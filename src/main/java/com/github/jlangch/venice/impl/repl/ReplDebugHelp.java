@@ -57,7 +57,7 @@ public class ReplDebugHelp {
 			"                  E.g.: !breakpoint remove foo/gauss\n" +
 			"               o Temporarily skip/unskip all breakpoints\n" +
 			"                  !breakpoint skip\n" +
-			"                  !breakpoint unksip\n" +
+			"                  !breakpoint unskip\n" +
 			"                  !breakpoint skip?\n" +
 			"               o List breakpoints\n" +
 			"                  !breakpoint list\n" +
