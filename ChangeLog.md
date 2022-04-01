@@ -9,11 +9,12 @@ and this project adheres to
 
 
 
-## [1.10.9] - 2022-03-xx
+## [1.10.9] - 2022-04-01
 
 ### Added
 
-- math functions `select-keys`
+- functions `select-keys`
+- functions `pmap` and `pcalls`
 
 ### Updated dependencies:
 
