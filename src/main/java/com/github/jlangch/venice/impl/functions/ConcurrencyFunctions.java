@@ -2892,67 +2892,71 @@ public class ConcurrencyFunctions {
 					.build()
 		) {
 			public VncVal apply(final VncList args) {
-
-//					  ([f coll]
-//							   (let [n (+ 2 (.. Runtime getRuntime availableProcessors))
-//							         rets (map #(future (f %)) coll)
-//							         step (fn step [[x & xs :as vs] fs]
-//							                (lazy-seq
-//							                 (if-let [s (seq fs)]
-//							                   (cons (deref x) (step xs (rest s)))
-//							                   (map deref vs))))]
-//							     (step rets (drop n rets))))
-//
-//					  ([f coll & colls]
-//					   (let [step (fn step [cs]
-//					                (lazy-seq
-//					                 (let [ss (map seq cs)]
-//					                   (when (every? identity ss)
-//					                     (cons (map first ss) (step (map rest ss)))))))]
-//					     (pmap #(apply f %) (step (cons coll colls))))))
-
 				ArityExceptions.assertMinArity(this, args, 2);
 
-				// TODO: implement pvalues and pcalls!
+				if (args.size() == 2 && args.second() == Nil) {
+					return VncList.empty();
+				}
+
+				VncLazySeq lazySeq;
 				
 				if (args.size() == 2) {
-					if (args.second() == Nil) {
-						return VncList.empty();
-					}
-					
+					// single collection
 					final IVncFunction fn = Coerce.toIVncFunction(args.first());
 					final VncSequence seq = VncSequence.coerceToSequence(args.second());
 					
-					VncLazySeq lazySeq = VncLazySeq
-											.ofAll(seq, Nil)
-											.map(v -> future.applyOf(
-														VncFunction.of(() -> fn.applyOf(v))));
-					
-					// parallelization
-					final int n = 2 + Runtime.getRuntime().availableProcessors();
-					
-					VncList result = VncList.empty();
-					while(true) {
-						final VncLazySeq part = lazySeq.take(n);
-						if (part.isEmpty()) {
-							break;
-						}
-
-						lazySeq = lazySeq.drop(n);
-						
-						final VncList partialRes = part.realize()
-													   .map(v -> deref.applyOf(v));
-						
-						result = result.addAllAtEnd(partialRes);
-					}
-					return result;
+					lazySeq = VncLazySeq
+								.ofAll(seq, Nil)
+								.map(v -> future.applyOf(
+											VncFunction.of(() -> fn.applyOf(v))));
 				}
 				else {
+					// multiple collections
 					final VncFunction fn = Coerce.toVncFunction(args.first());
 					final VncList listsOfSeqs = removeNilValues((VncList)args.rest());
-
-					throw new VncException("pmap: type %s not yet implemented for multiple collections");
+					
+					final VncSequence[] seqs = new VncSequence[listsOfSeqs.size()];
+					for(int ii=0; ii<listsOfSeqs.size(); ii++) {
+						seqs[ii] = VncSequence.coerceToSequence(listsOfSeqs.nth(ii));
+					}
+						
+					VncList mappingArgs = VncList.empty();
+					
+					while(!isOneEmpty(seqs)) {
+						VncList fnArgs = VncList.empty();
+						for(int ii=0; ii<seqs.length; ii++) {
+							fnArgs = fnArgs.addAtEnd(seqs[ii].first());
+							seqs[ii] = seqs[ii].rest();
+						}					
+						mappingArgs = mappingArgs.addAtEnd(fnArgs);
+					}
+				
+					lazySeq = VncLazySeq
+								.ofAll(mappingArgs, Nil)
+								.map(v -> future.applyOf(
+											VncFunction.of(() -> fn.apply((VncList)v))));
 				}
+				
+				
+				// parallelization
+				final int n = 2 + Runtime.getRuntime().availableProcessors();
+				
+				VncList result = VncList.empty();
+				while(true) {
+					final VncLazySeq part = lazySeq.take(n);
+					if (part.isEmpty()) {
+						break;
+					}
+
+					lazySeq = lazySeq.drop(n);
+					
+					final VncList partialRes = part.realize()
+												   .map(v -> deref.applyOf(v));
+					
+					result = result.addAllAtEnd(partialRes);
+				}
+				
+				return result;
 			}
 			
 			private static final long serialVersionUID = -1848883965231344442L;
@@ -3084,6 +3088,15 @@ public class ConcurrencyFunctions {
 	    delayer.schedule(() -> result.complete(timeoutVal), timeout, unit);
 	   
 	    return result;
+	}
+	
+	private static boolean isOneEmpty(final VncSequence[] seqs) {
+		for(int ii=0; ii<seqs.length; ii++) {
+			if (seqs[ii].isEmpty()) {
+				return true;
+			}
+		}
+		return false;
 	}
 	
 	

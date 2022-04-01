@@ -699,6 +699,11 @@ public class ConcurrencyFunctionsTest {
 		assertEquals("()", venice.eval("(pr-str (pmap inc nil))"));
 		assertEquals("()", venice.eval("(pr-str (pmap inc []))"));
 		assertEquals("(2 3 4 5 6 7)", venice.eval("(pr-str (pmap inc [1 2 3 4 5 6]))"));
+
+		assertEquals("(9 11)", venice.eval("(pr-str (pmap + [1 2] [8 9]))"));
+		assertEquals("(9 11)", venice.eval("(pr-str (pmap + [1 2 3 4 5] [8 9]))"));
+		assertEquals("(9 11)", venice.eval("(pr-str (pmap + [1 2 3 4 5] [8 9]))"));
+		assertEquals("(9 11)", venice.eval("(pr-str (pmap + [1 2] [8 9 10 11]))"));
 	}
 
 	@Test

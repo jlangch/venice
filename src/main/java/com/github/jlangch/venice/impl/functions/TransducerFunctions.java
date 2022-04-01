@@ -262,30 +262,21 @@ public class TransducerFunctions {
 						for(int ii=0; ii<lists.size(); ii++) {
 							seqs[ii] = VncSequence.coerceToSequence(lists.nth(ii));
 						}
-
+						
 						// mapper with multiple collections
-						boolean hasMore = true;
-						while(hasMore) {
+						while(!isOneEmpty(seqs)) {
 							final List<VncVal> fnArgs = new ArrayList<>();
 
 							for(int ii=0; ii<seqs.length; ii++) {
-								VncSequence s = seqs[ii];
-								if (s.isEmpty()) {
-									hasMore = false;
-									break;
-								}
-
-								fnArgs.add(s.first());
-								seqs[ii] = s.rest();
+								fnArgs.add(seqs[ii].first());
+								seqs[ii] = seqs[ii].rest();
 							}
 
-							if (hasMore) {
-								final VncVal val = VncFunction.applyWithMeter(
-														fn, 
-														VncList.ofList(fnArgs), 
-														meterRegistry);
-								result.add(val);
-							}
+							final VncVal val = VncFunction.applyWithMeter(
+													fn, 
+													VncList.ofList(fnArgs), 
+													meterRegistry);
+							result.add(val);
 						}
 
 						return VncList.ofList(result);
@@ -1521,6 +1512,15 @@ public class TransducerFunctions {
 		else {
 			result.add(value);
 		}
+	}
+	
+	private static boolean isOneEmpty(final VncSequence[] seqs) {
+		for(int ii=0; ii<seqs.length; ii++) {
+			if (seqs[ii].isEmpty()) {
+				return true;
+			}
+		}
+		return false;
 	}
 
 

@@ -13,7 +13,7 @@ and this project adheres to
 
 ### Added
 
-- ...
+- function `pmap` supports now multiple collections
 
 
 
