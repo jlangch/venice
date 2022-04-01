@@ -2980,7 +2980,7 @@ public class ConcurrencyFunctions {
 				
 				// (pmap #(%) fns)
 				return pmap.applyOf(
-						VncFunction.of((VncList x) -> ((VncFunction)(x.first())).apply(VncList.empty())),
+						VncFunction.of((VncList x) -> ((VncFunction)x.first()).apply(VncList.empty())),
 						args.map(f -> Coerce.toVncFunction(f)));
 			}
 			
