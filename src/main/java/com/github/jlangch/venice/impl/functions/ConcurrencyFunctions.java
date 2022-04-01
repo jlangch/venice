@@ -21,7 +21,6 @@
  */
 package com.github.jlangch.venice.impl.functions;
 
-import static com.github.jlangch.venice.impl.functions.FunctionsUtil.removeNilValues;
 import static com.github.jlangch.venice.impl.types.Constants.Nil;
 import static com.github.jlangch.venice.impl.types.VncBoolean.False;
 import static com.github.jlangch.venice.impl.types.VncBoolean.True;
@@ -2898,11 +2897,12 @@ public class ConcurrencyFunctions {
 					return VncList.empty();
 				}
 
+				final IVncFunction fn = Coerce.toIVncFunction(args.first());
+
 				VncLazySeq lazySeq;
 				
 				if (args.size() == 2) {
 					// single collection
-					final IVncFunction fn = Coerce.toIVncFunction(args.first());
 					final VncSequence seq = VncSequence.coerceToSequence(args.second());
 					
 					lazySeq = VncLazySeq
@@ -2912,27 +2912,26 @@ public class ConcurrencyFunctions {
 				}
 				else {
 					// multiple collections
-					final VncFunction fn = Coerce.toVncFunction(args.first());
-					final VncList listsOfSeqs = removeNilValues((VncList)args.rest());
+					final VncList listsOfSeqs = args.rest().filter(v -> v != Nil);
 					
 					final VncSequence[] seqs = new VncSequence[listsOfSeqs.size()];
 					for(int ii=0; ii<listsOfSeqs.size(); ii++) {
 						seqs[ii] = VncSequence.coerceToSequence(listsOfSeqs.nth(ii));
 					}
 						
-					VncList mappingArgs = VncList.empty();
+					VncList mappingFnArgs = VncList.empty();
 					
-					while(!isOneEmpty(seqs)) {
+					while(!isOneSeqEmpty(seqs)) {
 						VncList fnArgs = VncList.empty();
 						for(int ii=0; ii<seqs.length; ii++) {
 							fnArgs = fnArgs.addAtEnd(seqs[ii].first());
 							seqs[ii] = seqs[ii].rest();
 						}					
-						mappingArgs = mappingArgs.addAtEnd(fnArgs);
+						mappingFnArgs = mappingFnArgs.addAtEnd(fnArgs);
 					}
 				
 					lazySeq = VncLazySeq
-								.ofAll(mappingArgs, Nil)
+								.ofAll(mappingFnArgs, Nil)
 								.map(v -> future.applyOf(
 											VncFunction.of(() -> fn.apply((VncList)v))));
 				}
@@ -2979,11 +2978,10 @@ public class ConcurrencyFunctions {
 			public VncVal apply(final VncList args) {
 				ArityExceptions.assertMinArity(this, args, 1);
 				
-				VncList pmapArgs = VncList.empty();
-				pmapArgs = pmapArgs.addAtEnd(VncFunction.of((VncList x) -> ((VncFunction)(x.first())).apply(VncList.empty())));
-				pmapArgs = pmapArgs.addAtEnd(args.map(f -> Coerce.toVncFunction(f)));
-
-				return pmap.apply(pmapArgs);
+				// (pmap #(%) fns)
+				return pmap.applyOf(
+						VncFunction.of((VncList x) -> ((VncFunction)(x.first())).apply(VncList.empty())),
+						args.map(f -> Coerce.toVncFunction(f)));
 			}
 			
 			private static final long serialVersionUID = -1848883965231344442L;
@@ -3090,7 +3088,7 @@ public class ConcurrencyFunctions {
 	    return result;
 	}
 	
-	private static boolean isOneEmpty(final VncSequence[] seqs) {
+	private static boolean isOneSeqEmpty(final VncSequence[] seqs) {
 		for(int ii=0; ii<seqs.length; ii++) {
 			if (seqs[ii].isEmpty()) {
 				return true;
