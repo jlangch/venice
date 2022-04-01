@@ -82,11 +82,7 @@ public class VncLazySeq extends VncSequence {
 		return new VncLazySeq(Stream.cons(head, () -> tail.value), meta);
 	}
 
-	public static VncLazySeq ofAll(final VncList list, final VncVal meta) {
-		return new VncLazySeq(Stream.ofAll(list.stream()), meta);
-	}
-
-	public static VncLazySeq ofAll(final VncVector list, final VncVal meta) {
+	public static VncLazySeq ofAll(final VncSequence list, final VncVal meta) {
 		return new VncLazySeq(Stream.ofAll(list.stream()), meta);
 	}
 

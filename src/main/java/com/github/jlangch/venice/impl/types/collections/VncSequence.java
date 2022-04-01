@@ -30,7 +30,10 @@ import java.util.stream.Stream;
 
 import com.github.jlangch.venice.impl.types.Constants;
 import com.github.jlangch.venice.impl.types.VncKeyword;
+import com.github.jlangch.venice.impl.types.VncString;
 import com.github.jlangch.venice.impl.types.VncVal;
+import com.github.jlangch.venice.impl.types.util.Coerce;
+import com.github.jlangch.venice.impl.types.util.Types;
 import com.github.jlangch.venice.impl.util.MetaUtil;
 
 
@@ -134,7 +137,22 @@ public abstract class VncSequence extends VncCollection implements Iterable<VncV
 
 	public abstract VncSequence map(Function<? super VncVal, ? extends VncVal> mapper);
 
-	
+
+	public static VncSequence coerceToSequence(final VncVal val) {
+		if (Types.isVncMap(val)) {
+			return VncList.ofList(((VncMap)val).entries());
+		}
+		else if (Types.isVncSet(val)) {
+			return ((VncSet)val).toVncList();
+		}
+		else if (Types.isVncString(val)) {
+			return ((VncString)val).toVncList();
+		}
+		else {
+			return Coerce.toVncSequence(val);
+		}
+	}
+
 	
 	public static final String TYPE = ":core/sequence";
 

@@ -25,6 +25,7 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.UUID;
 import java.util.concurrent.atomic.AtomicReference;
+import java.util.function.Supplier;
 import java.util.stream.Collectors;
 
 import com.github.jlangch.venice.impl.thread.ThreadContext;
@@ -96,6 +97,26 @@ public abstract class VncFunction
 		this.preConditions = preConditions;
 		this.fnMeta.set(MetaUtil.setNamespace(meta, namespace));
 		this.fnPrivate = MetaUtil.isPrivate(meta);
+	}
+	
+	public static VncFunction of(final IVncFunction fn) {
+		return new VncFunction(createAnonymousFuncName()) {
+			@Override
+			public VncVal apply(final VncList args) {
+				return fn.apply(args);
+			}
+			private static final long serialVersionUID = 1L;
+		};
+	}
+	
+	public static VncFunction of(final Supplier<VncVal> fn) {
+		return new VncFunction(createAnonymousFuncName()) {
+			@Override
+			public VncVal apply(final VncList args) {
+				return fn.get();
+			}
+			private static final long serialVersionUID = 1L;
+		};
 	}
 	
 	@Override
