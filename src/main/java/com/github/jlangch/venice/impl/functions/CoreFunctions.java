@@ -3964,7 +3964,16 @@ public class CoreFunctions {
 			public VncVal apply(final VncList args) {
 				ArityExceptions.assertArity(this, args, 2);
 
+				if (args.first() == Nil) {
+					return new VncHashMap();
+				}
+				
 				final VncMap map = Coerce.toVncMap(args.first());
+				
+				if (args.second() == Nil) {
+					return map.emptyWithMeta();
+				}
+				
 				final VncSequence keyseq = Coerce.toVncSequence(args.second());
 
 				VncMap newMap = map.emptyWithMeta();
