@@ -2871,9 +2871,18 @@ public class ConcurrencyFunctions {
 					.meta()
 					.arglists("(pmap f coll)", "(pmap f coll & colls)")
 					.doc(
-						"Like map, except f is applied in parallel. Only useful for " +
-						"computationally intensive functions where the time of f " +
-						"dominates the coordination overhead.")
+						"Like `map`, except *f* is applied in parallel. Only useful for " +
+						"computationally intensive functions where the time of *f* " +
+						"dominates the coordination overhead.\n\n" +
+						"The result collection is sorted in the same way as for `map`, " +
+						"i.e. it preserves the items' order in the *coll* (or *colls*) " +
+						"parameter(s) of `pmap`. In other words: calculation is done " +
+						"parallel, but the result is delivered in the order the input " +
+						"came (in *coll*/*colls*).\n" +
+						"In contrast, side effects of *f* (if any) are coming in random " +
+						"order!\n\n" +
+						"`pmap` is implemented using Venice futures and processes " +
+						"`(+ 2 (cpus))` items in parallel.")
 					.examples(
 						";; With `pmap`, the total elapsed time is just over 2 seconds:\n" +
 						"(do                                          \n" +
@@ -2887,7 +2896,7 @@ public class ConcurrencyFunctions {
 						"    (sleep 2000)  ; wait for 2 seconds       \n" +
 						"    (+ n 10))                                \n" +
 						"  (time (map long-running-job (range 4))))  ")
-					.seeAlso("pcalls", "map")
+					.seeAlso("pcalls", "map", "cpus")
 					.build()
 		) {
 			public VncVal apply(final VncList args) {
@@ -2968,11 +2977,15 @@ public class ConcurrencyFunctions {
 					.meta()
 					.arglists("(pcalls & fns)")
 					.doc(
-						"Executes the no-arg fns in parallel, returning a lazy sequence " +
-						"of their values")
+						"Executes the no-arg *fns* in parallel, returning a sequence " +
+						"of their values in the same order the functions are passed.\n" +
+						"In contrast, side effects of *fns* (if any) are coming in random " +
+						"order!\n\n" +
+						"`pcalls` is implemented using Venice futures and processes " +
+						"`(+ 2 (cpus))` functions in parallel.")
 					.examples(
 						"(pcalls #(+ 1 2) #(+ 2 3) #(+ 3 4))")
-					.seeAlso("pmap")
+					.seeAlso("pmap", "cpus")
 					.build()
 		) {
 			public VncVal apply(final VncList args) {
