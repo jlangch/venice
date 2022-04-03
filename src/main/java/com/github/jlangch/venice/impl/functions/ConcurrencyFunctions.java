@@ -1283,11 +1283,11 @@ public class ConcurrencyFunctions {
 						"Delivers the supplied value to the promise, releasing any pending " + 
 						"derefs. A subsequent call to deliver on a promise will have no effect.")
 					.examples(
-						"(do                   \n" +
-						"   (def p (promise))  \n" +
-						"   (deliver p 10)     \n" +
-						"   (deliver p 20)     \n" +
-						"   @p)                  ")
+						"(do                            \n" +
+						"   (def p (promise))           \n" +
+						"   (deliver p 10)              \n" +
+						"   (deliver p 20) ; no effect  \n" +
+						"   @p)                           ")
 					.seeAlso("deliver-ex", "promise", "realized?")
 					.build()
 		) {
@@ -1327,7 +1327,7 @@ public class ConcurrencyFunctions {
 							"(do                                             \n" +
 							"   (def p (promise))                            \n" +
 							"   (deliver-ex p (ex :VncException \"error\"))  \n" +
-							"   (deliver p 20)                               \n" +
+							"   (deliver p 20)  ; no effect                  \n" +
 							"   (try                                         \n" +
 							"     @p                                         \n" +
 							"     (catch :VncException e (ex-message e))))   ")         
@@ -1344,20 +1344,22 @@ public class ConcurrencyFunctions {
 					final VncVal value = args.second();
 					
 					if (promise instanceof CompletableFuture) {
+						CompletableFuture<VncVal> cf = (CompletableFuture<VncVal>)promise;
+						
 						if (value instanceof VncJavaObject) {
 							final Object delegate = ((VncJavaObject)value).getDelegate();
 							if (delegate instanceof VncException) {
-								((CompletableFuture<VncVal>)promise).completeExceptionally((VncException)delegate);
+								cf.completeExceptionally((VncException)delegate);
 							}
 							else if (delegate instanceof Exception) {
-								((CompletableFuture<VncVal>)promise).completeExceptionally((VncException)delegate);
+								cf.completeExceptionally((Exception)delegate);
 							}
 							else {
-								((CompletableFuture<VncVal>)promise).completeExceptionally(new ValueException(value));
+								cf.completeExceptionally(new ValueException(value));
 							}
 						}
 						else {
-							((CompletableFuture<VncVal>)promise).completeExceptionally(new ValueException(value));
+							cf.completeExceptionally(new ValueException(value));
 						}
 						return Nil;
 					}
