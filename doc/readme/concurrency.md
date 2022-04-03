@@ -169,12 +169,26 @@ orchestrated.
     (trace "3)  filtering coffee...") 
     (filtered-coffee.))
 
-  ;; the processing, wiring the steps
-  (-> (promise #(grind-beans (coffee-beans.)))             ;; 1a
-      (then-combine (promise #(heat-water (cold-water.)))  ;; 1b
-                    #(mix %1 %2))                          ;; 2
-      (then-apply #(filter-coffee %1))                     ;; 3
-      (deref)))
+  (defn make-coffee []
+	;; the processing, wiring the steps
+	(-> (promise #(grind-beans (coffee-beans.)))             ;; 1a
+	    (then-combine (promise #(heat-water (cold-water.)))  ;; 1b
+	                  #(mix %1 %2))                          ;; 2
+	    (then-apply #(filter-coffee %1))                     ;; 3
+	    (deref)))
+
+  (defn make-coffee-2 []
+    (let [step_1a (promise)
+          step_1b (promise)
+          step_2  (promise)
+          step_3  (promise)]
+      (future #(deliver step_1a (grind-beans (coffee-beans.))))  ;; 1a
+      (future #(deliver step_1b (heat-water (cold-water.))))     ;; 1b
+      (future #(deliver step_2 (mix @step_1a @step_1b)))         ;; 2
+      (future #(deliver step_3 (filter-coffee @step_2)))         ;; 3
+      @step_3))
+
+  (make-coffee))
 ```
 
 

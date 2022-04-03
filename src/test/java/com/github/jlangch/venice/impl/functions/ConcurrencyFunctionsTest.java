@@ -763,6 +763,47 @@ public class ConcurrencyFunctionsTest {
 	}
 
 	@Test
+	public void test_promise_future() {
+		final Venice venice = new Venice();
+
+		final String script = 
+				"(do                                 \n" +
+				"   (def p (promise))                \n" +
+				"   (future #(deliver p 100))        \n" +
+				"   @p)                              ";
+
+		assertEquals(100L, venice.eval(script));
+	}
+
+	@Test
+	public void test_promise_deliver_ex_1() {
+		final Venice venice = new Venice();
+
+		final String script = 
+				"(do                                 			 \n" +
+				"   (def p (promise))                			 \n" +
+				"   (deliver-ex p (ex :VncException \"error\"))  \n" +
+				"   (deliver p 20)                               \n" +
+				"   @p)                                          ";
+
+		assertThrows(VncException.class, () -> venice.eval(script));
+	}
+
+	@Test
+	public void test_promise_deliver_ex_2() {
+		final Venice venice = new Venice();
+
+		final String script = 
+				"(do                                 			 \n" +
+				"   (def p (promise))                			 \n" +
+				"   (deliver-ex p 100)                           \n" +
+				"   (deliver p 20)                               \n" +
+				"   @p)                                          ";
+
+		assertThrows(ValueException.class, () -> venice.eval(script));
+	}
+
+	@Test
 	public void test_promise_dereferenceable() {
 		final Venice venice = new Venice();
 
@@ -1245,6 +1286,22 @@ public class ConcurrencyFunctionsTest {
 				") ";
 
 		assertThrows(ValueException.class, () -> venice.eval(script));
+	}
+
+	@Test
+	public void test_future_error() {
+		final Venice venice = new Venice();
+
+		// Note: the "Symbol 'xxx' not found" exception does not bubble up to the
+		//       caller. Without dereferencing the future the exception is not 
+		//       propagated! 'p' will never get a value delivered! 
+		final String script = 
+				"(do                                 \n" +
+				"   (def p (promise))                \n" +
+				"   (future #(deliver p xxx))        \n" +  // Symbol 'xxx' not found!
+				"   (deref p 300 :timeout))            ";
+
+		assertEquals("timeout", venice.eval(script));
 	}
 
 	@Test

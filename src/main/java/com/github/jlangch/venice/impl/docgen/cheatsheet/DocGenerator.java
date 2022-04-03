@@ -1523,6 +1523,7 @@ public class DocGenerator {
 		promises.addItem(getDocItem("promise"));
 		promises.addItem(getDocItem("promise?"));
 		promises.addItem(getDocItem("deliver"));
+		promises.addItem(getDocItem("deliver-ex"));
 		promises.addItem(getDocItem("realized?"));
 		promises.addItem(getDocItem("then-accept"));
 		promises.addItem(getDocItem("then-accept-both"));

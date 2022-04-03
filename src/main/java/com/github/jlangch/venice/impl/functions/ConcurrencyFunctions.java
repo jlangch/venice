@@ -46,6 +46,7 @@ import java.util.function.Supplier;
 import java.util.stream.Collectors;
 
 import com.github.jlangch.venice.SecurityException;
+import com.github.jlangch.venice.ValueException;
 import com.github.jlangch.venice.VncException;
 import com.github.jlangch.venice.impl.thread.ThreadBridge;
 import com.github.jlangch.venice.impl.types.IDeref;
@@ -1287,7 +1288,7 @@ public class ConcurrencyFunctions {
 						"   (deliver p 10)     \n" +
 						"   (deliver p 20)     \n" +
 						"   @p)                  ")
-					.seeAlso("promise", "realized?")
+					.seeAlso("deliver-ex", "promise", "realized?")
 					.build()
 		) {
 			@SuppressWarnings("unchecked")
@@ -1312,6 +1313,63 @@ public class ConcurrencyFunctions {
 			
 			private static final long serialVersionUID = -1848883965231344442L;
 		};
+
+	public static VncFunction deliver_ex = 
+			new VncFunction(
+					"deliver-ex", 
+					VncFunction
+						.meta()
+						.arglists("(deliver-ex ref ex)")
+						.doc(
+							"Delivers the supplied exception to the promise, releasing any pending " + 
+							"derefs. A subsequent call to deliver on a promise will have no effect.")
+						.examples(
+							"(do                                             \n" +
+							"   (def p (promise))                            \n" +
+							"   (deliver-ex p (ex :VncException \"error\"))  \n" +
+							"   (deliver p 20)                               \n" +
+							"   (try                                         \n" +
+							"     @p                                         \n" +
+							"     (catch :VncException e (ex-message e))))   ")         
+						.seeAlso("deliver", "promise", "realized?")
+						.build()
+			) {
+				@SuppressWarnings("unchecked")
+				public VncVal apply(final VncList args) {
+					ArityExceptions.assertArity(this, args, 2);
+
+					sandboxFunctionCallValidation();
+
+					final Object promise = Coerce.toVncJavaObject(args.first()).getDelegate();
+					final VncVal value = args.second();
+					
+					if (promise instanceof CompletableFuture) {
+						if (value instanceof VncJavaObject) {
+							final Object delegate = ((VncJavaObject)value).getDelegate();
+							if (delegate instanceof VncException) {
+								((CompletableFuture<VncVal>)promise).completeExceptionally((VncException)delegate);
+							}
+							else if (delegate instanceof Exception) {
+								((CompletableFuture<VncVal>)promise).completeExceptionally((VncException)delegate);
+							}
+							else {
+								((CompletableFuture<VncVal>)promise).completeExceptionally(new ValueException(value));
+							}
+						}
+						else {
+							((CompletableFuture<VncVal>)promise).completeExceptionally(new ValueException(value));
+						}
+						return Nil;
+					}
+					else {
+						throw new VncException(String.format(
+								"Function 'deliver-ex' does not allow type %s as parameter",
+								Types.getType(args.first())));
+					}
+				}
+				
+				private static final long serialVersionUID = -1848883965231344442L;
+			};
 
 	// see also: https://github.com/funcool/promesa   (promise chaining)
 	//           https://dzone.com/articles/20-examples-of-using-javas-completablefuture
@@ -3154,6 +3212,7 @@ public class ConcurrencyFunctions {
 					.add(promise)
 					.add(promise_Q)
 					.add(deliver)
+					.add(deliver_ex)
 					.add(then_accept)
 					.add(then_apply)
 					.add(then_combine)
