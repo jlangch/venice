@@ -1315,63 +1315,63 @@ public class ConcurrencyFunctions {
 		};
 
 	public static VncFunction deliver_ex = 
-			new VncFunction(
-					"deliver-ex", 
-					VncFunction
-						.meta()
-						.arglists("(deliver-ex ref ex)")
-						.doc(
-							"Delivers the supplied exception to the promise, releasing any pending " + 
-							"derefs. A subsequent call to deliver on a promise will have no effect.")
-						.examples(
-							"(do                                             \n" +
-							"   (def p (promise))                            \n" +
-							"   (deliver-ex p (ex :VncException \"error\"))  \n" +
-							"   (deliver p 20)  ; no effect                  \n" +
-							"   (try                                         \n" +
-							"     @p                                         \n" +
-							"     (catch :VncException e (ex-message e))))   ")         
-						.seeAlso("deliver", "promise", "realized?")
-						.build()
-			) {
-				@SuppressWarnings("unchecked")
-				public VncVal apply(final VncList args) {
-					ArityExceptions.assertArity(this, args, 2);
+		new VncFunction(
+				"deliver-ex", 
+				VncFunction
+					.meta()
+					.arglists("(deliver-ex ref ex)")
+					.doc(
+						"Delivers the supplied exception to the promise, releasing any pending " + 
+						"derefs. A subsequent call to deliver on a promise will have no effect.")
+					.examples(
+						"(do                                             \n" +
+						"   (def p (promise))                            \n" +
+						"   (deliver-ex p (ex :VncException \"error\"))  \n" +
+						"   (deliver p 20)  ; no effect                  \n" +
+						"   (try                                         \n" +
+						"     @p                                         \n" +
+						"     (catch :VncException e (ex-message e))))   ")         
+					.seeAlso("deliver", "promise", "realized?")
+					.build()
+		) {
+			@SuppressWarnings("unchecked")
+			public VncVal apply(final VncList args) {
+				ArityExceptions.assertArity(this, args, 2);
 
-					sandboxFunctionCallValidation();
+				sandboxFunctionCallValidation();
 
-					final Object promise = Coerce.toVncJavaObject(args.first()).getDelegate();
-					final VncVal value = args.second();
+				final Object promise = Coerce.toVncJavaObject(args.first()).getDelegate();
+				final VncVal value = args.second();
+				
+				if (promise instanceof CompletableFuture) {
+					CompletableFuture<VncVal> cf = (CompletableFuture<VncVal>)promise;
 					
-					if (promise instanceof CompletableFuture) {
-						CompletableFuture<VncVal> cf = (CompletableFuture<VncVal>)promise;
-						
-						if (value instanceof VncJavaObject) {
-							final Object delegate = ((VncJavaObject)value).getDelegate();
-							if (delegate instanceof VncException) {
-								cf.completeExceptionally((VncException)delegate);
-							}
-							else if (delegate instanceof Exception) {
-								cf.completeExceptionally((Exception)delegate);
-							}
-							else {
-								cf.completeExceptionally(new ValueException(value));
-							}
+					if (value instanceof VncJavaObject) {
+						final Object delegate = ((VncJavaObject)value).getDelegate();
+						if (delegate instanceof VncException) {
+							cf.completeExceptionally((VncException)delegate);
+						}
+						else if (delegate instanceof Exception) {
+							cf.completeExceptionally((Exception)delegate);
 						}
 						else {
 							cf.completeExceptionally(new ValueException(value));
 						}
-						return Nil;
 					}
 					else {
-						throw new VncException(String.format(
-								"Function 'deliver-ex' does not allow type %s as parameter",
-								Types.getType(args.first())));
+						cf.completeExceptionally(new ValueException(value));
 					}
+					return Nil;
 				}
-				
-				private static final long serialVersionUID = -1848883965231344442L;
-			};
+				else {
+					throw new VncException(String.format(
+							"Function 'deliver-ex' does not allow type %s as parameter",
+							Types.getType(args.first())));
+				}
+			}
+			
+			private static final long serialVersionUID = -1848883965231344442L;
+		};
 
 	// see also: https://github.com/funcool/promesa   (promise chaining)
 	//           https://dzone.com/articles/20-examples-of-using-javas-completablefuture
