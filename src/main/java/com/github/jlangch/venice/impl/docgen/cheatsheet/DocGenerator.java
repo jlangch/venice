@@ -1440,6 +1440,7 @@ public class DocGenerator {
 		
 		return section;
 	}
+	
 	private DocSection getTransducersSection() {
 		final DocSection section = new DocSection("Transducers", "transducers");
 
