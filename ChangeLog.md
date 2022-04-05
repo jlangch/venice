@@ -13,8 +13,9 @@ and this project adheres to
 
 ### Added
 
-- support for now multiple collections to function `pmap` 
+- support for multiple collections to function `pmap` 
 - function `deliver-ex` to complete promises exceptionally by delivering an exception
+
 
 
 ## [1.10.9] - 2022-04-01
