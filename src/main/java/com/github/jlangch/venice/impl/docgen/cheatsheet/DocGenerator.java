@@ -174,14 +174,17 @@ public class DocGenerator {
 		collections.addSection(new DocSection("ByteBuf", "bytebuf"));
 		content.add(collections);
 		
+		final DocSection datatypes = new DocSection("Datatypes", "datatypes");
+		datatypes.addSection(new DocSection("Types", "types"));
+		datatypes.addSection(new DocSection("Protocols", "protocols"));
+		content.add(datatypes);
+		
 		final DocSection functions = new DocSection("Core\u00A0Functions", "functions");
 		functions.addSection(new DocSection("Functions", "functions"));
 		functions.addSection(new DocSection("Macros", "macros"));
 		functions.addSection(new DocSection("Special\u00A0Forms", "specialforms"));
 		functions.addSection(new DocSection("Transducers", "transducers"));
 		functions.addSection(new DocSection("Namespaces", "namespace"));
-		functions.addSection(new DocSection("Types", "types"));
-		functions.addSection(new DocSection("Protocols", "protocols"));
 		functions.addSection(new DocSection("Exceptions", "exceptions"));
 		content.add(functions);
 		
