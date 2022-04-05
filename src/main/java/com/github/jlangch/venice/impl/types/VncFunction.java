@@ -148,16 +148,16 @@ public abstract class VncFunction
 	@Override
 	public abstract VncVal apply(final VncList args);
 
+	public VncVal applyOf(final VncVal... mvs) {
+		return apply(VncList.of(mvs));
+	}
+
 	public VncFunction getFunctionForArgs(final VncList args) {
 		return getFunctionForArity(args.size());
 	}
 
 	public VncFunction getFunctionForArity(final int arity) {
 		return this;
-	}
-
-	public VncVal applyOf(final VncVal... mvs) {
-		return apply(VncList.of(mvs));
 	}
 
 	@Override
