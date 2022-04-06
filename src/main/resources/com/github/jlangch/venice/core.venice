@@ -1107,7 +1107,7 @@
 
             (println (complex. 1 2)))
           """ )
-     :see-also '("deftype") }
+     :see-also '("defprotocol", "deftype") }
 
   Object
 

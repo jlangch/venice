@@ -174,7 +174,7 @@ public class DocGenerator {
 		collections.addSection(new DocSection("ByteBuf", "bytebuf"));
 		content.add(collections);
 		
-		final DocSection datatypes = new DocSection("Datatypes", "datatypes");
+		final DocSection datatypes = new DocSection("Custom\u00A0Types", "datatypes");
 		datatypes.addSection(new DocSection("Types", "types"));
 		datatypes.addSection(new DocSection("Protocols", "protocols"));
 		content.add(datatypes);
