@@ -63,6 +63,9 @@
                     :when (empty-field? board x y)]
            [x y])))
 
+(defn value-not-used? [val coll]
+  (nil? (some #{val} coll)))
+
 (defn sub-board-vals [board x y]
   (let [xs  (-> x (/ 3) (* 3))
         ys  (-> y (/ 3) (* 3))]
@@ -73,9 +76,9 @@
 (defn valid? [board x y val]
   (let [rows (partition 9 board)]
     (and (empty-field? board x y)
-         (nil? (some #{val} (nth rows y)))
-         (nil? (some #{val} (map #(nth % x) rows)))
-         (nil? (some #{val} (sub-board-vals board x y))))))
+         (value-not-used? val (nth rows y))                  ; row y
+         (value-not-used? val (map #(nth % x) rows))         ; col x
+         (value-not-used? val (sub-board-vals board x y))))) ; 3x3 sub board
 
 (defn solve [board]
   (if-let [[x y] (get-empty-field board)]
