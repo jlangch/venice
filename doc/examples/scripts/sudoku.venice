@@ -21,6 +21,18 @@
 
 ;;;; Sudoku solver
 
+;;;; Constraints for a 9x9 Sudoku
+;;;;
+;;;; Constraint 1: Each cell should be filled with a single value between 1
+;;;;               and 9
+;;;;
+;;;; Constraint 2: Each row should contain every number from 1 to 9 once
+;;;;
+;;;; Constraint 3: Each column should contain every number from 1 to 9 once
+;;;;
+;;;; Constraint 4: Each 3x3 grid, starting from top left, should contain every
+;;;;               number from 1 to 9 once
+
 
 (ns sudoku)
 
@@ -60,7 +72,7 @@
 (defn get-empty-field [board]
   (first (list-comp [x (range 9)
                      y (range 9)
-                    :when (empty-field? board x y)]
+                     :when (empty-field? board x y)]
            [x y])))
 
 (defn value-not-used? [val coll]
@@ -78,7 +90,7 @@
     (and (empty-field? board x y)
          (value-not-used? val (nth rows y))                  ; row y
          (value-not-used? val (map #(nth % x) rows))         ; col x
-         (value-not-used? val (sub-board-vals board x y))))) ; 3x3 sub board
+         (value-not-used? val (sub-board-vals board x y))))) ; 3x3 grid
 
 (defn solve [board]
   (if-let [[x y] (get-empty-field board)]
