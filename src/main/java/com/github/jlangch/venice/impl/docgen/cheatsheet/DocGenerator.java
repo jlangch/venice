@@ -756,6 +756,8 @@ public class DocGenerator {
 		vec_modify.addItem(getDocItem("drop-last"));
 		vec_modify.addItem(getDocItem("update"));
 		vec_modify.addItem(getDocItem("update!"));
+		vec_modify.addItem(getDocItem("assoc"));
+		vec_modify.addItem(getDocItem("assoc!"));
 		vec_modify.addItem(getDocItem("split-with"));
 		
 		final DocSection vec_nested = new DocSection("Nested", "collections.vectors.nested");

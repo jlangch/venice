@@ -3245,8 +3245,8 @@ public class CoreFunctions {
 						"  (deftype :complex [real :long, imaginary :long])  \n" +
 						"  (def x (complex. 100 200))                        \n" +
 						"  (def y (assoc x :real 110))                       \n" +
-						"  (pr-str y))                                         "
-						)
+						"  (pr-str y))                                         ")
+					.seeAlso("dissoc", "update")
 					.build()
 		) {
 			public VncVal apply(final VncList args) {
@@ -3331,7 +3331,7 @@ public class CoreFunctions {
 						"(assoc! (mutable-vector 1 2 3) 0 10)",
 						"(assoc! (mutable-vector 1 2 3) 3 10)",
 						"(assoc! (mutable-vector 1 2 3) 6 10)")
-					.seeAlso("dissoc!")
+					.seeAlso("dissoc!", "update!")
 					.build()
 		) {
 			public VncVal apply(final VncList args) {
@@ -3621,8 +3621,8 @@ public class CoreFunctions {
 						"  (deftype :complex [real :long, imaginary :long])  \n" +
 						"  (def x (complex. 100 200))                        \n" +
 						"  (def y (dissoc x :real))                          \n" +
-						"  (pr-str y))                                         "
-)
+						"  (pr-str y))                                         ")
+					.seeAlso("assoc", "update")
 					.build()
 		) {
 			public VncVal apply(final VncList args) {
@@ -3689,7 +3689,7 @@ public class CoreFunctions {
 						"(dissoc! (mutable-map :a 1 :b 2 :c 3) :b)",
 						"(dissoc! (mutable-map :a 1 :b 2 :c 3) :c :b)",
 						"(dissoc! (mutable-vector 1 2 3) 0)")
-					.seeAlso("assoc!")
+					.seeAlso("assoc!", "update!")
 					.build()
 		) {
 			public VncVal apply(final VncList args) {
@@ -4035,6 +4035,7 @@ public class CoreFunctions {
 						"(update {} :a (fn [x] 5))",
 						"(update {:a 0} :b (fn [x] 5))",
 						"(update {:a 0 :b 1} :a (fn [x] 5))")
+					.seeAlso("assoc", "dissoc")
 					.build()
 		) {
 			public VncVal apply(final VncList args) {
@@ -4093,6 +4094,7 @@ public class CoreFunctions {
 						"(update! (mutable-map :a 0) :b (fn [x] 5))",
 						"(update! (mutable-map :a 0 :b 1) :a (fn [x] 5))",
 						"(update! (mutable-vector 1 2 3) 0 (fn [x] 10))")
+					.seeAlso("assoc!", "dissoc!")
 					.build()
 		) {
 			public VncVal apply(final VncList args) {
