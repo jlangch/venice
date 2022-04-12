@@ -36,15 +36,35 @@
 
 (ns sudoku)
 
-(def board [7 8 0 4 0 0 1 2 0
-            6 0 0 0 7 5 0 0 9
-            0 0 0 6 0 1 0 7 8
-            0 0 7 0 4 0 2 6 0
-            0 0 1 0 5 0 9 3 0
-            9 0 4 0 6 0 0 0 5
-            0 7 0 3 0 0 0 1 2
-            1 2 0 0 0 7 4 0 0
-            0 4 9 2 0 6 0 0 7])
+(def board-1 [7 8 0 4 0 0 1 2 0
+              6 0 0 0 7 5 0 0 9
+              0 0 0 6 0 1 0 7 8
+              0 0 7 0 4 0 2 6 0
+              0 0 1 0 5 0 9 3 0
+              9 0 4 0 6 0 0 0 5
+              0 7 0 3 0 0 0 1 2
+              1 2 0 0 0 7 4 0 0
+              0 4 9 2 0 6 0 0 7])
+
+(def board-2 [5 3 0 0 7 0 0 0 0
+              6 0 0 1 9 5 0 0 0
+              0 9 8 0 0 0 0 6 0
+              8 0 0 0 6 0 0 0 3
+              4 0 0 8 0 3 0 0 1
+              7 0 0 0 2 0 0 0 6
+              0 6 0 0 0 0 2 8 0
+              0 0 0 4 1 9 0 0 5
+              0 0 0 0 8 0 0 7 9])
+
+(def board-3 [5 3 0 0 7 0 0 0 0
+              6 0 0 1 9 5 0 0 0
+              0 9 8 0 0 0 0 6 0
+              8 0 0 0 6 0 0 0 3
+              4 0 0 8 0 3 0 0 1
+              7 0 0 0 2 0 0 0 6
+              0 6 0 0 0 0 2 8 0
+              0 0 0 4 1 9 0 0 5
+              0 0 0 0 8 0 0 0 0])
 
 (defn print-board [board]
   (println)
@@ -52,7 +72,7 @@
        (partition 9)
        (map #(flatten (interpose "|" (partition 3 %))))
        (partition 3)
-       (interpose (repeat 11 "-"))
+       (interpose (seq "---+---+---"))
        (flatten)
        (partition 11)
        (docoll #(apply println %))))
@@ -99,6 +119,7 @@
     (print-board board))
   nil)
 
-(print-board board)
-(solve board)
-(println))
+(let [board board-1]
+  (print-board board)
+  (solve board)
+  (println))
