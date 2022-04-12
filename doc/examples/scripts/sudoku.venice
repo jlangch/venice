@@ -1,0 +1,89 @@
+;;;;   __    __         _
+;;;;   \ \  / /__ _ __ (_) ___ ___
+;;;;    \ \/ / _ \ '_ \| |/ __/ _ \
+;;;;     \  /  __/ | | | | (_|  __/
+;;;;      \/ \___|_| |_|_|\___\___|
+;;;;
+;;;;
+;;;; Copyright 2017-2021 Venice
+;;;;
+;;;; Licensed under the Apache License, Version 2.0 (the "License");
+;;;; you may not use this file except in compliance with the License.
+;;;; You may obtain a copy of the License at
+;;;;
+;;;;     http://www.apache.org/licenses/LICENSE-2.0
+;;;;
+;;;; Unless required by applicable law or agreed to in writing, software
+;;;; distributed under the License is distributed on an "AS IS" BASIS,
+;;;; WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+;;;; See the License for the specific language governing permissions and
+;;;; limitations under the License.
+
+;;;; Sudoku solver
+
+
+(ns sudoku)
+
+(def board [7 8 0 4 0 0 1 2 0
+            6 0 0 0 7 5 0 0 9
+            0 0 0 6 0 1 0 7 8
+            0 0 7 0 4 0 2 6 0
+            0 0 1 0 5 0 9 3 0
+            9 0 4 0 6 0 0 0 5
+            0 7 0 3 0 0 0 1 2
+            1 2 0 0 0 7 4 0 0
+            0 4 9 2 0 6 0 0 7])
+
+(defn print-board [board]
+  (println)
+  (->> (map (fn [x] (if (== x 0) "." x)) board)
+       (partition 9)
+       (map #(flatten (interpose "|" (partition 3 %))))
+       (partition 3)
+       (interpose (repeat 11 "-"))
+       (flatten)
+       (partition 11)
+       (docoll #(apply println %))))
+
+(defn board-index [x y]
+  (+ x (* 9 y)))
+
+(defn get-field [board x y]
+  (nth board (board-index x y)))
+
+(defn set-field [board x y val]
+  (assoc board (board-index x y) val))
+
+(defn empty-field? [board x y]
+  (== 0 (get-field board x y)))
+
+(defn get-empty-field [board]
+  (first (list-comp [x (range 9)
+                     y (range 9)
+                    :when (empty-field? board x y)]
+           [x y])))
+
+(defn sub-board-vals [board x y]
+  (let [xs  (-> x (/ 3) (* 3))
+        ys  (-> y (/ 3) (* 3))]
+    (list-comp [x1 (range xs (+ xs 3))
+                y1 (range ys (+ ys 3))]
+      (get-field board x1 y1))))
+
+(defn valid? [board x y val]
+  (let [rows (partition 9 board)]
+    (and (empty-field? board x y)
+         (nil? (some #{val} (nth rows y)))
+         (nil? (some #{val} (map #(nth % x) rows)))
+         (nil? (some #{val} (sub-board-vals board x y))))))
+
+(defn solve [board]
+  (if-let [[x y] (get-empty-field board)]
+    (list-comp [v (range 1 10) :when (valid? board x y v)]
+      (solve (set-field board x y v)))
+    (print-board board))
+  nil)
+
+(print-board board)
+(solve board)
+(println))
