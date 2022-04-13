@@ -1579,7 +1579,7 @@
           "(prewalk-replace {:a 1 :b 2} [:a :b])"
           "(prewalk-replace {:a 1 :b 2} [:a :b :c])"
           "(prewalk-replace {:a 1 :b 2} [:a :b [:a :b] :c])"
-          "(prewalk-replace {'a 1 'b 2} '[a b])")
+          "(prewalk-replace {'x 1 'y 2} '(+ x y))")
      :see-also '("postwalk-replace" "prewalk") }
 
   prewalk-replace [smap form]
@@ -1600,7 +1600,7 @@
           "(postwalk-replace {:a 1 :b 2} [:a :b])"
           "(postwalk-replace {:a 1 :b 2} [:a :b :c])"
           "(postwalk-replace {:a 1 :b 2} [:a :b [:a :b] :c])"
-          "(postwalk-replace {'a 1 'b 2} '[a b])")
+          "(postwalk-replace {'x 1 'y 2} '(+ x y))")
      :see-also '("prewalk-replace" "postwalk") }
 
   postwalk-replace [smap form]
