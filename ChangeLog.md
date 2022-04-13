@@ -15,6 +15,7 @@ and this project adheres to
 
 - support for multiple collections to function `pmap` 
 - function `deliver-ex` to complete promises exceptionally by delivering an exception
+- functions `prewalk-replace` and `postwalk-replace`
 
 
 

@@ -1173,6 +1173,8 @@ public class DocGenerator {
 		all.addSection(walk);
 		walk.addItem(getDocItem("prewalk"));
 		walk.addItem(getDocItem("postwalk"));
+		walk.addItem(getDocItem("prewalk-replace"));
+		walk.addItem(getDocItem("postwalk-replace"));
 
 		final DocSection meta = new DocSection("Meta", "functions.meta");
 		all.addSection(meta);
