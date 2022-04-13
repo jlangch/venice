@@ -410,7 +410,7 @@ public class CoreFunctions {
 			private static final long serialVersionUID = -1848883965231344442L;
 		};
 
-	public static VncFunction new_char =
+	public static VncFunction char_cast =
 		new VncFunction(
 				"char",
 				VncFunction
@@ -2605,7 +2605,7 @@ public class CoreFunctions {
 						"(juxt f g h & fs)")
 					.doc(
 						"Takes a set of functions and returns a fn that is the juxtaposition " +
-						"of those fns.  The returned fn takes a variable number of args, and " +
+						"of those fns. The returned fn takes a variable number of args, and " +
 						"returns a vector containing the result of applying each fn to the " +
 						"args (left-to-right).\n\n" +
 						"`((juxt a b c) x) => [(a x) (b x) (c x)]`")
@@ -8097,13 +8097,13 @@ public class CoreFunctions {
 				.add(not_match_Q)
 
 				.add(boolean_cast)
+				.add(char_cast)
 				.add(int_cast)
 				.add(long_cast)
 				.add(double_cast)
 				.add(decimal_cast)
 				.add(bigint_cast)
 
-				.add(new_char)
 				.add(new_list)
 				.add(new_list_ASTERISK)
 				.add(list_Q)
