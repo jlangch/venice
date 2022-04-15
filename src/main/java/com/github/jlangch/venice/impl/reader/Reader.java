@@ -362,7 +362,7 @@ public class Reader {
 					rdr.next();
 					return read_char(token);
 				}
-				throw new ParseError(formatParseError(token, "Expected '#{', '#(' or '#\\'"));
+				throw new ParseError(formatParseError(token, "Expected a valid reader macro '#{..}', '#(..)' or '#\\x'"));
 							
 			case '(': 
 				return read_list(rdr, VncList.empty(), '(' , ')'); 
@@ -405,7 +405,7 @@ public class Reader {
 			}
 		}
 		
-		throw new ParseError(formatParseError(token, "Invalid char " + s));
+		throw new ParseError(formatParseError(token, "Invalid char literal " + s + ". E.g.: #\\A, #\\u03C"));
 	}
 
 	public static AtomType getAtomType(final Token token) {
