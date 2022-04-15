@@ -350,6 +350,7 @@ public class DocGenerator {
 		lit.addLiteralItem("Double",               "3.569, 2.0E+10",                          id());
 		lit.addLiteralItem("BigDecimal",           "6.897M, 2.345E+10M",                      id());
 		lit.addLiteralItem("BigInteger",           "1000N, 1_000_000N",                       id());
+		lit.addLiteralItem("Char",                 "#\\A, #\\π, #\\u03C0",                    id());
 		lit.addLiteralItem("String",               "\"abcd\", \"ab\\\"cd\", \"PI: \\u03C0\"", id());
 		lit.addLiteralItem("",                     "\"\"\"{ \"age\": 42 }\"\"\"",             id());
 		lit.addLiteralItem("String interpolation", "\"~{x}\", \"\"\"~{x}\"\"\"",              id());

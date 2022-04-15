@@ -35,6 +35,7 @@ import com.github.jlangch.venice.impl.types.Constants;
 import com.github.jlangch.venice.impl.types.VncBigDecimal;
 import com.github.jlangch.venice.impl.types.VncBigInteger;
 import com.github.jlangch.venice.impl.types.VncBoolean;
+import com.github.jlangch.venice.impl.types.VncChar;
 import com.github.jlangch.venice.impl.types.VncDouble;
 import com.github.jlangch.venice.impl.types.VncInteger;
 import com.github.jlangch.venice.impl.types.VncKeyword;
@@ -331,29 +332,38 @@ public class Reader {
 							  .withMeta(MetaUtil.toMeta(token));
 				
 			case '#': 
-				rdr.next();
-				Token t = rdr.peek();
-				if (t.charAt(0) == '{') {
-					// set literal #{1 2}
-					return VncHashSet.ofAll(read_list(rdr, VncList.empty(), '{' , '}')); 
+				// Reader macros (built-in)
+				final String sToken = token.getToken();
+				if (sToken.length() == 1) {
+					rdr.next();
+					Token t = rdr.peek();
+					if (t != null) {
+						if (t.charAt(0) == '{') {
+							// set literal #{1 2}
+							return VncHashSet.ofAll(read_list(rdr, VncList.empty(), '{' , '}')); 
+						}
+						else if (t.charAt(0) == '(') {
+							final VncVal meta = MetaUtil.toMeta(t);
+							// anonymous function literal #(> % 2)
+							if (rdr.anonymousFnArgs.isCapturing()) {
+								throw new ParseError(formatParseError(t, " #() forms cannot be nested"));						
+							}
+							rdr.anonymousFnArgs.startCapture();
+							final VncVal body = read_list(rdr, VncList.empty(), '(' , ')').withMeta(meta);
+							final VncVector argsDef = rdr.anonymousFnArgs.buildArgDef().withMeta(meta);
+							final VncVal s_expr = VncList.of(new VncSymbol("fn", meta), argsDef, body);
+							rdr.anonymousFnArgs.stopCapture();
+							return s_expr;
+						}
+					}					
 				}
-				else if (t.charAt(0) == '(') {
-					final VncVal meta = MetaUtil.toMeta(t);
-					// anonymous function literal #(> % 2)
-					if (rdr.anonymousFnArgs.isCapturing()) {
-						throw new ParseError(formatParseError(t, " #() forms cannot be nested"));						
-					}
-					rdr.anonymousFnArgs.startCapture();
-					final VncVal body = read_list(rdr, VncList.empty(), '(' , ')').withMeta(meta);
-					final VncVector argsDef = rdr.anonymousFnArgs.buildArgDef().withMeta(meta);
-					final VncVal s_expr = VncList.of(new VncSymbol("fn", meta), argsDef, body);
-					rdr.anonymousFnArgs.stopCapture();
-					return s_expr;
+				else if (sToken.charAt(1) == '\\') {
+					// char #\A
+					rdr.next();
+					return read_char(token);
 				}
-				else {
-					throw new ParseError(formatParseError(t, "Expected '#{' or '#('"));
-				}
-			
+				throw new ParseError(formatParseError(token, "Expected '#{', '#(' or '#\\'"));
+							
 			case '(': 
 				return read_list(rdr, VncList.empty(), '(' , ')'); 
 			
@@ -379,7 +389,25 @@ public class Reader {
 				return read_atom(rdr);
 		}
 	}
-	
+
+	private static VncChar read_char(final Token token) {
+		final String s = token.getToken();
+		if (token.isAny()) {
+			if (s.length() == 3) {
+				// #\A
+				return new VncChar(s.charAt(2));
+			}
+			else if (s.startsWith("#\\u")) {
+				final String u = StringUtil.decodeUnicode(s.substring(1));
+				if (u.length() == 1) {
+					return new VncChar(u.charAt(0));
+				}
+			}
+		}
+		
+		throw new ParseError(formatParseError(token, "Invalid char " + s));
+	}
+
 	public static AtomType getAtomType(final Token token) {
 		switch(token.getType()) {
 			case STRING: 

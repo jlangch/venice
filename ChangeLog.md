@@ -13,6 +13,7 @@ and this project adheres to
 
 ### Added
 
+- support for char literals: `#\A`, `#\u03C0`
 - support for multiple collections to function `pmap` 
 - function `deliver-ex` to complete promises exceptionally by delivering an exception
 - functions `prewalk-replace` and `postwalk-replace`

@@ -100,6 +100,10 @@ public class Token {
 		return type == TokenType.STRING_BLOCK;
 	}
 
+	public boolean isAny() {
+		return type == TokenType.ANY;
+	}
+
 	
 	@Override
 	public String toString() {

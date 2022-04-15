@@ -51,15 +51,19 @@ Booleans are defined by constants _true_ and _false_.
 ## Characters
 
 ```clojure
+;; char literals
+#\A          ; => "A"
+#\π          ; => "π"
+#\u03C0      ; => "π"
+
 (char "A")   ; => "A"
 (char 65)    ; => "A"
 
 ;; UTF-8 code for "A"
-(long (char "A"))   ; => 65
+(long #\A)   ; => 65
 
-;; PI
-(char "\u03A0")   ; => "Π"
-(println (char "\u03A0"))
+;; Unicode PI
+(println #\u03C0)
 ```
 
 

@@ -1801,7 +1801,7 @@ public class MathFunctions {
 						"(range 1.1M 2.2M 0.1M)",
 						"(range 100N 200N 10N)",
 						";; capital letters \n" +
-						"(map char (range (int (char \"A\")) (inc (int (char \"Z\")))))")
+						"(map char (range (int #\\A) (inc (int #\\Z))))")
 					.build()
 		) {
 			public VncVal apply(final VncList args) {

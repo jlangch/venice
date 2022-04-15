@@ -258,15 +258,24 @@ public class HighlightParser {
 				break;
 				
 			case '#': 
+				final String sToken = token.getToken();
 				next();
-				addItem("#", HASH);
+				if (sToken.length() == 1) {
+					addItem("#", HASH);
 
-				Token t = peek();
-				if (t.charAt(0) == '{') { // set literal #{1 2}
-					process_list('{' , '}'); 
+					Token t = peek();
+					if (t.charAt(0) == '{') {  // set literal #{1 2}
+						process_list('{' , '}'); 
+					}
+					else if (t.charAt(0) == '(') {  // anonymous function literal #(> % 2)
+						process_list('(' , ')');
+					}
 				}
-				else if (t.charAt(0) == '(') { // anonymous function literal #(> % 2)
-					process_list('(' , ')');
+				else if (sToken.charAt(1) == '\\') {  // char literal #\A
+					addItem(sToken, UNKNOWN);
+				}
+				else { 
+					addItem(sToken, UNKNOWN);
 				}
 				break;
 			
