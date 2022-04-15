@@ -68,9 +68,7 @@
 
 (defn print-board [board]
   (println)
-  (->> (flatten board)
-       (map (fn [x] (if (== x 0) "." x)))
-       (partition 9)
+  (->> (postwalk-replace {0 "."} board)
        (map #(flatten (interpose "|" (partition 3 %))))
        (partition 3)
        (interpose (seq "---+---+---"))
@@ -78,7 +76,7 @@
        (partition 11)
        (docoll #(apply println %))))
 
-(defn get-empty-field [board]
+(defn first-empty-cell [board]
   (first (list-comp [x (range 9)
                      y (range 9)
                      :when (== 0 (get-in board [y x]))]
@@ -87,22 +85,22 @@
 (defn value-not-used? [val coll]
   (nil? (some #{val} coll)))
 
-(defn sub-board-vals [board x y]
+(defn grid-3x3-vals [board x y]
   (let [xs  (-> x (/ 3) (* 3))
         ys  (-> y (/ 3) (* 3))]
     (list-comp [x1 (range xs (+ xs 3))
                 y1 (range ys (+ ys 3))]
       (get-in board [y1 x1]))))
 
-(defn valid? [board x y val]
+(defn possible? [board x y val]
   (and (== 0 (get-in board [y x]))                         ; cell [x y]
        (value-not-used? val (nth board y))                 ; row y
        (value-not-used? val (map #(nth % x) board))        ; col x
-       (value-not-used? val (sub-board-vals board x y))))  ; 3x3 grid
+       (value-not-used? val (grid-3x3-vals board x y))))   ; 3x3 grid
 
 (defn solve [board]
-  (if-let [[x y] (get-empty-field board)]
-    (list-comp [v (range 1 10) :when (valid? board x y v)]
+  (if-let [[x y] (first-empty-cell board)]
+    (list-comp [v (range 1 10) :when (possible? board x y v)]
       (solve (assoc-in board [y x] v)))
     (print-board board)))
 
