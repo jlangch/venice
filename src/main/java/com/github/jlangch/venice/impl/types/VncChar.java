@@ -24,7 +24,6 @@ package com.github.jlangch.venice.impl.types;
 import com.github.jlangch.venice.impl.types.custom.VncWrappingTypeDef;
 import com.github.jlangch.venice.impl.types.util.Types;
 import com.github.jlangch.venice.impl.util.MetaUtil;
-import com.github.jlangch.venice.impl.util.StringUtil;
 
 
 public class VncChar extends VncVal {
@@ -123,8 +122,14 @@ public class VncChar extends VncVal {
 	
 	public String toString(final boolean print_readably) {
 		if (print_readably) {
-			return "\"" + StringUtil.escape(value.toString()) + "\"";
-		} 
+			final char ch = value.charValue();
+			if (ch >= 32 && ch < 256) {
+				return "#\\" + ch;
+			}
+			else {
+				return String.format("#\\u%04x", (int)ch);
+			}
+		}
 		else {
 			return value.toString();
 		}
