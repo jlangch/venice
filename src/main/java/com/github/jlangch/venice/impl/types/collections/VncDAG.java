@@ -305,10 +305,10 @@ public class VncDAG extends VncCollection {
 		return toString(true);
 	}
 	
-	public String toString(final boolean print_readably) {
+	public String toString(final boolean print_machine_readably) {
 		final VncList elements = getIsolatedNodes().addAllAtEnd(edges());
 		
-		return "(" + Printer.join(elements, " ", print_readably) + ")";
+		return "(" + Printer.join(elements, " ", print_machine_readably) + ")";
 	}
 	
 	private VncList getIsolatedNodes() {

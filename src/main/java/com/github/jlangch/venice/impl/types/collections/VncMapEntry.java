@@ -89,11 +89,11 @@ public class VncMapEntry extends VncVal {
 	}
 	
 	@Override
-	public String toString(final boolean print_readably) {
+	public String toString(final boolean print_machine_readably) {
 		return String.format(
 				"[%s %s]", 
-				key.toString(print_readably),
-				val.toString(print_readably));
+				key.toString(print_machine_readably),
+				val.toString(print_machine_readably));
 	}
 
 	

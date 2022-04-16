@@ -139,7 +139,7 @@ public class Agent implements IDeref {
 		return toString(true);
 	}
 
-	public String toString(final boolean print_readably) {
+	public String toString(final boolean print_machine_readably) {
 		final Value v = value.get();
 		final StringBuilder sb = new StringBuilder();
 		
@@ -149,7 +149,7 @@ public class Agent implements IDeref {
 			sb.append(v.ex.getClass().getName());
 		}
 		sb.append(":value ");
-		sb.append(Printer.pr_str(v.val, print_readably));
+		sb.append(Printer.pr_str(v.val, print_machine_readably));
 		sb.append(")");
 		
 		return sb.toString();

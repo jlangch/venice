@@ -253,7 +253,7 @@ public class VncKeyword extends VncString implements IVncFunction, INamespaceAwa
 		return ":" + getValue();
 	}
 	
-	public String toString(final boolean print_readably) {
+	public String toString(final boolean print_machine_readably) {
 		return toString();
 	}
 	

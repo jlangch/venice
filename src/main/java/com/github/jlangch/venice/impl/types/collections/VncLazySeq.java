@@ -363,9 +363,9 @@ public class VncLazySeq extends VncSequence {
 				: "(...)";
 	}
 	
-	public String toString(final boolean print_readably) {
+	public String toString(final boolean print_machine_readably) {
 		return value.hasDefiniteSize()
-				? "(" + Printer.join(this, " ", print_readably) + ")"
+				? "(" + Printer.join(this, " ", print_machine_readably) + ")"
 				: "(...)";
 	}
 

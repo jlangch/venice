@@ -242,8 +242,8 @@ public class VncMutableSet extends VncSet {
 	}
 	
 	@Override
-	public String toString(final boolean print_readably) {
-		return "#{" + Printer.join(stream(), " ", print_readably) + "}";
+	public String toString(final boolean print_machine_readably) {
+		return "#{" + Printer.join(stream(), " ", print_machine_readably) + "}";
 	}
 
 

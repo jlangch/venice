@@ -59,7 +59,7 @@ public abstract class VncCustomBaseTypeDef extends VncVal {
 		return ":" + type.getValue();
 	}
 	
-	public String toString(final boolean print_readably) {
+	public String toString(final boolean print_machine_readably) {
 		return toString();
 	}
 

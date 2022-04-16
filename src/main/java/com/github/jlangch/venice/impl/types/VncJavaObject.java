@@ -285,7 +285,7 @@ public class VncJavaObject extends VncMap implements IVncJavaObject {
 	}
 
 	@Override
-	public String toString(final boolean print_readably) {
+	public String toString(final boolean print_machine_readably) {
 		return toString();
 	}
 

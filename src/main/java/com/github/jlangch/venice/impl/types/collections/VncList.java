@@ -408,8 +408,8 @@ public class VncList extends VncSequence {
 		return "(" + Printer.join(this, " ", true) + ")";
 	}
 	
-	public String toString(final boolean print_readably) {
-		return "(" + Printer.join(this, " ", print_readably) + ")";
+	public String toString(final boolean print_machine_readably) {
+		return "(" + Printer.join(this, " ", print_machine_readably) + ")";
 	}
 
 	public static VncList empty() {

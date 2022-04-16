@@ -113,8 +113,8 @@ public class VncProtocol extends VncVal {
 	}
 	
 	@Override 
-	public String toString(final boolean print_readably) {
-		return name.toString(print_readably);
+	public String toString(final boolean print_machine_readably) {
+		return name.toString(print_machine_readably);
 	}
 	
 	public VncVal getDoc() { 

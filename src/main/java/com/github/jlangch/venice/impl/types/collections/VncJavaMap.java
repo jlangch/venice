@@ -284,14 +284,14 @@ public class VncJavaMap extends VncMap implements IVncJavaObject {
 	}
 	
 	@Override
-	public String toString(final boolean print_readably) {
+	public String toString(final boolean print_machine_readably) {
 		final List<VncVal> list = new ArrayList<>();
 		value.entrySet().forEach(e -> {
 			list.add(JavaInteropUtil.convertToVncVal(e.getKey()));
 			list.add(JavaInteropUtil.convertToVncVal(e.getValue()));
 		});
 	
-		return "{" + Printer.join(list.stream(), " ", print_readably) + "}";
+		return "{" + Printer.join(list.stream(), " ", print_machine_readably) + "}";
 	}
 	
 

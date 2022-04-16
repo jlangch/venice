@@ -184,8 +184,8 @@ public class VncString extends VncVal {
 		return value;
 	}
 	
-	public String toString(final boolean print_readably) {
-		if (print_readably) {
+	public String toString(final boolean print_machine_readably) {
+		if (print_machine_readably) {
 			return "\"" + StringUtil.escape(value) + "\"";
 		} 
 		else {

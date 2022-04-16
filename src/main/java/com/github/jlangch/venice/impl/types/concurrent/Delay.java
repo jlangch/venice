@@ -59,11 +59,11 @@ public class Delay implements IDeref {
 		return toString(true);
 	}
 
-	public String toString(final boolean print_readably) {
+	public String toString(final boolean print_machine_readably) {
 		if (isRealized()) {
 			try {
 				final VncVal val = deref();
-				return "(delay :value " + Printer.pr_str(val, print_readably) + ")";
+				return "(delay :value " + Printer.pr_str(val, print_machine_readably) + ")";
 			}
 			catch(Exception ex) {
 				return "(delay :exception :" + ex.getClass().getName() + ")";

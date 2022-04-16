@@ -78,8 +78,8 @@ public class VncVolatile extends VncVal implements IDeref {
 		return "(volatile " + Printer.pr_str(state, true) + ")";
 	}
 
-	public String toString(final boolean print_readably) {
-		return "(volatile " + Printer.pr_str(state, print_readably) + ")";
+	public String toString(final boolean print_machine_readably) {
+		return "(volatile " + Printer.pr_str(state, print_machine_readably) + ")";
 	}
 	
 	

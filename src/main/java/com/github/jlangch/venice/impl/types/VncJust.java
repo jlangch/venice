@@ -129,8 +129,8 @@ public class VncJust extends VncVal implements IDeref {
 		return toString(false);
 	}
 	
-	public String toString(final boolean print_readably) {
-		return String.format("(just %s)", value.toString(print_readably));
+	public String toString(final boolean print_machine_readably) {
+		return String.format("(just %s)", value.toString(print_machine_readably));
 	}
 	
 

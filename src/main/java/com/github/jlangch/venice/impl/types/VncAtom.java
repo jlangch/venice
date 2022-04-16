@@ -145,8 +145,8 @@ public class VncAtom extends VncVal implements IDeref {
 		return "(atom " + Printer.pr_str(state.get(), true) + ")";
 	}
 
-	public String toString(final boolean print_readably) {
-		return "(atom " + Printer.pr_str(state.get(), print_readably) + ")";
+	public String toString(final boolean print_machine_readably) {
+		return "(atom " + Printer.pr_str(state.get(), print_machine_readably) + ")";
 	}
 
 	private void validate(final VncVal newVal) {

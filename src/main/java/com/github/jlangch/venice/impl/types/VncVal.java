@@ -109,7 +109,7 @@ public abstract class VncVal implements Comparable<VncVal>, Serializable {
 		return c != 0 ? c : -1;
 	}
 
-	public String toString(final boolean print_readably) {
+	public String toString(final boolean print_machine_readably) {
 		return toString();
 	}
 	

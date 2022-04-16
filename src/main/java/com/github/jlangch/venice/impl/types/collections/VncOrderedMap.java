@@ -289,14 +289,14 @@ public class VncOrderedMap extends VncMap {
 	}
 	
 	@Override
-	public String toString(final boolean print_readably) {
+	public String toString(final boolean print_machine_readably) {
 		final Stream<VncVal> stream = value
 										.map(e -> Arrays.asList(e._1, e._2))
 										.collect(Collectors.toList())
 										.stream()
 										.flatMap(l -> l.stream());
 
-		return "{" + Printer.join(stream, " ", print_readably) + "}";
+		return "{" + Printer.join(stream, " ", print_machine_readably) + "}";
 	}
 		
 

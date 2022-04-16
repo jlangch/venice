@@ -274,14 +274,14 @@ public class VncCustomType extends VncMap {
 	}
 
 	@Override
-	public String toString(final boolean print_readably) {
+	public String toString(final boolean print_machine_readably) {
 		final VncFunction fn = typeDef.getCustomToStringFn();
 		
 		return fn == null
 				? VncOrderedMap
 					.of(new VncKeyword(":custom-type*"), type) 
 					.putAll(values)
-					.toString(print_readably)
+					.toString(print_machine_readably)
 				: customToString(fn);
 	}
 	
