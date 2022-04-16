@@ -123,7 +123,7 @@ public class VncChar extends VncVal {
 	public String toString(final boolean print_readably) {
 		if (print_readably) {
 			final char ch = value.charValue();
-			if (ch >= 32 && ch < 256) {
+			if (ch > 32 && ch < 256) {
 				return "#\\" + ch;
 			}
 			else {
