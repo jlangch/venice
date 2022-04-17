@@ -7515,7 +7515,7 @@ public class CoreFunctions {
 				}
 				else if (Types.isVncString(val)) {
 					final VncString s = (VncString)val;
-					return s.isEmpty() ? Nil : s.toVncList();
+					return s.isEmpty() ? Nil : s.toVncCharList();
 				}
 				else if (val == Nil) {
 					return Nil;

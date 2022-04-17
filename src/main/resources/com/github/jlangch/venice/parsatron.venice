@@ -113,7 +113,7 @@
 (defn parsatron-poline
   ; A trampoline for executing potentially stack-blowing recursive
   ; functions without running out of stack space. This particular
-  ; trampoline differs from clojure.core/trampoline by requiring
+  ; trampoline differs from Venice core/trampoline by requiring
   ; continuations to be wrapped in a Continue record. Will loop until
   ; the value is no longer a Continue record, returning that.
   [f & args]
