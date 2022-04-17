@@ -224,31 +224,19 @@ public class Tokenizer {
 			reader.consume();
 			sb.append('u');
 			
-			while(true) {
-				ch = reader.peek();
-				if (isHexChar((char)ch)) {
-					sb.append((char)ch);
-					reader.consume();
-				}
-				else {
-					break;
-				}
+			while(isHexChar((char)reader.peek())) {
+				sb.append((char)reader.peek());
+				reader.consume();
 			}
 		}
 		else if (ch > 32) {
 			// #\\A, #\\space, #\\newline, ...
 			reader.consume();
 			sb.append((char)ch);
-			
-			while(true) {
-				ch = reader.peek();
-				if (isAsciiLetter((char)ch) || ch == '-') {
-					sb.append((char)ch);
-					reader.consume();
-				}
-				else {
-					break;
-				}
+
+			while(isAsciiLetter((char)reader.peek())) {
+				sb.append((char)reader.peek());
+				reader.consume();
 			}
 		}
 		
