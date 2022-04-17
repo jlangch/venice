@@ -271,9 +271,6 @@ public class HighlightParser {
 						process_list('(' , ')');
 					}
 				}
-				else if (sToken.charAt(1) == '\\') {  // char literal #\A
-					addItem(sToken, UNKNOWN);
-				}
 				else { 
 					addItem(sToken, UNKNOWN);
 				}

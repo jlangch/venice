@@ -50,12 +50,51 @@ public class CharTest {
 	}
 	
 	@Test
+	public void test_symbols() {
+		final Venice venice = new Venice();
+
+		assertEquals(' ',  (Character)venice.eval("#\\space"));
+		assertEquals('\n', (Character)venice.eval("#\\newline"));
+		assertEquals('\r', (Character)venice.eval("#\\return"));
+		assertEquals('\t', (Character)venice.eval("#\\tab"));
+		assertEquals('\f', (Character)venice.eval("#\\formfeed"));
+		assertEquals('\b', (Character)venice.eval("#\\backspace"));
+	}
+	
+	@Test
+	public void test_reader_special_chars() {
+		final Venice venice = new Venice();
+
+		for(char ch : "()[]{}^'`~@\",;".toCharArray()) {
+			assertEquals(ch, (Character)venice.eval("#\\" + ch));
+		}
+	}
+
+	@Test
 	public void test_type() {
 		final Venice venice = new Venice();
 
 		assertEquals("core/char", venice.eval("(type #\\A)"));
+
+		assertEquals("core/char", venice.eval("(type #\\space)"));
+
+		// reader special chars
+		for(char ch : "()[]{}^'`~@\",;".toCharArray()) {
+			assertEquals("core/char", venice.eval("(type #\\" + ch + ")"));
+		}
 	}
-	
+
+	@Test
+	public void test_all_ascii_chars() {
+		final Venice venice = new Venice();
+
+		for(char ch=33; ch<127; ch++) {			
+			assertEquals(ch, (Character)venice.eval("#\\" + ch));
+
+			assertEquals("core/char", venice.eval("(type #\\" + ch + ")"));
+		}
+	}
+
 	@Test
 	public void test_pr_str() {
 		final Venice venice = new Venice();
@@ -108,4 +147,5 @@ public class CharTest {
 		assertEquals("π",        new VncChar('\u03c0').toString(false));
 		assertEquals("#\\u03c0", new VncChar('\u03c0').toString(true));
 	}
+	
 }

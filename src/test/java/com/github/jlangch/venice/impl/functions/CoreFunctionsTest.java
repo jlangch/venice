@@ -4017,6 +4017,7 @@ public class CoreFunctionsTest {
 		assertEquals("[1]", venice.eval("(str [1])"));
 		assertEquals("[1 2]", venice.eval("(str [1 2])"));
 		assertEquals("{:a 1 :b 2}", venice.eval("(str (ordered-map :a 1 :b 2 ))"));
+		assertEquals("1234567890", venice.eval("(apply str (seq \"1234567890\"))"));
 	}
 
 	@Test

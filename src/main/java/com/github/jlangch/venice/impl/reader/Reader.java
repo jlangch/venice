@@ -423,7 +423,7 @@ public class Reader {
 			}
 		}
 		
-		throw new ParseError(formatParseError(token, "Invalid char literal " + s + ". E.g.: #\\A, #\\u03C"));
+		throw new ParseError(formatParseError(token, "Invalid char literal " + s + ". Expected: #\\A, #\\u03C, #\\space"));
 	}
 
 	public static AtomType getAtomType(final Token token) {

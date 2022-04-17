@@ -100,6 +100,22 @@ public class Tokenizer {
 					reader.consume();
 				}
 				
+				// - reader macro ---------------------------------------------
+				else if (ch == (int)'#') { 
+					reader.consume();
+					
+					final int chNext = reader.peek();
+					if (chNext == (int)'\\') {
+						// char reader macro. E.g.: #\A, #\\u03C0", #\space
+						reader.consume();
+						processCharReaderMacro(pos);  
+					}
+					else {
+						addToken(ANY, String.valueOf('#'), pos);
+						// leave the reader macro processing to the Reader
+					}
+				}
+				
 				// - whitespaces ----------------------------------------------
 				else if (isWhitespace((char)ch)) {
 					final StringBuilder sb = new StringBuilder();
@@ -197,6 +213,46 @@ public class Tokenizer {
 		}
 
 		addToken(COMMENT, sb.toString(), pos);				
+	}
+
+	private void processCharReaderMacro(final ReaderPos startPos) {
+		final StringBuilder sb = new StringBuilder("#\\");
+
+		int ch = reader.peek();
+		if (ch == (int)'u') {  
+			// unicode char:  #\\u03C0
+			reader.consume();
+			sb.append('u');
+			
+			while(true) {
+				ch = reader.peek();
+				if (isHexChar((char)ch)) {
+					sb.append((char)ch);
+					reader.consume();
+				}
+				else {
+					break;
+				}
+			}
+		}
+		else if (ch > 32) {
+			// #\\A, #\\space, #\\newline, ...
+			reader.consume();
+			sb.append((char)ch);
+			
+			while(true) {
+				ch = reader.peek();
+				if (isAsciiLetter((char)ch) || ch == '-') {
+					sb.append((char)ch);
+					reader.consume();
+				}
+				else {
+					break;
+				}
+			}
+		}
+		
+		addToken(ANY, sb.toString(), startPos);
 	}
 
 	private void readString(final ReaderPos pos) {
@@ -382,7 +438,17 @@ public class Tokenizer {
 			sb.append((char)ch);
 		}
 	}
-
+	
+	private boolean isHexChar(final char ch) {
+		return (ch >= '0' && ch <= '9') 
+				|| (ch >= 'A' && ch <= 'F')
+				|| (ch >= 'a' && ch <= 'f');
+	}
+	
+	private boolean isAsciiLetter(final char ch) {
+		return (ch >= 'A' && ch <= 'Z') || (ch >= 'a' && ch <= 'z');
+	}
+	
 	private String formatParseError(
 			final Token token, 
 			final String format, 
