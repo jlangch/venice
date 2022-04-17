@@ -123,7 +123,25 @@ public class VncChar extends VncVal {
 	public String toString(final boolean print_machine_readably) {
 		if (print_machine_readably) {
 			final char ch = value.charValue();
-			if (ch > 32 && ch < 256) {
+			if (ch == '\n') {
+				return "#\\newline";
+			}
+			else if (ch == ' ') {
+				return "#\\space";
+			}
+			else if (ch == '\t') {
+				return "#\\tab";
+			}
+			else if (ch == '\r') {
+				return "#\\return";
+			}
+			else if (ch == '\f') {
+				return "#\\formfeed";
+			}
+			else if (ch == '\b') {
+				return "#\\backspace";
+			}
+			else if (ch > 32 && ch < 256) {
 				return "#\\" + ch;
 			}
 			else {

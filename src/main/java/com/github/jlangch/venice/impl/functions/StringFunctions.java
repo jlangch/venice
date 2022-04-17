@@ -104,11 +104,11 @@ public class StringFunctions {
 				"str/char?",
 				VncFunction
 					.meta()
-					.arglists("(str/char s)")
-					.doc("Returns true if s is a single char string.")
+					.arglists("(str/char? s)")
+					.doc("Returns true if s is a char or a single char string.")
 					.examples(
 						"(str/char? \"x\")",
-						"(str/char? (char \"x\"))")
+						"(str/char? #\\x)")
 					.build()
 		) {
 			public VncVal apply(final VncList args) {
@@ -1409,10 +1409,10 @@ public class StringFunctions {
 					.meta()
 					.arglists("(str/digit? s)")
 					.doc(
-						"True if s is a single char string and the char is a digit. " +
+						"True if s is a char or a single char string and the char is a digit. " +
 						"Defined by Java Character.isDigit(ch).")
 					.examples(
-						"(str/digit? (char \"8\"))",
+						"(str/digit? #\\8)",
 						"(str/digit? \"8\")")
 					.build()
 		) {
@@ -1448,10 +1448,10 @@ public class StringFunctions {
 					.meta()
 					.arglists("(str/letter? s)")
 					.doc(
-						"True if s is a single char string and the char is a letter. " +
+						"True if s is a char or a single char string and the char is a letter. " +
 						"Defined by Java Character.isLetter(ch).")
 					.examples(
-						"(str/letter? (char \"x\"))",
+						"(str/letter? #\\x)",
 						"(str/letter? \"x\")")
 					.build()
 		) {
@@ -1487,10 +1487,10 @@ public class StringFunctions {
 					.meta()
 					.arglists("(str/lower-case? s)")
 					.doc(
-						"True if s is a single char string and the char is a lower case char. " +
+						"True if s is a char or a single char string and the char is a lower case char. " +
 						"Defined by Java Character.isLowerCase(ch).")
 					.examples(
-						"(str/lower-case? (char \"x\"))",
+						"(str/lower-case? #\\x)",
 						"(str/lower-case? \"x\")")
 					.build()
 		) {
@@ -1526,10 +1526,10 @@ public class StringFunctions {
 					.meta()
 					.arglists("(str/upper-case? s)")
 					.doc(
-						"True if s is a single char string and the char is an upper case char. " +
+						"True if s is a char or single char string and the char is an upper case char. " +
 						"Defined by Java Character.isUpperCase(ch).")
 					.examples(
-						"(str/upper-case? (char \"X\"))",
+						"(str/upper-case? #\\X)",
 						"(str/upper-case? \"X\")")
 					.build()
 		) {
@@ -1564,9 +1564,9 @@ public class StringFunctions {
 				VncFunction
 					.meta()
 					.arglists("(str/linefeed? s)")
-					.doc("True if s is a single char string and the char is a linefeed.")
+					.doc("True if s is a char or a single char string and the char is a linefeed.")
 					.examples(
-						"(str/linefeed? (char \"\n\"))",
+						"(str/linefeed? #\\newline)",
 						"(str/linefeed? \"\n\")")
 					.build()
 		) {
@@ -1602,10 +1602,10 @@ public class StringFunctions {
 					.meta()
 					.arglists("(str/whitespace? s)")
 					.doc(
-						"True if s is a single char string and the char is a whitespace. " +
+						"True if s is char or a single char string and the char is a whitespace. " +
 						"Defined by Java Character.isWhitespace(ch).")
 					.examples(
-						"(str/whitespace? (char \" \"))",
+						"(str/whitespace? #\\space)",
 						"(str/whitespace? \" \")")
 					.build()
 		) {

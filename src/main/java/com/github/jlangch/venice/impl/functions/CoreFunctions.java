@@ -800,7 +800,9 @@ public class CoreFunctions {
 						"(str)",
 						"(str 1 2 3)",
 						"(str +)",
-						"(str [1 2 3])")
+						"(str [1 2 3])",
+						"(str \"total \" 100)",
+						"(str #\\h #\\i)")
 					.build()
 		) {
 			public VncVal apply(final VncList args) {

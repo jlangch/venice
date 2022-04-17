@@ -54,6 +54,9 @@ public class StringFunctionsTest {
 	public void test_str_digit_Q() {
 		final Venice venice = new Venice();
 		
+		assertTrue((Boolean)venice.eval("(str/digit? #\\8)"));
+		assertFalse((Boolean)venice.eval("(str/digit? #\\a)"));
+
 		assertTrue((Boolean)venice.eval("(str/digit? \"8\")"));
 		assertFalse((Boolean)venice.eval("(str/digit? \"a\")"));
 	}
@@ -161,6 +164,9 @@ public class StringFunctionsTest {
 	public void test_str_letter_Q() {
 		final Venice venice = new Venice();
 		
+		assertTrue((Boolean)venice.eval("(str/letter? #\\x)"));
+		assertFalse((Boolean)venice.eval("(str/letter? #\\8)"));
+		
 		assertTrue((Boolean)venice.eval("(str/letter? \"x\")"));
 		assertFalse((Boolean)venice.eval("(str/letter? \"8\")"));
 	}
@@ -176,7 +182,9 @@ public class StringFunctionsTest {
 	@Test
 	public void test_str_linefeed_Q() {
 		final Venice venice = new Venice();
-		
+
+		assertTrue((Boolean)venice.eval("(str/linefeed? #\\newline)"));
+
 		assertEquals("\n", venice.eval("(first \"\n----\")"));
 		assertTrue((Boolean)venice.eval("(str/linefeed? \"\n\")"));
 		assertFalse((Boolean)venice.eval("(str/linefeed? \"8\")"));

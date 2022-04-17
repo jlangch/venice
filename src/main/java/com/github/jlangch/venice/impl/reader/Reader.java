@@ -403,6 +403,24 @@ public class Reader {
 					return new VncChar(u.charAt(0));
 				}
 			}
+			else if (s.equals("#\\newline")) {
+				return new VncChar('\n');
+			}
+			else if (s.equals("#\\space")) {
+				return new VncChar(' ');
+			}
+			else if (s.equals("#\\tab")) {
+				return new VncChar('\t');
+			}
+			else if (s.equals("#\\formfeed")) {
+				return new VncChar('\f');
+			}
+			else if (s.equals("#\\return")) {
+				return new VncChar('\r');
+			}
+			else if (s.equals("#\\backspace")) {
+				return new VncChar('\b');
+			}
 		}
 		
 		throw new ParseError(formatParseError(token, "Invalid char literal " + s + ". E.g.: #\\A, #\\u03C"));
