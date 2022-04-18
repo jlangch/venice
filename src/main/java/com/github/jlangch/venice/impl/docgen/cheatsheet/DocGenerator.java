@@ -546,6 +546,7 @@ public class DocGenerator {
 
 		final DocSection charconv = new DocSection("Conversion", "primitives.chars.conversion");
 		chars.addSection(charconv);
+		charconv.addItem(getDocItem("str"));
 		charconv.addItem(getDocItem("str/lower-case"));
 		charconv.addItem(getDocItem("str/upper-case"));
 
