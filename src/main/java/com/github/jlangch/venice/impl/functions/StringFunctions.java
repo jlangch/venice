@@ -560,9 +560,13 @@ public class StringFunctions {
 					.arglists(
 						"(str/lower-case s)",
 						"(str/lower-case locale s)")
-					.doc("Converts s to lowercase")
+					.doc(
+						"Converts s to lowercase.\n\n" +
+						"Since case mappings are not always 1:1 character mappings when a locale is given, " +
+						"the resulting string may be a different length than the original!")
 					.examples(
 						"(str/lower-case \"aBcDeF\")",
+						"(str/lower-case #\\A)",
 						"(str/lower-case (. :java.util.Locale :new \"de\" \"DE\") \"aBcDeF\")",
 						"(str/lower-case (. :java.util.Locale :GERMANY) \"aBcDeF\")",
 						"(str/lower-case (. :java.util.Locale :new \"de\" \"CH\") \"aBcDeF\")",
@@ -575,27 +579,42 @@ public class StringFunctions {
 				ArityExceptions.assertArity(this, args, 1, 2);
 
 				if (args.size() == 1) {
-					if (args.first() == Nil) {
+					final VncVal v = args.first();
+					
+					if (v == Nil) {
 						return Nil;
 					}
-					return new VncString(Coerce
-											.toVncString(args.first())
-											.getValue()
-											.toLowerCase());
+					else if (v instanceof VncChar) {
+						return new VncChar(Character.toLowerCase(((VncChar)v).getValue()));
+					}
+					else {
+						return new VncString(Coerce
+												.toVncString(v)
+												.getValue()
+												.toLowerCase());
+					}
 				}
 				else  {
+					final VncVal v = args.second();
+
 					final Locale locale = toLocale(args.first());
 					if (locale == null) {
 						throw new VncException(String.format(
 									"str/lower-case: the first arg is not a locale. Got a '%s'.",
 									Types.getType(args.first())));
 					}
-					else if (args.second() == Nil) {
+					else if (v == Nil) {
 						return Nil;
+					}
+					else if (v instanceof VncChar) {
+						throw new VncException(
+								"str/lower-case: Cannot convert a char to lowercase if a locale is given " +
+								"since case mappings are not always 1:1 character mappings when a locale " +
+								"is given, the resulting string may be a different length than one!");
 					}
 					else {
 						return new VncString(Coerce
-												.toVncString(args.second())
+												.toVncString(v)
 												.getValue()
 												.toLowerCase(locale));
 					}
@@ -613,9 +632,13 @@ public class StringFunctions {
 					.arglists(
 						"(str/upper-case s)",
 						"(str/upper-case locale s)")
-					.doc("Converts s to uppercase")
+					.doc(
+						"Converts s to uppercase.\n\n" +
+						"Since case mappings are not always 1:1 character mappings when a locale is given, " +
+						"the resulting string may be a different length than the original!")
 					.examples(
 						"(str/upper-case \"aBcDeF\")",
+						"(str/upper-case #\\a)",
 						"(str/upper-case (. :java.util.Locale :new \"de\" \"DE\") \"aBcDeF\")",
 						"(str/upper-case (. :java.util.Locale :GERMANY) \"aBcDeF\")",
 						"(str/upper-case (. :java.util.Locale :new \"de\" \"CH\") \"aBcDeF\")",
@@ -627,28 +650,43 @@ public class StringFunctions {
 			public VncVal apply(final VncList args) {
 				ArityExceptions.assertArity(this, args, 1, 2);
 
-				if (args.size() == 1) {
-					if (args.first() == Nil) {
+				if (args.size() == 1) {				
+					final VncVal v = args.first();
+					
+					if (v == Nil) {
 						return Nil;
 					}
-					return new VncString(Coerce
-											.toVncString(args.first())
-											.getValue()
-											.toUpperCase());
+					else if (v instanceof VncChar) {
+						return new VncChar(Character.toUpperCase(((VncChar)v).getValue()));
+					}
+					else {
+						return new VncString(Coerce
+												.toVncString(v)
+												.getValue()
+												.toUpperCase());
+					}
 				}
 				else {
+					final VncVal v = args.second();
+
 					final Locale locale = toLocale(args.first());
 					if (locale == null) {
 						throw new VncException(String.format(
 									"str/upper-case: the first arg is not a locale. Got a '%s'.",
 									Types.getType(args.first())));
 					}
-					else if (args.second() == Nil) {
+					else if (v == Nil) {
 						return Nil;
+					}
+					else if (v instanceof VncChar) {
+						throw new VncException(
+								"str/upper-case: Cannot convert a char to uppercase if a locale is given " +
+								"since case mappings are not always 1:1 character mappings when a locale is " +
+								"given, the resulting string may be a different length than one!");
 					}
 					else {
 						return new VncString(Coerce
-												.toVncString(args.second())
+												.toVncString(v)
 												.getValue()
 												.toUpperCase(locale));
 					}

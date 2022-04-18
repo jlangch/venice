@@ -544,6 +544,21 @@ public class DocGenerator {
 		charuse.addItem(getDocItem("char"));
 		charuse.addItem(getDocItem("char?"));
 
+		final DocSection charconv = new DocSection("Conversion", "primitives.chars.conversion");
+		chars.addSection(charconv);
+		charconv.addItem(getDocItem("str/lower-case"));
+		charconv.addItem(getDocItem("str/upper-case"));
+
+		final DocSection chartest = new DocSection("Test char", "primitives.chars.test");
+		chars.addSection(chartest);
+		chartest.addItem(getDocItem("str/char?"));
+		chartest.addItem(getDocItem("str/digit?"));
+		chartest.addItem(getDocItem("str/letter?"));
+		chartest.addItem(getDocItem("str/whitespace?"));
+		chartest.addItem(getDocItem("str/linefeed?"));
+		chartest.addItem(getDocItem("str/lower-case?"));
+		chartest.addItem(getDocItem("str/upper-case?"));
+
 		
 		final DocSection other = new DocSection("Other", "primitives.other");
 		section.addSection(other);

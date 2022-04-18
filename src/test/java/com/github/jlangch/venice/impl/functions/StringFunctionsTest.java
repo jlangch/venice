@@ -193,9 +193,15 @@ public class StringFunctionsTest {
 	@Test
 	public void test_str_lower_case() {
 		final Venice venice = new Venice();
+	
+		// chars
+		assertEquals('a', (Character)venice.eval("(str/lower-case #\\A)"));
 		
+		// strings
 		assertEquals("abcdef", venice.eval("(str/lower-case \"abcdef\")"));
 		assertEquals("abcdef", venice.eval("(str/lower-case \"aBcDeF\")"));
+		assertEquals("abcdef", venice.eval("(str/lower-case (. :java.util.Locale :new \"de\" \"DE\") \"aBcDeF\")"));
+		assertEquals("abcdef", venice.eval("(str/lower-case [\"de\" \"DE\"] \"aBcDeF\")"));
 	}
 
 	@Test
@@ -691,8 +697,14 @@ public class StringFunctionsTest {
 	public void test_str_upper_case() {
 		final Venice venice = new Venice();
 		
-		assertEquals("ABCDEF", venice.eval("(str/upper-case \"abcdef\")"));
+		// chars
+		assertEquals('A', (Character)venice.eval("(str/upper-case #\\a)"));
+		
+		// strings
+		assertEquals("ABCDEF", venice.eval("(str/upper-case \"ABCDEF\")"));
 		assertEquals("ABCDEF", venice.eval("(str/upper-case \"aBcDeF\")"));
+		assertEquals("ABCDEF", venice.eval("(str/upper-case (. :java.util.Locale :new \"de\" \"DE\") \"aBcDeF\")"));
+		assertEquals("ABCDEF", venice.eval("(str/upper-case [\"de\" \"DE\"] \"aBcDeF\")"));
 	}
 
 	@Test
