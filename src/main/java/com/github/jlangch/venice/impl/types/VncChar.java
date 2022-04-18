@@ -21,6 +21,9 @@
  */
 package com.github.jlangch.venice.impl.types;
 
+import java.util.HashMap;
+import java.util.Map;
+
 import com.github.jlangch.venice.impl.types.custom.VncWrappingTypeDef;
 import com.github.jlangch.venice.impl.types.util.Types;
 import com.github.jlangch.venice.impl.util.MetaUtil;
@@ -158,6 +161,40 @@ public class VncChar extends VncVal {
 		}
 	}
 
+	public static VncChar fromSymbol(final String symbol) {
+		return SYMBOLS.get(symbol);
+	}
+	
+	
+	private static Map<String, VncChar> symbols() {
+		final  Map<String, VncChar> map = new HashMap<>();
+		
+		map.put("#\\space",              new VncChar(' '));
+		map.put("#\\newline",            new VncChar('\n'));
+		map.put("#\\tab",                new VncChar('\t'));
+		map.put("#\\formfeed",           new VncChar('\f'));
+		map.put("#\\return",             new VncChar('\r'));
+		map.put("#\\backspace",          new VncChar('\b'));
+		
+		map.put("#\\bullet",             new VncChar('\u2022'));  // bullet '•'
+		map.put("#\\horz-ellipsis",      new VncChar('\u2026'));  // horizontal ellipsis '…'
+		map.put("#\\per-mille-sign",     new VncChar('\u2030'));  // per mille sign '‰'		
+		map.put("#\\diameter-sign",      new VncChar('\u2300'));  // diameter sign '⌀'
+		map.put("#\\check-mark",         new VncChar('\u2713'));  // check mark '✓'
+		map.put("#\\pi",                 new VncChar('\u03C0'));  // PI 'π'
+
+		map.put("#\\nbsp",               new VncChar('\u00A0'));  // no break space
+		map.put("#\\en-space",           new VncChar('\u2002'));  // en space
+		map.put("#\\em-space",           new VncChar('\u2003'));  // em space, 1 en (= 1/2 em)
+		map.put("#\\three-per-em-space", new VncChar('\u2004'));  // three-per-em space
+		map.put("#\\four-per-em-space",  new VncChar('\u2005'));  // four-per-em space
+		map.put("#\\six-per-em-space",   new VncChar('\u2006'));  // six-per-em space
+
+		return map;
+	}
+	
+	
+	private static final Map<String, VncChar> SYMBOLS = symbols();
 	
     public static final String TYPE = ":core/char";
 

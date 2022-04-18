@@ -234,7 +234,7 @@ public class Tokenizer {
 			reader.consume();
 			sb.append((char)ch);
 
-			while(isAsciiLetter((char)reader.peek())) {
+			while(isAsciiLetterOrDash((char)reader.peek())) {
 				sb.append((char)reader.peek());
 				reader.consume();
 			}
@@ -433,8 +433,8 @@ public class Tokenizer {
 				|| (ch >= 'a' && ch <= 'f');
 	}
 	
-	private boolean isAsciiLetter(final char ch) {
-		return (ch >= 'A' && ch <= 'Z') || (ch >= 'a' && ch <= 'z');
+	private boolean isAsciiLetterOrDash(final char ch) {
+		return (ch >= 'A' && ch <= 'Z') || (ch >= 'a' && ch <= 'z') || (ch == '-');
 	}
 	
 	private String formatParseError(

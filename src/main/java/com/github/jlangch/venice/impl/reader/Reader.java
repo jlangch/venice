@@ -403,23 +403,9 @@ public class Reader {
 					return new VncChar(u.charAt(0));
 				}
 			}
-			else if (s.equals("#\\newline")) {
-				return new VncChar('\n');
-			}
-			else if (s.equals("#\\space")) {
-				return new VncChar(' ');
-			}
-			else if (s.equals("#\\tab")) {
-				return new VncChar('\t');
-			}
-			else if (s.equals("#\\formfeed")) {
-				return new VncChar('\f');
-			}
-			else if (s.equals("#\\return")) {
-				return new VncChar('\r');
-			}
-			else if (s.equals("#\\backspace")) {
-				return new VncChar('\b');
+			else {
+				final VncChar c = VncChar.fromSymbol(s);
+				if (c != null) return c;
 			}
 		}
 		
@@ -609,6 +595,7 @@ public class Reader {
 		}
 	}
 	
+
 	
 	private final String filename;
 	private final String form;
