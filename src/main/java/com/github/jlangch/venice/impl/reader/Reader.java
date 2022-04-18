@@ -398,18 +398,22 @@ public class Reader {
 				return new VncChar(s.charAt(2));
 			}
 			else if (s.startsWith("#\\u")) {
+				// unicode
 				final String u = StringUtil.decodeUnicode(s.substring(1));
 				if (u.length() == 1) {
 					return new VncChar(u.charAt(0));
 				}
 			}
 			else {
+				// symbol
 				final VncChar c = VncChar.fromSymbol(s);
 				if (c != null) return c;
 			}
 		}
 		
-		throw new ParseError(formatParseError(token, "Invalid char literal " + s + ". Expected: #\\A, #\\u03C, #\\space"));
+		throw new ParseError(formatParseError(
+						token, 
+						"Invalid char literal " + s + ". Expected: #\\A, #\\u03C0, #\\space"));
 	}
 
 	public static AtomType getAtomType(final Token token) {
