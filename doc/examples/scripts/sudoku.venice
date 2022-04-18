@@ -68,7 +68,7 @@
 
 (defn print-board [board]
   (println)
-  (->> (postwalk-replace {0 "."} board)
+  (->> (postwalk-replace {0 #\middle-dot} board)
        (map #(flatten (interpose "|" (partition 3 %))))
        (partition 3)
        (interpose (seq "---+---+---"))

@@ -175,12 +175,20 @@ public class VncChar extends VncVal {
 		map.put("#\\formfeed",           new VncChar('\f'));
 		map.put("#\\return",             new VncChar('\r'));
 		map.put("#\\backspace",          new VncChar('\b'));
+
+		// https://unicode-table.com/en/
 		
+		map.put("#\\pilcrow",            new VncChar('\u00B6'));  // pilcrow '¶'
+		map.put("#\\middle-dot",         new VncChar('\u00B7'));  // middle dot '·'
+		map.put("#\\right-guillemet",    new VncChar('\u00BB'));  // right guillemet  '»'
+		map.put("#\\left-guillemet",     new VncChar('\u00AB'));  // left guillemet  '«'
+
 		map.put("#\\bullet",             new VncChar('\u2022'));  // bullet '•'
 		map.put("#\\horz-ellipsis",      new VncChar('\u2026'));  // horizontal ellipsis '…'
 		map.put("#\\per-mille-sign",     new VncChar('\u2030'));  // per mille sign '‰'		
 		map.put("#\\diameter-sign",      new VncChar('\u2300'));  // diameter sign '⌀'
 		map.put("#\\check-mark",         new VncChar('\u2713'));  // check mark '✓'
+		map.put("#\\cross-mark",         new VncChar('\u2717'));  // cross mark '✗'
 		map.put("#\\pi",                 new VncChar('\u03C0'));  // PI 'π'
 
 		map.put("#\\nbsp",               new VncChar('\u00A0'));  // no break space
