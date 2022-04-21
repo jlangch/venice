@@ -26,12 +26,9 @@
 (defn byte [val]
   (mod (long val) 256))
 
-(defn ascii? [val]
-  (< 0x1F val 0x7F))
-
 (defn ascii [val]
   (let [v (byte val)]
-    (if (ascii? v) (char v) (char "."))))
+    (if (< 0x1F v 0x7F) (char v) (char "."))))
 
 (defn byte-offsets []
   (map #(str/format "%08x" %) (map #(* 16 %) (lazy-seq 0 inc))))
