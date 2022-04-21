@@ -10,16 +10,19 @@
 (defun match-variable (var input bindings)
   (let ((binding (assoc var bindings)))
     (cond ((null binding) (cons (cons var input) bindings))
-      ((equal input (cdr binding)) bindings))))
+          ((equal input (cdr binding)) bindings))))
 
 
 (defun match* (pattern input &optional (bindings '((dummy . dummy))))
   (cond ((null bindings) nil)
-    ((variable-p pattern) (match-variable pattern input bindings))
-    ((eql pattern input) bindings)
-    ((and (consp pattern) (consp input))
-    (match* (rest pattern) (rest input)
-      (match* (first pattern) (first input) bindings)))))
+        ((variable-p pattern) (match-variable pattern input bindings))
+        ((eql pattern input) bindings)
+        ((and (consp pattern) (consp input))
+        (match* (rest pattern)
+                (rest input)
+                (match* (first pattern)
+                        (first input)
+                        bindings)))))
 
 
 (defun match (pattern input)
@@ -29,8 +32,8 @@
 
 (defun apply-rule (input rules)
   (loop for (pattern replacement) in rules
-    for bindings = (match* pattern input)
-      thereis (and bindings (sublis bindings replacement))))
+        for bindings = (match* pattern input)
+        thereis (and bindings (sublis bindings replacement))))
 
 
 (defparameter *rules* nil)
@@ -41,19 +44,22 @@
 
 
 (defun transform* (expr)
-  (if (atom expr) expr (transform-expr (mapcar #'transform* expr))))
+  (if (atom expr)
+    expr
+    (transform-expr (mapcar #'transform* expr))))
 
 
 (defun transform-expr (expr)
   (cond ((transform* (apply-rule expr *rules*)))
-    ((evaluable expr) (eval expr))
-    (t expr)))
+        ((evaluable expr) (eval expr))
+        (t expr)))
 
 
 (defun evaluable (expr)
   (and (every #'numberp (rest expr))
-    (or (member (first expr) '(+ - * /))
-      (and (eq (first expr) 'expt) (integerp (third expr))))))
+       (or (member (first expr) '(+ - * /))
+           (and (eq (first expr) 'expt)
+                (integerp (third expr))))))
 
 
 (defparameter *simple-diff-rules*
@@ -69,9 +75,11 @@
 
 
 (defparameter *chain-diff-rules*
-  (loop for (in out) in '(((exp u) (exp u)) ((log u) (/ u))
-    ((sin u) (cos u)) ((cos u) (- (sin u))))
-    collect `((D ,in x) (* ,out (D u x)))))
+  (loop for (in out) in '(((exp u) (exp u))
+                          ((log u) (/ u))
+                          ((sin u) (cos u))
+                          ((cos u) (- (sin u))))
+        collect `((D ,in x) (* ,out (D u x)))))
 
 
 (defparameter *diff-rules*
