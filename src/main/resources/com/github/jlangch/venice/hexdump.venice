@@ -27,7 +27,7 @@
   (mod (long val) 256))
 
 (defn ascii? [val]
-  (and (< 0x1F val) (< val 0x7F)))
+  (< 0x1F val 0x7F))
 
 (defn ascii [val]
   (let [v (byte val)]
