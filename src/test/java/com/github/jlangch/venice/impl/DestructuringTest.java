@@ -714,11 +714,51 @@ public class DestructuringTest {
 	}
 	
 	@Test
-	public void test_function_args() {
+	public void test_function_args_sequential_destructuring_1() {
 		final Venice venice = new Venice();
-		
+
+		assertEquals("(1 2)", venice.eval(
+								"(do \n" +
+								"  (defn foo [[x y]] (list x y))\n" +
+								"  (pr-str (foo [1 2])))"));
+
+		assertEquals("(1 2)", venice.eval(
+								"(do \n" +
+								"  (defn foo [[x y]] (list x y))\n" +
+								"  (pr-str (foo [1 2 3])))"));
+
+		assertEquals("(1 nil)", venice.eval(
+								"(do \n" +
+								"  (defn foo [[x y]] (list x y))\n" +
+								"  (pr-str (foo [1])))"));
+	}
+	
+	@Test
+	public void test_function_args_sequential_destructuring_2() {
+		final Venice venice = new Venice();
+
 		assertEquals("(1 2)", venice.eval("(str (map (fn [[k v]] v) [[:a 1] [:b 2]]))"));
 		assertEquals("(:a :b)", venice.eval("(str (map (fn [[k v]] k) [[:a 1] [:b 2]]))"));
 		assertEquals("([1 :a] [2 :b])", venice.eval("(str (map (fn [[k v]] [v k]) [[:a 1] [:b 2]]))"));
+	}
+	
+	@Test
+	public void test_function_args_associative_destructuring() {
+		final Venice venice = new Venice();
+
+		assertEquals("(1 2)", venice.eval(
+								"(do \n" +
+								"  (defn foo [{:keys [x y]}] (list x y))\n" +
+								"  (pr-str (foo {:x 1 :y 2})))"));
+
+		assertEquals("(1 2)", venice.eval(
+								"(do \n" +
+								"  (defn foo [{:keys [x y] :or {y 10}}] (list x y))\n" +
+								"  (pr-str (foo {:x 1 :y 2})))"));
+
+		assertEquals("(1 9)", venice.eval(
+								"(do \n" +
+								"  (defn foo [{:keys [x y] :or {y 9}}] (list x y))\n" +
+								"  (pr-str (foo {:x 1})))"));
 	}
 }
