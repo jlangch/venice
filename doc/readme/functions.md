@@ -64,6 +64,23 @@ a variable number of arguments.
 ```
 
 
+## Passing Values by Name to Functions 
+
+Values can be passed by name using a map literal.
+
+The function `foo` expects the named arguments `x` and `y`. The `:or` clause specifies 
+a default for `y`.
+
+```clojure
+(do
+   (defn foo [{:keys [x y] :or {y 10}}] 
+      (list x y))
+      
+   (foo {:x 1 :y 2})  ;; => (1 2)
+   (foo {:x 1}))      ;; => (1 10)
+```
+
+
 ## Anonymous Functions
 
 ```clojure
