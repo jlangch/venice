@@ -1654,6 +1654,8 @@ public class DocGenerator {
 		to.addItem(getDocItem("printf"));
 		to.addItem(getDocItem("flush"));
 		to.addItem(getDocItem("newline"));
+		to.addItem(getDocItem("pr"));
+		to.addItem(getDocItem("prn"));
 
 		final DocSection to_str = new DocSection("to-str", "io.tostr");
 		all.addSection(to_str);

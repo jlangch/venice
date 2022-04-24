@@ -771,7 +771,10 @@ public class CoreFunctions {
 						"With no args, returns the empty string. With one arg x, returns " +
 						"x.toString(). With more than one arg, returns the concatenation " +
 						"of the str values of the args with delimiter ' '.")
-					.examples("(pr-str)", "(pr-str 1 2 3)")
+					.examples(
+						"(pr-str)", 
+						"(pr-str 1 2 3)")
+					.seeAlso("str")
 					.build()
 		) {
 			public VncVal apply(final VncList args) {
@@ -803,6 +806,7 @@ public class CoreFunctions {
 						"(str [1 2 3])",
 						"(str \"total \" 100)",
 						"(str #\\h #\\i)")
+					.seeAlso("pr-str")
 					.build()
 		) {
 			public VncVal apply(final VncList args) {

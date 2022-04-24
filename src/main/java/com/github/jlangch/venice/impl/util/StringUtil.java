@@ -178,9 +178,13 @@ public class StringUtil {
 				case '\n': sb.append('\\').append('n'); break;
 				case '\r': sb.append('\\').append('r'); break;
 				case '\t': sb.append('\\').append('t'); break;
+				case '\f': sb.append('\\').append('f'); break;
+				case '\b': sb.append('\\').append('b'); break;
 				case '"':  sb.append('\\').append('"'); break;
 				case '\\': sb.append('\\').append('\\'); break;
-				default:   sb.append(c); break;
+				default:
+					sb.append(c < 32 || c == 127 ? toEscapedUnicode(c) : c); 
+					break;
 			}
 		}
 		
@@ -510,6 +514,10 @@ public class StringUtil {
 	public static String padRight(final String s, final int len) {
 		final int padLen = len - s.length();
 		return padLen > 0 ? s + StringUtil.repeat(' ', padLen) : s;
+	}
+
+	public static String toEscapedUnicode(final char ch) {
+		return String.format("\\u%04x", (int)ch);
 	}
 
 	private static List<String> stripIndent(final String indent, final List<String> lines) {

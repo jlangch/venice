@@ -1117,12 +1117,16 @@
 (defn
   ^{ :arglists '("(print & xs)", "(print os & xs)")
      :doc """
-          Without output stream prints to the output stream that is the current
-          value of `*out*`. With no args, prints the empty string. With one arg x,
-          prints x.toString(). With more than one arg, prints the concatenation
-          of the string values of the args with delimiter ' '. With an
-          output stream prints to that output stream.¶
-          Returns nil.
+          Prints the values `xs` to the output stream that is the current value
+          of `*out*` or to the passed output stream `os` if given.
+
+          Prints the values, separated by spaces if there is more than one.
+          `print` and `println` print in a human readable form.
+
+          If the printed data needs to be read back by a Venice reader use the
+          functions `pr` and `prn` instead.
+
+          Returns `nil`.
           """
      :examples '(
          "(print [10 20 30])",
@@ -1148,8 +1152,12 @@
      :doc """
           Without output stream prints formatted output as per format to the
           output stream that is the current value of `*out*`.
-          With an output stream prints to that output stream.¶
-          Returns nil.
+          With an output stream prints to that output stream. Prints like
+          `print` and `println` in a human readable form.
+
+          Returns `nil`.
+
+          See: [Java Formatter](https://docs.oracle.com/javase/8/docs/api/java/util/Formatter.html)
           """
      :examples '(
           """(printf "%s: %d" "abc" 100)"""
@@ -1171,12 +1179,17 @@
 (defn
   ^{ :arglists '("(println & xs)", "(println os & xs)")
      :doc """
-          Without output stream prints to the output stream that is the current
-          value of `*out*` with a tailing linefeed. With no args, prints the
-          empty string. With one arg x, prints x.toString(). With more than one
-          arg, prints the concatenation of the string values of the args with
-          delimiter ' '. With an output stream prints to that output stream.¶
-          Returns nil.
+          Prints the values `xs` to the output stream that is the current value
+          of `*out*` or to the passed output stream `os` if given followed by
+          a `(newline)`.
+
+          Prints the values, separated by spaces if there is more than one.
+          `print` and `println` print in a human readable form.
+
+          If the printed data needs to be read back by a Venice reader use the
+          functions `pr` and `prn` instead.
+
+          Returns `nil`.
           """
      :examples '(
           "(println 200)"
@@ -1189,13 +1202,70 @@
 
   ([] (newline))
   ([& xs]
+    (apply print xs)
     (if (instance-of? :java.io.PrintStream (first xs))
-      (do
-        (apply print xs)
-        (newline (first xs)))
-      (do
-        (apply print xs)
-        (newline)))
+      (newline (first xs))
+      (newline))
+    nil))
+
+
+(defn
+  ^{ :arglists '("(pr & xs)", "(pr os & xs)")
+     :doc """
+          Prints the values `xs` to the output stream that is the current value
+          of `*out*` or to the passed output stream `os` if given.
+
+          Prints the values, separated by spaces if there is more than one.
+          `pr` and `prn` print in a way that objects can be read by the reader.
+
+          Returns `nil`.
+          """
+     :examples '(
+         "(pr [10 20 30])",
+         "(pr *out* [10 20 30])",
+         "(pr *err* [10 20 30])" )
+     :see-also '("prn" "newline") }
+
+  pr
+
+  ([] nil)
+  ([x] (when-not (instance-of? :java.io.PrintStream x)
+         (. *out* :append (pr-str x))
+         nil))
+  ([& xs] (do
+            (if (instance-of? :java.io.PrintStream (first xs))
+              (. (first xs) :append (str/join " " (map pr-str (rest xs))))
+              (. *out* :append (str/join " " (map pr-str xs))))
+            nil)))
+
+
+(defn
+  ^{ :arglists '("(prn & xs)", "(prn os & xs)")
+     :doc """
+          Prints the values `xs` to the output stream that is the current value
+          of `*out*` or to the passed output stream `os` if given followed by
+          a `(newline)`.
+
+          Prints the values, separated by spaces if there is more than one.
+          `pr` and `prn` print in a way that objects can be read by the reader.
+
+          Returns `nil`.
+          """
+     :examples '(
+          "(prn 200)"
+          "(prn [10 20 30])"
+          "(prn *out* 200)"
+          "(prn *err* 200)" )
+      :see-also '("pr" "newline") }
+
+  prn
+
+  ([] (newline))
+  ([& xs]
+    (apply pr xs)
+    (if (instance-of? :java.io.PrintStream (first xs))
+      (newline (first xs))
+      (newline))
     nil))
 
 
@@ -1205,7 +1275,7 @@
           Without arg writes a platform-specific newline to the output stream
           that is the current value of `*out*`. With arg writes a newline to the
           passed output stream.¶
-          Returns nil.
+          Returns `nil`.
           """
      :examples '(
           "(newline)"
@@ -1224,7 +1294,7 @@
      :doc """
           Without arg flushes the output stream that is the current value
           of `*out*`. With arg flushes the passed output stream.¶
-          Returns nil.
+          Returns `nil`.
           """
      :examples '(
           "(flush)"
@@ -1242,7 +1312,7 @@
      :doc """
           Reads the next line from the stream that is the current value of
           `*in*`.¶
-          Returns nil if the end of the stream is reached.
+          Returns `nil` if the end of the stream is reached.
           """
      :see-also '("read-char")  }
 
@@ -1258,7 +1328,7 @@
      :doc """
           Reads the next char from the stream that is the current value of
           `*in*`.¶
-          Returns nil if the of the stream is reached.
+          Returns `nil` if the of the stream is reached.
           """
      :see-also '("read-line") }
 

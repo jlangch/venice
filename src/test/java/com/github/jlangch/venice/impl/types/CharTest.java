@@ -107,8 +107,8 @@ public class CharTest {
 		assertEquals("#\\A",     venice.eval("(pr-str #\\A)"));
 		assertEquals("#\\A",     venice.eval("(pr-str #\\u0041)"));
 
-		assertEquals("#\\u03c0", venice.eval("(pr-str #\\u03c0)"));
-		assertEquals("#\\u03c0", venice.eval("(pr-str #\\π)"));
+		assertEquals("#\\π",     venice.eval("(pr-str #\\u03c0)"));
+		assertEquals("#\\π",     venice.eval("(pr-str #\\π)"));
 	}
 	
 	@Test
@@ -142,10 +142,10 @@ public class CharTest {
 		assertEquals("#\\A",     new VncChar('\u0041').toString(true));
 
 		assertEquals("π",        new VncChar('π').toString(false));
-		assertEquals("#\\u03c0", new VncChar('π').toString(true));
+		assertEquals("#\\π",     new VncChar('π').toString(true));
 
 		assertEquals("π",        new VncChar('\u03c0').toString(false));
-		assertEquals("#\\u03c0", new VncChar('\u03c0').toString(true));
+		assertEquals("#\\π",     new VncChar('\u03c0').toString(true));
 	}
 	
 }

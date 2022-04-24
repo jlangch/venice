@@ -27,6 +27,7 @@ import java.util.Map;
 import com.github.jlangch.venice.impl.types.custom.VncWrappingTypeDef;
 import com.github.jlangch.venice.impl.types.util.Types;
 import com.github.jlangch.venice.impl.util.MetaUtil;
+import com.github.jlangch.venice.impl.util.StringUtil;
 
 
 public class VncChar extends VncVal {
@@ -126,10 +127,7 @@ public class VncChar extends VncVal {
 	public String toString(final boolean print_machine_readably) {
 		if (print_machine_readably) {
 			final char ch = value.charValue();
-			if (ch > 32 && ch < 127) {
-				return "#\\" + ch;
-			}
-			else if (ch <= 32) {
+			if (ch <= 32) {
 				if (ch == ' ') {
 					return "#\\space";
 				}
@@ -149,11 +147,14 @@ public class VncChar extends VncVal {
 					return "#\\backspace";
 				}
 				else {
-					return String.format("#\\u%04x", (int)ch);
+					return "#" + StringUtil.toEscapedUnicode(ch);
 				}
 			}
+			else if (ch == 127) {
+				return "#" + StringUtil.toEscapedUnicode(ch);
+			}
 			else {
-				return String.format("#\\u%04x", (int)ch);
+				return "#\\" + ch;
 			}
 		}
 		else {

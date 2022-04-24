@@ -55,10 +55,15 @@ public class StringUtilTest {
 	@Test
 	public void testEscape() {
 		assertEquals("", StringUtil.escape(""));
+		assertEquals(" ", StringUtil.escape(" "));
 		assertEquals("a", StringUtil.escape("a"));
+		assertEquals("•", StringUtil.escape("•"));
+	
 		assertEquals("abc-123", StringUtil.escape("abc-123"));
+
+		assertEquals(" \\n \\r \\t \\\" \\\\ ", StringUtil.escape(" \n \r \t \" \\ "));
 		
-		assertEquals(" \\n \\r \\t \\\" \\\\ ", StringUtil.escape(" \n \r \t \" \\ "));				
+		assertEquals("--•--", StringUtil.escape("--•--"));
 	}
 
 	@Test
