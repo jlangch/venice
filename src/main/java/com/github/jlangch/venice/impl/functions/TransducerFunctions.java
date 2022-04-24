@@ -1254,6 +1254,7 @@ public class TransducerFunctions {
 					.examples(
 						"(reverse [1 2 3 4 5 6])",
 						"(reverse \"abcdef\")")
+					.seeAlso("str/reverse")
 					.build()
 		) {
 			public VncVal apply(final VncList args) {

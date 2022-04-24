@@ -5698,6 +5698,7 @@ public class CoreFunctions {
 						"(rest '(1))",
 						"(rest '(1 2 3))",
 						"(rest \"1234\")")
+					.seeAlso("str/rest")
 					.build()
 		) {
 			public VncVal apply(final VncList args) {
@@ -5749,6 +5750,7 @@ public class CoreFunctions {
 						"(butlast '(1))",
 						"(butlast '(1 2 3))",
 						"(butlast \"1234\")")
+					.seeAlso("str/butlast")
 					.build()
 		) {
 			public VncVal apply(final VncList args) {
@@ -5801,6 +5803,7 @@ public class CoreFunctions {
 						"(nfirst '(1 2 3) 2)",
 						"(nfirst \"abcdef\" 2)",
 						"(nfirst (lazy-seq 1 #(+ % 1)) 4)")
+					.seeAlso("str/nfirst")
 					.build()
 		) {
 			public VncVal apply(final VncList args) {
@@ -5862,6 +5865,7 @@ public class CoreFunctions {
 						"(nlast '(1) 2)",
 						"(nlast '(1 2 3) 2)",
 						"(nlast \"abcdef\" 2)")
+					.seeAlso("str/nlast")
 					.build()
 		) {
 			public VncVal apply(final VncList args) {
