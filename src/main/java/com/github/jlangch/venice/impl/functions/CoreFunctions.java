@@ -1841,7 +1841,8 @@ public class CoreFunctions {
 					.examples(
 						"(vector)",
 						"(vector 1 2 3)",
-						"(vector 1 2 3 [:a :b])")
+						"(vector 1 2 3 [:a :b])",
+						"(vector \"abc\")")
 					.build()
 		) {
 			public VncVal apply(final VncList args) {
@@ -5229,10 +5230,7 @@ public class CoreFunctions {
 						// skip
 					}
 					else if (Types.isVncString(val)) {
-						final String str = ((VncString)val).getValue();
-						for(char ch : str.toCharArray()) {
-							result = result.addAtEnd(new VncString(String.valueOf(ch)));
-						}
+						result = result.addAllAtEnd(((VncString)val).toVncList());
 					}
 					else if (Types.isVncCollection(val)) {
 						result = result.addAllAtEnd(((VncCollection)val).toVncList());
@@ -7519,7 +7517,7 @@ public class CoreFunctions {
 				}
 				else if (Types.isVncString(val)) {
 					final VncString s = (VncString)val;
-					return s.isEmpty() ? Nil : s.toVncCharList();
+					return s.isEmpty() ? Nil : s.toVncList();
 				}
 				else if (val == Nil) {
 					return Nil;

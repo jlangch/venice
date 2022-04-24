@@ -519,9 +519,9 @@ public class CoreFunctionsTest {
 
 		assertEquals("([:a 1] [:b 2])", venice.eval("(str (concat (ordered-map :a 1 :b 2)))"));
 		
-		assertEquals("()", venice.eval("(str (concat \"\"))"));
-		assertEquals("(a)", venice.eval("(str (concat \"a\"))"));
-		assertEquals("(a b c d e f)", venice.eval("(str (concat \"abc\" \"def\"))"));
+		assertEquals("()", venice.eval("(pr-str (concat \"\"))"));
+		assertEquals("(#\\a)", venice.eval("(pr-str (concat \"a\"))"));
+		assertEquals("(#\\a #\\b #\\c #\\d #\\e #\\f)", venice.eval("(pr-str (concat \"abc\" \"def\"))"));
 		
 		
 		// Java Interop
@@ -1281,9 +1281,9 @@ public class CoreFunctionsTest {
 		final Venice venice = new Venice();
 
 		assertNull(venice.eval("(first \"\")"));
-		assertEquals("1", venice.eval("(first \"1\")"));
-		assertEquals("1", venice.eval("(first \"12\")"));
-		assertEquals("1", venice.eval("(first \"123\")"));
+		assertEquals("#\\1", venice.eval("(pr-str (first \"1\"))"));
+		assertEquals("#\\1", venice.eval("(pr-str (first \"12\"))"));
+		assertEquals("#\\1", venice.eval("(pr-str (first \"123\"))"));
 
 		assertNull(venice.eval("(first '())"));
 		assertEquals(Long.valueOf(1), venice.eval("(first '(1))"));
@@ -2206,9 +2206,9 @@ public class CoreFunctionsTest {
 		final Venice venice = new Venice();
 
 		assertNull(venice.eval("(last \"\")"));
-		assertEquals("1", venice.eval("(last \"1\")"));
-		assertEquals("2", venice.eval("(last \"12\")"));
-		assertEquals("3", venice.eval("(last \"123\")"));
+		assertEquals("#\\1", venice.eval("(pr-str (last \"1\"))"));
+		assertEquals("#\\2", venice.eval("(pr-str (last \"12\"))"));
+		assertEquals("#\\3", venice.eval("(pr-str (last \"123\"))"));
 
 		assertEquals(null, venice.eval("(last '())"));
 		assertEquals(Long.valueOf(1), venice.eval("(last '(1))"));
@@ -3078,9 +3078,9 @@ public class CoreFunctionsTest {
 	public void test_nth() {
 		final Venice venice = new Venice();
 
-		assertEquals("1", venice.eval("(nth \"1\" 0)"));
-		assertEquals("2", venice.eval("(nth \"12\" 1 )"));
-		assertEquals("3", venice.eval("(nth \"123\" 2)"));
+		assertEquals("#\\1", venice.eval("(pr-str (nth \"1\" 0))"));
+		assertEquals("#\\2", venice.eval("(pr-str (nth \"12\" 1))"));
+		assertEquals("#\\3", venice.eval("(pr-str (nth \"123\" 2))"));
 
 		assertEquals(Long.valueOf(1), venice.eval("(nth '(1) 0)"));
 		assertEquals(Long.valueOf(2), venice.eval("(nth '(1 2) 1)"));
@@ -3652,8 +3652,8 @@ public class CoreFunctionsTest {
 
 		assertNull(venice.eval("(second \"\")"));
 		assertNull(venice.eval("(second \"1\")"));
-		assertEquals("2", venice.eval("(second \"12\")"));
-		assertEquals("2", venice.eval("(second \"123\")"));
+		assertEquals("#\\2", venice.eval("(pr-str (second \"12\"))"));
+		assertEquals("#\\2", venice.eval("(pr-str (second \"123\"))"));
 
 		assertNull(venice.eval("(second '())"));
 		assertNull(venice.eval("(second '(1))"));
@@ -4553,6 +4553,9 @@ public class CoreFunctionsTest {
 		assertEquals("[()]", venice.eval("(str (vector '()))"));
 		assertEquals("[[1 2]]", venice.eval("(str (vector [1 2]))"));
 		assertEquals("[[1 2] 3 4]", venice.eval("(str (vector [1 2] 3 4))"));
+
+		assertEquals("[\"abc\"]", venice.eval("(pr-str (vector \"abc\"))"));
+		assertEquals("[\"abc\" \"def\"]", venice.eval("(pr-str (vector \"abc\" \"def\"))"));
 	}
 	
 	@Test

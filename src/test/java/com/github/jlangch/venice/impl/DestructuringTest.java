@@ -30,6 +30,7 @@ import org.junit.jupiter.api.Test;
 import com.github.jlangch.venice.Venice;
 import com.github.jlangch.venice.impl.env.Var;
 import com.github.jlangch.venice.impl.types.Constants;
+import com.github.jlangch.venice.impl.types.VncChar;
 import com.github.jlangch.venice.impl.types.VncKeyword;
 import com.github.jlangch.venice.impl.types.VncLong;
 import com.github.jlangch.venice.impl.types.VncString;
@@ -346,13 +347,13 @@ public class DestructuringTest {
 		assertEquals(3, bindings.size());
 		
 		assertEquals("x", bindings.get(0).getName().getName());
-		assertEquals("a", ((VncString)bindings.get(0).getVal()).getValue());
+		assertEquals('a', (Character)((VncChar)bindings.get(0).getVal()).getValue());
 		
 		assertEquals("y", bindings.get(1).getName().getName());
-		assertEquals("b", ((VncString)bindings.get(1).getVal()).getValue());
+		assertEquals('b', (Character)((VncChar)bindings.get(1).getVal()).getValue());
 		
 		assertEquals("z", bindings.get(2).getName().getName());
-		assertEquals("c", ((VncString)bindings.get(2).getVal()).getValue());
+		assertEquals('c', (Character)((VncChar)bindings.get(2).getVal()).getValue());
 	}
 
 	@Test
@@ -372,13 +373,13 @@ public class DestructuringTest {
 		assertEquals(3, bindings.size());
 		
 		assertEquals("x", bindings.get(0).getName().getName());
-		assertEquals("a", ((VncString)bindings.get(0).getVal()).getValue());
+		assertEquals('a', (Character)((VncChar)bindings.get(0).getVal()).getValue());
 		
 		assertEquals("y", bindings.get(1).getName().getName());
-		assertEquals("c", ((VncString)bindings.get(1).getVal()).getValue());
+		assertEquals('c', (Character)((VncChar)bindings.get(1).getVal()).getValue());
 		
 		assertEquals("z", bindings.get(2).getName().getName());
-		assertEquals("e", ((VncString)bindings.get(2).getVal()).getValue());
+		assertEquals('e', (Character)((VncChar)bindings.get(2).getVal()).getValue());
 	}
 
 	@Test
@@ -398,17 +399,17 @@ public class DestructuringTest {
 		assertEquals(3, bindings.size());
 		
 		assertEquals("x", bindings.get(0).getName().getName());
-		assertEquals("a", ((VncString)bindings.get(0).getVal()).getValue());
+		assertEquals('a', (Character)((VncChar)bindings.get(0).getVal()).getValue());
 		
 		assertEquals("y", bindings.get(1).getName().getName());
-		assertEquals("b", ((VncString)bindings.get(1).getVal()).getValue());
+		assertEquals('b', (Character)((VncChar)bindings.get(1).getVal()).getValue());
 		
 		assertEquals("z", bindings.get(2).getName().getName());
 		assertEquals(4, ((VncList)bindings.get(2).getVal()).size());
-		assertEquals("c", ((VncString)((VncList)bindings.get(2).getVal()).nth(0)).getValue());
-		assertEquals("d", ((VncString)((VncList)bindings.get(2).getVal()).nth(1)).getValue());
-		assertEquals("e", ((VncString)((VncList)bindings.get(2).getVal()).nth(2)).getValue());
-		assertEquals("f", ((VncString)((VncList)bindings.get(2).getVal()).nth(3)).getValue());
+		assertEquals('c', (Character)((VncChar)((VncList)bindings.get(2).getVal()).nth(0)).getValue());
+		assertEquals('d', (Character)((VncChar)((VncList)bindings.get(2).getVal()).nth(1)).getValue());
+		assertEquals('e', (Character)((VncChar)((VncList)bindings.get(2).getVal()).nth(2)).getValue());
+		assertEquals('f', (Character)((VncChar)((VncList)bindings.get(2).getVal()).nth(3)).getValue());
 	}
 
 	@Test
@@ -429,13 +430,13 @@ public class DestructuringTest {
 		assertEquals(4, bindings.size());
 		
 		assertEquals("x", bindings.get(0).getName().getName());
-		assertEquals("a", ((VncString)bindings.get(0).getVal()).getValue());
+		assertEquals('a', (Character)((VncChar)bindings.get(0).getVal()).getValue());
 		
 		assertEquals("y", bindings.get(1).getName().getName());
-		assertEquals("b", ((VncString)bindings.get(1).getVal()).getValue());
+		assertEquals('b', (Character)((VncChar)bindings.get(1).getVal()).getValue());
 		
 		assertEquals("z", bindings.get(2).getName().getName());
-		assertEquals("c", ((VncString)bindings.get(2).getVal()).getValue());
+		assertEquals('c', (Character)((VncChar)bindings.get(2).getVal()).getValue());
 		
 		assertEquals("all", bindings.get(3).getName().getName());
 		assertEquals("abcdef", ((VncString)bindings.get(3).getVal()).getValue());

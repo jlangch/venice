@@ -806,10 +806,10 @@ public class TransducerFunctionsTest {
 	public void test_map_indexed() {
 		final Venice venice = new Venice();
 
-		assertEquals("([0 :a] [1 :b] [2 :c])", venice.eval("(pr-str (map-indexed (fn [idx val] [idx val]) [:a :b :c]))"));
-		assertEquals("([0 :a] [1 :b] [2 :c])", venice.eval("(pr-str (map-indexed vector [:a :b :c]))"));
-		assertEquals("({0 :a} {1 :b} {2 :c})", venice.eval("(pr-str (map-indexed hash-map [:a :b :c]))"));
-		assertEquals("([0 \"a\"] [1 \"b\"] [2 \"c\"])", venice.eval("(pr-str (map-indexed vector \"abc\"))"));
+		assertEquals("([0 :a] [1 :b] [2 :c])",       venice.eval("(pr-str (map-indexed (fn [idx val] [idx val]) [:a :b :c]))"));
+		assertEquals("([0 :a] [1 :b] [2 :c])",       venice.eval("(pr-str (map-indexed vector [:a :b :c]))"));
+		assertEquals("({0 :a} {1 :b} {2 :c})",       venice.eval("(pr-str (map-indexed hash-map [:a :b :c]))"));
+		assertEquals("([0 #\\a] [1 #\\b] [2 #\\c])", venice.eval("(pr-str (map-indexed vector \"abc\"))"));
 	}	
 
 	@Test

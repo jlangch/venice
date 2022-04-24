@@ -185,7 +185,7 @@ public class StringFunctionsTest {
 
 		assertTrue((Boolean)venice.eval("(str/linefeed? #\\newline)"));
 
-		assertEquals("\n", venice.eval("(first \"\n----\")"));
+		assertEquals("#\\newline", venice.eval("(pr-str (first \"\n----\"))"));
 		assertTrue((Boolean)venice.eval("(str/linefeed? \"\n\")"));
 		assertFalse((Boolean)venice.eval("(str/linefeed? \"8\")"));
 	}

@@ -192,7 +192,7 @@ public class StringFunctions {
 					.doc("True if s contains with substr.")
 					.examples(
 						"(str/contains? \"abc\" \"ab\")",
-						"(str/contains? \"abc\" (char \"b\"))")
+						"(str/contains? \"abc\" #\\b))")
 					.build()
 		) {
 			public VncVal apply(final VncList args) {

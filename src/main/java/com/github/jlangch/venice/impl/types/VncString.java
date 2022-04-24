@@ -97,7 +97,7 @@ public class VncString extends VncVal {
 					value.length()));
 		}
 
-		return new VncString(String.valueOf(value.charAt(idx)));
+		return new VncChar(value.charAt(idx));
 	}
 
 	public VncVal nthOrDefault(final int idx, final VncVal defaultVal) {
@@ -117,14 +117,6 @@ public class VncString extends VncVal {
 	}
 	
 	public VncList toVncList() {
-		final List<VncVal> list = new ArrayList<>();
-		for(char c : value.toCharArray()) {
-			list.add(new VncString(String.valueOf(c)));
-		}
-		return VncList.ofList(list);
-	}
-	
-	public VncList toVncCharList() {
 		final List<VncVal> list = new ArrayList<>();
 		for(char c : value.toCharArray()) {
 			list.add(new VncChar(c));

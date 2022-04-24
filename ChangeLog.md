@@ -17,7 +17,8 @@ and this project adheres to
 - support for multiple collections to function `pmap` 
 - function `deliver-ex` to complete promises exceptionally by delivering an exception
 - functions `prewalk-replace` and `postwalk-replace`
-- functions `pr` and `prn`
+- functions `pr` and `prn` that round out the printing functions that the support 
+  Venice's reader format
 
 
 
