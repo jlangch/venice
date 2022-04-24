@@ -203,7 +203,29 @@ public class StringFunctionsTest {
 		assertEquals("abcdef", venice.eval("(str/lower-case (. :java.util.Locale :new \"de\" \"DE\") \"aBcDeF\")"));
 		assertEquals("abcdef", venice.eval("(str/lower-case [\"de\" \"DE\"] \"aBcDeF\")"));
 	}
-
+	
+	@Test
+	public void test_str_nfirst() {
+		final Venice venice = new Venice();
+		
+		assertEquals("",    venice.eval("(str/nfirst \"abc\" 0)"));
+		assertEquals("a",   venice.eval("(str/nfirst \"abc\" 1)"));
+		assertEquals("ab",  venice.eval("(str/nfirst \"abc\" 2)"));
+		assertEquals("abc", venice.eval("(str/nfirst \"abc\" 3)"));
+		assertEquals("abc", venice.eval("(str/nfirst \"abc\" 4)"));
+	}
+	
+	@Test
+	public void test_str_nlast() {
+		final Venice venice = new Venice();
+		
+		assertEquals("",    venice.eval("(str/nlast \"abc\" 0)"));
+		assertEquals("c",   venice.eval("(str/nlast \"abc\" 1)"));
+		assertEquals("bc",  venice.eval("(str/nlast \"abc\" 2)"));
+		assertEquals("abc", venice.eval("(str/nlast \"abc\" 3)"));
+		assertEquals("abc", venice.eval("(str/nlast \"abc\" 4)"));
+	}
+	
 	@Test
 	public void test_str_pos() {
 		final Venice venice = new Venice();

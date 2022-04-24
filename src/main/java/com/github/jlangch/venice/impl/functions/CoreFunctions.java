@@ -5715,7 +5715,7 @@ public class CoreFunctions {
 					if (s.length() > 1) {
 						final List<VncVal> lst = new ArrayList<VncVal>();
 						for (char c : s.toCharArray()) {
-							lst.add(new VncString(String.valueOf(c)));
+							lst.add(new VncChar(c));
 						}
 						return VncList.ofList(lst).rest();
 					}
@@ -5766,7 +5766,7 @@ public class CoreFunctions {
 					if (s.length() > 1) {
 						final List<VncVal> lst = new ArrayList<VncVal>();
 						for (char c : s.toCharArray()) {
-							lst.add(new VncString(String.valueOf(c)));
+							lst.add(new VncChar(c));
 						}
 						return VncList.ofList(lst).slice(0, s.length()-1);
 					}
@@ -5832,11 +5832,9 @@ public class CoreFunctions {
 					return list.slice(0, n);
 				}
 				else if (Types.isVncString(coll)) {
-					final String s = ((VncString)coll).getValue();
-					n = Math.max(0, Math.min(s.length(), n));
-					return s.isEmpty()
-							? VncString.empty()
-							: new VncString(s.substring(0, n));
+					final VncSequence list = ((VncString)coll).toVncList();
+					n = Math.max(0, Math.min(list.size(), n));
+					return list.slice(0, n);
 				}
 				else {
 					throw new VncException(String.format(
@@ -5891,11 +5889,9 @@ public class CoreFunctions {
 					return list.slice(list.size()-n);
 				}
 				else if (Types.isVncString(coll)) {
-					final String s = ((VncString)coll).getValue();
-					n = Math.max(0, Math.min(s.length(), n));
-					return s.isEmpty()
-							? VncString.empty()
-							: new VncString(s.substring(s.length()-n, s.length()));
+					final VncSequence list = ((VncString)coll).toVncList();
+					n = Math.max(0, Math.min(list.size(),n));
+					return list.slice(list.size()-n);
 				}
 				else {
 					throw new VncException(String.format(

@@ -268,7 +268,7 @@ public class ParsatronModuleTest {
 				"                                (parsatron/digit)))              \n" +
 				"   (parsatron/run my-parser \"a5\"))                               ";
 
-		assertEquals("5", new Venice().eval(script1));
+		assertEquals('5', (Character)new Venice().eval(script1));
 
 	
 		final String script2 =
@@ -330,7 +330,7 @@ public class ParsatronModuleTest {
 				"     (parsatron/run (parsatron/times 5 (parsatron/letter))       \n" +
 				"                    \"Hello, world!\")))                           ";
 
-		assertEquals("[#\\H \"e\" \"l\" \"l\" \"o\"]", new Venice().eval(script1));
+		assertEquals("[#\\H #\\e #\\l #\\l #\\o]", new Venice().eval(script1));
 
 
 		final String script2 =
@@ -343,7 +343,7 @@ public class ParsatronModuleTest {
 				"                                (parsatron/letter)))             \n" +
 				"   (parsatron/run my-parser \"Hello, world!\"))                    ";
 
-		assertEquals("o", new Venice().eval(script2));
+		assertEquals('o', (Character)new Venice().eval(script2));
 	}
 
 	@Test
@@ -355,7 +355,7 @@ public class ParsatronModuleTest {
 				"     (parsatron/run (parsatron/many (parsatron/digit))           \n" +
 				"                    \"100 cats\")))                                ";
 
-		assertEquals("[#\\1 \"0\" \"0\"]", new Venice().eval(script1));
+		assertEquals("[#\\1 #\\0 #\\0]", new Venice().eval(script1));
 
 	
 		final String script2 =
@@ -372,7 +372,7 @@ public class ParsatronModuleTest {
 				"                                  number-parser)                        \n" +
 				"                    \"100  400\")))                                       ";
 
-		assertEquals("[\"4\" \"0\" \"0\"]", new Venice().eval(script2));
+		assertEquals("[#\\4 #\\0 #\\0]", new Venice().eval(script2));
 	}
 
 	@Test
@@ -400,7 +400,7 @@ public class ParsatronModuleTest {
 				"   (pr-str                                                              \n" +
 				"     (parsatron/run number-parser \"100\")))                              ";
 
-		assertEquals("[#\\1 \"0\" \"0\"]", new Venice().eval(script2));
+		assertEquals("[#\\1 #\\0 #\\0]", new Venice().eval(script2));
 		
 		
 		final String script3 =
@@ -426,7 +426,7 @@ public class ParsatronModuleTest {
 				"   (pr-str                                                              \n" +
 				"     (parsatron/run number-parser1 \"100\")))                              ";
 
-		assertEquals("[#\\1 \"0\" \"0\"]", new Venice().eval(script4));
+		assertEquals("[#\\1 #\\0 #\\0]", new Venice().eval(script4));
 	}
 
 	@Test
@@ -442,7 +442,7 @@ public class ParsatronModuleTest {
 				"   (pr-str                                                              \n" +
 				"     (parsatron/run number-or-word \"dog\")))                             ";
 
-		assertEquals("[#\\d \"o\" \"g\"]", new Venice().eval(script1));
+		assertEquals("[#\\d #\\o #\\g]", new Venice().eval(script1));
 
 	
 		final String script2 =
@@ -456,7 +456,7 @@ public class ParsatronModuleTest {
 				"   (pr-str                                                              \n" +
 				"     (parsatron/run number-or-word \"42\")))                             ";
 
-		assertEquals("[#\\4 \"2\"]", new Venice().eval(script2));
+		assertEquals("[#\\4 #\\2]", new Venice().eval(script2));
 	}
 
 	@Test
@@ -481,7 +481,7 @@ public class ParsatronModuleTest {
 				"               number)                                                  \n" +
 				"          \"(123    )\")))                                                ";
 
-		assertEquals("[\"1\" \"2\" \"3\"]", new Venice().eval(script));
+		assertEquals("[#\\1 #\\2 #\\3]", new Venice().eval(script));
 	}
 
 	@Test

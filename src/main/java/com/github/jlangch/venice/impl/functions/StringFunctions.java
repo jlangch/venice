@@ -990,6 +990,66 @@ public class StringFunctions {
 			private static final long serialVersionUID = -1848883965231344442L;
 		};
 
+	public static VncFunction str_nfirst =
+		new VncFunction(
+				"str/nfirst",
+				VncFunction
+					.meta()
+					.arglists("(str/nfirst s n)")
+					.doc("Returns a string of the n first characters of s.")
+					.examples("(str/nfirst \"abcdef\" 2)")
+					.build()
+		) {
+			public VncVal apply(final VncList args) {
+				ArityExceptions.assertArity(this, args, 2);
+
+				if (args.first() == Nil) {
+					return Nil;
+				}
+				else {
+					int n = Coerce.toVncLong(args.second()).getValue().intValue();
+
+					final String s = Coerce.toVncString(args.first()).getValue();
+					n = Math.max(0, Math.min(s.length(), n));
+					return s.isEmpty()
+							? VncString.empty()
+							: new VncString(s.substring(0, n));
+				}
+			}
+
+			private static final long serialVersionUID = -1848883965231344442L;
+		};
+
+	public static VncFunction str_nlast =
+		new VncFunction(
+				"str/nlast",
+				VncFunction
+					.meta()
+					.arglists("(str/nlast s n)")
+					.doc("Returns a string of the n last characters of s.")
+					.examples("(str/nlast \"abcdef\" 2)")
+					.build()
+		) {
+			public VncVal apply(final VncList args) {
+				ArityExceptions.assertArity(this, args, 2);
+
+				if (args.first() == Nil) {
+					return Nil;
+				}
+				else {
+					int n = Coerce.toVncLong(args.second()).getValue().intValue();
+
+					final String s = Coerce.toVncString(args.first()).getValue();
+					n = Math.max(0, Math.min(s.length(), n));
+					return s.isEmpty()
+							? VncString.empty()
+							: new VncString(s.substring(s.length()-n, s.length()));
+				}
+			}
+
+			private static final long serialVersionUID = -1848883965231344442L;
+		};
+
 	public static VncFunction str_format =
 		new VncFunction(
 				"str/format",
@@ -2143,6 +2203,8 @@ public class StringFunctions {
 					.add(str_cr_lf)
 					.add(str_format)
 					.add(str_rest)
+					.add(str_nfirst)
+					.add(str_nlast)
 					.add(str_butlast)
 					.add(str_quote)
 					.add(str_double_quote)

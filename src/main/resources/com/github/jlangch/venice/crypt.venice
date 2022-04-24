@@ -89,12 +89,12 @@
           """
           (let [s (-> (crypt/sha512-hash "hello world")
                       (str/bytebuf-to-hex :upper))]
-            (str (nfirst s 32) "..." (nlast s 32)))
+            (str (str/nfirst s 32) "..." (str/nlast s 32)))
           """,
           """
           (let [s (-> (crypt/sha512-hash "hello world" "-salt-")
                       (str/bytebuf-to-hex :upper))]
-            (str (nfirst s 32) "..." (nlast s 32)))
+            (str (str/nfirst s 32) "..." (str/nlast s 32)))
           """ ) }
 
   crypt/sha512-hash

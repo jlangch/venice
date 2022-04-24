@@ -443,6 +443,8 @@ public class DocGenerator {
 		use.addItem(getDocItem("str/index-of"));
 		use.addItem(getDocItem("str/last-index-of"));
 		use.addItem(getDocItem("str/subs"));
+		use.addItem(getDocItem("str/nfirst"));
+		use.addItem(getDocItem("str/nlast"));
 		use.addItem(getDocItem("str/rest"));
 		use.addItem(getDocItem("str/butlast"));
 		use.addItem(getDocItem("str/chars"));

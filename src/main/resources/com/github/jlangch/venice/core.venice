@@ -1223,7 +1223,7 @@
      :examples '(
          """(pr "hello")""",
          """(pr {:foo "hello" :bar 34.5})""",
-         """(pr ['a :b "\n" #\space "c"])"""
+         """(pr ['a :b "\n" #\\space "c"])"""
          "(pr *out* [10 20 30])",
          "(pr *err* [10 20 30])" )
      :see-also '("prn" "newline" "pr-str") }
@@ -1256,7 +1256,7 @@
      :examples '(
           """(prn "hello")""",
           """(prn {:foo "hello" :bar 34.5})""",
-          """(prn ['a :b "\n" #\space "c"])"""
+          """(prn ['a :b "\n" #\\space "c"])"""
           "(prn *out* [10 20 30])"
           "(prn *err* [10 20 30])" )
       :see-also '("pr" "newline" "pr-str") }

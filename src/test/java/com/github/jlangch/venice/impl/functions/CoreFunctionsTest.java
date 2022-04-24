@@ -254,6 +254,11 @@ public class CoreFunctionsTest {
 		assertEquals("[1 2]", venice.eval("(str (butlast [1 2 3]))"));
 		assertEquals("[1 2 3]", venice.eval("(str (butlast [1 2 3 4]))"));
 		assertEquals("[1 2 3 4]", venice.eval("(str (butlast [1 2 3 4 5]))"));
+
+		assertEquals("()", venice.eval("(pr-str (butlast \"\"))"));
+		assertEquals("()", venice.eval("(pr-str (butlast \"1\"))"));
+		assertEquals("(#\\1)", venice.eval("(pr-str (butlast \"12\"))"));
+		assertEquals("(#\\1 #\\2)", venice.eval("(pr-str (butlast \"123\"))"));
 	}
 
 	@Test
@@ -2976,11 +2981,11 @@ public class CoreFunctionsTest {
 		assertEquals("[1 2 3]", venice.eval("(str (nfirst [1 2 3] 3))"));
 		assertEquals("[1 2 3]", venice.eval("(str (nfirst [1 2 3] 4))"));
 
-		assertEquals("",    venice.eval("(nfirst \"abc\" 0)"));
-		assertEquals("a",   venice.eval("(nfirst \"abc\" 1)"));
-		assertEquals("ab",  venice.eval("(nfirst \"abc\" 2)"));
-		assertEquals("abc", venice.eval("(nfirst \"abc\" 3)"));
-		assertEquals("abc", venice.eval("(nfirst \"abc\" 4)"));
+		assertEquals("()",    venice.eval("(pr-str (nfirst \"abc\" 0))"));
+		assertEquals("(#\\a)",   venice.eval("(pr-str (nfirst \"abc\" 1))"));
+		assertEquals("(#\\a #\\b)",  venice.eval("(pr-str (nfirst \"abc\" 2))"));
+		assertEquals("(#\\a #\\b #\\c)", venice.eval("(pr-str (nfirst \"abc\" 3))"));
+		assertEquals("(#\\a #\\b #\\c)", venice.eval("(pr-str (nfirst \"abc\" 4))"));
 
 		// with lazy sequences
 		assertEquals("(1 2 3 4)", venice.eval("(str (doall (nfirst (lazy-seq 1 #(+ % 1)) 4)))"));
@@ -3027,11 +3032,11 @@ public class CoreFunctionsTest {
 		assertEquals("[1 2 3]", venice.eval("(str (nlast [1 2 3] 3))"));
 		assertEquals("[1 2 3]", venice.eval("(str (nlast [1 2 3] 4))"));
 
-		assertEquals("",    venice.eval("(nlast \"abc\" 0)"));
-		assertEquals("c",   venice.eval("(nlast \"abc\" 1)"));
-		assertEquals("bc",  venice.eval("(nlast \"abc\" 2)"));
-		assertEquals("abc", venice.eval("(nlast \"abc\" 3)"));
-		assertEquals("abc", venice.eval("(nlast \"abc\" 4)"));
+		assertEquals("()",    venice.eval("(pr-str (nlast \"abc\" 0))"));
+		assertEquals("(#\\c)",   venice.eval("(pr-str (nlast \"abc\" 1))"));
+		assertEquals("(#\\b #\\c)",  venice.eval("(pr-str (nlast \"abc\" 2))"));
+		assertEquals("(#\\a #\\b #\\c)", venice.eval("(pr-str (nlast \"abc\" 3))"));
+		assertEquals("(#\\a #\\b #\\c)", venice.eval("(pr-str (nlast \"abc\" 4))"));
 		
 		// with java lists
 		assertEquals(
@@ -3644,6 +3649,11 @@ public class CoreFunctionsTest {
 		assertEquals("[]", venice.eval("(str (rest [1]))"));
 		assertEquals("[2]", venice.eval("(str (rest [1 2]))"));
 		assertEquals("[2 3]", venice.eval("(str (rest [1 2 3]))"));
+
+		assertEquals("()", venice.eval("(pr-str (rest \"\"))"));
+		assertEquals("()", venice.eval("(pr-str (rest \"1\"))"));
+		assertEquals("(#\\2)", venice.eval("(pr-str (rest \"12\"))"));
+		assertEquals("(#\\2 #\\3)", venice.eval("(pr-str (rest \"123\"))"));
 	}
 	
 	@Test
