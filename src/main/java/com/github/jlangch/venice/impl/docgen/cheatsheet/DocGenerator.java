@@ -1676,6 +1676,8 @@ public class DocGenerator {
 		
 		final DocSection stream = new DocSection("stream", "io.stream");
 		all.addSection(stream);
+		stream.addItem(getDocItem("io/slurp"));
+		stream.addItem(getDocItem("io/slurp-lines"));
 		stream.addItem(getDocItem("io/copy-stream"));
 		stream.addItem(getDocItem("io/slurp-stream"));
 		stream.addItem(getDocItem("io/spit-stream"));

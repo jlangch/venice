@@ -20,6 +20,10 @@ and this project adheres to
 - functions `pr` and `prn` that round out the printing functions that the support 
   Venice's reader format
 
+### Fixed
+ - a problem with the functions `io/string-in-stream` and `io/bytebuf-in-stream` not 
+   being accessible through its global symbols
+
 
 
 ## [1.10.9] - 2022-04-01
