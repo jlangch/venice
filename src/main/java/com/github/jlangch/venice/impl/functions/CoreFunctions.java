@@ -469,7 +469,7 @@ public class CoreFunctions {
 					.meta()
 					.arglists("(char? s)")
 					.doc("Returns true if s is a char.")
-					.examples("(char? (char \"x\"))")
+					.examples("(char? #\\a)")
 					.build()
 		) {
 			public VncVal apply(final VncList args) {
