@@ -1583,7 +1583,7 @@ public class IOFunctions {
 						"Options:                                                          \n\n" +
 						"| :encoding enc | e.g.: `:encoding :utf-8`, defaults to :utf-8 |\n")
 					.examples(
-						"(->> \"1\n2\n3\"          \n" +
+						"(->> \"1\\n2\\n3\"        \n" +
 						"     io/string-in-stream  \n" +
 						"     io/slurp-lines)      ")
 					.seeAlso(
