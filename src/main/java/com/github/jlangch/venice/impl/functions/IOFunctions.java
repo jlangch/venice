@@ -1582,7 +1582,12 @@ public class IOFunctions {
 						" * `java.net.URI`                                                 \n\n" +
 						"Options:                                                          \n\n" +
 						"| :encoding enc | e.g.: `:encoding :utf-8`, defaults to :utf-8 |\n")
-					.seeAlso("io/slurp", "io/slurp-stream", "io/spit")
+					.examples(
+						"(->> \"1\n2\n3\n4\"      \n" +
+						"     io/string−in−stream \n" +
+						"     io/slurp-lines)      ")
+					.seeAlso(
+						"io/slurp", "io/slurp-stream", "io/spit", "io/string−in−stream")
 					.build()
 		) {
 			public VncVal apply(final VncList args) {
@@ -2239,8 +2244,10 @@ public class IOFunctions {
 						"Returns a `java.io.InputStream` for the string s.                     \n\n" +
 						"Options:                                                              \n\n" +
 						"| :encoding enc      | e.g.: `:encoding :utf-8`, defaults to :utf-8 | \n")
-					.examples("(io/string-in-stream \"The quick brown fox jumped over the lazy dog\")")
-					.seeAlso("io/slurp-stream", "io/file-in-stream", "io/bytebuf-in-stream")
+					.examples(
+						"(io/string-in-stream \"The quick brown fox jumped over the lazy dog\")")
+					.seeAlso(
+						"io/slurp-stream", "io/file-in-stream", "io/bytebuf-in-stream")
 					.build()
 		) {
 			public VncVal apply(final VncList args) {
@@ -2282,7 +2289,8 @@ public class IOFunctions {
 					.doc("Returns a `java.io.InputStream` from a bytebuf.")
 					.examples(
 						"(io/bytebuf-in-stream (bytebuf [97 98 99]))")
-					.seeAlso("io/slurp-stream", "io/file-in-stream", "io/string-in-stream")
+					.seeAlso(
+						"io/slurp-stream", "io/file-in-stream", "io/string-in-stream")
 					.build()
 		) {
 			public VncVal apply(final VncList args) {
