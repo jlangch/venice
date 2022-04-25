@@ -1583,11 +1583,11 @@ public class IOFunctions {
 						"Options:                                                          \n\n" +
 						"| :encoding enc | e.g.: `:encoding :utf-8`, defaults to :utf-8 |\n")
 					.examples(
-						"(->> \"1\n2\n3\n4\"      \n" +
-						"     io/string−in−stream \n" +
+						"(->> \"1\n2\n3\"          \n" +
+						"     io/string-in-stream  \n" +
 						"     io/slurp-lines)      ")
 					.seeAlso(
-						"io/slurp", "io/slurp-stream", "io/spit", "io/string−in−stream")
+						"io/slurp", "io/slurp-stream", "io/spit", "io/string-in-stream")
 					.build()
 		) {
 			public VncVal apply(final VncList args) {

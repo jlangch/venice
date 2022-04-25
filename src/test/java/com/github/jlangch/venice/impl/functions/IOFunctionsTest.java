@@ -382,7 +382,7 @@ public class IOFunctionsTest {
 	}
 	
 	@Test
-	public void test_io_slurp_lines_stream() {
+	public void test_io_slurp_lines_stream_1() {
 		final Venice venice = new Venice();
 
 		final String script =
@@ -396,6 +396,18 @@ public class IOFunctionsTest {
 				")";
 				
 		assertEquals("(\"123\" \"456\" \"789\")", venice.eval(script));					
+	}
+	
+	@Test
+	public void test_io_slurp_lines_stream_2() {
+		final Venice venice = new Venice();
+
+		final String script =
+				"(str (->> \"1\\n2\\n3\"         \n" +
+				"          io/string-in-stream   \n" +
+				"          io/slurp-lines))";
+				
+		assertEquals("(1 2 3)", venice.eval(script));					
 	}
 	
 	@Test
