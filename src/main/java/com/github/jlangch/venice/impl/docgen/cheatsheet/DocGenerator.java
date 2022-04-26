@@ -1364,6 +1364,7 @@ public class DocGenerator {
 		branch.addItem(getDocItem("if-not"));
 		branch.addItem(getDocItem("if-let"));
 		branch.addItem(getDocItem("when-let"));
+		branch.addItem(getDocItem("letfn"));
 
 		final DocSection loop = new DocSection("Loop", "macros.loop");
 		all.addSection(loop);

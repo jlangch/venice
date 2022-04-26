@@ -15,6 +15,7 @@ and this project adheres to
 
 - support for char literals: `#\A`, `#\u03C0`, `#\space` (implemented as reader macro)
 - support for multiple collections to function `pmap` 
+- macro `letfn`
 - function `deliver-ex` to complete promises exceptionally by delivering an exception
 - functions `prewalk-replace` and `postwalk-replace`
 - functions `pr` and `prn` that round out the printing functions that the support 

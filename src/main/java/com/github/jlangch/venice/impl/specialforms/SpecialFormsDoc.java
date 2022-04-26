@@ -1127,12 +1127,6 @@ public class SpecialFormsDoc {
 						"      y 2]  \n" +
 						"  (+ x y))    ",
 						
-						";; Define two functions in a local scope. Venice lets you refer from \n" +
-						";; one function to the other (as Clojure's `letfn`):                 \n" +
-						"(let [bar (fn [] (str (foo) \"def\"))   \n" +
-						"      foo (fn [] \"abc\")]              \n" +
-						"  (bar))                                  ",
-						
 						";; Destructured list                    \n" +
 						"(let [[x y] '(1 2)]                     \n" +
 						"  (printf \"x: %d, y: %d%n\" x y))        ",
@@ -1146,7 +1140,7 @@ public class SpecialFormsDoc {
 						"     (println \"height: \" height)      \n" +
 						"     (println \"title: \" title)        \n" +
 						"     (println \"styles: \" styles))       ")
-					.seeAlso("if-let", "when-let", "binding")
+					.seeAlso("letfn", "if-let", "when-let", "binding")
 					.build()
 		) {
 			private static final long serialVersionUID = -1;
