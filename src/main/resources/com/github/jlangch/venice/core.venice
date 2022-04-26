@@ -778,6 +778,37 @@
 
 
 (defmacro
+  ^{ :arglists '("(letfn [fnspec*] exprs*)")
+     :doc
+       """
+       Takes a vector of function specs and a body, and generates a set of
+       bindings of functions to their names. All of the names are available
+       in all of the definitions of the functions, as well as the body.
+
+       fnspec ==> `(fname [params*] exprs)` or `(fname ([params*] exprs)+)`
+
+       `(letfn [(foo [] "abc")] (foo))`
+
+       is equivalent to
+
+       `(let [foo (fn [] "abc")] (foo))`
+       """
+     :examples '(
+       """
+       (letfn [(foo [] "abc")
+               (bar [] (str (foo) "def"))]
+          (bar))
+       """)
+     :see-also '("let") }
+
+  letfn [fnspecs & body]
+
+  `(let ~(vector* (interleave (map first fnspecs)
+                              (map #(cons `fn %) fnspecs)))
+      ~@body))
+
+
+(defmacro
   ^{ :arglists '("(time expr)")
      :doc "Evaluates expr and prints the time it took. Returns the value of expr."
      :examples '("(time (+ 100 200))")
