@@ -77,14 +77,15 @@
               [4 7 0 0 0 6 0 0 0]])
 
 (defn read-board [s]
-  (->> (seq s)
-       (replace {#\. #\0})
-       (map #(- (long %) (long #\0))))
-       (partition 9)))
+  (vector* (->> (seq s)
+                (replace {#\. #\0})
+                (map #(- (long %) (long #\0)))
+                (partition 9)
+                (map vector*))))
 
 (defn read-boards [file]
   (->> (io/slurp-lines file)
-       (map read-board))
+       (map read-board)))
 
 (defn print-board [board]
   (println)

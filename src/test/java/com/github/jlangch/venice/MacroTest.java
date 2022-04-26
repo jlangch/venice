@@ -893,12 +893,20 @@ public class MacroTest {
 	public void test_letfn() {
 		final Venice venice = new Venice();
 
-		final String script =
+		final String script1 =
 				"(letfn [(foo [] \"abc\")              \n" +
 				"        (bar [] (str (foo) \"def\"))] \n" +
 				"   (bar))";
 
-		assertEquals("abcdef", venice.eval(script));
+		assertEquals("abcdef", venice.eval(script1));
+
+		
+		final String script2 =
+				"(letfn [(bar [] (str (foo) \"def\")) \n" +
+				"        (foo [] \"abc\")]            \n" +
+				"   (bar))";
+
+		assertEquals("abcdef", venice.eval(script2));
 	}
 
 	@Test
