@@ -164,8 +164,14 @@ public class SystemFunctions {
 					.doc(
 						"Returns the current value of the running Java Virtual Machine's " +
 						"high-resolution time source, in nanoseconds.")
-					.examples("(nano-time)")
-					.seeAlso("current-time-millis")
+					.examples(
+						"(nano-time)",
+						"(let [t (nano-time)                        \n" +
+						"      _ (sleep 100)                        \n" +
+						"      e (nano-time)]                       \n" +
+						"  (format-nano-time (- e t) :precision 2))  ")
+					.seeAlso(
+						"current-time-millis", "format-nano-time")
 					.build()
 		) {
 			public VncVal apply(final VncList args) {
@@ -310,7 +316,7 @@ public class SystemFunctions {
 						"(format-nano-time 203867669)",
 						"(format-nano-time 20386766988 :precision 2)",
 						"(format-nano-time 20386766988 :precision 6)")
-					.seeAlso("format-milli-time", "format-micro-time")
+					.seeAlso("format-milli-time", "format-micro-time", "nano-time")
 					.build()
 		) {
 			public VncVal apply(final VncList args) {

@@ -241,12 +241,14 @@
     (eok (f state) state)))
 
 (defn examine
-  ;Return the Parser's current state
+  ; Return the Parser's current state
   []
   (extract identity))
 
 (defn lineno
   ; A parser that returns the current line number. It consumes no input
+  ; (let->> [current-line (lineno)]
+  ;   (do-something-with current-line))
   []
   (extract (comp :line :pos)))
 
