@@ -1836,8 +1836,7 @@ public class CoreFunctions {
 					.meta()
 					.arglists("(vector & items)")
 					.doc(
-						"Creates a new mutable vector containing the items.\n\n" +
-						"The list is backed by `java.util.ArrayList` and is not thread-safe.")
+						"Creates a new vector containing the items.")
 					.examples(
 						"(vector)",
 						"(vector 1 2 3)",
