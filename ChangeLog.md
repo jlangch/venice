@@ -24,6 +24,7 @@ and this project adheres to
 ### Fixed
  - a problem with the functions `io/string-in-stream` and `io/bytebuf-in-stream` not 
    being accessible through its global symbols
+ - an edge case with dynamic vars propagating across threads
 
 
 

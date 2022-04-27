@@ -388,12 +388,18 @@ public class Env implements Serializable {
 	}
 
 	public void setGlobalDynamic(final VncSymbol sym, final VncVal val) {
-		final DynamicVar dv = findGlobalDynamicVar(sym);
-		if (dv != null) {
-			dv.setVal(val);
+		final Var gv = getGlobalVar(sym);
+		if (gv == null) {
+			final DynamicVar nv = new DynamicVar(sym, Nil);
+			setGlobalVar(sym, nv);
+			nv.pushVal(val);
+		}
+		else if (gv instanceof DynamicVar) {
+			final DynamicVar nv = ((DynamicVar)gv);
+			nv.pushVal(val);
 		}
 		else {
-			final DynamicVar nv = new DynamicVar(sym, Nil);
+			final DynamicVar nv = new DynamicVar(sym, gv.getVal());
 			setGlobalVar(sym, nv);
 			nv.pushVal(val);
 		}
@@ -485,13 +491,6 @@ public class Env implements Serializable {
 		if (dv != null) {
 			if (dv instanceof DynamicVar) {
 				return (DynamicVar)dv;
-			}
-			else {
-				try (WithCallStack cs = new WithCallStack(CallFrame.from(sym))) {
-					throw new VncException(String.format(
-								"The var '%s' is not defined as dynamic", 
-								sym.getQualifiedName()));
-				}
 			}
 		}
 		return null;

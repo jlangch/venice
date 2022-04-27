@@ -150,6 +150,35 @@ public class SpecialFormsTest_def_dynamic {
 	}
 
 	@Test
+	public void test_def_dynamic_7() {
+		final Venice venice = new Venice();
+
+		final String script = 
+				"(do                 \n" +
+				"  (def x 100)       \n" +
+				"  (def-dynamic x 5) \n" +
+				"  x)                  ";
+
+		assertEquals(5L, venice.eval(script));
+	}
+
+	@Test
+	public void test_def_dynamic_8() {
+		final Venice venice = new Venice();
+
+		final String script = 
+				"(do                                 \n" +
+				"  (defn f []                        \n" +
+				"    (def-dynamic x 5)               \n" +
+				"    (defn g [] (println x))         \n" +
+				"    (defn h [] (binding [x 3] (g))) \n" +
+				"    (h))                            \n" +
+				"  (with-out-str (f)))               ";
+
+		assertEquals("3\n", venice.eval(script));
+	}
+
+	@Test
 	public void test_binding_mutability() {
 		final Venice venice = new Venice();
 
@@ -176,6 +205,101 @@ public class SpecialFormsTest_def_dynamic {
 				"     user/x))                    ";
 
 		assertEquals(1L, venice.eval(script));
+	}
+
+	@Test
+	public void test_def_dynamic_threads_1a() {
+		final Venice venice = new Venice();
+
+		final String script = 
+				"(do                   \n" +
+				"   (def x 100)        \n" +
+				"   @(future #(do x))) \n";
+
+		assertEquals(100L, venice.eval(script));
+	}
+
+	@Test
+	public void test_def_dynamic_threads_1b() {
+		final Venice venice = new Venice();
+
+		final String script = 
+				"(do                                      \n" +
+				"   (def x 100)                           \n" +
+				"   @(future #(do (def-dynamic x 10) x))) \n";
+
+		assertEquals(10L, venice.eval(script));
+	}
+
+	@Test
+	public void test_def_dynamic_threads_2a() {
+		final Venice venice = new Venice();
+
+		final String script = 
+				"(do                                        \n" +
+				"  (def x 100)                              \n" +
+				"  (pr-str                                  \n" +
+				"    [ x                                    \n" +
+				"      @(future #(do (def-dynamic x 10) x)) \n" +
+				"      x ]))";
+
+		assertEquals("[100 10 100]", venice.eval(script));
+	}
+
+	@Test
+	public void test_def_dynamic_threads_2b() {
+		final Venice venice = new Venice();
+
+		final String script = 
+				"(do                                        \n" +
+				"  (def x 100)                              \n" +
+				"  (def-dynamic x 30)                       \n" +
+				"  (pr-str                                  \n" +
+				"    [ x                                    \n" +
+				"      @(future #(do x))                    \n" +
+				"      x                                    \n" +
+				"      @(future #(do (def-dynamic x 10) x)) \n" +
+				"      x                                    \n" +
+				"      @(future #(do (def-dynamic x 20) x)) \n" +
+				"      x ]))";
+
+		assertEquals("[30 30 30 10 30 20 30]", venice.eval(script));
+	}
+
+	@Test
+	public void test_def_dynamic_threads_2c() {
+		final Venice venice = new Venice();
+
+		final String script = 
+				"(do                                        \n" +
+				"  (def x 100)                              \n" +
+				"  (pr-str                                  \n" +
+				"    [ x                                    \n" +
+				"      @(future #(do x))                    \n" +
+				"      x                                    \n" +
+				"      @(future #(do (def-dynamic x 10) x)) \n" +
+				"      x                                    \n" +
+				"      @(future #(do (def-dynamic x 20) x)) \n" +
+				"      x ]))";
+
+		assertEquals("[100 100 100 10 100 20 100]", venice.eval(script));
+	}
+
+	@Test
+	public void test_def_threads_3() {
+		final Venice venice = new Venice();
+
+		final String script = 
+				"(do                                        \n" +
+				"  (def x 100)                              \n" +
+				"  (pr-str                                  \n" +
+				"    [ x                                    \n" +
+				"      @(future #(do (def x 10) x))         \n" +
+				"      x                                    \n" +
+				"      @(future #(do (def x 20) x))         \n" +
+				"      x ]))";
+
+		assertEquals("[100 10 10 20 20]", venice.eval(script));
 	}
 
 }

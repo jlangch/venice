@@ -33,7 +33,7 @@ public class DynamicVar extends Var {
 
 	public DynamicVar(final VncSymbol name, final VncVal val) {
 		super(name, val);
-		th_keyword = new VncKeyword(name.getName());
+		th_keyword = new VncKeyword(name.getQualifiedName());
 	}
 	
 	public VncVal getVal() {
