@@ -17,14 +17,14 @@ and this project adheres to
 - support for multiple collections to function `pmap` 
 - macro `letfn`
 - function `deliver-ex` to complete promises exceptionally by delivering an exception
-- functions `prewalk-replace` and `postwalk-replace`
+- functions `prewalk-replace` and `postwalk-replace` (recursive replace)
 - functions `pr` and `prn` that round out the printing functions that the support 
   Venice's reader format
 
 ### Fixed
  - a problem with the functions `io/string-in-stream` and `io/bytebuf-in-stream` not 
    being accessible through its global symbols
- - an edge case with dynamic vars propagating across threads
+ - an edge case with dynamic vars propagation across threads
 
 
 
