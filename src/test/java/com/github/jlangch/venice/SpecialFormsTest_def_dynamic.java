@@ -286,6 +286,25 @@ public class SpecialFormsTest_def_dynamic {
 	}
 
 	@Test
+	public void test_def_dynamic_threads_2d() {
+		final Venice venice = new Venice();
+
+		final String script = 
+				"(do                                        \n" +
+				"  (def-dynamic x 100)                      \n" +
+				"  (pr-str                                  \n" +
+				"    [ x                                    \n" +
+				"      @(future #(do x))                    \n" +
+				"      x                                    \n" +
+				"      @(future #(do (def-dynamic x 10) x)) \n" +
+				"      x                                    \n" +
+				"      @(future #(do (def-dynamic x 20) x)) \n" +
+				"      x ]))";
+
+		assertEquals("[100 100 100 10 100 20 100]", venice.eval(script));
+	}
+
+	@Test
 	public void test_def_dynamic_threads_3() {
 		final Venice venice = new Venice();
 
