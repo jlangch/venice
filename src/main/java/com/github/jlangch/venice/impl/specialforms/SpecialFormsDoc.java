@@ -375,7 +375,7 @@ public class SpecialFormsDoc {
 						 "(def x 5)",
 						 "(def sum (fn [x y] (+ x y)))",
 						 "(def ^{:private true} x 100)")
-					.seeAlso("def", "defonce", "def-dynamic", "set!")
+					.seeAlso("def", "def-", "defonce", "def-dynamic", "set!")
 					.build()
 		) {
 			private static final long serialVersionUID = -1;

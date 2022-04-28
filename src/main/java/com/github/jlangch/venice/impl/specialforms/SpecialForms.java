@@ -47,6 +47,7 @@ public class SpecialForms {
 					"var-thread-local?",
 					"var-global?",
 					"def",
+					"def-",
 					"defn",
 					"defn-",
 					"defonce",

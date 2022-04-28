@@ -104,6 +104,25 @@
 
 
 (defmacro
+  ^{ :arglists '("(def- name expr)")
+     :doc "Same as `def`, yielding non-public `def`"
+     :examples '(
+       "(def- x 100)"
+       """
+       (do
+         (ns foo)
+         (def- x 100)
+         (ns bar)
+         foo/x)  ; Illegal access of private symbol
+       """)
+     :see-also '("def") }
+
+   def- [name & forms]
+
+   (list* `def (with-meta name (assoc (meta name) :private true)) forms))
+
+
+(defmacro
   ^{ :arglists '("(and x)" "(and x & next)")
      :doc "Ands the predicate forms"
      :examples '("(and true true)", "(and true false)", "(and)")

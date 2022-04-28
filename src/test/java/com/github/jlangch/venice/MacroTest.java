@@ -23,6 +23,7 @@ package com.github.jlangch.venice;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.junit.jupiter.api.Assertions.fail;
 
@@ -465,6 +466,32 @@ public class MacroTest {
 	}
 
 	@Test
+	public void test_def_private_1() {
+		final Venice venice = new Venice();
+
+		final String script1 =
+				"(do               \n" +
+				"   (def- x 100)   \n" + 
+				"   x) ";
+
+		assertEquals(100L, venice.eval(script1));
+	}
+
+	@Test
+	public void test_def_private_2() {
+		final Venice venice = new Venice();
+
+		final String script1 =
+				"(do               \n" +
+				"   (ns foo)       \n" + 
+				"   (def- x 100)   \n" + 
+				"   (ns bar)       \n" + 
+				"   foo/x) ";
+
+		assertThrows(VncException.class, () -> venice.eval(script1));
+	}
+
+	@Test
 	public void test_defn() {
 		final Venice venice = new Venice();
 
@@ -503,9 +530,8 @@ public class MacroTest {
 		assertEquals("0123", venice.eval(s));
 	}
 
-
 	@Test
-	public void test_defn_private() {
+	public void test_defn_private_1() {
 		final Venice venice = new Venice();
 
 		final String script1 =
@@ -515,6 +541,21 @@ public class MacroTest {
 				") ";
 
 		assertEquals(Long.valueOf(7), venice.eval(script1));
+	}
+
+	@Test
+	public void test_defn_private_2() {
+		final Venice venice = new Venice();
+
+		final String script1 =
+				"(do                            \n" +
+				"   (ns foo)                    \n" + 
+				"   (defn- sum [x y] (+ x y))   \n" + 
+				"   (ns bar)                    \n" + 
+				"   (foo/sum 2 5)               \n" + 
+				") ";
+
+		assertThrows(VncException.class, () -> venice.eval(script1));
 	}
 
 	@Test

@@ -1218,6 +1218,145 @@ public class DocGenerator {
 		
 		return section;
 	}
+	private DocSection getMacrosSection() {
+		final DocSection section = new DocSection("Macros", "macros");
+
+		final DocSection all = new DocSection("", id());
+		section.addSection(all);
+
+		final DocSection create = new DocSection("Create", "macros.create");
+		all.addSection(create);		
+		create.addItem(getDocItem("def-", false));
+		create.addItem(getDocItem("defn"));
+		create.addItem(getDocItem("defn-"));
+		create.addItem(getDocItem("defmacro"));
+		create.addItem(getDocItem("macroexpand"));
+		create.addItem(getDocItem("macroexpand-all"));
+		create.addItem(getDocItem("macro?"));
+
+		final DocSection test = new DocSection("Test", "macros.test");
+		all.addSection(test);		
+		test.addItem(getDocItem("macro?"));
+
+		final DocSection quote = new DocSection("Quoting", "macros.quoting");
+		all.addSection(quote);
+		quote.addItem(getDocItem("quote"));
+		quote.addItem(getDocItem("quasiquote"));
+
+		final DocSection branch = new DocSection("Branch", "macros.branch");
+		all.addSection(branch);
+		branch.addItem(getDocItem("and"));
+		branch.addItem(getDocItem("or"));
+		branch.addItem(getDocItem("when"));
+		branch.addItem(getDocItem("when-not"));
+		branch.addItem(getDocItem("if-not"));
+		branch.addItem(getDocItem("if-let"));
+		branch.addItem(getDocItem("when-let"));
+		branch.addItem(getDocItem("letfn"));
+		
+		final DocSection cond = new DocSection("Conditions", "macros.cond");
+		all.addSection(cond);
+		cond.addItem(getDocItem("cond"));
+		cond.addItem(getDocItem("condp"));
+		cond.addItem(getDocItem("case"));
+
+		final DocSection loop = new DocSection("Loop", "macros.loop");
+		all.addSection(loop);
+		loop.addItem(getDocItem("while"));
+		loop.addItem(getDocItem("dotimes"));
+		loop.addItem(getDocItem("list-comp"));
+		loop.addItem(getDocItem("doseq"));
+
+		final DocSection call = new DocSection("Call", "macros.call");
+		all.addSection(call);
+		call.addItem(getDocItem("doto"));
+		call.addItem(getDocItem("->"));
+		call.addItem(getDocItem("->>"));
+		call.addItem(getDocItem("-<>"));
+		call.addItem(getDocItem("as->"));
+		call.addItem(getDocItem("cond->"));
+		call.addItem(getDocItem("cond->>"));
+		call.addItem(getDocItem("some->"));
+		call.addItem(getDocItem("some->>"));
+
+		final DocSection loading = new DocSection("Loading", "macros.loading");
+		all.addSection(loading);
+		loading.addItem(getDocItem("load-module"));
+		loading.addItem(getDocItem("load-file", false));
+		loading.addItem(getDocItem("load-classpath-file"));
+		loading.addItem(getDocItem("load-string"));
+
+		final DocSection assert_ = new DocSection("Assert", "macros.assert");
+		all.addSection(assert_);
+		assert_.addItem(getDocItem("assert", true, true));
+
+		final DocSection util = new DocSection("Util", "macros.util");
+		all.addSection(util);
+		util.addItem(getDocItem("comment"));
+		util.addItem(getDocItem("gensym"));
+		util.addItem(getDocItem("time"));
+		util.addItem(getDocItem("with-out-str"));
+		util.addItem(getDocItem("with-err-str"));
+		
+		final DocSection profil = new DocSection("Profiling", "macros.profiling");
+		all.addSection(profil);
+		profil.addItem(getDocItem("time"));
+		profil.addItem(getDocItem("perf", false));
+		
+		return section;
+	}
+
+	private DocSection getSpecialFormsSection() {
+		final DocSection section = new DocSection("Special Forms", "specialforms");
+
+		final DocSection all = new DocSection("", id());
+		section.addSection(all);
+
+		final DocSection generic = new DocSection("Forms", "specialforms.forms");
+		all.addSection(generic);
+
+		generic.addItem(getDocItem("def"));
+		generic.addItem(getDocItem("defonce"));
+		generic.addItem(getDocItem("def-dynamic"));
+		generic.addItem(getDocItem("if"));
+		generic.addItem(getDocItem("do"));
+		generic.addItem(getDocItem("let"));
+		generic.addItem(getDocItem("binding"));
+		generic.addItem(getDocItem("fn"));
+		generic.addItem(getDocItem("set!"));
+
+		final DocSection multi = new DocSection("Multi Methods", "specialforms.multimethod");
+		all.addSection(multi);
+		multi.addItem(getDocItem("defmulti"));
+		multi.addItem(getDocItem("defmethod"));
+
+		final DocSection proto = new DocSection("Protocols", "specialforms.protocol");
+		all.addSection(proto);
+		proto.addItem(getDocItem("defprotocol"));
+		proto.addItem(getDocItem("extend"));
+		proto.addItem(getDocItem("extends?"));
+
+		final DocSection recur = new DocSection("Recursion", "specialforms.recursion");
+		all.addSection(recur);
+		recur.addItem(getDocItem("loop"));
+		recur.addItem(getDocItem("recur"));
+		recur.addItem(getDocItem("tail-pos", true, true));
+
+		final DocSection ex = new DocSection("Exception", "specialforms.exception");
+		all.addSection(ex);
+		ex.addItem(getDocItem("throw", true, true));
+		ex.addItem(getDocItem("try", true, true));
+		ex.addItem(getDocItem("try-with", true, true));
+
+		final DocSection profiling = new DocSection("Profiling", "specialforms.profiling");
+		all.addSection(profiling);
+
+		profiling.addItem(getDocItem("dobench"));
+		profiling.addItem(getDocItem("dorun"));
+		profiling.addItem(getDocItem("prof"));
+
+		return section;
+	}
 
 	private DocSection getExceptionsSection() {
 		final DocSection section = new DocSection("Exceptions", "exceptions");
@@ -1333,89 +1472,6 @@ public class DocGenerator {
 		tools.addItem(getDocItem("sh/open", false));
 		tools.addItem(getDocItem("sh/pwd", false));
 				
-		return section;
-	}
-
-	private DocSection getMacrosSection() {
-		final DocSection section = new DocSection("Macros", "macros");
-
-		final DocSection all = new DocSection("", id());
-		section.addSection(all);
-
-		final DocSection create = new DocSection("Create", "macros.create");
-		all.addSection(create);		
-		create.addItem(getDocItem("defn"));
-		create.addItem(getDocItem("defn-"));
-		create.addItem(getDocItem("defmacro"));
-		create.addItem(getDocItem("macroexpand"));
-		create.addItem(getDocItem("macroexpand-all"));
-
-		final DocSection quote = new DocSection("Quoting", "macros.quoting");
-		all.addSection(quote);
-		quote.addItem(getDocItem("quote"));
-		quote.addItem(getDocItem("quasiquote"));
-
-		final DocSection branch = new DocSection("Branch", "macros.branch");
-		all.addSection(branch);
-		branch.addItem(getDocItem("and"));
-		branch.addItem(getDocItem("or"));
-		branch.addItem(getDocItem("when"));
-		branch.addItem(getDocItem("when-not"));
-		branch.addItem(getDocItem("if-not"));
-		branch.addItem(getDocItem("if-let"));
-		branch.addItem(getDocItem("when-let"));
-		branch.addItem(getDocItem("letfn"));
-
-		final DocSection loop = new DocSection("Loop", "macros.loop");
-		all.addSection(loop);
-		loop.addItem(getDocItem("while"));
-		loop.addItem(getDocItem("dotimes"));
-		loop.addItem(getDocItem("list-comp"));
-		loop.addItem(getDocItem("doseq"));
-
-		final DocSection call = new DocSection("Call", "macros.call");
-		all.addSection(call);
-		call.addItem(getDocItem("doto"));
-		call.addItem(getDocItem("->"));
-		call.addItem(getDocItem("->>"));
-		call.addItem(getDocItem("-<>"));
-		call.addItem(getDocItem("as->"));
-		call.addItem(getDocItem("cond->"));
-		call.addItem(getDocItem("cond->>"));
-		call.addItem(getDocItem("some->"));
-		call.addItem(getDocItem("some->>"));
-
-		final DocSection loading = new DocSection("Loading", "macros.loading");
-		all.addSection(loading);
-		loading.addItem(getDocItem("load-module"));
-		loading.addItem(getDocItem("load-file", false));
-		loading.addItem(getDocItem("load-classpath-file"));
-		loading.addItem(getDocItem("load-string"));
-		
-		final DocSection test = new DocSection("Test", "macros.test");
-		all.addSection(test);
-		test.addItem(getDocItem("macro?"));
-		test.addItem(getDocItem("cond"));
-		test.addItem(getDocItem("condp"));
-		test.addItem(getDocItem("case"));
-
-		final DocSection assert_ = new DocSection("Assert", "macros.assert");
-		all.addSection(assert_);
-		assert_.addItem(getDocItem("assert", true, true));
-
-		final DocSection util = new DocSection("Util", "macros.util");
-		all.addSection(util);
-		util.addItem(getDocItem("comment"));
-		util.addItem(getDocItem("gensym"));
-		util.addItem(getDocItem("time"));
-		util.addItem(getDocItem("with-out-str"));
-		util.addItem(getDocItem("with-err-str"));
-		
-		final DocSection profil = new DocSection("Profiling", "macros.profiling");
-		all.addSection(profil);
-		profil.addItem(getDocItem("time"));
-		profil.addItem(getDocItem("perf", false));
-		
 		return section;
 	}
 
@@ -1994,58 +2050,6 @@ public class DocGenerator {
 		all.addSection(util);
 		util.addItem(getDocItem("time/zone-ids"));
 		util.addItem(getDocItem("time/to-millis"));
-
-		return section;
-	}
-
-	private DocSection getSpecialFormsSection() {
-		final DocSection section = new DocSection("Special Forms", "specialforms");
-
-		final DocSection all = new DocSection("", id());
-		section.addSection(all);
-
-		final DocSection generic = new DocSection("Forms", "specialforms.forms");
-		all.addSection(generic);
-
-		generic.addItem(getDocItem("def"));
-		generic.addItem(getDocItem("defonce"));
-		generic.addItem(getDocItem("def-dynamic"));
-		generic.addItem(getDocItem("if"));
-		generic.addItem(getDocItem("do"));
-		generic.addItem(getDocItem("let"));
-		generic.addItem(getDocItem("binding"));
-		generic.addItem(getDocItem("fn"));
-		generic.addItem(getDocItem("set!"));
-
-		final DocSection multi = new DocSection("Multi Methods", "specialforms.multimethod");
-		all.addSection(multi);
-		multi.addItem(getDocItem("defmulti"));
-		multi.addItem(getDocItem("defmethod"));
-
-		final DocSection proto = new DocSection("Protocols", "specialforms.protocol");
-		all.addSection(proto);
-		proto.addItem(getDocItem("defprotocol"));
-		proto.addItem(getDocItem("extend"));
-		proto.addItem(getDocItem("extends?"));
-
-		final DocSection recur = new DocSection("Recursion", "specialforms.recursion");
-		all.addSection(recur);
-		recur.addItem(getDocItem("loop"));
-		recur.addItem(getDocItem("recur"));
-		recur.addItem(getDocItem("tail-pos", true, true));
-
-		final DocSection ex = new DocSection("Exception", "specialforms.exception");
-		all.addSection(ex);
-		ex.addItem(getDocItem("throw", true, true));
-		ex.addItem(getDocItem("try", true, true));
-		ex.addItem(getDocItem("try-with", true, true));
-
-		final DocSection profiling = new DocSection("Profiling", "specialforms.profiling");
-		all.addSection(profiling);
-
-		profiling.addItem(getDocItem("dobench"));
-		profiling.addItem(getDocItem("dorun"));
-		profiling.addItem(getDocItem("prof"));
 
 		return section;
 	}

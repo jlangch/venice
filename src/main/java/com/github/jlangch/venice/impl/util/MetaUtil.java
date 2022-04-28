@@ -100,6 +100,45 @@ public class MetaUtil {
 		}
 	}
 
+	public static boolean isDynamic(final VncVal meta) {
+		if (meta instanceof VncHashMap) {
+			return VncBoolean.isTrue(((VncHashMap)meta).get(DYNAMIC));
+		}
+		else {
+			return false;
+		}
+	}
+
+	public static VncVal markAsPrivate(final VncVal meta) {
+		if (meta == null || meta == Nil) {
+			return VncHashMap.of(PRIVATE, VncBoolean.True);
+		}
+		else if (meta instanceof VncHashMap) {
+			((VncHashMap)meta).assoc(PRIVATE, VncBoolean.True);
+			return meta;
+		}
+		else {
+			throw new VncException(String.format(
+					"Failed to add :private flag to meta data. The meta data (%s) is not a map!", 
+					Types.getType(meta)));
+		}
+	}
+
+	public static VncVal markAsDynamic(final VncVal meta) {
+		if (meta == null || meta == Nil) {
+			return VncHashMap.of(DYNAMIC, VncBoolean.True);
+		}
+		else if (meta instanceof VncHashMap) {
+			((VncHashMap)meta).assoc(DYNAMIC, VncBoolean.True);
+			return meta;
+		}
+		else {
+			throw new VncException(String.format(
+					"Failed to add :dynamic flag to meta data. The meta data (%s) is not a map!", 
+					Types.getType(meta)));
+		}
+	}
+
 	public static String getNamespace(final VncVal meta) {
 		if (meta instanceof VncHashMap) {
 			final VncVal ns = ((VncHashMap)meta).get(NS);
@@ -167,7 +206,9 @@ public class MetaUtil {
 	
 	public static final VncKeyword MACRO = new VncKeyword(":macro"); 
 	public static final VncKeyword NS = new VncKeyword(":ns"); 
-    public static final VncKeyword PRIVATE = new VncKeyword(":private");
+	
+	public static final VncKeyword PRIVATE = new VncKeyword(":private");
+	public static final VncKeyword DYNAMIC = new VncKeyword(":dynamic");
 
 	// Type info
 	public static final VncKeyword TYPE = new VncKeyword(":type_"); 
