@@ -25,9 +25,9 @@
 (ns esr)
 
 
-(def ^{ :private true } checksum-table [0 9 4 6 8 2 7 1 3 5])
+(def- checksum-table [0 9 4 6 8 2 7 1 3 5])
 
-(def ^{ :private true } ascii-code-0 (long (char "0")))
+(def- ascii-code-0 (long (char "0")))
 
 (defn- int-digit->char [x] (char (+ ascii-code-0 x)))
 
