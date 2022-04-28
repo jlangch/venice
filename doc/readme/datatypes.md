@@ -14,7 +14,7 @@ common features:
 
 ## nil
 
-In Venice _nil_ is value and has a meaning of void. _nil_ can be used for any 
+In Venice _nil_ is a value and has a meaning of void. _nil_ can be used for any 
 data type. _nil_ has the same value as _null_ in Java but compared to 
 Java _nil_ is a first class value and has a type (:core/nil).
 
