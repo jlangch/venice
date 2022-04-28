@@ -1365,24 +1365,24 @@ public class VeniceInterpreter implements IVeniceInterpreter, Serializable  {
 		final CallFrame callframe = new CallFrame("extend", args, meta);
 		try (WithCallStack cs = new WithCallStack(callframe)) {
 			assertMinArity("extend", FnType.SpecialForm, args, 2);
+
+			final VncSymbol protocol = Namespaces.qualifySymbolWithCurrNS(
+											evaluateSymbolMetaData(args.second(), env));
+
+			return specialFormHandler.extend_(args.first(), protocol, args, env);
 		}
-
-		final VncSymbol protocol = Namespaces.qualifySymbolWithCurrNS(
-										evaluateSymbolMetaData(args.second(), env));
-
-		return specialFormHandler.extend_(args.first(), protocol, args, env);
 	}
 
 	public VncVal extendsQ_(final VncList args, final Env env, final VncVal meta) {
 		final CallFrame callframe = new CallFrame("extends?", args, meta);
 		try (WithCallStack cs = new WithCallStack(callframe)) {
 			assertMinArity("extends?", FnType.SpecialForm, args, 2);
+
+			final VncSymbol protocol = Namespaces.qualifySymbolWithCurrNS(
+											evaluateSymbolMetaData(args.second(), env));
+
+			return specialFormHandler.extendsQ_(args.first(), protocol, env);
 		}
-
-		final VncSymbol protocol = Namespaces.qualifySymbolWithCurrNS(
-										evaluateSymbolMetaData(args.second(), env));
-
-		return specialFormHandler.extendsQ_(args.first(), protocol, env);
 	}
 
 	private VncVal defmulti_(final VncList args, final Env env, final VncVal meta) {
