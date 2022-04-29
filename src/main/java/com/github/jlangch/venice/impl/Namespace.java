@@ -21,6 +21,7 @@
  */
 package com.github.jlangch.venice.impl;
 
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.stream.Collectors;
 
 import com.github.jlangch.venice.impl.javainterop.JavaImports;
@@ -37,6 +38,18 @@ public class Namespace {
 
 	public VncSymbol getNS() {
 		return ns;
+	}
+
+	public void addAlias(final String alias, final String ns) {
+		aliases.put(alias, ns);
+	}
+
+	public void removeAlias(final String alias) {
+		aliases.remove(alias, ns);
+	}
+	
+	public String lookupByAlias(final String alias) {
+		return aliases.get(alias);
 	}
 
 	public JavaImports getJavaImports() {
@@ -59,4 +72,5 @@ public class Namespace {
 	
 	private final VncSymbol ns;
 	private final JavaImports javaImports = new JavaImports();
+	private final ConcurrentHashMap<String,String> aliases = new ConcurrentHashMap<>();
 }

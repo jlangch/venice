@@ -563,20 +563,36 @@ public class Env implements Serializable {
 	private Var getGlobalVar(final VncSymbol sym) {
 		Var v = null;
 
-		final boolean qualified = sym.hasNamespace();
-		if (qualified) {
-			final VncSymbol s = "core".equals(sym.getNamespace())
-									? new VncSymbol(sym.getSimpleName())
-									: sym;
-			v = getGlobalVarRaw(s);
+		final String symNsName = sym.getNamespace();
+		final String symSimpleName = sym.getSimpleName();
+
+		if (symNsName != null) {
+			// qualified symbol
+			
+//			final Namespace namespace = Namespaces.getCurrentNamespace();
+//			final String realsNsName = namespace.lookupByAlias(symNsName);
+//			if (realsNsName != null) {
+//				v = getGlobalVarRaw(
+//						"core".equals(realsNsName) 
+//							? new VncSymbol(symSimpleName) 
+//							: new VncSymbol(realsNsName, symSimpleName, Nil));
+//			}
+//			else {
+//				v = getGlobalVarRaw(
+//						"core".equals(symNsName) ? new VncSymbol(symSimpleName) : sym);
+//			}
+
+			v = getGlobalVarRaw(
+					"core".equals(symNsName) ? new VncSymbol(symSimpleName) : sym);
 		}
 		else {
 			final VncSymbol currNS = Namespaces.getCurrentNS();
+			
 			if (!Namespaces.isCoreNS(currNS)) {
 				// 1st: lookup for current namespace
 				final VncSymbol s = new VncSymbol(
 											currNS.getName(), 
-											sym.getSimpleName(), 
+											symSimpleName, 
 											Constants.Nil);
 				v = getGlobalVarRaw(s);
 			}
