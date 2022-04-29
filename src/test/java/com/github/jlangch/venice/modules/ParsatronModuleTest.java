@@ -27,8 +27,8 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 
 import org.junit.jupiter.api.Test;
 
+import com.github.jlangch.venice.ParseError;
 import com.github.jlangch.venice.Venice;
-import com.github.jlangch.venice.VncException;
 
 
 /**
@@ -68,7 +68,7 @@ public class ParsatronModuleTest {
 				"   (parsatron/run (parsatron/char #\\Q)           \n" +
 				"                  \"Hello, world!\"))              ";
 		
-		assertThrows(VncException.class, () -> new Venice().eval(script));
+		assertThrows(ParseError.class, () -> new Venice().eval(script));
 	}
 
 	@Test
@@ -134,7 +134,7 @@ public class ParsatronModuleTest {
 				"   (parsatron/run (parsatron/not-char #\\H)         \n" +
 				"                  \"Hello, world!\"))                 ";
 
-		assertThrows(VncException.class, () -> new Venice().eval(script2));
+		assertThrows(ParseError.class, () -> new Venice().eval(script2));
 	}
 
 	@Test
@@ -163,7 +163,7 @@ public class ParsatronModuleTest {
 				"   (parsatron/run (parsatron/any-char)  \n" +
 				"                  [1 2 3]))               ";
 
-		assertThrows(VncException.class, () -> new Venice().eval(script3));
+		assertThrows(ParseError.class, () -> new Venice().eval(script3));
 	}
 
 	@Test
@@ -216,7 +216,7 @@ public class ParsatronModuleTest {
 				"   (parsatron/run (parsatron/any-char-of \"DEF\")   \n" +
 				"                  \"Cats\"))                          ";
 
-		assertThrows(VncException.class, () -> new Venice().eval(script2));
+		assertThrows(ParseError.class, () -> new Venice().eval(script2));
 	}
 
 	@Test
@@ -236,7 +236,7 @@ public class ParsatronModuleTest {
 				"   (parsatron/run (parsatron/none-char-of \"ABC\")  \n" +
 				"                  \"Cats\"))                          ";
 
-		assertThrows(VncException.class, () -> new Venice().eval(script2));
+		assertThrows(ParseError.class, () -> new Venice().eval(script2));
 	}
 
 	@Test
@@ -256,7 +256,7 @@ public class ParsatronModuleTest {
 				"   (parsatron/run (parsatron/eof)       \n" +
 				"                  \"a\"))                 ";
 
-		assertThrows(VncException.class, () -> new Venice().eval(script2));
+		assertThrows(ParseError.class, () -> new Venice().eval(script2));
 	}
 
 	@Test
@@ -278,7 +278,7 @@ public class ParsatronModuleTest {
 				"                                (parsatron/digit)))              \n" +
 				"   (parsatron/run my-parser \"5a\"))                               ";
 
-		assertThrows(VncException.class, () -> new Venice().eval(script2));
+		assertThrows(ParseError.class, () -> new Venice().eval(script2));
 
 		
 		final String script3 =
@@ -288,7 +288,7 @@ public class ParsatronModuleTest {
 				"                                (parsatron/digit)))              \n" +
 				"   (parsatron/run my-parser \"b5\"))                               ";
 
-		assertThrows(VncException.class, () -> new Venice().eval(script3));
+		assertThrows(ParseError.class, () -> new Venice().eval(script3));
 
 		
 		final String script4 =
@@ -298,7 +298,7 @@ public class ParsatronModuleTest {
 				"                                (parsatron/digit)))              \n" +
 				"   (parsatron/run my-parser \"aq\"))                               ";
 
-		assertThrows(VncException.class, () -> new Venice().eval(script4));
+		assertThrows(ParseError.class, () -> new Venice().eval(script4));
 
 		
 		final String script5 =
@@ -318,7 +318,7 @@ public class ParsatronModuleTest {
 				"                                (parsatron/eof)))                \n" +
 				"   (parsatron/run my-parser \"1 cat\"))                            ";
 
-		assertThrows(VncException.class, () -> new Venice().eval(script6));
+		assertThrows(ParseError.class, () -> new Venice().eval(script6));
 	}
 
 	@Test
@@ -413,7 +413,7 @@ public class ParsatronModuleTest {
 				"   (pr-str                                                              \n" +
 				"     (parsatron/run number-parser1 \"\")))                                 ";
 
-		assertThrows(VncException.class, () -> new Venice().eval(script3));
+		assertThrows(ParseError.class, () -> new Venice().eval(script3));
 
 	
 		final String script4 =
@@ -589,14 +589,14 @@ public class ParsatronModuleTest {
 				"     (parsatron/let->> [sign (parsatron/choice                       \n" + 
 				"                                 (parsatron/char #\\+)               \n" + 
 				"                                 (parsatron/char #\\-))              \n" + 
-				"                        word (if (== sign plus)                      \n" + 
+				"                        word (if (== sign #\\+)                      \n" + 
 				"                                 (parsatron/string \"plus\")         \n" + 
 				"                                 (parsatron/string \"minus\"))]      \n" + 
 				"         (parsatron/always [sign word])))                            \n" +
 				"                                                                     \n" +
 				"   (pr-str (parsatron/run (sample) \"-plus\"))))                       ";
 		
-		assertThrows(VncException.class, () -> new Venice().eval(script));
+		assertThrows(ParseError.class, () -> new Venice().eval(script));
 	}
 
 	@Test

@@ -132,7 +132,7 @@
 ;; -----------------------------------------------------------------------------
 ;; util
 (defn fail [message]
-  (ex :VncException message))
+  (ex :com.github.jlangch.venice.ParseError message))
 
 (defn digit? [c]
   (str/digit? c))
@@ -156,11 +156,11 @@
   [p f]
   (fn [state cok cerr eok eerr]
     (let [pcok (fn [item state]
-                   (sequentially
+                 (sequentially
                      (fn [q] (continue. #(q state cok cerr cok cerr)))
                      (f item)))
           peok (fn [item state]
-                   (sequentially
+                 (sequentially
                      (fn [q] (continue. #(q state cok cerr eok eerr)))
                      (f item)))]
       (continue. #(p state pcok cerr peok eerr)))))
@@ -218,7 +218,7 @@
     (let [peerr (fn [err-from-p]
                   (let [qeerr (fn [err-from-q]
                                 (eerr (merge-errors err-from-p err-from-q)))]
-                     (continue. #(q state cok cerr eok qeerr))))]
+                    (continue. #(q state cok cerr eok qeerr))))]
       (continue. #(p state cok cerr eok peerr)))))
 
 (defn attempt
@@ -270,13 +270,13 @@
       (eerr (unexpect-error "end of input" pos)))))
 
 (defn many
-  ; Consume zero or more p. A VncException will be thrown if this
+  ; Consume zero or more p. A ParseError will be thrown if this
   ; combinator is applied to a parser that accepts the empty string, as
   ; that would cause the parser to loop forever
   [p]
   (let [many-err (fn [_ _]
-                     (fail "Combinator '*' is applied to a parser that accepts an empty string"))
-        safe-p (fn [state cok cerr eok eerr]
+                   (fail "Combinator '*' is applied to a parser that accepts an empty string"))
+        safe-p   (fn [state cok cerr eok eerr]
                    (continue. #(p state cok cerr many-err eerr)))]
     (either
      (let->> [x safe-p
@@ -317,8 +317,8 @@
   []
   (fn [state cok cerr eok eerr]
     (if (empty? (:input state))
-        (eok nil state)
-        (eerr (expect-error "end of input" (:pos state))))))
+      (eok nil state)
+      (eerr (expect-error "end of input" (:pos state))))))
 
 (defn char
   ; Consume the given character
@@ -365,9 +365,7 @@
   ; Parse p after parsing open and before parsing close, returning the
   ; value of p and discarding the values of open and close
   [open close p]
-  (let->> [_ open
-           x p
-           _ close]
+  (let->> [_ open, x p, _ close]
     (always x)))
 
 (defn many1
@@ -392,12 +390,12 @@
 (defn run
   ; Run a parser p over some input. The input can be a string or a seq
   ; of tokens, if the parser produces an error, its message is wrapped
-  ; in a VncException and thrown, and if the parser succeeds, its
+  ; in a ParseError and thrown, and if the parser succeeds, its
   ; value is returned
   [p input]
   (let [result (-<> (source-pos. 1 1)
                     (input-state. input <>)
                     (run-parser p <>))]
     (cond
-      (ok? result) (:item result)
+      (ok? result)  (:item result)
       (err? result) (throw (fail (:errmsg result))))))
