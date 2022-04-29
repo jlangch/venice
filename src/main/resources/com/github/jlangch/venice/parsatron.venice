@@ -26,6 +26,7 @@
 ;;;;
 ;;;; Introduction:
 ;;;; https://github.com/sjl/parsatron/blob/docs/docs/guide.markdown
+;;;; https://cljdoc.org/d/the/parsatron/0.0.8/doc/token
 ;;;; https://twoguysarguing.wordpress.com/category/haskell/
 ;;;;
 ;;;; This is a Venice port of the Parsatron parser combinator.
