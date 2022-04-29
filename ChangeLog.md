@@ -18,8 +18,8 @@ and this project adheres to
 - macro `letfn` and `def-`
 - function `deliver-ex` to complete promises exceptionally by delivering an exception
 - functions `prewalk-replace` and `postwalk-replace` (recursive replace)
-- functions `pr` and `prn` that round out the printing functions that the support 
-  Venice's reader format
+- functions `pr` and `prn` that round out the printing functions's support 
+  for the Venice's reader format
 
 ### Fixed
  - a problem with the functions `io/string-in-stream` and `io/bytebuf-in-stream` not 
