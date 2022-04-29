@@ -130,9 +130,16 @@ public class Env implements Serializable {
 		}
 		else {
 			try (WithCallStack cs = new WithCallStack(CallFrame.from(sym))) {
+				final String symName = sym.getQualifiedName();
 				throw new SymbolNotFoundException(
-						String.format("Symbol '%s' not found.", sym.getQualifiedName()),
-						sym.getQualifiedName()); 
+						symName.startsWith("\\")
+							? String.format(
+									"Symbol '%s' not found. Did you mean the char literal '#%s'?", 
+									symName, symName)
+							: String.format(
+									"Symbol '%s' not found.", 
+									symName),
+						symName); 
 			}
 		}
 	}
