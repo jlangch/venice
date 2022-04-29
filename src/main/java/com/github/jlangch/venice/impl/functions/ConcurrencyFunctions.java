@@ -2625,6 +2625,7 @@ public class ConcurrencyFunctions {
 						"(do                                              \n" +
 						"   (def x (delay (println \"working...\") 100))  \n" +
 						"   (delay? x))                                     ")
+					.seeAlso("delay", "deref", "realized?")
 					.build()
 		) {		
 			public VncVal apply(final VncList args) {

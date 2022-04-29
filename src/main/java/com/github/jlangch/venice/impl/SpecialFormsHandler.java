@@ -1120,7 +1120,9 @@ public class SpecialFormsHandler {
 				throw new NotInTailPositionException(
 						name.isEmpty() 
 							? "Not in tail position"
-							: String.format("Not '%s' in tail position", name.getValue()));
+							: String.format(
+								"The tail-pos expression '%s' is not in tail position", 
+								name.getValue()));
 			}
 		}
 		else {

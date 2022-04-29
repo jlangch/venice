@@ -1468,7 +1468,9 @@ public class SpecialFormsDoc {
 						"  (ns yyy)                        \n" + 
 						"  (def foo 5)                     \n" + 
 						"  (println xxx/foo foo yyy/foo))    ")
-					.seeAlso("ns-unmap", "ns-remove", "ns-list", "namespace", "var-ns")
+					.seeAlso(
+						"*ns*", "ns-unmap", "ns-remove", 
+						"ns-list", "namespace", "var-ns")
 					.build()
 		) {
 			private static final long serialVersionUID = -1;
@@ -1487,7 +1489,7 @@ public class SpecialFormsDoc {
 						"  (def foo 1)          \n" + 
 						"  (ns-unmap xxx foo)   \n" + 
 						"  (ns-unmap *ns* foo))   ")
-					.seeAlso("ns", "ns-remove", "ns-list", "namespace", "var-ns")
+					.seeAlso("ns", "*ns*", "ns-remove", "ns-list", "namespace", "var-ns")
 					.build()
 		) {
 			private static final long serialVersionUID = -1;
@@ -1523,7 +1525,7 @@ public class SpecialFormsDoc {
 					.arglists("(ns-list ns)")
 					.doc("Lists all the symbols in the namespace ns.")
 					.examples("(ns-list regex)")
-					.seeAlso("ns", "ns-unmap", "ns-remove", "namespace", "var-ns")
+					.seeAlso("ns", "*ns*", "ns-unmap", "ns-remove", "namespace", "var-ns")
 					.build()
 		) {
 			private static final long serialVersionUID = -1;
@@ -1551,7 +1553,7 @@ public class SpecialFormsDoc {
 						"  (ns foo) \n" +
 						"  (def add +)\n" +
 						"  (var-ns add))")
-					.seeAlso("ns", "var-ns")
+					.seeAlso("ns", "*ns*", "var-ns")
 					.build()
 		) {
 			private static final long serialVersionUID = -1;
