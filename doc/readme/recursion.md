@@ -1,5 +1,14 @@
 # Recursion
 
+# Table of Contents
+1. [Introduction](#Introduction)
+2. [Simple Recursion](#Simple-Recursion)
+3. [Self-Recursive Calls](#Self-Recursive-Calls)
+4. [Recursion with lazy sequences](#Recursion with lazy sequences)
+
+
+## Introduction
+
 Imperative languages like *Java* offer looping constructs like *while* or *for* loops.
 These looping constructs are based on mutable data.
 
@@ -43,7 +52,7 @@ In addition Venice provides the *trampoline* function for mutual recursion for m
 involved forms of recursion.
 
 
-## simple recursion
+## Simple Recursion
 
 To illustrate the problem with simple recursion consuming stack frames for each 
 iteration, let's look at a simple recursion example to compute the factorial for a
@@ -87,7 +96,7 @@ Simple recursion a few thousand calls deep throws a *StackOverflowError*.
 *Note: The recursive call to 'factorial' in this example is not in tail position. Thus it can not be tail call optimized!*			
 
 
-## self-recursive calls (loop - recur)
+## Self-Recursive Calls (loop - recur)
 
 Venice self-recursive calls do not consume a new a stack frame for every new 
 recursion iteration and have a constant memory usage. It's the only non-stack-consuming 
