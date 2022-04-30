@@ -1907,7 +1907,13 @@ public class DocGenerator {
 		all.addSection(util);
 		util.addItem(getDocItem("ns-list"));
 		util.addItem(getDocItem("namespace"));
-	
+
+//		final DocSection alias = new DocSection("Alias", "namespace.alias");
+//		all.addSection(alias);
+//		alias.addItem(getDocItem("ns-alias"));
+//		alias.addItem(getDocItem("ns-aliases"));
+//		alias.addItem(getDocItem("ns-unalias"));
+		
 		return section;
 	}
 

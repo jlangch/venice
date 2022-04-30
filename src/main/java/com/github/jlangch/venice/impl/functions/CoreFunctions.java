@@ -7764,14 +7764,19 @@ public class CoreFunctions {
 				"ns-alias",
 				VncFunction
 					.meta()
-					.arglists("(ns_alias alias namespace-sym)")
+					.arglists("(ns-alias alias namespace-sym)")
 					.doc(
 						"Add an alias in the current namespace to another namespace. " +
 						"Arguments are two symbols: the alias to be used, and the " +
 						"symbolic name of the target namespace.")
 					.examples(
-						"(ns_alias 'p 'parsatron)")
-					.seeAlso("ns_unalias", "ns_aliases", "*ns*", "ns")
+						"(ns-alias 'p 'parsatron)",
+						"(do                      \n" +
+						"  (load-module :hexdump) \n" +
+						"  (ns-alias 'h 'hexdump) \n" +
+						"  (h/dump [0 1 2 3]))    ")
+					.seeAlso(
+						"ns-unalias", "ns-aliases", "*ns*", "ns")
 					.build()
 		) {
 			public VncVal apply(final VncList args) {
@@ -7793,10 +7798,16 @@ public class CoreFunctions {
 				"ns-aliases",
 				VncFunction
 					.meta()
-					.arglists("(ns_aliases)")
+					.arglists("(ns-aliases)")
 					.doc("Returns a map of the aliases defined in the current namespace.")
-					.examples("(ns-aliases)")
-					.seeAlso("ns_alias", "ns_unalias", "*ns*", "ns")
+					.examples(
+						"(ns-aliases)",
+						"(do                        \n" +
+						"  (ns-alias 'h 'hexdump)   \n" +
+						"  (ns-alias 'p 'parsatron) \n" +
+						"  (ns-aliases))            ")
+					.seeAlso(
+						"ns-alias", "ns-unalias", "*ns*", "ns")
 					.build()
 		) {
 			public VncVal apply(final VncList args) {
@@ -7814,10 +7825,14 @@ public class CoreFunctions {
 				"ns-unalias",
 				VncFunction
 					.meta()
-					.arglists("(ns_unalias alias)")
+					.arglists("(ns-unalias alias)")
 					.doc("Removes a namespace alias in the current namespace." )
-					.examples("(ns_unalias 'p)")
-					.seeAlso("ns_alias", "ns_aliases", "*ns*", "ns")
+					.examples(
+						"(do                      \n" +
+						"  (ns-alias 'h 'hexdump) \n" +
+						"  (ns-unalias 'h))         ")
+					.seeAlso(
+						"ns-alias", "ns-aliases", "*ns*", "ns")
 					.build()
 		) {
 			public VncVal apply(final VncList args) {
@@ -7868,12 +7883,11 @@ public class CoreFunctions {
 				VncFunction
 					.meta()
 					.arglists("(name x)")
-					.doc("Returns the name String of a string, symbol, keyword, or function/macro.")
+					.doc("Returns the name String of a string, symbol, or keyword")
 					.examples(
 						"(name :x)",
 						"(name 'x)",
 						"(name \"x\")",
-						"(name +)",
 						"(do \n" +
 						"  (ns foo) \n" +
 						"  (def add +) \n" +
