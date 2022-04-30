@@ -568,22 +568,22 @@ public class Env implements Serializable {
 
 		if (symNsName != null) {
 			// qualified symbol
-			
-//			final Namespace namespace = Namespaces.getCurrentNamespace();
-//			final String realsNsName = namespace.lookupByAlias(symNsName);
-//			if (realsNsName != null) {
-//				v = getGlobalVarRaw(
-//						"core".equals(realsNsName) 
-//							? new VncSymbol(symSimpleName) 
-//							: new VncSymbol(realsNsName, symSimpleName, Nil));
-//			}
-//			else {
-//				v = getGlobalVarRaw(
-//						"core".equals(symNsName) ? new VncSymbol(symSimpleName) : sym);
-//			}
-
-			v = getGlobalVarRaw(
-					"core".equals(symNsName) ? new VncSymbol(symSimpleName) : sym);
+			if ("core".equals(symNsName)) {
+				v = getGlobalVarRaw(new VncSymbol(symSimpleName));
+			}
+			else {
+				final String realsNsName = Namespaces.getCurrentNamespace()
+													 .lookupByAlias(symNsName);
+				if (realsNsName != null) {
+					v = getGlobalVarRaw(
+							"core".equals(realsNsName) 
+								? new VncSymbol(symSimpleName) 
+								: new VncSymbol(realsNsName, symSimpleName, Nil));
+				}
+				else {
+					v = getGlobalVarRaw(sym);
+				}
+			}
 		}
 		else {
 			final VncSymbol currNS = Namespaces.getCurrentNS();

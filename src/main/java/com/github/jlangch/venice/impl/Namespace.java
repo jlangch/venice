@@ -27,7 +27,9 @@ import java.util.stream.Collectors;
 import com.github.jlangch.venice.impl.javainterop.JavaImports;
 import com.github.jlangch.venice.impl.types.VncKeyword;
 import com.github.jlangch.venice.impl.types.VncSymbol;
+import com.github.jlangch.venice.impl.types.collections.VncHashMap;
 import com.github.jlangch.venice.impl.types.collections.VncList;
+import com.github.jlangch.venice.impl.types.collections.VncMap;
 
 
 public class Namespace {
@@ -45,11 +47,20 @@ public class Namespace {
 	}
 
 	public void removeAlias(final String alias) {
-		aliases.remove(alias, ns);
+		aliases.remove(alias);
 	}
 	
 	public String lookupByAlias(final String alias) {
 		return aliases.get(alias);
+	}
+	
+	public VncMap listAliases() {
+		return aliases
+				.entrySet()
+			    .stream()
+			    .map(e -> VncHashMap.of(new VncSymbol(e.getKey()),
+   										new VncSymbol(e.getValue())))
+			    .reduce(new VncHashMap(), (x,y) -> x.putAll(y));
 	}
 
 	public JavaImports getJavaImports() {

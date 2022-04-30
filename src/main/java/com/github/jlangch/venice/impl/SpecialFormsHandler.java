@@ -96,7 +96,6 @@ public class SpecialFormsHandler {
 		this.interpreter = interpreter;
 		this.evaluator = evaluator;
 		this.valuesEvaluator = valuesEvaluator;
-		this.sequenceValuesEvaluator = sequenceValuesEvaluator;
 		this.nsRegistry = nsRegistry;
 		this.meterRegistry = meterRegistry;
 		this.sealedSystemNS = sealedSystemNS;
@@ -1617,5 +1616,4 @@ public class SpecialFormsHandler {
 	private final IVeniceInterpreter interpreter;
 	private final IFormEvaluator evaluator;
 	private final IValuesEvaluator valuesEvaluator;
-	private final ISequenceValuesEvaluator sequenceValuesEvaluator;
 }

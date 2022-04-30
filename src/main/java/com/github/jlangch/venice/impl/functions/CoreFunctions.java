@@ -7751,11 +7751,89 @@ public class CoreFunctions {
 
 			private static final long serialVersionUID = -1848883965231344442L;
 		};
+		
+		
+		
+		
+	///////////////////////////////////////////////////////////////////////////
+	// Namespace
+	///////////////////////////////////////////////////////////////////////////
 
+	public static VncFunction ns_alias =
+		new VncFunction(
+				"ns-alias",
+				VncFunction
+					.meta()
+					.arglists("(ns_alias alias namespace-sym)")
+					.doc(
+						"Add an alias in the current namespace to another namespace. " +
+						"Arguments are two symbols: the alias to be used, and the " +
+						"symbolic name of the target namespace.")
+					.examples(
+						"(ns_alias 'p 'parsatron)")
+					.seeAlso("ns_unalias", "ns_aliases", "*ns*", "ns")
+					.build()
+		) {
+			public VncVal apply(final VncList args) {
+				ArityExceptions.assertArity(this, args, 2);
+			
+				final VncSymbol alias = Coerce.toVncSymbol(args.first());
+				final VncSymbol ns = Coerce.toVncSymbol(args.second());
+				
+				Namespaces.getCurrentNamespace().addAlias(alias.getName(), ns.getQualifiedName());
+			
+				return Nil;
+			}
+
+			private static final long serialVersionUID = -1848883965231344442L;
+		};
 		
-		
+	public static VncFunction ns_aliases =
+		new VncFunction(
+				"ns-aliases",
+				VncFunction
+					.meta()
+					.arglists("(ns_aliases)")
+					.doc("Returns a map of the aliases defined in the current namespace.")
+					.examples("(ns-aliases)")
+					.seeAlso("ns_alias", "ns_unalias", "*ns*", "ns")
+					.build()
+		) {
+			public VncVal apply(final VncList args) {
+				ArityExceptions.assertArity(this, args, 0);
+				
+				return Namespaces.getCurrentNamespace().listAliases();
+			}
+
+			private static final long serialVersionUID = -1848883965231344442L;
+		};
 		
 
+	public static VncFunction ns_unalias =
+		new VncFunction(
+				"ns-unalias",
+				VncFunction
+					.meta()
+					.arglists("(ns_unalias alias)")
+					.doc("Removes a namespace alias in the current namespace." )
+					.examples("(ns_unalias 'p)")
+					.seeAlso("ns_alias", "ns_aliases", "*ns*", "ns")
+					.build()
+		) {
+			public VncVal apply(final VncList args) {
+				ArityExceptions.assertArity(this, args, 1);
+				
+				final VncSymbol alias = Coerce.toVncSymbol(args.first());
+				
+				Namespaces.getCurrentNamespace().removeAlias(alias.getName());
+				
+				return Nil;
+			}
+
+			private static final long serialVersionUID = -1848883965231344442L;
+		};
+		
+		
 	///////////////////////////////////////////////////////////////////////////
 	// Utilities
 	///////////////////////////////////////////////////////////////////////////
@@ -8258,6 +8336,10 @@ public class CoreFunctions {
 				.add(supertypes)
 				.add(instance_of_Q)
 				.add(highlight)
+				
+				.add(ns_alias)
+				.add(ns_aliases)
+				.add(ns_unalias)
 
 				.toMap();
 }
