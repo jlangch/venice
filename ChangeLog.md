@@ -13,7 +13,7 @@ and this project adheres to
 
 ### Added
 
-- ...
+- namespace aliases (`ns-alias`, `ns-aliases`, `ns-unalias`)
 
 
 
