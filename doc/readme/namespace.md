@@ -59,3 +59,24 @@ A namespace is a set of symbols that are used to organize vars, so that these va
 )
 ```
 
+### Namespace aliases
+
+```clojure
+(do
+  (ns AAAAAAAAAAAAAA)
+  (def x 100)
+  
+  (ns-alias 'a 'AAAAAAAAAAAAAA)
+  (println a/x))
+```
+
+```clojure
+(do
+  (ns AAAAAAAAAAAAAA)
+  (def x 100)
+ 
+  (ns B)
+  (ns-alias 'a 'AAAAAAAAAAAAAA)
+  (println a/x))
+```
+
