@@ -1,11 +1,5 @@
 # Recursion
 
-# Table of Contents
-1. [Introduction](#Introduction)
-2. [Simple Recursion](#Simple-Recursion)
-3. [Self-Recursive Calls](#Self-Recursive-Calls)
-4. [Recursion with lazy sequences](#Recursion with lazy sequences)
-
 
 ## Introduction
 
