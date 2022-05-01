@@ -22,12 +22,14 @@
 package com.github.jlangch.venice.impl;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 import java.io.PrintStream;
 
 import org.junit.jupiter.api.Test;
 
 import com.github.jlangch.venice.Venice;
+import com.github.jlangch.venice.VncException;
 import com.github.jlangch.venice.impl.env.Env;
 import com.github.jlangch.venice.impl.thread.ThreadContext;
 import com.github.jlangch.venice.impl.types.VncVal;
@@ -444,6 +446,155 @@ public class NamespaceTest {
 		//                              place the the time the macro 'alpha/whenn' is run.
 		// result:  "100\n100\n"     -> OK
 		assertEquals("100\n100\n", result2.toString());  
+	}
+
+	@Test
+	public void test_ns_alias_1() {
+		final Venice venice = new Venice();
+
+		final String script =
+				"(do                       \n" +
+				"   (ns AAA)               \n" +
+				"   (ns-alias 'a 'AAA)     \n" +
+				"   (def x 100)            \n" +
+				"   a/x)                   ";
+
+		assertEquals(100L, venice.eval(script));
+	}
+
+	@Test
+	public void test_ns_alias_2() {
+		final Venice venice = new Venice();
+
+		final String script =
+				"(do                       \n" +
+				"   (ns AAA)               \n" +
+				"   (def x 100)            \n" +
+				"   (ns BBB)               \n" +
+				"   (ns-alias 'a 'AAA)     \n" +
+				"   a/x)                   ";
+
+		assertEquals(100L, venice.eval(script));
+	}
+
+	@Test
+	public void test_ns_alias_3() {
+		final Venice venice = new Venice();
+
+		final String script =
+				"(do                       \n" +
+				"   (ns AAA)               \n" +
+				"   (def x 100)            \n" +
+				"   (ns BBB)               \n" +
+				"   (ns-alias 'a 'AAA)     \n" +
+				"   (ns-alias 'b 'AAA)     \n" +
+				"   (pr-str [a/x b/x]))      ";
+
+		assertEquals("[100 100]", venice.eval(script));
+	}
+
+	@Test
+	public void test_ns_alias_4() {
+		final Venice venice = new Venice();
+
+		final String script =
+				"(do                       \n" +
+				"   (ns AAA)               \n" +
+				"   (def x 100)            \n" +
+				"   (ns-alias 'a 'AAA)     \n" +
+				"   (ns BBB)               \n" +
+				"   a/x)                   ";
+
+		assertThrows(VncException.class, () -> venice.eval(script));
+	}
+
+	@Test
+	public void test_ns_unalias_1() {
+		final Venice venice = new Venice();
+
+		final String script =
+				"(do                       \n" +
+				"   (ns AAA)               \n" +
+				"   (def x 100)            \n" +
+				"   (ns-alias 'a 'AAA)     \n" +
+				"   (ns-unalias 'a)        \n" +
+				"   a/x)                   ";
+
+		assertThrows(VncException.class, () -> venice.eval(script));
+	}
+
+	@Test
+	public void test_ns_unalias_2() {
+		final Venice venice = new Venice();
+
+		final String script =
+				"(do                       \n" +
+				"   (ns AAA)               \n" +
+				"   (def x 100)            \n" +
+				"   (ns BBB)               \n" +
+				"   (ns-alias 'a 'AAA)     \n" +
+				"   (ns-unalias 'a)        \n" +
+				"   a/x)                   ";
+
+		assertThrows(VncException.class, () -> venice.eval(script));
+	}
+
+	@Test
+	public void test_ns_aliases_1() {
+		final Venice venice = new Venice();
+
+		final String script =
+				"(do                       \n" +
+				"   (ns AAA)               \n" +
+				"   (def x 100)            \n" +
+				"   (pr-str (ns-aliases))) ";
+
+		assertEquals("{}", venice.eval(script));
+	}
+
+	@Test
+	public void test_ns_aliases_2() {
+		final Venice venice = new Venice();
+
+		final String script =
+				"(do                       \n" +
+				"   (ns AAA)               \n" +
+				"   (ns-alias 'a 'AAA)     \n" +
+				"   (def x 100)            \n" +
+				"   (pr-str (ns-aliases))) ";
+
+		assertEquals("{a AAA}", venice.eval(script));
+	}
+
+	@Test
+	public void test_ns_aliases_3() {
+		final Venice venice = new Venice();
+
+		final String script =
+				"(do                       \n" +
+				"   (ns AAA)               \n" +
+				"   (ns-alias 'a 'AAA)     \n" +
+				"   (ns-alias 'b 'AAA)     \n" +
+				"   (def x 100)            \n" +
+				"   (pr-str (ns-aliases))) ";
+
+		assertEquals("{a AAA b AAA}", venice.eval(script));
+	}
+
+	@Test
+	public void test_ns_aliases_4() {
+		final Venice venice = new Venice();
+
+		final String script =
+				"(do                       \n" +
+				"   (ns AAA)               \n" +
+				"   (ns-alias 'a 'AAA)     \n" +
+				"   (ns-alias 'b 'AAA)     \n" +
+				"   (def x 100)            \n" +
+				"   (ns-unalias 'b)        \n" +
+				"   (pr-str (ns-aliases))) ";
+
+		assertEquals("{a AAA}", venice.eval(script));
 	}
 
 	@Test
