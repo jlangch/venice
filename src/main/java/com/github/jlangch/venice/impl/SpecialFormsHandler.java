@@ -219,7 +219,7 @@ public class SpecialFormsHandler {
 			specialFormCallValidation("ns-remove");
 			assertArity("ns-remove", FnType.SpecialForm, args, 1);
 
-			final VncSymbol ns = Namespaces.lookupNS(args.first(), env);
+			final VncSymbol ns = Coerce.toVncSymbol(evaluator.evaluate(args.first(), env, false));
 			final VncSymbol nsCurr = Namespaces.getCurrentNS();
 			if (Namespaces.isSystemNS(ns.getName()) && sealedSystemNS.get()) {
 				// prevent Venice's system namespaces from being altered
@@ -247,14 +247,15 @@ public class SpecialFormsHandler {
 			specialFormCallValidation("ns-unmap");
 			assertArity("ns-unmap", FnType.SpecialForm, args, 2);
 
-			final VncSymbol ns = Namespaces.lookupNS(args.first(), env);
+			final VncSymbol ns = Coerce.toVncSymbol(evaluator.evaluate(args.first(), env, false));
+
 			if (Namespaces.isSystemNS(ns.getName()) && sealedSystemNS.get()) {
 				// prevent Venice's system namespaces from being altered
 				throw new VncException("Cannot remove a symbol from namespace '" + ns.getName() + "'!");
 			}
 			else {
-				final VncSymbol sym = Coerce.toVncSymbol(args.second()).withNamespace(ns);
-				env.removeGlobalSymbol(sym);
+				final VncSymbol sym = Coerce.toVncSymbol(evaluator.evaluate(args.second(), env, false));
+				env.removeGlobalSymbol(sym.withNamespace(ns));
 				return Nil;
 			}
 		}
@@ -270,7 +271,7 @@ public class SpecialFormsHandler {
 			specialFormCallValidation("ns-list");
 			assertArity("ns-list", FnType.SpecialForm, args, 1);
 
-			final VncSymbol ns = Namespaces.lookupNS(args.first(), env);
+			final VncSymbol ns = Coerce.toVncSymbol(evaluator.evaluate(args.first(), env, false));
 
 			final String nsCore = Namespaces.NS_CORE.getName();
 			final String nsName = nsCore.equals(ns.getName()) ? null : ns.getName();

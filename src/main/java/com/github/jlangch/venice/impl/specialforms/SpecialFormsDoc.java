@@ -1485,10 +1485,10 @@ public class SpecialFormsDoc {
 					.doc("Removes the mappings for the symbol from the namespace.")
 					.examples(
 						"(do                    \n" + 
-						"  (ns xxx)             \n" + 
-						"  (def foo 1)          \n" + 
-						"  (ns-unmap xxx foo)   \n" + 
-						"  (ns-unmap *ns* foo))   ")
+						"  (ns foo)             \n" + 
+						"  (def x 1)            \n" + 
+						"  (ns-unmap 'foo 'x)   \n" + 
+						"  (ns-unmap *ns* 'x))   ")
 					.seeAlso("ns", "*ns*", "ns-remove", "ns-list", "namespace", "var-ns")
 					.build()
 		) {
@@ -1503,14 +1503,14 @@ public class SpecialFormsDoc {
 					.arglists("(ns-remove ns)")
 					.doc("Removes the mappings for all symbols from the namespace.")
 					.examples(
-						"(do                                    \n" + 
-						"  (ns xxx)                             \n" + 
-						"  (def xoo 1)                          \n" + 
-						"  (ns yyy)                             \n" + 
-						"  (def yoo 1)                          \n" + 
-						"  (ns-remove xxx)                      \n" + 
-						"  (println \"ns xxx:\" (ns-list xxx))  \n" + 
-						"  (println \"ns yyy:\" (ns-list yyy)))   ")
+						"(do                                     \n" + 
+						"  (ns foo)                              \n" + 
+						"  (def x 1)                             \n" + 
+						"  (ns bar)                              \n" + 
+						"  (def y 1)                             \n" + 
+						"  (ns-remove 'foo)                      \n" + 
+						"  (println \"ns foo:\" (ns-list 'foo))  \n" + 
+						"  (println \"ns bar:\" (ns-list 'bar)))   ")
 					.seeAlso("ns", "ns-unmap", "ns-list", "namespace", "var-ns")
 					.build()
 		) {
@@ -1524,7 +1524,7 @@ public class SpecialFormsDoc {
 					.meta()
 					.arglists("(ns-list ns)")
 					.doc("Lists all the symbols in the namespace ns.")
-					.examples("(ns-list regex)")
+					.examples("(ns-list 'regex)")
 					.seeAlso("ns", "*ns*", "ns-unmap", "ns-remove", "namespace", "var-ns")
 					.build()
 		) {

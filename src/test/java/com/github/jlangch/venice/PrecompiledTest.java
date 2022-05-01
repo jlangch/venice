@@ -323,7 +323,7 @@ public class PrecompiledTest {
 				"  (ns foo)          \n" +
 				"  (def x 100)       \n" +
 				"  (ns goo)          \n" +
-				"  (ns-unmap foo x))";
+				"  (ns-unmap 'foo 'x))";
 
 		// removing foo/x is okay, it's not part of the pre-compiled system symbols
 		final PreCompiled precomp = venice.precompile("test", script, true);
@@ -340,7 +340,7 @@ public class PrecompiledTest {
 				"  (ns foo)          \n" +
 				"  (def x 100)       \n" +
 				"  (ns goo)          \n" +
-				"  (ns-remove foo))";
+				"  (ns-remove 'foo))";
 
 		// removing foo/x is okay, it's not part of the pre-compiled system symbols
 		final PreCompiled precomp = venice.precompile("test", script, true);
@@ -357,7 +357,7 @@ public class PrecompiledTest {
 				"(do                 \n" +
 				"  (ns foo)          \n" +
 				"  (def x 100)       \n" +
-				"  (ns-unmap core +))";
+				"  (ns-unmap 'core '+))";
 
 		final PreCompiled precomp = venice.precompile("test", script, true);
 

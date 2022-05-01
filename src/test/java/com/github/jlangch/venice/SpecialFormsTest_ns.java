@@ -22,7 +22,7 @@
 package com.github.jlangch.venice;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.*;
 
 import org.junit.jupiter.api.Test;
 
@@ -114,9 +114,9 @@ public class SpecialFormsTest_ns {
 		final Venice venice = new Venice();
 
 		assertEquals("()", venice.eval("(pr-str (ns-list *ns*))"));
-		assertEquals("()", venice.eval("(pr-str (ns-list user))"));
+		assertEquals("()", venice.eval("(pr-str (ns-list 'user))"));
 		
-		assertEquals("()", venice.eval("(pr-str (ns-list inexistent))"));
+		assertEquals("()", venice.eval("(pr-str (ns-list 'inexistent))"));
 	}
 	
 	@Test
@@ -142,7 +142,7 @@ public class SpecialFormsTest_ns {
 				"  (def xoo 1)             \n" + 
 				"  (ns yyy)                \n" + 
 				"  (def yoo 1)             \n" + 
-				"  (pr-str (ns-list xxx)))   ";
+				"  (pr-str (ns-list 'xxx)))   ";
 
 		assertEquals("(xxx/xoo)", venice.eval(script));
 	}
@@ -158,9 +158,90 @@ public class SpecialFormsTest_ns {
 				"  (def xoo 1)             \n" + 
 				"  (ns yyy)                \n" + 
 				"  (def yoo 1)             \n" + 
-				"  (ns-remove xxx)         \n" + 
-				"  (pr-str (ns-list xxx)))   ";
+				"  (ns-remove 'xxx)        \n" + 
+				"  (pr-str (ns-list 'xxx)))  ";
 
 		assertEquals("()", venice.eval(script));
 	}
+	
+	@Test
+	public void test_unmap_1() {
+		final Venice venice = new Venice();
+
+		final String script = 
+				"(do                   \n" +
+				"  (ns foo)            \n" +
+				"  (def x 100)         \n" +
+				"  (ns-unmap *ns* 'x)  \n" +
+				"  foo/x)                ";
+
+		assertThrows(SymbolNotFoundException.class, () -> venice.eval(script));
+	}
+	
+	@Test
+	public void test_unmap_2() {
+		final Venice venice = new Venice();
+
+		final String script = 
+				"(do                   \n" +
+				"  (ns foo)            \n" +
+				"  (def x 100)         \n" +
+				"  (ns goo)            \n" +
+				"  (ns-unmap 'foo 'x)  \n" +
+				"  foo/x)                ";
+
+		assertThrows(SymbolNotFoundException.class, () -> venice.eval(script));
+	}
+	
+	@Test
+	public void test_unmap_3() {
+		final Venice venice = new Venice();
+
+		final String script = "(ns-unmap 'core '+)";
+
+		try {
+			venice.eval(script);
+			fail("Expected VncException");
+		}
+		catch(VncException ex) {
+			assertEquals("Cannot remove a symbol from namespace 'core'!", ex.getMessage());
+		}
+		catch(RuntimeException ex) {
+			fail("Expected VncException");
+		}
+	}
+
+	@Test
+	public void test_remove_1() {
+		final Venice venice = new Venice();
+
+		final String script = 
+				"(do                   \n" +
+				"  (ns foo)            \n" +
+				"  (def x 100)         \n" +
+				"  (ns user)           \n" +
+				"  (ns-remove 'foo)    \n" +
+				"  foo/x)                ";
+
+		assertThrows(SymbolNotFoundException.class, () -> venice.eval(script));
+	}
+
+	@Test
+	public void test_remove_2() {
+		final Venice venice = new Venice();
+
+		final String script = "(ns-remove 'core)";
+
+		try {
+			venice.eval(script);
+			fail("Expected VncException");
+		}
+		catch(VncException ex) {
+			assertEquals("Namespace 'core' cannot be removed!", ex.getMessage());
+		}
+		catch(RuntimeException ex) {
+			fail("Expected VncException");
+		}
+	}
+
 }

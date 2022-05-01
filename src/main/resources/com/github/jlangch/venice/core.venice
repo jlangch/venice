@@ -972,7 +972,7 @@
             (load-classpath-file "com/github/jlangch/venice/test.venice")
             (test/test-fn "hello")
             ; reload the classpath file
-            (ns-remove test)
+            (ns-remove 'test)
             (load-classpath-file "com/github/jlangch/venice/test.venice" true)
             (test/test-fn "hello"))
           """ )
@@ -1018,7 +1018,7 @@
           (do
             (load-module :trace)
             ; reload the module
-            (ns-remove trace)
+            (ns-remove 'trace)
             (load-module :trace true))
           """) }
 

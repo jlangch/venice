@@ -21,46 +21,19 @@
  */
 package com.github.jlangch.venice.impl;
 
-import static com.github.jlangch.venice.impl.types.Constants.Nil;
-
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
 
-import com.github.jlangch.venice.VncException;
-import com.github.jlangch.venice.impl.env.Env;
 import com.github.jlangch.venice.impl.thread.ThreadContext;
 import com.github.jlangch.venice.impl.types.VncSymbol;
 import com.github.jlangch.venice.impl.types.VncVal;
-import com.github.jlangch.venice.impl.types.util.Types;
 import com.github.jlangch.venice.impl.util.MetaUtil;
 
 
 public class Namespaces {
 	
-	public static VncSymbol lookupNS(final VncVal ns, final Env env) {
-		if (ns == null || ns == Nil) {
-			return Namespaces.NS_CORE;
-		}
-		else if (Types.isVncSymbol(ns)) {
-			final VncSymbol ns_ = (VncSymbol)ns;
-		
-			if (Namespaces.isCurrentNSSymbol(ns_)) {
-				final VncVal val = env.getGlobalOrNil(ns_);
-				return val == Nil ? Namespaces.NS_CORE : (VncSymbol)val;
-			}
-			else {
-				return ns_;
-			}
-		}
-		else {
-			throw new VncException(String.format(
-					"Cannot map type '%s' to VncSymbol to lookup namespace",
-					Types.getType(ns)));
-		}
-	}
-
 	public static boolean isCoreNS(final VncSymbol nsSym) {
 		return Namespaces.NS_CORE.equals(nsSym);
 	}
