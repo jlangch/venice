@@ -94,7 +94,6 @@ public class ReservedSymbols {
 					"macroexpand",
 					"macroexpand-all*",
 					"modules",
-					"namespace",
 					"ns",
 					"ns-list",
 					"ns-remove",

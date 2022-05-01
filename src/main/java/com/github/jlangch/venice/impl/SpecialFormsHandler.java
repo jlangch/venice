@@ -50,7 +50,6 @@ import com.github.jlangch.venice.impl.specialforms.CatchBlock;
 import com.github.jlangch.venice.impl.specialforms.DefTypeForm;
 import com.github.jlangch.venice.impl.specialforms.FinallyBlock;
 import com.github.jlangch.venice.impl.thread.ThreadContext;
-import com.github.jlangch.venice.impl.types.INamespaceAware;
 import com.github.jlangch.venice.impl.types.VncBoolean;
 import com.github.jlangch.venice.impl.types.VncFunction;
 import com.github.jlangch.venice.impl.types.VncJavaObject;
@@ -362,26 +361,6 @@ public class SpecialFormsHandler {
 							.sorted()
 							.map(s -> new VncKeyword(s))
 							.collect(Collectors.toList()));
-		}
-	}
-
-	public VncVal namespace_(
-			final VncList args, 
-			final Env env,
-			final VncVal meta
-	) {
-		final CallFrame callframe = new CallFrame("namespace", args, meta);
-		try (WithCallStack cs = new WithCallStack(callframe)) {
-			assertArity("namespace", FnType.SpecialForm, args, 1);
-			final VncVal val = evaluator.evaluate(args.first(), env, false);
-			if (val instanceof INamespaceAware) {
-				return new VncString(((INamespaceAware)val).getNamespace());
-			}
-			else {
-				throw new VncException(String.format(
-						"The type '%s' does not support namespaces!",
-						Types.getType(val)));
-			}
 		}
 	}
 

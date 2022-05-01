@@ -140,59 +140,6 @@ public class NamespaceTest {
 	}
 
 	@Test
-	public void test_namespace_symbol() {
-		final Venice venice = new Venice();
-
-		assertEquals("", venice.eval("(namespace 'foo)"));
-		assertEquals("xxx", venice.eval("(namespace 'xxx/foo)"));
-	}
-
-	@Test
-	public void test_namespace_keyword() {
-		final Venice venice = new Venice();
-
-		assertEquals("", venice.eval("(namespace :alpha)"));
-		assertEquals("user", venice.eval("(namespace :user/alpha)"));
-	}
-
-	@Test
-	public void test_namespace_div() {
-		final Venice venice = new Venice();
-
-		assertEquals(2L, venice.eval("(/ 4 2)"));
-		assertEquals(2L, venice.eval("(core// 4 2)"));
-
-		assertEquals("", venice.eval("(namespace /)"));
-		assertEquals("", venice.eval("(namespace core//)"));
-	}
-
-	@Test
-	public void test_namespace_function() {
-		final Venice venice = new Venice();
-
-		final String script =
-				"(do                         \n" +
-				"   (ns xxx)                 \n" +
-				"   (defn f1 [x] (+ x 1))    \n" +
-				"   (namespace f1))            ";
-
-		assertEquals("xxx", venice.eval(script));
-	}
-
-	@Test
-	public void test_namespace_anonymous_function() {
-		final Venice venice = new Venice();
-
-		final String script =
-				"(do                               \n" +
-				"   (ns xxx)                       \n" +
-				"   (defn f1 [f] (namespace f))    \n" +
-				"   (f1 #(+ 1)))                     ";
-
-		assertEquals("xxx", venice.eval(script));
-	}
-
-	@Test
 	public void test_namespace_in_function_evaluation() {
 		// Functions are evaluated in the namespace they are defined!
 		

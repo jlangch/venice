@@ -1530,34 +1530,6 @@ public class SpecialFormsDoc {
 		) {
 			private static final long serialVersionUID = -1;
 		};
-
-	public static VncFunction namespace = 
-		new SpecialFormsDocFunction(
-				"namespace",
-				VncFunction
-					.meta()
-					.arglists("(namespace x)")
-					.doc("Returns the namespace string of a symbol, keyword, or function.")
-					.examples(
-						"(namespace 'user/foo)",
-						"(namespace :user/foo)",
-						"(namespace +)",
-						"(do \n" +
-						"  (ns foo) \n" +
-						"  (def add +) \n" +
-						"  (namespace add))",
-						";; compare with var-ns \n" +
-						"(var-ns +)",
-						";; compare alias def'd function with var-ns \n" +
-						"(do \n" +
-						"  (ns foo) \n" +
-						"  (def add +)\n" +
-						"  (var-ns add))")
-					.seeAlso("ns", "*ns*", "var-ns")
-					.build()
-		) {
-			private static final long serialVersionUID = -1;
-		};
 		
 	public static VncFunction tail_pos = 
 		new SpecialFormsDocFunction(
@@ -1752,7 +1724,6 @@ public class SpecialFormsDoc {
 					.put(new VncSymbol("ns-unmap"),			ns_unmap)
 					.put(new VncSymbol("ns-remove"),		ns_remove)
 					.put(new VncSymbol("ns-list"),			ns_list)
-					.put(new VncSymbol("namespace"),		namespace)
 					.put(new VncSymbol("tail-pos"),			tail_pos)					
 					.put(new VncSymbol("print-highlight"),	print_highlight)					
 					.put(new VncSymbol("import"),			import_)

@@ -25,6 +25,7 @@ import static com.github.jlangch.venice.impl.functions.FunctionsUtil.removeNilVa
 import static com.github.jlangch.venice.impl.types.Constants.Nil;
 import static com.github.jlangch.venice.impl.types.VncBoolean.False;
 import static com.github.jlangch.venice.impl.types.VncBoolean.True;
+import static com.github.jlangch.venice.impl.util.ArityExceptions.assertArity;
 
 import java.math.BigDecimal;
 import java.math.BigInteger;
@@ -49,6 +50,7 @@ import com.github.jlangch.venice.impl.reader.HighlightItem;
 import com.github.jlangch.venice.impl.reader.HighlightParser;
 import com.github.jlangch.venice.impl.reader.Reader;
 import com.github.jlangch.venice.impl.thread.ThreadContext;
+import com.github.jlangch.venice.impl.types.INamespaceAware;
 import com.github.jlangch.venice.impl.types.IVncFunction;
 import com.github.jlangch.venice.impl.types.VncBigDecimal;
 import com.github.jlangch.venice.impl.types.VncBigInteger;
@@ -97,6 +99,7 @@ import com.github.jlangch.venice.impl.util.CallFrame;
 import com.github.jlangch.venice.impl.util.CallStack;
 import com.github.jlangch.venice.impl.util.MeterRegistry;
 import com.github.jlangch.venice.impl.util.StringUtil;
+import com.github.jlangch.venice.impl.util.ArityExceptions.FnType;
 import com.github.jlangch.venice.impl.util.transducer.Reducer;
 
 
@@ -7883,22 +7886,13 @@ public class CoreFunctions {
 				VncFunction
 					.meta()
 					.arglists("(name x)")
-					.doc("Returns the name String of a string, symbol, or keyword")
+					.doc("Returns the name String of a string, symbol, keyword, or function")
 					.examples(
 						"(name :x)",
 						"(name 'x)",
 						"(name \"x\")",
-						"(do \n" +
-						"  (ns foo) \n" +
-						"  (def add +) \n" +
-						"  (name add))",
-						";; compare with var-name \n" +
-						"(var-name +)",
-						";; compare aliased function with var-name \n" +
-						"(do \n" +
-						"  (ns foo) \n" +
-						"  (def add +) \n" +
-						"  (var-name add))")
+						"(name str/digit?)")
+					.seeAlso("namespace", "fn-name")
 					.build()
 		) {
 			public VncVal apply(final VncList args) {
@@ -7910,20 +7904,84 @@ public class CoreFunctions {
 					return Nil;
 				}
 				else if (Types.isVncKeyword(arg)) {
-					return new VncString(((VncKeyword)arg).getValue());
+					return new VncString(((VncKeyword)arg).getSimpleName());
 				}
 				else if (Types.isVncSymbol(arg)) {
-					return new VncString(((VncSymbol)arg).getName());
+					return new VncString(((VncSymbol)arg).getSimpleName());
 				}
 				else if (Types.isVncString(arg)) {
 					return arg;
 				}
-				else if (Types.isVncFunction(arg)) {
-					return new VncString(((VncFunction)arg).getQualifiedName());
+				else if (Types.isVncFunction(arg) || Types.isVncMacro(arg)) {
+					return new VncString(((VncFunction)arg).getSimpleName());
 				}
 				else {
 					throw new VncException(String.format(
 							"Function 'name' does not allow %s as parameter",
+							Types.getType(arg)));
+				}
+			}
+
+			private static final long serialVersionUID = -1848883965231344442L;
+		};
+
+	public static VncFunction namespace =
+		new VncFunction(
+				"namespace",
+				VncFunction
+					.meta()
+					.arglists("(namespace x)")
+					.doc("Returns the namespace string of a symbol, keyword, or function.")
+					.examples(
+						"(namespace 'user/foo)",
+						"(namespace :user/foo)",
+						"(namespace str/digit?)")
+					.seeAlso("name", "fn-name", "ns", "*ns*", "var-ns")
+					.build()
+		) {
+			public VncVal apply(final VncList args) {
+				assertArity("namespace", FnType.SpecialForm, args, 1);
+				final VncVal val = args.first();
+				if (val instanceof INamespaceAware) {
+					final String ns = ((INamespaceAware)val).getNamespace();
+					return ns == null ? Nil : new VncString(ns);
+				}
+				else {
+					throw new VncException(String.format(
+							"The type '%s' does not support namespaces!",
+							Types.getType(val)));
+				}
+			}
+
+			private static final long serialVersionUID = -1848883965231344442L;
+		};
+
+	public static VncFunction fn_name =
+		new VncFunction(
+				"fn-name",
+				VncFunction
+					.meta()
+					.arglists("(name x)")
+					.doc("Returns the qualified name of a function or macro")
+					.examples(
+						"(fn-name str/digit?)")
+					.seeAlso("name", "namespace")
+					.build()
+		) {
+			public VncVal apply(final VncList args) {
+				ArityExceptions.assertArity(this, args, 1);
+
+				final VncVal arg = args.first();
+
+				if (arg == Nil) {
+					return Nil;
+				}
+				else if (Types.isVncFunction(arg) || Types.isVncMacro(arg)) {
+					return new VncString(((VncFunction)arg).getQualifiedName());
+				}
+				else {
+					throw new VncException(String.format(
+							"Function 'fn-name' does not allow %s as parameter",
 							Types.getType(arg)));
 				}
 			}
@@ -8345,6 +8403,8 @@ public class CoreFunctions {
 				.add(identity)
 				.add(gensym)
 				.add(name)
+				.add(namespace)
+				.add(fn_name)
 				.add(type)
 				.add(supertype)
 				.add(supertypes)

@@ -15,6 +15,8 @@ and this project adheres to
 
 - namespace aliases (`ns-alias`, `ns-aliases`, `ns-unalias`)
 
+### Fixed
+ - function `name` to return the simple name only (without namespace)
 
 
 ## [1.10.10] - 2022-05-01

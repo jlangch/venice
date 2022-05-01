@@ -79,7 +79,6 @@ public class SpecialForms {
 					"defmacro",
 					"macroexpand",
 					"ns",
-					"namespace",
 					"ns-unmap",
 					"ns-remove",
 					"ns-list",

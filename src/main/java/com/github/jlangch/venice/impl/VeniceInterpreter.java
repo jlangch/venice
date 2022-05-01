@@ -697,9 +697,6 @@ public class VeniceInterpreter implements IVeniceInterpreter, Serializable  {
 				case "imports":
 					return specialFormHandler.imports_(args, env, a0meta);
 
-				case "namespace": // (namespace x)
-					return specialFormHandler.namespace_(args, env, a0meta);
-
 				case "resolve": // (resolve sym)
 					return specialFormHandler.resolve_(args, env, a0meta);
 				

@@ -1171,6 +1171,8 @@ public class DocGenerator {
 		misc.addItem(getDocItem("some?"));
 		misc.addItem(getDocItem("eval"));
 		misc.addItem(getDocItem("name"));
+		misc.addItem(getDocItem("namespace"));
+		misc.addItem(getDocItem("fn-name"));
 		misc.addItem(getDocItem("callstack"));
 		misc.addItem(getDocItem("coalesce"));
 		misc.addItem(getDocItem("load-resource"));
