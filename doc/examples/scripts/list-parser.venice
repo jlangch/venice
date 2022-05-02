@@ -23,84 +23,85 @@
 
 (do
   (load-module :parsatron)
+  (ns-alias 'p 'parsatron)
 
-  (parsatron/defparser digits []
-    (parsatron/many1 (parsatron/digit)))
+  (p/defparser digits []
+    (p/many1 (p/digit)))
 
-  (parsatron/defparser positive-int []
-    (parsatron/let->> [i (digits)]
-      (parsatron/always (int (apply str i)))))
+  (p/defparser positive-int []
+    (p/let->> [i (digits)]
+      (p/always (int (apply str i)))))
 
-  (parsatron/defparser negative-int []
-    (parsatron/let->> [i (parsatron/>> (parsatron/char "-")
+  (p/defparser negative-int []
+    (p/let->> [i (p/>> (p/char "-")
                                        (digits))]
-      (parsatron/always (int (str "-" (apply str i))))))
+      (p/always (int (str "-" (apply str i))))))
 
-  (parsatron/defparser lst-integer []
-    (parsatron/either (positive-int)
+  (p/defparser lst-integer []
+    (p/either (positive-int)
                       (negative-int)))
 
-  (parsatron/defparser whitespaces []
-    (parsatron/many (parsatron/token str/whitespace?)))
+  (p/defparser whitespaces []
+    (p/many (p/token str/whitespace?)))
 
-  (parsatron/defparser whitespaces1 []
-    (parsatron/many1 (parsatron/token str/whitespace?)))
+  (p/defparser whitespaces1 []
+    (p/many1 (p/token str/whitespace?)))
 
-  (parsatron/defparser lst-string []
-    (parsatron/between (parsatron/char "'")
-                       (parsatron/char "'")
-                       (parsatron/let->> [s (parsatron/many (parsatron/not-char "'"))]
-                         (parsatron/always (apply str s)))))
+  (p/defparser lst-string []
+    (p/between (p/char "'")
+                       (p/char "'")
+                       (p/let->> [s (p/many (p/not-char "'"))]
+                         (p/always (apply str s)))))
 
-  (parsatron/defparser lst-list-next-value []
-    (parsatron/>> (whitespaces)
-                  (parsatron/char ",")
+  (p/defparser lst-list-next-value []
+    (p/>> (whitespaces)
+                  (p/char ",")
                   (whitespaces)
                   (lst-value)))
 
-  (parsatron/defparser lst-list-values []
-    (parsatron/let->> [first (lst-value)
-                       rest  (parsatron/many (lst-list-next-value))]
-      (parsatron/always (into [ first ] rest))))
+  (p/defparser lst-list-values []
+    (p/let->> [first (lst-value)
+                       rest  (p/many (lst-list-next-value))]
+      (p/always (into [ first ] rest))))
 
-  (parsatron/defparser lst-list []
-    (parsatron/between (parsatron/>> (parsatron/char "[") (whitespaces))
-                       (parsatron/>> (whitespaces) (parsatron/char "]"))
+  (p/defparser lst-list []
+    (p/between (p/>> (p/char "[") (whitespaces))
+                       (p/>> (whitespaces) (p/char "]"))
                        (lst-list-values)))
 
-  (parsatron/defparser lst-dictionary-entry []
-    (parsatron/let->> [key (lst-value)
+  (p/defparser lst-dictionary-entry []
+    (p/let->> [key (lst-value)
                        _   (whitespaces1)
                        val (lst-value)]
-      (parsatron/always [key val])))
+      (p/always [key val])))
 
-  (parsatron/defparser lst-dictionary-next-entry []
-    (parsatron/>> (whitespaces)
-                  (parsatron/char ",")
+  (p/defparser lst-dictionary-next-entry []
+    (p/>> (whitespaces)
+                  (p/char ",")
                   (whitespaces)
                   (lst-dictionary-entry)))
 
-  (parsatron/defparser lst-dictionary-entries []
-    (parsatron/let->> [first (lst-dictionary-entry)
-                       rest  (parsatron/many (lst-dictionary-next-entry))]
-      (parsatron/always (into [ first ] rest))))
+  (p/defparser lst-dictionary-entries []
+    (p/let->> [first (lst-dictionary-entry)
+                       rest  (p/many (lst-dictionary-next-entry))]
+      (p/always (into [ first ] rest))))
 
-  (parsatron/defparser lst-dictionary []
-    (parsatron/between (parsatron/>> (parsatron/char "{") (whitespaces))
-                       (parsatron/>> (whitespaces) (parsatron/char "}"))
-                       (parsatron/let->> [entries (lst-dictionary-entries)]
-                         (parsatron/always (into {} entries)))))
+  (p/defparser lst-dictionary []
+    (p/between (p/>> (p/char "{") (whitespaces))
+                       (p/>> (whitespaces) (p/char "}"))
+                       (p/let->> [entries (lst-dictionary-entries)]
+                         (p/always (into {} entries)))))
 
-  (parsatron/defparser lst-value []
-    (parsatron/choice (lst-integer)
+  (p/defparser lst-value []
+    (p/choice (lst-integer)
                       (lst-string)
                       (lst-list)
                       (lst-dictionary)))
 
-  ;(parsatron/run (lst-value) "42")
-  ;(parsatron/run (lst-value) "'42'")
-  ;(parsatron/run (lst-value) "[0, 1, 2, 3, 4]")
-  ;(parsatron/run (lst-value) "[0,1,2,3,4,[10,11,12], 'abc']")
-  ;(parsatron/run (lst-value) "{'a' 100, 'b' 200}")
-  ;(parsatron/run (lst-value) "[0,1,2,3,4,[10,11,12], 'abc', {'a' 100, 'b' 200}]")
+  ;(p/run (lst-value) "42")
+  ;(p/run (lst-value) "'42'")
+  ;(p/run (lst-value) "[0, 1, 2, 3, 4]")
+  ;(p/run (lst-value) "[0,1,2,3,4,[10,11,12], 'abc']")
+  ;(p/run (lst-value) "{'a' 100, 'b' 200}")
+  ;(p/run (lst-value) "[0,1,2,3,4,[10,11,12], 'abc', {'a' 100, 'b' 200}]")
 )
