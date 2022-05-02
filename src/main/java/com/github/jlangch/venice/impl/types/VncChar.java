@@ -176,6 +176,8 @@ public class VncChar extends VncVal {
 		map.put("#\\formfeed",           new VncChar('\f'));
 		map.put("#\\return",             new VncChar('\r'));
 		map.put("#\\backspace",          new VncChar('\b'));
+		map.put("#\\par-open",           new VncChar('('));
+		map.put("#\\par-close",          new VncChar(')'));
 
 		// https://unicode-table.com/en/
 		
