@@ -32,7 +32,9 @@ import com.github.jlangch.venice.impl.specialforms.DefTypeForm;
 import com.github.jlangch.venice.impl.types.Constants;
 import com.github.jlangch.venice.impl.types.TypeRank;
 import com.github.jlangch.venice.impl.types.VncFunction;
+import com.github.jlangch.venice.impl.types.VncInteger;
 import com.github.jlangch.venice.impl.types.VncKeyword;
+import com.github.jlangch.venice.impl.types.VncLong;
 import com.github.jlangch.venice.impl.types.VncVal;
 import com.github.jlangch.venice.impl.types.collections.VncCollection;
 import com.github.jlangch.venice.impl.types.collections.VncList;
@@ -226,7 +228,23 @@ public class VncCustomType extends VncMap {
 
 	@Override 
 	public int compareTo(final VncVal o) {
-		return values.compareTo(o);
+		if (o instanceof VncCustomType) {
+			final VncCustomType other = (VncCustomType)o;
+			if (type.equals(other.type)) {			
+				final VncFunction fn = typeDef.getCustomCompareToFn();
+				return fn == null 
+						? values.compareTo(other.values) 
+						: customCompareTo(fn, other);
+			}
+			else {
+				return 1;
+			}
+		}
+		else if (o == Constants.Nil) {
+			return 1;
+		}
+
+		return super.compareTo(o);
 	}
 
 
@@ -288,6 +306,20 @@ public class VncCustomType extends VncMap {
 	private String customToString(final VncFunction fn) {
 		final VncVal s = fn.apply(VncList.of(this));
 		return s == Constants.Nil ? null : s.toString();
+	}
+	
+	private int customCompareTo(final VncFunction fn, final VncCustomType other) {
+		final VncVal ret = fn.apply(VncList.of(this, other));
+		if (ret instanceof VncInteger) {
+			return ((VncInteger)ret).toJavaInteger();
+		}
+		else if (ret instanceof VncLong) {
+			return ((VncLong)ret).toJavaInteger();
+		}
+		else {
+			throw new VncException(String.format(
+					":core/custom-type: compareTo protocol function must return an integer"));
+		}
 	}
 
 	

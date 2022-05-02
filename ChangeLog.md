@@ -14,6 +14,7 @@ and this project adheres to
 ### Added
 
 - namespace aliases (`ns-alias`, `ns-aliases`, `ns-unalias`)
+- `Object` protocol to support customized 'compareTo' for custom datatypes
 
 ### Fixed
  - function `name` to return the simple name only (without namespace)
@@ -58,7 +59,7 @@ and this project adheres to
 
 - math functions `exp`, `asin`, `acos`, `atan`
 - functions `nan?` and `infinite?` for double values
-- `Object` protocol to support customized toString conversion for custom datatypes
+- `Object` protocol to support customized 'toString' conversion for custom datatypes
 - improvements to documentation
 
 ### Updated dependencies:

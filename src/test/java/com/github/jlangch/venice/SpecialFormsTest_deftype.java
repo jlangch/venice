@@ -57,26 +57,6 @@ public class SpecialFormsTest_deftype {
 	}
 	
 	@Test
-	public void test_deftype_with_Object_protocol() {
-		final Venice venice = new Venice();
-
-		final String script =
-				"(do                                                               \n" +
-				"  (deftype :complex [real :long, imaginary :long]                 \n" +
-				"     Object                                                       \n" + 
-			    "       (toString [self] (let [re (:real self)                     \n" +
-				"                              im (:imaginary self)]               \n" +
-			    "                          (str/format \"(%s %s i%s)\"             \n" +
-			    "                                      re                          \n" +
-			    "                                      (if (neg? im) \"-\" \"+\")  \n" +
-			    "                                      im))))                      \n" +
-				"  (def x (complex. 1 2))                                          \n" +
-				"  (pr-str x))                                                       ";
-
-		assertEquals("(1 + i2)", venice.eval(script));					
-	}
-	
-	@Test
 	public void test_deftype_no_fields() {
 		final Venice venice = new Venice();
 

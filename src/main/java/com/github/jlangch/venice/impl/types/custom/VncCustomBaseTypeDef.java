@@ -70,10 +70,19 @@ public abstract class VncCustomBaseTypeDef extends VncVal {
 	public VncFunction getCustomToStringFn() {
 		return customToStringFn.get();
 	}
+
+	public void setCustomCompareToFn(final VncFunction fn) {
+		customCompareToFn.set(fn);
+	}
+
+	public VncFunction getCustomCompareToFn() {
+		return customCompareToFn.get();
+	}
 	
 	
 	private static final long serialVersionUID = -1639883423759533879L;
 	
 	private final VncKeyword type;
 	private final AtomicReference<VncFunction> customToStringFn = new AtomicReference<>();
+	private final AtomicReference<VncFunction> customCompareToFn = new AtomicReference<>();
 }

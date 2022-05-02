@@ -592,17 +592,32 @@ public class SpecialFormsHandler {
 			// Handle 'Object' protocol 'toString' function for custom types
 			if (isObjectProtocol) {
 				VncVal fnName = ((VncList)fnSpec).first();
-				if (fnName instanceof VncSymbol && ((VncSymbol)fnName).getSimpleName().equals("toString")) {
-					final VncKeyword qualifiedType = type.hasNamespace() 
-														? type 
-														: type.withNamespace(Namespaces.getCurrentNS());
-			
-					final VncVal typeDef = env.getGlobalOrNull(qualifiedType.toSymbol());
-					if (typeDef instanceof VncCustomBaseTypeDef) {
-						final VncCustomBaseTypeDef customBaseTypeDef = (VncCustomBaseTypeDef)typeDef;
-	
-						// register custom 'toSTring' function with the custom type definition
-						customBaseTypeDef.setCustomToStringFn(fn);
+				if (fnName instanceof VncSymbol) {
+					if (((VncSymbol)fnName).getSimpleName().equals("toString")) {
+						final VncKeyword qualifiedType = type.hasNamespace() 
+															? type 
+															: type.withNamespace(Namespaces.getCurrentNS());
+				
+						final VncVal typeDef = env.getGlobalOrNull(qualifiedType.toSymbol());
+						if (typeDef instanceof VncCustomBaseTypeDef) {
+							final VncCustomBaseTypeDef customBaseTypeDef = (VncCustomBaseTypeDef)typeDef;
+		
+							// register custom 'toString' function with the custom type definition
+							customBaseTypeDef.setCustomToStringFn(fn);
+						}
+					}
+					else if (((VncSymbol)fnName).getSimpleName().equals("compareTo")) {
+						final VncKeyword qualifiedType = type.hasNamespace() 
+															? type 
+															: type.withNamespace(Namespaces.getCurrentNS());
+				
+						final VncVal typeDef = env.getGlobalOrNull(qualifiedType.toSymbol());
+						if (typeDef instanceof VncCustomBaseTypeDef) {
+							final VncCustomBaseTypeDef customBaseTypeDef = (VncCustomBaseTypeDef)typeDef;
+		
+							// register custom 'compareTo' function with the custom type definition
+							customBaseTypeDef.setCustomCompareToFn(fn);
+						}
 					}
 				}
 			}

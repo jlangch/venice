@@ -1138,30 +1138,43 @@
 
 (defprotocol
   ^{ :doc """
-          Defines a protocol to customize the `toString` function of
-          custom datatypes.
+          Defines a protocol to customize the `toString` and/or the `compareTo`
+          function of custom datatypes.
 
           Definition:
 
           ```
           (defprotocol Object
-            (toString [self] (. self :toString)))
+            (toString [this] (. this :toString))
+            (compareTo [this other] (. this :compareTo other)))
           ```
+
+          `compareTo` returns a negative integer, zero, or a positive integer as
+          _this_ value is less than, equal to, or greater than the _other_
+          value.
           """
      :examples '(
           """
           (do
-            (deftype :complex [re :long, im :long]
+            (deftype :point [x :long, y :long]
               Object
-                (toString [this] (str/format "[%s %s]" (:re this) (:im this))))
+                (toString [this] (str/format "[%s %s]" (:x this) (:y this)))
+                (compareTo [self other] (. (:x self) :compareTo (:x other))))
 
-            (println (complex. 1 2)))
+            ; custom `toString`
+            (println "toString:" (point. 1 2))
+
+            ; custom `compareTo`: sort by 'x' ascending
+            (println "compareTo:"
+                     (sort compare
+                           [(point. 2 100) (point. 3 101) (point. 1 102)])))
           """ )
      :see-also '("defprotocol", "deftype") }
 
   Object
 
-  (toString [self] (. self :toString)))
+  (toString [this] (. this :toString))
+  (compareTo [this other] (. this :compareTo other)))
 
 
 (defn
