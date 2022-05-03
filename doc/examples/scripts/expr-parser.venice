@@ -1,7 +1,23 @@
+;;; ----------------------------------------------------------------------------
 ;;; EBNF
+;;; ----------------------------------------------------------------------------
 ;;;
-;;; Integer             ::=  "0" | ( "1" .. "9" ) [ Digit ]*
-;;; Float               ::=  ( [ Digit ]+ "." [ Digit ]* | "." [ Digit ]+ )
+
+;;; Tokenizer
+;;; ----------------------------------------------------------------------------
+;;; Whitespace          ::= ( " " | "\t" | "\n" )
+;;; Operation           ::= ( "+" | "-" )
+;;; LParen              ::= "("
+;;; RParen             ::= ")"
+;;; Integer             ::= "0" | ( "1" .. "9" ) [ Digit ]*
+;;; Float               ::= ( [ Digit ]+ "." [ Digit ]* | "." [ Digit ]+ )
+;;;
+;;; Token               ::= [ ( Whitespace | Operation | ParOpen | ParClose | Integer | Float) ]
+;;; Tokens              ::= [ Token ]* EOI
+
+
+;;; Parser
+;;; ----------------------------------------------------------------------------
 
 ;;; Literal             ::=  Integer | Float
 
@@ -17,50 +33,135 @@
 (load-module :parsatron)
 (ns-alias 'p 'parsatron)
 
-(p/defparser ws [] (p/many (p/char #\space)))
+;;; Token
+;;; ----------------------------------------------------------------------------
 
-(p/defparser digit-1to9 [] (p/choice (p/char #\1) (p/char #\2) (p/char #\3)
-                                     (p/char #\4) (p/char #\5) (p/char #\6)
-                                     (p/char #\7) (p/char #\8) (p/char #\9)))
+(deftype :Token [type :keyword, val :string]
+  Object
+    (toString [this] (str/format "[%s %s]"
+                                 (pr-str (:type this))
+                                 (pr-str (:val this)))))
 
-(p/defparser integer [] (p/attempt (p/either (p/let->> [_ (p/char #\0)]
-                                                (p/always '(#\0)))
-                                             (p/let->> [f (digit-1to9)
-                                                        r (p/many (p/digit))]
-                                                (p/always (list* f r))))))
+(defn token-type? [token type]
+  (= type (:type token)))
 
-(p/defparser float [] (p/attempt (p/let->> [i  (integer)
-                                            _  (p/char #\.)
-                                            f  (p/many1 (p/digit))]
-                                    (p/always (flatten (list* i #\. f))))))
+(defn token-value? [token value]
+  (= value (:val token)))
 
-(p/defparser literal [] (p/either (float) (integer)))
+(defn token? [token type value]
+  (and (= type (:type token)) (= value (:val token))))
 
-(p/defparser add-op [] (p/char #\+))
-(p/defparser sub-op [] (p/char #\-))
-(p/defparser mul-op [] (p/char #\*))
-(p/defparser div-op [] (p/char #\\))
+(defn remove-whitespaces [tokens]
+  (filter #(not (token-type? % :whitespace)) tokens))
 
 
-(p/defparser main [] (p/>> (ws) (expr) (ws) (p/eof)))
+
+;;; Tokenizer
+;;; ----------------------------------------------------------------------------
+
+(p/defparser ws []
+  (p/let->> [t (p/choice (p/char #\space) (p/char #\newline) (p/char #\tab))]
+     (p/always (Token. :whitespace (str t)))))
+
+(p/defparser op []
+  (p/let->> [t (p/choice (p/char #\+) (p/char #\-))]
+     (p/always (Token. :operator (str t)))))
+
+(p/defparser lparen []
+  (p/let->> [t (p/choice (p/char #\lparen))]
+     (p/always (Token. :lparen (str t)))))
+
+(p/defparser rparen []
+  (p/let->> [t (p/choice (p/char #\rparen))]
+     (p/always (Token. :rparen (str t)))))
+
+(p/defparser digit-1to9 []
+  (p/choice (p/char #\1) (p/char #\2) (p/char #\3)
+                         (p/char #\4) (p/char #\5) (p/char #\6)
+                         (p/char #\7) (p/char #\8) (p/char #\9)))
+
+(p/defparser integer []
+  (p/attempt (p/either (p/let->> [_ (p/char #\0)]
+                          (p/always (Token. :int "0")))
+                       (p/let->> [f (digit-1to9)
+                                  r (p/many (p/digit))]
+                          (p/always (Token. :int (apply str (list* f r))))))))
+
+(p/defparser float []
+  (p/attempt (p/let->> [i-tok (integer)
+                        _     (p/char #\.)
+                        f     (p/many1 (p/digit))]
+                (let [i (:val i-tok)]
+                  (p/always (Token. :float
+                                    (apply str (flatten (list* i #\. f)))))))))
+
+(p/defparser token []
+  (p/choice (ws) (op) (lparen) (rparen) (float) (integer)))
+
+(p/defparser tokens []
+  (p/let->> [toks (p/many (token))
+             _    (p/eof)]
+     (p/always (remove-whitespaces (into '() toks)))))
+
+
+;;; Parser
+;;; ----------------------------------------------------------------------------
+
+;; !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+;; The Parser is work in progress
+;; !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+
+
+(defn add-op [t]
+  (p/token #(token? % :operator "+")))
+
+(defn sub-op [t]
+  (p/token #(token? % :operator "-")))
+
+(defn mul-op [t]
+  (p/token #(token? % :operator "*")))
+
+(defn div-op [t]
+  (p/token #(token? % :operator "/")))
+
+(p/defparser nint []
+  (p/let->> [i (p/token #(token-type? % :int))]
+     (p/always (long (:val i)))))
+
+(p/defparser nfloat []
+ (p/let->> [i (p/token #(token-type? % :float))]
+    (p/always (double (:val i)))))
+
+(p/defparser number []
+  (p/either (nint) (nfloat)))
+
 
 (p/defparser expr [] (add-expr))
 
-(p/defparser add-expr [] (p/>> (mul-expr)
-                               (p/many (p/>> (ws)
-                                             (p/either (add-op) (sub-op))
-                                             (ws)
-                                             (mul-expr)))))
+(p/defparser add-expr []
+  (p/>> (mul-expr)
+        (p/many (p/>> (p/either (add-op) (sub-op))
+                                (mul-expr)))))
 
-(p/defparser mul-expr [] (p/>> (unary-expr)
-                               (p/many (p/>> (ws)
-                                             (p/either (mul-op) (div-op))
-                                             (ws)
-                                             (unary-expr)))))
+(p/defparser mul-expr []
+  (p/>> (unary-expr)
+        (p/many (p/>> (p/either (mul-op) (div-op))
+                                (unary-expr)))))
 
-(p/defparser unary-expr [] (p/either (p/>> (p/either (add-op) (sub-op))
-                                           (unary-expr))
-                                     (literal)))
+(p/defparser unary-expr []
+  (p/either (p/>> (p/either (add-op) (sub-op))
+                  (unary-expr))
+            (number)))
 
-;; (p/run (main) "123")
-;; (p/run (main) "123+2")
+
+
+;;; Usage
+;;; ----------------------------------------------------------------------------
+
+;; Tokenizer:
+;;   (p/run (tokens) "(3 + 4.2)")
+;;   => ([:lparen "("] [:int "3"] [:operator "+"] [:float "4.2"] [:rparen ")"])
+
+;; Parser:
+;;   (->> (p/run (tokens) "(3 + 4.2)")
+;;        (p/run (number)))
