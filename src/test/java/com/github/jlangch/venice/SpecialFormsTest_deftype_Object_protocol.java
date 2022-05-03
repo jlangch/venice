@@ -111,7 +111,7 @@ public class SpecialFormsTest_deftype_Object_protocol {
 	}
 	
 	@Test
-	public void test_Object_protocol_sort_equals_2a() {
+	public void test_Object_protocol_equals_2a() {
 		final Venice venice = new Venice();
 
 		final String script =
@@ -125,7 +125,7 @@ public class SpecialFormsTest_deftype_Object_protocol {
 	}
 	
 	@Test
-	public void test_Object_protocol_sort_equals_2b() {
+	public void test_Object_protocol_equals_2b() {
 		final Venice venice = new Venice();
 
 		final String script =
