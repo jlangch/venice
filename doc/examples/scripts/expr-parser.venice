@@ -33,6 +33,8 @@
 (load-module :parsatron)
 (ns-alias 'p 'parsatron)
 
+
+;;; ----------------------------------------------------------------------------
 ;;; Token
 ;;; ----------------------------------------------------------------------------
 
@@ -55,7 +57,7 @@
   (filter #(not (token-type? % :whitespace)) tokens))
 
 
-
+;;; ----------------------------------------------------------------------------
 ;;; Tokenizer
 ;;; ----------------------------------------------------------------------------
 
@@ -64,7 +66,7 @@
      (p/always (Token. :whitespace (str t)))))
 
 (p/defparser op []
-  (p/let->> [t (p/choice (p/char #\+) (p/char #\-))]
+  (p/let->> [t (p/choice (p/char #\+) (p/char #\-) (p/char #\*) (p/char #\\))]
      (p/always (Token. :operator (str t)))))
 
 (p/defparser lparen []
@@ -101,27 +103,23 @@
 (p/defparser tokens []
   (p/let->> [toks (p/many (token))
              _    (p/eof)]
-     (p/always (remove-whitespaces (into '() toks)))))
+     (p/always (remove-whitespaces (list* toks)))))
 
 
+;;; ----------------------------------------------------------------------------
 ;;; Parser
 ;;; ----------------------------------------------------------------------------
 
-;; !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-;; The Parser is work in progress
-;; !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-
-
-(defn add-op [t]
+(defn add-op []
   (p/token #(token? % :operator "+")))
 
-(defn sub-op [t]
+(defn sub-op []
   (p/token #(token? % :operator "-")))
 
-(defn mul-op [t]
+(defn mul-op []
   (p/token #(token? % :operator "*")))
 
-(defn div-op [t]
+(defn div-op []
   (p/token #(token? % :operator "/")))
 
 (p/defparser nint []
@@ -139,18 +137,33 @@
 (p/defparser expr [] (add-expr))
 
 (p/defparser add-expr []
-  (p/>> (mul-expr)
-        (p/many (p/>> (p/either (add-op) (sub-op))
-                                (mul-expr)))))
+  (p/let->> [seed (mul-expr)
+             rst  (p/many (p/let->> [op (p/either (add-op) (sub-op))
+                                     un (mul-expr)]
+                             (p/always [(:val op) un])))]
+      (p/always (reduce (fn [acc x]
+                          (let [op (resolve (symbol (first x)))]
+                            (op acc (second x))))
+                        seed
+                        rst))))
 
 (p/defparser mul-expr []
-  (p/>> (unary-expr)
-        (p/many (p/>> (p/either (mul-op) (div-op))
-                                (unary-expr)))))
+  ;; "3 * 4", "-3 * 4", "3 * 4 * 5"
+  (p/let->> [seed (unary-expr)
+             rst  (p/many (p/let->> [op (p/either (mul-op) (div-op))
+                                     un (unary-expr)]
+                             (p/always [(:val op) un])))]
+      (p/always (reduce (fn [acc x]
+                          (let [op (resolve (symbol (first x)))]
+                            (op acc (second x))))
+                        seed
+                        rst))))
 
 (p/defparser unary-expr []
-  (p/either (p/>> (p/either (add-op) (sub-op))
-                  (unary-expr))
+  ;; "3", "+3", "-3"
+  (p/either (p/let->> [op  (p/either (add-op) (sub-op))
+                       val (number)]
+               (p/always (if (token-value? op "+") val (negate val))))
             (number)))
 
 
@@ -159,9 +172,9 @@
 ;;; ----------------------------------------------------------------------------
 
 ;; Tokenizer:
-;;   (p/run (tokens) "(3 + 4.2)")
-;;   => ([:lparen "("] [:int "3"] [:operator "+"] [:float "4.2"] [:rparen ")"])
+;;   (p/run (tokens) "3 + 4.2")
+;;   => ([:int "3"] [:operator "+"] [:float "4.2"] )
 
 ;; Parser:
-;;   (->> (p/run (tokens) "(3 + 4.2)")
-;;        (p/run (number)))
+;;   (->> (p/run (tokens) "3 + 4.1 - 5 * 3.2")
+;;        (p/run (expr))
