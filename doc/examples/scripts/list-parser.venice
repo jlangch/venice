@@ -33,13 +33,12 @@
       (p/always (int (apply str i)))))
 
   (p/defparser negative-int []
-    (p/let->> [i (p/>> (p/char "-")
-                                       (digits))]
+    (p/let->> [i (p/>> (p/char "-") (digits))]
       (p/always (int (str "-" (apply str i))))))
 
   (p/defparser lst-integer []
     (p/either (positive-int)
-                      (negative-int)))
+              (negative-int)))
 
   (p/defparser whitespaces []
     (p/many (p/token str/whitespace?)))
@@ -49,54 +48,56 @@
 
   (p/defparser lst-string []
     (p/between (p/char "'")
-                       (p/char "'")
-                       (p/let->> [s (p/many (p/not-char "'"))]
-                         (p/always (apply str s)))))
+               (p/char "'")
+               (p/let->> [s (p/many (p/not-char "'"))]
+                  (p/always (apply str s)))))
 
   (p/defparser lst-list-next-value []
     (p/>> (whitespaces)
-                  (p/char ",")
-                  (whitespaces)
-                  (lst-value)))
+          (p/char ",")
+          (whitespaces)
+          (lst-value)))
 
   (p/defparser lst-list-values []
     (p/let->> [first (lst-value)
-                       rest  (p/many (lst-list-next-value))]
+               rest  (p/many (lst-list-next-value))]
       (p/always (into [ first ] rest))))
 
   (p/defparser lst-list []
-    (p/between (p/>> (p/char "[") (whitespaces))
-                       (p/>> (whitespaces) (p/char "]"))
-                       (lst-list-values)))
+    (p/between (p/>> (p/char "[")
+                     (whitespaces))
+               (p/>> (whitespaces)
+                     (p/char "]"))
+               (lst-list-values)))
 
   (p/defparser lst-dictionary-entry []
     (p/let->> [key (lst-value)
-                       _   (whitespaces1)
-                       val (lst-value)]
+               _   (whitespaces1)
+               val (lst-value)]
       (p/always [key val])))
 
   (p/defparser lst-dictionary-next-entry []
     (p/>> (whitespaces)
-                  (p/char ",")
-                  (whitespaces)
-                  (lst-dictionary-entry)))
+          (p/char ",")
+          (whitespaces)
+          (lst-dictionary-entry)))
 
   (p/defparser lst-dictionary-entries []
     (p/let->> [first (lst-dictionary-entry)
-                       rest  (p/many (lst-dictionary-next-entry))]
+               rest  (p/many (lst-dictionary-next-entry))]
       (p/always (into [ first ] rest))))
 
   (p/defparser lst-dictionary []
     (p/between (p/>> (p/char "{") (whitespaces))
-                       (p/>> (whitespaces) (p/char "}"))
-                       (p/let->> [entries (lst-dictionary-entries)]
-                         (p/always (into {} entries)))))
+               (p/>> (whitespaces) (p/char "}"))
+               (p/let->> [entries (lst-dictionary-entries)]
+                  (p/always (into {} entries)))))
 
   (p/defparser lst-value []
     (p/choice (lst-integer)
-                      (lst-string)
-                      (lst-list)
-                      (lst-dictionary)))
+              (lst-string)
+              (lst-list)
+              (lst-dictionary)))
 
   ;(p/run (lst-value) "42")
   ;(p/run (lst-value) "'42'")
