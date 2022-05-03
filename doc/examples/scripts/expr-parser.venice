@@ -206,7 +206,7 @@
 (p/defparser unary-expr []
   ;; "3", "+3", "-3"
   (p/choice (p/let->> [op_ (p/either (op "+") (op "-"))
-                       val (number)]
+                       val (unary-expr)]
                (p/always (if (token-value? op_ "+") val (negate val))))
             (par-expr)
             (number)))
