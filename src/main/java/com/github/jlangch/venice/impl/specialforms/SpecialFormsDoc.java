@@ -621,39 +621,38 @@ public class SpecialFormsDoc {
 						"Venice implicitly creates a builder and a type check " +
 						"function suffixed with a dot and a question mark:\n\n" +
 						"```venice                                        \n" +
-						"(deftype :complex [real :long, imaginary :long]) \n" +
+						"(deftype :point [x :long, y :long])              \n" +
 						"                                                 \n" +
-						"(complex. 200 300)             ; builder         \n" +
-						"(complex? (complex. 200 300))  ; type check      \n" +
+						"(point. 200 300)           ; builder             \n" +
+						"(point? (point. 200 300))  ; type check          \n" +
 						"```                                              \n\n" +
 						"The builder accepts values of any subtype of the \n" +
 						"field's type.")
 					.examples(
 						"(do                                                      \n" +
 						"  (ns foo)                                               \n" +
-						"  (deftype :complex [real :long, imaginary :long])       \n" +
+						"  (deftype :point [x :long, y :long])                    \n" +
 						"  ; explicitly creating a custom type value              \n" +
-						"  (def x (.: :complex 100 200))                          \n" +
+						"  (def x (.: :point 100 200))                            \n" +
 						"  ; Venice implicitly creates a builder function         \n" +
 						"  ; suffixed with a '.'                                  \n" +
-						"  (def y (complex. 200 300))                             \n" +
+						"  (def y (point. 200 300))                               \n" +
 						"  ; ... and a type check function                        \n" +
-						"  (complex? y)                                           \n" +
+						"  (point? y)                                             \n" +
 						"  y)                                                       ",
 						"(do                                                      \n" +
 						"  (ns foo)                                               \n" +
-						"  (deftype :complex [real :long, imaginary :long])       \n" +
-						"  (def x (complex. 100 200))                             \n" +
+						"  (deftype :point [x :long, y :long])                    \n" +
+						"  (def x (point. 100 200))                               \n" +
 						"  (type x))                                                ",
 						"(do                                                      \n" +
 						"  (ns foo)                                               \n" +
-						"  (deftype :complex                                                           \n" +
-						"           [real :long, imaginary :long]                                      \n" +
-						"           (fn [t]                                                            \n" +
-						"              (assert (pos? (:real t)) \"real must be positive\")             \n" +
-						"              (assert (pos? (:imaginary t)) \"imaginary must be positive\"))) \n" +
-						"  (def x (complex. 100 200))                                                  \n" +
-						"  [(:real x) (:imaginary x)])                                                   ",
+						"  (deftype :point [x :long, y :long]                     \n" +
+						"     (fn [p]                                             \n" +
+						"       (assert (pos? (:x p)) \"x must be positive\")     \n" +
+						"       (assert (pos? (:y p)) \"y must be positive\")))   \n" +
+						"  (def p (point. 100 200))                               \n" +
+						"  [(:x p) (:y p)])                                        ",
 						"(do                                                 \n" +
 						"  (ns foo)                                          \n" +
 						"  (deftype :named [name :string, value :any])       \n" +
@@ -662,17 +661,16 @@ public class SpecialFormsDoc {
 						"  [x y])                                              ",
 						";; modifying a custom type field                    \n" +
 						"(do                                                 \n" +
-						"  (deftype :complex [real :long, imaginary :long])  \n" +
-						"  (def x (complex. 100 200))                        \n" +
-						"  (def y (assoc x :real 110)) ; y is of type complex\n" +
-						"  (pr-str y))                                         ",
+						"  (deftype :point [x :long, y :long])               \n" +
+						"  (def p (point. 0 0))                              \n" +
+						"  (def q (assoc p :x 1 :y 2)) ; q is a 'point'      \n" +
+						"  (pr-str q))                                         ",
 						";; removing a custom type field                     \n" +
 						"(do                                                 \n" +
-						"  (deftype :complex [real :long, imaginary :long])  \n" +
-						"  (def x (complex. 100 200))                        \n" +
-						"  (def y (dissoc x :real)) ; y is just a map now    \n" +
-						"  (pr-str y))                                         "
-)
+						"  (deftype :point [x :long, y :long])               \n" +
+						"  (def p (point. 100 200))                          \n" +
+						"  (def q (dissoc p :x)) ; q is just a map now       \n" +
+						"  (pr-str q))                                         ")
 					.seeAlso(
 						"deftype?", "deftype-of", "deftype-or", ".:", 
 						"deftype-describe", "Object", "assoc", "dissoc")
