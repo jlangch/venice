@@ -15,6 +15,7 @@ and this project adheres to
 
 - namespace aliases (`ns-alias`, `ns-aliases`, `ns-unalias`)
 - `Object` protocol to support customized 'compareTo' for custom datatypes
+- a parsatron expression parser example 'doc/example/scripts/expr-parser.venice'
 
 ### Fixed
  - function `name` to return the simple name only (without namespace)
