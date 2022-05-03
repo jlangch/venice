@@ -126,8 +126,8 @@
 
 (p/defparser digit-1to9 []
   (p/choice (p/char #\1) (p/char #\2) (p/char #\3)
-                         (p/char #\4) (p/char #\5) (p/char #\6)
-                         (p/char #\7) (p/char #\8) (p/char #\9)))
+            (p/char #\4) (p/char #\5) (p/char #\6)
+            (p/char #\7) (p/char #\8) (p/char #\9)))
 
 (p/defparser integer []
   (p/attempt (p/either (p/let->> [_ (p/char #\0)]
