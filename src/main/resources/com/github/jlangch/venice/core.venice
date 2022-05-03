@@ -1150,7 +1150,7 @@
           ```
 
           `compareTo` returns a negative integer, zero, or a positive integer as
-          _this_ value is less than, equal to, or greater than the _other_
+          *this* value is less than, equal to, or greater than the *other*
           value.
           """
      :examples '(
@@ -1166,8 +1166,7 @@
 
             ; custom `compareTo`: sort by 'x' ascending
             (println "compareTo:"
-                     (sort compare
-                           [(point. 2 100) (point. 3 101) (point. 1 102)])))
+                     (sort [(point. 2 100) (point. 3 101) (point. 1 102)])))
           """ )
      :see-also '("defprotocol", "deftype") }
 

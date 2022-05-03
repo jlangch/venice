@@ -22,6 +22,7 @@
 package com.github.jlangch.venice;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.*;
 
 import org.junit.jupiter.api.Test;
 
@@ -57,7 +58,7 @@ public class SpecialFormsTest_deftype_Object_protocol {
 				"  (deftype :point [x :long, y :long]                                        \n" +
 				"     Object                                                                 \n" + 
 			    "       (compareTo [self other] (. (:x self) :compareTo (:x other))))        \n" +
-				"  (pr-str (sort compare [(point. 2 100) (point. 3 101) (point. 1 102)])))   ";
+				"  (pr-str (sort [(point. 2 100) (point. 3 101) (point. 1 102)])))           ";
 
 		assertEquals(
 				"[{:custom-type* :user/point :x 1 :y 102}" +
@@ -67,7 +68,7 @@ public class SpecialFormsTest_deftype_Object_protocol {
 	}
 	
 	@Test
-	public void test_Object_protocol_toString_and_compareTo_2() {
+	public void test_Object_protocol_toString_and_compareTo() {
 		final Venice venice = new Venice();
 
 		final String script =
@@ -76,8 +77,64 @@ public class SpecialFormsTest_deftype_Object_protocol {
 				"     Object                                                                 \n" + 
 			    "       (toString [self] (str/format \"[%d,%d]\" (:x self) (:y self)))       \n" +
 			    "       (compareTo [self other] (. (:x self) :compareTo (:x other))))        \n" +
-				"  (pr-str (sort compare [(point. 2 100) (point. 3 101) (point. 1 102)])))   ";
+				"  (pr-str (sort [(point. 2 100) (point. 3 101) (point. 1 102)])))           ";
 
 		assertEquals("[[1,102] [2,100] [3,101]]", venice.eval(script));					
+	}
+	
+	@Test
+	public void test_Object_protocol_sort_without_compareTo() {
+		final Venice venice = new Venice();
+
+		final String script =
+				"(do                                                                         \n" +
+				"  (deftype :point [x :long, y :long]                                        \n" +
+				"     Object                                                                 \n" + 
+			    "       (toString [self] (str/format \"[%d,%d]\" (:x self) (:y self))))      \n" +
+				"  (pr-str (sort [(point. 2 100) (point. 3 101) (point. 1 102)])))           ";
+
+		assertEquals("[[1,102] [3,101] [2,100]]", venice.eval(script));					
+	}
+	
+	@Test
+	public void test_Object_protocol_sort_equals_1() {
+		final Venice venice = new Venice();
+
+		final String script =
+				"(do                                                                         \n" +
+				"  (deftype :point [x :long, y :long]                                        \n" +
+				"     Object                                                                 \n" + 
+			    "       (toString [self] (str/format \"[%d,%d]\" (:x self) (:y self))))      \n" +
+				"  (= (point. 1 100) (point. 1 100)))                                          ";
+
+		assertTrue((Boolean)venice.eval(script));					
+	}
+	
+	@Test
+	public void test_Object_protocol_sort_equals_2a() {
+		final Venice venice = new Venice();
+
+		final String script =
+				"(do                                                                         \n" +
+				"  (deftype :point [x :long, y :long]                                        \n" +
+				"     Object                                                                 \n" + 
+			    "       (toString [self] (str/format \"[%d,%d]\" (:x self) (:y self))))      \n" +
+				"  (= (point. 2 100) (point. 1 100)))                                          ";
+
+		assertFalse((Boolean)venice.eval(script));					
+	}
+	
+	@Test
+	public void test_Object_protocol_sort_equals_2b() {
+		final Venice venice = new Venice();
+
+		final String script =
+				"(do                                                                         \n" +
+				"  (deftype :point [x :long, y :long]                                        \n" +
+				"     Object                                                                 \n" + 
+			    "       (toString [self] (str/format \"[%d,%d]\" (:x self) (:y self))))      \n" +
+				"  (= (point. 1 101) (point. 1 100)))                                          ";
+
+		assertFalse((Boolean)venice.eval(script));					
 	}
 }
