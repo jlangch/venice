@@ -1524,7 +1524,7 @@ public class MathFunctions {
 						"(neg? (int -3))",
 						"(neg? -3.2)",
 						"(neg? -3.2M)")
-					.seeAlso("zero?", "pos?")
+					.seeAlso("zero?", "pos?", "negate")
 					.build()
 		) {
 			public VncVal apply(final VncList args) {
