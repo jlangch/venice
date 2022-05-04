@@ -54,8 +54,7 @@ The expression parser operates on a stream of tokens and returns a number.
   ;;; LParen              = "(" ;
   ;;; RParen              = ")" ;
   ;;; Digit               = "0" | "1" | "2" | "3" | "4" | "5" | "6" | "7" | "8" | "9" ;
-  ;;; Digit_1to9          = "1" | "2" | "3" | "4" | "5" | "6" | "7" | "8" | "9" ;
-  ;;; Integer             = "0" | Digit_1to9 [ Digit ]* ;
+  ;;; Integer             = Digit { Digit } ;
   ;;; Float               = Integer "." { Digit };
   ;;;
   ;;; Token               = Whitespace | Operation | ParOpen | ParClose | Integer | Float ;
