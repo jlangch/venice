@@ -64,14 +64,14 @@ expression strings into tokens that are feeded into the expression parser.
   ;;; [2] Expression Parser
   ;;; ----------------------------------------------------------------------------
   ;;;
-  ;;; Literal             =  Integer | Float ;
+  ;;; Literal             = Integer | Float ;
   ;;;
-  ;;; Main                =  Expression EOI ;
-  ;;; Expression          =  AddExpression ;
-  ;;; AddExpression       =  MulExpression { ( "+" | "-" ) MulExpression } ;
-  ;;; MulExpression       =  UnaryExpression { ( "*" | "/" ) UnaryExpression } ;
-  ;;; UnaryExpression     =  ( "+" | "-" ) UnaryExpression | ParExpression | Literal ;
-  ;;; ParExpression       =  "(" Expression ")" ;
+  ;;; Main                = Expression EOI ;
+  ;;; Expression          = AddExpression ;
+  ;;; AddExpression       = MulExpression { ( "+" | "-" ) MulExpression } ;
+  ;;; MulExpression       = UnaryExpression { ( "*" | "/" ) UnaryExpression } ;
+  ;;; UnaryExpression     = ( "+" | "-" ) UnaryExpression | ParExpression | Literal ;
+  ;;; ParExpression       = "(" Expression ")" ;
 
 
   (load-module :parsatron)
