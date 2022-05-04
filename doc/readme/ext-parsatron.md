@@ -15,8 +15,9 @@ The expression evaluator evaluates expressions like `"3 + (4 * 5)"`. It
 supports the math operators `+`, `-`, `*`, and `/`, `long` and `double`
 numbers, and the parenthesis `(` and `)`.
 
-The evaluator uses two Parsatron parsers. A tokenzing parsers splits the
-expression strings into tokens that are feeded into the expression parser.
+The evaluator uses two Parsatron parsers. An up-front tokenzing parsers 
+operates on a string (stream of characters) and returns a list of tokens.
+The expression parser operates on a stream of tokens and returns a number.
 
 **Usage**
 
