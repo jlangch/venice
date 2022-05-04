@@ -9,39 +9,47 @@ See [A Guide to the Parsatron](https://github.com/sjl/parsatron/blob/docs/docs/g
 
 ## Example
 
+Parsatron expression evaluator example
+
+The expression evaluator evaluates expressions like `"3 + (4 * 5)"`. It
+supports the math operators `+`, `-`, `*`, and `/`, integer and float
+numbers, and parenthesis.
+
+The evaluator uses two Parsatron parsers. A tokenzing parsers splits the
+expression strings into tokens that are feeded into the expression parser.
+
+**Usage**
+
+[1] Start a REPL and load the expression parser script:
+
 ```clojure
-;;; ----------------------------------------------------------------------------
-;;; Parsatron expression evaluator example
-;;; ----------------------------------------------------------------------------
-;;;
-;;; The expression evaluator evaluates expressions like "3 + (4 * 5)". It
-;;; supports the math operators '+', '-', '*', and '/', integer and float
-;;; numbers, and parenthesis.
-;;;
-;;; The evaluator uses two Parsatron parsers. A tokenzing parsers splits the
-;;; expression strings into tokens that are feeded into the expression parser.
+(load-file "path-to-venice/doc/examples/scripts/expr-parser.venice")
+```
 
-;;; ----------------------------------------------------------------------------
-;;; Usage
-;;; ----------------------------------------------------------------------------
-;;;
-;;; [1] Start a REPL and load the expression parser script
-;;;     (load-file "path-to-venice/doc/examples/scripts/expr-parser.venice")
-;;;
-;;; [2] Test the tokenizer:
-;;;     (p/run (tokens) "3 + 4.2")
-;;;     => ([:int "3"] [:operator "+"] [:float "4.2"] )
-;;;
-;;; [3] Test the expression parser:
-;;;     (->> (p/run (tokens) "3 + 4.1 - 5 * 3.2")
-;;;          (p/run (expr))
-;;;     => -8.9
-;;;
-;;;     (->> (p/run (tokens) "3 + (4.1 - 5) * 3.2")
-;;;          (p/run (expr))
-;;;     => 0.11999999999999877
+[2] Test the tokenizer:
 
+```clojure
+ (p/run (tokens) "3 + 4.2")
+ ; => ([:int "3"] [:operator "+"] [:float "4.2"] )
+```
 
+[3] Test the expression parser:
+
+```clojure
+(->> (p/run (tokens) "3 + 4.1 - 5 * 3.2")
+     (p/run (expr))
+; => -8.9
+```
+
+```clojure
+(->> (p/run (tokens) "3 + (4.1 - 5) * 3.2")
+     (p/run (expr))
+; => 0.11999999999999877
+```
+
+**Expression Parser**
+
+```clojure
 ;;; ----------------------------------------------------------------------------
 ;;; EBNF
 ;;; ----------------------------------------------------------------------------
@@ -72,7 +80,6 @@ See [A Guide to the Parsatron](https://github.com/sjl/parsatron/blob/docs/docs/g
 ;;; MulExpression       =  UnaryExpression { ( "*" | "/" ) UnaryExpression } ;
 ;;; UnaryExpression     =  ( "+" | "-" ) UnaryExpression | ParExpression | Literal ;
 ;;; ParExpression       =  "(" Expression ")" ;
-
 
 
 (load-module :parsatron)
