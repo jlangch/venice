@@ -202,8 +202,7 @@ The evaluator uses two Parsatron parsers. An up-front tokenzing parsers operates
     (p/between (l-paren) (r-paren) (expr)))
     
   (defn evaluate [e]
-    (->> (p/run (tokens) e)
-         (p/run (expr))))
+    (p/run (expr) (tokenize e)))
 )
 ```
 
