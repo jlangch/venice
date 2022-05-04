@@ -105,6 +105,11 @@ The expression parser operates on a stream of tokens and returns a number.
   ;;; ----------------------------------------------------------------------------
   ;;; Tokenizer
   ;;; ----------------------------------------------------------------------------
+  (defn remove-leading-zeros [s]
+    (if (str/starts-with? s "0")
+      (let [s (str/replace-first s (regex/pattern "0+") "")]
+        (if (empty? s) "0" s))
+      s))
 
   (p/defparser ws []
     (p/let->> [t (p/choice (p/char #\space) (p/char #\newline) (p/char #\tab))]
@@ -122,15 +127,9 @@ The expression parser operates on a stream of tokens and returns a number.
     (p/let->> [t (p/choice (p/char #\rparen))]
        (p/always (Token. :rparen (str t)))))
 
-  (p/defparser digit-1to9 []
-    (p/token #(<= (long #\1) (long %) (long #\9))))
-
   (p/defparser integer []
-    (p/attempt (p/either (p/let->> [_ (p/char #\0)]
-                            (p/always (Token. :int "0")))
-                         (p/let->> [f (digit-1to9)
-                                    r (p/many (p/digit))]
-                            (p/always (Token. :int (apply str (list* f r))))))))
+    (p/attempt (p/let->> [i (p/many1 (p/digit))]
+                  (p/always (Token. :int (remove-leading-zeros (apply str i)))))))
 
   (p/defparser float []
     (p/attempt (p/let->> [i-tok (integer)
@@ -149,7 +148,7 @@ The expression parser operates on a stream of tokens and returns a number.
        (p/always (remove-whitespaces (list* toks)))))
        
   (defn tokenize [e] 
-     (p/run (tokens) e))
+    (p/run (tokens) e))
 
 
   ;;; ----------------------------------------------------------------------------
