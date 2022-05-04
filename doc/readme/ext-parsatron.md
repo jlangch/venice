@@ -11,13 +11,9 @@ See [A Guide to the Parsatron](https://github.com/sjl/parsatron/blob/docs/docs/g
 
 Parsatron expression evaluator example
 
-The expression evaluator evaluates expressions like `"3 + (4 * 5)"`. It
-supports the math operators `+`, `-`, `*`, and `/`, `long` and `double`
-numbers, and the parenthesis `(` and `)`.
+The expression evaluator evaluates expressions like `"3 + (4 * 5)"`. It supports the math operators `+`, `-`, `*`, and `/`, `long` and `double` numbers, and the parenthesis `(` and `)`.
 
-The evaluator uses two Parsatron parsers. An up-front tokenzing parsers 
-operates on a string (stream of characters) and returns a list of tokens.
-The expression parser operates on a stream of tokens and returns a number.
+The evaluator uses two Parsatron parsers. An up-front tokenzing parsers operates on a string (stream of characters) and returns a list of tokens. The expression parser operates on a stream of tokens and returns a number.
 
 **Usage**
 
