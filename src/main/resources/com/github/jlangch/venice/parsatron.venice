@@ -395,10 +395,10 @@
           in a ParseError and thrown, and if the parser succeeds, its
           value is returned.
 
-          *Parsatron* is port of Nate Young's Clojure 
+          *Parsatron* is port of Nate Young's Clojure
           [parser combinators](https://github.com/youngnh/parsatron)
           project. See
-          [Introduction](https://github.com/sjl/parsatron/blob/docs/docs/guide.markdown)
+          [A Guide to the Parsatron](https://github.com/sjl/parsatron/blob/docs/docs/guide.markdown)
 
           For details see: `(doc :parsatron)`
           """}
