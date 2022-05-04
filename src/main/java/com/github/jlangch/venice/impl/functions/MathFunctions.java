@@ -379,7 +379,8 @@ public class MathFunctions {
 					.doc("Returns true if x is a NaN else false")
 					.examples(
 						"(nan? 0.0)",
-						"(nan? (sqrt -1))")
+						"(nan? (sqrt -1))",
+						"(pr (sqrt -1))")
 					.seeAlso("infinite?")
 					.build()
 		) {
@@ -409,7 +410,8 @@ public class MathFunctions {
 					.doc("Returns true if x is infinite else false")
 					.examples(
 						"(infinite? 1.0E300)",
-						"(infinite? (* 1.0E300 1.0E100))")
+						"(infinite? (* 1.0E300 1.0E100))",
+						"(pr (/ 4.1 0))")
 					.seeAlso("nan?")
 					.build()
 		) {

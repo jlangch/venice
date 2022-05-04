@@ -279,9 +279,7 @@ public class DocGenerator {
 				getJavaInteropSection(),
 				getReplSection(),
 				getPdfSection(),
-				getIOZipSection(),
-				getAppSection(),
-				getCsvSection());
+				getIOZipSection());
 	}
 	
 	private List<DocSection> getRightSections() {
@@ -296,7 +294,9 @@ public class DocGenerator {
 				getIOSection(),
 				getIOFileSection(),
 				getJsonSection(),
-				getCidrSection());
+				getCidrSection(),
+				getAppSection(),
+				getCsvSection());
 	}
 
 	private List<DocSection> getModulesLeftSections() {

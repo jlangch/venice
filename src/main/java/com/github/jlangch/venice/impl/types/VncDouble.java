@@ -370,6 +370,23 @@ public class VncDouble extends VncNumber {
 		return String.valueOf(value);
 	}
 
+	public String toString(final boolean print_machine_readably) {
+		if (print_machine_readably) {
+			if (Double.isInfinite(value)) {
+				return ":Infinite";
+			}
+			else if (Double.isNaN(value)) {
+				return ":NaN";
+			}
+			else {
+				return  String.valueOf(value);
+			}
+		}
+		else {
+			return String.valueOf(value);
+		}
+	}
+	
 
     public static final String TYPE = ":core/double";
 
