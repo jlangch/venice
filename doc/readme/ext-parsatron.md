@@ -105,11 +105,6 @@ The expression parser operates on a stream of tokens and returns a number.
   ;;; ----------------------------------------------------------------------------
   ;;; Tokenizer
   ;;; ----------------------------------------------------------------------------
-  (defn remove-leading-zeros [s]
-    (if (str/starts-with? s "0")
-      (let [s (str/replace-first s (regex/pattern "0+") "")]
-        (if (empty? s) "0" s))
-      s))
 
   (p/defparser ws []
     (p/let->> [t (p/choice (p/char #\space) (p/char #\newline) (p/char #\tab))]
@@ -129,7 +124,7 @@ The expression parser operates on a stream of tokens and returns a number.
 
   (p/defparser integer []
     (p/attempt (p/let->> [i (p/many1 (p/digit))]
-                  (p/always (Token. :int (remove-leading-zeros (apply str i)))))))
+                  (p/always (Token. :int (apply str i))))))
 
   (p/defparser float []
     (p/attempt (p/let->> [i-tok (integer)
