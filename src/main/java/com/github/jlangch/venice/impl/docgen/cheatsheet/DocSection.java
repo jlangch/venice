@@ -51,10 +51,8 @@ public class DocSection {
 		this.title = title;
 		this.subtitle = subtitle;
 		this.id = id;
-		if (header != null) {
-			this.headers.add(header);
-		}
-		this.footerXmlStyled = styleFooter(footer);
+		this.headerXmlStyled = style(header);
+		this.footerXmlStyled = style(footer);
 	}
 	
 	
@@ -73,9 +71,9 @@ public class DocSection {
 	public String getId() {
 		return id;
 	}
-	
-	public List<String> getHeaders() {
-		return headers;
+
+	public String getHeaderXmlStyled() {
+		return headerXmlStyled;
 	}
 	
 	public String getFooterXmlStyled() {
@@ -121,17 +119,17 @@ public class DocSection {
 		return getFormattedTitle() + ", id=" + id;
 	}
 	
-	private static String styleFooter(final String footer) {
-		return footer == null 
+	private static String style(final String markdown) {
+		return markdown == null 
 				? null 
-				: Markdown.parse(footer).renderToHtml();	
+				: Markdown.parse(markdown).renderToHtml();	
 	}
 
 	
 	private final String title;
 	private final String subtitle;
 	private final String id;
-	private final List<String> headers = new ArrayList<>();
+	private final String headerXmlStyled;
 	private final String footerXmlStyled;
 	
 	private final List<DocSection> sections = new ArrayList<>();	

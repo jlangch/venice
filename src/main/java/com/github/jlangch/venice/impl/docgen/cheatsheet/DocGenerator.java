@@ -67,7 +67,7 @@ public class DocGenerator {
 						"trace",  "ansi",   "maven",     "kira",
 						"java",   "semver", "excel",     "hexdump",
 						"shell",  "geoip",  "benchmark", "component",
-						"config"));
+						"config", "parsatron"));
 		
 		final Env docEnv = new VeniceInterpreter(new AcceptAllInterceptor())
 							.createEnv(
@@ -252,6 +252,7 @@ public class DocGenerator {
 		extmod.addSection(new DocSection("Shell", "modules.shell"));
 		extmod.addSection(new DocSection("Geo IP", "modules.geoip"));
 		extmod.addSection(new DocSection("Ansi", "modules.ansi"));
+		extmod.addSection(new DocSection("Parsatron", "modules.parsatron"));
 		extmod.addSection(new DocSection("Benchmark", "modules.benchmark"));
 		extmod.addSection(new DocSection("Configuration", "modules.config"));
 		extmod.addSection(new DocSection("Component", "modules.component"));
@@ -309,6 +310,7 @@ public class DocGenerator {
 				getModuleTracingSection(),
 				getModuleShellSection(),
 				getModuleAnsiSection(),
+				getModuleParsatronSection(),
 				getModuleBenchmarkSection(),
 				getModuleComponentSection());
 	}
@@ -2564,6 +2566,28 @@ public class DocGenerator {
 		return section;
 	}
 
+	private DocSection getModuleParsatronSection() {
+		final DocSection section = new DocSection(
+										"Parsatron", 
+										"A parser combinator",
+										"modules.parsatron",
+										"*Parsatron* is a port of Nate Young's Clojure " +
+										"[parser combinators](https://github.com/youngnh/parsatron) "+
+										"project. See " +
+										"[A Guide to the Parsatron](https://github.com/sjl/parsatron/blob/docs/docs/guide.markdown)\n\n" +
+										"For details see: `(doc :parsatron)`",
+										null);
+
+		final DocSection all = new DocSection("(load-module :parsatron)", id());
+		section.addSection(all);
+
+		final DocSection parser = new DocSection("Parser", id());
+		all.addSection(parser);
+		parser.addItem(getDocItem("parsatron/run", false));
+
+		return section;
+	}
+	
 	private DocSection getModuleBenchmarkSection() {
 		final DocSection section = new DocSection(
 										"Benchmark", 
