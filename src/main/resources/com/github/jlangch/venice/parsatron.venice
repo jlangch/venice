@@ -294,7 +294,7 @@
       (always (cons x xs)))))
 
 (defn lookahead
-  ;A parser that upon success consumes no input, but returns what was
+  ; A parser that upon success consumes no input, but returns what was
   ; parsed
   [p]
   (fn [state cok cerr eok eerr]
