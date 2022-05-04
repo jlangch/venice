@@ -20,28 +20,22 @@ expression strings into tokens that are feeded into the expression parser.
 
 **Usage**
 
-[1] Test the tokenizer:
+[1] Load the expression parser below in a REPL
+
+[2] Test the tokenizer:
 
 ```clojure
- (p/run (tokens) "3 + 4.2")
- 
- ; => ([:int "3"] [:operator "+"] [:float "4.2"] )
+ (tokenize "3 + 4.2")  ; => ([:int "3"] [:operator "+"] [:float "4.2"] )
 ```
 
-[2] Test the expression parser:
+[3] Test the expression parser:
 
 ```clojure
-(->> (p/run (tokens) "3 + 4.1 - 5 * 3.2")
-     (p/run (expr)))
-     
-; => -8.9
+(evaluate "3 + 4.1 - 5 * 3.2")   ; => -8.9
 ```
 
 ```clojure
-(->> (p/run (tokens) "3 + (4.1 - 5) * 3.2")
-     (p/run (expr)))
-     
-; => 0.11999999999999877
+(evaluate "3 + (4.1 - 5) * 3.2")   ; => 0.11999999999999877
 ```
 
 **Expression Parser**
@@ -154,6 +148,9 @@ expression strings into tokens that are feeded into the expression parser.
     (p/let->> [toks (p/many (token))
                _    (p/eof)]
        (p/always (remove-whitespaces (list* toks)))))
+       
+  (defn tokenize [e] 
+     (p/run (tokens) e))
 
 
   ;;; ----------------------------------------------------------------------------
@@ -215,6 +212,10 @@ expression strings into tokens that are feeded into the expression parser.
 
   (p/defparser par-expr []
     (p/between (l-paren) (r-paren) (expr)))
+    
+  (defn evaluate [e]
+    (->> (p/run (tokens) e)
+         (p/run (expr))))
 )
 ```
 
