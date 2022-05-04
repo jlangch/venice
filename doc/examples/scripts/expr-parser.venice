@@ -20,9 +20,15 @@
 ;;;; limitations under the License.
 
 ;;; ----------------------------------------------------------------------------
-;;; Parsatron expression parser example
+;;; Parsatron expression evaluator example
 ;;; ----------------------------------------------------------------------------
-
+;;;
+;;; The expression evaluator evaluates expressions like "3 + (4 * 5)". It
+;;; supports the math operators '+', '-', '*', and '/', integer and float
+;;; numbers, and parenthesis.
+;;;
+;;; The evaluator uses two Parsatron parsers. A tokenzing parsers splits the
+;;; expression strings into tokens that are feeded into the expression parser.
 
 ;;; ----------------------------------------------------------------------------
 ;;; Usage
@@ -31,11 +37,11 @@
 ;;; [1] Start a REPL and load the expression parser script
 ;;;     (load-file "path-to-venice/doc/examples/scripts/expr-parser.venice")
 ;;;
-;;; [2] Test the Tokenizer:
+;;; [2] Test the tokenizer:
 ;;;     (p/run (tokens) "3 + 4.2")
 ;;;     => ([:int "3"] [:operator "+"] [:float "4.2"] )
 ;;;
-;;; [3] Test the Parser:
+;;; [3] Test the expression parser:
 ;;;     (->> (p/run (tokens) "3 + 4.1 - 5 * 3.2")
 ;;;          (p/run (expr))
 ;;;     => -8.9
@@ -49,7 +55,7 @@
 ;;; EBNF
 ;;; ----------------------------------------------------------------------------
 ;;;
-;;; Tokenizer
+;;; [1] Tokenizer
 ;;; ----------------------------------------------------------------------------
 ;;; Whitespace          = " " | "\t" | "\n" ;
 ;;; Operation           = "+" | "-" | "*" | "/" ;
@@ -64,7 +70,7 @@
 ;;; Tokens              = { Token } EOI ;
 ;;;
 ;;;
-;;; Parser
+;;; [2] Expression Parser
 ;;; ----------------------------------------------------------------------------
 ;;;
 ;;; Literal             =  Integer | Float ;
@@ -155,8 +161,15 @@
 
 
 ;;; ----------------------------------------------------------------------------
-;;; Parser
+;;; Expression Parser
 ;;; ----------------------------------------------------------------------------
+
+(defn chained-math [seed-val tuples]
+  ;; (chained-math 1 [["+" 6] ["-" 4]]) ; => (1 + 6 - 4) => 3
+  (reduce (fn [acc t] (let [op (resolve (symbol (first t)))]
+                        (op acc (second t))))
+          seed-val
+          tuples))
 
 (defn op [sym]
   (p/token #(token? % :operator sym)))
@@ -182,27 +195,19 @@
 (p/defparser expr [] (add-expr))
 
 (p/defparser add-expr []
-  (p/let->> [seed (mul-expr)
-             rst  (p/many (p/let->> [op_ (p/either (op "+") (op "-"))
-                                     val (mul-expr)]
-                             (p/always [(:val op_) val])))]
-      (p/always (reduce (fn [acc x]
-                          (let [op_ (resolve (symbol (first x)))]
-                            (op_ acc (second x))))
-                        seed
-                        rst))))
+  (p/let->> [seed   (mul-expr)
+             tuples (p/many (p/let->> [op_ (p/either (op "+") (op "-"))
+                                       val (mul-expr)]
+                               (p/always [(:val op_) val])))]
+     (p/always (chained-math seed tuples))))
 
 (p/defparser mul-expr []
   ;; "3 * 4", "-3 * 4", "3 * 4 * 5"
-  (p/let->> [seed (unary-expr)
-             rst  (p/many (p/let->> [op_ (p/either (op "*") (op "/"))
-                                     val (unary-expr)]
-                             (p/always [(:val op_) val])))]
-      (p/always (reduce (fn [acc x]
-                          (let [op_ (resolve (symbol (first x)))]
-                            (op_ acc (second x))))
-                        seed
-                        rst))))
+  (p/let->> [seed   (unary-expr)
+             tuples (p/many (p/let->> [op_ (p/either (op "*") (op "/"))
+                                       val (unary-expr)]
+                               (p/always [(:val op_) val])))]
+     (p/always (chained-math seed tuples))))
 
 (p/defparser unary-expr []
   ;; "3", "+3", "-3"
