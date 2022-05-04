@@ -142,6 +142,87 @@ public class MathFunctionsTest {
 		assertEquals(new BigDecimal("3"), venice.eval("(+ 1N 2.0)"));
 		assertEquals(new BigDecimal("3.0"), venice.eval("(+ 1N 2.0M)"));
 	}
+	
+	@Test
+	public void test_add_infinite_nan() {
+		final Venice venice = new Venice();
+		
+		assertEquals(true, venice.eval("(infinite? (/ 1.0 0))"));
+		assertEquals(true, venice.eval("(nan? (/ 0.0 0))"));
+		
+		assertEquals(":Infinite", venice.eval("(with-out-str (pr (+ (/ 1.0 0) (/ 1.0 0))))"));
+		assertEquals(":NaN",      venice.eval("(with-out-str (pr (+ (/ 1.0 0) (/ 0.0 0))))"));
+		assertEquals(":NaN",      venice.eval("(with-out-str (pr (+ (/ 0.0 0) (/ 0.0 0))))"));
+	}
+	
+	@Test
+	public void test_sub() {
+		final Venice venice = new Venice();
+
+		assertEquals(Long.valueOf(0), venice.eval("(-)"));
+
+		// Integer
+		assertEquals(Integer.valueOf(-3), venice.eval("(- (int 3))"));
+		assertEquals(Integer.valueOf(-1), venice.eval("(- (int 1) (int 2))"));
+		assertEquals(Integer.valueOf(-4), venice.eval("(- (int 1) (int 2) (int 3))"));
+		assertEquals(Long.valueOf(-1), venice.eval("(- (int 1) 2)"));
+		assertEquals(Double.valueOf(-1.0D), venice.eval("(- (int 1) 2.0)"));
+		assertEquals(new BigDecimal("-1.0"), venice.eval("(- (int 1) 2.0M)"));
+		assertEquals(new BigInteger("-1"), venice.eval("(- (int 1) 2N)"));
+
+		assertEquals(Integer.valueOf(-3), venice.eval("(- 3I)"));
+		assertEquals(Integer.valueOf(-1), venice.eval("(- 1I 2I)"));
+		assertEquals(Integer.valueOf(-4), venice.eval("(- 1I 2I 3I)"));
+		assertEquals(Integer.valueOf(-14), venice.eval("(- 1I 0x0FI)"));
+		assertEquals(Long.valueOf(-1), venice.eval("(- 1I 2)"));
+		assertEquals(Double.valueOf(-1.0D), venice.eval("(- 1I 2.0)"));
+		assertEquals(new BigDecimal("-1.0"), venice.eval("(- 1I 2.0M)"));
+		assertEquals(new BigInteger("-1"), venice.eval("(- 1I 2N)"));
+
+		// Long
+		assertEquals(Long.valueOf(-3), venice.eval("(- 3)"));
+		assertEquals(Long.valueOf(-1), venice.eval("(- 1 2)"));
+		assertEquals(Long.valueOf(-4), venice.eval("(- 1 2 3)"));
+		assertEquals(Long.valueOf(-14), venice.eval("(- 1 0x0F)"));
+		assertEquals(Double.valueOf(-1.0D), venice.eval("(- 1 2.0)"));
+		assertEquals(new BigDecimal("-1.0"), venice.eval("(- 1 2.0M)"));
+		assertEquals(new BigInteger("-1"), venice.eval("(- 1 2N)"));
+
+		// Double
+		assertEquals(Double.valueOf(-3.0D), venice.eval("(- 3.0)"));
+		assertEquals(Double.valueOf(-1.0D), venice.eval("(- 1.0 2.0)"));
+		assertEquals(Double.valueOf(80.0D), venice.eval("(- 1.0E+2 2.0E+1)"));
+		assertEquals(Double.valueOf(-1.0D), venice.eval("(- 1.0 2)"));
+		assertEquals(new BigDecimal("-1.0"), venice.eval("(- 1.0 2.0M)"));
+		assertEquals(new BigDecimal("-1"), venice.eval("(- 1.0 2N)"));
+
+		// Decimal
+		assertEquals(new BigDecimal("-3.0"), venice.eval("(- 3.0M)"));
+		assertEquals(new BigDecimal("-1.0"), venice.eval("(- 1.0M 2.0M)"));
+		assertEquals(new BigDecimal("-1.0"), venice.eval("(- 1.0M 2)"));
+		assertEquals(new BigDecimal("-1.0"), venice.eval("(- 1.0M 2.0)"));
+		assertEquals(new BigDecimal("-1.0"), venice.eval("(- 1.0M 2N)"));
+
+		// BigInteger
+		assertEquals(new BigInteger("-3"), venice.eval("(- 3N)"));
+		assertEquals(new BigInteger("-1"), venice.eval("(- 1N 2N)"));
+		assertEquals(new BigInteger("-1"), venice.eval("(- 1N 2)"));
+		assertEquals(new BigDecimal("-1"), venice.eval("(- 1N 2.0)"));
+		assertEquals(new BigDecimal("-1.0"), venice.eval("(- 1N 2.0M)"));
+	}
+	
+	@Test
+	public void test_sub_infinite_nan() {
+		final Venice venice = new Venice();
+		
+		assertEquals(true, venice.eval("(infinite? (/ 1.0 0))"));
+		assertEquals(true, venice.eval("(nan? (/ 0.0 0))"));
+		
+		assertEquals(":NaN", venice.eval("(with-out-str (pr (- (/ 1.0 0) (/ 1.0 0))))"));
+		assertEquals(":NaN", venice.eval("(with-out-str (pr (- (/ 1.0 0) (/ 0.0 0))))"));
+		assertEquals(":NaN", venice.eval("(with-out-str (pr (- (/ 0.0 0) (/ 1.0 0))))"));
+		assertEquals(":NaN", venice.eval("(with-out-str (pr (- (/ 0.0 0) (/ 0.0 0))))"));
+	}
 
 	@Test
 	public void test_dec() {
@@ -305,6 +386,18 @@ public class MathFunctionsTest {
 		assertEquals(new BigInteger("6"), venice.eval("(/ 12N 2N)"));
 		assertEquals(new BigInteger("6"), venice.eval("(/ 12N 2)"));
 		assertEquals(new BigDecimal("6.0000000000000000"), venice.eval("(/ 12N 2.0)"));
+	}
+	
+	@Test
+	public void test_div_infinite_nan() {
+		final Venice venice = new Venice();
+		
+		assertEquals(true, venice.eval("(infinite? (/ 1.0 0))"));
+		assertEquals(true, venice.eval("(nan? (/ 0.0 0))"));
+		
+		assertEquals(":NaN", venice.eval("(with-out-str (pr (/ (/ 1.0 0) (/ 1.0 0))))"));
+		assertEquals(":NaN", venice.eval("(with-out-str (pr (/ (/ 1.0 0) (/ 0.0 0))))"));
+		assertEquals(":NaN", venice.eval("(with-out-str (pr (/ (/ 0.0 0) (/ 0.0 0))))"));
 	}
 
 	@Test
@@ -757,6 +850,18 @@ public class MathFunctionsTest {
 		assertEquals(new BigDecimal("2"), venice.eval("(* 1N 2.0)"));
 		assertEquals(new BigDecimal("2.0"), venice.eval("(* 1N 2.0M)"));
 	}
+	
+	@Test
+	public void test_mul_infinite_nan() {
+		final Venice venice = new Venice();
+		
+		assertEquals(true, venice.eval("(infinite? (/ 1.0 0))"));
+		assertEquals(true, venice.eval("(nan? (/ 0.0 0))"));
+		
+		assertEquals(":Infinite", venice.eval("(with-out-str (pr (* (/ 1.0 0) (/ 1.0 0))))"));
+		assertEquals(":NaN",      venice.eval("(with-out-str (pr (* (/ 1.0 0) (/ 0.0 0))))"));
+		assertEquals(":NaN",      venice.eval("(with-out-str (pr (* (/ 0.0 0) (/ 0.0 0))))"));
+	}
 
 	@Test
 	public void test_neg() {
@@ -978,7 +1083,9 @@ public class MathFunctionsTest {
 		final Venice venice = new Venice();
 		
 		assertFalse((Boolean)venice.eval("(nan? 0.0)"));
+		
 		assertTrue((Boolean)venice.eval("(nan? (sqrt -1))"));
+		assertTrue((Boolean)venice.eval("(nan? (/ 0.0 0))"));
 	}
 
 	@Test
@@ -986,7 +1093,9 @@ public class MathFunctionsTest {
 		final Venice venice = new Venice();
 		
 		assertFalse((Boolean)venice.eval("(infinite? 1.0E300)"));
+
 		assertTrue((Boolean)venice.eval("(infinite? (* 1.0E300 1.0E100))"));
+		assertTrue((Boolean)venice.eval("(infinite? (/ 1.0 0))"));
 	}
 
 	@Test
