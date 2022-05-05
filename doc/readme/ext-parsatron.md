@@ -11,9 +11,10 @@ See [A Guide to the Parsatron](https://github.com/sjl/parsatron/blob/docs/docs/g
 
 Parsatron expression evaluator example
 
-The expression evaluator evaluates expressions like `"3 + (4 * 5)"`. It supports the math operators `+`, `-`, `*`, and `/`, `long` and `double` numbers, and the parenthesis `(` and `)`.
+The expression evaluator evaluates expressions like `"(3 + 4) * 5"`. It supports the math operators `+`, `-`, `*`, and `/`, `long` and `double` numbers, and the parenthesis `(` and `)`.
 
-The evaluator uses two Parsatron parsers. An up-front tokenzing parsers operates on a string (stream of characters) and returns a list of tokens. The expression parser operates on a stream of tokens and returns a number.
+The evaluator uses two Parsatron parsers. The up-front tokenizing parser operates on a string (stream of characters) and returns a list of tokens. The expression parser operates on a stream of tokens and returns a number.
+
 
 **Usage**
 
@@ -22,16 +23,13 @@ The evaluator uses two Parsatron parsers. An up-front tokenzing parsers operates
 [2] Test the tokenizer:
 
 ```clojure
- (tokenize "3 + 4.2")  ; => ([:int "3"] [:operator "+"] [:float "4.2"] )
+ (tokenize "3 + 4.2")  ; => [[:int "3" (1,1)] [:op "+" (1,3)] [:float "4.2" (1,5)]]
 ```
 
 [3] Test the expression parser:
 
 ```clojure
-(evaluate "3 + 4.1 - 5 * 3.2")   ; => -8.9
-```
-
-```clojure
+(evaluate "3 + 4.1 - 5 * 3.2")     ; => -8.9
 (evaluate "3 + (4.1 - 5) * 3.2")   ; => 0.11999999999999877
 ```
 
@@ -111,7 +109,7 @@ The evaluator uses two Parsatron parsers. An up-front tokenzing parsers operates
   (p/defparser operator []
     (p/let->> [[l c] (p/pos)
                t     (p/any-char-of "+-*/")]
-       (p/always (Token. :operator (str t) l c))))
+       (p/always (Token. :op (str t) l c))))
 
   (p/defparser lparen []
     (p/let->> [[l c] (p/pos)
@@ -164,7 +162,7 @@ The evaluator uses two Parsatron parsers. An up-front tokenzing parsers operates
             tuples))
 
   (defn op [sym]
-    (p/token #(token? % :operator sym)))
+    (p/token #(token? % :op sym)))
 
   (defn l-paren []
     (p/token #(token-type? % :lparen)))

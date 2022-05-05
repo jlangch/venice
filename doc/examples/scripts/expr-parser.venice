@@ -23,11 +23,11 @@
 ;;; Parsatron expression evaluator example
 ;;; ----------------------------------------------------------------------------
 ;;;
-;;; The expression evaluator evaluates expressions like "3 + (4 * 5)". It
-;;; supports the math operators '+', '-', '*', and '/', integer and float
-;;; numbers, and parenthesis.
+;;; The expression evaluator evaluates expressions like `"(3 + 4) * 5"`. It
+;;; supports the math operators `+`, `-`, `*`, and `/`, `long` and `double`
+;;; numbers, and the parenthesis `(` and `)`.
 ;;;
-;;; The evaluator uses two Parsatron parsers. An up-front tokenzing parsers
+;;; The evaluator uses two Parsatron parsers. The up-front tokenizing parser
 ;;; operates on a string (stream of characters) and returns a list of tokens.
 ;;; The expression parser operates on a stream of tokens and returns a number.
 
@@ -40,7 +40,7 @@
 ;;;     (load-file "path-to-venice/doc/examples/scripts/expr-parser.venice")
 ;;;
 ;;; [2] Test the tokenizer:
-;;;     (tokenize "3 + 4.2")  ; => ([:int "3"] [:operator "+"] [:float "4.2"])
+;;;     (tokenize "3 + 4.2")  ; => ([:int "3"] [:op "+"] [:float "4.2"])
 ;;;
 ;;; [3] Test the expression parser:
 ;;;     (evaluate "3 + 4.1 - 5 * 3.2")    ; => -8.9
@@ -120,7 +120,7 @@
 (p/defparser operator []
   (p/let->> [[l c] (p/pos)
              t     (p/any-char-of "+-*/")]
-     (p/always (Token. :operator (str t) l c))))
+     (p/always (Token. :op (str t) l c))))
 
 (p/defparser lparen []
   (p/let->> [[l c] (p/pos)
@@ -173,7 +173,7 @@
           tuples))
 
 (defn op [sym]
-  (p/token #(token? % :operator sym)))
+  (p/token #(token? % :op sym)))
 
 (defn l-paren []
   (p/token #(token-type? % :lparen)))
