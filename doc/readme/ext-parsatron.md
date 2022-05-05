@@ -44,14 +44,14 @@ The evaluator uses two Parsatron parsers. The up-front tokenizing parser operate
   ;;; [1] Tokenizer
   ;;; ----------------------------------------------------------------------------
   ;;; Whitespace          = " " | "\t" | "\n" ;
-  ;;; Operation           = "+" | "-" | "*" | "/" ;
+  ;;; Operator            = "+" | "-" | "*" | "/" ;
   ;;; LParen              = "(" ;
   ;;; RParen              = ")" ;
   ;;; Digit               = "0" | "1" | "2" | "3" | "4" | "5" | "6" | "7" | "8" | "9" ;
   ;;; Integer             = Digit { Digit } ;
   ;;; Float               = Integer "." { Digit };
   ;;;
-  ;;; Token               = Whitespace | Operation | ParOpen | ParClose | Integer | Float ;
+  ;;; Token               = Whitespace | Operator | ParOpen | ParClose | Integer | Float ;
   ;;; Tokens              = { Token } EOI ;
   ;;;
   ;;;

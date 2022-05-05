@@ -8,7 +8,7 @@ Extension Modules are plain Venice scripts and must be loaded
 explicitly `(load-module :name)`. Venice tracks the modules loaded
 and loads a module only once and skips subsequent load attempts.
 
-* [Kira Template](ext-kira.md)
+* [Kira Template Engine](ext-kira.md)
 * [Shell](ext-shell.md)
 * [Charts](ext-charts.md)
 * [Configuration](ext-configuration.md)
