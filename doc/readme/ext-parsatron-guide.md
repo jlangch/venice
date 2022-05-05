@@ -18,7 +18,7 @@ This document will show you the basics of how to use Parsatron as an end user.
 Importing
 ---------
 
-You can grab all the things you'll need by using loading the `parsatron` module:
+You can grab all the things you'll need by loading the `parsatron` module:
 
 ```clojure
 (load-module :parsatron)
