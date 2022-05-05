@@ -582,22 +582,28 @@ public class StringFunctionsTest {
 	public void test_str_trim_left() {
 		final Venice venice = new Venice();
 		
+		assertEquals(null, venice.eval("(str/trim-left nil)"));
+		assertEquals("", venice.eval("(str/trim-left \"\")"));
 		assertEquals("abcdef", venice.eval("(str/trim-left \"abcdef\")"));
 		assertEquals("abcdef  ", venice.eval("(str/trim-left \"  abcdef  \")"));
 		assertEquals("abcdef", venice.eval("(str/trim-left \"  abcdef\")"));
 		assertEquals("abcdef  ", venice.eval("(str/trim-left \"abcdef  \")"));
 		assertEquals("", venice.eval("(str/trim-left \"  \")"));
+		assertEquals("", venice.eval("(str/trim-left \" \f\t\r\n \")"));
 	}
 
 	@Test
 	public void test_str_trim_right() {
 		final Venice venice = new Venice();
 		
+		assertEquals(null, venice.eval("(str/trim-right nil)"));
+		assertEquals("", venice.eval("(str/trim-right \"\")"));
 		assertEquals("abcdef", venice.eval("(str/trim-right \"abcdef\")"));
 		assertEquals("  abcdef", venice.eval("(str/trim-right \"  abcdef  \")"));
 		assertEquals("  abcdef", venice.eval("(str/trim-right \"  abcdef\")"));
 		assertEquals("abcdef", venice.eval("(str/trim-right \"abcdef  \")"));
 		assertEquals("", venice.eval("(str/trim-right \"  \")"));
+		assertEquals("", venice.eval("(str/trim-right \" \f\t\r\n \")"));
 	}
 
 	@Test
