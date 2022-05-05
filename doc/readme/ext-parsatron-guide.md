@@ -4,7 +4,7 @@ A Guide to Parsatron
 
 The original Clojure Parsatron guide can be found at [A Guide to the Parsatron](https://github.com/sjl/parsatron/blob/docs/docs/guide.markdown)
 
-This guide is adapted to Venice port of Parsatron.
+This guide is adapted to the Venice port of Parsatron.
 
 
 The Parsatron is a library for building parsers for languages.  For an overview
