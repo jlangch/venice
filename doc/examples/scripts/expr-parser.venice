@@ -44,7 +44,7 @@
 ;;;
 ;;; [3] Test the expression parser:
 ;;;     (evaluate "3 + 4.1 - 5 * 3.2")    ; => -8.9
-;;;;    (evaluate "3 + (4.1 - 5) * 3.2")  ; => 0.11999999999999877
+;;;     (evaluate "3 + (4.1 - 5) * 3.2")  ; => 0.11999999999999877
 
 
 ;;; ----------------------------------------------------------------------------
@@ -112,32 +112,32 @@
 ;;; Tokenizer
 ;;; ----------------------------------------------------------------------------
 
-(p/defparser ws []
+(p/defparser ws-tok []
   (p/let->> [[l c] (p/pos)
              t     (p/many1 (p/any-char-of " \t\n"))]
      (p/always (Token. :whitespace (apply str t) l c))))
 
-(p/defparser operator []
+(p/defparser op-tok []
   (p/let->> [[l c] (p/pos)
              t     (p/any-char-of "+-*/")]
      (p/always (Token. :op (str t) l c))))
 
-(p/defparser lparen []
+(p/defparser lparen-tok []
   (p/let->> [[l c] (p/pos)
              t     (p/choice (p/char #\lparen))]
      (p/always (Token. :lparen (str t) l c))))
 
-(p/defparser rparen []
+(p/defparser rparen-tok []
   (p/let->> [[l c] (p/pos)
              t     (p/choice (p/char #\rparen))]
      (p/always (Token. :rparen (str t) l c))))
 
-(p/defparser integer []
+(p/defparser int-tok []
   (p/let->> [[l c] (p/pos)
              i     (p/many1 (p/digit))]
      (p/always (Token. :int (apply str i) l c))))
 
-(p/defparser float []
+(p/defparser float-tok []
   (p/attempt (p/let->> [[l c] (p/pos)
                         i     (p/many1 (p/digit))
                         d     (p/char #\.)
@@ -147,8 +147,8 @@
                                   l c)))))
 
 (p/defparser token []
-  (p/let->> [_  (p/many (ws)) ; skip whitespace token
-             t  (p/choice (operator) (lparen) (rparen) (float) (integer))]
+  (p/let->> [_  (p/many (ws-tok)) ; skip whitespace token
+             t  (p/choice (op-tok) (lparen-tok) (rparen-tok) (float-tok) (int-tok))]
      (p/always t)))
 
 (p/defparser tokens []
@@ -156,8 +156,8 @@
              _ (p/eof)]
      (p/always t)))
 
-(defn tokenize [e]
-  (p/run (tokens) (str/trim-right e)))
+(defn tokenize [expression]
+  (p/run (tokens) (str/trim-right expression)))
 
 
 
@@ -175,51 +175,49 @@
 (defn op [sym]
   (p/token #(token? % :op sym)))
 
-(defn l-paren []
+(defn lparen []
   (p/token #(token-type? % :lparen)))
 
-(defn r-paren []
+(defn rparen []
   (p/token #(token-type? % :rparen)))
 
-(p/defparser nint []
+(p/defparser int []
   (p/let->> [i (p/token #(token-type? % :int))]
      (p/always (long (:val i)))))
 
-(p/defparser nfloat []
+(p/defparser float []
  (p/let->> [i (p/token #(token-type? % :float))]
     (p/always (double (:val i)))))
 
 (p/defparser number []
-  (p/either (nint) (nfloat)))
+  (p/either (int) (float)))
 
 
 (p/defparser expr [] (add-expr))
 
 (p/defparser add-expr []
   (p/let->> [seed   (mul-expr)
-             tuples (p/many (p/let->> [op_ (p/either (op "+") (op "-"))
+             tuples (p/many (p/let->> [opc (p/either (op "+") (op "-"))
                                        val (mul-expr)]
-                               (p/always [(:val op_) val])))]
+                               (p/always [(:val opc) val])))]
      (p/always (chained-math seed tuples))))
 
 (p/defparser mul-expr []
-  ;; "3 * 4", "-3 * 4", "3 * 4 * 5"
   (p/let->> [seed   (unary-expr)
-             tuples (p/many (p/let->> [op_ (p/either (op "*") (op "/"))
+             tuples (p/many (p/let->> [opc (p/either (op "*") (op "/"))
                                        val (unary-expr)]
-                               (p/always [(:val op_) val])))]
+                               (p/always [(:val opc) val])))]
      (p/always (chained-math seed tuples))))
 
 (p/defparser unary-expr []
-  ;; "3", "+3", "-3"
-  (p/choice (p/let->> [op_ (p/either (op "+") (op "-"))
+  (p/choice (p/let->> [opc (p/either (op "+") (op "-"))
                        val (unary-expr)]
-               (p/always (if (token-value? op_ "+") val (negate val))))
-            (par-expr)
+               (p/always (if (token-value? opc "+") val (negate val))))
+            (paren-expr)
             (number)))
 
-(p/defparser par-expr []
-  (p/between (l-paren) (r-paren) (expr)))
+(p/defparser paren-expr []
+  (p/between (lparen) (rparen) (expr)))
 
-(defn evaluate [e]
-  (p/run (expr) (tokenize e)))
+(defn evaluate [expression]
+  (p/run (expr) (tokenize expression)))
