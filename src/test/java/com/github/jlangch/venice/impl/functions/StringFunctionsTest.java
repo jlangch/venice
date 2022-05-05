@@ -514,9 +514,12 @@ public class StringFunctionsTest {
 	@Test
 	public void test_str_strip_end() {
 		final Venice venice = new Venice();
+		
+		assertEquals("abcdef", venice.eval("(str/strip-end \"abcdef\" \"\")"));
 
 		assertEquals("abc", venice.eval("(str/strip-end \"abcdef\" \"def\")"));
 		assertEquals("abcdef", venice.eval("(str/strip-end \"abcdef\" \"abc\")"));
+		assertEquals("", venice.eval("(str/strip-end \"abcdef\" \"abcdef\")"));
 	}
 
 	@Test
@@ -541,14 +544,17 @@ public class StringFunctionsTest {
 	public void test_str_strip_start() {
 		final Venice venice = new Venice();
 
+		assertEquals("abcdef", venice.eval("(str/strip-start \"abcdef\" \"\")"));
+
 		assertEquals("def", venice.eval("(str/strip-start \"abcdef\" \"abc\")"));
 		assertEquals("abcdef", venice.eval("(str/strip-start \"abcdef\" \"def\")"));
+		assertEquals("", venice.eval("(str/strip-start \"abcdef\" \"abcdef\")"));
 	}
 
 	@Test
 	public void test_str_subs() {
 		final Venice venice = new Venice();
-
+		
 		assertEquals("abcdef", venice.eval("(str/subs \"abcdef\" 0)"));
 		assertEquals("ab", venice.eval("(str/subs \"abcdef\" 0 2)"));
 		assertEquals("bcdef", venice.eval("(str/subs \"abcdef\" 1)"));
