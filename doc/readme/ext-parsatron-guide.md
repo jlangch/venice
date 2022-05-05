@@ -412,7 +412,7 @@ Here's a little drawing that might help:
                (some parser)
 
 `run` takes the wrapped output from the parser and unwraps it for us before
-returning it, which is why our `run` calls always gave us vanilla Clojure data
+returning it, which is why our `run` calls always gave us vanilla Venice data
 structures before.
 
 We're almost to the point where we can create full-featured parsers.  The final
@@ -490,7 +490,7 @@ fine:
       (let [name (apply str name)]
         (p/always name)))
 
-`let` in this example is a vanilla Clojure `let`.
+`let` in this example is a vanilla Venice `let`.
 
 Binding forms in a `let->>` are executed in order, and importantly, later forms
 can refer to earlier ones.  Look at this example:
@@ -534,11 +534,6 @@ Before you go, here's a few tips and tricks that you might find helpful.
 Remember that the Parsatron operates on sequences of input.  These don't
 necessarily have to be strings.
 
-Maybe you've got a big JSON response that you want to split apart.  Don't try to
-write a JSON parser from scratch, just use an existing one like [Cheshire][] and
-then use the Parsatron to parse the Clojure datastructure(s) it sends back!
-
-[Cheshire]: https://github.com/dakrone/cheshire
 
 ### You can throw away `let->>` bindings
 
