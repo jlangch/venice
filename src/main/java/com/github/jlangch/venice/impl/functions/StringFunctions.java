@@ -267,8 +267,9 @@ public class StringFunctions {
 				VncFunction
 					.meta()
 					.arglists("(str/trim s)")
-					.doc("Trims leading and trailing spaces from s.")
+					.doc("Trims leading and trailing whitespaces from s.")
 					.examples("(str/trim \" abc  \")")
+					.seeAlso("str/trim-to-nil", "str/trim-left", "str/trim-right")
 					.build()
 		) {
 			public VncVal apply(final VncList args) {
@@ -284,6 +285,58 @@ public class StringFunctions {
 			private static final long serialVersionUID = -1848883965231344442L;
 		};
 
+	public static VncFunction str_trim_left =
+		new VncFunction(
+				"str/trim-left",
+				VncFunction
+					.meta()
+					.arglists("(str/trim-left s)")
+					.doc("Trims leading whitespaces from s.")
+					.examples("(str/trim \" abc \")")
+					.seeAlso("str/trim-right", "str/trim", "str/trim-to-nil")
+					.build()
+		) {
+			public VncVal apply(final VncList args) {
+				ArityExceptions.assertArity(this, args, 1);
+
+				if (args.first() == Nil) {
+					return Nil;
+				}
+
+				return new VncString(
+							StringUtil.trimLeft(
+								Coerce.toVncString(args.first()).getValue()));
+			}
+
+			private static final long serialVersionUID = -1848883965231344442L;
+		};
+
+	public static VncFunction str_trim_right =
+		new VncFunction(
+				"str/trim-right",
+				VncFunction
+					.meta()
+					.arglists("(str/trim-right s)")
+					.doc("Trims trailing whitespaces from s.")
+					.examples("(str/trim-right \" abc \")")
+					.seeAlso("str/trim-left", "str/trim", "str/trim-to-nil")
+					.build()
+		) {
+			public VncVal apply(final VncList args) {
+				ArityExceptions.assertArity(this, args, 1);
+
+				if (args.first() == Nil) {
+					return Nil;
+				}
+
+				return new VncString(
+							StringUtil.trimRight(
+								Coerce.toVncString(args.first()).getValue()));
+			}
+
+			private static final long serialVersionUID = -1848883965231344442L;
+		};
+
 	public static VncFunction str_trim_to_nil =
 		new VncFunction(
 				"str/trim-to-nil",
@@ -291,13 +344,14 @@ public class StringFunctions {
 					.meta()
 					.arglists("(str/trim-to-nil s)")
 					.doc(
-						"Trims leading and trailing spaces from s. " +
+						"Trims leading and trailing whitespaces from s. " +
 						"Returns nil if the resulting string is empty")
 					.examples(
 						"(str/trim-to-nil \"\")",
 						"(str/trim-to-nil \"    \")",
 						"(str/trim-to-nil nil)",
 						"(str/trim-to-nil \" abc   \")")
+					.seeAlso("str/trim", "str/trim-left", "str/trim-right")
 					.build()
 		) {
 			public VncVal apply(final VncList args) {
@@ -2185,6 +2239,8 @@ public class StringFunctions {
 					.add(str_upper_case_Q)
 					.add(str_lower_case_Q)
 					.add(str_trim)
+					.add(str_trim_left)
+					.add(str_trim_right)
 					.add(str_trim_to_nil)
 					.add(str_index_of)
 					.add(str_last_index_of)

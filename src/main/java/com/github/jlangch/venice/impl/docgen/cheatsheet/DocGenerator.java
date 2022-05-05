@@ -491,6 +491,8 @@ public class DocGenerator {
 		strings.addSection(trim);
 		trim.addItem(getDocItem("str/trim"));
 		trim.addItem(getDocItem("str/trim-to-nil"));
+		trim.addItem(getDocItem("str/trim-left"));
+		trim.addItem(getDocItem("str/trim-right"));
 
 		final DocSection hex = new DocSection("Hex", "primitives.strings.hex");
 		strings.addSection(hex);
