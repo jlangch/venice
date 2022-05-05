@@ -4,7 +4,7 @@
 Clojure [parser combinator library](https://github.com/youngnh/parsatron) 
 project. 
 
-See [A Guide to the Parsatron](https://github.com/sjl/parsatron/blob/docs/docs/guide.markdown)
+See [A Guide to Parsatron](ext-parsatron-guide.md)
 
 
 ## Example
