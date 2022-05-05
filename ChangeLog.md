@@ -17,8 +17,13 @@ and this project adheres to
 - `Object` protocol to support customized 'compareTo' for custom datatypes
 - a parsatron expression parser example 'doc/example/scripts/expr-parser.venice'
 
+### Changed
+
+- the printing of 'Infinite' and 'NaN' double numbers in the reader format for
+  the functions `pr-str`, `pr`, and `prn`. 
+
 ### Fixed
- - function `name` to return the simple name only (without namespace)
+- function `name` to return the simple name only (without namespace)
 
 
 ## [1.10.10] - 2022-05-01
@@ -34,9 +39,9 @@ and this project adheres to
   for the Venice's reader format
 
 ### Fixed
- - a problem with the functions `io/string-in-stream` and `io/bytebuf-in-stream` not 
-   being accessible through its global symbols
- - an edge case with dynamic vars propagation across threads
+- a problem with the functions `io/string-in-stream` and `io/bytebuf-in-stream` not 
+  being accessible through its global symbols
+- an edge case with dynamic vars propagation across threads
 
 
 
