@@ -136,8 +136,8 @@ The evaluator uses two Parsatron parsers. The up-front tokenizing parser operate
                                     l c)))))
 
   (p/defparser token []
-    (p/let->> [_  (p/many (ws-tok)) ; skip whitespace token
-               t  (p/choice (op-tok) (lparen-tok) (rparen-tok) (float-tok) (int-tok))]
+    (p/let->> [_ (p/many (ws-tok))
+               t (p/choice (op-tok) (lparen-tok) (rparen-tok) (float-tok) (int-tok))]
        (p/always t)))
 
   (p/defparser tokens []
@@ -178,10 +178,6 @@ The evaluator uses two Parsatron parsers. The up-front tokenizing parser operate
    (p/let->> [i (p/token #(token-type? % :float))]
       (p/always (double (:val i)))))
 
-  (p/defparser number []
-    (p/either (int) (float)))
-
-
   (p/defparser expr [] (add-expr))
 
   (p/defparser add-expr []
@@ -203,7 +199,8 @@ The evaluator uses two Parsatron parsers. The up-front tokenizing parser operate
                          val (unary-expr)]
                  (p/always (if (token-value? opc "+") val (negate val))))
               (paren-expr)
-              (number)))
+              (int) 
+              (float)))
 
   (p/defparser paren-expr []
     (p/between (lparen) (rparen) (expr)))
