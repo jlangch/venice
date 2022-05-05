@@ -22,8 +22,8 @@ and this project adheres to
 ### Added
 
 - namespace aliases (`ns-alias`, `ns-aliases`, `ns-unalias`)
-- `Object` protocol to support customized 'compareTo' for custom datatypes
-- a parsatron expression parser example 'doc/example/scripts/expr-parser.venice'
+- `Object` protocol to support customized `compareTo` function for custom datatypes
+- a Parsatron expression parser example _'doc/example/scripts/expr-parser.venice'_
 - functions `str/trim-left` and `str/trim-right`
 
 ### Changed
