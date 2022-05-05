@@ -133,7 +133,7 @@ that we can use the parsatron to parse more than just strings:
     (p/run (p/any-char) "Cats")
     ; #\C
 
-    (p/run (p/any-char) [#\C #\a #\t \s])#
+    (p/run (p/any-char) [#\C #\a #\t #\s])
     ; #\C
 
     (p/run (p/any-char) [1 2 3])
@@ -145,10 +145,10 @@ that we can use the parsatron to parse more than just strings:
 (a-z and A-Z) and digit characters (0-9) respectively.
 
     (p/run (p/letter) "Dogs")
-    ; \D
+    ; #\D
 
     (p/run (p/digit) "100")
-    ; \1
+    ; #\1
 
 Note that digit works with *character* objects.  It won't work with actual
 integers:
@@ -327,9 +327,9 @@ This is a convenient way to handle things like parentheses:
 
     (def number (p/many1 (p/digit)))
 
-    (p/run (between (p/>> open-paren optional-whitespace)
-                    (p/>> optional-whitespace close-paren)
-                    number)
+    (p/run (p/between (p/>> open-paren optional-whitespace)
+                      (p/>> optional-whitespace close-paren)
+                      number)
         "(123    )")
     ; (#\1 #\2 #\3)
 
@@ -499,8 +499,8 @@ can refer to earlier ones.  Look at this example:
       (p/let->> [sign (p/choice (p/char #\+)
                                 (p/char #\-))
                word (if (= sign #\+)
-                      (string "plus")
-                      (string "minus"))]
+                      (p/string "plus")
+                      (p/string "minus"))]
         (p/always [sign word])))
 
     (p/run (sample) "+plus")
