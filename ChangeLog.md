@@ -9,7 +9,7 @@ and this project adheres to
 
 
 
-## [1.10.11] - 2022-05-xx
+## [1.10.11] - 2022-05-05
 
 ### Added
 
@@ -25,6 +25,7 @@ and this project adheres to
 
 ### Fixed
 - function `name` to return the simple name only (without namespace)
+
 
 
 ## [1.10.10] - 2022-05-01
