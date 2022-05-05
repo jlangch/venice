@@ -104,7 +104,7 @@ The evaluator uses two Parsatron parsers. The up-front tokenizing parser operate
   (p/defparser ws-tok []
     (p/let->> [[l c] (p/pos)
                t     (p/many1 (p/any-char-of " \t\n"))]
-       (p/always (Token. :whitespace (apply str t) l c))))
+       (p/always (Token. :ws (apply str t) l c))))
 
   (p/defparser op-tok []
     (p/let->> [[l c] (p/pos)
