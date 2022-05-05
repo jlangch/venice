@@ -31,7 +31,7 @@
 ;;;;
 ;;;; This is a Venice port of the Parsatron parser combinator.
 
-;;; Parsec boils down to 2 ideas.
+;;; Parsatron is based on Haskell's Parsec and boils down to 2 ideas.
 ;;;    A parser either consumes input or doesn’t. Consumed or Empty.
 ;;;    A parser either succeeds in parsing or it fails. Ok or Err.
 ;;;
@@ -70,6 +70,7 @@
 
 (deftype :parse-error [pos :source-pos msgs :sequence])
 
+(defprotocol SourcePosition (line [p]) (column [p]))
 
 
 ;; -----------------------------------------------------------------------------
@@ -79,11 +80,13 @@
   ; increments the SourcePos's line number and resets the column, on
   ; all other characters, increments the column
   [pos c]
-  (let [line   (:line pos)
-        column (:column pos)]
-    (if (str/linefeed? c)
-      (source-pos. (inc line) 1)
-      (source-pos. line (inc column)))))
+  (if (extends? (type c) SourcePosition)
+    (source-pos. (line c) (column c))
+    (let [line   (:line pos)
+          column (:column pos)]
+      (if (str/linefeed? c)
+        (source-pos. (inc line) 1)
+        (source-pos. line (inc column))))))
 
 
 ;; -----------------------------------------------------------------------------
@@ -252,6 +255,13 @@
   ;   (do-something-with current-line))
   []
   (extract (comp :line :pos)))
+
+(defn pos
+  ; A parser that returns the current line/col number. It consumes no input
+  ; (let->> [[line col] (pos)]
+  ;   (do-something-with current-line))
+  []
+  (extract #(vector (-> % :pos :line) (-> % :pos :column))))
 
 
 ;; -----------------------------------------------------------------------------
