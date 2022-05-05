@@ -7,7 +7,9 @@ The original Clojure Parsatron guide can be found at [A Guide to the Parsatron](
 This guide is adapted to the Venice port of Parsatron.
 
 
-The Parsatron is a library for building parsers for languages.  For an overview of how it works internally you can watch [this talk][talk] from Nate Young on his Clojure Parsatron implementation.
+The Parsatron is a library for building parsers for languages.  For an overview of
+how it works internally you can watch [this talk][talk] from Nate Young on his 
+Clojure Parsatron implementation.
 
 This document will show you the basics of how to use Parsatron as an end user.
 
@@ -16,8 +18,7 @@ This document will show you the basics of how to use Parsatron as an end user.
 Importing
 ---------
 
-Assuming you have the library installed, you can grab all the things you'll
-need by using it:
+You can grab all the things you'll need by using loading the `parsatron` module:
 
 ```clojure
 (load-module :parsatron)
