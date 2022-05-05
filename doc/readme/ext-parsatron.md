@@ -78,11 +78,16 @@ The evaluator uses two Parsatron parsers. An up-front tokenzing parsers operates
   ;;; Token
   ;;; ----------------------------------------------------------------------------
 
-  (deftype :Token [type :keyword, val :string]
+  (deftype :Token [type :keyword, val :string, line :long, column :long]
     Object
-      (toString [this] (str/format "[%s %s]"
+      (toString [this] (str/format "[%s %s (%d,%d)]"
                                    (pr-str (:type this))
-                                   (pr-str (:val this)))))
+                                   (pr-str (:val this))
+                                   (:line this)
+                                   (:column this)))
+    p/SourcePosition
+      (line [this] (:line this))
+      (column [this] (:column this)))
 
   (defn token-type? [token type]
     (= type (:type token)))
@@ -99,31 +104,38 @@ The evaluator uses two Parsatron parsers. An up-front tokenzing parsers operates
   ;;; ----------------------------------------------------------------------------
 
   (p/defparser ws []
-    (p/let->> [t (p/many1 (p/any-char-of " \t\n"))]
-       (p/always (Token. :whitespace (apply str t)))))
+    (p/let->> [[l c] (p/pos)
+               t     (p/many1 (p/any-char-of " \t\n"))]
+       (p/always (Token. :whitespace (apply str t) l c))))
 
   (p/defparser operator []
-    (p/let->> [t (p/any-char-of "+-*/")]
-       (p/always (Token. :operator (str t)))))
+    (p/let->> [[l c] (p/pos)
+               t     (p/any-char-of "+-*/")]
+       (p/always (Token. :operator (str t) l c))))
 
   (p/defparser lparen []
-    (p/let->> [t (p/choice (p/char #\lparen))]
-       (p/always (Token. :lparen (str t)))))
+    (p/let->> [[l c] (p/pos)
+               t     (p/choice (p/char #\lparen))]
+       (p/always (Token. :lparen (str t) l c))))
 
   (p/defparser rparen []
-    (p/let->> [t (p/choice (p/char #\rparen))]
-       (p/always (Token. :rparen (str t)))))
+    (p/let->> [[l c] (p/pos)
+               t     (p/choice (p/char #\rparen))]
+       (p/always (Token. :rparen (str t) l c))))
 
   (p/defparser integer []
-    (p/let->> [i (p/many1 (p/digit))]
-       (p/always (Token. :int (apply str i)))))
+    (p/let->> [[l c] (p/pos)
+               i     (p/many1 (p/digit))]
+       (p/always (Token. :int (apply str i) l c))))
 
   (p/defparser float []
-    (p/attempt (p/let->> [i (p/many1 (p/digit))
-                          d (p/char #\.)
-                          f (p/many1 (p/digit))]
+    (p/attempt (p/let->> [[l c] (p/pos)
+                          i     (p/many1 (p/digit))
+                          d     (p/char #\.)
+                          f     (p/many1 (p/digit))]
                   (p/always (Token. :float
-                                    (apply str (flatten (list i d f))))))))
+                                    (apply str (flatten (list i d f)))
+                                    l c)))))
 
   (p/defparser token []
     (p/let->> [_  (p/many (ws)) ; skip whitespace token
