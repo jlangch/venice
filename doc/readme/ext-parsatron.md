@@ -99,8 +99,8 @@ The evaluator uses two Parsatron parsers. An up-front tokenzing parsers operates
   ;;; ----------------------------------------------------------------------------
 
   (p/defparser ws []
-    (p/let->> [_ (p/many1 (p/any-char-of " \t\n"))]
-       (p/always nil)))
+    (p/let->> [t (p/many1 (p/any-char-of " \t\n"))]
+       (p/always (Token. :whitespace (apply str t)))))
 
   (p/defparser operator []
     (p/let->> [t (p/any-char-of "+-*/")]
@@ -126,15 +126,17 @@ The evaluator uses two Parsatron parsers. An up-front tokenzing parsers operates
                                     (apply str (flatten (list i d f))))))))
 
   (p/defparser token []
-    (p/choice (ws) (operator) (lparen) (rparen) (float) (integer)))
+    (p/let->> [_  (p/many (ws)) ; skip whitespace token
+               t  (p/choice (operator) (lparen) (rparen) (float) (integer))]
+       (p/always t)))
 
   (p/defparser tokens []
-    (p/let->> [toks (p/many (token))
-               _    (p/eof)]
-       (p/always (filter #(some? %) toks)))) ; remove the nil form the ws parser
+    (p/let->> [t (p/many (token))
+               _ (p/eof)]
+       (p/always t)))
 
   (defn tokenize [e]
-    (p/run (tokens) e))
+    (p/run (tokens) (str/trim-right e)))
 
 
 
