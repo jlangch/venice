@@ -246,7 +246,7 @@ For example:
     (p/run (p/times 5 (p/letter)) "Hello, world!")
     ; (#\H #\e #\l #\l #\o)
 
-This is different than `(p/>> (letter) (letter) (letter) (letter) (letter))`
+This is different than `(p/>> (p/letter) (p/letter) (p/letter) (p/letter) (p/letter))`
 because it returns *all* of the parsers' results, not just the last one.
 
 ### many
@@ -319,7 +319,7 @@ returns the result of center.
 
 This is a convenient way to handle things like parentheses:
 
-    (def whitespace-char (p/token #{\space \newline \tab}))
+    (def whitespace-char (p/token #{#\space #\newline #\tab}))
     (def optional-whitespace (p/many whitespace-char))
 
     (def open-paren (p/char #\lparen))
@@ -328,8 +328,8 @@ This is a convenient way to handle things like parentheses:
     (def number (p/many1 (p/digit)))
 
     (p/run (between (p/>> open-paren optional-whitespace)
-                  (p/>> optional-whitespace close-paren)
-                  number)
+                    (p/>> optional-whitespace close-paren)
+                    number)
         "(123    )")
     ; (#\1 #\2 #\3)
 
@@ -431,8 +431,8 @@ you can then use normally.  Let's just take a look at how it works:
     (p/defparser greeting []
       (p/let->> [prefix (p/string "Hello, ")
                  name (word)
-                 punctuation (p/choice (p/char \.)
-                                       (p/char \!))]
+                 punctuation (p/choice (p/char #\.)
+                                       (p/char #\!))]
         (if (= punctuation #\!)
           (p/always [(apply str name) :excited])
           (p/always [(apply str name) :not-excited]))))
