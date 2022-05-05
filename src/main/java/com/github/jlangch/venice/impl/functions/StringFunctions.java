@@ -292,7 +292,7 @@ public class StringFunctions {
 					.meta()
 					.arglists("(str/trim-left s)")
 					.doc("Trims leading whitespaces from s.")
-					.examples("(str/trim \" abc \")")
+					.examples("(str/trim-left \" abc \")")
 					.seeAlso("str/trim-right", "str/trim", "str/trim-to-nil")
 					.build()
 		) {
