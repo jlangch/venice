@@ -56,6 +56,12 @@
 ;;; source position, itself made up of the name of the input, and one's
 ;;; current line and column location in it.
 
+;;; List of Venice changes added to Parsatron
+;;;  - Added protocol 'SourcePosition' and change function `inc-sourcepos`
+;;;    to support error message for source line/column nr if items types
+;;;    other than char are used.
+;;;  - Deduping error message list, to avoid repeating error messages
+
 
 (ns parsatron)
 
@@ -109,7 +115,8 @@
   (parse-error. pos [(str "Expected " msg)]))
 
 (defn merge-errors [err other-err]
-  (parse-error. (:pos err) (flatten (concat (:msgs err) (:msgs other-err)))))
+  (parse-error. (:pos err)
+                (dedupe (flatten (concat (:msgs err) (:msgs other-err))))))
 
 
 ;; -----------------------------------------------------------------------------
