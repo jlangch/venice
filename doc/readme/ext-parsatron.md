@@ -29,6 +29,7 @@ The evaluator uses two Parsatron parsers. The up-front tokenizing parser operate
 [3] Test the expression parser:
 
 ```clojure
+(evaluate "")                      ; => nil
 (evaluate "3 + 4.1 - 5 * 3.2")     ; => -8.9
 (evaluate "3 + (4.1 - 5) * 3.2")   ; => 0.11999999999999877
 ```
@@ -179,7 +180,8 @@ The evaluator uses two Parsatron parsers. The up-front tokenizing parser operate
       (p/always (double (:val i)))))
 
   (p/defparser expr []
-    (add-expr))  ; no EOF handling in this parser! It's recursively called.
+    ; no EOF handling in this parser! It's recursively called.
+    (add-expr))
 
   (p/defparser add-expr []
     (p/let->> [seed   (mul-expr)
@@ -207,10 +209,7 @@ The evaluator uses two Parsatron parsers. The up-front tokenizing parser operate
     (p/between (lparen) (rparen) (expr)))
 
   (p/defparser main []
-    (p/either (p/eof)
-              (p/let->> [e (expr)
-                         _ (p/eof)]
-                 (p/always e))))
+    (p/either (p/eof) (expr)))
 
   (defn evaluate [expression]
     (p/run (main) (tokenize expression)))

@@ -211,7 +211,8 @@
     (p/always (double (:val i)))))
 
 (p/defparser expr []
-  (add-expr))  ; no EOF handling in this parser! It's recursively called.
+  ; no EOF handling in this parser! It's recursively called.
+  (add-expr))
 
 (p/defparser add-expr []
   (p/let->> [seed   (mul-expr)
@@ -239,10 +240,15 @@
   (p/between (lparen) (rparen) (expr)))
 
 (p/defparser main []
+  ;; 1) handle empty expressions:    ""           => OK, value => nil
+  ;; 2) handle valid expressions:    "3 + 4"      => OK, value => 7
+  ;; 3) handle supernumerary tokens: "3 + 4  99"  => ERR, Unexpected token '99'
   (p/either (p/eof)
             (p/let->> [e (expr)
-                       _ (p/eof)]
-               (p/always e))))
+                       t (p/either (p/token (constantly true)) (p/eof))]
+               (if (nil? t)
+                 (p/always e)
+                 (p/never (str "Unexpected token '" (:val t) "'"))))))
 
 (defn evaluate [expression]
   (p/run (main) (tokenize expression)))
