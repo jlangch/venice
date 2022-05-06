@@ -376,12 +376,13 @@ public class MathFunctions {
 				VncFunction
 					.meta()
 					.arglists("(nan? x)")
-					.doc("Returns true if x is a NaN else false")
+					.doc("Returns true if x is a NaN else false. x must be a double!")
 					.examples(
 						"(nan? 0.0)",
+						"(nan? (/ 0.0 0))",
 						"(nan? (sqrt -1))",
 						"(pr (sqrt -1))")
-					.seeAlso("infinite?")
+					.seeAlso("infinite?", "double")
 					.build()
 		) {
 			public VncVal apply(final VncList args) {
@@ -407,12 +408,13 @@ public class MathFunctions {
 				VncFunction
 					.meta()
 					.arglists("(infinite? x)")
-					.doc("Returns true if x is infinite else false")
+					.doc("Returns true if x is infinite else false. x must be a double!")
 					.examples(
 						"(infinite? 1.0E300)",
 						"(infinite? (* 1.0E300 1.0E100))",
+						"(infinite? (/ 1.0 0))",
 						"(pr (/ 4.1 0))")
-					.seeAlso("nan?")
+					.seeAlso("nan?", "double")
 					.build()
 		) {
 			public VncVal apply(final VncList args) {

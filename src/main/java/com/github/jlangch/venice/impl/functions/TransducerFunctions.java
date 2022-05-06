@@ -989,6 +989,7 @@ public class TransducerFunctions {
 					.examples(
 						"(dedupe [1 2 2 2 3 4 4 2 3])",
 						"(dedupe '(1 2 2 2 3 4 4 2 3))")
+					.seeAlso("distinct")
 					.build()
 		) {
 			public VncVal apply(final VncList args) {
@@ -1117,6 +1118,7 @@ public class TransducerFunctions {
 					.examples(
 						"(distinct [1 2 3 4 2 3 4])",
 						"(distinct '(1 2 3 4 2 3 4))")
+					.seeAlso("dedupe")
 					.build()
 		) {
 			public VncVal apply(final VncList args) {
