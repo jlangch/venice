@@ -113,12 +113,12 @@ The evaluator uses two Parsatron parsers. The up-front tokenizing parser operate
 
   (p/defparser lparen-tok []
     (p/let->> [[l c] (p/pos)
-               t     (p/choice (p/char #\lparen))]
+               t     (p/char #\lparen)]
        (p/always (Token. :lparen (str t) l c))))
 
   (p/defparser rparen-tok []
     (p/let->> [[l c] (p/pos)
-               t     (p/choice (p/char #\rparen))]
+               t     (p/char #\rparen)]
        (p/always (Token. :rparen (str t) l c))))
 
   (p/defparser int-tok []
@@ -178,7 +178,10 @@ The evaluator uses two Parsatron parsers. The up-front tokenizing parser operate
    (p/let->> [i (p/token #(token-type? % :float))]
       (p/always (double (:val i)))))
 
-  (p/defparser expr [] (add-expr))
+  (p/defparser expr []
+    (p/let->> [e (add-expr)
+               _ (p/eof)]
+       (p/always e)))
 
   (p/defparser add-expr []
     (p/let->> [seed   (mul-expr)

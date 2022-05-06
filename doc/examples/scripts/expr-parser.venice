@@ -40,7 +40,10 @@
 ;;;     (load-file "path-to-venice/doc/examples/scripts/expr-parser.venice")
 ;;;
 ;;; [2] Test the tokenizer:
-;;;     (tokenize "3 + 4.2")  ; => ([:int "3"] [:op "+"] [:float "4.2"])
+;;;     (tokenize "3 + 4.2")        ; => [[:int "3"] [:op "+"] [:float "4.2"]]
+;;;     (tokenize """ "12" """)     ; => [[:string "12" (1,2)]]
+;;;     (tokenize """ "1\\"2" """)  ; => [[:string "1\"2" (1,2)]]
+;;;     (tokenize """ "1\\n2" """)  ; => [[:string "1\n2" (1,2)]]
 ;;;
 ;;; [3] Test the expression parser:
 ;;;     (evaluate "3 + 4.1 - 5 * 3.2")    ; => -8.9
@@ -124,12 +127,12 @@
 
 (p/defparser lparen-tok []
   (p/let->> [[l c] (p/pos)
-             t     (p/choice (p/char #\lparen))]
+             t     (p/char #\lparen)]
      (p/always (Token. :lparen (str t) l c))))
 
 (p/defparser rparen-tok []
   (p/let->> [[l c] (p/pos)
-             t     (p/choice (p/char #\rparen))]
+             t     (p/char #\rparen)]
      (p/always (Token. :rparen (str t) l c))))
 
 (p/defparser int-tok []
@@ -146,9 +149,27 @@
                                   (apply str (flatten (list i d f)))
                                   l c)))))
 
+(p/defparser escaped-char-tok []
+  (p/let->> [_ (p/char #\\)
+             c (p/any-char-of "nt\"")]
+     (p/always (case c
+                 #\t  #\tab
+                 #\n  #\newline
+                 c))))
+
+(p/defparser string-tok []
+  (p/let->> [[l c] (p/pos)
+             s     (p/between (p/char #\")
+                              (p/char #\")
+                              (p/many (p/either (escaped-char-tok)
+                                                (p/not-char #\"))))]
+     (p/always (Token. :string (apply str (flatten s)) l c))))
+
 (p/defparser token []
   (p/let->> [_ (p/many (ws-tok))
-             t (p/choice (op-tok) (lparen-tok) (rparen-tok) (float-tok) (int-tok))]
+             t (p/choice (op-tok) (string-tok)
+                         (lparen-tok) (rparen-tok)
+                         (float-tok) (int-tok))]
      (p/always t)))
 
 (p/defparser tokens []
@@ -189,7 +210,10 @@
  (p/let->> [i (p/token #(token-type? % :float))]
     (p/always (double (:val i)))))
 
-(p/defparser expr [] (add-expr))
+(p/defparser expr []
+  (p/let->> [e (add-expr)
+             _ (p/eof)]
+     (p/always e)))
 
 (p/defparser add-expr []
   (p/let->> [seed   (mul-expr)
