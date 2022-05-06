@@ -61,6 +61,8 @@
 ;;;    to support error message for source line/column nr if item types
 ;;;    other than char are used.
 ;;;  - Deduping error message list, to avoid repeating error messages
+;;;  - Enhanced the `never` parser to accept an optional customized error
+;;;    message
 
 
 (ns parsatron)
@@ -216,9 +218,12 @@
 ;; m+
 (defn never
   ; A parser that always fails, consuming no input
-  []
-  (fn [state cok cerr eok eerr]
-    (eerr (unknown-error state))))
+  ([]
+   (fn [state cok cerr eok eerr]
+     (eerr (unknown-error state))))
+  ([err-msg]
+   (fn [state cok cerr eok eerr]
+     (eerr (parse-error. (:pos state) [err-msg])))))
 
 (defn either
   ; A parser that tries p, upon success, returning its value, and upon
