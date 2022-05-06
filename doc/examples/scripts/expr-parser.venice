@@ -193,6 +193,9 @@
           seed-val
           tuples))
 
+(defn any []
+  (p/token (constantly true)))
+
 (defn op [sym]
   (p/token #(token? % :op sym)))
 
@@ -240,12 +243,12 @@
   (p/between (lparen) (rparen) (expr)))
 
 (p/defparser main []
-  ;; 1) handle empty expressions:    ""           => OK, value => nil
-  ;; 2) handle valid expressions:    "3 + 4"      => OK, value => 7
-  ;; 3) handle supernumerary tokens: "3 + 4  99"  => ERR, Unexpected token '99'
+  ;; 1) parse empty expressions:    ""           => OK, value => nil
+  ;; 2) parse valid expressions:    "3 + 4"      => OK, value => 7
+  ;; 3) parse supernumerary tokens: "3 + 4  99"  => ERR, Unexpected token '99'
   (p/either (p/eof)
             (p/let->> [e (expr)
-                       t (p/either (p/token (constantly true)) (p/eof))]
+                       t (p/either (any) (p/eof))]
                (if (nil? t)
                  (p/always e)
                  (p/never (str "Unexpected token '" (:val t) "'"))))))
