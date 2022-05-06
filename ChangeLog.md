@@ -13,7 +13,9 @@ and this project adheres to
 
 ### Added
 
-- ...
+- new features to the Parsatron parser
+    1. Deduping the error message list, to avoid repeated error messages
+    2. Allow customized error message with the `never` parser
 
 
 
