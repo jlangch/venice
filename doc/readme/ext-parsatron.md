@@ -179,9 +179,7 @@ The evaluator uses two Parsatron parsers. The up-front tokenizing parser operate
       (p/always (double (:val i)))))
 
   (p/defparser expr []
-    (p/let->> [e (add-expr)
-               _ (p/eof)]
-       (p/always e)))
+    (add-expr))  ; no EOF handling in this parser! It's recursively called.
 
   (p/defparser add-expr []
     (p/let->> [seed   (mul-expr)
@@ -208,8 +206,14 @@ The evaluator uses two Parsatron parsers. The up-front tokenizing parser operate
   (p/defparser paren-expr []
     (p/between (lparen) (rparen) (expr)))
 
+  (p/defparser main []
+    (p/either (p/eof)
+              (p/let->> [e (expr)
+                         _ (p/eof)]
+                 (p/always e))))
+
   (defn evaluate [expression]
-    (p/run (expr) (tokenize expression)))
+    (p/run (main) (tokenize expression)))
 )
 ```
 
