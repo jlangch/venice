@@ -17,6 +17,10 @@ and this project adheres to
     1. Deduping the error message list, to avoid repeated error messages
     2. Allow customized error message with the `never` parser
 
+### Changed
+
+- the name of the parser combinator to _Parsifal_ 
+
 
 
 ## [1.10.11] - 2022-05-05
