@@ -214,7 +214,7 @@ The evaluator uses two Parsifal parsers. The up-front tokenizing parser operates
   (p/defparser main []
     ;; 1) parse empty expressions:    ""           => OK, value => nil
     ;; 2) parse valid expressions:    "3 + 4"      => OK, value => 7
-    ;; 3) parse supernumerary tokens: "3 + 4  99"  => ERR, Unexpected token '99'
+    ;; 3) parse left over tokens:     "(3 + 4) 9"  => ERR, Unexpected token '9'
     (p/either (p/eof)
               (p/let->> [e (expr)
                          t (p/either (any) (p/eof))]
