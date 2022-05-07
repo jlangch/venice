@@ -1,28 +1,28 @@
-A Guide to Parsatron
+A Guide to Parsifal
 ====================
 
 
 The original Clojure Parsatron guide can be found at [A Guide to the Parsatron](https://github.com/sjl/parsatron/blob/docs/docs/guide.markdown)
 
-This guide is adapted to the Venice port of Parsatron.
+This guide is adapted to the _Parsifal_ Venice port of _Parsatron_.
 
 
-The Parsatron is a library for building parsers for languages.  For an overview of
+_Parsifal_ is a library for building parsers for languages.  For an overview of
 how it works internally you can watch [this talk][talk] from Nate Young on his 
 Clojure Parsatron implementation.
 
-This document will show you the basics of how to use Parsatron as an end user.
+This document will show you the basics of how to use _Parsifal_ as an end user.
 
 [talk]: http://www.infoq.com/presentations/Parser-Combinators
 
 Importing
 ---------
 
-You can grab all the things you'll need by loading the `parsatron` module:
+You can grab all the things you'll need by loading the `parsifal` module:
 
 ```clojure
-(load-module :parsatron)
-(ns-alias 'p 'parsatron)
+(load-module :parsifal)
+(ns-alias 'p 'parsifal)
 ```
 
 Running
@@ -127,7 +127,7 @@ single, specific character.
 ### any-char
 
 `any-char` creates parsers that will parse and return any character.  Remember
-that we can use the parsatron to parse more than just strings:
+that we can use _Parsifal_ to parse more than just strings:
 
     (p/run (p/any-char) "Cats")
     ; #\C
@@ -188,7 +188,7 @@ parsers.
 Combining Parsers
 -----------------
 
-The Parsatron wouldn't be very useful if we could only ever parse one thing at
+_Parsifal_ wouldn't be very useful if we could only ever parse one thing at
 a time.  There are a number of ways you can combine parsers to build up complex
 ones from basic parts.
 
@@ -353,7 +353,7 @@ set.  But usually the goal of parsing something is to do things with it, so
 let's look at how that works now.
 
 We've been using the word "returns" in a fast-and-loose fashion so far, but now
-it's time to look a bit more closely at what it means in the Parsatron.
+it's time to look a bit more closely at what it means in _Parsifal_.
 
 ### defparser and always
 
@@ -362,7 +362,7 @@ these parsers *returned* that character they parsed.  That's not quite true.
 They actually return a specially-wrapped value.
 
 If you want to know exactly what that special wrapping is, watch the [talk][].
-But you don't really need to understand the guts to use the Parsatron.  You just
+But you don't really need to understand the guts to use _Parsifal_.  You just
 need to know how to create them.
 
 This is the first time we're going to be creating parsers that are more than
@@ -530,7 +530,7 @@ Before you go, here's a few tips and tricks that you might find helpful.
 
 ### You can parse more than just strings
 
-Remember that the Parsatron operates on sequences of input.  These don't
+Remember that _Parsifal_ operates on sequences of input.  These don't
 necessarily have to be strings.
 
 

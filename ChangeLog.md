@@ -13,7 +13,7 @@ and this project adheres to
 
 ### Added
 
-- new features to the Parsatron parser
+- new features to the _Parsifal_ parser combinator
     1. Deduping the error message list, to avoid repeated error messages
     2. Allow customized error message with the `never` parser
 
@@ -25,7 +25,7 @@ and this project adheres to
 
 - namespace aliases (`ns-alias`, `ns-aliases`, `ns-unalias`)
 - `Object` protocol to support customized `compareTo` function for custom datatypes
-- a Parsatron expression parser example _'doc/example/scripts/expr-parser.venice'_
+- a _Parsifal_ expression parser example _'doc/example/scripts/expr-parser.venice'_
 - functions `str/trim-left` and `str/trim-right`
 
 ### Changed

@@ -14,7 +14,7 @@ and loads a module only once and skips subsequent load attempts.
 * [Configuration](ext-configuration.md)
 * [Components](ext-components.md)
 * [Hexdump](ext-hexdump.md)
-* [Parsatron Parser Combinator](ext-parsatron.md)
+* [Parsifal Parser Combinator](ext-parsifal.md)
 * [GEO IP](ext-geoip.md)
 * [Mercator Maps](ext-mercator.md)
 * [CIDR (Classless Inter-Domain Routing)](ext-cidr.md)

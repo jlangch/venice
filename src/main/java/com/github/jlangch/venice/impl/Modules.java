@@ -66,7 +66,7 @@ public class Modules {
 							"math", 
 							"maven", 
 							"mercator", 
-							"parsatron",
+							"parsifal",
 							"repl-setup", 
 							"ring", 
 							"semver", 

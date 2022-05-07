@@ -1,19 +1,19 @@
-# Parsatron Parser Combinator
+# Parsifal Parser Combinator
 
-*Parsatron* is a port of Nate Young's 
+*Parsifal* is a port of Nate Young's Parsatron
 Clojure [parser combinator library](https://github.com/youngnh/parsatron) 
 project. 
 
-See [A Guide to Parsatron](ext-parsatron-guide.md)
+See [A Guide to Parsifal](ext-parsifal-guide.md)
 
 
 ## Example
 
-Parsatron expression evaluator example
+Parsifal expression evaluator example
 
 The expression evaluator evaluates expressions like `"(3 + 4) * 5"`. It supports the math operators `+`, `-`, `*`, and `/`, `long` and `double` numbers, and the parenthesis `(` and `)`.
 
-The evaluator uses two Parsatron parsers. The up-front tokenizing parser operates on a string (stream of characters) and returns a list of tokens. The expression parser operates on a stream of tokens and returns a number.
+The evaluator uses two Parsifal parsers. The up-front tokenizing parser operates on a string (stream of characters) and returns a list of tokens. The expression parser operates on a stream of tokens and returns a number.
 
 
 **Usage**
@@ -50,7 +50,7 @@ The evaluator uses two Parsatron parsers. The up-front tokenizing parser operate
   ;;; RParen              = ")" ;
   ;;; Digit               = "0" | "1" | "2" | "3" | "4" | "5" | "6" | "7" | "8" | "9" ;
   ;;; Integer             = Digit { Digit } ;
-  ;;; Float               = Integer "." { Digit };
+  ;;; Float               = Digit { Digit } "." Digit { Digit };
   ;;;
   ;;; Token               = Whitespace | Operator | ParOpen | ParClose | Integer | Float ;
   ;;; Tokens              = { Token } EOI ;
@@ -69,8 +69,8 @@ The evaluator uses two Parsatron parsers. The up-front tokenizing parser operate
   ;;; ParExpression       = "(" Expression ")" ;
 
 
-  (load-module :parsatron)
-  (ns-alias 'p 'parsatron)
+  (load-module :parsifal)
+  (ns-alias 'p 'parsifal)
 
 
   ;;; ----------------------------------------------------------------------------
@@ -162,6 +162,9 @@ The evaluator uses two Parsatron parsers. The up-front tokenizing parser operate
             seed-val
             tuples))
 
+  (defn any []
+    (p/token (constantly true)))
+
   (defn op [sym]
     (p/token #(token? % :op sym)))
 
@@ -209,7 +212,15 @@ The evaluator uses two Parsatron parsers. The up-front tokenizing parser operate
     (p/between (lparen) (rparen) (expr)))
 
   (p/defparser main []
-    (p/either (p/eof) (expr)))
+    ;; 1) parse empty expressions:    ""           => OK, value => nil
+    ;; 2) parse valid expressions:    "3 + 4"      => OK, value => 7
+    ;; 3) parse supernumerary tokens: "3 + 4  99"  => ERR, Unexpected token '99'
+    (p/either (p/eof)
+              (p/let->> [e (expr)
+                         t (p/either (any) (p/eof))]
+                 (if (nil? t)
+                   (p/always e)
+                   (p/never (str "Unexpected token '" (:val t) "'"))))))
 
   (defn evaluate [expression]
     (p/run (main) (tokenize expression)))

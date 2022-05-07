@@ -19,9 +19,9 @@
 ;;;; See the License for the specific language governing permissions and
 ;;;; limitations under the License.
 
-;;;; Parsatron
+;;;; Parsifal
 
-;;;; Thanks to Nate Young and his Clojure parser combinators project.
+;;;; Thanks to Nate Young and his Parsatron Clojure parser combinators project.
 ;;;; https://github.com/youngnh/parsatron
 ;;;;
 ;;;; Introduction:
@@ -65,7 +65,7 @@
 ;;;    message
 
 
-(ns parsatron)
+(ns parsifal)
 
 ;; -----------------------------------------------------------------------------
 ;; types
@@ -123,7 +123,7 @@
 
 ;; -----------------------------------------------------------------------------
 ;; trampoline
-(defn parsatron-poline
+(defn parsifal-poline
   ; A trampoline for executing potentially stack-blowing recursive
   ; functions without running out of stack space. This particular
   ; trampoline differs from Venice core/trampoline by requiring
@@ -195,23 +195,23 @@
         p     (gensym "p_")]
     `(defn ~name ~args
        (fn [~state ~cok ~cerr ~eok ~eerr]
-         (let [~p (parsatron/>> ~@body)]
-           (parsatron/continue. #(~p ~state ~cok ~cerr ~eok ~eerr)))))))
+         (let [~p (parsifal/>> ~@body)]
+           (parsifal/continue. #(~p ~state ~cok ~cerr ~eok ~eerr)))))))
 
 (defmacro >>
   ; Expands into nested nxt forms
   ([m] m)
-  ([m n] `(parsatron/nxt ~m ~n))
-  ([m n & ms] `(parsatron/nxt ~m (parsatron/>> ~n ~@ms))))
+  ([m n] `(parsifal/nxt ~m ~n))
+  ([m n & ms] `(parsifal/nxt ~m (parsifal/>> ~n ~@ms))))
 
 (defmacro let->>
   ; Expands into nested bind forms
   [[& bindings_] & body]
   (let [[bind-form p] (take 2 bindings_)]
     (if (== 2 (count bindings_))
-      `(parsatron/bind ~p (fn [~bind-form] ~@body))
-      `(parsatron/bind ~p (fn [~bind-form]
-                            (parsatron/let->> ~(drop 2 bindings_) ~@body))))))
+      `(parsifal/bind ~p (fn [~bind-form] ~@body))
+      `(parsifal/bind ~p (fn [~bind-form]
+                            (parsifal/let->> ~(drop 2 bindings_) ~@body))))))
 
 
 ;; -----------------------------------------------------------------------------
@@ -402,7 +402,7 @@
 (defn run-parser
   ; Execute a parser p, given some state, Returns Ok or Err
   [p state]
-  (parsatron-poline p
+  (parsifal-poline p
                     state
                     (fn cok [it _] (ok. it))
                     (fn cerr [err] (err. (show-error err)))
@@ -417,12 +417,12 @@
           in a ParseError and thrown, and if the parser succeeds, its
           value is returned.
 
-          *Parsatron* is port of Nate Young's Clojure
+          *Parsifal* is port of Nate Young's Clojure Parsatron
           [parser combinators](https://github.com/youngnh/parsatron)
           project. See
           [A Guide to the Parsatron](https://github.com/sjl/parsatron/blob/docs/docs/guide.markdown)
 
-          For details see: `(doc :parsatron)`
+          For details see: `(doc :parsifal)`
           """}
 
   run [p input]

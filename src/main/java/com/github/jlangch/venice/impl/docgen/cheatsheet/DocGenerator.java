@@ -67,7 +67,7 @@ public class DocGenerator {
 						"trace",  "ansi",   "maven",     "kira",
 						"java",   "semver", "excel",     "hexdump",
 						"shell",  "geoip",  "benchmark", "component",
-						"config", "parsatron"));
+						"config", "parsifal"));
 		
 		final Env docEnv = new VeniceInterpreter(new AcceptAllInterceptor())
 							.createEnv(
@@ -252,7 +252,7 @@ public class DocGenerator {
 		extmod.addSection(new DocSection("Shell", "modules.shell"));
 		extmod.addSection(new DocSection("Geo IP", "modules.geoip"));
 		extmod.addSection(new DocSection("Ansi", "modules.ansi"));
-		extmod.addSection(new DocSection("Parsatron", "modules.parsatron"));
+		extmod.addSection(new DocSection("Parsifal", "modules.parsifal"));
 		extmod.addSection(new DocSection("Benchmark", "modules.benchmark"));
 		extmod.addSection(new DocSection("Configuration", "modules.config"));
 		extmod.addSection(new DocSection("Component", "modules.component"));
@@ -310,7 +310,7 @@ public class DocGenerator {
 				getModuleTracingSection(),
 				getModuleShellSection(),
 				getModuleAnsiSection(),
-				getModuleParsatronSection(),
+				getModuleParsifalSection(),
 				getModuleBenchmarkSection(),
 				getModuleComponentSection());
 	}
@@ -2568,24 +2568,22 @@ public class DocGenerator {
 		return section;
 	}
 
-	private DocSection getModuleParsatronSection() {
+	private DocSection getModuleParsifalSection() {
 		final DocSection section = new DocSection(
-										"Parsatron", 
+										"Parsifal", 
 										"A parser combinator",
-										"modules.parsatron",
-										"*Parsatron* is a port of Nate Young's Clojure " +
+										"modules.parsifal",
+										"*Parsifal* is a port of Nate Young's Parsatron Clojure " +
 										"[parser combinators](https://github.com/youngnh/parsatron) "+
-										"project. See " +
-										"[A Guide to the Parsatron](https://github.com/sjl/parsatron/blob/docs/docs/guide.markdown)\n\n" +
-										"For details see: `(doc :parsatron)`",
+										"project.",
 										null);
 
-		final DocSection all = new DocSection("(load-module :parsatron)", id());
+		final DocSection all = new DocSection("(load-module :parsifal)", id());
 		section.addSection(all);
 
 		final DocSection parser = new DocSection("Parser", id());
 		all.addSection(parser);
-		parser.addItem(getDocItem("parsatron/run", false));
+		parser.addItem(getDocItem("parsifal/run", false));
 
 		return section;
 	}
