@@ -19,13 +19,13 @@ and this project adheres to
     2. Allow customized error message with the `never` parser
     3. Added protocol 'SourcePosition' and changed function `inc-sourcepos` 
        to support error message for source line/column nr if item types
-       other than char are used.
+       other than `char` are used.
     4. A parser for any token: `any`
     5. A parser for hex digits: `hexdigit`
 
 ### Changed
 
-- the `load-module` to accept an optional ns alias
+- the `load-module` macro to accept an optional ns alias
 - the name of the parser combinator to _Parsifal_ 
 
 
