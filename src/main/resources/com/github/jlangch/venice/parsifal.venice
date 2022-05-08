@@ -69,6 +69,9 @@
 
 (ns parsifal)
 
+(import :com.github.jlangch.venice.ParseError)
+
+
 ;; -----------------------------------------------------------------------------
 ;; types
 (deftype :source-pos [line :long, column :long])
@@ -145,17 +148,13 @@
 
 ;; -----------------------------------------------------------------------------
 ;; util
-(defn fail [message]
-  (ex :com.github.jlangch.venice.ParseError message))
+(defn fail [message] (ex :ParseError message))
 
-(defn digit? [c]
-  (str/digit? c))
+(defn digit? [c] (str/digit? c))
 
-(defn hexdigit? [c]
-  (str/hexdigit? c))
+(defn hexdigit? [c] (str/hexdigit? c))
 
-(defn letter? [c]
-  (str/letter? c))
+(defn letter? [c] (str/letter? c))
 
 
 ;; -----------------------------------------------------------------------------
@@ -175,10 +174,12 @@
                      (f item)))]
       (continue. #(p state pcok cerr peok eerr)))))
 
+
 (defn nxt
   ; Parse p and then q, returning q's value and discarding p's
   [p q]
   (bind p (fn [_] q)))
+
 
 (defmacro defparser
   ; Defines a new parser. Parsers are simply functions that accept the
@@ -196,11 +197,13 @@
          (let [~p (parsifal/>> ~@body)]
            (parsifal/continue. #(~p ~state ~cok ~cerr ~eok ~eerr)))))))
 
+
 (defmacro >>
   ; Expands into nested nxt forms
   ([m] m)
   ([m n] `(parsifal/nxt ~m ~n))
   ([m n & ms] `(parsifal/nxt ~m (parsifal/>> ~n ~@ms))))
+
 
 (defmacro let->>
   ; Expands into nested bind forms
@@ -221,6 +224,7 @@
   (fn [state cok cerr eok eerr]
     (eok x state)))
 
+
 (defn never
   ; A parser that always fails, consuming no input
   ([]
@@ -229,6 +233,7 @@
   ([err-msg]
    (fn [state cok cerr eok eerr]
      (eerr (parse-error. (:pos state) [err-msg])))))
+
 
 (defn either
   ; A parser that tries p, upon success, returning its value, and upon
@@ -240,6 +245,7 @@
                                 (eerr (merge-errors err-from-p err-from-q)))]
                     (continue. #(q state cok cerr eok qeerr))))]
       (continue. #(p state cok cerr eok peerr)))))
+
 
 (defn attempt
   ; A parser that will attempt to parse p, and upon failure never
@@ -261,10 +267,12 @@
   (fn [state _ _ eok _]
     (eok (f state) state)))
 
+
 (defn examine
   ; Return the Parser's current state
   []
   (extract identity))
+
 
 (defn lineno
   ; A parser that returns the current line number. It consumes no input
@@ -272,6 +280,7 @@
   ;   (do-something-with current-line))
   []
   (extract (comp :line :pos)))
+
 
 (defn pos
   ; A parser that returns the current line/col number. It consumes no input
@@ -296,8 +305,10 @@
           (eerr (unexpect-error (str "token '" tok "'") pos))))
       (eerr (unexpect-error "end of input" pos)))))
 
+
 (defn any []
   (token (constantly true)))
+
 
 (defn many
   ; Consume zero or more p. A ParseError will be thrown if this
@@ -314,6 +325,7 @@
        (always (cons x xs)))
      (always []))))
 
+
 (defn times
   ; Consume exactly n number of p
   [n p]
@@ -323,6 +335,7 @@
              xs (times (dec n) p)]
       (always (cons x xs)))))
 
+
 (defn lookahead
   ; A parser that upon success consumes no input, but returns what was
   ; parsed
@@ -330,6 +343,7 @@
   (fn [state cok cerr eok eerr]
     (let [ok (fn [item _] (eok item state))]
       (continue. #(p state ok cerr eok eerr)))))
+
 
 (defn choice
   ; A varargs version of either that tries each given parser in turn,
@@ -339,6 +353,7 @@
     (never)
     (let [p (first parsers)]
       (either p (apply choice (rest parsers))))))
+
 
 (defn eof
   ; A parser to detect the end of input. If there is nothing more to
@@ -350,30 +365,36 @@
       (eok nil state)
       (eerr (expect-error "end of input" (:pos state))))))
 
+
 (defn char
   ; Consume the given character
   [c]
   (token #(== c %)))
+
 
 (defn not-char
   ; Consume all but the given character
   [c]
   (token #(not (== c %))))
 
+
 (defn any-char
   ; Consume any character
   []
   (token str/char?))
+
 
 (defn digit
   ; Consume a digit [0-9] character
   []
   (token str/digit?))
 
+
 (defn hexdigit
   ; Consume a hex digit [0-9a-fA-F] character
   []
   (token str/hexdigit?))
+
 
 (defn letter
   ; Consume a letter character
@@ -381,11 +402,13 @@
   []
   (token str/letter?))
 
+
 (defn letter-or-digit
   ; Consume a letter or digit character.
   ; Defined by Java Character.isLetterOrDigit(ch)
   []
   (token str/letter-or-digit?))
+
 
 (defn string
   ; Consume the given string
@@ -393,15 +416,18 @@
   (reduce nxt (concat (map char s)
                       (list (always s)))))
 
+
 (defn any-char-of
   ; Consume any of the characters given in the string. E.g.: (any-char-of "([{")
   [s]
   (token (fn [x] (str/contains? s x))))
 
+
 (defn none-char-of
   ; Consume all but the characters given in the string
   [s]
   (token (fn [x] (not (str/contains? s x)))))
+
 
 (defn between
   ; Parse p after parsing open and before parsing close, returning the
@@ -410,8 +436,9 @@
   (let->> [_ open, x p, _ close]
     (always x)))
 
+
 (defn many1
-  ;Consume 1 or more p
+  ; Consume 1 or more p
   [p]
   (let->> [x p, xs (many p)]
     (always (cons x xs))))
@@ -429,6 +456,7 @@
                     (fn eok [it _] (ok. it))
                     (fn eerr [err] (err. (show-error err)))))
 
+
 (defn
   ^{ :arglists '("(run p input)")
      :doc """
@@ -441,11 +469,9 @@
           [parser combinators](https://github.com/youngnh/parsatron)
           project. See
           [A Guide to the Parsatron](https://github.com/sjl/parsatron/blob/docs/docs/guide.markdown)
-
-          For details see: `(doc :parsifal)`
           """}
 
-  run [p input]
+  run  [p input]
 
   (let [result (-<> (source-pos. 1 1)
                     (input-state. input <>)
