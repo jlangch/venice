@@ -157,9 +157,9 @@
                  "(not (== 1 2))")
      :see-also '("and" "or") }
 
-  not
+  not [x]
 
-  [x] (if x false true))
+  (if x false true))
 
 
 (defmacro
@@ -1002,7 +1002,9 @@
 (defmacro
   ^{ :arglists '(
           "(load-module m)",
-          "(load-module m force)")
+          "(load-module m force)",
+          "(load-module m alias)",
+          "(load-module m force alias)")
      :doc """
           Loads a Venice predefined extension module.¶
           Returns `true` if the module has been successfully loaded and `false`
@@ -1012,6 +1014,9 @@
      :examples '(
           """
           (load-module :trace)
+          """,
+          """
+          (load-module :trace ['trace :as 't])
           """,
           """
           ;; reloading a module
@@ -1025,9 +1030,14 @@
   load-module
 
   ([m]
-    `(load-module ~m false))
+    `(load-module ~m false nil))
 
-  ([m force]
+  ([m n]
+    `(if (boolean? ~n)
+      (load-module ~m ~n nil)
+      (load-module ~m false ~n)))
+
+  ([m force alias]
     `(when (or ~force (not-contains? core/*loaded-modules* (keyword (name ~m))))
        (let [code# (str "(do " (core/load-module* ~m) ")")
              parsed# (read-string code# ~m)
@@ -1036,6 +1046,18 @@
                          parsed#)]
          (cons! (keyword (name ~m)) core/*loaded-modules*)
          (eval expanded#)
+         (if (and (vector? ~alias)
+                    (= 3 (count ~alias))
+                    (symbol? (first ~alias))
+                    (keyword? (second ~alias))
+                    (= "as" (name (second ~alias)))
+                    (symbol? (third ~alias)))
+           (let [[from op to] ~alias]
+             (ns-alias to from))
+           (throw (ex :VncException
+                      (str "Invalid ns alias definition '"
+                           (pr-str ~alias)
+                           "' for loading module '" (name ~m) "'!"))))
          (keyword (name ~m))))))
 
 
