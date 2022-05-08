@@ -1054,10 +1054,11 @@
                     (symbol? (third ~alias)))
            (let [[from op to] ~alias]
              (ns-alias to from))
-           (throw (ex :VncException
-                      (str "Invalid ns alias definition '"
-                           (pr-str ~alias)
-                           "' for loading module '" (name ~m) "'!"))))
+           (if (some? ~alias)
+             (throw (ex :VncException
+                        (str "Invalid ns alias definition '"
+                             (pr-str ~alias)
+                             "' for loading module '" (name ~m) "'!")))))
          (keyword (name ~m))))))
 
 

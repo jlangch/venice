@@ -42,8 +42,7 @@ public class ParsifalModuleTest {
 	public void test_basic() {
 		final String script =
 				"(do                                           \n" +
-				"   (load-module :parsifal)                    \n" +
-				"   (ns-alias 'p 'parsifal)                    \n" +
+				"   (load-module :parsifal ['parsifal :as 'p]) \n" +
 				"                                              \n" +
 				"   (p/run (p/char #\\H)  \"Hello, world!\"))  ";
 
@@ -54,8 +53,7 @@ public class ParsifalModuleTest {
 	public void test_basic_input() {
 		final String script =
 				"(do                                               \n" +
-				"   (load-module :parsifal)                        \n" +
-				"   (ns-alias 'p 'parsifal)                        \n" +
+				"   (load-module :parsifal ['parsifal :as 'p])     \n" +
 				"                                                  \n" +
 				"   (p/run (p/token #{1 2}) [1 \"cats\" :dogs]))   ";
 
@@ -66,8 +64,7 @@ public class ParsifalModuleTest {
 	public void test_basic_error() {
 		final String script =
 				"(do                                           \n" +
-				"   (load-module :parsifal)                    \n" +
-				"   (ns-alias 'p 'parsifal)                    \n" +
+				"   (load-module :parsifal ['parsifal :as 'p]) \n" +
 				"                                              \n" +
 				"   (p/run (p/char #\\Q)  \"Hello, world!\"))  ";
 		
@@ -77,12 +74,11 @@ public class ParsifalModuleTest {
 	@Test
 	public void test_basic_parser() {
 		final String script =
-				"(do                                       \n" +
-				"   (load-module :parsifal)                \n" +
-				"   (ns-alias 'p 'parsifal)                \n" +
-				"                                          \n" +
-				"   (def h-parser (p/char #\\H))           \n" +
-				"   (p/run h-parser \"Hello, world!\"))    ";
+				"(do                                           \n" +
+				"   (load-module :parsifal ['parsifal :as 'p]) \n" +
+				"                                              \n" +
+				"   (def h-parser (p/char #\\H))               \n" +
+				"   (p/run h-parser \"Hello, world!\"))        ";
 
 		assertEquals('H', (Character)new Venice().eval(script));
 	}
@@ -91,8 +87,7 @@ public class ParsifalModuleTest {
 	public void test_builtin_parser_token() {
 		final String script =
 				"(do                                           \n" +
-				"   (load-module :parsifal)                    \n" +
-				"   (ns-alias 'p 'parsifal)                    \n" +
+				"   (load-module :parsifal ['parsifal :as 'p]) \n" +
 				"                                              \n" +
 				"   (defn less-than-five [i] (< i 5))          \n" +
 				"   (p/run (p/token less-than-five) [3]))      ";
@@ -104,8 +99,7 @@ public class ParsifalModuleTest {
 	public void test_builtin_parser_token_number() {
 		final String script =
 				"(do                                           \n" +
-				"   (load-module :parsifal)                    \n" +
-				"   (ns-alias 'p 'parsifal)                    \n" +
+				"   (load-module :parsifal ['parsifal :as 'p]) \n" +
 				"                                              \n" +
 				"   (p/run (p/token number?) [10 20 30]))      ";
 
@@ -116,8 +110,7 @@ public class ParsifalModuleTest {
 	public void test_builtin_parser_char() {
 		final String script =
 				"(do                                           \n" +
-				"   (load-module :parsifal)                    \n" +
-				"   (ns-alias 'p 'parsifal)                    \n" +
+				"   (load-module :parsifal ['parsifal :as 'p]) \n" +
 				"                                              \n" +
 				"   (p/run (p/char #\\H) \"Hello, world!\"))   ";
 
@@ -128,8 +121,7 @@ public class ParsifalModuleTest {
 	public void test_builtin_parser_not_char() {
 		final String script1 =
 				"(do                                              \n" +
-				"   (load-module :parsifal)                       \n" +
-				"   (ns-alias 'p 'parsifal)                       \n" +
+				"   (load-module :parsifal ['parsifal :as 'p])    \n" +
 				"                                                 \n" +
 				"   (p/run (p/not-char #\\C) \"Hello, world!\"))  ";
 
