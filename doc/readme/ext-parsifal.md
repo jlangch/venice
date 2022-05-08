@@ -52,7 +52,7 @@ The evaluator uses two Parsifal parsers. The up-front tokenizing parser operates
   ;;; Integer             = Digit { Digit } ;
   ;;; Float               = Digit { Digit } "." Digit { Digit };
   ;;;
-  ;;; Token               = Whitespace | Operator | ParOpen | ParClose | Integer | Float ;
+  ;;; Token               = Whitespace | Operator | ParOpen | ParClose | Float | Integer ;
   ;;; Tokens              = { Token } EOI ;
   ;;;
   ;;;

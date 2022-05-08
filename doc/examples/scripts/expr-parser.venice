@@ -64,7 +64,7 @@
 ;;; Integer             = Digit { Digit } ;
 ;;; Float               = Digit { Digit } "." Digit { Digit };
 ;;;
-;;; Token               = Whitespace | Operator | ParOpen | ParClose | Integer | Float ;
+;;; Token               = Whitespace | Operator | ParOpen | ParClose | Float | Integer ;
 ;;; Tokens              = { Token } EOI ;
 ;;;
 ;;;
@@ -233,8 +233,8 @@
                        val (unary-expr)]
                (p/always (if (token-value? opc "+") val (negate val))))
             (paren-expr)
-            (float)
-            (int)))
+            (int)
+            (float)))
 
 (p/defparser paren-expr []
   (p/between (lparen) (rparen) (expr)))
