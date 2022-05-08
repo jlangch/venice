@@ -14,9 +14,14 @@ and this project adheres to
 ### Added
 
 - function `str/hexdigit?`
-- new features to the _Parsifal_ parser combinator
+- new features to the _Parsifal_ parser combinator:
     1. Deduping the error message list, to avoid repeated error messages
     2. Allow customized error message with the `never` parser
+    3. Added protocol 'SourcePosition' and changed function `inc-sourcepos` 
+       to support error message for source line/column nr if item types
+       other than char are used.
+    4. A parser for any token: `any`
+    5. A parser for hex digits: `hexdigit`
 
 ### Changed
 

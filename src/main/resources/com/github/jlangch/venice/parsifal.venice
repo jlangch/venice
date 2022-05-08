@@ -64,6 +64,7 @@
 ;;;  - Enhanced the `never` parser to accept an optional customized error
 ;;;    message
 ;;;  - Added an `any` parser to consume a token with any value
+;;;  - Added a `hexdigit` parser to consume hexdigit char
 
 
 (ns parsifal)
@@ -149,6 +150,9 @@
 
 (defn digit? [c]
   (str/digit? c))
+
+(defn hexdigit? [c]
+  (str/hexdigit? c))
 
 (defn letter? [c]
   (str/letter? c))
@@ -365,6 +369,11 @@
   ; Consume a digit [0-9] character
   []
   (token str/digit?))
+
+(defn hexdigit
+  ; Consume a hex digit [0-9a-fA-F] character
+  []
+  (token str/hexdigit?))
 
 (defn letter
   ; Consume a letter [a-zA-Z] character
