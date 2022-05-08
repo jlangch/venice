@@ -901,10 +901,27 @@
      (eval expanded#)))
 
 
+(defmacro process-ns-alias-def* [caller alias ]
+  `(when (some? ~alias)
+    (if (and (vector? ~alias)
+             (= 3 (count ~alias))
+             (symbol? (first ~alias))
+             (keyword? (second ~alias))
+             (= "as" (name (second ~alias)))
+             (symbol? (third ~alias)))
+      (ns-alias (third ~alias) (first ~alias))
+      (throw (ex :VncException
+                 (str/format "Invalid ns alias definition '%s' for %s!"
+                             (pr-str ~alias)
+                             ~caller))))))
+
+
 (defmacro
   ^{ :arglists '(
           "(load-file file)",
-          "(load-file file force)")
+          "(load-file file force)",
+          "(load-file file alias)",
+          "(load-file file force alias)")
      :doc """
           Sequentially read and evaluate the set of forms contained in the file.
 
@@ -931,9 +948,14 @@
   load-file
 
   ([file]
-    `(load-file ~file false))
+    `(load-file ~file false nil))
 
-  ([file force]
+  ([file opt]
+    `(if (boolean? ~opt)
+      (load-file ~file ~opt nil)
+      (load-file ~file false ~opt)))
+
+  ([file force alias]
     `(let [fc# (if (str/ends-with? (name ~file) ".venice")
                    (name ~file)
                    (str (name ~file) ".venice"))]
@@ -947,6 +969,9 @@
                                  parsed#)]
                  (cons! fc# core/*loaded-files*)
                  (eval expanded#)
+                 (process-ns-alias-def* (str/format "load-file '%s'"
+                                                    (name ~file))
+                                        ~alias)
                  fc#)))
             true)
         false))))
@@ -955,7 +980,9 @@
 (defmacro
   ^{ :arglists '(
           "(load-classpath-file name)",
-          "(load-classpath-file name force)")
+          "(load-classpath-file name force)",
+          "(load-classpath-file name alias)",
+          "(load-classpath-file name force alias)")
      :doc """
           Sequentially read and evaluate the set of forms contained in the
           classpath file. The function is restricted to classpath files with
@@ -981,9 +1008,14 @@
   load-classpath-file
 
   ([file]
-    `(load-classpath-file ~file false))
+    `(load-classpath-file ~file false nil))
 
-  ([file force]
+  ([file opt]
+    `(if (boolean? ~opt)
+      (load-classpath-file ~file ~opt nil)
+      (load-classpath-file ~file false ~opt)))
+
+  ([file force alias]
     `(let [fc# (if (str/ends-with? (name ~file) ".venice")
                    (name ~file)
                    (str (name ~file) ".venice"))]
@@ -996,6 +1028,9 @@
                                parsed#)]
                (cons! fc# core/*loaded-files*)
                (eval expanded#)
+               (process-ns-alias-def* (str/format "load-classpath-file '%s'"
+                                                  (name ~file))
+                                      ~alias)
                fc#)))))))
 
 
@@ -1016,6 +1051,7 @@
           (load-module :trace)
           """,
           """
+          ;; loading the :trace modul and define a ns alias 't for 'trace
           (load-module :trace ['trace :as 't])
           """,
           """
@@ -1032,10 +1068,10 @@
   ([m]
     `(load-module ~m false nil))
 
-  ([m n]
-    `(if (boolean? ~n)
-      (load-module ~m ~n nil)
-      (load-module ~m false ~n)))
+  ([m opt]
+    `(if (boolean? ~opt)
+      (load-module ~m ~opt nil)
+      (load-module ~m false ~opt)))
 
   ([m force alias]
     `(when (or ~force (not-contains? core/*loaded-modules* (keyword (name ~m))))
@@ -1046,19 +1082,8 @@
                          parsed#)]
          (cons! (keyword (name ~m)) core/*loaded-modules*)
          (eval expanded#)
-         (if (and (vector? ~alias)
-                    (= 3 (count ~alias))
-                    (symbol? (first ~alias))
-                    (keyword? (second ~alias))
-                    (= "as" (name (second ~alias)))
-                    (symbol? (third ~alias)))
-           (let [[from op to] ~alias]
-             (ns-alias to from))
-           (if (some? ~alias)
-             (throw (ex :VncException
-                        (str "Invalid ns alias definition '"
-                             (pr-str ~alias)
-                             "' for loading module '" (name ~m) "'!")))))
+         (process-ns-alias-def* (str/format "load-module '%s'" (name ~m))
+                                ~alias)
          (keyword (name ~m))))))
 
 

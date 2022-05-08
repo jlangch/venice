@@ -25,7 +25,8 @@ and this project adheres to
 
 ### Changed
 
-- the `load-module` macro to accept an optional ns alias
+- the `load-module`, `load-file`, and `load-classpath-file` macros to 
+  accept an optional ns alias
 - the name of the parser combinator to _Parsifal_ 
 
 
