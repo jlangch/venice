@@ -82,7 +82,7 @@ public class StringFunctions {
 						"(str/blank? \"\")",
 						"(str/blank? \"  \")",
 						"(str/blank? \"abc\")")
-					.seeAlso( "not-blank?", "empty?", "not-empty?", "nil?")
+					.seeAlso("str/not-blank?", "empty?", "not-empty?", "nil?")
 					.build()
 		) {
 			public VncVal apply(final VncList args) {
@@ -113,7 +113,7 @@ public class StringFunctions {
 							"(str/not-blank? nil)",
 							"(str/not-blank? \"\")",
 							"(str/not-blank? \"  \")")
-						.seeAlso("blank?", "empty?", "not-empty?", "nil?")
+						.seeAlso("str/blank?", "empty?", "not-empty?", "nil?")
 						.build()
 			) {
 				public VncVal apply(final VncList args) {
@@ -1593,11 +1593,12 @@ public class StringFunctions {
 					.meta()
 					.arglists("(str/digit? s)")
 					.doc(
-						"True if s is a char or a single char string and the char is a digit. " +
+						"True if s is a char and the char is a digit. \n\n" +
 						"Defined by Java Character.isDigit(ch).")
 					.examples(
 						"(str/digit? #\\8)",
 						"(str/digit? \"8\")")
+					.seeAlso("str/letter?", "str/hexdigit?")
 					.build()
 		) {
 			public VncVal apply(final VncList args) {
@@ -1607,15 +1608,6 @@ public class StringFunctions {
 
 				if (Types.isVncChar(v)) {
 					return VncBoolean.of(Character.isDigit(((VncChar)v).getValue()));
-				}
-				else if (Types.isVncString(v)) {
-					final String str = Coerce.toVncString(v).getValue();
-					if (str.length() != 1) {
-						throw new VncException(String.format(
-								"Function 'str/digit?' expects a single char string. Got a '%s'.",
-								Types.getType(v)));
-					}
-					return VncBoolean.of(Character.isDigit(str.charAt(0)));
 				}
 				else {
 					return False;
@@ -1636,7 +1628,8 @@ public class StringFunctions {
 					.examples(
 						"(str/hexdigit? #\\8)",
 						"(str/hexdigit? #\\a)",
-						"(str/hexdigit? #\\A)")
+						"(str/hexdigit? #\\A)",
+						"(str/hexdigit? #\\Y)")
 					.build()
 		) {
 			public VncVal apply(final VncList args) {
@@ -1666,11 +1659,10 @@ public class StringFunctions {
 					.meta()
 					.arglists("(str/letter? s)")
 					.doc(
-						"True if s is a char or a single char string and the char is a letter. " +
+						"True if s is a char and the char is a letter. \n\n" +
 						"Defined by Java Character.isLetter(ch).")
 					.examples(
-						"(str/letter? #\\x)",
-						"(str/letter? \"x\")")
+						"(str/letter? #\\x)")
 					.build()
 		) {
 			public VncVal apply(final VncList args) {
@@ -1698,6 +1690,37 @@ public class StringFunctions {
 			private static final long serialVersionUID = -1848883965231344442L;
 		};
 
+	public static VncFunction str_letter_or_digit_Q =
+		new VncFunction(
+				"str/letter-or-digit?",
+				VncFunction
+					.meta()
+					.arglists("(str/letter-or-digit? s)")
+					.doc(
+						"True if s is a char the char is a letter or a digit. \n\n" +
+						"Defined by Java Character.isLetterOrDigit(ch).")
+					.examples(
+						"(str/letter-or-digit? #\\x)",
+						"(str/letter-or-digit? #\\X)",
+						"(str/letter-or-digit? #\\!)")
+					.build()
+		) {
+			public VncVal apply(final VncList args) {
+				ArityExceptions.assertArity(this, args, 1);
+
+				final VncVal v = args.first();
+
+				if (Types.isVncChar(v)) {
+					return VncBoolean.of(Character.isLetterOrDigit(((VncChar)v).getValue()));
+				}
+				else {
+					return False;
+				}
+			}
+
+			private static final long serialVersionUID = -1848883965231344442L;
+		};
+
 	public static VncFunction str_lower_case_Q =
 		new VncFunction(
 				"str/lower-case?",
@@ -1705,11 +1728,12 @@ public class StringFunctions {
 					.meta()
 					.arglists("(str/lower-case? s)")
 					.doc(
-						"True if s is a char or a single char string and the char is a lower case char. " +
+						"True if s is a char and the char is a lower case char. \n\n" +
 						"Defined by Java Character.isLowerCase(ch).")
 					.examples(
 						"(str/lower-case? #\\x)",
-						"(str/lower-case? \"x\")")
+						"(str/lower-case? #\\X)",
+						"(str/lower-case? #\\8)")
 					.build()
 		) {
 			public VncVal apply(final VncList args) {
@@ -1719,15 +1743,6 @@ public class StringFunctions {
 
 				if (Types.isVncChar(v)) {
 					return VncBoolean.of(Character.isLowerCase(((VncChar)v).getValue()));
-				}
-				else if (Types.isVncString(v)) {
-					final String str = Coerce.toVncString(v).getValue();
-					if (str.length() != 1) {
-						throw new VncException(String.format(
-								"Function 'str/lower-case?' expects a single char string. Got a '%s'.",
-								Types.getType(v)));
-					}
-					return VncBoolean.of(Character.isLowerCase(str.charAt(0)));
 				}
 				else {
 					return False;
@@ -1744,11 +1759,12 @@ public class StringFunctions {
 					.meta()
 					.arglists("(str/upper-case? s)")
 					.doc(
-						"True if s is a char or single char string and the char is an upper case char. " +
+						"True if s is a char and the char is an upper case char. \n\n" +
 						"Defined by Java Character.isUpperCase(ch).")
 					.examples(
+						"(str/upper-case? #\\x)",
 						"(str/upper-case? #\\X)",
-						"(str/upper-case? \"X\")")
+						"(str/upper-case? #\\8)")
 					.build()
 		) {
 			public VncVal apply(final VncList args) {
@@ -1758,15 +1774,6 @@ public class StringFunctions {
 
 				if (Types.isVncChar(v)) {
 					return VncBoolean.of(Character.isUpperCase(((VncChar)v).getValue()));
-				}
-				else if (Types.isVncString(v)) {
-					final String str = Coerce.toVncString(v).getValue();
-					if (str.length() != 1) {
-						throw new VncException(String.format(
-								"Function 'str/upper-case?' expects a single char string. Got a '%s'.",
-								Types.getType(v)));
-					}
-					return VncBoolean.of(Character.isUpperCase(str.charAt(0)));
 				}
 				else {
 					return False;
@@ -1782,10 +1789,10 @@ public class StringFunctions {
 				VncFunction
 					.meta()
 					.arglists("(str/linefeed? s)")
-					.doc("True if s is a char or a single char string and the char is a linefeed.")
+					.doc("True if s is a char and the char is a linefeed.")
 					.examples(
 						"(str/linefeed? #\\newline)",
-						"(str/linefeed? \"\n\")")
+						"(str/linefeed? (first \"\n\"))")
 					.build()
 		) {
 			public VncVal apply(final VncList args) {
@@ -1795,15 +1802,6 @@ public class StringFunctions {
 
 				if (Types.isVncChar(v)) {
 					return VncBoolean.of(((VncChar)v).getValue() == '\n');
-				}
-				if (Types.isVncString(v)) {
-					final String str = Coerce.toVncString(v).getValue();
-					if (str.length() != 1) {
-						throw new VncException(String.format(
-								"Function 'str/linefeed?' expects a single char string. Got a '%s'.",
-								Types.getType(args.first())));
-					}
-					return VncBoolean.of(str.charAt(0) == '\n');
 				}
 				else {
 					return False;
@@ -1820,11 +1818,10 @@ public class StringFunctions {
 					.meta()
 					.arglists("(str/whitespace? s)")
 					.doc(
-						"True if s is char or a single char string and the char is a whitespace. " +
+						"True if s is char and the char is a whitespace. \n\n" +
 						"Defined by Java Character.isWhitespace(ch).")
 					.examples(
-						"(str/whitespace? #\\space)",
-						"(str/whitespace? \" \")")
+						"(str/whitespace? #\\space)")
 					.build()
 		) {
 			public VncVal apply(final VncList args) {
@@ -1834,15 +1831,6 @@ public class StringFunctions {
 
 				if (Types.isVncChar(v)) {
 					return VncBoolean.of(Character.isWhitespace(((VncChar)v).getValue()));
-				}
-				else if (Types.isVncString(v)) {
-					final String str = Coerce.toVncString(v).getValue();
-					if (str.length() != 1) {
-						throw new VncException(String.format(
-								"Function 'str/whitespace?' expects a single char string. Got a '%s'.",
-								Types.getType(v)));
-					}
-					return VncBoolean.of(Character.isWhitespace(str.charAt(0)));
 				}
 				else {
 					return False;
@@ -2302,6 +2290,7 @@ public class StringFunctions {
 					.add(str_digit_Q)
 					.add(str_hexdigit_Q)
 					.add(str_letter_Q)
+					.add(str_letter_or_digit_Q)
 					.add(str_linefeed_Q)
 					.add(str_whitespace_Q)
 					.add(str_upper_case_Q)

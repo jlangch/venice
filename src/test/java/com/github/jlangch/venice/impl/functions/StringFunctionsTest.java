@@ -213,9 +213,16 @@ public class StringFunctionsTest {
 		
 		assertTrue((Boolean)venice.eval("(str/letter? #\\x)"));
 		assertFalse((Boolean)venice.eval("(str/letter? #\\8)"));
+	}
+
+	@Test
+	public void test_str_letter_or_digit_Q() {
+		final Venice venice = new Venice();
 		
-		assertTrue((Boolean)venice.eval("(str/letter? \"x\")"));
-		assertFalse((Boolean)venice.eval("(str/letter? \"8\")"));
+		assertTrue((Boolean)venice.eval("(str/letter-or-digit? #\\x)"));
+		assertTrue((Boolean)venice.eval("(str/letter-or-digit? #\\X)"));
+		assertTrue((Boolean)venice.eval("(str/letter-or-digit? #\\8)"));
+		assertFalse((Boolean)venice.eval("(str/letter-or-digit? #\\!)"));
 	}
 
 	@Test
@@ -231,10 +238,9 @@ public class StringFunctionsTest {
 		final Venice venice = new Venice();
 
 		assertTrue((Boolean)venice.eval("(str/linefeed? #\\newline)"));
+		assertTrue((Boolean)venice.eval("(str/linefeed? (first \"\n\"))"));
 
 		assertEquals("#\\newline", venice.eval("(pr-str (first \"\n----\"))"));
-		assertTrue((Boolean)venice.eval("(str/linefeed? \"\n\")"));
-		assertFalse((Boolean)venice.eval("(str/linefeed? \"8\")"));
 	}
 
 	@Test
@@ -249,6 +255,15 @@ public class StringFunctionsTest {
 		assertEquals("abcdef", venice.eval("(str/lower-case \"aBcDeF\")"));
 		assertEquals("abcdef", venice.eval("(str/lower-case (. :java.util.Locale :new \"de\" \"DE\") \"aBcDeF\")"));
 		assertEquals("abcdef", venice.eval("(str/lower-case [\"de\" \"DE\"] \"aBcDeF\")"));
+	}
+
+	@Test
+	public void test_str_lower_case_Q() {
+		final Venice venice = new Venice();
+	
+		assertTrue((Boolean)venice.eval("(str/lower-case? #\\a)"));
+		assertFalse((Boolean)venice.eval("(str/lower-case? #\\A)"));
+		assertFalse((Boolean)venice.eval("(str/lower-case? #\\8)"));
 	}
 	
 	@Test
@@ -811,6 +826,15 @@ public class StringFunctionsTest {
 	}
 
 	@Test
+	public void test_str_upper_case_Q() {
+		final Venice venice = new Venice();
+	
+		assertTrue((Boolean)venice.eval("(str/upper-case? #\\A)"));
+		assertFalse((Boolean)venice.eval("(str/upper-case? #\\a)"));
+		assertFalse((Boolean)venice.eval("(str/upper-case? #\\8)"));
+	}
+
+	@Test
 	public void test_str_valid_email_addr_Q() {
 		final List<String> emails = CollectionUtil.toList(
 										"user@domain.com",
@@ -839,9 +863,9 @@ public class StringFunctionsTest {
 	public void test_str_whitespace_Q() {
 		final Venice venice = new Venice();
 		
-		assertTrue((Boolean)venice.eval("(str/whitespace? \" \")"));
-		assertTrue((Boolean)venice.eval("(str/whitespace? \"\n\")"));
-		assertTrue((Boolean)venice.eval("(str/whitespace? \"\r\")"));
+		assertTrue((Boolean)venice.eval("(str/whitespace? #\\space)"));
+		assertTrue((Boolean)venice.eval("(str/whitespace? #\\newline)"));
+		assertTrue((Boolean)venice.eval("(str/whitespace? #\\return)"));
 		assertFalse((Boolean)venice.eval("(str/whitespace? \"8\")"));
 	}
 	

@@ -376,9 +376,16 @@
   (token str/hexdigit?))
 
 (defn letter
-  ; Consume a letter [a-zA-Z] character
+  ; Consume a letter character
+  ; Defined by Java Character.isLetter(ch)
   []
   (token str/letter?))
+
+(defn letter-or-digit
+  ; Consume a letter or digit character.
+  ; Defined by Java Character.isLetterOrDigit(ch)
+  []
+  (token str/letter-or-digit?))
 
 (defn string
   ; Consume the given string
