@@ -25,6 +25,7 @@ and this project adheres to
 
 ### Changed
 
+- the `load-module` to accept an optional ns alias
 - the name of the parser combinator to _Parsifal_ 
 
 
