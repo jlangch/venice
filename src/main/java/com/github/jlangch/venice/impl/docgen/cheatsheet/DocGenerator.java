@@ -305,14 +305,12 @@ public class DocGenerator {
 				getModuleCryptographySection(),
 				getModuleXmlSection(),
 				getModuleJavaSection(),
+				getModuleParsifalSection(),
 				getModuleGradleSection(),
 				getModuleMavenSection(),
 				getModuleTracingSection(),
 				getModuleShellSection(),
-				getModuleAnsiSection(),
-				getModuleParsifalSection(),
-				getModuleBenchmarkSection(),
-				getModuleComponentSection());
+				getModuleAnsiSection());
 	}
 	
 	private List<DocSection> getModulesRightSections() {
@@ -322,7 +320,9 @@ public class DocGenerator {
 				getModuleGeoipSection(),
 				getModuleExcelSection(),
 				getModuleConfigSection(),
-				getModuleAppSection());
+				getModuleComponentSection(),
+				getModuleAppSection(),
+				getModuleBenchmarkSection());
 	}
 
 	private List<DocItem> getDocItems(final List<DocSection> sections) {
@@ -2599,16 +2599,19 @@ public class DocGenerator {
 		parsers.addItem(getDocItem("parsifal/times", false));
 		parsers.addItem(getDocItem("parsifal/either", false));
 		parsers.addItem(getDocItem("parsifal/choice", false));
-		parsers.addItem(getDocItem("parsifal/eof", false));
-		parsers.addItem(getDocItem("parsifal/never", false));
-		parsers.addItem(getDocItem("parsifal/always", false));
-		parsers.addItem(getDocItem("parsifal/lookahead", false));
-		parsers.addItem(getDocItem("parsifal/attempt", false));
+		parsers.addItem(getDocItem("parsifal/>>", false));
 
-		final DocSection combine = new DocSection("Combine Parsers", id());
-		all.addSection(combine);
-		combine.addItem(getDocItem("parsifal/>>", false));
-		combine.addItem(getDocItem("parsifal/let->>", false));
+		final DocSection special = new DocSection("Special Parsers", id());
+		all.addSection(special);
+		special.addItem(getDocItem("parsifal/eof", false));
+		special.addItem(getDocItem("parsifal/never", false));
+		special.addItem(getDocItem("parsifal/always", false));
+		special.addItem(getDocItem("parsifal/lookahead", false));
+		special.addItem(getDocItem("parsifal/attempt", false));
+
+		final DocSection binding = new DocSection("Binding", id());
+		all.addSection(binding);
+		binding.addItem(getDocItem("parsifal/let->>", false));
 
 		final DocSection ch = new DocSection("Char Parsers", id());
 		all.addSection(ch);
