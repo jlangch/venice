@@ -18,8 +18,8 @@ and this project adheres to
     1. Deduping the error message list, to avoid repeated error messages
     2. Allow customized error messages with the `never` parser
     3. Added protocol 'SourcePosition' and changed function `inc-sourcepos` 
-       to support error message for source line/column nr if item types
-       other than `char` are used.
+       to support error messages with source line/column nr for item types
+       other than `char`.
     4. A parser for any token: `any`
     5. A parser for hex digits: `hexdigit`
 
