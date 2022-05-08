@@ -3091,14 +3091,6 @@ public class DocGenerator {
 		final VncVal val = env.getOrNil(new VncSymbol(name));
 		return Types.isVncFunction(val) ? (VncFunction)val : null;
 	}
-
-	private String id() {
-		return String.valueOf(gen.getAndIncrement());
-	}
-
-	private String id(final String name) {
-		return idMap.computeIfAbsent(name, n -> String.valueOf(gen.getAndIncrement()));
-	}
 	
 	private final void validateUniqueSectionsId(
 			final List<DocSection> left,
@@ -3128,6 +3120,14 @@ public class DocGenerator {
 		// recursively validate children
 		section.getSections().forEach(s -> validateUniqueSectionId(s, ids));
 	}
+
+	private String id() {
+		return idgen.id();
+	}
+	
+	private String id(final String name) {
+		return idgen.id(name);
+	}
 	
 	
 	private static final boolean MARKDOWN_FN_DESCR = true;
@@ -3137,10 +3137,6 @@ public class DocGenerator {
 	
 	private static final int CROSSREF_MAX_LEN = 145;
 	
-	private final Map<String,String> idMap = new HashMap<>();
-	
-	private final AtomicLong gen = new AtomicLong(1000);
-	
 	private final List<String> preloadedModules = new ArrayList<>();
 
 	private final Map<String, DocItem> docItems = new HashMap<>();
@@ -3148,4 +3144,6 @@ public class DocGenerator {
 	private final DocHighlighter codeHighlighter;
 	
 	private boolean runExamples = false;
+
+	private final IdGen idgen = new IdGen();
 }
