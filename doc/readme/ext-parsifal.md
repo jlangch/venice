@@ -162,9 +162,6 @@ The evaluator uses two Parsifal parsers. The up-front tokenizing parser operates
             seed-val
             tuples))
 
-  (defn any []
-    (p/token (constantly true)))
-
   (defn op [sym]
     (p/token #(token? % :op sym)))
 
@@ -205,8 +202,8 @@ The evaluator uses two Parsifal parsers. The up-front tokenizing parser operates
                          val (unary-expr)]
                  (p/always (if (token-value? opc "+") val (negate val))))
               (paren-expr)
-              (int) 
-              (float)))
+              (float)
+              (int)))
 
   (p/defparser paren-expr []
     (p/between (lparen) (rparen) (expr)))
@@ -217,7 +214,7 @@ The evaluator uses two Parsifal parsers. The up-front tokenizing parser operates
     ;; 3) parse left over tokens:     "(3 + 4) 9"  => ERR, Unexpected token '9'
     (p/either (p/eof)
               (p/let->> [e (expr)
-                         t (p/either (any) (p/eof))]
+                         t (p/either (p/eof) (p/any))]
                  (if (nil? t)
                    (p/always e)
                    (p/never (str "Unexpected token '" (:val t) "'"))))))

@@ -156,13 +156,6 @@
 
 ;; -----------------------------------------------------------------------------
 ;; parsers
-(defn always
-  ; A parser that always succeeds with the value given and consumes no
-  ; input
-  [x]
-  (fn [state cok cerr eok eerr]
-    (eok x state)))
-
 (defn bind
   ; Parse p, and then q. The function f must be of one argument, it
   ; will be given the value of p and must return the q to follow p
@@ -217,6 +210,13 @@
 
 ;; -----------------------------------------------------------------------------
 ;; m+
+(defn always
+  ; A parser that always succeeds with the value given and consumes no
+  ; input
+  [x]
+  (fn [state cok cerr eok eerr]
+    (eok x state)))
+
 (defn never
   ; A parser that always fails, consuming no input
   ([]
@@ -291,6 +291,9 @@
           (cok tok (input-state. (rest input) (inc-sourcepos pos tok)))
           (eerr (unexpect-error (str "token '" tok "'") pos))))
       (eerr (unexpect-error "end of input" pos)))))
+
+(defn any []
+  (token (constantly true)))
 
 (defn many
   ; Consume zero or more p. A ParseError will be thrown if this
