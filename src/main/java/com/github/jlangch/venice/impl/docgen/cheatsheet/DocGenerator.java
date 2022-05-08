@@ -520,6 +520,7 @@ public class DocGenerator {
 		str_test.addItem(getDocItem("empty?"));
 		str_test.addItem(getDocItem("not-empty?"));
 		str_test.addItem(getDocItem("str/blank?"));
+		str_test.addItem(getDocItem("str/not-blank?"));
 		str_test.addItem(getDocItem("str/starts-with?"));
 		str_test.addItem(getDocItem("str/ends-with?"));
 		str_test.addItem(getDocItem("str/contains?"));
@@ -531,6 +532,7 @@ public class DocGenerator {
 		strings.addSection(str_test_char);
 		str_test_char.addItem(getDocItem("str/char?"));
 		str_test_char.addItem(getDocItem("str/digit?"));
+		str_test_char.addItem(getDocItem("str/hexdigit?"));
 		str_test_char.addItem(getDocItem("str/letter?"));
 		str_test_char.addItem(getDocItem("str/whitespace?"));
 		str_test_char.addItem(getDocItem("str/linefeed?"));

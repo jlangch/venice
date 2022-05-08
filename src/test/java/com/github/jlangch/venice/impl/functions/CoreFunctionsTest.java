@@ -1181,6 +1181,23 @@ public class CoreFunctionsTest {
 	}
 	
 	@Test
+	public void test_not_empty_Q() {
+		final Venice venice = new Venice();
+
+		assertFalse((Boolean)venice.eval("(not-empty? nil)"));	
+		assertFalse((Boolean)venice.eval("(not-empty? \"\")"));	
+		assertFalse((Boolean)venice.eval("(not-empty? '())"));	
+		assertFalse((Boolean)venice.eval("(not-empty? [])"));	
+		assertFalse((Boolean)venice.eval("(not-empty? {})"));	
+		assertFalse((Boolean)venice.eval("(not-empty? (stack))"));	
+
+		assertTrue((Boolean)venice.eval("(not-empty? \"a\")"));	
+		assertTrue((Boolean)venice.eval("(not-empty? '(1))"));	
+		assertTrue((Boolean)venice.eval("(not-empty? [1])"));	
+		assertTrue((Boolean)venice.eval("(not-empty? (push! (stack) 1))"));	
+	}
+	
+	@Test
 	public void test_empty_to_nil() {
 		final Venice venice = new Venice();
 

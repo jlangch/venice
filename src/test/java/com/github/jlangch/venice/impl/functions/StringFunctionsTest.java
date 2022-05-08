@@ -25,8 +25,10 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
+import java.util.HashSet;
 import java.util.List;
 import java.util.Locale;
+import java.util.stream.Collectors;
 
 import org.junit.jupiter.api.Test;
 
@@ -35,6 +37,36 @@ import com.github.jlangch.venice.impl.util.CollectionUtil;
 
 
 public class StringFunctionsTest {
+
+	@Test
+	public void test_str_blank_Q() {
+		final Venice venice = new Venice();
+		
+		assertTrue((Boolean)venice.eval("(str/blank? nil)"));
+		assertTrue((Boolean)venice.eval("(str/blank? \"\")"));
+		assertTrue((Boolean)venice.eval("(str/blank? \"  \")"));
+		
+		assertFalse((Boolean)venice.eval("(str/blank? \"abc\")"));
+		assertFalse((Boolean)venice.eval("(str/blank? \" bc\")"));
+		assertFalse((Boolean)venice.eval("(str/blank? \"  c\")"));
+		assertFalse((Boolean)venice.eval("(str/blank? \"ab \")"));
+		assertFalse((Boolean)venice.eval("(str/blank? \"a  \")"));
+	}
+
+	@Test
+	public void test_str_not_blank_Q() {
+		final Venice venice = new Venice();
+		
+		assertTrue((Boolean)venice.eval("(str/not-blank? \"abc\")"));
+		assertTrue((Boolean)venice.eval("(str/not-blank? \" bc\")"));
+		assertTrue((Boolean)venice.eval("(str/not-blank? \"  c\")"));
+		assertTrue((Boolean)venice.eval("(str/not-blank? \"ab \")"));
+		assertTrue((Boolean)venice.eval("(str/not-blank? \"a  \")"));
+		
+		assertFalse((Boolean)venice.eval("(str/not-blank? nil)"));
+		assertFalse((Boolean)venice.eval("(str/not-blank? \"\")"));
+		assertFalse((Boolean)venice.eval("(str/not-blank? \"  \")"));
+	}
 
 	@Test
 	public void test_str_contains() {
@@ -54,11 +86,26 @@ public class StringFunctionsTest {
 	public void test_str_digit_Q() {
 		final Venice venice = new Venice();
 		
-		assertTrue((Boolean)venice.eval("(str/digit? #\\8)"));
-		assertFalse((Boolean)venice.eval("(str/digit? #\\a)"));
+		final HashSet<Character> digits = new HashSet<>(toCharList("0123456789"));
+		
+		for (int ii=0; ii<128; ii++) {
+			final String e = "(str/digit? (char " + ii + "))";
+			
+			assertEquals(digits.contains((char)ii),(Boolean)venice.eval(e));
+		}
+	}
 
-		assertTrue((Boolean)venice.eval("(str/digit? \"8\")"));
-		assertFalse((Boolean)venice.eval("(str/digit? \"a\")"));
+	@Test
+	public void test_str_hexdigit_Q() {
+		final Venice venice = new Venice();
+		
+		final HashSet<Character> digits = new HashSet<>(toCharList("0123456789abcdefABCDEF"));
+		
+		for (int ii=0; ii<128; ii++) {
+			final String e = "(str/hexdigit? (char " + ii + "))";
+			
+			assertEquals(digits.contains((char)ii),(Boolean)venice.eval(e));
+		}
 	}
 
 	@Test
@@ -798,4 +845,8 @@ public class StringFunctionsTest {
 		assertFalse((Boolean)venice.eval("(str/whitespace? \"8\")"));
 	}
 	
+	
+	private static List<Character> toCharList(final String s) {
+		return s.chars().mapToObj(e->(char)e).collect(Collectors.toList());
+	}
 }

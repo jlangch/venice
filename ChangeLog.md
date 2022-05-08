@@ -13,6 +13,7 @@ and this project adheres to
 
 ### Added
 
+- function `str/hexdigit?`
 - new features to the _Parsifal_ parser combinator
     1. Deduping the error message list, to avoid repeated error messages
     2. Allow customized error message with the `never` parser

@@ -82,6 +82,7 @@ public class StringFunctions {
 						"(str/blank? \"\")",
 						"(str/blank? \"  \")",
 						"(str/blank? \"abc\")")
+					.seeAlso( "not-blank?", "empty?", "not-empty?", "nil?")
 					.build()
 		) {
 			public VncVal apply(final VncList args) {
@@ -98,6 +99,37 @@ public class StringFunctions {
 
 			private static final long serialVersionUID = -1848883965231344442L;
 		};
+
+	public static VncFunction str_not_blank_Q =
+			new VncFunction(
+					"str/not-blank?",
+					VncFunction
+						.meta()
+						.arglists("(str/not-blank? s)")
+						.doc("True if s contains at least one non whitespace char.")
+						.examples(
+							"(str/not-blank? \"abc\")",
+							"(str/not-blank? \" a \")",
+							"(str/not-blank? nil)",
+							"(str/not-blank? \"\")",
+							"(str/not-blank? \"  \")")
+						.seeAlso("blank?", "empty?", "not-empty?", "nil?")
+						.build()
+			) {
+				public VncVal apply(final VncList args) {
+					ArityExceptions.assertArity(this, args, 1);
+
+					if (args.first() == Nil) {
+						return False;
+					}
+
+					final String s = Coerce.toVncString(args.first()).getValue();
+
+					return VncBoolean.of(StringUtil.isNotBlank(s));
+				}
+
+				private static final long serialVersionUID = -1848883965231344442L;
+			};
 
 	public static VncFunction str_char_Q =
 		new VncFunction(
@@ -1593,6 +1625,40 @@ public class StringFunctions {
 			private static final long serialVersionUID = -1848883965231344442L;
 		};
 
+	public static VncFunction str_hexdigit_Q =
+		new VncFunction(
+				"str/hexdigit?",
+				VncFunction
+					.meta()
+					.arglists("(str/hexdigit? s)")
+					.doc(
+						"True if s is a char and the char is a hex digit.")
+					.examples(
+						"(str/hexdigit? #\\8)",
+						"(str/hexdigit? #\\a)",
+						"(str/hexdigit? #\\A)")
+					.build()
+		) {
+			public VncVal apply(final VncList args) {
+				ArityExceptions.assertArity(this, args, 1);
+
+				final VncVal v = args.first();
+
+				if (Types.isVncChar(v)) {
+					final int ch = (int)((VncChar)v).getValue().charValue();
+					return VncBoolean.of(
+								(ch >= '0' && ch <= '9') 
+								|| (ch >= 'A' && ch <= 'F') 
+								|| (ch >= 'a' && ch <= 'f'));
+				}
+				else {
+					return False;
+				}
+			}
+
+			private static final long serialVersionUID = -1848883965231344442L;
+		};
+
 	public static VncFunction str_letter_Q =
 		new VncFunction(
 				"str/letter?",
@@ -2227,12 +2293,14 @@ public class StringFunctions {
 			new VncHashMap
 					.Builder()
 					.add(str_blank_Q)
+					.add(str_not_blank_Q)
 					.add(str_starts_with_Q)
 					.add(str_ends_with_Q)
 					.add(str_contains_Q)
 					.add(str_equals_ignore_case_Q)
 					.add(str_char_Q)
 					.add(str_digit_Q)
+					.add(str_hexdigit_Q)
 					.add(str_letter_Q)
 					.add(str_linefeed_Q)
 					.add(str_whitespace_Q)
