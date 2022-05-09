@@ -956,22 +956,21 @@
        (load-file ~file false ~opt)))
 
   ([file force alias]
-    `(let [fc# (if (str/ends-with? (name ~file) ".venice")
-                   (name ~file)
-                   (str (name ~file) ".venice"))]
+    `(let [alias-err-msg# (str/format "load-file '%s'" (name ~file))
+           fc#            (if (str/ends-with? (name ~file) ".venice")
+                            (name ~file)
+                            (str (name ~file) ".venice"))]
        (if (or ~force (not-contains? core/*loaded-files* fc#))
          (do
            (let [code# (core/load-file* fc#)]
              (when (some? code#)
-               (let [parsed# (read-string (str "(do " code# ")") fc#)
+               (let [parsed#   (read-string (str "(do " code# ")") fc#)
                      expanded# (if core/*macroexpand-on-load*
                                  (macroexpand-all parsed#)
                                  parsed#)]
                  (cons! fc# core/*loaded-files*)
                  (eval expanded#)
-                 (process-ns-alias-def* (str/format "load-file '%s'"
-                                                    (name ~file))
-                                        ~alias)
+                 (process-ns-alias-def* alias-err-msg# ~alias)
                  fc#)))
             true)
         false))))
@@ -1016,21 +1015,20 @@
        (load-classpath-file ~file false ~opt)))
 
   ([file force alias]
-    `(let [fc# (if (str/ends-with? (name ~file) ".venice")
-                   (name ~file)
-                   (str (name ~file) ".venice"))]
+    `(let [alias-err-msg# (str/format "load-classpath-file '%s'" (name ~file))
+           fc#            (if (str/ends-with? (name ~file) ".venice")
+                            (name ~file)
+                            (str (name ~file) ".venice"))]
        (when (or ~force (not-contains? core/*loaded-files* fc#))
          (let [code# (core/load-classpath-file* fc#)]
            (when (some? code#)
-             (let [parsed# (read-string (str "(do " code# ")") fc#)
+             (let [parsed#   (read-string (str "(do " code# ")") fc#)
                    expanded# (if core/*macroexpand-on-load*
                                (macroexpand-all parsed#)
                                parsed#)]
                (cons! fc# core/*loaded-files*)
                (eval expanded#)
-               (process-ns-alias-def* (str/format "load-classpath-file '%s'"
-                                                  (name ~file))
-                                      ~alias)
+               (process-ns-alias-def* alias-err-msg# ~alias)
                fc#)))))))
 
 
@@ -1075,17 +1073,18 @@
        (load-module ~m false ~opt)))
 
   ([m force alias]
-    `(when (or ~force (not-contains? core/*loaded-modules* (keyword (name ~m))))
-       (let [code# (str "(do " (core/load-module* ~m) ")")
-             parsed# (read-string code# ~m)
-             expanded# (if core/*macroexpand-on-load*
-                         (macroexpand-all parsed#)
-                         parsed#)]
-         (cons! (keyword (name ~m)) core/*loaded-modules*)
-         (eval expanded#)
-         (process-ns-alias-def* (str/format "load-module '%s'" (name ~m))
-                                ~alias)
-         (keyword (name ~m))))))
+    `(let [alias-err-msg# (str/format "load-module '%s'" (name ~m))]
+       (if (or ~force (not-contains? core/*loaded-modules* (keyword (name ~m))))
+         (let [code#     (str "(do " (core/load-module* ~m) ")")
+               parsed#   (read-string code# ~m)
+               expanded# (if core/*macroexpand-on-load*
+                           (macroexpand-all parsed#)
+                           parsed#)]
+           (cons! (keyword (name ~m)) core/*loaded-modules*)
+           (eval expanded#)
+           (process-ns-alias-def* alias-err-msg# ~alias)
+           (keyword (name ~m)))
+         (process-ns-alias-def* alias-err-msg# ~alias)))))
 
 
 (defmacro

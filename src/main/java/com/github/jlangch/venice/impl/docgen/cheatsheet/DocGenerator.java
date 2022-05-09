@@ -2585,50 +2585,50 @@ public class DocGenerator {
 
 		final DocSection run = new DocSection("Run", id());
 		all.addSection(run);
-		run.addItem(getDocItem("parsifal/run", false));
+		run.addItem(getDocItem("parsifal/run"));
 
 		final DocSection define = new DocSection("Define", id());
 		all.addSection(define);
-		define.addItem(getDocItem("parsifal/defparser", false));
+		define.addItem(getDocItem("parsifal/defparser"));
 
 		final DocSection parsers = new DocSection("Parsers", id());
 		all.addSection(parsers);
-		parsers.addItem(getDocItem("parsifal/any", false));
-		parsers.addItem(getDocItem("parsifal/many", false));
-		parsers.addItem(getDocItem("parsifal/many1", false));
-		parsers.addItem(getDocItem("parsifal/times", false));
-		parsers.addItem(getDocItem("parsifal/either", false));
-		parsers.addItem(getDocItem("parsifal/choice", false));
-		parsers.addItem(getDocItem("parsifal/>>", false));
+		parsers.addItem(getDocItem("parsifal/any"));
+		parsers.addItem(getDocItem("parsifal/many"));
+		parsers.addItem(getDocItem("parsifal/many1"));
+		parsers.addItem(getDocItem("parsifal/times"));
+		parsers.addItem(getDocItem("parsifal/either"));
+		parsers.addItem(getDocItem("parsifal/choice"));
+		parsers.addItem(getDocItem("parsifal/>>"));
 
 		final DocSection special = new DocSection("Special Parsers", id());
 		all.addSection(special);
-		special.addItem(getDocItem("parsifal/eof", false));
-		special.addItem(getDocItem("parsifal/never", false));
-		special.addItem(getDocItem("parsifal/always", false));
-		special.addItem(getDocItem("parsifal/lookahead", false));
-		special.addItem(getDocItem("parsifal/attempt", false));
+		special.addItem(getDocItem("parsifal/eof"));
+		special.addItem(getDocItem("parsifal/never"));
+		special.addItem(getDocItem("parsifal/always"));
+		special.addItem(getDocItem("parsifal/lookahead"));
+		special.addItem(getDocItem("parsifal/attempt"));
 
 		final DocSection binding = new DocSection("Binding", id());
 		all.addSection(binding);
-		binding.addItem(getDocItem("parsifal/let->>", false));
+		binding.addItem(getDocItem("parsifal/let->>"));
 
 		final DocSection ch = new DocSection("Char Parsers", id());
 		all.addSection(ch);
-		ch.addItem(getDocItem("parsifal/char", false));
-		ch.addItem(getDocItem("parsifal/not-char", false));
-		ch.addItem(getDocItem("parsifal/any-char", false));
-		ch.addItem(getDocItem("parsifal/digit", false));
-		ch.addItem(getDocItem("parsifal/hexdigit", false));
-		ch.addItem(getDocItem("parsifal/letter", false));
-		ch.addItem(getDocItem("parsifal/letter-or-digit", false));
-		ch.addItem(getDocItem("parsifal/any-char-of", false));
-		ch.addItem(getDocItem("parsifal/none-char-of", false));
-		ch.addItem(getDocItem("parsifal/string", false));
+		ch.addItem(getDocItem("parsifal/char"));
+		ch.addItem(getDocItem("parsifal/not-char"));
+		ch.addItem(getDocItem("parsifal/any-char"));
+		ch.addItem(getDocItem("parsifal/digit"));
+		ch.addItem(getDocItem("parsifal/hexdigit"));
+		ch.addItem(getDocItem("parsifal/letter"));
+		ch.addItem(getDocItem("parsifal/letter-or-digit"));
+		ch.addItem(getDocItem("parsifal/any-char-of"));
+		ch.addItem(getDocItem("parsifal/none-char-of"));
+		ch.addItem(getDocItem("parsifal/string"));
 
 		final DocSection tok = new DocSection("Token Parsers", id());
 		all.addSection(tok);
-		tok.addItem(getDocItem("parsifal/token", false));
+		tok.addItem(getDocItem("parsifal/token"));
 
 		final DocSection proto = new DocSection("Protocols", id());
 		all.addSection(proto);		
@@ -2636,8 +2636,8 @@ public class DocGenerator {
 
 		final DocSection line = new DocSection("Line Info", id());
 		all.addSection(line);
-		line.addItem(getDocItem("parsifal/lineno", false));
-		line.addItem(getDocItem("parsifal/pos", false));
+		line.addItem(getDocItem("parsifal/lineno"));
+		line.addItem(getDocItem("parsifal/pos"));
 
 		return section;
 	}

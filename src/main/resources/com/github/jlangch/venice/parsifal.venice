@@ -384,35 +384,79 @@
   (token str/char?))
 
 
-(defn digit
-  ; Consume a digit [0-9] character
-  []
+(defn
+  ^{ :arglists '("(digit)")
+     :doc "Consume a digit [0-9] character"
+     :examples '(
+          """
+          (do
+            (load-module :parsifal ['parsifal :as 'p])
+            (p/run (p/digit) "123"))
+          """)}
+
+  digit []
   (token str/digit?))
 
 
-(defn hexdigit
-  ; Consume a hex digit [0-9a-fA-F] character
-  []
+(defn
+  ^{ :arglists '("(hexdigit)")
+     :doc "Consume a hex digit [0-9a-fA-F] character"
+     :examples '(
+          """
+          (do
+          (load-module :parsifal ['parsifal :as 'p])
+          (p/run (p/hexdigit) "A23"))
+          """)}
+
+  hexdigit []
   (token str/hexdigit?))
 
 
-(defn letter
-  ; Consume a letter character
-  ; Defined by Java Character.isLetter(ch)
-  []
+(defn
+  ^{ :arglists '("(letter)")
+     :doc """
+          Consume a letter character.
+          Defined by Java `Character.isLetter(ch)
+          """
+     :examples '(
+          """
+          (do
+            (load-module :parsifal ['parsifal :as 'p])
+            (p/run (p/letter) "abc"))
+          """)}
+
+  letter []
   (token str/letter?))
 
 
-(defn letter-or-digit
-  ; Consume a letter or digit character.
-  ; Defined by Java Character.isLetterOrDigit(ch)
-  []
+(defn
+  ^{ :arglists '("(letter-or-digit)")
+     :doc """
+          Consume a letter or digit character.
+          Defined by Java `Character.isLetterOrDigit(ch)
+          """
+     :examples '(
+          """
+          (do
+            (load-module :parsifal ['parsifal :as 'p])
+            (p/run (p/letter-or-digit) "abc"))
+          """)}
+
+  letter-or-digit []
   (token str/letter-or-digit?))
 
 
-(defn string
-  ; Consume the given string
-  [s]
+(defn
+  ^{ :arglists '("(string s)")
+     :doc "Consume the given string"
+     :examples '(
+          """
+          (do
+            (load-module :parsifal ['parsifal :as 'p])
+            (p/run (p/string "Hello") "Hello, world!"))
+          """)}
+
+  string [s]
   (reduce nxt (concat (map char s)
                       (list (always s)))))
 
