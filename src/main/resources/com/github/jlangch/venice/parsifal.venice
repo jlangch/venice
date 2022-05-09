@@ -351,6 +351,7 @@
             ; => #\H
           )
           """)}
+
   token [consume?]
   (fn [{:keys [input pos] :as state} cok cerr eok eerr]
     (if-not (empty? input)
@@ -361,15 +362,53 @@
       (eerr (unexpect-error "end of input" pos)))))
 
 
-(defn any []
+(defn
+  ^{ :arglists '("(any)")
+     :doc """
+          Consume any single item from the head of the input. This parser will
+          fail to consume if the input is empty.
+          """
+     :examples '(
+          """
+          (do
+            (load-module :parsifal ['parsifal :as 'p])
+
+            (p/run (p/any "Cats")
+            ; => #\C
+
+            (p/run (p/any) [#\\C #\\a #\\t #\\s])
+            ; => #\C
+          )
+          """)}
+
+  any []
   (token (constantly true)))
 
 
-(defn many
-  ; Consume zero or more p. A ParseError will be thrown if this
-  ; combinator is applied to a parser that accepts the empty string, as
-  ; that would cause the parser to loop forever
-  [p]
+(defn
+  ^{ :arglists '("(many p)")
+     :doc """
+          Returns a new parser that will parse zero or more items that match
+          the given parser `p`. The matched items are concatenated into a
+          sequence.¶
+          *Note*: A ParseError will be thrown if this combinator is applied to
+          a parser that accepts the empty string, as that would cause the parser
+          to loop forever.
+          """
+     :examples '(
+          """
+          (do
+            (load-module :parsifal ['parsifal :as 'p])
+
+            (p/run (p/many (p/digit)) "1234-0000")
+            ; => [#\\1 #\\2 #\\3 #\\4]
+
+            (p/run (p/many (p/digit)) "ABC-12345")
+            ; => []
+          )
+          """)}
+
+  many [p]
   (let [many-err (fn [_ _]
                    (fail "Combinator '*' is applied to a parser that accepts an empty string"))
         safe-p   (fn [state cok cerr eok eerr]
@@ -379,6 +418,34 @@
               xs (many safe-p)]
        (always (cons x xs)))
      (always []))))
+
+
+(defn
+  ^{ :arglists '("(many1 p)")
+     :doc """
+          Returns a new parser that will parse one or more items that match
+          the given parser `p`. The matched items are concatenated into a
+          sequence.¶
+          *Note*: A ParseError will be thrown if this combinator is applied to
+          a parser that accepts the empty string, as that would cause the parser
+          to loop forever.
+          """
+     :examples '(
+          """
+          (do
+            (load-module :parsifal ['parsifal :as 'p])
+
+            (p/run (p/many1 (p/digit)) "1234-0000")
+            ; => [#\\1 #\\2 #\\3 #\\4]
+
+            (p/run (p/many1 (p/digit)) "ABC-12345")
+            ; => ParseError: Unexpected token 'A' at line: 1 column: 1
+          )
+          """)}
+
+  many1 [p]
+  (let->> [x p, xs (many p)]
+    (always (cons x xs))))
 
 
 (defn times
@@ -410,11 +477,27 @@
       (either p (apply choice (rest parsers))))))
 
 
-(defn eof
-  ; A parser to detect the end of input. If there is nothing more to
-  ; consume from the underlying input, this parser suceeds with a nil
-  ; value, otherwise it fails
-  []
+(defn
+  ^{ :arglists '("(eof)")
+     :doc """
+          A parser to detect the end of input. If there is nothing more to
+          consume from the underlying input, this parser suceeds with a `nil`
+          value, otherwise it fails.
+          """
+     :examples '(
+          """
+          (do
+            (load-module :parsifal ['parsifal :as 'p])
+
+            (p/run (p/eof) "")
+            ; => nil
+
+            (p/run (p/eof) "a")
+            ; => ParseError: Expected end of input at line: 1 column: 1
+          )
+          """)}
+
+  eof []
   (fn [state cok cerr eok eerr]
     (if (empty? (:input state))
       (eok nil state)
@@ -624,11 +707,6 @@
     (always x)))
 
 
-(defn many1
-  ; Consume 1 or more p
-  [p]
-  (let->> [x p, xs (many p)]
-    (always (cons x xs))))
 
 
 ;; -----------------------------------------------------------------------------
