@@ -2632,7 +2632,7 @@ public class DocGenerator {
 
 		final DocSection proto = new DocSection("Protocols", id());
 		all.addSection(proto);		
-		proto.addItem(getDocItem("parsifal/SourcePosition"));
+		proto.addItem(getDocItem("parsifal/SourcePosition", false));
 
 		final DocSection line = new DocSection("Line Info", id());
 		all.addSection(line);

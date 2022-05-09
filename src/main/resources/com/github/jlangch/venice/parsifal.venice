@@ -83,7 +83,47 @@
 
 (deftype :parse-error [pos :source-pos msgs :sequence])
 
-(defprotocol SourcePosition (line [p]) (column [p]))
+(defprotocol
+  ^{ :doc """
+          Defines a protocol to add line and column information for custom
+          tokens.
+
+          Definition:
+
+          ```
+          (defprotocol SourcePosition
+            (line [p])
+            (column [p]))
+          ```
+          """
+     :examples '(
+          """
+          (do
+            (load-module :parsifal ['parsifal :as 'p])
+
+            (deftype :Token [type :keyword, val :string, line :long, column :long]
+              Object
+                (toString [this] (str/format "[%s %s (%d,%d)]"
+                                             (pr-str (:type this))
+                                             (pr-str (:val this))
+                                             (:line this)
+                                             (:column this)))
+              p/SourcePosition
+                (line [this] (:line this))
+                (column [this] (:column this)))
+
+            (p/defparser lbracket []
+              (p/let->> [[l c] (p/pos)
+                         t     (p/char #\\[)]
+                 (p/always (Token. :lbracket (str t) l c))))
+
+            (p/run (lbracket) "[1,2,3]")
+            ; => [:lbracket "[" (1,1)]
+          )
+          """ )
+     :see-also '("defprotocol", "deftype") }
+
+  SourcePosition (line [p]) (column [p]))
 
 
 ;; -----------------------------------------------------------------------------
