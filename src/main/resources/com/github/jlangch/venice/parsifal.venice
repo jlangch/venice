@@ -292,11 +292,26 @@
 
 ;; -----------------------------------------------------------------------------
 ;; token
-(defn token
-  ; Consume a single item from the head of the input if (consume? item)
-  ; is not nil. This parser will fail to consume if either the consume?
-  ; test returns nil or if the input is empty
-  [consume?]
+(defn
+  ^{ :arglists '("(token)")
+     :doc """
+          Consume a single item from the head of the input if `(consume? item)`
+          predicate is not `nil`. This parser will fail to consume if either the
+          `consume?` test returns `false` or if the input is empty.
+          """
+     :examples '(
+          """
+          (do
+            (load-module :parsifal ['parsifal :as 'p])
+
+            (p/run (p/token #(< % 5)) [3 5 7])
+            ; => 3
+
+            (p/run (p/token str/upper-case) "Hello")
+            ; => #\H
+          )
+          """)}
+  token [consume?]
   (fn [{:keys [input pos] :as state} cok cerr eok eerr]
     (if-not (empty? input)
       (let [tok (first input)]
@@ -366,32 +381,86 @@
       (eerr (expect-error "end of input" (:pos state))))))
 
 
-(defn char
-  ; Consume the given character
-  [c]
+(defn
+  ^{ :arglists '("(char)")
+     :doc "Consume the given character"
+     :examples '(
+          """
+          (do
+            (load-module :parsifal ['parsifal :as 'p])
+
+            (p/run (p/char #\\H) "Hello")
+            ; => #\\H
+
+            (p/run (p/char #\\H) [#\\H #\\e #\\l #\\l #\\o])
+            ; => #\\H
+          )
+          """)}
+
+  char [c]
   (token #(== c %)))
 
 
-(defn not-char
-  ; Consume all but the given character
-  [c]
+(defn
+  ^{ :arglists '("(not-char)")
+     :doc "Consume all but the given character"
+     :examples '(
+          """
+          (do
+            (load-module :parsifal ['parsifal :as 'p])
+
+            (p/run (p/not-char #\\x) "Cats")
+            ; => #\\C
+
+            (p/run (p/not-char #\\x) [#\\C #\\a #\\t #\\s])
+            ; => #\\C
+          )
+          """)}
+
+  not-char [c]
   (token #(not (== c %))))
 
 
-(defn any-char
-  ; Consume any character
-  []
+(defn
+  ^{ :arglists '("(any-char)")
+     :doc """
+          Consume any character.¶
+          *Note*: Works with char items only!
+          """
+     :examples '(
+          """
+          (do
+            (load-module :parsifal ['parsifal :as 'p])
+
+            (p/run (p/any-char) "Cats")
+            ; => #\\C
+
+            (p/run (p/any-char) [#\\C #\\a #\\t #\\s])
+            ; => #\\C
+          )
+          """)}
+
+  any-char []
   (token str/char?))
 
 
 (defn
   ^{ :arglists '("(digit)")
-     :doc "Consume a digit [0-9] character"
+     :doc """
+          Consume a digit [0-9] character.¶
+          *Note*: Works with char items only!
+          """
      :examples '(
           """
           (do
             (load-module :parsifal ['parsifal :as 'p])
-            (p/run (p/digit) "123"))
+
+            (p/run (p/digit) "123")
+            ; => #\\1
+
+            (p/run (p/any-char) [#\\1 #\\2 #\\3])
+            ; => #\\1
+          )
           """)}
 
   digit []
@@ -400,12 +469,21 @@
 
 (defn
   ^{ :arglists '("(hexdigit)")
-     :doc "Consume a hex digit [0-9a-fA-F] character"
+     :doc """
+          Consume a hex digit [0-9a-fA-F] character.¶
+          *Note*: Works with char items only!
+          """
      :examples '(
           """
           (do
-          (load-module :parsifal ['parsifal :as 'p])
-          (p/run (p/hexdigit) "A23"))
+            (load-module :parsifal ['parsifal :as 'p])
+
+            (p/run (p/hexdigit) "A00")
+            ; => #\\A
+
+            (p/run (p/hexdigit) [#\\A #\\0 #\\0])
+            ; => #\\A
+          )
           """)}
 
   hexdigit []
@@ -415,14 +493,20 @@
 (defn
   ^{ :arglists '("(letter)")
      :doc """
-          Consume a letter character.
-          Defined by Java `Character.isLetter(ch)
+          Consume a letter character defined by Java `Character.isLetter(ch)`.¶
+          *Note*: Works with char items only!
           """
      :examples '(
           """
           (do
             (load-module :parsifal ['parsifal :as 'p])
-            (p/run (p/letter) "abc"))
+
+            (p/run (p/letter) "Cats")
+            ; => #\\C
+
+            (p/run (p/letter) [#\\C #\\a #\\t #\\s])
+            ; => #\\C
+          )
           """)}
 
   letter []
@@ -432,14 +516,24 @@
 (defn
   ^{ :arglists '("(letter-or-digit)")
      :doc """
-          Consume a letter or digit character.
-          Defined by Java `Character.isLetterOrDigit(ch)
+          Consume a letter or digit character defined by Java
+          `Character.isLetterOrDigit(ch)`¶
+          *Note*: Works with char items only!
           """
      :examples '(
           """
           (do
             (load-module :parsifal ['parsifal :as 'p])
-            (p/run (p/letter-or-digit) "abc"))
+
+            (p/run (p/letter-or-digit) "Cats")
+            ; => #\\C
+
+            (p/run (p/letter-or-digit) "5Cats")
+            ; => #\\5
+
+            (p/run (p/letter-or-digit) [#\\C #\\a #\\t #\\s])
+            ; => #\\C
+          )
           """)}
 
   letter-or-digit []
@@ -448,12 +542,21 @@
 
 (defn
   ^{ :arglists '("(string s)")
-     :doc "Consume the given string"
+     :doc """
+          Consume the given string and returns a string. ¶
+          *Note*: Works with char items only!
+          """
      :examples '(
           """
           (do
             (load-module :parsifal ['parsifal :as 'p])
-            (p/run (p/string "Hello") "Hello, world!"))
+
+            (p/run (p/string "Hello") "Hello, world!")
+            ; => "Hello"
+
+            (p/run (p/string "Hello") (seq "Hello, world!"))
+            ; => "Hello"
+          )
           """)}
 
   string [s]
@@ -461,15 +564,15 @@
                       (list (always s)))))
 
 
-(defn any-char-of
+(defn
   ; Consume any of the characters given in the string. E.g.: (any-char-of "([{")
-  [s]
+  any-char-of [s]
   (token (fn [x] (str/contains? s x))))
 
 
-(defn none-char-of
+(defn
   ; Consume all but the characters given in the string
-  [s]
+  none-char-of [s]
   (token (fn [x] (not (str/contains? s x)))))
 
 
