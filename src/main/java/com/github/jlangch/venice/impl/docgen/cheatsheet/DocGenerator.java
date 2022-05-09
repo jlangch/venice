@@ -2630,6 +2630,10 @@ public class DocGenerator {
 		all.addSection(tok);
 		tok.addItem(getDocItem("parsifal/token", false));
 
+		final DocSection proto = new DocSection("Protocols", id());
+		all.addSection(proto);		
+		proto.addItem(getDocItem("parsifal/SourcePosition"));
+
 		final DocSection line = new DocSection("Line Info", id());
 		all.addSection(line);
 		line.addItem(getDocItem("parsifal/lineno", false));

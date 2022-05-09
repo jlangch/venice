@@ -1468,7 +1468,7 @@ public class SpecialFormsDoc {
 						"  (println xxx/foo foo yyy/foo))    ")
 					.seeAlso(
 						"*ns*", "ns-unmap", "ns-remove", 
-						"ns-list", "namespace", "var-ns")
+						"ns-list", "ns-alias", "namespace", "var-ns")
 					.build()
 		) {
 			private static final long serialVersionUID = -1;

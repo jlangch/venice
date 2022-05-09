@@ -952,8 +952,8 @@
 
   ([file opt]
     `(if (boolean? ~opt)
-      (load-file ~file ~opt nil)
-      (load-file ~file false ~opt)))
+       (load-file ~file ~opt nil)
+       (load-file ~file false ~opt)))
 
   ([file force alias]
     `(let [fc# (if (str/ends-with? (name ~file) ".venice")
@@ -1012,8 +1012,8 @@
 
   ([file opt]
     `(if (boolean? ~opt)
-      (load-classpath-file ~file ~opt nil)
-      (load-classpath-file ~file false ~opt)))
+       (load-classpath-file ~file ~opt nil)
+       (load-classpath-file ~file false ~opt)))
 
   ([file force alias]
     `(let [fc# (if (str/ends-with? (name ~file) ".venice")
@@ -1051,7 +1051,8 @@
           (load-module :trace)
           """,
           """
-          ;; loading the :trace modul and define a ns alias 't for 'trace
+          ;; loading the :trace modul and define a ns alias 't for namespace
+          ;; 'trace used in the module
           (load-module :trace ['trace :as 't])
           """,
           """
@@ -1070,8 +1071,8 @@
 
   ([m opt]
     `(if (boolean? ~opt)
-      (load-module ~m ~opt nil)
-      (load-module ~m false ~opt)))
+       (load-module ~m ~opt nil)
+       (load-module ~m false ~opt)))
 
   ([m force alias]
     `(when (or ~force (not-contains? core/*loaded-modules* (keyword (name ~m))))
