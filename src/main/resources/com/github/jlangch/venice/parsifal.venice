@@ -238,13 +238,6 @@
            (parsifal/continue. #(~p ~state ~cok ~cerr ~eok ~eerr)))))))
 
 
-(defmacro >>
-  ; Expands into nested nxt forms
-  ([m] m)
-  ([m n] `(parsifal/nxt ~m ~n))
-  ([m n & ms] `(parsifal/nxt ~m (parsifal/>> ~n ~@ms))))
-
-
 (defmacro let->>
   ; Expands into nested bind forms
   [[& bindings_] & body]
@@ -273,18 +266,6 @@
   ([err-msg]
    (fn [state cok cerr eok eerr]
      (eerr (parse-error. (:pos state) [err-msg])))))
-
-
-(defn either
-  ; A parser that tries p, upon success, returning its value, and upon
-  ; failure (if no input was consumed) tries to parse q
-  [p q]
-  (fn [state cok cerr eok eerr]
-    (let [peerr (fn [err-from-p]
-                  (let [qeerr (fn [err-from-q]
-                                (eerr (merge-errors err-from-p err-from-q)))]
-                    (continue. #(q state cok cerr eok qeerr))))]
-      (continue. #(p state cok cerr eok peerr)))))
 
 
 (defn attempt
@@ -348,11 +329,12 @@
             ; => 3
 
             (p/run (p/token str/upper-case) "Hello")
-            ; => #\H
+            ; => #\\H
           )
           """)}
 
   token [consume?]
+
   (fn [{:keys [input pos] :as state} cok cerr eok eerr]
     (if-not (empty? input)
       (let [tok (first input)]
@@ -382,6 +364,7 @@
           """)}
 
   any []
+
   (token (constantly true)))
 
 
@@ -409,6 +392,7 @@
           """)}
 
   many [p]
+
   (let [many-err (fn [_ _]
                    (fail "Combinator '*' is applied to a parser that accepts an empty string"))
         safe-p   (fn [state cok cerr eok eerr]
@@ -444,13 +428,38 @@
           """)}
 
   many1 [p]
+
   (let->> [x p, xs (many p)]
     (always (cons x xs))))
 
 
-(defn times
-  ; Consume exactly n number of p
-  [n p]
+(defn
+  ^{ :arglists '("(times n p)")
+     :doc """
+          Returns a new parser that consumes exactly n times what the parser `p`
+          matches. The matched items are concatenated into a sequence.
+          """
+     :examples '(
+          """
+          (do
+            (load-module :parsifal ['parsifal :as 'p])
+
+            (p/run (p/times 5 (p/letter)) "Hello, world!")
+            ; => [#\\H #\\e #\\l #\\l #\\o]
+
+            ;; Note: `p/times` is different from parsing letters explicitely
+            (p/run (p/>> (p/letter)
+                         (p/letter)
+                         (p/letter)
+                         (p/letter)
+                         (p/letter))
+                   "Hello, world!")
+            ; => [#\\o]
+          )
+          """)}
+
+  times [n p]
+
   (if (== n 0)
     (always [])
     (let->> [x p
@@ -458,23 +467,103 @@
       (always (cons x xs)))))
 
 
-(defn lookahead
-  ; A parser that upon success consumes no input, but returns what was
-  ; parsed
-  [p]
+(defn
+  ^{ :arglists '("(either p q)")
+     :doc """
+          Returns a new parser that tries `p`, upon success, returning its
+          value, and upon failure (if no input was consumed) tries to parse `q`
+          """
+     :examples '(
+          """
+          (do
+            (load-module :parsifal ['parsifal :as 'p])
+
+            (p/run (p/either (p/many1 (p/digit)) (p/many1 (p/letter))) "Hello")
+            ; => [#\\H #\\e #\\l #\\l #\\o]
+
+            (p/run (p/either (p/many1 (p/digit)) (p/many1 (p/letter))) "42")
+            ; => [#\\4 #\\2]
+          )
+          """)}
+
+  either [p q]
+
   (fn [state cok cerr eok eerr]
-    (let [ok (fn [item _] (eok item state))]
-      (continue. #(p state ok cerr eok eerr)))))
+    (let [peerr (fn [err-from-p]
+                  (let [qeerr (fn [err-from-q]
+                                (eerr (merge-errors err-from-p err-from-q)))]
+                    (continue. #(q state cok cerr eok qeerr))))]
+      (continue. #(p state cok cerr eok peerr)))))
 
 
-(defn choice
-  ; A varargs version of either that tries each given parser in turn,
-  ; returning the value of the first one that succeeds
-  [& parsers]
+(defn
+  ^{ :arglists '("(choice & p)")
+     :doc """
+          Returns a new parser that tries each given parsers in turn,
+          returning the value of the first one that succeeds.
+          """
+     :examples '(
+          """
+          (do
+            (load-module :parsifal ['parsifal :as 'p])
+
+            (p/run (p/choice (p/many1 (p/digit)) (p/many1 (p/letter))) "Hello")
+            ; => [#\\H #\\e #\\l #\\l #\\o]
+
+            (p/run (p/choice (p/many1 (p/digit)) (p/many1 (p/letter))) "42")
+            ; => [#\\4 #\\2]
+          )
+          """)}
+
+  choice [& parsers]
+
   (if (empty? parsers)
     (never)
     (let [p (first parsers)]
       (either p (apply choice (rest parsers))))))
+
+
+(defn
+  ^{ :arglists '("(between open close p)")
+     :doc """
+          Returns a new parser that parses `open`, `p`, and `close`
+          returning the value of `p` and discarding the values of `open` and
+          `close`.
+          """
+     :examples '(
+          """
+          (do
+            (load-module :parsifal ['parsifal :as 'p])
+
+            (p/run (p/between (p/char #\lparen)
+                              (p/char #\rparen)
+                              (p/many1 (p/digit)))
+                   "(123)")
+            ; => [#\\1 #\\2 #\\3]
+          )
+          """)}
+
+  between [open close p]
+
+  (let->> [_ open, x p, _ close]
+    (always x)))
+
+
+(defmacro
+  ; Expands into nested nxt forms
+  >>
+  ([m] m)
+  ([m n] `(parsifal/nxt ~m ~n))
+  ([m n & ms] `(parsifal/nxt ~m (parsifal/>> ~n ~@ms))))
+
+
+(defn
+  ; A parser that upon success consumes no input, but returns what was
+  ; parsed
+  lookahead [p]
+  (fn [state cok cerr eok eerr]
+    (let [ok (fn [item _] (eok item state))]
+      (continue. #(p state ok cerr eok eerr)))))
 
 
 (defn
@@ -498,6 +587,7 @@
           """)}
 
   eof []
+
   (fn [state cok cerr eok eerr]
     (if (empty? (:input state))
       (eok nil state)
@@ -521,6 +611,7 @@
           """)}
 
   char [c]
+
   (token #(== c %)))
 
 
@@ -541,6 +632,7 @@
           """)}
 
   not-char [c]
+
   (token #(not (== c %))))
 
 
@@ -564,6 +656,7 @@
           """)}
 
   any-char []
+
   (token str/char?))
 
 
@@ -587,6 +680,7 @@
           """)}
 
   digit []
+
   (token str/digit?))
 
 
@@ -610,6 +704,7 @@
           """)}
 
   hexdigit []
+
   (token str/hexdigit?))
 
 
@@ -633,6 +728,7 @@
           """)}
 
   letter []
+
   (token str/letter?))
 
 
@@ -660,6 +756,7 @@
           """)}
 
   letter-or-digit []
+
   (token str/letter-or-digit?))
 
 
@@ -683,6 +780,7 @@
           """)}
 
   string [s]
+
   (reduce nxt (concat (map char s)
                       (list (always s)))))
 
@@ -690,21 +788,17 @@
 (defn
   ; Consume any of the characters given in the string. E.g.: (any-char-of "([{")
   any-char-of [s]
+
   (token (fn [x] (str/contains? s x))))
 
 
 (defn
   ; Consume all but the characters given in the string
   none-char-of [s]
+
   (token (fn [x] (not (str/contains? s x)))))
 
 
-(defn between
-  ; Parse p after parsing open and before parsing close, returning the
-  ; value of p and discarding the values of open and close
-  [open close p]
-  (let->> [_ open, x p, _ close]
-    (always x)))
 
 
 
@@ -734,9 +828,23 @@
           [parser combinators](https://github.com/youngnh/parsatron)
           project. See
           [A Guide to the Parsatron](https://github.com/sjl/parsatron/blob/docs/docs/guide.markdown)
+
+          A simple example:
+          
+          ```
+          (do
+            (load-module :parsifal ['parsifal :as 'p])
+
+            (p/run (p/char #\\H) "Hello")
+            ; => #\\H
+
+            (p/run (p/char #\\H) [#\\H #\\e #\\l #\\l #\\o])
+            ; => #\\H
+          )
+          ``
           """}
 
-  run  [p input]
+  run [p input]
 
   (let [result (-<> (source-pos. 1 1)
                     (input-state. input <>)
