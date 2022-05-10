@@ -301,19 +301,56 @@
   (extract identity))
 
 
-(defn lineno
-  ; A parser that returns the current line number. It consumes no input
-  ; (let->> [current-line (lineno)]
-  ;   (do-something-with current-line))
-  []
+(defn
+  ^{ :arglists '("(lineno)")
+     :doc """
+          A parser that returns the current line number. It consumes no input.
+          """
+     :examples '(
+          """
+          (do
+            (load-module :parsifal ['parsifal :as 'p])
+
+            (p/defparser integer []
+              (p/let->> [l (p/lineno)
+                         t (p/many1 (p/digit))]
+                 (p/always [:int (apply str t) l])))
+
+
+            (p/run (integer) "400")
+            ; => [:int "400" 1]
+          )
+          """
+
+  lineno []
+
   (extract (comp :line :pos)))
 
 
-(defn pos
-  ; A parser that returns the current line/col number. It consumes no input
-  ; (let->> [[line col] (pos)]
-  ;   (do-something-with current-line))
-  []
+(defn
+  ^{ :arglists '("(pos)")
+     :doc """
+          A parser that returns the current line/column number as tuple of
+          `[line col]`. It consumes no input.
+          """
+     :examples '(
+          """
+          (do
+            (load-module :parsifal ['parsifal :as 'p])
+
+            (p/defparser integer []
+              (p/let->> [[l c] (p/pos)
+                         t     (p/many1 (p/digit))]
+                 (p/always [:int (apply str t) '(l c)])))
+
+
+            (p/run (integer) "400")
+            ; => [:int "400" (1,1)]
+          )
+          """)}
+
+  pos []
+
   (extract #(vector (-> % :pos :line) (-> % :pos :column))))
 
 
@@ -840,19 +877,47 @@
 
 
 (defn
-  ; Consume any of the characters given in the string. E.g.: (any-char-of "([{")
+  ^{ :arglists '("(any-char-of s)")
+     :doc """
+          Consume any of the characters given in the string. E.g.:
+          `(any-char-of "([{")`.¶
+          *Note*: Works with char items only!
+          """
+     :examples '(
+          """
+          (do
+            (load-module :parsifal ['parsifal :as 'p])
+
+            (p/run (p/any-char-of "HXYZ") "Hello, world!")
+            ; => #\\H
+          )
+          """)}
+
   any-char-of [s]
 
   (token (fn [x] (str/contains? s x))))
 
 
 (defn
-  ; Consume all but the characters given in the string
+  ^{ :arglists '("(none-char-of s)")
+     :doc """
+          Consume all but of the characters given in the string. E.g.:
+          `(none-char-of "([{")`.¶
+          *Note*: Works with char items only!
+          """
+     :examples '(
+          """
+          (do
+            (load-module :parsifal ['parsifal :as 'p])
+
+            (p/run (p/none-char-of "()[]{}") "Hello, world!")
+            ; => #\\H
+          )
+          """)}
+
   none-char-of [s]
 
   (token (fn [x] (not (str/contains? s x)))))
-
-
 
 
 
