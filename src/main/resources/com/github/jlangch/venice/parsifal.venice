@@ -73,15 +73,7 @@
 
 
 ;; -----------------------------------------------------------------------------
-;; types
-(deftype :source-pos [line :long, column :long])
-(deftype :input-state [input :any, pos :source-pos])
-
-(deftype :continue [func :function])
-(deftype :ok [item :any])
-(deftype :err [errmsg :string])
-
-(deftype :parse-error [pos :source-pos msgs :sequence])
+;; protocols
 
 (defprotocol
   ^{ :doc """
@@ -124,6 +116,20 @@
      :see-also '("defprotocol", "deftype") }
 
   SourcePosition (line [p]) (column [p]))
+
+
+
+;; -----------------------------------------------------------------------------
+;; internal types
+(deftype :source-pos [line :long, column :long])
+(deftype :input-state [input :any, pos :source-pos])
+
+(deftype :continue [func :function])
+(deftype :ok [item :any])
+(deftype :err [errmsg :string])
+
+(deftype :parse-error [pos :source-pos msgs :sequence])
+
 
 
 ;; -----------------------------------------------------------------------------
@@ -558,9 +564,35 @@
 
 
 (defn
-  ; A parser that upon success consumes no input, but returns what was
-  ; parsed
+  ^{ :arglists '("(lookahead p)")
+     :doc """
+          A parser that upon success consumes no input, but returns what was
+          parsed
+          """
+     :examples '(
+          """
+          (do
+            (load-module :parsifal ['parsifal :as 'p])
+
+            (p/defparser block-string-tok []
+              (p/between (p/times 3 (p/char #\\quote))
+                         (p/times 3 (p/char #\\quote))
+                         (p/many (p/let->> [cs (p/lookahead (p/times 3 (p/any-char)))]
+                                    (if (= cs [#\\quote #\\quote #\\quote])
+                                        (p/never)
+                                        (p/any-char))))))
+
+            (p/defparser block-string []
+              (p/let->> [s (block-string-tok)]
+                 (p/always (apply str s))))
+
+            (p/run (block-string) "\\"\\"\\"A \\"string\\" with quotes!\\"\\"\\"")
+            ; => "A \\"string\\" with quotes!"
+          )
+          """)}
+
   lookahead [p]
+
   (fn [state cok cerr eok eerr]
     (let [ok (fn [item _] (eok item state))]
       (continue. #(p state ok cerr eok eerr)))))
@@ -830,7 +862,7 @@
           [A Guide to the Parsatron](https://github.com/sjl/parsatron/blob/docs/docs/guide.markdown)
 
           A simple example:
-          
+
           ```
           (do
             (load-module :parsifal ['parsifal :as 'p])

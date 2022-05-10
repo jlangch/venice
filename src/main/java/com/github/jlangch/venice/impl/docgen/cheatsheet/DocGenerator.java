@@ -2599,6 +2599,7 @@ public class DocGenerator {
 		parsers.addItem(getDocItem("parsifal/times", false));
 		parsers.addItem(getDocItem("parsifal/either", false));
 		parsers.addItem(getDocItem("parsifal/choice", false));
+		parsers.addItem(getDocItem("parsifal/between", false));
 		parsers.addItem(getDocItem("parsifal/>>", false));
 
 		final DocSection special = new DocSection("Special Parsers", id());

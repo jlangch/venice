@@ -178,6 +178,7 @@ public class VncChar extends VncVal {
 		map.put("#\\backspace",          new VncChar('\b'));
 		map.put("#\\lparen",             new VncChar('('));
 		map.put("#\\rparen",             new VncChar(')'));
+		map.put("#\\quote",              new VncChar('"'));
 
 		// https://unicode-table.com/en/
 		
