@@ -556,11 +556,33 @@
 
 
 (defmacro
-  ; Expands into nested nxt forms
+  ^{ :arglists '("(>> p)", "(>> p q)", "(>> p q & ps)")
+     :doc """
+          Returns a new parser that parses a list parsers. Returns the value
+          of the last parser if all parsers succeed, else the new parser fails.
+          """
+     :examples '(
+          """
+          (do
+            (load-module :parsifal ['parsifal :as 'p])
+
+            (p/run (p/>> (p/char #\\lparen) (p/digit) (p/char #\\rparen)) "(1)")
+            ; => [#\\)]
+
+            (p/run (p/let->> [l (p/char #\\lparen)
+                              d (p/digit)
+                              r (p/char #\\rparen)]
+                      (p/always (str l d r)))
+                   "(1)")
+            ; => "(1)"
+          )
+          """)}
+
   >>
-  ([m] m)
-  ([m n] `(parsifal/nxt ~m ~n))
-  ([m n & ms] `(parsifal/nxt ~m (parsifal/>> ~n ~@ms))))
+
+  ([p] p)
+  ([p q] `(parsifal/nxt ~p ~q))
+  ([p q & ps] `(parsifal/nxt ~p (parsifal/>> ~q ~@ps))))
 
 
 (defn
