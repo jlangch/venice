@@ -115,7 +115,9 @@
           """ )
      :see-also '("defprotocol", "deftype") }
 
-  SourcePosition (line [p]) (column [p]))
+  SourcePosition
+    (line [p])
+    (column [p]))
 
 
 
@@ -244,9 +246,10 @@
            (parsifal/continue. #(~p ~state ~cok ~cerr ~eok ~eerr)))))))
 
 
-(defmacro let->>
+(defmacro
   ; Expands into nested bind forms
-  [[& bindings_] & body]
+  let->> [[& bindings_] & body]
+
   (let [[bind-form p] (take 2 bindings_)]
     (if (== 2 (count bindings_))
       `(parsifal/bind ~p (fn [~bind-form] ~@body))
@@ -256,28 +259,128 @@
 
 ;; -----------------------------------------------------------------------------
 ;; m+
-(defn always
-  ; A parser that always succeeds with the value given and consumes no
-  ; input
-  [x]
+(defn
+  ^{ :arglists '("(always x)")
+     :doc """
+          A parser that always succeeds with the value given and consumes no
+          input.
+          """
+     :examples '(
+          """
+          (do
+            (load-module :parsifal ['parsifal :as 'p])
+
+            (p/defparser integer []
+              (p/let->> [t (p/many1 (p/digit))]
+                 (p/always (long (apply str t)))))
+
+            (p/run (integer) "400")
+            ; => [:int "400" 1]
+          )
+          """,
+          """
+          (do
+            (load-module :parsifal ['parsifal :as 'p])
+
+            (p/defparser optional [p default-value]
+              (p/either (p/attempt p)
+                        (p/always default-value)))
+
+            (p/run (optional (p/char #\\X) #\\?) "X400")
+            ; => #\\X
+
+            (p/run (optional (p/char #\\X) #\\?) "400")
+            ; => #\\?
+          )
+          """)}
+
+  always [x]
+
   (fn [state cok cerr eok eerr]
     (eok x state)))
 
 
-(defn never
-  ; A parser that always fails, consuming no input
+(defn
+  ^{ :arglists '("(never)", "(never err-msg)")
+     :doc """
+          A parser that always fails, consuming no input
+          """
+     :examples '(
+          """
+          (do
+            (load-module :parsifal ['parsifal :as 'p])
+
+            ;; parse a string with a single integer
+            (p/defparser single-integer []
+               (p/let->> [i (p/many1 (p/digit))
+                          t (p/either (p/eof) (p/any))]
+                  (if (nil? t)
+                    (p/always (apply str i))
+                    (p/never (str "Unexpected token '" t "'")))))
+
+            (p/run (single-integer) "400")
+            ; => "400"
+
+            (p/run (single-integer) "400-")
+            ; => ParseError: Unexpected token '-' at line: 1 column: 5
+          )
+          """)}
+
+  never
+
   ([]
    (fn [state cok cerr eok eerr]
      (eerr (unknown-error state))))
+
   ([err-msg]
    (fn [state cok cerr eok eerr]
      (eerr (parse-error. (:pos state) [err-msg])))))
 
 
-(defn attempt
-  ; A parser that will attempt to parse p, and upon failure never
-  ; consume any input
-  [p]
+(defn
+  ^{ :arglists '("(attempt p)")
+     :doc """
+          A parser that will attempt to parse p, and upon failure never
+          consume any input.
+
+          **Note:** The parsers `>>` and `let->>` do not rewind the input state
+          to the value when the parser was called. To allow for backtracking
+          these two parser they should be wrapped with an `attempt` parser, see
+          the examples below!
+          """
+     :examples '(
+          """
+          (do
+            (load-module :parsifal ['parsifal :as 'p])
+
+            (p/defparser optional [p default-value]
+              (p/either (p/attempt p)
+                        (p/always default-value)))
+
+            (p/run (optional (p/char #\\X) #\\?) "400")
+            ; => #\\?
+          )
+          """,
+          """
+          (do
+            (load-module :parsifal ['parsifal :as 'p])
+
+            ;; No implicit backtracking with `p/>>`!
+            (p/run (p/either (p/>> (p/letter) (p/digit))
+                             (p/letter))
+                   "abc")
+            ; => ParseError: Unexpected token 'b' at line: 1 column: 2
+
+            ;; Explicit backtracking with `p/>>` for the expected result
+            (p/run (p/either (p/attempt (p/>> (p/letter) (p/digit)))
+                             (p/letter))
+                   "abc")
+            ; => #\\a
+          )
+          """)}
+
+  attempt [p]
+
   (fn [state cok cerr eok eerr]
     (continue. #(p state cok eerr eok eerr))))
 
@@ -316,11 +419,10 @@
                          t (p/many1 (p/digit))]
                  (p/always [:int (apply str t) l])))
 
-
             (p/run (integer) "400")
             ; => [:int "400" 1]
           )
-          """
+          """)}
 
   lineno []
 
