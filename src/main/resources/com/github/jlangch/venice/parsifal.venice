@@ -347,11 +347,14 @@
 
   let->> [[& bindings_] & body]
 
-  (let [[bind-form p] (take 2 bindings_)]
-    (if (== 2 (count bindings_))
-      `(parsifal/bind ~p (fn [~bind-form] ~@body))
-      `(parsifal/bind ~p (fn [~bind-form]
-                            (parsifal/let->> ~(drop 2 bindings_) ~@body))))))
+   (let [[bind-form p] (take 2 bindings_)]
+     (if (== 2 (count bindings_))
+       `(parsifal/bind ~p (fn [~bind-form] ~@body))
+       `(parsifal/bind ~p (fn [~bind-form]
+                             (parsifal/let->> ~(drop 2 bindings_) ~@body))))))
+
+(defmacro let->>* [[& bindings_] & body]
+  `(parsifal/attempt (let->> ~@bindings_ ~@body)))
 
 
 (defn
@@ -442,7 +445,7 @@
 (defn
   ^{ :arglists '("(attempt p)")
      :doc """
-          A parser that will attempt to parse p, and upon failure never
+          A parser that will attempt to parse `p`, and upon failure never
           consume any input.
 
           **Note:** The parsers `>>` and `let->>` do not rewind the input state
@@ -844,6 +847,11 @@
   ([p] p)
   ([p q] `(parsifal/nxt ~p ~q))
   ([p q & ps] `(parsifal/nxt ~p (parsifal/>> ~q ~@ps))))
+
+(defmacro >>*
+  ([p] p)
+  ([p q] `(parsifal/attempt (parsifal/nxt ~p ~q)))
+  ([p q & ps] `(parsifal/attempt (parsifal/nxt ~p (parsifal/>> ~q ~@ps)))))
 
 
 (defn
