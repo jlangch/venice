@@ -341,7 +341,6 @@
   ^{ :arglists '("(attempt p)")
      :doc """
           A parser that will attempt to parse p, and upon failure never
-<<<<<<< HEAD
           consume any input.
 
           **Note:** The parsers `>>` and `let->>` do not rewind the input state
@@ -377,45 +376,6 @@
                              (p/letter))
                    "abc")
             ; => #\\a
-=======
-          consume any input
-          """
-     :examples '(
-          """
-          (do
-            (load-module :parsifal ['parsifal :as 'p])
-
-            (p/defparser optional [p default-value]
-              (p/either (p/attempt p)
-                        (p/always default-value)))
-
-            (p/run (optional (p/char #\\X) #\\?) "400")
-            ; => #\\?
-          )
-          """,
-          """
-          (do
-            (load-module :parsifal ['parsifal :as 'p])
-
-            (p/defparser int []
-              (p/let->> [i (p/many1 (p/digit))]
-                 (p/always (apply str i))))
-
-            (p/defparser float []
-              (p/let->> [i (p/many1 (p/digit)))
-                         d (p/char #\\.))
-                         f (p/many1 (p/digit)))]
-                 (p/always (apply str (flatten (list i d f))))))
-
-            (p/run (p/either (p/attempt (float)) (int) "4")
-            ; => "4"
-
-            (p/run (p/either (p/attempt (float)) (int) "4.12")
-            ; => "4.12"
-
-            (p/run (p/either (float) (int) "4")
-            ; ParseError: Unexpected end of input at line: 1 column: 2
->>>>>>> branch 'master' of https://github.com/jlangch/venice.git
           )
           """)}
 
