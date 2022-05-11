@@ -65,6 +65,8 @@
 ;;;    message
 ;;;  - Changed the behaviour of the built-in `string` parser to not consume
 ;;;    any input upon failure to follow the principle of least surprise.
+;;;  - Changed the behaviour of the built-in `between` parser to not consume
+;;;    any input upon failure to follow the principle of least surprise.
 ;;;  - Added an `any` parser to consume a token with any value
 ;;;  - Added a `hexdigit` parser to consume hexdigit chars
 
@@ -766,7 +768,7 @@
      :doc """
           Returns a new parser that parses `open`, `p`, and `close`
           returning the value of `p` and discarding the values of `open` and
-          `close`.
+          `close`. Does not consume any input on failure.
           """
      :examples '(
           """
@@ -783,8 +785,8 @@
 
   between [open close p]
 
-  (let->> [_ open, x p, _ close]
-    (always x)))
+  (attempt (let->> [_ open, x p, _ close]
+             (always x))))
 
 
 (defmacro
@@ -900,7 +902,11 @@
 
 (defn
   ^{ :arglists '("(char)")
-     :doc "Consume the given character"
+     :doc """
+          Consume the given character.
+
+          *Note*: Works with char items only!
+          """
      :examples '(
           """
           (do
@@ -943,7 +949,8 @@
 (defn
   ^{ :arglists '("(any-char)")
      :doc """
-          Consume any character.¶
+          Consume any character.
+
           *Note*: Works with char items only!
           """
      :examples '(
@@ -967,7 +974,8 @@
 (defn
   ^{ :arglists '("(digit)")
      :doc """
-          Consume a digit [0-9] character.¶
+          Consume a digit [0-9] character.
+
           *Note*: Works with char items only!
           """
      :examples '(
@@ -991,7 +999,8 @@
 (defn
   ^{ :arglists '("(hexdigit)")
      :doc """
-          Consume a hex digit [0-9a-fA-F] character.¶
+          Consume a hex digit [0-9a-fA-F] character.
+
           *Note*: Works with char items only!
           """
      :examples '(
@@ -1015,7 +1024,8 @@
 (defn
   ^{ :arglists '("(letter)")
      :doc """
-          Consume a letter character defined by Java `Character.isLetter(ch)`.¶
+          Consume a letter character defined by Java `Character.isLetter(ch)`.
+
           *Note*: Works with char items only!
           """
      :examples '(
@@ -1040,7 +1050,8 @@
   ^{ :arglists '("(letter-or-digit)")
      :doc """
           Consume a letter or digit character defined by Java
-          `Character.isLetterOrDigit(ch)`¶
+          `Character.isLetterOrDigit(ch)`.
+
           *Note*: Works with char items only!
           """
      :examples '(
@@ -1106,7 +1117,8 @@
   ^{ :arglists '("(any-char-of s)")
      :doc """
           Consume any of the characters given in the string. E.g.:
-          `(any-char-of "([{")`.¶
+          `(any-char-of "([{")`.
+
           *Note*: Works with char items only!
           """
      :examples '(
@@ -1128,7 +1140,8 @@
   ^{ :arglists '("(none-char-of s)")
      :doc """
           Consume all but of the characters given in the string. E.g.:
-          `(none-char-of "([{")`.¶
+          `(none-char-of "([{")`.
+
           *Note*: Works with char items only!
           """
      :examples '(
