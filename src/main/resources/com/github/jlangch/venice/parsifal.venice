@@ -63,6 +63,8 @@
 ;;;  - Deduping the error message list, to avoid repeated error messages
 ;;;  - Enhanced the `never` parser to accept an optional customized error
 ;;;    message
+;;;  - Changed the behaviour of the built-in `string` parser to not consume
+;;;    any input upon failure to follow the principle of least surprise.
 ;;;  - Added an `any` parser to consume a token with any value
 ;;;  - Added a `hexdigit` parser to consume hexdigit chars
 
@@ -135,7 +137,7 @@
 
 
 ;; -----------------------------------------------------------------------------
-;; position
+;; position (internal use)
 (defn inc-sourcepos
   ; Increment the source position by a single character, c. On newline,
   ; increments the SourcePos's line number and resets the column, on
@@ -151,7 +153,7 @@
 
 
 ;; -----------------------------------------------------------------------------
-;; errors
+;; errors (internal use)
 (defn show-error [parse-error]
   (let [msgs (:msgs parse-error)
         pos  (:pos parse-error)]
@@ -175,7 +177,7 @@
 
 
 ;; -----------------------------------------------------------------------------
-;; trampoline
+;; trampoline  (internal use)
 (defn parsifal-poline
   ; A trampoline for executing potentially stack-blowing recursive
   ; functions without running out of stack space. This particular
@@ -195,7 +197,7 @@
 
 
 ;; -----------------------------------------------------------------------------
-;; util
+;; util  (internal use)
 (defn fail [message] (ex :ParseError message))
 
 (defn digit? [c] (str/digit? c))
@@ -206,7 +208,7 @@
 
 
 ;; -----------------------------------------------------------------------------
-;; parsers
+;; parsers  (internal use)
 (defn bind
   ; Parse p, and then q. The function f must be of one argument, it
   ; will be given the value of p and must return the q to follow p
@@ -229,6 +231,8 @@
   (bind p (fn [_] q)))
 
 
+;; -----------------------------------------------------------------------------
+;; parsers
 (defmacro
   ^{ :arglists '("(defparser name args & body)")
      :doc """
@@ -348,8 +352,6 @@
                             (parsifal/let->> ~(drop 2 bindings_) ~@body))))))
 
 
-;; -----------------------------------------------------------------------------
-;; m+
 (defn
   ^{ :arglists '("(always x)")
      :doc """
@@ -1065,7 +1067,9 @@
 (defn
   ^{ :arglists '("(string s)")
      :doc """
-          Consume the given string and returns a string. ¶
+          Consume the given string and returns a string. Does not consume any
+          input upon failure.
+
           *Note*: Works with char items only!
           """
      :examples '(
@@ -1079,12 +1083,23 @@
             (p/run (p/string "Hello") (seq "Hello, world!"))
             ; => "Hello"
           )
+          """,
+          """
+          (do
+            (load-module :parsifal ['parsifal :as 'p])
+
+            (p/run (p/either (p/string "Hello") (p/letter)) "Hello, world!")
+            ; => "Hello"
+
+            (p/run (p/either (p/string "HellO") (p/letter)) "Hello, world!")
+            ; => #\\H
+          )
           """)}
 
   string [s]
 
-  (reduce nxt (concat (map char s)
-                      (list (always s)))))
+  (attempt (reduce nxt (concat (map parsifal/char s)
+                                (list (always s))))))
 
 
 (defn

@@ -150,12 +150,12 @@
                                   l c)))))
 
 (p/defparser escaped-char-tok []
-  (p/let->> [_ (p/char #\\)
-             c (p/any-char-of "nt\"")]
-     (p/always (case c
-                 #\t  #\tab
-                 #\n  #\newline
-                 c))))
+  (p/attempt (p/let->> [_ (p/char #\\)
+                        c (p/any-char-of "nt\"")]
+                (p/always (case c
+                            #\t  #\tab
+                            #\n  #\newline
+                            c)))))
 
 (p/defparser string-tok []
   (p/let->> [[l c] (p/pos)
