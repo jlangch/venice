@@ -61,17 +61,18 @@
 ;;; LParen              = "(" ;
 ;;; RParen              = ")" ;
 ;;; Digit               = "0" | "1" | "2" | "3" | "4" | "5" | "6" | "7" | "8" | "9" ;
-;;; Integer             = Digit { Digit } ;
-;;; Float               = Digit { Digit } "." Digit { Digit };
+;;; IntegerLit          = Digit { Digit } ;
+;;; FloatLit            = Digit { Digit } "." Digit { Digit };
 ;;;
-;;; Token               = Whitespace | Operator | ParOpen | ParClose | Float | Integer ;
+;;; Token               = Whitespace | Operator | ParOpen | ParClose
+;;;                                  | FloatLit | IntegerLit ;
 ;;; Tokens              = { Token } EOI ;
 ;;;
 ;;;
 ;;; [2] Expression Parser
 ;;; ----------------------------------------------------------------------------
 ;;;
-;;; Literal             = Integer | Float ;
+;;; Literal             = IntegerLit | FloatLit ;
 ;;;
 ;;; Main                = Expression EOI ;
 ;;; Expression          = AddExpression ;
@@ -204,11 +205,11 @@
 (defn rparen []
   (p/token #(token-type? % :rparen)))
 
-(p/defparser int []
+(p/defparser int-lit []
   (p/let->> [i (p/token #(token-type? % :int))]
      (p/always (long (:val i)))))
 
-(p/defparser float []
+(p/defparser float-lit []
   (p/let->> [i (p/token #(token-type? % :float))]
     (p/always (double (:val i)))))
 
@@ -235,8 +236,8 @@
                        val (unary-expr)]
                (p/always (if (token-value? opc "+") val (negate val))))
             (paren-expr)
-            (int)
-            (float)))
+            (int-lit)
+            (float-lit)))
 
 (p/defparser paren-expr []
   (p/between (lparen) (rparen) (expr)))

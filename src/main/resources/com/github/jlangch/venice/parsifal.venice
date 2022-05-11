@@ -172,6 +172,9 @@
 (defn expect-error [msg pos]
   (parse-error. pos [(str "Expected " msg)]))
 
+(defn custom-error [msg pos]
+  (parse-error. pos [msg]))
+
 (defn merge-errors [err other-err]
   (parse-error. (:pos other-err)
                 (dedupe (flatten (concat (:msgs err) (:msgs other-err))))))
@@ -393,9 +396,12 @@
 
 
 (defn
-  ^{ :arglists '("(never)", "(never err-msg)")
+  ^{ :arglists '(
+          "(never)",
+          "(never err-msg)",
+          "(never err-msg line column)")
      :doc """
-          A parser that always fails, consuming no input
+          A parser that always fails, consuming no input.
           """
      :examples '(
           """
@@ -421,16 +427,16 @@
   never
 
   ([]
-   (fn [state cok cerr eok eerr]
-     (eerr (unknown-error state))))
+    (fn [state cok cerr eok eerr]
+      (eerr (unknown-error state))))
 
   ([err-msg]
-   (fn [state cok cerr eok eerr]
-     (eerr (parse-error. (:pos state) [err-msg]))))
-
-   ([err-msg line column]
     (fn [state cok cerr eok eerr]
-      (eerr (parse-error. (source-pos. line column) [err-msg])))))
+      (eerr (custom-error (:pos state) err-msg))))
+
+  ([err-msg line column]
+    (fn [state cok cerr eok eerr]
+      (eerr (custom-error err-msg (source-pos. line column))))))
 
 
 (defn
