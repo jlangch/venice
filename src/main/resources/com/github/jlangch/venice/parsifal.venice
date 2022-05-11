@@ -64,7 +64,7 @@
 ;;;  - Enhanced the `never` parser to accept an optional customized error
 ;;;    message
 ;;;  - Added an `any` parser to consume a token with any value
-;;;  - Added a `hexdigit` parser to consume hexdigit char
+;;;  - Added a `hexdigit` parser to consume hexdigit chars
 
 
 (ns parsifal)
@@ -344,9 +344,9 @@
           consume any input.
 
           **Note:** The parsers `>>` and `let->>` do not rewind the input state
-          to the value when the parser was called. To allow for backtracking
-          these two parser they should be wrapped with an `attempt` parser, see
-          the examples below!
+          to the value when the parser was called if one of the sub parsers
+          fails. To allow for backtracking these two parser they should be
+          wrapped with an `attempt` parser!
           """
      :examples '(
           """
@@ -365,13 +365,13 @@
           (do
             (load-module :parsifal ['parsifal :as 'p])
 
-            ;; No implicit backtracking with `p/>>`!
+            ; No implicit backtracking with `>>` parser!
             (p/run (p/either (p/>> (p/letter) (p/digit))
                              (p/letter))
                    "abc")
             ; => ParseError: Unexpected token 'b' at line: 1 column: 2
 
-            ;; Explicit backtracking with `p/>>` for the expected result
+            ; Explicit backtracking with `>>` parser using `attempt`!
             (p/run (p/either (p/attempt (p/>> (p/letter) (p/digit)))
                              (p/letter))
                    "abc")
@@ -501,10 +501,10 @@
             (load-module :parsifal ['parsifal :as 'p])
 
             (p/run (p/any "Cats")
-            ; => #\C
+            ; => #\\C
 
             (p/run (p/any) [#\\C #\\a #\\t #\\s])
-            ; => #\C
+            ; => #\\C
           )
           """)}
 
@@ -680,8 +680,8 @@
           (do
             (load-module :parsifal ['parsifal :as 'p])
 
-            (p/run (p/between (p/char #\lparen)
-                              (p/char #\rparen)
+            (p/run (p/between (p/char #\\lparen)
+                              (p/char #\\rparen)
                               (p/many1 (p/digit)))
                    "(123)")
             ; => [#\\1 #\\2 #\\3]
@@ -697,8 +697,13 @@
 (defmacro
   ^{ :arglists '("(>> p)", "(>> p q)", "(>> p q & ps)")
      :doc """
-          Returns a new parser that parses a list parsers. Returns the value
-          of the last parser if all parsers succeed, else the new parser fails.
+          Returns a new parser that parses a list of parsers. Returns the value
+          of the last parser if all parsers succeed, else the parser fails.
+
+          **Note:** The parsers `>>` does not rewind the input state to the
+          value when the parser was called if one of the sub parsers fails.
+          To allow for backtracking these two parser they should be wrapped
+          with an `attempt` parser!
           """
      :examples '(
           """
@@ -708,10 +713,23 @@
             (p/run (p/>> (p/char #\\lparen) (p/digit) (p/char #\\rparen)) "(1)")
             ; => [#\\)]
 
-            (p/run (p/let->> [l (p/char #\\lparen)
-                              d (p/digit)
-                              r (p/char #\\rparen)]
-                      (p/always (str l d r)))
+            ; No implicit backtracking with `>>` parser!
+            (p/run (p/either (p/>> (p/letter) (p/digit))
+                             (p/letter))
+                   "abc")
+            ; => ParseError: Unexpected token 'b' at line: 1 column: 2
+
+            ; Explicit backtracking with `>>` parser using `attempt`!
+            (p/run (p/either (p/attempt (p/>> (p/letter) (p/digit)))
+                             (p/letter))
+                   "abc")
+            ; => #\\a
+
+            ; Using bindings
+            (p/run (p/attempt (p/let->> [l (p/char #\\lparen)
+                                         d (p/digit)
+                                         r (p/char #\\rparen)]
+                                 (p/always (str l d r))))
                    "(1)")
             ; => "(1)"
           )
@@ -1062,7 +1080,7 @@
             (p/run (p/char #\\H) [#\\H #\\e #\\l #\\l #\\o])
             ; => #\\H
           )
-          ``
+          ```
           """}
 
   run [p input]
