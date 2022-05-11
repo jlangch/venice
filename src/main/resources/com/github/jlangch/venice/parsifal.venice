@@ -326,23 +326,15 @@
           (do
             (load-module :parsifal ['parsifal :as 'p])
 
-            (p/defparser word []
-              (p/many1 (p/letter)))
+            (p/defparser int []
+              (p/let->> [i (p/many1 (p/digit))]
+                 (let [n (long (apply str i))]
+                   (if (even? n)
+                     (p/always (str n " is even"))
+                     (p/always (str n " is odd"))))))
 
-            (p/defparser greeting []
-              (p/let->> [prefix      (p/string "Hello, ")
-                         name        (word)
-                         punctuation (p/choice (p/char #\\.)
-                                               (p/char #\\!))]
-                (if (= punctuation #\\!)
-                  (p/always [(apply str name) :excited])
-                  (p/always [(apply str name) :not-excited]))))
-
-            (p/run (greeting) "Hello, Cat!")
-            ; => ["Cat" :excited]
-
-            (p/run (greeting) "Hello, Dog.")
-            ; => ["Dog" :not-excited]
+            (p/run (int) "500")
+            ; => "500 is even"
           )
           """)}
 
@@ -788,14 +780,13 @@
           """
           (do
             (load-module :parsifal ['parsifal :as 'p])
-
             (p/run (p/between (p/char #\\lparen)
                               (p/char #\\rparen)
                               (p/many1 (p/digit)))
                    "(123)")
             ; => [#\\1 #\\2 #\\3]
           )
-          """)}
+          """ )}
 
   between [open close p]
 
