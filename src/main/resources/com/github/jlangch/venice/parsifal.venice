@@ -252,9 +252,9 @@
           (do
             (load-module :parsifal ['parsifal :as 'p])
 
-            (defparser sample []
-              (string "Hello")
-              (always 42))
+            (p/defparser sample []
+              (p/string "Hello")
+              (p/always 42))
 
             (p/run (sample) "Hello, world!")
             ; => 42
@@ -275,6 +275,7 @@
             ; Explicit backtracking with `attempt`!
             (p/run (p/either (p/attempt (letter-and-digit)) (p/letter)) "abc")
             ; => #\\a
+          )
           """)}
 
   ; Parsers are simply functions that accept the 5 arguments
@@ -313,7 +314,7 @@
 
             (p/defparser float []
               (p/let->> [i (p/many1 (p/digit))
-                         d (p/char #\.)
+                         d (p/char #\\.)
                          f (p/many1 (p/digit))]
                  (p/always (apply str (flatten (list i d f))))))
 
@@ -373,7 +374,7 @@
                  (p/always (long (apply str t)))))
 
             (p/run (integer) "400")
-            ; => [:int "400" 1]
+            ; => 400
           )
           """,
           """
@@ -435,7 +436,7 @@
 
   ([err-msg]
     (fn [state cok cerr eok eerr]
-      (eerr (custom-error (:pos state) err-msg))))
+      (eerr (custom-error err-msg (:pos state)))))
 
   ([err-msg line column]
     (fn [state cok cerr eok eerr]
@@ -548,7 +549,7 @@
             (p/defparser integer []
               (p/let->> [[l c] (p/pos)
                          t     (p/many1 (p/digit))]
-                 (p/always [:int (apply str t) '(l c)])))
+                 (p/always [:int (apply str t) (list l c)])))
 
 
             (p/run (integer) "400")
@@ -605,7 +606,7 @@
           (do
             (load-module :parsifal ['parsifal :as 'p])
 
-            (p/run (p/any "Cats")
+            (p/run (p/any) "Cats")
             ; => #\\C
 
             (p/run (p/any) [#\\C #\\a #\\t #\\s])
@@ -780,7 +781,8 @@
      :doc """
           Returns a new parser that parses `open`, `p`, and `close`
           returning the value of `p` and discarding the values of `open` and
-          `close`. Does not consume any input on failure.
+          `close`.¶
+          Does not consume any input on failure.
           """
      :examples '(
           """
@@ -818,7 +820,7 @@
             (load-module :parsifal ['parsifal :as 'p])
 
             (p/run (p/>> (p/char #\\lparen) (p/digit) (p/char #\\rparen)) "(1)")
-            ; => [#\\)]
+            ; => #\\)
 
             ; No implicit backtracking with `>>` parser!
             (p/run (p/either (p/>> (p/letter) (p/digit))
@@ -833,10 +835,10 @@
             ; => #\\a
 
             ; Using bindings
-            (p/run (p/attempt (p/let->> [l (p/char #\\lparen)
-                                         d (p/digit)
-                                         r (p/char #\\rparen)]
-                                 (p/always (str l d r))))
+            (p/run (p/let->> [l (p/char #\\lparen)
+                              d (p/digit)
+                              r (p/char #\\rparen)]
+                      (p/always (str l d r)))
                    "(1)")
             ; => "(1)"
           )
