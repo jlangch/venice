@@ -141,21 +141,23 @@
      (p/always (Token. :int (apply str i) l c))))
 
 (p/defparser float-tok []
-  (p/attempt (p/let->> [[l c] (p/pos)
-                        i     (p/many1 (p/digit))
-                        d     (p/char #\.)
-                        f     (p/many1 (p/digit))]
-                (p/always (Token. :float
-                                  (apply str (flatten (list i d f)))
-                                  l c)))))
+  (p/attempt
+    (p/let->> [[l c] (p/pos)
+               i     (p/many1 (p/digit))
+               d     (p/char #\.)
+               f     (p/many1 (p/digit))]
+       (p/always (Token. :float
+                          (apply str (flatten (list i d f)))
+                          l c)))))
 
 (p/defparser escaped-char-tok []
-  (p/attempt (p/let->> [_ (p/char #\\)
-                        c (p/any-char-of "nt\"")]
-                (p/always (case c
-                            #\t  #\tab
-                            #\n  #\newline
-                            c)))))
+  (p/attempt
+    (p/let->> [_ (p/char #\\)
+               c (p/any-char-of "nt\"")]
+       (p/always (case c
+                    #\t  #\tab
+                    #\n  #\newline
+                    c)))))
 
 (p/defparser string-tok []
   (p/let->> [[l c] (p/pos)
@@ -207,7 +209,7 @@
      (p/always (long (:val i)))))
 
 (p/defparser float []
- (p/let->> [i (p/token #(token-type? % :float))]
+  (p/let->> [i (p/token #(token-type? % :float))]
     (p/always (double (:val i)))))
 
 (p/defparser expr []
@@ -248,7 +250,9 @@
                        t (p/either (p/eof) (p/any))]
                (if (nil? t)
                  (p/always e)
-                 (p/never (str "Unexpected token '" (:val t) "'"))))))
+                 (p/never (str "Unexpected token '" (:val t) "'")
+                          (:line t)
+                          (:column t))))))
 
 (defn evaluate [expression]
   (p/run (main) (tokenize expression)))
