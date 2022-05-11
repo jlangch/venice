@@ -357,16 +357,21 @@ public class VeniceInterpreter implements IVeniceInterpreter, Serializable  {
 			final Env env, 
 			final VncMutableSet loadedModules
 	) {
-		final long nanos = System.nanoTime();
-		
-		RE("(eval " + ModuleLoader.loadModule(module) + ")", module, env);
-
-		if (meterRegistry.enabled) {
-			meterRegistry.record("venice.module." + module + ".load", System.nanoTime() - nanos);
+		try {
+			final long nanos = System.nanoTime();
+			
+			RE("(eval " + ModuleLoader.loadModule(module) + ")", module, env);
+	
+			if (meterRegistry.enabled) {
+				meterRegistry.record("venice.module." + module + ".load", System.nanoTime() - nanos);
+			}
+			
+			// remember the loaded module
+			loadedModules.add(new VncKeyword(module));
 		}
-		
-		// remember the loaded module
-		loadedModules.add(new VncKeyword(module));
+		catch(RuntimeException ex) {
+			throw new VncException("Failed to load module '" + module + "'", ex);
+		}
 	}
 	
 	private VncVal evaluate(
