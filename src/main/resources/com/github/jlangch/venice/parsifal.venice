@@ -229,11 +229,53 @@
   (bind p (fn [_] q)))
 
 
-(defmacro defparser
-  ; Defines a new parser. Parsers are simply functions that accept the
-  ; 5 arguments state, cok, cerr, eok, eerr but this macro takes care
+(defmacro
+  ^{ :arglists '("(defparser name args & body)")
+     :doc """
+          The `defparser` macro defines _functions_ that create parsers.
+
+
+          **Note:** The parsers created by this macro do not rewind the input
+          state to the value when the parser was called if one of the sub
+          parsers fails. To allow for backtracking the created parsers should
+          be wrapped with an `attempt` parser!
+          """
+     :examples '(
+          """
+          (do
+            (load-module :parsifal ['parsifal :as 'p])
+
+            (defparser sample []
+              (string "Hello")
+              (always 42))
+
+            (p/run (sample) "Hello, world!")
+            ; => 42
+          )
+          """,
+          """
+          (do
+            (load-module :parsifal ['parsifal :as 'p])
+
+            (p/defparser letter-and-digit []
+              (p/letter)
+              (p/digit))
+
+            ; No implicit backtracking!
+            (p/run (p/either (letter-and-digit) (p/letter)) "abc")
+            ; => ParseError: Unexpected token 'b' at line: 1 column: 2
+
+            ; Explicit backtracking with `attempt`!
+            (p/run (p/either (p/attempt (letter-and-digit)) (p/letter)) "abc")
+            ; => #\\a
+          """)}
+
+  ; Parsers are simply functions that accept the 5 arguments
+  ; state, cok, cerr, eok, eerr but this macro takes care
   ; of writing that ceremony for you and wraps the body in a >>
-  [name args & body]
+
+  defparser [name args & body]
+
   (let [state (gensym "state_")
         cok   (gensym "cok_")
         cerr  (gensym "cerr_")
@@ -247,7 +289,56 @@
 
 
 (defmacro
-  ; Expands into nested bind forms
+  ^{ :arglists '("(let->> [[& bindings_] & body])")
+     :doc """
+          Binds parser results to names for further processing
+          input.
+
+
+          **Note:** The parser `let->>` does not rewind the input state to the
+          value when the parser was called if one of the sub parsers fails.
+          To allow for backtracking this parser they should be wrapped with an
+          `attempt` parser!
+          """
+     :examples '(
+          """
+          (do
+            (load-module :parsifal ['parsifal :as 'p])
+
+            (p/defparser float []
+              (p/let->> [i (p/many1 (p/digit))
+                         d (p/char #\.)
+                         f (p/many1 (p/digit))]
+                 (p/always (apply str (flatten (list i d f))))))
+
+            (p/run (float) "10.56")
+            ; => "10.56"
+          )
+          """,
+          """
+          (do
+            (load-module :parsifal ['parsifal :as 'p])
+
+            (p/defparser word []
+              (p/many1 (p/letter)))
+
+            (p/defparser greeting []
+              (p/let->> [prefix      (p/string "Hello, ")
+                         name        (word)
+                         punctuation (p/choice (p/char #\\.)
+                                               (p/char #\\!))]
+                (if (= punctuation #\\!)
+                  (p/always [(apply str name) :excited])
+                  (p/always [(apply str name) :not-excited]))))
+
+            (p/run (greeting) "Hello, Cat!")
+            ; => ["Cat" :excited]
+
+            (p/run (greeting) "Hello, Dog.")
+            ; => ["Dog" :not-excited]
+          )
+          """)}
+
   let->> [[& bindings_] & body]
 
   (let [[bind-form p] (take 2 bindings_)]
@@ -700,10 +791,10 @@
           Returns a new parser that parses a list of parsers. Returns the value
           of the last parser if all parsers succeed, else the parser fails.
 
-          **Note:** The parsers `>>` does not rewind the input state to the
+          **Note:** The parser `>>` does not rewind the input state to the
           value when the parser was called if one of the sub parsers fails.
-          To allow for backtracking these two parser they should be wrapped
-          with an `attempt` parser!
+          To allow for backtracking this parser they should be wrapped with
+          an `attempt` parser!
           """
      :examples '(
           """
@@ -1064,9 +1155,7 @@
           value is returned.
 
           *Parsifal* is port of Nate Young's Clojure Parsatron
-          [parser combinators](https://github.com/youngnh/parsatron)
-          project. See
-          [A Guide to the Parsatron](https://github.com/sjl/parsatron/blob/docs/docs/guide.markdown)
+          [parser combinators](https://github.com/youngnh/parsatron) project.
 
           A simple example:
 
