@@ -136,18 +136,26 @@ The evaluator uses two Parsifal parsers. The up-front tokenizing parser operates
                                     (apply str (flatten (list i d f)))
                                     l c)))))
 
+  (p/defparser unknown-tok []
+   (p/let->> [[l c] (p/pos)
+              s     (p/many1 (p/none-char-of " "))]
+      (p/always (Token. :unknown (apply str s) l c))))
+
   (p/defparser token []
-    (p/let->> [_ (p/many (ws-tok))
-               t (p/choice (op-tok) (lparen-tok) (rparen-tok) (float-tok) (int-tok))]
-       (p/always t)))
+    (p/many (ws-tok))
+    (p/choice (op-tok) 
+              (lparen-tok) (rparen-tok) 
+              (float-tok) (int-tok) 
+              (unknown-tok)))
 
   (p/defparser tokens []
-    (p/let->> [t (p/many (token))
+    (p/let->> [t (p/many (p/attempt (token)))
+               _ (p/many (p/attempt (ws-tok)))
                _ (p/eof)]
        (p/always t)))
 
   (defn tokenize [expression]
-    (p/run (tokens) (str/trim-right expression)))
+    (p/run (tokens) expression))
 
 
 
