@@ -175,9 +175,12 @@
 
 (p/defparser token []
   (p/many (ws-tok))
-  (p/choice (op-tok) (string-tok)
-            (lparen-tok) (rparen-tok)
-            (float-tok) (int-tok)
+  (p/choice (op-tok)
+            (string-tok)
+            (lparen-tok)
+            (rparen-tok)
+            (float-tok)
+            (int-tok)
             (unknown-tok)))
 
 (p/defparser tokens []

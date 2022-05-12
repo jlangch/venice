@@ -144,8 +144,10 @@ The evaluator uses two Parsifal parsers. The up-front tokenizing parser operates
   (p/defparser token []
     (p/many (ws-tok))
     (p/choice (op-tok) 
-              (lparen-tok) (rparen-tok) 
-              (float-tok) (int-tok) 
+              (lparen-tok) 
+              (rparen-tok) 
+              (float-tok) 
+              (int-tok) 
               (unknown-tok)))
 
   (p/defparser tokens []
