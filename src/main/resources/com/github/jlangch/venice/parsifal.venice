@@ -32,8 +32,8 @@
 ;;;; This is a Venice port of the Parsatron parser combinator.
 
 ;;; Parsatron is based on Haskell's Parsec and boils down to 2 ideas.
-;;;    A parser either consumes input or doesn’t. Consumed or Empty.
-;;;    A parser either succeeds in parsing or it fails. Ok or Err.
+;;;     i) A parser either consumes input or doesn’t. Consumed or Empty.
+;;;    ii) A parser either succeeds in parsing or it fails. Ok or Err.
 ;;;
 ;;; These outcomes can be combined into 4 continuation functions that are
 ;;; passed to every parser:
@@ -50,6 +50,10 @@
 ;;; parser was expecting, which lead to messages like "expected 'a' and
 ;;; found 'b'", and some are the result of not finding input where we expected
 ;;; to, which lead to messages like "unexpected end of input".
+;;;
+;;; Parsatron as Parsec is not implementing backtracking by default, and instead
+;;; relies on the programmer to implement backtracking using constructs like
+;;; `lookahead` and `attempt`.
 ;;;
 ;;; Finally, Parsatron keeps tabs on the thing it's parsing, it maintains state.
 ;;; The state is made up of 2 elements, the input stream and the current
@@ -242,10 +246,12 @@
      :doc """
           The `defparser` macro defines _functions_ that create parsers.
 
-          **Note:** The parsers created by this macro do not rewind the input
-          state to the value when the parser was called if one of the sub
-          parsers fails. To allow for backtracking the created parsers should
-          be wrapped with an `attempt` parser!
+          **Note:** *Parsifal* is not implementing backtracking by default, and
+          instead relies on the programmer to implement backtracking using
+          constructs like `lookahead` and `attempt`.
+
+          The parsers created by this macro do not rewind the input state if one
+          of the sub parsers fails. To allow backtracking `attempt` can be used!
           """
      :examples '(
           """
@@ -263,6 +269,8 @@
           """
           (do
             (load-module :parsifal ['parsifal :as 'p])
+
+            ; Backtracking
 
             (p/defparser letter-and-digit []
               (p/letter)
@@ -302,10 +310,13 @@
           Binds parser results to names for further processing
           input.
 
-          **Note:** The parser `let->>` does not rewind the input state to the
-          value when the parser was called if one of the sub parsers fails.
-          To allow for backtracking this parser it should be wrapped with an
-          `attempt` parser!
+          **Note:** *Parsifal* is not implementing backtracking by default, and
+          instead relies on the programmer to implement backtracking using
+          constructs like `lookahead` and `attempt`.
+
+          The parser `let->>` does not rewind the input state if one of the sub
+          parsers fails. To add backtracking parsers can be wrapped with
+          `attempt`!
           """
      :examples '(
           """
@@ -335,6 +346,29 @@
 
             (p/run (int) "500")
             ; => "500 is even"
+          )
+          """,
+          """
+          (do
+            (load-module :parsifal ['parsifal :as 'p])
+
+            ; Backtracking
+
+            ; No implicit backtracking with `let->>` parser!
+            (p/run (p/either (p/let->> [c (p/letter)
+                                        d (p/digit)]
+                                (p/always (list c d)))
+                             (p/letter))
+                   "abc")
+            ; => ParseError: Unexpected token 'b' at line: 1 column: 2
+
+            ; Explicit backtracking using `attempt`!
+            (p/run (p/either (p/attempt (p/let->> [c (p/letter)
+                                                   d (p/digit)]
+                                           (p/always (list c d))))
+                             (p/letter))
+                   "abc")
+            ; => #\\a
           )
           """)}
 
@@ -441,10 +475,13 @@
           A parser that will attempt to parse `p`, and upon failure never
           consume any input.
 
-          **Note:** The parsers `>>` and `let->>` do not rewind the input state
-          to the value when the parser was called if one of the sub parsers
-          fails. To allow for backtracking for these two parser they should be
-          wrapped with an `attempt` parser!
+          **Note:** *Parsifal* is not implementing backtracking by default, and
+          instead relies on the programmer to implement backtracking using
+          constructs like `lookahead` and `attempt`.
+
+          The parsers `>>` and `let->>` do not rewind the input state if any
+          of the sub parsers fails. To add backtracking parsers can be wrapped
+          with `attempt`!
           """
      :examples '(
           """
@@ -462,6 +499,8 @@
           """
           (do
             (load-module :parsifal ['parsifal :as 'p])
+
+            ; Backtracking
 
             ; No implicit backtracking with `>>` parser!
             (p/run (p/either (p/>> (p/letter) (p/digit))
@@ -800,10 +839,13 @@
           Returns a new parser that parses a list of parsers. Returns the value
           of the last parser if all parsers succeed, else the parser fails.
 
-          **Note:** The parser `>>` does not rewind the input state to the
-          value when the parser was called if one of the sub parsers fails.
-          To allow for backtracking for this parser it should be wrapped with
-          an `attempt` parser!
+          **Note:** *Parsifal* is not implementing backtracking by default, and
+          instead relies on the programmer to implement backtracking using
+          constructs like `lookahead` and `attempt`.
+
+          The parser `>>` does not rewind the input state if any of the sub
+          parsers fails. To add backtracking parsers can be wrapped with
+          `attempt`!
           """
      :examples '(
           """
@@ -812,6 +854,21 @@
 
             (p/run (p/>> (p/char #\\lparen) (p/digit) (p/char #\\rparen)) "(1)")
             ; => #\\)
+
+            ; Using bindings
+            (p/run (p/let->> [l (p/char #\\lparen)
+                              d (p/digit)
+                              r (p/char #\\rparen)]
+                      (p/always (str l d r)))
+                   "(1)")
+            ; => "(1)"
+          )
+          """,
+          """
+          (do
+            (load-module :parsifal ['parsifal :as 'p])
+
+            ; Backtracking
 
             ; No implicit backtracking with `>>` parser!
             (p/run (p/either (p/>> (p/letter) (p/digit))
@@ -824,14 +881,6 @@
                              (p/letter))
                    "abc")
             ; => #\\a
-
-            ; Using bindings
-            (p/run (p/let->> [l (p/char #\\lparen)
-                              d (p/digit)
-                              r (p/char #\\rparen)]
-                      (p/always (str l d r)))
-                   "(1)")
-            ; => "(1)"
           )
           """)}
 
@@ -851,7 +900,11 @@
   ^{ :arglists '("(lookahead p)")
      :doc """
           A parser that upon success consumes no input, but returns what was
-          parsed
+          parsed.
+
+          **Note:** *Parsifal* is not implementing backtracking by default, and
+          instead relies on the programmer to implement backtracking using
+          constructs like `lookahead` and `attempt`.
           """
      :examples '(
           """
@@ -1189,13 +1242,17 @@
      :doc """
           Run a parser p over some input. The input can be a string or a seq
           of tokens, if the parser produces an error, its message is wrapped
-          in a ParseError and thrown, and if the parser succeeds, its
+          in a *ParseError* and thrown, and if the parser succeeds, its
           value is returned.
 
           *Parsifal* is port of Nate Young's Clojure Parsatron
           [parser combinators](https://github.com/youngnh/parsatron) project.
 
-          A simple example:
+          *Parsifal* is not implementing backtracking by default, and instead
+          relies on the programmer to implement backtracking using constructs
+          like `lookahead` and `attempt`.
+
+          A simple parser example:
 
           ```
           (do
