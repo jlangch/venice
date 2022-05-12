@@ -33,6 +33,13 @@ import com.github.jlangch.venice.Venice;
  */
 public class ExprParserTest {
 
+	
+	// ------------------------------------------------------------------------
+	//
+	//                             Tokenizer Tests
+	//
+	// ------------------------------------------------------------------------
+
 	@Test
 	public void test_tokenizer_empty_1() {
 		final String script =
@@ -306,6 +313,13 @@ public class ExprParserTest {
 			new Venice().eval(script));
 	}
 
+	
+	
+	// ------------------------------------------------------------------------
+	//
+	//                            Evaluator Tests
+	//
+	// ------------------------------------------------------------------------
 
 	@Test
 	public void test_evaluate_empty() {

@@ -72,14 +72,13 @@
 ;;; [2] Expression Parser
 ;;; ----------------------------------------------------------------------------
 ;;;
-;;; Literal             = IntegerLit | FloatLit ;
-;;;
 ;;; Main                = Expression EOI ;
 ;;; Expression          = AddExpression ;
 ;;; AddExpression       = MulExpression { ( "+" | "-" ) MulExpression } ;
 ;;; MulExpression       = UnaryExpression { ( "*" | "/" ) UnaryExpression } ;
 ;;; UnaryExpression     = ( "+" | "-" ) UnaryExpression | ParExpression | Literal ;
 ;;; ParExpression       = "(" Expression ")" ;
+;;; Literal             = IntegerLit | FloatLit ;
 
 
 

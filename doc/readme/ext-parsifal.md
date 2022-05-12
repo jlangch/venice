@@ -59,14 +59,13 @@ The evaluator uses two Parsifal parsers. The up-front tokenizing parser operates
   ;;; [2] Expression Parser
   ;;; ----------------------------------------------------------------------------
   ;;;
-  ;;; Literal             = Integer | Float ;
-  ;;;
   ;;; Main                = Expression EOI ;
   ;;; Expression          = AddExpression ;
   ;;; AddExpression       = MulExpression { ( "+" | "-" ) MulExpression } ;
   ;;; MulExpression       = UnaryExpression { ( "*" | "/" ) UnaryExpression } ;
   ;;; UnaryExpression     = ( "+" | "-" ) UnaryExpression | ParExpression | Literal ;
   ;;; ParExpression       = "(" Expression ")" ;
+  ;;; Literal             = Integer | Float ;
 
 
   (load-module :parsifal)
