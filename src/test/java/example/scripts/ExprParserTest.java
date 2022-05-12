@@ -25,6 +25,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import org.junit.jupiter.api.Test;
 
+import com.github.jlangch.venice.ParseError;
 import com.github.jlangch.venice.Venice;
 
 
@@ -511,6 +512,140 @@ public class ExprParserTest {
 				")";
 
 		new Venice().eval(script);
+	}
+
+	
+	
+	// ------------------------------------------------------------------------
+	//
+	//                         Evaluator Tests Error
+	//
+	// ------------------------------------------------------------------------
+
+	@Test
+	public void test_evaluate_error_1() {
+		final String script =
+				"(do                                                      \n" +
+				"   (load-classpath-file \"expr-parser.venice\")          \n" +
+				"                                                         \n" +
+				"   (evaluate \"(1 + 2) 99\")                             \n" +
+				")";
+
+		try {
+			new Venice().eval(script);
+		}
+		catch(ParseError ex) {
+			assertEquals(
+					"Unexpected token '99' at line: 1 column: 9",
+					ex.getMessage());
+		}
+	}
+
+	@Test
+	public void test_evaluate_error_2() {
+		final String script =
+				"(do                                                      \n" +
+				"   (load-classpath-file \"expr-parser.venice\")          \n" +
+				"                                                         \n" +
+				"   (evaluate \"(1 + 2) +\")                             \n" +
+				")";
+
+		try {
+			new Venice().eval(script);
+		}
+		catch(ParseError ex) {
+			assertEquals(
+					"Unexpected end of input, Error at line: 1 column: 9",
+					ex.getMessage());
+		}
+	}
+
+	@Test
+	public void test_evaluate_error_3() {
+		final String script =
+				"(do                                                      \n" +
+				"   (load-classpath-file \"expr-parser.venice\")          \n" +
+				"                                                         \n" +
+				"   (evaluate \"(1 !! 2)\")                              \n" +
+				")";
+
+		try {
+			new Venice().eval(script);
+		}
+		catch(ParseError ex) {
+			assertEquals(
+					  "Expected end of input, "
+					+ "Unexpected token '[:lparen \"(\" (1,1)]', "
+					+ "Unexpected token '[:unknown \"!!\" (1,4)]', "
+					+ "Unexpected token '[:lparen \"(\" (1,1)]', "
+					+ "Error at line: 1 column: 1",
+					ex.getMessage());
+		}
+	}
+
+	@Test
+	public void test_evaluate_error_4() {
+		final String script =
+				"(do                                                      \n" +
+				"   (load-classpath-file \"expr-parser.venice\")          \n" +
+				"                                                         \n" +
+				"   (evaluate \"(1 + 2) !!\")                              \n" +
+				")";
+
+		try {
+			new Venice().eval(script);
+		}
+		catch(ParseError ex) {
+			assertEquals(
+					"Unexpected token '!!' at line: 1 column: 9",
+					ex.getMessage());
+		}
+	}
+
+	@Test
+	public void test_evaluate_error_5() {
+		final String script =
+				"(do                                                      \n" +
+				"   (load-classpath-file \"expr-parser.venice\")          \n" +
+				"                                                         \n" +
+				"   (evaluate \"(1 + 2\")                                 \n" +
+				")";
+
+		try {
+			new Venice().eval(script);
+		}
+		catch(ParseError ex) {
+			assertEquals(
+					  "Expected end of input, "
+					+ "Unexpected token '[:lparen \"(\" (1,1)]', "
+					+ "Unexpected end of input, "
+					+ "Unexpected token '[:lparen \"(\" (1,1)]', "
+					+ "Error at line: 1 column: 1",
+					ex.getMessage());
+		}
+	}
+
+	@Test
+	public void test_evaluate_error_6() {
+		final String script =
+				"(do                                                      \n" +
+				"   (load-classpath-file \"expr-parser.venice\")          \n" +
+				"                                                         \n" +
+				"   (evaluate \"(1 + 2) * (1 + \")                        \n" +
+				")";
+
+		try {
+			new Venice().eval(script);
+		}
+		catch(ParseError ex) {
+			assertEquals(
+					  "Unexpected token '[:lparen \"(\" (1,11)]', "
+					+ "Unexpected end of input, "
+					+ "Error, "
+					+ "Unexpected token '[:lparen \"(\" (1,11)]', "
+					+ "Error at line: 1 column: 9",
+					ex.getMessage());
+		}
 	}
 
 }
