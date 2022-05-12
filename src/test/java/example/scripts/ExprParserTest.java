@@ -331,16 +331,22 @@ public class ExprParserTest {
 				"   (assert (= 0 (evaluate \" 0\")))                      \n" +
 				"   (assert (= 0 (evaluate \"0 \")))                      \n" +
 				"   (assert (= 0 (evaluate \" 0 \")))                     \n" +
+				"   (assert (= 0 (evaluate \"-0 \")))                     \n" +
+				"   (assert (= 0 (evaluate \" -0 \")))                    \n" +
 				"                                                         \n" +
 				"   (assert (= 1 (evaluate \"1\")))                       \n" +
 				"   (assert (= 1 (evaluate \" 1\")))                      \n" +
 				"   (assert (= 1 (evaluate \"1 \")))                      \n" +
 				"   (assert (= 1 (evaluate \" 1 \")))                     \n" +
+				"   (assert (= -1 (evaluate \"-1 \")))                    \n" +
+				"   (assert (= -1 (evaluate \" -1 \")))                   \n" +
 				"                                                         \n" +
 				"   (assert (= 123 (evaluate \"123\")))                   \n" +
 				"   (assert (= 123 (evaluate \" 123\")))                  \n" +
 				"   (assert (= 123 (evaluate \"123 \")))                  \n" +
 				"   (assert (= 123 (evaluate \" 123 \")))                 \n" +
+				"   (assert (= -123 (evaluate \"-123 \")))                \n" +
+				"   (assert (= -123 (evaluate \" -123 \")))               \n" +
 				")";
 
 		new Venice().eval(script);
@@ -356,16 +362,22 @@ public class ExprParserTest {
 				"   (assert (= 0.0 (evaluate \" 0.0\")))                  \n" +
 				"   (assert (= 0.0 (evaluate \"0.0 \")))                  \n" +
 				"   (assert (= 0.0 (evaluate \" 0.0 \")))                 \n" +
+				"   (assert (= 0.0 (evaluate \"-0.0 \")))                 \n" +
+				"   (assert (= 0.0 (evaluate \" -0.0 \")))                \n" +
 				"                                                         \n" +
 				"   (assert (= 1.0 (evaluate \"1.0\")))                   \n" +
 				"   (assert (= 1.0 (evaluate \" 1.0\")))                  \n" +
 				"   (assert (= 1.0 (evaluate \"1.0 \")))                  \n" +
 				"   (assert (= 1.0 (evaluate \" 1.0 \")))                 \n" +
+				"   (assert (= -1.0 (evaluate \"-1.0 \")))                \n" +
+				"   (assert (= -1.0 (evaluate \" -1.0 \")))               \n" +
 				"                                                         \n" +
 				"   (assert (= 123.45 (evaluate \"123.45\")))             \n" +
 				"   (assert (= 123.45 (evaluate \" 123.45\")))            \n" +
 				"   (assert (= 123.45 (evaluate \"123.45 \")))            \n" +
 				"   (assert (= 123.45 (evaluate \" 123.45 \")))           \n" +
+				"   (assert (= -123.45 (evaluate \"-123.45 \")))          \n" +
+				"   (assert (= -123.45 (evaluate \" -123.45 \")))         \n" +
 				")";
 
 		new Venice().eval(script);
@@ -395,11 +407,13 @@ public class ExprParserTest {
 				"   (assert (= 0.0  (evaluate \"0.0 + 0.0 - 0.0\")))                           \n" +
 				"   (assert (= 0.0  (evaluate \"0.0+0.0-0.0\")))                               \n" +
 				"   (assert (= 12.1 (evaluate \" 1.2 + 2.2 * 4.0 + 2 - 6.4 / 3.2 + 2.1 \")))   \n" +
+				"   (assert (= -5.5 (evaluate \" 1.2 + -2.2 * 4.0 + 2 - 6.4 / 3.2 + 2.1 \")))  \n" +
 				"   (assert (= 12.1 (evaluate \"1.2+2.2*4.0+2-6.4/3.2+2.1\")))                 \n" +
 				")";
 
 		new Venice().eval(script);
 	}
+	
 	@Test
 	public void test_evaluate_expression_float_int() {
 		final String script =
@@ -410,9 +424,76 @@ public class ExprParserTest {
 				"   (assert (= 3.2  (evaluate \"1 + 2.2\")))                                   \n" +
 				"   (assert (= 3.2  (evaluate \"1.2 + 2\")))                                   \n" +
 				"   (assert (= -1.1 (evaluate \"1 - 2.1\")))                                   \n" +
-				"   (assert (= -0.8  (evaluate \"1.2 - 2\")))                                   \n" +
+				"   (assert (= -0.8 (evaluate \"1.2 - 2\")))                                   \n" +
 				"   (assert (= 2.2  (evaluate \"1 * 2.2\")))                                   \n" +
 				"   (assert (= 2.4  (evaluate \"1.2 * 2\")))                                   \n" +
+				"   (assert (= 5.0  (evaluate \"10 / 2.0\")))                                  \n" +
+				"   (assert (= 5.0  (evaluate \"15.0 / 3\")))                                  \n" +
+				")";
+
+		new Venice().eval(script);
+	}
+	
+	@Test
+	public void test_evaluate_expression_1() {
+		final String script =
+				"(do                                                                           \n" +
+				"   (load-classpath-file \"expr-parser.venice\")                               \n" +
+				"                                                                              \n" +
+				"   (assert (= 1     (evaluate \"(1)\")))                                      \n" +
+				"   (assert (= 1     (evaluate \"(+1)\")))                                     \n" +
+				"   (assert (= -1    (evaluate \"(-1)\")))                                     \n" +
+				"   (assert (= 1.1   (evaluate \"(1.1)\")))                                    \n" +
+				"   (assert (= 1.1   (evaluate \"(+1.1)\")))                                   \n" +
+				"   (assert (= -1.1  (evaluate \"(-1.1)\")))                                   \n" +
+				"                                                                              \n" +
+				"   (assert (= -1    (evaluate \"(-1)\")))                                     \n" +
+				"   (assert (= -1    (evaluate \"-(1)\")))                                     \n" +
+				"   (assert (= 1     (evaluate \"-(-1)\")))                                    \n" +
+				"   (assert (= -1.1  (evaluate \"(-1.1)\")))                                   \n" +
+				"   (assert (= -1.1  (evaluate \"-(1.1)\")))                                   \n" +
+				"   (assert (= 1.1   (evaluate \"-(-1.1)\")))                                  \n" +
+				"                                                                              \n" +
+				"                                                                              \n" +
+				"   (assert (= 1     (evaluate \"((1))\")))                                    \n" +
+				"   (assert (= 1     (evaluate \"((+1))\")))                                   \n" +
+				"   (assert (= -1    (evaluate \"((-1))\")))                                   \n" +
+				"   (assert (= 1.1   (evaluate \"((1.1))\")))                                  \n" +
+				"   (assert (= 1.1   (evaluate \"((+1.1))\")))                                 \n" +
+				"   (assert (= -1.1  (evaluate \"((-1.1))\")))                                 \n" +
+				"                                                                              \n" +
+				"   (assert (= -1    (evaluate \"((-1))\")))                                   \n" +
+				"   (assert (= -1    (evaluate \"(-(1))\")))                                   \n" +
+				"   (assert (= -1    (evaluate \"-((1))\")))                                   \n" +
+				"   (assert (= 1     (evaluate \"-((-1))\")))                                  \n" +
+				"   (assert (= -1    (evaluate \"-(-(-1))\")))                                 \n" +
+				"   (assert (= -1.1  (evaluate \"((-1.1))\")))                                 \n" +
+				"   (assert (= -1.1  (evaluate \"(-(1.1))\")))                                 \n" +
+				"   (assert (= -1.1  (evaluate \"-((1.1))\")))                                 \n" +
+				"   (assert (= 1.1   (evaluate \"-((-1.1))\")))                                \n" +
+				"   (assert (= -1.1  (evaluate \"-(-(-1.1))\")))                               \n" +
+				")";
+
+		new Venice().eval(script);
+	}
+	
+	@Test
+	public void test_evaluate_expression_2() {
+		final String script =
+				"(do                                                                           \n" +
+				"   (load-classpath-file \"expr-parser.venice\")                               \n" +
+				"                                                                              \n" +
+				"   (assert (= 3     (evaluate \"(1 + 2)\")))                                  \n" +
+				"   (assert (= -1    (evaluate \"(1 + -2)\")))                                 \n" +
+				"   (assert (= -3    (evaluate \"(-1 + -2)\")))                                \n" +
+				"   (assert (= 1     (evaluate \"-(1 + -2)\")))                                \n" +
+				"                                                                              \n" +
+				"   (assert (= 21    (evaluate \"(1 + 2) * (3 + 4)\")))                        \n" +
+				"   (assert (= 11    (evaluate \"1 + 2 * 3 + 4\")))                            \n" +
+				"   (assert (= 11    (evaluate \"1 + (2 * 3) + 4\")))                          \n" +
+				"   (assert (= 3     (evaluate \"(3 + 6) / (2 + 1)\")))                        \n" +
+				"   (assert (= 7     (evaluate \"3 + 6 / 2 + 1\")))                            \n" +
+				"   (assert (= 7     (evaluate \"3 + (6 / 2) + 1\")))                          \n" +
 				")";
 
 		new Venice().eval(script);
