@@ -29,6 +29,10 @@ and this project adheres to
   accept an optional ns alias
 - the name of the parser combinator to _Parsifal_ 
 
+### Updated dependencies:
+
+- Bump openpdf from 1.3.27 to 1.3.28
+
 
 
 ## [1.10.11] - 2022-05-05
