@@ -426,6 +426,7 @@ public class CoreFunctions {
 						"(long (char \"A\"))",
 						"(str/join (map char [65 66 67 68]))",
 						"(map #(- (long %) (long (char \"0\"))) (str/chars \"123456\"))")
+					.seeAlso("char?")
 					.build()
 		) {
 			public VncVal apply(final VncList args) {
@@ -473,12 +474,44 @@ public class CoreFunctions {
 					.arglists("(char? s)")
 					.doc("Returns true if s is a char.")
 					.examples("(char? #\\a)")
+					.seeAlso("char")
 					.build()
 		) {
 			public VncVal apply(final VncList args) {
 				ArityExceptions.assertArity(this, args, 1);
 		
 				return VncBoolean.of(Types.isVncChar(args.first()));
+			}
+		
+			private static final long serialVersionUID = -1848883965231344442L;
+		};
+
+	public static VncFunction char_literals =
+		new VncFunction(
+				"char-literals",
+				VncFunction
+					.meta()
+					.arglists("(char-literals)")
+					.doc(
+						"Returns all defined char literals. \n\n" +
+						renderCharLiteralsMarkdownTable())
+					.examples("(char-literals)")
+					.seeAlso("char", "char?")
+					.build()
+		) {
+			public VncVal apply(final VncList args) {
+				ArityExceptions.assertArity(this, args, 0);
+		
+				return VncList.ofList(
+					VncChar
+						.symbols()
+						.entrySet()
+						.stream()
+						.map(e -> VncList.of(
+									new VncString(e.getKey()),
+									new VncString(e.getValue().toUnicode()),
+									new VncString("'" + e.getValue().getValue() + "'")))
+						.collect(Collectors.toList()));
 			}
 		
 			private static final long serialVersionUID = -1848883965231344442L;
@@ -8194,6 +8227,22 @@ public class CoreFunctions {
 		}
 	}
 	
+	private static String renderCharLiteralsMarkdownTable() {
+		return "| Char Literal | Unicode | Char | \n" +
+			   "| :----------- | :------ | :--- | \n" +
+				VncChar
+					.symbols()
+					.entrySet()
+					.stream()
+					.map(e -> String.format(
+									"| %s | %s | %s |", 
+									e.getKey(), //.replace("-", "\u2013"),  // en-dash
+									e.getValue().toUnicode(),
+									(e.getValue().getValue() == '¶')
+										? "#\\\\¶"
+										: e.getValue().toString(true)))
+					.collect(Collectors.joining("\n"));
+	}
 
 	
 
@@ -8256,6 +8305,8 @@ public class CoreFunctions {
 				.add(double_cast)
 				.add(decimal_cast)
 				.add(bigint_cast)
+				
+				.add(char_literals)
 
 				.add(new_list)
 				.add(new_list_ASTERISK)

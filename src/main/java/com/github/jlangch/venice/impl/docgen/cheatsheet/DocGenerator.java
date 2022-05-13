@@ -353,7 +353,9 @@ public class DocGenerator {
 		lit.addLiteralItem("BigDecimal",           "6.897M, 2.345E+10M",                      id());
 		lit.addLiteralItem("BigInteger",           "1000N, 1_000_000N",                       id());
 		lit.addLiteralItem("Char",                 "#\\A, #\\π, #\\u03C0",                    id());
-		lit.addLiteralItem("",                     "#\\space, #\\newline, #\\return, #\\tab, #\\formfeed, #\\backspace",  id());
+		lit.addLiteralItem("",                     "#\\space, #\\newline, #\\return, " +
+				                                   "#\\tab, #\\formfeed, #\\backspace, " +
+				                                   "#\\lparen, #\\rparen, #\\quote",          id());
 		lit.addLiteralItem("String",               "\"abcd\", \"ab\\\"cd\", \"PI: \\u03C0\"", id());
 		lit.addLiteralItem("",                     "\"\"\"{ \"age\": 42 }\"\"\"",             id());
 		lit.addLiteralItem("String interpolation", "\"~{x}\", \"\"\"~{x}\"\"\"",              id());
@@ -551,6 +553,7 @@ public class DocGenerator {
 		chars.addSection(charuse);		
 		charuse.addItem(getDocItem("char"));
 		charuse.addItem(getDocItem("char?"));
+		charuse.addItem(getDocItem("char-literals", false));
 
 		final DocSection charconv = new DocSection("Conversion", "primitives.chars.conversion");
 		chars.addSection(charconv);

@@ -21,7 +21,8 @@
  */
 package com.github.jlangch.venice.impl.types;
 
-import java.util.HashMap;
+import java.util.Collections;
+import java.util.LinkedHashMap;
 import java.util.Map;
 
 import com.github.jlangch.venice.impl.types.custom.VncWrappingTypeDef;
@@ -52,6 +53,9 @@ public class VncChar extends VncVal {
 		return value; 
 	}
 	
+	public String toUnicode() {
+		return String.format("\\u%04X", (int)value.charValue());
+	}
 	
 	@Override
 	public VncChar withMeta(final VncVal meta) {
@@ -150,6 +154,9 @@ public class VncChar extends VncVal {
 					return "#" + StringUtil.toEscapedUnicode(ch);
 				}
 			}
+			else if (ch == '\\') {
+				return "#\\backslash";
+			}
 			else if (ch == 127) {
 				return "#" + StringUtil.toEscapedUnicode(ch);
 			}
@@ -167,8 +174,8 @@ public class VncChar extends VncVal {
 	}
 	
 	
-	private static Map<String, VncChar> symbols() {
-		final  Map<String, VncChar> map = new HashMap<>();
+	public static Map<String, VncChar> symbols() {
+		final  Map<String, VncChar> map = new LinkedHashMap<>();
 		
 		map.put("#\\space",              new VncChar(' '));
 		map.put("#\\newline",            new VncChar('\n'));
@@ -179,6 +186,7 @@ public class VncChar extends VncVal {
 		map.put("#\\lparen",             new VncChar('('));
 		map.put("#\\rparen",             new VncChar(')'));
 		map.put("#\\quote",              new VncChar('"'));
+		map.put("#\\backslash",          new VncChar('\\')); // \u005C
 
 		// https://unicode-table.com/en/
 		
@@ -202,7 +210,7 @@ public class VncChar extends VncVal {
 		map.put("#\\four-per-em-space",  new VncChar('\u2005'));  // four-per-em space
 		map.put("#\\six-per-em-space",   new VncChar('\u2006'));  // six-per-em space
 
-		return map;
+		return Collections.unmodifiableMap(map);
 	}
 	
 	

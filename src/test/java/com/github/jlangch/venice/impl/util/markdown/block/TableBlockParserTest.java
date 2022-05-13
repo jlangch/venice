@@ -461,7 +461,56 @@ public class TableBlockParserTest {
 		assertEquals(TextChunk.Format.NORMAL, ((TextChunk)table.bodyCell(1, 2).getChunks().get(0)).getFormat());
 	}
 
+
+	@Test
+	public void test_basic_escaped_chars() {
+		final String md = "|\\u2020|";
+		
+		Blocks blocks = new BlockParser(md).parse();
+		
+		assertEquals(1, blocks.size());
+		
+		assertTrue(blocks.get(0) instanceof TableBlock);
+
+		TableBlock table = (TableBlock)blocks.get(0); 
 	
+		assertFalse(table.hasHeader());
+		assertEquals(1, table.cols());
+		assertEquals(1, table.bodyRows());
+		
+		assertEquals(TableBlock.Alignment.LEFT, table.format(0));	
+		assertEquals(TableBlock.Alignment.LEFT, table.format(1));
+		
+		assertEquals("\\u2020", ((TextChunk)table.bodyCell(0, 0).getChunks().get(0)).getText());
+		assertEquals(TextChunk.Format.NORMAL, ((TextChunk)table.bodyCell(0, 0).getChunks().get(0)).getFormat());
+	}
+
+	@Test
+	public void test_basic_escaped_pilcrow() {
+		final String md = "|xx\\¶xx|'\\¶'|";
+		
+		Blocks blocks = new BlockParser(md).parse();
+		
+		assertEquals(1, blocks.size());
+		
+		assertTrue(blocks.get(0) instanceof TableBlock);
+
+		TableBlock table = (TableBlock)blocks.get(0); 
+	
+		assertFalse(table.hasHeader());
+		assertEquals(2, table.cols());
+		assertEquals(1, table.bodyRows());
+		
+		assertEquals(TableBlock.Alignment.LEFT, table.format(0));	
+		assertEquals(TableBlock.Alignment.LEFT, table.format(1));
+		
+		assertEquals("xx¶xx", ((TextChunk)table.bodyCell(0, 0).getChunks().get(0)).getText());
+		assertEquals(TextChunk.Format.NORMAL, ((TextChunk)table.bodyCell(0, 0).getChunks().get(0)).getFormat());
+		
+		assertEquals("'¶'", ((TextChunk)table.bodyCell(0, 1).getChunks().get(0)).getText());
+		assertEquals(TextChunk.Format.NORMAL, ((TextChunk)table.bodyCell(0, 1).getChunks().get(0)).getFormat());
+	}
+
 
 	// -----------------------------------------------------------------------------
 	// Header - one row

@@ -113,9 +113,9 @@ public class TableBlockParser {
 	private List<String> split(final String line) {
 		final CharacterReader reader = new CharacterReader(line);
 
-		final List<String> cols = new ArrayList<>();
+		final List<String> cells = new ArrayList<>();
 		
-		StringBuilder col = new StringBuilder();
+		StringBuilder cell = new StringBuilder();
 
 		int ch = reader.peek();
 		if (ch == '|') reader.consume();
@@ -128,22 +128,25 @@ public class TableBlockParser {
 				break;
 			}
 			else if (ch == '\\') {
-				ch = reader.peek();
-				if (ch != EOF) {
+				int next = reader.peek();
+				if (next == '|') {
 					reader.consume();
-					col.append((char)ch);
+					cell.append((char)next);
+				}
+				else {
+					cell.append((char)ch);
 				}
 			}
 			else if (ch == '|') {
-				cols.add(col.toString().trim());
-				col = new StringBuilder();
+				cells.add(cell.toString().trim());
+				cell = new StringBuilder();
 			}
 			else {
-				col.append((char)ch);
+				cell.append((char)ch);
 			}
 		}
 		
-		return cols;
+		return cells;
 	}
 
 	private List<TableBlock.Alignment> parseAlignments(final List<String> row) {
@@ -204,20 +207,43 @@ public class TableBlockParser {
 		final Chunks chunks = new Chunks();
 		
 		if (line.contains("¶")) {
-			final String[] elments = line.split("¶");
-			for(int ii=0; ii<elments.length; ii++) {
-				if (ii>0) {
-					chunks.add(new LineBreakChunk());
-				}
-				chunks.add(new RawChunk(elments[ii].trim()));
-			}
+			final CharacterReader reader = new CharacterReader(line);
+
+			String chunk = "";
 			
-			if (line.endsWith("¶")) {
-				chunks.add(new LineBreakChunk());
-			}
+			while(true) {
+				int ch = reader.peek();
+				reader.consume();
+
+				if (ch == EOF) {
+					break;
+				}
+				else if (ch == '\\') {
+					int next = reader.peek();
+				
+					if (next == '¶') {
+						// escaped pilcrow -> no line break
+						reader.consume();
+						chunk = chunk + (char)next;
+					}
+					else {
+						chunk = chunk + (char)ch;
+					}
+				}
+				else if (ch == '¶') {
+					chunks.add(new RawChunk(chunk.trim()));
+					chunks.add(new LineBreakChunk());
+					chunk = "";
+				}
+				else {
+					chunk = chunk + (char)ch;
+				}
+			}		
+			
+			chunks.add(new RawChunk(chunk.trim()));
 		}
 		else {
-			 return chunks.add(new RawChunk(line));
+			chunks.add(new RawChunk(line.trim()));
 		}
 		
 		return chunks;

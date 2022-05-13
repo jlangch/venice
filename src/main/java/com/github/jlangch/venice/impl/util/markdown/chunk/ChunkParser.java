@@ -64,9 +64,12 @@ public class ChunkParser {
 			}
 			else if (ch == '\\') {
 				reader.consume();
-				ch = reader.peek();
-				if (ch != EOF) {
+				int next = reader.peek();
+				if (next == '*' || next == '`') {
 					reader.consume();
+					sb.append((char)next);
+				}
+				else {
 					sb.append((char)ch);
 				}
 			}
