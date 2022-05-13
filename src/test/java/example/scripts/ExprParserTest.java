@@ -547,6 +547,25 @@ public class ExprParserTest {
 				"(do                                                      \n" +
 				"   (load-classpath-file \"expr-parser.venice\")          \n" +
 				"                                                         \n" +
+				"   (evaluate \"(1 + 2) !!\")                              \n" +
+				")";
+
+		try {
+			new Venice().eval(script);
+		}
+		catch(ParseError ex) {
+			assertEquals(
+					"Unexpected token '!!' at line: 1 column: 9",
+					ex.getMessage());
+		}
+	}
+
+	@Test
+	public void test_evaluate_error_3() {
+		final String script =
+				"(do                                                      \n" +
+				"   (load-classpath-file \"expr-parser.venice\")          \n" +
+				"                                                         \n" +
 				"   (evaluate \"(1 + 2) +\")                             \n" +
 				")";
 
@@ -561,7 +580,7 @@ public class ExprParserTest {
 	}
 
 	@Test
-	public void test_evaluate_error_3() {
+	public void test_evaluate_error_4() {
 		final String script =
 				"(do                                                      \n" +
 				"   (load-classpath-file \"expr-parser.venice\")          \n" +
@@ -579,25 +598,6 @@ public class ExprParserTest {
 					+ "Unexpected token '[:unknown \"!!\" (1,4)]', "
 					+ "Unexpected token '[:lparen \"(\" (1,1)]', "
 					+ "Error at line: 1 column: 1",
-					ex.getMessage());
-		}
-	}
-
-	@Test
-	public void test_evaluate_error_4() {
-		final String script =
-				"(do                                                      \n" +
-				"   (load-classpath-file \"expr-parser.venice\")          \n" +
-				"                                                         \n" +
-				"   (evaluate \"(1 + 2) !!\")                              \n" +
-				")";
-
-		try {
-			new Venice().eval(script);
-		}
-		catch(ParseError ex) {
-			assertEquals(
-					"Unexpected token '!!' at line: 1 column: 9",
 					ex.getMessage());
 		}
 	}

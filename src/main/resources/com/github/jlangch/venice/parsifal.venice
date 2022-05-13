@@ -167,17 +167,17 @@
          " line: " (:line pos)
          " column: " (:column pos))))
 
+(defn error [msg pos]
+  (parse-error. pos (if (vector? msg) msg [msg])))
+
 (defn unknown-error [state]
-  (parse-error. (:pos state) ["Error"]))
+  (error "Error" (:pos state)))
 
 (defn unexpect-error [msg pos]
-  (parse-error. pos [(str "Unexpected " msg)]))
+  (error (str "Unexpected " msg) pos))
 
 (defn expect-error [msg pos]
-  (parse-error. pos [(str "Expected " msg)]))
-
-(defn custom-error [msg pos]
-  (parse-error. pos [msg]))
+  (error (str "Expected " msg) pos))
 
 (defn merge-errors [err other-err]
   (parse-error. (:pos other-err)
@@ -462,11 +462,11 @@
 
   ([err-msg]
     (fn [state cok cerr eok eerr]
-      (eerr (custom-error err-msg (:pos state)))))
+      (eerr (error err-msg (:pos state)))))
 
   ([err-msg line column]
     (fn [state cok cerr eok eerr]
-      (eerr (custom-error err-msg (source-pos. line column))))))
+      (eerr (error err-msg (source-pos. line column))))))
 
 
 (defn
