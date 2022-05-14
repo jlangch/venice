@@ -49,7 +49,7 @@
                               (p/let->> [i  (int)
                                          _  (ws)
                                          u  (unit)]
-                                 (p/always [i u])))]
+                                 (p/always [i (str u)])))]
        (p/always [name val])))
 
   (p/defparser text-align []

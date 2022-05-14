@@ -21,6 +21,7 @@
  */
 package com.github.jlangch.venice.impl.util.markdown.block;
 
+import java.util.List;
 import java.util.Map;
 import java.util.concurrent.atomic.AtomicReference;
 
@@ -30,6 +31,7 @@ import com.github.jlangch.venice.Venice;
 import com.github.jlangch.venice.impl.util.StringUtil;
 import com.github.jlangch.venice.impl.util.io.ClassPathResource;
 import com.github.jlangch.venice.impl.util.markdown.block.TableColFmt.HorzAlignment;
+import com.github.jlangch.venice.impl.util.markdown.block.TableColFmt.WidthUnit;
 
 
 public class TableColFmtParser {
@@ -52,7 +54,7 @@ public class TableColFmtParser {
 
 	private TableColFmt parseMarkdownStyleFormat(final String format) {
 		final HorzAlignment align = parseMarkdownStyleHorzAlignment(format);
-		return align == null ? null : new TableColFmt(align);
+		return align == null ? null : new TableColFmt(align, null);
 	}
 
 	@SuppressWarnings("unchecked")
@@ -70,11 +72,15 @@ public class TableColFmtParser {
 															Parameters.of("css", css));
 
 					final HorzAlignment align = parseCssStyleHorzAlignment(cssProps);
-					return align == null ? null : new TableColFmt(align);
+					
+					final TableColFmt.Width width = parseCssStyleWidth(cssProps);
+
+					return new TableColFmt(align, width);
 				}
 				catch(RuntimeException ex) {
-					ex.printStackTrace();
-					return null;
+					throw new RuntimeException(
+							"Failed to parse markdown table column css '"+ css + "'",
+							ex);
 				}
 			}
 		}
@@ -91,6 +97,33 @@ public class TableColFmtParser {
 			case "right":  return HorzAlignment.RIGHT;
 			default:       return null;
 		}
+	}
+	
+	@SuppressWarnings("unchecked")
+	private TableColFmt.Width parseCssStyleWidth(final Map<String,Object> cssProps) {
+		// "auto", [30, "%"]
+		Object width = cssProps.get("width");
+		if (width != null) {
+			if (width instanceof String) {
+				if ("auto".equals(width)) {
+					return new TableColFmt.Width(0, WidthUnit.AUTO); 
+				}
+			}
+			
+			if (width instanceof List) {
+				long val = (long)((List<Object>)width).get(0);
+				String unit = (String)((List<Object>)width).get(1);
+
+				switch(StringUtil.trimToEmpty(unit)) {
+					case "%":  return new TableColFmt.Width(val, WidthUnit.PERCENT);
+					case "px": return new TableColFmt.Width(val, WidthUnit.PERCENT);
+					case "em": return new TableColFmt.Width(val, WidthUnit.PERCENT);
+					default:   return new TableColFmt.Width(0, WidthUnit.AUTO); 
+				}
+			}
+		}
+		
+		return new TableColFmt.Width(0, WidthUnit.AUTO); 
 	}
 	
 	private HorzAlignment parseMarkdownStyleHorzAlignment(final String format) {

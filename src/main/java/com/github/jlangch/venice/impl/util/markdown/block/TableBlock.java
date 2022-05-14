@@ -79,7 +79,7 @@ public class TableBlock implements Block {
 	}
 
 	public TableColFmt format(final int col) {
-		return col >= format.size() ? TableColFmt.defaultFmt() : format.get(col);
+		return col >= format.size() ? new TableColFmt() : format.get(col);
 	}
 
 	public Chunks headerCell(final int col) {
@@ -113,7 +113,7 @@ public class TableBlock implements Block {
 	private void addFormat(final int cols, final List<TableColFmt> formats) {
 		for(int ii=0; ii<cols; ii++) {
 			format.add(
-				formats != null && ii<formats.size() ? formats.get(ii) : TableColFmt.defaultFmt());
+				formats != null && ii<formats.size() ? formats.get(ii) : new TableColFmt());
 		}
 	}
 	

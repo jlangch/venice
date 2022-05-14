@@ -97,4 +97,11 @@ public class TableColFmtParserTest {
 		assertEquals(RIGHT, parser.parse("[![text-align: right;]]").horzAlignment());
 	}
 
+	@Test
+	public void test_css_width() {
+		final TableColFmtParser parser = new TableColFmtParser();
+		
+		parser.parse("[![width: 30%]]");
+	}
+
 }

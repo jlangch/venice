@@ -160,7 +160,7 @@ public class TableBlockParser {
 		for(String c : rows) {
 			final TableColFmt fmt = parser.parse(c);
 			
-			align.add(fmt == null ? TableColFmt.defaultFmt() : fmt);
+			align.add(fmt == null ? new TableColFmt() : fmt);
 		}
 		
 		return align;
