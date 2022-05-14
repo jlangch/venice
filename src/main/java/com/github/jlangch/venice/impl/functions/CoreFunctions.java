@@ -7214,6 +7214,7 @@ public class CoreFunctions {
 						"(reduce (fn [x y] (+ x y)) [1 2 3 4 5 6 7])",
 						"(reduce (fn [x y] (+ x y)) 10 [1 2 3 4 5 6 7])",
 						"((reduce comp [(partial + 1) (partial * 2) (partial + 3)]) 100)",
+						"(reduce (fn [m [k v]] (assoc m k v)) {} [[:a 1] [:b 2] [:c 3]])",
 						"(reduce (fn [m [k v]] (assoc m v k)) {} {:b 2 :a 1 :c 3})",
 						"(reduce (fn [m c] (assoc m (first c) c)) {} [[:a 1] [:b 2] [:c 3]])",
 						";; sliding window (width 3) average\n" +

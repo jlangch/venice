@@ -1,0 +1,86 @@
+;;; EBNF
+;;; ----------------------------------------------------------------------------
+;;; Ws               = " " | "\t" | "\n" ;
+;;; Digit            = "0" ... "9" ;
+;;; Letter           = ("a" ... "z") | ("A" ... "Z") | "_" ;
+;;; Identifier       = Letter { Letter | Digit | "-" } ;
+;;; Integer          = Digit { Digit } ;
+;;; Unit             = "%" | "em" | "px" ;
+;;;
+;;; Width            = "width" { Ws } ":" { Ws } ((Integer { Ws } Unit) | "auto") ;
+;;; TextAlign        = "text-align" { Ws}  ":" { Ws } ("left" | "center" | "right") ;
+;;; Delim            = { Ws } ";" { Ws }
+;;; Property         = {Ws} (Width | TextAlign) ;
+;;; Properties       = {Ws} Property { Delim Property } { Delim } EOI ;
+;;;
+;;;
+;;; Parsifal Parser
+;;; ----------------------------------------------------------------------------
+
+
+(do
+  (load-module :parsifal)
+  (ns-alias 'p 'parsifal)
+
+  (defn ident-char [ch]
+    (p/token (fn [ch] (or (<= (long #\a) ch (long #\Z))
+                          (<= (long #\A) ch (long #\A))
+                          (<= (long #\0) ch (long #\9))
+                          (== ch #\-)))))
+
+  (p/defparser ws []
+    (p/many (p/any-char-of " \t\n")))
+
+  (p/defparser int []
+    (p/let->> [i (p/many1 (p/digit))]
+       (p/always (long (apply str i)))))
+
+  (p/defparser unit []
+    (p/attempt (p/choice (p/char #\%)
+                         (p/string "px")
+                         (p/string "em"))))
+
+  (p/defparser width []
+    (p/let->> [name (p/string "width")
+               _    (ws)
+               _    (p/char #\:)
+               _    (ws)
+               val  (p/choice (p/string "auto")
+                              (p/let->> [i  (int)
+                                         _  (ws)
+                                         u  (unit)]
+                                 (p/always [i u])))]
+       (p/always [name val])))
+
+  (p/defparser text-align []
+    (p/let->> [name (p/string "text-align")
+               _    (ws)
+               _    (p/char #\:)
+               _    (ws)
+               val  (p/choice (p/string "left")
+                              (p/string "center")
+                              (p/string "right"))]
+       (p/always [name val])))
+
+  (p/defparser delim []
+    (p/>> (ws) (p/char #\;) (ws)))
+
+  (p/defparser property []
+    (p/attempt (p/choice (width) (text-align))))
+
+  (p/defparser properties []
+    (p/let->> [_  (ws)
+               x  (property)
+               xs (p/many (p/attempt (p/let->> [_ (delim) p (property)]
+                                       (p/always p))))
+               _  (p/many (delim))]
+       (p/always (cons x xs))))
+
+  (defn evaluate [expression]
+    (->> (p/run (properties) expression)
+         (into {})))
+
+  ;; css var is passed from Venice markdown table parser TableColFmtParser
+  (when (bound? 'css)
+    (evaluate css))
+)

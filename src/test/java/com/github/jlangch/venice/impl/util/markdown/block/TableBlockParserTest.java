@@ -28,6 +28,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import org.junit.jupiter.api.Test;
 
 import com.github.jlangch.venice.impl.util.markdown.chunk.TextChunk;
+import com.github.jlangch.venice.impl.util.markdown.block.TableColFmt.HorzAlignment;
 
 
 public class TableBlockParserTest {
@@ -52,7 +53,7 @@ public class TableBlockParserTest {
 		assertEquals(1, table.cols());
 		assertEquals(1, table.bodyRows());
 		
-		assertEquals(TableBlock.HorzAlignment.LEFT, table.format(0).horzAlignment());
+		assertEquals(HorzAlignment.LEFT, table.format(0).horzAlignment());
 
 		assertEquals("c1", ((TextChunk)table.bodyCell(0, 0).getChunks().get(0)).getText());
 		assertEquals(TextChunk.Format.NORMAL, ((TextChunk)table.bodyCell(0, 0).getChunks().get(0)).getFormat());
@@ -74,8 +75,8 @@ public class TableBlockParserTest {
 		assertEquals(2, table.cols());
 		assertEquals(1, table.bodyRows());
 		
-		assertEquals(TableBlock.HorzAlignment.LEFT, table.format(0).horzAlignment());	
-		assertEquals(TableBlock.HorzAlignment.LEFT, table.format(1).horzAlignment());
+		assertEquals(HorzAlignment.LEFT, table.format(0).horzAlignment());	
+		assertEquals(HorzAlignment.LEFT, table.format(1).horzAlignment());
 	
 		assertEquals("c1", ((TextChunk)table.bodyCell(0, 0).getChunks().get(0)).getText());
 		assertEquals(TextChunk.Format.NORMAL, ((TextChunk)table.bodyCell(0, 0).getChunks().get(0)).getFormat());
@@ -100,9 +101,9 @@ public class TableBlockParserTest {
 		assertEquals(3, table.cols());
 		assertEquals(1, table.bodyRows());
 
-		assertEquals(TableBlock.HorzAlignment.LEFT, table.format(0).horzAlignment());	
-		assertEquals(TableBlock.HorzAlignment.LEFT, table.format(1).horzAlignment());
-		assertEquals(TableBlock.HorzAlignment.LEFT, table.format(2).horzAlignment());	
+		assertEquals(HorzAlignment.LEFT, table.format(0).horzAlignment());	
+		assertEquals(HorzAlignment.LEFT, table.format(1).horzAlignment());
+		assertEquals(HorzAlignment.LEFT, table.format(2).horzAlignment());	
 
 		assertEquals("c1", ((TextChunk)table.bodyCell(0, 0).getChunks().get(0)).getText());
 		assertEquals(TextChunk.Format.NORMAL, ((TextChunk)table.bodyCell(0, 0).getChunks().get(0)).getFormat());
@@ -136,8 +137,8 @@ public class TableBlockParserTest {
 		assertEquals(1, table.cols());
 		assertEquals(2, table.bodyRows());
 
-		assertEquals(TableBlock.HorzAlignment.LEFT, table.format(0).horzAlignment());	
-		assertEquals(TableBlock.HorzAlignment.LEFT, table.format(1).horzAlignment());
+		assertEquals(HorzAlignment.LEFT, table.format(0).horzAlignment());	
+		assertEquals(HorzAlignment.LEFT, table.format(1).horzAlignment());
 
 		// row 1
 		
@@ -167,8 +168,8 @@ public class TableBlockParserTest {
 		assertEquals(2, table.cols());
 		assertEquals(2, table.bodyRows());
 
-		assertEquals(TableBlock.HorzAlignment.LEFT, table.format(0).horzAlignment());	
-		assertEquals(TableBlock.HorzAlignment.LEFT, table.format(1).horzAlignment());
+		assertEquals(HorzAlignment.LEFT, table.format(0).horzAlignment());	
+		assertEquals(HorzAlignment.LEFT, table.format(1).horzAlignment());
 
 		// row 1
 
@@ -204,9 +205,9 @@ public class TableBlockParserTest {
 		assertEquals(3, table.cols());
 		assertEquals(2, table.bodyRows());
 
-		assertEquals(TableBlock.HorzAlignment.LEFT, table.format(0).horzAlignment());	
-		assertEquals(TableBlock.HorzAlignment.LEFT, table.format(1).horzAlignment());
-		assertEquals(TableBlock.HorzAlignment.LEFT, table.format(2).horzAlignment());
+		assertEquals(HorzAlignment.LEFT, table.format(0).horzAlignment());	
+		assertEquals(HorzAlignment.LEFT, table.format(1).horzAlignment());
+		assertEquals(HorzAlignment.LEFT, table.format(2).horzAlignment());
 
 		// row 1
 
@@ -252,7 +253,7 @@ public class TableBlockParserTest {
 		assertEquals(1, table.cols());
 		assertEquals(1, table.bodyRows());
 
-		assertEquals(TableBlock.HorzAlignment.LEFT, table.format(0).horzAlignment());	
+		assertEquals(HorzAlignment.LEFT, table.format(0).horzAlignment());	
 	
 		// row 1
 		
@@ -277,7 +278,7 @@ public class TableBlockParserTest {
 		assertEquals(1, table.cols());
 		assertEquals(1, table.bodyRows());
 
-		assertEquals(TableBlock.HorzAlignment.CENTER, table.format(0).horzAlignment());	
+		assertEquals(HorzAlignment.CENTER, table.format(0).horzAlignment());	
 	
 		// row 1
 		
@@ -302,7 +303,7 @@ public class TableBlockParserTest {
 		assertEquals(1, table.cols());
 		assertEquals(1, table.bodyRows());
 
-		assertEquals(TableBlock.HorzAlignment.RIGHT, table.format(0).horzAlignment());	
+		assertEquals(HorzAlignment.RIGHT, table.format(0).horzAlignment());	
 	
 		// row 1
 		
@@ -328,8 +329,8 @@ public class TableBlockParserTest {
 		assertEquals(2, table.cols());
 		assertEquals(1, table.bodyRows());
 		
-		assertEquals(TableBlock.HorzAlignment.LEFT, table.format(0).horzAlignment());
-		assertEquals(TableBlock.HorzAlignment.RIGHT, table.format(1).horzAlignment());
+		assertEquals(HorzAlignment.LEFT, table.format(0).horzAlignment());
+		assertEquals(HorzAlignment.RIGHT, table.format(1).horzAlignment());
 
 		
 		assertEquals("c1", ((TextChunk)table.bodyCell(0, 0).getChunks().get(0)).getText());
@@ -356,9 +357,9 @@ public class TableBlockParserTest {
 		assertEquals(3, table.cols());
 		assertEquals(1, table.bodyRows());
 		
-		assertEquals(TableBlock.HorzAlignment.LEFT, table.format(0).horzAlignment());
-		assertEquals(TableBlock.HorzAlignment.CENTER, table.format(1).horzAlignment());
-		assertEquals(TableBlock.HorzAlignment.RIGHT, table.format(2).horzAlignment());
+		assertEquals(HorzAlignment.LEFT, table.format(0).horzAlignment());
+		assertEquals(HorzAlignment.CENTER, table.format(1).horzAlignment());
+		assertEquals(HorzAlignment.RIGHT, table.format(2).horzAlignment());
 	
 		// row 1
 		assertEquals("c1", ((TextChunk)table.bodyCell(0, 0).getChunks().get(0)).getText());
@@ -389,9 +390,9 @@ public class TableBlockParserTest {
 		assertEquals(3, table.cols());
 		assertEquals(2, table.bodyRows());
 
-		assertEquals(TableBlock.HorzAlignment.LEFT, table.format(0).horzAlignment());	
-		assertEquals(TableBlock.HorzAlignment.CENTER, table.format(1).horzAlignment());
-		assertEquals(TableBlock.HorzAlignment.RIGHT, table.format(2).horzAlignment());
+		assertEquals(HorzAlignment.LEFT, table.format(0).horzAlignment());	
+		assertEquals(HorzAlignment.CENTER, table.format(1).horzAlignment());
+		assertEquals(HorzAlignment.RIGHT, table.format(2).horzAlignment());
 
 		// row 1
 
@@ -434,9 +435,9 @@ public class TableBlockParserTest {
 		assertEquals(3, table.cols());
 		assertEquals(2, table.bodyRows());
 
-		assertEquals(TableBlock.HorzAlignment.LEFT, table.format(0).horzAlignment());	
-		assertEquals(TableBlock.HorzAlignment.CENTER, table.format(1).horzAlignment());
-		assertEquals(TableBlock.HorzAlignment.RIGHT, table.format(2).horzAlignment());
+		assertEquals(HorzAlignment.LEFT, table.format(0).horzAlignment());	
+		assertEquals(HorzAlignment.CENTER, table.format(1).horzAlignment());
+		assertEquals(HorzAlignment.RIGHT, table.format(2).horzAlignment());
 
 		// row 1
 
@@ -478,8 +479,8 @@ public class TableBlockParserTest {
 		assertEquals(1, table.cols());
 		assertEquals(1, table.bodyRows());
 		
-		assertEquals(TableBlock.HorzAlignment.LEFT, table.format(0).horzAlignment());	
-		assertEquals(TableBlock.HorzAlignment.LEFT, table.format(1).horzAlignment());
+		assertEquals(HorzAlignment.LEFT, table.format(0).horzAlignment());	
+		assertEquals(HorzAlignment.LEFT, table.format(1).horzAlignment());
 		
 		assertEquals("\\u2020", ((TextChunk)table.bodyCell(0, 0).getChunks().get(0)).getText());
 		assertEquals(TextChunk.Format.NORMAL, ((TextChunk)table.bodyCell(0, 0).getChunks().get(0)).getFormat());
@@ -501,8 +502,8 @@ public class TableBlockParserTest {
 		assertEquals(2, table.cols());
 		assertEquals(1, table.bodyRows());
 		
-		assertEquals(TableBlock.HorzAlignment.LEFT, table.format(0).horzAlignment());	
-		assertEquals(TableBlock.HorzAlignment.LEFT, table.format(1).horzAlignment());
+		assertEquals(HorzAlignment.LEFT, table.format(0).horzAlignment());	
+		assertEquals(HorzAlignment.LEFT, table.format(1).horzAlignment());
 		
 		assertEquals("xx¶xx", ((TextChunk)table.bodyCell(0, 0).getChunks().get(0)).getText());
 		assertEquals(TextChunk.Format.NORMAL, ((TextChunk)table.bodyCell(0, 0).getChunks().get(0)).getFormat());

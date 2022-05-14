@@ -21,8 +21,15 @@
  */
 package com.github.jlangch.venice.impl.util.markdown.block;
 
+import java.util.Map;
+import java.util.concurrent.atomic.AtomicReference;
+
+import com.github.jlangch.venice.Parameters;
+import com.github.jlangch.venice.PreCompiled;
+import com.github.jlangch.venice.Venice;
 import com.github.jlangch.venice.impl.util.StringUtil;
-import com.github.jlangch.venice.impl.util.markdown.block.TableBlock.HorzAlignment;
+import com.github.jlangch.venice.impl.util.io.ClassPathResource;
+import com.github.jlangch.venice.impl.util.markdown.block.TableColFmt.HorzAlignment;
 
 
 public class TableColFmtParser {
@@ -32,27 +39,75 @@ public class TableColFmtParser {
 	
 	public TableColFmt parse(final String format) {
 		final String fmt = StringUtil.trimToEmpty(format);
+		
+		final TableColFmt fmtMD = parseMarkdownStyleFormat(fmt);
+		if (fmtMD != null) {
+			return fmtMD;
+		}
+		else {
+			return parseCssStyleFormat(fmt);
+		}
+	}
 
-		final HorzAlignment align = parseMarkdownStyleHorzAlignment(fmt);
+
+	private TableColFmt parseMarkdownStyleFormat(final String format) {
+		final HorzAlignment align = parseMarkdownStyleHorzAlignment(format);
 		return align == null ? null : new TableColFmt(align);
 	}
 
+	@SuppressWarnings("unchecked")
+	private TableColFmt parseCssStyleFormat(final String format) {
+		if (format.startsWith("[![") && format.endsWith("]]")) {
+			final String css = format.substring(3, format.length()-2).trim();
+			if (!css.isEmpty()) {
+				try {
+					final PreCompiled precompiled = getCssParser();
+					
+					final Venice venice = new Venice();
+					
+					final Map<String,Object> cssProps = (Map<String,Object>)venice.eval(
+															precompiled, 
+															Parameters.of("css", css));
+
+					final HorzAlignment align = parseCssStyleHorzAlignment(cssProps);
+					return align == null ? null : new TableColFmt(align);
+				}
+				catch(RuntimeException ex) {
+					ex.printStackTrace();
+					return null;
+				}
+			}
+		}
+		
+		return null;
+	}
+	
+	private HorzAlignment parseCssStyleHorzAlignment(final Map<String,Object> cssProps) {
+		final String align = (String)cssProps.get("text-align");
+
+		switch(StringUtil.trimToEmpty(align)) {
+			case "left":   return HorzAlignment.LEFT;
+			case "center": return HorzAlignment.CENTER;
+			case "right":  return HorzAlignment.RIGHT;
+			default:       return null;
+		}
+	}
 	
 	private HorzAlignment parseMarkdownStyleHorzAlignment(final String format) {
 		if (isCenterAlign(format)) {
-			return TableBlock.HorzAlignment.CENTER;
+			return HorzAlignment.CENTER;
 		}
 		else if (isLeftAlign(format)) {
-			return TableBlock.HorzAlignment.LEFT;
+			return HorzAlignment.LEFT;
 		}
 		else if (isRightAlign(format)) {
-			return TableBlock.HorzAlignment.RIGHT;
+			return HorzAlignment.RIGHT;
 		}
 		else {
 			return null;
 		}
 	}
-
+	
 	private boolean isCenterAlign(final String s) {
 		return s.matches("---+") || s.matches("[:]-+[:]");
 	}
@@ -64,6 +119,22 @@ public class TableColFmtParser {
 	private boolean isRightAlign(final String s) {
 		return s.matches("-+[:]");
 	}
+	
+	private PreCompiled getCssParser() {
+		PreCompiled pc = cssParser.get();
+		if (pc == null) {
+			final String parser = new ClassPathResource(CSS_PARSER).getResourceAsString();
+			
+			pc = new Venice().precompile("CssParser", parser, true);
+			cssParser.set(pc);
+		}
+		
+		return pc;
+	}
 
 	
+	private static AtomicReference<PreCompiled> cssParser = new AtomicReference<>();
+	
+	private static String CSS_PARSER = 
+			"com/github/jlangch/venice/impl/util/markdown/block/table-col-css-parser.venice";
 }

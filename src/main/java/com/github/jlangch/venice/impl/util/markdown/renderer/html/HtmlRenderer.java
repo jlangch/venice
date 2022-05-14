@@ -33,7 +33,7 @@ import com.github.jlangch.venice.impl.util.markdown.block.Block;
 import com.github.jlangch.venice.impl.util.markdown.block.CodeBlock;
 import com.github.jlangch.venice.impl.util.markdown.block.ListBlock;
 import com.github.jlangch.venice.impl.util.markdown.block.TableBlock;
-import com.github.jlangch.venice.impl.util.markdown.block.TableBlock.HorzAlignment;
+import com.github.jlangch.venice.impl.util.markdown.block.TableColFmt.HorzAlignment;
 import com.github.jlangch.venice.impl.util.markdown.block.TableColFmt;
 import com.github.jlangch.venice.impl.util.markdown.block.TextBlock;
 import com.github.jlangch.venice.impl.util.markdown.chunk.Chunk;

@@ -21,8 +21,6 @@
  */
 package com.github.jlangch.venice.impl.util.markdown.block;
 
-import com.github.jlangch.venice.impl.util.markdown.block.TableBlock.HorzAlignment;
-
 
 public class TableColFmt {
 
@@ -35,11 +33,12 @@ public class TableColFmt {
 	}
 
 	
-	public TableBlock.HorzAlignment horzAlignment() {
+	public HorzAlignment horzAlignment() {
 		return horzAlignment;
 	}
 
 
+	public static enum HorzAlignment { LEFT, CENTER, RIGHT };
 	
-	private final TableBlock.HorzAlignment horzAlignment;
+	private final HorzAlignment horzAlignment;
 }

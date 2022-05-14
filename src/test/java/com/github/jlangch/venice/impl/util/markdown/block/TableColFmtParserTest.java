@@ -21,9 +21,9 @@
  */
 package com.github.jlangch.venice.impl.util.markdown.block;
 
-import static com.github.jlangch.venice.impl.util.markdown.block.TableBlock.HorzAlignment.CENTER;
-import static com.github.jlangch.venice.impl.util.markdown.block.TableBlock.HorzAlignment.LEFT;
-import static com.github.jlangch.venice.impl.util.markdown.block.TableBlock.HorzAlignment.RIGHT;
+import static com.github.jlangch.venice.impl.util.markdown.block.TableColFmt.HorzAlignment.CENTER;
+import static com.github.jlangch.venice.impl.util.markdown.block.TableColFmt.HorzAlignment.LEFT;
+import static com.github.jlangch.venice.impl.util.markdown.block.TableColFmt.HorzAlignment.RIGHT;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNull;
 
@@ -81,6 +81,20 @@ public class TableColFmtParserTest {
 		assertEquals(RIGHT, parser.parse("--:").horzAlignment());
 		assertEquals(RIGHT, parser.parse("---:").horzAlignment());
 		assertEquals(RIGHT, parser.parse("----:").horzAlignment());
+	}
+
+	@Test
+	public void test_css_alignment() {
+		final TableColFmtParser parser = new TableColFmtParser();
+		
+		assertEquals(LEFT, parser.parse("[![text-align: left]]").horzAlignment());
+		assertEquals(LEFT, parser.parse("[![text-align: left;]]").horzAlignment());
+		
+		assertEquals(CENTER, parser.parse("[![text-align: center]]").horzAlignment());
+		assertEquals(CENTER, parser.parse("[![text-align: center;]]").horzAlignment());
+		
+		assertEquals(RIGHT, parser.parse("[![text-align: right]]").horzAlignment());
+		assertEquals(RIGHT, parser.parse("[![text-align: right;]]").horzAlignment());
 	}
 
 }

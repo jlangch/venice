@@ -150,9 +150,7 @@ public class TableBlock implements Block {
 					 .collect(Collectors.toList());
 	}
 	
-	
-	public static enum HorzAlignment { LEFT, CENTER, RIGHT };
-	
+		
 	private List<TableColFmt> format = new ArrayList<>();
 	private List<Chunks> headerRow = new ArrayList<>();
 	private List<List<Chunks>> bodyRows = new ArrayList<>();
