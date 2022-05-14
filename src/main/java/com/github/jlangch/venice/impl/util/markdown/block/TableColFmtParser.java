@@ -27,17 +27,18 @@ import com.github.jlangch.venice.impl.util.markdown.block.TableBlock.HorzAlignme
 
 public class TableColFmtParser {
 
-	public TableColFmtParser(final String format) {
-		this.format = StringUtil.trimToEmpty(format);
+	public TableColFmtParser() {
 	}
 	
-	public TableColFmt parse() {
-		final HorzAlignment align = parseMarkdownStyleHorzAlignment();
+	public TableColFmt parse(final String format) {
+		final String fmt = StringUtil.trimToEmpty(format);
+
+		final HorzAlignment align = parseMarkdownStyleHorzAlignment(fmt);
 		return align == null ? null : new TableColFmt(align);
 	}
 
 	
-	private HorzAlignment parseMarkdownStyleHorzAlignment() {
+	private HorzAlignment parseMarkdownStyleHorzAlignment(final String format) {
 		if (isCenterAlign(format)) {
 			return TableBlock.HorzAlignment.CENTER;
 		}
@@ -65,5 +66,4 @@ public class TableColFmtParser {
 	}
 
 	
-	private final String format;
 }

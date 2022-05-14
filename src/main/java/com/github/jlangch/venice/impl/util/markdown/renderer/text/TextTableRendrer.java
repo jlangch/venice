@@ -27,6 +27,7 @@ import java.util.stream.Collectors;
 
 import com.github.jlangch.venice.impl.util.StringUtil;
 import com.github.jlangch.venice.impl.util.markdown.block.TableBlock;
+import com.github.jlangch.venice.impl.util.markdown.block.TableColFmt;
 
 
 public class TextTableRendrer {
@@ -157,10 +158,10 @@ public class TextTableRendrer {
 	
 	private String align(
 			final String str, 
-			final TableBlock.HorzAlignment align,
+			final TableColFmt format,
 			final int width
 	) {
-		switch(align) {
+		switch(format.horzAlignment()) {
 			case LEFT:	 return LineFormatter.leftAlign(str, width, fillChar);
 			case CENTER: return LineFormatter.centerAlign(str, width, fillChar);
 			case RIGHT:  return LineFormatter.rightAlign(str, width, fillChar);

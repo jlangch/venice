@@ -21,12 +21,19 @@
  */
 package com.github.jlangch.venice.impl.util.markdown.block;
 
+import com.github.jlangch.venice.impl.util.markdown.block.TableBlock.HorzAlignment;
+
 
 public class TableColFmt {
 
-	public TableColFmt(final TableBlock.HorzAlignment align) {
+	public TableColFmt(final HorzAlignment align) {
 		this.horzAlignment = align;
 	}
+	
+	public static TableColFmt defaultFmt() {
+		return new TableColFmt(HorzAlignment.LEFT);
+	}
+
 	
 	public TableBlock.HorzAlignment horzAlignment() {
 		return horzAlignment;

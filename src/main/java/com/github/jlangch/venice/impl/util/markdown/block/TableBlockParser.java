@@ -59,7 +59,10 @@ public class TableBlockParser {
 			final List<String> formatRow = cells.get(0);
 			final List<List<String>> body = cells.subList(1, cells.size());
 			
-			final TableBlock block = new TableBlock(cols, parseAlignments(formatRow), toChunks2(body));
+			final TableBlock block = new TableBlock(
+											cols, 
+											parseColFormats(formatRow), 
+											toChunks2(body));
 			block.parseChunks();
 			return block;
 		}
@@ -70,7 +73,7 @@ public class TableBlockParser {
 
 			final TableBlock block = new TableBlock(
 											cols, 
-											parseAlignments(formatRow), 
+											parseColFormats(formatRow), 
 											toChunks(headerRow), 
 											toChunks2(body));
 			block.parseChunks();
@@ -149,22 +152,15 @@ public class TableBlockParser {
 		return cells;
 	}
 
-	private List<TableBlock.HorzAlignment> parseAlignments(final List<String> row) {
-		final List<TableBlock.HorzAlignment> align = new ArrayList<>();
+	private List<TableColFmt> parseColFormats(final List<String> rows) {
+		final List<TableColFmt> align = new ArrayList<>();
 
-		for(String s : row) {
-			if (isCenterAlign(s)) {
-				align.add(TableBlock.HorzAlignment.CENTER);
-			}
-			else if (isLeftAlign(s)) {
-				align.add(TableBlock.HorzAlignment.LEFT);
-			}
-			else if (isRightAlign(s)) {
-				align.add(TableBlock.HorzAlignment.RIGHT);
-			}
-			else {
-				align.add(TableBlock.HorzAlignment.LEFT);
-			}
+		final TableColFmtParser parser = new TableColFmtParser();
+		
+		for(String c : rows) {
+			final TableColFmt fmt = parser.parse(c);
+			
+			align.add(fmt == null ? TableColFmt.defaultFmt() : fmt);
 		}
 		
 		return align;
@@ -172,23 +168,11 @@ public class TableBlockParser {
 
 	private boolean isFormatRow(final List<String> row) {
 		for(String col : row) {
-			if (isCenterAlign(col) || isLeftAlign(col) || isRightAlign(col)) {
+			if (new TableColFmtParser().parse(col) != null) {
 				return true;
 			}
 		}
 		return false;
-	}
-
-	private boolean isCenterAlign(final String s) {
-		return s.matches("---+") || s.matches("[:]-+[:]");
-	}
-	
-	private boolean isLeftAlign(final String s) {
-		return s.matches("[:]-+");
-	}
-	
-	private boolean isRightAlign(final String s) {
-		return s.matches("-+[:]");
 	}
 	
 	private List<Chunks> toChunks(final List<String> list) {

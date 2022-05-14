@@ -33,6 +33,8 @@ import com.github.jlangch.venice.impl.util.markdown.block.Block;
 import com.github.jlangch.venice.impl.util.markdown.block.CodeBlock;
 import com.github.jlangch.venice.impl.util.markdown.block.ListBlock;
 import com.github.jlangch.venice.impl.util.markdown.block.TableBlock;
+import com.github.jlangch.venice.impl.util.markdown.block.TableBlock.HorzAlignment;
+import com.github.jlangch.venice.impl.util.markdown.block.TableColFmt;
 import com.github.jlangch.venice.impl.util.markdown.block.TextBlock;
 import com.github.jlangch.venice.impl.util.markdown.chunk.Chunk;
 import com.github.jlangch.venice.impl.util.markdown.chunk.Chunks;
@@ -224,7 +226,9 @@ public class HtmlRenderer {
 		return "md-text-" + format.name().replace('_','-').toLowerCase();
 	}
 	
-	private String buildCssAlignmentClass(final TableBlock.HorzAlignment alignment) {
+	private String buildCssAlignmentClass(final TableColFmt format) {
+		final HorzAlignment alignment = format.horzAlignment();
+		
 		return "md-align-" + alignment.name().toLowerCase();
 	}
 	

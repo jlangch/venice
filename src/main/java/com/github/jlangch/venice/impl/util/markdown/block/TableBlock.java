@@ -45,7 +45,7 @@ public class TableBlock implements Block {
 
 	public TableBlock(
 		final int cols,
-		final List<HorzAlignment> format,
+		final List<TableColFmt> format,
 		final List<List<Chunks>> bodyRows
 	) {
 		addFormat(cols, format);
@@ -56,7 +56,7 @@ public class TableBlock implements Block {
 
 	public TableBlock(
 		final int cols,
-		final List<HorzAlignment> format,
+		final List<TableColFmt> format,
 		final List<Chunks> headerRow,
 		final List<List<Chunks>> bodyRows
 	) {
@@ -78,8 +78,8 @@ public class TableBlock implements Block {
 		return !headerRow.isEmpty();
 	}
 
-	public HorzAlignment format(final int col) {
-		return col >= format.size() ? HorzAlignment.LEFT : format.get(col);
+	public TableColFmt format(final int col) {
+		return col >= format.size() ? TableColFmt.defaultFmt() : format.get(col);
 	}
 
 	public Chunks headerCell(final int col) {
@@ -110,10 +110,10 @@ public class TableBlock implements Block {
 		}
 	}
 
-	private void addFormat(final int cols, final List<HorzAlignment> formats) {
+	private void addFormat(final int cols, final List<TableColFmt> formats) {
 		for(int ii=0; ii<cols; ii++) {
 			format.add(
-				formats != null && ii<formats.size() ? formats.get(ii) : HorzAlignment.LEFT);
+				formats != null && ii<formats.size() ? formats.get(ii) : TableColFmt.defaultFmt());
 		}
 	}
 	
@@ -153,7 +153,7 @@ public class TableBlock implements Block {
 	
 	public static enum HorzAlignment { LEFT, CENTER, RIGHT };
 	
-	private List<HorzAlignment> format = new ArrayList<>();
+	private List<TableColFmt> format = new ArrayList<>();
 	private List<Chunks> headerRow = new ArrayList<>();
 	private List<List<Chunks>> bodyRows = new ArrayList<>();
 }
