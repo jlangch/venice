@@ -52,7 +52,7 @@ public class TableBlockParserTest {
 		assertEquals(1, table.cols());
 		assertEquals(1, table.bodyRows());
 		
-		assertEquals(TableBlock.Alignment.LEFT, table.format(0));
+		assertEquals(TableBlock.HorzAlignment.LEFT, table.format(0));
 
 		assertEquals("c1", ((TextChunk)table.bodyCell(0, 0).getChunks().get(0)).getText());
 		assertEquals(TextChunk.Format.NORMAL, ((TextChunk)table.bodyCell(0, 0).getChunks().get(0)).getFormat());
@@ -74,8 +74,8 @@ public class TableBlockParserTest {
 		assertEquals(2, table.cols());
 		assertEquals(1, table.bodyRows());
 		
-		assertEquals(TableBlock.Alignment.LEFT, table.format(0));	
-		assertEquals(TableBlock.Alignment.LEFT, table.format(1));
+		assertEquals(TableBlock.HorzAlignment.LEFT, table.format(0));	
+		assertEquals(TableBlock.HorzAlignment.LEFT, table.format(1));
 	
 		assertEquals("c1", ((TextChunk)table.bodyCell(0, 0).getChunks().get(0)).getText());
 		assertEquals(TextChunk.Format.NORMAL, ((TextChunk)table.bodyCell(0, 0).getChunks().get(0)).getFormat());
@@ -100,9 +100,9 @@ public class TableBlockParserTest {
 		assertEquals(3, table.cols());
 		assertEquals(1, table.bodyRows());
 
-		assertEquals(TableBlock.Alignment.LEFT, table.format(0));	
-		assertEquals(TableBlock.Alignment.LEFT, table.format(1));
-		assertEquals(TableBlock.Alignment.LEFT, table.format(2));	
+		assertEquals(TableBlock.HorzAlignment.LEFT, table.format(0));	
+		assertEquals(TableBlock.HorzAlignment.LEFT, table.format(1));
+		assertEquals(TableBlock.HorzAlignment.LEFT, table.format(2));	
 
 		assertEquals("c1", ((TextChunk)table.bodyCell(0, 0).getChunks().get(0)).getText());
 		assertEquals(TextChunk.Format.NORMAL, ((TextChunk)table.bodyCell(0, 0).getChunks().get(0)).getFormat());
@@ -136,8 +136,8 @@ public class TableBlockParserTest {
 		assertEquals(1, table.cols());
 		assertEquals(2, table.bodyRows());
 
-		assertEquals(TableBlock.Alignment.LEFT, table.format(0));	
-		assertEquals(TableBlock.Alignment.LEFT, table.format(1));
+		assertEquals(TableBlock.HorzAlignment.LEFT, table.format(0));	
+		assertEquals(TableBlock.HorzAlignment.LEFT, table.format(1));
 
 		// row 1
 		
@@ -167,8 +167,8 @@ public class TableBlockParserTest {
 		assertEquals(2, table.cols());
 		assertEquals(2, table.bodyRows());
 
-		assertEquals(TableBlock.Alignment.LEFT, table.format(0));	
-		assertEquals(TableBlock.Alignment.LEFT, table.format(1));
+		assertEquals(TableBlock.HorzAlignment.LEFT, table.format(0));	
+		assertEquals(TableBlock.HorzAlignment.LEFT, table.format(1));
 
 		// row 1
 
@@ -204,9 +204,9 @@ public class TableBlockParserTest {
 		assertEquals(3, table.cols());
 		assertEquals(2, table.bodyRows());
 
-		assertEquals(TableBlock.Alignment.LEFT, table.format(0));	
-		assertEquals(TableBlock.Alignment.LEFT, table.format(1));
-		assertEquals(TableBlock.Alignment.LEFT, table.format(2));
+		assertEquals(TableBlock.HorzAlignment.LEFT, table.format(0));	
+		assertEquals(TableBlock.HorzAlignment.LEFT, table.format(1));
+		assertEquals(TableBlock.HorzAlignment.LEFT, table.format(2));
 
 		// row 1
 
@@ -252,7 +252,7 @@ public class TableBlockParserTest {
 		assertEquals(1, table.cols());
 		assertEquals(1, table.bodyRows());
 
-		assertEquals(TableBlock.Alignment.LEFT, table.format(0));	
+		assertEquals(TableBlock.HorzAlignment.LEFT, table.format(0));	
 	
 		// row 1
 		
@@ -277,7 +277,7 @@ public class TableBlockParserTest {
 		assertEquals(1, table.cols());
 		assertEquals(1, table.bodyRows());
 
-		assertEquals(TableBlock.Alignment.CENTER, table.format(0));	
+		assertEquals(TableBlock.HorzAlignment.CENTER, table.format(0));	
 	
 		// row 1
 		
@@ -302,7 +302,7 @@ public class TableBlockParserTest {
 		assertEquals(1, table.cols());
 		assertEquals(1, table.bodyRows());
 
-		assertEquals(TableBlock.Alignment.RIGHT, table.format(0));	
+		assertEquals(TableBlock.HorzAlignment.RIGHT, table.format(0));	
 	
 		// row 1
 		
@@ -328,8 +328,8 @@ public class TableBlockParserTest {
 		assertEquals(2, table.cols());
 		assertEquals(1, table.bodyRows());
 		
-		assertEquals(TableBlock.Alignment.LEFT, table.format(0));
-		assertEquals(TableBlock.Alignment.RIGHT, table.format(1));
+		assertEquals(TableBlock.HorzAlignment.LEFT, table.format(0));
+		assertEquals(TableBlock.HorzAlignment.RIGHT, table.format(1));
 
 		
 		assertEquals("c1", ((TextChunk)table.bodyCell(0, 0).getChunks().get(0)).getText());
@@ -356,9 +356,9 @@ public class TableBlockParserTest {
 		assertEquals(3, table.cols());
 		assertEquals(1, table.bodyRows());
 		
-		assertEquals(TableBlock.Alignment.LEFT, table.format(0));
-		assertEquals(TableBlock.Alignment.CENTER, table.format(1));
-		assertEquals(TableBlock.Alignment.RIGHT, table.format(2));
+		assertEquals(TableBlock.HorzAlignment.LEFT, table.format(0));
+		assertEquals(TableBlock.HorzAlignment.CENTER, table.format(1));
+		assertEquals(TableBlock.HorzAlignment.RIGHT, table.format(2));
 	
 		// row 1
 		assertEquals("c1", ((TextChunk)table.bodyCell(0, 0).getChunks().get(0)).getText());
@@ -389,9 +389,9 @@ public class TableBlockParserTest {
 		assertEquals(3, table.cols());
 		assertEquals(2, table.bodyRows());
 
-		assertEquals(TableBlock.Alignment.LEFT, table.format(0));	
-		assertEquals(TableBlock.Alignment.CENTER, table.format(1));
-		assertEquals(TableBlock.Alignment.RIGHT, table.format(2));
+		assertEquals(TableBlock.HorzAlignment.LEFT, table.format(0));	
+		assertEquals(TableBlock.HorzAlignment.CENTER, table.format(1));
+		assertEquals(TableBlock.HorzAlignment.RIGHT, table.format(2));
 
 		// row 1
 
@@ -434,9 +434,9 @@ public class TableBlockParserTest {
 		assertEquals(3, table.cols());
 		assertEquals(2, table.bodyRows());
 
-		assertEquals(TableBlock.Alignment.LEFT, table.format(0));	
-		assertEquals(TableBlock.Alignment.CENTER, table.format(1));
-		assertEquals(TableBlock.Alignment.RIGHT, table.format(2));
+		assertEquals(TableBlock.HorzAlignment.LEFT, table.format(0));	
+		assertEquals(TableBlock.HorzAlignment.CENTER, table.format(1));
+		assertEquals(TableBlock.HorzAlignment.RIGHT, table.format(2));
 
 		// row 1
 
@@ -478,8 +478,8 @@ public class TableBlockParserTest {
 		assertEquals(1, table.cols());
 		assertEquals(1, table.bodyRows());
 		
-		assertEquals(TableBlock.Alignment.LEFT, table.format(0));	
-		assertEquals(TableBlock.Alignment.LEFT, table.format(1));
+		assertEquals(TableBlock.HorzAlignment.LEFT, table.format(0));	
+		assertEquals(TableBlock.HorzAlignment.LEFT, table.format(1));
 		
 		assertEquals("\\u2020", ((TextChunk)table.bodyCell(0, 0).getChunks().get(0)).getText());
 		assertEquals(TextChunk.Format.NORMAL, ((TextChunk)table.bodyCell(0, 0).getChunks().get(0)).getFormat());
@@ -501,8 +501,8 @@ public class TableBlockParserTest {
 		assertEquals(2, table.cols());
 		assertEquals(1, table.bodyRows());
 		
-		assertEquals(TableBlock.Alignment.LEFT, table.format(0));	
-		assertEquals(TableBlock.Alignment.LEFT, table.format(1));
+		assertEquals(TableBlock.HorzAlignment.LEFT, table.format(0));	
+		assertEquals(TableBlock.HorzAlignment.LEFT, table.format(1));
 		
 		assertEquals("xx¶xx", ((TextChunk)table.bodyCell(0, 0).getChunks().get(0)).getText());
 		assertEquals(TextChunk.Format.NORMAL, ((TextChunk)table.bodyCell(0, 0).getChunks().get(0)).getFormat());

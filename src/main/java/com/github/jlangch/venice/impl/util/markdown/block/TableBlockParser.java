@@ -149,21 +149,21 @@ public class TableBlockParser {
 		return cells;
 	}
 
-	private List<TableBlock.Alignment> parseAlignments(final List<String> row) {
-		final List<TableBlock.Alignment> align = new ArrayList<>();
+	private List<TableBlock.HorzAlignment> parseAlignments(final List<String> row) {
+		final List<TableBlock.HorzAlignment> align = new ArrayList<>();
 
 		for(String s : row) {
 			if (isCenterAlign(s)) {
-				align.add(TableBlock.Alignment.CENTER);
+				align.add(TableBlock.HorzAlignment.CENTER);
 			}
 			else if (isLeftAlign(s)) {
-				align.add(TableBlock.Alignment.LEFT);
+				align.add(TableBlock.HorzAlignment.LEFT);
 			}
 			else if (isRightAlign(s)) {
-				align.add(TableBlock.Alignment.RIGHT);
+				align.add(TableBlock.HorzAlignment.RIGHT);
 			}
 			else {
-				align.add(TableBlock.Alignment.LEFT);
+				align.add(TableBlock.HorzAlignment.LEFT);
 			}
 		}
 		

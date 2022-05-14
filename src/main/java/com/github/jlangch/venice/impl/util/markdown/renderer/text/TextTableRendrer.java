@@ -157,7 +157,7 @@ public class TextTableRendrer {
 	
 	private String align(
 			final String str, 
-			final TableBlock.Alignment align,
+			final TableBlock.HorzAlignment align,
 			final int width
 	) {
 		switch(align) {

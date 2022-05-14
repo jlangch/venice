@@ -224,7 +224,7 @@ public class HtmlRenderer {
 		return "md-text-" + format.name().replace('_','-').toLowerCase();
 	}
 	
-	private String buildCssAlignmentClass(final TableBlock.Alignment alignment) {
+	private String buildCssAlignmentClass(final TableBlock.HorzAlignment alignment) {
 		return "md-align-" + alignment.name().toLowerCase();
 	}
 	

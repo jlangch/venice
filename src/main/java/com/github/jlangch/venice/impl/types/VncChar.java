@@ -194,6 +194,7 @@ public class VncChar extends VncVal {
 		map.put("#\\middle-dot",         new VncChar('\u00B7'));  // middle dot '·'
 		map.put("#\\right-guillemet",    new VncChar('\u00BB'));  // right guillemet  '»'
 		map.put("#\\left-guillemet",     new VncChar('\u00AB'));  // left guillemet  '«'
+		map.put("#\\copyright",          new VncChar('\u00A9'));  // copyright '©'
 
 		map.put("#\\bullet",             new VncChar('\u2022'));  // bullet '•'
 		map.put("#\\horz-ellipsis",      new VncChar('\u2026'));  // horizontal ellipsis '…'
@@ -201,7 +202,7 @@ public class VncChar extends VncVal {
 		map.put("#\\diameter-sign",      new VncChar('\u2300'));  // diameter sign '⌀'
 		map.put("#\\check-mark",         new VncChar('\u2713'));  // check mark '✓'
 		map.put("#\\cross-mark",         new VncChar('\u2717'));  // cross mark '✗'
-		map.put("#\\pi",                 new VncChar('\u03C0'));  // PI 'π'
+		map.put("#\\pi",                 new VncChar('\u03C0'));  // PI 'π'		
 
 		map.put("#\\nbsp",               new VncChar('\u00A0'));  // no break space
 		map.put("#\\en-space",           new VncChar('\u2002'));  // en space
