@@ -14,6 +14,8 @@ and this project adheres to
 ### Added
 
 - function `str/hexdigit?`
+- CSS column styles for markdown tables. Currently 'text-align' and
+  'width' are supported
 - new features to the _Parsifal_ parser combinator:
     1. Deduping the error message list, to avoid repeated error messages
     2. Allow customized error messages with the `never` parser
