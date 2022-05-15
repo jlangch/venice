@@ -50,7 +50,13 @@ public class MarkdownHtmlRendererTest {
 
 		final String expected =
 						"<div class=\"md\">\n"
-						+ "<div class=\"md-text-block\"><div class=\"md-text-normal\">Lorem </div><div class=\"md-text-italic\">ipsum</div><div class=\"md-text-normal\"> * dolor </div><div class=\"md-text-bold\">sit</div><div class=\"md-text-normal\"> amet</div></div>\n"
+						+ "<div class=\"md-text-block\">"
+						+ "<div class=\"md-text-normal\">Lorem </div>"
+						+ "<div class=\"md-text-italic\">ipsum</div>"
+						+ "<div class=\"md-text-normal\"> * dolor </div>"
+						+ "<div class=\"md-text-bold\">sit</div>"
+						+ "<div class=\"md-text-normal\"> amet</div>"
+						+ "</div>\n"
 						+ "</div>\n";
 
 		final String rendered = Markdown.parse(md).renderToHtml();
@@ -68,9 +74,17 @@ public class MarkdownHtmlRendererTest {
 						"<div class=\"md\">\n"
 						+ "<div class=\"md-list-block\">\n"
 						+ "<ul class=\"md-list\">\n"
-						+ "<li><div class=\"md-text-block\"><div class=\"md-text-normal\">Lorem ipsum dolor &apos;sit&apos; amet</div></div>\n"
+						+ "<li>"
+						+ "<div class=\"md-text-block\">"
+						+ "<div class=\"md-text-normal\">Lorem ipsum dolor &apos;sit&apos; amet</div>"
+						+ "</div>\n"
 						+ "</li>\n"
-						+ "<li><div class=\"md-text-block\"><div class=\"md-text-normal\">Lorem </div><div class=\"md-text-italic\">ipsum</div><div class=\"md-text-normal\"> dolor sit amet</div></div>\n"
+						+ "<li>"
+						+ "<div class=\"md-text-block\">"
+						+ "<div class=\"md-text-normal\">Lorem </div>"
+						+ "<div class=\"md-text-italic\">ipsum</div>"
+						+ "<div class=\"md-text-normal\"> dolor sit amet</div>"
+						+ "</div>\n"
 						+ "</li>\n"
 						+ "</ul>\n"
 						+ "</div>\n"
