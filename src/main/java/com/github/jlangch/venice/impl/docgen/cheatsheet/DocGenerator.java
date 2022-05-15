@@ -119,6 +119,7 @@ public class DocGenerator {
 			data.put("details", getDocItems(concat(left, right, leftModules, rightModules)));
 			data.put("snippets", new CodeSnippetReader().readSnippets());
 			data.put("venicedoc", new HtmlRenderer().render(loadVeniceDocMarkdown()));
+			data.put("markdowndoc", new HtmlRenderer().render(loadMarkdownDoc()));
 			
 			// [1] create a HTML
 			data.put("pdfmode", false);
@@ -132,9 +133,9 @@ public class DocGenerator {
 			final byte[] pdfArr =  pdf.array();
 			save(new File(getUserDir(), "cheatsheet.pdf"), pdfArr);
 
-            final PdfReader reader = new PdfReader(pdf.array());
-            final int pages = reader.getNumberOfPages();
-	        reader.close();
+			final PdfReader reader = new PdfReader(pdf.array());
+			final int pages = reader.getNumberOfPages();
+			reader.close();
 
 			System.out.println(String.format(
 					"Generated Cheat Sheet at: %s. XHTML: %dKB, PDF: %dKB / %d pages",
@@ -263,6 +264,7 @@ public class DocGenerator {
 		final DocSection others = new DocSection("Others", "others");
 		others.addSection(new DocSection("Embedding in Java", "embedding"));
 		others.addSection(new DocSection("Venice Doc", "venicedoc"));
+		others.addSection(new DocSection("Markdown", "markdown"));
 		content.add(others);
 
 		return content;
@@ -3116,8 +3118,18 @@ public class DocGenerator {
 			throw new RuntimeException("Failed to read 'venice-doc.md!", ex);
 		}
 	}
-
 	
+	private Markdown loadMarkdownDoc() {
+		try {
+			return Markdown.parse(
+						new ClassPathResource(getVeniceBasePath() + "docgen/markdown-doc.md")
+							.getResourceAsString("UTF-8"));
+		}
+		catch(RuntimeException ex) {
+			throw new RuntimeException("Failed to read 'markdown-doc.md!", ex);
+		}
+	}
+
 	private final void validateUniqueSectionsId(
 			final List<DocSection> left,
 			final List<DocSection> right
