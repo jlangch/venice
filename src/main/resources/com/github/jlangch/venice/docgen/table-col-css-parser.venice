@@ -81,6 +81,7 @@
          (into {})))
 
   ;; css var is passed from Venice markdown table parser TableColFmtParser
+  ;; this allows the script to be loaded manually as well
   (when (bound? 'css)
     (evaluate css))
 )

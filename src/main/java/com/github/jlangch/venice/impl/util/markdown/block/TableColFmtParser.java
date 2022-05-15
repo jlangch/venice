@@ -116,8 +116,8 @@ public class TableColFmtParser {
 
 				switch(StringUtil.trimToEmpty(unit)) {
 					case "%":  return new TableColFmt.Width(val, WidthUnit.PERCENT);
-					case "px": return new TableColFmt.Width(val, WidthUnit.PERCENT);
-					case "em": return new TableColFmt.Width(val, WidthUnit.PERCENT);
+					case "px": return new TableColFmt.Width(val, WidthUnit.PX);
+					case "em": return new TableColFmt.Width(val, WidthUnit.EM);
 					default:   return new TableColFmt.Width(0, WidthUnit.AUTO); 
 				}
 			}
@@ -169,5 +169,5 @@ public class TableColFmtParser {
 	private static AtomicReference<PreCompiled> cssParser = new AtomicReference<>();
 	
 	private static String CSS_PARSER = 
-			"com/github/jlangch/venice/impl/util/markdown/block/table-col-css-parser.venice";
+			"com/github/jlangch/venice/docgen/table-col-css-parser.venice";
 }

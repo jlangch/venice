@@ -33,8 +33,9 @@ import com.github.jlangch.venice.impl.util.markdown.block.Block;
 import com.github.jlangch.venice.impl.util.markdown.block.CodeBlock;
 import com.github.jlangch.venice.impl.util.markdown.block.ListBlock;
 import com.github.jlangch.venice.impl.util.markdown.block.TableBlock;
-import com.github.jlangch.venice.impl.util.markdown.block.TableColFmt.HorzAlignment;
 import com.github.jlangch.venice.impl.util.markdown.block.TableColFmt;
+import com.github.jlangch.venice.impl.util.markdown.block.TableColFmt.HorzAlignment;
+import com.github.jlangch.venice.impl.util.markdown.block.TableColFmt.Width;
 import com.github.jlangch.venice.impl.util.markdown.block.TextBlock;
 import com.github.jlangch.venice.impl.util.markdown.chunk.Chunk;
 import com.github.jlangch.venice.impl.util.markdown.chunk.Chunks;
@@ -125,9 +126,15 @@ public class HtmlRenderer {
 			for(int col=0; col<block.cols(); col++) {
 				final TextChunk chunk =  ((TextChunk)block.headerCell(col).get(0));
 				final String header = escapeHtml(chunk.getText());
-				final String alignClass = buildCssAlignmentClass(block.format(col));
+				final String alignClass = buildCssAlignmentClass(block.format(col));			
+				final String styles = buildCssStyles(block.format(col));
 	
-				wr.println("<th class=\"" + alignClass + "\">" + header + "</th>");
+				if (styles.isEmpty()) {
+					wr.println("<th class=\"" + alignClass + "\">" + header + "</th>");
+				}
+				else {
+					wr.println("<th style=\"" + styles + "\">" + header + "</th>");
+				}
 			}
 			wr.println("</tr>");
 			wr.println("</thead>");
@@ -144,8 +151,14 @@ public class HtmlRenderer {
 			for(int col=0; col<block.cols(); col++) {
 				final Chunks chunks = block.bodyCell(row, col);
 				final String alignClass = buildCssAlignmentClass(block.format(col));
+				final String styles = buildCssStyles(block.format(col));
 	
-				wr.print("<td class=\"" + alignClass + "\">");
+				if (styles.isEmpty()) {
+					wr.print("<td class=\"" + alignClass + "\">");
+				}
+				else {
+					wr.print("<td style=\"" + styles + "\">");
+				}
 				
 				if (col==0 && noWrapFirstCol) {
 					wr.print("<div style=\"display: inline-block; white-space: pre;\">");					
@@ -230,6 +243,44 @@ public class HtmlRenderer {
 		final HorzAlignment alignment = format.horzAlignment();
 		
 		return "md-align-" + alignment.name().toLowerCase();
+	}
+
+	private String buildCssStyles(final TableColFmt format) {
+		final String align = buildCssAlignmentStyle(format);
+		final String width = buildCssWidthStyle(format);
+		
+		if (align.isEmpty()) {
+			return width;
+		}
+		else if (width.isEmpty()) {
+			return align;
+		}
+		else {
+			return align + "; " + width;
+		}
+	}
+
+	private String buildCssAlignmentStyle(final TableColFmt format) {
+		final HorzAlignment alignment = format.horzAlignment();
+
+		switch(alignment) {
+			case LEFT:    return "text-align: left";
+			case CENTER:  return "text-align: center";
+			case RIGHT:   return "text-align: right";
+			default:      return "";
+		}
+	}
+
+	private String buildCssWidthStyle(final TableColFmt format) {
+		final Width w = format.width();
+		
+		switch(w.getUnit()) {
+			case AUTO:    return "";
+			case PERCENT: return "width: " + w.getValue()+"%";
+			case PX:      return "width: " + w.getValue()+"px";
+			case EM:      return "width: " + w.getValue()+"em";
+			default:      return "";
+		}
 	}
 	
 	private String mapWhiteSpaces(final String text) {

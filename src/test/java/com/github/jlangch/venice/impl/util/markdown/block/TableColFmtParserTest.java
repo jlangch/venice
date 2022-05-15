@@ -24,10 +24,13 @@ package com.github.jlangch.venice.impl.util.markdown.block;
 import static com.github.jlangch.venice.impl.util.markdown.block.TableColFmt.HorzAlignment.CENTER;
 import static com.github.jlangch.venice.impl.util.markdown.block.TableColFmt.HorzAlignment.LEFT;
 import static com.github.jlangch.venice.impl.util.markdown.block.TableColFmt.HorzAlignment.RIGHT;
+import static com.github.jlangch.venice.impl.util.markdown.block.TableColFmt.WidthUnit.*;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNull;
 
 import org.junit.jupiter.api.Test;
+
+import com.github.jlangch.venice.impl.util.markdown.block.TableColFmt.Width;
 
 
 public class TableColFmtParserTest {
@@ -101,7 +104,22 @@ public class TableColFmtParserTest {
 	public void test_css_width() {
 		final TableColFmtParser parser = new TableColFmtParser();
 		
-		parser.parse("[![width: 30%]]");
+		Width width;
+		
+		width = parser.parse("[![width: auto]]").width();
+		assertEquals(AUTO, width.getUnit());
+		
+		width = parser.parse("[![width: 10%]]").width();
+		assertEquals(PERCENT, width.getUnit());
+		assertEquals(10L, width.getValue());
+		
+		width = parser.parse("[![width: 10px]]").width();
+		assertEquals(PX, width.getUnit());
+		assertEquals(10L, width.getValue());
+		
+		width = parser.parse("[![width: 10em]]").width();
+		assertEquals(EM, width.getUnit());
+		assertEquals(10L, width.getValue());
 	}
 
 }
