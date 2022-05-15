@@ -21,6 +21,8 @@
  */
 package com.github.jlangch.venice.impl.docgen.cheatsheet;
 
+import static com.github.jlangch.venice.impl.VeniceClasspath.getVeniceBasePath;
+
 import java.io.File;
 import java.io.FileOutputStream;
 import java.nio.ByteBuffer;
@@ -52,7 +54,9 @@ import com.github.jlangch.venice.impl.types.collections.VncList;
 import com.github.jlangch.venice.impl.types.custom.VncProtocol;
 import com.github.jlangch.venice.impl.types.util.Types;
 import com.github.jlangch.venice.impl.util.StringUtil;
+import com.github.jlangch.venice.impl.util.io.ClassPathResource;
 import com.github.jlangch.venice.impl.util.markdown.Markdown;
+import com.github.jlangch.venice.impl.util.markdown.renderer.html.HtmlRenderer;
 import com.github.jlangch.venice.javainterop.AcceptAllInterceptor;
 import com.github.jlangch.venice.util.CapturingPrintStream;
 import com.lowagie.text.pdf.PdfReader;
@@ -114,6 +118,7 @@ public class DocGenerator {
 			data.put("right-modules", rightModules);
 			data.put("details", getDocItems(concat(left, right, leftModules, rightModules)));
 			data.put("snippets", new CodeSnippetReader().readSnippets());
+			data.put("venicedoc", new HtmlRenderer().render(loadVeniceDocMarkdown()));
 			
 			// [1] create a HTML
 			data.put("pdfmode", false);
@@ -235,10 +240,6 @@ public class DocGenerator {
 		documents.addSection(new DocSection("Excel", "modules.excel"));
 		content.add(documents);
 
-		final DocSection embed = new DocSection("Embedding", "embedding");
-		embed.addSection(new DocSection("Embedding in Java", "embedding"));
-		content.add(embed);
-
 		final DocSection extmod = new DocSection("Modules", "modules");
 		extmod.addSection(new DocSection("Kira\u00A0Templates", "modules.kira"));
 		extmod.addSection(new DocSection("Tracing", "modules.tracing"));
@@ -258,6 +259,11 @@ public class DocGenerator {
 		extmod.addSection(new DocSection("Component", "modules.component"));
 		extmod.addSection(new DocSection("App", "modules.app"));
 		content.add(extmod);
+
+		final DocSection others = new DocSection("Others", "others");
+		others.addSection(new DocSection("Embedding in Java", "embedding"));
+		others.addSection(new DocSection("VeniceDoc", "venicedoc"));
+		content.add(others);
 
 		return content;
 	}
@@ -3099,6 +3105,18 @@ public class DocGenerator {
 		final VncVal val = env.getOrNil(new VncSymbol(name));
 		return Types.isVncFunction(val) ? (VncFunction)val : null;
 	}
+	
+	private Markdown loadVeniceDocMarkdown() {
+		try {
+			return Markdown.parse(
+						new ClassPathResource(getVeniceBasePath() + "docgen/venice-doc.md")
+							.getResourceAsString("UTF-8"));
+		}
+		catch(RuntimeException ex) {
+			throw new RuntimeException("Failed to read 'venice-doc.md!", ex);
+		}
+	}
+
 	
 	private final void validateUniqueSectionsId(
 			final List<DocSection> left,

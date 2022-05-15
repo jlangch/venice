@@ -235,6 +235,28 @@ ${ (when pdfmode }$<?xml version="1.0" encoding="UTF-8"?>${ ) }$${ (when-not pdf
                 font-size: 1.2em;
                 font-weight: 400;
             }
+            .venicedoc {
+                background-color: white;
+                margin: 0.5em 0 0 0;
+                padding: 0;
+            }
+            div.venicedoc h2 {
+                margin: 1em 0 0 0;
+                font-size: 1.2em;
+                font-weight: 400;
+            }
+            .venicedoc-frame {
+                color: #424242;
+                background-color: #ebebeb;
+                margin: 0.5em;
+                padding: 0.5em;
+            }
+            .venicedoc-body {
+                color: #424242;
+                background-color: #fafafa;
+                margin: 0;
+                padding: 0.5em;
+            }
             .nav-back {
                 width: 100%;
                 text-align: right;
@@ -639,6 +661,20 @@ ${ (when pdfmode }$<?xml version="1.0" encoding="UTF-8"?>${ ) }$${ (when-not pdf
                    </div>
                </div>
                ${ ) }$
+            </div>
+            
+            <div style="clear: both;"></div>
+            
+            <div class="section-main-title" id="venicedoc" style="page-break-before: always;">
+               <h1>VeniceDoc</h1>
+            </div>
+            
+            <div class="venicedoc">
+           	   <div class="venicedoc-frame">
+                  <div class="venicedoc-body">
+	                 ${= venicedoc }$
+	              </div>
+	           </div>
             </div>
             
             <div class="section-main-title" id="details" style="page-break-before: always;">
