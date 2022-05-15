@@ -65,17 +65,17 @@ The documentation is defined as a Venice metadata `map`:
 
 ```venice
   { :arglists '("(add)", "(add x)")
-     :doc "Returns the sum of the numbers."
-     :examples '("(add 1)", "(add 1 2)")
-     :see-also '("+", "-", "*", "/") }
+    :doc "Returns the sum of the numbers."
+    :examples '("(add 1)", "(add 1 2)")
+    :see-also '("+", "-", "*", "/") }
 ```
 
 | key       | description                                   |
 | [![text-align: left; width: 15%]] | [![text-align: left]] |
 | :arglist  | the arglist, a list of variadic arg specs     |
 | :doc      | the documentation                             |
-| :examples | examples a list of Venice scripts             |
-| :see-also | a list cross reference functions              |
+| :examples | examples, a list of Venice scripts            |
+| :see-also | a list of cross referenced functions          |
 
 *Note: ':examples' and* ':see-also' are optional.
 
