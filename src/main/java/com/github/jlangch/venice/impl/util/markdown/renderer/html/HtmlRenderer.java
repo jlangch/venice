@@ -37,6 +37,7 @@ import com.github.jlangch.venice.impl.util.markdown.block.TableColFmt;
 import com.github.jlangch.venice.impl.util.markdown.block.TableColFmt.HorzAlignment;
 import com.github.jlangch.venice.impl.util.markdown.block.TableColFmt.Width;
 import com.github.jlangch.venice.impl.util.markdown.block.TextBlock;
+import com.github.jlangch.venice.impl.util.markdown.block.TitleBlock;
 import com.github.jlangch.venice.impl.util.markdown.chunk.Chunk;
 import com.github.jlangch.venice.impl.util.markdown.chunk.Chunks;
 import com.github.jlangch.venice.impl.util.markdown.chunk.InlineCodeChunk;
@@ -73,7 +74,10 @@ public class HtmlRenderer {
 	}
 
 	private void render(final Block b, final PrintWriter wr) {
-		if (b instanceof TextBlock) {
+		if (b instanceof TitleBlock) {
+			render((TitleBlock)b, wr);
+		}
+		else if (b instanceof TextBlock) {
 			render((TextBlock)b, wr);
 		}
 		else if (b instanceof CodeBlock) {
@@ -91,6 +95,16 @@ public class HtmlRenderer {
 		wr.print("<div class=\"md-text-block\">");
 		render(block.getChunks(), wr);
 		wr.println("</div>");
+	}
+
+	private void render(final TitleBlock block, final PrintWriter wr) {
+		switch(block.getLevel()) {
+			case 1:  wr.println("<div class=\"md-h1\">" + block.getText() + "</div>"); break;
+			case 2:  wr.println("<div class=\"md-h2\">" + block.getText() + "</div>"); break;
+			case 3:  wr.println("<div class=\"md-h3\">" + block.getText() + "</div>"); break;
+			case 4:  wr.println("<div class=\"md-h4\">" + block.getText() + "</div>"); break;
+			default: wr.println("<div class=\"md-h4\">" + block.getText() + "</div>"); break;
+		}
 	}
 
 	private void render(final CodeBlock block, final PrintWriter wr) {

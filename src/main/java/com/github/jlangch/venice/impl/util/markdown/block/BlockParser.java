@@ -39,6 +39,13 @@ public class BlockParser {
 			if (StringUtil.isBlank(line)) {
 				reader.consume(); // skip blank lines
 			}
+			else if (TitleBlockParser.isBlockStart(line)) {
+				final TitleBlockParser p = new TitleBlockParser(reader);
+				final TitleBlock block = p.parse();				
+				if (!block.isEmpty()) {
+					blocks.add(block);
+				}
+			}
 			else if (CodeBlockParser.isBlockStart(line)) {
 				final CodeBlockParser p = new CodeBlockParser(reader);
 				final CodeBlock block = p.parse();				

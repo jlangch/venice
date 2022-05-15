@@ -33,6 +33,7 @@ import com.github.jlangch.venice.impl.util.markdown.block.CodeBlock;
 import com.github.jlangch.venice.impl.util.markdown.block.ListBlock;
 import com.github.jlangch.venice.impl.util.markdown.block.TableBlock;
 import com.github.jlangch.venice.impl.util.markdown.block.TextBlock;
+import com.github.jlangch.venice.impl.util.markdown.block.TitleBlock;
 import com.github.jlangch.venice.impl.util.markdown.chunk.Chunk;
 import com.github.jlangch.venice.impl.util.markdown.chunk.Chunks;
 import com.github.jlangch.venice.impl.util.markdown.chunk.InlineCodeChunk;
@@ -130,6 +131,9 @@ public class TextRenderer {
 		if (b.isEmpty()) {
 			return "";
 		}
+		else if (b instanceof TitleBlock) {
+			return render((TitleBlock)b);
+		}
 		else if (b instanceof TextBlock) {
 			return render((TextBlock)b);
 		}
@@ -171,6 +175,10 @@ public class TextRenderer {
 		s = isWrap() ? wrap(s, width) : s;
 		s = s.replace("\u00A0", " ");
 		return s;
+	}
+
+	private String render(final TitleBlock block) {
+		return "\n" + block.getText() + "\n";
 	}
 
 	private String render(final TextBlock block) {
