@@ -39,7 +39,7 @@ Show its documentation from the REPL:
 venice> (doc add)
 ```
 
-Output:
+REPL Output:
 
 ```text
 (add), (add x), (add x y), (add x y & more)
