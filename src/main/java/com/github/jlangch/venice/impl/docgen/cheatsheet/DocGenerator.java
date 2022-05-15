@@ -119,7 +119,7 @@ public class DocGenerator {
 			data.put("details", getDocItems(concat(left, right, leftModules, rightModules)));
 			data.put("snippets", new CodeSnippetReader().readSnippets());
 			data.put("venicedoc", new HtmlRenderer().render(loadVeniceDocMarkdown()));
-			data.put("markdowndoc", new HtmlRenderer().render(loadMarkdownDoc()));
+			data.put("markdown", new HtmlRenderer().render(loadMarkdownDoc()));
 			
 			// [1] create a HTML
 			data.put("pdfmode", false);
