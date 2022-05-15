@@ -915,6 +915,7 @@
 
         Available border styles:
 
+        | [![width: 15%]] | [![width: 15%]] | [![width: 30%]] | [![width: 50%]] |
         | :none   | :dotted | :medium-dashed   | :medium-dash-dot-dot |
         | :thin   | :thick  | :dash-dot        | :slanted-dash-dot    |
         | :medium | :double | :medium-dash-dot |                      |
@@ -976,7 +977,7 @@
           :left     (. builder :hAlignLeft)
           :center   (. builder :hAlignCenter)
           :right    (. builder :hAlignRight)
-          (throw    (ex :VncException 
+          (throw    (ex :VncException
                         (str "Invalid horizontal alignment "
                              align
                             ". Use one of :left, :center, or :right")))))

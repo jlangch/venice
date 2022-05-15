@@ -8229,8 +8229,8 @@ public class CoreFunctions {
 	}
 	
 	private static String renderCharLiteralsMarkdownTable() {
-		return "| Char Literal | Unicode | Char | \n" +
-			   "| :----------- | :------ | :--- | \n" +
+		return "| Char Literal                      | Unicode | Char | \n" +
+			   "| [![width: 25%; text-align: left]] | :------ | :--- | \n" +
 				VncChar
 					.symbols()
 					.entrySet()
