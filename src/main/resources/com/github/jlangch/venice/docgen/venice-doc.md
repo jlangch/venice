@@ -77,5 +77,5 @@ The documentation is defined as a Venice metadata `map`:
 | :examples | examples, a list of Venice scripts            |
 | :see-also | a list of cross referenced functions          |
 
-*Note: ':examples' and ':see-also' are optional.
+*Note: ':examples' and ':see-also' are optional.*
 
