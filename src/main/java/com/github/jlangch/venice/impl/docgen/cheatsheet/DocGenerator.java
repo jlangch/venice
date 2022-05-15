@@ -262,7 +262,7 @@ public class DocGenerator {
 
 		final DocSection others = new DocSection("Others", "others");
 		others.addSection(new DocSection("Embedding in Java", "embedding"));
-		others.addSection(new DocSection("VeniceDoc", "venicedoc"));
+		others.addSection(new DocSection("Venice Doc", "venicedoc"));
 		content.add(others);
 
 		return content;
