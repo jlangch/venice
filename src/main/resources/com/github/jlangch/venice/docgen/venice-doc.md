@@ -9,7 +9,7 @@ function `doc` makes use of it to display the documentation for functions.
 
 ## Example
 
-Define a function a `add` with documentation:
+Define a function `add` with documentation:
 
 ```venice
 (defn
