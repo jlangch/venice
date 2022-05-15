@@ -270,7 +270,6 @@ sourceSets {
         }
         resources {
             srcDirs = ['src/main/resources',
-                       'doc/examples/webapp',
                        'doc/examples/scripts']
         }
     }
