@@ -208,5 +208,52 @@ public class MarkdownHtmlRendererTest {
 
 		assertEquals(expected, rendered);
 	}
+	
+	@Test
+	public void test_table_block_3() {
+		final String md =  
+						"|T1|T2|T3|\n" +
+						"| [![width: 30%; text-align: left]] | [![text-align: center]] | [![text-align: right]] |\n" +
+						"|c1...|c2.|c3...|\n" +
+						"|d1'..|d2.....|d3...|\n" +
+						"||e2.||";
+
+		final String expected =
+						"<div class=\"md\">\n"
+						+ "<div class=\"md-table-block\">\n"
+						+ "<table class=\"md-table\">\n"
+						+ "<thead>\n"
+						+ "<tr>\n"
+						+ "<th style=\"text-align: left; width: 30%\">T1</th>\n"
+						+ "<th style=\"text-align: center\">T2</th>\n"
+						+ "<th style=\"text-align: right\">T3</th>\n"
+						+ "</tr>\n"
+						+ "</thead>\n"
+						+ "<tbody>\n"
+						+ "<tr>\n"
+						+ "<td style=\"text-align: left; width: 30%\"><div class=\"md-text-normal\">c1...</div></td>\n"
+						+ "<td style=\"text-align: center\"><div class=\"md-text-normal\">c2.</div></td>\n"
+						+ "<td style=\"text-align: right\"><div class=\"md-text-normal\">c3...</div></td>\n"
+						+ "</tr>\n"
+						+ "<tr>\n"
+						+ "<td style=\"text-align: left; width: 30%\"><div class=\"md-text-normal\">d1&apos;..</div></td>\n"
+						+ "<td style=\"text-align: center\"><div class=\"md-text-normal\">d2.....</div></td>\n"
+						+ "<td style=\"text-align: right\"><div class=\"md-text-normal\">d3...</div></td>\n"
+						+ "</tr>\n"
+						+ "<tr>\n"
+						+ "<td style=\"text-align: left; width: 30%\"></td>\n"
+						+ "<td style=\"text-align: center\"><div class=\"md-text-normal\">e2.</div></td>\n"
+						+ "<td style=\"text-align: right\"></td>\n"
+						+ "</tr>\n"
+						+ "</tbody>\n"
+						+ "</table>\n"
+						+ "</div>\n"
+						+ "</div>\n"
+						+ "";
+
+		final String rendered = Markdown.parse(md).renderToHtml();
+
+		assertEquals(expected, rendered);
+	}
 
 }
