@@ -16,7 +16,7 @@ Define a function `add` with documentation:
   ^{ :arglists '("(add)", "(add x)", "(add x y)", "(add x y & more)")
      :doc """
           Returns the sum of the numbers.
-          (add) returns 0.
+          `(add)` returns 0.
           """
      :examples '(
          "(add)",
@@ -70,12 +70,12 @@ The documentation is defined as a Venice metadata `map`:
     :see-also '("+", "-", "*", "/") }
 ```
 
-| key       | description                                   |
-| [![text-align: left; width: 15%]] | [![text-align: left]] |
-| :arglist  | the arglist, a list of variadic arg specs     |
-| :doc      | the documentation                             |
-| :examples | examples, a list of Venice scripts            |
-| :see-also | a list of cross referenced functions          |
+| key       | description                                     |
+| [![text-align: left; width: 15%]] | [![text-align: left]]   |
+| :arglist  | the arglist, a list of variadic arg specs       |
+| :doc      | the documentation (may contain Venice markdown) |
+| :examples | examples, a list of Venice scripts              |
+| :see-also | a list of cross referenced functions            |
 
-*Note: ':examples' and ':see-also' are optional.*
+*Note:* ':examples' and ':see-also' are optional.
 
