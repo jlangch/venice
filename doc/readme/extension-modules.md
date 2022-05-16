@@ -9,12 +9,12 @@ explicitly `(load-module :name)`. Venice tracks the modules loaded
 and loads a module only once and skips subsequent load attempts.
 
 * [Kira Template Engine](ext-kira.md)
+* [Parsifal Parser Combinator](ext-parsifal.md)
 * [Shell](ext-shell.md)
 * [Charts](ext-charts.md)
 * [Configuration](ext-configuration.md)
 * [Components](ext-components.md)
 * [Hexdump](ext-hexdump.md)
-* [Parsifal Parser Combinator](ext-parsifal.md)
 * [GEO IP](ext-geoip.md)
 * [Mercator Maps](ext-mercator.md)
 * [CIDR (Classless Inter-Domain Routing)](ext-cidr.md)
