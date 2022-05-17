@@ -18,7 +18,7 @@ To create a heading, add one to four `#` symbols before the heading text. The nu
 A paragraph is simply one or more consecutive lines of text, separated by 
 one or more blank lines (a line containing nothing but spaces or tabs).
 
-Line breaks can be added with a `pilcrow`
+Within a paragraph line breaks can be added by placing a `pilcrow`
 
 Line 1¶Line 2¶
 Line 3
