@@ -12,6 +12,19 @@ To create a heading, add one to four `#` symbols before the heading text. The nu
 #### The fourth largest heading
 ```
 
+## Paragraphs and Line Breaks
+
+```
+A paragraph is simply one or more consecutive lines of text, separated by 
+one or more blank lines (a line containing nothing but spaces or tabs).
+
+Line breaks can be added with a `pilcrow`
+
+Line 1¶Line 2¶
+Line 3
+```
+
+
 
 ## Styling
 
@@ -122,7 +135,7 @@ Column width:
 ```
 
 
-## Code
+## Code Blocks
 
 Code can be called out within a text by enclosing it with single backticks.
 
@@ -141,8 +154,4 @@ To format multi-line code the code is wrapped with three backticks:
  (hello)
  ```
 ```
-
-
-
-## Line Breaks
  
