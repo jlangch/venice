@@ -106,6 +106,16 @@ public class DocGenerator {
 			final List<DocSection> leftModules = getModulesLeftSections();
 			final List<DocSection> rightModules = getModulesRightSections();
 
+			final List<MarkdownDoc> topics = new ArrayList<>();
+			topics.add(new MarkdownDoc(
+							"VeniceDoc", 
+							new HtmlRenderer().render(loadVeniceDocMarkdown()),
+							"venicedoc"));
+			topics.add(new MarkdownDoc(
+							"Markdown", 
+							new HtmlRenderer().render(loadMarkdownDoc()),
+							"markdown"));
+
 			validateUniqueSectionsId(left, right);
 			
 			final Map<String,Object> data = new HashMap<>();
@@ -118,8 +128,7 @@ public class DocGenerator {
 			data.put("right-modules", rightModules);
 			data.put("details", getDocItems(concat(left, right, leftModules, rightModules)));
 			data.put("snippets", new CodeSnippetReader().readSnippets());
-			data.put("venicedoc", new HtmlRenderer().render(loadVeniceDocMarkdown()));
-			data.put("markdown", new HtmlRenderer().render(loadMarkdownDoc()));
+			data.put("topics", topics);
 			
 			// [1] create a HTML
 			data.put("pdfmode", false);

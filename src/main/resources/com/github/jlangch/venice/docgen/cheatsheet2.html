@@ -691,30 +691,21 @@ ${ (when pdfmode }$<?xml version="1.0" encoding="UTF-8"?>${ ) }$${ (when-not pdf
             </div>
             
             <div style="clear: both;"></div>
-            
-            <div class="section-main-title" id="venicedoc" style="page-break-before: always;">
-               <h1>VeniceDoc</h1>
-            </div>
-            
-            <div class="venicedoc">
-           	   <div class="venicedoc-frame">
-                  <div class="venicedoc-body">
-	                 ${= venicedoc }$
-	              </div>
-	           </div>
-            </div>
  
-             <div class="section-main-title" id="markdown" style="page-break-before: always;">
-               <h1>Markdown</h1>
+            ${ (doseq [it topics] }$
+            <div class="section-main-title" id="${= (:id it) }$" style="page-break-before: always;">
+               <h1>${= (kira/escape-xml (:title it)) }$</h1>
             </div>
-                       
+            
             <div class="venicedoc">
            	   <div class="venicedoc-frame">
                   <div class="venicedoc-body">
-	                 ${= markdown }$
+	                 ${= (:docMarkdown it) }$
 	              </div>
 	           </div>
             </div>
+            ${ ) }$
+
             
             <div class="section-main-title" id="details" style="page-break-before: always;">
                <h1>Function Details</h1>
