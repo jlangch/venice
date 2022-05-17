@@ -1,6 +1,7 @@
 # Venice Markdown
 
 
+
 ## Headings
 
 To create a heading, add one to four `#` symbols before the heading text. The number of `#` will determine the size of the heading.
@@ -11,6 +12,8 @@ To create a heading, add one to four `#` symbols before the heading text. The nu
 ### The third largest heading
 #### The fourth largest heading
 ```
+
+
 
 ## Paragraphs and Line Breaks
 
@@ -33,6 +36,7 @@ Venice markdown supports *italic*, **bold**, and ***bold-italic*** styling
 ```
 This is *italic*, **bold**, and ***bold-italic*** styled texth
 ```
+
 
 
 ## Lists
@@ -64,6 +68,7 @@ Mulitiline list items
 ```
 
 
+
 ## Links
 
 Links are created by wrapping link text in brackets `[ ]`, and then wrapping the URL in parentheses `( )`. 
@@ -71,6 +76,8 @@ Links are created by wrapping link text in brackets `[ ]`, and then wrapping the
 ```
 [Venice](https://github.com/jlangch/venice)
 ```
+
+
 
 ## Tables
 
@@ -133,6 +140,7 @@ Column width:
 | 200   |  200  |
 | 30000 | 30000 |
 ```
+
 
 
 ## Code Blocks
