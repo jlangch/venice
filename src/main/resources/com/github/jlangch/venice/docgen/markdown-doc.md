@@ -123,11 +123,13 @@ Line breaks in cells
 The Venice markdown supports custom CSS style
 
 Text alignment: 
+
 * `text-align: left`
 * `text-align: center`
 * `text-align: right`
 
 Column width:
+
 * `width: 15%`
 * `width: 15pm`
 * `width: 15em`
