@@ -144,6 +144,7 @@ ${ (when pdfmode }$<?xml version="1.0" encoding="UTF-8"?>${ ) }$${ (when-not pdf
                 margin: 0 0.5em 0.5em 0.5em;
                 padding: 0.5em 0.5em 0.5em;
                 background-color: #ebebeb;
+                border-radius: 4px;
             }
             .toc .title {
                 margin: 0.2em 0 0.4em 0;
@@ -177,12 +178,14 @@ ${ (when pdfmode }$<?xml version="1.0" encoding="UTF-8"?>${ ) }$${ (when-not pdf
                 padding: 0;
                 margin: 0;
                 width: 50%;
+                border-radius: 4px;
             }
             .section {
                 color: #424242;
                 background-color: #ebebeb;
                 margin: 1.5em 0.5em 0.5em 0.5em;
                 padding: 0 0.5em 0.5em;
+                border-radius: 4px;
             }
             .section-header {
                 margin-bottom: 1.5em;
@@ -197,9 +200,10 @@ ${ (when pdfmode }$<?xml version="1.0" encoding="UTF-8"?>${ ) }$${ (when-not pdf
                margin-bottom: 0;
             }
             .section-main-title {
-                margin: ${= (if pdfmode "0em" "10em") }$ 0.5em 2.8em 0.5em;
+            	border-radius: 4px;
                 padding: 0.5em 0.5em 0.5em 0.5em;
                 background-color: #ebebeb;
+                margin: ${= (if pdfmode "0em" "10em") }$ 0.5em 2.8em 0.5em;
             }
             div.section-main-title h1 {
                 margin: 0;
@@ -229,6 +233,7 @@ ${ (when pdfmode }$<?xml version="1.0" encoding="UTF-8"?>${ ) }$${ (when-not pdf
                 background-color: white;
                 margin: 0.5em 0 0 0;
                 padding: 0;
+                border-radius: 4px;
             }
             div.embedding h2 {
                 margin: 1em 0 0 0;
@@ -250,6 +255,7 @@ ${ (when pdfmode }$<?xml version="1.0" encoding="UTF-8"?>${ ) }$${ (when-not pdf
                 background-color: #ebebeb;
                 margin: 0.5em;
                 padding: 0.5em;
+                border-radius: 4px;
             }
             .venicedoc-body {
                 color: #424242;
@@ -300,6 +306,7 @@ ${ (when pdfmode }$<?xml version="1.0" encoding="UTF-8"?>${ ) }$${ (when-not pdf
                 background-color: #ebebeb;
                 margin: 0.5em;
                 padding: 0 0.5em 0.5em;
+            	border-radius: 4px;
             }
             .code-snippet {
                 color: #424242;
