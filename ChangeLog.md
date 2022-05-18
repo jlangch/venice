@@ -15,6 +15,11 @@ and this project adheres to
 
 - ...
 
+### Fixed
+
+-  fixed 'repl-setup.venice' script that runs at installation time  
+   `shell> java -jar venice-*.jar -setup -colors`
+
 
 
 ## [1.10.12] - 2022-05-18
