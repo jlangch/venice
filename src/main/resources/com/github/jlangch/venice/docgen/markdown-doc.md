@@ -158,10 +158,10 @@ To format multi-line code the code is wrapped with three backticks:
 
 ```
  ```
- (defn hello [] 
-    (println "Hello stranger"))
+(defn hello [] 
+   (println "Hello stranger"))
    
- (hello)
+(hello)
  ```
 ```
  
