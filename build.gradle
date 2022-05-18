@@ -306,6 +306,8 @@ test {
 jar {
     exclude 'com/github/jlangch/venice/fonts/OpenSans-*.ttf'
     exclude 'com/github/jlangch/venice/fonts/SourceCodePro-*.ttf'
+    exclude 'data'      // doc/examples/scripts/data
+    exclude 'nbody'     // doc/examples/scripts/nbody
     
     archiveFileName = "venice-raw-${project.version}.jar"
 }

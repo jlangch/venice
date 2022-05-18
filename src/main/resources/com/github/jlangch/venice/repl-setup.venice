@@ -125,10 +125,13 @@
                               :end-msg     (str "   " font-name " ok")
                               :failed-msg  (str "   " font-name " failed"))
                       nil)]
-    (io/spit target (io/download uri
-                        :binary true
-                        :user-agent "Mozilla"
-                        :progress-fn progress-fn))))
+    (try
+      (io/spit target (io/download uri
+                          :binary true
+                          :user-agent "Mozilla"
+                          :progress-fn progress-fn))
+      (catch :VncException ex
+             (println *err* (ex-venice-stacktrace ex))))))
 
 
 (defn download-fonts [dir fonts show-progress]
