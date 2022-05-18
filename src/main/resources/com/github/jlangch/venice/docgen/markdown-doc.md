@@ -13,6 +13,8 @@ To create a heading, add one to four `#` symbols before the heading text. The nu
 #### The fourth largest heading
 ```
 
+¶
+¶
 
 
 ## Paragraphs and Line Breaks
@@ -27,6 +29,16 @@ Line 1¶Line 2¶
 Line 3
 ```
 
+A paragraph is simply one or more consecutive lines of text, separated by 
+one or more blank lines (a line containing nothing but spaces or tabs).
+
+Within a paragraph line breaks can be added by placing a `pilcrow`
+
+Line 1¶Line 2¶
+Line 3
+
+¶
+¶
 
 
 ## Styling
@@ -34,9 +46,13 @@ Line 3
 Venice markdown supports *italic*, **bold**, and ***bold-italic*** styling
 
 ```
-This is *italic*, **bold**, and ***bold-italic*** styled texth
+This is *italic*, **bold**, and ***bold-italic*** styled text.
 ```
 
+This is *italic*, **bold**, and ***bold-italic*** styled text.
+
+¶
+¶
 
 
 ## Lists
@@ -49,6 +65,13 @@ Unordered List
 * item 3
 ```
 
+* item 1
+* item 2
+* item 3
+
+¶
+
+
 Ordered List
 
 ```
@@ -56,6 +79,13 @@ Ordered List
 2. item 2
 3. item 3
 ```
+
+1. item 1
+2. item 2
+3. item 3
+
+¶
+
 
 Mulitiline list items
 
@@ -67,6 +97,14 @@ Mulitiline list items
 * item 3
 ```
 
+* item 1
+* item 2¶
+  next line¶
+  next line 
+* item 3
+
+¶
+¶
 
 
 ## Links
@@ -77,6 +115,10 @@ Links are created by wrapping link text in brackets `[ ]`, and then wrapping the
 [Venice](https://github.com/jlangch/venice)
 ```
 
+[Venice](https://github.com/jlangch/venice)
+
+¶
+¶
 
 
 ## Tables
@@ -85,10 +127,13 @@ Links are created by wrapping link text in brackets `[ ]`, and then wrapping the
 A simple table
 
 ```
-| JAN | 1 |
-| FEB | 20 |
+| JAN | 1   |
+| FEB | 20  |
 | MAR | 300 |
 ```
+
+¶
+
 
 Column alignment
 
@@ -98,6 +143,9 @@ Column alignment
 | 200   |  200  |   200 |
 | 30000 | 30000 | 30000 |
 ```
+
+¶
+
 
 Width header
 
@@ -109,6 +157,8 @@ Width header
 | 30000 | 30000 | 30000 |
 ```
 
+¶
+
 Line breaks in cells
 
 ```
@@ -116,6 +166,9 @@ Line breaks in cells
 | FEB | 20      |
 | MAR | 300     |
 ```
+
+¶
+¶
 
 
 **Column format using CSS styles**
@@ -137,12 +190,20 @@ Column width:
 
 ```
 | Col 1 | Col 2 | 
-| [![text-align: left; width: 15%]] | [![text-align: left]] |
-| 1     |   1   | 
-| 200   |  200  |
+| [![text-align: left; width: 6em]] | [![text-align: left; width: 6em]] |
+| 1     | 1     | 
+| 200   | 200   |
 | 30000 | 30000 |
 ```
 
+| Col 1 | Col 2 | 
+| [![text-align: left; width: 6em]] | [![text-align: left; width: 6em]] |
+| 1     | 1     | 
+| 200   | 200   |
+| 30000 | 30000 |
+
+¶
+¶
 
 
 ## Code
@@ -153,8 +214,12 @@ Code can be called out within a text by enclosing it with single backticks.
 To open a namespace use `(ns name)`.
 ```
 
+To open a namespace use `(ns name)`.
 
-To format multi-line code the code is wrapped with three backticks:
+¶
+
+
+Code block are enclosed with three backticks:
 
 ```
  ```
@@ -163,5 +228,12 @@ To format multi-line code the code is wrapped with three backticks:
    
 (hello)
  ```
+```
+ 
+```
+(defn hello [] 
+   (println "Hello stranger"))
+   
+(hello)
 ```
  
