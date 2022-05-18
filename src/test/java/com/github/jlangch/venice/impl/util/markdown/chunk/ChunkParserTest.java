@@ -273,6 +273,16 @@ public class ChunkParserTest {
 		assertEquals("https://google.com", ((UrlChunk)chunks.getChunks().get(0)).getUrl());
 	}
 
+	@Test
+	public void test_url_3() {
+		final Chunks chunks = new ChunkParser(new Chunks().add(new RawChunk("[Google](#1234)"))).parse();
+		
+		assertEquals(1, chunks.size());
+		assertTrue(chunks.getChunks().get(0) instanceof UrlChunk);
+		assertEquals("Google", ((UrlChunk)chunks.getChunks().get(0)).getCaption());
+		assertEquals("#1234", ((UrlChunk)chunks.getChunks().get(0)).getUrl());
+	}
+
 	
 	
 	// -----------------------------------------------------------------------------

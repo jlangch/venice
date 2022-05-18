@@ -242,7 +242,9 @@ public class ChunkParser {
 	private Chunks parseTextChunk(final String text) {		
 		final Chunks chunks = new Chunks();
 		
-		final Pattern p = Pattern.compile("\\[.*?\\]\\(http[s]?://.*?\\)"); // non-greedy pattern: *?
+		// https://google.com
+		// #localref
+		final Pattern p = Pattern.compile("\\[.*?\\]\\((http[s]?://|[#]).*?\\)"); // non-greedy pattern: *?
 		final Matcher m = p.matcher(text);
 		
 		int lastEndPos = 0;

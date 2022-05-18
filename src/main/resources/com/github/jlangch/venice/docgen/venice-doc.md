@@ -73,7 +73,7 @@ The documentation is defined as a Venice metadata `map`:
 | key       | description                                     |
 | [![text-align: left; width: 15%]] | [![text-align: left]]   |
 | :arglist  | the arglist, a list of variadic arg specs       |
-| :doc      | the documentation (may contain Venice markdown) |
+| :doc      | the documentation in [Venice markdown](#markdown) format |
 | :examples | examples, a list of Venice scripts              |
 | :see-also | a list of cross referenced functions            |
 

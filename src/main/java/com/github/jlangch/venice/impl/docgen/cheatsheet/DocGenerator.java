@@ -105,16 +105,7 @@ public class DocGenerator {
 			final List<DocSection> right = getRightSections();
 			final List<DocSection> leftModules = getModulesLeftSections();
 			final List<DocSection> rightModules = getModulesRightSections();
-
-			final List<MarkdownDoc> topics = new ArrayList<>();
-			topics.add(new MarkdownDoc(
-							"VeniceDoc", 
-							new HtmlRenderer().render(loadVeniceDocMarkdown()),
-							"venicedoc"));
-			topics.add(new MarkdownDoc(
-							"Markdown", 
-							new HtmlRenderer().render(loadMarkdownDoc()),
-							"markdown"));
+			final List<MarkdownDoc> topics = getTopics();
 
 			validateUniqueSectionsId(left, right);
 			
@@ -277,6 +268,22 @@ public class DocGenerator {
 		content.add(others);
 
 		return content;
+	}
+
+	private List<MarkdownDoc> getTopics() {
+		final List<MarkdownDoc> topics = new ArrayList<>();
+		
+		topics.add(new MarkdownDoc(
+						"VeniceDoc", 
+						new HtmlRenderer().render(loadVeniceDocMarkdown()),
+						"venicedoc"));
+		
+		topics.add(new MarkdownDoc(
+						"Markdown", 
+						new HtmlRenderer().render(loadMarkdownDoc()),
+						"markdown"));
+		
+		return topics;
 	}
 
 	private List<DocSection> getLeftSections() {

@@ -258,11 +258,16 @@ ${ (when pdfmode }$<?xml version="1.0" encoding="UTF-8"?>${ ) }$${ (when-not pdf
                 padding: 0.5em;
             }
             .venicedoc-body .md-code-block {
+                page-break-inside: avoid;
+                display: block;
             	border: 1px solid #ebebeb;
             	border-radius: 4px;
            		color: #4884E0;
                 background-color: #f5f5f5;
                 padding: 1em;
+            }
+            .venicedoc-body table.md-table tr {
+                background-color: #fafafa;
             }
             .nav-back {
                 width: 100%;

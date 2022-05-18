@@ -145,7 +145,7 @@ Column width:
 
 
 
-## Code Blocks
+## Code
 
 Code can be called out within a text by enclosing it with single backticks.
 
