@@ -124,7 +124,6 @@ Links are created by wrapping link text in brackets `[ ]`, and then wrapping the
 
 ## Tables
 
-
 A simple table
 
 ```
@@ -134,7 +133,6 @@ A simple table
 ```
 
 ¶
-
 
 Column alignment
 
@@ -146,7 +144,6 @@ Column alignment
 ```
 
 ¶
-
 
 Width header
 
@@ -174,7 +171,7 @@ Line breaks in cells
 
 **Column format using CSS styles**
 
-The Venice markdown supports custom CSS style
+The Venice markdown supports a few CSS styles
 
 Text alignment: 
 
