@@ -12,4 +12,5 @@
 
 * [Open Sans](https://fonts.google.com/?query=open+sans)   ([License](https://www.apache.org/licenses/LICENSE-2.0.txt)) (used for the Cheatsheet PDF)
 * [Source Code Pro](https://fonts.google.com/?query=source+code+pro)   ([License](https://scripts.sil.org/cms/scripts/page.php?site_id=nrsi&id=OFL#9eda48a4)) (used for the Cheatsheet PDF)
+* [Audiowide Regular Open Font](https://fonts.google.com/?query=audiowide)   ([License](https://scripts.sil.org/cms/scripts/page.php?site_id=nrsi&id=OFL#9eda48a4)) (used for the Cheatsheet PDF)
 
