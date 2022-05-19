@@ -243,21 +243,21 @@ public class DocGenerator {
 
 		final DocSection extmod = new DocSection("Modules", "modules");
 		extmod.addSection(new DocSection("Kira\u00A0Templates", "modules.kira"));
-		extmod.addSection(new DocSection("Tracing", "modules.tracing"));
+		extmod.addSection(new DocSection("Parsifal", "modules.parsifal"));
+		extmod.addSection(new DocSection("Configuration", "modules.config"));
+		extmod.addSection(new DocSection("Component", "modules.component"));
 		extmod.addSection(new DocSection("XML", "modules.xml"));
 		extmod.addSection(new DocSection("Cryptography", "modules.cryptography"));
-		extmod.addSection(new DocSection("Gradle", "modules.gradle"));
-		extmod.addSection(new DocSection("Maven", "modules.maven"));
 		extmod.addSection(new DocSection("Java", "modules.java"));
 		extmod.addSection(new DocSection("Semver", "modules.semver"));
 		extmod.addSection(new DocSection("Hexdump", "modules.hexdump"));
 		extmod.addSection(new DocSection("Shell", "modules.shell"));
 		extmod.addSection(new DocSection("Geo IP", "modules.geoip"));
 		extmod.addSection(new DocSection("Ansi", "modules.ansi"));
-		extmod.addSection(new DocSection("Parsifal", "modules.parsifal"));
+		extmod.addSection(new DocSection("Gradle", "modules.gradle"));
+		extmod.addSection(new DocSection("Maven", "modules.maven"));
+		extmod.addSection(new DocSection("Tracing", "modules.tracing"));
 		extmod.addSection(new DocSection("Benchmark", "modules.benchmark"));
-		extmod.addSection(new DocSection("Configuration", "modules.config"));
-		extmod.addSection(new DocSection("Component", "modules.component"));
 		extmod.addSection(new DocSection("App", "modules.app"));
 		content.add(extmod);
 
