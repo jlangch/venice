@@ -4,16 +4,18 @@ A Guide to Parsifal
 
 The original Clojure Parsatron guide can be found at [A Guide to the Parsatron](https://github.com/sjl/parsatron/blob/docs/docs/guide.markdown)
 
-This guide is adapted to the _Parsifal_ Venice port of _Parsatron_.
+This guide is adapted to the  _Parsifal_  Venice port of  _Parsatron_ .
 
 
-_Parsifal_ is a library for building parsers for languages.  For an overview of
+_Parsifal_  is a library for building parsers for languages. For an overview of
 how it works internally you can watch [this talk][talk] from Nate Young on his 
 Clojure Parsatron implementation.
 
 This document will show you the basics of how to use _Parsifal_ as an end user.
 
 [talk]: http://www.infoq.com/presentations/Parser-Combinators
+
+
 
 Importing
 ---------
