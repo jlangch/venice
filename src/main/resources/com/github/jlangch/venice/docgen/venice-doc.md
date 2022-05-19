@@ -1,11 +1,15 @@
 # VeniceDoc
 
+¶
+
 **VeniceDoc** is a documentation generator for the *Venice* language for 
 generating API documentation in HTML format from *Venice* source code.
 
 It is used internally for generating the PDF and HTML cheatsheets. The 
 function `doc` makes use of it to display the documentation for functions.
  
+¶
+¶
 
 ## Example
 
@@ -33,6 +37,8 @@ Define a function `add` with documentation:
   ([x y & xs] (+ x y xs)))
 ```
 
+¶
+ 
 Show its documentation from the REPL:
  
 ```text
@@ -59,6 +65,9 @@ SEE ALSO:
    +, -, *, /
 ```
 
+¶
+¶
+
 ## VeniceDoc Format
 
 The documentation is defined as a Venice metadata `map`:
@@ -70,12 +79,13 @@ The documentation is defined as a Venice metadata `map`:
     :see-also '("+", "-", "*", "/") }
 ```
 
-| key       | description                                     |
-| [![text-align: left; width: 15%]] | [![text-align: left]]   |
-| :arglist  | the arglist, a list of variadic arg specs       |
-| :doc      | the documentation in [Venice markdown](#markdown) format |
-| :examples | examples, a list of Venice scripts              |
-| :see-also | a list of cross referenced functions            |
+¶
 
-*Note:* ':examples' and ':see-also' are optional.
+| key       | description                                              |
+| [![text-align: left; width: 15%]] | [![text-align: left]]            |
+| :arglist  | the optional arglist, a list of variadic arg specs       |
+| :doc      | the documentation in [Venice markdown](#markdown) format |
+| :examples | optional examples, a list of Venice scripts. ¶ use triple quotes for multi-line scripts |
+| :see-also | an optional list of cross referenced functions           |
+
 
