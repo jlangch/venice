@@ -119,6 +119,7 @@
                 margin: 0 0.5em 0.5em 0.5em;
                 padding: 0.5em 0.5em 0.5em;
                 background-color: #ebebeb;
+                border-radius: 4px;
             }
             .toc .title {
                 margin: 0.2em 0 0.4em 0;
@@ -152,12 +153,14 @@
                 padding: 0;
                 margin: 0;
                 width: 50%;
+                border-radius: 4px;
             }
             .section {
                 color: #424242;
                 background-color: #ebebeb;
                 margin: 1.5em 0.5em 0.5em 0.5em;
                 padding: 0 0.5em 0.5em;
+                border-radius: 4px;
             }
             .section-header {
                 margin-bottom: 1.5em;
@@ -172,9 +175,10 @@
                margin-bottom: 0;
             }
             .section-main-title {
-                margin: 10em 0.5em 2.8em 0.5em;
+            	border-radius: 4px;
                 padding: 0.5em 0.5em 0.5em 0.5em;
                 background-color: #ebebeb;
+                margin: 10em 0.5em 2.8em 0.5em;
             }
             div.section-main-title h1 {
                 margin: 0;
@@ -204,6 +208,7 @@
                 background-color: white;
                 margin: 0.5em 0 0 0;
                 padding: 0;
+                border-radius: 4px;
             }
             div.embedding h2 {
                 margin: 1em 0 0 0;
@@ -225,6 +230,7 @@
                 background-color: #ebebeb;
                 margin: 0.5em;
                 padding: 0.5em;
+                border-radius: 4px;
             }
             .venicedoc-body {
                 color: #424242;
@@ -275,6 +281,7 @@
                 background-color: #ebebeb;
                 margin: 0.5em;
                 padding: 0 0.5em 0.5em;
+            	border-radius: 4px;
             }
             .code-snippet {
                 color: #424242;
@@ -461,7 +468,7 @@
         <div class="main">
             <div class="title">
                  <div class="title-left">
-                   <span class="title-left-venice">Venice</span><span class="title-left-version">V 1.10.12</span>
+                   <span class="title-left-venice">Venice</span><span class="title-left-version">V 1.10.13</span>
                  </div> 
                  <div class="title-right">Cheat Sheet</div>
                  <div style="clear: both;"></div>
@@ -7847,6 +7854,7 @@ SEE ALSO:
 ## The second largest heading
 ### The third largest heading
 #### The fourth largest heading</code></div>
+<div class="md-text-block"><br/><div class="md-text-normal"> </div><br/></div>
 <div class="md-h2">Paragraphs and Line Breaks</div>
 <div class="md-code-block">
 <code class="md-code">A paragraph is simply one or more consecutive lines of text, separated by
@@ -7856,21 +7864,49 @@ Within a paragraph line breaks can be added by placing a `pilcrow`
 
 Line 1¶Line 2¶
 Line 3</code></div>
+<div class="md-text-block"><div class="md-text-normal">A paragraph is simply one or more consecutive lines of text, separated by one or more blank lines (a line containing nothing but spaces or tabs).</div></div>
+<div class="md-text-block"><div class="md-text-normal">Within a paragraph line breaks can be added by placing a </div><div class="md-inline-code">pilcrow</div></div>
+<div class="md-text-block"><div class="md-text-normal">Line 1</div><br/><div class="md-text-normal">Line 2</div><br/><div class="md-text-normal"> Line 3</div></div>
+<div class="md-text-block"><br/><div class="md-text-normal"> </div><br/></div>
 <div class="md-h2">Styling</div>
 <div class="md-text-block"><div class="md-text-normal">Venice markdown supports </div><div class="md-text-italic">italic</div><div class="md-text-normal">, </div><div class="md-text-bold">bold</div><div class="md-text-normal">, and </div><div class="md-text-bold-italic">bold-italic</div><div class="md-text-normal"> styling</div></div>
 <div class="md-code-block">
-<code class="md-code">This is *italic*, **bold**, and ***bold-italic*** styled texth</code></div>
+<code class="md-code">This is *italic*, **bold**, and ***bold-italic*** styled text.</code></div>
+<div class="md-text-block"><div class="md-text-normal">This is </div><div class="md-text-italic">italic</div><div class="md-text-normal">, </div><div class="md-text-bold">bold</div><div class="md-text-normal">, and </div><div class="md-text-bold-italic">bold-italic</div><div class="md-text-normal"> styled text.</div></div>
+<div class="md-text-block"><br/><div class="md-text-normal"> </div><br/></div>
 <div class="md-h2">Lists</div>
 <div class="md-text-block"><div class="md-text-normal">Unordered List</div></div>
 <div class="md-code-block">
 <code class="md-code">* item 1
 * item 2
 * item 3</code></div>
+<div class="md-list-block">
+<ul class="md-list">
+<li><div class="md-text-block"><div class="md-text-normal">item 1</div></div>
+</li>
+<li><div class="md-text-block"><div class="md-text-normal">item 2</div></div>
+</li>
+<li><div class="md-text-block"><div class="md-text-normal">item 3</div></div>
+</li>
+</ul>
+</div>
+<div class="md-text-block"><br/></div>
 <div class="md-text-block"><div class="md-text-normal">Ordered List</div></div>
 <div class="md-code-block">
 <code class="md-code">1. item 1
 2. item 2
 3. item 3</code></div>
+<div class="md-list-block">
+<ol class="md-list">
+<li><div class="md-text-block"><div class="md-text-normal">item 1</div></div>
+</li>
+<li><div class="md-text-block"><div class="md-text-normal">item 2</div></div>
+</li>
+<li><div class="md-text-block"><div class="md-text-normal">item 3</div></div>
+</li>
+</ol>
+</div>
+<div class="md-text-block"><br/></div>
 <div class="md-text-block"><div class="md-text-normal">Mulitiline list items</div></div>
 <div class="md-code-block">
 <code class="md-code">* item 1
@@ -7878,22 +7914,37 @@ Line 3</code></div>
   next line¶
   next line
 * item 3</code></div>
+<div class="md-list-block">
+<ul class="md-list">
+<li><div class="md-text-block"><div class="md-text-normal">item 1</div></div>
+</li>
+<li><div class="md-text-block"><div class="md-text-normal">item 2</div><br/><div class="md-text-normal">next line</div><br/><div class="md-text-normal">next line</div></div>
+</li>
+<li><div class="md-text-block"><div class="md-text-normal">item 3</div></div>
+</li>
+</ul>
+</div>
+<div class="md-text-block"><br/><div class="md-text-normal"> </div><br/></div>
 <div class="md-h2">Links</div>
 <div class="md-text-block"><div class="md-text-normal">Links are created by wrapping link text in brackets </div><div class="md-inline-code">[ ]</div><div class="md-text-normal">, and then wrapping the URL in parentheses </div><div class="md-inline-code">( )</div><div class="md-text-normal">. </div></div>
 <div class="md-code-block">
 <code class="md-code">[Venice](https://github.com/jlangch/venice)</code></div>
+<div class="md-text-block"><a class="md-url" href="https://github.com/jlangch/venice">Venice</a></div>
+<div class="md-text-block"><br/><div class="md-text-normal"> </div><br/></div>
 <div class="md-h2">Tables</div>
 <div class="md-text-block"><div class="md-text-normal">A simple table</div></div>
 <div class="md-code-block">
-<code class="md-code">| JAN | 1 |
-| FEB | 20 |
+<code class="md-code">| JAN | 1   |
+| FEB | 20  |
 | MAR | 300 |</code></div>
+<div class="md-text-block"><br/></div>
 <div class="md-text-block"><div class="md-text-normal">Column alignment</div></div>
 <div class="md-code-block">
 <code class="md-code">| :---  | :---: | ----: |
 | 1     |   1   |     1 |
 | 200   |  200  |   200 |
 | 30000 | 30000 | 30000 |</code></div>
+<div class="md-text-block"><br/></div>
 <div class="md-text-block"><div class="md-text-normal">Width header</div></div>
 <div class="md-code-block">
 <code class="md-code">| Col 1 | Col 2 | Col 3 |
@@ -7901,11 +7952,13 @@ Line 3</code></div>
 | 1     |   1   |     1 |
 | 200   |  200  |   200 |
 | 30000 | 30000 | 30000 |</code></div>
+<div class="md-text-block"><br/></div>
 <div class="md-text-block"><div class="md-text-normal">Line breaks in cells</div></div>
 <div class="md-code-block">
 <code class="md-code">| JAN | 1¶ 2¶ 3 |
 | FEB | 20      |
 | MAR | 300     |</code></div>
+<div class="md-text-block"><br/><div class="md-text-normal"> </div><br/></div>
 <div class="md-text-block"><div class="md-text-bold">Column format using CSS styles</div></div>
 <div class="md-text-block"><div class="md-text-normal">The Venice markdown supports custom CSS style</div></div>
 <div class="md-text-block"><div class="md-text-normal">Text alignment: </div></div>
@@ -7934,15 +7987,42 @@ Line 3</code></div>
 </div>
 <div class="md-code-block">
 <code class="md-code">| Col 1 | Col 2 |
-| [![text-align: left; width: 15%]] | [![text-align: left]] |
-| 1     |   1   |
-| 200   |  200  |
+| [![text-align: left; width: 6em]] | [![text-align: left; width: 6em]] |
+| 1     | 1     |
+| 200   | 200   |
 | 30000 | 30000 |</code></div>
+<div class="md-table-block">
+<table class="md-table">
+<thead>
+<tr>
+<th style="text-align: left; width: 6em">Col 1</th>
+<th style="text-align: left; width: 6em">Col 2</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align: left; width: 6em"><div style="display: inline-block; white-space: pre;"><div class="md-text-normal">1</div></div></td>
+<td style="text-align: left; width: 6em"><div class="md-text-normal">1</div></td>
+</tr>
+<tr>
+<td style="text-align: left; width: 6em"><div style="display: inline-block; white-space: pre;"><div class="md-text-normal">200</div></div></td>
+<td style="text-align: left; width: 6em"><div class="md-text-normal">200</div></td>
+</tr>
+<tr>
+<td style="text-align: left; width: 6em"><div style="display: inline-block; white-space: pre;"><div class="md-text-normal">30000</div></div></td>
+<td style="text-align: left; width: 6em"><div class="md-text-normal">30000</div></td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="md-text-block"><br/><div class="md-text-normal"> </div><br/></div>
 <div class="md-h2">Code</div>
 <div class="md-text-block"><div class="md-text-normal">Code can be called out within a text by enclosing it with single backticks.</div></div>
 <div class="md-code-block">
 <code class="md-code">To open a namespace use `(ns name)`.</code></div>
-<div class="md-text-block"><div class="md-text-normal">To format multi-line code the code is wrapped with three backticks:</div></div>
+<div class="md-text-block"><div class="md-text-normal">To open a namespace use </div><div class="md-inline-code">(ns name)</div><div class="md-text-normal">.</div></div>
+<div class="md-text-block"><br/></div>
+<div class="md-text-block"><div class="md-text-normal">Code block are enclosed with three backticks:</div></div>
 <div class="md-code-block">
 <code class="md-code"> ```
 (defn hello []
@@ -7950,6 +8030,11 @@ Line 3</code></div>
 
 (hello)
  ```</code></div>
+<div class="md-code-block">
+<code class="md-code">(defn hello []
+   (println &quot;Hello stranger&quot;))
+
+(hello)</code></div>
 </div>
 
 	              </div>
@@ -8790,7 +8875,7 @@ Line 3</code></div>
 
 <span style="color: #808080">;; invoke static method </span>
 <span style="color: #404040">(</span><span style="color: #4169E1">.</span> <span style="color: #E9967A">:java.time.ZonedDateTime</span> <span style="color: #E9967A">:now</span><span style="color: #404040">)</span>
-=&gt; 2022-05-18T11:35:36.675+02:00[Europe/Zurich]
+=&gt; 2022-05-19T12:31:57.306+02:00[Europe/Zurich]
 
 <span style="color: #808080">;; invoke static method </span>
 <span style="color: #404040">(</span><span style="color: #4169E1">.</span> <span style="color: #E9967A">:java.lang.Math</span> <span style="color: #E9967A">:min</span> <span style="color: #E9967A">10</span> <span style="color: #E9967A">20</span><span style="color: #404040">)</span>
@@ -10881,7 +10966,7 @@ compareTo: [[1 102] [2 100] [3 101]]</span>
     &quot;data/logo.jpg&quot;       &quot;staging/data/logo.jpg&quot; }
   &quot;.&quot;)</code></div>
 <div class="md-text-block"><div class="md-text-normal">Loading Venice files works relative to the application. You can only load files that are in the app archive. If for instances &quot;billing.venice&quot; in the above example requires &quot;utils/render.venice&quot; just add </div><div class="md-inline-code">(load-file &quot;utils/render.venice&quot;)</div><div class="md-text-normal"> to &quot;billing.venice&quot;.</div></div>
-<div class="md-text-block"><div class="md-text-normal">The app can be run from the command line as:</div><br/><div class="md-text-normal"> </div><div class="md-inline-code">&gt; java -jar venice-1.10.12.jar -app billing.zip</div><br/><div class="md-text-normal"> Venice reads the archive and loads the archive&apos;s main file.</div></div>
+<div class="md-text-block"><div class="md-text-normal">The app can be run from the command line as:</div><br/><div class="md-text-normal"> </div><div class="md-inline-code">&gt; java -jar venice-1.10.13.jar -app billing.zip</div><br/><div class="md-text-normal"> Venice reads the archive and loads the archive&apos;s main file.</div></div>
 <div class="md-text-block"><div class="md-text-normal">Or with additional Java libraries (all JARs in &apos;libs&apos; dir):</div><br/><div class="md-text-normal"> </div><div class="md-inline-code">&gt; java -cp &quot;libs/*&quot; com.github.jlangch.venice.Launcher -app billing.zip</div></div>
 </div>
 
@@ -15666,7 +15751,7 @@ After 150ms: cancelled=true</span>
                     
                     <div class="examples">
                         <code><span style="color: #404040">(</span><span style="color: #4169E1">complement</span> <span style="color: #404040">even?</span><span style="color: #404040">)</span>
-=&gt; function anonymous-ba0621e1-bf70-4a7a-8008-84337de2327e {visibility :public, ns &quot;&quot;, native false} defined at core: line 1469, col 10
+=&gt; function anonymous-119fc0be-0f0c-4501-be99-2fe00c03fe81 {visibility :public, ns &quot;&quot;, native false} defined at core: line 1469, col 10
 
 <span style="color: #404040">(</span><span style="color: #4169E1">filter</span> <span style="color: #404040">(</span><span style="color: #4169E1">complement</span> <span style="color: #404040">even?</span><span style="color: #404040">)</span> <span style="color: #404040">&apos;</span><span style="color: #404040">(</span><span style="color: #E9967A">1</span> <span style="color: #E9967A">2</span> <span style="color: #E9967A">3</span> <span style="color: #E9967A">4</span><span style="color: #404040">)</span><span style="color: #404040">)</span>
 =&gt; (1 3)</code>
@@ -17760,7 +17845,7 @@ venice&gt; (config/env &quot;java&quot;)
                     
                     <div class="examples">
                         <code><span style="color: #404040">(</span><span style="color: #4169E1">current-time-millis</span><span style="color: #404040">)</span>
-=&gt; 1652866571810</code>
+=&gt; 1652956353166</code>
                     </div>
                     
                     
@@ -21460,11 +21545,11 @@ venice&gt; (config/env &quot;java&quot;)
                         <code><span style="color: #404040">(</span><span style="color: #4169E1">-&gt;&gt;</span> <span style="color: #404040">(</span><span style="color: #4169E1">lazy-seq</span> <span style="color: #404040">#</span><span style="color: #404040">(</span><span style="color: #4169E1">rand-long</span> <span style="color: #E9967A">100</span><span style="color: #404040">)</span><span style="color: #404040">)</span>  
      <span style="color: #404040">(</span><span style="color: #4169E1">take</span> <span style="color: #E9967A">4</span><span style="color: #404040">)</span>                     
      <span style="color: #404040">(</span><span style="color: #4169E1">doall</span><span style="color: #404040">)</span><span style="color: #404040">)</span>
-=&gt; (35 91 70 17)
+=&gt; (50 6 19 18)
 
 <span style="color: #404040">(</span><span style="color: #4169E1">-&gt;&gt;</span> <span style="color: #404040">(</span><span style="color: #4169E1">lazy-seq</span> <span style="color: #404040">#</span><span style="color: #404040">(</span><span style="color: #4169E1">rand-long</span> <span style="color: #E9967A">100</span><span style="color: #404040">)</span><span style="color: #404040">)</span>  
      <span style="color: #404040">(</span><span style="color: #4169E1">doall</span> <span style="color: #E9967A">4</span><span style="color: #404040">)</span><span style="color: #404040">)</span>
-=&gt; (21 70 10 14)</code>
+=&gt; (82 7 2 92)</code>
                     </div>
                     
                     
@@ -21511,7 +21596,7 @@ venice&gt; (config/env &quot;java&quot;)
                     
                     <div class="examples">
                         <code><span style="color: #404040">(</span><span style="color: #9932CC">dobench</span> <span style="color: #E9967A">10</span> <span style="color: #404040">(</span><span style="color: #4169E1">+</span> <span style="color: #E9967A">1</span> <span style="color: #E9967A">1</span><span style="color: #404040">)</span><span style="color: #404040">)</span>
-=&gt; (2613 868 400 243 247 237 242 236 240 235)</code>
+=&gt; (2503 1301 455 301 265 259 289 253 254 313)</code>
                     </div>
                     
                     
@@ -27604,9 +27689,9 @@ com.github.jlangch.venice.VncException: Failed 3
   <span style="color: #404040">(</span><span style="color: #9932CC">defn</span> <span style="color: #404040">factory</span> <span style="color: #404040">[</span><span style="color: #404040">n</span><span style="color: #404040">]</span>                                
     <span style="color: #404040">(</span><span style="color: #9932CC">fn</span> <span style="color: #404040">[</span><span style="color: #404040">]</span> <span style="color: #404040">(</span><span style="color: #4169E1">log</span> <span style="color: #2E8B57">&quot;Worker&quot;</span> <span style="color: #404040">n</span><span style="color: #404040">)</span><span style="color: #404040">)</span><span style="color: #404040">)</span>                    
   <span style="color: #404040">(</span><span style="color: #4169E1">apply</span> <span style="color: #404040">futures-wait</span> <span style="color: #404040">(</span><span style="color: #4169E1">futures-fork</span> <span style="color: #E9967A">3</span> <span style="color: #404040">factory</span><span style="color: #404040">)</span><span style="color: #404040">)</span><span style="color: #404040">)</span>     
-<span style="color: #808080">Worker2
-Worker1
-Worker0</span>
+<span style="color: #808080">Worker0
+Worker2
+Worker1</span>
 =&gt; nil</code>
                     </div>
                     
@@ -27746,9 +27831,9 @@ Worker0</span>
   <span style="color: #404040">(</span><span style="color: #9932CC">defn</span> <span style="color: #404040">factory</span> <span style="color: #404040">[</span><span style="color: #404040">n</span><span style="color: #404040">]</span>                                
     <span style="color: #404040">(</span><span style="color: #9932CC">fn</span> <span style="color: #404040">[</span><span style="color: #404040">]</span> <span style="color: #404040">(</span><span style="color: #4169E1">log</span> <span style="color: #2E8B57">&quot;Worker&quot;</span> <span style="color: #404040">n</span><span style="color: #404040">)</span><span style="color: #404040">)</span><span style="color: #404040">)</span>                    
   <span style="color: #404040">(</span><span style="color: #4169E1">apply</span> <span style="color: #404040">futures-wait</span> <span style="color: #404040">(</span><span style="color: #4169E1">futures-fork</span> <span style="color: #E9967A">3</span> <span style="color: #404040">factory</span><span style="color: #404040">)</span><span style="color: #404040">)</span><span style="color: #404040">)</span>     
-<span style="color: #808080">Worker0
+<span style="color: #808080">Worker2
 Worker1
-Worker2</span>
+Worker0</span>
 =&gt; nil</code>
                     </div>
                     
@@ -36573,7 +36658,7 @@ Hello Bob</span>
 <span style="color: #404040">(</span><span style="color: #4169E1">-&gt;&gt;</span> <span style="color: #404040">(</span><span style="color: #4169E1">lazy-seq</span> <span style="color: #404040">rand-long</span><span style="color: #404040">)</span>                                       
      <span style="color: #404040">(</span><span style="color: #4169E1">take</span> <span style="color: #E9967A">4</span><span style="color: #404040">)</span>                                                   
      <span style="color: #404040">(</span><span style="color: #4169E1">doall</span><span style="color: #404040">)</span><span style="color: #404040">)</span>
-=&gt; (9141439529627401218 2656164766530079237 4730699364906612767 7244979209372576499)
+=&gt; (2350899813937570132 1532818355731717997 4794769448108618783 6509155198300290244)
 
 <span style="color: #808080">; lazy sequence with a constant value                           </span>
 <span style="color: #404040">(</span><span style="color: #4169E1">-&gt;&gt;</span> <span style="color: #404040">(</span><span style="color: #4169E1">lazy-seq</span> <span style="color: #404040">(</span><span style="color: #4169E1">constantly</span> <span style="color: #E9967A">5</span><span style="color: #404040">)</span><span style="color: #404040">)</span>                                  
@@ -39766,7 +39851,7 @@ out</span>
           <span style="color: #E9967A">:else</span> <span style="color: #404040">(</span><span style="color: #4169E1">+</span> <span style="color: #404040">(</span><span style="color: #4169E1">fibonacci</span> <span style="color: #404040">(</span><span style="color: #4169E1">-</span> <span style="color: #404040">n</span> <span style="color: #E9967A">1</span><span style="color: #404040">)</span><span style="color: #404040">)</span> <span style="color: #404040">(</span><span style="color: #4169E1">fibonacci</span> <span style="color: #404040">(</span><span style="color: #4169E1">-</span> <span style="color: #404040">n</span> <span style="color: #E9967A">2</span><span style="color: #404040">)</span><span style="color: #404040">)</span><span style="color: #404040">)</span><span style="color: #404040">)</span><span style="color: #404040">)</span><span style="color: #404040">)</span><span style="color: #404040">)</span>
 
   <span style="color: #404040">(</span><span style="color: #4169E1">time</span> <span style="color: #404040">(</span><span style="color: #4169E1">fibonacci</span> <span style="color: #E9967A">25</span><span style="color: #404040">)</span><span style="color: #404040">)</span><span style="color: #404040">)</span>
-<span style="color: #808080">Elapsed time: 2.05ms</span>
+<span style="color: #808080">Elapsed time: 2.20ms</span>
 =&gt; 75025
 
 <span style="color: #404040">(</span><span style="color: #9932CC">do</span>
@@ -40784,13 +40869,13 @@ calculating a=1, b=2</span>
                     
                     <div class="examples">
                         <code><span style="color: #404040">(</span><span style="color: #4169E1">nano-time</span><span style="color: #404040">)</span>
-=&gt; 155089833676440
+=&gt; 23645300219385
 
 <span style="color: #404040">(</span><span style="color: #9932CC">let</span> <span style="color: #404040">[</span><span style="color: #404040">t</span> <span style="color: #404040">(</span><span style="color: #4169E1">nano-time</span><span style="color: #404040">)</span>                        
       <span style="color: #404040">_</span> <span style="color: #404040">(</span><span style="color: #4169E1">sleep</span> <span style="color: #E9967A">100</span><span style="color: #404040">)</span>                        
       <span style="color: #404040">e</span> <span style="color: #404040">(</span><span style="color: #4169E1">nano-time</span><span style="color: #404040">)</span><span style="color: #404040">]</span>                       
   <span style="color: #404040">(</span><span style="color: #4169E1">format-nano-time</span> <span style="color: #404040">(</span><span style="color: #4169E1">-</span> <span style="color: #404040">e</span> <span style="color: #404040">t</span><span style="color: #404040">)</span> <span style="color: #E9967A">:precision</span> <span style="color: #E9967A">2</span><span style="color: #404040">)</span><span style="color: #404040">)</span>  
-=&gt; &quot;102.33ms&quot;</code>
+=&gt; &quot;103.46ms&quot;</code>
                     </div>
                     
                     
@@ -45199,7 +45284,7 @@ ns bar: (bar/y)</span>
                     
                     <div class="examples">
                         <code><span style="color: #404040">(</span><span style="color: #4169E1">pid</span><span style="color: #404040">)</span>
-=&gt; &quot;34447&quot;</code>
+=&gt; &quot;8487&quot;</code>
                     </div>
                     
                     
@@ -46926,10 +47011,10 @@ line 2: 456</span>
                     
                     <div class="examples">
                         <code><span style="color: #404040">(</span><span style="color: #4169E1">rand-double</span><span style="color: #404040">)</span>
-=&gt; 0.007213592868331009
+=&gt; 0.8850364121796271
 
 <span style="color: #404040">(</span><span style="color: #4169E1">rand-double</span> <span style="color: #E9967A">100.0</span><span style="color: #404040">)</span>
-=&gt; 12.709405169566491</code>
+=&gt; 50.40137607657458</code>
                     </div>
                     
                     
@@ -46984,10 +47069,10 @@ line 2: 456</span>
                     
                     <div class="examples">
                         <code><span style="color: #404040">(</span><span style="color: #4169E1">rand-gaussian</span><span style="color: #404040">)</span>
-=&gt; 1.166973940037897
+=&gt; 0.9729286533475159
 
 <span style="color: #404040">(</span><span style="color: #4169E1">rand-gaussian</span> <span style="color: #E9967A">0.0</span> <span style="color: #E9967A">5.0</span><span style="color: #404040">)</span>
-=&gt; 8.083857209829524</code>
+=&gt; -0.9514894076260162</code>
                     </div>
                     
                     
@@ -47042,10 +47127,10 @@ line 2: 456</span>
                     
                     <div class="examples">
                         <code><span style="color: #404040">(</span><span style="color: #4169E1">rand-long</span><span style="color: #404040">)</span>
-=&gt; 8718770320208741427
+=&gt; 740780422588834225
 
 <span style="color: #404040">(</span><span style="color: #4169E1">rand-long</span> <span style="color: #E9967A">100</span><span style="color: #404040">)</span>
-=&gt; 55</code>
+=&gt; 54</code>
                     </div>
                     
                     
@@ -47263,7 +47348,7 @@ line 2: 456</span>
         <span style="color: #404040">(</span><span style="color: #4169E1">println</span> <span style="color: #404040">(</span><span style="color: #4169E1">realized?</span> <span style="color: #404040">f</span><span style="color: #404040">)</span><span style="color: #404040">)</span>    
         <span style="color: #404040">(</span><span style="color: #4169E1">println</span> <span style="color: #404040">@</span><span style="color: #404040">f</span><span style="color: #404040">)</span>               
         <span style="color: #404040">(</span><span style="color: #4169E1">println</span> <span style="color: #404040">(</span><span style="color: #4169E1">realized?</span> <span style="color: #404040">f</span><span style="color: #404040">)</span><span style="color: #404040">)</span><span style="color: #404040">)</span><span style="color: #404040">)</span>    
-<span style="color: #808080">false
+<span style="color: #808080">true
 100
 true</span>
 =&gt; nil
@@ -47432,7 +47517,7 @@ true</span>
 <span style="color: #808080">;; sliding window (width 3) average</span>
 <span style="color: #404040">(</span><span style="color: #4169E1">-&gt;&gt;</span> <span style="color: #404040">(</span><span style="color: #4169E1">partition</span> <span style="color: #E9967A">3</span> <span style="color: #E9967A">1</span> <span style="color: #404040">(</span><span style="color: #4169E1">repeatedly</span> <span style="color: #E9967A">10</span> <span style="color: #404040">#</span><span style="color: #404040">(</span><span style="color: #4169E1">rand-long</span> <span style="color: #E9967A">30</span><span style="color: #404040">)</span><span style="color: #404040">)</span><span style="color: #404040">)</span>
      <span style="color: #404040">(</span><span style="color: #4169E1">map</span> <span style="color: #404040">(</span><span style="color: #9932CC">fn</span> <span style="color: #404040">[</span><span style="color: #404040">window</span><span style="color: #404040">]</span> <span style="color: #404040">(</span><span style="color: #4169E1">/</span> <span style="color: #404040">(</span><span style="color: #4169E1">reduce</span> <span style="color: #404040">+</span> <span style="color: #404040">window</span><span style="color: #404040">)</span> <span style="color: #404040">(</span><span style="color: #4169E1">count</span> <span style="color: #404040">window</span><span style="color: #404040">)</span><span style="color: #404040">)</span><span style="color: #404040">)</span><span style="color: #404040">)</span><span style="color: #404040">)</span>
-=&gt; (16 16 11 13 17 14 11 7)</code>
+=&gt; (20 16 13 13 13 21 23 22)</code>
                     </div>
                     
                     
@@ -48568,12 +48653,12 @@ group matches:  &quot;672-345-456-212&quot; {:start 0 :end 15}
                     
                     <div class="examples">
                         <code><span style="color: #404040">(</span><span style="color: #4169E1">repeatedly</span> <span style="color: #E9967A">5</span> <span style="color: #404040">#</span><span style="color: #404040">(</span><span style="color: #4169E1">rand-long</span> <span style="color: #E9967A">11</span><span style="color: #404040">)</span><span style="color: #404040">)</span>
-=&gt; (4 3 2 0 8)
+=&gt; (6 1 5 9 1)
 
 <span style="color: #808080">;; compare with repeat, which only calls the &apos;rand-long&apos;</span>
 <span style="color: #808080">;; function once, repeating the value five times. </span>
 <span style="color: #404040">(</span><span style="color: #4169E1">repeat</span> <span style="color: #E9967A">5</span> <span style="color: #404040">(</span><span style="color: #4169E1">rand-long</span> <span style="color: #E9967A">11</span><span style="color: #404040">)</span><span style="color: #404040">)</span>
-=&gt; (6 6 6 6 6)</code>
+=&gt; (10 10 10 10 10)</code>
                     </div>
                     
                     
@@ -51749,13 +51834,13 @@ E.g.: { :major 1, :minor 3, :patch 5 }
                     
                     <div class="examples">
                         <code><span style="color: #404040">(</span><span style="color: #4169E1">shuffle</span> <span style="color: #404040">&apos;</span><span style="color: #404040">(</span><span style="color: #E9967A">1</span> <span style="color: #E9967A">2</span> <span style="color: #E9967A">3</span> <span style="color: #E9967A">4</span> <span style="color: #E9967A">5</span> <span style="color: #E9967A">6</span><span style="color: #404040">)</span><span style="color: #404040">)</span>
-=&gt; (6 4 2 3 5 1)
+=&gt; (2 6 4 5 1 3)
 
 <span style="color: #404040">(</span><span style="color: #4169E1">shuffle</span> <span style="color: #404040">[</span><span style="color: #E9967A">1</span> <span style="color: #E9967A">2</span> <span style="color: #E9967A">3</span> <span style="color: #E9967A">4</span> <span style="color: #E9967A">5</span> <span style="color: #E9967A">6</span><span style="color: #404040">]</span><span style="color: #404040">)</span>
-=&gt; [4 2 6 5 3 1]
+=&gt; [5 2 1 3 6 4]
 
 <span style="color: #404040">(</span><span style="color: #4169E1">shuffle</span> <span style="color: #2E8B57">&quot;abcdef&quot;</span><span style="color: #404040">)</span>
-=&gt; (#\f #\b #\a #\d #\c #\e)</code>
+=&gt; (#\f #\c #\b #\d #\a #\e)</code>
                     </div>
                     
                     
@@ -57925,7 +58010,7 @@ line3&quot;</span><span style="color: #404040">)</span>
                     
                     <div class="examples">
                         <code><span style="color: #404040">(</span><span style="color: #4169E1">time</span> <span style="color: #404040">(</span><span style="color: #4169E1">+</span> <span style="color: #E9967A">100</span> <span style="color: #E9967A">200</span><span style="color: #404040">)</span><span style="color: #404040">)</span>
-<span style="color: #808080">Elapsed time: 6.59µs</span>
+<span style="color: #808080">Elapsed time: 6.08µs</span>
 =&gt; 300</code>
                     </div>
                     
@@ -58076,7 +58161,7 @@ line3&quot;</span><span style="color: #404040">)</span>
                     
                     <div class="examples">
                         <code><span style="color: #404040">(</span><span style="color: #4169E1">time/date</span><span style="color: #404040">)</span>
-=&gt; Wed May 18 11:36:17 CEST 2022</code>
+=&gt; Thu May 19 12:32:38 CEST 2022</code>
                     </div>
                     
                     
@@ -58150,13 +58235,13 @@ line3&quot;</span><span style="color: #404040">)</span>
                     
                     <div class="examples">
                         <code><span style="color: #404040">(</span><span style="color: #4169E1">time/day-of-month</span> <span style="color: #404040">(</span><span style="color: #4169E1">time/local-date</span><span style="color: #404040">)</span><span style="color: #404040">)</span>
-=&gt; 18
+=&gt; 19
 
 <span style="color: #404040">(</span><span style="color: #4169E1">time/day-of-month</span> <span style="color: #404040">(</span><span style="color: #4169E1">time/local-date-time</span><span style="color: #404040">)</span><span style="color: #404040">)</span>
-=&gt; 18
+=&gt; 19
 
 <span style="color: #404040">(</span><span style="color: #4169E1">time/day-of-month</span> <span style="color: #404040">(</span><span style="color: #4169E1">time/zoned-date-time</span><span style="color: #404040">)</span><span style="color: #404040">)</span>
-=&gt; 18</code>
+=&gt; 19</code>
                     </div>
                     
                     
@@ -58193,13 +58278,13 @@ line3&quot;</span><span style="color: #404040">)</span>
                     
                     <div class="examples">
                         <code><span style="color: #404040">(</span><span style="color: #4169E1">time/day-of-week</span> <span style="color: #404040">(</span><span style="color: #4169E1">time/local-date</span><span style="color: #404040">)</span><span style="color: #404040">)</span>
-=&gt; :WEDNESDAY
+=&gt; :THURSDAY
 
 <span style="color: #404040">(</span><span style="color: #4169E1">time/day-of-week</span> <span style="color: #404040">(</span><span style="color: #4169E1">time/local-date-time</span><span style="color: #404040">)</span><span style="color: #404040">)</span>
-=&gt; :WEDNESDAY
+=&gt; :THURSDAY
 
 <span style="color: #404040">(</span><span style="color: #4169E1">time/day-of-week</span> <span style="color: #404040">(</span><span style="color: #4169E1">time/zoned-date-time</span><span style="color: #404040">)</span><span style="color: #404040">)</span>
-=&gt; :WEDNESDAY</code>
+=&gt; :THURSDAY</code>
                     </div>
                     
                     
@@ -58236,13 +58321,13 @@ line3&quot;</span><span style="color: #404040">)</span>
                     
                     <div class="examples">
                         <code><span style="color: #404040">(</span><span style="color: #4169E1">time/day-of-year</span> <span style="color: #404040">(</span><span style="color: #4169E1">time/local-date</span><span style="color: #404040">)</span><span style="color: #404040">)</span>
-=&gt; 138
+=&gt; 139
 
 <span style="color: #404040">(</span><span style="color: #4169E1">time/day-of-year</span> <span style="color: #404040">(</span><span style="color: #4169E1">time/local-date-time</span><span style="color: #404040">)</span><span style="color: #404040">)</span>
-=&gt; 138
+=&gt; 139
 
 <span style="color: #404040">(</span><span style="color: #4169E1">time/day-of-year</span> <span style="color: #404040">(</span><span style="color: #4169E1">time/zoned-date-time</span><span style="color: #404040">)</span><span style="color: #404040">)</span>
-=&gt; 138</code>
+=&gt; 139</code>
                     </div>
                     
                     
@@ -58361,19 +58446,19 @@ line3&quot;</span><span style="color: #404040">)</span>
                     
                     <div class="examples">
                         <code><span style="color: #404040">(</span><span style="color: #4169E1">time/format</span> <span style="color: #404040">(</span><span style="color: #4169E1">time/local-date</span><span style="color: #404040">)</span> <span style="color: #2E8B57">&quot;dd-MM-yyyy&quot;</span><span style="color: #404040">)</span>
-=&gt; &quot;18-05-2022&quot;
+=&gt; &quot;19-05-2022&quot;
 
 <span style="color: #404040">(</span><span style="color: #4169E1">time/format</span> <span style="color: #404040">(</span><span style="color: #4169E1">time/zoned-date-time</span><span style="color: #404040">)</span> <span style="color: #2E8B57">&quot;yyyy-MM-dd&apos;T&apos;HH:mm:ss.SSSz&quot;</span><span style="color: #404040">)</span>
-=&gt; &quot;2022-05-18T11:36:19.112CEST&quot;
+=&gt; &quot;2022-05-19T12:32:40.479CEST&quot;
 
 <span style="color: #404040">(</span><span style="color: #4169E1">time/format</span> <span style="color: #404040">(</span><span style="color: #4169E1">time/zoned-date-time</span><span style="color: #404040">)</span> <span style="color: #E9967A">:ISO_OFFSET_DATE_TIME</span><span style="color: #404040">)</span>
-=&gt; &quot;2022-05-18T11:36:19.128+02:00&quot;
+=&gt; &quot;2022-05-19T12:32:40.496+02:00&quot;
 
 <span style="color: #404040">(</span><span style="color: #4169E1">time/format</span> <span style="color: #404040">(</span><span style="color: #4169E1">time/zoned-date-time</span><span style="color: #404040">)</span> <span style="color: #404040">(</span><span style="color: #4169E1">time/formatter</span> <span style="color: #2E8B57">&quot;yyyy-MM-dd&apos;T&apos;HH:mm:ss.SSSz&quot;</span><span style="color: #404040">)</span><span style="color: #404040">)</span>
-=&gt; &quot;2022-05-18T11:36:19.144CEST&quot;
+=&gt; &quot;2022-05-19T12:32:40.513CEST&quot;
 
 <span style="color: #404040">(</span><span style="color: #4169E1">time/format</span> <span style="color: #404040">(</span><span style="color: #4169E1">time/zoned-date-time</span><span style="color: #404040">)</span> <span style="color: #404040">(</span><span style="color: #4169E1">time/formatter</span> <span style="color: #E9967A">:ISO_OFFSET_DATE_TIME</span><span style="color: #404040">)</span><span style="color: #404040">)</span>
-=&gt; &quot;2022-05-18T11:36:19.16+02:00&quot;</code>
+=&gt; &quot;2022-05-19T12:32:40.531+02:00&quot;</code>
                     </div>
                     
                     
@@ -58462,10 +58547,10 @@ line3&quot;</span><span style="color: #404040">)</span>
 =&gt; 0
 
 <span style="color: #404040">(</span><span style="color: #4169E1">time/hour</span> <span style="color: #404040">(</span><span style="color: #4169E1">time/local-date-time</span><span style="color: #404040">)</span><span style="color: #404040">)</span>
-=&gt; 11
+=&gt; 12
 
 <span style="color: #404040">(</span><span style="color: #4169E1">time/hour</span> <span style="color: #404040">(</span><span style="color: #4169E1">time/zoned-date-time</span><span style="color: #404040">)</span><span style="color: #404040">)</span>
-=&gt; 11</code>
+=&gt; 12</code>
                     </div>
                     
                     
@@ -58726,7 +58811,7 @@ line3&quot;</span><span style="color: #404040">)</span>
                     
                     <div class="examples">
                         <code><span style="color: #404040">(</span><span style="color: #4169E1">time/local-date</span><span style="color: #404040">)</span>
-=&gt; 2022-05-18
+=&gt; 2022-05-19
 
 <span style="color: #404040">(</span><span style="color: #4169E1">time/local-date</span> <span style="color: #E9967A">2018</span> <span style="color: #E9967A">8</span> <span style="color: #E9967A">1</span><span style="color: #404040">)</span>
 =&gt; 2018-08-01
@@ -58738,7 +58823,7 @@ line3&quot;</span><span style="color: #404040">)</span>
 =&gt; 2013-08-01
 
 <span style="color: #404040">(</span><span style="color: #4169E1">time/local-date</span> <span style="color: #404040">(</span><span style="color: #4169E1">.</span> <span style="color: #E9967A">:java.util.Date</span> <span style="color: #E9967A">:new</span><span style="color: #404040">)</span><span style="color: #404040">)</span>
-=&gt; 2022-05-18</code>
+=&gt; 2022-05-19</code>
                     </div>
                     
                     
@@ -58823,7 +58908,7 @@ line3&quot;</span><span style="color: #404040">)</span>
                     
                     <div class="examples">
                         <code><span style="color: #404040">(</span><span style="color: #4169E1">time/local-date-time</span><span style="color: #404040">)</span>
-=&gt; 2022-05-18T11:36:17.809
+=&gt; 2022-05-19T12:32:39.164
 
 <span style="color: #404040">(</span><span style="color: #4169E1">time/local-date-time</span> <span style="color: #E9967A">2018</span> <span style="color: #E9967A">8</span> <span style="color: #E9967A">1</span><span style="color: #404040">)</span>
 =&gt; 2018-08-01T00:00
@@ -58841,7 +58926,7 @@ line3&quot;</span><span style="color: #404040">)</span>
 =&gt; 2013-08-01T02:00
 
 <span style="color: #404040">(</span><span style="color: #4169E1">time/local-date-time</span> <span style="color: #404040">(</span><span style="color: #4169E1">.</span> <span style="color: #E9967A">:java.util.Date</span> <span style="color: #E9967A">:new</span><span style="color: #404040">)</span><span style="color: #404040">)</span>
-=&gt; 2022-05-18T11:36:17.909</code>
+=&gt; 2022-05-19T12:32:39.268</code>
                     </div>
                     
                     
@@ -58992,13 +59077,13 @@ line3&quot;</span><span style="color: #404040">)</span>
                     
                     <div class="examples">
                         <code><span style="color: #404040">(</span><span style="color: #4169E1">time/minus</span> <span style="color: #404040">(</span><span style="color: #4169E1">time/local-date</span><span style="color: #404040">)</span> <span style="color: #E9967A">:days</span> <span style="color: #E9967A">2</span><span style="color: #404040">)</span>
-=&gt; 2022-05-16
+=&gt; 2022-05-17
 
 <span style="color: #404040">(</span><span style="color: #4169E1">time/minus</span> <span style="color: #404040">(</span><span style="color: #4169E1">time/local-date-time</span><span style="color: #404040">)</span> <span style="color: #E9967A">:days</span> <span style="color: #E9967A">2</span><span style="color: #404040">)</span>
-=&gt; 2022-05-16T11:36:19.626
+=&gt; 2022-05-17T12:32:41.036
 
 <span style="color: #404040">(</span><span style="color: #4169E1">time/minus</span> <span style="color: #404040">(</span><span style="color: #4169E1">time/zoned-date-time</span><span style="color: #404040">)</span> <span style="color: #E9967A">:days</span> <span style="color: #E9967A">2</span><span style="color: #404040">)</span>
-=&gt; 2022-05-16T11:36:19.641+02:00[Europe/Zurich]</code>
+=&gt; 2022-05-17T12:32:41.053+02:00[Europe/Zurich]</code>
                     </div>
                     
                     
@@ -59038,10 +59123,10 @@ line3&quot;</span><span style="color: #404040">)</span>
 =&gt; 0
 
 <span style="color: #404040">(</span><span style="color: #4169E1">time/minute</span> <span style="color: #404040">(</span><span style="color: #4169E1">time/local-date-time</span><span style="color: #404040">)</span><span style="color: #404040">)</span>
-=&gt; 36
+=&gt; 32
 
 <span style="color: #404040">(</span><span style="color: #4169E1">time/minute</span> <span style="color: #404040">(</span><span style="color: #4169E1">time/zoned-date-time</span><span style="color: #404040">)</span><span style="color: #404040">)</span>
-=&gt; 36</code>
+=&gt; 32</code>
                     </div>
                     
                     
@@ -59256,13 +59341,13 @@ line3&quot;</span><span style="color: #404040">)</span>
                     
                     <div class="examples">
                         <code><span style="color: #404040">(</span><span style="color: #4169E1">time/plus</span> <span style="color: #404040">(</span><span style="color: #4169E1">time/local-date</span><span style="color: #404040">)</span> <span style="color: #E9967A">:days</span> <span style="color: #E9967A">2</span><span style="color: #404040">)</span>
-=&gt; 2022-05-20
+=&gt; 2022-05-21
 
 <span style="color: #404040">(</span><span style="color: #4169E1">time/plus</span> <span style="color: #404040">(</span><span style="color: #4169E1">time/local-date-time</span><span style="color: #404040">)</span> <span style="color: #E9967A">:days</span> <span style="color: #E9967A">2</span><span style="color: #404040">)</span>
-=&gt; 2022-05-20T11:36:19.580
+=&gt; 2022-05-21T12:32:40.985
 
 <span style="color: #404040">(</span><span style="color: #4169E1">time/plus</span> <span style="color: #404040">(</span><span style="color: #4169E1">time/zoned-date-time</span><span style="color: #404040">)</span> <span style="color: #E9967A">:days</span> <span style="color: #E9967A">2</span><span style="color: #404040">)</span>
-=&gt; 2022-05-20T11:36:19.596+02:00[Europe/Zurich]</code>
+=&gt; 2022-05-21T12:32:41.002+02:00[Europe/Zurich]</code>
                     </div>
                     
                     
@@ -59302,10 +59387,10 @@ line3&quot;</span><span style="color: #404040">)</span>
 =&gt; 0
 
 <span style="color: #404040">(</span><span style="color: #4169E1">time/second</span> <span style="color: #404040">(</span><span style="color: #4169E1">time/local-date-time</span><span style="color: #404040">)</span><span style="color: #404040">)</span>
-=&gt; 18
+=&gt; 40
 
 <span style="color: #404040">(</span><span style="color: #4169E1">time/second</span> <span style="color: #404040">(</span><span style="color: #4169E1">time/zoned-date-time</span><span style="color: #404040">)</span><span style="color: #404040">)</span>
-=&gt; 18</code>
+=&gt; 40</code>
                     </div>
                     
                     
@@ -59342,7 +59427,7 @@ line3&quot;</span><span style="color: #404040">)</span>
                     
                     <div class="examples">
                         <code><span style="color: #404040">(</span><span style="color: #4169E1">time/to-millis</span> <span style="color: #404040">(</span><span style="color: #4169E1">time/local-date</span><span style="color: #404040">)</span><span style="color: #404040">)</span>
-=&gt; 1652824800000</code>
+=&gt; 1652911200000</code>
                     </div>
                     
                     
@@ -59381,13 +59466,13 @@ line3&quot;</span><span style="color: #404040">)</span>
                     
                     <div class="examples">
                         <code><span style="color: #404040">(</span><span style="color: #4169E1">time/with-time</span> <span style="color: #404040">(</span><span style="color: #4169E1">time/local-date</span><span style="color: #404040">)</span> <span style="color: #E9967A">22</span> <span style="color: #E9967A">00</span> <span style="color: #E9967A">15</span> <span style="color: #E9967A">333</span><span style="color: #404040">)</span>
-=&gt; 2022-05-18T22:00:15.333
+=&gt; 2022-05-19T22:00:15.333
 
 <span style="color: #404040">(</span><span style="color: #4169E1">time/with-time</span> <span style="color: #404040">(</span><span style="color: #4169E1">time/local-date-time</span><span style="color: #404040">)</span> <span style="color: #E9967A">22</span> <span style="color: #E9967A">00</span> <span style="color: #E9967A">15</span> <span style="color: #E9967A">333</span><span style="color: #404040">)</span>
-=&gt; 2022-05-18T22:00:15.333
+=&gt; 2022-05-19T22:00:15.333
 
 <span style="color: #404040">(</span><span style="color: #4169E1">time/with-time</span> <span style="color: #404040">(</span><span style="color: #4169E1">time/zoned-date-time</span><span style="color: #404040">)</span> <span style="color: #E9967A">22</span> <span style="color: #E9967A">00</span> <span style="color: #E9967A">15</span> <span style="color: #E9967A">333</span><span style="color: #404040">)</span>
-=&gt; 2022-05-18T22:00:15.333+02:00[Europe/Zurich]</code>
+=&gt; 2022-05-19T22:00:15.333+02:00[Europe/Zurich]</code>
                     </div>
                     
                     
@@ -59655,7 +59740,7 @@ line3&quot;</span><span style="color: #404040">)</span>
                     
                     <div class="examples">
                         <code><span style="color: #404040">(</span><span style="color: #4169E1">time/zoned-date-time</span><span style="color: #404040">)</span>
-=&gt; 2022-05-18T11:36:17.984+02:00[Europe/Zurich]
+=&gt; 2022-05-19T12:32:39.341+02:00[Europe/Zurich]
 
 <span style="color: #404040">(</span><span style="color: #4169E1">time/zoned-date-time</span> <span style="color: #E9967A">2018</span> <span style="color: #E9967A">8</span> <span style="color: #E9967A">1</span><span style="color: #404040">)</span>
 =&gt; 2018-08-01T00:00+02:00[Europe/Zurich]
@@ -59673,10 +59758,10 @@ line3&quot;</span><span style="color: #404040">)</span>
 =&gt; 2013-08-01T02:00+02:00[Europe/Zurich]
 
 <span style="color: #404040">(</span><span style="color: #4169E1">time/zoned-date-time</span> <span style="color: #404040">(</span><span style="color: #4169E1">.</span> <span style="color: #E9967A">:java.util.Date</span> <span style="color: #E9967A">:new</span><span style="color: #404040">)</span><span style="color: #404040">)</span>
-=&gt; 2022-05-18T11:36:18.097+02:00[Europe/Zurich]
+=&gt; 2022-05-19T12:32:39.445+02:00[Europe/Zurich]
 
 <span style="color: #404040">(</span><span style="color: #4169E1">time/zoned-date-time</span> <span style="color: #2E8B57">&quot;UTC&quot;</span><span style="color: #404040">)</span>
-=&gt; 2022-05-18T09:36:18.121Z[UTC]
+=&gt; 2022-05-19T10:32:39.462Z[UTC]
 
 <span style="color: #404040">(</span><span style="color: #4169E1">time/zoned-date-time</span> <span style="color: #2E8B57">&quot;UTC&quot;</span> <span style="color: #E9967A">2018</span> <span style="color: #E9967A">8</span> <span style="color: #E9967A">1</span><span style="color: #404040">)</span>
 =&gt; 2018-08-01T00:00Z[UTC]
@@ -59694,7 +59779,7 @@ line3&quot;</span><span style="color: #404040">)</span>
 =&gt; 2013-08-01T00:00Z[UTC]
 
 <span style="color: #404040">(</span><span style="color: #4169E1">time/zoned-date-time</span> <span style="color: #2E8B57">&quot;UTC&quot;</span> <span style="color: #404040">(</span><span style="color: #4169E1">.</span> <span style="color: #E9967A">:java.util.Date</span> <span style="color: #E9967A">:new</span><span style="color: #404040">)</span><span style="color: #404040">)</span>
-=&gt; 2022-05-18T09:36:18.243Z[UTC]</code>
+=&gt; 2022-05-19T10:32:39.567Z[UTC]</code>
                     </div>
                     
                     
@@ -59933,7 +60018,7 @@ line3&quot;</span><span style="color: #404040">)</span>
                     
                     <div class="examples">
                         <code><span style="color: #404040">(</span><span style="color: #4169E1">total-memory</span><span style="color: #404040">)</span>
-=&gt; &quot;946.0MB&quot;</code>
+=&gt; &quot;1474.5MB&quot;</code>
                     </div>
                     
                     
@@ -61366,7 +61451,7 @@ sorted     reverse         max, min</code></div>
                     
                     <div class="examples">
                         <code><span style="color: #404040">(</span><span style="color: #4169E1">uuid</span><span style="color: #404040">)</span>
-=&gt; &quot;02817d4d-ba11-47ce-8deb-9e19d2fc4f78&quot;</code>
+=&gt; &quot;d2c2baad-1e9a-4acf-8dac-df64dfa52fda&quot;</code>
                     </div>
                     
                     

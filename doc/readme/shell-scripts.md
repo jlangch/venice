@@ -112,7 +112,7 @@ A larger example that zips Tomcat log files
 ;; -------------------------------------------------------------------------------
 ;; Zips the last month's Tomcat log files
 ;;
-;; > java -jar venice-1.10.12.jar -file zip-tomcat-logs.venice ./logs
+;; > java -jar venice-1.10.13.jar -file zip-tomcat-logs.venice ./logs
 ;; -------------------------------------------------------------------------------
 (do
    (defn tomcat-log-file-filter [prefix year month]
