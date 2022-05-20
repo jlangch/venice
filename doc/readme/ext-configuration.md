@@ -57,6 +57,10 @@ Reads a JOSN file into a configuration map.
   (println "Password:    " (-> cfg :db :password)))
 ```
 
+*Note*: The functions `config/resource` and `config/file` accett optional translating 
+function for keys in the map. Mostly you may want to use `keyword` to turn strings 
+to keywords.
+
 
 **Environment Variables**
 
