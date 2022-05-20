@@ -32,7 +32,7 @@ Reads configuration from multiple sources and recursively merges it:
 
 **JSON Files**
 
-Reads a JOSN file into a configuration map.
+Reads a JSON file into a configuration map.
 
 ```
 (do
@@ -57,7 +57,7 @@ Reads a JOSN file into a configuration map.
   (println "Password:    " (-> cfg :db :password)))
 ```
 
-*Note*: The functions `config/resource` and `config/file` accett optional translating 
+*Note*: The functions `config/resource` and `config/file` accept an optional translating 
 function for keys in the map. Mostly you may want to use `keyword` to turn strings 
 to keywords.
 
