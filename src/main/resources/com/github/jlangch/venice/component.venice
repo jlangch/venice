@@ -315,19 +315,25 @@
 
 
 (defn- start-component [component system key]
-  (try (-> (start component) (mark-as-started))
-       (catch :VncException e
-              (throw (ex :VncException
-                         "Failed to start component ~{key} in system '~(:name system)'!"
-                         e)))))
+  (try
+    (if (extends? (type component) Component)
+      (-> (start component) (mark-as-started))
+      (mark-as-started component))
+    (catch :VncException e
+           (throw (ex :VncException
+                      "Failed to start component ~{key} in system '~(:name system)'!"
+                      e)))))
 
 
 (defn- stop-component [component system key]
-  (try (-> (stop component) (mark-as-stopped))
-       (catch :VncException e
-              (throw (ex :VncException
-                         "Failed to stop component ~{key} in system '~(:name system)'!"
-                         e)))))
+  (try
+    (if (extends? (type component) Component)
+      (-> (stop component) (mark-as-stopped))
+      (mark-as-stopped component))
+    (catch :VncException e
+           (throw (ex :VncException
+                      "Failed to stop component ~{key} in system '~(:name system)'!"
+                      e)))))
 
 
 (defn- mark-as-started [component]

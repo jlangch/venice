@@ -276,6 +276,64 @@ public class ComponentModuleTest {
 	}
 
 	@Test
+	public void test_component_with_config_as_vanilla_map() {
+		final Venice venice = new Venice();
+
+		final String script =
+				  "(do                                                                \n"
+				+ "  (load-module :component)                                         \n"
+				+ "                                                                   \n"
+				+ "  (deftype :server [components :map]                               \n"
+				+ "     component/Component                                           \n"
+				+ "       (start [this]                                               \n"
+				+ "          (let [port (get-cfg this :server :port)]                 \n"
+				+ "            (println \"~(id this) started at port ~{port}\") this))\n"
+				+ "       (stop [this]                                                \n"
+				+ "          (println \"~(id this) stopped\") this)                   \n"
+				+ "       (inject [this deps]                                         \n"
+				+ "          (assoc this :components deps)))                          \n"
+				+ "                                                                   \n"
+				+ "  (deftype :database [components :map]                             \n"
+				+ "     component/Component                                           \n"
+				+ "       (start [this]                                               \n"
+				+ "          (let [user (get-cfg this :db :user)]                     \n"
+				+ "            (println \"~(id this) started (user: ~{user})\") this))\n"
+				+ "       (stop [this]                                                \n"
+				+ "          (println \"~(id this) stopped\") this)                   \n"
+				+ "       (inject [this deps]                                         \n"
+				+ "          (assoc this :components deps)))                          \n"
+				+ "                                                                   \n"
+				+ "  (defn create-system []                                           \n"
+				+ "    (-> (component/system-map                                      \n"
+				+ "           \"test\"                                                \n"
+				+ "           :config {:server {:port 4600}                           \n"
+				+ "                    :db {:user \"foo\" :pwd \"123\"}}              \n"
+				+ "           :server (server. {})                                    \n"
+				+ "           :store (database. {}))                                  \n"
+				+ "        (component/system-using                                    \n"
+				+ "           {:server [:store :config]                               \n"
+				+ "            :store  [:config]})))                                  \n"
+				+ "                                                                   \n"
+				+ "  (defn- id [this]                                                 \n"
+				+ "    (-> this :components :component-info :id))                     \n"
+				+ "                                                                   \n"
+				+ "  (defn- get-cfg [this & ks]                                       \n"
+				+ "    (-> this :components :config (get-in ks)))                     \n"
+				+ "                                                                   \n"
+				+ "  (with-out-str                                                    \n"
+				+ "    (-> (create-system)                                            \n"
+				+ "        (component/start)                                          \n"
+				+ "        (component/stop))))                                          "; 
+
+		assertEquals(
+			":store started (user: foo)\n"  +
+			":server started at port 4600\n" +
+			":server stopped\n" +
+			":store stopped\n",
+			venice.eval(script));
+	}
+
+	@Test
 	public void test_double_start() {
 		final Venice venice = new Venice();
 
