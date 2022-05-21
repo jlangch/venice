@@ -290,14 +290,29 @@
             (println "port:" (-> cfg :http :port)))
             ; => port: 8080
           ```
+          """
+     :examples '(
+          """
+          ;; -------------------------------------------------------------------
+          ;; Example I) Configuration builder
+          (do
+            (load-module :config ['config :as 'cfg])
 
-          *Using configurations with the component module:*
-
-          ```
+            (cfg/build
+              (cfg/resource "config-defaults.json" :key-fn keyword)
+              (cfg/file "./config-local.json" :key-fn keyword)
+              (cfg/env-var "SERVER_PORT" [:http :port])
+              (cfg/env-var "SERVER_THREADS" [:http :threads])
+              (cfg/property-var "MASTER_PWD" [:app :master-pwd])))
+          """,
+          """
+          ;; -------------------------------------------------------------------
+          ;; Example II) Using configurations with the component module
           (do
             (load-module :config ['config :as 'cfg])
             (load-module :component ['component :as 'cmp])
 
+            ;; define the server component
             (deftype :server [components :map]
                cmp/Component
                  (start [this]
@@ -310,6 +325,8 @@
                  (inject [this deps]
                     (assoc this :components deps)))
 
+            ;; note that the configuration is a plain vanilla Venice map and
+            ;; does not implement the protocol 'Component'
             (defn create-system []
               (-> (cmp/system-map
                      "test"
@@ -327,16 +344,6 @@
                 (cmp/stop))
 
             nil)
-          ```
-          """
-     :examples '(
-          """
-          (config/build
-            (config/resource "config-defaults.json" :key-fn keyword)
-            (config/file "./config-local.json" :key-fn keyword)
-            (config/env-var "SERVER_PORT" [:http :port])
-            (config/env-var "SERVER_THREADS" [:http :threads])
-            (config/property-var "MASTER_PWD" [:app :master-pwd]))
           """)
      :see-also '(
           "config/file"     "config/resource"
