@@ -19,8 +19,8 @@ and this project adheres to
 ### Changed
 
 - the 'component' module to work with plain vanilla Venice values that do 
-  not implement the Component protocol. This allows a smoother integration
-  with the configurations created by the 'config' module.
+  not implement the Component protocol. This allows for a smoother 
+  integration with configurations created by the 'config' module.
 
 
 
