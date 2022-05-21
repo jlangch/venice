@@ -64,7 +64,7 @@ to keywords.
 
 **Environment Variables**
 
-Reads a configuration values from environment variables and associates them with the 
+Reads configuration values from environment variables and associates them with the 
 specified paths in the configuration map
 
 ```
@@ -97,7 +97,7 @@ Specifying default values:
 
 **Java Properties**
 
-Reads a configuration values from system properties and associates them with the 
+Reads configuration values from system properties and associates them with the 
 specified paths in the configuration map
 
 ```
