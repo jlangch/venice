@@ -125,3 +125,51 @@ Specifying default values:
   
   (println "Http port:"    (-> cfg :http :port)))  ; => "8080"
 ```
+
+## Using configurations with the component module
+
+```
+(do
+  (load-module :config ['config :as 'cfg])
+  (load-module :component ['component :as 'cmp])
+
+  ;; define the server component
+  (deftype :server [components :map]
+     cmp/Component
+       (start [this]
+          (let [port (-> this :components :config :server :port)]
+            (println (id this) "started at port " port)
+            this))
+       (stop [this]
+          (println (id this) "stopped")
+          this)
+       (inject [this deps]
+          (assoc this :components deps)))
+
+  ;; note that the configuration is a plain vanilla Venice map and does not
+  ;; implement the protocol 'Component'
+  (defn create-system []
+    (-> (cmp/system-map
+           "test"
+           :config (cfg/build
+                     (cfg/env-var "SERVER_PORT" [:server :port] "8800"))
+           :server (server. {}))
+        (cmp/system-using
+           {:server [:config]})))
+
+  (defn- id [this]
+    (-> this :components :component-info :id))
+
+  (-> (create-system)
+      (cmp/start)
+      (cmp/stop))
+      
+  nil)
+```
+
+prints
+
+```
+:server started at port 8800
+:server stopped
+```
