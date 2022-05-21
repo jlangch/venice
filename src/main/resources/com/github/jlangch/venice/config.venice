@@ -305,7 +305,7 @@
                       (println (id this) "started at port" port)
                       this))
                  (stop [this]
-                    (println (id this) " stopped")
+                    (println (id this) "stopped")
                     this)
                  (inject [this deps]
                     (assoc this :components deps)))
