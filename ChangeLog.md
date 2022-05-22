@@ -28,8 +28,10 @@ and this project adheres to
 
 ### Fixed
 
--  fixed 'repl-setup.venice' script that runs at installation time  
-   `shell> java -jar venice-*.jar -setup -colors`
+-  fixed the '-setup-ext' option in the 'repl-setup.venice' script 
+   that is used to install Venice  
+   `shell> java -jar venice-*.jar -setup -colors`   
+   `shell> java -jar venice-*.jar -setup-ext -colors`
 
 
 
