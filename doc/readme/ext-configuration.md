@@ -71,11 +71,11 @@ specified paths in the configuration map
 (do
   (load-module :config ['config :as 'c])
   
-  (def cfg (config/build
-             (config/env-var "JAVA_HOME" [:java-home])
-             (config/env-var "TERM_PROGRAM" [:term :prog])
-             (config/env-var "TERM" [:term :name])
-             (config/env-var "SERVER_PORT" [:http :port])))
+  (def cfg (c/build
+             (c/env-var "JAVA_HOME" [:java-home])
+             (c/env-var "TERM_PROGRAM" [:term :prog])
+             (c/env-var "TERM" [:term :name])
+             (c/env-var "SERVER_PORT" [:http :port])))
              
   (println "Java home:" (-> cfg :java-home))    ; => /Library/Java/JavaVirtualMachines/temurin-8.jdk/Contents/Home
   (println "Term prog:" (-> cfg :term :prog))   ; => Apple_Terminal
@@ -89,8 +89,8 @@ Specifying default values:
 (do
   (load-module :config ['config :as 'c])
   
-  (def cfg (config/build
-             (config/env-var "SERVER_PORT" [:http :port] "8080")))
+  (def cfg (c/build
+             (c/env-var "SERVER_PORT" [:http :port] "8080")))
   
   (println "Http port:" (-> cfg :http :port)))  ; => "8080"
 ```
@@ -104,10 +104,10 @@ specified paths in the configuration map
 (do
   (load-module :config ['config :as 'c])
   
-  (def cfg (config/build
-             (config/property-var "java.vendor" [:java :vendor])
-             (config/property-var "java.version" [:java :version])
-             (config/property-var "SERVER_PORT" [:http :port])))
+  (def cfg (c/build
+             (c/property-var "java.vendor" [:java :vendor])
+             (c/property-var "java.version" [:java :version])
+             (c/property-var "SERVER_PORT" [:http :port])))
              
   (println "Java vendor: " (-> cfg :java :vendor))    ; => Temurin
   (println "Java version:" (-> cfg :java :version))   ; => 1.8.0_322
@@ -120,8 +120,8 @@ Specifying default values:
 (do
   (load-module :config ['config :as 'c])
   
-  (def cfg (config/build
-             (config/property-var "SERVER_PORT" [:http :port] "8080")))
+  (def cfg (c/build
+             (c/property-var "SERVER_PORT" [:http :port] "8080")))
   
   (println "Http port:"    (-> cfg :http :port)))  ; => "8080"
 ```
