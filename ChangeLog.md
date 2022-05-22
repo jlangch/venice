@@ -28,8 +28,9 @@ and this project adheres to
 
 ### Fixed
 
--  fixed the '-setup-ext' option in the 'repl-setup.venice' script 
-   that is used to install Venice  
+-  fixed the '-setup-ext' option in the  _repl-setup.venice_  script 
+   that is used to install Venice with additional fonts and 3rdparty 
+   libraries   
    `shell> java -jar venice-*.jar -setup -colors`   
    `shell> java -jar venice-*.jar -setup-ext -colors`
 
