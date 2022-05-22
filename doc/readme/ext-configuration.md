@@ -53,8 +53,8 @@ Reads a JSON file into a configuration map.
              (config/build
                (c/file json :key-fn keyword)))) 
             
-  (println "Driver class:" (-> cfg :db :classname))   
-  (println "Password:    " (-> cfg :db :password)))
+  (println "Driver class:" (get-in cfg [:db :classname]))   
+  (println "Password:    " (get-in cfg [:db :password])))
 ```
 
 *Note*: The functions `config/resource` and `config/file` accept an optional translating 
@@ -77,10 +77,10 @@ specified paths in the configuration map
              (c/env-var "TERM" [:term :name])
              (c/env-var "SERVER_PORT" [:http :port])))
              
-  (println "Java home:" (-> cfg :java-home))    ; => /Library/Java/JavaVirtualMachines/temurin-8.jdk/Contents/Home
-  (println "Term prog:" (-> cfg :term :prog))   ; => Apple_Terminal
-  (println "Term name:" (-> cfg :term :name))   ; => xterm-256color
-  (println "Http port:" (-> cfg :http :port)))  ; => nil
+  (println "Java home:" (get cfg :java-home))         ; => /Library/Java/JavaVirtualMachines/temurin-8.jdk/Contents/Home
+  (println "Term prog:" (get-in cfg [:term :prog]))   ; => Apple_Terminal
+  (println "Term name:" (get-in cfg [:term :name]))   ; => xterm-256color
+  (println "Http port:" (get-in cfg [:http :port])))  ; => nil
 ```
 
 Specifying default values:
@@ -92,7 +92,7 @@ Specifying default values:
   (def cfg (c/build
              (c/env-var "SERVER_PORT" [:http :port] "8080")))
   
-  (println "Http port:" (-> cfg :http :port)))  ; => "8080"
+  (println "Http port:" (get-in cfg [:http :port])))  ; => "8080"
 ```
 
 **Java Properties**
@@ -109,9 +109,9 @@ specified paths in the configuration map
              (c/property-var "java.version" [:java :version])
              (c/property-var "SERVER_PORT" [:http :port])))
              
-  (println "Java vendor: " (-> cfg :java :vendor))    ; => Temurin
-  (println "Java version:" (-> cfg :java :version))   ; => 1.8.0_322
-  (println "Http port:   " (-> cfg :http :port)))     ; => nil
+  (println "Java vendor: " (get-in cfg [:java :vendor]))    ; => Temurin
+  (println "Java version:" (get-in cfg [:java :version]))   ; => 1.8.0_322
+  (println "Http port:   " (get-in cfg [:http :port])))     ; => nil
 ```
 
 Specifying default values:
@@ -123,7 +123,7 @@ Specifying default values:
   (def cfg (c/build
              (c/property-var "SERVER_PORT" [:http :port] "8080")))
   
-  (println "Http port:"    (-> cfg :http :port)))  ; => "8080"
+  (println "Http port:"    (get-in cfg [:http :port])))  ; => "8080"
 ```
 
 ## Using configurations with the component module
@@ -137,7 +137,7 @@ Specifying default values:
   (deftype :server [components :map]
      cmp/Component
        (start [this]
-          (let [port (-> this :components :config :server :port)]
+          (let [port (get-in this [:components :config :server :port])]
             (println (id this) "started at port " port)
             this))
        (stop [this]
@@ -158,7 +158,7 @@ Specifying default values:
            {:server [:config]})))
 
   (defn- id [this]
-    (-> this :components :component-info :id))
+    (get-in this [:components :component-info :id]))
 
   (-> (create-system)
       (cmp/start)
