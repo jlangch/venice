@@ -99,14 +99,14 @@
 
             (deftype :server [port :long]
                c/Component
-                 (start [this] (println ":server started") this)
-                 (stop [this] (println ":server stopped") this))
+                 (start [this] (println "server started") this)
+                 (stop [this] (println "server stopped") this))
 
             (deftype :database [user       :string
                                 password   :string]
                c/Component
-                 (start [this] (println ":database started") this)
-                 (stop [this] (println ":database stopped") this))
+                 (start [this] (println "database started") this)
+                 (stop [this] (println "database stopped") this))
 
             (c/system-map
               "test"
@@ -164,10 +164,10 @@
                  (start [this]
                    (let [store1 (-> (c/dep this :store1) :name)
                          store2 (-> (c/dep this :store2) :name)]
-                     (println ":server started. using the stores" store1 "," store2))
+                     (println "server started. using the stores" store1 "," store2))
                    this)
                  (stop [this]
-                   (println ":server stopped")
+                   (println "server stopped")
                    this))
 
             (deftype :database [name       :string
@@ -175,10 +175,10 @@
                                 password   :string]
                c/Component
                  (start [this]
-                   (println ":database" (:name this) "started")
+                   (println "database" (:name this) "started")
                    this)
                  (stop [this]
-                   (println ":database" (:name this) "stopped")
+                   (println "database" (:name this) "stopped")
                    this))
 
             (defn create-system []
@@ -278,7 +278,7 @@
 
   deps [c]
 
-  (-> (meta c) :dependencies))
+  (get (meta c) :dependencies))
 
 
 (defn
@@ -319,7 +319,7 @@
 
   dep [c k]
 
-  (-> (meta c) :dependencies k))
+  (get-in (meta c) [:dependencies k]))
 
 
 (defn
@@ -349,9 +349,9 @@
           """)
      :see-also '("component/dep", "component/deps")}
 
-  id [component]
+  id [c]
 
-  (get (dep component :component-info) :id))
+  (get-in (meta c) [:dependencies :component-info :id]))
 
 
 (defn-
@@ -369,7 +369,7 @@
                           key
                           (let [dep-keys (dag/direct-children graph key)]
                             (-> (get-component components key system)
-                                (mark-as-stopped-if-status-missing)
+                                (add-missing-status)
                                 (add-component-dependencies
                                     (get-component-dependency-map key
                                                                   system
@@ -474,7 +474,7 @@
   (vary-meta component assoc :started false))
 
 
-(defn- mark-as-stopped-if-status-missing [component]
+(defn- add-missing-status [component]
   (if (nil? (:started (meta component)))
     (mark-as-stopped component)
     component))

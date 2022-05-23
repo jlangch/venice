@@ -317,7 +317,7 @@
                cmp/Component
                  (start [this]
                     (let [config (cmp/dep this :config)
-                          port   (-> config :server :port)]
+                          port   (get-in config [:server :port])]
                       (println (cmp/id this) "started at port" port)
                       this))
                  (stop [this]
