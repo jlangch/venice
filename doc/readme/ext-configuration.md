@@ -137,12 +137,12 @@ Specifying default values:
   (deftype :server []
      cmp/Component
        (start [this]
-          (let [config (-> (cmp/dependencies this) :config)
+          (let [config (cmp/dep this :config)
                 port   (-> config :server :port)]
-            (println (id this) "started at port" port)
+            (println (c/id this) "started at port" port)
             this))
        (stop [this]
-          (println (id this) "stopped")
+          (println (c/id this) "stopped")
           this))
 
   ;; note that the configuration is a plain vanilla Venice map and
@@ -155,9 +155,6 @@ Specifying default values:
            :server (server. ))
         (cmp/system-using
            {:server [:config]})))
-
-  (defn- id [this]
-    (-> (cmp/dependencies this) :component-info :id))
 
   (-> (create-system)
       (cmp/start)

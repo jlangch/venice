@@ -2737,9 +2737,9 @@ public class DocGenerator {
 
 		final DocSection util = new DocSection("Util", id());
 		all.addSection(util);
-		util.addItem(getDocItem("component/dependencies"));
-		util.addItem(getDocItem("component/dependency"));
-		util.addItem(getDocItem("component/component-id"));
+		util.addItem(getDocItem("component/deps"));
+		util.addItem(getDocItem("component/dep"));
+		util.addItem(getDocItem("component/id"));
 
 		return section;
 	}

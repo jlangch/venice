@@ -162,8 +162,8 @@
             (deftype :server [port :long]
                c/Component
                  (start [this]
-                   (let [store1 (-> (c/dependency this :store1) :name)
-                         store2 (-> (c/dependency this :store2) :name)]
+                   (let [store1 (-> (c/dep this :store1) :name)
+                         store2 (-> (c/dep this :store2) :name)]
                      (println ":server started. using the stores" store1 "," store2))
                    this)
                  (stop [this]
@@ -217,17 +217,23 @@
 
 
 (defn
-  ^{ :arglists '("(started? component)")
-     :doc "Returns `true` if the component is marked as being started else `false`" }
+  ^{ :arglists '("(started? c)")
+     :doc """
+          Returns `true` if the component 'c' is marked as being started else
+          `false`.
+          """ }
 
-  started? [component]
+  started? [c]
 
-  (:started (meta component) false))
+  (:started (meta c) false))
 
 
 (defn
-  ^{ :arglists '("(stopped? component)")
-     :doc "Returns `true` if the component is marked as being stopped else `false`" }
+  ^{ :arglists '("(stopped? c)")
+     :doc """
+          Returns `true` if the component 'c' is marked as being stopped else
+          `false`.
+          """ }
 
   stopped? [component]
 
@@ -235,18 +241,19 @@
 
 
 (defn
-  ^{ :arglists '("(dependencies component)")
+  ^{ :arglists '("(deps c)")
      :doc """
-          Returns the dependencies of the component or `nil` if there aren't
+          Returns the dependencies of the component 'c' or `nil` if there aren't
           any dependencies.
-
-          ```
+          """
+     :examples '(
+          """
           (do
             (load-module :component ['component :as 'c])
 
             (deftype :server []
                c/Component
-                 (start [this] (println "Dependencies: " (c/dependencies this)) this)
+                 (start [this] (println "Dependencies: " (c/deps this)) this)
                  (stop [this] this))
 
             (deftype :database []
@@ -266,28 +273,28 @@
                 (c/stop))
 
             nil)
-          ```
-          """
-     :see-also '("component/dependency", "component/component-id")}
+          """)
+     :see-also '("component/dep", "component/id")}
 
-  dependencies [component]
+  deps [c]
 
-  (-> (meta component) :dependencies))
+  (-> (meta c) :dependencies))
 
 
 (defn
-  ^{ :arglists '("(dependency component k)")
+  ^{ :arglists '("(dep c k)")
      :doc """
-          Returns a dependency given by its key `k` from the component's
+          Returns a dependency given by its key 'k' from the component 'c'
           dependencies.
-
-          ```
+          """
+     :examples '(
+          """
           (do
             (load-module :component ['component :as 'c])
 
             (deftype :server []
                c/Component
-                 (start [this] (println "Store: " (c/dependency this :store)) this)
+                 (start [this] (println "Store: " (c/dep this :store)) this)
                  (stop [this] this))
 
             (deftype :database []
@@ -307,51 +314,42 @@
                 (c/stop))
 
             nil)
-          ```
-          """
-     :see-also '("component/dependencies", "component/component-id")}
+          """)
+     :see-also '("component/deps", "component/id")}
 
-  dependency [component k]
+  dep [c k]
 
-  (-> (meta component) :dependencies k))
+  (-> (meta c) :dependencies k))
 
 
 (defn
-  ^{ :arglists '("(component-id c)")
-     :doc """
-          Returns a component's id.
-
-          ```
+  ^{ :arglists '("(id c)")
+     :doc "Returns id of the component 'c'."
+     :examples '(
+          """
           (do
             (load-module :component ['component :as 'c])
 
             (deftype :server []
                c/Component
-                 (start [this] (println "ID: " (c/component-id this)) this)
-                 (stop [this] this))
-
-            (deftype :database []
-               c/Component
-                 (start [this] this)
+                 (start [this] (println "ID: " (c/id this)) this)
                  (stop [this] this))
 
             (defn create-system []
               (-> (c/system-map
                     "test"
-                    :server (server. )
-                    :store (database. ))
-                  (c/system-using {:server [:store]})))
+                    :server (server. ))
+                  (c/system-using {:server []})))
 
             (-> (create-system)
                 (c/start)
                 (c/stop))
 
             nil)
-          ```
-          """
-     :see-also '("component/dependency", "component/dependencies")}
+          """)
+     :see-also '("component/dep", "component/deps")}
 
-  component-id [component]
+  id [component]
 
   (get (dependency component :component-info) :id))
 
