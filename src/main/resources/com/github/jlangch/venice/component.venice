@@ -239,6 +239,34 @@
      :doc """
           Returns the dependencies of the component or `nil` if there aren't
           any dependencies.
+
+          ```
+          (do
+            (load-module :component ['component :as 'c])
+
+            (deftype :server []
+               c/Component
+                 (start [this] (println "Dependencies: " (c/dependencies this)) this)
+                 (stop [this] this))
+
+            (deftype :database []
+               c/Component
+                 (start [this] this)
+                 (stop [this] this))
+
+            (defn create-system []
+              (-> (c/system-map
+                    "test"
+                    :server (server. )
+                    :store (database. ))
+                  (c/system-using {:server [:store]})))
+
+            (-> (create-system)
+                (c/start)
+                (c/stop))
+
+            nil)
+          ```
           """
      :see-also '("component/dependency", "component/component-id")}
 
@@ -250,8 +278,36 @@
 (defn
   ^{ :arglists '("(dependency component k)")
      :doc """
-          Returns a dependency given by its key `k` from the components
+          Returns a dependency given by its key `k` from the component's
           dependencies.
+
+          ```
+          (do
+            (load-module :component ['component :as 'c])
+
+            (deftype :server []
+               c/Component
+                 (start [this] (println "Store: " (c/dependency this :store)) this)
+                 (stop [this] this))
+
+            (deftype :database []
+               c/Component
+                 (start [this] this)
+                 (stop [this] this))
+
+            (defn create-system []
+              (-> (c/system-map
+                    "test"
+                    :server (server. )
+                    :store (database. ))
+                  (c/system-using {:server [:store]})))
+
+            (-> (create-system)
+                (c/start)
+                (c/stop))
+
+            nil)
+          ```
           """
      :see-also '("component/dependencies", "component/component-id")}
 
@@ -262,7 +318,37 @@
 
 (defn
   ^{ :arglists '("(component-id c)")
-     :doc "Returns a component's id"
+     :doc """
+          Returns a component's id.
+
+          ```
+          (do
+            (load-module :component ['component :as 'c])
+
+            (deftype :server []
+               c/Component
+                 (start [this] (println "ID: " (c/component-id this)) this)
+                 (stop [this] this))
+
+            (deftype :database []
+               c/Component
+                 (start [this] this)
+                 (stop [this] this))
+
+            (defn create-system []
+              (-> (c/system-map
+                    "test"
+                    :server (server. )
+                    :store (database. ))
+                  (c/system-using {:server [:store]})))
+
+            (-> (create-system)
+                (c/start)
+                (c/stop))
+
+            nil)
+          ```
+          """
      :see-also '("component/dependency", "component/dependencies")}
 
   component-id [component]
