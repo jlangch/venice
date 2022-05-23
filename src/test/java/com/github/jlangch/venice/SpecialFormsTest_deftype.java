@@ -203,14 +203,27 @@ public class SpecialFormsTest_deftype {
 	public void test_deftype_assoc_meta() {
 		final Venice venice = new Venice();
 
-		final String script =
+		final String script1 =
 				"(do                                                   \n" +
 				"  (deftype :complex [real :long, imaginary :long?])   \n" +
-				"  (let [x (vary-meta (complex. 100 200) assoc :a 999) \n" +
+				"                                                      \n" +
+				"  (let [c (complex. 100 200)                          \n" +
+				"        x (vary-meta c assoc :a 999)                  \n" +
 				"        y (assoc x :real 101)]                        \n" +
 				"    (get (meta y) :a)))                                 ";
 
-		assertEquals(999L, venice.eval(script));					
+		assertEquals(999L, venice.eval(script1));					
+
+		final String script2 =
+				"(do                                                   \n" +
+				"  (deftype :complex [real :long, imaginary :long?])   \n" +
+				"                                                      \n" +
+				"  (let [c (complex. 100 200)                          \n" +
+				"        x (vary-meta c assoc :a 999)                  \n" +
+				"        y (assoc x :real 101)]                        \n" +
+				"    (get y :real)))                                     ";
+
+		assertEquals(101L, venice.eval(script2));					
 	}
 
 	@Test

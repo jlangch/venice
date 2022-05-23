@@ -21,6 +21,8 @@ and this project adheres to
 - the 'component' module to work with vanilla Venice values that do 
   not implement the Component protocol. This allows for a smoother 
   integration with configurations created by the 'config' module.
+- refactored the 'component' module to store a component's dependencies
+  in the component's meta data.
 
 
 

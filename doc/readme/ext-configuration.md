@@ -134,36 +134,35 @@ Specifying default values:
   (load-module :component ['component :as 'cmp])
 
   ;; define the server component
-  (deftype :server [components :map]
+  (deftype :server []
      cmp/Component
        (start [this]
-          (let [port (get-in this [:components :config :server :port])]
-            (println (id this) "started at port " port)
+          (let [config (-> (cmp/dependencies this) :config)
+                port   (-> config :server :port)]
+            (println (id this) "started at port" port)
             this))
        (stop [this]
           (println (id this) "stopped")
-          this)
-       (inject [this deps]
-          (assoc this :components deps)))
+          this))
 
-  ;; note that the configuration is a plain vanilla Venice map and does not
-  ;; implement the protocol 'Component'
+  ;; note that the configuration is a plain vanilla Venice map and
+  ;; does not implement the protocol 'Component'
   (defn create-system []
     (-> (cmp/system-map
            "test"
            :config (cfg/build
                      (cfg/env-var "SERVER_PORT" [:server :port] "8800"))
-           :server (server. {}))
+           :server (server. ))
         (cmp/system-using
            {:server [:config]})))
 
   (defn- id [this]
-    (get-in this [:components :component-info :id]))
+    (-> (cmp/dependencies this) :component-info :id))
 
   (-> (create-system)
       (cmp/start)
       (cmp/stop))
-      
+
   nil)
 ```
 
