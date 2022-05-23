@@ -2729,6 +2729,17 @@ public class DocGenerator {
 		all.addSection(system);
 		system.addItem(getDocItem("component/system-map", false));
 		system.addItem(getDocItem("component/system-using"));
+		
+		final DocSection protocol = new DocSection("Protocol", id());
+		all.addSection(protocol);
+		protocol.addItem(getDocItem("component/Component", false));
+
+
+		final DocSection util = new DocSection("Util", id());
+		all.addSection(util);
+		util.addItem(getDocItem("component/dependencies"));
+		util.addItem(getDocItem("component/dependency"));
+		util.addItem(getDocItem("component/component-id"));
 
 		return section;
 	}

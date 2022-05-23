@@ -25,15 +25,32 @@
 (ns component)
 
 
-(defprotocol Component
-  ;; Begins operation of this component. Synchronous, does not return
-  ;; until the component is started. Returns an updated version of this
-  ;; component.
-  (start [component] component)
+(defprotocol
+  ^{ :doc """
+          Defines a protocol for components.
 
-  ;; Ceases operation of this component. Synchronous, does not return
-  ;; until the component is stopped. Returns an updated version of this
-  ;; component.
+          Definition:
+
+          ```
+          (defprotocol Component
+            (start [component] component)
+            (stop [component] component))
+          ```
+
+          Function `start`:¶
+          Begins operation of this component. Synchronous, does not return
+          until the component is started. Returns an updated version of this
+          component.
+
+          Function `stop`:¶
+          Ceases operation of this component. Synchronous, does not return
+          until the component is stopped. Returns an updated version of this
+          component.
+          """ }
+
+  Component
+
+  (start [component] component)
   (stop [component] component))
 
 
@@ -41,10 +58,8 @@
                   components   :map
                   dependencies :dag/dag]
   Component
-    (start [system]
-      (start-system system))
-    (stop [system]
-      (stop-system system)))
+    (start [system] (start-system system))
+    (stop [system] (stop-system system)))
 
 
 (deftype :component-info [id          :keyword
@@ -66,7 +81,8 @@
   ^{ :arglists '("(system-map name keyval*)")
      :doc """
           Returns a system constructed of components given as key/value pairs.
-          The 'key' is a `keyword` referencing the component 'value'.¶
+          The 'key' is a `keyword` (the component's id) referencing the component
+          given as 'value'.¶
           The system has default implementations of the Lifecycle 'start' and
           'stop' methods which recursively starts/stops all components in the
           system.
@@ -203,14 +219,18 @@
 (defn
   ^{ :arglists '("(started? component)")
      :doc "Returns `true` if the component is marked as being started else `false`" }
+
   started? [component]
+
   (:started (meta component) false))
 
 
 (defn
   ^{ :arglists '("(stopped? component)")
      :doc "Returns `true` if the component is marked as being stopped else `false`" }
+
   stopped? [component]
+
   (not (started? component)))
 
 
@@ -219,8 +239,11 @@
      :doc """
           Returns the dependencies of the component or `nil` if there aren't
           any dependencies.
-          """ }
+          """
+     :see-also '("component/dependency", "component/component-id")}
+
   dependencies [component]
+
   (-> (meta component) :dependencies))
 
 
@@ -229,9 +252,22 @@
      :doc """
           Returns a dependency given by its key `k` from the components
           dependencies.
-          """ }
+          """
+     :see-also '("component/dependencies", "component/component-id")}
+
   dependency [component k]
+
   (-> (meta component) :dependencies k))
+
+
+(defn
+  ^{ :arglists '("(component-id c)")
+     :doc "Returns a component's id"
+     :see-also '("component/dependency", "component/dependencies")}
+
+  component-id [component]
+
+  (get (dependency component :component-info) :id))
 
 
 (defn-
