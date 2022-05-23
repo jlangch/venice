@@ -351,7 +351,7 @@
 
   id [component]
 
-  (get (dependency component :component-info) :id))
+  (get (dep component :component-info) :id))
 
 
 (defn-
