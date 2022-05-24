@@ -367,27 +367,27 @@ public class ComponentModuleTest {
 
 		final String script =
 				  "(do                                                                \n"
-				+ "  (load-module :component)                                         \n"
+				+ "  (load-module :component ['component :as 'c])                     \n"
 				+ "                                                                   \n"
 				+ "  (deftype :shopping-cart [cart :atom?]                            \n"
-				+ "     component/Component                                           \n"
+				+ "     c/Component                                                   \n"
 				+ "       (start [this] (assoc this :cart (atom [])))                 \n"
 				+ "       (stop [this] (assoc this :cart nil)))                       \n"
 				+ "                                                                   \n"
 				+ "  (defn create-system []                                           \n"
-				+ "    (-> (component/system-map                                      \n"
+				+ "    (-> (c/system-map                                              \n"
 				+ "           \"test\"                                                \n"
 				+ "           :shopping-cart (shopping-cart. nil))                    \n"
-				+ "        (component/system-using {:shopping-cart []})))             \n"
+				+ "        (c/system-using {:shopping-cart []})))                     \n"
 				+ "                                                                   \n"
 				+ "  (def system (create-system))                                     \n"
 				+ "                                                                   \n"
-				+ "  (set! system (component/start system))                           \n"
+				+ "  (set! system (c/start system))                                   \n"
 				+ "                                                                   \n"
-				+ "  (let [cart (-> system :components :shopping-cart :cart)]         \n"
+				+ "  (let [cart (get (c/dep system :shopping-cart) :cart)]            \n"
 				+ "    (swap! cart conj {:item 5677 :quantity 6 :price 45.80M}))      \n"
 				+ "                                                                   \n"
-				+ "  (set! system (component/stop system))))                          "; 
+				+ "  (set! system (c/stop system))))                                  "; 
 
 		venice.eval(script);
 	}
@@ -398,25 +398,25 @@ public class ComponentModuleTest {
 
 		final String script =
 				  "(do                                                                \n"
-				+ "  (load-module :component)                                         \n"
+				+ "  (load-module :component ['component :as 'c])                     \n"
 				+ "                                                                   \n"
 				+ "  (deftype :shopping-cart [cart :atom]                             \n"
-				+ "     component/Component)                                          \n"
+				+ "     c/Component)                                                  \n"
 				+ "                                                                   \n"
 				+ "  (defn create-system []                                           \n"
-				+ "    (-> (component/system-map                                      \n"
+				+ "    (-> (c/system-map                                              \n"
 				+ "           \"test\"                                                \n"
 				+ "           :shopping-cart (shopping-cart. (atom []))               \n"
-				+ "        (component/system-using {:shopping-cart []})))             \n"
+				+ "        (c/system-using {:shopping-cart []})))                     \n"
 				+ "                                                                   \n"
 				+ "  (def system (create-system))                                     \n"
 				+ "                                                                   \n"
-				+ "  (set! system (component/start system))                           \n"
+				+ "  (set! system (c/start system))                                   \n"
 				+ "                                                                   \n"
-				+ "  (let [cart (-> system :components :shopping-cart :cart)]         \n"
+				+ "  (let [cart (get (c/dep system :shopping-cart) :cart)]            \n"
 				+ "    (swap! cart conj {:item 5677 :quantity 6 :price 45.80M}))      \n"
 				+ "                                                                   \n"
-				+ "  (set! system (component/stop system))))                          "; 
+				+ "  (set! system (c/stop system))))                                  "; 
 
 		venice.eval(script);
 	}

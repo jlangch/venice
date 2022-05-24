@@ -278,7 +278,9 @@
 
   deps [c]
 
-  (get (meta c) :dependencies))
+  (if (= (type c) :component/system)
+    (get :components)
+    (get (meta c) :dependencies)))
 
 
 (defn
@@ -319,7 +321,9 @@
 
   dep [c k]
 
-  (get-in (meta c) [:dependencies k]))
+  (if (= (type c) :component/system)
+    (get-in c [:components k])
+    (get-in (meta c) [:dependencies k])))
 
 
 (defn
