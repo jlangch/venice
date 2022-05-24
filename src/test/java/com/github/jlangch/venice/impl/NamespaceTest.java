@@ -545,6 +545,18 @@ public class NamespaceTest {
 	}
 
 	@Test
+	public void test_ns_aliases_on_str_ns() {
+		final Venice venice = new Venice();
+
+		final String script =
+				"(do                            \n" +
+				"   (ns-alias 's 'str)          \n" +
+				"   (s/join [\"ab\" \"cd\"]))    ";
+
+		assertEquals("abcd", venice.eval(script));
+	}
+
+	@Test
 	public void test_def() {
 		final Venice venice = new Venice();
 

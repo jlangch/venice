@@ -235,9 +235,9 @@
           `false`.
           """ }
 
-  stopped? [component]
+  stopped? [c]
 
-  (not (started? component)))
+  (not (started? c)))
 
 
 (defn
