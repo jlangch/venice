@@ -36,23 +36,23 @@ public class ComponentModuleTest {
 
 		final String script =
 				  "(do                                                                \n"
-				+ "  (load-module :component)                                         \n"
+				+ "  (load-module :component ['component :as 'c])                     \n"
 				+ "                                                                   \n"
 				+ "  (deftype :server [port  :long]                                   \n"
-				+ "     component/Component                                           \n"
+				+ "     c/Component                                                   \n"
 				+ "       (start [this] (println \":server started\") this)           \n"
 				+ "       (stop [this] (println \":server stopped\") this))           \n"
 				+ "                                                                   \n"
 				+ "  (defn create-system []                                           \n"
-				+ "    (-> (component/system-map                                      \n"
+				+ "    (-> (c/system-map                                              \n"
 				+ "           \"test\"                                                \n"
 				+ "           :server (server. 4600))                                 \n"
-				+ "        (component/system-using {:server []})))                    \n"
+				+ "        (c/system-using {:server []})))                            \n"
 				+ "                                                                   \n"
 				+ "  (with-out-str                                                    \n"
 				+ "    (-> (create-system)                                            \n"
-				+ "        (component/start)                                          \n"
-				+ "        (component/stop))))                                          "; 
+				+ "        (c/start)                                                  \n"
+				+ "        (c/stop))))                                                  "; 
 
 		assertEquals(
 			":server started\n" +
@@ -66,36 +66,36 @@ public class ComponentModuleTest {
 
 		final String script =
 				  "(do                                                                \n"
-				+ "  (load-module :component)                                         \n"
+				+ "  (load-module :component ['component :as 'c])                     \n"
 				+ "                                                                   \n"
 				+ "  (deftype :server [port :long]                                    \n"
-				+ "     component/Component                                           \n"
-				+ "       (start [this] (println \":server started\") this)           \n"
-				+ "       (stop [this] (println \":server stopped\") this))           \n"
+				+ "     c/Component                                                   \n"
+				+ "       (start [this] (println (c/id this) \"started\") this)       \n"
+				+ "       (stop [this] (println (c/id this) \"stopped\") this))       \n"
 				+ "                                                                   \n"
 				+ "  (deftype :database [user       :string                           \n"
 				+ "                      password   :string]                          \n"
-				+ "     component/Component                                           \n"
-				+ "       (start [this] (println \":database started\") this)         \n"
-				+ "       (stop [this] (println \":database stopped\") this))         \n"
+				+ "     c/Component                                                   \n"
+				+ "       (start [this] (println (c/id this) \"started\") this)       \n"
+				+ "       (stop [this] (println (c/id this) \"stopped\") this))       \n"
 				+ "                                                                   \n"
 				+ "  (defn create-system []                                           \n"
-				+ "    (-> (component/system-map                                      \n"
+				+ "    (-> (c/system-map                                              \n"
 				+ "           \"test\"                                                \n"
 				+ "           :server (server. 4600)                                  \n"
 				+ "           :store  (database. \"foo\" \"123\"))                    \n"
-				+ "        (component/system-using {:server [:store]})))              \n"
+				+ "        (c/system-using {:server [:store]})))                      \n"
 				+ "                                                                   \n"
 				+ "  (with-out-str                                                    \n"
 				+ "    (-> (create-system)                                            \n"
-				+ "        (component/start)                                          \n"
-				+ "        (component/stop))))                                          "; 
+				+ "        (c/start)                                                  \n"
+				+ "        (c/stop))))                                                  "; 
 
 		assertEquals(
-			":database started\n" +
+			":store started\n" +
 			":server started\n" +
 			":server stopped\n" +
-			":database stopped\n",
+			":store stopped\n",
 			venice.eval(script));
 	}
 
