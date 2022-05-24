@@ -83,8 +83,8 @@ public class ComponentModuleTest {
 				+ "    (-> (c/system-map                                              \n"
 				+ "           \"test\"                                                \n"
 				+ "           :server (server. 4600)                                  \n"
-				+ "           :store  (database. \"foo\" \"123\"))                    \n"
-				+ "        (c/system-using {:server [:store]})))                      \n"
+				+ "           :database (database. \"foo\" \"123\"))                  \n"
+				+ "        (c/system-using {:server [:database]})))                   \n"
 				+ "                                                                   \n"
 				+ "  (with-out-str                                                    \n"
 				+ "    (-> (create-system)                                            \n"
@@ -92,10 +92,10 @@ public class ComponentModuleTest {
 				+ "        (c/stop))))                                                  "; 
 
 		assertEquals(
-			":store started\n" +
+			":database started\n" +
 			":server started\n" +
 			":server stopped\n" +
-			":store stopped\n",
+			":database stopped\n",
 			venice.eval(script));
 	}
 
