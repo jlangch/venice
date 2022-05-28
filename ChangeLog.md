@@ -23,7 +23,7 @@ and this project adheres to
   integration with configurations created by the 'config' module.
 - refactored the 'component' module to store a component's dependencies
   in the component's meta data.
-- the namespaces of extension modules 'tomcat', 'tomcat-util', and
+- the namespaces of the extension modules 'tomcat', 'tomcat-util', and
   'benchmark' to follow the module name. 
   Using namespace aliases, introduced with Venice 1.10.11, helps a lot 
   in working with qualified symbols.
