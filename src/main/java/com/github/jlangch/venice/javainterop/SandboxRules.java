@@ -615,7 +615,10 @@ public class SandboxRules {
 				"class:" + BASE + ".impl.types.concurrent.Agent:*",
 
 				// Venice dynamic proxies
-				"class:com.sun.proxy.$Proxy*:*");
+				"class:com.sun.proxy.$Proxy*:*",  // Java 8,11
+				"class:jdk.proxy1.$Proxy*:*",     // Java 17
+				"class:jdk.proxy2.$Proxy*:*",     // Java 17
+				"class:jdk.proxy3.$Proxy*:*");    // Java 17
 	
 	private static final List<String> DEFAULT_CLASS_RULES = 
 			Arrays.asList(

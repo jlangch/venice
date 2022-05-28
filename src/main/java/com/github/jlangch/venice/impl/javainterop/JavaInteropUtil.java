@@ -65,6 +65,7 @@ import com.github.jlangch.venice.impl.util.ErrorMessage;
 import com.github.jlangch.venice.impl.util.reflect.ReflectionAccessor;
 import com.github.jlangch.venice.impl.util.reflect.ReflectionTypes;
 import com.github.jlangch.venice.impl.util.reflect.ReflectionUtil;
+import com.github.jlangch.venice.javainterop.IInterceptor;
 import com.github.jlangch.venice.javainterop.ReturnValue;
 
 
@@ -95,10 +96,10 @@ public class JavaInteropUtil {
 							ReflectionAccessor.invokeConstructor(targetClass, methodArgs));
 				}
 				else {
+					final IInterceptor interceptor = ThreadContext.getInterceptor();
+
 					return JavaInteropUtil.convertToVncVal(
-							ThreadContext
-								.getInterceptor()
-								.onInvokeConstructor(new Invoker(), targetClass, methodArgs));
+							interceptor.onInvokeConstructor(new Invoker(), targetClass, methodArgs));
 				}
 			}
 			else if ("class".equals(methodName)) {			
@@ -122,6 +123,8 @@ public class JavaInteropUtil {
 				}
 			}
 			else {
+				final IInterceptor interceptor = ThreadContext.getInterceptor();
+				
 				if (Types.isVncKeyword(arg0) || (Types.isVncJavaObject(arg0, Class.class))) {
 					// static method / field:   (. :org.foo.Foo :getLastName)
 					final Class<?> targetClass = toClass(arg0, javaImports);
@@ -136,16 +139,12 @@ public class JavaInteropUtil {
 					if (methodArgs.length > 0 || ReflectionAccessor.isStaticMethod(targetClass, methodName, methodArgs)) {
 						// static method
 						return JavaInteropUtil.convertToVncVal(
-								ThreadContext
-									.getInterceptor()
-									.onInvokeStaticMethod(new Invoker(), targetClass, methodName, methodArgs));
+								interceptor.onInvokeStaticMethod(new Invoker(), targetClass, methodName, methodArgs));
 					}
 					else if (ReflectionAccessor.isStaticField(targetClass, methodName)) {
 						// static field
 						return JavaInteropUtil.convertToVncVal(
-								ThreadContext
-									.getInterceptor()
-									.onGetStaticField(new Invoker(), targetClass, methodName));
+								interceptor.onGetStaticField(new Invoker(), targetClass, methodName));
 					}
 					else {
 						throw new JavaMethodInvocationException(String.format(
@@ -179,16 +178,12 @@ public class JavaInteropUtil {
 					if (isInstanceMethod) {
 						// instance method
 						return JavaInteropUtil.convertToVncVal(
-								ThreadContext
-									.getInterceptor()
-									.onInvokeInstanceMethod(new Invoker(), target, targetFormalType, methodName, methodArgs));
+								interceptor.onInvokeInstanceMethod(new Invoker(), target, targetFormalType, methodName, methodArgs));
 					}
 					else if (ReflectionAccessor.isInstanceField(target, methodName)) {
 						// instance field
 						return JavaInteropUtil.convertToVncVal(
-								ThreadContext
-									.getInterceptor()
-									.onGetInstanceField(new Invoker(), target, targetFormalType, methodName));
+								interceptor.onGetInstanceField(new Invoker(), target, targetFormalType, methodName));
 					}
 					else {
 						throw new JavaMethodInvocationException(String.format(

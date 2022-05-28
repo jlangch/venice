@@ -39,14 +39,31 @@ import com.github.jlangch.venice.support.JavaObject;
 
 public class JavaInteropTest {
 
+	@Test
+	public void test_Math_max_int() {
+		final Venice venice = new Venice();
+
+		final String script = "(. :java.lang.Math :max 10I 20I)";
+		
+		assertEquals(20, venice.eval(script));
+	}
 	
 	@Test
-	public void test_Math_max() {
+	public void test_Math_max_long() {
 		final Venice venice = new Venice();
 
 		final String script = "(. :java.lang.Math :max 10 20)";
 		
 		assertEquals(20L, venice.eval(script));
+	}
+	
+	@Test
+	public void test_Math_max_double() {
+		final Venice venice = new Venice();
+
+		final String script = "(. :java.lang.Math :max 10.0 20.0)";
+		
+		assertEquals(20.0D, venice.eval(script));
 	}
 	
 	

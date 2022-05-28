@@ -217,11 +217,17 @@ public class JavaInterop_constructor_Test {
 
 		TestObject_Boxing obj;
 		
-		// Coerce Integer to Long constructor
+		// Coerce Integer to Long or Double constructor
 		obj = (TestObject_Boxing)venice.eval("(. :" + clazz + " :new 100I)");
 		obj = (TestObject_Boxing)venice.eval("(. :" + clazz + " :new 100I)");
-		assertEquals(100L, obj._long);
-		assertNull(obj._double);
+		if (obj._long != null) {
+			assertEquals(100L, obj._long);
+			assertNull(obj._double);
+		}
+		else {
+			assertNull(obj._long);
+			assertEquals(100.0D, obj._double);
+		}
 	}
 
 	@Test

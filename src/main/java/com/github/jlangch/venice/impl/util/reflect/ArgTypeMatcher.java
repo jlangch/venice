@@ -86,35 +86,31 @@ public class ArgTypeMatcher {
 			return true;
 		}
 		
-		if (paramType == byte.class 
-				|| paramType == Byte.class 
-				|| paramType == short.class 
-				|| paramType == Short.class 
-				|| paramType == int.class 
-				|| paramType == Integer.class 
-				|| paramType == long.class
-				|| paramType == Long.class
-		) {
-			return argType == Byte.class 
-					|| argType == Short.class 
-					|| argType == Integer.class 
-					|| argType == Long.class;
+		if (paramType == byte.class) {
+			return argType == Byte.class;
 		}
-		else if (paramType == float.class 
-					|| paramType == Float.class
-					|| paramType == double.class
-					|| paramType == Double.class
-		) {
-			return argType == Float.class 
-					|| argType == Double.class;
+		else if (paramType == short.class) {
+			return argType == Short.class;
 		}
-		else if (paramType == char.class || paramType == Character.class) {
+		else if (paramType == int.class) {
+			return argType == Integer.class;
+		}
+		else if (paramType == long.class) {
+			return argType == Long.class;
+		}
+		else if (paramType == float.class) {
+			return argType == Float.class;
+		}
+		else if (paramType == double.class) {
+			return argType == Double.class;
+		}
+		else if (paramType == char.class) {
 			return argType == Character.class;
 		}
-		else if (paramType == boolean.class || paramType == Boolean.class) {
+		else if (paramType == boolean.class) {
 			return argType == Boolean.class;
 		}
-		
+
 		return false;
 	}
 
