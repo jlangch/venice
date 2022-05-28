@@ -2680,7 +2680,7 @@ public class DocGenerator {
 
 		final DocSection colors = new DocSection("Utils", id());
 		all.addSection(colors);
-		colors.addItem(getDocItem("bench/benchmark", false));
+		colors.addItem(getDocItem("benchmark/benchmark", false));
 
 		return section;
 	}

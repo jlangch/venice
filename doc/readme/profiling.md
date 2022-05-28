@@ -29,8 +29,8 @@ Benchmarking an expression incorporates four phases:
 
 ```clojure
 (do
-  (load-module :benchmark)
-  (bench/benchmark (+ 1 2 3 4) 120000 10000))
+  (load-module :benchmark ['benchmark :as 'b])
+  (b/benchmark (+ 1 2 3 4) 120000 10000))
 ```
 
 The benchmark output: 
@@ -60,7 +60,9 @@ A sample is marked as an outlier if its execution time is lower than `Q1 - 3 * I
 #### Short warm-up phase
 
 ```clojure
-(bench/benchmark (+ 1 2 3 4) 1000 300 :chart true)
+(do
+  (load-module :benchmark ['benchmark :as 'b])
+  (b/benchmark (+ 1 2 3 4) 1000 300 :chart true))
 ```
 
 ```text
@@ -88,7 +90,9 @@ Saved chart to 'benchmark.png'.
 
 
 ```clojure
-(bench/benchmark (+ 1 2 3 4) 120000 10000 :chart true)
+(do
+  (load-module :benchmark ['benchmark :as 'b])
+  (b/benchmark (+ 1 2 3 4) 120000 10000 :chart true))
 ```
 
 ```text

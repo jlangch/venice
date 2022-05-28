@@ -22,26 +22,26 @@
 ;;;; Venice benchmarking
 
 
-(ns bench)
+(ns benchmark)
 
 (load-module :xchart)
 
-(defn bench/remove-outliers [samples low high]
+(defn remove-outliers [samples low high]
   (filter #(and (>= %1 low) (<= %1 high)) samples))
 
 
-(defn bench/chart-vert-line [name x y-max]
+(defn chart-vert-line [name x y-max]
   { name { :x [x x]
            :y [0 y-max]
            :style { :render-style :line
                     :marker-type :none }}})
 
 
-(defn bench/create-chart [data median outlier-low outlier-high params]
+(defn create-chart [data median outlier-low outlier-high params]
   (let [y-max (apply max (:y data))
-        median-line (bench/chart-vert-line "median" median y-max)
-        outlier-low-line (bench/chart-vert-line "outlier low" outlier-low y-max)
-        outlier-high-line (bench/chart-vert-line "outlier high" outlier-high y-max)
+        median-line (chart-vert-line "median" median y-max)
+        outlier-low-line (chart-vert-line "outlier low" outlier-low y-max)
+        outlier-high-line (chart-vert-line "outlier high" outlier-high y-max)
         cdata { "samples" data }
         cdata (if median (merge cdata median-line) cdata)
         cdata (if outlier-low (merge cdata outlier-low-line) cdata)
@@ -64,7 +64,7 @@
       (io/file "benchmark.png"))))
 
 
-(defn bench/chart [stats steps median? outlier?]
+(defn chart [stats steps median? outlier?]
   (let [samples  (:samples stats)
         sorted   (sort samples)
         min      (first sorted)
@@ -87,7 +87,7 @@
                        :else "s")
         x-format (cond (< min 1000) "#0" :else "#0.00")]
      (printf "Quantization step width: %s%n" (format-nano-time step-width))
-     (bench/create-chart
+     (create-chart
        { :x (map #(/ %1 x-scale) (keys data))
          :y (vals data) }
        (if median? (/ (:median stats) x-scale) nil)
@@ -100,7 +100,7 @@
      (println "Saved chart to 'benchmark.png'.")))
 
 
-(defn bench/stats [samples]
+(defn stats [samples]
   (let [q (math/quartiles samples)
         q1 (first q)
         q2 (second q)
@@ -108,7 +108,7 @@
         iqr (- q3 q1)
         outlier-low (- q1 (long (* 3 iqr)))
         outlier-high (+ q3 (long (* 3 iqr)))
-        cleaned-samples (bench/remove-outliers samples outlier-low outlier-high)]
+        cleaned-samples (remove-outliers samples outlier-low outlier-high)]
      { :samples samples
        :q1 q1
        :q2 q2
@@ -123,7 +123,7 @@
        :standard-deviation (math/standard-deviation :sample cleaned-samples) }))
 
 
-(defn bench/print-stats [stats]
+(defn print-stats [stats]
   (printf "                      Samples : %7d%n" (count (:samples stats)))
   (printf "          Execution time mean : %10s%n" (format-nano-time (:q2 stats)))
   (printf " Execution time std-deviation : %10s%n" (format-nano-time (:standard-deviation stats)))
@@ -156,12 +156,20 @@
             | :outliers b | show the outlier range in the chart {true/false}, defaults to false |
            """
       :examples '(
-        "(bench/benchmark (+ 1 2) 120000 10000)",
-        "(bench/benchmark (+ 1 2) 120000 10000 :chart true :median true)",
-        "(bench/benchmark (+ 1 2) 120000 10000 :chart true :outlier true)",
-        "(bench/benchmark (+ 1 2) 120000 10000 :chart true :steps 100)" ) }
+        """
+        (do
+          (load-module :benchmark ['benchmark :as 'b])
 
-   bench/benchmark [expr warmup-iterations iterations & options]
+          (b/benchmark (+ 1 2) 120000 10000)
+
+          (b/benchmark (+ 1 2) 120000 10000 :chart true :median true)
+
+          (b/benchmark (+ 1 2) 120000 10000 :chart true :outlier true)
+
+          (b/benchmark (+ 1 2) 120000 10000 :chart true :steps 100))
+        """) }
+
+   benchmark/benchmark [expr warmup-iterations iterations & options]
 
    (let [opts (apply hash-map options)
          chart? (:chart opts false)
@@ -176,9 +184,9 @@
         (sleep 1000)
         (println "Sampling...")
         (let [samples# (dobench ~iterations ~expr)
-              stats# (bench/stats samples#)]
+              stats# (benchmark/stats samples#)]
           (println "Analyzing...")
-          (bench/print-stats stats#)
+          (benchmark/print-stats stats#)
           (when ~chart?
             (println "Generating chart...")
-            (bench/chart stats# ~steps ~median? ~outlier?))))))
+            (benchmark/chart stats# ~steps ~median? ~outlier?))))))
