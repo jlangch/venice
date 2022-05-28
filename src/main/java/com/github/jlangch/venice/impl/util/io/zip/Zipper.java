@@ -164,7 +164,7 @@ public class Zipper {
 		try {
 			final Path zipFile = Paths.get(zip.getPath());
 
-			try (FileSystem fs = FileSystems.newFileSystem(zipFile, null)) {		
+			try (FileSystem fs = FileSystems.newFileSystem(zipFile, (ClassLoader)null)) {		
 				for (Map.Entry<String,Object> entry : entries.entrySet()) {
 					final String entryName = normalizeAndValidateEntryName(entry.getKey());
 					if (entry.getValue() != null) {
@@ -218,7 +218,7 @@ public class Zipper {
 		try {
 			final Path zipFile = Paths.get(zip.getPath());
 
-			try (FileSystem fs = FileSystems.newFileSystem(zipFile, null)) {		
+			try (FileSystem fs = FileSystems.newFileSystem(zipFile, (ClassLoader)null)) {		
 				for (String entryName : entryNames) {
 					final Path nf = fs.getPath(entryName);
 
