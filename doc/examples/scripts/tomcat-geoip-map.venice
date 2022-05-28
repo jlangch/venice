@@ -20,7 +20,7 @@
 ;;;; limitations under the License.
 
 (do
-  (load-module :tomcat-util)
+  (load-module :tomcat-util ['tomcat-util :as 'tc-util])
   (load-module :mercator)
   (load-module :geoip)
 
