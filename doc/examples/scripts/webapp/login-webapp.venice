@@ -36,7 +36,7 @@
 ;; SESSION_TIMEOUT   [*] -> [not-logged-in]              display login screen
 ;; -----------------+-----------------------------------+-----------------------
 
-(load-module :tomcat)
+(load-module :tomcat ['tomcat :as 'tc])
 (load-module :ring)
 (load-module :kira)
 

@@ -22,7 +22,7 @@
 ;;;; Tomcat
 
 ;;;; start an embedded Tomcat server:
-;;;;   (load-module :tomcat)
+;;;;   (load-module :tomcat ['tomcat :as 'tc])
 ;;;;   (tc/run-tomcat (tc/hello-world-servlet) {:await? false})
 ;;;;
 ;;;; required JARs on the classpath:
@@ -35,7 +35,7 @@
 ;;;; https://github.com/marchrock/ring-tomcat-adapter/blob/master/src/ring/adapter/tomcat.clj
 
 
-(ns tc)
+(ns tomcat)
 
 
 (import :com.github.jlangch.venice.util.servlet.IVeniceServlet
@@ -125,7 +125,7 @@
       (. :setHostName (:tls-hostname options "_default_"))
       (. :setCertificateKeystoreFile (:keystore options nil))
       (. :setCertificateKeystorePassword (:key-password options nil))
-      (. :setCiphers (:tls-ciphers options tc/https-ciphers))
+      (. :setCiphers (:tls-ciphers options tomcat/https-ciphers))
       (. :setSslProtocol (:tls-protocol options "TLSv1.2")))
     ssl-host-config))
 
@@ -138,31 +138,31 @@
 
 
 (defn- create-http-connector [options]
-  (let [connector (. :Connector :new tc/http-connector)]
+  (let [connector (. :Connector :new tomcat/http-connector)]
     (doto connector
-      (. :setPort (:port options tc/default-http-port)))
+      (. :setPort (:port options tomcat/default-http-port)))
     (when (:https? options false)
-      (. connector :setRedirectPort (:https-port options tc/default-https-port)))
+      (. connector :setRedirectPort (:https-port options tomcat/default-https-port)))
     connector))
 
 
 (defn- create-https-connector
   [options]
-  (let [connector (. :Connector :new tc/http-connector)
-        ssl-config (tc/create-ssl-host-config options)
+  (let [connector (. :Connector :new tomcat/http-connector)
+        ssl-config (tomcat/create-ssl-host-config options)
         protocol-handler (. connector :getProtocolHandler)]
     (doto connector
       (. :setScheme "https")
       (. :setSecure true)
       (. :addSslHostConfig ssl-config)
-      (. :setPort (:https-port options tc/default-https-port)))
+      (. :setPort (:https-port options tomcat/default-https-port)))
     (. (. connector :getProtocolHandler) :setSSLEnabled  true)
     connector))
 
 
 (defmacro create-executored-connectors
   [body service options]
-  `(let [executor# (tc/create-executor ~options)]
+  `(let [executor# (tomcat/create-executor ~options)]
      (. ~service :addExecutor executor#)
      (~body ~service ~options executor#)
      ~service))
@@ -171,21 +171,21 @@
 (defmacro create-connector-fn
   [create-fn service options & executor]
   `(. ~service :addConnector (if (:executor? ~options true)
-                               (tc/create-executored-connector ~create-fn (first ~@executor) ~options)
+                               (tomcat/create-executored-connector ~create-fn (first ~@executor) ~options)
                                (~create-fn ~options))))
 
 
 (defn- create-connector
   [service options & executor]
   (when (:http? options true)
-    (tc/create-connector-fn tc/create-http-connector service options executor))
+    (tomcat/create-connector-fn tomcat/create-http-connector service options executor))
   (when (:https? options false)
-    (tc/create-connector-fn tc/create-https-connector service options executor))
+    (tomcat/create-connector-fn tomcat/create-https-connector service options executor))
   service)
 
 
 (defn- create-server [options]
-  (let [base-dir (:base-dir options tc/default-base-dir)
+  (let [base-dir (:base-dir options tomcat/default-base-dir)
         resources-dir (io/file base-dir "resources")
         tomcat (doto (. :Tomcat :new)
                      (. :setBaseDir base-dir))
@@ -194,8 +194,8 @@
       (throw (ex :RuntimeException
                  (str "The resources dir " base-dir " does not exist"))))
     (if (:executor? options true)
-      (tc/create-executored-connectors tc/create-connector service options)
-      (tc/create-connector service options))
+      (tomcat/create-executored-connectors tomcat/create-connector service options)
+      (tomcat/create-connector service options))
     (. (. tomcat :getServer) :addLifecycleListener (. :JreMemoryLeakPreventionListener :new))
     (. (. tomcat :getHost) :setAppBase  "resources")
     tomcat))
@@ -217,13 +217,13 @@
     (proxify :IVeniceServlet
       { :init            (fn [config] nil)
         :destroy         (fn [] nil)
-        :doGet           (fn [req res _] (tc/reply-text res 200 "Hello World"))
-        :doHead          (fn [req res _] (tc/reply-text res 404 "Not Found"))
-        :doPost          (fn [req res _] (tc/reply-text res 404 "Not Found"))
-        :doPut           (fn [req res _] (tc/reply-text res 404 "Not Found"))
-        :doDelete        (fn [req res _] (tc/reply-text res 404 "Not Found"))
-        :doOptions       (fn [req res _] (tc/reply-text res 404 "Not Found"))
-        :doTrace         (fn [req res _] (tc/reply-text res 404 "Not Found"))
+        :doGet           (fn [req res _] (tomcat/reply-text res 200 "Hello World"))
+        :doHead          (fn [req res _] (tomcat/reply-text res 404 "Not Found"))
+        :doPost          (fn [req res _] (tomcat/reply-text res 404 "Not Found"))
+        :doPut           (fn [req res _] (tomcat/reply-text res 404 "Not Found"))
+        :doDelete        (fn [req res _] (tomcat/reply-text res 404 "Not Found"))
+        :doOptions       (fn [req res _] (tomcat/reply-text res 404 "Not Found"))
+        :doTrace         (fn [req res _] (tomcat/reply-text res 404 "Not Found"))
         :getLastModified (fn [] -1) })))
 
 
@@ -251,13 +251,13 @@
   run-tomcat
 
   ([servlet options]
-    (tc/run-tomcat servlet nil nil options))
+    (tomcat/run-tomcat servlet nil nil options))
 
   ([servlet context-path context-doc-base options]
-    (let [server (tc/create-server options)
+    (let [server (tomcat/create-server options)
           context (. server :addContext
-                            (coalesce context-path tc/default-context-path)
-                            (coalesce context-doc-base tc/default-context-doc-base))]
+                            (coalesce context-path tomcat/default-context-path)
+                            (coalesce context-doc-base tomcat/default-context-doc-base))]
       (. server :addServlet "" "venice-servlet" servlet)
       (. context :addServletMappingDecoded "/*" "venice-servlet" false)
       (. server :start)

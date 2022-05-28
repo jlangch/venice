@@ -3,7 +3,7 @@
 ;; -----------------------------------------------------------------------------
 ;;
 
-(load-module :tomcat)
+(load-module :tomcat ['tomcat :as 'tc])
 (load-module :ring)
 
 
