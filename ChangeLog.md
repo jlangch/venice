@@ -14,7 +14,7 @@ and this project adheres to
 
 ### Added
 
-- ...
+- ... 
 
 ### Changed
 
