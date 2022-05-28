@@ -616,6 +616,7 @@ public class SandboxRules {
 
 				// Venice dynamic proxies
 				"class:com.sun.proxy.$Proxy*:*",  // Java 8,11
+				"class:jdk.proxy.$Proxy*:*",      // Java 17
 				"class:jdk.proxy1.$Proxy*:*",     // Java 17
 				"class:jdk.proxy2.$Proxy*:*",     // Java 17
 				"class:jdk.proxy3.$Proxy*:*");    // Java 17
