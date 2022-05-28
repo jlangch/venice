@@ -180,9 +180,10 @@ def sonatypePassword = project.properties['sonatypePassword'] ?: "unknown"
 
 // Detect Java 8 or 11+
 def javaCurr = JavaVersion.current()
+def javaVendor = System.getProperty("java.vendor")
 def java8 = JavaVersion.current() == JavaVersion.VERSION_1_8
 def java11 = JavaVersion.current() >= JavaVersion.VERSION_11
-println "Gradle running on Java    : ${javaCurr}"
+println "Gradle running on Java    : ${javaCurr} (${javaVendor})"
 println "Gradle running on Java 8  : ${java8}"
 println "Gradle running on Java 11+: ${java11}"
 
