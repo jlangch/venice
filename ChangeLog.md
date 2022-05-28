@@ -23,11 +23,11 @@ and this project adheres to
 
 ### Changed
 
-- the 'component' module to work with vanilla Venice values that do 
-  not implement the Component protocol. This allows for a smoother 
+- the 'component' extension module to work with vanilla Venice values x 
+  that do not implement the Component protocol. This allows for a smoother 
   integration with configurations created by the 'config' module.
-- refactored the 'component' module to store a component's dependencies
-  in the component's meta data.
+- refactored the 'component' extension module to store a component's 
+  dependencies in the component's meta data.
 - the namespaces of the extension modules 'tomcat', 'tomcat-util', and
   'benchmark' to follow the module name. 
   Using namespace aliases, introduced with Venice 1.10.11, helps a lot 
