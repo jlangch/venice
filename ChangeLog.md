@@ -16,6 +16,11 @@ and this project adheres to
 
 - ... 
 
+### Fixed
+
+- JavaInterop to run on Java 17. All unit tests run now on Java 8, 11,
+  and 17.
+
 ### Changed
 
 - the 'component' module to work with vanilla Venice values that do 
