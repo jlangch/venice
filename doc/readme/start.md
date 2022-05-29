@@ -16,8 +16,9 @@ Setup Venice on a [local machine](#venice-local-setup) or use a [Venice Gitpod w
 Venice requires Java 8 or newer.
 
 Java can be downloaded from 
-- [AdoptOpenJDK](https://adoptopenjdk.net/)
+- [Eclipse Temurin](https://adoptium.net/de/temurin/releases/)
 - [Zulu](https://www.azul.com/downloads/zulu-community/)
+- [AdoptOpenJDK (old)](https://adoptopenjdk.net/)
 
 
 ### 2. Get the Venice JAR file

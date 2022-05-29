@@ -131,6 +131,13 @@
 //    Repeat step 5) and 6) whenever the Gradle build changes
 //
 // -----------------------------------------------------------------------------
+// GPG Tools for publishing
+//
+//   Download:       https://gpgtools.org/
+//  
+//   Migrate Keys:   https://access.redhat.com/solutions/2115511
+//
+// -----------------------------------------------------------------------------
 
 plugins {
     id 'java'
