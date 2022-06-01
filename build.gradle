@@ -325,7 +325,7 @@ jar {
 
 shadowJar {
     // https://github.com/johnrengelman/shadow/
-
+    
     relocate 'io.vavr', 'org.repackage.io.vavr'
     relocate 'org.jline', 'org.repackage.org.jline'
 
@@ -353,6 +353,8 @@ shadowJar {
 publishing {
     publications {
         venicePublication(MavenPublication) {
+            dependsOn(shadowJar)  // explicit dependency
+
             groupId = 'com.github.jlangch'
             artifactId = 'venice'
             version = "${project.version}"
@@ -416,6 +418,8 @@ publishing {
 
 
 signing {
+    dependsOn(shadowJar)  // explicit dependency
+
     useGpgCmd()  // use the local GPG agent to sign the artefacts
     
     sign publishing.publications.venicePublication
