@@ -10,11 +10,7 @@ and this project adheres to
 
 
 
-## [1.10.14] - 2022-06-xx
-
-### Added
-
-- ... 
+## [1.10.14] - 2022-06-01
 
 ### Fixed
 

@@ -468,7 +468,7 @@
         <div class="main">
             <div class="title">
                  <div class="title-left">
-                   <span class="title-left-venice">Venice</span><span class="title-left-version">V 1.10.13</span>
+                   <span class="title-left-venice">Venice</span><span class="title-left-version">V 1.10.14</span>
                  </div> 
                  <div class="title-right">Cheat Sheet</div>
                  <div style="clear: both;"></div>
@@ -722,15 +722,15 @@
                                  --><!--
                                  --><div class="alias"><a href="#modules.kira">Kira Templates</a></div><!--
                                   --><!--
-                                 --><div class="alias"><a href="#modules.tracing">Tracing</a></div><!--
+                                 --><div class="alias"><a href="#modules.parsifal">Parsifal</a></div><!--
+                                  --><!--
+                                 --><div class="alias"><a href="#modules.config">Configuration</a></div><!--
+                                  --><!--
+                                 --><div class="alias"><a href="#modules.component">Component</a></div><!--
                                   --><!--
                                  --><div class="alias"><a href="#modules.xml">XML</a></div><!--
                                   --><!--
                                  --><div class="alias"><a href="#modules.cryptography">Cryptography</a></div><!--
-                                  --><!--
-                                 --><div class="alias"><a href="#modules.gradle">Gradle</a></div><!--
-                                  --><!--
-                                 --><div class="alias"><a href="#modules.maven">Maven</a></div><!--
                                   --><!--
                                  --><div class="alias"><a href="#modules.java">Java</a></div><!--
                                   --><!--
@@ -744,13 +744,13 @@
                                   --><!--
                                  --><div class="alias"><a href="#modules.ansi">Ansi</a></div><!--
                                   --><!--
-                                 --><div class="alias"><a href="#modules.parsifal">Parsifal</a></div><!--
+                                 --><div class="alias"><a href="#modules.gradle">Gradle</a></div><!--
+                                  --><!--
+                                 --><div class="alias"><a href="#modules.maven">Maven</a></div><!--
+                                  --><!--
+                                 --><div class="alias"><a href="#modules.tracing">Tracing</a></div><!--
                                   --><!--
                                  --><div class="alias"><a href="#modules.benchmark">Benchmark</a></div><!--
-                                  --><!--
-                                 --><div class="alias"><a href="#modules.config">Configuration</a></div><!--
-                                  --><!--
-                                 --><div class="alias"><a href="#modules.component">Component</a></div><!--
                                   --><!--
                                  --><div class="alias"><a href="#modules.app">App</a></div><!--
                                   --><!--
@@ -7506,6 +7506,36 @@
                                 </td>
                               </tr>
                             
+                            <tr id="2073">
+                                <td class="shrink">Protocol</td>
+                                <td class="expand">
+                                  <div class="refs"><!-- prevent whitespaces
+                                     --><!-- 
+                                     --><div class="alias"><a href="#2074">component/Component</a></div><!--
+                                     --><!--
+                                     --><!--
+                                  --></div>
+                                </td>
+                              </tr>
+                            
+                            <tr id="2075">
+                                <td class="shrink">Util</td>
+                                <td class="expand">
+                                  <div class="refs"><!-- prevent whitespaces
+                                     --><!-- 
+                                     --><div class="alias"><a href="#2078">component/deps</a></div><!--
+                                     --><!--
+                                     --><!-- 
+                                     --><div class="alias"><a href="#2076">component/dep</a></div><!--
+                                     --><!--
+                                     --><!-- 
+                                     --><div class="alias"><a href="#2077">component/id</a></div><!--
+                                     --><!--
+                                     --><!--
+                                  --></div>
+                                </td>
+                              </tr>
+                            
                         </tbody>
                     </table>
                     
@@ -7519,11 +7549,11 @@
                       <h3>Venice application archive</h3>
                     </div>
                     
-                    <div class="sub-header-module" id="2073">(load-module :app)</div>
+                    <div class="sub-header-module" id="2079">(load-module :app)</div>
                     <table>
                         <tbody>
                             
-                            <tr id="2074">
+                            <tr id="2080">
                                 <td class="shrink">Build</td>
                                 <td class="expand">
                                   <div class="refs"><!-- prevent whitespaces
@@ -7535,7 +7565,7 @@
                                 </td>
                               </tr>
                             
-                            <tr id="2075">
+                            <tr id="2081">
                                 <td class="shrink">Manifest</td>
                                 <td class="expand">
                                   <div class="refs"><!-- prevent whitespaces
@@ -7560,16 +7590,16 @@
                       
                     </div>
                     
-                    <div class="sub-header-module" id="2076">(load-module :benchmark)</div>
+                    <div class="sub-header-module" id="2082">(load-module :benchmark)</div>
                     <table>
                         <tbody>
                             
-                            <tr id="2077">
+                            <tr id="2083">
                                 <td class="shrink">Utils</td>
                                 <td class="expand">
                                   <div class="refs"><!-- prevent whitespaces
                                      --><!-- 
-                                     --><div class="alias"><a href="#2078">bench/benchmark</a></div><!--
+                                     --><div class="alias"><a href="#2084">benchmark/benchmark</a></div><!--
                                      --><!--
                                      --><!--
                                   --></div>
@@ -7752,8 +7782,10 @@ public class Example {
                   <div class="venicedoc-body">
 	                 <div class="md">
 <div class="md-h1">VeniceDoc</div>
+<div class="md-text-block"><br/></div>
 <div class="md-text-block"><div class="md-text-bold">VeniceDoc</div><div class="md-text-normal"> is a documentation generator for the </div><div class="md-text-italic">Venice</div><div class="md-text-normal"> language for generating API documentation in HTML format from </div><div class="md-text-italic">Venice</div><div class="md-text-normal"> source code.</div></div>
 <div class="md-text-block"><div class="md-text-normal">It is used internally for generating the PDF and HTML cheatsheets. The function </div><div class="md-inline-code">doc</div><div class="md-text-normal"> makes use of it to display the documentation for functions.</div></div>
+<div class="md-text-block"><br/><div class="md-text-normal"> </div><br/></div>
 <div class="md-h2">Example</div>
 <div class="md-text-block"><div class="md-text-normal">Define a function </div><div class="md-inline-code">add</div><div class="md-text-normal"> with documentation:</div></div>
 <div class="md-code-block">
@@ -7776,6 +7808,7 @@ public class Example {
   ([x] x)
   ([x y] (+ x y))
   ([x y &amp; xs] (+ x y xs)))</code></div>
+<div class="md-text-block"><br/></div>
 <div class="md-text-block"><div class="md-text-normal">Show its documentation from the REPL:</div></div>
 <div class="md-code-block">
 <code class="md-code">venice&gt; (doc add)</code></div>
@@ -7796,6 +7829,7 @@ EXAMPLES:
 
 SEE ALSO:
    +, -, *, /</code></div>
+<div class="md-text-block"><br/><div class="md-text-normal"> </div><br/></div>
 <div class="md-h2">VeniceDoc Format</div>
 <div class="md-text-block"><div class="md-text-normal">The documentation is defined as a Venice metadata </div><div class="md-inline-code">map</div><div class="md-text-normal">:</div></div>
 <div class="md-code-block">
@@ -7803,6 +7837,7 @@ SEE ALSO:
     :doc &quot;Returns the sum of the numbers.&quot;
     :examples &apos;(&quot;(add 1)&quot;, &quot;(add 1 2)&quot;)
     :see-also &apos;(&quot;+&quot;, &quot;-&quot;, &quot;*&quot;, &quot;/&quot;) }</code></div>
+<div class="md-text-block"><br/></div>
 <div class="md-table-block">
 <table class="md-table">
 <thead>
@@ -7814,7 +7849,7 @@ SEE ALSO:
 <tbody>
 <tr>
 <td style="text-align: left; width: 15%"><div style="display: inline-block; white-space: pre;"><div class="md-text-normal">:arglist</div></div></td>
-<td style="text-align: left"><div class="md-text-normal">the arglist, a list of variadic arg specs</div></td>
+<td style="text-align: left"><div class="md-text-normal">the optional arglist, a list of variadic arg specs</div></td>
 </tr>
 <tr>
 <td style="text-align: left; width: 15%"><div style="display: inline-block; white-space: pre;"><div class="md-text-normal">:doc</div></div></td>
@@ -7822,16 +7857,15 @@ SEE ALSO:
 </tr>
 <tr>
 <td style="text-align: left; width: 15%"><div style="display: inline-block; white-space: pre;"><div class="md-text-normal">:examples</div></div></td>
-<td style="text-align: left"><div class="md-text-normal">examples, a list of Venice scripts</div></td>
+<td style="text-align: left"><div class="md-text-normal">optional examples, a list of Venice scripts.</div><br/><div class="md-text-normal">use triple quotes for multi-line scripts</div></td>
 </tr>
 <tr>
 <td style="text-align: left; width: 15%"><div style="display: inline-block; white-space: pre;"><div class="md-text-normal">:see-also</div></div></td>
-<td style="text-align: left"><div class="md-text-normal">a list of cross referenced functions</div></td>
+<td style="text-align: left"><div class="md-text-normal">an optional list of cross referenced functions</div></td>
 </tr>
 </tbody>
 </table>
 </div>
-<div class="md-text-block"><div class="md-text-italic">Note:</div><div class="md-text-normal"> &apos;:examples&apos; and &apos;:see-also&apos; are optional.</div></div>
 </div>
 
 	              </div>
@@ -7847,6 +7881,7 @@ SEE ALSO:
                   <div class="venicedoc-body">
 	                 <div class="md">
 <div class="md-h1">Venice Markdown</div>
+<div class="md-text-block"><br/></div>
 <div class="md-h2">Headings</div>
 <div class="md-text-block"><div class="md-text-normal">To create a heading, add one to four </div><div class="md-inline-code">#</div><div class="md-text-normal"> symbols before the heading text. The number of </div><div class="md-inline-code">#</div><div class="md-text-normal"> will determine the size of the heading.</div></div>
 <div class="md-code-block">
@@ -7960,7 +7995,7 @@ Line 3</code></div>
 | MAR | 300     |</code></div>
 <div class="md-text-block"><br/><div class="md-text-normal"> </div><br/></div>
 <div class="md-text-block"><div class="md-text-bold">Column format using CSS styles</div></div>
-<div class="md-text-block"><div class="md-text-normal">The Venice markdown supports custom CSS style</div></div>
+<div class="md-text-block"><div class="md-text-normal">The Venice markdown supports a few CSS styles</div></div>
 <div class="md-text-block"><div class="md-text-normal">Text alignment: </div></div>
 <div class="md-list-block">
 <ul class="md-list">
@@ -8030,6 +8065,7 @@ Line 3</code></div>
 
 (hello)
  ```</code></div>
+<div class="md-text-block"><div class="md-text-normal">producing</div></div>
 <div class="md-code-block">
 <code class="md-code">(defn hello []
    (println &quot;Hello stranger&quot;))
@@ -8875,7 +8911,7 @@ Line 3</code></div>
 
 <span style="color: #808080">;; invoke static method </span>
 <span style="color: #404040">(</span><span style="color: #4169E1">.</span> <span style="color: #E9967A">:java.time.ZonedDateTime</span> <span style="color: #E9967A">:now</span><span style="color: #404040">)</span>
-=&gt; 2022-05-19T12:31:57.306+02:00[Europe/Zurich]
+=&gt; 2022-06-01T09:21:25.408+02:00[Europe/Zurich]
 
 <span style="color: #808080">;; invoke static method </span>
 <span style="color: #404040">(</span><span style="color: #4169E1">.</span> <span style="color: #E9967A">:java.lang.Math</span> <span style="color: #E9967A">:min</span> <span style="color: #E9967A">10</span> <span style="color: #E9967A">20</span><span style="color: #404040">)</span>
@@ -10966,7 +11002,7 @@ compareTo: [[1 102] [2 100] [3 101]]</span>
     &quot;data/logo.jpg&quot;       &quot;staging/data/logo.jpg&quot; }
   &quot;.&quot;)</code></div>
 <div class="md-text-block"><div class="md-text-normal">Loading Venice files works relative to the application. You can only load files that are in the app archive. If for instances &quot;billing.venice&quot; in the above example requires &quot;utils/render.venice&quot; just add </div><div class="md-inline-code">(load-file &quot;utils/render.venice&quot;)</div><div class="md-text-normal"> to &quot;billing.venice&quot;.</div></div>
-<div class="md-text-block"><div class="md-text-normal">The app can be run from the command line as:</div><br/><div class="md-text-normal"> </div><div class="md-inline-code">&gt; java -jar venice-1.10.13.jar -app billing.zip</div><br/><div class="md-text-normal"> Venice reads the archive and loads the archive&apos;s main file.</div></div>
+<div class="md-text-block"><div class="md-text-normal">The app can be run from the command line as:</div><br/><div class="md-text-normal"> </div><div class="md-inline-code">&gt; java -jar venice-1.10.14.jar -app billing.zip</div><br/><div class="md-text-normal"> Venice reads the archive and loads the archive&apos;s main file.</div></div>
 <div class="md-text-block"><div class="md-text-normal">Or with additional Java libraries (all JARs in &apos;libs&apos; dir):</div><br/><div class="md-text-normal"> </div><div class="md-inline-code">&gt; java -cp &quot;libs/*&quot; com.github.jlangch.venice.Launcher -app billing.zip</div></div>
 </div>
 
@@ -12486,9 +12522,9 @@ compareTo: [[1 102] [2 100] [3 101]]</span>
                 
                  
                 
-                <div class="detail" id="2078">
+                <div class="detail" id="2084">
                     <div class="nav-back"><a href="#top">top</a></div>
-                    <div class="header">bench/benchmark</div>
+                    <div class="header">benchmark/benchmark</div>
                     
                     
                     <div class="arglists">
@@ -12549,13 +12585,16 @@ compareTo: [[1 102] [2 100] [3 101]]</span>
                     
                     
                     <div class="examples">
-                        <code><span style="color: #404040">(</span><span style="color: #4169E1">bench/benchmark</span> <span style="color: #404040">(</span><span style="color: #4169E1">+</span> <span style="color: #E9967A">1</span> <span style="color: #E9967A">2</span><span style="color: #404040">)</span> <span style="color: #E9967A">120000</span> <span style="color: #E9967A">10000</span><span style="color: #404040">)</span>
+                        <code><span style="color: #404040">(</span><span style="color: #9932CC">do</span>
+  <span style="color: #404040">(</span><span style="color: #4169E1">load-module</span> <span style="color: #E9967A">:benchmark</span> <span style="color: #404040">[</span><span style="color: #404040">&apos;</span><span style="color: #404040">benchmark</span> <span style="color: #E9967A">:as</span> <span style="color: #404040">&apos;</span><span style="color: #404040">b</span><span style="color: #404040">]</span><span style="color: #404040">)</span>
 
-<span style="color: #404040">(</span><span style="color: #4169E1">bench/benchmark</span> <span style="color: #404040">(</span><span style="color: #4169E1">+</span> <span style="color: #E9967A">1</span> <span style="color: #E9967A">2</span><span style="color: #404040">)</span> <span style="color: #E9967A">120000</span> <span style="color: #E9967A">10000</span> <span style="color: #E9967A">:chart</span> <span style="color: #E9967A">true</span> <span style="color: #E9967A">:median</span> <span style="color: #E9967A">true</span><span style="color: #404040">)</span>
+  <span style="color: #404040">(</span><span style="color: #4169E1">b/benchmark</span> <span style="color: #404040">(</span><span style="color: #4169E1">+</span> <span style="color: #E9967A">1</span> <span style="color: #E9967A">2</span><span style="color: #404040">)</span> <span style="color: #E9967A">120000</span> <span style="color: #E9967A">10000</span><span style="color: #404040">)</span>
 
-<span style="color: #404040">(</span><span style="color: #4169E1">bench/benchmark</span> <span style="color: #404040">(</span><span style="color: #4169E1">+</span> <span style="color: #E9967A">1</span> <span style="color: #E9967A">2</span><span style="color: #404040">)</span> <span style="color: #E9967A">120000</span> <span style="color: #E9967A">10000</span> <span style="color: #E9967A">:chart</span> <span style="color: #E9967A">true</span> <span style="color: #E9967A">:outlier</span> <span style="color: #E9967A">true</span><span style="color: #404040">)</span>
+  <span style="color: #404040">(</span><span style="color: #4169E1">b/benchmark</span> <span style="color: #404040">(</span><span style="color: #4169E1">+</span> <span style="color: #E9967A">1</span> <span style="color: #E9967A">2</span><span style="color: #404040">)</span> <span style="color: #E9967A">120000</span> <span style="color: #E9967A">10000</span> <span style="color: #E9967A">:chart</span> <span style="color: #E9967A">true</span> <span style="color: #E9967A">:median</span> <span style="color: #E9967A">true</span><span style="color: #404040">)</span>
 
-<span style="color: #404040">(</span><span style="color: #4169E1">bench/benchmark</span> <span style="color: #404040">(</span><span style="color: #4169E1">+</span> <span style="color: #E9967A">1</span> <span style="color: #E9967A">2</span><span style="color: #404040">)</span> <span style="color: #E9967A">120000</span> <span style="color: #E9967A">10000</span> <span style="color: #E9967A">:chart</span> <span style="color: #E9967A">true</span> <span style="color: #E9967A">:steps</span> <span style="color: #E9967A">100</span><span style="color: #404040">)</span></code>
+  <span style="color: #404040">(</span><span style="color: #4169E1">b/benchmark</span> <span style="color: #404040">(</span><span style="color: #4169E1">+</span> <span style="color: #E9967A">1</span> <span style="color: #E9967A">2</span><span style="color: #404040">)</span> <span style="color: #E9967A">120000</span> <span style="color: #E9967A">10000</span> <span style="color: #E9967A">:chart</span> <span style="color: #E9967A">true</span> <span style="color: #E9967A">:outlier</span> <span style="color: #E9967A">true</span><span style="color: #404040">)</span>
+
+  <span style="color: #404040">(</span><span style="color: #4169E1">b/benchmark</span> <span style="color: #404040">(</span><span style="color: #4169E1">+</span> <span style="color: #E9967A">1</span> <span style="color: #E9967A">2</span><span style="color: #404040">)</span> <span style="color: #E9967A">120000</span> <span style="color: #E9967A">10000</span> <span style="color: #E9967A">:chart</span> <span style="color: #E9967A">true</span> <span style="color: #E9967A">:steps</span> <span style="color: #E9967A">100</span><span style="color: #404040">)</span><span style="color: #404040">)</span></code>
                     </div>
                     
                     
@@ -15751,7 +15790,7 @@ After 150ms: cancelled=true</span>
                     
                     <div class="examples">
                         <code><span style="color: #404040">(</span><span style="color: #4169E1">complement</span> <span style="color: #404040">even?</span><span style="color: #404040">)</span>
-=&gt; function anonymous-119fc0be-0f0c-4501-be99-2fe00c03fe81 {visibility :public, ns &quot;&quot;, native false} defined at core: line 1469, col 10
+=&gt; function anonymous-64792091-cd3b-4d94-a3f9-376abddf5f38 {visibility :public, ns &quot;&quot;, native false} defined at core: line 1469, col 10
 
 <span style="color: #404040">(</span><span style="color: #4169E1">filter</span> <span style="color: #404040">(</span><span style="color: #4169E1">complement</span> <span style="color: #404040">even?</span><span style="color: #404040">)</span> <span style="color: #404040">&apos;</span><span style="color: #404040">(</span><span style="color: #E9967A">1</span> <span style="color: #E9967A">2</span> <span style="color: #E9967A">3</span> <span style="color: #E9967A">4</span><span style="color: #404040">)</span><span style="color: #404040">)</span>
 =&gt; (1 3)</code>
@@ -15875,6 +15914,262 @@ After 150ms: cancelled=true</span>
                 
                  
                 
+                <div class="detail" id="2074">
+                    <div class="nav-back"><a href="#top">top</a></div>
+                    <div class="header">component/Component</div>
+                    
+                    
+                    
+                    <div class="descr">
+                        
+                        
+                        
+                        <div class="md">
+<div class="md-text-block"><div class="md-text-normal">Defines a protocol for components.</div></div>
+<div class="md-text-block"><div class="md-text-normal">Definition:</div></div>
+<div class="md-code-block">
+<code class="md-code">(defprotocol Component
+  (start [component] component)
+  (stop [component] component))</code></div>
+<div class="md-text-block"><div class="md-text-normal">Function </div><div class="md-inline-code">start</div><div class="md-text-normal">:</div><br/><div class="md-text-normal"> Begins operation of this component. Synchronous, does not return until the component is started. Returns an updated version of this component.</div></div>
+<div class="md-text-block"><div class="md-text-normal">Function </div><div class="md-inline-code">stop</div><div class="md-text-normal">:</div><br/><div class="md-text-normal"> Ceases operation of this component. Synchronous, does not return until the component is stopped. Returns an updated version of this component.</div></div>
+</div>
+
+                        
+                    </div>
+                    
+                    
+                    
+                    
+                </div>
+                
+                 
+                
+                <div class="detail" id="2076">
+                    <div class="nav-back"><a href="#top">top</a></div>
+                    <div class="header">component/dep</div>
+                    
+                    
+                    <div class="arglists">
+                        <div class="arglist">
+                           
+                           <code>(dep c k)</code>
+                           
+                        </div>
+                    </div>
+                    
+                    
+                    <div class="descr">
+                        
+                        
+                        
+                        <div class="md">
+<div class="md-text-block"><div class="md-text-normal">Returns a dependency given by its key &apos;k&apos; from the component &apos;c&apos; dependencies.</div></div>
+</div>
+
+                        
+                    </div>
+                    
+                    
+                    <div class="examples">
+                        <code><span style="color: #404040">(</span><span style="color: #9932CC">do</span>
+  <span style="color: #404040">(</span><span style="color: #4169E1">load-module</span> <span style="color: #E9967A">:component</span> <span style="color: #404040">[</span><span style="color: #404040">&apos;</span><span style="color: #404040">component</span> <span style="color: #E9967A">:as</span> <span style="color: #404040">&apos;</span><span style="color: #404040">c</span><span style="color: #404040">]</span><span style="color: #404040">)</span>
+
+  <span style="color: #404040">(</span><span style="color: #9932CC">deftype</span> <span style="color: #E9967A">:server</span> <span style="color: #404040">[</span><span style="color: #404040">]</span>
+     <span style="color: #404040">c/Component</span>
+       <span style="color: #404040">(</span><span style="color: #4169E1">start</span> <span style="color: #404040">[</span><span style="color: #404040">this</span><span style="color: #404040">]</span> <span style="color: #404040">(</span><span style="color: #4169E1">println</span> <span style="color: #2E8B57">&quot;Store: &quot;</span> <span style="color: #404040">(</span><span style="color: #4169E1">c/dep</span> <span style="color: #404040">this</span> <span style="color: #E9967A">:store</span><span style="color: #404040">)</span><span style="color: #404040">)</span> <span style="color: #404040">this</span><span style="color: #404040">)</span>
+       <span style="color: #404040">(</span><span style="color: #4169E1">stop</span> <span style="color: #404040">[</span><span style="color: #404040">this</span><span style="color: #404040">]</span> <span style="color: #404040">this</span><span style="color: #404040">)</span><span style="color: #404040">)</span>
+
+  <span style="color: #404040">(</span><span style="color: #9932CC">deftype</span> <span style="color: #E9967A">:database</span> <span style="color: #404040">[</span><span style="color: #404040">]</span>
+     <span style="color: #404040">c/Component</span>
+       <span style="color: #404040">(</span><span style="color: #4169E1">start</span> <span style="color: #404040">[</span><span style="color: #404040">this</span><span style="color: #404040">]</span> <span style="color: #404040">this</span><span style="color: #404040">)</span>
+       <span style="color: #404040">(</span><span style="color: #4169E1">stop</span> <span style="color: #404040">[</span><span style="color: #404040">this</span><span style="color: #404040">]</span> <span style="color: #404040">this</span><span style="color: #404040">)</span><span style="color: #404040">)</span>
+
+  <span style="color: #404040">(</span><span style="color: #9932CC">defn</span> <span style="color: #404040">create-system</span> <span style="color: #404040">[</span><span style="color: #404040">]</span>
+    <span style="color: #404040">(</span><span style="color: #4169E1">-&gt;</span> <span style="color: #404040">(</span><span style="color: #4169E1">c/system-map</span>
+          <span style="color: #2E8B57">&quot;test&quot;</span>
+          <span style="color: #E9967A">:server</span> <span style="color: #404040">(</span><span style="color: #4169E1">server.</span> <span style="color: #404040">)</span>
+          <span style="color: #E9967A">:store</span> <span style="color: #404040">(</span><span style="color: #4169E1">database.</span> <span style="color: #404040">)</span><span style="color: #404040">)</span>
+        <span style="color: #404040">(</span><span style="color: #4169E1">c/system-using</span> <span style="color: #404040">{</span><span style="color: #E9967A">:server</span> <span style="color: #404040">[</span><span style="color: #E9967A">:store</span><span style="color: #404040">]</span><span style="color: #404040">}</span><span style="color: #404040">)</span><span style="color: #404040">)</span><span style="color: #404040">)</span>
+
+  <span style="color: #404040">(</span><span style="color: #4169E1">-&gt;</span> <span style="color: #404040">(</span><span style="color: #4169E1">create-system</span><span style="color: #404040">)</span>
+      <span style="color: #404040">(</span><span style="color: #4169E1">c/start</span><span style="color: #404040">)</span>
+      <span style="color: #404040">(</span><span style="color: #4169E1">c/stop</span><span style="color: #404040">)</span><span style="color: #404040">)</span>
+
+  <span style="color: #E9967A">nil</span><span style="color: #404040">)</span>
+<span style="color: #808080">Store:  {:custom-type* :user/database}</span>
+=&gt; nil</code>
+                    </div>
+                    
+                    
+                    
+                    <div class="seealso">
+                        <div class="header">SEE ALSO</div>
+                         
+                        <div class="crossref">
+                            <div class="name"><a href="#2078">component/deps</a></div>
+                            <div class="descr">Returns the dependencies of the component &apos;c&apos; or nil if there aren&apos;t any dependencies.</div>
+                        </div>
+                         
+                        <div class="crossref">
+                            <div class="name"><a href="#2077">component/id</a></div>
+                            <div class="descr">Returns id of the component &apos;c&apos;.</div>
+                        </div>
+                        
+                    </div>
+                    
+                </div>
+                
+                 
+                
+                <div class="detail" id="2078">
+                    <div class="nav-back"><a href="#top">top</a></div>
+                    <div class="header">component/deps</div>
+                    
+                    
+                    <div class="arglists">
+                        <div class="arglist">
+                           
+                           <code>(deps c)</code>
+                           
+                        </div>
+                    </div>
+                    
+                    
+                    <div class="descr">
+                        
+                        
+                        
+                        <div class="md">
+<div class="md-text-block"><div class="md-text-normal">Returns the dependencies of the component &apos;c&apos; or </div><div class="md-inline-code">nil</div><div class="md-text-normal"> if there aren&apos;t any dependencies.</div></div>
+</div>
+
+                        
+                    </div>
+                    
+                    
+                    <div class="examples">
+                        <code><span style="color: #404040">(</span><span style="color: #9932CC">do</span>
+  <span style="color: #404040">(</span><span style="color: #4169E1">load-module</span> <span style="color: #E9967A">:component</span> <span style="color: #404040">[</span><span style="color: #404040">&apos;</span><span style="color: #404040">component</span> <span style="color: #E9967A">:as</span> <span style="color: #404040">&apos;</span><span style="color: #404040">c</span><span style="color: #404040">]</span><span style="color: #404040">)</span>
+
+  <span style="color: #404040">(</span><span style="color: #9932CC">deftype</span> <span style="color: #E9967A">:server</span> <span style="color: #404040">[</span><span style="color: #404040">]</span>
+     <span style="color: #404040">c/Component</span>
+       <span style="color: #404040">(</span><span style="color: #4169E1">start</span> <span style="color: #404040">[</span><span style="color: #404040">this</span><span style="color: #404040">]</span> <span style="color: #404040">(</span><span style="color: #4169E1">println</span> <span style="color: #2E8B57">&quot;Dependencies: &quot;</span> <span style="color: #404040">(</span><span style="color: #4169E1">c/deps</span> <span style="color: #404040">this</span><span style="color: #404040">)</span><span style="color: #404040">)</span> <span style="color: #404040">this</span><span style="color: #404040">)</span>
+       <span style="color: #404040">(</span><span style="color: #4169E1">stop</span> <span style="color: #404040">[</span><span style="color: #404040">this</span><span style="color: #404040">]</span> <span style="color: #404040">this</span><span style="color: #404040">)</span><span style="color: #404040">)</span>
+
+  <span style="color: #404040">(</span><span style="color: #9932CC">deftype</span> <span style="color: #E9967A">:database</span> <span style="color: #404040">[</span><span style="color: #404040">]</span>
+     <span style="color: #404040">c/Component</span>
+       <span style="color: #404040">(</span><span style="color: #4169E1">start</span> <span style="color: #404040">[</span><span style="color: #404040">this</span><span style="color: #404040">]</span> <span style="color: #404040">this</span><span style="color: #404040">)</span>
+       <span style="color: #404040">(</span><span style="color: #4169E1">stop</span> <span style="color: #404040">[</span><span style="color: #404040">this</span><span style="color: #404040">]</span> <span style="color: #404040">this</span><span style="color: #404040">)</span><span style="color: #404040">)</span>
+
+  <span style="color: #404040">(</span><span style="color: #9932CC">defn</span> <span style="color: #404040">create-system</span> <span style="color: #404040">[</span><span style="color: #404040">]</span>
+    <span style="color: #404040">(</span><span style="color: #4169E1">-&gt;</span> <span style="color: #404040">(</span><span style="color: #4169E1">c/system-map</span>
+          <span style="color: #2E8B57">&quot;test&quot;</span>
+          <span style="color: #E9967A">:server</span> <span style="color: #404040">(</span><span style="color: #4169E1">server.</span> <span style="color: #404040">)</span>
+          <span style="color: #E9967A">:store</span> <span style="color: #404040">(</span><span style="color: #4169E1">database.</span> <span style="color: #404040">)</span><span style="color: #404040">)</span>
+        <span style="color: #404040">(</span><span style="color: #4169E1">c/system-using</span> <span style="color: #404040">{</span><span style="color: #E9967A">:server</span> <span style="color: #404040">[</span><span style="color: #E9967A">:store</span><span style="color: #404040">]</span><span style="color: #404040">}</span><span style="color: #404040">)</span><span style="color: #404040">)</span><span style="color: #404040">)</span>
+
+  <span style="color: #404040">(</span><span style="color: #4169E1">-&gt;</span> <span style="color: #404040">(</span><span style="color: #4169E1">create-system</span><span style="color: #404040">)</span>
+      <span style="color: #404040">(</span><span style="color: #4169E1">c/start</span><span style="color: #404040">)</span>
+      <span style="color: #404040">(</span><span style="color: #4169E1">c/stop</span><span style="color: #404040">)</span><span style="color: #404040">)</span>
+
+  <span style="color: #E9967A">nil</span><span style="color: #404040">)</span>
+<span style="color: #808080">Dependencies:  {:store {:custom-type* :user/database} :component-info {:custom-type* :component/component-info :id :server :system-name test :components {}}}</span>
+=&gt; nil</code>
+                    </div>
+                    
+                    
+                    
+                    <div class="seealso">
+                        <div class="header">SEE ALSO</div>
+                         
+                        <div class="crossref">
+                            <div class="name"><a href="#2076">component/dep</a></div>
+                            <div class="descr">Returns a dependency given by its key &apos;k&apos; from the component &apos;c&apos; dependencies.</div>
+                        </div>
+                         
+                        <div class="crossref">
+                            <div class="name"><a href="#2077">component/id</a></div>
+                            <div class="descr">Returns id of the component &apos;c&apos;.</div>
+                        </div>
+                        
+                    </div>
+                    
+                </div>
+                
+                 
+                
+                <div class="detail" id="2077">
+                    <div class="nav-back"><a href="#top">top</a></div>
+                    <div class="header">component/id</div>
+                    
+                    
+                    <div class="arglists">
+                        <div class="arglist">
+                           
+                           <code>(id c)</code>
+                           
+                        </div>
+                    </div>
+                    
+                    
+                    <div class="descr">
+                        
+                        
+                        
+                        <div class="md">
+<div class="md-text-block"><div class="md-text-normal">Returns id of the component &apos;c&apos;.</div></div>
+</div>
+
+                        
+                    </div>
+                    
+                    
+                    <div class="examples">
+                        <code><span style="color: #404040">(</span><span style="color: #9932CC">do</span>
+  <span style="color: #404040">(</span><span style="color: #4169E1">load-module</span> <span style="color: #E9967A">:component</span> <span style="color: #404040">[</span><span style="color: #404040">&apos;</span><span style="color: #404040">component</span> <span style="color: #E9967A">:as</span> <span style="color: #404040">&apos;</span><span style="color: #404040">c</span><span style="color: #404040">]</span><span style="color: #404040">)</span>
+
+  <span style="color: #404040">(</span><span style="color: #9932CC">deftype</span> <span style="color: #E9967A">:server</span> <span style="color: #404040">[</span><span style="color: #404040">]</span>
+     <span style="color: #404040">c/Component</span>
+       <span style="color: #404040">(</span><span style="color: #4169E1">start</span> <span style="color: #404040">[</span><span style="color: #404040">this</span><span style="color: #404040">]</span> <span style="color: #404040">(</span><span style="color: #4169E1">println</span> <span style="color: #2E8B57">&quot;ID: &quot;</span> <span style="color: #404040">(</span><span style="color: #4169E1">c/id</span> <span style="color: #404040">this</span><span style="color: #404040">)</span><span style="color: #404040">)</span> <span style="color: #404040">this</span><span style="color: #404040">)</span>
+       <span style="color: #404040">(</span><span style="color: #4169E1">stop</span> <span style="color: #404040">[</span><span style="color: #404040">this</span><span style="color: #404040">]</span> <span style="color: #404040">this</span><span style="color: #404040">)</span><span style="color: #404040">)</span>
+
+  <span style="color: #404040">(</span><span style="color: #9932CC">defn</span> <span style="color: #404040">create-system</span> <span style="color: #404040">[</span><span style="color: #404040">]</span>
+    <span style="color: #404040">(</span><span style="color: #4169E1">-&gt;</span> <span style="color: #404040">(</span><span style="color: #4169E1">c/system-map</span>
+          <span style="color: #2E8B57">&quot;test&quot;</span>
+          <span style="color: #E9967A">:server</span> <span style="color: #404040">(</span><span style="color: #4169E1">server.</span> <span style="color: #404040">)</span><span style="color: #404040">)</span>
+        <span style="color: #404040">(</span><span style="color: #4169E1">c/system-using</span> <span style="color: #404040">{</span><span style="color: #E9967A">:server</span> <span style="color: #404040">[</span><span style="color: #404040">]</span><span style="color: #404040">}</span><span style="color: #404040">)</span><span style="color: #404040">)</span><span style="color: #404040">)</span>
+
+  <span style="color: #404040">(</span><span style="color: #4169E1">-&gt;</span> <span style="color: #404040">(</span><span style="color: #4169E1">create-system</span><span style="color: #404040">)</span>
+      <span style="color: #404040">(</span><span style="color: #4169E1">c/start</span><span style="color: #404040">)</span>
+      <span style="color: #404040">(</span><span style="color: #4169E1">c/stop</span><span style="color: #404040">)</span><span style="color: #404040">)</span>
+
+  <span style="color: #E9967A">nil</span><span style="color: #404040">)</span>
+<span style="color: #808080">ID:  :server</span>
+=&gt; nil</code>
+                    </div>
+                    
+                    
+                    
+                    <div class="seealso">
+                        <div class="header">SEE ALSO</div>
+                         
+                        <div class="crossref">
+                            <div class="name"><a href="#2076">component/dep</a></div>
+                            <div class="descr">Returns a dependency given by its key &apos;k&apos; from the component &apos;c&apos; dependencies.</div>
+                        </div>
+                         
+                        <div class="crossref">
+                            <div class="name"><a href="#2078">component/deps</a></div>
+                            <div class="descr">Returns the dependencies of the component &apos;c&apos; or nil if there aren&apos;t any dependencies.</div>
+                        </div>
+                        
+                    </div>
+                    
+                </div>
+                
+                 
+                
                 <div class="detail" id="2072">
                     <div class="nav-back"><a href="#top">top</a></div>
                     <div class="header">component/system-map</div>
@@ -15894,7 +16189,7 @@ After 150ms: cancelled=true</span>
                         
                         
                         <div class="md">
-<div class="md-text-block"><div class="md-text-normal">Returns a system constructed of components given as key/value pairs. The &apos;key&apos; is a </div><div class="md-inline-code">keyword</div><div class="md-text-normal"> referencing the component &apos;value&apos;.</div><br/><div class="md-text-normal"> The system has default implementations of the Lifecycle &apos;start&apos; and &apos;stop&apos; methods which recursively starts/stops all components in the system.</div></div>
+<div class="md-text-block"><div class="md-text-normal">Returns a system constructed of components given as key/value pairs. The &apos;key&apos; is a </div><div class="md-inline-code">keyword</div><div class="md-text-normal"> (the component&apos;s id) referencing the component given as &apos;value&apos;.</div><br/><div class="md-text-normal"> The system has default implementations of the Lifecycle &apos;start&apos; and &apos;stop&apos; methods which recursively starts/stops all components in the system.</div></div>
 <div class="md-text-block"><div class="md-text-normal">Note:</div><br/><div class="md-text-normal"> </div><div class="md-inline-code">system-map</div><div class="md-text-normal"> just creates a raw system without any dependencies between the components. Use </div><div class="md-inline-code">system-using</div><div class="md-text-normal"> after creating the system map to establish the dependencies.</div></div>
 </div>
 
@@ -15904,29 +16199,25 @@ After 150ms: cancelled=true</span>
                     
                     <div class="examples">
                         <code><span style="color: #404040">(</span><span style="color: #9932CC">do</span>
-  <span style="color: #404040">(</span><span style="color: #4169E1">load-module</span> <span style="color: #E9967A">:component</span><span style="color: #404040">)</span>
+  <span style="color: #404040">(</span><span style="color: #4169E1">load-module</span> <span style="color: #E9967A">:component</span> <span style="color: #404040">[</span><span style="color: #404040">&apos;</span><span style="color: #404040">component</span> <span style="color: #E9967A">:as</span> <span style="color: #404040">&apos;</span><span style="color: #404040">c</span><span style="color: #404040">]</span><span style="color: #404040">)</span>
 
-  <span style="color: #404040">(</span><span style="color: #9932CC">deftype</span> <span style="color: #E9967A">:server</span> <span style="color: #404040">[</span><span style="color: #404040">port</span>       <span style="color: #E9967A">:long</span>
-                    <span style="color: #404040">components</span> <span style="color: #E9967A">:map</span><span style="color: #404040">]</span>
-     <span style="color: #404040">component/Component</span>
-       <span style="color: #404040">(</span><span style="color: #4169E1">start</span> <span style="color: #404040">[</span><span style="color: #404040">this</span><span style="color: #404040">]</span> <span style="color: #404040">(</span><span style="color: #4169E1">println</span> <span style="color: #2E8B57">&quot;:server started&quot;</span><span style="color: #404040">)</span> <span style="color: #404040">this</span><span style="color: #404040">)</span>
-       <span style="color: #404040">(</span><span style="color: #4169E1">stop</span> <span style="color: #404040">[</span><span style="color: #404040">this</span><span style="color: #404040">]</span> <span style="color: #404040">(</span><span style="color: #4169E1">println</span> <span style="color: #2E8B57">&quot;:server stopped&quot;</span><span style="color: #404040">)</span> <span style="color: #404040">this</span><span style="color: #404040">)</span>
-       <span style="color: #404040">(</span><span style="color: #4169E1">inject</span> <span style="color: #404040">[</span><span style="color: #404040">this</span> <span style="color: #404040">deps</span><span style="color: #404040">]</span> <span style="color: #404040">(</span><span style="color: #4169E1">assoc</span> <span style="color: #404040">this</span> <span style="color: #E9967A">:components</span> <span style="color: #404040">deps</span><span style="color: #404040">)</span><span style="color: #404040">)</span><span style="color: #404040">)</span>
+  <span style="color: #404040">(</span><span style="color: #9932CC">deftype</span> <span style="color: #E9967A">:server</span> <span style="color: #404040">[</span><span style="color: #404040">port</span> <span style="color: #E9967A">:long</span><span style="color: #404040">]</span>
+     <span style="color: #404040">c/Component</span>
+       <span style="color: #404040">(</span><span style="color: #4169E1">start</span> <span style="color: #404040">[</span><span style="color: #404040">this</span><span style="color: #404040">]</span> <span style="color: #404040">(</span><span style="color: #4169E1">println</span> <span style="color: #2E8B57">&quot;server started&quot;</span><span style="color: #404040">)</span> <span style="color: #404040">this</span><span style="color: #404040">)</span>
+       <span style="color: #404040">(</span><span style="color: #4169E1">stop</span> <span style="color: #404040">[</span><span style="color: #404040">this</span><span style="color: #404040">]</span> <span style="color: #404040">(</span><span style="color: #4169E1">println</span> <span style="color: #2E8B57">&quot;server stopped&quot;</span><span style="color: #404040">)</span> <span style="color: #404040">this</span><span style="color: #404040">)</span><span style="color: #404040">)</span>
 
   <span style="color: #404040">(</span><span style="color: #9932CC">deftype</span> <span style="color: #E9967A">:database</span> <span style="color: #404040">[</span><span style="color: #404040">user</span>       <span style="color: #E9967A">:string</span>
-                      <span style="color: #404040">password</span>   <span style="color: #E9967A">:string</span>
-                      <span style="color: #404040">components</span> <span style="color: #E9967A">:map</span><span style="color: #404040">]</span>
-     <span style="color: #404040">component/Component</span>
-       <span style="color: #404040">(</span><span style="color: #4169E1">start</span> <span style="color: #404040">[</span><span style="color: #404040">this</span><span style="color: #404040">]</span> <span style="color: #404040">(</span><span style="color: #4169E1">println</span> <span style="color: #2E8B57">&quot;:database started&quot;</span><span style="color: #404040">)</span> <span style="color: #404040">this</span><span style="color: #404040">)</span>
-       <span style="color: #404040">(</span><span style="color: #4169E1">stop</span> <span style="color: #404040">[</span><span style="color: #404040">this</span><span style="color: #404040">]</span> <span style="color: #404040">(</span><span style="color: #4169E1">println</span> <span style="color: #2E8B57">&quot;:database stopped&quot;</span><span style="color: #404040">)</span> <span style="color: #404040">this</span><span style="color: #404040">)</span>
-       <span style="color: #404040">(</span><span style="color: #4169E1">inject</span> <span style="color: #404040">[</span><span style="color: #404040">this</span> <span style="color: #404040">deps</span><span style="color: #404040">]</span> <span style="color: #404040">(</span><span style="color: #4169E1">assoc</span> <span style="color: #404040">this</span> <span style="color: #E9967A">:components</span> <span style="color: #404040">deps</span><span style="color: #404040">)</span><span style="color: #404040">)</span><span style="color: #404040">)</span>
+                      <span style="color: #404040">password</span>   <span style="color: #E9967A">:string</span><span style="color: #404040">]</span>
+     <span style="color: #404040">c/Component</span>
+       <span style="color: #404040">(</span><span style="color: #4169E1">start</span> <span style="color: #404040">[</span><span style="color: #404040">this</span><span style="color: #404040">]</span> <span style="color: #404040">(</span><span style="color: #4169E1">println</span> <span style="color: #2E8B57">&quot;database started&quot;</span><span style="color: #404040">)</span> <span style="color: #404040">this</span><span style="color: #404040">)</span>
+       <span style="color: #404040">(</span><span style="color: #4169E1">stop</span> <span style="color: #404040">[</span><span style="color: #404040">this</span><span style="color: #404040">]</span> <span style="color: #404040">(</span><span style="color: #4169E1">println</span> <span style="color: #2E8B57">&quot;database stopped&quot;</span><span style="color: #404040">)</span> <span style="color: #404040">this</span><span style="color: #404040">)</span><span style="color: #404040">)</span>
 
-  <span style="color: #404040">(</span><span style="color: #4169E1">component/system-map</span>
+  <span style="color: #404040">(</span><span style="color: #4169E1">c/system-map</span>
     <span style="color: #2E8B57">&quot;test&quot;</span>
-    <span style="color: #E9967A">:server</span> <span style="color: #404040">(</span><span style="color: #4169E1">server.</span> <span style="color: #E9967A">4600</span> <span style="color: #404040">{</span><span style="color: #404040">}</span><span style="color: #404040">)</span>
-    <span style="color: #E9967A">:store</span> <span style="color: #404040">(</span><span style="color: #4169E1">database.</span> <span style="color: #2E8B57">&quot;foo&quot;</span> <span style="color: #2E8B57">&quot;123&quot;</span> <span style="color: #404040">{</span><span style="color: #404040">}</span><span style="color: #404040">)</span><span style="color: #404040">)</span><span style="color: #404040">)</span>
+    <span style="color: #E9967A">:server</span> <span style="color: #404040">(</span><span style="color: #4169E1">server.</span> <span style="color: #E9967A">4600</span><span style="color: #404040">)</span>
+    <span style="color: #E9967A">:store</span> <span style="color: #404040">(</span><span style="color: #4169E1">database.</span> <span style="color: #2E8B57">&quot;foo&quot;</span> <span style="color: #2E8B57">&quot;123&quot;</span><span style="color: #404040">)</span><span style="color: #404040">)</span>
 
-  <span style="color: #C71585">nil)</span></code>
+  <span style="color: #E9967A">nil</span><span style="color: #404040">)</span></code>
                     </div>
                     
                     
@@ -15977,62 +16268,56 @@ After 150ms: cancelled=true</span>
                     
                     <div class="examples">
                         <code><span style="color: #404040">(</span><span style="color: #9932CC">do</span>
-  <span style="color: #404040">(</span><span style="color: #4169E1">load-module</span> <span style="color: #E9967A">:component</span><span style="color: #404040">)</span>
+  <span style="color: #404040">(</span><span style="color: #4169E1">load-module</span> <span style="color: #E9967A">:component</span> <span style="color: #404040">[</span><span style="color: #404040">&apos;</span><span style="color: #404040">component</span> <span style="color: #E9967A">:as</span> <span style="color: #404040">&apos;</span><span style="color: #404040">c</span><span style="color: #404040">]</span><span style="color: #404040">)</span>
 
-  <span style="color: #404040">(</span><span style="color: #9932CC">deftype</span> <span style="color: #E9967A">:server</span> <span style="color: #404040">[</span><span style="color: #404040">port</span>       <span style="color: #E9967A">:long</span>
-                    <span style="color: #404040">components</span> <span style="color: #E9967A">:map</span><span style="color: #404040">]</span>
-     <span style="color: #404040">component/Component</span>
+  <span style="color: #404040">(</span><span style="color: #9932CC">deftype</span> <span style="color: #E9967A">:server</span> <span style="color: #404040">[</span><span style="color: #404040">port</span> <span style="color: #E9967A">:long</span><span style="color: #404040">]</span>
+     <span style="color: #404040">c/Component</span>
        <span style="color: #404040">(</span><span style="color: #4169E1">start</span> <span style="color: #404040">[</span><span style="color: #404040">this</span><span style="color: #404040">]</span>
-         <span style="color: #404040">(</span><span style="color: #9932CC">let</span> <span style="color: #404040">[</span><span style="color: #404040">store1</span> <span style="color: #404040">(</span><span style="color: #4169E1">-&gt;</span> <span style="color: #404040">this</span> <span style="color: #E9967A">:components</span> <span style="color: #E9967A">:store1</span> <span style="color: #E9967A">:name</span><span style="color: #404040">)</span>
-               <span style="color: #404040">store2</span> <span style="color: #404040">(</span><span style="color: #4169E1">-&gt;</span> <span style="color: #404040">this</span> <span style="color: #E9967A">:components</span> <span style="color: #E9967A">:store2</span> <span style="color: #E9967A">:name</span><span style="color: #404040">)</span><span style="color: #404040">]</span>
-           <span style="color: #404040">(</span><span style="color: #4169E1">println</span> <span style="color: #2E8B57">&quot;:server started. using the stores&quot;</span> <span style="color: #404040">store1</span> <span style="color: #2E8B57">&quot;,&quot;</span> <span style="color: #404040">store2</span><span style="color: #404040">)</span><span style="color: #404040">)</span>
+         <span style="color: #404040">(</span><span style="color: #9932CC">let</span> <span style="color: #404040">[</span><span style="color: #404040">store1</span> <span style="color: #404040">(</span><span style="color: #4169E1">-&gt;</span> <span style="color: #404040">(</span><span style="color: #4169E1">c/dep</span> <span style="color: #404040">this</span> <span style="color: #E9967A">:store1</span><span style="color: #404040">)</span> <span style="color: #E9967A">:name</span><span style="color: #404040">)</span>
+               <span style="color: #404040">store2</span> <span style="color: #404040">(</span><span style="color: #4169E1">-&gt;</span> <span style="color: #404040">(</span><span style="color: #4169E1">c/dep</span> <span style="color: #404040">this</span> <span style="color: #E9967A">:store2</span><span style="color: #404040">)</span> <span style="color: #E9967A">:name</span><span style="color: #404040">)</span><span style="color: #404040">]</span>
+           <span style="color: #404040">(</span><span style="color: #4169E1">println</span> <span style="color: #2E8B57">&quot;server started. using the stores&quot;</span> <span style="color: #404040">store1</span> <span style="color: #2E8B57">&quot;,&quot;</span> <span style="color: #404040">store2</span><span style="color: #404040">)</span><span style="color: #404040">)</span>
          <span style="color: #404040">this</span><span style="color: #404040">)</span>
        <span style="color: #404040">(</span><span style="color: #4169E1">stop</span> <span style="color: #404040">[</span><span style="color: #404040">this</span><span style="color: #404040">]</span>
-         <span style="color: #404040">(</span><span style="color: #4169E1">println</span> <span style="color: #2E8B57">&quot;:server stopped&quot;</span><span style="color: #404040">)</span>
-         <span style="color: #404040">this</span><span style="color: #404040">)</span>
-       <span style="color: #404040">(</span><span style="color: #4169E1">inject</span> <span style="color: #404040">[</span><span style="color: #404040">this</span> <span style="color: #404040">deps</span><span style="color: #404040">]</span>
-         <span style="color: #404040">(</span><span style="color: #4169E1">assoc</span> <span style="color: #404040">this</span> <span style="color: #E9967A">:components</span> <span style="color: #404040">deps</span><span style="color: #404040">)</span><span style="color: #404040">)</span><span style="color: #404040">)</span>
+         <span style="color: #404040">(</span><span style="color: #4169E1">println</span> <span style="color: #2E8B57">&quot;server stopped&quot;</span><span style="color: #404040">)</span>
+         <span style="color: #404040">this</span><span style="color: #404040">)</span><span style="color: #404040">)</span>
 
   <span style="color: #404040">(</span><span style="color: #9932CC">deftype</span> <span style="color: #E9967A">:database</span> <span style="color: #404040">[</span><span style="color: #404040">name</span>       <span style="color: #E9967A">:string</span>
                       <span style="color: #404040">user</span>       <span style="color: #E9967A">:string</span>
-                      <span style="color: #404040">password</span>   <span style="color: #E9967A">:string</span>
-                      <span style="color: #404040">components</span> <span style="color: #E9967A">:map</span><span style="color: #404040">]</span>
-     <span style="color: #404040">component/Component</span>
+                      <span style="color: #404040">password</span>   <span style="color: #E9967A">:string</span><span style="color: #404040">]</span>
+     <span style="color: #404040">c/Component</span>
        <span style="color: #404040">(</span><span style="color: #4169E1">start</span> <span style="color: #404040">[</span><span style="color: #404040">this</span><span style="color: #404040">]</span>
-         <span style="color: #404040">(</span><span style="color: #4169E1">println</span> <span style="color: #2E8B57">&quot;:database&quot;</span> <span style="color: #404040">(</span><span style="color: #E9967A">:name</span> <span style="color: #404040">this</span><span style="color: #404040">)</span> <span style="color: #2E8B57">&quot;started&quot;</span><span style="color: #404040">)</span>
+         <span style="color: #404040">(</span><span style="color: #4169E1">println</span> <span style="color: #2E8B57">&quot;database&quot;</span> <span style="color: #404040">(</span><span style="color: #E9967A">:name</span> <span style="color: #404040">this</span><span style="color: #404040">)</span> <span style="color: #2E8B57">&quot;started&quot;</span><span style="color: #404040">)</span>
          <span style="color: #404040">this</span><span style="color: #404040">)</span>
        <span style="color: #404040">(</span><span style="color: #4169E1">stop</span> <span style="color: #404040">[</span><span style="color: #404040">this</span><span style="color: #404040">]</span>
-         <span style="color: #404040">(</span><span style="color: #4169E1">println</span> <span style="color: #2E8B57">&quot;:database&quot;</span> <span style="color: #404040">(</span><span style="color: #E9967A">:name</span> <span style="color: #404040">this</span><span style="color: #404040">)</span> <span style="color: #2E8B57">&quot;stopped&quot;</span><span style="color: #404040">)</span>
-         <span style="color: #404040">this</span><span style="color: #404040">)</span>
-       <span style="color: #404040">(</span><span style="color: #4169E1">inject</span> <span style="color: #404040">[</span><span style="color: #404040">this</span> <span style="color: #404040">deps</span><span style="color: #404040">]</span>
-         <span style="color: #404040">(</span><span style="color: #4169E1">assoc</span> <span style="color: #404040">this</span> <span style="color: #E9967A">:components</span> <span style="color: #404040">deps</span><span style="color: #404040">)</span><span style="color: #404040">)</span><span style="color: #404040">)</span>
+         <span style="color: #404040">(</span><span style="color: #4169E1">println</span> <span style="color: #2E8B57">&quot;database&quot;</span> <span style="color: #404040">(</span><span style="color: #E9967A">:name</span> <span style="color: #404040">this</span><span style="color: #404040">)</span> <span style="color: #2E8B57">&quot;stopped&quot;</span><span style="color: #404040">)</span>
+         <span style="color: #404040">this</span><span style="color: #404040">)</span><span style="color: #404040">)</span>
 
   <span style="color: #404040">(</span><span style="color: #9932CC">defn</span> <span style="color: #404040">create-system</span> <span style="color: #404040">[</span><span style="color: #404040">]</span>
-    <span style="color: #404040">(</span><span style="color: #4169E1">-&gt;</span> <span style="color: #404040">(</span><span style="color: #4169E1">component/system-map</span>
+    <span style="color: #404040">(</span><span style="color: #4169E1">-&gt;</span> <span style="color: #404040">(</span><span style="color: #4169E1">c/system-map</span>
           <span style="color: #2E8B57">&quot;test&quot;</span>
-          <span style="color: #E9967A">:server</span> <span style="color: #404040">(</span><span style="color: #4169E1">server.</span> <span style="color: #E9967A">4600</span> <span style="color: #404040">{</span><span style="color: #404040">}</span><span style="color: #404040">)</span>
-          <span style="color: #E9967A">:store1</span> <span style="color: #404040">(</span><span style="color: #4169E1">database.</span> <span style="color: #2E8B57">&quot;store1&quot;</span> <span style="color: #2E8B57">&quot;foo&quot;</span> <span style="color: #2E8B57">&quot;123&quot;</span> <span style="color: #404040">{</span><span style="color: #404040">}</span><span style="color: #404040">)</span>
-          <span style="color: #E9967A">:store2</span> <span style="color: #404040">(</span><span style="color: #4169E1">database.</span> <span style="color: #2E8B57">&quot;store2&quot;</span> <span style="color: #2E8B57">&quot;foo&quot;</span> <span style="color: #2E8B57">&quot;123&quot;</span> <span style="color: #404040">{</span><span style="color: #404040">}</span><span style="color: #404040">)</span><span style="color: #404040">)</span>
-        <span style="color: #404040">(</span><span style="color: #4169E1">component/system-using</span> <span style="color: #404040">{</span><span style="color: #E9967A">:server</span> <span style="color: #404040">[</span><span style="color: #E9967A">:store1</span> <span style="color: #E9967A">:store2</span><span style="color: #404040">]</span><span style="color: #404040">}</span><span style="color: #404040">)</span><span style="color: #404040">)</span><span style="color: #404040">)</span>
+          <span style="color: #E9967A">:server</span> <span style="color: #404040">(</span><span style="color: #4169E1">server.</span> <span style="color: #E9967A">4600</span><span style="color: #404040">)</span>
+          <span style="color: #E9967A">:store1</span> <span style="color: #404040">(</span><span style="color: #4169E1">database.</span> <span style="color: #2E8B57">&quot;store1&quot;</span> <span style="color: #2E8B57">&quot;foo&quot;</span> <span style="color: #2E8B57">&quot;123&quot;</span><span style="color: #404040">)</span>
+          <span style="color: #E9967A">:store2</span> <span style="color: #404040">(</span><span style="color: #4169E1">database.</span> <span style="color: #2E8B57">&quot;store2&quot;</span> <span style="color: #2E8B57">&quot;foo&quot;</span> <span style="color: #2E8B57">&quot;123&quot;</span><span style="color: #404040">)</span><span style="color: #404040">)</span>
+        <span style="color: #404040">(</span><span style="color: #4169E1">c/system-using</span> <span style="color: #404040">{</span><span style="color: #E9967A">:server</span> <span style="color: #404040">[</span><span style="color: #E9967A">:store1</span> <span style="color: #E9967A">:store2</span><span style="color: #404040">]</span><span style="color: #404040">}</span><span style="color: #404040">)</span><span style="color: #404040">)</span><span style="color: #404040">)</span>
 
   <span style="color: #404040">(</span><span style="color: #9932CC">defn</span> <span style="color: #404040">start</span> <span style="color: #404040">[</span><span style="color: #404040">]</span>
     <span style="color: #404040">(</span><span style="color: #4169E1">-&gt;</span> <span style="color: #404040">(</span><span style="color: #4169E1">create-system</span><span style="color: #404040">)</span>
-        <span style="color: #404040">(</span><span style="color: #4169E1">component/start</span><span style="color: #404040">)</span><span style="color: #404040">)</span><span style="color: #404040">)</span>
+        <span style="color: #404040">(</span><span style="color: #4169E1">c/start</span><span style="color: #404040">)</span><span style="color: #404040">)</span><span style="color: #404040">)</span>
 
   <span style="color: #404040">(</span><span style="color: #9932CC">let</span> <span style="color: #404040">[</span><span style="color: #404040">system</span> <span style="color: #404040">(</span><span style="color: #4169E1">start</span><span style="color: #404040">)</span>
         <span style="color: #404040">server</span> <span style="color: #404040">(</span><span style="color: #4169E1">-&gt;</span> <span style="color: #404040">system</span> <span style="color: #E9967A">:components</span> <span style="color: #E9967A">:server</span><span style="color: #404040">)</span><span style="color: #404040">]</span>
     <span style="color: #808080">; access server component</span>
     <span style="color: #404040">(</span><span style="color: #4169E1">println</span> <span style="color: #2E8B57">&quot;Accessing the system...&quot;</span><span style="color: #404040">)</span>
-    <span style="color: #404040">(</span><span style="color: #4169E1">component/stop</span> <span style="color: #404040">system</span><span style="color: #404040">)</span><span style="color: #404040">)</span>
+    <span style="color: #404040">(</span><span style="color: #4169E1">c/stop</span> <span style="color: #404040">system</span><span style="color: #404040">)</span><span style="color: #404040">)</span>
 
   <span style="color: #E9967A">nil</span><span style="color: #404040">)</span>
-<span style="color: #808080">:database store1 started
-:database store2 started
-:server started. using the stores store1 , store2
+<span style="color: #808080">database store1 started
+database store2 started
+server started. using the stores store1 , store2
 Accessing the system...
-:server stopped
-:database store2 stopped
-:database store1 stopped</span>
+server stopped
+database store2 stopped
+database store1 stopped</span>
 =&gt; nil</code>
                     </div>
                     
@@ -16043,7 +16328,7 @@ Accessing the system...
                          
                         <div class="crossref">
                             <div class="name"><a href="#2072">component/system−map</a></div>
-                            <div class="descr">Returns a system constructed of components given as key/value pairs. The &apos;key&apos; is a keyword referencing the component &apos;value&apos;.</div>
+                            <div class="descr">Returns a system constructed of components given as key/value pairs. The &apos;key&apos; is a keyword (the component&apos;s id) referencing the component ...</div>
                         </div>
                         
                     </div>
@@ -16372,6 +16657,7 @@ Accessing the system...
 <div class="md-code-block">
 <code class="md-code">(do
   (load-module :config)
+
   (def cfg (config/build
              (config/env &quot;java&quot;)
              (config/env-var &quot;SERVER_PORT&quot; [:http :port] &quot;8080&quot;)))
@@ -16388,12 +16674,52 @@ Accessing the system...
                     
                     
                     <div class="examples">
-                        <code><span style="color: #404040">(</span><span style="color: #4169E1">config/build</span>
-  <span style="color: #404040">(</span><span style="color: #4169E1">config/resource</span> <span style="color: #2E8B57">&quot;config-defaults.json&quot;</span> <span style="color: #E9967A">:key-fn</span> <span style="color: #404040">keyword</span><span style="color: #404040">)</span>
-  <span style="color: #404040">(</span><span style="color: #4169E1">config/file</span> <span style="color: #2E8B57">&quot;./config-local.json&quot;</span> <span style="color: #E9967A">:key-fn</span> <span style="color: #404040">keyword</span><span style="color: #404040">)</span>
-  <span style="color: #404040">(</span><span style="color: #4169E1">config/env-var</span> <span style="color: #2E8B57">&quot;SERVER_PORT&quot;</span> <span style="color: #404040">[</span><span style="color: #E9967A">:http</span> <span style="color: #E9967A">:port</span><span style="color: #404040">]</span><span style="color: #404040">)</span>
-  <span style="color: #404040">(</span><span style="color: #4169E1">config/env-var</span> <span style="color: #2E8B57">&quot;SERVER_THREADS&quot;</span> <span style="color: #404040">[</span><span style="color: #E9967A">:http</span> <span style="color: #E9967A">:threads</span><span style="color: #404040">]</span><span style="color: #404040">)</span>
-  <span style="color: #404040">(</span><span style="color: #4169E1">config/property-var</span> <span style="color: #2E8B57">&quot;MASTER_PWD&quot;</span> <span style="color: #404040">[</span><span style="color: #E9967A">:app</span> <span style="color: #E9967A">:master-pwd</span><span style="color: #404040">]</span><span style="color: #404040">)</span><span style="color: #404040">)</span></code>
+                        <code><span style="color: #808080">;; -------------------------------------------------------------------</span>
+<span style="color: #808080">;; Example I) Configuration builder</span>
+<span style="color: #404040">(</span><span style="color: #9932CC">do</span>
+  <span style="color: #404040">(</span><span style="color: #4169E1">load-module</span> <span style="color: #E9967A">:config</span> <span style="color: #404040">[</span><span style="color: #404040">&apos;</span><span style="color: #404040">config</span> <span style="color: #E9967A">:as</span> <span style="color: #404040">&apos;</span><span style="color: #404040">cfg</span><span style="color: #404040">]</span><span style="color: #404040">)</span>
+
+  <span style="color: #404040">(</span><span style="color: #4169E1">cfg/build</span>
+    <span style="color: #404040">(</span><span style="color: #4169E1">cfg/resource</span> <span style="color: #2E8B57">&quot;config-defaults.json&quot;</span> <span style="color: #E9967A">:key-fn</span> <span style="color: #404040">keyword</span><span style="color: #404040">)</span>
+    <span style="color: #404040">(</span><span style="color: #4169E1">cfg/file</span> <span style="color: #2E8B57">&quot;./config-local.json&quot;</span> <span style="color: #E9967A">:key-fn</span> <span style="color: #404040">keyword</span><span style="color: #404040">)</span>
+    <span style="color: #404040">(</span><span style="color: #4169E1">cfg/env-var</span> <span style="color: #2E8B57">&quot;SERVER_PORT&quot;</span> <span style="color: #404040">[</span><span style="color: #E9967A">:http</span> <span style="color: #E9967A">:port</span><span style="color: #404040">]</span><span style="color: #404040">)</span>
+    <span style="color: #404040">(</span><span style="color: #4169E1">cfg/env-var</span> <span style="color: #2E8B57">&quot;SERVER_THREADS&quot;</span> <span style="color: #404040">[</span><span style="color: #E9967A">:http</span> <span style="color: #E9967A">:threads</span><span style="color: #404040">]</span><span style="color: #404040">)</span>
+    <span style="color: #404040">(</span><span style="color: #4169E1">cfg/property-var</span> <span style="color: #2E8B57">&quot;MASTER_PWD&quot;</span> <span style="color: #404040">[</span><span style="color: #E9967A">:app</span> <span style="color: #E9967A">:master-pwd</span><span style="color: #404040">]</span><span style="color: #404040">)</span><span style="color: #404040">)</span><span style="color: #404040">)</span>
+
+<span style="color: #808080">;; -------------------------------------------------------------------</span>
+<span style="color: #808080">;; Example II) Using configurations with the component module</span>
+<span style="color: #404040">(</span><span style="color: #9932CC">do</span>
+  <span style="color: #404040">(</span><span style="color: #4169E1">load-module</span> <span style="color: #E9967A">:config</span> <span style="color: #404040">[</span><span style="color: #404040">&apos;</span><span style="color: #404040">config</span> <span style="color: #E9967A">:as</span> <span style="color: #404040">&apos;</span><span style="color: #404040">cfg</span><span style="color: #404040">]</span><span style="color: #404040">)</span>
+  <span style="color: #404040">(</span><span style="color: #4169E1">load-module</span> <span style="color: #E9967A">:component</span> <span style="color: #404040">[</span><span style="color: #404040">&apos;</span><span style="color: #404040">component</span> <span style="color: #E9967A">:as</span> <span style="color: #404040">&apos;</span><span style="color: #404040">cmp</span><span style="color: #404040">]</span><span style="color: #404040">)</span>
+
+  <span style="color: #808080">;; define the server component</span>
+  <span style="color: #404040">(</span><span style="color: #9932CC">deftype</span> <span style="color: #E9967A">:server</span> <span style="color: #404040">[</span><span style="color: #404040">]</span>
+     <span style="color: #404040">cmp/Component</span>
+       <span style="color: #404040">(</span><span style="color: #4169E1">start</span> <span style="color: #404040">[</span><span style="color: #404040">this</span><span style="color: #404040">]</span>
+          <span style="color: #404040">(</span><span style="color: #9932CC">let</span> <span style="color: #404040">[</span><span style="color: #404040">config</span> <span style="color: #404040">(</span><span style="color: #4169E1">cmp/dep</span> <span style="color: #404040">this</span> <span style="color: #E9967A">:config</span><span style="color: #404040">)</span>
+                <span style="color: #404040">port</span>   <span style="color: #404040">(</span><span style="color: #4169E1">get-in</span> <span style="color: #404040">config</span> <span style="color: #404040">[</span><span style="color: #E9967A">:server</span> <span style="color: #E9967A">:port</span><span style="color: #404040">]</span><span style="color: #404040">)</span><span style="color: #404040">]</span>
+            <span style="color: #404040">(</span><span style="color: #4169E1">println</span> <span style="color: #404040">(</span><span style="color: #4169E1">cmp/id</span> <span style="color: #404040">this</span><span style="color: #404040">)</span> <span style="color: #2E8B57">&quot;started at port&quot;</span> <span style="color: #404040">port</span><span style="color: #404040">)</span>
+            <span style="color: #404040">this</span><span style="color: #404040">)</span><span style="color: #404040">)</span>
+       <span style="color: #404040">(</span><span style="color: #4169E1">stop</span> <span style="color: #404040">[</span><span style="color: #404040">this</span><span style="color: #404040">]</span>
+          <span style="color: #404040">(</span><span style="color: #4169E1">println</span> <span style="color: #404040">(</span><span style="color: #4169E1">cmp/id</span> <span style="color: #404040">this</span><span style="color: #404040">)</span> <span style="color: #2E8B57">&quot;stopped&quot;</span><span style="color: #404040">)</span>
+          <span style="color: #404040">this</span><span style="color: #404040">)</span><span style="color: #404040">)</span>
+
+  <span style="color: #808080">;; note that the configuration is a plain vanilla Venice map and</span>
+  <span style="color: #808080">;; does not implement the protocol &apos;Component&apos;</span>
+  <span style="color: #404040">(</span><span style="color: #9932CC">defn</span> <span style="color: #404040">create-system</span> <span style="color: #404040">[</span><span style="color: #404040">]</span>
+    <span style="color: #404040">(</span><span style="color: #4169E1">-&gt;</span> <span style="color: #404040">(</span><span style="color: #4169E1">cmp/system-map</span>
+           <span style="color: #2E8B57">&quot;test&quot;</span>
+           <span style="color: #E9967A">:config</span> <span style="color: #404040">(</span><span style="color: #4169E1">cfg/build</span>
+                     <span style="color: #404040">(</span><span style="color: #4169E1">cfg/env-var</span> <span style="color: #2E8B57">&quot;SERVER_PORT&quot;</span> <span style="color: #404040">[</span><span style="color: #E9967A">:server</span> <span style="color: #E9967A">:port</span><span style="color: #404040">]</span> <span style="color: #2E8B57">&quot;8800&quot;</span><span style="color: #404040">)</span><span style="color: #404040">)</span>
+           <span style="color: #E9967A">:server</span> <span style="color: #404040">(</span><span style="color: #4169E1">server.</span> <span style="color: #404040">)</span><span style="color: #404040">)</span>
+        <span style="color: #404040">(</span><span style="color: #4169E1">cmp/system-using</span>
+           <span style="color: #404040">{</span><span style="color: #E9967A">:server</span> <span style="color: #404040">[</span><span style="color: #E9967A">:config</span><span style="color: #404040">]</span><span style="color: #404040">}</span><span style="color: #404040">)</span><span style="color: #404040">)</span><span style="color: #404040">)</span>
+
+  <span style="color: #404040">(</span><span style="color: #4169E1">-&gt;</span> <span style="color: #404040">(</span><span style="color: #4169E1">create-system</span><span style="color: #404040">)</span>
+      <span style="color: #404040">(</span><span style="color: #4169E1">cmp/start</span><span style="color: #404040">)</span>
+      <span style="color: #404040">(</span><span style="color: #4169E1">cmp/stop</span><span style="color: #404040">)</span><span style="color: #404040">)</span>
+
+  <span style="color: #E9967A">nil</span><span style="color: #404040">)</span></code>
                     </div>
                     
                     
@@ -17845,7 +18171,7 @@ venice&gt; (config/env &quot;java&quot;)
                     
                     <div class="examples">
                         <code><span style="color: #404040">(</span><span style="color: #4169E1">current-time-millis</span><span style="color: #404040">)</span>
-=&gt; 1652956353166</code>
+=&gt; 1654068120834</code>
                     </div>
                     
                     
@@ -21545,11 +21871,11 @@ venice&gt; (config/env &quot;java&quot;)
                         <code><span style="color: #404040">(</span><span style="color: #4169E1">-&gt;&gt;</span> <span style="color: #404040">(</span><span style="color: #4169E1">lazy-seq</span> <span style="color: #404040">#</span><span style="color: #404040">(</span><span style="color: #4169E1">rand-long</span> <span style="color: #E9967A">100</span><span style="color: #404040">)</span><span style="color: #404040">)</span>  
      <span style="color: #404040">(</span><span style="color: #4169E1">take</span> <span style="color: #E9967A">4</span><span style="color: #404040">)</span>                     
      <span style="color: #404040">(</span><span style="color: #4169E1">doall</span><span style="color: #404040">)</span><span style="color: #404040">)</span>
-=&gt; (50 6 19 18)
+=&gt; (20 80 56 47)
 
 <span style="color: #404040">(</span><span style="color: #4169E1">-&gt;&gt;</span> <span style="color: #404040">(</span><span style="color: #4169E1">lazy-seq</span> <span style="color: #404040">#</span><span style="color: #404040">(</span><span style="color: #4169E1">rand-long</span> <span style="color: #E9967A">100</span><span style="color: #404040">)</span><span style="color: #404040">)</span>  
      <span style="color: #404040">(</span><span style="color: #4169E1">doall</span> <span style="color: #E9967A">4</span><span style="color: #404040">)</span><span style="color: #404040">)</span>
-=&gt; (82 7 2 92)</code>
+=&gt; (92 15 77 25)</code>
                     </div>
                     
                     
@@ -21596,7 +21922,7 @@ venice&gt; (config/env &quot;java&quot;)
                     
                     <div class="examples">
                         <code><span style="color: #404040">(</span><span style="color: #9932CC">dobench</span> <span style="color: #E9967A">10</span> <span style="color: #404040">(</span><span style="color: #4169E1">+</span> <span style="color: #E9967A">1</span> <span style="color: #E9967A">1</span><span style="color: #404040">)</span><span style="color: #404040">)</span>
-=&gt; (2503 1301 455 301 265 259 289 253 254 313)</code>
+=&gt; (2997 816 463 247 259 228 260 240 244 225)</code>
                     </div>
                     
                     
@@ -27831,9 +28157,9 @@ Worker1</span>
   <span style="color: #404040">(</span><span style="color: #9932CC">defn</span> <span style="color: #404040">factory</span> <span style="color: #404040">[</span><span style="color: #404040">n</span><span style="color: #404040">]</span>                                
     <span style="color: #404040">(</span><span style="color: #9932CC">fn</span> <span style="color: #404040">[</span><span style="color: #404040">]</span> <span style="color: #404040">(</span><span style="color: #4169E1">log</span> <span style="color: #2E8B57">&quot;Worker&quot;</span> <span style="color: #404040">n</span><span style="color: #404040">)</span><span style="color: #404040">)</span><span style="color: #404040">)</span>                    
   <span style="color: #404040">(</span><span style="color: #4169E1">apply</span> <span style="color: #404040">futures-wait</span> <span style="color: #404040">(</span><span style="color: #4169E1">futures-fork</span> <span style="color: #E9967A">3</span> <span style="color: #404040">factory</span><span style="color: #404040">)</span><span style="color: #404040">)</span><span style="color: #404040">)</span>     
-<span style="color: #808080">Worker2
-Worker1
-Worker0</span>
+<span style="color: #808080">Worker0
+Worker2
+Worker1</span>
 =&gt; nil</code>
                     </div>
                     
@@ -27925,10 +28251,10 @@ Worker0</span>
                     
                     <div class="examples">
                         <code><span style="color: #404040">(</span><span style="color: #9932CC">gensym</span><span style="color: #404040">)</span>
-=&gt; G__33092
+=&gt; G__31314
 
 <span style="color: #404040">(</span><span style="color: #9932CC">gensym</span> <span style="color: #2E8B57">&quot;prefix_&quot;</span><span style="color: #404040">)</span>
-=&gt; prefix_33130</code>
+=&gt; prefix_31350</code>
                     </div>
                     
                     
@@ -36658,7 +36984,7 @@ Hello Bob</span>
 <span style="color: #404040">(</span><span style="color: #4169E1">-&gt;&gt;</span> <span style="color: #404040">(</span><span style="color: #4169E1">lazy-seq</span> <span style="color: #404040">rand-long</span><span style="color: #404040">)</span>                                       
      <span style="color: #404040">(</span><span style="color: #4169E1">take</span> <span style="color: #E9967A">4</span><span style="color: #404040">)</span>                                                   
      <span style="color: #404040">(</span><span style="color: #4169E1">doall</span><span style="color: #404040">)</span><span style="color: #404040">)</span>
-=&gt; (2350899813937570132 1532818355731717997 4794769448108618783 6509155198300290244)
+=&gt; (3461245156057646284 349287172907692845 8676503237576948681 637434901075546825)
 
 <span style="color: #808080">; lazy sequence with a constant value                           </span>
 <span style="color: #404040">(</span><span style="color: #4169E1">-&gt;&gt;</span> <span style="color: #404040">(</span><span style="color: #4169E1">lazy-seq</span> <span style="color: #404040">(</span><span style="color: #4169E1">constantly</span> <span style="color: #E9967A">5</span><span style="color: #404040">)</span><span style="color: #404040">)</span>                                  
@@ -37960,10 +38286,10 @@ out</span>
                     
                     <div class="examples">
                         <code><span style="color: #404040">(</span><span style="color: #4169E1">macroexpand-all</span> <span style="color: #404040">&apos;</span><span style="color: #404040">(</span><span style="color: #404040">and</span> <span style="color: #E9967A">true</span> <span style="color: #E9967A">true</span><span style="color: #404040">)</span><span style="color: #404040">)</span>
-=&gt; (let [cond__30598__auto true] (if cond__30598__auto true cond__30598__auto))
+=&gt; (let [cond__28954__auto true] (if cond__28954__auto true cond__28954__auto))
 
 <span style="color: #404040">(</span><span style="color: #4169E1">macroexpand-all</span> <span style="color: #404040">&apos;</span><span style="color: #404040">(</span><span style="color: #404040">and</span> <span style="color: #E9967A">true</span> <span style="color: #404040">(</span><span style="color: #4169E1">or</span> <span style="color: #E9967A">true</span> <span style="color: #E9967A">false</span><span style="color: #404040">)</span> <span style="color: #E9967A">true</span><span style="color: #404040">)</span><span style="color: #404040">)</span>
-=&gt; (let [cond__30635__auto true] (if cond__30635__auto (let [cond__30635__auto (let [cond__30636__auto true] (if cond__30636__auto cond__30636__auto false))] (if cond__30635__auto true cond__30635__auto)) cond__30635__auto))
+=&gt; (let [cond__28989__auto true] (if cond__28989__auto (let [cond__28989__auto (let [cond__28990__auto true] (if cond__28990__auto cond__28990__auto false))] (if cond__28989__auto true cond__28989__auto)) cond__28989__auto))
 
 <span style="color: #404040">(</span><span style="color: #4169E1">macroexpand-all</span> <span style="color: #404040">&apos;</span><span style="color: #404040">(</span><span style="color: #404040">let</span> <span style="color: #404040">[</span><span style="color: #404040">n</span> <span style="color: #E9967A">5</span><span style="color: #404040">]</span> <span style="color: #404040">(</span><span style="color: #4169E1">cond</span> <span style="color: #404040">(</span><span style="color: #4169E1">&lt;</span> <span style="color: #404040">n</span> <span style="color: #E9967A">0</span><span style="color: #404040">)</span> <span style="color: #E9967A">-1</span> <span style="color: #404040">(</span><span style="color: #4169E1">&gt;</span> <span style="color: #404040">n</span> <span style="color: #E9967A">0</span><span style="color: #404040">)</span> <span style="color: #E9967A">1</span> <span style="color: #E9967A">:else</span> <span style="color: #E9967A">0</span><span style="color: #404040">)</span><span style="color: #404040">)</span><span style="color: #404040">)</span>
 =&gt; (let [n 5] (if (&lt; n 0) -1 (if (&gt; n 0) 1 (if :else 0 nil))))</code>
@@ -39851,7 +40177,7 @@ out</span>
           <span style="color: #E9967A">:else</span> <span style="color: #404040">(</span><span style="color: #4169E1">+</span> <span style="color: #404040">(</span><span style="color: #4169E1">fibonacci</span> <span style="color: #404040">(</span><span style="color: #4169E1">-</span> <span style="color: #404040">n</span> <span style="color: #E9967A">1</span><span style="color: #404040">)</span><span style="color: #404040">)</span> <span style="color: #404040">(</span><span style="color: #4169E1">fibonacci</span> <span style="color: #404040">(</span><span style="color: #4169E1">-</span> <span style="color: #404040">n</span> <span style="color: #E9967A">2</span><span style="color: #404040">)</span><span style="color: #404040">)</span><span style="color: #404040">)</span><span style="color: #404040">)</span><span style="color: #404040">)</span><span style="color: #404040">)</span><span style="color: #404040">)</span>
 
   <span style="color: #404040">(</span><span style="color: #4169E1">time</span> <span style="color: #404040">(</span><span style="color: #4169E1">fibonacci</span> <span style="color: #E9967A">25</span><span style="color: #404040">)</span><span style="color: #404040">)</span><span style="color: #404040">)</span>
-<span style="color: #808080">Elapsed time: 2.20ms</span>
+<span style="color: #808080">Elapsed time: 1.95ms</span>
 =&gt; 75025
 
 <span style="color: #404040">(</span><span style="color: #9932CC">do</span>
@@ -40869,13 +41195,13 @@ calculating a=1, b=2</span>
                     
                     <div class="examples">
                         <code><span style="color: #404040">(</span><span style="color: #4169E1">nano-time</span><span style="color: #404040">)</span>
-=&gt; 23645300219385
+=&gt; 195451005531495
 
 <span style="color: #404040">(</span><span style="color: #9932CC">let</span> <span style="color: #404040">[</span><span style="color: #404040">t</span> <span style="color: #404040">(</span><span style="color: #4169E1">nano-time</span><span style="color: #404040">)</span>                        
       <span style="color: #404040">_</span> <span style="color: #404040">(</span><span style="color: #4169E1">sleep</span> <span style="color: #E9967A">100</span><span style="color: #404040">)</span>                        
       <span style="color: #404040">e</span> <span style="color: #404040">(</span><span style="color: #4169E1">nano-time</span><span style="color: #404040">)</span><span style="color: #404040">]</span>                       
   <span style="color: #404040">(</span><span style="color: #4169E1">format-nano-time</span> <span style="color: #404040">(</span><span style="color: #4169E1">-</span> <span style="color: #404040">e</span> <span style="color: #404040">t</span><span style="color: #404040">)</span> <span style="color: #E9967A">:precision</span> <span style="color: #E9967A">2</span><span style="color: #404040">)</span><span style="color: #404040">)</span>  
-=&gt; &quot;103.46ms&quot;</code>
+=&gt; &quot;105.21ms&quot;</code>
                     </div>
                     
                     
@@ -45284,7 +45610,7 @@ ns bar: (bar/y)</span>
                     
                     <div class="examples">
                         <code><span style="color: #404040">(</span><span style="color: #4169E1">pid</span><span style="color: #404040">)</span>
-=&gt; &quot;8487&quot;</code>
+=&gt; &quot;61962&quot;</code>
                     </div>
                     
                     
@@ -47011,10 +47337,10 @@ line 2: 456</span>
                     
                     <div class="examples">
                         <code><span style="color: #404040">(</span><span style="color: #4169E1">rand-double</span><span style="color: #404040">)</span>
-=&gt; 0.8850364121796271
+=&gt; 0.7430058190292672
 
 <span style="color: #404040">(</span><span style="color: #4169E1">rand-double</span> <span style="color: #E9967A">100.0</span><span style="color: #404040">)</span>
-=&gt; 50.40137607657458</code>
+=&gt; 68.47910820687079</code>
                     </div>
                     
                     
@@ -47069,10 +47395,10 @@ line 2: 456</span>
                     
                     <div class="examples">
                         <code><span style="color: #404040">(</span><span style="color: #4169E1">rand-gaussian</span><span style="color: #404040">)</span>
-=&gt; 0.9729286533475159
+=&gt; 0.543896800624642
 
 <span style="color: #404040">(</span><span style="color: #4169E1">rand-gaussian</span> <span style="color: #E9967A">0.0</span> <span style="color: #E9967A">5.0</span><span style="color: #404040">)</span>
-=&gt; -0.9514894076260162</code>
+=&gt; -3.771952596741772</code>
                     </div>
                     
                     
@@ -47127,10 +47453,10 @@ line 2: 456</span>
                     
                     <div class="examples">
                         <code><span style="color: #404040">(</span><span style="color: #4169E1">rand-long</span><span style="color: #404040">)</span>
-=&gt; 740780422588834225
+=&gt; 3739199743837580886
 
 <span style="color: #404040">(</span><span style="color: #4169E1">rand-long</span> <span style="color: #E9967A">100</span><span style="color: #404040">)</span>
-=&gt; 54</code>
+=&gt; 85</code>
                     </div>
                     
                     
@@ -47348,7 +47674,7 @@ line 2: 456</span>
         <span style="color: #404040">(</span><span style="color: #4169E1">println</span> <span style="color: #404040">(</span><span style="color: #4169E1">realized?</span> <span style="color: #404040">f</span><span style="color: #404040">)</span><span style="color: #404040">)</span>    
         <span style="color: #404040">(</span><span style="color: #4169E1">println</span> <span style="color: #404040">@</span><span style="color: #404040">f</span><span style="color: #404040">)</span>               
         <span style="color: #404040">(</span><span style="color: #4169E1">println</span> <span style="color: #404040">(</span><span style="color: #4169E1">realized?</span> <span style="color: #404040">f</span><span style="color: #404040">)</span><span style="color: #404040">)</span><span style="color: #404040">)</span><span style="color: #404040">)</span>    
-<span style="color: #808080">true
+<span style="color: #808080">false
 100
 true</span>
 =&gt; nil
@@ -47517,7 +47843,7 @@ true</span>
 <span style="color: #808080">;; sliding window (width 3) average</span>
 <span style="color: #404040">(</span><span style="color: #4169E1">-&gt;&gt;</span> <span style="color: #404040">(</span><span style="color: #4169E1">partition</span> <span style="color: #E9967A">3</span> <span style="color: #E9967A">1</span> <span style="color: #404040">(</span><span style="color: #4169E1">repeatedly</span> <span style="color: #E9967A">10</span> <span style="color: #404040">#</span><span style="color: #404040">(</span><span style="color: #4169E1">rand-long</span> <span style="color: #E9967A">30</span><span style="color: #404040">)</span><span style="color: #404040">)</span><span style="color: #404040">)</span>
      <span style="color: #404040">(</span><span style="color: #4169E1">map</span> <span style="color: #404040">(</span><span style="color: #9932CC">fn</span> <span style="color: #404040">[</span><span style="color: #404040">window</span><span style="color: #404040">]</span> <span style="color: #404040">(</span><span style="color: #4169E1">/</span> <span style="color: #404040">(</span><span style="color: #4169E1">reduce</span> <span style="color: #404040">+</span> <span style="color: #404040">window</span><span style="color: #404040">)</span> <span style="color: #404040">(</span><span style="color: #4169E1">count</span> <span style="color: #404040">window</span><span style="color: #404040">)</span><span style="color: #404040">)</span><span style="color: #404040">)</span><span style="color: #404040">)</span><span style="color: #404040">)</span>
-=&gt; (20 16 13 13 13 21 23 22)</code>
+=&gt; (19 20 17 13 5 10 18 20)</code>
                     </div>
                     
                     
@@ -48653,12 +48979,12 @@ group matches:  &quot;672-345-456-212&quot; {:start 0 :end 15}
                     
                     <div class="examples">
                         <code><span style="color: #404040">(</span><span style="color: #4169E1">repeatedly</span> <span style="color: #E9967A">5</span> <span style="color: #404040">#</span><span style="color: #404040">(</span><span style="color: #4169E1">rand-long</span> <span style="color: #E9967A">11</span><span style="color: #404040">)</span><span style="color: #404040">)</span>
-=&gt; (6 1 5 9 1)
+=&gt; (3 1 0 0 1)
 
 <span style="color: #808080">;; compare with repeat, which only calls the &apos;rand-long&apos;</span>
 <span style="color: #808080">;; function once, repeating the value five times. </span>
 <span style="color: #404040">(</span><span style="color: #4169E1">repeat</span> <span style="color: #E9967A">5</span> <span style="color: #404040">(</span><span style="color: #4169E1">rand-long</span> <span style="color: #E9967A">11</span><span style="color: #404040">)</span><span style="color: #404040">)</span>
-=&gt; (10 10 10 10 10)</code>
+=&gt; (7 7 7 7 7)</code>
                     </div>
                     
                     
@@ -51834,13 +52160,13 @@ E.g.: { :major 1, :minor 3, :patch 5 }
                     
                     <div class="examples">
                         <code><span style="color: #404040">(</span><span style="color: #4169E1">shuffle</span> <span style="color: #404040">&apos;</span><span style="color: #404040">(</span><span style="color: #E9967A">1</span> <span style="color: #E9967A">2</span> <span style="color: #E9967A">3</span> <span style="color: #E9967A">4</span> <span style="color: #E9967A">5</span> <span style="color: #E9967A">6</span><span style="color: #404040">)</span><span style="color: #404040">)</span>
-=&gt; (2 6 4 5 1 3)
+=&gt; (4 3 1 2 5 6)
 
 <span style="color: #404040">(</span><span style="color: #4169E1">shuffle</span> <span style="color: #404040">[</span><span style="color: #E9967A">1</span> <span style="color: #E9967A">2</span> <span style="color: #E9967A">3</span> <span style="color: #E9967A">4</span> <span style="color: #E9967A">5</span> <span style="color: #E9967A">6</span><span style="color: #404040">]</span><span style="color: #404040">)</span>
-=&gt; [5 2 1 3 6 4]
+=&gt; [3 1 5 2 4 6]
 
 <span style="color: #404040">(</span><span style="color: #4169E1">shuffle</span> <span style="color: #2E8B57">&quot;abcdef&quot;</span><span style="color: #404040">)</span>
-=&gt; (#\f #\c #\b #\d #\a #\e)</code>
+=&gt; (#\d #\f #\b #\a #\e #\c)</code>
                     </div>
                     
                     
@@ -58010,7 +58336,7 @@ line3&quot;</span><span style="color: #404040">)</span>
                     
                     <div class="examples">
                         <code><span style="color: #404040">(</span><span style="color: #4169E1">time</span> <span style="color: #404040">(</span><span style="color: #4169E1">+</span> <span style="color: #E9967A">100</span> <span style="color: #E9967A">200</span><span style="color: #404040">)</span><span style="color: #404040">)</span>
-<span style="color: #808080">Elapsed time: 6.08µs</span>
+<span style="color: #808080">Elapsed time: 6.67µs</span>
 =&gt; 300</code>
                     </div>
                     
@@ -58161,7 +58487,7 @@ line3&quot;</span><span style="color: #404040">)</span>
                     
                     <div class="examples">
                         <code><span style="color: #404040">(</span><span style="color: #4169E1">time/date</span><span style="color: #404040">)</span>
-=&gt; Thu May 19 12:32:38 CEST 2022</code>
+=&gt; Wed Jun 01 09:22:06 CEST 2022</code>
                     </div>
                     
                     
@@ -58235,13 +58561,13 @@ line3&quot;</span><span style="color: #404040">)</span>
                     
                     <div class="examples">
                         <code><span style="color: #404040">(</span><span style="color: #4169E1">time/day-of-month</span> <span style="color: #404040">(</span><span style="color: #4169E1">time/local-date</span><span style="color: #404040">)</span><span style="color: #404040">)</span>
-=&gt; 19
+=&gt; 1
 
 <span style="color: #404040">(</span><span style="color: #4169E1">time/day-of-month</span> <span style="color: #404040">(</span><span style="color: #4169E1">time/local-date-time</span><span style="color: #404040">)</span><span style="color: #404040">)</span>
-=&gt; 19
+=&gt; 1
 
 <span style="color: #404040">(</span><span style="color: #4169E1">time/day-of-month</span> <span style="color: #404040">(</span><span style="color: #4169E1">time/zoned-date-time</span><span style="color: #404040">)</span><span style="color: #404040">)</span>
-=&gt; 19</code>
+=&gt; 1</code>
                     </div>
                     
                     
@@ -58278,13 +58604,13 @@ line3&quot;</span><span style="color: #404040">)</span>
                     
                     <div class="examples">
                         <code><span style="color: #404040">(</span><span style="color: #4169E1">time/day-of-week</span> <span style="color: #404040">(</span><span style="color: #4169E1">time/local-date</span><span style="color: #404040">)</span><span style="color: #404040">)</span>
-=&gt; :THURSDAY
+=&gt; :WEDNESDAY
 
 <span style="color: #404040">(</span><span style="color: #4169E1">time/day-of-week</span> <span style="color: #404040">(</span><span style="color: #4169E1">time/local-date-time</span><span style="color: #404040">)</span><span style="color: #404040">)</span>
-=&gt; :THURSDAY
+=&gt; :WEDNESDAY
 
 <span style="color: #404040">(</span><span style="color: #4169E1">time/day-of-week</span> <span style="color: #404040">(</span><span style="color: #4169E1">time/zoned-date-time</span><span style="color: #404040">)</span><span style="color: #404040">)</span>
-=&gt; :THURSDAY</code>
+=&gt; :WEDNESDAY</code>
                     </div>
                     
                     
@@ -58321,13 +58647,13 @@ line3&quot;</span><span style="color: #404040">)</span>
                     
                     <div class="examples">
                         <code><span style="color: #404040">(</span><span style="color: #4169E1">time/day-of-year</span> <span style="color: #404040">(</span><span style="color: #4169E1">time/local-date</span><span style="color: #404040">)</span><span style="color: #404040">)</span>
-=&gt; 139
+=&gt; 152
 
 <span style="color: #404040">(</span><span style="color: #4169E1">time/day-of-year</span> <span style="color: #404040">(</span><span style="color: #4169E1">time/local-date-time</span><span style="color: #404040">)</span><span style="color: #404040">)</span>
-=&gt; 139
+=&gt; 152
 
 <span style="color: #404040">(</span><span style="color: #4169E1">time/day-of-year</span> <span style="color: #404040">(</span><span style="color: #4169E1">time/zoned-date-time</span><span style="color: #404040">)</span><span style="color: #404040">)</span>
-=&gt; 139</code>
+=&gt; 152</code>
                     </div>
                     
                     
@@ -58401,13 +58727,13 @@ line3&quot;</span><span style="color: #404040">)</span>
                     
                     <div class="examples">
                         <code><span style="color: #404040">(</span><span style="color: #4169E1">time/first-day-of-month</span> <span style="color: #404040">(</span><span style="color: #4169E1">time/local-date</span><span style="color: #404040">)</span><span style="color: #404040">)</span>
-=&gt; 2022-05-01
+=&gt; 2022-06-01
 
 <span style="color: #404040">(</span><span style="color: #4169E1">time/first-day-of-month</span> <span style="color: #404040">(</span><span style="color: #4169E1">time/local-date-time</span><span style="color: #404040">)</span><span style="color: #404040">)</span>
-=&gt; 2022-05-01
+=&gt; 2022-06-01
 
 <span style="color: #404040">(</span><span style="color: #4169E1">time/first-day-of-month</span> <span style="color: #404040">(</span><span style="color: #4169E1">time/zoned-date-time</span><span style="color: #404040">)</span><span style="color: #404040">)</span>
-=&gt; 2022-05-01</code>
+=&gt; 2022-06-01</code>
                     </div>
                     
                     
@@ -58446,19 +58772,19 @@ line3&quot;</span><span style="color: #404040">)</span>
                     
                     <div class="examples">
                         <code><span style="color: #404040">(</span><span style="color: #4169E1">time/format</span> <span style="color: #404040">(</span><span style="color: #4169E1">time/local-date</span><span style="color: #404040">)</span> <span style="color: #2E8B57">&quot;dd-MM-yyyy&quot;</span><span style="color: #404040">)</span>
-=&gt; &quot;19-05-2022&quot;
+=&gt; &quot;01-06-2022&quot;
 
 <span style="color: #404040">(</span><span style="color: #4169E1">time/format</span> <span style="color: #404040">(</span><span style="color: #4169E1">time/zoned-date-time</span><span style="color: #404040">)</span> <span style="color: #2E8B57">&quot;yyyy-MM-dd&apos;T&apos;HH:mm:ss.SSSz&quot;</span><span style="color: #404040">)</span>
-=&gt; &quot;2022-05-19T12:32:40.479CEST&quot;
+=&gt; &quot;2022-06-01T09:22:08.171CEST&quot;
 
 <span style="color: #404040">(</span><span style="color: #4169E1">time/format</span> <span style="color: #404040">(</span><span style="color: #4169E1">time/zoned-date-time</span><span style="color: #404040">)</span> <span style="color: #E9967A">:ISO_OFFSET_DATE_TIME</span><span style="color: #404040">)</span>
-=&gt; &quot;2022-05-19T12:32:40.496+02:00&quot;
+=&gt; &quot;2022-06-01T09:22:08.188+02:00&quot;
 
 <span style="color: #404040">(</span><span style="color: #4169E1">time/format</span> <span style="color: #404040">(</span><span style="color: #4169E1">time/zoned-date-time</span><span style="color: #404040">)</span> <span style="color: #404040">(</span><span style="color: #4169E1">time/formatter</span> <span style="color: #2E8B57">&quot;yyyy-MM-dd&apos;T&apos;HH:mm:ss.SSSz&quot;</span><span style="color: #404040">)</span><span style="color: #404040">)</span>
-=&gt; &quot;2022-05-19T12:32:40.513CEST&quot;
+=&gt; &quot;2022-06-01T09:22:08.205CEST&quot;
 
 <span style="color: #404040">(</span><span style="color: #4169E1">time/format</span> <span style="color: #404040">(</span><span style="color: #4169E1">time/zoned-date-time</span><span style="color: #404040">)</span> <span style="color: #404040">(</span><span style="color: #4169E1">time/formatter</span> <span style="color: #E9967A">:ISO_OFFSET_DATE_TIME</span><span style="color: #404040">)</span><span style="color: #404040">)</span>
-=&gt; &quot;2022-05-19T12:32:40.531+02:00&quot;</code>
+=&gt; &quot;2022-06-01T09:22:08.223+02:00&quot;</code>
                     </div>
                     
                     
@@ -58547,10 +58873,10 @@ line3&quot;</span><span style="color: #404040">)</span>
 =&gt; 0
 
 <span style="color: #404040">(</span><span style="color: #4169E1">time/hour</span> <span style="color: #404040">(</span><span style="color: #4169E1">time/local-date-time</span><span style="color: #404040">)</span><span style="color: #404040">)</span>
-=&gt; 12
+=&gt; 9
 
 <span style="color: #404040">(</span><span style="color: #4169E1">time/hour</span> <span style="color: #404040">(</span><span style="color: #4169E1">time/zoned-date-time</span><span style="color: #404040">)</span><span style="color: #404040">)</span>
-=&gt; 12</code>
+=&gt; 9</code>
                     </div>
                     
                     
@@ -58587,13 +58913,13 @@ line3&quot;</span><span style="color: #404040">)</span>
                     
                     <div class="examples">
                         <code><span style="color: #404040">(</span><span style="color: #4169E1">time/last-day-of-month</span> <span style="color: #404040">(</span><span style="color: #4169E1">time/local-date</span><span style="color: #404040">)</span><span style="color: #404040">)</span>
-=&gt; 2022-05-31
+=&gt; 2022-06-30
 
 <span style="color: #404040">(</span><span style="color: #4169E1">time/last-day-of-month</span> <span style="color: #404040">(</span><span style="color: #4169E1">time/local-date-time</span><span style="color: #404040">)</span><span style="color: #404040">)</span>
-=&gt; 2022-05-31
+=&gt; 2022-06-30
 
 <span style="color: #404040">(</span><span style="color: #4169E1">time/last-day-of-month</span> <span style="color: #404040">(</span><span style="color: #4169E1">time/zoned-date-time</span><span style="color: #404040">)</span><span style="color: #404040">)</span>
-=&gt; 2022-05-31</code>
+=&gt; 2022-06-30</code>
                     </div>
                     
                     
@@ -58720,10 +59046,10 @@ line3&quot;</span><span style="color: #404040">)</span>
 =&gt; 28
 
 <span style="color: #404040">(</span><span style="color: #4169E1">time/length-of-month</span> <span style="color: #404040">(</span><span style="color: #4169E1">time/local-date-time</span><span style="color: #404040">)</span><span style="color: #404040">)</span>
-=&gt; 31
+=&gt; 30
 
 <span style="color: #404040">(</span><span style="color: #4169E1">time/length-of-month</span> <span style="color: #404040">(</span><span style="color: #4169E1">time/zoned-date-time</span><span style="color: #404040">)</span><span style="color: #404040">)</span>
-=&gt; 31</code>
+=&gt; 30</code>
                     </div>
                     
                     
@@ -58811,7 +59137,7 @@ line3&quot;</span><span style="color: #404040">)</span>
                     
                     <div class="examples">
                         <code><span style="color: #404040">(</span><span style="color: #4169E1">time/local-date</span><span style="color: #404040">)</span>
-=&gt; 2022-05-19
+=&gt; 2022-06-01
 
 <span style="color: #404040">(</span><span style="color: #4169E1">time/local-date</span> <span style="color: #E9967A">2018</span> <span style="color: #E9967A">8</span> <span style="color: #E9967A">1</span><span style="color: #404040">)</span>
 =&gt; 2018-08-01
@@ -58823,7 +59149,7 @@ line3&quot;</span><span style="color: #404040">)</span>
 =&gt; 2013-08-01
 
 <span style="color: #404040">(</span><span style="color: #4169E1">time/local-date</span> <span style="color: #404040">(</span><span style="color: #4169E1">.</span> <span style="color: #E9967A">:java.util.Date</span> <span style="color: #E9967A">:new</span><span style="color: #404040">)</span><span style="color: #404040">)</span>
-=&gt; 2022-05-19</code>
+=&gt; 2022-06-01</code>
                     </div>
                     
                     
@@ -58908,7 +59234,7 @@ line3&quot;</span><span style="color: #404040">)</span>
                     
                     <div class="examples">
                         <code><span style="color: #404040">(</span><span style="color: #4169E1">time/local-date-time</span><span style="color: #404040">)</span>
-=&gt; 2022-05-19T12:32:39.164
+=&gt; 2022-06-01T09:22:06.869
 
 <span style="color: #404040">(</span><span style="color: #4169E1">time/local-date-time</span> <span style="color: #E9967A">2018</span> <span style="color: #E9967A">8</span> <span style="color: #E9967A">1</span><span style="color: #404040">)</span>
 =&gt; 2018-08-01T00:00
@@ -58926,7 +59252,7 @@ line3&quot;</span><span style="color: #404040">)</span>
 =&gt; 2013-08-01T02:00
 
 <span style="color: #404040">(</span><span style="color: #4169E1">time/local-date-time</span> <span style="color: #404040">(</span><span style="color: #4169E1">.</span> <span style="color: #E9967A">:java.util.Date</span> <span style="color: #E9967A">:new</span><span style="color: #404040">)</span><span style="color: #404040">)</span>
-=&gt; 2022-05-19T12:32:39.268</code>
+=&gt; 2022-06-01T09:22:06.979</code>
                     </div>
                     
                     
@@ -59077,13 +59403,13 @@ line3&quot;</span><span style="color: #404040">)</span>
                     
                     <div class="examples">
                         <code><span style="color: #404040">(</span><span style="color: #4169E1">time/minus</span> <span style="color: #404040">(</span><span style="color: #4169E1">time/local-date</span><span style="color: #404040">)</span> <span style="color: #E9967A">:days</span> <span style="color: #E9967A">2</span><span style="color: #404040">)</span>
-=&gt; 2022-05-17
+=&gt; 2022-05-30
 
 <span style="color: #404040">(</span><span style="color: #4169E1">time/minus</span> <span style="color: #404040">(</span><span style="color: #4169E1">time/local-date-time</span><span style="color: #404040">)</span> <span style="color: #E9967A">:days</span> <span style="color: #E9967A">2</span><span style="color: #404040">)</span>
-=&gt; 2022-05-17T12:32:41.036
+=&gt; 2022-05-30T09:22:08.725
 
 <span style="color: #404040">(</span><span style="color: #4169E1">time/minus</span> <span style="color: #404040">(</span><span style="color: #4169E1">time/zoned-date-time</span><span style="color: #404040">)</span> <span style="color: #E9967A">:days</span> <span style="color: #E9967A">2</span><span style="color: #404040">)</span>
-=&gt; 2022-05-17T12:32:41.053+02:00[Europe/Zurich]</code>
+=&gt; 2022-05-30T09:22:08.742+02:00[Europe/Zurich]</code>
                     </div>
                     
                     
@@ -59123,10 +59449,10 @@ line3&quot;</span><span style="color: #404040">)</span>
 =&gt; 0
 
 <span style="color: #404040">(</span><span style="color: #4169E1">time/minute</span> <span style="color: #404040">(</span><span style="color: #4169E1">time/local-date-time</span><span style="color: #404040">)</span><span style="color: #404040">)</span>
-=&gt; 32
+=&gt; 22
 
 <span style="color: #404040">(</span><span style="color: #4169E1">time/minute</span> <span style="color: #404040">(</span><span style="color: #4169E1">time/zoned-date-time</span><span style="color: #404040">)</span><span style="color: #404040">)</span>
-=&gt; 32</code>
+=&gt; 22</code>
                     </div>
                     
                     
@@ -59163,13 +59489,13 @@ line3&quot;</span><span style="color: #404040">)</span>
                     
                     <div class="examples">
                         <code><span style="color: #404040">(</span><span style="color: #4169E1">time/month</span> <span style="color: #404040">(</span><span style="color: #4169E1">time/local-date</span><span style="color: #404040">)</span><span style="color: #404040">)</span>
-=&gt; 5
+=&gt; 6
 
 <span style="color: #404040">(</span><span style="color: #4169E1">time/month</span> <span style="color: #404040">(</span><span style="color: #4169E1">time/local-date-time</span><span style="color: #404040">)</span><span style="color: #404040">)</span>
-=&gt; 5
+=&gt; 6
 
 <span style="color: #404040">(</span><span style="color: #4169E1">time/month</span> <span style="color: #404040">(</span><span style="color: #4169E1">time/zoned-date-time</span><span style="color: #404040">)</span><span style="color: #404040">)</span>
-=&gt; 5</code>
+=&gt; 6</code>
                     </div>
                     
                     
@@ -59341,13 +59667,13 @@ line3&quot;</span><span style="color: #404040">)</span>
                     
                     <div class="examples">
                         <code><span style="color: #404040">(</span><span style="color: #4169E1">time/plus</span> <span style="color: #404040">(</span><span style="color: #4169E1">time/local-date</span><span style="color: #404040">)</span> <span style="color: #E9967A">:days</span> <span style="color: #E9967A">2</span><span style="color: #404040">)</span>
-=&gt; 2022-05-21
+=&gt; 2022-06-03
 
 <span style="color: #404040">(</span><span style="color: #4169E1">time/plus</span> <span style="color: #404040">(</span><span style="color: #4169E1">time/local-date-time</span><span style="color: #404040">)</span> <span style="color: #E9967A">:days</span> <span style="color: #E9967A">2</span><span style="color: #404040">)</span>
-=&gt; 2022-05-21T12:32:40.985
+=&gt; 2022-06-03T09:22:08.672
 
 <span style="color: #404040">(</span><span style="color: #4169E1">time/plus</span> <span style="color: #404040">(</span><span style="color: #4169E1">time/zoned-date-time</span><span style="color: #404040">)</span> <span style="color: #E9967A">:days</span> <span style="color: #E9967A">2</span><span style="color: #404040">)</span>
-=&gt; 2022-05-21T12:32:41.002+02:00[Europe/Zurich]</code>
+=&gt; 2022-06-03T09:22:08.689+02:00[Europe/Zurich]</code>
                     </div>
                     
                     
@@ -59387,10 +59713,10 @@ line3&quot;</span><span style="color: #404040">)</span>
 =&gt; 0
 
 <span style="color: #404040">(</span><span style="color: #4169E1">time/second</span> <span style="color: #404040">(</span><span style="color: #4169E1">time/local-date-time</span><span style="color: #404040">)</span><span style="color: #404040">)</span>
-=&gt; 40
+=&gt; 7
 
 <span style="color: #404040">(</span><span style="color: #4169E1">time/second</span> <span style="color: #404040">(</span><span style="color: #4169E1">time/zoned-date-time</span><span style="color: #404040">)</span><span style="color: #404040">)</span>
-=&gt; 40</code>
+=&gt; 7</code>
                     </div>
                     
                     
@@ -59427,7 +59753,7 @@ line3&quot;</span><span style="color: #404040">)</span>
                     
                     <div class="examples">
                         <code><span style="color: #404040">(</span><span style="color: #4169E1">time/to-millis</span> <span style="color: #404040">(</span><span style="color: #4169E1">time/local-date</span><span style="color: #404040">)</span><span style="color: #404040">)</span>
-=&gt; 1652911200000</code>
+=&gt; 1654034400000</code>
                     </div>
                     
                     
@@ -59466,13 +59792,13 @@ line3&quot;</span><span style="color: #404040">)</span>
                     
                     <div class="examples">
                         <code><span style="color: #404040">(</span><span style="color: #4169E1">time/with-time</span> <span style="color: #404040">(</span><span style="color: #4169E1">time/local-date</span><span style="color: #404040">)</span> <span style="color: #E9967A">22</span> <span style="color: #E9967A">00</span> <span style="color: #E9967A">15</span> <span style="color: #E9967A">333</span><span style="color: #404040">)</span>
-=&gt; 2022-05-19T22:00:15.333
+=&gt; 2022-06-01T22:00:15.333
 
 <span style="color: #404040">(</span><span style="color: #4169E1">time/with-time</span> <span style="color: #404040">(</span><span style="color: #4169E1">time/local-date-time</span><span style="color: #404040">)</span> <span style="color: #E9967A">22</span> <span style="color: #E9967A">00</span> <span style="color: #E9967A">15</span> <span style="color: #E9967A">333</span><span style="color: #404040">)</span>
-=&gt; 2022-05-19T22:00:15.333
+=&gt; 2022-06-01T22:00:15.333
 
 <span style="color: #404040">(</span><span style="color: #4169E1">time/with-time</span> <span style="color: #404040">(</span><span style="color: #4169E1">time/zoned-date-time</span><span style="color: #404040">)</span> <span style="color: #E9967A">22</span> <span style="color: #E9967A">00</span> <span style="color: #E9967A">15</span> <span style="color: #E9967A">333</span><span style="color: #404040">)</span>
-=&gt; 2022-05-19T22:00:15.333+02:00[Europe/Zurich]</code>
+=&gt; 2022-06-01T22:00:15.333+02:00[Europe/Zurich]</code>
                     </div>
                     
                     
@@ -59740,7 +60066,7 @@ line3&quot;</span><span style="color: #404040">)</span>
                     
                     <div class="examples">
                         <code><span style="color: #404040">(</span><span style="color: #4169E1">time/zoned-date-time</span><span style="color: #404040">)</span>
-=&gt; 2022-05-19T12:32:39.341+02:00[Europe/Zurich]
+=&gt; 2022-06-01T09:22:07.047+02:00[Europe/Zurich]
 
 <span style="color: #404040">(</span><span style="color: #4169E1">time/zoned-date-time</span> <span style="color: #E9967A">2018</span> <span style="color: #E9967A">8</span> <span style="color: #E9967A">1</span><span style="color: #404040">)</span>
 =&gt; 2018-08-01T00:00+02:00[Europe/Zurich]
@@ -59758,10 +60084,10 @@ line3&quot;</span><span style="color: #404040">)</span>
 =&gt; 2013-08-01T02:00+02:00[Europe/Zurich]
 
 <span style="color: #404040">(</span><span style="color: #4169E1">time/zoned-date-time</span> <span style="color: #404040">(</span><span style="color: #4169E1">.</span> <span style="color: #E9967A">:java.util.Date</span> <span style="color: #E9967A">:new</span><span style="color: #404040">)</span><span style="color: #404040">)</span>
-=&gt; 2022-05-19T12:32:39.445+02:00[Europe/Zurich]
+=&gt; 2022-06-01T09:22:07.153+02:00[Europe/Zurich]
 
 <span style="color: #404040">(</span><span style="color: #4169E1">time/zoned-date-time</span> <span style="color: #2E8B57">&quot;UTC&quot;</span><span style="color: #404040">)</span>
-=&gt; 2022-05-19T10:32:39.462Z[UTC]
+=&gt; 2022-06-01T07:22:07.170Z[UTC]
 
 <span style="color: #404040">(</span><span style="color: #4169E1">time/zoned-date-time</span> <span style="color: #2E8B57">&quot;UTC&quot;</span> <span style="color: #E9967A">2018</span> <span style="color: #E9967A">8</span> <span style="color: #E9967A">1</span><span style="color: #404040">)</span>
 =&gt; 2018-08-01T00:00Z[UTC]
@@ -59779,7 +60105,7 @@ line3&quot;</span><span style="color: #404040">)</span>
 =&gt; 2013-08-01T00:00Z[UTC]
 
 <span style="color: #404040">(</span><span style="color: #4169E1">time/zoned-date-time</span> <span style="color: #2E8B57">&quot;UTC&quot;</span> <span style="color: #404040">(</span><span style="color: #4169E1">.</span> <span style="color: #E9967A">:java.util.Date</span> <span style="color: #E9967A">:new</span><span style="color: #404040">)</span><span style="color: #404040">)</span>
-=&gt; 2022-05-19T10:32:39.567Z[UTC]</code>
+=&gt; 2022-06-01T07:22:07.273Z[UTC]</code>
                     </div>
                     
                     
@@ -60018,7 +60344,7 @@ line3&quot;</span><span style="color: #404040">)</span>
                     
                     <div class="examples">
                         <code><span style="color: #404040">(</span><span style="color: #4169E1">total-memory</span><span style="color: #404040">)</span>
-=&gt; &quot;1474.5MB&quot;</code>
+=&gt; &quot;981.0MB&quot;</code>
                     </div>
                     
                     
@@ -60367,8 +60693,8 @@ trace: 4</span>
 
   <span style="color: #404040">(</span><span style="color: #4169E1">trace/trace-var</span> <span style="color: #404040">+</span><span style="color: #404040">)</span>
   <span style="color: #404040">(</span><span style="color: #4169E1">+</span> <span style="color: #E9967A">1</span> <span style="color: #E9967A">2</span><span style="color: #404040">)</span><span style="color: #404040">)</span>
-<span style="color: #808080">TRACE t70919: (core/+ 1 2)
-TRACE t70919: | =&gt; 3</span>
+<span style="color: #808080">TRACE t67099: (core/+ 1 2)
+TRACE t67099: | =&gt; 3</span>
 =&gt; 3
 
 <span style="color: #404040">(</span><span style="color: #9932CC">do</span>
@@ -60382,12 +60708,12 @@ TRACE t70919: | =&gt; 3</span>
   <span style="color: #404040">(</span><span style="color: #4169E1">trace/trace-var</span> <span style="color: #404040">bar</span><span style="color: #404040">)</span>
 
   <span style="color: #404040">(</span><span style="color: #4169E1">bar</span> <span style="color: #E9967A">5</span><span style="color: #404040">)</span><span style="color: #404040">)</span>
-<span style="color: #808080">TRACE t70957: (user/bar 5)
-TRACE t70958: | (user/foo 5)
-TRACE t70959: | | (core/+ 5 2)
-TRACE t70959: | | | =&gt; 7
-TRACE t70958: | | =&gt; 7
-TRACE t70957: | =&gt; 7</span>
+<span style="color: #808080">TRACE t67135: (user/bar 5)
+TRACE t67136: | (user/foo 5)
+TRACE t67137: | | (core/+ 5 2)
+TRACE t67137: | | | =&gt; 7
+TRACE t67136: | | =&gt; 7
+TRACE t67135: | =&gt; 7</span>
 =&gt; 7</code>
                     </div>
                     
@@ -61357,7 +61683,7 @@ sorted     reverse         max, min</code></div>
                     
                     <div class="examples">
                         <code><span style="color: #404040">(</span><span style="color: #4169E1">used-memory</span><span style="color: #404040">)</span>
-=&gt; &quot;91.8MB&quot;</code>
+=&gt; &quot;92.2MB&quot;</code>
                     </div>
                     
                     
@@ -61451,7 +61777,7 @@ sorted     reverse         max, min</code></div>
                     
                     <div class="examples">
                         <code><span style="color: #404040">(</span><span style="color: #4169E1">uuid</span><span style="color: #404040">)</span>
-=&gt; &quot;d2c2baad-1e9a-4acf-8dac-df64dfa52fda&quot;</code>
+=&gt; &quot;9902326a-3de5-4df5-bebc-11401f80eded&quot;</code>
                     </div>
                     
                     
