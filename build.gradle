@@ -362,8 +362,7 @@ publishing {
               
             //artifact shadowJar
             artifact "build/libs/venice-${project.version}.jar"
-            
-            
+                        
             versionMapping {
                 usage('java-api') {
                     fromResolutionOf('runtimeClasspath')
@@ -666,11 +665,6 @@ artifacts {
     archives sourcesJar
     archives javadocJar
 }
-
-
-// Add explicit task dependencies
-publishVenicePublicationPublicationToMavenRepository.dependsOn shadowJar
-signVenicePublicationPublication.dependsOn shadowJar
 
 
 dependencies {
