@@ -325,7 +325,7 @@ jar {
 
 shadowJar {
     // https://github.com/johnrengelman/shadow/
-    
+
     relocate 'io.vavr', 'org.repackage.io.vavr'
     relocate 'org.jline', 'org.repackage.org.jline'
 
@@ -347,6 +347,7 @@ shadowJar {
     mergeServiceFiles()
    
     archiveFileName = "venice-${project.version}.jar"
+    classifier = ''
 }
 
 
@@ -360,9 +361,10 @@ publishing {
             artifact sourcesJar 
             artifact javadocJar 
               
-            //artifact shadowJar
-            artifact "build/libs/venice-${project.version}.jar"
-                        
+            artifact shadowJar
+            //artifact "build/libs/venice-${project.version}.jar"
+            
+            
             versionMapping {
                 usage('java-api') {
                     fromResolutionOf('runtimeClasspath')
