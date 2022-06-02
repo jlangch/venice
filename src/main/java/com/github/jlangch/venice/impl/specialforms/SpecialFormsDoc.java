@@ -1423,16 +1423,16 @@ public class SpecialFormsDoc {
 						"  (import :java.awt.Point  \n" +
 						"          :java.lang.Math) \n" +
 						"  (. :Math :max 2 10))      ",
-						"(do                                                                \n" +
-						"  (ns alpha)                                                       \n" +
-						"  (import :java.lang.Math)                                         \n" +
-						"  (println \"alpha:\" (any? #(== % :java.lang.Math) (imports)))    \n" +
-						"                                                                   \n" +
-						"  (ns beta)                                                        \n" +
-						"  (println \"beta:\" (any? #(== % :java.lang.Math) (imports)))     \n" +
-						"                                                                   \n" +
-						"  (ns alpha)                                                       \n" +
-						"  (println \"alpha:\" (any? #(== % :java.lang.Math) (imports)))    \n" +
+						"(do                                                                            \n" +
+						"  (ns alpha)                                                                   \n" +
+						"  (import :java.lang.Math)                                                     \n" +
+						"  (println \"alpha:\" (any? #(== % :java.lang.Math) (map first (imports))))    \n" +
+						"                                                                               \n" +
+						"  (ns beta)                                                                    \n" +
+						"  (println \"beta:\" (any? #(== % :java.lang.Math) (map first (imports))))     \n" +
+						"                                                                               \n" +
+						"  (ns alpha)                                                                   \n" +
+						"  (println \"alpha:\" (any? #(== % :java.lang.Math) (map first (imports))))    \n" +
 						")")
 					.seeAlso("imports")
 					.build()
