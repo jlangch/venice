@@ -24,7 +24,7 @@ and this project adheres to
 ### Fixed
 
 - color definitions in :xchart module. This caused in some cases the 
-  :benchmark module to fail loading.
+  :benchmark module to fail getting loaded.
 
 
 
