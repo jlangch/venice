@@ -10,11 +10,13 @@ and this project adheres to
 
 
 
-## [1.10.15] - 2022-06-xx
+## [1.10.15] - 2022-06-02
 
 ### Added
 
-- ...
+### Fixed
+
+- color definitions in :xchart module
 
 
 
