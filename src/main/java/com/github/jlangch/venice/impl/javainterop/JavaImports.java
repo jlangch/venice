@@ -101,7 +101,7 @@ public class JavaImports implements Serializable {
 					.entrySet()
 					.stream()
 					.map(e -> new String[] {e.getValue(), e.getKey()})
-					.sorted(Comparator.comparing(e -> e[1]))
+					.sorted(Comparator.comparing(e -> e[0]))
 					.map(i -> VncVector.of(
 								new VncKeyword(i[0]),
 								new VncKeyword(i[1])))
