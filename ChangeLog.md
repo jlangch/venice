@@ -14,7 +14,7 @@ and this project adheres to
 
 ### Added
 
-- ...
+- support for import aliases `(import :java.awt.Color :as :Col)`
 
 
 
