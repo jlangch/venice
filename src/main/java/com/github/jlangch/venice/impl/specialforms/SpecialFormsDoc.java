@@ -1411,7 +1411,9 @@ public class SpecialFormsDoc {
 				"import",
 				VncFunction
 					.meta()
-					.arglists("(import class & classes)")
+					.arglists(
+						"(import class & classes)",
+						"(import class :as alias)")
 					.doc(
 						"Imports one or multiple Java classes. Imports are bound to the current " +
 						"namespace.")
@@ -1423,6 +1425,9 @@ public class SpecialFormsDoc {
 						"  (import :java.awt.Point  \n" +
 						"          :java.lang.Math) \n" +
 						"  (. :Math :max 2 10))      ",
+						"(do                        \n" +
+						"  (import :java.awt.Color :as :AwtColor)    \n" +
+						"  (. :AwtColor :new 200I 230I 255I 180I))   ",
 						"(do                                                                            \n" +
 						"  (ns alpha)                                                                   \n" +
 						"  (import :java.lang.Math)                                                     \n" +

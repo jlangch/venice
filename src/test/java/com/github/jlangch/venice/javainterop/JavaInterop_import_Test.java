@@ -80,6 +80,56 @@ public class JavaInterop_import_Test {
 		
 		assertEquals(10L, venice.eval(script));
 	}
+
+	@Test
+	public void testImport_alias() {
+		final Venice venice = new Venice();
+
+		final String script =
+				"(do                                           \n" +
+				"   (import :java.lang.Long :as :LongNr)       \n" +
+				"   (. :LongNr :new 10))                       ";
+		
+		assertEquals(10L, venice.eval(script));
+	}
+
+	@Test
+	public void testImport_alias_1() {
+		final Venice venice = new Venice();
+
+		final String script =
+				"(do                                           \n" +
+				"   (import :java.lang.Long)                   \n" +
+				"   (import :java.lang.Long :as :LongNr)       \n" +
+				"   (. :LongNr :new 10))                       ";
+		
+		assertEquals(10L, venice.eval(script));
+	}
+
+	@Test
+	public void testImport_alias_2() {
+		final Venice venice = new Venice();
+
+		final String script =
+				"(do                                           \n" +
+				"   (import :java.lang.Long)                   \n" +
+				"   (import :java.lang.Long :as :LongNr)       \n" +
+				"   (. :Long :new 10))                         ";
+		
+		assertEquals(10L, venice.eval(script));
+	}
+
+	@Test
+	public void testImport_alias_3() {
+		final Venice venice = new Venice();
+
+		final String script =
+				"(do                                           \n" +
+				"   (import :java.lang.Long :as :Long)         \n" +
+				"   (. :Long :new 10))                         ";
+		
+		assertEquals(10L, venice.eval(script));
+	}
 	
 	@Test
 	public void testImport_failure() {

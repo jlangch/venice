@@ -32,6 +32,7 @@ import com.github.jlangch.venice.VncException;
 import com.github.jlangch.venice.impl.types.VncKeyword;
 import com.github.jlangch.venice.impl.types.collections.VncList;
 import com.github.jlangch.venice.impl.types.collections.VncVector;
+import com.github.jlangch.venice.impl.util.StringUtil;
 
 
 public class JavaImports implements Serializable {
@@ -74,10 +75,22 @@ public class JavaImports implements Serializable {
 	}
 
 	public void add(final String clazz) {
-		validateNoDuplicate(clazz);
-		imports.put(getSimpleClassname(clazz), clazz);
+		add(clazz, getSimpleClassname(clazz));
 	}
-	
+
+	public void add(final String clazz, final String alias) {		
+		final String alias_ = StringUtil.trimToNull(alias);
+		if (alias_ == null) {
+			throw new VncException(String.format(
+					"An import class alias on class '%s' must not be blank!",
+					clazz));
+		}
+
+		validateNoDuplicateAlias(clazz, alias_);
+
+		imports.put(alias_, clazz);
+	}
+
 	public void clear() {
 		imports.clear();
 	}
@@ -100,17 +113,17 @@ public class JavaImports implements Serializable {
 		return pos < 0 ? clazz : clazz.substring(pos+1);
 	}
 
-	private void validateNoDuplicate(final String clazz) {
-		final String cn = getSimpleClassname(clazz);
-		final String c = imports.get(cn);
+	private void validateNoDuplicateAlias(final String clazz, final String alias) {
+		final String c = imports.get(alias);
 		
 		if (c != null && !c.equals(clazz)) {
 			throw new VncException(String.format(
-					"Failed to import class '%s' as '%s'. There is a '%s' already imported as '%s'.",
-					clazz, cn, c, cn));
+					"Failed to import class '%s' with alias '%s'. The import alias "
+					+ "already exists for another class.",
+					clazz, alias));
 		}
 	}
-	
+
 	
 	private static final long serialVersionUID = 1784667662341909868L;
 

@@ -46,6 +46,7 @@ import com.github.jlangch.venice.impl.env.Env;
 import com.github.jlangch.venice.impl.env.GenSym;
 import com.github.jlangch.venice.impl.env.Var;
 import com.github.jlangch.venice.impl.functions.CoreFunctions;
+import com.github.jlangch.venice.impl.javainterop.JavaImports;
 import com.github.jlangch.venice.impl.specialforms.CatchBlock;
 import com.github.jlangch.venice.impl.specialforms.DefTypeForm;
 import com.github.jlangch.venice.impl.specialforms.FinallyBlock;
@@ -139,10 +140,34 @@ public class SpecialFormsHandler {
 		final CallFrame callframe = new CallFrame("import", args, meta);
 		try (WithCallStack cs = new WithCallStack(callframe)) {
 			assertMinArity("import", FnType.SpecialForm, args, 0);
-			args.forEach(i -> Namespaces
-								.getCurrentNamespace()
-								.getJavaImports()
-								.add(Coerce.toVncString(i).getValue()));
+			
+			final JavaImports jImports = Namespaces
+											.getCurrentNamespace()
+											.getJavaImports();
+			
+			VncList args_ = args;
+			while(!args_.isEmpty()) {
+				final VncVal def = args_.first();
+				final VncVal as = args_.second();
+				
+				if (Types.isVncKeyword(as) && "as".equals(((VncKeyword)as).getValue())) {
+					final VncVal alias = args_.third();
+					if (alias != Nil) {
+						jImports.add(Coerce.toVncString(def).getValue(),
+								 	 Coerce.toVncString(alias).getValue());
+						
+						args_ = args_.drop(3);
+					}
+					else {
+						throw new VncException("Invalid Java import definition!");
+					}
+				}
+				else {
+					jImports.add(Coerce.toVncString(def).getValue());
+					args_ = args_.drop(1);
+				}			
+			}
+			
 			return Nil;
 		}
 	}
