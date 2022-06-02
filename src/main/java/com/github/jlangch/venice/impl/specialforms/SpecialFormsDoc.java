@@ -1411,12 +1411,17 @@ public class SpecialFormsDoc {
 				"import",
 				VncFunction
 					.meta()
-					.arglists("(import class)")
+					.arglists("(import class & classes)")
 					.doc(
-						"Imports a Java class. Imports are bound to the current namespace.")
+						"Imports one or multiple Java classes. Imports are bound to the current " +
+						"namespace.")
 					.examples(
 						"(do                        \n" +
 						"  (import :java.lang.Math) \n" +
+						"  (. :Math :max 2 10))      ",
+						"(do                        \n" +
+						"  (import :java.awt.Point  \n" +
+						"          :java.lang.Math) \n" +
 						"  (. :Math :max 2 10))      ",
 						"(do                                                                \n" +
 						"  (ns alpha)                                                       \n" +
@@ -1440,12 +1445,27 @@ public class SpecialFormsDoc {
 				"imports",
 				VncFunction
 					.meta()
-					.arglists("(imports)")
-					.doc("List the registered imports for the current namespace.")
+					.arglists(
+						"(imports & options)",
+						"(imports ns & options)")
+					.doc(
+						"Without namespace arg returns a list with the registered imports " +
+						"for the current namespace. With namespace arg returns a list with " +
+						"the registered imports for the given namespace. \n\n" +
+						"Options:  \n\n" +
+						"| :print | print the import list to the current value of `*out*` | ")
 					.examples(
-						"(do                        \n" +
-						"  (import :java.lang.Math) \n" +
-						"  (imports))                 ")
+						"(do                           \n" +
+						"  (import :java.lang.Math)    \n" +
+						"  (imports))                  ",
+						"(do                           \n" +
+						"  (import :java.lang.Math)    \n" +
+						"  (imports :print))           ",
+						"(do                           \n" +
+						"  (ns foo)                    \n" +
+						"  (import :java.lang.Math)    \n" +
+						"  (ns bar)                    \n" +
+						"  (imports foo))              ")
 					.seeAlso("import")
 					.build()
 		) {

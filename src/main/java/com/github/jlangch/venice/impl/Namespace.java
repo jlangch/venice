@@ -22,10 +22,8 @@
 package com.github.jlangch.venice.impl;
 
 import java.util.concurrent.ConcurrentHashMap;
-import java.util.stream.Collectors;
 
 import com.github.jlangch.venice.impl.javainterop.JavaImports;
-import com.github.jlangch.venice.impl.types.VncKeyword;
 import com.github.jlangch.venice.impl.types.VncSymbol;
 import com.github.jlangch.venice.impl.types.collections.VncHashMap;
 import com.github.jlangch.venice.impl.types.collections.VncList;
@@ -68,11 +66,7 @@ public class Namespace {
 	}
 	
 	public VncList getJavaImportsAsVncList() {
-		return VncList.ofList(
-				javaImports
-					.list()
-					.stream().map(s -> new VncKeyword(s))
-					.collect(Collectors.toList()));
+		return javaImports.list();
 	}
 
 	@Override

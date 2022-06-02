@@ -154,20 +154,39 @@ public class SpecialFormsHandler {
 	) {
 		final CallFrame callframe = new CallFrame("imports", args, meta);
 		try (WithCallStack cs = new WithCallStack(callframe)) {
-			if (args.isEmpty()) {
-				return Namespaces.getCurrentNamespace().getJavaImportsAsVncList();
+			assertArity("imports", FnType.SpecialForm, args, 0, 1, 2);
+
+			final boolean print = Types.isVncKeyword(args.last()) 
+									&& "print".equals(((VncKeyword)args.last()).getValue());
+			
+			
+			final VncList args_ = print ? args.butlast() : args;
+			
+			Namespace namespace = Namespaces.getCurrentNamespace();
+			 
+			if (!args_.isEmpty()) {
+				// we got a ns argument
+				final VncSymbol ns = Coerce.toVncSymbol(args_.first());
+				namespace = nsRegistry.get(ns);
+				if (namespace == null) {
+					throw new VncException(String.format(
+							"The namespace '%s' does not exist", 
+							ns.toString()));
+				}
+			}
+			
+			final VncList importList = namespace.getJavaImportsAsVncList();
+			
+			if (print) {
+				final VncFunction printFn = (VncFunction)env.get(new VncSymbol("println"));
+				importList.forEach(i -> printFn.applyOf(
+											((VncVector)i).first(), 
+											new VncKeyword("as"),
+											((VncVector)i).second()));
+				return Nil;
 			}
 			else {
-				final VncSymbol ns = Coerce.toVncSymbol(args.first());
-				final Namespace namespace = nsRegistry.get(ns);
-				if (namespace != null) {
-					return namespace.getJavaImportsAsVncList();
-				}
-				else {
-					throw new VncException(String.format(
-						"The namespace '%s' does not exist", 
-						ns.toString()));
-				}
+				return importList;
 			}
 		}
 	}

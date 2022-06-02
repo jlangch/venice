@@ -22,14 +22,16 @@
 package com.github.jlangch.venice.impl.javainterop;
 
 import java.io.Serializable;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
+import java.util.Comparator;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.stream.Collectors;
 
 import com.github.jlangch.venice.ValueException;
 import com.github.jlangch.venice.VncException;
+import com.github.jlangch.venice.impl.types.VncKeyword;
+import com.github.jlangch.venice.impl.types.collections.VncList;
+import com.github.jlangch.venice.impl.types.collections.VncVector;
 
 
 public class JavaImports implements Serializable {
@@ -80,12 +82,18 @@ public class JavaImports implements Serializable {
 		imports.clear();
 	}
 	
-	public List<String> list() {
-		final ArrayList<String> items = new ArrayList<>(imports.values());
-		Collections.sort(items);	
-		return items;
+	public VncList list() {
+		return VncList.ofColl(
+				imports
+					.entrySet()
+					.stream()
+					.map(e -> new String[] {e.getValue(), e.getKey()})
+					.sorted(Comparator.comparing(e -> e[1]))
+					.map(i -> VncVector.of(
+								new VncKeyword(i[0]),
+								new VncKeyword(i[1])))
+					.collect(Collectors.toList()));
 	}
-
 	
 	private String getSimpleClassname(final String clazz) {
 		final int pos = clazz.lastIndexOf('.');
