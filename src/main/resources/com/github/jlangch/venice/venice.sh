@@ -19,6 +19,7 @@ help () {
   echo "          -PsonatypeUsername=${SONATYPE_USER} \\"
   echo "          -PsonatypePassword=\"password\" \\"
   echo "          clean shadowJar publish"
+  echo "./gradlew eclipse"
   echo "./gradlew jmh -Pinclude=\".*PrecompileBenchmark\""
   echo "./gradlew -Dorg.gradle.java.home=\${JAVA_11_ZULU_HOME} jmh -Pinclude=\".*PrecompileBenchmark\""
   echo "-------------------------------------------------------------------------"
@@ -59,7 +60,7 @@ rebuild () {
 }
 
 cheatsheet () {
-  ./gradlew cheatsheet
+  ./gradlew clean compileJava cheatsheet
 }
 
 tests () {
