@@ -80,6 +80,20 @@ public class JavaInterop_import_Test {
 		
 		assertEquals(10L, venice.eval(script));
 	}
+	
+	@Test
+	public void testImport_multiple() {
+		final Venice venice = new Venice();
+
+		final String script =
+				"(do                           \n" +
+				"   (import :java.lang.Long    \n" +
+				"           :java.awt.Color    \n" +
+				"           :java.lang.Math)   \n" +
+				"   (. :Long :new 10))           ";
+		
+		assertEquals(10L, venice.eval(script));
+	}
 
 	@Test
 	public void testImport_alias() {
@@ -132,7 +146,35 @@ public class JavaInterop_import_Test {
 	}
 	
 	@Test
-	public void testImport_failure() {
+	public void testImport_alias_multiple_1() {
+		final Venice venice = new Venice();
+
+		final String script =
+				"(do                                      \n" +
+				"   (import :java.lang.Long :as :jLong    \n" +
+				"           :java.awt.Color :as :jColor   \n" +
+				"           :java.lang.Math :as :jMath)   \n" +
+				"   (. :jLong :new 10))                   ";
+		
+		assertEquals(10L, venice.eval(script));
+	}
+	
+	@Test
+	public void testImport_alias_multiple_2() {
+		final Venice venice = new Venice();
+
+		final String script =
+				"(do                                      \n" +
+				"   (import :java.lang.Long :as :jLong    \n" +
+				"           :java.awt.Color :as :jColor   \n" +
+				"           :java.lang.Math :as :jMath)   \n" +
+				"   (. :jMath :max 10 7))                   ";
+		
+		assertEquals(10L, venice.eval(script));
+	}
+	
+	@Test
+	public void testImport_failure_classnotfound() {
 		final Venice venice = new Venice();
 
 		final String script =
@@ -140,6 +182,45 @@ public class JavaInterop_import_Test {
 				"   (import :java.lang.Long)   \n" +
 				"   (import :foo.some.Long)    \n" +
 				"   (. :Long :new 10))           ";
+
+		assertThrows(VncException.class, () -> venice.eval(script));
+	}
+	
+	@Test
+	public void testImport_double_def_ok_1() {
+		final Venice venice = new Venice();
+
+		final String script =
+				"(do                                  \n" +
+				"   (import :java.lang.Long)          \n" +
+				"   (import :java.lang.Long)          \n" +
+				"   (. :Long :new 10))                ";
+
+		assertEquals(10L, venice.eval(script));
+	}
+	
+	@Test
+	public void testImport_double_def_ok_2() {
+		final Venice venice = new Venice();
+
+		final String script =
+				"(do                                  \n" +
+				"   (import :java.lang.Long :as :X)   \n" +
+				"   (import :java.lang.Long :as :X)   \n" +
+				"   (. :X :new 10))                   ";
+
+		assertEquals(10L, venice.eval(script));
+	}
+	
+	@Test
+	public void testImport_double_def_failure() {
+		final Venice venice = new Venice();
+
+		final String script =
+				"(do                                  \n" +
+				"   (import :java.lang.Long :as :X)   \n" +
+				"   (import :java.lang.Math :as :X)   \n" +
+				"   (. :X :new 10))                   ";
 
 		assertThrows(VncException.class, () -> venice.eval(script));
 	}

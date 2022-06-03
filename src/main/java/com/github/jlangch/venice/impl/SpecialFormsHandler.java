@@ -137,6 +137,10 @@ public class SpecialFormsHandler {
 			final Env env,
 			final VncVal meta
 	) {
+		// (import :java.lang.Math)
+		// (import :java.lang.Math :java.awt.Color)
+		// (import :java.lang.Math :as :Math)
+		// (import :java.lang.Math :as :Math :java.awt.Color :as :Color)
 		final CallFrame callframe = new CallFrame("import", args, meta);
 		try (WithCallStack cs = new WithCallStack(callframe)) {
 			assertMinArity("import", FnType.SpecialForm, args, 0);
@@ -177,6 +181,10 @@ public class SpecialFormsHandler {
 			final Env env,
 			final VncVal meta
 	) {
+		// (imports)
+		// (imports user)
+		// (imports :print)
+		// (imports user :print)
 		final CallFrame callframe = new CallFrame("imports", args, meta);
 		try (WithCallStack cs = new WithCallStack(callframe)) {
 			assertArity("imports", FnType.SpecialForm, args, 0, 1, 2);
