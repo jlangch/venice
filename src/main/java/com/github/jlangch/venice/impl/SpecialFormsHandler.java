@@ -199,7 +199,7 @@ public class SpecialFormsHandler {
 			 
 			if (!args_.isEmpty()) {
 				// we got a ns argument
-				final VncSymbol ns = Coerce.toVncSymbol(args_.first());
+				final VncSymbol ns = Coerce.toVncSymbol(evaluator.evaluate(args.first(), env, false));
 				namespace = nsRegistry.get(ns);
 				if (namespace == null) {
 					throw new VncException(String.format(

@@ -1439,15 +1439,19 @@ public class SpecialFormsDoc {
 						"  (import :java.awt.Color :as :AwtColor)    \n" +
 						"  (. :AwtColor :new 200I 230I 255I 180I))   ",
 						"(do                                                                            \n" +
+						"  (ns util)                                                                    \n" +
+						"  (defn import? [clazz ns_]                                                    \n" +
+						"    (any? #(== % clazz) (map first (imports ns_))))                            \n" +
+						"                                                                               \n" +
 						"  (ns alpha)                                                                   \n" +
 						"  (import :java.lang.Math)                                                     \n" +
-						"  (println \"alpha:\" (any? #(== % :java.lang.Math) (map first (imports))))    \n" +
+						"  (println \"alpha:\" (util/import? :java.lang.Math 'alpha))                   \n" +
 						"                                                                               \n" +
 						"  (ns beta)                                                                    \n" +
-						"  (println \"beta:\" (any? #(== % :java.lang.Math) (map first (imports))))     \n" +
+						"  (println \"beta:\" (util/import? :java.lang.Math 'beta))                     \n" +
 						"                                                                               \n" +
 						"  (ns alpha)                                                                   \n" +
-						"  (println \"alpha:\" (any? #(== % :java.lang.Math) (map first (imports))))    \n" +
+						"  (println \"alpha:\" (util/import? :java.lang.Math 'alpha))                   \n" +
 						")")
 					.seeAlso("imports")
 					.build()
@@ -1480,7 +1484,7 @@ public class SpecialFormsDoc {
 						"  (ns foo)                    \n" +
 						"  (import :java.lang.Math)    \n" +
 						"  (ns bar)                    \n" +
-						"  (imports foo))              ")
+						"  (imports 'foo))              ")
 					.seeAlso("import")
 					.build()
 		) {
