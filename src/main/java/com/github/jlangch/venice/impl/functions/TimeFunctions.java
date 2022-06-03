@@ -1757,6 +1757,7 @@ public class TimeFunctions {
 						"(time/formatter \"dd-MM-yyyy\" \"en_EN\")",
 						"(time/formatter \"yyyy-MM-dd'T'HH:mm:ss.SSSz\")",
 						"(time/formatter :ISO_OFFSET_DATE_TIME)")
+					.seeAlso("time/format")
 					.build()
 		) {
 			public VncVal apply(final VncList args) {
@@ -1787,6 +1788,7 @@ public class TimeFunctions {
 						"(time/format (time/zoned-date-time) :ISO_OFFSET_DATE_TIME)",
 						"(time/format (time/zoned-date-time) (time/formatter \"yyyy-MM-dd'T'HH:mm:ss.SSSz\"))",
 						"(time/format (time/zoned-date-time) (time/formatter :ISO_OFFSET_DATE_TIME))")
+					.seeAlso("time/formatter")
 					.build()
 		) {
 			public VncVal apply(final VncList args) {

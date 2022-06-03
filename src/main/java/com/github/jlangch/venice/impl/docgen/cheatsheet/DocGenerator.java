@@ -2066,7 +2066,7 @@ public class DocGenerator {
 
 		final DocSection format = new DocSection("Format", "time.format");
 		all.addSection(format);
-		format.addItem(getDocItem("time/formatter"));
+		format.addItem(getDocItem("time/formatter", false, false));
 		format.addItem(getDocItem("time/format"));
 		
 		final DocSection compare = new DocSection("Test", "time.test");
