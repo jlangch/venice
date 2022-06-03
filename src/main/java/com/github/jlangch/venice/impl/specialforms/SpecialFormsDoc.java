@@ -1416,7 +1416,17 @@ public class SpecialFormsDoc {
 						"(import class :as alias)")
 					.doc(
 						"Imports one or multiple Java classes. Imports are bound to the current " +
-						"namespace.")
+						"namespace.\n\n" +
+						"Aliases are helpful if Java classes have the same name but different " +
+						"packages like `java.util.Date` and `java.sql.Date`:\n\n" +
+						"```                                                  \n" +
+						"(do                                                  \n" +
+						"  (import :java.util.Date)                           \n" +
+						"  (import :java.sql.Date :as :sql.Date)              \n" +
+						"                                                     \n" +
+						"  (println (. :Date :new))                           \n" +
+						"  (println (. :sql.Date :valueOf \"2022-06-24\")))   \n" +
+						"```")
 					.examples(
 						"(do                        \n" +
 						"  (import :java.lang.Math) \n" +
