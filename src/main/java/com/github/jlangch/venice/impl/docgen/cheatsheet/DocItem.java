@@ -81,12 +81,13 @@ public class DocItem {
 		return descriptionXmlStyled;
 	}
 	
-	public String getExamples() {
-		return StringUtil.trimToNull(
-				examples
-					.stream()
-					.map(o -> o.render())
-					.collect(Collectors.joining("\n\n")));
+	public List<String> getExamples() {
+		return examples
+				.stream()
+				.map(o -> o.render())
+				.map(s -> StringUtil.trimToNull(s))
+				.filter(s -> s != null)
+				.collect(Collectors.toList());
 	}
 	
 	public List<String> getExamplesXmlStyled() {
