@@ -919,7 +919,7 @@ public class ZipFunctions {
 						"(-> (io/zip \"a.txt\" (bytebuf-from-string \"abc\" :utf-8)  \n" +
 						"            \"b.txt\" (bytebuf-from-string \"def\" :utf-8)  \n" +
 						"            \"c.txt\" (bytebuf-from-string \"ghi\" :utf-8)) \n" +
-						"    (io/unzip-to-dir \".\")")
+						"    (io/unzip-to-dir \".\"))")
 					.seeAlso("io/unzip", "io/unzip-nth", "io/unzip-first", "io/unzip-all", "io/zip", "io/zip?")
 					.build()
 		) {
@@ -1254,7 +1254,7 @@ public class ZipFunctions {
 						"Returns true if f is a gzipped file. f may be a file, a string (file path), " +
 						"a bytebuf, or an InputStream")
 					.examples(
-						"(-> (io/gzip (bytebuf-from-string \"abc\" :utf-8)) " +
+						"(-> (io/gzip (bytebuf-from-string \"abc\" :utf-8)) \n" +
 						"    (io/gzip?))")
 					.seeAlso("io/gzip")
 					.build()

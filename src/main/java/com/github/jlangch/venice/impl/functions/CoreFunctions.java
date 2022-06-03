@@ -4292,10 +4292,10 @@ public class CoreFunctions {
 						"   (into (. :java.util.concurrent.CopyOnWriteArrayList :new)\n" +
 						"         (doto (. :java.util.ArrayList :new)\n" +
 						"               (. :add 3)\n" +
-						"               (. :add 4))))\n",
+						"               (. :add 4))))",
 						"(do\n" +
 						"   (into (. :java.util.concurrent.CopyOnWriteArrayList :new)\n" +
-						"         '(3 4)))\n")
+						"         '(3 4)))")
 					.build()
 		) {
 			@SuppressWarnings("unchecked")
