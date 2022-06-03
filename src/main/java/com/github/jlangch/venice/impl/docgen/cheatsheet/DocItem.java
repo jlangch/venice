@@ -89,12 +89,13 @@ public class DocItem {
 					.collect(Collectors.joining("\n\n")));
 	}
 	
-	public String getExamplesXmlStyled() {
-		return StringUtil.trimToNull(
-				examples
-					.stream()
-					.map(o -> o.renderXmlStyled())
-					.collect(Collectors.joining("\n\n")));
+	public List<String> getExamplesXmlStyled() {
+		return examples
+				.stream()
+				.map(o -> o.renderXmlStyled())
+				.map(s -> StringUtil.trimToNull(s))
+				.filter(s -> s != null)
+				.collect(Collectors.toList());
 	}
 
 	public List<CrossRef> getCrossRefs() {

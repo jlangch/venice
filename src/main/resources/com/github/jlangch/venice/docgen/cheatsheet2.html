@@ -354,6 +354,12 @@ ${ (when pdfmode }$<?xml version="1.0" encoding="UTF-8"?>${ ) }$${ (when-not pdf
                 margin: 0.5em 0 0.5em 0;
                 padding: 0.5em;
             }
+            .examples code {
+                margin-top: 2em;
+            }
+            .examples code:first-child {
+                margin-top: 0em;
+            }
             .seealso {
                 background-color: #f5f5f5;
                 margin: 0.5em 0 0.5em 0;
@@ -752,7 +758,9 @@ ${ (when pdfmode }$<?xml version="1.0" encoding="UTF-8"?>${ ) }$${ (when-not pdf
                     
                     ${ (when (not-empty? (:examplesXmlStyled it)) }$
                     <div class="examples">
-                        <code>${= (:examplesXmlStyled it) }$</code>
+                        ${ (doseq [code (:examplesXmlStyled it)] }$
+                        <code>${= code }$</code>
+                        ${ ) }$
                     </div>
                     ${ ) }$
                     
