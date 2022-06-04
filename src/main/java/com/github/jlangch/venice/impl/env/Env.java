@@ -43,6 +43,7 @@ import com.github.jlangch.venice.impl.types.VncBoolean;
 import com.github.jlangch.venice.impl.types.VncFunction;
 import com.github.jlangch.venice.impl.types.VncJavaObject;
 import com.github.jlangch.venice.impl.types.VncKeyword;
+import com.github.jlangch.venice.impl.types.VncSpecialForm;
 import com.github.jlangch.venice.impl.types.VncString;
 import com.github.jlangch.venice.impl.types.VncSymbol;
 import com.github.jlangch.venice.impl.types.VncVal;
@@ -315,7 +316,7 @@ public class Env implements Serializable {
 	public Env setGlobal(final Var val) {
 		final VncSymbol sym = val.getName();
 
-		if (ReservedSymbols.isSpecialForm(sym.getName())) {
+		if (ReservedSymbols.isSpecialForm(sym.getName()) && !(val.getVal() instanceof VncSpecialForm)) {
 			try (WithCallStack cs = new WithCallStack(CallFrame.from(sym))) {
 				throw new VncException(String.format(
 							"Rejected setting var %s with name of a special form", 

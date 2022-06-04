@@ -41,6 +41,7 @@ import com.github.jlangch.venice.impl.types.Constants;
 import com.github.jlangch.venice.impl.types.VncFunction;
 import com.github.jlangch.venice.impl.types.VncKeyword;
 import com.github.jlangch.venice.impl.types.VncLong;
+import com.github.jlangch.venice.impl.types.VncSpecialForm;
 import com.github.jlangch.venice.impl.types.VncString;
 import com.github.jlangch.venice.impl.types.VncSymbol;
 import com.github.jlangch.venice.impl.types.VncVal;
@@ -71,9 +72,17 @@ public class DocForm {
 			return docForSymbol(((VncString)ref).toSymbol(), env);
 		}
 		else {
-			// last resort
-			final VncString name = (VncString)CoreFunctions.name.apply(VncList.of(ref));
-			return docForSymbol(name.toSymbol(), env);
+			try {
+				// last resort
+				final VncString name = (VncString)CoreFunctions.name.apply(VncList.of(ref));
+				return docForSymbol(name.toSymbol(), env);
+			}
+			catch(RuntimeException ex) {
+				throw new VncException(String.format(
+							"Function 'doc' does not allow a parameter of type %s! " +
+							"Expected a symbol, keyword, or string.",
+							Types.getType(ref)));
+			}
 		}
 	}
 
@@ -398,6 +407,9 @@ public class DocForm {
 			if (Types.isVncFunction(val)) {
 				return formatDoc((VncFunction)val, width);
 			}
+			else if (Types.isVncSpecialForm(val)) {
+				return formatDoc((VncSpecialForm)val, width);
+			}
 			else if (Types.isVncProtocol(val)) {
 				return formatDoc((VncProtocol)val, width);
 			}
@@ -407,6 +419,7 @@ public class DocForm {
 	}
 	
 	private static VncString formatDoc(final VncFunction fn, final int width) {
+		final VncVal doc = fn.getDoc();
 		final VncList argsList = fn.getArgLists();
 		final VncList examples = fn.getExamples();
 		final VncList seeAlso = fn.getSeeAlso();
@@ -422,7 +435,7 @@ public class DocForm {
 			sb.append("\n\n");
 		}
 		
-		final String fnDescr = toString(fn.getDoc());
+		final String fnDescr = toString(doc);
 		if (!fnDescr.isEmpty()) {
 			sb.append(MARKDOWN_FN_DESCR
 						? Markdown.parse(fnDescr).renderToText(width)
@@ -456,7 +469,59 @@ public class DocForm {
 			return new VncString(NO_DOC);
 		}
 	}
-	
+
+	private static VncString formatDoc(final VncSpecialForm fn, final int width) {
+		final VncVal doc = fn.getDoc();
+		final VncList argsList = fn.getArgLists();
+		final VncList examples = fn.getExamples();
+		final VncList seeAlso = fn.getSeeAlso();
+		
+		final StringBuilder sb =  new StringBuilder();
+		
+		if (!argsList.isEmpty()) {
+			sb.append(argsList
+						.stream()
+						.map(s -> toString(s))
+						.collect(Collectors.joining(", ")));
+			
+			sb.append("\n\n");
+		}
+		
+		final String fnDescr = toString(doc);
+		if (!fnDescr.isEmpty()) {
+			sb.append(MARKDOWN_FN_DESCR
+						? Markdown.parse(fnDescr).renderToText(width)
+						: fnDescr);
+		}
+					
+		if (!examples.isEmpty()) {
+			sb.append("\n\n");
+			sb.append("EXAMPLES:\n");
+			sb.append(examples
+						.stream()
+						.map(s -> toString(s))
+						.map(e -> indent(e, "   "))
+						.collect(Collectors.joining("\n\n")));
+		}
+
+		if (!seeAlso.isEmpty()) {
+			sb.append("\n\n");
+			sb.append("SEE ALSO:\n   ");
+			sb.append(seeAlso
+						.stream()
+						.map(s -> toString(s))
+						.collect(Collectors.joining(", ")));
+		}
+
+		if (sb.length() > 0) {
+			sb.append("\n");
+			return new VncString(sb.toString());
+		}
+		else {
+			return new VncString(NO_DOC);
+		}
+	}
+
 	private static VncString formatDoc(final VncProtocol protocol, final int width) {
 		final VncVal doc = MetaUtil.getMetaVal(protocol.getMeta(), MetaUtil.DOC);
 		final VncVal examples = MetaUtil.getMetaVal(protocol.getMeta(), MetaUtil.EXAMPLES);

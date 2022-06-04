@@ -427,114 +427,114 @@ public class SpecialFormsHandler {
 		}
 	}
 
-	public VncVal var_get_(
-			final VncList args, 
-			final Env env,
-			final VncVal meta
-	) {
-		final CallFrame callframe = new CallFrame("var-get", args, meta);
-		try (WithCallStack cs = new WithCallStack(callframe)) {
-			specialFormCallValidation("var-get");
-			assertArity("var-get", FnType.SpecialForm, args, 1);
-			final VncSymbol sym = Types.isVncSymbol(args.first())
-									? (VncSymbol)args.first()
-									: Coerce.toVncSymbol(evaluator.evaluate(args.first(), env, false));
-			return env.getOrNil(sym);
-		}
-	}
-
-	public VncVal var_ns_(
-			final VncList args, 
-			final Env env,
-			final VncVal meta
-	) {
-		final CallFrame callframe = new CallFrame("var-ns", args, meta);
-		try (WithCallStack cs = new WithCallStack(callframe)) {
-			specialFormCallValidation("var-ns");
-			assertArity("var-ns", FnType.SpecialForm, args, 1);
-			
-			final VncSymbol sym = Types.isVncSymbol(args.first())
-									? (VncSymbol)args.first()
-									: Coerce.toVncSymbol(evaluator.evaluate(args.first(), env, false));
-			
-			if (sym.hasNamespace()) {
-				return new VncString(sym.getNamespace());
-			}
-			else if (env.isLocal(sym)) {
-				return Nil;
-			}
-			else {
-				final Var v = env.getGlobalVarOrNull(sym);
-				return v == null
-						? Nil
-						: new VncString(
-									v.getName().hasNamespace()
-										? v.getName().getNamespace()
-										: Namespaces.NS_CORE.getName());
-			}
-		}
-	}
-
-	public VncVal var_name_(
-			final VncList args, 
-			final Env env,
-			final VncVal meta
-	) {
-		final CallFrame callframe = new CallFrame("var-name", args, meta);
-		try (WithCallStack cs = new WithCallStack(callframe)) {
-			specialFormCallValidation("var-name");
-			assertArity("var-name", FnType.SpecialForm, args, 1);
-			final VncSymbol sym = Types.isVncSymbol(args.first())
-									? (VncSymbol)args.first()
-									: Coerce.toVncSymbol(evaluator.evaluate(args.first(), env, false));
-			return new VncString(sym.getSimpleName());
-		}
-	}
-
-	public VncVal var_localQ_(
-			final VncList args, 
-			final Env env,
-			final VncVal meta
-	) {
-		final CallFrame callframe = new CallFrame("var-local?", args, meta);
-		try (WithCallStack cs = new WithCallStack(callframe)) {
-			assertArity("var-local?", FnType.SpecialForm, args, 1);
-			final VncSymbol sym = Types.isVncSymbol(args.first())
-									? (VncSymbol)args.first()
-									: Coerce.toVncSymbol(evaluator.evaluate(args.first(), env, false));
-			return VncBoolean.of(env.isLocal(sym));
-		}
-	}
-
-	public VncVal var_thread_localQ_(
-			final VncList args, 
-			final Env env,
-			final VncVal meta
-	) {
-		final CallFrame callframe = new CallFrame("var-thread-local?", args, meta);
-		try (WithCallStack cs = new WithCallStack(callframe)) {
-			assertArity("var-thread-local?", FnType.SpecialForm, args, 1);
-			final VncSymbol sym = Types.isVncSymbol(args.first())
-									? (VncSymbol)args.first()
-									: Coerce.toVncSymbol(evaluator.evaluate(args.first(), env, false));
-			return VncBoolean.of(env.isDynamic(sym));
-		}
-	}
-
-	public VncVal var_globalQ_(
-			final VncList args, 
-			final Env env,
-			final VncVal meta
-	) {
-		final CallFrame callframe = new CallFrame("var-global?", args, meta);
-		try (WithCallStack cs = new WithCallStack(callframe)) {
-			assertArity("var-global?", FnType.SpecialForm, args, 1);
-			final VncSymbol sym = Types.isVncSymbol(args.first())
-									? (VncSymbol)args.first()
-									: Coerce.toVncSymbol(evaluator.evaluate(args.first(), env, false));
-			return VncBoolean.of(env.isGlobal(sym));
-		}
-	}
+//	public VncVal var_get_(
+//			final VncList args, 
+//			final Env env,
+//			final VncVal meta
+//	) {
+//		final CallFrame callframe = new CallFrame("var-get", args, meta);
+//		try (WithCallStack cs = new WithCallStack(callframe)) {
+//			specialFormCallValidation("var-get");
+//			assertArity("var-get", FnType.SpecialForm, args, 1);
+//			final VncSymbol sym = Types.isVncSymbol(args.first())
+//									? (VncSymbol)args.first()
+//									: Coerce.toVncSymbol(evaluator.evaluate(args.first(), env, false));
+//			return env.getOrNil(sym);
+//		}
+//	}
+//
+//	public VncVal var_ns_(
+//			final VncList args, 
+//			final Env env,
+//			final VncVal meta
+//	) {
+//		final CallFrame callframe = new CallFrame("var-ns", args, meta);
+//		try (WithCallStack cs = new WithCallStack(callframe)) {
+//			specialFormCallValidation("var-ns");
+//			assertArity("var-ns", FnType.SpecialForm, args, 1);
+//			
+//			final VncSymbol sym = Types.isVncSymbol(args.first())
+//									? (VncSymbol)args.first()
+//									: Coerce.toVncSymbol(evaluator.evaluate(args.first(), env, false));
+//			
+//			if (sym.hasNamespace()) {
+//				return new VncString(sym.getNamespace());
+//			}
+//			else if (env.isLocal(sym)) {
+//				return Nil;
+//			}
+//			else {
+//				final Var v = env.getGlobalVarOrNull(sym);
+//				return v == null
+//						? Nil
+//						: new VncString(
+//									v.getName().hasNamespace()
+//										? v.getName().getNamespace()
+//										: Namespaces.NS_CORE.getName());
+//			}
+//		}
+//	}
+//
+//	public VncVal var_name_(
+//			final VncList args, 
+//			final Env env,
+//			final VncVal meta
+//	) {
+//		final CallFrame callframe = new CallFrame("var-name", args, meta);
+//		try (WithCallStack cs = new WithCallStack(callframe)) {
+//			specialFormCallValidation("var-name");
+//			assertArity("var-name", FnType.SpecialForm, args, 1);
+//			final VncSymbol sym = Types.isVncSymbol(args.first())
+//									? (VncSymbol)args.first()
+//									: Coerce.toVncSymbol(evaluator.evaluate(args.first(), env, false));
+//			return new VncString(sym.getSimpleName());
+//		}
+//	}
+//
+//	public VncVal var_localQ_(
+//			final VncList args, 
+//			final Env env,
+//			final VncVal meta
+//	) {
+//		final CallFrame callframe = new CallFrame("var-local?", args, meta);
+//		try (WithCallStack cs = new WithCallStack(callframe)) {
+//			assertArity("var-local?", FnType.SpecialForm, args, 1);
+//			final VncSymbol sym = Types.isVncSymbol(args.first())
+//									? (VncSymbol)args.first()
+//									: Coerce.toVncSymbol(evaluator.evaluate(args.first(), env, false));
+//			return VncBoolean.of(env.isLocal(sym));
+//		}
+//	}
+//
+//	public VncVal var_thread_localQ_(
+//			final VncList args, 
+//			final Env env,
+//			final VncVal meta
+//	) {
+//		final CallFrame callframe = new CallFrame("var-thread-local?", args, meta);
+//		try (WithCallStack cs = new WithCallStack(callframe)) {
+//			assertArity("var-thread-local?", FnType.SpecialForm, args, 1);
+//			final VncSymbol sym = Types.isVncSymbol(args.first())
+//									? (VncSymbol)args.first()
+//									: Coerce.toVncSymbol(evaluator.evaluate(args.first(), env, false));
+//			return VncBoolean.of(env.isDynamic(sym));
+//		}
+//	}
+//
+//	public VncVal var_globalQ_(
+//			final VncList args, 
+//			final Env env,
+//			final VncVal meta
+//	) {
+//		final CallFrame callframe = new CallFrame("var-global?", args, meta);
+//		try (WithCallStack cs = new WithCallStack(callframe)) {
+//			assertArity("var-global?", FnType.SpecialForm, args, 1);
+//			final VncSymbol sym = Types.isVncSymbol(args.first())
+//									? (VncSymbol)args.first()
+//									: Coerce.toVncSymbol(evaluator.evaluate(args.first(), env, false));
+//			return VncBoolean.of(env.isGlobal(sym));
+//		}
+//	}
 	
 	public VncVal defprotocol_(
 			final IVeniceInterpreter interpreter, 
@@ -862,19 +862,19 @@ public class SpecialFormsHandler {
 		}
 	}
 	
-	public VncVal doc_(
-			final VncList args, 
-			final Env env,
-			final VncVal meta
-	) {
-		final CallFrame callframe = new CallFrame("doc", args, meta);
-		try (WithCallStack cs = new WithCallStack(callframe)) {
-			assertArity("doc", FnType.SpecialForm, args, 1);
-			final VncString doc = DocForm.doc(args.first(), env);
-			evaluator.evaluate(VncList.of(new VncSymbol("println"), doc), env, false);
-			return Nil;
-		}
-	}
+//	public VncVal doc_(
+//			final VncList args, 
+//			final Env env,
+//			final VncVal meta
+//	) {
+//		final CallFrame callframe = new CallFrame("doc", args, meta);
+//		try (WithCallStack cs = new WithCallStack(callframe)) {
+//			assertArity("doc", FnType.SpecialForm, args, 1);
+//			final VncString doc = DocForm.doc(args.first(), env);
+//			evaluator.evaluate(VncList.of(new VncSymbol("println"), doc), env, false);
+//			return Nil;
+//		}
+//	}
 	
 	public VncVal print_highlight_(
 			final VncList args, 

@@ -25,6 +25,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import com.github.jlangch.venice.impl.javainterop.JavaInteropFunctions;
+import com.github.jlangch.venice.impl.specialforms.SpecialFormsFunctions;
 import com.github.jlangch.venice.impl.types.VncVal;
 
 
@@ -33,6 +34,8 @@ public class Functions {
 	public static final Map<VncVal,VncVal> functions = new HashMap<>();
 	
 	static {
+		functions.putAll(SpecialFormsFunctions.ns);
+
 		functions.putAll(CoreFunctions.ns);
 		functions.putAll(ExceptionFunctions.ns);
 		functions.putAll(BytebufFunctions.ns);

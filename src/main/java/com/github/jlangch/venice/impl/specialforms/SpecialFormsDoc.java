@@ -38,37 +38,37 @@ import com.github.jlangch.venice.impl.util.SymbolMapBuilder;
  */
 public class SpecialFormsDoc {
 
-	public static VncFunction doc = 
-		new SpecialFormsDocFunction(
-				"doc",
-				VncFunction
-					.meta()
-					.arglists("(doc x)")
-					.doc(
-						"Prints documentation for a var or special form given `x` as its name. " +
-						"Prints the definition of custom types. \n\n" +
-						"Displays the source of a module if `x` is a module: `(doc :ansi)`\n\n" +
-						"If the var could not be found, searches for a similiar var with " +
-						"the **Levenshtein distance** 1.¶" +
-						"E.g: \n\n" +
-						"```                     \n" +
-						"> (doc dac)             \n" +
-						"Symbol 'dac' not found! \n" +
-						"                        \n" +
-						"Did you mean?           \n" +
-						"   dag/dag              \n" +
-						"   dec                  \n" +
-						"```")
-					.examples(
-						"(doc +)",
-						"(doc def)",
-						"(do \n" +
-						"   (deftype :complex [real :long, imaginary :long]) \n" +
-						"   (doc :complex))")
-					.build()
-		) {
-			private static final long serialVersionUID = -1;
-		};
+//	public static VncFunction doc = 
+//		new SpecialFormsDocFunction(
+//				"doc",
+//				VncFunction
+//					.meta()
+//					.arglists("(doc x)")
+//					.doc(
+//						"Prints documentation for a var or special form given `x` as its name. " +
+//						"Prints the definition of custom types. \n\n" +
+//						"Displays the source of a module if `x` is a module: `(doc :ansi)`\n\n" +
+//						"If the var could not be found, searches for a similiar var with " +
+//						"the **Levenshtein distance** 1.¶" +
+//						"E.g: \n\n" +
+//						"```                     \n" +
+//						"> (doc dac)             \n" +
+//						"Symbol 'dac' not found! \n" +
+//						"                        \n" +
+//						"Did you mean?           \n" +
+//						"   dag/dag              \n" +
+//						"   dec                  \n" +
+//						"```")
+//					.examples(
+//						"(doc +)",
+//						"(doc def)",
+//						"(do \n" +
+//						"   (deftype :complex [real :long, imaginary :long]) \n" +
+//						"   (doc :complex))")
+//					.build()
+//		) {
+//			private static final long serialVersionUID = -1;
+//		};
 	
 	public static VncFunction modules = 
 		new SpecialFormsDocFunction(
@@ -147,160 +147,160 @@ public class SpecialFormsDoc {
 		   private static final long serialVersionUID = -1;
 		};
 
-	public static VncFunction var_get = 
-		new SpecialFormsDocFunction(
-				"var-get",
-				VncFunction
-					.meta()
-					.arglists("(var-get v)")
-					.doc("Returns a var's value.")
-					.examples(
-						"(var-get +)",
-						"(var-get '+)",
-						"(var-get (symbol \"+\"))",
-						"((var-get +) 1 2)",
-						"(do \n" +
-						"  (def x 10) \n" +
-						"  (var-get 'x))")
-					.seeAlso("var-ns", "var-name", "var-local?", "var-global?", "var-thread-local?")
-					.build()
-		) {
-			private static final long serialVersionUID = -1;
-		};
-
-	public static VncFunction var_ns = 
-		new SpecialFormsDocFunction(
-				"var-ns",
-				VncFunction
-					.meta()
-					.arglists("(var-ns v)")
-					.doc("Returns the namespace of the var's symbol")
-					.examples(
-						"(var-ns +)",
-						"(var-ns '+)",
-						"(var-ns (symbol \"+\"))",
-						";; aliased function \n" +
-						"(do \n" +
-						"  (ns foo) \n" +
-						"  (def add +)\n" +
-						"  (var-ns add))",
-						"(do  \n" +
-						"  (def x 10) \n" +
-						"  (var-ns x))",
-						"(let [x 10]\n" +
-						"  (var-ns x))",
-						";; compare with namespace \n" +
-						"(do \n" +
-						"  (ns foo) \n" +
-						"  (def add +)\n" +
-						"  (namespace add))",
-						";; compare aliased function with namespace \n" +
-						"(do \n" +
-						"  (ns foo) \n" +
-						"  (def add +)\n" +
-						"  (namespace add))")
-					.seeAlso("namespace", "var-get", "var-name", "var-local?", "var-global?", "var-thread-local?")
-					.build()
-		) {
-			private static final long serialVersionUID = -1;
-		};
-
-	public static VncFunction var_name = 
-		new SpecialFormsDocFunction(
-				"var-name",
-				VncFunction
-					.meta()
-					.arglists("(var-name v)")
-					.doc("Returns the name of the var's symbol")
-					.examples(
-							"(var-name +)",
-							"(var-name '+)",
-							"(var-name (symbol \"+\"))",
-							";; aliased function \n" +
-							"(do \n" +
-							"  (ns foo) \n" +
-							"  (def add +)\n" +
-							"  (var-name add))",
-							"(do \n" +
-							"  (def x 10) \n" +
-							"  (var-name x))",
-							"(let [x 10] \n" +
-							"  (var-name x))",
-							";; compare with name \n" +
-							"(do \n" +
-							"  (ns foo) \n" +
-							"  (def add +)\n" +
-							"  (name add))",
-							";; compare aliased function with name \n" +
-							"(do \n" +
-							"  (ns foo) \n" +
-							"  (def add +)\n" +
-							"  (name add))")
-					.seeAlso("name", "var-get", "var-ns", "var-local?", "var-global?", "var-thread-local?")
-					.build()
-		) {
-			private static final long serialVersionUID = -1;
-		};
-
-	public static VncFunction var_local_QUESTION = 
-		new SpecialFormsDocFunction(
-				"var-local?",
-				VncFunction
-					.meta()
-					.arglists("(var-local? v)")
-					.doc("Returns true if the var is local else false")
-					.examples(
-							"(var-local? +)",
-							"(var-local? '+)",
-							"(var-local? (symbol \"+\"))",
-							"(do               \n" +
-							"  (def x 10)      \n" +
-							"  (var-local? x))   ",
-							"(let [x 10]       \n" +
-							"  (var-local? x))   ")
-					.seeAlso("var-get", "var-ns", "var-name", "var-global?", "var-thread-local?")
-					.build()
-		) {
-			private static final long serialVersionUID = -1;
-		};
-
-	public static VncFunction var_thread_local_QUESTION = 
-		new SpecialFormsDocFunction(
-				"var-thread-local?",
-				VncFunction
-					.meta()
-					.arglists("(var-thread-local? v)")
-					.doc("Returns true if the var is thread-local else false")
-					.examples(
-							"(binding [x 100] \n" +
-							"  (var-local? x))")
-					.seeAlso("var-get", "var-ns", "var-name", "var-local?", "var-global?")
-					.build()
-		) {
-			private static final long serialVersionUID = -1;
-		};
-
-	public static VncFunction var_global_QUESTION = 
-		new SpecialFormsDocFunction(
-				"var-global?",
-				VncFunction
-					.meta()
-					.arglists("(var-global? v)")
-					.doc("Returns true if the var is global else false")
-					.examples(
-							"(var-global? +)",
-							"(var-global? '+)",
-							"(var-global? (symbol \"+\"))",
-							"(do                \n" +
-							"  (def x 10)       \n" +
-							"  (var-global? x))   ",
-							"(let [x 10]        \n" +
-							"  (var-global? x))   ")
-					.seeAlso("var-get", "var-ns", "var-name", "var-local?", "var-thread-local?")
-					.build()
-		) {
-			private static final long serialVersionUID = -1;
-		};
+//	public static VncFunction var_get = 
+//		new SpecialFormsDocFunction(
+//				"var-get",
+//				VncFunction
+//					.meta()
+//					.arglists("(var-get v)")
+//					.doc("Returns a var's value.")
+//					.examples(
+//						"(var-get +)",
+//						"(var-get '+)",
+//						"(var-get (symbol \"+\"))",
+//						"((var-get +) 1 2)",
+//						"(do \n" +
+//						"  (def x 10) \n" +
+//						"  (var-get 'x))")
+//					.seeAlso("var-ns", "var-name", "var-local?", "var-global?", "var-thread-local?")
+//					.build()
+//		) {
+//			private static final long serialVersionUID = -1;
+//		};
+//
+//	public static VncFunction var_ns = 
+//		new SpecialFormsDocFunction(
+//				"var-ns",
+//				VncFunction
+//					.meta()
+//					.arglists("(var-ns v)")
+//					.doc("Returns the namespace of the var's symbol")
+//					.examples(
+//						"(var-ns +)",
+//						"(var-ns '+)",
+//						"(var-ns (symbol \"+\"))",
+//						";; aliased function \n" +
+//						"(do \n" +
+//						"  (ns foo) \n" +
+//						"  (def add +)\n" +
+//						"  (var-ns add))",
+//						"(do  \n" +
+//						"  (def x 10) \n" +
+//						"  (var-ns x))",
+//						"(let [x 10]\n" +
+//						"  (var-ns x))",
+//						";; compare with namespace \n" +
+//						"(do \n" +
+//						"  (ns foo) \n" +
+//						"  (def add +)\n" +
+//						"  (namespace add))",
+//						";; compare aliased function with namespace \n" +
+//						"(do \n" +
+//						"  (ns foo) \n" +
+//						"  (def add +)\n" +
+//						"  (namespace add))")
+//					.seeAlso("namespace", "var-get", "var-name", "var-local?", "var-global?", "var-thread-local?")
+//					.build()
+//		) {
+//			private static final long serialVersionUID = -1;
+//		};
+//
+//	public static VncFunction var_name = 
+//		new SpecialFormsDocFunction(
+//				"var-name",
+//				VncFunction
+//					.meta()
+//					.arglists("(var-name v)")
+//					.doc("Returns the name of the var's symbol")
+//					.examples(
+//							"(var-name +)",
+//							"(var-name '+)",
+//							"(var-name (symbol \"+\"))",
+//							";; aliased function \n" +
+//							"(do \n" +
+//							"  (ns foo) \n" +
+//							"  (def add +)\n" +
+//							"  (var-name add))",
+//							"(do \n" +
+//							"  (def x 10) \n" +
+//							"  (var-name x))",
+//							"(let [x 10] \n" +
+//							"  (var-name x))",
+//							";; compare with name \n" +
+//							"(do \n" +
+//							"  (ns foo) \n" +
+//							"  (def add +)\n" +
+//							"  (name add))",
+//							";; compare aliased function with name \n" +
+//							"(do \n" +
+//							"  (ns foo) \n" +
+//							"  (def add +)\n" +
+//							"  (name add))")
+//					.seeAlso("name", "var-get", "var-ns", "var-local?", "var-global?", "var-thread-local?")
+//					.build()
+//		) {
+//			private static final long serialVersionUID = -1;
+//		};
+//
+//	public static VncFunction var_local_QUESTION = 
+//		new SpecialFormsDocFunction(
+//				"var-local?",
+//				VncFunction
+//					.meta()
+//					.arglists("(var-local? v)")
+//					.doc("Returns true if the var is local else false")
+//					.examples(
+//							"(var-local? +)",
+//							"(var-local? '+)",
+//							"(var-local? (symbol \"+\"))",
+//							"(do               \n" +
+//							"  (def x 10)      \n" +
+//							"  (var-local? x))   ",
+//							"(let [x 10]       \n" +
+//							"  (var-local? x))   ")
+//					.seeAlso("var-get", "var-ns", "var-name", "var-global?", "var-thread-local?")
+//					.build()
+//		) {
+//			private static final long serialVersionUID = -1;
+//		};
+//
+//	public static VncFunction var_thread_local_QUESTION = 
+//		new SpecialFormsDocFunction(
+//				"var-thread-local?",
+//				VncFunction
+//					.meta()
+//					.arglists("(var-thread-local? v)")
+//					.doc("Returns true if the var is thread-local else false")
+//					.examples(
+//							"(binding [x 100] \n" +
+//							"  (var-local? x))")
+//					.seeAlso("var-get", "var-ns", "var-name", "var-local?", "var-global?")
+//					.build()
+//		) {
+//			private static final long serialVersionUID = -1;
+//		};
+//
+//	public static VncFunction var_global_QUESTION = 
+//		new SpecialFormsDocFunction(
+//				"var-global?",
+//				VncFunction
+//					.meta()
+//					.arglists("(var-global? v)")
+//					.doc("Returns true if the var is global else false")
+//					.examples(
+//							"(var-global? +)",
+//							"(var-global? '+)",
+//							"(var-global? (symbol \"+\"))",
+//							"(do                \n" +
+//							"  (def x 10)       \n" +
+//							"  (var-global? x))   ",
+//							"(let [x 10]        \n" +
+//							"  (var-global? x))   ")
+//					.seeAlso("var-get", "var-ns", "var-name", "var-local?", "var-thread-local?")
+//					.build()
+//		) {
+//			private static final long serialVersionUID = -1;
+//		};
 
 	public static VncFunction fn = 
 		new SpecialFormsDocFunction(
@@ -1712,17 +1712,17 @@ public class SpecialFormsDoc {
 	
 	public static Map<VncVal, VncVal> ns = 
 			new SymbolMapBuilder()
-					.put(new VncSymbol("doc"),				doc)
+//					.put(new VncSymbol("doc"),				doc)
 					.put(new VncSymbol("modules"),			modules)
 					.put(new VncSymbol("fn"),				fn)
 					.put(new VncSymbol("eval"),				eval)
 					.put(new VncSymbol("resolve"),			resolve)
-					.put(new VncSymbol("var-get"),			var_get)
-					.put(new VncSymbol("var-name"),			var_name)
-					.put(new VncSymbol("var-ns"),			var_ns)
-					.put(new VncSymbol("var-local?"),		var_local_QUESTION)
-					.put(new VncSymbol("var-thread-local?"),var_thread_local_QUESTION)
-					.put(new VncSymbol("var-global?"),		var_global_QUESTION)
+//					.put(new VncSymbol("var-get"),			var_get)
+//					.put(new VncSymbol("var-name"),			var_name)
+//					.put(new VncSymbol("var-ns"),			var_ns)
+//					.put(new VncSymbol("var-local?"),		var_local_QUESTION)
+//					.put(new VncSymbol("var-thread-local?"),var_thread_local_QUESTION)
+//					.put(new VncSymbol("var-global?"),		var_global_QUESTION)
 					.put(new VncSymbol("def"),				def)
 					.put(new VncSymbol("defonce"),			defonce)
 					.put(new VncSymbol("defmulti"),			defmulti)

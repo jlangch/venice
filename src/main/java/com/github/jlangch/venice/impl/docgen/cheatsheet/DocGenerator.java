@@ -47,6 +47,7 @@ import com.github.jlangch.venice.impl.repl.ReplFunctions;
 import com.github.jlangch.venice.impl.specialforms.SpecialFormsDoc;
 import com.github.jlangch.venice.impl.types.Constants;
 import com.github.jlangch.venice.impl.types.VncFunction;
+import com.github.jlangch.venice.impl.types.VncSpecialForm;
 import com.github.jlangch.venice.impl.types.VncString;
 import com.github.jlangch.venice.impl.types.VncSymbol;
 import com.github.jlangch.venice.impl.types.VncVal;
@@ -2911,7 +2912,34 @@ public class DocGenerator {
 							id(name));
 			}
 			else {
-				throw new RuntimeException(String.format("Unknown doc function %s", name));
+				final VncSpecialForm sf = findSpecialForm(name);	
+				if (sf != null) {
+					final String fnDescr = sf.getDoc() == Constants.Nil 
+												? "" 
+												: ((VncString)sf.getDoc()).getValue();
+					
+					final String descr = MARKDOWN_FN_DESCR ? null : fnDescr;
+					
+					final String descrXmlStyled = MARKDOWN_FN_DESCR
+													? Markdown.parse(fnDescr).renderToHtml()
+													: null;
+					
+					return new DocItem(
+								name, 
+								toStringList(sf.getArgLists(), name, ":arglists"), 
+								descr,
+								descrXmlStyled,
+								runExamples(
+										name, 
+										toStringList(sf.getExamples(), name, ":examples"), 
+										runExamples, 
+										catchEx),
+								createCrossRefs(name, sf.getSeeAlso()),
+								id(name));
+				}
+				else {
+					throw new RuntimeException(String.format("Unknown doc function %s", name));
+				}
 			}
 		}
 	}
@@ -3011,7 +3039,13 @@ public class DocGenerator {
 		}
 
 		// functions & macros
-		return getFunction(name);
+		final VncVal val = env.getOrNil(new VncSymbol(name));
+		return Types.isVncFunction(val) ? (VncFunction)val : null;
+	}
+	
+	private VncSpecialForm findSpecialForm(final String name) {
+		final VncVal val = env.getOrNil(new VncSymbol(name));
+		return Types.isVncSpecialForm(val) ? (VncSpecialForm)val : null;
 	}
 	
 	private VncProtocol findProtocol(final String name) {
@@ -3023,9 +3057,9 @@ public class DocGenerator {
 		final List<CrossRef> crossRefs = new ArrayList<>();
 		
 		seeAlso.forEach(v -> {
-			final String crossRefFnName = ((VncString)v).getValue();
+			final String crossRefName = ((VncString)v).getValue();
 			
-			final VncProtocol crossRefProtocol = findProtocol(crossRefFnName);
+			final VncProtocol crossRefProtocol = findProtocol(crossRefName);
 			if (crossRefProtocol != null) {
 				String doc = crossRefProtocol.getDoc() == Constants.Nil 
 								? null 
@@ -3033,11 +3067,11 @@ public class DocGenerator {
 		
 				if (doc != null) {
 					crossRefs.add(
-						createCrossRef(crossRefFnName, getCrossRefDescr(doc)));
+						createCrossRef(crossRefName, getCrossRefDescr(doc)));
 				}			
 			}
 			else {
-				final VncFunction crossRefFn = findFunction(crossRefFnName);
+				final VncFunction crossRefFn = findFunction(crossRefName);
 				if (crossRefFn != null) {
 					String doc = crossRefFn.getDoc() == Constants.Nil 
 									? null 
@@ -3045,14 +3079,27 @@ public class DocGenerator {
 					
 					if (doc != null) {
 						crossRefs.add(
-							createCrossRef(crossRefFnName, getCrossRefDescr(doc)));
+							createCrossRef(crossRefName, getCrossRefDescr(doc)));
 					}
 				}
 				else {
-					throw new RuntimeException(String.format(
+					final VncSpecialForm crossRefSf = findSpecialForm(crossRefName);
+					if (crossRefSf != null) {
+						String doc = crossRefSf.getDoc() == Constants.Nil 
+										? null 
+										: ((VncString)crossRefSf.getDoc()).getValue();
+						
+						if (doc != null) {
+							crossRefs.add(
+								createCrossRef(crossRefName, getCrossRefDescr(doc)));
+						}
+					}
+					else {
+						throw new RuntimeException(String.format(
 								"Missing cross reference function %s -> %s",
 								parentName,
-								crossRefFnName));
+								crossRefName));
+					}
 				}
 			}
 		});
@@ -3128,11 +3175,6 @@ public class DocGenerator {
 	
 	private File getUserDir() {
 		return new File(System.getProperty("user.dir"));
-	}
-
-	private VncFunction getFunction(final String name) {
-		final VncVal val = env.getOrNil(new VncSymbol(name));
-		return Types.isVncFunction(val) ? (VncFunction)val : null;
 	}
 	
 	private Markdown loadVeniceDocMarkdown() {

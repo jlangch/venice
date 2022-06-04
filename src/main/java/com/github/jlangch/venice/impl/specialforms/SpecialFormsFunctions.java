@@ -21,18 +21,358 @@
  */
 package com.github.jlangch.venice.impl.specialforms;
 
+import static com.github.jlangch.venice.impl.types.Constants.Nil;
+import static com.github.jlangch.venice.impl.util.ArityExceptions.assertArity;
+
 import java.util.Map;
 
+import com.github.jlangch.venice.impl.Namespaces;
+import com.github.jlangch.venice.impl.docgen.runtime.DocForm;
+import com.github.jlangch.venice.impl.env.Env;
+import com.github.jlangch.venice.impl.env.Var;
+import com.github.jlangch.venice.impl.thread.ThreadContext;
+import com.github.jlangch.venice.impl.types.VncBoolean;
+import com.github.jlangch.venice.impl.types.VncSpecialForm;
+import com.github.jlangch.venice.impl.types.VncString;
+import com.github.jlangch.venice.impl.types.VncSymbol;
 import com.github.jlangch.venice.impl.types.VncVal;
+import com.github.jlangch.venice.impl.types.collections.VncList;
+import com.github.jlangch.venice.impl.types.util.Coerce;
+import com.github.jlangch.venice.impl.types.util.Types;
+import com.github.jlangch.venice.impl.util.ArityExceptions.FnType;
 import com.github.jlangch.venice.impl.util.SymbolMapBuilder;
+
 
 /**
  * The special form pesudo functions
  */
 public class SpecialFormsFunctions {
 
+	///////////////////////////////////////////////////////////////////////////
+	// doc functions
+	///////////////////////////////////////////////////////////////////////////
 
+	public static VncSpecialForm doc =
+		new VncSpecialForm(
+				"doc",
+				VncSpecialForm
+					.meta()
+					.arglists("(doc x)")
+					.doc(
+						"Prints documentation for a var or special form given `x` as its name. " +
+						"Prints the definition of custom types. \n\n" +
+						"Displays the source of a module if `x` is a module: `(doc :ansi)`\n\n" +
+						"If the var could not be found, searches for a similiar var with " +
+						"the **Levenshtein distance** 1.¶" +
+						"E.g: \n\n" +
+						"```                     \n" +
+						"> (doc dac)             \n" +
+						"Symbol 'dac' not found! \n" +
+						"                        \n" +
+						"Did you mean?           \n" +
+						"   dag/dag              \n" +
+						"   dec                  \n" +
+						"```")
+					.examples(
+						"(doc +)",
+						"(doc def)",
+						"(do \n" +
+						"   (deftype :complex [real :long, imaginary :long]) \n" +
+						"   (doc :complex))")
+					.build()
+		) {
+			public VncVal apply(
+					final VncList args, 
+					final Env env, 
+					final SpecialFormsContext ctx
+			) {
+				assertArity("doc", FnType.SpecialForm, args, 1);
+				final VncString doc = DocForm.doc(args.first(), env);
+				ctx.getEvaluator().evaluate(
+						VncList.of(new VncSymbol("println"), doc), 
+						env, 
+						false);
+				return Nil;
+			}
 
+			private static final long serialVersionUID = -1848883965231344442L;
+		};
+
+			
+			
+	///////////////////////////////////////////////////////////////////////////
+	// var functions
+	///////////////////////////////////////////////////////////////////////////
+
+	public static VncSpecialForm var_get =
+		new VncSpecialForm(
+				"var-get",
+				VncSpecialForm
+					.meta()
+					.arglists("(var-get v)")
+					.doc("Returns a var's value.")
+					.examples(
+						"(var-get +)",
+						"(var-get '+)",
+						"(var-get (symbol \"+\"))",
+						"((var-get +) 1 2)",
+						"(do \n" +
+						"  (def x 10) \n" +
+						"  (var-get 'x))")
+					.seeAlso(
+						"var-ns", "var-name", "var-local?", "var-global?", "var-thread-local?")
+					.build()
+		) {
+			public VncVal apply(
+					final VncList args, 
+					final Env env, 
+					final SpecialFormsContext ctx
+			) {
+				specialFormCallValidation("var-get");
+				assertArity("var-get", FnType.SpecialForm, args, 1);
+				final VncSymbol sym = Types.isVncSymbol(args.first())
+										? (VncSymbol)args.first()
+										: Coerce.toVncSymbol(
+												ctx.getEvaluator().evaluate(args.first(), 
+												env, 
+												false));
+				return env.getOrNil(sym);
+			}
+
+			private static final long serialVersionUID = -1848883965231344442L;
+		};
+
+	public static VncSpecialForm var_ns =
+		new VncSpecialForm(
+				"var-ns",
+				VncSpecialForm
+					.meta()
+					.arglists("(var-ns v)")
+					.doc("Returns the namespace of the var's symbol")
+					.examples(
+						"(var-ns +)",
+						"(var-ns '+)",
+						"(var-ns (symbol \"+\"))",
+						";; aliased function \n" +
+						"(do \n" +
+						"  (ns foo) \n" +
+						"  (def add +)\n" +
+						"  (var-ns add))",
+						"(do  \n" +
+						"  (def x 10) \n" +
+						"  (var-ns x))",
+						"(let [x 10]\n" +
+						"  (var-ns x))",
+						";; compare with namespace \n" +
+						"(do \n" +
+						"  (ns foo) \n" +
+						"  (def add +)\n" +
+						"  (namespace add))",
+						";; compare aliased function with namespace \n" +
+						"(do \n" +
+						"  (ns foo) \n" +
+						"  (def add +)\n" +
+						"  (namespace add))")
+					.seeAlso(
+						"namespace", "var-get", "var-name", "var-local?", "var-global?", "var-thread-local?")
+					.build()
+		) {
+			public VncVal apply(
+					final VncList args, 
+					final Env env, 
+					final SpecialFormsContext ctx
+			) {
+				specialFormCallValidation("var-ns");
+				assertArity("var-ns", FnType.SpecialForm, args, 1);
+				
+				final VncSymbol sym = Types.isVncSymbol(args.first())
+										? (VncSymbol)args.first()
+										: Coerce.toVncSymbol(
+												ctx.getEvaluator().evaluate(args.first(), 
+														env, 
+														false));
+				
+				if (sym.hasNamespace()) {
+					return new VncString(sym.getNamespace());
+				}
+				else if (env.isLocal(sym)) {
+					return Nil;
+				}
+				else {
+					final Var v = env.getGlobalVarOrNull(sym);
+					return v == null
+							? Nil
+							: new VncString(
+										v.getName().hasNamespace()
+											? v.getName().getNamespace()
+											: Namespaces.NS_CORE.getName());
+				}
+			}
+
+			private static final long serialVersionUID = -1848883965231344442L;
+		};
+
+	public static VncSpecialForm var_name =
+		new VncSpecialForm(
+				"var-name",
+				VncSpecialForm
+					.meta()
+					.arglists("(var-name v)")
+					.doc("Returns the name of the var's symbol")
+					.examples(
+						"(var-name +)",
+						"(var-name '+)",
+						"(var-name (symbol \"+\"))",
+						";; aliased function \n" +
+						"(do \n" +
+						"  (ns foo) \n" +
+						"  (def add +)\n" +
+						"  (var-name add))",
+						"(do \n" +
+						"  (def x 10) \n" +
+						"  (var-name x))",
+						"(let [x 10] \n" +
+						"  (var-name x))",
+						";; compare with name \n" +
+						"(do \n" +
+						"  (ns foo) \n" +
+						"  (def add +)\n" +
+						"  (name add))",
+						";; compare aliased function with name \n" +
+						"(do \n" +
+						"  (ns foo) \n" +
+						"  (def add +)\n" +
+						"  (name add))")
+					.seeAlso(
+						"name", "var-get", "var-ns", "var-local?", "var-global?", "var-thread-local?")
+					.build()
+		) {
+			public VncVal apply(
+					final VncList args, 
+					final Env env, 
+					final SpecialFormsContext ctx
+			) {
+				specialFormCallValidation("var-name");
+				assertArity("var-name", FnType.SpecialForm, args, 1);
+				final VncSymbol sym = Types.isVncSymbol(args.first())
+										? (VncSymbol)args.first()
+										: Coerce.toVncSymbol(
+												ctx.getEvaluator().evaluate(args.first(), env, false));
+				return new VncString(sym.getSimpleName());
+			}
+				
+			private static final long serialVersionUID = -1848883965231344442L;
+			
+		};
+
+	public static VncSpecialForm var_localQ =
+		new VncSpecialForm(
+				"var-local?",
+				VncSpecialForm
+					.meta()
+					.arglists("(var-local? v)")
+					.doc("Returns true if the var is local else false")
+					.examples(
+						"(var-local? +)",
+						"(var-local? '+)",
+						"(var-local? (symbol \"+\"))",
+						"(do               \n" +
+						"  (def x 10)      \n" +
+						"  (var-local? x))   ",
+						"(let [x 10]       \n" +
+						"  (var-local? x))   ")
+					.seeAlso(
+						"var-get", "var-ns", "var-name", "var-global?", "var-thread-local?")
+					.build()
+		) {
+			public VncVal apply(
+					final VncList args, 
+					final Env env, 
+					final SpecialFormsContext ctx
+			) {
+				assertArity("var-local?", FnType.SpecialForm, args, 1);
+				final VncSymbol sym = Types.isVncSymbol(args.first())
+										? (VncSymbol)args.first()
+										: Coerce.toVncSymbol(ctx.getEvaluator().evaluate(args.first(), env, false));
+				return VncBoolean.of(env.isLocal(sym));
+			}
+			
+			private static final long serialVersionUID = -1848883965231344442L;
+		};
+
+	public static VncSpecialForm var_thread_localQ =
+		new VncSpecialForm(
+				"var-thread-local?",
+				VncSpecialForm
+					.meta()
+					.arglists("(var-thread-local? v)")
+					.doc("Returns true if the var is thread-local else false")
+					.examples(
+						"(binding [x 100] \n" +
+						"  (var-local? x))")
+					.seeAlso(
+						"var-get", "var-ns", "var-name", "var-local?", "var-global?")
+					.build()
+		) {
+			public VncVal apply(
+					final VncList args, 
+					final Env env, 
+					final SpecialFormsContext ctx
+			) {
+				assertArity("var-thread-local?", FnType.SpecialForm, args, 1);
+				final VncSymbol sym = Types.isVncSymbol(args.first())
+										? (VncSymbol)args.first()
+										: Coerce.toVncSymbol(ctx.getEvaluator().evaluate(args.first(), env, false));
+				return VncBoolean.of(env.isDynamic(sym));
+			}
+
+			private static final long serialVersionUID = -1848883965231344442L;
+		};
+
+	public static VncSpecialForm var_globalQ =
+		new VncSpecialForm(
+				"var-global?",
+				VncSpecialForm
+					.meta()
+					.arglists("(var-global? v)")
+					.doc("Returns true if the var is global else false")
+					.examples(
+						"(var-global? +)",
+						"(var-global? '+)",
+						"(var-global? (symbol \"+\"))",
+						"(do                \n" +
+						"  (def x 10)       \n" +
+						"  (var-global? x))   ",
+						"(let [x 10]        \n" +
+						"  (var-global? x))   ")
+					.seeAlso(
+						"var-get", "var-ns", "var-name", "var-local?", "var-thread-local?")
+					.build()
+		) {
+			public VncVal apply(
+					final VncList args, 
+					final Env env, 
+					final SpecialFormsContext ctx
+			) {
+				assertArity("var-global?", FnType.SpecialForm, args, 1);
+				final VncSymbol sym = Types.isVncSymbol(args.first())
+										? (VncSymbol)args.first()
+										: Coerce.toVncSymbol(ctx.getEvaluator().evaluate(args.first(), env, false));
+				return VncBoolean.of(env.isGlobal(sym));
+			}
+
+			private static final long serialVersionUID = -1848883965231344442L;
+		};
+		
+		
+		
+		
+		
+	private static void specialFormCallValidation(final String name) {
+		ThreadContext.getInterceptor().validateVeniceFunction(name);
+	}
+
+	
 	
 	///////////////////////////////////////////////////////////////////////////
 	// types_ns is namespace of type functions
@@ -40,6 +380,12 @@ public class SpecialFormsFunctions {
 
 	public static Map<VncVal, VncVal> ns =
 			new SymbolMapBuilder()
-//					.add(io_zip)
+					.add(doc)
+					.add(var_get)
+					.add(var_globalQ)
+					.add(var_localQ)
+					.add(var_name)
+					.add(var_ns)
+					.add(var_thread_localQ)
 					.toMap();
 }

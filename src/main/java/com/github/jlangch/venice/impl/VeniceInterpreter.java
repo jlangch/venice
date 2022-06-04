@@ -676,23 +676,29 @@ public class VeniceInterpreter implements IVeniceInterpreter, Serializable  {
 				case "resolve": // (resolve sym)
 					return specialFormsHandler.resolve_(args, env, a0meta);
 				
-				case "var-get": // (var-get v)
-					return specialFormsHandler.var_get_(args, env, a0meta);
+//				case "var-get": // (var-get v)
+//					return SpecialFormsFunctions.var_get.apply(args, env, specialFormsContext);
+//					return specialFormsHandler.var_get_(args, env, a0meta);
 
-				case "var-ns": // (var-ns v)
-					return specialFormsHandler.var_ns_(args, env, a0meta);
+//				case "var-ns": // (var-ns v)
+//					return SpecialFormsFunctions.var_ns.apply(args, env, specialFormsContext);
+//					return specialFormsHandler.var_ns_(args, env, a0meta);
 
-				case "var-name": // (var-name v)
-					return specialFormsHandler.var_name_(args, env, a0meta);
+//				case "var-name": // (var-name v)
+//					return SpecialFormsFunctions.var_name.apply(args, env, specialFormsContext);
+//					return specialFormsHandler.var_name_(args, env, a0meta);
 
-				case "var-local?": // (var-local? v)
-					return specialFormsHandler.var_localQ_(args, env, a0meta);
+//				case "var-local?": // (var-local? v)
+//					return SpecialFormsFunctions.var_localQ.apply(args, env, specialFormsContext);
+//					return specialFormsHandler.var_localQ_(args, env, a0meta);
 
-				case "var-thread-local?": // (var-thread-local? v)
-					return specialFormsHandler.var_thread_localQ_(args, env, a0meta);
+//				case "var-thread-local?": // (var-thread-local? v)
+//					return SpecialFormsFunctions.var_thread_localQ.apply(args, env, specialFormsContext);
+//					return specialFormsHandler.var_thread_localQ_(args, env, a0meta);
 
-				case "var-global?": // (var-global? v)
-					return specialFormsHandler.var_globalQ_(args, env, a0meta);
+//				case "var-global?": // (var-global? v)
+//					return SpecialFormsFunctions.var_globalQ.apply(args, env, specialFormsContext);
+//					return specialFormsHandler.var_globalQ_(args, env, a0meta);
 
 				case "set!": // (set! name expr)
 					return specialFormsHandler.setBANG_(args, env, a0meta);
@@ -711,8 +717,9 @@ public class VeniceInterpreter implements IVeniceInterpreter, Serializable  {
 							evaluate(args.first(), env, false), 
 							env);
 
-				case "doc": // (doc sym)
-					return specialFormsHandler.doc_(args, env, a0meta);
+//				case "doc": // (doc sym)
+//					return SpecialFormsFunctions.doc.apply(args, env, specialFormsContext);
+//					return specialFormsHandler.doc_(args, env, a0meta);
 
 				case "print-highlight": // (print-highlight form)
 					return specialFormsHandler.print_highlight_(args, env, a0meta);
