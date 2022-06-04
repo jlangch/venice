@@ -63,6 +63,7 @@ public class SymbolMapBuilder {
 		return this;
 	}
 
+	
 	public VncHashMap build() {
 		return new VncHashMap(map);
 	}
@@ -70,6 +71,7 @@ public class SymbolMapBuilder {
 	public Map<VncVal,VncVal> toMap() {
 		return map;
 	}
+	
 	
 	private HashMap<VncVal,VncVal> map = new HashMap<>();
 }
