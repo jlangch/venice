@@ -45,6 +45,7 @@ import com.github.jlangch.venice.impl.types.collections.VncList;
 import com.github.jlangch.venice.impl.types.util.Coerce;
 import com.github.jlangch.venice.impl.types.util.Types;
 import com.github.jlangch.venice.impl.util.ArityExceptions;
+import com.github.jlangch.venice.impl.util.SymbolMapBuilder;
 import com.github.jlangch.venice.impl.util.csv.CSVReader;
 import com.github.jlangch.venice.impl.util.csv.CSVWriter;
 
@@ -319,8 +320,7 @@ public class CsvFunctions {
 	///////////////////////////////////////////////////////////////////////////
 
 	public static Map<VncVal, VncVal> ns = 
-			new VncHashMap
-					.Builder()
+			new SymbolMapBuilder()
 					.add(read)
 					.add(write)
 					.add(write_str)

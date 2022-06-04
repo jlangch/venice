@@ -28,8 +28,8 @@ import java.util.Map;
 import com.github.jlangch.venice.impl.types.VncFunction;
 import com.github.jlangch.venice.impl.types.VncSymbol;
 import com.github.jlangch.venice.impl.types.VncVal;
-import com.github.jlangch.venice.impl.types.collections.VncHashMap;
 import com.github.jlangch.venice.impl.types.collections.VncList;
+import com.github.jlangch.venice.impl.util.SymbolMapBuilder;
 
 
 /**
@@ -1711,14 +1711,9 @@ public class SpecialFormsDoc {
 	
 	
 	public static Map<VncVal, VncVal> ns = 
-			new VncHashMap
-					.Builder()
+			new SymbolMapBuilder()
 					.put(new VncSymbol("doc"),				doc)
 					.put(new VncSymbol("modules"),			modules)
-					.put(new VncSymbol("()"),				list)
-					.put(new VncSymbol("[]"),				vector)
-					.put(new VncSymbol("#{}"),				set)
-					.put(new VncSymbol("{}"),				map)
 					.put(new VncSymbol("fn"),				fn)
 					.put(new VncSymbol("eval"),				eval)
 					.put(new VncSymbol("resolve"),			resolve)
@@ -1768,6 +1763,12 @@ public class SpecialFormsDoc {
 					.put(new VncSymbol("dobench"),			dobench)
 					.put(new VncSymbol("dorun"),			dorun)
 					.put(new VncSymbol("prof"),				prof)
+					
+					.put(new VncSymbol("()"),				list)
+					.put(new VncSymbol("[]"),				vector)
+					.put(new VncSymbol("#{}"),				set)
+					.put(new VncSymbol("{}"),				map)
+
 					.put(new VncSymbol("*version*"),		global_var_version)
 					.put(new VncSymbol("*newline*"),		global_var_newline)
 					.put(new VncSymbol("*loaded-modules*"),	global_var_loaded_modules)

@@ -34,11 +34,11 @@ import com.github.jlangch.venice.impl.types.VncJavaObject;
 import com.github.jlangch.venice.impl.types.VncKeyword;
 import com.github.jlangch.venice.impl.types.VncLong;
 import com.github.jlangch.venice.impl.types.VncVal;
-import com.github.jlangch.venice.impl.types.collections.VncHashMap;
 import com.github.jlangch.venice.impl.types.collections.VncList;
 import com.github.jlangch.venice.impl.types.util.Coerce;
 import com.github.jlangch.venice.impl.util.ArityExceptions;
 import com.github.jlangch.venice.impl.util.CallFrame;
+import com.github.jlangch.venice.impl.util.SymbolMapBuilder;
 import com.github.jlangch.venice.impl.util.concurrent.ManagedScheduledThreadPoolExecutor;
 
 
@@ -177,8 +177,7 @@ public class ScheduleFunctions {
 	///////////////////////////////////////////////////////////////////////////
 
 	public static Map<VncVal, VncVal> ns = 
-			new VncHashMap
-					.Builder()
+			new SymbolMapBuilder()
 					.add(schedule_delay)
 					.add(schedule_at_fixed_rate)
 					.toMap();	

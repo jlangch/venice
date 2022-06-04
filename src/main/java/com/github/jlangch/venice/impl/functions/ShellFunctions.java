@@ -58,6 +58,7 @@ import com.github.jlangch.venice.impl.types.util.Coerce;
 import com.github.jlangch.venice.impl.types.util.Types;
 import com.github.jlangch.venice.impl.util.ArityExceptions;
 import com.github.jlangch.venice.impl.util.CallFrame;
+import com.github.jlangch.venice.impl.util.SymbolMapBuilder;
 import com.github.jlangch.venice.impl.util.WithCallStack;
 import com.github.jlangch.venice.impl.util.io.IOStreamUtil;
 
@@ -562,8 +563,7 @@ public class ShellFunctions {
 	///////////////////////////////////////////////////////////////////////////
 
 	public static Map<VncVal, VncVal> ns = 
-			new VncHashMap
-					.Builder()
+			new SymbolMapBuilder()
 					.add(sh)
 					.add(open)
 					.add(pwd)

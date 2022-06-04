@@ -53,6 +53,7 @@ import com.github.jlangch.venice.impl.types.collections.VncList;
 import com.github.jlangch.venice.impl.types.util.Coerce;
 import com.github.jlangch.venice.impl.types.util.Types;
 import com.github.jlangch.venice.impl.util.ArityExceptions;
+import com.github.jlangch.venice.impl.util.SymbolMapBuilder;
 import com.github.jlangch.venice.impl.util.io.zip.GZipper;
 import com.github.jlangch.venice.impl.util.io.zip.ZipEntryAttr;
 import com.github.jlangch.venice.impl.util.io.zip.ZipEntryAttrPrinter;
@@ -1407,8 +1408,7 @@ public class ZipFunctions {
 	///////////////////////////////////////////////////////////////////////////
 
 	public static Map<VncVal, VncVal> ns =
-			new VncHashMap
-					.Builder()
+			new SymbolMapBuilder()
 					.add(io_zip)
 					.add(io_zip_append)
 					.add(io_zip_remove)

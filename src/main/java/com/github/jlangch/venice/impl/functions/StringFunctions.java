@@ -62,6 +62,7 @@ import com.github.jlangch.venice.impl.util.HexUtil;
 import com.github.jlangch.venice.impl.util.LoremIpsum;
 import com.github.jlangch.venice.impl.util.StringEscapeUtil;
 import com.github.jlangch.venice.impl.util.StringUtil;
+import com.github.jlangch.venice.impl.util.SymbolMapBuilder;
 
 
 public class StringFunctions {
@@ -2278,8 +2279,7 @@ public class StringFunctions {
 	///////////////////////////////////////////////////////////////////////////
 
 	public static Map<VncVal, VncVal> ns =
-			new VncHashMap
-					.Builder()
+			new SymbolMapBuilder()
 					.add(str_blank_Q)
 					.add(str_not_blank_Q)
 					.add(str_starts_with_Q)

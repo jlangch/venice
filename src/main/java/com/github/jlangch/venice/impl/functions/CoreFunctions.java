@@ -99,6 +99,7 @@ import com.github.jlangch.venice.impl.util.CallFrame;
 import com.github.jlangch.venice.impl.util.CallStack;
 import com.github.jlangch.venice.impl.util.MeterRegistry;
 import com.github.jlangch.venice.impl.util.StringUtil;
+import com.github.jlangch.venice.impl.util.SymbolMapBuilder;
 import com.github.jlangch.venice.impl.util.ArityExceptions.FnType;
 import com.github.jlangch.venice.impl.util.transducer.Reducer;
 
@@ -8252,8 +8253,7 @@ public class CoreFunctions {
 	///////////////////////////////////////////////////////////////////////////
 
 	public static Map<VncVal, VncVal> ns =
-			new VncHashMap
-				.Builder()
+			new SymbolMapBuilder()
 
 				.add(nil_Q)
 				.add(some_Q)

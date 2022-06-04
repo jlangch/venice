@@ -43,7 +43,6 @@ import com.github.jlangch.venice.impl.types.VncNumber;
 import com.github.jlangch.venice.impl.types.VncString;
 import com.github.jlangch.venice.impl.types.VncSymbol;
 import com.github.jlangch.venice.impl.types.VncVal;
-import com.github.jlangch.venice.impl.types.collections.VncHashMap;
 import com.github.jlangch.venice.impl.types.collections.VncLazySeq;
 import com.github.jlangch.venice.impl.types.collections.VncList;
 import com.github.jlangch.venice.impl.types.collections.VncSequence;
@@ -51,6 +50,7 @@ import com.github.jlangch.venice.impl.types.collections.VncVector;
 import com.github.jlangch.venice.impl.types.util.Coerce;
 import com.github.jlangch.venice.impl.types.util.Types;
 import com.github.jlangch.venice.impl.util.ArityExceptions;
+import com.github.jlangch.venice.impl.util.SymbolMapBuilder;
 
 
 public class MathFunctions {
@@ -1985,8 +1985,7 @@ public class MathFunctions {
 	///////////////////////////////////////////////////////////////////////////
 
 	public static Map<VncVal, VncVal> ns =
-			new VncHashMap
-					.Builder()
+			new SymbolMapBuilder()
 
 					.put(new VncSymbol("math", "PI", null), new VncDouble(Math.PI))
 					

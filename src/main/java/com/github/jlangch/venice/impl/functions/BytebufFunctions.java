@@ -38,13 +38,13 @@ import com.github.jlangch.venice.impl.types.VncJavaObject;
 import com.github.jlangch.venice.impl.types.VncLong;
 import com.github.jlangch.venice.impl.types.VncString;
 import com.github.jlangch.venice.impl.types.VncVal;
-import com.github.jlangch.venice.impl.types.collections.VncHashMap;
 import com.github.jlangch.venice.impl.types.collections.VncLazySeq;
 import com.github.jlangch.venice.impl.types.collections.VncList;
 import com.github.jlangch.venice.impl.types.collections.VncSequence;
 import com.github.jlangch.venice.impl.types.util.Coerce;
 import com.github.jlangch.venice.impl.types.util.Types;
 import com.github.jlangch.venice.impl.util.ArityExceptions;
+import com.github.jlangch.venice.impl.util.SymbolMapBuilder;
 
 
 public class BytebufFunctions {
@@ -790,9 +790,7 @@ public class BytebufFunctions {
 	///////////////////////////////////////////////////////////////////////////
 
 	public static Map<VncVal, VncVal> ns =
-			new VncHashMap
-				.Builder()
-
+			new SymbolMapBuilder()
 				.add(bytebuf_Q)
 				.add(bytebuf_cast)
 				.add(bytebuf_allocate)
@@ -815,6 +813,5 @@ public class BytebufFunctions {
 				.add(bytebuf_put_double_BANG)
 				.add(bytebuf_pos)
 				.add(bytebuf_pos_BANG)
-
 				.toMap();
 }

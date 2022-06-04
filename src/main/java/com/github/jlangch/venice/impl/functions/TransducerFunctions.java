@@ -56,6 +56,7 @@ import com.github.jlangch.venice.impl.types.util.Coerce;
 import com.github.jlangch.venice.impl.types.util.Types;
 import com.github.jlangch.venice.impl.util.ArityExceptions;
 import com.github.jlangch.venice.impl.util.MeterRegistry;
+import com.github.jlangch.venice.impl.util.SymbolMapBuilder;
 import com.github.jlangch.venice.impl.util.transducer.Reduced;
 
 
@@ -1537,8 +1538,7 @@ public class TransducerFunctions {
 	///////////////////////////////////////////////////////////////////////////
 
 	public static Map<VncVal, VncVal> ns =
-			new VncHashMap
-					.Builder()
+			new SymbolMapBuilder()
 					.add(transduce)
 					.add(reduced)
 					.add(reduced_Q)

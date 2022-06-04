@@ -53,6 +53,7 @@ import com.github.jlangch.venice.impl.types.collections.VncList;
 import com.github.jlangch.venice.impl.types.util.Coerce;
 import com.github.jlangch.venice.impl.types.util.Types;
 import com.github.jlangch.venice.impl.util.ArityExceptions;
+import com.github.jlangch.venice.impl.util.SymbolMapBuilder;
 import com.github.jlangch.venice.impl.util.json.VncJsonReader;
 import com.github.jlangch.venice.impl.util.json.VncJsonWriter;
 import com.github.jlangch.venice.nanojson.JsonAppendableWriter;
@@ -436,8 +437,7 @@ public class JsonFunctions {
 	///////////////////////////////////////////////////////////////////////////
 
 	public static Map<VncVal, VncVal> ns = 
-			new VncHashMap
-					.Builder()
+			new SymbolMapBuilder()
 					.add(write_str)
 					.add(spit)
 					.add(read_str)

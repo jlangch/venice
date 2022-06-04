@@ -24,7 +24,6 @@ package com.github.jlangch.venice.impl.types.collections;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -35,9 +34,7 @@ import com.github.jlangch.venice.impl.Printer;
 import com.github.jlangch.venice.impl.types.Constants;
 import com.github.jlangch.venice.impl.types.TypeRank;
 import com.github.jlangch.venice.impl.types.VncBoolean;
-import com.github.jlangch.venice.impl.types.VncFunction;
 import com.github.jlangch.venice.impl.types.VncKeyword;
-import com.github.jlangch.venice.impl.types.VncSymbol;
 import com.github.jlangch.venice.impl.types.VncVal;
 import com.github.jlangch.venice.impl.types.util.Types;
 import com.github.jlangch.venice.impl.util.MetaUtil;
@@ -309,39 +306,6 @@ public class VncHashMap extends VncMap {
 										.flatMap(l -> l.stream());
 
 		return "{" + Printer.join(stream, " ", print_machine_readably) + "}";
-	}
-
-	public static class Builder {
-		public Builder() {
-		}
-
-		public Builder add(final VncFunction fn) {
-			if (fn.isPrivate()) {
-				map.put(new VncSymbol(
-								fn.getQualifiedName(), 
-								VncHashMap.of(MetaUtil.PRIVATE, VncBoolean.True)),
-						fn);
-			}
-			else {
-				map.put(new VncSymbol(fn.getQualifiedName()), fn);
-			}
-			return this;
-		}
-
-		public Builder put(final VncVal key, final VncVal val) {
-			map.put(key, val);
-			return this;
-		}
-
-		public VncHashMap build() {
-			return new VncHashMap(map);
-		}
-		
-		public Map<VncVal,VncVal> toMap() {
-			return map;
-		}
-		
-		private HashMap<VncVal,VncVal> map = new HashMap<>();
 	}
 	
 
