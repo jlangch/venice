@@ -28,23 +28,19 @@ import static com.github.jlangch.venice.impl.util.ArityExceptions.assertMinArity
 
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Objects;
-import java.util.Set;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.stream.Collectors;
 
 import com.github.jlangch.venice.NotInTailPositionException;
 import com.github.jlangch.venice.ValueException;
 import com.github.jlangch.venice.VncException;
-import com.github.jlangch.venice.impl.Destructuring;
 import com.github.jlangch.venice.impl.IFormEvaluator;
 import com.github.jlangch.venice.impl.IValuesEvaluator;
 import com.github.jlangch.venice.impl.IVeniceInterpreter;
 import com.github.jlangch.venice.impl.InterruptChecker;
 import com.github.jlangch.venice.impl.Modules;
-import com.github.jlangch.venice.impl.Namespace;
 import com.github.jlangch.venice.impl.NamespaceRegistry;
 import com.github.jlangch.venice.impl.Namespaces;
 import com.github.jlangch.venice.impl.debug.agent.DebugAgent;
@@ -55,7 +51,6 @@ import com.github.jlangch.venice.impl.env.Env;
 import com.github.jlangch.venice.impl.env.GenSym;
 import com.github.jlangch.venice.impl.env.Var;
 import com.github.jlangch.venice.impl.functions.CoreFunctions;
-import com.github.jlangch.venice.impl.javainterop.JavaImports;
 import com.github.jlangch.venice.impl.thread.ThreadContext;
 import com.github.jlangch.venice.impl.types.VncBoolean;
 import com.github.jlangch.venice.impl.types.VncFunction;
@@ -63,12 +58,10 @@ import com.github.jlangch.venice.impl.types.VncJavaObject;
 import com.github.jlangch.venice.impl.types.VncJust;
 import com.github.jlangch.venice.impl.types.VncKeyword;
 import com.github.jlangch.venice.impl.types.VncLong;
-import com.github.jlangch.venice.impl.types.VncMultiArityFunction;
 import com.github.jlangch.venice.impl.types.VncProtocolFunction;
 import com.github.jlangch.venice.impl.types.VncString;
 import com.github.jlangch.venice.impl.types.VncSymbol;
 import com.github.jlangch.venice.impl.types.VncVal;
-import com.github.jlangch.venice.impl.types.collections.VncHashMap;
 import com.github.jlangch.venice.impl.types.collections.VncList;
 import com.github.jlangch.venice.impl.types.collections.VncMap;
 import com.github.jlangch.venice.impl.types.collections.VncSequence;
@@ -82,7 +75,6 @@ import com.github.jlangch.venice.impl.util.ArityExceptions.FnType;
 import com.github.jlangch.venice.impl.util.CallFrame;
 import com.github.jlangch.venice.impl.util.CallStack;
 import com.github.jlangch.venice.impl.util.Inspector;
-import com.github.jlangch.venice.impl.util.MetaUtil;
 import com.github.jlangch.venice.impl.util.MeterRegistry;
 import com.github.jlangch.venice.impl.util.WithCallStack;
 import com.github.jlangch.venice.impl.util.reflect.ReflectionAccessor;
@@ -129,99 +121,6 @@ public class SpecialFormsHandler {
 		}
 		return quasiquote(args.first());
 	}
-
-	public VncVal import_(
-			final VncList args, 
-			final Env env,
-			final VncVal meta
-	) {
-		// (import :java.lang.Math)
-		// (import :java.lang.Math :java.awt.Color)
-		// (import :java.lang.Math :as :Math)
-		// (import :java.lang.Math :as :Math :java.awt.Color :as :Color)
-		final CallFrame callframe = new CallFrame("import", args, meta);
-		try (WithCallStack cs = new WithCallStack(callframe)) {
-			assertMinArity("import", FnType.SpecialForm, args, 0);
-			
-			final JavaImports jImports = Namespaces
-											.getCurrentNamespace()
-											.getJavaImports();
-			
-			VncList args_ = args;
-			while(!args_.isEmpty()) {
-				final VncVal def = args_.first();
-				final VncVal as = args_.second();
-				
-				if (Types.isVncKeyword(as) && "as".equals(((VncKeyword)as).getValue())) {
-					final VncVal alias = args_.third();
-					if (alias != Nil) {
-						jImports.add(Coerce.toVncString(def).getValue(),
-								 	 Coerce.toVncString(alias).getValue());
-						
-						args_ = args_.drop(3);
-					}
-					else {
-						throw new VncException("Invalid Java import definition!");
-					}
-				}
-				else {
-					jImports.add(Coerce.toVncString(def).getValue());
-					args_ = args_.drop(1);
-				}			
-			}
-			
-			return Nil;
-		}
-	}
-
-	public VncVal imports_(
-			final VncList args, 
-			final Env env,
-			final VncVal meta
-	) {
-		// (imports)
-		// (imports user)
-		// (imports :print)
-		// (imports user :print)
-		final CallFrame callframe = new CallFrame("imports", args, meta);
-		try (WithCallStack cs = new WithCallStack(callframe)) {
-			assertArity("imports", FnType.SpecialForm, args, 0, 1, 2);
-
-			final boolean print = Types.isVncKeyword(args.last()) 
-									&& "print".equals(((VncKeyword)args.last()).getValue());
-			
-			
-			final VncList args_ = print ? args.butlast() : args;
-			
-			Namespace namespace = Namespaces.getCurrentNamespace();
-			 
-			if (!args_.isEmpty()) {
-				// we got a ns argument
-				final VncSymbol ns = Coerce.toVncSymbol(evaluator.evaluate(args.first(), env, false));
-				namespace = nsRegistry.get(ns);
-				if (namespace == null) {
-					throw new VncException(String.format(
-							"The namespace '%s' does not exist", 
-							ns.toString()));
-				}
-			}
-			
-			final VncList importList = namespace.getJavaImportsAsVncList();
-			
-			if (print) {
-				final VncFunction printFn = (VncFunction)env.get(new VncSymbol("println"));
-				importList.forEach(i -> printFn.applyOf(
-											((VncVector)i).first(), 
-											new VncKeyword("as"),
-											((VncVector)i).second()));
-				return Nil;
-			}
-			else {
-				return importList;
-			}
-		}
-	}
-
 
 	public VncVal ns_(
 			final VncList args, 
@@ -426,174 +325,7 @@ public class SpecialFormsHandler {
 			return env.getOrNil(Coerce.toVncSymbol(evaluator.evaluate(args.first(), env, false)));
 		}
 	}
-
-//	public VncVal var_get_(
-//			final VncList args, 
-//			final Env env,
-//			final VncVal meta
-//	) {
-//		final CallFrame callframe = new CallFrame("var-get", args, meta);
-//		try (WithCallStack cs = new WithCallStack(callframe)) {
-//			specialFormCallValidation("var-get");
-//			assertArity("var-get", FnType.SpecialForm, args, 1);
-//			final VncSymbol sym = Types.isVncSymbol(args.first())
-//									? (VncSymbol)args.first()
-//									: Coerce.toVncSymbol(evaluator.evaluate(args.first(), env, false));
-//			return env.getOrNil(sym);
-//		}
-//	}
-//
-//	public VncVal var_ns_(
-//			final VncList args, 
-//			final Env env,
-//			final VncVal meta
-//	) {
-//		final CallFrame callframe = new CallFrame("var-ns", args, meta);
-//		try (WithCallStack cs = new WithCallStack(callframe)) {
-//			specialFormCallValidation("var-ns");
-//			assertArity("var-ns", FnType.SpecialForm, args, 1);
-//			
-//			final VncSymbol sym = Types.isVncSymbol(args.first())
-//									? (VncSymbol)args.first()
-//									: Coerce.toVncSymbol(evaluator.evaluate(args.first(), env, false));
-//			
-//			if (sym.hasNamespace()) {
-//				return new VncString(sym.getNamespace());
-//			}
-//			else if (env.isLocal(sym)) {
-//				return Nil;
-//			}
-//			else {
-//				final Var v = env.getGlobalVarOrNull(sym);
-//				return v == null
-//						? Nil
-//						: new VncString(
-//									v.getName().hasNamespace()
-//										? v.getName().getNamespace()
-//										: Namespaces.NS_CORE.getName());
-//			}
-//		}
-//	}
-//
-//	public VncVal var_name_(
-//			final VncList args, 
-//			final Env env,
-//			final VncVal meta
-//	) {
-//		final CallFrame callframe = new CallFrame("var-name", args, meta);
-//		try (WithCallStack cs = new WithCallStack(callframe)) {
-//			specialFormCallValidation("var-name");
-//			assertArity("var-name", FnType.SpecialForm, args, 1);
-//			final VncSymbol sym = Types.isVncSymbol(args.first())
-//									? (VncSymbol)args.first()
-//									: Coerce.toVncSymbol(evaluator.evaluate(args.first(), env, false));
-//			return new VncString(sym.getSimpleName());
-//		}
-//	}
-//
-//	public VncVal var_localQ_(
-//			final VncList args, 
-//			final Env env,
-//			final VncVal meta
-//	) {
-//		final CallFrame callframe = new CallFrame("var-local?", args, meta);
-//		try (WithCallStack cs = new WithCallStack(callframe)) {
-//			assertArity("var-local?", FnType.SpecialForm, args, 1);
-//			final VncSymbol sym = Types.isVncSymbol(args.first())
-//									? (VncSymbol)args.first()
-//									: Coerce.toVncSymbol(evaluator.evaluate(args.first(), env, false));
-//			return VncBoolean.of(env.isLocal(sym));
-//		}
-//	}
-//
-//	public VncVal var_thread_localQ_(
-//			final VncList args, 
-//			final Env env,
-//			final VncVal meta
-//	) {
-//		final CallFrame callframe = new CallFrame("var-thread-local?", args, meta);
-//		try (WithCallStack cs = new WithCallStack(callframe)) {
-//			assertArity("var-thread-local?", FnType.SpecialForm, args, 1);
-//			final VncSymbol sym = Types.isVncSymbol(args.first())
-//									? (VncSymbol)args.first()
-//									: Coerce.toVncSymbol(evaluator.evaluate(args.first(), env, false));
-//			return VncBoolean.of(env.isDynamic(sym));
-//		}
-//	}
-//
-//	public VncVal var_globalQ_(
-//			final VncList args, 
-//			final Env env,
-//			final VncVal meta
-//	) {
-//		final CallFrame callframe = new CallFrame("var-global?", args, meta);
-//		try (WithCallStack cs = new WithCallStack(callframe)) {
-//			assertArity("var-global?", FnType.SpecialForm, args, 1);
-//			final VncSymbol sym = Types.isVncSymbol(args.first())
-//									? (VncSymbol)args.first()
-//									: Coerce.toVncSymbol(evaluator.evaluate(args.first(), env, false));
-//			return VncBoolean.of(env.isGlobal(sym));
-//		}
-//	}
 	
-	public VncVal defprotocol_(
-			final IVeniceInterpreter interpreter, 
-			final VncSymbol name,
-			final VncList args, 
-			final Env env,
-			final VncVal meta
-	) {
-		final CallFrame callframe = new CallFrame("defprotocol", args, meta);
-		try (WithCallStack cs = new WithCallStack(callframe)) {
-			// (defprotocol P
-			//	  (foo [x])
-			//	  (bar [x] [x y])
-			//	  (zoo [x] "default val")
-			//	  (yar [x] [x y] "default val"))
-			
-			validateDefProtocol(args);
-						
-			VncMap protocolFns = VncHashMap.empty();
-			for(VncVal s : args.rest()) {
-				final VncMultiArityFunction fn = parseProtocolFnSpec(s, env);
-				
-				final VncSymbol fnName = new VncSymbol(
-												name.getNamespace(), 
-												fn.getSimpleName(),
-												meta);
-				
-				final VncProtocolFunction fnProtocol = new VncProtocolFunction(
-																fnName.getQualifiedName(), 
-																name,
-																fn, 
-																fn.getMeta());
-
-				final VncVal p = env.getGlobalOrNull(fnName);
-				if (p instanceof VncProtocolFunction) {
-					if (!((VncProtocolFunction)p).getProtocolName().equals(name)) {
-						// collision of protocol function name with another protocol
-						throw new VncException(String.format(
-									"The protocol function '%s' of protocol '%s' collides "
-											+ "with the same function in protocol '%s' in "
-											+ "the same namespace!",
-									fn.getSimpleName(),
-									((VncProtocolFunction)p).getProtocolName(),
-									name));
-					}
-				}
-				
-				env.setGlobal(new Var(fnName, fnProtocol));
-
-				protocolFns = protocolFns.assoc(new VncString(fn.getSimpleName()), fn);
-			}
-	
-			final VncProtocol protocol = new VncProtocol(name, protocolFns, name.getMeta());
-			
-			env.setGlobal(new Var(name, protocol));
-
-			return protocol;
-		}
-	}
 	
 	public VncVal extend_(
 			final VncVal typeRef,
@@ -678,96 +410,6 @@ public class SpecialFormsHandler {
 		return Nil;
 	}
 	
-	public VncVal extendsQ_(
-			final VncVal typeRef,
-			final VncSymbol protocolSym,
-			final Env env
-	) {
-		final VncVal typeRefEval = evaluator.evaluate(typeRef, env, false);
-		
-		if (!(typeRefEval instanceof VncKeyword)) {
-			throw new VncException(String.format(
-					"The type '%s' must be a keyword like :core/long!",
-					typeRefEval.getType()));
-		}
-
-		// Lookup protocol from the ENV
-		final VncVal p = env.getGlobalOrNull(protocolSym);
-		if (!(p instanceof VncProtocol)) {
-			throw new VncException(String.format(
-					"The protocol '%s' is not defined!",
-					protocolSym.getQualifiedName()));
-		}
-		
-		final VncKeyword type = (VncKeyword)typeRefEval;
-		
-		if (!type.hasNamespace()) {
-			throw new VncException(String.format(
-					"The type '%s' must be qualified!",
-					type.getQualifiedName()));
-		}
-		
-		final VncProtocol protocol = (VncProtocol)p;
-				
-		return VncBoolean.of(protocol.isRegistered(type));
-	}
-
-	public VncVal deftype_(
-			final VncList args, 
-			final Env env,
-			final VncVal meta
-	) {
-		// (deftype :complex [real :long, imaginary :long])
-		//
-		// (deftype :complex [real :long, imaginary :long]
-		//          P (foo [x])
-		final CallFrame callframe = new CallFrame("deftype", args, meta);
-		try (WithCallStack cs = new WithCallStack(callframe)) {
-			assertMinArity("deftype", FnType.SpecialForm, args, 2);
-			
-			final VncList deftypeArgs = args.takeWhile(e -> !Types.isVncSymbol(e));
-			VncList extendArgs = args.drop(deftypeArgs.size());
-			
-			// [1] parse deftype args
-			final VncKeyword type = Coerce.toVncKeyword(
-										evaluator.evaluate(deftypeArgs.first(), env, false));
-
-			final VncVector fields = Coerce.toVncVector(deftypeArgs.second());
-
-			final VncFunction validationFn = deftypeArgs.size() == 3
-												? Coerce.toVncFunction(
-														evaluator.evaluate(
-																args.third(), env, false))
-												: null;
-			
-			// custom type is a namespace qualified keyword
-			final VncVal customType = DefTypeForm.defineCustomType(
-											type, fields, validationFn, interpreter, env);
-	
-			// [2] parse extend protocol definitions
-			while(!extendArgs.isEmpty()) {
-				final VncVal protocolSym = extendArgs.first();
-				final VncList extDefs = extendArgs.drop(1).takeWhile(e -> Types.isVncList(e));
-				if (Types.isVncSymbol(protocolSym)) {
-					extendArgs = extendArgs.drop(extDefs.size()+1);
-					
-					// process the extend definition
-					extend_(customType,
-							(VncSymbol)protocolSym,
-							extDefs.addAtStart(protocolSym).addAtStart(type), 
-							env);						
-				}
-				else {
-					throw new VncException(String.format(
-							"Invalid extend protocol definitions for custom type '%s'",
-							type.toString()));
-				}
-			}	
-			
-			return customType;
-		}
-	}
-
 	public VncVal deftypeQ_(
 			final VncList args, 
 			final Env env,
@@ -1458,150 +1100,7 @@ public class SpecialFormsHandler {
 		}
 	}
 
-	private void validateDefProtocol(final VncList args) {
-		// (defprotocol P
-		//	  (foo [x])
-		//	  (bar [x] [x y])
-		//	  (goo [x] "default val")
-		//	  (dar [x] [x y] "default val"))
 
-		if (!Types.isVncSymbol(args.first())) {
-			throw new VncException(
-					"A protocol definition must have a symbol as its name!\n" +
-					"E.g.: as 'P' in (defprotocol P (foo [x]))");
-		}
-		
-		for(VncVal spec : args.rest()) {
-			if (!Types.isVncList(spec)) {
-				throw new VncException(
-						"A protocol definition must have a list with function " +
-						"specifications!\n" +
-						"E.g.: as '(foo [x])' (defprotocol P (foo [x]) (bar [x]))");
-			}
-
-			final VncList specList = (VncList)spec;
-
-			final VncSymbol fnName = (VncSymbol)specList.first();
-			final VncList specs = specList.rest();
-			final VncList paramSpecs = specs.takeWhile(s -> Types.isVncVector(s));
-
-			if (!Types.isVncSymbol(fnName)) {
-				throw new VncException(
-						"A protocol function specification must have a symbol as " +
-						"its name!\n" +
-						"E.g.: as 'foo' in (defprotocol P (foo [x]))");
-			}
-
-			if (paramSpecs.isEmpty()) {
-				throw new VncException(String.format(
-						"The protocol function specification '%s' must have at least one " +
-						"parameter specification!\n" +
-						"E.g.: as '[x]' in (defprotocol P (foo [x]))",
-						fnName));
-			}
-			
-			final Set<Integer> aritySet = new HashSet<>();			
-			for(VncVal ps : paramSpecs) {
-				if (!Types.isVncVector(ps)) {
-					throw new VncException(String.format(
-							"The protocol function specification '%s' must have one or multiple " +
-							"vectors of param symbols followed by an optional return value of any " +
-							"type but vector!\n" +
-							"E.g.: (defprotocol P (foo [x] [x y] nil))",
-							fnName));
-				}
-				
-				// validate for non duplicate arities
-				final int arity = ((VncVector)ps).size();
-				if (aritySet.contains(arity)) {
-					throw new VncException(String.format(
-							"The protocol function specification '%s' has multiple parameter " +
-							"definitions for the arity %d!\n" +
-							"E.g.: as '[x y]' in (defprotocol P (foo [x] [x y] [x y]))",
-							fnName,
-							arity));
-				}
-				aritySet.add(arity);
-
-				for(VncVal p : (VncVector)ps) {
-					if (!Types.isVncSymbol(p)) {
-						throw new VncException(String.format(
-								"The protocol function specification '%s' must have vector of param " +
-								"symbols!\n" +
-								"E.g.: as '[x y]' in (defprotocol P (foo [x y]))",
-								fnName));
-					}
-				}
-			}
-		}
-	}
-
-	private VncMultiArityFunction parseProtocolFnSpec(
-			final VncVal spec,
-			final Env env
-	) {
-		// spec:  (bar [x] [x y] nil)
-		
-		final VncList specList = (VncList)spec;
-		
-		final VncSymbol fnName = (VncSymbol)specList.first();
-		final VncList specs = specList.rest();
-		final VncList paramSpecs = specs.takeWhile(s -> Types.isVncVector(s));
-		
-		final VncList body = specs.slice(paramSpecs.size());
-
-		// the namespace the function is defined for
-		final Namespace ns = Namespaces.getCurrentNamespace();
-
-		// the arg list for the function's meta data
-		final List<VncString> argList =
-			paramSpecs
-				.stream()
-				.map(spc -> String.format("(%s %s)", fnName.getName(), spc.toString()))
-				.map(s -> new VncString(s))
-				.collect(Collectors.toList());
-		
-		final List<VncFunction> functions =
-			paramSpecs
-				.getJavaList()
-				.stream()
-				.map(p -> new VncFunction(
-								fnName.getQualifiedName(), 
-								(VncVector)p,
-								fnName.getMeta()
-						  ) {
-							public VncVal apply(final VncList args) {
-								final ThreadContext threadCtx = ThreadContext.get();
-
-								final Env localEnv = new Env(env);
-								localEnv.addLocalVars(Destructuring.destructure(p, args));
-
-								final Namespace curr_ns = threadCtx.getCurrNS_();
-
-								try {
-									threadCtx.setCurrNS_(ns);
-									valuesEvaluator.evaluate_values(body.butlast(), localEnv);
-									return evaluator.evaluate(body.last(), localEnv, false);
-								}
-								finally {
-									// switch always back to current namespace, just in case
-									// the namespace was changed within the function body!
-									threadCtx.setCurrNS_(curr_ns);
-								}
-							}
-							
-							private static final long serialVersionUID = -1L;
-						  })
-				.collect(Collectors.toList());
-
-		return new VncMultiArityFunction(
-						fnName.getQualifiedName(),
-						functions,
-						false,
-						MetaUtil.mergeMeta(
-								VncHashMap.of(MetaUtil.ARGLIST, VncList.ofColl(argList)),
-								fnName.getMeta()));
-	}
 
 	private VncFunction extendFnSpec(
 			final VncKeyword type,

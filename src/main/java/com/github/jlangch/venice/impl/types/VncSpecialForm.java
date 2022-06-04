@@ -42,6 +42,7 @@ public abstract class VncSpecialForm extends VncVal {
 
 
 	public VncVal apply(
+			final VncVal specialFormMeta, 
 			final VncList args, 
 			final Env env, 
 			final SpecialFormsContext ctx

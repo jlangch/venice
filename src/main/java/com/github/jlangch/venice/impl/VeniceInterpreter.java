@@ -622,18 +622,6 @@ public class VeniceInterpreter implements IVeniceInterpreter, Serializable  {
 				case "defmacro":
 					return defmacro_(args, env, a0meta);
 
-				case "defprotocol": // (defprotocol name (fn-name [args*])+)
-					return defprotocol_(args, env, a0meta);
-
-				case "extend": // (extend type protocol (fn-name [args*] expr+)+)
-					return extend_(args, env, a0meta);
-
-				case "extends?": // (extends? type protocol)
-					return extendsQ_(args, env, a0meta);
-
-				case "deftype": // (deftype type fields validationFn*)
-					return specialFormsHandler.deftype_(args, env, a0meta);
-
 				case "deftype?": // (deftype? type)
 					return specialFormsHandler.deftypeQ_(args, env, a0meta);
 
@@ -667,38 +655,8 @@ public class VeniceInterpreter implements IVeniceInterpreter, Serializable  {
 				case "ns-list": // (ns-list ns)
 					return specialFormsHandler.ns_list_(args, env, a0meta);
 
-				case "import":
-					return specialFormsHandler.import_(args, env, a0meta);
-
-				case "imports":
-					return specialFormsHandler.imports_(args, env, a0meta);
-
 				case "resolve": // (resolve sym)
 					return specialFormsHandler.resolve_(args, env, a0meta);
-				
-//				case "var-get": // (var-get v)
-//					return SpecialFormsFunctions.var_get.apply(args, env, specialFormsContext);
-//					return specialFormsHandler.var_get_(args, env, a0meta);
-
-//				case "var-ns": // (var-ns v)
-//					return SpecialFormsFunctions.var_ns.apply(args, env, specialFormsContext);
-//					return specialFormsHandler.var_ns_(args, env, a0meta);
-
-//				case "var-name": // (var-name v)
-//					return SpecialFormsFunctions.var_name.apply(args, env, specialFormsContext);
-//					return specialFormsHandler.var_name_(args, env, a0meta);
-
-//				case "var-local?": // (var-local? v)
-//					return SpecialFormsFunctions.var_localQ.apply(args, env, specialFormsContext);
-//					return specialFormsHandler.var_localQ_(args, env, a0meta);
-
-//				case "var-thread-local?": // (var-thread-local? v)
-//					return SpecialFormsFunctions.var_thread_localQ.apply(args, env, specialFormsContext);
-//					return specialFormsHandler.var_thread_localQ_(args, env, a0meta);
-
-//				case "var-global?": // (var-global? v)
-//					return SpecialFormsFunctions.var_globalQ.apply(args, env, specialFormsContext);
-//					return specialFormsHandler.var_globalQ_(args, env, a0meta);
 
 				case "set!": // (set! name expr)
 					return specialFormsHandler.setBANG_(args, env, a0meta);
@@ -716,10 +674,6 @@ public class VeniceInterpreter implements IVeniceInterpreter, Serializable  {
 							new CallFrame("macroexpand-all*", args, a0meta), 
 							evaluate(args.first(), env, false), 
 							env);
-
-//				case "doc": // (doc sym)
-//					return SpecialFormsFunctions.doc.apply(args, env, specialFormsContext);
-//					return specialFormsHandler.doc_(args, env, a0meta);
 
 				case "print-highlight": // (print-highlight form)
 					return specialFormsHandler.print_highlight_(args, env, a0meta);
@@ -765,11 +719,11 @@ public class VeniceInterpreter implements IVeniceInterpreter, Serializable  {
 						if (sf.addCallFrame()) {
 							final CallFrame callframe = new CallFrame(sf.getName(), args, a0meta);
 							try (WithCallStack cs = new WithCallStack(callframe)) {
-								return sf.apply(args, env, specialFormsContext);
+								return sf.apply(a0meta, args, env, specialFormsContext);
 							}
 						}
 						else {
-							return sf.apply(args, env, specialFormsContext);
+							return sf.apply(a0meta, args, env, specialFormsContext);
 						}
 					}
 					else if (fn0 instanceof VncFunction) { 
@@ -1339,42 +1293,6 @@ public class VeniceInterpreter implements IVeniceInterpreter, Serializable  {
 			final VncVal res = evaluate(val, env, false).withMeta(name.getMeta());
 			env.setGlobalDynamic(name, res);
 			return name;
-		}
-	}
-
-	public VncVal defprotocol_(final VncList args, final Env env, final VncVal meta) {
-		final CallFrame callframe = new CallFrame("defprotocol", args, meta);
-		try (WithCallStack cs = new WithCallStack(callframe)) {
-			assertMinArity("defprotocol", FnType.SpecialForm, args, 2);
-		}
-
-		final VncSymbol protocol = Namespaces.qualifySymbolWithCurrNS(
-										evaluateSymbolMetaData(args.first(), env));
-
-		return specialFormsHandler.defprotocol_(this, protocol, args, env, meta);
-	}
-
-	public VncVal extend_(final VncList args, final Env env, final VncVal meta) {
-		final CallFrame callframe = new CallFrame("extend", args, meta);
-		try (WithCallStack cs = new WithCallStack(callframe)) {
-			assertMinArity("extend", FnType.SpecialForm, args, 2);
-
-			final VncSymbol protocol = Namespaces.qualifySymbolWithCurrNS(
-											evaluateSymbolMetaData(args.second(), env));
-
-			return specialFormsHandler.extend_(args.first(), protocol, args, env);
-		}
-	}
-
-	public VncVal extendsQ_(final VncList args, final Env env, final VncVal meta) {
-		final CallFrame callframe = new CallFrame("extends?", args, meta);
-		try (WithCallStack cs = new WithCallStack(callframe)) {
-			assertMinArity("extends?", FnType.SpecialForm, args, 2);
-
-			final VncSymbol protocol = Namespaces.qualifySymbolWithCurrNS(
-											evaluateSymbolMetaData(args.second(), env));
-
-			return specialFormsHandler.extendsQ_(args.first(), protocol, env);
 		}
 	}
 
