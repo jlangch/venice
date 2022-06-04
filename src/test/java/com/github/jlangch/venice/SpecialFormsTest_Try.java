@@ -32,7 +32,7 @@ import org.junit.jupiter.api.Test;
 import com.github.jlangch.venice.util.CapturingPrintStream;
 
 
-public class SpecialForms_TryTest {
+public class SpecialFormsTest_Try {
 	
 	// ---------------------------------------------------------------
 	// try - only

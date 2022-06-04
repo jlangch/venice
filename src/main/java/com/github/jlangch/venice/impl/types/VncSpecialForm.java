@@ -66,6 +66,15 @@ public abstract class VncSpecialForm extends VncVal {
 					new VncKeyword(VncVal.TYPE)));
 	}
 	
+	@Override
+	public VncSpecialForm withMeta(final VncVal meta) {
+		return this;  // no effect
+	}
+
+	public VncList getArgLists() { 
+		return (VncList)getMetaVal(MetaUtil.ARGLIST, VncList.empty());
+	}
+	
 	public VncVal getDoc() { 
 		return getMetaVal(MetaUtil.DOC); 
 	}

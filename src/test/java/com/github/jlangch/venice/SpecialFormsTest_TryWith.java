@@ -28,7 +28,7 @@ import org.junit.jupiter.api.Test;
 import com.github.jlangch.venice.util.CapturingPrintStream;
 
 
-public class SpecialForms_TryWithTest {
+public class SpecialFormsTest_TryWith {
 	
 	@Test
 	public void test_try_with_1() {

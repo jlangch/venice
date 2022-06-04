@@ -39,6 +39,13 @@ public class SpecialFormsTest_doc {
 	}
 	
 	@Test
+	public void test_doc_self() {
+		final Map<String, Object> params = Parameters.of("*out*", null, "*err*", null);
+		
+		new Venice().eval("(doc doc)", params);					
+	}
+	
+	@Test
 	public void test_doc_not_found() {
 		final Map<String, Object> params = Parameters.of("*out*", null, "*err*", null);
 

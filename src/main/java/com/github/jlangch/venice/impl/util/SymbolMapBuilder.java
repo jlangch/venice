@@ -51,10 +51,7 @@ public class SymbolMapBuilder {
 	}
 	
 	public SymbolMapBuilder add(final VncSpecialForm sf) {
-		map.put(new VncSymbol(
-						sf.getName(), 
-						VncHashMap.of(MetaUtil.PRIVATE, VncBoolean.True)),
-				sf);
+		map.put(new VncSymbol(sf.getName()), sf);
 		return this;
 	}
 
