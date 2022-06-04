@@ -19,7 +19,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.github.jlangch.venice.impl;
+package com.github.jlangch.venice.impl.specialforms;
 
 import static com.github.jlangch.venice.impl.debug.breakpoint.FunctionScope.FunctionEntry;
 import static com.github.jlangch.venice.impl.types.Constants.Nil;
@@ -38,6 +38,15 @@ import java.util.stream.Collectors;
 import com.github.jlangch.venice.NotInTailPositionException;
 import com.github.jlangch.venice.ValueException;
 import com.github.jlangch.venice.VncException;
+import com.github.jlangch.venice.impl.Destructuring;
+import com.github.jlangch.venice.impl.IFormEvaluator;
+import com.github.jlangch.venice.impl.IValuesEvaluator;
+import com.github.jlangch.venice.impl.IVeniceInterpreter;
+import com.github.jlangch.venice.impl.InterruptChecker;
+import com.github.jlangch.venice.impl.Modules;
+import com.github.jlangch.venice.impl.Namespace;
+import com.github.jlangch.venice.impl.NamespaceRegistry;
+import com.github.jlangch.venice.impl.Namespaces;
 import com.github.jlangch.venice.impl.debug.agent.DebugAgent;
 import com.github.jlangch.venice.impl.debug.breakpoint.BreakpointFnRef;
 import com.github.jlangch.venice.impl.docgen.runtime.DocForm;
@@ -47,9 +56,6 @@ import com.github.jlangch.venice.impl.env.GenSym;
 import com.github.jlangch.venice.impl.env.Var;
 import com.github.jlangch.venice.impl.functions.CoreFunctions;
 import com.github.jlangch.venice.impl.javainterop.JavaImports;
-import com.github.jlangch.venice.impl.specialforms.CatchBlock;
-import com.github.jlangch.venice.impl.specialforms.DefTypeForm;
-import com.github.jlangch.venice.impl.specialforms.FinallyBlock;
 import com.github.jlangch.venice.impl.thread.ThreadContext;
 import com.github.jlangch.venice.impl.types.VncBoolean;
 import com.github.jlangch.venice.impl.types.VncFunction;
@@ -84,21 +90,13 @@ import com.github.jlangch.venice.impl.util.reflect.ReflectionAccessor;
 
 public class SpecialFormsHandler {
 
-	public SpecialFormsHandler(
-			final IVeniceInterpreter interpreter,
-			final IFormEvaluator evaluator,
-			final IValuesEvaluator valuesEvaluator,
-			final ISequenceValuesEvaluator sequenceValuesEvaluator,
-			final NamespaceRegistry nsRegistry,
-			final MeterRegistry meterRegistry,
-			final AtomicBoolean sealedSystemNS
-	) {
-		this.interpreter = interpreter;
-		this.evaluator = evaluator;
-		this.valuesEvaluator = valuesEvaluator;
-		this.nsRegistry = nsRegistry;
-		this.meterRegistry = meterRegistry;
-		this.sealedSystemNS = sealedSystemNS;
+	public SpecialFormsHandler(final SpecialFormsContext context) {
+		this.interpreter = context.getInterpreter();
+		this.evaluator = context.getEvaluator();
+		this.valuesEvaluator = context.getValuesEvaluator();
+		this.nsRegistry = context.getNsRegistry();
+		this.meterRegistry = context.getMeterRegistry();
+		this.sealedSystemNS = context.getSealedSystemNS();
 	}
 
 

@@ -21,16 +21,13 @@
  */
 package com.github.jlangch.venice.impl.types;
 
-import java.util.Arrays;
-import java.util.HashMap;
 import java.util.UUID;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.function.Function;
 import java.util.function.Supplier;
-import java.util.stream.Collectors;
 
+import com.github.jlangch.venice.impl.FunctionMetaBuilder;
 import com.github.jlangch.venice.impl.thread.ThreadContext;
-import com.github.jlangch.venice.impl.types.collections.VncHashMap;
 import com.github.jlangch.venice.impl.types.collections.VncList;
 import com.github.jlangch.venice.impl.types.collections.VncVector;
 import com.github.jlangch.venice.impl.types.util.QualifiedName;
@@ -303,9 +300,8 @@ public abstract class VncFunction
 	}
 	
 	
-	
-	public static MetaBuilder meta() {
-		return new MetaBuilder();
+	public static FunctionMetaBuilder meta() {
+		return new FunctionMetaBuilder();
 	}
 	
 
@@ -331,54 +327,6 @@ public abstract class VncFunction
 	}
 
 	
-	public static class MetaBuilder  {
-
-		public MetaBuilder() {
-		}
-		
-		public MetaBuilder arglists(final String... arglists) {
-			meta.put(MetaUtil.ARGLIST, toVncList(arglists));
-			return this;
-		}
-		
-		public MetaBuilder doc(final String doc) { 
-			meta.put(MetaUtil.DOC, new VncString(doc));
-			return this;
-		}
-		
-		public MetaBuilder examples(final String... examples) { 
-			meta.put(MetaUtil.EXAMPLES, toVncList(examples));
-			return this;
-		}
-		
-		public MetaBuilder seeAlso(final String... refs) { 
-			meta.put(MetaUtil.SEE_ALSO, toVncList(refs));
-			return this;
-		}
-		
-		public MetaBuilder functionRefs(final String... refs) { 
-			meta.put(MetaUtil.FUNCTION_REFS, toVncList(refs));
-			return this;
-		}
-
-		public MetaBuilder privateFn() { 
-			meta.put(MetaUtil.PRIVATE, VncBoolean.True);
-			return this;
-		}
-
-		public VncHashMap build() {
-			return new VncHashMap(meta);
-		}
-
-		private final HashMap<VncVal,VncVal> meta = new HashMap<>();
-	}
-	
-	
-	private static VncList toVncList(final String... strings) { 
-		return VncList.ofList(Arrays.stream(strings)
-									.map(r -> new VncString(r))
-									.collect(Collectors.toList()));
-	}
 
 	
 	

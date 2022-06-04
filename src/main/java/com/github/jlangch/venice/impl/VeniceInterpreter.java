@@ -53,6 +53,8 @@ import com.github.jlangch.venice.impl.functions.CoreFunctions;
 import com.github.jlangch.venice.impl.functions.Functions;
 import com.github.jlangch.venice.impl.functions.TransducerFunctions;
 import com.github.jlangch.venice.impl.reader.Reader;
+import com.github.jlangch.venice.impl.specialforms.SpecialFormsContext;
+import com.github.jlangch.venice.impl.specialforms.SpecialFormsHandler;
 import com.github.jlangch.venice.impl.thread.ThreadContext;
 import com.github.jlangch.venice.impl.types.Constants;
 import com.github.jlangch.venice.impl.types.IVncFunction;
@@ -61,6 +63,7 @@ import com.github.jlangch.venice.impl.types.VncFunction;
 import com.github.jlangch.venice.impl.types.VncKeyword;
 import com.github.jlangch.venice.impl.types.VncMultiArityFunction;
 import com.github.jlangch.venice.impl.types.VncMultiFunction;
+import com.github.jlangch.venice.impl.types.VncSpecialForm;
 import com.github.jlangch.venice.impl.types.VncString;
 import com.github.jlangch.venice.impl.types.VncSymbol;
 import com.github.jlangch.venice.impl.types.VncVal;
@@ -134,14 +137,16 @@ public class VeniceInterpreter implements IVeniceInterpreter, Serializable  {
 		this.checkSandbox = !(interceptor instanceof AcceptAllInterceptor);
 		this.optimized = false;  // no callstack, no auto TCO, meter, checks, ...
 		
-		this.specialFormHandler = new SpecialFormsHandler(
+		this.specialFormsContext= new SpecialFormsContext(
 										this,
 										this::evaluate,
 										this::evaluate_values,
 										this::evaluate_sequence_values,
 										this.nsRegistry,
 										this.meterRegistry,
-										this.sealedSystemNS);
+										this.sealedSystemNS); 
+		
+		this.specialFormsHandler = new SpecialFormsHandler(specialFormsContext);
 		
 		this.functionBuilder = new FunctionBuilder(this::evaluate, this.optimized);
 
@@ -152,40 +157,6 @@ public class VeniceInterpreter implements IVeniceInterpreter, Serializable  {
 			// invalid combination: prevent security problems with partially deactivated sandboxes
 			throw new VncException("Venice interpreter supports optimized mode only with AcceptAllInterceptor!");					
 		}
-
-//		specialFunctions.put("quote",             specialFormHandler::quote_); // (quote form)
-//		specialFunctions.put("deftype",           specialFormHandler::deftype_); // (deftype type fields validationFn*)
-//		specialFunctions.put("deftype?",          specialFormHandler::deftypeQ_); // (deftype? type)
-//		specialFunctions.put("deftype-of",        specialFormHandler::deftype_of_); // (deftype-of type base-type validationFn*)
-//		specialFunctions.put("deftype-or",        specialFormHandler::deftype_or_);  // (deftype-or type vals*)
-//		specialFunctions.put("deftype-describe",  specialFormHandler::deftype_describe_);  // (deftype-describe type)
-//		specialFunctions.put(".:",                specialFormHandler::deftype_create_); // (.: type args*)
-//		specialFunctions.put("ns",                specialFormHandler::ns_); // (ns alpha)
-//		specialFunctions.put("ns-remove",         specialFormHandler::ns_remove_); // (ns-remove ns)
-//		specialFunctions.put("ns-unmap",          specialFormHandler::ns_unmap_); // (ns-unmap ns sym)
-//		specialFunctions.put("ns-list",           specialFormHandler::ns_list_); // (ns-list ns)
-//		specialFunctions.put("import",            specialFormHandler::import_);
-//		specialFunctions.put("imports",           specialFormHandler::imports_);
-//		specialFunctions.put("namespace",         specialFormHandler::namespace_); // (namespace x)
-//		specialFunctions.put("resolve",           specialFormHandler::resolve_); // (resolve sym)
-//		specialFunctions.put("var-get",           specialFormHandler::var_get_); // (var-get v)
-//		specialFunctions.put("var-ns",            specialFormHandler::var_ns_); // (var-ns v)
-//		specialFunctions.put("var-name",          specialFormHandler::var_name_); // (var-name v)
-//		specialFunctions.put("var-local?",        specialFormHandler::var_localQ_); // (var-local? v)
-//		specialFunctions.put("var-thread-local?", specialFormHandler::var_thread_localQ_); // (var-thread-local? v)
-//		specialFunctions.put("var-global?",       specialFormHandler::var_globalQ_); // (var-global? v)
-//		specialFunctions.put("set!",              specialFormHandler::setBANG_); // (set! name expr)
-//		specialFunctions.put("inspect",           specialFormHandler::inspect_); // (inspect sym)
-//		specialFunctions.put("doc",               specialFormHandler::doc_); // (doc sym)
-//		specialFunctions.put("print-highlight",   specialFormHandler::print_highlight_); // (print-highlight form)
-//		specialFunctions.put("modules",           specialFormHandler::modules_); // (modules )
-//		specialFunctions.put("bound?",            specialFormHandler::boundQ_); // (bound? sym)
-//		specialFunctions.put("try",               specialFormHandler::try_); // (try exprs* (catch :Exception e exprs*) (finally exprs*))
-//		specialFunctions.put("try-with",          specialFormHandler::try_with_); // (try-with [bindings*] exprs* (catch :Exception e exprs*) (finally exprs*))
-//		specialFunctions.put("locking",           specialFormHandler::locking_);
-//		specialFunctions.put("dorun",             specialFormHandler::dorun_);
-//		specialFunctions.put("dobench",           specialFormHandler::dobench_);
-//		specialFunctions.put("prof",              specialFormHandler::prof_);
 	}
 
 	
@@ -627,11 +598,11 @@ public class VeniceInterpreter implements IVeniceInterpreter, Serializable  {
 					break;
 
 				case "quasiquote": // (quasiquote form)
-					orig_ast = specialFormHandler.quasiquote_(args, env, a0meta);
+					orig_ast = specialFormsHandler.quasiquote_(args, env, a0meta);
 					break;
 
 				case "quote": // (quote form)
-					return specialFormHandler.quote_(args, env, a0meta);
+					return specialFormsHandler.quote_(args, env, a0meta);
 
 				case "fn": // (fn name? [params*] condition-map? expr*)
 					return fn_(args, env, a0meta);
@@ -661,22 +632,22 @@ public class VeniceInterpreter implements IVeniceInterpreter, Serializable  {
 					return extendsQ_(args, env, a0meta);
 
 				case "deftype": // (deftype type fields validationFn*)
-					return specialFormHandler.deftype_(args, env, a0meta);
+					return specialFormsHandler.deftype_(args, env, a0meta);
 
 				case "deftype?": // (deftype? type)
-					return specialFormHandler.deftypeQ_(args, env, a0meta);
+					return specialFormsHandler.deftypeQ_(args, env, a0meta);
 
 				case "deftype-of": // (deftype-of type base-type validationFn*)
-					return specialFormHandler.deftype_of_(args, env, a0meta);
+					return specialFormsHandler.deftype_of_(args, env, a0meta);
 
 				case "deftype-or":  // (deftype-or type vals*)
-					return specialFormHandler.deftype_or_(args, env, a0meta);
+					return specialFormsHandler.deftype_or_(args, env, a0meta);
 
 				case "deftype-describe":  // (deftype-describe type)
-					return specialFormHandler.deftype_describe_(args, env, a0meta);
+					return specialFormsHandler.deftype_describe_(args, env, a0meta);
 
 				case ".:": // (.: type args*)
-					return specialFormHandler.deftype_create_(args, env, a0meta);
+					return specialFormsHandler.deftype_create_(args, env, a0meta);
 
 				case "defmulti":  // (defmulti name dispatch-fn)
 					return defmulti_(args, env, a0meta);
@@ -685,49 +656,49 @@ public class VeniceInterpreter implements IVeniceInterpreter, Serializable  {
 					return defmethod_(args, env, a0meta);
 
 				case "ns": // (ns alpha)
-					return specialFormHandler.ns_(args, env, a0meta);
+					return specialFormsHandler.ns_(args, env, a0meta);
 
 				case "ns-remove": // (ns-remove ns)
-					return specialFormHandler.ns_remove_(args, env, a0meta);
+					return specialFormsHandler.ns_remove_(args, env, a0meta);
 
 				case "ns-unmap": // (ns-unmap ns sym)
-					return specialFormHandler.ns_unmap_(args, env, a0meta);
+					return specialFormsHandler.ns_unmap_(args, env, a0meta);
 
 				case "ns-list": // (ns-list ns)
-					return specialFormHandler.ns_list_(args, env, a0meta);
+					return specialFormsHandler.ns_list_(args, env, a0meta);
 
 				case "import":
-					return specialFormHandler.import_(args, env, a0meta);
+					return specialFormsHandler.import_(args, env, a0meta);
 
 				case "imports":
-					return specialFormHandler.imports_(args, env, a0meta);
+					return specialFormsHandler.imports_(args, env, a0meta);
 
 				case "resolve": // (resolve sym)
-					return specialFormHandler.resolve_(args, env, a0meta);
+					return specialFormsHandler.resolve_(args, env, a0meta);
 				
 				case "var-get": // (var-get v)
-					return specialFormHandler.var_get_(args, env, a0meta);
+					return specialFormsHandler.var_get_(args, env, a0meta);
 
 				case "var-ns": // (var-ns v)
-					return specialFormHandler.var_ns_(args, env, a0meta);
+					return specialFormsHandler.var_ns_(args, env, a0meta);
 
 				case "var-name": // (var-name v)
-					return specialFormHandler.var_name_(args, env, a0meta);
+					return specialFormsHandler.var_name_(args, env, a0meta);
 
 				case "var-local?": // (var-local? v)
-					return specialFormHandler.var_localQ_(args, env, a0meta);
+					return specialFormsHandler.var_localQ_(args, env, a0meta);
 
 				case "var-thread-local?": // (var-thread-local? v)
-					return specialFormHandler.var_thread_localQ_(args, env, a0meta);
+					return specialFormsHandler.var_thread_localQ_(args, env, a0meta);
 
 				case "var-global?": // (var-global? v)
-					return specialFormHandler.var_globalQ_(args, env, a0meta);
+					return specialFormsHandler.var_globalQ_(args, env, a0meta);
 
 				case "set!": // (set! name expr)
-					return specialFormHandler.setBANG_(args, env, a0meta);
+					return specialFormsHandler.setBANG_(args, env, a0meta);
 				
 				case "inspect": // (inspect sym)
-					return specialFormHandler.inspect_(args, env, a0meta);
+					return specialFormsHandler.inspect_(args, env, a0meta);
 
 				case "macroexpand": // (macroexpand form)
 					return macroexpand(args, env, a0meta);
@@ -741,47 +712,60 @@ public class VeniceInterpreter implements IVeniceInterpreter, Serializable  {
 							env);
 
 				case "doc": // (doc sym)
-					return specialFormHandler.doc_(args, env, a0meta);
+					return specialFormsHandler.doc_(args, env, a0meta);
 
 				case "print-highlight": // (print-highlight form)
-					return specialFormHandler.print_highlight_(args, env, a0meta);
+					return specialFormsHandler.print_highlight_(args, env, a0meta);
 
 				case "modules": // (modules )
-					return specialFormHandler.modules_(args, env, a0meta);
+					return specialFormsHandler.modules_(args, env, a0meta);
 
 				case "binding":  // (binding [bindings*] exprs*)
 					return binding_(args, env, a0meta);
 
 				case "bound?": // (bound? sym)
-					return specialFormHandler.boundQ_(args, env, a0meta);
+					return specialFormsHandler.boundQ_(args, env, a0meta);
 	
 				case "try": // (try exprs* (catch :Exception e exprs*) (finally exprs*))
-					return specialFormHandler.try_(args, env, a0meta);
+					return specialFormsHandler.try_(args, env, a0meta);
 
 				case "try-with": // (try-with [bindings*] exprs* (catch :Exception e exprs*) (finally exprs*))
-					return specialFormHandler.try_with_(args, env, a0meta);
+					return specialFormsHandler.try_with_(args, env, a0meta);
 
 				case "locking":
-					return specialFormHandler.locking_(args, env, a0meta);
+					return specialFormsHandler.locking_(args, env, a0meta);
 
 				case "dorun":
-					return specialFormHandler.dorun_(args, env, a0meta);
+					return specialFormsHandler.dorun_(args, env, a0meta);
 
 				case "dobench":
-					return specialFormHandler.dobench_(args, env, a0meta);
+					return specialFormsHandler.dobench_(args, env, a0meta);
 
 				case "prof":
-					return specialFormHandler.prof_(args, env, a0meta);
+					return specialFormsHandler.prof_(args, env, a0meta);
 				
 				case "tail-pos": 
-					return specialFormHandler.tail_pos_check(tailPosition, args, env, a0meta);
+					return specialFormsHandler.tail_pos_check(tailPosition, args, env, a0meta);
 
 				default: { // functions, macros, collections/keywords as functions
 					final VncVal fn0 = a0 instanceof VncSymbol
 											? env.get((VncSymbol)a0)  	
 											: evaluate(a0, env, false); // ((resolve '+) 1 2)
-										
-					if (fn0 instanceof VncFunction) { 
+						
+					
+					if (fn0 instanceof VncSpecialForm) {
+						final VncSpecialForm sf = (VncSpecialForm)fn0;					
+						if (sf.addCallFrame()) {
+							final CallFrame callframe = new CallFrame(sf.getName(), args, a0meta);
+							try (WithCallStack cs = new WithCallStack(callframe)) {
+								return sf.apply(args, env, specialFormsContext);
+							}
+						}
+						else {
+							return sf.apply(args, env, specialFormsContext);
+						}
+					}
+					else if (fn0 instanceof VncFunction) { 
 						final VncFunction fn = (VncFunction)fn0;
 
 						if (fn.isMacro()) { 
@@ -1360,7 +1344,7 @@ public class VeniceInterpreter implements IVeniceInterpreter, Serializable  {
 		final VncSymbol protocol = Namespaces.qualifySymbolWithCurrNS(
 										evaluateSymbolMetaData(args.first(), env));
 
-		return specialFormHandler.defprotocol_(this, protocol, args, env, meta);
+		return specialFormsHandler.defprotocol_(this, protocol, args, env, meta);
 	}
 
 	public VncVal extend_(final VncList args, final Env env, final VncVal meta) {
@@ -1371,7 +1355,7 @@ public class VeniceInterpreter implements IVeniceInterpreter, Serializable  {
 			final VncSymbol protocol = Namespaces.qualifySymbolWithCurrNS(
 											evaluateSymbolMetaData(args.second(), env));
 
-			return specialFormHandler.extend_(args.first(), protocol, args, env);
+			return specialFormsHandler.extend_(args.first(), protocol, args, env);
 		}
 	}
 
@@ -1383,7 +1367,7 @@ public class VeniceInterpreter implements IVeniceInterpreter, Serializable  {
 			final VncSymbol protocol = Namespaces.qualifySymbolWithCurrNS(
 											evaluateSymbolMetaData(args.second(), env));
 
-			return specialFormHandler.extendsQ_(args.first(), protocol, env);
+			return specialFormsHandler.extendsQ_(args.first(), protocol, env);
 		}
 	}
 
@@ -1693,11 +1677,6 @@ public class VeniceInterpreter implements IVeniceInterpreter, Serializable  {
 		ThreadContext.getInterceptor().validateVeniceFunction(name);
 	}
 
-//	@FunctionalInterface
-//	public interface SpecialFunction {
-//		 VncVal apply(VncList args, Env env, VncVal meta);
-//	}
-
 	
 	
 	private static final long serialVersionUID = -8130740279914790685L;
@@ -1714,7 +1693,8 @@ public class VeniceInterpreter implements IVeniceInterpreter, Serializable  {
 	private final MeterRegistry meterRegistry;
 	private final NamespaceRegistry nsRegistry;
 	
-	private final SpecialFormsHandler specialFormHandler;
+	private final SpecialFormsContext specialFormsContext;
+	private final SpecialFormsHandler specialFormsHandler;
 	private final FunctionBuilder functionBuilder;
 	
 	private final AtomicBoolean sealedSystemNS;
