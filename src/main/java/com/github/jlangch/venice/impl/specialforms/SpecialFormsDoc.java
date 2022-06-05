@@ -33,12 +33,13 @@ import com.github.jlangch.venice.impl.util.SymbolMapBuilder;
 
 
 /**
- * The special form pseudo functions just serve for the cheat-sheet generation 
- * and the 'doc' function!
+ * Provides the documentation for the cheat-sheet and the 'doc' function
+ * for global vars and special forms that are implemented in the Reader 
+ * or in the VeniceInterpreter without having a VncSpecialForm 
+ * implementation!
  */
 public class SpecialFormsDoc {
 
-				
 	public static VncFunction list = 
 		new SpecialFormsDocFunction(
 				"()",
