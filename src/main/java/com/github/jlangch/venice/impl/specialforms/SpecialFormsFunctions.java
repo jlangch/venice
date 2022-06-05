@@ -21,31 +21,49 @@
  */
 package com.github.jlangch.venice.impl.specialforms;
 
+import static com.github.jlangch.venice.impl.debug.breakpoint.FunctionScope.FunctionEntry;
 import static com.github.jlangch.venice.impl.types.Constants.Nil;
 import static com.github.jlangch.venice.impl.util.ArityExceptions.assertArity;
 import static com.github.jlangch.venice.impl.util.ArityExceptions.assertMinArity;
 
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+import com.github.jlangch.venice.ValueException;
 import com.github.jlangch.venice.VncException;
 import com.github.jlangch.venice.impl.Destructuring;
+import com.github.jlangch.venice.impl.FunctionBuilder;
+import com.github.jlangch.venice.impl.IFormEvaluator;
+import com.github.jlangch.venice.impl.InterruptChecker;
+import com.github.jlangch.venice.impl.Modules;
 import com.github.jlangch.venice.impl.Namespace;
 import com.github.jlangch.venice.impl.Namespaces;
+import com.github.jlangch.venice.impl.debug.agent.DebugAgent;
+import com.github.jlangch.venice.impl.debug.breakpoint.BreakpointFnRef;
 import com.github.jlangch.venice.impl.docgen.runtime.DocForm;
+import com.github.jlangch.venice.impl.env.DynamicVar;
 import com.github.jlangch.venice.impl.env.Env;
 import com.github.jlangch.venice.impl.env.GenSym;
 import com.github.jlangch.venice.impl.env.ReservedSymbols;
 import com.github.jlangch.venice.impl.env.Var;
+import com.github.jlangch.venice.impl.functions.CoreFunctions;
 import com.github.jlangch.venice.impl.javainterop.JavaImports;
 import com.github.jlangch.venice.impl.thread.ThreadContext;
+import com.github.jlangch.venice.impl.types.IVncFunction;
 import com.github.jlangch.venice.impl.types.VncBoolean;
 import com.github.jlangch.venice.impl.types.VncFunction;
+import com.github.jlangch.venice.impl.types.VncJavaObject;
+import com.github.jlangch.venice.impl.types.VncJust;
 import com.github.jlangch.venice.impl.types.VncKeyword;
+import com.github.jlangch.venice.impl.types.VncLong;
 import com.github.jlangch.venice.impl.types.VncMultiArityFunction;
+import com.github.jlangch.venice.impl.types.VncMultiFunction;
 import com.github.jlangch.venice.impl.types.VncProtocolFunction;
 import com.github.jlangch.venice.impl.types.VncSpecialForm;
 import com.github.jlangch.venice.impl.types.VncString;
@@ -61,8 +79,12 @@ import com.github.jlangch.venice.impl.types.custom.VncProtocol;
 import com.github.jlangch.venice.impl.types.util.Coerce;
 import com.github.jlangch.venice.impl.types.util.Types;
 import com.github.jlangch.venice.impl.util.ArityExceptions.FnType;
+import com.github.jlangch.venice.impl.util.reflect.ReflectionAccessor;
 import com.github.jlangch.venice.impl.util.CallFrame;
+import com.github.jlangch.venice.impl.util.CallStack;
+import com.github.jlangch.venice.impl.util.Inspector;
 import com.github.jlangch.venice.impl.util.MetaUtil;
+import com.github.jlangch.venice.impl.util.MeterRegistry;
 import com.github.jlangch.venice.impl.util.SymbolMapBuilder;
 import com.github.jlangch.venice.impl.util.WithCallStack;
 
@@ -72,6 +94,133 @@ import com.github.jlangch.venice.impl.util.WithCallStack;
  */
 public class SpecialFormsFunctions {
 
+	
+	///////////////////////////////////////////////////////////////////////////
+	// def functions
+	///////////////////////////////////////////////////////////////////////////
+
+	public static VncSpecialForm def =
+		new VncSpecialForm(
+				"def",
+				VncSpecialForm
+					.meta()
+					.arglists("(def name expr)")
+					.doc("Creates a global variable.")
+					.examples(
+						 "(def x 5)",
+						 "(def sum (fn [x y] (+ x y)))",
+						 "(def ^{:private true} x 100)")
+					.seeAlso("def", "def-", "defonce", "def-dynamic", "set!")
+					.build()
+		) {
+			public VncVal apply(
+					final VncVal specialFormMeta,
+					final VncList args, 
+					final Env env, 
+					final SpecialFormsContext ctx
+			) {
+				assertArity("def", FnType.SpecialForm, args, 1, 2);
+				final VncSymbol name = validateSymbolWithCurrNS(
+											Namespaces.qualifySymbolWithCurrNS(
+													evaluateSymbolMetaData(args.first(), env, ctx)),
+											"def");
+				
+				final VncVal val = args.second();
+				
+				VncVal res = ctx.getEvaluator().evaluate(val, env, false);
+				
+				// we want source location from name and this to work:
+				//      (def y (vary-meta 1 assoc :a 100))
+				//      (get (meta y) :a)  ; -> 100
+
+				res = res.withMeta(MetaUtil.mergeMeta(res.getMeta(), name.getMeta()));
+				
+				env.setGlobal(new Var(name, res, true));
+				return name;
+			}
+
+			private static final long serialVersionUID = -1848883965231344442L;
+		};
+
+	public static VncSpecialForm defonce =
+		new VncSpecialForm(
+				"defonce",
+				VncSpecialForm
+					.meta()
+					.arglists("(defonce name expr)")
+					.doc("Creates a global variable that can not be overwritten")
+					.examples(
+						"(defonce x 5)",
+						"(defonce ^{:private true} x 5)")
+					.seeAlso("def", "def-dynamic")
+					.build()
+		) {
+			public VncVal apply(
+					final VncVal specialFormMeta,
+					final VncList args, 
+					final Env env, 
+					final SpecialFormsContext ctx
+			) {
+				assertArity("defonce", FnType.SpecialForm, args, 1, 2);
+				final VncSymbol name = validateSymbolWithCurrNS(
+											Namespaces.qualifySymbolWithCurrNS(
+													evaluateSymbolMetaData(args.first(), env, ctx)),
+											"defonce");
+								
+				final VncVal val = args.second();
+
+				final VncVal res = ctx.getEvaluator().evaluate(val, env, false).withMeta(name.getMeta());
+				env.setGlobal(new Var(name, res, false));
+				return name;
+			}
+
+			private static final long serialVersionUID = -1848883965231344442L;
+		};
+
+	public static VncSpecialForm def_dynamic =
+		new VncSpecialForm(
+				"def-dynamic",
+				VncSpecialForm
+					.meta()
+					.arglists("(def-dynamic name expr)")
+					.doc(
+						"Creates a dynamic variable that starts off as a global variable " +
+						"and can be bound with 'binding' to a new value on the local thread.")
+					.examples(
+						"(do                      \n" +
+						"   (def-dynamic x 100)   \n" +
+						"   (println x)           \n" +
+						"   (binding [x 200]      \n" +
+						"      (println x))       \n" +
+						"   (println x)))           ",
+						"(def-dynamic ^{:private true} x 100)")
+					.seeAlso("binding", "def", "defonce", "set!")
+					.build()
+		) {
+			public VncVal apply(
+					final VncVal specialFormMeta,
+					final VncList args, 
+					final Env env, 
+					final SpecialFormsContext ctx
+			) {
+				assertArity("def-dynamic", FnType.SpecialForm, args, 1, 2);
+				final VncSymbol name = validateSymbolWithCurrNS(
+											Namespaces.qualifySymbolWithCurrNS(
+													evaluateSymbolMetaData(args.first(), env, ctx)),
+											"def-dynamic");
+				
+				final VncVal val = args.second();
+				
+				final VncVal res = ctx.getEvaluator().evaluate(val, env, false).withMeta(name.getMeta());
+				env.setGlobalDynamic(name, res);
+				return name;
+			}
+
+			private static final long serialVersionUID = -1848883965231344442L;
+		};
+
+		
+		
 	///////////////////////////////////////////////////////////////////////////
 	// doc functions
 	///////////////////////////////////////////////////////////////////////////
@@ -674,7 +823,1304 @@ public class SpecialFormsFunctions {
 			private static final long serialVersionUID = -1848883965231344442L;
 		};
 
+	public static VncSpecialForm deftypeQ =
+		new VncSpecialForm(
+				"deftype?",
+				VncSpecialForm
+					.meta()
+					.arglists(
+						"(deftype? type)")
+					.doc(
+						"Returns true if `type` is a custom type else false.")
+					.examples(
+						"(do                                                 \n" +
+						"  (ns foo)                                          \n" +
+						"  (deftype :complex [real :long, imaginary :long])  \n" +
+						"  (deftype? :complex))                                ",
+						"(do                                                 \n" +
+						"  (ns foo)                                          \n" +
+						"  (deftype-of :email-address :string)               \n" +
+						"  (deftype? :email-address))                          ",
+						"(do                                                 \n" +
+						"  (ns foo)                                          \n" +
+						"  (deftype :complex [real :long, imaginary :long])  \n" +
+						"  (def x (complex. 100 200))                        \n" +
+						"  (deftype? (type x)))                                ")
+					.seeAlso(
+						"deftype", "deftype-of", "deftype-or", ".:", 
+						"deftype-describe")
+					.build()
+		) {
+			public VncVal apply(
+					final VncVal specialFormMeta,
+					final VncList args, 
+					final Env env, 
+					final SpecialFormsContext ctx
+			) {
+				assertArity("deftype?", FnType.SpecialForm, args, 1);
+				final VncVal type = ctx.getEvaluator().evaluate(args.first(), env, false);
+				return VncBoolean.of(DefTypeForm.isCustomType(type, env));
+			}
+	
+			private static final long serialVersionUID = -1848883965231344442L;
+		};
+
+	public static VncSpecialForm deftype_describe =
+		new VncSpecialForm(
+				"deftype-describe",
+				VncSpecialForm
+					.meta()
+					.arglists(
+						"(deftype-describe type)")
+					.doc(
+						"Describes a custom type.")
+					.examples(
+						"(do                                                           \n" +
+						"  (ns foo)                                                    \n" +
+						"  (deftype :complex [real :long, imaginary :long])		       \n" +
+						"  (deftype-describe :complex))	                               \n",
+						"(do                                                           \n" +
+						"  (ns foo)                                                    \n" +
+						"  (deftype-of :port :long)		                               \n" +
+						"  (deftype-describe :port))	                               \n",
+						"(do                                                           \n" +
+						"  (ns foo)                                                    \n" +
+						"  (deftype-or :digit 0 1 2 3 4 5 6 7 8 9)                     \n" +
+						"  (deftype-describe :digit))                                    ")
+					.seeAlso(
+						"deftype", "deftype?", "deftype-or", "deftype-of", ".:")
+					.build()
+		) {
+			public VncVal apply(
+					final VncVal specialFormMeta,
+					final VncList args, 
+					final Env env, 
+					final SpecialFormsContext ctx
+			) {
+				assertArity("deftype-describe", FnType.SpecialForm, args, 1);
+				final VncVal evaluatedArg = ctx.getEvaluator().evaluate(args.first(), env, false);
+				return DefTypeForm.describeType(evaluatedArg, env);
+			}
+	
+			private static final long serialVersionUID = -1848883965231344442L;
+		};
+
+	public static VncSpecialForm deftype_new =
+		new VncSpecialForm(
+				".:",
+				VncSpecialForm
+					.meta()
+					.arglists("(.: type-name args*)")
+					.doc(
+						"Instantiates a custom type.                           \n\n" +
+						"Note: Venice implicitly creates a builder function    \n" +
+						"suffixed with a dot:                                  \n\n" +
+						"```venice                                             \n" +
+						"(deftype :complex [real :long, imaginary :long])      \n" +
+						"(complex. 200 300)                                    \n" +
+						"```                                                   \n\n" +
+						"For readability prefer `(complex. 200 300)` over      \n" +
+						"`(.: :complex 100 200)`.                                ")
+					.examples(
+						"(do                                                      \n" +
+						"  (ns foo)                                               \n" +
+						"  (deftype :complex [real :long, imaginary :long])       \n" +
+						"  (def x (.: :complex 100 200))                          \n" +
+						"  [(:real x) (:imaginary x)])                              ")
+					.seeAlso(
+						"deftype", "deftype?", "deftype-of", "deftype-or", 
+						"deftype-describe")
+					.build()
+		) {
+			public VncVal apply(
+					final VncVal specialFormMeta,
+					final VncList args, 
+					final Env env, 
+					final SpecialFormsContext ctx
+			) {
+				assertMinArity(".:", FnType.SpecialForm, args, 1);
+				final List<VncVal> evaluatedArgs = new ArrayList<>();
+				for(VncVal v : args) {
+					evaluatedArgs.add(ctx.getEvaluator().evaluate(v, env, false));
+				}
+				return DefTypeForm.createType(evaluatedArgs, env);
+			}
+	
+			private static final long serialVersionUID = -1848883965231344442L;
+		};
+
+		public static VncSpecialForm deftype_of =
+			new VncSpecialForm(
+					"deftype-of",
+					VncSpecialForm
+						.meta()
+						.arglists(
+							"(deftype-of name base-type)",
+							"(deftype-of name base-type validator)")
+						.doc(
+							"Defines a new custom *wrapper* type based on a base type. \n\n" +
+							"Venice implicitly creates a builder and a type check " +
+							"function suffixed with a dot and a question mark:\n\n" +
+							"```venice                           \n" +
+							"(deftype-of :port :long)            \n" +
+							"                                    \n" +
+							"(port. 8080)          ; builder     \n" +
+							"(port? (port. 8080))  ; type check  \n" +
+							"```")
+						.examples(
+							"(do                                                           \n" +
+							"  (ns foo)                                                    \n" +
+							"  (deftype-of :email-address :string)                         \n" +
+							"  ; explicitly creating a wrapper type value                  \n" +
+							"  (def x (.: :email-address \"foo@foo.org\"))                 \n" +
+							"  ; Venice implicitly creates a builder function              \n" +
+							"  ; suffixed with a '.'                                       \n" +
+							"  (def y (email-address. \"foo@foo.org\"))                    \n" +
+							"  ; ... and a type check function                             \n" +
+							"  (email-address? y)                                          \n" +
+							"  y)                                                            ",
+							"(do                                                           \n" +
+							"  (ns foo)                                                    \n" +
+							"  (deftype-of :email-address :string)                         \n" +
+							"  (str \"Email: \" (email-address. \"foo@foo.org\")))           ",
+							"(do                                                           \n" +
+							"  (ns foo)                                                    \n" +
+							"  (deftype-of :email-address :string)                         \n" +
+							"  (def x (email-address. \"foo@foo.org\"))                    \n" +
+							"  [(type x) (supertype x)])                                     ",
+							"(do                                                           \n" +
+							"  (ns foo)                                                    \n" +
+							"  (deftype-of :email-address                                  \n" +
+							"              :string                                         \n" +
+							"              str/valid-email-addr?)                          \n" +
+							"  (email-address. \"foo@foo.org\"))                             ",
+							"(do                                                           \n" +
+							"  (ns foo)                                                    \n" +
+							"  (deftype-of :contract-id :long)                             \n" +
+							"  (contract-id. 100000))                                        ",
+							"(do                                                           \n" +
+							"  (ns foo)                                                    \n" +
+							"  (deftype-of :my-long :long)                                 \n" +
+							"  (+ 10 (my-long. 100000)))                                     ")
+						.seeAlso(
+							"deftype", "deftype?", "deftype-or", ".:", "deftype-describe")
+						.build()
+			) {
+				public VncVal apply(
+						final VncVal specialFormMeta,
+						final VncList args, 
+						final Env env, 
+						final SpecialFormsContext ctx
+				) {
+					assertMinArity("deftype-of", FnType.SpecialForm, args, 2);
+					final VncKeyword type = Coerce.toVncKeyword(ctx.getEvaluator().evaluate(args.first(), env, false));
+					final VncKeyword baseType = Coerce.toVncKeyword(ctx.getEvaluator().evaluate(args.second(), env, false));
+					final VncFunction validationFn = args.size() == 3
+														? Coerce.toVncFunction(ctx.getEvaluator().evaluate(args.third(), env, false))
+														: null;
+					return DefTypeForm.defineCustomWrapperType(
+								type, 
+								baseType, 
+								validationFn, 
+								ctx.getInterpreter(), 
+								env,
+								ctx.getWrappableTypes());
+				}
+		
+				private static final long serialVersionUID = -1848883965231344442L;
+			};
+
+		public static VncSpecialForm deftype_or =
+			new VncSpecialForm(
+					"deftype-or",
+					VncSpecialForm
+						.meta()
+						.arglists(
+							"(deftype-or name val*)")
+						.doc(
+							"Defines a new custom *choice* type. \n\n" +
+							"Venice implicitly creates a builder and a type check " +
+							"function suffixed with a dot and a question mark:\n\n" +
+							"```venice                                 \n" +
+							"(deftype-or :color :red :green :blue)     \n" +
+							"                                          \n" +
+							"(color. :blue)           ; builder        \n" +
+							"(color? (color. :blue))  ; type check     \n" +
+							"```")
+						.examples(
+							"(do                                                           \n" +
+							"  (ns foo)                                                    \n" +
+							"  (deftype-or :color :red :green :blue)                       \n" +
+							"  ; explicitly creating a wrapper type value                  \n" +
+							"  (def x (.: :color :red))                                    \n" +
+							"  ; Venice implicitly creates a builder function              \n" +
+							"  ; suffixed with a '.'                                       \n" +
+							"  (def y (color. :blue))                                       \n" +
+							"  ; ... and a type check function                             \n" +
+							"  (color? y)                                                  \n" +
+							"  y)                                                            ",
+							"(do                                                           \n" +
+							"  (ns foo)                                                    \n" +
+							"  (deftype-or :digit 0 1 2 3 4 5 6 7 8 9)                     \n" +
+							"  (digit. 1))                                                   ",
+							"(do                                                           \n" +
+							"  (ns foo)                                                    \n" +
+							"  (deftype-or :long-or-double :long :double)                  \n" +
+							"  (long-or-double. 1000))                                       ")
+						.seeAlso(
+							"deftype", "deftype?", "deftype-of", ".:", "deftype-describe")
+						.build()
+			) {
+				public VncVal apply(
+						final VncVal specialFormMeta,
+						final VncList args, 
+						final Env env, 
+						final SpecialFormsContext ctx
+				) {
+					assertMinArity("deftype-or", FnType.SpecialForm, args, 2);
+					final VncKeyword type = Coerce.toVncKeyword(ctx.getEvaluator().evaluate(args.first(), env, false));
+					final VncList choiceVals = args.rest();
+
+					return DefTypeForm.defineCustomChoiceType(type, choiceVals, ctx.getInterpreter(), env);
+				}
+		
+				private static final long serialVersionUID = -1848883965231344442L;
+			};
+	
 			
+			
+					
+	///////////////////////////////////////////////////////////////////////////
+	// multimethod functions
+	///////////////////////////////////////////////////////////////////////////
+			
+	public static VncSpecialForm defmethod =
+		new VncSpecialForm(
+				"defmethod",
+				VncSpecialForm
+					.meta()
+					.arglists("(defmethod multifn-name dispatch-val & fn-tail)")		
+					.doc("Creates a new method for a multimethod associated with a dispatch-value.")
+					.examples(
+							"(do                                                                       \n" +
+							"   ;;defmulti with dispatch function                                      \n" +
+							"   (defmulti salary (fn [amount] (amount :t)))                            \n" +
+							"                                                                          \n" +
+							"   ;;defmethod provides a function implementation for a particular value  \n" +
+							"   (defmethod salary \"com\" [amount] (+ (:b amount) (/ (:b amount) 2)))  \n" +
+							"   (defmethod salary \"bon\" [amount] (+ (:b amount) 99))                 \n" +
+							"   (defmethod salary :default  [amount] (:b amount))                      \n" +
+							"                                                                          \n" +
+							"   [(salary {:t \"com\" :b 1000})                                         \n" +
+							"    (salary {:t \"bon\" :b 1000})                                         \n" +
+							"    (salary {:t \"xxx\" :b 1000})]                                        \n" +
+							")                                                                           ")
+					.seeAlso("defmulti")
+					.build()
+		) {
+			public VncVal apply(
+					final VncVal specialFormMeta,
+					final VncList args, 
+					final Env env, 
+					final SpecialFormsContext ctx
+			) {
+				assertMinArity("defmethod", FnType.SpecialForm, args, 2);
+				final VncSymbol multiFnName = Namespaces.qualifySymbolWithCurrNS(
+												Coerce.toVncSymbol(args.first()));
+				final VncVal multiFnVal = env.getGlobalOrNull(multiFnName);
+				if (multiFnVal == null) {
+					throw new VncException(String.format(
+								"No multifunction '%s' defined for the method definition", 
+								multiFnName.getName())); 
+				}
+				final VncMultiFunction multiFn = Coerce.toVncMultiFunction(multiFnVal);
+				final VncVal dispatchVal = args.second();
+				
+				final VncVector params = Coerce.toVncVector(args.third());
+				if (params.size() != multiFn.getParams().size()) {
+					throw new VncException(String.format(
+							"A method definition for the multifunction '%s' must have %d parameters", 
+							multiFnName.getName(),
+							multiFn.getParams().size()));
+				}
+				final VncVector preConditions = getFnPreconditions(args.fourth());
+				final VncList body = args.slice(preConditions == null ? 3 : 4);
+				final VncFunction fn = ctx.getFunctionBuilder().buildFunction(
+											multiFnName.getName(),
+											params,
+											body,
+											preConditions,
+											false,
+											specialFormMeta,
+											env);
+
+				return multiFn.addFn(dispatchVal, fn.withMeta(specialFormMeta));
+			}
+
+			private static final long serialVersionUID = -1848883965231344442L;
+		};
+		
+	public static VncSpecialForm defmulti =
+		new VncSpecialForm(
+				"defmulti",
+				VncSpecialForm
+					.meta()
+					.arglists("(defmulti name dispatch-fn)")
+					.doc("Creates a new multimethod with the associated dispatch function.")
+					.examples(
+						"(do                                                                         \n" +
+						"   ;;defmulti with dispatch function                                        \n" +
+						"   (defmulti salary (fn [amount] (amount :t)))                              \n" +
+						"                                                                            \n" +
+						"   ;;defmethod provides a function implementation for a particular value    \n" +
+						"   (defmethod salary \"com\"   [amount] (+ (:b amount) (/ (:b amount) 2)))  \n" +
+						"   (defmethod salary \"bon\"   [amount] (+ (:b amount) 99))                 \n" +
+						"   (defmethod salary :default  [amount] (:b amount))                        \n" +
+						"                                                                            \n" +
+						"   [(salary {:t \"com\" :b 1000})                                           \n" +
+						"    (salary {:t \"bon\" :b 1000})                                           \n" +
+						"    (salary {:t \"xxx\" :b 1000})]                                          \n" +
+						")                                                                             ",
+						"(do                                                \n" +
+						"   ;;dispatch on type                              \n" +
+						"   (defmulti test (fn [x] (type x)))               \n" +
+						"                                                   \n" +
+						"   (defmethod test :core/number  [x] [x :number])  \n" +
+						"   (defmethod test :core/string  [x] [x :string])  \n" +
+						"   (defmethod test :core/boolean [x] [x :boolean]) \n" +
+						"   (defmethod test :default      [x] [x :default]) \n" +
+						"                                                   \n" +
+						"   [(test 1)                                       \n" +
+						"    (test 1.0)                                     \n" +
+						"    (test 1.0M)                                    \n" +
+						"    (test \"abc\")                                 \n" +
+						"    (test [1])]                                    \n" +
+						")                                                    ")
+					.seeAlso("defmethod")
+					.build()
+		) {
+			public VncVal apply(
+					final VncVal specialFormMeta,
+					final VncList args, 
+					final Env env, 
+					final SpecialFormsContext ctx
+			) {
+				assertArity("defmulti", FnType.SpecialForm, args, 2);
+				final VncSymbol name =  validateSymbolWithCurrNS(
+											Namespaces.qualifySymbolWithCurrNS(
+													evaluateSymbolMetaData(args.first(), env, ctx)),
+											"defmulti");
+				
+				IVncFunction dispatchFn;
+				
+				if (Types.isVncKeyword(args.second())) {
+					dispatchFn = (VncKeyword)args.second();
+				}
+				else if (Types.isVncSymbol(args.second())) {
+					dispatchFn = Coerce.toVncFunction(env.get((VncSymbol)args.second()));
+				}
+				else {
+					final VncList fnAst = Coerce.toVncList(args.second());
+					dispatchFn = (IVncFunction)fn.apply(specialFormMeta, fnAst.rest(), env, ctx);
+				}
+
+				final VncMultiFunction multiFn = new VncMultiFunction(name.getName(), dispatchFn)
+															.withMeta(name.getMeta());
+				env.setGlobal(new Var(name, multiFn, true));
+				return multiFn;
+			}
+	
+			private static final long serialVersionUID = -1848883965231344442L;
+		};
+		
+		
+		
+	///////////////////////////////////////////////////////////////////////////
+	// create functions
+	///////////////////////////////////////////////////////////////////////////
+			
+	public static VncSpecialForm fn =
+		new VncSpecialForm(
+				"fn",
+				VncSpecialForm
+					.meta()
+					.arglists("(fn name? [params*] condition-map? expr*)")
+					.doc("Defines an anonymous function.")
+					.examples(
+						"(do                             \n" +
+						"  (def sum (fn [x y] (+ x y)))  \n" +
+						"  (sum 2 3))                    ",
+						
+						";; multi-arity anonymous function      \n" +
+						"(let [f (fn ([x] x) ([x y] (+ x y)))]  \n" +
+						"   [(f 1) (f 4 6)])",
+							
+						"(map (fn double [x] (* 2 x)) (range 1 5))",
+						
+						"(map #(* 2 %) (range 1 5))",
+						
+						"(map #(* 2 %1) (range 1 5))",
+						
+						";; anonymous function with two params, the second is destructured\n" + 
+						"(reduce (fn [m [k v]] (assoc m v k)) {} {:b 2 :a 1 :c 3})",
+						
+						";; defining a pre-condition                 \n" + 
+						"(do                                         \n" +
+						"   (def square-root                         \n" +
+						"        (fn [x]                             \n" +
+						"            { :pre [(>= x 0)] }             \n" +
+						"            (. :java.lang.Math :sqrt x)))   \n" +
+						"   (square-root 4))                           ",
+						
+						";; higher-order function                                           \n" + 
+						"(do                                                                \n" +
+						"   (def discount                                                   \n" +
+						"        (fn [percentage]                                           \n" +
+						"            { :pre [(and (>= percentage 0) (<= percentage 100))] } \n" +
+						"            (fn [price] (- price (* price percentage 0.01)))))     \n" +
+						"   ((discount 50) 300))                                              ")
+					.seeAlso("defn", "defn-", "def")
+					.build()
+		) {
+			public VncVal apply(
+					final VncVal specialFormMeta,
+					final VncList args, 
+					final Env env, 
+					final SpecialFormsContext ctx
+			) {
+				// single arity:  (fn name? [params*] condition-map? expr*)
+				// multi arity:   (fn name? ([params*] condition-map? expr*)+ )
+
+				assertMinArity("fn", FnType.SpecialForm, args, 1);
+				
+				VncSymbol name;
+				VncVal meta;
+				int argPos;
+				
+				if (Types.isVncSymbol(args.first())) {
+					argPos = 1;
+					name = (VncSymbol)args.first();
+					meta = name.getMeta();
+				}
+				else {
+					argPos = 0;
+					name = new VncSymbol(VncFunction.createAnonymousFuncName());
+					meta = args.second().getMeta();
+				}
+		
+				final VncSymbol fnName = Namespaces.qualifySymbolWithCurrNS(name);
+				ReservedSymbols.validateNotReservedSymbol(fnName);
+			
+				final FunctionBuilder functionBuilder = ctx.getFunctionBuilder();
+
+				final VncSequence paramsOrSig = Coerce.toVncSequence(args.nth(argPos));
+				if (Types.isVncVector(paramsOrSig)) {
+					// single arity:
+					
+					argPos++;
+					final VncVector params = (VncVector)paramsOrSig;				
+					final VncVector preCon = getFnPreconditions(args.nthOrDefault(argPos, null));
+					if (preCon != null) argPos++;
+					
+					final VncList body = args.slice(argPos);
+					
+					return functionBuilder.buildFunction(
+								fnName.getName(), params, body, preCon, 
+								false, meta, env);
+				}
+				else {
+					// multi arity:
+		
+					final List<VncFunction> fns = new ArrayList<>();
+					
+					args.slice(argPos).forEach(s -> {
+						int pos = 0;
+						
+						final VncList sig = Coerce.toVncList(s);					
+						final VncVector params = Coerce.toVncVector(sig.nth(pos++));					
+						final VncVector preCon = getFnPreconditions(sig.nth(pos));
+						if (preCon != null) pos++;
+						
+						final VncList body = sig.slice(pos);
+						
+						fns.add(
+							functionBuilder.buildFunction(
+								fnName.getName(), params, body, preCon, false, meta, env));
+					});
+					
+					return new VncMultiArityFunction(fnName.getName(), fns, false, meta);
+				}
+			}
+
+			private static final long serialVersionUID = -1848883965231344442L;
+		};
+
+
+		
+	///////////////////////////////////////////////////////////////////////////
+	// namespace functions
+	///////////////////////////////////////////////////////////////////////////
+
+	public static VncSpecialForm ns_new =
+		new VncSpecialForm(
+				"ns",
+				VncSpecialForm
+					.meta()
+					.arglists("(ns sym)")
+					.doc("Opens a namespace.")
+					.examples(
+						"(do                               \n" + 
+						"  (ns xxx)                        \n" + 
+						"  (def foo 1)                     \n" + 
+						"  (ns yyy)                        \n" + 
+						"  (def foo 5)                     \n" + 
+						"  (println xxx/foo foo yyy/foo))    ")
+					.seeAlso(
+						"*ns*", "ns-unmap", "ns-remove", 
+						"ns-list", "ns-alias", "namespace", "var-ns")
+					.build()
+		) {
+			public VncVal apply(
+					final VncVal specialFormMeta,
+					final VncList args, 
+					final Env env, 
+					final SpecialFormsContext ctx
+			) {
+				specialFormCallValidation("ns");
+				assertArity("ns", FnType.SpecialForm, args, 1);
+
+				final VncVal name = args.first();
+				final VncSymbol ns = Types.isVncSymbol(name)
+										? (VncSymbol)name
+										: (VncSymbol)CoreFunctions.symbol.apply(
+														VncList.of(ctx.getEvaluator().evaluate(name, env, false)));
+				
+				if (ns.hasNamespace() && !"core".equals(ns.getNamespace())) {
+					throw new VncException(String.format(
+							"A namespace '%s' must not have itself a namespace! However you can use '%s'.",
+							ns.getQualifiedName(),
+							ns.getNamespace() + "." + ns.getSimpleName()));
+				}
+				else {
+					// clean
+					final VncSymbol ns_ = new VncSymbol(ns.getSimpleName());
+					
+					if (Namespaces.isSystemNS(ns_.getSimpleName()) && ctx.getSealedSystemNS().get()) {
+						// prevent Venice's system namespaces from being altered
+						throw new VncException("Namespace '" + ns_.getName() + "' cannot be reopened!");
+					}
+					Namespaces.setCurrentNamespace(ctx.getNsRegistry().computeIfAbsent(ns_));
+					return ns_;
+				}
+			}
+
+			private static final long serialVersionUID = -1848883965231344442L;
+		};
+
+
+	public static VncSpecialForm ns_unmap =
+		new VncSpecialForm(
+				"ns-unmap",
+				VncSpecialForm
+					.meta()
+					.arglists("(ns-unmap ns sym)")
+					.doc("Removes the mappings for the symbol from the namespace.")
+					.examples(
+						"(do                    \n" + 
+						"  (ns foo)             \n" + 
+						"  (def x 1)            \n" + 
+						"  (ns-unmap 'foo 'x)   \n" + 
+						"  (ns-unmap *ns* 'x))   ")
+					.seeAlso("ns", "*ns*", "ns-remove", "ns-list", "namespace", "var-ns")
+					.build()
+		) {
+			public VncVal apply(
+					final VncVal specialFormMeta,
+					final VncList args, 
+					final Env env, 
+					final SpecialFormsContext ctx
+			) {
+				specialFormCallValidation("ns-unmap");
+				assertArity("ns-unmap", FnType.SpecialForm, args, 2);
+
+				final VncSymbol ns = Coerce.toVncSymbol(
+										ctx.getEvaluator().evaluate(args.first(), env, false));
+
+				if (Namespaces.isSystemNS(ns.getName()) && ctx.getSealedSystemNS().get()) {
+					// prevent Venice's system namespaces from being altered
+					throw new VncException("Cannot remove a symbol from namespace '" + ns.getName() + "'!");
+				}
+				else {
+					final VncSymbol sym = Coerce.toVncSymbol(
+											ctx.getEvaluator().evaluate(args.second(), env, false));
+					env.removeGlobalSymbol(sym.withNamespace(ns));
+					return Nil;
+				}
+			}
+
+			private static final long serialVersionUID = -1848883965231344442L;
+		};
+
+	public static VncSpecialForm ns_remove =
+		new VncSpecialForm(
+				"ns-remove",
+				VncSpecialForm
+					.meta()
+					.arglists("(ns-remove ns)")
+					.doc("Removes the mappings for all symbols from the namespace.")
+					.examples(
+						"(do                                     \n" + 
+						"  (ns foo)                              \n" + 
+						"  (def x 1)                             \n" + 
+						"  (ns bar)                              \n" + 
+						"  (def y 1)                             \n" + 
+						"  (ns-remove 'foo)                      \n" + 
+						"  (println \"ns foo:\" (ns-list 'foo))  \n" + 
+						"  (println \"ns bar:\" (ns-list 'bar)))   ")
+					.seeAlso("ns", "ns-unmap", "ns-list", "namespace", "var-ns")
+					.build()
+		) {
+			public VncVal apply(
+					final VncVal specialFormMeta,
+					final VncList args, 
+					final Env env, 
+					final SpecialFormsContext ctx
+			) {
+				specialFormCallValidation("ns-remove");
+				assertArity("ns-remove", FnType.SpecialForm, args, 1);
+
+				final VncSymbol ns = Coerce.toVncSymbol(
+										ctx.getEvaluator().evaluate(args.first(), env, false));
+				final VncSymbol nsCurr = Namespaces.getCurrentNS();
+				if (Namespaces.isSystemNS(ns.getName()) && ctx.getSealedSystemNS().get()) {
+					// prevent Venice's system namespaces from being altered
+					throw new VncException("Namespace '" + ns.getName() + "' cannot be removed!");
+				}
+				else if (ns.equals(nsCurr)) {
+					// prevent removing the current namespace
+					throw new VncException("The current samespace '" + nsCurr.getName() + "' cannot be removed!");
+				}
+				else {
+					env.removeGlobalSymbolsByNS(ns);
+					ctx.getNsRegistry().remove(ns);
+					return Nil;
+				}
+			}
+
+			private static final long serialVersionUID = -1848883965231344442L;
+		};
+
+	public static VncSpecialForm ns_list =
+		new VncSpecialForm(
+				"ns-list",
+				VncSpecialForm
+					.meta()
+					.arglists("(ns-list ns)")
+					.doc("Lists all the symbols in the namespace ns.")
+					.examples("(ns-list 'regex)")
+					.seeAlso("ns", "*ns*", "ns-unmap", "ns-remove", "namespace", "var-ns")
+					.build()
+		) {
+			public VncVal apply(
+					final VncVal specialFormMeta,
+					final VncList args, 
+					final Env env, 
+					final SpecialFormsContext ctx
+			) {
+				specialFormCallValidation("ns-list");
+				assertArity("ns-list", FnType.SpecialForm, args, 1);
+
+				final VncSymbol ns = Coerce.toVncSymbol(
+										ctx.getEvaluator().evaluate(args.first(), env, false));
+
+				final String nsCore = Namespaces.NS_CORE.getName();
+				final String nsName = nsCore.equals(ns.getName()) ? null : ns.getName();
+							
+				return VncList.ofList(
+							env.getAllGlobalSymbols()
+								.keySet()
+								.stream()
+								.filter(s -> Objects.equals(nsName, s.getNamespace()))
+								.sorted()
+								.collect(Collectors.toList()));
+			}
+
+			private static final long serialVersionUID = -1848883965231344442L;
+		};
+		
+
+
+	///////////////////////////////////////////////////////////////////////////
+	// Utility functions
+	///////////////////////////////////////////////////////////////////////////
+		
+	public static VncSpecialForm locking =
+		new VncSpecialForm(
+				"locking",
+				VncSpecialForm
+					.meta()
+					.arglists("(locking x & exprs)")
+					.doc(
+						"Executes 'exprs' in an implicit do, while holding the " + 
+						"monitor of 'x'. Will release the monitor of 'x' in all " +
+						"circumstances. Locking operates like the synchronized " +
+						"keyword in Java.")
+					.examples(
+						"(do                        \n" +
+						"   (def x 1)               \n" +
+						"   (locking x              \n" +
+						"      (println 100)        \n" +
+						"      (println 200)))",
+						";; Locks are reentrant     \n" +
+						"(do                        \n" +
+						"   (def x 1)               \n" +
+						"   (locking x              \n" +
+						"      (locking x           \n" +
+						"         (println \"in\")) \n" +
+						"      (println \"out\"))) ",
+						"(do                                             \n" +
+					    "  (defn log [msg] (locking log (println msg)))  \n" +
+						"  (log \"message\"))")
+					.build()
+		) {
+			public VncVal apply(
+					final VncVal specialFormMeta,
+					final VncList args, 
+					final Env env, 
+					final SpecialFormsContext ctx
+			) {
+				assertMinArity("locking", FnType.SpecialForm, args, 2);
+				
+				final VncVal mutex = ctx.getEvaluator().evaluate(args.first(), env, false);
+		
+				synchronized(mutex) {
+					return evaluateBody(args.rest(), ctx, env, true);
+				}
+			}
+	
+			private static final long serialVersionUID = -1848883965231344442L;
+		};
+		
+	public static VncSpecialForm print_highlight =
+		new VncSpecialForm(
+				"print-highlight",
+				VncSpecialForm
+					.meta()
+					.arglists("(print-highlight form)")
+					.doc(
+						"Prints the form highlighted to *out*")
+					.examples(
+						"(print-highlight \"(+ 1 2)\")")
+					.build()
+		) {
+			public VncVal apply(
+					final VncVal specialFormMeta,
+					final VncList args, 
+					final Env env, 
+					final SpecialFormsContext ctx
+			) {
+				assertArity("print-highlight", FnType.SpecialForm, args, 1);
+				final VncString form = DocForm.highlight(Coerce.toVncString(args.first()), env);
+				ctx.getEvaluator().evaluate(VncList.of(new VncSymbol("println"), form), env, false);
+				return Nil;
+			}
+	
+			private static final long serialVersionUID = -1848883965231344442L;
+		};
+		
+	public static VncSpecialForm modules =
+		new VncSpecialForm(
+				"modules",
+				VncSpecialForm
+					.meta()
+					.arglists("(modules)")
+					.doc("Lists the available modules")
+					.build()
+		) {
+			public VncVal apply(
+					final VncVal specialFormMeta,
+					final VncList args, 
+					final Env env, 
+					final SpecialFormsContext ctx
+			) {
+				return VncList.ofList(
+						Modules
+							.VALID_MODULES
+							.stream()
+							.filter(s ->!s.equals("core"))  // skip core module
+							.sorted()
+							.map(s -> new VncKeyword(s))
+							.collect(Collectors.toList()));
+			}
+	
+			private static final long serialVersionUID = -1848883965231344442L;
+		};
+		
+	public static VncSpecialForm inspect =
+		new VncSpecialForm(
+				"inspect",
+				VncSpecialForm
+					.meta()
+					.arglists("(inspect val)")
+					.doc("Inspect a value")
+					.examples("(inspect '+)")
+					.build()
+		) {
+			public VncVal apply(
+					final VncVal specialFormMeta,
+					final VncList args, 
+					final Env env, 
+					final SpecialFormsContext ctx
+			) {
+				specialFormCallValidation("inspect");
+				assertArity("inspect", FnType.SpecialForm, args, 1);
+				final VncSymbol sym = Coerce.toVncSymbol(ctx.getEvaluator().evaluate(args.first(), env, false));
+				return Inspector.inspect(env.get(sym));
+			}
+	
+			private static final long serialVersionUID = -1848883965231344442L;
+		};
+		
+	public static VncSpecialForm resolve =
+		new VncSpecialForm(
+				"resolve",
+				VncSpecialForm
+					.meta()
+					.arglists("(resolve symbol)")
+					.doc("Resolves a symbol.")
+					.examples(
+						"(resolve '+)", 
+						"(resolve 'y)", 
+						"(resolve (symbol \"+\"))",
+						"((-> \"first\" symbol resolve) [1 2 3])")
+					.build()
+		) {
+			public VncVal apply(
+					final VncVal specialFormMeta,
+					final VncList args, 
+					final Env env, 
+					final SpecialFormsContext ctx
+			) {
+				specialFormCallValidation("resolve");
+				assertArity("resolve", FnType.SpecialForm, args, 1);
+				return env.getOrNil(Coerce.toVncSymbol(
+										ctx.getEvaluator().evaluate(args.first(), env, false)));
+			}
+	
+			private static final long serialVersionUID = -1848883965231344442L;
+		};
+		
+	public static VncSpecialForm boundQ =
+		new VncSpecialForm(
+				"bound?",
+				VncSpecialForm
+					.meta()
+					.arglists("(bound? s)")
+					.doc("Returns true if the symbol is bound to a value else false")
+					.examples(
+						"(bound? 'test)",
+						"(let [test 100]   \n" +
+						"  (bound? 'test))   ",
+						"(do               \n" +
+						"  (def a 100)     \n" +
+						"  (bound? 'a))      ")
+					.seeAlso("let", "def", "defonce")
+					.build()
+		) {
+			public VncVal apply(
+					final VncVal specialFormMeta,
+					final VncList args, 
+					final Env env, 
+					final SpecialFormsContext ctx
+			) {
+				return VncBoolean.of(
+							env.isBound(
+								Coerce.toVncSymbol(
+									ctx.getEvaluator().evaluate(args.first(), env, false))));
+			}
+	
+			private static final long serialVersionUID = -1848883965231344442L;
+		};
+		
+	public static VncSpecialForm setBANG =
+		new VncSpecialForm(
+				"set!",
+				VncSpecialForm
+					.meta()
+					.arglists("(set! var-symbol expr)")
+					.doc("Sets a global or thread-local variable to the value of the expression.")
+					.examples(
+						"(do                             \n" +
+						"  (def x 10)                    \n" +
+						"  (set! x 20)                   \n" +
+						"  x)                              ",
+						 
+						"(do                             \n" +
+						"   (def-dynamic x 100)          \n" +
+						"   (set! x 200)                 \n" +
+						"   x)                             ",
+						
+						"(do                             \n" +
+						"   (def-dynamic x 100)          \n" +
+						"   (with-out-str                \n" +
+						"      (print x)                 \n" +
+						"      (binding [x 200]          \n" +
+						"        (print (str \"-\" x))   \n" +
+						"        (set! x (inc x))        \n" +
+						"        (print (str \"-\" x)))  \n" +
+						"      (print (str \"-\" x))))     ")
+					.seeAlso("def", "def-dynamic")
+					.build()
+		) {
+			public VncVal apply(
+					final VncVal specialFormMeta,
+					final VncList args, 
+					final Env env, 
+					final SpecialFormsContext ctx
+			) {
+				specialFormCallValidation("set!");
+				assertArity("set!", FnType.SpecialForm, args, 2);
+		
+				final VncSymbol sym = Types.isVncSymbol(args.first())
+										? (VncSymbol)args.first()
+										: Coerce.toVncSymbol(ctx.getEvaluator().evaluate(args.first(), env, false));
+				final Var globVar = env.getGlobalVarOrNull(sym);
+				if (globVar != null) {
+					final VncVal expr = args.second();
+					final VncVal val = ctx.getEvaluator().evaluate(expr, env, false);
+					
+					if (globVar instanceof DynamicVar) {
+						env.popGlobalDynamic(globVar.getName());
+						env.pushGlobalDynamic(globVar.getName(), val);
+					}
+					else {
+						env.setGlobal(new Var(globVar.getName(), val, globVar.isOverwritable()));
+					}
+					return val;
+				}
+				else {
+					throw new VncException(String.format(
+								"The global or thread-local var '%s' does not exist!", 
+								sym.getName()));
+				}
+			}
+	
+			private static final long serialVersionUID = -1848883965231344442L;
+		};
+		
+	public static VncSpecialForm quote =
+		new VncSpecialForm(
+				"quote",
+				VncSpecialForm
+					.meta()
+					.arglists("(quote form)")
+					.doc(
+						"There are two equivalent ways to quote a form either with " +
+						"quote or with '. They prevent the quoted form from being " +
+						"evaluated.\n\n" +
+						"Regular quotes work recursively with any kind of forms and " +
+						"types: strings, maps, lists, vectors...")
+					.examples(
+						"(quote (1 2 3))",
+						"(quote (+ 1 2))",
+						"'(1 2 3)",
+						"'(+ 1 2)",
+						"'(a (b (c d (+ 1 2))))")
+					.seeAlso("quasiquote")
+					.build()
+		) {
+			public VncVal apply(
+					final VncVal specialFormMeta,
+					final VncList args, 
+					final Env env, 
+					final SpecialFormsContext ctx
+			) {
+				if (args.size() != 1) {
+					// only create callstack when needed!
+					final CallFrame callframe = new CallFrame("quote", args, specialFormMeta);
+					try (WithCallStack cs = new WithCallStack(callframe)) {
+						assertArity("quote", FnType.SpecialForm, args, 1);
+					}
+				}
+				return args.first();
+			}
+			
+			public boolean addCallFrame() { 
+				return false; 
+			}
+	
+			private static final long serialVersionUID = -1848883965231344442L;
+		};
+	
+	public static VncSpecialForm quasiquote =
+		new VncSpecialForm(
+				"quasiquote",
+				VncSpecialForm
+					.meta()
+					.arglists("(quasiquote form)")
+					.doc(
+						"Quasi quotes also called syntax quotes (a backquote) supress " +
+						"evaluation of the form that follows it and all the nested forms." +
+						"\n\n" +
+						"unquote:¶\n" +
+						"It is possible to unquote part of the form that is quoted with `~`. " +
+						"Unquoting allows you to evaluate parts of the syntax quoted expression." +
+						"\n\n" +
+						"unquote-splicing:¶\n" +
+						"Unquote evaluates to a collection of values and inserts the " +
+						"collection into the quoted form. But sometimes you want to " +
+						"unquote a list and insert its elements (not the list) inside " +
+						"the quoted form. This is where `~@` (unquote-splicing) comes " +
+						"to rescue.")
+					.examples(
+						"(quasiquote (16 17 (inc 17)))",
+						"`(16 17 (inc 17))",
+						"`(16 17 ~(inc 17))",
+						"`(16 17 ~(map inc [16 17]))",
+						"`(16 17 ~@(map inc [16 17]))",
+						"`(1 2 ~@#{1 2 3})",
+						"`(1 2 ~@{:a 1 :b 2 :c 3})")
+					.seeAlso("quote")
+					.build()
+		) {
+			public VncVal apply(
+					final VncVal specialFormMeta,
+					final VncList args, 
+					final Env env, 
+					final SpecialFormsContext ctx
+			) {
+				if (args.size() != 1) {
+					// only create callstack when needed!
+					final CallFrame callframe = new CallFrame("quasiquote", args, specialFormMeta);
+					try (WithCallStack cs = new WithCallStack(callframe)) {
+						assertArity("quasiquote", FnType.SpecialForm, args, 1);
+					}
+				}
+				return quasiquote(args.first());
+			}
+			
+			public boolean addCallFrame() { 
+				return false; 
+			}
+	
+			private static final long serialVersionUID = -1848883965231344442L;
+		};
+			
+			
+			
+	///////////////////////////////////////////////////////////////////////////
+	// try-catch functions
+	///////////////////////////////////////////////////////////////////////////
+		
+	public static VncSpecialForm try_ =
+		new VncSpecialForm(
+				"try",
+				VncSpecialForm
+					.meta()
+					.arglists(
+							"(try expr*)",
+							"(try expr* (catch selector ex-sym expr*)*)",
+							"(try expr* (catch selector ex-sym expr*)* (finally expr*))")
+					.doc(
+						"Exception handling: try - catch - finally \n\n" +
+						"`(try)` without any expression returns `nil`.\n\n" +
+						"The exception types \n\n" +
+						"  * :java.lang.Exception \n" +
+						"  * :java.lang.RuntimeException \n" +
+						"  * :com.github.jlangch.venice.VncException \n" +
+						"  * :com.github.jlangch.venice.ValueException \n\n" +
+						"are imported implicitly so its alias :Exception, :RuntimeException, " +
+						":VncException, and :ValueException can be used as selector without " +
+						"an import of the class.\n\n" +
+						"**Selectors**\n\n" +
+						"  * a class: (e.g., :RuntimeException, :java.text.ParseException), " +
+						"    matches any instance of that class\n" +
+						"  * a key-values vector: (e.g., [key val & kvs]), matches any instance " +
+						"    of :ValueException where the exception's value meets the expression " +
+						"    `(and (= (get ex-value key) val) ...)`\n" +
+						"  * a predicate: (a function of one argument like map?, set?), matches " +
+						"    any instance of :ValueException where the predicate applied to the " +
+						"    exception's value returns true\n\n" +
+						"**Notes:**\n\n" +
+						"The finally block is just for side effects, like closing resources. " +
+						"It never returns a value!\n\n" +
+						"All exceptions in Venice are *unchecked*. If *checked* exceptions are thrown " +
+						"in Venice they are immediately wrapped in a :RuntimeException before being " +
+						"thrown! If Venice catches a *checked* exception from a Java interop call " +
+						"it wraps it in a :RuntimeException before handling it by the catch block " +
+						"selectors.")
+					.examples(
+						"(try                                      \n" +
+						"   (throw \"test\")                       \n" +
+						"   (catch :ValueException e               \n" +
+						"          \"caught ~(ex-value e)\"))        ",
+						
+						"(try                                       \n" +
+						"   (throw 100)                             \n" +
+						"   (catch :Exception e -100))                ",
+												
+						"(try                                       \n" +
+						"   (throw 100)                             \n" +
+						"   (catch :ValueException e (ex-value e))  \n" +
+						"   (finally (println \"...finally\")))       ",
+						
+						"(try                                              \n" +
+						"   (throw (ex :RuntimeException \"message\"))     \n" +
+						"   (catch :RuntimeException e (ex-message e)))     ",
+						
+						";; exception type selector:                       \n" +
+						"(try                                              \n" +
+						"   (throw [1 2 3])                                \n" +
+						"   (catch :ValueException e (ex-value e))         \n" +
+						"   (catch :RuntimeException e \"runtime ex\")     \n" +
+						"   (finally (println \"...finally\")))             ",
+						
+						";; key-value selector:                                      \n" +
+						"(try                                                        \n" +
+						"   (throw {:a 100, :b 200})                                 \n" +
+						"   (catch [:a 100] e                                        \n" +
+						"      (println \"ValueException, value: ~(ex-value e)\"))   \n" +
+						"   (catch [:a 100, :b 200] e                                \n" +
+						"      (println \"ValueException, value: ~(ex-value e)\")))   ",
+						
+						";; key-value selector (exception cause):                           \n" +
+						"(try                                                               \n" +
+						"   (throw (ex :java.io.IOException \"failure\"))                   \n" +
+						"   (catch [:cause-type :java.io.IOException] e                     \n" +
+						"      (println \"IOException, msg: ~(ex-message (ex-cause e))\"))  \n" +
+						"   (catch :RuntimeException e                                      \n" +
+						"      (println \"RuntimeException, msg: ~(ex-message e)\")))         ",
+					
+						";; predicate selector:                                      \n" +
+						"(try                                                        \n" +
+						"   (throw {:a 100, :b 200})                                 \n" +
+						"   (catch long? e                                           \n" +
+						"      (println \"ValueException, value: ~(ex-value e)\"))   \n" +
+						"   (catch map? e                                            \n" +
+						"      (println \"ValueException, value: ~(ex-value e)\"))   \n" +
+						"   (catch #(and (map? %) (= 100 (:a %))) e                  \n" +
+						"      (println \"ValueException, value: ~(ex-value e)\"))))   ",
+					
+						";; predicate selector with custom types:                       \n" +
+						"(do                                                            \n" +
+						"   (deftype :my-exception1 [message :string, position :long])  \n" +
+						"   (deftype :my-exception2 [message :string])                  \n" +
+						"                                                               \n" +
+						"   (try                                                        \n" +
+						"      (throw (my-exception1. \"error\" 100))                   \n" +
+						"      (catch my-exception1? e                                  \n" +
+						"         (println (:value e)))                                 \n" +
+						"      (catch my-exception2? e                                  \n" +
+						"         (println (:value e)))))                                 ")
+					.seeAlso("try-with", "throw", "ex")
+					.build()
+		) {
+			public VncVal apply(
+					final VncVal specialFormMeta,
+					final VncList args, 
+					final Env env, 
+					final SpecialFormsContext ctx
+			) {
+				return handleTryCatchFinally(
+						"try",
+						args,
+						ctx,
+						env,
+						specialFormMeta,
+						new ArrayList<Var>());
+			}
+	
+			private static final long serialVersionUID = -1848883965231344442L;
+		};
+	
+	public static VncSpecialForm try_with =
+		new VncSpecialForm(
+				"try-with",
+				VncSpecialForm
+					.meta()
+					.arglists(
+							"(try-with [bindings*] expr*)",
+							"(try-with [bindings*] expr* (catch selector ex-sym expr*)*)",
+							"(try-with [bindings*] expr* (catch selector ex-sym expr*)* (finally expr))")		
+					.doc(
+						"*try-with-resources* allows the declaration of resources to be used in a try block " +
+						"with the assurance that the resources will be closed after execution " +
+						"of that block. The resources declared must implement the Closeable or " +
+						"AutoCloseable interface.")
+					.examples(
+						"(do                                                   \n" +
+						"   (import :java.io.FileInputStream)                  \n" +
+						"   (let [file (io/temp-file \"test-\", \".txt\")]     \n" +
+						"        (io/spit file \"123456789\" :append true)     \n" +
+						"        (try-with [is (. :FileInputStream :new file)] \n" +
+						"           (io/slurp-stream is :binary false))))        ")
+					.seeAlso("try", "throw", "ex")
+					.build()
+		) {
+			public VncVal apply(
+					final VncVal specialFormMeta,
+					final VncList args, 
+					final Env env, 
+					final SpecialFormsContext ctx
+			) {
+				final Env localEnv = new Env(env);
+				final VncSequence bindings = Coerce.toVncSequence(args.first());
+				final List<Var> boundResources = new ArrayList<>();
+				
+				for(int i=0; i<bindings.size(); i+=2) {
+					final VncVal sym = bindings.nth(i);
+					final VncVal val = ctx.getEvaluator().evaluate(bindings.nth(i+1), localEnv, false);
+		
+					if (Types.isVncSymbol(sym)) {
+						final Var binding = new Var((VncSymbol)sym, val);
+						localEnv.setLocal(binding);
+						boundResources.add(binding);
+					}
+					else {
+						throw new VncException(
+								String.format(
+										"Invalid 'try-with' destructuring symbol "
+										+ "value type %s. Expected symbol.",
+										Types.getType(sym)));
+					}
+				}
+		
+				try {
+					return handleTryCatchFinally(
+								"try-with",
+								args.rest(),
+								ctx,
+								localEnv,
+								specialFormMeta,
+								boundResources);
+				}
+				finally {
+					// close resources in reverse order
+					Collections.reverse(boundResources);
+					boundResources.stream().forEach(b -> {
+						final VncVal resource = b.getVal();
+						if (Types.isVncJavaObject(resource)) {
+							final Object r = ((VncJavaObject)resource).getDelegate();
+							if (r instanceof AutoCloseable) {
+								try {
+									((AutoCloseable)r).close();
+								}
+								catch(Exception ex) {
+									throw new VncException(
+											String.format(
+													"'try-with' failed to close resource %s.",
+													b.getName()));
+								}
+							}
+						}
+					});
+				}
+			}
+	
+			private static final long serialVersionUID = -1848883965231344442L;
+		};
+
+		
 		
 	///////////////////////////////////////////////////////////////////////////
 	// var functions
@@ -945,6 +2391,266 @@ public class SpecialFormsFunctions {
 			private static final long serialVersionUID = -1848883965231344442L;
 		};
 		
+
+	
+	///////////////////////////////////////////////////////////////////////////
+	// benchmark functions
+	///////////////////////////////////////////////////////////////////////////
+
+	public static VncSpecialForm dobench =
+		new VncSpecialForm(
+				"dobench",
+				VncSpecialForm
+					.meta()
+					.arglists("(dobench count expr)")
+					.doc(
+						"Runs the expr count times in the most effective way and returns a list of " +
+						"elapsed nanoseconds for each invocation. It's main purpose is supporting " +
+						"benchmark test.")
+					.examples("(dobench 10 (+ 1 1))")
+					.build()
+		) {
+			public VncVal apply(
+					final VncVal specialFormMeta,
+					final VncList args, 
+					final Env env, 
+					final SpecialFormsContext ctx
+			) {
+				specialFormCallValidation("dobench");
+				assertArity("dobench", FnType.SpecialForm, args, 2);
+				
+				try {
+					final long count = Coerce.toVncLong(args.first()).getValue();
+					final VncVal expr = args.second();
+					
+					final List<VncVal> elapsed = new ArrayList<>();
+					for(int ii=0; ii<count; ii++) {
+						final long start = System.nanoTime();
+						
+						final VncVal result = ctx.getEvaluator().evaluate(expr, env, false);
+						
+						final long end = System.nanoTime();
+						elapsed.add(new VncLong(end-start));
+		
+						InterruptChecker.checkInterrupted(Thread.currentThread(), "dobench");
+		
+						// Store value to a mutable place to prevent JIT from optimizing 
+						// too much. Wrap the result so a VncStack can be used as result
+						// too (VncStack is a special value in ThreadLocalMap)
+						ThreadContext.setValue(
+								new VncKeyword("*benchmark-val*"), 
+								new VncJust(result));
+					}
+					
+					return VncList.ofList(elapsed);
+				}
+				finally {
+					ThreadContext.removeValue(new VncKeyword("*benchmark-val*"));
+				}
+			}
+
+			private static final long serialVersionUID = -1848883965231344442L;
+		};
+
+	public static VncSpecialForm dorun =
+		new VncSpecialForm(
+				"dorun",
+				VncSpecialForm
+					.meta()
+					.arglists("(dorun count expr)")
+					.doc(
+						"Runs the expr count times in the most effective way. It's main purpose is " +
+						"supporting benchmark tests. Returns the expression result of the last " +
+						"invocation.\n\n" +
+						"*Note:*¶" +
+						"The expression is evaluated for every run. " +
+						"Alternatively a zero or one arg function referenced by a symbol can be " +
+						"passed:\n\n" +
+						"```                      \n" +
+						"(let [f (fn [] (+ 1 1))] \n" +
+						"  (dorun 10 f))          \n" +
+						"```                      \n\n" +
+						"When passing a one arg function `dorun` passes the incrementing counter " +
+						"value (0..N) to the function:\n\n" +
+						"```                       \n" +
+						"(let [f (fn [x] (+ x 1))] \n" +
+						"  (dorun 10 f))           \n" +
+						"```                         ")
+					.examples("(dorun 10 (+ 1 1))")
+					.build()
+		) {
+			public VncVal apply(
+					final VncVal specialFormMeta,
+					final VncList args, 
+					final Env env, 
+					final SpecialFormsContext ctx
+			) {
+				final IFormEvaluator evaluator = ctx.getEvaluator();
+				
+				final VncVal vCount = evaluator.evaluate(args.first(), env, false);				
+				final long count = Coerce.toVncLong(vCount).getValue();
+				if (count <= 0) return Nil;
+				
+				final VncVal expr = args.second();
+		
+				if (Types.isVncSymbol(expr)) {
+					final VncVal v = env.getOrNil((VncSymbol)expr);
+					
+					if (Types.isVncFunction(v)) {
+						// run the function
+						final VncFunction fn = (VncFunction)v;
+						
+						if (fn.getFixedArgsCount() == 1) {
+							// one arg function: pass the counter value
+							for(int ii=0; ii<count-1; ii++) {
+								fn.apply(VncList.of(new VncLong(ii)));
+							}
+							return fn.apply(VncList.of(new VncLong(count-1)));
+						}
+						else {
+							// call as zero arg function
+							final VncList fnArgs = VncList.empty();
+							for(int ii=0; ii<count-1; ii++) {
+								fn.apply(fnArgs);
+							}
+							return fn.apply(fnArgs);
+						}
+					}
+				}
+
+				try {
+					final VncVal first = evaluator.evaluate(expr, env, false);
+					
+					for(int ii=1; ii<count; ii++) {
+						final VncVal result = evaluator.evaluate(expr, env, false);
+		
+						InterruptChecker.checkInterrupted(Thread.currentThread(), "dorun");
+		
+						// Store value to a mutable place to prevent JIT from optimizing 
+						// too much. Wrap the result so a VncStack can be used as result
+						// too (VncStack is a special value in ThreadLocalMap)
+						ThreadContext.setValue(
+								new VncKeyword("*benchmark-val*"), 
+								new VncJust(result));
+					}
+					
+					return first;
+				}
+				finally {
+					ThreadContext.removeValue(new VncKeyword("*benchmark-val*"));
+				}
+			}
+
+			private static final long serialVersionUID = -1848883965231344442L;
+		};
+
+	public static VncSpecialForm prof =
+		new VncSpecialForm(
+				"prof",
+				VncSpecialForm
+					.meta()
+					.arglists("(prof opts)")
+					.doc(
+						"Controls the code profiling. See the companion functions/macros " +
+						"'dorun' and 'perf'. The perf macro is built on prof and dorun and " +
+						"provides all for simple Venice profiling.\n\n" +
+						"The profiler reports a function's elapsed time as \"time with children\"! \n\n" +
+						"Profiling recursive functions:¶\n" +
+						"Because the profiler reports \"time with children\" and accumulates the " +
+						"elapsed time across all recursive calls the resulting time for a " +
+						"particular recursive function is higher than the effective time.")
+					.examples(
+						"(do  \n" +
+						"  (prof :on)   ; turn profiler on  \n" +
+						"  (prof :off)   ; turn profiler off  \n" +
+						"  (prof :status)   ; returns the profiler on/off staus  \n" +
+						"  (prof :clear)   ; clear profiler data captured so far  \n" +
+						"  (prof :data)   ; returns the profiler data as map  \n" +
+						"  (prof :data-formatted)   ; returns the profiler data as formatted text  \n" +
+						"  (prof :data-formatted \"Metrics test\")   ; returns the profiler data as formatted text with a title  \n" +
+						"  nil)  ")
+					.seeAlso("perf", "time")
+					.build()
+		) {
+			public VncVal apply(
+					final VncVal specialFormMeta,
+					final VncList args, 
+					final Env env, 
+					final SpecialFormsContext ctx
+			) {
+				// Note on profiling recursive functions: 
+				// For recursive functions the profiler reports the 'time with children
+				// for the particular recursive function resulting in much higher measured 
+				// elapsed times.
+				// Profiling TCO based recursive functions report correct times.
+				//
+				// See:  - https://smartbear.com/learn/code-profiling/fundamentals-of-performance-profiling/
+				//       - https://support.smartbear.com/aqtime/docs/profiling-with/profile-various-apps/recursive-routines.html
+
+				specialFormCallValidation("prof");
+				assertArity("prof", FnType.SpecialForm, args, 1, 2, 3);
+
+				final MeterRegistry meterRegistry = ctx.getMeterRegistry();
+				
+				if (Types.isVncKeyword(args.first())) {
+					final VncKeyword cmd = (VncKeyword)args.first();
+					switch(cmd.getValue()) {
+						case "on":
+						case "enable":
+							meterRegistry.enable(); 
+							return new VncKeyword("on");
+							
+						case "off":
+						case "disable":
+							meterRegistry.disable(); 
+							return new VncKeyword("off");
+							
+						case "status":
+							return new VncKeyword(meterRegistry.isEnabled() ? "on" : "off");
+							
+						case "clear":
+							meterRegistry.reset(); 
+							return new VncKeyword(meterRegistry.isEnabled() ? "on" : "off");
+							
+						case "clear-all-but":
+							meterRegistry.resetAllBut(Coerce.toVncSequence(args.second())); 
+							return new VncKeyword(meterRegistry.isEnabled() ? "on" : "off");
+							
+						case "data":
+							return meterRegistry.getVncTimerData();
+							
+						case "data-formatted":
+							final VncVal opt1 = args.second();
+							final VncVal opt2 = args.third();
+							
+							String title = "Metrics";
+							if (Types.isVncString(opt1) && !Types.isVncKeyword(opt1)) {
+								title = ((VncString)opt1).getValue();
+							}
+							if (Types.isVncString(opt2) && !Types.isVncKeyword(opt2)) {
+								title = ((VncString)opt2).getValue();
+							}
+		
+							boolean anonFn = false;
+							if (Types.isVncKeyword(opt1)) {
+								anonFn = anonFn || ((VncKeyword)opt1).hasValue("anon-fn");
+							}
+							if (Types.isVncKeyword(opt2)) {
+								anonFn = anonFn || ((VncKeyword)opt2).hasValue("anon-fn");
+							}
+		
+							return new VncString(meterRegistry.getTimerDataFormatted(title, anonFn));
+					}
+				}
+		
+				throw new VncException(
+						"Function 'prof' expects a single keyword argument: " +
+						":on, :off, :status, :clear, :clear-all-but, :data, " +
+						"or :data-formatted");
+			}
+
+			private static final long serialVersionUID = -1848883965231344442L;
+		};
 		
 		
 		
@@ -1239,10 +2945,335 @@ public class SpecialFormsFunctions {
 		return fn;
 	}
 
+	private static VncVector getFnPreconditions(final VncVal prePostConditions) {
+		if (Types.isVncMap(prePostConditions)) {
+			final VncVal val = ((VncMap)prePostConditions).get(PRE_CONDITION_KEY);
+			if (Types.isVncVector(val)) {
+				return (VncVector)val;
+			}
+		}
+		
+		return null;
+	}	
+
+	private static VncVal handleTryCatchFinally(
+			final String specialForm,
+			final VncList args,
+			final SpecialFormsContext ctx,
+			final Env env, 
+			final VncVal meta,
+			final List<Var> bindings
+	) {
+		final ThreadContext threadCtx = ThreadContext.get();
+		final DebugAgent debugAgent = threadCtx.getDebugAgent_();
+
+		if (debugAgent != null && debugAgent.hasBreakpointFor(new BreakpointFnRef(specialForm))) {
+			final CallStack callStack = threadCtx.getCallStack_();
+			debugAgent.onBreakSpecialForm(
+					specialForm, FunctionEntry, bindings, meta, env, callStack);
+		}
+		
+		try {
+			final Env bodyEnv = new Env(env);
+			return evaluateBody(getTryBody(args), ctx, bodyEnv, true);
+		} 
+		catch (Exception ex) {
+			final RuntimeException wrappedEx = ex instanceof RuntimeException 
+													? (RuntimeException)ex 
+													: new RuntimeException(ex);
+			
+			final CatchBlock catchBlock = findCatchBlockMatchingThrowable(ctx, env, args, ex);
+			if (catchBlock == null) {
+				throw wrappedEx;
+			}
+			else {
+				final Env catchEnv = new Env(env);
+				catchEnv.setLocal(new Var(catchBlock.getExSym(), new VncJavaObject(wrappedEx)));			
+				catchBlockDebug(threadCtx, debugAgent, catchBlock.getMeta(), catchEnv, catchBlock.getExSym(), wrappedEx);
+				return evaluateBody(catchBlock.getBody(), ctx, catchEnv, false);
+			}
+		}
+		finally {
+			final FinallyBlock finallyBlock = findFirstFinallyBlock(args);
+			if (finallyBlock != null) {
+				final Env finallyEnv = new Env(env);
+				finallyBlockDebug(threadCtx, debugAgent, finallyBlock.getMeta(), finallyEnv);
+				evaluateBody(finallyBlock.getBody(), ctx, finallyEnv, false);
+			}
+		}
+	}
+	
+	private static VncList getTryBody(final VncList args) {
+		final List<VncVal> body = new ArrayList<>();
+ 		for(VncVal e : args) {
+			if (Types.isVncList(e)) {
+				final VncVal first = ((VncList)e).first();
+				if (Types.isVncSymbol(first)) {
+					final String symName = ((VncSymbol)first).getName();
+					if (symName.equals("catch") || symName.equals("finally")) {
+						break;
+					}
+				}
+			}
+			body.add(e);
+		}
+		
+		return VncList.ofList(body);
+	}
+	
+	private static CatchBlock findCatchBlockMatchingThrowable(
+			final SpecialFormsContext ctx,
+			final Env env,
+			final VncList blocks, 
+			final Throwable th
+	) {
+		// (catch ex-class ex-sym expr*)
+		
+		for(VncVal b : blocks) {
+			if (Types.isVncList(b)) {
+				final VncList block = ((VncList)b);
+				final VncVal catchSym = block.first();
+				if (Types.isVncSymbol(catchSym) && ((VncSymbol)catchSym).getName().equals("catch")) {
+					if (isCatchBlockMatchingThrowable(ctx, env, block, th)) {
+						return new CatchBlock(
+									Coerce.toVncSymbol(block.third()), 
+									block.slice(3),
+									catchSym.getMeta());
+					}
+				}
+			}
+		}
+		
+		return null;
+	}
+	
+	private static boolean isCatchBlockMatchingThrowable(
+			final SpecialFormsContext ctx,
+			final Env env,
+			final VncList block, 
+			final Throwable th
+	) {
+		final VncVal selector = ctx.getEvaluator().evaluate(block.second(), env, false);
+
+		// Selector: exception class => (catch :RuntimeExceptiom e (..))
+		if (Types.isVncString(selector)) {
+			final String className = resolveClassName(((VncString)selector).getValue());
+			final Class<?> targetClass = ReflectionAccessor.classForName(className);
+			
+			return targetClass.isAssignableFrom(th.getClass());
+		}
+
+		// Selector: predicate => (catch predicate-fn e (..))
+		else if (Types.isVncFunction(selector)) {
+			final VncFunction predicate = (VncFunction)selector;
+			
+			if (th instanceof ValueException) {
+				final VncVal exVal = getValueExceptionValue((ValueException)th);				
+				final VncVal result = predicate.apply(VncList.of(exVal));
+				return VncBoolean.isTrue(result);
+			}
+			else {
+				final VncVal result = predicate.apply(VncList.of(Nil));
+				return VncBoolean.isTrue(result);
+			}
+		}
+		
+		// Selector: list => (catch [key1 value1, ...] e (..))
+		else if (Types.isVncSequence(selector)) {
+			VncSequence seq = (VncSequence)selector;
+			
+			// (catch [:cause :IOException, ...] e (..))
+			if (seq.first().equals(CAUSE_TYPE_SELECTOR_KEY) && Types.isVncKeyword(seq.second())) {
+				final Throwable cause = th.getCause();
+				if (cause != null) {
+					final VncKeyword classRef = (VncKeyword)seq.second();
+					final String className = resolveClassName(classRef.getSimpleName());
+					final Class<?> targetClass = ReflectionAccessor.classForName(className);
+					
+					if (!targetClass.isAssignableFrom(cause.getClass())) {
+						return false;
+					}
+					
+					if (seq.size() == 2) {
+						return true; // no more key/val pairs
+					}
+				}
+				seq = seq.drop(2);
+			}
+			
+			// (catch [key1 value1, ...] e (..))
+			if (th instanceof ValueException) {				
+				final VncVal exVal = getValueExceptionValue((ValueException)th);
+				if (Types.isVncMap(exVal)) {
+					final VncMap exValMap = (VncMap)exVal;
+					
+					while (!seq.isEmpty()) {
+						final VncVal key = seq.first();
+						final VncVal val = seq.second();
+						
+						if (!Types._equal_strict_Q(val, exValMap.get(key))) {
+							return false;
+						}
+						
+						seq = seq.drop(2);
+					}
+					
+					return true;
+				}
+			}
+			
+			return false;
+		}
+
+		else {
+			return false;
+		}
+	}
+	
+	private static FinallyBlock findFirstFinallyBlock(final VncList blocks) {
+		for(VncVal b : blocks) {
+			if (Types.isVncList(b)) {
+				final VncList block = ((VncList)b);
+				final VncVal first = block.first();
+				if (Types.isVncSymbol(first) && ((VncSymbol)first).getName().equals("finally")) {
+					return new FinallyBlock(block.rest(), first.getMeta());
+				}
+			}
+		}
+		return null;
+	}
+	
+	private static void catchBlockDebug(
+			final ThreadContext threadCtx,
+			final DebugAgent debugAgent,
+			final VncVal meta,
+			final Env env,
+			final VncSymbol exSymbol,
+			final RuntimeException ex
+	) {
+		if (debugAgent != null && debugAgent.hasBreakpointFor(new BreakpointFnRef("catch"))) {
+			debugAgent.onBreakSpecialForm(
+					"catch", 
+					FunctionEntry, 
+					VncVector.of(exSymbol), 
+					VncList.of(new VncJavaObject(ex)), 
+					meta, 
+					env, 
+					threadCtx.getCallStack_());
+		}
+	}
+	
+	private static void finallyBlockDebug(
+			final ThreadContext threadCtx,
+			final DebugAgent debugAgent,
+			final VncVal meta,
+			final Env env
+	) {
+		if (debugAgent != null && debugAgent.hasBreakpointFor(new BreakpointFnRef("finally"))) {
+			debugAgent.onBreakSpecialForm(
+					"finally", 
+					FunctionEntry, 
+					new ArrayList<Var>(), 
+					meta, 
+					env, 
+					threadCtx.getCallStack_());
+		}
+	}
+
+	private static VncVal getValueExceptionValue(final ValueException ex) {
+		final Object val = ex.getValue();
+		
+		return val == null 
+				? Nil
+				: val instanceof VncVal 
+					? (VncVal)val 
+					: new VncJavaObject(val);
+	}
+	
+	private static VncVal evaluateBody(
+			final VncList body, 
+			final SpecialFormsContext ctx,
+			final Env env, 
+			final boolean withTailPosition
+	) {
+		ctx.getValuesEvaluator().evaluate_values(body.butlast(), env);
+		return ctx.getEvaluator().evaluate(body.last(), env, withTailPosition);
+	}
+
+	/**
+	 * Resolves a class name.
+	 * 
+	 * @param className A simple class name like 'Math' or a class name
+	 *                  'java.lang.Math'
+	 * @return the mapped class 'Math' -&gt; 'java.lang.Math' or the passed 
+	 *         value if a mapping does nor exist 
+	 */
+	private static String resolveClassName(final String className) {
+		return Namespaces
+					.getCurrentNamespace()
+					.getJavaImports()
+					.resolveClassName(className);
+	}
+
+	private static VncSymbol validateSymbolWithCurrNS(
+			final VncSymbol sym,
+			final String specialFormName
+	) {
+		if (sym != null) {
+			// do not allow to hijack another namespace
+			final String ns = sym.getNamespace();
+			if (ns != null && !ns.equals(Namespaces.getCurrentNS().getName())) {
+				final CallFrame cf = new CallFrame(specialFormName, sym.getMeta());
+				try (WithCallStack cs = new WithCallStack(cf)) {
+					throw new VncException(String.format(
+							"Special form '%s': Invalid use of namespace. "
+								+ "The symbol '%s' can only be defined for the "
+								+ "current namespace '%s'.",
+							specialFormName,
+							sym.getSimpleName(),
+							Namespaces.getCurrentNS().toString()));
+				}
+			}
+		}
+		
+		return sym;
+	}
+	
+	private static VncVal quasiquote(final VncVal ast) {
+		if (isNonEmptySequence(ast)) {
+			final VncVal a0 = Coerce.toVncSequence(ast).first();
+			if (Types.isVncSymbol(a0) && ((VncSymbol)a0).getName().equals("unquote")) {
+				return ((VncSequence)ast).second();
+			} 
+			else if (isNonEmptySequence(a0)) {
+				final VncVal a00 = Coerce.toVncSequence(a0).first();
+				if (Types.isVncSymbol(a00) && ((VncSymbol)a00).getName().equals("splice-unquote")) {
+					return VncList.of(
+								new VncSymbol("concat"),
+								Coerce.toVncSequence(a0).second(),
+								quasiquote(((VncSequence)ast).rest()));
+				}
+			}
+			return VncList.of(
+						new VncSymbol("cons"),
+						quasiquote(a0),
+						quasiquote(((VncSequence)ast).rest()));
+		}
+		else {
+			return VncList.of(new VncSymbol("quote"), ast);
+		}
+	}
+
 	private static boolean isNonEmptySequence(final VncVal x) {
 		return Types.isVncSequence(x) && !((VncSequence)x).isEmpty();
 	}
+	
 
+	private static final VncKeyword PRE_CONDITION_KEY = new VncKeyword(":pre");
+	private static final VncKeyword CAUSE_TYPE_SELECTOR_KEY = new VncKeyword(":cause-type");
+
+	
+	
 	
 	///////////////////////////////////////////////////////////////////////////
 	// types_ns is namespace of type functions
@@ -1250,13 +3281,42 @@ public class SpecialFormsFunctions {
 
 	public static Map<VncVal, VncVal> ns =
 			new SymbolMapBuilder()
+					.add(boundQ)
+					.add(def)
+					.add(defonce)
+					.add(def_dynamic)
+					.add(defmethod)
+					.add(defmulti)
 					.add(defprotocol)
 					.add(deftype)
+					.add(deftype_describe)
+					.add(deftype_new)
+					.add(deftype_of)
+					.add(deftype_or)
+					.add(deftypeQ)
+					.add(dobench)
+					.add(doc)
+					.add(dorun)
 					.add(extend_)
 					.add(extendsQ_)
-					.add(doc)
+					.add(fn)
 					.add(import_)
 					.add(imports_)
+					.add(inspect)
+					.add(locking)
+					.add(modules)
+					.add(ns_new)
+					.add(ns_list)
+					.add(ns_remove)
+					.add(ns_unmap)
+					.add(print_highlight)
+					.add(prof)
+					.add(quote)
+					.add(quasiquote)
+					.add(resolve)
+					.add(setBANG)
+					.add(try_)
+					.add(try_with)
 					.add(var_get)
 					.add(var_globalQ)
 					.add(var_localQ)

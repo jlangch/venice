@@ -54,7 +54,7 @@ import com.github.jlangch.venice.impl.functions.Functions;
 import com.github.jlangch.venice.impl.functions.TransducerFunctions;
 import com.github.jlangch.venice.impl.reader.Reader;
 import com.github.jlangch.venice.impl.specialforms.SpecialFormsContext;
-import com.github.jlangch.venice.impl.specialforms.SpecialFormsHandler;
+import com.github.jlangch.venice.impl.specialforms.SpecialFormsFunctions;
 import com.github.jlangch.venice.impl.thread.ThreadContext;
 import com.github.jlangch.venice.impl.types.Constants;
 import com.github.jlangch.venice.impl.types.IVncFunction;
@@ -62,7 +62,6 @@ import com.github.jlangch.venice.impl.types.VncBoolean;
 import com.github.jlangch.venice.impl.types.VncFunction;
 import com.github.jlangch.venice.impl.types.VncKeyword;
 import com.github.jlangch.venice.impl.types.VncMultiArityFunction;
-import com.github.jlangch.venice.impl.types.VncMultiFunction;
 import com.github.jlangch.venice.impl.types.VncSpecialForm;
 import com.github.jlangch.venice.impl.types.VncString;
 import com.github.jlangch.venice.impl.types.VncSymbol;
@@ -136,19 +135,19 @@ public class VeniceInterpreter implements IVeniceInterpreter, Serializable  {
 		// performance optimization
 		this.checkSandbox = !(interceptor instanceof AcceptAllInterceptor);
 		this.optimized = false;  // no callstack, no auto TCO, meter, checks, ...
-		
+
+		this.functionBuilder = new FunctionBuilder(this::evaluate, this.optimized);
+
 		this.specialFormsContext= new SpecialFormsContext(
 										this,
 										this::evaluate,
 										this::evaluate_values,
 										this::evaluate_sequence_values,
+										this.functionBuilder,
 										this.nsRegistry,
 										this.meterRegistry,
 										this.sealedSystemNS); 
-		
-		this.specialFormsHandler = new SpecialFormsHandler(specialFormsContext);
-		
-		this.functionBuilder = new FunctionBuilder(this::evaluate, this.optimized);
+			
 
 		ThreadContext.setInterceptor(interceptor);	
 		ThreadContext.setMeterRegistry(mr);
@@ -598,71 +597,22 @@ public class VeniceInterpreter implements IVeniceInterpreter, Serializable  {
 					break;
 
 				case "quasiquote": // (quasiquote form)
-					orig_ast = specialFormsHandler.quasiquote_(args, env, a0meta);
+					orig_ast = SpecialFormsFunctions.quasiquote.apply(a0meta, args, env, specialFormsContext);
 					break;
 
 				case "quote": // (quote form)
-					return specialFormsHandler.quote_(args, env, a0meta);
+					return SpecialFormsFunctions.quote.apply(a0meta, args, env, specialFormsContext);
 
 				case "fn": // (fn name? [params*] condition-map? expr*)
-					return fn_(args, env, a0meta);
+					// TODO: need explicit call here, env lookup and call via 
+					//       VncSpecialForm below does not work properly (unit tests fail)
+					return SpecialFormsFunctions.fn.apply(a0meta, args, env, specialFormsContext);
 
 				case "eval": // (eval expr*)
 					return eval_(args, env, a0meta);
 
-				case "def":  // (def name value)
-					return def_(args, env, a0meta);
-
-				case "defonce": // (defonce name value)
-					return defonce_(args, env, a0meta);
-
-				case "def-dynamic": // (def-dynamic name value)
-					return def_dynamic_(args, env, a0meta);
-
 				case "defmacro":
 					return defmacro_(args, env, a0meta);
-
-				case "deftype?": // (deftype? type)
-					return specialFormsHandler.deftypeQ_(args, env, a0meta);
-
-				case "deftype-of": // (deftype-of type base-type validationFn*)
-					return specialFormsHandler.deftype_of_(args, env, a0meta);
-
-				case "deftype-or":  // (deftype-or type vals*)
-					return specialFormsHandler.deftype_or_(args, env, a0meta);
-
-				case "deftype-describe":  // (deftype-describe type)
-					return specialFormsHandler.deftype_describe_(args, env, a0meta);
-
-				case ".:": // (.: type args*)
-					return specialFormsHandler.deftype_create_(args, env, a0meta);
-
-				case "defmulti":  // (defmulti name dispatch-fn)
-					return defmulti_(args, env, a0meta);
-
-				case "defmethod": // (defmethod multifn-name dispatch-val & fn-tail)
-					return defmethod_(args, env, a0meta);
-
-				case "ns": // (ns alpha)
-					return specialFormsHandler.ns_(args, env, a0meta);
-
-				case "ns-remove": // (ns-remove ns)
-					return specialFormsHandler.ns_remove_(args, env, a0meta);
-
-				case "ns-unmap": // (ns-unmap ns sym)
-					return specialFormsHandler.ns_unmap_(args, env, a0meta);
-
-				case "ns-list": // (ns-list ns)
-					return specialFormsHandler.ns_list_(args, env, a0meta);
-
-				case "resolve": // (resolve sym)
-					return specialFormsHandler.resolve_(args, env, a0meta);
-
-				case "set!": // (set! name expr)
-					return specialFormsHandler.setBANG_(args, env, a0meta);
-				
-				case "inspect": // (inspect sym)
-					return specialFormsHandler.inspect_(args, env, a0meta);
 
 				case "macroexpand": // (macroexpand form)
 					return macroexpand(args, env, a0meta);
@@ -675,38 +625,11 @@ public class VeniceInterpreter implements IVeniceInterpreter, Serializable  {
 							evaluate(args.first(), env, false), 
 							env);
 
-				case "print-highlight": // (print-highlight form)
-					return specialFormsHandler.print_highlight_(args, env, a0meta);
-
-				case "modules": // (modules )
-					return specialFormsHandler.modules_(args, env, a0meta);
-
 				case "binding":  // (binding [bindings*] exprs*)
 					return binding_(args, env, a0meta);
-
-				case "bound?": // (bound? sym)
-					return specialFormsHandler.boundQ_(args, env, a0meta);
-	
-				case "try": // (try exprs* (catch :Exception e exprs*) (finally exprs*))
-					return specialFormsHandler.try_(args, env, a0meta);
-
-				case "try-with": // (try-with [bindings*] exprs* (catch :Exception e exprs*) (finally exprs*))
-					return specialFormsHandler.try_with_(args, env, a0meta);
-
-				case "locking":
-					return specialFormsHandler.locking_(args, env, a0meta);
-
-				case "dorun":
-					return specialFormsHandler.dorun_(args, env, a0meta);
-
-				case "dobench":
-					return specialFormsHandler.dobench_(args, env, a0meta);
-
-				case "prof":
-					return specialFormsHandler.prof_(args, env, a0meta);
 				
 				case "tail-pos": 
-					return specialFormsHandler.tail_pos_check(tailPosition, args, env, a0meta);
+					return tail_pos_check_(tailPosition, args, env, a0meta);
 
 				default: { // functions, macros, collections/keywords as functions
 					final VncVal fn0 = a0 instanceof VncSymbol
@@ -1238,131 +1161,6 @@ public class VeniceInterpreter implements IVeniceInterpreter, Serializable  {
 		}
 	}
 
-	private VncVal def_(final VncList args, final Env env, final VncVal meta) {
-		final CallFrame cf = new CallFrame("def", args, meta); 
-		try (WithCallStack cs = new WithCallStack(cf)) {
-			assertArity("def", FnType.SpecialForm, args, 1, 2);
-			final VncSymbol name = validateSymbolWithCurrNS(
-										Namespaces.qualifySymbolWithCurrNS(
-												evaluateSymbolMetaData(args.first(), env)),
-										"def");
-			
-			final VncVal val = args.second();
-			
-			VncVal res = evaluate(val, env, false);
-			
-			// we want source location from name and this to work:
-			//      (def y (vary-meta 1 assoc :a 100))
-			//      (get (meta y) :a)  ; -> 100
-
-			res = res.withMeta(MetaUtil.mergeMeta(res.getMeta(), name.getMeta()));
-			
-			env.setGlobal(new Var(name, res, true));
-			return name;
-		}				
-	}
-
-	private VncVal defonce_(final VncList args, final Env env, final VncVal meta) {
-		final CallFrame cf = new CallFrame("defonce", args, meta); 
-		try (WithCallStack cs = new WithCallStack(cf)) {
-			assertArity("defonce", FnType.SpecialForm, args, 1, 2);
-			final VncSymbol name = validateSymbolWithCurrNS(
-										Namespaces.qualifySymbolWithCurrNS(
-												evaluateSymbolMetaData(args.first(), env)),
-										"defonce");
-							
-			final VncVal val = args.second();
-
-			final VncVal res = evaluate(val, env, false).withMeta(name.getMeta());
-			env.setGlobal(new Var(name, res, false));
-			return name;
-		}
-	}
-
-	private VncVal def_dynamic_(final VncList args, final Env env, final VncVal meta) {
-		final CallFrame cf = new CallFrame("def-dynamic", args, meta); 
-		try (WithCallStack cs = new WithCallStack(cf)) {
-			assertArity("def-dynamic", FnType.SpecialForm, args, 1, 2);
-			final VncSymbol name = validateSymbolWithCurrNS(
-										Namespaces.qualifySymbolWithCurrNS(
-												evaluateSymbolMetaData(args.first(), env)),
-										"def-dynamic");
-			
-			final VncVal val = args.second();
-			
-			final VncVal res = evaluate(val, env, false).withMeta(name.getMeta());
-			env.setGlobalDynamic(name, res);
-			return name;
-		}
-	}
-
-	private VncVal defmulti_(final VncList args, final Env env, final VncVal meta) {
-		final CallFrame callframe = new CallFrame("defmulti", args, meta);
-		try (WithCallStack cs = new WithCallStack(callframe)) {
-			assertArity("defmulti", FnType.SpecialForm, args, 2);
-			final VncSymbol name =  validateSymbolWithCurrNS(
-										Namespaces.qualifySymbolWithCurrNS(
-												evaluateSymbolMetaData(args.first(), env)),
-										"defmulti");
-			
-			IVncFunction dispatchFn;
-			
-			if (Types.isVncKeyword(args.second())) {
-				dispatchFn = (VncKeyword)args.second();
-			}
-			else if (Types.isVncSymbol(args.second())) {
-				dispatchFn = Coerce.toVncFunction(env.get((VncSymbol)args.second()));
-			}
-			else {
-				final VncList fnAst = Coerce.toVncList(args.second());
-				dispatchFn = fn_(fnAst.rest(), env, meta);
-			}
-
-			final VncMultiFunction multiFn = new VncMultiFunction(name.getName(), dispatchFn)
-														.withMeta(name.getMeta());
-			env.setGlobal(new Var(name, multiFn, true));
-			return multiFn;
-		}
-	}
-
-	private VncVal defmethod_(final VncList args, final Env env, final VncVal meta) {
-		final CallFrame callframe = new CallFrame("defmethod", args, meta);
-		try (WithCallStack cs = new WithCallStack(callframe)) {
-			assertMinArity("defmethod", FnType.SpecialForm, args, 2);
-			final VncSymbol multiFnName = Namespaces.qualifySymbolWithCurrNS(
-											Coerce.toVncSymbol(args.first()));
-			final VncVal multiFnVal = env.getGlobalOrNull(multiFnName);
-			if (multiFnVal == null) {
-				throw new VncException(String.format(
-							"No multifunction '%s' defined for the method definition", 
-							multiFnName.getName())); 
-			}
-			final VncMultiFunction multiFn = Coerce.toVncMultiFunction(multiFnVal);
-			final VncVal dispatchVal = args.second();
-			
-			final VncVector params = Coerce.toVncVector(args.third());
-			if (params.size() != multiFn.getParams().size()) {
-				throw new VncException(String.format(
-						"A method definition for the multifunction '%s' must have %d parameters", 
-						multiFnName.getName(),
-						multiFn.getParams().size()));
-			}
-			final VncVector preConditions = getFnPreconditions(args.fourth());
-			final VncList body = args.slice(preConditions == null ? 3 : 4);
-			final VncFunction fn = functionBuilder.buildFunction(
-										multiFnName.getName(),
-										params,
-										body,
-										preConditions,
-										false,
-										meta,
-										env);
-
-			return multiFn.addFn(dispatchVal, fn.withMeta(meta));
-		}
-	}
-
-
 	private VncVal eval_(
 			final VncList args, 
 			final Env env, 
@@ -1384,74 +1182,27 @@ public class VeniceInterpreter implements IVeniceInterpreter, Serializable  {
 			}
 		}
 	}
-
-	private VncFunction fn_(
+	
+	private VncVal tail_pos_check_(
+			final boolean inTailPosition, 
 			final VncList args, 
-			final Env env, 
-			final VncVal callMeta
+			final Env env,
+			final VncVal meta
 	) {
-		// single arity:  (fn name? [params*] condition-map? expr*)
-		// multi arity:   (fn name? ([params*] condition-map? expr*)+ )
-
-		final CallFrame callframe = new CallFrame("fn", args, callMeta);
-		try (WithCallStack cs = new WithCallStack(callframe)) {
-			assertMinArity("fn", FnType.SpecialForm, args, 1);
-	
-			VncSymbol name;
-			VncVal meta;
-			int argPos;
-			
-			if (Types.isVncSymbol(args.first())) {
-				argPos = 1;
-				name = (VncSymbol)args.first();
-				meta = name.getMeta();
+		if (!inTailPosition) {
+			final CallFrame callframe = new CallFrame("tail-pos", args, meta);
+			final VncString name = Coerce.toVncString(args.nthOrDefault(0, VncString.empty()));
+			try (WithCallStack cs = new WithCallStack(callframe)) {
+				throw new NotInTailPositionException(
+						name.isEmpty() 
+							? "Not in tail position"
+							: String.format(
+								"The tail-pos expression '%s' is not in tail position", 
+								name.getValue()));
 			}
-			else {
-				argPos = 0;
-				name = new VncSymbol(VncFunction.createAnonymousFuncName());
-				meta = args.second().getMeta();
-			}
-	
-			final VncSymbol fnName = Namespaces.qualifySymbolWithCurrNS(name);
-			ReservedSymbols.validateNotReservedSymbol(fnName);
-	
-			final VncSequence paramsOrSig = Coerce.toVncSequence(args.nth(argPos));
-			if (Types.isVncVector(paramsOrSig)) {
-				// single arity:
-				
-				argPos++;
-				final VncVector params = (VncVector)paramsOrSig;				
-				final VncVector preCon = getFnPreconditions(args.nthOrDefault(argPos, null));
-				if (preCon != null) argPos++;
-				
-				final VncList body = args.slice(argPos);
-				
-				return functionBuilder.buildFunction(
-							fnName.getName(), params, body, preCon, 
-							false, meta, env);
-			}
-			else {
-				// multi arity:
-	
-				final List<VncFunction> fns = new ArrayList<>();
-				
-				args.slice(argPos).forEach(s -> {
-					int pos = 0;
-					
-					final VncList sig = Coerce.toVncList(s);					
-					final VncVector params = Coerce.toVncVector(sig.nth(pos++));					
-					final VncVector preCon = getFnPreconditions(sig.nth(pos));
-					if (preCon != null) pos++;
-					
-					final VncList body = sig.slice(pos);
-					
-					fns.add(
-						functionBuilder.buildFunction(
-							fnName.getName(), params, body, preCon, false, meta, env));
-				});
-				
-				return new VncMultiArityFunction(fnName.getName(), fns, false, meta);
-			}
+		}
+		else {
+			return Nil;
 		}
 	}
 
@@ -1552,17 +1303,6 @@ public class VeniceInterpreter implements IVeniceInterpreter, Serializable  {
 		
 		return recur_env;
 	}
-
-	private VncVector getFnPreconditions(final VncVal prePostConditions) {
-		if (Types.isVncMap(prePostConditions)) {
-			final VncVal val = ((VncMap)prePostConditions).get(PRE_CONDITION_KEY);
-			if (Types.isVncVector(val)) {
-				return (VncVector)val;
-			}
-		}
-		
-		return null;
-	}	
 	
 	private VncSymbol evaluateSymbolMetaData(final VncVal symVal, final Env env) {
 		final VncSymbol sym = Coerce.toVncSymbol(symVal);
@@ -1574,30 +1314,6 @@ public class VeniceInterpreter implements IVeniceInterpreter, Serializable  {
 		return list == null ? new ArrayList<T>() : list;
 	}
 	
-	private VncSymbol validateSymbolWithCurrNS(
-			final VncSymbol sym,
-			final String specialFormName
-	) {
-		if (sym != null) {
-			// do not allow to hijack another namespace
-			final String ns = sym.getNamespace();
-			if (ns != null && !ns.equals(Namespaces.getCurrentNS().getName())) {
-				final CallFrame cf = new CallFrame(specialFormName, sym.getMeta());
-				try (WithCallStack cs = new WithCallStack(cf)) {
-					throw new VncException(String.format(
-							"Special form '%s': Invalid use of namespace. "
-								+ "The symbol '%s' can only be defined for the "
-								+ "current namespace '%s'.",
-							specialFormName,
-							sym.getSimpleName(),
-							Namespaces.getCurrentNS().toString()));
-				}
-			}
-		}
-		
-		return sym;
-	}
-	
 	private void specialFormCallValidation(final String name) {
 		ThreadContext.getInterceptor().validateVeniceFunction(name);
 	}
@@ -1605,8 +1321,6 @@ public class VeniceInterpreter implements IVeniceInterpreter, Serializable  {
 	
 	
 	private static final long serialVersionUID = -8130740279914790685L;
-
-	private static final VncKeyword PRE_CONDITION_KEY = new VncKeyword(":pre");
 	
 	private static final BreakpointFnRef BREAKPOINT_REF_IF = new BreakpointFnRef("if");
 	private static final BreakpointFnRef BREAKPOINT_REF_LET = new BreakpointFnRef("let");
@@ -1619,7 +1333,6 @@ public class VeniceInterpreter implements IVeniceInterpreter, Serializable  {
 	private final NamespaceRegistry nsRegistry;
 	
 	private final SpecialFormsContext specialFormsContext;
-	private final SpecialFormsHandler specialFormsHandler;
 	private final FunctionBuilder functionBuilder;
 	
 	private final AtomicBoolean sealedSystemNS;

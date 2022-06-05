@@ -85,6 +85,7 @@ public class SpecialForms {
 					"quote",
 					"quasiquote",
 					"tail-pos",
+					"inspect",
 					"import",
 					"imports",
 					"dobench",

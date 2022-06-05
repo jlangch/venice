@@ -23,6 +23,7 @@ package com.github.jlangch.venice.impl.specialforms;
 
 import java.util.concurrent.atomic.AtomicBoolean;
 
+import com.github.jlangch.venice.impl.FunctionBuilder;
 import com.github.jlangch.venice.impl.IFormEvaluator;
 import com.github.jlangch.venice.impl.ISequenceValuesEvaluator;
 import com.github.jlangch.venice.impl.IValuesEvaluator;
@@ -39,6 +40,7 @@ public class SpecialFormsContext {
 			final IFormEvaluator evaluator,
 			final IValuesEvaluator valuesEvaluator,
 			final ISequenceValuesEvaluator sequenceValuesEvaluator,
+			final FunctionBuilder functionBuilder,
 			final NamespaceRegistry nsRegistry,
 			final MeterRegistry meterRegistry,
 			final AtomicBoolean sealedSystemNS
@@ -46,6 +48,7 @@ public class SpecialFormsContext {
 		this.interpreter = interpreter;
 		this.evaluator = evaluator;
 		this.valuesEvaluator = valuesEvaluator;
+		this.functionBuilder = functionBuilder;
 		this.nsRegistry = nsRegistry;
 		this.meterRegistry = meterRegistry;
 		this.sealedSystemNS = sealedSystemNS;
@@ -80,6 +83,10 @@ public class SpecialFormsContext {
 		return valuesEvaluator;
 	}
 
+	public FunctionBuilder getFunctionBuilder() {
+		return functionBuilder;
+	}
+
 
 	private final CustomWrappableTypes wrappableTypes = new CustomWrappableTypes();
 	private final NamespaceRegistry nsRegistry;
@@ -89,4 +96,5 @@ public class SpecialFormsContext {
 	private final IVeniceInterpreter interpreter;
 	private final IFormEvaluator evaluator;
 	private final IValuesEvaluator valuesEvaluator;
+	private final FunctionBuilder functionBuilder;
 }
