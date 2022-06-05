@@ -19,7 +19,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.github.jlangch.venice.impl.specialforms;
+package com.github.jlangch.venice.impl.specialforms.util;
 
 import java.util.ArrayList;
 import java.util.HashSet;

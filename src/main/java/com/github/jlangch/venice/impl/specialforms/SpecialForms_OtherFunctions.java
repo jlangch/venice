@@ -22,8 +22,8 @@
 package com.github.jlangch.venice.impl.specialforms;
 
 import static com.github.jlangch.venice.impl.debug.breakpoint.FunctionScope.FunctionEntry;
-import static com.github.jlangch.venice.impl.specialforms.SpecialFormsUtil.evaluateBody;
-import static com.github.jlangch.venice.impl.specialforms.SpecialFormsUtil.specialFormCallValidation;
+import static com.github.jlangch.venice.impl.specialforms.util.SpecialFormsUtil.evaluateBody;
+import static com.github.jlangch.venice.impl.specialforms.util.SpecialFormsUtil.specialFormCallValidation;
 import static com.github.jlangch.venice.impl.types.Constants.Nil;
 import static com.github.jlangch.venice.impl.util.ArityExceptions.assertArity;
 import static com.github.jlangch.venice.impl.util.ArityExceptions.assertMinArity;
@@ -47,6 +47,7 @@ import com.github.jlangch.venice.impl.docgen.runtime.DocForm;
 import com.github.jlangch.venice.impl.env.DynamicVar;
 import com.github.jlangch.venice.impl.env.Env;
 import com.github.jlangch.venice.impl.env.Var;
+import com.github.jlangch.venice.impl.specialforms.util.SpecialFormsContext;
 import com.github.jlangch.venice.impl.thread.ThreadContext;
 import com.github.jlangch.venice.impl.types.VncBoolean;
 import com.github.jlangch.venice.impl.types.VncFunction;

@@ -23,7 +23,7 @@ package com.github.jlangch.venice.impl.types;
 
 import com.github.jlangch.venice.impl.FunctionMetaBuilder;
 import com.github.jlangch.venice.impl.env.Env;
-import com.github.jlangch.venice.impl.specialforms.SpecialFormsContext;
+import com.github.jlangch.venice.impl.specialforms.util.SpecialFormsContext;
 import com.github.jlangch.venice.impl.types.collections.VncList;
 import com.github.jlangch.venice.impl.util.MetaUtil;
 

@@ -21,8 +21,8 @@
  */
 package com.github.jlangch.venice.impl.specialforms;
 
-import static com.github.jlangch.venice.impl.specialforms.SpecialFormsUtil.evaluateSymbolMetaData;
-import static com.github.jlangch.venice.impl.specialforms.SpecialFormsUtil.validateSymbolWithCurrNS;
+import static com.github.jlangch.venice.impl.specialforms.util.SpecialFormsUtil.evaluateSymbolMetaData;
+import static com.github.jlangch.venice.impl.specialforms.util.SpecialFormsUtil.validateSymbolWithCurrNS;
 import static com.github.jlangch.venice.impl.util.ArityExceptions.assertArity;
 import static com.github.jlangch.venice.impl.util.ArityExceptions.assertMinArity;
 
@@ -36,6 +36,7 @@ import com.github.jlangch.venice.impl.Namespaces;
 import com.github.jlangch.venice.impl.env.Env;
 import com.github.jlangch.venice.impl.env.ReservedSymbols;
 import com.github.jlangch.venice.impl.env.Var;
+import com.github.jlangch.venice.impl.specialforms.util.SpecialFormsContext;
 import com.github.jlangch.venice.impl.types.IVncFunction;
 import com.github.jlangch.venice.impl.types.VncFunction;
 import com.github.jlangch.venice.impl.types.VncKeyword;

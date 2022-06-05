@@ -19,23 +19,30 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.github.jlangch.venice.impl.specialforms;
+package com.github.jlangch.venice.impl.specialforms.util;
 
+import com.github.jlangch.venice.impl.types.VncSymbol;
 import com.github.jlangch.venice.impl.types.VncVal;
 import com.github.jlangch.venice.impl.types.collections.VncList;
 
 
-public class FinallyBlock {
+public class CatchBlock {
 
-	public FinallyBlock(
+	public CatchBlock(
+			final VncSymbol exSym,
 			final VncList body,
 			final VncVal meta
 	) {
+		this.exSym = exSym;
 		this.body = body;
 		this.meta = meta;
 	}
 	
 		
+	public VncSymbol getExSym() {
+		return exSym;
+	}
+	
 	public VncList getBody() {
 		return body;
 	}
@@ -46,10 +53,17 @@ public class FinallyBlock {
 
 	@Override
 	public String toString() {
-		return body.toString();
+		final StringBuilder sb = new StringBuilder();
+		sb.append("SYM: ");
+		sb.append(exSym);
+		sb.append("\n");
+		sb.append(body);
+		
+		return sb.toString();
 	}
 	
 
+	private final VncSymbol exSym;
 	private final VncList body;
 	private final VncVal meta;
 }

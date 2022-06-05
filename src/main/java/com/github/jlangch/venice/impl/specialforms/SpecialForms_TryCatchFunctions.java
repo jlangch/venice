@@ -22,8 +22,8 @@
 package com.github.jlangch.venice.impl.specialforms;
 
 import static com.github.jlangch.venice.impl.debug.breakpoint.FunctionScope.FunctionEntry;
-import static com.github.jlangch.venice.impl.specialforms.SpecialFormsUtil.evaluateBody;
-import static com.github.jlangch.venice.impl.specialforms.SpecialFormsUtil.resolveClassName;
+import static com.github.jlangch.venice.impl.specialforms.util.SpecialFormsUtil.evaluateBody;
+import static com.github.jlangch.venice.impl.specialforms.util.SpecialFormsUtil.resolveClassName;
 import static com.github.jlangch.venice.impl.types.Constants.Nil;
 
 import java.util.ArrayList;
@@ -37,6 +37,9 @@ import com.github.jlangch.venice.impl.debug.agent.DebugAgent;
 import com.github.jlangch.venice.impl.debug.breakpoint.BreakpointFnRef;
 import com.github.jlangch.venice.impl.env.Env;
 import com.github.jlangch.venice.impl.env.Var;
+import com.github.jlangch.venice.impl.specialforms.util.CatchBlock;
+import com.github.jlangch.venice.impl.specialforms.util.FinallyBlock;
+import com.github.jlangch.venice.impl.specialforms.util.SpecialFormsContext;
 import com.github.jlangch.venice.impl.thread.ThreadContext;
 import com.github.jlangch.venice.impl.types.VncBoolean;
 import com.github.jlangch.venice.impl.types.VncFunction;
