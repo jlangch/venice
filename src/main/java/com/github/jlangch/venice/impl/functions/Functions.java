@@ -25,7 +25,14 @@ import java.util.HashMap;
 import java.util.Map;
 
 import com.github.jlangch.venice.impl.javainterop.JavaInteropFunctions;
-import com.github.jlangch.venice.impl.specialforms.SpecialFormsFunctions;
+import com.github.jlangch.venice.impl.specialforms.SpecialForms_OtherFunctions;
+import com.github.jlangch.venice.impl.specialforms.SpecialForms_DefFunctions;
+import com.github.jlangch.venice.impl.specialforms.SpecialForms_ImportFunctions;
+import com.github.jlangch.venice.impl.specialforms.SpecialForms_MethodFunctions;
+import com.github.jlangch.venice.impl.specialforms.SpecialForms_NamespaceFunctions;
+import com.github.jlangch.venice.impl.specialforms.SpecialForms_TryCatchFunctions;
+import com.github.jlangch.venice.impl.specialforms.SpecialForms_TypeFunctions;
+import com.github.jlangch.venice.impl.specialforms.SpecialForms_VarFunctions;
 import com.github.jlangch.venice.impl.types.VncVal;
 
 
@@ -34,7 +41,14 @@ public class Functions {
 	public static final Map<VncVal,VncVal> functions = new HashMap<>();
 	
 	static {
-		functions.putAll(SpecialFormsFunctions.ns);
+		functions.putAll(SpecialForms_DefFunctions.ns);
+		functions.putAll(SpecialForms_ImportFunctions.ns);
+		functions.putAll(SpecialForms_TypeFunctions.ns);
+		functions.putAll(SpecialForms_MethodFunctions.ns);
+		functions.putAll(SpecialForms_NamespaceFunctions.ns);
+		functions.putAll(SpecialForms_TryCatchFunctions.ns);
+		functions.putAll(SpecialForms_VarFunctions.ns);
+		functions.putAll(SpecialForms_OtherFunctions.ns);
 
 		functions.putAll(CoreFunctions.ns);
 		functions.putAll(ExceptionFunctions.ns);

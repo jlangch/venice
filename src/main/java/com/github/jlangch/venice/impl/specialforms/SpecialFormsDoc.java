@@ -87,51 +87,6 @@ public class SpecialFormsDoc {
 			private static final long serialVersionUID = -1;
 		};
 
-	public static VncFunction eval = 
-		new SpecialFormsDocFunction(
-				"eval",
-				VncFunction
-					.meta()
-					.arglists("(eval form)")
-					.doc("Evaluates the form data structure (not text!) and returns the result.")
-					.examples(
-						"(eval '(let [a 10] (+ 3 4 a)))",
-						"(eval (list + 1 2 3))",
-					 	"(let [s \"(+ 2 x)\" x 10]     \n" +
-					 	"   (eval (read-string s))))     ")
-					.seeAlso("read-string")
-					.build()
-		) {
-			private static final long serialVersionUID = -1;
-		};
-
-	public static VncFunction binding = 
-		new SpecialFormsDocFunction(
-				"binding",
-				VncFunction
-					.meta()
-					.arglists("(binding [bindings*] exprs*)")
-					.doc("Evaluates the expressions and binds the values to dynamic (thread-local) symbols")
-					.examples(
-						"(do                      \n" +
-						"   (binding [x 100]      \n" +
-						"      (println x)        \n" +
-						"      (binding [x 200]   \n" +
-						"         (println x))    \n" +
-						"      (println x)))        ",
-						";; binding-introduced bindings are thread-locally mutable: \n" +
-						"(binding [x 1]                                             \n" +
-						"  (set! x 2)                                               \n" +
-						"  x)                                                         ",
-						";; binding can use qualified names : \n" +
-						"(binding [user/x 1]                  \n" +
-						"  user/x)                              ")
-					.seeAlso("def-dynamic", "let")
-					.build()
-		) {
-			private static final long serialVersionUID = -1;
-		};
-
 	public static VncFunction do_ = 
 		new SpecialFormsDocFunction(
 				"do",
@@ -255,22 +210,6 @@ public class SpecialFormsDoc {
 						"                (recur (dec cnt) (+ acc cnt)))))    \n" +
 						"   (sum 10000))                                       ")
 					.seeAlso("loop")
-					.build()
-		) {
-			private static final long serialVersionUID = -1;
-		};
-
-	public static VncFunction defmacro = 
-		new SpecialFormsDocFunction(
-				"defmacro",
-				VncFunction
-					.meta()
-					.arglists("(defmacro name [params*] body)")
-					.doc("Macro definition")
-					.examples(
-						"(defmacro unless [pred a b]   \n" + 
-						"  `(if (not ~pred) ~a ~b))      ")
-					.seeAlso("macroexpand", "macroexpand-all")
 					.build()
 		) {
 			private static final long serialVersionUID = -1;
@@ -423,16 +362,12 @@ public class SpecialFormsDoc {
 	
 	public static Map<VncVal, VncVal> ns = 
 			new SymbolMapBuilder()
-					.put(new VncSymbol("eval"),				eval)
-					.put(new VncSymbol("binding"),			binding)
-					.put(new VncSymbol("defmacro"),			defmacro)
-					.put(new VncSymbol("macroexpand"),		macroexpand)
-
 					.put(new VncSymbol("do"),				do_)
 					.put(new VncSymbol("if"),				if_)
 					.put(new VncSymbol("let"),				let)
 					.put(new VncSymbol("loop"),				loop)
 					.put(new VncSymbol("recur"),			recur)
+					.put(new VncSymbol("macroexpand"),		macroexpand)
 					.put(new VncSymbol("tail-pos"),			tail_pos)					
 
 					.put(new VncSymbol("()"),				list)

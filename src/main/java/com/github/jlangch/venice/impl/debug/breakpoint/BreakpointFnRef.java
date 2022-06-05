@@ -68,6 +68,11 @@ public class BreakpointFnRef {
 		return true;
 	}
 
+	
+	public static final BreakpointFnRef IF = new BreakpointFnRef("if");
+	public static final BreakpointFnRef LET = new BreakpointFnRef("let");
+	public static final BreakpointFnRef BINDINGS = new BreakpointFnRef("bindings");
+	public static final BreakpointFnRef LOOP = new BreakpointFnRef("loop");
 
 	private final String qualifiedName;
 }

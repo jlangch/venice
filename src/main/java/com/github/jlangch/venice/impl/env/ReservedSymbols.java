@@ -27,6 +27,7 @@ import java.util.HashSet;
 import java.util.Set;
 
 import com.github.jlangch.venice.VncException;
+import com.github.jlangch.venice.impl.specialforms.SpecialForms;
 import com.github.jlangch.venice.impl.types.VncSymbol;
 import com.github.jlangch.venice.impl.util.CallFrame;
 import com.github.jlangch.venice.impl.util.WithCallStack;
@@ -39,11 +40,11 @@ public class ReservedSymbols {
 	}
 
 	public static boolean isSpecialForm(final VncSymbol symbol) {
-		return symbol != null && sepcial_forms.contains(symbol.getName());
+		return symbol != null && SpecialForms.isSpecialForm(symbol.getName());
 	}
 
 	public static boolean isSpecialForm(final String name) {
-		return name != null && sepcial_forms.contains(name);
+		return name != null && SpecialForms.isSpecialForm(name);
 	}
 
 
@@ -63,67 +64,10 @@ public class ReservedSymbols {
 		s.addAll(s2);
 		return s;
 	}
-	
-	private static final Set<String> sepcial_forms = 
-			new HashSet<>(Arrays.asList(
-					"binding",
-					"bound?",
-					"def",
-					"defmacro",
-					"defmethod",					
-					"defmulti",
-					"defonce",
-					"deftype",
-					"deftype?",
-					"deftype-of",
-					"deftype-or",
-					"def-dynamic",
-					"do",
-					"dobench",
-					"doc",
-					"dorun",
-					"eval",
-					"fn",
-					"if",
-					"import",
-					"imports",
-					"inspect",
-					"let",
-					"locking",
-					"loop",
-					"macroexpand",
-					"macroexpand-all*",
-					"modules",
-					"ns",
-					"ns-list",
-					"ns-remove",
-					"ns-unmap",
-					"print-highlight",
-					"prof",
-					"quasiquote",
-					"quote",
-					"recur",
-					"resolve",
-					"set!",
-					"tail-pos",
-					"try",
-					"try-with",
-					"var-get",
-					"var-global?",
-					"var-local?",
-					"var-name",
-					"var-ns",
-					"var-thread-local?",
-					".:",
-					
-					// reserved for lisp & clojure
-					"call-cc",
-					"defprotocol",
-					"defrecord"));
-	
+		
 	private static final Set<String> reserved = 
 			merge(
-				sepcial_forms, 
+				SpecialForms.FORMS, 
 				Arrays.asList(
 					".",
 					"proxify",

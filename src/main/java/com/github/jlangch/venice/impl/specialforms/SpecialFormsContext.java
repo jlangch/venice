@@ -48,6 +48,7 @@ public class SpecialFormsContext {
 		this.interpreter = interpreter;
 		this.evaluator = evaluator;
 		this.valuesEvaluator = valuesEvaluator;
+		this.sequenceValuesEvaluator = sequenceValuesEvaluator;
 		this.functionBuilder = functionBuilder;
 		this.nsRegistry = nsRegistry;
 		this.meterRegistry = meterRegistry;
@@ -82,6 +83,10 @@ public class SpecialFormsContext {
 	public IValuesEvaluator getValuesEvaluator() {
 		return valuesEvaluator;
 	}
+	
+	public ISequenceValuesEvaluator  getSequenceValuesEvaluator() {
+		return sequenceValuesEvaluator;
+	}
 
 	public FunctionBuilder getFunctionBuilder() {
 		return functionBuilder;
@@ -96,5 +101,6 @@ public class SpecialFormsContext {
 	private final IVeniceInterpreter interpreter;
 	private final IFormEvaluator evaluator;
 	private final IValuesEvaluator valuesEvaluator;
+	private final ISequenceValuesEvaluator sequenceValuesEvaluator;
 	private final FunctionBuilder functionBuilder;
 }

@@ -23,7 +23,6 @@ package com.github.jlangch.venice.impl;
 
 import static com.github.jlangch.venice.impl.debug.breakpoint.FunctionScope.FunctionEntry;
 import static com.github.jlangch.venice.impl.types.Constants.Nil;
-import static com.github.jlangch.venice.impl.types.VncBoolean.True;
 import static com.github.jlangch.venice.impl.types.VncFunction.createAnonymousFuncName;
 import static com.github.jlangch.venice.impl.util.ArityExceptions.assertArity;
 import static com.github.jlangch.venice.impl.util.ArityExceptions.assertMinArity;
@@ -47,14 +46,15 @@ import com.github.jlangch.venice.impl.debug.agent.DebugAgent;
 import com.github.jlangch.venice.impl.debug.breakpoint.BreakpointFnRef;
 import com.github.jlangch.venice.impl.env.ComputedVar;
 import com.github.jlangch.venice.impl.env.Env;
-import com.github.jlangch.venice.impl.env.ReservedSymbols;
 import com.github.jlangch.venice.impl.env.Var;
 import com.github.jlangch.venice.impl.functions.CoreFunctions;
 import com.github.jlangch.venice.impl.functions.Functions;
 import com.github.jlangch.venice.impl.functions.TransducerFunctions;
 import com.github.jlangch.venice.impl.reader.Reader;
 import com.github.jlangch.venice.impl.specialforms.SpecialFormsContext;
-import com.github.jlangch.venice.impl.specialforms.SpecialFormsFunctions;
+import com.github.jlangch.venice.impl.specialforms.SpecialForms_DefFunctions;
+import com.github.jlangch.venice.impl.specialforms.SpecialForms_MethodFunctions;
+import com.github.jlangch.venice.impl.specialforms.SpecialForms_OtherFunctions;
 import com.github.jlangch.venice.impl.thread.ThreadContext;
 import com.github.jlangch.venice.impl.types.Constants;
 import com.github.jlangch.venice.impl.types.IVncFunction;
@@ -80,7 +80,6 @@ import com.github.jlangch.venice.impl.util.ArityExceptions.FnType;
 import com.github.jlangch.venice.impl.util.CallFrame;
 import com.github.jlangch.venice.impl.util.CallFrameFnData;
 import com.github.jlangch.venice.impl.util.CallStack;
-import com.github.jlangch.venice.impl.util.MetaUtil;
 import com.github.jlangch.venice.impl.util.MeterRegistry;
 import com.github.jlangch.venice.impl.util.WithCallStack;
 import com.github.jlangch.venice.javainterop.AcceptAllInterceptor;
@@ -122,11 +121,11 @@ public class VeniceInterpreter implements IVeniceInterpreter, Serializable  {
 		if (interceptor == null) {
 			throw new SecurityException("VeniceInterpreter can not run without an interceptor");
 		}
-		
+
 		final MeterRegistry mr = meterRegistry == null 
 									? new MeterRegistry(false)
 									: meterRegistry;
-		
+
 		this.interceptor = interceptor;
 		this.meterRegistry = mr;
 		this.nsRegistry = new NamespaceRegistry();
@@ -147,11 +146,10 @@ public class VeniceInterpreter implements IVeniceInterpreter, Serializable  {
 										this.nsRegistry,
 										this.meterRegistry,
 										this.sealedSystemNS); 
-			
 
 		ThreadContext.setInterceptor(interceptor);	
 		ThreadContext.setMeterRegistry(mr);
-		
+
 		if (optimized && checkSandbox) {
 			// invalid combination: prevent security problems with partially deactivated sandboxes
 			throw new VncException("Venice interpreter supports optimized mode only with AcceptAllInterceptor!");					
@@ -322,28 +320,6 @@ public class VeniceInterpreter implements IVeniceInterpreter, Serializable  {
 	}
 	
 	
-	private void loadModule(
-			final String module, 
-			final Env env, 
-			final VncMutableSet loadedModules
-	) {
-		try {
-			final long nanos = System.nanoTime();
-			
-			RE("(eval " + ModuleLoader.loadModule(module) + ")", module, env);
-	
-			if (meterRegistry.enabled) {
-				meterRegistry.record("venice.module." + module + ".load", System.nanoTime() - nanos);
-			}
-			
-			// remember the loaded module
-			loadedModules.add(new VncKeyword(module));
-		}
-		catch(RuntimeException ex) {
-			throw new VncException("Failed to load module '" + module + "'", ex);
-		}
-	}
-	
 	private VncVal evaluate(
 			final VncVal ast_, 
 			final Env env_, 
@@ -392,7 +368,7 @@ public class VeniceInterpreter implements IVeniceInterpreter, Serializable  {
 								final ThreadContext threadCtx = ThreadContext.get();
 								final DebugAgent debugAgent = threadCtx.getDebugAgent_();
 	
-								if (debugAgent != null && debugAgent.hasBreakpointFor(BREAKPOINT_REF_IF)) {
+								if (debugAgent != null && debugAgent.hasBreakpointFor(BreakpointFnRef.IF)) {
 									debugAgent.onBreakSpecialForm(
 											"if", 
 											FunctionEntry, 
@@ -473,7 +449,7 @@ public class VeniceInterpreter implements IVeniceInterpreter, Serializable  {
 							}
 						}
 						
-						if (debugAgent != null && debugAgent.hasBreakpointFor(BREAKPOINT_REF_LET)) {
+						if (debugAgent != null && debugAgent.hasBreakpointFor(BreakpointFnRef.LET)) {
 							final CallStack callStack = threadCtx.getCallStack_();
 							debugAgent.onBreakSpecialForm(
 									"let", FunctionEntry, vars, a0meta, env, callStack);
@@ -531,7 +507,7 @@ public class VeniceInterpreter implements IVeniceInterpreter, Serializable  {
 												a0meta,
 												debugAgent);
 
-						if (debugAgent != null && debugAgent.hasBreakpointFor(BREAKPOINT_REF_LOOP)) {
+						if (debugAgent != null && debugAgent.hasBreakpointFor(BreakpointFnRef.LOOP)) {
 							debugAgent.onBreakLoop(
 								FunctionEntry,
 								recursionPoint.getLoopBindingNames(), 
@@ -575,7 +551,7 @@ public class VeniceInterpreter implements IVeniceInterpreter, Serializable  {
 						// for performance reasons the DebugAgent is stored in the 
 						// RecursionPoint. Saves repeated ThreadLocal access!
 						final DebugAgent debugAgent = recursionPoint.getDebugAgent();
-						if (debugAgent != null && debugAgent.hasBreakpointFor(BREAKPOINT_REF_LOOP)) {
+						if (debugAgent != null && debugAgent.hasBreakpointFor(BreakpointFnRef.LOOP)) {
 							debugAgent.onBreakLoop(
 									FunctionEntry,
 									recursionPoint.getLoopBindingNames(), 
@@ -597,22 +573,25 @@ public class VeniceInterpreter implements IVeniceInterpreter, Serializable  {
 					break;
 
 				case "quasiquote": // (quasiquote form)
-					orig_ast = SpecialFormsFunctions.quasiquote.apply(a0meta, args, env, specialFormsContext);
+					orig_ast = SpecialForms_OtherFunctions.quasiquote.apply(a0meta, args, env, specialFormsContext);
 					break;
 
 				case "quote": // (quote form)
-					return SpecialFormsFunctions.quote.apply(a0meta, args, env, specialFormsContext);
+					return SpecialForms_OtherFunctions.quote.apply(a0meta, args, env, specialFormsContext);
 
 				case "fn": // (fn name? [params*] condition-map? expr*)
 					// TODO: need explicit call here, env lookup and call via 
 					//       VncSpecialForm below does not work properly (unit tests fail)
-					return SpecialFormsFunctions.fn.apply(a0meta, args, env, specialFormsContext);
+					return SpecialForms_MethodFunctions.fn.apply(a0meta, args, env, specialFormsContext);
 
 				case "eval": // (eval expr*)
-					return eval_(args, env, a0meta);
+					return SpecialForms_OtherFunctions.eval.apply(a0meta, args, env, specialFormsContext);
+
+				case "binding":  // (binding [bindings*] exprs*)
+					return SpecialForms_OtherFunctions.binding.apply(a0meta, args, env, specialFormsContext);
 
 				case "defmacro":
-					return defmacro_(args, env, a0meta);
+					return SpecialForms_DefFunctions.defmacro.apply(a0meta, args, env, specialFormsContext);
 
 				case "macroexpand": // (macroexpand form)
 					return macroexpand(args, env, a0meta);
@@ -624,9 +603,6 @@ public class VeniceInterpreter implements IVeniceInterpreter, Serializable  {
 							new CallFrame("macroexpand-all*", args, a0meta), 
 							evaluate(args.first(), env, false), 
 							env);
-
-				case "binding":  // (binding [bindings*] exprs*)
-					return binding_(args, env, a0meta);
 				
 				case "tail-pos": 
 					return tail_pos_check_(tailPosition, args, env, a0meta);
@@ -863,6 +839,28 @@ public class VeniceInterpreter implements IVeniceInterpreter, Serializable  {
 			}
 		}
 	}
+	
+	private void loadModule(
+			final String module, 
+			final Env env, 
+			final VncMutableSet loadedModules
+	) {
+		try {
+			final long nanos = System.nanoTime();
+			
+			RE("(eval " + ModuleLoader.loadModule(module) + ")", module, env);
+	
+			if (meterRegistry.enabled) {
+				meterRegistry.record("venice.module." + module + ".load", System.nanoTime() - nanos);
+			}
+			
+			// remember the loaded module
+			loadedModules.add(new VncKeyword(module));
+		}
+		catch(RuntimeException ex) {
+			throw new VncException("Failed to load module '" + module + "'", ex);
+		}
+	}
 
 	/**
 	 * Recursively expands a macro. Inside the loop, the first element 
@@ -1065,123 +1063,6 @@ public class VeniceInterpreter implements IVeniceInterpreter, Serializable  {
 			}
 		}
 	}
-
-	private VncVal defmacro_(final VncList args, final Env env, final VncVal meta) {
-		final CallFrame cf = new CallFrame("defmacro", args, meta); 
-		try (WithCallStack cs = new WithCallStack(cf)) {
-			assertMinArity("defmacro", FnType.SpecialForm, args, 2);
-			return defmacro_(args, env);
-		}
-	}
-	
-	private VncFunction defmacro_(final VncList args, final Env env) {
-		int argPos = 0;
-		
-		final VncSymbol macroName = Namespaces.qualifySymbolWithCurrNS(
-										evaluateSymbolMetaData(args.nth(argPos++), env));
-		VncVal meta = macroName.getMeta();
-		
-		if (MetaUtil.isPrivate(meta)) {
-			throw new VncException(String.format(
-					"The macro '%s' must not be defined as private! "
-						+ "Venice does not support private macros.",
-					macroName.getName()));
-		}
-		
-		final VncSequence paramsOrSig = Coerce.toVncSequence(args.nth(argPos));
-					
-		String name = macroName.getName();
-		String ns = macroName.getNamespace();
-
-		if (ns == null) {
-			ns = Namespaces.getCurrentNS().getName();
-			if (!Namespaces.isCoreNS(ns)) {
-				name = ns + "/" + name;
-			}
-		}
-
-		meta = MetaUtil.addMetaVal(
-							meta,
-							MetaUtil.NS, new VncString(ns),
-							MetaUtil.MACRO, True);
-
-		final VncSymbol macroName_ = new VncSymbol(name, meta);
-
-		if (Types.isVncVector(paramsOrSig)) {
-			// single arity:
-			
-			argPos++;
-			final VncVector params = (VncVector)paramsOrSig;
-			final VncList body = args.slice(argPos);	
-			final VncFunction macroFn = functionBuilder.buildFunction(
-											macroName_.getName(), 
-											params, 
-											body, 
-											null, 
-											true,
-											meta,
-											env);
-	
-			env.setGlobal(new Var(macroName_, macroFn.withMeta(meta), false));
-
-			return macroFn;
-		}
-		else {
-			// multi arity:
-
-			final List<VncFunction> fns = new ArrayList<>();
-			
-			final VncVal meta_ = meta;
-
-			args.slice(argPos).forEach(s -> {
-				int pos = 0;				
-				final VncList fnSig = Coerce.toVncList(s);				
-				final VncVector fnParams = Coerce.toVncVector(fnSig.nth(pos++));				
-				final VncList fnBody = fnSig.slice(pos);
-				
-				fns.add(functionBuilder.buildFunction(
-							macroName_.getName() + "-arity-" + fnParams.size(),
-							fnParams, 
-							fnBody, 
-							null,
-							true,
-							meta_,
-							env));
-			});
-
-			final VncFunction macroFn = new VncMultiArityFunction(
-												macroName_.getName(), 
-												fns, 
-												true, 
-												meta);
-			
-			env.setGlobal(new Var(macroName_, macroFn, false));
-
-			return macroFn;
-		}
-	}
-
-	private VncVal eval_(
-			final VncList args, 
-			final Env env, 
-			final VncVal meta
-	) {
-		final CallFrame callframe = new CallFrame("eval", args, meta);
-		try (WithCallStack cs = new WithCallStack(callframe)) {
-			specialFormCallValidation("eval");
-			assertMinArity("eval", FnType.SpecialForm, args, 0);
-			final Namespace ns = Namespaces.getCurrentNamespace();
-			try {
-				return evaluate(
-						Coerce.toVncSequence(evaluate_sequence_values(args, env)).last(), 
-						env, 
-						false);
-			}
-			finally {
-				Namespaces.setCurrentNamespace(ns);
-			}
-		}
-	}
 	
 	private VncVal tail_pos_check_(
 			final boolean inTailPosition, 
@@ -1203,55 +1084,6 @@ public class VeniceInterpreter implements IVeniceInterpreter, Serializable  {
 		}
 		else {
 			return Nil;
-		}
-	}
-
-	private VncVal binding_(final VncList args, final Env env, final VncVal meta) {
-		final Env bind_env = new Env(env);
-		
-		final VncSequence bindings = Coerce.toVncSequence(args.first());
-		final VncList expressions = args.rest();
-
-		if (bindings.size() % 2 != 0) {
-			try (WithCallStack cs = new WithCallStack(new CallFrame("bindings", args, meta))) {
-				throw new VncException(
-						"bindings requires an even number of forms in the "
-						+ "binding vector!");					
-			}
-		}
-
-		final List<Var> bindingVars = new ArrayList<>();
-		try {
-			for(int i=0; i<bindings.size(); i+=2) {
-				final VncVal sym = bindings.nth(i);
-				final VncVal val = evaluate(bindings.nth(i+1), bind_env, false);
-		
-				if (sym instanceof VncSymbol) {
-					// optimization if not destructuring 
-					bind_env.pushGlobalDynamic((VncSymbol)sym, val);
-					bindingVars.add(new Var((VncSymbol)sym, val));
-				}
-				else {
-					final List<Var> vars = Destructuring.destructure(sym, val);
-					vars.forEach(v -> bind_env.pushGlobalDynamic(v.getName(), v.getVal()));
-					bindingVars.addAll(vars);
-				}
-			}
-
-			final ThreadContext threadCtx = ThreadContext.get();
-			final DebugAgent debugAgent = threadCtx.getDebugAgent_();
-
-			if (debugAgent != null && debugAgent.hasBreakpointFor(BREAKPOINT_REF_BINDINGS)) {
-				final CallStack callStack = threadCtx.getCallStack_();
-				debugAgent.onBreakSpecialForm(
-						"bindings", FunctionEntry, bindingVars, meta, bind_env, callStack);
-			}
-
-			evaluate_sequence_values(expressions.butlast(), bind_env);
-			return evaluate(expressions.last(), bind_env, false);
-		}
-		finally {
-			bindingVars.forEach(v -> bind_env.popGlobalDynamic(v.getName()));
 		}
 	}
 		
@@ -1303,29 +1135,15 @@ public class VeniceInterpreter implements IVeniceInterpreter, Serializable  {
 		
 		return recur_env;
 	}
-	
-	private VncSymbol evaluateSymbolMetaData(final VncVal symVal, final Env env) {
-		final VncSymbol sym = Coerce.toVncSymbol(symVal);
-		ReservedSymbols.validateNotReservedSymbol(sym);
-		return sym.withMeta(evaluate(sym.getMeta(), env, false));
-	}
 
 	private static <T> List<T> toEmpty(final List<T> list) {
 		return list == null ? new ArrayList<T>() : list;
-	}
-	
-	private void specialFormCallValidation(final String name) {
-		ThreadContext.getInterceptor().validateVeniceFunction(name);
 	}
 
 	
 	
 	private static final long serialVersionUID = -8130740279914790685L;
 	
-	private static final BreakpointFnRef BREAKPOINT_REF_IF = new BreakpointFnRef("if");
-	private static final BreakpointFnRef BREAKPOINT_REF_LET = new BreakpointFnRef("let");
-	private static final BreakpointFnRef BREAKPOINT_REF_BINDINGS = new BreakpointFnRef("bindings");
-	private static final BreakpointFnRef BREAKPOINT_REF_LOOP = new BreakpointFnRef("loop");
 		
 	private final IInterceptor interceptor;	
 	private final boolean checkSandbox;
