@@ -347,7 +347,7 @@ shadowJar {
     mergeServiceFiles()
    
     archiveFileName = "venice-${project.version}.jar"
-    classifier = ''
+    classifier = ''  // default is '-all'
 }
 
 
@@ -358,12 +358,9 @@ publishing {
             artifactId = 'venice'
             version = "${project.version}"
             
-            artifact sourcesJar 
-            artifact javadocJar 
-              
+            artifact sourcesJar
+            artifact javadocJar
             artifact shadowJar
-            //artifact "build/libs/venice-${project.version}.jar"
-            
             
             versionMapping {
                 usage('java-api') {
