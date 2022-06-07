@@ -26,6 +26,10 @@ import java.util.HashSet;
 import java.util.Set;
 
 
+/**
+ * Special forms have evaluation rules that differ from standard Venice 
+ * evaluation rules and are understood directly by the Venice interpreter.
+ */
 public class SpecialForms {
 	
 	public static boolean isSpecialForm(final String name) {

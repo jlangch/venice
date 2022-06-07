@@ -588,6 +588,8 @@ public class Env implements Serializable {
 			}
 		}
 		else {
+			// unqualified symbol, handle special case for core and 
+			// special form symbols
 			final VncSymbol currNS = Namespaces.getCurrentNS();
 			
 			if (!Namespaces.isCoreNS(currNS) && !SpecialForms.isSpecialForm(symSimpleName)) {
@@ -600,7 +602,7 @@ public class Env implements Serializable {
 			}
 				
 			if (v == null) {
-				// 2nd: lookup for core namespace
+				// 2nd: lookup without namespace for core symbol or special form
 				v = getGlobalVarRaw(sym);
 			}
 		}

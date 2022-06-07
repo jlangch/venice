@@ -45,7 +45,10 @@ import com.github.jlangch.venice.impl.util.SymbolMapBuilder;
 
 
 /**
- * The special form pesudo functions
+ * The special form pseudo functions
+ * 
+ * Special forms have evaluation rules that differ from standard Venice 
+ * evaluation rules and are understood directly by the Venice interpreter.
  */
 public class SpecialForms_NamespaceFunctions {
 

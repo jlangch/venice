@@ -37,6 +37,10 @@ import com.github.jlangch.venice.impl.util.SymbolMapBuilder;
  * for global vars and special forms that are implemented in the Reader 
  * or in the VeniceInterpreter without having a VncSpecialForm 
  * implementation!
+ * 
+ * Special forms have evaluation rules that differ from standard Venice 
+ * evaluation rules and are understood directly by the Venice reader or
+ * interpreter.
  */
 public class SpecialFormsDoc {
 
