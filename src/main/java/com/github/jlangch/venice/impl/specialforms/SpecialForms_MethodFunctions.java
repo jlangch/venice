@@ -281,7 +281,18 @@ public class SpecialForms_MethodFunctions {
 				}
 		
 				final VncSymbol fnName = Namespaces.qualifySymbolWithCurrNS(name);
-				ReservedSymbols.validateNotReservedSymbol(fnName);
+				if (ReservedSymbols.isSpecialForm(fnName)) {
+					throw new VncException(
+							String.format(
+									"The special form name '%s' cannot be used for a function name!", 
+									fnName.getSimpleName()));
+				}
+				if (ReservedSymbols.isReserved(fnName)) {
+					throw new VncException(
+							String.format(
+									"The reserved name '%s' cannot be used for a function name!", 
+									fnName.getSimpleName()));
+				}
 
 				final VncSequence paramsOrSig = Coerce.toVncSequence(args.nth(argPos));
 				if (Types.isVncVector(paramsOrSig)) {

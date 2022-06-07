@@ -39,7 +39,7 @@ import com.github.jlangch.venice.impl.types.VncVal;
 public class Functions {
 
 	public static final Map<VncVal,VncVal> functions = new HashMap<>();
-	
+
 	static {
 		functions.putAll(SpecialForms_DefFunctions.ns);
 		functions.putAll(SpecialForms_ImportFunctions.ns);

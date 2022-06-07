@@ -37,6 +37,7 @@ import java.util.stream.Collectors;
 import com.github.jlangch.venice.SymbolNotFoundException;
 import com.github.jlangch.venice.VncException;
 import com.github.jlangch.venice.impl.Namespaces;
+import com.github.jlangch.venice.impl.specialforms.SpecialForms;
 import com.github.jlangch.venice.impl.thread.ThreadContext;
 import com.github.jlangch.venice.impl.types.Constants;
 import com.github.jlangch.venice.impl.types.VncBoolean;
@@ -316,7 +317,7 @@ public class Env implements Serializable {
 	public Env setGlobal(final Var val) {
 		final VncSymbol sym = val.getName();
 
-		if (ReservedSymbols.isSpecialForm(sym.getName()) && !(val.getVal() instanceof VncSpecialForm)) {
+		if (ReservedSymbols.isSpecialForm(sym) && !(val.getVal() instanceof VncSpecialForm)) {
 			try (WithCallStack cs = new WithCallStack(CallFrame.from(sym))) {
 				throw new VncException(String.format(
 							"Rejected setting var %s with name of a special form", 
@@ -589,7 +590,7 @@ public class Env implements Serializable {
 		else {
 			final VncSymbol currNS = Namespaces.getCurrentNS();
 			
-			if (!Namespaces.isCoreNS(currNS)) {
+			if (!Namespaces.isCoreNS(currNS) && !SpecialForms.isSpecialForm(symSimpleName)) {
 				// 1st: lookup for current namespace
 				final VncSymbol s = new VncSymbol(
 											currNS.getName(), 

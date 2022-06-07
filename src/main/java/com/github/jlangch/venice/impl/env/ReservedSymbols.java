@@ -43,18 +43,23 @@ public class ReservedSymbols {
 		return symbol != null && SpecialForms.isSpecialForm(symbol.getName());
 	}
 
-	public static boolean isSpecialForm(final String name) {
-		return name != null && SpecialForms.isSpecialForm(name);
-	}
-
-
 	public static void validateNotReservedSymbol(final VncSymbol symbol) {
-		if (symbol != null && isReserved(symbol)) {
-			try (WithCallStack cs = new WithCallStack(new CallFrame(symbol.getQualifiedName(), symbol.getMeta()))) {
-				throw new VncException(
-						String.format(
-								"Reserved symbol '%s'. Redefinition is not allowed.", 
-								symbol.getName()));
+		if (symbol != null) {
+			if (isSpecialForm(symbol)) {
+				try (WithCallStack cs = new WithCallStack(new CallFrame(symbol.getQualifiedName(), symbol.getMeta()))) {
+					throw new VncException(
+							String.format(
+									"The special form name '%s' can not be used a symbol.", 
+									symbol.getName()));
+				}
+			}
+			if (isReserved(symbol)) {
+				try (WithCallStack cs = new WithCallStack(new CallFrame(symbol.getQualifiedName(), symbol.getMeta()))) {
+					throw new VncException(
+							String.format(
+									"Reserved name '%s' can not be used a symbol.", 
+									symbol.getName()));
+				}
 			}
 		}
 	}

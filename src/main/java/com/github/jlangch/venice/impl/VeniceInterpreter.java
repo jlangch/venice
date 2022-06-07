@@ -51,8 +51,6 @@ import com.github.jlangch.venice.impl.functions.CoreFunctions;
 import com.github.jlangch.venice.impl.functions.Functions;
 import com.github.jlangch.venice.impl.functions.TransducerFunctions;
 import com.github.jlangch.venice.impl.reader.Reader;
-import com.github.jlangch.venice.impl.specialforms.SpecialForms_DefFunctions;
-import com.github.jlangch.venice.impl.specialforms.SpecialForms_MethodFunctions;
 import com.github.jlangch.venice.impl.specialforms.SpecialForms_OtherFunctions;
 import com.github.jlangch.venice.impl.specialforms.util.SpecialFormsContext;
 import com.github.jlangch.venice.impl.thread.ThreadContext;
@@ -262,6 +260,9 @@ public class VeniceInterpreter implements IVeniceInterpreter, Serializable  {
 				final VncFunction fn = (VncFunction)e.getValue();			
 				env.setGlobal(new Var(sym, fn, fn.isRedefinable()));
 			}
+			else if (val instanceof VncSpecialForm) {
+				env.setGlobal(new Var(sym, val, false)); // not redefinable
+			}
 			else {
 				env.setGlobal(new Var(sym, val, true));
 			}
@@ -276,7 +277,7 @@ public class VeniceInterpreter implements IVeniceInterpreter, Serializable  {
 		// set system newline
 		env.setGlobal(new Var(new VncSymbol("*newline*"), new VncString(System.lineSeparator()), false));
 
-		// ansi terminal (set when run from a REPL in an ASNI terminal)
+		// ansi terminal (set when run from a REPL in an ANSI terminal)
 		env.setGlobal(new Var(new VncSymbol("*ansi-term*"), VncBoolean.of(ansiTerminal), false));
 		
 		// set the run mode
@@ -575,23 +576,6 @@ public class VeniceInterpreter implements IVeniceInterpreter, Serializable  {
 				case "quasiquote": // (quasiquote form)
 					orig_ast = SpecialForms_OtherFunctions.quasiquote.apply(a0meta, args, env, specialFormsContext);
 					break;
-
-				case "quote": // (quote form)
-					return SpecialForms_OtherFunctions.quote.apply(a0meta, args, env, specialFormsContext);
-
-				case "fn": // (fn name? [params*] condition-map? expr*)
-					// TODO: need explicit call here, env lookup and call via 
-					//       VncSpecialForm below does not work properly (unit tests fail)
-					return SpecialForms_MethodFunctions.fn.apply(a0meta, args, env, specialFormsContext);
-
-				case "eval": // (eval expr*)
-					return SpecialForms_OtherFunctions.eval.apply(a0meta, args, env, specialFormsContext);
-
-				case "binding":  // (binding [bindings*] exprs*)
-					return SpecialForms_OtherFunctions.binding.apply(a0meta, args, env, specialFormsContext);
-
-				case "defmacro":
-					return SpecialForms_DefFunctions.defmacro.apply(a0meta, args, env, specialFormsContext);
 
 				case "macroexpand": // (macroexpand form)
 					return macroexpand(args, env, a0meta);

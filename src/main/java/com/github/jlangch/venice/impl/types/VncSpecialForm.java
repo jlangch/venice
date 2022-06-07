@@ -100,7 +100,7 @@ public abstract class VncSpecialForm extends VncVal {
 
 	@Override 
 	public String toString() {
-		return name;
+		return "special form " + name;
 	}
 
 	
