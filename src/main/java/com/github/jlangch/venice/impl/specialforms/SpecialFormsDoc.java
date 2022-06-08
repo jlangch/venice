@@ -357,8 +357,8 @@ public class SpecialFormsDoc {
 				VncFunction
 					.meta()
 					.doc(
-						"A list of the supplied command line arguments, or nil if " +
-						"instantiator of the Venice instance decided not to make " +
+						"A list of the supplied command line arguments, or `nil` if " +
+						"the instantiator of the Venice instance decided not to make " +
 						"the command line arguments available.")
 					.examples(
 						"*ARGV*")
