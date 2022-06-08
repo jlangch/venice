@@ -1805,10 +1805,6 @@ public class DocGenerator {
 		vars.addItem(getDocItem("*out*"));
 		vars.addItem(getDocItem("*err*"));
 		vars.addItem(getDocItem("*in*"));
-		
-		final DocSection cmdline = new DocSection("cmd line", "io.cmdline");
-		all.addSection(cmdline);
-		cmdline.addItem(getDocItem("*ARGV*"));
 
 		return section;
 	}
@@ -2235,6 +2231,10 @@ public class DocGenerator {
 		other.addItem(getDocItem("*ns*"));
 		other.addItem(getDocItem("*run-mode*"));
 		other.addItem(getDocItem("*ansi-term*"));
+		other.addItem(getDocItem("*ARGV*"));
+		other.addItem(getDocItem("*out*"));
+		other.addItem(getDocItem("*err*"));
+		other.addItem(getDocItem("*in*"));
 
 		return section;
 	}
