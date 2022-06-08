@@ -286,6 +286,9 @@ public class VeniceInterpreter implements IVeniceInterpreter, Serializable  {
 		// loaded modules & files
 		env.setGlobal(new Var(new VncSymbol("*loaded-modules*"), loadedModules, true));
 		env.setGlobal(new Var(new VncSymbol("*loaded-files*"), new VncMutableSet(), true));
+		
+		// command line args (default nil)
+		env.setGlobal(new Var(new VncSymbol("*ARGV*"), Constants.Nil, true));
 
 		// init namespaces
 		initNS();

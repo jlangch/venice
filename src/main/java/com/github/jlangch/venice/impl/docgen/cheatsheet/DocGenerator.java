@@ -1805,6 +1805,10 @@ public class DocGenerator {
 		vars.addItem(getDocItem("*out*"));
 		vars.addItem(getDocItem("*err*"));
 		vars.addItem(getDocItem("*in*"));
+		
+		final DocSection cmdline = new DocSection("cmd line", "io.cmdline");
+		all.addSection(cmdline);
+		cmdline.addItem(getDocItem("*ARGV*"));
 
 		return section;
 	}

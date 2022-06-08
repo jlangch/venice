@@ -351,6 +351,22 @@ public class SpecialFormsDoc {
 			private static final long serialVersionUID = -1;
 		};
 		
+	public static VncFunction global_var_argv = 
+		new SpecialFormsDocFunction(
+				"*ARGV*",
+				VncFunction
+					.meta()
+					.doc(
+						"A list of the supplied command line arguments, or nil if " +
+						"instantiator of the Venice instance decided not to make " +
+						"the command line arguments available.")
+					.examples(
+						"*ARGV*")
+					.build()
+		) {
+			private static final long serialVersionUID = -1;
+		};
+		
 	public static VncFunction global_var_out = 
 		new SpecialFormsDocFunction(
 				"*out*",
@@ -401,7 +417,7 @@ public class SpecialFormsDoc {
 					.doc(
 						"A `:java.io.Reader` object representing standard input " +
 						"for read operations.\n\n" +
-						"Defaults to System.in, wrapped in an Reader.\n\n" +
+						"Defaults to System.in, wrapped in an InputStreamReader.\n\n" +
 						"`*in*` is a dynamic var. Any `:java.io.Reader` can be " +
 						"dynamically bound to it:\n\n" +
 						"```                           \n" +
@@ -451,6 +467,7 @@ public class SpecialFormsDoc {
 					.put(new VncSymbol("*ns*"),				global_var_ns)
 					.put(new VncSymbol("*run-mode*"),		global_var_run_mode)
 					.put(new VncSymbol("*ansi-term*"),		global_var_ansi_term)
+					.put(new VncSymbol("*ARGV*"),	     	global_var_argv)
 					
 					.put(new VncSymbol("*out*"),		    global_var_out)
 					.put(new VncSymbol("*err*"),		    global_var_err)
