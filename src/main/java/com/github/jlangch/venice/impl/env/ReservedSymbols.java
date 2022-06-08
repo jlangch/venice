@@ -22,58 +22,18 @@
 package com.github.jlangch.venice.impl.env;
 
 import java.util.Arrays;
-import java.util.Collection;
 import java.util.HashSet;
 import java.util.Set;
 
-import com.github.jlangch.venice.VncException;
-import com.github.jlangch.venice.impl.specialforms.SpecialForms;
-import com.github.jlangch.venice.impl.types.VncSymbol;
-import com.github.jlangch.venice.impl.util.CallFrame;
-import com.github.jlangch.venice.impl.util.WithCallStack;
-
 
 public class ReservedSymbols {
-
-	public static boolean isReserved(final VncSymbol symbol) {
-		return symbol != null && reserved.contains(symbol.getName());
-	}
-
-	public static boolean isSpecialForm(final VncSymbol symbol) {
-		return symbol != null && SpecialForms.isSpecialForm(symbol.getName());
-	}
-
-	public static void validateNotReservedSymbol(final VncSymbol symbol) {
-		if (symbol != null) {
-			if (isSpecialForm(symbol)) {
-				try (WithCallStack cs = new WithCallStack(new CallFrame(symbol.getQualifiedName(), symbol.getMeta()))) {
-					throw new VncException(
-							String.format(
-									"The special form name '%s' can not be used a symbol.", 
-									symbol.getName()));
-				}
-			}
-			if (isReserved(symbol)) {
-				try (WithCallStack cs = new WithCallStack(new CallFrame(symbol.getQualifiedName(), symbol.getMeta()))) {
-					throw new VncException(
-							String.format(
-									"Reserved name '%s' can not be used a symbol.", 
-									symbol.getName()));
-				}
-			}
-		}
-	}
-
-	private static<T> HashSet<T> merge(final Set<T> s1, final Collection<T> s2) {
-		final HashSet<T> s = new HashSet<>(s1);
-		s.addAll(s2);
-		return s;
+	
+	public static boolean isReserved(final String name) {
+		return RESERVED.contains(name);
 	}
 		
-	private static final Set<String> reserved = 
-			merge(
-				SpecialForms.FORMS, 
-				Arrays.asList(
+	private static final Set<String> RESERVED = new HashSet<>(
+			Arrays.asList(
 					".",
 					"proxify",
 					"*in*",

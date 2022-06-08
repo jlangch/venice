@@ -26,7 +26,6 @@ import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
 
-import com.github.jlangch.venice.impl.specialforms.SpecialForms;
 import com.github.jlangch.venice.impl.thread.ThreadContext;
 import com.github.jlangch.venice.impl.types.VncSymbol;
 import com.github.jlangch.venice.impl.types.VncVal;
@@ -80,7 +79,7 @@ public class Namespaces {
 			final VncSymbol ns = Namespaces.getCurrentNS();			
 			final VncVal newMeta = MetaUtil.setNamespace(sym.getMeta(), ns.getName());
 			
-			return Namespaces.isCoreNS(ns) || SpecialForms.isSpecialForm(sym.getName())
+			return Namespaces.isCoreNS(ns) || sym.isSpecialFormName()
 					? new VncSymbol(sym.getName(), newMeta)
 					: new VncSymbol(ns.getName(), sym.getName(), newMeta);
 		}

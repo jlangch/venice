@@ -58,6 +58,15 @@ public class Recursion_TailPos_Check_Test {
 	}
 
 	@Test
+	public void test_check_if_let() {
+		final Venice venice = new Venice();
+
+		assertNull(venice.eval("(if-let [a true] (tail-pos))"));
+		assertNull(venice.eval("(if-let [a false] 2 (tail-pos))"));
+		assertThrows(NotInTailPositionException.class, () -> venice.eval("(if-let [a true] (+ 1 (tail-pos)) 2)"));
+	}
+
+	@Test
 	public void test_check_when() {
 		final Venice venice = new Venice();
 
@@ -73,6 +82,15 @@ public class Recursion_TailPos_Check_Test {
 		assertNull(venice.eval("(when-not false (tail-pos))"));
 		assertNull(venice.eval("(when-not false 2 (tail-pos))"));
 		assertThrows(NotInTailPositionException.class, () -> venice.eval("(when-not false (tail-pos) 2)"));
+	}
+	
+	@Test
+	public void test_check_when_let() {
+		final Venice venice = new Venice();
+
+		assertNull(venice.eval("(when-let [a true] (tail-pos))"));
+		assertNull(venice.eval("(when-let [a true] 2 (tail-pos))"));
+		assertThrows(NotInTailPositionException.class, () -> venice.eval("(when-let [a true] (+ 1 (tail-pos)) 2)"));
 	}
 
 	@Test
@@ -109,7 +127,41 @@ public class Recursion_TailPos_Check_Test {
 	}
 
 	@Test
-	public void test_check_function() {
+	public void test_check_case() {
+		final Venice venice = new Venice();
+
+		assertNull(venice.eval("(case :a :a (tail-pos) :b (tail-pos) (tail-pos))"));
+		assertNull(venice.eval("(case :b :a (tail-pos) :b (tail-pos) (tail-pos))"));
+		assertNull(venice.eval("(case :c :a (tail-pos) :b (tail-pos) (tail-pos))"));
+	}
+
+	@Test
+	public void test_check_cond() {
+		final Venice venice = new Venice();
+
+		assertNull(venice.eval("(cond true (tail-pos) false (tail-pos) :else (tail-pos))"));
+		assertNull(venice.eval("(cond false (tail-pos) true (tail-pos) :else (tail-pos))"));
+		assertNull(venice.eval("(cond false (tail-pos) false (tail-pos) :else (tail-pos))"));
+	}
+
+	@Test
+	public void test_check_or() {
+		final Venice venice = new Venice();
+
+		assertNull(venice.eval("(or false (tail-pos))"));
+		assertNull(venice.eval("(or false false (tail-pos))"));
+	}
+
+	@Test
+	public void test_check_and() {
+		final Venice venice = new Venice();
+
+		assertNull(venice.eval("(and true (tail-pos))"));
+		assertNull(venice.eval("(and true true (tail-pos))"));
+	}
+
+	@Test
+	public void test_check_defn() {
 		final Venice venice = new Venice();
 
 		assertNull(venice.eval("(do (defn foo [] (tail-pos)) (foo))"));

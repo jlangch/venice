@@ -139,7 +139,7 @@
 (defmacro
   ^{ :arglists '("(or x)" "(or x & next)")
      :doc "Ors the predicate forms"
-     :examples '("(or true false)", "(or false false)", "(or)")
+     :examples '("(or true false)", "(or false false)", "(or nil 100)", "(or)")
      :see-also '("and" "not") }
 
   or

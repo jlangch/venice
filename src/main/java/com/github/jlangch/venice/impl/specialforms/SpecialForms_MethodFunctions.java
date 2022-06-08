@@ -34,7 +34,6 @@ import com.github.jlangch.venice.VncException;
 import com.github.jlangch.venice.impl.FunctionBuilder;
 import com.github.jlangch.venice.impl.Namespaces;
 import com.github.jlangch.venice.impl.env.Env;
-import com.github.jlangch.venice.impl.env.ReservedSymbols;
 import com.github.jlangch.venice.impl.env.Var;
 import com.github.jlangch.venice.impl.specialforms.util.SpecialFormsContext;
 import com.github.jlangch.venice.impl.types.IVncFunction;
@@ -284,18 +283,6 @@ public class SpecialForms_MethodFunctions {
 				}
 		
 				final VncSymbol fnName = Namespaces.qualifySymbolWithCurrNS(name);
-				if (ReservedSymbols.isSpecialForm(fnName)) {
-					throw new VncException(
-							String.format(
-									"The special form name '%s' cannot be used for a function name!", 
-									fnName.getSimpleName()));
-				}
-				if (ReservedSymbols.isReserved(fnName)) {
-					throw new VncException(
-							String.format(
-									"The reserved name '%s' cannot be used for a function name!", 
-									fnName.getSimpleName()));
-				}
 
 				final VncSequence paramsOrSig = Coerce.toVncSequence(args.nth(argPos));
 				if (Types.isVncVector(paramsOrSig)) {

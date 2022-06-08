@@ -22,6 +22,8 @@
 package com.github.jlangch.venice.impl.types;
 
 import com.github.jlangch.venice.VncException;
+import com.github.jlangch.venice.impl.env.ReservedSymbols;
+import com.github.jlangch.venice.impl.specialforms.SpecialForms;
 import com.github.jlangch.venice.impl.types.util.QualifiedName;
 import com.github.jlangch.venice.impl.types.util.Types;
 import com.github.jlangch.venice.impl.util.MetaUtil;
@@ -42,6 +44,9 @@ public class VncSymbol extends VncVal implements INamespaceAware {
 		simpleName = qn.getSimpleName(); 	
 		qualifiedName = qn.getQualifiedName();
 		
+		specialFormName = SpecialForms.isSpecialForm(qualifiedName);
+		reservedName = ReservedSymbols.isReserved(qualifiedName);
+		
 		hash = qualifiedName.hashCode();
 	}
 
@@ -54,6 +59,9 @@ public class VncSymbol extends VncVal implements INamespaceAware {
 		simpleName = qn.getSimpleName(); 	
 		qualifiedName = qn.getQualifiedName();
 		
+		specialFormName = SpecialForms.isSpecialForm(qualifiedName);
+		reservedName = ReservedSymbols.isReserved(qualifiedName);
+		
 		hash = qualifiedName.hashCode();
 	}
 
@@ -63,6 +71,10 @@ public class VncSymbol extends VncVal implements INamespaceAware {
 		namespace = other.namespace;
 		simpleName = other.simpleName;
 		qualifiedName = other.qualifiedName;
+		
+		specialFormName = other.specialFormName;
+		reservedName = other.reservedName;
+
 		hash = other.hash;
 	}
 	
@@ -135,6 +147,14 @@ public class VncSymbol extends VncVal implements INamespaceAware {
 		}
 		return new VncSymbol(ns.getName() + "/" + sym.getName());
 	}
+	
+	public boolean isSpecialFormName() {
+		return specialFormName;
+	}
+
+	public boolean isReservedName() {
+		return reservedName;
+	}
 
 	@Override 
 	public TypeRank typeRank() {
@@ -191,6 +211,7 @@ public class VncSymbol extends VncVal implements INamespaceAware {
 	private final String qualifiedName;
 	private final String simpleName;
 	private final String namespace;
+	private final boolean specialFormName;
+	private final boolean reservedName;
 	private final int hash;
-
 }

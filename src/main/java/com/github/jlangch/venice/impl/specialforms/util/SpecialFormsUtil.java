@@ -24,7 +24,6 @@ package com.github.jlangch.venice.impl.specialforms.util;
 import com.github.jlangch.venice.VncException;
 import com.github.jlangch.venice.impl.Namespaces;
 import com.github.jlangch.venice.impl.env.Env;
-import com.github.jlangch.venice.impl.env.ReservedSymbols;
 import com.github.jlangch.venice.impl.thread.ThreadContext;
 import com.github.jlangch.venice.impl.types.VncSymbol;
 import com.github.jlangch.venice.impl.types.VncVal;
@@ -46,7 +45,7 @@ public class SpecialFormsUtil {
 			final SpecialFormsContext ctx
 	) {
 		final VncSymbol sym = Coerce.toVncSymbol(symVal);
-		ReservedSymbols.validateNotReservedSymbol(sym);
+		validateNotReservedSymbol(sym);
 		return sym.withMeta(ctx.getEvaluator().evaluate(sym.getMeta(), env, false));
 	}
 
@@ -100,6 +99,28 @@ public class SpecialFormsUtil {
 					.getCurrentNamespace()
 					.getJavaImports()
 					.resolveClassName(className);
+	}
+
+	
+	private static void validateNotReservedSymbol(final VncSymbol symbol) {
+		if (symbol != null) {
+			if (symbol.isSpecialFormName()) {
+				try (WithCallStack cs = new WithCallStack(new CallFrame(symbol.getQualifiedName(), symbol.getMeta()))) {
+					throw new VncException(
+							String.format(
+									"The special form name '%s' can not be used a symbol.", 
+									symbol.getName()));
+				}
+			}
+			if (symbol.isReservedName()) {
+				try (WithCallStack cs = new WithCallStack(new CallFrame(symbol.getQualifiedName(), symbol.getMeta()))) {
+					throw new VncException(
+							String.format(
+									"Reserved name '%s' can not be used a symbol.", 
+									symbol.getName()));
+				}
+			}
+		}
 	}
 
 }
