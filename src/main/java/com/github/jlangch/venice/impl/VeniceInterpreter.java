@@ -54,7 +54,6 @@ import com.github.jlangch.venice.impl.reader.Reader;
 import com.github.jlangch.venice.impl.specialforms.SpecialForms_OtherFunctions;
 import com.github.jlangch.venice.impl.specialforms.util.SpecialFormsContext;
 import com.github.jlangch.venice.impl.thread.ThreadContext;
-import com.github.jlangch.venice.impl.types.Constants;
 import com.github.jlangch.venice.impl.types.IVncFunction;
 import com.github.jlangch.venice.impl.types.VncBoolean;
 import com.github.jlangch.venice.impl.types.VncFunction;
@@ -281,14 +280,14 @@ public class VeniceInterpreter implements IVeniceInterpreter, Serializable  {
 		env.setGlobal(new Var(new VncSymbol("*ansi-term*"), VncBoolean.of(ansiTerminal), false));
 		
 		// set the run mode
-		env.setGlobal(new Var(new VncSymbol("*run-mode*"), runMode == null ? Constants.Nil : runMode.mode, false));
+		env.setGlobal(new Var(new VncSymbol("*run-mode*"), runMode == null ? Nil : runMode.mode, false));
 
 		// loaded modules & files
 		env.setGlobal(new Var(new VncSymbol("*loaded-modules*"), loadedModules, true));
 		env.setGlobal(new Var(new VncSymbol("*loaded-files*"), new VncMutableSet(), true));
 		
 		// command line args (default nil)
-		env.setGlobal(new Var(new VncSymbol("*ARGV*"), Constants.Nil, true));
+		env.setGlobal(new Var(new VncSymbol("*ARGV*"), Nil, true));
 
 		// init namespaces
 		initNS();
