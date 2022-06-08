@@ -411,6 +411,13 @@ public class VeniceInterpreter implements IVeniceInterpreter, Serializable  {
 
 						final VncVector bindings = Coerce.toVncVector(args.first());
 						final VncList expressions = args.rest();
+						
+						if (bindings.size() % 2 != 0) {
+							final CallFrame cf = new CallFrame("let", args, a0meta);
+							try (WithCallStack cs = new WithCallStack(cf)) {
+								throw new VncException("let requires an even number of forms in the binding vector!");					
+							}
+						}
 
 						final Iterator<VncVal> bindingsIter = bindings.iterator();
 						final List<Var> vars = new ArrayList<>();
@@ -418,12 +425,6 @@ public class VeniceInterpreter implements IVeniceInterpreter, Serializable  {
 							final VncVal sym = bindingsIter.next();
 							final boolean symIsSymbol = sym instanceof VncSymbol;
 							
-							if (!bindingsIter.hasNext()) {
-								final CallFrame cf = new CallFrame("let", args, a0meta);
-								try (WithCallStack cs = new WithCallStack(cf)) {
-									throw new VncException("let requires an even number of forms in the binding vector!");					
-								}
-							}
 							if (symIsSymbol && ((VncSymbol)sym).hasNamespace()) {
 								final VncSymbol s = (VncSymbol)sym;
 								final CallFrame cf = new CallFrame(s.getQualifiedName(), args, s.getMeta());
