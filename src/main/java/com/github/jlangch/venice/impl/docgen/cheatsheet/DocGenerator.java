@@ -1204,6 +1204,7 @@ public class DocGenerator {
 		misc.addItem(getDocItem("nil?"));
 		misc.addItem(getDocItem("some?"));
 		misc.addItem(getDocItem("eval"));
+		misc.addItem(getDocItem("read-string"));
 		misc.addItem(getDocItem("name"));
 		misc.addItem(getDocItem("namespace"));
 		misc.addItem(getDocItem("fn-name"));
@@ -1760,7 +1761,7 @@ public class DocGenerator {
 		final DocSection from = new DocSection("from", "io.from");
 		all.addSection(from);
 		from.addItem(getDocItem("read-line"));
-		from.addItem(getDocItem("read-string"));
+		from.addItem(getDocItem("read-char"));
 
 		final DocSection classpath = new DocSection("classpath", "io.classpath");
 		all.addSection(classpath);
@@ -1795,8 +1796,15 @@ public class DocGenerator {
 		final DocSection other = new DocSection("other", "io.other");
 		all.addSection(other);
 		other.addItem(getDocItem("with-out-str"));
+		other.addItem(getDocItem("with-err-str"));
 		other.addItem(getDocItem("io/mime-type"));
 		other.addItem(getDocItem("io/default-charset"));
+
+		final DocSection vars = new DocSection("vars", "io.vars");
+		all.addSection(vars);
+		vars.addItem(getDocItem("*out*"));
+		vars.addItem(getDocItem("*err*"));
+		vars.addItem(getDocItem("*in*"));
 
 		return section;
 	}

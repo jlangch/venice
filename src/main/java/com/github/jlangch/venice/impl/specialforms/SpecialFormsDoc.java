@@ -338,7 +338,6 @@ public class SpecialFormsDoc {
 			private static final long serialVersionUID = -1;
 		};
 	
-
 	public static VncFunction global_var_ansi_term = 
 		new SpecialFormsDocFunction(
 				"*ansi-term*",
@@ -351,7 +350,72 @@ public class SpecialFormsDoc {
 		) {
 			private static final long serialVersionUID = -1;
 		};
-	
+		
+	public static VncFunction global_var_out = 
+		new SpecialFormsDocFunction(
+				"*out*",
+				VncFunction
+					.meta()
+					.doc(
+						"A `:java.io.PrintStream` object representing standard output " +
+						"for print operations.\n\n" +
+						"Defaults to System.out, wrapped in an PrintStream.\n\n" +
+						"`*out*` is a dynamic var. Any `:java.io.PrintStream` can be " +
+						"dynamically bound to it:\n\n" +
+						"```                           \n" +
+						"(binding [*out* print-stream] \n" +
+						"  (println \"text\"))         \n" +
+						"```")
+					.seeAlso("with-out-str", "*err*", "*in*")
+					.build()
+		) {
+			private static final long serialVersionUID = -1;
+		};
+		
+	public static VncFunction global_var_err = 
+		new SpecialFormsDocFunction(
+				"*err*",
+				VncFunction
+					.meta()
+					.doc(
+						"A `:java.io.PrintStream` object representing standard error " +
+						"for print operations.\n\n" +
+						"Defaults to System.err, wrapped in an PrintStream.\n\n" +
+						"`*err*` is a dynamic var. Any `:java.io.PrintStream` can be " +
+						"dynamically bound to it:\n\n" +
+						"```                           \n" +
+						"(binding [*err* print-stream] \n" +
+						"  (println \"text\"))         \n" +
+						"```")
+					.seeAlso("with-err-str", "*out*", "*in*")
+					.build()
+		) {
+			private static final long serialVersionUID = -1;
+		};
+		
+	public static VncFunction global_var_in = 
+		new SpecialFormsDocFunction(
+				"*in*",
+				VncFunction
+					.meta()
+					.doc(
+						"A `:java.io.Reader` object representing standard input " +
+						"for read operations.\n\n" +
+						"Defaults to System.in, wrapped in an Reader.\n\n" +
+						"`*in*` is a dynamic var. Any `:java.io.Reader` can be " +
+						"dynamically bound to it:\n\n" +
+						"```                           \n" +
+						"(binding [*in* reader]        \n" +
+						"  (read-line))                \n" +
+						"```")
+					.seeAlso("read-line", "read-char", "*out*", "*err*")
+					.build()
+		) {
+			private static final long serialVersionUID = -1;
+		};
+
+		
+		
 	private static class SpecialFormsDocFunction extends VncFunction {
 		public SpecialFormsDocFunction(final String name, final VncVal meta) {
 			super(name, meta);
@@ -387,5 +451,9 @@ public class SpecialFormsDoc {
 					.put(new VncSymbol("*ns*"),				global_var_ns)
 					.put(new VncSymbol("*run-mode*"),		global_var_run_mode)
 					.put(new VncSymbol("*ansi-term*"),		global_var_ansi_term)
+					
+					.put(new VncSymbol("*out*"),		    global_var_out)
+					.put(new VncSymbol("*err*"),		    global_var_err)
+					.put(new VncSymbol("*in*"),		        global_var_in)
 					.toMap();
 }
