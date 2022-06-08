@@ -284,10 +284,17 @@ public class Env implements Serializable {
 	public Env setLocal(final Var localVar) {
 		final VncSymbol sym = localVar.getName();
 		
-		if (sym.isReservedName() || sym.isSpecialFormName()) {
+		if (sym.isReservedName()) {
 			try (WithCallStack cs = new WithCallStack(CallFrame.from(sym))) {
 				throw new VncException(String.format(
-							"Rejected setting local var with name '%s'. Use another name, please.", 
+							"Rejected setting local var with rerved name '%s'. Use another name, please.", 
+							sym.getName()));
+			}
+		}
+		if (sym.isSpecialFormName()) {
+			try (WithCallStack cs = new WithCallStack(CallFrame.from(sym))) {
+				throw new VncException(String.format(
+							"Rejected setting local var with special form name '%s'. Use another name, please.", 
 							sym.getName()));
 			}
 		}
