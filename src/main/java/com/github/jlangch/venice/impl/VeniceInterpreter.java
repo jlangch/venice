@@ -77,6 +77,7 @@ import com.github.jlangch.venice.impl.util.ArityExceptions.FnType;
 import com.github.jlangch.venice.impl.util.CallFrame;
 import com.github.jlangch.venice.impl.util.CallFrameFnData;
 import com.github.jlangch.venice.impl.util.CallStack;
+import com.github.jlangch.venice.impl.util.CollectionUtil;
 import com.github.jlangch.venice.impl.util.MeterRegistry;
 import com.github.jlangch.venice.impl.util.WithCallStack;
 import com.github.jlangch.venice.javainterop.AcceptAllInterceptor;
@@ -309,7 +310,8 @@ public class VeniceInterpreter implements IVeniceInterpreter, Serializable  {
 		sealedSystemNS.set(true);
 
 		// load other modules requested for preload
-		toEmpty(preloadedExtensionModules).forEach(m -> loadModule(m, env, loadedModules));
+		CollectionUtil.toEmpty(preloadedExtensionModules)
+					  .forEach(m -> loadModule(m, env, loadedModules));
 
 		return env;
 	}
@@ -512,12 +514,8 @@ public class VeniceInterpreter implements IVeniceInterpreter, Serializable  {
 												debugAgent);
 
 						if (debugAgent != null && debugAgent.hasBreakpointFor(BreakpointFnRef.LOOP)) {
-							debugAgent.onBreakLoop(
-								FunctionEntry,
-								recursionPoint.getLoopBindingNames(), 
-								recursionPoint.getMeta(),
-								env,
-								threadCtx.getCallStack_());
+							final CallStack cs = threadCtx.getCallStack_();
+							debugAgent.onBreakLoop(FunctionEntry, recursionPoint, env, cs);
 						}
 
 						if (expressions.size() == 1) {
@@ -553,15 +551,11 @@ public class VeniceInterpreter implements IVeniceInterpreter, Serializable  {
 						env = buildRecursionEnv(args, env, recursionPoint);
 	
 						// for performance reasons the DebugAgent is stored in the 
-						// RecursionPoint. Saves repeated ThreadLocal access!
+						// RecursionPoint. This saves repeated ThreadLocal access!
 						final DebugAgent debugAgent = recursionPoint.getDebugAgent();
 						if (debugAgent != null && debugAgent.hasBreakpointFor(BreakpointFnRef.LOOP)) {
-							debugAgent.onBreakLoop(
-									FunctionEntry,
-									recursionPoint.getLoopBindingNames(), 
-									recursionPoint.getMeta(),
-									env,
-									ThreadContext.getCallStack());
+							final CallStack cs = ThreadContext.getCallStack();
+							debugAgent.onBreakLoop(FunctionEntry, recursionPoint, env, cs);
 						}
 
 						final VncList expressions = recursionPoint.getLoopExpressions();
@@ -705,9 +699,9 @@ public class VeniceInterpreter implements IVeniceInterpreter, Serializable  {
 											}
 										}
 										else {
-											// Debugging for non native functions is handled in 
-											// VncFunction::apply. See the builder
-											// VeniceInterpreter::buildFunction(..)
+											// Debugging for non native functions is handled in the
+											// implementation of VncFunction::apply. See the builder
+											// FunctionBuilder::buildFunction(..)
 											threadCtx.setCallFrameFnData_(new CallFrameFnData(fnName, a0meta));
 											return fn.apply(fnArgs);
 										}
@@ -726,7 +720,7 @@ public class VeniceInterpreter implements IVeniceInterpreter, Serializable  {
 											final long elapsed = System.nanoTime() - nanos;
 											if (fn instanceof VncMultiArityFunction) {
 												final VncFunction f = fn.getFunctionForArgs(fnArgs);
-												meterRegistry.record(fnName + "[" + f.getParams().size() + "]", elapsed);
+												meterRegistry.record(fnName, f.getParams().size(), elapsed);
 											}
 											else {
 												meterRegistry.record(fnName, elapsed);
@@ -1121,10 +1115,6 @@ public class VeniceInterpreter implements IVeniceInterpreter, Serializable  {
 		}
 		
 		return recur_env;
-	}
-
-	private static <T> List<T> toEmpty(final List<T> list) {
-		return list == null ? new ArrayList<T>() : list;
 	}
 
 	

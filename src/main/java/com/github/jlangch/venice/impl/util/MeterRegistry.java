@@ -84,6 +84,17 @@ public class MeterRegistry implements Serializable {
 		}
 	}
 	
+	public void record(final String name, final int arity, final long elapsedTime) {
+		if (elapsedTime > 0) {
+			final String name_ = name + "[" + arity + "]";
+			data.compute(
+					name_, 
+					(k, v) -> v == null 
+								? new ElapsedTime(name_, elapsedTime) 
+								: v.add(elapsedTime));
+		}
+	}
+	
 	public Collection<ElapsedTime> getTimerData() {
 		return data.values();
 	}

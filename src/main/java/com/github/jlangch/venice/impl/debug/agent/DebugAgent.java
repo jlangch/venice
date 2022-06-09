@@ -46,6 +46,7 @@ import java.util.concurrent.atomic.AtomicLong;
 import java.util.stream.Collectors;
 
 import com.github.jlangch.venice.impl.Namespaces;
+import com.github.jlangch.venice.impl.RecursionPoint;
 import com.github.jlangch.venice.impl.debug.breakpoint.AncestorSelector;
 import com.github.jlangch.venice.impl.debug.breakpoint.AncestorType;
 import com.github.jlangch.venice.impl.debug.breakpoint.BreakpointFn;
@@ -262,12 +263,14 @@ public class DebugAgent implements IDebugAgent {
 
 	public void onBreakLoop(
 			final FunctionScope scope,
-			final List<VncSymbol> loopBindingNames,
-			final VncVal meta,
+			final RecursionPoint recursionPoint,
 			final Env env,
 			final CallStack callstack
 	) {
 		if (isStopOnFunction("loop", true, FunctionEntry)) {
+			final List<VncSymbol> loopBindingNames = recursionPoint.getLoopBindingNames();
+			final VncVal meta = recursionPoint.getMeta();
+
 			handleBreak(
 					new Break(
 							new BreakpointFnRef("loop"),

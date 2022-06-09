@@ -180,6 +180,9 @@ public class CollectionUtil {
 		return Collections.unmodifiableSet(toSet(objects));
 	}
 
+	public static <T> List<T> toEmpty(final List<T> list) {
+		return list == null ? new ArrayList<T>() : list;
+	}
 	
 	public static <U> List<U> drop(final List<U> items, final int n) {
 		if (n <= 0) {
