@@ -188,8 +188,8 @@ Example 2: Factorial numbers:
       ([x]     (first (drop (dec x) (factorial))))
       ([n acc] (cons acc #(factorial (inc n) (* acc (inc n))))))
 
-   (factorial 5)      ; => 120N 
-   (factorial 1000))  ; => 284625968091...00000N  (35661 digits)
+   (factorial 5)       ; => 120N 
+   (factorial 10000))  ; => 284625968091...00000N  (35661 digits)
 ```
 
 
@@ -254,7 +254,8 @@ call must be in tail position.
                acc
                (factorial (dec n) (* acc n)))))
  
-  (factorial 5))
+   (factorial 5)       ; => 120N 
+   (factorial 10000))  ; => 284625968091...00000N  (35661 digits)
 ```
 
 
