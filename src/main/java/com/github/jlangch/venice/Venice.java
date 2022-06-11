@@ -280,11 +280,9 @@ public class Venice {
             final Env env = createEnv(venice, macroexpand, params);
 
             meterRegistry.reset();  // no metrics for creating env and loading modules
-
             meterRegistry.record("venice.setup", System.nanoTime() - nanos);
 
             final VncVal result = venice.RE(script, scriptName, env);
-
             final Object jResult = result.convertToJavaObject();
 
             meterRegistry.record("venice.total", System.nanoTime() - nanos);
@@ -340,17 +338,14 @@ public class Venice {
 
                 if (key.equals("*out*")) {
                     env.setStdoutPrintStream(buildPrintStream(val, "*out*"));
-
                     stdoutAdded = true;
                 }
                 else if (key.equals("*err*")) {
                     env.setStderrPrintStream(buildPrintStream(val, "*err*"));
-
                     stderrAdded = true;
                 }
                 else if (key.equals("*in*")) {
                     env.setStdinReader(buildIOReader(val, "*in*"));
-
                     stdinAdded = true;
                 }
                 else {
@@ -430,7 +425,6 @@ public class Venice {
                     ThreadContext.remove(); // clean thread locals
                     ThreadContext.setInterceptor(interceptor);
                     ThreadContext.setMeterRegistry(meterRegistry);
-
                     return callable.call();
                 }
                 finally {
