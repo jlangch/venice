@@ -4,6 +4,8 @@
     },
     
     "workbench.colorTheme": "Tomorrow Night Blue",
-    "redhat.telemetry.enabled": false
-    
+    "redhat.telemetry.enabled": false,
+    "editor.insertSpaces": true,
+    "editor.tabSize": 4,
+    "editor.detectIndentation": false
 }
