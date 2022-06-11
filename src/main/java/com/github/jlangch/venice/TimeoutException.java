@@ -1,5 +1,5 @@
 /*   __    __         _
- *   \ \  / /__ _ __ (_) ___ ___ 
+ *   \ \  / /__ _ __ (_) ___ ___
  *    \ \/ / _ \ '_ \| |/ __/ _ \
  *     \  /  __/ | | | | (_|  __/
  *      \/ \___|_| |_|_|\___\___|
@@ -23,25 +23,25 @@ package com.github.jlangch.venice;
 
 
 /**
- * Exception thrown when an operation times out. 
+ * Exception thrown when an operation times out.
  */
 public class TimeoutException extends VncException {
 
-	public TimeoutException() {
-	}
-	
-	public TimeoutException(final String message) {
-		super(message);
-	}
+    public TimeoutException() {
+    }
 
-	public TimeoutException(final Throwable cause) {
-		super(cause);
-	}
+    public TimeoutException(final String message) {
+        super(message);
+    }
 
-	public TimeoutException(final String message, final Throwable cause) {
-		super(message, cause);
-	}
+    public TimeoutException(final Throwable cause) {
+        super(cause);
+    }
+
+    public TimeoutException(final String message, final Throwable cause) {
+        super(message, cause);
+    }
 
 
-	private static final long serialVersionUID = 1349237272157335345L;
+    private static final long serialVersionUID = 1349237272157335345L;
 }

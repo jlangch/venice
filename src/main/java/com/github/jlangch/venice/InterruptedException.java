@@ -1,5 +1,5 @@
 /*   __    __         _
- *   \ \  / /__ _ __ (_) ___ ___ 
+ *   \ \  / /__ _ __ (_) ___ ___
  *    \ \/ / _ \ '_ \| |/ __/ _ \
  *     \  /  __/ | | | | (_|  __/
  *      \/ \___|_| |_|_|\___\___|
@@ -23,22 +23,22 @@ package com.github.jlangch.venice;
 
 
 /**
- * Thrown when a thread is waiting, sleeping, or otherwise occupied, and the 
- * thread is interrupted, either before or during a function. 
+ * Thrown when a thread is waiting, sleeping, or otherwise occupied, and the
+ * thread is interrupted, either before or during a function.
  */
 public class InterruptedException extends VncException {
 
-	public InterruptedException() {
-	}
-	
-	public InterruptedException(final String message) {
-		super(message);
-	}
+    public InterruptedException() {
+    }
 
-	public InterruptedException(final String message, final Throwable cause) {
-		super(message, cause);
-	}
+    public InterruptedException(final String message) {
+        super(message);
+    }
+
+    public InterruptedException(final String message, final Throwable cause) {
+        super(message, cause);
+    }
 
 
-	private static final long serialVersionUID = 1349237272157335345L;
+    private static final long serialVersionUID = 1349237272157335345L;
 }

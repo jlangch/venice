@@ -1,5 +1,5 @@
 /*   __    __         _
- *   \ \  / /__ _ __ (_) ___ ___ 
+ *   \ \  / /__ _ __ (_) ___ ___
  *    \ \/ / _ \ '_ \| |/ __/ _ \
  *     \  /  __/ | | | | (_|  __/
  *      \/ \___|_| |_|_|\___\___|
@@ -24,23 +24,23 @@ package com.github.jlangch.venice;
 
 /**
  * Thrown to indicate an error with Excel file processing
- * 
+ *
  * @author juerg
  */
 public class ExcelException extends VncException {
 
-	public ExcelException(final String message) {
-		super(message);
-	}
+    public ExcelException(final String message) {
+        super(message);
+    }
 
-	public ExcelException(final String message, final Throwable cause) {
-		super(message, cause);
-	}
+    public ExcelException(final String message, final Throwable cause) {
+        super(message, cause);
+    }
 
-	public ExcelException(final Throwable cause) {
-		super(cause);
-	}
+    public ExcelException(final Throwable cause) {
+        super(cause);
+    }
 
-	
-	private static final long serialVersionUID = 1287052357875193031L;
+
+    private static final long serialVersionUID = 1287052357875193031L;
 }

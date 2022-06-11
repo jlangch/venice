@@ -1,5 +1,5 @@
 /*   __    __         _
- *   \ \  / /__ _ __ (_) ___ ___ 
+ *   \ \  / /__ _ __ (_) ___ ___
  *    \ \/ / _ \ '_ \| |/ __/ _ \
  *     \  /  __/ | | | | (_|  __/
  *      \/ \___|_| |_|_|\___\___|
@@ -27,52 +27,52 @@ package com.github.jlangch.venice.impl.debug.breakpoint;
  */
 public class BreakpointFnRef {
 
-	public BreakpointFnRef(final String qualifiedName) {
-		this.qualifiedName = qualifiedName;
-	}
-	
-	
-	public String getQualifiedName() {
-		return qualifiedName;
-	}
+    public BreakpointFnRef(final String qualifiedName) {
+        this.qualifiedName = qualifiedName;
+    }
 
 
-	@Override
-	public String toString() {
-		return qualifiedName;
-	}
-	
-	
-	@Override
-	public int hashCode() {
-		final int prime = 31;
-		int result = 1;
-		result = prime * result + ((qualifiedName == null) ? 0 : qualifiedName.hashCode());
-		return result;
-	}
+    public String getQualifiedName() {
+        return qualifiedName;
+    }
 
-	@Override
-	public boolean equals(Object obj) {
-		if (this == obj)
-			return true;
-		if (obj == null)
-			return false;
-		if (getClass() != obj.getClass())
-			return false;
-		BreakpointFnRef other = (BreakpointFnRef) obj;
-		if (qualifiedName == null) {
-			if (other.qualifiedName != null)
-				return false;
-		} else if (!qualifiedName.equals(other.qualifiedName))
-			return false;
-		return true;
-	}
 
-	
-	public static final BreakpointFnRef IF = new BreakpointFnRef("if");
-	public static final BreakpointFnRef LET = new BreakpointFnRef("let");
-	public static final BreakpointFnRef BINDINGS = new BreakpointFnRef("bindings");
-	public static final BreakpointFnRef LOOP = new BreakpointFnRef("loop");
+    @Override
+    public String toString() {
+        return qualifiedName;
+    }
 
-	private final String qualifiedName;
+
+    @Override
+    public int hashCode() {
+        final int prime = 31;
+        int result = 1;
+        result = prime * result + ((qualifiedName == null) ? 0 : qualifiedName.hashCode());
+        return result;
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (this == obj)
+            return true;
+        if (obj == null)
+            return false;
+        if (getClass() != obj.getClass())
+            return false;
+        BreakpointFnRef other = (BreakpointFnRef) obj;
+        if (qualifiedName == null) {
+            if (other.qualifiedName != null)
+                return false;
+        } else if (!qualifiedName.equals(other.qualifiedName))
+            return false;
+        return true;
+    }
+
+
+    public static final BreakpointFnRef IF = new BreakpointFnRef("if");
+    public static final BreakpointFnRef LET = new BreakpointFnRef("let");
+    public static final BreakpointFnRef BINDINGS = new BreakpointFnRef("bindings");
+    public static final BreakpointFnRef LOOP = new BreakpointFnRef("loop");
+
+    private final String qualifiedName;
 }

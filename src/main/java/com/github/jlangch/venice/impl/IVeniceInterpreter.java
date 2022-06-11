@@ -1,5 +1,5 @@
 /*   __    __         _
- *   \ \  / /__ _ __ (_) ___ ___ 
+ *   \ \  / /__ _ __ (_) ___ ___
  *    \ \/ / _ \ '_ \| |/ __/ _ \
  *     \  /  __/ | | | | (_|  __/
  *      \/ \___|_| |_|_|\___\___|
@@ -29,35 +29,35 @@ import com.github.jlangch.venice.impl.types.VncVal;
 
 public interface IVeniceInterpreter {
 
-	void initNS();
-	
-	void sealSystemNS();
-	
-	void setMacroExpandOnLoad(boolean macroExpandOnLoad, Env env);
-	
-	boolean isMacroExpandOnLoad();
+    void initNS();
 
-	VncVal READ(String script, String filename);
+    void sealSystemNS();
 
-	VncVal EVAL(VncVal ast, Env env);
+    void setMacroExpandOnLoad(boolean macroExpandOnLoad, Env env);
 
-	VncVal MACROEXPAND(VncVal ast, Env env);
+    boolean isMacroExpandOnLoad();
 
-	VncVal RE(String script, String name, Env env);
+    VncVal READ(String script, String filename);
 
-	String PRINT(VncVal exp);
+    VncVal EVAL(VncVal ast, Env env);
 
-	Env createEnv(
-			boolean macroexpandOnLoad, 
-			boolean ansiTerminal, 
-			RunMode runMode);
+    VncVal MACROEXPAND(VncVal ast, Env env);
 
-	Env createEnv(
-			List<String> preloadedExtensionModules,
-			boolean macroExpandOnLoad, 
-			boolean ansiTerminal, 
-			RunMode runMode);
+    VncVal RE(String script, String name, Env env);
 
-	List<String> getAvailableModules();
+    String PRINT(VncVal exp);
+
+    Env createEnv(
+            boolean macroexpandOnLoad,
+            boolean ansiTerminal,
+            RunMode runMode);
+
+    Env createEnv(
+            List<String> preloadedExtensionModules,
+            boolean macroExpandOnLoad,
+            boolean ansiTerminal,
+            RunMode runMode);
+
+    List<String> getAvailableModules();
 
 }

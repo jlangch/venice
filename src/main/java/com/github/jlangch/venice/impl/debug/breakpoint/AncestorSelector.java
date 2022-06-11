@@ -1,5 +1,5 @@
 /*   __    __         _
- *   \ \  / /__ _ __ (_) ___ ___ 
+ *   \ \  / /__ _ __ (_) ___ ___
  *    \ \/ / _ \ '_ \| |/ __/ _ \
  *     \  /  __/ | | | | (_|  __/
  *      \/ \___|_| |_|_|\___\___|
@@ -25,69 +25,69 @@ import com.github.jlangch.venice.impl.types.util.QualifiedName;
 
 
 public class AncestorSelector {
-	
-	public AncestorSelector(
-			final QualifiedName ancestorQN, 
-			final AncestorType type
-	) {
-		if (ancestorQN == null) {
-			throw new RuntimeException("A ancestorQN must not be null");
-		}
-		if (type == null) {
-			throw new RuntimeException("A type must not be null");
-		}
-		
-		this.ancestorQN = ancestorQN;
-		this.type = type;
-	}
-	
-	
-	public QualifiedName getAncestor() {
-		return ancestorQN;
-	}
-	
-	public AncestorType getType() {
-		return type;
-	}
 
-	public String formatForBaseFn(final String fnName) {
-		return String.format(
-				"%s %s %s", 
-				ancestorQN.getQualifiedName(),
-				type.symbol(),
-				fnName);
-	}
+    public AncestorSelector(
+            final QualifiedName ancestorQN,
+            final AncestorType type
+    ) {
+        if (ancestorQN == null) {
+            throw new RuntimeException("A ancestorQN must not be null");
+        }
+        if (type == null) {
+            throw new RuntimeException("A type must not be null");
+        }
 
-	
-	@Override
-	public int hashCode() {
-		final int prime = 31;
-		int result = 1;
-		result = prime * result + ((ancestorQN == null) ? 0 : ancestorQN.hashCode());
-		result = prime * result + ((type == null) ? 0 : type.hashCode());
-		return result;
-	}
-
-	@Override
-	public boolean equals(Object obj) {
-		if (this == obj)
-			return true;
-		if (obj == null)
-			return false;
-		if (getClass() != obj.getClass())
-			return false;
-		AncestorSelector other = (AncestorSelector) obj;
-		if (ancestorQN == null) {
-			if (other.ancestorQN != null)
-				return false;
-		} else if (!ancestorQN.equals(other.ancestorQN))
-			return false;
-		if (type != other.type)
-			return false;
-		return true;
-	}
+        this.ancestorQN = ancestorQN;
+        this.type = type;
+    }
 
 
-	private final QualifiedName ancestorQN;
-	private final AncestorType type;
+    public QualifiedName getAncestor() {
+        return ancestorQN;
+    }
+
+    public AncestorType getType() {
+        return type;
+    }
+
+    public String formatForBaseFn(final String fnName) {
+        return String.format(
+                "%s %s %s",
+                ancestorQN.getQualifiedName(),
+                type.symbol(),
+                fnName);
+    }
+
+
+    @Override
+    public int hashCode() {
+        final int prime = 31;
+        int result = 1;
+        result = prime * result + ((ancestorQN == null) ? 0 : ancestorQN.hashCode());
+        result = prime * result + ((type == null) ? 0 : type.hashCode());
+        return result;
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (this == obj)
+            return true;
+        if (obj == null)
+            return false;
+        if (getClass() != obj.getClass())
+            return false;
+        AncestorSelector other = (AncestorSelector) obj;
+        if (ancestorQN == null) {
+            if (other.ancestorQN != null)
+                return false;
+        } else if (!ancestorQN.equals(other.ancestorQN))
+            return false;
+        if (type != other.type)
+            return false;
+        return true;
+    }
+
+
+    private final QualifiedName ancestorQN;
+    private final AncestorType type;
 }

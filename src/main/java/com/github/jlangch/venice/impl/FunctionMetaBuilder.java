@@ -1,5 +1,5 @@
 /*   __    __         _
- *   \ \  / /__ _ __ (_) ___ ___ 
+ *   \ \  / /__ _ __ (_) ___ ___
  *    \ \/ / _ \ '_ \| |/ __/ _ \
  *     \  /  __/ | | | | (_|  __/
  *      \/ \___|_| |_|_|\___\___|
@@ -35,50 +35,50 @@ import com.github.jlangch.venice.impl.util.MetaUtil;
 
 public class FunctionMetaBuilder {
 
-	public FunctionMetaBuilder() {
-	}
-	
-	public FunctionMetaBuilder arglists(final String... arglists) {
-		meta.put(MetaUtil.ARGLIST, toVncList(arglists));
-		return this;
-	}
-	
-	public FunctionMetaBuilder doc(final String doc) { 
-		meta.put(MetaUtil.DOC, new VncString(doc));
-		return this;
-	}
-	
-	public FunctionMetaBuilder examples(final String... examples) { 
-		meta.put(MetaUtil.EXAMPLES, toVncList(examples));
-		return this;
-	}
-	
-	public FunctionMetaBuilder seeAlso(final String... refs) { 
-		meta.put(MetaUtil.SEE_ALSO, toVncList(refs));
-		return this;
-	}
-	
-	public FunctionMetaBuilder functionRefs(final String... refs) { 
-		meta.put(MetaUtil.FUNCTION_REFS, toVncList(refs));
-		return this;
-	}
+    public FunctionMetaBuilder() {
+    }
 
-	public FunctionMetaBuilder privateFn() { 
-		meta.put(MetaUtil.PRIVATE, VncBoolean.True);
-		return this;
-	}
+    public FunctionMetaBuilder arglists(final String... arglists) {
+        meta.put(MetaUtil.ARGLIST, toVncList(arglists));
+        return this;
+    }
 
-	public VncHashMap build() {
-		return new VncHashMap(meta);
-	}
-	
+    public FunctionMetaBuilder doc(final String doc) {
+        meta.put(MetaUtil.DOC, new VncString(doc));
+        return this;
+    }
 
-	private VncList toVncList(final String... strings) { 
-		return VncList.ofList(Arrays.stream(strings)
-									.map(r -> new VncString(r))
-									.collect(Collectors.toList()));
-	}
+    public FunctionMetaBuilder examples(final String... examples) {
+        meta.put(MetaUtil.EXAMPLES, toVncList(examples));
+        return this;
+    }
 
-	private final HashMap<VncVal,VncVal> meta = new HashMap<>();
+    public FunctionMetaBuilder seeAlso(final String... refs) {
+        meta.put(MetaUtil.SEE_ALSO, toVncList(refs));
+        return this;
+    }
+
+    public FunctionMetaBuilder functionRefs(final String... refs) {
+        meta.put(MetaUtil.FUNCTION_REFS, toVncList(refs));
+        return this;
+    }
+
+    public FunctionMetaBuilder privateFn() {
+        meta.put(MetaUtil.PRIVATE, VncBoolean.True);
+        return this;
+    }
+
+    public VncHashMap build() {
+        return new VncHashMap(meta);
+    }
+
+
+    private VncList toVncList(final String... strings) {
+        return VncList.ofList(Arrays.stream(strings)
+                                    .map(r -> new VncString(r))
+                                    .collect(Collectors.toList()));
+    }
+
+    private final HashMap<VncVal,VncVal> meta = new HashMap<>();
 
 }

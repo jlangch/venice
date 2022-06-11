@@ -1,5 +1,5 @@
 /*   __    __         _
- *   \ \  / /__ _ __ (_) ___ ___ 
+ *   \ \  / /__ _ __ (_) ___ ___
  *    \ \/ / _ \ '_ \| |/ __/ _ \
  *     \  /  __/ | | | | (_|  __/
  *      \/ \___|_| |_|_|\___\___|
@@ -28,16 +28,16 @@ import java.util.concurrent.atomic.AtomicLong;
 
 public class IdGen {
 
-	public String id() {
-		return String.valueOf(gen.getAndIncrement());
-	}
+    public String id() {
+        return String.valueOf(gen.getAndIncrement());
+    }
 
-	public String id(final String name) {
-		return idMap.computeIfAbsent(name, n -> String.valueOf(gen.getAndIncrement()));
-	
-	}
+    public String id(final String name) {
+        return idMap.computeIfAbsent(name, n -> String.valueOf(gen.getAndIncrement()));
 
-	private final AtomicLong gen = new AtomicLong(1000);
+    }
 
-	private final Map<String,String> idMap = new HashMap<>();
+    private final AtomicLong gen = new AtomicLong(1000);
+
+    private final Map<String,String> idMap = new HashMap<>();
 }

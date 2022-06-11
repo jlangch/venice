@@ -1,5 +1,5 @@
 /*   __    __         _
- *   \ \  / /__ _ __ (_) ___ ___ 
+ *   \ \  / /__ _ __ (_) ___ ___
  *    \ \/ / _ \ '_ \| |/ __/ _ \
  *     \  /  __/ | | | | (_|  __/
  *      \/ \___|_| |_|_|\___\___|
@@ -31,51 +31,51 @@ import com.github.jlangch.venice.impl.types.collections.VncMap;
 
 
 public class Namespace {
-	
-	public Namespace(final VncSymbol ns) {
-		this.ns = ns == null ? Namespaces.NS_USER : ns;
-	}
 
-	public VncSymbol getNS() {
-		return ns;
-	}
+    public Namespace(final VncSymbol ns) {
+        this.ns = ns == null ? Namespaces.NS_USER : ns;
+    }
 
-	public void addAlias(final String alias, final String ns) {
-		aliases.put(alias, ns);
-	}
+    public VncSymbol getNS() {
+        return ns;
+    }
 
-	public void removeAlias(final String alias) {
-		aliases.remove(alias);
-	}
-	
-	public String lookupByAlias(final String alias) {
-		return aliases.get(alias);
-	}
-	
-	public VncMap listAliases() {
-		return aliases
-				.entrySet()
-			    .stream()
-			    .map(e -> VncHashMap.of(new VncSymbol(e.getKey()),
-   										new VncSymbol(e.getValue())))
-			    .reduce(new VncHashMap(), (x,y) -> x.putAll(y));
-	}
+    public void addAlias(final String alias, final String ns) {
+        aliases.put(alias, ns);
+    }
 
-	public JavaImports getJavaImports() {
-		return javaImports;
-	}
-	
-	public VncList getJavaImportsAsVncList() {
-		return javaImports.list();
-	}
+    public void removeAlias(final String alias) {
+        aliases.remove(alias);
+    }
 
-	@Override
-	public String toString() {
-		return ns.getName();
-	}
-	
-	
-	private final VncSymbol ns;
-	private final JavaImports javaImports = new JavaImports();
-	private final ConcurrentHashMap<String,String> aliases = new ConcurrentHashMap<>();
+    public String lookupByAlias(final String alias) {
+        return aliases.get(alias);
+    }
+
+    public VncMap listAliases() {
+        return aliases
+                .entrySet()
+                .stream()
+                .map(e -> VncHashMap.of(new VncSymbol(e.getKey()),
+                                        new VncSymbol(e.getValue())))
+                .reduce(new VncHashMap(), (x,y) -> x.putAll(y));
+    }
+
+    public JavaImports getJavaImports() {
+        return javaImports;
+    }
+
+    public VncList getJavaImportsAsVncList() {
+        return javaImports.list();
+    }
+
+    @Override
+    public String toString() {
+        return ns.getName();
+    }
+
+
+    private final VncSymbol ns;
+    private final JavaImports javaImports = new JavaImports();
+    private final ConcurrentHashMap<String,String> aliases = new ConcurrentHashMap<>();
 }

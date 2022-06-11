@@ -1,5 +1,5 @@
 /*   __    __         _
- *   \ \  / /__ _ __ (_) ___ ___ 
+ *   \ \  / /__ _ __ (_) ___ ___
  *    \ \/ / _ \ '_ \| |/ __/ _ \
  *     \  /  __/ | | | | (_|  __/
  *      \/ \___|_| |_|_|\___\___|
@@ -30,32 +30,32 @@ import com.github.jlangch.venice.impl.types.collections.VncSequence;
 
 public class Printer {
 
-	public static String join(
-			final Stream<VncVal> values, 
-			final String delim, 
-			final boolean print_readably
-	) {
-		return values.map(v -> v.toString(print_readably))
-					 .collect(Collectors.joining(delim));
-	}
+    public static String join(
+            final Stream<VncVal> values,
+            final String delim,
+            final boolean print_readably
+    ) {
+        return values.map(v -> v.toString(print_readably))
+                     .collect(Collectors.joining(delim));
+    }
 
-	public static String join(
-			final VncSequence values, 
-			final String delim, 
-			final boolean print_readably
-	) {
-		return join(values.stream(), delim, print_readably);
-	}
+    public static String join(
+            final VncSequence values,
+            final String delim,
+            final boolean print_readably
+    ) {
+        return join(values.stream(), delim, print_readably);
+    }
 
-	public static String pr_str(final VncVal val, final boolean print_readably) {
-		return val.toString(print_readably);
-	}
+    public static String pr_str(final VncVal val, final boolean print_readably) {
+        return val.toString(print_readably);
+    }
 
-	public static String pr_str_args(
-			final VncSequence args,
-			final String delim, 
-			final boolean print_readably
-	) {
-		return join(args, delim, print_readably);
-	}
+    public static String pr_str_args(
+            final VncSequence args,
+            final String delim,
+            final boolean print_readably
+    ) {
+        return join(args, delim, print_readably);
+    }
 }

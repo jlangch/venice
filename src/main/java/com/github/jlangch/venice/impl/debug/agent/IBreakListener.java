@@ -1,5 +1,5 @@
 /*   __    __         _
- *   \ \  / /__ _ __ (_) ___ ___ 
+ *   \ \  / /__ _ __ (_) ___ ___
  *    \ \/ / _ \ '_ \| |/ __/ _ \
  *     \  /  __/ | | | | (_|  __/
  *      \/ \___|_| |_|_|\___\___|
@@ -23,11 +23,11 @@ package com.github.jlangch.venice.impl.debug.agent;
 
 public interface IBreakListener {
 
-	/**
-	 * Called if a breakpoint is reached
-	 * 
-	 * @param br the break
-	 */
-	void onBreak(Break br);
-	
+    /**
+     * Called if a breakpoint is reached
+     *
+     * @param br the break
+     */
+    void onBreak(Break br);
+
 }

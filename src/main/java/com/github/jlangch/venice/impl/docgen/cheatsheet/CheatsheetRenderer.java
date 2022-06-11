@@ -1,5 +1,5 @@
 /*   __    __         _
- *   \ \  / /__ _ __ (_) ___ ___ 
+ *   \ \  / /__ _ __ (_) ___ ___
  *    \ \/ / _ \ '_ \| |/ __/ _ \
  *     \  /  __/ | | | | (_|  __/
  *      \/ \___|_| |_|_|\___\___|
@@ -35,62 +35,62 @@ import com.github.jlangch.venice.util.pdf.PdfRenderer;
 
 public class CheatsheetRenderer {
 
-	public static String parseTemplate() {
-		try {
-			final String template = loadCheatSheetTemplate();
-			
-			final String script = "(do                                              \n" +
-								  "   (load-module :kira)                           \n" +
-								  "   (kira/parse-string template [\"${\" \"}$\"]))   ";
-			
-			// apply the template
-			return (String)new Venice().eval(
-							script,
-							Parameters.of("template", template));
-		}
-		catch(VncException ex) {
-			throw new RuntimeException(
-						"Failed to parse cheatsheet template. \n" + 
-						"Venice Callstack: \n" + ex.getCallStackAsString("   "),
-						ex);
-		}
-		catch(Exception ex) {
-			throw new RuntimeException("Failed toparse cheatsheet template", ex);
-		}
-	}
+    public static String parseTemplate() {
+        try {
+            final String template = loadCheatSheetTemplate();
 
-	public static String renderXHTML(final Map<String,Object> data) {
-		try {
-			final String template = loadCheatSheetTemplate();
-			
-			final String script = "(do                                           \n" +
-								  "   (load-module :kira)                        \n" +
-								  "   (kira/eval template [\"${\" \"}$\"] data))   ";
-			
-			// apply the template
-			return (String)new Venice().eval(
-							script,
-							Parameters.of("template", template, "data", data));
-		}
-		catch(VncException ex) {
-			throw new RuntimeException(
-						"Failed to render cheatsheet XHTML. \n" + 
-						"Venice Callstack: \n" + ex.getCallStackAsString("   "),
-						ex);
-		}
-		catch(Exception ex) {
-			throw new RuntimeException("Failed to render cheatsheet XHTML", ex);
-		}
-	}
+            final String script = "(do                                              \n" +
+                                  "   (load-module :kira)                           \n" +
+                                  "   (kira/parse-string template [\"${\" \"}$\"]))   ";
 
-	public static ByteBuffer renderPDF(final String xhtml) {
-		return PdfRenderer.render(
-				xhtml, 
-				"classpath:/com/github/jlangch/venice/fonts/");
-	}
+            // apply the template
+            return (String)new Venice().eval(
+                            script,
+                            Parameters.of("template", template));
+        }
+        catch(VncException ex) {
+            throw new RuntimeException(
+                        "Failed to parse cheatsheet template. \n" +
+                        "Venice Callstack: \n" + ex.getCallStackAsString("   "),
+                        ex);
+        }
+        catch(Exception ex) {
+            throw new RuntimeException("Failed toparse cheatsheet template", ex);
+        }
+    }
 
-	private static String loadCheatSheetTemplate() {
-		return new ClassPathResource(getVeniceBasePath() + "docgen/cheatsheet2.html")
-						.getResourceAsString("UTF-8");
-	}
+    public static String renderXHTML(final Map<String,Object> data) {
+        try {
+            final String template = loadCheatSheetTemplate();
+
+            final String script = "(do                                           \n" +
+                                  "   (load-module :kira)                        \n" +
+                                  "   (kira/eval template [\"${\" \"}$\"] data))   ";
+
+            // apply the template
+            return (String)new Venice().eval(
+                            script,
+                            Parameters.of("template", template, "data", data));
+        }
+        catch(VncException ex) {
+            throw new RuntimeException(
+                        "Failed to render cheatsheet XHTML. \n" +
+                        "Venice Callstack: \n" + ex.getCallStackAsString("   "),
+                        ex);
+        }
+        catch(Exception ex) {
+            throw new RuntimeException("Failed to render cheatsheet XHTML", ex);
+        }
+    }
+
+    public static ByteBuffer renderPDF(final String xhtml) {
+        return PdfRenderer.render(
+                xhtml,
+                "classpath:/com/github/jlangch/venice/fonts/");
+    }
+
+    private static String loadCheatSheetTemplate() {
+        return new ClassPathResource(getVeniceBasePath() + "docgen/cheatsheet2.html")
+                        .getResourceAsString("UTF-8");
+    }
 }

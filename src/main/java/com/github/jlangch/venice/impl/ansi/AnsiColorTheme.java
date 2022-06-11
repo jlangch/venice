@@ -1,5 +1,5 @@
 /*   __    __         _
- *   \ \  / /__ _ __ (_) ___ ___ 
+ *   \ \  / /__ _ __ (_) ___ ___
  *    \ \/ / _ \ '_ \| |/ __/ _ \
  *     \  /  __/ | | | | (_|  __/
  *      \/ \___|_| |_|_|\___\___|
@@ -32,42 +32,42 @@ import com.github.jlangch.venice.impl.types.VncKeyword;
 
 public class AnsiColorTheme {
 
-	public AnsiColorTheme(
-			final String name,
-			final Map<VncKeyword,String> colors
-	) {
-		this.name = name;
-		this.colors.putAll(colors);
-		this.mapper = Arrays.stream(HighlightClass.values())
-							.collect(Collectors.toMap(
-										p -> p,
-										p -> new VncKeyword(p.name()
-															 .toLowerCase()
-															 .replace('_', '-'))));
-	}
-	
-	public String getName() {
-		return name;
-	}
-	
-	public String getColor(final HighlightClass clazz) {
-		return getColor(mapper.get(clazz));
-	}
+    public AnsiColorTheme(
+            final String name,
+            final Map<VncKeyword,String> colors
+    ) {
+        this.name = name;
+        this.colors.putAll(colors);
+        this.mapper = Arrays.stream(HighlightClass.values())
+                            .collect(Collectors.toMap(
+                                        p -> p,
+                                        p -> new VncKeyword(p.name()
+                                                             .toLowerCase()
+                                                             .replace('_', '-'))));
+    }
 
-	public String getColor(final VncKeyword clazz) {
-		return colors.get(clazz);
-	}
+    public String getName() {
+        return name;
+    }
 
-	public String style(final String text, final HighlightClass clazz) {
-		final String style = clazz == null ? null : getColor(clazz);			
-		return style == null ? text : style + text + AnsiColorTheme.ANSI_RESET;
-	}
+    public String getColor(final HighlightClass clazz) {
+        return getColor(mapper.get(clazz));
+    }
+
+    public String getColor(final VncKeyword clazz) {
+        return colors.get(clazz);
+    }
+
+    public String style(final String text, final HighlightClass clazz) {
+        final String style = clazz == null ? null : getColor(clazz);
+        return style == null ? text : style + text + AnsiColorTheme.ANSI_RESET;
+    }
 
 
-	public static String ANSI_RESET = "\u001b[0m";
+    public static String ANSI_RESET = "\u001b[0m";
 
-	
-	private final String name;
-	private final Map<VncKeyword,String> colors = new HashMap<>();
-	private final Map<HighlightClass,VncKeyword> mapper;
+
+    private final String name;
+    private final Map<VncKeyword,String> colors = new HashMap<>();
+    private final Map<HighlightClass,VncKeyword> mapper;
 }

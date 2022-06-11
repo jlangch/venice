@@ -1,5 +1,5 @@
 /*   __    __         _
- *   \ \  / /__ _ __ (_) ___ ___ 
+ *   \ \  / /__ _ __ (_) ___ ___
  *    \ \/ / _ \ '_ \| |/ __/ _ \
  *     \  /  __/ | | | | (_|  __/
  *      \/ \___|_| |_|_|\___\___|
@@ -27,17 +27,17 @@ package com.github.jlangch.venice;
  */
 public class RingRedirectException extends VncException {
 
-	public RingRedirectException(final String redirectUri) {
-		super();
-		this.redirectUri = redirectUri;
-	}
-	
-	public String getRedirectUri() {
-		return redirectUri;
-	}
+    public RingRedirectException(final String redirectUri) {
+        super();
+        this.redirectUri = redirectUri;
+    }
 
-	
-	private static final long serialVersionUID = 5439694361809280080L;
-	
-	private String redirectUri;
+    public String getRedirectUri() {
+        return redirectUri;
+    }
+
+
+    private static final long serialVersionUID = 5439694361809280080L;
+
+    private String redirectUri;
 }

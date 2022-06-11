@@ -1,5 +1,5 @@
 /*   __    __         _
- *   \ \  / /__ _ __ (_) ___ ___ 
+ *   \ \  / /__ _ __ (_) ___ ___
  *    \ \/ / _ \ '_ \| |/ __/ _ \
  *     \  /  __/ | | | | (_|  __/
  *      \/ \___|_| |_|_|\___\___|
@@ -31,48 +31,48 @@ import com.github.jlangch.venice.impl.util.CollectionUtil;
  */
 public class Step {
 
-	public Step() {
-		this(SteppingDisabled, null);
-	}
-	
-	public Step(final StepMode mode) {
-		this(mode, null);
-	}
+    public Step() {
+        this(SteppingDisabled, null);
+    }
 
-	public Step(
-			final StepMode mode,
-			final String boundToFnName
-	) {
-		this.mode = mode;
-		this.boundToFnName = boundToFnName;
-	}
-	
-	
-	public Step clear() {
-		return new Step();
-	}
-	
-	public StepMode mode() {
-		return mode;
-	}
+    public Step(final StepMode mode) {
+        this(mode, null);
+    }
 
-	public boolean isInMode(final StepMode... modes) {
-		return CollectionUtil.toList(modes).contains(mode);
-	}
-	
-	public String boundToFnName() {
-		return boundToFnName;
-	}
+    public Step(
+            final StepMode mode,
+            final String boundToFnName
+    ) {
+        this.mode = mode;
+        this.boundToFnName = boundToFnName;
+    }
 
-	public boolean isBoundToFnName(final String fnName) {
-		return boundToFnName != null && boundToFnName.equals(fnName);
-	}
 
-	public boolean isBoundToFnNameOrNull(final String fnName) {
-		return boundToFnName == null || boundToFnName.equals(fnName);
-	}
-	
+    public Step clear() {
+        return new Step();
+    }
 
-	private final StepMode mode;
-	private final String boundToFnName;
+    public StepMode mode() {
+        return mode;
+    }
+
+    public boolean isInMode(final StepMode... modes) {
+        return CollectionUtil.toList(modes).contains(mode);
+    }
+
+    public String boundToFnName() {
+        return boundToFnName;
+    }
+
+    public boolean isBoundToFnName(final String fnName) {
+        return boundToFnName != null && boundToFnName.equals(fnName);
+    }
+
+    public boolean isBoundToFnNameOrNull(final String fnName) {
+        return boundToFnName == null || boundToFnName.equals(fnName);
+    }
+
+
+    private final StepMode mode;
+    private final String boundToFnName;
 }

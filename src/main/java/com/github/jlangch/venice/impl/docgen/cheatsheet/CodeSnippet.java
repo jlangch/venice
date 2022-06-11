@@ -1,5 +1,5 @@
 /*   __    __         _
- *   \ \  / /__ _ __ (_) ___ ___ 
+ *   \ \  / /__ _ __ (_) ___ ___
  *    \ \/ / _ \ '_ \| |/ __/ _ \
  *     \  /  __/ | | | | (_|  __/
  *      \/ \___|_| |_|_|\___\___|
@@ -23,21 +23,21 @@ package com.github.jlangch.venice.impl.docgen.cheatsheet;
 
 public class CodeSnippet {
 
-	public CodeSnippet(final String title, final String code) {
-		this.title = title;
-		this.code = code;
-	}
-	
-	
-	public String getTitle() {
-		return title;
-	}
-	
-	public String getCode() {
-		return code;
-	}
+    public CodeSnippet(final String title, final String code) {
+        this.title = title;
+        this.code = code;
+    }
 
 
-	private final String title;
-	private final String code;
+    public String getTitle() {
+        return title;
+    }
+
+    public String getCode() {
+        return code;
+    }
+
+
+    private final String title;
+    private final String code;
 }

@@ -1,5 +1,5 @@
 /*   __    __         _
- *   \ \  / /__ _ __ (_) ___ ___ 
+ *   \ \  / /__ _ __ (_) ___ ___
  *    \ \/ / _ \ '_ \| |/ __/ _ \
  *     \  /  __/ | | | | (_|  __/
  *      \/ \___|_| |_|_|\___\___|
@@ -27,18 +27,18 @@ package com.github.jlangch.venice;
  */
 public class FileException extends VncException {
 
-	public FileException(final String message) {
-		super(message);
-	}
+    public FileException(final String message) {
+        super(message);
+    }
 
-	public FileException(final String message, final Throwable cause) {
-		super(message, cause);
-	}
+    public FileException(final String message, final Throwable cause) {
+        super(message, cause);
+    }
 
-	public FileException(final Throwable cause) {
-		super(cause);
-	}
-	
+    public FileException(final Throwable cause) {
+        super(cause);
+    }
 
-	private static final long serialVersionUID = -23568367901801596L;
+
+    private static final long serialVersionUID = -23568367901801596L;
 }

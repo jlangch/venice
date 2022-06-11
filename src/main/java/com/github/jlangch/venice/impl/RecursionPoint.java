@@ -1,5 +1,5 @@
 /*   __    __         _
- *   \ \  / /__ _ __ (_) ___ ___ 
+ *   \ \  / /__ _ __ (_) ___ ___
  *    \ \/ / _ \ '_ \| |/ __/ _ \
  *     \  /  __/ | | | | (_|  __/
  *      \/ \___|_| |_|_|\___\___|
@@ -32,55 +32,55 @@ import com.github.jlangch.venice.impl.types.collections.VncList;
 
 public class RecursionPoint {
 
-	public RecursionPoint(
-			final List<VncSymbol> loopBindingNames,
-			final VncList loopExpressions,
-			final Env loopEnv,
-			final VncVal meta,
-			final DebugAgent debugAgent
-	) {
-		this.loopBindingNames = loopBindingNames;
-		this.loopBindingNamesCount = loopBindingNames.size();
-		this.loopExpressions = loopExpressions;
-		this.loopEnv = loopEnv;
-		this.meta = meta;
-		this.debugAgent = debugAgent;
-	}
+    public RecursionPoint(
+            final List<VncSymbol> loopBindingNames,
+            final VncList loopExpressions,
+            final Env loopEnv,
+            final VncVal meta,
+            final DebugAgent debugAgent
+    ) {
+        this.loopBindingNames = loopBindingNames;
+        this.loopBindingNamesCount = loopBindingNames.size();
+        this.loopExpressions = loopExpressions;
+        this.loopEnv = loopEnv;
+        this.meta = meta;
+        this.debugAgent = debugAgent;
+    }
 
 
-	public int getLoopBindingNamesCount() {
-		return loopBindingNamesCount;
-	}
+    public int getLoopBindingNamesCount() {
+        return loopBindingNamesCount;
+    }
 
-	public VncSymbol getLoopBindingName(final int idx) {
-		return (VncSymbol)loopBindingNames.get(idx);
-	}
-	
-	public List<VncSymbol> getLoopBindingNames() {
-		return loopBindingNames;
-	}
-	
-	public VncList getLoopExpressions() {
-		return loopExpressions;
-	}
-	
-	public Env getLoopEnv() {
-		return loopEnv;
-	}
-	
-	public VncVal getMeta() {
-		return meta;
-	}
-	
-	public DebugAgent getDebugAgent() {
-		return debugAgent;
-	}
+    public VncSymbol getLoopBindingName(final int idx) {
+        return loopBindingNames.get(idx);
+    }
+
+    public List<VncSymbol> getLoopBindingNames() {
+        return loopBindingNames;
+    }
+
+    public VncList getLoopExpressions() {
+        return loopExpressions;
+    }
+
+    public Env getLoopEnv() {
+        return loopEnv;
+    }
+
+    public VncVal getMeta() {
+        return meta;
+    }
+
+    public DebugAgent getDebugAgent() {
+        return debugAgent;
+    }
 
 
-	private final List<VncSymbol> loopBindingNames;
-	private final int loopBindingNamesCount;
-	private final VncList loopExpressions;
-	private final Env loopEnv;
-	private final VncVal meta;
-	private final DebugAgent debugAgent;
+    private final List<VncSymbol> loopBindingNames;
+    private final int loopBindingNamesCount;
+    private final VncList loopExpressions;
+    private final Env loopEnv;
+    private final VncVal meta;
+    private final DebugAgent debugAgent;
 }

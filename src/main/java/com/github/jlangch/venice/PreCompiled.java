@@ -1,5 +1,5 @@
 /*   __    __         _
- *   \ \  / /__ _ __ (_) ___ ___ 
+ *   \ \  / /__ _ __ (_) ___ ___
  *    \ \/ / _ \ '_ \| |/ __/ _ \
  *     \  /  __/ | | | | (_|  __/
  *      \/ \___|_| |_|_|\___\___|
@@ -34,85 +34,85 @@ import java.util.zip.GZIPOutputStream;
  * Holds a pre-compiled Venice script
  */
 public class PreCompiled implements Serializable {
-	
-	public PreCompiled(final String name, final Object precompiled, final boolean macroexpand) {
-		this.name = name;
-		this.precompiled = precompiled;
-		this.macroexpand = macroexpand;
-		this.version = Version.VERSION;
-	}
-	
-	public String getName() {
-		return name;
-	}
 
-	public String getVersion() {
-		return version;
-	}
+    public PreCompiled(final String name, final Object precompiled, final boolean macroexpand) {
+        this.name = name;
+        this.precompiled = precompiled;
+        this.macroexpand = macroexpand;
+        this.version = Version.VERSION;
+    }
 
-	public boolean isMacroexpand() {
-		return macroexpand;
-	}
+    public String getName() {
+        return name;
+    }
 
-	public Object getPrecompiled() {
-		return precompiled;
-	}
-	
-	/**
-	 * Serializes this pre-compiled Venice script
-	 * 
-	 * @return the serialized byte array
-	 */
-	public byte[] serialize() {
-		final ByteArrayOutputStream baos = new ByteArrayOutputStream();
-		
-		try (GZIPOutputStream gzos = new GZIPOutputStream(baos, true)) {
-			new ObjectOutputStream(gzos).writeObject(this);
-			gzos.flush();
-			return baos.toByteArray();
-		} 
-		catch (Exception ex) {
-			throw new RuntimeException("Failed to serialize pre-compiled Venice script", ex);
-		}
-	}
+    public String getVersion() {
+        return version;
+    }
 
-	/**
-	 * Deserializes a pre-compiled Venice script
-	 * 
-	 * @param precompiled a serialized, pre-compiled Venice script
-	 * @return the deserialized pre-compiled script
-	 * @throws IncompatibleVersionException 
-	 * 				if the Venice version of the deserialized script
-	 *              does not match this Venice version
-	 */
-	public static PreCompiled deserialize(final byte[] precompiled) {
-		final PreCompiled preCompiled = deserialize_(precompiled); 
-		if (!preCompiled.version.equals(Version.VERSION)) {
-			throw new IncompatibleVersionException(String.format(
-					"Failed to deserialize pre-compiled Venice script. "
-						+ "The pre-compiled version %s does not match this Venice version %s",
-					preCompiled.version,
-					Version.VERSION));
-		}
-		return preCompiled;
-	}
+    public boolean isMacroexpand() {
+        return macroexpand;
+    }
 
-	private static PreCompiled deserialize_(final byte[] precompiled) {
-		final ByteArrayInputStream bais = new ByteArrayInputStream(precompiled);
+    public Object getPrecompiled() {
+        return precompiled;
+    }
 
-		try (GZIPInputStream gzis = new GZIPInputStream(bais)) {
-			return (PreCompiled)new ObjectInputStream(gzis).readObject(); 
-		} 
-		catch (Exception ex) {
-			throw new RuntimeException("Failed to deserialize pre-compiled Venice script", ex);
-		}
-	}
+    /**
+     * Serializes this pre-compiled Venice script
+     *
+     * @return the serialized byte array
+     */
+    public byte[] serialize() {
+        final ByteArrayOutputStream baos = new ByteArrayOutputStream();
 
-	
-	private static final long serialVersionUID = -3044466744877602703L;
+        try (GZIPOutputStream gzos = new GZIPOutputStream(baos, true)) {
+            new ObjectOutputStream(gzos).writeObject(this);
+            gzos.flush();
+            return baos.toByteArray();
+        }
+        catch (Exception ex) {
+            throw new RuntimeException("Failed to serialize pre-compiled Venice script", ex);
+        }
+    }
 
-	private final String name;
-	private final Object precompiled;
-	private final String version;
-	private final boolean macroexpand;
+    /**
+     * Deserializes a pre-compiled Venice script
+     *
+     * @param precompiled a serialized, pre-compiled Venice script
+     * @return the deserialized pre-compiled script
+     * @throws IncompatibleVersionException
+     * 				if the Venice version of the deserialized script
+     *              does not match this Venice version
+     */
+    public static PreCompiled deserialize(final byte[] precompiled) {
+        final PreCompiled preCompiled = deserialize_(precompiled);
+        if (!preCompiled.version.equals(Version.VERSION)) {
+            throw new IncompatibleVersionException(String.format(
+                    "Failed to deserialize pre-compiled Venice script. "
+                        + "The pre-compiled version %s does not match this Venice version %s",
+                    preCompiled.version,
+                    Version.VERSION));
+        }
+        return preCompiled;
+    }
+
+    private static PreCompiled deserialize_(final byte[] precompiled) {
+        final ByteArrayInputStream bais = new ByteArrayInputStream(precompiled);
+
+        try (GZIPInputStream gzis = new GZIPInputStream(bais)) {
+            return (PreCompiled)new ObjectInputStream(gzis).readObject();
+        }
+        catch (Exception ex) {
+            throw new RuntimeException("Failed to deserialize pre-compiled Venice script", ex);
+        }
+    }
+
+
+    private static final long serialVersionUID = -3044466744877602703L;
+
+    private final String name;
+    private final Object precompiled;
+    private final String version;
+    private final boolean macroexpand;
 }

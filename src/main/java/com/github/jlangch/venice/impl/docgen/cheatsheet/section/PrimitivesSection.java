@@ -1,5 +1,5 @@
 /*   __    __         _
- *   \ \  / /__ _ __ (_) ___ ___ 
+ *   \ \  / /__ _ __ (_) ___ ___
  *    \ \/ / _ \ '_ \| |/ __/ _ \
  *     \  /  __/ | | | | (_|  __/
  *      \/ \___|_| |_|_|\___\___|
@@ -26,9 +26,9 @@ import com.github.jlangch.venice.impl.docgen.cheatsheet.DocSection;
 
 public class PrimitivesSection {
 
-	public static DocSection section() {
-		final DocSection section = new DocSection("Primitives", "primitives");
-		
-		return section;
-	}
+    public static DocSection section() {
+        final DocSection section = new DocSection("Primitives", "primitives");
+
+        return section;
+    }
 }

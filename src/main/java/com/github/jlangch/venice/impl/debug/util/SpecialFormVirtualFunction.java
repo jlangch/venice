@@ -1,5 +1,5 @@
 /*   __    __         _
- *   \ \  / /__ _ __ (_) ___ ___ 
+ *   \ \  / /__ _ __ (_) ___ ___
  *    \ \/ / _ \ '_ \| |/ __/ _ \
  *     \  /  __/ | | | | (_|  __/
  *      \/ \___|_| |_|_|\___\___|
@@ -38,42 +38,42 @@ import com.github.jlangch.venice.impl.types.collections.VncVector;
  * function for a breakpoint.
  */
 public class SpecialFormVirtualFunction extends VncFunction {
-	
-	public SpecialFormVirtualFunction(
-			final String name, 
-			final VncVector params, 
-			final VncVal meta
-	) {
-		super(name, params, false, null, meta);
-	}
-	
-	public SpecialFormVirtualFunction(
-			final String name, 
-			final List<Var> args, 
-			final VncVal meta
-	) {
-		this(name, toParams(args), meta);
-	}
-	
-	
-	@Override
-	public VncVal apply(final VncList args) {
-		return Nil;
-	}
 
-	@Override
-	public boolean isNative() { 
-		return false;
-	}
+    public SpecialFormVirtualFunction(
+            final String name,
+            final VncVector params,
+            final VncVal meta
+    ) {
+        super(name, params, false, null, meta);
+    }
 
-	
-	private static VncVector toParams(final List<Var> args) {
-		return VncVector.ofColl(
-					args.stream()
-						.map(v -> v.getName())
-						.collect(Collectors.toList()));
-	}
-	
-	
-	private static final long serialVersionUID = -1;
+    public SpecialFormVirtualFunction(
+            final String name,
+            final List<Var> args,
+            final VncVal meta
+    ) {
+        this(name, toParams(args), meta);
+    }
+
+
+    @Override
+    public VncVal apply(final VncList args) {
+        return Nil;
+    }
+
+    @Override
+    public boolean isNative() {
+        return false;
+    }
+
+
+    private static VncVector toParams(final List<Var> args) {
+        return VncVector.ofColl(
+                    args.stream()
+                        .map(v -> v.getName())
+                        .collect(Collectors.toList()));
+    }
+
+
+    private static final long serialVersionUID = -1;
 }

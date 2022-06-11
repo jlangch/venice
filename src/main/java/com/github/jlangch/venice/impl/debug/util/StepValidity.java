@@ -1,5 +1,5 @@
 /*   __    __         _
- *   \ \  / /__ _ __ (_) ___ ___ 
+ *   \ \  / /__ _ __ (_) ___ ___
  *    \ \/ / _ \ '_ \| |/ __/ _ \
  *     \  /  __/ | | | | (_|  __/
  *      \/ \___|_| |_|_|\___\___|
@@ -23,32 +23,32 @@ package com.github.jlangch.venice.impl.debug.util;
 
 
 public class StepValidity {
-	
-	private StepValidity(
-			final boolean valid, 
-			final String errMsg
-	) {
-		this.valid = valid;
-		this.errMsg = errMsg;
-	}
 
-	public static StepValidity valid() {
-		return new StepValidity(true, null);
-	}
-	
-	public static StepValidity invalid(final String errMsg) {
-		return new StepValidity(false, errMsg);
-	}
+    private StepValidity(
+            final boolean valid,
+            final String errMsg
+    ) {
+        this.valid = valid;
+        this.errMsg = errMsg;
+    }
 
-	public boolean isValid() {
-		return valid;
-	}
-	
-	public String getErrMsg() {
-		return errMsg;
-	}
-	
-	
-	private final boolean valid; 
-	private final String errMsg;
+    public static StepValidity valid() {
+        return new StepValidity(true, null);
+    }
+
+    public static StepValidity invalid(final String errMsg) {
+        return new StepValidity(false, errMsg);
+    }
+
+    public boolean isValid() {
+        return valid;
+    }
+
+    public String getErrMsg() {
+        return errMsg;
+    }
+
+
+    private final boolean valid;
+    private final String errMsg;
 }

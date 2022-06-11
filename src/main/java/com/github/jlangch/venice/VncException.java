@@ -1,5 +1,5 @@
 /*   __    __         _
- *   \ \  / /__ _ __ (_) ___ ___ 
+ *   \ \  / /__ _ __ (_) ___ ___
  *    \ \/ / _ \ '_ \| |/ __/ _ \
  *     \  /  __/ | | | | (_|  __/
  *      \/ \___|_| |_|_|\___\___|
@@ -35,139 +35,139 @@ import com.github.jlangch.venice.util.StackFrame;
 
 
 /**
- * {@code VncException} is the superclass of those exceptions that can be 
+ * {@code VncException} is the superclass of those exceptions that can be
  * thrown during Venice form reading or execution.
  */
 public class VncException extends RuntimeException {
 
-	public VncException() {
-		callstack = ThreadContext.getCallStack().copy();
-	}
-	
-	public VncException(final String message) {
-		super(message);
-		callstack = ThreadContext.getCallStack().copy();
-	}
+    public VncException() {
+        callstack = ThreadContext.getCallStack().copy();
+    }
 
-	public VncException(final String message, final Throwable cause) {
-		super(message, cause);
-		callstack = ThreadContext.getCallStack().copy();
-	}
+    public VncException(final String message) {
+        super(message);
+        callstack = ThreadContext.getCallStack().copy();
+    }
 
-	public VncException(final Throwable cause) {
-		super(cause);
-		callstack = ThreadContext.getCallStack().copy();
-	}
+    public VncException(final String message, final Throwable cause) {
+        super(message, cause);
+        callstack = ThreadContext.getCallStack().copy();
+    }
 
-	public boolean hasCallStack() {
-		return !callstack.isEmpty();
-	}
+    public VncException(final Throwable cause) {
+        super(cause);
+        callstack = ThreadContext.getCallStack().copy();
+    }
 
-	public List<StackFrame> getCallStack() {
-		return callstack
-					.callstack()
-					.stream()
-					.map(f -> f.toStackFrame())
-					.collect(Collectors.toList());
-	}
+    public boolean hasCallStack() {
+        return !callstack.isEmpty();
+    }
 
-	public List<String> getCallStackAsStringList() {
-		return callstack
-					.callstack()
-					.stream()
-					.map(v -> callFrameToString(v))
-					.collect(Collectors.toList());
-	}
+    public List<StackFrame> getCallStack() {
+        return callstack
+                    .callstack()
+                    .stream()
+                    .map(f -> f.toStackFrame())
+                    .collect(Collectors.toList());
+    }
 
-	public String getCallStackAsString(final String indent) {
-		return "\n[Callstack]\n"
-			   + callstack
-					.callstack()
-					.stream()
-					.map(v -> StringUtil.nullToEmpty(indent) + callFrameToString(v))
-					.collect(Collectors.joining("\n"));
-	}
-	
-	public void printVeniceStackTrace() {
-		printVeniceStackTrace(System.err);
-	}
+    public List<String> getCallStackAsStringList() {
+        return callstack
+                    .callstack()
+                    .stream()
+                    .map(v -> callFrameToString(v))
+                    .collect(Collectors.toList());
+    }
 
-	public void printVeniceStackTrace(final PrintStream ps) {
-		printVeniceStackTrace(new PrintWriter(ps));
-	}
-	
-	public void printVeniceStackTrace(final PrintWriter pw) {
-		pw.println(String.format(
-				"Exception in thread \"%s\" %s: %s",
-				Thread.currentThread().getName(),
-				getClass().getSimpleName(),
-				getMessage()));
-		
-		if (hasCallStack()) {
-			pw.println(getCallStackAsString("    at: "));
-		}
-		
-		if (getCause() != null) {
-			final Throwable cause = getCause();
-			if (cause instanceof VncException) {
-				pw.println();
-				pw.println();
-				printVeniceCauseStackTrace(pw, cause);
-			}
-			else {
-				pw.println("\n[Java Cause Callstack]");
-				cause.printStackTrace(pw);
-			}
-		}
-		
-		pw.flush();
-	}
+    public String getCallStackAsString(final String indent) {
+        return "\n[Callstack]\n"
+               + callstack
+                    .callstack()
+                    .stream()
+                    .map(v -> StringUtil.nullToEmpty(indent) + callFrameToString(v))
+                    .collect(Collectors.joining("\n"));
+    }
 
-	public String printVeniceStackTraceToString() {
-		final StringWriter sw = new StringWriter();
-		final PrintWriter pw = new PrintWriter(sw);
-		printVeniceStackTrace(pw);
-		pw.flush();
-		return sw.toString();
-	}
+    public void printVeniceStackTrace() {
+        printVeniceStackTrace(System.err);
+    }
 
-	private void printVeniceCauseStackTrace(final PrintWriter pw, final Throwable ex) {
-		pw.println(String.format(
-				"Caused by: %s: %s",
-				ex instanceof VncException
-					? ex.getClass().getSimpleName()
-					: ex.getClass().getName(),
-				ex.getMessage()));
+    public void printVeniceStackTrace(final PrintStream ps) {
+        printVeniceStackTrace(new PrintWriter(ps));
+    }
 
-		if (ex instanceof VncException) {
-			final VncException vncEx = (VncException)ex;
-			if (vncEx.hasCallStack()) {
-				pw.println(vncEx.getCallStackAsString("    at: "));
-			}
-		}
-		
-		if (ex.getCause() != null) {
-			printVeniceCauseStackTrace(pw, ex.getCause());
-		}
-	}
+    public void printVeniceStackTrace(final PrintWriter pw) {
+        pw.println(String.format(
+                "Exception in thread \"%s\" %s: %s",
+                Thread.currentThread().getName(),
+                getClass().getSimpleName(),
+                getMessage()));
 
-	private String callFrameToString(final CallFrame callFrame) {
-		return callFrame.getFnName() == null
-				? String.format(
-						"%s: line %d, col %d", 
-						callFrame.getFile(), 
-						callFrame.getLine(), 
-						callFrame.getCol())
-				: String.format(
-						"%s (%s: line %d, col %d)", 
-						callFrame.getFnName(), 
-						callFrame.getFile(), 
-						callFrame.getLine(), 
-						callFrame.getCol());
-	}
+        if (hasCallStack()) {
+            pw.println(getCallStackAsString("    at: "));
+        }
 
-	
-	private static final long serialVersionUID = 5439694361809280080L;
-	
-	private final CallStack callstack;
+        if (getCause() != null) {
+            final Throwable cause = getCause();
+            if (cause instanceof VncException) {
+                pw.println();
+                pw.println();
+                printVeniceCauseStackTrace(pw, cause);
+            }
+            else {
+                pw.println("\n[Java Cause Callstack]");
+                cause.printStackTrace(pw);
+            }
+        }
+
+        pw.flush();
+    }
+
+    public String printVeniceStackTraceToString() {
+        final StringWriter sw = new StringWriter();
+        final PrintWriter pw = new PrintWriter(sw);
+        printVeniceStackTrace(pw);
+        pw.flush();
+        return sw.toString();
+    }
+
+    private void printVeniceCauseStackTrace(final PrintWriter pw, final Throwable ex) {
+        pw.println(String.format(
+                "Caused by: %s: %s",
+                ex instanceof VncException
+                    ? ex.getClass().getSimpleName()
+                    : ex.getClass().getName(),
+                ex.getMessage()));
+
+        if (ex instanceof VncException) {
+            final VncException vncEx = (VncException)ex;
+            if (vncEx.hasCallStack()) {
+                pw.println(vncEx.getCallStackAsString("    at: "));
+            }
+        }
+
+        if (ex.getCause() != null) {
+            printVeniceCauseStackTrace(pw, ex.getCause());
+        }
+    }
+
+    private String callFrameToString(final CallFrame callFrame) {
+        return callFrame.getFnName() == null
+                ? String.format(
+                        "%s: line %d, col %d",
+                        callFrame.getFile(),
+                        callFrame.getLine(),
+                        callFrame.getCol())
+                : String.format(
+                        "%s (%s: line %d, col %d)",
+                        callFrame.getFnName(),
+                        callFrame.getFile(),
+                        callFrame.getLine(),
+                        callFrame.getCol());
+    }
+
+
+    private static final long serialVersionUID = 5439694361809280080L;
+
+    private final CallStack callstack;
 }

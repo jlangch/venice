@@ -1,5 +1,5 @@
 /*   __    __         _
- *   \ \  / /__ _ __ (_) ___ ___ 
+ *   \ \  / /__ _ __ (_) ___ ___
  *    \ \/ / _ \ '_ \| |/ __/ _ \
  *     \  /  __/ | | | | (_|  __/
  *      \/ \___|_| |_|_|\___\___|
@@ -29,31 +29,31 @@ import com.github.jlangch.venice.impl.util.StringEscapeUtil;
 
 
 public class DocHighlighter {
-	
-	public DocHighlighter(final DocColorTheme theme) {
-		this.theme = theme;
-	}
-	
-	public String highlight(final String form) {
-		return HighlightParser
-				.parse(form)
-				.stream()
-				.map(it -> style(it.getForm(), it.getClazz()))
-				.collect(Collectors.joining());
-	}
 
-	public static String style(final String text, final String htmlColor) {
-		return htmlColor == null 
-				? StringEscapeUtil.escapeXml(text) 
-				: String.format(TEMPLATE, htmlColor, StringEscapeUtil.escapeXml(text));
-	}
+    public DocHighlighter(final DocColorTheme theme) {
+        this.theme = theme;
+    }
 
-	
-	private String style(final String text, final HighlightClass clazz) {
-		return style(text, theme.getColor(clazz));
-	}
-	
-	
-	private final DocColorTheme theme;
-	private final static String TEMPLATE = "<span style=\"color: %s\">%s</span>";
+    public String highlight(final String form) {
+        return HighlightParser
+                .parse(form)
+                .stream()
+                .map(it -> style(it.getForm(), it.getClazz()))
+                .collect(Collectors.joining());
+    }
+
+    public static String style(final String text, final String htmlColor) {
+        return htmlColor == null
+                ? StringEscapeUtil.escapeXml(text)
+                : String.format(TEMPLATE, htmlColor, StringEscapeUtil.escapeXml(text));
+    }
+
+
+    private String style(final String text, final HighlightClass clazz) {
+        return style(text, theme.getColor(clazz));
+    }
+
+
+    private final DocColorTheme theme;
+    private final static String TEMPLATE = "<span style=\"color: %s\">%s</span>";
 }

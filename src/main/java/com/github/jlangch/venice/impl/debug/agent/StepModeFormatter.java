@@ -1,5 +1,5 @@
 /*   __    __         _
- *   \ \  / /__ _ __ (_) ___ ___ 
+ *   \ \  / /__ _ __ (_) ___ ___
  *    \ \/ / _ \ '_ \| |/ __/ _ \
  *     \  /  __/ | | | | (_|  __/
  *      \/ \___|_| |_|_|\___\___|
@@ -27,43 +27,43 @@ package com.github.jlangch.venice.impl.debug.agent;
  */
 public class StepModeFormatter {
 
-	public static String format(final StepMode mode) {
-		if (mode == null) {
-			return "undefined";
-		}
-		
-		switch(mode) {
-			case StepToAny:
-				return "step to any";
-				
-			case StepToNextFunction:
-				return "step to next function";
-	
-			case StepToNextNonSystemFunction:
-				return "step to next non system function";
-	
-			case StepOverFunction:
-				return "step over function";
-				
-			case StepOverFunction_NextCall:
-				return "step over function";
-			
-			case StepToNextFunctionCall:
-				return "step to next function call level";
-	
-			case StepToFunctionEntry:
-				return "step to entry level in current function";
-	
-			case StepToFunctionExit:
-				return "step to exit level in current function";
-				
-			case SteppingDisabled:
-				return "disabled";
-				
-			default:
-				throw new RuntimeException("Unhandled mode " + mode);
-		
-		}
-	}
+    public static String format(final StepMode mode) {
+        if (mode == null) {
+            return "undefined";
+        }
+
+        switch(mode) {
+            case StepToAny:
+                return "step to any";
+
+            case StepToNextFunction:
+                return "step to next function";
+
+            case StepToNextNonSystemFunction:
+                return "step to next non system function";
+
+            case StepOverFunction:
+                return "step over function";
+
+            case StepOverFunction_NextCall:
+                return "step over function";
+
+            case StepToNextFunctionCall:
+                return "step to next function call level";
+
+            case StepToFunctionEntry:
+                return "step to entry level in current function";
+
+            case StepToFunctionExit:
+                return "step to exit level in current function";
+
+            case SteppingDisabled:
+                return "disabled";
+
+            default:
+                throw new RuntimeException("Unhandled mode " + mode);
+
+        }
+    }
 
 }

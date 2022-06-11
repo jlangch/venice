@@ -1,5 +1,5 @@
 /*   __    __         _
- *   \ \  / /__ _ __ (_) ___ ___ 
+ *   \ \  / /__ _ __ (_) ___ ___
  *    \ \/ / _ \ '_ \| |/ __/ _ \
  *     \  /  __/ | | | | (_|  __/
  *      \/ \___|_| |_|_|\___\___|
@@ -28,6 +28,6 @@ import com.github.jlangch.venice.impl.types.collections.VncSequence;
 @FunctionalInterface
 public interface ISequenceValuesEvaluator {
 
-	VncSequence evaluate_sequence_values(final VncSequence seq, final Env env);
+    VncSequence evaluate_sequence_values(final VncSequence seq, final Env env);
 
 }

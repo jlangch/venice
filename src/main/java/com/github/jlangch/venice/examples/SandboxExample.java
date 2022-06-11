@@ -1,5 +1,5 @@
 /*   __    __         _
- *   \ \  / /__ _ __ (_) ___ ___ 
+ *   \ \  / /__ _ __ (_) ___ ___
  *    \ \/ / _ \ '_ \| |/ __/ _ \
  *     \  /  __/ | | | | (_|  __/
  *      \/ \___|_| |_|_|\___\___|
@@ -30,97 +30,97 @@ import com.github.jlangch.venice.javainterop.SandboxRules;
 
 
 public class SandboxExample {
-	
-	public static void main(final String[] args) {
-		// --------------------------------------------------------------
-		// Reject all Java calls and all Venice IO functions
-		// --------------------------------------------------------------
-		try {
-			sandboxing_strict();
-		}
-		catch(VncException ex) {
-			ex.printVeniceStackTrace();		
-		}
-		catch(Exception ex) {
-			ex.printStackTrace();		
-		}
-		
-		// --------------------------------------------------------------
-		// Allow dedicated Java calls and reject all Venice IO functions 
-		// --------------------------------------------------------------
-		try {
-			sandboxing_java_calls_with_safe_venice_func();
-		}
-		catch(VncException ex) {
-			ex.printVeniceStackTrace();		
-		}
-		catch(Exception ex) {
-			ex.printStackTrace();
-		}
-	}
 
-	private static void sandboxing_strict() {
-		// disable all Java calls and all Venice IO functions
-		// like 'println', 'slurp', ...
-		//
-		// Note: Using the RejectAllInterceptor has the same effect
-		final Interceptor interceptor = new SandboxInterceptor(
-													new SandboxRules().rejectAllVeniceIoFunctions());
-		
-		final Venice venice = new Venice(interceptor);
+    public static void main(final String[] args) {
+        // --------------------------------------------------------------
+        // Reject all Java calls and all Venice IO functions
+        // --------------------------------------------------------------
+        try {
+            sandboxing_strict();
+        }
+        catch(VncException ex) {
+            ex.printVeniceStackTrace();
+        }
+        catch(Exception ex) {
+            ex.printStackTrace();
+        }
 
-		// => FAIL (Venice IO function) with Sandbox SecurityException
-		venice.eval("(println 100)"); 
-	}
-	
-	private static void sandboxing_java_calls_with_safe_venice_func() {
-		final IInterceptor interceptor =
-				new SandboxInterceptor(
-						new SandboxRules()
-								.rejectAllVeniceIoFunctions()
-								.withClasses(
-									"java.lang.Math:PI", 
-									"java.lang.Math:min", 
-									"java.lang.Math:max", 
-									"java.time.ZonedDateTime:*", 
-					                "java.awt.**:*", 
-									"java.util.ArrayList:new",
-									"java.util.ArrayList:add"));
+        // --------------------------------------------------------------
+        // Allow dedicated Java calls and reject all Venice IO functions
+        // --------------------------------------------------------------
+        try {
+            sandboxing_java_calls_with_safe_venice_func();
+        }
+        catch(VncException ex) {
+            ex.printVeniceStackTrace();
+        }
+        catch(Exception ex) {
+            ex.printStackTrace();
+        }
+    }
 
-		final Venice venice = new Venice(interceptor);
+    private static void sandboxing_strict() {
+        // disable all Java calls and all Venice IO functions
+        // like 'println', 'slurp', ...
+        //
+        // Note: Using the RejectAllInterceptor has the same effect
+        final Interceptor interceptor = new SandboxInterceptor(
+                                                    new SandboxRules().rejectAllVeniceIoFunctions());
 
-		// rule: "java.lang.Math:PI"
-		// => OK (static field)
-		venice.eval("(. :java.lang.Math :PI)"); 
+        final Venice venice = new Venice(interceptor);
 
-		// rule: "java.lang.Math:min"
-		// => OK (static method)
-		venice.eval("(. :java.lang.Math :min 20 30)"); 
-		
-		// rule: "java.lang.Math:max"
-		// => OK (static method)
-		venice.eval("(. :java.lang.Math :max 20 30)"); 
-		
-		// rule: "java.time.ZonedDateTime:*"
-		// => OK (constructor & instance method)
-		venice.eval("(. (. :java.time.ZonedDateTime :now) :plusDays 5))"); 
-		
-		// rule: "java.awt.**:*"
-		// => OK (constructor & instance method)
-		venice.eval("(. (. :java.awt.color.ICC_ColorSpace :getInstance (. :java.awt.color.ColorSpace :CS_LINEAR_RGB)) :getMaxValue 0)");	
-		
-		// rule: "java.util.ArrayList:new"
-		// => OK (constructor)
-		venice.eval("(. :java.util.ArrayList :new)");
-	
-		// rule: "java.util.ArrayList:add"
-		// => OK (constructor & instance method)
-		venice.eval(
-				"(doto (. :java.util.ArrayList :new)  " +
-				"      (. :add 1)                     " +
-				"      (. :add 2))                    ");
+        // => FAIL (Venice IO function) with Sandbox SecurityException
+        venice.eval("(println 100)");
+    }
 
-		// => FAIL (static method) with Sandbox SecurityException
-		venice.eval("(. :java.lang.System :exit 0)"); 
-	}
+    private static void sandboxing_java_calls_with_safe_venice_func() {
+        final IInterceptor interceptor =
+                new SandboxInterceptor(
+                        new SandboxRules()
+                                .rejectAllVeniceIoFunctions()
+                                .withClasses(
+                                    "java.lang.Math:PI",
+                                    "java.lang.Math:min",
+                                    "java.lang.Math:max",
+                                    "java.time.ZonedDateTime:*",
+                                    "java.awt.**:*",
+                                    "java.util.ArrayList:new",
+                                    "java.util.ArrayList:add"));
+
+        final Venice venice = new Venice(interceptor);
+
+        // rule: "java.lang.Math:PI"
+        // => OK (static field)
+        venice.eval("(. :java.lang.Math :PI)");
+
+        // rule: "java.lang.Math:min"
+        // => OK (static method)
+        venice.eval("(. :java.lang.Math :min 20 30)");
+
+        // rule: "java.lang.Math:max"
+        // => OK (static method)
+        venice.eval("(. :java.lang.Math :max 20 30)");
+
+        // rule: "java.time.ZonedDateTime:*"
+        // => OK (constructor & instance method)
+        venice.eval("(. (. :java.time.ZonedDateTime :now) :plusDays 5))");
+
+        // rule: "java.awt.**:*"
+        // => OK (constructor & instance method)
+        venice.eval("(. (. :java.awt.color.ICC_ColorSpace :getInstance (. :java.awt.color.ColorSpace :CS_LINEAR_RGB)) :getMaxValue 0)");
+
+        // rule: "java.util.ArrayList:new"
+        // => OK (constructor)
+        venice.eval("(. :java.util.ArrayList :new)");
+
+        // rule: "java.util.ArrayList:add"
+        // => OK (constructor & instance method)
+        venice.eval(
+                "(doto (. :java.util.ArrayList :new)  " +
+                "      (. :add 1)                     " +
+                "      (. :add 2))                    ");
+
+        // => FAIL (static method) with Sandbox SecurityException
+        venice.eval("(. :java.lang.System :exit 0)");
+    }
 }

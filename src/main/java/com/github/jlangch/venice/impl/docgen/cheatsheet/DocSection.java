@@ -1,5 +1,5 @@
 /*   __    __         _
- *   \ \  / /__ _ __ (_) ___ ___ 
+ *   \ \  / /__ _ __ (_) ___ ___
  *    \ \/ / _ \ '_ \| |/ __/ _ \
  *     \  /  __/ | | | | (_|  __/
  *      \/ \___|_| |_|_|\___\___|
@@ -28,110 +28,110 @@ import com.github.jlangch.venice.impl.util.markdown.Markdown;
 
 
 public class DocSection {
-	
-	public DocSection(final String title, final String id) {
-		this(title, null, id, null, null);
-	}
 
-	public DocSection(
-			final String title, 
-			final String subtitle, 
-			final String id
-	) {
-		this(title, subtitle, id, null, null);
-	}
+    public DocSection(final String title, final String id) {
+        this(title, null, id, null, null);
+    }
 
-	public DocSection(
-			final String title, 
-			final String subtitle, 
-			final String id, 
-			final String header, 
-			final String footer
-	) {
-		this.title = title;
-		this.subtitle = subtitle;
-		this.id = id;
-		this.headerXmlStyled = style(header);
-		this.footerXmlStyled = style(footer);
-	}
-	
-	
-	public String getTitle() {
-		return title;
-	}
+    public DocSection(
+            final String title,
+            final String subtitle,
+            final String id
+    ) {
+        this(title, subtitle, id, null, null);
+    }
 
-	public String getFormattedTitle() {
-		return subtitle == null ? title : title + "\u00A0\u00A0(" + subtitle + ")";
-	}
+    public DocSection(
+            final String title,
+            final String subtitle,
+            final String id,
+            final String header,
+            final String footer
+    ) {
+        this.title = title;
+        this.subtitle = subtitle;
+        this.id = id;
+        this.headerXmlStyled = style(header);
+        this.footerXmlStyled = style(footer);
+    }
 
-	public String getSubtitle() {
-		return subtitle;
-	}
 
-	public String getId() {
-		return id;
-	}
+    public String getTitle() {
+        return title;
+    }
 
-	public String getHeaderXmlStyled() {
-		return headerXmlStyled;
-	}
-	
-	public String getFooterXmlStyled() {
-		return footerXmlStyled;
-	}
-	
-	public void addSection(final DocSection section) {
-		if (section != null) {
-			sections.add(section);
-		}
-	}
-	
-	public void addLiteralItem(final String name, final String text, final String id) {
-		final DocSection s = new DocSection(name, id);
-		addSection(s);
-		s.addItem(new DocItem(text, null));
-	}
-	
-	public List<DocSection> getSections() {
-		return sections;
-	}
-	
-	public boolean isSectionsEmpty() {
-		return sections.isEmpty();
-	}
-	
-	public void addItem(final DocItem item) {
-		if (item != null) {
-			items.add(item);
-		}
-	}
-	
-	public List<DocItem> getItems() {
-		return items;
-	}
-	
-	public boolean isItemsEmpty() {
-		return items.isEmpty();
-	}
-	
-	@Override
-	public String toString() {
-		return getFormattedTitle() + ", id=" + id;
-	}
-	
-	private static String style(final String markdown) {
-		return markdown == null 
-				? null 
-				: Markdown.parse(markdown).renderToHtml();	
-	}
+    public String getFormattedTitle() {
+        return subtitle == null ? title : title + "\u00A0\u00A0(" + subtitle + ")";
+    }
 
-	
-	private final String title;
-	private final String subtitle;
-	private final String id;
-	private final String headerXmlStyled;
-	private final String footerXmlStyled;
-	
-	private final List<DocSection> sections = new ArrayList<>();	
-	private final List<DocItem> items = new ArrayList<>();
+    public String getSubtitle() {
+        return subtitle;
+    }
+
+    public String getId() {
+        return id;
+    }
+
+    public String getHeaderXmlStyled() {
+        return headerXmlStyled;
+    }
+
+    public String getFooterXmlStyled() {
+        return footerXmlStyled;
+    }
+
+    public void addSection(final DocSection section) {
+        if (section != null) {
+            sections.add(section);
+        }
+    }
+
+    public void addLiteralItem(final String name, final String text, final String id) {
+        final DocSection s = new DocSection(name, id);
+        addSection(s);
+        s.addItem(new DocItem(text, null));
+    }
+
+    public List<DocSection> getSections() {
+        return sections;
+    }
+
+    public boolean isSectionsEmpty() {
+        return sections.isEmpty();
+    }
+
+    public void addItem(final DocItem item) {
+        if (item != null) {
+            items.add(item);
+        }
+    }
+
+    public List<DocItem> getItems() {
+        return items;
+    }
+
+    public boolean isItemsEmpty() {
+        return items.isEmpty();
+    }
+
+    @Override
+    public String toString() {
+        return getFormattedTitle() + ", id=" + id;
+    }
+
+    private static String style(final String markdown) {
+        return markdown == null
+                ? null
+                : Markdown.parse(markdown).renderToHtml();
+    }
+
+
+    private final String title;
+    private final String subtitle;
+    private final String id;
+    private final String headerXmlStyled;
+    private final String footerXmlStyled;
+
+    private final List<DocSection> sections = new ArrayList<>();
+    private final List<DocItem> items = new ArrayList<>();
 }

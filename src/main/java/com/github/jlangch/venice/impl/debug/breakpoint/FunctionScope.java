@@ -1,5 +1,5 @@
 /*   __    __         _
- *   \ \  / /__ _ __ (_) ___ ___ 
+ *   \ \  / /__ _ __ (_) ___ ___
  *    \ \/ / _ \ '_ \| |/ __/ _ \
  *     \  /  __/ | | | | (_|  __/
  *      \/ \___|_| |_|_|\___\___|
@@ -27,21 +27,21 @@ import java.util.List;
 
 /**
  * Defines the breakpoint function scopes.
- * 
+ *
  * <p>Breakpoint function scopes are related to function execution phases and
  * define at which execution phase a break point may be set.
- * 
+ *
  * <p><b>Defined scopes:</b>
  * <ol>
  * <li> CALL: inspection of unevaluated function args
  * <li> ENTRY: inspection of evaluated function args
- * <li> EXCEPTION: inspection of exception caught in the function's body 
+ * <li> EXCEPTION: inspection of exception caught in the function's body
  * and evaluated function args
  * <li> EXIT: inspection of evaluated function args and return value
  * </ol>
- * 
+ *
  * <p><b>Function processing model:</b>
- * 
+ *
  * <pre>
  *                                                  Function Scope
  *                                                        |
@@ -65,33 +65,33 @@ import java.util.List;
  */
 public enum FunctionScope {
 
-	FunctionCall(">", "call"),				// Stop at fn call
+    FunctionCall(">", "call"),				// Stop at fn call
 
-	FunctionEntry("(", "entry"),			// Stop at fn entry
+    FunctionEntry("(", "entry"),			// Stop at fn entry
 
-	FunctionExit(")", "exit"),				// Stop at fn exit
+    FunctionExit(")", "exit"),				// Stop at fn exit
 
-	FunctionException("!", "exception");	// Stop on exception in fn body
+    FunctionException("!", "exception");	// Stop on exception in fn body
 
 
-	private FunctionScope(String symbol, String description) {
-		this.symbol = symbol;
-		this.description = description;
-	}
+    private FunctionScope(String symbol, String description) {
+        this.symbol = symbol;
+        this.description = description;
+    }
 
-	public String symbol() { 
-		return symbol; 
-	}
-	
-	public String description() { 
-		return description; 
-	}
+    public String symbol() {
+        return symbol;
+    }
 
-	public static List<FunctionScope> all() {
-		return Arrays.asList(values());
-	}
+    public String description() {
+        return description;
+    }
 
-	
-	private final String symbol;
-	private final String description;
+    public static List<FunctionScope> all() {
+        return Arrays.asList(values());
+    }
+
+
+    private final String symbol;
+    private final String description;
 }

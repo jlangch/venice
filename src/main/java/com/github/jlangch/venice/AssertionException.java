@@ -1,5 +1,5 @@
 /*   __    __         _
- *   \ \  / /__ _ __ (_) ___ ___ 
+ *   \ \  / /__ _ __ (_) ___ ___
  *    \ \/ / _ \ '_ \| |/ __/ _ \
  *     \  /  __/ | | | | (_|  __/
  *      \/ \___|_| |_|_|\___\___|
@@ -24,7 +24,7 @@ package com.github.jlangch.venice;
 
 /**
  * Thrown if an assertion validation fails.
- * 
+ *
  * <p>It's raised in two cases:
  * <ul>
  *   <li> if the assert macro expression validation fails</li>
@@ -33,18 +33,18 @@ package com.github.jlangch.venice;
  */
 public class AssertionException extends VncException {
 
-	public AssertionException(final String message) {
-		super(message);
-	}
+    public AssertionException(final String message) {
+        super(message);
+    }
 
-	public AssertionException(final String message, final Throwable cause) {
-		super(message, cause);
-	}
+    public AssertionException(final String message, final Throwable cause) {
+        super(message, cause);
+    }
 
-	public AssertionException(final Throwable cause) {
-		super(cause);
-	}
+    public AssertionException(final Throwable cause) {
+        super(cause);
+    }
 
-	
-	private static final long serialVersionUID = 1349237272157335345L;
+
+    private static final long serialVersionUID = 1349237272157335345L;
 }

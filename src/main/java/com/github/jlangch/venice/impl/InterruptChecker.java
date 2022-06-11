@@ -1,5 +1,5 @@
 /*   __    __         _
- *   \ \  / /__ _ __ (_) ___ ___ 
+ *   \ \  / /__ _ __ (_) ___ ___
  *    \ \/ / _ \ '_ \| |/ __/ _ \
  *     \  /  __/ | | | | (_|  __/
  *      \/ \___|_| |_|_|\___\___|
@@ -25,19 +25,19 @@ import com.github.jlangch.venice.impl.types.VncFunction;
 
 
 public class InterruptChecker {
-	
-	public static void checkInterrupted(final Thread thread, final VncFunction fn) {
-		if (thread.isInterrupted()) {
-			throw new com.github.jlangch.venice.InterruptedException(
-						"Interrupted while processing function " + fn.getQualifiedName());
-		}
-	}
-	
-	public static void checkInterrupted(final Thread thread, final String fnName) {
-		if (thread.isInterrupted()) {
-			throw new com.github.jlangch.venice.InterruptedException(
-						"Interrupted while processing function " + fnName);
-		}
-	}
+
+    public static void checkInterrupted(final Thread thread, final VncFunction fn) {
+        if (thread.isInterrupted()) {
+            throw new com.github.jlangch.venice.InterruptedException(
+                        "Interrupted while processing function " + fn.getQualifiedName());
+        }
+    }
+
+    public static void checkInterrupted(final Thread thread, final String fnName) {
+        if (thread.isInterrupted()) {
+            throw new com.github.jlangch.venice.InterruptedException(
+                        "Interrupted while processing function " + fnName);
+        }
+    }
 
 }

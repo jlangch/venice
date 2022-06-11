@@ -1,5 +1,5 @@
 /*   __    __         _
- *   \ \  / /__ _ __ (_) ___ ___ 
+ *   \ \  / /__ _ __ (_) ___ ___
  *    \ \/ / _ \ '_ \| |/ __/ _ \
  *     \  /  __/ | | | | (_|  __/
  *      \/ \___|_| |_|_|\___\___|
@@ -25,14 +25,14 @@ import com.github.jlangch.venice.impl.types.VncKeyword;
 
 
 public enum RunMode {
-	REPL("repl"),
-	SCRIPT("script"),
-	APP("app"),
-	DOCGEN("docgen"),
-	PRECOMPILE("macroexpand");
- 
+    REPL("repl"),
+    SCRIPT("script"),
+    APP("app"),
+    DOCGEN("docgen"),
+    PRECOMPILE("macroexpand");
+
     public final VncKeyword mode;
- 
+
     private RunMode(final String mode) {
         this.mode = new VncKeyword(mode);
     }

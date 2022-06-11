@@ -1,5 +1,5 @@
 /*   __    __         _
- *   \ \  / /__ _ __ (_) ___ ___ 
+ *   \ \  / /__ _ __ (_) ___ ___
  *    \ \/ / _ \ '_ \| |/ __/ _ \
  *     \  /  __/ | | | | (_|  __/
  *      \/ \___|_| |_|_|\___\___|
@@ -31,48 +31,48 @@ import java.util.concurrent.atomic.AtomicBoolean;
  */
 public class WaitableBreak {
 
-	public WaitableBreak(final Break br, final boolean waiting) {
-		if (br == null) {
-			throw new IllegalArgumentException("A break must not be null");
-		}
-		
-		this.br = br;
-		this.waiting.set(waiting);
-	}
+    public WaitableBreak(final Break br, final boolean waiting) {
+        if (br == null) {
+            throw new IllegalArgumentException("A break must not be null");
+        }
+
+        this.br = br;
+        this.waiting.set(waiting);
+    }
 
 
-	public Break getBreak() {
-		return br;
-	}
-	
-	public boolean isWaitingOnBreak() {
-		return waiting.get();
-	}
+    public Break getBreak() {
+        return br;
+    }
 
-	public void stopWaitingOnBreak() {
-		waiting.set(false);
-	}
+    public boolean isWaitingOnBreak() {
+        return waiting.get();
+    }
 
-	@Override
-	public String toString() {
-		return String.format(
-					"%s\n%s %b",
-					br.toString(),
-					padRight("Waiting:", Break.FORMAT_PAD_LEN),
-					waiting.get());
-	}
+    public void stopWaitingOnBreak() {
+        waiting.set(false);
+    }
 
-	@Override
-	public int hashCode() {
-		return br.hashCode();
-	}
+    @Override
+    public String toString() {
+        return String.format(
+                    "%s\n%s %b",
+                    br.toString(),
+                    padRight("Waiting:", Break.FORMAT_PAD_LEN),
+                    waiting.get());
+    }
 
-	@Override
-	public boolean equals(Object obj) {
-		return obj instanceof WaitableBreak && br.equals(((WaitableBreak)obj).br);
-	}
+    @Override
+    public int hashCode() {
+        return br.hashCode();
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        return obj instanceof WaitableBreak && br.equals(((WaitableBreak)obj).br);
+    }
 
 
-	private final Break br;
-	private final AtomicBoolean waiting = new AtomicBoolean(false);
+    private final Break br;
+    private final AtomicBoolean waiting = new AtomicBoolean(false);
 }

@@ -1,5 +1,5 @@
 /*   __    __         _
- *   \ \  / /__ _ __ (_) ___ ___ 
+ *   \ \  / /__ _ __ (_) ___ ___
  *    \ \/ / _ \ '_ \| |/ __/ _ \
  *     \  /  __/ | | | | (_|  __/
  *      \/ \___|_| |_|_|\___\___|
@@ -38,93 +38,93 @@ import com.github.jlangch.venice.impl.util.StringUtil;
 
 public class Selector {
 
-	public Selector() {
-		this(null, null);
-	}
+    public Selector() {
+        this(null, null);
+    }
 
-	public Selector(final Set<FunctionScope> scopes) {
-		this(scopes, null);
-	}
+    public Selector(final Set<FunctionScope> scopes) {
+        this(scopes, null);
+    }
 
-	public Selector(
-			final Set<FunctionScope> scopes, 
-			final AncestorSelector ancestorSelector
-	) {
-		this.scopes = scopes == null || scopes.isEmpty() 
-						? DEFAULT_SCOPES
-						: new HashSet<>(scopes);
-		this.ancestorSelector = ancestorSelector;
-	}
-	
-	
-	public boolean hasScope(final FunctionScope scope) {
-		return scope == null ? false : scopes.contains(scope);
-	}
-	
-	public AncestorSelector getAncestorSelector() {
-		return ancestorSelector;
-	}
-	
-	public boolean hasSameAncestorSelector(final Selector other) {
-		return Objects.equals(ancestorSelector, other.getAncestorSelector());
-	}
+    public Selector(
+            final Set<FunctionScope> scopes,
+            final AncestorSelector ancestorSelector
+    ) {
+        this.scopes = scopes == null || scopes.isEmpty()
+                        ? DEFAULT_SCOPES
+                        : new HashSet<>(scopes);
+        this.ancestorSelector = ancestorSelector;
+    }
 
-	public String formatForBaseFn(
-			final String fnName, 
-			final boolean useDescriptiveScopeNames
-	) {
-		final String sScopes = format(scopes, useDescriptiveScopeNames);
-		
-		if (ancestorSelector != null) {
-			return StringUtil.isBlank(sScopes)
-					? ancestorSelector.formatForBaseFn(fnName)
-					: String.format(
-							"%s at level %s", 
-							ancestorSelector.formatForBaseFn(fnName), 
-							sScopes);
-		}
-		else {
-			return StringUtil.isBlank(sScopes)
-					? fnName
-					: String.format(
-							"%s at level %s", 
-							fnName, 
-							sScopes);
-		}
-	}
 
-	public String getFormattedScopes() {
-		return format(scopes, false);
-	}
+    public boolean hasScope(final FunctionScope scope) {
+        return scope == null ? false : scopes.contains(scope);
+    }
 
-	private String format(
-			final Set<FunctionScope> scopes, 
-			final boolean useDescriptiveScopeNames
-	) {
-		if (scopes.size() == 1 && scopes.contains(FunctionEntry)) {
-			return "";
-		}
-		else {
-			final String delimiter = useDescriptiveScopeNames ? ", " : "";
+    public AncestorSelector getAncestorSelector() {
+        return ancestorSelector;
+    }
 
-			// predefined order of breakpoint scopes
-			return Arrays.asList(
-							FunctionCall, 
-							FunctionEntry, 
-							FunctionException, 
-							FunctionExit)
-						 .stream()
-						 .filter(t -> scopes.contains(t))
-						 .map(t -> useDescriptiveScopeNames 
-								 	? t.description() 
-								 	: t.symbol())
-						 .collect(Collectors.joining(delimiter));
-		}
-	}
+    public boolean hasSameAncestorSelector(final Selector other) {
+        return Objects.equals(ancestorSelector, other.getAncestorSelector());
+    }
 
-	
-	private static final Set<FunctionScope> DEFAULT_SCOPES = toSet(FunctionEntry);
+    public String formatForBaseFn(
+            final String fnName,
+            final boolean useDescriptiveScopeNames
+    ) {
+        final String sScopes = format(scopes, useDescriptiveScopeNames);
 
-	private final Set<FunctionScope> scopes;
-	private final AncestorSelector ancestorSelector;
+        if (ancestorSelector != null) {
+            return StringUtil.isBlank(sScopes)
+                    ? ancestorSelector.formatForBaseFn(fnName)
+                    : String.format(
+                            "%s at level %s",
+                            ancestorSelector.formatForBaseFn(fnName),
+                            sScopes);
+        }
+        else {
+            return StringUtil.isBlank(sScopes)
+                    ? fnName
+                    : String.format(
+                            "%s at level %s",
+                            fnName,
+                            sScopes);
+        }
+    }
+
+    public String getFormattedScopes() {
+        return format(scopes, false);
+    }
+
+    private String format(
+            final Set<FunctionScope> scopes,
+            final boolean useDescriptiveScopeNames
+    ) {
+        if (scopes.size() == 1 && scopes.contains(FunctionEntry)) {
+            return "";
+        }
+        else {
+            final String delimiter = useDescriptiveScopeNames ? ", " : "";
+
+            // predefined order of breakpoint scopes
+            return Arrays.asList(
+                            FunctionCall,
+                            FunctionEntry,
+                            FunctionException,
+                            FunctionExit)
+                         .stream()
+                         .filter(t -> scopes.contains(t))
+                         .map(t -> useDescriptiveScopeNames
+                                     ? t.description()
+                                     : t.symbol())
+                         .collect(Collectors.joining(delimiter));
+        }
+    }
+
+
+    private static final Set<FunctionScope> DEFAULT_SCOPES = toSet(FunctionEntry);
+
+    private final Set<FunctionScope> scopes;
+    private final AncestorSelector ancestorSelector;
 }

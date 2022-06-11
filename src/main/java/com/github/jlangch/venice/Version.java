@@ -1,5 +1,5 @@
 /*   __    __         _
- *   \ \  / /__ _ __ (_) ___ ___ 
+ *   \ \  / /__ _ __ (_) ___ ___
  *    \ \/ / _ \ '_ \| |/ __/ _ \
  *     \  /  __/ | | | | (_|  __/
  *      \/ \___|_| |_|_|\___\___|
@@ -24,19 +24,19 @@ package com.github.jlangch.venice;
 
 /**
  * Represents the Venice version as {major}.{minor}.{patch} like "1.1.0".
- * 
+ *
  * <p> Venice follows semantic versioning
  */
 public class Version {
-	
-	/**
-	 * @return the Venice version
-	 */
-	public static String getBuildVersion() {
-		final String version = Version.class.getPackage().getImplementationVersion();
-		return version == null ? "0.0.0" : version;
-	}
 
-	/** Defines the Venice version */
-	public final static String VERSION = getBuildVersion();
+    /**
+     * @return the Venice version
+     */
+    public static String getBuildVersion() {
+        final String version = Version.class.getPackage().getImplementationVersion();
+        return version == null ? "0.0.0" : version;
+    }
+
+    /** Defines the Venice version */
+    public final static String VERSION = getBuildVersion();
 }

@@ -1,5 +1,5 @@
 /*   __    __         _
- *   \ \  / /__ _ __ (_) ___ ___ 
+ *   \ \  / /__ _ __ (_) ___ ___
  *    \ \/ / _ \ '_ \| |/ __/ _ \
  *     \  /  __/ | | | | (_|  __/
  *      \/ \___|_| |_|_|\___\___|
@@ -24,22 +24,22 @@ package com.github.jlangch.venice;
 
 /**
  * Thrown by the {@code Reader} to signal that it is reading an incomplete form.
- * 
- * <p>The REPL makes use of this to allow the user to continue expressions. 
- * The REPL displays the continue prompt '|' on the next line to request more 
+ *
+ * <p>The REPL makes use of this to allow the user to continue expressions.
+ * The REPL displays the continue prompt '|' on the next line to request more
  * input.
- * 
+ *
  * <p>E.g.: reading an incomplete vector
  * <pre>
  * venice&gt; [1 2 3
- *       | 
+ *       |
  * </pre>
  */
 public class ContinueException extends VncException {
 
-	public ContinueException() {
-	}
-	
+    public ContinueException() {
+    }
 
-	private static final long serialVersionUID = 7978400430881723919L; 
+
+    private static final long serialVersionUID = 7978400430881723919L;
 }

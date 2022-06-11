@@ -1,5 +1,5 @@
 /*   __    __         _
- *   \ \  / /__ _ __ (_) ___ ___ 
+ *   \ \  / /__ _ __ (_) ___ ___
  *    \ \/ / _ \ '_ \| |/ __/ _ \
  *     \  /  __/ | | | | (_|  __/
  *      \/ \___|_| |_|_|\___\___|
@@ -27,26 +27,26 @@ package com.github.jlangch.venice;
  */
 public class ShellException extends VncException {
 
-	public ShellException(final String message) {
-		super(message);
-		this.exitCode = null;
-	}
+    public ShellException(final String message) {
+        super(message);
+        this.exitCode = null;
+    }
 
-	public ShellException(final String message, final Integer exitCode) {
-		super(message);
-		this.exitCode = exitCode;
-	}
+    public ShellException(final String message, final Integer exitCode) {
+        super(message);
+        this.exitCode = exitCode;
+    }
 
-	public ShellException(final String message, final Throwable cause) {
-		super(message, cause);
-		this.exitCode = null;
-	}
-	
-	public Integer getExitCode() {
-		return exitCode;
-	}
+    public ShellException(final String message, final Throwable cause) {
+        super(message, cause);
+        this.exitCode = null;
+    }
 
-	private static final long serialVersionUID = 5439694361809280080L;
-	
-	private Integer exitCode;
+    public Integer getExitCode() {
+        return exitCode;
+    }
+
+    private static final long serialVersionUID = 5439694361809280080L;
+
+    private Integer exitCode;
 }

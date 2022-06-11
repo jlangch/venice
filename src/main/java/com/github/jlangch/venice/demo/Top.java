@@ -1,5 +1,5 @@
 /*   __    __         _
- *   \ \  / /__ _ __ (_) ___ ___ 
+ *   \ \  / /__ _ __ (_) ___ ___
  *    \ \/ / _ \ '_ \| |/ __/ _ \
  *     \  /  __/ | | | | (_|  __/
  *      \/ \___|_| |_|_|\___\___|
@@ -28,21 +28,21 @@ import org.jline.terminal.TerminalBuilder;
 
 public class Top {
 
-	public static void main(final String[] args){
-		try {
-			final TerminalBuilder builder = TerminalBuilder
-												.builder()
-												.streams(System.in, System.out)
-												.system(true)
-												.jna(false);
-			
-			final Terminal terminal = builder.build();
-			
-			TTop.ttop(terminal, null, null, args);
-		}
-		catch(Exception ex) {
-			ex.printStackTrace();
-		}
-	}
-	
+    public static void main(final String[] args){
+        try {
+            final TerminalBuilder builder = TerminalBuilder
+                                                .builder()
+                                                .streams(System.in, System.out)
+                                                .system(true)
+                                                .jna(false);
+
+            final Terminal terminal = builder.build();
+
+            TTop.ttop(terminal, null, null, args);
+        }
+        catch(Exception ex) {
+            ex.printStackTrace();
+        }
+    }
+
 }

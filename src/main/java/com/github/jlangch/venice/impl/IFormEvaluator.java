@@ -1,5 +1,5 @@
 /*   __    __         _
- *   \ \  / /__ _ __ (_) ___ ___ 
+ *   \ \  / /__ _ __ (_) ___ ___
  *    \ \/ / _ \ '_ \| |/ __/ _ \
  *     \  /  __/ | | | | (_|  __/
  *      \/ \___|_| |_|_|\___\___|
@@ -28,6 +28,6 @@ import com.github.jlangch.venice.impl.types.VncVal;
 @FunctionalInterface
 public interface IFormEvaluator {
 
-	VncVal evaluate(VncVal ast, Env env, boolean inTailPosition);
+    VncVal evaluate(VncVal ast, Env env, boolean inTailPosition);
 
 }

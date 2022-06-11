@@ -1,5 +1,5 @@
 /*   __    __         _
- *   \ \  / /__ _ __ (_) ___ ___ 
+ *   \ \  / /__ _ __ (_) ___ ___
  *    \ \/ / _ \ '_ \| |/ __/ _ \
  *     \  /  __/ | | | | (_|  __/
  *      \/ \___|_| |_|_|\___\___|
@@ -27,14 +27,14 @@ package com.github.jlangch.venice;
  */
 public class SecurityException extends VncException {
 
-	public SecurityException(final String message) {
-		super(message);
-	}
+    public SecurityException(final String message) {
+        super(message);
+    }
 
-	public SecurityException(final String message, final Throwable cause) {
-		super(message, cause);
-	}
+    public SecurityException(final String message, final Throwable cause) {
+        super(message, cause);
+    }
 
-	
-	private static final long serialVersionUID = 5439694361809280080L;
+
+    private static final long serialVersionUID = 5439694361809280080L;
 }

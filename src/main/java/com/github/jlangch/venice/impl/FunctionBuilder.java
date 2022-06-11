@@ -1,5 +1,5 @@
 /*   __    __         _
- *   \ \  / /__ _ __ (_) ___ ___ 
+ *   \ \  / /__ _ __ (_) ___ ___
  *    \ \/ / _ \ '_ \| |/ __/ _ \
  *     \  /  __/ | | | | (_|  __/
  *      \/ \___|_| |_|_|\___\___|
@@ -49,232 +49,232 @@ import com.github.jlangch.venice.impl.util.WithCallStack;
 
 public class FunctionBuilder {
 
-	public FunctionBuilder(
-			final IFormEvaluator evaluator,
-			final boolean optimized
-	) {
-		this.evaluator = evaluator;
-		this.optimized = optimized;
-	}
+    public FunctionBuilder(
+            final IFormEvaluator evaluator,
+            final boolean optimized
+    ) {
+        this.evaluator = evaluator;
+        this.optimized = optimized;
+    }
 
-	
-	public VncFunction buildFunction(
-			final String name, 
-			final VncVector params, 
-			final VncList body, 
-			final VncVector preConditions, 
-			final boolean macro,
-			final VncVal meta,
-			final Env env
-	) {
-		// the namespace the function/macro is defined for
-		final Namespace functionNS = Namespaces.getCurrentNamespace();
-		
-		// Note: Do not switch to the functions own namespace for the function 
-		//       "core/macroexpand-all". Handle "macroexpand-all" like a special 
-		//       form. This allows expanding locally defined macros from the REPL 
-		//       without the need of qualifying them:
-		//          > (defmacro bench [expr] ...)
-		//          > (macroexpand-all '(bench (+ 1 2))
-		//       instead of:
-		//          > (macroexpand-all '(user/bench (+ 1 2))
-		final boolean switchToFunctionNamespaceAtRuntime = !macro && !name.equals("macroexpand-all");
 
-		// Destructuring optimization for function parameters
-		final boolean plainSymbolParams = Destructuring.isFnParamsWithoutDestructuring(params);
+    public VncFunction buildFunction(
+            final String name,
+            final VncVector params,
+            final VncList body,
+            final VncVector preConditions,
+            final boolean macro,
+            final VncVal meta,
+            final Env env
+    ) {
+        // the namespace the function/macro is defined for
+        final Namespace functionNS = Namespaces.getCurrentNamespace();
 
-		// PreCondition optimization
-		final boolean hasPreConditions = preConditions != null && !preConditions.isEmpty();
+        // Note: Do not switch to the functions own namespace for the function
+        //       "core/macroexpand-all". Handle "macroexpand-all" like a special
+        //       form. This allows expanding locally defined macros from the REPL
+        //       without the need of qualifying them:
+        //          > (defmacro bench [expr] ...)
+        //          > (macroexpand-all '(bench (+ 1 2))
+        //       instead of:
+        //          > (macroexpand-all '(user/bench (+ 1 2))
+        final boolean switchToFunctionNamespaceAtRuntime = !macro && !name.equals("macroexpand-all");
 
-		// Body evaluation optimizations
-		final VncVal[] bodyExprs = body.isEmpty() 
-										? new VncVal[] {Nil}
-										: body.getJavaList().toArray(new  VncVal[] {});
+        // Destructuring optimization for function parameters
+        final boolean plainSymbolParams = Destructuring.isFnParamsWithoutDestructuring(params);
 
-		// Param access optimizations
-		final VncVal[] paramArr = params.getJavaList().toArray(new  VncVal[] {});
+        // PreCondition optimization
+        final boolean hasPreConditions = preConditions != null && !preConditions.isEmpty();
 
-		return new VncFunction(name, params, macro, preConditions, meta) {
-			@Override
-			public VncVal apply(final VncList args) {
-				final ThreadContext threadCtx = ThreadContext.get();
-				
-				final CallFrameFnData callFrameFnData = threadCtx.getAndClearCallFrameFnData_();
-								
-				if (hasVariadicArgs()) {
-					if (args.size() < getFixedArgsCount()) {
-						throwVariadicArityException(this, args, callFrameFnData);
-					}
-				}
-				else if (args.size() != getFixedArgsCount()) {
-					throwFixedArityException(this, args, callFrameFnData);
-				}
+        // Body evaluation optimizations
+        final VncVal[] bodyExprs = body.isEmpty()
+                                        ? new VncVal[] {Nil}
+                                        : body.getJavaList().toArray(new  VncVal[] {});
 
-				final Env localEnv = new Env(env);
+        // Param access optimizations
+        final VncVal[] paramArr = params.getJavaList().toArray(new  VncVal[] {});
 
-				addFnArgsToEnv(args, localEnv);
+        return new VncFunction(name, params, macro, preConditions, meta) {
+            @Override
+            public VncVal apply(final VncList args) {
+                final ThreadContext threadCtx = ThreadContext.get();
 
-				if (switchToFunctionNamespaceAtRuntime) {	
-					final CallStack callStack = threadCtx.getCallStack_();						
-					final DebugAgent debugAgent = threadCtx.getDebugAgent_();
-					final Namespace curr_ns = threadCtx.getCurrNS_();
-					final String fnName = getQualifiedName();
-					
-					final boolean pushCallstack = !optimized 
-													&& callFrameFnData != null 
-													&& callFrameFnData.matchesFnName(fnName);
-					if (pushCallstack) {
-						callStack.push(new CallFrame(fnName, args, callFrameFnData.getFnMeta(), localEnv));
-					}
-					
-					try {
-						threadCtx.setCurrNS_(functionNS);
+                final CallFrameFnData callFrameFnData = threadCtx.getAndClearCallFrameFnData_();
 
-						if (debugAgent != null && debugAgent.hasBreakpointFor(new BreakpointFnRef(fnName))) {
-							final CallStack cs = threadCtx.getCallStack_();
-							try {
-								debugAgent.onBreakFnEnter(fnName, this, args, localEnv, cs);
-								if (hasPreConditions) {
-									validateFnPreconditions(localEnv);
-								}
-								final VncVal retVal = evaluateBody(bodyExprs, localEnv, true);
-								debugAgent.onBreakFnExit(fnName, this, args, retVal, localEnv, cs);
-								return retVal;
-							}
-							catch(Exception ex) {
-								debugAgent.onBreakFnException(fnName, this, args, ex, localEnv, cs);
-								throw ex;
-							}
-						}
-						else {
-							if (hasPreConditions) {
-								validateFnPreconditions(localEnv);
-							}
-							return evaluateBody(bodyExprs, localEnv, true);
-						}
-					}
-					finally {
-						if (pushCallstack) {
-							callStack.pop();
-						}
+                if (hasVariadicArgs()) {
+                    if (args.size() < getFixedArgsCount()) {
+                        throwVariadicArityException(this, args, callFrameFnData);
+                    }
+                }
+                else if (args.size() != getFixedArgsCount()) {
+                    throwFixedArityException(this, args, callFrameFnData);
+                }
 
-						// switch always back to current namespace, just in case
-						// the namespace was changed within the function body!
-						threadCtx.setCurrNS_(curr_ns);
-					}
-				}
-				else {
-					if (hasPreConditions) {
-						validateFnPreconditions(localEnv);
-					}
-					return evaluateBody(bodyExprs, localEnv, false);
-				}
-			}
-			
-			@Override
-			public boolean isNative() { 
-				return false;
-			}
-			
-			@Override
-			public VncVal getBody() {
-				return body;
-			}
+                final Env localEnv = new Env(env);
 
-			private void addFnArgsToEnv(final VncList args, final Env env) {
-				// destructuring fn params -> args
-				if (plainSymbolParams) {
-					for(int ii=0; ii<paramArr.length; ii++) {
-						env.setLocal(
-							new Var(
-								(VncSymbol)paramArr[ii], 
-								args.nthOrDefault(ii, Nil)));
-					}
-				}
-				else {
-					env.addLocalVars(Destructuring.destructure(params, args));	
-				}
-			}
+                addFnArgsToEnv(args, localEnv);
 
-			private void validateFnPreconditions(final Env env) {
-		 		final Env local = new Env(env);	
-		 		for(VncVal v : preConditions) {
-					if (!isFnConditionTrue(evaluator.evaluate(v, local, false))) {
-						final CallFrame cf = new CallFrame(name, v.getMeta());
-						try (WithCallStack cs = new WithCallStack(cf)) {
-							throw new AssertionException(String.format(
-									"pre-condition assert failed: %s",
-									v.toString(true)));
-						}
-					}
-	 			}
-			}
+                if (switchToFunctionNamespaceAtRuntime) {
+                    final CallStack callStack = threadCtx.getCallStack_();
+                    final DebugAgent debugAgent = threadCtx.getDebugAgent_();
+                    final Namespace curr_ns = threadCtx.getCurrNS_();
+                    final String fnName = getQualifiedName();
 
-			private static final long serialVersionUID = -1L;
-		};
-	}
+                    final boolean pushCallstack = !optimized
+                                                    && callFrameFnData != null
+                                                    && callFrameFnData.matchesFnName(fnName);
+                    if (pushCallstack) {
+                        callStack.push(new CallFrame(fnName, args, callFrameFnData.getFnMeta(), localEnv));
+                    }
 
-	
-	private void throwVariadicArityException(
-			final VncFunction fn,
-			final VncList args,
-			final CallFrameFnData callFrameFnData
-	) {
-		final VncVal meta = callFrameFnData == null ? null : callFrameFnData.getFnMeta();
-		final CallFrame cf = new CallFrame(fn.getQualifiedName(), meta);
-		try (WithCallStack cs = new WithCallStack(cf)) {
-			throw new ArityException(
-					formatVariadicArityExMsg(
-						fn.getQualifiedName(), 
-						fn.isMacro() ? FnType.Macro : FnType.Function,
-						args.size(), 
-						fn.getFixedArgsCount(),
-						fn.getArgLists()));
-		}
-	}
-	
-	private void throwFixedArityException(
-			final VncFunction fn,
-			final VncList args,
-			final CallFrameFnData callFrameFnData
-	) {
-		final VncVal meta = callFrameFnData == null ? null : callFrameFnData.getFnMeta();
-		final CallFrame cf = new CallFrame(fn.getQualifiedName(), meta);
-		try (WithCallStack cs = new WithCallStack(cf)) {
-			throw new ArityException(
-					formatArityExMsg(
-						fn.getQualifiedName(), 
-						fn.isMacro() ? FnType.Macro : FnType.Function,
-						args.size(), 
-						fn.getFixedArgsCount(),
-						fn.getArgLists()));
-		}
-	}
+                    try {
+                        threadCtx.setCurrNS_(functionNS);
 
-	private boolean isFnConditionTrue(final VncVal result) {
-		return Types.isVncSequence(result) 
-				? VncBoolean.isTrue(((VncSequence)result).first()) 
-				: VncBoolean.isTrue(result);
-	}
-		
-	private VncVal evaluateBody(
-			final VncVal[] body, 
-			final Env env, 
-			final boolean withTailPosition
-	) {
-		if (body.length == 1) {
-			return evaluator.evaluate(body[0], env, withTailPosition);
-		}
-		else {	
-			for(int ii=0; ii<body.length-1; ii++) {
-				evaluator.evaluate(body[ii], env, false);
-			}
-			return evaluator.evaluate(body[body.length-1], env, withTailPosition);
-		}
-	}
+                        if (debugAgent != null && debugAgent.hasBreakpointFor(new BreakpointFnRef(fnName))) {
+                            final CallStack cs = threadCtx.getCallStack_();
+                            try {
+                                debugAgent.onBreakFnEnter(fnName, this, args, localEnv, cs);
+                                if (hasPreConditions) {
+                                    validateFnPreconditions(localEnv);
+                                }
+                                final VncVal retVal = evaluateBody(bodyExprs, localEnv, true);
+                                debugAgent.onBreakFnExit(fnName, this, args, retVal, localEnv, cs);
+                                return retVal;
+                            }
+                            catch(Exception ex) {
+                                debugAgent.onBreakFnException(fnName, this, args, ex, localEnv, cs);
+                                throw ex;
+                            }
+                        }
+                        else {
+                            if (hasPreConditions) {
+                                validateFnPreconditions(localEnv);
+                            }
+                            return evaluateBody(bodyExprs, localEnv, true);
+                        }
+                    }
+                    finally {
+                        if (pushCallstack) {
+                            callStack.pop();
+                        }
 
-	
-	private final IFormEvaluator evaluator;
-	private final boolean optimized;
+                        // switch always back to current namespace, just in case
+                        // the namespace was changed within the function body!
+                        threadCtx.setCurrNS_(curr_ns);
+                    }
+                }
+                else {
+                    if (hasPreConditions) {
+                        validateFnPreconditions(localEnv);
+                    }
+                    return evaluateBody(bodyExprs, localEnv, false);
+                }
+            }
+
+            @Override
+            public boolean isNative() {
+                return false;
+            }
+
+            @Override
+            public VncVal getBody() {
+                return body;
+            }
+
+            private void addFnArgsToEnv(final VncList args, final Env env) {
+                // destructuring fn params -> args
+                if (plainSymbolParams) {
+                    for(int ii=0; ii<paramArr.length; ii++) {
+                        env.setLocal(
+                            new Var(
+                                (VncSymbol)paramArr[ii],
+                                args.nthOrDefault(ii, Nil)));
+                    }
+                }
+                else {
+                    env.addLocalVars(Destructuring.destructure(params, args));
+                }
+            }
+
+            private void validateFnPreconditions(final Env env) {
+                 final Env local = new Env(env);
+                 for(VncVal v : preConditions) {
+                    if (!isFnConditionTrue(evaluator.evaluate(v, local, false))) {
+                        final CallFrame cf = new CallFrame(name, v.getMeta());
+                        try (WithCallStack cs = new WithCallStack(cf)) {
+                            throw new AssertionException(String.format(
+                                    "pre-condition assert failed: %s",
+                                    v.toString(true)));
+                        }
+                    }
+                 }
+            }
+
+            private static final long serialVersionUID = -1L;
+        };
+    }
+
+
+    private void throwVariadicArityException(
+            final VncFunction fn,
+            final VncList args,
+            final CallFrameFnData callFrameFnData
+    ) {
+        final VncVal meta = callFrameFnData == null ? null : callFrameFnData.getFnMeta();
+        final CallFrame cf = new CallFrame(fn.getQualifiedName(), meta);
+        try (WithCallStack cs = new WithCallStack(cf)) {
+            throw new ArityException(
+                    formatVariadicArityExMsg(
+                        fn.getQualifiedName(),
+                        fn.isMacro() ? FnType.Macro : FnType.Function,
+                        args.size(),
+                        fn.getFixedArgsCount(),
+                        fn.getArgLists()));
+        }
+    }
+
+    private void throwFixedArityException(
+            final VncFunction fn,
+            final VncList args,
+            final CallFrameFnData callFrameFnData
+    ) {
+        final VncVal meta = callFrameFnData == null ? null : callFrameFnData.getFnMeta();
+        final CallFrame cf = new CallFrame(fn.getQualifiedName(), meta);
+        try (WithCallStack cs = new WithCallStack(cf)) {
+            throw new ArityException(
+                    formatArityExMsg(
+                        fn.getQualifiedName(),
+                        fn.isMacro() ? FnType.Macro : FnType.Function,
+                        args.size(),
+                        fn.getFixedArgsCount(),
+                        fn.getArgLists()));
+        }
+    }
+
+    private boolean isFnConditionTrue(final VncVal result) {
+        return Types.isVncSequence(result)
+                ? VncBoolean.isTrue(((VncSequence)result).first())
+                : VncBoolean.isTrue(result);
+    }
+
+    private VncVal evaluateBody(
+            final VncVal[] body,
+            final Env env,
+            final boolean withTailPosition
+    ) {
+        if (body.length == 1) {
+            return evaluator.evaluate(body[0], env, withTailPosition);
+        }
+        else {
+            for(int ii=0; ii<body.length-1; ii++) {
+                evaluator.evaluate(body[ii], env, false);
+            }
+            return evaluator.evaluate(body[body.length-1], env, withTailPosition);
+        }
+    }
+
+
+    private final IFormEvaluator evaluator;
+    private final boolean optimized;
 }
 

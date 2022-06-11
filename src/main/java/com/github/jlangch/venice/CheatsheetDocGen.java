@@ -1,5 +1,5 @@
 /*   __    __         _
- *   \ \  / /__ _ __ (_) ___ ___ 
+ *   \ \  / /__ _ __ (_) ___ ___
  *    \ \/ / _ \ '_ \| |/ __/ _ \
  *     \  /  __/ | | | | (_|  __/
  *      \/ \___|_| |_|_|\___\___|
@@ -30,12 +30,12 @@ import com.github.jlangch.venice.impl.docgen.cheatsheet.DocGenerator;
  */
 public class CheatsheetDocGen {
 
-	public static void main(final String[] args) {
-		final String version = args.length > 0 ? args[0] : "0.0.0";
-		
-		new DocGenerator()
-				.includeExamples(true)
-				.run(version);
-	}
+    public static void main(final String[] args) {
+        final String version = args.length > 0 ? args[0] : "0.0.0";
+
+        new DocGenerator()
+                .includeExamples(true)
+                .run(version);
+    }
 
 }

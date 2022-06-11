@@ -1,5 +1,5 @@
 /*   __    __         _
- *   \ \  / /__ _ __ (_) ___ ___ 
+ *   \ \  / /__ _ __ (_) ___ ___
  *    \ \/ / _ \ '_ \| |/ __/ _ \
  *     \  /  __/ | | | | (_|  __/
  *      \/ \___|_| |_|_|\___\___|
@@ -35,105 +35,105 @@ import com.github.jlangch.venice.javainterop.IInterceptor;
 
 public class ModuleLoader {
 
-	public static String loadModule(final String module) {
-		if (!Modules.isValidModule(module)) {
-			throw new VncException(String.format(
-					"The Venice module '%s' does not exist",
-					module));
-		}
-		
-		final String name = module + ".venice";
+    public static String loadModule(final String module) {
+        if (!Modules.isValidModule(module)) {
+            throw new VncException(String.format(
+                    "The Venice module '%s' does not exist",
+                    module));
+        }
 
-		try {
-			return modules.computeIfAbsent(
-					name, 
-					k -> loadFromClasspathAsString(getVeniceBasePath() + k));
-		}
-		catch(Exception ex) {
-			throw new VncException(String.format(
-					"Failed to load Venice module '%s'", name), 
-					ex);
-		}
-	}
+        final String name = module + ".venice";
 
-	public static String loadClasspathFile(final String file) {
-		// For security reasons just allow to load venice scripts!
-		if (!file.endsWith(".venice")) {
-			throw new VncException(String.format(
-					"Must not load other than Venice (*.venice) resources from "
-						+ "classpath. Resource: '%s'",
-						file));
-		}
-		
-		try {
-			return classpathFiles.computeIfAbsent(
-					file, 
-					k -> loadFromClasspathAsString(file));
-		}
-		catch(Exception ex) {
-			throw new VncException(String.format(
-					"Failed to load Venice classpath file '%s'", file), 
-					ex);
-		}
-	}
+        try {
+            return modules.computeIfAbsent(
+                    name,
+                    k -> loadFromClasspathAsString(getVeniceBasePath() + k));
+        }
+        catch(Exception ex) {
+            throw new VncException(String.format(
+                    "Failed to load Venice module '%s'", name),
+                    ex);
+        }
+    }
 
-	public static String loadExternalFile(final String file) {
-		// For security reasons just allow to load venice scripts!
-		if (!file.endsWith(".venice")) {
-			throw new VncException(String.format(
-					"Must not load other than Venice (*.venice) files. "
-						+ "File: '%s'",
-						file));
-		}
+    public static String loadClasspathFile(final String file) {
+        // For security reasons just allow to load venice scripts!
+        if (!file.endsWith(".venice")) {
+            throw new VncException(String.format(
+                    "Must not load other than Venice (*.venice) resources from "
+                        + "classpath. Resource: '%s'",
+                    file));
+        }
 
-		final File f = new File(file);
-				
-		final IInterceptor interceptor = ThreadContext.getInterceptor();
-		
-		final String data = interceptor.getLoadPaths().loadVeniceFile(f);
-			
-		if (data == null) {
-			throw new VncException("Failed to load the file '" + f + "'!");
-		}
-		else {
-			externalFiles.put(f.getName(), data);		
-			return data;
-		}
-	} 
+        try {
+            return classpathFiles.computeIfAbsent(
+                    file,
+                    k -> loadFromClasspathAsString(file));
+        }
+        catch(Exception ex) {
+            throw new VncException(String.format(
+                    "Failed to load Venice classpath file '%s'", file),
+                    ex);
+        }
+    }
 
-	
-	public static boolean isLoadedModule(final String module) {
-		return modules.containsKey(module);
-	}
+    public static String loadExternalFile(final String file) {
+        // For security reasons just allow to load venice scripts!
+        if (!file.endsWith(".venice")) {
+            throw new VncException(String.format(
+                    "Must not load other than Venice (*.venice) files. "
+                        + "File: '%s'",
+                    file));
+        }
 
-	public static boolean isLoadedClasspathFile(final String file) {
-		return classpathFiles.containsKey(file);
-	}
+        final File f = new File(file);
 
-	public static boolean isLoadedExternalFile(final String file) {
-		return externalFiles.containsKey(file);
-	}
-	
+        final IInterceptor interceptor = ThreadContext.getInterceptor();
 
-	public static String getCachedLoadedModule(final String module) {
-		return modules.get(module);
-	}
+        final String data = interceptor.getLoadPaths().loadVeniceFile(f);
 
-	public static String getCachedClasspathFile(final String file) {
-		return classpathFiles.get(file);
-	}
+        if (data == null) {
+            throw new VncException("Failed to load the file '" + f + "'!");
+        }
+        else {
+            externalFiles.put(f.getName(), data);
+            return data;
+        }
+    }
 
-	public static String getCachedExternalFile(final String file) {
-		return externalFiles.get(file);
-	}
 
-	
-	private static String loadFromClasspathAsString(final String path) {
-		return new ClassPathResource(path).getResourceAsString("UTF-8");
-	}
-	
-	
-	private static final Map<String,String> modules = new ConcurrentHashMap<>();
-	private static final Map<String,String> classpathFiles = new ConcurrentHashMap<>();
-	private static final Map<String,String> externalFiles = new ConcurrentHashMap<>();
+    public static boolean isLoadedModule(final String module) {
+        return modules.containsKey(module);
+    }
+
+    public static boolean isLoadedClasspathFile(final String file) {
+        return classpathFiles.containsKey(file);
+    }
+
+    public static boolean isLoadedExternalFile(final String file) {
+        return externalFiles.containsKey(file);
+    }
+
+
+    public static String getCachedLoadedModule(final String module) {
+        return modules.get(module);
+    }
+
+    public static String getCachedClasspathFile(final String file) {
+        return classpathFiles.get(file);
+    }
+
+    public static String getCachedExternalFile(final String file) {
+        return externalFiles.get(file);
+    }
+
+
+    private static String loadFromClasspathAsString(final String path) {
+        return new ClassPathResource(path).getResourceAsString("UTF-8");
+    }
+
+
+    private static final Map<String,String> modules = new ConcurrentHashMap<>();
+    private static final Map<String,String> classpathFiles = new ConcurrentHashMap<>();
+    private static final Map<String,String> externalFiles = new ConcurrentHashMap<>();
 }

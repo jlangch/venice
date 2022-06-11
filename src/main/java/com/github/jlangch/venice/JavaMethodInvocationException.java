@@ -1,5 +1,5 @@
 /*   __    __         _
- *   \ \  / /__ _ __ (_) ___ ___ 
+ *   \ \  / /__ _ __ (_) ___ ___
  *    \ \/ / _ \ '_ \| |/ __/ _ \
  *     \  /  __/ | | | | (_|  __/
  *      \/ \___|_| |_|_|\___\___|
@@ -27,18 +27,18 @@ package com.github.jlangch.venice;
  */
 public class JavaMethodInvocationException extends VncException {
 
-	public JavaMethodInvocationException(final String message) {
-		super(message);
-	}
+    public JavaMethodInvocationException(final String message) {
+        super(message);
+    }
 
-	public JavaMethodInvocationException(final String message, final Throwable cause) {
-		super(message, cause);
-	}
+    public JavaMethodInvocationException(final String message, final Throwable cause) {
+        super(message, cause);
+    }
 
-	public JavaMethodInvocationException(final Throwable cause) {
-		super(cause);
-	}
-	
+    public JavaMethodInvocationException(final Throwable cause) {
+        super(cause);
+    }
 
-	private static final long serialVersionUID = 5439694361809280080L;
+
+    private static final long serialVersionUID = 5439694361809280080L;
 }

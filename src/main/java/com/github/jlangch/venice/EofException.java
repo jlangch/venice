@@ -1,5 +1,5 @@
 /*   __    __         _
- *   \ \  / /__ _ __ (_) ___ ___ 
+ *   \ \  / /__ _ __ (_) ___ ___
  *    \ \/ / _ \ '_ \| |/ __/ _ \
  *     \  /  __/ | | | | (_|  __/
  *      \/ \___|_| |_|_|\___\___|
@@ -24,24 +24,24 @@ package com.github.jlangch.venice;
 
 /**
  * Thrown by the {@code Reader} to signal a premature end of input.
- * 
+ *
  * <p>E.g.: defining a string without closing it with the end quote before
  * the end of the input is reached
  */
 public class EofException extends ParseError {
 
-	public EofException(final String message) {
-		super(message);
-	}
+    public EofException(final String message) {
+        super(message);
+    }
 
-	public EofException(final String message, final Throwable cause) {
-		super(message, cause);
-	}
+    public EofException(final String message, final Throwable cause) {
+        super(message, cause);
+    }
 
-	public EofException(final Throwable cause) {
-		super(cause);
-	}
-	
+    public EofException(final Throwable cause) {
+        super(cause);
+    }
 
-	private static final long serialVersionUID = -23568367901801596L;
+
+    private static final long serialVersionUID = -23568367901801596L;
 }

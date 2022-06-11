@@ -1,5 +1,5 @@
 /*   __    __         _
- *   \ \  / /__ _ __ (_) ___ ___ 
+ *   \ \  / /__ _ __ (_) ___ ___
  *    \ \/ / _ \ '_ \| |/ __/ _ \
  *     \  /  __/ | | | | (_|  __/
  *      \/ \___|_| |_|_|\___\___|
@@ -30,61 +30,61 @@ import com.github.jlangch.venice.impl.types.VncVal;
  */
 public class ValueException extends VncException {
 
-	public ValueException(final Object value) {
-		super("");
-		this.value = value;
-		this.type = type(value);
-	}
+    public ValueException(final Object value) {
+        super("");
+        this.value = value;
+        this.type = type(value);
+    }
 
-	public ValueException(final Object value, final Throwable cause) {
-		super("", cause);
-		this.value = value;
-		this.type = type(value);
-	}
-	
-	public Object getValue() { 
-		return value; 
-	}
-	
-	public String getType() { 
-		return type; 
-	}
+    public ValueException(final Object value, final Throwable cause) {
+        super("", cause);
+        this.value = value;
+        this.type = type(value);
+    }
 
-	@Override
+    public Object getValue() {
+        return value;
+    }
+
+    public String getType() {
+        return type;
+    }
+
+    @Override
     public String toString() {
         String s = getClass().getName();
         return value == null
-        		? s + ": null"
-        		: s + ": (" + type + ") " + format(value);
+                ? s + ": null"
+                : s + ": (" + type + ") " + format(value);
     }
-	
-	private static String format(final Object value) {
-		if (value == null) {
-			return null;
-		}
-		else if (value instanceof VncVal) {
-			return ((VncVal)value).toString(true);
-		}
-		else {
-			return value.toString();
-		}
-	}
 
-	private static String type(final Object value) {
-		if (value == null) {
-			return Constants.Nil.getType().toString();
-		}
-		else if (value instanceof VncVal) {
-			return ((VncVal)value).getType().toString();
-		}
-		else {
-			return ":" + value.getClass().getName();
-		}
-	}
-	
-	
-	private static final long serialVersionUID = -7070216020647646364L;
+    private static String format(final Object value) {
+        if (value == null) {
+            return null;
+        }
+        else if (value instanceof VncVal) {
+            return ((VncVal)value).toString(true);
+        }
+        else {
+            return value.toString();
+        }
+    }
 
-	private final Object value;
-	private final String type;
+    private static String type(final Object value) {
+        if (value == null) {
+            return Constants.Nil.getType().toString();
+        }
+        else if (value instanceof VncVal) {
+            return ((VncVal)value).getType().toString();
+        }
+        else {
+            return ":" + value.getClass().getName();
+        }
+    }
+
+
+    private static final long serialVersionUID = -7070216020647646364L;
+
+    private final Object value;
+    private final String type;
 }

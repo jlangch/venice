@@ -1,5 +1,5 @@
 /*   __    __         _
- *   \ \  / /__ _ __ (_) ___ ___ 
+ *   \ \  / /__ _ __ (_) ___ ___
  *    \ \/ / _ \ '_ \| |/ __/ _ \
  *     \  /  __/ | | | | (_|  __/
  *      \/ \___|_| |_|_|\___\___|
@@ -35,11 +35,11 @@ public class Embed_10_CustomSandbox {
                         new SandboxRules()
                                 .rejectAllVeniceIoFunctions()
                                 .withClasses(
-                                    "java.lang.Math:PI", 
-                                    "java.lang.Math:min", 
-                                    "java.lang.Math:max", 
-                                    "java.time.ZonedDateTime:*", 
-                                    "java.awt.**:*", 
+                                    "java.lang.Math:PI",
+                                    "java.lang.Math:min",
+                                    "java.lang.Math:max",
+                                    "java.time.ZonedDateTime:*",
+                                    "java.awt.**:*",
                                     "java.util.ArrayList:new",
                                     "java.util.ArrayList:add"));
 
@@ -52,15 +52,15 @@ public class Embed_10_CustomSandbox {
         // rule: "java.lang.Math:min"
         // => OK (static method)
         venice.eval("(. :java.lang.Math :min 20 30)");
-        
+
         // rule: "java.lang.Math:max"
         // => OK (static method)
         venice.eval("(. :java.lang.Math :max 20 30)");
-        
+
         // rule: "java.time.ZonedDateTime:*"
         // => OK (constructor & instance method)
         venice.eval("(. (. :java.time.ZonedDateTime :now) :plusDays 5))");
-        
+
         // rule: "java.awt.**:*"
         // => OK (constructor & instance method)
         venice.eval("(. (. :java.awt.color.ICC_ColorSpace                  \n" +
@@ -68,11 +68,11 @@ public class Embed_10_CustomSandbox {
                     "      (. :java.awt.color.ColorSpace :CS_LINEAR_RGB))  \n" +
                     "   :getMaxValue                                       \n" +
                     "   0)                                                 ");
-        
+
         // rule: "java.util.ArrayList:new"
         // => OK (constructor)
         venice.eval("(. :java.util.ArrayList :new)");
-    
+
         // rule: "java.util.ArrayList:add"
         // => OK (constructor & instance method)
         venice.eval(
@@ -81,7 +81,7 @@ public class Embed_10_CustomSandbox {
                 "      (. :add 2))                    ");
 
         // => FAIL (static method) with Sandbox SecurityException
-        venice.eval("(. :java.lang.System :exit 0)"); 
+        venice.eval("(. :java.lang.System :exit 0)");
     }
-    
+
 }

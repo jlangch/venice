@@ -1,5 +1,5 @@
 /*   __    __         _
- *   \ \  / /__ _ __ (_) ___ ___ 
+ *   \ \  / /__ _ __ (_) ___ ___
  *    \ \/ / _ \ '_ \| |/ __/ _ \
  *     \  /  __/ | | | | (_|  __/
  *      \/ \___|_| |_|_|\___\___|
@@ -27,31 +27,31 @@ package com.github.jlangch.venice.impl.debug.agent;
  */
 public enum StepMode {
 
-	// Step to any next function or next level
-	StepToAny,
+    // Step to any next function or next level
+    StepToAny,
 
-	// Step to next function entry
-	StepToNextFunction,
+    // Step to next function entry
+    StepToNextFunction,
 
-	// Step to next non system function entry
-	StepToNextNonSystemFunction,
+    // Step to next non system function entry
+    StepToNextNonSystemFunction,
 
-	// Step over the current function
-	StepOverFunction,
-	StepOverFunction_NextCall,
-	
-	// Step in the next function at call level
-	StepToNextFunctionCall,
+    // Step over the current function
+    StepOverFunction,
+    StepOverFunction_NextCall,
 
-	// Step in the current function to the entry: call -> entry
-	// Steps over all functions called for evaluating the functions args
-	StepToFunctionEntry,
+    // Step in the next function at call level
+    StepToNextFunctionCall,
 
-	// Step in the current function to the exit: (call,entry) -> exit
-	// Steps over all functions called for evaluating the functions args or body
-	StepToFunctionExit,
-	
-	// Disable stepping, just stop on function breakpoints
-	SteppingDisabled;
+    // Step in the current function to the entry: call -> entry
+    // Steps over all functions called for evaluating the functions args
+    StepToFunctionEntry,
+
+    // Step in the current function to the exit: (call,entry) -> exit
+    // Steps over all functions called for evaluating the functions args or body
+    StepToFunctionExit,
+
+    // Disable stepping, just stop on function breakpoints
+    SteppingDisabled;
 
 }

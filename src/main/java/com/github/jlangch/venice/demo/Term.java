@@ -1,5 +1,5 @@
 /*   __    __         _
- *   \ \  / /__ _ __ (_) ___ ___ 
+ *   \ \  / /__ _ __ (_) ___ ___
  *    \ \/ / _ \ '_ \| |/ __/ _ \
  *     \  /  __/ | | | | (_|  __/
  *      \/ \___|_| |_|_|\___\___|
@@ -29,29 +29,29 @@ import org.jline.terminal.TerminalBuilder;
 
 
 public class Term {
-	
-	public static void main(final String[] args){
-		try {
-			final TerminalBuilder builder = TerminalBuilder
-												.builder()
-												.streams(System.in, System.out)
-												.system(true)
-												.jna(false);
-			
-			final Terminal terminal = builder.build();
-			
-			Tmux tm = new Tmux(terminal, System.err, Term::open);
-			tm.run();
-			tm.execute(System.out, System.err, Arrays.asList(args));
-		}
-		catch(Exception ex) {
-			ex.printStackTrace();
-		}
-	}
-	
-	
-	public static void open(Terminal terminal) {
-		terminal.writer().println("Terminal opened");
-	}
-	
+
+    public static void main(final String[] args){
+        try {
+            final TerminalBuilder builder = TerminalBuilder
+                                                .builder()
+                                                .streams(System.in, System.out)
+                                                .system(true)
+                                                .jna(false);
+
+            final Terminal terminal = builder.build();
+
+            Tmux tm = new Tmux(terminal, System.err, Term::open);
+            tm.run();
+            tm.execute(System.out, System.err, Arrays.asList(args));
+        }
+        catch(Exception ex) {
+            ex.printStackTrace();
+        }
+    }
+
+
+    public static void open(Terminal terminal) {
+        terminal.writer().println("Terminal opened");
+    }
+
 }

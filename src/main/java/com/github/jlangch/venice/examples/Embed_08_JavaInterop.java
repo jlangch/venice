@@ -1,5 +1,5 @@
 /*   __    __         _
- *   \ \  / /__ _ __ (_) ___ ___ 
+ *   \ \  / /__ _ __ (_) ___ ___
  *    \ \/ / _ \ '_ \| |/ __/ _ \
  *     \  /  __/ | | | | (_|  __/
  *      \/ \___|_| |_|_|\___\___|
@@ -27,13 +27,13 @@ import com.github.jlangch.venice.Venice;
 
 
 public class Embed_08_JavaInterop {
-    
-	public static void main(final String[] args) {
+
+    public static void main(final String[] args) {
         final Venice venice = new Venice();
-        
+
         // qualified classes
         final Long val = (Long)venice.eval("(. :java.lang.Math :min 20 30)");
-        
+
         // class import
         final ZonedDateTime ts = (ZonedDateTime)venice.eval(
                                     "(do " +
@@ -43,5 +43,5 @@ public class Embed_08_JavaInterop {
         System.out.println(val);
         System.out.println(ts);
     }
-	
+
 }

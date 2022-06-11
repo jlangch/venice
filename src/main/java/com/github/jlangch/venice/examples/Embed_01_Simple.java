@@ -1,5 +1,5 @@
 /*   __    __         _
- *   \ \  / /__ _ __ (_) ___ ___ 
+ *   \ \  / /__ _ __ (_) ___ ___
  *    \ \/ / _ \ '_ \| |/ __/ _ \
  *     \  /  __/ | | | | (_|  __/
  *      \/ \___|_| |_|_|\___\___|
@@ -26,12 +26,12 @@ import com.github.jlangch.venice.VncException;
 
 
 public class Embed_01_Simple {
-    
-	public static void main(final String[] args) {
+
+    public static void main(final String[] args) {
         try {
-           final Venice venice = new Venice();  
+           final Venice venice = new Venice();
            System.out.println(venice.eval("(+ 1 1)"));
-        } 
+        }
         catch(VncException ex) {
            ex.printVeniceStackTrace();
         }
@@ -39,5 +39,5 @@ public class Embed_01_Simple {
            ex.printStackTrace();
         }
     }
-	
+
 }

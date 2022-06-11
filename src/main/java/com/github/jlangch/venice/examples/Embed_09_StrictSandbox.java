@@ -1,5 +1,5 @@
 /*   __    __         _
- *   \ \  / /__ _ __ (_) ___ ___ 
+ *   \ \  / /__ _ __ (_) ___ ___
  *    \ \/ / _ \ '_ \| |/ __/ _ \
  *     \  /  __/ | | | | (_|  __/
  *      \/ \___|_| |_|_|\___\___|
@@ -26,7 +26,7 @@ import com.github.jlangch.venice.javainterop.RejectAllInterceptor;
 
 
 public class Embed_09_StrictSandbox {
-    
+
     public static void main(final String[] args) {
         // disable all Java calls and all Venice IO functions
         // like 'println', 'slurp', ...
@@ -34,7 +34,7 @@ public class Embed_09_StrictSandbox {
         final Venice venice = new Venice(new RejectAllInterceptor());
 
         // => FAIL (Venice IO function) with Sandbox SecurityException
-        venice.eval("(println 100)"); 
+        venice.eval("(println 100)");
     }
-    
+
 }

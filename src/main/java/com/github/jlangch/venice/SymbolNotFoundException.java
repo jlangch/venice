@@ -1,5 +1,5 @@
 /*   __    __         _
- *   \ \  / /__ _ __ (_) ___ ___ 
+ *   \ \  / /__ _ __ (_) ___ ___
  *    \ \/ / _ \ '_ \| |/ __/ _ \
  *     \  /  __/ | | | | (_|  __/
  *      \/ \___|_| |_|_|\___\___|
@@ -27,22 +27,22 @@ package com.github.jlangch.venice;
  */
 public class SymbolNotFoundException extends VncException {
 
-	public SymbolNotFoundException(
-			final String message, 
-			final String symbol 
-	) {
-		super(message);
-		
-		this.symbol = symbol;
-	}
-	
+    public SymbolNotFoundException(
+            final String message,
+            final String symbol
+    ) {
+        super(message);
 
-	public String getSymbol() {
-		return symbol;
-	}
+        this.symbol = symbol;
+    }
 
 
-	private static final long serialVersionUID = -23568367901801596L;
-	
-	private final String symbol;
+    public String getSymbol() {
+        return symbol;
+    }
+
+
+    private static final long serialVersionUID = -23568367901801596L;
+
+    private final String symbol;
 }

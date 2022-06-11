@@ -1,5 +1,5 @@
 /*   __    __         _
- *   \ \  / /__ _ __ (_) ___ ___ 
+ *   \ \  / /__ _ __ (_) ___ ___
  *    \ \/ / _ \ '_ \| |/ __/ _ \
  *     \  /  __/ | | | | (_|  __/
  *      \/ \___|_| |_|_|\___\___|
@@ -28,26 +28,26 @@ import com.github.jlangch.venice.impl.types.collections.VncList;
 
 
 public class VncContinuationFunction extends VncFunction {
-		
-	public VncContinuationFunction(final Continuation cont) {
-		super(createAnonymousFuncName("continuation"));
-		
-		this.cont = cont;
-	}
 
-	
-	@Override
-	public VncVal apply(final VncList args) {
-		return Constants.Nil;
-	}
+    public VncContinuationFunction(final Continuation cont) {
+        super(createAnonymousFuncName("continuation"));
+
+        this.cont = cont;
+    }
 
 
-	public Continuation getContinuation() { 
-		return cont; 
-	}
+    @Override
+    public VncVal apply(final VncList args) {
+        return Constants.Nil;
+    }
 
-	
-	private static final long serialVersionUID = -7070216020647646364L;
 
-	private final Continuation cont;
+    public Continuation getContinuation() {
+        return cont;
+    }
+
+
+    private static final long serialVersionUID = -7070216020647646364L;
+
+    private final Continuation cont;
 }

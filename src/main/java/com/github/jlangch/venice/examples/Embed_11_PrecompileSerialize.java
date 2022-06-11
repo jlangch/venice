@@ -1,5 +1,5 @@
 /*   __    __         _
- *   \ \  / /__ _ __ (_) ___ ___ 
+ *   \ \  / /__ _ __ (_) ___ ___
  *    \ \/ / _ \ '_ \| |/ __/ _ \
  *     \  /  __/ | | | | (_|  __/
  *      \/ \___|_| |_|_|\___\___|
@@ -27,23 +27,23 @@ import com.github.jlangch.venice.Venice;
 
 
 public class Embed_11_PrecompileSerialize {
-    
-	public static void main(final String[] args) {
+
+    public static void main(final String[] args) {
         final Venice venice = new Venice();
 
         PreCompiled precompiled = venice.precompile("example", "(+ 1 x)");
-        
+
         final byte[] data = precompiled.serialize();
-        
+
         // store the serialized expression on a DB for example
-        
+
         // ...
-        
+
         // reload the serialized expression to use it
-        
+
         precompiled = PreCompiled.deserialize(data);
 
         System.out.println(venice.eval(precompiled, Parameters.of("x", 2)));
     }
-	
+
 }

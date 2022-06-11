@@ -1,5 +1,5 @@
 /*   __    __         _
- *   \ \  / /__ _ __ (_) ___ ___ 
+ *   \ \  / /__ _ __ (_) ___ ___
  *    \ \/ / _ \ '_ \| |/ __/ _ \
  *     \  /  __/ | | | | (_|  __/
  *      \/ \___|_| |_|_|\___\___|
@@ -26,17 +26,17 @@ import com.github.jlangch.venice.impl.types.VncVal;
 
 
 public class ContinuationException extends VncException {
-		
-	public ContinuationException(final VncVal val) {
-		this.val = val;
-	}
 
-	public VncVal getVal() { 
-		return val; 
-	}
-	
-	
-	private static final long serialVersionUID = -7070216020647646364L;
+    public ContinuationException(final VncVal val) {
+        this.val = val;
+    }
 
-	private final VncVal val;
+    public VncVal getVal() {
+        return val;
+    }
+
+
+    private static final long serialVersionUID = -7070216020647646364L;
+
+    private final VncVal val;
 }

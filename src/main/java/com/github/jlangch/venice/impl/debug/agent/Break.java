@@ -1,5 +1,5 @@
 /*   __    __         _
- *   \ \  / /__ _ __ (_) ___ ___ 
+ *   \ \  / /__ _ __ (_) ___ ___
  *    \ \/ / _ \ '_ \| |/ __/ _ \
  *     \  /  __/ | | | | (_|  __/
  *      \/ \___|_| |_|_|\___\___|
@@ -42,189 +42,189 @@ import com.github.jlangch.venice.impl.util.MetaUtil;
  */
 public class Break {
 
-	public Break(
-			final BreakpointFnRef breakpoint,
-			final VncFunction fn,
-			final VncList args,
-			final Env env,
-			final CallStack callStack,
-			final FunctionScope scope,
-			final String threadName
-	) {
-		this(breakpoint, fn, args, null, null, env, callStack, scope, threadName);
-	}
+    public Break(
+            final BreakpointFnRef breakpoint,
+            final VncFunction fn,
+            final VncList args,
+            final Env env,
+            final CallStack callStack,
+            final FunctionScope scope,
+            final String threadName
+    ) {
+        this(breakpoint, fn, args, null, null, env, callStack, scope, threadName);
+    }
 
-	public Break(
-			final BreakpointFnRef breakpoint,
-			final VncFunction fn,
-			final VncList args,
-			final VncVal retVal,
-			final Exception ex,
-			final Env env,
-			final CallStack callStack,
-			final FunctionScope scope,
-			final String threadName
-	) {
-		this.breakpoint = breakpoint;
-		this.fn = fn;
-		this.args = args;
-		this.retVal = retVal;
-		this.ex = ex;
-		this.env = env;
-		this.callStack = callStack;
-		this.scope = scope;
-		this.threadName = threadName;
-	}
-
-	
-	public BreakpointFnRef getBreakpoint() {
-		return breakpoint;
-	}
-
-	public VncFunction getFn() {
-		return fn;
-	}
-
-	public VncList getArgs() {
-		return args;
-	}
-
-	public VncVal getRetVal() {
-		return retVal;
-	}
-
-	public Exception getException() {
-		return ex;
-	}
-
-	public Env getEnv() {
-		return env;
-	}
-
-	public CallStack getCallStack() {
-		return callStack;
-	}
-
-	public FunctionScope getBreakpointScope() {
-		return scope;
-	}
-
-	public boolean isInScope(final FunctionScope... scopes) {
-		return CollectionUtil.toList(scopes).contains(scope);
-	}
-
-	public boolean isBreakInSpecialForm() {
-		return fn instanceof SpecialFormVirtualFunction;
-	}
-
-	public boolean isBreakInNativeFn() {
-		return fn.isNative();
-	}
-
-	public String getThreadName() {
-		return threadName;
-	}
-	
-	public String getBreakFnInfo(final boolean pad) {
-		final int padLen = pad ? FORMAT_PAD_LEN : 0;
-		
-		if (isBreakInSpecialForm()) {
-			return String.format(
-						"%s %s", 
-						padRight("Special Form:", padLen),
-						fn.getQualifiedName());
-		}
-		else if (fn.isMacro()) {
-			return String.format(
-						"%s %s defined in %s at line %d", 
-						padRight("Macro:", padLen),
-						fn.getQualifiedName(),
-						MetaUtil.getFile(fn.getMeta()),
-						MetaUtil.getLine(fn.getMeta()));
-		}
-		else if (fn.isNative()) {
-			return String.format(
-						"%s %s (native, no source line info)", 
-						padRight("Function:", padLen),
-						fn.getQualifiedName());
-		}
-		else {
-			return String.format(
-						"%s %s defined in %s at line %d", 
-						padRight("Function:", padLen),
-						fn.getQualifiedName(),
-						MetaUtil.getFile(fn.getMeta()),
-						MetaUtil.getLine(fn.getMeta()));
-		}
-	}
-
-	@Override
-	public String toString() {
-		final StringBuilder sb = new StringBuilder();
-		
-		sb.append(String.format(
-						"%s %s",
-						padRight("Breakpoint:", FORMAT_PAD_LEN),
-						breakpoint.toString()));
-		
-		sb.append("\n");
-		sb.append(getBreakFnInfo(true));
-		
-		sb.append("\n");
-		sb.append(String.format(
-						"%s %s", 
-						padRight("Scope:", FORMAT_PAD_LEN),
-						scope));
-		
-		sb.append("\n");
-		sb.append(String.format(
-						"%s %s", 
-						padRight("Thread:", FORMAT_PAD_LEN),
-						threadName));	
-			
-		sb.append("\n");
-		sb.append(String.format(
-						"%s %d frames", 
-						padRight("Callstack:", FORMAT_PAD_LEN),
-						getCallStack().size()));	
-		
-		return sb.toString();
-	}
-
-	
-	@Override
-	public int hashCode() {
-		return id.hashCode();
-	}
-
-	@Override
-	public boolean equals(Object obj) {
-		if (this == obj)
-			return true;
-		if (obj == null)
-			return false;
-		if (getClass() != obj.getClass())
-			return false;
-		Break other = (Break) obj;
-		if (id == null) {
-			if (other.id != null)
-				return false;
-		} else if (!id.equals(other.id))
-			return false;
-		return true;
-	}
+    public Break(
+            final BreakpointFnRef breakpoint,
+            final VncFunction fn,
+            final VncList args,
+            final VncVal retVal,
+            final Exception ex,
+            final Env env,
+            final CallStack callStack,
+            final FunctionScope scope,
+            final String threadName
+    ) {
+        this.breakpoint = breakpoint;
+        this.fn = fn;
+        this.args = args;
+        this.retVal = retVal;
+        this.ex = ex;
+        this.env = env;
+        this.callStack = callStack;
+        this.scope = scope;
+        this.threadName = threadName;
+    }
 
 
-	public static int FORMAT_PAD_LEN = 14;
+    public BreakpointFnRef getBreakpoint() {
+        return breakpoint;
+    }
 
-	private final String id = UUID.randomUUID().toString();
-	private final BreakpointFnRef breakpoint;
-	private final VncFunction fn;
-	private final VncList args;
-	private final VncVal retVal;
-	private final Exception ex;
-	private final Env env;
-	private final CallStack callStack;
-	private final FunctionScope scope;
-	private final String threadName;
+    public VncFunction getFn() {
+        return fn;
+    }
+
+    public VncList getArgs() {
+        return args;
+    }
+
+    public VncVal getRetVal() {
+        return retVal;
+    }
+
+    public Exception getException() {
+        return ex;
+    }
+
+    public Env getEnv() {
+        return env;
+    }
+
+    public CallStack getCallStack() {
+        return callStack;
+    }
+
+    public FunctionScope getBreakpointScope() {
+        return scope;
+    }
+
+    public boolean isInScope(final FunctionScope... scopes) {
+        return CollectionUtil.toList(scopes).contains(scope);
+    }
+
+    public boolean isBreakInSpecialForm() {
+        return fn instanceof SpecialFormVirtualFunction;
+    }
+
+    public boolean isBreakInNativeFn() {
+        return fn.isNative();
+    }
+
+    public String getThreadName() {
+        return threadName;
+    }
+
+    public String getBreakFnInfo(final boolean pad) {
+        final int padLen = pad ? FORMAT_PAD_LEN : 0;
+
+        if (isBreakInSpecialForm()) {
+            return String.format(
+                        "%s %s",
+                        padRight("Special Form:", padLen),
+                        fn.getQualifiedName());
+        }
+        else if (fn.isMacro()) {
+            return String.format(
+                        "%s %s defined in %s at line %d",
+                        padRight("Macro:", padLen),
+                        fn.getQualifiedName(),
+                        MetaUtil.getFile(fn.getMeta()),
+                        MetaUtil.getLine(fn.getMeta()));
+        }
+        else if (fn.isNative()) {
+            return String.format(
+                        "%s %s (native, no source line info)",
+                        padRight("Function:", padLen),
+                        fn.getQualifiedName());
+        }
+        else {
+            return String.format(
+                        "%s %s defined in %s at line %d",
+                        padRight("Function:", padLen),
+                        fn.getQualifiedName(),
+                        MetaUtil.getFile(fn.getMeta()),
+                        MetaUtil.getLine(fn.getMeta()));
+        }
+    }
+
+    @Override
+    public String toString() {
+        final StringBuilder sb = new StringBuilder();
+
+        sb.append(String.format(
+                        "%s %s",
+                        padRight("Breakpoint:", FORMAT_PAD_LEN),
+                        breakpoint.toString()));
+
+        sb.append("\n");
+        sb.append(getBreakFnInfo(true));
+
+        sb.append("\n");
+        sb.append(String.format(
+                        "%s %s",
+                        padRight("Scope:", FORMAT_PAD_LEN),
+                        scope));
+
+        sb.append("\n");
+        sb.append(String.format(
+                        "%s %s",
+                        padRight("Thread:", FORMAT_PAD_LEN),
+                        threadName));
+
+        sb.append("\n");
+        sb.append(String.format(
+                        "%s %d frames",
+                        padRight("Callstack:", FORMAT_PAD_LEN),
+                        getCallStack().size()));
+
+        return sb.toString();
+    }
+
+
+    @Override
+    public int hashCode() {
+        return id.hashCode();
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (this == obj)
+            return true;
+        if (obj == null)
+            return false;
+        if (getClass() != obj.getClass())
+            return false;
+        Break other = (Break) obj;
+        if (id == null) {
+            if (other.id != null)
+                return false;
+        } else if (!id.equals(other.id))
+            return false;
+        return true;
+    }
+
+
+    public static int FORMAT_PAD_LEN = 14;
+
+    private final String id = UUID.randomUUID().toString();
+    private final BreakpointFnRef breakpoint;
+    private final VncFunction fn;
+    private final VncList args;
+    private final VncVal retVal;
+    private final Exception ex;
+    private final Env env;
+    private final CallStack callStack;
+    private final FunctionScope scope;
+    private final String threadName;
 }

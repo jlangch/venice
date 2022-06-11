@@ -1,5 +1,5 @@
 /*   __    __         _
- *   \ \  / /__ _ __ (_) ___ ___ 
+ *   \ \  / /__ _ __ (_) ___ ___
  *    \ \/ / _ \ '_ \| |/ __/ _ \
  *     \  /  __/ | | | | (_|  __/
  *      \/ \___|_| |_|_|\___\___|
@@ -25,7 +25,7 @@ import com.github.jlangch.venice.Venice;
 
 public class VeniceClasspath {
 
-	public static String getVeniceBasePath() {
-		return Venice.class.getPackage().getName().replace('.', '/') + "/";
-	}
+    public static String getVeniceBasePath() {
+        return Venice.class.getPackage().getName().replace('.', '/') + "/";
+    }
 }

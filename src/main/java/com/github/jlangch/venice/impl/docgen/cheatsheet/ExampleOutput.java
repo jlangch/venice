@@ -1,5 +1,5 @@
 /*   __    __         _
- *   \ \  / /__ _ __ (_) ___ ___ 
+ *   \ \  / /__ _ __ (_) ___ ___
  *    \ \/ / _ \ '_ \| |/ __/ _ \
  *     \  /  __/ | | | | (_|  __/
  *      \/ \___|_| |_|_|\___\___|
@@ -26,158 +26,158 @@ import com.github.jlangch.venice.impl.util.StringUtil;
 
 public class ExampleOutput {
 
-	public ExampleOutput(
-			final String name,
-			final String example,
-			final String exampleXmlStyled
-	) {
-		this(name, example, exampleXmlStyled, null, null, null, null);
-	}
+    public ExampleOutput(
+            final String name,
+            final String example,
+            final String exampleXmlStyled
+    ) {
+        this(name, example, exampleXmlStyled, null, null, null, null);
+    }
 
-	public ExampleOutput(
-			final String name,
-			final String example,
-			final String exampleXmlStyled,
-			final String stdout,
-			final String stderr,
-			final String result
-	) {
-		this(name, example, exampleXmlStyled, stdout, stderr, result, null);
-	}
-	
-	public ExampleOutput(
-			final String name,
-			final String example,
-			final String exampleXmlStyled,
-			final String stdout,
-			final String stderr,
-			final RuntimeException ex
-	) {
-		this(name, example, exampleXmlStyled, stdout, stderr, null, ex);
-	}
-	
-	private ExampleOutput(
-			final String name,
-			final String example,
-			final String exampleXmlStyled,
-			final String stdout,
-			final String stderr,
-			final String result,
-			final RuntimeException ex
-	) {
-		this.name = name;
-		this.example = StringUtil.emptyToNull(StringUtil.trimRight(example));
-		this.exampleXmlStyled = exampleXmlStyled;
-		this.stdout = StringUtil.emptyToNull(StringUtil.trimRight(stdout));
-		this.stderr = StringUtil.emptyToNull(StringUtil.trimRight(stderr));
-		this.result = StringUtil.emptyToNull(StringUtil.trimRight(result));
-		this.ex = ex;
-	}
+    public ExampleOutput(
+            final String name,
+            final String example,
+            final String exampleXmlStyled,
+            final String stdout,
+            final String stderr,
+            final String result
+    ) {
+        this(name, example, exampleXmlStyled, stdout, stderr, result, null);
+    }
 
-	
-	
-	public String getName() {
-		return name;
-	}
+    public ExampleOutput(
+            final String name,
+            final String example,
+            final String exampleXmlStyled,
+            final String stdout,
+            final String stderr,
+            final RuntimeException ex
+    ) {
+        this(name, example, exampleXmlStyled, stdout, stderr, null, ex);
+    }
 
-	public String getExample() {
-		return example;
-	}
+    private ExampleOutput(
+            final String name,
+            final String example,
+            final String exampleXmlStyled,
+            final String stdout,
+            final String stderr,
+            final String result,
+            final RuntimeException ex
+    ) {
+        this.name = name;
+        this.example = StringUtil.emptyToNull(StringUtil.trimRight(example));
+        this.exampleXmlStyled = exampleXmlStyled;
+        this.stdout = StringUtil.emptyToNull(StringUtil.trimRight(stdout));
+        this.stderr = StringUtil.emptyToNull(StringUtil.trimRight(stderr));
+        this.result = StringUtil.emptyToNull(StringUtil.trimRight(result));
+        this.ex = ex;
+    }
 
-	public String getExampleXmlStyled() {
-		return exampleXmlStyled;
-	}
 
-	public String getResult() {
-		return result;
-	}
 
-	public String getStdout() {
-		return stdout;
-	}
+    public String getName() {
+        return name;
+    }
 
-	public String getStderr() {
-		return stderr;
-	}
+    public String getExample() {
+        return example;
+    }
 
-	public RuntimeException getEx() {
-		return ex;
-	}
+    public String getExampleXmlStyled() {
+        return exampleXmlStyled;
+    }
 
-	public String getExString() {
-		return ex != null
-				? String.format(
-						"%s: %s", 
-						ex.getClass().getSimpleName(),
-						ex.getMessage())
-				: null;
-	}
+    public String getResult() {
+        return result;
+    }
 
-	public String render() {
-		final StringBuilder sb = new StringBuilder();
+    public String getStdout() {
+        return stdout;
+    }
 
-		sb.append(example);
-		
-		if (stdout != null) {
-			sb.append("\n");
-			sb.append(stdout);
-		}
-		
-		if (stderr != null) {
-			sb.append("\n");
-			sb.append(stderr);
-		}
+    public String getStderr() {
+        return stderr;
+    }
 
-		if (result != null) {
-			sb.append("\n");
-			sb.append("=> ").append(result);
-		}
-		
-		if (ex != null) {
-			sb.append("\n");
-			sb.append("=> ").append(getExString());
-		}
-		 
-		return sb.toString();
-	}
+    public RuntimeException getEx() {
+        return ex;
+    }
 
-	public String renderXmlStyled() {
-		final StringBuilder sb = new StringBuilder();
+    public String getExString() {
+        return ex != null
+                ? String.format(
+                        "%s: %s",
+                        ex.getClass().getSimpleName(),
+                        ex.getMessage())
+                : null;
+    }
 
-		sb.append(exampleXmlStyled);
-		
-		if (stdout != null) {
-			sb.append("\n");
-			sb.append(DocHighlighter.style(stdout, "#808080"));
-		}
-		
-		if (stderr != null) {
-			sb.append("\n");
-			sb.append(DocHighlighter.style(stderr, "#808080"));
-		}
+    public String render() {
+        final StringBuilder sb = new StringBuilder();
 
-		if (result != null) {
-			sb.append("\n");
-			sb.append(StringEscapeUtil.escapeXml("=> "));
-			sb.append(StringEscapeUtil.escapeXml(result));
-		}
-		
-		if (ex != null) {
-			sb.append("\n");
-			sb.append(StringEscapeUtil.escapeXml("=> "));
-			sb.append(DocHighlighter.style(getExString(), "#808080"));
-		}
-		 
-		return sb.toString();
-	}
-	
-	
-	
-	private final String name;
-	private final String example;
-	private final String exampleXmlStyled;
-	private final String result;
-	private final String stdout;
-	private final String stderr;
-	private final RuntimeException ex;
+        sb.append(example);
+
+        if (stdout != null) {
+            sb.append("\n");
+            sb.append(stdout);
+        }
+
+        if (stderr != null) {
+            sb.append("\n");
+            sb.append(stderr);
+        }
+
+        if (result != null) {
+            sb.append("\n");
+            sb.append("=> ").append(result);
+        }
+
+        if (ex != null) {
+            sb.append("\n");
+            sb.append("=> ").append(getExString());
+        }
+
+        return sb.toString();
+    }
+
+    public String renderXmlStyled() {
+        final StringBuilder sb = new StringBuilder();
+
+        sb.append(exampleXmlStyled);
+
+        if (stdout != null) {
+            sb.append("\n");
+            sb.append(DocHighlighter.style(stdout, "#808080"));
+        }
+
+        if (stderr != null) {
+            sb.append("\n");
+            sb.append(DocHighlighter.style(stderr, "#808080"));
+        }
+
+        if (result != null) {
+            sb.append("\n");
+            sb.append(StringEscapeUtil.escapeXml("=> "));
+            sb.append(StringEscapeUtil.escapeXml(result));
+        }
+
+        if (ex != null) {
+            sb.append("\n");
+            sb.append(StringEscapeUtil.escapeXml("=> "));
+            sb.append(DocHighlighter.style(getExString(), "#808080"));
+        }
+
+        return sb.toString();
+    }
+
+
+
+    private final String name;
+    private final String example;
+    private final String exampleXmlStyled;
+    private final String result;
+    private final String stdout;
+    private final String stderr;
+    private final RuntimeException ex;
 }

@@ -1,5 +1,5 @@
 /*   __    __         _
- *   \ \  / /__ _ __ (_) ___ ___ 
+ *   \ \  / /__ _ __ (_) ___ ___
  *    \ \/ / _ \ '_ \| |/ __/ _ \
  *     \  /  __/ | | | | (_|  __/
  *      \/ \___|_| |_|_|\___\___|
@@ -28,10 +28,10 @@ package com.github.jlangch.venice;
  */
 public class ArityException extends VncException {
 
-	public ArityException(final String message) {
-		super(message);
-	}
+    public ArityException(final String message) {
+        super(message);
+    }
 
-	
-	private static final long serialVersionUID = 1349237272157335345L;
+
+    private static final long serialVersionUID = 1349237272157335345L;
 }

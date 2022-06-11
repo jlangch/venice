@@ -1,5 +1,5 @@
 /*   __    __         _
- *   \ \  / /__ _ __ (_) ___ ___ 
+ *   \ \  / /__ _ __ (_) ___ ___
  *    \ \/ / _ \ '_ \| |/ __/ _ \
  *     \  /  __/ | | | | (_|  __/
  *      \/ \___|_| |_|_|\___\___|
@@ -37,137 +37,137 @@ import com.github.jlangch.venice.impl.util.CollectionUtil;
  */
 public class BreakpointFn implements Comparable<BreakpointFn> {
 
-	public BreakpointFn(
-			final QualifiedName qualifiedName
-	) {
-		this(qualifiedName, new ArrayList<>());
-	}
+    public BreakpointFn(
+            final QualifiedName qualifiedName
+    ) {
+        this(qualifiedName, new ArrayList<>());
+    }
 
-	public BreakpointFn(
-			final QualifiedName qualifiedName,
-			final Selector selector
-	) {
-		this(qualifiedName, CollectionUtil.toList(selector));
-	}
+    public BreakpointFn(
+            final QualifiedName qualifiedName,
+            final Selector selector
+    ) {
+        this(qualifiedName, CollectionUtil.toList(selector));
+    }
 
-	public BreakpointFn(
-			final QualifiedName qualifiedName,
-			final List<Selector> selectors
-	) {
-		if (qualifiedName == null) {
-			throw new IllegalArgumentException("A qualifiedName must not be null");
-		}
+    public BreakpointFn(
+            final QualifiedName qualifiedName,
+            final List<Selector> selectors
+    ) {
+        if (qualifiedName == null) {
+            throw new IllegalArgumentException("A qualifiedName must not be null");
+        }
 
-		this.ref = new BreakpointFnRef(qualifiedName.getQualifiedName());
-		this.qn = qualifiedName;
-		this.selectors = new ArrayList<>();
-		
-		if (selectors == null || selectors.isEmpty()) {
-			this.selectors.add(new Selector());
-		}
-		else {
-			this.selectors.addAll(selectors);
-		}
-	}
+        this.ref = new BreakpointFnRef(qualifiedName.getQualifiedName());
+        this.qn = qualifiedName;
+        this.selectors = new ArrayList<>();
 
-	public BreakpointFn merge(final List<Selector> newSelectors) {
-		if (newSelectors == null || newSelectors.isEmpty()) {
-			return this;
-		}
-		else {
-			List<Selector> mergedSelectors = new ArrayList<>(selectors);
-			
-			for(Selector other : newSelectors) {
-				Selector match = findSelectorByMatchingAncestor(other, mergedSelectors);
-				if (match != null) {
-					// remove selector match
-					mergedSelectors = mergedSelectors
-										.stream()
-										.filter(s -> !s.hasSameAncestorSelector(match))
-										.collect(Collectors.toList());
+        if (selectors == null || selectors.isEmpty()) {
+            this.selectors.add(new Selector());
+        }
+        else {
+            this.selectors.addAll(selectors);
+        }
+    }
 
-				}
-				mergedSelectors.add(other);
-			}
-			
-			return new BreakpointFn(qn, mergedSelectors);
-		}
-	}
+    public BreakpointFn merge(final List<Selector> newSelectors) {
+        if (newSelectors == null || newSelectors.isEmpty()) {
+            return this;
+        }
+        else {
+            List<Selector> mergedSelectors = new ArrayList<>(selectors);
 
-	public String getQualifiedFnName() {
-		return qn.getQualifiedName();
-	}
+            for(Selector other : newSelectors) {
+                Selector match = findSelectorByMatchingAncestor(other, mergedSelectors);
+                if (match != null) {
+                    // remove selector match
+                    mergedSelectors = mergedSelectors
+                                        .stream()
+                                        .filter(s -> !s.hasSameAncestorSelector(match))
+                                        .collect(Collectors.toList());
 
-	public String getNamespace() {
-		return qn.getNamespace();
-	}
+                }
+                mergedSelectors.add(other);
+            }
 
-	public String getSimpleFnName() {
-		return qn.getSimpleName();
-	}
+            return new BreakpointFn(qn, mergedSelectors);
+        }
+    }
 
-	public List<Selector> getSelectors() {
-		return Collections.unmodifiableList(selectors);
-	}
+    public String getQualifiedFnName() {
+        return qn.getQualifiedName();
+    }
 
-	public BreakpointFnRef getBreakpointRef() {
-		return ref;
-	}
-	
-	public List<String> format(boolean useDescriptiveScopeNames) {
-		return selectors
-				.stream()
-				.map(s -> s.formatForBaseFn(
-								qn.getQualifiedName(), 
-								useDescriptiveScopeNames))
-				.collect(Collectors.toList());
-	}
-	
-	@Override
-	public String toString() {
-		return format(false)
-				.stream()
-				.collect(Collectors.joining("\n"));
-	}
-	
-	@Override
-	public int hashCode() {
-		return qn.hashCode();
-	}
+    public String getNamespace() {
+        return qn.getNamespace();
+    }
 
-	@Override
-	public boolean equals(Object obj) {
-		if (this == obj)
-			return true;
-		if (obj == null)
-			return false;
-		if (getClass() != obj.getClass())
-			return false;
-		BreakpointFn other = (BreakpointFn) obj;
-		return (qn.equals(other.qn));
-	}
+    public String getSimpleFnName() {
+        return qn.getSimpleName();
+    }
 
-	@Override
-	public int compareTo(final BreakpointFn o) {
-		return comp.compare(this, (BreakpointFn)o);
-	}
-	
-	private Selector findSelectorByMatchingAncestor(
-			final Selector candidate,
-			final List<Selector> selectors
-	) {
-		return selectors
-				.stream()
-				.filter(s -> s.hasSameAncestorSelector(candidate))
-				.findFirst()
-				.orElse(null);
-	}
-	
-	
-	private static Comparator<BreakpointFn> comp = 
-			Comparator.comparing(BreakpointFn::getQualifiedFnName);
-	
-	private final BreakpointFnRef ref;
-	private final QualifiedName qn;
-	private final List<Selector> selectors;
+    public List<Selector> getSelectors() {
+        return Collections.unmodifiableList(selectors);
+    }
+
+    public BreakpointFnRef getBreakpointRef() {
+        return ref;
+    }
+
+    public List<String> format(boolean useDescriptiveScopeNames) {
+        return selectors
+                .stream()
+                .map(s -> s.formatForBaseFn(
+                                qn.getQualifiedName(),
+                                useDescriptiveScopeNames))
+                .collect(Collectors.toList());
+    }
+
+    @Override
+    public String toString() {
+        return format(false)
+                .stream()
+                .collect(Collectors.joining("\n"));
+    }
+
+    @Override
+    public int hashCode() {
+        return qn.hashCode();
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (this == obj)
+            return true;
+        if (obj == null)
+            return false;
+        if (getClass() != obj.getClass())
+            return false;
+        BreakpointFn other = (BreakpointFn) obj;
+        return (qn.equals(other.qn));
+    }
+
+    @Override
+    public int compareTo(final BreakpointFn o) {
+        return comp.compare(this, o);
+    }
+
+    private Selector findSelectorByMatchingAncestor(
+            final Selector candidate,
+            final List<Selector> selectors
+    ) {
+        return selectors
+                .stream()
+                .filter(s -> s.hasSameAncestorSelector(candidate))
+                .findFirst()
+                .orElse(null);
+    }
+
+
+    private static Comparator<BreakpointFn> comp =
+            Comparator.comparing(BreakpointFn::getQualifiedFnName);
+
+    private final BreakpointFnRef ref;
+    private final QualifiedName qn;
+    private final List<Selector> selectors;
 }

@@ -1,5 +1,5 @@
 /*   __    __         _
- *   \ \  / /__ _ __ (_) ___ ___ 
+ *   \ \  / /__ _ __ (_) ___ ___
  *    \ \/ / _ \ '_ \| |/ __/ _ \
  *     \  /  __/ | | | | (_|  __/
  *      \/ \___|_| |_|_|\___\___|
@@ -30,156 +30,156 @@ import com.github.jlangch.venice.impl.debug.util.StepValidity;
 
 public interface IDebugAgent {
 
-	/**
-	 * Detach the debugger from Venice
-	 */
-	void detach();
-
-	
-	
-	// -------------------------------------------------------------------------
-	// Breakpoint management
-	// -------------------------------------------------------------------------
-
-	/**
-	 * @return all the registered breakpoints
-	 */
-	List<BreakpointFn> getBreakpoints();
-
-	/**
-	 * Add a new breakpoint
-	 * 
-	 * @param breakpoint A breakpoint
-	 */
-	void addBreakpoint(BreakpointFn breakpoint);
-
-	/**
-	 * Add a new breakpoints
-	 * 
-	 * @param breakpoints A list of breakpoints
-	 */
-	void addBreakpoints(List<BreakpointFn> breakpoints);
-
-	/**
-	 * Removes a breakpoint
-	 * 
-	 * @param breakpoint The breakpoint to be removed
-	 */
-	void removeBreakpoint(BreakpointFn breakpoint);
-
-	/**
-	 * Removes breakpoints
-	 * 
-	 * @param breakpoints The breakpoints to be removed
-	 */
-	void removeBreakpoints(List<BreakpointFn> breakpoints);
-
-	/**
-	 * Remove all breakpoints
-	 */
-	void removeAllBreakpoints();
-	
-	/**
-	 * Temporarily skip/unskip all breakpoints
-	 * 
-	 * @param skip if <code>true</code> skip else unskip
-	 */
-	void skipBreakpoints(boolean skip);
-	
-	/**
-	 * @return <code>true</code> if the breakpoints are temporarily skipped
-	 * 			else <code>false</code>
-	 */
-	boolean isSkipBreakpoints();
-
-	
-	void storeBreakpoints();
-	
-	void restoreBreakpoints();
-	
+    /**
+     * Detach the debugger from Venice
+     */
+    void detach();
 
 
-	// -------------------------------------------------------------------------
-	// Breaks
-	// -------------------------------------------------------------------------
 
-	/**
-	 * Checks if there is a breakpoint matching the qualified name
-	 *  
-	 * @param bpRef The a breakpoint reference
-	 * @return Returns <code>true</code> if there is a breakpoint matching the
-	 *         qualified name, otherwise <code>false</code>.
-	 */
-	boolean hasBreakpointFor(BreakpointFnRef bpRef);
+    // -------------------------------------------------------------------------
+    // Breakpoint management
+    // -------------------------------------------------------------------------
 
-	/**
-	 * Add a breakpoint listener that is call from the debug agent whenever
-	 * a breakpoint is reached.
-	 * 
-	 * <p>Note: As of now not more than one listener can be attached to the
-	 * debug agent.
-	 * 
-	 * @param listener A listener. Passing <code>null</code> will deactivate 
-	 * 					listening.
-	 */
-	void addBreakListener(IBreakListener listener);
+    /**
+     * @return all the registered breakpoints
+     */
+    List<BreakpointFn> getBreakpoints();
 
-	/**
-	 * @return <code>true</code> if the debugger is currently in a break.
-	 */
-	boolean hasActiveBreak();
-	
-	/**
-	 * @return Returns the break if the debugger is currently in a break
-	 *         otherwise <code>null</code>.
-	 */
-	Break getActiveBreak();
+    /**
+     * Add a new breakpoint
+     *
+     * @param breakpoint A breakpoint
+     */
+    void addBreakpoint(BreakpointFn breakpoint);
 
-	/**
-	 * switches the active break
-	 * 
-	 * @param index the index of the break in the range [1..n]
-	 * @return the active break or <code>null</code> if the break could not
-	 * 		   be switched.
-	 */
-	Break switchActiveBreak(int index);
+    /**
+     * Add a new breakpoints
+     *
+     * @param breakpoints A list of breakpoints
+     */
+    void addBreakpoints(List<BreakpointFn> breakpoints);
 
-	/**
-	 * @return all breaks
-	 */
-	List<Break> getAllBreaks();
+    /**
+     * Removes a breakpoint
+     *
+     * @param breakpoint The breakpoint to be removed
+     */
+    void removeBreakpoint(BreakpointFn breakpoint);
 
-	/**
-	 * Clears the current break and resumes processing for the next breakpoint.
-	 */
-	void clearBreaks();
+    /**
+     * Removes breakpoints
+     *
+     * @param breakpoints The breakpoints to be removed
+     */
+    void removeBreakpoints(List<BreakpointFn> breakpoints);
 
-	/**
-	 * Resumes processing for the next breakpoint in the active break.
-	 */
-	void resume();
+    /**
+     * Remove all breakpoints
+     */
+    void removeAllBreakpoints();
 
-	/**
-	 * Resumes processing for the next breakpoint in all breaks.
-	 */
-	void resumeAll();
+    /**
+     * Temporarily skip/unskip all breakpoints
+     *
+     * @param skip if <code>true</code> skip else unskip
+     */
+    void skipBreakpoints(boolean skip);
 
-	/**
-	 * Enters a step mode.
-	 * 
-	 * @param mode A step mode
-	 * @return The validity if the step mode could be entered or the reason when
-	 *         not
-	 */
-	StepValidity step(StepMode mode);
+    /**
+     * @return <code>true</code> if the breakpoints are temporarily skipped
+     * 			else <code>false</code>
+     */
+    boolean isSkipBreakpoints();
 
-	/**
-	 * Checks a step mode is possible in the current debugger context.
-	 * 
-	 * @param mode A step mode
-	 * @return The validity if the step mode can be entered or the reason when
-	 *         not
-	 */
-	StepValidity isStepPossible(StepMode mode);
+
+    void storeBreakpoints();
+
+    void restoreBreakpoints();
+
+
+
+    // -------------------------------------------------------------------------
+    // Breaks
+    // -------------------------------------------------------------------------
+
+    /**
+     * Checks if there is a breakpoint matching the qualified name
+     *
+     * @param bpRef The a breakpoint reference
+     * @return Returns <code>true</code> if there is a breakpoint matching the
+     *         qualified name, otherwise <code>false</code>.
+     */
+    boolean hasBreakpointFor(BreakpointFnRef bpRef);
+
+    /**
+     * Add a breakpoint listener that is call from the debug agent whenever
+     * a breakpoint is reached.
+     *
+     * <p>Note: As of now not more than one listener can be attached to the
+     * debug agent.
+     *
+     * @param listener A listener. Passing <code>null</code> will deactivate
+     *                 listening.
+     */
+    void addBreakListener(IBreakListener listener);
+
+    /**
+     * @return <code>true</code> if the debugger is currently in a break.
+     */
+    boolean hasActiveBreak();
+
+    /**
+     * @return Returns the break if the debugger is currently in a break
+     *         otherwise <code>null</code>.
+     */
+    Break getActiveBreak();
+
+    /**
+     * switches the active break
+     *
+     * @param index the index of the break in the range [1..n]
+     * @return the active break or <code>null</code> if the break could not
+     *         be switched.
+     */
+    Break switchActiveBreak(int index);
+
+    /**
+     * @return all breaks
+     */
+    List<Break> getAllBreaks();
+
+    /**
+     * Clears the current break and resumes processing for the next breakpoint.
+     */
+    void clearBreaks();
+
+    /**
+     * Resumes processing for the next breakpoint in the active break.
+     */
+    void resume();
+
+    /**
+     * Resumes processing for the next breakpoint in all breaks.
+     */
+    void resumeAll();
+
+    /**
+     * Enters a step mode.
+     *
+     * @param mode A step mode
+     * @return The validity if the step mode could be entered or the reason when
+     *         not
+     */
+    StepValidity step(StepMode mode);
+
+    /**
+     * Checks a step mode is possible in the current debugger context.
+     *
+     * @param mode A step mode
+     * @return The validity if the step mode can be entered or the reason when
+     *         not
+     */
+    StepValidity isStepPossible(StepMode mode);
 
 }

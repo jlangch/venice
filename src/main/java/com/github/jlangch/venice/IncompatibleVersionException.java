@@ -1,5 +1,5 @@
 /*   __    __         _
- *   \ \  / /__ _ __ (_) ___ ___ 
+ *   \ \  / /__ _ __ (_) ___ ___
  *    \ \/ / _ \ '_ \| |/ __/ _ \
  *     \  /  __/ | | | | (_|  __/
  *      \/ \___|_| |_|_|\___\___|
@@ -23,18 +23,18 @@ package com.github.jlangch.venice;
 
 
 /**
- * Thrown if Venice can not handle a precompiled script because of incompatible 
+ * Thrown if Venice can not handle a precompiled script because of incompatible
  * versions.
  */
 public class IncompatibleVersionException extends VncException {
 
-	public IncompatibleVersionException() {
-	}
-	
-	public IncompatibleVersionException(final String message) {
-		super(message);
-	}
+    public IncompatibleVersionException() {
+    }
+
+    public IncompatibleVersionException(final String message) {
+        super(message);
+    }
 
 
-	private static final long serialVersionUID = 1349237272157335345L;
+    private static final long serialVersionUID = 1349237272157335345L;
 }

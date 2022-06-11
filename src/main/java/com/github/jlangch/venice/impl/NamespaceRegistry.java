@@ -1,5 +1,5 @@
 /*   __    __         _
- *   \ \  / /__ _ __ (_) ___ ___ 
+ *   \ \  / /__ _ __ (_) ___ ___
  *    \ \/ / _ \ '_ \| |/ __/ _ \
  *     \  /  __/ | | | | (_|  __/
  *      \/ \___|_| |_|_|\___\___|
@@ -29,34 +29,34 @@ import com.github.jlangch.venice.impl.types.VncSymbol;
 
 
 public class NamespaceRegistry {
-	
-	public NamespaceRegistry() {
-	}
 
-	public void add(final Namespace ns) {
-		Objects.requireNonNull(ns);
-		namespaces.put(ns.getNS(), ns);
-	}
-	
-	public Namespace get(final VncSymbol sym) {
-		Objects.requireNonNull(sym);
-		return namespaces.get(sym);
-	}
-	
-	public Namespace computeIfAbsent(final VncSymbol sym) {
-		Objects.requireNonNull(sym);
-		return namespaces.computeIfAbsent(sym, (s) -> new Namespace(s));
-	}
-	
-	public Namespace remove(final VncSymbol sym) {
-		Objects.requireNonNull(sym);
-		return namespaces.remove(sym);
-	}
+    public NamespaceRegistry() {
+    }
 
-	public void clear() {
-		namespaces.clear();
-	}
-	
+    public void add(final Namespace ns) {
+        Objects.requireNonNull(ns);
+        namespaces.put(ns.getNS(), ns);
+    }
 
-	private final Map<VncSymbol, Namespace> namespaces = new ConcurrentHashMap<>();
+    public Namespace get(final VncSymbol sym) {
+        Objects.requireNonNull(sym);
+        return namespaces.get(sym);
+    }
+
+    public Namespace computeIfAbsent(final VncSymbol sym) {
+        Objects.requireNonNull(sym);
+        return namespaces.computeIfAbsent(sym, (s) -> new Namespace(s));
+    }
+
+    public Namespace remove(final VncSymbol sym) {
+        Objects.requireNonNull(sym);
+        return namespaces.remove(sym);
+    }
+
+    public void clear() {
+        namespaces.clear();
+    }
+
+
+    private final Map<VncSymbol, Namespace> namespaces = new ConcurrentHashMap<>();
 }

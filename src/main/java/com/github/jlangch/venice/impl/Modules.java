@@ -1,5 +1,5 @@
 /*   __    __         _
- *   \ \  / /__ _ __ (_) ___ ___ 
+ *   \ \  / /__ _ __ (_) ___ ___
  *    \ \/ / _ \ '_ \| |/ __/ _ \
  *     \  /  __/ | | | | (_|  __/
  *      \/ \___|_| |_|_|\___\___|
@@ -30,67 +30,67 @@ import com.github.jlangch.venice.impl.types.VncKeyword;
 
 
 public class Modules {
-	
-	public static boolean isValidModule(final String module) {
-		return VALID_MODULES.contains(module);
-	}
-	
-	public static boolean isValidModule(final VncKeyword module) {
-		return isValidModule(module.getValue());
-	}
-		
-		
-	public static final Set<String> VALID_MODULES = 
-			Collections.unmodifiableSet(
-				new HashSet<>(
-					Arrays.asList(
-							"ansi", 
-							"app", 
-							"benchmark", 
-							"config", 
-							"core", 
-							"component", 
-							"crypt", 
-							"dag", 
-							"docx", 
-							"excel", 
-							"esr", 
-							"fam", 
-							"geoip", 
-							"gradle", 
-							"hexdump", 
-							"http", 
-							"jackson", 
-							"java", 
-							"kira", 
-							"math", 
-							"maven", 
-							"mercator", 
-							"parsifal",
-							"repl-setup", 
-							"ring", 
-							"semver", 
-							"shell", 
-							"test",
-							"tomcat", 
-							"tomcat-util", 
-							"tput",
-							"trace",
-							"webdav", 
-							"xchart", 
-							"xml")));
-	
-	public static final Set<VncKeyword> PRELOADED_MODULES = 
-			Collections.unmodifiableSet(
-				new HashSet<>(
-					Arrays.asList(
-							new VncKeyword("math"), 
-							new VncKeyword("str"), 
-							new VncKeyword("regex"), 
-							new VncKeyword("time"), 
-							new VncKeyword("io"), 
-							new VncKeyword("json"), 
-							new VncKeyword("pdf"), 
-							new VncKeyword("cidr"), 
-							new VncKeyword("csv"))));
+
+    public static boolean isValidModule(final String module) {
+        return VALID_MODULES.contains(module);
+    }
+
+    public static boolean isValidModule(final VncKeyword module) {
+        return isValidModule(module.getValue());
+    }
+
+
+    public static final Set<String> VALID_MODULES =
+            Collections.unmodifiableSet(
+                new HashSet<>(
+                    Arrays.asList(
+                        "ansi",
+                        "app",
+                        "benchmark",
+                        "config",
+                        "core",
+                        "component",
+                        "crypt",
+                        "dag",
+                        "docx",
+                        "excel",
+                        "esr",
+                        "fam",
+                        "geoip",
+                        "gradle",
+                        "hexdump",
+                        "http",
+                        "jackson",
+                        "java",
+                        "kira",
+                        "math",
+                        "maven",
+                        "mercator",
+                        "parsifal",
+                        "repl-setup",
+                        "ring",
+                        "semver",
+                        "shell",
+                        "test",
+                        "tomcat",
+                        "tomcat-util",
+                        "tput",
+                        "trace",
+                        "webdav",
+                        "xchart",
+                        "xml")));
+
+    public static final Set<VncKeyword> PRELOADED_MODULES =
+            Collections.unmodifiableSet(
+                new HashSet<>(
+                    Arrays.asList(
+                        new VncKeyword("math"),
+                        new VncKeyword("str"),
+                        new VncKeyword("regex"),
+                        new VncKeyword("time"),
+                        new VncKeyword("io"),
+                        new VncKeyword("json"),
+                        new VncKeyword("pdf"),
+                        new VncKeyword("cidr"),
+                        new VncKeyword("csv"))));
 }

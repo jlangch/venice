@@ -1,5 +1,5 @@
 /*   __    __         _
- *   \ \  / /__ _ __ (_) ___ ___ 
+ *   \ \  / /__ _ __ (_) ___ ___
  *    \ \/ / _ \ '_ \| |/ __/ _ \
  *     \  /  __/ | | | | (_|  __/
  *      \/ \___|_| |_|_|\___\___|
@@ -23,58 +23,58 @@ package com.github.jlangch.venice.impl.docgen.cheatsheet;
 
 
 public class MarkdownDoc {
-	
-	public MarkdownDoc(
-			final String title, 
-			final String docMarkdown,
-			final String id
-	) {
-		this.title = title;
-		this.docMarkdown = docMarkdown;
-		this.id = id;
-	}
 
-	
-	public String getTitle() {
-		return title;
-	}
+    public MarkdownDoc(
+            final String title,
+            final String docMarkdown,
+            final String id
+    ) {
+        this.title = title;
+        this.docMarkdown = docMarkdown;
+        this.id = id;
+    }
 
-	public String getDocMarkdown() {
-		return docMarkdown;
-	}
 
-	public String getId() {
-		return id;
-	}
+    public String getTitle() {
+        return title;
+    }
 
-	
-	@Override
-	public int hashCode() {
-		final int prime = 31;
-		int result = 1;
-		result = prime * result + ((title == null) ? 0 : title.hashCode());
-		return result;
-	}
+    public String getDocMarkdown() {
+        return docMarkdown;
+    }
 
-	@Override
-	public boolean equals(Object obj) {
-		if (this == obj)
-			return true;
-		if (obj == null)
-			return false;
-		if (getClass() != obj.getClass())
-			return false;
-		MarkdownDoc other = (MarkdownDoc) obj;
-		if (title == null) {
-			if (other.title != null)
-				return false;
-		} else if (!title.equals(other.title))
-			return false;
-		return true;
-	}
+    public String getId() {
+        return id;
+    }
 
-	
-	private final String title;
-	private final String docMarkdown;
-	private final String id;
+
+    @Override
+    public int hashCode() {
+        final int prime = 31;
+        int result = 1;
+        result = prime * result + ((title == null) ? 0 : title.hashCode());
+        return result;
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (this == obj)
+            return true;
+        if (obj == null)
+            return false;
+        if (getClass() != obj.getClass())
+            return false;
+        MarkdownDoc other = (MarkdownDoc) obj;
+        if (title == null) {
+            if (other.title != null)
+                return false;
+        } else if (!title.equals(other.title))
+            return false;
+        return true;
+    }
+
+
+    private final String title;
+    private final String docMarkdown;
+    private final String id;
 }

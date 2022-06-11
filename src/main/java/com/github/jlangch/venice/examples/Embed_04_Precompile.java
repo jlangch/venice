@@ -1,5 +1,5 @@
 /*   __    __         _
- *   \ \  / /__ _ __ (_) ___ ___ 
+ *   \ \  / /__ _ __ (_) ___ ___
  *    \ \/ / _ \ '_ \| |/ __/ _ \
  *     \  /  __/ | | | | (_|  __/
  *      \/ \___|_| |_|_|\___\___|
@@ -29,8 +29,8 @@ import com.github.jlangch.venice.Venice;
 
 
 public class Embed_04_Precompile {
-    
-	public static void main(final String[] args) {
+
+    public static void main(final String[] args) {
         final Venice venice = new Venice();
 
         // turn up-front macro expansion on
@@ -40,15 +40,15 @@ public class Embed_04_Precompile {
         IntStream.range(0, 100).sequential().forEach(
           ii -> System.out.println(
                   venice.eval(
-                     precompiled, 
+                     precompiled,
                      Parameters.of("x", ii))));
-             
+
         // multi-threaded
         IntStream.range(0, 100).parallel().forEach(
           ii -> System.out.println(
                   venice.eval(
-                     precompiled, 
+                     precompiled,
                      Parameters.of("x", ii))));
     }
-	
+
 }
