@@ -1,5 +1,5 @@
 /*   __    __         _
- *   \ \  / /__ _ __ (_) ___ ___ 
+ *   \ \  / /__ _ __ (_) ___ ___
  *    \ \/ / _ \ '_ \| |/ __/ _ \
  *     \  /  __/ | | | | (_|  __/
  *      \/ \___|_| |_|_|\___\___|
@@ -30,42 +30,42 @@ import com.github.jlangch.venice.impl.types.VncVal;
 
 public class ComputedVar extends Var {
 
-	public ComputedVar(
-			final VncSymbol name, 
-			final Supplier<VncVal> supplier
-	) {
-		super(name, Constants.Nil);
-		
-		this.supplier = supplier;
-	}
+    public ComputedVar(
+            final VncSymbol name,
+            final Supplier<VncVal> supplier
+    ) {
+        super(name, Constants.Nil);
 
-	public ComputedVar(
-			final VncSymbol name, 
-			final Supplier<VncVal> supplier,
-			final boolean overwritable
-	) {
-		super(name, Constants.Nil, overwritable);
-		
-		this.supplier = supplier;
-	}
+        this.supplier = supplier;
+    }
 
-	@Override 
-	public VncVal getVal() {
-		return supplier.get();
-	}
+    public ComputedVar(
+            final VncSymbol name,
+            final Supplier<VncVal> supplier,
+            final boolean overwritable
+    ) {
+        super(name, Constants.Nil, overwritable);
 
-	@Override 
-	public String toString() {
-		return super.toString();
-	}
-	
-	@Override 
-	public String toString(final boolean print_readably) {
-		return super.toString(print_readably);
-	}
+        this.supplier = supplier;
+    }
 
-	
-	private static final long serialVersionUID = 1598432086227773369L;
-	
-	final Supplier<VncVal> supplier;
+    @Override
+    public VncVal getVal() {
+        return supplier.get();
+    }
+
+    @Override
+    public String toString() {
+        return super.toString();
+    }
+
+    @Override
+    public String toString(final boolean print_readably) {
+        return super.toString(print_readably);
+    }
+
+
+    private static final long serialVersionUID = 1598432086227773369L;
+
+    final Supplier<VncVal> supplier;
 }

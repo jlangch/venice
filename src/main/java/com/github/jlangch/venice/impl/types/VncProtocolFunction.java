@@ -1,5 +1,5 @@
 /*   __    __         _
- *   \ \  / /__ _ __ (_) ___ ___ 
+ *   \ \  / /__ _ __ (_) ___ ___
  *    \ \/ / _ \ '_ \| |/ __/ _ \
  *     \  /  __/ | | | | (_|  __/
  *      \/ \___|_| |_|_|\___\___|
@@ -32,103 +32,103 @@ import com.github.jlangch.venice.impl.util.MetaUtil;
 
 public class VncProtocolFunction extends VncFunction {
 
-	public VncProtocolFunction(
-			final String name, 
-			final VncSymbol protocol,
-			final VncMultiArityFunction defaultFn,
-			final VncVal meta
-	) {
-		super(name, null, false, null, meta);
-		this.protocol = protocol;
-		this.defaultFn = defaultFn;
-	}
+    public VncProtocolFunction(
+            final String name,
+            final VncSymbol protocol,
+            final VncMultiArityFunction defaultFn,
+            final VncVal meta
+    ) {
+        super(name, null, false, null, meta);
+        this.protocol = protocol;
+        this.defaultFn = defaultFn;
+    }
 
-	public VncSymbol getProtocolName() {
-		return protocol;
-	}
-	
-	public void register(final VncKeyword type, final VncFunction fn) {
-		typeFunctions.put(type, fn);
-	}
-	
-	public void unregister(final VncKeyword type) {
-		typeFunctions.remove(type);
-	}
-	
-	@Override
-	public VncProtocolFunction withMeta(final VncVal meta) {
-		super.withMeta(meta);
-		return this;
-	}
-	
-	@Override
-	public VncKeyword getType() {
-		return new VncKeyword(
-					TYPE, 
-					MetaUtil.typeMeta(
-						new VncKeyword(VncFunction.TYPE_FUNCTION),
-						new VncKeyword(VncVal.TYPE)));
-	}
+    public VncSymbol getProtocolName() {
+        return protocol;
+    }
 
-	@Override
-	public VncVal apply(final VncList args) {
-		return getFunctionForArgs(args).apply(args);
-	}
+    public void register(final VncKeyword type, final VncFunction fn) {
+        typeFunctions.put(type, fn);
+    }
 
-	@Override
-	public boolean isNative() { 
-		return false;
-	}
+    public void unregister(final VncKeyword type) {
+        typeFunctions.remove(type);
+    }
 
-	@Override
-	public VncFunction getFunctionForArgs(final VncList args) {
-		// lookup protocol function based on the type of the first argument
-		final VncKeyword type = Types.getType(args.first());
-		final VncFunction fn = typeFunctions.get(type);
-		
-		if (fn != null) {
-			if (fn instanceof VncMultiArityFunction) {
-				try {
-					return ((VncMultiArityFunction)fn).getFunctionForArgs(args);
-				}
-				catch(ArityException ex) {
-					return defaultFn.getFunctionForArgs(args);  // fallback
-				}
-			}
-			else {
-				final int arity = args.size();
-	
-				if (fn.hasVariadicArgs()) {
-					if (arity >= fn.getFixedArgsCount()) {
-						return fn;
-					}
-				}
-				else {
-					if (fn.getFixedArgsCount() == arity) {
-						return fn;
-					}
-				}
-			}
-		}
-		
-		return defaultFn.getFunctionForArgs(args);  // fallback
-	}
+    @Override
+    public VncProtocolFunction withMeta(final VncVal meta) {
+        super.withMeta(meta);
+        return this;
+    }
 
-	@Override
-	public VncFunction getFunctionForArity(final int arity) {
-		throw new VncException("Not supported VncProtocolFunction::getFunctionForArity(..)!");
-	}
-	
-	@Override public TypeRank typeRank() {
-		return TypeRank.MULTI_PROTOCOL_FUNCTION;
-	}
+    @Override
+    public VncKeyword getType() {
+        return new VncKeyword(
+                    TYPE,
+                    MetaUtil.typeMeta(
+                        new VncKeyword(VncFunction.TYPE_FUNCTION),
+                        new VncKeyword(VncVal.TYPE)));
+    }
 
-	
+    @Override
+    public VncVal apply(final VncList args) {
+        return getFunctionForArgs(args).apply(args);
+    }
+
+    @Override
+    public boolean isNative() {
+        return false;
+    }
+
+    @Override
+    public VncFunction getFunctionForArgs(final VncList args) {
+        // lookup protocol function based on the type of the first argument
+        final VncKeyword type = Types.getType(args.first());
+        final VncFunction fn = typeFunctions.get(type);
+
+        if (fn != null) {
+            if (fn instanceof VncMultiArityFunction) {
+                try {
+                    return ((VncMultiArityFunction)fn).getFunctionForArgs(args);
+                }
+                catch(ArityException ex) {
+                    return defaultFn.getFunctionForArgs(args);  // fallback
+                }
+            }
+            else {
+                final int arity = args.size();
+
+                if (fn.hasVariadicArgs()) {
+                    if (arity >= fn.getFixedArgsCount()) {
+                        return fn;
+                    }
+                }
+                else {
+                    if (fn.getFixedArgsCount() == arity) {
+                        return fn;
+                    }
+                }
+            }
+        }
+
+        return defaultFn.getFunctionForArgs(args);  // fallback
+    }
+
+    @Override
+    public VncFunction getFunctionForArity(final int arity) {
+        throw new VncException("Not supported VncProtocolFunction::getFunctionForArity(..)!");
+    }
+
+    @Override public TypeRank typeRank() {
+        return TypeRank.MULTI_PROTOCOL_FUNCTION;
+    }
+
+
     public static final String TYPE = ":core/protocol-function";
-	
+
     private static final long serialVersionUID = -1848883965231344442L;
-    
-	private final VncSymbol protocol;
-	private final VncMultiArityFunction defaultFn;
-	private final ConcurrentHashMap<VncKeyword,VncFunction> typeFunctions = new ConcurrentHashMap<>();
+
+    private final VncSymbol protocol;
+    private final VncMultiArityFunction defaultFn;
+    private final ConcurrentHashMap<VncKeyword,VncFunction> typeFunctions = new ConcurrentHashMap<>();
 }

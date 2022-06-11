@@ -1,5 +1,5 @@
 /*   __    __         _
- *   \ \  / /__ _ __ (_) ___ ___ 
+ *   \ \  / /__ _ __ (_) ___ ___
  *    \ \/ / _ \ '_ \| |/ __/ _ \
  *     \  /  __/ | | | | (_|  __/
  *      \/ \___|_| |_|_|\___\___|
@@ -37,95 +37,95 @@ import com.github.jlangch.venice.impl.util.StringUtil;
 
 public class JavaImports implements Serializable {
 
-	public JavaImports() {
-		// from java.lang
-		add(Throwable.class.getName());
-		add(Exception.class.getName());
-		add(RuntimeException.class.getName());
-		add(NullPointerException.class.getName());
-		add(IllegalArgumentException.class.getName());
-		
-		// from com.github.jlangch.venice
-		add(VncException.class.getName());
-		add(ValueException.class.getName());
-	}
-	
-	
-	/**
-	 * Looks up a class name
-	 * 
-	 * @param simpleClassName A simple class name like 'Math'
-	 * @return the class name e.g.: 'java.lang.Math' or <code>null</code> if not found
-	 */
-	public String lookupClassName(final String simpleClassName) {
-		return imports.get(simpleClassName);
-	}
+    public JavaImports() {
+        // from java.lang
+        add(Throwable.class.getName());
+        add(Exception.class.getName());
+        add(RuntimeException.class.getName());
+        add(NullPointerException.class.getName());
+        add(IllegalArgumentException.class.getName());
 
-	/**
-	 * Resolves a class name.
-	 * 
-	 * @param className A simple class name like 'Math' or a class
-	 *                  'java.lang.Math'
-	 * @return the mapped class 'Math' -&gt; 'java.lang.Math' or the passed 
-	 *         value if a mapping does nor exist 
-	 */
-	public String resolveClassName(final String className) {
-		final String cn = imports.get(className);
-		return cn == null ? className : cn;
-	}
+        // from com.github.jlangch.venice
+        add(VncException.class.getName());
+        add(ValueException.class.getName());
+    }
 
-	public void add(final String clazz) {
-		add(clazz, getSimpleClassname(clazz));
-	}
 
-	public void add(final String clazz, final String alias) {		
-		final String alias_ = StringUtil.trimToNull(alias);
-		if (alias_ == null) {
-			throw new VncException(String.format(
-					"An import class alias on class '%s' must not be blank!",
-					clazz));
-		}
+    /**
+     * Looks up a class name
+     *
+     * @param simpleClassName A simple class name like 'Math'
+     * @return the class name e.g.: 'java.lang.Math' or <code>null</code> if not found
+     */
+    public String lookupClassName(final String simpleClassName) {
+        return imports.get(simpleClassName);
+    }
 
-		validateNoDuplicateAlias(clazz, alias_);
+    /**
+     * Resolves a class name.
+     *
+     * @param className A simple class name like 'Math' or a class
+     *                  'java.lang.Math'
+     * @return the mapped class 'Math' -&gt; 'java.lang.Math' or the passed
+     *         value if a mapping does nor exist
+     */
+    public String resolveClassName(final String className) {
+        final String cn = imports.get(className);
+        return cn == null ? className : cn;
+    }
 
-		imports.put(alias_, clazz);
-	}
+    public void add(final String clazz) {
+        add(clazz, getSimpleClassname(clazz));
+    }
 
-	public void clear() {
-		imports.clear();
-	}
-	
-	public VncList list() {
-		return VncList.ofColl(
-				imports
-					.entrySet()
-					.stream()
-					.map(e -> new String[] {e.getValue(), e.getKey()})
-					.sorted(Comparator.comparing(e -> e[0]))
-					.map(i -> VncVector.of(
-								new VncKeyword(i[0]),
-								new VncKeyword(i[1])))
-					.collect(Collectors.toList()));
-	}
-	
-	private String getSimpleClassname(final String clazz) {
-		final int pos = clazz.lastIndexOf('.');
-		return pos < 0 ? clazz : clazz.substring(pos+1);
-	}
+    public void add(final String clazz, final String alias) {
+        final String alias_ = StringUtil.trimToNull(alias);
+        if (alias_ == null) {
+            throw new VncException(String.format(
+                    "An import class alias on class '%s' must not be blank!",
+                    clazz));
+        }
 
-	private void validateNoDuplicateAlias(final String clazz, final String alias) {
-		final String c = imports.get(alias);
-		
-		if (c != null && !c.equals(clazz)) {
-			throw new VncException(String.format(
-					"Failed to import class '%s' with alias '%s'. The import alias "
-					+ "already exists for another class.",
-					clazz, alias));
-		}
-	}
+        validateNoDuplicateAlias(clazz, alias_);
 
-	
-	private static final long serialVersionUID = 1784667662341909868L;
+        imports.put(alias_, clazz);
+    }
 
-	private final Map<String,String> imports = new ConcurrentHashMap<>();
+    public void clear() {
+        imports.clear();
+    }
+
+    public VncList list() {
+        return VncList.ofColl(
+                imports
+                    .entrySet()
+                    .stream()
+                    .map(e -> new String[] {e.getValue(), e.getKey()})
+                    .sorted(Comparator.comparing(e -> e[0]))
+                    .map(i -> VncVector.of(
+                                new VncKeyword(i[0]),
+                                new VncKeyword(i[1])))
+                    .collect(Collectors.toList()));
+    }
+
+    private String getSimpleClassname(final String clazz) {
+        final int pos = clazz.lastIndexOf('.');
+        return pos < 0 ? clazz : clazz.substring(pos+1);
+    }
+
+    private void validateNoDuplicateAlias(final String clazz, final String alias) {
+        final String c = imports.get(alias);
+
+        if (c != null && !c.equals(clazz)) {
+            throw new VncException(String.format(
+                    "Failed to import class '%s' with alias '%s'. The import alias "
+                    + "already exists for another class.",
+                    clazz, alias));
+        }
+    }
+
+
+    private static final long serialVersionUID = 1784667662341909868L;
+
+    private final Map<String,String> imports = new ConcurrentHashMap<>();
 }

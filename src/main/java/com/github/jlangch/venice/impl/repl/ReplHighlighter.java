@@ -1,5 +1,5 @@
 /*   __    __         _
- *   \ \  / /__ _ __ (_) ___ ___ 
+ *   \ \  / /__ _ __ (_) ___ ___
  *    \ \/ / _ \ '_ \| |/ __/ _ \
  *     \  /  __/ | | | | (_|  __/
  *      \/ \___|_| |_|_|\___\___|
@@ -37,69 +37,69 @@ import com.github.jlangch.venice.impl.repl.ReplConfig.ColorMode;
 
 public class ReplHighlighter implements Highlighter {
 
-	public ReplHighlighter(final ReplConfig config) {
-		this.config = config;
-		this.theme = getAnsiColorTheme(config.getColorMode());
-	}
-	
-	public void enable(final boolean val) {
-		enabled = val;
-	}
-	
-	public boolean isEnabled() {
-		return enabled;
-	}
-	
-	public void reloadColors() {
-		theme = getAnsiColorTheme(config.getColorMode());
-	}
-	
-	@Override
-	public AttributedString highlight(
-			final LineReader reader, 
-			final String buffer
-	) {
-		final AttributedStringBuilder sb = new AttributedStringBuilder();
-		
-		if (enabled && !ReplParser.isCommand(buffer)) {
-			HighlightParser
-				.parse(buffer)
-				.forEach(it -> sb.ansiAppend(highlight(it)));		
-		}
-		else {
-			sb.append(buffer);
-		}
-		
-		return sb.toAttributedString();
-	}
+    public ReplHighlighter(final ReplConfig config) {
+        this.config = config;
+        this.theme = getAnsiColorTheme(config.getColorMode());
+    }
 
-	@Override
-	public void setErrorPattern(final Pattern errorPattern) {
-	}
+    public void enable(final boolean val) {
+        enabled = val;
+    }
 
-	@Override
-	public void setErrorIndex(final int errorIndex) {
-	}
+    public boolean isEnabled() {
+        return enabled;
+    }
 
-	
-	private String highlight(final HighlightItem item) {
-		return theme == null 
-				? item.getForm() 
-				: theme.style(item.getForm(), item.getClazz());
-	}
-	
-	private AnsiColorTheme getAnsiColorTheme(final ColorMode mode) {
-		switch(mode) {
-			case Light: return AnsiColorThemes.getLightTheme();
-			case Dark:  return AnsiColorThemes.getDarkTheme();
-			case None:  return null;
-			default:    return null;
-		}
-	}
+    public void reloadColors() {
+        theme = getAnsiColorTheme(config.getColorMode());
+    }
 
-	
-	
-	private final ReplConfig config;
-	private AnsiColorTheme theme;
-	private boolean enabled = true;
+    @Override
+    public AttributedString highlight(
+            final LineReader reader,
+            final String buffer
+    ) {
+        final AttributedStringBuilder sb = new AttributedStringBuilder();
+
+        if (enabled && !ReplParser.isCommand(buffer)) {
+            HighlightParser
+                .parse(buffer)
+                .forEach(it -> sb.ansiAppend(highlight(it)));
+        }
+        else {
+            sb.append(buffer);
+        }
+
+        return sb.toAttributedString();
+    }
+
+    @Override
+    public void setErrorPattern(final Pattern errorPattern) {
+    }
+
+    @Override
+    public void setErrorIndex(final int errorIndex) {
+    }
+
+
+    private String highlight(final HighlightItem item) {
+        return theme == null
+                ? item.getForm()
+                : theme.style(item.getForm(), item.getClazz());
+    }
+
+    private AnsiColorTheme getAnsiColorTheme(final ColorMode mode) {
+        switch(mode) {
+            case Light: return AnsiColorThemes.getLightTheme();
+            case Dark:  return AnsiColorThemes.getDarkTheme();
+            case None:  return null;
+            default:    return null;
+        }
+    }
+
+
+
+    private final ReplConfig config;
+    private AnsiColorTheme theme;
+    private boolean enabled = true;
 }

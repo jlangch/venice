@@ -1,5 +1,5 @@
 /*   __    __         _
- *   \ \  / /__ _ __ (_) ___ ___ 
+ *   \ \  / /__ _ __ (_) ___ ___
  *    \ \/ / _ \ '_ \| |/ __/ _ \
  *     \  /  __/ | | | | (_|  __/
  *      \/ \___|_| |_|_|\___\___|
@@ -32,59 +32,59 @@ import com.github.jlangch.venice.impl.util.StringUtil;
 
 
 public class ReplParser extends DefaultParser {
-	
-	public ReplParser(final IVeniceInterpreter venice) {
-		this.venice = venice;
-		
-		setQuoteChars(new char[] { '"'});
-	}
 
-	@Override
-	public ParsedLine parse(
-			final String line, 
-			final int cursor, 
-			final ParseContext context
-	) throws SyntaxError {
-		try {
-			if (line.startsWith("/") && line.trim().endsWith(".venice")) {
-				// dropped Venice script file
-				eof = false;
-				return super.parse(line, cursor, context);
-			}
-			else {
-				if (context != ParseContext.COMPLETE) {
-					venice.READ(line, "repl");
-				}
-				eof = false;
-				return super.parse(line, cursor, context);
-			}
-		}
-		catch(EofException ex) {
-			eof = true;
-			// proceed with multi-line editing
-			throw new EOFError(1, 1, ex.getMessage());
-		}
-	}
+    public ReplParser(final IVeniceInterpreter venice) {
+        this.venice = venice;
 
-	public boolean isEOF() {
-		return eof;
-	}
+        setQuoteChars(new char[] { '"'});
+    }
 
-	public void reset() {
-		eof = false;
-	}
+    @Override
+    public ParsedLine parse(
+            final String line,
+            final int cursor,
+            final ParseContext context
+    ) throws SyntaxError {
+        try {
+            if (line.startsWith("/") && line.trim().endsWith(".venice")) {
+                // dropped Venice script file
+                eof = false;
+                return super.parse(line, cursor, context);
+            }
+            else {
+                if (context != ParseContext.COMPLETE) {
+                    venice.READ(line, "repl");
+                }
+                eof = false;
+                return super.parse(line, cursor, context);
+            }
+        }
+        catch(EofException ex) {
+            eof = true;
+            // proceed with multi-line editing
+            throw new EOFError(1, 1, ex.getMessage());
+        }
+    }
 
-	public static boolean isDroppedVeniceScriptFile(final String buffer) {
-		return StringUtil.trimToEmpty(buffer).endsWith(".venice");
-	}
+    public boolean isEOF() {
+        return eof;
+    }
 
-	public static boolean isCommand(final String buffer) {
-		final String cmd = buffer.trim();
-		return cmd.startsWith("!") || cmd.startsWith("$");
-	}
+    public void reset() {
+        eof = false;
+    }
 
-	
-	private final IVeniceInterpreter venice;
-	
-	private boolean eof = false;
+    public static boolean isDroppedVeniceScriptFile(final String buffer) {
+        return StringUtil.trimToEmpty(buffer).endsWith(".venice");
+    }
+
+    public static boolean isCommand(final String buffer) {
+        final String cmd = buffer.trim();
+        return cmd.startsWith("!") || cmd.startsWith("$");
+    }
+
+
+    private final IVeniceInterpreter venice;
+
+    private boolean eof = false;
 }

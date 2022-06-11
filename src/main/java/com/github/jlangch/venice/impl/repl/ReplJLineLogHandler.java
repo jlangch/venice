@@ -1,5 +1,5 @@
 /*   __    __         _
- *   \ \  / /__ _ __ (_) ___ ___ 
+ *   \ \  / /__ _ __ (_) ___ ___
  *    \ \/ / _ \ '_ \| |/ __/ _ \
  *     \  /  __/ | | | | (_|  __/
  *      \/ \___|_| |_|_|\___\___|
@@ -29,23 +29,23 @@ import java.util.logging.SimpleFormatter;
 
 public class ReplJLineLogHandler extends Handler {
 
-	public ReplJLineLogHandler(final TerminalPrinter printer) {
-		this.printer = printer;
-	}
-	
-	@Override
-	public void publish(final LogRecord record) {
-		printer.println("stdout", formatter.format(record));
-	}
+    public ReplJLineLogHandler(final TerminalPrinter printer) {
+        this.printer = printer;
+    }
 
-	@Override
-	public void flush() {
-	}
+    @Override
+    public void publish(final LogRecord record) {
+        printer.println("stdout", formatter.format(record));
+    }
 
-	@Override
-	public void close() {
-	}
+    @Override
+    public void flush() {
+    }
 
-	private final TerminalPrinter printer;
-	private final Formatter formatter = new SimpleFormatter();
+    @Override
+    public void close() {
+    }
+
+    private final TerminalPrinter printer;
+    private final Formatter formatter = new SimpleFormatter();
 }

@@ -1,5 +1,5 @@
 /*   __    __         _
- *   \ \  / /__ _ __ (_) ___ ___ 
+ *   \ \  / /__ _ __ (_) ___ ___
  *    \ \/ / _ \ '_ \| |/ __/ _ \
  *     \  /  __/ | | | | (_|  __/
  *      \/ \___|_| |_|_|\___\___|
@@ -27,21 +27,21 @@ import com.github.jlangch.venice.impl.types.VncSymbol;
 
 public class GlobalRefVar extends Var {
 
-	public GlobalRefVar(final VncSymbol name) {
-		super(name, Constants.Nil);
-	}
+    public GlobalRefVar(final VncSymbol name) {
+        super(name, Constants.Nil);
+    }
 
 
-	@Override 
-	public String toString() {
-		return super.toString();
-	}
-	
-	@Override 
-	public String toString(final boolean print_readably) {
-		return super.toString(print_readably);
-	}
+    @Override
+    public String toString() {
+        return super.toString();
+    }
 
-	
-	private static final long serialVersionUID = 1598432086227773369L;
+    @Override
+    public String toString(final boolean print_readably) {
+        return super.toString(print_readably);
+    }
+
+
+    private static final long serialVersionUID = 1598432086227773369L;
 }

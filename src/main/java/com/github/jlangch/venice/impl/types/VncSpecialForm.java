@@ -1,5 +1,5 @@
 /*   __    __         _
- *   \ \  / /__ _ __ (_) ___ ___ 
+ *   \ \  / /__ _ __ (_) ___ ___
  *    \ \/ / _ \ '_ \| |/ __/ _ \
  *     \  /  __/ | | | | (_|  __/
  *      \/ \___|_| |_|_|\___\___|
@@ -30,89 +30,89 @@ import com.github.jlangch.venice.impl.util.MetaUtil;
 
 public abstract class VncSpecialForm extends VncVal {
 
-	public VncSpecialForm(final String name) {
-		this(name, Constants.Nil);
-	}
-	
-	public VncSpecialForm(final String name, final VncVal meta) {
-		super(meta);
+    public VncSpecialForm(final String name) {
+        this(name, Constants.Nil);
+    }
 
-		this.name = name;
-	}
+    public VncSpecialForm(final String name, final VncVal meta) {
+        super(meta);
+
+        this.name = name;
+    }
 
 
-	public VncVal apply(
-			final VncVal specialFormMeta, 
-			final VncList args, 
-			final Env env, 
-			final SpecialFormsContext ctx
-	) {
-		return Constants.Nil;
-	}
+    public VncVal apply(
+            final VncVal specialFormMeta,
+            final VncList args,
+            final Env env,
+            final SpecialFormsContext ctx
+    ) {
+        return Constants.Nil;
+    }
 
-	
-	public String getName() { 
-		return name; 
-	}
 
-	public boolean addCallFrame() { 
-		return true; 
-	}
+    public String getName() {
+        return name;
+    }
 
-	@Override
-	public VncKeyword getType() {
-		return new VncKeyword(
-				TYPE, 
-				MetaUtil.typeMeta(
-					new VncKeyword(VncVal.TYPE)));
-	}
-	
-	@Override
-	public VncSpecialForm withMeta(final VncVal meta) {
-		return this;  // no effect
-	}
+    public boolean addCallFrame() {
+        return true;
+    }
 
-	public VncList getArgLists() { 
-		return (VncList)getMetaVal(MetaUtil.ARGLIST, VncList.empty());
-	}
-	
-	public VncVal getDoc() { 
-		return getMetaVal(MetaUtil.DOC); 
-	}
-	
-	public VncList getExamples() { 
-		return (VncList)getMetaVal(MetaUtil.EXAMPLES, VncList.empty());
-	}
-	
-	public VncList getSeeAlso() { 
-		return (VncList)getMetaVal(MetaUtil.SEE_ALSO, VncList.empty());
-	}
-	
-	@Override 
-	public TypeRank typeRank() {
-		return TypeRank.SPECIAL_FORM;
-	}
+    @Override
+    public VncKeyword getType() {
+        return new VncKeyword(
+                TYPE,
+                MetaUtil.typeMeta(
+                    new VncKeyword(VncVal.TYPE)));
+    }
 
-	@Override
-	public Object convertToJavaObject() {
-		return null;
-	}
+    @Override
+    public VncSpecialForm withMeta(final VncVal meta) {
+        return this;  // no effect
+    }
 
-	@Override 
-	public String toString() {
-		return "special form " + name;
-	}
+    public VncList getArgLists() {
+        return (VncList)getMetaVal(MetaUtil.ARGLIST, VncList.empty());
+    }
 
-	
-	public static FunctionMetaBuilder meta() {
-		return new FunctionMetaBuilder();
-	}
+    public VncVal getDoc() {
+        return getMetaVal(MetaUtil.DOC);
+    }
 
-	
-	
+    public VncList getExamples() {
+        return (VncList)getMetaVal(MetaUtil.EXAMPLES, VncList.empty());
+    }
+
+    public VncList getSeeAlso() {
+        return (VncList)getMetaVal(MetaUtil.SEE_ALSO, VncList.empty());
+    }
+
+    @Override
+    public TypeRank typeRank() {
+        return TypeRank.SPECIAL_FORM;
+    }
+
+    @Override
+    public Object convertToJavaObject() {
+        return null;
+    }
+
+    @Override
+    public String toString() {
+        return "special form " + name;
+    }
+
+
+    public static FunctionMetaBuilder meta() {
+        return new FunctionMetaBuilder();
+    }
+
+
+
     public static final String TYPE = ":core/special-form";
 
     private static final long serialVersionUID = -1848883965231344442L;
 
-	private final String name;
+    private final String name;
 }

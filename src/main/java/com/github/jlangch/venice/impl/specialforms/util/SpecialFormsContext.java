@@ -1,5 +1,5 @@
 /*   __    __         _
- *   \ \  / /__ _ __ (_) ___ ___ 
+ *   \ \  / /__ _ __ (_) ___ ___
  *    \ \/ / _ \ '_ \| |/ __/ _ \
  *     \  /  __/ | | | | (_|  __/
  *      \/ \___|_| |_|_|\___\___|
@@ -35,72 +35,72 @@ import com.github.jlangch.venice.impl.util.MeterRegistry;
 
 public class SpecialFormsContext {
 
-	public SpecialFormsContext(
-			final IVeniceInterpreter interpreter,
-			final IFormEvaluator evaluator,
-			final IValuesEvaluator valuesEvaluator,
-			final ISequenceValuesEvaluator sequenceValuesEvaluator,
-			final FunctionBuilder functionBuilder,
-			final NamespaceRegistry nsRegistry,
-			final MeterRegistry meterRegistry,
-			final AtomicBoolean sealedSystemNS
-	) {
-		this.interpreter = interpreter;
-		this.evaluator = evaluator;
-		this.valuesEvaluator = valuesEvaluator;
-		this.sequenceValuesEvaluator = sequenceValuesEvaluator;
-		this.functionBuilder = functionBuilder;
-		this.nsRegistry = nsRegistry;
-		this.meterRegistry = meterRegistry;
-		this.sealedSystemNS = sealedSystemNS;
-	}
-	
-
-	public CustomWrappableTypes getWrappableTypes() {
-		return wrappableTypes;
-	}
-	
-	public NamespaceRegistry getNsRegistry() {
-		return nsRegistry;
-	}
-	
-	public MeterRegistry getMeterRegistry() {
-		return meterRegistry;
-	}
-	
-	public AtomicBoolean getSealedSystemNS() {
-		return sealedSystemNS;
-	}
-	
-	public IVeniceInterpreter getInterpreter() {
-		return interpreter;
-	}
-	
-	public IFormEvaluator getEvaluator() {
-		return evaluator;
-	}
-	
-	public IValuesEvaluator getValuesEvaluator() {
-		return valuesEvaluator;
-	}
-	
-	public ISequenceValuesEvaluator  getSequenceValuesEvaluator() {
-		return sequenceValuesEvaluator;
-	}
-
-	public FunctionBuilder getFunctionBuilder() {
-		return functionBuilder;
-	}
+    public SpecialFormsContext(
+            final IVeniceInterpreter interpreter,
+            final IFormEvaluator evaluator,
+            final IValuesEvaluator valuesEvaluator,
+            final ISequenceValuesEvaluator sequenceValuesEvaluator,
+            final FunctionBuilder functionBuilder,
+            final NamespaceRegistry nsRegistry,
+            final MeterRegistry meterRegistry,
+            final AtomicBoolean sealedSystemNS
+    ) {
+        this.interpreter = interpreter;
+        this.evaluator = evaluator;
+        this.valuesEvaluator = valuesEvaluator;
+        this.sequenceValuesEvaluator = sequenceValuesEvaluator;
+        this.functionBuilder = functionBuilder;
+        this.nsRegistry = nsRegistry;
+        this.meterRegistry = meterRegistry;
+        this.sealedSystemNS = sealedSystemNS;
+    }
 
 
-	private final CustomWrappableTypes wrappableTypes = new CustomWrappableTypes();
-	private final NamespaceRegistry nsRegistry;
-	private final MeterRegistry meterRegistry;
-	private final AtomicBoolean sealedSystemNS;
+    public CustomWrappableTypes getWrappableTypes() {
+        return wrappableTypes;
+    }
 
-	private final IVeniceInterpreter interpreter;
-	private final IFormEvaluator evaluator;
-	private final IValuesEvaluator valuesEvaluator;
-	private final ISequenceValuesEvaluator sequenceValuesEvaluator;
-	private final FunctionBuilder functionBuilder;
+    public NamespaceRegistry getNsRegistry() {
+        return nsRegistry;
+    }
+
+    public MeterRegistry getMeterRegistry() {
+        return meterRegistry;
+    }
+
+    public AtomicBoolean getSealedSystemNS() {
+        return sealedSystemNS;
+    }
+
+    public IVeniceInterpreter getInterpreter() {
+        return interpreter;
+    }
+
+    public IFormEvaluator getEvaluator() {
+        return evaluator;
+    }
+
+    public IValuesEvaluator getValuesEvaluator() {
+        return valuesEvaluator;
+    }
+
+    public ISequenceValuesEvaluator  getSequenceValuesEvaluator() {
+        return sequenceValuesEvaluator;
+    }
+
+    public FunctionBuilder getFunctionBuilder() {
+        return functionBuilder;
+    }
+
+
+    private final CustomWrappableTypes wrappableTypes = new CustomWrappableTypes();
+    private final NamespaceRegistry nsRegistry;
+    private final MeterRegistry meterRegistry;
+    private final AtomicBoolean sealedSystemNS;
+
+    private final IVeniceInterpreter interpreter;
+    private final IFormEvaluator evaluator;
+    private final IValuesEvaluator valuesEvaluator;
+    private final ISequenceValuesEvaluator sequenceValuesEvaluator;
+    private final FunctionBuilder functionBuilder;
 }

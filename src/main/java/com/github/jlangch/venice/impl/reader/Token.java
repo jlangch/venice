@@ -1,5 +1,5 @@
 /*   __    __         _
- *   \ \  / /__ _ __ (_) ___ ___ 
+ *   \ \  / /__ _ __ (_) ___ ___
  *    \ \/ / _ \ '_ \| |/ __/ _ \
  *     \  /  __/ | | | | (_|  __/
  *      \/ \___|_| |_|_|\___\___|
@@ -23,98 +23,98 @@ package com.github.jlangch.venice.impl.reader;
 
 
 public class Token {
-	
-	public Token(
-			final TokenType type,
-			final String token, 
-			final String file, 
-			final ReaderPos pos
-	) {
-		this.type = type;
-		this.token = token;
-		this.file = file == null || file.isEmpty() ? "unknown" : file;
-		this.filePos = pos.getFilePos();
-		this.line = pos.getLineNr();
-		this.col = pos.getColumnNr();
-	}
-	
-	
-	public TokenType getType() {
-		return type;
-	}
-	
-	public String getToken() {
-		return token;
-	}
-	
-	public String getFile() {
-		return file;
-	}
-	
-	// zero based start position
-	public int getFileStartPos() {
-		return filePos;
-	}
-	
-	// zero based end position
-	public int getFileEndPos() {
-		return filePos + token.length() - 1;
-	}
-	
-	// one based line number
-	public int getLine() {
-		return line;  
-	}
-	
-	// one based column number
-	public int getColumn() {
-		return col;
-	}
-	
-	public char charAt(int index) {
-		return token.charAt(index);
-	}
 
-	public boolean equals(String str) {
-		return token.equals(str);
-	}
+    public Token(
+            final TokenType type,
+            final String token,
+            final String file,
+            final ReaderPos pos
+    ) {
+        this.type = type;
+        this.token = token;
+        this.file = file == null || file.isEmpty() ? "unknown" : file;
+        this.filePos = pos.getFilePos();
+        this.line = pos.getLineNr();
+        this.col = pos.getColumnNr();
+    }
 
-	
-	public boolean isWhitespaces() {
-		return type == TokenType.WHITESPACES;
-	}
 
-	public boolean isComment() {
-		return type == TokenType.COMMENT;
-	}
-	
-	public boolean isWhitespacesOrComment() {
-		return isWhitespaces() || isComment();
-	}
+    public TokenType getType() {
+        return type;
+    }
 
-	public boolean isString() {
-		return type == TokenType.STRING;
-	}
+    public String getToken() {
+        return token;
+    }
 
-	public boolean isStringBlock() {
-		return type == TokenType.STRING_BLOCK;
-	}
+    public String getFile() {
+        return file;
+    }
 
-	public boolean isAny() {
-		return type == TokenType.ANY;
-	}
+    // zero based start position
+    public int getFileStartPos() {
+        return filePos;
+    }
 
-	
-	@Override
-	public String toString() {
-		return String.format("%s (file: %s, line %d, column %d)", token, file, line, col);
-	}
+    // zero based end position
+    public int getFileEndPos() {
+        return filePos + token.length() - 1;
+    }
 
-	
-	private final TokenType type;
-	private final String token;
-	private final String file;
-	private final int filePos;
-	private final int line; 
-	private final int col;
+    // one based line number
+    public int getLine() {
+        return line;
+    }
+
+    // one based column number
+    public int getColumn() {
+        return col;
+    }
+
+    public char charAt(int index) {
+        return token.charAt(index);
+    }
+
+    public boolean equals(String str) {
+        return token.equals(str);
+    }
+
+
+    public boolean isWhitespaces() {
+        return type == TokenType.WHITESPACES;
+    }
+
+    public boolean isComment() {
+        return type == TokenType.COMMENT;
+    }
+
+    public boolean isWhitespacesOrComment() {
+        return isWhitespaces() || isComment();
+    }
+
+    public boolean isString() {
+        return type == TokenType.STRING;
+    }
+
+    public boolean isStringBlock() {
+        return type == TokenType.STRING_BLOCK;
+    }
+
+    public boolean isAny() {
+        return type == TokenType.ANY;
+    }
+
+
+    @Override
+    public String toString() {
+        return String.format("%s (file: %s, line %d, column %d)", token, file, line, col);
+    }
+
+
+    private final TokenType type;
+    private final String token;
+    private final String file;
+    private final int filePos;
+    private final int line;
+    private final int col;
 }

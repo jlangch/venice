@@ -1,5 +1,5 @@
 /*   __    __         _
- *   \ \  / /__ _ __ (_) ___ ___ 
+ *   \ \  / /__ _ __ (_) ___ ___
  *    \ \/ / _ \ '_ \| |/ __/ _ \
  *     \  /  __/ | | | | (_|  __/
  *      \/ \___|_| |_|_|\___\___|
@@ -31,45 +31,46 @@ import com.github.jlangch.venice.impl.types.VncVal;
 
 public class DynamicVar extends Var {
 
-	public DynamicVar(final VncSymbol name, final VncVal val) {
-		super(name, val);
-		th_keyword = new VncKeyword(name.getQualifiedName());
-	}
-	
-	public VncVal getVal() {
-		return peekVal();
-	}
-	
-	public void setVal(final VncVal val) {
-		ThreadContext.setValue(th_keyword, val == null ? Nil : val);
-	}
+    public DynamicVar(final VncSymbol name, final VncVal val) {
+        super(name, val);
+        th_keyword = new VncKeyword(name.getQualifiedName());
+    }
 
-	public void pushVal(final VncVal val) {
-		ThreadContext.pushValue(th_keyword, val == null ? Nil : val);
-	}
+    @Override
+    public VncVal getVal() {
+        return peekVal();
+    }
 
-	public VncVal peekVal() {
-		final VncVal thVal = ThreadContext.peekValue(th_keyword);
-		return thVal == Nil ? super.getVal() : thVal;
-	}
+    public void setVal(final VncVal val) {
+        ThreadContext.setValue(th_keyword, val == null ? Nil : val);
+    }
 
-	public VncVal popVal() {
-		final VncVal thVal = ThreadContext.popValue(th_keyword);
-		return thVal == Nil ? super.getVal() : thVal;
-	}
+    public void pushVal(final VncVal val) {
+        ThreadContext.pushValue(th_keyword, val == null ? Nil : val);
+    }
 
-	@Override 
-	public String toString() {
-		return super.toString();
-	}
-	
-	@Override 
-	public String toString(final boolean print_readably) {
-		return super.toString(print_readably);
-	}
+    public VncVal peekVal() {
+        final VncVal thVal = ThreadContext.peekValue(th_keyword);
+        return thVal == Nil ? super.getVal() : thVal;
+    }
+
+    public VncVal popVal() {
+        final VncVal thVal = ThreadContext.popValue(th_keyword);
+        return thVal == Nil ? super.getVal() : thVal;
+    }
+
+    @Override
+    public String toString() {
+        return super.toString();
+    }
+
+    @Override
+    public String toString(final boolean print_readably) {
+        return super.toString(print_readably);
+    }
 
 
-	private static final long serialVersionUID = 1598432086227773369L;
-	
-	private final VncKeyword th_keyword;
+    private static final long serialVersionUID = 1598432086227773369L;
+
+    private final VncKeyword th_keyword;
 }

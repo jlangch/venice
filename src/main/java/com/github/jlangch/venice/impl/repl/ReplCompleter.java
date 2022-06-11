@@ -1,5 +1,5 @@
 /*   __    __         _
- *   \ \  / /__ _ __ (_) ___ ___ 
+ *   \ \  / /__ _ __ (_) ___ ___
  *    \ \/ / _ \ '_ \| |/ __/ _ \
  *     \  /  __/ | | | | (_|  __/
  *      \/ \___|_| |_|_|\___\___|
@@ -34,54 +34,54 @@ import com.github.jlangch.venice.impl.env.Env;
 import com.github.jlangch.venice.impl.util.StringUtil;
 
 public class ReplCompleter implements Completer {
-	
-	public ReplCompleter(
-			final IVeniceInterpreter venice, 
-			final Env env, 
-			final List<File> loadPaths
-	) {
-		this.venice = venice;
-		this.env = env;
-		this.filePathCompleter = new FilePathCompleter(loadPaths);
-	}
 
-	@Override
-    public void complete(
-    		final LineReader reader, 
-    		final ParsedLine line, 
-    		final List<Candidate> candidates
+    public ReplCompleter(
+            final IVeniceInterpreter venice,
+            final Env env,
+            final List<File> loadPaths
     ) {
-    	if (line.line().contains("(load-file ")) {
-    		candidates.addAll(filePathCompleter.getCandidates(line));
-    	}
-    	else if (line.line().endsWith("(load-module ")) {
-    		venice.getAvailableModules()
-    			  .forEach(m -> candidates.add(new Candidate(":" + m)));
-     	}
-    	else if (line.line().startsWith("(doc ")) {
-    		final String namePrefix = StringUtil.trimToNull(line.line().substring(5));   		
-    		env.getAllGlobalFunctionSymbols()
-    		   .stream()
-    		   .map(s -> s.getName())
-    		   .filter(s -> namePrefix == null ? true : s.startsWith(namePrefix))
-    		   .filter(s -> !s.endsWith("__auto"))
-     		   .forEach(s -> candidates.add(new Candidate(s)));
-     	}
-    	else if (line.word().startsWith("(")) {
-    		final String sym = StringUtil.trimToNull(line.word().substring(1));
-    		env.getAllGlobalFunctionSymbols()
-    		   .stream()
-    		   .map(s -> s.getName())
-    		   .filter(s -> (sym == null) || sym.isEmpty() || s.startsWith(sym))
-    		   .filter(s -> !s.endsWith("__auto"))
-    		   .sorted()
-    		   .forEach(s -> candidates.add(new Candidate(
-    				   			"(" + s, s, null, null, null, null, true)));
-     	}
+        this.venice = venice;
+        this.env = env;
+        this.filePathCompleter = new FilePathCompleter(loadPaths);
     }
-    
-    
+
+    @Override
+    public void complete(
+            final LineReader reader,
+            final ParsedLine line,
+            final List<Candidate> candidates
+    ) {
+        if (line.line().contains("(load-file ")) {
+            candidates.addAll(filePathCompleter.getCandidates(line));
+        }
+        else if (line.line().endsWith("(load-module ")) {
+            venice.getAvailableModules()
+                  .forEach(m -> candidates.add(new Candidate(":" + m)));
+         }
+        else if (line.line().startsWith("(doc ")) {
+            final String namePrefix = StringUtil.trimToNull(line.line().substring(5));
+            env.getAllGlobalFunctionSymbols()
+               .stream()
+               .map(s -> s.getName())
+               .filter(s -> namePrefix == null ? true : s.startsWith(namePrefix))
+               .filter(s -> !s.endsWith("__auto"))
+                .forEach(s -> candidates.add(new Candidate(s)));
+         }
+        else if (line.word().startsWith("(")) {
+            final String sym = StringUtil.trimToNull(line.word().substring(1));
+            env.getAllGlobalFunctionSymbols()
+               .stream()
+               .map(s -> s.getName())
+               .filter(s -> (sym == null) || sym.isEmpty() || s.startsWith(sym))
+               .filter(s -> !s.endsWith("__auto"))
+               .sorted()
+               .forEach(s -> candidates.add(new Candidate(
+                                   "(" + s, s, null, null, null, null, true)));
+         }
+    }
+
+
     private final IVeniceInterpreter venice;
-	private final Env env;
-	private final FilePathCompleter filePathCompleter;
+    private final Env env;
+    private final FilePathCompleter filePathCompleter;
 }

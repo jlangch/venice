@@ -1,5 +1,5 @@
 /*   __    __         _
- *   \ \  / /__ _ __ (_) ___ ___ 
+ *   \ \  / /__ _ __ (_) ___ ___
  *    \ \/ / _ \ '_ \| |/ __/ _ \
  *     \  /  __/ | | | | (_|  __/
  *      \/ \___|_| |_|_|\___\___|
@@ -33,169 +33,170 @@ import com.github.jlangch.venice.impl.util.StringUtil;
 
 
 public class VncString extends VncVal {
-	
-	public VncString(final String v) { 
-		super(null, Constants.Nil);
-		value = (v == null) ? "" : v; 
-	}
 
-	public VncString(final String v, final VncVal meta) { 
-		super(null, meta);
-		value = (v == null) ? "" : v; 
-	}
+    public VncString(final String v) {
+        super(null, Constants.Nil);
+        value = (v == null) ? "" : v;
+    }
 
-	public VncString(
-			final String v, 
-			final VncWrappingTypeDef wrappingTypeDef, 
-			final VncVal meta
-	) { 
-		super(wrappingTypeDef, meta);
-		value = (v == null) ? "" : v; 
-	}
+    public VncString(final String v, final VncVal meta) {
+        super(null, meta);
+        value = (v == null) ? "" : v;
+    }
 
-	
-	public String getValue() { 
-		return value; 
-	}
-	
-	@Override
-	public VncString withMeta(final VncVal meta) {
-		return new VncString(value, getWrappingTypeDef(), meta); 
-	}
-	
-	@Override
-	public VncString wrap(final VncWrappingTypeDef wrappingTypeDef, final VncVal meta) {
-		return new VncString(value, wrappingTypeDef, meta); 
-	}
+    public VncString(
+            final String v,
+            final VncWrappingTypeDef wrappingTypeDef,
+            final VncVal meta
+    ) {
+        super(wrappingTypeDef, meta);
+        value = (v == null) ? "" : v;
+    }
 
-	@Override
-	public VncKeyword getType() {
-		return isWrapped() ? new VncKeyword(
-									getWrappingTypeDef().getType().getQualifiedName(),
-									MetaUtil.typeMeta(
-										new VncKeyword(VncString.TYPE), 
-										new VncKeyword(VncVal.TYPE)))
-						   : new VncKeyword(
-									VncString.TYPE, 
-									MetaUtil.typeMeta(
-										new VncKeyword(VncVal.TYPE)));
-	}
 
-	public int size() {
-		return value.length();
-	}
-	
-	public boolean isEmpty() {
-		return value.isEmpty();
-	}
-	
-	public VncVal nth(final int idx) {
-		if (idx < 0 || idx >= value.length()) {
-			throw new VncException(String.format(
-					"nth: index %d out of range for a string of length %d",
-					idx,
-					value.length()));
-		}
+    public String getValue() {
+        return value;
+    }
 
-		return new VncChar(value.charAt(idx));
-	}
+    @Override
+    public VncString withMeta(final VncVal meta) {
+        return new VncString(value, getWrappingTypeDef(), meta);
+    }
 
-	public VncVal nthOrDefault(final int idx, final VncVal defaultVal) {
-		return (idx < 0 || idx >= value.length()) ? defaultVal : nth(idx);
-	}
+    @Override
+    public VncString wrap(final VncWrappingTypeDef wrappingTypeDef, final VncVal meta) {
+        return new VncString(value, wrappingTypeDef, meta);
+    }
 
-	public VncVal first() {
-		return isEmpty() ? Constants.Nil : nth(0);
-	}
+    @Override
+    public VncKeyword getType() {
+        return isWrapped() ? new VncKeyword(
+                                    getWrappingTypeDef().getType().getQualifiedName(),
+                                    MetaUtil.typeMeta(
+                                        new VncKeyword(VncString.TYPE),
+                                        new VncKeyword(VncVal.TYPE)))
+                           : new VncKeyword(
+                                    VncString.TYPE,
+                                    MetaUtil.typeMeta(
+                                        new VncKeyword(VncVal.TYPE)));
+    }
 
-	public VncVal second() {
-		return size() < 2 ? Constants.Nil : nth(1);
-	}
+    public int size() {
+        return value.length();
+    }
 
-	public VncVal last() {
-		return isEmpty() ? Constants.Nil : nth(value.length()-1);
-	}
-	
-	public VncList toVncList() {
-		final List<VncVal> list = new ArrayList<>();
-		for(char c : value.toCharArray()) {
-			list.add(new VncChar(c));
-		}
-		return VncList.ofList(list);
-	}
+    public boolean isEmpty() {
+        return value.isEmpty();
+    }
 
-	public VncSymbol toSymbol() {
-		return new VncSymbol(getValue());
-	}
-	
-	@Override 
-	public TypeRank typeRank() {
-		return TypeRank.STRING;
-	}
-	
-	@Override
-	public Object convertToJavaObject() {
-		return value;
-	}
+    public VncVal nth(final int idx) {
+        if (idx < 0 || idx >= value.length()) {
+            throw new VncException(String.format(
+                    "nth: index %d out of range for a string of length %d",
+                    idx,
+                    value.length()));
+        }
 
-	@Override 
-	public int compareTo(final VncVal o) {
-		if (o == Constants.Nil) {
-			return 1;
-		}
-		else if (Types.isVncString(o)) {
-			return getValue().compareTo(((VncString)o).getValue());
-		}
-		else if (Types.isVncChar(o)) {
-			return getValue().compareTo(((VncChar)o).getValue().toString());
-		}
+        return new VncChar(value.charAt(idx));
+    }
 
-		return super.compareTo(o);
-	}
-	
-	@Override
-	public int hashCode() {
-		return value.hashCode();
-	}
+    public VncVal nthOrDefault(final int idx, final VncVal defaultVal) {
+        return (idx < 0 || idx >= value.length()) ? defaultVal : nth(idx);
+    }
 
-	@Override
-	public boolean equals(Object obj) {
-		if (this == obj) {
-			return true;
-		}
-		else if (getClass() != obj.getClass()) {
-			return false;
-		}
-		else {
-			return value.equals(((VncString)obj).value);
-		}
-	}
+    public VncVal first() {
+        return isEmpty() ? Constants.Nil : nth(0);
+    }
 
-	@Override 
-	public String toString() {
-		return value;
-	}
-	
-	public String toString(final boolean print_machine_readably) {
-		if (print_machine_readably) {
-			return StringUtil.quote(StringUtil.escape(value), '"');
-		} 
-		else {
-			return value;
-		}
-	}
-	
-	public static VncString empty() {
-		return EMPTY;
-	}
-	
-    
+    public VncVal second() {
+        return size() < 2 ? Constants.Nil : nth(1);
+    }
+
+    public VncVal last() {
+        return isEmpty() ? Constants.Nil : nth(value.length()-1);
+    }
+
+    public VncList toVncList() {
+        final List<VncVal> list = new ArrayList<>();
+        for(char c : value.toCharArray()) {
+            list.add(new VncChar(c));
+        }
+        return VncList.ofList(list);
+    }
+
+    public VncSymbol toSymbol() {
+        return new VncSymbol(getValue());
+    }
+
+    @Override
+    public TypeRank typeRank() {
+        return TypeRank.STRING;
+    }
+
+    @Override
+    public Object convertToJavaObject() {
+        return value;
+    }
+
+    @Override
+    public int compareTo(final VncVal o) {
+        if (o == Constants.Nil) {
+            return 1;
+        }
+        else if (Types.isVncString(o)) {
+            return getValue().compareTo(((VncString)o).getValue());
+        }
+        else if (Types.isVncChar(o)) {
+            return getValue().compareTo(((VncChar)o).getValue().toString());
+        }
+
+        return super.compareTo(o);
+    }
+
+    @Override
+    public int hashCode() {
+        return value.hashCode();
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (this == obj) {
+            return true;
+        }
+        else if (getClass() != obj.getClass()) {
+            return false;
+        }
+        else {
+            return value.equals(((VncString)obj).value);
+        }
+    }
+
+    @Override
+    public String toString() {
+        return value;
+    }
+
+    @Override
+    public String toString(final boolean print_machine_readably) {
+        if (print_machine_readably) {
+            return StringUtil.quote(StringUtil.escape(value), '"');
+        }
+        else {
+            return value;
+        }
+    }
+
+    public static VncString empty() {
+        return EMPTY;
+    }
+
+
     public static final VncString EMPTY = new VncString("");
-    
+
     public static final String TYPE = ":core/string";
 
-    
+
     private static final long serialVersionUID = -1848883965231344442L;
 
-	private final String value;
+    private final String value;
 }

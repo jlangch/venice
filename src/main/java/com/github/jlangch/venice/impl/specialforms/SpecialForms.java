@@ -1,5 +1,5 @@
 /*   __    __         _
- *   \ \  / /__ _ __ (_) ___ ___ 
+ *   \ \  / /__ _ __ (_) ___ ___
  *    \ \/ / _ \ '_ \| |/ __/ _ \
  *     \  /  __/ | | | | (_|  __/
  *      \/ \___|_| |_|_|\___\___|
@@ -27,74 +27,74 @@ import java.util.Set;
 
 
 /**
- * Special forms have evaluation rules that differ from standard Venice 
+ * Special forms have evaluation rules that differ from standard Venice
  * evaluation rules and are understood directly by the Venice interpreter.
  */
 public class SpecialForms {
-	
-	public static boolean isSpecialForm(final String name) {
-		return FORMS.contains(name);
-	}
 
-	public static Set<String> FORMS = new HashSet<>(
-			Arrays.asList(
-					"binding",
-					"bound?",
-					"catch",
-					"do",
-					"dobench",
-					"doc",
-					"dorun",
-					"def",
-					"defmacro",
-					"defmethod",
-					"defmulti",
-					"defonce",
-					"defprotocol",
-					"deftype",
-					"deftype?",
-					"deftype-describe",
-					"deftype-of",
-					"deftype-or",
-					"def-dynamic",
-					"dobench",
-					"doc",
-					"dorun",
-					"eval",
-					"extend",
-					"extends?",
-					"finally",
-					"fn",
-					"if",
-					"import",
-					"imports",
-					"inspect",
-					"let",
-					"locking",
-					"loop",
-					"macroexpand",
-					"macroexpand-all*",
-					"modules",
-					"ns",
-					"ns-list",
-					"ns-remove",
-					"ns-unmap",		
-					"print-highlight",
-					"prof",
-					"quasiquote",
-					"quote",
-					"recur",
-					"resolve",
-					"set!",
-					"tail-pos",
-					"try",
-					"try-with",
-					"var-get",
-					"var-global?",
-					"var-local?",
-					"var-name",
-					"var-ns",
-					"var-thread-local?",
-					".:"));
+    public static boolean isSpecialForm(final String name) {
+        return FORMS.contains(name);
+    }
+
+    public static Set<String> FORMS = new HashSet<>(
+            Arrays.asList(
+                    "binding",
+                    "bound?",
+                    "catch",
+                    "do",
+                    "dobench",
+                    "doc",
+                    "dorun",
+                    "def",
+                    "defmacro",
+                    "defmethod",
+                    "defmulti",
+                    "defonce",
+                    "defprotocol",
+                    "deftype",
+                    "deftype?",
+                    "deftype-describe",
+                    "deftype-of",
+                    "deftype-or",
+                    "def-dynamic",
+                    "dobench",
+                    "doc",
+                    "dorun",
+                    "eval",
+                    "extend",
+                    "extends?",
+                    "finally",
+                    "fn",
+                    "if",
+                    "import",
+                    "imports",
+                    "inspect",
+                    "let",
+                    "locking",
+                    "loop",
+                    "macroexpand",
+                    "macroexpand-all*",
+                    "modules",
+                    "ns",
+                    "ns-list",
+                    "ns-remove",
+                    "ns-unmap",
+                    "print-highlight",
+                    "prof",
+                    "quasiquote",
+                    "quote",
+                    "recur",
+                    "resolve",
+                    "set!",
+                    "tail-pos",
+                    "try",
+                    "try-with",
+                    "var-get",
+                    "var-global?",
+                    "var-local?",
+                    "var-name",
+                    "var-ns",
+                    "var-thread-local?",
+                    ".:"));
 
 }

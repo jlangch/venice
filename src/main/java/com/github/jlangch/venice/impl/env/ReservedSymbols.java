@@ -1,5 +1,5 @@
 /*   __    __         _
- *   \ \  / /__ _ __ (_) ___ ___ 
+ *   \ \  / /__ _ __ (_) ___ ___
  *    \ \/ / _ \ '_ \| |/ __/ _ \
  *     \  /  __/ | | | | (_|  __/
  *      \/ \___|_| |_|_|\___\___|
@@ -27,29 +27,29 @@ import java.util.Set;
 
 
 public class ReservedSymbols {
-	
-	public static boolean isReserved(final String name) {
-		return RESERVED.contains(name);
-	}
-		
-	private static final Set<String> RESERVED = new HashSet<>(
-			Arrays.asList(
-					".",
-					"proxify",
-					"*in*",
-					"*out*",
-					"*err*",
-					"*version*",
-					"*newline*",
-					"*ns*",
-					"*loaded-modules*",
-					"*loaded-files*",
-					"*run-mode*",
-					"*macroexpand-on-load*",
-					"*ansi-term*",
-					"*app-name*",
-					"*app-archive*",
-					"*ARGV*",
-					"*REPL*",
-					"*repl-color-theme*"));
+
+    public static boolean isReserved(final String name) {
+        return RESERVED.contains(name);
+    }
+
+    private static final Set<String> RESERVED = new HashSet<>(
+            Arrays.asList(
+                ".",
+                "proxify",
+                "*in*",
+                "*out*",
+                "*err*",
+                "*version*",
+                "*newline*",
+                "*ns*",
+                "*loaded-modules*",
+                "*loaded-files*",
+                "*run-mode*",
+                "*macroexpand-on-load*",
+                "*ansi-term*",
+                "*app-name*",
+                "*app-archive*",
+                "*ARGV*",
+                "*REPL*",
+                "*repl-color-theme*"));
 }

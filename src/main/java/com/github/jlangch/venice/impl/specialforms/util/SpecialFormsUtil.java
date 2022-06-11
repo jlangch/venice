@@ -1,5 +1,5 @@
 /*   __    __         _
- *   \ \  / /__ _ __ (_) ___ ___ 
+ *   \ \  / /__ _ __ (_) ___ ___
  *    \ \/ / _ \ '_ \| |/ __/ _ \
  *     \  /  __/ | | | | (_|  __/
  *      \/ \___|_| |_|_|\___\___|
@@ -35,92 +35,92 @@ import com.github.jlangch.venice.impl.util.WithCallStack;
 
 public class SpecialFormsUtil {
 
-	public static void specialFormCallValidation(final String name) {
-		ThreadContext.getInterceptor().validateVeniceFunction(name);
-	}
+    public static void specialFormCallValidation(final String name) {
+        ThreadContext.getInterceptor().validateVeniceFunction(name);
+    }
 
-	public static VncSymbol evaluateSymbolMetaData(
-			final VncVal symVal, 
-			final Env env,
-			final SpecialFormsContext ctx
-	) {
-		final VncSymbol sym = Coerce.toVncSymbol(symVal);
-		validateNotReservedSymbol(sym);
-		return sym.withMeta(ctx.getEvaluator().evaluate(sym.getMeta(), env, false));
-	}
+    public static VncSymbol evaluateSymbolMetaData(
+            final VncVal symVal,
+            final Env env,
+            final SpecialFormsContext ctx
+    ) {
+        final VncSymbol sym = Coerce.toVncSymbol(symVal);
+        validateNotReservedSymbol(sym);
+        return sym.withMeta(ctx.getEvaluator().evaluate(sym.getMeta(), env, false));
+    }
 
-	public static VncSymbol validateSymbolWithCurrNS(
-			final VncSymbol sym,
-			final String specialFormName
-	) {
-		if (sym != null) {
-			// do not allow to hijack another namespace
-			final String ns = sym.getNamespace();
-			if (ns != null && !ns.equals(Namespaces.getCurrentNS().getName())) {
-				final CallFrame cf = new CallFrame(specialFormName, sym.getMeta());
-				try (WithCallStack cs = new WithCallStack(cf)) {
-					throw new VncException(String.format(
-							"Special form '%s': Invalid use of namespace. "
-								+ "The symbol '%s' can only be defined for the "
-								+ "current namespace '%s'.",
-							specialFormName,
-							sym.getSimpleName(),
-							Namespaces.getCurrentNS().toString()));
-				}
-			}
-		}
-		
-		return sym;
-	}
+    public static VncSymbol validateSymbolWithCurrNS(
+            final VncSymbol sym,
+            final String specialFormName
+    ) {
+        if (sym != null) {
+            // do not allow to hijack another namespace
+            final String ns = sym.getNamespace();
+            if (ns != null && !ns.equals(Namespaces.getCurrentNS().getName())) {
+                final CallFrame cf = new CallFrame(specialFormName, sym.getMeta());
+                try (WithCallStack cs = new WithCallStack(cf)) {
+                    throw new VncException(String.format(
+                            "Special form '%s': Invalid use of namespace. "
+                                + "The symbol '%s' can only be defined for the "
+                                + "current namespace '%s'.",
+                            specialFormName,
+                            sym.getSimpleName(),
+                            Namespaces.getCurrentNS().toString()));
+                }
+            }
+        }
 
-	public static VncVal evaluateBody(
-			final VncList body, 
-			final SpecialFormsContext ctx,
-			final Env env, 
-			final boolean withTailPosition
-	) {
-		ctx.getValuesEvaluator()
-		   .evaluate_values(body.butlast(), env);
-		
-		return ctx.getEvaluator()
-				  .evaluate(body.last(), env, withTailPosition);
-	}
+        return sym;
+    }
 
-	/**
-	 * Resolves a class name.
-	 * 
-	 * @param className A simple class name like 'Math' or a class name
-	 *                  'java.lang.Math'
-	 * @return the mapped class 'Math' -&gt; 'java.lang.Math' or the passed 
-	 *         value if a mapping does nor exist 
-	 */
-	public static String resolveClassName(final String className) {
-		return Namespaces
-					.getCurrentNamespace()
-					.getJavaImports()
-					.resolveClassName(className);
-	}
+    public static VncVal evaluateBody(
+            final VncList body,
+            final SpecialFormsContext ctx,
+            final Env env,
+            final boolean withTailPosition
+    ) {
+        ctx.getValuesEvaluator()
+           .evaluate_values(body.butlast(), env);
 
-	
-	private static void validateNotReservedSymbol(final VncSymbol symbol) {
-		if (symbol != null) {
-			if (symbol.isSpecialFormName()) {
-				try (WithCallStack cs = new WithCallStack(new CallFrame(symbol.getQualifiedName(), symbol.getMeta()))) {
-					throw new VncException(
-							String.format(
-									"The special form name '%s' can not be used a symbol.", 
-									symbol.getName()));
-				}
-			}
-			if (symbol.isReservedName()) {
-				try (WithCallStack cs = new WithCallStack(new CallFrame(symbol.getQualifiedName(), symbol.getMeta()))) {
-					throw new VncException(
-							String.format(
-									"Reserved name '%s' can not be used a symbol.", 
-									symbol.getName()));
-				}
-			}
-		}
-	}
+        return ctx.getEvaluator()
+                  .evaluate(body.last(), env, withTailPosition);
+    }
+
+    /**
+     * Resolves a class name.
+     *
+     * @param className A simple class name like 'Math' or a class name
+     *                  'java.lang.Math'
+     * @return the mapped class 'Math' -&gt; 'java.lang.Math' or the passed
+     *         value if a mapping does nor exist
+     */
+    public static String resolveClassName(final String className) {
+        return Namespaces
+                    .getCurrentNamespace()
+                    .getJavaImports()
+                    .resolveClassName(className);
+    }
+
+
+    private static void validateNotReservedSymbol(final VncSymbol symbol) {
+        if (symbol != null) {
+            if (symbol.isSpecialFormName()) {
+                try (WithCallStack cs = new WithCallStack(new CallFrame(symbol.getQualifiedName(), symbol.getMeta()))) {
+                    throw new VncException(
+                            String.format(
+                                    "The special form name '%s' can not be used a symbol.",
+                                    symbol.getName()));
+                }
+            }
+            if (symbol.isReservedName()) {
+                try (WithCallStack cs = new WithCallStack(new CallFrame(symbol.getQualifiedName(), symbol.getMeta()))) {
+                    throw new VncException(
+                            String.format(
+                                    "Reserved name '%s' can not be used a symbol.",
+                                    symbol.getName()));
+                }
+            }
+        }
+    }
 
 }

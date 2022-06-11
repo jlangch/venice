@@ -1,5 +1,5 @@
 /*   __    __         _
- *   \ \  / /__ _ __ (_) ___ ___ 
+ *   \ \  / /__ _ __ (_) ___ ___
  *    \ \/ / _ \ '_ \| |/ __/ _ \
  *     \  /  __/ | | | | (_|  __/
  *      \/ \___|_| |_|_|\___\___|
@@ -45,117 +45,117 @@ import com.github.jlangch.venice.impl.util.CallStack;
 
 /**
  * DynamicInvocationHandler
- * 
+ *
  * <pre>
  * Map proxyInstance = (Map)Proxy.newProxyInstance(
- *                             DynamicProxyTest.class.getClassLoader(), 
- *                             new Class[] { Map.class }, 
+ *                             DynamicProxyTest.class.getClassLoader(),
+ *                             new Class[] { Map.class },
  *                             new DynamicInvocationHandler());
- *                             
+ *
  * proxyInstance.put("hello", "world");
  * </pre>
  */
 public class DynamicInvocationHandler implements InvocationHandler {
-	
-	private DynamicInvocationHandler(
-			final CallFrame callFrameProxy,
-			final Map<String, VncFunction> methods
-	) {
-		this.callFrameProxy = callFrameProxy;
-		this.methods = methods;	
-		this.threadBridge = ThreadBridge.create("proxy");
-	}
-		 
-	@Override
-	public Object invoke(
-			final Object proxy, 
-			final Method method, 
-			final Object[] args
-	) throws Throwable { 
-		final VncFunction fn = methods.get(method.getName());
-		if (fn != null) {
-			final VncList fnArgs = toVncArgs(args);
-				
-			final CallFrame callFrameMethod = new CallFrame(
-													"proxy(:" + method.getName() + ")->" + fn.getQualifiedName(),
-													fn.getMeta());
-			
-			final Callable<Object> impl = () -> {
-				final CallStack callStack = ThreadContext.getCallStack();
-				callStack.push(callFrameProxy);
-				callStack.push(callFrameMethod);
-				try {			
-					return fn.apply(fnArgs).convertToJavaObject();
-				}
-				finally {
-					callStack.pop();
-					callStack.pop();
-				}};
-				
-			
-			if (threadBridge.isSameAsCurrentThread()) {
-				// we're running in the same thread as the caller (parent)
-				return impl.call();		
-			}
-			else {
-				// we're running in an other thread
-				return threadBridge.bridgeCallable(() -> impl.call())
-								   .call();
-			}
-		}
-		else {
-			throw new UnsupportedOperationException(
-					String.format("ProxyMethod %s", method.getName()));
-		}
-	}
-		
-	public static Object proxify(
-			final CallFrame callFrame,
-			final Class<?> clazz, 
-			final VncMap handlers
-	) {
-		return Proxy.newProxyInstance(
-				DynamicInvocationHandler.class.getClassLoader(), 
-				new Class[] { clazz }, 
-				new DynamicInvocationHandler(callFrame, handlerMap(handlers)));
-	}
-	
-	private static String name(final VncVal val) {
-		if (Types.isVncKeyword(val)) {
-			return ((VncKeyword)val).getValue();
-		}
-		else if (Types.isVncString(val)) {
-			return ((VncString)val).getValue();
-		}
-		else {
-			throw new VncException("A proxy handler map key must be of type VncKeyword or VncString");
-		}
-	}
 
-	private static Map<String, VncFunction> handlerMap(final VncMap handlers) {
-		return handlers
-					.entries()
-					.stream()
-					.collect(Collectors.toMap(
-						e -> name(e.getKey()), 
-						e -> Coerce.toVncFunction(e.getValue())));
-	}
-	
-	private static VncList toVncArgs(final Object[] args) {
-		if (args == null || args.length == 0) {
-			return VncList.empty();
-		}
-		else {
-			final VncVal[] vncArgs = new VncVal[args.length];		
-			for(int ii=0; ii<args.length; ii++) {
-				vncArgs[ii] = JavaInteropUtil.convertToVncVal(args[ii]);
-			}
-			return VncList.of(vncArgs);
-		}
-	}
+    private DynamicInvocationHandler(
+            final CallFrame callFrameProxy,
+            final Map<String, VncFunction> methods
+    ) {
+        this.callFrameProxy = callFrameProxy;
+        this.methods = methods;
+        this.threadBridge = ThreadBridge.create("proxy");
+    }
 
-	
-	private final CallFrame callFrameProxy;
-	private final Map<String, VncFunction> methods;
-	private final ThreadBridge threadBridge;
+    @Override
+    public Object invoke(
+            final Object proxy,
+            final Method method,
+            final Object[] args
+    ) throws Throwable {
+        final VncFunction fn = methods.get(method.getName());
+        if (fn != null) {
+            final VncList fnArgs = toVncArgs(args);
+
+            final CallFrame callFrameMethod = new CallFrame(
+                                                    "proxy(:" + method.getName() + ")->" + fn.getQualifiedName(),
+                                                    fn.getMeta());
+
+            final Callable<Object> impl = () -> {
+                final CallStack callStack = ThreadContext.getCallStack();
+                callStack.push(callFrameProxy);
+                callStack.push(callFrameMethod);
+                try {
+                    return fn.apply(fnArgs).convertToJavaObject();
+                }
+                finally {
+                    callStack.pop();
+                    callStack.pop();
+                }};
+
+
+            if (threadBridge.isSameAsCurrentThread()) {
+                // we're running in the same thread as the caller (parent)
+                return impl.call();
+            }
+            else {
+                // we're running in an other thread
+                return threadBridge.bridgeCallable(() -> impl.call())
+                                   .call();
+            }
+        }
+        else {
+            throw new UnsupportedOperationException(
+                    String.format("ProxyMethod %s", method.getName()));
+        }
+    }
+
+    public static Object proxify(
+            final CallFrame callFrame,
+            final Class<?> clazz,
+            final VncMap handlers
+    ) {
+        return Proxy.newProxyInstance(
+                DynamicInvocationHandler.class.getClassLoader(),
+                new Class[] { clazz },
+                new DynamicInvocationHandler(callFrame, handlerMap(handlers)));
+    }
+
+    private static String name(final VncVal val) {
+        if (Types.isVncKeyword(val)) {
+            return ((VncKeyword)val).getValue();
+        }
+        else if (Types.isVncString(val)) {
+            return ((VncString)val).getValue();
+        }
+        else {
+            throw new VncException("A proxy handler map key must be of type VncKeyword or VncString");
+        }
+    }
+
+    private static Map<String, VncFunction> handlerMap(final VncMap handlers) {
+        return handlers
+                    .entries()
+                    .stream()
+                    .collect(Collectors.toMap(
+                        e -> name(e.getKey()),
+                        e -> Coerce.toVncFunction(e.getValue())));
+    }
+
+    private static VncList toVncArgs(final Object[] args) {
+        if (args == null || args.length == 0) {
+            return VncList.empty();
+        }
+        else {
+            final VncVal[] vncArgs = new VncVal[args.length];
+            for(int ii=0; ii<args.length; ii++) {
+                vncArgs[ii] = JavaInteropUtil.convertToVncVal(args[ii]);
+            }
+            return VncList.of(vncArgs);
+        }
+    }
+
+
+    private final CallFrame callFrameProxy;
+    private final Map<String, VncFunction> methods;
+    private final ThreadBridge threadBridge;
 }

@@ -1,5 +1,5 @@
 /*   __    __         _
- *   \ \  / /__ _ __ (_) ___ ___ 
+ *   \ \  / /__ _ __ (_) ___ ___
  *    \ \/ / _ \ '_ \| |/ __/ _ \
  *     \  /  __/ | | | | (_|  __/
  *      \/ \___|_| |_|_|\___\___|
@@ -28,113 +28,113 @@ import com.github.jlangch.venice.impl.util.MetaUtil;
 
 public class VncBoolean extends VncVal {
 
-	private VncBoolean(final Boolean v) { 
-		this(v, null); 
-	}
+    private VncBoolean(final Boolean v) {
+        this(v, null);
+    }
 
-	private VncBoolean(
-			final Boolean v, 
-			final VncWrappingTypeDef wrappingTypeDef
-	) { 
-		super(wrappingTypeDef, Constants.Nil);
-		value = v; 
-	}
-	
-	public static VncBoolean of(final boolean bool) {
-		return bool ? True : False;
-	}
-	
-	public static boolean isTrue(final VncVal val) {
-		return (val instanceof VncBoolean) && (((VncBoolean)val).getValue() == Boolean.TRUE);
-	}
-	
-	public static boolean isFalse(final VncVal val) {
-		return (val instanceof VncBoolean) && (((VncBoolean)val).getValue() == Boolean.FALSE);
-	}
-	
-	public static boolean isFalseOrNil(final VncVal val) {
-		return val == Constants.Nil || ((val instanceof VncBoolean) && (((VncBoolean)val).getValue() == Boolean.FALSE));
-	}
-	
-	@Override
-	public VncBoolean withMeta(final VncVal meta) {
-		return this;
-	}
-	
-	@Override
-	public VncBoolean wrap(final VncWrappingTypeDef wrappingTypeDef, final VncVal meta) {
-		return new VncBoolean(value, wrappingTypeDef);
-	}
-	
-	@Override
-	public VncKeyword getType() {
-		return isWrapped() ? new VncKeyword(
-									getWrappingTypeDef().getType().getQualifiedName(),
-									MetaUtil.typeMeta(
-										new VncKeyword(VncBoolean.TYPE), 
-										new VncKeyword(VncVal.TYPE)))
-						   : new VncKeyword(
-									VncBoolean.TYPE, 
-									MetaUtil.typeMeta(
-										new VncKeyword(VncVal.TYPE)));
-	}
+    private VncBoolean(
+            final Boolean v,
+            final VncWrappingTypeDef wrappingTypeDef
+    ) {
+        super(wrappingTypeDef, Constants.Nil);
+        value = v;
+    }
 
-	public Boolean getValue() { 
-		return value; 
-	}
-	
-	@Override 
-	public TypeRank typeRank() {
-		return TypeRank.BOOLEAN;
-	}
-	
-	@Override
-	public Object convertToJavaObject() {
-		return value;
-	}
+    public static VncBoolean of(final boolean bool) {
+        return bool ? True : False;
+    }
 
-	@Override 
-	public int compareTo(final VncVal o) {
-		if (Types.isVncBoolean(o)) {
-			return value.compareTo(((VncBoolean)o).getValue());
-		}
-		else if (o == Constants.Nil) {
-			return 1;
-		}
+    public static boolean isTrue(final VncVal val) {
+        return (val instanceof VncBoolean) && (((VncBoolean)val).getValue() == Boolean.TRUE);
+    }
 
-		return super.compareTo(o);
-	}
+    public static boolean isFalse(final VncVal val) {
+        return (val instanceof VncBoolean) && (((VncBoolean)val).getValue() == Boolean.FALSE);
+    }
 
-	@Override
-	public int hashCode() {
-		return value.hashCode();
-	}
+    public static boolean isFalseOrNil(final VncVal val) {
+        return val == Constants.Nil || ((val instanceof VncBoolean) && (((VncBoolean)val).getValue() == Boolean.FALSE));
+    }
 
-	@Override
-	public boolean equals(Object obj) {
-		if (this == obj) {
-			return true;
-		}
-		else if (getClass() != obj.getClass()) {
-			return false;
-		}
-		else {
-			return value.equals(((VncBoolean)obj).value);
-		}
-	}
+    @Override
+    public VncBoolean withMeta(final VncVal meta) {
+        return this;
+    }
 
-	@Override 
-	public String toString() {
-		return value.toString();
-	}
+    @Override
+    public VncBoolean wrap(final VncWrappingTypeDef wrappingTypeDef, final VncVal meta) {
+        return new VncBoolean(value, wrappingTypeDef);
+    }
 
-	// Note: never use  "val == VncBoolean.False" use "VncBoolean.isFalse(val)"
-	public static final VncBoolean True = new VncBoolean(true);
-	public static final VncBoolean False = new VncBoolean(false);
-    
+    @Override
+    public VncKeyword getType() {
+        return isWrapped() ? new VncKeyword(
+                                    getWrappingTypeDef().getType().getQualifiedName(),
+                                    MetaUtil.typeMeta(
+                                        new VncKeyword(VncBoolean.TYPE),
+                                        new VncKeyword(VncVal.TYPE)))
+                           : new VncKeyword(
+                                    VncBoolean.TYPE,
+                                    MetaUtil.typeMeta(
+                                        new VncKeyword(VncVal.TYPE)));
+    }
+
+    public Boolean getValue() {
+        return value;
+    }
+
+    @Override
+    public TypeRank typeRank() {
+        return TypeRank.BOOLEAN;
+    }
+
+    @Override
+    public Object convertToJavaObject() {
+        return value;
+    }
+
+    @Override
+    public int compareTo(final VncVal o) {
+        if (Types.isVncBoolean(o)) {
+            return value.compareTo(((VncBoolean)o).getValue());
+        }
+        else if (o == Constants.Nil) {
+            return 1;
+        }
+
+        return super.compareTo(o);
+    }
+
+    @Override
+    public int hashCode() {
+        return value.hashCode();
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (this == obj) {
+            return true;
+        }
+        else if (getClass() != obj.getClass()) {
+            return false;
+        }
+        else {
+            return value.equals(((VncBoolean)obj).value);
+        }
+    }
+
+    @Override
+    public String toString() {
+        return value.toString();
+    }
+
+    // Note: never use  "val == VncBoolean.False" use "VncBoolean.isFalse(val)"
+    public static final VncBoolean True = new VncBoolean(true);
+    public static final VncBoolean False = new VncBoolean(false);
+
     public static final String TYPE = ":core/boolean";
 
     private static final long serialVersionUID = -1848883965231344442L;
 
-	private final Boolean value;
+    private final Boolean value;
 }

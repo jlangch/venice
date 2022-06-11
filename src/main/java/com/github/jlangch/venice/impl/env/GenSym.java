@@ -1,5 +1,5 @@
 /*   __    __         _
- *   \ \  / /__ _ __ (_) ___ ___ 
+ *   \ \  / /__ _ __ (_) ___ ___
  *    \ \/ / _ \ '_ \| |/ __/ _ \
  *     \  /  __/ | | | | (_|  __/
  *      \/ \___|_| |_|_|\___\___|
@@ -28,28 +28,28 @@ import com.github.jlangch.venice.impl.util.StringUtil;
 
 
 public class GenSym {
-	
-	public GenSym() {		
-	}
 
-	public static VncSymbol generate() {
-		return generate(null);
-	}
+    public GenSym() {
+    }
 
-	public static VncSymbol generate(final String prefix) {
-		final String suffix = String.valueOf(value.incrementAndGet());
-		final String prefix_ = StringUtil.isBlank(prefix) ? DEFAULT_PREFIX : prefix;
-		
-		return new VncSymbol(prefix_ + suffix);
-	}
+    public static VncSymbol generate() {
+        return generate(null);
+    }
 
-	public static VncSymbol generateAutoSym(final String name) {
-		final String suffix = String.valueOf(value.incrementAndGet());
-		
-		return new VncSymbol(name + "__" + suffix + "__auto");
-	}
-	
-	
-	private static final String DEFAULT_PREFIX = "G__";
-	private static final AtomicLong value = new AtomicLong(0);
+    public static VncSymbol generate(final String prefix) {
+        final String suffix = String.valueOf(value.incrementAndGet());
+        final String prefix_ = StringUtil.isBlank(prefix) ? DEFAULT_PREFIX : prefix;
+
+        return new VncSymbol(prefix_ + suffix);
+    }
+
+    public static VncSymbol generateAutoSym(final String name) {
+        final String suffix = String.valueOf(value.incrementAndGet());
+
+        return new VncSymbol(name + "__" + suffix + "__auto");
+    }
+
+
+    private static final String DEFAULT_PREFIX = "G__";
+    private static final AtomicLong value = new AtomicLong(0);
 }

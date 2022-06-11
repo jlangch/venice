@@ -1,5 +1,5 @@
 /*   __    __         _
- *   \ \  / /__ _ __ (_) ___ ___ 
+ *   \ \  / /__ _ __ (_) ___ ___
  *    \ \/ / _ \ '_ \| |/ __/ _ \
  *     \  /  __/ | | | | (_|  __/
  *      \/ \___|_| |_|_|\___\___|
@@ -22,11 +22,11 @@
 package com.github.jlangch.venice.impl.reader;
 
 public enum TokenType {
-	COMMENT,
-	WHITESPACES,
-	UNQUOTE_SPLICE,
-	STRING,
-	STRING_BLOCK,
-	SPECIAL_CHAR,
-	ANY;
+    COMMENT,
+    WHITESPACES,
+    UNQUOTE_SPLICE,
+    STRING,
+    STRING_BLOCK,
+    SPECIAL_CHAR,
+    ANY;
 }

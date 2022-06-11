@@ -1,5 +1,5 @@
 /*   __    __         _
- *   \ \  / /__ _ __ (_) ___ ___ 
+ *   \ \  / /__ _ __ (_) ___ ___
  *    \ \/ / _ \ '_ \| |/ __/ _ \
  *     \  /  __/ | | | | (_|  __/
  *      \/ \___|_| |_|_|\___\___|
@@ -34,43 +34,43 @@ import com.github.jlangch.venice.impl.types.collections.VncList;
 
 
 public class ReplResultHistory {
-	
-	public ReplResultHistory(final int max) {
-		this.max = max;
-		IntStream.range(0, max).forEach(ii -> results.add(Constants.Nil));
-	}
 
-	public synchronized void add(final VncVal val) {
-		results.addFirst(val == null ? Constants.Nil : val);
-		results.removeLast();
-	}
+    public ReplResultHistory(final int max) {
+        this.max = max;
+        IntStream.range(0, max).forEach(ii -> results.add(Constants.Nil));
+    }
 
-	public int max() {
-		return max;
-	}
+    public synchronized void add(final VncVal val) {
+        results.addFirst(val == null ? Constants.Nil : val);
+        results.removeLast();
+    }
 
-	public synchronized void mergeToEnv(final Env env) {
-		IntStream.rangeClosed(1, results.size())
-				 .forEach(ii -> addToEnv(env, "*" + ii, results.get(ii-1)));
+    public int max() {
+        return max;
+    }
 
-		addToEnv(env, "**", VncList.ofList(results));
-	}
-	
-	public void addToEnv(final Env env, final String name, final VncVal val) {
-		env.setGlobal(new Var(new VncSymbol(name), val));
-	}
+    public synchronized void mergeToEnv(final Env env) {
+        IntStream.rangeClosed(1, results.size())
+                 .forEach(ii -> addToEnv(env, "*" + ii, results.get(ii-1)));
 
-	public boolean isResultHistorySymbol(final String symbol) {
-		final String l = symbol.trim();
-		
-		//  check **, *1, *2, *3, ...
-		return Stream.concat(
-						Stream.of("**"),
-						IntStream.rangeClosed(1, max()).mapToObj(ii -> "*" + ii))
-					 .anyMatch(s -> l.equals(s));
-	}
-	
-	
-	private final int max;
-	private final LinkedList<VncVal> results = new LinkedList<>();
+        addToEnv(env, "**", VncList.ofList(results));
+    }
+
+    public void addToEnv(final Env env, final String name, final VncVal val) {
+        env.setGlobal(new Var(new VncSymbol(name), val));
+    }
+
+    public boolean isResultHistorySymbol(final String symbol) {
+        final String l = symbol.trim();
+
+        //  check **, *1, *2, *3, ...
+        return Stream.concat(
+                        Stream.of("**"),
+                        IntStream.rangeClosed(1, max()).mapToObj(ii -> "*" + ii))
+                     .anyMatch(s -> l.equals(s));
+    }
+
+
+    private final int max;
+    private final LinkedList<VncVal> results = new LinkedList<>();
 }

@@ -1,5 +1,5 @@
 /*   __    __         _
- *   \ \  / /__ _ __ (_) ___ ___ 
+ *   \ \  / /__ _ __ (_) ___ ___
  *    \ \/ / _ \ '_ \| |/ __/ _ \
  *     \  /  __/ | | | | (_|  __/
  *      \/ \___|_| |_|_|\___\___|
@@ -27,29 +27,29 @@ import com.github.jlangch.venice.impl.types.collections.VncList;
 
 public class FinallyBlock {
 
-	public FinallyBlock(
-			final VncList body,
-			final VncVal meta
-	) {
-		this.body = body;
-		this.meta = meta;
-	}
-	
-		
-	public VncList getBody() {
-		return body;
-	}
-	
-	public VncVal getMeta() {
-		return meta;
-	}
+    public FinallyBlock(
+            final VncList body,
+            final VncVal meta
+    ) {
+        this.body = body;
+        this.meta = meta;
+    }
 
-	@Override
-	public String toString() {
-		return body.toString();
-	}
-	
 
-	private final VncList body;
-	private final VncVal meta;
+    public VncList getBody() {
+        return body;
+    }
+
+    public VncVal getMeta() {
+        return meta;
+    }
+
+    @Override
+    public String toString() {
+        return body.toString();
+    }
+
+
+    private final VncList body;
+    private final VncVal meta;
 }

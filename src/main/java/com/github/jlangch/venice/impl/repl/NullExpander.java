@@ -1,5 +1,5 @@
 /*   __    __         _
- *   \ \  / /__ _ __ (_) ___ ___ 
+ *   \ \  / /__ _ __ (_) ___ ___
  *    \ \/ / _ \ '_ \| |/ __/ _ \
  *     \  /  __/ | | | | (_|  __/
  *      \/ \___|_| |_|_|\___\___|
@@ -26,17 +26,17 @@ import org.jline.reader.History;
 
 
 public class NullExpander implements Expander {
-	
-	public NullExpander() {
-	}
-	
-	@Override
-	public String expandHistory(final History history, final String line) {
-		return line;
-	}
 
-	@Override
-	public String expandVar(final String word) {
-		return word;
-	}
+    public NullExpander() {
+    }
+
+    @Override
+    public String expandHistory(final History history, final String line) {
+        return line;
+    }
+
+    @Override
+    public String expandVar(final String word) {
+        return word;
+    }
 }

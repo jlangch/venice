@@ -1,5 +1,5 @@
 /*   __    __         _
- *   \ \  / /__ _ __ (_) ___ ___ 
+ *   \ \  / /__ _ __ (_) ___ ___
  *    \ \/ / _ \ '_ \| |/ __/ _ \
  *     \  /  __/ | | | | (_|  __/
  *      \/ \___|_| |_|_|\___\___|
@@ -34,68 +34,68 @@ import com.github.jlangch.venice.impl.types.collections.VncVector;
 
 public class AnonymousFnArgs {
 
-	public boolean isCapturing() {
-		return capturing;
-	}
+    public boolean isCapturing() {
+        return capturing;
+    }
 
-	public void startCapture() {
-		capturing = true;
-		fnArgs.clear();
-	}
-	
-	public void stopCapture() {
-		capturing = false;
-		fnArgs.clear();
-	}
-	
-	public boolean isFnArgSymbol(final VncSymbol sym) {
-		return possibleFnArgs.contains(sym.getName());
-	}
-	
-	public void addSymbol(final VncSymbol sym) {
-		if (isFnArgSymbol(sym)) {
-			fnArgs.add(sym.getName());
-		}		
-	}
-	
-	public VncVector buildArgDef() {
-		final List<VncVal> argDef = new ArrayList<>();
-		
-		if (fnArgs.size() == 1 && fnArgs.contains("%")) {
-			argDef.add(new VncSymbol("%"));
-		}
-		else {
-			for(int ii=1; ii<=getMaxArgPos(); ii++) {
-				argDef.add(new VncSymbol("%" + ii));
-			}
-			
-			if (fnArgs.contains("%&")) {
-				argDef.add(new VncSymbol("&"));
-				argDef.add(new VncSymbol("%&"));
-			}
-		}
+    public void startCapture() {
+        capturing = true;
+        fnArgs.clear();
+    }
 
-		return VncVector.ofList(argDef);
-	}
-	
-	
-	private int getMaxArgPos() {
-		return fnArgs.stream()
-					 .filter(s -> s.matches("%[1-9][0-9]*"))
-					 .map(s -> Integer.parseInt(s.substring(1)))
-					 .max(Integer::compareTo)
-					 .orElse(Integer.valueOf(-1));
-	}
-	
-	
-	
-	
-	private final Set<String> possibleFnArgs = new HashSet<>(Arrays.asList(
-													"%1", "%2","%3","%4","%5",
-													"%6", "%7","%8","%9","%10",
-													"%", "%&"));
-	
-	private final Set<String> fnArgs = new HashSet<>();
-	
-	private boolean capturing = false;
+    public void stopCapture() {
+        capturing = false;
+        fnArgs.clear();
+    }
+
+    public boolean isFnArgSymbol(final VncSymbol sym) {
+        return possibleFnArgs.contains(sym.getName());
+    }
+
+    public void addSymbol(final VncSymbol sym) {
+        if (isFnArgSymbol(sym)) {
+            fnArgs.add(sym.getName());
+        }
+    }
+
+    public VncVector buildArgDef() {
+        final List<VncVal> argDef = new ArrayList<>();
+
+        if (fnArgs.size() == 1 && fnArgs.contains("%")) {
+            argDef.add(new VncSymbol("%"));
+        }
+        else {
+            for(int ii=1; ii<=getMaxArgPos(); ii++) {
+                argDef.add(new VncSymbol("%" + ii));
+            }
+
+            if (fnArgs.contains("%&")) {
+                argDef.add(new VncSymbol("&"));
+                argDef.add(new VncSymbol("%&"));
+            }
+        }
+
+        return VncVector.ofList(argDef);
+    }
+
+
+    private int getMaxArgPos() {
+        return fnArgs.stream()
+                     .filter(s -> s.matches("%[1-9][0-9]*"))
+                     .map(s -> Integer.parseInt(s.substring(1)))
+                     .max(Integer::compareTo)
+                     .orElse(Integer.valueOf(-1));
+    }
+
+
+
+
+    private final Set<String> possibleFnArgs = new HashSet<>(Arrays.asList(
+                                                    "%1", "%2","%3","%4","%5",
+                                                    "%6", "%7","%8","%9","%10",
+                                                    "%", "%&"));
+
+    private final Set<String> fnArgs = new HashSet<>();
+
+    private boolean capturing = false;
 }

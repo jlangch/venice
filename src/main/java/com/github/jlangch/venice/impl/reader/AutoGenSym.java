@@ -1,5 +1,5 @@
 /*   __    __         _
- *   \ \  / /__ _ __ (_) ___ ___ 
+ *   \ \  / /__ _ __ (_) ___ ___
  *    \ \/ / _ \ '_ \| |/ __/ _ \
  *     \  /  __/ | | | | (_|  __/
  *      \/ \___|_| |_|_|\___\___|
@@ -32,50 +32,50 @@ import com.github.jlangch.venice.impl.types.VncSymbol;
 
 
 public class AutoGenSym {
-	
-	public AutoGenSym() {
-	}
 
-	public void enterSyntaxQuote() {
-		stack.push(new HashMap<VncSymbol,VncSymbol>());
-	}
-	
-	public void leaveSyntaxQuote() {
-		stack.pop();
-	}
-	
-	public boolean isWithinSyntaxQuote() {
-		return !stack.isEmpty();
-	}
+    public AutoGenSym() {
+    }
 
-	public boolean isAutoGenSymbol(final VncSymbol sym) {
-		final String name = sym.getName();
-		return name.length() > 1 && name.endsWith("#");
-	}
-	
-	public VncSymbol lookup(final VncSymbol sym) {
-		if (stack.isEmpty()) {
-			throw new VncException(String.format(
-					"Invalid autogen symbol (%s) usage outside of a syntax quote!",
-					sym.getName()));
-		}
-		
-		final Map<VncSymbol,VncSymbol> autogenSymMap = stack.peek();
+    public void enterSyntaxQuote() {
+        stack.push(new HashMap<VncSymbol,VncSymbol>());
+    }
 
-		return isAutoGenSymbol(sym)
-					? autogenSymMap.computeIfAbsent(sym, s -> genAutoSym(s))
-					: sym;
-	}
+    public void leaveSyntaxQuote() {
+        stack.pop();
+    }
 
-	private VncSymbol genAutoSym(final VncSymbol sym) {
-		return GenSym.generateAutoSym(stripTrailingHash(sym.getName()));
-	}
-	
-	private String stripTrailingHash(final String s) {
-		return s.substring(0, s.length()-1);
-	}
-	
-	
-	// A stack that maps "xyz#" -> "xyz__1000__auto"
-	private final Deque<Map<VncSymbol,VncSymbol>> stack = new ConcurrentLinkedDeque<>();
+    public boolean isWithinSyntaxQuote() {
+        return !stack.isEmpty();
+    }
+
+    public boolean isAutoGenSymbol(final VncSymbol sym) {
+        final String name = sym.getName();
+        return name.length() > 1 && name.endsWith("#");
+    }
+
+    public VncSymbol lookup(final VncSymbol sym) {
+        if (stack.isEmpty()) {
+            throw new VncException(String.format(
+                    "Invalid autogen symbol (%s) usage outside of a syntax quote!",
+                    sym.getName()));
+        }
+
+        final Map<VncSymbol,VncSymbol> autogenSymMap = stack.peek();
+
+        return isAutoGenSymbol(sym)
+                    ? autogenSymMap.computeIfAbsent(sym, s -> genAutoSym(s))
+                    : sym;
+    }
+
+    private VncSymbol genAutoSym(final VncSymbol sym) {
+        return GenSym.generateAutoSym(stripTrailingHash(sym.getName()));
+    }
+
+    private String stripTrailingHash(final String s) {
+        return s.substring(0, s.length()-1);
+    }
+
+
+    // A stack that maps "xyz#" -> "xyz__1000__auto"
+    private final Deque<Map<VncSymbol,VncSymbol>> stack = new ConcurrentLinkedDeque<>();
 }

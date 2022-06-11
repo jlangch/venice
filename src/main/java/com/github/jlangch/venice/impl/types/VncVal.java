@@ -1,5 +1,5 @@
 /*   __    __         _
- *   \ \  / /__ _ __ (_) ___ ___ 
+ *   \ \  / /__ _ __ (_) ___ ___
  *    \ \/ / _ \ '_ \| |/ __/ _ \
  *     \  /  __/ | | | | (_|  __/
  *      \/ \___|_| |_|_|\___\___|
@@ -33,109 +33,109 @@ import com.github.jlangch.venice.impl.util.MetaUtil;
 
 public abstract class VncVal implements Comparable<VncVal>, Serializable {
 
-	public VncVal() {
-		this(null, Nil);
-	}
+    public VncVal() {
+        this(null, Nil);
+    }
 
-	public VncVal(final VncVal meta) {	
-		this(null, meta);
-	}
+    public VncVal(final VncVal meta) {
+        this(null, meta);
+    }
 
-	public VncVal(
-			final VncWrappingTypeDef wrappingTypeDef, 
-			final VncVal meta
-	) {	
-		this.meta = meta == null ? Nil : meta;
-		this.wrappingTypeDef = wrappingTypeDef;
-		this._private = MetaUtil.isPrivate(meta);
-	}
-	
-	public abstract VncVal withMeta(final VncVal meta);
-	
-	public VncKeyword getType() {
-		return new VncKeyword(TYPE, MetaUtil.typeMeta());
-	}
-	
-	public VncWrappingTypeDef getWrappingTypeDef() {
-		return wrappingTypeDef;
-	}
+    public VncVal(
+            final VncWrappingTypeDef wrappingTypeDef,
+            final VncVal meta
+    ) {
+        this.meta = meta == null ? Nil : meta;
+        this.wrappingTypeDef = wrappingTypeDef;
+        this._private = MetaUtil.isPrivate(meta);
+    }
 
-	public boolean isWrapped() {
-		return wrappingTypeDef != null;
-	}
+    public abstract VncVal withMeta(final VncVal meta);
 
-	public VncVal wrap(final VncWrappingTypeDef wrappingTypeDef, final VncVal meta) {
-		throw new VncException(
-					String.format(
-							"The type :%s can not be wrapped!", 
-							getType().getValue()));
-	}
-	
-	public abstract TypeRank typeRank();
+    public VncKeyword getType() {
+        return new VncKeyword(TYPE, MetaUtil.typeMeta());
+    }
 
-	public boolean isVncList() {
-		return false;
-	}
+    public VncWrappingTypeDef getWrappingTypeDef() {
+        return wrappingTypeDef;
+    }
 
-	public abstract Object convertToJavaObject();
+    public boolean isWrapped() {
+        return wrappingTypeDef != null;
+    }
 
-	public VncVal getMeta() {
-		// getMeta() can be redefined. Some data types do that to manage meta data themselves.
-		return meta == null ? Nil : meta; 
-	}
-	
-	public VncVal getMetaVal(final VncString key) {
-		final VncVal meta_ = getMeta();
-		if (meta_ instanceof VncHashMap) {
-			return ((VncHashMap)meta_).get(key);
-		}
-		else {
-			return Nil; // not a map
-		}
-	}
+    public VncVal wrap(final VncWrappingTypeDef wrappingTypeDef, final VncVal meta) {
+        throw new VncException(
+                    String.format(
+                            "The type :%s can not be wrapped!",
+                            getType().getValue()));
+    }
 
-	public VncVal getMetaVal(final VncString key, final VncVal defaultValue) {
-		final VncVal val = getMetaVal(key);
-		return val == Nil ? defaultValue : val;
-	}
+    public abstract TypeRank typeRank();
 
-	public boolean isPrivate() {
-		return _private;
-	}
+    public boolean isVncList() {
+        return false;
+    }
 
-	@Override
-	public int compareTo(final VncVal o) {
-		final int c = Integer.valueOf(typeRank().getRank()).compareTo(Integer.valueOf(o.typeRank().getRank()));
-		return c != 0 ? c : -1;
-	}
+    public abstract Object convertToJavaObject();
 
-	public String toString(final boolean print_machine_readably) {
-		return toString();
-	}
-	
+    public VncVal getMeta() {
+        // getMeta() can be redefined. Some data types do that to manage meta data themselves.
+        return meta == null ? Nil : meta;
+    }
 
-	@Override
-	public int hashCode() {
-		return 31;
-	}
+    public VncVal getMetaVal(final VncString key) {
+        final VncVal meta_ = getMeta();
+        if (meta_ instanceof VncHashMap) {
+            return ((VncHashMap)meta_).get(key);
+        }
+        else {
+            return Nil; // not a map
+        }
+    }
 
-	@Override
-	public boolean equals(Object obj) {
-		if (this == obj)
-			return true;
-		if (getClass() != obj.getClass())
-			return false;
-		return true;
-	}
-	
-    
+    public VncVal getMetaVal(final VncString key, final VncVal defaultValue) {
+        final VncVal val = getMetaVal(key);
+        return val == Nil ? defaultValue : val;
+    }
+
+    public boolean isPrivate() {
+        return _private;
+    }
+
+    @Override
+    public int compareTo(final VncVal o) {
+        final int c = Integer.valueOf(typeRank().getRank()).compareTo(Integer.valueOf(o.typeRank().getRank()));
+        return c != 0 ? c : -1;
+    }
+
+    public String toString(final boolean print_machine_readably) {
+        return toString();
+    }
+
+
+    @Override
+    public int hashCode() {
+        return 31;
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (this == obj)
+            return true;
+        if (getClass() != obj.getClass())
+            return false;
+        return true;
+    }
+
+
     public static final String TYPE = ":core/val";
- 	
+
     private static final long serialVersionUID = -1848883965231344442L;
 
-	private final VncVal meta;
-	private final boolean _private;
-		
-	// the wrap type info when this instance has been wrapped
-	private final VncWrappingTypeDef wrappingTypeDef; 
+    private final VncVal meta;
+    private final boolean _private;
+
+    // the wrap type info when this instance has been wrapped
+    private final VncWrappingTypeDef wrappingTypeDef;
 }

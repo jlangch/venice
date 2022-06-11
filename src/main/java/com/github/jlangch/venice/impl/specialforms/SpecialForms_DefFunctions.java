@@ -1,5 +1,5 @@
 /*   __    __         _
- *   \ \  / /__ _ __ (_) ___ ___ 
+ *   \ \  / /__ _ __ (_) ___ ___
  *    \ \/ / _ \ '_ \| |/ __/ _ \
  *     \  /  __/ | | | | (_|  __/
  *      \/ \___|_| |_|_|\___\___|
@@ -55,256 +55,260 @@ import com.github.jlangch.venice.impl.util.SymbolMapBuilder;
 
 /**
  * The special form pseudo functions
- * 
- * Special forms have evaluation rules that differ from standard Venice 
+ *
+ * Special forms have evaluation rules that differ from standard Venice
  * evaluation rules and are understood directly by the Venice interpreter.
  */
 public class SpecialForms_DefFunctions {
 
-	public static VncSpecialForm def =
-		new VncSpecialForm(
-				"def",
-				VncSpecialForm
-					.meta()
-					.arglists("(def name expr)")
-					.doc("Creates a global variable.")
-					.examples(
-						 "(def x 5)",
-						 "(def sum (fn [x y] (+ x y)))",
-						 "(def ^{:private true} x 100)")
-					.seeAlso("def", "def-", "defonce", "def-dynamic", "set!")
-					.build()
-		) {
-			public VncVal apply(
-					final VncVal specialFormMeta,
-					final VncList args, 
-					final Env env, 
-					final SpecialFormsContext ctx
-			) {
-				assertArity("def", FnType.SpecialForm, args, 1, 2);
-				final VncSymbol name = validateSymbolWithCurrNS(
-											Namespaces.qualifySymbolWithCurrNS(
-													evaluateSymbolMetaData(args.first(), env, ctx)),
-											"def");
-				
-				final VncVal val = args.second();
-				
-				VncVal res = ctx.getEvaluator().evaluate(val, env, false);
-				
-				// we want source location from name and this to work:
-				//      (def y (vary-meta 1 assoc :a 100))
-				//      (get (meta y) :a)  ; -> 100
+    public static VncSpecialForm def =
+        new VncSpecialForm(
+                "def",
+                VncSpecialForm
+                    .meta()
+                    .arglists("(def name expr)")
+                    .doc("Creates a global variable.")
+                    .examples(
+                         "(def x 5)",
+                         "(def sum (fn [x y] (+ x y)))",
+                         "(def ^{:private true} x 100)")
+                    .seeAlso("def", "def-", "defonce", "def-dynamic", "set!")
+                    .build()
+        ) {
+            @Override
+            public VncVal apply(
+                    final VncVal specialFormMeta,
+                    final VncList args,
+                    final Env env,
+                    final SpecialFormsContext ctx
+            ) {
+                assertArity("def", FnType.SpecialForm, args, 1, 2);
+                final VncSymbol name = validateSymbolWithCurrNS(
+                                            Namespaces.qualifySymbolWithCurrNS(
+                                                    evaluateSymbolMetaData(args.first(), env, ctx)),
+                                            "def");
 
-				res = res.withMeta(MetaUtil.mergeMeta(res.getMeta(), name.getMeta()));
-				
-				env.setGlobal(new Var(name, res, true));
-				return name;
-			}
+                final VncVal val = args.second();
 
-			private static final long serialVersionUID = -1848883965231344442L;
-		};
+                VncVal res = ctx.getEvaluator().evaluate(val, env, false);
 
-	public static VncSpecialForm defonce =
-		new VncSpecialForm(
-				"defonce",
-				VncSpecialForm
-					.meta()
-					.arglists("(defonce name expr)")
-					.doc("Creates a global variable that can not be overwritten")
-					.examples(
-						"(defonce x 5)",
-						"(defonce ^{:private true} x 5)")
-					.seeAlso("def", "def-dynamic")
-					.build()
-		) {
-			public VncVal apply(
-					final VncVal specialFormMeta,
-					final VncList args, 
-					final Env env, 
-					final SpecialFormsContext ctx
-			) {
-				assertArity("defonce", FnType.SpecialForm, args, 1, 2);
-				final VncSymbol name = validateSymbolWithCurrNS(
-											Namespaces.qualifySymbolWithCurrNS(
-													evaluateSymbolMetaData(args.first(), env, ctx)),
-											"defonce");
-								
-				final VncVal val = args.second();
+                // we want source location from name and this to work:
+                //      (def y (vary-meta 1 assoc :a 100))
+                //      (get (meta y) :a)  ; -> 100
 
-				final VncVal res = ctx.getEvaluator().evaluate(val, env, false).withMeta(name.getMeta());
-				env.setGlobal(new Var(name, res, false));
-				return name;
-			}
+                res = res.withMeta(MetaUtil.mergeMeta(res.getMeta(), name.getMeta()));
 
-			private static final long serialVersionUID = -1848883965231344442L;
-		};
+                env.setGlobal(new Var(name, res, true));
+                return name;
+            }
 
-	public static VncSpecialForm def_dynamic =
-		new VncSpecialForm(
-				"def-dynamic",
-				VncSpecialForm
-					.meta()
-					.arglists("(def-dynamic name expr)")
-					.doc(
-						"Creates a dynamic variable that starts off as a global variable " +
-						"and can be bound with 'binding' to a new value on the local thread.")
-					.examples(
-						"(do                      \n" +
-						"   (def-dynamic x 100)   \n" +
-						"   (println x)           \n" +
-						"   (binding [x 200]      \n" +
-						"      (println x))       \n" +
-						"   (println x)))           ",
-						"(def-dynamic ^{:private true} x 100)")
-					.seeAlso("binding", "def", "defonce", "set!")
-					.build()
-		) {
-			public VncVal apply(
-					final VncVal specialFormMeta,
-					final VncList args, 
-					final Env env, 
-					final SpecialFormsContext ctx
-			) {
-				assertArity("def-dynamic", FnType.SpecialForm, args, 1, 2);
-				final VncSymbol name = validateSymbolWithCurrNS(
-											Namespaces.qualifySymbolWithCurrNS(
-													evaluateSymbolMetaData(args.first(), env, ctx)),
-											"def-dynamic");
-				
-				final VncVal val = args.second();
-				
-				final VncVal res = ctx.getEvaluator().evaluate(val, env, false).withMeta(name.getMeta());
-				env.setGlobalDynamic(name, res);
-				return name;
-			}
+            private static final long serialVersionUID = -1848883965231344442L;
+        };
 
-			private static final long serialVersionUID = -1848883965231344442L;
-		};
+    public static VncSpecialForm defonce =
+        new VncSpecialForm(
+                "defonce",
+                VncSpecialForm
+                    .meta()
+                    .arglists("(defonce name expr)")
+                    .doc("Creates a global variable that can not be overwritten")
+                    .examples(
+                        "(defonce x 5)",
+                        "(defonce ^{:private true} x 5)")
+                    .seeAlso("def", "def-dynamic")
+                    .build()
+        ) {
+            @Override
+            public VncVal apply(
+                    final VncVal specialFormMeta,
+                    final VncList args,
+                    final Env env,
+                    final SpecialFormsContext ctx
+            ) {
+                assertArity("defonce", FnType.SpecialForm, args, 1, 2);
+                final VncSymbol name = validateSymbolWithCurrNS(
+                                            Namespaces.qualifySymbolWithCurrNS(
+                                                    evaluateSymbolMetaData(args.first(), env, ctx)),
+                                            "defonce");
 
-	public static VncSpecialForm defmacro =
-		new VncSpecialForm(
-				"defmacro",
-				VncSpecialForm
-					.meta()
-					.arglists("(defmacro name [params*] body)")
-					.doc("Macro definition")
-					.examples(
-						"(defmacro unless [pred a b]   \n" + 
-						"  `(if (not ~pred) ~a ~b))      ")
-					.seeAlso("macroexpand", "macroexpand-all")
-					.build()
-		) {
-			public VncVal apply(
-					final VncVal specialFormMeta,
-					final VncList args, 
-					final Env env, 
-					final SpecialFormsContext ctx
-			) {
-				assertMinArity("defmacro", FnType.SpecialForm, args, 2);
+                final VncVal val = args.second();
 
-				final FunctionBuilder functionBuilder = ctx.getFunctionBuilder();
+                final VncVal res = ctx.getEvaluator().evaluate(val, env, false).withMeta(name.getMeta());
+                env.setGlobal(new Var(name, res, false));
+                return name;
+            }
 
-				int argPos = 0;
-				
-				final VncSymbol macroName = Namespaces.qualifySymbolWithCurrNS(
-												evaluateSymbolMetaData(args.nth(argPos++), env, ctx));
-				VncVal meta = macroName.getMeta();
-				
-				if (MetaUtil.isPrivate(meta)) {
-					throw new VncException(String.format(
-							"The macro '%s' must not be defined as private! "
-								+ "Venice does not support private macros.",
-							macroName.getName()));
-				}
-				
-				final VncSequence paramsOrSig = Coerce.toVncSequence(args.nth(argPos));
-							
-				String name = macroName.getName();
-				String ns = macroName.getNamespace();
+            private static final long serialVersionUID = -1848883965231344442L;
+        };
 
-				if (ns == null) {
-					ns = Namespaces.getCurrentNS().getName();
-					if (!Namespaces.isCoreNS(ns)) {
-						name = ns + "/" + name;
-					}
-				}
+    public static VncSpecialForm def_dynamic =
+        new VncSpecialForm(
+                "def-dynamic",
+                VncSpecialForm
+                    .meta()
+                    .arglists("(def-dynamic name expr)")
+                    .doc(
+                        "Creates a dynamic variable that starts off as a global variable " +
+                        "and can be bound with 'binding' to a new value on the local thread.")
+                    .examples(
+                        "(do                      \n" +
+                        "   (def-dynamic x 100)   \n" +
+                        "   (println x)           \n" +
+                        "   (binding [x 200]      \n" +
+                        "      (println x))       \n" +
+                        "   (println x)))           ",
+                        "(def-dynamic ^{:private true} x 100)")
+                    .seeAlso("binding", "def", "defonce", "set!")
+                    .build()
+        ) {
+            @Override
+            public VncVal apply(
+                    final VncVal specialFormMeta,
+                    final VncList args,
+                    final Env env,
+                    final SpecialFormsContext ctx
+            ) {
+                assertArity("def-dynamic", FnType.SpecialForm, args, 1, 2);
+                final VncSymbol name = validateSymbolWithCurrNS(
+                                            Namespaces.qualifySymbolWithCurrNS(
+                                                    evaluateSymbolMetaData(args.first(), env, ctx)),
+                                            "def-dynamic");
 
-				meta = MetaUtil.addMetaVal(
-									meta,
-									MetaUtil.NS, new VncString(ns),
-									MetaUtil.MACRO, True);
+                final VncVal val = args.second();
 
-				final VncSymbol macroName_ = new VncSymbol(name, meta);
+                final VncVal res = ctx.getEvaluator().evaluate(val, env, false).withMeta(name.getMeta());
+                env.setGlobalDynamic(name, res);
+                return name;
+            }
 
-				if (Types.isVncVector(paramsOrSig)) {
-					// single arity:
-					
-					argPos++;
-					final VncVector params = (VncVector)paramsOrSig;
-					final VncList body = args.slice(argPos);	
-					final VncFunction macroFn = functionBuilder.buildFunction(
-													macroName_.getName(), 
-													params, 
-													body, 
-													null, 
-													true,
-													meta,
-													env);
-			
-					env.setGlobal(new Var(macroName_, macroFn.withMeta(meta), false));
+            private static final long serialVersionUID = -1848883965231344442L;
+        };
 
-					return macroFn;
-				}
-				else {
-					// multi arity:
+    public static VncSpecialForm defmacro =
+        new VncSpecialForm(
+                "defmacro",
+                VncSpecialForm
+                    .meta()
+                    .arglists("(defmacro name [params*] body)")
+                    .doc("Macro definition")
+                    .examples(
+                        "(defmacro unless [pred a b]   \n" +
+                        "  `(if (not ~pred) ~a ~b))      ")
+                    .seeAlso("macroexpand", "macroexpand-all")
+                    .build()
+        ) {
+            @Override
+            public VncVal apply(
+                    final VncVal specialFormMeta,
+                    final VncList args,
+                    final Env env,
+                    final SpecialFormsContext ctx
+            ) {
+                assertMinArity("defmacro", FnType.SpecialForm, args, 2);
 
-					final List<VncFunction> fns = new ArrayList<>();
-					
-					final VncVal meta_ = meta;
+                final FunctionBuilder functionBuilder = ctx.getFunctionBuilder();
 
-					args.slice(argPos).forEach(s -> {
-						int pos = 0;				
-						final VncList fnSig = Coerce.toVncList(s);				
-						final VncVector fnParams = Coerce.toVncVector(fnSig.nth(pos++));				
-						final VncList fnBody = fnSig.slice(pos);
-						
-						fns.add(functionBuilder.buildFunction(
-									macroName_.getName() + "-arity-" + fnParams.size(),
-									fnParams, 
-									fnBody, 
-									null,
-									true,
-									meta_,
-									env));
-					});
+                int argPos = 0;
 
-					final VncFunction macroFn = new VncMultiArityFunction(
-														macroName_.getName(), 
-														fns, 
-														true, 
-														meta);
-					
-					env.setGlobal(new Var(macroName_, macroFn, false));
+                final VncSymbol macroName = Namespaces.qualifySymbolWithCurrNS(
+                                                evaluateSymbolMetaData(args.nth(argPos++), env, ctx));
+                VncVal meta = macroName.getMeta();
 
-					return macroFn;
-				}
-			}
+                if (MetaUtil.isPrivate(meta)) {
+                    throw new VncException(String.format(
+                            "The macro '%s' must not be defined as private! "
+                                + "Venice does not support private macros.",
+                            macroName.getName()));
+                }
 
-			private static final long serialVersionUID = -1848883965231344442L;
-		};
-		
-	
-	
-	
-	///////////////////////////////////////////////////////////////////////////
-	// types_ns is namespace of type functions
-	///////////////////////////////////////////////////////////////////////////
+                final VncSequence paramsOrSig = Coerce.toVncSequence(args.nth(argPos));
 
-	public static Map<VncVal, VncVal> ns =
-			new SymbolMapBuilder()
-					.add(def)
-					.add(defonce)
-					.add(def_dynamic)
-					.add(defmacro)
-					.toMap();
+                String name = macroName.getName();
+                String ns = macroName.getNamespace();
+
+                if (ns == null) {
+                    ns = Namespaces.getCurrentNS().getName();
+                    if (!Namespaces.isCoreNS(ns)) {
+                        name = ns + "/" + name;
+                    }
+                }
+
+                meta = MetaUtil.addMetaVal(
+                                    meta,
+                                    MetaUtil.NS, new VncString(ns),
+                                    MetaUtil.MACRO, True);
+
+                final VncSymbol macroName_ = new VncSymbol(name, meta);
+
+                if (Types.isVncVector(paramsOrSig)) {
+                    // single arity:
+
+                    argPos++;
+                    final VncVector params = (VncVector)paramsOrSig;
+                    final VncList body = args.slice(argPos);
+                    final VncFunction macroFn = functionBuilder.buildFunction(
+                                                    macroName_.getName(),
+                                                    params,
+                                                    body,
+                                                    null,
+                                                    true,
+                                                    meta,
+                                                    env);
+
+                    env.setGlobal(new Var(macroName_, macroFn.withMeta(meta), false));
+
+                    return macroFn;
+                }
+                else {
+                    // multi arity:
+
+                    final List<VncFunction> fns = new ArrayList<>();
+
+                    final VncVal meta_ = meta;
+
+                    args.slice(argPos).forEach(s -> {
+                        int pos = 0;
+                        final VncList fnSig = Coerce.toVncList(s);
+                        final VncVector fnParams = Coerce.toVncVector(fnSig.nth(pos++));
+                        final VncList fnBody = fnSig.slice(pos);
+
+                        fns.add(functionBuilder.buildFunction(
+                                    macroName_.getName() + "-arity-" + fnParams.size(),
+                                    fnParams,
+                                    fnBody,
+                                    null,
+                                    true,
+                                    meta_,
+                                    env));
+                    });
+
+                    final VncFunction macroFn = new VncMultiArityFunction(
+                                                        macroName_.getName(),
+                                                        fns,
+                                                        true,
+                                                        meta);
+
+                    env.setGlobal(new Var(macroName_, macroFn, false));
+
+                    return macroFn;
+                }
+            }
+
+            private static final long serialVersionUID = -1848883965231344442L;
+        };
+
+
+
+
+    ///////////////////////////////////////////////////////////////////////////
+    // types_ns is namespace of type functions
+    ///////////////////////////////////////////////////////////////////////////
+
+    public static Map<VncVal, VncVal> ns =
+            new SymbolMapBuilder()
+                    .add(def)
+                    .add(defonce)
+                    .add(def_dynamic)
+                    .add(defmacro)
+                    .toMap();
 }

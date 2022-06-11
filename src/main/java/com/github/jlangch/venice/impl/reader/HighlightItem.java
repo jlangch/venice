@@ -1,5 +1,5 @@
 /*   __    __         _
- *   \ \  / /__ _ __ (_) ___ ___ 
+ *   \ \  / /__ _ __ (_) ___ ___
  *    \ \/ / _ \ '_ \| |/ __/ _ \
  *     \  /  __/ | | | | (_|  __/
  *      \/ \___|_| |_|_|\___\___|
@@ -24,30 +24,30 @@ package com.github.jlangch.venice.impl.reader;
 
 public class HighlightItem {
 
-	public HighlightItem(final char form, final HighlightClass clazz) {
-		this(String.valueOf(form), clazz);
-	}
+    public HighlightItem(final char form, final HighlightClass clazz) {
+        this(String.valueOf(form), clazz);
+    }
 
-	public HighlightItem(final String form, final HighlightClass clazz) {
-		this.form = form;
-		this.clazz = clazz;
-	}
-	
-	
-	public String getForm() {
-		return form;
-	}
-	
-	public HighlightClass getClazz() {
-		return clazz;
-	}
+    public HighlightItem(final String form, final HighlightClass clazz) {
+        this.form = form;
+        this.clazz = clazz;
+    }
 
-	@Override
-	public String toString() {
-		return clazz.name() + ": " + form;
-	}
-	
-	
-	private final String form;
-	private final HighlightClass clazz;
+
+    public String getForm() {
+        return form;
+    }
+
+    public HighlightClass getClazz() {
+        return clazz;
+    }
+
+    @Override
+    public String toString() {
+        return clazz.name() + ": " + form;
+    }
+
+
+    private final String form;
+    private final HighlightClass clazz;
 }

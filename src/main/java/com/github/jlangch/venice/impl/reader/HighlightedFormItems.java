@@ -1,5 +1,5 @@
 /*   __    __         _
- *   \ \  / /__ _ __ (_) ___ ___ 
+ *   \ \  / /__ _ __ (_) ___ ___
  *    \ \/ / _ \ '_ \| |/ __/ _ \
  *     \  /  __/ | | | | (_|  __/
  *      \/ \___|_| |_|_|\___\___|
@@ -26,31 +26,31 @@ import java.util.List;
 
 public class HighlightedFormItems {
 
-	public HighlightedFormItems(final List<HighlightItem> items) {
-		this(items, null);
-	}
+    public HighlightedFormItems(final List<HighlightItem> items) {
+        this(items, null);
+    }
 
-	public HighlightedFormItems(
-			final List<HighlightItem> items,
-			final String unprocessed
-	) {
-		this.items = items;
-		this.unprocessed = unprocessed;
-	}
-	
-	public boolean hasUnprocessed() {
-		return unprocessed != null;
-	}
+    public HighlightedFormItems(
+            final List<HighlightItem> items,
+            final String unprocessed
+    ) {
+        this.items = items;
+        this.unprocessed = unprocessed;
+    }
 
-	public String getUnprocessed() {
-		return unprocessed;
-	}
-	
-	public List<HighlightItem> items() {
-		return items;
-	}
-	
-	
-	private final List<HighlightItem> items;
-	private final String unprocessed;
+    public boolean hasUnprocessed() {
+        return unprocessed != null;
+    }
+
+    public String getUnprocessed() {
+        return unprocessed;
+    }
+
+    public List<HighlightItem> items() {
+        return items;
+    }
+
+
+    private final List<HighlightItem> items;
+    private final String unprocessed;
 }

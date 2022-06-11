@@ -1,5 +1,5 @@
 /*   __    __         _
- *   \ \  / /__ _ __ (_) ___ ___ 
+ *   \ \  / /__ _ __ (_) ___ ___
  *    \ \/ / _ \ '_ \| |/ __/ _ \
  *     \  /  __/ | | | | (_|  __/
  *      \/ \___|_| |_|_|\___\___|
@@ -36,122 +36,122 @@ import com.github.jlangch.venice.impl.util.StringUtil;
 
 
 public class ReplRestart {
-	
-	private ReplRestart(final List<String> lines) {
-		this.lines = lines;
-		this.createdAt = lines.isEmpty() ? null : parse(lines.get(0));
-	}
-	
-	public static ReplRestart read() {
-		try {
-			return new ReplRestart(
-					Files.readAllLines(RESTART_FILE.toPath())
-					     .stream()
-					     .map(s -> StringUtil.trimToNull(s))
-					     .filter(s -> s != null)
-					     .collect(Collectors.toList()));
-		}
-		catch(Exception ex) {
-			return new ReplRestart(new ArrayList<>());
-		}
-	}
-	
-	public static void write(
-			final boolean macroEpxandOnLoad, 
-			final ColorMode mode
-	) {
-		try {
-			final List<String> lines = new ArrayList<>();
 
-			lines.add(format(LocalDateTime.now()));
+    private ReplRestart(final List<String> lines) {
+        this.lines = lines;
+        this.createdAt = lines.isEmpty() ? null : parse(lines.get(0));
+    }
 
-			if (macroEpxandOnLoad) {
-				lines.add("-macropexand");
-			}
+    public static ReplRestart read() {
+        try {
+            return new ReplRestart(
+                    Files.readAllLines(RESTART_FILE.toPath())
+                         .stream()
+                         .map(s -> StringUtil.trimToNull(s))
+                         .filter(s -> s != null)
+                         .collect(Collectors.toList()));
+        }
+        catch(Exception ex) {
+            return new ReplRestart(new ArrayList<>());
+        }
+    }
 
-			if (mode != null) {
-				lines.add("ColorMode." + mode.name());
-			}
+    public static void write(
+            final boolean macroEpxandOnLoad,
+            final ColorMode mode
+    ) {
+        try {
+            final List<String> lines = new ArrayList<>();
 
-			Files.write(
-					RESTART_FILE.toPath(), 
-					lines, 
-					StandardOpenOption.WRITE,
-					StandardOpenOption.CREATE,
-					StandardOpenOption.TRUNCATE_EXISTING);
-		}
-		catch(Exception ex) {
-			// skipped (best effort)
-		}
-	}
+            lines.add(format(LocalDateTime.now()));
 
-	public static boolean exists() {
-		try {
-			return RESTART_FILE.exists();
-		}
-		catch(Exception ex) {
-			return false;
-		}
-	}
+            if (macroEpxandOnLoad) {
+                lines.add("-macropexand");
+            }
 
-	public static void remove() {
-		try {
-			RESTART_FILE.delete();
-		}
-		catch(Exception ex) {
-			// skipped (best effort)
-		}
-	}
+            if (mode != null) {
+                lines.add("ColorMode." + mode.name());
+            }
 
-	public boolean hasMacroExpand() {
-		try {
-			return lines.stream().anyMatch(s -> s.equals("-macropexand"));
-		}
-		catch(Exception ex) {
-			return false;
-		}
-	}
-	
-	public ColorMode getColorMode() {
-		try {
-			if (lines.stream().anyMatch(s -> s.equals("ColorMode.Light"))) {
-				return ColorMode.Light;
-			}
-			else if (lines.stream().anyMatch(s -> s.equals("ColorMode.Dark"))) {
-				return ColorMode.Dark;
-			}
-			else {
-				return ColorMode.None;
-			}
-		}
-		catch(Exception ex) {
-			return ColorMode.None;
-		}
-	}
+            Files.write(
+                    RESTART_FILE.toPath(),
+                    lines,
+                    StandardOpenOption.WRITE,
+                    StandardOpenOption.CREATE,
+                    StandardOpenOption.TRUNCATE_EXISTING);
+        }
+        catch(Exception ex) {
+            // skipped (best effort)
+        }
+    }
 
-	public boolean oudated() {
-		return createdAt == null || ChronoUnit.DAYS.between(createdAt, readAt) > 30L;
-	}
-	
-	private static String format(final LocalDateTime dt) {
-		return dtFormatter.format(dt);
-	}
-	
-	private static LocalDateTime parse(final String s) {
-		try {
-			return LocalDateTime.parse(s, dtFormatter);
-		}
-		catch (Exception ex) {
-			return null;
-		}
-	}
+    public static boolean exists() {
+        try {
+            return RESTART_FILE.exists();
+        }
+        catch(Exception ex) {
+            return false;
+        }
+    }
 
-	
-	private final static File RESTART_FILE = new File(".repl.restart");
-	private final static DateTimeFormatter dtFormatter = 
-			DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss"); 
-	
-	private final List<String> lines;
-	private final LocalDateTime createdAt;
-	private final LocalDateTime readAt = LocalDateTime.now();
+    public static void remove() {
+        try {
+            RESTART_FILE.delete();
+        }
+        catch(Exception ex) {
+            // skipped (best effort)
+        }
+    }
+
+    public boolean hasMacroExpand() {
+        try {
+            return lines.stream().anyMatch(s -> s.equals("-macropexand"));
+        }
+        catch(Exception ex) {
+            return false;
+        }
+    }
+
+    public ColorMode getColorMode() {
+        try {
+            if (lines.stream().anyMatch(s -> s.equals("ColorMode.Light"))) {
+                return ColorMode.Light;
+            }
+            else if (lines.stream().anyMatch(s -> s.equals("ColorMode.Dark"))) {
+                return ColorMode.Dark;
+            }
+            else {
+                return ColorMode.None;
+            }
+        }
+        catch(Exception ex) {
+            return ColorMode.None;
+        }
+    }
+
+    public boolean oudated() {
+        return createdAt == null || ChronoUnit.DAYS.between(createdAt, readAt) > 30L;
+    }
+
+    private static String format(final LocalDateTime dt) {
+        return dtFormatter.format(dt);
+    }
+
+    private static LocalDateTime parse(final String s) {
+        try {
+            return LocalDateTime.parse(s, dtFormatter);
+        }
+        catch (Exception ex) {
+            return null;
+        }
+    }
+
+
+    private final static File RESTART_FILE = new File(".repl.restart");
+    private final static DateTimeFormatter dtFormatter =
+            DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss");
+
+    private final List<String> lines;
+    private final LocalDateTime createdAt;
+    private final LocalDateTime readAt = LocalDateTime.now();
 }

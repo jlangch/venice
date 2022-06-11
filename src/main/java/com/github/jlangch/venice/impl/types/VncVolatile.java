@@ -1,5 +1,5 @@
 /*   __    __         _
- *   \ \  / /__ _ __ (_) ___ ___ 
+ *   \ \  / /__ _ __ (_) ___ ___
  *    \ \/ / _ \ '_ \| |/ __/ _ \
  *     \  /  __/ | | | | (_|  __/
  *      \/ \___|_| |_|_|\___\___|
@@ -28,64 +28,65 @@ import com.github.jlangch.venice.impl.util.MetaUtil;
 
 public class VncVolatile extends VncVal implements IDeref {
 
-	public VncVolatile(final VncVal value, final VncVal meta) {
-		super(meta);
-		state = value; 
-	}
+    public VncVolatile(final VncVal value, final VncVal meta) {
+        super(meta);
+        state = value;
+    }
 
-	
-	@Override
-	public VncVolatile withMeta(final VncVal meta) {
-		return new VncVolatile(state, meta);
-	}
-	
-	@Override
-	public VncKeyword getType() {
-		return new VncKeyword(
-						TYPE, 
-						MetaUtil.typeMeta(
-								new VncKeyword(VncVal.TYPE)));
-	}
 
-	public VncVal reset(final VncVal newVal) {
-		state = newVal; 
-		return newVal;
-	}
-	
-	@Override
-	public VncVal deref() {
-		return state;
-	}
-	
-	public VncVal swap(final VncFunction fn, final VncList args) {
-		final VncList new_args = VncList.of(state).addAllAtEnd(args);
-		state = fn.apply(new_args);
-		return state;
-	}
-	
-	@Override 
-	public TypeRank typeRank() {
-		return TypeRank.VOLATILE;
-	}
+    @Override
+    public VncVolatile withMeta(final VncVal meta) {
+        return new VncVolatile(state, meta);
+    }
 
-	@Override
-	public Object convertToJavaObject() {
-		return null;
-	}
-	
-	@Override 
-	public String toString() {
-		return "(volatile " + Printer.pr_str(state, true) + ")";
-	}
+    @Override
+    public VncKeyword getType() {
+        return new VncKeyword(
+                        TYPE,
+                        MetaUtil.typeMeta(
+                                new VncKeyword(VncVal.TYPE)));
+    }
 
-	public String toString(final boolean print_machine_readably) {
-		return "(volatile " + Printer.pr_str(state, print_machine_readably) + ")";
-	}
-	
-	
+    public VncVal reset(final VncVal newVal) {
+        state = newVal;
+        return newVal;
+    }
+
+    @Override
+    public VncVal deref() {
+        return state;
+    }
+
+    public VncVal swap(final VncFunction fn, final VncList args) {
+        final VncList new_args = VncList.of(state).addAllAtEnd(args);
+        state = fn.apply(new_args);
+        return state;
+    }
+
+    @Override
+    public TypeRank typeRank() {
+        return TypeRank.VOLATILE;
+    }
+
+    @Override
+    public Object convertToJavaObject() {
+        return null;
+    }
+
+    @Override
+    public String toString() {
+        return "(volatile " + Printer.pr_str(state, true) + ")";
+    }
+
+    @Override
+    public String toString(final boolean print_machine_readably) {
+        return "(volatile " + Printer.pr_str(state, print_machine_readably) + ")";
+    }
+
+
     public static final String TYPE = ":core/volatile";
-	
+
     private static final long serialVersionUID = -1848883965231344442L;
-	
-	private volatile VncVal state = Constants.Nil;
+
+    private volatile VncVal state = Constants.Nil;
 }

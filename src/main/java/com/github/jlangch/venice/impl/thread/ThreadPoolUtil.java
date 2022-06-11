@@ -1,5 +1,5 @@
 /*   __    __         _
- *   \ \  / /__ _ __ (_) ___ ___ 
+ *   \ \  / /__ _ __ (_) ___ ___
  *    \ \/ / _ \ '_ \| |/ __/ _ \
  *     \  /  __/ | | | | (_|  __/
  *      \/ \___|_| |_|_|\___\___|
@@ -28,45 +28,45 @@ import java.util.concurrent.atomic.AtomicLong;
 /**
  * Creates a <code>ThreadFactory</code> that creates daemon threads and gives
  * the threads a unique name with an incremented index. So this threads can be
- * always associated with a <code>ThreadFactory</code> when analyzing Java VM 
+ * always associated with a <code>ThreadFactory</code> when analyzing Java VM
  * threads.
  */
 public class ThreadPoolUtil {
 
-	/**
-	 * Creates a new counted <code>ThreadFactory</code>
-	 * 
-	 * @param poolName a pool name like: "venice-future-pool"
-	 * @param deamon if <code>true</code> create daemon threads
-	 * @return the <code>ThreadFactory</code>
-	 */
-	public static ThreadFactory createCountedThreadFactory(
-			final String poolName, 
-			final boolean deamon
-	) {
-		return new CountedThreadFactory(poolName, deamon);
-	}
-	
+    /**
+     * Creates a new counted <code>ThreadFactory</code>
+     *
+     * @param poolName a pool name like: "venice-future-pool"
+     * @param deamon if <code>true</code> create daemon threads
+     * @return the <code>ThreadFactory</code>
+     */
+    public static ThreadFactory createCountedThreadFactory(
+            final String poolName,
+            final boolean deamon
+    ) {
+        return new CountedThreadFactory(poolName, deamon);
+    }
 
-	public static class CountedThreadFactory implements ThreadFactory {
-		public CountedThreadFactory(
-				final String poolName,
-				final boolean deamon
-		) {
-			this.poolName = poolName;
-			this.deamon = deamon;
-		}
-		
-		@Override
-		public Thread newThread(final Runnable runnable) {
-			final Thread thread = new Thread(runnable);
-			thread.setDaemon(deamon);
-			thread.setName(poolName + "-" + counter.getAndIncrement());
-			return thread;
-		}
-		
-		private final String poolName;
-		private final boolean deamon;
-		private final AtomicLong counter = new AtomicLong(1L);
-	}
+
+    public static class CountedThreadFactory implements ThreadFactory {
+        public CountedThreadFactory(
+                final String poolName,
+                final boolean deamon
+        ) {
+            this.poolName = poolName;
+            this.deamon = deamon;
+        }
+
+        @Override
+        public Thread newThread(final Runnable runnable) {
+            final Thread thread = new Thread(runnable);
+            thread.setDaemon(deamon);
+            thread.setName(poolName + "-" + counter.getAndIncrement());
+            return thread;
+        }
+
+        private final String poolName;
+        private final boolean deamon;
+        private final AtomicLong counter = new AtomicLong(1L);
+    }
 }

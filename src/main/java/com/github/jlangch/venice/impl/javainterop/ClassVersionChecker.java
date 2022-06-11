@@ -1,5 +1,5 @@
 /*   __    __         _
- *   \ \  / /__ _ __ (_) ___ ___ 
+ *   \ \  / /__ _ __ (_) ___ ___
  *    \ \/ / _ \ '_ \| |/ __/ _ \
  *     \  /  __/ | | | | (_|  __/
  *      \/ \___|_| |_|_|\___\___|
@@ -31,10 +31,10 @@ import com.github.jlangch.venice.impl.util.io.ClassPathResource;
 
 /**
  * Reads the Java major version from a class file
- * 
- * <p>The definition of the class file format can be found here: 
+ *
+ * <p>The definition of the class file format can be found here:
  * <a href="https://docs.oracle.com/javase/specs/jvms/se11/html/jvms-4.html">Format</a>
- * 
+ *
  * <ul>
  * <li> Java 1.2 uses major version 46</li>
  * <li> Java 1.3 uses major version 47</li>
@@ -54,48 +54,48 @@ import com.github.jlangch.venice.impl.util.io.ClassPathResource;
  */
 public class ClassVersionChecker {
 
-	public static int getClassResourceMajorVersion(final String classResource) {
-		try {		
-			return readMajorVersion(
-						new ClassPathResource(classResource).getInputStream(), 
-						classResource);
-		}
-		catch(IOException ex) {
-			throw new RuntimeException(
-					"Failed to retrieve Java major version for class "
-						+ "resource '" + classResource + "'!");
-		}
-	}
+    public static int getClassResourceMajorVersion(final String classResource) {
+        try {
+            return readMajorVersion(
+                        new ClassPathResource(classResource).getInputStream(),
+                        classResource);
+        }
+        catch(IOException ex) {
+            throw new RuntimeException(
+                    "Failed to retrieve Java major version for class "
+                        + "resource '" + classResource + "'!");
+        }
+    }
 
-	public static int getClassFileMajorVersion(final String filename) {
-		try {
-			return readMajorVersion(
-						new FileInputStream(filename), 
-						filename);
-		}
-		catch(IOException ex) {
-			throw new RuntimeException(
-					"Failed to retrieve Java major version for file"
-						+ " '" + filename + "'!");
-		}
-	}
-	
-	@SuppressWarnings("unused")
-	private static int readMajorVersion(final InputStream in, final String source) throws IOException {
-		try (DataInputStream din = new DataInputStream(in)) {
-			
-			final int magic = din.readInt();
-			if (magic != MAGIC) {
-				throw new RuntimeException(source + " is not a valid class!");
-			}
-			
-			final int minor = din.readUnsignedShort();
-			final int major = din.readUnsignedShort();
-			
-			return major;
-		}
-	}
-	
-	
-	private static int MAGIC = 0xcafebabe; // 4 bytes
+    public static int getClassFileMajorVersion(final String filename) {
+        try {
+            return readMajorVersion(
+                        new FileInputStream(filename),
+                        filename);
+        }
+        catch(IOException ex) {
+            throw new RuntimeException(
+                    "Failed to retrieve Java major version for file"
+                        + " '" + filename + "'!");
+        }
+    }
+
+    @SuppressWarnings("unused")
+    private static int readMajorVersion(final InputStream in, final String source) throws IOException {
+        try (DataInputStream din = new DataInputStream(in)) {
+
+            final int magic = din.readInt();
+            if (magic != MAGIC) {
+                throw new RuntimeException(source + " is not a valid class!");
+            }
+
+            final int minor = din.readUnsignedShort();
+            final int major = din.readUnsignedShort();
+
+            return major;
+        }
+    }
+
+
+    private static int MAGIC = 0xcafebabe; // 4 bytes
 }

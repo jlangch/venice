@@ -1,5 +1,5 @@
 /*   __    __         _
- *   \ \  / /__ _ __ (_) ___ ___ 
+ *   \ \  / /__ _ __ (_) ___ ___
  *    \ \/ / _ \ '_ \| |/ __/ _ \
  *     \  /  __/ | | | | (_|  __/
  *      \/ \___|_| |_|_|\___\___|
@@ -28,40 +28,40 @@ import com.github.jlangch.venice.javainterop.ReturnValue;
 
 public class Invoker implements IInvoker {
 
-	@Override
-	public ReturnValue callInstanceMethod(Object receiver, Class<?> receiverFormalType, String method, Object... args) {
-		return ReflectionAccessor.invokeInstanceMethod(receiver, receiverFormalType, method, args);
-	}
+    @Override
+    public ReturnValue callInstanceMethod(Object receiver, Class<?> receiverFormalType, String method, Object... args) {
+        return ReflectionAccessor.invokeInstanceMethod(receiver, receiverFormalType, method, args);
+    }
 
-	@Override
-	public ReturnValue callStaticMethod(Class<?> receiver, String method, Object... args) {
-		return ReflectionAccessor.invokeStaticMethod(receiver, method, args);
-	}
+    @Override
+    public ReturnValue callStaticMethod(Class<?> receiver, String method, Object... args) {
+        return ReflectionAccessor.invokeStaticMethod(receiver, method, args);
+    }
 
-	@Override
-	public ReturnValue callConstructor(Class<?> receiver, Object... args) {
-		return ReflectionAccessor.invokeConstructor(receiver, args);
-	}
+    @Override
+    public ReturnValue callConstructor(Class<?> receiver, Object... args) {
+        return ReflectionAccessor.invokeConstructor(receiver, args);
+    }
 
-	@Override
-	public ReturnValue getBeanProperty(Object receiver, String property) {
-		return ReflectionAccessor.getBeanProperty(receiver, property);
-	}
+    @Override
+    public ReturnValue getBeanProperty(Object receiver, String property) {
+        return ReflectionAccessor.getBeanProperty(receiver, property);
+    }
 
-	@Override
-	public ReturnValue setBeanProperty(Object receiver, String property, Object value) {
-		ReflectionAccessor.setBeanProperty(receiver, property, value);
-		return null;
-	}
+    @Override
+    public ReturnValue setBeanProperty(Object receiver, String property, Object value) {
+        ReflectionAccessor.setBeanProperty(receiver, property, value);
+        return null;
+    }
 
-	@Override
-	public ReturnValue getStaticField(Class<?> receiver, String fieldName) {
-		return ReflectionAccessor.getStaticField(receiver, fieldName);
-	}
+    @Override
+    public ReturnValue getStaticField(Class<?> receiver, String fieldName) {
+        return ReflectionAccessor.getStaticField(receiver, fieldName);
+    }
 
-	@Override
-	public ReturnValue getInstanceField(Object receiver, Class<?> receiverFormalType, String fieldName) {
-		return ReflectionAccessor.getInstanceField(receiver, receiverFormalType, fieldName);
-	}
+    @Override
+    public ReturnValue getInstanceField(Object receiver, Class<?> receiverFormalType, String fieldName) {
+        return ReflectionAccessor.getInstanceField(receiver, receiverFormalType, fieldName);
+    }
 
 }

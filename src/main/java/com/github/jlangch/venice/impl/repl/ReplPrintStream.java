@@ -1,5 +1,5 @@
 /*   __    __         _
- *   \ \  / /__ _ __ (_) ___ ___ 
+ *   \ \  / /__ _ __ (_) ___ ___
  *    \ \/ / _ \ '_ \| |/ __/ _ \
  *     \  /  __/ | | | | (_|  __/
  *      \/ \___|_| |_|_|\___\___|
@@ -30,164 +30,164 @@ import com.github.jlangch.venice.util.NullOutputStream;
 
 public class ReplPrintStream extends PrintStream {
 
-	public ReplPrintStream(
-			final Terminal terminal,
-			final String colorEscape
-	) {
-		super(new NullOutputStream());
-		this.terminal = terminal;
-		this.colorEscape = colorEscape;
-	}
+    public ReplPrintStream(
+            final Terminal terminal,
+            final String colorEscape
+    ) {
+        super(new NullOutputStream());
+        this.terminal = terminal;
+        this.colorEscape = colorEscape;
+    }
 
-	
-	@Override
-	public PrintStream append(final CharSequence csq) {
-		print(csq == null ? "null" : csq.toString());
-		return this;
-	}
-	
-	@Override
-	public PrintStream append(final CharSequence csq, final int start, final int end) {
-		final CharSequence cs = (csq == null ? "null" : csq);
-		print(cs.subSequence(start, end).toString());
-		return this;
-	}
 
-	@Override
-	public PrintStream append(final char c) {
-		print(c);
-		return this;
-	}
+    @Override
+    public PrintStream append(final CharSequence csq) {
+        print(csq == null ? "null" : csq.toString());
+        return this;
+    }
 
-	@Override
-	public void print(final boolean x) {
-		print(String.valueOf(x));
-	}
+    @Override
+    public PrintStream append(final CharSequence csq, final int start, final int end) {
+        final CharSequence cs = (csq == null ? "null" : csq);
+        print(cs.subSequence(start, end).toString());
+        return this;
+    }
 
-	@Override
-	public void print(final int x) {
-		print(String.valueOf(x));
-	}
+    @Override
+    public PrintStream append(final char c) {
+        print(c);
+        return this;
+    }
 
-	@Override
-	public void print(final long x) {
-		print(String.valueOf(x));
-	}
+    @Override
+    public void print(final boolean x) {
+        print(String.valueOf(x));
+    }
 
-	@Override
-	public void print(final float x) {
-		print(String.valueOf(x));
-	}
+    @Override
+    public void print(final int x) {
+        print(String.valueOf(x));
+    }
 
-	@Override
-	public void print(final double x) {
-		print(String.valueOf(x));
-	}
+    @Override
+    public void print(final long x) {
+        print(String.valueOf(x));
+    }
 
-	@Override
-	public void print(final char x) {
-		print(String.valueOf(x));
-	}
+    @Override
+    public void print(final float x) {
+        print(String.valueOf(x));
+    }
 
-	@Override
-	public void print(final char[] x) {
-		print(String.valueOf(x));
-	}
+    @Override
+    public void print(final double x) {
+        print(String.valueOf(x));
+    }
 
-	@Override
-	public void print(final Object x) {
-		print(String.valueOf(x));
-	}
+    @Override
+    public void print(final char x) {
+        print(String.valueOf(x));
+    }
 
-	@Override
-	public void print(final String s) {
-		printToTerminal(s);
-	}
+    @Override
+    public void print(final char[] x) {
+        print(String.valueOf(x));
+    }
 
-	@Override
-	public void println() {
-		println("");
-	}
+    @Override
+    public void print(final Object x) {
+        print(String.valueOf(x));
+    }
 
-	@Override
-	public void println(final boolean x) {
-		println(String.valueOf(x));
-	}
+    @Override
+    public void print(final String s) {
+        printToTerminal(s);
+    }
 
-	@Override
-	public void println(final int x) {
-		println(String.valueOf(x));
-	}
+    @Override
+    public void println() {
+        println("");
+    }
 
-	@Override
-	public void println(final long x) {
-		println(String.valueOf(x));
-	}
+    @Override
+    public void println(final boolean x) {
+        println(String.valueOf(x));
+    }
 
-	@Override
-	public void println(final float x) {
-		println(String.valueOf(x));
-	}
+    @Override
+    public void println(final int x) {
+        println(String.valueOf(x));
+    }
 
-	@Override
-	public void println(final double x) {
-		println(String.valueOf(x));
-	}
+    @Override
+    public void println(final long x) {
+        println(String.valueOf(x));
+    }
 
-	@Override
-	public void println(final char x) {
-		println(String.valueOf(x));
-	}
+    @Override
+    public void println(final float x) {
+        println(String.valueOf(x));
+    }
 
-	@Override
-	public void println(final char[] x) {
-		println(String.valueOf(x));
-	}
+    @Override
+    public void println(final double x) {
+        println(String.valueOf(x));
+    }
 
-	@Override
-	public void println(final Object x) {
-		println(String.valueOf(x));
-	}
+    @Override
+    public void println(final char x) {
+        println(String.valueOf(x));
+    }
 
-	@Override
-	public void println(final String s) {
-		printToTerminal(s + "\n");
-	}
+    @Override
+    public void println(final char[] x) {
+        println(String.valueOf(x));
+    }
 
-	@Override
-	public void write(final byte buf[], final int off, final int len) {
-		throw new RuntimeException(
-				"Method write(byte[],int,int) is not supported");
-	}
-	
-	@Override
-	public void write(final int b) {
-		throw new RuntimeException(
-				"Method write(int) is not supported");
-	}
-	
-	@Override
-	public void close() {
-	}
+    @Override
+    public void println(final Object x) {
+        println(String.valueOf(x));
+    }
 
-	@Override
-	public void flush() {
-	}
+    @Override
+    public void println(final String s) {
+        printToTerminal(s + "\n");
+    }
 
-	
-	private void printToTerminal(final String s) {
-		synchronized (this) {
-			if (colorEscape != null) terminal.writer().print(colorEscape);
-			
-			terminal.writer().print(s);
-			
-			if (colorEscape != null) terminal.writer().print(ReplConfig.ANSI_RESET);
-			
-			terminal.flush();
-		}
-	}
-    
-    
+    @Override
+    public void write(final byte buf[], final int off, final int len) {
+        throw new RuntimeException(
+                "Method write(byte[],int,int) is not supported");
+    }
+
+    @Override
+    public void write(final int b) {
+        throw new RuntimeException(
+                "Method write(int) is not supported");
+    }
+
+    @Override
+    public void close() {
+    }
+
+    @Override
+    public void flush() {
+    }
+
+
+    private void printToTerminal(final String s) {
+        synchronized (this) {
+            if (colorEscape != null) terminal.writer().print(colorEscape);
+
+            terminal.writer().print(s);
+
+            if (colorEscape != null) terminal.writer().print(ReplConfig.ANSI_RESET);
+
+            terminal.flush();
+        }
+    }
+
+
     private final Terminal terminal;
-	private final String colorEscape;
+    private final String colorEscape;
 }

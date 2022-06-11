@@ -1,5 +1,5 @@
 /*   __    __         _
- *   \ \  / /__ _ __ (_) ___ ___ 
+ *   \ \  / /__ _ __ (_) ___ ___
  *    \ \/ / _ \ '_ \| |/ __/ _ \
  *     \  /  __/ | | | | (_|  __/
  *      \/ \___|_| |_|_|\___\___|
@@ -43,146 +43,148 @@ import com.github.jlangch.venice.impl.util.concurrent.ManagedScheduledThreadPool
 
 
 public class ScheduleFunctions {
-	
-	public static VncFunction schedule_delay = 
-		new VncFunction(
-				"schedule-delay", 
-				VncFunction
-					.meta()
-					.arglists("(schedule-delay fn delay time-unit)")		
-					.doc(
-						"Creates and executes a one-shot action that becomes enabled " + 
-						"after the given delay.¶" + 
-						"Returns a future. `(deref f)`, `(future? f)`, `(future-cancel f)`, " +
-						"and `(future-done? f)` will work on the returned future.¶" + 
-						"Time unit is one of :milliseconds, :seconds, :minutes, :hours, or :days. ")
-					.examples(
-						"(schedule-delay (fn[] (println \"test\")) 1 :seconds)",
-						"(deref (schedule-delay (fn [] 100) 2 :seconds))")
-					.seeAlso("schedule-at-fixed-rate")
-					.build()
-		) {		
-			public VncVal apply(final VncList args) {	
-				ArityExceptions.assertArity(this, args, 3);
-	
-				sandboxFunctionCallValidation();
 
-				final VncFunction fn = Coerce.toVncFunction(args.first());
-				final VncLong delay = Coerce.toVncLong(args.second());
-				final VncKeyword unit = Coerce.toVncKeyword(args.third());
+    public static VncFunction schedule_delay =
+        new VncFunction(
+                "schedule-delay",
+                VncFunction
+                    .meta()
+                    .arglists("(schedule-delay fn delay time-unit)")
+                    .doc(
+                        "Creates and executes a one-shot action that becomes enabled " +
+                        "after the given delay.¶" +
+                        "Returns a future. `(deref f)`, `(future? f)`, `(future-cancel f)`, " +
+                        "and `(future-done? f)` will work on the returned future.¶" +
+                        "Time unit is one of :milliseconds, :seconds, :minutes, :hours, or :days. ")
+                    .examples(
+                        "(schedule-delay (fn[] (println \"test\")) 1 :seconds)",
+                        "(deref (schedule-delay (fn [] 100) 2 :seconds))")
+                    .seeAlso("schedule-at-fixed-rate")
+                    .build()
+        ) {
+            @Override
+            public VncVal apply(final VncList args) {
+                ArityExceptions.assertArity(this, args, 3);
 
-				// Create a wrapper that inherits the Venice thread context
-				// from the parent thread to the executer thread!
-				final ThreadBridge threadBridge = ThreadBridge.create(
-													"schedule-delay",
-													new CallFrame[] {
-														new CallFrame(this, args),
-														new CallFrame(fn)});				
-				final Callable<VncVal> taskWrapper = threadBridge.bridgeCallable(() -> fn.applyOf());
-				
-				final ScheduledFuture<VncVal> future = getScheduledExecutorService()
-														.schedule(
-															taskWrapper, 
-															delay.getValue(),
-															toTimeUnit(unit));
-					
-				return new VncJavaObject(future);
-			}
-			
-			private static final long serialVersionUID = -1848883965231344442L;
-		};
+                sandboxFunctionCallValidation();
 
-	public static VncFunction schedule_at_fixed_rate = 
-		new VncFunction(
-				"schedule-at-fixed-rate", 
-				VncFunction
-					.meta()
-					.arglists("(schedule-at-fixed-rate fn initial-delay period time-unit)")		
-					.doc(
-						"Creates and executes a periodic action that becomes enabled first " + 
-						"after the given initial delay, and subsequently with the given " + 
-						"period.¶" + 
-						"Returns a future. `(future? f)`, `(future-cancel f)`, and `(future-done? f)` " +
-						"will work on the returned future.¶" + 
-						"Time unit is one of :milliseconds, :seconds, :minutes, :hours, or :days. ")
-					.examples(
-						"(schedule-at-fixed-rate #(println \"test\") 1 2 :seconds)",
-						
-						"(let [s (schedule-at-fixed-rate #(println \"test\") 1 2 :seconds)] \n" +
-						"   (sleep 16 :seconds) \n" +
-						"   (future-cancel s))")
-					.seeAlso("schedule-delay")
-					.build()
-		) {		
-			public VncVal apply(final VncList args) {	
-				ArityExceptions.assertArity(this, args, 4);
+                final VncFunction fn = Coerce.toVncFunction(args.first());
+                final VncLong delay = Coerce.toVncLong(args.second());
+                final VncKeyword unit = Coerce.toVncKeyword(args.third());
 
-				sandboxFunctionCallValidation();
+                // Create a wrapper that inherits the Venice thread context
+                // from the parent thread to the executer thread!
+                final ThreadBridge threadBridge = ThreadBridge.create(
+                                                    "schedule-delay",
+                                                    new CallFrame[] {
+                                                        new CallFrame(this, args),
+                                                        new CallFrame(fn)});
+                final Callable<VncVal> taskWrapper = threadBridge.bridgeCallable(() -> fn.applyOf());
 
-				final VncFunction fn = Coerce.toVncFunction(args.first());
-				final VncLong delay = Coerce.toVncLong(args.second());
-				final VncLong period = Coerce.toVncLong(args.third());
-				final VncKeyword unit = Coerce.toVncKeyword(args.fourth());
-	
-				// Create a wrapper that inherits the Venice thread context
-				// from the parent thread to the executer thread!
-				final ThreadBridge threadBridge = ThreadBridge.create(
-													"schedule-at-fixed-rate",
-													new CallFrame[] {
-														new CallFrame(this, args),
-														new CallFrame(fn)});				
-				final Runnable taskWrapper = threadBridge.bridgeRunnable(() -> fn.applyOf());
-				
-				final ScheduledFuture<?> future = getScheduledExecutorService()
-													.scheduleAtFixedRate(
-														taskWrapper, 
-														delay.getValue(),
-														period.getValue(),
-														toTimeUnit(unit));
-				
-				return new VncJavaObject(future);
-			}
-			
-			private static final long serialVersionUID = -1848883965231344442L;
-		};
+                final ScheduledFuture<VncVal> future = getScheduledExecutorService()
+                                                        .schedule(
+                                                            taskWrapper,
+                                                            delay.getValue(),
+                                                            toTimeUnit(unit));
 
-		
-	///////////////////////////////////////////////////////////////////////////
-	// Utils
-	///////////////////////////////////////////////////////////////////////////
+                return new VncJavaObject(future);
+            }
 
-	public static TimeUnit toTimeUnit(final VncKeyword unit) {
-		switch(unit.getValue()) {
-			case "millis": return TimeUnit.MILLISECONDS;
-			case "milliseconds": return TimeUnit.MILLISECONDS;
-			case "seconds": return TimeUnit.SECONDS;
-			case "minutes":  return TimeUnit.MINUTES;
-			case "hours": return TimeUnit.HOURS;
-			case "days": return TimeUnit.DAYS;
-			default: throw new VncException("Invalid scheduler time-unit " + unit.getValue());
-		}
-	}
+            private static final long serialVersionUID = -1848883965231344442L;
+        };
 
-	public static void shutdown() {
-		mngdExecutor.shutdown();
-	}
+    public static VncFunction schedule_at_fixed_rate =
+        new VncFunction(
+                "schedule-at-fixed-rate",
+                VncFunction
+                    .meta()
+                    .arglists("(schedule-at-fixed-rate fn initial-delay period time-unit)")
+                    .doc(
+                        "Creates and executes a periodic action that becomes enabled first " +
+                        "after the given initial delay, and subsequently with the given " +
+                        "period.¶" +
+                        "Returns a future. `(future? f)`, `(future-cancel f)`, and `(future-done? f)` " +
+                        "will work on the returned future.¶" +
+                        "Time unit is one of :milliseconds, :seconds, :minutes, :hours, or :days. ")
+                    .examples(
+                        "(schedule-at-fixed-rate #(println \"test\") 1 2 :seconds)",
 
-	public static ScheduledExecutorService getScheduledExecutorService() {
-		return mngdExecutor.getExecutor();
-	}
-	
+                        "(let [s (schedule-at-fixed-rate #(println \"test\") 1 2 :seconds)] \n" +
+                        "   (sleep 16 :seconds) \n" +
+                        "   (future-cancel s))")
+                    .seeAlso("schedule-delay")
+                    .build()
+        ) {
+            @Override
+            public VncVal apply(final VncList args) {
+                ArityExceptions.assertArity(this, args, 4);
 
-	///////////////////////////////////////////////////////////////////////////
-	// types_ns is namespace of type functions
-	///////////////////////////////////////////////////////////////////////////
+                sandboxFunctionCallValidation();
 
-	public static Map<VncVal, VncVal> ns = 
-			new SymbolMapBuilder()
-					.add(schedule_delay)
-					.add(schedule_at_fixed_rate)
-					.toMap();	
-	
-	
-	private static ManagedScheduledThreadPoolExecutor mngdExecutor =
-		new ManagedScheduledThreadPoolExecutor("venice-scheduler-pool", 4);
+                final VncFunction fn = Coerce.toVncFunction(args.first());
+                final VncLong delay = Coerce.toVncLong(args.second());
+                final VncLong period = Coerce.toVncLong(args.third());
+                final VncKeyword unit = Coerce.toVncKeyword(args.fourth());
+
+                // Create a wrapper that inherits the Venice thread context
+                // from the parent thread to the executer thread!
+                final ThreadBridge threadBridge = ThreadBridge.create(
+                                                    "schedule-at-fixed-rate",
+                                                    new CallFrame[] {
+                                                        new CallFrame(this, args),
+                                                        new CallFrame(fn)});
+                final Runnable taskWrapper = threadBridge.bridgeRunnable(() -> fn.applyOf());
+
+                final ScheduledFuture<?> future = getScheduledExecutorService()
+                                                    .scheduleAtFixedRate(
+                                                        taskWrapper,
+                                                        delay.getValue(),
+                                                        period.getValue(),
+                                                        toTimeUnit(unit));
+
+                return new VncJavaObject(future);
+            }
+
+            private static final long serialVersionUID = -1848883965231344442L;
+        };
+
+
+    ///////////////////////////////////////////////////////////////////////////
+    // Utils
+    ///////////////////////////////////////////////////////////////////////////
+
+    public static TimeUnit toTimeUnit(final VncKeyword unit) {
+        switch(unit.getValue()) {
+            case "millis": return TimeUnit.MILLISECONDS;
+            case "milliseconds": return TimeUnit.MILLISECONDS;
+            case "seconds": return TimeUnit.SECONDS;
+            case "minutes":  return TimeUnit.MINUTES;
+            case "hours": return TimeUnit.HOURS;
+            case "days": return TimeUnit.DAYS;
+            default: throw new VncException("Invalid scheduler time-unit " + unit.getValue());
+        }
+    }
+
+    public static void shutdown() {
+        mngdExecutor.shutdown();
+    }
+
+    public static ScheduledExecutorService getScheduledExecutorService() {
+        return mngdExecutor.getExecutor();
+    }
+
+
+    ///////////////////////////////////////////////////////////////////////////
+    // types_ns is namespace of type functions
+    ///////////////////////////////////////////////////////////////////////////
+
+    public static Map<VncVal, VncVal> ns =
+            new SymbolMapBuilder()
+                    .add(schedule_delay)
+                    .add(schedule_at_fixed_rate)
+                    .toMap();
+
+
+    private static ManagedScheduledThreadPoolExecutor mngdExecutor =
+        new ManagedScheduledThreadPoolExecutor("venice-scheduler-pool", 4);
 }

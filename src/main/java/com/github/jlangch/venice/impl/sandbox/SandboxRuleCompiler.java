@@ -1,5 +1,5 @@
 /*   __    __         _
- *   \ \  / /__ _ __ (_) ___ ___ 
+ *   \ \  / /__ _ __ (_) ___ ___
  *    \ \/ / _ \ '_ \| |/ __/ _ \
  *     \  /  __/ | | | | (_|  __/
  *      \/ \___|_| |_|_|\___\___|
@@ -26,15 +26,15 @@ import java.util.regex.Pattern;
 
 public class SandboxRuleCompiler {
 
-	public static Pattern compile(final String rule) {
-		String rule_ = rule;
-				
-		rule_ = rule_.replace("$", "[$]");
-		rule_ = rule_.replace(".", "[.]");
-		rule_ = rule_.replaceAll("[*][*]", "@@");
-		rule_ = rule_.replaceAll("[*]", "[^./:]*");
-		rule_ = rule_.replaceAll("@@", ".*");
+    public static Pattern compile(final String rule) {
+        String rule_ = rule;
 
-		return Pattern.compile(rule_);
-	}
+        rule_ = rule_.replace("$", "[$]");
+        rule_ = rule_.replace(".", "[.]");
+        rule_ = rule_.replaceAll("[*][*]", "@@");
+        rule_ = rule_.replaceAll("[*]", "[^./:]*");
+        rule_ = rule_.replaceAll("@@", ".*");
+
+        return Pattern.compile(rule_);
+    }
 }

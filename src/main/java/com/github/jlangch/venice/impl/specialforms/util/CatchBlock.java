@@ -1,5 +1,5 @@
 /*   __    __         _
- *   \ \  / /__ _ __ (_) ___ ___ 
+ *   \ \  / /__ _ __ (_) ___ ___
  *    \ \/ / _ \ '_ \| |/ __/ _ \
  *     \  /  __/ | | | | (_|  __/
  *      \/ \___|_| |_|_|\___\___|
@@ -28,42 +28,42 @@ import com.github.jlangch.venice.impl.types.collections.VncList;
 
 public class CatchBlock {
 
-	public CatchBlock(
-			final VncSymbol exSym,
-			final VncList body,
-			final VncVal meta
-	) {
-		this.exSym = exSym;
-		this.body = body;
-		this.meta = meta;
-	}
-	
-		
-	public VncSymbol getExSym() {
-		return exSym;
-	}
-	
-	public VncList getBody() {
-		return body;
-	}
-	
-	public VncVal getMeta() {
-		return meta;
-	}
+    public CatchBlock(
+            final VncSymbol exSym,
+            final VncList body,
+            final VncVal meta
+    ) {
+        this.exSym = exSym;
+        this.body = body;
+        this.meta = meta;
+    }
 
-	@Override
-	public String toString() {
-		final StringBuilder sb = new StringBuilder();
-		sb.append("SYM: ");
-		sb.append(exSym);
-		sb.append("\n");
-		sb.append(body);
-		
-		return sb.toString();
-	}
-	
 
-	private final VncSymbol exSym;
-	private final VncList body;
-	private final VncVal meta;
+    public VncSymbol getExSym() {
+        return exSym;
+    }
+
+    public VncList getBody() {
+        return body;
+    }
+
+    public VncVal getMeta() {
+        return meta;
+    }
+
+    @Override
+    public String toString() {
+        final StringBuilder sb = new StringBuilder();
+        sb.append("SYM: ");
+        sb.append(exSym);
+        sb.append("\n");
+        sb.append(body);
+
+        return sb.toString();
+    }
+
+
+    private final VncSymbol exSym;
+    private final VncList body;
+    private final VncVal meta;
 }

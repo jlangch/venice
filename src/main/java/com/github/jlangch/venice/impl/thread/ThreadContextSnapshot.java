@@ -16,61 +16,61 @@ import com.github.jlangch.venice.javainterop.IInterceptor;
  */
 public class ThreadContextSnapshot {
 
-	public ThreadContextSnapshot(
-			final Long threadID,
-			final Namespace ns,
-			final Map<VncKeyword,VncVal> values,
-			final DebugAgent agent,
-			final IInterceptor interceptor,
-			final MeterRegistry meterRegistry
-	) {
-		this.threadID = threadID;
-		this.ns = ns;
-		this.values = values;
-		this.agent = agent;
-		this.interceptor = interceptor;
-		this.meterRegistry = meterRegistry;
-	}
-
-	
-	public long getThreadID() {
-		return threadID;
-	}
-	
-	public Namespace getNamespace() {
-		return ns;
-	}
-	
-	public Map<VncKeyword, VncVal> getValues() {
-		return values;
-	}
-	
-	public DebugAgent getAgent() {
-		return agent;
-	}
-	
-	public IInterceptor getInterceptor() {
-		return interceptor;
-	}
-	
-	public MeterRegistry getMeterRegistry() {
-		return meterRegistry;
-	}
-
-	public boolean isDifferentFromCurrentThread() {
-		return threadID != Thread.currentThread().getId();
-	}
-
-	public boolean isSameAsCurrentThread() {
-		return threadID == Thread.currentThread().getId();
-	}
+    public ThreadContextSnapshot(
+            final Long threadID,
+            final Namespace ns,
+            final Map<VncKeyword,VncVal> values,
+            final DebugAgent agent,
+            final IInterceptor interceptor,
+            final MeterRegistry meterRegistry
+    ) {
+        this.threadID = threadID;
+        this.ns = ns;
+        this.values = values;
+        this.agent = agent;
+        this.interceptor = interceptor;
+        this.meterRegistry = meterRegistry;
+    }
 
 
+    public long getThreadID() {
+        return threadID;
+    }
 
-	private final Long threadID;
-	private final Namespace ns;
-	private final Map<VncKeyword,VncVal> values;
-	private final DebugAgent agent;
-	private final IInterceptor interceptor;
-	private final MeterRegistry meterRegistry;
+    public Namespace getNamespace() {
+        return ns;
+    }
+
+    public Map<VncKeyword, VncVal> getValues() {
+        return values;
+    }
+
+    public DebugAgent getAgent() {
+        return agent;
+    }
+
+    public IInterceptor getInterceptor() {
+        return interceptor;
+    }
+
+    public MeterRegistry getMeterRegistry() {
+        return meterRegistry;
+    }
+
+    public boolean isDifferentFromCurrentThread() {
+        return threadID != Thread.currentThread().getId();
+    }
+
+    public boolean isSameAsCurrentThread() {
+        return threadID == Thread.currentThread().getId();
+    }
+
+
+
+    private final Long threadID;
+    private final Namespace ns;
+    private final Map<VncKeyword,VncVal> values;
+    private final DebugAgent agent;
+    private final IInterceptor interceptor;
+    private final MeterRegistry meterRegistry;
 }

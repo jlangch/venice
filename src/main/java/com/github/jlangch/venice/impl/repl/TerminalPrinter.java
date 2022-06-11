@@ -1,5 +1,5 @@
 /*   __    __         _
- *   \ \  / /__ _ __ (_) ___ ___ 
+ *   \ \  / /__ _ __ (_) ___ ___
  *    \ \/ / _ \ '_ \| |/ __/ _ \
  *     \  /  __/ | | | | (_|  __/
  *      \/ \___|_| |_|_|\___\___|
@@ -32,111 +32,111 @@ import com.github.jlangch.venice.impl.types.VncVal;
 
 
 public class TerminalPrinter {
-	
-	public TerminalPrinter(
-			final ReplConfig config,
-			final Terminal terminal,
-			final boolean ansiTerminal,
-			final boolean printJavaEx
-	) {
-		this.config = config;
-		this.terminal = terminal;
-		this.ansiTerminal = ansiTerminal;
-		this.printJavaEx = printJavaEx;
-	}
-	
-	public void setPrintJavaEx(final boolean printJavaEx) {
-		this.printJavaEx = printJavaEx;
-	}
-	
-	public void print(
-			final String colorID,
-			final Consumer<Terminal> fn
-	) {
-		synchronized (lock) {
-			final String color = getColor(colorID);
-			if (color == null) {
-				fn.accept(terminal);
-				terminal.flush();
-			}
-			else {
-				try {
-					terminal.writer().print(color);
-					fn.accept(terminal);
-				}
-				finally {
-					terminal.writer().print(ReplConfig.ANSI_RESET);
-					terminal.flush();
-				}
-			}
-		}
-	}
-	
-	public void println() {
-		synchronized (lock) {
-			terminal.writer().println();
-			terminal.flush();
-		}
-	}
-	
-	public void println(
-			final String colorID,
-			final String text
-	) {
-		synchronized (lock) {
-			print(colorID, t -> t.writer().print(text));
-			terminal.writer().println();
-			terminal.flush();
-		}
-	}
-	
-	public void printex(
-			final String colorID,
-			final Throwable ex
-	) {
-		synchronized (lock) {
-			try {
-				if (ex instanceof ValueException) {
-					print(
-						colorID, 
-						t -> ((ValueException)ex).printVeniceStackTrace(t.writer()));
-					println(
-						colorID, 
-						"\nThrown value: " + Printer.pr_str(
-												(VncVal)((ValueException)ex).getValue(), 
-												false));			
-				}
-				else if (ex instanceof VncException) {
-					if (printJavaEx) {
-						print(
-							colorID, 
-							t -> ex.printStackTrace(t.writer()));			
-					}
-					else {
-						print(
-							colorID, 
-							t -> ((VncException)ex).printVeniceStackTrace(t.writer()));		
-					}
-				}
-				else {
-					print(colorID, t -> ex.printStackTrace(t.writer()));			
-				}
-			}
-			catch(Throwable e) {
-				System.out.println("Internal REPL error while printing exception.");
-				e.printStackTrace();
-			}
-		}
-	}
-	
-	private String getColor(final String colorID) {
-		return ansiTerminal ? config.getColor(colorID) : null;
-	}
-	
-	
-	private final Object lock = new Object();
-	private final Terminal terminal;
-	private final boolean ansiTerminal;
-	private final ReplConfig config;
-	private boolean printJavaEx;
+
+    public TerminalPrinter(
+            final ReplConfig config,
+            final Terminal terminal,
+            final boolean ansiTerminal,
+            final boolean printJavaEx
+    ) {
+        this.config = config;
+        this.terminal = terminal;
+        this.ansiTerminal = ansiTerminal;
+        this.printJavaEx = printJavaEx;
+    }
+
+    public void setPrintJavaEx(final boolean printJavaEx) {
+        this.printJavaEx = printJavaEx;
+    }
+
+    public void print(
+            final String colorID,
+            final Consumer<Terminal> fn
+    ) {
+        synchronized (lock) {
+            final String color = getColor(colorID);
+            if (color == null) {
+                fn.accept(terminal);
+                terminal.flush();
+            }
+            else {
+                try {
+                    terminal.writer().print(color);
+                    fn.accept(terminal);
+                }
+                finally {
+                    terminal.writer().print(ReplConfig.ANSI_RESET);
+                    terminal.flush();
+                }
+            }
+        }
+    }
+
+    public void println() {
+        synchronized (lock) {
+            terminal.writer().println();
+            terminal.flush();
+        }
+    }
+
+    public void println(
+            final String colorID,
+            final String text
+    ) {
+        synchronized (lock) {
+            print(colorID, t -> t.writer().print(text));
+            terminal.writer().println();
+            terminal.flush();
+        }
+    }
+
+    public void printex(
+            final String colorID,
+            final Throwable ex
+    ) {
+        synchronized (lock) {
+            try {
+                if (ex instanceof ValueException) {
+                    print(
+                        colorID,
+                        t -> ((ValueException)ex).printVeniceStackTrace(t.writer()));
+                    println(
+                        colorID,
+                        "\nThrown value: " + Printer.pr_str(
+                                                (VncVal)((ValueException)ex).getValue(),
+                                                false));
+                }
+                else if (ex instanceof VncException) {
+                    if (printJavaEx) {
+                        print(
+                            colorID,
+                            t -> ex.printStackTrace(t.writer()));
+                    }
+                    else {
+                        print(
+                            colorID,
+                            t -> ((VncException)ex).printVeniceStackTrace(t.writer()));
+                    }
+                }
+                else {
+                    print(colorID, t -> ex.printStackTrace(t.writer()));
+                }
+            }
+            catch(Throwable e) {
+                System.out.println("Internal REPL error while printing exception.");
+                e.printStackTrace();
+            }
+        }
+    }
+
+    private String getColor(final String colorID) {
+        return ansiTerminal ? config.getColor(colorID) : null;
+    }
+
+
+    private final Object lock = new Object();
+    private final Terminal terminal;
+    private final boolean ansiTerminal;
+    private final ReplConfig config;
+    private boolean printJavaEx;
 }

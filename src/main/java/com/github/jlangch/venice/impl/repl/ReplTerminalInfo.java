@@ -1,5 +1,5 @@
 /*   __    __         _
- *   \ \  / /__ _ __ (_) ___ ___ 
+ *   \ \  / /__ _ __ (_) ___ ___
  *    \ \/ / _ \ '_ \| |/ __/ _ \
  *     \  /  __/ | | | | (_|  __/
  *      \/ \___|_| |_|_|\___\___|
@@ -32,18 +32,18 @@ import com.github.jlangch.venice.impl.types.collections.VncOrderedMap;
 
 public class ReplTerminalInfo {
 
-	public ReplTerminalInfo(final Terminal terminal) {
-		this.terminal = terminal;
-	}
-	
-	public VncMap info() {
-		return VncOrderedMap.of(
-				new VncKeyword("term-name"),  new VncString(terminal.getName()),
-				new VncKeyword("term-type"),  new VncString(terminal.getType()),
-				new VncKeyword("term-cols"),  new VncLong(terminal.getSize().getColumns()),
-				new VncKeyword("term-rows"),  new VncLong(terminal.getSize().getRows()),
-				new VncKeyword("term-class"), new VncKeyword(terminal.getClass().getSimpleName()));
-	}
-	
-	private final Terminal terminal;
+    public ReplTerminalInfo(final Terminal terminal) {
+        this.terminal = terminal;
+    }
+
+    public VncMap info() {
+        return VncOrderedMap.of(
+                new VncKeyword("term-name"),  new VncString(terminal.getName()),
+                new VncKeyword("term-type"),  new VncString(terminal.getType()),
+                new VncKeyword("term-cols"),  new VncLong(terminal.getSize().getColumns()),
+                new VncKeyword("term-rows"),  new VncLong(terminal.getSize().getRows()),
+                new VncKeyword("term-class"), new VncKeyword(terminal.getClass().getSimpleName()));
+    }
+
+    private final Terminal terminal;
 }

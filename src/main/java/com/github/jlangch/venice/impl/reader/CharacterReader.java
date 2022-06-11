@@ -1,5 +1,5 @@
 /*   __    __         _
- *   \ \  / /__ _ __ (_) ___ ___ 
+ *   \ \  / /__ _ __ (_) ___ ___
  *    \ \/ / _ \ '_ \| |/ __/ _ \
  *     \  /  __/ | | | | (_|  __/
  *      \/ \___|_| |_|_|\___\___|
@@ -24,50 +24,50 @@ package com.github.jlangch.venice.impl.reader;
 
 public class CharacterReader {
 
-	public CharacterReader(final String s) {
-		str = s == null ? "" : s;
-		length = str.length();
-		pos = str.isEmpty() ? 1 : 0;
-		chNext = str.isEmpty() ? EOF : str.charAt(0);
-	}
+    public CharacterReader(final String s) {
+        str = s == null ? "" : s;
+        length = str.length();
+        pos = str.isEmpty() ? 1 : 0;
+        chNext = str.isEmpty() ? EOF : str.charAt(0);
+    }
 
-	public int peek() {
-		return chNext;
-	}
-	
-	public void consume() {
-		if (chNext != EOF) {
-			pos++;
-			
-			if (chNext == LF) {
-				lineNr++;
-				columnNr = 1;
-			}
-			else {
-				columnNr++;
-			}
-			
-			chNext = eof() ? EOF : str.charAt(pos);
-		}
-	}
+    public int peek() {
+        return chNext;
+    }
 
-	public ReaderPos getPos() {
-		return new ReaderPos(pos, lineNr, columnNr);
-	}
+    public void consume() {
+        if (chNext != EOF) {
+            pos++;
 
-	private boolean eof() {
-		return pos >= length;
-	}
-		
-	
-	private static final int LF  = (int)'\n';
-	private static final int EOF = -1;
-	
-	private final String str;
-	private final int length;
-	
-	private int chNext;
-	private int pos;
-	private int lineNr = 1;
-	private int columnNr = 1;
+            if (chNext == LF) {
+                lineNr++;
+                columnNr = 1;
+            }
+            else {
+                columnNr++;
+            }
+
+            chNext = eof() ? EOF : str.charAt(pos);
+        }
+    }
+
+    public ReaderPos getPos() {
+        return new ReaderPos(pos, lineNr, columnNr);
+    }
+
+    private boolean eof() {
+        return pos >= length;
+    }
+
+
+    private static final int LF  = '\n';
+    private static final int EOF = -1;
+
+    private final String str;
+    private final int length;
+
+    private int chNext;
+    private int pos;
+    private int lineNr = 1;
+    private int columnNr = 1;
 }

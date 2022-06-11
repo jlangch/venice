@@ -1,5 +1,5 @@
 /*   __    __         _
- *   \ \  / /__ _ __ (_) ___ ___ 
+ *   \ \  / /__ _ __ (_) ___ ___
  *    \ \/ / _ \ '_ \| |/ __/ _ \
  *     \  /  __/ | | | | (_|  __/
  *      \/ \___|_| |_|_|\___\___|
@@ -33,143 +33,143 @@ import com.github.jlangch.venice.impl.util.MetaUtil;
 
 public class VncByteBuffer extends VncVal {
 
-	public VncByteBuffer(final byte[] v) { 
-		this(ByteBuffer.wrap(v), null, Constants.Nil); 
-	}
-	
-	public VncByteBuffer(final ByteBuffer v) { 
-		this(v, null, Constants.Nil); 
-	}
-	
-	public VncByteBuffer(final ByteBuffer v, final VncVal meta) {
-		this(v, null, meta);
-	}
-	
-	public VncByteBuffer(
-			final ByteBuffer v, 
-			final VncWrappingTypeDef wrappingTypeDef, 
-			final VncVal meta
-	) {
-		super(wrappingTypeDef, meta);
-		value = v; 
-	}
+    public VncByteBuffer(final byte[] v) {
+        this(ByteBuffer.wrap(v), null, Constants.Nil);
+    }
 
-	
-	@Override
-	public VncByteBuffer withMeta(final VncVal meta) {
-		return new VncByteBuffer(value, getWrappingTypeDef(), meta);
-	}
-	
-	@Override
-	public VncByteBuffer wrap(final VncWrappingTypeDef wrappingTypeDef, final VncVal meta) {
-		return new VncByteBuffer(value, wrappingTypeDef, meta); 
-	}
-	
-	@Override
-	public VncKeyword getType() {
-		return isWrapped() ?  new VncKeyword(
-									getWrappingTypeDef().getType().getQualifiedName(),
-									MetaUtil.typeMeta(
-											new VncKeyword(VncByteBuffer.TYPE), 
-											new VncKeyword(VncVal.TYPE)))
-						   : new VncKeyword(
-									VncByteBuffer.TYPE, 
-									MetaUtil.typeMeta(
-										new VncKeyword(VncVal.TYPE)));
-	}
+    public VncByteBuffer(final ByteBuffer v) {
+        this(v, null, Constants.Nil);
+    }
 
-	public ByteBuffer getValue() { 
-		return value; 
-	}
+    public VncByteBuffer(final ByteBuffer v, final VncVal meta) {
+        this(v, null, meta);
+    }
 
-	public byte[] getBytes() { 
-		return value.array(); 
-	}
+    public VncByteBuffer(
+            final ByteBuffer v,
+            final VncWrappingTypeDef wrappingTypeDef,
+            final VncVal meta
+    ) {
+        super(wrappingTypeDef, meta);
+        value = v;
+    }
 
-	public int size() { 
-		return value.capacity(); 
-	}
-	
-	public VncList toVncList() { 
-		final List<VncVal> list = new ArrayList<>();
-		final byte[] buf = value.array();
-		for(int ii=0; ii<buf.length; ii++) {
-			list.add(new VncLong(buf[ii] & 0x0FF));
-		}
-		return VncList.ofList(list);
-	}
-	
-	@Override 
-	public TypeRank typeRank() {
-		return TypeRank.BYTEBUFFER;
-	}
 
-	@Override
-	public Object convertToJavaObject() {
-		return value;
-	}
-	
-	@Override 
-	public int compareTo(final VncVal o) {
-		if (o == Constants.Nil) {
-			return 1;
-		}
-		else if(Types.isVncByteBuffer(o)) {
-			return getValue().compareTo(((VncByteBuffer)o).getValue());
-		}
+    @Override
+    public VncByteBuffer withMeta(final VncVal meta) {
+        return new VncByteBuffer(value, getWrappingTypeDef(), meta);
+    }
 
-		return super.compareTo(o);
-	}
+    @Override
+    public VncByteBuffer wrap(final VncWrappingTypeDef wrappingTypeDef, final VncVal meta) {
+        return new VncByteBuffer(value, wrappingTypeDef, meta);
+    }
 
-	@Override
-	public int hashCode() {
-		final int prime = 31;
-		int result = super.hashCode();
-		result = prime * result + ((value == null) ? 0 : value.hashCode());
-		return result;
-	}
+    @Override
+    public VncKeyword getType() {
+        return isWrapped() ?  new VncKeyword(
+                                    getWrappingTypeDef().getType().getQualifiedName(),
+                                    MetaUtil.typeMeta(
+                                            new VncKeyword(VncByteBuffer.TYPE),
+                                            new VncKeyword(VncVal.TYPE)))
+                           : new VncKeyword(
+                                    VncByteBuffer.TYPE,
+                                    MetaUtil.typeMeta(
+                                        new VncKeyword(VncVal.TYPE)));
+    }
 
-	@Override
-	public boolean equals(Object obj) {
-		if (this == obj)
-			return true;
-		if (!super.equals(obj))
-			return false;
-		if (getClass() != obj.getClass())
-			return false;
-		VncByteBuffer other = (VncByteBuffer) obj;
-		if (value == null) {
-			if (other.value != null)
-				return false;
-		} else if (!value.equals(other.value))
-			return false;
-		return true;
-	}
+    public ByteBuffer getValue() {
+        return value;
+    }
 
-	@Override 
-	public String toString() {
-		final byte[] arr = value.array();
-		
-		final StringBuilder sb = new StringBuilder();
-		sb.append("[");
-		
-		for(int ii=0; ii<100 && ii<arr.length; ii++) {
-			if (ii>0) sb.append(" ");
-			sb.append((long)arr[ii] & 0x0FF);
-		}
-		
-		if (arr.length > 100) {
-			 sb.append(" ...");
-		}
-		
-		sb.append("]");
-		return sb.toString();
-	}
+    public byte[] getBytes() {
+        return value.array();
+    }
+
+    public int size() {
+        return value.capacity();
+    }
+
+    public VncList toVncList() {
+        final List<VncVal> list = new ArrayList<>();
+        final byte[] buf = value.array();
+        for(int ii=0; ii<buf.length; ii++) {
+            list.add(new VncLong(buf[ii] & 0x0FF));
+        }
+        return VncList.ofList(list);
+    }
+
+    @Override
+    public TypeRank typeRank() {
+        return TypeRank.BYTEBUFFER;
+    }
+
+    @Override
+    public Object convertToJavaObject() {
+        return value;
+    }
+
+    @Override
+    public int compareTo(final VncVal o) {
+        if (o == Constants.Nil) {
+            return 1;
+        }
+        else if(Types.isVncByteBuffer(o)) {
+            return getValue().compareTo(((VncByteBuffer)o).getValue());
+        }
+
+        return super.compareTo(o);
+    }
+
+    @Override
+    public int hashCode() {
+        final int prime = 31;
+        int result = super.hashCode();
+        result = prime * result + ((value == null) ? 0 : value.hashCode());
+        return result;
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (this == obj)
+            return true;
+        if (!super.equals(obj))
+            return false;
+        if (getClass() != obj.getClass())
+            return false;
+        VncByteBuffer other = (VncByteBuffer) obj;
+        if (value == null) {
+            if (other.value != null)
+                return false;
+        } else if (!value.equals(other.value))
+            return false;
+        return true;
+    }
+
+    @Override
+    public String toString() {
+        final byte[] arr = value.array();
+
+        final StringBuilder sb = new StringBuilder();
+        sb.append("[");
+
+        for(int ii=0; ii<100 && ii<arr.length; ii++) {
+            if (ii>0) sb.append(" ");
+            sb.append((long)arr[ii] & 0x0FF);
+        }
+
+        if (arr.length > 100) {
+             sb.append(" ...");
+        }
+
+        sb.append("]");
+        return sb.toString();
+    }
 
 
     public static final String TYPE = ":core/bytebuf";
 
-	private static final long serialVersionUID = -1848883965231344442L;
+    private static final long serialVersionUID = -1848883965231344442L;
 
-	private final ByteBuffer value;
+    private final ByteBuffer value;
 }

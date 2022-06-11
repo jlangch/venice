@@ -1,5 +1,5 @@
 /*   __    __         _
- *   \ \  / /__ _ __ (_) ___ ___ 
+ *   \ \  / /__ _ __ (_) ___ ___
  *    \ \/ / _ \ '_ \| |/ __/ _ \
  *     \  /  __/ | | | | (_|  __/
  *      \/ \___|_| |_|_|\___\___|
@@ -28,7 +28,7 @@ import com.github.jlangch.venice.impl.types.collections.VncList;
 
 public class FunctionsUtil {
 
-	public static VncList removeNilValues(final VncList list) {
-		return list.filter(v -> v != Nil);
-	}
+    public static VncList removeNilValues(final VncList list) {
+        return list.filter(v -> v != Nil);
+    }
 }

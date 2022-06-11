@@ -1,5 +1,5 @@
 /*   __    __         _
- *   \ \  / /__ _ __ (_) ___ ___ 
+ *   \ \  / /__ _ __ (_) ___ ___
  *    \ \/ / _ \ '_ \| |/ __/ _ \
  *     \  /  __/ | | | | (_|  __/
  *      \/ \___|_| |_|_|\___\___|
@@ -43,121 +43,124 @@ import com.github.jlangch.venice.impl.util.ArityExceptions;
 
 public class ReplFunctions {
 
-	public static Env register(
-			final Env env,
-			final Terminal terminal,
-			final ReplConfig config
-	) {
-		Env e = env;
-		for(VncFunction fn : createFunctions(terminal, config)) {
-			e = registerFn(e,fn);
-		}
-		return e;
-	};
+    public static Env register(
+            final Env env,
+            final Terminal terminal,
+            final ReplConfig config
+    ) {
+        Env e = env;
+        for(VncFunction fn : createFunctions(terminal, config)) {
+            e = registerFn(e,fn);
+        }
+        return e;
+    };
 
-	
-	private static Env registerFn(final Env env, final VncFunction fn) {
-		return env.setGlobal(new Var(new VncSymbol(fn.getQualifiedName()), fn, false));
-	}
-	
-	private static List<VncFunction> createFunctions(
-			final Terminal terminal,
-			final ReplConfig config
-	) {
-		final List<VncFunction> fns = new ArrayList<>();
-		
-		fns.add(createReplInfoFn(terminal, config));
-		fns.add(createTermRowsFn(terminal));
-		fns.add(createTermColsFn(terminal));
-		
-		return fns;
-	}
-	
-	private static VncFunction createReplInfoFn(
-			final Terminal terminal, 
-			final ReplConfig config
-	) {
-		return 
-			new VncFunction(
-					"repl/info",
-					VncFunction
-						.meta()
-						.arglists("(repl/info)")
-						.doc(
-							"Returns information on the REPL.\n\n" +
-							"E.g.: \n\n" +
-							"```\n" +
-							"{ :term-name \"JLine terminal\" \n" +
-							"  :term-type \"xterm-256color\" \n" +
-							"  :term-cols 80 \n" +
-							"  :term-rows 24 \n" +
-							"  :term-colors 256 \n" +
-							"  :term-class :org.repackage.org.jline.terminal.impl.PosixSysTerminal \n" +
-							"  :color-mode :light }")
-						.seeAlso("repl/term-rows", "repl/term-cols")
-						.build()
-			) {
-				public VncVal apply(final VncList args) {
-					ArityExceptions.assertArity(this, args, 0);
-	
-					try {
-						return VncOrderedMap.of(
-								new VncKeyword("term-name"),   new VncString(terminal.getName()),
-								new VncKeyword("term-type"),   new VncString(terminal.getType()),
-								new VncKeyword("term-cols"),   new VncLong(terminal.getSize().getColumns()),
-								new VncKeyword("term-rows"),   new VncLong(terminal.getSize().getRows()),
-								new VncKeyword("term-colors"), new VncLong(terminal.getNumericCapability(Capability.max_colors)),
-								new VncKeyword("term-class"),  new VncKeyword(terminal.getClass().getName()),
-								new VncKeyword("color-mode"),  new VncKeyword(config.getColorMode().toString().toLowerCase()));
-					}
-					catch(Exception ex) {
-						throw new VncException("Failed to get the REPL terminal info", ex);
-					}
-				}
-	
-				private static final long serialVersionUID = -1L;
-			};
-	}
-	
-	private static VncFunction createTermRowsFn(final Terminal terminal) {
-		return 
-			new VncFunction(
-					"repl/term-rows",
-					VncFunction
-						.meta()
-						.arglists("(repl/term-rows)")
-						.doc("Returns number of rows in the REPL terminal.")
-						.seeAlso("repl/term-cols", "repl/info")
-						.build()
-			) {
-				public VncVal apply(final VncList args) {
-					ArityExceptions.assertArity(this, args, 0);
-	
-					return new VncLong(terminal.getSize().getRows());
-				}
-	
-				private static final long serialVersionUID = -1L;
-			};
-	}
-	
-	private static VncFunction createTermColsFn(final Terminal terminal) {
-		return 
-			new VncFunction(
-					"repl/term-cols",
-					VncFunction
-						.meta()
-						.arglists("(repl/term-cols)")
-						.doc("Returns number of columns in the REPL terminal.")
-						.seeAlso("repl/term-rows", "repl/info")
-						.build()
-			) {
-				public VncVal apply(final VncList args) {
-					ArityExceptions.assertArity(this, args, 0);
-	
-					return new VncLong(terminal.getSize().getColumns());
-				}
-	
-				private static final long serialVersionUID = -1L;
-			};
-	}
+
+    private static Env registerFn(final Env env, final VncFunction fn) {
+        return env.setGlobal(new Var(new VncSymbol(fn.getQualifiedName()), fn, false));
+    }
+
+    private static List<VncFunction> createFunctions(
+            final Terminal terminal,
+            final ReplConfig config
+    ) {
+        final List<VncFunction> fns = new ArrayList<>();
+
+        fns.add(createReplInfoFn(terminal, config));
+        fns.add(createTermRowsFn(terminal));
+        fns.add(createTermColsFn(terminal));
+
+        return fns;
+    }
+
+    private static VncFunction createReplInfoFn(
+            final Terminal terminal,
+            final ReplConfig config
+    ) {
+        return
+            new VncFunction(
+                    "repl/info",
+                    VncFunction
+                        .meta()
+                        .arglists("(repl/info)")
+                        .doc(
+                            "Returns information on the REPL.\n\n" +
+                            "E.g.: \n\n" +
+                            "```\n" +
+                            "{ :term-name \"JLine terminal\" \n" +
+                            "  :term-type \"xterm-256color\" \n" +
+                            "  :term-cols 80 \n" +
+                            "  :term-rows 24 \n" +
+                            "  :term-colors 256 \n" +
+                            "  :term-class :org.repackage.org.jline.terminal.impl.PosixSysTerminal \n" +
+                            "  :color-mode :light }")
+                        .seeAlso("repl/term-rows", "repl/term-cols")
+                        .build()
+            ) {
+                @Override
+                public VncVal apply(final VncList args) {
+                    ArityExceptions.assertArity(this, args, 0);
+
+                    try {
+                        return VncOrderedMap.of(
+                                new VncKeyword("term-name"),   new VncString(terminal.getName()),
+                                new VncKeyword("term-type"),   new VncString(terminal.getType()),
+                                new VncKeyword("term-cols"),   new VncLong(terminal.getSize().getColumns()),
+                                new VncKeyword("term-rows"),   new VncLong(terminal.getSize().getRows()),
+                                new VncKeyword("term-colors"), new VncLong(terminal.getNumericCapability(Capability.max_colors)),
+                                new VncKeyword("term-class"),  new VncKeyword(terminal.getClass().getName()),
+                                new VncKeyword("color-mode"),  new VncKeyword(config.getColorMode().toString().toLowerCase()));
+                    }
+                    catch(Exception ex) {
+                        throw new VncException("Failed to get the REPL terminal info", ex);
+                    }
+                }
+
+                private static final long serialVersionUID = -1L;
+            };
+    }
+
+    private static VncFunction createTermRowsFn(final Terminal terminal) {
+        return
+            new VncFunction(
+                    "repl/term-rows",
+                    VncFunction
+                        .meta()
+                        .arglists("(repl/term-rows)")
+                        .doc("Returns number of rows in the REPL terminal.")
+                        .seeAlso("repl/term-cols", "repl/info")
+                        .build()
+            ) {
+                @Override
+                public VncVal apply(final VncList args) {
+                    ArityExceptions.assertArity(this, args, 0);
+
+                    return new VncLong(terminal.getSize().getRows());
+                }
+
+                private static final long serialVersionUID = -1L;
+            };
+    }
+
+    private static VncFunction createTermColsFn(final Terminal terminal) {
+        return
+            new VncFunction(
+                    "repl/term-cols",
+                    VncFunction
+                        .meta()
+                        .arglists("(repl/term-cols)")
+                        .doc("Returns number of columns in the REPL terminal.")
+                        .seeAlso("repl/term-rows", "repl/info")
+                        .build()
+            ) {
+                @Override
+                public VncVal apply(final VncList args) {
+                    ArityExceptions.assertArity(this, args, 0);
+
+                    return new VncLong(terminal.getSize().getColumns());
+                }
+
+                private static final long serialVersionUID = -1L;
+            };
+    }
 }

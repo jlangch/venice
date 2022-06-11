@@ -1,5 +1,5 @@
 /*   __    __         _
- *   \ \  / /__ _ __ (_) ___ ___ 
+ *   \ \  / /__ _ __ (_) ___ ___
  *    \ \/ / _ \ '_ \| |/ __/ _ \
  *     \  /  __/ | | | | (_|  __/
  *      \/ \___|_| |_|_|\___\___|
@@ -30,59 +30,59 @@ import java.util.stream.Collectors;
 
 public class LineReader {
 
-	public LineReader(final String s) {
-		lines = s == null ? new ArrayList<>() : lines(s);
-		lineNr = 1;
-		lnNext = lines.isEmpty() ? EOF : lines.get(0);
-	}
+    public LineReader(final String s) {
+        lines = s == null ? new ArrayList<>() : lines(s);
+        lineNr = 1;
+        lnNext = lines.isEmpty() ? EOF : lines.get(0);
+    }
 
-	public String peek() {
-		return lnNext;
-	}
-	
-	public void consume() {
-		if (lnNext != EOF) {
-			lnNext = lineNr >= lines.size() ? EOF : lines.get(lineNr++);
-		}
-	}
+    public String peek() {
+        return lnNext;
+    }
 
-	public int getLineNr() {
-		return lineNr;
-	}
-	
-	public int size() {
-		return lines.size();
-	}
+    public void consume() {
+        if (lnNext != EOF) {
+            lnNext = lineNr >= lines.size() ? EOF : lines.get(lineNr++);
+        }
+    }
 
-	public boolean eof() {
-		return lnNext == EOF;
-	}
-	
-	private List<String> lines(final String s) {
-		if (s.isEmpty()) {
-			final List<String> lines = new ArrayList<>();
-			lines.add("");
-			return lines;
-		}
-		else {
-			final List<String> lines = new BufferedReader(new StringReader(s))
-											.lines()
-											.collect(Collectors.toList());
-			
-			if (s.endsWith("\n")) {
-				lines.add("");
-			}
-			
-			return lines;
-		}
-	}
-	
-	
-	
-	private static final String EOF = null;
-	
-	private final List<String> lines;
-	
-	private String lnNext;
-	private int lineNr;
+    public int getLineNr() {
+        return lineNr;
+    }
+
+    public int size() {
+        return lines.size();
+    }
+
+    public boolean eof() {
+        return lnNext == EOF;
+    }
+
+    private List<String> lines(final String s) {
+        if (s.isEmpty()) {
+            final List<String> lines = new ArrayList<>();
+            lines.add("");
+            return lines;
+        }
+        else {
+            final List<String> lines = new BufferedReader(new StringReader(s))
+                                            .lines()
+                                            .collect(Collectors.toList());
+
+            if (s.endsWith("\n")) {
+                lines.add("");
+            }
+
+            return lines;
+        }
+    }
+
+
+
+    private static final String EOF = null;
+
+    private final List<String> lines;
+
+    private String lnNext;
+    private int lineNr;
 }

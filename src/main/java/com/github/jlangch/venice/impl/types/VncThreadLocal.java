@@ -1,5 +1,5 @@
 /*   __    __         _
- *   \ \  / /__ _ __ (_) ___ ___ 
+ *   \ \  / /__ _ __ (_) ___ ___
  *    \ \/ / _ \ '_ \| |/ __/ _ \
  *     \  /  __/ | | | | (_|  __/
  *      \/ \___|_| |_|_|\___\___|
@@ -34,158 +34,158 @@ import com.github.jlangch.venice.impl.util.MetaUtil;
 
 public class VncThreadLocal extends VncVal {
 
-	public VncThreadLocal() { 
-		super(Constants.Nil);
-	}
-	
-	public VncThreadLocal(final Map<VncVal,VncVal> val) {
-		super(Constants.Nil);
-		val.entrySet().forEach(e -> set(Coerce.toVncKeyword(e.getKey()), e.getValue()));
-	}
-	
-	public VncThreadLocal(final VncList lst) {
-		super(Constants.Nil);
-		assoc(lst);
-	}
+    public VncThreadLocal() {
+        super(Constants.Nil);
+    }
 
-		
-	@Override
-	public VncThreadLocal withMeta(final VncVal meta) {
-		return this;
-	}
-	
-	@Override
-	public VncKeyword getType() {
-		return new VncKeyword(
-						TYPE, 
-						MetaUtil.typeMeta(
-							new VncKeyword(VncVal.TYPE)));
-	}
+    public VncThreadLocal(final Map<VncVal,VncVal> val) {
+        super(Constants.Nil);
+        val.entrySet().forEach(e -> set(Coerce.toVncKeyword(e.getKey()), e.getValue()));
+    }
 
-	public VncVal get(final VncKeyword key) {
-		return ThreadContext.getValue(key);
-	}
+    public VncThreadLocal(final VncList lst) {
+        super(Constants.Nil);
+        assoc(lst);
+    }
 
-	public VncVal get(final VncKeyword key, final VncVal defaultValue) {
-		return ThreadContext.getValue(key, defaultValue);
-	}
 
-	public VncVal get(final String key) {
-		return get(new VncKeyword(key));
-	}
+    @Override
+    public VncThreadLocal withMeta(final VncVal meta) {
+        return this;
+    }
 
-	public VncVal get(final String key, final VncVal defaultValue) {
-		return get(new VncKeyword(key), defaultValue);
-	}
-	
-	public void set(final VncKeyword key, final VncVal val) {
-		ThreadContext.setValue(key, val);
-	}
-	
-	public void remove(final VncKeyword key) {
-		ThreadContext.removeValue(key);
-	}
+    @Override
+    public VncKeyword getType() {
+        return new VncKeyword(
+                        TYPE,
+                        MetaUtil.typeMeta(
+                            new VncKeyword(VncVal.TYPE)));
+    }
 
-	public VncVal containsKey(final VncKeyword key) {
-		return VncBoolean.of(key != null && ThreadContext.containsKey(key));
-	}
+    public VncVal get(final VncKeyword key) {
+        return ThreadContext.getValue(key);
+    }
 
-	public VncThreadLocal assoc(final VncVal... kvs) {
-		for (int ii=0; ii<kvs.length-1; ii+=2) {
-			final VncKeyword key = Coerce.toVncKeyword(kvs[ii]);
-			if (isSystemKey(key)) {
-				throw new VncException(String.format(
-						"The %s value must be added/modifed on the thread local vars!",
-						key));
-			}
-			else {
-				set(key, kvs[ii+1]);
-			}
-		}
-		return this;
-	}
+    public VncVal get(final VncKeyword key, final VncVal defaultValue) {
+        return ThreadContext.getValue(key, defaultValue);
+    }
 
-	public VncThreadLocal assoc(final VncList mvs) {
-		VncList kv = mvs;
-		while(!kv.isEmpty()) {
-			final VncKeyword key = Coerce.toVncKeyword(kv.first());
-			if (isSystemKey(key)) {
-				throw new VncException(String.format(
-						"The %s value must be added/modifed on the thread local vars!",
-						key));
-			}
-			else {
-				set(key, kv.second());
-			}
-			kv = kv.drop(2);
-		}
-		return this;
-	}
+    public VncVal get(final String key) {
+        return get(new VncKeyword(key));
+    }
 
-	public VncThreadLocal dissoc(final VncList lst) {
-		for (VncVal v : lst) {
-			final VncKeyword key = Coerce.toVncKeyword(v);
-			if (isSystemKey(key)) {
-				throw new VncException(String.format(
-						"The %s value must be removed from the thread local vars!",
-						key));
-			}
-			else {
-				remove(key);
-			}
-		}
-		return this;
-	}
+    public VncVal get(final String key, final VncVal defaultValue) {
+        return get(new VncKeyword(key), defaultValue);
+    }
 
-	public VncThreadLocal dissoc(final VncKeyword... ks) {
-		for (int ii=0; ii<ks.length; ii++) {
-			if (isSystemKey(ks[ii])) {
-				throw new VncException(String.format(
-						"The %s value must be removed from the thread local vars!",
-						ks[ii]));
-			}
-			else {
-				remove(ks[ii]);
-			}
-		}
-		return this;
-	}
+    public void set(final VncKeyword key, final VncVal val) {
+        ThreadContext.setValue(key, val);
+    }
 
-	public VncThreadLocal clear(final boolean preserveSystemValues) {
-		ThreadContext.clearValues(preserveSystemValues);
-		return this;
-	}
+    public void remove(final VncKeyword key) {
+        ThreadContext.removeValue(key);
+    }
 
-	public static VncMap toMap() {
-		// do not disclose *in*, *out*, *err*
-		return new VncHashMap(ThreadContext.getValues())
-						.dissoc(new VncKeyword("*in*"))
-						.dissoc(new VncKeyword("*out*"))
-						.dissoc(new VncKeyword("*err*"));
-	}
-	
-	@Override 
-	public TypeRank typeRank() {
-		return TypeRank.THREADLOCAL;
-	}
+    public VncVal containsKey(final VncKeyword key) {
+        return VncBoolean.of(key != null && ThreadContext.containsKey(key));
+    }
 
-	@Override
-	public Object convertToJavaObject() {
-		return null;
-	}
-	
-	@Override 
-	public String toString() {
-		return "ThreadLocal";
-	}
-	
-	private static boolean isSystemKey(final VncKeyword key) {
-		return "*in*".equals(key.getSimpleName())
-			   || "*out*".equals(key.getSimpleName())
-			   || "*err*".equals(key.getSimpleName());
-	}
+    public VncThreadLocal assoc(final VncVal... kvs) {
+        for (int ii=0; ii<kvs.length-1; ii+=2) {
+            final VncKeyword key = Coerce.toVncKeyword(kvs[ii]);
+            if (isSystemKey(key)) {
+                throw new VncException(String.format(
+                        "The %s value must be added/modifed on the thread local vars!",
+                        key));
+            }
+            else {
+                set(key, kvs[ii+1]);
+            }
+        }
+        return this;
+    }
 
-	public static final String TYPE = ":core/thread-local";
+    public VncThreadLocal assoc(final VncList mvs) {
+        VncList kv = mvs;
+        while(!kv.isEmpty()) {
+            final VncKeyword key = Coerce.toVncKeyword(kv.first());
+            if (isSystemKey(key)) {
+                throw new VncException(String.format(
+                        "The %s value must be added/modifed on the thread local vars!",
+                        key));
+            }
+            else {
+                set(key, kv.second());
+            }
+            kv = kv.drop(2);
+        }
+        return this;
+    }
+
+    public VncThreadLocal dissoc(final VncList lst) {
+        for (VncVal v : lst) {
+            final VncKeyword key = Coerce.toVncKeyword(v);
+            if (isSystemKey(key)) {
+                throw new VncException(String.format(
+                        "The %s value must be removed from the thread local vars!",
+                        key));
+            }
+            else {
+                remove(key);
+            }
+        }
+        return this;
+    }
+
+    public VncThreadLocal dissoc(final VncKeyword... ks) {
+        for (int ii=0; ii<ks.length; ii++) {
+            if (isSystemKey(ks[ii])) {
+                throw new VncException(String.format(
+                        "The %s value must be removed from the thread local vars!",
+                        ks[ii]));
+            }
+            else {
+                remove(ks[ii]);
+            }
+        }
+        return this;
+    }
+
+    public VncThreadLocal clear(final boolean preserveSystemValues) {
+        ThreadContext.clearValues(preserveSystemValues);
+        return this;
+    }
+
+    public static VncMap toMap() {
+        // do not disclose *in*, *out*, *err*
+        return new VncHashMap(ThreadContext.getValues())
+                        .dissoc(new VncKeyword("*in*"))
+                        .dissoc(new VncKeyword("*out*"))
+                        .dissoc(new VncKeyword("*err*"));
+    }
+
+    @Override
+    public TypeRank typeRank() {
+        return TypeRank.THREADLOCAL;
+    }
+
+    @Override
+    public Object convertToJavaObject() {
+        return null;
+    }
+
+    @Override
+    public String toString() {
+        return "ThreadLocal";
+    }
+
+    private static boolean isSystemKey(final VncKeyword key) {
+        return "*in*".equals(key.getSimpleName())
+               || "*out*".equals(key.getSimpleName())
+               || "*err*".equals(key.getSimpleName());
+    }
+
+    public static final String TYPE = ":core/thread-local";
 
     private static final long serialVersionUID = -1848883965231344442L;
 }

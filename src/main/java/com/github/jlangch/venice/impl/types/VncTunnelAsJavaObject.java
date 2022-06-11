@@ -1,5 +1,5 @@
 /*   __    __         _
- *   \ \  / /__ _ __ (_) ___ ___ 
+ *   \ \  / /__ _ __ (_) ___ ___
  *    \ \/ / _ \ '_ \| |/ __/ _ \
  *     \  /  __/ | | | | (_|  __/
  *      \/ \___|_| |_|_|\___\___|
@@ -24,34 +24,34 @@ package com.github.jlangch.venice.impl.types;
 import com.github.jlangch.venice.impl.util.MetaUtil;
 
 public class VncTunnelAsJavaObject extends VncJavaObject {
-	public VncTunnelAsJavaObject(final VncVal val) {
-		super(null);
-		this.val = val;
-	}
+    public VncTunnelAsJavaObject(final VncVal val) {
+        super(null);
+        this.val = val;
+    }
 
-	
-	@Override
-	public VncKeyword getType() {
-		return new VncKeyword(
-						TYPE, 
-						MetaUtil.typeMeta(
-							new VncKeyword(VncVal.TYPE)));
-	}
 
-	@Override
-	public VncVal getDelegate() {
-		return val;
-	}
-	
-	@Override
-	public VncVal convertToJavaObject() {
-		return val;
-	}
+    @Override
+    public VncKeyword getType() {
+        return new VncKeyword(
+                        TYPE,
+                        MetaUtil.typeMeta(
+                            new VncKeyword(VncVal.TYPE)));
+    }
 
-	
-	public static final String TYPE = ":core/tunneled-java-object";
+    @Override
+    public VncVal getDelegate() {
+        return val;
+    }
+
+    @Override
+    public VncVal convertToJavaObject() {
+        return val;
+    }
+
+
+    public static final String TYPE = ":core/tunneled-java-object";
 
     private static final long serialVersionUID = -1848883965231344442L;
-    
+
     private final VncVal val;
 }

@@ -1,5 +1,5 @@
 /*   __    __         _
- *   \ \  / /__ _ __ (_) ___ ___ 
+ *   \ \  / /__ _ __ (_) ___ ___
  *    \ \/ / _ \ '_ \| |/ __/ _ \
  *     \  /  __/ | | | | (_|  __/
  *      \/ \___|_| |_|_|\___\___|
@@ -26,24 +26,24 @@ import com.github.jlangch.venice.impl.types.collections.VncList;
 
 public interface IVncFunction {
 
-	VncList getArgLists();
+    VncList getArgLists();
 
-	VncVal apply(VncList args);
+    VncVal apply(VncList args);
 
-	default VncVal applyOf(final VncVal... mvs) {
-		return apply(VncList.of(mvs));
-	}
+    default VncVal applyOf(final VncVal... mvs) {
+        return apply(VncList.of(mvs));
+    }
 
-	default boolean isAnonymous() { 
-		return true; 
-	}
+    default boolean isAnonymous() {
+        return true;
+    }
 
-	default boolean isMacro() { 
-		return false; 
-	}
-	
-	default boolean isNative() {
-		return false;
-	}
+    default boolean isMacro() {
+        return false;
+    }
+
+    default boolean isNative() {
+        return false;
+    }
 
 }

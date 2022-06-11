@@ -1,5 +1,5 @@
 /*   __    __         _
- *   \ \  / /__ _ __ (_) ___ ___ 
+ *   \ \  / /__ _ __ (_) ___ ___
  *    \ \/ / _ \ '_ \| |/ __/ _ \
  *     \  /  __/ | | | | (_|  __/
  *      \/ \___|_| |_|_|\___\___|
@@ -28,92 +28,92 @@ import com.github.jlangch.venice.impl.util.MetaUtil;
 
 public class VncConstant extends VncVal {
 
-	public VncConstant(final String name) { 
-		super(Nil);
-		value = name; 
-	}
+    public VncConstant(final String name) {
+        super(Nil);
+        value = name;
+    }
 
-	
-	@Override
-	public VncConstant withMeta(final VncVal meta) {
-		return this;
-	}
-	
-	@Override
-	public VncKeyword getType() {
-		if (this == Constants.Nil) {
-			return new VncKeyword(
-					":core/nil", 
-					MetaUtil.typeMeta(new VncKeyword(VncVal.TYPE)));
-		}
-		else {
-			return null;
-		}
-	}
 
-	public String getValue() { 
-		return value; 
-	}
-	
-	@Override 
-	public TypeRank typeRank() {
-		return TypeRank.CONSTANT;
-	}
+    @Override
+    public VncConstant withMeta(final VncVal meta) {
+        return this;
+    }
 
-	@Override
-	public Object convertToJavaObject() {
-		if (this == Constants.Nil) {
-			return null;
-		}
-		else {
-			return null;
-		}
-	}
+    @Override
+    public VncKeyword getType() {
+        if (this == Constants.Nil) {
+            return new VncKeyword(
+                    ":core/nil",
+                    MetaUtil.typeMeta(new VncKeyword(VncVal.TYPE)));
+        }
+        else {
+            return null;
+        }
+    }
 
-	@Override 
-	public int compareTo(final VncVal o) {
-		if (this == Nil) {
-			return o == Nil ? 0 : -1;
-		}
-		else if (o == Nil) {
-			return 1;
-		}
+    public String getValue() {
+        return value;
+    }
 
-		return super.compareTo(o);
-	}
+    @Override
+    public TypeRank typeRank() {
+        return TypeRank.CONSTANT;
+    }
 
-	@Override
-	public int hashCode() {
-		final int prime = 31;
-		int result = super.hashCode();
-		result = prime * result + ((value == null) ? 0 : value.hashCode());
-		return result;
-	}
+    @Override
+    public Object convertToJavaObject() {
+        if (this == Constants.Nil) {
+            return null;
+        }
+        else {
+            return null;
+        }
+    }
 
-	@Override
-	public boolean equals(Object obj) {
-		if (this == obj)
-			return true;
-		if (!super.equals(obj))
-			return false;
-		if (getClass() != obj.getClass())
-			return false;
-		VncConstant other = (VncConstant) obj;
-		if (value == null) {
-			if (other.value != null)
-				return false;
-		} else if (!value.equals(other.value))
-			return false;
-		return true;
-	}
+    @Override
+    public int compareTo(final VncVal o) {
+        if (this == Nil) {
+            return o == Nil ? 0 : -1;
+        }
+        else if (o == Nil) {
+            return 1;
+        }
 
-	@Override 
-	public String toString() { 
-		return value; 
-	}
-   
-	
+        return super.compareTo(o);
+    }
+
+    @Override
+    public int hashCode() {
+        final int prime = 31;
+        int result = super.hashCode();
+        result = prime * result + ((value == null) ? 0 : value.hashCode());
+        return result;
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (this == obj)
+            return true;
+        if (!super.equals(obj))
+            return false;
+        if (getClass() != obj.getClass())
+            return false;
+        VncConstant other = (VncConstant) obj;
+        if (value == null) {
+            if (other.value != null)
+                return false;
+        } else if (!value.equals(other.value))
+            return false;
+        return true;
+    }
+
+    @Override
+    public String toString() {
+        return value;
+    }
+
+
     private static final long serialVersionUID = -1848883965231344442L;
 
-	private final String value;
+    private final String value;
 }

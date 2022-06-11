@@ -1,5 +1,5 @@
 /*   __    __         _
- *   \ \  / /__ _ __ (_) ___ ___ 
+ *   \ \  / /__ _ __ (_) ___ ___
  *    \ \/ / _ \ '_ \| |/ __/ _ \
  *     \  /  __/ | | | | (_|  __/
  *      \/ \___|_| |_|_|\___\___|
@@ -22,32 +22,32 @@
 package com.github.jlangch.venice.impl.reader;
 
 public class ReaderPos {
-	
-	public ReaderPos(
-			final int filePos,
-			final int lineNr,
-			final int columnNr
-	) {
-		this.filePos = filePos;
-		this.lineNr = lineNr;
-		this.columnNr = columnNr;
-	}
 
-	
-	public int getFilePos() {
-		return filePos;
-	}
-	
-	public int getLineNr() {
-		return lineNr;
-	}
-	
-	public int getColumnNr() {
-		return columnNr;
-	}
+    public ReaderPos(
+            final int filePos,
+            final int lineNr,
+            final int columnNr
+    ) {
+        this.filePos = filePos;
+        this.lineNr = lineNr;
+        this.columnNr = columnNr;
+    }
 
 
-	private final int filePos;    // zero based file position
-	private final int lineNr;     // one based line number
-	private final int columnNr;   // one based column number
+    public int getFilePos() {
+        return filePos;
+    }
+
+    public int getLineNr() {
+        return lineNr;
+    }
+
+    public int getColumnNr() {
+        return columnNr;
+    }
+
+
+    private final int filePos;    // zero based file position
+    private final int lineNr;     // one based line number
+    private final int columnNr;   // one based column number
 }

@@ -1,5 +1,5 @@
 /*   __    __         _
- *   \ \  / /__ _ __ (_) ___ ___ 
+ *   \ \  / /__ _ __ (_) ___ ___
  *    \ \/ / _ \ '_ \| |/ __/ _ \
  *     \  /  __/ | | | | (_|  __/
  *      \/ \___|_| |_|_|\___\___|
@@ -22,40 +22,40 @@
 package com.github.jlangch.venice.impl.reader;
 
 public enum HighlightClass {
-	// whitespaces
-	COMMENT,               // "; ...."
-	WHITESPACES,           // " \t", "\n", "  \n"
-	
-	// atoms
-	STRING,                // "lorem", """lorem"""
-	NUMBER,                // 100, 100I, 100.0, 100.23M
-	CONSTANT,              // nil, true, false
-	KEYWORD,               // :alpha
-	SYMBOL,                // alpha
-	SYMBOL_SPECIAL_FORM,   // def, loop, ...
-	SYMBOL_FUNCTION_NAME,  // +, println, ...
-	SYMBOL_MACRO_NAME,     // and, case ...
-	SYMBOL_EAR_MUFFS,      // *out*, *err*
-	
-	// quotes
-	QUOTE,                 // '
-	QUASI_QUOTE,           // `
-	UNQUOTE,               // ~
-	UNQUOTE_SPLICING,      // ~@
+    // whitespaces
+    COMMENT,               // "; ...."
+    WHITESPACES,           // " \t", "\n", "  \n"
 
-	META,                  // ^private, ^{:arglist '() :doc "...."}
-	AT,                    // @
-	HASH,                  // #
-	
-	// braces
-	BRACE_BEGIN,           // {
-	BRACE_END,             // {
-	BRACKET_BEGIN,         // [
-	BRACKET_END,           // ]
-	PARENTHESIS_BEGIN,     // (
-	PARENTHESIS_END,       // )
-	
-	UNKNOWN,               // anything that could not be classified
-	
-	UNPROCESSED;           // unprocessed input
+    // atoms
+    STRING,                // "lorem", """lorem"""
+    NUMBER,                // 100, 100I, 100.0, 100.23M
+    CONSTANT,              // nil, true, false
+    KEYWORD,               // :alpha
+    SYMBOL,                // alpha
+    SYMBOL_SPECIAL_FORM,   // def, loop, ...
+    SYMBOL_FUNCTION_NAME,  // +, println, ...
+    SYMBOL_MACRO_NAME,     // and, case ...
+    SYMBOL_EAR_MUFFS,      // *out*, *err*
+
+    // quotes
+    QUOTE,                 // '
+    QUASI_QUOTE,           // `
+    UNQUOTE,               // ~
+    UNQUOTE_SPLICING,      // ~@
+
+    META,                  // ^private, ^{:arglist '() :doc "...."}
+    AT,                    // @
+    HASH,                  // #
+
+    // braces
+    BRACE_BEGIN,           // {
+    BRACE_END,             // {
+    BRACKET_BEGIN,         // [
+    BRACKET_END,           // ]
+    PARENTHESIS_BEGIN,     // (
+    PARENTHESIS_END,       // )
+
+    UNKNOWN,               // anything that could not be classified
+
+    UNPROCESSED;           // unprocessed input
 }
