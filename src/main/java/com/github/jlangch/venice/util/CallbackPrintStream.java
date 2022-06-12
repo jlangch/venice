@@ -1,8 +1,8 @@
-/*   __	__		 _
- *   \ \  / /__ _ __ (_) ___ ___ 
- *	\ \/ / _ \ '_ \| |/ __/ _ \
- *	 \  /  __/ | | | | (_|  __/
- *	  \/ \___|_| |_|_|\___\___|
+/*   __    __         _
+ *   \ \  / /__ _ __ (_) ___ ___
+ *    \ \/ / _ \ '_ \| |/ __/ _ \
+ *     \  /  __/ | | | | (_|  __/
+ *      \/ \___|_| |_|_|\___\___|
  *
  *
  * Copyright 2017-2022 Venice
@@ -11,7 +11,7 @@
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *	 http://www.apache.org/licenses/LICENSE-2.0
+ *     http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -38,18 +38,18 @@ public class CallbackPrintStream extends PrintStream {
 			final Consumer<String> printer
 	) {
 		super(new NullOutputStream());
-		
+
 		this.autoFlush = autoFlush;
 		this.printer = printer;
 	}
 
-	
+
 	@Override
 	public PrintStream append(final CharSequence csq) {
 		print(csq == null ? "null" : csq.toString());
 		return this;
 	}
-	
+
 	@Override
 	public PrintStream append(final CharSequence csq, final int start, final int end) {
 		final CharSequence cs = (csq == null ? "null" : csq);
@@ -107,7 +107,7 @@ public class CallbackPrintStream extends PrintStream {
 	public void print(final String s) {
 		synchronized (this) {
 			sb.append(s);
-			
+
 			if (autoFlush && (s.indexOf('\n') >= 0)) {
 				flush();
 			}
@@ -162,7 +162,7 @@ public class CallbackPrintStream extends PrintStream {
 	@Override
 	public void println(final String s) {
 		synchronized (this) {
-			sb.append(s).append(System.lineSeparator());		
+			sb.append(s).append(System.lineSeparator());
 			if (autoFlush) flush();
 		}
 	}
@@ -172,13 +172,13 @@ public class CallbackPrintStream extends PrintStream {
 		throw new RuntimeException(
 				"Method write(byte[],int,int) is not supported");
 	}
-	
+
 	@Override
 	public void write(final int b) {
 		throw new RuntimeException(
 				"Method write(int) is not supported");
 	}
-	
+
 	@Override
 	public void close() {
 	}
@@ -193,7 +193,7 @@ public class CallbackPrintStream extends PrintStream {
 		}
 	}
 
-	
+
 	private final Consumer<String> printer;
 	private final StringBuilder sb = new StringBuilder();
 	private final boolean autoFlush;
