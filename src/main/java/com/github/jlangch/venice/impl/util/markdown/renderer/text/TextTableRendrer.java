@@ -162,10 +162,10 @@ public class TextTableRendrer {
             final int width
     ) {
         switch(format.horzAlignment()) {
-            case LEFT:	 return LineFormatter.leftAlign(str, width, fillChar);
+            case LEFT:   return LineFormatter.leftAlign(str, width, fillChar);
             case CENTER: return LineFormatter.centerAlign(str, width, fillChar);
             case RIGHT:  return LineFormatter.rightAlign(str, width, fillChar);
-            default:	 return LineFormatter.leftAlign(str, width, fillChar);
+            default:     return LineFormatter.leftAlign(str, width, fillChar);
         }
     }
 

@@ -22,17 +22,17 @@
 package com.github.jlangch.venice.impl.reader;
 
 public enum AtomType {
-    NIL,			// nil
-    TRUE,			// true
-    FALSE,			// false
-    INTEGER,		// 10I, -10I
-    LONG,			// 10, -10
-    DOUBLE,			// 10.2, -10.2
-    DECIMAL,		// 10.2M, -10.2M
-    BIGINT,			// 10N, -10N
-    STRING,			// "abcde"
-    STRING_BLOCK,	// """abcde"""
-    KEYWORD,		// :abc
-    SYMBOL,			// abcd, .:, $ab
+    NIL,            // nil
+    TRUE,           // true
+    FALSE,          // false
+    INTEGER,        // 10I, -10I
+    LONG,           // 10, -10
+    DOUBLE,         // 10.2, -10.2
+    DECIMAL,        // 10.2M, -10.2M
+    BIGINT,         // 10N, -10N
+    STRING,         // "abcde"
+    STRING_BLOCK,   // """abcde"""
+    KEYWORD,        // :abc
+    SYMBOL,         // abcd, .:, $ab
     UNKNOWN;
 }

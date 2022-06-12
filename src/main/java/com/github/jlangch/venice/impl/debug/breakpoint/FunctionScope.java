@@ -65,13 +65,13 @@ import java.util.List;
  */
 public enum FunctionScope {
 
-    FunctionCall(">", "call"),				// Stop at fn call
+    FunctionCall(">", "call"),              // Stop at fn call
 
-    FunctionEntry("(", "entry"),			// Stop at fn entry
+    FunctionEntry("(", "entry"),            // Stop at fn entry
 
-    FunctionExit(")", "exit"),				// Stop at fn exit
+    FunctionExit(")", "exit"),              // Stop at fn exit
 
-    FunctionException("!", "exception");	// Stop on exception in fn body
+    FunctionException("!", "exception");    // Stop on exception in fn body
 
 
     private FunctionScope(String symbol, String description) {

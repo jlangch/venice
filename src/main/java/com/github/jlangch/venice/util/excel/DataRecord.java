@@ -1,5 +1,5 @@
 /*   __    __         _
- *   \ \  / /__ _ __ (_) ___ ___ 
+ *   \ \  / /__ _ __ (_) ___ ___
  *    \ \/ / _ \ '_ \| |/ __/ _ \
  *     \  /  __/ | | | | (_|  __/
  *      \/ \___|_| |_|_|\___\___|
@@ -26,20 +26,20 @@ import java.util.Map;
 
 
 public class DataRecord {
-	
-	public DataRecord() {
-	}
-	
-	public static DataRecord of(final Map<String,Object> fields) {
-		final DataRecord ge = new DataRecord();
-		fields.forEach((k,v) -> ge.fields.put(k, v));
-		return ge;
-	}
 
-	public Object get(final String fieldName) {
-		return fields.get(fieldName);
-	}
+    public DataRecord() {
+    }
 
-	
-	final private Map<String,Object> fields = new HashMap<>();
+    public static DataRecord of(final Map<String,Object> fields) {
+        final DataRecord ge = new DataRecord();
+        fields.forEach((k,v) -> ge.fields.put(k, v));
+        return ge;
+    }
+
+    public Object get(final String fieldName) {
+        return fields.get(fieldName);
+    }
+
+
+    final private Map<String,Object> fields = new HashMap<>();
 }

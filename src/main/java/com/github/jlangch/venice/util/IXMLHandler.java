@@ -1,5 +1,5 @@
 /*   __    __         _
- *   \ \  / /__ _ __ (_) ___ ___ 
+ *   \ \  / /__ _ __ (_) ___ ___
  *    \ \/ / _ \ '_ \| |/ __/ _ \
  *     \  /  __/ | | | | (_|  __/
  *      \/ \___|_| |_|_|\___\___|
@@ -27,9 +27,9 @@ import org.xml.sax.SAXException;
 
 
 /**
- * Defines a {@code SAX Parser} content handler. Venice scripts can 
+ * Defines a {@code SAX Parser} content handler. Venice scripts can
  * dynamically proxify this handler to process SAX parser events.
- * 
+ *
  * <pre>
  * (proxify :IXMLHandler
  *          { :startElement (fn [uri local-name q-name attributes] nil)
@@ -44,40 +44,40 @@ import org.xml.sax.SAXException;
  *            :processingInstruction (fn [target data] nil)
  *            :skippedEntity (fn [name] nil) })
  * </pre>
- * 
+ *
  * @see XMLHandler
  * @see XMLUtil
  */
 public interface IXMLHandler {
 
-	public void setDocumentLocator(Locator locator);
+    public void setDocumentLocator(Locator locator);
 
-	public void startDocument() throws SAXException;
+    public void startDocument() throws SAXException;
 
-	public void endDocument() throws SAXException;
+    public void endDocument() throws SAXException;
 
-	public void startPrefixMapping(String prefix, String uri) 
-		throws SAXException;
+    public void startPrefixMapping(String prefix, String uri)
+        throws SAXException;
 
-	public void endPrefixMapping(String prefix) 
-		throws SAXException;
+    public void endPrefixMapping(String prefix)
+        throws SAXException;
 
-	public void startElement(String uri, String localName, String qName, Attributes atts) 
-		throws SAXException;
-	
-	public void endElement(String uri, String localName, String qName) 
-		throws SAXException;
+    public void startElement(String uri, String localName, String qName, Attributes atts)
+        throws SAXException;
 
-	void characters(String chars) 
-		throws SAXException;
+    public void endElement(String uri, String localName, String qName)
+        throws SAXException;
 
-	void ignorableWhitespace(String chars) 
-		throws SAXException;
+    void characters(String chars)
+        throws SAXException;
 
-	void processingInstruction(String target, String data) 
-		throws SAXException;
-	
+    void ignorableWhitespace(String chars)
+        throws SAXException;
+
+    void processingInstruction(String target, String data)
+        throws SAXException;
+
     void skippedEntity(String name)
-    	throws SAXException;
+        throws SAXException;
 
 }

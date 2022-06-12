@@ -151,7 +151,7 @@ public class CompiledSandboxRules {
      *
      * @param clazz A class
      * @return <code>true</code> if the class is white listed otherwise
-     * 		   <code>false</code>
+     *         <code>false</code>
      */
     public boolean isWhiteListed(final Class<?> clazz) {
         if (clazz == null) {
@@ -187,7 +187,7 @@ public class CompiledSandboxRules {
      * @param clazz A class
      * @param accessor An accessor (method or field name)
      * @return <code>true</code> if the class/accessor is white listed otherwise
-     * 		   <code>false</code>
+     *         <code>false</code>
      */
     public boolean isWhiteListed(final Class<?> clazz, final String accessor) {
         if (clazz == null || accessor == null) {
@@ -226,7 +226,7 @@ public class CompiledSandboxRules {
      *
      * @param resource A classpath resource
      * @return <code>true</code> if the classpath resource is white listed otherwise
-     * 		   <code>false</code>
+     *         <code>false</code>
      */
     public boolean isWhiteListedClasspathResource(final String resource) {
         if (resource == null) {

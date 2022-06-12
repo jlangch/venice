@@ -1,5 +1,5 @@
 /*   __    __         _
- *   \ \  / /__ _ __ (_) ___ ___ 
+ *   \ \  / /__ _ __ (_) ___ ___
  *    \ \/ / _ \ '_ \| |/ __/ _ \
  *     \  /  __/ | | | | (_|  __/
  *      \/ \___|_| |_|_|\___\___|
@@ -27,58 +27,58 @@ import com.github.jlangch.venice.impl.util.MeterRegistry;
 
 
 /**
- * Provides access to Venice's collected runtime execution times for 
+ * Provides access to Venice's collected runtime execution times for
  * functions.
- * 
+ *
  * <p>Its mainly used for unit testing
- * 
+ *
  * @author juerg
  */
 public class FunctionExecutionMeter {
 
-	public FunctionExecutionMeter(final MeterRegistry meterRegistry) {
-		this.meterRegistry = meterRegistry;
-	}
-	
-	
-	/**
-	 * Enables the collection of runtime execution time for functions 
-	 */
-	public void enable() {
-		meterRegistry.enable();
-	}
-	
-	/**
-	 * Disables the collection of runtime execution time for functions 
-	 */
-	public void disable() {
-		meterRegistry.disable();
-	}
-	
-	/**
-	 * Removes all collected runtime execution times for functions 
-	 */
-	public void reset() {
-		meterRegistry.reset();
-	}
+    public FunctionExecutionMeter(final MeterRegistry meterRegistry) {
+        this.meterRegistry = meterRegistry;
+    }
 
-	/**
-	 * @return the collected runtime execution times for functions 
-	 */
-	public Collection<ElapsedTime> getData() {
-		return meterRegistry.getTimerData();
-	}
 
-	/**
-	 * Formats the execution times
-	 * 
-	 * @param title a title
-	 * @return formatted collected runtime execution times for functions 
-	 */
-	public String getDataFormatted(final String title) {
-		return meterRegistry.getTimerDataFormatted(title, false);
-	}
-	
-	
-	private final MeterRegistry meterRegistry;
+    /**
+     * Enables the collection of runtime execution time for functions
+     */
+    public void enable() {
+        meterRegistry.enable();
+    }
+
+    /**
+     * Disables the collection of runtime execution time for functions
+     */
+    public void disable() {
+        meterRegistry.disable();
+    }
+
+    /**
+     * Removes all collected runtime execution times for functions
+     */
+    public void reset() {
+        meterRegistry.reset();
+    }
+
+    /**
+     * @return the collected runtime execution times for functions
+     */
+    public Collection<ElapsedTime> getData() {
+        return meterRegistry.getTimerData();
+    }
+
+    /**
+     * Formats the execution times
+     *
+     * @param title a title
+     * @return formatted collected runtime execution times for functions
+     */
+    public String getDataFormatted(final String title) {
+        return meterRegistry.getTimerDataFormatted(title, false);
+    }
+
+
+    private final MeterRegistry meterRegistry;
 }

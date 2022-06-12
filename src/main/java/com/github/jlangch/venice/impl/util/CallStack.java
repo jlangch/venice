@@ -141,7 +141,7 @@ public class CallStack {
      * @param fnName A qualified function name
      * @param skipHead skip the head element
      * @return <code>true</code> if any of the call frames refers to the
-     * 			specified function name else <code>false</code>
+     *         specified function name else <code>false</code>
      */
     public boolean hasAnyAncestor(final String fnName, final boolean skipHead) {
         final Iterator<CallFrame> iter = queue.iterator();
@@ -166,7 +166,7 @@ public class CallStack {
      * @param fnName A qualified function name
      * @param skipHead skip the head element
      * @return <code>true</code> if if the top call frame refers to the
-     * 			specified function name else <code>false</code>
+     *         specified function name else <code>false</code>
      */
     public boolean hasNearestAncestor(final String fnName, final boolean skipHead) {
         final Iterator<CallFrame> iter = queue.iterator();

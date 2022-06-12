@@ -82,7 +82,7 @@ public class PreCompiled implements Serializable {
      * @param precompiled a serialized, pre-compiled Venice script
      * @return the deserialized pre-compiled script
      * @throws IncompatibleVersionException
-     * 				if the Venice version of the deserialized script
+     *              if the Venice version of the deserialized script
      *              does not match this Venice version
      */
     public static PreCompiled deserialize(final byte[] precompiled) {

@@ -88,7 +88,7 @@ public interface IDebugAgent {
 
     /**
      * @return <code>true</code> if the breakpoints are temporarily skipped
-     * 			else <code>false</code>
+     *         else <code>false</code>
      */
     boolean isSkipBreakpoints();
 

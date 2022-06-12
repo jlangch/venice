@@ -35,12 +35,12 @@ public class CollectionUtil {
     /**
      * Creates a list from a single object.
      *
-     * @param 	<U> The object type
-     * @param	object
-     * 				The object the list will hold. If the object is null an
-     *				empty list will be returned
+     * @param   <U> The object type
+     * @param   object
+     *              The object the list will hold. If the object is null an
+     *              empty list will be returned
      *
-     * @return	the list
+     * @return  the list
      */
     public static <U> List<U> toList(final U object) {
         final List<U> list = new ArrayList<U>();
@@ -53,12 +53,12 @@ public class CollectionUtil {
     /**
      * Creates an unmodifiable list from a single object.
      *
-     * @param 	<U> The object type
-     * @param	object
-     * 				The object the list will hold. If the object is null an
-     *				empty list will be returned.
+     * @param   <U> The object type
+     * @param   object
+     *              The object the list will hold. If the object is null an
+     *              empty list will be returned.
      *
-     * @return	the list
+     * @return  the list
      */
     public static <U> List<U> toUnmodifiableList(final U object) {
         return Collections.unmodifiableList(toList(object));
@@ -67,12 +67,12 @@ public class CollectionUtil {
     /**
      * Creates a list from objects.
      *
-     * @param 	<U> The object type
-     * @param	objects
-     * 				The objects the list will hold. If no objects are passed an
-     *				empty list will be returned.
+     * @param   <U> The object type
+     * @param   objects
+     *              The objects the list will hold. If no objects are passed an
+     *              empty list will be returned.
      *
-     * @return	the list
+     * @return  the list
      */
     @SafeVarargs
     public static <U> List<U> toList(final U ... objects) {
@@ -82,12 +82,12 @@ public class CollectionUtil {
     /**
      * Converts an enumeration to an array list
      *
-     * @param 	<U> The object type
-     * @param	enumeration
-     * 				enumeration providing elements for the returned
-     *		  	array list
-     * @return	an array list containing the elements returned
-     *			by the specified enumeration.
+     * @param   <U> The object type
+     * @param   enumeration
+     *              enumeration providing elements for the returned
+     *              array list
+     * @return  an array list containing the elements returned
+     *          by the specified enumeration.
      */
     public static <U> ArrayList<U> toList(Enumeration<U> enumeration) {
         final ArrayList<U> list = new ArrayList<>();
@@ -100,12 +100,12 @@ public class CollectionUtil {
     /**
      * Creates an unmodifiable list from objects.
      *
-     * @param 	<U> The object type
-     * @param	objects
-     * 				The objects the list will hold. If no objects are passed an
-     *				empty list will be returned.
+     * @param   <U> The object type
+     * @param   objects
+     *              The objects the list will hold. If no objects are passed an
+     *  empty list will be returned.
      *
-     * @return	the list
+     * @return  the list
      */
     @SafeVarargs
     public static <U> List<U> toUnmodifiableList(final U ... objects) {
@@ -115,12 +115,12 @@ public class CollectionUtil {
     /**
      * Creates a set from a single object.
      *
-     * @param 	<U> The object type
-     * @param	object
-     * 				The object the set will hold. If the object is null an
-     *				empty set will be returned.
+     * @param   <U> The object type
+     * @param   object
+     *              The object the set will hold. If the object is null an
+     *              empty set will be returned.
      *
-     * @return	the set
+     * @return  the set
      */
     public static <U> Set<U> toSet(final U object) {
         final Set<U> set = new HashSet<U>();
@@ -133,12 +133,12 @@ public class CollectionUtil {
     /**
      * Creates an unmodifiable set from a single object.
      *
-     * @param 	<U> The object type
-     * @param	object
-     * 				The object the set will hold. If the object is null an
-     *				empty set will be returned.
+     * @param   <U> The object type
+     * @param   object
+     *              The object the set will hold. If the object is null an
+     *              empty set will be returned.
      *
-     * @return	the set
+     * @return  the set
      */
     public static <U> Set<U> toUnmodifiableSet(final U object) {
         return Collections.unmodifiableSet(toSet(object));
@@ -147,12 +147,12 @@ public class CollectionUtil {
     /**
      * Creates a set from objects.
      *
-     * @param 	<U> The object type
-     * @param	objects
-     * 				The objects the set will hold. If no objects are passed an
-     *				empty set will be returned.
+     * @param   <U> The object type
+     * @param   objects
+     *              The objects the set will hold. If no objects are passed an
+     *              empty set will be returned.
      *
-     * @return	the set
+     * @return  the set
      */
     @SafeVarargs
     public static <U> Set<U> toSet(final U ... objects) {
@@ -168,12 +168,12 @@ public class CollectionUtil {
     /**
      * Creates an unmodifiable set from objects.
      *
-     * @param 	<U> The object type
-     * @param	objects
-     * 				The objects the set will hold. If no objects are passed an
-     *				empty set will be returned.
+     * @param   <U> The object type
+     * @param   objects
+     *              The objects the set will hold. If no objects are passed an
+     *              empty set will be returned.
      *
-     * @return	the set
+     * @return  the set
      */
     @SafeVarargs
     public static <U> Set<U> toUnmodifiableSet(final U ... objects) {

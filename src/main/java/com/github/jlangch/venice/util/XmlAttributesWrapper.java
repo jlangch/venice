@@ -1,5 +1,5 @@
 /*   __    __         _
- *   \ \  / /__ _ __ (_) ___ ___ 
+ *   \ \  / /__ _ __ (_) ___ ___
  *    \ \/ / _ \ '_ \| |/ __/ _ \
  *     \  /  __/ | | | | (_|  __/
  *      \/ \___|_| |_|_|\___\___|
@@ -29,70 +29,70 @@ import org.xml.sax.Attributes;
  */
 public class XmlAttributesWrapper implements Attributes {
 
-	public XmlAttributesWrapper(final Attributes attrs) {
-		this.attrs = attrs;
-	}
-	
-	@Override
-	public int getLength() {
-		return attrs.getLength();
-	}
+    public XmlAttributesWrapper(final Attributes attrs) {
+        this.attrs = attrs;
+    }
 
-	@Override
-	public String getURI(int index) {
-		return attrs.getURI(index);
-	}
+    @Override
+    public int getLength() {
+        return attrs.getLength();
+    }
 
-	@Override
-	public String getLocalName(int index) {
-		return attrs.getLocalName(index);
-	}
+    @Override
+    public String getURI(int index) {
+        return attrs.getURI(index);
+    }
 
-	@Override
-	public String getQName(int index) {
-		return attrs.getQName(index);
-	}
+    @Override
+    public String getLocalName(int index) {
+        return attrs.getLocalName(index);
+    }
 
-	@Override
-	public String getType(int index) {
-		return attrs.getValue(index);
-	}
+    @Override
+    public String getQName(int index) {
+        return attrs.getQName(index);
+    }
 
-	@Override
-	public String getValue(int index) {
-		return attrs.getValue(index);
-	}
+    @Override
+    public String getType(int index) {
+        return attrs.getValue(index);
+    }
 
-	@Override
-	public int getIndex(String uri, String localName) {
-		return attrs.getIndex(uri, localName);
-	}
+    @Override
+    public String getValue(int index) {
+        return attrs.getValue(index);
+    }
 
-	@Override
-	public int getIndex(String qName) {
-		return attrs.getIndex(qName);
-	}
+    @Override
+    public int getIndex(String uri, String localName) {
+        return attrs.getIndex(uri, localName);
+    }
 
-	@Override
-	public String getType(String uri, String localName) {
-		return attrs.getType(uri, localName);
-	}
+    @Override
+    public int getIndex(String qName) {
+        return attrs.getIndex(qName);
+    }
 
-	@Override
-	public String getType(String qName) {
-		return attrs.getType(qName);
-	}
+    @Override
+    public String getType(String uri, String localName) {
+        return attrs.getType(uri, localName);
+    }
 
-	@Override
-	public String getValue(String uri, String localName) {
-		return attrs.getValue(uri, localName);
-	}
+    @Override
+    public String getType(String qName) {
+        return attrs.getType(qName);
+    }
 
-	@Override
-	public String getValue(String qName) {
-		return attrs.getValue(qName);
-	}
+    @Override
+    public String getValue(String uri, String localName) {
+        return attrs.getValue(uri, localName);
+    }
 
-	
-	private final Attributes attrs;
+    @Override
+    public String getValue(String qName) {
+        return attrs.getValue(qName);
+    }
+
+
+    private final Attributes attrs;
 }

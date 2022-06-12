@@ -1,5 +1,5 @@
 /*   __    __         _
- *   \ \  / /__ _ __ (_) ___ ___ 
+ *   \ \  / /__ _ __ (_) ___ ___
  *    \ \/ / _ \ '_ \| |/ __/ _ \
  *     \  /  __/ | | | | (_|  __/
  *      \/ \___|_| |_|_|\___\___|
@@ -21,10 +21,13 @@
  */
 package com.github.jlangch.venice.util;
 
+import java.io.PrintStream;
+import java.io.PrintWriter;
+
 /**
  * Represents a stack frame in a callstack. All Venice exceptions {@code VncException}
  * provide a {@code stacktrace}.
- * 
+ *
  * @see com.github.jlangch.venice.VncException#hasCallStack()
  * @see com.github.jlangch.venice.VncException#getCallStack()
  * @see com.github.jlangch.venice.VncException#printVeniceStackTrace()
@@ -33,38 +36,38 @@ package com.github.jlangch.venice.util;
  */
 public class StackFrame {
 
-	public StackFrame(
-			final String fnName, 
-			final String file,
-			final int line,
-			final int col
-	) {
-		this.fnName = fnName;
-		this.file = file;
-		this.line = line;
-		this.col = col;
-	}
-
-	
-	public String getFnName() {
-		return fnName;
-	}
-	
-	public String getFile() {
-		return file;
-	}
-	
-	public int getLine() {
-		return line;
-	}
-	
-	public int getCol() {
-		return col;
-	}
+    public StackFrame(
+            final String fnName,
+            final String file,
+            final int line,
+            final int col
+    ) {
+        this.fnName = fnName;
+        this.file = file;
+        this.line = line;
+        this.col = col;
+    }
 
 
-	private final String fnName;
-	private final String file; 
-	private final int line; 
-	private final int col; 
+    public String getFnName() {
+        return fnName;
+    }
+
+    public String getFile() {
+        return file;
+    }
+
+    public int getLine() {
+        return line;
+    }
+
+    public int getCol() {
+        return col;
+    }
+
+
+    private final String fnName;
+    private final String file;
+    private final int line;
+    private final int col;
 }

@@ -1,5 +1,5 @@
 /*   __    __         _
- *   \ \  / /__ _ __ (_) ___ ___ 
+ *   \ \  / /__ _ __ (_) ___ ___
  *    \ \/ / _ \ '_ \| |/ __/ _ \
  *     \  /  __/ | | | | (_|  __/
  *      \/ \___|_| |_|_|\___\___|
@@ -30,8 +30,8 @@ import java.io.OutputStream;
  */
 public class NullOutputStream extends OutputStream {
 
-	@Override
-	public void write(int b) {
-	}
+    @Override
+    public void write(int b) {
+    }
 
 }

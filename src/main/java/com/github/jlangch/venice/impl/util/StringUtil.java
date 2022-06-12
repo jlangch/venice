@@ -134,7 +134,7 @@ public class StringUtil {
     /**
      * Splits a text into lines
      *
-     * @param text	a string
+     * @param text  a string
      *
      * @return the lines (maybe empty if the text was <code>null</code> or empty
      */

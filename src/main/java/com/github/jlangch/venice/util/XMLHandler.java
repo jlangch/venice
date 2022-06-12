@@ -1,5 +1,5 @@
 /*   __    __         _
- *   \ \  / /__ _ __ (_) ___ ___ 
+ *   \ \  / /__ _ __ (_) ___ ___
  *    \ \/ / _ \ '_ \| |/ __/ _ \
  *     \  /  __/ | | | | (_|  __/
  *      \/ \___|_| |_|_|\___\___|
@@ -31,154 +31,154 @@ import com.github.jlangch.venice.VncException;
 
 /**
  * The {@code XMLHandler} serves as an adapater to hook into Java XML processing.
- * 
- * <p>Venice can not extend Java classes. The {@code XMLHandler} allows Venice to 
+ *
+ * <p>Venice can not extend Java classes. The {@code XMLHandler} allows Venice to
  * pass a dynamic proxy for the interface {@code IXMLHandler}.
- * 
+ *
  * @see IXMLHandler
  * @see XMLUtil
  */
 public class XMLHandler extends DefaultHandler {
 
-	public XMLHandler(final IXMLHandler handler) {
-		this.handler = handler;
-	}
+    public XMLHandler(final IXMLHandler handler) {
+        this.handler = handler;
+    }
 
 
-	@Override
-	public void setDocumentLocator(final Locator locator) {
-		handler.setDocumentLocator(locator);
-	}
+    @Override
+    public void setDocumentLocator(final Locator locator) {
+        handler.setDocumentLocator(locator);
+    }
 
-	@Override
-	public void startDocument() throws SAXException {
-		try {
-			handler.startDocument();
-		}
-		catch(VncException ex) {
-			throw new SAXException(ex.printVeniceStackTraceToString(),ex);
-		}
-	}
+    @Override
+    public void startDocument() throws SAXException {
+        try {
+            handler.startDocument();
+        }
+        catch(VncException ex) {
+            throw new SAXException(ex.printVeniceStackTraceToString(),ex);
+        }
+    }
 
-	@Override
-	public void endDocument() throws SAXException {
-		try {
-			handler.endDocument();
-		}
-		catch(VncException ex) {
-			throw new SAXException(ex.printVeniceStackTraceToString(),ex);
-		}
-	}
+    @Override
+    public void endDocument() throws SAXException {
+        try {
+            handler.endDocument();
+        }
+        catch(VncException ex) {
+            throw new SAXException(ex.printVeniceStackTraceToString(),ex);
+        }
+    }
 
-	@Override
-	public void startPrefixMapping(
-			final String prefix, 
-			final String uri
-	) throws SAXException {
-		try {
-			handler.startPrefixMapping(prefix, uri);
-		}
-		catch(VncException ex) {
-			throw new SAXException(ex.printVeniceStackTraceToString(),ex);
-		}
-	}
+    @Override
+    public void startPrefixMapping(
+            final String prefix,
+            final String uri
+    ) throws SAXException {
+        try {
+            handler.startPrefixMapping(prefix, uri);
+        }
+        catch(VncException ex) {
+            throw new SAXException(ex.printVeniceStackTraceToString(),ex);
+        }
+    }
 
-	@Override
-	public void endPrefixMapping(
-			final String prefix
-	) throws SAXException {
-		try {
-			handler.endPrefixMapping(prefix);
-		}
-		catch(VncException ex) {
-			throw new SAXException(ex.printVeniceStackTraceToString(),ex);
-		}
-	}
+    @Override
+    public void endPrefixMapping(
+            final String prefix
+    ) throws SAXException {
+        try {
+            handler.endPrefixMapping(prefix);
+        }
+        catch(VncException ex) {
+            throw new SAXException(ex.printVeniceStackTraceToString(),ex);
+        }
+    }
 
-	@Override
-	public void startElement(
-			final String uri, 
-			final String localName, 
-			final String qName, 
-			final Attributes attrs
-	) throws SAXException {
-		try {
-			// wrap org.xml.sax.Attributes to allow reflective access
-			// without "illegal reflective access operations" warnings on Java 9+
-			handler.startElement(uri, localName, qName, new XmlAttributesWrapper(attrs));
-		}
-		catch(VncException ex) {
-			throw new SAXException(ex.printVeniceStackTraceToString(),ex);
-		}
-	}
+    @Override
+    public void startElement(
+            final String uri,
+            final String localName,
+            final String qName,
+            final Attributes attrs
+    ) throws SAXException {
+        try {
+            // wrap org.xml.sax.Attributes to allow reflective access
+            // without "illegal reflective access operations" warnings on Java 9+
+            handler.startElement(uri, localName, qName, new XmlAttributesWrapper(attrs));
+        }
+        catch(VncException ex) {
+            throw new SAXException(ex.printVeniceStackTraceToString(),ex);
+        }
+    }
 
-	@Override
-	public void endElement(
-			final String uri, 
-			final String localName, 
-			final String qName
-	) throws SAXException {
-		try {
-			handler.endElement(uri, localName, qName);
-		}
-		catch(VncException ex) {
-			throw new SAXException(ex.printVeniceStackTraceToString(),ex);
-		}
-	}
+    @Override
+    public void endElement(
+            final String uri,
+            final String localName,
+            final String qName
+    ) throws SAXException {
+        try {
+            handler.endElement(uri, localName, qName);
+        }
+        catch(VncException ex) {
+            throw new SAXException(ex.printVeniceStackTraceToString(),ex);
+        }
+    }
 
-	@Override
-	public void characters(
-			final char ch[], 
-			final int start, 
-			final int length
-	) throws SAXException {
-		try {
-			handler.characters(new String(ch).substring(start, start + length));
-		}
-		catch(VncException ex) {
-			throw new SAXException(ex.printVeniceStackTraceToString(),ex);
-		}
-	}
+    @Override
+    public void characters(
+            final char ch[],
+            final int start,
+            final int length
+    ) throws SAXException {
+        try {
+            handler.characters(new String(ch).substring(start, start + length));
+        }
+        catch(VncException ex) {
+            throw new SAXException(ex.printVeniceStackTraceToString(),ex);
+        }
+    }
 
-	@Override
-	public void ignorableWhitespace(
-			final char ch[], 
-			final int start, 
-			final int length
-	) throws SAXException {
-		try {
-			handler.ignorableWhitespace(new String(ch).substring(start, start + length));
-		}
-		catch(VncException ex) {
-			throw new SAXException(ex.printVeniceStackTraceToString(),ex);
-		}
-	}
+    @Override
+    public void ignorableWhitespace(
+            final char ch[],
+            final int start,
+            final int length
+    ) throws SAXException {
+        try {
+            handler.ignorableWhitespace(new String(ch).substring(start, start + length));
+        }
+        catch(VncException ex) {
+            throw new SAXException(ex.printVeniceStackTraceToString(),ex);
+        }
+    }
 
-	@Override
-	public void processingInstruction(
-			final String target, 
-			final String data
-	) throws SAXException {
-		try {
-			handler.processingInstruction(target, data);
-		}
-		catch(VncException ex) {
-			throw new SAXException(ex.printVeniceStackTraceToString(),ex);
-		}
-	}
+    @Override
+    public void processingInstruction(
+            final String target,
+            final String data
+    ) throws SAXException {
+        try {
+            handler.processingInstruction(target, data);
+        }
+        catch(VncException ex) {
+            throw new SAXException(ex.printVeniceStackTraceToString(),ex);
+        }
+    }
 
-	@Override
-	public void skippedEntity(
-			final String name
-	) throws SAXException {
-		try {
-			handler.skippedEntity(name);
-		}
-		catch(VncException ex) {
-			throw new SAXException(ex.printVeniceStackTraceToString(),ex);
-		}
-	}
-	
-	
-	private final IXMLHandler handler;
+    @Override
+    public void skippedEntity(
+            final String name
+    ) throws SAXException {
+        try {
+            handler.skippedEntity(name);
+        }
+        catch(VncException ex) {
+            throw new SAXException(ex.printVeniceStackTraceToString(),ex);
+        }
+    }
+
+
+    private final IXMLHandler handler;
 }

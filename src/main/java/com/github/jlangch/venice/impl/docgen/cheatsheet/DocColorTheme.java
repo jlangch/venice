@@ -76,38 +76,38 @@ public class DocColorTheme {
     public static DocColorTheme getLightTheme() {
         final Map<HighlightClass,String> colors = new HashMap<>();
 
-        colors.put(COMMENT, 				GREY_LIGHT);
-        colors.put(WHITESPACES, 			null);
+        colors.put(COMMENT,                 GREY_LIGHT);
+        colors.put(WHITESPACES,             null);
 
-        colors.put(STRING, 					GREEN);
-        colors.put(NUMBER, 					ORANGE);
-        colors.put(CONSTANT,				ORANGE);
-        colors.put(KEYWORD, 				ORANGE);
-        colors.put(SYMBOL, 					GREY);
-        colors.put(SYMBOL_SPECIAL_FORM, 	PURPLE);
-        colors.put(SYMBOL_FUNCTION_NAME,	BLUE);
-        colors.put(SYMBOL_MACRO_NAME,		BLUE);
-        colors.put(SYMBOL_EAR_MUFFS,		BLUE);
+        colors.put(STRING,                  GREEN);
+        colors.put(NUMBER,                  ORANGE);
+        colors.put(CONSTANT,                ORANGE);
+        colors.put(KEYWORD,                 ORANGE);
+        colors.put(SYMBOL,                  GREY);
+        colors.put(SYMBOL_SPECIAL_FORM,     PURPLE);
+        colors.put(SYMBOL_FUNCTION_NAME,    BLUE);
+        colors.put(SYMBOL_MACRO_NAME,       BLUE);
+        colors.put(SYMBOL_EAR_MUFFS,        BLUE);
 
-        colors.put(QUOTE,					GREY);
-        colors.put(QUASI_QUOTE,				GREY);
-        colors.put(UNQUOTE,					GREY);
-        colors.put(UNQUOTE_SPLICING,		GREY);
+        colors.put(QUOTE,                   GREY);
+        colors.put(QUASI_QUOTE,             GREY);
+        colors.put(UNQUOTE,                 GREY);
+        colors.put(UNQUOTE_SPLICING,        GREY);
 
-        colors.put(META,					GREY_LIGHT);
-        colors.put(AT,						GREY);
-        colors.put(HASH,					GREY);
+        colors.put(META,                    GREY_LIGHT);
+        colors.put(AT,                      GREY);
+        colors.put(HASH,                    GREY);
 
-        colors.put(BRACE_BEGIN,				GREY);
-        colors.put(BRACE_END,				GREY);
-        colors.put(BRACKET_BEGIN,			GREY);
-        colors.put(BRACKET_END,				GREY);
-        colors.put(PARENTHESIS_BEGIN,		GREY);
-        colors.put(PARENTHESIS_END,			GREY);
+        colors.put(BRACE_BEGIN,             GREY);
+        colors.put(BRACE_END,               GREY);
+        colors.put(BRACKET_BEGIN,           GREY);
+        colors.put(BRACKET_END,             GREY);
+        colors.put(PARENTHESIS_BEGIN,       GREY);
+        colors.put(PARENTHESIS_END,         GREY);
 
-        colors.put(UNKNOWN,					GREY);
+        colors.put(UNKNOWN,                 GREY);
 
-        colors.put(UNPROCESSED,				RED);
+        colors.put(UNPROCESSED,             RED);
 
         return new DocColorTheme("light", colors);
     }

@@ -505,9 +505,9 @@ public class REPL {
                 .variable(LineReader.SECONDARY_PROMPT_PATTERN, secondaryPrompt)
                 .variable(LineReader.INDENTATION, 2)
                 .variable(LineReader.LIST_MAX, 100)
-//				.variable(LineReader.HISTORY_SIZE, 20)
+//              .variable(LineReader.HISTORY_SIZE, 20)
                 .variable(LineReader.HISTORY_FILE, HISTORY_FILE)
-//				.variable(LineReader.HISTORY_FILE_SIZE, 25)
+//              .variable(LineReader.HISTORY_FILE_SIZE, 25)
                 .build();
     }
 
@@ -564,9 +564,9 @@ public class REPL {
                     case "?":           handleHelpCommand(); break;
                     case "help":        handleHelpCommand(); break;
                     case "config":      handleConfigCommand(); break;
-                    case "dark":   		handleColorModeCommand(ColorMode.Dark); break;
+                    case "dark":        handleColorModeCommand(ColorMode.Dark); break;
                     case "darkmode":    handleColorModeCommand(ColorMode.Dark); break;
-                    case "light":    	handleColorModeCommand(ColorMode.Light); break;
+                    case "light":       handleColorModeCommand(ColorMode.Light); break;
                     case "lightmode":   handleColorModeCommand(ColorMode.Light); break;
                     case "restartable": handleRestartableCommand(); break;
                     case "setup":       handleSetupCommand(venice, env, Minimal, printer); break;
@@ -575,7 +575,7 @@ public class REPL {
                     case "cp":          handleReplClasspathCommand(); break;
                     case "loadpath":    handleLoadPathsCommand(interceptor.getLoadPaths()); break;
                     case "launcher":    handleLauncherCommand(); break;
-                    case "app":    		handleAppCommand(args, terminal, env); break;
+                    case "app":         handleAppCommand(args, terminal, env); break;
                     case "manifest":    handleAppManifestCommand(args, terminal, env); break;
                     case "env":         handleEnvCommand(args, env); break;
                     case "hist":        handleHistoryCommand(args, terminal, history); break;
@@ -584,7 +584,7 @@ public class REPL {
                     case "info":        handleInfoCommand(terminal); break;
                     case "highlight":   handleHighlightCommand(args); break;
                     case "java-ex":     handleJavaExCommand(args); break;
-                    case "debug":     	handleDebugHelpCommand(); break;
+                    case "debug":       handleDebugHelpCommand(); break;
                     default:            handleInvalidCommand(cmd); break;
                 }
             }

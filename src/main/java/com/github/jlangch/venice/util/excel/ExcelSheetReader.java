@@ -1,5 +1,5 @@
 /*   __    __         _
- *   \ \  / /__ _ __ (_) ___ ___ 
+ *   \ \  / /__ _ __ (_) ___ ___
  *    \ \/ / _ \ '_ \| |/ __/ _ \
  *     \  /  __/ | | | | (_|  __/
  *      \/ \___|_| |_|_|\___\___|
@@ -28,80 +28,80 @@ import com.github.jlangch.venice.impl.util.excel.ExcelSheet;
 
 /**
  * An Excel sheet reader
- * 
+ *
  * @author juerg
  */
 public class ExcelSheetReader {
 
-	public ExcelSheetReader(
-		final ExcelSheet sheet
-	) {
-		this.sheet = sheet;
-	}
+    public ExcelSheetReader(
+        final ExcelSheet sheet
+    ) {
+        this.sheet = sheet;
+    }
 
-	
-	public String getName() {
-		return sheet.getName();
-	}
 
-	public int getFirstRowNum() {
-		final int n = sheet.getFirstRowNum();		
-		return n < 0 ? n : n + 1;
-	}
+    public String getName() {
+        return sheet.getName();
+    }
 
-	public int getLastRowNum() {
-		final int n = sheet.getLastRowNum();		
-		return n < 0 ? n : n + 1;
-	}
+    public int getFirstRowNum() {
+        final int n = sheet.getFirstRowNum();
+        return n < 0 ? n : n + 1;
+    }
 
-	public int getFirstCellNum(final int row1) {
-		final int n = sheet.getFirstCellNum(row1-1);		
-		return n < 0 ? n : n + 1;
-	}
+    public int getLastRowNum() {
+        final int n = sheet.getLastRowNum();
+        return n < 0 ? n : n + 1;
+    }
 
-	public int getLastCellNum(final int row1) {
-		// returns the last cell number PLUS ONE
-		final int n = sheet.getLastCellNum(row1-1);		
-		return n; // no correction
-	}
+    public int getFirstCellNum(final int row1) {
+        final int n = sheet.getFirstCellNum(row1-1);
+        return n < 0 ? n : n + 1;
+    }
 
-	public boolean isCellEmpty(final int row1, final int col1) {
-		return sheet.isCellEmpty(row1-1, col1-1);
-	}
+    public int getLastCellNum(final int row1) {
+        // returns the last cell number PLUS ONE
+        final int n = sheet.getLastCellNum(row1-1);
+        return n; // no correction
+    }
 
-	public String getCellType(final int row1, final int col1) {
-		return sheet.getCellType(row1-1, col1-1);
-	}
+    public boolean isCellEmpty(final int row1, final int col1) {
+        return sheet.isCellEmpty(row1-1, col1-1);
+    }
 
-	public String getCellAddress(final int row1, final int col1) {
-		return sheet.getCellAddress(row1-1, col1-1);
-	}
-	
-	public String getString(final int row1, final int col1) {
-		return sheet.getString(row1-1, col1-1);
-	}
+    public String getCellType(final int row1, final int col1) {
+        return sheet.getCellType(row1-1, col1-1);
+    }
 
-	public Boolean getBoolean(final int row1, final int col1) {
-		return sheet.getBoolean(row1-1, col1-1);
-	}
+    public String getCellAddress(final int row1, final int col1) {
+        return sheet.getCellAddress(row1-1, col1-1);
+    }
 
-	public Long getInteger(final int row1, final int col1) {
-		return sheet.getInteger(row1-1, col1-1);
-	}
+    public String getString(final int row1, final int col1) {
+        return sheet.getString(row1-1, col1-1);
+    }
 
-	public Double getFloat(final int row1, final int col1) {
-		return sheet.getFloat(row1-1, col1-1);
-	}
+    public Boolean getBoolean(final int row1, final int col1) {
+        return sheet.getBoolean(row1-1, col1-1);
+    }
 
-	public LocalDateTime getDate(final int row1, final int col1) {
-		return sheet.getDate(row1-1, col1-1);
-	}
-	
-	public void evaluateAllFormulas() {
-		sheet.evaluateAllFormulas();
-	}
+    public Long getInteger(final int row1, final int col1) {
+        return sheet.getInteger(row1-1, col1-1);
+    }
 
-	
-	
-	private final ExcelSheet sheet;
+    public Double getFloat(final int row1, final int col1) {
+        return sheet.getFloat(row1-1, col1-1);
+    }
+
+    public LocalDateTime getDate(final int row1, final int col1) {
+        return sheet.getDate(row1-1, col1-1);
+    }
+
+    public void evaluateAllFormulas() {
+        sheet.evaluateAllFormulas();
+    }
+
+
+
+    private final ExcelSheet sheet;
 }

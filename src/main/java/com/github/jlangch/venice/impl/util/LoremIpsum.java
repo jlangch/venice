@@ -37,7 +37,7 @@ public class LoremIpsum {
      *          The length of the text to be created. Returns an empty
      *          string if the <code>length</code> is lower than 1
      *
-     * @return	The created <i>Lorem Ipsum</i> text
+     * @return The created <i>Lorem Ipsum</i> text
      */
     public static String loremIpsum_Chars(final int length) {
         int len = clip(length);
@@ -72,7 +72,7 @@ public class LoremIpsum {
      *          The number of paragraphs (limited to 100). Returns an empty
      *          string if the <code>paragraphs</code> is lower than 1
      *
-     * @return	The created <i>Lorem Ipsum</i> text
+     * @return The created <i>Lorem Ipsum</i> text
      */
     public static String loremIpsum_Paragraphs(final int paragraphs) {
         int len = Math.min(MAX_PARAGRAPHS, paragraphs);

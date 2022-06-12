@@ -1,5 +1,5 @@
 /*   __    __         _
- *   \ \  / /__ _ __ (_) ___ ___ 
+ *   \ \  / /__ _ __ (_) ___ ___
  *    \ \/ / _ \ '_ \| |/ __/ _ \
  *     \  /  __/ | | | | (_|  __/
  *      \/ \___|_| |_|_|\___\___|
@@ -27,8 +27,8 @@ import com.github.jlangch.venice.impl.util.excel.Excel;
 
 
 /**
- * Excel builder 
- * 
+ * Excel builder
+ *
  * <p><b>Example 1:</b>
  * <pre>
  *    final byte[] data = ExcelBuilder
@@ -42,7 +42,7 @@ import com.github.jlangch.venice.impl.util.excel.Excel;
  *                             .end()
  *                           .writeToBytes();
  * </pre>
- * 
+ *
  * <p><b>Example 2 (header row format):</b>
  * <pre>
  *    final byte[] data = ExcelBuilder
@@ -61,7 +61,7 @@ import com.github.jlangch.venice.impl.util.excel.Excel;
  *                             .end()
  *                           .writeToBytes();
  * </pre>
- * 
+ *
  * <p><b>Example 3 (footer SUM):</b>
  * <pre>
  *    final List&lt;DataRecord&gt; persons = persons();
@@ -84,7 +84,7 @@ import com.github.jlangch.venice.impl.util.excel.Excel;
  *                              .end()
  *                           .writeToBytes();
  * </pre>
- * 
+ *
  * <p><b>Example 4 (footer SUM with styles):</b>
  * <pre>
  *    final List&lt;DataRecord&gt; persons = persons();
@@ -117,63 +117,63 @@ import com.github.jlangch.venice.impl.util.excel.Excel;
  *                              .end()
  *                           .writeToBytes();
  * </pre>
- * 
+ *
  * @author juerg
  */
 public class ExcelBuilder {
 
-	private ExcelBuilder(final Excel managedExcel) {
-		this.managedExcel = managedExcel;
-	}
+    private ExcelBuilder(final Excel managedExcel) {
+        this.managedExcel = managedExcel;
+    }
 
-	
-	public static ExcelBuilder createXls() {
-		return new ExcelBuilder(Excel.createXls());
-	}
 
-	public static ExcelBuilder createXlsx() {
-		return new ExcelBuilder(Excel.createXlsx());
-	}
-	
+    public static ExcelBuilder createXls() {
+        return new ExcelBuilder(Excel.createXls());
+    }
 
-	public ExcelFontBuilder withFont(final String name) {
-		return new ExcelFontBuilder(this, managedExcel, name);
-	}
+    public static ExcelBuilder createXlsx() {
+        return new ExcelBuilder(Excel.createXlsx());
+    }
 
-	public ExcelCellStyleBuilder withCellStyle(final String name) {
-		return new ExcelCellStyleBuilder(this, managedExcel, name);
-	}
 
-	public <T> ExcelSheetBuilder<T> withSheet(final String name, final Class<T> type) {
-		return new ExcelSheetBuilder<T>(this, managedExcel.createSheet(name));
-	}
-	
-	public void evaluateAllFormulas() {
-		managedExcel.evaluateAllFormulas();;
-	}
+    public ExcelFontBuilder withFont(final String name) {
+        return new ExcelFontBuilder(this, managedExcel, name);
+    }
 
-	public Excel toExcel() {
-		return managedExcel;
-	}
+    public ExcelCellStyleBuilder withCellStyle(final String name) {
+        return new ExcelCellStyleBuilder(this, managedExcel, name);
+    }
 
-	public void write(final OutputStream outputStream) {
-		managedExcel.write(outputStream);
-	}
-	
-	public byte[] writeToBytes() {
-		return managedExcel.writeToBytes();
-	}
+    public <T> ExcelSheetBuilder<T> withSheet(final String name, final Class<T> type) {
+        return new ExcelSheetBuilder<T>(this, managedExcel.createSheet(name));
+    }
 
-	public ExcelReader reader() {
-		managedExcel.close();
-		return new ExcelReader(managedExcel);
-	}
+    public void evaluateAllFormulas() {
+        managedExcel.evaluateAllFormulas();;
+    }
 
-	public ExcelBuilder end() {
-		managedExcel.close();
-		return this;
-	}
+    public Excel toExcel() {
+        return managedExcel;
+    }
 
-	
-	private final Excel managedExcel;
+    public void write(final OutputStream outputStream) {
+        managedExcel.write(outputStream);
+    }
+
+    public byte[] writeToBytes() {
+        return managedExcel.writeToBytes();
+    }
+
+    public ExcelReader reader() {
+        managedExcel.close();
+        return new ExcelReader(managedExcel);
+    }
+
+    public ExcelBuilder end() {
+        managedExcel.close();
+        return this;
+    }
+
+
+    private final Excel managedExcel;
 }

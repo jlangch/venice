@@ -80,7 +80,7 @@ public class DynamicClassLoader2 extends URLClassLoader {
             }
         }
 
-        if (resolve) {	  // marked to resolve
+        if (resolve) {   // marked to resolve
             resolveClass(loadedClass);
         }
 

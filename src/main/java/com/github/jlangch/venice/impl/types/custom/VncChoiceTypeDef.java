@@ -72,9 +72,9 @@ public class VncChoiceTypeDef extends VncCustomBaseTypeDef {
     @Override
     public VncMap toMap() {
         return VncOrderedMap.of(
-                new VncKeyword(":type"),		getType(),
+                new VncKeyword(":type"),        getType(),
                 new VncKeyword(":custom-type"), new VncKeyword(":choice"),
-                new VncKeyword(":values"),		values());
+                new VncKeyword(":values"),      values());
     }
 
 

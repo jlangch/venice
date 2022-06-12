@@ -1,5 +1,5 @@
 /*   __    __         _
- *   \ \  / /__ _ __ (_) ___ ___ 
+ *   \ \  / /__ _ __ (_) ___ ___
  *    \ \/ / _ \ '_ \| |/ __/ _ \
  *     \  /  __/ | | | | (_|  __/
  *      \/ \___|_| |_|_|\___\___|
@@ -31,51 +31,51 @@ import com.github.jlangch.venice.impl.util.excel.Excel;
 
 /**
  * An Excel reader
- * 
+ *
  * @author juerg
  */
 public class ExcelReader {
 
-	ExcelReader(final Excel excel) {
-		this.excel = excel;
-	}
+    ExcelReader(final Excel excel) {
+        this.excel = excel;
+    }
 
-	
-	public static ExcelReader open(final byte[] document) {
-		return new ExcelReader(Excel.open(new ByteArrayInputStream(document)));
-	}
-	
-	public static ExcelReader open(final ByteBuffer document) {
-		return new ExcelReader(Excel.open(new ByteArrayInputStream(document.array())));
-	}
-	
-	public static ExcelReader open(final File file) {
-		return new ExcelReader(Excel.open(file));
-	}
-	
-	public static ExcelReader open(final InputStream is) {
-		return new ExcelReader(Excel.open(is));
-	}
 
-	
+    public static ExcelReader open(final byte[] document) {
+        return new ExcelReader(Excel.open(new ByteArrayInputStream(document)));
+    }
 
-	public int getNumberOfSheets() {
-		return excel.getNumberOfSheets();
-	}
-	
-	public void evaluateAllFormulas() {
-		excel.evaluateAllFormulas();
-	}
+    public static ExcelReader open(final ByteBuffer document) {
+        return new ExcelReader(Excel.open(new ByteArrayInputStream(document.array())));
+    }
 
-	public ExcelSheetReader getSheet(final String name) {
-		return new ExcelSheetReader(excel.getSheet(name));
-	}
+    public static ExcelReader open(final File file) {
+        return new ExcelReader(Excel.open(file));
+    }
 
-	public ExcelSheetReader getSheetAt(final int sheetIdx) {
-		return new ExcelSheetReader(excel.getSheetAt(sheetIdx-1));
-	}
-	
-	
+    public static ExcelReader open(final InputStream is) {
+        return new ExcelReader(Excel.open(is));
+    }
 
-	private final Excel excel;
+
+
+    public int getNumberOfSheets() {
+        return excel.getNumberOfSheets();
+    }
+
+    public void evaluateAllFormulas() {
+        excel.evaluateAllFormulas();
+    }
+
+    public ExcelSheetReader getSheet(final String name) {
+        return new ExcelSheetReader(excel.getSheet(name));
+    }
+
+    public ExcelSheetReader getSheetAt(final int sheetIdx) {
+        return new ExcelSheetReader(excel.getSheetAt(sheetIdx-1));
+    }
+
+
+
+    private final Excel excel;
 }

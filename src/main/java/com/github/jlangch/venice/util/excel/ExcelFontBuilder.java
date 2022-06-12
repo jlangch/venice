@@ -1,5 +1,5 @@
 /*   __    __         _
- *   \ \  / /__ _ __ (_) ___ ___ 
+ *   \ \  / /__ _ __ (_) ___ ___
  *    \ \/ / _ \ '_ \| |/ __/ _ \
  *     \  /  __/ | | | | (_|  __/
  *      \/ \___|_| |_|_|\___\___|
@@ -31,80 +31,80 @@ import com.github.jlangch.venice.util.pdf.HtmlColor;
 
 public class ExcelFontBuilder {
 
-	public ExcelFontBuilder(
-			final ExcelBuilder excelBuilder,
-			final Excel managedExcel,
-			final String id
-	) {
-		this.parentBuilder = excelBuilder;
-		this.managedExcel = managedExcel;
-		this.id = id;
-	}
-
-	
-
-	public ExcelFontBuilder name(final String fontName) {
-		this.fontName = fontName;
-		return this;
-	}
-
-	public ExcelFontBuilder heightInPoints(final int heightInPoints) {
-		this.heightInPoints = heightInPoints;
-		return this;
-	}
-
-	public ExcelFontBuilder bold() {
-		this.bold = true;
-		return this;
-	}
-
-	public ExcelFontBuilder italic() {
-		this.italic = true;
-		return this;
-	}
-
-	public ExcelFontBuilder color(final IndexedColors color) {
-		this.colorIndex = color.index;
-		return this;
-	}
-
-	public ExcelFontBuilder color(final short colorIndex) {
-		this.colorIndex = colorIndex;
-		return this;
-	}
-
-	public ExcelFontBuilder color(final Color color) {
-		this.color = color;
-		return this;
-	}
-
-	public ExcelFontBuilder colorHtml(final String color) {
-		this.color = HtmlColor.getColor(color);
-		return this;
-	}
-
-	public ExcelBuilder end() {
-		if (colorIndex != null) {
-			managedExcel.registerFont(id, fontName, heightInPoints, bold, italic, colorIndex);
-		}
-		else if (color != null) {
-			managedExcel.registerFont(id, fontName, heightInPoints, bold, italic, color);
-		}
-		else {
-			managedExcel.registerFont(id, fontName, heightInPoints, bold, italic, (Short)null);
-		}
-
-		return parentBuilder;
-	}
+    public ExcelFontBuilder(
+            final ExcelBuilder excelBuilder,
+            final Excel managedExcel,
+            final String id
+    ) {
+        this.parentBuilder = excelBuilder;
+        this.managedExcel = managedExcel;
+        this.id = id;
+    }
 
 
-	private final ExcelBuilder parentBuilder;
-	private final Excel managedExcel;
-	private final String id;
-	private String fontName;
-	private Integer heightInPoints;
-	private boolean bold;
-	private boolean italic;
-	private Short colorIndex;
-	private Color color;
+
+    public ExcelFontBuilder name(final String fontName) {
+        this.fontName = fontName;
+        return this;
+    }
+
+    public ExcelFontBuilder heightInPoints(final int heightInPoints) {
+        this.heightInPoints = heightInPoints;
+        return this;
+    }
+
+    public ExcelFontBuilder bold() {
+        this.bold = true;
+        return this;
+    }
+
+    public ExcelFontBuilder italic() {
+        this.italic = true;
+        return this;
+    }
+
+    public ExcelFontBuilder color(final IndexedColors color) {
+        this.colorIndex = color.index;
+        return this;
+    }
+
+    public ExcelFontBuilder color(final short colorIndex) {
+        this.colorIndex = colorIndex;
+        return this;
+    }
+
+    public ExcelFontBuilder color(final Color color) {
+        this.color = color;
+        return this;
+    }
+
+    public ExcelFontBuilder colorHtml(final String color) {
+        this.color = HtmlColor.getColor(color);
+        return this;
+    }
+
+    public ExcelBuilder end() {
+        if (colorIndex != null) {
+            managedExcel.registerFont(id, fontName, heightInPoints, bold, italic, colorIndex);
+        }
+        else if (color != null) {
+            managedExcel.registerFont(id, fontName, heightInPoints, bold, italic, color);
+        }
+        else {
+            managedExcel.registerFont(id, fontName, heightInPoints, bold, italic, (Short)null);
+        }
+
+        return parentBuilder;
+    }
+
+
+    private final ExcelBuilder parentBuilder;
+    private final Excel managedExcel;
+    private final String id;
+    private String fontName;
+    private Integer heightInPoints;
+    private boolean bold;
+    private boolean italic;
+    private Short colorIndex;
+    private Color color;
 }

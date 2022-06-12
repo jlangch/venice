@@ -103,11 +103,11 @@ public final class JsonWriter {
          *
          * <pre>
          * JsonWriter.indent("  ").on(System.out)
-         * 		.object()
-         * 			.value(&quot;a&quot;, 1)
-         * 			.value(&quot;b&quot;, 2)
-         * 		.end()
-         * 	.done();
+         *      .object()
+         *          .value(&quot;a&quot;, 1)
+         *          .value(&quot;b&quot;, 2)
+         *      .end()
+         *  .done();
          * </pre>
          */
         //@formatter:on
@@ -123,11 +123,11 @@ public final class JsonWriter {
          *
          * <pre>
          * JsonWriter.indent("  ").on(System.out)
-         * 		.object()
-         * 			.value(&quot;a&quot;, 1)
-         * 			.value(&quot;b&quot;, 2)
-         * 		.end()
-         * 	.done();
+         *      .object()
+         *              .value(&quot;a&quot;, 1)
+         *              .value(&quot;b&quot;, 2)
+         *          .end()
+         *  .done();
          * </pre>
          */
         //@formatter:on
@@ -228,11 +228,11 @@ public final class JsonWriter {
      *
      * <pre>
      * JsonWriter.on(System.out)
-     * 		.object()
-     * 			.value(&quot;a&quot;, 1)
-     * 			.value(&quot;b&quot;, 2)
-     * 		.end()
-     * 	.done();
+     *      .object()
+     *          .value(&quot;a&quot;, 1)
+     *          .value(&quot;b&quot;, 2)
+     *      .end()
+     *  .done();
      * </pre>
      */
     //@formatter:on
@@ -248,11 +248,11 @@ public final class JsonWriter {
      *
      * <pre>
      * JsonWriter.on(System.out)
-     * 		.object()
-     * 			.value(&quot;a&quot;, 1)
-     * 			.value(&quot;b&quot;, 2)
-     * 		.end()
-     * 	.done();
+     *      .object()
+     *          .value(&quot;a&quot;, 1)
+     *          .value(&quot;b&quot;, 2)
+     *      .end()
+     *  .done();
      * </pre>
      */
     //@formatter:on

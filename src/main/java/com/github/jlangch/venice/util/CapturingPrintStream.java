@@ -1,5 +1,5 @@
 /*   __    __         _
- *   \ \  / /__ _ __ (_) ___ ___ 
+ *   \ \  / /__ _ __ (_) ___ ___
  *    \ \/ / _ \ '_ \| |/ __/ _ \
  *     \  /  __/ | | | | (_|  __/
  *      \/ \___|_| |_|_|\___\___|
@@ -30,211 +30,211 @@ import com.github.jlangch.venice.SecurityException;
  */
 public class CapturingPrintStream extends PrintStream {
 
-	/**
-	 * Creates a new {@link CapturingPrintStream} and a default capturing limit 
-	 * of 10MB.
-	 * 
-	 * <p>The {@link CapturingPrintStream} throws a {@link SecurityException}
-	 * if the bytes written to the stream exceed the specified limit. 
-	 */
-	public CapturingPrintStream() {
-		this(DEFAULT_LIMIT);
-	}
+    /**
+     * Creates a new {@link CapturingPrintStream} and a default capturing limit
+     * of 10MB.
+     *
+     * <p>The {@link CapturingPrintStream} throws a {@link SecurityException}
+     * if the bytes written to the stream exceed the specified limit.
+     */
+    public CapturingPrintStream() {
+        this(DEFAULT_LIMIT);
+    }
 
-	/**
-	 * Creates a new {@link CapturingPrintStream} with the given capturing limit.
-	 * 
-	 * <p>The {@link CapturingPrintStream} throws a {@link SecurityException}
-	 * if the bytes written to the stream exceed the specified limit. 
-	 * 
-	 * @param limit A capturing limit
-	 */
-	public CapturingPrintStream(final int limit) {
-		super(new NullOutputStream());
-		
-		this.limit = limit;
-	}
+    /**
+     * Creates a new {@link CapturingPrintStream} with the given capturing limit.
+     *
+     * <p>The {@link CapturingPrintStream} throws a {@link SecurityException}
+     * if the bytes written to the stream exceed the specified limit.
+     *
+     * @param limit A capturing limit
+     */
+    public CapturingPrintStream(final int limit) {
+        super(new NullOutputStream());
 
-	
-	@Override
-	public PrintStream append(final CharSequence csq) {
-		print(csq == null ? "null" : csq.toString());
-		return this;
-	}
-	
-	@Override
-	public PrintStream append(final CharSequence csq, final int start, final int end) {
-		final CharSequence cs = (csq == null ? "null" : csq);
-		print(cs.subSequence(start, end).toString());
-		return this;
-	}
+        this.limit = limit;
+    }
 
-	@Override
-	public PrintStream append(final char c) {
-		print(c);
-		return this;
-	}
 
-	@Override
-	public void print(final boolean x) {
-		print(String.valueOf(x));
-	}
+    @Override
+    public PrintStream append(final CharSequence csq) {
+        print(csq == null ? "null" : csq.toString());
+        return this;
+    }
 
-	@Override
-	public void print(final int x) {
-		print(String.valueOf(x));
-	}
+    @Override
+    public PrintStream append(final CharSequence csq, final int start, final int end) {
+        final CharSequence cs = (csq == null ? "null" : csq);
+        print(cs.subSequence(start, end).toString());
+        return this;
+    }
 
-	@Override
-	public void print(final long x) {
-		print(String.valueOf(x));
-	}
+    @Override
+    public PrintStream append(final char c) {
+        print(c);
+        return this;
+    }
 
-	@Override
-	public void print(final float x) {
-		print(String.valueOf(x));
-	}
+    @Override
+    public void print(final boolean x) {
+        print(String.valueOf(x));
+    }
 
-	@Override
-	public void print(final double x) {
-		print(String.valueOf(x));
-	}
+    @Override
+    public void print(final int x) {
+        print(String.valueOf(x));
+    }
 
-	@Override
-	public void print(final char x) {
-		print(String.valueOf(x));
-	}
+    @Override
+    public void print(final long x) {
+        print(String.valueOf(x));
+    }
 
-	@Override
-	public void print(final char[] x) {
-		print(String.valueOf(x));
-	}
+    @Override
+    public void print(final float x) {
+        print(String.valueOf(x));
+    }
 
-	@Override
-	public void print(final Object x) {
-		print(String.valueOf(x));
-	}
+    @Override
+    public void print(final double x) {
+        print(String.valueOf(x));
+    }
 
-	@Override
-	public void print(final String s) {
-		appendToBuffer(s);
-	}
+    @Override
+    public void print(final char x) {
+        print(String.valueOf(x));
+    }
 
-	@Override
-	public void println() {
-		println("");
-	}
+    @Override
+    public void print(final char[] x) {
+        print(String.valueOf(x));
+    }
 
-	@Override
-	public void println(final boolean x) {
-		println(String.valueOf(x));
-	}
+    @Override
+    public void print(final Object x) {
+        print(String.valueOf(x));
+    }
 
-	@Override
-	public void println(final int x) {
-		println(String.valueOf(x));
-	}
+    @Override
+    public void print(final String s) {
+        appendToBuffer(s);
+    }
 
-	@Override
-	public void println(final long x) {
-		println(String.valueOf(x));
-	}
+    @Override
+    public void println() {
+        println("");
+    }
 
-	@Override
-	public void println(final float x) {
-		println(String.valueOf(x));
-	}
+    @Override
+    public void println(final boolean x) {
+        println(String.valueOf(x));
+    }
 
-	@Override
-	public void println(final double x) {
-		println(String.valueOf(x));
-	}
+    @Override
+    public void println(final int x) {
+        println(String.valueOf(x));
+    }
 
-	@Override
-	public void println(final char x) {
-		println(String.valueOf(x));
-	}
+    @Override
+    public void println(final long x) {
+        println(String.valueOf(x));
+    }
 
-	@Override
-	public void println(final char[] x) {
-		println(String.valueOf(x));
-	}
+    @Override
+    public void println(final float x) {
+        println(String.valueOf(x));
+    }
 
-	@Override
-	public void println(final Object x) {
-		println(String.valueOf(x));
-	}
+    @Override
+    public void println(final double x) {
+        println(String.valueOf(x));
+    }
 
-	@Override
-	public void println(final String s) {
-		appendToBuffer(s);
-		appendToBuffer(System.lineSeparator());
-	}
+    @Override
+    public void println(final char x) {
+        println(String.valueOf(x));
+    }
 
-	@Override
-	public void write(final byte buf[], final int off, final int len) {
-		throw new RuntimeException(
-				"Method write(byte[],int,int) is not supported");
-	}
-	
-	@Override
-	public void write(final int b) {
-		throw new RuntimeException(
-				"Method write(int) is not supported");
-	}
-	
-	@Override
-	public void close() {
-	}
+    @Override
+    public void println(final char[] x) {
+        println(String.valueOf(x));
+    }
 
-	@Override
-	public void flush() {
-	}
+    @Override
+    public void println(final Object x) {
+        println(String.valueOf(x));
+    }
 
-	public void reset() {
-		synchronized (this) {
-			sb.setLength(0);
-		}
-	}
+    @Override
+    public void println(final String s) {
+        appendToBuffer(s);
+        appendToBuffer(System.lineSeparator());
+    }
 
-	public boolean isEmpty() {
-		synchronized (this) {
-			return sb.length() == 0;
-		}
-	}
+    @Override
+    public void write(final byte buf[], final int off, final int len) {
+        throw new RuntimeException(
+                "Method write(byte[],int,int) is not supported");
+    }
 
-	public String getOutput() {
-		synchronized (this) {
-			return sb.toString();
-		}
-	}
-	
-	private void appendToBuffer(final String s) {
-		synchronized (this) {
-			final int left = limit - sb.length();
-			
-			if (left <= 0) {
-				throw new SecurityException(String.format(
-						"CapturingPrintStream exceeded the limit of %d chars",
-						limit));
-			}
-			else if (s.length() <= left) {
-				sb.append(s);		
-			}
-			else {
-				sb.append(s.substring(0, left));
-				
-				throw new SecurityException(String.format(
-						"CapturingPrintStream exceeded the limit of %d chars",
-						limit));
-			}
-		}
-		
-	}
-	
-	
-	public static final int DEFAULT_LIMIT = 1024 * 1024 * 10;
-	
-	private final int limit;
-	private final StringBuilder sb = new StringBuilder();
+    @Override
+    public void write(final int b) {
+        throw new RuntimeException(
+                "Method write(int) is not supported");
+    }
+
+    @Override
+    public void close() {
+    }
+
+    @Override
+    public void flush() {
+    }
+
+    public void reset() {
+        synchronized (this) {
+            sb.setLength(0);
+        }
+    }
+
+    public boolean isEmpty() {
+        synchronized (this) {
+            return sb.length() == 0;
+        }
+    }
+
+    public String getOutput() {
+        synchronized (this) {
+            return sb.toString();
+        }
+    }
+
+    private void appendToBuffer(final String s) {
+        synchronized (this) {
+            final int left = limit - sb.length();
+
+            if (left <= 0) {
+                throw new SecurityException(String.format(
+                        "CapturingPrintStream exceeded the limit of %d chars",
+                        limit));
+            }
+            else if (s.length() <= left) {
+                sb.append(s);
+            }
+            else {
+                sb.append(s.substring(0, left));
+
+                throw new SecurityException(String.format(
+                        "CapturingPrintStream exceeded the limit of %d chars",
+                        limit));
+            }
+        }
+
+    }
+
+
+    public static final int DEFAULT_LIMIT = 1024 * 1024 * 10;
+
+    private final int limit;
+    private final StringBuilder sb = new StringBuilder();
 }

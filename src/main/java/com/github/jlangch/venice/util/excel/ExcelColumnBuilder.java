@@ -1,5 +1,5 @@
 /*   __    __         _
- *   \ \  / /__ _ __ (_) ___ ___ 
+ *   \ \  / /__ _ __ (_) ___ ___
  *    \ \/ / _ \ '_ \| |/ __/ _ \
  *     \  /  __/ | | | | (_|  __/
  *      \/ \___|_| |_|_|\___\___|
@@ -29,109 +29,109 @@ import com.github.jlangch.venice.impl.util.excel.ExcelColumnDef;
 
 public class ExcelColumnBuilder<T> {
 
-	public ExcelColumnBuilder(
-			final ExcelSheetBuilder<T> excelSheetBuilder,
-			final List<ExcelColumnDef<T>> columnDefs,
-			final String name
-	) {
-		this.parentBuilder = excelSheetBuilder;
-		this.columnDefs = columnDefs;
-		this.name = name;
-	}
-
-	
-	public ExcelColumnBuilder<T> colMapper(final Function<? super T, ?> mapper) {
-		this.mapper = mapper;
-		return this;
-	}
-
-	public ExcelColumnBuilder<T> colMapper(final String fieldName) {
-		this.mapper = e -> ((DataRecord)e).get(fieldName);
-		return this;
-	}
-
-	public ExcelColumnBuilder<T> widthInPoints(final int width) {
-		this.width = width;
-		return this;
-	}
-	
-	public ExcelColumnBuilder<T> hidden(final boolean hide) {
-		this.hidden = hide;
-		return this;
-	}
-
-	public ExcelColumnBuilder<T> headerStyle(final String style) {
-		this.headerStyle = style;
-		return this;
-	}
-	
-	public ExcelColumnBuilder<T> bodyStyle(final String style) {
-		this.bodyStyle = style;
-		return this;
-	}
-	
-	public ExcelColumnBuilder<T> footerStyle(final String style) {
-		this.footerStyle = style;
-		return this;
-	}
-	
-	public ExcelColumnBuilder<T> footerTextValue(final String text) {
-		this.footerValue = text;
-		footerType = ExcelColumnDef.FooterType.TEXT;
-		return this;
-	}
-	
-	public ExcelColumnBuilder<T> footerNumberValue(final Number number) {
-		this.footerValue = number;
-		footerType = ExcelColumnDef.FooterType.NUMBER;
-		return this;
-	}
-	
-	public ExcelColumnBuilder<T> footerMin() {
-		this.footerValue = null;
-		footerType = ExcelColumnDef.FooterType.MIN;
-		return this;
-	}
-	
-	public ExcelColumnBuilder<T> footerMax() {
-		this.footerValue = null;
-		footerType = ExcelColumnDef.FooterType.MAX;
-		return this;
-	}
-	
-	public ExcelColumnBuilder<T> footerAverage() {
-		this.footerValue = null;
-		footerType = ExcelColumnDef.FooterType.AVERAGE;
-		return this;
-	}
-	
-	public ExcelColumnBuilder<T> footerSum() {
-		this.footerValue = null;
-		footerType = ExcelColumnDef.FooterType.SUM;
-		return this;
-	}
-
-	public ExcelSheetBuilder<T> end() {
-		if (!hidden) {
-			columnDefs.add(
-				new ExcelColumnDef<T>(
-						name, mapper, width, 
-						headerStyle, bodyStyle, footerStyle, 
-						footerValue, footerType));
-		}
-		return parentBuilder;
-	}
+    public ExcelColumnBuilder(
+            final ExcelSheetBuilder<T> excelSheetBuilder,
+            final List<ExcelColumnDef<T>> columnDefs,
+            final String name
+    ) {
+        this.parentBuilder = excelSheetBuilder;
+        this.columnDefs = columnDefs;
+        this.name = name;
+    }
 
 
-	private final ExcelSheetBuilder<T> parentBuilder;
-	private final List<ExcelColumnDef<T>> columnDefs;
-	private Function<? super T, ?> mapper;
-	private String name;
-	private Integer width;
-	private String headerStyle;
-	private String bodyStyle;
-	private String footerStyle;
-	private Object footerValue;
-	private boolean hidden = false;
-	private ExcelColumnDef.FooterType footerType = ExcelColumnDef.FooterType.NONE;
+    public ExcelColumnBuilder<T> colMapper(final Function<? super T, ?> mapper) {
+        this.mapper = mapper;
+        return this;
+    }
+
+    public ExcelColumnBuilder<T> colMapper(final String fieldName) {
+        this.mapper = e -> ((DataRecord)e).get(fieldName);
+        return this;
+    }
+
+    public ExcelColumnBuilder<T> widthInPoints(final int width) {
+        this.width = width;
+        return this;
+    }
+
+    public ExcelColumnBuilder<T> hidden(final boolean hide) {
+        this.hidden = hide;
+        return this;
+    }
+
+    public ExcelColumnBuilder<T> headerStyle(final String style) {
+        this.headerStyle = style;
+        return this;
+    }
+
+    public ExcelColumnBuilder<T> bodyStyle(final String style) {
+        this.bodyStyle = style;
+        return this;
+    }
+
+    public ExcelColumnBuilder<T> footerStyle(final String style) {
+        this.footerStyle = style;
+        return this;
+    }
+
+    public ExcelColumnBuilder<T> footerTextValue(final String text) {
+        this.footerValue = text;
+        footerType = ExcelColumnDef.FooterType.TEXT;
+        return this;
+    }
+
+    public ExcelColumnBuilder<T> footerNumberValue(final Number number) {
+        this.footerValue = number;
+        footerType = ExcelColumnDef.FooterType.NUMBER;
+        return this;
+    }
+
+    public ExcelColumnBuilder<T> footerMin() {
+        this.footerValue = null;
+        footerType = ExcelColumnDef.FooterType.MIN;
+        return this;
+    }
+
+    public ExcelColumnBuilder<T> footerMax() {
+        this.footerValue = null;
+        footerType = ExcelColumnDef.FooterType.MAX;
+        return this;
+    }
+
+    public ExcelColumnBuilder<T> footerAverage() {
+        this.footerValue = null;
+        footerType = ExcelColumnDef.FooterType.AVERAGE;
+        return this;
+    }
+
+    public ExcelColumnBuilder<T> footerSum() {
+        this.footerValue = null;
+        footerType = ExcelColumnDef.FooterType.SUM;
+        return this;
+    }
+
+    public ExcelSheetBuilder<T> end() {
+        if (!hidden) {
+            columnDefs.add(
+                new ExcelColumnDef<T>(
+                        name, mapper, width,
+                        headerStyle, bodyStyle, footerStyle,
+                        footerValue, footerType));
+        }
+        return parentBuilder;
+    }
+
+
+    private final ExcelSheetBuilder<T> parentBuilder;
+    private final List<ExcelColumnDef<T>> columnDefs;
+    private Function<? super T, ?> mapper;
+    private String name;
+    private Integer width;
+    private String headerStyle;
+    private String bodyStyle;
+    private String footerStyle;
+    private Object footerValue;
+    private boolean hidden = false;
+    private ExcelColumnDef.FooterType footerType = ExcelColumnDef.FooterType.NONE;
 }

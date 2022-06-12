@@ -309,57 +309,57 @@ public class Types {
         final String sType = ":" + type.getQualifiedName();
 
         switch(sType) {
-            case ":core/nil":			return val == Nil;
+            case ":core/nil":           return val == Nil;
 
-            case ":core/char":			return Types.isVncChar(val);
-            case ":core/string":		return Types.isVncString(val);
-            case ":core/boolean":		return Types.isVncBoolean(val);
-            case ":core/number":		return Types.isVncNumber(val);
-            case ":core/integer":		return Types.isVncInteger(val);
-            case ":core/long":			return Types.isVncLong(val);
-            case ":core/double":		return Types.isVncDouble(val);
-            case ":core/decimal":		return Types.isVncBigDecimal(val);
-            case ":core/bigint":		return Types.isVncBigInteger(val);
-            case ":core/bytebuf":		return Types.isVncByteBuffer(val);
+            case ":core/char":          return Types.isVncChar(val);
+            case ":core/string":        return Types.isVncString(val);
+            case ":core/boolean":       return Types.isVncBoolean(val);
+            case ":core/number":        return Types.isVncNumber(val);
+            case ":core/integer":       return Types.isVncInteger(val);
+            case ":core/long":          return Types.isVncLong(val);
+            case ":core/double":        return Types.isVncDouble(val);
+            case ":core/decimal":       return Types.isVncBigDecimal(val);
+            case ":core/bigint":        return Types.isVncBigInteger(val);
+            case ":core/bytebuf":       return Types.isVncByteBuffer(val);
 
-            case ":core/symbol":		return Types.isVncSymbol(val);
-            case ":core/keyword":		return Types.isVncKeyword(val);
+            case ":core/symbol":        return Types.isVncSymbol(val);
+            case ":core/keyword":       return Types.isVncKeyword(val);
 
-            case ":core/atom":			return Types.isVncAtom(val);
-            case ":core/volatile":		return Types.isVncVolatile(val);
-            case ":core/thread-local":	return Types.isVncThreadLocal(val);
+            case ":core/atom":          return Types.isVncAtom(val);
+            case ":core/volatile":      return Types.isVncVolatile(val);
+            case ":core/thread-local":  return Types.isVncThreadLocal(val);
 
-            case ":core/java-object":	return Types.isVncJavaObject(val);
+            case ":core/java-object":   return Types.isVncJavaObject(val);
 
-            case ":core/just":			return Types.isVncJust(val);
-            case ":core/function":		return Types.isVncFunction(val);
-            case ":core/macro":			return Types.isVncMacro(val);
+            case ":core/just":          return Types.isVncJust(val);
+            case ":core/function":      return Types.isVncFunction(val);
+            case ":core/macro":         return Types.isVncMacro(val);
 
-            case ":core/collection":	return Types.isVncCollection(val);
+            case ":core/collection":    return Types.isVncCollection(val);
 
-            case ":core/sequence":		return Types.isVncSequence(val);
-            case ":core/vector":		return Types.isVncVector(val);
-            case ":core/list":			return Types.isVncList(val);
-            case ":core/mutable-list":	return Types.isVncMutableList(val);
+            case ":core/sequence":      return Types.isVncSequence(val);
+            case ":core/vector":        return Types.isVncVector(val);
+            case ":core/list":          return Types.isVncList(val);
+            case ":core/mutable-list":  return Types.isVncMutableList(val);
 
-            case ":core/set":			return Types.isVncSet(val);
-            case ":core/hash-set":		return Types.isVncHashSet(val);
-            case ":core/sorted-set":	return Types.isVncSortedSet(val);
-            case ":core/mutable-set":	return Types.isVncMutableSet(val);
+            case ":core/set":           return Types.isVncSet(val);
+            case ":core/hash-set":      return Types.isVncHashSet(val);
+            case ":core/sorted-set":    return Types.isVncSortedSet(val);
+            case ":core/mutable-set":   return Types.isVncMutableSet(val);
 
-            case ":core/map":			return Types.isVncMap(val);
-            case ":core/hash-map":		return Types.isVncHashMap(val);
-            case ":core/ordered-map":	return Types.isVncOrderedMap(val);
-            case ":core/sorted-map":	return Types.isVncSortedMap(val);
-            case ":core/mutable-map":	return Types.isVncMutableMap(val);
-            case ":core/map-entry":		return Types.isVncMapEntry(val);
+            case ":core/map":           return Types.isVncMap(val);
+            case ":core/hash-map":      return Types.isVncHashMap(val);
+            case ":core/ordered-map":   return Types.isVncOrderedMap(val);
+            case ":core/sorted-map":    return Types.isVncSortedMap(val);
+            case ":core/mutable-map":   return Types.isVncMutableMap(val);
+            case ":core/map-entry":     return Types.isVncMapEntry(val);
 
-            case ":core/stack":			return Types.isVncStack(val);
-            case ":core/queue":			return Types.isVncQueue(val);
+            case ":core/stack":         return Types.isVncStack(val);
+            case ":core/queue":         return Types.isVncQueue(val);
 
-            case ":core/custom-type":	return Types.isVncCustomType(val);
+            case ":core/custom-type":   return Types.isVncCustomType(val);
 
-            case ":dag/dag":			return Types.isVncDAG(val);
+            case ":dag/dag":            return Types.isVncDAG(val);
 
             default:
                 try {
@@ -420,19 +420,19 @@ public class Types {
                                 : val.getType().getValue();
 
         switch(type) {
-            case "core/nil":		return true;
-            case "core/boolean":	return true;
-            case "core/long":		return true;
-            case "core/integer":	return true;
-            case "core/double":		return true;
-            case "core/bigint":		return true;
-            case "core/decimal":	return true;
-            case "core/string":		return true;
-            case "core/char":		return true;
-            case "core/symbol":		return true;
-            case "core/keyword":	return true;
-            case "core/function":	return true;
-            default:				return false;
+            case "core/nil":        return true;
+            case "core/boolean":    return true;
+            case "core/long":       return true;
+            case "core/integer":    return true;
+            case "core/double":     return true;
+            case "core/bigint":     return true;
+            case "core/decimal":    return true;
+            case "core/string":     return true;
+            case "core/char":       return true;
+            case "core/symbol":     return true;
+            case "core/keyword":    return true;
+            case "core/function":   return true;
+            default:                return false;
         }
     }
 

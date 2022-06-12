@@ -42,7 +42,7 @@ import com.github.jlangch.venice.impl.types.collections.VncList;
 //
 //     (do
 //       (def counter (atom 0))
-//		 (def saved-cont (atom nil))
+//       (def saved-cont (atom nil))
 //
 //       (println (call-cc (fn [cont]
 //                           (reset! saved-cont cont)

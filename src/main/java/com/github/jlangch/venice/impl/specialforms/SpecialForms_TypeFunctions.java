@@ -131,10 +131,10 @@ public class SpecialForms_TypeFunctions {
                         final SpecialFormsContext ctx
                 ) {
                     // (defprotocol P
-                    //	  (foo [x])
-                    //	  (bar [x] [x y])
-                    //	  (zoo [x] "default val")
-                    //	  (yar [x] [x y] "default val"))
+                    //    (foo [x])
+                    //    (bar [x] [x y])
+                    //    (zoo [x] "default val")
+                    //    (yar [x] [x y] "default val"))
 
                     final CallFrame callframe = new CallFrame("defprotocol", args, specialFormMeta);
                     try (WithCallStack cs = new WithCallStack(callframe)) {
@@ -504,12 +504,12 @@ public class SpecialForms_TypeFunctions {
                     .examples(
                         "(do                                                           \n" +
                         "  (ns foo)                                                    \n" +
-                        "  (deftype :complex [real :long, imaginary :long])		       \n" +
-                        "  (deftype-describe :complex))	                               \n",
+                        "  (deftype :complex [real :long, imaginary :long]             \n" +
+                        "  (deftype-describe :complex))                                \n",
                         "(do                                                           \n" +
                         "  (ns foo)                                                    \n" +
-                        "  (deftype-of :port :long)		                               \n" +
-                        "  (deftype-describe :port))	                               \n",
+                        "  (deftype-of :port :long)                                    \n" +
+                        "  (deftype-describe :port))                                   \n",
                         "(do                                                           \n" +
                         "  (ns foo)                                                    \n" +
                         "  (deftype-or :digit 0 1 2 3 4 5 6 7 8 9)                     \n" +
@@ -728,10 +728,10 @@ public class SpecialForms_TypeFunctions {
 
     private static void validateDefProtocol(final VncList args) {
         // (defprotocol P
-        //	  (foo [x])
-        //	  (bar [x] [x y])
-        //	  (goo [x] "default val")
-        //	  (dar [x] [x y] "default val"))
+        //    (foo [x])
+        //    (bar [x] [x y])
+        //    (goo [x] "default val")
+        //    (dar [x] [x y] "default val"))
 
         if (!Types.isVncSymbol(args.first())) {
             throw new VncException(

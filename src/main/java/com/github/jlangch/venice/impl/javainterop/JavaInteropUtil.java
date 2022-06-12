@@ -155,7 +155,7 @@ public class JavaInteropUtil {
                 }
                 else {
                     // instance method/field:   (. person :getLastName)
-                    //	                        (. person :setLastName \"john\")
+                    //                          (. person :setLastName \"john\")
                     Object target = null;
                     Class<?> targetFormalType = null;
                     if (arg0 instanceof IVncJavaObject) {

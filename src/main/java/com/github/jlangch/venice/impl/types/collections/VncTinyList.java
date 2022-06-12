@@ -79,22 +79,22 @@ public class VncTinyList extends VncList {
 
     public static VncTinyList of(final VncVal... mvs) {
         switch (mvs.length) {
-            case 0:	return EMPTY;
-            case 1:	return new VncTinyList(1, mvs[0], Nil,    Nil,    Nil,    null);
-            case 2:	return new VncTinyList(2, mvs[0], mvs[1], Nil,    Nil,    null);
-            case 3:	return new VncTinyList(3, mvs[0], mvs[1], mvs[2], Nil,    null);
-            case 4:	return new VncTinyList(4, mvs[0], mvs[1], mvs[2], mvs[3], null);
+            case 0:  return EMPTY;
+            case 1:  return new VncTinyList(1, mvs[0], Nil,    Nil,    Nil,    null);
+            case 2:  return new VncTinyList(2, mvs[0], mvs[1], Nil,    Nil,    null);
+            case 3:  return new VncTinyList(3, mvs[0], mvs[1], mvs[2], Nil,    null);
+            case 4:  return new VncTinyList(4, mvs[0], mvs[1], mvs[2], mvs[3], null);
             default: throw new IllegalStateException("Length out of range");
         }
     }
 
     public static VncTinyList ofArr(final VncVal[] mvs, final VncVal meta) {
         switch (mvs.length) {
-            case 0:	return new VncTinyList(meta);
-            case 1:	return new VncTinyList(1, mvs[0], Nil,    Nil,    Nil,    meta);
-            case 2:	return new VncTinyList(2, mvs[0], mvs[1], Nil,    Nil,    meta);
-            case 3:	return new VncTinyList(3, mvs[0], mvs[1], mvs[2], Nil,    meta);
-            case 4:	return new VncTinyList(4, mvs[0], mvs[1], mvs[2], mvs[3], meta);
+            case 0:  return new VncTinyList(meta);
+            case 1:  return new VncTinyList(1, mvs[0], Nil,    Nil,    Nil,    meta);
+            case 2:  return new VncTinyList(2, mvs[0], mvs[1], Nil,    Nil,    meta);
+            case 3:  return new VncTinyList(3, mvs[0], mvs[1], mvs[2], Nil,    meta);
+            case 4:  return new VncTinyList(4, mvs[0], mvs[1], mvs[2], mvs[3], meta);
             default: throw new IllegalStateException("Length out of range");
         }
     }
@@ -162,11 +162,11 @@ public class VncTinyList extends VncList {
         }
 
         switch (idx) {
-            case 0:	return EMPTY;
-            case 1:	return new VncTinyList(1, values[0], Nil,       Nil,       Nil,       getMeta());
-            case 2:	return new VncTinyList(2, values[0], values[1], Nil,       Nil,       getMeta());
-            case 3:	return new VncTinyList(3, values[0], values[1], values[2], Nil,       getMeta());
-            case 4:	return new VncTinyList(4, values[0], values[1], values[2], values[3], getMeta());
+            case 0:  return EMPTY;
+            case 1:  return new VncTinyList(1, values[0], Nil,       Nil,       Nil,       getMeta());
+            case 2:  return new VncTinyList(2, values[0], values[1], Nil,       Nil,       getMeta());
+            case 3:  return new VncTinyList(3, values[0], values[1], values[2], Nil,       getMeta());
+            case 4:  return new VncTinyList(4, values[0], values[1], values[2], values[3], getMeta());
             default: throw new IllegalStateException("Length out of range");
         }
     }
@@ -231,10 +231,10 @@ public class VncTinyList extends VncList {
         }
 
         switch(idx) {
-            case 0:	return first;
-            case 1:	return second;
-            case 2:	return third;
-            case 3:	return fourth;
+            case 0:  return first;
+            case 1:  return second;
+            case 2:  return third;
+            case 3:  return fourth;
             default: throw new IllegalStateException("Length out of range");
         }
     }
@@ -246,10 +246,10 @@ public class VncTinyList extends VncList {
         }
         else {
             switch(idx) {
-                case 0:	return first;
-                case 1:	return second;
-                case 2:	return third;
-                case 3:	return fourth;
+                case 0:  return first;
+                case 1:  return second;
+                case 2:  return third;
+                case 3:  return fourth;
                 default: return defaultVal;
             }
         }
@@ -278,11 +278,11 @@ public class VncTinyList extends VncList {
     @Override
     public VncVal last() {
         switch(len) {
-            case 0:	return Nil;
-            case 1:	return first;
-            case 2:	return second;
-            case 3:	return third;
-            case 4:	return fourth;
+            case 0:  return Nil;
+            case 1:  return first;
+            case 2:  return second;
+            case 3:  return third;
+            case 4:  return fourth;
             default: throw new IllegalStateException("Length out of range");
         }
     }
@@ -290,11 +290,11 @@ public class VncTinyList extends VncList {
     @Override
     public VncList rest() {
         switch(len) {
-            case 0:	return this;
-            case 1:	return new VncTinyList(getMeta());
-            case 2:	return new VncTinyList(1, second, Nil,   Nil,    Nil, getMeta());
-            case 3:	return new VncTinyList(2, second, third, Nil,    Nil, getMeta());
-            case 4:	return new VncTinyList(3, second, third, fourth, Nil, getMeta());
+            case 0:  return this;
+            case 1:  return new VncTinyList(getMeta());
+            case 2:  return new VncTinyList(1, second, Nil,   Nil,    Nil, getMeta());
+            case 3:  return new VncTinyList(2, second, third, Nil,    Nil, getMeta());
+            case 4:  return new VncTinyList(3, second, third, fourth, Nil, getMeta());
             default: throw new IllegalStateException("Length out of range");
         }
     }
@@ -302,11 +302,11 @@ public class VncTinyList extends VncList {
     @Override
     public VncList butlast() {
         switch(len) {
-            case 0:	return this;
-            case 1:	return new VncTinyList(getMeta());
-            case 2:	return new VncTinyList(1, first, Nil,    Nil,   Nil, getMeta());
-            case 3:	return new VncTinyList(2, first, second, Nil,   Nil, getMeta());
-            case 4:	return new VncTinyList(3, first, second, third, Nil, getMeta());
+            case 0:  return this;
+            case 1:  return new VncTinyList(getMeta());
+            case 2:  return new VncTinyList(1, first, Nil,    Nil,   Nil, getMeta());
+            case 3:  return new VncTinyList(2, first, second, Nil,   Nil, getMeta());
+            case 4:  return new VncTinyList(3, first, second, third, Nil, getMeta());
             default: throw new IllegalStateException("Length out of range");
         }
     }
@@ -321,9 +321,9 @@ public class VncTinyList extends VncList {
         }
 
         switch(n) {
-            case 1:	return new VncTinyList(len-1, second, third,  fourth, Nil, getMeta());
-            case 2:	return new VncTinyList(len-2, third,  fourth, Nil,    Nil, getMeta());
-            case 3:	return new VncTinyList(len-3, fourth, Nil,    Nil,    Nil, getMeta());
+            case 1:  return new VncTinyList(len-1, second, third,  fourth, Nil, getMeta());
+            case 2:  return new VncTinyList(len-2, third,  fourth, Nil,    Nil, getMeta());
+            case 3:  return new VncTinyList(len-3, fourth, Nil,    Nil,    Nil, getMeta());
             default: return EMPTY;
         }
     }
@@ -361,9 +361,9 @@ public class VncTinyList extends VncList {
         }
 
         switch(n) {
-            case 1:	return new VncTinyList(1, first, Nil,    Nil,   Nil, getMeta());
-            case 2:	return new VncTinyList(2, first, second, Nil,   Nil, getMeta());
-            case 3:	return new VncTinyList(3, first, second, third, Nil, getMeta());
+            case 1:  return new VncTinyList(1, first, Nil,    Nil,   Nil, getMeta());
+            case 2:  return new VncTinyList(2, first, second, Nil,   Nil, getMeta());
+            case 3:  return new VncTinyList(3, first, second, third, Nil, getMeta());
             default: return this;
         }
     }
@@ -394,11 +394,11 @@ public class VncTinyList extends VncList {
     @Override
     public VncList reverse() {
         switch(len) {
-            case 0:	return this;
-            case 1:	return this;
-            case 2:	return new VncTinyList(2, second, first, Nil,   Nil,    getMeta());
-            case 3:	return new VncTinyList(3, third, second, first, Nil,    getMeta());
-            case 4:	return new VncTinyList(4, fourth, third, second, first, getMeta());
+            case 0:  return this;
+            case 1:  return this;
+            case 2:  return new VncTinyList(2, second, first, Nil,   Nil,    getMeta());
+            case 3:  return new VncTinyList(3, third, second, first, Nil,    getMeta());
+            case 4:  return new VncTinyList(4, fourth, third, second, first, getMeta());
             default: throw new IllegalStateException("Length out of range");
         }
     }
@@ -450,11 +450,11 @@ public class VncTinyList extends VncList {
         }
 
         switch (idx) {
-            case 0:	return EMPTY;
-            case 1:	return new VncTinyList(1, values[0], Nil,       Nil,       Nil,       getMeta());
-            case 2:	return new VncTinyList(2, values[0], values[1], Nil,       Nil,       getMeta());
-            case 3:	return new VncTinyList(3, values[0], values[1], values[2], Nil,       getMeta());
-            case 4:	return new VncTinyList(4, values[0], values[1], values[2], values[3], getMeta());
+            case 0:  return EMPTY;
+            case 1:  return new VncTinyList(1, values[0], Nil,       Nil,       Nil,       getMeta());
+            case 2:  return new VncTinyList(2, values[0], values[1], Nil,       Nil,       getMeta());
+            case 3:  return new VncTinyList(3, values[0], values[1], values[2], Nil,       getMeta());
+            case 4:  return new VncTinyList(4, values[0], values[1], values[2], values[3], getMeta());
             default: throw new IllegalStateException("Length out of range");
         }
     }
@@ -485,9 +485,9 @@ public class VncTinyList extends VncList {
         }
 
         switch(start) {
-            case 1:	return new VncTinyList(len-1, second, third,  fourth, Nil, getMeta());
-            case 2:	return new VncTinyList(len-2, third,  fourth, Nil,    Nil, getMeta());
-            case 3:	return new VncTinyList(len-3, fourth, Nil,    Nil,    Nil, getMeta());
+            case 1:  return new VncTinyList(len-1, second, third,  fourth, Nil, getMeta());
+            case 2:  return new VncTinyList(len-2, third,  fourth, Nil,    Nil, getMeta());
+            case 3:  return new VncTinyList(len-3, fourth, Nil,    Nil,    Nil, getMeta());
             default: return EMPTY;
         }
     }
@@ -500,11 +500,11 @@ public class VncTinyList extends VncList {
     @Override
     public VncVector toVncVector() {
         switch (len) {
-            case 0:	return new VncTinyVector(getMeta());
+            case 0:  return new VncTinyVector(getMeta());
             case 1: return VncTinyVector.of(first).withMeta(getMeta());
-            case 2:	return VncTinyVector.of(first, second).withMeta(getMeta());
-            case 3:	return VncTinyVector.of(first, second, third).withMeta(getMeta());
-            case 4:	return VncTinyVector.of(first, second, third, fourth).withMeta(getMeta());
+            case 2:  return VncTinyVector.of(first, second).withMeta(getMeta());
+            case 3:  return VncTinyVector.of(first, second, third).withMeta(getMeta());
+            case 4:  return VncTinyVector.of(first, second, third, fourth).withMeta(getMeta());
             default: throw new IllegalStateException("List length out of range");
         }
     }
@@ -512,11 +512,11 @@ public class VncTinyList extends VncList {
     @Override
     public VncList addAtStart(final VncVal val) {
         switch (len) {
-            case 0:	return new VncTinyList(1, val, Nil,   Nil,    Nil,  getMeta());
+            case 0:  return new VncTinyList(1, val, Nil,   Nil,    Nil,  getMeta());
             case 1: return new VncTinyList(2, val, first, Nil,    Nil,  getMeta());
-            case 2:	return new VncTinyList(3, val, first, second, Nil,  getMeta());
-            case 3:	return new VncTinyList(4, val, first, second, third, getMeta());
-            case 4:	return VncList.of(val, first, second, third, fourth).withMeta(getMeta());
+            case 2:  return new VncTinyList(3, val, first, second, Nil,  getMeta());
+            case 3:  return new VncTinyList(4, val, first, second, third, getMeta());
+            case 4:  return VncList.of(val, first, second, third, fourth).withMeta(getMeta());
             default: throw new IllegalStateException("List length out of range");
         }
     }
@@ -549,11 +549,11 @@ public class VncTinyList extends VncList {
     @Override
     public VncList addAtEnd(final VncVal val) {
         switch (len) {
-            case 0:	return new VncTinyList(1, val,   Nil,    Nil,   Nil, getMeta());
-            case 1:	return new VncTinyList(2, first, val,    Nil,   Nil, getMeta());
-            case 2:	return new VncTinyList(3, first, second, val,   Nil, getMeta());
-            case 3:	return new VncTinyList(4, first, second, third, val,  getMeta());
-            case 4:	return VncList.of(first, second, third, fourth, val).withMeta(getMeta());
+            case 0:  return new VncTinyList(1, val,   Nil,    Nil,   Nil, getMeta());
+            case 1:  return new VncTinyList(2, first, val,    Nil,   Nil, getMeta());
+            case 2:  return new VncTinyList(3, first, second, val,   Nil, getMeta());
+            case 3:  return new VncTinyList(4, first, second, third, val,  getMeta());
+            case 4:  return VncList.of(first, second, third, fourth, val).withMeta(getMeta());
             default: throw new IllegalStateException("List length out of range");
         }
     }
@@ -600,10 +600,10 @@ public class VncTinyList extends VncList {
         }
         else {
             switch (idx) {
-                case 0:	return new VncTinyList(len-1, second, third, fourth, Nil, getMeta());
-                case 1:	return new VncTinyList(len-1, first, third, fourth, Nil, getMeta());
-                case 2:	return new VncTinyList(len-1, first, second, fourth, Nil, getMeta());
-                case 3:	return new VncTinyList(len-1, first, second, third, Nil, getMeta());
+                case 0:  return new VncTinyList(len-1, second, third, fourth, Nil, getMeta());
+                case 1:  return new VncTinyList(len-1, first, third, fourth, Nil, getMeta());
+                case 2:  return new VncTinyList(len-1, first, second, fourth, Nil, getMeta());
+                case 3:  return new VncTinyList(len-1, first, second, third, Nil, getMeta());
                 default: throw new IllegalStateException("List length out of range");
             }
         }
