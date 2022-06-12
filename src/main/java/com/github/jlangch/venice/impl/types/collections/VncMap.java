@@ -1,5 +1,5 @@
 /*   __    __         _
- *   \ \  / /__ _ __ (_) ___ ___ 
+ *   \ \  / /__ _ __ (_) ___ ___
  *    \ \/ / _ \ '_ \| |/ __/ _ \
  *     \  /  __/ | | | | (_|  __/
  *      \/ \___|_| |_|_|\___\___|
@@ -38,100 +38,100 @@ import com.github.jlangch.venice.impl.util.MetaUtil;
 
 
 public abstract class VncMap extends VncCollection implements IVncFunction {
-	
-	public VncMap(final VncVal meta) {
-		super(meta);
-	}
 
-	public VncMap(
-			final VncWrappingTypeDef wrappingTypeDef,
-			final VncVal meta
-	) {
-		super(wrappingTypeDef, meta);
-	}
+    public VncMap(final VncVal meta) {
+        super(meta);
+    }
+
+    public VncMap(
+            final VncWrappingTypeDef wrappingTypeDef,
+            final VncVal meta
+    ) {
+        super(wrappingTypeDef, meta);
+    }
 
 
-	@Override
-	public VncVal apply(final VncList args) {
-		ArityExceptions.assertArity(this, FnType.Collection, args, 1, 2);
-		
-		final VncVal first = args.first();
-		
-		if (args.size() == 1) {
-			return get(args.first());		
-		}
-		else if (VncBoolean.isTrue(containsKey(first))) {
-			return get(args.first());
-		}
-		else {
-			return args.second(); // default
-		}
-	}
+    @Override
+    public VncVal apply(final VncList args) {
+        ArityExceptions.assertArity(this, FnType.Collection, args, 1, 2);
 
-	@Override
-	public VncList getArgLists() { 
-		return VncList.of(
-				new VncString("(map key)"),
-				new VncString("(map key default-val)"));
-	}
-	
-	@Override
-	public abstract VncMap emptyWithMeta();
+        final VncVal first = args.first();
 
-	public abstract VncMap withValues(Map<VncVal,VncVal> replaceVals);
-	
-	public abstract VncMap withValues(Map<VncVal,VncVal> replaceVals, VncVal meta);
+        if (args.size() == 1) {
+            return get(args.first());
+        }
+        else if (VncBoolean.isTrue(containsKey(first))) {
+            return get(args.first());
+        }
+        else {
+            return args.second(); // default
+        }
+    }
 
-	@Override
-	public abstract VncMap withMeta(VncVal meta);
-	
-	@Override
-	public VncKeyword getType() {
-		return new VncKeyword(
-						TYPE, 
-						MetaUtil.typeMeta(
-							new VncKeyword(VncCollection.TYPE), 
-							new VncKeyword(VncVal.TYPE)));
-	}
-	
-	public abstract Map<VncVal,VncVal> getJavaMap();
-	
-	public abstract VncVal get(VncVal key);
+    @Override
+    public VncList getArgLists() {
+        return VncList.of(
+                new VncString("(map key)"),
+                new VncString("(map key default-val)"));
+    }
 
-	public VncVal get(VncVal key, VncVal defaultValue) {
-		final VncVal val = get(key);
-		return val == Constants.Nil ? defaultValue : val;
-	}
+    @Override
+    public abstract VncMap emptyWithMeta();
 
-	public abstract VncVal containsKey(VncVal key);
-	
-	public abstract VncList keys();
-	
-	public abstract List<VncMapEntry> entries();
+    public abstract VncMap withValues(Map<VncVal,VncVal> replaceVals);
 
-	public abstract VncMap putAll(VncMap map);
+    public abstract VncMap withValues(Map<VncVal,VncVal> replaceVals, VncVal meta);
 
-	public abstract VncMap assoc(VncVal... mvs);
+    @Override
+    public abstract VncMap withMeta(VncVal meta);
 
-	public abstract VncMap assoc(VncSequence mvs);
+    @Override
+    public VncKeyword getType() {
+        return new VncKeyword(
+                        TYPE,
+                        MetaUtil.typeMeta(
+                            new VncKeyword(VncCollection.TYPE),
+                            new VncKeyword(VncVal.TYPE)));
+    }
 
-	public abstract VncMap dissoc(VncVal... keys);
+    public abstract Map<VncVal,VncVal> getJavaMap();
 
-	public abstract VncMap dissoc(VncSequence keys);
+    public abstract VncVal get(VncVal key);
 
-	@Override
-	public Object convertToJavaObject() {
-		final Map<Object,Object> map = new HashMap<>();
-		for(VncMapEntry e : entries()) {
-			map.put(
-				e.getKey().convertToJavaObject(), 
-				e.getValue().convertToJavaObject());
-		}
-		return map;
-	}
+    public VncVal get(VncVal key, VncVal defaultValue) {
+        final VncVal val = get(key);
+        return val == Constants.Nil ? defaultValue : val;
+    }
 
-	
-	public static final String TYPE = ":core/map";
+    public abstract VncVal containsKey(VncVal key);
 
-	private static final long serialVersionUID = -1848883965231344442L;
+    public abstract VncList keys();
+
+    public abstract List<VncMapEntry> entries();
+
+    public abstract VncMap putAll(VncMap map);
+
+    public abstract VncMap assoc(VncVal... mvs);
+
+    public abstract VncMap assoc(VncSequence mvs);
+
+    public abstract VncMap dissoc(VncVal... keys);
+
+    public abstract VncMap dissoc(VncSequence keys);
+
+    @Override
+    public Object convertToJavaObject() {
+        final Map<Object,Object> map = new HashMap<>();
+        for(VncMapEntry e : entries()) {
+            map.put(
+                e.getKey().convertToJavaObject(),
+                e.getValue().convertToJavaObject());
+        }
+        return map;
+    }
+
+
+    public static final String TYPE = ":core/map";
+
+    private static final long serialVersionUID = -1848883965231344442L;
 }

@@ -1,5 +1,5 @@
 /*   __    __         _
- *   \ \  / /__ _ __ (_) ___ ___ 
+ *   \ \  / /__ _ __ (_) ___ ___
  *    \ \/ / _ \ '_ \| |/ __/ _ \
  *     \  /  __/ | | | | (_|  __/
  *      \/ \___|_| |_|_|\___\___|
@@ -40,121 +40,124 @@ import com.github.jlangch.venice.impl.util.MetaUtil;
 
 public abstract class VncSequence extends VncCollection implements Iterable<VncVal> {
 
-	public VncSequence(VncVal meta) {
-		super(meta);
-	}
+    public VncSequence(VncVal meta) {
+        super(meta);
+    }
 
-	
-	public abstract VncSequence emptyWithMeta();
 
-	public abstract VncSequence withVariadicValues(VncVal... replaceVals);
+    @Override
+    public abstract VncSequence emptyWithMeta();
 
-	public abstract VncSequence withValues(List<? extends VncVal> replaceVals);
-	
-	public abstract VncSequence withValues(List<? extends VncVal> replaceVals, VncVal meta);
-	
-	@Override
-	public abstract VncSequence withMeta(VncVal meta);
-	
-	@Override
-	public VncKeyword getType() {
-		return new VncKeyword(
-						TYPE, 
-						MetaUtil.typeMeta(
-							new VncKeyword(VncCollection.TYPE), 
-							new VncKeyword(VncVal.TYPE)));
-	}
+    public abstract VncSequence withVariadicValues(VncVal... replaceVals);
 
-	public abstract List<VncVal> getJavaList();
-	
-	public abstract VncVal nth(int idx);
+    public abstract VncSequence withValues(List<? extends VncVal> replaceVals);
 
-	public abstract VncVal nthOrDefault(int idx, VncVal defaultVal);
+    public abstract VncSequence withValues(List<? extends VncVal> replaceVals, VncVal meta);
 
-	public VncVal first() {
-		return nthOrDefault(0, Constants.Nil);
-	}
+    @Override
+    public abstract VncSequence withMeta(VncVal meta);
 
-	public VncVal second() {
-		return nthOrDefault(1, Constants.Nil);
-	}
+    @Override
+    public VncKeyword getType() {
+        return new VncKeyword(
+                        TYPE,
+                        MetaUtil.typeMeta(
+                            new VncKeyword(VncCollection.TYPE),
+                            new VncKeyword(VncVal.TYPE)));
+    }
 
-	public VncVal third() {
-		return nthOrDefault(2, Constants.Nil);
-	}
+    public abstract List<VncVal> getJavaList();
 
-	public VncVal fourth() {
-		return nthOrDefault(3, Constants.Nil);
-	}
+    public abstract VncVal nth(int idx);
 
-	public abstract VncVal last();
+    public abstract VncVal nthOrDefault(int idx, VncVal defaultVal);
 
-	public abstract VncSequence rest();
-	
-	public abstract VncSequence butlast();
-	
-	public abstract VncSequence drop(int n);
-	
-	public abstract VncSequence dropWhile(Predicate<? super VncVal> predicate);
-	
-	public abstract VncSequence dropRight(int n);
-	
-	public abstract VncSequence take(int n);
-	
-	public abstract VncSequence takeWhile(Predicate<? super VncVal> predicate);
-	
-	public abstract VncSequence takeRight(int n);
+    public VncVal first() {
+        return nthOrDefault(0, Constants.Nil);
+    }
 
-	public abstract VncSequence slice(int start, int end);
-	
-	public abstract VncSequence slice(int start);
+    public VncVal second() {
+        return nthOrDefault(1, Constants.Nil);
+    }
 
-	public abstract VncSequence setAt(int idx, VncVal val);
+    public VncVal third() {
+        return nthOrDefault(2, Constants.Nil);
+    }
 
-	public abstract VncSequence addAtStart(VncVal val) ;
-	
-	public abstract VncSequence addAllAtStart(VncSequence seq, boolean reverseAdd);
-	
-	public abstract VncSequence addAtEnd(VncVal val);
-	
-	public abstract VncSequence addAllAtEnd(VncSequence seq);
-	
-	public abstract VncSequence removeAt(int idx);
-	
-	public abstract VncSequence reverse();
-	
-	public abstract VncSequence shuffle();
-	
-	public abstract VncSequence distinct();
+    public VncVal fourth() {
+        return nthOrDefault(3, Constants.Nil);
+    }
 
+    public abstract VncVal last();
+
+    public abstract VncSequence rest();
+
+    public abstract VncSequence butlast();
+
+    public abstract VncSequence drop(int n);
+
+    public abstract VncSequence dropWhile(Predicate<? super VncVal> predicate);
+
+    public abstract VncSequence dropRight(int n);
+
+    public abstract VncSequence take(int n);
+
+    public abstract VncSequence takeWhile(Predicate<? super VncVal> predicate);
+
+    public abstract VncSequence takeRight(int n);
+
+    public abstract VncSequence slice(int start, int end);
+
+    public abstract VncSequence slice(int start);
+
+    public abstract VncSequence setAt(int idx, VncVal val);
+
+    public abstract VncSequence addAtStart(VncVal val) ;
+
+    public abstract VncSequence addAllAtStart(VncSequence seq, boolean reverseAdd);
+
+    public abstract VncSequence addAtEnd(VncVal val);
+
+    public abstract VncSequence addAllAtEnd(VncSequence seq);
+
+    public abstract VncSequence removeAt(int idx);
+
+    public abstract VncSequence reverse();
+
+    public abstract VncSequence shuffle();
+
+    public abstract VncSequence distinct();
+
+    @Override
     public abstract Iterator<VncVal> iterator();
 
-	public abstract Stream<VncVal> stream();
+    public abstract Stream<VncVal> stream();
 
-	public abstract void forEach(Consumer<? super VncVal> action);
+    @Override
+    public abstract void forEach(Consumer<? super VncVal> action);
 
-	public abstract VncSequence filter(Predicate<? super VncVal> predicate);
+    public abstract VncSequence filter(Predicate<? super VncVal> predicate);
 
-	public abstract VncSequence map(Function<? super VncVal, ? extends VncVal> mapper);
+    public abstract VncSequence map(Function<? super VncVal, ? extends VncVal> mapper);
 
 
-	public static VncSequence coerceToSequence(final VncVal val) {
-		if (Types.isVncMap(val)) {
-			return VncList.ofList(((VncMap)val).entries());
-		}
-		else if (Types.isVncSet(val)) {
-			return ((VncSet)val).toVncList();
-		}
-		else if (Types.isVncString(val)) {
-			return ((VncString)val).toVncList();
-		}
-		else {
-			return Coerce.toVncSequence(val);
-		}
-	}
+    public static VncSequence coerceToSequence(final VncVal val) {
+        if (Types.isVncMap(val)) {
+            return VncList.ofList(((VncMap)val).entries());
+        }
+        else if (Types.isVncSet(val)) {
+            return ((VncSet)val).toVncList();
+        }
+        else if (Types.isVncString(val)) {
+            return ((VncString)val).toVncList();
+        }
+        else {
+            return Coerce.toVncSequence(val);
+        }
+    }
 
-	
-	public static final String TYPE = ":core/sequence";
 
-	private static final long serialVersionUID = -1848883965231344442L;
+    public static final String TYPE = ":core/sequence";
+
+    private static final long serialVersionUID = -1848883965231344442L;
 }

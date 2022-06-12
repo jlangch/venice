@@ -1,5 +1,5 @@
 /*   __    __         _
- *   \ \  / /__ _ __ (_) ___ ___ 
+ *   \ \  / /__ _ __ (_) ___ ___
  *    \ \/ / _ \ '_ \| |/ __/ _ \
  *     \  /  __/ | | | | (_|  __/
  *      \/ \___|_| |_|_|\___\___|
@@ -33,145 +33,145 @@ import com.github.jlangch.venice.impl.util.markdown.chunk.RawChunk;
 
 public class ListBlockParser {
 
-	public ListBlockParser(final LineReader reader) {
-		this.reader = reader;
-	}
-	
-	public ListBlock parse() {
-		if (reader.eof()) {
-			return new ListBlock();
-		}
+    public ListBlockParser(final LineReader reader) {
+        this.reader = reader;
+    }
 
-		if (!ListBlockParser.isBlockStart(reader.peek())) {
-			return new ListBlock();
-		}
-		
-		// parse into lines
-		final List<String> lines = new ArrayList<>();	
-		while (!reader.eof() && !StringUtil.isBlank(reader.peek())) {
-			String line = reader.peek();
-			reader.consume();
-			lines.add(line);
-		}
+    public ListBlock parse() {
+        if (reader.eof()) {
+            return new ListBlock();
+        }
 
-		// parse into items (an item may have 1..N lines)
-		final List<List<String>> items = new ArrayList<>();
-		List<String> itemLines = new ArrayList<>();	
-		for(String line : lines) {
-			if (isEmptyItem(line)) {
-				continue; // skip empty items
-			}
-			if (isItemStart(line)) {
-				if (!itemLines.isEmpty()) {
-					items.add(itemLines);
-					itemLines = new ArrayList<>();
-				}
-			}			
-			itemLines.add(line);
-		}
-		if (!itemLines.isEmpty()) {
-			items.add(itemLines);
-		}
-		
+        if (!ListBlockParser.isBlockStart(reader.peek())) {
+            return new ListBlock();
+        }
 
-		final ListBlock block = new ListBlock();
+        // parse into lines
+        final List<String> lines = new ArrayList<>();
+        while (!reader.eof() && !StringUtil.isBlank(reader.peek())) {
+            String line = reader.peek();
+            reader.consume();
+            lines.add(line);
+        }
 
-		// list type
-		block.setOrdered(isOrderedItemStart(items.get(0).get(0)));
-		
-		for(List<String> itemLines_ : items) {
-			String first = itemLines_.get(0);
-			
-			if (isUnorderedItemStart(first)) {
-				// strip list bullet
-				first = StringUtil.trimLeft(first);
-				first = first.substring(1);
-				first = StringUtil.trimLeft(first);
-				
-				String text = first;
-				
-				if (itemLines_.size() > 1) {
-					final List<String> rest = itemLines_
-												.subList(1, itemLines_.size())
-												.stream()
-												.map(l -> StringUtil.trimLeft(l))
-												.collect(Collectors.toList());
-					text = text + " " + String.join(" ", rest);
-				}
+        // parse into items (an item may have 1..N lines)
+        final List<List<String>> items = new ArrayList<>();
+        List<String> itemLines = new ArrayList<>();
+        for(String line : lines) {
+            if (isEmptyItem(line)) {
+                continue; // skip empty items
+            }
+            if (isItemStart(line)) {
+                if (!itemLines.isEmpty()) {
+                    items.add(itemLines);
+                    itemLines = new ArrayList<>();
+                }
+            }
+            itemLines.add(line);
+        }
+        if (!itemLines.isEmpty()) {
+            items.add(itemLines);
+        }
 
-				TextBlock item = new TextBlock();
-				addLine(item, StringUtil.trimRight(text));
-				
-				block.addItem(item);
-			}		
-			else if (isOrderedItemStart(first)) {
-				// strip list item number
-				final int pos = first.indexOf('.');
-				first = first.substring(pos+1);
-				first = StringUtil.trimLeft(first);
-				
-				String text = first;
 
-				if (itemLines_.size() > 1) {
-					final List<String> rest = itemLines_
-												.subList(1, itemLines_.size())
-												.stream()
-												.map(l -> StringUtil.trimLeft(l))
-												.collect(Collectors.toList());
-					text = text + " " + String.join(" ", rest);
-				}
+        final ListBlock block = new ListBlock();
 
-				TextBlock item = new TextBlock();
-				addLine(item, StringUtil.trimRight(text));
-				
-				if (!item.isEmpty()) {
-					block.addItem(item);
-				}
-			}			
-		}
-		
-		block.parseChunks();
-		return block;
-	}
-	
-	public static boolean isBlockStart(final String line) {
-		return isItemStart(line);
-	}
+        // list type
+        block.setOrdered(isOrderedItemStart(items.get(0).get(0)));
 
-	public static boolean isItemStart(final String line) {
-		return isUnorderedItemStart(line) || isOrderedItemStart(line);
-	}
+        for(List<String> itemLines_ : items) {
+            String first = itemLines_.get(0);
 
-	public static boolean isEmptyItem(final String line) {
-		return line.matches(" *[*] *") || line.matches(" *[0-9]+[.] *");
-	}
+            if (isUnorderedItemStart(first)) {
+                // strip list bullet
+                first = StringUtil.trimLeft(first);
+                first = first.substring(1);
+                first = StringUtil.trimLeft(first);
 
-	private static boolean isUnorderedItemStart(final String line) {
-		return line.matches(" *[*] +[^ ].*");
-	}
+                String text = first;
 
-	private static boolean isOrderedItemStart(final String line) {
-		return line.matches(" *[0-9]+[.] +[^ ].*");
-	}
+                if (itemLines_.size() > 1) {
+                    final List<String> rest = itemLines_
+                                                .subList(1, itemLines_.size())
+                                                .stream()
+                                                .map(l -> StringUtil.trimLeft(l))
+                                                .collect(Collectors.toList());
+                    text = text + " " + String.join(" ", rest);
+                }
 
-	private void addLine(final TextBlock block, final String line) {
-		if (line.contains("¶")) {
-			final String[] chunks = line.split("¶");
-			for(int ii=0; ii<chunks.length; ii++) {
-				if (ii>0) {
-					block.add(new LineBreakChunk());
-				}
-				block.add(new RawChunk(chunks[ii].trim()));
-			}
-			
-			if (line.endsWith("¶")) {
-				block.add(new LineBreakChunk());
-			}
-		}
-		else {
-			block.add(new RawChunk(line));
-		}
-	}
-	
-	private final LineReader reader;
+                TextBlock item = new TextBlock();
+                addLine(item, StringUtil.trimRight(text));
+
+                block.addItem(item);
+            }
+            else if (isOrderedItemStart(first)) {
+                // strip list item number
+                final int pos = first.indexOf('.');
+                first = first.substring(pos+1);
+                first = StringUtil.trimLeft(first);
+
+                String text = first;
+
+                if (itemLines_.size() > 1) {
+                    final List<String> rest = itemLines_
+                                                .subList(1, itemLines_.size())
+                                                .stream()
+                                                .map(l -> StringUtil.trimLeft(l))
+                                                .collect(Collectors.toList());
+                    text = text + " " + String.join(" ", rest);
+                }
+
+                TextBlock item = new TextBlock();
+                addLine(item, StringUtil.trimRight(text));
+
+                if (!item.isEmpty()) {
+                    block.addItem(item);
+                }
+            }
+        }
+
+        block.parseChunks();
+        return block;
+    }
+
+    public static boolean isBlockStart(final String line) {
+        return isItemStart(line);
+    }
+
+    public static boolean isItemStart(final String line) {
+        return isUnorderedItemStart(line) || isOrderedItemStart(line);
+    }
+
+    public static boolean isEmptyItem(final String line) {
+        return line.matches(" *[*] *") || line.matches(" *[0-9]+[.] *");
+    }
+
+    private static boolean isUnorderedItemStart(final String line) {
+        return line.matches(" *[*] +[^ ].*");
+    }
+
+    private static boolean isOrderedItemStart(final String line) {
+        return line.matches(" *[0-9]+[.] +[^ ].*");
+    }
+
+    private void addLine(final TextBlock block, final String line) {
+        if (line.contains("¶")) {
+            final String[] chunks = line.split("¶");
+            for(int ii=0; ii<chunks.length; ii++) {
+                if (ii>0) {
+                    block.add(new LineBreakChunk());
+                }
+                block.add(new RawChunk(chunks[ii].trim()));
+            }
+
+            if (line.endsWith("¶")) {
+                block.add(new LineBreakChunk());
+            }
+        }
+        else {
+            block.add(new RawChunk(line));
+        }
+    }
+
+    private final LineReader reader;
 }

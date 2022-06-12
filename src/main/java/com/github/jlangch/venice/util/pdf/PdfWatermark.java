@@ -1,5 +1,5 @@
 /*   __    __         _
- *   \ \  / /__ _ __ (_) ___ ___ 
+ *   \ \  / /__ _ __ (_) ___ ___
  *    \ \/ / _ \ '_ \| |/ __/ _ \
  *     \  /  __/ | | | | (_|  __/
  *      \/ \___|_| |_|_|\___\___|
@@ -38,125 +38,125 @@ import com.lowagie.text.pdf.PdfStamper;
  */
 public class PdfWatermark {
 
-	public PdfWatermark() {
-	}
-	
-	public ByteBuffer addWatermarkImage(
-			final ByteBuffer pdf, 
-			final String imgResourceName,
-			final int skipTopPages, 
-			final int skipBottomPages
-	) {
-		if (pdf == null) {
-			throw new IllegalArgumentException("A pdf must not be null");
-		}
-		
-		try {
-			final ByteArrayOutputStream os = new ByteArrayOutputStream();
-			
-			final PdfReader reader = new PdfReader(pdf.array());
-			final int numPages = reader.getNumberOfPages();
-			final PdfStamper stamper = new PdfStamper(reader, os);
-			final Image watermark_image = Image.getInstance(imgResourceName);
-			watermark_image.setAbsolutePosition(200, 400);
+    public PdfWatermark() {
+    }
 
-			final int startPage = skipTopPages;
-			final int endPage = numPages - skipBottomPages;
+    public ByteBuffer addWatermarkImage(
+            final ByteBuffer pdf,
+            final String imgResourceName,
+            final int skipTopPages,
+            final int skipBottomPages
+    ) {
+        if (pdf == null) {
+            throw new IllegalArgumentException("A pdf must not be null");
+        }
 
-			for(int page=startPage; page<endPage; page++) {
-				PdfContentByte under = stamper.getUnderContent(page);
-				under.addImage(watermark_image);
-			}
-			
-			stamper.close();
-			
-			return ByteBuffer.wrap(os.toByteArray());
-		}
-		catch(Exception ex) {
-			throw new RuntimeException("Failed to add image watermark to the PDF", ex);
-		}		
-	}
+        try {
+            final ByteArrayOutputStream os = new ByteArrayOutputStream();
 
-	public ByteBuffer addWatermarkText(
-			final ByteBuffer pdf, 
-			final String text,
-			final float fontSize,
-			final float fontCharacterSpacing,
-			final Color color,
-			final float opacity,
-			final Color colorOutline,
-			final float colorOutlineOpacity,
-			final float outlineWidth,
-			final float angle,
-			final boolean overContent,
-			final int skipTopPages, 
-			final int skipBottomPages
-	) {
-		if (pdf == null) {
-			throw new IllegalArgumentException("A pdf must not be null");
-		}
-		
-		try {
-			final ByteArrayOutputStream os = new ByteArrayOutputStream();
-			
-			final PdfReader reader = new PdfReader(pdf.array());
-			final PdfStamper stamper = new PdfStamper(reader, os);
-			final int numPages = reader.getNumberOfPages();
-			final int startPage = 1 + skipTopPages;
-			final int endPage = numPages - skipBottomPages;
+            final PdfReader reader = new PdfReader(pdf.array());
+            final int numPages = reader.getNumberOfPages();
+            final PdfStamper stamper = new PdfStamper(reader, os);
+            final Image watermark_image = Image.getInstance(imgResourceName);
+            watermark_image.setAbsolutePosition(200, 400);
 
-			final BaseFont baseFont = BaseFont.createFont("Helvetica", BaseFont.WINANSI, false);
+            final int startPage = skipTopPages;
+            final int endPage = numPages - skipBottomPages;
 
-			final Color textColor = withOpacity(nullToBlack(color), opacity);
-			final Color strokeColor = withOpacity(nullToBlack(colorOutline), colorOutlineOpacity);
+            for(int page=startPage; page<endPage; page++) {
+                PdfContentByte under = stamper.getUnderContent(page);
+                under.addImage(watermark_image);
+            }
 
-			for(int page=startPage; page<=endPage; page++) {
-				final PdfContentByte cb = overContent 
-											? stamper.getOverContent(page) 
-											: stamper.getUnderContent(page);
-				
-				cb.saveState();
-				cb.setColorFill(textColor);
-				cb.setColorStroke(strokeColor);
-				cb.beginText();
-				cb.setFontAndSize(baseFont, fontSize);
-				cb.setCharacterSpacing(fontCharacterSpacing);			
-				cb.setLineWidth(Math.max(0.0F, outlineWidth));
-				cb.setTextRenderingMode(PdfContentByte.TEXT_RENDER_MODE_FILL_STROKE); 
-				
-				cb.showTextAligned(
-						Element.ALIGN_CENTER, 
-						text,
-						cb.getPdfDocument().getPageSize().getWidth() / 2,
-						cb.getPdfDocument().getPageSize().getHeight() / 2,
-						angle);
-				
-				cb.endText();
-				cb.restoreState();
-			}
-			
-			stamper.close();
-			
-			return ByteBuffer.wrap(os.toByteArray());
-		}
-		catch(Exception ex) {
-			throw new RuntimeException("Failed to add text watermark to the PDF", ex);
-		}		
-	}
+            stamper.close();
 
-	private Color nullToBlack(final Color color) {
-		return color == null ? Color.BLACK : color;
-	}
+            return ByteBuffer.wrap(os.toByteArray());
+        }
+        catch(Exception ex) {
+            throw new RuntimeException("Failed to add image watermark to the PDF", ex);
+        }
+    }
 
-	private Color withOpacity(final Color color, final float opacity) {
-		return new Color(
-					color.getRed(), 
-					color.getGreen(), 
-					color.getBlue(),
-					toIntOpacity(opacity));
-	}
-	
-	private int toIntOpacity(final float opacity) {
-		return Math.max(0, Math.min(255, (int)(opacity * 255)));
-	}
+    public ByteBuffer addWatermarkText(
+            final ByteBuffer pdf,
+            final String text,
+            final float fontSize,
+            final float fontCharacterSpacing,
+            final Color color,
+            final float opacity,
+            final Color colorOutline,
+            final float colorOutlineOpacity,
+            final float outlineWidth,
+            final float angle,
+            final boolean overContent,
+            final int skipTopPages,
+            final int skipBottomPages
+    ) {
+        if (pdf == null) {
+            throw new IllegalArgumentException("A pdf must not be null");
+        }
+
+        try {
+            final ByteArrayOutputStream os = new ByteArrayOutputStream();
+
+            final PdfReader reader = new PdfReader(pdf.array());
+            final PdfStamper stamper = new PdfStamper(reader, os);
+            final int numPages = reader.getNumberOfPages();
+            final int startPage = 1 + skipTopPages;
+            final int endPage = numPages - skipBottomPages;
+
+            final BaseFont baseFont = BaseFont.createFont("Helvetica", BaseFont.WINANSI, false);
+
+            final Color textColor = withOpacity(nullToBlack(color), opacity);
+            final Color strokeColor = withOpacity(nullToBlack(colorOutline), colorOutlineOpacity);
+
+            for(int page=startPage; page<=endPage; page++) {
+                final PdfContentByte cb = overContent
+                                            ? stamper.getOverContent(page)
+                                            : stamper.getUnderContent(page);
+
+                cb.saveState();
+                cb.setColorFill(textColor);
+                cb.setColorStroke(strokeColor);
+                cb.beginText();
+                cb.setFontAndSize(baseFont, fontSize);
+                cb.setCharacterSpacing(fontCharacterSpacing);
+                cb.setLineWidth(Math.max(0.0F, outlineWidth));
+                cb.setTextRenderingMode(PdfContentByte.TEXT_RENDER_MODE_FILL_STROKE);
+
+                cb.showTextAligned(
+                        Element.ALIGN_CENTER,
+                        text,
+                        cb.getPdfDocument().getPageSize().getWidth() / 2,
+                        cb.getPdfDocument().getPageSize().getHeight() / 2,
+                        angle);
+
+                cb.endText();
+                cb.restoreState();
+            }
+
+            stamper.close();
+
+            return ByteBuffer.wrap(os.toByteArray());
+        }
+        catch(Exception ex) {
+            throw new RuntimeException("Failed to add text watermark to the PDF", ex);
+        }
+    }
+
+    private Color nullToBlack(final Color color) {
+        return color == null ? Color.BLACK : color;
+    }
+
+    private Color withOpacity(final Color color, final float opacity) {
+        return new Color(
+                    color.getRed(),
+                    color.getGreen(),
+                    color.getBlue(),
+                    toIntOpacity(opacity));
+    }
+
+    private int toIntOpacity(final float opacity) {
+        return Math.max(0, Math.min(255, (int)(opacity * 255)));
+    }
 }

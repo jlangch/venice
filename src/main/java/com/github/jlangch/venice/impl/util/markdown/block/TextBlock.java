@@ -1,5 +1,5 @@
 /*   __    __         _
- *   \ \  / /__ _ __ (_) ___ ___ 
+ *   \ \  / /__ _ __ (_) ___ ___
  *    \ \/ / _ \ '_ \| |/ __/ _ \
  *     \  /  __/ | | | | (_|  __/
  *      \/ \___|_| |_|_|\___\___|
@@ -28,32 +28,32 @@ import com.github.jlangch.venice.impl.util.markdown.chunk.Chunks;
 
 public class TextBlock implements Block {
 
-	public TextBlock() {
-	}
+    public TextBlock() {
+    }
 
 
-	public void add(final Chunks chunks) {
-		this.chunks.add(chunks);
-	}
-	
-	public void add(final Chunk chunk) {
-		this.chunks.add(chunk);
-	}
-	
-	public Chunks getChunks() {
-		return chunks;
-	}
+    public void add(final Chunks chunks) {
+        this.chunks.add(chunks);
+    }
 
-	@Override
-	public boolean isEmpty() {
-		return chunks.isEmpty();
-	}
-	
-	@Override
-	public void parseChunks() {
-		chunks = new ChunkParser(chunks).parse();
-	}
-	
-	
-	private Chunks chunks = new Chunks();
+    public void add(final Chunk chunk) {
+        this.chunks.add(chunk);
+    }
+
+    public Chunks getChunks() {
+        return chunks;
+    }
+
+    @Override
+    public boolean isEmpty() {
+        return chunks.isEmpty();
+    }
+
+    @Override
+    public void parseChunks() {
+        chunks = new ChunkParser(chunks).parse();
+    }
+
+
+    private Chunks chunks = new Chunks();
 }

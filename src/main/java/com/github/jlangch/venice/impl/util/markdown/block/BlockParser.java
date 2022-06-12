@@ -1,5 +1,5 @@
 /*   __    __         _
- *   \ \  / /__ _ __ (_) ___ ___ 
+ *   \ \  / /__ _ __ (_) ___ ___
  *    \ \/ / _ \ '_ \| |/ __/ _ \
  *     \  /  __/ | | | | (_|  __/
  *      \/ \___|_| |_|_|\___\___|
@@ -27,59 +27,59 @@ import com.github.jlangch.venice.impl.util.StringUtil;
 
 public class BlockParser {
 
-	public BlockParser(final String text) {
-		reader = new LineReader(text);
-	}
-	
-	
-	public Blocks parse() {
-		while(!reader.eof()) {
-			String line = reader.peek();
-			
-			if (StringUtil.isBlank(line)) {
-				reader.consume(); // skip blank lines
-			}
-			else if (TitleBlockParser.isBlockStart(line)) {
-				final TitleBlockParser p = new TitleBlockParser(reader);
-				final TitleBlock block = p.parse();				
-				if (!block.isEmpty()) {
-					blocks.add(block);
-				}
-			}
-			else if (CodeBlockParser.isBlockStart(line)) {
-				final CodeBlockParser p = new CodeBlockParser(reader);
-				final CodeBlock block = p.parse();				
-				if (!block.isEmpty()) {
-					blocks.add(block);
-				}
-			}
-			else if (ListBlockParser.isBlockStart(line)) {
-				final ListBlockParser p = new ListBlockParser(reader);
-				final ListBlock block = p.parse();				
-				if (!block.isEmpty()) {
-					blocks.add(block);
-				}
-			}
-			else if (TableBlockParser.isBlockStart(line)) {
-				final TableBlockParser p = new TableBlockParser(reader);
-				final TableBlock block = p.parse();				
-				if (!block.isEmpty()) {
-					blocks.add(block);
-				}
-			}
-			else {
-				final TextBlockParser p = new TextBlockParser(reader);
-				final TextBlock block = p.parse();				
-				if (!block.isEmpty()) {
-					blocks.add(block);
-				}
-			}
-		}
-		
-		return blocks;
-	}
+    public BlockParser(final String text) {
+        reader = new LineReader(text);
+    }
 
-	
-	private final LineReader reader;
-	private final Blocks blocks = new Blocks();
+
+    public Blocks parse() {
+        while(!reader.eof()) {
+            String line = reader.peek();
+
+            if (StringUtil.isBlank(line)) {
+                reader.consume(); // skip blank lines
+            }
+            else if (TitleBlockParser.isBlockStart(line)) {
+                final TitleBlockParser p = new TitleBlockParser(reader);
+                final TitleBlock block = p.parse();
+                if (!block.isEmpty()) {
+                    blocks.add(block);
+                }
+            }
+            else if (CodeBlockParser.isBlockStart(line)) {
+                final CodeBlockParser p = new CodeBlockParser(reader);
+                final CodeBlock block = p.parse();
+                if (!block.isEmpty()) {
+                    blocks.add(block);
+                }
+            }
+            else if (ListBlockParser.isBlockStart(line)) {
+                final ListBlockParser p = new ListBlockParser(reader);
+                final ListBlock block = p.parse();
+                if (!block.isEmpty()) {
+                    blocks.add(block);
+                }
+            }
+            else if (TableBlockParser.isBlockStart(line)) {
+                final TableBlockParser p = new TableBlockParser(reader);
+                final TableBlock block = p.parse();
+                if (!block.isEmpty()) {
+                    blocks.add(block);
+                }
+            }
+            else {
+                final TextBlockParser p = new TextBlockParser(reader);
+                final TextBlock block = p.parse();
+                if (!block.isEmpty()) {
+                    blocks.add(block);
+                }
+            }
+        }
+
+        return blocks;
+    }
+
+
+    private final LineReader reader;
+    private final Blocks blocks = new Blocks();
 }

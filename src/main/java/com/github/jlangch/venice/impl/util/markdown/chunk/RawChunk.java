@@ -1,5 +1,5 @@
 /*   __    __         _
- *   \ \  / /__ _ __ (_) ___ ___ 
+ *   \ \  / /__ _ __ (_) ___ ___
  *    \ \/ / _ \ '_ \| |/ __/ _ \
  *     \  /  __/ | | | | (_|  __/
  *      \/ \___|_| |_|_|\___\___|
@@ -24,29 +24,29 @@ package com.github.jlangch.venice.impl.util.markdown.chunk;
 
 public class RawChunk implements Chunk {
 
-	public RawChunk() {
-		this("");
-	}
+    public RawChunk() {
+        this("");
+    }
 
-	public RawChunk(final String text) {
-		this.text = text == null ? "" : collapseWhitespaces(text);
-	}
+    public RawChunk(final String text) {
+        this.text = text == null ? "" : collapseWhitespaces(text);
+    }
 
-	
-	@Override
-	public boolean isEmpty() {
-		return text.isEmpty();
-	}
-	
-	
-	public String getText() {
-		return text;
-	}
 
-	private String collapseWhitespaces(final String s) {
-		return s.replaceAll("[ \t]+", " ");
-	}
+    @Override
+    public boolean isEmpty() {
+        return text.isEmpty();
+    }
 
-	
-	private final String text;
+
+    public String getText() {
+        return text;
+    }
+
+    private String collapseWhitespaces(final String s) {
+        return s.replaceAll("[ \t]+", " ");
+    }
+
+
+    private final String text;
 }

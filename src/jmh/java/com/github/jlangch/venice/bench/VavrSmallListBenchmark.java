@@ -1,5 +1,5 @@
 /*   __    __         _
- *   \ \  / /__ _ __ (_) ___ ___ 
+ *   \ \  / /__ _ __ (_) ___ ___
  *    \ \/ / _ \ '_ \| |/ __/ _ \
  *     \  /  __/ | | | | (_|  __/
  *      \/ \___|_| |_|_|\___\___|
@@ -45,51 +45,51 @@ import io.vavr.collection.List;
 @State (Scope.Benchmark)
 @Threads (1)
 public class VavrSmallListBenchmark {
-	
-	public VavrSmallListBenchmark() {
-	}
-	
-	
-	@Benchmark
-	public Object prepend() {
-		return list.prepend(0);
-	}
-	
-	@Benchmark
-	public Object append() {
-		return list.append(0);
-	}
 
-	@Benchmark
-	public Object first() {
-		return list.get(0);
- 	}
+    public VavrSmallListBenchmark() {
+    }
 
-	@Benchmark
-	public Object nth3() {
-		return list.get(2);
- 	}
-	
-	@Benchmark
-	public Object last() {
-		return list.last();
-	}
 
-	@Benchmark
-	public Object rest() {
-		return list.tail();
-	}
-	
-	@Benchmark
-	public Object butlast() {
-		return list.slice(0, list.length()-1);
-	}
-	
-	@Benchmark
-	public Object drop_1() {
-		return list.drop(1);
-	}
-	
-	
-	private final List<Integer> list = List.range(0, 1000);
+    @Benchmark
+    public Object prepend() {
+        return list.prepend(0);
+    }
+
+    @Benchmark
+    public Object append() {
+        return list.append(0);
+    }
+
+    @Benchmark
+    public Object first() {
+        return list.get(0);
+     }
+
+    @Benchmark
+    public Object nth3() {
+        return list.get(2);
+     }
+
+    @Benchmark
+    public Object last() {
+        return list.last();
+    }
+
+    @Benchmark
+    public Object rest() {
+        return list.tail();
+    }
+
+    @Benchmark
+    public Object butlast() {
+        return list.slice(0, list.length()-1);
+    }
+
+    @Benchmark
+    public Object drop_1() {
+        return list.drop(1);
+    }
+
+
+    private final List<Integer> list = List.range(0, 1000);
 }

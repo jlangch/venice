@@ -27,10 +27,10 @@ import java.io.OutputStream;
 //@formatter:off
 /**
  * JSON writer that emits JSON to a {@link Appendable}.
- * 
+ *
  * Create this class with {@link JsonWriter#on(Appendable)} or
  * {@link JsonWriter#on(OutputStream)}.
- * 
+ *
  * <pre>
  * OutputStream out = ...;
  * JsonWriter
@@ -49,31 +49,31 @@ import java.io.OutputStream;
  */
 // @formatter:on
 public final class JsonAppendableWriter extends JsonWriterBase<JsonAppendableWriter> {
-	JsonAppendableWriter(Appendable appendable, String indent) {
-		super(appendable, indent);
-	}
+    JsonAppendableWriter(Appendable appendable, String indent) {
+        super(appendable, indent);
+    }
 
-	JsonAppendableWriter(OutputStream out, String indent) {
-		super(out, indent);
-	}
+    JsonAppendableWriter(OutputStream out, String indent) {
+        super(out, indent);
+    }
 
-	/**
-	 * Closes this JSON writer and flushes the underlying {@link Appendable} if
-	 * it is also {@link Flushable}.
-	 * 
-	 * @throws JsonWriterException
-	 *             if the underlying {@link Flushable} {@link Appendable} failed
-	 *             to flush.
-	 */
-	public void done() throws JsonWriterException {
-		super.doneInternal();
-		try {
-			if (appendable instanceof Flushable)
-				((Flushable) appendable).flush();
-			else if (out != null)
-				out.flush();
-		} catch (IOException e) {
-			throw new JsonWriterException(e);
-		}
-	}
+    /**
+     * Closes this JSON writer and flushes the underlying {@link Appendable} if
+     * it is also {@link Flushable}.
+     *
+     * @throws JsonWriterException
+     *             if the underlying {@link Flushable} {@link Appendable} failed
+     *             to flush.
+     */
+    public void done() throws JsonWriterException {
+        super.doneInternal();
+        try {
+            if (appendable instanceof Flushable)
+                ((Flushable) appendable).flush();
+            else if (out != null)
+                out.flush();
+        } catch (IOException e) {
+            throw new JsonWriterException(e);
+        }
+    }
 }

@@ -1,5 +1,5 @@
 /*   __	__		 _
- *   \ \  / /__ _ __ (_) ___ ___ 
+ *   \ \  / /__ _ __ (_) ___ ___
  *	\ \/ / _ \ '_ \| |/ __/ _ \
  *	 \  /  __/ | | | | (_|  __/
  *	  \/ \___|_| |_|_|\___\___|
@@ -21,8 +21,9 @@
  */
 package com.github.jlangch.venice.impl.types.custom;
 
-import com.github.jlangch.venice.AssertionException;
 import static com.github.jlangch.venice.impl.types.Constants.Nil;
+
+import com.github.jlangch.venice.AssertionException;
 import com.github.jlangch.venice.impl.types.VncBoolean;
 import com.github.jlangch.venice.impl.types.VncFunction;
 import com.github.jlangch.venice.impl.types.VncKeyword;
@@ -34,68 +35,68 @@ import com.github.jlangch.venice.impl.types.collections.VncMap;
 
 public class VncWrappingTypeDef extends VncCustomBaseTypeDef {
 
-	public VncWrappingTypeDef(
-			final VncKeyword type,
-			final VncKeyword baseType
-	) {
-		this(type, baseType, null);
-	}
+    public VncWrappingTypeDef(
+            final VncKeyword type,
+            final VncKeyword baseType
+    ) {
+        this(type, baseType, null);
+    }
 
-	public VncWrappingTypeDef(
-			final VncKeyword type,
-			final VncKeyword baseType,
-			final VncFunction validationFn
-	) {
-		super(type);
-		
-		this.baseType = baseType;
-		this.validationFn = validationFn;
-	}
+    public VncWrappingTypeDef(
+            final VncKeyword type,
+            final VncKeyword baseType,
+            final VncFunction validationFn
+    ) {
+        super(type);
 
- 
-	public VncKeyword getBaseType() {
-		return baseType;
-	}
- 
-	public VncFunction getValidationFn() {
-		return validationFn;
-	}
+        this.baseType = baseType;
+        this.validationFn = validationFn;
+    }
 
-	public void validate(final VncVal val) {
-		if (validationFn != null) {
-			try {
-				final VncVal valid = validationFn.apply(VncList.of(val));
-				if (valid == Nil || VncBoolean.isFalse(valid)) {
-					throw new AssertionException(String.format(
-							"Invalid value for custom type :%s",
-							getType().getValue()));
-				}
-			}
-			catch(AssertionException ex) {
-				throw ex;
-			}
-			catch(Exception ex) {
-				throw new AssertionException(
-						String.format(
-								"Invalid value for custom type :%s",
-								getType().getValue()),
-						ex);
-			}
-		}
-	}
 
-	@Override
-	public VncMap toMap() {
-		return VncHashMap.of(
-				new VncKeyword(":type"),			getType(),
-				new VncKeyword(":custom-type"), 	new VncKeyword(":wrapping"),
-				new VncKeyword(":base-type"),   	baseType,
-				new VncKeyword(":validation-fn"),	validationFn == null ? Nil : validationFn);
-	}
+    public VncKeyword getBaseType() {
+        return baseType;
+    }
 
-	
+    public VncFunction getValidationFn() {
+        return validationFn;
+    }
+
+    public void validate(final VncVal val) {
+        if (validationFn != null) {
+            try {
+                final VncVal valid = validationFn.apply(VncList.of(val));
+                if (valid == Nil || VncBoolean.isFalse(valid)) {
+                    throw new AssertionException(String.format(
+                            "Invalid value for custom type :%s",
+                            getType().getValue()));
+                }
+            }
+            catch(AssertionException ex) {
+                throw ex;
+            }
+            catch(Exception ex) {
+                throw new AssertionException(
+                        String.format(
+                                "Invalid value for custom type :%s",
+                                getType().getValue()),
+                        ex);
+            }
+        }
+    }
+
+    @Override
+    public VncMap toMap() {
+        return VncHashMap.of(
+                new VncKeyword(":type"),			getType(),
+                new VncKeyword(":custom-type"), 	new VncKeyword(":wrapping"),
+                new VncKeyword(":base-type"),   	baseType,
+                new VncKeyword(":validation-fn"),	validationFn == null ? Nil : validationFn);
+    }
+
+
     private static final long serialVersionUID = -1848883965231344442L;
 
-	private final VncKeyword baseType;
-	private final VncFunction validationFn;
+    private final VncKeyword baseType;
+    private final VncFunction validationFn;
 }

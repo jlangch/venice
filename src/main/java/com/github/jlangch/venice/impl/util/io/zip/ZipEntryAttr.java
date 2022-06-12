@@ -1,5 +1,5 @@
 /*   __    __         _
- *   \ \  / /__ _ __ (_) ___ ___ 
+ *   \ \  / /__ _ __ (_) ___ ___
  *    \ \/ / _ \ '_ \| |/ __/ _ \
  *     \  /  __/ | | | | (_|  __/
  *      \/ \___|_| |_|_|\___\___|
@@ -34,70 +34,70 @@ import com.github.jlangch.venice.impl.types.collections.VncMap;
 
 public class ZipEntryAttr {
 
-	public ZipEntryAttr(
-			final String name,
-			final boolean isDirectory,
-			final String method,
-			final long size,
-			final long compressedSize,
-			final FileTime lastModifiedTime,
-			final Long crc
-	) {
-		this.method = method;
-		this.size = size;
-		this.compressedSize = compressedSize;
-		this.lastModifiedTime = lastModifiedTime;
-		this.crc = crc;
-		this.name = name;
-		this.isDirectory = isDirectory;
-	}
+    public ZipEntryAttr(
+            final String name,
+            final boolean isDirectory,
+            final String method,
+            final long size,
+            final long compressedSize,
+            final FileTime lastModifiedTime,
+            final Long crc
+    ) {
+        this.method = method;
+        this.size = size;
+        this.compressedSize = compressedSize;
+        this.lastModifiedTime = lastModifiedTime;
+        this.crc = crc;
+        this.name = name;
+        this.isDirectory = isDirectory;
+    }
 
-	
-	public long getSize() {
-		return size;
-	}
-	
-	public String getMethod() {
-		return method;
-	}
-	
-	public long getCompressedSize() {
-		return compressedSize;
-	}
-	
-	public FileTime getLastModifiedTime() {
-		return lastModifiedTime;
-	}
-	
-	public Long getCrc() {
-		return crc;
-	}
-	
-	public String getName() {
-		return name;
-	}
-	
-	public boolean isDirectory() {
-		return isDirectory;
-	}
 
-	
-	public VncMap toVncMap() {
-		return VncHashMap.of(
-				new VncKeyword("name"),            new VncString(name),
-				new VncKeyword("directory"),       VncBoolean.of(isDirectory),
-				new VncKeyword("method"),          new VncString(method),
-				new VncKeyword("size"),            new VncLong(size),
-				new VncKeyword("compressed-size"), new VncLong(compressedSize),
-				new VncKeyword("crc"),             crc == null ? Constants.Nil : new VncLong(crc));
-	}
+    public long getSize() {
+        return size;
+    }
 
-	
-	private final long size;
-	private final String method;
-	private final long compressedSize;
-	private final FileTime lastModifiedTime;
-	private final Long crc;
-	private final String name;
-	private final boolean isDirectory;
+    public String getMethod() {
+        return method;
+    }
+
+    public long getCompressedSize() {
+        return compressedSize;
+    }
+
+    public FileTime getLastModifiedTime() {
+        return lastModifiedTime;
+    }
+
+    public Long getCrc() {
+        return crc;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public boolean isDirectory() {
+        return isDirectory;
+    }
+
+
+    public VncMap toVncMap() {
+        return VncHashMap.of(
+                new VncKeyword("name"),            new VncString(name),
+                new VncKeyword("directory"),       VncBoolean.of(isDirectory),
+                new VncKeyword("method"),          new VncString(method),
+                new VncKeyword("size"),            new VncLong(size),
+                new VncKeyword("compressed-size"), new VncLong(compressedSize),
+                new VncKeyword("crc"),             crc == null ? Constants.Nil : new VncLong(crc));
+    }
+
+
+    private final long size;
+    private final String method;
+    private final long compressedSize;
+    private final FileTime lastModifiedTime;
+    private final Long crc;
+    private final String name;
+    private final boolean isDirectory;
 }

@@ -1,5 +1,5 @@
 /*   __    __         _
- *   \ \  / /__ _ __ (_) ___ ___ 
+ *   \ \  / /__ _ __ (_) ___ ___
  *    \ \/ / _ \ '_ \| |/ __/ _ \
  *     \  /  __/ | | | | (_|  __/
  *      \/ \___|_| |_|_|\___\___|
@@ -48,46 +48,46 @@ import com.github.jlangch.venice.impl.util.StringUtil;
 @State (Scope.Benchmark)
 @Threads (1)
 public class ReaderBenchmark {
-	
-	public ReaderBenchmark() {
-		System.out.print("(Core lines: " + StringUtil.splitIntoLines(core).size() + ") ");
-	}
-	
-	/* ------------------------------------------------------------------------
-	 *  Venice 1.8.5 (08.06.2020)
-	 *  
-	 *     Test system:            2017 MacBook Pro (Mac OSX, Core i7 2.8 GHz) 
-	 *                             Java 8 server VM
-	 * 
-	 *     Benchmark               Mode  Cnt  Score   Error  Units
-	 *     ReaderBenchmark.reader  avgt    3  1.278 ± 0.069  ms/op
-	 * 
-	 * 
-	 * 
-	 *  Venice 1.8.4 (05.06.2020)
-	 *  
-	 *     Test system:            2017 MacBook Pro (Mac OSX, Core i7 2.8 GHz) 
-	 *                             Java 8 server VM
-	 * 
-	 *     Benchmark               Mode  Cnt  Score   Error  Units
-	 *     ReaderBenchmark.reader  avgt    3  1.685 ± 0.411  ms/op
-	 * 
-	 * 
-	 * 
-	 *  Venice 1.8.0 (05.06.2020) 
-	 * 
-	 *     Test system:            2017 MacBook Pro (Mac OSX, Core i7 2.8 GHz) 
-	 *                             Java 8 server VM
-	 * 
-	 *     Benchmark               Mode  Cnt  Score   Error  Units
-	 *     ReaderBenchmark.reader  avgt    3  2.961 ± 1.019  ms/op
-	 * 
-	 * ------------------------------------------------------------------------ */
-	@Benchmark
-	public VncVal reader() {
-		return Reader.read_str(core, "core");
-	}
-	
-	
-	private final String core = "(do\n" + ModuleLoader.loadModule("core") + "\n)";
+
+    public ReaderBenchmark() {
+        System.out.print("(Core lines: " + StringUtil.splitIntoLines(core).size() + ") ");
+    }
+
+    /* ------------------------------------------------------------------------
+     *  Venice 1.8.5 (08.06.2020)
+     *
+     *     Test system:            2017 MacBook Pro (Mac OSX, Core i7 2.8 GHz)
+     *                             Java 8 server VM
+     *
+     *     Benchmark               Mode  Cnt  Score   Error  Units
+     *     ReaderBenchmark.reader  avgt    3  1.278 ± 0.069  ms/op
+     *
+     *
+     *
+     *  Venice 1.8.4 (05.06.2020)
+     *
+     *     Test system:            2017 MacBook Pro (Mac OSX, Core i7 2.8 GHz)
+     *                             Java 8 server VM
+     *
+     *     Benchmark               Mode  Cnt  Score   Error  Units
+     *     ReaderBenchmark.reader  avgt    3  1.685 ± 0.411  ms/op
+     *
+     *
+     *
+     *  Venice 1.8.0 (05.06.2020)
+     *
+     *     Test system:            2017 MacBook Pro (Mac OSX, Core i7 2.8 GHz)
+     *                             Java 8 server VM
+     *
+     *     Benchmark               Mode  Cnt  Score   Error  Units
+     *     ReaderBenchmark.reader  avgt    3  2.961 ± 1.019  ms/op
+     *
+     * ------------------------------------------------------------------------ */
+    @Benchmark
+    public VncVal reader() {
+        return Reader.read_str(core, "core");
+    }
+
+
+    private final String core = "(do\n" + ModuleLoader.loadModule("core") + "\n)";
 }

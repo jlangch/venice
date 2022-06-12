@@ -1,5 +1,5 @@
 /*   __	__		 _
- *   \ \  / /__ _ __ (_) ___ ___ 
+ *   \ \  / /__ _ __ (_) ___ ___
  *	\ \/ / _ \ '_ \| |/ __/ _ \
  *	 \  /  __/ | | | | (_|  __/
  *	  \/ \___|_| |_|_|\___\___|
@@ -64,95 +64,95 @@ import org.openjdk.jmh.annotations.Warmup;
 @State(Scope.Benchmark)
 public class FieldAccessBenchmark {
 
-	public FieldAccessBenchmark() {
-		init();
-	}
-	
-	@Benchmark
-	public int plain() {
-		return value;
-	}
+    public FieldAccessBenchmark() {
+        init();
+    }
 
-	@Benchmark
-	public int dynamic_reflect() throws InvocationTargetException, IllegalAccessException {
-		return (int)reflective.get(this);
-	}
+    @Benchmark
+    public int plain() {
+        return value;
+    }
 
-	@Benchmark
-	public int dynamic_unreflect_invoke() throws Throwable {
-		return (int)unreflect.invoke(this);
-	}
+    @Benchmark
+    public int dynamic_reflect() throws InvocationTargetException, IllegalAccessException {
+        return (int)reflective.get(this);
+    }
 
-	@Benchmark
-	public int dynamic_unreflect_invokeExact() throws Throwable {
-		return (int)unreflect.invokeExact(this);
-	}
+    @Benchmark
+    public int dynamic_unreflect_invoke() throws Throwable {
+        return (int)unreflect.invoke(this);
+    }
 
-	@Benchmark
-	public int dynamic_mh_invoke() throws Throwable {
-		return (int)mh.invoke(this);
-	}
+    @Benchmark
+    public int dynamic_unreflect_invokeExact() throws Throwable {
+        return (int)unreflect.invokeExact(this);
+    }
 
-	@Benchmark
-	public int dynamic_mh_invokeExact() throws Throwable {
-		return (int)mh.invokeExact(this);
-	}
+    @Benchmark
+    public int dynamic_mh_invoke() throws Throwable {
+        return (int)mh.invoke(this);
+    }
 
-	@Benchmark
-	public int static_reflect() throws InvocationTargetException, IllegalAccessException {
-		return (int)static_reflective.get(this);
-	}
+    @Benchmark
+    public int dynamic_mh_invokeExact() throws Throwable {
+        return (int)mh.invokeExact(this);
+    }
 
-	@Benchmark
-	public int static_unreflect_invoke() throws Throwable {
-		return (int)static_unreflect.invoke(this);
-	}
+    @Benchmark
+    public int static_reflect() throws InvocationTargetException, IllegalAccessException {
+        return (int)static_reflective.get(this);
+    }
 
-	@Benchmark
-	public int static_unreflect_invokeExact() throws Throwable {
-		return (int)static_unreflect.invokeExact(this);
-	}
+    @Benchmark
+    public int static_unreflect_invoke() throws Throwable {
+        return (int)static_unreflect.invoke(this);
+    }
 
-	@Benchmark
-	public int static_mh_invoke() throws Throwable {
-		return (int)static_mh.invoke(this);
-	}
+    @Benchmark
+    public int static_unreflect_invokeExact() throws Throwable {
+        return (int)static_unreflect.invokeExact(this);
+    }
 
-	@Benchmark
-	public int static_mh_invokeExact() throws Throwable {
-		return (int)static_mh.invokeExact(this);
-	}
+    @Benchmark
+    public int static_mh_invoke() throws Throwable {
+        return (int)static_mh.invoke(this);
+    }
+
+    @Benchmark
+    public int static_mh_invokeExact() throws Throwable {
+        return (int)static_mh.invokeExact(this);
+    }
 
 
-	private void init() {
-		try {
-			reflective = FieldAccessBenchmark.class.getDeclaredField("value");
-			unreflect = MethodHandles.lookup().unreflectGetter(reflective);
-			mh = MethodHandles.lookup().findGetter(FieldAccessBenchmark.class, "value", int.class);
-		} 
-		catch (IllegalAccessException | NoSuchFieldException e) {
-			throw new IllegalStateException(e);
-		}
-	}
-	
-	private int value = 42;
+    private void init() {
+        try {
+            reflective = FieldAccessBenchmark.class.getDeclaredField("value");
+            unreflect = MethodHandles.lookup().unreflectGetter(reflective);
+            mh = MethodHandles.lookup().findGetter(FieldAccessBenchmark.class, "value", int.class);
+        }
+        catch (IllegalAccessException | NoSuchFieldException e) {
+            throw new IllegalStateException(e);
+        }
+    }
 
-	private static final Field static_reflective;
-	private static final MethodHandle static_unreflect;
-	private static final MethodHandle static_mh;
+    private int value = 42;
 
-	private Field reflective;
-	private MethodHandle unreflect;
-	private MethodHandle mh;
+    private static final Field static_reflective;
+    private static final MethodHandle static_unreflect;
+    private static final MethodHandle static_mh;
 
-	static {
-		try {
-			static_reflective = FieldAccessBenchmark.class.getDeclaredField("value");
-			static_unreflect = MethodHandles.lookup().unreflectGetter(static_reflective);
-			static_mh = MethodHandles.lookup().findGetter(FieldAccessBenchmark.class, "value", int.class);
-		} 
-		catch (IllegalAccessException | NoSuchFieldException e) {
-			throw new IllegalStateException(e);
-		}
-	}
+    private Field reflective;
+    private MethodHandle unreflect;
+    private MethodHandle mh;
+
+    static {
+        try {
+            static_reflective = FieldAccessBenchmark.class.getDeclaredField("value");
+            static_unreflect = MethodHandles.lookup().unreflectGetter(static_reflective);
+            static_mh = MethodHandles.lookup().findGetter(FieldAccessBenchmark.class, "value", int.class);
+        }
+        catch (IllegalAccessException | NoSuchFieldException e) {
+            throw new IllegalStateException(e);
+        }
+    }
 }

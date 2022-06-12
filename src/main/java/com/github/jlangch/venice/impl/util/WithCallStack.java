@@ -1,5 +1,5 @@
 /*   __    __         _
- *   \ \  / /__ _ __ (_) ___ ___ 
+ *   \ \  / /__ _ __ (_) ___ ___
  *    \ \/ / _ \ '_ \| |/ __/ _ \
  *     \  /  __/ | | | | (_|  __/
  *      \/ \___|_| |_|_|\___\___|
@@ -28,13 +28,13 @@ import com.github.jlangch.venice.impl.thread.ThreadContext;
 
 /**
  * Run code with an explicit Venice call stack
- * 
+ *
  * <pre>
  *    try (WithCallStack cs = new WithCallStack(CallFrame.fromVal("rest", ast))) {
  *       return ast.rest();
  *    }
  * </pre>
- * 
+ *
  * <pre>
  *    WithCallStack.run(
  *       CallFrame.fromVal("rest", ast)));
@@ -44,30 +44,30 @@ import com.github.jlangch.venice.impl.thread.ThreadContext;
  */
 public class WithCallStack implements AutoCloseable {
 
-	public WithCallStack(final CallFrame callFrame) {
-		if (callFrame == null) {
-			throw new IllegalArgumentException("A 'callFrame' must not be null");
-		}
+    public WithCallStack(final CallFrame callFrame) {
+        if (callFrame == null) {
+            throw new IllegalArgumentException("A 'callFrame' must not be null");
+        }
 
-		ThreadContext.getCallStack().push(callFrame);
-	}
+        ThreadContext.getCallStack().push(callFrame);
+    }
 
-	@Override
-	public void close() {
-		ThreadContext.getCallStack().pop();
-	}
-	
-	
-	public static <T> T call(final CallFrame callFrame, final Supplier<T> func) {
-		try (WithCallStack cs = new WithCallStack(callFrame)) {
-			return func.get();
-		}
-	}
+    @Override
+    public void close() {
+        ThreadContext.getCallStack().pop();
+    }
 
-	public static void run(final CallFrame callFrame, final Runnable func) {
-		try (WithCallStack cs = new WithCallStack(callFrame)) {
-			func.run();
-		}
-	}
+
+    public static <T> T call(final CallFrame callFrame, final Supplier<T> func) {
+        try (WithCallStack cs = new WithCallStack(callFrame)) {
+            return func.get();
+        }
+    }
+
+    public static void run(final CallFrame callFrame, final Runnable func) {
+        try (WithCallStack cs = new WithCallStack(callFrame)) {
+            func.run();
+        }
+    }
 
 }

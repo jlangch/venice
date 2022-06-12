@@ -1,5 +1,5 @@
 /*   __    __         _
- *   \ \  / /__ _ __ (_) ___ ___ 
+ *   \ \  / /__ _ __ (_) ___ ___
  *    \ \/ / _ \ '_ \| |/ __/ _ \
  *     \  /  __/ | | | | (_|  __/
  *      \/ \___|_| |_|_|\___\___|
@@ -35,106 +35,106 @@ import com.github.jlangch.venice.impl.Modules;
 
 public class VeniceScriptEngineFactory implements ScriptEngineFactory {
 
-	public VeniceScriptEngineFactory() {
-		properties.setProperty(ScriptEngine.NAME, getEngineName());
-		properties.setProperty(ScriptEngine.LANGUAGE, getLanguageName());
-		properties.setProperty(ScriptEngine.LANGUAGE_VERSION, getLanguageVersion());
+    public VeniceScriptEngineFactory() {
+        properties.setProperty(ScriptEngine.NAME, getEngineName());
+        properties.setProperty(ScriptEngine.LANGUAGE, getLanguageName());
+        properties.setProperty(ScriptEngine.LANGUAGE_VERSION, getLanguageVersion());
 
-		this.scriptEngine = new VeniceScriptEngine(this, new VeniceBindings());
-	}
-	
-	
-	@Override
-	public String getEngineName() {
-		return  "venice";
-	}
+        this.scriptEngine = new VeniceScriptEngine(this, new VeniceBindings());
+    }
 
-	@Override
-	public String getEngineVersion() {
-		return Venice.getVersion();
-	}
 
-	@Override
-	public List<String> getExtensions() {
-		return new ArrayList<>(Modules.VALID_MODULES);
-	}
+    @Override
+    public String getEngineName() {
+        return  "venice";
+    }
 
-	@Override
-	public List<String> getMimeTypes() {
-		return Arrays.asList("application/venice");
-	}
+    @Override
+    public String getEngineVersion() {
+        return Venice.getVersion();
+    }
 
-	@Override
-	public List<String> getNames() {
-		return Arrays.asList("venice");
-	}
+    @Override
+    public List<String> getExtensions() {
+        return new ArrayList<>(Modules.VALID_MODULES);
+    }
 
-	@Override
-	public String getLanguageName() {
-		return "venice";
-	}
+    @Override
+    public List<String> getMimeTypes() {
+        return Arrays.asList("application/venice");
+    }
 
-	@Override
-	public String getLanguageVersion() {
-		return "1.0";
-	}
+    @Override
+    public List<String> getNames() {
+        return Arrays.asList("venice");
+    }
 
-	@Override
-	public Object getParameter(final String key) {
-		 if (ScriptEngine.ENGINE.equals(key)) {
-			 return getScriptEngine();
-		 }
+    @Override
+    public String getLanguageName() {
+        return "venice";
+    }
 
-		 return properties.getProperty(key);	
-	}
+    @Override
+    public String getLanguageVersion() {
+        return "1.0";
+    }
 
-	@Override
-	public String getMethodCallSyntax(
-			final String obj, 
-			final String method, 
-			final String... args
-	) {
-		final StringBuilder sb = new StringBuilder();
-		
-		sb.append("(. ");
-		sb.append(obj);
-		sb.append(" :");
-		sb.append(method);
-		for (String arg : args) {
-			sb.append(" ");
-			sb.append(arg);
-		}
-		sb.append(" )");
-		
-		return sb.toString();
-	}
+    @Override
+    public Object getParameter(final String key) {
+         if (ScriptEngine.ENGINE.equals(key)) {
+             return getScriptEngine();
+         }
 
-	@Override
-	public String getOutputStatement(final String toDisplay) {
-		return "(println " + toDisplay + ")";
-	}
+         return properties.getProperty(key);
+    }
 
-	@Override
-	public String getProgram(final String... statements) {
-		final StringBuilder sb = new StringBuilder();
+    @Override
+    public String getMethodCallSyntax(
+            final String obj,
+            final String method,
+            final String... args
+    ) {
+        final StringBuilder sb = new StringBuilder();
 
-		sb.append("(do \n");
-		for (String statement : statements) {
-			sb.append("    ");
-			sb.append(statement);
-			sb.append("\n");
-		}
-		sb.append(" )");
+        sb.append("(. ");
+        sb.append(obj);
+        sb.append(" :");
+        sb.append(method);
+        for (String arg : args) {
+            sb.append(" ");
+            sb.append(arg);
+        }
+        sb.append(" )");
 
-		return sb.toString();
-	}
+        return sb.toString();
+    }
 
-	@Override
-	public ScriptEngine getScriptEngine() {
-		return scriptEngine;
-	}
+    @Override
+    public String getOutputStatement(final String toDisplay) {
+        return "(println " + toDisplay + ")";
+    }
 
-	
-	private final ScriptEngine scriptEngine;
-	private final Properties properties = new Properties();
+    @Override
+    public String getProgram(final String... statements) {
+        final StringBuilder sb = new StringBuilder();
+
+        sb.append("(do \n");
+        for (String statement : statements) {
+            sb.append("    ");
+            sb.append(statement);
+            sb.append("\n");
+        }
+        sb.append(" )");
+
+        return sb.toString();
+    }
+
+    @Override
+    public ScriptEngine getScriptEngine() {
+        return scriptEngine;
+    }
+
+
+    private final ScriptEngine scriptEngine;
+    private final Properties properties = new Properties();
 }

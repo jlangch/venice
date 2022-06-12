@@ -1,5 +1,5 @@
 /*   __    __         _
- *   \ \  / /__ _ __ (_) ___ ___ 
+ *   \ \  / /__ _ __ (_) ___ ___
  *    \ \/ / _ \ '_ \| |/ __/ _ \
  *     \  /  __/ | | | | (_|  __/
  *      \/ \___|_| |_|_|\___\___|
@@ -32,23 +32,23 @@ import javax.servlet.http.HttpServletResponse;
 
 public interface IVeniceServlet {
 
-	void init(ServletConfig config) throws ServletException;
+    void init(ServletConfig config) throws ServletException;
 
-	void destroy();
+    void destroy();
 
-	void doGet(HttpServletRequest req, HttpServletResponse resp, HttpServlet servlet) throws ServletException, IOException;
+    void doGet(HttpServletRequest req, HttpServletResponse resp, HttpServlet servlet) throws ServletException, IOException;
 
-	void doHead(HttpServletRequest req, HttpServletResponse resp, HttpServlet servle) throws ServletException, IOException;
-	
-	void doPost(HttpServletRequest req, HttpServletResponse resp, HttpServlet servle) throws ServletException, IOException;
-	
-	void doPut(HttpServletRequest req, HttpServletResponse resp, HttpServlet servle) throws ServletException, IOException;
-	
-	void doDelete(HttpServletRequest req, HttpServletResponse resp, HttpServlet servle) throws ServletException, IOException;
-	
-	void doOptions(HttpServletRequest req, HttpServletResponse resp, HttpServlet servle) throws ServletException, IOException;
-	
-	void doTrace(HttpServletRequest req, HttpServletResponse resp, HttpServlet servle) throws ServletException, IOException;
+    void doHead(HttpServletRequest req, HttpServletResponse resp, HttpServlet servle) throws ServletException, IOException;
 
-	long getLastModified(HttpServletRequest req);
+    void doPost(HttpServletRequest req, HttpServletResponse resp, HttpServlet servle) throws ServletException, IOException;
+
+    void doPut(HttpServletRequest req, HttpServletResponse resp, HttpServlet servle) throws ServletException, IOException;
+
+    void doDelete(HttpServletRequest req, HttpServletResponse resp, HttpServlet servle) throws ServletException, IOException;
+
+    void doOptions(HttpServletRequest req, HttpServletResponse resp, HttpServlet servle) throws ServletException, IOException;
+
+    void doTrace(HttpServletRequest req, HttpServletResponse resp, HttpServlet servle) throws ServletException, IOException;
+
+    long getLastModified(HttpServletRequest req);
 }

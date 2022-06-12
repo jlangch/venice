@@ -1,5 +1,5 @@
 /*   __    __         _
- *   \ \  / /__ _ __ (_) ___ ___ 
+ *   \ \  / /__ _ __ (_) ___ ___
  *    \ \/ / _ \ '_ \| |/ __/ _ \
  *     \  /  __/ | | | | (_|  __/
  *      \/ \___|_| |_|_|\___\___|
@@ -27,27 +27,27 @@ import java.io.OutputStream;
 
 
 public class FilterOutputStreamCloseCB extends FilterOutputStream {
-	
-	public FilterOutputStreamCloseCB(
-			final OutputStream out,
-			final Runnable onClose
-	) {
-		super(out);
-		this.onClose = onClose;
-	}
 
-	@Override
-	public void close() throws IOException {
-		try {
-			super.close();
-		}
-		finally {
-			if (onClose != null) {
-				onClose.run();
-			}
-		}
-	}
-	
-	
-	private final Runnable onClose;
+    public FilterOutputStreamCloseCB(
+            final OutputStream out,
+            final Runnable onClose
+    ) {
+        super(out);
+        this.onClose = onClose;
+    }
+
+    @Override
+    public void close() throws IOException {
+        try {
+            super.close();
+        }
+        finally {
+            if (onClose != null) {
+                onClose.run();
+            }
+        }
+    }
+
+
+    private final Runnable onClose;
 }

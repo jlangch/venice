@@ -1,5 +1,5 @@
 /*   __    __         _
- *   \ \  / /__ _ __ (_) ___ ___ 
+ *   \ \  / /__ _ __ (_) ___ ___
  *    \ \/ / _ \ '_ \| |/ __/ _ \
  *     \  /  __/ | | | | (_|  __/
  *      \/ \___|_| |_|_|\___\___|
@@ -32,91 +32,91 @@ import javax.servlet.http.HttpServletResponse;
 
 public class VeniceServlet extends HttpServlet {
 
-	public VeniceServlet(final IVeniceServlet delegate) { 
-		this.delegate = delegate;
-	}
-
-	
-	@Override
-	public void init(final ServletConfig config)
-	throws ServletException {
-		super.init(config);
-		delegate.init(config);
-	}
-
-	@Override
-	public void destroy() {
-		super.destroy();
-		delegate.destroy();
-	}
-
-	@Override
-	protected void doGet(
-			final HttpServletRequest req, 
-			final HttpServletResponse resp
-	) throws ServletException, IOException {
-		delegate.doGet(req, resp, this);
-	}
-
-	@Override
-	protected void doHead(
-			final HttpServletRequest req, 
-			final HttpServletResponse resp
-	) throws ServletException, IOException {
-		delegate.doHead(req, resp, this);
-	}
-	
-	@Override
-	protected void doPost(
-			final HttpServletRequest req, 
-			final HttpServletResponse resp
-	) throws ServletException, IOException {
-		// Triggers the lazy load of the parameter map for POST "application/x-www-form-urlencoded"
-		// requests. Accessing req.getParameterMap() via reflection does not seem to load
-		// the parameter map from x-www-form-urlencoded body.
-		req.getParameterMap();
-		delegate.doPost(req, resp, this);
-	}
-	
-	@Override
-	protected void doPut(
-			final HttpServletRequest req, 
-			final HttpServletResponse resp
-	) throws ServletException, IOException {
-		delegate.doPut(req, resp, this);
-	}
-	
-	@Override
-	protected void doDelete(
-			final HttpServletRequest req, 
-			final HttpServletResponse resp
-	) throws ServletException, IOException {
-		delegate.doDelete(req, resp, this);
-	}
-	
-	@Override
-	protected void doOptions(
-			final HttpServletRequest req, 
-			final HttpServletResponse resp
-	) throws ServletException, IOException {
-		delegate.doOptions(req, resp, this);
-	}
-	
-	@Override
-	protected void doTrace(
-			final HttpServletRequest req, 
-			final HttpServletResponse resp
-	) throws ServletException, IOException {
-		delegate.doTrace(req, resp, this);
-	}
-
-	@Override
-	protected long getLastModified(final HttpServletRequest req) {
-		return delegate.getLastModified(req);
-	}
+    public VeniceServlet(final IVeniceServlet delegate) {
+        this.delegate = delegate;
+    }
 
 
-	private static final long serialVersionUID = 7024848763477707717L;
-	
-	private final IVeniceServlet delegate;
+    @Override
+    public void init(final ServletConfig config)
+    throws ServletException {
+        super.init(config);
+        delegate.init(config);
+    }
+
+    @Override
+    public void destroy() {
+        super.destroy();
+        delegate.destroy();
+    }
+
+    @Override
+    protected void doGet(
+            final HttpServletRequest req,
+            final HttpServletResponse resp
+    ) throws ServletException, IOException {
+        delegate.doGet(req, resp, this);
+    }
+
+    @Override
+    protected void doHead(
+            final HttpServletRequest req,
+            final HttpServletResponse resp
+    ) throws ServletException, IOException {
+        delegate.doHead(req, resp, this);
+    }
+
+    @Override
+    protected void doPost(
+            final HttpServletRequest req,
+            final HttpServletResponse resp
+    ) throws ServletException, IOException {
+        // Triggers the lazy load of the parameter map for POST "application/x-www-form-urlencoded"
+        // requests. Accessing req.getParameterMap() via reflection does not seem to load
+        // the parameter map from x-www-form-urlencoded body.
+        req.getParameterMap();
+        delegate.doPost(req, resp, this);
+    }
+
+    @Override
+    protected void doPut(
+            final HttpServletRequest req,
+            final HttpServletResponse resp
+    ) throws ServletException, IOException {
+        delegate.doPut(req, resp, this);
+    }
+
+    @Override
+    protected void doDelete(
+            final HttpServletRequest req,
+            final HttpServletResponse resp
+    ) throws ServletException, IOException {
+        delegate.doDelete(req, resp, this);
+    }
+
+    @Override
+    protected void doOptions(
+            final HttpServletRequest req,
+            final HttpServletResponse resp
+    ) throws ServletException, IOException {
+        delegate.doOptions(req, resp, this);
+    }
+
+    @Override
+    protected void doTrace(
+            final HttpServletRequest req,
+            final HttpServletResponse resp
+    ) throws ServletException, IOException {
+        delegate.doTrace(req, resp, this);
+    }
+
+    @Override
+    protected long getLastModified(final HttpServletRequest req) {
+        return delegate.getLastModified(req);
+    }
+
+
+    private static final long serialVersionUID = 7024848763477707717L;
+
+    private final IVeniceServlet delegate;
 }

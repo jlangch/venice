@@ -24,36 +24,36 @@ package com.github.jlangch.venice.nanojson;
  * Thrown when the {@link JsonParser} encounters malformed JSON.
  */
 public class JsonParserException extends Exception {
-	private static final long serialVersionUID = 1L;
-	private final int linePos;
-	private final int charPos;
-	private final int charOffset;
+    private static final long serialVersionUID = 1L;
+    private final int linePos;
+    private final int charPos;
+    private final int charOffset;
 
-	JsonParserException(Exception e, String message, int linePos, int charPos, int charOffset) {
-		super(message, e);
-		this.linePos = linePos;
-		this.charPos = charPos;
-		this.charOffset = charOffset;
-	}
+    JsonParserException(Exception e, String message, int linePos, int charPos, int charOffset) {
+        super(message, e);
+        this.linePos = linePos;
+        this.charPos = charPos;
+        this.charOffset = charOffset;
+    }
 
-	/**
-	 * Gets the 1-based line position of the error.
-	 */
-	public int getLinePosition() {
-		return linePos;
-	}
+    /**
+     * Gets the 1-based line position of the error.
+     */
+    public int getLinePosition() {
+        return linePos;
+    }
 
-	/**
-	 * Gets the 1-based character position of the error.
-	 */
-	public int getCharPosition() {
-		return charPos;
-	}
-	
-	/**
-	 * Gets the 0-based character offset of the error from the beginning of the string.
-	 */
-	public int getCharOffset() {
-		return charOffset;
-	}
+    /**
+     * Gets the 1-based character position of the error.
+     */
+    public int getCharPosition() {
+        return charPos;
+    }
+
+    /**
+     * Gets the 0-based character offset of the error from the beginning of the string.
+     */
+    public int getCharOffset() {
+        return charOffset;
+    }
 }

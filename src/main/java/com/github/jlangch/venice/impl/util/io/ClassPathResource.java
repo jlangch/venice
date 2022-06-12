@@ -1,5 +1,5 @@
 /*   __    __         _
- *   \ \  / /__ _ __ (_) ___ ___ 
+ *   \ \  / /__ _ __ (_) ___ ___
  *    \ \/ / _ \ '_ \| |/ __/ _ \
  *     \  /  __/ | | | | (_|  __/
  *      \/ \___|_| |_|_|\___\___|
@@ -29,143 +29,143 @@ import java.nio.ByteBuffer;
 
 public class ClassPathResource {
 
-	public ClassPathResource(final String path) {
-		this(path, null, null);
-	}
+    public ClassPathResource(final String path) {
+        this(path, null, null);
+    }
 
-	public ClassPathResource(final String path, final Class<?> clazz) {
-		this(path, clazz, null);
-	}
+    public ClassPathResource(final String path, final Class<?> clazz) {
+        this(path, clazz, null);
+    }
 
-	public ClassPathResource(final String path, final ClassLoader classLoader) {
-		this(path, null, classLoader);
-	}
+    public ClassPathResource(final String path, final ClassLoader classLoader) {
+        this(path, null, classLoader);
+    }
 
-	public ClassPathResource(
-			final String path, 
-			final Class<?> clazz, 
-			final ClassLoader classLoader
-	) {
-		if (path == null || path.trim().isEmpty()) {
-			throw new IllegalArgumentException("A 'path' must not be blank");
-		}
+    public ClassPathResource(
+            final String path,
+            final Class<?> clazz,
+            final ClassLoader classLoader
+    ) {
+        if (path == null || path.trim().isEmpty()) {
+            throw new IllegalArgumentException("A 'path' must not be blank");
+        }
 
-		this.path = path;
-		this.clazz = clazz;
-		this.classLoader = classLoader;
-	}
+        this.path = path;
+        this.clazz = clazz;
+        this.classLoader = classLoader;
+    }
 
-	public InputStream getInputStream() {
-		InputStream is = null;
-		
-		if (this.clazz != null) {
-			is = this.clazz.getResourceAsStream(this.path);
-		}
-		else if (this.classLoader != null) {
-			is = this.classLoader.getResourceAsStream(this.path);
-		}
-		
-		if (is == null) {
-			is = Thread.currentThread()
-					   .getContextClassLoader()
-					   .getResourceAsStream(this.path);
-		}
-		
-		if (is == null) {
-			is = ClassLoader.getSystemClassLoader()
-							.getResourceAsStream(this.path);
-		}
-		
-		if (is == null) {
-			is = ClassLoader.getSystemResourceAsStream(this.path);
-		}
+    public InputStream getInputStream() {
+        InputStream is = null;
 
-		return is;
-	}
+        if (this.clazz != null) {
+            is = this.clazz.getResourceAsStream(this.path);
+        }
+        else if (this.classLoader != null) {
+            is = this.classLoader.getResourceAsStream(this.path);
+        }
 
-	public URL getResource() {
-		URL url = null;
-		
-		if (this.clazz != null) {
-			url = this.clazz.getResource(this.path);
-		}
-		else if (this.classLoader != null) {
-			url = this.classLoader.getResource(this.path);
-		}
-		
-		if (url == null) {
-			url = Thread.currentThread()
-						.getContextClassLoader()
-						.getResource(this.path);
-		}
-		
-		if (url == null) {
-			url = ClassLoader.getSystemClassLoader()
-							 .getResource(this.path);
-		}
-		
-		return url;
-	}
+        if (is == null) {
+            is = Thread.currentThread()
+                       .getContextClassLoader()
+                       .getResourceAsStream(this.path);
+        }
 
-	public byte[] getResourceAsBinary() {  
-		try(InputStream is = getInputStream()) {
-			if (is == null) {
-				throw new RuntimeException(
-						String.format(
-								"Classpath resource %s not found", 
-								path));
-			}
-			else {
-				return IOStreamUtil.copyIStoByteArray(is);
-			}
-		}
-		catch(RuntimeException ex) {
-			if (ex.getMessage().startsWith("Classpath resource ")) {
-				throw ex;
-			}
-			else {
-				throw new RuntimeException(
-						String.format(
-								"Failed to load classpath resource '%s'", 
-								path), 
-						ex);
-			}
-		}
-		catch(Exception ex) {
-			throw new RuntimeException(
-					String.format(
-						"Failed to load classpath resource '%s'", 
-						path), 
-					ex);
-		}
-	 }
+        if (is == null) {
+            is = ClassLoader.getSystemClassLoader()
+                            .getResourceAsStream(this.path);
+        }
 
-	public ByteBuffer getResourceAsByteBuffer() {  
-		final byte[] data = getResourceAsBinary();
-		return data == null ? null : ByteBuffer.wrap(data);
-	}
+        if (is == null) {
+            is = ClassLoader.getSystemResourceAsStream(this.path);
+        }
 
-	public String getResourceAsString() {		
-		return getResourceAsString("UTF-8");
-	}
+        return is;
+    }
 
-	public String getResourceAsString(final String charsetName) {
-		try {
-			return new String(getResourceAsBinary(), charsetName);
-		}
-		catch (UnsupportedEncodingException ex) {
-			throw new RuntimeException(
-					String.format(
-						"Failed to load classpath resource '%s' as string. "
-							+ "The charset name '%' is not supported!", 
-						path,
-						charsetName), 
-					ex);
-		}
-	}
-	
-	
-	private final String path;
-	private final ClassLoader classLoader;
-	private final Class<?> clazz;
+    public URL getResource() {
+        URL url = null;
+
+        if (this.clazz != null) {
+            url = this.clazz.getResource(this.path);
+        }
+        else if (this.classLoader != null) {
+            url = this.classLoader.getResource(this.path);
+        }
+
+        if (url == null) {
+            url = Thread.currentThread()
+                        .getContextClassLoader()
+                        .getResource(this.path);
+        }
+
+        if (url == null) {
+            url = ClassLoader.getSystemClassLoader()
+                             .getResource(this.path);
+        }
+
+        return url;
+    }
+
+    public byte[] getResourceAsBinary() {
+        try(InputStream is = getInputStream()) {
+            if (is == null) {
+                throw new RuntimeException(
+                        String.format(
+                                "Classpath resource %s not found",
+                                path));
+            }
+            else {
+                return IOStreamUtil.copyIStoByteArray(is);
+            }
+        }
+        catch(RuntimeException ex) {
+            if (ex.getMessage().startsWith("Classpath resource ")) {
+                throw ex;
+            }
+            else {
+                throw new RuntimeException(
+                        String.format(
+                                "Failed to load classpath resource '%s'",
+                                path),
+                        ex);
+            }
+        }
+        catch(Exception ex) {
+            throw new RuntimeException(
+                    String.format(
+                        "Failed to load classpath resource '%s'",
+                        path),
+                    ex);
+        }
+     }
+
+    public ByteBuffer getResourceAsByteBuffer() {
+        final byte[] data = getResourceAsBinary();
+        return data == null ? null : ByteBuffer.wrap(data);
+    }
+
+    public String getResourceAsString() {
+        return getResourceAsString("UTF-8");
+    }
+
+    public String getResourceAsString(final String charsetName) {
+        try {
+            return new String(getResourceAsBinary(), charsetName);
+        }
+        catch (UnsupportedEncodingException ex) {
+            throw new RuntimeException(
+                    String.format(
+                        "Failed to load classpath resource '%s' as string. "
+                            + "The charset name '%' is not supported!",
+                        path,
+                        charsetName),
+                    ex);
+        }
+    }
+
+
+    private final String path;
+    private final ClassLoader classLoader;
+    private final Class<?> clazz;
 }

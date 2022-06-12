@@ -1,5 +1,5 @@
 /*   __    __         _
- *   \ \  / /__ _ __ (_) ___ ___ 
+ *   \ \  / /__ _ __ (_) ___ ___
  *    \ \/ / _ \ '_ \| |/ __/ _ \
  *     \  /  __/ | | | | (_|  __/
  *      \/ \___|_| |_|_|\___\___|
@@ -24,12 +24,12 @@ package com.github.jlangch.venice.impl.util.markdown.chunk;
 
 public class LineBreakChunk implements Chunk {
 
-	public LineBreakChunk() {
-	}
+    public LineBreakChunk() {
+    }
 
-	@Override
-	public boolean isEmpty() {
-		return false;
-	}
+    @Override
+    public boolean isEmpty() {
+        return false;
+    }
 
 }

@@ -1,5 +1,5 @@
 /*   __    __         _
- *   \ \  / /__ _ __ (_) ___ ___ 
+ *   \ \  / /__ _ __ (_) ___ ___
  *    \ \/ / _ \ '_ \| |/ __/ _ \
  *     \  /  __/ | | | | (_|  __/
  *      \/ \___|_| |_|_|\___\___|
@@ -44,87 +44,87 @@ import com.github.jlangch.venice.nanojson.JsonReader;
 
 public class VncJsonReader {
 
-	public VncJsonReader(final JsonReader reader) {
-		this(reader, null, null, false);
-	}
+    public VncJsonReader(final JsonReader reader) {
+        this(reader, null, null, false);
+    }
 
-	public VncJsonReader(
-			final JsonReader reader,
-			final Function<VncVal,VncVal> key_fn,
-			final BiFunction<VncVal,VncVal,VncVal> value_fn,
-			final boolean toDecimal
-	) {
-		this.reader = reader;
-		this.key_fn = key_fn;
-		this.value_fn = value_fn;
-		this.toDecimal = toDecimal;
-	}
+    public VncJsonReader(
+            final JsonReader reader,
+            final Function<VncVal,VncVal> key_fn,
+            final BiFunction<VncVal,VncVal,VncVal> value_fn,
+            final boolean toDecimal
+    ) {
+        this.reader = reader;
+        this.key_fn = key_fn;
+        this.value_fn = value_fn;
+        this.toDecimal = toDecimal;
+    }
 
-	public VncVal read() {
-		try {
-			return readAny();
-		}
-		catch(JsonParserException ex) {
-			throw new VncException(
-					String.format(
-						"JSON deserialization error at line %d column %d. %s",
-						ex.getLinePosition(),
-						ex.getCharPosition(),
-						ex.getMessage()),
-					ex);
-		}
-	}
-	
-	private VncVal readAny() throws JsonParserException {
-		switch(reader.current()) {
-			case OBJECT:  return readObject();
-			case ARRAY:   return readArray();
-			case STRING:  return new VncString(reader.string());
-			case NUMBER:  return readNumber();
-			case BOOLEAN: return VncBoolean.of(reader.bool());
-			case NULL:    return Constants.Nil;
- 			default: throw new RuntimeException("Unexpected JSON type " + reader.current());
-		}
-	}
-	
-	private VncVal readObject() throws JsonParserException {
-		reader.object();
-		
-		final Map<VncVal,VncVal> map = new HashMap<>();
-		while(reader.next()) {
-			final VncVal key = new VncString(reader.key());
-			final VncVal mappedKey = key_fn == null ? key : key_fn.apply(key);
+    public VncVal read() {
+        try {
+            return readAny();
+        }
+        catch(JsonParserException ex) {
+            throw new VncException(
+                    String.format(
+                        "JSON deserialization error at line %d column %d. %s",
+                        ex.getLinePosition(),
+                        ex.getCharPosition(),
+                        ex.getMessage()),
+                    ex);
+        }
+    }
 
-			final VncVal val = readAny();
-			final VncVal mappedVal = value_fn == null ? val : value_fn.apply(mappedKey, val);
+    private VncVal readAny() throws JsonParserException {
+        switch(reader.current()) {
+            case OBJECT:  return readObject();
+            case ARRAY:   return readArray();
+            case STRING:  return new VncString(reader.string());
+            case NUMBER:  return readNumber();
+            case BOOLEAN: return VncBoolean.of(reader.bool());
+            case NULL:    return Constants.Nil;
+             default: throw new RuntimeException("Unexpected JSON type " + reader.current());
+        }
+    }
 
-			map.put(mappedKey, mappedVal);
-		}		
-		return new VncHashMap(map);
-	}
+    private VncVal readObject() throws JsonParserException {
+        reader.object();
 
-	private VncVal readArray() throws JsonParserException {
-		reader.array();
-		
-		final List<VncVal> list = new ArrayList<>();
-		while(reader.next()) {
-			list.add(readAny());
-		}
-		return VncList.ofList(list);
-	}
+        final Map<VncVal,VncVal> map = new HashMap<>();
+        while(reader.next()) {
+            final VncVal key = new VncString(reader.key());
+            final VncVal mappedKey = key_fn == null ? key : key_fn.apply(key);
 
-	private VncVal readNumber() throws JsonParserException {
-		final JsonLazyNumber n = (JsonLazyNumber)reader.number();
-		return n.isDouble() 
-					? (toDecimal 
-						? new VncBigDecimal(n.bigDecimalValue())
-						: new VncDouble(n.doubleValue()))
-					: new VncLong(n.longValue());
-	}
+            final VncVal val = readAny();
+            final VncVal mappedVal = value_fn == null ? val : value_fn.apply(mappedKey, val);
 
-	
-	private final JsonReader reader;
-	private final Function<VncVal,VncVal> key_fn;
-	private final BiFunction<VncVal,VncVal,VncVal> value_fn;
-	private final boolean toDecimal;
+            map.put(mappedKey, mappedVal);
+        }
+        return new VncHashMap(map);
+    }
+
+    private VncVal readArray() throws JsonParserException {
+        reader.array();
+
+        final List<VncVal> list = new ArrayList<>();
+        while(reader.next()) {
+            list.add(readAny());
+        }
+        return VncList.ofList(list);
+    }
+
+    private VncVal readNumber() throws JsonParserException {
+        final JsonLazyNumber n = (JsonLazyNumber)reader.number();
+        return n.isDouble()
+                    ? (toDecimal
+                        ? new VncBigDecimal(n.bigDecimalValue())
+                        : new VncDouble(n.doubleValue()))
+                    : new VncLong(n.longValue());
+    }
+
+
+    private final JsonReader reader;
+    private final Function<VncVal,VncVal> key_fn;
+    private final BiFunction<VncVal,VncVal,VncVal> value_fn;
+    private final boolean toDecimal;
 }

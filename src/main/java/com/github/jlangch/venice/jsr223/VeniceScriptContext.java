@@ -1,5 +1,5 @@
 /*   __    __         _
- *   \ \  / /__ _ __ (_) ___ ___ 
+ *   \ \  / /__ _ __ (_) ___ ___
  *    \ \/ / _ \ '_ \| |/ __/ _ \
  *     \  /  __/ | | | | (_|  __/
  *      \/ \___|_| |_|_|\___\___|
@@ -31,69 +31,69 @@ import javax.script.ScriptContext;
 
 public class VeniceScriptContext implements ScriptContext {
 
-	@Override
-	public void setBindings(final Bindings bindings, final int scope) {
-	}
+    @Override
+    public void setBindings(final Bindings bindings, final int scope) {
+    }
 
-	@Override
-	public Bindings getBindings(final int scope) {
-		return null;
-	}
+    @Override
+    public Bindings getBindings(final int scope) {
+        return null;
+    }
 
-	@Override
-	public void setAttribute(final String name, final Object value, final int scope) {
-	}
+    @Override
+    public void setAttribute(final String name, final Object value, final int scope) {
+    }
 
-	@Override
-	public Object getAttribute(final String name, final int scope) {
-		return null;
-	}
+    @Override
+    public Object getAttribute(final String name, final int scope) {
+        return null;
+    }
 
-	@Override
-	public Object removeAttribute(final String name, final int scope) {
-		return null;
-	}
+    @Override
+    public Object removeAttribute(final String name, final int scope) {
+        return null;
+    }
 
-	@Override
-	public Object getAttribute(final String name) {
-		return null;
-	}
+    @Override
+    public Object getAttribute(final String name) {
+        return null;
+    }
 
-	@Override
-	public int getAttributesScope(final String name) {
-		return 0;
-	}
+    @Override
+    public int getAttributesScope(final String name) {
+        return 0;
+    }
 
-	@Override
-	public Writer getWriter() {
-		return null;
-	}
+    @Override
+    public Writer getWriter() {
+        return null;
+    }
 
-	@Override
-	public Writer getErrorWriter() {
-		return null;
-	}
+    @Override
+    public Writer getErrorWriter() {
+        return null;
+    }
 
-	@Override
-	public void setWriter(final Writer writer) {
-	}
+    @Override
+    public void setWriter(final Writer writer) {
+    }
 
-	@Override
-	public void setErrorWriter(final Writer writer) {
-	}
+    @Override
+    public void setErrorWriter(final Writer writer) {
+    }
 
-	@Override
-	public Reader getReader() {
-		return null;
-	}
+    @Override
+    public Reader getReader() {
+        return null;
+    }
 
-	@Override
-	public void setReader(final Reader reader) {
-	}
+    @Override
+    public void setReader(final Reader reader) {
+    }
 
-	@Override
-	public List<Integer> getScopes() {
-		return null;
-	}
+    @Override
+    public List<Integer> getScopes() {
+        return null;
+    }
 
 }

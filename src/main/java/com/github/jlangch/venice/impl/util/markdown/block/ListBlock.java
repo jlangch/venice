@@ -1,5 +1,5 @@
 /*   __    __         _
- *   \ \  / /__ _ __ (_) ___ ___ 
+ *   \ \  / /__ _ __ (_) ___ ___
  *    \ \/ / _ \ '_ \| |/ __/ _ \
  *     \  /  __/ | | | | (_|  __/
  *      \/ \___|_| |_|_|\___\___|
@@ -27,46 +27,46 @@ import java.util.List;
 
 public class ListBlock implements Block {
 
-	public ListBlock() {
-	}
+    public ListBlock() {
+    }
 
-	public void addItem(final Block block) {
-		if (block != null) {
-			items.add(block);
-		}
-	}
-	
-	public List<Block> getItems() {
-		return items;
-	}
-	
-	@Override
-	public boolean isEmpty() {
-		return items.isEmpty();
-	}
-	
-	public int size() {
-		return items.size();
-	}
-	
-	public Block get(final int index) {
-		return items.get(index);
-	}
-	
-	public boolean isOrdered() {
-		return ordered;
-	}
-	
-	public void setOrdered(final boolean ordered) {
-		this.ordered = ordered;
-	}
+    public void addItem(final Block block) {
+        if (block != null) {
+            items.add(block);
+        }
+    }
 
-	@Override
-	public void parseChunks() {
-		items.forEach(b -> b.parseChunks());
-	}
-	
-	
-	private List<Block> items = new ArrayList<>();
-	private boolean ordered = false;
+    public List<Block> getItems() {
+        return items;
+    }
+
+    @Override
+    public boolean isEmpty() {
+        return items.isEmpty();
+    }
+
+    public int size() {
+        return items.size();
+    }
+
+    public Block get(final int index) {
+        return items.get(index);
+    }
+
+    public boolean isOrdered() {
+        return ordered;
+    }
+
+    public void setOrdered(final boolean ordered) {
+        this.ordered = ordered;
+    }
+
+    @Override
+    public void parseChunks() {
+        items.forEach(b -> b.parseChunks());
+    }
+
+
+    private List<Block> items = new ArrayList<>();
+    private boolean ordered = false;
 }

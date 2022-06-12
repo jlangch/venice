@@ -1,5 +1,5 @@
 /*   __    __         _
- *   \ \  / /__ _ __ (_) ___ ___ 
+ *   \ \  / /__ _ __ (_) ___ ___
  *    \ \/ / _ \ '_ \| |/ __/ _ \
  *     \  /  __/ | | | | (_|  __/
  *      \/ \___|_| |_|_|\___\___|
@@ -27,38 +27,38 @@ import com.github.jlangch.venice.impl.util.StringUtil;
 
 public class TitleBlockParser {
 
-	public TitleBlockParser(final LineReader reader) {
-		this.reader = reader;
-	}
-	
-	public TitleBlock parse() {
-		if (reader.eof()) {
-			return new TitleBlock();
-		}
+    public TitleBlockParser(final LineReader reader) {
+        this.reader = reader;
+    }
 
-		String line = StringUtil.trimToEmpty(reader.peek());
-		
-		if (TitleBlockParser.isBlockStart(line)) {
-			int level = 0;
-			while (!line.isEmpty() && line.startsWith("#")) {
-				level++;
-				line = line.substring(1);
-			}
+    public TitleBlock parse() {
+        if (reader.eof()) {
+            return new TitleBlock();
+        }
 
-			final String text = StringUtil.trimToEmpty(line);
-			if (!text.isEmpty()) {
-				reader.consume();
-				return new TitleBlock(text, level);
-			}
-		}
-		
-		return new TitleBlock();
-	}
+        String line = StringUtil.trimToEmpty(reader.peek());
 
-	public static boolean isBlockStart(final String line) {
-		return line.startsWith("#") && !line.matches("[#]+");
-	}
+        if (TitleBlockParser.isBlockStart(line)) {
+            int level = 0;
+            while (!line.isEmpty() && line.startsWith("#")) {
+                level++;
+                line = line.substring(1);
+            }
 
-	
-	private final LineReader reader;
+            final String text = StringUtil.trimToEmpty(line);
+            if (!text.isEmpty()) {
+                reader.consume();
+                return new TitleBlock(text, level);
+            }
+        }
+
+        return new TitleBlock();
+    }
+
+    public static boolean isBlockStart(final String line) {
+        return line.startsWith("#") && !line.matches("[#]+");
+    }
+
+
+    private final LineReader reader;
 }

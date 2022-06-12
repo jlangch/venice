@@ -1,5 +1,5 @@
 /*   __    __         _
- *   \ \  / /__ _ __ (_) ___ ___ 
+ *   \ \  / /__ _ __ (_) ___ ___
  *    \ \/ / _ \ '_ \| |/ __/ _ \
  *     \  /  __/ | | | | (_|  __/
  *      \/ \___|_| |_|_|\___\___|
@@ -29,45 +29,45 @@ import com.github.jlangch.venice.impl.util.StringUtil;
 
 public class CodeBlock implements Block {
 
-	public CodeBlock() {
-		this(null);
-	}
+    public CodeBlock() {
+        this(null);
+    }
 
-	public CodeBlock(final String language) {
-		this.language = StringUtil.isEmpty(language) ? "text" : language;
-	}
+    public CodeBlock(final String language) {
+        this.language = StringUtil.isEmpty(language) ? "text" : language;
+    }
 
 
-	public void addLine(final String line) {
-		lines.add(line);
-	}
-	
-	public List<String> getLines() {
-		return lines;
-	}
-	
-	public String getLanguage() {
-		return language;
-	}
-	
-	@Override
-	public boolean isEmpty() {
-		return lines.isEmpty();
-	}
-	
-	public int size() {
-		return lines.size();
-	}
-	
-	public String get(final int index) {
-		return lines.get(index);
-	}
-	
-	@Override
-	public void parseChunks() {	
-	}
+    public void addLine(final String line) {
+        lines.add(line);
+    }
 
-	
-	private final String language;
-	private List<String> lines = new ArrayList<>();
+    public List<String> getLines() {
+        return lines;
+    }
+
+    public String getLanguage() {
+        return language;
+    }
+
+    @Override
+    public boolean isEmpty() {
+        return lines.isEmpty();
+    }
+
+    public int size() {
+        return lines.size();
+    }
+
+    public String get(final int index) {
+        return lines.get(index);
+    }
+
+    @Override
+    public void parseChunks() {
+    }
+
+
+    private final String language;
+    private List<String> lines = new ArrayList<>();
 }

@@ -1,5 +1,5 @@
 /*   __    __         _
- *   \ \  / /__ _ __ (_) ___ ___ 
+ *   \ \  / /__ _ __ (_) ___ ___
  *    \ \/ / _ \ '_ \| |/ __/ _ \
  *     \  /  __/ | | | | (_|  __/
  *      \/ \___|_| |_|_|\___\___|
@@ -42,87 +42,87 @@ import java.util.Stack;
  */
 public class TopologicalSort<T> {
 
-	public TopologicalSort(
-			final Collection<Edge<Node<T>>> edges,
-			final List<Node<T>> isolatedNodes
-	) {
-		this.edges.addAll(edges);
-		
-		// all nodes in the graph (isolated and edge nodes)
-		final Set<Node<T>> nodes = new HashSet<>(isolatedNodes);
-		for(Edge<Node<T>> e : edges) {
-			nodes.add(e.getParent());
-			nodes.add(e.getChild());
-		}
-		this.nodes = new ArrayList<>(nodes);
-	}
+    public TopologicalSort(
+            final Collection<Edge<Node<T>>> edges,
+            final List<Node<T>> isolatedNodes
+    ) {
+        this.edges.addAll(edges);
 
-	
-	public List<T> sort() throws DagCycleException {
-		if (nodes.isEmpty()) {
-			throw new RuntimeException("The graph is empty!");
-		}
-		
-		// --- Init Data ------------------------------------------------------
+        // all nodes in the graph (isolated and edge nodes)
+        final Set<Node<T>> nodes = new HashSet<>(isolatedNodes);
+        for(Edge<Node<T>> e : edges) {
+            nodes.add(e.getParent());
+            nodes.add(e.getChild());
+        }
+        this.nodes = new ArrayList<>(nodes);
+    }
 
-		// A list of lists to represent an adjacency list
-		final Map<Node<T>,List<Node<T>>> adjList = new HashMap<>();	
-		nodes.forEach(n -> adjList.put(n, new ArrayList<Node<T>>()));
 
-		// stores in-degree of a node, defaults to 0
-		final Map<Node<T>,Integer> indegree = new HashMap<>();
+    public List<T> sort() throws DagCycleException {
+        if (nodes.isEmpty()) {
+            throw new RuntimeException("The graph is empty!");
+        }
 
-		
-		// --- Prepare adjacent list and in-degree counts ---------------------
-		
-		for(Edge<Node<T>> e : edges) {
-			// add edge parent/child to the adjacency list
-			adjList.get(e.getParent()).add(e.getChild());
+        // --- Init Data ------------------------------------------------------
 
-			// increment in-degree of destination vertex by 1
-			indegree.put(e.getChild(), indegree.getOrDefault(e.getChild(), 0) + 1);
-		}
-		
-			
-		// --- Sort ----------------------------------------------------------
-		
-		final List<Node<T>> sorted = new ArrayList<>();
+        // A list of lists to represent an adjacency list
+        final Map<Node<T>,List<Node<T>>> adjList = new HashMap<>();
+        nodes.forEach(n -> adjList.put(n, new ArrayList<Node<T>>()));
 
-		final Stack<Node<T>> stack = new Stack<>();
-		
-		// Put all nodes with no incoming edges (in-degree = 0) onto the stack
-		nodes.stream()
-		     .filter(n -> indegree.getOrDefault(n, 0) == 0)
-		     .forEach(n -> stack.push(n));
+        // stores in-degree of a node, defaults to 0
+        final Map<Node<T>,Integer> indegree = new HashMap<>();
 
-		while (!stack.isEmpty()) {
-			final Node<T> n = stack.pop();
 
-			// add `n` at the tail of `sorted`
-			sorted.add(n);
+        // --- Prepare adjacent list and in-degree counts ---------------------
 
-			for (Node<T> m : adjList.get(n)) {
-				// remove an edge from `n` to `m` from the graph
-				indegree.put(m, indegree.getOrDefault(m, 0) - 1);
+        for(Edge<Node<T>> e : edges) {
+            // add edge parent/child to the adjacency list
+            adjList.get(e.getParent()).add(e.getChild());
 
-				// if `m` has no other incoming edges, put `m` onto the `stack`
-				if (indegree.getOrDefault(m, 0) == 0) {
-					stack.push(m);
-				}
-			}
-		}
+            // increment in-degree of destination vertex by 1
+            indegree.put(e.getChild(), indegree.getOrDefault(e.getChild(), 0) + 1);
+        }
 
-		// if there is a node left, then the graph has at least one cycle
-		for (Node<T> node : nodes) {
-			if (indegree.getOrDefault(node, 0) != 0) {
-				throw new DagCycleException("The graph has at least one cycle!");
-			}
-		}
 
-		return Node.toValues(sorted);
-	}
+        // --- Sort ----------------------------------------------------------
 
-	
-	private final List<Edge<Node<T>>> edges = new ArrayList<>();
-	private final List<Node<T>> nodes;
+        final List<Node<T>> sorted = new ArrayList<>();
+
+        final Stack<Node<T>> stack = new Stack<>();
+
+        // Put all nodes with no incoming edges (in-degree = 0) onto the stack
+        nodes.stream()
+             .filter(n -> indegree.getOrDefault(n, 0) == 0)
+             .forEach(n -> stack.push(n));
+
+        while (!stack.isEmpty()) {
+            final Node<T> n = stack.pop();
+
+            // add `n` at the tail of `sorted`
+            sorted.add(n);
+
+            for (Node<T> m : adjList.get(n)) {
+                // remove an edge from `n` to `m` from the graph
+                indegree.put(m, indegree.getOrDefault(m, 0) - 1);
+
+                // if `m` has no other incoming edges, put `m` onto the `stack`
+                if (indegree.getOrDefault(m, 0) == 0) {
+                    stack.push(m);
+                }
+            }
+        }
+
+        // if there is a node left, then the graph has at least one cycle
+        for (Node<T> node : nodes) {
+            if (indegree.getOrDefault(node, 0) != 0) {
+                throw new DagCycleException("The graph has at least one cycle!");
+            }
+        }
+
+        return Node.toValues(sorted);
+    }
+
+
+    private final List<Edge<Node<T>>> edges = new ArrayList<>();
+    private final List<Node<T>> nodes;
 }

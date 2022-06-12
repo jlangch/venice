@@ -1,5 +1,5 @@
 /*   __    __         _
- *   \ \  / /__ _ __ (_) ___ ___ 
+ *   \ \  / /__ _ __ (_) ___ ___
  *    \ \/ / _ \ '_ \| |/ __/ _ \
  *     \  /  __/ | | | | (_|  __/
  *      \/ \___|_| |_|_|\___\___|
@@ -25,30 +25,30 @@ import com.github.jlangch.venice.impl.util.StringUtil;
 
 public class UrlChunk implements Chunk {
 
-	public UrlChunk() {
-		this("", "");
-	}
+    public UrlChunk() {
+        this("", "");
+    }
 
-	public UrlChunk(final String caption, final String url) {
-		this.caption = StringUtil.trimToEmpty(caption);
-		this.url = StringUtil.trimToEmpty(url);
-	}
+    public UrlChunk(final String caption, final String url) {
+        this.caption = StringUtil.trimToEmpty(caption);
+        this.url = StringUtil.trimToEmpty(url);
+    }
 
 
-	@Override
-	public boolean isEmpty() {
-		return url.isEmpty();
-	}
-	
-	public String getCaption() {
-		return caption;
-	}
-	
-	public String getUrl() {
-		return url;
-	}
+    @Override
+    public boolean isEmpty() {
+        return url.isEmpty();
+    }
 
-	
-	private final String caption;
-	private final String url;
+    public String getCaption() {
+        return caption;
+    }
+
+    public String getUrl() {
+        return url;
+    }
+
+
+    private final String caption;
+    private final String url;
 }

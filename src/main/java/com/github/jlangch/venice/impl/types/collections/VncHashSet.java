@@ -1,5 +1,5 @@
 /*   __    __         _
- *   \ \  / /__ _ __ (_) ___ ___ 
+ *   \ \  / /__ _ __ (_) ___ ___
  *    \ \/ / _ \ '_ \| |/ __/ _ \
  *     \  /  __/ | | | | (_|  __/
  *      \/ \___|_| |_|_|\___\___|
@@ -40,104 +40,104 @@ import com.github.jlangch.venice.impl.util.MetaUtil;
 
 public class VncHashSet extends VncSet {
 
-	public VncHashSet() {
-		this(null, null);
-	}
+    public VncHashSet() {
+        this(null, null);
+    }
 
-	public VncHashSet(final VncVal meta) {
-		this(null, meta);
-	}
+    public VncHashSet(final VncVal meta) {
+        this(null, meta);
+    }
 
-	public VncHashSet(final io.vavr.collection.Set<VncVal> val) {
-		this(val, null);
-	}
+    public VncHashSet(final io.vavr.collection.Set<VncVal> val) {
+        this(val, null);
+    }
 
-	public VncHashSet(final io.vavr.collection.Set<VncVal> val, final VncVal meta) {
-		super(meta == null ? Constants.Nil : meta);
-		if (val == null) {
-			value = io.vavr.collection.HashSet.empty();
-		}
-		else if (val instanceof io.vavr.collection.HashSet) {
-			value = (io.vavr.collection.HashSet<VncVal>)val;
-		}
-		else {
-			value = io.vavr.collection.HashSet.ofAll(val);
-		}
-	}
+    public VncHashSet(final io.vavr.collection.Set<VncVal> val, final VncVal meta) {
+        super(meta == null ? Constants.Nil : meta);
+        if (val == null) {
+            value = io.vavr.collection.HashSet.empty();
+        }
+        else if (val instanceof io.vavr.collection.HashSet) {
+            value = (io.vavr.collection.HashSet<VncVal>)val;
+        }
+        else {
+            value = io.vavr.collection.HashSet.ofAll(val);
+        }
+    }
 
-	
-	public static VncHashSet ofAll(final java.util.Collection<? extends VncVal> val) {
-		return new VncHashSet(io.vavr.collection.HashSet.ofAll(val));
-	}
-	
-	public static VncHashSet ofAll(final VncSequence val) {
-		return new VncHashSet(io.vavr.collection.HashSet.ofAll(val));
-	}
-	
-	public static VncHashSet of(final VncVal... mvs) {
-		return new VncHashSet(io.vavr.collection.HashSet.of(mvs));
-	}
-	
-	
-	@Override
-	public VncHashSet emptyWithMeta() {
-		return new VncHashSet(getMeta());
-	}
-	
-	@Override
-	public VncHashSet withValues(final Collection<? extends VncVal> replaceVals) {
-		return new VncHashSet(io.vavr.collection.HashSet.ofAll(replaceVals), getMeta());
-	}
 
-	@Override
-	public VncHashSet withValues(final Collection<? extends VncVal> replaceVals, final VncVal meta) {
-		return new VncHashSet(io.vavr.collection.HashSet.ofAll(replaceVals), meta);
-	}
+    public static VncHashSet ofAll(final java.util.Collection<? extends VncVal> val) {
+        return new VncHashSet(io.vavr.collection.HashSet.ofAll(val));
+    }
 
-	@Override
-	public VncHashSet withMeta(final VncVal meta) {
-		return new VncHashSet(value, meta);
-	}
-	
-	@Override
-	public VncKeyword getType() {
-		return new VncKeyword(
-						TYPE, 
-						MetaUtil.typeMeta(
-							new VncKeyword(VncSet.TYPE), 
-							new VncKeyword(VncCollection.TYPE), 
-							new VncKeyword(VncVal.TYPE)));
-	}
-	
-	@Override
-	public VncHashSet add(final VncVal val) {
-		return new VncHashSet(value.add(val), getMeta());
-	}
-	
-	@Override
-	public VncHashSet addAll(final VncSet val) {
-		return new VncHashSet(value.addAll(val), getMeta());
-	}
-	
-	@Override
-	public VncHashSet addAll(final VncSequence val) {
-		return new VncHashSet(value.addAll(val), getMeta());
-	}
+    public static VncHashSet ofAll(final VncSequence val) {
+        return new VncHashSet(io.vavr.collection.HashSet.ofAll(val));
+    }
 
-	@Override
-	public VncHashSet remove(final VncVal val) {
-		return new VncHashSet(value.remove(val), getMeta());
-	}
+    public static VncHashSet of(final VncVal... mvs) {
+        return new VncHashSet(io.vavr.collection.HashSet.of(mvs));
+    }
 
-	@Override
-	public VncHashSet removeAll(final VncSet val) {
-		return new VncHashSet(value.removeAll(val), getMeta());
-	}
 
-	@Override
-	public VncHashSet removeAll(final VncSequence val) {
-		return new VncHashSet(value.removeAll(val), getMeta());
-	}
+    @Override
+    public VncHashSet emptyWithMeta() {
+        return new VncHashSet(getMeta());
+    }
+
+    @Override
+    public VncHashSet withValues(final Collection<? extends VncVal> replaceVals) {
+        return new VncHashSet(io.vavr.collection.HashSet.ofAll(replaceVals), getMeta());
+    }
+
+    @Override
+    public VncHashSet withValues(final Collection<? extends VncVal> replaceVals, final VncVal meta) {
+        return new VncHashSet(io.vavr.collection.HashSet.ofAll(replaceVals), meta);
+    }
+
+    @Override
+    public VncHashSet withMeta(final VncVal meta) {
+        return new VncHashSet(value, meta);
+    }
+
+    @Override
+    public VncKeyword getType() {
+        return new VncKeyword(
+                        TYPE,
+                        MetaUtil.typeMeta(
+                            new VncKeyword(VncSet.TYPE),
+                            new VncKeyword(VncCollection.TYPE),
+                            new VncKeyword(VncVal.TYPE)));
+    }
+
+    @Override
+    public VncHashSet add(final VncVal val) {
+        return new VncHashSet(value.add(val), getMeta());
+    }
+
+    @Override
+    public VncHashSet addAll(final VncSet val) {
+        return new VncHashSet(value.addAll(val), getMeta());
+    }
+
+    @Override
+    public VncHashSet addAll(final VncSequence val) {
+        return new VncHashSet(value.addAll(val), getMeta());
+    }
+
+    @Override
+    public VncHashSet remove(final VncVal val) {
+        return new VncHashSet(value.remove(val), getMeta());
+    }
+
+    @Override
+    public VncHashSet removeAll(final VncSet val) {
+        return new VncHashSet(value.removeAll(val), getMeta());
+    }
+
+    @Override
+    public VncHashSet removeAll(final VncSequence val) {
+        return new VncHashSet(value.removeAll(val), getMeta());
+    }
 
     @Override
     public Iterator<VncVal> iterator() {
@@ -145,96 +145,96 @@ public class VncHashSet extends VncSet {
     }
 
     @Override
-	public Stream<VncVal> stream() {
-		return value.toJavaStream();
-	}
-	
-	@Override
-	public boolean contains(final VncVal val) {
-		return value.contains(val);
-	}
+    public Stream<VncVal> stream() {
+        return value.toJavaStream();
+    }
 
-	@Override
-	public Set<VncVal> getJavaSet() { 
-		return Collections.unmodifiableSet(value.toJavaSet()); 
-	}
+    @Override
+    public boolean contains(final VncVal val) {
+        return value.contains(val);
+    }
 
-	@Override
-	public List<VncVal> getJavaList() { 
-		return Collections.unmodifiableList(value.toJavaList()); 
-	}
-	
-	@Override
-	public VncList toVncList() {
-		return new VncList(value.toVector(), getMeta());
-	}
+    @Override
+    public Set<VncVal> getJavaSet() {
+        return Collections.unmodifiableSet(value.toJavaSet());
+    }
 
-	@Override
-	public VncVector toVncVector() {
-		return new VncVector(value.toVector(), getMeta());
-	}
-	
-	@Override
-	public int size() {
-		return value.size();
-	}
-	
-	@Override
-	public boolean isEmpty() {
-		return value.isEmpty();
-	}
-	
-	@Override public TypeRank typeRank() {
-		return TypeRank.HASHSET;
-	}
-	
-	@Override
-	public int compareTo(final VncVal o) {
-		if (o == Constants.Nil) {
-			return 1;
-		}
-		else if (Types.isVncHashSet(o)) {
-			int c = Integer.compare(size(), ((VncHashSet)o).size());
-			if (c != 0) {
-				return c;
-			}
-			else {
-				return equals(o) ? 0 : -1;
-			}
-		}
+    @Override
+    public List<VncVal> getJavaList() {
+        return Collections.unmodifiableList(value.toJavaList());
+    }
 
-		return super.compareTo(o);
-	}
-	
-	@Override
-	public int hashCode() {
-		return value.hashCode();
-	}
+    @Override
+    public VncList toVncList() {
+        return new VncList(value.toVector(), getMeta());
+    }
 
-	@Override
-	public boolean equals(Object obj) {
-		if (this == obj)
-			return true;
-		if (getClass() != obj.getClass())
-			return false;
-		VncHashSet other = (VncHashSet) obj;
-		return value.equals(other.value);
-	}
+    @Override
+    public VncVector toVncVector() {
+        return new VncVector(value.toVector(), getMeta());
+    }
 
-	@Override 
-	public String toString() {
-		return toString(true);
-	}
-	
-	@Override
-	public String toString(final boolean print_machine_readably) {
-		return "#{" + Printer.join(toVncList(), " ", print_machine_readably) + "}";
-	}
+    @Override
+    public int size() {
+        return value.size();
+    }
 
-	
-	public static final String TYPE = ":core/hash-set";
+    @Override
+    public boolean isEmpty() {
+        return value.isEmpty();
+    }
 
-	private static final long serialVersionUID = -1848883965231344442L;
+    @Override public TypeRank typeRank() {
+        return TypeRank.HASHSET;
+    }
 
-	private final io.vavr.collection.HashSet<VncVal> value;	
+    @Override
+    public int compareTo(final VncVal o) {
+        if (o == Constants.Nil) {
+            return 1;
+        }
+        else if (Types.isVncHashSet(o)) {
+            int c = Integer.compare(size(), ((VncHashSet)o).size());
+            if (c != 0) {
+                return c;
+            }
+            else {
+                return equals(o) ? 0 : -1;
+            }
+        }
+
+        return super.compareTo(o);
+    }
+
+    @Override
+    public int hashCode() {
+        return value.hashCode();
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (this == obj)
+            return true;
+        if (getClass() != obj.getClass())
+            return false;
+        VncHashSet other = (VncHashSet) obj;
+        return value.equals(other.value);
+    }
+
+    @Override
+    public String toString() {
+        return toString(true);
+    }
+
+    @Override
+    public String toString(final boolean print_machine_readably) {
+        return "#{" + Printer.join(toVncList(), " ", print_machine_readably) + "}";
+    }
+
+
+    public static final String TYPE = ":core/hash-set";
+
+    private static final long serialVersionUID = -1848883965231344442L;
+
+    private final io.vavr.collection.HashSet<VncVal> value;
 }

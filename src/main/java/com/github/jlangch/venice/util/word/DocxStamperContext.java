@@ -5,17 +5,17 @@ import java.util.Map;
 
 
 public class DocxStamperContext {
-	
-	public DocxStamperContext(final Map<String,Object> properties) {
-		this.properties.putAll(properties);
-	}
-	
-	    
-    public Map<String,Object> getProperties() {
-    	return properties;
+
+    public DocxStamperContext(final Map<String,Object> properties) {
+        this.properties.putAll(properties);
     }
 
-     
-	private final Map<String,Object> properties = new HashMap<>();
+
+    public Map<String,Object> getProperties() {
+        return properties;
+    }
+
+
+    private final Map<String,Object> properties = new HashMap<>();
 
 }

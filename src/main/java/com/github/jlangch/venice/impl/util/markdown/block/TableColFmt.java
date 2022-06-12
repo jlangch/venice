@@ -1,5 +1,5 @@
 /*   __    __         _
- *   \ \  / /__ _ __ (_) ___ ___ 
+ *   \ \  / /__ _ __ (_) ___ ___
  *    \ \/ / _ \ '_ \| |/ __/ _ \
  *     \  /  __/ | | | | (_|  __/
  *      \/ \___|_| |_|_|\___\___|
@@ -24,45 +24,45 @@ package com.github.jlangch.venice.impl.util.markdown.block;
 
 public class TableColFmt {
 
-	public TableColFmt() {
-		this(null, null);
-	}
+    public TableColFmt() {
+        this(null, null);
+    }
 
-	public TableColFmt(
-			final HorzAlignment align,
-			final Width width
-	) {
-		this.horzAlignment = align == null ? HorzAlignment.LEFT : align;
-		this.width = width == null ? new Width(0, WidthUnit.AUTO) : width;
-	}
-
-	
-	public HorzAlignment horzAlignment() {
-		return horzAlignment;
-	}
-	
-	public Width width() {
-		return width;
-	}
+    public TableColFmt(
+            final HorzAlignment align,
+            final Width width
+    ) {
+        this.horzAlignment = align == null ? HorzAlignment.LEFT : align;
+        this.width = width == null ? new Width(0, WidthUnit.AUTO) : width;
+    }
 
 
-	public static enum HorzAlignment { LEFT, CENTER, RIGHT };
-	public static enum WidthUnit { PERCENT, PX, EM, AUTO };
-	
-	public static class Width {
-		public Width(long value, WidthUnit unit) {
-			this.value = value;
-			this.unit = unit;
-		}
-		
-		public long getValue() { return value; }
-		public WidthUnit getUnit() { return unit; }
+    public HorzAlignment horzAlignment() {
+        return horzAlignment;
+    }
 
-		private final long value;
-		private final WidthUnit unit;
-	}
-	
-	
-	private final HorzAlignment horzAlignment;
-	private final Width width;
+    public Width width() {
+        return width;
+    }
+
+
+    public static enum HorzAlignment { LEFT, CENTER, RIGHT };
+    public static enum WidthUnit { PERCENT, PX, EM, AUTO };
+
+    public static class Width {
+        public Width(long value, WidthUnit unit) {
+            this.value = value;
+            this.unit = unit;
+        }
+
+        public long getValue() { return value; }
+        public WidthUnit getUnit() { return unit; }
+
+        private final long value;
+        private final WidthUnit unit;
+    }
+
+
+    private final HorzAlignment horzAlignment;
+    private final Width width;
 }

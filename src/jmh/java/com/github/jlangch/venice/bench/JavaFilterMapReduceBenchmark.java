@@ -1,5 +1,5 @@
 /*   __    __         _
- *   \ \  / /__ _ __ (_) ___ ___ 
+ *   \ \  / /__ _ __ (_) ___ ___
  *    \ \/ / _ \ '_ \| |/ __/ _ \
  *     \  /  __/ | | | | (_|  __/
  *      \/ \___|_| |_|_|\___\___|
@@ -44,22 +44,22 @@ import org.openjdk.jmh.annotations.Warmup;
 @State (Scope.Benchmark)
 @Threads (1)
 public class JavaFilterMapReduceBenchmark {
-	
-	public JavaFilterMapReduceBenchmark() {
-		list = new ArrayList<>(2000);
-		for(long ii=0; ii<2000; ii++) {
-			list.add(Long.valueOf(ii));
-		}
-	}
 
-	@Benchmark
-	public Object filter_map_reduce() {
-		return list.stream()
-					.filter(v -> (v % 2L) == 0L)
-					.map(v -> v * 10L)
-					.reduce(0L, (sum, v) -> sum + v);
-	}
-	
-	
-	private final List<Long> list;
+    public JavaFilterMapReduceBenchmark() {
+        list = new ArrayList<>(2000);
+        for(long ii=0; ii<2000; ii++) {
+            list.add(Long.valueOf(ii));
+        }
+    }
+
+    @Benchmark
+    public Object filter_map_reduce() {
+        return list.stream()
+                    .filter(v -> (v % 2L) == 0L)
+                    .map(v -> v * 10L)
+                    .reduce(0L, (sum, v) -> sum + v);
+    }
+
+
+    private final List<Long> list;
 }

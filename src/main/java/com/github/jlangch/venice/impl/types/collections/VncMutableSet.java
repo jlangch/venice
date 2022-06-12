@@ -1,5 +1,5 @@
 /*   __    __         _
- *   \ \  / /__ _ __ (_) ___ ___ 
+ *   \ \  / /__ _ __ (_) ___ ___
  *    \ \/ / _ \ '_ \| |/ __/ _ \
  *     \  /  __/ | | | | (_|  __/
  *      \/ \___|_| |_|_|\___\___|
@@ -43,116 +43,116 @@ import com.github.jlangch.venice.impl.util.MetaUtil;
 
 public class VncMutableSet extends VncSet {
 
-	public VncMutableSet() {
-		this(null, null);
-	}
+    public VncMutableSet() {
+        this(null, null);
+    }
 
-	public VncMutableSet(final VncVal meta) {
-		this(null, meta);
-	}
+    public VncMutableSet(final VncVal meta) {
+        this(null, meta);
+    }
 
-	public VncMutableSet(final Collection<? extends VncVal> val, final VncVal meta) {
-		super(meta == null ? Constants.Nil : meta);
-		if (val != null) value.addAll(val);
-	}
-	
-	public static VncMutableSet ofAll(final Iterable<? extends VncVal> iter) {
-		final Set<VncVal> set = ConcurrentHashMap.newKeySet();
-		for(VncVal o : iter) set.add(o);
-		return new VncMutableSet(set, null);
-	}
+    public VncMutableSet(final Collection<? extends VncVal> val, final VncVal meta) {
+        super(meta == null ? Constants.Nil : meta);
+        if (val != null) value.addAll(val);
+    }
 
-	public static VncMutableSet ofAll(final Iterable<? extends VncVal> iter, final VncVal meta) {
-		final Set<VncVal> set = ConcurrentHashMap.newKeySet();
-		for(VncVal o : iter) set.add(o);
-		return new VncMutableSet(set, meta);
-	}
-	
-	public static VncMutableSet of(final VncVal... mvs) {
-		return new VncMutableSet(Arrays.asList(mvs), null);
-	}
+    public static VncMutableSet ofAll(final Iterable<? extends VncVal> iter) {
+        final Set<VncVal> set = ConcurrentHashMap.newKeySet();
+        for(VncVal o : iter) set.add(o);
+        return new VncMutableSet(set, null);
+    }
 
-	
-	@Override
-	public VncMutableSet emptyWithMeta() {
-		return new VncMutableSet(getMeta());
-	}
-	
-	@Override
-	public VncMutableSet withValues(final Collection<? extends VncVal> replaceVals) {
-		return new VncMutableSet(replaceVals, getMeta());
-	}
+    public static VncMutableSet ofAll(final Iterable<? extends VncVal> iter, final VncVal meta) {
+        final Set<VncVal> set = ConcurrentHashMap.newKeySet();
+        for(VncVal o : iter) set.add(o);
+        return new VncMutableSet(set, meta);
+    }
 
-	@Override
-	public VncMutableSet withValues(final Collection<? extends VncVal> replaceVals, final VncVal meta) {
-		return new VncMutableSet(replaceVals, meta);
-	}
+    public static VncMutableSet of(final VncVal... mvs) {
+        return new VncMutableSet(Arrays.asList(mvs), null);
+    }
 
-	@Override
-	public VncMutableSet withMeta(final VncVal meta) {
-		return new VncMutableSet(value, meta);
-	}
-	
-	@Override
-	public VncKeyword getType() {
-		return new VncKeyword(
-						TYPE, 
-						MetaUtil.typeMeta(
-							new VncKeyword(VncSet.TYPE), 
-							new VncKeyword(VncCollection.TYPE), 
-							new VncKeyword(VncVal.TYPE)));
-	}
-	
-	@Override
-	public VncMutableSet add(final VncVal val) {
-		value.add(val);
-		return this;
-	}
 
-	@Override
-	public VncMutableSet addAll(final VncSet val) {
-		if (Types.isVncMutableSet(val)) {
-			value.addAll(((VncMutableSet)val).value);
-		}
-		else {
-			val.forEach(v -> value.add(v));
-		}
-		return this;
-	}
-	
-	@Override
-	public VncMutableSet addAll(final VncSequence seq) {
-		for(VncVal v : seq) value.add(v);
-		return this;
-	}
+    @Override
+    public VncMutableSet emptyWithMeta() {
+        return new VncMutableSet(getMeta());
+    }
 
-	@Override
-	public VncMutableSet remove(final VncVal val) {
-		value.remove(val);
-		return this;
-	}
+    @Override
+    public VncMutableSet withValues(final Collection<? extends VncVal> replaceVals) {
+        return new VncMutableSet(replaceVals, getMeta());
+    }
 
-	@Override
-	public VncMutableSet removeAll(final VncSet val) {
-		if (Types.isVncMutableSet(val)) {
-			value.removeAll(((VncMutableSet)val).value);
-		}
-		else {
-			val.forEach(v -> value.remove(v));
-		}
-		return this;
-	}
+    @Override
+    public VncMutableSet withValues(final Collection<? extends VncVal> replaceVals, final VncVal meta) {
+        return new VncMutableSet(replaceVals, meta);
+    }
 
-	@Override
-	public VncMutableSet removeAll(final VncSequence seq) {
-		for(VncVal v : seq) value.remove(v);
-		return this;
-	}
+    @Override
+    public VncMutableSet withMeta(final VncVal meta) {
+        return new VncMutableSet(value, meta);
+    }
 
-	@Override
-	public boolean contains(final VncVal val) {
-		return value.contains(val);
-	}
+    @Override
+    public VncKeyword getType() {
+        return new VncKeyword(
+                        TYPE,
+                        MetaUtil.typeMeta(
+                            new VncKeyword(VncSet.TYPE),
+                            new VncKeyword(VncCollection.TYPE),
+                            new VncKeyword(VncVal.TYPE)));
+    }
+
+    @Override
+    public VncMutableSet add(final VncVal val) {
+        value.add(val);
+        return this;
+    }
+
+    @Override
+    public VncMutableSet addAll(final VncSet val) {
+        if (Types.isVncMutableSet(val)) {
+            value.addAll(((VncMutableSet)val).value);
+        }
+        else {
+            val.forEach(v -> value.add(v));
+        }
+        return this;
+    }
+
+    @Override
+    public VncMutableSet addAll(final VncSequence seq) {
+        for(VncVal v : seq) value.add(v);
+        return this;
+    }
+
+    @Override
+    public VncMutableSet remove(final VncVal val) {
+        value.remove(val);
+        return this;
+    }
+
+    @Override
+    public VncMutableSet removeAll(final VncSet val) {
+        if (Types.isVncMutableSet(val)) {
+            value.removeAll(((VncMutableSet)val).value);
+        }
+        else {
+            val.forEach(v -> value.remove(v));
+        }
+        return this;
+    }
+
+    @Override
+    public VncMutableSet removeAll(final VncSequence seq) {
+        for(VncVal v : seq) value.remove(v);
+        return this;
+    }
+
+    @Override
+    public boolean contains(final VncVal val) {
+        return value.contains(val);
+    }
 
     @Override
     public Iterator<VncVal> iterator() {
@@ -160,96 +160,96 @@ public class VncMutableSet extends VncSet {
     }
 
     @Override
-	public Stream<VncVal> stream() {
-		return value.stream();
-	}
+    public Stream<VncVal> stream() {
+        return value.stream();
+    }
 
-	@Override
-	public Set<VncVal> getJavaSet() { 
-		return Collections.unmodifiableSet(value); 
-	}
+    @Override
+    public Set<VncVal> getJavaSet() {
+        return Collections.unmodifiableSet(value);
+    }
 
-	@Override
-	public List<VncVal> getJavaList() { 
-		return Collections.unmodifiableList(new ArrayList<>(value)); 
-	}
+    @Override
+    public List<VncVal> getJavaList() {
+        return Collections.unmodifiableList(new ArrayList<>(value));
+    }
 
-	@Override
-	public VncList toVncList() {
-		return VncList.ofAll(stream(), getMeta());
-	}
+    @Override
+    public VncList toVncList() {
+        return VncList.ofAll(stream(), getMeta());
+    }
 
-	@Override
-	public VncVector toVncVector() {
-		return VncVector.ofAll(stream(), getMeta());
-	}
+    @Override
+    public VncVector toVncVector() {
+        return VncVector.ofAll(stream(), getMeta());
+    }
 
-	@Override
-	public int size() {
-		return value.size();
-	}
-	
-	@Override
-	public boolean isEmpty() {
-		return value.isEmpty();
-	}
+    @Override
+    public int size() {
+        return value.size();
+    }
 
-	public void clear() {
-		value.clear();
-	}
-	
-	@Override 
-	public TypeRank typeRank() {
-		return TypeRank.MUTABLESET;
-	}
+    @Override
+    public boolean isEmpty() {
+        return value.isEmpty();
+    }
 
-	@Override
-	public int compareTo(final VncVal o) {
-		if (o == Constants.Nil) {
-			return 1;
-		}
-		else if (Types.isVncMutableSet(o)) {
-			int c = Integer.compare(size(), ((VncMutableSet)o).size());
-			if (c != 0) {
-				return c;
-			}
-			else {
-				return equals(o) ? 0 : -1;
-			}
-		}
+    public void clear() {
+        value.clear();
+    }
 
-		return super.compareTo(o);
-	}
-	
-	@Override
-	public int hashCode() {
-		return value.hashCode();
-	}
+    @Override
+    public TypeRank typeRank() {
+        return TypeRank.MUTABLESET;
+    }
 
-	@Override
-	public boolean equals(Object obj) {
-		if (this == obj)
-			return true;
-		if (getClass() != obj.getClass())
-			return false;
-		VncMutableSet other = (VncMutableSet) obj;
-		return value.equals(other.value);
-	}
+    @Override
+    public int compareTo(final VncVal o) {
+        if (o == Constants.Nil) {
+            return 1;
+        }
+        else if (Types.isVncMutableSet(o)) {
+            int c = Integer.compare(size(), ((VncMutableSet)o).size());
+            if (c != 0) {
+                return c;
+            }
+            else {
+                return equals(o) ? 0 : -1;
+            }
+        }
 
-	@Override 
-	public String toString() {
-		return toString(true);
-	}
-	
-	@Override
-	public String toString(final boolean print_machine_readably) {
-		return "#{" + Printer.join(stream(), " ", print_machine_readably) + "}";
-	}
+        return super.compareTo(o);
+    }
+
+    @Override
+    public int hashCode() {
+        return value.hashCode();
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (this == obj)
+            return true;
+        if (getClass() != obj.getClass())
+            return false;
+        VncMutableSet other = (VncMutableSet) obj;
+        return value.equals(other.value);
+    }
+
+    @Override
+    public String toString() {
+        return toString(true);
+    }
+
+    @Override
+    public String toString(final boolean print_machine_readably) {
+        return "#{" + Printer.join(stream(), " ", print_machine_readably) + "}";
+    }
 
 
-	public static final String TYPE = ":core/mutable-map";
-	
+    public static final String TYPE = ":core/mutable-map";
+
     private static final long serialVersionUID = -1848883965231344442L;
 
-	private final Set<VncVal> value = ConcurrentHashMap.newKeySet();	
+    private final Set<VncVal> value = ConcurrentHashMap.newKeySet();
 }

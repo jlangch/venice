@@ -1,5 +1,5 @@
 /*   __    __         _
- *   \ \  / /__ _ __ (_) ___ ___ 
+ *   \ \  / /__ _ __ (_) ___ ___
  *    \ \/ / _ \ '_ \| |/ __/ _ \
  *     \  /  __/ | | | | (_|  __/
  *      \/ \___|_| |_|_|\___\___|
@@ -43,143 +43,143 @@ import com.github.jlangch.venice.util.ElapsedTime;
 
 public class MeterRegistry implements Serializable {
 
-	public MeterRegistry(final boolean enabled) {
-		this.enabled = enabled;
-	}
+    public MeterRegistry(final boolean enabled) {
+        this.enabled = enabled;
+    }
 
-	public boolean isEnabled() {
-		return enabled;
-	}
+    public boolean isEnabled() {
+        return enabled;
+    }
 
-	public void enable() {
-		enabled = true;
-	}
-	
-	public void disable() {
-		enabled = false;
-	}
-	
-	public void reset() {
-		data.clear();
-	}
-	
-	public void resetAllBut(final VncSequence records) {
-		final Map<String,ElapsedTime> keep = 
-				records.stream()
-					   .map(r -> data.get(Coerce.toVncString(r).getValue()))
-					   .filter(t -> t != null)
-					   .collect(Collectors.toMap(ElapsedTime::getName, Function.identity()));
+    public void enable() {
+        enabled = true;
+    }
 
-		data.clear();
-		data.putAll(keep);
-	}
-	
-	public void record(final String name, final long elapsedTime) {
-		if (elapsedTime > 0) {
-			data.compute(
-					name, 
-					(k, v) -> v == null 
-								? new ElapsedTime(name, elapsedTime) 
-								: v.add(elapsedTime));
-		}
-	}
-	
-	public void record(final String name, final int arity, final long elapsedTime) {
-		if (elapsedTime > 0) {
-			final String name_ = name + "[" + arity + "]";
-			data.compute(
-					name_, 
-					(k, v) -> v == null 
-								? new ElapsedTime(name_, elapsedTime) 
-								: v.add(elapsedTime));
-		}
-	}
-	
-	public Collection<ElapsedTime> getTimerData() {
-		return data.values();
-	}
-	
-	public VncList getVncTimerData() {
-		return VncList.ofList(
-					getTimerData()
-						.stream()
-						.map(t -> convertToVncMap(t))
-						.collect(Collectors.toList()));
-	}
+    public void disable() {
+        enabled = false;
+    }
 
-	public String getTimerDataFormatted(
-			final String title, 
-			final boolean withAnonymousFunctions
-	) {
-		final Collection<ElapsedTime> data = withAnonymousFunctions 
-										? getTimerData()
-										: getTimerData()
-											.stream()
-											.filter(t -> !t.name.contains("anonymous-"))
-											.collect(Collectors.toList());
-		
-		final int maxNameLen = data
-								.stream()
-								.mapToInt(v -> v.name.length())
-								.max()
-								.orElse(10);
+    public void reset() {
+        data.clear();
+    }
 
-		final int maxCount = data
-								.stream()
-								.mapToInt(v -> v.count)
-								.max()
-								.orElse(10);
+    public void resetAllBut(final VncSequence records) {
+        final Map<String,ElapsedTime> keep =
+                records.stream()
+                       .map(r -> data.get(Coerce.toVncString(r).getValue()))
+                       .filter(t -> t != null)
+                       .collect(Collectors.toMap(ElapsedTime::getName, Function.identity()));
 
-		final int maxCountLen = Integer.valueOf(maxCount).toString().length();
+        data.clear();
+        data.putAll(keep);
+    }
 
-		final List<String> lines =
-				data.stream()
-					.sorted((u,v) -> Long.valueOf(v.elapsedNanos).compareTo(u.elapsedNanos))
-					.map(v -> format(v, maxNameLen, maxCountLen))
-					.collect(Collectors.toList());
+    public void record(final String name, final long elapsedTime) {
+        if (elapsedTime > 0) {
+            data.compute(
+                    name,
+                    (k, v) -> v == null
+                                ? new ElapsedTime(name, elapsedTime)
+                                : v.add(elapsedTime));
+        }
+    }
 
-		if (lines.isEmpty()) {
-			lines.add("no meter data!");
-		}
-		
-		if (!StringUtil.isBlank(title)) {
-			final int maxLineLen = Math.max(
-									title.length(), 
-									lines.stream()
-										 .mapToInt(l -> l.length())
-										 .max()
-										 .orElse(0));
-			
-			final String delim = String.join("", Collections.nCopies(maxLineLen, "-"));
-			lines.add(0, delim.toString());
-			lines.add(0, title);
-			lines.add(0, delim.toString());
-			lines.add(delim.toString());
-		}
+    public void record(final String name, final int arity, final long elapsedTime) {
+        if (elapsedTime > 0) {
+            final String name_ = name + "[" + arity + "]";
+            data.compute(
+                    name_,
+                    (k, v) -> v == null
+                                ? new ElapsedTime(name_, elapsedTime)
+                                : v.add(elapsedTime));
+        }
+    }
 
-		return String.join("\n", lines);
-	}
-	
-	private String format(final ElapsedTime t, final int maxNameLen, final int maxCountLen) {
-		return String.format(
-					"%-" + maxNameLen +"s  [%" + maxCountLen + "d]: %11s %11s", 
-					t.name, 
-					t.count, 
-					ElapsedTime.formatNanos(t.elapsedNanos),
-					t.count == 1 ? "" : ElapsedTime.formatNanos(t.elapsedNanos / t.count));	
-	}
-	
-	private VncMap convertToVncMap(final ElapsedTime timer) {
-		return VncHashMap.of(
-				new VncKeyword("name"),  new VncString(timer.name),
-				new VncKeyword("count"), new VncLong(timer.count),
-				new VncKeyword("nanos"), new VncLong(timer.elapsedNanos));
-	}
+    public Collection<ElapsedTime> getTimerData() {
+        return data.values();
+    }
 
-	
-	private static final long serialVersionUID = 5426843508785133806L;
-	
-	private final Map<String,ElapsedTime> data = new ConcurrentHashMap<>();
-	
-	public volatile boolean enabled;
+    public VncList getVncTimerData() {
+        return VncList.ofList(
+                    getTimerData()
+                        .stream()
+                        .map(t -> convertToVncMap(t))
+                        .collect(Collectors.toList()));
+    }
+
+    public String getTimerDataFormatted(
+            final String title,
+            final boolean withAnonymousFunctions
+    ) {
+        final Collection<ElapsedTime> data = withAnonymousFunctions
+                                        ? getTimerData()
+                                        : getTimerData()
+                                            .stream()
+                                            .filter(t -> !t.name.contains("anonymous-"))
+                                            .collect(Collectors.toList());
+
+        final int maxNameLen = data
+                                .stream()
+                                .mapToInt(v -> v.name.length())
+                                .max()
+                                .orElse(10);
+
+        final int maxCount = data
+                                .stream()
+                                .mapToInt(v -> v.count)
+                                .max()
+                                .orElse(10);
+
+        final int maxCountLen = Integer.valueOf(maxCount).toString().length();
+
+        final List<String> lines =
+                data.stream()
+                    .sorted((u,v) -> Long.valueOf(v.elapsedNanos).compareTo(u.elapsedNanos))
+                    .map(v -> format(v, maxNameLen, maxCountLen))
+                    .collect(Collectors.toList());
+
+        if (lines.isEmpty()) {
+            lines.add("no meter data!");
+        }
+
+        if (!StringUtil.isBlank(title)) {
+            final int maxLineLen = Math.max(
+                                    title.length(),
+                                    lines.stream()
+                                         .mapToInt(l -> l.length())
+                                         .max()
+                                         .orElse(0));
+
+            final String delim = String.join("", Collections.nCopies(maxLineLen, "-"));
+            lines.add(0, delim.toString());
+            lines.add(0, title);
+            lines.add(0, delim.toString());
+            lines.add(delim.toString());
+        }
+
+        return String.join("\n", lines);
+    }
+
+    private String format(final ElapsedTime t, final int maxNameLen, final int maxCountLen) {
+        return String.format(
+                    "%-" + maxNameLen +"s  [%" + maxCountLen + "d]: %11s %11s",
+                    t.name,
+                    t.count,
+                    ElapsedTime.formatNanos(t.elapsedNanos),
+                    t.count == 1 ? "" : ElapsedTime.formatNanos(t.elapsedNanos / t.count));
+    }
+
+    private VncMap convertToVncMap(final ElapsedTime timer) {
+        return VncHashMap.of(
+                new VncKeyword("name"),  new VncString(timer.name),
+                new VncKeyword("count"), new VncLong(timer.count),
+                new VncKeyword("nanos"), new VncLong(timer.elapsedNanos));
+    }
+
+
+    private static final long serialVersionUID = 5426843508785133806L;
+
+    private final Map<String,ElapsedTime> data = new ConcurrentHashMap<>();
+
+    public volatile boolean enabled;
 }

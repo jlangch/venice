@@ -1,5 +1,5 @@
 /*   __    __         _
- *   \ \  / /__ _ __ (_) ___ ___ 
+ *   \ \  / /__ _ __ (_) ___ ___
  *    \ \/ / _ \ '_ \| |/ __/ _ \
  *     \  /  __/ | | | | (_|  __/
  *      \/ \___|_| |_|_|\___\___|
@@ -27,25 +27,25 @@ import java.util.NoSuchElementException;
 
 public class EmptyIterator<T> implements Iterator<T> {
 
-	private EmptyIterator() {
-	}
-	
-	public static <T> Iterator<T> empty() {
-		return new EmptyIterator<T>();
-	}
+    private EmptyIterator() {
+    }
 
-	@Override
-	public boolean hasNext() { 
-		return false; 
-	}
+    public static <T> Iterator<T> empty() {
+        return new EmptyIterator<T>();
+    }
 
-	@Override
-	public T next() { 
-		throw new NoSuchElementException("EmptyIterator.next()"); 
-	}
+    @Override
+    public boolean hasNext() {
+        return false;
+    }
 
-	@Override
-	public String toString() {
-		return "EmptyIterator()";
-	}
+    @Override
+    public T next() {
+        throw new NoSuchElementException("EmptyIterator.next()");
+    }
+
+    @Override
+    public String toString() {
+        return "EmptyIterator()";
+    }
 }

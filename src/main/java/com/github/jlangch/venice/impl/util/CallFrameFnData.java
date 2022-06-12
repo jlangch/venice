@@ -1,5 +1,5 @@
 /*   __    __         _
- *   \ \  / /__ _ __ (_) ___ ___ 
+ *   \ \  / /__ _ __ (_) ___ ___
  *    \ \/ / _ \ '_ \| |/ __/ _ \
  *     \  /  __/ | | | | (_|  __/
  *      \/ \___|_| |_|_|\___\___|
@@ -26,25 +26,25 @@ import com.github.jlangch.venice.impl.types.VncVal;
 
 public class CallFrameFnData {
 
-	public CallFrameFnData(final String fnName, final VncVal fnMeta) {
-		this.fnName = fnName;
-		this.fnMeta = fnMeta;
-	}
-
-	
-	public String getFnName() {
-		return fnName;
-	}
-	
-	public VncVal getFnMeta() {
-		return fnMeta;
-	}
-
-	public boolean matchesFnName(final String fnName) {
-		return this.fnName.equals(fnName);
-	}
+    public CallFrameFnData(final String fnName, final VncVal fnMeta) {
+        this.fnName = fnName;
+        this.fnMeta = fnMeta;
+    }
 
 
-	private final String fnName;
-	private final VncVal fnMeta;
+    public String getFnName() {
+        return fnName;
+    }
+
+    public VncVal getFnMeta() {
+        return fnMeta;
+    }
+
+    public boolean matchesFnName(final String fnName) {
+        return this.fnName.equals(fnName);
+    }
+
+
+    private final String fnName;
+    private final VncVal fnMeta;
 }

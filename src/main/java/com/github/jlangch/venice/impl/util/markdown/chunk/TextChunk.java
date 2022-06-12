@@ -1,5 +1,5 @@
 /*   __    __         _
- *   \ \  / /__ _ __ (_) ___ ___ 
+ *   \ \  / /__ _ __ (_) ___ ___
  *    \ \/ / _ \ '_ \| |/ __/ _ \
  *     \  /  __/ | | | | (_|  __/
  *      \/ \___|_| |_|_|\___\___|
@@ -24,38 +24,38 @@ package com.github.jlangch.venice.impl.util.markdown.chunk;
 
 public class TextChunk implements Chunk {
 
-	public TextChunk() {
-		this("", Format.NORMAL);
-	}
+    public TextChunk() {
+        this("", Format.NORMAL);
+    }
 
-	public TextChunk(final String text) {
-		this(text, Format.NORMAL);
-	}
+    public TextChunk(final String text) {
+        this(text, Format.NORMAL);
+    }
 
-	public TextChunk(final String text, final Format format) {
-		this.text = text == null ? "" : collapseWhitespaces(text);
-		this.format = format == null ? Format.NORMAL : format;
-	}
+    public TextChunk(final String text, final Format format) {
+        this.text = text == null ? "" : collapseWhitespaces(text);
+        this.format = format == null ? Format.NORMAL : format;
+    }
 
-	@Override
-	public boolean isEmpty() {
-		return text.isEmpty();
-	}
-	
-	public String getText() {
-		return text;
-	}
+    @Override
+    public boolean isEmpty() {
+        return text.isEmpty();
+    }
 
-	public Format getFormat() {
-		return format;
-	}
+    public String getText() {
+        return text;
+    }
 
-	private String collapseWhitespaces(final String s) {
-		return s.replaceAll("[ \t]+", " ");
-	}
+    public Format getFormat() {
+        return format;
+    }
 
-	public static enum Format { NORMAL, ITALIC, BOLD, BOLD_ITALIC };
-	
-	private final String text;
-	private final Format format;
+    private String collapseWhitespaces(final String s) {
+        return s.replaceAll("[ \t]+", " ");
+    }
+
+    public static enum Format { NORMAL, ITALIC, BOLD, BOLD_ITALIC };
+
+    private final String text;
+    private final Format format;
 }

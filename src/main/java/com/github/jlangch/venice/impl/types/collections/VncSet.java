@@ -1,5 +1,5 @@
 /*   __    __         _
- *   \ \  / /__ _ __ (_) ___ ___ 
+ *   \ \  / /__ _ __ (_) ___ ___
  *    \ \/ / _ \ '_ \| |/ __/ _ \
  *     \  /  __/ | | | | (_|  __/
  *      \/ \___|_| |_|_|\___\___|
@@ -40,83 +40,84 @@ import com.github.jlangch.venice.impl.util.MetaUtil;
 
 public abstract class VncSet extends VncCollection implements IVncFunction, Iterable<VncVal> {
 
-	public VncSet(VncVal meta) {
-		super(meta);
-	}
-	
+    public VncSet(VncVal meta) {
+        super(meta);
+    }
 
-	@Override
-	public VncVal apply(final VncList args) {
-		ArityExceptions.assertArity(this, FnType.Collection, args, 1, 2);
-		
-		final VncVal first = args.first();
-		
-		if (args.size() == 1) {
-			return contains(first) ? first : Constants.Nil;
-		}
-		else {
-			return contains(first) ? first : args.second();
-		}
-	}
 
-	@Override
-	public VncList getArgLists() { 
-		return VncList.of(
-				new VncString("(set val)"),
-				new VncString("(set val default-val)"));
-	}
-	
-	@Override
-	public abstract VncSet emptyWithMeta();
-	
-	@Override
-	public VncKeyword getType() {
-		return new VncKeyword(
-						TYPE, 
-						MetaUtil.typeMeta(
-							new VncKeyword(VncCollection.TYPE), 
-							new VncKeyword(VncVal.TYPE)));
-	}
+    @Override
+    public VncVal apply(final VncList args) {
+        ArityExceptions.assertArity(this, FnType.Collection, args, 1, 2);
 
-	public abstract VncSet withValues(Collection<? extends VncVal> replaceVals);
-	
-	public abstract VncSet withValues(Collection<? extends VncVal> replaceVals, VncVal meta);
+        final VncVal first = args.first();
 
-	@Override
-	public abstract VncSet withMeta(VncVal meta);
-	
+        if (args.size() == 1) {
+            return contains(first) ? first : Constants.Nil;
+        }
+        else {
+            return contains(first) ? first : args.second();
+        }
+    }
 
-	public abstract VncSet add(VncVal val);
-	
-	public abstract VncSet addAll(VncSet val);
-	
-	public abstract VncSet addAll(VncSequence val);
+    @Override
+    public VncList getArgLists() {
+        return VncList.of(
+                new VncString("(set val)"),
+                new VncString("(set val default-val)"));
+    }
 
-	public abstract VncSet remove(VncVal val);
+    @Override
+    public abstract VncSet emptyWithMeta();
 
-	public abstract VncSet removeAll(VncSet val);
+    @Override
+    public VncKeyword getType() {
+        return new VncKeyword(
+                        TYPE,
+                        MetaUtil.typeMeta(
+                            new VncKeyword(VncCollection.TYPE),
+                            new VncKeyword(VncVal.TYPE)));
+    }
 
-	public abstract VncSet removeAll(VncSequence val);
-	
-	public abstract boolean contains(VncVal val);
-	
-	public abstract Set<VncVal> getJavaSet();
-	
-	public abstract List<VncVal> getJavaList();
+    public abstract VncSet withValues(Collection<? extends VncVal> replaceVals);
 
+    public abstract VncSet withValues(Collection<? extends VncVal> replaceVals, VncVal meta);
+
+    @Override
+    public abstract VncSet withMeta(VncVal meta);
+
+
+    public abstract VncSet add(VncVal val);
+
+    public abstract VncSet addAll(VncSet val);
+
+    public abstract VncSet addAll(VncSequence val);
+
+    public abstract VncSet remove(VncVal val);
+
+    public abstract VncSet removeAll(VncSet val);
+
+    public abstract VncSet removeAll(VncSequence val);
+
+    public abstract boolean contains(VncVal val);
+
+    public abstract Set<VncVal> getJavaSet();
+
+    public abstract List<VncVal> getJavaList();
+
+    @Override
     public abstract Iterator<VncVal> iterator();
 
-	public abstract Stream<VncVal> stream();
+    public abstract Stream<VncVal> stream();
 
-	@Override
-	public Object convertToJavaObject() {
-		return stream()
-				.map(v -> v.convertToJavaObject())
-				.collect(Collectors.toSet());
-	}
+    @Override
+    public Object convertToJavaObject() {
+        return stream()
+                .map(v -> v.convertToJavaObject())
+                .collect(Collectors.toSet());
+    }
 
 
-	public static final String TYPE = ":core/set";
+    public static final String TYPE = ":core/set";
 
     private static final long serialVersionUID = -1848883965231344442L;
 }

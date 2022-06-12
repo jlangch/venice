@@ -1,5 +1,5 @@
 /*   __    __         _
- *   \ \  / /__ _ __ (_) ___ ___ 
+ *   \ \  / /__ _ __ (_) ___ ___
  *    \ \/ / _ \ '_ \| |/ __/ _ \
  *     \  /  __/ | | | | (_|  __/
  *      \/ \___|_| |_|_|\___\___|
@@ -26,41 +26,41 @@ import java.util.List;
 
 
 public class StringEscapeUtil {
-	
-	public static String escapeXml(final String s) {
-		return replace(s, XML_ESCAPES);
-	}
 
-	public static String escapeHtml(final String s) {
-		return replace(s, HTML_ESCAPES);
-	}
+    public static String escapeXml(final String s) {
+        return replace(s, XML_ESCAPES);
+    }
 
-	private static String replace(final String str, final List<Tuple2<String,String>> replacements) {
-		if (str == null || str.isEmpty()) {
-			return str;
-		}
+    public static String escapeHtml(final String s) {
+        return replace(s, HTML_ESCAPES);
+    }
 
-		String s = str;
-		for(Tuple2<String,String> r : replacements) {
-			s = s.replace(r._1, r._2);
-		}
-		return s;
-	}
-	
-	
-	private static final List<Tuple2<String,String>> XML_ESCAPES =
-			Arrays.asList(
-					Tuple2.of("&", "&amp;"),
-					Tuple2.of("<", "&lt;"),
-					Tuple2.of(">", "&gt;"),
-					Tuple2.of("\"", "&quot;"),
-					Tuple2.of("'", "&apos;"));
+    private static String replace(final String str, final List<Tuple2<String,String>> replacements) {
+        if (str == null || str.isEmpty()) {
+            return str;
+        }
 
-	private static final List<Tuple2<String,String>> HTML_ESCAPES =
-			Arrays.asList(
-					Tuple2.of("&", "&amp;"),
-					Tuple2.of("<", "&lt;"),
-					Tuple2.of(">", "&gt;"),
-					Tuple2.of("\"", "&quot;"),
-					Tuple2.of("'", "&apos;"));
+        String s = str;
+        for(Tuple2<String,String> r : replacements) {
+            s = s.replace(r._1, r._2);
+        }
+        return s;
+    }
+
+
+    private static final List<Tuple2<String,String>> XML_ESCAPES =
+            Arrays.asList(
+                    Tuple2.of("&", "&amp;"),
+                    Tuple2.of("<", "&lt;"),
+                    Tuple2.of(">", "&gt;"),
+                    Tuple2.of("\"", "&quot;"),
+                    Tuple2.of("'", "&apos;"));
+
+    private static final List<Tuple2<String,String>> HTML_ESCAPES =
+            Arrays.asList(
+                    Tuple2.of("&", "&amp;"),
+                    Tuple2.of("<", "&lt;"),
+                    Tuple2.of(">", "&gt;"),
+                    Tuple2.of("\"", "&quot;"),
+                    Tuple2.of("'", "&apos;"));
 }

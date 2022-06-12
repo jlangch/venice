@@ -1,5 +1,5 @@
 /*   __	__		 _
- *   \ \  / /__ _ __ (_) ___ ___ 
+ *   \ \  / /__ _ __ (_) ___ ___
  *	\ \/ / _ \ '_ \| |/ __/ _ \
  *	 \  /  __/ | | | | (_|  __/
  *	  \/ \___|_| |_|_|\___\___|
@@ -41,84 +41,84 @@ import com.github.jlangch.venice.impl.types.collections.VncOrderedMap;
 
 public class VncCustomTypeDef extends VncCustomBaseTypeDef {
 
-	public VncCustomTypeDef(
-			final VncKeyword type,
-			final List<VncCustomTypeFieldDef> fieldDefs,
-			final VncFunction validationFn
-	) {
-		super(type);
-		
-		this.fieldDefs = fieldDefs;
-		this.validationFn = validationFn;
-	}
+    public VncCustomTypeDef(
+            final VncKeyword type,
+            final List<VncCustomTypeFieldDef> fieldDefs,
+            final VncFunction validationFn
+    ) {
+        super(type);
+
+        this.fieldDefs = fieldDefs;
+        this.validationFn = validationFn;
+    }
 
 
-	public VncCustomTypeFieldDef getFieldDef(final int index) {
-		if (index >= 0 && index < fieldDefs.size()) {
-			return fieldDefs.get(index);
-		}
-		else {
-			throw new VncException(String.format(
-					"deftype: field def index %d out of bounds.", index)); 
-		}
-	}
+    public VncCustomTypeFieldDef getFieldDef(final int index) {
+        if (index >= 0 && index < fieldDefs.size()) {
+            return fieldDefs.get(index);
+        }
+        else {
+            throw new VncException(String.format(
+                    "deftype: field def index %d out of bounds.", index));
+        }
+    }
 
-	public List<VncCustomTypeFieldDef> getFieldDefs() {
-		return fieldDefs;
-	}
+    public List<VncCustomTypeFieldDef> getFieldDefs() {
+        return fieldDefs;
+    }
 
-	public Set<VncKeyword> getFieldNames() {
-		return fieldDefs.stream().map(f -> f.getName()).collect(Collectors.toSet());
-	}
+    public Set<VncKeyword> getFieldNames() {
+        return fieldDefs.stream().map(f -> f.getName()).collect(Collectors.toSet());
+    }
 
-	public VncFunction getValidationFn() {
-		return validationFn;
-	}
-	
-	public int count() {
-		return fieldDefs.size();
-	}
+    public VncFunction getValidationFn() {
+        return validationFn;
+    }
 
-	public void validate(final VncVal val) {
-		if (validationFn != null) {
-			try {
-				final VncVal valid = validationFn.apply(VncList.of(val));
-				if (valid == Constants.Nil || VncBoolean.isFalse(valid)) {
-					throw new AssertionException(String.format(
-							"Invalid value for custom type :%s",
-							getType().getValue()));
-				}
-			}
-			catch(AssertionException ex) {
-				throw ex;
-			}
-			catch(Exception ex) {
-				throw new AssertionException(
-						String.format(
-								"Invalid value for custom type :%s",
-								getType().getValue()),
-						ex);
-			}
-		}
-	}
-	
-	@Override
-	public VncMap toMap() {
-		final List<VncMap> defs = fieldDefs
-									.stream()
-									.map(o -> o.toMap())
-									.collect(Collectors.toList());
-		
-		return VncOrderedMap.of(
-				new VncKeyword(":type"),			getType(),
-				new VncKeyword(":custom-type"), 	new VncKeyword(":record"),
-				new VncKeyword(":field-defs"),  	VncList.ofColl(defs),
-				new VncKeyword(":validation-fn"),	validationFn == null ? Nil : validationFn);
-	}
-	
+    public int count() {
+        return fieldDefs.size();
+    }
 
-    private static final long serialVersionUID = -1848883965231344442L;	
+    public void validate(final VncVal val) {
+        if (validationFn != null) {
+            try {
+                final VncVal valid = validationFn.apply(VncList.of(val));
+                if (valid == Constants.Nil || VncBoolean.isFalse(valid)) {
+                    throw new AssertionException(String.format(
+                            "Invalid value for custom type :%s",
+                            getType().getValue()));
+                }
+            }
+            catch(AssertionException ex) {
+                throw ex;
+            }
+            catch(Exception ex) {
+                throw new AssertionException(
+                        String.format(
+                                "Invalid value for custom type :%s",
+                                getType().getValue()),
+                        ex);
+            }
+        }
+    }
 
-	private final List<VncCustomTypeFieldDef> fieldDefs;
-	private final VncFunction validationFn;
+    @Override
+    public VncMap toMap() {
+        final List<VncMap> defs = fieldDefs
+                                    .stream()
+                                    .map(o -> o.toMap())
+                                    .collect(Collectors.toList());
+
+        return VncOrderedMap.of(
+                new VncKeyword(":type"),			getType(),
+                new VncKeyword(":custom-type"), 	new VncKeyword(":record"),
+                new VncKeyword(":field-defs"),  	VncList.ofColl(defs),
+                new VncKeyword(":validation-fn"),	validationFn == null ? Nil : validationFn);
+    }
+
+
+    private static final long serialVersionUID = -1848883965231344442L;
+
+    private final List<VncCustomTypeFieldDef> fieldDefs;
+    private final VncFunction validationFn;
 }

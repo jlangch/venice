@@ -1,5 +1,5 @@
 /*   __    __         _
- *   \ \  / /__ _ __ (_) ___ ___ 
+ *   \ \  / /__ _ __ (_) ___ ___
  *    \ \/ / _ \ '_ \| |/ __/ _ \
  *     \  /  __/ | | | | (_|  __/
  *      \/ \___|_| |_|_|\___\___|
@@ -28,27 +28,27 @@ import com.github.jlangch.venice.impl.util.markdown.renderer.text.TextRenderer;
 
 
 public class Markdown {
-	
-	private Markdown(final Blocks blocks) {
-		this.blocks = blocks;
-	}
-	
-	public static Markdown parse(final String text) {
-		return new Markdown(new BlockParser(text).parse());
-	}
-	
-	public Blocks blocks() {
-		return blocks;
-	}
-	
-	public String renderToText(final int width) {
-		return new TextRenderer().softWrap(width).render(this);
-	}
-	
-	public String renderToHtml() {
-		return new HtmlRenderer().render(this);
-	}
-	
-	
-	private final Blocks blocks;
+
+    private Markdown(final Blocks blocks) {
+        this.blocks = blocks;
+    }
+
+    public static Markdown parse(final String text) {
+        return new Markdown(new BlockParser(text).parse());
+    }
+
+    public Blocks blocks() {
+        return blocks;
+    }
+
+    public String renderToText(final int width) {
+        return new TextRenderer().softWrap(width).render(this);
+    }
+
+    public String renderToHtml() {
+        return new HtmlRenderer().render(this);
+    }
+
+
+    private final Blocks blocks;
 }

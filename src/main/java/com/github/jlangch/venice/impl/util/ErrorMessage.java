@@ -1,5 +1,5 @@
 /*   __    __         _
- *   \ \  / /__ _ __ (_) ___ ___ 
+ *   \ \  / /__ _ __ (_) ___ ___
  *    \ \/ / _ \ '_ \| |/ __/ _ \
  *     \  /  __/ | | | | (_|  __/
  *      \/ \___|_| |_|_|\___\___|
@@ -27,38 +27,38 @@ import com.github.jlangch.venice.impl.types.VncVal;
 
 public class ErrorMessage {
 
-	public static String buildErrLocation(
-			final String file,
-			final int line,
-			final int column
-	) {
-		return String.format(
-				"File <%s> (%d,%d)",
-				file == null ? "unknown" : file,
-				line,
-				column);
-	}
+    public static String buildErrLocation(
+            final String file,
+            final int line,
+            final int column
+    ) {
+        return String.format(
+                "File <%s> (%d,%d)",
+                file == null ? "unknown" : file,
+                line,
+                column);
+    }
 
-	public static String buildErrLocation(final Token token) {
-		return token != null
-				? buildErrLocation(
-						token.getFile(),
-						token.getLine(),
-						token.getColumn())
-				: "File <unknown> (1,1)";
-	}
-	
-	public static String buildErrLocation(final VncVal val) {
-		final VncVal meta = val.getMeta();
-		
-		final String file = MetaUtil.getFile(meta);
-		final int line =  MetaUtil.getLine(meta);
-		final int column =  MetaUtil.getCol(meta);
-		
-		return String.format(
-				"File <%s> (%d,%d)",
-				file == null || file.isEmpty()? "unknown" : file,
-				line == -1 ? 1 : line,
-				column == -1 ? 1 : column);
-	}
+    public static String buildErrLocation(final Token token) {
+        return token != null
+                ? buildErrLocation(
+                        token.getFile(),
+                        token.getLine(),
+                        token.getColumn())
+                : "File <unknown> (1,1)";
+    }
+
+    public static String buildErrLocation(final VncVal val) {
+        final VncVal meta = val.getMeta();
+
+        final String file = MetaUtil.getFile(meta);
+        final int line =  MetaUtil.getLine(meta);
+        final int column =  MetaUtil.getCol(meta);
+
+        return String.format(
+                "File <%s> (%d,%d)",
+                file == null || file.isEmpty()? "unknown" : file,
+                line == -1 ? 1 : line,
+                column == -1 ? 1 : column);
+    }
 }

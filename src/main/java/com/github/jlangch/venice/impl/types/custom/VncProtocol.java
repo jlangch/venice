@@ -1,5 +1,5 @@
 /*   __	__		 _
- *   \ \  / /__ _ __ (_) ___ ___ 
+ *   \ \  / /__ _ __ (_) ___ ___
  *	\ \/ / _ \ '_ \| |/ __/ _ \
  *	 \  /  __/ | | | | (_|  __/
  *	  \/ \___|_| |_|_|\___\___|
@@ -37,104 +37,104 @@ import com.github.jlangch.venice.impl.util.MetaUtil;
 
 public class VncProtocol extends VncVal {
 
-	public VncProtocol(
-			final VncSymbol name,
-			final VncMap functions,
-			final VncVal meta
-	) {
-		super(meta);
-		this.name = name;
-		this.functions = functions;
-	}
+    public VncProtocol(
+            final VncSymbol name,
+            final VncMap functions,
+            final VncVal meta
+    ) {
+        super(meta);
+        this.name = name;
+        this.functions = functions;
+    }
 
-	
-	public VncSymbol getName() {
-		return name;
-	}
-	
-	public VncMap getFunctions() {
-		return functions;
-	}
 
-	public VncMultiArityFunction getFunctionForName(final VncString name) {
-		return (VncMultiArityFunction)functions.get(name);
-	}
-	
-	public void register(final VncKeyword type) {
-		types.put(type, type);
-	}
-	
-	public boolean isRegistered(final VncKeyword type) {
-		return types.containsKey(type);
-	}
-	
-	public void unregister(final VncKeyword type) {
-		types.remove(type);
-	}
-	
-	@Override
-	public VncVal withMeta(final VncVal meta) {
-		return new VncProtocol(name, functions, meta);
-	}
+    public VncSymbol getName() {
+        return name;
+    }
 
-	@Override
-	public VncKeyword getType() {
-		return new VncKeyword(
-					TYPE, 
-					MetaUtil.typeMeta(
-						new VncKeyword(VncVal.TYPE)));
-	}
+    public VncMap getFunctions() {
+        return functions;
+    }
 
-	@Override 
-	public TypeRank typeRank() {
-		return TypeRank.PROTOCOL_TYPE;
-	}
-	
-	@Override
-	public Object convertToJavaObject() {
-		return null; // not supported
-	}
+    public VncMultiArityFunction getFunctionForName(final VncString name) {
+        return (VncMultiArityFunction)functions.get(name);
+    }
 
-	@Override 
-	public int compareTo(final VncVal o) {
-		if (o == Constants.Nil) {
-			return 1;
-		}
-		else if (o instanceof VncCustomBaseTypeDef) {
-			return name.getValue().compareTo(((VncProtocol)o).name.getValue());
-		}
+    public void register(final VncKeyword type) {
+        types.put(type, type);
+    }
 
-		return super.compareTo(o);
-	}
+    public boolean isRegistered(final VncKeyword type) {
+        return types.containsKey(type);
+    }
 
-	@Override 
-	public String toString() {
-		return name.toString();
-	}
-	
-	@Override 
-	public String toString(final boolean print_machine_readably) {
-		return name.toString(print_machine_readably);
-	}
-	
-	public VncVal getDoc() { 
-		return getMetaVal(MetaUtil.DOC); 
-	}
-	
-	public VncList getExamples() { 
-		return (VncList)getMetaVal(MetaUtil.EXAMPLES, VncList.empty());
-	}
-	
-	public VncList getSeeAlso() { 
-		return (VncList)getMetaVal(MetaUtil.SEE_ALSO, VncList.empty());
-	}
+    public void unregister(final VncKeyword type) {
+        types.remove(type);
+    }
 
-	
+    @Override
+    public VncVal withMeta(final VncVal meta) {
+        return new VncProtocol(name, functions, meta);
+    }
+
+    @Override
+    public VncKeyword getType() {
+        return new VncKeyword(
+                    TYPE,
+                    MetaUtil.typeMeta(
+                        new VncKeyword(VncVal.TYPE)));
+    }
+
+    @Override
+    public TypeRank typeRank() {
+        return TypeRank.PROTOCOL_TYPE;
+    }
+
+    @Override
+    public Object convertToJavaObject() {
+        return null; // not supported
+    }
+
+    @Override
+    public int compareTo(final VncVal o) {
+        if (o == Constants.Nil) {
+            return 1;
+        }
+        else if (o instanceof VncCustomBaseTypeDef) {
+            return name.getValue().compareTo(((VncProtocol)o).name.getValue());
+        }
+
+        return super.compareTo(o);
+    }
+
+    @Override
+    public String toString() {
+        return name.toString();
+    }
+
+    @Override
+    public String toString(final boolean print_machine_readably) {
+        return name.toString(print_machine_readably);
+    }
+
+    public VncVal getDoc() {
+        return getMetaVal(MetaUtil.DOC);
+    }
+
+    public VncList getExamples() {
+        return (VncList)getMetaVal(MetaUtil.EXAMPLES, VncList.empty());
+    }
+
+    public VncList getSeeAlso() {
+        return (VncList)getMetaVal(MetaUtil.SEE_ALSO, VncList.empty());
+    }
+
+
     public static final String TYPE = ":core/protocol";
 
-    private static final long serialVersionUID = -1848883965231344442L;	
-	
+    private static final long serialVersionUID = -1848883965231344442L;
+
     private final VncSymbol name;
     private final VncMap functions;
-	private final ConcurrentHashMap<VncKeyword,VncKeyword> types = new ConcurrentHashMap<>();
+    private final ConcurrentHashMap<VncKeyword,VncKeyword> types = new ConcurrentHashMap<>();
 }

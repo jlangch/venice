@@ -1,5 +1,5 @@
 /*   __    __         _
- *   \ \  / /__ _ __ (_) ___ ___ 
+ *   \ \  / /__ _ __ (_) ___ ___
  *    \ \/ / _ \ '_ \| |/ __/ _ \
  *     \  /  __/ | | | | (_|  __/
  *      \/ \___|_| |_|_|\___\___|
@@ -24,9 +24,9 @@ package com.github.jlangch.venice.impl.util.dag;
 
 public class DagCycleException extends RuntimeException {
 
-	public DagCycleException(final String message) {
-		super(message);
-	}
+    public DagCycleException(final String message) {
+        super(message);
+    }
 
-	private static final long serialVersionUID = -532782218459409794L;
+    private static final long serialVersionUID = -532782218459409794L;
 }

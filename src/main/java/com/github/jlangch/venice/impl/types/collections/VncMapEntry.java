@@ -1,5 +1,5 @@
 /*   __    __         _
- *   \ \  / /__ _ __ (_) ___ ___ 
+ *   \ \  / /__ _ __ (_) ___ ___
  *    \ \/ / _ \ '_ \| |/ __/ _ \
  *     \  /  __/ | | | | (_|  __/
  *      \/ \___|_| |_|_|\___\___|
@@ -33,74 +33,74 @@ import com.github.jlangch.venice.impl.util.MetaUtil;
 
 public class VncMapEntry extends VncVal {
 
-	public VncMapEntry(final VncVal key, final VncVal val) {
-		super(Constants.Nil);
-		this.key = key;
-		this.val = val;
-	}
-	
-	public VncMapEntry(final Map.Entry<VncVal, VncVal> entry) {
-		super(Constants.Nil);
-		this.key = entry.getKey();
-		this.val = entry.getValue();
-	}
-	
-	public VncVal getKey() {
-		return key;
-	}
+    public VncMapEntry(final VncVal key, final VncVal val) {
+        super(Constants.Nil);
+        this.key = key;
+        this.val = val;
+    }
 
-	public VncVal getValue() {
-		return val;
-	}
+    public VncMapEntry(final Map.Entry<VncVal, VncVal> entry) {
+        super(Constants.Nil);
+        this.key = entry.getKey();
+        this.val = entry.getValue();
+    }
 
-	public VncVector toVector() {
-		return VncVector.of(key, val);
-	}
+    public VncVal getKey() {
+        return key;
+    }
 
-	@Override
-	public VncMapEntry withMeta(final VncVal meta) {
-		return this;
-	}
-	
-	@Override
-	public VncKeyword getType() {
-		return new VncKeyword(
-						TYPE, 
-						MetaUtil.typeMeta(
-							new VncKeyword(VncVal.TYPE)));
-	}
-	
-	@Override 
-	public TypeRank typeRank() {
-		return TypeRank.MAPENTRY;
-	}
+    public VncVal getValue() {
+        return val;
+    }
 
-	@Override
-	public Object convertToJavaObject() {
-		return Arrays.asList(
-				key.convertToJavaObject(),
-				val.convertToJavaObject());
-	}
+    public VncVector toVector() {
+        return VncVector.of(key, val);
+    }
+
+    @Override
+    public VncMapEntry withMeta(final VncVal meta) {
+        return this;
+    }
+
+    @Override
+    public VncKeyword getType() {
+        return new VncKeyword(
+                        TYPE,
+                        MetaUtil.typeMeta(
+                            new VncKeyword(VncVal.TYPE)));
+    }
+
+    @Override
+    public TypeRank typeRank() {
+        return TypeRank.MAPENTRY;
+    }
+
+    @Override
+    public Object convertToJavaObject() {
+        return Arrays.asList(
+                key.convertToJavaObject(),
+                val.convertToJavaObject());
+    }
 
 
-	@Override 
-	public String toString() {
-		return toString(true);
-	}
-	
-	@Override
-	public String toString(final boolean print_machine_readably) {
-		return String.format(
-				"[%s %s]", 
-				key.toString(print_machine_readably),
-				val.toString(print_machine_readably));
-	}
+    @Override
+    public String toString() {
+        return toString(true);
+    }
 
-	
+    @Override
+    public String toString(final boolean print_machine_readably) {
+        return String.format(
+                "[%s %s]",
+                key.toString(print_machine_readably),
+                val.toString(print_machine_readably));
+    }
+
+
     public static final String TYPE = ":core/map-entry";
 
     private static final long serialVersionUID = 7943559441888855596L;
-	
-	private final VncVal key;
-	private final VncVal val;
+
+    private final VncVal key;
+    private final VncVal val;
 }

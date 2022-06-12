@@ -1,5 +1,5 @@
 /*   __    __         _
- *   \ \  / /__ _ __ (_) ___ ___ 
+ *   \ \  / /__ _ __ (_) ___ ___
  *    \ \/ / _ \ '_ \| |/ __/ _ \
  *     \  /  __/ | | | | (_|  __/
  *      \/ \___|_| |_|_|\___\___|
@@ -28,70 +28,70 @@ import com.github.jlangch.venice.impl.util.markdown.block.TableBlock;
 
 
 public class TextTableUtil {
-	
-	public static int[] maxColWidths(final TableBlock block) {
-		return maxColWidths(
-				block,
-				toHeaderCellTextLines(block),
-				toBodyCellTextLines(block));
-	}
-	
-	public static int[] maxColWidths(
-			final TableBlock block, 
-			final List<String> headerCells,
-			final List<List<String>> bodyCells
-	) {
-		final int cols = block.cols();
-		
-		int[] widths = new int[cols];
 
-		for(int ii=0; ii<block.cols(); ii++) {
-			widths[ii] = 0;
-		}
-		
-		// header
-		for(int ii=0; ii<cols; ii++) {
-			widths[ii] = Math.max(widths[ii], headerCells.get(ii).length());
-		}
-		
-		// body
-		bodyCells.forEach(row -> {
-			for(int ii=0; ii<cols; ii++) {
-				widths[ii] = Math.max(widths[ii], row.get(ii).length());
-			}
-		});
-		
-		return widths;
-	}
+    public static int[] maxColWidths(final TableBlock block) {
+        return maxColWidths(
+                block,
+                toHeaderCellTextLines(block),
+                toBodyCellTextLines(block));
+    }
 
-	public static List<String> toHeaderCellTextLines(final TableBlock block) {
-		final TextRenderer renderer = new TextRenderer().nowrap();
-		
-		final List<String> cols = new ArrayList<>();
-		
-		for(int col=0; col<block.cols(); col++) {
-			cols.add(block.hasHeader() 
-						? renderer.render(block.headerCell(col))
-						: "");
-		}
-		
-		return cols;
-	}
+    public static int[] maxColWidths(
+            final TableBlock block,
+            final List<String> headerCells,
+            final List<List<String>> bodyCells
+    ) {
+        final int cols = block.cols();
 
-	public static List<List<String>> toBodyCellTextLines(final TableBlock block) {
-		final TextRenderer renderer = new TextRenderer().nowrap();
-		
-		final List<List<String>> cells = new ArrayList<>();
-		
-		for(int row=0; row<block.bodyRows(); row++) {
-			final List<String> cols = new ArrayList<>();
-			for(int col=0; col<block.cols(); col++) {
-				cols.add(renderer.render(block.bodyCell(row, col)));
-			}
-			cells.add(cols);
-		}
-		
-		return cells;
-	}
+        int[] widths = new int[cols];
+
+        for(int ii=0; ii<block.cols(); ii++) {
+            widths[ii] = 0;
+        }
+
+        // header
+        for(int ii=0; ii<cols; ii++) {
+            widths[ii] = Math.max(widths[ii], headerCells.get(ii).length());
+        }
+
+        // body
+        bodyCells.forEach(row -> {
+            for(int ii=0; ii<cols; ii++) {
+                widths[ii] = Math.max(widths[ii], row.get(ii).length());
+            }
+        });
+
+        return widths;
+    }
+
+    public static List<String> toHeaderCellTextLines(final TableBlock block) {
+        final TextRenderer renderer = new TextRenderer().nowrap();
+
+        final List<String> cols = new ArrayList<>();
+
+        for(int col=0; col<block.cols(); col++) {
+            cols.add(block.hasHeader()
+                        ? renderer.render(block.headerCell(col))
+                        : "");
+        }
+
+        return cols;
+    }
+
+    public static List<List<String>> toBodyCellTextLines(final TableBlock block) {
+        final TextRenderer renderer = new TextRenderer().nowrap();
+
+        final List<List<String>> cells = new ArrayList<>();
+
+        for(int row=0; row<block.bodyRows(); row++) {
+            final List<String> cols = new ArrayList<>();
+            for(int col=0; col<block.cols(); col++) {
+                cols.add(renderer.render(block.bodyCell(row, col)));
+            }
+            cells.add(cols);
+        }
+
+        return cells;
+    }
 
 }

@@ -1,5 +1,5 @@
 /*   __    __         _
- *   \ \  / /__ _ __ (_) ___ ___ 
+ *   \ \  / /__ _ __ (_) ___ ___
  *    \ \/ / _ \ '_ \| |/ __/ _ \
  *     \  /  __/ | | | | (_|  __/
  *      \/ \___|_| |_|_|\___\___|
@@ -31,127 +31,127 @@ import com.github.jlangch.venice.impl.util.markdown.chunk.Chunks;
 
 public class TableBlock implements Block {
 
-	public TableBlock() {
-	}
+    public TableBlock() {
+    }
 
-	public TableBlock(
-		final int cols,
-		final List<List<Chunks>> bodyRows
-	) {
-		addFormat(cols, new ArrayList<>());
-		addHeaderRow(cols, new ArrayList<>());
-		addBodyRows(cols, bodyRows);
-	}
+    public TableBlock(
+        final int cols,
+        final List<List<Chunks>> bodyRows
+    ) {
+        addFormat(cols, new ArrayList<>());
+        addHeaderRow(cols, new ArrayList<>());
+        addBodyRows(cols, bodyRows);
+    }
 
-	public TableBlock(
-		final int cols,
-		final List<TableColFmt> format,
-		final List<List<Chunks>> bodyRows
-	) {
-		addFormat(cols, format);
-		addHeaderRow(cols, new ArrayList<>());
-		addBodyRows(cols, bodyRows);
-	}
+    public TableBlock(
+        final int cols,
+        final List<TableColFmt> format,
+        final List<List<Chunks>> bodyRows
+    ) {
+        addFormat(cols, format);
+        addHeaderRow(cols, new ArrayList<>());
+        addBodyRows(cols, bodyRows);
+    }
 
 
-	public TableBlock(
-		final int cols,
-		final List<TableColFmt> format,
-		final List<Chunks> headerRow,
-		final List<List<Chunks>> bodyRows
-	) {
-		addFormat(cols, format);
-		addHeaderRow(cols, headerRow);
-		addBodyRows(cols, bodyRows);
-	}
+    public TableBlock(
+        final int cols,
+        final List<TableColFmt> format,
+        final List<Chunks> headerRow,
+        final List<List<Chunks>> bodyRows
+    ) {
+        addFormat(cols, format);
+        addHeaderRow(cols, headerRow);
+        addBodyRows(cols, bodyRows);
+    }
 
-	
-	public int cols() {
-		return format.size();
-	}
 
-	public int bodyRows() {
-		return bodyRows.size();
-	}
+    public int cols() {
+        return format.size();
+    }
 
-	public boolean hasHeader() {
-		return !headerRow.isEmpty();
-	}
+    public int bodyRows() {
+        return bodyRows.size();
+    }
 
-	public TableColFmt format(final int col) {
-		return col >= format.size() ? new TableColFmt() : format.get(col);
-	}
+    public boolean hasHeader() {
+        return !headerRow.isEmpty();
+    }
 
-	public Chunks headerCell(final int col) {
-		return col >= headerRow.size() ? new Chunks() : headerRow.get(col);
-	}
+    public TableColFmt format(final int col) {
+        return col >= format.size() ? new TableColFmt() : format.get(col);
+    }
 
-	public Chunks bodyCell(final int row, final int col) {
-		if (row >= bodyRows.size()) {
-			return new Chunks();
-		}
-		else {
-			final List<Chunks> bodyRow = bodyRows.get(row);
-			return col >= bodyRow.size() ? new Chunks() : bodyRow.get(col);
-		}
-	}
+    public Chunks headerCell(final int col) {
+        return col >= headerRow.size() ? new Chunks() : headerRow.get(col);
+    }
 
-	@Override
-	public boolean isEmpty() {
-		return headerRow.isEmpty() && bodyRows.isEmpty();
-	}
-	
-	@Override
-	public void parseChunks() {
-		headerRow = parseChunks(headerRow);
-		
-		for(int ii=0; ii<bodyRows.size(); ii++) {
-			bodyRows.set(ii, parseChunks(bodyRows.get(ii)));
-		}
-	}
+    public Chunks bodyCell(final int row, final int col) {
+        if (row >= bodyRows.size()) {
+            return new Chunks();
+        }
+        else {
+            final List<Chunks> bodyRow = bodyRows.get(row);
+            return col >= bodyRow.size() ? new Chunks() : bodyRow.get(col);
+        }
+    }
 
-	private void addFormat(final int cols, final List<TableColFmt> formats) {
-		for(int ii=0; ii<cols; ii++) {
-			format.add(
-				formats != null && ii<formats.size() ? formats.get(ii) : new TableColFmt());
-		}
-	}
-	
-	private void addHeaderRow(final int cols, final List<Chunks> row) {
-		if (row == null || row.isEmpty()) {
-			return;
-		}
+    @Override
+    public boolean isEmpty() {
+        return headerRow.isEmpty() && bodyRows.isEmpty();
+    }
 
-		for(int ii=0; ii<cols; ii++) {
-			headerRow.add(
-				ii<row.size() ? row.get(ii) : new Chunks());
-		}
-	}
-	
-	private void addBodyRows(final int cols, final List<List<Chunks>> rows) {
-		if (rows == null || rows.isEmpty()) {
-			return;
-		}
-		
-		for(List<Chunks> row : rows) {
-			final List<Chunks> bodyRow = new ArrayList<>();
-			bodyRows.add(bodyRow);
-			
-			for(int ii=0; ii<cols; ii++) {
-				bodyRow.add(
-					row != null && ii<row.size() ? row.get(ii) : new Chunks());
-			}
-		}
-	}
-	
-	private List<Chunks> parseChunks(final List<Chunks> chunks) {
-		return chunks.stream()
-					 .map(c -> new ChunkParser(c).parse())
-					 .collect(Collectors.toList());
-	}
-	
-		
-	private List<TableColFmt> format = new ArrayList<>();
-	private List<Chunks> headerRow = new ArrayList<>();
-	private List<List<Chunks>> bodyRows = new ArrayList<>();
+    @Override
+    public void parseChunks() {
+        headerRow = parseChunks(headerRow);
+
+        for(int ii=0; ii<bodyRows.size(); ii++) {
+            bodyRows.set(ii, parseChunks(bodyRows.get(ii)));
+        }
+    }
+
+    private void addFormat(final int cols, final List<TableColFmt> formats) {
+        for(int ii=0; ii<cols; ii++) {
+            format.add(
+                formats != null && ii<formats.size() ? formats.get(ii) : new TableColFmt());
+        }
+    }
+
+    private void addHeaderRow(final int cols, final List<Chunks> row) {
+        if (row == null || row.isEmpty()) {
+            return;
+        }
+
+        for(int ii=0; ii<cols; ii++) {
+            headerRow.add(
+                ii<row.size() ? row.get(ii) : new Chunks());
+        }
+    }
+
+    private void addBodyRows(final int cols, final List<List<Chunks>> rows) {
+        if (rows == null || rows.isEmpty()) {
+            return;
+        }
+
+        for(List<Chunks> row : rows) {
+            final List<Chunks> bodyRow = new ArrayList<>();
+            bodyRows.add(bodyRow);
+
+            for(int ii=0; ii<cols; ii++) {
+                bodyRow.add(
+                    row != null && ii<row.size() ? row.get(ii) : new Chunks());
+            }
+        }
+    }
+
+    private List<Chunks> parseChunks(final List<Chunks> chunks) {
+        return chunks.stream()
+                     .map(c -> new ChunkParser(c).parse())
+                     .collect(Collectors.toList());
+    }
+
+
+    private List<TableColFmt> format = new ArrayList<>();
+    private List<Chunks> headerRow = new ArrayList<>();
+    private List<List<Chunks>> bodyRows = new ArrayList<>();
 }

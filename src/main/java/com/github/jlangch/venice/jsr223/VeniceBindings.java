@@ -1,5 +1,5 @@
 /*   __    __         _
- *   \ \  / /__ _ __ (_) ___ ___ 
+ *   \ \  / /__ _ __ (_) ___ ___
  *    \ \/ / _ \ '_ \| |/ __/ _ \
  *     \  /  __/ | | | | (_|  __/
  *      \/ \___|_| |_|_|\___\___|
@@ -31,66 +31,66 @@ import javax.script.Bindings;
 
 public class VeniceBindings implements Bindings {
 
-	@Override
-	public int size() {
-		return bindings.size();
-	}
+    @Override
+    public int size() {
+        return bindings.size();
+    }
 
-	@Override
-	public boolean isEmpty() {
-		return bindings.isEmpty();
-	}
+    @Override
+    public boolean isEmpty() {
+        return bindings.isEmpty();
+    }
 
-	@Override
-	public boolean containsValue(final Object value) {
-		return bindings.containsValue(value);
-	}
+    @Override
+    public boolean containsValue(final Object value) {
+        return bindings.containsValue(value);
+    }
 
-	@Override
-	public void clear() {
-		bindings.clear();
-	}
+    @Override
+    public void clear() {
+        bindings.clear();
+    }
 
-	@Override
-	public Set<String> keySet() {
-		return bindings.keySet();
-	}
+    @Override
+    public Set<String> keySet() {
+        return bindings.keySet();
+    }
 
-	@Override
-	public Collection<Object> values() {
-		return bindings.values();
-	}
+    @Override
+    public Collection<Object> values() {
+        return bindings.values();
+    }
 
-	@Override
-	public Set<Entry<String, Object>> entrySet() {
-		return bindings.entrySet();
-	}
+    @Override
+    public Set<Entry<String, Object>> entrySet() {
+        return bindings.entrySet();
+    }
 
-	@Override
-	public Object put(final String name, final Object value) {
-		return bindings.put(name, value);
-	}
+    @Override
+    public Object put(final String name, final Object value) {
+        return bindings.put(name, value);
+    }
 
-	@Override
-	public void putAll(final Map<? extends String, ? extends Object> toMerge) {
-		bindings.putAll(toMerge);
-	}
+    @Override
+    public void putAll(final Map<? extends String, ? extends Object> toMerge) {
+        bindings.putAll(toMerge);
+    }
 
-	@Override
-	public boolean containsKey(final Object key) {
-		return bindings.containsKey(key);
-	}
+    @Override
+    public boolean containsKey(final Object key) {
+        return bindings.containsKey(key);
+    }
 
-	@Override
-	public Object get(final Object key) {
-		return bindings.get(key);
-	}
+    @Override
+    public Object get(final Object key) {
+        return bindings.get(key);
+    }
 
-	@Override
-	public Object remove(final Object key) {
-		return bindings.remove(key);
-	}
+    @Override
+    public Object remove(final Object key) {
+        return bindings.remove(key);
+    }
 
-	
-	private final Map<String,Object> bindings = new HashMap<>();
+
+    private final Map<String,Object> bindings = new HashMap<>();
 }

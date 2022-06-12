@@ -1,5 +1,5 @@
 /*   __    __         _
- *   \ \  / /__ _ __ (_) ___ ___ 
+ *   \ \  / /__ _ __ (_) ___ ___
  *    \ \/ / _ \ '_ \| |/ __/ _ \
  *     \  /  __/ | | | | (_|  __/
  *      \/ \___|_| |_|_|\___\___|
@@ -30,37 +30,37 @@ import com.github.jlangch.venice.impl.util.MeterRegistry;
 
 public class Reducer {
 
-	public static VncVal reduce(
-			final IVncFunction reduceFn, 
-			final VncVal init, 
-			final Iterable<VncVal> coll,
-			final MeterRegistry meterRegistry
-	) {
-		VncVal value = init;
-		
-		if (meterRegistry.enabled) {
-			for(VncVal v : coll) {
-				value = VncFunction.applyWithMeter(
-								reduceFn, 
-								VncList.of(value, v), 
-								meterRegistry);
-				
-				if (Reduced.isReduced(value)) {
-					return Reduced.unreduced(value);
-				}
-			}
-		}
-		else {
-			for(VncVal v : coll) {
-				value = reduceFn.apply(VncList.of(value, v));
-				
-				if (Reduced.isReduced(value)) {
-					return Reduced.unreduced(value);
-				}
-			}
-		}
-		
-		return value;
-	}
+    public static VncVal reduce(
+            final IVncFunction reduceFn,
+            final VncVal init,
+            final Iterable<VncVal> coll,
+            final MeterRegistry meterRegistry
+    ) {
+        VncVal value = init;
+
+        if (meterRegistry.enabled) {
+            for(VncVal v : coll) {
+                value = VncFunction.applyWithMeter(
+                                reduceFn,
+                                VncList.of(value, v),
+                                meterRegistry);
+
+                if (Reduced.isReduced(value)) {
+                    return Reduced.unreduced(value);
+                }
+            }
+        }
+        else {
+            for(VncVal v : coll) {
+                value = reduceFn.apply(VncList.of(value, v));
+
+                if (Reduced.isReduced(value)) {
+                    return Reduced.unreduced(value);
+                }
+            }
+        }
+
+        return value;
+    }
 
 }

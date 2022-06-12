@@ -1,5 +1,5 @@
 /*   __    __         _
- *   \ \  / /__ _ __ (_) ___ ___ 
+ *   \ \  / /__ _ __ (_) ___ ___
  *    \ \/ / _ \ '_ \| |/ __/ _ \
  *     \  /  __/ | | | | (_|  __/
  *      \/ \___|_| |_|_|\___\___|
@@ -27,39 +27,39 @@ import java.util.EmptyStackException;
 
 public final class ArrayListStack<T> extends ArrayList<T> {
 
-	public ArrayListStack(final int initialCapacity) {
-		super(initialCapacity);
-	}
+    public ArrayListStack(final int initialCapacity) {
+        super(initialCapacity);
+    }
 
-	public ArrayListStack() {
-		this(10);
-	}
+    public ArrayListStack() {
+        this(10);
+    }
 
-	public ArrayListStack(final Collection<T> collection) {
-		super(collection);
-	}
+    public ArrayListStack(final Collection<T> collection) {
+        super(collection);
+    }
 
-	public final void push(final T item) {
-		add(item);
-	}
+    public final void push(final T item) {
+        add(item);
+    }
 
-	public final T pop() {
-		final T top = peek();
-		remove(size() - 1);
-		return top;
-	}
+    public final T pop() {
+        final T top = peek();
+        remove(size() - 1);
+        return top;
+    }
 
-	public final T peek() {
-		int size = size();
-		if (size == 0) {
-			throw new EmptyStackException();
-		}
-		return get(size - 1);
-	}
+    public final T peek() {
+        int size = size();
+        if (size == 0) {
+            throw new EmptyStackException();
+        }
+        return get(size - 1);
+    }
 
-	public final boolean empty() {
-		return size() == 0;
-	}
+    public final boolean empty() {
+        return size() == 0;
+    }
 
-	private static final long serialVersionUID = 1L;
+    private static final long serialVersionUID = 1L;
 }

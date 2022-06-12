@@ -1,5 +1,5 @@
 /*   __    __         _
- *   \ \  / /__ _ __ (_) ___ ___ 
+ *   \ \  / /__ _ __ (_) ___ ___
  *    \ \/ / _ \ '_ \| |/ __/ _ \
  *     \  /  __/ | | | | (_|  __/
  *      \/ \___|_| |_|_|\___\___|
@@ -48,30 +48,30 @@ import com.github.jlangch.venice.Venice;
 @State (Scope.Benchmark)
 @Threads (1)
 public class PrecompileBenchmark {
-	@Benchmark
+    @Benchmark
     public Object no_precompilation(State_ state) {
-		return state.venice.eval("test", state.expr, state.parameters);
+        return state.venice.eval("test", state.expr, state.parameters);
     }
 
-	@Benchmark
+    @Benchmark
     public Object precompilation_no_macroexpand(State_ state) {
-		return state.venice.eval(state.precompiledNoMacroExpand, state.parameters);
+        return state.venice.eval(state.precompiledNoMacroExpand, state.parameters);
     }
-    
-	@Benchmark
-	public Object precompilation_macroexpand(State_ state) {
-    	return state.venice.eval(state.precompiledMacroExpand, state.parameters);
+
+    @Benchmark
+    public Object precompilation_macroexpand(State_ state) {
+        return state.venice.eval(state.precompiledMacroExpand, state.parameters);
     }
-  
+
     @State(Scope.Benchmark)
     public static class State_ {
-    	public String expr = "(+ (cond (< x 0) -1 (> x 0) 1 :else 0) " +
-							 "   (cond (< y 0) -1 (> y 0) 1 :else 0) " +
-							 "   (cond (< z 0) -1 (> z 0) 1 :else 0))";
+        public String expr = "(+ (cond (< x 0) -1 (> x 0) 1 :else 0) " +
+                             "   (cond (< y 0) -1 (> y 0) 1 :else 0) " +
+                             "   (cond (< z 0) -1 (> z 0) 1 :else 0))";
 
-    	public Venice venice = new Venice();
-    	public PreCompiled precompiledNoMacroExpand = venice.precompile("example", expr, false);
-    	public PreCompiled precompiledMacroExpand = venice.precompile("example", expr, true);
-    	public Map<String,Object> parameters = Parameters.of("x", -10, "y", 0, "z", 10);
+        public Venice venice = new Venice();
+        public PreCompiled precompiledNoMacroExpand = venice.precompile("example", expr, false);
+        public PreCompiled precompiledMacroExpand = venice.precompile("example", expr, true);
+        public Map<String,Object> parameters = Parameters.of("x", -10, "y", 0, "z", 10);
     }
 }

@@ -1,5 +1,5 @@
 /*   __    __         _
- *   \ \  / /__ _ __ (_) ___ ___ 
+ *   \ \  / /__ _ __ (_) ___ ___
  *    \ \/ / _ \ '_ \| |/ __/ _ \
  *     \  /  __/ | | | | (_|  __/
  *      \/ \___|_| |_|_|\___\___|
@@ -26,34 +26,34 @@ import com.github.jlangch.venice.impl.util.StringUtil;
 
 public class TitleBlock implements Block {
 
-	public TitleBlock() {
-		this("", 1);
-	}
+    public TitleBlock() {
+        this("", 1);
+    }
 
-	public TitleBlock(final String text, final int level) {
-		this.text = StringUtil.trimToEmpty(text);
-		this.level = level;
-	}
+    public TitleBlock(final String text, final int level) {
+        this.text = StringUtil.trimToEmpty(text);
+        this.level = level;
+    }
 
-	
-	public String getText() {
-		return text;
-	}
-	
-	public int getLevel() {
-		return level;
-	}
-	
-	@Override
-	public boolean isEmpty() {
-		return text.isEmpty();
-	}
-	
-	@Override
-	public void parseChunks() {	
-	}
 
-	
-	private final String text;
-	private final int level;
+    public String getText() {
+        return text;
+    }
+
+    public int getLevel() {
+        return level;
+    }
+
+    @Override
+    public boolean isEmpty() {
+        return text.isEmpty();
+    }
+
+    @Override
+    public void parseChunks() {
+    }
+
+
+    private final String text;
+    private final int level;
 }

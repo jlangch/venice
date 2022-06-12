@@ -1,5 +1,5 @@
 /*   __    __         _
- *   \ \  / /__ _ __ (_) ___ ___ 
+ *   \ \  / /__ _ __ (_) ___ ___
  *    \ \/ / _ \ '_ \| |/ __/ _ \
  *     \  /  __/ | | | | (_|  __/
  *      \/ \___|_| |_|_|\___\___|
@@ -40,109 +40,109 @@ import com.github.jlangch.venice.impl.util.MetaUtil;
 
 public class VncSortedSet extends VncSet {
 
-	public VncSortedSet() {
-		this(null, null);
-	}
+    public VncSortedSet() {
+        this(null, null);
+    }
 
-	public VncSortedSet(final VncVal meta) {
-		this(null, meta);
-	}
+    public VncSortedSet(final VncVal meta) {
+        this(null, meta);
+    }
 
-	public VncSortedSet(final io.vavr.collection.Set<VncVal> val) {
-		this(val, null);
-	}
+    public VncSortedSet(final io.vavr.collection.Set<VncVal> val) {
+        this(val, null);
+    }
 
-	public VncSortedSet(final io.vavr.collection.Set<VncVal> val, final VncVal meta) {
-		super(meta == null ? Constants.Nil : meta);
-		if (val == null) {
-			value = io.vavr.collection.TreeSet.empty();
-		}
-		else if (val instanceof io.vavr.collection.TreeSet) {
-			value = (io.vavr.collection.TreeSet<VncVal>)val;
-		}
-		else {
-			value = io.vavr.collection.TreeSet.ofAll(val);
-		}
-	}
+    public VncSortedSet(final io.vavr.collection.Set<VncVal> val, final VncVal meta) {
+        super(meta == null ? Constants.Nil : meta);
+        if (val == null) {
+            value = io.vavr.collection.TreeSet.empty();
+        }
+        else if (val instanceof io.vavr.collection.TreeSet) {
+            value = (io.vavr.collection.TreeSet<VncVal>)val;
+        }
+        else {
+            value = io.vavr.collection.TreeSet.ofAll(val);
+        }
+    }
 
-	
-	public static VncSortedSet ofAll(final java.util.Collection<? extends VncVal> val) {
-		return new VncSortedSet(io.vavr.collection.TreeSet.ofAll(val));
-	}
-	
-	public static VncSortedSet ofAll(final VncSequence val) {
-		return new VncSortedSet(io.vavr.collection.TreeSet.ofAll(val));
-	}
-	
-	public static VncSortedSet of(final VncVal... mvs) {
-		return new VncSortedSet(io.vavr.collection.TreeSet.of(mvs));
-	}
-	
-	
-	@Override
-	public VncSortedSet emptyWithMeta() {
-		return new VncSortedSet(getMeta());
-	}
-	
-	@Override
-	public VncSortedSet withValues(final Collection<? extends VncVal> replaceVals) {
-		return new VncSortedSet(io.vavr.collection.TreeSet.ofAll(replaceVals), getMeta());
-	}
 
-	@Override
-	public VncSortedSet withValues(final Collection<? extends VncVal> replaceVals, final VncVal meta) {
-		return new VncSortedSet(io.vavr.collection.TreeSet.ofAll(replaceVals), meta);
-	}
+    public static VncSortedSet ofAll(final java.util.Collection<? extends VncVal> val) {
+        return new VncSortedSet(io.vavr.collection.TreeSet.ofAll(val));
+    }
 
-	@Override
-	public VncSortedSet withMeta(final VncVal meta) {
-		return new VncSortedSet(value, meta);
-	}
-	
-	@Override
-	public VncKeyword getType() {
-		return new VncKeyword(
-						TYPE, 
-						MetaUtil.typeMeta(
-							new VncKeyword(VncSet.TYPE), 
-							new VncKeyword(VncCollection.TYPE), 
-							new VncKeyword(VncVal.TYPE)));
-	}
-	
-	@Override
-	public VncSortedSet add(final VncVal val) {
-		return new VncSortedSet(value.add(val), getMeta());
-	}
-	
-	@Override
-	public VncSortedSet addAll(final VncSet val) {
-		return new VncSortedSet(value.addAll(val), getMeta());
-	}
-	
-	@Override
-	public VncSortedSet addAll(final VncSequence val) {
-		return new VncSortedSet(value.addAll(val), getMeta());
-	}
+    public static VncSortedSet ofAll(final VncSequence val) {
+        return new VncSortedSet(io.vavr.collection.TreeSet.ofAll(val));
+    }
 
-	@Override
-	public VncSortedSet remove(final VncVal val) {
-		return new VncSortedSet(value.remove(val), getMeta());
-	}
+    public static VncSortedSet of(final VncVal... mvs) {
+        return new VncSortedSet(io.vavr.collection.TreeSet.of(mvs));
+    }
 
-	@Override
-	public VncSortedSet removeAll(final VncSet val) {
-		return new VncSortedSet(value.removeAll(val), getMeta());
-	}
 
-	@Override
-	public VncSortedSet removeAll(final VncSequence val) {
-		return new VncSortedSet(value.removeAll(val), getMeta());
-	}
-	
-	@Override
-	public boolean contains(final VncVal val) {
-		return value.contains(val);
-	}
+    @Override
+    public VncSortedSet emptyWithMeta() {
+        return new VncSortedSet(getMeta());
+    }
+
+    @Override
+    public VncSortedSet withValues(final Collection<? extends VncVal> replaceVals) {
+        return new VncSortedSet(io.vavr.collection.TreeSet.ofAll(replaceVals), getMeta());
+    }
+
+    @Override
+    public VncSortedSet withValues(final Collection<? extends VncVal> replaceVals, final VncVal meta) {
+        return new VncSortedSet(io.vavr.collection.TreeSet.ofAll(replaceVals), meta);
+    }
+
+    @Override
+    public VncSortedSet withMeta(final VncVal meta) {
+        return new VncSortedSet(value, meta);
+    }
+
+    @Override
+    public VncKeyword getType() {
+        return new VncKeyword(
+                        TYPE,
+                        MetaUtil.typeMeta(
+                            new VncKeyword(VncSet.TYPE),
+                            new VncKeyword(VncCollection.TYPE),
+                            new VncKeyword(VncVal.TYPE)));
+    }
+
+    @Override
+    public VncSortedSet add(final VncVal val) {
+        return new VncSortedSet(value.add(val), getMeta());
+    }
+
+    @Override
+    public VncSortedSet addAll(final VncSet val) {
+        return new VncSortedSet(value.addAll(val), getMeta());
+    }
+
+    @Override
+    public VncSortedSet addAll(final VncSequence val) {
+        return new VncSortedSet(value.addAll(val), getMeta());
+    }
+
+    @Override
+    public VncSortedSet remove(final VncVal val) {
+        return new VncSortedSet(value.remove(val), getMeta());
+    }
+
+    @Override
+    public VncSortedSet removeAll(final VncSet val) {
+        return new VncSortedSet(value.removeAll(val), getMeta());
+    }
+
+    @Override
+    public VncSortedSet removeAll(final VncSequence val) {
+        return new VncSortedSet(value.removeAll(val), getMeta());
+    }
+
+    @Override
+    public boolean contains(final VncVal val) {
+        return value.contains(val);
+    }
 
     @Override
     public Iterator<VncVal> iterator() {
@@ -150,91 +150,91 @@ public class VncSortedSet extends VncSet {
     }
 
     @Override
-	public Stream<VncVal> stream() {
-		return value.toJavaStream();
-	}
+    public Stream<VncVal> stream() {
+        return value.toJavaStream();
+    }
 
-	@Override
-	public Set<VncVal> getJavaSet() { 
-		return Collections.unmodifiableSet(value.toJavaSet()); 
-	}
+    @Override
+    public Set<VncVal> getJavaSet() {
+        return Collections.unmodifiableSet(value.toJavaSet());
+    }
 
-	@Override
-	public List<VncVal> getJavaList() { 
-		return Collections.unmodifiableList(value.toJavaList()); 
-	}
-	
-	@Override
-	public VncList toVncList() {
-		return new VncList(value.toVector(), getMeta());
-	}
+    @Override
+    public List<VncVal> getJavaList() {
+        return Collections.unmodifiableList(value.toJavaList());
+    }
 
-	@Override
-	public VncVector toVncVector() {
-		return new VncVector(value.toVector(), getMeta());
-	}
-	
-	@Override
-	public int size() {
-		return value.size();
-	}
-	
-	@Override
-	public boolean isEmpty() {
-		return value.isEmpty();
-	}
-	
-	@Override public TypeRank typeRank() {
-		return TypeRank.SORTEDSET;
-	}
-	
-	@Override
-	public int compareTo(final VncVal o) {
-		if (o == Constants.Nil) {
-			return 1;
-		}
-		else if (Types.isVncSortedSet(o)) {
-			int c = Integer.compare(size(), ((VncSortedSet)o).size());
-			if (c != 0) {
-				return c;
-			}
-			else {
-				return equals(o) ? 0 : -1;
-			}
-		}
+    @Override
+    public VncList toVncList() {
+        return new VncList(value.toVector(), getMeta());
+    }
 
-		return super.compareTo(o);
-	}
-	
-	@Override
-	public int hashCode() {
-		return value.hashCode();
-	}
+    @Override
+    public VncVector toVncVector() {
+        return new VncVector(value.toVector(), getMeta());
+    }
 
-	@Override
-	public boolean equals(Object obj) {
-		if (this == obj)
-			return true;
-		if (getClass() != obj.getClass())
-			return false;
-		VncSortedSet other = (VncSortedSet) obj;
-		return value.equals(other.value);
-	}
+    @Override
+    public int size() {
+        return value.size();
+    }
 
-	@Override 
-	public String toString() {
-		return toString(true);
-	}
-	
-	@Override
-	public String toString(final boolean print_machine_readably) {
-		return "#{" + Printer.join(toVncList(), " ", print_machine_readably) + "}";
-	}
+    @Override
+    public boolean isEmpty() {
+        return value.isEmpty();
+    }
+
+    @Override public TypeRank typeRank() {
+        return TypeRank.SORTEDSET;
+    }
+
+    @Override
+    public int compareTo(final VncVal o) {
+        if (o == Constants.Nil) {
+            return 1;
+        }
+        else if (Types.isVncSortedSet(o)) {
+            int c = Integer.compare(size(), ((VncSortedSet)o).size());
+            if (c != 0) {
+                return c;
+            }
+            else {
+                return equals(o) ? 0 : -1;
+            }
+        }
+
+        return super.compareTo(o);
+    }
+
+    @Override
+    public int hashCode() {
+        return value.hashCode();
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (this == obj)
+            return true;
+        if (getClass() != obj.getClass())
+            return false;
+        VncSortedSet other = (VncSortedSet) obj;
+        return value.equals(other.value);
+    }
+
+    @Override
+    public String toString() {
+        return toString(true);
+    }
+
+    @Override
+    public String toString(final boolean print_machine_readably) {
+        return "#{" + Printer.join(toVncList(), " ", print_machine_readably) + "}";
+    }
 
 
-	public static final String TYPE = ":core/sorted-set";
+    public static final String TYPE = ":core/sorted-set";
 
     private static final long serialVersionUID = -1848883965231344442L;
 
-	private final io.vavr.collection.TreeSet<VncVal> value;	
+    private final io.vavr.collection.TreeSet<VncVal> value;
 }

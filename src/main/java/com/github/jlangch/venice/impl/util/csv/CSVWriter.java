@@ -1,5 +1,5 @@
 /*   __    __         _
- *   \ \  / /__ _ __ (_) ___ ___ 
+ *   \ \  / /__ _ __ (_) ___ ___
  *    \ \/ / _ \ '_ \| |/ __/ _ \
  *     \  /  __/ | | | | (_|  __/
  *      \/ \___|_| |_|_|\___\___|
@@ -34,124 +34,124 @@ import com.github.jlangch.venice.impl.types.util.Types;
 
 public class CSVWriter {
 
-	public CSVWriter() {
-		this(',', '"', "\n");
-	}
+    public CSVWriter() {
+        this(',', '"', "\n");
+    }
 
-	public CSVWriter(final char separator, final char quote, final String newline) {
-		this.separator = String.valueOf(separator);
-		this.quote = String.valueOf(quote);
-		this.newline = newline == null ? "\n" : newline;
-	}
-	
-	
-	public void write(final Writer writer, final List<List<String>> data) {
-		try {
-			boolean first = true;
-			for(List<String> record : data) {
-				if (!first) {
-					writer.write(newline);
-				}
-	
-				writeRecord(writer, record);
-				
-				first = false;
-			}
-		}
-		catch(IOException ex) {
-			throw new RuntimeException(ex);
-		}
-	}
+    public CSVWriter(final char separator, final char quote, final String newline) {
+        this.separator = String.valueOf(separator);
+        this.quote = String.valueOf(quote);
+        this.newline = newline == null ? "\n" : newline;
+    }
 
-	public void write(final Writer writer, final VncSequence data) {
-		try {
-			boolean first = true;
-			for(VncVal record : data) {
-				if (!first) {
-					writer.write(newline);
-				}
-	
-				if (Types.isVncSequence(record)) {
-					writeRecord(writer, (VncSequence)record);
-				}
-				else {
-					throw new VncException("CSV data records must be of type VncSequence");
-				}
-				
-				first = false;
-			}
-		}
-		catch(IOException ex) {
-			throw new RuntimeException(ex);
-		}
-	}
 
-	private void writeRecord(final Writer writer, final List<String> record) throws IOException {
-		boolean first = true;
-		for(String s : record) {
-			if (!first) {
-				writer.write(separator);
-			}
-			
-			if (s != null) {
-				writer.write(quote(s));
-			}
-			
-			first = false;
-		}
-	}
+    public void write(final Writer writer, final List<List<String>> data) {
+        try {
+            boolean first = true;
+            for(List<String> record : data) {
+                if (!first) {
+                    writer.write(newline);
+                }
 
-	private void writeRecord(final Writer writer, VncSequence record) throws IOException {
-		boolean first = true;
-		for(VncVal v : record) {
-			if (!first) {
-				writer.write(separator);
-			}
-			
-			if (v != Constants.Nil) {
-				writer.write(quote(v.toString()));
-			}
-			
-			first = false;
-		}
-	}
+                writeRecord(writer, record);
 
-	private String escape(final String s) {
-		final StringBuilder sb = new StringBuilder();
-		
-		int pos = s.indexOf(quote);
-		if (pos < 0) {
-			return s;
-		}
-		else {
-			int curr = 0;			
-			while(curr < s.length()) {
-				if (pos >= 0) {
-					sb.append(s.substring(curr, pos+1));
-					sb.append(quote);
-					curr = pos + 1;
-				}
-				else {
-					sb.append(s.substring(pos));
-					break;
-				}
-				pos = s.indexOf(quote, curr);
-			}			
-			return sb.toString();			
-		}
-	}
+                first = false;
+            }
+        }
+        catch(IOException ex) {
+            throw new RuntimeException(ex);
+        }
+    }
 
-	private String quote(final String s) {
-		return needsQuote(s) ? quote + escape(s) + quote : s;
-	}
+    public void write(final Writer writer, final VncSequence data) {
+        try {
+            boolean first = true;
+            for(VncVal record : data) {
+                if (!first) {
+                    writer.write(newline);
+                }
 
-	private boolean needsQuote(final String s) {
-		return s != null && (s.contains(" ") || s.contains(quote) || s.contains(separator));
-	}
-	
-	
+                if (Types.isVncSequence(record)) {
+                    writeRecord(writer, (VncSequence)record);
+                }
+                else {
+                    throw new VncException("CSV data records must be of type VncSequence");
+                }
 
-	private final String separator;
-	private final String quote;
-	private final String newline;
+                first = false;
+            }
+        }
+        catch(IOException ex) {
+            throw new RuntimeException(ex);
+        }
+    }
+
+    private void writeRecord(final Writer writer, final List<String> record) throws IOException {
+        boolean first = true;
+        for(String s : record) {
+            if (!first) {
+                writer.write(separator);
+            }
+
+            if (s != null) {
+                writer.write(quote(s));
+            }
+
+            first = false;
+        }
+    }
+
+    private void writeRecord(final Writer writer, VncSequence record) throws IOException {
+        boolean first = true;
+        for(VncVal v : record) {
+            if (!first) {
+                writer.write(separator);
+            }
+
+            if (v != Constants.Nil) {
+                writer.write(quote(v.toString()));
+            }
+
+            first = false;
+        }
+    }
+
+    private String escape(final String s) {
+        final StringBuilder sb = new StringBuilder();
+
+        int pos = s.indexOf(quote);
+        if (pos < 0) {
+            return s;
+        }
+        else {
+            int curr = 0;
+            while(curr < s.length()) {
+                if (pos >= 0) {
+                    sb.append(s.substring(curr, pos+1));
+                    sb.append(quote);
+                    curr = pos + 1;
+                }
+                else {
+                    sb.append(s.substring(pos));
+                    break;
+                }
+                pos = s.indexOf(quote, curr);
+            }
+            return sb.toString();
+        }
+    }
+
+    private String quote(final String s) {
+        return needsQuote(s) ? quote + escape(s) + quote : s;
+    }
+
+    private boolean needsQuote(final String s) {
+        return s != null && (s.contains(" ") || s.contains(quote) || s.contains(separator));
+    }
+
+
+
+    private final String separator;
+    private final String quote;
+    private final String newline;
 }

@@ -1,5 +1,5 @@
 /*   __    __         _
- *   \ \  / /__ _ __ (_) ___ ___ 
+ *   \ \  / /__ _ __ (_) ___ ___
  *    \ \/ / _ \ '_ \| |/ __/ _ \
  *     \  /  __/ | | | | (_|  __/
  *      \/ \___|_| |_|_|\___\___|
@@ -31,99 +31,99 @@ import com.github.jlangch.venice.util.StackFrame;
 
 public class CallFrame {
 
-	public CallFrame(final VncFunction fn) {
-		this.fnName = fn.getQualifiedName();
-		this.args = null;
-		this.meta = fn.getMeta();
-		this.env = null;
-	}
-	
-	public CallFrame(final VncFunction fn, final VncList args) {
-		this.fnName = fn.getQualifiedName();
-		this.args = args;
-		this.meta = fn.getMeta();
-		this.env = null;
-	}
-	
-	public CallFrame(final String fnName, final VncVal meta) {
-		this.fnName = fnName;
-		this.args = null;
-		this.meta = meta;
-		this.env = null;
-	}
-	
-	public CallFrame(final String fnName, final VncList args, final VncVal meta) {
-		this.fnName = fnName;
-		this.args = args;
-		this.meta = meta;
-		this.env = null;
-	}
-		
-	public CallFrame(final String fnName, final VncList args, final VncVal meta, final Env env) {
-		this.fnName = fnName;
-		this.args = args;
-		this.meta = meta;
-		this.env = env;
-	}
+    public CallFrame(final VncFunction fn) {
+        this.fnName = fn.getQualifiedName();
+        this.args = null;
+        this.meta = fn.getMeta();
+        this.env = null;
+    }
 
-	public static CallFrame from(final VncSymbol sym) {
-		return new CallFrame(sym.getQualifiedName(), sym.getMeta());
-	}
+    public CallFrame(final VncFunction fn, final VncList args) {
+        this.fnName = fn.getQualifiedName();
+        this.args = args;
+        this.meta = fn.getMeta();
+        this.env = null;
+    }
 
-	
-	public String getFnName() {
-		return fnName;
-	}
+    public CallFrame(final String fnName, final VncVal meta) {
+        this.fnName = fnName;
+        this.args = null;
+        this.meta = meta;
+        this.env = null;
+    }
 
-	public VncList getArgs() {
-		return args;
-	}
+    public CallFrame(final String fnName, final VncList args, final VncVal meta) {
+        this.fnName = fnName;
+        this.args = args;
+        this.meta = meta;
+        this.env = null;
+    }
 
-	public Env getEnv() {
-		return env;
-	}
-	
-	public boolean hasFnName(final String fnName) {
-		return this.fnName.equals(fnName);
-	}
-	
-	public String getFile() {
-		// Accessing meta data is expensive so its delayed until the data
-		// is needed. Creating a CallFrame must be as fast as possible.
-		final String file = MetaUtil.getFile(meta);
-		return file == null || file.isEmpty() ? "unknown" : file;
-	}
-	
-	public int getLine() {
-		// Accessing meta data is expensive so its delayed until the data
-		// is needed. Creating a CallFrame must be as fast as possible.
-		return MetaUtil.getLine(meta);		
-	}
-	
-	public int getCol() {
-		// Accessing meta data is expensive so its delayed until the data
-		// is needed. Creating a CallFrame must be as fast as possible.
-		return MetaUtil.getCol(meta);		
-	}
-	
-	public StackFrame toStackFrame() {
-		return new StackFrame(getFnName(), getFile(), getLine(), getCol());
-	}
-	
-	public String getSourcePosInfo() {
-		return String.format("%s: line %d, col %d", getFile(), getLine(), getCol());
-	}
+    public CallFrame(final String fnName, final VncList args, final VncVal meta, final Env env) {
+        this.fnName = fnName;
+        this.args = args;
+        this.meta = meta;
+        this.env = env;
+    }
 
-	@Override
-	public String toString() {
-		return fnName == null
-				? getSourcePosInfo()
-				: String.format("%s (%s)", fnName, getSourcePosInfo());
-	}
+    public static CallFrame from(final VncSymbol sym) {
+        return new CallFrame(sym.getQualifiedName(), sym.getMeta());
+    }
 
-	
-	private final String fnName;
-	private final VncList args;
-	private final VncVal meta;
-	private final Env env;
+
+    public String getFnName() {
+        return fnName;
+    }
+
+    public VncList getArgs() {
+        return args;
+    }
+
+    public Env getEnv() {
+        return env;
+    }
+
+    public boolean hasFnName(final String fnName) {
+        return this.fnName.equals(fnName);
+    }
+
+    public String getFile() {
+        // Accessing meta data is expensive so its delayed until the data
+        // is needed. Creating a CallFrame must be as fast as possible.
+        final String file = MetaUtil.getFile(meta);
+        return file == null || file.isEmpty() ? "unknown" : file;
+    }
+
+    public int getLine() {
+        // Accessing meta data is expensive so its delayed until the data
+        // is needed. Creating a CallFrame must be as fast as possible.
+        return MetaUtil.getLine(meta);
+    }
+
+    public int getCol() {
+        // Accessing meta data is expensive so its delayed until the data
+        // is needed. Creating a CallFrame must be as fast as possible.
+        return MetaUtil.getCol(meta);
+    }
+
+    public StackFrame toStackFrame() {
+        return new StackFrame(getFnName(), getFile(), getLine(), getCol());
+    }
+
+    public String getSourcePosInfo() {
+        return String.format("%s: line %d, col %d", getFile(), getLine(), getCol());
+    }
+
+    @Override
+    public String toString() {
+        return fnName == null
+                ? getSourcePosInfo()
+                : String.format("%s (%s)", fnName, getSourcePosInfo());
+    }
+
+
+    private final String fnName;
+    private final VncList args;
+    private final VncVal meta;
+    private final Env env;
 }

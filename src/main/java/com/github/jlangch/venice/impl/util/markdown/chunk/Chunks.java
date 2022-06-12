@@ -1,5 +1,5 @@
 /*   __    __         _
- *   \ \  / /__ _ __ (_) ___ ___ 
+ *   \ \  / /__ _ __ (_) ___ ___
  *    \ \/ / _ \ '_ \| |/ __/ _ \
  *     \  /  __/ | | | | (_|  __/
  *      \/ \___|_| |_|_|\___\___|
@@ -27,42 +27,42 @@ import java.util.List;
 
 public class Chunks {
 
-	public Chunks() {
-	}
-	
-	public Chunks add(final Chunk chunk) {
-		if (chunk != null && !chunk.isEmpty()) {
-			chunks.add(chunk);
-		}
-		return this;
-	}
+    public Chunks() {
+    }
 
-	public Chunks add(final Chunks chunks) {
-		if (chunks != null ) {
-			for(Chunk c : chunks.getChunks()) {
-				if (!c.isEmpty()) this.chunks.add(c);
-			}
-		}
-		
-		return this;
-	}
-	
-	public boolean isEmpty() {
-		return chunks.isEmpty();
-	}
-	
-	public int size() {
-		return chunks.size();
-	}
-	
-	public List<Chunk> getChunks() {
-		return chunks;
-	}
-	
-	public Chunk get(final int index) {
-		return chunks.get(index);
-	}
+    public Chunks add(final Chunk chunk) {
+        if (chunk != null && !chunk.isEmpty()) {
+            chunks.add(chunk);
+        }
+        return this;
+    }
+
+    public Chunks add(final Chunks chunks) {
+        if (chunks != null ) {
+            for(Chunk c : chunks.getChunks()) {
+                if (!c.isEmpty()) this.chunks.add(c);
+            }
+        }
+
+        return this;
+    }
+
+    public boolean isEmpty() {
+        return chunks.isEmpty();
+    }
+
+    public int size() {
+        return chunks.size();
+    }
+
+    public List<Chunk> getChunks() {
+        return chunks;
+    }
+
+    public Chunk get(final int index) {
+        return chunks.get(index);
+    }
 
 
-	private final List<Chunk> chunks = new ArrayList<>();
+    private final List<Chunk> chunks = new ArrayList<>();
 }

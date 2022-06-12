@@ -1,5 +1,5 @@
 /*   __    __         _
- *   \ \  / /__ _ __ (_) ___ ___ 
+ *   \ \  / /__ _ __ (_) ___ ___
  *    \ \/ / _ \ '_ \| |/ __/ _ \
  *     \  /  __/ | | | | (_|  __/
  *      \/ \___|_| |_|_|\___\___|
@@ -31,24 +31,24 @@ import com.github.jlangch.venice.impl.types.collections.VncList;
 
 public class Watchable {
 
-	public void addWatch(final VncKeyword name, final VncFunction fn) {
-		watches.put(name, fn);
-	}
-	
-	public void removeWatch(final VncKeyword name) {
-		watches.remove(name);
-	}
+    public void addWatch(final VncKeyword name, final VncFunction fn) {
+        watches.put(name, fn);
+    }
 
-	public void notifyWatches(final VncVal ref, final VncVal oldVal, final VncVal newVal) {
-		watches.entrySet().forEach(e -> {
-			try {
-				e.getValue().apply(VncList.of(e.getKey(), ref, oldVal, newVal));
-			}
-			catch(RuntimeException ex) { 
-				/* just skip */ 
-			}
-		});
-	}
-	
-	private final ConcurrentHashMap<VncKeyword,VncFunction> watches = new ConcurrentHashMap<>(); 
+    public void removeWatch(final VncKeyword name) {
+        watches.remove(name);
+    }
+
+    public void notifyWatches(final VncVal ref, final VncVal oldVal, final VncVal newVal) {
+        watches.entrySet().forEach(e -> {
+            try {
+                e.getValue().apply(VncList.of(e.getKey(), ref, oldVal, newVal));
+            }
+            catch(RuntimeException ex) {
+                /* just skip */
+            }
+        });
+    }
+
+    private final ConcurrentHashMap<VncKeyword,VncFunction> watches = new ConcurrentHashMap<>();
 }

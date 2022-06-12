@@ -1,5 +1,5 @@
 /*   __    __         _
- *   \ \  / /__ _ __ (_) ___ ___ 
+ *   \ \  / /__ _ __ (_) ___ ___
  *    \ \/ / _ \ '_ \| |/ __/ _ \
  *     \  /  __/ | | | | (_|  __/
  *      \/ \___|_| |_|_|\___\___|
@@ -30,24 +30,24 @@ import org.apache.poi.hssf.util.HSSFColor.HSSFColorPredefined;
 
 public class ColorUtil {
 
-	public static HSSFColor bestHSSFColor(final HSSFWorkbook wb, final Color color) {
-		final HSSFPalette palette = wb.getCustomPalette();
-		final HSSFColor hssfColor = palette.findColor(
-										(byte)color.getRed(), 
-										(byte)color.getGreen(), 
-										(byte)color.getBlue());
-		if (hssfColor != null) {
-			return hssfColor;
-		}
-		else {
-			final HSSFColor hssfColor2 = palette.findSimilarColor(
-											(byte)color.getRed(), 
-											(byte)color.getGreen(), 
-											(byte)color.getBlue());
-			
-			return hssfColor2 != null ? hssfColor2 : HSSFColorPredefined.AUTOMATIC.getColor();
-		}
+    public static HSSFColor bestHSSFColor(final HSSFWorkbook wb, final Color color) {
+        final HSSFPalette palette = wb.getCustomPalette();
+        final HSSFColor hssfColor = palette.findColor(
+                                        (byte)color.getRed(),
+                                        (byte)color.getGreen(),
+                                        (byte)color.getBlue());
+        if (hssfColor != null) {
+            return hssfColor;
+        }
+        else {
+            final HSSFColor hssfColor2 = palette.findSimilarColor(
+                                            (byte)color.getRed(),
+                                            (byte)color.getGreen(),
+                                            (byte)color.getBlue());
 
-	}
+            return hssfColor2 != null ? hssfColor2 : HSSFColorPredefined.AUTOMATIC.getColor();
+        }
+
+    }
 
 }

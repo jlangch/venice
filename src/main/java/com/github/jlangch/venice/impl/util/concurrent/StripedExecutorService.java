@@ -18,7 +18,7 @@
 
 /*
  * https://github.com/kabutz/javaspecialists/tree/master/src/main/java/eu/javaspecialists/tjsn/concurrency/stripedexecutor
- * 
+ *
  * Modified to fit Venice's needs.
  */
 
@@ -71,7 +71,7 @@ public class StripedExecutorService extends AbstractExecutorService {
 
     /**
      * The lock prevents shutdown from being called in the middle
-     * of a submit.  It also guards the executors IdentityHashMap.
+     * of a submit. It also guards the executors IdentityHashMap.
      */
     private final ReentrantLock lock = new ReentrantLock();
 
@@ -83,7 +83,7 @@ public class StripedExecutorService extends AbstractExecutorService {
 
     /**
      * Whenever a new StripedObject is submitted to the pool, it
-     * is added to this IdentityHashMap.  As soon as the
+     * is added to this IdentityHashMap. As soon as the
      * SerialExecutor is empty, the entry is removed from the map,
      * in order to avoid a memory leak.
      */
@@ -92,9 +92,9 @@ public class StripedExecutorService extends AbstractExecutorService {
 
     /**
      * The default submit() method creates a new FutureTask and
-     * wraps our StripedRunnable with it.  We thus need to
-     * remember the stripe object somewhere.  In our case, we will
-     * do this inside the ThreadLocal "stripes".  Before the
+     * wraps our StripedRunnable with it. We thus need to
+     * remember the stripe object somewhere. In our case, we will
+     * do this inside the ThreadLocal "stripes". Before the
      * thread returns from submitting the runnable, it will always
      * remove the thread local entry.
      */
@@ -140,56 +140,57 @@ public class StripedExecutorService extends AbstractExecutorService {
         this(Executors.newFixedThreadPool(numberOfThreads));
     }
 
-    
-	public int getCoreThreadPoolSize() {
-		return executor instanceof ThreadPoolExecutor 
-				? ((ThreadPoolExecutor)executor).getCorePoolSize()
-				: 0;
-	}
-	
-	public int getMaximumThreadPoolSize() {
-		return executor instanceof ThreadPoolExecutor 
-				? ((ThreadPoolExecutor)executor).getMaximumPoolSize()
-				: 0;
-	}
-	
-	public int getLargestThreadPoolSize() {
-		return executor instanceof ThreadPoolExecutor 
-				? ((ThreadPoolExecutor)executor).getLargestPoolSize()
-				: 0;
-	}
-	
-	public int getThreadPoolSize() {
-		return executor instanceof ThreadPoolExecutor 
-				? ((ThreadPoolExecutor)executor).getPoolSize()
-				: 0;
-	}
-	
-	public int getActiveThreadCount() {
-		return executor instanceof ThreadPoolExecutor 
-				? ((ThreadPoolExecutor)executor).getActiveCount()
-				: 0;
-	}
-	
-	public long getScheduledTaskCount() {
-		return executor instanceof ThreadPoolExecutor 
-				? ((ThreadPoolExecutor)executor).getTaskCount()
-				: 0;
-	}
-	
-	public long getCompletedTaskCount() {
-		return executor instanceof ThreadPoolExecutor 
-				? ((ThreadPoolExecutor)executor).getCompletedTaskCount()
-				: 0;
-	}
-    
-    
-    
+
+    public int getCoreThreadPoolSize() {
+        return executor instanceof ThreadPoolExecutor
+                ? ((ThreadPoolExecutor)executor).getCorePoolSize()
+                : 0;
+    }
+
+    public int getMaximumThreadPoolSize() {
+        return executor instanceof ThreadPoolExecutor
+                ? ((ThreadPoolExecutor)executor).getMaximumPoolSize()
+                : 0;
+    }
+
+    public int getLargestThreadPoolSize() {
+        return executor instanceof ThreadPoolExecutor
+                ? ((ThreadPoolExecutor)executor).getLargestPoolSize()
+                : 0;
+    }
+
+    public int getThreadPoolSize() {
+        return executor instanceof ThreadPoolExecutor
+                ? ((ThreadPoolExecutor)executor).getPoolSize()
+                : 0;
+    }
+
+    public int getActiveThreadCount() {
+        return executor instanceof ThreadPoolExecutor
+                ? ((ThreadPoolExecutor)executor).getActiveCount()
+                : 0;
+    }
+
+    public long getScheduledTaskCount() {
+        return executor instanceof ThreadPoolExecutor
+                ? ((ThreadPoolExecutor)executor).getTaskCount()
+                : 0;
+    }
+
+    public long getCompletedTaskCount() {
+        return executor instanceof ThreadPoolExecutor
+                ? ((ThreadPoolExecutor)executor).getCompletedTaskCount()
+                : 0;
+    }
+
+
+
     /**
      * If the runnable also implements StripedObject, we store the
      * stripe object in a thread local, since the actual runnable
      * will be wrapped with a FutureTask.
      */
+    @Override
     protected <T> RunnableFuture<T> newTaskFor(Runnable runnable, T value) {
         saveStripedObject(runnable);
         return super.newTaskFor(runnable, value);
@@ -200,6 +201,7 @@ public class StripedExecutorService extends AbstractExecutorService {
      * stripe object in a thread local, since the actual callable
      * will be wrapped with a FutureTask.
      */
+    @Override
     protected <T> RunnableFuture<T> newTaskFor(Callable<T> callable) {
         saveStripedObject(callable);
         return super.newTaskFor(callable);
@@ -226,6 +228,7 @@ public class StripedExecutorService extends AbstractExecutorService {
     /**
      * Delegates the call to submit(task, null).
      */
+    @Override
     public Future<?> submit(Runnable task) {
         return submit(task, null);
     }
@@ -236,6 +239,7 @@ public class StripedExecutorService extends AbstractExecutorService {
      * executor.  If the pool is not running, we throw a
      * RejectedExecutionException.
      */
+    @Override
     public <T> Future<T> submit(Runnable task, T result) {
         lock.lock();
         try {
@@ -256,6 +260,7 @@ public class StripedExecutorService extends AbstractExecutorService {
      * executor.  If the pool is not running, we throw a
      * RejectedExecutionException.
      */
+    @Override
     public <T> Future<T> submit(Callable<T> task) {
         lock.lock();
         try {
@@ -293,6 +298,7 @@ public class StripedExecutorService extends AbstractExecutorService {
      * StripedObject is set, we instead pass the command to the
      * wrapped ExecutorService directly.
      */
+    @Override
     public void execute(Runnable command) {
         lock.lock();
         try {
@@ -334,6 +340,7 @@ public class StripedExecutorService extends AbstractExecutorService {
      * be submitted.  If the map of SerialExecutors is empty, we
      * shut down the wrapped executor.
      */
+    @Override
     public void shutdown() {
         lock.lock();
         try {
@@ -352,6 +359,7 @@ public class StripedExecutorService extends AbstractExecutorService {
      * ExecutorService.  This is then returned to the user.  Also,
      * the shutdownNow method of the wrapped executor is called.
      */
+    @Override
     public List<Runnable> shutdownNow() {
         lock.lock();
         try {
@@ -371,6 +379,7 @@ public class StripedExecutorService extends AbstractExecutorService {
      * Returns true if shutdown() or shutdownNow() have been
      * called; false otherwise.
      */
+    @Override
     public boolean isShutdown() {
         lock.lock();
         try {
@@ -385,6 +394,7 @@ public class StripedExecutorService extends AbstractExecutorService {
      * the SerialExecutors are empty and the wrapped
      * ExecutorService has been terminated.
      */
+    @Override
     public boolean isTerminated() {
         lock.lock();
         try {
@@ -402,6 +412,7 @@ public class StripedExecutorService extends AbstractExecutorService {
      * Returns true if the wrapped ExecutorService terminates
      * within the allotted amount of time.
      */
+    @Override
     public boolean awaitTermination(long timeout, TimeUnit unit)
             throws InterruptedException {
         lock.lock();
@@ -413,7 +424,7 @@ public class StripedExecutorService extends AbstractExecutorService {
                 terminating.awaitNanos(remainingTime);
             }
             if (remainingTime <= 0) {
-            	return false;
+                return false;
             }
             if (executors.isEmpty()) {
                 return executor.awaitTermination(
@@ -448,6 +459,7 @@ public class StripedExecutorService extends AbstractExecutorService {
      * Prints information about current state of this executor, the
      * wrapped executor and the serial executors.
      */
+    @Override
     public String toString() {
         lock.lock();
         try {
@@ -506,10 +518,12 @@ public class StripedExecutorService extends AbstractExecutorService {
          * the queue of tasks that will run the current task and
          * then schedule the next task in the queue.
          */
+        @Override
         public void execute(final Runnable r) {
             lock.lock();
             try {
                 tasks.add(new Runnable() {
+                    @Override
                     public void run() {
                         try {
                             r.run();
@@ -558,6 +572,7 @@ public class StripedExecutorService extends AbstractExecutorService {
             }
         }
 
+        @Override
         public String toString() {
             assert lock.isHeldByCurrentThread();
             return "SerialExecutor: active=" + active + ", " +

@@ -42,12 +42,12 @@ import com.github.jlangch.venice.impl.types.VncSymbol;
 // Run on a 2017 MacBook Pro (Mac OSX, Core i7 2.8 GHz).
 // Venice 1.10.16, Java 8
 //
-// Benchmark                   Mode  Cnt   Score   Error  Units
-// EnvGlobalBenchmark.env_001  avgt    3  56.815 ± 2.867  ns/op
-// EnvGlobalBenchmark.env_002  avgt    3  52.481 ± 1.535  ns/op
-// EnvGlobalBenchmark.env_010  avgt    3  55.123 ± 1.425  ns/op
-// EnvGlobalBenchmark.env_020  avgt    3  57.287 ± 2.726  ns/op
-// EnvGlobalBenchmark.env_100  avgt    3  57.453 ± 5.869  ns/op
+// Benchmark                            Mode  Cnt   Score   Error  Units
+// EnvGlobalQualifiedBenchmark.env_001  avgt    3  13.232 ± 1.852  ns/op
+// EnvGlobalQualifiedBenchmark.env_002  avgt    3  14.403 ± 1.127  ns/op
+// EnvGlobalQualifiedBenchmark.env_010  avgt    3  13.270 ± 0.282  ns/op
+// EnvGlobalQualifiedBenchmark.env_020  avgt    3  13.215 ± 2.566  ns/op
+// EnvGlobalQualifiedBenchmark.env_100  avgt    3  14.119 ± 2.534  ns/op
 
 
 @Warmup(iterations=3, time=3, timeUnit=TimeUnit.SECONDS)
@@ -57,9 +57,9 @@ import com.github.jlangch.venice.impl.types.VncSymbol;
 @OutputTimeUnit (TimeUnit.NANOSECONDS)
 @State (Scope.Benchmark)
 @Threads (1)
-public class EnvGlobalBenchmark {
+public class EnvGlobalQualifiedBenchmark {
 
-    public EnvGlobalBenchmark() {
+    public EnvGlobalQualifiedBenchmark() {
         env_level_1 = createEnv(1);
         env_level_2 = createEnv(2);
         env_level_10 = createEnv(10);
@@ -111,7 +111,7 @@ public class EnvGlobalBenchmark {
     }
 
 
-    private static VncSymbol GLOBAL_SYMBOL = new VncSymbol("global");
+    private static VncSymbol GLOBAL_SYMBOL = new VncSymbol("test/global");
 
     private final Env env_level_1;
     private final Env env_level_2;

@@ -24,13 +24,13 @@ package com.github.jlangch.venice.nanojson;
  * Thrown when {@link JsonWriter} is used to write invalid JSON.
  */
 public class JsonWriterException extends RuntimeException {
-	private static final long serialVersionUID = 1L;
+    private static final long serialVersionUID = 1L;
 
-	JsonWriterException(String message) {
-		super(message);
-	}
+    JsonWriterException(String message) {
+        super(message);
+    }
 
-	JsonWriterException(Throwable t) {
-		super(t);
-	}
+    JsonWriterException(Throwable t) {
+        super(t);
+    }
 }

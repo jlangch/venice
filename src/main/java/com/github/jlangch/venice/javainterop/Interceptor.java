@@ -1,5 +1,5 @@
 /*   __    __         _
- *   \ \  / /__ _ __ (_) ___ ___ 
+ *   \ \  / /__ _ __ (_) ___ ___
  *    \ \/ / _ \ '_ \| |/ __/ _ \
  *     \  /  __/ | | | | (_|  __/
  *      \/ \___|_| |_|_|\___\___|
@@ -29,152 +29,152 @@ import com.github.jlangch.venice.impl.util.io.ClassPathResource;
 
 
 public abstract class Interceptor implements IInterceptor {
- 
-	public Interceptor(final ILoadPaths loadPaths) {
-		this.loadPaths = loadPaths == null 
-							? LoadPathsFactory.rejectAll() 
-							: loadPaths;
-	}
-	
-	@Override
-	public ReturnValue onInvokeInstanceMethod(
-			final IInvoker invoker, 
-			final Object receiver, 
-			final Class<?> receiverFormalType,
-			final String method, 
-			final Object... args
-	) throws SecurityException {
-		return invoker.callInstanceMethod(receiver, receiverFormalType, method, args);
-	}
 
-	@Override
-	public ReturnValue onInvokeStaticMethod(
-			final IInvoker invoker, 
-			final Class<?> receiver, 
-			final String method, 
-			final Object... args
-	) throws SecurityException {
-		return invoker.callStaticMethod(receiver, method, args);
-	}
+    public Interceptor(final ILoadPaths loadPaths) {
+        this.loadPaths = loadPaths == null
+                            ? LoadPathsFactory.rejectAll()
+                            : loadPaths;
+    }
 
-	@Override
-	public ReturnValue onInvokeConstructor(
-			final IInvoker invoker, 
-			final Class<?> receiver, 
-			final Object... args
-	) throws SecurityException {
-		return invoker.callConstructor(receiver, args);
-	}
+    @Override
+    public ReturnValue onInvokeInstanceMethod(
+            final IInvoker invoker,
+            final Object receiver,
+            final Class<?> receiverFormalType,
+            final String method,
+            final Object... args
+    ) throws SecurityException {
+        return invoker.callInstanceMethod(receiver, receiverFormalType, method, args);
+    }
 
-	@Override
-	public ReturnValue onGetBeanProperty(
-			final IInvoker invoker, 
-			final Object receiver, 
-			final String property
-	) throws SecurityException {
-		return invoker.getBeanProperty(receiver, property);
-	}
+    @Override
+    public ReturnValue onInvokeStaticMethod(
+            final IInvoker invoker,
+            final Class<?> receiver,
+            final String method,
+            final Object... args
+    ) throws SecurityException {
+        return invoker.callStaticMethod(receiver, method, args);
+    }
 
-	@Override
-	public void onSetBeanProperty(
-			final IInvoker invoker, 
-			final Object receiver, 
-			final String property, 
-			final Object value
-	) throws SecurityException {
-		invoker.setBeanProperty(receiver, property, value);
-	}
+    @Override
+    public ReturnValue onInvokeConstructor(
+            final IInvoker invoker,
+            final Class<?> receiver,
+            final Object... args
+    ) throws SecurityException {
+        return invoker.callConstructor(receiver, args);
+    }
 
-	@Override
-	public ReturnValue onGetStaticField(
-			final IInvoker invoker, 
-			final Class<?> receiver, 
-			final String fieldName
-	) throws SecurityException {
-		return invoker.getStaticField(receiver, fieldName);
-	}
+    @Override
+    public ReturnValue onGetBeanProperty(
+            final IInvoker invoker,
+            final Object receiver,
+            final String property
+    ) throws SecurityException {
+        return invoker.getBeanProperty(receiver, property);
+    }
 
-	@Override
-	public ReturnValue onGetInstanceField(
-			final IInvoker invoker, 
-			final Object receiver, 
-			final Class<?> receiverFormalType,
-			final String fieldName
-	) throws SecurityException {
-		return invoker.getInstanceField(receiver, receiverFormalType, fieldName);
-	}
+    @Override
+    public void onSetBeanProperty(
+            final IInvoker invoker,
+            final Object receiver,
+            final String property,
+            final Object value
+    ) throws SecurityException {
+        invoker.setBeanProperty(receiver, property, value);
+    }
 
-	@Override
-	public byte[] onLoadClassPathResource(
-			final String resourceName
-	) throws SecurityException {
-		return StringUtil.isBlank(resourceName) 
-					? null
-					: new ClassPathResource(resourceName).getResourceAsBinary();
-	}
+    @Override
+    public ReturnValue onGetStaticField(
+            final IInvoker invoker,
+            final Class<?> receiver,
+            final String fieldName
+    ) throws SecurityException {
+        return invoker.getStaticField(receiver, fieldName);
+    }
 
-	@Override
-	public String onReadSystemProperty(
-			final String propertyName
-	) throws SecurityException {
-		return StringUtil.isBlank(propertyName) 
-				? null
-				: System.getProperty(propertyName);
-	}
+    @Override
+    public ReturnValue onGetInstanceField(
+            final IInvoker invoker,
+            final Object receiver,
+            final Class<?> receiverFormalType,
+            final String fieldName
+    ) throws SecurityException {
+        return invoker.getInstanceField(receiver, receiverFormalType, fieldName);
+    }
 
-	@Override
-	public String onReadSystemEnv(
-			final String name
-	) throws SecurityException {
-		return StringUtil.isBlank(name) 
-				? null
-				: System.getenv(name);
-	}
-	
-	@Override
-	public void validateVeniceFunction(
-			final String funcName
-	) throws SecurityException {
-		// ok, no black listed Venice functions
-	}
+    @Override
+    public byte[] onLoadClassPathResource(
+            final String resourceName
+    ) throws SecurityException {
+        return StringUtil.isBlank(resourceName)
+                    ? null
+                    : new ClassPathResource(resourceName).getResourceAsBinary();
+    }
 
-	
-	@Override
-	public void validateLoadModule(
-			final String moduleName
-	) throws SecurityException {
-		// ok, no black listed Venice module
-	}
+    @Override
+    public String onReadSystemProperty(
+            final String propertyName
+    ) throws SecurityException {
+        return StringUtil.isBlank(propertyName)
+                ? null
+                : System.getProperty(propertyName);
+    }
 
-	@Override
-	public void validateFileRead(final File file) throws SecurityException {
-		// ok
-	}
-	
-	@Override
-	public void validateFileWrite(final File file) throws SecurityException {
-		// ok
-	}
+    @Override
+    public String onReadSystemEnv(
+            final String name
+    ) throws SecurityException {
+        return StringUtil.isBlank(name)
+                ? null
+                : System.getenv(name);
+    }
 
-	@Override
-	public void validateMaxExecutionTime() throws SecurityException {
-	}
+    @Override
+    public void validateVeniceFunction(
+            final String funcName
+    ) throws SecurityException {
+        // ok, no black listed Venice functions
+    }
 
-	@Override
-	public Integer getMaxExecutionTimeSeconds() {
-		return null;
-	}
 
-	@Override
-	public Integer getMaxFutureThreadPoolSize() {
-		return null;
-	}
+    @Override
+    public void validateLoadModule(
+            final String moduleName
+    ) throws SecurityException {
+        // ok, no black listed Venice module
+    }
 
-	@Override
-	public ILoadPaths getLoadPaths() {
-		return loadPaths;
-	}
+    @Override
+    public void validateFileRead(final File file) throws SecurityException {
+        // ok
+    }
 
-	
-	private final ILoadPaths loadPaths;
+    @Override
+    public void validateFileWrite(final File file) throws SecurityException {
+        // ok
+    }
+
+    @Override
+    public void validateMaxExecutionTime() throws SecurityException {
+    }
+
+    @Override
+    public Integer getMaxExecutionTimeSeconds() {
+        return null;
+    }
+
+    @Override
+    public Integer getMaxFutureThreadPoolSize() {
+        return null;
+    }
+
+    @Override
+    public ILoadPaths getLoadPaths() {
+        return loadPaths;
+    }
+
+
+    private final ILoadPaths loadPaths;
 }

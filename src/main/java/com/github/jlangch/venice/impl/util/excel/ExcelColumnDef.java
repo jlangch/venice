@@ -1,5 +1,5 @@
 /*   __    __         _
- *   \ \  / /__ _ __ (_) ___ ___ 
+ *   \ \  / /__ _ __ (_) ___ ___
  *    \ \/ / _ \ '_ \| |/ __/ _ \
  *     \  /  __/ | | | | (_|  __/
  *      \/ \___|_| |_|_|\___\___|
@@ -27,39 +27,39 @@ import com.github.jlangch.venice.impl.util.StringUtil;
 
 
 public class ExcelColumnDef<T> {
-	
-	public ExcelColumnDef(			
-			final String header,
-			final Function<? super T, ?> colMapper,
-			final Integer width,
-			final String headerStyle,
-			final String bodyStyle,
-			final String footerStyle,
-			final Object footerValue,
-			final FooterType footerType
-	) {
-		this.header = StringUtil.trimToEmpty(header);
-		this.colMapper = colMapper;
-		this.width = width;
-		this.headerStyle = headerStyle;
-		this.bodyStyle = bodyStyle;
-		this.footerStyle = footerStyle;
-		this.footerValue = footerValue;
-		this.footerType = footerType == null ? ExcelColumnDef.FooterType.NONE : footerType;
-	}
 
-	
-	public static enum FooterType {
-		NONE, NUMBER, TEXT, FORMULA, SUM, MIN, MAX, AVERAGE;
-	}
-	
-	
-	public final String header;
-	public final Function<? super T, ?> colMapper;
-	public final Integer width;
-	public final String headerStyle;
-	public final String bodyStyle;
-	public final String footerStyle;
-	public final Object footerValue;
-	public final FooterType footerType;
+    public ExcelColumnDef(
+            final String header,
+            final Function<? super T, ?> colMapper,
+            final Integer width,
+            final String headerStyle,
+            final String bodyStyle,
+            final String footerStyle,
+            final Object footerValue,
+            final FooterType footerType
+    ) {
+        this.header = StringUtil.trimToEmpty(header);
+        this.colMapper = colMapper;
+        this.width = width;
+        this.headerStyle = headerStyle;
+        this.bodyStyle = bodyStyle;
+        this.footerStyle = footerStyle;
+        this.footerValue = footerValue;
+        this.footerType = footerType == null ? ExcelColumnDef.FooterType.NONE : footerType;
+    }
+
+
+    public static enum FooterType {
+        NONE, NUMBER, TEXT, FORMULA, SUM, MIN, MAX, AVERAGE;
+    }
+
+
+    public final String header;
+    public final Function<? super T, ?> colMapper;
+    public final Integer width;
+    public final String headerStyle;
+    public final String bodyStyle;
+    public final String footerStyle;
+    public final Object footerValue;
+    public final FooterType footerType;
 }

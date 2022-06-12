@@ -1,5 +1,5 @@
 /*   __    __         _
- *   \ \  / /__ _ __ (_) ___ ___ 
+ *   \ \  / /__ _ __ (_) ___ ___
  *    \ \/ / _ \ '_ \| |/ __/ _ \
  *     \  /  __/ | | | | (_|  __/
  *      \/ \___|_| |_|_|\___\___|
@@ -52,76 +52,76 @@ import io.vavr.collection.Vector;
 @State (Scope.Benchmark)
 @Threads (1)
 public class VncTinyVectorBenchmark {
-	
-	public VncTinyVectorBenchmark() {
-	}
-	
-	
-	@Benchmark
-	public Object prepend() {
-		return vector.addAtStart(val);
-	}
-	
-	@Benchmark
-	public Object append() {
-		return vector.addAtEnd(val);
-	}
 
-	@Benchmark
-	public Object first() {
-		return vector.first();
- 	}
-	
-	@Benchmark
-	public Object last() {
-		return vector.last();
-	}
+    public VncTinyVectorBenchmark() {
+    }
 
-	@Benchmark
-	public Object rest() {
-		return vector.rest();
-	}
-	
-	@Benchmark
-	public Object butlast() {
-		return vector.butlast();
-	}
-	
-	@Benchmark
-	public Object drop_1() {
-		return vector.removeAt(0);
-	}
-	
-	@Benchmark
-	public Object map() {
-		return vector.map(v -> new VncLong(((VncLong)v).getValue() + 1));
-	}
-	
-	@Benchmark
-	public Object map_for_1() {
-		Vector<VncLong> tmp = Vector.empty();
-		for(VncVal v : vector) {
-			tmp = tmp.append(new VncLong(((VncLong)v).getValue() + 1));
-		}
-		return tmp;
-	}
-	
-	@Benchmark
-	public Object map_for_2() {
-		List<VncLong> tmp = new ArrayList<>(vector.size());
-		for(VncVal v : vector) {
-			tmp.add(new VncLong(((VncLong)v).getValue() + 1));
-		}
-		return Vector.ofAll(tmp);
-	}
 
-	
-	
-	private final VncVal val = new VncLong(0L);
-	
-									 // range 1..4
-	private final VncVector vector = VncTinyVector.of(
-										new VncLong(1),
-										new VncLong(2), 
-										new VncLong(3));
+    @Benchmark
+    public Object prepend() {
+        return vector.addAtStart(val);
+    }
+
+    @Benchmark
+    public Object append() {
+        return vector.addAtEnd(val);
+    }
+
+    @Benchmark
+    public Object first() {
+        return vector.first();
+     }
+
+    @Benchmark
+    public Object last() {
+        return vector.last();
+    }
+
+    @Benchmark
+    public Object rest() {
+        return vector.rest();
+    }
+
+    @Benchmark
+    public Object butlast() {
+        return vector.butlast();
+    }
+
+    @Benchmark
+    public Object drop_1() {
+        return vector.removeAt(0);
+    }
+
+    @Benchmark
+    public Object map() {
+        return vector.map(v -> new VncLong(((VncLong)v).getValue() + 1));
+    }
+
+    @Benchmark
+    public Object map_for_1() {
+        Vector<VncLong> tmp = Vector.empty();
+        for(VncVal v : vector) {
+            tmp = tmp.append(new VncLong(((VncLong)v).getValue() + 1));
+        }
+        return tmp;
+    }
+
+    @Benchmark
+    public Object map_for_2() {
+        List<VncLong> tmp = new ArrayList<>(vector.size());
+        for(VncVal v : vector) {
+            tmp.add(new VncLong(((VncLong)v).getValue() + 1));
+        }
+        return Vector.ofAll(tmp);
+    }
+
+
+
+    private final VncVal val = new VncLong(0L);
+
+                                     // range 1..4
+    private final VncVector vector = VncTinyVector.of(
+                                        new VncLong(1),
+                                        new VncLong(2),
+                                        new VncLong(3));
 }

@@ -1,5 +1,5 @@
 /*   __    __         _
- *   \ \  / /__ _ __ (_) ___ ___ 
+ *   \ \  / /__ _ __ (_) ___ ___
  *    \ \/ / _ \ '_ \| |/ __/ _ \
  *     \  /  __/ | | | | (_|  __/
  *      \/ \___|_| |_|_|\___\___|
@@ -22,19 +22,19 @@
 package com.github.jlangch.venice.javainterop;
 
 public interface IInvoker {
- 
-	ReturnValue callInstanceMethod(Object receiver, Class<?> receiverFormalType, String method, Object... args);
 
-	ReturnValue callStaticMethod(Class<?> receiver, String method, Object... args);
+    ReturnValue callInstanceMethod(Object receiver, Class<?> receiverFormalType, String method, Object... args);
 
-	ReturnValue callConstructor(Class<?> receiver, Object... args);
+    ReturnValue callStaticMethod(Class<?> receiver, String method, Object... args);
 
-	ReturnValue getBeanProperty(Object receiver, String property);
+    ReturnValue callConstructor(Class<?> receiver, Object... args);
 
-	ReturnValue setBeanProperty(Object receiver, String property, Object value);
+    ReturnValue getBeanProperty(Object receiver, String property);
 
-	ReturnValue getStaticField(Class<?> receiver, String fieldName);
+    ReturnValue setBeanProperty(Object receiver, String property, Object value);
 
-	ReturnValue getInstanceField(Object receiver, Class<?> receiverFormalType, String fieldName);
+    ReturnValue getStaticField(Class<?> receiver, String fieldName);
+
+    ReturnValue getInstanceField(Object receiver, Class<?> receiverFormalType, String fieldName);
 
 }

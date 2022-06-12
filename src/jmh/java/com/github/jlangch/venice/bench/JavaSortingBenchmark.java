@@ -1,5 +1,5 @@
 /*   __    __         _
- *   \ \  / /__ _ __ (_) ___ ___ 
+ *   \ \  / /__ _ __ (_) ___ ___
  *    \ \/ / _ \ '_ \| |/ __/ _ \
  *     \  /  __/ | | | | (_|  __/
  *      \/ \___|_| |_|_|\___\___|
@@ -44,38 +44,38 @@ import org.openjdk.jmh.annotations.Warmup;
 @State (Scope.Benchmark)
 @Threads (1)
 public class JavaSortingBenchmark {
-	
-	public JavaSortingBenchmark() {
-	}
 
-	@Benchmark
-	public Object sort() {
-		final ArrayList<Long> list = new ArrayList<>(2000);
-		for(long ii=0; ii<2000; ii++) {
-			list.add(Long.valueOf(ii));
-		}
-		Collections.shuffle(list);
-		Collections.sort(list);
-		return list;
-	}
+    public JavaSortingBenchmark() {
+    }
 
-	@Benchmark
-	public Object sort_effective(State_ state) {
-		Collections.sort(state.list);
-		return state.list;
-	}
-	  
+    @Benchmark
+    public Object sort() {
+        final ArrayList<Long> list = new ArrayList<>(2000);
+        for(long ii=0; ii<2000; ii++) {
+            list.add(Long.valueOf(ii));
+        }
+        Collections.shuffle(list);
+        Collections.sort(list);
+        return list;
+    }
+
+    @Benchmark
+    public Object sort_effective(State_ state) {
+        Collections.sort(state.list);
+        return state.list;
+    }
+
     @State(Scope.Benchmark)
     public static class State_ {
-    	public State_() {
-    		final ArrayList<Long> list = new ArrayList<>(2000);
-    		for(long ii=0; ii<2000; ii++) {
-    			list.add(Long.valueOf(ii));
-    		}
-    		Collections.shuffle(list);
-    		this.list = list;
-    	}
+        public State_() {
+            final ArrayList<Long> list = new ArrayList<>(2000);
+            for(long ii=0; ii<2000; ii++) {
+                list.add(Long.valueOf(ii));
+            }
+            Collections.shuffle(list);
+            this.list = list;
+        }
 
-    	public final ArrayList<Long> list;
+        public final ArrayList<Long> list;
     }
 }

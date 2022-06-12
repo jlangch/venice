@@ -23,9 +23,9 @@ package com.github.jlangch.venice.nanojson;
 //@formatter:off
 /**
  * JSON writer that emits JSON to a {@link String}.
- * 
+ *
  * Create this class using {@link JsonWriter#string()}.
- * 
+ *
  * <pre>
  * String json = JsonEmitter
  *     .indent("  ")
@@ -43,15 +43,15 @@ package com.github.jlangch.venice.nanojson;
  */
 //@formatter:on
 public final class JsonStringWriter extends JsonWriterBase<JsonStringWriter> {
-	JsonStringWriter(String indent) {
-		super(new StringBuilder(), indent);
-	}
+    JsonStringWriter(String indent) {
+        super(new StringBuilder(), indent);
+    }
 
-	/**
-	 * Completes this JSON writing session and returns the internal representation as a {@link String}.
-	 */
-	public String done() {
-		super.doneInternal();
-		return appendable.toString();
-	}
+    /**
+     * Completes this JSON writing session and returns the internal representation as a {@link String}.
+     */
+    public String done() {
+        super.doneInternal();
+        return appendable.toString();
+    }
 }

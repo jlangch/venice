@@ -1,5 +1,5 @@
 /*   __    __         _
- *   \ \  / /__ _ __ (_) ___ ___ 
+ *   \ \  / /__ _ __ (_) ___ ___
  *    \ \/ / _ \ '_ \| |/ __/ _ \
  *     \  /  __/ | | | | (_|  __/
  *      \/ \___|_| |_|_|\___\___|
@@ -47,74 +47,74 @@ import io.vavr.collection.Vector;
 @State (Scope.Benchmark)
 @Threads (1)
 public class VavrVectorBenchmark {
-	
-	public VavrVectorBenchmark() {
-	}
-	
-	
-	@Benchmark
-	public Object prepend() {
-		return vector.prepend(0);
-	}
-	
-	@Benchmark
-	public Object append() {
-		return vector.append(0);
-	}
 
-	@Benchmark
-	public Object first() {
-		return vector.get(0);
- 	}
+    public VavrVectorBenchmark() {
+    }
 
-	@Benchmark
-	public Object nth6() {
-		return vector.get(5);
- 	}
-	
-	@Benchmark
-	public Object last() {
-		return vector.last();
-	}
 
-	@Benchmark
-	public Object rest() {
-		return vector.tail();
-	}
-	
-	@Benchmark
-	public Object butlast() {
-		return vector.slice(0, vector.length()-1);
-	}
-	
-	@Benchmark
-	public Object drop_1() {
-		return vector.drop(1);
-	}
-	
-	@Benchmark
-	public Object map() {
-		return vector.map(v -> v + 1);
-	}
-	
-	@Benchmark
-	public Object map_for_1() {
-		Vector<Integer> tmp = Vector.empty();
-		for(Integer i : vector) {
-			tmp = tmp.append(i + 1);
-		}
-		return tmp;
-	}
-	
-	@Benchmark
-	public Object map_for_2() {
-		List<Integer> tmp = new ArrayList<>(vector.size());
-		for(Integer i : vector) {
-			tmp.add(i + 1);
-		}
-		return Vector.ofAll(tmp);
-	}
-	
-	
-	private final Vector<Integer> vector = Vector.range(0, 1000);
+    @Benchmark
+    public Object prepend() {
+        return vector.prepend(0);
+    }
+
+    @Benchmark
+    public Object append() {
+        return vector.append(0);
+    }
+
+    @Benchmark
+    public Object first() {
+        return vector.get(0);
+     }
+
+    @Benchmark
+    public Object nth6() {
+        return vector.get(5);
+     }
+
+    @Benchmark
+    public Object last() {
+        return vector.last();
+    }
+
+    @Benchmark
+    public Object rest() {
+        return vector.tail();
+    }
+
+    @Benchmark
+    public Object butlast() {
+        return vector.slice(0, vector.length()-1);
+    }
+
+    @Benchmark
+    public Object drop_1() {
+        return vector.drop(1);
+    }
+
+    @Benchmark
+    public Object map() {
+        return vector.map(v -> v + 1);
+    }
+
+    @Benchmark
+    public Object map_for_1() {
+        Vector<Integer> tmp = Vector.empty();
+        for(Integer i : vector) {
+            tmp = tmp.append(i + 1);
+        }
+        return tmp;
+    }
+
+    @Benchmark
+    public Object map_for_2() {
+        List<Integer> tmp = new ArrayList<>(vector.size());
+        for(Integer i : vector) {
+            tmp.add(i + 1);
+        }
+        return Vector.ofAll(tmp);
+    }
+
+
+    private final Vector<Integer> vector = Vector.range(0, 1000);
 }

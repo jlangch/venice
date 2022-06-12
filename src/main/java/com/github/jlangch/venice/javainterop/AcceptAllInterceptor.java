@@ -1,5 +1,5 @@
 /*   __    __         _
- *   \ \  / /__ _ __ (_) ___ ___ 
+ *   \ \  / /__ _ __ (_) ___ ___
  *    \ \/ / _ \ '_ \| |/ __/ _ \
  *     \  /  __/ | | | | (_|  __/
  *      \/ \___|_| |_|_|\___\___|
@@ -28,116 +28,116 @@ import com.github.jlangch.venice.SecurityException;
  * Defines a Venice sandbox without any restrictions.
  */
 public class AcceptAllInterceptor extends Interceptor {
-	
-	public AcceptAllInterceptor(final ILoadPaths loadPaths) {
-		super(loadPaths == null ? LoadPathsFactory.acceptAll() : loadPaths);
-	}
-	
-	public AcceptAllInterceptor() {
-		super(LoadPathsFactory.acceptAll());
-	}
-	
 
-	@Override
-	public ReturnValue onInvokeInstanceMethod(
-			final IInvoker invoker, 
-			final Object receiver, 
-			final Class<?> receiverFormalType,
-			final String method, 
-			final Object... args
-	) throws SecurityException {
-		return super.onInvokeInstanceMethod(invoker, receiver, receiverFormalType, method, args);
-	}
+    public AcceptAllInterceptor(final ILoadPaths loadPaths) {
+        super(loadPaths == null ? LoadPathsFactory.acceptAll() : loadPaths);
+    }
 
-	@Override
-	public ReturnValue onInvokeStaticMethod(
-			final IInvoker invoker, 
-			final Class<?> receiver, 
-			final String method, 
-			final Object... args
-	) throws SecurityException {
-		return super.onInvokeStaticMethod(invoker, receiver, method, args);
-	}
+    public AcceptAllInterceptor() {
+        super(LoadPathsFactory.acceptAll());
+    }
 
-	@Override
-	public ReturnValue onInvokeConstructor(
-			final IInvoker invoker, 
-			final Class<?> receiver,
-			final Object... args
-	) throws SecurityException {
-		return super.onInvokeConstructor(invoker, receiver, args);
-	}
 
-	@Override
-	public ReturnValue onGetBeanProperty(
-			final IInvoker invoker, 
-			final Object receiver, 
-			final String property
-	) throws SecurityException {
-		return super.onGetBeanProperty(invoker, receiver, property);
-	}
+    @Override
+    public ReturnValue onInvokeInstanceMethod(
+            final IInvoker invoker,
+            final Object receiver,
+            final Class<?> receiverFormalType,
+            final String method,
+            final Object... args
+    ) throws SecurityException {
+        return super.onInvokeInstanceMethod(invoker, receiver, receiverFormalType, method, args);
+    }
 
-	@Override
-	public void onSetBeanProperty(
-			final IInvoker invoker, 
-			final Object receiver, 
-			final String property, 
-			final Object value
-	) throws SecurityException {
-		super.onSetBeanProperty(invoker, receiver, property, value);
-	}
+    @Override
+    public ReturnValue onInvokeStaticMethod(
+            final IInvoker invoker,
+            final Class<?> receiver,
+            final String method,
+            final Object... args
+    ) throws SecurityException {
+        return super.onInvokeStaticMethod(invoker, receiver, method, args);
+    }
 
-	@Override
-	public ReturnValue onGetStaticField(
-			final IInvoker invoker, 
-			final Class<?> receiver, 
-			final String fieldName
-	) throws SecurityException {
-		return super.onGetStaticField(invoker, receiver, fieldName);
-	}
+    @Override
+    public ReturnValue onInvokeConstructor(
+            final IInvoker invoker,
+            final Class<?> receiver,
+            final Object... args
+    ) throws SecurityException {
+        return super.onInvokeConstructor(invoker, receiver, args);
+    }
 
-	@Override
-	public ReturnValue onGetInstanceField(
-			final IInvoker invoker, 
-			final Object receiver,
-			final Class<?> receiverFormalType,
-			final String fieldName
-	) throws SecurityException {
-		return super.onGetInstanceField(invoker, receiver, receiverFormalType, fieldName);
-	}
+    @Override
+    public ReturnValue onGetBeanProperty(
+            final IInvoker invoker,
+            final Object receiver,
+            final String property
+    ) throws SecurityException {
+        return super.onGetBeanProperty(invoker, receiver, property);
+    }
 
-	@Override
-	public byte[] onLoadClassPathResource(
-			final String resourceName
-	) throws SecurityException {
-		return super.onLoadClassPathResource(resourceName);
-	}
+    @Override
+    public void onSetBeanProperty(
+            final IInvoker invoker,
+            final Object receiver,
+            final String property,
+            final Object value
+    ) throws SecurityException {
+        super.onSetBeanProperty(invoker, receiver, property, value);
+    }
 
-	@Override
-	public String onReadSystemProperty(
-			final String propertyName
-	) throws SecurityException {
-		return super.onReadSystemProperty(propertyName);
-	}
+    @Override
+    public ReturnValue onGetStaticField(
+            final IInvoker invoker,
+            final Class<?> receiver,
+            final String fieldName
+    ) throws SecurityException {
+        return super.onGetStaticField(invoker, receiver, fieldName);
+    }
 
-	@Override
-	public String onReadSystemEnv(
-			final String name
-	) throws SecurityException {
-		return super.onReadSystemEnv(name);
-	}
+    @Override
+    public ReturnValue onGetInstanceField(
+            final IInvoker invoker,
+            final Object receiver,
+            final Class<?> receiverFormalType,
+            final String fieldName
+    ) throws SecurityException {
+        return super.onGetInstanceField(invoker, receiver, receiverFormalType, fieldName);
+    }
 
-	@Override
-	public void validateVeniceFunction(
-			final String funcName
-	) throws SecurityException {
-		// ok
-	}
-	
-	@Override
-	public void validateLoadModule(
-			final String moduleName
-	) throws SecurityException {
-		// ok
-	}
+    @Override
+    public byte[] onLoadClassPathResource(
+            final String resourceName
+    ) throws SecurityException {
+        return super.onLoadClassPathResource(resourceName);
+    }
+
+    @Override
+    public String onReadSystemProperty(
+            final String propertyName
+    ) throws SecurityException {
+        return super.onReadSystemProperty(propertyName);
+    }
+
+    @Override
+    public String onReadSystemEnv(
+            final String name
+    ) throws SecurityException {
+        return super.onReadSystemEnv(name);
+    }
+
+    @Override
+    public void validateVeniceFunction(
+            final String funcName
+    ) throws SecurityException {
+        // ok
+    }
+
+    @Override
+    public void validateLoadModule(
+            final String moduleName
+    ) throws SecurityException {
+        // ok
+    }
 }

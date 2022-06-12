@@ -1,5 +1,5 @@
 /*   __    __         _
- *   \ \  / /__ _ __ (_) ___ ___ 
+ *   \ \  / /__ _ __ (_) ___ ___
  *    \ \/ / _ \ '_ \| |/ __/ _ \
  *     \  /  __/ | | | | (_|  __/
  *      \/ \___|_| |_|_|\___\___|
@@ -34,241 +34,241 @@ import com.github.jlangch.venice.impl.sandbox.RestrictedBlacklistedFunctions;
  * Defines a safe Venice sandbox rejecting all I/O functions and Java interoperability.
  */
 public class RejectAllInterceptor extends Interceptor {
-	
-	public RejectAllInterceptor() {
-		super(LoadPathsFactory.rejectAll());
-		
-		this.executionTimeDeadline = calcExecutionTimeDeadline(MAX_EXECUTION_TIME_SECONDS);
-	}
 
-	@Override
-	public ReturnValue onInvokeInstanceMethod(
-			final IInvoker invoker, 
-			final Object receiver, 
-			final Class<?> receiverFormalType,
-			final String method, 
-			final Object... args
-	) throws SecurityException {
-		if (receiver == null) {
-			throw new SecurityException(String.format(
-					"%s: Access to any java object denied",
-					PREFIX));
-		}
-		else {
-			throw new SecurityException(String.format(
-						"%s: Access denied to target %s",
-						PREFIX,
-						receiver.getClass().getName()));
-		}
-	}
+    public RejectAllInterceptor() {
+        super(LoadPathsFactory.rejectAll());
 
-	@Override
-	public ReturnValue onInvokeStaticMethod(
-			final IInvoker invoker, 
-			final Class<?> receiver, 
-			final String method, 
-			final Object... args
-	) throws SecurityException {
-		throw new SecurityException(String.format(
-				"%s: Access denied to target %s",
-				PREFIX,
-				receiver.getName()));
-	}
+        this.executionTimeDeadline = calcExecutionTimeDeadline(MAX_EXECUTION_TIME_SECONDS);
+    }
 
-	@Override
-	public ReturnValue onInvokeConstructor(
-			final IInvoker invoker, 
-			final Class<?> receiver,
-			final Object... args
-	) throws SecurityException {
-		throw new SecurityException(String.format(
-				"%s: Access denied to target %s", 
-				PREFIX,
-				receiver.getName()));
-	}
+    @Override
+    public ReturnValue onInvokeInstanceMethod(
+            final IInvoker invoker,
+            final Object receiver,
+            final Class<?> receiverFormalType,
+            final String method,
+            final Object... args
+    ) throws SecurityException {
+        if (receiver == null) {
+            throw new SecurityException(String.format(
+                    "%s: Access to any java object denied",
+                    PREFIX));
+        }
+        else {
+            throw new SecurityException(String.format(
+                        "%s: Access denied to target %s",
+                        PREFIX,
+                        receiver.getClass().getName()));
+        }
+    }
 
-	@Override
-	public ReturnValue onGetBeanProperty(
-			final IInvoker invoker, 
-			final Object receiver, 
-			final String property
-	) throws SecurityException {
-		if (receiver == null) {
-			throw new SecurityException(String.format(
-					"%s: Access to any java object denied",
-					PREFIX));
-		}
-		else {
-			throw new SecurityException(String.format(
-					"%s: Access denied to target %s",
-					PREFIX,
-					receiver.getClass().getName()));
-		}
-	}
+    @Override
+    public ReturnValue onInvokeStaticMethod(
+            final IInvoker invoker,
+            final Class<?> receiver,
+            final String method,
+            final Object... args
+    ) throws SecurityException {
+        throw new SecurityException(String.format(
+                "%s: Access denied to target %s",
+                PREFIX,
+                receiver.getName()));
+    }
 
-	@Override
-	public void onSetBeanProperty(
-			final IInvoker invoker, 
-			final Object receiver, 
-			final String property, 
-			final Object value
-	) throws SecurityException {
-		if (receiver == null) {
-			throw new SecurityException(String.format(
-					"%s: Access to any java object denied",
-					PREFIX));
-		}
-		else {
-			throw new SecurityException(String.format(
-					"%s: Access denied to target %s", 
-					PREFIX,
-					receiver.getClass().getName()));
-		}
-	}
+    @Override
+    public ReturnValue onInvokeConstructor(
+            final IInvoker invoker,
+            final Class<?> receiver,
+            final Object... args
+    ) throws SecurityException {
+        throw new SecurityException(String.format(
+                "%s: Access denied to target %s",
+                PREFIX,
+                receiver.getName()));
+    }
 
-	@Override
-	public ReturnValue onGetStaticField(
-			final IInvoker invoker, 
-			final Class<?> receiver, 
-			final String fieldName
-	) throws SecurityException {
-		throw new SecurityException(String.format(
-				"%s: Access denied to target %s", 
-				PREFIX,
-				receiver.getName()));
-	}
+    @Override
+    public ReturnValue onGetBeanProperty(
+            final IInvoker invoker,
+            final Object receiver,
+            final String property
+    ) throws SecurityException {
+        if (receiver == null) {
+            throw new SecurityException(String.format(
+                    "%s: Access to any java object denied",
+                    PREFIX));
+        }
+        else {
+            throw new SecurityException(String.format(
+                    "%s: Access denied to target %s",
+                    PREFIX,
+                    receiver.getClass().getName()));
+        }
+    }
 
-	@Override
-	public ReturnValue onGetInstanceField(
-			final IInvoker invoker, 
-			final Object receiver, 
-			final Class<?> receiverFormalType,
-			final String fieldName
-	) throws SecurityException {
-		if (receiver == null) {
-			throw new SecurityException(String.format(
-					"%s: Access to any java object denied",
-					PREFIX));
-		}
-		else {
-			throw new SecurityException(String.format(
-					"%s: Access denied to target %s",
-					PREFIX,
-					receiver.getClass().getName()));
-		}
-	}
+    @Override
+    public void onSetBeanProperty(
+            final IInvoker invoker,
+            final Object receiver,
+            final String property,
+            final Object value
+    ) throws SecurityException {
+        if (receiver == null) {
+            throw new SecurityException(String.format(
+                    "%s: Access to any java object denied",
+                    PREFIX));
+        }
+        else {
+            throw new SecurityException(String.format(
+                    "%s: Access denied to target %s",
+                    PREFIX,
+                    receiver.getClass().getName()));
+        }
+    }
 
-	@Override
-	public byte[] onLoadClassPathResource(
-			final String resourceName
-	) throws SecurityException {
-		throw new SecurityException(String.format(
-				"%s: Access denied to classpath resource '%s'",
-				PREFIX,
-				resourceName));
-	}
+    @Override
+    public ReturnValue onGetStaticField(
+            final IInvoker invoker,
+            final Class<?> receiver,
+            final String fieldName
+    ) throws SecurityException {
+        throw new SecurityException(String.format(
+                "%s: Access denied to target %s",
+                PREFIX,
+                receiver.getName()));
+    }
 
-	@Override
-	public String onReadSystemProperty(
-			final String propertyName
-	) throws SecurityException {
-		throw new SecurityException(String.format(
-				"%s: Access denied to system property '%s'", 
-				PREFIX,
-				propertyName));
-	}
+    @Override
+    public ReturnValue onGetInstanceField(
+            final IInvoker invoker,
+            final Object receiver,
+            final Class<?> receiverFormalType,
+            final String fieldName
+    ) throws SecurityException {
+        if (receiver == null) {
+            throw new SecurityException(String.format(
+                    "%s: Access to any java object denied",
+                    PREFIX));
+        }
+        else {
+            throw new SecurityException(String.format(
+                    "%s: Access denied to target %s",
+                    PREFIX,
+                    receiver.getClass().getName()));
+        }
+    }
 
-	@Override
-	public String onReadSystemEnv(
-			final String name
-	) throws SecurityException {
-		throw new SecurityException(String.format(
-				"%s: Access denied to system environment variable '%s'", 
-				PREFIX,
-				name));
-	}
+    @Override
+    public byte[] onLoadClassPathResource(
+            final String resourceName
+    ) throws SecurityException {
+        throw new SecurityException(String.format(
+                "%s: Access denied to classpath resource '%s'",
+                PREFIX,
+                resourceName));
+    }
 
-	@Override
-	public void validateVeniceFunction(
-			final String funcName
-	) throws SecurityException {
-		if (RestrictedBlacklistedFunctions.contains(funcName)) {
-			throw new SecurityException(String.format(
-					"%s: Access denied to Venice function %s.", 
-					PREFIX,
-					funcName));
-		}
-	}
+    @Override
+    public String onReadSystemProperty(
+            final String propertyName
+    ) throws SecurityException {
+        throw new SecurityException(String.format(
+                "%s: Access denied to system property '%s'",
+                PREFIX,
+                propertyName));
+    }
 
-	@Override
-	public void validateLoadModule(
-			final String moduleName
-	) throws SecurityException {
-		if (!SandboxRules.DEFAULT_WHITELISTED_MODULES.contains(moduleName)) {
-			throw new SecurityException(String.format(
-					"%s: Access denied to Venice module %s.", 
-					PREFIX,
-					moduleName));
-		}
-	}
+    @Override
+    public String onReadSystemEnv(
+            final String name
+    ) throws SecurityException {
+        throw new SecurityException(String.format(
+                "%s: Access denied to system environment variable '%s'",
+                PREFIX,
+                name));
+    }
 
-	@Override
-	public void validateMaxExecutionTime() throws SecurityException {
-		if (executionTimeDeadline > 0 && System.currentTimeMillis() > executionTimeDeadline) {
-			throw new SecurityException(
-					"Venice Sandbox: The sandbox exceeded the max execution time");
-		}
-	}
-	
-	@Override
-	public void validateFileRead(final File file) throws SecurityException {
-		throw new SecurityException(
-				"Venice Sandbox: The sandbox denied reading the file: " + file);
-	}
-	
-	@Override
-	public void validateFileWrite(final File file) throws SecurityException {
-		throw new SecurityException(
-				"Venice Sandbox: The sandbox denied writing the file: " + file);
-	}
+    @Override
+    public void validateVeniceFunction(
+            final String funcName
+    ) throws SecurityException {
+        if (RestrictedBlacklistedFunctions.contains(funcName)) {
+            throw new SecurityException(String.format(
+                    "%s: Access denied to Venice function %s.",
+                    PREFIX,
+                    funcName));
+        }
+    }
 
-	@Override
-	public Integer getMaxExecutionTimeSeconds() {
-		return MAX_EXECUTION_TIME_SECONDS;
-	}
+    @Override
+    public void validateLoadModule(
+            final String moduleName
+    ) throws SecurityException {
+        if (!SandboxRules.DEFAULT_WHITELISTED_MODULES.contains(moduleName)) {
+            throw new SecurityException(String.format(
+                    "%s: Access denied to Venice module %s.",
+                    PREFIX,
+                    moduleName));
+        }
+    }
 
-	@Override
-	public Integer getMaxFutureThreadPoolSize() {
-		return MAX_FUTURE_THREAD_POOL_SIZE;
-	}
+    @Override
+    public void validateMaxExecutionTime() throws SecurityException {
+        if (executionTimeDeadline > 0 && System.currentTimeMillis() > executionTimeDeadline) {
+            throw new SecurityException(
+                    "Venice Sandbox: The sandbox exceeded the max execution time");
+        }
+    }
 
-	
-	public List<String> getBlacklistedVeniceFunctions() {
-		final List<String> list = new ArrayList<>(RestrictedBlacklistedFunctions.getAll());
-		Collections.sort(list); 
-		return list;
-	}
+    @Override
+    public void validateFileRead(final File file) throws SecurityException {
+        throw new SecurityException(
+                "Venice Sandbox: The sandbox denied reading the file: " + file);
+    }
 
-	public List<String> getWhitelistedVeniceModules() {
-		final List<String> list = new ArrayList<>(SandboxRules.DEFAULT_WHITELISTED_MODULES);
-		Collections.sort(list);
-		return list;
-	}
+    @Override
+    public void validateFileWrite(final File file) throws SecurityException {
+        throw new SecurityException(
+                "Venice Sandbox: The sandbox denied writing the file: " + file);
+    }
 
-	
-	private static long calcExecutionTimeDeadline(final Integer maxExecutionTimeSeconds) {
-		return maxExecutionTimeSeconds == null
-				? -1L
-				: System.currentTimeMillis() + maxExecutionTimeSeconds * 1000L;		
-	}
-	
-	
-	
-	private static final String PREFIX = "Venice Sandbox (RejectAllInterceptor)";
+    @Override
+    public Integer getMaxExecutionTimeSeconds() {
+        return MAX_EXECUTION_TIME_SECONDS;
+    }
 
-	private static final Integer MAX_EXECUTION_TIME_SECONDS = null; // null is unlimited
+    @Override
+    public Integer getMaxFutureThreadPoolSize() {
+        return MAX_FUTURE_THREAD_POOL_SIZE;
+    }
 
-	private static final Integer MAX_FUTURE_THREAD_POOL_SIZE = 5;
-	
-	private final long executionTimeDeadline;
+
+    public List<String> getBlacklistedVeniceFunctions() {
+        final List<String> list = new ArrayList<>(RestrictedBlacklistedFunctions.getAll());
+        Collections.sort(list);
+        return list;
+    }
+
+    public List<String> getWhitelistedVeniceModules() {
+        final List<String> list = new ArrayList<>(SandboxRules.DEFAULT_WHITELISTED_MODULES);
+        Collections.sort(list);
+        return list;
+    }
+
+
+    private static long calcExecutionTimeDeadline(final Integer maxExecutionTimeSeconds) {
+        return maxExecutionTimeSeconds == null
+                ? -1L
+                : System.currentTimeMillis() + maxExecutionTimeSeconds * 1000L;
+    }
+
+
+
+    private static final String PREFIX = "Venice Sandbox (RejectAllInterceptor)";
+
+    private static final Integer MAX_EXECUTION_TIME_SECONDS = null; // null is unlimited
+
+    private static final Integer MAX_FUTURE_THREAD_POOL_SIZE = 5;
+
+    private final long executionTimeDeadline;
 }

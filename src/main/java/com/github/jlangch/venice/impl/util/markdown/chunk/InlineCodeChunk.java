@@ -1,5 +1,5 @@
 /*   __    __         _
- *   \ \  / /__ _ __ (_) ___ ___ 
+ *   \ \  / /__ _ __ (_) ___ ___
  *    \ \/ / _ \ '_ \| |/ __/ _ \
  *     \  /  __/ | | | | (_|  __/
  *      \/ \___|_| |_|_|\___\___|
@@ -25,25 +25,25 @@ import com.github.jlangch.venice.impl.util.StringUtil;
 
 public class InlineCodeChunk implements Chunk {
 
-	public InlineCodeChunk() {
-		this("");
-	}
+    public InlineCodeChunk() {
+        this("");
+    }
 
-	public InlineCodeChunk(final String text) {
-		this.text = StringUtil.trimToEmpty(text);
-	}
+    public InlineCodeChunk(final String text) {
+        this.text = StringUtil.trimToEmpty(text);
+    }
 
 
-	@Override
-	public boolean isEmpty() {
-		return text.isEmpty();
-	}
-	
-	
-	public String getText() {
-		return text;
-	}
+    @Override
+    public boolean isEmpty() {
+        return text.isEmpty();
+    }
 
-	
-	private final String text;
+
+    public String getText() {
+        return text;
+    }
+
+
+    private final String text;
 }

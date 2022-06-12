@@ -1,5 +1,5 @@
 /*   __    __         _
- *   \ \  / /__ _ __ (_) ___ ___ 
+ *   \ \  / /__ _ __ (_) ___ ___
  *    \ \/ / _ \ '_ \| |/ __/ _ \
  *     \  /  __/ | | | | (_|  __/
  *      \/ \___|_| |_|_|\___\___|
@@ -43,260 +43,260 @@ import com.github.jlangch.venice.impl.util.MetaUtil;
 
 public class VncJavaMap extends VncMap implements IVncJavaObject {
 
-	public VncJavaMap() {
-		this(null, null);
-	}
+    public VncJavaMap() {
+        this(null, null);
+    }
 
-	public VncJavaMap(final VncVal meta) {
-		this(null, meta);
-	}
+    public VncJavaMap(final VncVal meta) {
+        this(null, meta);
+    }
 
-	public VncJavaMap(final Map<Object,Object> val) {
-		this(val, null);
-	}
+    public VncJavaMap(final Map<Object,Object> val) {
+        this(val, null);
+    }
 
-	public VncJavaMap(final Map<Object,Object> val, final VncVal meta) {
-		super(meta == null ? Constants.Nil : meta);
-		value = val == null ? new HashMap<>() : val;
-	}
+    public VncJavaMap(final Map<Object,Object> val, final VncVal meta) {
+        super(meta == null ? Constants.Nil : meta);
+        value = val == null ? new HashMap<>() : val;
+    }
 
-	
-	
-	@Override
-	public Object getDelegate() {
-		return value;
-	}
 
-	@Override
-	public VncJavaMap emptyWithMeta() {
-		return new VncJavaMap(getMeta());
-	}
 
-	@Override
-	public VncHashMap withValues(final Map<VncVal,VncVal> replaceVals) {
-		return new VncHashMap(replaceVals, getMeta());
-	}
-	
-	@Override
-	public VncHashMap withValues(
-			final Map<VncVal,VncVal> replaceVals, 
-			final VncVal meta
-	) {
-		return new VncHashMap(replaceVals, meta);
-	}
+    @Override
+    public Object getDelegate() {
+        return value;
+    }
 
-	@Override
-	public VncJavaMap withMeta(final VncVal meta) {
-		return new VncJavaMap(value, meta);
-	}
-	
-	@Override
-	public VncKeyword getType() {
-		final Class<?> type = value.getClass();
+    @Override
+    public VncJavaMap emptyWithMeta() {
+        return new VncJavaMap(getMeta());
+    }
 
-		final List<VncKeyword> superclasses = new ArrayList<>();
-		Class<?> superClass = type.getSuperclass();
-		while(superClass != null) {
-			superclasses.add(new VncKeyword(superClass.getName(), MetaUtil.typeMeta()));
-		    superClass = superClass.getSuperclass();
-		}
-		
-		return new VncKeyword(
-					type.getName(), 
-					MetaUtil.typeMeta(superclasses.toArray(new VncKeyword[0])));
-	}
+    @Override
+    public VncHashMap withValues(final Map<VncVal,VncVal> replaceVals) {
+        return new VncHashMap(replaceVals, getMeta());
+    }
 
-	@Override
-	public Map<VncVal,VncVal> getJavaMap() {
-		return value
-				.entrySet()
-				.stream()
-				.collect(Collectors.toMap(
-						e -> JavaInteropUtil.convertToVncVal(e.getKey()),
-						e -> JavaInteropUtil.convertToVncVal(e.getValue())));
-	}
+    @Override
+    public VncHashMap withValues(
+            final Map<VncVal,VncVal> replaceVals,
+            final VncVal meta
+    ) {
+        return new VncHashMap(replaceVals, meta);
+    }
 
-	@Override
-	public VncVal get(final VncVal key) {
-		return JavaInteropUtil.convertToVncVal(
-					value.get(key.convertToJavaObject()));
-	}
+    @Override
+    public VncJavaMap withMeta(final VncVal meta) {
+        return new VncJavaMap(value, meta);
+    }
 
-	@Override
-	public VncVal containsKey(final VncVal key) {
-		return VncBoolean.of(value.containsKey(key.convertToJavaObject()));
-	}
+    @Override
+    public VncKeyword getType() {
+        final Class<?> type = value.getClass();
 
-	@Override
-	public VncList keys() {
-		return VncList.ofList(
-					value
-						.keySet()
-						.stream()
-						.map(k -> JavaInteropUtil.convertToVncVal(k))
-						.collect(Collectors.toList()));
-	}
+        final List<VncKeyword> superclasses = new ArrayList<>();
+        Class<?> superClass = type.getSuperclass();
+        while(superClass != null) {
+            superclasses.add(new VncKeyword(superClass.getName(), MetaUtil.typeMeta()));
+            superClass = superClass.getSuperclass();
+        }
 
-	@Override
-	public List<VncMapEntry> entries() {
-		return Collections.unmodifiableList(
-					getJavaMap()
-						.entrySet()
-						.stream().map(e -> new VncMapEntry(e.getKey(), e.getValue()))
-						.collect(Collectors.toList()));
-	}
+        return new VncKeyword(
+                    type.getName(),
+                    MetaUtil.typeMeta(superclasses.toArray(new VncKeyword[0])));
+    }
 
-	@Override
-	public VncJavaMap putAll(final VncMap map) {
-		getJavaMap().entrySet().forEach(
-				e -> value.put(
-					e.getKey().convertToJavaObject(), 
-					e.getValue().convertToJavaObject()));
-		return this;
-	}
-	
-	@Override
-	public VncJavaMap assoc(final VncVal... mvs) {
-		if (mvs.length %2 != 0) {
-			throw new VncException(String.format(
-					"java-map: assoc requires an even number of items."));
-		}
-		
-		for (int i=0; i<mvs.length-1; i+=2) {
-			value.put(
-				mvs[i].convertToJavaObject(), 
-				mvs[i+1].convertToJavaObject());
-		}
-		return this;
-	}
+    @Override
+    public Map<VncVal,VncVal> getJavaMap() {
+        return value
+                .entrySet()
+                .stream()
+                .collect(Collectors.toMap(
+                        e -> JavaInteropUtil.convertToVncVal(e.getKey()),
+                        e -> JavaInteropUtil.convertToVncVal(e.getValue())));
+    }
 
-	@Override
-	public VncJavaMap assoc(final VncSequence mvs) {
-		if (mvs.size() %2 != 0) {
-			throw new VncException(String.format(
-					"java-map: assoc requires an even number of items."));
-		}	
+    @Override
+    public VncVal get(final VncVal key) {
+        return JavaInteropUtil.convertToVncVal(
+                    value.get(key.convertToJavaObject()));
+    }
 
-		VncSequence kv = mvs;
-		while(!kv.isEmpty()) {
-			value.put(
-					kv.first().convertToJavaObject(), 
-					kv.second().convertToJavaObject());
-			kv = kv.drop(2);
-		}
-		return this;
-	}
+    @Override
+    public VncVal containsKey(final VncVal key) {
+        return VncBoolean.of(value.containsKey(key.convertToJavaObject()));
+    }
 
-	@Override
-	public VncJavaMap dissoc(final VncVal... keys) {
-		for (VncVal key : keys) {
-			value.remove(key.convertToJavaObject());
-		}
-		return this;
-	}
+    @Override
+    public VncList keys() {
+        return VncList.ofList(
+                    value
+                        .keySet()
+                        .stream()
+                        .map(k -> JavaInteropUtil.convertToVncVal(k))
+                        .collect(Collectors.toList()));
+    }
 
-	@Override
-	public VncJavaMap dissoc(final VncSequence keys) {
-		for (VncVal key : keys) {
-			value.remove(key.convertToJavaObject());
-		}
-		return this;
-	}
-	
-	@Override
-	public VncList toVncList() {
-		return VncList.ofAll(
-						value.entrySet()
-							 .stream()
-							 .map(e -> VncVector.of(
-										JavaInteropUtil.convertToVncVal(e.getKey()), 
-										JavaInteropUtil.convertToVncVal(e.getValue()))),
-						getMeta());
-	}
-	
-	@Override
-	public VncVector toVncVector() {
-		return VncVector.ofAll(
-						value.entrySet()
-							 .stream()
-							 .map(e -> VncVector.of(
-										JavaInteropUtil.convertToVncVal(e.getKey()), 
-										JavaInteropUtil.convertToVncVal(e.getValue()))),
-						getMeta());
-	}
-	
-	@Override
-	public int size() {
-		return value.size();
-	}
-	
-	@Override
-	public boolean isEmpty() {
-		return value.isEmpty();
-	}
-	
-	@Override 
-	public TypeRank typeRank() {
-		return TypeRank.JAVAMAP;
-	}
+    @Override
+    public List<VncMapEntry> entries() {
+        return Collections.unmodifiableList(
+                    getJavaMap()
+                        .entrySet()
+                        .stream().map(e -> new VncMapEntry(e.getKey(), e.getValue()))
+                        .collect(Collectors.toList()));
+    }
 
-	@Override
-	public Object convertToJavaObject() {
-		return value;
-	}
-	
-	@Override
-	public int compareTo(final VncVal o) {
-		if (o == Constants.Nil) {
-			return 1;
-		}
-		else if (Types.isVncJavaMap(o)) {
-			int c = Integer.compare(size(), ((VncJavaMap)o).size());
-			if (c != 0) {
-				return c;
-			}
-			else {
-				return equals(o) ? 0 : -1;
-			}
-		}
+    @Override
+    public VncJavaMap putAll(final VncMap map) {
+        getJavaMap().entrySet().forEach(
+                e -> value.put(
+                    e.getKey().convertToJavaObject(),
+                    e.getValue().convertToJavaObject()));
+        return this;
+    }
 
-		return super.compareTo(o);
-	}
+    @Override
+    public VncJavaMap assoc(final VncVal... mvs) {
+        if (mvs.length %2 != 0) {
+            throw new VncException(String.format(
+                    "java-map: assoc requires an even number of items."));
+        }
 
-	@Override
-	public int hashCode() {
-		return value.hashCode();
-	}
+        for (int i=0; i<mvs.length-1; i+=2) {
+            value.put(
+                mvs[i].convertToJavaObject(),
+                mvs[i+1].convertToJavaObject());
+        }
+        return this;
+    }
 
-	@Override
-	public boolean equals(Object obj) {
-		if (this == obj)
-			return true;
-		if (getClass() != obj.getClass())
-			return false;
-		VncJavaMap other = (VncJavaMap) obj;
-		return value.equals(other.value);
-	}
+    @Override
+    public VncJavaMap assoc(final VncSequence mvs) {
+        if (mvs.size() %2 != 0) {
+            throw new VncException(String.format(
+                    "java-map: assoc requires an even number of items."));
+        }
 
-	@Override 
-	public String toString() {
-		return toString(true);
-	}
-	
-	@Override
-	public String toString(final boolean print_machine_readably) {
-		final List<VncVal> list = new ArrayList<>();
-		value.entrySet().forEach(e -> {
-			list.add(JavaInteropUtil.convertToVncVal(e.getKey()));
-			list.add(JavaInteropUtil.convertToVncVal(e.getValue()));
-		});
-	
-		return "{" + Printer.join(list.stream(), " ", print_machine_readably) + "}";
-	}
-	
+        VncSequence kv = mvs;
+        while(!kv.isEmpty()) {
+            value.put(
+                    kv.first().convertToJavaObject(),
+                    kv.second().convertToJavaObject());
+            kv = kv.drop(2);
+        }
+        return this;
+    }
+
+    @Override
+    public VncJavaMap dissoc(final VncVal... keys) {
+        for (VncVal key : keys) {
+            value.remove(key.convertToJavaObject());
+        }
+        return this;
+    }
+
+    @Override
+    public VncJavaMap dissoc(final VncSequence keys) {
+        for (VncVal key : keys) {
+            value.remove(key.convertToJavaObject());
+        }
+        return this;
+    }
+
+    @Override
+    public VncList toVncList() {
+        return VncList.ofAll(
+                        value.entrySet()
+                             .stream()
+                             .map(e -> VncVector.of(
+                                        JavaInteropUtil.convertToVncVal(e.getKey()),
+                                        JavaInteropUtil.convertToVncVal(e.getValue()))),
+                        getMeta());
+    }
+
+    @Override
+    public VncVector toVncVector() {
+        return VncVector.ofAll(
+                        value.entrySet()
+                             .stream()
+                             .map(e -> VncVector.of(
+                                        JavaInteropUtil.convertToVncVal(e.getKey()),
+                                        JavaInteropUtil.convertToVncVal(e.getValue()))),
+                        getMeta());
+    }
+
+    @Override
+    public int size() {
+        return value.size();
+    }
+
+    @Override
+    public boolean isEmpty() {
+        return value.isEmpty();
+    }
+
+    @Override
+    public TypeRank typeRank() {
+        return TypeRank.JAVAMAP;
+    }
+
+    @Override
+    public Object convertToJavaObject() {
+        return value;
+    }
+
+    @Override
+    public int compareTo(final VncVal o) {
+        if (o == Constants.Nil) {
+            return 1;
+        }
+        else if (Types.isVncJavaMap(o)) {
+            int c = Integer.compare(size(), ((VncJavaMap)o).size());
+            if (c != 0) {
+                return c;
+            }
+            else {
+                return equals(o) ? 0 : -1;
+            }
+        }
+
+        return super.compareTo(o);
+    }
+
+    @Override
+    public int hashCode() {
+        return value.hashCode();
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (this == obj)
+            return true;
+        if (getClass() != obj.getClass())
+            return false;
+        VncJavaMap other = (VncJavaMap) obj;
+        return value.equals(other.value);
+    }
+
+    @Override
+    public String toString() {
+        return toString(true);
+    }
+
+    @Override
+    public String toString(final boolean print_machine_readably) {
+        final List<VncVal> list = new ArrayList<>();
+        value.entrySet().forEach(e -> {
+            list.add(JavaInteropUtil.convertToVncVal(e.getKey()));
+            list.add(JavaInteropUtil.convertToVncVal(e.getValue()));
+        });
+
+        return "{" + Printer.join(list.stream(), " ", print_machine_readably) + "}";
+    }
+
 
 
     private static final long serialVersionUID = -1848883965231344442L;
 
-	private final Map<Object,Object> value;	
+    private final Map<Object,Object> value;
 }

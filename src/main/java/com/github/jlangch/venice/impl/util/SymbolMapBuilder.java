@@ -1,5 +1,5 @@
 /*   __    __         _
- *   \ \  / /__ _ __ (_) ___ ___ 
+ *   \ \  / /__ _ __ (_) ___ ___
  *    \ \/ / _ \ '_ \| |/ __/ _ \
  *     \  /  __/ | | | | (_|  __/
  *      \/ \___|_| |_|_|\___\___|
@@ -33,42 +33,42 @@ import com.github.jlangch.venice.impl.types.collections.VncHashMap;
 
 
 public class SymbolMapBuilder {
-	
-	public SymbolMapBuilder() {
-	}
 
-	public SymbolMapBuilder add(final VncFunction fn) {
-		if (fn.isPrivate()) {
-			map.put(new VncSymbol(
-							fn.getQualifiedName(), 
-							VncHashMap.of(MetaUtil.PRIVATE, VncBoolean.True)),
-					fn);
-		}
-		else {
-			map.put(new VncSymbol(fn.getQualifiedName()), fn);
-		}
-		return this;
-	}
-	
-	public SymbolMapBuilder add(final VncSpecialForm sf) {
-		map.put(new VncSymbol(sf.getName()), sf);
-		return this;
-	}
+    public SymbolMapBuilder() {
+    }
 
-	public SymbolMapBuilder put(final VncSymbol key, final VncVal val) {
-		map.put(key, val);
-		return this;
-	}
+    public SymbolMapBuilder add(final VncFunction fn) {
+        if (fn.isPrivate()) {
+            map.put(new VncSymbol(
+                            fn.getQualifiedName(),
+                            VncHashMap.of(MetaUtil.PRIVATE, VncBoolean.True)),
+                    fn);
+        }
+        else {
+            map.put(new VncSymbol(fn.getQualifiedName()), fn);
+        }
+        return this;
+    }
 
-	
-	public VncHashMap build() {
-		return new VncHashMap(map);
-	}
-	
-	public Map<VncVal,VncVal> toMap() {
-		return map;
-	}
-	
-	
-	private HashMap<VncVal,VncVal> map = new HashMap<>();
+    public SymbolMapBuilder add(final VncSpecialForm sf) {
+        map.put(new VncSymbol(sf.getName()), sf);
+        return this;
+    }
+
+    public SymbolMapBuilder put(final VncSymbol key, final VncVal val) {
+        map.put(key, val);
+        return this;
+    }
+
+
+    public VncHashMap build() {
+        return new VncHashMap(map);
+    }
+
+    public Map<VncVal,VncVal> toMap() {
+        return map;
+    }
+
+
+    private HashMap<VncVal,VncVal> map = new HashMap<>();
 }

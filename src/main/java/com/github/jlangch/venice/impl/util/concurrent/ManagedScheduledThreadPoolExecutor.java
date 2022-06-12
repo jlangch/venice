@@ -23,24 +23,24 @@ import java.util.concurrent.ScheduledExecutorService;
 
 public class ManagedScheduledThreadPoolExecutor extends ManagedExecutor {
 
-	public ManagedScheduledThreadPoolExecutor(
-			final String threadPoolName,
-			final int corePoolSize
-	) {
-		super(threadPoolName);
-		this.corePoolSize = corePoolSize;
-	}
-	
-	@Override
-	public ScheduledExecutorService getExecutor() {
-		return (ScheduledExecutorService)super.getExecutor();
-	}
+    public ManagedScheduledThreadPoolExecutor(
+            final String threadPoolName,
+            final int corePoolSize
+    ) {
+        super(threadPoolName);
+        this.corePoolSize = corePoolSize;
+    }
 
-	@Override
-	protected ScheduledExecutorService createExecutorService() {
-		return Executors.newScheduledThreadPool(corePoolSize, createThreadFactory());
-	}
-	
-	final int corePoolSize;
+    @Override
+    public ScheduledExecutorService getExecutor() {
+        return (ScheduledExecutorService)super.getExecutor();
+    }
+
+    @Override
+    protected ScheduledExecutorService createExecutorService() {
+        return Executors.newScheduledThreadPool(corePoolSize, createThreadFactory());
+    }
+
+    final int corePoolSize;
 }
 

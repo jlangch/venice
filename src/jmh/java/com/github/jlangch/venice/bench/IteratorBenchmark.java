@@ -1,5 +1,5 @@
 /*   __    __         _
- *   \ \  / /__ _ __ (_) ___ ___ 
+ *   \ \  / /__ _ __ (_) ___ ___
  *    \ \/ / _ \ '_ \| |/ __/ _ \
  *     \  /  __/ | | | | (_|  __/
  *      \/ \___|_| |_|_|\___\___|
@@ -47,127 +47,127 @@ import io.vavr.collection.Vector;
 @State (Scope.Benchmark)
 @Threads (1)
 public class IteratorBenchmark {
-	
-	public IteratorBenchmark() {
-	}
-	
-	@Benchmark
-	public Object sum_vavr_rest_short() {
-		Vector<Long> vec = vectorShort;
-		long sum = 0;
-		for(int ii=0; ii<4; ii++) {
-			sum += vec.head();
-			vec = vec.tail();
-		}
-		return sum;
-	}
 
-	@Benchmark
-	public Object sum_vavr_nth_short() {
-		long sum = 0;
-		for(int ii=0; ii<vectorShort.size(); ii++) {
-			sum += vectorShort.get(ii);
-		}
-		return sum;
-	}
-	
-	@Benchmark
-	public Object sum_vavr_iterator_short() {
-		final Iterator<Long> iter = vectorShort.iterator();
-		
-		long sum = 0;
-		while(iter.hasNext()) {
-			sum += iter.next();
-		}
-		return sum;
-	}
-	
-	@Benchmark
-	public Object sum_vavr_for_short() {
-		long sum = 0;
-		for(Long v : vectorShort) {
-			sum += v;
-		}
-		return sum;
-	}
-	
-	@Benchmark
-	public Object sum_vavr_foreach_short() {
-		final AtomicLong sum = new AtomicLong(0);
-		vectorShort.forEach(i -> sum.addAndGet(i));
-		return sum;
-	}
+    public IteratorBenchmark() {
+    }
 
-	@Benchmark
-	public Object sum_iterator_asjava_loop_short() {
-		
-		long sum = 0;
-		for(Long v : vectorShort.asJava()) {
-			sum += v;
-		}
-		return sum;
-	}
-	
+    @Benchmark
+    public Object sum_vavr_rest_short() {
+        Vector<Long> vec = vectorShort;
+        long sum = 0;
+        for(int ii=0; ii<4; ii++) {
+            sum += vec.head();
+            vec = vec.tail();
+        }
+        return sum;
+    }
 
-	
-	@Benchmark
-	public Object sum_vavr_rest_long() {
-		Vector<Long> vec = vectorLong;
-		long sum = 0;
-		for(int ii=0; ii<4; ii++) {
-			sum += vec.head();
-			vec = vec.tail();
-		}
-		return sum;
-	}
+    @Benchmark
+    public Object sum_vavr_nth_short() {
+        long sum = 0;
+        for(int ii=0; ii<vectorShort.size(); ii++) {
+            sum += vectorShort.get(ii);
+        }
+        return sum;
+    }
 
-	@Benchmark
-	public Object sum_vavr_nth_long() {
-		long sum = 0;
-		for(int ii=0; ii<vectorLong.size(); ii++) {
-			sum += vectorLong.get(ii);
-		}
-		return sum;
-	}
-	
-	@Benchmark
-	public Object sum_vavr_iterator_long() {
-		final Iterator<Long> iter = vectorLong.iterator();
-		
-		long sum = 0;
-		while(iter.hasNext()) {
-			sum += iter.next();
-		}
-		return sum;
-	}
-	
-	@Benchmark
-	public Object sum_vavr_for_long() {
-		long sum = 0;
-		for(Long v : vectorLong) {
-			sum += v;
-		}
-		return sum;
-	}
+    @Benchmark
+    public Object sum_vavr_iterator_short() {
+        final Iterator<Long> iter = vectorShort.iterator();
 
-	@Benchmark
-	public Object sum_vavr_foreach_long() {
-		final AtomicLong sum = new AtomicLong(0);
-		vectorLong.forEach(i -> sum.addAndGet(i));
-		return sum;
-	}
+        long sum = 0;
+        while(iter.hasNext()) {
+            sum += iter.next();
+        }
+        return sum;
+    }
 
-	@Benchmark
-	public Object sum_iterator_asjava_loop_long() {
-		
-		long sum = 0;
-		for(Long v : vectorLong.asJava()) {
-			sum += v;
-		}
-		return sum;
-	}
+    @Benchmark
+    public Object sum_vavr_for_short() {
+        long sum = 0;
+        for(Long v : vectorShort) {
+            sum += v;
+        }
+        return sum;
+    }
 
-	
-	private final Vector<Long> vectorShort = Vector.range(1L, 5L);
-	private final Vector<Long> vectorLong = Vector.range(1L, 1000L);
+    @Benchmark
+    public Object sum_vavr_foreach_short() {
+        final AtomicLong sum = new AtomicLong(0);
+        vectorShort.forEach(i -> sum.addAndGet(i));
+        return sum;
+    }
+
+    @Benchmark
+    public Object sum_iterator_asjava_loop_short() {
+
+        long sum = 0;
+        for(Long v : vectorShort.asJava()) {
+            sum += v;
+        }
+        return sum;
+    }
+
+
+
+    @Benchmark
+    public Object sum_vavr_rest_long() {
+        Vector<Long> vec = vectorLong;
+        long sum = 0;
+        for(int ii=0; ii<4; ii++) {
+            sum += vec.head();
+            vec = vec.tail();
+        }
+        return sum;
+    }
+
+    @Benchmark
+    public Object sum_vavr_nth_long() {
+        long sum = 0;
+        for(int ii=0; ii<vectorLong.size(); ii++) {
+            sum += vectorLong.get(ii);
+        }
+        return sum;
+    }
+
+    @Benchmark
+    public Object sum_vavr_iterator_long() {
+        final Iterator<Long> iter = vectorLong.iterator();
+
+        long sum = 0;
+        while(iter.hasNext()) {
+            sum += iter.next();
+        }
+        return sum;
+    }
+
+    @Benchmark
+    public Object sum_vavr_for_long() {
+        long sum = 0;
+        for(Long v : vectorLong) {
+            sum += v;
+        }
+        return sum;
+    }
+
+    @Benchmark
+    public Object sum_vavr_foreach_long() {
+        final AtomicLong sum = new AtomicLong(0);
+        vectorLong.forEach(i -> sum.addAndGet(i));
+        return sum;
+    }
+
+    @Benchmark
+    public Object sum_iterator_asjava_loop_long() {
+
+        long sum = 0;
+        for(Long v : vectorLong.asJava()) {
+            sum += v;
+        }
+        return sum;
+    }
+
+
+    private final Vector<Long> vectorShort = Vector.range(1L, 5L);
+    private final Vector<Long> vectorLong = Vector.range(1L, 1000L);
 }

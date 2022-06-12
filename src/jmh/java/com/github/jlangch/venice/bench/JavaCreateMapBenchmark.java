@@ -1,5 +1,5 @@
 /*   __    __         _
- *   \ \  / /__ _ __ (_) ___ ___ 
+ *   \ \  / /__ _ __ (_) ___ ___
  *    \ \/ / _ \ '_ \| |/ __/ _ \
  *     \  /  __/ | | | | (_|  __/
  *      \/ \___|_| |_|_|\___\___|
@@ -59,58 +59,58 @@ import org.openjdk.jmh.annotations.Warmup;
 @State (Scope.Benchmark)
 @Threads (1)
 public class JavaCreateMapBenchmark {
-	
-	public JavaCreateMapBenchmark() {
-	}
-	
-	/** 
-	    [VENICE]
-	     
-	    (load-module :benchmark)
-	       
-	 	(defn create−mutable-map [size] 
-		  (loop [m (mutable-map), i size]
-		    (if (zero? i)
-		      m
-		      (recur (assoc! m i (* 2 i)) (dec i)))))
 
-	 	(defn create−persistent-map [size] 
-		  (loop [m (hash-map), i size]
-		    (if (zero? i)
-		      m
-		      (recur (assoc m i (* 2 i)) (dec i)))))
+    public JavaCreateMapBenchmark() {
+    }
+
+    /**
+        [VENICE]
+
+        (load-module :benchmark)
+
+         (defn create−mutable-map [size]
+          (loop [m (mutable-map), i size]
+            (if (zero? i)
+              m
+              (recur (assoc! m i (* 2 i)) (dec i)))))
+
+         (defn create−persistent-map [size]
+          (loop [m (hash-map), i size]
+            (if (zero? i)
+              m
+              (recur (assoc m i (* 2 i)) (dec i)))))
 
 
         (bench/benchmark (create−mutable-map 2000) 1000 1000)
-        
- 		(do (time (dorun 1000 (create−mutable-map 2000))) nil)
-		(reduce + (dobench 1000 (create−mutable-map 2000)))
-		
-		
-		[CLOJURE]
-		
-		(require '[criterium.core :as criterium])
-		
-		(time (dotimes [_ 1e6] (reduce + (map #(/ % 100.0) (range 100)))))
-		
-		(criterium/quick-bench (reduce + (map #(/ % 100.0) (range 100))))
+
+         (do (time (dorun 1000 (create−mutable-map 2000))) nil)
+        (reduce + (dobench 1000 (create−mutable-map 2000)))
+
+
+        [CLOJURE]
+
+        (require '[criterium.core :as criterium])
+
+        (time (dotimes [_ 1e6] (reduce + (map #(/ % 100.0) (range 100)))))
+
+        (criterium/quick-bench (reduce + (map #(/ % 100.0) (range 100))))
     */
 
-	@Benchmark
-	public Object create_mutable_map() {
-		final ConcurrentHashMap<Long,Long> map = new ConcurrentHashMap<>();
-		for(long ii=0; ii<2000; ii++) {
-			map.put(Long.valueOf(ii), Long.valueOf(ii*2));
-		}
-		return map;
-	}
+    @Benchmark
+    public Object create_mutable_map() {
+        final ConcurrentHashMap<Long,Long> map = new ConcurrentHashMap<>();
+        for(long ii=0; ii<2000; ii++) {
+            map.put(Long.valueOf(ii), Long.valueOf(ii*2));
+        }
+        return map;
+    }
 
-	@Benchmark
-	public Object create_persistent_map() {
-		io.vavr.collection.HashMap<Long,Long> map = io.vavr.collection.HashMap.empty();
-		for(long ii=0; ii<2000; ii++) {
-			map = map.put(Long.valueOf(ii), Long.valueOf(ii*2));
-		}
-		return map;
-	}
+    @Benchmark
+    public Object create_persistent_map() {
+        io.vavr.collection.HashMap<Long,Long> map = io.vavr.collection.HashMap.empty();
+        for(long ii=0; ii<2000; ii++) {
+            map = map.put(Long.valueOf(ii), Long.valueOf(ii*2));
+        }
+        return map;
+    }
 }

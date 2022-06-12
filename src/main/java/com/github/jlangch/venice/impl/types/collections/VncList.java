@@ -1,5 +1,5 @@
 /*   __    __         _
- *   \ \  / /__ _ __ (_) ___ ___ 
+ *   \ \  / /__ _ __ (_) ___ ___
  *    \ \/ / _ \ '_ \| |/ __/ _ \
  *     \  /  __/ | | | | (_|  __/
  *      \/ \___|_| |_|_|\___\___|
@@ -44,99 +44,99 @@ import com.github.jlangch.venice.impl.util.MetaUtil;
 
 public class VncList extends VncSequence {
 
-	protected VncList(final VncVal meta) {
-		this((io.vavr.collection.Seq<VncVal>)null, meta);
-	}
+    protected VncList(final VncVal meta) {
+        this((io.vavr.collection.Seq<VncVal>)null, meta);
+    }
 
-	protected VncList(final java.util.Collection<? extends VncVal> vals, final VncVal meta) {
-		this(vals == null ? null : io.vavr.collection.Vector.ofAll(vals), meta);
-	}
+    protected VncList(final java.util.Collection<? extends VncVal> vals, final VncVal meta) {
+        this(vals == null ? null : io.vavr.collection.Vector.ofAll(vals), meta);
+    }
 
-	public VncList(final io.vavr.collection.Seq<VncVal> vals, final VncVal meta) {
-		super(meta == null ? Nil : meta);
-		if (vals == null) {
-			value = io.vavr.collection.Vector.empty();
-		}
-		else if (vals instanceof io.vavr.collection.Vector) {
-			value = (io.vavr.collection.Vector<VncVal>)vals;
-		}
-		else {
-			value = io.vavr.collection.Vector.ofAll(vals);
-		}
-	}
-	
-	
-	public static VncList of(final VncVal... mvs) {
-		return mvs.length <= VncTinyList.MAX_ELEMENTS
-				? VncTinyList.of(mvs)
-				: new VncList(io.vavr.collection.Vector.of(mvs), null);
-	}
-	
-	public static VncList ofList(final List<? extends VncVal> list) {
-		return list.size() <= VncTinyList.MAX_ELEMENTS
-				? VncTinyList.ofArr(list.toArray(new VncVal[0]), null)
-				: new VncList(list, null);
-	}
+    public VncList(final io.vavr.collection.Seq<VncVal> vals, final VncVal meta) {
+        super(meta == null ? Nil : meta);
+        if (vals == null) {
+            value = io.vavr.collection.Vector.empty();
+        }
+        else if (vals instanceof io.vavr.collection.Vector) {
+            value = (io.vavr.collection.Vector<VncVal>)vals;
+        }
+        else {
+            value = io.vavr.collection.Vector.ofAll(vals);
+        }
+    }
 
-	public static VncList ofList(final List<? extends VncVal> list, final VncVal meta) {
-		return list.size() <= VncTinyList.MAX_ELEMENTS
-				? VncTinyList.ofArr(list.toArray(new VncVal[0]), meta)
-				: new VncList(list, meta);
-	}
 
-	public static VncList ofColl(final Collection<? extends VncVal> vals) {
-		return new VncList(vals, Nil);
-	}
+    public static VncList of(final VncVal... mvs) {
+        return mvs.length <= VncTinyList.MAX_ELEMENTS
+                ? VncTinyList.of(mvs)
+                : new VncList(io.vavr.collection.Vector.of(mvs), null);
+    }
 
-	public static VncList ofColl(final Collection<? extends VncVal> vals, final VncVal meta) {
-		return new VncList(vals, meta);
-	}
+    public static VncList ofList(final List<? extends VncVal> list) {
+        return list.size() <= VncTinyList.MAX_ELEMENTS
+                ? VncTinyList.ofArr(list.toArray(new VncVal[0]), null)
+                : new VncList(list, null);
+    }
 
-	public static VncList ofAll(final Iterable<? extends VncVal> iter, final VncVal meta) {
-		return new VncList(io.vavr.collection.Vector.ofAll(iter), meta);
-	}
+    public static VncList ofList(final List<? extends VncVal> list, final VncVal meta) {
+        return list.size() <= VncTinyList.MAX_ELEMENTS
+                ? VncTinyList.ofArr(list.toArray(new VncVal[0]), meta)
+                : new VncList(list, meta);
+    }
 
-	public static VncList ofAll(final Stream<? extends VncVal> stream, final VncVal meta) {
-		return new VncList(io.vavr.collection.Vector.ofAll(stream), meta);
-	}
+    public static VncList ofColl(final Collection<? extends VncVal> vals) {
+        return new VncList(vals, Nil);
+    }
 
-	
-	@Override
-	public VncList emptyWithMeta() {
-		return new VncTinyList(getMeta());
-	}
-	
-	@Override
-	public VncList withVariadicValues(final VncVal... replaceVals) {
-		return replaceVals.length <= VncTinyList.MAX_ELEMENTS
-				? VncTinyList.ofArr(replaceVals, getMeta())
-				: new VncList(io.vavr.collection.Vector.of(replaceVals), getMeta());
-	}
-	
-	@Override
-	public VncList withValues(final List<? extends VncVal> replaceVals) {
-		return VncList.ofList(replaceVals, getMeta());
-	}
+    public static VncList ofColl(final Collection<? extends VncVal> vals, final VncVal meta) {
+        return new VncList(vals, meta);
+    }
 
-	@Override
-	public VncList withValues(final List<? extends VncVal> replaceVals, final VncVal meta) {
-		return VncList.ofList(replaceVals, meta);
-	}
+    public static VncList ofAll(final Iterable<? extends VncVal> iter, final VncVal meta) {
+        return new VncList(io.vavr.collection.Vector.ofAll(iter), meta);
+    }
 
-	@Override
-	public VncList withMeta(final VncVal meta) {
-		return new VncList(value, meta);
-	}
-	
-	@Override
-	public VncKeyword getType() {
-		return new VncKeyword(
-						TYPE, 
-						MetaUtil.typeMeta(
-							new VncKeyword(VncSequence.TYPE), 
-							new VncKeyword(VncCollection.TYPE), 
-							new VncKeyword(VncVal.TYPE)));
-	}
+    public static VncList ofAll(final Stream<? extends VncVal> stream, final VncVal meta) {
+        return new VncList(io.vavr.collection.Vector.ofAll(stream), meta);
+    }
+
+
+    @Override
+    public VncList emptyWithMeta() {
+        return new VncTinyList(getMeta());
+    }
+
+    @Override
+    public VncList withVariadicValues(final VncVal... replaceVals) {
+        return replaceVals.length <= VncTinyList.MAX_ELEMENTS
+                ? VncTinyList.ofArr(replaceVals, getMeta())
+                : new VncList(io.vavr.collection.Vector.of(replaceVals), getMeta());
+    }
+
+    @Override
+    public VncList withValues(final List<? extends VncVal> replaceVals) {
+        return VncList.ofList(replaceVals, getMeta());
+    }
+
+    @Override
+    public VncList withValues(final List<? extends VncVal> replaceVals, final VncVal meta) {
+        return VncList.ofList(replaceVals, meta);
+    }
+
+    @Override
+    public VncList withMeta(final VncVal meta) {
+        return new VncList(value, meta);
+    }
+
+    @Override
+    public VncKeyword getType() {
+        return new VncKeyword(
+                        TYPE,
+                        MetaUtil.typeMeta(
+                            new VncKeyword(VncSequence.TYPE),
+                            new VncKeyword(VncCollection.TYPE),
+                            new VncKeyword(VncVal.TYPE)));
+    }
 
     @Override
     public Iterator<VncVal> iterator() {
@@ -144,282 +144,283 @@ public class VncList extends VncSequence {
     }
 
     @Override
-	public Stream<VncVal> stream() {
-		return value.toJavaStream();
-	}
+    public Stream<VncVal> stream() {
+        return value.toJavaStream();
+    }
 
-	@Override
-	public void forEach(Consumer<? super VncVal> action) {
-		value.forEach(v -> action.accept(v));
-	}
-	
-	@Override
-	public VncList filter(final Predicate<? super VncVal> predicate) {
-		return new VncList(value.filter(predicate), getMeta());
-	}
+    @Override
+    public void forEach(Consumer<? super VncVal> action) {
+        value.forEach(v -> action.accept(v));
+    }
 
-	@Override
-	public VncList map(final Function<? super VncVal, ? extends VncVal> mapper) {
-		return new VncList(value.map(mapper), getMeta());
-	}
+    @Override
+    public VncList filter(final Predicate<? super VncVal> predicate) {
+        return new VncList(value.filter(predicate), getMeta());
+    }
 
-	@Override
-	public List<VncVal> getJavaList() { 
-		return value.asJava(); // return an immutable view on top of Vector<VncVal>
-	}
+    @Override
+    public VncList map(final Function<? super VncVal, ? extends VncVal> mapper) {
+        return new VncList(value.map(mapper), getMeta());
+    }
 
-	@Override
-	public int size() {
-		return value.size();
-	}
-	
-	@Override
-	public boolean isEmpty() {
-		return value.isEmpty();
-	}
+    @Override
+    public List<VncVal> getJavaList() {
+        return value.asJava(); // return an immutable view on top of Vector<VncVal>
+    }
 
-	@Override
-	public VncVal nth(final int idx) {
-		if (idx < 0 || idx >= value.size()) {
-			throw new VncException(String.format(
-						"nth: index %d out of range for a list of size %d.", 
-						idx, 
-						size()));
-		}
+    @Override
+    public int size() {
+        return value.size();
+    }
 
-		return value.get(idx);
-	}
+    @Override
+    public boolean isEmpty() {
+        return value.isEmpty();
+    }
 
-	@Override
-	public VncVal nthOrDefault(final int idx, final VncVal defaultVal) {
-		return idx >= 0 && idx < value.size() ? value.get(idx) : defaultVal;
-	}
+    @Override
+    public VncVal nth(final int idx) {
+        if (idx < 0 || idx >= value.size()) {
+            throw new VncException(String.format(
+                        "nth: index %d out of range for a list of size %d.",
+                        idx,
+                        size()));
+        }
 
-	@Override
-	public VncVal first() {
-		return isEmpty() ? Nil : value.head();
-	}
+        return value.get(idx);
+    }
 
-	@Override
-	public VncVal last() {
-		return isEmpty() ? Nil : value.last();
-	}
-	
-	@Override
-	public VncList rest() {
-		if (value.isEmpty()) {
-			return this;
-		}
-		else {
-			final io.vavr.collection.Vector<VncVal> rest = value.tail();
-			return rest.size() <= VncTinyList.MAX_ELEMENTS
-					? VncTinyList.ofList(rest.asJava(), getMeta())
-					: new VncList(rest, getMeta());
-		}
-	}
-	
-	@Override
-	public VncList butlast() {
-		if (value.isEmpty()) {
-			return this;
-		}
-		else {
-			return value.size() <= 1
-						? emptyWithMeta() 
-						: new VncList(value.dropRight(1), getMeta());
-		}
-	}
+    @Override
+    public VncVal nthOrDefault(final int idx, final VncVal defaultVal) {
+        return idx >= 0 && idx < value.size() ? value.get(idx) : defaultVal;
+    }
 
-	@Override
-	public VncList drop(final int n) {
-		if (n <= 0) {
-			return this;
-		}
-		else if (n >= value.size()) {
-			return VncTinyList.EMPTY;
-		}
-		else {
-			return value.isEmpty() ? this : new VncList(value.drop(n), getMeta());
-		}
-	}
-	
-	@Override
-	public VncList dropWhile(final Predicate<? super VncVal> predicate) {
-		return new VncList(value.dropWhile(predicate), getMeta());
-	}
+    @Override
+    public VncVal first() {
+        return isEmpty() ? Nil : value.head();
+    }
 
-	@Override
-	public VncList dropRight(final int n) {
-		if (value.isEmpty()) {
-			return this;
-		}
-		else {
-			return n >= value.size() 
-						? emptyWithMeta() 
-						: new VncList(value.dropRight(n), getMeta());
-		}
-	}
+    @Override
+    public VncVal last() {
+        return isEmpty() ? Nil : value.last();
+    }
 
-	@Override
-	public VncList take(final int n) {
-		return value.isEmpty() ? this : new VncList(value.take(n), getMeta());
-	}
-	
-	@Override
-	public VncList takeWhile(final Predicate<? super VncVal> predicate) {
-		return new VncList(value.takeWhile(predicate), getMeta());
-	}
+    @Override
+    public VncList rest() {
+        if (value.isEmpty()) {
+            return this;
+        }
+        else {
+            final io.vavr.collection.Vector<VncVal> rest = value.tail();
+            return rest.size() <= VncTinyList.MAX_ELEMENTS
+                    ? VncTinyList.ofList(rest.asJava(), getMeta())
+                    : new VncList(rest, getMeta());
+        }
+    }
 
-	@Override
-	public VncList takeRight(final int n) {
-		if (n >= value.size()) {
-			return this;
-		}
-		else {
-			return n <= 0 ? emptyWithMeta() : new VncList(value.takeRight(n), getMeta());
-		}
-	}
+    @Override
+    public VncList butlast() {
+        if (value.isEmpty()) {
+            return this;
+        }
+        else {
+            return value.size() <= 1
+                        ? emptyWithMeta()
+                        : new VncList(value.dropRight(1), getMeta());
+        }
+    }
 
-	@Override
-	public VncList reverse() {
-		return new VncList(value.reverse(), getMeta());
-	}
-	
-	@Override 
-	public VncList shuffle() {
-		return new VncList(value.shuffle(), getMeta());
-	}
-	
-	@Override 
-	public VncList distinct() {
-		return new VncList(value.distinct(), getMeta());
-	}
+    @Override
+    public VncList drop(final int n) {
+        if (n <= 0) {
+            return this;
+        }
+        else if (n >= value.size()) {
+            return VncTinyList.EMPTY;
+        }
+        else {
+            return value.isEmpty() ? this : new VncList(value.drop(n), getMeta());
+        }
+    }
 
-	@Override
-	public VncList slice(final int start, final int end) {
-		return new VncList(value.subSequence(start, Math.min(end, value.size())), getMeta());
-	}
-	
-	@Override
-	public VncList slice(final int start) {
-		return new VncList(value.subSequence(start), getMeta());
-	}
-	
-	@Override
-	public VncList toVncList() {
-		return this;
-	}
+    @Override
+    public VncList dropWhile(final Predicate<? super VncVal> predicate) {
+        return new VncList(value.dropWhile(predicate), getMeta());
+    }
 
-	@Override
-	public VncVector toVncVector() {
-		return new VncVector(value, getMeta());
-	}
+    @Override
+    public VncList dropRight(final int n) {
+        if (value.isEmpty()) {
+            return this;
+        }
+        else {
+            return n >= value.size()
+                        ? emptyWithMeta()
+                        : new VncList(value.dropRight(n), getMeta());
+        }
+    }
 
-	
-	@Override
-	public VncList addAtStart(final VncVal val) {
-		return new VncList(value.prepend(val), getMeta());
-	}
-	
-	@Override
-	public VncList addAllAtStart(final VncSequence list, final boolean reverseAdd) {
-		final VncSequence seq = reverseAdd ? list.reverse() : list;
-		return new VncList(value.prependAll(seq), getMeta());
-	}
-	
-	@Override
-	public VncList addAtEnd(final VncVal val) {
-		return new VncList(value.append(val), getMeta());
-	}
-	
-	@Override
-	public VncList addAllAtEnd(final VncSequence list) {
-		return new VncList(value.appendAll(list), getMeta());
-	}
-	
-	@Override
-	public VncList setAt(final int idx, final VncVal val) {
-		return new VncList(value.update(idx, val), getMeta());
-	}
-	
-	@Override
-	public VncList removeAt(final int idx) {
-		return new VncList(value.removeAt(idx), getMeta());
-	}
-	
-	@Override 
-	public TypeRank typeRank() {
-		return TypeRank.LIST;
-	}
+    @Override
+    public VncList take(final int n) {
+        return value.isEmpty() ? this : new VncList(value.take(n), getMeta());
+    }
 
-	@Override 
-	public boolean isVncList() {
-		return true;
-	}
+    @Override
+    public VncList takeWhile(final Predicate<? super VncVal> predicate) {
+        return new VncList(value.takeWhile(predicate), getMeta());
+    }
 
-	@Override
-	public Object convertToJavaObject() {
-		return stream()
-				.map(v -> v.convertToJavaObject())
-				.collect(Collectors.toList());
-	}
-	
-	@Override
-	public int compareTo(final VncVal o) {
-		if (o == Nil) {
-			return 1;
-		}
-		else if (Types.isVncList(o)) {
-			int c = Integer.compare(size(), ((VncList)o).size());
-			if (c != 0) {
-				return c;
-			}
-			else {
-				for(int ii=0; ii<size(); ii++) {
-					c = nth(ii).compareTo(((VncList)o).nth(ii));
-					if (c != 0) {
-						return c;
-					}
-				}
-				return 0;
-			}
-		}
+    @Override
+    public VncList takeRight(final int n) {
+        if (n >= value.size()) {
+            return this;
+        }
+        else {
+            return n <= 0 ? emptyWithMeta() : new VncList(value.takeRight(n), getMeta());
+        }
+    }
 
-		return super.compareTo(o);
-	}
+    @Override
+    public VncList reverse() {
+        return new VncList(value.reverse(), getMeta());
+    }
 
-	@Override
-	public int hashCode() {
-		return value.hashCode();
-	}
+    @Override
+    public VncList shuffle() {
+        return new VncList(value.shuffle(), getMeta());
+    }
 
-	@Override
-	public boolean equals(Object obj) {
-		if (this == obj)
-			return true;
-		if (getClass() != obj.getClass())
-			return false;
-		VncList other = (VncList) obj;
-		return value.equals(other.value);
-	}
+    @Override
+    public VncList distinct() {
+        return new VncList(value.distinct(), getMeta());
+    }
 
-	@Override 
-	public String toString() {
-		return "(" + Printer.join(this, " ", true) + ")";
-	}
-	
-	public String toString(final boolean print_machine_readably) {
-		return "(" + Printer.join(this, " ", print_machine_readably) + ")";
-	}
+    @Override
+    public VncList slice(final int start, final int end) {
+        return new VncList(value.subSequence(start, Math.min(end, value.size())), getMeta());
+    }
 
-	public static VncList empty() {
-		return VncTinyList.EMPTY;
-	}
+    @Override
+    public VncList slice(final int start) {
+        return new VncList(value.subSequence(start), getMeta());
+    }
+
+    @Override
+    public VncList toVncList() {
+        return this;
+    }
+
+    @Override
+    public VncVector toVncVector() {
+        return new VncVector(value, getMeta());
+    }
 
 
-	public static final String TYPE = ":core/list";
+    @Override
+    public VncList addAtStart(final VncVal val) {
+        return new VncList(value.prepend(val), getMeta());
+    }
+
+    @Override
+    public VncList addAllAtStart(final VncSequence list, final boolean reverseAdd) {
+        final VncSequence seq = reverseAdd ? list.reverse() : list;
+        return new VncList(value.prependAll(seq), getMeta());
+    }
+
+    @Override
+    public VncList addAtEnd(final VncVal val) {
+        return new VncList(value.append(val), getMeta());
+    }
+
+    @Override
+    public VncList addAllAtEnd(final VncSequence list) {
+        return new VncList(value.appendAll(list), getMeta());
+    }
+
+    @Override
+    public VncList setAt(final int idx, final VncVal val) {
+        return new VncList(value.update(idx, val), getMeta());
+    }
+
+    @Override
+    public VncList removeAt(final int idx) {
+        return new VncList(value.removeAt(idx), getMeta());
+    }
+
+    @Override
+    public TypeRank typeRank() {
+        return TypeRank.LIST;
+    }
+
+    @Override
+    public boolean isVncList() {
+        return true;
+    }
+
+    @Override
+    public Object convertToJavaObject() {
+        return stream()
+                .map(v -> v.convertToJavaObject())
+                .collect(Collectors.toList());
+    }
+
+    @Override
+    public int compareTo(final VncVal o) {
+        if (o == Nil) {
+            return 1;
+        }
+        else if (Types.isVncList(o)) {
+            int c = Integer.compare(size(), ((VncList)o).size());
+            if (c != 0) {
+                return c;
+            }
+            else {
+                for(int ii=0; ii<size(); ii++) {
+                    c = nth(ii).compareTo(((VncList)o).nth(ii));
+                    if (c != 0) {
+                        return c;
+                    }
+                }
+                return 0;
+            }
+        }
+
+        return super.compareTo(o);
+    }
+
+    @Override
+    public int hashCode() {
+        return value.hashCode();
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (this == obj)
+            return true;
+        if (getClass() != obj.getClass())
+            return false;
+        VncList other = (VncList) obj;
+        return value.equals(other.value);
+    }
+
+    @Override
+    public String toString() {
+        return "(" + Printer.join(this, " ", true) + ")";
+    }
+
+    @Override
+    public String toString(final boolean print_machine_readably) {
+        return "(" + Printer.join(this, " ", print_machine_readably) + ")";
+    }
+
+    public static VncList empty() {
+        return VncTinyList.EMPTY;
+    }
+
+
+    public static final String TYPE = ":core/list";
 
     private static final long serialVersionUID = -1848883965231344442L;
- 
-	private final io.vavr.collection.Vector<VncVal> value;
+
+    private final io.vavr.collection.Vector<VncVal> value;
 }

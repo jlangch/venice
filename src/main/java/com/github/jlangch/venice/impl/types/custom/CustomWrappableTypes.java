@@ -1,5 +1,5 @@
 /*   __    __         _
- *   \ \  / /__ _ __ (_) ___ ___ 
+ *   \ \  / /__ _ __ (_) ___ ___
  *    \ \/ / _ \ '_ \| |/ __/ _ \
  *     \  /  __/ | | | | (_|  __/
  *      \/ \___|_| |_|_|\___\___|
@@ -39,24 +39,24 @@ import com.github.jlangch.venice.impl.util.CollectionUtil;
 
 public class CustomWrappableTypes {
 
-	public CustomWrappableTypes() {
-		types = CollectionUtil.toSet(
-					new VncKeyword(VncBoolean.TYPE),
-					new VncKeyword(VncChar.TYPE),
-					new VncKeyword(VncString.TYPE),
-					new VncKeyword(VncLong.TYPE),
-					new VncKeyword(VncInteger.TYPE),
-					new VncKeyword(VncDouble.TYPE),
-					new VncKeyword(VncBigDecimal.TYPE),
-					new VncKeyword(VncBigInteger.TYPE),
-					new VncKeyword(VncByteBuffer.TYPE),
-					new VncKeyword(VncJust.TYPE));
-	}
+    public CustomWrappableTypes() {
+        types = CollectionUtil.toSet(
+                    new VncKeyword(VncBoolean.TYPE),
+                    new VncKeyword(VncChar.TYPE),
+                    new VncKeyword(VncString.TYPE),
+                    new VncKeyword(VncLong.TYPE),
+                    new VncKeyword(VncInteger.TYPE),
+                    new VncKeyword(VncDouble.TYPE),
+                    new VncKeyword(VncBigDecimal.TYPE),
+                    new VncKeyword(VncBigInteger.TYPE),
+                    new VncKeyword(VncByteBuffer.TYPE),
+                    new VncKeyword(VncJust.TYPE));
+    }
 
-	public boolean isWrappable(final VncKeyword type) {
-		return types.contains(type);
-	}
-	
-	
-	private final Set<VncKeyword> types;
+    public boolean isWrappable(final VncKeyword type) {
+        return types.contains(type);
+    }
+
+
+    private final Set<VncKeyword> types;
 }

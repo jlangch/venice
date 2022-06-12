@@ -1,5 +1,5 @@
 /*   __    __         _
- *   \ \  / /__ _ __ (_) ___ ___ 
+ *   \ \  / /__ _ __ (_) ___ ___
  *    \ \/ / _ \ '_ \| |/ __/ _ \
  *     \  /  __/ | | | | (_|  __/
  *      \/ \___|_| |_|_|\___\___|
@@ -31,53 +31,53 @@ import java.util.Date;
 
 public class TimeUtil {
 
-	public static Date convertLocalDateToDate(final LocalDate date) {
-		return new Date(date.atTime(0, 0, 0)
-							.atZone(ZoneId.systemDefault())
-							.toInstant()
-							.toEpochMilli());
-	}
+    public static Date convertLocalDateToDate(final LocalDate date) {
+        return new Date(date.atTime(0, 0, 0)
+                            .atZone(ZoneId.systemDefault())
+                            .toInstant()
+                            .toEpochMilli());
+    }
 
-	public static Date convertLocalDateTimeToDate(final LocalDateTime date) {
-		return new Date(date.atZone(ZoneId.systemDefault())
-							.toInstant()
-							.toEpochMilli());
-	}
+    public static Date convertLocalDateTimeToDate(final LocalDateTime date) {
+        return new Date(date.atZone(ZoneId.systemDefault())
+                            .toInstant()
+                            .toEpochMilli());
+    }
 
-	public static Date convertZonedDateTimeToDate(final ZonedDateTime date) {
-		return new Date(date.toInstant()
-							.toEpochMilli());
-	}
+    public static Date convertZonedDateTimeToDate(final ZonedDateTime date) {
+        return new Date(date.toInstant()
+                            .toEpochMilli());
+    }
 
-	public static LocalDate convertDateToLocalDate(final Date date) {
-		final long millis = date.getTime();
-		return Instant.ofEpochMilli(millis)
-					  .atZone(ZoneId.systemDefault())
-					  .toLocalDate();
-	}
+    public static LocalDate convertDateToLocalDate(final Date date) {
+        final long millis = date.getTime();
+        return Instant.ofEpochMilli(millis)
+                      .atZone(ZoneId.systemDefault())
+                      .toLocalDate();
+    }
 
-	public static LocalDate convertLocalDateTimeToLocalDate(final LocalDateTime date) {
-		return date.toLocalDate();
-	}
+    public static LocalDate convertLocalDateTimeToLocalDate(final LocalDateTime date) {
+        return date.toLocalDate();
+    }
 
-	public static LocalDate convertZonedDateTimeToLocalDate(final ZonedDateTime date) {
-		return date.toLocalDate();
-	}
+    public static LocalDate convertZonedDateTimeToLocalDate(final ZonedDateTime date) {
+        return date.toLocalDate();
+    }
 
-	
-	public static LocalDateTime convertDateToLocalDateTime(final Date date) {
-		final long millis = date.getTime();
-		return Instant.ofEpochMilli(millis)
-					  .atZone(ZoneId.systemDefault())
-					  .toLocalDateTime();
-	}
 
-	public static LocalDateTime convertLocalDateTimeToLocalDateTime(final LocalDate date) {
-		return date.atTime(0, 0, 0);
-	}
+    public static LocalDateTime convertDateToLocalDateTime(final Date date) {
+        final long millis = date.getTime();
+        return Instant.ofEpochMilli(millis)
+                      .atZone(ZoneId.systemDefault())
+                      .toLocalDateTime();
+    }
 
-	public static LocalDateTime convertZonedDateTimeToLocalDateTime(final ZonedDateTime date) {
-		return date.toLocalDateTime();
-	}
+    public static LocalDateTime convertLocalDateTimeToLocalDateTime(final LocalDate date) {
+        return date.atTime(0, 0, 0);
+    }
+
+    public static LocalDateTime convertZonedDateTimeToLocalDateTime(final ZonedDateTime date) {
+        return date.toLocalDateTime();
+    }
 
 }

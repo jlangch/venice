@@ -1,5 +1,5 @@
 /*   __    __         _
- *   \ \  / /__ _ __ (_) ___ ___ 
+ *   \ \  / /__ _ __ (_) ___ ___
  *    \ \/ / _ \ '_ \| |/ __/ _ \
  *     \  /  __/ | | | | (_|  __/
  *      \/ \___|_| |_|_|\___\___|
@@ -31,39 +31,39 @@ import com.github.jlangch.venice.impl.types.util.Types;
 
 public class Reduced implements IDeref {
 
-	public Reduced(final VncVal val) {
-		this.val = val;
-	}
-	
-	@Override 
-	public VncVal deref() {
-		return val;
-	}
+    public Reduced(final VncVal val) {
+        this.val = val;
+    }
 
-	@Override 
-	public String toString() {
-		return toString(true);
-	}
+    @Override
+    public VncVal deref() {
+        return val;
+    }
 
-	public String toString(final boolean print_readably) {
-		return "(reduced :value " + Printer.pr_str(val, print_readably) + ")";
-	}
+    @Override
+    public String toString() {
+        return toString(true);
+    }
 
-	
-	public static boolean isReduced(final VncVal val) {
-		return Types.isVncJavaObject(val, Reduced.class);
-	}
-
-	public static VncVal reduced(final VncVal val) {
-		return new VncJavaObject(new Reduced(val));
-	}
-		
-	public static VncVal unreduced(final VncVal val) {
-		return Types.isVncJavaObject(val, Reduced.class)
-				? Coerce.toVncJavaObject(val, Reduced.class).deref()
-				: val;
-	}
+    public String toString(final boolean print_readably) {
+        return "(reduced :value " + Printer.pr_str(val, print_readably) + ")";
+    }
 
 
-	private final VncVal val;
+    public static boolean isReduced(final VncVal val) {
+        return Types.isVncJavaObject(val, Reduced.class);
+    }
+
+    public static VncVal reduced(final VncVal val) {
+        return new VncJavaObject(new Reduced(val));
+    }
+
+    public static VncVal unreduced(final VncVal val) {
+        return Types.isVncJavaObject(val, Reduced.class)
+                ? Coerce.toVncJavaObject(val, Reduced.class).deref()
+                : val;
+    }
+
+
+    private final VncVal val;
 }

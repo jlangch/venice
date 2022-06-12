@@ -1,5 +1,5 @@
 /*   __    __         _
- *   \ \  / /__ _ __ (_) ___ ___ 
+ *   \ \  / /__ _ __ (_) ___ ___
  *    \ \/ / _ \ '_ \| |/ __/ _ \
  *     \  /  __/ | | | | (_|  __/
  *      \/ \___|_| |_|_|\___\___|
@@ -31,134 +31,134 @@ import com.github.jlangch.venice.impl.util.StringUtil;
 
 public class LineWrap {
 
-	public static List<String> softWrap(final String text, final int maxWidth) {
-		if (maxWidth < 1) {
-			throw new IllegalArgumentException("A maxWidth must be a positive number!");
-		}
-		
-		return wrap(text, maxWidth, LineWrap::softWrapLine);
-	}
+    public static List<String> softWrap(final String text, final int maxWidth) {
+        if (maxWidth < 1) {
+            throw new IllegalArgumentException("A maxWidth must be a positive number!");
+        }
 
-	public static List<String> hardWrap(final String text, final int maxWidth) {
-		if (maxWidth < 1) {
-			throw new IllegalArgumentException("A maxWidth must be a positive number!");
-		}
-		
-		return wrap(text, maxWidth, LineWrap::hardWrapLine);
-	}
+        return wrap(text, maxWidth, LineWrap::softWrapLine);
+    }
+
+    public static List<String> hardWrap(final String text, final int maxWidth) {
+        if (maxWidth < 1) {
+            throw new IllegalArgumentException("A maxWidth must be a positive number!");
+        }
+
+        return wrap(text, maxWidth, LineWrap::hardWrapLine);
+    }
 
 
-	private static List<String> wrap(
-			final String text, 
-			final int maxWidth,
-			final BiFunction<String, Integer, List<String>> wrapper
-	) {		
-		if (StringUtil.isBlank(text)) {
-			return new ArrayList<>();
-		}
+    private static List<String> wrap(
+            final String text,
+            final int maxWidth,
+            final BiFunction<String, Integer, List<String>> wrapper
+    ) {
+        if (StringUtil.isBlank(text)) {
+            return new ArrayList<>();
+        }
 
-		final LineReader reader = new LineReader(text);
-		
-		final List<String> lines = new ArrayList<>();
-		while(!reader.eof()) {
-			final String line = StringUtil.trimRight(reader.peek());
-			lines.addAll(
-					wrapper.apply(line, maxWidth));		
-			reader.consume();
-		}
-		return lines;
-	}
+        final LineReader reader = new LineReader(text);
 
-	private static List<String> softWrapLine(final String line, final int maxWidth) {
-		final List<String> lines = new ArrayList<>();
+        final List<String> lines = new ArrayList<>();
+        while(!reader.eof()) {
+            final String line = StringUtil.trimRight(reader.peek());
+            lines.addAll(
+                    wrapper.apply(line, maxWidth));
+            reader.consume();
+        }
+        return lines;
+    }
 
-		if (line.length() <= maxWidth) {
-			lines.add(line); 
-		}
-		else {
-			final int minWidth = maxWidth / 2;
-			
-			String rest = line;
-			
-			while (rest.length() > maxWidth) {
-				int pos = maxWidth;  // 1 behind the max width pos!
-				
-				while(pos >= minWidth) {
-					if (isWhitespaceChar(rest.charAt(pos))) {
-						break;
-					}
-					else if ((pos>1) && isPunctuationChar(rest.charAt(pos-1))) {
-						break;
-					}
-					pos--;
-				}
-				
-				if (pos >= minWidth) {
-					// soft wrap
-					final String part = rest.substring(0, pos).trim();
-					rest = rest.substring(pos).trim();
-					lines.add(part);
-				}
-				else {
-					// hard wrap
-					final String part = rest.substring(0, maxWidth).trim();
-					rest = rest.substring(maxWidth).trim();
-					lines.add(part);
-				}
-			}
-			
-			if (!rest.isEmpty()) {
-				lines.add(rest);
-			}
-		}
-		
-		return lines;
-	}
+    private static List<String> softWrapLine(final String line, final int maxWidth) {
+        final List<String> lines = new ArrayList<>();
 
-	private static List<String> hardWrapLine(final String line, final int maxWidth) {
-		final List<String> lines = new ArrayList<>();
+        if (line.length() <= maxWidth) {
+            lines.add(line);
+        }
+        else {
+            final int minWidth = maxWidth / 2;
 
-		if (line.length() <= maxWidth) {
-			lines.add(line); 
-		}
-		else {
-			String rest = line;
-			
-			while (rest.length() > maxWidth) {
-				final String part = rest.substring(0, maxWidth).trim();
-				rest = rest.substring(maxWidth).trim();
-				lines.add(part);
-			}
-			
-			if (!rest.isEmpty()) {
-				lines.add(rest);
-			}
-		}
-		
-		return lines;
-	}
+            String rest = line;
 
-	private static boolean isWhitespaceChar(final int ch) {
-		switch (ch) {
-			case ' ': 
-			case '\t': 
-				return true;
-			default:
-				return false;
-		}
-	}
+            while (rest.length() > maxWidth) {
+                int pos = maxWidth;  // 1 behind the max width pos!
 
-	private static boolean isPunctuationChar(final int ch) {
-		switch (ch) {
-			case '.': 
-			//case ':': 
-			case ',': 
-			case ';': 
-			case '!': 
-			case '?': 
-				return true;
-			default:
-				return false;
-		}
-	}
+                while(pos >= minWidth) {
+                    if (isWhitespaceChar(rest.charAt(pos))) {
+                        break;
+                    }
+                    else if ((pos>1) && isPunctuationChar(rest.charAt(pos-1))) {
+                        break;
+                    }
+                    pos--;
+                }
+
+                if (pos >= minWidth) {
+                    // soft wrap
+                    final String part = rest.substring(0, pos).trim();
+                    rest = rest.substring(pos).trim();
+                    lines.add(part);
+                }
+                else {
+                    // hard wrap
+                    final String part = rest.substring(0, maxWidth).trim();
+                    rest = rest.substring(maxWidth).trim();
+                    lines.add(part);
+                }
+            }
+
+            if (!rest.isEmpty()) {
+                lines.add(rest);
+            }
+        }
+
+        return lines;
+    }
+
+    private static List<String> hardWrapLine(final String line, final int maxWidth) {
+        final List<String> lines = new ArrayList<>();
+
+        if (line.length() <= maxWidth) {
+            lines.add(line);
+        }
+        else {
+            String rest = line;
+
+            while (rest.length() > maxWidth) {
+                final String part = rest.substring(0, maxWidth).trim();
+                rest = rest.substring(maxWidth).trim();
+                lines.add(part);
+            }
+
+            if (!rest.isEmpty()) {
+                lines.add(rest);
+            }
+        }
+
+        return lines;
+    }
+
+    private static boolean isWhitespaceChar(final int ch) {
+        switch (ch) {
+            case ' ':
+            case '\t':
+                return true;
+            default:
+                return false;
+        }
+    }
+
+    private static boolean isPunctuationChar(final int ch) {
+        switch (ch) {
+            case '.':
+            //case ':':
+            case ',':
+            case ';':
+            case '!':
+            case '?':
+                return true;
+            default:
+                return false;
+        }
+    }
 }

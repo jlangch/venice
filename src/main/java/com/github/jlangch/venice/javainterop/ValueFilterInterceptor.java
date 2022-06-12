@@ -1,5 +1,5 @@
 /*   __    __         _
- *   \ \  / /__ _ __ (_) ___ ___ 
+ *   \ \  / /__ _ __ (_) ___ ___
  *    \ \/ / _ \ '_ \| |/ __/ _ \
  *     \  /  __/ | | | | (_|  __/
  *      \/ \___|_| |_|_|\___\___|
@@ -26,121 +26,121 @@ import com.github.jlangch.venice.SecurityException;
 
 public class ValueFilterInterceptor extends Interceptor {
 
-	public ValueFilterInterceptor(final ILoadPaths loadPaths) {
-		super(loadPaths);
-	}
+    public ValueFilterInterceptor(final ILoadPaths loadPaths) {
+        super(loadPaths);
+    }
 
-	@Override
-	public ReturnValue onInvokeInstanceMethod(
-			final IInvoker invoker, 
-			final Object receiver, 
-			final Class<?> receiverFormalType,
-			final String method, 
-			final Object... args
-	) throws SecurityException {
-		filterAccessor(receiver, method);
-		return filterReturnValue(
-				super.onInvokeInstanceMethod(
-						invoker, receiver, receiverFormalType, method, filterArguments(args)));
-	}
+    @Override
+    public ReturnValue onInvokeInstanceMethod(
+            final IInvoker invoker,
+            final Object receiver,
+            final Class<?> receiverFormalType,
+            final String method,
+            final Object... args
+    ) throws SecurityException {
+        filterAccessor(receiver, method);
+        return filterReturnValue(
+                super.onInvokeInstanceMethod(
+                        invoker, receiver, receiverFormalType, method, filterArguments(args)));
+    }
 
-	@Override
-	public ReturnValue onInvokeStaticMethod(
-			final IInvoker invoker, 
-			final Class<?> receiver, 
-			final String method, 
-			final Object... args
-	) throws SecurityException {
-		filterAccessor(receiver, method);
-		return filterReturnValue(
-				super.onInvokeStaticMethod(
-						invoker, receiver, method, filterArguments(args)));
-	}
+    @Override
+    public ReturnValue onInvokeStaticMethod(
+            final IInvoker invoker,
+            final Class<?> receiver,
+            final String method,
+            final Object... args
+    ) throws SecurityException {
+        filterAccessor(receiver, method);
+        return filterReturnValue(
+                super.onInvokeStaticMethod(
+                        invoker, receiver, method, filterArguments(args)));
+    }
 
-	@Override
-	public ReturnValue onInvokeConstructor(
-			final IInvoker invoker, 
-			final Class<?> receiver, 
-			final Object... args
-	) throws SecurityException {
-		filterAccessor(receiver, "new");
-		return filterReturnValue(
-				super.onInvokeConstructor(
-						invoker, receiver, filterArguments(args)));
-	}
+    @Override
+    public ReturnValue onInvokeConstructor(
+            final IInvoker invoker,
+            final Class<?> receiver,
+            final Object... args
+    ) throws SecurityException {
+        filterAccessor(receiver, "new");
+        return filterReturnValue(
+                super.onInvokeConstructor(
+                        invoker, receiver, filterArguments(args)));
+    }
 
-	@Override
-	public ReturnValue onGetBeanProperty(
-			final IInvoker invoker, 
-			final Object receiver, 
-			final String property
-	) throws SecurityException {
-		filterAccessor(receiver, property);
-		return filterReturnValue(
-				super.onGetBeanProperty(
-						invoker, receiver, property));
-	}
+    @Override
+    public ReturnValue onGetBeanProperty(
+            final IInvoker invoker,
+            final Object receiver,
+            final String property
+    ) throws SecurityException {
+        filterAccessor(receiver, property);
+        return filterReturnValue(
+                super.onGetBeanProperty(
+                        invoker, receiver, property));
+    }
 
-	@Override
-	public void onSetBeanProperty(
-			final IInvoker invoker, 
-			final Object receiver, 
-			final String property, 
-			final Object value
-	) throws SecurityException {
-		filterAccessor(receiver, property);
-		super.onSetBeanProperty(
-					invoker, receiver, property, filterArgument(value));
-	}
+    @Override
+    public void onSetBeanProperty(
+            final IInvoker invoker,
+            final Object receiver,
+            final String property,
+            final Object value
+    ) throws SecurityException {
+        filterAccessor(receiver, property);
+        super.onSetBeanProperty(
+                    invoker, receiver, property, filterArgument(value));
+    }
 
-	@Override
-	public ReturnValue onGetStaticField(
-			final IInvoker invoker, 
-			final Class<?> receiver, 
-			final String fieldName
-	) throws SecurityException {
-		filterAccessor(receiver, fieldName);
-		return filterReturnValue(
-				super.onGetStaticField(
-						invoker, receiver, fieldName));
-	}
+    @Override
+    public ReturnValue onGetStaticField(
+            final IInvoker invoker,
+            final Class<?> receiver,
+            final String fieldName
+    ) throws SecurityException {
+        filterAccessor(receiver, fieldName);
+        return filterReturnValue(
+                super.onGetStaticField(
+                        invoker, receiver, fieldName));
+    }
 
-	@Override
-	public ReturnValue onGetInstanceField(
-			final IInvoker invoker, 
-			final Object receiver, 
-			final Class<?> receiverFormalType,
-			final String fieldName
-	) throws SecurityException {
-		filterAccessor(receiver, fieldName);
-		return filterReturnValue(
-				super.onGetInstanceField(
-						invoker, receiver, receiverFormalType, fieldName));
-	}
+    @Override
+    public ReturnValue onGetInstanceField(
+            final IInvoker invoker,
+            final Object receiver,
+            final Class<?> receiverFormalType,
+            final String fieldName
+    ) throws SecurityException {
+        filterAccessor(receiver, fieldName);
+        return filterReturnValue(
+                super.onGetInstanceField(
+                        invoker, receiver, receiverFormalType, fieldName));
+    }
 
-	
-	protected ReturnValue filterReturnValue(final ReturnValue returnValue) {
-		return returnValue;
-	}
-	
-	protected Object filterArgument(final Object arg) {
-		return filter(arg);
-	}
 
-	protected Object filter(final Object o) {
-		return o;
-	}
+    protected ReturnValue filterReturnValue(final ReturnValue returnValue) {
+        return returnValue;
+    }
 
-	protected Object filterAccessor(final Object o, final String accessor) {
-		return o;
-	}
+    protected Object filterArgument(final Object arg) {
+        return filter(arg);
+    }
 
-	
-	private Object[] filterArguments(final Object[] args) {
-		for (int i=0; i<args.length; i++) {
-			args[i] = filterArgument(args[i]);
-		}
-		return args;
-	}
-	
+    protected Object filter(final Object o) {
+        return o;
+    }
+
+    protected Object filterAccessor(final Object o, final String accessor) {
+        return o;
+    }
+
+
+    private Object[] filterArguments(final Object[] args) {
+        for (int i=0; i<args.length; i++) {
+            args[i] = filterArgument(args[i]);
+        }
+        return args;
+    }
+
 }

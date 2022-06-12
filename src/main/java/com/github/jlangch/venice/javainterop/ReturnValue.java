@@ -1,5 +1,5 @@
 /*   __    __         _
- *   \ \  / /__ _ __ (_) ___ ___ 
+ *   \ \  / /__ _ __ (_) ___ ___
  *    \ \/ / _ \ '_ \| |/ __/ _ \
  *     \  /  __/ | | | | (_|  __/
  *      \/ \___|_| |_|_|\___\___|
@@ -24,25 +24,25 @@ package com.github.jlangch.venice.javainterop;
 
 public class ReturnValue {
 
-	public ReturnValue(final Object value) {
-		this.value = value;
-		this.formalType = null;
-	}
+    public ReturnValue(final Object value) {
+        this.value = value;
+        this.formalType = null;
+    }
 
-	public ReturnValue(final Object value, final Class<?> formalType) {
-		this.value = value;
-		this.formalType = formalType;
-	}
-	
-	public Object getValue() {
-		return value;
-	}
-	
-	public Class<?> getFormalType() {
-		return formalType;
-	}
+    public ReturnValue(final Object value, final Class<?> formalType) {
+        this.value = value;
+        this.formalType = formalType;
+    }
 
-	
-	private final Object value;
-	private final Class<?> formalType;
+    public Object getValue() {
+        return value;
+    }
+
+    public Class<?> getFormalType() {
+        return formalType;
+    }
+
+
+    private final Object value;
+    private final Class<?> formalType;
 }

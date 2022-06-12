@@ -1,5 +1,5 @@
 /*   __    __         _
- *   \ \  / /__ _ __ (_) ___ ___ 
+ *   \ \  / /__ _ __ (_) ___ ___
  *    \ \/ / _ \ '_ \| |/ __/ _ \
  *     \  /  __/ | | | | (_|  __/
  *      \/ \___|_| |_|_|\___\___|
@@ -29,46 +29,46 @@ import com.github.jlangch.venice.impl.types.collections.VncOrderedMap;
 
 public class VncCustomTypeFieldDef  {
 
-	public VncCustomTypeFieldDef(
-			final VncKeyword name,
-			final VncKeyword type,
-			final VncInteger index,
-			final boolean nillable
-	) {
-		this.name = name;
-		this.type = type;
-		this.index = index;
-		this.nillable = nillable;
-	}
-	
-		
-	public VncKeyword getName() {
-		return name;
-	}
-	
-	public VncKeyword getType() {
-		return type;
-	}
-	
-	public VncInteger getIndex() {
-		return index;
-	}
-	
-	public boolean isNillable() {
-		return nillable;
-	}
+    public VncCustomTypeFieldDef(
+            final VncKeyword name,
+            final VncKeyword type,
+            final VncInteger index,
+            final boolean nillable
+    ) {
+        this.name = name;
+        this.type = type;
+        this.index = index;
+        this.nillable = nillable;
+    }
 
-	public VncMap toMap() {
-		return VncOrderedMap.of(
-				new VncKeyword(":name"),     name,
-				new VncKeyword(":type"),     type,
-				new VncKeyword(":index"),    index,
-				new VncKeyword(":nillable"), VncBoolean.of(nillable));
-	}
 
-	
-	private final VncKeyword name;
-	private final VncKeyword type;
-	private final VncInteger index;
-	private final boolean nillable;
+    public VncKeyword getName() {
+        return name;
+    }
+
+    public VncKeyword getType() {
+        return type;
+    }
+
+    public VncInteger getIndex() {
+        return index;
+    }
+
+    public boolean isNillable() {
+        return nillable;
+    }
+
+    public VncMap toMap() {
+        return VncOrderedMap.of(
+                new VncKeyword(":name"),     name,
+                new VncKeyword(":type"),     type,
+                new VncKeyword(":index"),    index,
+                new VncKeyword(":nillable"), VncBoolean.of(nillable));
+    }
+
+
+    private final VncKeyword name;
+    private final VncKeyword type;
+    private final VncInteger index;
+    private final boolean nillable;
 }

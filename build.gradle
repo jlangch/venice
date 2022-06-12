@@ -1,5 +1,5 @@
 /*   __    __         _
- *   \ \  / /__ _ __ (_) ___ ___ 
+ *   \ \  / /__ _ __ (_) ___ ___
  *    \ \/ / _ \ '_ \| |/ __/ _ \
  *     \  /  __/ | | | | (_|  __/
  *      \/ \___|_| |_|_|\___\___|
@@ -19,17 +19,17 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
- 
+
 // -----------------------------------------------------------------------------
 // Gradle build
 // -----------------------------------------------------------------------------
-// 
+//
 // Venice uses Gradle 7.2
-// 
+//
 // JPMS (Java Platform Module System)
 //
-//   The Venice Gradle build is prepared to support building a Java 8 library 
-//   for JPMS. The 'compileModuleInfoJava' task provides a Java 9 compiled 
+//   The Venice Gradle build is prepared to support building a Java 8 library
+//   for JPMS. The 'compileModuleInfoJava' task provides a Java 9 compiled
 //   'module-info.class' in the root output directory.
 //   See also: https://dzone.com/articles/building-java-6-8-libraries-for-jpms-in-gradle
 //
@@ -48,12 +48,12 @@
 //
 //   - Micro benchmarks
 //     $> ./gradlew jmh -Pinclude=".*PrecompileBenchmark"
-//     $> ./gradlew -Dorg.gradle.java.home=${JAVA_11_ZULU_HOME} 
-//                  jmh 
-//                  -Pinclude=".*PrecompileBenchmark" 
+//     $> ./gradlew -Dorg.gradle.java.home=${JAVA_11_ZULU_HOME}
+//                  jmh
+//                  -Pinclude=".*PrecompileBenchmark"
 //                  -PjvmArgs="-XX:+UseParallelGC"
-//     $> ./gradlew jmh 
-//                  -Pinclude=".*PrecompileBenchmark" 
+//     $> ./gradlew jmh
+//                  -Pinclude=".*PrecompileBenchmark"
 //                  -PjvmArgs="-XX:+PrintCompilation -XX:CompileThreshold=1000"
 //
 // -----------------------------------------------------------------------------
@@ -77,14 +77,14 @@
 //                   -Dorg.gradle.internal.http.connectionTimeout=60000
 //                   --warning-mode all
 //                   -Psigning.gnupg.keyName=[gpg-user-key-id]
-//                   -PsonatypeUsername=[name] 
+//                   -PsonatypeUsername=[name]
 //                   -PsonatypePassword=[pw]
 //                   clean shadowJar publish
 //       - Log in to Sonatype OSSRH (https://oss.sonatype.org/)
 //       - Choose Staging Repositories
 //       - Find the release 'comgithubjlangch-*'
 //       - Verify the contents are ok
-//       - Click Close (wait for validation steps under the Activity tab 
+//       - Click Close (wait for validation steps under the Activity tab
 //         to complete)
 //       - Click Release
 //
@@ -92,7 +92,7 @@
 //       - Draft a new release in Git (https://github.com/jlangch/venice/releases)
 //         This will create the release tag
 //       - Pull the changes (commit tag)
-//   
+//
 //   [4] Open new development cycle
 //       - Change version in 'gradle.properties' to '1.x.y-SNAPSHOT'
 //       - Add an empty ChangeLog entry for the new version
@@ -124,7 +124,7 @@
 //    3.  Unix: ./gradlew cleaneclipse
 //        Win:  gradlew cleaneclipse
 //    4.  Refresh your Project in Eclipse
-//    5.  After that for Unix: ./gradlew eclipse     
+//    5.  After that for Unix: ./gradlew eclipse
 //                       Win:  gradlew eclipse
 //    6.  Refresh your Project in Eclipse
 //
@@ -134,7 +134,7 @@
 // GPG Tools for publishing
 //
 //   Download:       https://gpgtools.org/
-//  
+//
 //   Migrate Keys:   https://access.redhat.com/solutions/2115511
 //
 // -----------------------------------------------------------------------------
@@ -172,7 +172,7 @@ ext {
     openpdf_Version = '1.3.28'
     poi_Version = '4.1.2'
     servletApi_Version = '4.0.1'
-    springExpression_Version = '5.2.0.RELEASE'   
+    springExpression_Version = '5.2.0.RELEASE'
     vavr_Version = '0.10.4'
     xchart_Version = '3.8.1'
 }
@@ -196,7 +196,7 @@ println "Gradle running on Java 11+: ${java11}"
 
 def getCheckedOutGitCommitHash() {
     def takeFromHash = 12
-    
+
     try {
         'git rev-parse --verify --short HEAD'.execute()
                                              .text
@@ -205,7 +205,7 @@ def getCheckedOutGitCommitHash() {
     }
     catch(Exception e) {
         println "getCheckedOutGitCommitId(): 'git' not installed, falling back to '.git' folder ..."
-         
+
         def gitFolder = "$projectDir/.git/"
         /*
          * '.git/HEAD' contains either
@@ -215,7 +215,7 @@ def getCheckedOutGitCommitHash() {
         def head = new File(gitFolder + "HEAD").text.split(":") // .git/HEAD
         def isCommit = head.length == 1    // e5a7c79edabbf7dd39888442df081b1c9d8e88fd
         // def isRef = head.length > 1     // ref: refs/heads/master
-    
+
         if (isCommit) {
             return head[0].trim().take(takeFromHash) // e5a7c79edabb
         }
@@ -232,7 +232,7 @@ compileJava {
     targetCompatibility = 1.8
     options.encoding = 'UTF-8'
     options.compilerArgs = [ '-parameters' ]
-    
+
     doLast {
         println "Java: ${JavaVersion.current()}"
     }
@@ -273,7 +273,7 @@ sourceSets {
     jmh {
         java.srcDirs = ['src/jmh/java']
     }
-    
+
     main {
         java {
             srcDirs = ['src/main/java']
@@ -306,7 +306,7 @@ test {
 
     useJUnitPlatform {
     }
-    
+
     testLogging {
         showStandardStreams = false
     }
@@ -318,7 +318,7 @@ jar {
     exclude 'com/github/jlangch/venice/fonts/SourceCodePro-*.ttf'
     exclude 'data'      // doc/examples/scripts/data
     exclude 'nbody'     // doc/examples/scripts/nbody
-    
+
     archiveFileName = "venice-raw-${project.version}.jar"
 }
 
@@ -330,7 +330,7 @@ shadowJar {
     relocate 'org.jline', 'org.repackage.org.jline'
 
     def buildTimestamp = new Date().format("yyyy-MM-dd'T'HH:mm:ss")
-        
+
     manifest {
         attributes 'Main-Class':             'com.github.jlangch.venice.Launcher',
                    'Build-Date':             buildTimestamp,
@@ -338,14 +338,14 @@ shadowJar {
                    'Implementation-Title':   'Venice',
                    'Implementation-Version': "${project.version}"
     }
- 
+
     exclude 'com/github/jlangch/venice/fonts/OpenSans-*.ttf'
     exclude 'com/github/jlangch/venice/fonts/SourceCodePro-*.ttf'
     exclude 'data'      // doc/examples/scripts/data
     exclude 'nbody'     // doc/examples/scripts/nbody
-   
+
     mergeServiceFiles()
-   
+
     archiveFileName = "venice-${project.version}.jar"
     classifier = ''  // default is '-all'
 }
@@ -357,11 +357,11 @@ publishing {
             groupId = 'com.github.jlangch'
             artifactId = 'venice'
             version = "${project.version}"
-            
+
             artifact sourcesJar
             artifact javadocJar
             artifact shadowJar
-            
+
             versionMapping {
                 usage('java-api') {
                     fromResolutionOf('runtimeClasspath')
@@ -370,7 +370,7 @@ publishing {
                     fromResolutionResult()
                 }
             }
-            
+
             pom {
                 name = 'Venice'
                 description = 'Venice, a sandboxed Lisp implemented in Java.'
@@ -397,12 +397,12 @@ publishing {
             }
         }
     }
-    
+
     repositories {
         if(!version.endsWith('SNAPSHOT')) {
             maven {
                 url "https://oss.sonatype.org/service/local/staging/deploy/maven2"
-                
+
                 credentials {
                     username sonatypeUsername
                     password sonatypePassword
@@ -415,7 +415,7 @@ publishing {
 
 signing {
     useGpgCmd()  // use the local GPG agent to sign the artefacts
-    
+
     sign publishing.publications.venicePublication
 }
 
@@ -435,11 +435,11 @@ jdeprscanReport {
 
 task bundle(type: Exec, dependsOn: [clean, shadowJar, sourcesJar, javadocJar]) {
     workingDir 'build/libs'
-    
-    commandLine "/bin/sh", 
-                "-c", 
+
+    commandLine "/bin/sh",
+                "-c",
                 "cat ../../src/main/resources/com/github/jlangch/venice/old/pom.xml " +
-                  " | sed 's/__VERSION__/${project.version}/g' > ./pom.xml" + 
+                  " | sed 's/__VERSION__/${project.version}/g' > ./pom.xml" +
                   "; echo 'Bundling Venice ${project.version}'" +
                   "; echo 'Signing artifacts...'" +
                   "; gpg2 -ab pom.xml" +
@@ -459,8 +459,8 @@ task cheatsheet(type: JavaExec, dependsOn: compileJava) {
     description="Generate cheatsheet"
 
     mainClass = 'com.github.jlangch.venice.CheatsheetDocGen'
-    
-    classpath { 
+
+    classpath {
       [ sourceSets.main.runtimeClasspath,
         sourceSets.main.compileClasspath,
         "src/main/resources" ]
@@ -474,73 +474,73 @@ task updateReleaseVersion {
     doLast {
         if(version.endsWith('SNAPSHOT')) {
             throw new GradleException(
-            		"Rejected updating release version. ${project.version} is not a release!")
+                    "Rejected updating release version. ${project.version} is not a release!")
         }
- 
+
         println "Updating version ${project.version} -> 'maven-central.svg'"
         ant.replaceregexp(
-                match:   "v${version_regex}", 
-                replace: "v${project.version}", 
+                match:   "v${version_regex}",
+                replace: "v${project.version}",
                 flags:   'g'
         ) {
             fileset(dir: 'doc', includes: 'maven-central.svg')
         }
-        
+
         println "Updating version ${project.version} -> 'build-dependencies.md'"
         ant.replaceregexp(
-                match:   "${version_regex}", 
-                replace: "${project.version}", 
+                match:   "${version_regex}",
+                replace: "${project.version}",
                 flags:   'g'
         ) {
             fileset(dir: 'doc/readme', includes: 'build-dependencies.md')
         }
-        
+
         println "Updating version ${project.version} -> 'notice.txt', 'license.txt'"
         ant.replaceregexp(
-                match:   "Venice Release ${version_regex}", 
-                replace: "Venice Release ${project.version}", 
+                match:   "Venice Release ${version_regex}",
+                replace: "Venice Release ${project.version}",
                 flags:   'g'
         ) {
             fileset(dir: 'src/main/resources/META-INF', includes: 'notice.txt')
             fileset(dir: 'src/main/resources/META-INF', includes: 'license.txt')
         }
-          
+
         println "Updating version ${project.version} -> 'app.venice'"
         ant.replaceregexp(
-                match:   "venice-${version_regex}[.]jar", 
-                replace: "venice-${project.version}.jar", 
+                match:   "venice-${version_regex}[.]jar",
+                replace: "venice-${project.version}.jar",
                 flags:   'g'
         ) {
             fileset(dir: 'src/main/resources', includes: '**/app.venice')
         }
-        
+
         println "Updating version ${project.version} -> 'readme/*.md'"
         ant.replaceregexp(
-                match:   "venice-${version_regex}[.]jar", 
-                replace: "venice-${project.version}.jar", 
+                match:   "venice-${version_regex}[.]jar",
+                replace: "venice-${project.version}.jar",
                 flags:   'g'
         ) {
             fileset(dir: 'doc/readme', includes: '*.md')
         }
         ant.replaceregexp(
-                match:   "V${version_regex}", 
-                replace: "V${project.version}", 
+                match:   "V${version_regex}",
+                replace: "V${project.version}",
                 flags:   'g'
         ) {
             fileset(dir: 'doc/readme', includes: 'start.md')
         }
         ant.replaceregexp(
-                match:   "/venice/${version_regex}/", 
-                replace: "/venice/${project.version}/", 
+                match:   "/venice/${version_regex}/",
+                replace: "/venice/${project.version}/",
                 flags:   'g'
         ) {
             fileset(dir: 'doc/readme', includes: 'start.md')
         }
-        
+
         println "Updating version ${project.version} -> 'repl.sh', 'repl.bat'"
         ant.replaceregexp(
-                match:   "venice-${version_regex}[.]jar", 
-                replace: "venice-${project.version}.jar", 
+                match:   "venice-${version_regex}[.]jar",
+                replace: "venice-${project.version}.jar",
                 flags:   'g'
         ) {
             fileset(dir: 'src/main/resources', includes: '**/repl.sh')
@@ -556,8 +556,8 @@ task updateReadMeCheatsheetRef {
         def id = getCheckedOutGitCommitHash().take(7)
         println "Updating Cheatsheet id ${id} -> 'README.md'"
         ant.replaceregexp(
-                match:   "jlangch/venice/[0-9a-f]{7}/cheatsheet", 
-                replace: "jlangch/venice/${id}/cheatsheet", 
+                match:   "jlangch/venice/[0-9a-f]{7}/cheatsheet",
+                replace: "jlangch/venice/${id}/cheatsheet",
                 flags:   'g'
         ) {
             fileset(dir: '.', includes: 'README.md')
@@ -567,37 +567,37 @@ task updateReadMeCheatsheetRef {
 
 
 task ('jmhHelp', description:'Print help for the jmh task') {
-    doLast {  
+    doLast {
         println ""
         println "Usage of jmh tasks:"
         println ""
-        
+
         println "Only execute specific benchmark(s):"
         println "\t./gradlew jmh -Pinclude=\".*MyBenchmark.*\""
-        
+
         println ""
         println "Specify extra profilers:"
         println "\t./gradlew jmh -Pprofilers=\"gc,stack\""
-        
+
         println ""
         println "Prominent profilers (for full list call jmhProfilers task):"
         println "\tcomp - JitCompilations, tune your iterations"
         println "\tstack - which methods used most time"
         println "\tgc - print garbage collection stats"
         println "\ths_thr - thread usage"
-        
+
         println ""
         println "Change report format from JSON to one of [CSV, JSON, NONE, SCSV, TEXT]:"
         println "\t./gradlew jmh -Pformat=csv"
-        
+
         println ""
         println "Specify JVM arguments:"
         println "\t./gradlew jmh -PjvmArgs=\"-Dtest.cluster=local\""
-        
+
         println ""
         println "Run in verification mode (execute benchmarks with minimum of fork/warmup-/benchmark-iterations):"
         println "\tgw jmh -Pverify"
-        
+
         println ""
         println "Resources:"
         println "\thttp://tutorials.jenkov.com/java-performance/jmh.html (Introduction)"
@@ -625,7 +625,7 @@ task jmh(type: JavaExec, description: 'Executing JMH benchmarks') {
     def verify =  project.properties.get('verify');
 
     def resultFile = file("build/reports/jmh/result.${format}")
-    
+
     args include
     if (exclude) {
         args '-e', exclude
@@ -652,7 +652,7 @@ task jmh(type: JavaExec, description: 'Executing JMH benchmarks') {
     }
     args '-rf', format
     args '-rff', resultFile
-    
+
     doFirst {
         println "\nExecuting JMH with: $args \n"
         resultFile.parentFile.mkdirs()
@@ -667,15 +667,15 @@ artifacts {
 
 
 dependencies {
-    // JMH (the Java Microbenchmark Harness) has been added to the JDK 
-    // starting with JDK 12; for earlier versions, the dependencies 
+    // JMH (the Java Microbenchmark Harness) has been added to the JDK
+    // starting with JDK 12; for earlier versions, the dependencies
     // have to be added explicitly.
     // See: https://gitlab.com/barfuin/jmh-gradle-example
     jmhImplementation project
     jmhImplementation "io.vavr:vavr:${vavr_Version}"
     jmhImplementation "org.openjdk.jmh:jmh-core:${jmh_Version}"
     jmhAnnotationProcessor "org.openjdk.jmh:jmh-generator-annprocess:${jmh_Version}"
-            
+
     compileOnly "org.openjdk.jmh:jmh-core:${jmh_Version}"
     compileOnly "org.openjdk.jmh:jmh-generator-annprocess:${jmh_Version}"
 
@@ -696,17 +696,17 @@ dependencies {
     compileOnly "org.xhtmlrenderer:flying-saucer-pdf-openpdf:${flyingSaucer_Version}"
     compileOnly "com.github.librepdf:openpdf:${openpdf_Version}"
     compileOnly "org.knowm.xchart:xchart:${xchart_Version}"
-    
+
     // MS Excel support
     compileOnly "org.apache.poi:poi:${poi_Version}"
     compileOnly "org.apache.poi:poi-ooxml:${poi_Version}"
     compileOnly "org.apache.poi:poi-ooxml-schemas:${poi_Version}"
-    
+
     // MS Word support
     compileOnly "org.wickedsource.docx-stamper:docx-stamper:${docxStamper_Version}"
     compileOnly "commons-io:commons-io:${commonsIo_Version}"
     compileOnly "org.javassist:javassist:${javassist_Version}"
-    compileOnly "org.springframework:spring-expression:${springExpression_Version}"   
+    compileOnly "org.springframework:spring-expression:${springExpression_Version}"
     if (java8) {
         compileOnly "org.docx4j:docx4j-core:${docx4j_Version_Java8}"   // Java 8
     }
@@ -717,7 +717,7 @@ dependencies {
 
     // WebApp support
     compileOnly "javax.servlet:javax.servlet-api:${servletApi_Version}"
-      
+
     // runtime dependencies (repackaged)
     implementation "io.vavr:vavr:${vavr_Version}"
     implementation "org.jline:jline:${jline_Version}"

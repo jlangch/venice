@@ -1,5 +1,5 @@
 /*   __    __         _
- *   \ \  / /__ _ __ (_) ___ ___ 
+ *   \ \  / /__ _ __ (_) ___ ___
  *    \ \/ / _ \ '_ \| |/ __/ _ \
  *     \  /  __/ | | | | (_|  __/
  *      \/ \___|_| |_|_|\___\___|
@@ -41,78 +41,78 @@ import com.lowagie.text.pdf.PdfWriter;
  */
 public class PdfMetaDataCreationListener extends DefaultPDFCreationListener {
 
-	public PdfMetaDataCreationListener() {
-	}
+    public PdfMetaDataCreationListener() {
+    }
 
-	public PdfMetaDataCreationListener parseMetaTags(final Document sourceXHTML) {
-		final Element headTag = (Element)sourceXHTML.getDocumentElement()
-													.getElementsByTagName("head")
-													.item(0);
-		if (headTag == null) {
-			return this;
-		}
-		
-		final NodeList metaTags = headTag.getElementsByTagName("meta");
-		if (metaTags == null) {
-			return this;
-		}
+    public PdfMetaDataCreationListener parseMetaTags(final Document sourceXHTML) {
+        final Element headTag = (Element)sourceXHTML.getDocumentElement()
+                                                    .getElementsByTagName("head")
+                                                    .item(0);
+        if (headTag == null) {
+            return this;
+        }
 
-		for (int ii=0; ii<metaTags.getLength(); ++ii) {
-			final Element tag = (Element)metaTags.item(ii);
-			final String name = tag.getAttribute("name");
-			final String content = tag.getAttribute("content");
-			if (!name.isEmpty() && !content.isEmpty()) {
-				headMetaTags.setProperty(name, content);
-			}
-		}
+        final NodeList metaTags = headTag.getElementsByTagName("meta");
+        if (metaTags == null) {
+            return this;
+        }
 
-		// No title meta tag given --> take it from title tag
-		if (headMetaTags.getProperty("title") == null) {
-			final Element titleTag = (Element)headTag.getElementsByTagName("title").item(0);
-			if (titleTag != null) {
-				headMetaTags.setProperty("title", titleTag.getTextContent());
-			}
-		}
-		
-		return this;
-	}
+        for (int ii=0; ii<metaTags.getLength(); ++ii) {
+            final Element tag = (Element)metaTags.item(ii);
+            final String name = tag.getAttribute("name");
+            final String content = tag.getAttribute("content");
+            if (!name.isEmpty() && !content.isEmpty()) {
+                headMetaTags.setProperty(name, content);
+            }
+        }
 
-	@Override
-	public void preOpen(final ITextRenderer iTextRenderer) {
-		final Enumeration<?> e = headMetaTags.propertyNames();
-        
-		while (e.hasMoreElements()) {
-			final String key = (String)e.nextElement();
-			final PdfString val = new PdfString(headMetaTags.getProperty(key), PdfObject.TEXT_UNICODE);
-			iTextRenderer.getWriter().setViewerPreferences(PdfWriter.DisplayDocTitle);
+        // No title meta tag given --> take it from title tag
+        if (headMetaTags.getProperty("title") == null) {
+            final Element titleTag = (Element)headTag.getElementsByTagName("title").item(0);
+            if (titleTag != null) {
+                headMetaTags.setProperty("title", titleTag.getTextContent());
+            }
+        }
 
-			switch(key) {
-				case "title":
-					iTextRenderer.getWriter().getInfo().put(PdfName.TITLE, val);
-					break;
-				case "author":
-					iTextRenderer.getWriter().getInfo().put(PdfName.AUTHOR, val);
-					break;
-				case "subject":
-					iTextRenderer.getWriter().getInfo().put(PdfName.SUBJECT, val);
-					break;
-				case "creator":
-					iTextRenderer.getWriter().getInfo().put(PdfName.CREATOR, val);
-					break;
-				case "description":
-					iTextRenderer.getWriter().getInfo().put(PdfName.DESC, val);
-					break;
-				case "keywords":
-					iTextRenderer.getWriter().getInfo().put(PdfName.KEYWORDS, val);
-					break;
-				default:
-					/* This allows for arbitrary meta tags. */
-					iTextRenderer.getWriter().getInfo().put(new PdfName(key), val);
-					break;
-			}
-		}
-	}
+        return this;
+    }
+
+    @Override
+    public void preOpen(final ITextRenderer iTextRenderer) {
+        final Enumeration<?> e = headMetaTags.propertyNames();
+
+        while (e.hasMoreElements()) {
+            final String key = (String)e.nextElement();
+            final PdfString val = new PdfString(headMetaTags.getProperty(key), PdfObject.TEXT_UNICODE);
+            iTextRenderer.getWriter().setViewerPreferences(PdfWriter.DisplayDocTitle);
+
+            switch(key) {
+                case "title":
+                    iTextRenderer.getWriter().getInfo().put(PdfName.TITLE, val);
+                    break;
+                case "author":
+                    iTextRenderer.getWriter().getInfo().put(PdfName.AUTHOR, val);
+                    break;
+                case "subject":
+                    iTextRenderer.getWriter().getInfo().put(PdfName.SUBJECT, val);
+                    break;
+                case "creator":
+                    iTextRenderer.getWriter().getInfo().put(PdfName.CREATOR, val);
+                    break;
+                case "description":
+                    iTextRenderer.getWriter().getInfo().put(PdfName.DESC, val);
+                    break;
+                case "keywords":
+                    iTextRenderer.getWriter().getInfo().put(PdfName.KEYWORDS, val);
+                    break;
+                default:
+                    /* This allows for arbitrary meta tags. */
+                    iTextRenderer.getWriter().getInfo().put(new PdfName(key), val);
+                    break;
+            }
+        }
+    }
 
 
-	final Properties headMetaTags = new Properties();
+    final Properties headMetaTags = new Properties();
 }

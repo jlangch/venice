@@ -13,76 +13,77 @@ import com.github.jlangch.venice.impl.util.MetaUtil;
 
 public abstract class VncCustomBaseTypeDef extends VncVal {
 
-	public VncCustomBaseTypeDef(final VncKeyword type) {	
-		super(Constants.Nil);
-		
-		this.type = type.withMeta(MetaUtil.typeMeta());
-	}
+    public VncCustomBaseTypeDef(final VncKeyword type) {
+        super(Constants.Nil);
 
-	public abstract VncMap toMap();
+        this.type = type.withMeta(MetaUtil.typeMeta());
+    }
 
-	@Override
-	public VncVal withMeta(final VncVal meta) {
-		return this; // not supported
-	}
+    public abstract VncMap toMap();
 
-	@Override
-	public VncKeyword getType() {
-		return type.withMeta(
-				MetaUtil.typeMeta(new VncKeyword(VncVal.TYPE)));
-	}
+    @Override
+    public VncVal withMeta(final VncVal meta) {
+        return this; // not supported
+    }
 
-	@Override 
-	public TypeRank typeRank() {
-		return TypeRank.CUSTOM_TYPE_DEF;
-	}
-	
-	@Override
-	public Object convertToJavaObject() {
-		return null; // not supported
-	}
+    @Override
+    public VncKeyword getType() {
+        return type.withMeta(
+                MetaUtil.typeMeta(new VncKeyword(VncVal.TYPE)));
+    }
 
-	@Override 
-	public int compareTo(final VncVal o) {
-		if (o == Constants.Nil) {
-			return 1;
-		}
-		else if (o instanceof VncCustomBaseTypeDef) {
-			return type.getValue().compareTo(((VncCustomBaseTypeDef)o).type.getValue());
-		}
+    @Override
+    public TypeRank typeRank() {
+        return TypeRank.CUSTOM_TYPE_DEF;
+    }
 
-		return super.compareTo(o);
-	}
+    @Override
+    public Object convertToJavaObject() {
+        return null; // not supported
+    }
 
-	@Override 
-	public String toString() {
-		return ":" + type.getValue();
-	}
-	
-	public String toString(final boolean print_machine_readably) {
-		return toString();
-	}
+    @Override
+    public int compareTo(final VncVal o) {
+        if (o == Constants.Nil) {
+            return 1;
+        }
+        else if (o instanceof VncCustomBaseTypeDef) {
+            return type.getValue().compareTo(((VncCustomBaseTypeDef)o).type.getValue());
+        }
 
-	public void setCustomToStringFn(final VncFunction fn) {
-		customToStringFn.set(fn);
-	}
+        return super.compareTo(o);
+    }
 
-	public VncFunction getCustomToStringFn() {
-		return customToStringFn.get();
-	}
+    @Override
+    public String toString() {
+        return ":" + type.getValue();
+    }
 
-	public void setCustomCompareToFn(final VncFunction fn) {
-		customCompareToFn.set(fn);
-	}
+    @Override
+    public String toString(final boolean print_machine_readably) {
+        return toString();
+    }
 
-	public VncFunction getCustomCompareToFn() {
-		return customCompareToFn.get();
-	}
-	
-	
-	private static final long serialVersionUID = -1639883423759533879L;
-	
-	private final VncKeyword type;
-	private final AtomicReference<VncFunction> customToStringFn = new AtomicReference<>();
-	private final AtomicReference<VncFunction> customCompareToFn = new AtomicReference<>();
+    public void setCustomToStringFn(final VncFunction fn) {
+        customToStringFn.set(fn);
+    }
+
+    public VncFunction getCustomToStringFn() {
+        return customToStringFn.get();
+    }
+
+    public void setCustomCompareToFn(final VncFunction fn) {
+        customCompareToFn.set(fn);
+    }
+
+    public VncFunction getCustomCompareToFn() {
+        return customCompareToFn.get();
+    }
+
+
+    private static final long serialVersionUID = -1639883423759533879L;
+
+    private final VncKeyword type;
+    private final AtomicReference<VncFunction> customToStringFn = new AtomicReference<>();
+    private final AtomicReference<VncFunction> customCompareToFn = new AtomicReference<>();
 }

@@ -1,5 +1,5 @@
 /*   __    __         _
- *   \ \  / /__ _ __ (_) ___ ___ 
+ *   \ \  / /__ _ __ (_) ___ ___
  *    \ \/ / _ \ '_ \| |/ __/ _ \
  *     \  /  __/ | | | | (_|  __/
  *      \/ \___|_| |_|_|\___\___|
@@ -27,42 +27,42 @@ import java.util.List;
 
 public class Blocks {
 
-	public Blocks() {
-	}
-	
-	public Blocks add(final Block block) {
-		if (block != null && !block.isEmpty()) {
-			blocks.add(block);
-		}
-		return this;
-	}
+    public Blocks() {
+    }
 
-	public Blocks add(final Blocks blocks) {
-		if (blocks != null ) {
-			for(Block b : blocks.getBlocks()) {
-				if (!b.isEmpty()) this.blocks.add(b);
-			}
-		}
-		
-		return this;
-	}
-	
-	public boolean isEmpty() {
-		return blocks.isEmpty();
-	}
-	
-	public int size() {
-		return blocks.size();
-	}
-	
-	public List<Block> getBlocks() {
-		return blocks;
-	}
-	
-	public Block get(final int index) {
-		return blocks.get(index);
-	}
+    public Blocks add(final Block block) {
+        if (block != null && !block.isEmpty()) {
+            blocks.add(block);
+        }
+        return this;
+    }
+
+    public Blocks add(final Blocks blocks) {
+        if (blocks != null ) {
+            for(Block b : blocks.getBlocks()) {
+                if (!b.isEmpty()) this.blocks.add(b);
+            }
+        }
+
+        return this;
+    }
+
+    public boolean isEmpty() {
+        return blocks.isEmpty();
+    }
+
+    public int size() {
+        return blocks.size();
+    }
+
+    public List<Block> getBlocks() {
+        return blocks;
+    }
+
+    public Block get(final int index) {
+        return blocks.get(index);
+    }
 
 
-	private final List<Block> blocks = new ArrayList<>();
+    private final List<Block> blocks = new ArrayList<>();
 }

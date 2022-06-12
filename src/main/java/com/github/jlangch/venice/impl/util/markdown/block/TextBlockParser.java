@@ -1,5 +1,5 @@
 /*   __    __         _
- *   \ \  / /__ _ __ (_) ___ ___ 
+ *   \ \  / /__ _ __ (_) ___ ___
  *    \ \/ / _ \ '_ \| |/ __/ _ \
  *     \  /  __/ | | | | (_|  __/
  *      \/ \___|_| |_|_|\___\___|
@@ -32,63 +32,63 @@ import com.github.jlangch.venice.impl.util.markdown.chunk.RawChunk;
 
 public class TextBlockParser {
 
-	public TextBlockParser(final LineReader reader) {
-		this.reader = reader;
-	}
-	
-	public TextBlock parse() {		
-		final TextBlock block = new TextBlock();
+    public TextBlockParser(final LineReader reader) {
+        this.reader = reader;
+    }
 
-		if (reader.eof()) {
-			return block;
-		}
+    public TextBlock parse() {
+        final TextBlock block = new TextBlock();
 
-		List<String> lines = new ArrayList<>();
-		
-		while(!reader.eof()) {
-			String line = reader.peek();
-			reader.consume();
-			
-			if (StringUtil.isBlank(line)) {
-				break;
-			}
-			else {
-				lines.add(line);
-			}
-		}
-		
-		addLine(block, String.join(" ", lines));
+        if (reader.eof()) {
+            return block;
+        }
 
-		block.parseChunks();
-		
-		return block;
-	}
-	
-	
-	public static boolean isTextBlockStart(final String line) {
-		return true;
-	}
+        List<String> lines = new ArrayList<>();
 
-	
-	private void addLine(final TextBlock block, final String line) {
-		if (line.contains("¶")) {
-			final String[] chunks = line.split("¶");
-			for(int ii=0; ii<chunks.length; ii++) {
-				if (ii>0) {
-					block.add(new LineBreakChunk());
-				}
-				block.add(new RawChunk(chunks[ii]));
-			}
-			
-			if (line.endsWith("¶")) {
-				block.add(new LineBreakChunk());
-			}
-		}
-		else {
-			block.add(new RawChunk(line));
-		}
-	}
-	
-	
-	private final LineReader reader;
+        while(!reader.eof()) {
+            String line = reader.peek();
+            reader.consume();
+
+            if (StringUtil.isBlank(line)) {
+                break;
+            }
+            else {
+                lines.add(line);
+            }
+        }
+
+        addLine(block, String.join(" ", lines));
+
+        block.parseChunks();
+
+        return block;
+    }
+
+
+    public static boolean isTextBlockStart(final String line) {
+        return true;
+    }
+
+
+    private void addLine(final TextBlock block, final String line) {
+        if (line.contains("¶")) {
+            final String[] chunks = line.split("¶");
+            for(int ii=0; ii<chunks.length; ii++) {
+                if (ii>0) {
+                    block.add(new LineBreakChunk());
+                }
+                block.add(new RawChunk(chunks[ii]));
+            }
+
+            if (line.endsWith("¶")) {
+                block.add(new LineBreakChunk());
+            }
+        }
+        else {
+            block.add(new RawChunk(line));
+        }
+    }
+
+
+    private final LineReader reader;
 }

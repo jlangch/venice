@@ -1,5 +1,5 @@
 /*   __    __         _
- *   \ \  / /__ _ __ (_) ___ ___ 
+ *   \ \  / /__ _ __ (_) ___ ___
  *    \ \/ / _ \ '_ \| |/ __/ _ \
  *     \  /  __/ | | | | (_|  __/
  *      \/ \___|_| |_|_|\___\___|
@@ -42,7 +42,7 @@ public class Streams {
      * @return A new Stream
      */
     public static <T> Stream<T> iterate(
-    		final Supplier<? extends Option<? extends T>> supplier
+            final Supplier<? extends Option<? extends T>> supplier
     ) {
         Objects.requireNonNull(supplier, "supplier is null");
         return Stream.ofAll(Iterators.iterate(supplier));
@@ -58,8 +58,8 @@ public class Streams {
      * @return A new Stream
      */
     public static <T> Stream<T> iterate(
-    		final T seed, 
-    		final Function<? super T, ? extends Option<? extends T>> fn
+            final T seed,
+            final Function<? super T, ? extends Option<? extends T>> fn
     ) {
         Objects.requireNonNull(fn, "function is null");
         return Stream.ofAll(Iterators.iterate(seed, fn));

@@ -1,5 +1,5 @@
 /*   __    __         _
- *   \ \  / /__ _ __ (_) ___ ___ 
+ *   \ \  / /__ _ __ (_) ___ ___
  *    \ \/ / _ \ '_ \| |/ __/ _ \
  *     \  /  __/ | | | | (_|  __/
  *      \/ \___|_| |_|_|\___\___|
@@ -30,89 +30,89 @@ import java.util.stream.Collectors;
 
 public class Node<T> {
 
-	public Node(final T value) {
-		this.value = value;
-	}
+    public Node(final T value) {
+        this.value = value;
+    }
 
-	public T getValue() {
-		return value;
-	}
+    public T getValue() {
+        return value;
+    }
 
-	public List<Node<T>> getParents() {
-		return Collections.unmodifiableList(parents);
-	}
+    public List<Node<T>> getParents() {
+        return Collections.unmodifiableList(parents);
+    }
 
-	public List<Node<T>> getChildren() {
-		return Collections.unmodifiableList(children);
-	}
+    public List<Node<T>> getChildren() {
+        return Collections.unmodifiableList(children);
+    }
 
-	public void addChild(final Node<T> child) {
-		if (child == this) {
-			throw new DagCycleException(this.toString() + "->" + this.toString());
-		}
-		
-		children.add(child);
-		
-		if (!child.getParents().contains(this)) {
-			child.addParent(this);
-		}
-	}
-	
-	public boolean isWithoutRelations() {
-		return parents.isEmpty() && children.isEmpty();
-	}
+    public void addChild(final Node<T> child) {
+        if (child == this) {
+            throw new DagCycleException(this.toString() + "->" + this.toString());
+        }
 
-	@Override
-	public String toString() {
-		return "Node{" + "value=" + value.toString() + '}';
-	}
-	
-	@Override
-	public int hashCode() {
-		final int prime = 31;
-		int result = 1;
-		result = prime * result + ((value == null) ? 0 : value.hashCode());
-		return result;
-	}
+        children.add(child);
 
-	@Override
-	@SuppressWarnings("unchecked")
-	public boolean equals(Object obj) {
-		if (this == obj)
-			return true;
-		if (obj == null)
-			return false;
-		if (getClass() != obj.getClass())
-			return false;
-		Node<T> other = (Node<T>) obj;
-		if (value == null) {
-			if (other.value != null)
-				return false;
-		} else if (!value.equals(other.value))
-			return false;
-		return true;
-	}
+        if (!child.getParents().contains(this)) {
+            child.addParent(this);
+        }
+    }
 
-	public static <T> List<T> toValues(final Collection<Node<T>> nodes) {
-		return nodes.stream()
-					.map(n -> n.getValue())
-					.collect(Collectors.toList());
-	}
+    public boolean isWithoutRelations() {
+        return parents.isEmpty() && children.isEmpty();
+    }
 
-	
-	private void addParent(final Node<T> parent) {
-		if (parent == this) {
-			throw new DagCycleException(this.toString() + "->" + this.toString());
-		}
-		
-		parents.add(parent);
-		if (!parent.getChildren().contains(this)) {
-			parent.addChild(this);
-		}
-	}
+    @Override
+    public String toString() {
+        return "Node{" + "value=" + value.toString() + '}';
+    }
+
+    @Override
+    public int hashCode() {
+        final int prime = 31;
+        int result = 1;
+        result = prime * result + ((value == null) ? 0 : value.hashCode());
+        return result;
+    }
+
+    @Override
+    @SuppressWarnings("unchecked")
+    public boolean equals(Object obj) {
+        if (this == obj)
+            return true;
+        if (obj == null)
+            return false;
+        if (getClass() != obj.getClass())
+            return false;
+        Node<T> other = (Node<T>) obj;
+        if (value == null) {
+            if (other.value != null)
+                return false;
+        } else if (!value.equals(other.value))
+            return false;
+        return true;
+    }
+
+    public static <T> List<T> toValues(final Collection<Node<T>> nodes) {
+        return nodes.stream()
+                    .map(n -> n.getValue())
+                    .collect(Collectors.toList());
+    }
 
 
-	private final List<Node<T>> parents = new LinkedList<>();
-	private final List<Node<T>> children = new LinkedList<>();
-	private final T value;
+    private void addParent(final Node<T> parent) {
+        if (parent == this) {
+            throw new DagCycleException(this.toString() + "->" + this.toString());
+        }
+
+        parents.add(parent);
+        if (!parent.getChildren().contains(this)) {
+            parent.addChild(this);
+        }
+    }
+
+
+    private final List<Node<T>> parents = new LinkedList<>();
+    private final List<Node<T>> children = new LinkedList<>();
+    private final T value;
 }

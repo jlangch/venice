@@ -1,5 +1,5 @@
 /*   __    __         _
- *   \ \  / /__ _ __ (_) ___ ___ 
+ *   \ \  / /__ _ __ (_) ___ ___
  *    \ \/ / _ \ '_ \| |/ __/ _ \
  *     \  /  __/ | | | | (_|  __/
  *      \/ \___|_| |_|_|\___\___|
@@ -31,96 +31,96 @@ import io.vavr.control.Option;
 
 
 public class Iterators {
-	
-	/**
-	 * Creates an iterator that repeatedly invokes the supplier
-	 * while it's a {@code Some} and end on the first {@code None}
-	 *
-	 * @param supplier A Supplier of iterator values
-	 * @param <T> value type
-	 * @return A new {@code Iterator}
-	 * @throws NullPointerException if supplier produces null value
-	 */
-	public static <T> io.vavr.collection.Iterator<T> iterate(
-			final Supplier<? extends Option<? extends T>> supplier
-	) {
-		Objects.requireNonNull(supplier, "supplier is null");
-		
-		return new io.vavr.collection.Iterator<T>() {
-			@Override
-			public boolean hasNext() {
-				if (nextOption == null) {
-					nextOption = supplier.get();
-				}
-				return nextOption.isDefined();
-			}
-			
-			@Override
-			public String toString() {
-				return stringPrefix() + "(" + (isEmpty() ? "" : "?") + ")";
-			}
 
-			@Override
-			public final T next() {
-				if (!hasNext()) {
-					throw new NoSuchElementException("next() on empty iterator");
-				}
-				
-				final T next = nextOption.get();
-				nextOption = null;
-				return next;
-			}
+    /**
+     * Creates an iterator that repeatedly invokes the supplier
+     * while it's a {@code Some} and end on the first {@code None}
+     *
+     * @param supplier A Supplier of iterator values
+     * @param <T> value type
+     * @return A new {@code Iterator}
+     * @throws NullPointerException if supplier produces null value
+     */
+    public static <T> io.vavr.collection.Iterator<T> iterate(
+            final Supplier<? extends Option<? extends T>> supplier
+    ) {
+        Objects.requireNonNull(supplier, "supplier is null");
 
-			private Option<? extends T> nextOption = null;
-		};
-	}
+        return new io.vavr.collection.Iterator<T>() {
+            @Override
+            public boolean hasNext() {
+                if (nextOption == null) {
+                    nextOption = supplier.get();
+                }
+                return nextOption.isDefined();
+            }
 
-	/**
-	 * Generates an infinite iterator using a function to calculate the next value
-	 * based on the previous. The functions is invoked as long as it returns a {@code Some} 
-	 * and stops on the first {@code None}
-	 *
-	 * @param seed The first value in the iterator
-	 * @param fn   A function to calculate the next value based on the previous
-	 * @param <T>  value type
-	 * @return A new {@code Iterator}
-	 */
-	public static <T> Iterator<T> iterate(
-			final T seed, 
-			final Function<? super T, ? extends Option<? extends T>> fn
-	) {
-		Objects.requireNonNull(fn, "function is null");
-		
-		return new io.vavr.collection.Iterator<T>() {
-			@Override
-			public boolean hasNext() {
-				if (nextOption == null) {
-					nextOption = fn.apply(last);
-				}
-				
-				return nextOption.isDefined();
-			}
-			
-			@Override
-			public String toString() {
-				return stringPrefix() + "(" + (isEmpty() ? "" : "?") + ")";
-			}
+            @Override
+            public String toString() {
+                return stringPrefix() + "(" + (isEmpty() ? "" : "?") + ")";
+            }
 
-			@Override
-			public final T next() {
-				if (!hasNext()) {
-					throw new NoSuchElementException("next() on empty iterator");
-				}
-				
-				final T next = nextOption.get();
-				nextOption = null;
-				last = next;
-				return next;
-			}
- 
-			private T last = null;
-			private Option<? extends T> nextOption = Option.of(seed);			
-		};
-	}
+            @Override
+            public final T next() {
+                if (!hasNext()) {
+                    throw new NoSuchElementException("next() on empty iterator");
+                }
+
+                final T next = nextOption.get();
+                nextOption = null;
+                return next;
+            }
+
+            private Option<? extends T> nextOption = null;
+        };
+    }
+
+    /**
+     * Generates an infinite iterator using a function to calculate the next value
+     * based on the previous. The functions is invoked as long as it returns a {@code Some}
+     * and stops on the first {@code None}
+     *
+     * @param seed The first value in the iterator
+     * @param fn   A function to calculate the next value based on the previous
+     * @param <T>  value type
+     * @return A new {@code Iterator}
+     */
+    public static <T> Iterator<T> iterate(
+            final T seed,
+            final Function<? super T, ? extends Option<? extends T>> fn
+    ) {
+        Objects.requireNonNull(fn, "function is null");
+
+        return new io.vavr.collection.Iterator<T>() {
+            @Override
+            public boolean hasNext() {
+                if (nextOption == null) {
+                    nextOption = fn.apply(last);
+                }
+
+                return nextOption.isDefined();
+            }
+
+            @Override
+            public String toString() {
+                return stringPrefix() + "(" + (isEmpty() ? "" : "?") + ")";
+            }
+
+            @Override
+            public final T next() {
+                if (!hasNext()) {
+                    throw new NoSuchElementException("next() on empty iterator");
+                }
+
+                final T next = nextOption.get();
+                nextOption = null;
+                last = next;
+                return next;
+            }
+
+            private T last = null;
+            private Option<? extends T> nextOption = Option.of(seed);
+        };
+    }
 
 }

@@ -27,94 +27,94 @@ import com.github.jlangch.venice.impl.thread.ThreadPoolUtil;
 
 public abstract class ManagedExecutor {
 
-	public ManagedExecutor(final String threadPoolName) {
-		this.threadPoolName = threadPoolName;
-	}
-	
+    public ManagedExecutor(final String threadPoolName) {
+        this.threadPoolName = threadPoolName;
+    }
 
-	public ExecutorService getExecutor() {
-		synchronized(this) {
-			if (executor == null) {
-				executor = createExecutorService();				
-			}
-			return executor;
-		}
-	}
 
-	public boolean exists() {
-		synchronized(this) {
-			return executor != null;
-		}
-	}
+    public ExecutorService getExecutor() {
+        synchronized(this) {
+            if (executor == null) {
+                executor = createExecutorService();
+            }
+            return executor;
+        }
+    }
 
-	public boolean isShutdown() {
-		synchronized(this) {
-			return executor == null ? true : executor.isShutdown();
-		}
-	}
+    public boolean exists() {
+        synchronized(this) {
+            return executor != null;
+        }
+    }
 
-	public void awaitTermination(final long timeoutMillis) {
-		synchronized(this) {
-			if (executor != null) {
-				try {
-					executor.awaitTermination(timeoutMillis, TimeUnit.MILLISECONDS);
-				}
-				catch(Exception ex) {
-					throw new VncException(
-							"Failed awaiting for executor termination", 
-							ex);
-				}
-			}
-		}
-	}
+    public boolean isShutdown() {
+        synchronized(this) {
+            return executor == null ? true : executor.isShutdown();
+        }
+    }
 
-	public boolean isTerminated() {
-		synchronized(this) {
-			return executor == null ? true : executor.isTerminated();
-		}
-	}
+    public void awaitTermination(final long timeoutMillis) {
+        synchronized(this) {
+            if (executor != null) {
+                try {
+                    executor.awaitTermination(timeoutMillis, TimeUnit.MILLISECONDS);
+                }
+                catch(Exception ex) {
+                    throw new VncException(
+                            "Failed awaiting for executor termination",
+                            ex);
+                }
+            }
+        }
+    }
 
-	public void shutdown() {
-		synchronized(this) {
-			if (executor != null) {
-				try {
-					executor.shutdown();
-				}
-				catch(Exception ex) {
-					// silently
-				}
-				finally {
-					executor = null;
-				}
-			}
-		}
-	}
+    public boolean isTerminated() {
+        synchronized(this) {
+            return executor == null ? true : executor.isTerminated();
+        }
+    }
 
-	public void shutdownNow() {
-		synchronized(this) {
-			if (executor != null) {
-				try {
-					executor.shutdownNow();
-				}
-				catch(Exception ex) {
-					// silently
-				}
-				finally {
-					executor = null;
-				}
-			}
-		}
-	}
+    public void shutdown() {
+        synchronized(this) {
+            if (executor != null) {
+                try {
+                    executor.shutdown();
+                }
+                catch(Exception ex) {
+                    // silently
+                }
+                finally {
+                    executor = null;
+                }
+            }
+        }
+    }
 
-	abstract protected ExecutorService createExecutorService();
+    public void shutdownNow() {
+        synchronized(this) {
+            if (executor != null) {
+                try {
+                    executor.shutdownNow();
+                }
+                catch(Exception ex) {
+                    // silently
+                }
+                finally {
+                    executor = null;
+                }
+            }
+        }
+    }
 
-	protected ThreadFactory createThreadFactory() {
-		return ThreadPoolUtil.createCountedThreadFactory(
-					threadPoolName, 
-					true /* daemon threads */);
-	}
-	
+    abstract protected ExecutorService createExecutorService();
 
-	private final String threadPoolName;
-	private ExecutorService executor;
+    protected ThreadFactory createThreadFactory() {
+        return ThreadPoolUtil.createCountedThreadFactory(
+                    threadPoolName,
+                    true /* daemon threads */);
+    }
+
+
+    private final String threadPoolName;
+    private ExecutorService executor;
 }

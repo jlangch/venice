@@ -1,5 +1,5 @@
 /*   __    __         _
- *   \ \  / /__ _ __ (_) ___ ___ 
+ *   \ \  / /__ _ __ (_) ___ ___
  *    \ \/ / _ \ '_ \| |/ __/ _ \
  *     \  /  __/ | | | | (_|  __/
  *      \/ \___|_| |_|_|\___\___|
@@ -48,37 +48,37 @@ import com.github.jlangch.venice.impl.types.collections.VncList;
 @State (Scope.Benchmark)
 @Threads (1)
 public class InstanceOfBenchmark {
-	
-	public InstanceOfBenchmark() {
-	}
-	
-	
-	@Benchmark
-	public Object test_instanceof_VncList() {
-		return list instanceof VncList;
-	}
-	
-	@Benchmark
-	public Object test_instanceof_VncCollection() {
-		return list instanceof VncCollection;
-	}
 
-	@Benchmark
-	public Object test_is_VncList() {
-		return list.isVncList();
-	}
-	
-	@Benchmark
-	public Object test_instanceof_VncLong() {
-		return number instanceof VncList;
-	}
+    public InstanceOfBenchmark() {
+    }
 
-	@Benchmark
-	public Object test_is_VncLong() {
-		return number.isVncList();
-	}
 
-	
-	private final VncVal list = VncList.of(new VncLong(0L));
-	private final VncVal number = new VncLong(0L);
+    @Benchmark
+    public Object test_instanceof_VncList() {
+        return list instanceof VncList;
+    }
+
+    @Benchmark
+    public Object test_instanceof_VncCollection() {
+        return list instanceof VncCollection;
+    }
+
+    @Benchmark
+    public Object test_is_VncList() {
+        return list.isVncList();
+    }
+
+    @Benchmark
+    public Object test_instanceof_VncLong() {
+        return number instanceof VncList;
+    }
+
+    @Benchmark
+    public Object test_is_VncLong() {
+        return number.isVncList();
+    }
+
+
+    private final VncVal list = VncList.of(new VncLong(0L));
+    private final VncVal number = new VncLong(0L);
 }

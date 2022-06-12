@@ -1,5 +1,5 @@
 /*   __    __         _
- *   \ \  / /__ _ __ (_) ___ ___ 
+ *   \ \  / /__ _ __ (_) ___ ___
  *    \ \/ / _ \ '_ \| |/ __/ _ \
  *     \  /  __/ | | | | (_|  __/
  *      \/ \___|_| |_|_|\___\___|
@@ -24,11 +24,11 @@ package com.github.jlangch.venice.impl.util.markdown.chunk;
 
 public class EmptyChunk implements Chunk {
 
-	public EmptyChunk() {
-	}
+    public EmptyChunk() {
+    }
 
-	@Override
-	public boolean isEmpty() {
-		return true;
-	}
+    @Override
+    public boolean isEmpty() {
+        return true;
+    }
 }

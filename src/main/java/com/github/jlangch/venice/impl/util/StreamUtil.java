@@ -1,5 +1,5 @@
 /*   __    __         _
- *   \ \  / /__ _ __ (_) ___ ___ 
+ *   \ \  / /__ _ __ (_) ___ ___
  *    \ \/ / _ \ '_ \| |/ __/ _ \
  *     \  /  __/ | | | | (_|  __/
  *      \/ \___|_| |_|_|\___\___|
@@ -31,52 +31,54 @@ import java.util.stream.StreamSupport;
 
 public class StreamUtil {
 
-	/**
-	 * Returns a {@link java.util.stream.Stream} from an {@link Iterable}
-	 * 
-	 * @param <T> the type of the stream elements
-	 * @param in An {@link Iterable}
-	 * @return A {@link java.util.stream.Stream}
-	 */
-	public static <T> Stream<T> stream(final Iterable<T> in) {
-		return StreamSupport.stream(in.spliterator(), false);
-	}
+    /**
+     * Returns a {@link java.util.stream.Stream} from an {@link Iterable}
+     *
+     * @param <T> the type of the stream elements
+     * @param in An {@link Iterable}
+     * @return A {@link java.util.stream.Stream}
+     */
+    public static <T> Stream<T> stream(final Iterable<T> in) {
+        return StreamSupport.stream(in.spliterator(), false);
+    }
 
-	/**
-	 * Returns a {@link java.util.stream.Stream} from an {@link Iterable}
-	 * 
-	 * @param <T> the type of the stream elements
-	 * @param in An {@link Iterable}
-	 * @return A {@link java.util.stream.Stream}
-	 */
-	public static <T> Stream<T> stream(final Iterator<T> in) {
-		return StreamSupport.stream(
-				Spliterators.spliteratorUnknownSize(
-				in,
-				Spliterator.ORDERED), 
-				false);
-	}
+    /**
+     * Returns a {@link java.util.stream.Stream} from an {@link Iterable}
+     *
+     * @param <T> the type of the stream elements
+     * @param in An {@link Iterable}
+     * @return A {@link java.util.stream.Stream}
+     */
+    public static <T> Stream<T> stream(final Iterator<T> in) {
+        return StreamSupport.stream(
+                Spliterators.spliteratorUnknownSize(
+                in,
+                Spliterator.ORDERED),
+                false);
+    }
 
-	/**
-	 * Returns a {@link java.util.stream.Stream} from an {@link Enumeration}
-	 * 
-	 * @param <T> the type of the stream elements
-	 * @param e An {@link Enumeration}
-	 * @return A {@link java.util.stream.Stream}
-	 */
-	public static <T> Stream<T> stream(final Enumeration<T> e) {
-		return StreamSupport.stream(
-			Spliterators.spliteratorUnknownSize(
-			new Iterator<T>() {
-				public T next() {
-					return e.nextElement();
-				}
-				public boolean hasNext() {
-					return e.hasMoreElements();
-				}
-			},
-			Spliterator.ORDERED), 
-			false);
-	}
- 
+    /**
+     * Returns a {@link java.util.stream.Stream} from an {@link Enumeration}
+     *
+     * @param <T> the type of the stream elements
+     * @param e An {@link Enumeration}
+     * @return A {@link java.util.stream.Stream}
+     */
+    public static <T> Stream<T> stream(final Enumeration<T> e) {
+        return StreamSupport.stream(
+            Spliterators.spliteratorUnknownSize(
+            new Iterator<T>() {
+                @Override
+                public T next() {
+                    return e.nextElement();
+                }
+                @Override
+                public boolean hasNext() {
+                    return e.hasMoreElements();
+                }
+            },
+            Spliterator.ORDERED),
+            false);
+    }
+
 }

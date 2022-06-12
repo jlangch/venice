@@ -1,5 +1,5 @@
 /*   __    __         _
- *   \ \  / /__ _ __ (_) ___ ___ 
+ *   \ \  / /__ _ __ (_) ___ ___
  *    \ \/ / _ \ '_ \| |/ __/ _ \
  *     \  /  __/ | | | | (_|  __/
  *      \/ \___|_| |_|_|\___\___|
@@ -30,279 +30,279 @@ import com.github.jlangch.venice.impl.util.StringUtil;
 
 public class ChunkParser {
 
-	public ChunkParser(final Chunks chunks) {
-		this.chunksRaw = chunks;
-	}
-	
-	
-	public Chunks parse() {
-		for(Chunk ch : chunksRaw.getChunks()) {
-			if (ch instanceof RawChunk) {
-				chunks.add(parse(((RawChunk)ch).getText()));
-			}
-			else {
-				chunks.add(ch);
-			}
-		}
-		
-		return chunks;
-	}
+    public ChunkParser(final Chunks chunks) {
+        this.chunksRaw = chunks;
+    }
 
-	private Chunks parse(final String s) {
-		final Chunks chunks = new Chunks();
-		
-		final CharacterReader reader = new CharacterReader(s);
-		
-		StringBuilder sb = new StringBuilder();
-		
-		while(true) {
-			int ch = reader.peek();
-			
-			if (ch == EOF) {
-				chunks.add(parseTextChunk(sb.toString()));
-				break;
-			}
-			else if (ch == '\\') {
-				reader.consume();
-				int next = reader.peek();
-				if (next == '*' || next == '`') {
-					reader.consume();
-					sb.append((char)next);
-				}
-				else {
-					sb.append((char)ch);
-				}
-			}
-			else if (ch == '*') {
-				chunks.add(parseTextChunk(sb.toString()));
-				sb = new StringBuilder();
 
-				reader.consume(); // "*" consumed
-				ch = reader.peek();
-				if (ch != '*') {
-					chunks.add(parseEmphasizeSingle(reader));
-				}
-				else {
-					reader.consume();  // "**" consumed
-					ch = reader.peek();
-					if (ch != '*') {
-						chunks.add(parseEmphasizeDouble(reader));
-					}
-					else {
-						reader.consume();  // "***" consumed
-						ch = reader.peek();
-						if (ch != '*') {
-							chunks.add(parseEmphasizeTriple(reader));
-						}
-						else {
-							// read all '*'
-							sb.append("***");
-							while(reader.peek() == '*') {
-								reader.consume();
-								ch = reader.peek();
-								sb.append("*");
-							}
-						}
-					}
-				}
-			}
-			else if (ch == '`') {
-				chunks.add(parseTextChunk(sb.toString()));
-				sb = new StringBuilder();
+    public Chunks parse() {
+        for(Chunk ch : chunksRaw.getChunks()) {
+            if (ch instanceof RawChunk) {
+                chunks.add(parse(((RawChunk)ch).getText()));
+            }
+            else {
+                chunks.add(ch);
+            }
+        }
 
-				reader.consume();
-				chunks.add(parseInlineCode(reader));
-			}
-			else {
-				reader.consume();
-				sb.append((char)ch);
-			}
-		}		
-		
-		return chunks;
-	}
+        return chunks;
+    }
 
-	private Chunk parseEmphasizeSingle(final CharacterReader reader) {
-		// .*....*.
-		final StringBuilder sb = new StringBuilder();
-		
-		int last2Ch = -1;
-		int last1Ch = -1;
-		int ch = reader.peek();
-		while(true) {
-			if (ch == EOF) {
-				if (last2Ch != '*' && last1Ch == '*') {
-					final String chunk = collapseWhitespaces(
-											StringUtil.removeEnd(
-													sb.toString(), "*"));
-					return new TextChunk(chunk, TextChunk.Format.ITALIC);
-				}
-				else {
-					// premature EOF
-					return new TextChunk("*" + sb.toString());
-				}
-			}
-			else if (last2Ch != '*' && last1Ch == '*' && ch != '*') {
-				final String chunk = collapseWhitespaces(
-										StringUtil.removeEnd(
-												sb.toString(), "*"));
-				return new TextChunk(chunk, TextChunk.Format.ITALIC);
-			}
-			else {
-				reader.consume();
-				last2Ch = last1Ch;
-				last1Ch = ch;
-				sb.append((char)ch);
-			}
-			
-			ch = reader.peek();
-		}	
-	}
+    private Chunks parse(final String s) {
+        final Chunks chunks = new Chunks();
 
-	private Chunk parseEmphasizeDouble(final CharacterReader reader) {	
-		// .**....**.
-		final StringBuilder sb = new StringBuilder();
-		
-		int last3Ch = -1;
-		int last2Ch = -1;
-		int last1Ch = -1;
-		int ch = reader.peek();
-		while(true) {
-			if (ch == EOF) {
-				if (last3Ch != '*' && last2Ch == '*' && last1Ch == '*') {
-					final String chunk = collapseWhitespaces(
-											StringUtil.removeEnd(
-													sb.toString(), "**"));
-					return new TextChunk(chunk, TextChunk.Format.BOLD);
-				}
-				else {
-					// premature EOF
-					return new TextChunk("**" + sb.toString());
-				}
-			}
-			else if (last3Ch != '*' && last2Ch == '*' && last1Ch == '*' && ch != '*') {
-				final String chunk = collapseWhitespaces(
-										StringUtil.removeEnd(
-												sb.toString(), "**"));
-				return new TextChunk(chunk, TextChunk.Format.BOLD);
-			}
-			else {
-				reader.consume();
-				last3Ch = last2Ch;
-				last2Ch = last1Ch;
-				last1Ch = ch;
-				sb.append((char)ch);
-			}
-			
-			ch = reader.peek();
-		}	
-	}
+        final CharacterReader reader = new CharacterReader(s);
 
-	private Chunk parseEmphasizeTriple(final CharacterReader reader) {	
-		// .***....***.
-		final StringBuilder sb = new StringBuilder();
-		
-		int last4Ch = -1;
-		int last3Ch = -1;
-		int last2Ch = -1;
-		int last1Ch = -1;
-		int ch = reader.peek();
-		while(true) {
-			if (ch == EOF) {
-				if (last4Ch != '*' && last3Ch == '*'  && last2Ch == '*' && last1Ch == '*') {
-					final String chunk = collapseWhitespaces(
-											StringUtil.removeEnd(
-													sb.toString(), "***"));
-					return new TextChunk(chunk, TextChunk.Format.BOLD_ITALIC);
-				}
-				else {
-					// premature EOF
-					return new TextChunk("***" + sb.toString());
-				}
-			}
-			else if (last4Ch != '*' && last3Ch == '*'  && last2Ch == '*' && last1Ch == '*' && ch != '*') {
-				final String chunk = collapseWhitespaces(
-										StringUtil.removeEnd(
-												sb.toString(), "***"));
-				return new TextChunk(chunk, TextChunk.Format.BOLD_ITALIC);
-			}
-			else {
-				reader.consume();
-				last4Ch = last3Ch;
-				last3Ch = last2Ch;
-				last2Ch = last1Ch;
-				last1Ch = ch;
-				sb.append((char)ch);
-			}
-			
-			ch = reader.peek();
-		}	
-	}
+        StringBuilder sb = new StringBuilder();
 
-	private Chunks parseTextChunk(final String text) {		
-		final Chunks chunks = new Chunks();
-		
-		// https://google.com
-		// #localref
-		final Pattern p = Pattern.compile("\\[.*?\\]\\((http[s]?://|[#]).*?\\)"); // non-greedy pattern: *?
-		final Matcher m = p.matcher(text);
-		
-		int lastEndPos = 0;
-		
-		while (m.find()) {
-			final int startPos = m.start();
-			final int endPos = m.end();
-			final String urlRef = m.group();
-			final String caption = urlRef.substring(urlRef.indexOf("[")+1, urlRef.indexOf("]"));
-			final String url = urlRef.substring(urlRef.indexOf("(")+1, urlRef.indexOf(")"));
+        while(true) {
+            int ch = reader.peek();
 
-			if (startPos > lastEndPos) {
-				chunks.add(new TextChunk(collapseWhitespaces(text.substring(lastEndPos, startPos))));
-			}
-			
-			chunks.add(new UrlChunk(caption, url));
-			
-			lastEndPos = endPos;
-		}
+            if (ch == EOF) {
+                chunks.add(parseTextChunk(sb.toString()));
+                break;
+            }
+            else if (ch == '\\') {
+                reader.consume();
+                int next = reader.peek();
+                if (next == '*' || next == '`') {
+                    reader.consume();
+                    sb.append((char)next);
+                }
+                else {
+                    sb.append((char)ch);
+                }
+            }
+            else if (ch == '*') {
+                chunks.add(parseTextChunk(sb.toString()));
+                sb = new StringBuilder();
 
-		if (lastEndPos < text.length()) {
-			chunks.add(new TextChunk(collapseWhitespaces(text.substring(lastEndPos, text.length()))));
-		}
-		
-		return chunks;
-	}
+                reader.consume(); // "*" consumed
+                ch = reader.peek();
+                if (ch != '*') {
+                    chunks.add(parseEmphasizeSingle(reader));
+                }
+                else {
+                    reader.consume();  // "**" consumed
+                    ch = reader.peek();
+                    if (ch != '*') {
+                        chunks.add(parseEmphasizeDouble(reader));
+                    }
+                    else {
+                        reader.consume();  // "***" consumed
+                        ch = reader.peek();
+                        if (ch != '*') {
+                            chunks.add(parseEmphasizeTriple(reader));
+                        }
+                        else {
+                            // read all '*'
+                            sb.append("***");
+                            while(reader.peek() == '*') {
+                                reader.consume();
+                                ch = reader.peek();
+                                sb.append("*");
+                            }
+                        }
+                    }
+                }
+            }
+            else if (ch == '`') {
+                chunks.add(parseTextChunk(sb.toString()));
+                sb = new StringBuilder();
 
-	private Chunk parseInlineCode(final CharacterReader reader) {		
-		final StringBuilder sb = new StringBuilder();
-		
-		int ch = reader.peek();
-		while(true) {
-			reader.consume();
+                reader.consume();
+                chunks.add(parseInlineCode(reader));
+            }
+            else {
+                reader.consume();
+                sb.append((char)ch);
+            }
+        }
 
-			if (ch == EOF) {
-				// premature EOF
-				final String chunk = collapseWhitespaces("`" + sb.toString());
-				return new TextChunk(chunk);
-			}
-			else if (ch == '`') {
-				return new InlineCodeChunk(sb.toString());
-			}
-			else {
-				sb.append((char)ch);
-			}
-			
-			ch = reader.peek();
-		}
-	}
-	
-	private String collapseWhitespaces(final String str) {
-		return str.replaceAll("\t", " ")
-				  .replaceAll(" +", " ");
-	}
+        return chunks;
+    }
 
-	
-	private static final int EOF = -1;
-	
-	private final Chunks chunksRaw;
-	private final Chunks chunks = new Chunks();
+    private Chunk parseEmphasizeSingle(final CharacterReader reader) {
+        // .*....*.
+        final StringBuilder sb = new StringBuilder();
+
+        int last2Ch = -1;
+        int last1Ch = -1;
+        int ch = reader.peek();
+        while(true) {
+            if (ch == EOF) {
+                if (last2Ch != '*' && last1Ch == '*') {
+                    final String chunk = collapseWhitespaces(
+                                            StringUtil.removeEnd(
+                                                    sb.toString(), "*"));
+                    return new TextChunk(chunk, TextChunk.Format.ITALIC);
+                }
+                else {
+                    // premature EOF
+                    return new TextChunk("*" + sb.toString());
+                }
+            }
+            else if (last2Ch != '*' && last1Ch == '*' && ch != '*') {
+                final String chunk = collapseWhitespaces(
+                                        StringUtil.removeEnd(
+                                                sb.toString(), "*"));
+                return new TextChunk(chunk, TextChunk.Format.ITALIC);
+            }
+            else {
+                reader.consume();
+                last2Ch = last1Ch;
+                last1Ch = ch;
+                sb.append((char)ch);
+            }
+
+            ch = reader.peek();
+        }
+    }
+
+    private Chunk parseEmphasizeDouble(final CharacterReader reader) {
+        // .**....**.
+        final StringBuilder sb = new StringBuilder();
+
+        int last3Ch = -1;
+        int last2Ch = -1;
+        int last1Ch = -1;
+        int ch = reader.peek();
+        while(true) {
+            if (ch == EOF) {
+                if (last3Ch != '*' && last2Ch == '*' && last1Ch == '*') {
+                    final String chunk = collapseWhitespaces(
+                                            StringUtil.removeEnd(
+                                                    sb.toString(), "**"));
+                    return new TextChunk(chunk, TextChunk.Format.BOLD);
+                }
+                else {
+                    // premature EOF
+                    return new TextChunk("**" + sb.toString());
+                }
+            }
+            else if (last3Ch != '*' && last2Ch == '*' && last1Ch == '*' && ch != '*') {
+                final String chunk = collapseWhitespaces(
+                                        StringUtil.removeEnd(
+                                                sb.toString(), "**"));
+                return new TextChunk(chunk, TextChunk.Format.BOLD);
+            }
+            else {
+                reader.consume();
+                last3Ch = last2Ch;
+                last2Ch = last1Ch;
+                last1Ch = ch;
+                sb.append((char)ch);
+            }
+
+            ch = reader.peek();
+        }
+    }
+
+    private Chunk parseEmphasizeTriple(final CharacterReader reader) {
+        // .***....***.
+        final StringBuilder sb = new StringBuilder();
+
+        int last4Ch = -1;
+        int last3Ch = -1;
+        int last2Ch = -1;
+        int last1Ch = -1;
+        int ch = reader.peek();
+        while(true) {
+            if (ch == EOF) {
+                if (last4Ch != '*' && last3Ch == '*'  && last2Ch == '*' && last1Ch == '*') {
+                    final String chunk = collapseWhitespaces(
+                                            StringUtil.removeEnd(
+                                                    sb.toString(), "***"));
+                    return new TextChunk(chunk, TextChunk.Format.BOLD_ITALIC);
+                }
+                else {
+                    // premature EOF
+                    return new TextChunk("***" + sb.toString());
+                }
+            }
+            else if (last4Ch != '*' && last3Ch == '*'  && last2Ch == '*' && last1Ch == '*' && ch != '*') {
+                final String chunk = collapseWhitespaces(
+                                        StringUtil.removeEnd(
+                                                sb.toString(), "***"));
+                return new TextChunk(chunk, TextChunk.Format.BOLD_ITALIC);
+            }
+            else {
+                reader.consume();
+                last4Ch = last3Ch;
+                last3Ch = last2Ch;
+                last2Ch = last1Ch;
+                last1Ch = ch;
+                sb.append((char)ch);
+            }
+
+            ch = reader.peek();
+        }
+    }
+
+    private Chunks parseTextChunk(final String text) {
+        final Chunks chunks = new Chunks();
+
+        // https://google.com
+        // #localref
+        final Pattern p = Pattern.compile("\\[.*?\\]\\((http[s]?://|[#]).*?\\)"); // non-greedy pattern: *?
+        final Matcher m = p.matcher(text);
+
+        int lastEndPos = 0;
+
+        while (m.find()) {
+            final int startPos = m.start();
+            final int endPos = m.end();
+            final String urlRef = m.group();
+            final String caption = urlRef.substring(urlRef.indexOf("[")+1, urlRef.indexOf("]"));
+            final String url = urlRef.substring(urlRef.indexOf("(")+1, urlRef.indexOf(")"));
+
+            if (startPos > lastEndPos) {
+                chunks.add(new TextChunk(collapseWhitespaces(text.substring(lastEndPos, startPos))));
+            }
+
+            chunks.add(new UrlChunk(caption, url));
+
+            lastEndPos = endPos;
+        }
+
+        if (lastEndPos < text.length()) {
+            chunks.add(new TextChunk(collapseWhitespaces(text.substring(lastEndPos, text.length()))));
+        }
+
+        return chunks;
+    }
+
+    private Chunk parseInlineCode(final CharacterReader reader) {
+        final StringBuilder sb = new StringBuilder();
+
+        int ch = reader.peek();
+        while(true) {
+            reader.consume();
+
+            if (ch == EOF) {
+                // premature EOF
+                final String chunk = collapseWhitespaces("`" + sb.toString());
+                return new TextChunk(chunk);
+            }
+            else if (ch == '`') {
+                return new InlineCodeChunk(sb.toString());
+            }
+            else {
+                sb.append((char)ch);
+            }
+
+            ch = reader.peek();
+        }
+    }
+
+    private String collapseWhitespaces(final String str) {
+        return str.replaceAll("\t", " ")
+                  .replaceAll(" +", " ");
+    }
+
+
+    private static final int EOF = -1;
+
+    private final Chunks chunksRaw;
+    private final Chunks chunks = new Chunks();
 }

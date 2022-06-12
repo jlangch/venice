@@ -1,5 +1,5 @@
 /*   __    __         _
- *   \ \  / /__ _ __ (_) ___ ___ 
+ *   \ \  / /__ _ __ (_) ___ ___
  *    \ \/ / _ \ '_ \| |/ __/ _ \
  *     \  /  __/ | | | | (_|  __/
  *      \/ \___|_| |_|_|\___\___|
@@ -32,70 +32,70 @@ import com.github.jlangch.venice.impl.types.collections.VncList;
 
 public class Delay implements IDeref {
 
-	public Delay(final VncFunction fn) {
-		this.fn = fn;
-	}
-	
-	@Override 
-	public VncVal deref() {
-		return results.computeIfAbsent(KEY, k -> compute()).deref();
-	}
-	
-	public boolean isRealized() {
-		return results.containsKey(KEY);
-	}
-	
-	private Result compute() {
-		try {
-			return new Result(fn.apply(VncList.empty()), null);
-		}
-		catch(RuntimeException ex) {
-			return new Result(null, ex);
-		}
-	}
+    public Delay(final VncFunction fn) {
+        this.fn = fn;
+    }
 
-	@Override 
-	public String toString() {
-		return toString(true);
-	}
+    @Override
+    public VncVal deref() {
+        return results.computeIfAbsent(KEY, k -> compute()).deref();
+    }
 
-	public String toString(final boolean print_machine_readably) {
-		if (isRealized()) {
-			try {
-				final VncVal val = deref();
-				return "(delay :value " + Printer.pr_str(val, print_machine_readably) + ")";
-			}
-			catch(Exception ex) {
-				return "(delay :exception :" + ex.getClass().getName() + ")";
-			}
-		}
-		else {
-			return "(delay :not-realized)";
-		}
-	}
+    public boolean isRealized() {
+        return results.containsKey(KEY);
+    }
 
-	private static class Result {
-		public Result(final VncVal val, final RuntimeException ex) {
-			this.val = val;
-			this.ex = ex;
-		}
-		
-		public VncVal deref() {
-			if (val != null) {
-				return val;
-			}
-			else {
-				throw ex;
-			}
-		}
-		
-		private final VncVal val;
-		private final RuntimeException ex;
-	}
-	
-	
-	private static final String KEY = "result";
-	
-	private final VncFunction fn;
-	private final ConcurrentHashMap<String,Result> results = new ConcurrentHashMap<>();
+    private Result compute() {
+        try {
+            return new Result(fn.apply(VncList.empty()), null);
+        }
+        catch(RuntimeException ex) {
+            return new Result(null, ex);
+        }
+    }
+
+    @Override
+    public String toString() {
+        return toString(true);
+    }
+
+    public String toString(final boolean print_machine_readably) {
+        if (isRealized()) {
+            try {
+                final VncVal val = deref();
+                return "(delay :value " + Printer.pr_str(val, print_machine_readably) + ")";
+            }
+            catch(Exception ex) {
+                return "(delay :exception :" + ex.getClass().getName() + ")";
+            }
+        }
+        else {
+            return "(delay :not-realized)";
+        }
+    }
+
+    private static class Result {
+        public Result(final VncVal val, final RuntimeException ex) {
+            this.val = val;
+            this.ex = ex;
+        }
+
+        public VncVal deref() {
+            if (val != null) {
+                return val;
+            }
+            else {
+                throw ex;
+            }
+        }
+
+        private final VncVal val;
+        private final RuntimeException ex;
+    }
+
+
+    private static final String KEY = "result";
+
+    private final VncFunction fn;
+    private final ConcurrentHashMap<String,Result> results = new ConcurrentHashMap<>();
 }

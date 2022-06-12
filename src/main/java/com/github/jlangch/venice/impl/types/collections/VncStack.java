@@ -1,5 +1,5 @@
 /*   __    __         _
- *   \ \  / /__ _ __ (_) ___ ___ 
+ *   \ \  / /__ _ __ (_) ___ ___
  *    \ \/ / _ \ '_ \| |/ __/ _ \
  *     \  /  __/ | | | | (_|  __/
  *      \/ \___|_| |_|_|\___\___|
@@ -35,104 +35,105 @@ import com.github.jlangch.venice.impl.util.MetaUtil;
 
 public class VncStack extends VncCollection {
 
-	public VncStack() {
-		super(Constants.Nil);
-		this.stack = new ConcurrentLinkedDeque<>();
-	}
+    public VncStack() {
+        super(Constants.Nil);
+        this.stack = new ConcurrentLinkedDeque<>();
+    }
 
-	private VncStack(final VncStack stack, final VncVal meta) {
-		super(meta);
-		this.stack = stack.stack;
-	}
-
-	
-	@Override
-	public VncCollection emptyWithMeta() {
-		return new VncStack();
-	}
-
-	@Override
-	public VncStack withMeta(final VncVal meta) {
-		return new VncStack(this, meta);
-	}
-	
-	@Override
-	public VncKeyword getType() {
-		return new VncKeyword(
-						TYPE, 
-						MetaUtil.typeMeta(
-							new VncKeyword(VncCollection.TYPE), 
-							new VncKeyword(VncVal.TYPE)));
-	}
-
-	@Override
-	public VncList toVncList() {
-		return VncList.of(stack.toArray(new VncVal[0]));
-	}
-
-	@Override
-	public VncVector toVncVector() {
-		return VncVector.of(stack.toArray(new VncVal[0]));
-	}
-
-	@Override
-	public int size() {
-		return stack.size();
-	}
-
-	@Override
-	public boolean isEmpty() {
-		return stack.isEmpty();
-	}
-	
-	public VncStack push(final VncVal val) {
-		stack.push(val);
-		return this;
-	}
-
-	public VncVal pop() {
-		return toNil(stack.poll());
-	}
-
-	public VncVal peek() {
-		return toNil(stack.peek());
-	}
-
-	public void clear() {
-		stack.clear();
-	}
-	
-	@Override 
-	public TypeRank typeRank() {
-		return TypeRank.STACK;
-	}
-
-	@Override
-	public Object convertToJavaObject() {
-		return Arrays
-				.stream(stack.toArray(new VncVal[0]))
-				.map(v -> v.convertToJavaObject())
-				.collect(Collectors.toList());
-	}
-
-	@Override 
-	public String toString() {
-		return "(" + Printer.join(toVncList(), " ", true) + ")";
-	}
-	
-	public String toString(final boolean print_machine_readably) {
-		return "(" + Printer.join(toVncList(), " ", print_machine_readably) + ")";
-	}
-
-	
-	private VncVal toNil(final VncVal val) {
-		return val == null ? Constants.Nil : val;
-	}
+    private VncStack(final VncStack stack, final VncVal meta) {
+        super(meta);
+        this.stack = stack.stack;
+    }
 
 
-	public static final String TYPE = ":core/stack";
+    @Override
+    public VncCollection emptyWithMeta() {
+        return new VncStack();
+    }
 
-	private static final long serialVersionUID = -564531670922145260L;
+    @Override
+    public VncStack withMeta(final VncVal meta) {
+        return new VncStack(this, meta);
+    }
 
-	private final ConcurrentLinkedDeque<VncVal> stack;
+    @Override
+    public VncKeyword getType() {
+        return new VncKeyword(
+                        TYPE,
+                        MetaUtil.typeMeta(
+                            new VncKeyword(VncCollection.TYPE),
+                            new VncKeyword(VncVal.TYPE)));
+    }
+
+    @Override
+    public VncList toVncList() {
+        return VncList.of(stack.toArray(new VncVal[0]));
+    }
+
+    @Override
+    public VncVector toVncVector() {
+        return VncVector.of(stack.toArray(new VncVal[0]));
+    }
+
+    @Override
+    public int size() {
+        return stack.size();
+    }
+
+    @Override
+    public boolean isEmpty() {
+        return stack.isEmpty();
+    }
+
+    public VncStack push(final VncVal val) {
+        stack.push(val);
+        return this;
+    }
+
+    public VncVal pop() {
+        return toNil(stack.poll());
+    }
+
+    public VncVal peek() {
+        return toNil(stack.peek());
+    }
+
+    public void clear() {
+        stack.clear();
+    }
+
+    @Override
+    public TypeRank typeRank() {
+        return TypeRank.STACK;
+    }
+
+    @Override
+    public Object convertToJavaObject() {
+        return Arrays
+                .stream(stack.toArray(new VncVal[0]))
+                .map(v -> v.convertToJavaObject())
+                .collect(Collectors.toList());
+    }
+
+    @Override
+    public String toString() {
+        return "(" + Printer.join(toVncList(), " ", true) + ")";
+    }
+
+    @Override
+    public String toString(final boolean print_machine_readably) {
+        return "(" + Printer.join(toVncList(), " ", print_machine_readably) + ")";
+    }
+
+
+    private VncVal toNil(final VncVal val) {
+        return val == null ? Constants.Nil : val;
+    }
+
+
+    public static final String TYPE = ":core/stack";
+
+    private static final long serialVersionUID = -564531670922145260L;
+
+    private final ConcurrentLinkedDeque<VncVal> stack;
 }

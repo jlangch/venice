@@ -1,5 +1,5 @@
 /*   __    __         _
- *   \ \  / /__ _ __ (_) ___ ___ 
+ *   \ \  / /__ _ __ (_) ___ ___
  *    \ \/ / _ \ '_ \| |/ __/ _ \
  *     \  /  __/ | | | | (_|  __/
  *      \/ \___|_| |_|_|\___\___|
@@ -27,71 +27,71 @@ import com.github.jlangch.venice.impl.util.StringUtil;
 
 public class CodeBlockParser {
 
-	public CodeBlockParser(final LineReader reader) {
-		this.reader = reader;
-	}
-	
-	public CodeBlock parse() {
-		if (reader.eof()) {
-			return new CodeBlock();
-		}
+    public CodeBlockParser(final LineReader reader) {
+        this.reader = reader;
+    }
 
-		String line = reader.peek();
-		
-		if (CodeBlockParser.isBlockStart(line)) {
-			reader.consume();
-		
-			final int indentLen = parseIndent(line);
-			final String language = parseLanguage(line);
-			
-			final CodeBlock block = new CodeBlock(language);
-			
-			while(!reader.eof()) {
-				line = reader.peek();
-				reader.consume();
-				
-				if (isFence(line)) {
-					break;
-				}
-				else {
-					block.addLine(removeIndent(StringUtil.trimRight(line), indentLen));
-				}
-			}
-			
-			block.parseChunks();
-			return block;
-		}
-		else {
-			return new CodeBlock();
-		}
-	}
-	
-	public static boolean isBlockStart(final String line) {
-		return isFence(line);
-	}
-	
-	private static boolean isFence(final String line) {
-		return line.matches(" *```.*");
-	}
-		
-	private static String parseLanguage(final String line) {
-		return StringUtil.removeStart(line.trim(), "```").trim();
-	}
+    public CodeBlock parse() {
+        if (reader.eof()) {
+            return new CodeBlock();
+        }
 
-	private static int parseIndent(final String line) {
-		return StringUtil.indexNotOf(line, " ", 0);
-	}
+        String line = reader.peek();
 
-	private static String removeIndent(final String line, final int indent) {
-		if (indent == 0 ) {
-			return line;
-		}
-		else {
-			final int lineIndent = Math.min(parseIndent(line), indent);		
-			return lineIndent == 0 ? line : line.substring(lineIndent);
-		}
-	}
+        if (CodeBlockParser.isBlockStart(line)) {
+            reader.consume();
 
-	
-	private final LineReader reader;
+            final int indentLen = parseIndent(line);
+            final String language = parseLanguage(line);
+
+            final CodeBlock block = new CodeBlock(language);
+
+            while(!reader.eof()) {
+                line = reader.peek();
+                reader.consume();
+
+                if (isFence(line)) {
+                    break;
+                }
+                else {
+                    block.addLine(removeIndent(StringUtil.trimRight(line), indentLen));
+                }
+            }
+
+            block.parseChunks();
+            return block;
+        }
+        else {
+            return new CodeBlock();
+        }
+    }
+
+    public static boolean isBlockStart(final String line) {
+        return isFence(line);
+    }
+
+    private static boolean isFence(final String line) {
+        return line.matches(" *```.*");
+    }
+
+    private static String parseLanguage(final String line) {
+        return StringUtil.removeStart(line.trim(), "```").trim();
+    }
+
+    private static int parseIndent(final String line) {
+        return StringUtil.indexNotOf(line, " ", 0);
+    }
+
+    private static String removeIndent(final String line, final int indent) {
+        if (indent == 0 ) {
+            return line;
+        }
+        else {
+            final int lineIndent = Math.min(parseIndent(line), indent);
+            return lineIndent == 0 ? line : line.substring(lineIndent);
+        }
+    }
+
+
+    private final LineReader reader;
 }
