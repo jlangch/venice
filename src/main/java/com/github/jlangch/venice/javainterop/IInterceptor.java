@@ -56,7 +56,7 @@ public interface IInterceptor {
      * @param invoker   the invoker
      * @param receiver  a class
      * @param method    a method
-     * @param arg       a list of arguments
+     * @param args      a list of arguments
      * @return the return value
      * @throws SecurityException if the static method is not whitelisted
      */
