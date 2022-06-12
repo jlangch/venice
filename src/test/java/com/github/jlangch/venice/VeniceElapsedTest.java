@@ -82,7 +82,7 @@ public class VeniceElapsedTest {
             result += res ? 0 : 1;
         }
         System.gc();
-        final StopWatch	sw = StopWatch.millis();
+        final StopWatch sw = StopWatch.millis();
         for(int ii=0; ii<1000; ii++) {
             boolean res = event.getEventName().matches("webapp[.](started|stopped)")
                             || event.getEventKey().equals("superuser")
@@ -244,12 +244,12 @@ public class VeniceElapsedTest {
 
     private Map<String,Object> toMap(final AuditEvent event) {
         return Parameters.of(
-                "principal", 		 event.getPrincipal(),
+                "principal",         event.getPrincipal(),
                 "elapsedTimeMillis", event.getElapsedTimeMillis(),
-                "eventType", 		 event.getEventType(),
-                "eventKey",  		 event.getEventKey(),
-                "eventName", 		 event.getEventName(),
-                "eventMessage", 	 event.getEventMessage());
+                "eventType",         event.getEventType(),
+                "eventKey",          event.getEventKey(),
+                "eventName",         event.getEventName(),
+                "eventMessage",      event.getEventMessage());
     }
 
 }

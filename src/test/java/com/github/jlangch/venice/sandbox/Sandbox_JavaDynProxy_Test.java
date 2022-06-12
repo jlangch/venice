@@ -42,7 +42,7 @@ public class Sandbox_JavaDynProxy_Test {
             "    (import :java.util.function.Predicate)                   \n" +
             "    (import :java.util.stream.Collectors)                    \n" +
             "                                                             \n" +
-            "    (-> (. [1 2 3 4] :stream) 			                      \n" +
+            "    (-> (. [1 2 3 4] :stream)                                \n" +
             "        (. :filter (proxify :Predicate { :test #(> % 2) }))  \n" +
             "        (. :collect (. :Collectors :toList))))                 ";
 

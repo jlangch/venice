@@ -504,7 +504,7 @@ public class SpecialForms_TypeFunctions {
                     .examples(
                         "(do                                                           \n" +
                         "  (ns foo)                                                    \n" +
-                        "  (deftype :complex [real :long, imaginary :long]             \n" +
+                        "  (deftype :complex [real :long, imaginary :long])            \n" +
                         "  (deftype-describe :complex))                                \n",
                         "(do                                                           \n" +
                         "  (ns foo)                                                    \n" +

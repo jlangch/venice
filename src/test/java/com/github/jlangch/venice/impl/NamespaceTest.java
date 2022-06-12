@@ -586,18 +586,18 @@ public class NamespaceTest {
                 "(do                                                             \n" +
                 "   (ns A)                                                       \n" +
                 "                                                                \n" +
-                "	(defmulti math-op (fn [s] (:op s)))                          \n" +
+                "   (defmulti math-op (fn [s] (:op s)))                          \n" +
                 "                                                                \n" +
-                "	(defmethod math-op \"add\" [s] (+ (:op1 s) (:op2 s)))        \n" +
-                "	(defmethod math-op \"subtract\" [s] (- (:op1 s) (:op2 s)))   \n" +
-                "	(defmethod math-op :default [s] 0)                           \n" +
+                "   (defmethod math-op \"add\" [s] (+ (:op1 s) (:op2 s)))        \n" +
+                "   (defmethod math-op \"subtract\" [s] (- (:op1 s) (:op2 s)))   \n" +
+                "   (defmethod math-op :default [s] 0)                           \n" +
                 "                                                                \n" +
                 "   (ns B)                                                       \n" +
                 "                                                                \n" +
                 "   (str                                                         \n" +
-                "	   [ (A/math-op {:op \"add\"      :op1 1 :op2 5})            \n" +
-                "	     (A/math-op {:op \"subtract\" :op1 1 :op2 5})            \n" +
-                "	     (A/math-op {:op \"bogus\"    :op1 1 :op2 5}) ] ))       \n" +
+                "      [ (A/math-op {:op \"add\"      :op1 1 :op2 5})            \n" +
+                "        (A/math-op {:op \"subtract\" :op1 1 :op2 5})            \n" +
+                "        (A/math-op {:op \"bogus\"    :op1 1 :op2 5}) ] ))       \n" +
                 ")                                                                 ";
 
         assertEquals("[6 -4 0]", venice.eval(script));

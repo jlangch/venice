@@ -104,10 +104,10 @@ public class PerformanceTest {
         final String script =
                 "(do                                                     \n" +
                 "   (defn sum [n]                                        \n" +
-                "	      (loop [i 0]                                    \n" +
-                "	         (if (< i n)                                 \n" +
-                "	            (recur (inc i))                          \n" +
-                "	            i)))                                     \n" +
+                "         (loop [i 0]                                    \n" +
+                "            (if (< i n)                                 \n" +
+                "               (recur (inc i))                          \n" +
+                "               i)))                                     \n" +
                 "                                                        \n" +
                 "   (sum 100000) (gc) (gc)                               \n" +
                 "                                                        \n" +
@@ -123,10 +123,10 @@ public class PerformanceTest {
         final String script =
                 "(do                                                     \n" +
                 "   (defn sum [n]                                        \n" +
-                "	      (loop [cnt n, acc 0]                           \n" +
-                "	         (if (zero? cnt)                             \n" +
-                "	            acc                                      \n" +
-                "	            (recur (dec cnt) (+ acc cnt)))))         \n" +
+                "         (loop [cnt n, acc 0]                           \n" +
+                "            (if (zero? cnt)                             \n" +
+                "               acc                                      \n" +
+                "               (recur (dec cnt) (+ acc cnt)))))         \n" +
                 "                                                        \n" +
                 "   (sum 100000) (gc) (gc)                               \n" +
                 "                                                        \n" +
@@ -142,7 +142,7 @@ public class PerformanceTest {
         final String script =
                 "(do                                                           \n" +
                 "   (perf (* (+ 1 2) 3) 12000 1000)                            \n" +
-                "	(println (prof :data-formatted \"Metrics (* (+ 1 2) 3)\")))  ";
+                "   (println (prof :data-formatted \"Metrics (* (+ 1 2) 3)\")))  ";
 
         venice.eval(script);
     }
@@ -154,12 +154,12 @@ public class PerformanceTest {
         final String script =
                 "(do                                                     \n" +
                 "   (defn sum [n]                                        \n" +
-                "	      (loop [cnt n, acc 0]                           \n" +
-                "	         (if (zero? cnt)                             \n" +
-                "	            acc                                      \n" +
-                "	            (recur (dec cnt) (+ acc cnt)))))         \n" +
+                "         (loop [cnt n, acc 0]                           \n" +
+                "            (if (zero? cnt)                             \n" +
+                "               acc                                      \n" +
+                "               (recur (dec cnt) (+ acc cnt)))))         \n" +
                 "   (perf (sum 300) 2000 1000)                           \n" +
-                "	(println (prof :data-formatted \"Metrics loop\")))     ";
+                "   (println (prof :data-formatted \"Metrics loop\")))     ";
 
         venice.eval(script);
     }
@@ -172,7 +172,7 @@ public class PerformanceTest {
                 "(do                                                     \n" +
                 "   (defn test [] (and true true true false))            \n" +
                 "   (perf (test) 20000 1000)                             \n" +
-                "	(println (prof :data-formatted \"Metrics and\")))     ";
+                "   (println (prof :data-formatted \"Metrics and\")))     ";
 
         venice.eval(script);
     }

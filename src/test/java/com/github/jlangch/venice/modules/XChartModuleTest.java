@@ -271,7 +271,7 @@ public class XChartModuleTest {
             "(do                                                                \n" +
             "   (load-module :xchart)                                           \n" +
             "                                                                   \n" +
-            "	(def p (fn [x y] (println (str x \" : \" y))))                  \n" +
+            "   (def p (fn [x y] (println (str x \" : \" y))))                  \n" +
             "                                                                   \n" +
             "   (p \"...test\" \"start\")                                       \n" +
             "                                                                   \n" +

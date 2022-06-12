@@ -368,12 +368,12 @@ public class KiraModuleTest {
 
         final String script =
                 "(do                                                                    \n" +
-                "	(load-module :kira)                                                 \n" +
-                "	                                                                    \n" +
-                "	(def template \"\"\"<%= (time/format ts \"yyyy-MM-dd\") %>\"\"\")   \n" +
-                "	                                                                    \n" +
-                "	(def data { :ts (time/local-date 2000 8 1) })                       \n" +
-                "	                                                                    \n" +
+                "   (load-module :kira)                                                 \n" +
+                "                                                                       \n" +
+                "   (def template \"\"\"<%= (time/format ts \"yyyy-MM-dd\") %>\"\"\")   \n" +
+                "                                                                       \n" +
+                "   (def data { :ts (time/local-date 2000 8 1) })                       \n" +
+                "                                                                       \n" +
                 "   (kira/eval template data)                                           \n" +
                 ")";
 
@@ -387,15 +387,15 @@ public class KiraModuleTest {
         final String script =
                 "(do                                                       \n" +
                 "   (ns test)                                              \n" +
-                "	                                                       \n" +
-                "	(load-module :kira)                                    \n" +
-                "	                                                       \n" +
-                "	(defn format-ts [t] (time/format t \"yyyy-MM-dd\"))    \n" +
-                "	                                                       \n" +
-                "	(def template \"<%= (test/format-ts ts) %>\")          \n" +
-                "	                                                       \n" +
-                "	(def data { :ts (time/local-date 2000 8 1) })          \n" +
-                "	                                                       \n" +
+                "                                                          \n" +
+                "   (load-module :kira)                                    \n" +
+                "                                                          \n" +
+                "   (defn format-ts [t] (time/format t \"yyyy-MM-dd\"))    \n" +
+                "                                                          \n" +
+                "   (def template \"<%= (test/format-ts ts) %>\")          \n" +
+                "                                                          \n" +
+                "   (def data { :ts (time/local-date 2000 8 1) })          \n" +
+                "                                                          \n" +
                 "   (kira/eval template data)                              \n" +
                 ")";
 
@@ -408,12 +408,12 @@ public class KiraModuleTest {
 
         final String script =
                 "(do                                                                                             \n" +
-                "	(load-module :kira)                                                                          \n" +
-                "	                                                                                             \n" +
-                "	(def template \"\"\"<%= (kira/escape-xml ts #(time/format %1 \"yyyy-MM-dd\")) %>\"\"\")      \n" +
-                "	                                                                                             \n" +
-                "	(def data { :ts (time/local-date 2000 8 1) })                                                \n" +
-                "	                                                                                             \n" +
+                "   (load-module :kira)                                                                          \n" +
+                "                                                                                                \n" +
+                "   (def template \"\"\"<%= (kira/escape-xml ts #(time/format %1 \"yyyy-MM-dd\")) %>\"\"\")      \n" +
+                "                                                                                                \n" +
+                "   (def data { :ts (time/local-date 2000 8 1) })                                                \n" +
+                "                                                                                                \n" +
                 "   (kira/eval template data)                                                                    \n" +
                 ")";
 
@@ -427,15 +427,15 @@ public class KiraModuleTest {
         final String script =
                 "(do                                                              \n" +
                 "   (ns test)                                                     \n" +
-                "	                                                              \n" +
-                "	(load-module :kira)                                           \n" +
-                "	                                                              \n" +
-                "	(defn format-ts [t] (time/format t \"yyyy-MM-dd\"))           \n" +
-                "	                                                              \n" +
-                "	(def template \"<%= (kira/escape-xml ts test/format-ts) %>\") \n" +
-                "	                                                              \n" +
-                "	(def data { :ts (time/local-date 2000 8 1) })                 \n" +
-                "	                                                              \n" +
+                "                                                                 \n" +
+                "   (load-module :kira)                                           \n" +
+                "                                                                 \n" +
+                "   (defn format-ts [t] (time/format t \"yyyy-MM-dd\"))           \n" +
+                "                                                                 \n" +
+                "   (def template \"<%= (kira/escape-xml ts test/format-ts) %>\") \n" +
+                "                                                                 \n" +
+                "   (def data { :ts (time/local-date 2000 8 1) })                 \n" +
+                "                                                                 \n" +
                 "   (kira/eval template data)                                     \n" +
                 ")";
 

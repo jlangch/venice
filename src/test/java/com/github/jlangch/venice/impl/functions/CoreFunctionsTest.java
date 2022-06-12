@@ -536,8 +536,8 @@ public class CoreFunctionsTest {
                 venice.eval(
                         "(str (concat                                 " +
                         "        (doto (. :java.util.ArrayList :new)  " +
-                        "	           (. :add 1)                     " +
-                        "	           (. :add 2))                    " +
+                        "              (. :add 1)                     " +
+                        "              (. :add 2))                    " +
                         "        '(3 4)))                             "));
 
         assertEquals(
@@ -545,8 +545,8 @@ public class CoreFunctionsTest {
                 venice.eval(
                         "(str (concat                                    " +
                         "        (doto (. :java.util.LinkedHashMap :new) " +
-                        "	           (. :put :a 1)                     " +
-                        "	           (. :put :b 2))                    " +
+                        "              (. :put :a 1)                     " +
+                        "              (. :put :b 2))                    " +
                         "        '(3 4)))                                "));
 
     }
@@ -679,24 +679,24 @@ public class CoreFunctionsTest {
                 venice.eval(
                         "(str                                     " +
                         "    (doto (. :java.util.ArrayList :new)  " +
-                        "	       (. :add 1)                     " +
-                        "	       (. :add 2)))                   " ));
+                        "          (. :add 1)                     " +
+                        "          (. :add 2)))                   " ));
 
         assertEquals(
                 Long.valueOf(2L),
                 venice.eval(
                         "(count                                   " +
                         "    (doto (. :java.util.ArrayList :new)  " +
-                        "	       (. :add 1)                     " +
-                        "	       (. :add 2)))                   " ));
+                        "          (. :add 1)                     " +
+                        "          (. :add 2)))                   " ));
 
         assertEquals(
                 Long.valueOf(2L),
                 venice.eval(
                         "(count                                       " +
                         "    (doto (. :java.util.LinkedHashMap :new)  " +
-                        "	       (. :put :a 1)                      " +
-                        "	       (. :put :b 2)))                    " ));
+                        "          (. :put :a 1)                      " +
+                        "          (. :put :b 2)))                    " ));
     }
 
     @Test
@@ -2858,8 +2858,8 @@ public class CoreFunctionsTest {
         assertEquals(
                 "{:a #{1 2 3 7 8} :b #{4 5 6} :c #{1 2 3}}",
                 venice.eval("(str (sorted-map (merge-with union                \n" +
-                            "		            {:a #{1 2 3}    :b #{4 5 6}}   \n" +
-                            "		            {:a #{2 3 7 8}  :c #{1 2 3}})))  "));
+                            "                   {:a #{1 2 3}    :b #{4 5 6}}   \n" +
+                            "                   {:a #{2 3 7 8}  :c #{1 2 3}})))  "));
     }
 
     @Test
@@ -3077,11 +3077,11 @@ public class CoreFunctionsTest {
                 venice.eval(
                         "(str (nfirst                                 " +
                         "        (doto (. :java.util.ArrayList :new)  " +
-                        "	           (. :add 1)                     " +
-                        "	           (. :add 2)                     " +
-                        "	           (. :add 3)                     " +
-                        "	           (. :add 4))                    " +
-                        "	     2))                                  "));
+                        "              (. :add 1)                     " +
+                        "              (. :add 2)                     " +
+                        "              (. :add 3)                     " +
+                        "              (. :add 4))                    " +
+                        "        2))                                  "));
     }
 
     @Test
@@ -3125,11 +3125,11 @@ public class CoreFunctionsTest {
                 venice.eval(
                         "(str (nlast                                  " +
                         "        (doto (. :java.util.ArrayList :new)  " +
-                        "	           (. :add 1)                     " +
-                        "	           (. :add 2)                     " +
-                        "	           (. :add 3)                     " +
-                        "	           (. :add 4))                    " +
-                        "	     2))                                  "));
+                        "              (. :add 1)                     " +
+                        "              (. :add 2)                     " +
+                        "              (. :add 3)                     " +
+                        "              (. :add 4))                    " +
+                        "        2))                                  "));
     }
 
     @Test
@@ -4396,9 +4396,9 @@ public class CoreFunctionsTest {
     public void test_supertype() {
         final Venice venice = new Venice();
 
-//		assertEquals(":core/val", venice.eval("(pr-str (supertype nil))"));
-//		assertEquals(":core/val", venice.eval("(pr-str (supertype false))"));
-//		assertEquals(":core/val", venice.eval("(pr-str (supertype true))"));
+//      assertEquals(":core/val", venice.eval("(pr-str (supertype nil))"));
+//      assertEquals(":core/val", venice.eval("(pr-str (supertype false))"));
+//      assertEquals(":core/val", venice.eval("(pr-str (supertype true))"));
 
         assertEquals(":core/string", venice.eval("(pr-str (supertype :a))"));
         assertEquals(":core/val", venice.eval("(pr-str (supertype 'a))"));

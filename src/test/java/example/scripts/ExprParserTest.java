@@ -630,7 +630,7 @@ public class ExprParserTest {
     public void test_evaluate_error_6() {
         final String script =
                 "(do                                                      \n" +
-                "   (load-classpath-file parser-res)       			   	  \n" +
+                "   (load-classpath-file parser-res)                      \n" +
                 "                                                         \n" +
                 "   (evaluate \"(1 + 2) * (1 + \")                        \n" +
                 ")";

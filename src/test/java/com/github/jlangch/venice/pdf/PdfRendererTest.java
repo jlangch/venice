@@ -34,32 +34,32 @@ public class PdfRendererTest {
 
         final String script =
                 "(do                                                                \n" +
-                "	  (ns test)                                                     \n" +
-                "	                                                                \n" +
-                "	  (import :com.github.jlangch.venice.util.pdf.PdfRenderer)      \n" +
-                "	                                                                \n" +
-                "	  (load-module :kira)                                           \n" +
-                "	                                                                \n" +
-                "	  (defn format-ts [t] (time/format t \"yyyy-MM-dd\"))           \n" +
-                "	                                                                \n" +
-                "	  ; define the template                                         \n" +
-                "	  (def template (str/strip-indent                               \n" +
-                "	     \"\"\"<?xml version=\"1.0\" encoding=\"UTF-8\"?>           \n" +
-                "	     <html lang=\"en\" xmlns=\"http://www.w3.org/1999/xhtml\">  \n" +
-                "	       <body>                                                   \n" +
-                "	         <div>${ (kira/escape-xml title) }$</div>               \n" +
-                "	         <div>${ (kira/escape-xml ts test/format-ts) }$</div>   \n" +
-                "	       </body>                                                  \n" +
-                "	     </html>                                                    \n" +
-                "	     \"\"\"))                                                   \n" +
-                "	                                                                \n" +
-                "	  (def data { :title \"Hello, world\"                           \n" +
-                "	              :ts (time/local-date 2000 8 1) })                 \n" +
-                "	                                                                \n" +
-                "	  (def xhtml (kira/eval template [\"${\" \"}$\"] data))         \n" +
-                "	                                                                \n" +
-                "	  (. :PdfRenderer :render xhtml)                                \n" +
-                "	)                                                               \n";
+                "     (ns test)                                                     \n" +
+                "                                                                   \n" +
+                "     (import :com.github.jlangch.venice.util.pdf.PdfRenderer)      \n" +
+                "                                                                   \n" +
+                "     (load-module :kira)                                           \n" +
+                "                                                                   \n" +
+                "     (defn format-ts [t] (time/format t \"yyyy-MM-dd\"))           \n" +
+                "                                                                   \n" +
+                "     ; define the template                                         \n" +
+                "     (def template (str/strip-indent                               \n" +
+                "        \"\"\"<?xml version=\"1.0\" encoding=\"UTF-8\"?>           \n" +
+                "        <html lang=\"en\" xmlns=\"http://www.w3.org/1999/xhtml\">  \n" +
+                "          <body>                                                   \n" +
+                "            <div>${ (kira/escape-xml title) }$</div>               \n" +
+                "            <div>${ (kira/escape-xml ts test/format-ts) }$</div>   \n" +
+                "          </body>                                                  \n" +
+                "        </html>                                                    \n" +
+                "        \"\"\"))                                                   \n" +
+                "                                                                   \n" +
+                "     (def data { :title \"Hello, world\"                           \n" +
+                "                 :ts (time/local-date 2000 8 1) })                 \n" +
+                "                                                                   \n" +
+                "     (def xhtml (kira/eval template [\"${\" \"}$\"] data))         \n" +
+                "                                                                   \n" +
+                "     (. :PdfRenderer :render xhtml)                                \n" +
+                "   )                                                               \n";
 
         venice.eval(script);
     }

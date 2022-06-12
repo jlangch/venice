@@ -50,7 +50,7 @@ public class AtomTest {
         final String s =
                 "(do                            " +
                 "   (def counter (atom 0))      " +
-                "	(reset! counter 99)         " +
+                "   (reset! counter 99)         " +
                 "   (deref counter)             " +
                 ")                              ";
 
@@ -64,7 +64,7 @@ public class AtomTest {
         final String s1 =
                 "(do                                        " +
                 "   (def counter (atom 2))                  " +
-                "	(swap! counter inc)                     " +
+                "   (swap! counter inc)                     " +
                 "   (deref counter)                         " +
                 ")                                          ";
 
@@ -73,7 +73,7 @@ public class AtomTest {
         final String s2 =
                 "(do                                        " +
                 "   (def counter (atom 2))                  " +
-                "	(swap! counter (fn [n] (+ n 1)))        " +
+                "   (swap! counter (fn [n] (+ n 1)))        " +
                 "   (deref counter)                         " +
                 ")                                          ";
 
@@ -87,7 +87,7 @@ public class AtomTest {
         final String s1 =
                 "(do                                        " +
                 "   (def counter (atom 2))                  " +
-                "	(compare-and-set! counter 2 4)          " +
+                "   (compare-and-set! counter 2 4)          " +
                 ")                                          ";
 
         assertTrue((Boolean)venice.eval(s1));
@@ -95,7 +95,7 @@ public class AtomTest {
         final String s2 =
                 "(do                                        " +
                 "   (def counter (atom 2))                  " +
-                "	(compare-and-set! counter 0 4)          " +
+                "   (compare-and-set! counter 0 4)          " +
                 ")                                          ";
 
         assertFalse((Boolean)venice.eval(s2));
@@ -122,7 +122,7 @@ public class AtomTest {
         final String s =
                 "(do                            " +
                 "   (def counter (atom {}))     " +
-                "	(reset! counter {:a 1})     " +
+                "   (reset! counter {:a 1})     " +
                 "   (deref counter)             " +
                 ")                              ";
 
@@ -136,7 +136,7 @@ public class AtomTest {
         final String s =
                 "(do                                        " +
                 "   (def counter (atom {}))                 " +
-                "	(swap! counter assoc :b 2)              " +
+                "   (swap! counter assoc :b 2)              " +
                 "   (deref counter)                         " +
                 ")                                          ";
 
@@ -166,7 +166,7 @@ public class AtomTest {
                 "   (defn watcher [key ref old new]                                      \n" +
                 "         (println \"watcher: \" key \", old:\" old \", new:\" new ))    \n" +
                 "   (add-watch counter :test watcher)                                    \n" +
-                "	(swap! counter (fn [n] (+ n 1)))                                     \n" +
+                "   (swap! counter (fn [n] (+ n 1)))                                     \n" +
                 "   (deref counter)                                                      \n" +
                 ")                                                                         ";
 

@@ -241,7 +241,7 @@ public class MacroTest {
                 "(do                                 " +
                 "   (defn pos-neg-or-zero [n]        " +
                 "         (cond                      " +
-                "   		 (< n 0) \"negative\"    " +
+                "            (< n 0) \"negative\"    " +
                 "            (> n 0) \"positive\"    " +
                 "            :else \"zero\"))        " +
                 "                                    " +
@@ -252,7 +252,7 @@ public class MacroTest {
                 "(do                                 " +
                 "   (defn pos [n]                    " +
                 "         (cond                      " +
-                "   		 (< n 10) \"<10\"        " +
+                "            (< n 10) \"<10\"        " +
                 "            (< n 20) \"<20\"        " +
                 "            (< n 30) \"<30\"        " +
                 "            :else \"else\"))        " +
@@ -266,7 +266,7 @@ public class MacroTest {
                 "         (cond                      " +
                 "            (< n 30) \"<30\"        " +
                 "            (< n 20) \"<20\"        " +
-                "   		 (< n 10) \"<10\"        " +
+                "            (< n 10) \"<10\"        " +
                 "            :else \"else\"))        " +
                 "                                    " +
                 "   (pr-str [(pos 5)(pos 15)(pos 25)(pos 35)])" +
@@ -276,7 +276,7 @@ public class MacroTest {
                 "(do                                 " +
                 "   (defn pos-neg-or-zero [n]        " +
                 "         (cond                      " +
-                "   		 (< n 0) \"negative\"    " +
+                "            (< n 0) \"negative\"    " +
                 "            (> n 0) \"positive\"    " +
                 "            :else \"zero\"))        " +
                 "                                    " +
@@ -287,7 +287,7 @@ public class MacroTest {
                 "(do                                 " +
                 "   (defn pos-neg-or-zero [n]        " +
                 "         (cond                      " +
-                "   		 (< n 0) \"negative\"    " +
+                "            (< n 0) \"negative\"    " +
                 "            (> n 0) \"positive\"    " +
                 "            :else \"zero\"))        " +
                 "                                    " +
@@ -644,9 +644,9 @@ public class MacroTest {
                 "oo",
                 venice.eval(
                         "(as-> [:foo :bar] v      " +
-                        "	      (map name v)    " +
-                        "	      (first v)       " +
-                        "	      (str/subs v 1)) "));
+                        "         (map name v)    " +
+                        "         (first v)       " +
+                        "         (str/subs v 1)) "));
     }
 
     @Test

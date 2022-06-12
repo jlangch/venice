@@ -39,8 +39,8 @@ public class JavaInterop_java_types_Test {
                 "(do                                      " +
                 "  (type                                  " +
                 "    (doto (. :java.util.ArrayList :new)  " +
-                "	       (. :add 1)                     " +
-                "	       (. :add (+ 1 2))))             " +
+                "          (. :add 1)                     " +
+                "          (. :add (+ 1 2))))             " +
                 ") ";
 
         assertEquals("java.util.ArrayList", venice.eval(list1));
@@ -49,8 +49,8 @@ public class JavaInterop_java_types_Test {
         final String list2 =
                 "(do                                    " +
                 "  (doto (. :java.util.ArrayList :new)  " +
-                "	     (. :add 1)                     " +
-                "	     (. :add (+ 1 2)))              " +
+                "        (. :add 1)                     " +
+                "        (. :add (+ 1 2)))              " +
                 ") ";
 
         assertEquals("java.util.ArrayList", venice.eval(list2).getClass().getName());
@@ -60,8 +60,8 @@ public class JavaInterop_java_types_Test {
         final String list3 =
                 "(do                                                          " +
                 "  (doto (. :java.util.concurrent.CopyOnWriteArrayList :new)  " +
-                "	     (. :add 1)                                           " +
-                "	     (. :add (+ 1 2)))                                    " +
+                "        (. :add 1)                                           " +
+                "        (. :add (+ 1 2)))                                    " +
                 ") ";
 
         assertEquals("java.util.concurrent.CopyOnWriteArrayList", venice.eval(list3).getClass().getName());
@@ -71,8 +71,8 @@ public class JavaInterop_java_types_Test {
         final String list4 =
                 "(do                                           " +
                 "  (first (doto (. :java.util.ArrayList :new)  " +
-                "	            (. :add 1)                     " +
-                "	            (. :add (+ 1 2))))             " +
+                "               (. :add 1)                     " +
+                "               (. :add (+ 1 2))))             " +
                 ") ";
 
         assertEquals(1L, venice.eval(list4));
@@ -81,8 +81,8 @@ public class JavaInterop_java_types_Test {
         final String list5 =
                 "(do                                          " +
                 "  (rest (doto (. :java.util.ArrayList :new)  " +
-                "	           (. :add 1)                     " +
-                "	           (. :add (+ 1 2))))             " +
+                "              (. :add 1)                     " +
+                "              (. :add (+ 1 2))))             " +
                 ") ";
 
         assertEquals("[3]", venice.eval(list5).toString());
@@ -91,9 +91,9 @@ public class JavaInterop_java_types_Test {
         final String list6 =
                 "(do                                          " +
                 "  (nth (doto (. :java.util.ArrayList :new)   " +
-                "	           (. :add 1)                     " +
-                "	           (. :add (+ 1 2)))              " +
-                "	    1)                                    " +
+                "              (. :add 1)                     " +
+                "              (. :add (+ 1 2)))              " +
+                "       1)                                    " +
                 ") ";
 
         assertEquals(3L, venice.eval(list6));
@@ -108,8 +108,8 @@ public class JavaInterop_java_types_Test {
                 "   (str                                           " +
                 "      (into (list)                                " +
                 "            (doto (. :java.util.ArrayList :new)   " +
-                "	               (. :add 1)                      " +
-                "	               (. :add (+ 1 2)))))             " +
+                "                  (. :add 1)                      " +
+                "                  (. :add (+ 1 2)))))             " +
                 ") ";
 
         assertEquals("(3 1)", venice.eval(list1));
@@ -119,8 +119,8 @@ public class JavaInterop_java_types_Test {
                 "   (str                                           " +
                 "      (list*                                      " +
                 "            (doto (. :java.util.ArrayList :new)   " +
-                "	               (. :add 1)                      " +
-                "	               (. :add (+ 1 2)))))             " +
+                "                  (. :add 1)                      " +
+                "                  (. :add (+ 1 2)))))             " +
                 ") ";
 
         assertEquals("(1 3)", venice.eval(list2));
@@ -130,8 +130,8 @@ public class JavaInterop_java_types_Test {
                 "   (str                                           " +
                 "      (into (vector)                              " +
                 "            (doto (. :java.util.ArrayList :new)   " +
-                "	               (. :add 1)                      " +
-                "	               (. :add (+ 1 2)))))             " +
+                "                  (. :add 1)                      " +
+                "                  (. :add (+ 1 2)))))             " +
                 ") ";
 
         assertEquals("[1 3]", venice.eval(list3));
@@ -145,11 +145,11 @@ public class JavaInterop_java_types_Test {
                 "(do                                                                     " +
                 "   (str                                                                 " +
                 "      (into (doto (. :java.util.concurrent.CopyOnWriteArrayList :new)   " +
-                "	               (. :add 1)                                            " +
-                "	               (. :add 2))                                           " +
+                "                  (. :add 1)                                            " +
+                "                  (. :add 2))                                           " +
                 "            (doto (. :java.util.ArrayList :new)                         " +
-                "	               (. :add 3)                                            " +
-                "	               (. :add 4))))                                         " +
+                "                  (. :add 3)                                            " +
+                "                  (. :add 4))))                                         " +
                 ") ";
 
         assertEquals("(1 2 3 4)", venice.eval(list1));
@@ -158,11 +158,11 @@ public class JavaInterop_java_types_Test {
                 "(do                                               " +
                 "   (str                                           " +
                 "      (into (doto (. :java.util.ArrayList :new)   " +
-                "	               (. :add 1)                      " +
-                "	               (. :add 2))                     " +
+                "                  (. :add 1)                      " +
+                "                  (. :add 2))                     " +
                 "            (doto (. :java.util.ArrayList :new)   " +
-                "	               (. :add 3)                      " +
-                "	               (. :add 4))))                   " +
+                "                  (. :add 3)                      " +
+                "                  (. :add 4))))                   " +
                 ") ";
 
         assertEquals("(1 2 3 4)", venice.eval(list2));
@@ -171,10 +171,10 @@ public class JavaInterop_java_types_Test {
                 "(do                                               " +
                 "   (str                                           " +
                 "      (into (doto (. :java.util.ArrayList :new)   " +
-                "	               (. :add 1)                      " +
-                "	               (. :add 2))                     " +
+                "                  (. :add 1)                      " +
+                "                  (. :add 2))                     " +
                 "            (doto (. :java.util.HashSet :new)     " +
-                "	               (. :add 3))))                   " +
+                "                  (. :add 3))))                   " +
                 ") ";
 
         assertEquals("(1 2 3)", venice.eval(list3));
@@ -183,8 +183,8 @@ public class JavaInterop_java_types_Test {
                 "(do                                               " +
                 "   (str                                           " +
                 "      (into (doto (. :java.util.ArrayList :new)   " +
-                "	               (. :add 1)                      " +
-                "	               (. :add 2))                     " +
+                "                  (. :add 1)                      " +
+                "                  (. :add 2))                     " +
                 "            '(3 4)))                              " +
                 ") ";
 
@@ -198,8 +198,8 @@ public class JavaInterop_java_types_Test {
         final String set =
                 "(do                                  " +
                 "  (doto (. :java.util.HashSet :new)  " +
-                "	     (. :add :a)                  " +
-                "	     (. :add :b))                 " +
+                "        (. :add :a)                  " +
+                "        (. :add :b))                 " +
                 ") ";
 
         assertEquals("java.util.HashSet", venice.eval(set).getClass().getName());
@@ -215,8 +215,8 @@ public class JavaInterop_java_types_Test {
                 "  (str                                       " +
                 "    (into (set)                              " +
                 "          (doto (. :java.util.HashSet :new)  " +
-                "	             (. :add :a)                  " +
-                "	             (. :add :b))))               " +
+                "                (. :add :a)                  " +
+                "                (. :add :b))))               " +
                 ") ";
 
         assertEquals("#{a b}", venice.eval(set).toString());
@@ -229,8 +229,8 @@ public class JavaInterop_java_types_Test {
         final String map =
                 "(do                                  " +
                 "  (doto (. :java.util.HashMap :new)  " +
-                "	     (. :put :a 1)                " +
-                "	     (. :put :b (+ 1 2)))         " +
+                "        (. :put :a 1)                " +
+                "        (. :put :b (+ 1 2)))         " +
                 ") ";
 
         assertEquals("java.util.HashMap", venice.eval(map).getClass().getName());
@@ -245,8 +245,8 @@ public class JavaInterop_java_types_Test {
                 "(do                                           " +
                 "  (hash-map                                   " +
                 "     (doto (. :java.util.LinkedHashMap :new)  " +
-                "	        (. :put :a 1)                      " +
-                "	        (. :put :b 2)))                    " +
+                "           (. :put :a 1)                      " +
+                "           (. :put :b 2)))                    " +
                 ") ";
 
         assertEquals("{a=1, b=2}", venice.eval(map1).toString());
@@ -255,8 +255,8 @@ public class JavaInterop_java_types_Test {
                 "(type                                         " +
                 "  (hash-map                                   " +
                 "     (doto (. :java.util.LinkedHashMap :new)  " +
-                "	        (. :put :a 1)                      " +
-                "	        (. :put :b 2)))                    " +
+                "           (. :put :a 1)                      " +
+                "           (. :put :b 2)))                    " +
                 ") ";
 
         assertEquals("core/hash-map", venice.eval(map2).toString());
@@ -270,8 +270,8 @@ public class JavaInterop_java_types_Test {
                 "(do                                           " +
                 "  (ordered-map                                " +
                 "     (doto (. :java.util.LinkedHashMap :new)  " +
-                "	        (. :put :a 1)                      " +
-                "	        (. :put :b 2)))                    " +
+                "           (. :put :a 1)                      " +
+                "           (. :put :b 2)))                    " +
                 ") ";
 
         assertEquals("{a=1, b=2}", venice.eval(map1).toString());
@@ -280,8 +280,8 @@ public class JavaInterop_java_types_Test {
                 "(type                                         " +
                 "  (ordered-map                                " +
                 "     (doto (. :java.util.LinkedHashMap :new)  " +
-                "	        (. :put :a 1)                      " +
-                "	        (. :put :b 2)))                    " +
+                "           (. :put :a 1)                      " +
+                "           (. :put :b 2)))                    " +
                 ") ";
 
         assertEquals("core/ordered-map", venice.eval(map2).toString());
@@ -295,8 +295,8 @@ public class JavaInterop_java_types_Test {
                 "(do                                           " +
                 "  (sorted-map                                 " +
                 "     (doto (. :java.util.LinkedHashMap :new)  " +
-                "	        (. :put :a 1)                      " +
-                "	        (. :put :b 2)))                    " +
+                "           (. :put :a 1)                      " +
+                "           (. :put :b 2)))                    " +
                 ") ";
 
         assertEquals("{a=1, b=2}", venice.eval(map1).toString());
@@ -305,8 +305,8 @@ public class JavaInterop_java_types_Test {
                 "(type                                         " +
                 "  (sorted-map                                 " +
                 "     (doto (. :java.util.LinkedHashMap :new)  " +
-                "	        (. :put :a 1)                      " +
-                "	        (. :put :b 2)))                    " +
+                "           (. :put :a 1)                      " +
+                "           (. :put :b 2)))                    " +
                 ") ";
 
         assertEquals("core/sorted-map", venice.eval(map2).toString());

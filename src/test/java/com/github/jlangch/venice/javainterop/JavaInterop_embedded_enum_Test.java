@@ -44,7 +44,7 @@ public class JavaInterop_embedded_enum_Test {
         final Venice venice = new Venice();
 
         final String script =
-                "(do                                                                      			\n" +
+                "(do                                                                                \n" +
                 "   (import :com.github.jlangch.venice.support.ClassWithEmbeddedEnum)               \n" +
                 "   (import :com.github.jlangch.venice.support.ClassWithEmbeddedEnum.TextAlignment) \n" +
                 "                                                                                   \n" +
@@ -62,7 +62,7 @@ public class JavaInterop_embedded_enum_Test {
         final Venice venice = new Venice();
 
         final String script =
-                "(do                                                                      			\n" +
+                "(do                                                                                \n" +
                 "   (import :com.github.jlangch.venice.support.ClassWithEmbeddedEnum)               \n" +
                 "   (import :com.github.jlangch.venice.support.ClassWithEmbeddedEnum.TextAlignment) \n" +
                 "                                                                                   \n" +
@@ -81,7 +81,7 @@ public class JavaInterop_embedded_enum_Test {
         final Venice venice = new Venice();
 
         final String script =
-                "(do                                                                      			\n" +
+                "(do                                                                                \n" +
                 "   (import :com.github.jlangch.venice.support.ClassWithEmbeddedEnum)               \n" +
                 "   (import :com.github.jlangch.venice.support.ClassWithEmbeddedEnum$TextAlignment) \n" +
                 "                                                                                   \n" +
@@ -104,7 +104,7 @@ public class JavaInterop_embedded_enum_Test {
         final Venice venice = new Venice();
 
         final String script =
-                "(do                                                                      			\n" +
+                "(do                                                                                \n" +
                 "   (import :com.github.jlangch.venice.support.ClassWithEmbeddedEnum)               \n" +
                 "   (import :com.github.jlangch.venice.support.ClassWithEmbeddedEnum$TextAlignment) \n" +
                 "                                                                                   \n" +
@@ -121,7 +121,7 @@ public class JavaInterop_embedded_enum_Test {
         final Venice venice = new Venice();
 
         final String script =
-                "(do                                                                      			\n" +
+                "(do                                                                                \n" +
                 "   (import :com.github.jlangch.venice.support.ClassWithEmbeddedEnum)               \n" +
                 "   (import :com.github.jlangch.venice.support.ClassWithEmbeddedEnum$TextAlignment) \n" +
                 "                                                                                   \n" +

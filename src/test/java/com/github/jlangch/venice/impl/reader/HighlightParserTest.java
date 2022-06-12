@@ -164,29 +164,29 @@ public class HighlightParserTest {
         assertEquals(core, joined);
     }
 
-//	private void diff(final String s1, final String s2) {
-//		int line = 1;
-//		int col = 1;
-//		for(int ii=0; ii<Math.min(s1.length(), s2.length()); ii++) {
-//			final char u = s1.charAt(ii);
-//			final char v = s2.charAt(ii);
+//    private void diff(final String s1, final String s2) {
+//        int line = 1;
+//        int col = 1;
+//        for(int ii=0; ii<Math.min(s1.length(), s2.length()); ii++) {
+//            final char u = s1.charAt(ii);
+//            final char v = s2.charAt(ii);
 //
-//			if (u == '\n') {
-//				line++;
-//				col = 1;
-//			}
-//			else {
-//				col++;
-//			}
+//            if (u == '\n') {
+//                line++;
+//                col = 1;
+//            }
+//            else {
+//                col++;
+//            }
 //
-//			if (u != v) {
-//				for(int jj=-3; jj<=3; jj++) System.out.print("'" + s1.charAt(ii+jj) + "', ");
-//				System.out.println();
-//				for(int jj=-3; jj<=3; jj++) System.out.print("'" + s2.charAt(ii+jj) + "', ");
-//				System.out.println();
-//				System.out.println(String.format("Diff: line=%d / col=%d   '%c' :: '%c'", line, col, u, v));
-//				break;
-//			}
-//		}
-//	}
+//            if (u != v) {
+//                for(int jj=-3; jj<=3; jj++) System.out.print("'" + s1.charAt(ii+jj) + "', ");
+//                System.out.println();
+//                for(int jj=-3; jj<=3; jj++) System.out.print("'" + s2.charAt(ii+jj) + "', ");
+//                System.out.println();
+//                System.out.println(String.format("Diff: line=%d / col=%d   '%c' :: '%c'", line, col, u, v));
+//                break;
+//            }
+//        }
+//    }
 }

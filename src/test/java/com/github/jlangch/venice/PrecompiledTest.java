@@ -58,7 +58,7 @@ public class PrecompiledTest {
         final PreCompiled precomp = venice.precompile("test", script);
         assertEquals(103L, venice.eval(precomp, Parameters.of("x", 100L, "y", 1L, "z", 2L)));
 
-//		assertEquals(103L, venice.eval(script, Parameters.of("x", 100L, "y", 1L, "z", 2L)));
+//      assertEquals(103L, venice.eval(script, Parameters.of("x", 100L, "y", 1L, "z", 2L)));
     }
 
     @Test
@@ -204,7 +204,7 @@ public class PrecompiledTest {
         }
 
         System.gc();
-        final StopWatch	sw = StopWatch.nanos();
+        final StopWatch sw = StopWatch.nanos();
         for(int ii=0; ii<10_000; ii++) {
             venice.eval(precomp);
         }
@@ -225,7 +225,7 @@ public class PrecompiledTest {
         }
 
         System.gc();
-        final StopWatch	sw = StopWatch.nanos();
+        final StopWatch sw = StopWatch.nanos();
         for(int ii=0; ii<10_000; ii++) {
             venice.eval(precomp, Parameters.of("x", 100, "y", 200));
         }

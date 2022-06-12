@@ -30,24 +30,24 @@ import com.github.jlangch.venice.Venice;
 
 public class MapTest {
 
-	@Test
-	public void test_MapAsFunction() {
-		final Venice venice = new Venice();
+    @Test
+    public void test_MapAsFunction() {
+        final Venice venice = new Venice();
 
-		assertEquals("2", venice.eval("(pr-str ({:a 2 :b 3} :a))"));
-		assertEquals("nil", venice.eval("(pr-str ({:a 2 :b 3} :c))"));
-		assertEquals("nil", venice.eval("(pr-str ({:a 2 :b 3} nil))"));
+        assertEquals("2", venice.eval("(pr-str ({:a 2 :b 3} :a))"));
+        assertEquals("nil", venice.eval("(pr-str ({:a 2 :b 3} :c))"));
+        assertEquals("nil", venice.eval("(pr-str ({:a 2 :b 3} nil))"));
 
-		// defaults
-		assertEquals("2", venice.eval("(pr-str ({:a 2 :b 3} :a 9))"));
-		assertEquals("9", venice.eval("(pr-str ({:a 2 :b 3} :c 9))"));
-		assertEquals("9", venice.eval("(pr-str ({:a 2 :b 3} nil 9))"));
-	}
+        // defaults
+        assertEquals("2", venice.eval("(pr-str ({:a 2 :b 3} :a 9))"));
+        assertEquals("9", venice.eval("(pr-str ({:a 2 :b 3} :c 9))"));
+        assertEquals("9", venice.eval("(pr-str ({:a 2 :b 3} nil 9))"));
+    }
 
-	@Test
-	public void test_map_eval() {
-		final Venice venice = new Venice();
+    @Test
+    public void test_map_eval() {
+        final Venice venice = new Venice();
 
-		assertEquals("{:a 2 :b 3}", venice.eval("(pr-str {:a 2 :b (+ 1 2)})"));
-	}
+        assertEquals("{:a 2 :b 3}", venice.eval("(pr-str {:a 2 :b (+ 1 2)})"));
+    }
 }

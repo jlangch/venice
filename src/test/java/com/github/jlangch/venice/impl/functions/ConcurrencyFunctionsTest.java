@@ -601,17 +601,17 @@ public class ConcurrencyFunctionsTest {
                 "   (let [pwtr (. :PrintWriter :new *out* true)                              \n" +
                 "         wtr (agent (. :BufferedWriter :new pwtr))]                         \n" +
                 "      (defn log* [msg]                                                      \n" +
-                "	      (let [write (fn [out msg] (do (. out :write msg) out))]            \n" +
-                "	         (send wtr write msg)))                                          \n" +
-                "	   (defn log-close []                                                    \n" +
-                "	         (do                                                             \n" +
-                "	            (send wtr (fn [out] (do (. out :flush) (. out :close) out))) \n" +
-                "	            (await-for 2000 wtr))))                                      \n" +
+                "         (let [write (fn [out msg] (do (. out :write msg) out))]            \n" +
+                "            (send wtr write msg)))                                          \n" +
+                "      (defn log-close []                                                    \n" +
+                "            (do                                                             \n" +
+                "               (send wtr (fn [out] (do (. out :flush) (. out :close) out))) \n" +
+                "               (await-for 2000 wtr))))                                      \n" +
                 "                                                                            \n" +
-                "	(log* \"test\n\")                                                        \n" +
-                "	(log* \"another line\n\")                                                \n" +
-                "	(log-close)                                                              \n" +
-                "	(println \"DONE.\"))                                                 ";
+                "   (log* \"test\n\")                                                        \n" +
+                "   (log* \"another line\n\")                                                \n" +
+                "   (log-close)                                                              \n" +
+                "   (println \"DONE.\"))                                                 ";
 
         venice.eval(script);
     }
@@ -780,8 +780,8 @@ public class ConcurrencyFunctionsTest {
         final Venice venice = new Venice();
 
         final String script =
-                "(do                                 			 \n" +
-                "   (def p (promise))                			 \n" +
+                "(do                                             \n" +
+                "   (def p (promise))                            \n" +
                 "   (deliver-ex p (ex :VncException \"error\"))  \n" +
                 "   (deliver p 20)                               \n" +
                 "   @p)                                          ";
@@ -794,8 +794,8 @@ public class ConcurrencyFunctionsTest {
         final Venice venice = new Venice();
 
         final String script =
-                "(do                                 			 \n" +
-                "   (def p (promise))                			 \n" +
+                "(do                                             \n" +
+                "   (def p (promise))                            \n" +
                 "   (deliver-ex p 100)                           \n" +
                 "   (deliver p 20)                               \n" +
                 "   @p)                                          ";
@@ -1380,7 +1380,7 @@ public class ConcurrencyFunctionsTest {
                 "   (defn worker []                         \n" +
                 "     (reset! progress :started)            \n" +
                 "     (sleep 500)                           \n" +
-                "     (reset! progress :end)	            \n" +
+                "     (reset! progress :end)                \n" +
                 "     100)                                  \n" +
                 "                                           \n" +
                 "   (def f (future worker))                 \n" +
