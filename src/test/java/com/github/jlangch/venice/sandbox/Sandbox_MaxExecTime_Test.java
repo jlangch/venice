@@ -34,6 +34,7 @@ import com.github.jlangch.venice.javainterop.Interceptor;
 import com.github.jlangch.venice.javainterop.SandboxInterceptor;
 import com.github.jlangch.venice.javainterop.SandboxRules;
 
+
 public class Sandbox_MaxExecTime_Test {
 
     @Test
@@ -49,7 +50,11 @@ public class Sandbox_MaxExecTime_Test {
             // Returns after ~2s with a SecurityException
             assertThrows(
                     SecurityException.class,
-                    () -> new Venice(interceptor).eval("(do (+ 1 1) (sleep 30000) (+ 1 2))"));
+                    () -> new Venice(interceptor).eval(
+                                "(do                    \n" +
+                                "  (+ 1 1)              \n" +
+                                "  (sleep 30 :seconds)  \n" +
+                                "  (+ 1 2))             "));
 
             final long elapsed = sw.stop().elapsedMillis();
             assertTrue(1900 < elapsed && elapsed < 2500, "Elapsed: " + elapsed);
@@ -70,11 +75,11 @@ public class Sandbox_MaxExecTime_Test {
             final Venice venice = new Venice(interceptor);
 
             final String script =
-                    "(do                                          " +
-                    "   (def wait (fn [] (do (sleep 30000) 100))) " +
-                    "                                             " +
-                    "   (let [f (future wait)]                    " +
-                    "        (deref f))                           " +
+                    "(do                                           \n" +
+                    "   (defn wait [] (sleep 30 :seconds) 100)     \n" +
+                    "                                              \n" +
+                    "   (let [f (future wait)]                     \n" +
+                    "        (deref f))                            \n" +
                     ") ";
 
             final StopWatch sw = new StopWatch();
@@ -98,7 +103,11 @@ public class Sandbox_MaxExecTime_Test {
             final Interceptor interceptor =
                     new SandboxInterceptor(new SandboxRules().withMaxExecTimeSeconds(2));
 
-            assertDoesNotThrow(() -> new Venice(interceptor).eval("(do (+ 1 1) (sleep 1000) (+ 1 2))"));
+            assertDoesNotThrow(() -> new Venice(interceptor).eval(
+                                            "(do             \n" +
+                                            "  (+ 1 1)       \n" +
+                                            "  (sleep 1000)  \n" +
+                                            "  (+ 1 2))      "));
         }
         finally {
             Thread.interrupted();
