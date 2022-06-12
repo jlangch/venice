@@ -1,5 +1,5 @@
 /*   __    __         _
- *   \ \  / /__ _ __ (_) ___ ___ 
+ *   \ \  / /__ _ __ (_) ___ ___
  *    \ \/ / _ \ '_ \| |/ __/ _ \
  *     \  /  __/ | | | | (_|  __/
  *      \/ \___|_| |_|_|\___\___|
@@ -26,17 +26,17 @@ import org.junit.jupiter.api.Test;
 
 public class NBodyTest {
 
-	@Test
-	public void testJava() {
-		NBody.run(50_000_000);
-	}
+    @Test
+    public void testJava() {
+        NBody.run(50_000_000);
+    }
 
-	@Test
-	public void testJava2() {
-		NBody.run(100_000);
-	}
+    @Test
+    public void testJava2() {
+        NBody.run(100_000);
+    }
 
-	@Test
-	public void testVenice() {
-	}
+    @Test
+    public void testVenice() {
+    }
 }

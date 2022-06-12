@@ -1,5 +1,5 @@
 /*   __    __         _
- *   \ \  / /__ _ __ (_) ___ ___ 
+ *   \ \  / /__ _ __ (_) ___ ___
  *    \ \/ / _ \ '_ \| |/ __/ _ \
  *     \  /  __/ | | | | (_|  __/
  *      \/ \___|_| |_|_|\___\___|
@@ -36,144 +36,144 @@ import io.vavr.collection.Vector;
 
 public class VavrTest {
 
-	@Test
-	public void testZip() {
-		Vector<String> vec = Vector.of("a", "b", "c");
-		
-		Vector<Tuple2<String, Integer>> zipped = vec.zip(Vector.of(0, 1, 2));
-		
-		assertEquals(3, zipped.size());
-	}
+    @Test
+    public void testZip() {
+        Vector<String> vec = Vector.of("a", "b", "c");
 
-	@Test @Disabled
-	public void testPerformance() {
-		Vector<Long> vec = Vector.of(1L,1L,1L,1L,1L,1L,1L,1L,1L,1L,1L,1L,1L,1L,1L,1L,1L,1L);
-		
-		// WARMUP ------------------------------------------------------------
-		int count = 0;
-		for(int ii=0; ii<20000; ii++) {
-			final List<Long> result = new ArrayList<>();
-			vec.forEach(s -> result.add(s));
-			count += result.size();
-		}
+        Vector<Tuple2<String, Integer>> zipped = vec.zip(Vector.of(0, 1, 2));
 
-		for(int ii=0; ii<20000; ii++) {
-			final List<Long> result = new ArrayList<>();
-			for(Long i : vec.asJava()) {
-				result.add(i + 1L);
-			}
-			count += result.size();
-		}
+        assertEquals(3, zipped.size());
+    }
 
-		for(int ii=0; ii<20000; ii++) {
-			final List<Long> result = new ArrayList<>();
-			for(Long i : vec.toJavaList()) {
-				result.add(i + 1L);
-			}
-			count += result.size();
-		}
+    @Test @Disabled
+    public void testPerformance() {
+        Vector<Long> vec = Vector.of(1L,1L,1L,1L,1L,1L,1L,1L,1L,1L,1L,1L,1L,1L,1L,1L,1L,1L);
 
-		for(int ii=0; ii<20000; ii++) {
-			final List<Long> result = new ArrayList<>();
-			for(Long i : vec.asJavaMutable()) {
-				result.add(i + 1L);
-			}
-			count += result.size();
-		}
+        // WARMUP ------------------------------------------------------------
+        int count = 0;
+        for(int ii=0; ii<20000; ii++) {
+            final List<Long> result = new ArrayList<>();
+            vec.forEach(s -> result.add(s));
+            count += result.size();
+        }
 
-		
-		// TEST ------------------------------------------------------------
+        for(int ii=0; ii<20000; ii++) {
+            final List<Long> result = new ArrayList<>();
+            for(Long i : vec.asJava()) {
+                result.add(i + 1L);
+            }
+            count += result.size();
+        }
 
-		count = 0;
-		
-		System.gc();
-		long nanos = System.nanoTime();
-		for(int ii=0; ii<1000; ii++) {
-			final List<Long> result = new ArrayList<>();
-			vec.forEach(s -> result.add(s + 1L));
-			count += result.size();
-		}
-		long elapsed = System.nanoTime() - nanos;
-		System.out.println("Vavr forEach(): " + elapsed / 1000);
+        for(int ii=0; ii<20000; ii++) {
+            final List<Long> result = new ArrayList<>();
+            for(Long i : vec.toJavaList()) {
+                result.add(i + 1L);
+            }
+            count += result.size();
+        }
 
-		System.gc();
-		nanos = System.nanoTime();
-		for(int ii=0; ii<1000; ii++) {
-			final List<Long> result = new ArrayList<>();
-			for(Long i : vec.asJava()) {
-				result.add(i + 1L);
-			}
-			count += result.size();
-		}
-		elapsed = System.nanoTime() - nanos;
-		System.out.println("Vavr vec.asJava(): " + elapsed / 1000);
+        for(int ii=0; ii<20000; ii++) {
+            final List<Long> result = new ArrayList<>();
+            for(Long i : vec.asJavaMutable()) {
+                result.add(i + 1L);
+            }
+            count += result.size();
+        }
 
-		System.gc();
-		nanos = System.nanoTime();
-		for(int ii=0; ii<1000; ii++) {
-			final List<Long> result = new ArrayList<>();
-			for(Long i : vec.toJavaList()) {
-				result.add(i + 1L);
-			}
-			count += result.size();
-		}
-		elapsed = System.nanoTime() - nanos;
-		System.out.println("Vavr vec.toJavaList(): " + elapsed / 1000);
 
-		System.gc();
-		nanos = System.nanoTime();
-		for(int ii=0; ii<1000; ii++) {
-			final List<Long> result = new ArrayList<>();
-			for(Long i : vec.asJavaMutable()) {
-				result.add(i + 1L);
-			}
-			count += result.size();
-		}
-		elapsed = System.nanoTime() - nanos;
-		System.out.println("Vavr vec.asJavaMutable(): " + elapsed / 1000);
+        // TEST ------------------------------------------------------------
 
-		assertEquals(72000, count);
-	}
-	
-	@Test 
-	public void testRecursiveStream() {
-		Stream<Integer> s = ones();
-		long f = 0L;
-		
-		for(int ii=0; ii<10000; ii++) {
-			f = s.head();
-			s = s.tail();
-		}
-		
-		assertEquals(1L, f);
-	}
-	
-	@Test
-	public void testRecursiveFib() {
-		// https://www.sitepoint.com/functional-fizzbuzz-with-vavr/
-		Stream<Long> s = fib();
-		long f = 0L;
-		
-		for(int ii=0; ii<90; ii++) {
-			f = s.head();
-			s = s.tail();
-		}
-		
-		assertEquals(2880067194370816120L, f);
-	}
-	
-	private Stream<Integer> ones() {
-		// Java evaluates method arguments before a method is called. In case of
-		// an infinite stream this is tricked with a Supplier in order to prevent 
-		// a stack overflow.
-	    return Stream.cons(1, () -> ones());
-	}
-	
-	private Stream<Long> fib() {
-	    return fib(1L, 1L);
-	}
-	
-	private Stream<Long> fib(final long a, final long b) {
-	    return Stream.cons(a, () -> fib(b, a + b));
-	}
+        count = 0;
+
+        System.gc();
+        long nanos = System.nanoTime();
+        for(int ii=0; ii<1000; ii++) {
+            final List<Long> result = new ArrayList<>();
+            vec.forEach(s -> result.add(s + 1L));
+            count += result.size();
+        }
+        long elapsed = System.nanoTime() - nanos;
+        System.out.println("Vavr forEach(): " + elapsed / 1000);
+
+        System.gc();
+        nanos = System.nanoTime();
+        for(int ii=0; ii<1000; ii++) {
+            final List<Long> result = new ArrayList<>();
+            for(Long i : vec.asJava()) {
+                result.add(i + 1L);
+            }
+            count += result.size();
+        }
+        elapsed = System.nanoTime() - nanos;
+        System.out.println("Vavr vec.asJava(): " + elapsed / 1000);
+
+        System.gc();
+        nanos = System.nanoTime();
+        for(int ii=0; ii<1000; ii++) {
+            final List<Long> result = new ArrayList<>();
+            for(Long i : vec.toJavaList()) {
+                result.add(i + 1L);
+            }
+            count += result.size();
+        }
+        elapsed = System.nanoTime() - nanos;
+        System.out.println("Vavr vec.toJavaList(): " + elapsed / 1000);
+
+        System.gc();
+        nanos = System.nanoTime();
+        for(int ii=0; ii<1000; ii++) {
+            final List<Long> result = new ArrayList<>();
+            for(Long i : vec.asJavaMutable()) {
+                result.add(i + 1L);
+            }
+            count += result.size();
+        }
+        elapsed = System.nanoTime() - nanos;
+        System.out.println("Vavr vec.asJavaMutable(): " + elapsed / 1000);
+
+        assertEquals(72000, count);
+    }
+
+    @Test
+    public void testRecursiveStream() {
+        Stream<Integer> s = ones();
+        long f = 0L;
+
+        for(int ii=0; ii<10000; ii++) {
+            f = s.head();
+            s = s.tail();
+        }
+
+        assertEquals(1L, f);
+    }
+
+    @Test
+    public void testRecursiveFib() {
+        // https://www.sitepoint.com/functional-fizzbuzz-with-vavr/
+        Stream<Long> s = fib();
+        long f = 0L;
+
+        for(int ii=0; ii<90; ii++) {
+            f = s.head();
+            s = s.tail();
+        }
+
+        assertEquals(2880067194370816120L, f);
+    }
+
+    private Stream<Integer> ones() {
+        // Java evaluates method arguments before a method is called. In case of
+        // an infinite stream this is tricked with a Supplier in order to prevent
+        // a stack overflow.
+        return Stream.cons(1, () -> ones());
+    }
+
+    private Stream<Long> fib() {
+        return fib(1L, 1L);
+    }
+
+    private Stream<Long> fib(final long a, final long b) {
+        return Stream.cons(a, () -> fib(b, a + b));
+    }
 }

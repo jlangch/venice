@@ -1,5 +1,5 @@
 /*   __    __         _
- *   \ \  / /__ _ __ (_) ___ ___ 
+ *   \ \  / /__ _ __ (_) ___ ___
  *    \ \/ / _ \ '_ \| |/ __/ _ \
  *     \  /  __/ | | | | (_|  __/
  *      \/ \___|_| |_|_|\___\___|
@@ -33,72 +33,72 @@ import com.github.jlangch.venice.Venice;
 public class JavaInterop_invocation_ex_Test {
 
 
-	@Test
-	public void test_ok() {
-		final Venice venice = new Venice();
+    @Test
+    public void test_ok() {
+        final Venice venice = new Venice();
 
-		final String script = "(. :com.github.jlangch.venice.javainterop.JavaInterop_invocation_ex_Test$TestObj :methodA 100) ";
-		
-		assertEquals(100, venice.eval(script));
-	}
-	
-	@Test
-	@Disabled
-	public void test_invalid_param() {
-		final Venice venice = new Venice();
+        final String script = "(. :com.github.jlangch.venice.javainterop.JavaInterop_invocation_ex_Test$TestObj :methodA 100) ";
 
-		final String script = 
-				"(do                                                                                         \n" +
-				"  (def clazz :com.github.jlangch.venice.javainterop.JavaInterop_invocation_ex_Test$TestObj) \n" +
-				"  (defn run []                                                                              \n" +
-				"    (. clazz :methodC true))                                                                \n" +
-				"  (run))";
-		
-		try {
-			venice.eval(script);
-		}
-		catch(JavaMethodInvocationException ex) {
-			System.out.println(ex.printVeniceStackTraceToString());
-		}
-	}
-	
-	@Test
-	@Disabled
-	public void test_fail() {
-		final Venice venice = new Venice();
+        assertEquals(100, venice.eval(script));
+    }
 
-		final String script = 
-				"(do                                                                                         \n" +
-				"  (def clazz :com.github.jlangch.venice.javainterop.JavaInterop_invocation_ex_Test$TestObj) \n" +
-				"  (defn run []                                                                              \n" +
-				"    (. clazz :methodC 100))                                                                 \n" +
-				"  (run))";
-		
-		try {
-			venice.eval(script);
-		}
-		catch(JavaMethodInvocationException ex) {
-			System.out.println(ex.printVeniceStackTraceToString());
-		}
-	}
-	
-	
-	public static class TestObj {
-		
-		public static int methodErr(int a) {
-			throw new RuntimeException("Failed on methodErr");
-		}
-		
-		public static int methodA(int a) {
-			return a;
-		}
-		
-		public static int methodB(int b) {
-			return methodA(b);
-		}
-		
-		public static int methodC(int c) {
-			return methodErr(c);
-		}
-	}
+    @Test
+    @Disabled
+    public void test_invalid_param() {
+        final Venice venice = new Venice();
+
+        final String script =
+                "(do                                                                                         \n" +
+                "  (def clazz :com.github.jlangch.venice.javainterop.JavaInterop_invocation_ex_Test$TestObj) \n" +
+                "  (defn run []                                                                              \n" +
+                "    (. clazz :methodC true))                                                                \n" +
+                "  (run))";
+
+        try {
+            venice.eval(script);
+        }
+        catch(JavaMethodInvocationException ex) {
+            System.out.println(ex.printVeniceStackTraceToString());
+        }
+    }
+
+    @Test
+    @Disabled
+    public void test_fail() {
+        final Venice venice = new Venice();
+
+        final String script =
+                "(do                                                                                         \n" +
+                "  (def clazz :com.github.jlangch.venice.javainterop.JavaInterop_invocation_ex_Test$TestObj) \n" +
+                "  (defn run []                                                                              \n" +
+                "    (. clazz :methodC 100))                                                                 \n" +
+                "  (run))";
+
+        try {
+            venice.eval(script);
+        }
+        catch(JavaMethodInvocationException ex) {
+            System.out.println(ex.printVeniceStackTraceToString());
+        }
+    }
+
+
+    public static class TestObj {
+
+        public static int methodErr(int a) {
+            throw new RuntimeException("Failed on methodErr");
+        }
+
+        public static int methodA(int a) {
+            return a;
+        }
+
+        public static int methodB(int b) {
+            return methodA(b);
+        }
+
+        public static int methodC(int c) {
+            return methodErr(c);
+        }
+    }
 }

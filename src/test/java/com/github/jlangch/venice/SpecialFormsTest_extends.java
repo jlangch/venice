@@ -1,5 +1,5 @@
 /*   __    __         _
- *   \ \  / /__ _ __ (_) ___ ___ 
+ *   \ \  / /__ _ __ (_) ___ ___
  *    \ \/ / _ \ '_ \| |/ __/ _ \
  *     \  /  __/ | | | | (_|  __/
  *      \/ \___|_| |_|_|\___\___|
@@ -27,40 +27,40 @@ import org.junit.jupiter.api.Test;
 
 
 public class SpecialFormsTest_extends {
-	
-	@Test
-	public void test_extends_deftype_1() {
-		final Venice venice = new Venice();
 
-		final String script =
-				"(do                                                 \n" +
-				"  (ns test)                                         \n" +
-				"  (defprotocol P (foo [x]) (bar [x]))               \n" +
-				"  (deftype :person [name :string last :string]      \n" +
-				"           P (foo [x] (:name x))                    \n" +
-				"             (bar [x] (:last x)))                   \n" +
-				"  (def p (person. \"joe\" \"smith\"))               \n" +
-				"  (extends? (type p) P))";
+    @Test
+    public void test_extends_deftype_1() {
+        final Venice venice = new Venice();
 
-		assertTrue((boolean)venice.eval(script));					
-	}
+        final String script =
+                "(do                                                 \n" +
+                "  (ns test)                                         \n" +
+                "  (defprotocol P (foo [x]) (bar [x]))               \n" +
+                "  (deftype :person [name :string last :string]      \n" +
+                "           P (foo [x] (:name x))                    \n" +
+                "             (bar [x] (:last x)))                   \n" +
+                "  (def p (person. \"joe\" \"smith\"))               \n" +
+                "  (extends? (type p) P))";
 
-	@Test
-	public void test_extends_deftype_2() {
-		final Venice venice = new Venice();
+        assertTrue((boolean)venice.eval(script));
+    }
 
-		final String script =
-				"(do                                                 \n" +
-				"  (ns test)                                         \n" +
-				"  (defprotocol P (foo [x]) (bar [x]))               \n" +
-				"  (deftype :person [name :string last :string])     \n" +
-				"  (extend :test/person P                            \n" +
-				"          (foo [x] (:name x))                       \n" +
-				"          (bar [x] (:last x)))                      \n" +
-				"  (def p (person. \"joe\" \"smith\"))               \n" +
-				"  (extends? (type p) P))";
+    @Test
+    public void test_extends_deftype_2() {
+        final Venice venice = new Venice();
 
-		assertTrue((boolean)venice.eval(script));					
-	}
+        final String script =
+                "(do                                                 \n" +
+                "  (ns test)                                         \n" +
+                "  (defprotocol P (foo [x]) (bar [x]))               \n" +
+                "  (deftype :person [name :string last :string])     \n" +
+                "  (extend :test/person P                            \n" +
+                "          (foo [x] (:name x))                       \n" +
+                "          (bar [x] (:last x)))                      \n" +
+                "  (def p (person. \"joe\" \"smith\"))               \n" +
+                "  (extends? (type p) P))";
+
+        assertTrue((boolean)venice.eval(script));
+    }
 
 }

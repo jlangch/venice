@@ -1,5 +1,5 @@
 /*   __    __         _
- *   \ \  / /__ _ __ (_) ___ ___ 
+ *   \ \  / /__ _ __ (_) ___ ___
  *    \ \/ / _ \ '_ \| |/ __/ _ \
  *     \  /  __/ | | | | (_|  __/
  *      \/ \___|_| |_|_|\___\___|
@@ -35,74 +35,74 @@ import com.github.jlangch.venice.javainterop.SandboxInterceptor;
 import com.github.jlangch.venice.javainterop.SandboxRules;
 
 public class Sandbox_MaxExecTime_Test {
-		
-	@Test
-	public void test_too_long() {
-		try {
-			Thread.interrupted(); // reset the thread's interrupt status
-			
-			final Interceptor interceptor = 
-					new SandboxInterceptor(new SandboxRules().withMaxExecTimeSeconds(2));
-		
-			final StopWatch sw = new StopWatch();
-			
-			// Returns after ~2s with a SecurityException
-			assertThrows(
-					SecurityException.class, 
-					() -> new Venice(interceptor).eval("(do (+ 1 1) (sleep 30000) (+ 1 2))"));
-			
-			final long elapsed = sw.stop().elapsedMillis();
-			assertTrue(1900 < elapsed && elapsed < 2500, "Elapsed: " + elapsed);
-		}
-		finally {
-			Thread.interrupted();
-		}
-	}
 
-	@Test
-	public void test_future_too_long() {
-		try {
-			Thread.interrupted(); // reset the thread's interrupt status
-			
-			final Interceptor interceptor = 
-					new SandboxInterceptor(new SandboxRules().withMaxExecTimeSeconds(2));
-	
-			final Venice venice = new Venice(interceptor);
-	
-			final String script = 
-					"(do                                          " +
-					"   (def wait (fn [] (do (sleep 30000) 100))) " +
-					"                                             " +
-					"   (let [f (future wait)]                    " +
-					"        (deref f))                           " +
-					") ";
-	
-			final StopWatch sw = new StopWatch();
-			
-			// Returns after ~2s with a SecurityException
-			assertThrows(SecurityException.class, () -> venice.eval(script));
-			
-			final long elapsed = sw.stop().elapsedMillis();
-			assertTrue(1900 < elapsed && elapsed < 2500);
-		}
-		finally {
-			Thread.interrupted();
-		}
-	}
+    @Test
+    public void test_too_long() {
+        try {
+            Thread.interrupted(); // reset the thread's interrupt status
 
-	@Test
-	public void test_ok() {
-		try {
-			Thread.interrupted(); // reset the thread's interrupt status
-			
-			final Interceptor interceptor = 
-					new SandboxInterceptor(new SandboxRules().withMaxExecTimeSeconds(2));
-		
-			assertDoesNotThrow(() -> new Venice(interceptor).eval("(do (+ 1 1) (sleep 1000) (+ 1 2))"));
-		}
-		finally {
-			Thread.interrupted();
-		}
-	}
+            final Interceptor interceptor =
+                    new SandboxInterceptor(new SandboxRules().withMaxExecTimeSeconds(2));
+
+            final StopWatch sw = new StopWatch();
+
+            // Returns after ~2s with a SecurityException
+            assertThrows(
+                    SecurityException.class,
+                    () -> new Venice(interceptor).eval("(do (+ 1 1) (sleep 30000) (+ 1 2))"));
+
+            final long elapsed = sw.stop().elapsedMillis();
+            assertTrue(1900 < elapsed && elapsed < 2500, "Elapsed: " + elapsed);
+        }
+        finally {
+            Thread.interrupted();
+        }
+    }
+
+    @Test
+    public void test_future_too_long() {
+        try {
+            Thread.interrupted(); // reset the thread's interrupt status
+
+            final Interceptor interceptor =
+                    new SandboxInterceptor(new SandboxRules().withMaxExecTimeSeconds(2));
+
+            final Venice venice = new Venice(interceptor);
+
+            final String script =
+                    "(do                                          " +
+                    "   (def wait (fn [] (do (sleep 30000) 100))) " +
+                    "                                             " +
+                    "   (let [f (future wait)]                    " +
+                    "        (deref f))                           " +
+                    ") ";
+
+            final StopWatch sw = new StopWatch();
+
+            // Returns after ~2s with a SecurityException
+            assertThrows(SecurityException.class, () -> venice.eval(script));
+
+            final long elapsed = sw.stop().elapsedMillis();
+            assertTrue(1900 < elapsed && elapsed < 2500);
+        }
+        finally {
+            Thread.interrupted();
+        }
+    }
+
+    @Test
+    public void test_ok() {
+        try {
+            Thread.interrupted(); // reset the thread's interrupt status
+
+            final Interceptor interceptor =
+                    new SandboxInterceptor(new SandboxRules().withMaxExecTimeSeconds(2));
+
+            assertDoesNotThrow(() -> new Venice(interceptor).eval("(do (+ 1 1) (sleep 1000) (+ 1 2))"));
+        }
+        finally {
+            Thread.interrupted();
+        }
+    }
 
 }

@@ -1,5 +1,5 @@
 /*   __    __         _
- *   \ \  / /__ _ __ (_) ___ ___ 
+ *   \ \  / /__ _ __ (_) ___ ___
  *    \ \/ / _ \ '_ \| |/ __/ _ \
  *     \  /  __/ | | | | (_|  __/
  *      \/ \___|_| |_|_|\___\___|
@@ -35,85 +35,85 @@ import com.github.jlangch.venice.javainterop.SandboxRules;
 
 
 public class Sandbox_PreCompiledScript_Test {
-	
-	@Test
-	public void test_RejectAllInterceptor_1() {
-		final PreCompiled pre = new Venice(new AcceptAllInterceptor())
-									.precompile("test","(gc)");
 
-		assertThrows(SecurityException.class, () -> {
-			// RejectAllInterceptor -> gc is blacklisted
-			new Venice(new RejectAllInterceptor()).eval(pre);
-		});
-	}
-	
-	@Test
-	public void test_RejectAllInterceptor_2() {
-		final PreCompiled pre = new Venice(new RejectAllInterceptor())
-									.precompile("test","(gc)");
+    @Test
+    public void test_RejectAllInterceptor_1() {
+        final PreCompiled pre = new Venice(new AcceptAllInterceptor())
+                                    .precompile("test","(gc)");
 
-		assertThrows(SecurityException.class, () -> {
-			// RejectAllInterceptor -> gc is blacklisted
-			new Venice(new RejectAllInterceptor()).eval(pre);
-		});
-	}
-	
-	@Test
-	public void test_AcceptAllInterceptor_1() {
-		final PreCompiled pre = new Venice(new AcceptAllInterceptor())
-									.precompile("test","(gc)");
+        assertThrows(SecurityException.class, () -> {
+            // RejectAllInterceptor -> gc is blacklisted
+            new Venice(new RejectAllInterceptor()).eval(pre);
+        });
+    }
 
-		new Venice(new AcceptAllInterceptor()).eval(pre);
-	}
-	
-	@Test
-	public void test_AcceptAllInterceptor_2() {
-		final PreCompiled pre = new Venice(new RejectAllInterceptor())
-									.precompile("test","(gc)");
+    @Test
+    public void test_RejectAllInterceptor_2() {
+        final PreCompiled pre = new Venice(new RejectAllInterceptor())
+                                    .precompile("test","(gc)");
 
-		new Venice(new AcceptAllInterceptor()).eval(pre);
-	}
-	
-	@Test
-	public void test_SandboxInterceptor_1a() {
-		final PreCompiled pre = new Venice(new AcceptAllInterceptor())
-									.precompile("test","(gc)");
+        assertThrows(SecurityException.class, () -> {
+            // RejectAllInterceptor -> gc is blacklisted
+            new Venice(new RejectAllInterceptor()).eval(pre);
+        });
+    }
 
-		new Venice(new SandboxInterceptor(new SandboxRules())).eval(pre);
-	}
-	
-	@Test
-	public void test_SandboxInterceptor_1b() {
-		final PreCompiled pre = new Venice(new AcceptAllInterceptor())
-									.precompile("test","(gc)");
+    @Test
+    public void test_AcceptAllInterceptor_1() {
+        final PreCompiled pre = new Venice(new AcceptAllInterceptor())
+                                    .precompile("test","(gc)");
 
-		final SandboxRules rules = new SandboxRules().rejectVeniceFunctions("*io*");
-		
-		assertThrows(SecurityException.class, () -> {
-			// SandboxInterceptor with I/O functions rejected -> gc is blacklisted
-			new Venice(new SandboxInterceptor(rules)).eval(pre);
-		});
-	}
-	
-	@Test
-	public void test_SandboxInterceptor_2a() {
-		final PreCompiled pre = new Venice(new RejectAllInterceptor())
-									.precompile("test","(gc)");
+        new Venice(new AcceptAllInterceptor()).eval(pre);
+    }
 
-		new Venice(new SandboxInterceptor(new SandboxRules())).eval(pre);
-	}
-	
-	@Test
-	public void test_SandboxInterceptor_2b() {
-		final PreCompiled pre = new Venice(new RejectAllInterceptor())
-									.precompile("test","(gc)");
+    @Test
+    public void test_AcceptAllInterceptor_2() {
+        final PreCompiled pre = new Venice(new RejectAllInterceptor())
+                                    .precompile("test","(gc)");
 
-		final SandboxRules rules = new SandboxRules().rejectVeniceFunctions("*io*");
+        new Venice(new AcceptAllInterceptor()).eval(pre);
+    }
 
-		assertThrows(SecurityException.class, () -> {
-			// SandboxInterceptor with I/O functions rejected -> gc is blacklisted
-			new Venice(new SandboxInterceptor(rules)).eval(pre);
-		});
-	}
+    @Test
+    public void test_SandboxInterceptor_1a() {
+        final PreCompiled pre = new Venice(new AcceptAllInterceptor())
+                                    .precompile("test","(gc)");
+
+        new Venice(new SandboxInterceptor(new SandboxRules())).eval(pre);
+    }
+
+    @Test
+    public void test_SandboxInterceptor_1b() {
+        final PreCompiled pre = new Venice(new AcceptAllInterceptor())
+                                    .precompile("test","(gc)");
+
+        final SandboxRules rules = new SandboxRules().rejectVeniceFunctions("*io*");
+
+        assertThrows(SecurityException.class, () -> {
+            // SandboxInterceptor with I/O functions rejected -> gc is blacklisted
+            new Venice(new SandboxInterceptor(rules)).eval(pre);
+        });
+    }
+
+    @Test
+    public void test_SandboxInterceptor_2a() {
+        final PreCompiled pre = new Venice(new RejectAllInterceptor())
+                                    .precompile("test","(gc)");
+
+        new Venice(new SandboxInterceptor(new SandboxRules())).eval(pre);
+    }
+
+    @Test
+    public void test_SandboxInterceptor_2b() {
+        final PreCompiled pre = new Venice(new RejectAllInterceptor())
+                                    .precompile("test","(gc)");
+
+        final SandboxRules rules = new SandboxRules().rejectVeniceFunctions("*io*");
+
+        assertThrows(SecurityException.class, () -> {
+            // SandboxInterceptor with I/O functions rejected -> gc is blacklisted
+            new Venice(new SandboxInterceptor(rules)).eval(pre);
+        });
+    }
 
 }

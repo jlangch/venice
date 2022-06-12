@@ -1,5 +1,5 @@
 /*   __    __         _
- *   \ \  / /__ _ __ (_) ___ ___ 
+ *   \ \  / /__ _ __ (_) ___ ___
  *    \ \/ / _ \ '_ \| |/ __/ _ \
  *     \  /  __/ | | | | (_|  __/
  *      \/ \___|_| |_|_|\___\___|
@@ -32,193 +32,193 @@ import org.junit.jupiter.api.Test;
 
 public class DAG_topologicalSort_Test {
 
-	@Test
-	public void test_topologicalSort_1() {
-		final DAG<String> dag = 
-				new DAG<String>()
-						.addEdge("A", "B"); 
-		
-		final List<String> sorted = dag.topologicalSort();
+    @Test
+    public void test_topologicalSort_1() {
+        final DAG<String> dag =
+                new DAG<String>()
+                        .addEdge("A", "B");
 
-		assertEquals("A B", String.join(" ", sorted));
-	}
+        final List<String> sorted = dag.topologicalSort();
 
-	@Test
-	public void test_topologicalSort_2() {
-		final DAG<String> dag = 
-				new DAG<String>()
-						.addEdge("A", "B")     //     A
-						.addEdge("B", "C");    //     |
-						                       //     B
-						                       //     |
-						                       //     C
-		
-		final List<String> sorted = dag.topologicalSort();
+        assertEquals("A B", String.join(" ", sorted));
+    }
 
-		assertEquals("A B C", String.join(" ", sorted));
-	}
+    @Test
+    public void test_topologicalSort_2() {
+        final DAG<String> dag =
+                new DAG<String>()
+                        .addEdge("A", "B")     //     A
+                        .addEdge("B", "C");    //     |
+                                               //     B
+                                               //     |
+                                               //     C
 
-	@Test
-	public void test_topologicalSort_3() {
-		final DAG<String> dag = 
-				new DAG<String>()
-						.addEdge("A", "B")      //       A
-						.addEdge("B", "D")      //      / \
-						.addEdge("A", "C")      //     B   C
-						.addEdge("A", "D");     //      \ /
-						                        //       D
-		
-		final List<String> sorted = dag.topologicalSort();
+        final List<String> sorted = dag.topologicalSort();
 
-		assertEquals("A C B D", String.join(" ", sorted));
-	}
+        assertEquals("A B C", String.join(" ", sorted));
+    }
 
-	@Test
-	public void test_topologicalSort_4() {
-		final DAG<String> dag = 
-				new DAG<String>()
-						.addEdge("A", "B")      //     A   C
-						.addEdge("B", "E")      //     |   |
-						.addEdge("C", "D")      //     B   D
-						.addEdge("D", "E");     //      \ /
-						                        //       E
-		
-		final List<String> sorted = dag.topologicalSort();
+    @Test
+    public void test_topologicalSort_3() {
+        final DAG<String> dag =
+                new DAG<String>()
+                        .addEdge("A", "B")      //       A
+                        .addEdge("B", "D")      //      / \
+                        .addEdge("A", "C")      //     B   C
+                        .addEdge("A", "D");     //      \ /
+                                                //       D
 
-		assertEquals("C D A B E", String.join(" ", sorted));
-	}
+        final List<String> sorted = dag.topologicalSort();
 
-	@Test
-	public void test_topologicalSort_5() {
-		final DAG<String> dag = 
-				new DAG<String>()
-						.addEdge("A", "B")      //     A  C
-						.addEdge("B", "E")      //     | /
-						.addEdge("C", "B")      //     B   D
-						.addEdge("D", "E");     //      \ /
-						                        //       E
-		
-		final List<String> sorted = dag.topologicalSort();
+        assertEquals("A C B D", String.join(" ", sorted));
+    }
 
-		assertEquals("D C A B E", String.join(" ", sorted));
-	}
-	
-	@Test
-	public void test_topologicalSort_6a() {
-		final DAG<String> dag = 
-				new DAG<String>()
-						.addEdge("A", "B")      //     A  E
-						.addEdge("B", "C")      //     |  |
-						.addEdge("C", "D")      //     B  F
-						.addEdge("E", "F")      //     | / \
-						.addEdge("F", "C")      //     C   G
-						.addEdge("F", "G")      //      \ /
-						.addEdge("G", "D");     //       D
-		
-		final List<String> sorted = dag.topologicalSort();
+    @Test
+    public void test_topologicalSort_4() {
+        final DAG<String> dag =
+                new DAG<String>()
+                        .addEdge("A", "B")      //     A   C
+                        .addEdge("B", "E")      //     |   |
+                        .addEdge("C", "D")      //     B   D
+                        .addEdge("D", "E");     //      \ /
+                                                //       E
 
-		assertEquals("E F G A B C D", String.join(" ", sorted));
-	}
-	
-	@Test
-	public void test_topologicalSort_6b() {
-		final DAG<String> dag = 
-				new DAG<String>()
-						.addEdge("B", "A")      //       D
-						.addEdge("C", "B")      //      / \
-						.addEdge("D", "C")      //     C   G
-						.addEdge("F", "E")      //     | \ /
-						.addEdge("C", "F")      //     B  F
-						.addEdge("G", "F")      //     |  |
-						.addEdge("D", "G");     //     A  E
-		
-		final List<String> sorted = dag.topologicalSort();
+        final List<String> sorted = dag.topologicalSort();
 
-		assertEquals("D G C F E B A", String.join(" ", sorted));
-	}
-	
-	@Test
-	public void test_topologicalSort_7a() {
-		final DAG<String> dag = 
-				new DAG<String>()
-						.addEdge("A", "B")      //       A
-						.addEdge("A", "C")      //      / \ 
-						.addEdge("B", "D")      //     B   C
-						.addEdge("C", "D")      //      \ /
-						.addEdge("D", "E")      //       D 
-						.addEdge("D", "F");     //      / \
-						                        //     E   F
-		
-		final List<String> sorted = dag.topologicalSort();
+        assertEquals("C D A B E", String.join(" ", sorted));
+    }
 
-		assertEquals("A C B D F E", String.join(" ", sorted));
-	}
-	
-	@Test
-	public void test_topologicalSort_7b() {
-		final DAG<String> dag = 
-				new DAG<String>()
-						.addEdge("B", "A")      //     E   F
-						.addEdge("C", "A")      //      \ /
-						.addEdge("D", "B")      //       D 
-						.addEdge("D", "C")      //      / \
-						.addEdge("E", "D")      //     B   C 
-						.addEdge("F", "D");     //      \ /
-						                        //       A
-		
-		final List<String> sorted = dag.topologicalSort();
+    @Test
+    public void test_topologicalSort_5() {
+        final DAG<String> dag =
+                new DAG<String>()
+                        .addEdge("A", "B")      //     A  C
+                        .addEdge("B", "E")      //     | /
+                        .addEdge("C", "B")      //     B   D
+                        .addEdge("D", "E");     //      \ /
+                                                //       E
 
-		assertEquals("F E D C B A", String.join(" ", sorted));
-	}
+        final List<String> sorted = dag.topologicalSort();
 
-	
-	@Test
-	public void test_topologicalSort_8() {
-		final DAG<String> dag = 
-				new DAG<String>()
-						.addEdge("A", "B")      //       A       Z
-						.addEdge("A", "C")      //      / \ 
-						.addEdge("B", "D")      //     B   C
-						.addEdge("C", "D")      //      \ /
-						.addEdge("D", "E")      //       D 
-						.addEdge("D", "F")      //      / \
-						.addNode("Z");          //     E   F
-		
-		final List<String> sorted = dag.topologicalSort();
+        assertEquals("D C A B E", String.join(" ", sorted));
+    }
 
-		assertEquals("Z A C B D F E", String.join(" ", sorted));
-	}
+    @Test
+    public void test_topologicalSort_6a() {
+        final DAG<String> dag =
+                new DAG<String>()
+                        .addEdge("A", "B")      //     A  E
+                        .addEdge("B", "C")      //     |  |
+                        .addEdge("C", "D")      //     B  F
+                        .addEdge("E", "F")      //     | / \
+                        .addEdge("F", "C")      //     C   G
+                        .addEdge("F", "G")      //      \ /
+                        .addEdge("G", "D");     //       D
+
+        final List<String> sorted = dag.topologicalSort();
+
+        assertEquals("E F G A B C D", String.join(" ", sorted));
+    }
+
+    @Test
+    public void test_topologicalSort_6b() {
+        final DAG<String> dag =
+                new DAG<String>()
+                        .addEdge("B", "A")      //       D
+                        .addEdge("C", "B")      //      / \
+                        .addEdge("D", "C")      //     C   G
+                        .addEdge("F", "E")      //     | \ /
+                        .addEdge("C", "F")      //     B  F
+                        .addEdge("G", "F")      //     |  |
+                        .addEdge("D", "G");     //     A  E
+
+        final List<String> sorted = dag.topologicalSort();
+
+        assertEquals("D G C F E B A", String.join(" ", sorted));
+    }
+
+    @Test
+    public void test_topologicalSort_7a() {
+        final DAG<String> dag =
+                new DAG<String>()
+                        .addEdge("A", "B")      //       A
+                        .addEdge("A", "C")      //      / \
+                        .addEdge("B", "D")      //     B   C
+                        .addEdge("C", "D")      //      \ /
+                        .addEdge("D", "E")      //       D
+                        .addEdge("D", "F");     //      / \
+                                                //     E   F
+
+        final List<String> sorted = dag.topologicalSort();
+
+        assertEquals("A C B D F E", String.join(" ", sorted));
+    }
+
+    @Test
+    public void test_topologicalSort_7b() {
+        final DAG<String> dag =
+                new DAG<String>()
+                        .addEdge("B", "A")      //     E   F
+                        .addEdge("C", "A")      //      \ /
+                        .addEdge("D", "B")      //       D
+                        .addEdge("D", "C")      //      / \
+                        .addEdge("E", "D")      //     B   C
+                        .addEdge("F", "D");     //      \ /
+                                                //       A
+
+        final List<String> sorted = dag.topologicalSort();
+
+        assertEquals("F E D C B A", String.join(" ", sorted));
+    }
 
 
-	@Test
-	public void test_topologicalSort_9() {
-		final DAG<String> dag = 
-				new DAG<String>()
-						.addNode("A") 
-						.addNode("B"); 
-		
-		final List<String> sorted = dag.topologicalSort();
+    @Test
+    public void test_topologicalSort_8() {
+        final DAG<String> dag =
+                new DAG<String>()
+                        .addEdge("A", "B")      //       A       Z
+                        .addEdge("A", "C")      //      / \
+                        .addEdge("B", "D")      //     B   C
+                        .addEdge("C", "D")      //      \ /
+                        .addEdge("D", "E")      //       D
+                        .addEdge("D", "F")      //      / \
+                        .addNode("Z");          //     E   F
 
-		assertEquals("B A", String.join(" ", sorted));
-	}
+        final List<String> sorted = dag.topologicalSort();
 
-	@Test
-	public void test_comparator_1() {
-		final DAG<String> dag = 
-				new DAG<String>()
-						.addEdge("A", "B")      //     A  E
-						.addEdge("B", "C")      //     |  |
-						.addEdge("C", "D")      //     B  F
-						.addEdge("E", "F")      //     | / \
-						.addEdge("F", "C")      //     C   G
-						.addEdge("F", "G")      //      \ /
-						.addEdge("G", "D");      //       D
-		
-		final List<String> sorted = Arrays.asList("D", "F", "A", "Z")
-										  .stream()
-										  .sorted(dag.comparator())
-										  .collect(Collectors.toList());
+        assertEquals("Z A C B D F E", String.join(" ", sorted));
+    }
 
-		assertEquals("F A D Z", String.join(" ", sorted));
-	}
+
+    @Test
+    public void test_topologicalSort_9() {
+        final DAG<String> dag =
+                new DAG<String>()
+                        .addNode("A")
+                        .addNode("B");
+
+        final List<String> sorted = dag.topologicalSort();
+
+        assertEquals("B A", String.join(" ", sorted));
+    }
+
+    @Test
+    public void test_comparator_1() {
+        final DAG<String> dag =
+                new DAG<String>()
+                        .addEdge("A", "B")      //     A  E
+                        .addEdge("B", "C")      //     |  |
+                        .addEdge("C", "D")      //     B  F
+                        .addEdge("E", "F")      //     | / \
+                        .addEdge("F", "C")      //     C   G
+                        .addEdge("F", "G")      //      \ /
+                        .addEdge("G", "D");      //       D
+
+        final List<String> sorted = Arrays.asList("D", "F", "A", "Z")
+                                          .stream()
+                                          .sorted(dag.comparator())
+                                          .collect(Collectors.toList());
+
+        assertEquals("F A D Z", String.join(" ", sorted));
+    }
 }

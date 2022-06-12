@@ -1,5 +1,5 @@
 /*   __    __         _
- *   \ \  / /__ _ __ (_) ___ ___ 
+ *   \ \  / /__ _ __ (_) ___ ___
  *    \ \/ / _ \ '_ \| |/ __/ _ \
  *     \  /  __/ | | | | (_|  __/
  *      \/ \___|_| |_|_|\___\___|
@@ -28,232 +28,232 @@ import org.junit.jupiter.api.Test;
 
 public class MarkdownHtmlRendererTest {
 
-	@Test
-	public void test_text_block1() {
-		final String md = 
-						"Lorem ipsum dolor 'sit' amet";
-			
-		final String expected =
-						"<div class=\"md\">\n"
-						+ "<div class=\"md-text-block\"><div class=\"md-text-normal\">Lorem ipsum dolor &apos;sit&apos; amet</div></div>\n"
-						+ "</div>\n";
+    @Test
+    public void test_text_block1() {
+        final String md =
+                        "Lorem ipsum dolor 'sit' amet";
 
-		final String rendered = Markdown.parse(md).renderToHtml();
+        final String expected =
+                        "<div class=\"md\">\n"
+                        + "<div class=\"md-text-block\"><div class=\"md-text-normal\">Lorem ipsum dolor &apos;sit&apos; amet</div></div>\n"
+                        + "</div>\n";
 
-		assertEquals(expected, rendered);
-	}
+        final String rendered = Markdown.parse(md).renderToHtml();
 
-	@Test
-	public void test_text_block2() {
-		final String md = 
-						"Lorem *ipsum* \\* dolor **sit** amet";
+        assertEquals(expected, rendered);
+    }
 
-		final String expected =
-						"<div class=\"md\">\n"
-						+ "<div class=\"md-text-block\">"
-						+ "<div class=\"md-text-normal\">Lorem </div>"
-						+ "<div class=\"md-text-italic\">ipsum</div>"
-						+ "<div class=\"md-text-normal\"> * dolor </div>"
-						+ "<div class=\"md-text-bold\">sit</div>"
-						+ "<div class=\"md-text-normal\"> amet</div>"
-						+ "</div>\n"
-						+ "</div>\n";
+    @Test
+    public void test_text_block2() {
+        final String md =
+                        "Lorem *ipsum* \\* dolor **sit** amet";
 
-		final String rendered = Markdown.parse(md).renderToHtml();
+        final String expected =
+                        "<div class=\"md\">\n"
+                        + "<div class=\"md-text-block\">"
+                        + "<div class=\"md-text-normal\">Lorem </div>"
+                        + "<div class=\"md-text-italic\">ipsum</div>"
+                        + "<div class=\"md-text-normal\"> * dolor </div>"
+                        + "<div class=\"md-text-bold\">sit</div>"
+                        + "<div class=\"md-text-normal\"> amet</div>"
+                        + "</div>\n"
+                        + "</div>\n";
 
-		assertEquals(expected, rendered);
-	}
-	
-	@Test
-	public void test_list_block() {
-		final String md = 
-						"* Lorem ipsum dolor 'sit' amet\n" +
-						"* Lorem *ipsum* dolor sit amet";
+        final String rendered = Markdown.parse(md).renderToHtml();
 
-		final String expected =
-						"<div class=\"md\">\n"
-						+ "<div class=\"md-list-block\">\n"
-						+ "<ul class=\"md-list\">\n"
-						+ "<li>"
-						+ "<div class=\"md-text-block\">"
-						+ "<div class=\"md-text-normal\">Lorem ipsum dolor &apos;sit&apos; amet</div>"
-						+ "</div>\n"
-						+ "</li>\n"
-						+ "<li>"
-						+ "<div class=\"md-text-block\">"
-						+ "<div class=\"md-text-normal\">Lorem </div>"
-						+ "<div class=\"md-text-italic\">ipsum</div>"
-						+ "<div class=\"md-text-normal\"> dolor sit amet</div>"
-						+ "</div>\n"
-						+ "</li>\n"
-						+ "</ul>\n"
-						+ "</div>\n"
-						+ "</div>\n";
+        assertEquals(expected, rendered);
+    }
 
-		final String rendered = Markdown.parse(md).renderToHtml();
+    @Test
+    public void test_list_block() {
+        final String md =
+                        "* Lorem ipsum dolor 'sit' amet\n" +
+                        "* Lorem *ipsum* dolor sit amet";
 
-		assertEquals(expected, rendered);
-	}
-	
-	@Test
-	public void test_code_block() {
-		final String md = 
-						"```venice\n" +
-						"(do\n" +
-						"  (> 1 100))\n" +
-						"```";
+        final String expected =
+                        "<div class=\"md\">\n"
+                        + "<div class=\"md-list-block\">\n"
+                        + "<ul class=\"md-list\">\n"
+                        + "<li>"
+                        + "<div class=\"md-text-block\">"
+                        + "<div class=\"md-text-normal\">Lorem ipsum dolor &apos;sit&apos; amet</div>"
+                        + "</div>\n"
+                        + "</li>\n"
+                        + "<li>"
+                        + "<div class=\"md-text-block\">"
+                        + "<div class=\"md-text-normal\">Lorem </div>"
+                        + "<div class=\"md-text-italic\">ipsum</div>"
+                        + "<div class=\"md-text-normal\"> dolor sit amet</div>"
+                        + "</div>\n"
+                        + "</li>\n"
+                        + "</ul>\n"
+                        + "</div>\n"
+                        + "</div>\n";
 
-		final String expected =
-						"<div class=\"md\">\n"
-						+ "<div class=\"md-code-block\">\n"
-						+ "<code class=\"md-code\">(do\n"
-						+ "  (&gt; 1 100))</code></div>\n"
-						+ "</div>\n";
-		
-		final String rendered = Markdown.parse(md).renderToHtml();
+        final String rendered = Markdown.parse(md).renderToHtml();
 
-		assertEquals(expected, rendered);
-	}
-	
-	@Test
-	public void test_table_block_1() {
-		final String md =  
-						"|T1|T2|T3|\n" +
-						"|:-|:-:|-:|\n" +
-						"|c1...|c2.|c3...|\n" +
-						"|d1'..|d2.....|d3...|\n" +
-						"||e2.||";
+        assertEquals(expected, rendered);
+    }
 
-		final String expected =
-						"<div class=\"md\">\n"
-						+ "<div class=\"md-table-block\">\n"
-						+ "<table class=\"md-table\">\n"
-						+ "<thead>\n"
-						+ "<tr>\n"
-						+ "<th style=\"text-align: left\">T1</th>\n"
-						+ "<th style=\"text-align: center\">T2</th>\n"
-						+ "<th style=\"text-align: right\">T3</th>\n"
-						+ "</tr>\n"
-						+ "</thead>\n"
-						+ "<tbody>\n"
-						+ "<tr>\n"
-						+ "<td style=\"text-align: left\"><div class=\"md-text-normal\">c1...</div></td>\n"
-						+ "<td style=\"text-align: center\"><div class=\"md-text-normal\">c2.</div></td>\n"
-						+ "<td style=\"text-align: right\"><div class=\"md-text-normal\">c3...</div></td>\n"
-						+ "</tr>\n"
-						+ "<tr>\n"
-						+ "<td style=\"text-align: left\"><div class=\"md-text-normal\">d1&apos;..</div></td>\n"
-						+ "<td style=\"text-align: center\"><div class=\"md-text-normal\">d2.....</div></td>\n"
-						+ "<td style=\"text-align: right\"><div class=\"md-text-normal\">d3...</div></td>\n"
-						+ "</tr>\n"
-						+ "<tr>\n"
-						+ "<td style=\"text-align: left\"></td>\n"
-						+ "<td style=\"text-align: center\"><div class=\"md-text-normal\">e2.</div></td>\n"
-						+ "<td style=\"text-align: right\"></td>\n"
-						+ "</tr>\n"
-						+ "</tbody>\n"
-						+ "</table>\n"
-						+ "</div>\n"
-						+ "</div>\n"
-						+ "";
+    @Test
+    public void test_code_block() {
+        final String md =
+                        "```venice\n" +
+                        "(do\n" +
+                        "  (> 1 100))\n" +
+                        "```";
 
-		final String rendered = Markdown.parse(md).renderToHtml();
+        final String expected =
+                        "<div class=\"md\">\n"
+                        + "<div class=\"md-code-block\">\n"
+                        + "<code class=\"md-code\">(do\n"
+                        + "  (&gt; 1 100))</code></div>\n"
+                        + "</div>\n";
 
-		assertEquals(expected, rendered);
-	}
-	
-	@Test
-	public void test_table_block_2() {
-		final String md =  
-						"|T1|T2|T3|\n" +
-						"| [![text-align: left]] | [![text-align: center]] | [![text-align: right]] |\n" +
-						"|c1...|c2.|c3...|\n" +
-						"|d1'..|d2.....|d3...|\n" +
-						"||e2.||";
+        final String rendered = Markdown.parse(md).renderToHtml();
 
-		final String expected =
-						"<div class=\"md\">\n"
-						+ "<div class=\"md-table-block\">\n"
-						+ "<table class=\"md-table\">\n"
-						+ "<thead>\n"
-						+ "<tr>\n"
-						+ "<th style=\"text-align: left\">T1</th>\n"
-						+ "<th style=\"text-align: center\">T2</th>\n"
-						+ "<th style=\"text-align: right\">T3</th>\n"
-						+ "</tr>\n"
-						+ "</thead>\n"
-						+ "<tbody>\n"
-						+ "<tr>\n"
-						+ "<td style=\"text-align: left\"><div class=\"md-text-normal\">c1...</div></td>\n"
-						+ "<td style=\"text-align: center\"><div class=\"md-text-normal\">c2.</div></td>\n"
-						+ "<td style=\"text-align: right\"><div class=\"md-text-normal\">c3...</div></td>\n"
-						+ "</tr>\n"
-						+ "<tr>\n"
-						+ "<td style=\"text-align: left\"><div class=\"md-text-normal\">d1&apos;..</div></td>\n"
-						+ "<td style=\"text-align: center\"><div class=\"md-text-normal\">d2.....</div></td>\n"
-						+ "<td style=\"text-align: right\"><div class=\"md-text-normal\">d3...</div></td>\n"
-						+ "</tr>\n"
-						+ "<tr>\n"
-						+ "<td style=\"text-align: left\"></td>\n"
-						+ "<td style=\"text-align: center\"><div class=\"md-text-normal\">e2.</div></td>\n"
-						+ "<td style=\"text-align: right\"></td>\n"
-						+ "</tr>\n"
-						+ "</tbody>\n"
-						+ "</table>\n"
-						+ "</div>\n"
-						+ "</div>\n"
-						+ "";
+        assertEquals(expected, rendered);
+    }
 
-		final String rendered = Markdown.parse(md).renderToHtml();
+    @Test
+    public void test_table_block_1() {
+        final String md =
+                        "|T1|T2|T3|\n" +
+                        "|:-|:-:|-:|\n" +
+                        "|c1...|c2.|c3...|\n" +
+                        "|d1'..|d2.....|d3...|\n" +
+                        "||e2.||";
 
-		assertEquals(expected, rendered);
-	}
-	
-	@Test
-	public void test_table_block_3() {
-		final String md =  
-						"|T1|T2|T3|\n" +
-						"| [![width: 30%; text-align: left]] | [![text-align: center]] | [![text-align: right]] |\n" +
-						"|c1...|c2.|c3...|\n" +
-						"|d1'..|d2.....|d3...|\n" +
-						"||e2.||";
+        final String expected =
+                        "<div class=\"md\">\n"
+                        + "<div class=\"md-table-block\">\n"
+                        + "<table class=\"md-table\">\n"
+                        + "<thead>\n"
+                        + "<tr>\n"
+                        + "<th style=\"text-align: left\">T1</th>\n"
+                        + "<th style=\"text-align: center\">T2</th>\n"
+                        + "<th style=\"text-align: right\">T3</th>\n"
+                        + "</tr>\n"
+                        + "</thead>\n"
+                        + "<tbody>\n"
+                        + "<tr>\n"
+                        + "<td style=\"text-align: left\"><div class=\"md-text-normal\">c1...</div></td>\n"
+                        + "<td style=\"text-align: center\"><div class=\"md-text-normal\">c2.</div></td>\n"
+                        + "<td style=\"text-align: right\"><div class=\"md-text-normal\">c3...</div></td>\n"
+                        + "</tr>\n"
+                        + "<tr>\n"
+                        + "<td style=\"text-align: left\"><div class=\"md-text-normal\">d1&apos;..</div></td>\n"
+                        + "<td style=\"text-align: center\"><div class=\"md-text-normal\">d2.....</div></td>\n"
+                        + "<td style=\"text-align: right\"><div class=\"md-text-normal\">d3...</div></td>\n"
+                        + "</tr>\n"
+                        + "<tr>\n"
+                        + "<td style=\"text-align: left\"></td>\n"
+                        + "<td style=\"text-align: center\"><div class=\"md-text-normal\">e2.</div></td>\n"
+                        + "<td style=\"text-align: right\"></td>\n"
+                        + "</tr>\n"
+                        + "</tbody>\n"
+                        + "</table>\n"
+                        + "</div>\n"
+                        + "</div>\n"
+                        + "";
 
-		final String expected =
-						"<div class=\"md\">\n"
-						+ "<div class=\"md-table-block\">\n"
-						+ "<table class=\"md-table\">\n"
-						+ "<thead>\n"
-						+ "<tr>\n"
-						+ "<th style=\"text-align: left; width: 30%\">T1</th>\n"
-						+ "<th style=\"text-align: center\">T2</th>\n"
-						+ "<th style=\"text-align: right\">T3</th>\n"
-						+ "</tr>\n"
-						+ "</thead>\n"
-						+ "<tbody>\n"
-						+ "<tr>\n"
-						+ "<td style=\"text-align: left; width: 30%\"><div class=\"md-text-normal\">c1...</div></td>\n"
-						+ "<td style=\"text-align: center\"><div class=\"md-text-normal\">c2.</div></td>\n"
-						+ "<td style=\"text-align: right\"><div class=\"md-text-normal\">c3...</div></td>\n"
-						+ "</tr>\n"
-						+ "<tr>\n"
-						+ "<td style=\"text-align: left; width: 30%\"><div class=\"md-text-normal\">d1&apos;..</div></td>\n"
-						+ "<td style=\"text-align: center\"><div class=\"md-text-normal\">d2.....</div></td>\n"
-						+ "<td style=\"text-align: right\"><div class=\"md-text-normal\">d3...</div></td>\n"
-						+ "</tr>\n"
-						+ "<tr>\n"
-						+ "<td style=\"text-align: left; width: 30%\"></td>\n"
-						+ "<td style=\"text-align: center\"><div class=\"md-text-normal\">e2.</div></td>\n"
-						+ "<td style=\"text-align: right\"></td>\n"
-						+ "</tr>\n"
-						+ "</tbody>\n"
-						+ "</table>\n"
-						+ "</div>\n"
-						+ "</div>\n"
-						+ "";
+        final String rendered = Markdown.parse(md).renderToHtml();
 
-		final String rendered = Markdown.parse(md).renderToHtml();
+        assertEquals(expected, rendered);
+    }
 
-		assertEquals(expected, rendered);
-	}
+    @Test
+    public void test_table_block_2() {
+        final String md =
+                        "|T1|T2|T3|\n" +
+                        "| [![text-align: left]] | [![text-align: center]] | [![text-align: right]] |\n" +
+                        "|c1...|c2.|c3...|\n" +
+                        "|d1'..|d2.....|d3...|\n" +
+                        "||e2.||";
+
+        final String expected =
+                        "<div class=\"md\">\n"
+                        + "<div class=\"md-table-block\">\n"
+                        + "<table class=\"md-table\">\n"
+                        + "<thead>\n"
+                        + "<tr>\n"
+                        + "<th style=\"text-align: left\">T1</th>\n"
+                        + "<th style=\"text-align: center\">T2</th>\n"
+                        + "<th style=\"text-align: right\">T3</th>\n"
+                        + "</tr>\n"
+                        + "</thead>\n"
+                        + "<tbody>\n"
+                        + "<tr>\n"
+                        + "<td style=\"text-align: left\"><div class=\"md-text-normal\">c1...</div></td>\n"
+                        + "<td style=\"text-align: center\"><div class=\"md-text-normal\">c2.</div></td>\n"
+                        + "<td style=\"text-align: right\"><div class=\"md-text-normal\">c3...</div></td>\n"
+                        + "</tr>\n"
+                        + "<tr>\n"
+                        + "<td style=\"text-align: left\"><div class=\"md-text-normal\">d1&apos;..</div></td>\n"
+                        + "<td style=\"text-align: center\"><div class=\"md-text-normal\">d2.....</div></td>\n"
+                        + "<td style=\"text-align: right\"><div class=\"md-text-normal\">d3...</div></td>\n"
+                        + "</tr>\n"
+                        + "<tr>\n"
+                        + "<td style=\"text-align: left\"></td>\n"
+                        + "<td style=\"text-align: center\"><div class=\"md-text-normal\">e2.</div></td>\n"
+                        + "<td style=\"text-align: right\"></td>\n"
+                        + "</tr>\n"
+                        + "</tbody>\n"
+                        + "</table>\n"
+                        + "</div>\n"
+                        + "</div>\n"
+                        + "";
+
+        final String rendered = Markdown.parse(md).renderToHtml();
+
+        assertEquals(expected, rendered);
+    }
+
+    @Test
+    public void test_table_block_3() {
+        final String md =
+                        "|T1|T2|T3|\n" +
+                        "| [![width: 30%; text-align: left]] | [![text-align: center]] | [![text-align: right]] |\n" +
+                        "|c1...|c2.|c3...|\n" +
+                        "|d1'..|d2.....|d3...|\n" +
+                        "||e2.||";
+
+        final String expected =
+                        "<div class=\"md\">\n"
+                        + "<div class=\"md-table-block\">\n"
+                        + "<table class=\"md-table\">\n"
+                        + "<thead>\n"
+                        + "<tr>\n"
+                        + "<th style=\"text-align: left; width: 30%\">T1</th>\n"
+                        + "<th style=\"text-align: center\">T2</th>\n"
+                        + "<th style=\"text-align: right\">T3</th>\n"
+                        + "</tr>\n"
+                        + "</thead>\n"
+                        + "<tbody>\n"
+                        + "<tr>\n"
+                        + "<td style=\"text-align: left; width: 30%\"><div class=\"md-text-normal\">c1...</div></td>\n"
+                        + "<td style=\"text-align: center\"><div class=\"md-text-normal\">c2.</div></td>\n"
+                        + "<td style=\"text-align: right\"><div class=\"md-text-normal\">c3...</div></td>\n"
+                        + "</tr>\n"
+                        + "<tr>\n"
+                        + "<td style=\"text-align: left; width: 30%\"><div class=\"md-text-normal\">d1&apos;..</div></td>\n"
+                        + "<td style=\"text-align: center\"><div class=\"md-text-normal\">d2.....</div></td>\n"
+                        + "<td style=\"text-align: right\"><div class=\"md-text-normal\">d3...</div></td>\n"
+                        + "</tr>\n"
+                        + "<tr>\n"
+                        + "<td style=\"text-align: left; width: 30%\"></td>\n"
+                        + "<td style=\"text-align: center\"><div class=\"md-text-normal\">e2.</div></td>\n"
+                        + "<td style=\"text-align: right\"></td>\n"
+                        + "</tr>\n"
+                        + "</tbody>\n"
+                        + "</table>\n"
+                        + "</div>\n"
+                        + "</div>\n"
+                        + "";
+
+        final String rendered = Markdown.parse(md).renderToHtml();
+
+        assertEquals(expected, rendered);
+    }
 
 }

@@ -1,5 +1,5 @@
 /*   __    __         _
- *   \ \  / /__ _ __ (_) ___ ___ 
+ *   \ \  / /__ _ __ (_) ___ ___
  *    \ \/ / _ \ '_ \| |/ __/ _ \
  *     \  /  __/ | | | | (_|  __/
  *      \/ \___|_| |_|_|\___\___|
@@ -32,15 +32,15 @@ import com.github.jlangch.venice.impl.types.VncLong;
 
 public class ThreadLocalMapTest {
 
-	@Test
-	public void test() {
-		ThreadContext.setValue(new VncKeyword("alpha"), new VncLong(100));
-		ThreadContext.setValue(new VncKeyword("beta"), new VncLong(200));
-		ThreadContext.setValue(new VncKeyword("gamma"), new VncLong(300));
-		
-		assertEquals(100L, ((VncLong)ThreadContext.getValue(new VncKeyword("alpha"))).getValue().longValue());
-		assertEquals(200L, ((VncLong)ThreadContext.getValue(new VncKeyword("beta"))).getValue().longValue());
-		assertEquals(300L, ((VncLong)ThreadContext.getValue(new VncKeyword("gamma"))).getValue().longValue());
-	}
-	
+    @Test
+    public void test() {
+        ThreadContext.setValue(new VncKeyword("alpha"), new VncLong(100));
+        ThreadContext.setValue(new VncKeyword("beta"), new VncLong(200));
+        ThreadContext.setValue(new VncKeyword("gamma"), new VncLong(300));
+
+        assertEquals(100L, ((VncLong)ThreadContext.getValue(new VncKeyword("alpha"))).getValue().longValue());
+        assertEquals(200L, ((VncLong)ThreadContext.getValue(new VncKeyword("beta"))).getValue().longValue());
+        assertEquals(300L, ((VncLong)ThreadContext.getValue(new VncKeyword("gamma"))).getValue().longValue());
+    }
+
 }

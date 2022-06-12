@@ -1,5 +1,5 @@
 /*   __    __         _
- *   \ \  / /__ _ __ (_) ___ ___ 
+ *   \ \  / /__ _ __ (_) ___ ___
  *    \ \/ / _ \ '_ \| |/ __/ _ \
  *     \  /  __/ | | | | (_|  __/
  *      \/ \___|_| |_|_|\___\___|
@@ -28,51 +28,51 @@ import org.junit.jupiter.api.Test;
 
 public class PrivateAccessTest {
 
-	@Test
-	public void test_access_var() {
-		final Venice venice = new Venice();
+    @Test
+    public void test_access_var() {
+        final Venice venice = new Venice();
 
-		final String s = 
-				"(do                       \n" +
-				"   (ns alpha)             \n" +
-				"   (def ^:private y 100)  \n" +
-				"                          \n" +
-				"   (ns beta)              \n" +
-				"   alpha/y                \n" +
-				")                           ";
-	
-		assertThrows(VncException.class, () -> venice.eval(s));
-	}
-	
-	@Test
-	public void test_access_function_1() {
-		final Venice venice = new Venice();
+        final String s =
+                "(do                       \n" +
+                "   (ns alpha)             \n" +
+                "   (def ^:private y 100)  \n" +
+                "                          \n" +
+                "   (ns beta)              \n" +
+                "   alpha/y                \n" +
+                ")                           ";
 
-		final String s = 
-				"(do                                  \n" +
-				"   (ns alpha)                        \n" +
-				"   (defn ^:private add [x] (+ x 10)) \n" +
-				"                                     \n" +
-				"   (ns beta)                         \n" +
-				"   (alpha/add 5)                     \n" +
-				")                                      ";
-	
-		assertThrows(VncException.class, () -> venice.eval(s));
-	}
-	
-	@Test
-	public void test_access_function_2() {
-		final Venice venice = new Venice();
+        assertThrows(VncException.class, () -> venice.eval(s));
+    }
 
-		final String s = 
-				"(do                         \n" +
-				"   (ns alpha)               \n" +
-				"   (defn- add [x] (+ x 10)) \n" +
-				"                            \n" +
-				"   (ns beta)                \n" +
-				"   (alpha/add 5)            \n" +
-				")                             ";
-	
-		assertThrows(VncException.class, () -> venice.eval(s));
-	}
+    @Test
+    public void test_access_function_1() {
+        final Venice venice = new Venice();
+
+        final String s =
+                "(do                                  \n" +
+                "   (ns alpha)                        \n" +
+                "   (defn ^:private add [x] (+ x 10)) \n" +
+                "                                     \n" +
+                "   (ns beta)                         \n" +
+                "   (alpha/add 5)                     \n" +
+                ")                                      ";
+
+        assertThrows(VncException.class, () -> venice.eval(s));
+    }
+
+    @Test
+    public void test_access_function_2() {
+        final Venice venice = new Venice();
+
+        final String s =
+                "(do                         \n" +
+                "   (ns alpha)               \n" +
+                "   (defn- add [x] (+ x 10)) \n" +
+                "                            \n" +
+                "   (ns beta)                \n" +
+                "   (alpha/add 5)            \n" +
+                ")                             ";
+
+        assertThrows(VncException.class, () -> venice.eval(s));
+    }
 }

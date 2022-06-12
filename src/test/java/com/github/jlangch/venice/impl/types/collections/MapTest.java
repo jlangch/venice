@@ -1,5 +1,5 @@
 /*   __    __         _
- *   \ \  / /__ _ __ (_) ___ ___ 
+ *   \ \  / /__ _ __ (_) ___ ___
  *    \ \/ / _ \ '_ \| |/ __/ _ \
  *     \  /  __/ | | | | (_|  __/
  *      \/ \___|_| |_|_|\___\___|
@@ -37,7 +37,7 @@ public class MapTest {
 		assertEquals("2", venice.eval("(pr-str ({:a 2 :b 3} :a))"));
 		assertEquals("nil", venice.eval("(pr-str ({:a 2 :b 3} :c))"));
 		assertEquals("nil", venice.eval("(pr-str ({:a 2 :b 3} nil))"));
-		
+
 		// defaults
 		assertEquals("2", venice.eval("(pr-str ({:a 2 :b 3} :a 9))"));
 		assertEquals("9", venice.eval("(pr-str ({:a 2 :b 3} :c 9))"));

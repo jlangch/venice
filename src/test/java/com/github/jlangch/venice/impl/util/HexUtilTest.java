@@ -1,5 +1,5 @@
 /*   __    __         _
- *   \ \  / /__ _ __ (_) ___ ___ 
+ *   \ \  / /__ _ __ (_) ___ ___
  *    \ \/ / _ \ '_ \| |/ __/ _ \
  *     \  /  __/ | | | | (_|  __/
  *      \/ \___|_| |_|_|\___\___|
@@ -28,13 +28,13 @@ import org.junit.jupiter.api.Test;
 
 public class HexUtilTest {
 
-	@Test
-	public void test() {
-		final String data = "000145e512efff";
-		
-		assertEquals(data, HexUtil.toString(HexUtil.toBytes(data)));
+    @Test
+    public void test() {
+        final String data = "000145e512efff";
 
-		assertEquals(data, HexUtil.toString(HexUtil.toBytes(data.toUpperCase())));
-	}
-	
+        assertEquals(data, HexUtil.toString(HexUtil.toBytes(data)));
+
+        assertEquals(data, HexUtil.toString(HexUtil.toBytes(data.toUpperCase())));
+    }
+
 }

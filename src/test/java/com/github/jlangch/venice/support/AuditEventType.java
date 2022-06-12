@@ -1,5 +1,5 @@
 /*   __    __         _
- *   \ \  / /__ _ __ (_) ___ ___ 
+ *   \ \  / /__ _ __ (_) ___ ___
  *    \ \/ / _ \ '_ \| |/ __/ _ \
  *     \  /  __/ | | | | (_|  __/
  *      \/ \___|_| |_|_|\___\___|
@@ -24,20 +24,20 @@ package com.github.jlangch.venice.support;
 
 /**
  * AuditEvent types
- * 
+ *
  * @author juerg
  */
 public enum AuditEventType {
-	AUDIT,
-	CONTROL,
-	ALERT,
-	WARN,
-	INFO,
-	
-	/**
-	 * <b>Note:</b> Do NOT misuse TRACE audit trail events. These are currently 
-	 * used only with <i>User Tracing</i>. Tracing events are not intended for 
-	 * any other use!
-	 */
-	TRACE;
+    AUDIT,
+    CONTROL,
+    ALERT,
+    WARN,
+    INFO,
+
+    /**
+     * <b>Note:</b> Do NOT misuse TRACE audit trail events. These are currently
+     * used only with <i>User Tracing</i>. Tracing events are not intended for
+     * any other use!
+     */
+    TRACE;
 }

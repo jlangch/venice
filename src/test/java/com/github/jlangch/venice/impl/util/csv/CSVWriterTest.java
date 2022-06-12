@@ -1,5 +1,5 @@
 /*   __    __         _
- *   \ \  / /__ _ __ (_) ___ ___ 
+ *   \ \  / /__ _ __ (_) ___ ___
  *    \ \/ / _ \ '_ \| |/ __/ _ \
  *     \  /  __/ | | | | (_|  __/
  *      \/ \___|_| |_|_|\___\___|
@@ -32,70 +32,70 @@ import org.junit.jupiter.api.Test;
 
 public class CSVWriterTest {
 
-	@Test
-	public void test_1() {
-		final StringWriter wr = new StringWriter();
-		
-		final List<List<String>> records = Arrays.asList(Arrays.asList("1", "2", "3"));
-		
-		new CSVWriter().write(wr, records);
-		
-		assertEquals("1,2,3", wr.toString());
-	}
+    @Test
+    public void test_1() {
+        final StringWriter wr = new StringWriter();
 
-	@Test
-	public void test_2() {
-		final StringWriter wr = new StringWriter();
-		
-		final List<List<String>> records = Arrays.asList(Arrays.asList("1", "2", "3"));
-		
-		new CSVWriter(',', '"', "\n").write(wr, records);
-		
-		assertEquals("1,2,3", wr.toString());
-	}
+        final List<List<String>> records = Arrays.asList(Arrays.asList("1", "2", "3"));
 
-	@Test
-	public void test_3() {
-		final StringWriter wr = new StringWriter();
-		
-		final List<List<String>> records = Arrays.asList(Arrays.asList("1", "2", "3"));
-		
-		new CSVWriter(';', '"', "\n").write(wr, records);
-		
-		assertEquals("1;2;3", wr.toString());
-	}
+        new CSVWriter().write(wr, records);
 
-	@Test
-	public void test_4() {
-		final StringWriter wr = new StringWriter();
-		
-		final List<List<String>> records = Arrays.asList(Arrays.asList("1", null, "3"));
-		
-		new CSVWriter(',', '"', "\n").write(wr, records);
-		
-		assertEquals("1,,3", wr.toString());
-	}
+        assertEquals("1,2,3", wr.toString());
+    }
 
-	@Test
-	public void test_5() {
-		final StringWriter wr = new StringWriter();
-		
-		final List<List<String>> records = Arrays.asList(Arrays.asList(null, null, null));
-		
-		new CSVWriter(',', '"', "\n").write(wr, records);
-		
-		assertEquals(",,", wr.toString());
-	}
+    @Test
+    public void test_2() {
+        final StringWriter wr = new StringWriter();
 
-	@Test
-	public void test_6() {
-		final StringWriter wr = new StringWriter();
-		
-		final List<List<String>> records = Arrays.asList(Arrays.asList("1", "Zurich", "Wipkingen, X-'1'", "ZH"));
-		
-		new CSVWriter(',', '\'', "\n").write(wr, records);
-		
-		assertEquals("1,Zurich,'Wipkingen, X-''1''',ZH", wr.toString());
-	}
+        final List<List<String>> records = Arrays.asList(Arrays.asList("1", "2", "3"));
+
+        new CSVWriter(',', '"', "\n").write(wr, records);
+
+        assertEquals("1,2,3", wr.toString());
+    }
+
+    @Test
+    public void test_3() {
+        final StringWriter wr = new StringWriter();
+
+        final List<List<String>> records = Arrays.asList(Arrays.asList("1", "2", "3"));
+
+        new CSVWriter(';', '"', "\n").write(wr, records);
+
+        assertEquals("1;2;3", wr.toString());
+    }
+
+    @Test
+    public void test_4() {
+        final StringWriter wr = new StringWriter();
+
+        final List<List<String>> records = Arrays.asList(Arrays.asList("1", null, "3"));
+
+        new CSVWriter(',', '"', "\n").write(wr, records);
+
+        assertEquals("1,,3", wr.toString());
+    }
+
+    @Test
+    public void test_5() {
+        final StringWriter wr = new StringWriter();
+
+        final List<List<String>> records = Arrays.asList(Arrays.asList(null, null, null));
+
+        new CSVWriter(',', '"', "\n").write(wr, records);
+
+        assertEquals(",,", wr.toString());
+    }
+
+    @Test
+    public void test_6() {
+        final StringWriter wr = new StringWriter();
+
+        final List<List<String>> records = Arrays.asList(Arrays.asList("1", "Zurich", "Wipkingen, X-'1'", "ZH"));
+
+        new CSVWriter(',', '\'', "\n").write(wr, records);
+
+        assertEquals("1,Zurich,'Wipkingen, X-''1''',ZH", wr.toString());
+    }
 
 }

@@ -1,5 +1,5 @@
 /*   __    __         _
- *   \ \  / /__ _ __ (_) ___ ___ 
+ *   \ \  / /__ _ __ (_) ___ ___
  *    \ \/ / _ \ '_ \| |/ __/ _ \
  *     \  /  __/ | | | | (_|  __/
  *      \/ \___|_| |_|_|\___\___|
@@ -30,21 +30,21 @@ import com.github.jlangch.venice.Venice;
 
 public class JavaInterop_filter_Test {
 
-	@Test
-	public void test_filter_java_objects() {
-		final Venice venice = new Venice();
+    @Test
+    public void test_filter_java_objects() {
+        final Venice venice = new Venice();
 
-		final String script =
-				"(do                                                                      " +
-				"   (import :com.github.jlangch.venice.support.User )                     " +
-				"   (import :java.time.LocalDate)                                         " +
-				"                                                                         " + 
-				"   (def users [                                                          " +
-				"        (. :User :new \"john\" 24 (. :LocalDate :of 2018 7 21))          " +
-				"        (. :User :new \"pete\" 48 (. :LocalDate :of 1970 1 12)) ])       " +
-				"   (str (filter (fn [u] (> (get u :age) 30)) users))                     " + 
-				")";
-		
-		assertEquals("(pete, 48, 1970-01-12)", venice.eval(script));
-	}
+        final String script =
+                "(do                                                                      " +
+                "   (import :com.github.jlangch.venice.support.User )                     " +
+                "   (import :java.time.LocalDate)                                         " +
+                "                                                                         " +
+                "   (def users [                                                          " +
+                "        (. :User :new \"john\" 24 (. :LocalDate :of 2018 7 21))          " +
+                "        (. :User :new \"pete\" 48 (. :LocalDate :of 1970 1 12)) ])       " +
+                "   (str (filter (fn [u] (> (get u :age) 30)) users))                     " +
+                ")";
+
+        assertEquals("(pete, 48, 1970-01-12)", venice.eval(script));
+    }
 }

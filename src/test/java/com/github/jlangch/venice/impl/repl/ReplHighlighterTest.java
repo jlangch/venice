@@ -1,5 +1,5 @@
 /*   __    __         _
- *   \ \  / /__ _ __ (_) ___ ___ 
+ *   \ \  / /__ _ __ (_) ___ ___
  *    \ \/ / _ \ '_ \| |/ __/ _ \
  *     \  /  __/ | | | | (_|  __/
  *      \/ \___|_| |_|_|\___\___|
@@ -30,12 +30,12 @@ import org.junit.jupiter.api.Test;
 
 public class ReplHighlighterTest {
 
-	@Test
-	public void test_attribute() {	
-		final AttributedStringBuilder sb = new AttributedStringBuilder();
-		sb.ansiAppend("\u001b[38;5;208m" + "xxx" + "\u001b[0m");		
-		final AttributedString as = sb.toAttributedString();
-		
-		assertEquals("\u001b[38;5;208mxxx\u001b[0m", as.toAnsi());
-	}
+    @Test
+    public void test_attribute() {
+        final AttributedStringBuilder sb = new AttributedStringBuilder();
+        sb.ansiAppend("\u001b[38;5;208m" + "xxx" + "\u001b[0m");
+        final AttributedString as = sb.toAttributedString();
+
+        assertEquals("\u001b[38;5;208mxxx\u001b[0m", as.toAnsi());
+    }
 }

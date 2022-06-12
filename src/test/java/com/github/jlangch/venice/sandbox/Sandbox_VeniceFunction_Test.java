@@ -1,5 +1,5 @@
 /*   __    __         _
- *   \ \  / /__ _ __ (_) ___ ___ 
+ *   \ \  / /__ _ __ (_) ___ ___
  *    \ \/ / _ \ '_ \| |/ __/ _ \
  *     \  /  __/ | | | | (_|  __/
  *      \/ \___|_| |_|_|\___\___|
@@ -44,189 +44,189 @@ import com.github.jlangch.venice.javainterop.SandboxRules;
 
 public class Sandbox_VeniceFunction_Test {
 
-	
-	// ------------------------------------------------------------------------
-	// Sandbox FAIL
-	// ------------------------------------------------------------------------
 
-	@Test
-	public void test_RejectAllInterceptor_slurp() {
-		assertThrows(SecurityException.class, () -> {
-			// RejectAllInterceptor -> all Venice IO functions blacklisted
-			new Venice(new RejectAllInterceptor()).eval("(io/slurp \"/tmp/test\")");
-		});
-	}
-	
-	@Test
-	public void test_rejectAllVeniceIoFunctions_slurp() {
-		// Sandbox::rejectAllVeniceIoFunctions() -> all Venice IO functions blacklisted
-		final Interceptor interceptor = 
-				new SandboxInterceptor(new SandboxRules().rejectAllVeniceIoFunctions());				
+    // ------------------------------------------------------------------------
+    // Sandbox FAIL
+    // ------------------------------------------------------------------------
 
-		assertThrows(SecurityException.class, () -> {
-			new Venice(interceptor).eval("(io/slurp \"/tmp/test\")");
-		});
-	}
-	
-	@Test
-	public void test_blacklistedIO_slurp() {
-		// all Venice IO functions blacklisted
-		final Interceptor interceptor = 
-				new SandboxInterceptor(new SandboxRules().rejectVeniceFunctions("*io*"));
-	
-		assertThrows(SecurityException.class, () -> {
-			new Venice(interceptor).eval("(io/slurp \"/tmp/test\")");
-		});
-	}
-	
-	@Test
-	public void test_withBlacklistedVeniceFn_slurp() {
-		// Venice 'slurp' function blacklisted
-		final Interceptor interceptor = 
-				new SandboxInterceptor(new SandboxRules().rejectVeniceFunctions("io/slurp"));				
-		
-		assertThrows(SecurityException.class, () -> {
-			new Venice(interceptor).eval("(io/slurp \"/tmp/test\")");
-		});
-	}
+    @Test
+    public void test_RejectAllInterceptor_slurp() {
+        assertThrows(SecurityException.class, () -> {
+            // RejectAllInterceptor -> all Venice IO functions blacklisted
+            new Venice(new RejectAllInterceptor()).eval("(io/slurp \"/tmp/test\")");
+        });
+    }
 
-	@Test
-	public void test_RejectAllInterceptor_gc_1() {
-		assertThrows(SecurityException.class, () -> {
-			// RejectAllInterceptor -> gc is blacklisted
-			new Venice(new RejectAllInterceptor()).eval("(gc)");
-		});
-	}
+    @Test
+    public void test_rejectAllVeniceIoFunctions_slurp() {
+        // Sandbox::rejectAllVeniceIoFunctions() -> all Venice IO functions blacklisted
+        final Interceptor interceptor =
+                new SandboxInterceptor(new SandboxRules().rejectAllVeniceIoFunctions());
 
-	@Test
-	public void test_RejectAllInterceptor_gc_2() {
-		assertThrows(SecurityException.class, () -> {
-			// RejectAllInterceptor -> gc is blacklisted
-			new Venice(new RejectAllInterceptor()).eval("(docoll (fn [x] (gc)) [1])");
-		});
-	}
+        assertThrows(SecurityException.class, () -> {
+            new Venice(interceptor).eval("(io/slurp \"/tmp/test\")");
+        });
+    }
 
-	@Test
-	public void test_RejectAllInterceptor_gc_3() {
-		assertThrows(SecurityException.class, () -> {
-			// RejectAllInterceptor -> gc is blacklisted
-			new Venice(new RejectAllInterceptor()).eval("(map (fn [x] (gc)) [1])");
-		});
-	}
-	
-	
-	
-	// ------------------------------------------------------------------------
-	// Sandbox PASS
-	// ------------------------------------------------------------------------
+    @Test
+    public void test_blacklistedIO_slurp() {
+        // all Venice IO functions blacklisted
+        final Interceptor interceptor =
+                new SandboxInterceptor(new SandboxRules().rejectVeniceFunctions("*io*"));
 
-	@Test
-	public void test_NoSandbox_slurp() {
-		// AcceptAllInterceptor -> all Venice IO functions available
-		final Venice venice = new Venice();
-		
-		assertEquals("1234567890", venice.eval("(io/slurp f)", Parameters.of("f", tempFile.getPath())));
-	}
+        assertThrows(SecurityException.class, () -> {
+            new Venice(interceptor).eval("(io/slurp \"/tmp/test\")");
+        });
+    }
 
-	@Test
-	public void test_AcceptAllInterceptor_slurp() {
-		// AcceptAllInterceptor -> all Venice IO functions available
-		final Venice venice = new Venice(new AcceptAllInterceptor());
-		
-		assertEquals("1234567890", venice.eval("(io/slurp f)", Parameters.of("f", tempFile.getPath())));
-	}
+    @Test
+    public void test_withBlacklistedVeniceFn_slurp() {
+        // Venice 'slurp' function blacklisted
+        final Interceptor interceptor =
+                new SandboxInterceptor(new SandboxRules().rejectVeniceFunctions("io/slurp"));
+
+        assertThrows(SecurityException.class, () -> {
+            new Venice(interceptor).eval("(io/slurp \"/tmp/test\")");
+        });
+    }
+
+    @Test
+    public void test_RejectAllInterceptor_gc_1() {
+        assertThrows(SecurityException.class, () -> {
+            // RejectAllInterceptor -> gc is blacklisted
+            new Venice(new RejectAllInterceptor()).eval("(gc)");
+        });
+    }
+
+    @Test
+    public void test_RejectAllInterceptor_gc_2() {
+        assertThrows(SecurityException.class, () -> {
+            // RejectAllInterceptor -> gc is blacklisted
+            new Venice(new RejectAllInterceptor()).eval("(docoll (fn [x] (gc)) [1])");
+        });
+    }
+
+    @Test
+    public void test_RejectAllInterceptor_gc_3() {
+        assertThrows(SecurityException.class, () -> {
+            // RejectAllInterceptor -> gc is blacklisted
+            new Venice(new RejectAllInterceptor()).eval("(map (fn [x] (gc)) [1])");
+        });
+    }
 
 
-	// ------------------------------------------------------------------------
-	// Blacklisted/whitelisted IO
-	// ------------------------------------------------------------------------
 
-	@Test
-	public void test_black_white_println_1() {
-		final Interceptor interceptor = new AcceptAllInterceptor();
+    // ------------------------------------------------------------------------
+    // Sandbox PASS
+    // ------------------------------------------------------------------------
 
-		// allowed
-		new Venice(interceptor).eval("(println 100)", Parameters.of("*out*", null));
-	}
+    @Test
+    public void test_NoSandbox_slurp() {
+        // AcceptAllInterceptor -> all Venice IO functions available
+        final Venice venice = new Venice();
 
+        assertEquals("1234567890", venice.eval("(io/slurp f)", Parameters.of("f", tempFile.getPath())));
+    }
 
-	@Test
-	public void test_black_white_println_2() {
-		final Interceptor interceptor = 
-				new SandboxInterceptor(
-						new SandboxRules()
-								.rejectVeniceFunctions("*io*"));
+    @Test
+    public void test_AcceptAllInterceptor_slurp() {
+        // AcceptAllInterceptor -> all Venice IO functions available
+        final Venice venice = new Venice(new AcceptAllInterceptor());
 
-		// denied
-		assertThrows(SecurityException.class, () -> {
-			new Venice(interceptor).eval("(println 100)", Parameters.of("*out*", null));
-		});
-	}
-
-	@Test
-	public void test_black_white_println_3() {
-		final Interceptor interceptor = 
-				new SandboxInterceptor(
-						new SandboxRules()
-								.rejectVeniceFunctions("*io*")
-								.whitelistVeniceFunctions("println", "newline"));
-
-		// allowed
-		new Venice(interceptor).eval("(println 100)", Parameters.of("*out*", null));
-	}
-
-	@Test
-	public void test_black_white_println_4() {
-		final Interceptor interceptor = 
-				new SandboxInterceptor(
-						new SandboxRules()
-								.whitelistVeniceFunctions("println", "newline")
-								.rejectVeniceFunctions("*io*"));
-
-		// denied
-		assertThrows(SecurityException.class, () -> {
-			new Venice(interceptor).eval("(println 100)", Parameters.of("*out*", null));
-		});
-	}
-
-	@Test
-	public void test_black_white_println_5() {
-		final Interceptor interceptor = 
-				new SandboxInterceptor(
-						new SandboxRules()
-								.whitelistVeniceFunctions("println", "newline")
-								.rejectVeniceFunctions("*io*")
-								.whitelistVeniceFunctions("println")
-								.whitelistVeniceFunctions("newline"));
-
-		// allowed
-		new Venice(interceptor).eval("(println 100)", Parameters.of("*out*", null));
-	}
-	
-	// ------------------------------------------------------------------------
-	// Helpers
-	// ------------------------------------------------------------------------
-	
-	@BeforeEach
-	public void createTempFile() {
-		try {
-			tempFile = File.createTempFile("test__", ".txt");
-			FileUtil.save("1234567890", tempFile, true);
-		}
-		catch(IOException ex) {
-			throw new RuntimeException("Failed to create temp file");
-		}
-	}
-
-	@AfterEach
-	public void removeTempFile() {
-		if (tempFile != null && tempFile.exists()) {
-			tempFile.delete();
-			tempFile = null;
-		}
-	}
+        assertEquals("1234567890", venice.eval("(io/slurp f)", Parameters.of("f", tempFile.getPath())));
+    }
 
 
-	
-	private File tempFile;
+    // ------------------------------------------------------------------------
+    // Blacklisted/whitelisted IO
+    // ------------------------------------------------------------------------
+
+    @Test
+    public void test_black_white_println_1() {
+        final Interceptor interceptor = new AcceptAllInterceptor();
+
+        // allowed
+        new Venice(interceptor).eval("(println 100)", Parameters.of("*out*", null));
+    }
+
+
+    @Test
+    public void test_black_white_println_2() {
+        final Interceptor interceptor =
+                new SandboxInterceptor(
+                        new SandboxRules()
+                                .rejectVeniceFunctions("*io*"));
+
+        // denied
+        assertThrows(SecurityException.class, () -> {
+            new Venice(interceptor).eval("(println 100)", Parameters.of("*out*", null));
+        });
+    }
+
+    @Test
+    public void test_black_white_println_3() {
+        final Interceptor interceptor =
+                new SandboxInterceptor(
+                        new SandboxRules()
+                                .rejectVeniceFunctions("*io*")
+                                .whitelistVeniceFunctions("println", "newline"));
+
+        // allowed
+        new Venice(interceptor).eval("(println 100)", Parameters.of("*out*", null));
+    }
+
+    @Test
+    public void test_black_white_println_4() {
+        final Interceptor interceptor =
+                new SandboxInterceptor(
+                        new SandboxRules()
+                                .whitelistVeniceFunctions("println", "newline")
+                                .rejectVeniceFunctions("*io*"));
+
+        // denied
+        assertThrows(SecurityException.class, () -> {
+            new Venice(interceptor).eval("(println 100)", Parameters.of("*out*", null));
+        });
+    }
+
+    @Test
+    public void test_black_white_println_5() {
+        final Interceptor interceptor =
+                new SandboxInterceptor(
+                        new SandboxRules()
+                                .whitelistVeniceFunctions("println", "newline")
+                                .rejectVeniceFunctions("*io*")
+                                .whitelistVeniceFunctions("println")
+                                .whitelistVeniceFunctions("newline"));
+
+        // allowed
+        new Venice(interceptor).eval("(println 100)", Parameters.of("*out*", null));
+    }
+
+    // ------------------------------------------------------------------------
+    // Helpers
+    // ------------------------------------------------------------------------
+
+    @BeforeEach
+    public void createTempFile() {
+        try {
+            tempFile = File.createTempFile("test__", ".txt");
+            FileUtil.save("1234567890", tempFile, true);
+        }
+        catch(IOException ex) {
+            throw new RuntimeException("Failed to create temp file");
+        }
+    }
+
+    @AfterEach
+    public void removeTempFile() {
+        if (tempFile != null && tempFile.exists()) {
+            tempFile.delete();
+            tempFile = null;
+        }
+    }
+
+
+
+    private File tempFile;
 }

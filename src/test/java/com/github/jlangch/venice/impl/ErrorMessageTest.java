@@ -1,5 +1,5 @@
 /*   __    __         _
- *   \ \  / /__ _ __ (_) ___ ___ 
+ *   \ \  / /__ _ __ (_) ___ ___
  *    \ \/ / _ \ '_ \| |/ __/ _ \
  *     \  /  __/ | | | | (_|  __/
  *      \/ \___|_| |_|_|\___\___|
@@ -34,22 +34,22 @@ import com.github.jlangch.venice.impl.util.MetaUtil;
 
 public class ErrorMessageTest {
 
-	@Test
-	public void test_err_location() {
-		VncVal meta = Constants.Nil;
-		meta = MetaUtil.addMetaVal(meta, MetaUtil.FILE, new VncString("core.venice"));
-		meta = MetaUtil.addMetaVal(meta, MetaUtil.LINE, new VncLong(10));
-		meta = MetaUtil.addMetaVal(meta, MetaUtil.COLUMN, new VncLong(42));
+    @Test
+    public void test_err_location() {
+        VncVal meta = Constants.Nil;
+        meta = MetaUtil.addMetaVal(meta, MetaUtil.FILE, new VncString("core.venice"));
+        meta = MetaUtil.addMetaVal(meta, MetaUtil.LINE, new VncLong(10));
+        meta = MetaUtil.addMetaVal(meta, MetaUtil.COLUMN, new VncLong(42));
 
-		final VncVal val = new VncLong(0L, meta);
-		
-		assertEquals("core.venice", ((VncString)val.getMetaVal(MetaUtil.FILE)).getValue());
-		assertEquals(10L, ((VncLong)val.getMetaVal(MetaUtil.LINE)).getValue());
-		assertEquals(42L, ((VncLong)val.getMetaVal(MetaUtil.COLUMN)).getValue());
-		
-		assertEquals("core.venice", MetaUtil.getFile(val.getMeta()));
-		assertEquals(10, MetaUtil.getLine(val.getMeta()));
-		assertEquals(42, MetaUtil.getCol(val.getMeta()));
-	}
-	
+        final VncVal val = new VncLong(0L, meta);
+
+        assertEquals("core.venice", ((VncString)val.getMetaVal(MetaUtil.FILE)).getValue());
+        assertEquals(10L, ((VncLong)val.getMetaVal(MetaUtil.LINE)).getValue());
+        assertEquals(42L, ((VncLong)val.getMetaVal(MetaUtil.COLUMN)).getValue());
+
+        assertEquals("core.venice", MetaUtil.getFile(val.getMeta()));
+        assertEquals(10, MetaUtil.getLine(val.getMeta()));
+        assertEquals(42, MetaUtil.getCol(val.getMeta()));
+    }
+
 }

@@ -1,5 +1,5 @@
 /*   __    __         _
- *   \ \  / /__ _ __ (_) ___ ___ 
+ *   \ \  / /__ _ __ (_) ___ ___
  *    \ \/ / _ \ '_ \| |/ __/ _ \
  *     \  /  __/ | | | | (_|  __/
  *      \/ \___|_| |_|_|\___\___|
@@ -36,117 +36,117 @@ import com.github.jlangch.venice.impl.types.VncString;
 
 public class JavaFunctionsTest {
 
-	@Test
-	public void test_class() {
-		final Venice venice = new Venice();
+    @Test
+    public void test_class() {
+        final Venice venice = new Venice();
 
-		assertEquals(
-				java.util.ArrayList.class, 
-				venice.eval("(class :java.util.ArrayList)"));
-	}
+        assertEquals(
+                java.util.ArrayList.class,
+                venice.eval("(class :java.util.ArrayList)"));
+    }
 
-	@Test
-	public void test_class_version() {
-		final Venice venice = new Venice();
+    @Test
+    public void test_class_version() {
+        final Venice venice = new Venice();
 
-		final long version = (Long)venice.eval("(class-version :com.github.jlangch.venice.Venice)");
-		
-		assertTrue(version >= 52);
-	}
+        final long version = (Long)venice.eval("(class-version :com.github.jlangch.venice.Venice)");
 
-	@Test
-	public void test_class_of() {
-		final Venice venice = new Venice();
+        assertTrue(version >= 52);
+    }
 
-		assertEquals(
-				com.github.jlangch.venice.impl.types.VncLong.class, 
-				venice.eval("(class-of 100)"));
+    @Test
+    public void test_class_of() {
+        final Venice venice = new Venice();
 
-		assertEquals(
-				com.github.jlangch.venice.impl.types.collections.VncJavaList.class, 
-				venice.eval("(class-of (. :java.util.ArrayList :new))"));
+        assertEquals(
+                com.github.jlangch.venice.impl.types.VncLong.class,
+                venice.eval("(class-of 100)"));
 
-		assertEquals(
-				java.awt.Point.class, 
-				venice.eval("(class-of (. :java.awt.Point :new 10 10))"));
+        assertEquals(
+                com.github.jlangch.venice.impl.types.collections.VncJavaList.class,
+                venice.eval("(class-of (. :java.util.ArrayList :new))"));
 
-		assertEquals(
-				java.lang.Class.class, 
-				venice.eval("(class-of (class :java.awt.Point))"));
+        assertEquals(
+                java.awt.Point.class,
+                venice.eval("(class-of (. :java.awt.Point :new 10 10))"));
 
-		assertEquals(
-				java.lang.Class.class, 
-				venice.eval("(class-of (class-of (class :java.awt.Point)))"));
-	}
+        assertEquals(
+                java.lang.Class.class,
+                venice.eval("(class-of (class :java.awt.Point))"));
 
-	@Test
-	public void test_class_name() {
-		final Venice venice = new Venice();
+        assertEquals(
+                java.lang.Class.class,
+                venice.eval("(class-of (class-of (class :java.awt.Point)))"));
+    }
 
-		assertEquals(
-				"com.github.jlangch.venice.impl.types.VncLong", 
-				venice.eval("(class-name (class-of 100))"));
+    @Test
+    public void test_class_name() {
+        final Venice venice = new Venice();
 
-		assertEquals(
-				"com.github.jlangch.venice.impl.types.collections.VncJavaList", 
-				venice.eval("(class-name (class-of (. :java.util.ArrayList :new)))"));
+        assertEquals(
+                "com.github.jlangch.venice.impl.types.VncLong",
+                venice.eval("(class-name (class-of 100))"));
 
-		assertEquals(
-				"java.awt.Point", 
-				venice.eval("(class-name (class-of (. :java.awt.Point :new 10 10)))"));
-	}
+        assertEquals(
+                "com.github.jlangch.venice.impl.types.collections.VncJavaList",
+                venice.eval("(class-name (class-of (. :java.util.ArrayList :new)))"));
 
-	@Test
-	public void test_classloader() {
-		final Venice venice = new Venice();
+        assertEquals(
+                "java.awt.Point",
+                venice.eval("(class-name (class-of (. :java.awt.Point :new 10 10)))"));
+    }
 
-		// the classloader result depends on the Java VM
-		
-		assertNotNull(
-				venice.eval("(classloader)"));
+    @Test
+    public void test_classloader() {
+        final Venice venice = new Venice();
 
-		assertNotNull(
-				venice.eval("(classloader :system)"));
+        // the classloader result depends on the Java VM
 
-		assertNotNull(
-				venice.eval("(classloader :application)"));
+        assertNotNull(
+                venice.eval("(classloader)"));
 
-		assertNotNull(
-				venice.eval("(classloader :thread-context)"));
-	}
+        assertNotNull(
+                venice.eval("(classloader :system)"));
 
-	@Test
-	public void test_classloader_of() {
-		final Venice venice = new Venice();
+        assertNotNull(
+                venice.eval("(classloader :application)"));
 
-		assertEquals(
-				java.awt.Point.class.getClassLoader(), 
-				venice.eval("(classloader-of (class :java.awt.Point))"));
+        assertNotNull(
+                venice.eval("(classloader :thread-context)"));
+    }
 
-		assertEquals(
-				java.awt.Point.class.getClassLoader(), 
-				venice.eval("(classloader-of (class-of (. :java.awt.Point :new 10 10)))"));
+    @Test
+    public void test_classloader_of() {
+        final Venice venice = new Venice();
 
-		assertEquals(
-				VncString.class.getClassLoader(), 
-				venice.eval("(classloader-of (class-of \"abcdef\"))"));
+        assertEquals(
+                java.awt.Point.class.getClassLoader(),
+                venice.eval("(classloader-of (class :java.awt.Point))"));
 
-		assertEquals(
-				VncString.class.getClassLoader(), 
-				venice.eval("(classloader-of \"abcdef\")"));
-	}
+        assertEquals(
+                java.awt.Point.class.getClassLoader(),
+                venice.eval("(classloader-of (class-of (. :java.awt.Point :new 10 10)))"));
 
-	@Test
-	public void test_java_unwrap_optional() {
-		final Venice venice = new Venice();
+        assertEquals(
+                VncString.class.getClassLoader(),
+                venice.eval("(classloader-of (class-of \"abcdef\"))"));
 
-		assertEquals(
-				"123", 
-				venice.eval("(java-unwrap-optional s)", Parameters.of("s", Optional.of("123"))));
+        assertEquals(
+                VncString.class.getClassLoader(),
+                venice.eval("(classloader-of \"abcdef\")"));
+    }
 
-		assertEquals(
-				null, 
-				venice.eval("(java-unwrap-optional s)", Parameters.of("s", Optional.empty())));
-	}
+    @Test
+    public void test_java_unwrap_optional() {
+        final Venice venice = new Venice();
+
+        assertEquals(
+                "123",
+                venice.eval("(java-unwrap-optional s)", Parameters.of("s", Optional.of("123"))));
+
+        assertEquals(
+                null,
+                venice.eval("(java-unwrap-optional s)", Parameters.of("s", Optional.empty())));
+    }
 }
 

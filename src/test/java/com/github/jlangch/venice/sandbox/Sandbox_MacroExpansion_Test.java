@@ -1,5 +1,5 @@
 /*   __    __         _
- *   \ \  / /__ _ __ (_) ___ ___ 
+ *   \ \  / /__ _ __ (_) ___ ___
  *    \ \/ / _ \ '_ \| |/ __/ _ \
  *     \  /  __/ | | | | (_|  __/
  *      \/ \___|_| |_|_|\___\___|
@@ -35,79 +35,79 @@ import com.github.jlangch.venice.javainterop.RejectAllInterceptor;
 
 
 public class Sandbox_MacroExpansion_Test {
-	
-	@Test
-	public void test_execution_at_macro_expansion_ok() {
-		final VeniceInterpreter venice = new VeniceInterpreter(new RejectAllInterceptor());	
-		
-		final Env env = venice.createEnv(true, false, RunMode.SCRIPT);
-		
-		final String macro =
-				"(do                                             \n" +
-				"  (ns alpha)                                    \n" +
-				"                                                \n" +
-				"  (defmacro whenn [test form]                   \n" +
-				"    (do                                         \n" +
-				"      `(if ~test ~form nil))))                    ";
-		
-		// READ/EVAL macro definition is OK
-		venice.RE(macro, "test", env);
+
+    @Test
+    public void test_execution_at_macro_expansion_ok() {
+        final VeniceInterpreter venice = new VeniceInterpreter(new RejectAllInterceptor());
+
+        final Env env = venice.createEnv(true, false, RunMode.SCRIPT);
+
+        final String macro =
+                "(do                                             \n" +
+                "  (ns alpha)                                    \n" +
+                "                                                \n" +
+                "  (defmacro whenn [test form]                   \n" +
+                "    (do                                         \n" +
+                "      `(if ~test ~form nil))))                    ";
+
+        // READ/EVAL macro definition is OK
+        venice.RE(macro, "test", env);
 
 
-		final String script = "(alpha/whenn true 100)";
+        final String script = "(alpha/whenn true 100)";
 
-		// READ macro usage is OK
-		venice.READ(script, "test"); 
-		
-		// MACROEXPAND macro usage is OK
-		venice.MACROEXPAND(venice.READ(script, "test"), env);
+        // READ macro usage is OK
+        venice.READ(script, "test");
 
-		
-		// READ/EVAL with macro expansion is OK
-		final VncVal result = venice.RE(script, "test", env);
-		assertEquals("100", result.toString());
-	}
+        // MACROEXPAND macro usage is OK
+        venice.MACROEXPAND(venice.READ(script, "test"), env);
 
 
-	@Test
-	public void test_execution_at_macro_expansion_sandbox_violation() {
-		final VeniceInterpreter venice = new VeniceInterpreter(new RejectAllInterceptor());	
-		
-		final Env env = venice.createEnv(true, false, RunMode.SCRIPT);
-		
-		final String macro =
-				"(do                                             \n" +
-				"  (ns alpha)                                    \n" +
-				"                                                \n" +
-				"  (defmacro whenn [test form]                   \n" +
-				"    (do                                         \n" +
-				"      (. :java.lang.System :exit 0)             \n" +
-				"      `(if ~test ~form nil))))                    ";
-
-		// READ/EVAL macro definition is OK
-		venice.RE(macro, "test", env);
+        // READ/EVAL with macro expansion is OK
+        final VncVal result = venice.RE(script, "test", env);
+        assertEquals("100", result.toString());
+    }
 
 
-		final String script = "(alpha/whenn true 100)";
+    @Test
+    public void test_execution_at_macro_expansion_sandbox_violation() {
+        final VeniceInterpreter venice = new VeniceInterpreter(new RejectAllInterceptor());
 
-		// READ macro usage is OK
-		venice.READ(script, "test"); 
-		
-		
-		// MACROEXPAND macro usage must FAIL
-		try {
-			// (. :java.lang.System :exit 0) is executed while the macro expands
-			// -> SecurityException from the sandbox
-			
-			venice.MACROEXPAND(venice.READ(script, "test"), env);
-			fail();
-		}
-		catch(SecurityException ex) {
-			assertEquals(
-				"Venice Sandbox (RejectAllInterceptor): Access denied to target java.lang.System. File <test> (6,7)",
-				ex.getMessage());
-		}
-	}
+        final Env env = venice.createEnv(true, false, RunMode.SCRIPT);
 
-	
+        final String macro =
+                "(do                                             \n" +
+                "  (ns alpha)                                    \n" +
+                "                                                \n" +
+                "  (defmacro whenn [test form]                   \n" +
+                "    (do                                         \n" +
+                "      (. :java.lang.System :exit 0)             \n" +
+                "      `(if ~test ~form nil))))                    ";
+
+        // READ/EVAL macro definition is OK
+        venice.RE(macro, "test", env);
+
+
+        final String script = "(alpha/whenn true 100)";
+
+        // READ macro usage is OK
+        venice.READ(script, "test");
+
+
+        // MACROEXPAND macro usage must FAIL
+        try {
+            // (. :java.lang.System :exit 0) is executed while the macro expands
+            // -> SecurityException from the sandbox
+
+            venice.MACROEXPAND(venice.READ(script, "test"), env);
+            fail();
+        }
+        catch(SecurityException ex) {
+            assertEquals(
+                "Venice Sandbox (RejectAllInterceptor): Access denied to target java.lang.System. File <test> (6,7)",
+                ex.getMessage());
+        }
+    }
+
+
 }

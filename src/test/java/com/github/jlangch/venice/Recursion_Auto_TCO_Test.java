@@ -1,5 +1,5 @@
 /*   __    __         _
- *   \ \  / /__ _ __ (_) ___ ___ 
+ *   \ \  / /__ _ __ (_) ___ ___
  *    \ \/ / _ \ '_ \| |/ __/ _ \
  *     \  /  __/ | | | | (_|  __/
  *      \/ \___|_| |_|_|\___\___|
@@ -28,93 +28,93 @@ import org.junit.jupiter.api.Test;
 
 public class Recursion_Auto_TCO_Test {
 
-	@Test
-	public void test_recursion_multi_arity() {
-		final String script = 
-				"(do                                                 \n"
-				+ "  (defn factorial                                 \n"
-				+ "     ([n]     (factorial n 1))                    \n"
-				+ "     ([n acc] (if (== n 1)                        \n"
-				+ "                acc                               \n"
-				+ "                (factorial (dec n) (* acc n)))))  \n"
-				+ "                                                  \n"
-				+ "  (factorial 5))";
+    @Test
+    public void test_recursion_multi_arity() {
+        final String script =
+                "(do                                                 \n"
+                + "  (defn factorial                                 \n"
+                + "     ([n]     (factorial n 1))                    \n"
+                + "     ([n acc] (if (== n 1)                        \n"
+                + "                acc                               \n"
+                + "                (factorial (dec n) (* acc n)))))  \n"
+                + "                                                  \n"
+                + "  (factorial 5))";
 
-		final Venice venice = new Venice();
-		
-		assertEquals(120L, venice.eval(script));
-	}
+        final Venice venice = new Venice();
 
-	@Test
-	public void test_recursion_local_function() {
-		final String script = 
-				"(do                                               \n"
-				+ "  (defn factorial [n]                           \n"
-				+ "    (let [fact (fn [n acc]                      \n"
-				+ "                 (if (== n 1)                   \n"
-				+ "                   acc                          \n"
-				+ "                   (fact (dec n) (* acc n))))]  \n"
-				+ "      (fact n 1)))                              \n"
-				+ "  (factorial 5))";
+        assertEquals(120L, venice.eval(script));
+    }
 
-		final Venice venice = new Venice();
-		
-		assertEquals(120L, venice.eval(script));
-	}
+    @Test
+    public void test_recursion_local_function() {
+        final String script =
+                "(do                                               \n"
+                + "  (defn factorial [n]                           \n"
+                + "    (let [fact (fn [n acc]                      \n"
+                + "                 (if (== n 1)                   \n"
+                + "                   acc                          \n"
+                + "                   (fact (dec n) (* acc n))))]  \n"
+                + "      (fact n 1)))                              \n"
+                + "  (factorial 5))";
 
-	@Test
-	public void test_recursion_2nd_function() {
-		final String script = 
-				"(do                                        \n"
-				+ "  (defn factorial [n] (factorial* n 1))  \n"
-				+ "                                         \n"
-				+ "  (defn factorial* [n acc]               \n"
-				+ "    (if (== n 1)                         \n"
-				+ "      acc                                \n"
-				+ "      (factorial* (dec n) (* acc n))))   \n"
-				+ "                                         \n"
-				+ "  (factorial 5))";
+        final Venice venice = new Venice();
 
-		final Venice venice = new Venice();
-		
-		assertEquals(120L, venice.eval(script));
-	}
+        assertEquals(120L, venice.eval(script));
+    }
 
-	@Test
-	public void test_recursion_deep_multi_arity() {
-		final Venice venice = new Venice();
-		
-		final String script = 
-				"(do                                           \n"
-				+ "  (defn sum                                 \n"
-				+ "     ([n]     (sum n 1))                    \n"
-				+ "     ([n acc] (if (== n 1)                  \n"
-				+ "                acc                         \n"
-				+ "                (sum (dec n) (+ acc n)))))  \n"
-				+ "                                            \n"
-				+ "  (sum 1_000_000))";
+    @Test
+    public void test_recursion_2nd_function() {
+        final String script =
+                "(do                                        \n"
+                + "  (defn factorial [n] (factorial* n 1))  \n"
+                + "                                         \n"
+                + "  (defn factorial* [n acc]               \n"
+                + "    (if (== n 1)                         \n"
+                + "      acc                                \n"
+                + "      (factorial* (dec n) (* acc n))))   \n"
+                + "                                         \n"
+                + "  (factorial 5))";
 
-		assertEquals(500000500000L, venice.eval(script));
-	}
+        final Venice venice = new Venice();
 
-	@Test
-	public void test_recursion_no_tail_pos() {
-		final String script = 
-				"(do                                           \n"
-				+ "  (defn factorial [n] (factorial* n 1))     \n"
-				+ "                                            \n"
-				+ "  (defn factorial* [n acc]                  \n"
-				+ "    (if (== n 1)                            \n"
-				+ "      acc                                   \n"
-				+ "      (do                                   \n"
-				+ "        (factorial* (dec n) (* acc n))      \n"
-				+ "        1)))                                \n"
-				+ "                                            \n"
-				+ "  (factorial 2))";
+        assertEquals(120L, venice.eval(script));
+    }
 
-		final Venice venice = new Venice();
-		
-		assertEquals(1L, venice.eval(script));
-	}
+    @Test
+    public void test_recursion_deep_multi_arity() {
+        final Venice venice = new Venice();
+
+        final String script =
+                "(do                                           \n"
+                + "  (defn sum                                 \n"
+                + "     ([n]     (sum n 1))                    \n"
+                + "     ([n acc] (if (== n 1)                  \n"
+                + "                acc                         \n"
+                + "                (sum (dec n) (+ acc n)))))  \n"
+                + "                                            \n"
+                + "  (sum 1_000_000))";
+
+        assertEquals(500000500000L, venice.eval(script));
+    }
+
+    @Test
+    public void test_recursion_no_tail_pos() {
+        final String script =
+                "(do                                           \n"
+                + "  (defn factorial [n] (factorial* n 1))     \n"
+                + "                                            \n"
+                + "  (defn factorial* [n acc]                  \n"
+                + "    (if (== n 1)                            \n"
+                + "      acc                                   \n"
+                + "      (do                                   \n"
+                + "        (factorial* (dec n) (* acc n))      \n"
+                + "        1)))                                \n"
+                + "                                            \n"
+                + "  (factorial 2))";
+
+        final Venice venice = new Venice();
+
+        assertEquals(1L, venice.eval(script));
+    }
 
 }

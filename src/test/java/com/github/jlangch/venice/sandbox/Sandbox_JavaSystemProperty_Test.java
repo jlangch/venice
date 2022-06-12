@@ -1,5 +1,5 @@
 /*   __    __         _
- *   \ \  / /__ _ __ (_) ___ ___ 
+ *   \ \  / /__ _ __ (_) ___ ___
  *    \ \/ / _ \ '_ \| |/ __/ _ \
  *     \  /  __/ | | | | (_|  __/
  *      \/ \___|_| |_|_|\___\___|
@@ -38,103 +38,103 @@ import com.github.jlangch.venice.javainterop.SandboxRules;
 
 public class Sandbox_JavaSystemProperty_Test {
 
-	
-	// ------------------------------------------------------------------------
-	// Sandbox FAIL
-	// ------------------------------------------------------------------------
-		
-	@Test
-	public void test_RejectAccessToAllSystemProperties_RejectAllInterceptor() {
-		assertThrows(SecurityException.class, () -> {
-			new Venice(new RejectAllInterceptor()).eval("(system-prop \"db.password\")");
-		});
-	}
 
-	@Test
-	public void test_all_RejectAllInterceptor() {
-		final HashMap<?,?> env = (HashMap<?,?>)new Venice(new RejectAllInterceptor()).eval("(system-prop)");
-		assertTrue(env.isEmpty());
-	}
+    // ------------------------------------------------------------------------
+    // Sandbox FAIL
+    // ------------------------------------------------------------------------
 
-	@Test
-	public void test_RejectAccessToAllSystemProperties_EmptySandbox() {
-		final Interceptor interceptor = new SandboxInterceptor(new SandboxRules());				
-		
-		assertThrows(SecurityException.class, () -> {
-			new Venice(interceptor).eval("(system-prop \"db.password\")");
-		});
-	}
-	
-	@Test
-	public void test_RejectAccessToNonStandardSystemProperties() {
-		final Interceptor interceptor = new SandboxInterceptor(
-												new SandboxRules().withStandardSystemProperties());				
-		
-		assertThrows(SecurityException.class, () -> {
-			new Venice(interceptor).eval("(system-prop \"db.password\")");
-		});
-	}
-	
-	@Test
-	public void test_RejectAccessToNonWhitelistedSystemProperties() {
-		final Interceptor interceptor = new SandboxInterceptor(
-												new SandboxRules().withSystemProperties("user.home"));				
-		
-		assertThrows(SecurityException.class, () -> {
-			new Venice(interceptor).eval("(system-prop \"db.password\")");
-		});
-	}
+    @Test
+    public void test_RejectAccessToAllSystemProperties_RejectAllInterceptor() {
+        assertThrows(SecurityException.class, () -> {
+            new Venice(new RejectAllInterceptor()).eval("(system-prop \"db.password\")");
+        });
+    }
 
-	
-	
-	// ------------------------------------------------------------------------
-	// Sandbox PASS
-	// ------------------------------------------------------------------------
+    @Test
+    public void test_all_RejectAllInterceptor() {
+        final HashMap<?,?> env = (HashMap<?,?>)new Venice(new RejectAllInterceptor()).eval("(system-prop)");
+        assertTrue(env.isEmpty());
+    }
 
-	@Test
-	public void test_NoSandbox() {
-		new Venice().eval("(system-prop \"db.password\")");
-		new Venice().eval("(system-prop \"user.home\")");
-	}
+    @Test
+    public void test_RejectAccessToAllSystemProperties_EmptySandbox() {
+        final Interceptor interceptor = new SandboxInterceptor(new SandboxRules());
 
-	@Test
-	public void test_all_NoSandbox() {
-		final HashMap<?,?> env = (HashMap<?,?>)new Venice().eval("(system-prop)");
-		assertFalse(env.isEmpty());
-	}
+        assertThrows(SecurityException.class, () -> {
+            new Venice(interceptor).eval("(system-prop \"db.password\")");
+        });
+    }
 
-	@Test
-	public void test_AccessToAllSystemProperties() {
-		final Interceptor interceptor = 
-				new SandboxInterceptor(new SandboxRules().withAllSystemProperties());				
+    @Test
+    public void test_RejectAccessToNonStandardSystemProperties() {
+        final Interceptor interceptor = new SandboxInterceptor(
+                                                new SandboxRules().withStandardSystemProperties());
 
-		new Venice(interceptor).eval("(system-prop \"db.password\")");
-		new Venice(interceptor).eval("(system-prop \"user.home\")");
-	}
+        assertThrows(SecurityException.class, () -> {
+            new Venice(interceptor).eval("(system-prop \"db.password\")");
+        });
+    }
 
-	@Test
-	public void test_all_AccessToAllSystemProperties() {
-		final Interceptor interceptor = 
-				new SandboxInterceptor(new SandboxRules().withAllSystemProperties());				
+    @Test
+    public void test_RejectAccessToNonWhitelistedSystemProperties() {
+        final Interceptor interceptor = new SandboxInterceptor(
+                                                new SandboxRules().withSystemProperties("user.home"));
 
-		final HashMap<?,?> env = (HashMap<?,?>)new Venice(interceptor).eval("(system-prop)");
-		assertFalse(env.isEmpty());
-	}
+        assertThrows(SecurityException.class, () -> {
+            new Venice(interceptor).eval("(system-prop \"db.password\")");
+        });
+    }
 
-	@Test
-	public void test_AccessToStandardSystemProperties() {
-		final Interceptor interceptor = 
-				new SandboxInterceptor(new SandboxRules().withStandardSystemProperties());				
 
-		new Venice(interceptor).eval("(system-prop \"user.home\")");
-	}
-	
-	@Test
-	public void test_AccessToWhitelistedSystemProperties() {
-		final Interceptor interceptor = 
-				new SandboxInterceptor(new SandboxRules().withSystemProperties("db.password"));				
-		
-		new Venice(interceptor).eval("(system-prop \"db.password\")");
-	}
+
+    // ------------------------------------------------------------------------
+    // Sandbox PASS
+    // ------------------------------------------------------------------------
+
+    @Test
+    public void test_NoSandbox() {
+        new Venice().eval("(system-prop \"db.password\")");
+        new Venice().eval("(system-prop \"user.home\")");
+    }
+
+    @Test
+    public void test_all_NoSandbox() {
+        final HashMap<?,?> env = (HashMap<?,?>)new Venice().eval("(system-prop)");
+        assertFalse(env.isEmpty());
+    }
+
+    @Test
+    public void test_AccessToAllSystemProperties() {
+        final Interceptor interceptor =
+                new SandboxInterceptor(new SandboxRules().withAllSystemProperties());
+
+        new Venice(interceptor).eval("(system-prop \"db.password\")");
+        new Venice(interceptor).eval("(system-prop \"user.home\")");
+    }
+
+    @Test
+    public void test_all_AccessToAllSystemProperties() {
+        final Interceptor interceptor =
+                new SandboxInterceptor(new SandboxRules().withAllSystemProperties());
+
+        final HashMap<?,?> env = (HashMap<?,?>)new Venice(interceptor).eval("(system-prop)");
+        assertFalse(env.isEmpty());
+    }
+
+    @Test
+    public void test_AccessToStandardSystemProperties() {
+        final Interceptor interceptor =
+                new SandboxInterceptor(new SandboxRules().withStandardSystemProperties());
+
+        new Venice(interceptor).eval("(system-prop \"user.home\")");
+    }
+
+    @Test
+    public void test_AccessToWhitelistedSystemProperties() {
+        final Interceptor interceptor =
+                new SandboxInterceptor(new SandboxRules().withSystemProperties("db.password"));
+
+        new Venice(interceptor).eval("(system-prop \"db.password\")");
+    }
 
 }

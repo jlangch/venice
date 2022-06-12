@@ -1,5 +1,5 @@
 /*   __    __         _
- *   \ \  / /__ _ __ (_) ___ ___ 
+ *   \ \  / /__ _ __ (_) ___ ___
  *    \ \/ / _ \ '_ \| |/ __/ _ \
  *     \  /  __/ | | | | (_|  __/
  *      \/ \___|_| |_|_|\___\___|
@@ -28,178 +28,178 @@ import org.junit.jupiter.api.Test;
 
 public class MarkdownTextRendererTest {
 
-	@Test
-	public void test_text_block() {
-		final String md = 
-				  "Lorem ipsum dolor sit amet, consetetur sadipscing elitr, "
-				+ "sed diam nonumy eirmod tempor invidunt ut labore et "
-				+ "dolore magna aliquyam erat, sed diam voluptua. At vero "
-				+ "eos et accusam et justo duo dolores et ea rebum. Stet "
-				+ "clita kasd gubergren, no sea takimata sanctus est "
-				+ "Lorem ipsum dolor sit amet. Lorem ipsum dolor sit amet, "
-				+ "consetetur sadipscing elitr, sed diam nonumy eirmod "
-				+ "tempor invidunt ut labore et dolore magna aliquyam "
-				+ "erat, sed diam voluptua.";
-			
-		final String expected =
-				  "Lorem ipsum dolor sit amet, consetetur sadipscing\n"
-				+ "elitr, sed diam nonumy eirmod tempor invidunt ut\n"
-				+ "labore et dolore magna aliquyam erat, sed diam\n"
-				+ "voluptua. At vero eos et accusam et justo duo\n"
-				+ "dolores et ea rebum. Stet clita kasd gubergren, no\n"
-				+ "sea takimata sanctus est Lorem ipsum dolor sit\n"
-				+ "amet. Lorem ipsum dolor sit amet, consetetur\n"
-				+ "sadipscing elitr, sed diam nonumy eirmod tempor\n"
-				+ "invidunt ut labore et dolore magna aliquyam erat,\n"
-				+ "sed diam voluptua.";
-		
-		final String rendered = Markdown.parse(md).renderToText(50);
+    @Test
+    public void test_text_block() {
+        final String md =
+                  "Lorem ipsum dolor sit amet, consetetur sadipscing elitr, "
+                + "sed diam nonumy eirmod tempor invidunt ut labore et "
+                + "dolore magna aliquyam erat, sed diam voluptua. At vero "
+                + "eos et accusam et justo duo dolores et ea rebum. Stet "
+                + "clita kasd gubergren, no sea takimata sanctus est "
+                + "Lorem ipsum dolor sit amet. Lorem ipsum dolor sit amet, "
+                + "consetetur sadipscing elitr, sed diam nonumy eirmod "
+                + "tempor invidunt ut labore et dolore magna aliquyam "
+                + "erat, sed diam voluptua.";
 
-		assertEquals(expected, rendered);
-	}
+        final String expected =
+                  "Lorem ipsum dolor sit amet, consetetur sadipscing\n"
+                + "elitr, sed diam nonumy eirmod tempor invidunt ut\n"
+                + "labore et dolore magna aliquyam erat, sed diam\n"
+                + "voluptua. At vero eos et accusam et justo duo\n"
+                + "dolores et ea rebum. Stet clita kasd gubergren, no\n"
+                + "sea takimata sanctus est Lorem ipsum dolor sit\n"
+                + "amet. Lorem ipsum dolor sit amet, consetetur\n"
+                + "sadipscing elitr, sed diam nonumy eirmod tempor\n"
+                + "invidunt ut labore et dolore magna aliquyam erat,\n"
+                + "sed diam voluptua.";
 
-	@Test
-	public void test_text_block_2() {
-		final String md = 
-				  "Lorem ipsum *dolor* sit amet, consetetur sadipscing elitr, "
-				+ "sed diam nonumy eirmod tempor invidunt ut labore et "
-				+ "dolore magna aliquyam erat, sed diam voluptua. At vero "
-				+ "eos et accusam et justo ***duo*** dolores et ea rebum. Stet "
-				+ "clita kasd gubergren, no sea takimata sanctus est "
-				+ "Lorem **ipsum** dolor sit amet. \n\n"
-				+ "Lorem   ipsum dolor sit   amet, consetetur sadipscing elitr, "
-				+ "sed diam nonumy eirmod tempor `invidunt` ut labore et "
-				+ "dolore magna aliquyam erat, sed diam voluptua.";
-			
-		final String expected =
-				  "Lorem ipsum dolor sit amet, consetetur sadipscing\n"
-				+ "elitr, sed diam nonumy eirmod tempor invidunt ut\n"
-				+ "labore et dolore magna aliquyam erat, sed diam\n"
-				+ "voluptua. At vero eos et accusam et justo duo\n"
-				+ "dolores et ea rebum. Stet clita kasd gubergren, no\n"
-				+ "sea takimata sanctus est Lorem ipsum dolor sit\n"
-				+ "amet.\n"
-				+ "\n"
-				+ "Lorem ipsum dolor sit amet, consetetur sadipscing\n"
-				+ "elitr, sed diam nonumy eirmod tempor invidunt ut\n"
-				+ "labore et dolore magna aliquyam erat, sed diam\n"
-				+ "voluptua.";
-		
-		final String rendered = Markdown.parse(md).renderToText(50);
+        final String rendered = Markdown.parse(md).renderToText(50);
 
-		assertEquals(expected, rendered);
-	}
+        assertEquals(expected, rendered);
+    }
 
-	@Test
-	public void test_code_block() {
-		final String md = 
-				  "```venice\n"
-				+ "(defmacro\n"
-				+ "  ^{ :arglists '(\"(comment & body)\")\n"
-				+ "     :doc \"Ignores body, yields nil\"\n"
-				+ "     :examples '(\n"
-				+ "          \"\"\"\n"
-				+ "          (comment\n"
-				+ "            (println 1)\n"
-				+ "            (println 5))\n"
-				+ "          \"\"\" ) }\n"
-				+ "\n"
-				+ "   comment [& body] nil)\n"
-				+ "```";
-			
-		final String expected =
-				    "   (defmacro\n"
-				  + "     ^{ :arglists '(\"(comment & body)\")\n"
-				  + "        :doc \"Ignores body, yields nil\"\n"
-				  + "        :examples '(\n"
-				  + "             \"\"\"\n"
-				  + "             (comment\n"
-				  + "               (println 1)\n"
-				  + "               (println 5))\n"
-				  + "             \"\"\" ) }\n"
-				  + "   \n"
-				  + "      comment [& body] nil)";
-		
-		final String rendered = Markdown.parse(md).renderToText(50);
+    @Test
+    public void test_text_block_2() {
+        final String md =
+                  "Lorem ipsum *dolor* sit amet, consetetur sadipscing elitr, "
+                + "sed diam nonumy eirmod tempor invidunt ut labore et "
+                + "dolore magna aliquyam erat, sed diam voluptua. At vero "
+                + "eos et accusam et justo ***duo*** dolores et ea rebum. Stet "
+                + "clita kasd gubergren, no sea takimata sanctus est "
+                + "Lorem **ipsum** dolor sit amet. \n\n"
+                + "Lorem   ipsum dolor sit   amet, consetetur sadipscing elitr, "
+                + "sed diam nonumy eirmod tempor `invidunt` ut labore et "
+                + "dolore magna aliquyam erat, sed diam voluptua.";
 
-		assertEquals(expected, rendered);
-	}
+        final String expected =
+                  "Lorem ipsum dolor sit amet, consetetur sadipscing\n"
+                + "elitr, sed diam nonumy eirmod tempor invidunt ut\n"
+                + "labore et dolore magna aliquyam erat, sed diam\n"
+                + "voluptua. At vero eos et accusam et justo duo\n"
+                + "dolores et ea rebum. Stet clita kasd gubergren, no\n"
+                + "sea takimata sanctus est Lorem ipsum dolor sit\n"
+                + "amet.\n"
+                + "\n"
+                + "Lorem ipsum dolor sit amet, consetetur sadipscing\n"
+                + "elitr, sed diam nonumy eirmod tempor invidunt ut\n"
+                + "labore et dolore magna aliquyam erat, sed diam\n"
+                + "voluptua.";
 
-	@Test
-	public void test_list_block_1() {   // FIXME
-		final String md = 
-				  "* Lorem ipsum dolor sit amet, consetetur sadipscing elit\n"
-				+ "  sed diam nonumy eirmod tempor invidunt ut labore et";
-				
-		final String expected =
-				// 1         11        21        31
-				// +---------+---------+---------+---------+
-				  "  o Lorem ipsum dolor sit amet,\n"
-				+ "    consetetur sadipscing elit\n"
-				+ "    sed diam nonumy eirmod\n"
-				+ "    tempor invidunt ut labore et";
-		
-		final String rendered = Markdown.parse(md).renderToText(32);
+        final String rendered = Markdown.parse(md).renderToText(50);
 
-		assertEquals(expected, rendered);
-	}
+        assertEquals(expected, rendered);
+    }
 
-	@Test
-	public void test_list_block_2() {   // FIXME
-		final String md = 
-				  "* Lorem ipsum dolor sit amet, consetetur sadipscing elit\n"
-				+ "  sed diam nonumy eirmod tempor invidunt ut labore et\n"
-				+ "* At vero eos et accusam et justo duo\n"
-				+ "  dolores et ea rebum.";
-				
-		final String expected =
-				  "  o Lorem ipsum dolor sit amet,\n"
-				+ "    consetetur sadipscing elit\n"
-				+ "    sed diam nonumy eirmod\n"
-				+ "    tempor invidunt ut labore et\n"
-				+ "  o At vero eos et accusam et\n"
-				+ "    justo duo dolores et ea\n"
-				+ "    rebum.";
-		
-		final String rendered = Markdown.parse(md).renderToText(32);
+    @Test
+    public void test_code_block() {
+        final String md =
+                  "```venice\n"
+                + "(defmacro\n"
+                + "  ^{ :arglists '(\"(comment & body)\")\n"
+                + "     :doc \"Ignores body, yields nil\"\n"
+                + "     :examples '(\n"
+                + "          \"\"\"\n"
+                + "          (comment\n"
+                + "            (println 1)\n"
+                + "            (println 5))\n"
+                + "          \"\"\" ) }\n"
+                + "\n"
+                + "   comment [& body] nil)\n"
+                + "```";
 
-		assertEquals(expected, rendered);
-	}
+        final String expected =
+                    "   (defmacro\n"
+                  + "     ^{ :arglists '(\"(comment & body)\")\n"
+                  + "        :doc \"Ignores body, yields nil\"\n"
+                  + "        :examples '(\n"
+                  + "             \"\"\"\n"
+                  + "             (comment\n"
+                  + "               (println 1)\n"
+                  + "               (println 5))\n"
+                  + "             \"\"\" ) }\n"
+                  + "   \n"
+                  + "      comment [& body] nil)";
 
-	@Test
-	public void test_table_block() {
-		final String md = 
-				"|T1|T2|\n" +
-				"|:-|:-|\n" +
-				"|c1|Lorem ipsum dolor sit amet, consetetur sadipscing elitr, "
-						+ "sed diam nonumy eirmod tempor invidunt ut labore et "
-						+ "dolore magna aliquyam erat, sed diam voluptua. At vero "
-						+ "eos et accusam et justo duo dolores et ea rebum. Stet "
-						+ "clita kasd gubergren, no sea takimata sanctus est "
-						+ "Lorem ipsum dolor sit amet. Lorem ipsum dolor sit amet, "
-						+ "consetetur sadipscing elitr, sed diam nonumy eirmod "
-						+ "tempor invidunt ut labore et dolore magna aliquyam "
-						+ "erat, sed diam voluptua.|\n" +
-				"|d1|At vero eos et accusam et justo duo dolores et ea "
-						+ "rebum. Stet clita kasd gubergren, no sea takimata "
-						+ "sanctus est Lorem ipsum dolor sit amet.|";
-			
-		final String expected =
-				"T1  T2\n" +
-				"--  ----------------------------------------------------------------------------\n" +
-				"c1  Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy\n" +
-				"    eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam\n" +
-				"    voluptua. At vero eos et accusam et justo duo dolores et ea rebum. Stet\n" +
-				"    clita kasd gubergren, no sea takimata sanctus est Lorem ipsum dolor sit\n" +
-				"    amet. Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam\n" +
-				"    nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed\n" +
-				"    diam voluptua.\n" +
-				"d1  At vero eos et accusam et justo duo dolores et ea rebum. Stet clita kasd\n" +
-				"    gubergren, no sea takimata sanctus est Lorem ipsum dolor sit amet.";
-		
-		final String rendered = Markdown.parse(md).renderToText(80);
+        final String rendered = Markdown.parse(md).renderToText(50);
 
-		assertEquals(expected, rendered);
-	}
+        assertEquals(expected, rendered);
+    }
+
+    @Test
+    public void test_list_block_1() {   // FIXME
+        final String md =
+                  "* Lorem ipsum dolor sit amet, consetetur sadipscing elit\n"
+                + "  sed diam nonumy eirmod tempor invidunt ut labore et";
+
+        final String expected =
+                // 1         11        21        31
+                // +---------+---------+---------+---------+
+                  "  o Lorem ipsum dolor sit amet,\n"
+                + "    consetetur sadipscing elit\n"
+                + "    sed diam nonumy eirmod\n"
+                + "    tempor invidunt ut labore et";
+
+        final String rendered = Markdown.parse(md).renderToText(32);
+
+        assertEquals(expected, rendered);
+    }
+
+    @Test
+    public void test_list_block_2() {   // FIXME
+        final String md =
+                  "* Lorem ipsum dolor sit amet, consetetur sadipscing elit\n"
+                + "  sed diam nonumy eirmod tempor invidunt ut labore et\n"
+                + "* At vero eos et accusam et justo duo\n"
+                + "  dolores et ea rebum.";
+
+        final String expected =
+                  "  o Lorem ipsum dolor sit amet,\n"
+                + "    consetetur sadipscing elit\n"
+                + "    sed diam nonumy eirmod\n"
+                + "    tempor invidunt ut labore et\n"
+                + "  o At vero eos et accusam et\n"
+                + "    justo duo dolores et ea\n"
+                + "    rebum.";
+
+        final String rendered = Markdown.parse(md).renderToText(32);
+
+        assertEquals(expected, rendered);
+    }
+
+    @Test
+    public void test_table_block() {
+        final String md =
+                "|T1|T2|\n" +
+                "|:-|:-|\n" +
+                "|c1|Lorem ipsum dolor sit amet, consetetur sadipscing elitr, "
+                        + "sed diam nonumy eirmod tempor invidunt ut labore et "
+                        + "dolore magna aliquyam erat, sed diam voluptua. At vero "
+                        + "eos et accusam et justo duo dolores et ea rebum. Stet "
+                        + "clita kasd gubergren, no sea takimata sanctus est "
+                        + "Lorem ipsum dolor sit amet. Lorem ipsum dolor sit amet, "
+                        + "consetetur sadipscing elitr, sed diam nonumy eirmod "
+                        + "tempor invidunt ut labore et dolore magna aliquyam "
+                        + "erat, sed diam voluptua.|\n" +
+                "|d1|At vero eos et accusam et justo duo dolores et ea "
+                        + "rebum. Stet clita kasd gubergren, no sea takimata "
+                        + "sanctus est Lorem ipsum dolor sit amet.|";
+
+        final String expected =
+                "T1  T2\n" +
+                "--  ----------------------------------------------------------------------------\n" +
+                "c1  Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy\n" +
+                "    eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam\n" +
+                "    voluptua. At vero eos et accusam et justo duo dolores et ea rebum. Stet\n" +
+                "    clita kasd gubergren, no sea takimata sanctus est Lorem ipsum dolor sit\n" +
+                "    amet. Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam\n" +
+                "    nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed\n" +
+                "    diam voluptua.\n" +
+                "d1  At vero eos et accusam et justo duo dolores et ea rebum. Stet clita kasd\n" +
+                "    gubergren, no sea takimata sanctus est Lorem ipsum dolor sit amet.";
+
+        final String rendered = Markdown.parse(md).renderToText(80);
+
+        assertEquals(expected, rendered);
+    }
 
 }

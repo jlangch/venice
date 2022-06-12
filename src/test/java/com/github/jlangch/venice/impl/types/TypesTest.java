@@ -1,5 +1,5 @@
 /*   __    __         _
- *   \ \  / /__ _ __ (_) ___ ___ 
+ *   \ \  / /__ _ __ (_) ___ ___
  *    \ \/ / _ \ '_ \| |/ __/ _ \
  *     \  /  __/ | | | | (_|  __/
  *      \/ \___|_| |_|_|\___\___|
@@ -32,38 +32,38 @@ import com.github.jlangch.venice.impl.types.util.Types;
 
 public class TypesTest {
 
-	@Test
-	public void test_isVncJavaObject() {
-		final VncJavaObject javaObj = new VncJavaObject(Long.valueOf(100));
-		
-		assertTrue(Types.isVncJavaObject(javaObj));
-		assertTrue(Types.isVncJavaObject(javaObj, Long.class));
-		assertTrue(Types.isVncJavaObject(javaObj, Number.class));
-		assertTrue(Types.isVncJavaObject(javaObj, Object.class));
-		assertFalse(Types.isVncJavaObject(javaObj, Integer.class));
-	}
+    @Test
+    public void test_isVncJavaObject() {
+        final VncJavaObject javaObj = new VncJavaObject(Long.valueOf(100));
 
-	@Test
-	public void test_Type() {
-		assertEquals(":core/nil", Types.getType(Constants.Nil).toString(true));
-		
-		assertEquals(":core/long", Types.getType(new VncLong(1L)).toString(true));
-	}
+        assertTrue(Types.isVncJavaObject(javaObj));
+        assertTrue(Types.isVncJavaObject(javaObj, Long.class));
+        assertTrue(Types.isVncJavaObject(javaObj, Number.class));
+        assertTrue(Types.isVncJavaObject(javaObj, Object.class));
+        assertFalse(Types.isVncJavaObject(javaObj, Integer.class));
+    }
 
-	@Test
-	public void test_Supertype() {
-		assertEquals(":core/val", Types.getSupertype(Constants.Nil).toString(true));
-		
-		assertEquals(":core/number", Types.getSupertype(new VncLong(1L)).toString(true));
-	}
+    @Test
+    public void test_Type() {
+        assertEquals(":core/nil", Types.getType(Constants.Nil).toString(true));
 
-	@Test
-	public void test_Supertypes() {
-		assertEquals(":core/val", Types.getSupertypes(Constants.Nil).first().toString(true));
-		assertEquals(1L, Types.getSupertypes(Constants.Nil).size());
+        assertEquals(":core/long", Types.getType(new VncLong(1L)).toString(true));
+    }
 
-		assertEquals(":core/number", Types.getSupertypes(new VncLong(1L)).first().toString(true));
-		assertEquals(":core/val", Types.getSupertypes(new VncLong(1L)).second().toString(true));
-		assertEquals(2L, Types.getSupertypes(new VncLong(1L)).size());
-	}
+    @Test
+    public void test_Supertype() {
+        assertEquals(":core/val", Types.getSupertype(Constants.Nil).toString(true));
+
+        assertEquals(":core/number", Types.getSupertype(new VncLong(1L)).toString(true));
+    }
+
+    @Test
+    public void test_Supertypes() {
+        assertEquals(":core/val", Types.getSupertypes(Constants.Nil).first().toString(true));
+        assertEquals(1L, Types.getSupertypes(Constants.Nil).size());
+
+        assertEquals(":core/number", Types.getSupertypes(new VncLong(1L)).first().toString(true));
+        assertEquals(":core/val", Types.getSupertypes(new VncLong(1L)).second().toString(true));
+        assertEquals(2L, Types.getSupertypes(new VncLong(1L)).size());
+    }
 }

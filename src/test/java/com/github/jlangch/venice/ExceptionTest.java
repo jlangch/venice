@@ -1,5 +1,5 @@
 /*   __    __         _
- *   \ \  / /__ _ __ (_) ___ ___ 
+ *   \ \  / /__ _ __ (_) ___ ___
  *    \ \/ / _ \ '_ \| |/ __/ _ \
  *     \  /  __/ | | | | (_|  __/
  *      \/ \___|_| |_|_|\___\___|
@@ -31,29 +31,29 @@ import org.junit.jupiter.api.Test;
 
 public class ExceptionTest {
 
-	@SuppressWarnings({ "unchecked" })
-	@Test
-	public void test_ValueException() {
-		final Venice venice = new Venice();
-		
-		try {
-			venice.eval("(throw '(1 2))");
-		}
-		catch(ValueException ex) {
-			final Object val = ex.getValue();
-			if (val instanceof List) {
-				final List<Object> list = (List<Object>)val;
-				assertEquals(2, list.size());
-				assertEquals(1L, list.get(0));
-				assertEquals(2L, list.get(1));
-			}
-			else {
-				fail("Expected java.util.List value");
-			}
-		}
-		catch(RuntimeException ex) {
-			fail("Expected ValueException");
-		}
-	}
+    @SuppressWarnings({ "unchecked" })
+    @Test
+    public void test_ValueException() {
+        final Venice venice = new Venice();
+
+        try {
+            venice.eval("(throw '(1 2))");
+        }
+        catch(ValueException ex) {
+            final Object val = ex.getValue();
+            if (val instanceof List) {
+                final List<Object> list = (List<Object>)val;
+                assertEquals(2, list.size());
+                assertEquals(1L, list.get(0));
+                assertEquals(2L, list.get(1));
+            }
+            else {
+                fail("Expected java.util.List value");
+            }
+        }
+        catch(RuntimeException ex) {
+            fail("Expected ValueException");
+        }
+    }
 
 }

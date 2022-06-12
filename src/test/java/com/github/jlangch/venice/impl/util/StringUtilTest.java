@@ -1,5 +1,5 @@
 /*   __    __         _
- *   \ \  / /__ _ __ (_) ___ ___ 
+ *   \ \  / /__ _ __ (_) ___ ___
  *    \ \/ / _ \ '_ \| |/ __/ _ \
  *     \  /  __/ | | | | (_|  __/
  *      \/ \___|_| |_|_|\___\___|
@@ -31,96 +31,96 @@ import org.junit.jupiter.api.Test;
 
 public class StringUtilTest {
 
-	@Test
-	public void testTrimToNull() {
-		assertNull(StringUtil.trimToNull(""));
-		assertNull(StringUtil.trimToNull(" "));
-		assertNull(StringUtil.trimToNull("  "));
-		assertNull(StringUtil.trimToNull("\n"));
-		assertNull(StringUtil.trimToNull("  \n\n"));
-	}
+    @Test
+    public void testTrimToNull() {
+        assertNull(StringUtil.trimToNull(""));
+        assertNull(StringUtil.trimToNull(" "));
+        assertNull(StringUtil.trimToNull("  "));
+        assertNull(StringUtil.trimToNull("\n"));
+        assertNull(StringUtil.trimToNull("  \n\n"));
+    }
 
-	@Test
-	public void testTrimLeft() {
-		assertEquals(null, StringUtil.trimLeft(null));
-		assertEquals("", StringUtil.trimLeft(""));
-		assertEquals("", StringUtil.trimLeft(" "));
-		assertEquals("", StringUtil.trimLeft("  "));
-		
-		assertEquals("a", StringUtil.trimLeft("a"));
-		assertEquals("a", StringUtil.trimLeft(" a"));
-		assertEquals("a", StringUtil.trimLeft("  a"));
-	}
+    @Test
+    public void testTrimLeft() {
+        assertEquals(null, StringUtil.trimLeft(null));
+        assertEquals("", StringUtil.trimLeft(""));
+        assertEquals("", StringUtil.trimLeft(" "));
+        assertEquals("", StringUtil.trimLeft("  "));
 
-	@Test
-	public void testTrimRight() {
-		assertEquals(null, StringUtil.trimRight(null));
-		assertEquals("", StringUtil.trimRight(""));
-		assertEquals("", StringUtil.trimRight(" "));
-		assertEquals("", StringUtil.trimRight("  "));
-		assertEquals("", StringUtil.trimRight("\n"));
-		assertEquals("", StringUtil.trimRight("  \n\n"));
-		assertEquals("", StringUtil.trimRight("  \n\r\n"));
-		
-		assertEquals("a", StringUtil.trimRight("a"));
-		assertEquals("a", StringUtil.trimRight("a "));
-		assertEquals("a", StringUtil.trimRight("a  "));
-		assertEquals("a", StringUtil.trimRight("a\n"));
-		assertEquals("a", StringUtil.trimRight("a  \n\n"));
-		assertEquals("a", StringUtil.trimRight("a  \n\r\n"));
-	}
+        assertEquals("a", StringUtil.trimLeft("a"));
+        assertEquals("a", StringUtil.trimLeft(" a"));
+        assertEquals("a", StringUtil.trimLeft("  a"));
+    }
 
-	@Test
-	public void testSplitIntoLines() {
-		List<String> lines;
+    @Test
+    public void testTrimRight() {
+        assertEquals(null, StringUtil.trimRight(null));
+        assertEquals("", StringUtil.trimRight(""));
+        assertEquals("", StringUtil.trimRight(" "));
+        assertEquals("", StringUtil.trimRight("  "));
+        assertEquals("", StringUtil.trimRight("\n"));
+        assertEquals("", StringUtil.trimRight("  \n\n"));
+        assertEquals("", StringUtil.trimRight("  \n\r\n"));
 
-		lines = StringUtil.splitIntoLines("");	
-		assertEquals(0, lines.size());
+        assertEquals("a", StringUtil.trimRight("a"));
+        assertEquals("a", StringUtil.trimRight("a "));
+        assertEquals("a", StringUtil.trimRight("a  "));
+        assertEquals("a", StringUtil.trimRight("a\n"));
+        assertEquals("a", StringUtil.trimRight("a  \n\n"));
+        assertEquals("a", StringUtil.trimRight("a  \n\r\n"));
+    }
 
-		
-		
-		lines = StringUtil.splitIntoLines("\n");	
-		assertEquals(1, lines.size());
-		assertEquals("", lines.get(0));
+    @Test
+    public void testSplitIntoLines() {
+        List<String> lines;
 
-		
-		
-		lines = StringUtil.splitIntoLines("1\n");	
-		assertEquals(1, lines.size());
-		assertEquals("1", lines.get(0));
+        lines = StringUtil.splitIntoLines("");
+        assertEquals(0, lines.size());
 
-		lines = StringUtil.splitIntoLines("\n2");	
-		assertEquals(2, lines.size());
-		assertEquals("", lines.get(0));
-		assertEquals("2", lines.get(1));
 
-		lines = StringUtil.splitIntoLines("1\n2");	
-		assertEquals(2, lines.size());
-		assertEquals("1", lines.get(0));
-		assertEquals("2", lines.get(1));
 
-		lines = StringUtil.splitIntoLines("\n\n");	
-		assertEquals(2, lines.size());
-		assertEquals("", lines.get(0));
-		assertEquals("", lines.get(1));
+        lines = StringUtil.splitIntoLines("\n");
+        assertEquals(1, lines.size());
+        assertEquals("", lines.get(0));
 
-		
-		
-		lines = StringUtil.splitIntoLines("1\n\n");	
-		assertEquals(2, lines.size());
-		assertEquals("1", lines.get(0));
-		assertEquals("", lines.get(1));
 
-		lines = StringUtil.splitIntoLines("\n2\n");	
-		assertEquals(2, lines.size());
-		assertEquals("", lines.get(0));
-		assertEquals("2", lines.get(1));
 
-		lines = StringUtil.splitIntoLines("\n\n3");	
-		assertEquals(3, lines.size());
-		assertEquals("", lines.get(0));
-		assertEquals("", lines.get(1));
-		assertEquals("3", lines.get(2));
-	}
+        lines = StringUtil.splitIntoLines("1\n");
+        assertEquals(1, lines.size());
+        assertEquals("1", lines.get(0));
+
+        lines = StringUtil.splitIntoLines("\n2");
+        assertEquals(2, lines.size());
+        assertEquals("", lines.get(0));
+        assertEquals("2", lines.get(1));
+
+        lines = StringUtil.splitIntoLines("1\n2");
+        assertEquals(2, lines.size());
+        assertEquals("1", lines.get(0));
+        assertEquals("2", lines.get(1));
+
+        lines = StringUtil.splitIntoLines("\n\n");
+        assertEquals(2, lines.size());
+        assertEquals("", lines.get(0));
+        assertEquals("", lines.get(1));
+
+
+
+        lines = StringUtil.splitIntoLines("1\n\n");
+        assertEquals(2, lines.size());
+        assertEquals("1", lines.get(0));
+        assertEquals("", lines.get(1));
+
+        lines = StringUtil.splitIntoLines("\n2\n");
+        assertEquals(2, lines.size());
+        assertEquals("", lines.get(0));
+        assertEquals("2", lines.get(1));
+
+        lines = StringUtil.splitIntoLines("\n\n3");
+        assertEquals(3, lines.size());
+        assertEquals("", lines.get(0));
+        assertEquals("", lines.get(1));
+        assertEquals("3", lines.get(2));
+    }
 
 }

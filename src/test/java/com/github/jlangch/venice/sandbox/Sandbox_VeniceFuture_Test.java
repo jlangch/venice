@@ -1,5 +1,5 @@
 /*   __    __         _
- *   \ \  / /__ _ __ (_) ___ ___ 
+ *   \ \  / /__ _ __ (_) ___ ___
  *    \ \/ / _ \ '_ \| |/ __/ _ \
  *     \  /  __/ | | | | (_|  __/
  *      \/ \___|_| |_|_|\___\___|
@@ -38,80 +38,80 @@ import com.github.jlangch.venice.javainterop.SandboxRules;
 
 
 public class Sandbox_VeniceFuture_Test {
-	
-	@Test
-	public void test_future_not_sandboxed() {
-			final Venice venice = new Venice();
-	
-			final String script = 
-					"(do                                        " +
-					"   (def wait (fn [] (sandboxed?)))         " +
-					"                                           " +
-					"   (let [f (future wait)]                  " +
-					"        (deref f))                         " +
-					") ";
 
-			assertFalse((Boolean)venice.eval(script));
-	}
-	
-	@Test
-	public void test_future_sandboxed() {
-		// all venice 'file' function blacklisted
-		final Interceptor interceptor = 
-				new SandboxInterceptor(new SandboxRules().rejectVeniceFunctions("io/file"));
+    @Test
+    public void test_future_not_sandboxed() {
+            final Venice venice = new Venice();
 
-		final Venice venice = new Venice(interceptor);
+            final String script =
+                    "(do                                        " +
+                    "   (def wait (fn [] (sandboxed?)))         " +
+                    "                                           " +
+                    "   (let [f (future wait)]                  " +
+                    "        (deref f))                         " +
+                    ") ";
 
-		final String script = 
-				"(do                                        " +
-				"   (def wait (fn [] (sandboxed?)))         " +
-				"                                           " +
-				"   (let [f (future wait)]                  " +
-				"        (deref f))                         " +
-				") ";
+            assertFalse((Boolean)venice.eval(script));
+    }
 
-		assertTrue((Boolean)venice.eval(script));
-	}
-	
-	@Test
-	public void test_future_sandbox_violation() {
-		// all venice 'file' function blacklisted
-		final Interceptor interceptor = 
-				new SandboxInterceptor(new SandboxRules().rejectVeniceFunctions("io/file"));
+    @Test
+    public void test_future_sandboxed() {
+        // all venice 'file' function blacklisted
+        final Interceptor interceptor =
+                new SandboxInterceptor(new SandboxRules().rejectVeniceFunctions("io/file"));
 
-		final Venice venice = new Venice(interceptor);
+        final Venice venice = new Venice(interceptor);
 
-		// 'io/file' is black listed, thus a call to 'io/file' must 
-		// throw a SecurityException!
-		final String script = 
-				"(do                                        " +
-				"   (def wait (fn [] (io/file \"a.txt\")))  " +
-				"                                           " +
-				"   (let [f (future wait)]                  " +
-				"        (deref f))                         " +
-				") ";
+        final String script =
+                "(do                                        " +
+                "   (def wait (fn [] (sandboxed?)))         " +
+                "                                           " +
+                "   (let [f (future wait)]                  " +
+                "        (deref f))                         " +
+                ") ";
 
-		assertThrows(SecurityException.class, () -> venice.eval(script));
-	}
-	
-	@Test
-	public void test_future_sandbox_ok() {
-		// all venice 'file' function blacklisted
-		final Interceptor interceptor = 
-				new SandboxInterceptor(new SandboxRules().rejectVeniceFunctions("io/slurp"));
+        assertTrue((Boolean)venice.eval(script));
+    }
 
-		final Venice venice = new Venice(interceptor);
+    @Test
+    public void test_future_sandbox_violation() {
+        // all venice 'file' function blacklisted
+        final Interceptor interceptor =
+                new SandboxInterceptor(new SandboxRules().rejectVeniceFunctions("io/file"));
 
-		final String script = 
-				"(do                                        " +
-				"   (def wait (fn [] (io/file \"a.txt\")))  " +
-				"                                           " +
-				"   (let [f (future wait)]                  " +
-				"        (deref f))                         " +
-				") ";
+        final Venice venice = new Venice(interceptor);
 
-		final File file = (File)venice.eval(script);
-		assertEquals("a.txt", file.getName());
-	}
+        // 'io/file' is black listed, thus a call to 'io/file' must
+        // throw a SecurityException!
+        final String script =
+                "(do                                        " +
+                "   (def wait (fn [] (io/file \"a.txt\")))  " +
+                "                                           " +
+                "   (let [f (future wait)]                  " +
+                "        (deref f))                         " +
+                ") ";
+
+        assertThrows(SecurityException.class, () -> venice.eval(script));
+    }
+
+    @Test
+    public void test_future_sandbox_ok() {
+        // all venice 'file' function blacklisted
+        final Interceptor interceptor =
+                new SandboxInterceptor(new SandboxRules().rejectVeniceFunctions("io/slurp"));
+
+        final Venice venice = new Venice(interceptor);
+
+        final String script =
+                "(do                                        " +
+                "   (def wait (fn [] (io/file \"a.txt\")))  " +
+                "                                           " +
+                "   (let [f (future wait)]                  " +
+                "        (deref f))                         " +
+                ") ";
+
+        final File file = (File)venice.eval(script);
+        assertEquals("a.txt", file.getName());
+    }
 
 }

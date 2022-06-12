@@ -1,5 +1,5 @@
 /*   __    __         _
- *   \ \  / /__ _ __ (_) ___ ___ 
+ *   \ \  / /__ _ __ (_) ___ ___
  *    \ \/ / _ \ '_ \| |/ __/ _ \
  *     \  /  __/ | | | | (_|  __/
  *      \/ \___|_| |_|_|\___\___|
@@ -33,167 +33,167 @@ import com.github.jlangch.venice.Venice;
 
 public class LiteralsTest {
 
-	@Test
-	public void test_nil() {
-		final Venice venice = new Venice();
+    @Test
+    public void test_nil() {
+        final Venice venice = new Venice();
 
-		assertEquals(null, venice.eval("nil"));
-	}
+        assertEquals(null, venice.eval("nil"));
+    }
 
-	@Test
-	public void test_string() {
-		final Venice venice = new Venice();
+    @Test
+    public void test_string() {
+        final Venice venice = new Venice();
 
-		assertEquals("", venice.eval("\"\""));
-		assertEquals("a", venice.eval("\"a\""));
-		assertEquals("abc", venice.eval("\"abc\""));
+        assertEquals("", venice.eval("\"\""));
+        assertEquals("a", venice.eval("\"a\""));
+        assertEquals("abc", venice.eval("\"abc\""));
 
-		assertEquals("", venice.eval("\"\""));
-		assertEquals("a", venice.eval("\"\"\"a\"\"\""));
-		assertEquals("abc", venice.eval("\"\"\"abc\"\"\""));
-	}
+        assertEquals("", venice.eval("\"\""));
+        assertEquals("a", venice.eval("\"\"\"a\"\"\""));
+        assertEquals("abc", venice.eval("\"\"\"abc\"\"\""));
+    }
 
-	@Test
-	public void test_boolean() {
-		final Venice venice = new Venice();
+    @Test
+    public void test_boolean() {
+        final Venice venice = new Venice();
 
-		assertEquals(false, (Boolean)venice.eval("false"));
-		assertEquals(true, (Boolean)venice.eval("true"));
-	}
+        assertEquals(false, venice.eval("false"));
+        assertEquals(true, venice.eval("true"));
+    }
 
-	@Test
-	public void test_integer() {
-		final Venice venice = new Venice();
+    @Test
+    public void test_integer() {
+        final Venice venice = new Venice();
 
-		assertEquals(0, (Integer)venice.eval("0I"));
-		assertEquals(-10, (Integer)venice.eval("-10I"));
-		assertEquals(10, (Integer)venice.eval("10I"));
-		
-		assertEquals(10000, (Integer)venice.eval("10_000I"));
-		assertEquals(10000222, (Integer)venice.eval("10_000_222I"));
-		assertEquals(-10000, (Integer)venice.eval("-10_000I"));
-		assertEquals(-10000222, (Integer)venice.eval("-10_000_222I"));
-		
-		assertEquals(65535, (Integer)venice.eval("0xFFFFI"));
-	}
+        assertEquals(0, (Integer)venice.eval("0I"));
+        assertEquals(-10, (Integer)venice.eval("-10I"));
+        assertEquals(10, (Integer)venice.eval("10I"));
 
-	@Test
-	public void test_long() {
-		final Venice venice = new Venice();
+        assertEquals(10000, (Integer)venice.eval("10_000I"));
+        assertEquals(10000222, (Integer)venice.eval("10_000_222I"));
+        assertEquals(-10000, (Integer)venice.eval("-10_000I"));
+        assertEquals(-10000222, (Integer)venice.eval("-10_000_222I"));
 
-		assertEquals(0L, (Long)venice.eval("0"));
-		assertEquals(-10L, (Long)venice.eval("-10"));
-		assertEquals(10L, (Long)venice.eval("10"));
-		
-		assertEquals(10000L, (Long)venice.eval("10_000"));
-		assertEquals(10000222L, (Long)venice.eval("10_000_222"));
-		assertEquals(-10000L, (Long)venice.eval("-10_000"));
-		assertEquals(-10000222L, (Long)venice.eval("-10_000_222"));
-		
-		assertEquals(65535L, (Long)venice.eval("0xFFFF"));
-	}
-	
-	@Test
-	public void test_double() {
-		final Venice venice = new Venice();
+        assertEquals(65535, (Integer)venice.eval("0xFFFFI"));
+    }
 
-		assertEquals(0D, (Double)venice.eval("0.0"));
-		assertEquals(-10D, (Double)venice.eval("-10.0"));
-		assertEquals(10D, (Double)venice.eval("10.0"));
+    @Test
+    public void test_long() {
+        final Venice venice = new Venice();
+
+        assertEquals(0L, (Long)venice.eval("0"));
+        assertEquals(-10L, (Long)venice.eval("-10"));
+        assertEquals(10L, (Long)venice.eval("10"));
+
+        assertEquals(10000L, (Long)venice.eval("10_000"));
+        assertEquals(10000222L, (Long)venice.eval("10_000_222"));
+        assertEquals(-10000L, (Long)venice.eval("-10_000"));
+        assertEquals(-10000222L, (Long)venice.eval("-10_000_222"));
+
+        assertEquals(65535L, (Long)venice.eval("0xFFFF"));
+    }
+
+    @Test
+    public void test_double() {
+        final Venice venice = new Venice();
+
+        assertEquals(0D, (Double)venice.eval("0.0"));
+        assertEquals(-10D, (Double)venice.eval("-10.0"));
+        assertEquals(10D, (Double)venice.eval("10.0"));
 
 
-		assertEquals(10D, (Double)venice.eval("10.0e0"));
-		assertEquals(10D, (Double)venice.eval("10.0E0"));
-		assertEquals(-10D, (Double)venice.eval("-10.0e0"));
-		assertEquals(-10D, (Double)venice.eval("-10.0E0"));
+        assertEquals(10D, (Double)venice.eval("10.0e0"));
+        assertEquals(10D, (Double)venice.eval("10.0E0"));
+        assertEquals(-10D, (Double)venice.eval("-10.0e0"));
+        assertEquals(-10D, (Double)venice.eval("-10.0E0"));
 
-		assertEquals(10D, (Double)venice.eval("10.0e00"));
-		assertEquals(10D, (Double)venice.eval("10.0E00"));
-		assertEquals(-10D, (Double)venice.eval("-10.0e00"));
-		assertEquals(-10D, (Double)venice.eval("-10.0E00"));
+        assertEquals(10D, (Double)venice.eval("10.0e00"));
+        assertEquals(10D, (Double)venice.eval("10.0E00"));
+        assertEquals(-10D, (Double)venice.eval("-10.0e00"));
+        assertEquals(-10D, (Double)venice.eval("-10.0E00"));
 
-		assertEquals(10D, (Double)venice.eval("10.0e+0"));
-		assertEquals(10D, (Double)venice.eval("10.0E+0"));
-		assertEquals(-10D, (Double)venice.eval("-10.0e+0"));
-		assertEquals(-10D, (Double)venice.eval("-10.0E+0"));
+        assertEquals(10D, (Double)venice.eval("10.0e+0"));
+        assertEquals(10D, (Double)venice.eval("10.0E+0"));
+        assertEquals(-10D, (Double)venice.eval("-10.0e+0"));
+        assertEquals(-10D, (Double)venice.eval("-10.0E+0"));
 
-		assertEquals(10D, (Double)venice.eval("10.0e+00"));
-		assertEquals(10D, (Double)venice.eval("10.0E+00"));
-		assertEquals(-10D, (Double)venice.eval("-10.0e+00"));
-		assertEquals(-10D, (Double)venice.eval("-10.0E+00"));
+        assertEquals(10D, (Double)venice.eval("10.0e+00"));
+        assertEquals(10D, (Double)venice.eval("10.0E+00"));
+        assertEquals(-10D, (Double)venice.eval("-10.0e+00"));
+        assertEquals(-10D, (Double)venice.eval("-10.0E+00"));
 
-		assertEquals(10D, (Double)venice.eval("10.0e-0"));
-		assertEquals(10D, (Double)venice.eval("10.0E-0"));
-		assertEquals(-10D, (Double)venice.eval("-10.0e-0"));
-		assertEquals(-10D, (Double)venice.eval("-10.0E-0"));
+        assertEquals(10D, (Double)venice.eval("10.0e-0"));
+        assertEquals(10D, (Double)venice.eval("10.0E-0"));
+        assertEquals(-10D, (Double)venice.eval("-10.0e-0"));
+        assertEquals(-10D, (Double)venice.eval("-10.0E-0"));
 
-		assertEquals(10D, (Double)venice.eval("10.0e-00"));
-		assertEquals(10D, (Double)venice.eval("10.0E-00"));
-		assertEquals(-10D, (Double)venice.eval("-10.0e-00"));
-		assertEquals(-10D, (Double)venice.eval("-10.0E-00"));
+        assertEquals(10D, (Double)venice.eval("10.0e-00"));
+        assertEquals(10D, (Double)venice.eval("10.0E-00"));
+        assertEquals(-10D, (Double)venice.eval("-10.0e-00"));
+        assertEquals(-10D, (Double)venice.eval("-10.0E-00"));
 
-		assertEquals(1000000D, (Double)venice.eval("10.0e5"));
-		assertEquals(1000000D, (Double)venice.eval("10.0E5"));
-		assertEquals(-1000000D, (Double)venice.eval("-10.0e5"));
-		assertEquals(-1000000D, (Double)venice.eval("-10.0E5"));
-		
-		assertEquals(1000000D, (Double)venice.eval("10.0e05"));
-		assertEquals(1000000D, (Double)venice.eval("10.0E05"));
-		assertEquals(-1000000D, (Double)venice.eval("-10.0e05"));
-		assertEquals(-1000000D, (Double)venice.eval("-10.0E05"));
+        assertEquals(1000000D, (Double)venice.eval("10.0e5"));
+        assertEquals(1000000D, (Double)venice.eval("10.0E5"));
+        assertEquals(-1000000D, (Double)venice.eval("-10.0e5"));
+        assertEquals(-1000000D, (Double)venice.eval("-10.0E5"));
 
-		assertEquals(1000000D, (Double)venice.eval("10.0e+5"));
-		assertEquals(1000000D, (Double)venice.eval("10.0E+5"));
-		assertEquals(-1000000D, (Double)venice.eval("-10.0e+5"));
-		assertEquals(-1000000D, (Double)venice.eval("-10.0E+5"));
-		
-		assertEquals(1000000D, (Double)venice.eval("10.0e+05"));
-		assertEquals(1000000D, (Double)venice.eval("10.0E+05"));
-		assertEquals(-1000000D, (Double)venice.eval("-10.0e+05"));
-		assertEquals(-1000000D, (Double)venice.eval("-10.0E+05"));
-		
-		assertEquals(1.0E-4D, (Double)venice.eval("10.0e-5"));
-		assertEquals(1.0E-4D, (Double)venice.eval("10.0E-5"));
-		assertEquals(-1.0E-4D, (Double)venice.eval("-10.0e-5"));
-		assertEquals(-1.0E-4D, (Double)venice.eval("-10.0E-5"));
-		
-		assertEquals(1.0E-4D, (Double)venice.eval("10.0e-05"));
-		assertEquals(1.0E-4D, (Double)venice.eval("10.0E-05"));
-		assertEquals(-1.0E-4D, (Double)venice.eval("-10.0e-05"));
-		assertEquals(-1.0E-4D, (Double)venice.eval("-10.0E-05"));
-	}
-	
-	@Test
-	public void test_bigdecimal() {
-		final Venice venice = new Venice();
+        assertEquals(1000000D, (Double)venice.eval("10.0e05"));
+        assertEquals(1000000D, (Double)venice.eval("10.0E05"));
+        assertEquals(-1000000D, (Double)venice.eval("-10.0e05"));
+        assertEquals(-1000000D, (Double)venice.eval("-10.0E05"));
 
-		assertEquals(new BigDecimal("0"), (BigDecimal)venice.eval("0M"));
-		assertEquals(new BigDecimal("-10"), (BigDecimal)venice.eval("-10M"));
-		assertEquals(new BigDecimal("10"), (BigDecimal)venice.eval("10M"));
-		
-		assertEquals(new BigDecimal("10.123"), (BigDecimal)venice.eval("10.123M"));
-		assertEquals(new BigDecimal("-10.123"), (BigDecimal)venice.eval("-10.123M"));
-		
-		assertEquals(new BigDecimal("1.0123E+6"), (BigDecimal)venice.eval("10.123e5M"));
-		assertEquals(new BigDecimal("-1.0123E+6"), (BigDecimal)venice.eval("-10.123e5M"));
-		
-		assertEquals(new BigDecimal("1.0123E-4"), (BigDecimal)venice.eval("10.123e-5M"));
-		assertEquals(new BigDecimal("-1.0123E-4"), (BigDecimal)venice.eval("-10.123e-5M"));
-	}
+        assertEquals(1000000D, (Double)venice.eval("10.0e+5"));
+        assertEquals(1000000D, (Double)venice.eval("10.0E+5"));
+        assertEquals(-1000000D, (Double)venice.eval("-10.0e+5"));
+        assertEquals(-1000000D, (Double)venice.eval("-10.0E+5"));
 
-	@Test
-	public void test_bigint() {
-		final Venice venice = new Venice();
+        assertEquals(1000000D, (Double)venice.eval("10.0e+05"));
+        assertEquals(1000000D, (Double)venice.eval("10.0E+05"));
+        assertEquals(-1000000D, (Double)venice.eval("-10.0e+05"));
+        assertEquals(-1000000D, (Double)venice.eval("-10.0E+05"));
 
-		assertEquals(new BigInteger("0"), (BigInteger)venice.eval("0N"));
-		assertEquals(new BigInteger("-10"), (BigInteger)venice.eval("-10N"));
-		assertEquals(new BigInteger("10"), (BigInteger)venice.eval("10N"));
-		
-		assertEquals(new BigInteger("10000"), (BigInteger)venice.eval("10_000N"));
-		assertEquals(new BigInteger("10000222"), (BigInteger)venice.eval("10_000_222N"));	
-		assertEquals(new BigInteger("-10000"), (BigInteger)venice.eval("-10_000N"));
-		assertEquals(new BigInteger("-10000222"), (BigInteger)venice.eval("-10_000_222N"));
-		
-		assertEquals(new BigInteger("65535"), (BigInteger)venice.eval("0xFFFFN"));
-	}
+        assertEquals(1.0E-4D, (Double)venice.eval("10.0e-5"));
+        assertEquals(1.0E-4D, (Double)venice.eval("10.0E-5"));
+        assertEquals(-1.0E-4D, (Double)venice.eval("-10.0e-5"));
+        assertEquals(-1.0E-4D, (Double)venice.eval("-10.0E-5"));
+
+        assertEquals(1.0E-4D, (Double)venice.eval("10.0e-05"));
+        assertEquals(1.0E-4D, (Double)venice.eval("10.0E-05"));
+        assertEquals(-1.0E-4D, (Double)venice.eval("-10.0e-05"));
+        assertEquals(-1.0E-4D, (Double)venice.eval("-10.0E-05"));
+    }
+
+    @Test
+    public void test_bigdecimal() {
+        final Venice venice = new Venice();
+
+        assertEquals(new BigDecimal("0"), venice.eval("0M"));
+        assertEquals(new BigDecimal("-10"), venice.eval("-10M"));
+        assertEquals(new BigDecimal("10"), venice.eval("10M"));
+
+        assertEquals(new BigDecimal("10.123"), venice.eval("10.123M"));
+        assertEquals(new BigDecimal("-10.123"), venice.eval("-10.123M"));
+
+        assertEquals(new BigDecimal("1.0123E+6"), venice.eval("10.123e5M"));
+        assertEquals(new BigDecimal("-1.0123E+6"), venice.eval("-10.123e5M"));
+
+        assertEquals(new BigDecimal("1.0123E-4"), venice.eval("10.123e-5M"));
+        assertEquals(new BigDecimal("-1.0123E-4"), venice.eval("-10.123e-5M"));
+    }
+
+    @Test
+    public void test_bigint() {
+        final Venice venice = new Venice();
+
+        assertEquals(new BigInteger("0"), venice.eval("0N"));
+        assertEquals(new BigInteger("-10"), venice.eval("-10N"));
+        assertEquals(new BigInteger("10"), venice.eval("10N"));
+
+        assertEquals(new BigInteger("10000"), venice.eval("10_000N"));
+        assertEquals(new BigInteger("10000222"), venice.eval("10_000_222N"));
+        assertEquals(new BigInteger("-10000"), venice.eval("-10_000N"));
+        assertEquals(new BigInteger("-10000222"), venice.eval("-10_000_222N"));
+
+        assertEquals(new BigInteger("65535"), venice.eval("0xFFFFN"));
+    }
 }

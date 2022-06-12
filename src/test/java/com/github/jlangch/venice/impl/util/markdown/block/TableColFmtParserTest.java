@@ -1,5 +1,5 @@
 /*   __    __         _
- *   \ \  / /__ _ __ (_) ___ ___ 
+ *   \ \  / /__ _ __ (_) ___ ___
  *    \ \/ / _ \ '_ \| |/ __/ _ \
  *     \  /  __/ | | | | (_|  __/
  *      \/ \___|_| |_|_|\___\___|
@@ -24,7 +24,10 @@ package com.github.jlangch.venice.impl.util.markdown.block;
 import static com.github.jlangch.venice.impl.util.markdown.block.TableColFmt.HorzAlignment.CENTER;
 import static com.github.jlangch.venice.impl.util.markdown.block.TableColFmt.HorzAlignment.LEFT;
 import static com.github.jlangch.venice.impl.util.markdown.block.TableColFmt.HorzAlignment.RIGHT;
-import static com.github.jlangch.venice.impl.util.markdown.block.TableColFmt.WidthUnit.*;
+import static com.github.jlangch.venice.impl.util.markdown.block.TableColFmt.WidthUnit.AUTO;
+import static com.github.jlangch.venice.impl.util.markdown.block.TableColFmt.WidthUnit.EM;
+import static com.github.jlangch.venice.impl.util.markdown.block.TableColFmt.WidthUnit.PERCENT;
+import static com.github.jlangch.venice.impl.util.markdown.block.TableColFmt.WidthUnit.PX;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNull;
 
@@ -35,91 +38,91 @@ import com.github.jlangch.venice.impl.util.markdown.block.TableColFmt.Width;
 
 public class TableColFmtParserTest {
 
-	@Test
-	public void test_md_format_empty() {
-		final TableColFmtParser parser = new TableColFmtParser();
-		
-		assertNull(parser.parse(null));
-		assertNull(parser.parse(""));
-		assertNull(parser.parse(" "));
-		assertNull(parser.parse("    "));
-	}
+    @Test
+    public void test_md_format_empty() {
+        final TableColFmtParser parser = new TableColFmtParser();
 
-	@Test
-	public void test_md_format_unknown() {
-		final TableColFmtParser parser = new TableColFmtParser();
-		
-		assertNull(parser.parse("x"));
-		assertNull(parser.parse(" x "));
-		
-		assertNull(parser.parse("-"));
-		assertNull(parser.parse("--"));
+        assertNull(parser.parse(null));
+        assertNull(parser.parse(""));
+        assertNull(parser.parse(" "));
+        assertNull(parser.parse("    "));
+    }
 
-		assertNull(parser.parse(" - "));
-		assertNull(parser.parse(" -- "));
+    @Test
+    public void test_md_format_unknown() {
+        final TableColFmtParser parser = new TableColFmtParser();
 
-		assertNull(parser.parse(":"));
-		assertNull(parser.parse("::"));
-		assertNull(parser.parse(":::"));
-	}
+        assertNull(parser.parse("x"));
+        assertNull(parser.parse(" x "));
 
-	@Test
-	public void test_md_alignment() {
-		final TableColFmtParser parser = new TableColFmtParser();
-		
-		assertEquals(LEFT, parser.parse(":-").horzAlignment());
-		assertEquals(LEFT, parser.parse(":--").horzAlignment());
-		assertEquals(LEFT, parser.parse(":---").horzAlignment());
-		assertEquals(LEFT, parser.parse(":----").horzAlignment());
-		
-		assertEquals(CENTER, parser.parse(":-:").horzAlignment());
-		assertEquals(CENTER, parser.parse(":--:").horzAlignment());
-		assertEquals(CENTER, parser.parse(":---:").horzAlignment());
-		
-		assertEquals(CENTER, parser.parse("---").horzAlignment());
-		assertEquals(CENTER, parser.parse("----").horzAlignment());
-		assertEquals(CENTER, parser.parse("-----").horzAlignment());
-		
-		assertEquals(RIGHT, parser.parse("-:").horzAlignment());
-		assertEquals(RIGHT, parser.parse("--:").horzAlignment());
-		assertEquals(RIGHT, parser.parse("---:").horzAlignment());
-		assertEquals(RIGHT, parser.parse("----:").horzAlignment());
-	}
+        assertNull(parser.parse("-"));
+        assertNull(parser.parse("--"));
 
-	@Test
-	public void test_css_alignment() {
-		final TableColFmtParser parser = new TableColFmtParser();
-		
-		assertEquals(LEFT, parser.parse("[![text-align: left]]").horzAlignment());
-		assertEquals(LEFT, parser.parse("[![text-align: left;]]").horzAlignment());
-		
-		assertEquals(CENTER, parser.parse("[![text-align: center]]").horzAlignment());
-		assertEquals(CENTER, parser.parse("[![text-align: center;]]").horzAlignment());
-		
-		assertEquals(RIGHT, parser.parse("[![text-align: right]]").horzAlignment());
-		assertEquals(RIGHT, parser.parse("[![text-align: right;]]").horzAlignment());
-	}
+        assertNull(parser.parse(" - "));
+        assertNull(parser.parse(" -- "));
 
-	@Test
-	public void test_css_width() {
-		final TableColFmtParser parser = new TableColFmtParser();
-		
-		Width width;
-		
-		width = parser.parse("[![width: auto]]").width();
-		assertEquals(AUTO, width.getUnit());
-		
-		width = parser.parse("[![width: 10%]]").width();
-		assertEquals(PERCENT, width.getUnit());
-		assertEquals(10L, width.getValue());
-		
-		width = parser.parse("[![width: 10px]]").width();
-		assertEquals(PX, width.getUnit());
-		assertEquals(10L, width.getValue());
-		
-		width = parser.parse("[![width: 10em]]").width();
-		assertEquals(EM, width.getUnit());
-		assertEquals(10L, width.getValue());
-	}
+        assertNull(parser.parse(":"));
+        assertNull(parser.parse("::"));
+        assertNull(parser.parse(":::"));
+    }
+
+    @Test
+    public void test_md_alignment() {
+        final TableColFmtParser parser = new TableColFmtParser();
+
+        assertEquals(LEFT, parser.parse(":-").horzAlignment());
+        assertEquals(LEFT, parser.parse(":--").horzAlignment());
+        assertEquals(LEFT, parser.parse(":---").horzAlignment());
+        assertEquals(LEFT, parser.parse(":----").horzAlignment());
+
+        assertEquals(CENTER, parser.parse(":-:").horzAlignment());
+        assertEquals(CENTER, parser.parse(":--:").horzAlignment());
+        assertEquals(CENTER, parser.parse(":---:").horzAlignment());
+
+        assertEquals(CENTER, parser.parse("---").horzAlignment());
+        assertEquals(CENTER, parser.parse("----").horzAlignment());
+        assertEquals(CENTER, parser.parse("-----").horzAlignment());
+
+        assertEquals(RIGHT, parser.parse("-:").horzAlignment());
+        assertEquals(RIGHT, parser.parse("--:").horzAlignment());
+        assertEquals(RIGHT, parser.parse("---:").horzAlignment());
+        assertEquals(RIGHT, parser.parse("----:").horzAlignment());
+    }
+
+    @Test
+    public void test_css_alignment() {
+        final TableColFmtParser parser = new TableColFmtParser();
+
+        assertEquals(LEFT, parser.parse("[![text-align: left]]").horzAlignment());
+        assertEquals(LEFT, parser.parse("[![text-align: left;]]").horzAlignment());
+
+        assertEquals(CENTER, parser.parse("[![text-align: center]]").horzAlignment());
+        assertEquals(CENTER, parser.parse("[![text-align: center;]]").horzAlignment());
+
+        assertEquals(RIGHT, parser.parse("[![text-align: right]]").horzAlignment());
+        assertEquals(RIGHT, parser.parse("[![text-align: right;]]").horzAlignment());
+    }
+
+    @Test
+    public void test_css_width() {
+        final TableColFmtParser parser = new TableColFmtParser();
+
+        Width width;
+
+        width = parser.parse("[![width: auto]]").width();
+        assertEquals(AUTO, width.getUnit());
+
+        width = parser.parse("[![width: 10%]]").width();
+        assertEquals(PERCENT, width.getUnit());
+        assertEquals(10L, width.getValue());
+
+        width = parser.parse("[![width: 10px]]").width();
+        assertEquals(PX, width.getUnit());
+        assertEquals(10L, width.getValue());
+
+        width = parser.parse("[![width: 10em]]").width();
+        assertEquals(EM, width.getUnit());
+        assertEquals(10L, width.getValue());
+    }
 
 }

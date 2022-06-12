@@ -1,5 +1,5 @@
 /*   __    __         _
- *   \ \  / /__ _ __ (_) ___ ___ 
+ *   \ \  / /__ _ __ (_) ___ ___
  *    \ \/ / _ \ '_ \| |/ __/ _ \
  *     \  /  __/ | | | | (_|  __/
  *      \/ \___|_| |_|_|\___\___|
@@ -33,36 +33,36 @@ import com.github.jlangch.venice.Venice;
 public class JavaInterop_formal_type_Test {
 
 
-	@Test
-	public void test_Graphics2D() {
-		final Venice venice = new Venice();
+    @Test
+    public void test_Graphics2D() {
+        final Venice venice = new Venice();
 
-		// BufferedImage::createGraphics() returns effectively an object of type 'sun.java2d.SunGraphics2D'
-		// The API defines the return type as 'java.awt.Graphics2D' (the formal type)
+        // BufferedImage::createGraphics() returns effectively an object of type 'sun.java2d.SunGraphics2D'
+        // The API defines the return type as 'java.awt.Graphics2D' (the formal type)
 
-		// On Java 9+ :fillOval can not be called on 'sun.java2d.SunGraphics2D' without severe warnings
-		// because 'sun.**' class are not on the public module path!!
-		
-		// WARNING: An illegal reflective access operation has occurred
-		// WARNING: Illegal reflective access by com.github.jlangch.venice.impl.util.reflect.ReflectionAccessor (file:/Users/.../venice/build/classes/java/main/) to method sun.java2d.SunGraphics2D.fillOval(int,int,int,int)
-		// WARNING: Please consider reporting this to the maintainers of com.github.jlangch.venice.impl.util.reflect.ReflectionAccessor
-		// WARNING: Use --illegal-access=warn to enable warnings of further illegal reflective access operations
-		// WARNING: All illegal access operations will be denied in a future release
-		
-		// Reflection must be done on the formal type! Venice handles implicitly with Version 1.7.17+ 
-		
-		final String script =
-				"(do                                                  \n" +
-				"   (import :java.awt.image.BufferedImage)            \n" +
-				"   (import :java.awt.Graphics2D)                     \n" +
-				"                                                     \n" + 
-				"   (let [img (. :BufferedImage :new 40 40 1)         \n" +
-				"         g2d (. img :createGraphics)]                \n" +
-				"     (. g2d :fillOval 10 20 5 5)                     \n" +
-				"     img))                                             ";
-		
-		final BufferedImage img = (BufferedImage)venice.eval(script);
-		assertEquals(40, img.getWidth());
-	}
+        // On Java 9+ :fillOval can not be called on 'sun.java2d.SunGraphics2D' without severe warnings
+        // because 'sun.**' class are not on the public module path!!
+
+        // WARNING: An illegal reflective access operation has occurred
+        // WARNING: Illegal reflective access by com.github.jlangch.venice.impl.util.reflect.ReflectionAccessor (file:/Users/.../venice/build/classes/java/main/) to method sun.java2d.SunGraphics2D.fillOval(int,int,int,int)
+        // WARNING: Please consider reporting this to the maintainers of com.github.jlangch.venice.impl.util.reflect.ReflectionAccessor
+        // WARNING: Use --illegal-access=warn to enable warnings of further illegal reflective access operations
+        // WARNING: All illegal access operations will be denied in a future release
+
+        // Reflection must be done on the formal type! Venice handles implicitly with Version 1.7.17+
+
+        final String script =
+                "(do                                                  \n" +
+                "   (import :java.awt.image.BufferedImage)            \n" +
+                "   (import :java.awt.Graphics2D)                     \n" +
+                "                                                     \n" +
+                "   (let [img (. :BufferedImage :new 40 40 1)         \n" +
+                "         g2d (. img :createGraphics)]                \n" +
+                "     (. g2d :fillOval 10 20 5 5)                     \n" +
+                "     img))                                             ";
+
+        final BufferedImage img = (BufferedImage)venice.eval(script);
+        assertEquals(40, img.getWidth());
+    }
 
 }

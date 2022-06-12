@@ -1,5 +1,5 @@
 /*   __    __         _
- *   \ \  / /__ _ __ (_) ___ ___ 
+ *   \ \  / /__ _ __ (_) ___ ___
  *    \ \/ / _ \ '_ \| |/ __/ _ \
  *     \  /  __/ | | | | (_|  __/
  *      \/ \___|_| |_|_|\___\___|
@@ -29,32 +29,32 @@ import org.junit.jupiter.api.Test;
 
 public class DAG_childOf_Test {
 
-	@Test
-	public void test_childOf_1() {
-		final DAG<String> dag = 
-				new DAG<String>()
-						.addEdge("B", "A")      //       D
-						.addEdge("C", "B")      //      / \
-						.addEdge("D", "C")      //     C   G
-						.addEdge("F", "E")      //     | \ /
-						.addEdge("C", "F")      //     B  F
-						.addEdge("G", "F")      //     |  |
-						.addEdge("D", "G");     //     A  E
-		
-		assertTrue(dag.isChildOf("C", "D"));
-		assertTrue(dag.isChildOf("B", "D"));
-		assertTrue(dag.isChildOf("A", "D"));
-		assertTrue(dag.isChildOf("G", "D"));
-		assertTrue(dag.isChildOf("F", "D"));
-		assertTrue(dag.isChildOf("E", "D"));
-		
-		assertTrue(dag.isChildOf("E", "C"));
-		assertTrue(dag.isChildOf("E", "G"));
-		
-		assertFalse(dag.isChildOf("B", "G"));
-		assertFalse(dag.isChildOf("A", "G"));
-		assertFalse(dag.isChildOf("A", "F"));
-		assertFalse(dag.isChildOf("A", "E"));
-	}
+    @Test
+    public void test_childOf_1() {
+        final DAG<String> dag =
+                new DAG<String>()
+                        .addEdge("B", "A")      //       D
+                        .addEdge("C", "B")      //      / \
+                        .addEdge("D", "C")      //     C   G
+                        .addEdge("F", "E")      //     | \ /
+                        .addEdge("C", "F")      //     B  F
+                        .addEdge("G", "F")      //     |  |
+                        .addEdge("D", "G");     //     A  E
+
+        assertTrue(dag.isChildOf("C", "D"));
+        assertTrue(dag.isChildOf("B", "D"));
+        assertTrue(dag.isChildOf("A", "D"));
+        assertTrue(dag.isChildOf("G", "D"));
+        assertTrue(dag.isChildOf("F", "D"));
+        assertTrue(dag.isChildOf("E", "D"));
+
+        assertTrue(dag.isChildOf("E", "C"));
+        assertTrue(dag.isChildOf("E", "G"));
+
+        assertFalse(dag.isChildOf("B", "G"));
+        assertFalse(dag.isChildOf("A", "G"));
+        assertFalse(dag.isChildOf("A", "F"));
+        assertFalse(dag.isChildOf("A", "E"));
+    }
 
 }

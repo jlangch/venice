@@ -1,5 +1,5 @@
 /*   __    __         _
- *   \ \  / /__ _ __ (_) ___ ___ 
+ *   \ \  / /__ _ __ (_) ___ ___
  *    \ \/ / _ \ '_ \| |/ __/ _ \
  *     \  /  __/ | | | | (_|  __/
  *      \/ \___|_| |_|_|\___\___|
@@ -29,78 +29,78 @@ import com.github.jlangch.venice.util.CapturingPrintStream;
 
 
 public class SpecialFormsTest_TryWith {
-	
-	@Test
-	public void test_try_with_1() {
-		final Venice venice = new Venice();
 
-		final String lisp = 
-				"(do                                                      \n" +
-				"   (import :java.io.FileInputStream)                     \n" +
-				"   (let [file (io/temp-file \"test-\", \".txt\")]        \n" +
-				"        (io/spit file \"123456789\" :append true)        \n" +
-				"        (try-with [is (. :FileInputStream :new file)]    \n" +
-				"           (io/slurp-stream is :binary false)))          \n" +
-				")";
+    @Test
+    public void test_try_with_1() {
+        final Venice venice = new Venice();
 
-		assertEquals("123456789", venice.eval(lisp));
-	}
-	
-	@Test
-	public void test_try_with_2() {
-		final CapturingPrintStream ps = new CapturingPrintStream();
-		
-		final Venice venice = new Venice();
+        final String lisp =
+                "(do                                                      \n" +
+                "   (import :java.io.FileInputStream)                     \n" +
+                "   (let [file (io/temp-file \"test-\", \".txt\")]        \n" +
+                "        (io/spit file \"123456789\" :append true)        \n" +
+                "        (try-with [is (. :FileInputStream :new file)]    \n" +
+                "           (io/slurp-stream is :binary false)))          \n" +
+                ")";
 
-		final String lisp = 
-				"(do                                                         \n" +
-				"   (import :java.io.FileInputStream)                        \n" +
-				"   (let [file (io/temp-file \"test-\", \".txt\")]           \n" +
-				"        (io/spit file \"123456789\" :append true)           \n" +
-				"        (try-with [is (. :FileInputStream :new file)]       \n" +
-				"           (print 100)                                      \n" +
-				"           (print 101)                                      \n" +
-				"           (io/slurp-stream is :binary false)               \n" +
-				"           (catch :java.lang.IllegalArgumentException ex    \n" +
-				"                  -1)                                       \n" +
-				"           (catch :VncException ex                          \n" +
-				"                  -2)                                       \n" +
-				"           (finally                                         \n" +
-				"              (print 300)                                   \n" +
-				"              (print 301))))                                \n" +
-				")";
+        assertEquals("123456789", venice.eval(lisp));
+    }
 
-		assertEquals("123456789", venice.eval(lisp, Parameters.of("*out*", ps)));
-		assertEquals("100101300301", ps.getOutput());
-	}
-	
-	@Test
-	public void test_try_with_3() {
-		final CapturingPrintStream ps = new CapturingPrintStream();
-		
-		final Venice venice = new Venice();
+    @Test
+    public void test_try_with_2() {
+        final CapturingPrintStream ps = new CapturingPrintStream();
 
-		final String lisp = 
-				"(do                                                         \n" +
-				"   (import :java.io.FileInputStream)                        \n" +
-				"   (let [file (io/temp-file \"test-\", \".txt\")]           \n" +
-				"        (io/spit file \"123456789\" :append true)           \n" +
-				"        (try-with [is (. :FileInputStream :new file)]       \n" +
-				"           (print 100)                                      \n" +
-				"           (print 101)                                      \n" +
-				"           (io/slurp-stream nil :binary false)              \n" +
-				"           (catch :java.lang.Exception ex                   \n" +
-				"                  (print 200)                               \n" +
-				"                  (print 201)                               \n" +
-				"                  -1)                                       \n" +
-				"           (catch :VncException ex                          \n" +
-				"                  -2)                                       \n" +
-				"           (finally                                         \n" +
-				"              (print 300)                                   \n" +
-				"              (print 301))))                                \n" +
-				")";
+        final Venice venice = new Venice();
 
-		assertEquals(-1L, venice.eval(lisp, Parameters.of("*out*", ps)));
-		assertEquals("100101200201300301", ps.getOutput());
-	}
+        final String lisp =
+                "(do                                                         \n" +
+                "   (import :java.io.FileInputStream)                        \n" +
+                "   (let [file (io/temp-file \"test-\", \".txt\")]           \n" +
+                "        (io/spit file \"123456789\" :append true)           \n" +
+                "        (try-with [is (. :FileInputStream :new file)]       \n" +
+                "           (print 100)                                      \n" +
+                "           (print 101)                                      \n" +
+                "           (io/slurp-stream is :binary false)               \n" +
+                "           (catch :java.lang.IllegalArgumentException ex    \n" +
+                "                  -1)                                       \n" +
+                "           (catch :VncException ex                          \n" +
+                "                  -2)                                       \n" +
+                "           (finally                                         \n" +
+                "              (print 300)                                   \n" +
+                "              (print 301))))                                \n" +
+                ")";
+
+        assertEquals("123456789", venice.eval(lisp, Parameters.of("*out*", ps)));
+        assertEquals("100101300301", ps.getOutput());
+    }
+
+    @Test
+    public void test_try_with_3() {
+        final CapturingPrintStream ps = new CapturingPrintStream();
+
+        final Venice venice = new Venice();
+
+        final String lisp =
+                "(do                                                         \n" +
+                "   (import :java.io.FileInputStream)                        \n" +
+                "   (let [file (io/temp-file \"test-\", \".txt\")]           \n" +
+                "        (io/spit file \"123456789\" :append true)           \n" +
+                "        (try-with [is (. :FileInputStream :new file)]       \n" +
+                "           (print 100)                                      \n" +
+                "           (print 101)                                      \n" +
+                "           (io/slurp-stream nil :binary false)              \n" +
+                "           (catch :java.lang.Exception ex                   \n" +
+                "                  (print 200)                               \n" +
+                "                  (print 201)                               \n" +
+                "                  -1)                                       \n" +
+                "           (catch :VncException ex                          \n" +
+                "                  -2)                                       \n" +
+                "           (finally                                         \n" +
+                "              (print 300)                                   \n" +
+                "              (print 301))))                                \n" +
+                ")";
+
+        assertEquals(-1L, venice.eval(lisp, Parameters.of("*out*", ps)));
+        assertEquals("100101200201300301", ps.getOutput());
+    }
 }

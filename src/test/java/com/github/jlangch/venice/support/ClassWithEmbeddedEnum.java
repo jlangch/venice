@@ -1,5 +1,5 @@
 /*   __    __         _
- *   \ \  / /__ _ __ (_) ___ ___ 
+ *   \ \  / /__ _ __ (_) ___ ___
  *    \ \/ / _ \ '_ \| |/ __/ _ \
  *     \  /  __/ | | | | (_|  __/
  *      \/ \___|_| |_|_|\___\___|
@@ -24,20 +24,20 @@ package com.github.jlangch.venice.support;
 
 public class ClassWithEmbeddedEnum {
 
-	public TextAlignment getAlignment() {
-		return alignment;
-	}
+    public TextAlignment getAlignment() {
+        return alignment;
+    }
 
-	public void setAlignment(TextAlignment alignment) {
-		this.alignment = alignment;
-	}
-	
-	public enum TextAlignment {
-		Left,
-		Centre,
-		Right
-	}
-	  
-	
-	private TextAlignment alignment = TextAlignment.Left;
+    public void setAlignment(TextAlignment alignment) {
+        this.alignment = alignment;
+    }
+
+    public enum TextAlignment {
+        Left,
+        Centre,
+        Right
+    }
+
+
+    private TextAlignment alignment = TextAlignment.Left;
 }

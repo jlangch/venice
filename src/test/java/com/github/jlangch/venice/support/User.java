@@ -1,5 +1,5 @@
 /*   __    __         _
- *   \ \  / /__ _ __ (_) ___ ___ 
+ *   \ \  / /__ _ __ (_) ___ ___
  *    \ \/ / _ \ '_ \| |/ __/ _ \
  *     \  /  __/ | | | | (_|  __/
  *      \/ \___|_| |_|_|\___\___|
@@ -25,35 +25,36 @@ import java.time.LocalDate;
 
 public class User {
 
-	public User(
-			final String firstname,
-			final int age,
-			final LocalDate birthday
-	) {
-		this.firstname = firstname;
-		this.age = age;
-		this.birthday = birthday;
-	}
-
-	
-	public String getFirstname() {
-		return firstname;
-	}
-	
-	public int getAge() {
-		return age;
-	}
-	
-	public LocalDate getBirthday() {
-		return birthday;
-	}
-	
-	public String toString() {
-		return String.format("%s, %d, %s", firstname, age, birthday.toString());
-	}
+    public User(
+            final String firstname,
+            final int age,
+            final LocalDate birthday
+    ) {
+        this.firstname = firstname;
+        this.age = age;
+        this.birthday = birthday;
+    }
 
 
-	private final String firstname;
-	private final int age;
-	private final LocalDate birthday;
+    public String getFirstname() {
+        return firstname;
+    }
+
+    public int getAge() {
+        return age;
+    }
+
+    public LocalDate getBirthday() {
+        return birthday;
+    }
+
+    @Override
+    public String toString() {
+        return String.format("%s, %d, %s", firstname, age, birthday.toString());
+    }
+
+
+    private final String firstname;
+    private final int age;
+    private final LocalDate birthday;
 }

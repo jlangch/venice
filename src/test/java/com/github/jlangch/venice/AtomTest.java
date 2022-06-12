@@ -1,5 +1,5 @@
 /*   __    __         _
- *   \ \  / /__ _ __ (_) ___ ___ 
+ *   \ \  / /__ _ __ (_) ___ ___
  *    \ \/ / _ \ '_ \| |/ __/ _ \
  *     \  /  __/ | | | | (_|  __/
  *      \/ \___|_| |_|_|\___\___|
@@ -30,148 +30,148 @@ import org.junit.jupiter.api.Test;
 
 public class AtomTest {
 
-	@Test
-	public void testLongCreate() {
-		final Venice venice = new Venice();
+    @Test
+    public void testLongCreate() {
+        final Venice venice = new Venice();
 
-		final String s = 
-				"(do                            \n" +
-				"   (def counter (atom 0))      \n" +
-				"   (deref counter)             \n" +
-				")                              ";
-	
-		assertEquals("0", venice.eval("(str " + s + ")"));
-	}
+        final String s =
+                "(do                            \n" +
+                "   (def counter (atom 0))      \n" +
+                "   (deref counter)             \n" +
+                ")                              ";
 
-	@Test
-	public void testLongReset() {
-		final Venice venice = new Venice();
+        assertEquals("0", venice.eval("(str " + s + ")"));
+    }
 
-		final String s = 
-				"(do                            " +
-				"   (def counter (atom 0))      " +
-				"	(reset! counter 99)         " +
-				"   (deref counter)             " +
-				")                              ";
-	
-		assertEquals("99", venice.eval("(str " + s + ")"));
-	}
+    @Test
+    public void testLongReset() {
+        final Venice venice = new Venice();
 
-	@Test
-	public void testLongSwap() {
-		final Venice venice = new Venice();
+        final String s =
+                "(do                            " +
+                "   (def counter (atom 0))      " +
+                "	(reset! counter 99)         " +
+                "   (deref counter)             " +
+                ")                              ";
 
-		final String s1 = 
-				"(do                                        " +
-				"   (def counter (atom 2))                  " +
-				"	(swap! counter inc)                     " +
-				"   (deref counter)                         " +
-				")                                          ";
-	
-		assertEquals("3", venice.eval("(str " + s1 + ")"));
+        assertEquals("99", venice.eval("(str " + s + ")"));
+    }
 
-		final String s2 = 
-				"(do                                        " +
-				"   (def counter (atom 2))                  " +
-				"	(swap! counter (fn [n] (+ n 1)))        " +
-				"   (deref counter)                         " +
-				")                                          ";
-	
-		assertEquals("3", venice.eval("(str " + s2 + ")"));
-	}
+    @Test
+    public void testLongSwap() {
+        final Venice venice = new Venice();
 
-	@Test
-	public void testLongCompareAndSet() {
-		final Venice venice = new Venice();
+        final String s1 =
+                "(do                                        " +
+                "   (def counter (atom 2))                  " +
+                "	(swap! counter inc)                     " +
+                "   (deref counter)                         " +
+                ")                                          ";
 
-		final String s1 = 
-				"(do                                        " +
-				"   (def counter (atom 2))                  " +
-				"	(compare-and-set! counter 2 4)          " +
-				")                                          ";
-	
-		assertTrue((Boolean)venice.eval(s1));
+        assertEquals("3", venice.eval("(str " + s1 + ")"));
 
-		final String s2 = 
-				"(do                                        " +
-				"   (def counter (atom 2))                  " +
-				"	(compare-and-set! counter 0 4)          " +
-				")                                          ";
-	
-		assertFalse((Boolean)venice.eval(s2));
-	}
+        final String s2 =
+                "(do                                        " +
+                "   (def counter (atom 2))                  " +
+                "	(swap! counter (fn [n] (+ n 1)))        " +
+                "   (deref counter)                         " +
+                ")                                          ";
+
+        assertEquals("3", venice.eval("(str " + s2 + ")"));
+    }
+
+    @Test
+    public void testLongCompareAndSet() {
+        final Venice venice = new Venice();
+
+        final String s1 =
+                "(do                                        " +
+                "   (def counter (atom 2))                  " +
+                "	(compare-and-set! counter 2 4)          " +
+                ")                                          ";
+
+        assertTrue((Boolean)venice.eval(s1));
+
+        final String s2 =
+                "(do                                        " +
+                "   (def counter (atom 2))                  " +
+                "	(compare-and-set! counter 0 4)          " +
+                ")                                          ";
+
+        assertFalse((Boolean)venice.eval(s2));
+    }
 
 
-	@Test
-	public void testHashMapCreate() {
-		final Venice venice = new Venice();
+    @Test
+    public void testHashMapCreate() {
+        final Venice venice = new Venice();
 
-		final String s = 
-				"(do                            " +
-				"   (def counter (atom {}))     " +
-				"   (deref counter)             " +
-				")                              ";
-	
-		assertEquals("{}", venice.eval("(str " + s + ")"));
-	}
+        final String s =
+                "(do                            " +
+                "   (def counter (atom {}))     " +
+                "   (deref counter)             " +
+                ")                              ";
 
-	@Test
-	public void testHashMapReset() {
-		final Venice venice = new Venice();
+        assertEquals("{}", venice.eval("(str " + s + ")"));
+    }
 
-		final String s = 
-				"(do                            " +
-				"   (def counter (atom {}))     " +
-				"	(reset! counter {:a 1})     " +
-				"   (deref counter)             " +
-				")                              ";
-	
-		assertEquals("{:a 1}", venice.eval("(str " + s + ")"));
-	}
+    @Test
+    public void testHashMapReset() {
+        final Venice venice = new Venice();
 
-	@Test
-	public void testHashMapSwap() {
-		final Venice venice = new Venice();
+        final String s =
+                "(do                            " +
+                "   (def counter (atom {}))     " +
+                "	(reset! counter {:a 1})     " +
+                "   (deref counter)             " +
+                ")                              ";
 
-		final String s = 
-				"(do                                        " +
-				"   (def counter (atom {}))                 " +
-				"	(swap! counter assoc :b 2)              " +
-				"   (deref counter)                         " +
-				")                                          ";
-	
-		assertEquals("{:b 2}", venice.eval("(str " + s + ")"));
-	}
+        assertEquals("{:a 1}", venice.eval("(str " + s + ")"));
+    }
 
-	@Test
-	public void testDeref() {
-		final Venice venice = new Venice();
+    @Test
+    public void testHashMapSwap() {
+        final Venice venice = new Venice();
 
-		final String s = 
-				"(do                            \n" +
-				"   (def counter (atom 0))      \n" +
-				"   @counter                    \n" +
-				")                              ";
-	
-		assertEquals("0", venice.eval("(str " + s + ")"));
-	}
+        final String s =
+                "(do                                        " +
+                "   (def counter (atom {}))                 " +
+                "	(swap! counter assoc :b 2)              " +
+                "   (deref counter)                         " +
+                ")                                          ";
 
-	@Test
-	public void test_watch() {
-		final Venice venice = new Venice();
+        assertEquals("{:b 2}", venice.eval("(str " + s + ")"));
+    }
 
-		final String script = 
-				"(do                                                                     \n" +
-				"   (def counter (atom 2))                                               \n" +
-				"   (defn watcher [key ref old new]                                      \n" +
-				"         (println \"watcher: \" key \", old:\" old \", new:\" new ))    \n" +
-				"   (add-watch counter :test watcher)                                    \n" +
-				"	(swap! counter (fn [n] (+ n 1)))                                     \n" +
-				"   (deref counter)                                                      \n" +
-				")                                                                         ";
+    @Test
+    public void testDeref() {
+        final Venice venice = new Venice();
 
-		final Object result = venice.eval(script);
-		
-		assertEquals(Long.valueOf(3), result);
-	}
+        final String s =
+                "(do                            \n" +
+                "   (def counter (atom 0))      \n" +
+                "   @counter                    \n" +
+                ")                              ";
+
+        assertEquals("0", venice.eval("(str " + s + ")"));
+    }
+
+    @Test
+    public void test_watch() {
+        final Venice venice = new Venice();
+
+        final String script =
+                "(do                                                                     \n" +
+                "   (def counter (atom 2))                                               \n" +
+                "   (defn watcher [key ref old new]                                      \n" +
+                "         (println \"watcher: \" key \", old:\" old \", new:\" new ))    \n" +
+                "   (add-watch counter :test watcher)                                    \n" +
+                "	(swap! counter (fn [n] (+ n 1)))                                     \n" +
+                "   (deref counter)                                                      \n" +
+                ")                                                                         ";
+
+        final Object result = venice.eval(script);
+
+        assertEquals(Long.valueOf(3), result);
+    }
 }

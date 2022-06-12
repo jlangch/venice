@@ -1,5 +1,5 @@
 /*   __    __         _
- *   \ \  / /__ _ __ (_) ___ ___ 
+ *   \ \  / /__ _ __ (_) ___ ___
  *    \ \/ / _ \ '_ \| |/ __/ _ \
  *     \  /  __/ | | | | (_|  __/
  *      \/ \___|_| |_|_|\___\___|
@@ -30,26 +30,26 @@ import com.github.jlangch.venice.javainterop.SandboxRecorder;
 
 public class Sandbox_Recorder_Test {
 
-	@Test
-	@Disabled
-	public void testSandboxRecorder() {
-		final Venice venice = new Venice(new SandboxRecorder());
-		
-		venice.eval("(. :java.lang.Math :min 20 30)");
-		venice.eval("(. (. :java.time.ZonedDateTime :now) :plusDays 5)");
-				
-		final String lisp = 
-				"(do                                                  " +
-				"   (def fmt (. :java.time.format.DateTimeFormatter   " +
-				"               :ofPattern                            " +
-				"               \"YYYY-MM-dd'T'HH:mm:ss.SSS\"))       " +
-				"                                                     " +
-				"   (let [now (. :java.time.ZonedDateTime :now)]      " +
-				"        (. fmt :parse (. fmt :format now))           " +
-				"        (. fmt :format now))                         " +
-				")                                                    ";
+    @Test
+    @Disabled
+    public void testSandboxRecorder() {
+        final Venice venice = new Venice(new SandboxRecorder());
 
-		System.out.println(venice.eval(lisp));
-	}
+        venice.eval("(. :java.lang.Math :min 20 30)");
+        venice.eval("(. (. :java.time.ZonedDateTime :now) :plusDays 5)");
+
+        final String lisp =
+                "(do                                                  " +
+                "   (def fmt (. :java.time.format.DateTimeFormatter   " +
+                "               :ofPattern                            " +
+                "               \"YYYY-MM-dd'T'HH:mm:ss.SSS\"))       " +
+                "                                                     " +
+                "   (let [now (. :java.time.ZonedDateTime :now)]      " +
+                "        (. fmt :parse (. fmt :format now))           " +
+                "        (. fmt :format now))                         " +
+                ")                                                    ";
+
+        System.out.println(venice.eval(lisp));
+    }
 
 }

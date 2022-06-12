@@ -1,5 +1,5 @@
 /*   __    __         _
- *   \ \  / /__ _ __ (_) ___ ___ 
+ *   \ \  / /__ _ __ (_) ___ ___
  *    \ \/ / _ \ '_ \| |/ __/ _ \
  *     \  /  __/ | | | | (_|  __/
  *      \/ \___|_| |_|_|\___\___|
@@ -35,62 +35,62 @@ import com.github.jlangch.venice.impl.util.junit.EnableOnMacOrLinux;
 
 public class ShellFunctionsTest {
 
-	@Test
-	@EnableOnMacOrLinux
-	public void test_shell() {
-		final Venice venice = new Venice();
-		
-		final Map<?,?> result = (Map<?,?>)venice.eval("(sh \"ls\" \"-l\")");
-		
-		assertEquals(0L, result.get("exit"));
-	}
+    @Test
+    @EnableOnMacOrLinux
+    public void test_shell() {
+        final Venice venice = new Venice();
 
-	@Test
-	@EnableOnMacOrLinux
-	public void test_shell_with_dir_1() {
-		final Venice venice = new Venice();
-		
-		final Map<?,?> result = (Map<?,?>)venice.eval("(with-sh-dir \"/tmp\" (sh \"ls\"))");
-		
-		assertEquals(0L, result.get("exit"));
-	}
+        final Map<?,?> result = (Map<?,?>)venice.eval("(sh \"ls\" \"-l\")");
 
-	@Test
-	@EnableOnMacOrLinux
-	public void test_shell_with_dir_2() {
-		final Venice venice = new Venice();
-		
-		final Map<?,?> result = (Map<?,?>)venice.eval("(sh \"ls\" :dir \"/tmp\")");
-		
-		assertEquals(0L, result.get("exit"));
-	}
+        assertEquals(0L, result.get("exit"));
+    }
 
-	@Test
-	@EnableOnMacOrLinux
-	public void test_shell_error_exit_code() {
-		final Venice venice = new Venice();
-		
-		final Map<?,?> result = (Map<?,?>)venice.eval("(sh \"rm\" \"xxxxxxxxxxxxxxxxxxxxxxxxx.any\")");
-		assertEquals(1L, result.get("exit"));
-	}
+    @Test
+    @EnableOnMacOrLinux
+    public void test_shell_with_dir_1() {
+        final Venice venice = new Venice();
 
-	@Test
-	@EnableOnMacOrLinux
-	public void test_shell_error_throw_exception_1() {
-		final Venice venice = new Venice();
-		
-		assertThrows(
-	            ShellException.class, 
-	            () -> venice.eval("(with-sh-throw (sh \"rm\" \"xxxxxxxxxxxxxxxxxxxxxxxxx.any\"))"));
-	}
+        final Map<?,?> result = (Map<?,?>)venice.eval("(with-sh-dir \"/tmp\" (sh \"ls\"))");
 
-	@Test
-	@EnableOnMacOrLinux
-	public void test_shell_error_throw_exception_2() {
-		final Venice venice = new Venice();
-		
-		assertThrows(
-	            ShellException.class, 
-	            () -> venice.eval("(sh \"rm\" \"xxxxxxxxxxxxxxxxxxxxxxxxx.any\" :throw-ex true)"));
-	}
+        assertEquals(0L, result.get("exit"));
+    }
+
+    @Test
+    @EnableOnMacOrLinux
+    public void test_shell_with_dir_2() {
+        final Venice venice = new Venice();
+
+        final Map<?,?> result = (Map<?,?>)venice.eval("(sh \"ls\" :dir \"/tmp\")");
+
+        assertEquals(0L, result.get("exit"));
+    }
+
+    @Test
+    @EnableOnMacOrLinux
+    public void test_shell_error_exit_code() {
+        final Venice venice = new Venice();
+
+        final Map<?,?> result = (Map<?,?>)venice.eval("(sh \"rm\" \"xxxxxxxxxxxxxxxxxxxxxxxxx.any\")");
+        assertEquals(1L, result.get("exit"));
+    }
+
+    @Test
+    @EnableOnMacOrLinux
+    public void test_shell_error_throw_exception_1() {
+        final Venice venice = new Venice();
+
+        assertThrows(
+                ShellException.class,
+                () -> venice.eval("(with-sh-throw (sh \"rm\" \"xxxxxxxxxxxxxxxxxxxxxxxxx.any\"))"));
+    }
+
+    @Test
+    @EnableOnMacOrLinux
+    public void test_shell_error_throw_exception_2() {
+        final Venice venice = new Venice();
+
+        assertThrows(
+                ShellException.class,
+                () -> venice.eval("(sh \"rm\" \"xxxxxxxxxxxxxxxxxxxxxxxxx.any\" :throw-ex true)"));
+    }
 }

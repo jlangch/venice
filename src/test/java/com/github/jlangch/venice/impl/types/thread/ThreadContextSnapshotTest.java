@@ -1,5 +1,5 @@
 /*   __    __         _
- *   \ \  / /__ _ __ (_) ___ ___ 
+ *   \ \  / /__ _ __ (_) ___ ___
  *    \ \/ / _ \ '_ \| |/ __/ _ \
  *     \  /  __/ | | | | (_|  __/
  *      \/ \___|_| |_|_|\___\___|
@@ -35,35 +35,35 @@ import com.github.jlangch.venice.impl.thread.ThreadContextSnapshot;
 
 public class ThreadContextSnapshotTest {
 
-	@Test
-	public void test_snapshot_thread_same() throws Exception {
-		final ThreadContext ctx = ThreadContext.get();
-		assertNotNull(ctx);
-		
-		final ThreadContextSnapshot ctxSnapshot = ThreadContext.snapshot();
-		assertEquals(Thread.currentThread().getId(), ctxSnapshot.getThreadID());
-			
-		assertTrue(ctxSnapshot.isSameAsCurrentThread());
-	}
+    @Test
+    public void test_snapshot_thread_same() throws Exception {
+        final ThreadContext ctx = ThreadContext.get();
+        assertNotNull(ctx);
 
-	@Test
-	public void test_snapshot_thread_different() throws Exception {
-		final ThreadContext ctx = ThreadContext.get();
-		assertNotNull(ctx);
-		
-		final ThreadContextSnapshot ctxSnapshot = ThreadContext.snapshot();
-		assertEquals(Thread.currentThread().getId(), ctxSnapshot.getThreadID());
-		
-		final AtomicBoolean diffrentThread = new AtomicBoolean();
+        final ThreadContextSnapshot ctxSnapshot = ThreadContext.snapshot();
+        assertEquals(Thread.currentThread().getId(), ctxSnapshot.getThreadID());
 
-		final Runnable r = () -> diffrentThread.set(
-									ctxSnapshot.isDifferentFromCurrentThread());
-		
-		final Thread th = new Thread(r);
-		th.start();
-		th.join();
-			
-		assertTrue(diffrentThread.get());
-	}
+        assertTrue(ctxSnapshot.isSameAsCurrentThread());
+    }
+
+    @Test
+    public void test_snapshot_thread_different() throws Exception {
+        final ThreadContext ctx = ThreadContext.get();
+        assertNotNull(ctx);
+
+        final ThreadContextSnapshot ctxSnapshot = ThreadContext.snapshot();
+        assertEquals(Thread.currentThread().getId(), ctxSnapshot.getThreadID());
+
+        final AtomicBoolean diffrentThread = new AtomicBoolean();
+
+        final Runnable r = () -> diffrentThread.set(
+                                    ctxSnapshot.isDifferentFromCurrentThread());
+
+        final Thread th = new Thread(r);
+        th.start();
+        th.join();
+
+        assertTrue(diffrentThread.get());
+    }
 
 }

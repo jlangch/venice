@@ -1,5 +1,5 @@
 /*   __    __         _
- *   \ \  / /__ _ __ (_) ___ ___ 
+ *   \ \  / /__ _ __ (_) ___ ___
  *    \ \/ / _ \ '_ \| |/ __/ _ \
  *     \  /  __/ | | | | (_|  __/
  *      \/ \___|_| |_|_|\___\___|
@@ -38,280 +38,280 @@ import org.junit.jupiter.api.Test;
 
 public class BreakpointParserTest {
 
-	@Test
-	public void test_parseBreakpointScopes() {
-		final Set<FunctionScope> scopes1 = parseBreakpointScopes("");
-		assertTrue(scopes1.isEmpty());
-		
-		final Set<FunctionScope> scopes2 = parseBreakpointScopes("(");
-		assertEquals(1, scopes2.size());
-		assertTrue(scopes2.contains(FunctionEntry));
+    @Test
+    public void test_parseBreakpointScopes() {
+        final Set<FunctionScope> scopes1 = parseBreakpointScopes("");
+        assertTrue(scopes1.isEmpty());
 
-		final Set<FunctionScope> scopes3 = parseBreakpointScopes("(!)");
-		assertEquals(3, scopes3.size());
-		assertTrue(scopes3.contains(FunctionEntry));
-		assertTrue(scopes3.contains(FunctionException));
-		assertTrue(scopes3.contains(FunctionExit));
-		
-		final Set<FunctionScope> scopes4 = parseBreakpointScopes(">");
-		assertEquals(1, scopes4.size());
-		assertTrue(scopes4.contains(FunctionCall));
+        final Set<FunctionScope> scopes2 = parseBreakpointScopes("(");
+        assertEquals(1, scopes2.size());
+        assertTrue(scopes2.contains(FunctionEntry));
 
-		final Set<FunctionScope> scopes5 = parseBreakpointScopes(">(!)");
-		assertEquals(4, scopes5.size());
-		assertTrue(scopes5.contains(FunctionEntry));
-		assertTrue(scopes5.contains(FunctionException));
-		assertTrue(scopes5.contains(FunctionExit));
-		assertTrue(scopes5.contains(FunctionCall));
-	}
-	
-	@Test
-	public void test_parseBreakpointScopes_Format() {
-		assertEquals(
-				"", 
-				parseBreakpoints("foo").get(0).getSelectors().get(0).getFormattedScopes());
-		
-		assertEquals(
-				"", 
-				parseBreakpoints("( foo").get(0).getSelectors().get(0).getFormattedScopes());
-		
-		assertEquals(
-				")", 
-				parseBreakpoints(") foo").get(0).getSelectors().get(0).getFormattedScopes());
-		
-		assertEquals(
-				"!", 
-				parseBreakpoints("! foo").get(0).getSelectors().get(0).getFormattedScopes());
-		
-		assertEquals(
-				">", 
-				parseBreakpoints("> foo").get(0).getSelectors().get(0).getFormattedScopes());
-		
-		assertEquals(
-				"()", 
-				parseBreakpoints("() foo").get(0).getSelectors().get(0).getFormattedScopes());
-		
-		assertEquals(
-				">(!)", 
-				parseBreakpoints(">(!) foo").get(0).getSelectors().get(0).getFormattedScopes());
-		
-	}
+        final Set<FunctionScope> scopes3 = parseBreakpointScopes("(!)");
+        assertEquals(3, scopes3.size());
+        assertTrue(scopes3.contains(FunctionEntry));
+        assertTrue(scopes3.contains(FunctionException));
+        assertTrue(scopes3.contains(FunctionExit));
 
-	@Test
-	public void test_parseBreakpointScopes_withDefault() {
-		final Set<FunctionScope> scopes1 = parseBreakpointScopes("", toSet(FunctionEntry));
-		assertEquals(1, scopes1.size());
-		assertTrue(scopes1.contains(FunctionEntry));
-		
-		final Set<FunctionScope> scopes2 = parseBreakpointScopes("", toSet(FunctionEntry, FunctionExit));
-		assertEquals(2, scopes2.size());
-		assertTrue(scopes2.contains(FunctionEntry));
-		assertTrue(scopes2.contains(FunctionExit));
-		
-		final Set<FunctionScope> scopes3 = parseBreakpointScopes("(", toSet(FunctionEntry));
-		assertEquals(1, scopes3.size());
-		assertTrue(scopes3.contains(FunctionEntry));
-		
-		final Set<FunctionScope> scopes4 = parseBreakpointScopes("!", toSet(FunctionEntry, FunctionExit));
-		assertEquals(1, scopes4.size());
-		assertTrue(scopes4.contains(FunctionException));
+        final Set<FunctionScope> scopes4 = parseBreakpointScopes(">");
+        assertEquals(1, scopes4.size());
+        assertTrue(scopes4.contains(FunctionCall));
 
-		final Set<FunctionScope> scopes5 = parseBreakpointScopes("(!)", toSet(FunctionEntry, FunctionExit));
-		assertEquals(3, scopes5.size());
-		assertTrue(scopes5.contains(FunctionEntry));
-		assertTrue(scopes5.contains(FunctionException));
-		assertTrue(scopes5.contains(FunctionExit));
-	}
+        final Set<FunctionScope> scopes5 = parseBreakpointScopes(">(!)");
+        assertEquals(4, scopes5.size());
+        assertTrue(scopes5.contains(FunctionEntry));
+        assertTrue(scopes5.contains(FunctionException));
+        assertTrue(scopes5.contains(FunctionExit));
+        assertTrue(scopes5.contains(FunctionCall));
+    }
 
-	@Test
-	public void test_parseBreakpoint_invalid() {
-		assertTrue(parseBreakpoints("").isEmpty());
-		assertTrue(parseBreakpoints("0").isEmpty());
-		assertTrue(parseBreakpoints("0.0").isEmpty());
-		assertTrue(parseBreakpoints("0M").isEmpty());
-		assertTrue(parseBreakpoints("test.venice/").isEmpty());
-		assertTrue(parseBreakpoints("/any").isEmpty());
- 	}
+    @Test
+    public void test_parseBreakpointScopes_Format() {
+        assertEquals(
+                "",
+                parseBreakpoints("foo").get(0).getSelectors().get(0).getFormattedScopes());
 
-	@Test
-	public void test_parseBreakpoint_fn() {
-		assertEquals(
-				"/", 
-				parseBreakpoints("/").get(0).getQualifiedFnName());
+        assertEquals(
+                "",
+                parseBreakpoints("( foo").get(0).getSelectors().get(0).getFormattedScopes());
 
-		assertEquals(
-				"+", 
-				parseBreakpoints("+").get(0).getQualifiedFnName());
+        assertEquals(
+                ")",
+                parseBreakpoints(") foo").get(0).getSelectors().get(0).getFormattedScopes());
 
-		assertEquals(
-				"user/sum", 
-				parseBreakpoints("user/sum").get(0).getQualifiedFnName());
+        assertEquals(
+                "!",
+                parseBreakpoints("! foo").get(0).getSelectors().get(0).getFormattedScopes());
 
-		assertEquals(
-				"user/*", 
-				parseBreakpoints("user/*").get(0).getQualifiedFnName());
-	}
+        assertEquals(
+                ">",
+                parseBreakpoints("> foo").get(0).getSelectors().get(0).getFormattedScopes());
 
-	@Test
-	public void test_parseBreakpoint_fn_scopes() {
-		assertEquals(
-				"", 
-				parseBreakpoints("user/*")
-					.get(0)
-					.getSelectors()
-					.get(0)
-					.getFormattedScopes());
+        assertEquals(
+                "()",
+                parseBreakpoints("() foo").get(0).getSelectors().get(0).getFormattedScopes());
 
-		assertEquals(
-				"", 
-				parseBreakpoints("( user/*")
-					.get(0)
-					.getSelectors()
-					.get(0)
-					.getFormattedScopes());
+        assertEquals(
+                ">(!)",
+                parseBreakpoints(">(!) foo").get(0).getSelectors().get(0).getFormattedScopes());
 
-		assertEquals(
-				"()", 
-				parseBreakpoints("() user/*")
-					.get(0)
-					.getSelectors()
-					.get(0)
-					.getFormattedScopes());
+    }
 
-		assertEquals(
-				"(!)", 
-				parseBreakpoints("(!) user/*")
-					.get(0)
-					.getSelectors()
-					.get(0)
-					.getFormattedScopes());
-	}	
+    @Test
+    public void test_parseBreakpointScopes_withDefault() {
+        final Set<FunctionScope> scopes1 = parseBreakpointScopes("", toSet(FunctionEntry));
+        assertEquals(1, scopes1.size());
+        assertTrue(scopes1.contains(FunctionEntry));
 
-	@Test
-	public void test_parseBreakpoint_fn_ancestor_nearest() {
-		assertEquals(
-				"*", 
-				parseBreakpoints("foo/test > *")
-					.get(0)
-					.getQualifiedFnName());
+        final Set<FunctionScope> scopes2 = parseBreakpointScopes("", toSet(FunctionEntry, FunctionExit));
+        assertEquals(2, scopes2.size());
+        assertTrue(scopes2.contains(FunctionEntry));
+        assertTrue(scopes2.contains(FunctionExit));
 
-		assertEquals(
-				"foo/test", 
-				parseBreakpoints("foo/test > *")
-					.get(0)
-					.getSelectors()
-					.get(0)
-					.getAncestorSelector()
-					.getAncestor()
-					.getQualifiedName());
+        final Set<FunctionScope> scopes3 = parseBreakpointScopes("(", toSet(FunctionEntry));
+        assertEquals(1, scopes3.size());
+        assertTrue(scopes3.contains(FunctionEntry));
 
-		assertEquals(
-				AncestorType.Nearest, 
-				parseBreakpoints("foo/test > *")
-					.get(0)
-					.getSelectors()
-					.get(0)
-					.getAncestorSelector()
-					.getType());
-	}	
+        final Set<FunctionScope> scopes4 = parseBreakpointScopes("!", toSet(FunctionEntry, FunctionExit));
+        assertEquals(1, scopes4.size());
+        assertTrue(scopes4.contains(FunctionException));
 
-	@Test
-	public void test_parseBreakpoint_fn_ancestor_nearest_with_scopes() {
-		assertEquals(
-				"*", 
-				parseBreakpoints("(!) foo/test > *")
-					.get(0)
-					.getQualifiedFnName());
+        final Set<FunctionScope> scopes5 = parseBreakpointScopes("(!)", toSet(FunctionEntry, FunctionExit));
+        assertEquals(3, scopes5.size());
+        assertTrue(scopes5.contains(FunctionEntry));
+        assertTrue(scopes5.contains(FunctionException));
+        assertTrue(scopes5.contains(FunctionExit));
+    }
 
-		assertEquals(
-				"foo/test", 
-				parseBreakpoints("(!) foo/test > *")
-					.get(0)
-					.getSelectors()
-					.get(0)
-					.getAncestorSelector()
-					.getAncestor()
-					.getQualifiedName());
+    @Test
+    public void test_parseBreakpoint_invalid() {
+        assertTrue(parseBreakpoints("").isEmpty());
+        assertTrue(parseBreakpoints("0").isEmpty());
+        assertTrue(parseBreakpoints("0.0").isEmpty());
+        assertTrue(parseBreakpoints("0M").isEmpty());
+        assertTrue(parseBreakpoints("test.venice/").isEmpty());
+        assertTrue(parseBreakpoints("/any").isEmpty());
+     }
 
-		assertEquals(
-				AncestorType.Nearest, 
-				parseBreakpoints("(!) foo/test > *")
-					.get(0)
-					.getSelectors()
-					.get(0)
-					.getAncestorSelector()
-					.getType());
+    @Test
+    public void test_parseBreakpoint_fn() {
+        assertEquals(
+                "/",
+                parseBreakpoints("/").get(0).getQualifiedFnName());
 
-		assertEquals(
-				"(!)", 
-				parseBreakpoints("(!) foo/test > *")
-					.get(0)
-					.getSelectors()
-					.get(0)
-					.getFormattedScopes());
-	}	
+        assertEquals(
+                "+",
+                parseBreakpoints("+").get(0).getQualifiedFnName());
 
-	@Test
-	public void test_parseBreakpoint_fn_ancestor_any() {
-		assertEquals(
-				"*", 
-				parseBreakpoints("foo/test + *")
-					.get(0)
-					.getQualifiedFnName());
+        assertEquals(
+                "user/sum",
+                parseBreakpoints("user/sum").get(0).getQualifiedFnName());
 
-		assertEquals(
-				"foo/test", 
-				parseBreakpoints("foo/test + *")
-					.get(0)
-					.getSelectors()
-					.get(0)
-					.getAncestorSelector()
-					.getAncestor()
-					.getQualifiedName());
+        assertEquals(
+                "user/*",
+                parseBreakpoints("user/*").get(0).getQualifiedFnName());
+    }
 
-		assertEquals(
-				AncestorType.Any, 
-				parseBreakpoints("foo/test + *")
-					.get(0)
-					.getSelectors()
-					.get(0)
-					.getAncestorSelector()
-					.getType());
-	}	
+    @Test
+    public void test_parseBreakpoint_fn_scopes() {
+        assertEquals(
+                "",
+                parseBreakpoints("user/*")
+                    .get(0)
+                    .getSelectors()
+                    .get(0)
+                    .getFormattedScopes());
 
-	@Test
-	public void test_parseBreakpoint_fn_ancestor_any_with_scopes() {
-		assertEquals(
-				"*", 
-				parseBreakpoints("(!) foo/test + *")
-					.get(0)
-					.getQualifiedFnName());
+        assertEquals(
+                "",
+                parseBreakpoints("( user/*")
+                    .get(0)
+                    .getSelectors()
+                    .get(0)
+                    .getFormattedScopes());
 
-		assertEquals(
-				"foo/test", 
-				parseBreakpoints("(!) foo/test + *")
-					.get(0)
-					.getSelectors()
-					.get(0)
-					.getAncestorSelector()
-					.getAncestor()
-					.getQualifiedName());
+        assertEquals(
+                "()",
+                parseBreakpoints("() user/*")
+                    .get(0)
+                    .getSelectors()
+                    .get(0)
+                    .getFormattedScopes());
 
-		assertEquals(
-				AncestorType.Any, 
-				parseBreakpoints("(!) foo/test + *")
-					.get(0)
-					.getSelectors()
-					.get(0)
-					.getAncestorSelector()
-					.getType());
+        assertEquals(
+                "(!)",
+                parseBreakpoints("(!) user/*")
+                    .get(0)
+                    .getSelectors()
+                    .get(0)
+                    .getFormattedScopes());
+    }
 
-		assertEquals(
-				"(!)", 
-				parseBreakpoints("(!) foo/test + *")
-					.get(0)
-					.getSelectors()
-					.get(0)
-					.getFormattedScopes());
-	}	
+    @Test
+    public void test_parseBreakpoint_fn_ancestor_nearest() {
+        assertEquals(
+                "*",
+                parseBreakpoints("foo/test > *")
+                    .get(0)
+                    .getQualifiedFnName());
+
+        assertEquals(
+                "foo/test",
+                parseBreakpoints("foo/test > *")
+                    .get(0)
+                    .getSelectors()
+                    .get(0)
+                    .getAncestorSelector()
+                    .getAncestor()
+                    .getQualifiedName());
+
+        assertEquals(
+                AncestorType.Nearest,
+                parseBreakpoints("foo/test > *")
+                    .get(0)
+                    .getSelectors()
+                    .get(0)
+                    .getAncestorSelector()
+                    .getType());
+    }
+
+    @Test
+    public void test_parseBreakpoint_fn_ancestor_nearest_with_scopes() {
+        assertEquals(
+                "*",
+                parseBreakpoints("(!) foo/test > *")
+                    .get(0)
+                    .getQualifiedFnName());
+
+        assertEquals(
+                "foo/test",
+                parseBreakpoints("(!) foo/test > *")
+                    .get(0)
+                    .getSelectors()
+                    .get(0)
+                    .getAncestorSelector()
+                    .getAncestor()
+                    .getQualifiedName());
+
+        assertEquals(
+                AncestorType.Nearest,
+                parseBreakpoints("(!) foo/test > *")
+                    .get(0)
+                    .getSelectors()
+                    .get(0)
+                    .getAncestorSelector()
+                    .getType());
+
+        assertEquals(
+                "(!)",
+                parseBreakpoints("(!) foo/test > *")
+                    .get(0)
+                    .getSelectors()
+                    .get(0)
+                    .getFormattedScopes());
+    }
+
+    @Test
+    public void test_parseBreakpoint_fn_ancestor_any() {
+        assertEquals(
+                "*",
+                parseBreakpoints("foo/test + *")
+                    .get(0)
+                    .getQualifiedFnName());
+
+        assertEquals(
+                "foo/test",
+                parseBreakpoints("foo/test + *")
+                    .get(0)
+                    .getSelectors()
+                    .get(0)
+                    .getAncestorSelector()
+                    .getAncestor()
+                    .getQualifiedName());
+
+        assertEquals(
+                AncestorType.Any,
+                parseBreakpoints("foo/test + *")
+                    .get(0)
+                    .getSelectors()
+                    .get(0)
+                    .getAncestorSelector()
+                    .getType());
+    }
+
+    @Test
+    public void test_parseBreakpoint_fn_ancestor_any_with_scopes() {
+        assertEquals(
+                "*",
+                parseBreakpoints("(!) foo/test + *")
+                    .get(0)
+                    .getQualifiedFnName());
+
+        assertEquals(
+                "foo/test",
+                parseBreakpoints("(!) foo/test + *")
+                    .get(0)
+                    .getSelectors()
+                    .get(0)
+                    .getAncestorSelector()
+                    .getAncestor()
+                    .getQualifiedName());
+
+        assertEquals(
+                AncestorType.Any,
+                parseBreakpoints("(!) foo/test + *")
+                    .get(0)
+                    .getSelectors()
+                    .get(0)
+                    .getAncestorSelector()
+                    .getType());
+
+        assertEquals(
+                "(!)",
+                parseBreakpoints("(!) foo/test + *")
+                    .get(0)
+                    .getSelectors()
+                    .get(0)
+                    .getFormattedScopes());
+    }
 }

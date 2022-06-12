@@ -1,5 +1,5 @@
 /*   __    __         _
- *   \ \  / /__ _ __ (_) ___ ___ 
+ *   \ \  / /__ _ __ (_) ___ ___
  *    \ \/ / _ \ '_ \| |/ __/ _ \
  *     \  /  __/ | | | | (_|  __/
  *      \/ \___|_| |_|_|\___\___|
@@ -30,24 +30,24 @@ import com.github.jlangch.venice.Venice;
 
 public class TestModuleTest {
 
-	@Test
-	public void test_load() {
-		assertEquals("test", new Venice().eval("(load-module :test)"));
-	}
+    @Test
+    public void test_load() {
+        assertEquals("test", new Venice().eval("(load-module :test)"));
+    }
 
-	@Test
-	public void test_eval() {
-		final String script =
-			"(ns xxx)                            \n" +
-			"                                    \n" +
-			"(defmacro xxx/fn ([x] `(+ 1 ~x)))   \n" +
-			"                                    \n" +
-			"(defn xxx/test-fn [x]               \n" +
-			"  (str \"test: \" x))                 ";
+    @Test
+    public void test_eval() {
+        final String script =
+            "(ns xxx)                            \n" +
+            "                                    \n" +
+            "(defmacro xxx/fn ([x] `(+ 1 ~x)))   \n" +
+            "                                    \n" +
+            "(defn xxx/test-fn [x]               \n" +
+            "  (str \"test: \" x))                 ";
 
-		assertEquals(
-			"xxx/test-fn", 
-			new Venice().eval("(load-string \"\"\"" + script + "\"\"\")"));
-	}
+        assertEquals(
+            "xxx/test-fn",
+            new Venice().eval("(load-string \"\"\"" + script + "\"\"\")"));
+    }
 
 }

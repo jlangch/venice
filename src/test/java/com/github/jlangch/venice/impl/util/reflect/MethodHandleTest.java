@@ -1,5 +1,5 @@
 /*   __    __         _
- *   \ \  / /__ _ __ (_) ___ ___ 
+ *   \ \  / /__ _ __ (_) ___ ___
  *    \ \/ / _ \ '_ \| |/ __/ _ \
  *     \  /  __/ | | | | (_|  __/
  *      \/ \___|_| |_|_|\___\___|
@@ -33,39 +33,39 @@ import org.junit.jupiter.api.Test;
 
 public class MethodHandleTest {
 
-	@Test
-	public void test_1() throws Throwable {
-		final MethodHandles.Lookup caller = MethodHandles.lookup();
+    @Test
+    public void test_1() throws Throwable {
+        final MethodHandles.Lookup caller = MethodHandles.lookup();
 
-		final MethodHandle mh = caller.findConstructor(
-									Long.class,
-									MethodType.methodType(void.class, long.class));
-				
-		final Long l1 = (Long)mh.invoke(10L);
-		
-		assertEquals(10L, l1);
-	}
+        final MethodHandle mh = caller.findConstructor(
+                                    Long.class,
+                                    MethodType.methodType(void.class, long.class));
 
-	@Test
-	public void test_2() throws Throwable {
-		final MethodHandles.Lookup caller = MethodHandles.lookup();
+        final Long l1 = (Long)mh.invoke(10L);
 
-		final MethodHandle mhValueOf = caller.findStatic(
-											BigInteger.class, 
-											"valueOf", 
-											MethodType.methodType(BigInteger.class, long.class));
-		
-		final MethodHandle mhAdd = caller.findVirtual(
-										BigInteger.class, 
-										"add", 
-										MethodType.methodType(BigInteger.class, BigInteger.class));
+        assertEquals(10L, l1);
+    }
 
-		
-		final BigInteger i1 = (BigInteger)mhValueOf.invoke(10L);
-		final BigInteger i2 = (BigInteger)mhValueOf.invoke(100L);
-		final BigInteger sum = (BigInteger)mhAdd.invoke(i1, i2);      		
-				
-		assertEquals(110L, sum.longValue());
-	}
+    @Test
+    public void test_2() throws Throwable {
+        final MethodHandles.Lookup caller = MethodHandles.lookup();
+
+        final MethodHandle mhValueOf = caller.findStatic(
+                                            BigInteger.class,
+                                            "valueOf",
+                                            MethodType.methodType(BigInteger.class, long.class));
+
+        final MethodHandle mhAdd = caller.findVirtual(
+                                        BigInteger.class,
+                                        "add",
+                                        MethodType.methodType(BigInteger.class, BigInteger.class));
+
+
+        final BigInteger i1 = (BigInteger)mhValueOf.invoke(10L);
+        final BigInteger i2 = (BigInteger)mhValueOf.invoke(100L);
+        final BigInteger sum = (BigInteger)mhAdd.invoke(i1, i2);
+
+        assertEquals(110L, sum.longValue());
+    }
 
 }

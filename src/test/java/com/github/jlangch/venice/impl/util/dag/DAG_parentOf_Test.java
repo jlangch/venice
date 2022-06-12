@@ -1,5 +1,5 @@
 /*   __    __         _
- *   \ \  / /__ _ __ (_) ___ ___ 
+ *   \ \  / /__ _ __ (_) ___ ___
  *    \ \/ / _ \ '_ \| |/ __/ _ \
  *     \  /  __/ | | | | (_|  __/
  *      \/ \___|_| |_|_|\___\___|
@@ -29,29 +29,29 @@ import org.junit.jupiter.api.Test;
 
 public class DAG_parentOf_Test {
 
-	@Test
-	public void test_parentOf_1() {
-		final DAG<String> dag = 
-				new DAG<String>()
-						.addEdge("B", "A")      //       D
-						.addEdge("C", "B")      //      / \
-						.addEdge("D", "C")      //     C   G
-						.addEdge("F", "E")      //     | \ /
-						.addEdge("C", "F")      //     B  F
-						.addEdge("G", "F")      //     |  |
-						.addEdge("D", "G");     //     A  E
-		
-		assertTrue(dag.isParentOf("D", "A"));
-		assertTrue(dag.isParentOf("D", "E"));
-		
-		assertTrue(dag.isParentOf("C", "A"));
-		assertTrue(dag.isParentOf("C", "E"));
-		
-		assertTrue(dag.isParentOf("B", "A"));
-		assertFalse(dag.isParentOf("B", "E"));
-		
-		assertTrue(dag.isParentOf("G", "E"));
-		assertFalse(dag.isParentOf("G", "A"));
-	}
+    @Test
+    public void test_parentOf_1() {
+        final DAG<String> dag =
+                new DAG<String>()
+                        .addEdge("B", "A")      //       D
+                        .addEdge("C", "B")      //      / \
+                        .addEdge("D", "C")      //     C   G
+                        .addEdge("F", "E")      //     | \ /
+                        .addEdge("C", "F")      //     B  F
+                        .addEdge("G", "F")      //     |  |
+                        .addEdge("D", "G");     //     A  E
+
+        assertTrue(dag.isParentOf("D", "A"));
+        assertTrue(dag.isParentOf("D", "E"));
+
+        assertTrue(dag.isParentOf("C", "A"));
+        assertTrue(dag.isParentOf("C", "E"));
+
+        assertTrue(dag.isParentOf("B", "A"));
+        assertFalse(dag.isParentOf("B", "E"));
+
+        assertTrue(dag.isParentOf("G", "E"));
+        assertFalse(dag.isParentOf("G", "A"));
+    }
 
 }

@@ -1,5 +1,5 @@
 /*   __    __         _
- *   \ \  / /__ _ __ (_) ___ ___ 
+ *   \ \  / /__ _ __ (_) ___ ___
  *    \ \/ / _ \ '_ \| |/ __/ _ \
  *     \  /  __/ | | | | (_|  __/
  *      \/ \___|_| |_|_|\___\___|
@@ -30,26 +30,26 @@ import com.github.jlangch.venice.Venice;
 
 public class SetTest {
 
-	@Test
-	public void test_SetAsFunction() {
-		final Venice venice = new Venice();
+    @Test
+    public void test_SetAsFunction() {
+        final Venice venice = new Venice();
 
-		assertEquals(":a", venice.eval("(pr-str (#{:a :b :c} :a))"));
-		assertEquals("nil", venice.eval("(pr-str (#{:a :b :c} :d))"));
-		assertEquals("nil", venice.eval("(pr-str (#{:a :b :c} nil))"));
-		assertEquals("nil", venice.eval("(pr-str (#{:a :b :c nil} nil))"));
-		
-		// defaults
-		assertEquals(":a", venice.eval("(pr-str (#{:a :b :c} :a :e))"));
-		assertEquals(":e", venice.eval("(pr-str (#{:a :b :c} :d :e))"));
-		assertEquals(":e", venice.eval("(pr-str (#{:a :b :c} nil :e))"));
-		assertEquals("nil", venice.eval("(pr-str (#{:a :b :c nil} nil :e))"));
-	}
+        assertEquals(":a", venice.eval("(pr-str (#{:a :b :c} :a))"));
+        assertEquals("nil", venice.eval("(pr-str (#{:a :b :c} :d))"));
+        assertEquals("nil", venice.eval("(pr-str (#{:a :b :c} nil))"));
+        assertEquals("nil", venice.eval("(pr-str (#{:a :b :c nil} nil))"));
 
-	@Test
-	public void test_set_eval() {
-		final Venice venice = new Venice();
+        // defaults
+        assertEquals(":a", venice.eval("(pr-str (#{:a :b :c} :a :e))"));
+        assertEquals(":e", venice.eval("(pr-str (#{:a :b :c} :d :e))"));
+        assertEquals(":e", venice.eval("(pr-str (#{:a :b :c} nil :e))"));
+        assertEquals("nil", venice.eval("(pr-str (#{:a :b :c nil} nil :e))"));
+    }
 
-		assertEquals("#{2 3}", venice.eval("(pr-str #{2 (+ 1 2) (+ 1 1)})"));
-	}
+    @Test
+    public void test_set_eval() {
+        final Venice venice = new Venice();
+
+        assertEquals("#{2 3}", venice.eval("(pr-str #{2 (+ 1 2) (+ 1 1)})"));
+    }
 }

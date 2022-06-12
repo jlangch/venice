@@ -1,5 +1,5 @@
 /*   __    __         _
- *   \ \  / /__ _ __ (_) ___ ___ 
+ *   \ \  / /__ _ __ (_) ___ ___
  *    \ \/ / _ \ '_ \| |/ __/ _ \
  *     \  /  __/ | | | | (_|  __/
  *      \/ \___|_| |_|_|\___\___|
@@ -38,62 +38,62 @@ import org.junit.jupiter.api.Test;
 
 public class LambdaMetafactoryTest {
 
-	@Test
-	@Disabled  // not working on Java 11 (primitive type)
-	public void test() throws Exception {
-		Method mValueOf = BigInteger.class.getDeclaredMethod("valueOf", long.class);
-		Method mAdd = BigInteger.class.getDeclaredMethod("add", BigInteger.class);
-		
-		Function<Long,BigInteger> fnValueOf = compileValueOf(mValueOf);
-		BiFunction<BigInteger,BigInteger,BigInteger> fnAdd = compileAdd(mAdd);
+    @Test
+    @Disabled  // not working on Java 11 (primitive type)
+    public void test() throws Exception {
+        Method mValueOf = BigInteger.class.getDeclaredMethod("valueOf", long.class);
+        Method mAdd = BigInteger.class.getDeclaredMethod("add", BigInteger.class);
 
-		BigInteger i1 = fnValueOf.apply(10L);
-		BigInteger i2 = fnValueOf.apply(100L);
-		BigInteger sum = fnAdd.apply(i1, i2);      		
-				
-		assertEquals(110L, sum.longValue());
-	}
+        Function<Long,BigInteger> fnValueOf = compileValueOf(mValueOf);
+        BiFunction<BigInteger,BigInteger,BigInteger> fnAdd = compileAdd(mAdd);
 
-	
-	private Function<Long,BigInteger> compileValueOf(final Method method) {
-		try {
-			final MethodHandles.Lookup caller = MethodHandles.lookup();
-			final MethodHandle handle = caller.unreflect(method);
-			
-			return (Function<Long,BigInteger>)LambdaMetafactory
-					.metafactory(
-						caller,
-						"apply",
-						MethodType.methodType(Function.class),
-						MethodType.methodType(Object.class, Object.class), // type erasure on SAM!
-						handle,
-						handle.type())
-					.getTarget()
-					.invoke();
-		} 
-		catch (Throwable ex) {
-			throw new RuntimeException(ex);
-		}
-	}
-	
-	private BiFunction<BigInteger,BigInteger,BigInteger> compileAdd(final Method method) {
-		try {
-			final MethodHandles.Lookup caller = MethodHandles.lookup();
-			final MethodHandle handle = caller.unreflect(method);
-			
-			return (BiFunction<BigInteger,BigInteger,BigInteger>)LambdaMetafactory
-					.metafactory(
-						caller,
-						"apply",
-						MethodType.methodType(BiFunction.class),
-						MethodType.methodType(Object.class, Object.class, Object.class), // type erasure on SAM!
-						handle,
-						handle.type())
-					.getTarget()
-					.invoke();
-		} 
-		catch (Throwable ex) {
-			throw new RuntimeException(ex);
-		}
-	}
+        BigInteger i1 = fnValueOf.apply(10L);
+        BigInteger i2 = fnValueOf.apply(100L);
+        BigInteger sum = fnAdd.apply(i1, i2);
+
+        assertEquals(110L, sum.longValue());
+    }
+
+
+    private Function<Long,BigInteger> compileValueOf(final Method method) {
+        try {
+            final MethodHandles.Lookup caller = MethodHandles.lookup();
+            final MethodHandle handle = caller.unreflect(method);
+
+            return (Function<Long,BigInteger>)LambdaMetafactory
+                    .metafactory(
+                        caller,
+                        "apply",
+                        MethodType.methodType(Function.class),
+                        MethodType.methodType(Object.class, Object.class), // type erasure on SAM!
+                        handle,
+                        handle.type())
+                    .getTarget()
+                    .invoke();
+        }
+        catch (Throwable ex) {
+            throw new RuntimeException(ex);
+        }
+    }
+
+    private BiFunction<BigInteger,BigInteger,BigInteger> compileAdd(final Method method) {
+        try {
+            final MethodHandles.Lookup caller = MethodHandles.lookup();
+            final MethodHandle handle = caller.unreflect(method);
+
+            return (BiFunction<BigInteger,BigInteger,BigInteger>)LambdaMetafactory
+                    .metafactory(
+                        caller,
+                        "apply",
+                        MethodType.methodType(BiFunction.class),
+                        MethodType.methodType(Object.class, Object.class, Object.class), // type erasure on SAM!
+                        handle,
+                        handle.type())
+                    .getTarget()
+                    .invoke();
+        }
+        catch (Throwable ex) {
+            throw new RuntimeException(ex);
+        }
+    }
 }

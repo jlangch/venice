@@ -1,5 +1,5 @@
 /*   __    __         _
- *   \ \  / /__ _ __ (_) ___ ___ 
+ *   \ \  / /__ _ __ (_) ___ ___
  *    \ \/ / _ \ '_ \| |/ __/ _ \
  *     \  /  __/ | | | | (_|  __/
  *      \/ \___|_| |_|_|\___\___|
@@ -29,14 +29,14 @@ import org.junit.jupiter.api.Test;
 
 public class BugsTest {
 
-	@Test
-	public void test_0_2_0_meta_for_vectors() {	
-		assertNotNull(new Venice().eval("(meta [1 2 3])"));
-	}
+    @Test
+    public void test_0_2_0_meta_for_vectors() {
+        assertNotNull(new Venice().eval("(meta [1 2 3])"));
+    }
 
-	@Test
-	public void test_0_2_0_str_unicode() {
-		assertEquals("ABC", new Venice().eval("(str \"\\u0041\\u0042\\u0043\")"));
-	}
+    @Test
+    public void test_0_2_0_str_unicode() {
+        assertEquals("ABC", new Venice().eval("(str \"\\u0041\\u0042\\u0043\")"));
+    }
 
 }

@@ -1,5 +1,5 @@
 /*   __    __         _
- *   \ \  / /__ _ __ (_) ___ ___ 
+ *   \ \  / /__ _ __ (_) ___ ___
  *    \ \/ / _ \ '_ \| |/ __/ _ \
  *     \  /  __/ | | | | (_|  __/
  *      \/ \___|_| |_|_|\___\___|
@@ -36,243 +36,243 @@ import com.github.jlangch.venice.Venice;
 
 public class TraceModuleTest {
 
-	@Test
-	public void test_qualified_name() {
-		final Venice venice = new Venice();
+    @Test
+    public void test_qualified_name() {
+        final Venice venice = new Venice();
 
-		final String script1 =
-				"(do                            \n" +
-				"   (load-module :trace)        \n" +
-				"   (trace/qualified-name +))     ";
+        final String script1 =
+                "(do                            \n" +
+                "   (load-module :trace)        \n" +
+                "   (trace/qualified-name +))     ";
 
-		assertEquals("core/+", venice.eval(script1));
+        assertEquals("core/+", venice.eval(script1));
 
-		
-		final String script2 =
-				"(do                              \n" +
-				"   (load-module :trace)          \n" +
-				"   (defn foo [] nil)             \n" +
-				"   (trace/qualified-name foo))     ";
 
-		assertEquals("user/foo", venice.eval(script2));
-	}
+        final String script2 =
+                "(do                              \n" +
+                "   (load-module :trace)          \n" +
+                "   (defn foo [] nil)             \n" +
+                "   (trace/qualified-name foo))     ";
 
-	@Test
-	public void test_trace() {
-		final Venice venice = new Venice();
-		final Map<String,Object> params = Parameters.of("*out*", null);
+        assertEquals("user/foo", venice.eval(script2));
+    }
 
-		final String script1 =
-				"(do                            \n" +
-				"   (load-module :trace)        \n" +
-				"   (trace/trace (+ 4 5)))        ";
+    @Test
+    public void test_trace() {
+        final Venice venice = new Venice();
+        final Map<String,Object> params = Parameters.of("*out*", null);
 
-		assertEquals(9L, venice.eval(script1, params));
+        final String script1 =
+                "(do                            \n" +
+                "   (load-module :trace)        \n" +
+                "   (trace/trace (+ 4 5)))        ";
 
-		
-		final String script2 =
-				"(do                              \n" +
-				"   (load-module :trace)          \n" +
-				"   (trace/trace 9))                ";
+        assertEquals(9L, venice.eval(script1, params));
 
-		assertEquals(9L, venice.eval(script2, params));
 
-		
-		final String script3 =
-				"(do                              \n" +
-				"   (load-module :trace)          \n" +
-				"   (trace/trace nil))              ";
+        final String script2 =
+                "(do                              \n" +
+                "   (load-module :trace)          \n" +
+                "   (trace/trace 9))                ";
 
-		assertNull(venice.eval(script3, params));
-	}
+        assertEquals(9L, venice.eval(script2, params));
 
-	@Test
-	public void test_traceable() {
-		final Venice venice = new Venice();
 
-		final String script1 =
-				"(do                        \n" +
-				"   (load-module :trace)    \n" +
-				"   (trace/traceable? +))     ";
+        final String script3 =
+                "(do                              \n" +
+                "   (load-module :trace)          \n" +
+                "   (trace/trace nil))              ";
 
-		assertTrue((Boolean)venice.eval(script1));
+        assertNull(venice.eval(script3, params));
+    }
 
-		
-		final String script2 =
-				"(do                        \n" +
-				"   (load-module :trace)    \n" +
-				"   (defn foo [] nil)       \n" +
-				"   (trace/traceable? foo))     ";
+    @Test
+    public void test_traceable() {
+        final Venice venice = new Venice();
 
-		assertTrue((Boolean)venice.eval(script2));
+        final String script1 =
+                "(do                        \n" +
+                "   (load-module :trace)    \n" +
+                "   (trace/traceable? +))     ";
 
-		
-		final String script3 =
-				"(do                        \n" +
-				"   (load-module :trace)    \n" +
-				"   (def foo (fn [] nil))   \n" +
-				"   (trace/traceable? foo))     ";
+        assertTrue((Boolean)venice.eval(script1));
 
-		assertTrue((Boolean)venice.eval(script3));
 
-		
-		final String script4 =
-				"(do                        \n" +
-				"   (load-module :trace)    \n" +
-				"   (def foo 3)             \n" +
-				"   (trace/traceable? foo))     ";
+        final String script2 =
+                "(do                        \n" +
+                "   (load-module :trace)    \n" +
+                "   (defn foo [] nil)       \n" +
+                "   (trace/traceable? foo))     ";
 
-		assertFalse((Boolean)venice.eval(script4));
-	}
+        assertTrue((Boolean)venice.eval(script2));
 
-	@Test
-	public void test_traced_not_active() {
-		final Venice venice = new Venice();
 
-		final String script1 =
-				"(do                        \n" +
-				"   (load-module :trace)    \n" +
-				"   (trace/traced? +))        ";
+        final String script3 =
+                "(do                        \n" +
+                "   (load-module :trace)    \n" +
+                "   (def foo (fn [] nil))   \n" +
+                "   (trace/traceable? foo))     ";
 
-		assertFalse((Boolean)venice.eval(script1));
+        assertTrue((Boolean)venice.eval(script3));
 
-		
-		final String script2 =
-				"(do                        \n" +
-				"   (load-module :trace)    \n" +
-				"   (defn foo [] nil)       \n" +
-				"   (trace/traced? foo))      ";
 
-		assertFalse((Boolean)venice.eval(script2));
+        final String script4 =
+                "(do                        \n" +
+                "   (load-module :trace)    \n" +
+                "   (def foo 3)             \n" +
+                "   (trace/traceable? foo))     ";
 
-		
-		final String script3 =
-				"(do                        \n" +
-				"   (load-module :trace)    \n" +
-				"   (def foo (fn [] nil))   \n" +
-				"   (trace/traced? foo))      ";
+        assertFalse((Boolean)venice.eval(script4));
+    }
 
-		assertFalse((Boolean)venice.eval(script3));
-	}
+    @Test
+    public void test_traced_not_active() {
+        final Venice venice = new Venice();
 
-	@Test
-	public void test_traced_active() {
-		final Venice venice = new Venice();
+        final String script1 =
+                "(do                        \n" +
+                "   (load-module :trace)    \n" +
+                "   (trace/traced? +))        ";
 
-		final String script1 =
-				"(do                        \n" +
-				"   (load-module :trace)    \n" +
-				"   (trace/trace-var +)     \n" +
-				"   (trace/traced? +))        ";
+        assertFalse((Boolean)venice.eval(script1));
 
-		assertTrue((Boolean)venice.eval(script1));
 
-		
-		final String script2 =
-				"(do                        \n" +
-				"   (load-module :trace)    \n" +
-				"   (defn foo [] nil)       \n" +
-				"   (trace/trace-var foo)   \n" +
-				"   (trace/traced? foo))      ";
+        final String script2 =
+                "(do                        \n" +
+                "   (load-module :trace)    \n" +
+                "   (defn foo [] nil)       \n" +
+                "   (trace/traced? foo))      ";
 
-		assertTrue((Boolean)venice.eval(script2));
+        assertFalse((Boolean)venice.eval(script2));
 
-		
-		final String script3 =
-				"(do                        \n" +
-				"   (load-module :trace)    \n" +
-				"   (def foo (fn [] nil))   \n" +
-				"   (trace/trace-var foo)   \n" +
-				"   (trace/traced? foo))      ";
 
-		assertTrue((Boolean)venice.eval(script3));
-	}
+        final String script3 =
+                "(do                        \n" +
+                "   (load-module :trace)    \n" +
+                "   (def foo (fn [] nil))   \n" +
+                "   (trace/traced? foo))      ";
 
-	@Test
-	public void test_traced_active_revert() {
-		final Venice venice = new Venice();
+        assertFalse((Boolean)venice.eval(script3));
+    }
 
-		final String script1 =
-				"(do                        \n" +
-				"   (load-module :trace)    \n" +
-				"   (trace/trace-var +)     \n" +
-				"   (trace/untrace-var +)   \n" +
-				"   (trace/traced? +))        ";
+    @Test
+    public void test_traced_active() {
+        final Venice venice = new Venice();
 
-		assertFalse((Boolean)venice.eval(script1));
+        final String script1 =
+                "(do                        \n" +
+                "   (load-module :trace)    \n" +
+                "   (trace/trace-var +)     \n" +
+                "   (trace/traced? +))        ";
 
-		
-		final String script2 =
-				"(do                        \n" +
-				"   (load-module :trace)    \n" +
-				"   (defn foo [] nil)       \n" +
-				"   (trace/trace-var foo)   \n" +
-				"   (trace/untrace-var foo) \n" +
-				"   (trace/traced? foo))      ";
+        assertTrue((Boolean)venice.eval(script1));
 
-		assertFalse((Boolean)venice.eval(script2));
 
-		
-		final String script3 =
-				"(do                        \n" +
-				"   (load-module :trace)    \n" +
-				"   (def foo (fn [] nil))   \n" +
-				"   (trace/trace-var foo)   \n" +
-				"   (trace/untrace-var foo) \n" +
-				"   (trace/traced? foo))      ";
+        final String script2 =
+                "(do                        \n" +
+                "   (load-module :trace)    \n" +
+                "   (defn foo [] nil)       \n" +
+                "   (trace/trace-var foo)   \n" +
+                "   (trace/traced? foo))      ";
 
-		assertFalse((Boolean)venice.eval(script3));
-	}
+        assertTrue((Boolean)venice.eval(script2));
 
-	@Test
-	public void test_tee_1() {
-		final Venice venice = new Venice();
 
-		final String script =
-				"(do                                          \n" +
-				"  (load-module :trace)                       \n" +
-				"  (with-out-str                              \n" +
-				"    (-> 5                                    \n" +
-				"       (+ 3)                                 \n" +
-				"       (/ 2)                                 \n" +
-				"       (trace/tee-> #(print \"trace:\" %))   \n" +
-				"       (- 1))))                                ";
+        final String script3 =
+                "(do                        \n" +
+                "   (load-module :trace)    \n" +
+                "   (def foo (fn [] nil))   \n" +
+                "   (trace/trace-var foo)   \n" +
+                "   (trace/traced? foo))      ";
 
-		assertEquals("trace: 4", venice.eval(script));
-	}
+        assertTrue((Boolean)venice.eval(script3));
+    }
 
-	@Test
-	public void test_tee_2() {
-		final Venice venice = new Venice();
+    @Test
+    public void test_traced_active_revert() {
+        final Venice venice = new Venice();
 
-		final String script =
-				"(do                                           \n" +
-				"  (load-module :trace)                        \n" +
-				"  (with-out-str                               \n" +
-				"    (->> 5                                    \n" +
-				"        (+ 3)                                 \n" +
-				"        (/ 32)                                \n" +
-				"        (trace/tee->> #(print \"trace:\" %))  \n" +
-				"        (- 1))))                                ";
+        final String script1 =
+                "(do                        \n" +
+                "   (load-module :trace)    \n" +
+                "   (trace/trace-var +)     \n" +
+                "   (trace/untrace-var +)   \n" +
+                "   (trace/traced? +))        ";
 
-		assertEquals("trace: 4", venice.eval(script));
-	}
+        assertFalse((Boolean)venice.eval(script1));
 
-	@Test
-	public void test_tee_3() {
-		final Venice venice = new Venice();
 
-		final String script =
-				"(do                                           \n" +
-				"  (load-module :trace)                        \n" +
-				"  (with-out-str                               \n" +
-				"    (->> 5                                    \n" +
-				"        (+ 3)                                 \n" +
-				"        (/ 32)                                \n" +
-				"        trace/tee                             \n" +
-				"        (- 1))))                                ";
+        final String script2 =
+                "(do                        \n" +
+                "   (load-module :trace)    \n" +
+                "   (defn foo [] nil)       \n" +
+                "   (trace/trace-var foo)   \n" +
+                "   (trace/untrace-var foo) \n" +
+                "   (trace/traced? foo))      ";
 
-		assertEquals("trace: 4\n", venice.eval(script));
-	}
+        assertFalse((Boolean)venice.eval(script2));
+
+
+        final String script3 =
+                "(do                        \n" +
+                "   (load-module :trace)    \n" +
+                "   (def foo (fn [] nil))   \n" +
+                "   (trace/trace-var foo)   \n" +
+                "   (trace/untrace-var foo) \n" +
+                "   (trace/traced? foo))      ";
+
+        assertFalse((Boolean)venice.eval(script3));
+    }
+
+    @Test
+    public void test_tee_1() {
+        final Venice venice = new Venice();
+
+        final String script =
+                "(do                                          \n" +
+                "  (load-module :trace)                       \n" +
+                "  (with-out-str                              \n" +
+                "    (-> 5                                    \n" +
+                "       (+ 3)                                 \n" +
+                "       (/ 2)                                 \n" +
+                "       (trace/tee-> #(print \"trace:\" %))   \n" +
+                "       (- 1))))                                ";
+
+        assertEquals("trace: 4", venice.eval(script));
+    }
+
+    @Test
+    public void test_tee_2() {
+        final Venice venice = new Venice();
+
+        final String script =
+                "(do                                           \n" +
+                "  (load-module :trace)                        \n" +
+                "  (with-out-str                               \n" +
+                "    (->> 5                                    \n" +
+                "        (+ 3)                                 \n" +
+                "        (/ 32)                                \n" +
+                "        (trace/tee->> #(print \"trace:\" %))  \n" +
+                "        (- 1))))                                ";
+
+        assertEquals("trace: 4", venice.eval(script));
+    }
+
+    @Test
+    public void test_tee_3() {
+        final Venice venice = new Venice();
+
+        final String script =
+                "(do                                           \n" +
+                "  (load-module :trace)                        \n" +
+                "  (with-out-str                               \n" +
+                "    (->> 5                                    \n" +
+                "        (+ 3)                                 \n" +
+                "        (/ 32)                                \n" +
+                "        trace/tee                             \n" +
+                "        (- 1))))                                ";
+
+        assertEquals("trace: 4\n", venice.eval(script));
+    }
 
 }

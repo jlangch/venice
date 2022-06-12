@@ -1,5 +1,5 @@
 /*   __    __         _
- *   \ \  / /__ _ __ (_) ___ ___ 
+ *   \ \  / /__ _ __ (_) ___ ___
  *    \ \/ / _ \ '_ \| |/ __/ _ \
  *     \  /  __/ | | | | (_|  __/
  *      \/ \___|_| |_|_|\___\___|
@@ -22,210 +22,212 @@
 package com.github.jlangch.venice.impl.reader;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import org.junit.jupiter.api.Test;
 
 
 public class LineReaderTest {
 
-	@Test
-	public void test_null() {
-		final LineReader rd = new LineReader(null);
+    @Test
+    public void test_null() {
+        final LineReader rd = new LineReader(null);
 
-		assertTrue(rd.eof());
+        assertTrue(rd.eof());
 
-		assertEquals(0, rd.size());
+        assertEquals(0, rd.size());
 
-		assertNull(rd.peek());
-		assertEquals(1, rd.getLineNr());
-		
-		rd.consume();
-		
-		assertNull(rd.peek());
-		assertEquals(1, rd.getLineNr());
-	}
+        assertNull(rd.peek());
+        assertEquals(1, rd.getLineNr());
 
-	@Test
-	public void test_one_line_empty() {
-		final LineReader rd = new LineReader("");
+        rd.consume();
 
-		assertFalse(rd.eof());
+        assertNull(rd.peek());
+        assertEquals(1, rd.getLineNr());
+    }
 
-		assertEquals(1, rd.size());
-		
-		assertEquals("", rd.peek());
-		assertEquals(1, rd.getLineNr());
-		
-		rd.consume();
+    @Test
+    public void test_one_line_empty() {
+        final LineReader rd = new LineReader("");
 
-		assertTrue(rd.eof());
-		
-		assertNull(rd.peek());
-		assertEquals(1, rd.getLineNr());
-	}
+        assertFalse(rd.eof());
 
-	@Test
-	public void test_one_line() {
-		final LineReader rd = new LineReader("1");
+        assertEquals(1, rd.size());
 
-		assertFalse(rd.eof());
+        assertEquals("", rd.peek());
+        assertEquals(1, rd.getLineNr());
 
-		assertEquals(1, rd.size());
-		
-		assertEquals("1", rd.peek());
-		assertEquals(1, rd.getLineNr());
-		
-		rd.consume();
+        rd.consume();
 
-		assertTrue(rd.eof());
-		
-		assertNull(rd.peek());
-		assertEquals(1, rd.getLineNr());
-	}
+        assertTrue(rd.eof());
 
-	@Test
-	public void test_two_lines_1() {
-		final LineReader rd = new LineReader("\n");
+        assertNull(rd.peek());
+        assertEquals(1, rd.getLineNr());
+    }
 
-		assertFalse(rd.eof());
+    @Test
+    public void test_one_line() {
+        final LineReader rd = new LineReader("1");
 
-		assertEquals(2, rd.size());
-		
-		assertEquals("", rd.peek());
-		assertEquals(1, rd.getLineNr());
-		
-		rd.consume();
+        assertFalse(rd.eof());
 
-		assertFalse(rd.eof());
-		
-		assertEquals("", rd.peek());
-		assertEquals(2, rd.getLineNr());
-		
-		rd.consume();
+        assertEquals(1, rd.size());
 
-		assertTrue(rd.eof());
-		
-		assertNull(rd.peek());
-		assertEquals(2, rd.getLineNr());
-	}
+        assertEquals("1", rd.peek());
+        assertEquals(1, rd.getLineNr());
 
-	@Test
-	public void test_two_lines_2() {
-		final LineReader rd = new LineReader("1\n");
+        rd.consume();
 
-		assertFalse(rd.eof());
+        assertTrue(rd.eof());
 
-		assertEquals(2, rd.size());
-		
-		assertEquals("1", rd.peek());
-		assertEquals(1, rd.getLineNr());
-		
-		rd.consume();
+        assertNull(rd.peek());
+        assertEquals(1, rd.getLineNr());
+    }
 
-		assertFalse(rd.eof());
-		
-		assertEquals("", rd.peek());
-		assertEquals(2, rd.getLineNr());
-		
-		rd.consume();
+    @Test
+    public void test_two_lines_1() {
+        final LineReader rd = new LineReader("\n");
 
-		assertTrue(rd.eof());
-		
-		assertNull(rd.peek());
-		assertEquals(2, rd.getLineNr());
-	}
+        assertFalse(rd.eof());
 
-	@Test
-	public void test_two_lines_3() {
-		final LineReader rd = new LineReader("1\n2");
+        assertEquals(2, rd.size());
 
-		assertFalse(rd.eof());
+        assertEquals("", rd.peek());
+        assertEquals(1, rd.getLineNr());
 
-		assertEquals(2, rd.size());
-		
-		assertEquals("1", rd.peek());
-		assertEquals(1, rd.getLineNr());
-		
-		rd.consume();
+        rd.consume();
 
-		assertFalse(rd.eof());
-		
-		assertEquals("2", rd.peek());
-		assertEquals(2, rd.getLineNr());
-		
-		rd.consume();
+        assertFalse(rd.eof());
 
-		assertTrue(rd.eof());
-		
-		assertNull(rd.peek());
-		assertEquals(2, rd.getLineNr());
-	}
+        assertEquals("", rd.peek());
+        assertEquals(2, rd.getLineNr());
 
-	@Test
-	public void test_three_lines_1() {
-		final LineReader rd = new LineReader("\n\n");
+        rd.consume();
 
-		assertFalse(rd.eof());
+        assertTrue(rd.eof());
 
-		assertEquals(3, rd.size());
-		
-		assertEquals("", rd.peek());
-		assertEquals(1, rd.getLineNr());
-		
-		rd.consume();
+        assertNull(rd.peek());
+        assertEquals(2, rd.getLineNr());
+    }
 
-		assertFalse(rd.eof());
-		
-		assertEquals("", rd.peek());
-		assertEquals(2, rd.getLineNr());
-		
-		rd.consume();
+    @Test
+    public void test_two_lines_2() {
+        final LineReader rd = new LineReader("1\n");
 
-		assertFalse(rd.eof());
-		
-		assertEquals("", rd.peek());
-		assertEquals(3, rd.getLineNr());
-		
-		rd.consume();
+        assertFalse(rd.eof());
 
-		assertTrue(rd.eof());
-		
-		assertNull(rd.peek());
-		assertEquals(3, rd.getLineNr());
-	}
+        assertEquals(2, rd.size());
 
-	@Test
-	public void test_three_lines_2() {
-		final LineReader rd = new LineReader("1\n2\n3");
+        assertEquals("1", rd.peek());
+        assertEquals(1, rd.getLineNr());
 
-		assertFalse(rd.eof());
+        rd.consume();
 
-		assertEquals(3, rd.size());
-		
-		assertEquals("1", rd.peek());
-		assertEquals(1, rd.getLineNr());
-		
-		rd.consume();
+        assertFalse(rd.eof());
 
-		assertFalse(rd.eof());
-		
-		assertEquals("2", rd.peek());
-		assertEquals(2, rd.getLineNr());
-		
-		rd.consume();
+        assertEquals("", rd.peek());
+        assertEquals(2, rd.getLineNr());
 
-		assertFalse(rd.eof());
-		
-		assertEquals("3", rd.peek());
-		assertEquals(3, rd.getLineNr());
-		
-		rd.consume();
+        rd.consume();
 
-		assertTrue(rd.eof());
-		
-		assertNull(rd.peek());
-		assertEquals(3, rd.getLineNr());
-	}
+        assertTrue(rd.eof());
+
+        assertNull(rd.peek());
+        assertEquals(2, rd.getLineNr());
+    }
+
+    @Test
+    public void test_two_lines_3() {
+        final LineReader rd = new LineReader("1\n2");
+
+        assertFalse(rd.eof());
+
+        assertEquals(2, rd.size());
+
+        assertEquals("1", rd.peek());
+        assertEquals(1, rd.getLineNr());
+
+        rd.consume();
+
+        assertFalse(rd.eof());
+
+        assertEquals("2", rd.peek());
+        assertEquals(2, rd.getLineNr());
+
+        rd.consume();
+
+        assertTrue(rd.eof());
+
+        assertNull(rd.peek());
+        assertEquals(2, rd.getLineNr());
+    }
+
+    @Test
+    public void test_three_lines_1() {
+        final LineReader rd = new LineReader("\n\n");
+
+        assertFalse(rd.eof());
+
+        assertEquals(3, rd.size());
+
+        assertEquals("", rd.peek());
+        assertEquals(1, rd.getLineNr());
+
+        rd.consume();
+
+        assertFalse(rd.eof());
+
+        assertEquals("", rd.peek());
+        assertEquals(2, rd.getLineNr());
+
+        rd.consume();
+
+        assertFalse(rd.eof());
+
+        assertEquals("", rd.peek());
+        assertEquals(3, rd.getLineNr());
+
+        rd.consume();
+
+        assertTrue(rd.eof());
+
+        assertNull(rd.peek());
+        assertEquals(3, rd.getLineNr());
+    }
+
+    @Test
+    public void test_three_lines_2() {
+        final LineReader rd = new LineReader("1\n2\n3");
+
+        assertFalse(rd.eof());
+
+        assertEquals(3, rd.size());
+
+        assertEquals("1", rd.peek());
+        assertEquals(1, rd.getLineNr());
+
+        rd.consume();
+
+        assertFalse(rd.eof());
+
+        assertEquals("2", rd.peek());
+        assertEquals(2, rd.getLineNr());
+
+        rd.consume();
+
+        assertFalse(rd.eof());
+
+        assertEquals("3", rd.peek());
+        assertEquals(3, rd.getLineNr());
+
+        rd.consume();
+
+        assertTrue(rd.eof());
+
+        assertNull(rd.peek());
+        assertEquals(3, rd.getLineNr());
+    }
 
 }

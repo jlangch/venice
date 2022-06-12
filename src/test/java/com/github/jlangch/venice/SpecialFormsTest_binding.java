@@ -1,5 +1,5 @@
 /*   __    __         _
- *   \ \  / /__ _ __ (_) ___ ___ 
+ *   \ \  / /__ _ __ (_) ___ ___
  *    \ \/ / _ \ '_ \| |/ __/ _ \
  *     \  /  __/ | | | | (_|  __/
  *      \/ \___|_| |_|_|\___\___|
@@ -29,62 +29,62 @@ import org.junit.jupiter.api.Test;
 
 public class SpecialFormsTest_binding {
 
-	@Test
-	public void test_basics() {
-		final Venice venice = new Venice();
+    @Test
+    public void test_basics() {
+        final Venice venice = new Venice();
 
-		final String script = 
-				"(do                      \n" +
-				"  (with-out-str          \n" +
-				"    (binding [x 100]     \n" +
-				"      (println x)        \n" +
-				"      (binding [x 200]   \n" +
-				"        (println x))     \n" +
-				"      (println x))))       ";
+        final String script =
+                "(do                      \n" +
+                "  (with-out-str          \n" +
+                "    (binding [x 100]     \n" +
+                "      (println x)        \n" +
+                "      (binding [x 200]   \n" +
+                "        (println x))     \n" +
+                "      (println x))))       ";
 
-		assertEquals(
-				"100\n200\n100\n",
-				venice.eval(script));
-	}
+        assertEquals(
+                "100\n200\n100\n",
+                venice.eval(script));
+    }
 
-	@Test
-	public void test_function_1() {
-		final Venice venice = new Venice();
+    @Test
+    public void test_function_1() {
+        final Venice venice = new Venice();
 
-		final String script = 
-				"(do                            \n" +
-				"   (defn add [a b] (+ a b z))  \n" +
-				"   (binding [z 5]              \n" +
-				"     (add 1 2)))               ";
+        final String script =
+                "(do                            \n" +
+                "   (defn add [a b] (+ a b z))  \n" +
+                "   (binding [z 5]              \n" +
+                "     (add 1 2)))               ";
 
-		assertEquals(8L, venice.eval(script));
-	}
-	
-	@Test
-	public void test_function_2() {
-		final Venice venice = new Venice();
+        assertEquals(8L, venice.eval(script));
+    }
 
-		final String script = 
-				"(do                            \n" +
-				"   (defn add [a b] (+ a b z))  \n" +
-				"   (binding [z 5]              \n" +
-				"     (add 1 2))                \n" +
-				"   (add 10 20))                    ";
+    @Test
+    public void test_function_2() {
+        final Venice venice = new Venice();
 
-		assertThrows(
-				VncException.class,
-				() -> venice.eval(script));
-	}
+        final String script =
+                "(do                            \n" +
+                "   (defn add [a b] (+ a b z))  \n" +
+                "   (binding [z 5]              \n" +
+                "     (add 1 2))                \n" +
+                "   (add 10 20))                    ";
 
-	@Test
-	public void test_destructuring() {
-		final Venice venice = new Venice();
+        assertThrows(
+                VncException.class,
+                () -> venice.eval(script));
+    }
 
-		assertEquals(10L, venice.eval("(binding [x 10] x)"));
-		assertEquals(21L, venice.eval("(binding [x 10 y 11] (+ x y))"));
-		assertEquals(60L, venice.eval("(binding [x 10 y (* x 5)] (+ x y))"));
+    @Test
+    public void test_destructuring() {
+        final Venice venice = new Venice();
 
-		assertEquals(21L, venice.eval("(binding [[x y] [10 11]] (+ x y))"));
-		assertEquals(71L, venice.eval("(binding [[x y] [10 11] z (* x 5)] (+ x y z))"));
-	}
+        assertEquals(10L, venice.eval("(binding [x 10] x)"));
+        assertEquals(21L, venice.eval("(binding [x 10 y 11] (+ x y))"));
+        assertEquals(60L, venice.eval("(binding [x 10 y (* x 5)] (+ x y))"));
+
+        assertEquals(21L, venice.eval("(binding [[x y] [10 11]] (+ x y))"));
+        assertEquals(71L, venice.eval("(binding [[x y] [10 11] z (* x 5)] (+ x y z))"));
+    }
 }

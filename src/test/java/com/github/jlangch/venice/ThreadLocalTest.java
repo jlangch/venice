@@ -1,5 +1,5 @@
 /*   __    __         _
- *   \ \  / /__ _ __ (_) ___ ___ 
+ *   \ \  / /__ _ __ (_) ___ ___
  *    \ \/ / _ \ '_ \| |/ __/ _ \
  *     \  /  __/ | | | | (_|  __/
  *      \/ \___|_| |_|_|\___\___|
@@ -28,30 +28,30 @@ import org.junit.jupiter.api.Test;
 
 public class ThreadLocalTest {
 
-	@Test
-	public void testAssoc() {
-		final Venice venice = new Venice();
+    @Test
+    public void testAssoc() {
+        final Venice venice = new Venice();
 
-		final String s = 
-				"(do                                   \n" +
-				"   (assoc! (thread-local) :a 1 :b 2)  \n" +
-				"   (get (thread-local) :a)            \n" +
-				")                              ";
-	
-		assertEquals("1", venice.eval("(str " + s + ")"));
-	}
+        final String s =
+                "(do                                   \n" +
+                "   (assoc! (thread-local) :a 1 :b 2)  \n" +
+                "   (get (thread-local) :a)            \n" +
+                ")                              ";
 
-	@Test
-	public void testDissoc() {
-		final Venice venice = new Venice();
+        assertEquals("1", venice.eval("(str " + s + ")"));
+    }
 
-		final String s = 
-				"(do                                  \n" +
-				"   (assoc! (thread-local) :a 1 :b 2) \n" +
-				"   (dissoc! (thread-local) :a)       \n" +
-				"   (get (thread-local) :a 100)       \n" +
-				")                                      ";
-	
-		assertEquals("100", venice.eval("(str " + s + ")"));
-	}
+    @Test
+    public void testDissoc() {
+        final Venice venice = new Venice();
+
+        final String s =
+                "(do                                  \n" +
+                "   (assoc! (thread-local) :a 1 :b 2) \n" +
+                "   (dissoc! (thread-local) :a)       \n" +
+                "   (get (thread-local) :a 100)       \n" +
+                ")                                      ";
+
+        assertEquals("100", venice.eval("(str " + s + ")"));
+    }
 }

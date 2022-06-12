@@ -1,5 +1,5 @@
 /*   __    __         _
- *   \ \  / /__ _ __ (_) ___ ___ 
+ *   \ \  / /__ _ __ (_) ___ ___
  *    \ \/ / _ \ '_ \| |/ __/ _ \
  *     \  /  __/ | | | | (_|  __/
  *      \/ \___|_| |_|_|\___\___|
@@ -27,86 +27,86 @@ import org.junit.jupiter.api.Test;
 
 
 public class SpecialFormsTest_deftypeQ {
-	
-	@Test
-	public void test_deftypeQ_deftype() {
-		final Venice venice = new Venice();
 
-		final String script =
-				"(do                                                 \n" +
-				"  (ns foo)                                          \n" +
-				"  (deftype :complex [real :long, imaginary :long])  \n" +
-				"  (deftype? :complex))                                ";
+    @Test
+    public void test_deftypeQ_deftype() {
+        final Venice venice = new Venice();
 
-		assertTrue((Boolean)venice.eval(script));					
-	}
-	
-	@Test
-	public void test_deftypeQ_deftype_value_1() {
-		final Venice venice = new Venice();
+        final String script =
+                "(do                                                 \n" +
+                "  (ns foo)                                          \n" +
+                "  (deftype :complex [real :long, imaginary :long])  \n" +
+                "  (deftype? :complex))                                ";
 
-		final String script =
-				"(do                                                 \n" +
-				"  (ns foo)                                          \n" +
-				"  (deftype :complex [real :long, imaginary :long])  \n" +
-				"  (def x (.: :complex 100 200))                     \n" +
-				"  (deftype? (type x)))                                ";
+        assertTrue((Boolean)venice.eval(script));
+    }
 
-		assertTrue((Boolean)venice.eval(script));					
-	}
-	
-	@Test
-	public void test_deftypeQ_deftype_value_2() {
-		final Venice venice = new Venice();
+    @Test
+    public void test_deftypeQ_deftype_value_1() {
+        final Venice venice = new Venice();
 
-		final String script =
-				"(do                                                 \n" +
-				"  (ns foo)                                          \n" +
-				"  (deftype :complex [real :long, imaginary :long])  \n" +
-				"  (def x (.: :complex 100 200))                     \n" +
-				"  (deftype? x))                                       ";
+        final String script =
+                "(do                                                 \n" +
+                "  (ns foo)                                          \n" +
+                "  (deftype :complex [real :long, imaginary :long])  \n" +
+                "  (def x (.: :complex 100 200))                     \n" +
+                "  (deftype? (type x)))                                ";
 
-		assertTrue((Boolean)venice.eval(script));					
-	}
-	
-	@Test
-	public void test_deftypeQ_deftype_of() {
-		final Venice venice = new Venice();
+        assertTrue((Boolean)venice.eval(script));
+    }
 
-		final String script =
-				"(do                                                 \n" +
-				"  (ns foo)                                          \n" +
-				"  (deftype-of :email-address :string)               \n" +
-				"  (deftype? :email-address))                          ";
+    @Test
+    public void test_deftypeQ_deftype_value_2() {
+        final Venice venice = new Venice();
 
-		assertTrue((Boolean)venice.eval(script));					
-	}
-	
-	@Test
-	public void test_deftypeQ_deftype_of_value_1() {
-		final Venice venice = new Venice();
+        final String script =
+                "(do                                                 \n" +
+                "  (ns foo)                                          \n" +
+                "  (deftype :complex [real :long, imaginary :long])  \n" +
+                "  (def x (.: :complex 100 200))                     \n" +
+                "  (deftype? x))                                       ";
 
-		final String script =
-				"(do                                                 \n" +
-				"  (ns foo)                                          \n" +
-				"  (deftype-of :email-address :string)               \n" +
-				"  (def x (.: :email-address \"foo@foo.org\"))       \n" +
-				"  (deftype? (type x)))                                ";
+        assertTrue((Boolean)venice.eval(script));
+    }
 
-		assertTrue((Boolean)venice.eval(script));					
-	}
-	
-	@Test
-	public void test_deftypeQ_deftype_of_value_2() {
-		final Venice venice = new Venice();
+    @Test
+    public void test_deftypeQ_deftype_of() {
+        final Venice venice = new Venice();
 
-		final String script =
-				"(do                                                 \n" +
-				"  (ns foo)                                          \n" +
-				"  (deftype-of :email-address :string)               \n" +
-				"  (def x (.: :email-address \"foo@foo.org\"))       \n" +
-				"  (deftype? x))                                       ";
+        final String script =
+                "(do                                                 \n" +
+                "  (ns foo)                                          \n" +
+                "  (deftype-of :email-address :string)               \n" +
+                "  (deftype? :email-address))                          ";
 
-		assertTrue((Boolean)venice.eval(script));					
-	}
+        assertTrue((Boolean)venice.eval(script));
+    }
+
+    @Test
+    public void test_deftypeQ_deftype_of_value_1() {
+        final Venice venice = new Venice();
+
+        final String script =
+                "(do                                                 \n" +
+                "  (ns foo)                                          \n" +
+                "  (deftype-of :email-address :string)               \n" +
+                "  (def x (.: :email-address \"foo@foo.org\"))       \n" +
+                "  (deftype? (type x)))                                ";
+
+        assertTrue((Boolean)venice.eval(script));
+    }
+
+    @Test
+    public void test_deftypeQ_deftype_of_value_2() {
+        final Venice venice = new Venice();
+
+        final String script =
+                "(do                                                 \n" +
+                "  (ns foo)                                          \n" +
+                "  (deftype-of :email-address :string)               \n" +
+                "  (def x (.: :email-address \"foo@foo.org\"))       \n" +
+                "  (deftype? x))                                       ";
+
+        assertTrue((Boolean)venice.eval(script));
+    }
 }

@@ -1,5 +1,5 @@
 /*   __    __         _
- *   \ \  / /__ _ __ (_) ___ ___ 
+ *   \ \  / /__ _ __ (_) ___ ___
  *    \ \/ / _ \ '_ \| |/ __/ _ \
  *     \  /  __/ | | | | (_|  __/
  *      \/ \___|_| |_|_|\___\___|
@@ -32,188 +32,188 @@ import org.junit.jupiter.api.Test;
 
 public class LoadScriptTest {
 
-	@Test
-	public void test_load_classpath_file() {
-		final String script = 
-				"(do                                                                \n" + 
-				"  (load-classpath-file \"com/github/jlangch/venice/test.venice\")  \n" + 
-				"  (test/test-fn \"hello\"))                                          ";
-		
-		assertEquals("test: hello", new Venice().eval(script));
-	}
+    @Test
+    public void test_load_classpath_file() {
+        final String script =
+                "(do                                                                \n" +
+                "  (load-classpath-file \"com/github/jlangch/venice/test.venice\")  \n" +
+                "  (test/test-fn \"hello\"))                                          ";
 
-	@Test
-	public void test_load_classpath_file_with_ns() {
-		final String script = 
-				"(do                                                                               \n" + 
-				"  (load-classpath-file \"com/github/jlangch/venice/test.venice\" ['test :as 't])  \n" + 
-				"  (t/test-fn \"hello\"))                                                            ";
-		
-		assertEquals("test: hello", new Venice().eval(script));
-	}
+        assertEquals("test: hello", new Venice().eval(script));
+    }
 
-	@Test
-	public void test_load_file() {
-		final String script_1 = 
-				"(ns xxx)                        \n" + 
-				"                                \n" + 
-				"(defn sum [x y] (+ x y 11))       ";
+    @Test
+    public void test_load_classpath_file_with_ns() {
+        final String script =
+                "(do                                                                               \n" +
+                "  (load-classpath-file \"com/github/jlangch/venice/test.venice\" ['test :as 't])  \n" +
+                "  (t/test-fn \"hello\"))                                                            ";
 
-		try {
-			final File file = File.createTempFile("test", ".venice");
-			Files.write(file.toPath(), script_1.getBytes("UTF-8"), StandardOpenOption.TRUNCATE_EXISTING);
+        assertEquals("test: hello", new Venice().eval(script));
+    }
 
-			final String script_2 = 
-					String.format(
-						"(do                   \n" + 
-						"  (load-file \"%s\")  \n" + 
-						"  (xxx/sum 1 2))        ",
-				    file.getPath());
+    @Test
+    public void test_load_file() {
+        final String script_1 =
+                "(ns xxx)                        \n" +
+                "                                \n" +
+                "(defn sum [x y] (+ x y 11))       ";
 
-			try {			
-				assertEquals(14L, new Venice().eval(script_2));
-			}
-			finally {
-				file.delete();
-			}
-		}
-		catch(Exception ex) {
-			throw new RuntimeException(ex);
-		}
-	}
+        try {
+            final File file = File.createTempFile("test", ".venice");
+            Files.write(file.toPath(), script_1.getBytes("UTF-8"), StandardOpenOption.TRUNCATE_EXISTING);
 
-	@Test
-	public void test_load_file_with_ns() {
-		final String script_1 = 
-				"(ns xxx)                        \n" + 
-				"                                \n" + 
-				"(defn sum [x y] (+ x y 11))     ";
+            final String script_2 =
+                    String.format(
+                        "(do                   \n" +
+                        "  (load-file \"%s\")  \n" +
+                        "  (xxx/sum 1 2))        ",
+                    file.getPath());
 
-		try {
-			final File file = File.createTempFile("test", ".venice");
-			Files.write(file.toPath(), script_1.getBytes("UTF-8"), StandardOpenOption.TRUNCATE_EXISTING);
+            try {
+                assertEquals(14L, new Venice().eval(script_2));
+            }
+            finally {
+                file.delete();
+            }
+        }
+        catch(Exception ex) {
+            throw new RuntimeException(ex);
+        }
+    }
 
-			final String script_2 = 
-					String.format(
-						"(do                                 \n" + 
-						"  (load-file \"%s\" ['xxx :as 'x])  \n" + 
-						"  (x/sum 1 2))                      ",
-				    file.getPath());
+    @Test
+    public void test_load_file_with_ns() {
+        final String script_1 =
+                "(ns xxx)                        \n" +
+                "                                \n" +
+                "(defn sum [x y] (+ x y 11))     ";
 
-			try {			
-				assertEquals(14L, new Venice().eval(script_2));
-			}
-			finally {
-				file.delete();
-			}
-		}
-		catch(Exception ex) {
-			throw new RuntimeException(ex);
-		}
-	}
+        try {
+            final File file = File.createTempFile("test", ".venice");
+            Files.write(file.toPath(), script_1.getBytes("UTF-8"), StandardOpenOption.TRUNCATE_EXISTING);
 
-	@Test
-	public void test_load_file_param() {
-		final String script_1 = 
-				"(ns xxx)                        \n" + 
-				"                                \n" + 
-				"(defn sum [x y] (+ x y 11))       ";
+            final String script_2 =
+                    String.format(
+                        "(do                                 \n" +
+                        "  (load-file \"%s\" ['xxx :as 'x])  \n" +
+                        "  (x/sum 1 2))                      ",
+                    file.getPath());
 
-		try {
-			File file = File.createTempFile("test", ".venice");
-			Files.write(file.toPath(), script_1.getBytes("UTF-8"), StandardOpenOption.TRUNCATE_EXISTING);
+            try {
+                assertEquals(14L, new Venice().eval(script_2));
+            }
+            finally {
+                file.delete();
+            }
+        }
+        catch(Exception ex) {
+            throw new RuntimeException(ex);
+        }
+    }
 
-			final String script_2 = 
-					"(do                   \n" + 
-					"  (load-file f)       \n" + 
-					"  (xxx/sum 1 2)))       ";
+    @Test
+    public void test_load_file_param() {
+        final String script_1 =
+                "(ns xxx)                        \n" +
+                "                                \n" +
+                "(defn sum [x y] (+ x y 11))       ";
 
-			try {
-				assertEquals(14L, new Venice().eval(script_2, Parameters.of("f", file.getAbsolutePath())));
-			}
-			finally {
-				file.delete();
-			}
-			
+        try {
+            File file = File.createTempFile("test", ".venice");
+            Files.write(file.toPath(), script_1.getBytes("UTF-8"), StandardOpenOption.TRUNCATE_EXISTING);
 
-			file = File.createTempFile("test", ".venice");
-			Files.write(file.toPath(), script_1.getBytes("UTF-8"), StandardOpenOption.TRUNCATE_EXISTING);
+            final String script_2 =
+                    "(do                   \n" +
+                    "  (load-file f)       \n" +
+                    "  (xxx/sum 1 2)))       ";
 
-			final String script_3 = 
-					"(do                    \n" + 
-					"  (load-file f true)   \n" + 
-					"  (xxx/sum 1 2)))       ";
+            try {
+                assertEquals(14L, new Venice().eval(script_2, Parameters.of("f", file.getAbsolutePath())));
+            }
+            finally {
+                file.delete();
+            }
 
-			try {
-				assertEquals(14L, new Venice().eval(script_3, Parameters.of("f", file.getAbsolutePath())));
-			}
-			finally {
-				file.delete();
-			}
-		}
-		catch(Exception ex) {
-			throw new RuntimeException(ex);
-		}
-	}
 
-	@Test
-	public void test_load_file_force() {
-		final String script_1 = 
-				"(ns xxx)                        \n" + 
-				"                                \n" + 
-				"(defn sum [x y] (+ x y 11))       ";
+            file = File.createTempFile("test", ".venice");
+            Files.write(file.toPath(), script_1.getBytes("UTF-8"), StandardOpenOption.TRUNCATE_EXISTING);
 
-		try {
-			final File file = File.createTempFile("test", ".venice");
-			Files.write(file.toPath(), script_1.getBytes("UTF-8"), StandardOpenOption.TRUNCATE_EXISTING);
+            final String script_3 =
+                    "(do                    \n" +
+                    "  (load-file f true)   \n" +
+                    "  (xxx/sum 1 2)))       ";
 
-			final String script_2 = 
-					String.format(
-						"(do                         \n" + 
-						"  (load-file \"%s\" true)   \n" + 
-						"  (xxx/sum 1 2))              ",
-				    file.getPath());
+            try {
+                assertEquals(14L, new Venice().eval(script_3, Parameters.of("f", file.getAbsolutePath())));
+            }
+            finally {
+                file.delete();
+            }
+        }
+        catch(Exception ex) {
+            throw new RuntimeException(ex);
+        }
+    }
 
-			try {	
-				assertEquals(14L, new Venice().eval(script_2));
-			}
-			finally {
-				file.delete();
-			}
-		}
-		catch(Exception ex) {
-			throw new RuntimeException(ex);
-		}
-	}
+    @Test
+    public void test_load_file_force() {
+        final String script_1 =
+                "(ns xxx)                        \n" +
+                "                                \n" +
+                "(defn sum [x y] (+ x y 11))       ";
 
-	@Test
-	public void test_load_file_force_with_ns() {
-		final String script_1 = 
-				"(ns xxx)                        \n" + 
-				"                                \n" + 
-				"(defn sum [x y] (+ x y 11))       ";
+        try {
+            final File file = File.createTempFile("test", ".venice");
+            Files.write(file.toPath(), script_1.getBytes("UTF-8"), StandardOpenOption.TRUNCATE_EXISTING);
 
-		try {
-			final File file = File.createTempFile("test", ".venice");
-			Files.write(file.toPath(), script_1.getBytes("UTF-8"), StandardOpenOption.TRUNCATE_EXISTING);
+            final String script_2 =
+                    String.format(
+                        "(do                         \n" +
+                        "  (load-file \"%s\" true)   \n" +
+                        "  (xxx/sum 1 2))              ",
+                    file.getPath());
 
-			final String script_2 = 
-					String.format(
-						"(do                                      \n" + 
-						"  (load-file \"%s\" true ['xxx :as 'x])  \n" + 
-						"  (x/sum 1 2))                             ",
-				    file.getPath());
+            try {
+                assertEquals(14L, new Venice().eval(script_2));
+            }
+            finally {
+                file.delete();
+            }
+        }
+        catch(Exception ex) {
+            throw new RuntimeException(ex);
+        }
+    }
 
-			try {	
-				assertEquals(14L, new Venice().eval(script_2));
-			}
-			finally {
-				file.delete();
-			}
-		}
-		catch(Exception ex) {
-			throw new RuntimeException(ex);
-		}
-	}
+    @Test
+    public void test_load_file_force_with_ns() {
+        final String script_1 =
+                "(ns xxx)                        \n" +
+                "                                \n" +
+                "(defn sum [x y] (+ x y 11))       ";
+
+        try {
+            final File file = File.createTempFile("test", ".venice");
+            Files.write(file.toPath(), script_1.getBytes("UTF-8"), StandardOpenOption.TRUNCATE_EXISTING);
+
+            final String script_2 =
+                    String.format(
+                        "(do                                      \n" +
+                        "  (load-file \"%s\" true ['xxx :as 'x])  \n" +
+                        "  (x/sum 1 2))                             ",
+                    file.getPath());
+
+            try {
+                assertEquals(14L, new Venice().eval(script_2));
+            }
+            finally {
+                file.delete();
+            }
+        }
+        catch(Exception ex) {
+            throw new RuntimeException(ex);
+        }
+    }
 
 }

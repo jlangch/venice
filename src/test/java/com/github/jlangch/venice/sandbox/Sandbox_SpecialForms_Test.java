@@ -1,5 +1,5 @@
 /*   __    __         _
- *   \ \  / /__ _ __ (_) ___ ___ 
+ *   \ \  / /__ _ __ (_) ___ ___
  *    \ \/ / _ \ '_ \| |/ __/ _ \
  *     \  /  __/ | | | | (_|  __/
  *      \/ \___|_| |_|_|\___\___|
@@ -35,36 +35,36 @@ import com.github.jlangch.venice.javainterop.SandboxRules;
 
 public class Sandbox_SpecialForms_Test {
 
-	
-	// ------------------------------------------------------------------------
-	// Sandbox FAIL
-	// ------------------------------------------------------------------------
 
-	@Test
-	public void test_RejectAllInterceptor_set_BANG() {
-		assertThrows(SecurityException.class, () -> {
-			new Venice(new RejectAllInterceptor()).eval("(set! x 100)");
-		});
-	}
-	
-	@Test
-	public void test_withBlacklistedVeniceFn_set_BANG() {
-		final Interceptor interceptor = 
-				new SandboxInterceptor(new SandboxRules().rejectVeniceFunctions("set!"));				
-		
-		assertThrows(SecurityException.class, () -> {
-			new Venice(interceptor).eval("(set! x 100)");
-		});
-	}
-	
-	@Test
-	public void test_blacklistedSpecialForms_set_BANG() {
-		// all Venice IO functions blacklisted
-		final Interceptor interceptor = 
-				new SandboxInterceptor(new SandboxRules().rejectVeniceFunctions("*special-forms*"));
-	
-		assertThrows(SecurityException.class, () -> {
-			new Venice(interceptor).eval("(set! x 100)");
-		});
-	}
+    // ------------------------------------------------------------------------
+    // Sandbox FAIL
+    // ------------------------------------------------------------------------
+
+    @Test
+    public void test_RejectAllInterceptor_set_BANG() {
+        assertThrows(SecurityException.class, () -> {
+            new Venice(new RejectAllInterceptor()).eval("(set! x 100)");
+        });
+    }
+
+    @Test
+    public void test_withBlacklistedVeniceFn_set_BANG() {
+        final Interceptor interceptor =
+                new SandboxInterceptor(new SandboxRules().rejectVeniceFunctions("set!"));
+
+        assertThrows(SecurityException.class, () -> {
+            new Venice(interceptor).eval("(set! x 100)");
+        });
+    }
+
+    @Test
+    public void test_blacklistedSpecialForms_set_BANG() {
+        // all Venice IO functions blacklisted
+        final Interceptor interceptor =
+                new SandboxInterceptor(new SandboxRules().rejectVeniceFunctions("*special-forms*"));
+
+        assertThrows(SecurityException.class, () -> {
+            new Venice(interceptor).eval("(set! x 100)");
+        });
+    }
 }

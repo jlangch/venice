@@ -1,5 +1,5 @@
 /*   __    __         _
- *   \ \  / /__ _ __ (_) ___ ___ 
+ *   \ \  / /__ _ __ (_) ___ ___
  *    \ \/ / _ \ '_ \| |/ __/ _ \
  *     \  /  __/ | | | | (_|  __/
  *      \/ \___|_| |_|_|\___\___|
@@ -31,31 +31,31 @@ import com.github.jlangch.venice.impl.util.cidr.CIDR;
 
 public class Ip4CidrTrieTest {
 
-	@Test
-	public void test() {
-		final CidrTrie<String> trie = new CidrTrie<>();
+    @Test
+    public void test() {
+        final CidrTrie<String> trie = new CidrTrie<>();
 
-		assertEquals(0, trie.size());
+        assertEquals(0, trie.size());
 
-		final CIDR cidr = CIDR.parse("192.16.10.0/24");
-		
-		trie.insert(cidr, cidr.getNotation());
+        final CIDR cidr = CIDR.parse("192.16.10.0/24");
 
-		assertEquals(1, trie.size());
+        trie.insert(cidr, cidr.getNotation());
 
-		assertEquals("192.16.10.0/24", trie.getValue(CIDR.parse("192.16.10.0")));
-		assertEquals("192.16.10.0/24", trie.getValue(CIDR.parse("192.16.10.100")));
-		assertEquals("192.16.10.0/24", trie.getValue(CIDR.parse("192.16.10.255")));
+        assertEquals(1, trie.size());
 
-		assertEquals("192.16.10.0/24", trie.getCIDR("192.16.10.100").getNotation());
-		
-		assertNull(trie.getValue(CIDR.parse("0.0.0.0")));
-		assertNull(trie.getValue(CIDR.parse("20.10.0.0")));
-		assertNull(trie.getValue(CIDR.parse("192.16.9.255")));
-		assertNull(trie.getValue(CIDR.parse("192.16.11.0")));
-		assertNull(trie.getValue(CIDR.parse("192.16.12.0")));
-		assertNull(trie.getValue(CIDR.parse("200.16.0.9")));
-		assertNull(trie.getValue(CIDR.parse("255.255.255.255")));
-	}
+        assertEquals("192.16.10.0/24", trie.getValue(CIDR.parse("192.16.10.0")));
+        assertEquals("192.16.10.0/24", trie.getValue(CIDR.parse("192.16.10.100")));
+        assertEquals("192.16.10.0/24", trie.getValue(CIDR.parse("192.16.10.255")));
+
+        assertEquals("192.16.10.0/24", trie.getCIDR("192.16.10.100").getNotation());
+
+        assertNull(trie.getValue(CIDR.parse("0.0.0.0")));
+        assertNull(trie.getValue(CIDR.parse("20.10.0.0")));
+        assertNull(trie.getValue(CIDR.parse("192.16.9.255")));
+        assertNull(trie.getValue(CIDR.parse("192.16.11.0")));
+        assertNull(trie.getValue(CIDR.parse("192.16.12.0")));
+        assertNull(trie.getValue(CIDR.parse("200.16.0.9")));
+        assertNull(trie.getValue(CIDR.parse("255.255.255.255")));
+    }
 
 }

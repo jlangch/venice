@@ -1,5 +1,5 @@
 /*   __    __         _
- *   \ \  / /__ _ __ (_) ___ ___ 
+ *   \ \  / /__ _ __ (_) ___ ___
  *    \ \/ / _ \ '_ \| |/ __/ _ \
  *     \  /  __/ | | | | (_|  __/
  *      \/ \___|_| |_|_|\___\___|
@@ -27,81 +27,81 @@ import java.beans.Transient;
 
 public class AuditEvent {
 
-	public AuditEvent() {
-	}
+    public AuditEvent() {
+    }
 
-	public AuditEvent(
-			final String principal,
-			final long elapsedTimeMillis,
-			final AuditEventType eventType,
-			final String eventKey,
-			final String eventName,
-			final String eventMessage
-	) {
-		this.principal = principal;
-		this.elapsedTimeMillis = elapsedTimeMillis;
-		this.eventType = eventType;
-		this.eventKey = eventKey;
-		this.eventName = eventName;
-		this.eventMessage = eventMessage;
-	}
+    public AuditEvent(
+            final String principal,
+            final long elapsedTimeMillis,
+            final AuditEventType eventType,
+            final String eventKey,
+            final String eventName,
+            final String eventMessage
+    ) {
+        this.principal = principal;
+        this.elapsedTimeMillis = elapsedTimeMillis;
+        this.eventType = eventType;
+        this.eventKey = eventKey;
+        this.eventName = eventName;
+        this.eventMessage = eventMessage;
+    }
 
-	public String getPrincipal() {
-		return principal;
-	}
-	public void setPrincipal(final String principal) {
-		this.principal = principal;
-	}
+    public String getPrincipal() {
+        return principal;
+    }
+    public void setPrincipal(final String principal) {
+        this.principal = principal;
+    }
 
-	public long getElapsedTimeMillis() {
-		return elapsedTimeMillis;
-	}
-	public void setElapsedTimeMillis(final Integer elapsedTimeMillis) {
-		this.elapsedTimeMillis = elapsedTimeMillis;
-	}
+    public long getElapsedTimeMillis() {
+        return elapsedTimeMillis;
+    }
+    public void setElapsedTimeMillis(final Integer elapsedTimeMillis) {
+        this.elapsedTimeMillis = elapsedTimeMillis;
+    }
 
-	public AuditEventType getEventType() {
-		return eventType;
-	}
-	public void setEventType(final AuditEventType eventType) {
-		this.eventType = eventType;
-	}
-	@Transient
-	public boolean isType(final AuditEventType ... type) {
-		if (type != null) {
-			for(AuditEventType t : type) {
-				if (getEventType() == t) return true;
-			}
-		}
-		return false;
-	}
+    public AuditEventType getEventType() {
+        return eventType;
+    }
+    public void setEventType(final AuditEventType eventType) {
+        this.eventType = eventType;
+    }
+    @Transient
+    public boolean isType(final AuditEventType ... type) {
+        if (type != null) {
+            for(AuditEventType t : type) {
+                if (getEventType() == t) return true;
+            }
+        }
+        return false;
+    }
 
-	public String getEventName() {
-		return eventName;
-	}
-	public void setEventName(final String eventName) {
-		this.eventName = eventName;
-	}
+    public String getEventName() {
+        return eventName;
+    }
+    public void setEventName(final String eventName) {
+        this.eventName = eventName;
+    }
 
-	public String getEventKey() {
-		return eventKey;
-	}
-	public void setEventKey(final String eventKey) {
-		this.eventKey = eventKey;
-	}
+    public String getEventKey() {
+        return eventKey;
+    }
+    public void setEventKey(final String eventKey) {
+        this.eventKey = eventKey;
+    }
 
-	public String getEventMessage() {
-		return eventMessage;
-	}
-	public void setEventMessage(final String eventMessage) {
-		this.eventMessage = eventMessage;
-	}
+    public String getEventMessage() {
+        return eventMessage;
+    }
+    public void setEventMessage(final String eventMessage) {
+        this.eventMessage = eventMessage;
+    }
 
-	
-	private String principal;
-	private long elapsedTimeMillis;
-	private AuditEventType eventType;
-	private String eventName;
-	private String eventKey;
-	private String eventMessage;
+
+    private String principal;
+    private long elapsedTimeMillis;
+    private AuditEventType eventType;
+    private String eventName;
+    private String eventKey;
+    private String eventMessage;
 }

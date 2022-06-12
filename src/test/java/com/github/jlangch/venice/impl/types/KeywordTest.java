@@ -1,5 +1,5 @@
 /*   __    __         _
- *   \ \  / /__ _ __ (_) ___ ___ 
+ *   \ \  / /__ _ __ (_) ___ ___
  *    \ \/ / _ \ '_ \| |/ __/ _ \
  *     \  /  __/ | | | | (_|  __/
  *      \/ \___|_| |_|_|\___\___|
@@ -32,78 +32,78 @@ import com.github.jlangch.venice.Venice;
 
 public class KeywordTest {
 
-	@Test
-	public void test_toString() {
-		assertEquals(":alpha", new VncKeyword("alpha").toString());
-		assertEquals(":xx/alpha", new VncKeyword("xx/alpha").toString());
+    @Test
+    public void test_toString() {
+        assertEquals(":alpha", new VncKeyword("alpha").toString());
+        assertEquals(":xx/alpha", new VncKeyword("xx/alpha").toString());
 
-		assertEquals(":alpha", new VncKeyword(":alpha").toString());
-		assertEquals(":xx/alpha", new VncKeyword(":xx/alpha").toString());
+        assertEquals(":alpha", new VncKeyword(":alpha").toString());
+        assertEquals(":xx/alpha", new VncKeyword(":xx/alpha").toString());
 
-		assertEquals(":alpha", new VncKeyword("alpha").toString(true));
-		assertEquals(":xx/alpha", new VncKeyword("xx/alpha").toString(true));
+        assertEquals(":alpha", new VncKeyword("alpha").toString(true));
+        assertEquals(":xx/alpha", new VncKeyword("xx/alpha").toString(true));
 
-		assertEquals(":alpha", new VncKeyword(":alpha").toString(true));
-		assertEquals(":xx/alpha", new VncKeyword(":xx/alpha").toString(true));
-	}
+        assertEquals(":alpha", new VncKeyword(":alpha").toString(true));
+        assertEquals(":xx/alpha", new VncKeyword(":xx/alpha").toString(true));
+    }
 
-	@Test
-	public void test_convertToJavaObject() {
-		assertEquals("alpha", new VncKeyword("alpha").convertToJavaObject());
-		assertEquals("xx/alpha", new VncKeyword("xx/alpha").convertToJavaObject());
-		
-		assertEquals("alpha", new VncKeyword(":alpha").convertToJavaObject());
-		assertEquals("xx/alpha", new VncKeyword(":xx/alpha").convertToJavaObject());
-	}
+    @Test
+    public void test_convertToJavaObject() {
+        assertEquals("alpha", new VncKeyword("alpha").convertToJavaObject());
+        assertEquals("xx/alpha", new VncKeyword("xx/alpha").convertToJavaObject());
 
-	@Test
-	public void test_WithoutNamespace() {
-		assertEquals("alpha", new VncKeyword("alpha").getValue());
-		assertEquals("alpha", new VncKeyword("alpha").getQualifiedName());
-		assertEquals("alpha", new VncKeyword("alpha").getSimpleName());
-		assertEquals(null, new VncKeyword("alpha").getNamespace());
-		assertFalse(new VncKeyword("alpha").hasNamespace());
+        assertEquals("alpha", new VncKeyword(":alpha").convertToJavaObject());
+        assertEquals("xx/alpha", new VncKeyword(":xx/alpha").convertToJavaObject());
+    }
 
-		assertEquals("alpha", new VncKeyword(":alpha").getValue());
-		assertEquals("alpha", new VncKeyword(":alpha").getQualifiedName());
-		assertEquals("alpha", new VncKeyword(":alpha").getSimpleName());
-		assertEquals(null, new VncKeyword(":alpha").getNamespace());
-		assertFalse(new VncKeyword(":alpha").hasNamespace());
-	}
+    @Test
+    public void test_WithoutNamespace() {
+        assertEquals("alpha", new VncKeyword("alpha").getValue());
+        assertEquals("alpha", new VncKeyword("alpha").getQualifiedName());
+        assertEquals("alpha", new VncKeyword("alpha").getSimpleName());
+        assertEquals(null, new VncKeyword("alpha").getNamespace());
+        assertFalse(new VncKeyword("alpha").hasNamespace());
 
-	@Test
-	public void test_WithNamespace() {
-		assertEquals("xx/alpha", new VncKeyword("xx/alpha").getValue());
-		assertEquals("xx/alpha", new VncKeyword("xx/alpha").getQualifiedName());
-		assertEquals("alpha", new VncKeyword("xx/alpha").getSimpleName());
-		assertEquals("xx", new VncKeyword("xx/alpha").getNamespace());
-		assertTrue(new VncKeyword("xx/alpha").hasNamespace());
+        assertEquals("alpha", new VncKeyword(":alpha").getValue());
+        assertEquals("alpha", new VncKeyword(":alpha").getQualifiedName());
+        assertEquals("alpha", new VncKeyword(":alpha").getSimpleName());
+        assertEquals(null, new VncKeyword(":alpha").getNamespace());
+        assertFalse(new VncKeyword(":alpha").hasNamespace());
+    }
 
-		assertEquals("xx/alpha", new VncKeyword(":xx/alpha").getValue());
-		assertEquals("xx/alpha", new VncKeyword(":xx/alpha").getQualifiedName());
-		assertEquals("alpha", new VncKeyword(":xx/alpha").getSimpleName());
-		assertEquals("xx", new VncKeyword(":xx/alpha").getNamespace());
-		assertTrue(new VncKeyword(":xx/alpha").hasNamespace());
-	}
+    @Test
+    public void test_WithNamespace() {
+        assertEquals("xx/alpha", new VncKeyword("xx/alpha").getValue());
+        assertEquals("xx/alpha", new VncKeyword("xx/alpha").getQualifiedName());
+        assertEquals("alpha", new VncKeyword("xx/alpha").getSimpleName());
+        assertEquals("xx", new VncKeyword("xx/alpha").getNamespace());
+        assertTrue(new VncKeyword("xx/alpha").hasNamespace());
 
-	@Test
-	public void test_KeywordAsFunction() {
-		final Venice venice = new Venice();
+        assertEquals("xx/alpha", new VncKeyword(":xx/alpha").getValue());
+        assertEquals("xx/alpha", new VncKeyword(":xx/alpha").getQualifiedName());
+        assertEquals("alpha", new VncKeyword(":xx/alpha").getSimpleName());
+        assertEquals("xx", new VncKeyword(":xx/alpha").getNamespace());
+        assertTrue(new VncKeyword(":xx/alpha").hasNamespace());
+    }
 
-		// maps
-		assertEquals("2", venice.eval("(pr-str (:a {:a 2 :b 3}))"));		
-		assertEquals("nil", venice.eval("(pr-str (:c {:a 2 :b 3}))"));
-		
-		// maps with default
-		assertEquals("2", venice.eval("(pr-str (:a {:a 2 :b 3} 5))"));
-		assertEquals("5", venice.eval("(pr-str (:c {:a 2 :b 3} 5))"));
+    @Test
+    public void test_KeywordAsFunction() {
+        final Venice venice = new Venice();
 
-		// sets
-		assertEquals(":a", venice.eval("(pr-str (:a #{:a :b}))"));		
-		assertEquals("nil", venice.eval("(pr-str (:c #{:a :b}))"));
-		
-		// sets with default
-		assertEquals(":a", venice.eval("(pr-str (:a #{:a :b } :e))"));
-		assertEquals(":e", venice.eval("(pr-str (:c #{:a :b} :e))"));
-	}
+        // maps
+        assertEquals("2", venice.eval("(pr-str (:a {:a 2 :b 3}))"));
+        assertEquals("nil", venice.eval("(pr-str (:c {:a 2 :b 3}))"));
+
+        // maps with default
+        assertEquals("2", venice.eval("(pr-str (:a {:a 2 :b 3} 5))"));
+        assertEquals("5", venice.eval("(pr-str (:c {:a 2 :b 3} 5))"));
+
+        // sets
+        assertEquals(":a", venice.eval("(pr-str (:a #{:a :b}))"));
+        assertEquals("nil", venice.eval("(pr-str (:c #{:a :b}))"));
+
+        // sets with default
+        assertEquals(":a", venice.eval("(pr-str (:a #{:a :b } :e))"));
+        assertEquals(":e", venice.eval("(pr-str (:c #{:a :b} :e))"));
+    }
 }

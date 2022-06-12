@@ -1,5 +1,5 @@
 /*   __    __         _
- *   \ \  / /__ _ __ (_) ___ ___ 
+ *   \ \  / /__ _ __ (_) ___ ___
  *    \ \/ / _ \ '_ \| |/ __/ _ \
  *     \  /  __/ | | | | (_|  __/
  *      \/ \___|_| |_|_|\___\___|
@@ -28,9 +28,9 @@ import org.junit.jupiter.api.Test;
 
 public class VeniceClasspathTest {
 
-	@Test
-	public void testVeniceBasePath() {
-		assertEquals("com/github/jlangch/venice/", VeniceClasspath.getVeniceBasePath());
-	}
+    @Test
+    public void testVeniceBasePath() {
+        assertEquals("com/github/jlangch/venice/", VeniceClasspath.getVeniceBasePath());
+    }
 
 }

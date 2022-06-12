@@ -1,5 +1,5 @@
 /*   __    __         _
- *   \ \  / /__ _ __ (_) ___ ___ 
+ *   \ \  / /__ _ __ (_) ___ ___
  *    \ \/ / _ \ '_ \| |/ __/ _ \
  *     \  /  __/ | | | | (_|  __/
  *      \/ \___|_| |_|_|\___\___|
@@ -28,60 +28,60 @@ import org.junit.jupiter.api.Test;
 
 
 public class SpecialFormsTest_dorun {
-	
-	@Test
-	public void test() {
-		final Venice venice = new Venice();
 
-		final String script ="(+ (+ 1 1) 2)";
+    @Test
+    public void test() {
+        final Venice venice = new Venice();
 
-		assertEquals(4L, venice.eval(script));
-	}
-	
-	@Test
-	public void test_dorun_expr() {
-		final Venice venice = new Venice();
+        final String script ="(+ (+ 1 1) 2)";
 
-		final String script =
-				"(with-out-str                 \n" + 
-				"  (dorun 3 (print (+ 1 1))))  ";
+        assertEquals(4L, venice.eval(script));
+    }
 
-		assertEquals("222", venice.eval(script));
-	}
-	
-	@Test
-	public void test_dorun_expr_time() {
-		final Venice venice = new Venice();
+    @Test
+    public void test_dorun_expr() {
+        final Venice venice = new Venice();
 
-		final String script =
-				"(with-out-str                        \n" + 
-				"  (time (dorun 3 (print (+ 1 1)))))    ";
+        final String script =
+                "(with-out-str                 \n" +
+                "  (dorun 3 (print (+ 1 1))))  ";
 
-		final String result = (String)venice.eval(script);
-		assertTrue(result.startsWith("222Elapsed time: "));
-	}
-	
-	@Test
-	public void test_dorun_fn() {
-		final Venice venice = new Venice();
+        assertEquals("222", venice.eval(script));
+    }
 
-		final String script =
-				"(with-out-str                       \n" + 
-				"  (let [f (fn [] (print (+ 1 1)))]  \n" + 
-				"    (dorun 3 f)))                      ";
+    @Test
+    public void test_dorun_expr_time() {
+        final Venice venice = new Venice();
 
-		assertEquals("222", venice.eval(script));
-	}
-	
-	@Test
-	public void test_dorun_fn_arg() {
-		final Venice venice = new Venice();
+        final String script =
+                "(with-out-str                        \n" +
+                "  (time (dorun 3 (print (+ 1 1)))))    ";
 
-		final String script =
-				"(with-out-str                       \n" + 
-				"  (let [f (fn [x] (print (+ x 1)))] \n" + 
-				"    (dorun 3 f)))                      ";
+        final String result = (String)venice.eval(script);
+        assertTrue(result.startsWith("222Elapsed time: "));
+    }
 
-		assertEquals("123", venice.eval(script));
-	}
+    @Test
+    public void test_dorun_fn() {
+        final Venice venice = new Venice();
+
+        final String script =
+                "(with-out-str                       \n" +
+                "  (let [f (fn [] (print (+ 1 1)))]  \n" +
+                "    (dorun 3 f)))                      ";
+
+        assertEquals("222", venice.eval(script));
+    }
+
+    @Test
+    public void test_dorun_fn_arg() {
+        final Venice venice = new Venice();
+
+        final String script =
+                "(with-out-str                       \n" +
+                "  (let [f (fn [x] (print (+ x 1)))] \n" +
+                "    (dorun 3 f)))                      ";
+
+        assertEquals("123", venice.eval(script));
+    }
 }

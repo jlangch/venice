@@ -1,5 +1,5 @@
 /*   __    __         _
- *   \ \  / /__ _ __ (_) ___ ___ 
+ *   \ \  / /__ _ __ (_) ___ ___
  *    \ \/ / _ \ '_ \| |/ __/ _ \
  *     \  /  __/ | | | | (_|  __/
  *      \/ \___|_| |_|_|\___\___|
@@ -33,35 +33,35 @@ import com.github.jlangch.venice.Venice;
 
 public class JavaInterop_instance_field_Test {
 
-	@Test
-	public void test1() {
-		final Map<String,Object> params = Parameters.of("obj", new TestObject());
-		
-		final Venice venice = new Venice();
+    @Test
+    public void test1() {
+        final Map<String,Object> params = Parameters.of("obj", new TestObject());
 
-		assertEquals(100L, venice.eval("(. obj :LONG_VAL)", params));		
-		assertEquals(100L, venice.eval("(. obj :LONG_VAL)", params));		
-				
-		assertEquals(Double.valueOf(3.14159265), (Double)venice.eval("(. obj :DOUBLE_VAL)", params), 0.0000001D);
-		assertEquals(Double.valueOf(3.14159265), (Double)venice.eval("(. obj :DOUBLE_VAL)", params), 0.0000001D);
+        final Venice venice = new Venice();
 
-		assertEquals("alpha", venice.eval("(. obj :STRING_VAL)", params));		
-		assertEquals("alpha", venice.eval("(. obj :STRING_VAL)", params));		
+        assertEquals(100L, venice.eval("(. obj :LONG_VAL)", params));
+        assertEquals(100L, venice.eval("(. obj :LONG_VAL)", params));
 
-		assertEquals("BLUE", venice.eval("(. obj :ENUM_VAL)", params));		
-		assertEquals("BLUE", venice.eval("(. obj :ENUM_VAL)", params));		
-	}
+        assertEquals(Double.valueOf(3.14159265), (Double)venice.eval("(. obj :DOUBLE_VAL)", params), 0.0000001D);
+        assertEquals(Double.valueOf(3.14159265), (Double)venice.eval("(. obj :DOUBLE_VAL)", params), 0.0000001D);
+
+        assertEquals("alpha", venice.eval("(. obj :STRING_VAL)", params));
+        assertEquals("alpha", venice.eval("(. obj :STRING_VAL)", params));
+
+        assertEquals("BLUE", venice.eval("(. obj :ENUM_VAL)", params));
+        assertEquals("BLUE", venice.eval("(. obj :ENUM_VAL)", params));
+    }
 
 
-	
-	public static enum TestEnum {
-		RED, GREEN, BLUE;
-	}
-	
-	public static class TestObject {
-		public final long LONG_VAL = 100L;
-		public final double DOUBLE_VAL = 3.14159265D;
-		public final String STRING_VAL = "alpha";
-		public final TestEnum ENUM_VAL = TestEnum.BLUE;
-	}
+
+    public static enum TestEnum {
+        RED, GREEN, BLUE;
+    }
+
+    public static class TestObject {
+        public final long LONG_VAL = 100L;
+        public final double DOUBLE_VAL = 3.14159265D;
+        public final String STRING_VAL = "alpha";
+        public final TestEnum ENUM_VAL = TestEnum.BLUE;
+    }
 }

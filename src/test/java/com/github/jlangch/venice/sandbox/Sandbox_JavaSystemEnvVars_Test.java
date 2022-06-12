@@ -1,5 +1,5 @@
 /*   __    __         _
- *   \ \  / /__ _ __ (_) ___ ___ 
+ *   \ \  / /__ _ __ (_) ___ ___
  *    \ \/ / _ \ '_ \| |/ __/ _ \
  *     \  /  __/ | | | | (_|  __/
  *      \/ \___|_| |_|_|\___\___|
@@ -38,93 +38,93 @@ import com.github.jlangch.venice.javainterop.SandboxRules;
 
 public class Sandbox_JavaSystemEnvVars_Test {
 
-	
-	// ------------------------------------------------------------------------
-	// Sandbox FAIL
-	// ------------------------------------------------------------------------
-		
-	@Test
-	public void test_RejectAccessToAllSystemEnvs_RejectAllInterceptor() {
-		assertThrows(SecurityException.class, () -> {
-			new Venice(new RejectAllInterceptor()).eval("(system-env \"test\")");
-		});
-	}
 
-	@Test
-	public void test_all_RejectAllInterceptor() {
-		final HashMap<?,?> env = (HashMap<?,?>)new Venice(new RejectAllInterceptor()).eval("(system-env)");
-		assertTrue(env.isEmpty());
-	}
-	
-	@Test
-	public void test_RejectAccessToAllSystemEnvs_EmptySandbox() {
-		final Interceptor interceptor = new SandboxInterceptor(new SandboxRules());				
-		
-		assertThrows(SecurityException.class, () -> {
-			new Venice(interceptor).eval("(system-env \"test\")");
-		});
-	}
-	
-	@Test
-	public void test_RejectAccessToNonStandardSystemEnvs() {
-		final Interceptor interceptor = new SandboxInterceptor(
-												new SandboxRules().withStandardSystemEnvs());				
-		
-		assertThrows(SecurityException.class, () -> {
-			new Venice(interceptor).eval("(system-env \"test\")");
-		});
-	}
-	
-	@Test
-	public void test_RejectAccessToNonWhitelistedSystemEnvs() {
-		final Interceptor interceptor = new SandboxInterceptor(
-												new SandboxRules().withSystemEnvs("user"));				
-		
-		assertThrows(SecurityException.class, () -> {
-			new Venice(interceptor).eval("(system-env \"test\")");
-		});
-	}
+    // ------------------------------------------------------------------------
+    // Sandbox FAIL
+    // ------------------------------------------------------------------------
 
-	
-	
-	// ------------------------------------------------------------------------
-	// Sandbox PASS
-	// ------------------------------------------------------------------------
+    @Test
+    public void test_RejectAccessToAllSystemEnvs_RejectAllInterceptor() {
+        assertThrows(SecurityException.class, () -> {
+            new Venice(new RejectAllInterceptor()).eval("(system-env \"test\")");
+        });
+    }
 
-	@Test
-	public void test_NoSandbox() {
-		new Venice().eval("(system-env \"test\")");
-	}
+    @Test
+    public void test_all_RejectAllInterceptor() {
+        final HashMap<?,?> env = (HashMap<?,?>)new Venice(new RejectAllInterceptor()).eval("(system-env)");
+        assertTrue(env.isEmpty());
+    }
 
-	@Test
-	public void test_all_NoSandbox() {
-		final HashMap<?,?> env = (HashMap<?,?>)new Venice().eval("(system-env)");
-		assertFalse(env.isEmpty());
-	}
+    @Test
+    public void test_RejectAccessToAllSystemEnvs_EmptySandbox() {
+        final Interceptor interceptor = new SandboxInterceptor(new SandboxRules());
 
-	@Test
-	public void test_AccessToAllSystemEnvs() {
-		final Interceptor interceptor = 
-				new SandboxInterceptor(new SandboxRules().withAllSystemEnvs());				
+        assertThrows(SecurityException.class, () -> {
+            new Venice(interceptor).eval("(system-env \"test\")");
+        });
+    }
 
-		new Venice(interceptor).eval("(system-env \"test\")");
-	}
+    @Test
+    public void test_RejectAccessToNonStandardSystemEnvs() {
+        final Interceptor interceptor = new SandboxInterceptor(
+                                                new SandboxRules().withStandardSystemEnvs());
 
-	@Test
-	public void test_all_AccessToAllSystemEnvs() {
-		final Interceptor interceptor = 
-				new SandboxInterceptor(new SandboxRules().withAllSystemEnvs());				
+        assertThrows(SecurityException.class, () -> {
+            new Venice(interceptor).eval("(system-env \"test\")");
+        });
+    }
 
-		final HashMap<?,?> env = (HashMap<?,?>)new Venice(interceptor).eval("(system-env)");
-		assertFalse(env.isEmpty());
-	}
-	
-	@Test
-	public void test_AccessToWhitelistedSystemEnvs() {
-		final Interceptor interceptor = 
-				new SandboxInterceptor(new SandboxRules().withSystemEnvs("test"));				
-		
-		new Venice(interceptor).eval("(system-env \"test\")");
-	}
+    @Test
+    public void test_RejectAccessToNonWhitelistedSystemEnvs() {
+        final Interceptor interceptor = new SandboxInterceptor(
+                                                new SandboxRules().withSystemEnvs("user"));
+
+        assertThrows(SecurityException.class, () -> {
+            new Venice(interceptor).eval("(system-env \"test\")");
+        });
+    }
+
+
+
+    // ------------------------------------------------------------------------
+    // Sandbox PASS
+    // ------------------------------------------------------------------------
+
+    @Test
+    public void test_NoSandbox() {
+        new Venice().eval("(system-env \"test\")");
+    }
+
+    @Test
+    public void test_all_NoSandbox() {
+        final HashMap<?,?> env = (HashMap<?,?>)new Venice().eval("(system-env)");
+        assertFalse(env.isEmpty());
+    }
+
+    @Test
+    public void test_AccessToAllSystemEnvs() {
+        final Interceptor interceptor =
+                new SandboxInterceptor(new SandboxRules().withAllSystemEnvs());
+
+        new Venice(interceptor).eval("(system-env \"test\")");
+    }
+
+    @Test
+    public void test_all_AccessToAllSystemEnvs() {
+        final Interceptor interceptor =
+                new SandboxInterceptor(new SandboxRules().withAllSystemEnvs());
+
+        final HashMap<?,?> env = (HashMap<?,?>)new Venice(interceptor).eval("(system-env)");
+        assertFalse(env.isEmpty());
+    }
+
+    @Test
+    public void test_AccessToWhitelistedSystemEnvs() {
+        final Interceptor interceptor =
+                new SandboxInterceptor(new SandboxRules().withSystemEnvs("test"));
+
+        new Venice(interceptor).eval("(system-env \"test\")");
+    }
 
 }

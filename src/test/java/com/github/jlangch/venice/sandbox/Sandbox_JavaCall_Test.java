@@ -1,5 +1,5 @@
 /*   __    __         _
- *   \ \  / /__ _ __ (_) ___ ___ 
+ *   \ \  / /__ _ __ (_) ___ ___
  *    \ \/ / _ \ '_ \| |/ __/ _ \
  *     \  /  __/ | | | | (_|  __/
  *      \/ \___|_| |_|_|\___\___|
@@ -32,54 +32,54 @@ import com.github.jlangch.venice.javainterop.RejectAllInterceptor;
 
 
 public class Sandbox_JavaCall_Test {
-	
-	@Test
-	public void testRedefineJavaFn() {
-		assertThrows(VncException.class, () -> {
-			new Venice(new RejectAllInterceptor()).eval(
-					"(do                           \n" +
-					"  (defn . [x] x)              \n" +
-					"  (. 12))                       ");
-		});
-	}
-	
-	@Test
-	public void testException() {
-		assertThrows(VncException.class, () -> {
-			new Venice(new RejectAllInterceptor()).eval(
-					"(throw (ex :VncException \"x\")))");
-		});
-	}
-	
-	@Test
-	public void testRedefineJavaProxifyFn() {
-		assertThrows(VncException.class, () -> {
-			new Venice(new RejectAllInterceptor()).eval(
-					"(do                           \n" +
-					"  (defn proxify [x] x)        \n" +
-					"  (proxify 12))                 ");
-		});
-	}
 
-	@Test
-	public void test_system_exit_1() {
-		assertThrows(SecurityException.class, () -> {
-			new Venice(new RejectAllInterceptor()).eval("(. :java.lang.System :exit 0)");
-		});
-	}
+    @Test
+    public void testRedefineJavaFn() {
+        assertThrows(VncException.class, () -> {
+            new Venice(new RejectAllInterceptor()).eval(
+                    "(do                           \n" +
+                    "  (defn . [x] x)              \n" +
+                    "  (. 12))                       ");
+        });
+    }
 
-	@Test
-	public void test_system_exit_2() {
-		assertThrows(SecurityException.class, () -> {
-			new Venice(new RejectAllInterceptor()).eval("(docoll (fn [x] (. :java.lang.System :exit 0)) [1])");
-		});
-	}
+    @Test
+    public void testException() {
+        assertThrows(VncException.class, () -> {
+            new Venice(new RejectAllInterceptor()).eval(
+                    "(throw (ex :VncException \"x\")))");
+        });
+    }
 
-	@Test
-	public void test_system_exit_3() {
-		assertThrows(SecurityException.class, () -> {
-			new Venice(new RejectAllInterceptor()).eval("(map (fn [x] (do (. :java.lang.System :exit 0) x)) [1])");
-		});
-	}
+    @Test
+    public void testRedefineJavaProxifyFn() {
+        assertThrows(VncException.class, () -> {
+            new Venice(new RejectAllInterceptor()).eval(
+                    "(do                           \n" +
+                    "  (defn proxify [x] x)        \n" +
+                    "  (proxify 12))                 ");
+        });
+    }
+
+    @Test
+    public void test_system_exit_1() {
+        assertThrows(SecurityException.class, () -> {
+            new Venice(new RejectAllInterceptor()).eval("(. :java.lang.System :exit 0)");
+        });
+    }
+
+    @Test
+    public void test_system_exit_2() {
+        assertThrows(SecurityException.class, () -> {
+            new Venice(new RejectAllInterceptor()).eval("(docoll (fn [x] (. :java.lang.System :exit 0)) [1])");
+        });
+    }
+
+    @Test
+    public void test_system_exit_3() {
+        assertThrows(SecurityException.class, () -> {
+            new Venice(new RejectAllInterceptor()).eval("(map (fn [x] (do (. :java.lang.System :exit 0) x)) [1])");
+        });
+    }
 
 }

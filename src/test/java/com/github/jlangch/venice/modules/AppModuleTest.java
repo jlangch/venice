@@ -1,5 +1,5 @@
 /*   __    __         _
- *   \ \  / /__ _ __ (_) ___ ___ 
+ *   \ \  / /__ _ __ (_) ___ ___
  *    \ \/ / _ \ '_ \| |/ __/ _ \
  *     \  /  __/ | | | | (_|  __/
  *      \/ \___|_| |_|_|\___\___|
@@ -42,71 +42,71 @@ import com.github.jlangch.venice.util.NullInputStream;
 
 public class AppModuleTest {
 
-	@Test
-	public void test_base() throws Exception {
-		final Venice venice = new Venice();
+    @Test
+    public void test_base() throws Exception {
+        final Venice venice = new Venice();
 
-		final File dir = Files.createTempDirectory("test").toFile();
-		final File subdir = new File(dir, "util");
-		FileUtil.mkdir(subdir);	
-		
-		FileUtil.save(
-				"(do                                  \n" +
-				"  (load-file \"util/def.venice\")    \n" +
-				"  (println XXX))                       ",
-				new File(dir, "main.venice"),
-				true);
-		
-		FileUtil.save(
-				"(def XXX 100)",
-				new File(subdir, "def.venice"),
-				true);
-		
-		try {
-			final String script =
-				"(do                                                                       \n"
-			  + "  (load-module :app)                                                      \n"
-			  + "  (app/build                                                              \n"
-			  + "     \"test\"                                                             \n"
-			  + "     \"main.venice\"                                                      \n"
-			  + "     { \"main.venice\"      \"" + new File(dir, "main.venice") + "\"      \n"
-			  + "       \"util/def.venice\"  \"" + new File(subdir, "def.venice") + "\" }  \n"
-			  + "     \"" + dir + "\"))"; 
-					
-			final Map<?,?> result = (Map<?,?>)venice.eval(script);
-			
-			final File appArchive = (File)result.get("file");
-			
-			assertEquals("test", result.get("name"));
-			assertEquals("test.zip", appArchive.getName());
-			
-			assertTrue(new File(dir, "test.zip").exists());
-			
-			final CapturingPrintStream stdout = new CapturingPrintStream();
-			final CapturingPrintStream stderr = new CapturingPrintStream();
+        final File dir = Files.createTempDirectory("test").toFile();
+        final File subdir = new File(dir, "util");
+        FileUtil.mkdir(subdir);
 
-			AppRunner.run(
-				appArchive, 
-				null, 
-				LoadPathsFactory.acceptAll(),
-				stdout,
-				stderr,
-				new InputStreamReader(new NullInputStream()));
-			
-			stdout.flush();
-			stderr.flush();
-			
-			assertEquals("100\n", stdout.getOutput());
-			assertEquals("", stderr.getOutput());
-		}
-		catch(Exception ex) {
-			throw ex;
-		}
-		finally {
-			FileUtil.rmdir(dir);
-		}
-		
-		assertFalse(dir.exists());
-	}
+        FileUtil.save(
+                "(do                                  \n" +
+                "  (load-file \"util/def.venice\")    \n" +
+                "  (println XXX))                       ",
+                new File(dir, "main.venice"),
+                true);
+
+        FileUtil.save(
+                "(def XXX 100)",
+                new File(subdir, "def.venice"),
+                true);
+
+        try {
+            final String script =
+                "(do                                                                       \n"
+              + "  (load-module :app)                                                      \n"
+              + "  (app/build                                                              \n"
+              + "     \"test\"                                                             \n"
+              + "     \"main.venice\"                                                      \n"
+              + "     { \"main.venice\"      \"" + new File(dir, "main.venice") + "\"      \n"
+              + "       \"util/def.venice\"  \"" + new File(subdir, "def.venice") + "\" }  \n"
+              + "     \"" + dir + "\"))";
+
+            final Map<?,?> result = (Map<?,?>)venice.eval(script);
+
+            final File appArchive = (File)result.get("file");
+
+            assertEquals("test", result.get("name"));
+            assertEquals("test.zip", appArchive.getName());
+
+            assertTrue(new File(dir, "test.zip").exists());
+
+            final CapturingPrintStream stdout = new CapturingPrintStream();
+            final CapturingPrintStream stderr = new CapturingPrintStream();
+
+            AppRunner.run(
+                appArchive,
+                null,
+                LoadPathsFactory.acceptAll(),
+                stdout,
+                stderr,
+                new InputStreamReader(new NullInputStream()));
+
+            stdout.flush();
+            stderr.flush();
+
+            assertEquals("100\n", stdout.getOutput());
+            assertEquals("", stderr.getOutput());
+        }
+        catch(Exception ex) {
+            throw ex;
+        }
+        finally {
+            FileUtil.rmdir(dir);
+        }
+
+        assertFalse(dir.exists());
+    }
 
 }

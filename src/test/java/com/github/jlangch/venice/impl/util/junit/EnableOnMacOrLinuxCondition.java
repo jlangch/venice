@@ -27,18 +27,18 @@ import org.junit.jupiter.api.extension.ExtensionContext;
 
 
 public class EnableOnMacOrLinuxCondition implements ExecutionCondition {
-	
-	@Override
-	public ConditionEvaluationResult evaluateExecutionCondition(ExtensionContext context) {
-		final String osName = System.getProperty("os.name");
-		if (osName.startsWith("Mac OS X")) {
-			return ConditionEvaluationResult.enabled("Test enabled");
-		}
-		else if (osName.startsWith("LINUX")) {
-			return ConditionEvaluationResult.enabled("Test enabled");
-		}
-		else {
-			return ConditionEvaluationResult.disabled("Test disabled on " + osName);
-		}
-	}
+
+    @Override
+    public ConditionEvaluationResult evaluateExecutionCondition(ExtensionContext context) {
+        final String osName = System.getProperty("os.name");
+        if (osName.startsWith("Mac OS X")) {
+            return ConditionEvaluationResult.enabled("Test enabled");
+        }
+        else if (osName.startsWith("LINUX")) {
+            return ConditionEvaluationResult.enabled("Test enabled");
+        }
+        else {
+            return ConditionEvaluationResult.disabled("Test disabled on " + osName);
+        }
+    }
 }

@@ -1,5 +1,5 @@
 /*   __    __         _
- *   \ \  / /__ _ __ (_) ___ ___ 
+ *   \ \  / /__ _ __ (_) ___ ___
  *    \ \/ / _ \ '_ \| |/ __/ _ \
  *     \  /  __/ | | | | (_|  __/
  *      \/ \___|_| |_|_|\___\___|
@@ -32,200 +32,200 @@ import com.github.jlangch.venice.impl.util.markdown.chunk.TextChunk;
 
 public class TextBlockParserTest {
 
-	@Test
-	public void test_basic_1() {
-		final String md = "Lorem ipsum dolor sit amet, consetetur";
-		
-		Blocks blocks = new BlockParser(md).parse();
-		
-		assertEquals(1, blocks.size());
-		
-		assertTrue(blocks.get(0) instanceof TextBlock);
+    @Test
+    public void test_basic_1() {
+        final String md = "Lorem ipsum dolor sit amet, consetetur";
 
-		TextBlock text = (TextBlock)blocks.get(0); 
-		
-		assertEquals(1, text.getChunks().size());
+        Blocks blocks = new BlockParser(md).parse();
 
-		assertEquals("Lorem ipsum dolor sit amet, consetetur", ((TextChunk)text.getChunks().get(0)).getText());
-		assertEquals(TextChunk.Format.NORMAL, ((TextChunk)text.getChunks().get(0)).getFormat());
-	}
+        assertEquals(1, blocks.size());
 
-	@Test
-	public void test_basic_2() {
-		final String md = "Lorem ipsum dolor \n" +
-						  "sit amet, consetetur";
-		
-		Blocks blocks = new BlockParser(md).parse();
-		
-		assertEquals(1, blocks.size());
-		
-		assertTrue(blocks.get(0) instanceof TextBlock);
+        assertTrue(blocks.get(0) instanceof TextBlock);
 
-		TextBlock text = (TextBlock)blocks.get(0); 
-	
-		assertEquals(1, text.getChunks().size());
+        TextBlock text = (TextBlock)blocks.get(0);
 
-		assertEquals("Lorem ipsum dolor sit amet, consetetur", ((TextChunk)text.getChunks().get(0)).getText());
-		assertEquals(TextChunk.Format.NORMAL, ((TextChunk)text.getChunks().get(0)).getFormat());
-	}
+        assertEquals(1, text.getChunks().size());
 
-	@Test
-	public void test_basic_3() {
-		final String md = "Lorem ipsum dolor sit amet, consetetur.\n" +
-						  "\n" +
-						  "At vero eos et accusam et justo duo.";
-		
-		Blocks blocks = new BlockParser(md).parse();
-		
-		assertEquals(2, blocks.size());
-		
-		assertTrue(blocks.get(0) instanceof TextBlock);
+        assertEquals("Lorem ipsum dolor sit amet, consetetur", ((TextChunk)text.getChunks().get(0)).getText());
+        assertEquals(TextChunk.Format.NORMAL, ((TextChunk)text.getChunks().get(0)).getFormat());
+    }
 
-		// block 1
-		
-		TextBlock text1 = (TextBlock)blocks.get(0); 
-		
-		assertEquals(1, text1.getChunks().size());
+    @Test
+    public void test_basic_2() {
+        final String md = "Lorem ipsum dolor \n" +
+                          "sit amet, consetetur";
 
-		assertEquals("Lorem ipsum dolor sit amet, consetetur.", ((TextChunk)text1.getChunks().get(0)).getText());
-		assertEquals(TextChunk.Format.NORMAL, ((TextChunk)text1.getChunks().get(0)).getFormat());
+        Blocks blocks = new BlockParser(md).parse();
 
-		// block 2
-		
-		TextBlock text2 = (TextBlock)blocks.get(1); 
-		
-		assertEquals(1, text2.getChunks().size());
+        assertEquals(1, blocks.size());
 
-		assertEquals("At vero eos et accusam et justo duo.", ((TextChunk)text2.getChunks().get(0)).getText());
-		assertEquals(TextChunk.Format.NORMAL, ((TextChunk)text2.getChunks().get(0)).getFormat());
-	}
+        assertTrue(blocks.get(0) instanceof TextBlock);
 
-	@Test
-	public void test_basic_4() {
-		final String md = "Lorem ipsum dolor \n" +
-						  "sit amet, consetetur.\n" +
-						  "\n\n" +
-						  "At vero eos et accusam et\n" +
-						  "justo duo.";
-		
-		Blocks blocks = new BlockParser(md).parse();
-		
-		assertEquals(2, blocks.size());
-		
-		assertTrue(blocks.get(0) instanceof TextBlock);
+        TextBlock text = (TextBlock)blocks.get(0);
 
-		// block 1
+        assertEquals(1, text.getChunks().size());
 
-		TextBlock text1 = (TextBlock)blocks.get(0); 
-	
-		assertEquals(1, text1.getChunks().size());
+        assertEquals("Lorem ipsum dolor sit amet, consetetur", ((TextChunk)text.getChunks().get(0)).getText());
+        assertEquals(TextChunk.Format.NORMAL, ((TextChunk)text.getChunks().get(0)).getFormat());
+    }
 
-		assertEquals("Lorem ipsum dolor sit amet, consetetur.", ((TextChunk)text1.getChunks().get(0)).getText());
-		assertEquals(TextChunk.Format.NORMAL, ((TextChunk)text1.getChunks().get(0)).getFormat());
+    @Test
+    public void test_basic_3() {
+        final String md = "Lorem ipsum dolor sit amet, consetetur.\n" +
+                          "\n" +
+                          "At vero eos et accusam et justo duo.";
 
-		// block 2
+        Blocks blocks = new BlockParser(md).parse();
 
-		TextBlock text2 = (TextBlock)blocks.get(1); 
-	
-		assertEquals(1, text2.getChunks().size());
+        assertEquals(2, blocks.size());
 
-		assertEquals("At vero eos et accusam et justo duo.", ((TextChunk)text2.getChunks().get(0)).getText());
-		assertEquals(TextChunk.Format.NORMAL, ((TextChunk)text2.getChunks().get(0)).getFormat());
-	}
+        assertTrue(blocks.get(0) instanceof TextBlock);
 
-	@Test
-	public void test_linebreak_1() {
-		final String md = "Lorem ipsum dolor¶";
-		
-		Blocks blocks = new BlockParser(md).parse();
-		
-		assertEquals(1, blocks.size());
-		assertTrue(blocks.get(0) instanceof TextBlock);
+        // block 1
 
-		TextBlock text1 = (TextBlock)blocks.get(0); 
-	
-		assertEquals(2, text1.getChunks().size());
+        TextBlock text1 = (TextBlock)blocks.get(0);
 
-		assertTrue(text1.getChunks().get(0) instanceof TextChunk);
-		assertTrue(text1.getChunks().get(1) instanceof LineBreakChunk);
+        assertEquals(1, text1.getChunks().size());
 
-		assertEquals("Lorem ipsum dolor", ((TextChunk)text1.getChunks().get(0)).getText());
-		assertEquals(TextChunk.Format.NORMAL, ((TextChunk)text1.getChunks().get(0)).getFormat());
-	}
+        assertEquals("Lorem ipsum dolor sit amet, consetetur.", ((TextChunk)text1.getChunks().get(0)).getText());
+        assertEquals(TextChunk.Format.NORMAL, ((TextChunk)text1.getChunks().get(0)).getFormat());
 
-	@Test
-	public void test_linebreak_2() {
-		final String md = "Lorem ¶ ipsum ¶ dolor ¶";
-		
-		Blocks blocks = new BlockParser(md).parse();
-		
-		assertEquals(1, blocks.size());
-		assertTrue(blocks.get(0) instanceof TextBlock);
+        // block 2
 
-		TextBlock text1 = (TextBlock)blocks.get(0); 
-	
-		assertEquals(6, text1.getChunks().size());
+        TextBlock text2 = (TextBlock)blocks.get(1);
 
-		assertTrue(text1.getChunks().get(0) instanceof TextChunk);
-		assertTrue(text1.getChunks().get(1) instanceof LineBreakChunk);
-		assertTrue(text1.getChunks().get(2) instanceof TextChunk);
-		assertTrue(text1.getChunks().get(3) instanceof LineBreakChunk);
-		assertTrue(text1.getChunks().get(4) instanceof TextChunk);
-		assertTrue(text1.getChunks().get(5) instanceof LineBreakChunk);
+        assertEquals(1, text2.getChunks().size());
 
-		assertEquals("Lorem ", ((TextChunk)text1.getChunks().get(0)).getText());
-		assertEquals(TextChunk.Format.NORMAL, ((TextChunk)text1.getChunks().get(0)).getFormat());
+        assertEquals("At vero eos et accusam et justo duo.", ((TextChunk)text2.getChunks().get(0)).getText());
+        assertEquals(TextChunk.Format.NORMAL, ((TextChunk)text2.getChunks().get(0)).getFormat());
+    }
 
-		assertEquals(" ipsum ", ((TextChunk)text1.getChunks().get(2)).getText());
-		assertEquals(TextChunk.Format.NORMAL, ((TextChunk)text1.getChunks().get(2)).getFormat());
+    @Test
+    public void test_basic_4() {
+        final String md = "Lorem ipsum dolor \n" +
+                          "sit amet, consetetur.\n" +
+                          "\n\n" +
+                          "At vero eos et accusam et\n" +
+                          "justo duo.";
 
-		assertEquals(" dolor ", ((TextChunk)text1.getChunks().get(4)).getText());
-		assertEquals(TextChunk.Format.NORMAL, ((TextChunk)text1.getChunks().get(4)).getFormat());
-	}
+        Blocks blocks = new BlockParser(md).parse();
 
-	@Test
-	public void test_linebreak_3() {
-		final String md = "Lorem ipsum dolor¶¶";
-		
-		Blocks blocks = new BlockParser(md).parse();
-		
-		assertEquals(1, blocks.size());
-		assertTrue(blocks.get(0) instanceof TextBlock);
+        assertEquals(2, blocks.size());
 
-		TextBlock text1 = (TextBlock)blocks.get(0); 
-	
-		assertEquals(2, text1.getChunks().size());
+        assertTrue(blocks.get(0) instanceof TextBlock);
 
-		assertTrue(text1.getChunks().get(0) instanceof TextChunk);
-		assertTrue(text1.getChunks().get(1) instanceof LineBreakChunk);
+        // block 1
 
-		assertEquals("Lorem ipsum dolor", ((TextChunk)text1.getChunks().get(0)).getText());
-		assertEquals(TextChunk.Format.NORMAL, ((TextChunk)text1.getChunks().get(0)).getFormat());
-	}
+        TextBlock text1 = (TextBlock)blocks.get(0);
 
-	@Test
-	public void test_linebreak_4() {
-		final String md = "Lorem ipsum dolor¶ ¶";
-		
-		Blocks blocks = new BlockParser(md).parse();
-		
-		assertEquals(1, blocks.size());
-		assertTrue(blocks.get(0) instanceof TextBlock);
+        assertEquals(1, text1.getChunks().size());
 
-		TextBlock text1 = (TextBlock)blocks.get(0); 
-	
-		assertEquals(4, text1.getChunks().size());
+        assertEquals("Lorem ipsum dolor sit amet, consetetur.", ((TextChunk)text1.getChunks().get(0)).getText());
+        assertEquals(TextChunk.Format.NORMAL, ((TextChunk)text1.getChunks().get(0)).getFormat());
 
-		assertTrue(text1.getChunks().get(0) instanceof TextChunk);
-		assertTrue(text1.getChunks().get(1) instanceof LineBreakChunk);
-		assertTrue(text1.getChunks().get(2) instanceof TextChunk);
-		assertTrue(text1.getChunks().get(3) instanceof LineBreakChunk);
+        // block 2
 
-		assertEquals("Lorem ipsum dolor", ((TextChunk)text1.getChunks().get(0)).getText());
-		assertEquals(TextChunk.Format.NORMAL, ((TextChunk)text1.getChunks().get(0)).getFormat());
+        TextBlock text2 = (TextBlock)blocks.get(1);
 
-		assertEquals(" ", ((TextChunk)text1.getChunks().get(2)).getText());
-		assertEquals(TextChunk.Format.NORMAL, ((TextChunk)text1.getChunks().get(2)).getFormat());
-	}
+        assertEquals(1, text2.getChunks().size());
+
+        assertEquals("At vero eos et accusam et justo duo.", ((TextChunk)text2.getChunks().get(0)).getText());
+        assertEquals(TextChunk.Format.NORMAL, ((TextChunk)text2.getChunks().get(0)).getFormat());
+    }
+
+    @Test
+    public void test_linebreak_1() {
+        final String md = "Lorem ipsum dolor¶";
+
+        Blocks blocks = new BlockParser(md).parse();
+
+        assertEquals(1, blocks.size());
+        assertTrue(blocks.get(0) instanceof TextBlock);
+
+        TextBlock text1 = (TextBlock)blocks.get(0);
+
+        assertEquals(2, text1.getChunks().size());
+
+        assertTrue(text1.getChunks().get(0) instanceof TextChunk);
+        assertTrue(text1.getChunks().get(1) instanceof LineBreakChunk);
+
+        assertEquals("Lorem ipsum dolor", ((TextChunk)text1.getChunks().get(0)).getText());
+        assertEquals(TextChunk.Format.NORMAL, ((TextChunk)text1.getChunks().get(0)).getFormat());
+    }
+
+    @Test
+    public void test_linebreak_2() {
+        final String md = "Lorem ¶ ipsum ¶ dolor ¶";
+
+        Blocks blocks = new BlockParser(md).parse();
+
+        assertEquals(1, blocks.size());
+        assertTrue(blocks.get(0) instanceof TextBlock);
+
+        TextBlock text1 = (TextBlock)blocks.get(0);
+
+        assertEquals(6, text1.getChunks().size());
+
+        assertTrue(text1.getChunks().get(0) instanceof TextChunk);
+        assertTrue(text1.getChunks().get(1) instanceof LineBreakChunk);
+        assertTrue(text1.getChunks().get(2) instanceof TextChunk);
+        assertTrue(text1.getChunks().get(3) instanceof LineBreakChunk);
+        assertTrue(text1.getChunks().get(4) instanceof TextChunk);
+        assertTrue(text1.getChunks().get(5) instanceof LineBreakChunk);
+
+        assertEquals("Lorem ", ((TextChunk)text1.getChunks().get(0)).getText());
+        assertEquals(TextChunk.Format.NORMAL, ((TextChunk)text1.getChunks().get(0)).getFormat());
+
+        assertEquals(" ipsum ", ((TextChunk)text1.getChunks().get(2)).getText());
+        assertEquals(TextChunk.Format.NORMAL, ((TextChunk)text1.getChunks().get(2)).getFormat());
+
+        assertEquals(" dolor ", ((TextChunk)text1.getChunks().get(4)).getText());
+        assertEquals(TextChunk.Format.NORMAL, ((TextChunk)text1.getChunks().get(4)).getFormat());
+    }
+
+    @Test
+    public void test_linebreak_3() {
+        final String md = "Lorem ipsum dolor¶¶";
+
+        Blocks blocks = new BlockParser(md).parse();
+
+        assertEquals(1, blocks.size());
+        assertTrue(blocks.get(0) instanceof TextBlock);
+
+        TextBlock text1 = (TextBlock)blocks.get(0);
+
+        assertEquals(2, text1.getChunks().size());
+
+        assertTrue(text1.getChunks().get(0) instanceof TextChunk);
+        assertTrue(text1.getChunks().get(1) instanceof LineBreakChunk);
+
+        assertEquals("Lorem ipsum dolor", ((TextChunk)text1.getChunks().get(0)).getText());
+        assertEquals(TextChunk.Format.NORMAL, ((TextChunk)text1.getChunks().get(0)).getFormat());
+    }
+
+    @Test
+    public void test_linebreak_4() {
+        final String md = "Lorem ipsum dolor¶ ¶";
+
+        Blocks blocks = new BlockParser(md).parse();
+
+        assertEquals(1, blocks.size());
+        assertTrue(blocks.get(0) instanceof TextBlock);
+
+        TextBlock text1 = (TextBlock)blocks.get(0);
+
+        assertEquals(4, text1.getChunks().size());
+
+        assertTrue(text1.getChunks().get(0) instanceof TextChunk);
+        assertTrue(text1.getChunks().get(1) instanceof LineBreakChunk);
+        assertTrue(text1.getChunks().get(2) instanceof TextChunk);
+        assertTrue(text1.getChunks().get(3) instanceof LineBreakChunk);
+
+        assertEquals("Lorem ipsum dolor", ((TextChunk)text1.getChunks().get(0)).getText());
+        assertEquals(TextChunk.Format.NORMAL, ((TextChunk)text1.getChunks().get(0)).getFormat());
+
+        assertEquals(" ", ((TextChunk)text1.getChunks().get(2)).getText());
+        assertEquals(TextChunk.Format.NORMAL, ((TextChunk)text1.getChunks().get(2)).getFormat());
+    }
 
 }

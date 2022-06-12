@@ -1,5 +1,5 @@
 /*   __    __         _
- *   \ \  / /__ _ __ (_) ___ ___ 
+ *   \ \  / /__ _ __ (_) ___ ___
  *    \ \/ / _ \ '_ \| |/ __/ _ \
  *     \  /  __/ | | | | (_|  __/
  *      \/ \___|_| |_|_|\___\___|
@@ -35,79 +35,79 @@ import com.github.jlangch.venice.impl.types.VncSymbol;
 
 public class EnvTest {
 
-	@Test
-	public void testSingleLevel() {
-		final Env env = new Env();
-		
-		env.setLocal(new Var(new VncSymbol("a"), new VncLong(100)));
-		env.setLocal(new Var(new VncSymbol("b"), new VncLong(200)));
-		env.setLocal(new Var(new VncSymbol("c"), new VncLong(300)));
-		env.setGlobal(new Var(new VncSymbol("g"), new VncLong(900)));
-		
-		assertEquals(new VncLong(100), env.get(new VncSymbol("a")));
-		assertEquals(new VncLong(200), env.get(new VncSymbol("b")));
-		assertEquals(new VncLong(300), env.get(new VncSymbol("c")));
-		assertEquals(new VncLong(900), env.get(new VncSymbol("g")));
+    @Test
+    public void testSingleLevel() {
+        final Env env = new Env();
 
-		assertThrows(VncException.class, () -> env.get(new VncSymbol("x")));
-	}
+        env.setLocal(new Var(new VncSymbol("a"), new VncLong(100)));
+        env.setLocal(new Var(new VncSymbol("b"), new VncLong(200)));
+        env.setLocal(new Var(new VncSymbol("c"), new VncLong(300)));
+        env.setGlobal(new Var(new VncSymbol("g"), new VncLong(900)));
 
-	@Test
-	public void testMultiLevel() {
-		final Env env_0 = new Env();
-		env_0.setLocal(new Var(new VncSymbol("a"), new VncLong(100)));
-		
-		final Env env_1 = new Env(env_0);
-		env_1.setLocal(new Var(new VncSymbol("b"), new VncLong(200)));
-		
-		final Env env_2 = new Env(env_1);
-		env_2.setLocal(new Var(new VncSymbol("c"), new VncLong(300)));
+        assertEquals(new VncLong(100), env.get(new VncSymbol("a")));
+        assertEquals(new VncLong(200), env.get(new VncSymbol("b")));
+        assertEquals(new VncLong(300), env.get(new VncSymbol("c")));
+        assertEquals(new VncLong(900), env.get(new VncSymbol("g")));
 
-		env_2.setGlobal(new Var(new VncSymbol("g"), new VncLong(900)));
+        assertThrows(VncException.class, () -> env.get(new VncSymbol("x")));
+    }
 
-		assertEquals(new VncLong(100), env_0.get(new VncSymbol("a")));
-		assertEquals(new VncLong(900), env_0.get(new VncSymbol("g")));
+    @Test
+    public void testMultiLevel() {
+        final Env env_0 = new Env();
+        env_0.setLocal(new Var(new VncSymbol("a"), new VncLong(100)));
 
-		assertEquals(new VncLong(100), env_1.get(new VncSymbol("a")));
-		assertEquals(new VncLong(200), env_1.get(new VncSymbol("b")));
-		assertEquals(new VncLong(900), env_1.get(new VncSymbol("g")));
+        final Env env_1 = new Env(env_0);
+        env_1.setLocal(new Var(new VncSymbol("b"), new VncLong(200)));
 
-		assertEquals(new VncLong(100), env_2.get(new VncSymbol("a")));
-		assertEquals(new VncLong(200), env_2.get(new VncSymbol("b")));
-		assertEquals(new VncLong(300), env_2.get(new VncSymbol("c")));
-		assertEquals(new VncLong(900), env_2.get(new VncSymbol("g")));
+        final Env env_2 = new Env(env_1);
+        env_2.setLocal(new Var(new VncSymbol("c"), new VncLong(300)));
 
-		assertThrows(VncException.class, () -> env_0.get(new VncSymbol("x")));
-		assertThrows(VncException.class, () -> env_1.get(new VncSymbol("x")));
-		assertThrows(VncException.class, () -> env_2.get(new VncSymbol("x")));
-		
-		env_2.setLocal(new Var(new VncSymbol("a"), new VncLong(101)));
-		env_2.setGlobal(new Var(new VncSymbol("g"), new VncLong(901)));
-		assertEquals(new VncLong(100), env_0.get(new VncSymbol("a")));
-		assertEquals(new VncLong(100), env_1.get(new VncSymbol("a")));
-		assertEquals(new VncLong(101), env_2.get(new VncSymbol("a")));
-		assertEquals(new VncLong(901), env_0.get(new VncSymbol("g")));
-		assertEquals(new VncLong(901), env_1.get(new VncSymbol("g")));
-		assertEquals(new VncLong(901), env_2.get(new VncSymbol("g")));
-	}
+        env_2.setGlobal(new Var(new VncSymbol("g"), new VncLong(900)));
 
-	@Test
-	public void testMultiLevel_OverwriteGlobal() {
-		final Env env_0 = new Env();
-		env_0.setLocal(new Var(new VncSymbol("a"), new VncLong(100)));
-		
-		final Env env_1 = new Env(env_0);
-		env_1.setLocal(new Var(new VncSymbol("b"), new VncLong(200)));
-		
-		final Env env_2 = new Env(env_1);
-		env_2.setGlobal(new Var(new VncSymbol("g"), new VncLong(900)));
-		env_2.setLocal(new Var(new VncSymbol("g"), new VncLong(300)));
+        assertEquals(new VncLong(100), env_0.get(new VncSymbol("a")));
+        assertEquals(new VncLong(900), env_0.get(new VncSymbol("g")));
 
-		assertEquals(new VncLong(900), env_0.get(new VncSymbol("g")));
+        assertEquals(new VncLong(100), env_1.get(new VncSymbol("a")));
+        assertEquals(new VncLong(200), env_1.get(new VncSymbol("b")));
+        assertEquals(new VncLong(900), env_1.get(new VncSymbol("g")));
 
-		assertEquals(new VncLong(900), env_1.get(new VncSymbol("g")));
+        assertEquals(new VncLong(100), env_2.get(new VncSymbol("a")));
+        assertEquals(new VncLong(200), env_2.get(new VncSymbol("b")));
+        assertEquals(new VncLong(300), env_2.get(new VncSymbol("c")));
+        assertEquals(new VncLong(900), env_2.get(new VncSymbol("g")));
 
-		assertEquals(new VncLong(300), env_2.get(new VncSymbol("g")));
-	}
+        assertThrows(VncException.class, () -> env_0.get(new VncSymbol("x")));
+        assertThrows(VncException.class, () -> env_1.get(new VncSymbol("x")));
+        assertThrows(VncException.class, () -> env_2.get(new VncSymbol("x")));
+
+        env_2.setLocal(new Var(new VncSymbol("a"), new VncLong(101)));
+        env_2.setGlobal(new Var(new VncSymbol("g"), new VncLong(901)));
+        assertEquals(new VncLong(100), env_0.get(new VncSymbol("a")));
+        assertEquals(new VncLong(100), env_1.get(new VncSymbol("a")));
+        assertEquals(new VncLong(101), env_2.get(new VncSymbol("a")));
+        assertEquals(new VncLong(901), env_0.get(new VncSymbol("g")));
+        assertEquals(new VncLong(901), env_1.get(new VncSymbol("g")));
+        assertEquals(new VncLong(901), env_2.get(new VncSymbol("g")));
+    }
+
+    @Test
+    public void testMultiLevel_OverwriteGlobal() {
+        final Env env_0 = new Env();
+        env_0.setLocal(new Var(new VncSymbol("a"), new VncLong(100)));
+
+        final Env env_1 = new Env(env_0);
+        env_1.setLocal(new Var(new VncSymbol("b"), new VncLong(200)));
+
+        final Env env_2 = new Env(env_1);
+        env_2.setGlobal(new Var(new VncSymbol("g"), new VncLong(900)));
+        env_2.setLocal(new Var(new VncSymbol("g"), new VncLong(300)));
+
+        assertEquals(new VncLong(900), env_0.get(new VncSymbol("g")));
+
+        assertEquals(new VncLong(900), env_1.get(new VncSymbol("g")));
+
+        assertEquals(new VncLong(300), env_2.get(new VncSymbol("g")));
+    }
 
 }

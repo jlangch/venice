@@ -1,5 +1,5 @@
 /*   __    __         _
- *   \ \  / /__ _ __ (_) ___ ___ 
+ *   \ \  / /__ _ __ (_) ___ ___
  *    \ \/ / _ \ '_ \| |/ __/ _ \
  *     \  /  __/ | | | | (_|  __/
  *      \/ \___|_| |_|_|\___\___|
@@ -27,50 +27,50 @@ import org.junit.jupiter.api.Test;
 
 
 public class SpecialFormsTest_def {
-	
-	@Test
-	public void test_def_1() {
-		final Venice venice = new Venice();
 
-		final String script = 
-				"(do                    \n" +
-				"   (def x 100)         \n" +
-				"   x)                    ";
+    @Test
+    public void test_def_1() {
+        final Venice venice = new Venice();
 
-		assertEquals(100L, venice.eval(script));
-	}
-	
-	@Test
-	public void test_def_2() {
-		final Venice venice = new Venice();
+        final String script =
+                "(do                    \n" +
+                "   (def x 100)         \n" +
+                "   x)                    ";
 
-		final String script = 
-				"(do                       \n" +
-				"  (def x 100)             \n" +
-				"  (pr-str                 \n" +
-				"    [ x                   \n" +
-				"      (do (def x 10) x)   \n" +
-				"      (do (def x 20) x)   \n" +
-				"    ]))";
+        assertEquals(100L, venice.eval(script));
+    }
 
-		assertEquals("[100 10 20]", venice.eval(script));
-	}
-	
-	@Test
-	public void test_def_threads() {
-		final Venice venice = new Venice();
+    @Test
+    public void test_def_2() {
+        final Venice venice = new Venice();
 
-		final String script = 
-				"(do                                        \n" +
-				"  (def x 100)                              \n" +
-				"  (pr-str                                  \n" +
-				"    [ x                                    \n" +
-				"      @(future #(do (def x 10) x))         \n" +
-				"      x                                    \n" +
-				"      @(future #(do (def x 20) x))         \n" +
-				"      x ]))";
+        final String script =
+                "(do                       \n" +
+                "  (def x 100)             \n" +
+                "  (pr-str                 \n" +
+                "    [ x                   \n" +
+                "      (do (def x 10) x)   \n" +
+                "      (do (def x 20) x)   \n" +
+                "    ]))";
 
-		assertEquals("[100 10 10 20 20]", venice.eval(script));
-	}
+        assertEquals("[100 10 20]", venice.eval(script));
+    }
+
+    @Test
+    public void test_def_threads() {
+        final Venice venice = new Venice();
+
+        final String script =
+                "(do                                        \n" +
+                "  (def x 100)                              \n" +
+                "  (pr-str                                  \n" +
+                "    [ x                                    \n" +
+                "      @(future #(do (def x 10) x))         \n" +
+                "      x                                    \n" +
+                "      @(future #(do (def x 20) x))         \n" +
+                "      x ]))";
+
+        assertEquals("[100 10 10 20 20]", venice.eval(script));
+    }
 
 }

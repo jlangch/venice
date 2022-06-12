@@ -1,5 +1,5 @@
 /*   __    __         _
- *   \ \  / /__ _ __ (_) ___ ___ 
+ *   \ \  / /__ _ __ (_) ___ ___
  *    \ \/ / _ \ '_ \| |/ __/ _ \
  *     \  /  __/ | | | | (_|  __/
  *      \/ \___|_| |_|_|\___\___|
@@ -27,69 +27,69 @@ import org.junit.jupiter.api.Test;
 
 
 public class SpecialFormsTest_fn {
-	
-	@Test
-	public void test_fn_1() {
-		final Venice venice = new Venice();
 
-		final String script = 
-				"(do                           \n" +
-				"  (def sum (fn [x] (+ x 1)))  \n" +
-				"  (sum 2))                    ";
+    @Test
+    public void test_fn_1() {
+        final Venice venice = new Venice();
 
-		assertEquals(3L, venice.eval(script));
-	}
-	
-	@Test
-	public void test_fn_2() {
-		final Venice venice = new Venice();
+        final String script =
+                "(do                           \n" +
+                "  (def sum (fn [x] (+ x 1)))  \n" +
+                "  (sum 2))                    ";
 
-		final String script = 
-				"(do                                \n" +
-				"  (def sum (fn sum_ [x] (+ x 1)))  \n" +
-				"  (sum 2))                         ";
+        assertEquals(3L, venice.eval(script));
+    }
 
-		assertEquals(3L, venice.eval(script));
-	}
-	
-	@Test
-	public void test_fn_3() {
-		final Venice venice = new Venice();
+    @Test
+    public void test_fn_2() {
+        final Venice venice = new Venice();
 
-		final String script = 
-				"(do                           \n" +
-				"  (def sum (fn [x] (+ x 1)))  \n" +
-				"  (user/sum 2))               ";
+        final String script =
+                "(do                                \n" +
+                "  (def sum (fn sum_ [x] (+ x 1)))  \n" +
+                "  (sum 2))                         ";
 
-		assertEquals(3L, venice.eval(script));
-	}
-	
-	@Test
-	public void test_fn_4() {
-		final Venice venice = new Venice();
+        assertEquals(3L, venice.eval(script));
+    }
 
-		final String script = 
-				"(do                           \n" +
-				"  (ns foo)                    \n" +
-				"  (def sum (fn [x] (+ x 1)))  \n" +
-				"  (ns bar)                    \n" +
-				"  (foo/sum 2))                ";
+    @Test
+    public void test_fn_3() {
+        final Venice venice = new Venice();
 
-		assertEquals(3L, venice.eval(script));
-	}
-	
-	@Test
-	public void test_fn_5() {
-		final Venice venice = new Venice();
+        final String script =
+                "(do                           \n" +
+                "  (def sum (fn [x] (+ x 1)))  \n" +
+                "  (user/sum 2))               ";
 
-		final String script = 
-				"(do                                   \n" +
-				"  (ns foo)                            \n" +
-				"  (defmacro foo/fn ([x] `(+ 1 ~x)))   \n" +
-				"  (defn foo/test-fn [x] x)            \n" +
-		        "  (foo/test-fn 3))                    ";
+        assertEquals(3L, venice.eval(script));
+    }
 
-		assertEquals(3L, venice.eval(script));
-	}
+    @Test
+    public void test_fn_4() {
+        final Venice venice = new Venice();
+
+        final String script =
+                "(do                           \n" +
+                "  (ns foo)                    \n" +
+                "  (def sum (fn [x] (+ x 1)))  \n" +
+                "  (ns bar)                    \n" +
+                "  (foo/sum 2))                ";
+
+        assertEquals(3L, venice.eval(script));
+    }
+
+    @Test
+    public void test_fn_5() {
+        final Venice venice = new Venice();
+
+        final String script =
+                "(do                                   \n" +
+                "  (ns foo)                            \n" +
+                "  (defmacro foo/fn ([x] `(+ 1 ~x)))   \n" +
+                "  (defn foo/test-fn [x] x)            \n" +
+                "  (foo/test-fn 3))                    ";
+
+        assertEquals(3L, venice.eval(script));
+    }
 
 }

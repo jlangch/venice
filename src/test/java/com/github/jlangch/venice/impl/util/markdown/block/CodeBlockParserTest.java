@@ -1,5 +1,5 @@
 /*   __    __         _
- *   \ \  / /__ _ __ (_) ___ ___ 
+ *   \ \  / /__ _ __ (_) ___ ___
  *    \ \/ / _ \ '_ \| |/ __/ _ \
  *     \  /  __/ | | | | (_|  __/
  *      \/ \___|_| |_|_|\___\___|
@@ -29,100 +29,100 @@ import org.junit.jupiter.api.Test;
 
 public class CodeBlockParserTest {
 
-	@Test
-	public void test_code_block() {
-		final String md = "```\n" +
-						  "line1\n" +
-						  "line2\n" +
-						  "```";
-		
-		Blocks blocks = new BlockParser(md).parse();
-		
-		assertEquals(1, blocks.size());
-		assertTrue(blocks.get(0) instanceof CodeBlock);
-		assertEquals(2, ((CodeBlock)blocks.get(0)).size());
-		assertEquals("line1", ((CodeBlock)blocks.get(0)).get(0));
-		assertEquals("line2", ((CodeBlock)blocks.get(0)).get(1));
-	}
-	
-	@Test
-	public void test_code_block_empty() {
-		final String md = "```\n" +
-						  "```";
-		
-		Blocks blocks = new BlockParser(md).parse();
-		
-		assertEquals(0, blocks.size());
-	}
-	
-	@Test
-	public void test_code_block_empty_line() {
-		final String md = "```\n" +
-				  		  "   \n" +
-						  "```";
-		
-		Blocks blocks = new BlockParser(md).parse();
-		
-		assertEquals(1, blocks.size());
-		assertTrue(blocks.get(0) instanceof CodeBlock);
-		assertEquals(1, ((CodeBlock)blocks.get(0)).size());
-		assertEquals("", ((CodeBlock)blocks.get(0)).get(0));
-	}
-	
-	@Test
-	public void test_code_block_with_whitespaces() {
-		final String md = "```\n" +
-						  " \n" +
-						  "line1\n" +
-						  "  line2  \n" +
-						  "    line3  \n" +
-						  " \n" +
-						  "```";
-		
-		Blocks blocks = new BlockParser(md).parse();
-		
-		assertEquals(1, blocks.size());
-		assertTrue(blocks.get(0) instanceof CodeBlock);
-		assertEquals(5, ((CodeBlock)blocks.get(0)).size());
-		assertEquals("", ((CodeBlock)blocks.get(0)).get(0));
-		assertEquals("line1", ((CodeBlock)blocks.get(0)).get(1));
-		assertEquals("  line2", ((CodeBlock)blocks.get(0)).get(2));
-		assertEquals("    line3", ((CodeBlock)blocks.get(0)).get(3));
-		assertEquals("", ((CodeBlock)blocks.get(0)).get(4));
-	}
-	
-	@Test
-	public void test_code_block_language() {
-		final String md = "```java\n" +
-						  "line1\n" +
-						  "line2\n" +
-						  "```";
-		
-		Blocks blocks = new BlockParser(md).parse();
-		
-		assertEquals(1, blocks.size());
-		assertTrue(blocks.get(0) instanceof CodeBlock);
-		assertEquals("java", ((CodeBlock)blocks.get(0)).getLanguage());
-		assertEquals(2, ((CodeBlock)blocks.get(0)).size());
-		assertEquals("line1", ((CodeBlock)blocks.get(0)).get(0));
-		assertEquals("line2", ((CodeBlock)blocks.get(0)).get(1));
-	}
-	
-	@Test
-	public void test_code_block_language_2() {
-		final String md = "``` java \n" +
-						  "line1\n" +
-						  "line2\n" +
-						  "```";
-		
-		Blocks blocks = new BlockParser(md).parse();
-		
-		assertEquals(1, blocks.size());
-		assertTrue(blocks.get(0) instanceof CodeBlock);
-		assertEquals("java", ((CodeBlock)blocks.get(0)).getLanguage());
-		assertEquals(2, ((CodeBlock)blocks.get(0)).size());
-		assertEquals("line1", ((CodeBlock)blocks.get(0)).get(0));
-		assertEquals("line2", ((CodeBlock)blocks.get(0)).get(1));
-	}
-	
+    @Test
+    public void test_code_block() {
+        final String md = "```\n" +
+                          "line1\n" +
+                          "line2\n" +
+                          "```";
+
+        Blocks blocks = new BlockParser(md).parse();
+
+        assertEquals(1, blocks.size());
+        assertTrue(blocks.get(0) instanceof CodeBlock);
+        assertEquals(2, ((CodeBlock)blocks.get(0)).size());
+        assertEquals("line1", ((CodeBlock)blocks.get(0)).get(0));
+        assertEquals("line2", ((CodeBlock)blocks.get(0)).get(1));
+    }
+
+    @Test
+    public void test_code_block_empty() {
+        final String md = "```\n" +
+                          "```";
+
+        Blocks blocks = new BlockParser(md).parse();
+
+        assertEquals(0, blocks.size());
+    }
+
+    @Test
+    public void test_code_block_empty_line() {
+        final String md = "```\n" +
+                            "   \n" +
+                          "```";
+
+        Blocks blocks = new BlockParser(md).parse();
+
+        assertEquals(1, blocks.size());
+        assertTrue(blocks.get(0) instanceof CodeBlock);
+        assertEquals(1, ((CodeBlock)blocks.get(0)).size());
+        assertEquals("", ((CodeBlock)blocks.get(0)).get(0));
+    }
+
+    @Test
+    public void test_code_block_with_whitespaces() {
+        final String md = "```\n" +
+                          " \n" +
+                          "line1\n" +
+                          "  line2  \n" +
+                          "    line3  \n" +
+                          " \n" +
+                          "```";
+
+        Blocks blocks = new BlockParser(md).parse();
+
+        assertEquals(1, blocks.size());
+        assertTrue(blocks.get(0) instanceof CodeBlock);
+        assertEquals(5, ((CodeBlock)blocks.get(0)).size());
+        assertEquals("", ((CodeBlock)blocks.get(0)).get(0));
+        assertEquals("line1", ((CodeBlock)blocks.get(0)).get(1));
+        assertEquals("  line2", ((CodeBlock)blocks.get(0)).get(2));
+        assertEquals("    line3", ((CodeBlock)blocks.get(0)).get(3));
+        assertEquals("", ((CodeBlock)blocks.get(0)).get(4));
+    }
+
+    @Test
+    public void test_code_block_language() {
+        final String md = "```java\n" +
+                          "line1\n" +
+                          "line2\n" +
+                          "```";
+
+        Blocks blocks = new BlockParser(md).parse();
+
+        assertEquals(1, blocks.size());
+        assertTrue(blocks.get(0) instanceof CodeBlock);
+        assertEquals("java", ((CodeBlock)blocks.get(0)).getLanguage());
+        assertEquals(2, ((CodeBlock)blocks.get(0)).size());
+        assertEquals("line1", ((CodeBlock)blocks.get(0)).get(0));
+        assertEquals("line2", ((CodeBlock)blocks.get(0)).get(1));
+    }
+
+    @Test
+    public void test_code_block_language_2() {
+        final String md = "``` java \n" +
+                          "line1\n" +
+                          "line2\n" +
+                          "```";
+
+        Blocks blocks = new BlockParser(md).parse();
+
+        assertEquals(1, blocks.size());
+        assertTrue(blocks.get(0) instanceof CodeBlock);
+        assertEquals("java", ((CodeBlock)blocks.get(0)).getLanguage());
+        assertEquals(2, ((CodeBlock)blocks.get(0)).size());
+        assertEquals("line1", ((CodeBlock)blocks.get(0)).get(0));
+        assertEquals("line2", ((CodeBlock)blocks.get(0)).get(1));
+    }
+
 }

@@ -1,5 +1,5 @@
 /*   __    __         _
- *   \ \  / /__ _ __ (_) ___ ___ 
+ *   \ \  / /__ _ __ (_) ___ ___
  *    \ \/ / _ \ '_ \| |/ __/ _ \
  *     \  /  __/ | | | | (_|  __/
  *      \/ \___|_| |_|_|\___\___|
@@ -29,233 +29,233 @@ import org.junit.jupiter.api.Test;
 
 
 public class SpecialFormsTest_deftype_of {
-		
-	@Test
-	public void test_deftype_of() {
-		final Venice venice = new Venice();
 
-		final String script =
-				"(do                                                      \n" +
-				"  (deftype-of :user/email-address :string)               \n" +
-				"  (def x (.: :user/email-address \"foo@foo.org\"))       \n" +
-				"  (pr-str x))                                              ";
+    @Test
+    public void test_deftype_of() {
+        final Venice venice = new Venice();
 
-		assertEquals("\"foo@foo.org\"", venice.eval(script));					
-	}
-	
-	@Test
-	public void test_deftype_of_long_1() {
-		final Venice venice = new Venice();
+        final String script =
+                "(do                                                      \n" +
+                "  (deftype-of :user/email-address :string)               \n" +
+                "  (def x (.: :user/email-address \"foo@foo.org\"))       \n" +
+                "  (pr-str x))                                              ";
 
-		final String script =
-				"(do                             \n" +
-				"  (deftype-of :my-long :long)   \n" +
-				"  (+ 10 (my-long. 20)))           ";
+        assertEquals("\"foo@foo.org\"", venice.eval(script));
+    }
 
-		assertEquals(30L, venice.eval(script));					
-	}
-	
-	@Test
-	public void test_deftype_of_long_2() {
-		final Venice venice = new Venice();
+    @Test
+    public void test_deftype_of_long_1() {
+        final Venice venice = new Venice();
 
-		final String script =
-				"(do                             \n" +
-				"  (deftype-of :my-long :long)   \n" +
-				"  (+ (my-long. 20) 10))           ";
+        final String script =
+                "(do                             \n" +
+                "  (deftype-of :my-long :long)   \n" +
+                "  (+ 10 (my-long. 20)))           ";
 
-		assertEquals(30L, venice.eval(script));					
-	}
-	
-	@Test
-	public void test_deftype_of_long_3() {
-		final Venice venice = new Venice();
+        assertEquals(30L, venice.eval(script));
+    }
 
-		final String script =
-				"(do                                       \n" +
-				"  (deftype-of :my-long-1 :long)           \n" +
-				"  (deftype-of :my-long-2 :long)           \n" +
-				"                                          \n" +
-				"  (+ (my-long-1. 10) (my-long-2. 20)))      ";
+    @Test
+    public void test_deftype_of_long_2() {
+        final Venice venice = new Venice();
 
-		venice.eval(script);					
-	}
-	
-	@Test
-	public void test_deftype_of_invalid_type() {
-		final String script =
-				"(do                                          \n" +
-				"  (deftype-of :user/email-address :string)   \n" +
-				"  (user/email-address. 200))                   ";
-	
-		assertThrows(VncException.class, () -> new Venice().eval(script));
-	}
+        final String script =
+                "(do                             \n" +
+                "  (deftype-of :my-long :long)   \n" +
+                "  (+ (my-long. 20) 10))           ";
 
-	@Test
-	public void test_deftype_of_invalid_name() {
-		final String script =
-				"(do                                      \n" +
-				"  (deftype-of :email-address. :string))    ";
+        assertEquals(30L, venice.eval(script));
+    }
 
-		assertThrows(VncException.class, () -> new Venice().eval(script));
-	}
+    @Test
+    public void test_deftype_of_long_3() {
+        final Venice venice = new Venice();
 
-	@Test
-	public void test_deftype_of_type_builder() {
-		final Venice venice = new Venice();
+        final String script =
+                "(do                                       \n" +
+                "  (deftype-of :my-long-1 :long)           \n" +
+                "  (deftype-of :my-long-2 :long)           \n" +
+                "                                          \n" +
+                "  (+ (my-long-1. 10) (my-long-2. 20)))      ";
 
-		final String script =
-				"(do                                                 \n" +
-				"  (deftype-of :email-address :string)               \n" +
-				"  (def x (email-address. \"foo@foo.org\"))          \n" +
-				"  (pr-str x))                                         ";
+        venice.eval(script);
+    }
 
-		assertEquals("\"foo@foo.org\"", venice.eval(script));					
-	}
+    @Test
+    public void test_deftype_of_invalid_type() {
+        final String script =
+                "(do                                          \n" +
+                "  (deftype-of :user/email-address :string)   \n" +
+                "  (user/email-address. 200))                   ";
 
-	@Test
-	public void test_deftype_of_type_checker() {
-		final Venice venice = new Venice();
+        assertThrows(VncException.class, () -> new Venice().eval(script));
+    }
 
-		final String script =
-				"(do                                                     \n" +
-				"  (deftype-of :email-address :string)                   \n" +
-				"  (email-address? (.: :email-address \"foo@foo.org\")))   ";
+    @Test
+    public void test_deftype_of_invalid_name() {
+        final String script =
+                "(do                                      \n" +
+                "  (deftype-of :email-address. :string))    ";
 
-		assertTrue((Boolean)venice.eval(script));					
-	}
+        assertThrows(VncException.class, () -> new Venice().eval(script));
+    }
 
-	@Test
-	public void test_deftype_of_type() {
-		final Venice venice = new Venice();
+    @Test
+    public void test_deftype_of_type_builder() {
+        final Venice venice = new Venice();
 
-		final String script =
-				"(do                                                      \n" +
-				"  (deftype-of :user/email-address :string)               \n" +
-				"  (def x (.: :user/email-address \"foo@foo.org\"))       \n" +
-				"  (pr-str (type x)))                                       ";
+        final String script =
+                "(do                                                 \n" +
+                "  (deftype-of :email-address :string)               \n" +
+                "  (def x (email-address. \"foo@foo.org\"))          \n" +
+                "  (pr-str x))                                         ";
 
-		assertEquals(":user/email-address", venice.eval(script));					
-	}
-	
-	@Test
-	public void test_deftype_of_supertype() {
-		final Venice venice = new Venice();
+        assertEquals("\"foo@foo.org\"", venice.eval(script));
+    }
 
-		final String script =
-				"(do                                                      \n" +
-				"  (deftype-of :user/email-address :string)               \n" +
-				"  (def x (.: :user/email-address \"foo@foo.org\"))       \n" +
-				"  (pr-str (supertype x)))                                  ";
+    @Test
+    public void test_deftype_of_type_checker() {
+        final Venice venice = new Venice();
 
-		assertEquals(":core/string", venice.eval(script));					
-	}
+        final String script =
+                "(do                                                     \n" +
+                "  (deftype-of :email-address :string)                   \n" +
+                "  (email-address? (.: :email-address \"foo@foo.org\")))   ";
 
-	@Test
-	public void test_deftype_of_validation_OK_1() {
-		final Venice venice = new Venice();
+        assertTrue((Boolean)venice.eval(script));
+    }
 
-		final String script =
-				"(do                                                            \n" +
-				"  (deftype-of :user/email-address                              \n" +
-				"              :string                                          \n" +
-				"              (fn [e] (assert (str/valid-email-addr? e)        \n" +
-				"                              \"invalid email address\")))     \n" +
-				"  (def x (.: :user/email-address \"foo@foo.org\"))             \n" +
-				"  (pr-str x))                                                    ";
+    @Test
+    public void test_deftype_of_type() {
+        final Venice venice = new Venice();
 
-		assertEquals("\"foo@foo.org\"", venice.eval(script));					
-	}
+        final String script =
+                "(do                                                      \n" +
+                "  (deftype-of :user/email-address :string)               \n" +
+                "  (def x (.: :user/email-address \"foo@foo.org\"))       \n" +
+                "  (pr-str (type x)))                                       ";
 
-	@Test
-	public void test_deftype_of_validation_OK_2() {
-		final Venice venice = new Venice();
+        assertEquals(":user/email-address", venice.eval(script));
+    }
 
-		final String script =
-				"(do                                                            \n" +
-				"  (deftype-of :user/email-address                              \n" +
-				"              :string                                          \n" +
-				"              str/valid-email-addr?)                           \n" +
-				"  (def x (.: :user/email-address \"foo@foo.org\"))             \n" +
-				"  (pr-str x))                                                    ";
+    @Test
+    public void test_deftype_of_supertype() {
+        final Venice venice = new Venice();
 
-		assertEquals("\"foo@foo.org\"", venice.eval(script));					
-	}
+        final String script =
+                "(do                                                      \n" +
+                "  (deftype-of :user/email-address :string)               \n" +
+                "  (def x (.: :user/email-address \"foo@foo.org\"))       \n" +
+                "  (pr-str (supertype x)))                                  ";
 
-	@Test
-	public void test_deftype_of_validation_FAILED_1() {
-		final String script =
-				"(do                                                            \n" +
-				"  (deftype-of :user/email-address                              \n" +
-				"              :string                                          \n" +
-				"              (fn [e] (assert (str/valid-email-addr? e)        \n" +
-				"                              \"invalid email address\")))     \n" +
-				"  (def x (.: :user/email-address \"..foo@foo.org\"))           \n" +
-				"  (pr-str x))                                                    ";
+        assertEquals(":core/string", venice.eval(script));
+    }
 
-		assertThrows(AssertionException.class, () -> new Venice().eval(script));
-	}
+    @Test
+    public void test_deftype_of_validation_OK_1() {
+        final Venice venice = new Venice();
 
-	@Test
-	public void test_deftype_of_validation_FAILED_2() {
-		final String script =
-				"(do                                                            \n" +
-				"  (deftype-of :user/email-address                              \n" +
-				"              :string                                          \n" +
-				"              str/valid-email-addr?)                           \n" +
-				"  (def x (.: :user/email-address \"..foo@foo.org\"))           \n" +
-				"  (pr-str x))                                                    ";
+        final String script =
+                "(do                                                            \n" +
+                "  (deftype-of :user/email-address                              \n" +
+                "              :string                                          \n" +
+                "              (fn [e] (assert (str/valid-email-addr? e)        \n" +
+                "                              \"invalid email address\")))     \n" +
+                "  (def x (.: :user/email-address \"foo@foo.org\"))             \n" +
+                "  (pr-str x))                                                    ";
 
-		assertThrows(AssertionException.class, () -> new Venice().eval(script));
-	}
+        assertEquals("\"foo@foo.org\"", venice.eval(script));
+    }
 
-	@Test
-	public void test_deftype_of_ns_hijack_1() {
-		final String script =
-				"(do                                         \n" +
-				"  (ns foo)                                  \n" +
-				"  (deftype-of :user/email-address :string))   ";
+    @Test
+    public void test_deftype_of_validation_OK_2() {
+        final Venice venice = new Venice();
 
-		assertThrows(VncException.class, () -> new Venice().eval(script));
-	}
-	
-	@Test
-	public void test_deftype_of_ns_hijack_2() {
-		final String script =
-				"(do                                         \n" +
-				"  (ns foo)                                  \n" +
-				"  (deftype-of :core/email-address :string))   ";
+        final String script =
+                "(do                                                            \n" +
+                "  (deftype-of :user/email-address                              \n" +
+                "              :string                                          \n" +
+                "              str/valid-email-addr?)                           \n" +
+                "  (def x (.: :user/email-address \"foo@foo.org\"))             \n" +
+                "  (pr-str x))                                                    ";
 
-		assertThrows(VncException.class, () -> new Venice().eval(script));
-	}
-	
-	@Test
-	public void test_deftype_of_equality() {
-		final Venice venice = new Venice();
+        assertEquals("\"foo@foo.org\"", venice.eval(script));
+    }
 
-		final String script =
-				"(do                                                                                      \n" +
-				"  (deftype-of :email-address :string str/valid-email-addr?)                              \n" +
-				"  (assert (email-address. \"foo@foo.org\") (email-address. \"foo@foo.org\")))            \n" +
-				"  (assert (not (= (email-address. \"foo@foo.org\") (email-address. \"boo@foo.org\"))))   \n" +
-				"  (assert (not (= (email-address. \"foo@foo.org\") 100)))                                \n" +
-				"  nil)";
+    @Test
+    public void test_deftype_of_validation_FAILED_1() {
+        final String script =
+                "(do                                                            \n" +
+                "  (deftype-of :user/email-address                              \n" +
+                "              :string                                          \n" +
+                "              (fn [e] (assert (str/valid-email-addr? e)        \n" +
+                "                              \"invalid email address\")))     \n" +
+                "  (def x (.: :user/email-address \"..foo@foo.org\"))           \n" +
+                "  (pr-str x))                                                    ";
 
-		venice.eval(script);					
-	}
-	
-	@Test
-	public void test_deftype_of_equality_strict() {
-		final Venice venice = new Venice();
+        assertThrows(AssertionException.class, () -> new Venice().eval(script));
+    }
 
-		final String script =
-				"(do                                                                                        \n" +
-				"  (deftype-of :email-address :string str/valid-email-addr?)                                \n" +
-				"  (assert (== (email-address. \"foo@foo.org\") (email-address. \"foo@foo.org\")))          \n" +
-				"  (assert (not (== (email-address. \"foo@foo.org\") (email-address. \"boo@foo.org\"))))    \n" +
-				"  (assert (not (== (email-address. \"foo@foo.org\") 100)))                                 \n" +
-				"  nil)";
+    @Test
+    public void test_deftype_of_validation_FAILED_2() {
+        final String script =
+                "(do                                                            \n" +
+                "  (deftype-of :user/email-address                              \n" +
+                "              :string                                          \n" +
+                "              str/valid-email-addr?)                           \n" +
+                "  (def x (.: :user/email-address \"..foo@foo.org\"))           \n" +
+                "  (pr-str x))                                                    ";
 
-		venice.eval(script);					
-	}
+        assertThrows(AssertionException.class, () -> new Venice().eval(script));
+    }
+
+    @Test
+    public void test_deftype_of_ns_hijack_1() {
+        final String script =
+                "(do                                         \n" +
+                "  (ns foo)                                  \n" +
+                "  (deftype-of :user/email-address :string))   ";
+
+        assertThrows(VncException.class, () -> new Venice().eval(script));
+    }
+
+    @Test
+    public void test_deftype_of_ns_hijack_2() {
+        final String script =
+                "(do                                         \n" +
+                "  (ns foo)                                  \n" +
+                "  (deftype-of :core/email-address :string))   ";
+
+        assertThrows(VncException.class, () -> new Venice().eval(script));
+    }
+
+    @Test
+    public void test_deftype_of_equality() {
+        final Venice venice = new Venice();
+
+        final String script =
+                "(do                                                                                      \n" +
+                "  (deftype-of :email-address :string str/valid-email-addr?)                              \n" +
+                "  (assert (email-address. \"foo@foo.org\") (email-address. \"foo@foo.org\")))            \n" +
+                "  (assert (not (= (email-address. \"foo@foo.org\") (email-address. \"boo@foo.org\"))))   \n" +
+                "  (assert (not (= (email-address. \"foo@foo.org\") 100)))                                \n" +
+                "  nil)";
+
+        venice.eval(script);
+    }
+
+    @Test
+    public void test_deftype_of_equality_strict() {
+        final Venice venice = new Venice();
+
+        final String script =
+                "(do                                                                                        \n" +
+                "  (deftype-of :email-address :string str/valid-email-addr?)                                \n" +
+                "  (assert (== (email-address. \"foo@foo.org\") (email-address. \"foo@foo.org\")))          \n" +
+                "  (assert (not (== (email-address. \"foo@foo.org\") (email-address. \"boo@foo.org\"))))    \n" +
+                "  (assert (not (== (email-address. \"foo@foo.org\") 100)))                                 \n" +
+                "  nil)";
+
+        venice.eval(script);
+    }
 }

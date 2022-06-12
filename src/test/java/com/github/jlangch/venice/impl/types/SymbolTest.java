@@ -1,5 +1,5 @@
 /*   __    __         _
- *   \ \  / /__ _ __ (_) ___ ___ 
+ *   \ \  / /__ _ __ (_) ___ ___
  *    \ \/ / _ \ '_ \| |/ __/ _ \
  *     \  /  __/ | | | | (_|  __/
  *      \/ \___|_| |_|_|\___\___|
@@ -30,38 +30,38 @@ import org.junit.jupiter.api.Test;
 
 public class SymbolTest {
 
-	@Test
-	public void test_toString() {
-		assertEquals("alpha", new VncSymbol("alpha").toString());
-		assertEquals("xx/alpha", new VncSymbol("xx/alpha").toString());
+    @Test
+    public void test_toString() {
+        assertEquals("alpha", new VncSymbol("alpha").toString());
+        assertEquals("xx/alpha", new VncSymbol("xx/alpha").toString());
 
-		assertEquals("alpha", new VncSymbol("alpha").toString(true));
-		assertEquals("xx/alpha", new VncSymbol("xx/alpha").toString(true));
-	}
+        assertEquals("alpha", new VncSymbol("alpha").toString(true));
+        assertEquals("xx/alpha", new VncSymbol("xx/alpha").toString(true));
+    }
 
-	@Test
-	public void test_convertToJavaObject() {
-		assertEquals("alpha", new VncSymbol("alpha").convertToJavaObject());
-		assertEquals("xx/alpha", new VncSymbol("xx/alpha").convertToJavaObject());
-	}
+    @Test
+    public void test_convertToJavaObject() {
+        assertEquals("alpha", new VncSymbol("alpha").convertToJavaObject());
+        assertEquals("xx/alpha", new VncSymbol("xx/alpha").convertToJavaObject());
+    }
 
-	@Test
-	public void test_WithoutNamespace() {
-		assertEquals("alpha", new VncSymbol("alpha").getName());
-		assertEquals("alpha", new VncSymbol("alpha").getValue());
-		assertEquals("alpha", new VncSymbol("alpha").getQualifiedName());
-		assertEquals("alpha", new VncSymbol("alpha").getSimpleName());
-		assertEquals(null, new VncSymbol("alpha").getNamespace());
-		assertFalse(new VncSymbol("alpha").hasNamespace());
-	}
+    @Test
+    public void test_WithoutNamespace() {
+        assertEquals("alpha", new VncSymbol("alpha").getName());
+        assertEquals("alpha", new VncSymbol("alpha").getValue());
+        assertEquals("alpha", new VncSymbol("alpha").getQualifiedName());
+        assertEquals("alpha", new VncSymbol("alpha").getSimpleName());
+        assertEquals(null, new VncSymbol("alpha").getNamespace());
+        assertFalse(new VncSymbol("alpha").hasNamespace());
+    }
 
-	@Test
-	public void test_WithNamespace() {
-		assertEquals("xx/alpha", new VncSymbol("xx/alpha").getName());
-		assertEquals("xx/alpha", new VncSymbol("xx/alpha").getValue());
-		assertEquals("xx/alpha", new VncSymbol("xx/alpha").getQualifiedName());
-		assertEquals("alpha", new VncSymbol("xx/alpha").getSimpleName());
-		assertEquals("xx", new VncSymbol("xx/alpha").getNamespace());
-		assertTrue(new VncSymbol("xx/alpha").hasNamespace());
-	}
+    @Test
+    public void test_WithNamespace() {
+        assertEquals("xx/alpha", new VncSymbol("xx/alpha").getName());
+        assertEquals("xx/alpha", new VncSymbol("xx/alpha").getValue());
+        assertEquals("xx/alpha", new VncSymbol("xx/alpha").getQualifiedName());
+        assertEquals("alpha", new VncSymbol("xx/alpha").getSimpleName());
+        assertEquals("xx", new VncSymbol("xx/alpha").getNamespace());
+        assertTrue(new VncSymbol("xx/alpha").hasNamespace());
+    }
 }

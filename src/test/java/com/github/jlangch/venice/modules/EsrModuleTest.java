@@ -1,5 +1,5 @@
 /*   __    __         _
- *   \ \  / /__ _ __ (_) ___ ___ 
+ *   \ \  / /__ _ __ (_) ___ ___
  *    \ \/ / _ \ '_ \| |/ __/ _ \
  *     \  /  __/ | | | | (_|  __/
  *      \/ \___|_| |_|_|\___\___|
@@ -28,156 +28,156 @@ import com.github.jlangch.venice.Venice;
 
 public class EsrModuleTest {
 
-	@Test
-	public void test_checksum_1() {
-		final Venice venice = new Venice();
+    @Test
+    public void test_checksum_1() {
+        final Venice venice = new Venice();
 
-		final String script =
-				"(do                                                                                 \n" +
-				"   (load-module :esr)                                                               \n" +
-				"   (assert (= \"8\" (esr/modulo-10-checksum \"150001 1234567890123456 00 0 1\")))   \n" +
-				"   (assert (= \"9\" (esr/modulo-10-checksum \"150001 1234567890123456 00 1 1\")))   \n" +
-				"   (assert (= \"5\" (esr/modulo-10-checksum \"150001 1234567890123456 00 2 1\")))   \n" +
-				"   (assert (= \"4\" (esr/modulo-10-checksum \"150001 1234567890123456 00 3 1\"))))"; 
+        final String script =
+                "(do                                                                                 \n" +
+                "   (load-module :esr)                                                               \n" +
+                "   (assert (= \"8\" (esr/modulo-10-checksum \"150001 1234567890123456 00 0 1\")))   \n" +
+                "   (assert (= \"9\" (esr/modulo-10-checksum \"150001 1234567890123456 00 1 1\")))   \n" +
+                "   (assert (= \"5\" (esr/modulo-10-checksum \"150001 1234567890123456 00 2 1\")))   \n" +
+                "   (assert (= \"4\" (esr/modulo-10-checksum \"150001 1234567890123456 00 3 1\"))))";
 
-		venice.eval(script);
-	}
+        venice.eval(script);
+    }
 
-	@Test
-	public void test_checksum_2() {
-		final Venice venice = new Venice();
+    @Test
+    public void test_checksum_2() {
+        final Venice venice = new Venice();
 
-		final String script =
-				"(do                                                                             \n" +
-				"   (load-module :esr)                                                           \n" +
-				"   (assert (= \"8\" (esr/modulo-10-checksum \"15000112345678901234560001\")))   \n" +
-				"   (assert (= \"9\" (esr/modulo-10-checksum \"15000112345678901234560011\")))   \n" +
-				"   (assert (= \"5\" (esr/modulo-10-checksum \"15000112345678901234560021\")))   \n" +
-				"   (assert (= \"4\" (esr/modulo-10-checksum \"15000112345678901234560031\"))))"; 
+        final String script =
+                "(do                                                                             \n" +
+                "   (load-module :esr)                                                           \n" +
+                "   (assert (= \"8\" (esr/modulo-10-checksum \"15000112345678901234560001\")))   \n" +
+                "   (assert (= \"9\" (esr/modulo-10-checksum \"15000112345678901234560011\")))   \n" +
+                "   (assert (= \"5\" (esr/modulo-10-checksum \"15000112345678901234560021\")))   \n" +
+                "   (assert (= \"4\" (esr/modulo-10-checksum \"15000112345678901234560031\"))))";
 
-		venice.eval(script);
-	}
+        venice.eval(script);
+    }
 
-	@Test
-	public void test_checksum_3() {
-		final Venice venice = new Venice();
+    @Test
+    public void test_checksum_3() {
+        final Venice venice = new Venice();
 
-		final String script =
-				"(do                                                                 \n" +
-				"   (load-module :esr)                                               \n" +
-				"   (assert (= \"4\" (esr/modulo-10-checksum \"123456789\")))        \n" +
-				"   (assert (= \"4\" (esr/modulo-10-checksum \"0123456789\")))       \n" +
-				"   (assert (= \"4\" (esr/modulo-10-checksum \"00123456789\")))      \n" +
-				"   (assert (= \"4\" (esr/modulo-10-checksum \"000123456789\")))     \n" +
-				"   (assert (= \"4\" (esr/modulo-10-checksum \"0000123456789\")))    \n" +
-				"   (assert (= \"4\" (esr/modulo-10-checksum \"00000123456789\"))))"; 
+        final String script =
+                "(do                                                                 \n" +
+                "   (load-module :esr)                                               \n" +
+                "   (assert (= \"4\" (esr/modulo-10-checksum \"123456789\")))        \n" +
+                "   (assert (= \"4\" (esr/modulo-10-checksum \"0123456789\")))       \n" +
+                "   (assert (= \"4\" (esr/modulo-10-checksum \"00123456789\")))      \n" +
+                "   (assert (= \"4\" (esr/modulo-10-checksum \"000123456789\")))     \n" +
+                "   (assert (= \"4\" (esr/modulo-10-checksum \"0000123456789\")))    \n" +
+                "   (assert (= \"4\" (esr/modulo-10-checksum \"00000123456789\"))))";
 
-		venice.eval(script);
-	}
+        venice.eval(script);
+    }
 
-	@Test
-	public void test_format() {
-		final Venice venice = new Venice();
+    @Test
+    public void test_format() {
+        final Venice venice = new Venice();
 
-		final String script =
-				"(do                                                            \n" +
-				"   (load-module :esr)                                          \n" +
-				"   (assert (= \"15 00011 23456 78901 23456 00018\"             \n" +
-				"              (esr/format \"150001123456789012345600018\"))))"; 
+        final String script =
+                "(do                                                            \n" +
+                "   (load-module :esr)                                          \n" +
+                "   (assert (= \"15 00011 23456 78901 23456 00018\"             \n" +
+                "              (esr/format \"150001123456789012345600018\"))))";
 
-		venice.eval(script);
-	}
+        venice.eval(script);
+    }
 
-	@Test
-	public void test_normalize_1() {
-		final Venice venice = new Venice();
+    @Test
+    public void test_normalize_1() {
+        final Venice venice = new Venice();
 
-		final String script = 
-				"(do                                                                \n" +
-				"   (load-module :esr)                                              \n" +
-				"   (assert (= \"150001123456789012345600018\"                      \n" +
-				"              (esr/normalize \"15 00011 23456 78901 23456 00018\"))))"; 
+        final String script =
+                "(do                                                                \n" +
+                "   (load-module :esr)                                              \n" +
+                "   (assert (= \"150001123456789012345600018\"                      \n" +
+                "              (esr/normalize \"15 00011 23456 78901 23456 00018\"))))";
 
-		venice.eval(script);
-	}
+        venice.eval(script);
+    }
 
-	@Test
-	public void test_normalize_2() {
-		final Venice venice = new Venice();
+    @Test
+    public void test_normalize_2() {
+        final Venice venice = new Venice();
 
-		final String script = 
-				"(do                                                                \n" +
-				"   (load-module :esr)                                              \n" +
-				"   (assert (= \"150001123456789012345600018\"                      \n" +
-				"              (esr/normalize \"150001123456789012345600018\"))))"; 
+        final String script =
+                "(do                                                                \n" +
+                "   (load-module :esr)                                              \n" +
+                "   (assert (= \"150001123456789012345600018\"                      \n" +
+                "              (esr/normalize \"150001123456789012345600018\"))))";
 
-		venice.eval(script);
-	}
+        venice.eval(script);
+    }
 
-	@Test
-	public void test_create_1() {
-		final Venice venice = new Venice();
+    @Test
+    public void test_create_1() {
+        final Venice venice = new Venice();
 
-		final String script = 
-				"(do                                                                \n" +
-				"   (load-module :esr)                                              \n" +
-				"   (assert (= \"150001123456789012345600018\"                      \n" +
-				"              (esr/create \"150001\" \"12345678901234560001\"))))"; 
+        final String script =
+                "(do                                                                \n" +
+                "   (load-module :esr)                                              \n" +
+                "   (assert (= \"150001123456789012345600018\"                      \n" +
+                "              (esr/create \"150001\" \"12345678901234560001\"))))";
 
-		venice.eval(script);
-	}
+        venice.eval(script);
+    }
 
-	@Test
-	public void test_create_2() {
-		final Venice venice = new Venice();
+    @Test
+    public void test_create_2() {
+        final Venice venice = new Venice();
 
-		final String script = 
-				"(do                                                                \n" +
-				"   (load-module :esr)                                              \n" +
-				"   (assert (= \"158888000000000001234567892\"                      \n" +
-				"              (esr/create \"158888\" \"00000000000123456789\"))))"; 
+        final String script =
+                "(do                                                                \n" +
+                "   (load-module :esr)                                              \n" +
+                "   (assert (= \"158888000000000001234567892\"                      \n" +
+                "              (esr/create \"158888\" \"00000000000123456789\"))))";
 
-		venice.eval(script);
-	}
+        venice.eval(script);
+    }
 
-	@Test
-	public void test_create_3() {
-		final Venice venice = new Venice();
+    @Test
+    public void test_create_3() {
+        final Venice venice = new Venice();
 
-		final String script = 
-				"(do                                                                \n" +
-				"   (load-module :esr)                                              \n" +
-				"   (assert (= \"158888000000000001234567892\"                      \n" +
-				"              (esr/create \"158888\" \"123456789\"))))"; 
+        final String script =
+                "(do                                                                \n" +
+                "   (load-module :esr)                                              \n" +
+                "   (assert (= \"158888000000000001234567892\"                      \n" +
+                "              (esr/create \"158888\" \"123456789\"))))";
 
-		venice.eval(script);
-	}
+        venice.eval(script);
+    }
 
-	@Test
-	public void test_parse() {
-		final Venice venice = new Venice();
+    @Test
+    public void test_parse() {
+        final Venice venice = new Venice();
 
-		final String script = 
-				"(do                                                                \n" +
-				"   (load-module :esr)                                              \n" +
-				"   (let [esr (esr/parse \"158888000000000001234567892\")]          \n" +
-				"     (assert (= \"158888\" (:identification-nr esr)))              \n" +
-				"     (assert (= \"123456789\" (:invoice-nr esr)))                  \n" +
-				"     (assert (= \"2\" (:checksum esr)))))"; 
+        final String script =
+                "(do                                                                \n" +
+                "   (load-module :esr)                                              \n" +
+                "   (let [esr (esr/parse \"158888000000000001234567892\")]          \n" +
+                "     (assert (= \"158888\" (:identification-nr esr)))              \n" +
+                "     (assert (= \"123456789\" (:invoice-nr esr)))                  \n" +
+                "     (assert (= \"2\" (:checksum esr)))))";
 
-		venice.eval(script);
-	}
+        venice.eval(script);
+    }
 
-	@Test
-	public void test_validQ() {
-		final Venice venice = new Venice();
+    @Test
+    public void test_validQ() {
+        final Venice venice = new Venice();
 
-		final String script = 
-				"(do                                                                \n" +
-				"   (load-module :esr)                                              \n" +
-				"   (assert (esr/valid? \"158888000000000001234567892\")))"; 
+        final String script =
+                "(do                                                                \n" +
+                "   (load-module :esr)                                              \n" +
+                "   (assert (esr/valid? \"158888000000000001234567892\")))";
 
-		venice.eval(script);
-	}
+        venice.eval(script);
+    }
 
 }

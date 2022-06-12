@@ -1,5 +1,5 @@
 /*   __    __         _
- *   \ \  / /__ _ __ (_) ___ ___ 
+ *   \ \  / /__ _ __ (_) ___ ___
  *    \ \/ / _ \ '_ \| |/ __/ _ \
  *     \  /  __/ | | | | (_|  __/
  *      \/ \___|_| |_|_|\___\___|
@@ -32,105 +32,105 @@ import com.github.jlangch.venice.support.ClassWithEmbeddedEnum.TextAlignment;
 
 public class JavaInterop_embedded_enum_Test {
 
-	@Test
-	public void test() {
-		ClassWithEmbeddedEnum c = new ClassWithEmbeddedEnum();
-		
-		c.setAlignment(TextAlignment.Centre);
-	}
+    @Test
+    public void test() {
+        ClassWithEmbeddedEnum c = new ClassWithEmbeddedEnum();
 
-	@Test
-	public void test_1() {
-		final Venice venice = new Venice();
+        c.setAlignment(TextAlignment.Centre);
+    }
 
-		final String script =
-				"(do                                                                      			\n" +
-				"   (import :com.github.jlangch.venice.support.ClassWithEmbeddedEnum)               \n" +
-				"   (import :com.github.jlangch.venice.support.ClassWithEmbeddedEnum.TextAlignment) \n" +
-				"                                                                                   \n" + 
-				"   (def obj (. :ClassWithEmbeddedEnum :new))                                       \n" +
-				"   (. obj :getAlignment)                                                           \n" + 
-				")";
-		
-		final String align = (String)venice.eval(script);
-		
-		assertEquals("Left", align);
-	}
+    @Test
+    public void test_1() {
+        final Venice venice = new Venice();
 
-	@Test
-	public void test_2() {
-		final Venice venice = new Venice();
+        final String script =
+                "(do                                                                      			\n" +
+                "   (import :com.github.jlangch.venice.support.ClassWithEmbeddedEnum)               \n" +
+                "   (import :com.github.jlangch.venice.support.ClassWithEmbeddedEnum.TextAlignment) \n" +
+                "                                                                                   \n" +
+                "   (def obj (. :ClassWithEmbeddedEnum :new))                                       \n" +
+                "   (. obj :getAlignment)                                                           \n" +
+                ")";
 
-		final String script =
-				"(do                                                                      			\n" +
-				"   (import :com.github.jlangch.venice.support.ClassWithEmbeddedEnum)               \n" +
-				"   (import :com.github.jlangch.venice.support.ClassWithEmbeddedEnum.TextAlignment) \n" +
-				"                                                                                   \n" + 
-				"   (def obj (. :ClassWithEmbeddedEnum :new))                                       \n" +
-				"   (. obj :setAlignment :Right)                                                    \n" + 
-				"   (. obj :getAlignment)                                                           \n" + 
-				")";
-		
-		final String align = (String)venice.eval(script);
-		
-		assertEquals("Right", align);
-	}
+        final String align = (String)venice.eval(script);
 
-	@Test
-	public void test_3() {
-		final Venice venice = new Venice();
+        assertEquals("Left", align);
+    }
 
-		final String script =
-				"(do                                                                      			\n" +
-				"   (import :com.github.jlangch.venice.support.ClassWithEmbeddedEnum)               \n" +
-				"   (import :com.github.jlangch.venice.support.ClassWithEmbeddedEnum$TextAlignment) \n" +
-				"                                                                                   \n" + 
-				"   (def alignments { :centre  (. :ClassWithEmbeddedEnum$TextAlignment :Centre)     \n" +
-				"                     :left    (. :ClassWithEmbeddedEnum$TextAlignment :Left )      \n" +
-				"                     :right   (. :ClassWithEmbeddedEnum$TextAlignment :Right)})    \n" +
-				"                                                                                   \n" + 
-				"   (def obj (. :ClassWithEmbeddedEnum :new))                                       \n" +
-				"   (. obj :setAlignment (:right alignments))                                       \n" + 
-				"   (. obj :getAlignment)                                                           \n" + 
-				")";
+    @Test
+    public void test_2() {
+        final Venice venice = new Venice();
 
-		final String align = (String)venice.eval(script);
-		
-		assertEquals("Right", align);
-	}
+        final String script =
+                "(do                                                                      			\n" +
+                "   (import :com.github.jlangch.venice.support.ClassWithEmbeddedEnum)               \n" +
+                "   (import :com.github.jlangch.venice.support.ClassWithEmbeddedEnum.TextAlignment) \n" +
+                "                                                                                   \n" +
+                "   (def obj (. :ClassWithEmbeddedEnum :new))                                       \n" +
+                "   (. obj :setAlignment :Right)                                                    \n" +
+                "   (. obj :getAlignment)                                                           \n" +
+                ")";
 
-	@Test
-	public void test_4() {
-		final Venice venice = new Venice();
+        final String align = (String)venice.eval(script);
 
-		final String script =
-				"(do                                                                      			\n" +
-				"   (import :com.github.jlangch.venice.support.ClassWithEmbeddedEnum)               \n" +
-				"   (import :com.github.jlangch.venice.support.ClassWithEmbeddedEnum$TextAlignment) \n" +
-				"                                                                                   \n" + 
-				"   (type  (. :ClassWithEmbeddedEnum$TextAlignment :Centre))                        \n" +
-				")";
+        assertEquals("Right", align);
+    }
 
-		final String align = (String)venice.eval(script);
-		
-		assertEquals("core/string", align);
-	}
+    @Test
+    public void test_3() {
+        final Venice venice = new Venice();
 
-	@Test
-	public void test_5() {
-		final Venice venice = new Venice();
+        final String script =
+                "(do                                                                      			\n" +
+                "   (import :com.github.jlangch.venice.support.ClassWithEmbeddedEnum)               \n" +
+                "   (import :com.github.jlangch.venice.support.ClassWithEmbeddedEnum$TextAlignment) \n" +
+                "                                                                                   \n" +
+                "   (def alignments { :centre  (. :ClassWithEmbeddedEnum$TextAlignment :Centre)     \n" +
+                "                     :left    (. :ClassWithEmbeddedEnum$TextAlignment :Left )      \n" +
+                "                     :right   (. :ClassWithEmbeddedEnum$TextAlignment :Right)})    \n" +
+                "                                                                                   \n" +
+                "   (def obj (. :ClassWithEmbeddedEnum :new))                                       \n" +
+                "   (. obj :setAlignment (:right alignments))                                       \n" +
+                "   (. obj :getAlignment)                                                           \n" +
+                ")";
 
-		final String script =
-				"(do                                                                      			\n" +
-				"   (import :com.github.jlangch.venice.support.ClassWithEmbeddedEnum)               \n" +
-				"   (import :com.github.jlangch.venice.support.ClassWithEmbeddedEnum$TextAlignment) \n" +
-				"                                                                                   \n" + 
-				"   (. :ClassWithEmbeddedEnum$TextAlignment :Centre)                                \n" +
-				")";
+        final String align = (String)venice.eval(script);
 
-		final String align = (String)venice.eval(script);
-		
-		assertEquals("Centre", align);
-	}
+        assertEquals("Right", align);
+    }
+
+    @Test
+    public void test_4() {
+        final Venice venice = new Venice();
+
+        final String script =
+                "(do                                                                      			\n" +
+                "   (import :com.github.jlangch.venice.support.ClassWithEmbeddedEnum)               \n" +
+                "   (import :com.github.jlangch.venice.support.ClassWithEmbeddedEnum$TextAlignment) \n" +
+                "                                                                                   \n" +
+                "   (type  (. :ClassWithEmbeddedEnum$TextAlignment :Centre))                        \n" +
+                ")";
+
+        final String align = (String)venice.eval(script);
+
+        assertEquals("core/string", align);
+    }
+
+    @Test
+    public void test_5() {
+        final Venice venice = new Venice();
+
+        final String script =
+                "(do                                                                      			\n" +
+                "   (import :com.github.jlangch.venice.support.ClassWithEmbeddedEnum)               \n" +
+                "   (import :com.github.jlangch.venice.support.ClassWithEmbeddedEnum$TextAlignment) \n" +
+                "                                                                                   \n" +
+                "   (. :ClassWithEmbeddedEnum$TextAlignment :Centre)                                \n" +
+                ")";
+
+        final String align = (String)venice.eval(script);
+
+        assertEquals("Centre", align);
+    }
 
 }

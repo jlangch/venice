@@ -1,5 +1,5 @@
 /*   __    __         _
- *   \ \  / /__ _ __ (_) ___ ___ 
+ *   \ \  / /__ _ __ (_) ___ ___
  *    \ \/ / _ \ '_ \| |/ __/ _ \
  *     \  /  __/ | | | | (_|  __/
  *      \/ \___|_| |_|_|\___\___|
@@ -28,310 +28,310 @@ import org.junit.jupiter.api.Test;
 
 
 public class SpecialFormsTest_extend {
-	
-	@Test
-	public void test_extend_basic_1() {
-		final Venice venice = new Venice();
 
-		final String script =
-				"(do                                     \n" +
-				"  (ns test)                             \n" +
-				"  (defprotocol P (foo [x]))             \n" +
-				"  (extend :core/long P (foo [x] x)))      ";
+    @Test
+    public void test_extend_basic_1() {
+        final Venice venice = new Venice();
 
-		assertEquals(null, venice.eval(script));					
-	}
-	
-	@Test
-	public void test_extend_basic_2a() {
-		final Venice venice = new Venice();
+        final String script =
+                "(do                                     \n" +
+                "  (ns test)                             \n" +
+                "  (defprotocol P (foo [x]))             \n" +
+                "  (extend :core/long P (foo [x] x)))      ";
 
-		final String script =
-				"(do                                     \n" +
-				"  (ns test)                             \n" +
-				"  (defprotocol P (foo [x]))             \n" +
-				"  (extend :core/long P (foo [x] x))     \n" +
-				"  (foo 10))";
+        assertEquals(null, venice.eval(script));
+    }
 
-		assertEquals(10L, venice.eval(script));					
-	}
-	
-	@Test
-	public void test_extend_basic_2b() {
-		final Venice venice = new Venice();
+    @Test
+    public void test_extend_basic_2a() {
+        final Venice venice = new Venice();
 
-		final String script =
-				"(do                                     \n" +
-				"  (ns test)                             \n" +
-				"  (defprotocol P (foo [x]))             \n" +
-				"  (extend :core/long P (foo [x] 1M x))  \n" +
-				"  (foo 10))";
+        final String script =
+                "(do                                     \n" +
+                "  (ns test)                             \n" +
+                "  (defprotocol P (foo [x]))             \n" +
+                "  (extend :core/long P (foo [x] x))     \n" +
+                "  (foo 10))";
 
-		assertEquals(10L, venice.eval(script));					
-	}
-	
-	@Test
-	public void test_extend_basic_2c() {
-		final Venice venice = new Venice();
+        assertEquals(10L, venice.eval(script));
+    }
 
-		final String script =
-				"(do                                     \n" +
-				"  (ns test)                             \n" +
-				"  (defprotocol P (foo [x] [x y] nil))   \n" +
-				"  (extend :core/long P (foo [x] x))     \n" +
-				"  (foo 1))                                ";
+    @Test
+    public void test_extend_basic_2b() {
+        final Venice venice = new Venice();
 
-		assertEquals(1L, venice.eval(script));					
-	}
-	
-	@Test
-	public void test_extend_basic_3() {
-		final Venice venice = new Venice();
+        final String script =
+                "(do                                     \n" +
+                "  (ns test)                             \n" +
+                "  (defprotocol P (foo [x]))             \n" +
+                "  (extend :core/long P (foo [x] 1M x))  \n" +
+                "  (foo 10))";
 
-		final String script =
-				"(do                                     \n" +
-				"  (ns test)                             \n" +
-				"  (defprotocol P (foo [x] [x y] nil))  \n" +
-				"  (extend :core/long P (foo [x] x))     \n" +
-				"  (foo 1 2))                              ";
+        assertEquals(10L, venice.eval(script));
+    }
 
-		assertEquals(null, venice.eval(script));					
-	}
-	
-	@Test
-	public void test_extend_basic_4a() {
-		final Venice venice = new Venice();
+    @Test
+    public void test_extend_basic_2c() {
+        final Venice venice = new Venice();
 
-		final String script =
-				"(do                                            \n" +
-				"  (ns test)                                    \n" +
-				"  (defprotocol P (foo [x] [x y] [x y z] nil))  \n" +
-				"  (extend :core/long P (foo [x y] x))          \n" +
-				"  (foo 1))                                       ";
+        final String script =
+                "(do                                     \n" +
+                "  (ns test)                             \n" +
+                "  (defprotocol P (foo [x] [x y] nil))   \n" +
+                "  (extend :core/long P (foo [x] x))     \n" +
+                "  (foo 1))                                ";
 
-		assertEquals(null, venice.eval(script));					
-	}
-	
-	@Test
-	public void test_extend_basic_4b() {
-		final Venice venice = new Venice();
+        assertEquals(1L, venice.eval(script));
+    }
 
-		final String script =
-				"(do                                            \n" +
-				"  (ns test)                                    \n" +
-				"  (defprotocol P (foo [x] [x y] [x y z] nil))  \n" +
-				"  (extend :core/long P (foo [x y] x))          \n" +
-				"  (foo 2 100))                                   ";
+    @Test
+    public void test_extend_basic_3() {
+        final Venice venice = new Venice();
 
-		assertEquals(2L, venice.eval(script));					
-	}
-	
-	@Test
-	public void test_extend_basic_4c() {
-		final Venice venice = new Venice();
+        final String script =
+                "(do                                     \n" +
+                "  (ns test)                             \n" +
+                "  (defprotocol P (foo [x] [x y] nil))  \n" +
+                "  (extend :core/long P (foo [x] x))     \n" +
+                "  (foo 1 2))                              ";
 
-		final String script =
-				"(do                                            \n" +
-				"  (ns test)                                    \n" +
-				"  (defprotocol P (foo [x] [x y] [x y z] nil))  \n" +
-				"  (extend :core/long P (foo [x y] x))          \n" +
-				"  (foo 2 3 4))                                   ";
+        assertEquals(null, venice.eval(script));
+    }
 
-		assertEquals(null, venice.eval(script));					
-	}
-	
-	@Test
-	public void test_extend_basic_4d() {
-		final Venice venice = new Venice();
+    @Test
+    public void test_extend_basic_4a() {
+        final Venice venice = new Venice();
 
-		final String script =
-				"(do                                            \n" +
-				"  (ns test)                                    \n" +
-				"  (defprotocol P (foo [x] [x y] [x y z] nil))  \n" +
-				"  (extend :core/long P (foo [x y] x))          \n" +
-				"  (foo 2 3 4 5))                                   ";
+        final String script =
+                "(do                                            \n" +
+                "  (ns test)                                    \n" +
+                "  (defprotocol P (foo [x] [x y] [x y z] nil))  \n" +
+                "  (extend :core/long P (foo [x y] x))          \n" +
+                "  (foo 1))                                       ";
 
-		assertThrows(
-				ArityException.class,
-				() -> venice.eval(script));					
-	}
-	
-	@Test
-	public void test_extend_basic_5() {
-		final Venice venice = new Venice();
+        assertEquals(null, venice.eval(script));
+    }
 
-		final String script =
-				"(do                                            \n" +
-				"  (ns test)                                    \n" +
-				"  (deftype :person [name :string])             \n" +
-				"  (defprotocol P (foo [x]))                    \n" +
-				"  (extend :test/person P (foo [x] (:name x)))  \n" +
-				"  (foo (person. \"joe\")))                       ";
+    @Test
+    public void test_extend_basic_4b() {
+        final Venice venice = new Venice();
 
-		assertEquals("joe", venice.eval(script));					
-	}
+        final String script =
+                "(do                                            \n" +
+                "  (ns test)                                    \n" +
+                "  (defprotocol P (foo [x] [x y] [x y z] nil))  \n" +
+                "  (extend :core/long P (foo [x y] x))          \n" +
+                "  (foo 2 100))                                   ";
 
-	@Test
-	public void test_extend_on_deftype_1() {
-		final Venice venice = new Venice();
+        assertEquals(2L, venice.eval(script));
+    }
 
-		final String script =
-				"(do                                    \n" +
-				"  (defprotocol P (foo [x]))            \n" +
-				"  (deftype :person [name :string]      \n" +
-				"           P (foo [x] (:name x)))      \n" +
-				"  (foo (person. \"joe\")))               ";
+    @Test
+    public void test_extend_basic_4c() {
+        final Venice venice = new Venice();
 
-		assertEquals("joe", venice.eval(script));					
-	}
+        final String script =
+                "(do                                            \n" +
+                "  (ns test)                                    \n" +
+                "  (defprotocol P (foo [x] [x y] [x y z] nil))  \n" +
+                "  (extend :core/long P (foo [x y] x))          \n" +
+                "  (foo 2 3 4))                                   ";
 
-	@Test
-	public void test_extend_on_deftype_2() {
-		final Venice venice = new Venice();
+        assertEquals(null, venice.eval(script));
+    }
 
-		final String script =
-				"(do                                                 \n" +
-				"  (defprotocol P (foo [x]) (bar [x]))               \n" +
-				"  (deftype :person [name :string last :string]      \n" +
-				"           P (foo [x] (:name x))                    \n" +
-				"             (bar [x] (:last x)))                   \n" +
-				"  (def p (person. \"joe\" \"smith\"))               \n" +
-				"  (pr-str [(foo p) (bar p)]))";
+    @Test
+    public void test_extend_basic_4d() {
+        final Venice venice = new Venice();
 
-		assertEquals("[\"joe\" \"smith\"]", venice.eval(script));					
-	}
-	
-	@Test
-	public void test_namespaces_1a() {
-		final Venice venice = new Venice();
+        final String script =
+                "(do                                            \n" +
+                "  (ns test)                                    \n" +
+                "  (defprotocol P (foo [x] [x y] [x y z] nil))  \n" +
+                "  (extend :core/long P (foo [x y] x))          \n" +
+                "  (foo 2 3 4 5))                                   ";
 
-		final String script =
-				"(do                                                   \n" +
-				"  (ns test)                                           \n" +
-				"  (deftype :person [name :string])                    \n" +
-				"                                                      \n" +
-				"  (ns test1)                                          \n" +
-				"  (defprotocol P (foo [x]))                           \n" +
-				"  (extend :test/person P (foo [x] (:name x)))         \n" +
-				"                                                      \n" +
-				"  (ns test2)                                          \n" +
-				"  (test1/foo (test/person. \"joe\")))                   ";
+        assertThrows(
+                ArityException.class,
+                () -> venice.eval(script));
+    }
 
-		assertEquals("joe", venice.eval(script));					
-	}
-	
-	@Test
-	public void test_namespaces_1b() {
-		final Venice venice = new Venice();
+    @Test
+    public void test_extend_basic_5() {
+        final Venice venice = new Venice();
 
-		final String script =
-				"(do                                                   \n" +
-				"  (ns testA)                                          \n" +
-				"  (deftype :person [name :string])                    \n" +
-				"                                                      \n" +
-				"  (ns testB)                                          \n" +
-				"  (deftype :company [name :string])                   \n" +
-				"                                                      \n" +
-				"  (ns test1)                                          \n" +
-				"  (defprotocol P (foo [x]))                           \n" +
-				"  (extend :testA/person P (foo [x] (:name x)))        \n" +
-				"  (extend :testB/company P (foo [x] (:name x)))       \n" +
-				"                                                      \n" +
-				"  (ns test2)                                          \n" +
-				"  (test1/foo (testA/person. \"joe\"))                 \n" +
-				"  (test1/foo (testB/company. \"ABC Inc.\")))            ";
+        final String script =
+                "(do                                            \n" +
+                "  (ns test)                                    \n" +
+                "  (deftype :person [name :string])             \n" +
+                "  (defprotocol P (foo [x]))                    \n" +
+                "  (extend :test/person P (foo [x] (:name x)))  \n" +
+                "  (foo (person. \"joe\")))                       ";
 
-		assertEquals("ABC Inc.", venice.eval(script));					
-	}
-	
-	@Test
-	public void test_namespaces_2a() {
-		final Venice venice = new Venice();
+        assertEquals("joe", venice.eval(script));
+    }
 
-		final String script =
-				"(do                                                   \n" +
-				"  (ns test)                                           \n" +
-				"  (deftype :person [name :string])                    \n" +
-				"                                                      \n" +
-				"  (ns test1)                                          \n" +
-				"  (defprotocol P (foo [x]))                           \n" +
-				"                                                      \n" +
-				"  (ns test2)                                          \n" +
-				"  (extend :test/person test1/P (foo [x] (:name x)))   \n" +
-				"                                                      \n" +
-				"  (ns test3)                                          \n" +
-				"  (test1/foo (test/person. \"joe\")))                   ";
+    @Test
+    public void test_extend_on_deftype_1() {
+        final Venice venice = new Venice();
 
-		assertEquals("joe", venice.eval(script));					
-	}
-	
-	@Test
-	public void test_namespaces_2b() {
-		final Venice venice = new Venice();
+        final String script =
+                "(do                                    \n" +
+                "  (defprotocol P (foo [x]))            \n" +
+                "  (deftype :person [name :string]      \n" +
+                "           P (foo [x] (:name x)))      \n" +
+                "  (foo (person. \"joe\")))               ";
 
-		final String script =
-				"(do                                                   \n" +
-				"  (ns testA)                                          \n" +
-				"  (deftype :person [name :string])                    \n" +
-				"                                                      \n" +
-				"  (ns testB)                                          \n" +
-				"  (deftype :company [name :string])                   \n" +
-				"                                                      \n" +
-				"  (ns test1)                                          \n" +
-				"  (defprotocol P (foo [x]))                           \n" +
-				"                                                      \n" +
-				"  (ns test2)                                          \n" +
-				"  (extend :testA/person test1/P (foo [x] (:name x)))  \n" +
-				"  (extend :testB/company test1/P (foo [x] (:name x))) \n" +
-				"                                                      \n" +
-				"  (ns test3)                                          \n" +
-				"  (test1/foo (testA/person. \"joe\"))                 \n" +
-				"  (test1/foo (testB/company. \"ABC Inc.\")))            ";
+        assertEquals("joe", venice.eval(script));
+    }
 
-		assertEquals("ABC Inc.", venice.eval(script));					
-	}
+    @Test
+    public void test_extend_on_deftype_2() {
+        final Venice venice = new Venice();
 
-	@Test
-	public void test_namespaces_3a() {
-		final Venice venice = new Venice();
+        final String script =
+                "(do                                                 \n" +
+                "  (defprotocol P (foo [x]) (bar [x]))               \n" +
+                "  (deftype :person [name :string last :string]      \n" +
+                "           P (foo [x] (:name x))                    \n" +
+                "             (bar [x] (:last x)))                   \n" +
+                "  (def p (person. \"joe\" \"smith\"))               \n" +
+                "  (pr-str [(foo p) (bar p)]))";
 
-		final String script =
-				"(do                                       \n" +
-				"  (ns test)                               \n" +
-				"  (defprotocol P (foo [x]))               \n" +
-				"                                          \n" +
-				"  (ns test1)                              \n" +
-				"  (deftype :person [name :string]         \n" +
-				"           test/P (foo [x] (:name x)))    \n" +
-				"                                          \n" +
-				"  (ns test2)                              \n" +
-				"  (test/foo (test1/person. \"joe\")))       ";
+        assertEquals("[\"joe\" \"smith\"]", venice.eval(script));
+    }
 
-		assertEquals("joe", venice.eval(script));					
-	}
+    @Test
+    public void test_namespaces_1a() {
+        final Venice venice = new Venice();
 
-	@Test
-	public void test_namespaces_3b() {
-		final Venice venice = new Venice();
+        final String script =
+                "(do                                                   \n" +
+                "  (ns test)                                           \n" +
+                "  (deftype :person [name :string])                    \n" +
+                "                                                      \n" +
+                "  (ns test1)                                          \n" +
+                "  (defprotocol P (foo [x]))                           \n" +
+                "  (extend :test/person P (foo [x] (:name x)))         \n" +
+                "                                                      \n" +
+                "  (ns test2)                                          \n" +
+                "  (test1/foo (test/person. \"joe\")))                   ";
 
-		final String script =
-				"(do                                                   \n" +
-				"  (ns test)                                           \n" +
-				"  (defprotocol P (foo [x]))                           \n" +
-				"                                                      \n" +
-				"  (ns testA)                                          \n" +
-				"  (deftype :person [name :string]                     \n" +
-				"           test/P (foo [x] (:name x)))                \n" +
-				"                                                      \n" +
-				"  (ns testB)                                          \n" +
-				"  (deftype :company [name :string]                    \n" +
-				"           test/P (foo [x] (:name x)))                \n" +
-				"                                                      \n" +
-				"  (ns test2)                                          \n" +
-				"  (test/foo (testA/person. \"joe\"))                  \n" +
-				"  (test/foo (testB/company. \"ABC Inc.\")))             ";
+        assertEquals("joe", venice.eval(script));
+    }
 
-		assertEquals("ABC Inc.", venice.eval(script));					
-	}
+    @Test
+    public void test_namespaces_1b() {
+        final Venice venice = new Venice();
+
+        final String script =
+                "(do                                                   \n" +
+                "  (ns testA)                                          \n" +
+                "  (deftype :person [name :string])                    \n" +
+                "                                                      \n" +
+                "  (ns testB)                                          \n" +
+                "  (deftype :company [name :string])                   \n" +
+                "                                                      \n" +
+                "  (ns test1)                                          \n" +
+                "  (defprotocol P (foo [x]))                           \n" +
+                "  (extend :testA/person P (foo [x] (:name x)))        \n" +
+                "  (extend :testB/company P (foo [x] (:name x)))       \n" +
+                "                                                      \n" +
+                "  (ns test2)                                          \n" +
+                "  (test1/foo (testA/person. \"joe\"))                 \n" +
+                "  (test1/foo (testB/company. \"ABC Inc.\")))            ";
+
+        assertEquals("ABC Inc.", venice.eval(script));
+    }
+
+    @Test
+    public void test_namespaces_2a() {
+        final Venice venice = new Venice();
+
+        final String script =
+                "(do                                                   \n" +
+                "  (ns test)                                           \n" +
+                "  (deftype :person [name :string])                    \n" +
+                "                                                      \n" +
+                "  (ns test1)                                          \n" +
+                "  (defprotocol P (foo [x]))                           \n" +
+                "                                                      \n" +
+                "  (ns test2)                                          \n" +
+                "  (extend :test/person test1/P (foo [x] (:name x)))   \n" +
+                "                                                      \n" +
+                "  (ns test3)                                          \n" +
+                "  (test1/foo (test/person. \"joe\")))                   ";
+
+        assertEquals("joe", venice.eval(script));
+    }
+
+    @Test
+    public void test_namespaces_2b() {
+        final Venice venice = new Venice();
+
+        final String script =
+                "(do                                                   \n" +
+                "  (ns testA)                                          \n" +
+                "  (deftype :person [name :string])                    \n" +
+                "                                                      \n" +
+                "  (ns testB)                                          \n" +
+                "  (deftype :company [name :string])                   \n" +
+                "                                                      \n" +
+                "  (ns test1)                                          \n" +
+                "  (defprotocol P (foo [x]))                           \n" +
+                "                                                      \n" +
+                "  (ns test2)                                          \n" +
+                "  (extend :testA/person test1/P (foo [x] (:name x)))  \n" +
+                "  (extend :testB/company test1/P (foo [x] (:name x))) \n" +
+                "                                                      \n" +
+                "  (ns test3)                                          \n" +
+                "  (test1/foo (testA/person. \"joe\"))                 \n" +
+                "  (test1/foo (testB/company. \"ABC Inc.\")))            ";
+
+        assertEquals("ABC Inc.", venice.eval(script));
+    }
+
+    @Test
+    public void test_namespaces_3a() {
+        final Venice venice = new Venice();
+
+        final String script =
+                "(do                                       \n" +
+                "  (ns test)                               \n" +
+                "  (defprotocol P (foo [x]))               \n" +
+                "                                          \n" +
+                "  (ns test1)                              \n" +
+                "  (deftype :person [name :string]         \n" +
+                "           test/P (foo [x] (:name x)))    \n" +
+                "                                          \n" +
+                "  (ns test2)                              \n" +
+                "  (test/foo (test1/person. \"joe\")))       ";
+
+        assertEquals("joe", venice.eval(script));
+    }
+
+    @Test
+    public void test_namespaces_3b() {
+        final Venice venice = new Venice();
+
+        final String script =
+                "(do                                                   \n" +
+                "  (ns test)                                           \n" +
+                "  (defprotocol P (foo [x]))                           \n" +
+                "                                                      \n" +
+                "  (ns testA)                                          \n" +
+                "  (deftype :person [name :string]                     \n" +
+                "           test/P (foo [x] (:name x)))                \n" +
+                "                                                      \n" +
+                "  (ns testB)                                          \n" +
+                "  (deftype :company [name :string]                    \n" +
+                "           test/P (foo [x] (:name x)))                \n" +
+                "                                                      \n" +
+                "  (ns test2)                                          \n" +
+                "  (test/foo (testA/person. \"joe\"))                  \n" +
+                "  (test/foo (testB/company. \"ABC Inc.\")))             ";
+
+        assertEquals("ABC Inc.", venice.eval(script));
+    }
 
 }

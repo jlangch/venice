@@ -1,5 +1,5 @@
 /*   __    __         _
- *   \ \  / /__ _ __ (_) ___ ___ 
+ *   \ \  / /__ _ __ (_) ___ ___
  *    \ \/ / _ \ '_ \| |/ __/ _ \
  *     \  /  __/ | | | | (_|  __/
  *      \/ \___|_| |_|_|\___\___|
@@ -33,42 +33,42 @@ import com.github.jlangch.venice.javainterop.SandboxRules;
 
 
 public class Sandbox_VeniceAgent_Test {
-	
-	@Test
-	public void test_agent_sandbox_ok() {
-		final Venice venice = new Venice();
 
-		final String script = 
-				"(do                                             \n" +
-				"   (defn add [a b] (io/file \"zz\") (+ a b 10)) \n" +
-				"   (def x (agent 100))                          \n" +
-				"   (send x add 5)                               \n" +
-				"   (sleep 200)                                  \n" +
-				"   (deref x))                                     ";
+    @Test
+    public void test_agent_sandbox_ok() {
+        final Venice venice = new Venice();
 
-		final Object result = venice.eval(script);
-		
-		assertEquals(Long.valueOf(115), result);
-	}
-	
-	@Test
-	public void test_agent_sandbox_violation() {
-		// all venice 'file' function blacklisted
-		final Interceptor interceptor = 
-				new SandboxInterceptor(new SandboxRules().rejectVeniceFunctions("io/file"));
+        final String script =
+                "(do                                             \n" +
+                "   (defn add [a b] (io/file \"zz\") (+ a b 10)) \n" +
+                "   (def x (agent 100))                          \n" +
+                "   (send x add 5)                               \n" +
+                "   (sleep 200)                                  \n" +
+                "   (deref x))                                     ";
 
-		final Venice venice = new Venice(interceptor);
+        final Object result = venice.eval(script);
 
-		final String script = 
-				"(do                                             \n" +
-				"   (defn add [a b] (io/file \"zz\") (+ a b 10)) \n" +
-				"   (def x (agent 100 :error-mode :fail))        \n" +
-				"   (send x add 5)                               \n" +
-				"   (sleep 200)                                  \n" +
-				"   (agent-error x))                               ";
+        assertEquals(Long.valueOf(115), result);
+    }
 
-		final SecurityException ex = (SecurityException)venice.eval(script);
-		assertEquals("Venice Sandbox: Access denied to function io/file", ex.getMessage());
-	}
+    @Test
+    public void test_agent_sandbox_violation() {
+        // all venice 'file' function blacklisted
+        final Interceptor interceptor =
+                new SandboxInterceptor(new SandboxRules().rejectVeniceFunctions("io/file"));
+
+        final Venice venice = new Venice(interceptor);
+
+        final String script =
+                "(do                                             \n" +
+                "   (defn add [a b] (io/file \"zz\") (+ a b 10)) \n" +
+                "   (def x (agent 100 :error-mode :fail))        \n" +
+                "   (send x add 5)                               \n" +
+                "   (sleep 200)                                  \n" +
+                "   (agent-error x))                               ";
+
+        final SecurityException ex = (SecurityException)venice.eval(script);
+        assertEquals("Venice Sandbox: Access denied to function io/file", ex.getMessage());
+    }
 
 }

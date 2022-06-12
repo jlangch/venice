@@ -1,5 +1,5 @@
 /*   __    __         _
- *   \ \  / /__ _ __ (_) ___ ___ 
+ *   \ \  / /__ _ __ (_) ___ ___
  *    \ \/ / _ \ '_ \| |/ __/ _ \
  *     \  /  __/ | | | | (_|  __/
  *      \/ \___|_| |_|_|\___\___|
@@ -45,75 +45,75 @@ import com.github.jlangch.venice.support.AuditEventType;
 public class JavaInterop_bean_Test {
 
 
-	@Test
-	public void test_convert_bean_to_map() {
-		final Venice venice = new Venice();
+    @Test
+    public void test_convert_bean_to_map() {
+        final Venice venice = new Venice();
 
-		final String script =
-				"(do                                                                      " +
-				"   (import :com.github.jlangch.venice.support.User )                     " +
-				"   (import :java.time.LocalDate)                                         " +
-				"                                                                         " + 
-				"   (def john (. :User :new \"john\" 24 (. :LocalDate :of 2018 7 21)))    " +
-				"   (hash-map john)                                                       " + 
-				")";
-		
-		@SuppressWarnings("unchecked")
-		final Map<Object,Object> map = (Map<Object,Object>)venice.eval(script);
-		
-		assertEquals("john", map.get("firstname"));
-		assertEquals(Integer.valueOf(24), map.get("age"));
-		assertEquals(LocalDate.of(2018, 07, 21), map.get("birthday"));
-		assertEquals("com.github.jlangch.venice.support.User", map.get("class"));
-	}
+        final String script =
+                "(do                                                                      " +
+                "   (import :com.github.jlangch.venice.support.User )                     " +
+                "   (import :java.time.LocalDate)                                         " +
+                "                                                                         " +
+                "   (def john (. :User :new \"john\" 24 (. :LocalDate :of 2018 7 21)))    " +
+                "   (hash-map john)                                                       " +
+                ")";
 
-	@Test
-	public void test_bean_map_accessor() {
-		final Venice venice = new Venice();
+        @SuppressWarnings("unchecked")
+        final Map<Object,Object> map = (Map<Object,Object>)venice.eval(script);
 
-		final String script =
-				"(do                                                                      " +
-				"   (import :com.github.jlangch.venice.support.User )                     " +
-				"   (import :java.time.LocalDate)                                         " +
-				"                                                                         " + 
-				"   (def john (. :User :new \"john\" 24 (. :LocalDate :of 2018 7 21)))    " +
-				"   (:age john)                                                           " + 
-				")";
-		
-		assertEquals(24, venice.eval(script));
-	}
+        assertEquals("john", map.get("firstname"));
+        assertEquals(Integer.valueOf(24), map.get("age"));
+        assertEquals(LocalDate.of(2018, 07, 21), map.get("birthday"));
+        assertEquals("com.github.jlangch.venice.support.User", map.get("class"));
+    }
 
-	@Test
-	public void test_bean_like_access() {
-		final AuditEvent event = new AuditEvent(
-										"su",
-										2000L,
-										AuditEventType.ALERT,
-										"superuser",
-										"webapp.started",
-										"text");
-		
-		try {
-			ThreadContext.setInterceptor(new AcceptAllInterceptor());
+    @Test
+    public void test_bean_map_accessor() {
+        final Venice venice = new Venice();
 
-			final VncVal val = JavaInteropUtil.convertToVncVal(event);
-			assertTrue(Types.isVncJavaObject(val));
-			
-			final VncJavaObject javaObj = (VncJavaObject)val;
-			assertEquals("su", ((VncString)javaObj.get(new VncKeyword("principal"))).getValue());
-			assertEquals(2000L, ((VncLong)javaObj.get(new VncKeyword("elapsedTimeMillis"))).getValue().longValue());
-			assertEquals("ALERT", ((VncString)javaObj.get(new VncKeyword("eventType"))).getValue());
-			assertEquals("superuser", ((VncString)javaObj.get(new VncKeyword("eventKey"))).getValue());
-			assertEquals("webapp.started", ((VncString)javaObj.get(new VncKeyword("eventName"))).getValue());
-			assertEquals("text", ((VncString)javaObj.get(new VncKeyword("eventMessage"))).getValue());
-			assertEquals(AuditEvent.class.getName(), ((VncString)javaObj.get(new VncKeyword("class"))).getValue());
-			
-			final Object obj = val.convertToJavaObject();
-			assertTrue(obj instanceof AuditEvent);
-		}
-		finally {
-			ThreadContext.remove();
-		}
-	}
+        final String script =
+                "(do                                                                      " +
+                "   (import :com.github.jlangch.venice.support.User )                     " +
+                "   (import :java.time.LocalDate)                                         " +
+                "                                                                         " +
+                "   (def john (. :User :new \"john\" 24 (. :LocalDate :of 2018 7 21)))    " +
+                "   (:age john)                                                           " +
+                ")";
+
+        assertEquals(24, venice.eval(script));
+    }
+
+    @Test
+    public void test_bean_like_access() {
+        final AuditEvent event = new AuditEvent(
+                                        "su",
+                                        2000L,
+                                        AuditEventType.ALERT,
+                                        "superuser",
+                                        "webapp.started",
+                                        "text");
+
+        try {
+            ThreadContext.setInterceptor(new AcceptAllInterceptor());
+
+            final VncVal val = JavaInteropUtil.convertToVncVal(event);
+            assertTrue(Types.isVncJavaObject(val));
+
+            final VncJavaObject javaObj = (VncJavaObject)val;
+            assertEquals("su", ((VncString)javaObj.get(new VncKeyword("principal"))).getValue());
+            assertEquals(2000L, ((VncLong)javaObj.get(new VncKeyword("elapsedTimeMillis"))).getValue().longValue());
+            assertEquals("ALERT", ((VncString)javaObj.get(new VncKeyword("eventType"))).getValue());
+            assertEquals("superuser", ((VncString)javaObj.get(new VncKeyword("eventKey"))).getValue());
+            assertEquals("webapp.started", ((VncString)javaObj.get(new VncKeyword("eventName"))).getValue());
+            assertEquals("text", ((VncString)javaObj.get(new VncKeyword("eventMessage"))).getValue());
+            assertEquals(AuditEvent.class.getName(), ((VncString)javaObj.get(new VncKeyword("class"))).getValue());
+
+            final Object obj = val.convertToJavaObject();
+            assertTrue(obj instanceof AuditEvent);
+        }
+        finally {
+            ThreadContext.remove();
+        }
+    }
 
 }

@@ -1,5 +1,5 @@
 /*   __    __         _
- *   \ \  / /__ _ __ (_) ___ ___ 
+ *   \ \  / /__ _ __ (_) ___ ___
  *    \ \/ / _ \ '_ \| |/ __/ _ \
  *     \  /  __/ | | | | (_|  __/
  *      \/ \___|_| |_|_|\___\___|
@@ -38,164 +38,164 @@ import com.github.jlangch.venice.Venice;
 
 public class MavenModuleTest {
 
-	@Test
-	public void test_uri_jar() {
-		final Venice venice = new Venice();
+    @Test
+    public void test_uri_jar() {
+        final Venice venice = new Venice();
 
-		final String script =
-				"(do                                                    " +
-				"   (load-module :maven)                                " +
-				"                                                       " +
-				"   (maven/uri \"org.knowm.xchart:xchart:3.6.1\" :jar)  " + 
-				") ";
+        final String script =
+                "(do                                                    " +
+                "   (load-module :maven)                                " +
+                "                                                       " +
+                "   (maven/uri \"org.knowm.xchart:xchart:3.6.1\" :jar)  " +
+                ") ";
 
-		assertEquals(
-				"https://repo1.maven.org/maven2/org/knowm/xchart/xchart/3.6.1/xchart-3.6.1.jar", 
-				venice.eval(script));
-	}
+        assertEquals(
+                "https://repo1.maven.org/maven2/org/knowm/xchart/xchart/3.6.1/xchart-3.6.1.jar",
+                venice.eval(script));
+    }
 
-	@Test
-	public void test_uri_sources() {
-		final Venice venice = new Venice();
+    @Test
+    public void test_uri_sources() {
+        final Venice venice = new Venice();
 
-		final String script =
-				"(do                                                        " +
-				"   (load-module :maven)                                    " +
-				"                                                           " +
-				"   (maven/uri \"org.knowm.xchart:xchart:3.6.1\" :sources)  " + 
-				") ";
+        final String script =
+                "(do                                                        " +
+                "   (load-module :maven)                                    " +
+                "                                                           " +
+                "   (maven/uri \"org.knowm.xchart:xchart:3.6.1\" :sources)  " +
+                ") ";
 
-		assertEquals(
-				"https://repo1.maven.org/maven2/org/knowm/xchart/xchart/3.6.1/xchart-3.6.1-sources.jar", 
-				venice.eval(script));
-	}
+        assertEquals(
+                "https://repo1.maven.org/maven2/org/knowm/xchart/xchart/3.6.1/xchart-3.6.1-sources.jar",
+                venice.eval(script));
+    }
 
-	@Test
-	public void test_uri_pom() {
-		final Venice venice = new Venice();
+    @Test
+    public void test_uri_pom() {
+        final Venice venice = new Venice();
 
-		final String script =
-				"(do                                                    " +
-				"   (load-module :maven)                                " +
-				"                                                       " +
-				"   (maven/uri \"org.knowm.xchart:xchart:3.6.1\" :pom)  " + 
-				") ";
+        final String script =
+                "(do                                                    " +
+                "   (load-module :maven)                                " +
+                "                                                       " +
+                "   (maven/uri \"org.knowm.xchart:xchart:3.6.1\" :pom)  " +
+                ") ";
 
-		assertEquals(
-				"https://repo1.maven.org/maven2/org/knowm/xchart/xchart/3.6.1/xchart-3.6.1.pom", 
-				venice.eval(script));
-	}
+        assertEquals(
+                "https://repo1.maven.org/maven2/org/knowm/xchart/xchart/3.6.1/xchart-3.6.1.pom",
+                venice.eval(script));
+    }
 
-	@Test
-	public void test_get_jar() {
-		final Venice venice = new Venice();
+    @Test
+    public void test_get_jar() {
+        final Venice venice = new Venice();
 
-		final String script =
-				"(do                                                      " +
-				"   (load-module :maven)                                  " +
-				"                                                         " +
-				"   (if (io/internet-avail?)                              " + 
-				"     (maven/get \"org.knowm.xchart:xchart:3.6.1\" :jar)  " + 
-				"     :no-internet)                                       " +
-				") ";
+        final String script =
+                "(do                                                      " +
+                "   (load-module :maven)                                  " +
+                "                                                         " +
+                "   (if (io/internet-avail?)                              " +
+                "     (maven/get \"org.knowm.xchart:xchart:3.6.1\" :jar)  " +
+                "     :no-internet)                                       " +
+                ") ";
 
-		final Object result = venice.eval(script);
-		
-		if (result instanceof String) {
-			assertEquals("no-internet", (String)result);
-		}
-		else if (result instanceof ByteBuffer) {
-			assertEquals(320835, ((ByteBuffer)result).remaining());
-		}
-		else {
-			fail("got " + result.getClass().toGenericString());
-		}
-	}
+        final Object result = venice.eval(script);
 
-	@Test
-	public void test_get_sources() {
-		final Venice venice = new Venice();
+        if (result instanceof String) {
+            assertEquals("no-internet", result);
+        }
+        else if (result instanceof ByteBuffer) {
+            assertEquals(320835, ((ByteBuffer)result).remaining());
+        }
+        else {
+            fail("got " + result.getClass().toGenericString());
+        }
+    }
 
-		final String script =
-				"(do                                                          " +
-				"   (load-module :maven)                                      " +
-				"                                                             " +
-				"   (if (io/internet-avail?)                                  " + 
-				"     (maven/get \"org.knowm.xchart:xchart:3.6.1\" :sources)  " + 
-				"     :no-internet)                                           " +
-				") ";
+    @Test
+    public void test_get_sources() {
+        final Venice venice = new Venice();
 
-		final Object result = venice.eval(script);
-		
-		if (result instanceof String) {
-			assertEquals("no-internet", (String)result);
-		}
-		else if (result instanceof ByteBuffer) {
-			assertEquals(174665, ((ByteBuffer)result).remaining());
-		}
-		else {
-			fail("got " + result.getClass().toGenericString());
-		}
-	}
+        final String script =
+                "(do                                                          " +
+                "   (load-module :maven)                                      " +
+                "                                                             " +
+                "   (if (io/internet-avail?)                                  " +
+                "     (maven/get \"org.knowm.xchart:xchart:3.6.1\" :sources)  " +
+                "     :no-internet)                                           " +
+                ") ";
 
-	@Test
-	public void test_get_pom() {
-		final Venice venice = new Venice();
+        final Object result = venice.eval(script);
 
-		final String script =
-				"(do                                                      " +
-				"   (load-module :maven)                                  " +
-				"                                                         " +
-				"   (if (io/internet-avail?)                              " + 
-				"     (maven/get \"org.knowm.xchart:xchart:3.6.1\" :pom)  " + 
-				"     :no-internet)                                       " +
-				") ";
+        if (result instanceof String) {
+            assertEquals("no-internet", result);
+        }
+        else if (result instanceof ByteBuffer) {
+            assertEquals(174665, ((ByteBuffer)result).remaining());
+        }
+        else {
+            fail("got " + result.getClass().toGenericString());
+        }
+    }
 
-		final Object result = venice.eval(script);
-		
-		if (result instanceof String) {
-			assertEquals("no-internet", (String)result);
-		}
-		else if (result instanceof ByteBuffer) {
-			assertEquals(799, ((ByteBuffer)result).remaining());
-		}
-		else {
-			fail("got " + result.getClass().toGenericString());
-		}
-	}
+    @Test
+    public void test_get_pom() {
+        final Venice venice = new Venice();
 
-	@Test
-	public void test_download_pom() throws IOException {
-		final Venice venice = new Venice();
-		
-		final File tmp = Files.createTempDirectory("maven").toFile();
+        final String script =
+                "(do                                                      " +
+                "   (load-module :maven)                                  " +
+                "                                                         " +
+                "   (if (io/internet-avail?)                              " +
+                "     (maven/get \"org.knowm.xchart:xchart:3.6.1\" :pom)  " +
+                "     :no-internet)                                       " +
+                ") ";
 
-		final String script = 
-				"(do                                                        " +
-				"   (load-module :maven)                                    " +
-				"                                                           " +
-				"   (if (io/internet-avail?)                                " + 
-				"     (do                                                   " +
-				"       (maven/download \"org.knowm.xchart:xchart:3.6.1\"   " + 
-				"                       :pom true                           " + 
-				"                       :dir dir)                           " + 
-				"       :downloaded)                                        " + 
-				"     :no-internet)                                         " +
-				") ";
+        final Object result = venice.eval(script);
 
-		final String result = (String)venice.eval(script, Parameters.of("dir", tmp));
-		
-		if (result.equals("no-internet")) {
-			assertTrue(true);
-		}
-		else if (result.equals("downloaded")) {
-			final File pom = new File(tmp, "xchart-3.6.1.pom");
-			assertTrue(pom.isFile());
-			pom.delete();
-		}
-		else {
-			fail("got " + result);
-		}
-	}
+        if (result instanceof String) {
+            assertEquals("no-internet", result);
+        }
+        else if (result instanceof ByteBuffer) {
+            assertEquals(799, ((ByteBuffer)result).remaining());
+        }
+        else {
+            fail("got " + result.getClass().toGenericString());
+        }
+    }
+
+    @Test
+    public void test_download_pom() throws IOException {
+        final Venice venice = new Venice();
+
+        final File tmp = Files.createTempDirectory("maven").toFile();
+
+        final String script =
+                "(do                                                        " +
+                "   (load-module :maven)                                    " +
+                "                                                           " +
+                "   (if (io/internet-avail?)                                " +
+                "     (do                                                   " +
+                "       (maven/download \"org.knowm.xchart:xchart:3.6.1\"   " +
+                "                       :pom true                           " +
+                "                       :dir dir)                           " +
+                "       :downloaded)                                        " +
+                "     :no-internet)                                         " +
+                ") ";
+
+        final String result = (String)venice.eval(script, Parameters.of("dir", tmp));
+
+        if (result.equals("no-internet")) {
+            assertTrue(true);
+        }
+        else if (result.equals("downloaded")) {
+            final File pom = new File(tmp, "xchart-3.6.1.pom");
+            assertTrue(pom.isFile());
+            pom.delete();
+        }
+        else {
+            fail("got " + result);
+        }
+    }
 }
 

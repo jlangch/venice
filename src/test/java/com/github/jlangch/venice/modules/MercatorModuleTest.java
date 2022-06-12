@@ -1,5 +1,5 @@
 /*   __    __         _
- *   \ \  / /__ _ __ (_) ___ ___ 
+ *   \ \  / /__ _ __ (_) ___ ___
  *    \ \/ / _ \ '_ \| |/ __/ _ \
  *     \  /  __/ | | | | (_|  __/
  *      \/ \___|_| |_|_|\___\___|
@@ -32,54 +32,54 @@ import com.github.jlangch.venice.Venice;
 
 public class MercatorModuleTest {
 
-	@Test
-	public void test_spherical() {
-		final Venice venice = new Venice();
+    @Test
+    public void test_spherical() {
+        final Venice venice = new Venice();
 
-		final String script =
-				"(do                                      " +
-				"   (load-module :mercator)               " +
-				"                                         " +
-				"   [ (mercator/spherical-x-axis 22)      " +
-				"     (mercator/spherical-y-axis 44) ] )  ";
+        final String script =
+                "(do                                      " +
+                "   (load-module :mercator)               " +
+                "                                         " +
+                "   [ (mercator/spherical-x-axis 22)      " +
+                "     (mercator/spherical-y-axis 44) ] )  ";
 
-		@SuppressWarnings("unchecked")
-		final List<Object> map = (List<Object>)venice.eval(script);
-		
-		assertEquals(
-				2449028.7974520186D,  
-				(Double)map.get(0),
-				0.0000000001D);
-		
-		assertEquals(
-				5465442.183322753D,  
-				(Double)map.get(1),
-				0.000000001D);
-	}
+        @SuppressWarnings("unchecked")
+        final List<Object> map = (List<Object>)venice.eval(script);
 
-	@Test
-	public void test_elliptical() {
-		final Venice venice = new Venice();
+        assertEquals(
+                2449028.7974520186D,
+                (Double)map.get(0),
+                0.0000000001D);
 
-		final String script =
-				"(do                                      " +
-				"   (load-module :mercator)               " +
-				"                                         " +
-				"   [ (mercator/elliptical-x-axis 22)     " +
-				"     (mercator/elliptical-y-axis 44) ] ) ";
+        assertEquals(
+                5465442.183322753D,
+                (Double)map.get(1),
+                0.000000001D);
+    }
 
-		@SuppressWarnings("unchecked")
-		final List<Object> map = (List<Object>)venice.eval(script);
-		
-		assertEquals(
-				2449028.7974520186D,  
-				(Double)map.get(0),
-				0.0000000001D);
-		
-		assertEquals(
-				5435749.887511954D,  
-				(Double)map.get(1),
-				0.000000001D);
-	}
+    @Test
+    public void test_elliptical() {
+        final Venice venice = new Venice();
+
+        final String script =
+                "(do                                      " +
+                "   (load-module :mercator)               " +
+                "                                         " +
+                "   [ (mercator/elliptical-x-axis 22)     " +
+                "     (mercator/elliptical-y-axis 44) ] ) ";
+
+        @SuppressWarnings("unchecked")
+        final List<Object> map = (List<Object>)venice.eval(script);
+
+        assertEquals(
+                2449028.7974520186D,
+                (Double)map.get(0),
+                0.0000000001D);
+
+        assertEquals(
+                5435749.887511954D,
+                (Double)map.get(1),
+                0.000000001D);
+    }
 
 }

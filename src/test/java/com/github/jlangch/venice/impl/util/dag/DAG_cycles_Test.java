@@ -1,5 +1,5 @@
 /*   __    __         _
- *   \ \  / /__ _ __ (_) ___ ___ 
+ *   \ \  / /__ _ __ (_) ___ ___
  *    \ \/ / _ \ '_ \| |/ __/ _ \
  *     \  /  __/ | | | | (_|  __/
  *      \/ \___|_| |_|_|\___\___|
@@ -28,46 +28,46 @@ import org.junit.jupiter.api.Test;
 
 public class DAG_cycles_Test {
 
-	@Test
-	public void test_cyles_1() {
-		assertThrows(DagCycleException.class, () -> 
-				new DAG<String>()
-						.addEdge("A", "A"));
-	}
+    @Test
+    public void test_cyles_1() {
+        assertThrows(DagCycleException.class, () ->
+                new DAG<String>()
+                        .addEdge("A", "A"));
+    }
 
-	@Test
-	public void test_cyles_2() {
-		assertThrows(DagCycleException.class, () -> 
-				new DAG<String>()
-							.addEdge("A", "B")
-							.addEdge("B", "A"));
-	}
+    @Test
+    public void test_cyles_2() {
+        assertThrows(DagCycleException.class, () ->
+                new DAG<String>()
+                            .addEdge("A", "B")
+                            .addEdge("B", "A"));
+    }
 
-	@Test
-	public void test_cycles_3() {
-		assertThrows(DagCycleException.class, () -> 
-				new DAG<String>()
-						.addEdge("A", "B")      //     A  E
-						.addEdge("B", "C")      //     |  |
-						.addEdge("C", "D")      //     B  F <--+
-						.addEdge("E", "F")      //     | / \   |
-						.addEdge("F", "C")      //     C   G   |
-						.addEdge("F", "G")      //      \ /    |
-						.addEdge("G", "D")      //       D-----+
-						.addEdge("D", "F")
-						.topologicalSort());
-	}
+    @Test
+    public void test_cycles_3() {
+        assertThrows(DagCycleException.class, () ->
+                new DAG<String>()
+                        .addEdge("A", "B")      //     A  E
+                        .addEdge("B", "C")      //     |  |
+                        .addEdge("C", "D")      //     B  F <--+
+                        .addEdge("E", "F")      //     | / \   |
+                        .addEdge("F", "C")      //     C   G   |
+                        .addEdge("F", "G")      //      \ /    |
+                        .addEdge("G", "D")      //       D-----+
+                        .addEdge("D", "F")
+                        .topologicalSort());
+    }
 
-	@Test
-	public void test_cycles_4() {
-		assertThrows(DagCycleException.class, () ->
-				new DAG<String>()
-						.addEdge("A", "B")      //     A  C <--+
-						.addEdge("B", "E")      //     | /     |
-						.addEdge("C", "B")      //     B   D   |
-						.addEdge("D", "E")      //      \ /    |
-						.addEdge("E", "C")      //       E-----+
-						.topologicalSort());
-	}
+    @Test
+    public void test_cycles_4() {
+        assertThrows(DagCycleException.class, () ->
+                new DAG<String>()
+                        .addEdge("A", "B")      //     A  C <--+
+                        .addEdge("B", "E")      //     | /     |
+                        .addEdge("C", "B")      //     B   D   |
+                        .addEdge("D", "E")      //      \ /    |
+                        .addEdge("E", "C")      //       E-----+
+                        .topologicalSort());
+    }
 
 }

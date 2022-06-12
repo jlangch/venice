@@ -1,5 +1,5 @@
 /*   __    __         _
- *   \ \  / /__ _ __ (_) ___ ___ 
+ *   \ \  / /__ _ __ (_) ___ ___
  *    \ \/ / _ \ '_ \| |/ __/ _ \
  *     \  /  __/ | | | | (_|  __/
  *      \/ \___|_| |_|_|\___\___|
@@ -28,100 +28,100 @@ import org.junit.jupiter.api.Test;
 
 public class FunctionTest {
 
-	@Test
-	public void test_fn_call() {
-		final Venice venice = new Venice();
+    @Test
+    public void test_fn_call() {
+        final Venice venice = new Venice();
 
-		final String script =
-				"(do                        \n" +
-				"   (defn f1 [x] 100)       \n" +
-				"   (defn f2 [x] (f1 x))    \n" +
-				"                           \n" +
-				"   (f2 10))                 ";
+        final String script =
+                "(do                        \n" +
+                "   (defn f1 [x] 100)       \n" +
+                "   (defn f2 [x] (f1 x))    \n" +
+                "                           \n" +
+                "   (f2 10))                 ";
 
-		assertEquals(100L, venice.eval(script));
-	}
+        assertEquals(100L, venice.eval(script));
+    }
 
-	@Test
-	public void test_body_empty() {
-		final Venice venice = new Venice();
+    @Test
+    public void test_body_empty() {
+        final Venice venice = new Venice();
 
-		assertEquals(
-			null, 
-			venice.eval(
-				"(do                \n" +
-				"  (defn foo [] )   \n" + 
-				"  (foo))             "));
-	}
+        assertEquals(
+            null,
+            venice.eval(
+                "(do                \n" +
+                "  (defn foo [] )   \n" +
+                "  (foo))             "));
+    }
 
-	@Test
-	public void test_body_no_side_effects_1() {
-		final Venice venice = new Venice();
+    @Test
+    public void test_body_no_side_effects_1() {
+        final Venice venice = new Venice();
 
-		assertEquals(
-			1L, 
-			venice.eval(
-				"(do                \n" +
-				"  (defn foo [] 1)  \n" + 
-				"  (foo))             "));
-	}
+        assertEquals(
+            1L,
+            venice.eval(
+                "(do                \n" +
+                "  (defn foo [] 1)  \n" +
+                "  (foo))             "));
+    }
 
-	@Test
-	public void test_body_no_side_effects_2() {
-		final Venice venice = new Venice();
+    @Test
+    public void test_body_no_side_effects_2() {
+        final Venice venice = new Venice();
 
-		assertEquals(
-			3L, 
-			venice.eval(
-				"(do                      \n" +
-				"  (defn foo [] (+ 1 2))  \n" + 
-				"  (foo))                   "));
-	}
+        assertEquals(
+            3L,
+            venice.eval(
+                "(do                      \n" +
+                "  (defn foo [] (+ 1 2))  \n" +
+                "  (foo))                   "));
+    }
 
-	@Test
-	public void test_body_with_side_effects_1() {
-		final Venice venice = new Venice();
+    @Test
+    public void test_body_with_side_effects_1() {
+        final Venice venice = new Venice();
 
-		assertEquals(
-			"[1 11]", 
-			venice.eval(
-				"(do                                    \n" +
-				"  (def counter (atom 10))              \n" + 
-				"  (defn foo [] (swap! counter inc) 1)  \n" + 
-				"  (pr-str [(foo) (deref counter)]))      "));
-	}
+        assertEquals(
+            "[1 11]",
+            venice.eval(
+                "(do                                    \n" +
+                "  (def counter (atom 10))              \n" +
+                "  (defn foo [] (swap! counter inc) 1)  \n" +
+                "  (pr-str [(foo) (deref counter)]))      "));
+    }
 
-	@Test
-	public void test_body_with_side_effects_2() {
-		final Venice venice = new Venice();
+    @Test
+    public void test_body_with_side_effects_2() {
+        final Venice venice = new Venice();
 
-		assertEquals(
-			"[3 12]", 
-			venice.eval(
-				"(do                                    \n" +
-				"  (def counter (atom 10))              \n" + 
-				"  (defn foo []                         \n" + 
-				"     (swap! counter inc)               \n" + 
-				"     (swap! counter inc)               \n" + 
-				"     (+ 1 2))                          \n" + 
-				"  (pr-str [(foo) (deref counter)]))      "));
-	}
+        assertEquals(
+            "[3 12]",
+            venice.eval(
+                "(do                                    \n" +
+                "  (def counter (atom 10))              \n" +
+                "  (defn foo []                         \n" +
+                "     (swap! counter inc)               \n" +
+                "     (swap! counter inc)               \n" +
+                "     (+ 1 2))                          \n" +
+                "  (pr-str [(foo) (deref counter)]))      "));
+    }
 
-	@Test
-	public void test_body_with_side_effects_3() {
-		final Venice venice = new Venice();
+    @Test
+    public void test_body_with_side_effects_3() {
+        final Venice venice = new Venice();
 
-		assertEquals(
-			"[3 13]", 
-			venice.eval(
-				"(do                                    \n" +
-				"  (def counter (atom 10))              \n" + 
-				"  (defn foo []                         \n" + 
-				"     (swap! counter inc)               \n" + 
-				"     (swap! counter inc)               \n" + 
-				"     (swap! counter inc)               \n" + 
-				"     (+ 1 2))                          \n" + 
-				"  (pr-str [(foo) (deref counter)]))      "));
-	}
-	
+        assertEquals(
+            "[3 13]",
+            venice.eval(
+                "(do                                    \n" +
+                "  (def counter (atom 10))              \n" +
+                "  (defn foo []                         \n" +
+                "     (swap! counter inc)               \n" +
+                "     (swap! counter inc)               \n" +
+                "     (swap! counter inc)               \n" +
+                "     (+ 1 2))                          \n" +
+                "  (pr-str [(foo) (deref counter)]))      "));
+    }
+
 }

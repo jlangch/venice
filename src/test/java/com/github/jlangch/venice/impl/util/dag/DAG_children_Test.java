@@ -1,5 +1,5 @@
 /*   __    __         _
- *   \ \  / /__ _ __ (_) ___ ___ 
+ *   \ \  / /__ _ __ (_) ___ ___
  *    \ \/ / _ \ '_ \| |/ __/ _ \
  *     \  /  __/ | | | | (_|  __/
  *      \/ \___|_| |_|_|\___\___|
@@ -29,80 +29,80 @@ import org.junit.jupiter.api.Test;
 public class DAG_children_Test {
 
 
-	@Test
-	public void test_children_1() {
-		final DAG<String> dag = 
-				new DAG<String>()
-						.addEdge("A", "B")      //       A
-						.addEdge("A", "C")      //      / \ 
-						.addEdge("B", "D")      //     B   C
-						.addEdge("C", "D")      //      \ /
-						.addEdge("D", "E")      //       D 
-						.addEdge("D", "F");     //      / \
-						                        //     E   F
-		
-		
-		assertEquals("B C D E F", String.join(" ", dag.children("A")));
-		
-		assertEquals("D E F", String.join(" ", dag.children("B")));
-		
-		assertEquals("D E F", String.join(" ", dag.children("C")));
-		
-		assertEquals("E F", String.join(" ", dag.children("D")));
-		
-		assertEquals("", String.join(" ", dag.children("E")));
-		
-		assertEquals("", String.join(" ", dag.children("F")));
-	}
+    @Test
+    public void test_children_1() {
+        final DAG<String> dag =
+                new DAG<String>()
+                        .addEdge("A", "B")      //       A
+                        .addEdge("A", "C")      //      / \
+                        .addEdge("B", "D")      //     B   C
+                        .addEdge("C", "D")      //      \ /
+                        .addEdge("D", "E")      //       D
+                        .addEdge("D", "F");     //      / \
+                                                //     E   F
 
-	@Test
-	public void test_children_2() {
-		final DAG<String> dag = 
-				new DAG<String>()
-						.addEdge("A", "B")      //       A
-						.addEdge("A", "C")      //      / \ 
-						.addEdge("B", "D")      //     B   C
-						.addEdge("C", "D")      //      \ / \
-						.addEdge("D", "E")      //       D  |
-						.addEdge("D", "F")      //      / \ /
-						.addEdge("C", "F");     //     E   F
-		
-		assertEquals("B C D F E", String.join(" ", dag.children("A")));
-		
-		assertEquals("D E F", String.join(" ", dag.children("B")));
-		
-		assertEquals("D F E", String.join(" ", dag.children("C")));
-		
-		assertEquals("E F", String.join(" ", dag.children("D")));
-		
-		assertEquals("", String.join(" ", dag.children("E")));
-		
-		assertEquals("", String.join(" ", dag.children("F")));
-	}
 
-	@Test
-	public void test_direct_children() {
-		final DAG<String> dag = 
-				new DAG<String>()
-						.addEdge("A", "B")      //       A
-						.addEdge("A", "C")      //      / \ 
-						.addEdge("B", "D")      //     B   C
-						.addEdge("C", "D")      //      \ / \
-						.addEdge("D", "E")      //       D   |
-						.addEdge("D", "F")      //      / \ /
-						.addEdge("C", "F");     //     E   F
-		
-		assertEquals("B C", String.join(" ", dag.directChildren("A")));
-		
-		assertEquals("D", String.join(" ", dag.directChildren("B")));
-		
-		assertEquals("D F", String.join(" ", dag.directChildren("C")));
-		
-		assertEquals("E F", String.join(" ", dag.directChildren("D")));
-		
-		assertEquals("", String.join(" ", dag.directChildren("E")));
-		
-		assertEquals("", String.join(" ", dag.directChildren("F")));
-	}
+        assertEquals("B C D E F", String.join(" ", dag.children("A")));
+
+        assertEquals("D E F", String.join(" ", dag.children("B")));
+
+        assertEquals("D E F", String.join(" ", dag.children("C")));
+
+        assertEquals("E F", String.join(" ", dag.children("D")));
+
+        assertEquals("", String.join(" ", dag.children("E")));
+
+        assertEquals("", String.join(" ", dag.children("F")));
+    }
+
+    @Test
+    public void test_children_2() {
+        final DAG<String> dag =
+                new DAG<String>()
+                        .addEdge("A", "B")      //       A
+                        .addEdge("A", "C")      //      / \
+                        .addEdge("B", "D")      //     B   C
+                        .addEdge("C", "D")      //      \ / \
+                        .addEdge("D", "E")      //       D  |
+                        .addEdge("D", "F")      //      / \ /
+                        .addEdge("C", "F");     //     E   F
+
+        assertEquals("B C D F E", String.join(" ", dag.children("A")));
+
+        assertEquals("D E F", String.join(" ", dag.children("B")));
+
+        assertEquals("D F E", String.join(" ", dag.children("C")));
+
+        assertEquals("E F", String.join(" ", dag.children("D")));
+
+        assertEquals("", String.join(" ", dag.children("E")));
+
+        assertEquals("", String.join(" ", dag.children("F")));
+    }
+
+    @Test
+    public void test_direct_children() {
+        final DAG<String> dag =
+                new DAG<String>()
+                        .addEdge("A", "B")      //       A
+                        .addEdge("A", "C")      //      / \
+                        .addEdge("B", "D")      //     B   C
+                        .addEdge("C", "D")      //      \ / \
+                        .addEdge("D", "E")      //       D   |
+                        .addEdge("D", "F")      //      / \ /
+                        .addEdge("C", "F");     //     E   F
+
+        assertEquals("B C", String.join(" ", dag.directChildren("A")));
+
+        assertEquals("D", String.join(" ", dag.directChildren("B")));
+
+        assertEquals("D F", String.join(" ", dag.directChildren("C")));
+
+        assertEquals("E F", String.join(" ", dag.directChildren("D")));
+
+        assertEquals("", String.join(" ", dag.directChildren("E")));
+
+        assertEquals("", String.join(" ", dag.directChildren("F")));
+    }
 
 }

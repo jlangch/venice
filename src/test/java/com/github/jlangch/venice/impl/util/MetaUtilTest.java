@@ -1,5 +1,5 @@
 /*   __    __         _
- *   \ \  / /__ _ __ (_) ___ ___ 
+ *   \ \  / /__ _ __ (_) ___ ___
  *    \ \/ / _ \ '_ \| |/ __/ _ \
  *     \  /  __/ | | | | (_|  __/
  *      \/ \___|_| |_|_|\___\___|
@@ -36,77 +36,77 @@ import com.github.jlangch.venice.impl.types.collections.VncList;
 
 public class MetaUtilTest {
 
-	@Test
-	public void testGetFileNullMeta() {
-		assertNull(MetaUtil.getFile(null));
-	}
-	
-	@Test
-	public void testGetLineNullMeta() {
-		assertEquals(-1, MetaUtil.getLine(null));
-	}
-	
-	@Test
-	public void testGetColNullMeta() {
-		assertEquals(-1, MetaUtil.getCol(null));
-	}
-	
-	@Test
-	public void testGetMetaValNullMeta() {
-		assertEquals(Constants.Nil, MetaUtil.getMetaVal(null, new VncString("key")));
-	}
-	
-	@Test
-	public void testGetNamespaceNullMeta() {
-		assertNull(MetaUtil.getNamespace(null));
-	}
+    @Test
+    public void testGetFileNullMeta() {
+        assertNull(MetaUtil.getFile(null));
+    }
 
-	
-	
-	@Test
-	public void testGetFileNilMeta() {
-		assertNull(MetaUtil.getFile(Constants.Nil));
-	}
-	
-	@Test
-	public void testGetLineNillMeta() {
-		assertEquals(-1, MetaUtil.getLine(Constants.Nil));
-	}
-	
-	@Test
-	public void testGetColNillMeta() {
-		assertEquals(-1, MetaUtil.getCol(Constants.Nil));
-	}
-	
-	@Test
-	public void testGetMetaValNillMeta() {
-		assertEquals(Constants.Nil, MetaUtil.getMetaVal(Constants.Nil, new VncString("key")));
-	}
-	
-	@Test
-	public void testGetNamespaceNillMeta() {
-		assertNull(MetaUtil.getNamespace(Constants.Nil));
-	}
-	
-	@Test
-	public void testIsType_1() {
-		final VncVal meta = MetaUtil.typeMeta();
-		assertTrue(MetaUtil.isType(meta));
-	}
-	
-	@Test
-	public void testIsType_2() {
-		final VncVal meta = MetaUtil.typeMeta(new VncKeyword("core/val"));
-		assertTrue(MetaUtil.isType(meta));
-	}
-	
-	@Test
-	public void testSuperTypes() {
-		final VncVal meta = MetaUtil.typeMeta(new VncKeyword("core/val"));
-		final VncVal types = MetaUtil.getMetaVal(meta, MetaUtil.SUPERTYPES);
-		assertTrue(types instanceof VncList);
-		assertEquals(1, ((VncList)types).size());
-		assertEquals(":core/val", ((VncList)types).first().toString(true));
-	}
+    @Test
+    public void testGetLineNullMeta() {
+        assertEquals(-1, MetaUtil.getLine(null));
+    }
+
+    @Test
+    public void testGetColNullMeta() {
+        assertEquals(-1, MetaUtil.getCol(null));
+    }
+
+    @Test
+    public void testGetMetaValNullMeta() {
+        assertEquals(Constants.Nil, MetaUtil.getMetaVal(null, new VncString("key")));
+    }
+
+    @Test
+    public void testGetNamespaceNullMeta() {
+        assertNull(MetaUtil.getNamespace(null));
+    }
+
+
+
+    @Test
+    public void testGetFileNilMeta() {
+        assertNull(MetaUtil.getFile(Constants.Nil));
+    }
+
+    @Test
+    public void testGetLineNillMeta() {
+        assertEquals(-1, MetaUtil.getLine(Constants.Nil));
+    }
+
+    @Test
+    public void testGetColNillMeta() {
+        assertEquals(-1, MetaUtil.getCol(Constants.Nil));
+    }
+
+    @Test
+    public void testGetMetaValNillMeta() {
+        assertEquals(Constants.Nil, MetaUtil.getMetaVal(Constants.Nil, new VncString("key")));
+    }
+
+    @Test
+    public void testGetNamespaceNillMeta() {
+        assertNull(MetaUtil.getNamespace(Constants.Nil));
+    }
+
+    @Test
+    public void testIsType_1() {
+        final VncVal meta = MetaUtil.typeMeta();
+        assertTrue(MetaUtil.isType(meta));
+    }
+
+    @Test
+    public void testIsType_2() {
+        final VncVal meta = MetaUtil.typeMeta(new VncKeyword("core/val"));
+        assertTrue(MetaUtil.isType(meta));
+    }
+
+    @Test
+    public void testSuperTypes() {
+        final VncVal meta = MetaUtil.typeMeta(new VncKeyword("core/val"));
+        final VncVal types = MetaUtil.getMetaVal(meta, MetaUtil.SUPERTYPES);
+        assertTrue(types instanceof VncList);
+        assertEquals(1, ((VncList)types).size());
+        assertEquals(":core/val", ((VncList)types).first().toString(true));
+    }
 
 }

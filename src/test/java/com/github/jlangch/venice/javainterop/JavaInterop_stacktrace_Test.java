@@ -1,5 +1,5 @@
 /*   __    __         _
- *   \ \  / /__ _ __ (_) ___ ___ 
+ *   \ \  / /__ _ __ (_) ___ ___
  *    \ \/ / _ \ '_ \| |/ __/ _ \
  *     \  /  __/ | | | | (_|  __/
  *      \/ \___|_| |_|_|\___\___|
@@ -30,8 +30,8 @@ import com.github.jlangch.venice.Venice;
 
 public class JavaInterop_stacktrace_Test {
 
-	@Test
-	public void test_stacktrace() {
-		assertNotNull(new Venice().eval("(stacktrace (. :VncException :new \"test\")) "));
-	}
+    @Test
+    public void test_stacktrace() {
+        assertNotNull(new Venice().eval("(stacktrace (. :VncException :new \"test\")) "));
+    }
 }

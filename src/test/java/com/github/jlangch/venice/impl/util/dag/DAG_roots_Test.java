@@ -1,5 +1,5 @@
 /*   __    __         _
- *   \ \  / /__ _ __ (_) ___ ___ 
+ *   \ \  / /__ _ __ (_) ___ ___
  *    \ \/ / _ \ '_ \| |/ __/ _ \
  *     \  /  __/ | | | | (_|  __/
  *      \/ \___|_| |_|_|\___\___|
@@ -30,132 +30,132 @@ import org.junit.jupiter.api.Test;
 
 public class DAG_roots_Test {
 
-	@Test
-	public void test_roots_1() {
-		final DAG<String> dag = 
-				new DAG<String>()
-						.addEdge("A", "B"); 
-		
-		final List<String> sorted = dag.roots();
+    @Test
+    public void test_roots_1() {
+        final DAG<String> dag =
+                new DAG<String>()
+                        .addEdge("A", "B");
 
-		assertEquals("A", String.join(" ", sorted));
-	}
+        final List<String> sorted = dag.roots();
 
-	@Test
-	public void test_roots_2() {
-		final DAG<String> dag = 
-				new DAG<String>()
-						.addEdge("A", "B")     //     A
-						.addEdge("B", "C");    //     |
-						                       //     B
-						                       //     |
-						                       //     C
-		
-		final List<String> sorted = dag.roots();
+        assertEquals("A", String.join(" ", sorted));
+    }
 
-		assertEquals("A", String.join(" ", sorted));
-	}
+    @Test
+    public void test_roots_2() {
+        final DAG<String> dag =
+                new DAG<String>()
+                        .addEdge("A", "B")     //     A
+                        .addEdge("B", "C");    //     |
+                                               //     B
+                                               //     |
+                                               //     C
 
-	@Test
-	public void test_roots_3() {
-		final DAG<String> dag = 
-				new DAG<String>()
-						.addEdge("A", "B")      //       A
-						.addEdge("B", "D")      //      / \
-						.addEdge("A", "C")      //     B   C
-						.addEdge("A", "D");     //      \ /
-						                        //       D
-		
-		final List<String> sorted = dag.roots();
+        final List<String> sorted = dag.roots();
 
-		assertEquals("A", String.join(" ", sorted));
-	}
+        assertEquals("A", String.join(" ", sorted));
+    }
 
-	@Test
-	public void test_roots_4() {
-		final DAG<String> dag = 
-				new DAG<String>()
-						.addEdge("A", "B")      //     A   C
-						.addEdge("B", "E")      //     |   |
-						.addEdge("C", "D")      //     B   D
-						.addEdge("D", "E");     //      \ /
-						                        //       E
-		
-		final List<String> sorted = dag.roots();
+    @Test
+    public void test_roots_3() {
+        final DAG<String> dag =
+                new DAG<String>()
+                        .addEdge("A", "B")      //       A
+                        .addEdge("B", "D")      //      / \
+                        .addEdge("A", "C")      //     B   C
+                        .addEdge("A", "D");     //      \ /
+                                                //       D
 
-		assertEquals("A C", String.join(" ", sorted));
-	}
+        final List<String> sorted = dag.roots();
 
-	@Test
-	public void test_roots_5() {
-		final DAG<String> dag = 
-				new DAG<String>()
-						.addEdge("A", "B")      //     A  C
-						.addEdge("B", "E")      //     | /
-						.addEdge("C", "B")      //     B   D
-						.addEdge("D", "E");     //      \ /
-						                        //       E
-		
-		final List<String> sorted = dag.roots();
+        assertEquals("A", String.join(" ", sorted));
+    }
 
-		assertEquals("A C D", String.join(" ", sorted));
-	}
-	
-	@Test
-	public void test_roots_6() {
-		final DAG<String> dag = 
-				new DAG<String>()
-						.addEdge("A", "B")      //     A  E
-						.addEdge("B", "C")      //     |  |
-						.addEdge("C", "D")      //     B  F
-						.addEdge("E", "F")      //     | / \
-						.addEdge("F", "C")      //     C   G
-						.addEdge("F", "G")      //      \ /
-						.addEdge("G", "D");      //       D
-		
-		final List<String> sorted = dag.roots();
+    @Test
+    public void test_roots_4() {
+        final DAG<String> dag =
+                new DAG<String>()
+                        .addEdge("A", "B")      //     A   C
+                        .addEdge("B", "E")      //     |   |
+                        .addEdge("C", "D")      //     B   D
+                        .addEdge("D", "E");     //      \ /
+                                                //       E
 
-		assertEquals("A E", String.join(" ", sorted));
-	}
-	
-	@Test
-	public void test_roots_7() {
-		final DAG<String> dag = 
-				new DAG<String>()
-						.addEdge("A", "B")      //       A
-						.addEdge("A", "C")      //      / \ 
-						.addEdge("B", "D")      //     B   C
-						.addEdge("C", "D")      //      \ /
-						.addEdge("D", "E")      //       D 
-						.addEdge("D", "F");     //      / \
-						                        //     E   F
-		
-		final List<String> sorted = dag.roots();
+        final List<String> sorted = dag.roots();
 
-		assertEquals("A", String.join(" ", sorted));
-	}
+        assertEquals("A C", String.join(" ", sorted));
+    }
 
-	@Test
-	public void test_roots_node_1() {
-		final DAG<String> dag = 
-				new DAG<String>().addNode("A"); 
-		
-		final List<String> roots = dag.roots();
+    @Test
+    public void test_roots_5() {
+        final DAG<String> dag =
+                new DAG<String>()
+                        .addEdge("A", "B")      //     A  C
+                        .addEdge("B", "E")      //     | /
+                        .addEdge("C", "B")      //     B   D
+                        .addEdge("D", "E");     //      \ /
+                                                //       E
 
-		assertEquals("A", String.join(" ", roots));
-	}
+        final List<String> sorted = dag.roots();
+
+        assertEquals("A C D", String.join(" ", sorted));
+    }
+
+    @Test
+    public void test_roots_6() {
+        final DAG<String> dag =
+                new DAG<String>()
+                        .addEdge("A", "B")      //     A  E
+                        .addEdge("B", "C")      //     |  |
+                        .addEdge("C", "D")      //     B  F
+                        .addEdge("E", "F")      //     | / \
+                        .addEdge("F", "C")      //     C   G
+                        .addEdge("F", "G")      //      \ /
+                        .addEdge("G", "D");      //       D
+
+        final List<String> sorted = dag.roots();
+
+        assertEquals("A E", String.join(" ", sorted));
+    }
+
+    @Test
+    public void test_roots_7() {
+        final DAG<String> dag =
+                new DAG<String>()
+                        .addEdge("A", "B")      //       A
+                        .addEdge("A", "C")      //      / \
+                        .addEdge("B", "D")      //     B   C
+                        .addEdge("C", "D")      //      \ /
+                        .addEdge("D", "E")      //       D
+                        .addEdge("D", "F");     //      / \
+                                                //     E   F
+
+        final List<String> sorted = dag.roots();
+
+        assertEquals("A", String.join(" ", sorted));
+    }
+
+    @Test
+    public void test_roots_node_1() {
+        final DAG<String> dag =
+                new DAG<String>().addNode("A");
+
+        final List<String> roots = dag.roots();
+
+        assertEquals("A", String.join(" ", roots));
+    }
 
 
-	@Test
-	public void test_roots_node_2() {
-		final DAG<String> dag = 
-				new DAG<String>()
-						.addNode("A") 
-						.addNode("B"); 
-		
-		final List<String> roots = dag.roots();
+    @Test
+    public void test_roots_node_2() {
+        final DAG<String> dag =
+                new DAG<String>()
+                        .addNode("A")
+                        .addNode("B");
 
-		assertEquals("A B", String.join(" ", roots));
-	}
+        final List<String> roots = dag.roots();
+
+        assertEquals("A B", String.join(" ", roots));
+    }
 
 }

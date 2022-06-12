@@ -1,5 +1,5 @@
 /*   __    __         _
- *   \ \  / /__ _ __ (_) ___ ___ 
+ *   \ \  / /__ _ __ (_) ___ ___
  *    \ \/ / _ \ '_ \| |/ __/ _ \
  *     \  /  __/ | | | | (_|  __/
  *      \/ \___|_| |_|_|\___\___|
@@ -30,70 +30,70 @@ import org.junit.jupiter.api.Test;
 
 
 public class SpecialFormsTest_doc {
-	
-	@Test
-	public void test_doc() {
-		final Map<String, Object> params = Parameters.of("*out*", null, "*err*", null);
-		
-		new Venice().eval("(doc +)", params);					
-	}
-	
-	@Test
-	public void test_doc_self() {
-		final Map<String, Object> params = Parameters.of("*out*", null, "*err*", null);
-		
-		new Venice().eval("(doc doc)", params);					
-	}
-	
-	@Test
-	public void test_doc_not_found() {
-		final Map<String, Object> params = Parameters.of("*out*", null, "*err*", null);
 
-		assertThrows(VncException.class, () -> new Venice().eval("(doc foo-foo-foo)", params));
-	}
-	
-	@Test
-	public void test_doc_not_found_candidates() {
-		final Map<String, Object> params = Parameters.of("*out*", null, "*err*", null);
+    @Test
+    public void test_doc() {
+        final Map<String, Object> params = Parameters.of("*out*", null, "*err*", null);
 
-		new Venice().eval("(doc slurp)", params);
-	}
-	
-	@Test
-	public void test_doc_customtype_protocol_1() {
-		final Venice venice = new Venice();
+        new Venice().eval("(doc +)", params);
+    }
 
-		final String script =
-				"(do                                                 \n" +
-				"  (defprotocol Lifecycle (start [c]) (stop [c]))    \n" +
-				"  (deftype :xxx [name :string]                      \n" +
-				"               Lifecycle (start [c] c)              \n" +
-				"                         (stop [c] c))              \n" +
-				"  (with-out-str (doc :xxx)))                          ";
+    @Test
+    public void test_doc_self() {
+        final Map<String, Object> params = Parameters.of("*out*", null, "*err*", null);
 
-		final String doc = (String)venice.eval(script);
-		assertTrue(doc.contains("Protocol: user/Lifecycle"));					
-		assertTrue(doc.contains("start: (start [c])"));					
-		assertTrue(doc.contains("stop: (stop [c])"));					
-	}
-	
-	@Test
-	public void test_doc_customtype_protocol_2() {
-		final Venice venice = new Venice();
+        new Venice().eval("(doc doc)", params);
+    }
 
-		final String script =
-				"(do                                                 \n" +
-				"  (defprotocol Lifecycle (start [c]) (stop [c]))    \n" +
-				"  (deftype :xxx [name :string])                     \n" +
-				"  (extend :user/xxx                                 \n" +
-				"      Lifecycle                                     \n" +
-				"         (start [c] c)                              \n" +
-				"         (stop [c] c))                              \n" +
-				"  (with-out-str (doc :xxx)))                          ";
+    @Test
+    public void test_doc_not_found() {
+        final Map<String, Object> params = Parameters.of("*out*", null, "*err*", null);
 
-		final String doc = (String)venice.eval(script);
-		assertTrue(doc.contains("Protocol: user/Lifecycle"));					
-		assertTrue(doc.contains("start: (start [c])"));					
-		assertTrue(doc.contains("stop: (stop [c])"));					
-	}
+        assertThrows(VncException.class, () -> new Venice().eval("(doc foo-foo-foo)", params));
+    }
+
+    @Test
+    public void test_doc_not_found_candidates() {
+        final Map<String, Object> params = Parameters.of("*out*", null, "*err*", null);
+
+        new Venice().eval("(doc slurp)", params);
+    }
+
+    @Test
+    public void test_doc_customtype_protocol_1() {
+        final Venice venice = new Venice();
+
+        final String script =
+                "(do                                                 \n" +
+                "  (defprotocol Lifecycle (start [c]) (stop [c]))    \n" +
+                "  (deftype :xxx [name :string]                      \n" +
+                "               Lifecycle (start [c] c)              \n" +
+                "                         (stop [c] c))              \n" +
+                "  (with-out-str (doc :xxx)))                          ";
+
+        final String doc = (String)venice.eval(script);
+        assertTrue(doc.contains("Protocol: user/Lifecycle"));
+        assertTrue(doc.contains("start: (start [c])"));
+        assertTrue(doc.contains("stop: (stop [c])"));
+    }
+
+    @Test
+    public void test_doc_customtype_protocol_2() {
+        final Venice venice = new Venice();
+
+        final String script =
+                "(do                                                 \n" +
+                "  (defprotocol Lifecycle (start [c]) (stop [c]))    \n" +
+                "  (deftype :xxx [name :string])                     \n" +
+                "  (extend :user/xxx                                 \n" +
+                "      Lifecycle                                     \n" +
+                "         (start [c] c)                              \n" +
+                "         (stop [c] c))                              \n" +
+                "  (with-out-str (doc :xxx)))                          ";
+
+        final String doc = (String)venice.eval(script);
+        assertTrue(doc.contains("Protocol: user/Lifecycle"));
+        assertTrue(doc.contains("start: (start [c])"));
+        assertTrue(doc.contains("stop: (stop [c])"));
+    }
 }

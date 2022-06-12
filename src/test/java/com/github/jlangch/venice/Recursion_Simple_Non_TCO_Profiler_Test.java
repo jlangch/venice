@@ -1,5 +1,5 @@
 /*   __    __         _
- *   \ \  / /__ _ __ (_) ___ ___ 
+ *   \ \  / /__ _ __ (_) ___ ___
  *    \ \/ / _ \ '_ \| |/ __/ _ \
  *     \  /  __/ | | | | (_|  __/
  *      \/ \___|_| |_|_|\___\___|
@@ -28,49 +28,49 @@ import org.junit.jupiter.api.Test;
 
 public class Recursion_Simple_Non_TCO_Profiler_Test {
 
-	@Test
-	public void test_fib() {
-		final Venice venice = new Venice();
-		
-		final String lisp = 
-				"(do                                       \n" +
-				"  (defn fib [n]                           \n" +
-				"    (if (< n 2)                           \n" +
-				"      n                                   \n" +
-				"      (+ (fib (- n 1)) (fib (- n 2)))))   \n" +
-				"                                          \n" +
-				"  (fib 6))                                ";
+    @Test
+    public void test_fib() {
+        final Venice venice = new Venice();
 
-		assertEquals(8L, venice.eval(lisp));
-	}
+        final String lisp =
+                "(do                                       \n" +
+                "  (defn fib [n]                           \n" +
+                "    (if (< n 2)                           \n" +
+                "      n                                   \n" +
+                "      (+ (fib (- n 1)) (fib (- n 2)))))   \n" +
+                "                                          \n" +
+                "  (fib 6))                                ";
 
-	@Test
-	public void test_recursive_profiler() {
-		final Venice venice = new Venice();
-		
-		// (fib 4)
-		//
-		// (+ (fib 3)                         (fib 2))
-		// (+ (+ (fib 2)             (fib 1)) (+ (fib 1) (fib 0)))
-		// (+ (+ (+ (fib 1) (fib 0)) 1)       (+ 1       0))
-		// (+ (+ (+  1      0)       1)       (+ 1       0))
-		//
-		// => 3
+        assertEquals(8L, venice.eval(lisp));
+    }
 
-		final String lisp = 
-				"(do                                                 \n" +
-				"  (defn fib [n]                                     \n" +
-				"    (if (< n 2)                                     \n" +
-				"      n                                             \n" +
-				"      (+ (fib (- n 1)) (fib (- n 2)))))             \n" +
-				"                                                    \n" +
-				"  (perf (fib 4) 0 1)                                \n" +
-				"  (->> (prof :data)                                 \n" +
-				"       (filter (fn [x] (= (:name x) \"user/fib\"))) \n" +
-				"       (map #(:count %))                            \n" +
-				"       (first)))                                      ";
+    @Test
+    public void test_recursive_profiler() {
+        final Venice venice = new Venice();
 
-		assertEquals(Long.valueOf(9L), venice.eval(lisp));
-	}
+        // (fib 4)
+        //
+        // (+ (fib 3)                         (fib 2))
+        // (+ (+ (fib 2)             (fib 1)) (+ (fib 1) (fib 0)))
+        // (+ (+ (+ (fib 1) (fib 0)) 1)       (+ 1       0))
+        // (+ (+ (+  1      0)       1)       (+ 1       0))
+        //
+        // => 3
+
+        final String lisp =
+                "(do                                                 \n" +
+                "  (defn fib [n]                                     \n" +
+                "    (if (< n 2)                                     \n" +
+                "      n                                             \n" +
+                "      (+ (fib (- n 1)) (fib (- n 2)))))             \n" +
+                "                                                    \n" +
+                "  (perf (fib 4) 0 1)                                \n" +
+                "  (->> (prof :data)                                 \n" +
+                "       (filter (fn [x] (= (:name x) \"user/fib\"))) \n" +
+                "       (map #(:count %))                            \n" +
+                "       (first)))                                      ";
+
+        assertEquals(Long.valueOf(9L), venice.eval(lisp));
+    }
 
 }
