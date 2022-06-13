@@ -17,9 +17,15 @@ and this project adheres to
 - support for import aliases `(import :java.awt.Color :as :Col)`   
   `(import :java.awt.Color)` is equivalent to `(import :java.awt.Color :as :Color)`
 
+### Changed
+
+- the implementation of the special forms. It's now easier to add and document
+  special forms
+- all tabs to spaces in the sources
 
 
-## [1.10.15] - 2022-06-02
+
+## [1.10.15] - 2022-06-0
 
 ### Fixed
 
