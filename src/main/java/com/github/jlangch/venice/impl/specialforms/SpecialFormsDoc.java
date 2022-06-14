@@ -468,7 +468,7 @@ public class SpecialFormsDoc {
                     .put(new VncSymbol("*ns*"),             global_var_ns)
                     .put(new VncSymbol("*run-mode*"),       global_var_run_mode)
                     .put(new VncSymbol("*ansi-term*"),      global_var_ansi_term)
-                    .put(new VncSymbol("*ARGV*"),         global_var_argv)
+                    .put(new VncSymbol("*ARGV*"),           global_var_argv)
 
                     .put(new VncSymbol("*out*"),            global_var_out)
                     .put(new VncSymbol("*err*"),            global_var_err)
