@@ -24,9 +24,9 @@
 
 (ns xml)
 
-(import :com.github.jlangch.venice.util.XMLHandler
-        :com.github.jlangch.venice.util.IXMLHandler
-        :com.github.jlangch.venice.util.XMLUtil
+(import :com.github.jlangch.venice.util.xml.IXMLHandler
+        :com.github.jlangch.venice.util.xml.XMLHandler
+        :com.github.jlangch.venice.util.xml.XMLUtil
         :java.lang.StringBuilder
         :java.io.StringReader
         :org.xml.sax.InputSource)
