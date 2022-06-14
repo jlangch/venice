@@ -32,9 +32,9 @@ import java.util.stream.Stream;
 
 import com.github.jlangch.venice.ValueException;
 import com.github.jlangch.venice.VncException;
-import com.github.jlangch.venice.impl.Namespaces;
 import com.github.jlangch.venice.impl.javainterop.JavaImports;
 import com.github.jlangch.venice.impl.javainterop.JavaInteropUtil;
+import com.github.jlangch.venice.impl.namespaces.Namespaces;
 import com.github.jlangch.venice.impl.types.VncBoolean;
 import com.github.jlangch.venice.impl.types.VncFunction;
 import com.github.jlangch.venice.impl.types.VncJavaObject;

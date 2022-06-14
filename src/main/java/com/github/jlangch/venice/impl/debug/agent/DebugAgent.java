@@ -45,7 +45,6 @@ import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.atomic.AtomicLong;
 import java.util.stream.Collectors;
 
-import com.github.jlangch.venice.impl.Namespaces;
 import com.github.jlangch.venice.impl.RecursionPoint;
 import com.github.jlangch.venice.impl.debug.breakpoint.AncestorSelector;
 import com.github.jlangch.venice.impl.debug.breakpoint.AncestorType;
@@ -57,6 +56,7 @@ import com.github.jlangch.venice.impl.debug.util.SpecialFormVirtualFunction;
 import com.github.jlangch.venice.impl.debug.util.StepValidity;
 import com.github.jlangch.venice.impl.env.Env;
 import com.github.jlangch.venice.impl.env.Var;
+import com.github.jlangch.venice.impl.namespaces.Namespaces;
 import com.github.jlangch.venice.impl.thread.ThreadContext;
 import com.github.jlangch.venice.impl.types.VncFunction;
 import com.github.jlangch.venice.impl.types.VncSymbol;

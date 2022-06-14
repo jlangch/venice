@@ -25,8 +25,8 @@ import static com.github.jlangch.venice.impl.types.Constants.Nil;
 
 import java.util.Map;
 
-import com.github.jlangch.venice.impl.Namespaces;
 import com.github.jlangch.venice.impl.javainterop.JavaInteropUtil;
+import com.github.jlangch.venice.impl.namespaces.Namespaces;
 import com.github.jlangch.venice.impl.types.IDeref;
 import com.github.jlangch.venice.impl.types.IVncFunction;
 import com.github.jlangch.venice.impl.types.IVncJavaObject;

@@ -28,7 +28,7 @@ import com.github.jlangch.venice.impl.IFormEvaluator;
 import com.github.jlangch.venice.impl.ISequenceValuesEvaluator;
 import com.github.jlangch.venice.impl.IValuesEvaluator;
 import com.github.jlangch.venice.impl.IVeniceInterpreter;
-import com.github.jlangch.venice.impl.NamespaceRegistry;
+import com.github.jlangch.venice.impl.namespaces.NamespaceRegistry;
 import com.github.jlangch.venice.impl.types.custom.CustomWrappableTypes;
 import com.github.jlangch.venice.impl.util.MeterRegistry;
 

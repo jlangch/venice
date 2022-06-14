@@ -2,8 +2,8 @@ package com.github.jlangch.venice.impl.thread;
 
 import java.util.Map;
 
-import com.github.jlangch.venice.impl.Namespace;
 import com.github.jlangch.venice.impl.debug.agent.DebugAgent;
+import com.github.jlangch.venice.impl.namespaces.Namespace;
 import com.github.jlangch.venice.impl.types.VncKeyword;
 import com.github.jlangch.venice.impl.types.VncVal;
 import com.github.jlangch.venice.impl.util.MeterRegistry;
