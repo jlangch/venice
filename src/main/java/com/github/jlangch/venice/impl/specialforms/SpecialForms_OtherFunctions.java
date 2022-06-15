@@ -160,7 +160,9 @@ public class SpecialForms_OtherFunctions {
             ) {
                 specialFormCallValidation("eval");
                 assertMinArity("eval", FnType.SpecialForm, args, 0);
+
                 final Namespace ns = Namespaces.getCurrentNamespace();
+
                 try {
                     final IFormEvaluator formEvaluator = ctx.getEvaluator();
                     final ISequenceValuesEvaluator seqEvaluator = ctx.getSequenceValuesEvaluator();

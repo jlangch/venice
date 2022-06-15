@@ -94,7 +94,7 @@ public class SpecialForms_DefFunctions {
 
                 // we want source location from name and this to work:
                 //      (def y (vary-meta 1 assoc :a 100))
-                //      (get (meta y) :a)  ; -> 100
+                //      (get (meta y) :a)  ; => 100
 
                 res = res.withMeta(MetaUtil.mergeMeta(res.getMeta(), name.getMeta()));
 
