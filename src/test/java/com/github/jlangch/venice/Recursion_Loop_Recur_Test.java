@@ -41,7 +41,7 @@ public class Recursion_Loop_Recur_Test {
                 "      (swap! x inc)       \n" +
                 "       (recur)))          \n" +
                 "                          \n" +
-                "   @x                     \n" +
+                "  @x                      \n" +
                 ")                         ";
 
         assertEquals(Long.valueOf(6L), venice.eval(lisp));
