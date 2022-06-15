@@ -30,6 +30,24 @@ import org.junit.jupiter.api.Test;
 public class Recursion_Loop_Recur_Test {
 
     @Test
+    public void test_loop_0_arg() {
+        final Venice venice = new Venice();
+
+        final String lisp =
+                "(do                       \n" +
+                "  (def x (atom 0))        \n" +
+                "  (loop []                \n" +
+                "    (when (< @x 6)        \n" +
+                "      (swap! x inc)       \n" +
+                "       (recur)))          \n" +
+                "                          \n" +
+                "   @x                     \n" +
+                ")                         ";
+
+        assertEquals(Long.valueOf(6L), venice.eval(lisp));
+    }
+
+    @Test
     public void test_loop_1_arg() {
         final Venice venice = new Venice();
 

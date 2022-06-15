@@ -555,10 +555,12 @@ public class VeniceInterpreter implements IVeniceInterpreter, Serializable  {
 
                         // for performance reasons the DebugAgent is stored in the
                         // RecursionPoint. This saves repeated ThreadLocal access!
-                        final DebugAgent debugAgent = recursionPoint.getDebugAgent();
-                        if (debugAgent != null && debugAgent.hasBreakpointFor(BreakpointFnRef.LOOP)) {
-                            final CallStack cs = ThreadContext.getCallStack();
-                            debugAgent.onBreakLoop(FunctionEntry, recursionPoint, env, cs);
+                        if (recursionPoint.isDebuggingActive()) {
+                            final DebugAgent debugAgent = recursionPoint.getDebugAgent();
+                            if (debugAgent.hasBreakpointFor(BreakpointFnRef.LOOP)) {
+                                final CallStack cs = ThreadContext.getCallStack();
+                                debugAgent.onBreakLoop(FunctionEntry, recursionPoint, env, cs);
+                            }
                         }
 
                         final VncList expressions = recursionPoint.getLoopExpressions();
@@ -1090,10 +1092,8 @@ public class VeniceInterpreter implements IVeniceInterpreter, Serializable  {
 
             case 1:
                 // [1][2] calculate and bind the single new value
-                recur_env.setLocal(
-                    new Var(
-                        recursionPoint.getLoopBindingName(0),
-                        evaluate(args.first(), env, false)));
+                final VncVal v = evaluate(args.first(), env, false);
+                recur_env.setLocal(new Var(recursionPoint.getLoopBindingName(0), v));
                 break;
 
             case 2:
