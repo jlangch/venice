@@ -32,7 +32,7 @@ import com.github.jlangch.venice.impl.util.MetaUtil;
 import com.github.jlangch.venice.impl.util.StringUtil;
 
 
-public class VncString extends VncVal {
+public class VncString extends VncScalar {
 
     public VncString(final String v) {
         super(null, Constants.Nil);

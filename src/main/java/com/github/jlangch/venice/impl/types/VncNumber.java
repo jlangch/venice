@@ -28,7 +28,7 @@ import com.github.jlangch.venice.impl.types.custom.VncWrappingTypeDef;
 import com.github.jlangch.venice.impl.util.MetaUtil;
 
 
-public abstract class VncNumber extends VncVal {
+public abstract class VncNumber extends VncScalar {
 
     public VncNumber(final VncVal meta) {
         super(null, meta);

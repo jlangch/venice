@@ -31,7 +31,7 @@ import com.github.jlangch.venice.impl.util.MetaUtil;
 import com.github.jlangch.venice.impl.util.StringUtil;
 
 
-public class VncChar extends VncVal {
+public class VncChar extends VncScalar {
 
     public VncChar(final char v) {
         this(Character.valueOf(v), null);

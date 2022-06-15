@@ -62,6 +62,7 @@ import com.github.jlangch.venice.impl.types.VncBoolean;
 import com.github.jlangch.venice.impl.types.VncFunction;
 import com.github.jlangch.venice.impl.types.VncKeyword;
 import com.github.jlangch.venice.impl.types.VncMultiArityFunction;
+import com.github.jlangch.venice.impl.types.VncScalar;
 import com.github.jlangch.venice.impl.types.VncSpecialForm;
 import com.github.jlangch.venice.impl.types.VncString;
 import com.github.jlangch.venice.impl.types.VncSymbol;
@@ -772,6 +773,9 @@ public class VeniceInterpreter implements IVeniceInterpreter, Serializable  {
         }
         else if (ast instanceof VncSequence) {
             return evaluate_sequence_values((VncSequence)ast, env);
+        }
+        else if (ast instanceof VncScalar) {
+            return ast;
         }
         else if (ast instanceof VncMap) {
             final VncMap map = (VncMap)ast;
