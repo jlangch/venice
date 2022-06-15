@@ -39,6 +39,16 @@ import com.github.jlangch.venice.impl.types.VncVal;
 import com.github.jlangch.venice.impl.types.collections.VncCollection;
 import com.github.jlangch.venice.impl.types.collections.VncList;
 
+//Run on a 2017 MacBook Pro (Mac OSX, Core i7 2.8 GHz).
+//Venice 1.10.16, Java 8
+//
+// Benchmark                                          Mode  Cnt  Score   Error  Units
+// InstanceOfBenchmark.test_instanceof_VncCollection  avgt    3  2.649 ± 0.069  ns/op
+// InstanceOfBenchmark.test_instanceof_VncList        avgt    3  2.651 ± 0.047  ns/op
+// InstanceOfBenchmark.test_instanceof_VncLong        avgt    3  2.654 ± 0.107  ns/op
+// InstanceOfBenchmark.test_is_VncList_on_VncList     avgt    3  2.409 ± 0.383  ns/op
+// InstanceOfBenchmark.test_is_VncList_on_VncLong     avgt    3  2.478 ± 0.740  ns/op
+
 
 @Warmup(iterations=3, time=3, timeUnit=TimeUnit.SECONDS)
 @Measurement(iterations=3, time=10, timeUnit=TimeUnit.SECONDS)
@@ -64,17 +74,17 @@ public class InstanceOfBenchmark {
     }
 
     @Benchmark
-    public Object test_is_VncList() {
-        return list.isVncList();
-    }
-
-    @Benchmark
     public Object test_instanceof_VncLong() {
         return number instanceof VncList;
     }
 
     @Benchmark
-    public Object test_is_VncLong() {
+    public Object test_is_VncList_on_VncList() {
+        return list.isVncList();
+    }
+
+    @Benchmark
+    public Object test_is_VncList_on_VncLong() {
         return number.isVncList();
     }
 
