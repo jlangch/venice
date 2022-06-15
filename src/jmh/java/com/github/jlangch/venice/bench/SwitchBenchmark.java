@@ -34,6 +34,14 @@ import org.openjdk.jmh.annotations.State;
 import org.openjdk.jmh.annotations.Threads;
 import org.openjdk.jmh.annotations.Warmup;
 
+//Run on a 2017 MacBook Pro (Mac OSX, Core i7 2.8 GHz).
+//Venice 1.10.16, Java 8
+//
+//SwitchBenchmark.dispatchLargeHit   avgt    3  9.274 ± 0.691  ns/op
+//SwitchBenchmark.dispatchLargeMiss  avgt    3  7.433 ± 0.317  ns/op
+//SwitchBenchmark.dispatchSmallHit   avgt    3  7.177 ± 0.557  ns/op
+//SwitchBenchmark.dispatchSmallMiss  avgt    3  6.105 ± 0.396  ns/op
+
 
 @Warmup(iterations=3, time=3, timeUnit=TimeUnit.SECONDS)
 @Measurement(iterations=3, time=10, timeUnit=TimeUnit.SECONDS)
