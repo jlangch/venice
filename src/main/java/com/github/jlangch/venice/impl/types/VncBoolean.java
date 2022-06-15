@@ -26,7 +26,7 @@ import com.github.jlangch.venice.impl.types.util.Types;
 import com.github.jlangch.venice.impl.util.MetaUtil;
 
 
-public class VncBoolean extends VncVal {
+public class VncBoolean extends VncScalar {
 
     private VncBoolean(final Boolean v) {
         this(v, null);

@@ -34,20 +34,17 @@ import org.openjdk.jmh.annotations.State;
 import org.openjdk.jmh.annotations.Threads;
 import org.openjdk.jmh.annotations.Warmup;
 
+import com.github.jlangch.venice.impl.functions.MathFunctions;
 import com.github.jlangch.venice.impl.types.VncLong;
-import com.github.jlangch.venice.impl.types.VncVal;
-import com.github.jlangch.venice.impl.types.collections.VncCollection;
-import com.github.jlangch.venice.impl.types.collections.VncList;
 
-//Run on a 2017 MacBook Pro (Mac OSX, Core i7 2.8 GHz).
-//Venice 1.10.16, Java 8
+// Run on a 2017 MacBook Pro (Mac OSX, Core i7 2.8 GHz).
+// Venice 1.10.16, Java 8
 //
-// Benchmark                                          Mode  Cnt  Score   Error  Units
-// InstanceOfBenchmark.test_instanceof_VncCollection  avgt    3  2.649 ± 0.069  ns/op
-// InstanceOfBenchmark.test_instanceof_VncList        avgt    3  2.651 ± 0.047  ns/op
-// InstanceOfBenchmark.test_instanceof_VncLong        avgt    3  2.654 ± 0.107  ns/op
-// InstanceOfBenchmark.test_is_VncList_on_VncList     avgt    3  2.409 ± 0.383  ns/op
-// InstanceOfBenchmark.test_is_VncList_on_VncLong     avgt    3  2.478 ± 0.740  ns/op
+// Benchmark                  Mode  Cnt   Score   Error  Units
+// MathBenchmark.addLong      avgt    3   3.456 ± 0.001  ns/op
+// MathBenchmark.addLong4     avgt    3   4.261 ± 0.237  ns/op
+// MathBenchmark.addVncLong   avgt    3  13.900 ± 0.417  ns/op
+// MathBenchmark.addVncLong4  avgt    3  32.879 ± 0.272  ns/op
 
 
 @Warmup(iterations=3, time=3, timeUnit=TimeUnit.SECONDS)
@@ -57,38 +54,38 @@ import com.github.jlangch.venice.impl.types.collections.VncList;
 @OutputTimeUnit (TimeUnit.NANOSECONDS)
 @State (Scope.Benchmark)
 @Threads (1)
-public class InstanceOfBenchmark {
+public class MathBenchmark {
 
-    public InstanceOfBenchmark() {
-    }
+     public MathBenchmark() {
+     }
 
+     @Benchmark
+     public Object addLong() {
+         return d1 + d2;
+     }
 
-    @Benchmark
-    public Object test_instanceof_VncList() {
-        return list instanceof VncList;
-    }
+     @Benchmark
+     public Object addLong4() {
+         return d1 + d2 + d3 + d4;
+     }
 
-    @Benchmark
-    public Object test_instanceof_VncCollection() {
-        return list instanceof VncCollection;
-    }
+     @Benchmark
+     public Object addVncLong() {
+         return MathFunctions.add.applyOf(d5, d6);
+     }
 
-    @Benchmark
-    public Object test_instanceof_VncLong() {
-        return number instanceof VncList;
-    }
-
-    @Benchmark
-    public Object test_is_VncList_on_VncList() {
-        return list.isVncList();
-    }
-
-    @Benchmark
-    public Object test_is_VncList_on_VncLong() {
-        return number.isVncList();
-    }
+     @Benchmark
+     public Object addVncLong4() {
+         return MathFunctions.add.applyOf(d5, d6, d7, d8);
+     }
 
 
-    private final VncVal list = VncList.of(new VncLong(0L));
-    private final VncVal number = new VncLong(0L);
-}
+     private Long d1 = new Long(1L);
+     private Long d2 = new Long(2L);
+     private Long d3 = new Long(3L);
+     private Long d4 = new Long(4L);
+     private VncLong d5 = new VncLong(1L);
+     private VncLong d6 = new VncLong(2L);
+     private VncLong d7 = new VncLong(3L);
+     private VncLong d8 = new VncLong(4L);
+ }

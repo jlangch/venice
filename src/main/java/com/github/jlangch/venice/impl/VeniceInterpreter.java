@@ -62,6 +62,7 @@ import com.github.jlangch.venice.impl.types.VncBoolean;
 import com.github.jlangch.venice.impl.types.VncFunction;
 import com.github.jlangch.venice.impl.types.VncKeyword;
 import com.github.jlangch.venice.impl.types.VncMultiArityFunction;
+import com.github.jlangch.venice.impl.types.VncScalar;
 import com.github.jlangch.venice.impl.types.VncSpecialForm;
 import com.github.jlangch.venice.impl.types.VncString;
 import com.github.jlangch.venice.impl.types.VncSymbol;
@@ -555,10 +556,12 @@ public class VeniceInterpreter implements IVeniceInterpreter, Serializable  {
 
                         // for performance reasons the DebugAgent is stored in the
                         // RecursionPoint. This saves repeated ThreadLocal access!
-                        final DebugAgent debugAgent = recursionPoint.getDebugAgent();
-                        if (debugAgent != null && debugAgent.hasBreakpointFor(BreakpointFnRef.LOOP)) {
-                            final CallStack cs = ThreadContext.getCallStack();
-                            debugAgent.onBreakLoop(FunctionEntry, recursionPoint, env, cs);
+                        if (recursionPoint.isDebuggingActive()) {
+                            final DebugAgent debugAgent = recursionPoint.getDebugAgent();
+                            if (debugAgent.hasBreakpointFor(BreakpointFnRef.LOOP)) {
+                                final CallStack cs = ThreadContext.getCallStack();
+                                debugAgent.onBreakLoop(FunctionEntry, recursionPoint, env, cs);
+                            }
                         }
 
                         final VncList expressions = recursionPoint.getLoopExpressions();
@@ -770,6 +773,9 @@ public class VeniceInterpreter implements IVeniceInterpreter, Serializable  {
         }
         else if (ast instanceof VncSequence) {
             return evaluate_sequence_values((VncSequence)ast, env);
+        }
+        else if (ast instanceof VncScalar) {
+            return ast;
         }
         else if (ast instanceof VncMap) {
             final VncMap map = (VncMap)ast;
@@ -1090,10 +1096,8 @@ public class VeniceInterpreter implements IVeniceInterpreter, Serializable  {
 
             case 1:
                 // [1][2] calculate and bind the single new value
-                recur_env.setLocal(
-                    new Var(
-                        recursionPoint.getLoopBindingName(0),
-                        evaluate(args.first(), env, false)));
+                final VncVal v = evaluate(args.first(), env, false);
+                recur_env.setLocal(new Var(recursionPoint.getLoopBindingName(0), v));
                 break;
 
             case 2:

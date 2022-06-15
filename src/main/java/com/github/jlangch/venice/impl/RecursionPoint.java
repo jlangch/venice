@@ -76,6 +76,10 @@ public class RecursionPoint {
         return debugAgent;
     }
 
+    public boolean isDebuggingActive() {
+        return debugAgent != null;
+    }
+
 
     private final List<VncSymbol> loopBindingNames;
     private final int loopBindingNamesCount;
