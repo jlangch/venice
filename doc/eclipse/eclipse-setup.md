@@ -1,5 +1,15 @@
 # Setting Up Eclipse IDE
 
+## Eclipse Plugins
+
+### Markdown
+
+Currently there doesn't seem a usable markdown plugin available after the built-in markdown support has been lost with version 2022-06!
+
+A good alternative is the [Markdown App](https://apps.apple.com/ch/app/markdown-editor/id1458220908?l=en&mt=12) from the **Mac App Store**.
+
+
+
 ## Gradle project configuration for Eclipse IDE
 
 1.  Checkout Project
