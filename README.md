@@ -82,7 +82,7 @@ Cheat Sheet: [HTML](https://htmlpreview.github.io/?https://cdn.rawgit.com/jlangc
 * [Shell Scripts](doc/readme/shell-scripts.md)
 * [Extension modules](doc/readme/extension-modules.md)
 * [Tree walker](doc/readme/walk.md)
-* [Benchmarks & Profiling](doc/readme/profiling.md)
+* [Benchmarks](doc/readme/benchmarks.md)
 * [Multi-File Apps](doc/readme/multi-file-app.md)
 * [Development Tools](doc/readme/dev-tools.md)
 * [Build dependencies](doc/readme/build-dependencies.md)
