@@ -33,6 +33,14 @@ Elapsed time: 11.95ms
 => 0
 ```
 
+Check if macro expansion is enabled:
+
+```text
+venice> !macroexpand
+venice> (macroexpand-on-load?)
+=> true
+```
+
 
 ## Drag and Drop Venice files into the REPL for execution
 
