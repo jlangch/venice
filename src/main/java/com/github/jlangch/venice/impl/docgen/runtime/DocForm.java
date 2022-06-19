@@ -25,14 +25,13 @@ import java.util.Comparator;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import org.jline.utils.Levenshtein;
-
 import com.github.jlangch.venice.VncException;
 import com.github.jlangch.venice.impl.ModuleLoader;
 import com.github.jlangch.venice.impl.Modules;
 import com.github.jlangch.venice.impl.ansi.AnsiColorTheme;
 import com.github.jlangch.venice.impl.ansi.AnsiColorThemes;
 import com.github.jlangch.venice.impl.env.Env;
+import com.github.jlangch.venice.impl.env.EnvSymbolLookupUtil;
 import com.github.jlangch.venice.impl.functions.CoreFunctions;
 import com.github.jlangch.venice.impl.reader.HighlightItem;
 import com.github.jlangch.venice.impl.reader.HighlightParser;
@@ -55,7 +54,6 @@ import com.github.jlangch.venice.impl.types.custom.VncWrappingTypeDef;
 import com.github.jlangch.venice.impl.types.util.Types;
 import com.github.jlangch.venice.impl.util.MetaUtil;
 import com.github.jlangch.venice.impl.util.StringUtil;
-import com.github.jlangch.venice.impl.util.Tuple2;
 import com.github.jlangch.venice.impl.util.markdown.Markdown;
 
 
@@ -122,7 +120,7 @@ public class DocForm {
                 final String simpleName = sym.getSimpleName();
 
                 // exact match on simple name
-                List<VncSymbol> candidates = getGlobalSymbolCandidates(
+                List<VncSymbol> candidates = EnvSymbolLookupUtil.getGlobalSymbolCandidates(
                                                     simpleName,
                                                     globalSymbols,
                                                     5,
@@ -130,7 +128,7 @@ public class DocForm {
 
                 if (candidates.isEmpty()) {
                     // levenshtein match on simple name with distance 1
-                    candidates = getGlobalSymbolCandidates(
+                    candidates = EnvSymbolLookupUtil.getGlobalSymbolCandidates(
                                     simpleName,
                                     globalSymbols,
                                     5,
@@ -141,7 +139,7 @@ public class DocForm {
                     throw ex;
                 }
 
-                return new VncString(getSymbolNotFoundMsg(sym, candidates));
+                return new VncString(EnvSymbolLookupUtil.getSymbolNotFoundMsg(sym, candidates));
             }
         }
     }
@@ -621,48 +619,6 @@ public class DocForm {
         }
     }
 
-    private static List<VncSymbol> getGlobalSymbolCandidates(
-            final String name,
-            final List<VncSymbol> globalFunctionSymbols,
-            final int limit,
-            final int levenshteinDistance
-    ) {
-        if (levenshteinDistance == 0) {
-            return globalFunctionSymbols
-                       .stream()
-                       .filter(s -> s.getSimpleName().equals(name))
-                       .sorted()
-                       .limit(limit)
-                       .collect(Collectors.toList());
-        }
-        else {
-            return globalFunctionSymbols
-                       .stream()
-                       .map(s -> new Tuple2<Integer,VncSymbol>(
-                                       Levenshtein.distance(name, s.getSimpleName()),
-                                       s))
-                       .filter(t -> t.getFirst() <= levenshteinDistance)
-                       .sorted()
-                       .map(t -> t.getSecond())
-                       .limit(limit)
-                       .collect(Collectors.toList());
-        }
-    }
-
-    private static String getSymbolNotFoundMsg(
-            final VncSymbol sym,
-            final List<VncSymbol> candidates
-    ) {
-        final List<String> indented = candidates
-                                       .stream()
-                                       .map(s -> "   " + s.getQualifiedName())
-                                       .collect(Collectors.toList());
-
-        return String.format(
-                "Symbol '%s' not found!\n\nDid you mean?\n%s\n",
-                sym.getQualifiedName(),
-                String.join("\n", indented));
-    }
 
     private static List<VncProtocol> getAllEnvProtocols(
             final VncCustomBaseTypeDef typeDef,

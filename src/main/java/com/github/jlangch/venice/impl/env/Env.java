@@ -132,15 +132,47 @@ public class Env implements Serializable {
         else {
             try (WithCallStack cs = new WithCallStack(CallFrame.from(sym))) {
                 final String symName = sym.getQualifiedName();
+                if (symName.startsWith("\\")) {
+                    throw new SymbolNotFoundException(
+                                String.format(
+                                        "Symbol '%s' not found. Did you mean the char literal '#%s'?",
+                                        symName, symName),
+                                symName);
+                }
+
+                if (sym.hasNamespace()) {
+                   throw new SymbolNotFoundException(
+                                 String.format("Symbol '%s' not found.", symName),
+                                 symName);
+                }
+
+                // exact match on simple name
+                final List<VncSymbol> globSymbols = getAllGlobalFunctionSymbols();
+
+                List<VncSymbol> candidates = EnvSymbolLookupUtil.getGlobalSymbolCandidates(
+                                                    sym.getSimpleName(),
+                                                    globSymbols,
+                                                    5,
+                                                    0);
+
+                if (candidates.isEmpty()) {
+                    // levenshtein match on simple name with distance 1
+                    candidates = EnvSymbolLookupUtil.getGlobalSymbolCandidates(
+                                    sym.getSimpleName(),
+                                    globSymbols,
+                                    5,
+                                    1);
+                }
+
+                if (candidates.isEmpty()) {
+                    throw new SymbolNotFoundException(
+                            String.format("Symbol '%s' not found.", symName),
+                            symName);
+                }
+
                 throw new SymbolNotFoundException(
-                        symName.startsWith("\\")
-                            ? String.format(
-                                    "Symbol '%s' not found. Did you mean the char literal '#%s'?",
-                                    symName, symName)
-                            : String.format(
-                                    "Symbol '%s' not found.",
-                                    symName),
-                        symName);
+                                EnvSymbolLookupUtil.getSymbolNotFoundMsg(sym, candidates),
+                                symName);
             }
         }
     }
