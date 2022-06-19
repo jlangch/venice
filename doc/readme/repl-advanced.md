@@ -21,7 +21,7 @@ An example:
 ```text
 venice> (time (reduce + (map (fn [x] (cond (< x 0) -1 (> x 0) 1 :else 0)) 
                              (range -10000 10001))))
-Elapsed time: 271,66 ms
+Elapsed time: 150.26ms
 => 0
 ```
      
@@ -29,7 +29,7 @@ Elapsed time: 271,66 ms
 venice> !macroexpand
 venice> (time (reduce + (map (fn [x] (cond (< x 0) -1 (> x 0) 1 :else 0)) 
                              (range -10000 10001))))
-Elapsed time: 26,35 ms
+Elapsed time: 11.95ms
 => 0
 ```
 
