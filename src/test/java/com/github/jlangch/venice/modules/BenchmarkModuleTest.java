@@ -56,13 +56,23 @@ public class BenchmarkModuleTest {
     }
 
     @Test
-    public void test_macro() {
+    public void test_macroexpand_false() {
         final String script =
             "(do                                               \n" +
             "  (load-module :benchmark ['benchmark :as 'b])    \n" +
             "  (b/benchmark (and true true) 30 30))              ";
 
-         new Venice().eval(script);
+         new Venice().eval("test", script, false, null);
+    }
+
+    @Test
+    public void test_macroexpand_true() {
+        final String script =
+            "(do                                               \n" +
+            "  (load-module :benchmark ['benchmark :as 'b])    \n" +
+            "  (b/benchmark (and true true) 30 30))              ";
+
+         new Venice().eval("test", script, true, null);
     }
 
 }

@@ -160,7 +160,7 @@
                                                  "localhost_access_log.2020-*"))
            """)
 
-  (when-not *macroexpand-on-load*
+  (when-not (macroexpand-on-load?)
     (println)
     (println *err*
              """

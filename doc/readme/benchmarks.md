@@ -18,6 +18,10 @@ Benchmarking an expression incorporates four phases:
    2. Run the garbage collector to isolate timings from GC state prior to testing 
    3. Runs the expression
    4. Statistically analyze the expression evaluations
+   
+**Note:** For best performance activate `macroexpand-on-load`. In the REPL it can be 
+activated by the `!macroexpand` command.
+
 
 ### Signature
 
@@ -121,6 +125,59 @@ Saved chart to 'benchmark.png'.
 ```
 
 <img src="https://github.com/jlangch/venice/blob/master/doc/assets/benchmark/benchmark2.png" width="300">
+
+
+#### Macro Expansion
+
+```clojure
+(do
+  (load-module :benchmark ['benchmark :as 'b])
+  
+  (defn testfn [] 
+     (reduce + (map (fn [x] (cond (< x 0) -1 (> x 0) 1 :else 0)) 
+                    (range -10000 10001))))
+                    
+  (b/benchmark (testfn) 1_000 100))
+```
+
+##### Without macroexpansion-on-load
+
+```text
+Warmup...
+GC...
+Sampling...
+Analyzing...
+                      Samples :        100
+          Execution time mean :  152.908ms
+ Execution time std-deviation :    4.053ms
+Execution time lower quartile :  150.691ms (25%)
+Execution time upper quartile :  155.036ms (75%)
+Execution time lower quantile :  147.785ms (2.5%)
+Execution time upper quantile :  164.773ms (97.5%)
+                 Outliers low :  137.657ms
+                Outliers high :  168.070ms
+                     Outliers :          0
+```
+
+##### With macroexpansion-on-load (15x faster)
+
+```text
+Warmup...
+GC...
+Sampling...
+Analyzing...
+                      Samples :        100
+          Execution time mean :   10.145ms
+ Execution time std-deviation :  583.564µs
+Execution time lower quartile :    9.898ms (25%)
+Execution time upper quartile :   10.774ms (75%)
+Execution time lower quantile :    9.688ms (2.5%)
+Execution time upper quantile :   11.760ms (97.5%)
+                 Outliers low :    7.268ms
+                Outliers high :   13.404ms
+                     Outliers :          0
+```
+
 
 
 ### References

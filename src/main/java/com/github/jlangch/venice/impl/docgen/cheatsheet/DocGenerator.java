@@ -1274,6 +1274,8 @@ public class DocGenerator {
         final DocSection test = new DocSection("Test", "macros.test");
         all.addSection(test);
         test.addItem(getDocItem("macro?"));
+        test.addItem(getDocItem("macroexpand-on-load?"));
+
 
         final DocSection quote = new DocSection("Quoting", "macros.quoting");
         all.addSection(quote);

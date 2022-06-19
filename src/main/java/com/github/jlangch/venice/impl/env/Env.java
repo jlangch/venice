@@ -39,7 +39,6 @@ import com.github.jlangch.venice.VncException;
 import com.github.jlangch.venice.impl.namespaces.Namespaces;
 import com.github.jlangch.venice.impl.thread.ThreadContext;
 import com.github.jlangch.venice.impl.types.Constants;
-import com.github.jlangch.venice.impl.types.VncBoolean;
 import com.github.jlangch.venice.impl.types.VncFunction;
 import com.github.jlangch.venice.impl.types.VncJavaObject;
 import com.github.jlangch.venice.impl.types.VncKeyword;
@@ -488,13 +487,6 @@ public class Env implements Serializable {
                         ps != null ? ps : IOStreamUtil.nullPrintStream(),
                         PrintStream.class));
 
-        return this;
-    }
-
-    public Env setMacroExpandOnLoad(final VncBoolean macroexpandOnLoad) {
-        setGlobal(new Var(new VncSymbol("*macroexpand-on-load*"),
-                          macroexpandOnLoad,
-                          true));
         return this;
     }
 

@@ -126,7 +126,7 @@
     (print-board board)))
 
 
-(when-not *macroexpand-on-load*
+(when-not (macroexpand-on-load?)
   (println *err*
            """
            --------------------------------------------------------------

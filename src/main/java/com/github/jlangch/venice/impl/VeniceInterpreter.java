@@ -173,13 +173,12 @@ public class VeniceInterpreter implements IVeniceInterpreter, Serializable  {
     @Override
     public void setMacroExpandOnLoad(final boolean macroExpandOnLoad, final Env env) {
         // Dynamically turn on/off macroexpand-on-load. The REPL makes use of this.
-        env.setMacroExpandOnLoad(VncBoolean.of(macroExpandOnLoad));
-        this.macroexpand = macroExpandOnLoad;
+        this.macroExpandOnLoad = macroExpandOnLoad;
     }
 
     @Override
     public boolean isMacroExpandOnLoad() {
-        return macroexpand;
+        return macroExpandOnLoad;
     }
 
     @Override
@@ -223,7 +222,7 @@ public class VeniceInterpreter implements IVeniceInterpreter, Serializable  {
             final Env env
     ) {
         VncVal ast = READ(script, name);
-        if (macroexpand) {
+        if (macroExpandOnLoad) {
             ast = MACROEXPAND(ast, env);
         }
         return EVAL(ast, env);
@@ -1146,5 +1145,5 @@ public class VeniceInterpreter implements IVeniceInterpreter, Serializable  {
 
     private final boolean optimized;
 
-    private volatile boolean macroexpand = false;
+    private volatile boolean macroExpandOnLoad = false;
 }

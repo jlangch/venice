@@ -45,7 +45,6 @@ public class ReservedSymbols {
                 "*loaded-modules*",
                 "*loaded-files*",
                 "*run-mode*",
-                "*macroexpand-on-load*",
                 "*ansi-term*",
                 "*app-name*",
                 "*app-archive*",

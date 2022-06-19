@@ -831,7 +831,7 @@
   ^{ :arglists '("(time expr)")
      :doc "Evaluates expr and prints the time it took. Returns the value of expr."
      :examples '("(time (+ 100 200))")
-     :see-also '("perf" "prof") }
+     :see-also '("dorun") }
 
   time [expr]
 
@@ -895,7 +895,7 @@
   load-string [s]
 
   `(let [parsed# (read-string (str "(do " ~s ")"))
-         expanded# (if core/*macroexpand-on-load*
+         expanded# (if (core/macroexpand-on-load?)
                      (macroexpand-all parsed#)
                      parsed#)]
      (eval expanded#)))
@@ -965,7 +965,7 @@
            (let [code# (core/load-file* fc#)]
              (when (some? code#)
                (let [parsed#   (read-string (str "(do " code# ")") fc#)
-                     expanded# (if core/*macroexpand-on-load*
+                     expanded# (if (core/macroexpand-on-load?)
                                  (macroexpand-all parsed#)
                                  parsed#)]
                  (cons! fc# core/*loaded-files*)
@@ -1023,7 +1023,7 @@
          (let [code# (core/load-classpath-file* fc#)]
            (when (some? code#)
              (let [parsed#   (read-string (str "(do " code# ")") fc#)
-                   expanded# (if core/*macroexpand-on-load*
+                   expanded# (if (core/macroexpand-on-load?)
                                (macroexpand-all parsed#)
                                parsed#)]
                (cons! fc# core/*loaded-files*)
@@ -1077,7 +1077,7 @@
        (if (or ~force (not-contains? core/*loaded-modules* (keyword (name ~m))))
          (let [code#     (str "(do " (core/load-module* ~m) ")")
                parsed#   (read-string code# ~m)
-               expanded# (if core/*macroexpand-on-load*
+               expanded# (if (core/macroexpand-on-load?)
                            (macroexpand-all parsed#)
                            parsed#)]
            (cons! (keyword (name ~m)) core/*loaded-modules*)

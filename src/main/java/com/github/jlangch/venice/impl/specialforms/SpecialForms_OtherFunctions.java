@@ -37,7 +37,6 @@ import com.github.jlangch.venice.VncException;
 import com.github.jlangch.venice.impl.Destructuring;
 import com.github.jlangch.venice.impl.IFormEvaluator;
 import com.github.jlangch.venice.impl.ISequenceValuesEvaluator;
-import com.github.jlangch.venice.impl.IVeniceInterpreter;
 import com.github.jlangch.venice.impl.InterruptChecker;
 import com.github.jlangch.venice.impl.Modules;
 import com.github.jlangch.venice.impl.debug.agent.DebugAgent;
@@ -137,6 +136,32 @@ public class SpecialForms_OtherFunctions {
     ///////////////////////////////////////////////////////////////////////////
     // Utility functions
     ///////////////////////////////////////////////////////////////////////////
+
+    public static VncSpecialForm macroexpand_on_loadQ =
+        new VncSpecialForm(
+                "macroexpand-on-load?",
+                VncSpecialForm
+                    .meta()
+                    .arglists("(macroexpand-on-load?)")
+                    .doc("Returns true if macroexpand-on-load is enabled else false.")
+                    .examples(
+                        "(macroexpand-on-load?)")
+                    .build()
+        ) {
+            @Override
+            public VncVal apply(
+                    final VncVal specialFormMeta,
+                    final VncList args,
+                    final Env env,
+                    final SpecialFormsContext ctx
+            ) {
+                assertMinArity("macroexpand-on-read?", FnType.SpecialForm, args, 0);
+
+                return VncBoolean.of(ctx.getInterpreter().isMacroExpandOnLoad());
+            }
+
+            private static final long serialVersionUID = -1848883965231344442L;
+        };
 
     public static VncSpecialForm eval =
         new VncSpecialForm(
@@ -648,7 +673,7 @@ public class SpecialForms_OtherFunctions {
                         "Runs the expr count times in the most effective way and returns a list of " +
                         "elapsed nanoseconds for each invocation. It's main purpose is supporting " +
                         "benchmark test.\n\n" +
-                        "*Note:* All macros in the expression are expanded upfront.")
+                        "*Note:* For best performance enable `macroexpand-on-load`!")
                     .examples(
                          "(dobench 1000 (+ 1 1))",
                          "(dobench 1000 2 1000 (+ 1 1))")
@@ -695,17 +720,11 @@ public class SpecialForms_OtherFunctions {
                     final VncVal expr = args.fourth();
                     final VncFunction statusFn = Coerce.toVncFunction(args.nth(4));
 
-                    final IVeniceInterpreter interpreter = ctx.getInterpreter();
-                    final VncVal exprMacroExpanded = interpreter.macroexpand_all(
-                                                        new CallFrame("dobench", args, specialFormMeta),
-                                                        expr,
-                                                        env);
-
                     return Benchmark.benchmark(
                                 warmUpIterations,
                                 gcRuns,
                                 iterations,
-                                exprMacroExpanded,
+                                expr,
                                 statusFn,
                                 env,
                                 ctx.getEvaluator());
@@ -726,7 +745,7 @@ public class SpecialForms_OtherFunctions {
                         "supporting benchmark tests. Returns the expression result of the last " +
                         "invocation.\n\n" +
                         "*Note:*¶" +
-                        "All macros in the expression are expanded upfront. The expression is evaluated " +
+                        "For best performance enable `macroexpand-on-load`! The expression is evaluated " +
                         "for every run. Alternatively a zero or one arg function referenced by a symbol " +
                         "can be passed:\n\n" +
                         "```                      \n" +
@@ -783,16 +802,10 @@ public class SpecialForms_OtherFunctions {
                 }
 
                 try {
-                    final IVeniceInterpreter interpreter = ctx.getInterpreter();
-                    final VncVal exprMacroExpanded = interpreter.macroexpand_all(
-                                                        new CallFrame("dorun", args, specialFormMeta),
-                                                        expr,
-                                                        env);
-
-                    final VncVal first = evaluator.evaluate(exprMacroExpanded, env, false);
+                    final VncVal first = evaluator.evaluate(expr, env, false);
 
                     for(int ii=1; ii<count; ii++) {
-                        final VncVal result = evaluator.evaluate(exprMacroExpanded, env, false);
+                        final VncVal result = evaluator.evaluate(expr, env, false);
 
                         InterruptChecker.checkInterrupted(Thread.currentThread(), "dorun");
 
@@ -979,6 +992,7 @@ public class SpecialForms_OtherFunctions {
                     .add(dobench)
                     .add(doc)
                     .add(dorun)
+                    .add(macroexpand_on_loadQ)
                     .add(eval)
                     .add(inspect)
                     .add(locking)

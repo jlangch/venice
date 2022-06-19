@@ -29,7 +29,6 @@ public class GlobalSymbols {
     public static final VncSymbol VERSION = new VncSymbol("*version*");
     public static final VncSymbol NEWLINE = new VncSymbol("*newline*");
     public static final VncSymbol NAMESPACE = new VncSymbol("*ns*");
-    public static final VncSymbol MACRO_EXPAND_ON_LOAD = new VncSymbol("*macroexpand-on-load*");
 
     public static final VncSymbol LOADED_MODULES = new VncSymbol("*loaded-modules*");
     public static final VncSymbol LOADED_FILES = new VncSymbol("*loaded-files*");
