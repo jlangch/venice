@@ -25,6 +25,7 @@ import java.util.List;
 
 import com.github.jlangch.venice.impl.env.Env;
 import com.github.jlangch.venice.impl.types.VncVal;
+import com.github.jlangch.venice.impl.util.CallFrame;
 
 
 public interface IVeniceInterpreter {
@@ -59,5 +60,10 @@ public interface IVeniceInterpreter {
             RunMode runMode);
 
     List<String> getAvailableModules();
+
+    VncVal macroexpand_all(
+            CallFrame callframe,
+            VncVal ast,
+            Env env);
 
 }

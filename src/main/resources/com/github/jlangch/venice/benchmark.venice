@@ -154,6 +154,9 @@
       :doc """
            Benchmarks the given expression.
 
+           *Note:* All macros in the expression are expanded before running
+           running the benchmark phases.
+
            Runs the benchmark in 4 phases:
 
               1. Run the expression in a warm-up phase to allow the

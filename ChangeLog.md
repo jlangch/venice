@@ -19,6 +19,8 @@ and this project adheres to
 
 ### Changed
 
+- the functions `benchmark/benchmark` and  `dorun` to expand all macros in the
+  expression before benchmarking or running it.
 - the implementation of the special forms. It's now easier to add and document
   special forms
 - all tabs to spaces in the sources

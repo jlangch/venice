@@ -55,4 +55,14 @@ public class BenchmarkModuleTest {
          new Venice().eval(script);
     }
 
+    @Test
+    public void test_macro() {
+        final String script =
+            "(do                                               \n" +
+            "  (load-module :benchmark ['benchmark :as 'b])    \n" +
+            "  (b/benchmark (and true true) 30 30))              ";
+
+         new Venice().eval(script);
+    }
+
 }

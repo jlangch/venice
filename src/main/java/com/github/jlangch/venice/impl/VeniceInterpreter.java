@@ -328,7 +328,6 @@ public class VeniceInterpreter implements IVeniceInterpreter, Serializable  {
         return modules;
     }
 
-
     private VncVal evaluate(
             final VncVal ast_,
             final Env env_,
@@ -958,11 +957,14 @@ public class VeniceInterpreter implements IVeniceInterpreter, Serializable  {
      *          run macro definitions and put them to the symbol table for later
      *          reference!
      *
+     * @param callframe a callframe
      * @param form the form to expand
      * @param env the env
+     * @param nsRegistry the NamespaceRegistry
      * @return the expanded form
      */
-    private VncVal macroexpand_all(
+    @Override
+    public VncVal macroexpand_all(
             final CallFrame callframe,
             final VncVal form,
             final Env env
