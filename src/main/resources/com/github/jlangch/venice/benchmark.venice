@@ -101,13 +101,13 @@
 
 
 (defn stats [samples]
-  (let [q (math/quartiles samples)
-        q1 (first q)
-        q2 (second q)
-        q3 (third q)
+  (let [q   (math/quartiles samples)
+        q1  (first q)
+        q2  (second q)
+        q3  (third q)
         iqr (- q3 q1)
-        outlier-low (- q1 (long (* 3 iqr)))
-        outlier-high (+ q3 (long (* 3 iqr)))
+        outlier-low     (- q1 (long (* 3 iqr)))
+        outlier-high    (+ q3 (long (* 3 iqr)))
         cleaned-samples (remove-outliers samples outlier-low outlier-high)]
      { :samples samples
        :q1 q1
@@ -171,21 +171,16 @@
 
    benchmark/benchmark [expr warmup-iterations iterations & options]
 
-   (let [opts (apply hash-map options)
-         chart? (:chart opts false)
-         median? (:median opts false)
-         outlier? (:outlier opts false)
-         steps (:steps opts 100)]
+   (let [opts       (apply hash-map options)
+         chart?     (:chart opts false)
+         median?    (:median opts false)
+         outlier?   (:outlier opts false)
+         steps      (:steps opts 100)
+         status-fn  (fn [s] (println s))]
      `(do
-        (println "Warmup...")
-        (dobench ~warmup-iterations ~expr)
-        (println "GC...")
-        (dorun 2 (gc))
-        (sleep 1000)
-        (println "Sampling...")
-        (let [samples# (dobench ~iterations ~expr)
-              stats# (benchmark/stats samples#)]
-          (println "Analyzing...")
+        (let [samples# (dobench ~warmup-iterations 2 ~iterations ~expr ~status-fn)
+              _        (println "Analyzing...")
+              stats#   (benchmark/stats samples#)]
           (benchmark/print-stats stats#)
           (when ~chart?
             (println "Generating chart...")

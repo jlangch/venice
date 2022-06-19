@@ -47,6 +47,7 @@ import com.github.jlangch.venice.impl.env.Env;
 import com.github.jlangch.venice.impl.env.Var;
 import com.github.jlangch.venice.impl.namespaces.Namespace;
 import com.github.jlangch.venice.impl.namespaces.Namespaces;
+import com.github.jlangch.venice.impl.specialforms.util.Benchmark;
 import com.github.jlangch.venice.impl.specialforms.util.SpecialFormsContext;
 import com.github.jlangch.venice.impl.thread.ThreadContext;
 import com.github.jlangch.venice.impl.types.VncBoolean;
@@ -639,12 +640,16 @@ public class SpecialForms_OtherFunctions {
                 "dobench",
                 VncSpecialForm
                     .meta()
-                    .arglists("(dobench count expr)")
+                    .arglists(
+                        "(dobench iterations expr)",
+                        "(dobench warm-up-iterations gc-runs iterations expr)")
                     .doc(
                         "Runs the expr count times in the most effective way and returns a list of " +
                         "elapsed nanoseconds for each invocation. It's main purpose is supporting " +
                         "benchmark test.")
-                    .examples("(dobench 10 (+ 1 1))")
+                    .examples(
+                         "(dobench 1000 (+ 1 1))",
+                         "(dobench 1000 2 1000 (+ 1 1))")
                     .build()
         ) {
             @Override
@@ -655,35 +660,47 @@ public class SpecialForms_OtherFunctions {
                     final SpecialFormsContext ctx
             ) {
                 specialFormCallValidation("dobench");
-                assertArity("dobench", FnType.SpecialForm, args, 2);
+                assertArity("dobench", FnType.SpecialForm, args, 2, 4, 5);
 
-                try {
-                    final long count = Coerce.toVncLong(args.first()).getValue();
-                    final VncVal expr = args.second();
-
-                    final List<VncVal> elapsed = new ArrayList<>();
-                    for(int ii=0; ii<count; ii++) {
-                        final long start = System.nanoTime();
-
-                        final VncVal result = ctx.getEvaluator().evaluate(expr, env, false);
-
-                        final long end = System.nanoTime();
-                        elapsed.add(new VncLong(end-start));
-
-                        InterruptChecker.checkInterrupted(Thread.currentThread(), "dobench");
-
-                        // Store value to a mutable place to prevent JIT from optimizing
-                        // too much. Wrap the result so a VncStack can be used as result
-                        // too (VncStack is a special value in ThreadLocalMap)
-                        ThreadContext.setValue(
-                                new VncKeyword("*benchmark-val*"),
-                                new VncJust(result));
-                    }
-
-                    return VncList.ofList(elapsed);
+                if (args.size() == 2) {
+                    return dobench.apply(
+                            specialFormMeta,
+                            VncList.of(
+                                new VncLong(0),
+                                new VncLong(0),
+                                args.first(),
+                                args.second(),
+                                nilStatusFn),
+                            env,
+                            ctx);
                 }
-                finally {
-                    ThreadContext.removeValue(new VncKeyword("*benchmark-val*"));
+                else if (args.size() == 4) {
+                    return dobench.apply(
+                            specialFormMeta,
+                            VncList.of(
+                                args.first(),
+                                args.second(),
+                                args.third(),
+                                args.fourth(),
+                                nilStatusFn),
+                            env,
+                            ctx);
+                }
+                else {
+                    final long warmUpIterations = Coerce.toVncLong(args.first()).getValue();
+                    final long gcRuns = Coerce.toVncLong(args.second()).getValue();
+                    final long iterations = Coerce.toVncLong(args.third()).getValue();
+                    final VncVal expr = args.fourth();
+                    final VncFunction statusFn = Coerce.toVncFunction(args.nth(4));
+
+                    return Benchmark.benchmark(
+                                warmUpIterations,
+                                gcRuns,
+                                iterations,
+                                expr,
+                                statusFn,
+                                env,
+                                ctx.getEvaluator());
                 }
             }
 
@@ -928,7 +945,12 @@ public class SpecialForms_OtherFunctions {
         return Types.isVncSequence(x) && !((VncSequence)x).isEmpty();
     }
 
-
+    private static VncFunction nilStatusFn =
+            new VncFunction("nil-status-fn") {
+                @Override
+                public VncVal apply(final VncList args) { return Nil; }
+                private static final long serialVersionUID = -1L;
+            };
 
 
 
