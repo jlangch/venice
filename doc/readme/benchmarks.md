@@ -29,7 +29,9 @@ Benchmarking an expression incorporates four phases:
 ```clojure
 (do
   (load-module :benchmark ['benchmark :as 'b])
-  (b/benchmark (+ 1 2 3 4) 120000 10000))
+  
+  ;; add the numbers 0..99
+  (b/benchmark (apply + (range 100)) 1_000_000 10_000))
 ```
 
 The benchmark output: 
@@ -39,14 +41,16 @@ Warmup...
 GC...
 Sampling...
 Analyzing...
-                      Samples :   10000
-          Execution time mean :  460.000ns
- Execution time std-deviation :   67.452ns
-Execution time lower quartile :  455.000ns (25%)
-Execution time upper quartile :  574.000ns (75%)
-Execution time lower quantile :  420.000ns (2.5%)
-Execution time upper quantile :  616.000ns (97.5%)
-                     Outliers :      18
+                      Samples :      10000
+          Execution time mean :    5.114µs
+ Execution time std-deviation :  224.415ns
+Execution time lower quartile :    4.892µs (25%)
+Execution time upper quartile :    5.242µs (75%)
+Execution time lower quantile :    4.629µs (2.5%)
+Execution time upper quantile :    5.441µs (97.5%)
+                 Outliers low :    3.842µs
+                Outliers high :    6.292µs
+                     Outliers :         82
 ```
 
 ### Outliers
@@ -61,7 +65,7 @@ A sample is marked as an outlier if its execution time is lower than `Q1 - 3 * I
 ```clojure
 (do
   (load-module :benchmark ['benchmark :as 'b])
-  (b/benchmark (+ 1 2 3 4) 1000 300 :chart true))
+  (b/benchmark (apply + (range 100)) 1000 300 :chart true))
 ```
 
 ```text
@@ -69,16 +73,18 @@ Warmup...
 GC...
 Sampling...
 Analyzing...
-                      Samples :    300
-          Execution time mean : 14,877 µs
- Execution time std-deviation :  2,761 µs
-Execution time lower quartile : 14,230 µs (25%)
-Execution time upper quartile : 18,289 µs (75%)
-Execution time lower quantile : 13,790 µs (2.5%)
-Execution time upper quantile : 26,689 µs (97.5%)
-                     Outliers :      5
+                      Samples :        300
+          Execution time mean :   21.032µs
+ Execution time std-deviation :    7.798µs
+Execution time lower quartile :   20.371µs (25%)
+Execution time upper quartile :   30.718µs (75%)
+Execution time lower quantile :   17.051µs (2.5%)
+Execution time upper quantile :   58.323µs (97.5%)
+                 Outliers low :        0ns
+                Outliers high :   61.757µs
+                     Outliers :          6
 Generating chart...
-Quantization step width: 4,757 µs 
+Quantization step width: 1.101µs (100 steps)
 Saved chart to 'benchmark.png'.
 ```
 
@@ -91,7 +97,7 @@ Saved chart to 'benchmark.png'.
 ```clojure
 (do
   (load-module :benchmark ['benchmark :as 'b])
-  (b/benchmark (+ 1 2 3 4) 120000 10000 :chart true))
+  (b/benchmark (apply + (range 100)) 1_000_000 10_000 :chart true))
 ```
 
 ```text
@@ -99,16 +105,18 @@ Warmup...
 GC...
 Sampling...
 Analyzing...
-                      Samples :   10000
-          Execution time mean :  462.000ns
- Execution time std-deviation :   85.202ns
-Execution time lower quartile :  456.000ns (25%)
-Execution time upper quartile :  576.000ns (75%)
-Execution time lower quantile :  421.000ns (2.5%)
-Execution time upper quantile :  845.000ns (97.5%)
-                     Outliers :      64
+                      Samples :      10000
+          Execution time mean :    4.933µs
+ Execution time std-deviation :  249.539ns
+Execution time lower quartile :    4.541µs (25%)
+Execution time upper quartile :    4.991µs (75%)
+Execution time lower quantile :    4.408µs (2.5%)
+Execution time upper quantile :    5.176µs (97.5%)
+                 Outliers low :    3.191µs
+                Outliers high :    6.341µs
+                     Outliers :         78
 Generating chart...
-Quantization step width: 141ns
+Quantization step width: 290ns (100 steps)
 Saved chart to 'benchmark.png'.
 ```
 
