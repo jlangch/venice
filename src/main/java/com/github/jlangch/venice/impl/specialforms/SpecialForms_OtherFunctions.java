@@ -143,7 +143,10 @@ public class SpecialForms_OtherFunctions {
                 VncSpecialForm
                     .meta()
                     .arglists("(macroexpand-on-load?)")
-                    .doc("Returns true if macroexpand-on-load is enabled else false.")
+                    .doc(
+                        "Returns true if `macroexpand-on-load` feature is enabled else false.\n\n" +
+                        "The activation of `macroexpand-on-load` (upfront macro expansion) " +
+                        "results in 3x to 15x better performance.")
                     .examples(
                         "(macroexpand-on-load?)")
                     .build()
