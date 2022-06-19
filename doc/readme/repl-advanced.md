@@ -36,7 +36,6 @@ Elapsed time: 11.95ms
 Check if macro expansion is enabled:
 
 ```text
-venice> !macroexpand
 venice> (macroexpand-on-load?)
 => true
 ```
