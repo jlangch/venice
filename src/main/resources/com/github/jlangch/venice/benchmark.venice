@@ -134,7 +134,7 @@
         l-quantile (format-nano-time (:lower-quantile stats))
         u-quantile (format-nano-time (:higher-quantile stats))
         outliers   (:outliers-cnt stats)
-        l-outliers (format-nano-time (:outlier-low stats))
+        l-outliers (format-nano-time (max 0 (:outlier-low stats)))
         u-outliers (format-nano-time (:outlier-high stats))]
 
     (printf "                      Samples : %10d%n" samples)
