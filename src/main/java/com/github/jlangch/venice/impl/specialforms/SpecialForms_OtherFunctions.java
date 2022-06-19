@@ -146,7 +146,8 @@ public class SpecialForms_OtherFunctions {
                     .doc(
                         "Returns true if `macroexpand-on-load` feature is enabled else false.\n\n" +
                         "The activation of `macroexpand-on-load` (upfront macro expansion) " +
-                        "results in 3x to 15x better performance.")
+                        "results in 3x to 15x better performance. Upfront macro expansion " +
+                        "can be activated through the `!macroexpand` command in the REPL.")
                     .examples(
                         "(macroexpand-on-load?)")
                     .build()
