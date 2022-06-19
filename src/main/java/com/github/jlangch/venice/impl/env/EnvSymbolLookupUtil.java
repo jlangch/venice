@@ -34,6 +34,32 @@ public class EnvSymbolLookupUtil {
 
     public static List<VncSymbol> getGlobalSymbolCandidates(
             final String name,
+            final Env env,
+            final int limit
+    ) {
+        final List<VncSymbol> globalSymbols = env.getAllGlobalFunctionSymbols();
+
+        // exact match on simple name
+        List<VncSymbol> candidates = EnvSymbolLookupUtil.getGlobalSymbolCandidates(
+                                            name,
+                                            globalSymbols,
+                                            5,
+                                            0);
+
+        if (candidates.isEmpty()) {
+            // levenshtein match on simple name with distance 1
+            candidates = EnvSymbolLookupUtil.getGlobalSymbolCandidates(
+                            name,
+                            globalSymbols,
+                            5,
+                            1);
+        }
+
+        return candidates;
+    }
+
+    public static List<VncSymbol> getGlobalSymbolCandidates(
+            final String name,
             final List<VncSymbol> globalFunctionSymbols,
             final int limit,
             final int levenshteinDistance

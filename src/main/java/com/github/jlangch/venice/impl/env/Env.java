@@ -146,23 +146,8 @@ public class Env implements Serializable {
                                  symName);
                 }
 
-                // exact match on simple name
-                final List<VncSymbol> globSymbols = getAllGlobalFunctionSymbols();
-
-                List<VncSymbol> candidates = EnvSymbolLookupUtil.getGlobalSymbolCandidates(
-                                                    sym.getSimpleName(),
-                                                    globSymbols,
-                                                    5,
-                                                    0);
-
-                if (candidates.isEmpty()) {
-                    // levenshtein match on simple name with distance 1
-                    candidates = EnvSymbolLookupUtil.getGlobalSymbolCandidates(
-                                    sym.getSimpleName(),
-                                    globSymbols,
-                                    5,
-                                    1);
-                }
+                final List<VncSymbol> candidates = EnvSymbolLookupUtil.getGlobalSymbolCandidates(
+                                                        sym.getSimpleName(), this, 5);
 
                 if (candidates.isEmpty()) {
                     throw new SymbolNotFoundException(

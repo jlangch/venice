@@ -116,24 +116,11 @@ public class DocForm {
                     throw ex;
                 }
 
-                final List<VncSymbol> globalSymbols = env.getAllGlobalFunctionSymbols();
                 final String simpleName = sym.getSimpleName();
 
                 // exact match on simple name
-                List<VncSymbol> candidates = EnvSymbolLookupUtil.getGlobalSymbolCandidates(
-                                                    simpleName,
-                                                    globalSymbols,
-                                                    5,
-                                                    0);
-
-                if (candidates.isEmpty()) {
-                    // levenshtein match on simple name with distance 1
-                    candidates = EnvSymbolLookupUtil.getGlobalSymbolCandidates(
-                                    simpleName,
-                                    globalSymbols,
-                                    5,
-                                    1);
-                }
+                final List<VncSymbol> candidates = EnvSymbolLookupUtil.getGlobalSymbolCandidates(
+                                                    simpleName, env, 5);
 
                 if (candidates.isEmpty()) {
                     throw ex;
