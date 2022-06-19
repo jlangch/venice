@@ -86,7 +86,9 @@
                        (< min 1000000000) "ms"
                        :else "s")
         x-format (cond (< min 1000) "#0" :else "#0.00")]
-     (printf "Quantization step width: %s%n" (format-nano-time step-width))
+     (printf "Quantization step width: %s (%d steps)%n"
+             (format-nano-time step-width)
+             steps)
      (create-chart
        { :x (map #(/ %1 x-scale) (keys data))
          :y (vals data) }
@@ -124,14 +126,27 @@
 
 
 (defn print-stats [stats]
-  (printf "                      Samples : %7d%n" (count (:samples stats)))
-  (printf "          Execution time mean : %10s%n" (format-nano-time (:q2 stats)))
-  (printf " Execution time std-deviation : %10s%n" (format-nano-time (:standard-deviation stats)))
-  (printf "Execution time lower quartile : %10s (25%%)%n" (format-nano-time (:q1 stats)))
-  (printf "Execution time upper quartile : %10s (75%%)%n" (format-nano-time (:q3 stats)))
-  (printf "Execution time lower quantile : %10s (2.5%%)%n" (format-nano-time (:lower-quantile stats)))
-  (printf "Execution time upper quantile : %10s (97.5%%)%n" (format-nano-time (:higher-quantile stats)))
-  (printf "                     Outliers : %7d%n" (:outliers-cnt stats)))
+  (let [samples    (count (:samples stats))
+        mean       (format-nano-time (:q2 stats))
+        std-dev    (format-nano-time (:standard-deviation stats))
+        l-quartile (format-nano-time (:q1 stats))
+        u-quartile (format-nano-time (:q3 stats))
+        l-quantile (format-nano-time (:lower-quantile stats))
+        u-quantile (format-nano-time (:higher-quantile stats))
+        outliers   (:outliers-cnt stats)
+        l-outliers (format-nano-time (:outlier-low stats))
+        u-outliers (format-nano-time (:outlier-high stats))]
+
+    (printf "                      Samples : %10d%n" samples)
+    (printf "          Execution time mean : %10s%n" mean)
+    (printf " Execution time std-deviation : %10s%n" std-dev)
+    (printf "Execution time lower quartile : %10s (25%%)%n" l-quartile)
+    (printf "Execution time upper quartile : %10s (75%%)%n" u-quartile)
+    (printf "Execution time lower quantile : %10s (2.5%%)%n" l-quantile)
+    (printf "Execution time upper quantile : %10s (97.5%%)%n" u-quantile)
+    (printf "                 Outliers low : %10s%n" l-outliers)
+    (printf "                Outliers high : %10s%n" u-outliers)
+    (printf "                     Outliers : %10d%n" outliers)))
 
 
 (defmacro
@@ -150,10 +165,11 @@
 
            Options:
 
-            | :chart b    | If true generates a chart and saves it to 'benchmark.png'. Defaults to false. |
-            | :steps n    | the number of steps for the quantization, defaults to 100 |
-            | :median b   | show the median value in the chart {true/false}, defaults to false |
-            | :outliers b | show the outlier range in the chart {true/false}, defaults to false |
+            | :chart b   | If true generates a chart and saves it to 'benchmark.png'. Defaults to false. |
+            | :steps n   | the number of steps for the quantization, defaults to 100 |
+            | :median b  | show the median value in the chart {true/false}, defaults to false |
+            | :outlier b | show the outlier range in the chart {true/false}, defaults to false |
+            | :gc n      | the number of GC runs |
            """
       :examples '(
         """
@@ -176,9 +192,10 @@
          median?    (:median opts false)
          outlier?   (:outlier opts false)
          steps      (:steps opts 100)
+         gc-runs    (:gc opts 2)
          status-fn  (fn [s] (println s))]
      `(do
-        (let [samples# (dobench ~warmup-iterations 2 ~iterations ~expr ~status-fn)
+        (let [samples# (dobench ~warmup-iterations ~gc-runs ~iterations ~expr ~status-fn)
               _        (println "Analyzing...")
               stats#   (benchmark/stats samples#)]
           (benchmark/print-stats stats#)

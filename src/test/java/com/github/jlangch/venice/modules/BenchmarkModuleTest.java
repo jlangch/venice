@@ -40,7 +40,7 @@ public class BenchmarkModuleTest {
         final String script =
             "(do                                               \n" +
             "  (load-module :benchmark ['benchmark :as 'b])    \n" +
-            "  (b/benchmark (+ 1 2) 120 100))                   ";
+            "  (b/benchmark (+ 1 2 3 4) 120_000 10_000))            ";
 
          new Venice().eval(script);
     }

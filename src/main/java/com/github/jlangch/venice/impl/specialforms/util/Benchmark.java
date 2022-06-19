@@ -28,6 +28,7 @@ import com.github.jlangch.venice.impl.IFormEvaluator;
 import com.github.jlangch.venice.impl.InterruptChecker;
 import com.github.jlangch.venice.impl.env.Env;
 import com.github.jlangch.venice.impl.thread.ThreadContext;
+import com.github.jlangch.venice.impl.types.Constants;
 import com.github.jlangch.venice.impl.types.VncFunction;
 import com.github.jlangch.venice.impl.types.VncJust;
 import com.github.jlangch.venice.impl.types.VncKeyword;
@@ -51,7 +52,18 @@ public class Benchmark {
         try {
             // warmup
             statusFn.applyOf(new VncString("Warmup..."));
-            samples(warmUpIterations, 0L, expr, env, evaluator);
+            final VncList warmupSamples = samples(warmUpIterations, expr, env, evaluator);
+            storeToHole(warmupSamples);
+
+            long batchSize = 1;
+
+//            final VncList sortedUp = (VncList)CoreFunctions.sort.applyOf(warmupSamples);
+//            final VncList samples = (VncList)TransducerFunctions.take.applyOf(
+//                                                new VncLong(Math.min(100, sortedUp.size())),
+//                                                sortedUp);
+//            final long warmupElapsed = ((VncNumber)MathFunctions.mean.apply(samples)).toJavaLong();
+//            if (warmupElapsed < 1000) batchSize = 1000;
+//            else if (warmupElapsed < 10000) batchSize = 100;
 
             // GC
             statusFn.applyOf(new VncString("GC..."));
@@ -64,7 +76,8 @@ public class Benchmark {
 
             // sampling
             statusFn.applyOf(new VncString("Sampling..."));
-            return samples(iterations, overheadPerSample, expr, env, evaluator);
+            final VncList iterationSamples = samples(iterations, batchSize, overheadPerSample, expr, env, evaluator);
+            return iterationSamples;
         }
         finally {
             ThreadContext.removeValue(benchVal);
@@ -73,38 +86,76 @@ public class Benchmark {
 
     private static VncList samples(
             final long iterations,
+            final VncVal expr,
+            final Env env,
+            final IFormEvaluator evaluator
+    ) {
+        return samples(iterations, 1L, 0L, expr, env, evaluator);
+    }
+
+    private static VncList samples(
+            final long iterations,
+            final long batchSize,
             final long overheadPerSample,
             final VncVal expr,
             final Env env,
             final IFormEvaluator evaluator
     ) {
-        final List<VncVal> elapsed = new ArrayList<>();
-        for(int ii=0; ii<iterations; ii++) {
-            final long elapsed_ = sample(expr, env, evaluator);
+        if (batchSize == 1) {
+            final List<VncVal> elapsed = new ArrayList<>();
+            for(int ii=0; ii<iterations; ii++) {
+                final long elapsed_ = sample(1, expr, env, evaluator);
 
-            elapsed.add(new VncLong(Math.max(0, elapsed_ - overheadPerSample)));
+                elapsed.add(new VncLong(Math.max(0, elapsed_ - overheadPerSample)));
 
-            InterruptChecker.checkInterrupted(Thread.currentThread(), "dobench");
+                InterruptChecker.checkInterrupted(Thread.currentThread(), "dobench");
+            }
+
+            return VncList.ofList(elapsed);
         }
+        else {
+            final List<VncVal> elapsed = new ArrayList<>();
+            final long batchedIterations = iterations/batchSize + 1L;
+            for(int ii=0; ii<batchedIterations; ii++) {
+                final long elapsed_ = sample(batchSize, expr, env, evaluator);
 
-        return VncList.ofList(elapsed);
+                final long e = Math.max(1, (elapsed_ - overheadPerSample) / batchSize);
+                for(int jj=0; jj<batchSize; jj++) {
+                    elapsed.add(new VncLong(e));
+                }
+
+                InterruptChecker.checkInterrupted(Thread.currentThread(), "dobench");
+            }
+
+            return VncList.ofList(elapsed);
+        }
     }
 
     private static long sample(
+            final long n,
             final VncVal expr,
             final Env env,
             final IFormEvaluator evaluator
     ) {
         final long start = System.nanoTime();
 
-        final VncVal result = evaluator.evaluate(expr, env, false);
+        VncVal result = Constants.Nil;
+
+        if (n == 1) {
+            result = evaluator.evaluate(expr, env, false);
+        }
+        else {
+            for(int ii=0; ii<n; ii++) {
+                result = evaluator.evaluate(expr, env, false);
+            }
+        }
 
         final long elapsed = System.nanoTime() - start;
 
         // Store value to a mutable place to prevent JIT from optimizing
         // too much. Wrap the result so a VncStack can be used as result
         // too (VncStack is a special value in ThreadLocalMap)
-        ThreadContext.setValue(benchVal, new VncJust(result));
+        storeToHole(new VncJust(result));
 
         return elapsed;
     }
@@ -122,7 +173,7 @@ public class Benchmark {
             // Store value to a mutable place to prevent JIT from optimizing
             // too much. Wrap the result so a VncStack can be used as result
             // too (VncStack is a special value in ThreadLocalMap)
-            ThreadContext.setValue(benchVal, new VncLong(elapsed - start_ + result.toJavaLong()));
+            storeToHole(new VncLong(elapsed - start_ + result.toJavaLong()));
 
             elapsedTotal += elapsed;
         }
@@ -141,6 +192,12 @@ public class Benchmark {
         }
     }
 
+    private static void storeToHole(final VncVal v) {
+        // Store value to a mutable place to prevent JIT from optimizing
+        // too much. Wrap the result so a VncStack can be used as result
+        // too (VncStack is a special value in ThreadLocalMap)
+        ThreadContext.setValue(benchVal, v);
+    }
 
     private static VncFunction dummyFn =
         new VncFunction("dummy___") {
