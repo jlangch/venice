@@ -107,7 +107,7 @@ public class CreateMap_Benchmark {
            m
            (recur (assoc m i (* 2 i)) (dec i)))))
          
-  (be/benchmark (create−persistent-map 2000) 1000 500))
+  (b/benchmark (create−persistent-map 2000) 1000 500))
 ```
 
 ### Results
