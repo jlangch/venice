@@ -99,7 +99,7 @@ public class CreateMap_Benchmark {
 
 ```clojure
 (do
-  (load-module :benchmark)
+  (load-module :benchmark ['benchmark :as 'b])
   
   (defn create−persistent-map [size] 
     (loop [m (hash-map), i size]
@@ -107,7 +107,7 @@ public class CreateMap_Benchmark {
            m
            (recur (assoc m i (* 2 i)) (dec i)))))
          
-  (bench/benchmark (create−persistent-map 2000) 1000 500))
+  (be/benchmark (create−persistent-map 2000) 1000 500))
 ```
 
 ### Results
@@ -202,7 +202,7 @@ public class JavaFilterMapReduceBenchmark {
 
 ```clojure
 (do
-  (load-module :benchmark)
+  (load-module :benchmark ['benchmark :as 'b])
   
   (def data (range 2000))
 
@@ -210,7 +210,7 @@ public class JavaFilterMapReduceBenchmark {
                (filter #(even? %))
                (map #(* 10 %))))
                         
-  (bench/benchmark (transduce xform + 0 data) 1000 500))
+  (b/benchmark (transduce xform + 0 data) 1000 500))
 ```
 
 ### Results
