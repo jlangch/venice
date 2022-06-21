@@ -959,7 +959,6 @@ public class VeniceInterpreter implements IVeniceInterpreter, Serializable  {
      * @param callframe a callframe
      * @param form the form to expand
      * @param env the env
-     * @param nsRegistry the NamespaceRegistry
      * @return the expanded form
      */
     @Override
