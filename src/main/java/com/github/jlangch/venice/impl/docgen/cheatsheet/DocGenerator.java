@@ -1863,6 +1863,12 @@ public class DocGenerator {
         file_test.addItem(getDocItem("io/file-hidden?", false));
         file_test.addItem(getDocItem("io/file-symbolic-link?", false));
 
+        final DocSection file_glob = new DocSection("file glob", "io.fileglob");
+        all.addSection(file_glob);
+        file_glob.addItem(getDocItem("io/glob-path-matcher"));
+        file_glob.addItem(getDocItem("io/file-matches-glob?"));
+        file_glob.addItem(getDocItem("io/list-files-glob", false));
+
         final DocSection file_uri = new DocSection("URL/URI", "io.url_uri");
         all.addSection(file_uri);
         file_uri.addItem(getDocItem("io/->url"));

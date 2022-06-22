@@ -194,6 +194,44 @@ public class IOFunctionsTest {
     }
 
     @Test
+    public void test_io_glob_path_matcher() {
+        final Venice venice = new Venice();
+
+        assertEquals(
+                "com.github.jlangch.venice.impl.functions.IOFunctions$VncPathMatcher",
+                venice.eval("(type (io/glob-path-matcher \"*.log\"))"));
+
+        assertEquals(
+                "com.github.jlangch.venice.impl.functions.IOFunctions$VncPathMatcher",
+                venice.eval("(type (io/glob-path-matcher \"**/*.log\"))"));
+    }
+
+    @Test
+    public void test_io_file_matches_globQ() {
+        final Venice venice = new Venice();
+
+        assertTrue((Boolean)venice.eval("(io/file-matches-glob? \"*.log\" \"file1.log\")"));
+        assertFalse((Boolean)venice.eval("(io/file-matches-glob? \"*.log\" \"dir/file1.log\")"));
+        assertTrue((Boolean)venice.eval("(io/file-matches-glob? \"**/*.log\" \"dir/file1.log\")"));
+        assertTrue((Boolean)venice.eval("(io/file-matches-glob? \"**/*.log\" \"dir1/dir2/file1.log\")"));
+
+        assertTrue((Boolean)venice.eval("(io/file-matches-glob? \"*.log\" (io/file \"file1.log\"))"));
+        assertFalse((Boolean)venice.eval("(io/file-matches-glob? \"*.log\" (io/file \"dir/file1.log\"))"));
+        assertTrue((Boolean)venice.eval("(io/file-matches-glob? \"**/*.log\" (io/file \"dir/file1.log\"))"));
+        assertTrue((Boolean)venice.eval("(io/file-matches-glob? \"**/*.log\" (io/file \"dir1/dir2/file1.log\"))"));
+
+        assertTrue((Boolean)venice.eval("(io/file-matches-glob? (io/glob-path-matcher\"*.log\") \"file1.log\")"));
+        assertFalse((Boolean)venice.eval("(io/file-matches-glob? (io/glob-path-matcher\"*.log\") \"dir/file1.log\")"));
+        assertTrue((Boolean)venice.eval("(io/file-matches-glob? (io/glob-path-matcher\"**/*.log\") \"dir/file1.log\")"));
+        assertTrue((Boolean)venice.eval("(io/file-matches-glob? (io/glob-path-matcher\"**/*.log\") \"dir1/dir2/file1.log\")"));
+
+        assertTrue((Boolean)venice.eval("(io/file-matches-glob? (io/glob-path-matcher\"*.log\") (io/file \"file1.log\"))"));
+        assertFalse((Boolean)venice.eval("(io/file-matches-glob? (io/glob-path-matcher\"*.log\") (io/file \"dir/file1.log\"))"));
+        assertTrue((Boolean)venice.eval("(io/file-matches-glob? (io/glob-path-matcher\"**/*.log\") (io/file \"dir/file1.log\"))"));
+        assertTrue((Boolean)venice.eval("(io/file-matches-glob? (io/glob-path-matcher\"**/*.log\") (io/file \"dir1/dir2/file1.log\"))"));
+   }
+
+    @Test
     public void test_io_list_files() throws Exception{
         final Venice venice = new Venice();
 

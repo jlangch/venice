@@ -23,59 +23,47 @@
 
 (ns grep)
 
+(deftype :named-file [name :string, data :any])
 
 (defn numbered-lines [lines]
   (map vector (range) lines))
-  
 
-(defn dir-descendants [dir]
-  (let [children (.listFiles (File. dir))]
-    (lazy-cat
-     (map (memfn getPath) (filter (memfn isFile) children))
-     (mapcat dir-descendants
-	     (map (memfn getPath) (filter (memfn isDirectory) children))))))
+(defn filter-lines [lines pattern]
+  (vector (filter #(regex/matches pattern (second %)) lines)))
 
+(defn read-lines [nfile]
+  (->> (io/slurp-lines (:data nfile))
+       (numbered-lines)
+       (assoc nfile :data)))
 
-(defn numbered-lines [lines]
-  (map vector (iterate inc 0) lines))
+(defn grep-in-file [pattern nfile]
+  { (:name nfile) (filter-lines (:data (read-lines nfile)) pattern) })
 
-(defn grep-in-file [pattern file]
-  {file (vec (filter #(re-find pattern (second %)) (numbered-lines (read-lines file))))})
+(defn grep-in-dir [pattern dir file-glob]
+  (let [files (map (fn [f] (named-file. (first f) (second f)))
+                   (io/list-files-glob dir file-glob))]
+    (apply merge (map #(grep-in-file pattern %) files))))
 
-(defn expand-file
-  [file]
-  (if (.isDirectory (java.io.File. file))
-    (dir-descendants file)
-    file))
-
-(defn all-files
-  [files]
-  (if (string? files)
-    (expand-file files)
-    (flatten (map expand-file files))))
-
-(defn grep-in-files [pattern files & {:keys [parallel]}]
-  (let [map-fn (if parallel pmap map)]
-    (apply merge (map-fn #(grep-in-file pattern %) (all-files files)))))
+(defn grep-in-zipfile [pattern zip file-pattern]
+  (let [files (filter (io/unzip-all zip)
+  (let [files (map (fn [f] (named-file. (str (io/file-name zip) ":::" (first f))
+                                        (second f)))
+                   (io/unzip-all zip))]
+    (apply merge (map #(grep-in-file pattern %) files))))
 
 (defn print-matches [matches]
   (doseq [[fname submatches] matches
-	  [line-no match] submatches]
+    [line-no match] submatches]
     (printf "%s:%s:%s\n" fname line-no match)))
 
-(defn -main [& args]
-  (with-command-line args
-    "Simple grep, written in Clojure"
-    [[parallel? p? "Run in parallel" false]
-     remaining]
-    (let [[pattern & files] remaining]
-      (if (or (nil? pattern) (empty? files))
-	(println "Usage: grep <pattern> <file...>")
-	(do
-	  (.println *err* (str "Running with pattern " pattern
-			       ", parallel set to " parallel?
-			       " and files "
-			       (apply str (interpose " " files))))
-	  (print-matches (grep-in-files (re-pattern pattern) files :parallel parallel?))
-	  (shutdown-agents)
-	  (.println *err* "Done."))))))
+(defn grep-zip [zip file-glob pattern]
+    ;; (load-module :grep ['grep :as 'g])
+    ;; (g/grep /users/foo/logs/logs.zip" "*.log" ".*remove")
+    (print-matches (grep-in-zip zip file-glob (regex/pattern pattern)))
+    (println *err* "Done."))
+
+(defn grep [dir file-glob pattern]
+    ;; (load-module :grep ['grep :as 'g])
+    ;; (g/grep /users/foo/logs "*.log" ".*remove")
+    (print-matches (grep-in-dir dir file-glob (regex/pattern pattern)))
+    (println *err* "Done."))

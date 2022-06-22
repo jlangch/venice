@@ -52,9 +52,11 @@ import java.nio.ByteBuffer;
 import java.nio.charset.Charset;
 import java.nio.file.CopyOption;
 import java.nio.file.DirectoryStream;
+import java.nio.file.FileSystems;
 import java.nio.file.Files;
 import java.nio.file.OpenOption;
 import java.nio.file.Path;
+import java.nio.file.PathMatcher;
 import java.nio.file.StandardCopyOption;
 import java.nio.file.StandardOpenOption;
 import java.nio.file.StandardWatchEventKinds;
@@ -628,6 +630,100 @@ public class IOFunctions {
             private static final long serialVersionUID = -1848883965231344442L;
         };
 
+    public static VncFunction io_glob_path_matcher =
+        new VncFunction(
+                "io/glob-path-matcher",
+                VncFunction
+                    .meta()
+                    .arglists("(io/glob-path-matcher pattern)")
+                    .doc(
+                        "Returns a file matcher for glob file patterns.\n\n" +
+                        "Globbing patterns: \n\n" +
+                        "| [![width: 20%]] | [![width: 80%]] |\n" +
+                        "| `*.txt`       | Matches a path that represents a file name ending in .txt |\n" +
+                        "| `*.*`         | Matches file names containing a dot |\n" +
+                        "| `*.{txt,xml}` | Matches file names ending with .txt or .xml |\n" +
+                        "| `foo.?`       | Matches file names starting with foo. and a single character extension |\n" +
+                        "| `/home/*/*`   | Matches `/home/gus/data` on UNIX platforms |\n" +
+                        "| `/home/**`    | Matches `/home/gus` and `/home/gus/data` on UNIX platforms |\n" +
+                        "| `C:\\\\*`     | Matches `C:\\\\foo` and `C:\\\\bar` on the Windows platform |\n")
+                    .examples(
+                        "(io/glob-path-matcher\"*.log\")",
+                        "(io/glob-path-matcher\"**/*.log\")")
+                    .seeAlso("io/file-matches-glob?", "io/list-files-glob")
+                    .build()
+        ) {
+            @Override
+            public VncVal apply(final VncList args) {
+                ArityExceptions.assertArity(this, args, 1);
+
+                final String searchPattern = Coerce.toVncString(args.first()).getValue();
+
+                final PathMatcher m = FileSystems.getDefault()
+                                                 .getPathMatcher("glob:" + searchPattern);
+
+                return new VncJavaObject(new VncPathMatcher(m));
+             }
+
+            private static final long serialVersionUID = -1848883965231344442L;
+        };
+
+    public static VncFunction io_file_matches_globQ =
+        new VncFunction(
+                "io/file-matches-glob?",
+                VncFunction
+                    .meta()
+                    .arglists("(io/file-matches-glob? glob f)")
+                    .doc(
+                        "Returns true if the file f matches the glob pattern. f must be a file or a string (file path).\n\n" +
+                        "Globbing patterns: \n\n" +
+                        "| [![width: 20%]] | [![width: 80%]] |\n" +
+                        "| `*.txt`       | Matches a path that represents a file name ending in .txt |\n" +
+                        "| `*.*`         | Matches file names containing a dot |\n" +
+                        "| `*.{txt,xml}` | Matches file names ending with .txt or .xml |\n" +
+                        "| `foo.?`       | Matches file names starting with foo. and a single character extension |\n" +
+                        "| `/home/*/*`   | Matches `/home/gus/data` on UNIX platforms |\n" +
+                        "| `/home/**`    | Matches `/home/gus` and `/home/gus/data` on UNIX platforms |\n" +
+                        "| `C:\\\\*`     | Matches `C:\\\\foo` and `C:\\\\bar` on the Windows platform |\n")
+                    .examples(
+                        "(io/file-matches-glob? \"*.log\" \"file.log\")",
+                        "(io/file-matches-glob? \"**/*.log\" \"x/y/file.log\")",
+                        "(io/file-matches-glob? (io/glob-path-matcher\"*.log\") (io/file \"file.log\"))",
+                        "(io/file-matches-glob? (io/glob-path-matcher\"**/*.log\") (io/file \"x/y/file.log\"))")
+                   .seeAlso("io/glob-path-matcher", "io/list-files-glob")
+                    .build()
+        ) {
+            @Override
+            public VncVal apply(final VncList args) {
+                ArityExceptions.assertArity(this, args, 2);
+
+                PathMatcher m = null;
+
+                if (Types.isVncString(args.first())) {
+                    final String searchPattern = Coerce.toVncString(args.first()).getValue();
+                    m = FileSystems.getDefault()
+                                   .getPathMatcher("glob:" + searchPattern);
+                }
+                else if (Types.isVncJavaObject(args.first(),VncPathMatcher.class)) {
+                    m = Coerce.toVncJavaObject(args.first(),VncPathMatcher.class).matcher;
+                }
+                else {
+                    throw new VncException(
+                            String.format(
+                                    "Function 'io/file-matches-glob?' does not allow %s as argument one",
+                                    args.first().getType()));
+                }
+
+                final File f = convertToFile(
+                                    args.second(),
+                                    "Function 'io/file-matches-glob?' does not allow %s as f");
+
+                return VncBoolean.of(m.matches(f.toPath()));
+            }
+
+            private static final long serialVersionUID = -1848883965231344442L;
+        };
+
     public static VncFunction io_to_url =
         new VncFunction(
                 "io/->url",
@@ -757,7 +853,10 @@ public class IOFunctions {
                             return new VncJavaObject(((URL)obj.getDelegate()).toURI());
                         }
                         else {
-                            throw new VncException("Function 'io/->uri' does not allow %s as argument");
+                            throw new VncException(
+                                    String.format(
+                                            "Function 'io/->uri' does not allow %s as argument",
+                                            f.getType()));
                         }
                     }
                     else {
@@ -2999,6 +3098,14 @@ public class IOFunctions {
         }
     }
 
+    private static class VncPathMatcher {
+        public VncPathMatcher(final PathMatcher matcher) {
+            this.matcher = matcher;
+        }
+
+        public final PathMatcher matcher;
+    }
+
 
     ///////////////////////////////////////////////////////////////////////////
     // types_ns is namespace of type functions
@@ -3024,6 +3131,8 @@ public class IOFunctions {
                     .add(io_file_can_execute_Q)
                     .add(io_file_hidden_Q)
                     .add(io_file_symbolicl_link_Q)
+                    .add(io_glob_path_matcher)
+                    .add(io_file_matches_globQ)
                     .add(io_to_url)
                     .add(io_to_uri)
                     .add(io_await_for)
