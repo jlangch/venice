@@ -1,0 +1,81 @@
+;;;;   __    __         _
+;;;;   \ \  / /__ _ __ (_) ___ ___
+;;;;    \ \/ / _ \ '_ \| |/ __/ _ \
+;;;;     \  /  __/ | | | | (_|  __/
+;;;;      \/ \___|_| |_|_|\___\___|
+;;;;
+;;;;
+;;;; Copyright 2017-2022 Venice
+;;;;
+;;;; Licensed under the Apache License, Version 2.0 (the "License");
+;;;; you may not use this file except in compliance with the License.
+;;;; You may obtain a copy of the License at
+;;;;
+;;;;     http://www.apache.org/licenses/LICENSE-2.0
+;;;;
+;;;; Unless required by applicable law or agreed to in writing, software
+;;;; distributed under the License is distributed on an "AS IS" BASIS,
+;;;; WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+;;;; See the License for the specific language governing permissions and
+;;;; limitations under the License.
+
+;;;; Simple GREP in Venice
+
+(ns grep)
+
+
+(defn numbered-lines [lines]
+  (map vector (range) lines))
+  
+
+(defn dir-descendants [dir]
+  (let [children (.listFiles (File. dir))]
+    (lazy-cat
+     (map (memfn getPath) (filter (memfn isFile) children))
+     (mapcat dir-descendants
+	     (map (memfn getPath) (filter (memfn isDirectory) children))))))
+
+
+(defn numbered-lines [lines]
+  (map vector (iterate inc 0) lines))
+
+(defn grep-in-file [pattern file]
+  {file (vec (filter #(re-find pattern (second %)) (numbered-lines (read-lines file))))})
+
+(defn expand-file
+  [file]
+  (if (.isDirectory (java.io.File. file))
+    (dir-descendants file)
+    file))
+
+(defn all-files
+  [files]
+  (if (string? files)
+    (expand-file files)
+    (flatten (map expand-file files))))
+
+(defn grep-in-files [pattern files & {:keys [parallel]}]
+  (let [map-fn (if parallel pmap map)]
+    (apply merge (map-fn #(grep-in-file pattern %) (all-files files)))))
+
+(defn print-matches [matches]
+  (doseq [[fname submatches] matches
+	  [line-no match] submatches]
+    (printf "%s:%s:%s\n" fname line-no match)))
+
+(defn -main [& args]
+  (with-command-line args
+    "Simple grep, written in Clojure"
+    [[parallel? p? "Run in parallel" false]
+     remaining]
+    (let [[pattern & files] remaining]
+      (if (or (nil? pattern) (empty? files))
+	(println "Usage: grep <pattern> <file...>")
+	(do
+	  (.println *err* (str "Running with pattern " pattern
+			       ", parallel set to " parallel?
+			       " and files "
+			       (apply str (interpose " " files))))
+	  (print-matches (grep-in-files (re-pattern pattern) files :parallel parallel?))
+	  (shutdown-agents)
+	  (.println *err* "Done."))))))

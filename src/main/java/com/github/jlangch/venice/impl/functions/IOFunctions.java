@@ -1283,6 +1283,7 @@ public class IOFunctions {
                         "dir must be a file or a string (file path). " +
                         "Returns files as `java.io.File`\n\n" +
                         "Globbing patterns: \n\n" +
+                        "| [![width: 20%]] | [![width: 80%]] |\n" +
                         "| `*.txt`       | Matches a path that represents a file name ending in .txt |\n" +
                         "| `*.*`         | Matches file names containing a dot |\n" +
                         "| `*.{txt,xml}` | Matches file names ending with .txt or .xml |\n" +
