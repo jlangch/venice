@@ -19,7 +19,7 @@
 ;;;; See the License for the specific language governing permissions and
 ;;;; limitations under the License.
 
-;;;; Simple GREP in Venice
+;;;; Simple GREP in Venice  (in progress: NOT YET TESTED!)
 
 (ns grep)
 
@@ -44,11 +44,12 @@
                    (io/list-files-glob dir file-glob))]
     (apply merge (map #(grep-in-file pattern %) files))))
 
-(defn grep-in-zipfile [pattern zip file-pattern]
-  (let [files (filter (io/unzip-all zip)
-  (let [files (map (fn [f] (named-file. (str (io/file-name zip) ":::" (first f))
-                                        (second f)))
-                   (io/unzip-all zip))]
+(defn grep-in-zipfile [pattern zip file-glob]
+  (let [m      (io/glob-path-matcher pattern)
+        zfiles (filter #(io/file-matches-glob? m (first %) (io/unzip-all zip)))
+        files  (map (fn [f] (named-file. (str (io/file-name zip) "!" (first f))
+                                         (second f)))
+                    zfiles)]
     (apply merge (map #(grep-in-file pattern %) files))))
 
 (defn print-matches [matches]
@@ -58,12 +59,12 @@
 
 (defn grep-zip [zip file-glob pattern]
     ;; (load-module :grep ['grep :as 'g])
-    ;; (g/grep /users/foo/logs/logs.zip" "*.log" ".*remove")
+    ;; (g/grep /users/foo/logs/logs.zip" "*.log" "Session removed.*")
     (print-matches (grep-in-zip zip file-glob (regex/pattern pattern)))
     (println *err* "Done."))
 
 (defn grep [dir file-glob pattern]
     ;; (load-module :grep ['grep :as 'g])
-    ;; (g/grep /users/foo/logs "*.log" ".*remove")
+    ;; (g/grep /users/foo/logs "*.log" Session removed.*")
     (print-matches (grep-in-dir dir file-glob (regex/pattern pattern)))
     (println *err* "Done."))
