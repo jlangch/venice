@@ -45,12 +45,10 @@
     (apply merge (map #(grep-in-file pattern %) files))))
 
 (defn grep-in-zipfile [pattern zip file-glob]
-  (let [m      (io/glob-path-matcher pattern)
-        zfiles (filter #(io/file-matches-glob? m (first %) (io/unzip-all zip)))
-        files  (map (fn [f] (named-file. (str (io/file-name zip) "!" (first f))
-                                         (second f)))
-                    zfiles)]
-    (apply merge (map #(grep-in-file pattern %) files))))
+  (->> (io/unzip-all zip file-glob)
+       (map (fn [f] (named-file. (str (io/file-name zip) "!" (first f))
+                                 (second f))))
+       (apply merge (map #(grep-in-file pattern %)))))
 
 (defn print-matches [matches]
   (doseq [[fname submatches] matches
