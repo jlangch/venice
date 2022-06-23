@@ -1713,6 +1713,7 @@ public class IOFunctions {
                         "Read all lines from f.                                            \n\n" +
                         "f may be a:                                                       \n\n" +
                         " * string file path, e.g: \"/temp/foo.json\"                      \n" +
+                        " * bytebuffer                                        `            \n" +
                         " * `java.io.File`, e.g: `(io/file \"/temp/foo.json\")`            \n" +
                         " * `java.io.InputStream`                                          \n" +
                         " * `java.io.Reader`                                               \n" +
@@ -1751,6 +1752,17 @@ public class IOFunctions {
                                 "Failed to slurp text lines from the file " + file.getPath(),
                                 ex);
                     }
+                }
+                else if (Types.isVncByteBuffer(arg)) {
+                    try {
+                        final VncByteBuffer buf = (VncByteBuffer)arg;
+                        final InputStream is = new ByteArrayInputStream(buf.getBytes());
+                        return slurpLines(options, is);
+                    }
+                    catch (Exception ex) {
+                        throw new VncException("Failed to slurp text lines from a bytebuffer", ex);
+                    }
+
                 }
                 else if (Types.isVncJavaObject(arg, InputStream.class)) {
                     try {
