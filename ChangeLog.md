@@ -26,7 +26,7 @@ and this project adheres to
 
 
 
-## [1.10.15] - 2022-06-0
+## [1.10.15] - 2022-06-02
 
 ### Fixed
 
