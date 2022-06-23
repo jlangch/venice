@@ -426,7 +426,6 @@ ${ (when pdfmode }$<?xml version="1.0" encoding="UTF-8"?>${ ) }$${ (when-not pdf
             }
             div.md-inline-code {
                 display: inline;
-                white-space: pre-wrap;
                 font-family: 'Source Code Pro', sans-serif;
                 font-weight: 400;
                 margin: 0;
@@ -439,6 +438,7 @@ ${ (when pdfmode }$<?xml version="1.0" encoding="UTF-8"?>${ ) }$${ (when-not pdf
                 ${)}$
                 
                 ${(when-not pdfmode}$
+                  /* white-space: pre-wrap; */
                   padding: 0.2em 0.4em;
                   font-size: 85%;
                   border-radius: 6px;
