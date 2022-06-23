@@ -55,7 +55,7 @@
 
 (defn print-matches [matches]
   (doseq [[fname submatches] matches
-    [line-no match] submatches]
+          [line-no match] submatches]
     (printf "%s:%s:%s\n" fname line-no match)))
 
 (defn
