@@ -40,15 +40,18 @@
   { (:name nfile) (read-lines line-matcher (:data nfile)) })
 
 (defn grep-in-dir [dir file-glob line-matcher]
-  (let [files (map (fn [f] (named-file. (str/strip-start (io/file-path f) dir) f))
-                   (io/list-files-glob dir file-glob))]
-    (apply merge (map #(grep-in-file line-matcher %) files))))
+  (->> (io/list-files-glob dir file-glob)
+       (map (fn [f] (named-file. (str/strip-start (io/file-path f) dir)
+                                 f)))
+       (map #(grep-in-file line-matcher %))
+       (apply merge)))
 
 (defn grep-in-zipfile [zip file-glob line-matcher]
   (->> (io/unzip-all zip file-glob)
        (map (fn [f] (named-file. (str (io/file-name zip) "!" (first f))
                                  (second f))))
-       (apply merge (map #(grep-in-file line-matcher %)))))
+       (map #(grep-in-file line-matcher %))
+       (apply merge)))
 
 (defn print-matches [matches]
   (doseq [[fname submatches] matches
