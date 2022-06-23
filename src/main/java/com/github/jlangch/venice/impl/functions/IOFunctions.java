@@ -1762,7 +1762,6 @@ public class IOFunctions {
                     catch (Exception ex) {
                         throw new VncException("Failed to slurp text lines from a bytebuffer", ex);
                     }
-
                 }
                 else if (Types.isVncJavaObject(arg, InputStream.class)) {
                     try {
