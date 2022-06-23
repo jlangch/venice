@@ -28,41 +28,41 @@
 (defn numbered-lines [lines]
   (map vector (range) lines))
 
-(defn filter-lines [lines pattern]
-  (vector (filter #(regex/matches pattern (second %)) lines)))
+(defn filter-lines [line-matcher lines]
+  (filter #(regex/matches? line-matcher (second %)) lines))
 
-(defn read-lines [nfile]
-  (->> (io/slurp-lines (:data nfile))
+(defn read-lines [line-matcher file]
+  (->> (io/slurp-lines file)
        (numbered-lines)
-       (assoc nfile :data)))
+       (filter-lines line-matcher)))
 
-(defn grep-in-file [pattern nfile]
-  { (:name nfile) (filter-lines (:data (read-lines nfile)) pattern) })
+(defn grep-in-file [line-matcher nfile]
+  { (:name nfile) (read-lines line-matcher (:data nfile)) })
 
-(defn grep-in-dir [pattern dir file-glob]
-  (let [files (map (fn [f] (named-file. (first f) (second f)))
+(defn grep-in-dir [dir file-glob line-matcher]
+  (let [files (map (fn [f] (named-file. (str/strip-start (io/file-path f) dir) f))
                    (io/list-files-glob dir file-glob))]
-    (apply merge (map #(grep-in-file pattern %) files))))
+    (apply merge (map #(grep-in-file line-matcher %) files))))
 
-(defn grep-in-zipfile [pattern zip file-glob]
+(defn grep-in-zipfile [zip file-glob line-matcher]
   (->> (io/unzip-all zip file-glob)
        (map (fn [f] (named-file. (str (io/file-name zip) "!" (first f))
                                  (second f))))
-       (apply merge (map #(grep-in-file pattern %)))))
+       (apply merge (map #(grep-in-file line-matcher %)))))
 
 (defn print-matches [matches]
   (doseq [[fname submatches] matches
     [line-no match] submatches]
     (printf "%s:%s:%s\n" fname line-no match)))
 
-(defn grep-zip [zip file-glob pattern]
+(defn grep-zip [zip file-glob line-pattern]
     ;; (load-module :grep ['grep :as 'g])
-    ;; (g/grep /users/foo/logs/logs.zip" "*.log" "Session removed.*")
-    (print-matches (grep-in-zip zip file-glob (regex/pattern pattern)))
+    ;; (g/grep /users/foo/logs/logs.zip" "*.log" ".*Session removed.*")
+    (print-matches (grep-in-zip zip file-glob (regex/matcher line-pattern "")))
     (println *err* "Done."))
 
-(defn grep [dir file-glob pattern]
+(defn grep [dir file-glob line-pattern]
     ;; (load-module :grep ['grep :as 'g])
-    ;; (g/grep /users/foo/logs "*.log" Session removed.*")
-    (print-matches (grep-in-dir dir file-glob (regex/pattern pattern)))
+    ;; (g/grep /users/foo/logs "*.log" ".*Session removed.*")
+    (print-matches (grep-in-dir dir file-glob (regex/matcher line-pattern "")))
     (println *err* "Done."))

@@ -58,6 +58,7 @@ public class Modules {
                         "fam",
                         "geoip",
                         "gradle",
+                        "grep",
                         "hexdump",
                         "http",
                         "jackson",
