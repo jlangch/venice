@@ -59,26 +59,40 @@
     (printf "%s:%s:%s\n" fname line-no match)))
 
 (defn
-  ^{ :arglists '("(grep/grep-zip zip-file file-glob line-pattern)")
+  ^{ :arglists '(
+        "(grep/grep-zip dir zipfile-glob file-glob line-pattern)")
      :doc
         """
         Search for lines that match a regular expression in text files within
-        a ZIP file. The search chooses all files in the ZIP that match a
+        ZIP files. The search chooses all files in the ZIP that match a
         globbing pattern.
+        The search starts from a base directory and chooses all ZIP files that
+        match the zipfile globbing pattern.
         """
     :examples '(
        """
        (do
          (load-module :grep)
-
          (grep/grep-zip "/Users/foo/logs/logs.zip" "**/*.log" ".*Shutdown.*"))
+       """,
+       """
+       (do
+         (load-module :grep)
+         (grep/grep-zip "/Users/foo/logs" "logs.zip" "**/*.log" ".*Shutdown.*"))
        """ )
     :see-also '("io/file-matches-glob?") }
 
-  grep-zip [zip file-glob line-pattern]
+  grep-zip
 
-  (print-matches (grep-in-zipfile zip file-glob (regex/matcher line-pattern "")))
-  (println *err* "Done."))
+  ([zip file-glob line-pattern]
+    (print-matches (grep-in-zipfile zip file-glob (regex/matcher line-pattern "")))
+    (println *err* "Done."))
+
+  ([dir zipfile-glob file-glob line-pattern]
+    (let [matcher (regex/matcher line-pattern "")]
+      (->> (io/list-files-glob dir zipfile-glob)
+           (map #(print-matches (grep-in-zipfile % file-glob matcher)))))
+    (println *err* "Done.")))
 
 
 (defn
