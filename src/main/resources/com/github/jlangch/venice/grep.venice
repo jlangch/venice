@@ -47,9 +47,9 @@
        (apply merge)))
 
 (defn grep-in-zipfile [zip file-glob line-matcher]
-  (->> (io/unzip-all zip file-glob)
-       (map (fn [f] (named-file. (str (io/file-name zip) "!" (first f))
-                                 (second f))))
+  (->> (io/unzip-all file-glob zip)
+       (map (fn [f] (named-file. (str (io/file-name zip) "!" (key f))
+                                 (val f))))
        (map #(grep-in-file line-matcher %))
        (apply merge)))
 
@@ -60,8 +60,8 @@
 
 (defn grep-zip [zip file-glob line-pattern]
     ;; (load-module :grep ['grep :as 'g])
-    ;; (g/grep /users/foo/logs/logs.zip" "*.log" ".*Session removed.*")
-    (print-matches (grep-in-zip zip file-glob (regex/matcher line-pattern "")))
+    ;; (g/grep /users/foo/logs/logs.zip" "step.log.*" ".*Session removed.*")
+    (print-matches (grep-in-zipfile zip file-glob (regex/matcher line-pattern "")))
     (println *err* "Done."))
 
 (defn grep [dir file-glob line-pattern]
