@@ -68,11 +68,11 @@ public class DocGenerator {
     public DocGenerator() {
         preloadedModules
             .addAll(Arrays.asList(
-                        "app",    "xml",    "crypt",     "gradle",
-                        "trace",  "ansi",   "maven",     "kira",
-                        "java",   "semver", "excel",     "hexdump",
-                        "shell",  "geoip",  "benchmark", "component",
-                        "config", "parsifal"));
+                        "app",    "xml",      "crypt",     "gradle",
+                        "trace",  "ansi",     "maven",     "kira",
+                        "java",   "semver",   "excel",     "hexdump",
+                        "shell",  "geoip",    "benchmark", "component",
+                        "config", "parsifal", "grep"));
 
         final Env docEnv = new VeniceInterpreter(new AcceptAllInterceptor())
                             .createEnv(
@@ -248,6 +248,7 @@ public class DocGenerator {
         extmod.addSection(new DocSection("Configuration", "modules.config"));
         extmod.addSection(new DocSection("Component", "modules.component"));
         extmod.addSection(new DocSection("XML", "modules.xml"));
+        extmod.addSection(new DocSection("Grep", "modules.grep"));
         extmod.addSection(new DocSection("Cryptography", "modules.cryptography"));
         extmod.addSection(new DocSection("Java", "modules.java"));
         extmod.addSection(new DocSection("Semver", "modules.semver"));
@@ -335,7 +336,8 @@ public class DocGenerator {
                 getModuleMavenSection(),
                 getModuleTracingSection(),
                 getModuleShellSection(),
-                getModuleAnsiSection());
+                getModuleAnsiSection(),
+                getModuleGrepSection());
     }
 
     private List<DocSection> getModulesRightSections() {
@@ -2614,6 +2616,23 @@ public class DocGenerator {
         all.addSection(progress);
         progress.addItem(getDocItem("ansi/progress", false));
         progress.addItem(getDocItem("ansi/progress-bar", false));
+
+        return section;
+    }
+
+    private DocSection getModuleGrepSection() {
+        final DocSection section = new DocSection(
+                                        "Grep",
+                                        "Grep like search tool",
+                                        "modules.grep");
+
+        final DocSection all = new DocSection("(load-module :grep)", id());
+        section.addSection(all);
+
+        final DocSection grep = new DocSection("Grep", id());
+        all.addSection(grep);
+        grep.addItem(getDocItem("grep/grep", false));
+        grep.addItem(getDocItem("grep/grep-zip", false));
 
         return section;
     }
