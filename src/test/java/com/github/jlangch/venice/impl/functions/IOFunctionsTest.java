@@ -198,11 +198,11 @@ public class IOFunctionsTest {
         final Venice venice = new Venice();
 
         assertEquals(
-                "com.github.jlangch.venice.impl.functions.IOFunctions$VncPathMatcher",
+                "com.github.jlangch.venice.impl.util.VncPathMatcher",
                 venice.eval("(type (io/glob-path-matcher \"*.log\"))"));
 
         assertEquals(
-                "com.github.jlangch.venice.impl.functions.IOFunctions$VncPathMatcher",
+                "com.github.jlangch.venice.impl.util.VncPathMatcher",
                 venice.eval("(type (io/glob-path-matcher \"**/*.log\"))"));
     }
 
