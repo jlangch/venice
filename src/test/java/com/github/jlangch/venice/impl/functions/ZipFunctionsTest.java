@@ -306,15 +306,31 @@ public class ZipFunctionsTest {
         final Venice venice = new Venice();
 
         Map<String,ByteBuffer> data = (Map<String,ByteBuffer>)venice.eval(
-                                        "(-> (io/zip \"a\" (bytebuf-from-string \"abc\" :utf-8)  \n" +
-                                        "            \"b\" (bytebuf-from-string \"def\" :utf-8)  \n" +
-                                        "            \"c\" (bytebuf-from-string \"ghi\" :utf-8)) \n" +
-                                        "    (io/unzip-all))");
+                                        "(->> (io/zip \"a\" (bytebuf-from-string \"abc\" :utf-8)  \n" +
+                                        "             \"b\" (bytebuf-from-string \"def\" :utf-8)  \n" +
+                                        "             \"c\" (bytebuf-from-string \"ghi\" :utf-8)) \n" +
+                                        "     (io/unzip-all))");
 
         assertEquals(3, data.size());
         assertEquals("abc", new String(data.get("a").array(), "utf-8"));
         assertEquals("def", new String(data.get("b").array(), "utf-8"));
         assertEquals("ghi", new String(data.get("c").array(), "utf-8"));
+    }
+
+    @SuppressWarnings("unchecked")
+    @Test
+    public void test_io_unzip_all_glob() throws Exception {
+        final Venice venice = new Venice();
+
+        Map<String,ByteBuffer> data = (Map<String,ByteBuffer>)venice.eval(
+                                        "(->> (io/zip \"a.txt\" (bytebuf-from-string \"abc\" :utf-8)  \n" +
+                                        "             \"b.txt\" (bytebuf-from-string \"def\" :utf-8)  \n" +
+                                        "             \"c.log\" (bytebuf-from-string \"ghi\" :utf-8)) \n" +
+                                        "     (io/unzip-all \"*.txt\"))");
+
+        assertEquals(2, data.size());
+        assertEquals("abc", new String(data.get("a.txt").array(), "utf-8"));
+        assertEquals("def", new String(data.get("b.txt").array(), "utf-8"));
     }
 
     @Test

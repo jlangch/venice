@@ -36,6 +36,7 @@ import java.nio.file.FileSystem;
 import java.nio.file.FileSystems;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.nio.file.PathMatcher;
 import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -429,33 +430,33 @@ public class Zipper {
         }
     }
 
-    public static Map<String, byte[]> unzipAll(final File zip) {
+    public static Map<String, byte[]> unzipAll(final File zip, final PathMatcher matcher) {
         if (zip == null) {
             throw new IllegalArgumentException("A 'zip' must not be null");
         }
 
         try (FileInputStream is = new FileInputStream(zip)) {
-            return unzipAll(is);
+            return unzipAll(is, matcher);
         }
         catch(IOException ex) {
             throw new RuntimeException(ex.getMessage(), ex);
         }
     }
 
-    public static Map<String, byte[]> unzipAll(final byte[] binary) {
+    public static Map<String, byte[]> unzipAll(final byte[] binary, final PathMatcher matcher) {
         if (binary == null) {
             throw new IllegalArgumentException("A 'binary' must not be null");
         }
 
         try (ByteArrayInputStream is = new ByteArrayInputStream(binary)) {
-            return unzipAll(is);
+            return unzipAll(is, matcher);
         }
         catch(IOException ex) {
             throw new RuntimeException(ex.getMessage(), ex);
         }
     }
 
-    public static Map<String, byte[]> unzipAll(final InputStream is) {
+    public static Map<String, byte[]> unzipAll(final InputStream is, final PathMatcher matcher) {
         if (is == null) {
             throw new IllegalArgumentException("A 'is' must not be null");
         }
@@ -471,9 +472,16 @@ public class Zipper {
 
                 final byte[] data = slurpBytes(zis);
 
-                files.put(
-                    entry.getName(),
-                    entry.isDirectory() ? null : data);
+                if (matcher == null) {
+                    files.put(
+                        entry.getName(),
+                        entry.isDirectory() ? null : data);
+                }
+                else if (!entry.isDirectory()) {
+                    if (matcher.matches(new File(entry.getName()).toPath())) {
+                        files.put(entry.getName(), data);
+                    }
+                }
 
                 zis.closeEntry();
             }

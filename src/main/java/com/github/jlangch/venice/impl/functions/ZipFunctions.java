@@ -29,8 +29,10 @@ import java.io.FilenameFilter;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.io.PrintStream;
+import java.nio.file.FileSystems;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.nio.file.PathMatcher;
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -54,6 +56,7 @@ import com.github.jlangch.venice.impl.types.util.Coerce;
 import com.github.jlangch.venice.impl.types.util.Types;
 import com.github.jlangch.venice.impl.util.ArityExceptions;
 import com.github.jlangch.venice.impl.util.SymbolMapBuilder;
+import com.github.jlangch.venice.impl.util.VncPathMatcher;
 import com.github.jlangch.venice.impl.util.io.zip.GZipper;
 import com.github.jlangch.venice.impl.util.io.zip.ZipEntryAttr;
 import com.github.jlangch.venice.impl.util.io.zip.ZipEntryAttrPrinter;
@@ -554,26 +557,62 @@ public class ZipFunctions {
                 "io/unzip-all",
                 VncFunction
                     .meta()
-                    .arglists("(io/unzip-all f)")
+                    .arglists(
+                         "(io/unzip-all f)",
+                         "(io/unzip-all glob f)")
                     .doc(
                         "Unzips all entries of the zip f returning a map with " +
                         "the entry names as key and the entry data as bytebuf values. " +
-                        "f may be a bytebuf, a file, a string (file path) or an InputStream.")
+                        "f may be a bytebuf, a file, a string (file path) or an InputStream.\n\n" +
+                        "An optional globbing pattern can be passed to filter the files to be " +
+                        "unzipped.\n\n" +
+                        "Globbing patterns: \n\n" +
+                        "| [![width: 20%]] | [![width: 80%]] |\n" +
+                        "| `*.txt`       | Matches a path that represents a file name ending in .txt |\n" +
+                        "| `*.*`         | Matches file names containing a dot |\n" +
+                        "| `*.{txt,xml}` | Matches file names ending with .txt or .xml |\n" +
+                        "| `foo.?`       | Matches file names starting with foo. and a single character extension |\n" +
+                        "| `/home/*/*`   | Matches `/home/gus/data` on UNIX platforms |\n" +
+                        "| `/home/**`    | Matches `/home/gus` and `/home/gus/data` on UNIX platforms |\n" +
+                        "| `C:\\\\*`     | Matches `C:\\\\foo` and `C:\\\\bar` on the Windows platform |\n")
                     .examples(
                         "(-> (io/zip \"a.txt\" (bytebuf-from-string \"abc\" :utf-8)  \n" +
                         "            \"b.txt\" (bytebuf-from-string \"def\" :utf-8)  \n" +
                         "            \"c.txt\" (bytebuf-from-string \"ghi\" :utf-8)) \n" +
-                        "    (io/unzip-all))")
+                        "    (io/unzip-all))",
+                        "(->> (io/zip \"a.txt\" (bytebuf-from-string \"abc\" :utf-8)  \n" +
+                        "             \"b.txt\" (bytebuf-from-string \"def\" :utf-8)  \n" +
+                        "             \"c.log\" (bytebuf-from-string \"ghi\" :utf-8)) \n" +
+                        "     (io/unzip-all \"*.txt\"))")
                     .seeAlso("io/unzip-to-dir", "io/unzip-nth", "io/unzip-first", "io/zip", "io/zip?")
                     .build()
         ) {
             @Override
             public VncVal apply(final VncList args) {
-                ArityExceptions.assertArity(this, args, 1);
+                ArityExceptions.assertArity(this, args, 1,2);
 
                 sandboxFunctionCallValidation();
 
-                final VncVal buf = args.first();
+                final VncVal buf = args.last();
+                PathMatcher m = null;
+
+                if (args.size() == 2) {
+                    if (Types.isVncString(args.first())) {
+                        final String searchPattern = Coerce.toVncString(args.first()).getValue();
+                        m = FileSystems.getDefault()
+                                       .getPathMatcher("glob:" + searchPattern);
+                    }
+                    else if (Types.isVncJavaObject(args.first(), VncPathMatcher.class)) {
+                        m = Coerce.toVncJavaObject(args.first(), VncPathMatcher.class).matcher;
+                    }
+                    else {
+                        throw new VncException(
+                                String.format(
+                                        "Function 'io/unzip-all' does not allow %s as argument one",
+                                        args.first().getType()));
+                    }
+                }
+
                 try {
                     if (buf == Nil) {
                         return Nil;
@@ -582,20 +621,20 @@ public class ZipFunctions {
                         final Map<String,byte[]> data;
 
                         if (Types.isVncByteBuffer(buf)) {
-                            data = Zipper.unzipAll(((VncByteBuffer)buf).getBytes());
+                            data = Zipper.unzipAll(((VncByteBuffer)buf).getBytes(), m);
                         }
                         else if (Types.isVncJavaObject(buf, InputStream.class)) {
-                            data = Zipper.unzipAll((InputStream)((VncJavaObject)buf).getDelegate());
+                            data = Zipper.unzipAll((InputStream)((VncJavaObject)buf).getDelegate(), m);
                         }
                         else if (Types.isVncJavaObject(buf, File.class)) {
                             final File file = (File)((VncJavaObject)buf).getDelegate();
                             validateReadableFile(file);
-                            data = Zipper.unzipAll(file);
+                            data = Zipper.unzipAll(file, m);
                         }
                         else if (Types.isVncString(buf)) {
                             final File file = new File(Coerce.toVncString(buf).getValue());
                             validateReadableFile(file);
-                            data = Zipper.unzipAll(file);
+                            data = Zipper.unzipAll(file, m);
                         }
                         else {
                             throw new VncException(String.format(

@@ -97,6 +97,7 @@ import com.github.jlangch.venice.impl.util.ArityExceptions;
 import com.github.jlangch.venice.impl.util.CallFrame;
 import com.github.jlangch.venice.impl.util.MimeTypes;
 import com.github.jlangch.venice.impl.util.SymbolMapBuilder;
+import com.github.jlangch.venice.impl.util.VncPathMatcher;
 import com.github.jlangch.venice.impl.util.io.ClassPathResource;
 import com.github.jlangch.venice.impl.util.io.FileUtil;
 import com.github.jlangch.venice.impl.util.io.IOStreamUtil;
@@ -3098,13 +3099,6 @@ public class IOFunctions {
         }
     }
 
-    private static class VncPathMatcher {
-        public VncPathMatcher(final PathMatcher matcher) {
-            this.matcher = matcher;
-        }
-
-        public final PathMatcher matcher;
-    }
 
 
     ///////////////////////////////////////////////////////////////////////////
