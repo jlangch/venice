@@ -116,26 +116,36 @@ public class RegexFunctions {
                 "regex/matches?",
                 VncFunction
                     .meta()
-                    .arglists("(regex/matches? matcher)")
+                    .arglists(
+                        "(regex/matches? matcher)",
+                        "(regex/matches? matcher str)")
                     .doc(
                         "Attempts to match the entire region against the pattern. " +
                         "If the match succeeds then more information can be obtained " +
                         "via the regex/group function")
                     .examples(
-                        "(let [m (regex/matcher \"[0-9]+\" \"100\")]  \n" +
-                        "  (regex/matches? m))",
+                        "(let [m (regex/matcher \"[0-9]+\" \"100\")]         \n" +
+                        "  (regex/matches? m))                               ",
                         "(let [m (regex/matcher \"[0-9]+\" \"value: 100\")]  \n" +
-                        "  (regex/matches? m))")
+                        "  (regex/matches? m))                               ",
+                        "(let [m (regex/matcher \"[0-9]+\" \"\")]                     \n" +
+                        "  (filter #(regex/matches? m %) [\"100\" \"1a1\" \"200\"]))  ")
                     .seeAlso("regex/matcher", "regex/matches")
                     .build()
         ) {
             @Override
             public VncVal apply(final VncList args) {
-                ArityExceptions.assertArity(this, args, 1);
+                ArityExceptions.assertArity(this, args, 1, 2);
 
-                final Matcher m = (Matcher)Coerce.toVncJavaObject(args.first()).getDelegate();
-
-                return VncBoolean.of(m.matches());
+                if (args.size() == 1) {
+                    final Matcher m = (Matcher)Coerce.toVncJavaObject(args.first()).getDelegate();
+                    return VncBoolean.of(m.matches());
+                }
+                else {
+                    final Matcher m = (Matcher)Coerce.toVncJavaObject(args.first()).getDelegate();
+                    final String s = Coerce.toVncString(args.second()).getValue();
+                    return VncBoolean.of(m.reset(s).matches());
+                }
             }
 
             private static final long serialVersionUID = -1848883965231344442L;

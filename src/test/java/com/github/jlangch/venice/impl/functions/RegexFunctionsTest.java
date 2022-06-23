@@ -56,6 +56,17 @@ public class RegexFunctionsTest {
     }
 
     @Test
+    public void test_regex_matcher_2() {
+        final Venice venice = new Venice();
+
+        final String script =
+                "(let [m (regex/matcher \"[0-9]+\" \"\")]                     \n" +
+                "  (pr-str (filter #(regex/matches? m %) [\"100\" \"1a1\" \"200\"])))  ";
+
+        assertEquals("(\"100\" \"200\")", venice.eval(script));
+    }
+
+    @Test
     public void test_regex_find_Q() {
         final Venice venice = new Venice();
 

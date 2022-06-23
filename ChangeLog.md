@@ -16,6 +16,7 @@ and this project adheres to
 
 - support for import aliases `(import :java.awt.Color :as :Col)`   
   `(import :java.awt.Color)` is equivalent to `(import :java.awt.Color :as :Color)`
+- support for regex rematching to function `regex/matches?`
 
 ### Changed
 

@@ -1372,7 +1372,7 @@ public class IOFunctions {
             private static final long serialVersionUID = -1848883965231344442L;
         };
 
-    public static VncFunction io_list_files_glob_pattern =
+    public static VncFunction io_list_files_glob =
         new VncFunction(
                 "io/list-files-glob",
                 VncFunction
@@ -3134,7 +3134,7 @@ public class IOFunctions {
                     .add(io_close_watcher)
                     .add(io_list_files)
                     .add(io_list_file_tree)
-                    .add(io_list_files_glob_pattern)
+                    .add(io_list_files_glob)
                     .add(io_delete_file)
                     .add(io_delete_file_on_exit)
                     .add(io_delete_file_tree)
