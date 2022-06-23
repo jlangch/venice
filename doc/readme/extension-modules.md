@@ -11,6 +11,7 @@ and loads a module only once and skips subsequent load attempts.
 * [Kira Template Engine](ext-kira.md)
 * [Parsifal Parser Combinator](ext-parsifal.md)
 * [Shell](ext-shell.md)
+* [Grep](ext-grep.md)
 * [Charts](ext-charts.md)
 * [Configuration](ext-configuration.md)
 * [Components](ext-components.md)
