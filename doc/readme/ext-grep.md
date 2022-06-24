@@ -33,19 +33,10 @@ Search for lines that match a regular expression in text files within a ZIP file
 chooses all files in the ZIP that match a globbing pattern.
 
 ```
-(grep/grep-zip zipfile file-glob line-pattern)
-
 (grep/grep-zip dir zipfile-glob file-glob line-pattern)
 ```
 
 Example:
-
-```clojure
-(do
-  (load-module :grep)
-  
-  (grep/grep-zip "/Users/foo/logs/logs.zip" "**/*.log" ".*Shutdown.*"))
-```
 
 ```clojure
 (do
