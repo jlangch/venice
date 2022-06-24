@@ -58,6 +58,7 @@
   (->> matches
        (map #(cartesian-product (list (key %)) (val %)))
        (map #(flatten %))))
+       ;; TODO: sort by file-name, line-no
 
 (defn print-matches [matches]
   (doseq [[file-name line-no matched-line] matches]
@@ -65,6 +66,15 @@
 
 (defn print-match [file-name line-no matched-line]
   (printf "%s:%s:%s\n" file-name line-no matched-line))
+
+(defn process-matches [print? matches]
+  (if print?
+    (do
+      (print-matches matches)
+      (println *err* "Done.")
+      nil)
+    matches))
+
 
 (defn
   ^{ :arglists '(
@@ -90,15 +100,15 @@
     :see-also '("io/file-matches-glob?") }
 
   grep-zip [dir zipfile-glob file-glob line-pattern & options]
-    (let [opts    (apply hash-map options)
-          print?  (:print opts true)
-          matcher (regex/matcher line-pattern "")]
-      (->> (io/list-files-glob dir zipfile-glob)
-           (map #(grep-in-zipfile % file-glob matcher))
-           (apply merge)
-           (flatten-matches)
-           (print-matches))
-      (println *err* "Done.")))
+
+  (let [opts    (apply hash-map options)
+        print?  (:print opts true)
+        matcher (regex/matcher line-pattern "")]
+    (->> (io/list-files-glob dir zipfile-glob)
+         (map #(grep-in-zipfile % file-glob matcher))
+         (apply merge)
+         (flatten-matches)
+         (process-matches print?))))
 
 
 (defn
@@ -128,5 +138,4 @@
         matcher (regex/matcher line-pattern "")]
     (->> (grep-in-dir dir file-glob matcher)
          (flatten-matches)
-         (print-matches))
-    (println *err* "Done.")))
+         (process-matches print?))))
