@@ -25,6 +25,11 @@
 
 (deftype :named-file [name :string, data :any])
 
+
+(defn strip-leading-dir [file dir]
+  (-> (str/strip-start (io/file-path file)  (io/file-path dir))
+      (str/strip-start "/")))
+
 (defn numbered-lines [lines]
   (map vector (lazy-seq 1 inc) lines))
 
@@ -47,8 +52,7 @@
 
 (defn grep-in-dir [dir file-glob line-matcher]
   (->> (io/list-files-glob dir file-glob)
-       (map (fn [f] (named-file. (str/strip-start (io/file-path f) dir)
-                                 f)))
+       (map (fn [f] (named-file. (strip-leading-dir f dir) f)))
        (grep-in-files line-matcher)))
 
 (defn grep-in-zipfile [zip file-glob line-matcher]
