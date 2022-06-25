@@ -49,7 +49,7 @@ chooses all files in the ZIP that match a globbing pattern.
 
 Example:
 
-Print the `grep` matches in a human readable form, one line per match in the format "{zipname!filename}:{lineno}:{line}":
+Print the `grep` matches in a human readable form, one line per match in the format "{{zipname}}!{{filename}}:{{lineno}}:{{line}}":
 
 
 ```clojure
