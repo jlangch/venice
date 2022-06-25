@@ -26,7 +26,7 @@
 (deftype :named-file [name :string, data :any])
 
 (defn numbered-lines [lines]
-  (map vector (range) lines))
+  (map vector (lazy-seq 1 inc) lines))
 
 (defn filter-lines [line-matcher lines]
   (filter #(regex/matches? line-matcher (second %)) lines))
@@ -39,33 +39,37 @@
 (defn grep-in-file [line-matcher nfile]
   { (:name nfile) (read-lines line-matcher (:data nfile)) })
 
+(defn grep-in-files [line-matcher nfiles]
+  (->> (map #(grep-in-file line-matcher %) nfiles)
+       (apply merge {})
+       (filter-kv (fn [k v] (not-empty? v)))
+       (flatten-matches)))
+
 (defn grep-in-dir [dir file-glob line-matcher]
   (->> (io/list-files-glob dir file-glob)
        (map (fn [f] (named-file. (str/strip-start (io/file-path f) dir)
                                  f)))
-       (map #(grep-in-file line-matcher %))
-       (apply merge)))
+       (grep-in-files line-matcher)))
 
 (defn grep-in-zipfile [zip file-glob line-matcher]
   (->> (io/unzip-all file-glob zip)
        (map (fn [f] (named-file. (str (io/file-name zip) "!" (key f))
                                  (val f))))
-       (map #(grep-in-file line-matcher %))
-       (apply merge)))
+       (grep-in-files line-matcher)))
 
 (defn flatten-matches [matches]
   ;; return a list of tuples [file-name line-no matched-line]
-  (->> matches
-       (map #(cartesian-product (list (key %)) (val %)))
-       (map #(flatten %))))
-       ;; TODO: sort by file-name, line-no
+  (->> (map #(cartesian-product (list (key %)) (val %)) matches)
+       (apply concat)
+       (map flatten)))
+
+(defn sort-matches [matches]
+  ;; sort by filename and line number
+  (sort-by #(str (first %) (second %)) matches))
 
 (defn print-matches [matches]
   (doseq [[file-name line-no matched-line] matches]
-         (print-match file-name line-no matched-line)))
-
-(defn print-match [file-name line-no matched-line]
-  (printf "%s:%s:%s\n" file-name line-no matched-line))
+         (printf "%s:%s:%s\n" file-name line-no matched-line)))
 
 (defn process-matches [print? matches]
   (if print?
@@ -95,7 +99,7 @@
        """
        (do
          (load-module :grep)
-         (grep/grep-zip "/Users/foo/logs" "logs*.zip" "**/*.log" ".*Shutdown.*"))
+         (grep/grep-zip "/Users/foo/logs" "logs*.zip" "**/*.log" ".*Error.*"))
        """ )
     :see-also '("io/file-matches-glob?") }
 
@@ -106,8 +110,8 @@
         matcher (regex/matcher line-pattern "")]
     (->> (io/list-files-glob dir zipfile-glob)
          (map #(grep-in-zipfile % file-glob matcher))
-         (apply merge)
-         (flatten-matches)
+         (apply concat)
+         (sort-matches)
          (process-matches print?))))
 
 
@@ -127,7 +131,7 @@
         """
         (do
           (load-module :grep)
-          (grep/grep "/Users/foo/logs" "*.log" ".*Shutdown.*"))
+          (grep/grep "/Users/foo/logs" "*.log" ".*Error.*"))
         """ )
      :see-also '("io/file-matches-glob?") }
 
@@ -137,5 +141,5 @@
         print?  (:print opts true)
         matcher (regex/matcher line-pattern "")]
     (->> (grep-in-dir dir file-glob matcher)
-         (flatten-matches)
+         (sort-matches)
          (process-matches print?))))

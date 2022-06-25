@@ -6626,6 +6626,7 @@ public class CoreFunctions {
                         "; reversed\n" +
                         "(sort (comp - compare) [3 2 5 4 1 6])",
                         "(sort {:c 3 :a 1 :b 2})")
+                    .seeAlso("sort-by")
                     .build()
         ) {
             @Override
@@ -6683,6 +6684,7 @@ public class CoreFunctions {
                         "           {:foo 2 :bar 55} \n" +
                         "           {:foo 1 :bar 77} ])\n" +
                         "  (sort-by (juxt :foo :bar) x))")
+                    .seeAlso("sort")
                     .build()
         ) {
             @Override
