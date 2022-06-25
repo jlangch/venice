@@ -17,11 +17,22 @@ directory and chooses all files that match a globbing pattern.
 
 Example:
 
+Print the `grep` matches in a human printable form, one line per match in the format "{filename}:{lineno}:{line}":
+
 ```clojure
 (do
   (load-module :grep)
   
   (grep/grep "/Users/foo/logs" "**/*.log" ".*Shutdown.*"))
+```
+
+Print the `grep` matches in a machine readable form. Returns a list of tuples, each tuple holding _filename_, _lineno_, and _line_:
+
+```clojure
+(do
+  (load-module :grep)
+  
+  (grep/grep "/Users/foo/logs" "**/*.log" ".*Shutdown.*" :print false))
 ```
 
 
@@ -38,9 +49,21 @@ chooses all files in the ZIP that match a globbing pattern.
 
 Example:
 
+Print the `grep` matches in a human printable form, one line per match in the format "{zipname!filename}:{lineno}:{line}":
+
+
 ```clojure
 (do
   (load-module :grep)
   
   (grep/grep-zip "/Users/foo/logs/" "logs*.zip" "**/*.log" ".*Shutdown.*"))
+```
+
+Print the `grep` matches in a machine readable form. Returns a list of tuples, each tuple holding _filename_, _lineno_, and _line_:
+
+```clojure
+(do
+  (load-module :grep)
+  
+  (grep/grep-zip "/Users/foo/logs/" "logs*.zip" "**/*.log" ".*Shutdown.*" :print false))
 ```
