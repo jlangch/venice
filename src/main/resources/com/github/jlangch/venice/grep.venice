@@ -94,6 +94,14 @@
         Options:
 
         | :print b    | e.g :print false, defaults to true |
+
+        With the print option `:print true`, `grep-zip` print the matches in a
+        human readable form, one line per match in the format
+        "{{zipfile}}!{{filename}}\:{{lineno}}\:{{line}}"
+
+        With the print option `:print false`, `grep-zip` print the matches in a
+        machine readable form. It returns a list of tuples holding
+        _zipname_, _filename_, _lineno_, and _line_.
         """
     :examples '(
        """
@@ -126,6 +134,14 @@
         Options:
 
         | :print b    | e.g :print false, defaults to true |
+
+        With the print option `:print true`, `grep` print the matches in a
+        human readable form, one line per match in the format
+        "{{filename}}\:{{lineno}}\:{{line}}"
+
+        With the print option `:print false`, `grep` print the matches in a
+        machine readable form. It returns a list of tuples holding _zipname_,
+        _filename_, _lineno_, and _line_.
         """
      :examples '(
         """
