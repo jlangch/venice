@@ -52,10 +52,11 @@
        (grep-in-files line-matcher)))
 
 (defn grep-in-zipfile [zip file-glob line-matcher]
-  (->> (io/unzip-all file-glob zip)
-       (map (fn [f] (named-file. (str (io/file-name zip) "!" (key f))
-                                 (val f))))
-       (grep-in-files line-matcher)))
+  (let [zipname (io/file-name zip)]
+    (->> (io/unzip-all file-glob zip)
+         (map (fn [f] (named-file. (key f) (val f))))
+         (grep-in-files line-matcher)
+         (map #(cons zipname %)))))
 
 (defn flatten-matches [matches]
   ;; return a list of tuples [file-name line-no matched-line]
@@ -63,18 +64,34 @@
        (apply concat)
        (map flatten)))
 
-(defn sort-matches [matches]
+(defn sort-file-matches [matches]
   ;; sort by filename and line number
   (sort-by #(str (first %) (second %)) matches))
 
-(defn print-matches [matches]
+(defn sort-zip-matches [matches]
+  ;; sort by zipname, filename, and line number
+  (sort-by #(str (first %) (second %) (third %)) matches))
+
+(defn print-file-matches [matches]
   (doseq [[file-name line-no matched-line] matches]
          (printf "%s:%s:%s\n" file-name line-no matched-line)))
 
-(defn process-matches [print? matches]
+(defn print-zip-matches [matches]
+  (doseq [[zipname file-name line-no matched-line] matches]
+         (printf "%s!%s:%s:%s\n" zipname file-name line-no matched-line)))
+
+(defn process-file-matches [print? matches]
   (if print?
     (do
-      (print-matches matches)
+      (print-file-matches matches)
+      (println *err* "Done.")
+      nil)
+    matches))
+
+(defn process-zip-matches [print? matches]
+  (if print?
+    (do
+      (print-zip-matches matches)
       (println *err* "Done.")
       nil)
     matches))
@@ -119,8 +136,8 @@
     (->> (io/list-files-glob dir zipfile-glob)
          (map #(grep-in-zipfile % file-glob matcher))
          (apply concat)
-         (sort-matches)
-         (process-matches print?))))
+         (sort-zip-matches)
+         (process-zip-matches print?))))
 
 
 (defn
@@ -157,5 +174,5 @@
         print?  (:print opts true)
         matcher (regex/matcher line-pattern "")]
     (->> (grep-in-dir dir file-glob matcher)
-         (sort-matches)
-         (process-matches print?))))
+         (sort-file-matches)
+         (process-file-matches print?))))
