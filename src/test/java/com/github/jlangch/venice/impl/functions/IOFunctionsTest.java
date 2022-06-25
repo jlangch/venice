@@ -298,6 +298,34 @@ public class IOFunctionsTest {
     }
 
     @Test
+    public void test_io_temp_dir() {
+        final Venice venice = new Venice();
+
+        final String script =
+                "(do                                     \n" +
+                "  (def dir (io/temp-dir \"test-\"))     \n" +
+                "  (assert (io/exists-dir? dir))         \n" +
+                "  (io/delete-file-on-exit dir))         ";
+
+        venice.eval(script);
+    }
+
+    @Test
+    public void test_io_temp_file() {
+        final Venice venice = new Venice();
+
+        final String script =
+                "(do                                               \n" +
+                "  (def f (io/temp-file \"test-\" \".txt\"))       \n" +
+                "  (assert (io/exists-file? f))                    \n" +
+                "  (io/spit f \"123456789\" :append true)          \n" +
+                "  (io/delete-file-on-exit f)                      \n" +
+                "  (assert (io/exists-file? f)))                   ";
+
+        venice.eval(script);
+    }
+
+    @Test
     public void test_io_tmp_dir() {
         final Venice venice = new Venice();
 

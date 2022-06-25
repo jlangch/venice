@@ -1230,7 +1230,14 @@ public class IOFunctions {
                 VncFunction
                     .meta()
                     .arglists("(io/delete-file-on-exit f)")
-                    .doc("Deletes a file f on JVM exit. f must be a file or a string (file path).")
+                    .doc(
+                       "Requests that the file or directory be deleted when the virtual machine " +
+                       "terminates. Files (or directories) are deleted in the reverse order that " +
+                       "they are registered. Invoking this method to delete a file or directory " +
+                       "that is already registered for deletion has no effect. Deletion will be " +
+                       "attempted only for normal termination of the virtual machine, as defined " +
+                       "by the Java Language Specification.\n\n" +
+                       "f must be a file or a string (file path).")
                     .seeAlso("io/delete-file", "io/delete-file-tree")
                     .build()
         ) {
@@ -1244,7 +1251,7 @@ public class IOFunctions {
                                     args.first(),
                                     "Function 'io/delete-file-on-exit' does not allow %s as f");
 
-                validateReadableFile(file);
+                validateReadableFileOrDirectory(file);
 
                 try {
                     file.deleteOnExit();
@@ -2814,7 +2821,8 @@ public class IOFunctions {
                     .meta()
                     .arglists("(io/temp-file prefix suffix)")
                     .doc(
-                        "Creates an empty temp file with the given prefix and suffix.")
+                        "Creates an empty temp file with the given prefix and " +
+                        "suffix. Returns a :java.io.File.")
                     .examples(
                         "(do \n" +
                         "  (let [file (io/temp-file \"test-\", \".txt\")] \n" +
@@ -2833,7 +2841,7 @@ public class IOFunctions {
                 final String prefix = Coerce.toVncString(args.first()).getValue();
                 final String suffix = Coerce.toVncString(args.second()).getValue();
                 try {
-                    return new VncString(Files.createTempFile(prefix, suffix).normalize().toString());
+                    return new VncJavaObject(Files.createTempFile(prefix, suffix).normalize().toFile());
                 }
                 catch (Exception ex) {
                     throw new VncException(ex.getMessage(), ex);
@@ -2849,7 +2857,7 @@ public class IOFunctions {
                 VncFunction
                     .meta()
                     .arglists("(io/temp-dir prefix)")
-                    .doc("Creates a temp directory with prefix.")
+                    .doc("Creates a new temp directory with prefix. Returns a :java.io.File.")
                     .examples("(io/temp-dir \"test-\")")
                     .seeAlso("io/tmp-dir", "io/temp-file")
                     .build()
@@ -2862,7 +2870,7 @@ public class IOFunctions {
 
                 final String prefix = Coerce.toVncString(args.first()).getValue();
                 try {
-                    return new VncString(Files.createTempDirectory(prefix).normalize().toString());
+                    return new VncJavaObject(Files.createTempDirectory(prefix).normalize().toFile());
                 }
                 catch (Exception ex) {
                     throw new VncException("Failed to create a temp directory", ex);
@@ -3029,6 +3037,18 @@ public class IOFunctions {
             throw new VncException(String.format("'%s' is not a directory", file.getPath()));
         }
         if (!file.canRead()) {
+            throw new VncException(String.format("The directory '%s' has no read permission", file.getPath()));
+        }
+    }
+
+    public static void validateReadableFileOrDirectory(final File file) {
+        if (!(file.isDirectory() || file.isFile())) {
+            throw new VncException(String.format("'%s' is not a file or a directory", file.getPath()));
+        }
+        if (file.isFile() && !file.canRead()) {
+            throw new VncException(String.format("The file '%s' has no read permission", file.getPath()));
+        }
+        if (file.isDirectory() && !file.canRead()) {
             throw new VncException(String.format("The directory '%s' has no read permission", file.getPath()));
         }
     }

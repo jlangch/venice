@@ -25,6 +25,10 @@ and this project adheres to
   special forms
 - all tabs to spaces in the sources
 
+### Fixed
+
+- `io/delete-file-on-exit` to work with directories too
+
 
 
 ## [1.10.15] - 2022-06-02
