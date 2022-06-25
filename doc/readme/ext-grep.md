@@ -17,7 +17,7 @@ directory and chooses all files that match a globbing pattern.
 
 Example:
 
-Print the `grep` matches in a human printable form, one line per match in the format "{filename}:{lineno}:{line}":
+Print the `grep` matches in a human readable form, one line per match in the format "{{filename}}:{{lineno}}:{{line}}":
 
 ```clojure
 (do
@@ -49,7 +49,7 @@ chooses all files in the ZIP that match a globbing pattern.
 
 Example:
 
-Print the `grep` matches in a human printable form, one line per match in the format "{zipname!filename}:{lineno}:{line}":
+Print the `grep` matches in a human readable form, one line per match in the format "{zipname!filename}:{lineno}:{line}":
 
 
 ```clojure
