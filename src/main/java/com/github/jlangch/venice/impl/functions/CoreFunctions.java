@@ -7052,6 +7052,7 @@ public class CoreFunctions {
                         "Applys function f to the keys of the map m.")
                     .examples(
                         "(map-keys name {:a 1 :b 2 :c 3})")
+                    .seeAlso("map-vals", "map-invert")
                     .build()
         ) {
             @Override
@@ -7092,6 +7093,7 @@ public class CoreFunctions {
                     .examples(
                         "(map-vals inc {:a 1 :b 2 :c 3})",
                         "(map-vals :len {:a {:col 1 :len 10} :b {:col 2 :len 20} :c {:col 3 :len 30}})")
+                    .seeAlso("map-keys", "map-invert")
                     .build()
         ) {
             @Override
@@ -7307,6 +7309,7 @@ public class CoreFunctions {
                         "logical true. f is a function with one arguments.")
                     .examples(
                         "(filter-k #(= % :a) {:a 1 :b 2 :c 3})")
+                    .seeAlso("filter-kv")
                     .build()
         ) {
             @Override
@@ -7346,6 +7349,7 @@ public class CoreFunctions {
                     .examples(
                         "(filter-kv (fn [k v] (= k :a)) {:a 1 :b 2 :c 3})",
                         "(filter-kv (fn [k v] (= v 2)) {:a 1 :b 2 :c 3})")
+                    .seeAlso("filter-k")
                     .build()
         ) {
             @Override
@@ -7403,7 +7407,7 @@ public class CoreFunctions {
                         ";; sliding window (width 3) average\n" +
                         "(->> (partition 3 1 (repeatedly 10 #(rand-long 30)))\n" +
                         "     (map (fn [window] (/ (reduce + window) (count window)))))")
-                    .seeAlso("map", "filter")
+                    .seeAlso("reduce-kv", "map", "filter")
                     .build()
         ) {
             @Override
@@ -7478,6 +7482,7 @@ public class CoreFunctions {
                         "           {:a {:col :red   :len 10}         \n" +
                         "            :b {:col :green :len 20}         \n" +
                         "            :c {:col :blue  :len 30} })")
+                    .seeAlso("reduce", "map", "filter")
                     .build()
         ) {
             @Override
