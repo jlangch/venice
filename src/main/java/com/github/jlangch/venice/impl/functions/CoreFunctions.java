@@ -4411,6 +4411,7 @@ public class CoreFunctions {
                         "(do\n" +
                         "   (into (. :java.util.concurrent.CopyOnWriteArrayList :new)\n" +
                         "         '(3 4)))")
+                    .seeAlso("concat", "merge")
                     .build()
         ) {
             @Override
@@ -5379,17 +5380,18 @@ public class CoreFunctions {
                 VncFunction
                     .meta()
                     .arglists("(concat coll)", "(concat coll & colls)")
-                    .doc( "Returns a collection of the concatenation of the elements " +
-                          "in the supplied colls.")
+                    .doc( "Returns a list of the concatenation of the elements " +
+                          "in the supplied collections.")
                     .examples(
-                    "(concat [1 2])",
-                    "(concat [1 2] [4 5 6])",
-                    "(concat '(1 2))",
-                    "(concat '(1 2) [4 5 6])",
-                    "(concat {:a 1})",
-                    "(concat {:a 1} {:b 2 :c 3})",
-                    "(concat \"abc\")",
-                    "(concat \"abc\" \"def\")")
+                        "(concat [1 2])",
+                        "(concat [1 2] [4 5 6])",
+                        "(concat '(1 2))",
+                        "(concat '(1 2) [4 5 6])",
+                        "(concat {:a 1})",
+                        "(concat {:a 1} {:b 2 :c 3})",
+                        "(concat \"abc\")",
+                        "(concat \"abc\" \"def\")")
+                    .seeAlso("into", "merge")
                     .build()
         ) {
             @Override
@@ -7520,7 +7522,7 @@ public class CoreFunctions {
                         "(merge {:a 1} nil)",
                         "(merge nil {:a 1})",
                         "(merge nil nil)")
-                    .seeAlso("merge-with", "merge-deep")
+                    .seeAlso("merge-with", "merge-deep", "into", "concat")
                     .build()
         ) {
             @Override
