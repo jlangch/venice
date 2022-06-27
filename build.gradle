@@ -283,6 +283,16 @@ sourceSets {
                        'doc/examples/scripts']
         }
     }
+    
+    test {
+	    java {
+	        srcDirs = ['src/test/java']
+	    }
+	    resources {
+            srcDir "src/test/java"
+            include "**/*.venice"
+	    }
+    }
 }
 
 
