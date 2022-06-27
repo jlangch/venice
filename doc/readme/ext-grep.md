@@ -21,18 +21,18 @@ Print the `grep` matches in a human readable form, one line per match in the for
 
 ```clojure
 (do
-  (load-module :grep)
+  (load-module :grep ['grep :as 'g])
   
-  (grep/grep "/Users/foo/logs" "**/*.log" ".*Shutdown.*"))
+  (g/grep "/Users/foo/logs" "**/*.log" ".*Shutdown.*"))
 ```
 
 Print the `grep` matches in a machine readable form. It returns a list of tuples holding _filename_, _lineno_, and _line_:
 
 ```clojure
 (do
-  (load-module :grep)
+  (load-module :grep ['grep :as 'g])
   
-  (grep/grep "/Users/foo/logs" "**/*.log" ".*Shutdown.*" :print false))
+  (g/grep "/Users/foo/logs" "**/*.log" ".*Shutdown.*" :print false))
 ```
 
 
@@ -54,9 +54,9 @@ Print the `grep` matches in a human readable form, one line per match in the for
 
 ```clojure
 (do
-  (load-module :grep)
+  (load-module :grep ['grep :as 'g])
   
-  (grep/grep-zip "/Users/foo/logs/" "logs*.zip" "**/*.log" ".*Shutdown.*"))
+  (g/grep-zip "/Users/foo/logs/" "logs*.zip" "**/*.log" ".*Shutdown.*"))
 ```
 
 Print the `grep` matches in a machine readable form. It returns a list of tuples holding _zipname_, _filename_, _lineno_, and _line_:
@@ -64,7 +64,7 @@ Print the `grep` matches in a machine readable form. It returns a list of tuples
 
 ```clojure
 (do
-  (load-module :grep)
+  (load-module :grep ['grep :as 'g])
   
-  (grep/grep-zip "/Users/foo/logs/" "logs*.zip" "**/*.log" ".*Shutdown.*" :print false))
+  (g/grep-zip "/Users/foo/logs/" "logs*.zip" "**/*.log" ".*Shutdown.*" :print false))
 ```
