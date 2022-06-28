@@ -23,6 +23,9 @@ package com.github.jlangch.venice.impl.util.markdown.block;
 
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.Callable;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.FutureTask;
 import java.util.concurrent.atomic.AtomicReference;
 
 import com.github.jlangch.venice.Parameters;
@@ -63,13 +66,21 @@ public class TableColFmtParser {
             final String css = format.substring(3, format.length()-2).trim();
             if (!css.isEmpty()) {
                 try {
-                    final PreCompiled precompiled = getCssParser();
-
-                    final Venice venice = new Venice();
-
-                    final Map<String,Object> cssProps = (Map<String,Object>)venice.eval(
-                                                            precompiled,
-                                                            Parameters.of("css", css));
+                    // Run the CSS parser in another thread. The parser runs a new
+                    // Venice instance to run a Parsifal parser.
+                    // Starting a new Venice instance will reset the sandbox to
+                    // reject-all in the current thread!!
+                    final Map<String,Object> cssProps =
+                            runAsync(
+                                new Callable<Map<String,Object>>() {
+                                    @Override
+                                    public Map<String, Object> call() throws Exception {
+                                       final PreCompiled precompiled = getCssParser();
+                                       return (Map<String,Object>)new Venice().eval(
+                                                                       precompiled,
+                                                                       Parameters.of("css", css));
+                                    }
+                                });
 
                     final HorzAlignment align = parseCssStyleHorzAlignment(cssProps);
 
@@ -77,7 +88,7 @@ public class TableColFmtParser {
 
                     return new TableColFmt(align, width);
                 }
-                catch(RuntimeException ex) {
+                catch(Exception ex) {
                     throw new RuntimeException(
                             "Failed to parse markdown table column css '"+ css + "'",
                             ex);
@@ -163,6 +174,15 @@ public class TableColFmtParser {
         }
 
         return pc;
+    }
+
+    private <T> T runAsync(final Callable<T> callable)
+    throws InterruptedException, ExecutionException {
+        final FutureTask<T> futureTask = new FutureTask<>(callable);
+        final Thread t = new Thread(futureTask);
+        t.start();
+
+        return futureTask.get();
     }
 
 

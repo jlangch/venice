@@ -1443,8 +1443,11 @@ public class DocGenerator {
         final DocSection venice = new DocSection("Venice", "system.venice");
         all.addSection(venice);
         venice.addItem(getDocItem("version"));
-        venice.addItem(getDocItem("sandboxed?"));
-        venice.addItem(getDocItem("sandbox-type"));
+
+        final DocSection sandbox = new DocSection("Venice", "system.sandbox");
+        all.addSection(sandbox);
+        sandbox.addItem(getDocItem("sandboxed?"));
+        sandbox.addItem(getDocItem("sandbox-type"));
 
         final DocSection system = new DocSection("System", "system.system");
         all.addSection(system);

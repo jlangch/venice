@@ -19,7 +19,7 @@
 ;;;; See the License for the specific language governing permissions and
 ;;;; limitations under the License.
 
-;;;; Simple GREP in Venice
+;;;; Simple GREP utility that scans text and zip files
 
 (ns grep)
 
@@ -53,7 +53,7 @@
          (load-module :grep)
          (grep/grep-zip "/Users/foo/logs" "logs*.zip" "**/*.log" ".*Error.*"))
        """ )
-    :see-also '("io/file-matches-glob?") }
+    :see-also '("grep/grep", "io/file-matches-glob?") }
 
   grep-zip [dir zipfile-glob file-glob line-pattern & options]
 
@@ -93,7 +93,7 @@
           (load-module :grep)
           (grep/grep "/Users/foo/logs" "*.log" ".*Error.*"))
         """ )
-     :see-also '("io/file-matches-glob?") }
+     :see-also '("grep/grep-zip", "io/file-matches-glob?") }
 
   grep [dir file-glob line-pattern & options]
 

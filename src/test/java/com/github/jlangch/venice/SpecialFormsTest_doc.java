@@ -36,6 +36,22 @@ public class SpecialFormsTest_doc {
         final Map<String, Object> params = Parameters.of("*out*", null, "*err*", null);
 
         new Venice().eval("(doc +)", params);
+        new Venice().eval("(doc .)", params);
+        new Venice().eval("(doc io/slurp)", params);
+    }
+
+    @Test
+    public void test_doc_multiple() {
+        final Map<String, Object> params = Parameters.of("*out*", null, "*err*", null);
+
+        final String script =
+                "(do          \n" +
+                "  (doc +)    \n" +
+                "  (doc +)    \n" +
+                "  (doc +)    \n" +
+                "  (doc +))   ";
+
+        new Venice().eval(script, params);
     }
 
     @Test
@@ -95,5 +111,12 @@ public class SpecialFormsTest_doc {
         assertTrue(doc.contains("Protocol: user/Lifecycle"));
         assertTrue(doc.contains("start: (start [c])"));
         assertTrue(doc.contains("stop: (stop [c])"));
+    }
+
+    @Test
+    public void test_doc_bug_001() {
+        final Map<String, Object> params = Parameters.of("*out*", null, "*err*", null);
+
+        new Venice().eval("(doc io/file-matches-glob?)", params);
     }
 }

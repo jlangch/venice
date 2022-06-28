@@ -28,6 +28,7 @@ and this project adheres to
 ### Fixed
 
 - `io/delete-file-on-exit` to work with directories too
+- a bug in the markdown table renderer, parsing custom column styles
 
 
 

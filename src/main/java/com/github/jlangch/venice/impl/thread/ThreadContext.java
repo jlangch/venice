@@ -385,7 +385,7 @@ public class ThreadContext {
     private final CallStack callStack = new CallStack();
     private Namespace ns = null;
     private DebugAgent debugAgent = null;
-    private IInterceptor interceptor = null;
+    private IInterceptor interceptor = REJECT_ALL_INTERCEPTOR;
     private MeterRegistry meterRegistry = new MeterRegistry(false);
     private CallFrameFnData callFrameFnData = null;
 
