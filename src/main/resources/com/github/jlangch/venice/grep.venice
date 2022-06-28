@@ -23,83 +23,6 @@
 
 (ns grep)
 
-(deftype :named-file [name :string, data :any])
-
-
-(defn strip-leading-dir [file dir]
-  (-> (str/strip-start (io/file-path file)  (io/file-path dir))
-      (str/strip-start "/")))
-
-(defn numbered-lines [lines]
-  (map vector (lazy-seq 1 inc) lines))
-
-(defn filter-lines [line-matcher lines]
-  (filter #(regex/matches? line-matcher (second %)) lines))
-
-(defn read-lines [line-matcher file]
-  (->> (io/slurp-lines file)
-       (numbered-lines)
-       (filter-lines line-matcher)))
-
-(defn grep-in-file [line-matcher nfile]
-  { (:name nfile) (read-lines line-matcher (:data nfile)) })
-
-(defn grep-in-files [line-matcher nfiles]
-  (->> (map #(grep-in-file line-matcher %) nfiles)
-       (apply merge {})
-       (filter-kv (fn [k v] (not-empty? v)))
-       (flatten-matches)))
-
-(defn grep-in-dir [dir file-glob line-matcher]
-  (->> (io/list-files-glob dir file-glob)
-       (map (fn [f] (named-file. (strip-leading-dir f dir) f)))
-       (grep-in-files line-matcher)))
-
-(defn grep-in-zipfile [zip file-glob line-matcher]
-  (let [zipname (io/file-name zip)]
-    (->> (io/unzip-all file-glob zip)
-         (map (fn [f] (named-file. (key f) (val f))))
-         (grep-in-files line-matcher)
-         (map #(cons zipname %)))))
-
-(defn flatten-matches [matches]
-  ;; return a list of tuples [file-name line-no matched-line]
-  (->> (map #(cartesian-product (list (key %)) (val %)) matches)
-       (apply concat)
-       (map flatten)))
-
-(defn sort-file-matches [matches]
-  ;; sort by filename and line number
-  (sort-by #(str (first %) (second %)) matches))
-
-(defn sort-zip-matches [matches]
-  ;; sort by zipname, filename, and line number
-  (sort-by #(str (first %) (second %) (third %)) matches))
-
-(defn print-file-matches [matches]
-  (doseq [[file-name line-no matched-line] matches]
-         (printf "%s:%s:%s\n" file-name line-no matched-line)))
-
-(defn print-zip-matches [matches]
-  (doseq [[zipname file-name line-no matched-line] matches]
-         (printf "%s!%s:%s:%s\n" zipname file-name line-no matched-line)))
-
-(defn process-file-matches [print? matches]
-  (if print?
-    (do
-      (print-file-matches matches)
-      (println *err* "Done.")
-      nil)
-    matches))
-
-(defn process-zip-matches [print? matches]
-  (if print?
-    (do
-      (print-zip-matches matches)
-      (println *err* "Done.")
-      nil)
-    matches))
-
 
 (defn
   ^{ :arglists '(
@@ -141,7 +64,7 @@
          (map #(grep-in-zipfile % file-glob matcher))
          (apply concat)
          (sort-zip-matches)
-         (process-zip-matches print?))))
+         (process-matches print? print-zip-matches))))
 
 
 (defn
@@ -179,4 +102,77 @@
         matcher (regex/matcher line-pattern "")]
     (->> (grep-in-dir dir file-glob matcher)
          (sort-file-matches)
-         (process-file-matches print?))))
+         (process-matches print? print-file-matches))))
+
+
+;; -----------------------------------------------------------------------------
+;; Implementation
+;; -----------------------------------------------------------------------------
+
+(deftype :named-file [name :string, data :any])
+
+(defn- strip-leading-dir [file dir]
+  (-> (str/strip-start (io/file-path file)  (io/file-path dir))
+      (str/strip-start "/")))
+
+(defn- numbered-lines [lines]
+  (map vector (lazy-seq 1 inc) lines))
+
+(defn- filter-lines [line-matcher lines]
+  (filter #(regex/matches? line-matcher (second %)) lines))
+
+(defn- read-lines [line-matcher file]
+  (->> (io/slurp-lines file)
+       (numbered-lines)
+       (filter-lines line-matcher)))
+
+(defn- grep-in-file [line-matcher nfile]
+  { (:name nfile) (read-lines line-matcher (:data nfile)) })
+
+(defn- grep-in-files [line-matcher nfiles]
+  (->> (map #(grep-in-file line-matcher %) nfiles)
+       (apply merge {})
+       (filter-kv (fn [k v] (not-empty? v)))
+       (flatten-matches)))
+
+(defn- grep-in-dir [dir file-glob line-matcher]
+  (->> (io/list-files-glob dir file-glob)
+       (map (fn [f] (named-file. (strip-leading-dir f dir) f)))
+       (grep-in-files line-matcher)))
+
+(defn- grep-in-zipfile [zip file-glob line-matcher]
+  (let [zipname (io/file-name zip)]
+    (->> (io/unzip-all file-glob zip)
+         (map (fn [f] (named-file. (key f) (val f))))
+         (grep-in-files line-matcher)
+         (map #(cons zipname %)))))
+
+(defn- flatten-matches [matches]
+  ;; return a list of tuples [file-name line-no matched-line]
+  (->> (map #(cartesian-product (list (key %)) (val %)) matches)
+       (apply concat)
+       (map flatten)))
+
+(defn- sort-file-matches [matches]
+  ;; sort by filename and line number
+  (sort-by #(str (first %) (second %)) matches))
+
+(defn- sort-zip-matches [matches]
+  ;; sort by zipname, filename, and line number
+  (sort-by #(str (first %) (second %) (third %)) matches))
+
+(defn- print-file-matches [matches]
+  (doseq [[file-name line-no matched-line] matches]
+         (printf "%s:%s:%s\n" file-name line-no matched-line)))
+
+(defn- print-zip-matches [matches]
+  (doseq [[zipname file-name line-no matched-line] matches]
+         (printf "%s!%s:%s:%s\n" zipname file-name line-no matched-line)))
+
+(defn- process-matches [print? processor matches]
+  (if print?
+    (do
+      (processor matches)
+      (println *err* "Done.")
+      nil)
+    matches))
