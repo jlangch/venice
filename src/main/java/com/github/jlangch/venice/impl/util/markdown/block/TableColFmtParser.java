@@ -69,7 +69,8 @@ public class TableColFmtParser {
                     // Run the CSS parser in another thread. The parser runs a new
                     // Venice instance to run a Parsifal parser.
                     // Starting a new Venice instance will reset the sandbox to
-                    // reject-all in the current thread!!
+                    // reject-all in the current thread, thus overwriting the current
+                    // sandbox!
                     final Map<String,Object> cssProps =
                             runAsync(
                                 new Callable<Map<String,Object>>() {
