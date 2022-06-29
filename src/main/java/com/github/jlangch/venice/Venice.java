@@ -116,31 +116,36 @@ public class Venice {
 
         final long nanos = System.nanoTime();
 
-        ThreadContext.clear();
+        try {
+            ThreadContext.clear(true);
 
-        // Note: For security reasons use the RejectAllInterceptor because
-        //       macros can execute code while being expanded. Thus we need
-        //       to have a safe sandbox in-place if macros are misused to
-        //       execute code at expansion time.
-        final IVeniceInterpreter venice = new VeniceInterpreter(
-                                                new RejectAllInterceptor(),
-                                                meterRegistry);
+            // Note: For security reasons use the RejectAllInterceptor because
+            //       macros can execute code while being expanded. Thus we need
+            //       to have a safe sandbox in-place if macros are misused to
+            //       execute code at expansion time.
+            final IVeniceInterpreter venice = new VeniceInterpreter(
+                                                    new RejectAllInterceptor(),
+                                                    meterRegistry);
 
-        final Env env = venice.createEnv(macroexpand, false, RunMode.PRECOMPILE)
-                              .setStdoutPrintStream(null)
-                              .setStderrPrintStream(null)
-                              .setStdinReader(null);
+            final Env env = venice.createEnv(macroexpand, false, RunMode.PRECOMPILE)
+                                  .setStdoutPrintStream(null)
+                                  .setStderrPrintStream(null)
+                                  .setStdinReader(null);
 
-        VncVal ast = venice.READ(script, scriptName);
-        if (macroexpand) {
-            ast = venice.MACROEXPAND(ast, env);
+            VncVal ast = venice.READ(script, scriptName);
+            if (macroexpand) {
+                ast = venice.MACROEXPAND(ast, env);
+            }
+
+            final PreCompiled pc = new PreCompiled(scriptName, ast, macroexpand);
+
+            meterRegistry.record("venice.precompile", System.nanoTime() - nanos);
+
+            return pc;
         }
-
-        final PreCompiled pc = new PreCompiled(scriptName, ast, macroexpand);
-
-        meterRegistry.record("venice.precompile", System.nanoTime() - nanos);
-
-        return pc;
+        finally {
+            ThreadContext.clear(false);
+        }
     }
 
     /**
@@ -174,31 +179,36 @@ public class Venice {
 
         final long nanos = System.nanoTime();
 
-        ThreadContext.clear();
+        try {
+            ThreadContext.clear(true);
 
-        final IVeniceInterpreter venice = new VeniceInterpreter(interceptor, meterRegistry);
+            final IVeniceInterpreter venice = new VeniceInterpreter(interceptor, meterRegistry);
 
-        return runWithSandbox(venice, () -> {
-            final Env env = addParams(getPrecompiledEnv(), params);
+            return runWithSandbox(venice, () -> {
+                final Env env = addParams(getPrecompiledEnv(), params);
 
-            // re-init namespaces!
-            venice.initNS();
-            venice.sealSystemNS();
+                // re-init namespaces!
+                venice.initNS();
+                venice.sealSystemNS();
 
-            if (meterRegistry.enabled) {
-                meterRegistry.record("venice.setup", System.nanoTime() - nanos);
-            }
+                if (meterRegistry.enabled) {
+                    meterRegistry.record("venice.setup", System.nanoTime() - nanos);
+                }
 
-            final VncVal result = venice.EVAL((VncVal)precompiled.getPrecompiled(), env);
+                final VncVal result = venice.EVAL((VncVal)precompiled.getPrecompiled(), env);
 
-            final Object jResult = result.convertToJavaObject();
+                final Object jResult = result.convertToJavaObject();
 
-            if (meterRegistry.enabled) {
-                meterRegistry.record("venice.total", System.nanoTime() - nanos);
-            }
+                if (meterRegistry.enabled) {
+                    meterRegistry.record("venice.total", System.nanoTime() - nanos);
+                }
 
-            return jResult;
-        });
+                return jResult;
+            });
+        }
+        finally {
+            ThreadContext.clear(false);
+        }
     }
 
     /**
@@ -272,23 +282,28 @@ public class Venice {
 
         final long nanos = System.nanoTime();
 
-        ThreadContext.clear();
+        try {
+            ThreadContext.clear(true);
 
-        final IVeniceInterpreter venice = new VeniceInterpreter(interceptor, meterRegistry);
+            final IVeniceInterpreter venice = new VeniceInterpreter(interceptor, meterRegistry);
 
-        return runWithSandbox(venice, () -> {
-            final Env env = createEnv(venice, macroexpand, params);
+            return runWithSandbox(venice, () -> {
+                final Env env = createEnv(venice, macroexpand, params);
 
-            meterRegistry.reset();  // no metrics for creating env and loading modules
-            meterRegistry.record("venice.setup", System.nanoTime() - nanos);
+                meterRegistry.reset();  // no metrics for creating env and loading modules
+                meterRegistry.record("venice.setup", System.nanoTime() - nanos);
 
-            final VncVal result = venice.RE(script, scriptName, env);
-            final Object jResult = result.convertToJavaObject();
+                final VncVal result = venice.RE(script, scriptName, env);
+                final Object jResult = result.convertToJavaObject();
 
-            meterRegistry.record("venice.total", System.nanoTime() - nanos);
+                meterRegistry.record("venice.total", System.nanoTime() - nanos);
 
-            return jResult;
-        });
+                return jResult;
+            });
+        }
+        finally {
+            ThreadContext.clear(false);
+        }
     }
 
     /**

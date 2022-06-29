@@ -60,9 +60,12 @@ import com.github.jlangch.venice.javainterop.RejectAllInterceptor;
 public class ThreadContext {
 
     public ThreadContext() {
-        initNS();
     }
 
+
+    public boolean isInUse_() {
+        return inUse;
+    }
 
     public Namespace getCurrNS_() {
         return ns;
@@ -111,6 +114,10 @@ public class ThreadContext {
                 return v == null ? defaultValue : v;
             }
         }
+    }
+
+    public static boolean isInUse() {
+        return get().inUse;
     }
 
     public static void setValue(final VncKeyword key, final VncVal val) {
@@ -212,7 +219,7 @@ public class ThreadContext {
     }
 
     public static void clearCallStack() {
-        get().callStack.clear();
+        get().callStack = new CallStack();
     }
 
     public static CallStack getCallStack() {
@@ -262,22 +269,22 @@ public class ThreadContext {
     public static void clearValues(final boolean preserveSystemValues) {
         try {
             if (preserveSystemValues) {
-                final Map<VncKeyword, VncVal> values = get().values;
+                final ThreadContext ctx = get();
 
                 // save
-                final VncVal stdIn = values.get(STD_IN);
-                final VncVal stdOut = values.get(STD_OUT);
-                final VncVal stdErr = values.get(STD_ERR);
+                final VncVal stdIn = ctx.values.get(STD_IN);
+                final VncVal stdOut = ctx.values.get(STD_OUT);
+                final VncVal stdErr = ctx.values.get(STD_ERR);
 
-                values.clear();
+                ctx.values = new HashMap<>();
 
                 // restore
-                values.put(STD_IN, stdIn);
-                values.put(STD_OUT, stdOut);
-                values.put(STD_ERR, stdErr);
+                ctx.values.put(STD_IN, stdIn);
+                ctx.values.put(STD_OUT, stdOut);
+                ctx.values.put(STD_ERR, stdErr);
             }
             else {
-                get().values.clear();
+                get().values = new HashMap<>();
             }
         }
         catch(Exception ex) {
@@ -285,16 +292,22 @@ public class ThreadContext {
         }
     }
 
-    public static void clear() {
-        try {
-            final ThreadContext ctx = ThreadContext.get();
+    public static void clear(boolean inUse) {
+        final ThreadContext ctx = ThreadContext.get();
 
+        if (inUse && ctx.inUse) {
+            throw new SecurityException(
+                    "Rejected to start a second VeniceInterpreter within the same thread!");
+        }
+
+        try {
             ctx.interceptor = REJECT_ALL_INTERCEPTOR;
             ctx.debugAgent = null;
-            ctx.values.clear();
-            ctx.callStack.clear();
+            ctx.values = new HashMap<>();
+            ctx.callStack = new CallStack();
             ctx.meterRegistry = new MeterRegistry(false);
-            ctx.initNS();
+            ctx.ns = new Namespace(DEFAULT_NS);
+            ctx.inUse = inUse;
         }
         catch(Exception ex) {
             // do not care
@@ -303,7 +316,7 @@ public class ThreadContext {
 
     public static void remove() {
         try {
-            clear();
+            clear(false);
 
             ThreadContext.context.set(null);
             ThreadContext.context.remove();
@@ -375,20 +388,17 @@ public class ThreadContext {
         }
     }
 
-    private void initNS() {
-        ns = new Namespace(new VncSymbol("user"));
-    }
 
-
-
-    private final Map<VncKeyword,VncVal> values = new HashMap<>();
-    private final CallStack callStack = new CallStack();
-    private Namespace ns = null;
+    private Map<VncKeyword,VncVal> values = new HashMap<>();
+    private CallStack callStack = new CallStack();
+    private Namespace ns = new Namespace(DEFAULT_NS);
     private DebugAgent debugAgent = null;
     private IInterceptor interceptor = REJECT_ALL_INTERCEPTOR;
     private MeterRegistry meterRegistry = new MeterRegistry(false);
     private CallFrameFnData callFrameFnData = null;
+    private boolean inUse = false;
 
+    private static final VncSymbol DEFAULT_NS = new VncSymbol("user");
     private static final IInterceptor REJECT_ALL_INTERCEPTOR = new RejectAllInterceptor();
     private static final VncKeyword STD_IN = new VncKeyword("*in*");
     private static final VncKeyword STD_OUT = new VncKeyword("*out*");
