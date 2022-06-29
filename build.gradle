@@ -285,13 +285,13 @@ sourceSets {
     }
     
     test {
-	    java {
-	        srcDirs = ['src/test/java']
-	    }
-	    resources {
+        java {
+            srcDirs = ['src/test/java']
+        }
+        resources {
             srcDir "src/test/java"
             include "**/*.venice"
-	    }
+        }
     }
 }
 
