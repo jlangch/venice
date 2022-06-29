@@ -63,10 +63,6 @@ public class ThreadContext {
     }
 
 
-    public boolean isInUse_() {
-        return inUse;
-    }
-
     public Namespace getCurrNS_() {
         return ns;
     }
@@ -114,10 +110,6 @@ public class ThreadContext {
                 return v == null ? defaultValue : v;
             }
         }
-    }
-
-    public static boolean isInUse() {
-        return get().inUse;
     }
 
     public static void setValue(final VncKeyword key, final VncVal val) {
