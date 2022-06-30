@@ -239,6 +239,10 @@ public class VncDAG extends VncCollection {
         return VncBoolean.of(dag.isNode(value));
     }
 
+    public VncBoolean isEdge(final VncVal parent, final VncVal child) {
+        return VncBoolean.of(dag.isEdge(parent, child));
+    }
+
     @Override
     public VncList toVncList() {
         return VncList.ofColl(dag.getValues());

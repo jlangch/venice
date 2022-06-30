@@ -241,6 +241,10 @@ public class DAG<T> {
         return nodes.containsKey(value);
     }
 
+    public boolean isEdge(final T parent, final T child)  {
+        return edges.contains(new Edge<Node<T>>(new Node<T>(parent), new Node<T>(child)));
+    }
+
     @Override
     public String toString() {
         return String.format("DAG{nodes=%d}", nodes.size());

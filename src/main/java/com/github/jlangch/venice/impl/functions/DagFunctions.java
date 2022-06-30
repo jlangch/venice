@@ -49,7 +49,7 @@ public class DagFunctions {
                     .meta()
                     .arglists("(dag)", "(dag edges*)")
                     .doc(
-                        "Creates a new DAG (directed acyclic graph)\n\n" +
+                        "Creates a new DAG (directed acyclic graph) built from edges\n\n" +
                         "An edge is a vector of two nodes forming a parent/child " +
                         "relationship.")
                     .examples(
@@ -64,11 +64,13 @@ public class DagFunctions {
                         "         [\"G\", \"D\"]) ;      D      ")
                     .seeAlso(
                         "dag/dag?",
-                        "dag/add-edges",
-                        "dag/add-nodes",
+                        "dag/add-edges", "dag/add-nodes",
                         "dag/topological-sort",
-                        "dag/edges",
-                        "dag/nodes",
+                        "dag/edges", "dag/edge?",
+                        "dag/nodes", "dag/node?",
+                        "dag/roots",
+                        "dag/children", "dag/direct-children", "child-of?",
+                        "dag/parents", "dag/direct-parents", "parent-of?",
                         "empty?",
                         "count")
                     .build()
@@ -558,6 +560,38 @@ public class DagFunctions {
             private static final long serialVersionUID = -1848883965231344442L;
         };
 
+    public static VncFunction edge_Q =
+        new VncFunction(
+                "dag/edge?",
+                VncFunction
+                    .meta()
+                    .arglists("(edge? dag parent child)")
+                    .doc("Returns `true` if the edge given by its parent and child node is part of the DAG")
+                    .examples(
+                        "(-> (dag/dag [\"A\", \"B\"]  ;    A  E   \n" +
+                        "             [\"B\", \"C\"]  ;    |  |   \n" +
+                        "             [\"C\", \"D\"]  ;    B  F   \n" +
+                        "             [\"E\", \"F\"]  ;    | / \\ \n" +
+                        "             [\"F\", \"C\"]  ;    C    G \n" +
+                        "             [\"F\", \"G\"]  ;     \\  / \n" +
+                        "             [\"G\", \"D\"]) ;      D    \n" +
+                        "    (dag/edge? \"C\", \"D\"))            ")
+                    .seeAlso(
+                        "dag/dag", "dag/edges")
+                    .build()
+        ) {
+            @Override
+            public VncVal apply(final VncList args) {
+                ArityExceptions.assertArity(this, args, 3);
+
+                final VncDAG dag = Coerce.toVncDAG(args.first());
+
+                return dag.isEdge(args.second(), args.third());
+            }
+
+            private static final long serialVersionUID = -1848883965231344442L;
+        };
+
 
     ///////////////////////////////////////////////////////////////////////////
     // types_ns is namespace of type functions
@@ -581,5 +615,6 @@ public class DagFunctions {
                     .add(parent_of_Q)
                     .add(child_of_Q)
                     .add(node_Q)
+                    .add(edge_Q)
                     .toMap();
 }
