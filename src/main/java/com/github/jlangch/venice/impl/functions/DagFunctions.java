@@ -69,8 +69,8 @@ public class DagFunctions {
                         "dag/edges", "dag/edge?",
                         "dag/nodes", "dag/node?",
                         "dag/roots",
-                        "dag/children", "dag/direct-children", "child-of?",
-                        "dag/parents", "dag/direct-parents", "parent-of?",
+                        "dag/children", "dag/direct-children", "dag/child-of?",
+                        "dag/parents", "dag/direct-parents", "dag/parent-of?",
                         "empty?",
                         "count")
                     .build()
