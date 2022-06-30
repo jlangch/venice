@@ -26,23 +26,24 @@ import com.github.jlangch.venice.impl.docgen.cheatsheet.DocSection;
 import com.github.jlangch.venice.impl.docgen.cheatsheet.ISectionBuilder;
 
 
-public class AppSection implements ISectionBuilder {
+public class ModuleJavaSection implements ISectionBuilder {
 
-    public AppSection(final DocItemBuilder diBuilder) {
+    public ModuleJavaSection(final DocItemBuilder diBuilder) {
         this.diBuilder = diBuilder;
     }
 
     @Override
     public DocSection section() {
-        final DocSection section = new DocSection("Application", "application");
+        final DocSection section = new DocSection(
+                                            "Java",
+                                            "modules.java");
 
-        final DocSection all = new DocSection("", id());
+        final DocSection all = new DocSection("(load-module :java)", id());
         section.addSection(all);
 
-        final DocSection mgmt = new DocSection("Management", "application.management");
-        all.addSection(mgmt);
-        mgmt.addItem(diBuilder.getDocItem("app/build"));
-        mgmt.addItem(diBuilder.getDocItem("app/manifest"));
+        final DocSection java = new DocSection("Java", id());
+        all.addSection(java);
+        java.addItem(diBuilder.getDocItem("java/javadoc", false));
 
         return section;
     }

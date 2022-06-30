@@ -38,9 +38,8 @@ import java.util.stream.Collectors;
 
 import com.github.jlangch.venice.impl.RunMode;
 import com.github.jlangch.venice.impl.VeniceInterpreter;
-import com.github.jlangch.venice.impl.docgen.cheatsheet.section.AppSection;
 import com.github.jlangch.venice.impl.docgen.cheatsheet.section.ArraySection;
-import com.github.jlangch.venice.impl.docgen.cheatsheet.section.BufferSection;
+import com.github.jlangch.venice.impl.docgen.cheatsheet.section.ByteBufSection;
 import com.github.jlangch.venice.impl.docgen.cheatsheet.section.CidrSection;
 import com.github.jlangch.venice.impl.docgen.cheatsheet.section.CollectionsSection;
 import com.github.jlangch.venice.impl.docgen.cheatsheet.section.ConcurrencySection;
@@ -55,7 +54,25 @@ import com.github.jlangch.venice.impl.docgen.cheatsheet.section.JsonSection;
 import com.github.jlangch.venice.impl.docgen.cheatsheet.section.LazySequencesSection;
 import com.github.jlangch.venice.impl.docgen.cheatsheet.section.MacrosSection;
 import com.github.jlangch.venice.impl.docgen.cheatsheet.section.MathSection;
+import com.github.jlangch.venice.impl.docgen.cheatsheet.section.ModuleAnsiSection;
+import com.github.jlangch.venice.impl.docgen.cheatsheet.section.ModuleAppSection;
+import com.github.jlangch.venice.impl.docgen.cheatsheet.section.ModuleBenchmarkSection;
+import com.github.jlangch.venice.impl.docgen.cheatsheet.section.ModuleComponentSection;
+import com.github.jlangch.venice.impl.docgen.cheatsheet.section.ModuleConfigSection;
+import com.github.jlangch.venice.impl.docgen.cheatsheet.section.ModuleCryptographySection;
+import com.github.jlangch.venice.impl.docgen.cheatsheet.section.ModuleExcelSection;
+import com.github.jlangch.venice.impl.docgen.cheatsheet.section.ModuleGeoipSection;
+import com.github.jlangch.venice.impl.docgen.cheatsheet.section.ModuleGradleSection;
+import com.github.jlangch.venice.impl.docgen.cheatsheet.section.ModuleGrepSection;
+import com.github.jlangch.venice.impl.docgen.cheatsheet.section.ModuleHexdumpSection;
+import com.github.jlangch.venice.impl.docgen.cheatsheet.section.ModuleJavaSection;
 import com.github.jlangch.venice.impl.docgen.cheatsheet.section.ModuleKiraSection;
+import com.github.jlangch.venice.impl.docgen.cheatsheet.section.ModuleMavenSection;
+import com.github.jlangch.venice.impl.docgen.cheatsheet.section.ModuleParsifalSection;
+import com.github.jlangch.venice.impl.docgen.cheatsheet.section.ModuleSemverSection;
+import com.github.jlangch.venice.impl.docgen.cheatsheet.section.ModuleShellSection;
+import com.github.jlangch.venice.impl.docgen.cheatsheet.section.ModuleTracingSection;
+import com.github.jlangch.venice.impl.docgen.cheatsheet.section.ModuleXmlSection;
 import com.github.jlangch.venice.impl.docgen.cheatsheet.section.NamespaceSection;
 import com.github.jlangch.venice.impl.docgen.cheatsheet.section.PdfSection;
 import com.github.jlangch.venice.impl.docgen.cheatsheet.section.PrimitivesSection;
@@ -306,66 +323,65 @@ public class DocGenerator {
 
     private List<DocSection> getLeftSections() {
         return Arrays.asList(
-                getPrimitivesSection(),
-                getByteBufSection(),
-                getRegexSection(),
-                getMathSection(),
-                getTransducersSection(),
-                getFunctionsSection(),
-                getMacrosSection(),
-                getSpecialFormsSection(),
-                getExceptionsSection(),
-                getTypesSection(),
-                getProtocolsSection(),
-                getNamespaceSection(),
-                getJavaInteropSection(),
-                getReplSection(),
-                getPdfSection(),
-                getIOZipSection());
+                new PrimitivesSection(diBuilder).section(),
+                new ByteBufSection(diBuilder).section(),
+                new RegexSection(diBuilder).section(),
+                new MathSection(diBuilder).section(),
+                new TransducersSection(diBuilder).section(),
+                new FunctionsSection(diBuilder).section(),
+                new MacrosSection(diBuilder).section(),
+                new SpecialFormsSection(diBuilder).section(),
+                new ExceptionsSection(diBuilder).section(),
+                new TypesSection(diBuilder).section(),
+                new ProtocolsSection(diBuilder).section(),
+                new NamespaceSection(diBuilder).section(),
+                new JavaInteropSection(diBuilder).section(),
+                new ReplSection(diBuilder).section(),
+                new PdfSection(diBuilder).section(),
+                new IoZipSection(diBuilder).section());
     }
 
     private List<DocSection> getRightSections() {
         return Arrays.asList(
-                getCollectionsSection(),
-                getLazySequencesSection(),
-                getArraysSection(),
-                getConcurrencySection(),
-                getSystemSection(),
-                getSystemVarSection(),
-                getTimeSection(),
-                getIOSection(),
-                getIOFileSection(),
-                getJsonSection(),
-                getCidrSection(),
-                getAppSection(),
-                getCsvSection());
+                new CollectionsSection(diBuilder).section(),
+                new LazySequencesSection(diBuilder).section(),
+                new ArraySection(diBuilder).section(),
+                new ConcurrencySection(diBuilder).section(),
+                new SystemSection(diBuilder).section(),
+                new SystemVarSection(diBuilder).section(),
+                new TimeSection(diBuilder).section(),
+                new IoSection(diBuilder).section(),
+                new IoFileSection(diBuilder).section(),
+                new JsonSection(diBuilder).section(),
+                new CidrSection(diBuilder).section(),
+                new CsvSection(diBuilder).section());
     }
 
     private List<DocSection> getModulesLeftSections() {
         return Arrays.asList(
-                getModuleKiraSection(),
-                getModuleCryptographySection(),
-                getModuleXmlSection(),
-                getModuleJavaSection(),
-                getModuleParsifalSection(),
-                getModuleGradleSection(),
-                getModuleMavenSection(),
-                getModuleTracingSection(),
-                getModuleShellSection(),
-                getModuleAnsiSection(),
-                getModuleGrepSection());
+                new ModuleKiraSection(diBuilder).section(),
+                new ModuleCryptographySection(diBuilder).section(),
+                new ModuleXmlSection(diBuilder).section(),
+                new ModuleJavaSection(diBuilder).section(),
+                new ModuleParsifalSection(diBuilder).section(),
+                new ModuleGradleSection(diBuilder).section(),
+                new ModuleMavenSection(diBuilder).section(),
+                new ModuleTracingSection(diBuilder).section(),
+                new ModuleShellSection(diBuilder).section(),
+                new ModuleAnsiSection(diBuilder).section(),
+                new ModuleGrepSection(diBuilder).section());
     }
 
     private List<DocSection> getModulesRightSections() {
         return Arrays.asList(
-                getModuleHexdumpSection(),
-                getModuleSemverSection(),
-                getModuleGeoipSection(),
-                getModuleExcelSection(),
-                getModuleConfigSection(),
-                getModuleComponentSection(),
-                getModuleAppSection(),
-                getModuleBenchmarkSection());
+                new ModuleHexdumpSection(diBuilder).section(),
+                new ModuleSemverSection(diBuilder).section(),
+                new ModuleGeoipSection(diBuilder).section(),
+                new ModuleExcelSection(diBuilder).section(),
+                new ModuleConfigSection(diBuilder).section(),
+                new ModuleComponentSection(diBuilder).section(),
+                new ModuleAppSection(diBuilder).section(),
+                new ModuleBenchmarkSection(diBuilder).section());
     }
 
     private List<DocItem> getDocItems(final List<DocSection> sections) {
@@ -381,657 +397,6 @@ public class DocGenerator {
                 .distinct()
                 .sorted(Comparator.comparing(DocItem::getName))
                 .collect(Collectors.toList());
-    }
-
-    private DocSection getPrimitivesSection() {
-        return new PrimitivesSection(diBuilder).section();
-    }
-
-    private DocSection getCollectionsSection() {
-        return new CollectionsSection(diBuilder).section();
-    }
-
-    private DocSection getLazySequencesSection() {
-        return new LazySequencesSection(diBuilder).section();
-    }
-
-    private DocSection getArraysSection() {
-        return new ArraySection(diBuilder).section();
-    }
-
-    private DocSection getRegexSection() {
-        return new RegexSection(diBuilder).section();
-    }
-
-    private DocSection getMathSection() {
-        return new MathSection(diBuilder).section();
-    }
-
-    private DocSection getFunctionsSection() {
-        return new FunctionsSection(diBuilder).section();
-    }
-    private DocSection getMacrosSection() {
-        return new MacrosSection(diBuilder).section();
-    }
-
-    private DocSection getSpecialFormsSection() {
-        return new SpecialFormsSection(diBuilder).section();
-    }
-
-    private DocSection getExceptionsSection() {
-        return new ExceptionsSection(diBuilder).section();
-    }
-
-    private DocSection getSystemSection() {
-        return new SystemSection(diBuilder).section();
-    }
-
-    private DocSection getTypesSection() {
-        return new TypesSection(diBuilder).section();
-    }
-
-    private DocSection getProtocolsSection() {
-        return new ProtocolsSection(diBuilder).section();
-    }
-
-    private DocSection getTransducersSection() {
-        return new TransducersSection(diBuilder).section();
-    }
-
-    private DocSection getConcurrencySection() {
-        return new ConcurrencySection(diBuilder).section();
-    }
-
-    private DocSection getIOSection() {
-        return new IoSection(diBuilder).section();
-    }
-
-    private DocSection getIOFileSection() {
-        return new IoFileSection(diBuilder).section();
-    }
-
-    private DocSection getIOZipSection() {
-        return new IoZipSection(diBuilder).section();
-    }
-
-    private DocSection getAppSection() {
-        return new AppSection(diBuilder).section();
-    }
-
-    private DocSection getNamespaceSection() {
-        return new NamespaceSection(diBuilder).section();
-    }
-
-    private DocSection getByteBufSection() {
-        return new BufferSection(diBuilder).section();
-    }
-
-    private DocSection getTimeSection() {
-        return new TimeSection(diBuilder).section();
-    }
-
-    private DocSection getJavaInteropSection() {
-        return new JavaInteropSection(diBuilder).section();
-    }
-
-    private DocSection getReplSection() {
-        return new ReplSection(diBuilder).section();
-    }
-
-    private DocSection getPdfSection() {
-        return new PdfSection(diBuilder).section();
-    }
-
-    private DocSection getSystemVarSection() {
-        return new SystemVarSection(diBuilder).section();
-    }
-
-    private DocSection getJsonSection() {
-        return new JsonSection(diBuilder).section();
-    }
-
-    private DocSection getCsvSection() {
-        return new CsvSection(diBuilder).section();
-    }
-
-    private DocSection getCidrSection() {
-        return new CidrSection(diBuilder).section();
-    }
-
-    private DocSection getModuleKiraSection() {
-        return new ModuleKiraSection(diBuilder).section();
-    }
-
-    private DocSection getModuleTracingSection() {
-        final DocSection section = new DocSection(
-                                        "Tracing",
-                                        "Tracing functions",
-                                        "modules.tracing");
-
-        final DocSection all = new DocSection("(load-module :trace)", id());
-        section.addSection(all);
-
-        final DocSection trace = new DocSection("Tracing", id());
-        all.addSection(trace);
-        trace.addItem(diBuilder.getDocItem("trace/trace"));
-        trace.addItem(diBuilder.getDocItem("trace/trace-var"));
-        trace.addItem(diBuilder.getDocItem("trace/untrace-var"));
-
-        final DocSection test = new DocSection("Test", id());
-        all.addSection(test);
-        test.addItem(diBuilder.getDocItem("trace/traced?"));
-        test.addItem(diBuilder.getDocItem("trace/traceable?"));
-
-        final DocSection util = new DocSection("Util", id());
-        all.addSection(util);
-        util.addItem(diBuilder.getDocItem("trace/trace-str-limit"));
-
-        final DocSection tee = new DocSection("Tee", id());
-        all.addSection(tee);
-        tee.addItem(diBuilder.getDocItem("trace/tee->"));
-        tee.addItem(diBuilder.getDocItem("trace/tee->>"));
-        tee.addItem(diBuilder.getDocItem("trace/tee"));
-
-        return section;
-    }
-
-    private DocSection getModuleShellSection() {
-        final DocSection section = new DocSection(
-                                        "Shell",
-                                        "Functions to deal with the operating system",
-                                        "modules.shell");
-
-        final DocSection all = new DocSection("(load-module :shell)", id());
-        section.addSection(all);
-
-        final DocSection trace = new DocSection("Open", id());
-        all.addSection(trace);
-        trace.addItem(diBuilder.getDocItem("shell/open", false));
-        trace.addItem(diBuilder.getDocItem("shell/open-macos-app", false));
-
-        final DocSection test = new DocSection("Process", id());
-        all.addSection(test);
-        test.addItem(diBuilder.getDocItem("shell/kill", false));
-        test.addItem(diBuilder.getDocItem("shell/kill-forcibly", false));
-        test.addItem(diBuilder.getDocItem("shell/wait-for-process-exit", false));
-        test.addItem(diBuilder.getDocItem("shell/alive?", false));
-        test.addItem(diBuilder.getDocItem("shell/pid", false));
-        test.addItem(diBuilder.getDocItem("shell/process-handle", false));
-        test.addItem(diBuilder.getDocItem("shell/process-handle?", false));
-        test.addItem(diBuilder.getDocItem("shell/process-info", false));
-        test.addItem(diBuilder.getDocItem("shell/processes", false));
-        test.addItem(diBuilder.getDocItem("shell/processes-info", false));
-        test.addItem(diBuilder.getDocItem("shell/descendant-processes", false));
-        test.addItem(diBuilder.getDocItem("shell/parent-process", false));
-
-        final DocSection util = new DocSection("Util", id());
-        all.addSection(util);
-        util.addItem(diBuilder.getDocItem("shell/diff", false));
-
-        return section;
-    }
-
-    private DocSection getModuleXmlSection() {
-        final DocSection section = new DocSection(
-                                        "XML",
-                                        "modules.xml");
-
-        final DocSection all = new DocSection("(load-module :xml)", id());
-        section.addSection(all);
-
-        final DocSection xml = new DocSection("XML", id());
-        all.addSection(xml);
-        xml.addItem(diBuilder.getDocItem("xml/parse-str"));
-        xml.addItem(diBuilder.getDocItem("xml/parse"));
-        xml.addItem(diBuilder.getDocItem("xml/path->"));
-        xml.addItem(diBuilder.getDocItem("xml/children"));
-        xml.addItem(diBuilder.getDocItem("xml/text"));
-
-        return section;
-    }
-
-    private DocSection getModuleCryptographySection() {
-        final DocSection section = new DocSection(
-                                        "Cryptography",
-                                        "modules.cryptography");
-
-        final DocSection all = new DocSection("(load-module :crypt)", id());
-        section.addSection(all);
-
-        final DocSection hashes = new DocSection("Hashes", id());
-        all.addSection(hashes);
-        hashes.addItem(diBuilder.getDocItem("crypt/md5-hash"));
-        hashes.addItem(diBuilder.getDocItem("crypt/sha1-hash"));
-        hashes.addItem(diBuilder.getDocItem("crypt/sha512-hash"));
-        hashes.addItem(diBuilder.getDocItem("crypt/pbkdf2-hash"));
-
-        final DocSection crypt = new DocSection("Encrypt", id());
-        all.addSection(crypt);
-        crypt.addItem(diBuilder.getDocItem("crypt/encrypt"));
-        crypt.addItem(diBuilder.getDocItem("crypt/decrypt"));
-
-        return section;
-    }
-
-    private DocSection getModuleGradleSection() {
-        final DocSection section = new DocSection(
-                                        "Gradle",
-                                        "modules.gradle");
-
-        final DocSection all = new DocSection("(load-module :gradle)", id());
-        section.addSection(all);
-
-        final DocSection gradle = new DocSection("Gradle", id());
-        all.addSection(gradle);
-        gradle.addItem(diBuilder.getDocItem("gradle/with-home", false));
-        gradle.addItem(diBuilder.getDocItem("gradle/version", false));
-        gradle.addItem(diBuilder.getDocItem("gradle/task", false));
-
-        return section;
-    }
-
-    private DocSection getModuleMavenSection() {
-        final DocSection section = new DocSection(
-                                        "Maven",
-                                        "modules.maven");
-
-        final DocSection all = new DocSection("(load-module :maven)", id());
-        section.addSection(all);
-
-        final DocSection maven = new DocSection("Maven", id());
-        all.addSection(maven);
-        maven.addItem(diBuilder.getDocItem("maven/download", false));
-        maven.addItem(diBuilder.getDocItem("maven/get", false));
-        maven.addItem(diBuilder.getDocItem("maven/uri", false));
-        maven.addItem(diBuilder.getDocItem("maven/parse-artefact", false));
-
-        return section;
-    }
-
-    private DocSection getModuleJavaSection() {
-        final DocSection section = new DocSection(
-                                        "Java",
-                                        "modules.java");
-
-        final DocSection all = new DocSection("(load-module :java)", id());
-        section.addSection(all);
-
-        final DocSection java = new DocSection("Java", id());
-        all.addSection(java);
-        java.addItem(diBuilder.getDocItem("java/javadoc", false));
-
-        return section;
-    }
-
-    private DocSection getModuleSemverSection() {
-        final DocSection section = new DocSection(
-                                        "Semver",
-                                        "Semantic versioning",
-                                        "modules.semver");
-
-        final DocSection all = new DocSection("(load-module :semver)", id());
-        section.addSection(all);
-
-        final DocSection semver = new DocSection("Semver", id());
-        all.addSection(semver);
-        semver.addItem(diBuilder.getDocItem("semver/parse"));
-        semver.addItem(diBuilder.getDocItem("semver/version"));
-
-        final DocSection valid = new DocSection("Validation", id());
-        all.addSection(valid);
-        valid.addItem(diBuilder.getDocItem("semver/valid?"));
-        valid.addItem(diBuilder.getDocItem("semver/valid-format?"));
-
-        final DocSection test = new DocSection("Test", id());
-        all.addSection(test);
-        test.addItem(diBuilder.getDocItem("semver/newer?"));
-        test.addItem(diBuilder.getDocItem("semver/older?"));
-        test.addItem(diBuilder.getDocItem("semver/equal?"));
-        test.addItem(diBuilder.getDocItem("semver/cmp"));
-
-        return section;
-    }
-
-    private DocSection getModuleGeoipSection() {
-        final DocSection section = new DocSection(
-                                        "Geo IP",
-                                        "Geolocation mapping for IP adresses",
-                                        "modules.geoip");
-
-        final DocSection all = new DocSection("(load-module :geoip)", id());
-        section.addSection(all);
-
-        final DocSection geoip = new DocSection("Lookup", id());
-        all.addSection(geoip);
-        geoip.addItem(diBuilder.getDocItem("geoip/ip-to-country-resolver", false));
-        geoip.addItem(diBuilder.getDocItem("geoip/ip-to-country-loc-resolver", false));
-        geoip.addItem(diBuilder.getDocItem("geoip/ip-to-city-loc-resolver", false));
-        geoip.addItem(diBuilder.getDocItem("geoip/ip-to-city-loc-resolver-mem-optimized", false));
-
-        final DocSection db = new DocSection("Databases", id());
-        all.addSection(db);
-        db.addItem(diBuilder.getDocItem("geoip/download-google-country-db-to-csvfile", false));
-        db.addItem(diBuilder.getDocItem("geoip/download-maxmind-db-to-zipfile", false));
-        db.addItem(diBuilder.getDocItem("geoip/download-maxmind-db", false));
-
-        final DocSection dbBuild = new DocSection("DB Parser", id());
-        all.addSection(dbBuild);
-        dbBuild.addItem(diBuilder.getDocItem("geoip/parse-maxmind-country-ip-db", false));
-        dbBuild.addItem(diBuilder.getDocItem("geoip/parse-maxmind-city-ip-db", false));
-        dbBuild.addItem(diBuilder.getDocItem("geoip/parse-maxmind-country-db", false));
-        dbBuild.addItem(diBuilder.getDocItem("geoip/parse-maxmind-city-db", false));
-
-        final DocSection util = new DocSection("Util", id());
-        all.addSection(util);
-        util.addItem(diBuilder.getDocItem("geoip/build-maxmind-country-db-url"));
-        util.addItem(diBuilder.getDocItem("geoip/build-maxmind-city-db-url"));
-        util.addItem(diBuilder.getDocItem("geoip/map-location-to-numerics"));
-        util.addItem(diBuilder.getDocItem("geoip/country-to-location-resolver", false));
-
-        return section;
-    }
-
-    private DocSection getModuleHexdumpSection() {
-        final DocSection section = new DocSection(
-                                        "Hexdump",
-                                        "modules.hexdump");
-
-        final DocSection all = new DocSection("(load-module :hexdump)", id());
-        section.addSection(all);
-
-        final DocSection hexdump = new DocSection("Hexdump", id());
-        all.addSection(hexdump);
-        hexdump.addItem(diBuilder.getDocItem("hexdump/dump", false));
-
-        return section;
-    }
-
-    private DocSection getModuleAnsiSection() {
-        final DocSection section = new DocSection(
-                                        "Ansi",
-                                        "ANSI codes, styles, and colorization helper functions",
-                                        "modules.ansi");
-
-        final DocSection all = new DocSection("(load-module :ansi)", id());
-        section.addSection(all);
-
-        final DocSection colors = new DocSection("Colors", id());
-        all.addSection(colors);
-        colors.addItem(diBuilder.getDocItem("ansi/fg-color", false));
-        colors.addItem(diBuilder.getDocItem("ansi/bg-color", false));
-
-        final DocSection style = new DocSection("Styles", id());
-        all.addSection(style);
-        style.addItem(diBuilder.getDocItem("ansi/style", false));
-        style.addItem(diBuilder.getDocItem("ansi/ansi", false));
-        style.addItem(diBuilder.getDocItem("ansi/with-ansi", false));
-        style.addItem(diBuilder.getDocItem("ansi/without-ansi", false));
-
-        final DocSection cursor = new DocSection("Cursor", id());
-        all.addSection(cursor);
-        cursor.addItem(diBuilder.getDocItem("ansi/without-cursor", false));
-
-        final DocSection progress = new DocSection("Progress", id());
-        all.addSection(progress);
-        progress.addItem(diBuilder.getDocItem("ansi/progress", false));
-        progress.addItem(diBuilder.getDocItem("ansi/progress-bar", false));
-
-        return section;
-    }
-
-    private DocSection getModuleGrepSection() {
-        final DocSection section = new DocSection(
-                                        "Grep",
-                                        "Grep like search tool",
-                                        "modules.grep");
-
-        final DocSection all = new DocSection("(load-module :grep)", id());
-        section.addSection(all);
-
-        final DocSection grep = new DocSection("Grep", id());
-        all.addSection(grep);
-        grep.addItem(diBuilder.getDocItem("grep/grep", false));
-        grep.addItem(diBuilder.getDocItem("grep/grep-zip", false));
-
-        return section;
-    }
-
-    private DocSection getModuleParsifalSection() {
-        final DocSection section = new DocSection(
-                                        "Parsifal",
-                                        "A parser combinator",
-                                        "modules.parsifal",
-                                        "*Parsifal* is a port of Nate Young's Parsatron Clojure " +
-                                        "[parser combinators](https://github.com/youngnh/parsatron) "+
-                                        "project.",
-                                        null);
-
-        final DocSection all = new DocSection("(load-module :parsifal)", id());
-        section.addSection(all);
-
-        final DocSection run = new DocSection("Run", id());
-        all.addSection(run);
-        run.addItem(diBuilder.getDocItem("parsifal/run", false));
-
-        final DocSection define = new DocSection("Define", id());
-        all.addSection(define);
-        define.addItem(diBuilder.getDocItem("parsifal/defparser", false));
-
-        final DocSection parsers = new DocSection("Parsers", id());
-        all.addSection(parsers);
-        parsers.addItem(diBuilder.getDocItem("parsifal/any", false));
-        parsers.addItem(diBuilder.getDocItem("parsifal/many", false));
-        parsers.addItem(diBuilder.getDocItem("parsifal/many1", false));
-        parsers.addItem(diBuilder.getDocItem("parsifal/times", false));
-        parsers.addItem(diBuilder.getDocItem("parsifal/either", false));
-        parsers.addItem(diBuilder.getDocItem("parsifal/choice", false));
-        parsers.addItem(diBuilder.getDocItem("parsifal/between", false));
-        parsers.addItem(diBuilder.getDocItem("parsifal/>>", false));
-
-        final DocSection special = new DocSection("Special Parsers", id());
-        all.addSection(special);
-        special.addItem(diBuilder.getDocItem("parsifal/eof", false));
-        special.addItem(diBuilder.getDocItem("parsifal/never", false));
-        special.addItem(diBuilder.getDocItem("parsifal/always", false));
-        special.addItem(diBuilder.getDocItem("parsifal/lookahead", false));
-        special.addItem(diBuilder.getDocItem("parsifal/attempt", false));
-
-        final DocSection binding = new DocSection("Binding", id());
-        all.addSection(binding);
-        binding.addItem(diBuilder.getDocItem("parsifal/let->>", false));
-
-        final DocSection ch = new DocSection("Char Parsers", id());
-        all.addSection(ch);
-        ch.addItem(diBuilder.getDocItem("parsifal/char", false));
-        ch.addItem(diBuilder.getDocItem("parsifal/not-char", false));
-        ch.addItem(diBuilder.getDocItem("parsifal/any-char", false));
-        ch.addItem(diBuilder.getDocItem("parsifal/digit", false));
-        ch.addItem(diBuilder.getDocItem("parsifal/hexdigit", false));
-        ch.addItem(diBuilder.getDocItem("parsifal/letter", false));
-        ch.addItem(diBuilder.getDocItem("parsifal/letter-or-digit", false));
-        ch.addItem(diBuilder.getDocItem("parsifal/any-char-of", false));
-        ch.addItem(diBuilder.getDocItem("parsifal/none-char-of", false));
-        ch.addItem(diBuilder.getDocItem("parsifal/string", false));
-
-        final DocSection tok = new DocSection("Token Parsers", id());
-        all.addSection(tok);
-        tok.addItem(diBuilder.getDocItem("parsifal/token", false));
-
-        final DocSection proto = new DocSection("Protocols", id());
-        all.addSection(proto);
-        proto.addItem(diBuilder.getDocItem("parsifal/SourcePosition", false));
-
-        final DocSection line = new DocSection("Line Info", id());
-        all.addSection(line);
-        line.addItem(diBuilder.getDocItem("parsifal/lineno", false));
-        line.addItem(diBuilder.getDocItem("parsifal/pos", false));
-
-        return section;
-    }
-
-    private DocSection getModuleBenchmarkSection() {
-        final DocSection section = new DocSection(
-                                        "Benchmark",
-                                        "modules.benchmark");
-
-        final DocSection all = new DocSection("(load-module :benchmark)", id());
-        section.addSection(all);
-
-        final DocSection colors = new DocSection("Utils", id());
-        all.addSection(colors);
-        colors.addItem(diBuilder.getDocItem("benchmark/benchmark", false));
-
-        return section;
-    }
-
-    private DocSection getModuleConfigSection() {
-        final DocSection section = new DocSection(
-                                        "Configuration",
-                                        "Manages configurations with system property & env var support",
-                                        "modules.config");
-
-        final DocSection all = new DocSection("(load-module :config)", id());
-        section.addSection(all);
-
-        final DocSection build = new DocSection("Build", id());
-        all.addSection(build);
-        build.addItem(diBuilder.getDocItem("config/build", false));
-
-        final DocSection file = new DocSection("File", id());
-        all.addSection(file);
-        file.addItem(diBuilder.getDocItem("config/file", false));
-        file.addItem(diBuilder.getDocItem("config/resource", true));
-
-        final DocSection env = new DocSection("Env", id());
-        all.addSection(env);
-        env.addItem(diBuilder.getDocItem("config/env-var", true));
-        env.addItem(diBuilder.getDocItem("config/env", false));
-
-        final DocSection prop = new DocSection("Properties", id());
-        all.addSection(prop);
-        prop.addItem(diBuilder.getDocItem("config/property-var", true));
-        prop.addItem(diBuilder.getDocItem("config/properties", false));
-
-        return section;
-    }
-
-    private DocSection getModuleComponentSection() {
-        final DocSection section = new DocSection(
-                                    "Component",
-                                    "Managing lifecycle and dependencies of components",
-                                    "modules.component");
-
-        final DocSection all = new DocSection("(load-module :component)", id());
-        section.addSection(all);
-
-        final DocSection system = new DocSection("Build", id());
-        all.addSection(system);
-        system.addItem(diBuilder.getDocItem("component/system-map", false));
-        system.addItem(diBuilder.getDocItem("component/system-using"));
-
-        final DocSection protocol = new DocSection("Protocol", id());
-        all.addSection(protocol);
-        protocol.addItem(diBuilder.getDocItem("component/Component", false));
-
-
-        final DocSection util = new DocSection("Util", id());
-        all.addSection(util);
-        util.addItem(diBuilder.getDocItem("component/deps"));
-        util.addItem(diBuilder.getDocItem("component/dep"));
-        util.addItem(diBuilder.getDocItem("component/id"));
-
-        return section;
-    }
-
-    private DocSection getModuleAppSection() {
-        final DocSection section = new DocSection(
-                                        "App",
-                                        "Venice application archive",
-                                        "modules.app");
-
-        final DocSection all = new DocSection("(load-module :app)", id());
-        section.addSection(all);
-
-        final DocSection build = new DocSection("Build", id());
-        all.addSection(build);
-        build.addItem(diBuilder.getDocItem("app/build", false));
-
-        final DocSection manifest = new DocSection("Manifest", id());
-        all.addSection(manifest);
-        manifest.addItem(diBuilder.getDocItem("app/manifest", false));
-
-        return section;
-    }
-
-    private DocSection getModuleExcelSection() {
-        final String footer = "Required 3rd party libraries:\n\n" +
-                              "* org.apache.poi:poi:4.1.2\n" +
-                              "* org.apache.poi:ooxml:4.1.2\n" +
-                              "* org.apache.poi:ooxml-schemas:4.1.2\n" +
-                              "* commons-codec:commons-codec:1.15\n" +
-                              "* org.apache.commons:commons-collections:4.4.4\n" +
-                              "* org.apache.commons:commons-compress:1.20\n" +
-                              "* org.apache.commons:commons-math3:3.6.1\n" +
-                              "* org.apache.xmlbeans:xmlbeans:3.1.0\n";
-
-        final DocSection section = new DocSection("Excel", "Read/Write Excel files", "modules.excel", null, footer);
-
-        final DocSection all = new DocSection("(load-module :excel)", id());
-        section.addSection(all);
-
-        final DocSection wr = new DocSection("Writer", id());
-        all.addSection(wr);
-        wr.addItem(diBuilder.getDocItem("excel/writer", false));
-        wr.addItem(diBuilder.getDocItem("excel/add-sheet", false));
-        wr.addItem(diBuilder.getDocItem("excel/add-font", false));
-        wr.addItem(diBuilder.getDocItem("excel/add-style", false));
-        wr.addItem(diBuilder.getDocItem("excel/add-column", false));
-
-        final DocSection wr_data = new DocSection("Writer Data", id());
-        all.addSection(wr_data);
-        wr_data.addItem(diBuilder.getDocItem("excel/write-data", false));
-        wr_data.addItem(diBuilder.getDocItem("excel/write-items", false));
-        wr_data.addItem(diBuilder.getDocItem("excel/write-item", false));
-        wr_data.addItem(diBuilder.getDocItem("excel/write-value", false));
-
-        final DocSection wr_io = new DocSection("Writer I/O", id());
-        all.addSection(wr_io);
-        wr_io.addItem(diBuilder.getDocItem("excel/write->file", false));
-        wr_io.addItem(diBuilder.getDocItem("excel/write->stream", false));
-        wr_io.addItem(diBuilder.getDocItem("excel/write->bytebuf", false));
-
-        final DocSection wr_util = new DocSection("Writer Util", id());
-        all.addSection(wr_util);
-        wr_util.addItem(diBuilder.getDocItem("excel/cell-formula", false));
-        wr_util.addItem(diBuilder.getDocItem("excel/sum-formula", false));
-        wr_util.addItem(diBuilder.getDocItem("excel/cell-address", false));
-        wr_util.addItem(diBuilder.getDocItem("excel/auto-size-columns", false));
-        wr_util.addItem(diBuilder.getDocItem("excel/auto-size-column", false));
-        wr_util.addItem(diBuilder.getDocItem("excel/row-height", false));
-        wr_util.addItem(diBuilder.getDocItem("excel/evaluate-formulas", false));
-        wr_util.addItem(diBuilder.getDocItem("excel/convert->reader", false));
-
-        final DocSection rd = new DocSection("Reader", id());
-        all.addSection(rd);
-        rd.addItem(diBuilder.getDocItem("excel/open", false));
-        rd.addItem(diBuilder.getDocItem("excel/sheet", false));
-        rd.addItem(diBuilder.getDocItem("excel/read-string-val", false));
-        rd.addItem(diBuilder.getDocItem("excel/read-boolean-val", false));
-        rd.addItem(diBuilder.getDocItem("excel/read-long-val", false));
-        rd.addItem(diBuilder.getDocItem("excel/read-double-val", false));
-        rd.addItem(diBuilder.getDocItem("excel/read-date-val", false));
-
-        final DocSection rd_util = new DocSection("Reader Util", id());
-        all.addSection(rd_util);
-        rd_util.addItem(diBuilder.getDocItem("excel/sheet-count", false));
-        rd_util.addItem(diBuilder.getDocItem("excel/sheet-name", false));
-        rd_util.addItem(diBuilder.getDocItem("excel/sheet-row-range", false));
-        rd_util.addItem(diBuilder.getDocItem("excel/sheet-col-range", false));
-        rd_util.addItem(diBuilder.getDocItem("excel/evaluate-formulas", false));
-        rd_util.addItem(diBuilder.getDocItem("excel/cell-empty?", false));
-        rd_util.addItem(diBuilder.getDocItem("excel/cell-type", false));
-
-        return section;
     }
 
     private List<DocSection> concat(
@@ -1070,7 +435,7 @@ public class DocGenerator {
                             .getResourceAsString("UTF-8"));
         }
         catch(RuntimeException ex) {
-            throw new RuntimeException("Failed to read 'venice-doc.md!", ex);
+            throw new RuntimeException("Failed to read 'venice-doc.md'!", ex);
         }
     }
 
@@ -1081,7 +446,7 @@ public class DocGenerator {
                             .getResourceAsString("UTF-8"));
         }
         catch(RuntimeException ex) {
-            throw new RuntimeException("Failed to read 'markdown-doc.md!", ex);
+            throw new RuntimeException("Failed to read 'markdown-doc.md'!", ex);
         }
     }
 
@@ -1112,10 +477,6 @@ public class DocGenerator {
 
         // recursively validate children
         section.getSections().forEach(s -> validateUniqueSectionId(s, ids));
-    }
-
-    private String id() {
-        return diBuilder.id();
     }
 
 

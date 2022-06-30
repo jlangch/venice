@@ -26,9 +26,9 @@ import com.github.jlangch.venice.impl.docgen.cheatsheet.DocSection;
 import com.github.jlangch.venice.impl.docgen.cheatsheet.ISectionBuilder;
 
 
-public class BufferSection implements ISectionBuilder {
+public class ByteBufSection implements ISectionBuilder {
 
-    public BufferSection(final DocItemBuilder diBuilder) {
+    public ByteBufSection(final DocItemBuilder diBuilder) {
         this.diBuilder = diBuilder;
     }
 
