@@ -10,13 +10,13 @@ and this project adheres to
 
 
 
-## [1.10.16] - 2022-06-xx
+## [1.10.16] - 2022-07-01
 
 ### Added
 
 - support for import aliases `(import :java.awt.Color :as :Col)`   
   `(import :java.awt.Color)` is equivalent to `(import :java.awt.Color :as :Color)`
-- support for regex rematching to function `regex/matches?`
+- support for regex rematching in function `regex/matches?`
 - a *grep* module with grep like search for lines in text
 
 ### Changed
@@ -28,7 +28,7 @@ and this project adheres to
 ### Fixed
 
 - `io/delete-file-on-exit` to work with directories too
-- a bug in the markdown table renderer, parsing custom column styles
+- a bug in the markdown table renderer with parsing custom column styles
 
 
 
