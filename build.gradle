@@ -206,11 +206,6 @@ def getCheckedOutGitCommitHash() {
     def takeFromHash = 12
 
     try {
-        'git rev-parse --verify --short HEAD'.execute()
-                                             .text
-                                             .trim()
-                                             .take(takeFromHash)
-        /* 
         def process = 'git rev-parse --verify --short HEAD'.execute()
         if (process.exitValue() == 0) {
             return process.text
@@ -220,7 +215,6 @@ def getCheckedOutGitCommitHash() {
         else {
             throw new Exception()
         }
-        */
     }
     catch(Exception e) {
         println "getCheckedOutGitCommitId(): 'git' not installed, falling back to '.git' folder ..."
