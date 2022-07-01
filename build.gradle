@@ -206,13 +206,14 @@ def getCheckedOutGitCommitHash() {
     def takeFromHash = 12
 
     try {
-        def hash = 'git rev-parse --verify --short HEAD'.execute()
-                                                        .text
-                                                        .trim()
-                                                        .take(takeFromHash)
-                                                        
-        if (!hash?.trim()) {
-            throw new Exception("Failed to get commit hash!")
+        def process = 'git rev-parse --verify --short HEAD'.execute()      
+        if (process.exitValue() == 0) {
+            return process.text
+                          .trim()
+                          .take(takeFromHash)
+        }                                               
+        else {
+            throw new Exception()
         }
     }
     catch(Exception e) {
