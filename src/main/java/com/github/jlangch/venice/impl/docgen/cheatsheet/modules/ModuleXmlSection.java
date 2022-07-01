@@ -19,34 +19,35 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.github.jlangch.venice.impl.docgen.cheatsheet.section;
+package com.github.jlangch.venice.impl.docgen.cheatsheet.modules;
 
 import com.github.jlangch.venice.impl.docgen.cheatsheet.DocItemBuilder;
 import com.github.jlangch.venice.impl.docgen.cheatsheet.DocSection;
 import com.github.jlangch.venice.impl.docgen.cheatsheet.ISectionBuilder;
 
 
-public class ModuleMavenSection implements ISectionBuilder {
+public class ModuleXmlSection implements ISectionBuilder {
 
-    public ModuleMavenSection(final DocItemBuilder diBuilder) {
+    public ModuleXmlSection(final DocItemBuilder diBuilder) {
         this.diBuilder = diBuilder;
     }
 
     @Override
     public DocSection section() {
         final DocSection section = new DocSection(
-                                            "Maven",
-                                            "modules.maven");
+                                            "XML",
+                                            "modules.xml");
 
-        final DocSection all = new DocSection("(load-module :maven)", id());
+        final DocSection all = new DocSection("(load-module :xml)", id());
         section.addSection(all);
 
-        final DocSection maven = new DocSection("Maven", id());
-        all.addSection(maven);
-        maven.addItem(diBuilder.getDocItem("maven/download", false));
-        maven.addItem(diBuilder.getDocItem("maven/get", false));
-        maven.addItem(diBuilder.getDocItem("maven/uri", false));
-        maven.addItem(diBuilder.getDocItem("maven/parse-artefact", false));
+        final DocSection xml = new DocSection("XML", id());
+        all.addSection(xml);
+        xml.addItem(diBuilder.getDocItem("xml/parse-str"));
+        xml.addItem(diBuilder.getDocItem("xml/parse"));
+        xml.addItem(diBuilder.getDocItem("xml/path->"));
+        xml.addItem(diBuilder.getDocItem("xml/children"));
+        xml.addItem(diBuilder.getDocItem("xml/text"));
 
         return section;
     }

@@ -19,33 +19,45 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.github.jlangch.venice.impl.docgen.cheatsheet.section;
+package com.github.jlangch.venice.impl.docgen.cheatsheet.modules;
 
 import com.github.jlangch.venice.impl.docgen.cheatsheet.DocItemBuilder;
 import com.github.jlangch.venice.impl.docgen.cheatsheet.DocSection;
 import com.github.jlangch.venice.impl.docgen.cheatsheet.ISectionBuilder;
 
 
-public class ModuleGradleSection implements ISectionBuilder {
+public class ModuleSemverSection implements ISectionBuilder {
 
-    public ModuleGradleSection(final DocItemBuilder diBuilder) {
+    public ModuleSemverSection(final DocItemBuilder diBuilder) {
         this.diBuilder = diBuilder;
     }
 
     @Override
     public DocSection section() {
         final DocSection section = new DocSection(
-                                            "Gradle",
-                                            "modules.gradle");
+                                            "Semver",
+                                            "Semantic versioning",
+                                            "modules.semver");
 
-        final DocSection all = new DocSection("(load-module :gradle)", id());
+        final DocSection all = new DocSection("(load-module :semver)", id());
         section.addSection(all);
 
-        final DocSection gradle = new DocSection("Gradle", id());
-        all.addSection(gradle);
-        gradle.addItem(diBuilder.getDocItem("gradle/with-home", false));
-        gradle.addItem(diBuilder.getDocItem("gradle/version", false));
-        gradle.addItem(diBuilder.getDocItem("gradle/task", false));
+        final DocSection semver = new DocSection("Semver", id());
+        all.addSection(semver);
+        semver.addItem(diBuilder.getDocItem("semver/parse"));
+        semver.addItem(diBuilder.getDocItem("semver/version"));
+
+        final DocSection valid = new DocSection("Validation", id());
+        all.addSection(valid);
+        valid.addItem(diBuilder.getDocItem("semver/valid?"));
+        valid.addItem(diBuilder.getDocItem("semver/valid-format?"));
+
+        final DocSection test = new DocSection("Test", id());
+        all.addSection(test);
+        test.addItem(diBuilder.getDocItem("semver/newer?"));
+        test.addItem(diBuilder.getDocItem("semver/older?"));
+        test.addItem(diBuilder.getDocItem("semver/equal?"));
+        test.addItem(diBuilder.getDocItem("semver/cmp"));
 
         return section;
     }

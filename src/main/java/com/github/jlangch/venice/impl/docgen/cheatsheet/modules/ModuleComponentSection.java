@@ -19,35 +19,44 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.github.jlangch.venice.impl.docgen.cheatsheet.section;
+package com.github.jlangch.venice.impl.docgen.cheatsheet.modules;
 
 import com.github.jlangch.venice.impl.docgen.cheatsheet.DocItemBuilder;
 import com.github.jlangch.venice.impl.docgen.cheatsheet.DocSection;
 import com.github.jlangch.venice.impl.docgen.cheatsheet.ISectionBuilder;
 
 
-public class ModuleXmlSection implements ISectionBuilder {
+public class ModuleComponentSection implements ISectionBuilder {
 
-    public ModuleXmlSection(final DocItemBuilder diBuilder) {
+    public ModuleComponentSection(final DocItemBuilder diBuilder) {
         this.diBuilder = diBuilder;
     }
 
     @Override
     public DocSection section() {
         final DocSection section = new DocSection(
-                                            "XML",
-                                            "modules.xml");
+                                            "Component",
+                                            "Managing lifecycle and dependencies of components",
+                                            "modules.component");
 
-        final DocSection all = new DocSection("(load-module :xml)", id());
+        final DocSection all = new DocSection("(load-module :component)", id());
         section.addSection(all);
 
-        final DocSection xml = new DocSection("XML", id());
-        all.addSection(xml);
-        xml.addItem(diBuilder.getDocItem("xml/parse-str"));
-        xml.addItem(diBuilder.getDocItem("xml/parse"));
-        xml.addItem(diBuilder.getDocItem("xml/path->"));
-        xml.addItem(diBuilder.getDocItem("xml/children"));
-        xml.addItem(diBuilder.getDocItem("xml/text"));
+        final DocSection system = new DocSection("Build", id());
+        all.addSection(system);
+        system.addItem(diBuilder.getDocItem("component/system-map", false));
+        system.addItem(diBuilder.getDocItem("component/system-using"));
+
+        final DocSection protocol = new DocSection("Protocol", id());
+        all.addSection(protocol);
+        protocol.addItem(diBuilder.getDocItem("component/Component", false));
+
+
+        final DocSection util = new DocSection("Util", id());
+        all.addSection(util);
+        util.addItem(diBuilder.getDocItem("component/deps"));
+        util.addItem(diBuilder.getDocItem("component/dep"));
+        util.addItem(diBuilder.getDocItem("component/id"));
 
         return section;
     }

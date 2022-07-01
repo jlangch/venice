@@ -19,44 +19,34 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.github.jlangch.venice.impl.docgen.cheatsheet.section;
+package com.github.jlangch.venice.impl.docgen.cheatsheet.modules;
 
 import com.github.jlangch.venice.impl.docgen.cheatsheet.DocItemBuilder;
 import com.github.jlangch.venice.impl.docgen.cheatsheet.DocSection;
 import com.github.jlangch.venice.impl.docgen.cheatsheet.ISectionBuilder;
 
 
-public class ModuleComponentSection implements ISectionBuilder {
+public class ModuleMavenSection implements ISectionBuilder {
 
-    public ModuleComponentSection(final DocItemBuilder diBuilder) {
+    public ModuleMavenSection(final DocItemBuilder diBuilder) {
         this.diBuilder = diBuilder;
     }
 
     @Override
     public DocSection section() {
         final DocSection section = new DocSection(
-                                            "Component",
-                                            "Managing lifecycle and dependencies of components",
-                                            "modules.component");
+                                            "Maven",
+                                            "modules.maven");
 
-        final DocSection all = new DocSection("(load-module :component)", id());
+        final DocSection all = new DocSection("(load-module :maven)", id());
         section.addSection(all);
 
-        final DocSection system = new DocSection("Build", id());
-        all.addSection(system);
-        system.addItem(diBuilder.getDocItem("component/system-map", false));
-        system.addItem(diBuilder.getDocItem("component/system-using"));
-
-        final DocSection protocol = new DocSection("Protocol", id());
-        all.addSection(protocol);
-        protocol.addItem(diBuilder.getDocItem("component/Component", false));
-
-
-        final DocSection util = new DocSection("Util", id());
-        all.addSection(util);
-        util.addItem(diBuilder.getDocItem("component/deps"));
-        util.addItem(diBuilder.getDocItem("component/dep"));
-        util.addItem(diBuilder.getDocItem("component/id"));
+        final DocSection maven = new DocSection("Maven", id());
+        all.addSection(maven);
+        maven.addItem(diBuilder.getDocItem("maven/download", false));
+        maven.addItem(diBuilder.getDocItem("maven/get", false));
+        maven.addItem(diBuilder.getDocItem("maven/uri", false));
+        maven.addItem(diBuilder.getDocItem("maven/parse-artefact", false));
 
         return section;
     }

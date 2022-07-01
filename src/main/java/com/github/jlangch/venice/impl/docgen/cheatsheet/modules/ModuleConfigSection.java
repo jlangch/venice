@@ -19,36 +19,47 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.github.jlangch.venice.impl.docgen.cheatsheet.section;
+package com.github.jlangch.venice.impl.docgen.cheatsheet.modules;
 
 import com.github.jlangch.venice.impl.docgen.cheatsheet.DocItemBuilder;
 import com.github.jlangch.venice.impl.docgen.cheatsheet.DocSection;
 import com.github.jlangch.venice.impl.docgen.cheatsheet.ISectionBuilder;
 
 
-public class ModuleAppSection implements ISectionBuilder {
+public class ModuleConfigSection implements ISectionBuilder {
 
-    public ModuleAppSection(final DocItemBuilder diBuilder) {
+    public ModuleConfigSection(final DocItemBuilder diBuilder) {
         this.diBuilder = diBuilder;
     }
 
     @Override
     public DocSection section() {
         final DocSection section = new DocSection(
-                                            "App",
-                                            "Venice application archive",
-                                            "modules.app");
+                                            "Configuration",
+                                            "Manages configurations with system property & env var support",
+                                            "modules.config");
 
-        final DocSection all = new DocSection("(load-module :app)", id());
+        final DocSection all = new DocSection("(load-module :config)", id());
         section.addSection(all);
 
         final DocSection build = new DocSection("Build", id());
         all.addSection(build);
-        build.addItem(diBuilder.getDocItem("app/build", false));
+        build.addItem(diBuilder.getDocItem("config/build", false));
 
-        final DocSection manifest = new DocSection("Manifest", id());
-        all.addSection(manifest);
-        manifest.addItem(diBuilder.getDocItem("app/manifest", false));
+        final DocSection file = new DocSection("File", id());
+        all.addSection(file);
+        file.addItem(diBuilder.getDocItem("config/file", false));
+        file.addItem(diBuilder.getDocItem("config/resource", true));
+
+        final DocSection env = new DocSection("Env", id());
+        all.addSection(env);
+        env.addItem(diBuilder.getDocItem("config/env-var", true));
+        env.addItem(diBuilder.getDocItem("config/env", false));
+
+        final DocSection prop = new DocSection("Properties", id());
+        all.addSection(prop);
+        prop.addItem(diBuilder.getDocItem("config/property-var", true));
+        prop.addItem(diBuilder.getDocItem("config/properties", false));
 
         return section;
     }

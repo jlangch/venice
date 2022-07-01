@@ -19,39 +19,31 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.github.jlangch.venice.impl.docgen.cheatsheet.section;
+package com.github.jlangch.venice.impl.docgen.cheatsheet.modules;
 
 import com.github.jlangch.venice.impl.docgen.cheatsheet.DocItemBuilder;
 import com.github.jlangch.venice.impl.docgen.cheatsheet.DocSection;
 import com.github.jlangch.venice.impl.docgen.cheatsheet.ISectionBuilder;
 
 
-public class ModuleCryptographySection implements ISectionBuilder {
+public class ModuleHexdumpSection implements ISectionBuilder {
 
-    public ModuleCryptographySection(final DocItemBuilder diBuilder) {
+    public ModuleHexdumpSection(final DocItemBuilder diBuilder) {
         this.diBuilder = diBuilder;
     }
 
     @Override
     public DocSection section() {
         final DocSection section = new DocSection(
-                                            "Cryptography",
-                                            "modules.cryptography");
+                                            "Hexdump",
+                                            "modules.hexdump");
 
-        final DocSection all = new DocSection("(load-module :crypt)", id());
+        final DocSection all = new DocSection("(load-module :hexdump)", id());
         section.addSection(all);
 
-        final DocSection hashes = new DocSection("Hashes", id());
-        all.addSection(hashes);
-        hashes.addItem(diBuilder.getDocItem("crypt/md5-hash"));
-        hashes.addItem(diBuilder.getDocItem("crypt/sha1-hash"));
-        hashes.addItem(diBuilder.getDocItem("crypt/sha512-hash"));
-        hashes.addItem(diBuilder.getDocItem("crypt/pbkdf2-hash"));
-
-        final DocSection crypt = new DocSection("Encrypt", id());
-        all.addSection(crypt);
-        crypt.addItem(diBuilder.getDocItem("crypt/encrypt"));
-        crypt.addItem(diBuilder.getDocItem("crypt/decrypt"));
+        final DocSection hexdump = new DocSection("Hexdump", id());
+        all.addSection(hexdump);
+        hexdump.addItem(diBuilder.getDocItem("hexdump/dump", false));
 
         return section;
     }

@@ -19,31 +19,36 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.github.jlangch.venice.impl.docgen.cheatsheet.section;
+package com.github.jlangch.venice.impl.docgen.cheatsheet.modules;
 
 import com.github.jlangch.venice.impl.docgen.cheatsheet.DocItemBuilder;
 import com.github.jlangch.venice.impl.docgen.cheatsheet.DocSection;
 import com.github.jlangch.venice.impl.docgen.cheatsheet.ISectionBuilder;
 
 
-public class ModuleHexdumpSection implements ISectionBuilder {
+public class ModuleAppSection implements ISectionBuilder {
 
-    public ModuleHexdumpSection(final DocItemBuilder diBuilder) {
+    public ModuleAppSection(final DocItemBuilder diBuilder) {
         this.diBuilder = diBuilder;
     }
 
     @Override
     public DocSection section() {
         final DocSection section = new DocSection(
-                                            "Hexdump",
-                                            "modules.hexdump");
+                                            "App",
+                                            "Venice application archive",
+                                            "modules.app");
 
-        final DocSection all = new DocSection("(load-module :hexdump)", id());
+        final DocSection all = new DocSection("(load-module :app)", id());
         section.addSection(all);
 
-        final DocSection hexdump = new DocSection("Hexdump", id());
-        all.addSection(hexdump);
-        hexdump.addItem(diBuilder.getDocItem("hexdump/dump", false));
+        final DocSection build = new DocSection("Build", id());
+        all.addSection(build);
+        build.addItem(diBuilder.getDocItem("app/build", false));
+
+        final DocSection manifest = new DocSection("Manifest", id());
+        all.addSection(manifest);
+        manifest.addItem(diBuilder.getDocItem("app/manifest", false));
 
         return section;
     }

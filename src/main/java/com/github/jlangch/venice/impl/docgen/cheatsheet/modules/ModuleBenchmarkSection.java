@@ -19,38 +19,31 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.github.jlangch.venice.impl.docgen.cheatsheet.section;
+package com.github.jlangch.venice.impl.docgen.cheatsheet.modules;
 
 import com.github.jlangch.venice.impl.docgen.cheatsheet.DocItemBuilder;
 import com.github.jlangch.venice.impl.docgen.cheatsheet.DocSection;
 import com.github.jlangch.venice.impl.docgen.cheatsheet.ISectionBuilder;
 
 
-public class ModuleKiraSection implements ISectionBuilder {
+public class ModuleBenchmarkSection implements ISectionBuilder {
 
-    public ModuleKiraSection(final DocItemBuilder diBuilder) {
+    public ModuleBenchmarkSection(final DocItemBuilder diBuilder) {
         this.diBuilder = diBuilder;
     }
 
     @Override
     public DocSection section() {
         final DocSection section = new DocSection(
-                                            "Kira",
-                                            "Templating system",
-                                            "modules.kira");
+                                            "Benchmark",
+                                            "modules.benchmark");
 
-        final DocSection all = new DocSection("(load-module :kira)", id());
+        final DocSection all = new DocSection("(load-module :benchmark)", id());
         section.addSection(all);
 
-        final DocSection kira = new DocSection("Kira", id());
-        all.addSection(kira);
-        kira.addItem(diBuilder.getDocItem("kira/eval"));
-        kira.addItem(diBuilder.getDocItem("kira/fn"));
-
-        final DocSection escape = new DocSection("Escape", id());
-        all.addSection(escape);
-        escape.addItem(diBuilder.getDocItem("kira/escape-xml"));
-        escape.addItem(diBuilder.getDocItem("kira/escape-html"));
+        final DocSection colors = new DocSection("Utils", id());
+        all.addSection(colors);
+        colors.addItem(diBuilder.getDocItem("benchmark/benchmark", false));
 
         return section;
     }

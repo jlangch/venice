@@ -19,33 +19,33 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.github.jlangch.venice.impl.docgen.cheatsheet.section;
+package com.github.jlangch.venice.impl.docgen.cheatsheet.modules;
 
 import com.github.jlangch.venice.impl.docgen.cheatsheet.DocItemBuilder;
 import com.github.jlangch.venice.impl.docgen.cheatsheet.DocSection;
 import com.github.jlangch.venice.impl.docgen.cheatsheet.ISectionBuilder;
 
 
-public class ModuleGrepSection implements ISectionBuilder {
+public class ModuleGradleSection implements ISectionBuilder {
 
-    public ModuleGrepSection(final DocItemBuilder diBuilder) {
+    public ModuleGradleSection(final DocItemBuilder diBuilder) {
         this.diBuilder = diBuilder;
     }
 
     @Override
     public DocSection section() {
         final DocSection section = new DocSection(
-                                            "Grep",
-                                            "Grep like search tool",
-                                            "modules.grep");
+                                            "Gradle",
+                                            "modules.gradle");
 
-        final DocSection all = new DocSection("(load-module :grep)", id());
+        final DocSection all = new DocSection("(load-module :gradle)", id());
         section.addSection(all);
 
-        final DocSection grep = new DocSection("Grep", id());
-        all.addSection(grep);
-        grep.addItem(diBuilder.getDocItem("grep/grep", false));
-        grep.addItem(diBuilder.getDocItem("grep/grep-zip", false));
+        final DocSection gradle = new DocSection("Gradle", id());
+        all.addSection(gradle);
+        gradle.addItem(diBuilder.getDocItem("gradle/with-home", false));
+        gradle.addItem(diBuilder.getDocItem("gradle/version", false));
+        gradle.addItem(diBuilder.getDocItem("gradle/task", false));
 
         return section;
     }

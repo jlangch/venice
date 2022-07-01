@@ -19,45 +19,39 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.github.jlangch.venice.impl.docgen.cheatsheet.section;
+package com.github.jlangch.venice.impl.docgen.cheatsheet.modules;
 
 import com.github.jlangch.venice.impl.docgen.cheatsheet.DocItemBuilder;
 import com.github.jlangch.venice.impl.docgen.cheatsheet.DocSection;
 import com.github.jlangch.venice.impl.docgen.cheatsheet.ISectionBuilder;
 
 
-public class ModuleSemverSection implements ISectionBuilder {
+public class ModuleCryptographySection implements ISectionBuilder {
 
-    public ModuleSemverSection(final DocItemBuilder diBuilder) {
+    public ModuleCryptographySection(final DocItemBuilder diBuilder) {
         this.diBuilder = diBuilder;
     }
 
     @Override
     public DocSection section() {
         final DocSection section = new DocSection(
-                                            "Semver",
-                                            "Semantic versioning",
-                                            "modules.semver");
+                                            "Cryptography",
+                                            "modules.cryptography");
 
-        final DocSection all = new DocSection("(load-module :semver)", id());
+        final DocSection all = new DocSection("(load-module :crypt)", id());
         section.addSection(all);
 
-        final DocSection semver = new DocSection("Semver", id());
-        all.addSection(semver);
-        semver.addItem(diBuilder.getDocItem("semver/parse"));
-        semver.addItem(diBuilder.getDocItem("semver/version"));
+        final DocSection hashes = new DocSection("Hashes", id());
+        all.addSection(hashes);
+        hashes.addItem(diBuilder.getDocItem("crypt/md5-hash"));
+        hashes.addItem(diBuilder.getDocItem("crypt/sha1-hash"));
+        hashes.addItem(diBuilder.getDocItem("crypt/sha512-hash"));
+        hashes.addItem(diBuilder.getDocItem("crypt/pbkdf2-hash"));
 
-        final DocSection valid = new DocSection("Validation", id());
-        all.addSection(valid);
-        valid.addItem(diBuilder.getDocItem("semver/valid?"));
-        valid.addItem(diBuilder.getDocItem("semver/valid-format?"));
-
-        final DocSection test = new DocSection("Test", id());
-        all.addSection(test);
-        test.addItem(diBuilder.getDocItem("semver/newer?"));
-        test.addItem(diBuilder.getDocItem("semver/older?"));
-        test.addItem(diBuilder.getDocItem("semver/equal?"));
-        test.addItem(diBuilder.getDocItem("semver/cmp"));
+        final DocSection crypt = new DocSection("Encrypt", id());
+        all.addSection(crypt);
+        crypt.addItem(diBuilder.getDocItem("crypt/encrypt"));
+        crypt.addItem(diBuilder.getDocItem("crypt/decrypt"));
 
         return section;
     }
