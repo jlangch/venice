@@ -63,7 +63,7 @@
     (->> (io/list-files-glob dir zipfile-glob)
          (map #(grep-in-zipfile % file-glob matcher))
          (apply concat)
-         (sort-zip-matches)
+         (sort-by (juxt first second third))
          (process-matches print? print-zip-matches))))
 
 
@@ -101,7 +101,7 @@
         print?  (:print opts true)
         matcher (regex/matcher line-pattern "")]
     (->> (grep-in-dir dir file-glob matcher)
-         (sort-file-matches)
+         (sort-by (juxt first second))
          (process-matches print? print-file-matches))))
 
 
@@ -112,7 +112,7 @@
 (deftype :named-file [name :string, data :any])
 
 (defn- strip-leading-dir [file dir]
-  (-> (str/strip-start (io/file-path file)  (io/file-path dir))
+  (-> (str/strip-start (io/file-path file) (io/file-path dir))
       (str/strip-start "/")))
 
 (defn- numbered-lines [lines]
@@ -136,11 +136,13 @@
        (flatten-matches)))
 
 (defn- grep-in-dir [dir file-glob line-matcher]
+  ;; return a list of tuples [filename line-no matched-line]
   (->> (io/list-files-glob dir file-glob)
        (map (fn [f] (named-file. (strip-leading-dir f dir) f)))
        (grep-in-files line-matcher)))
 
 (defn- grep-in-zipfile [zip file-glob line-matcher]
+  ;; return a list of tuples [zipname filename line-no matched-line]
   (let [zipname (io/file-name zip)]
     (->> (io/unzip-all file-glob zip)
          (map (fn [f] (named-file. (key f) (val f))))
@@ -148,26 +150,16 @@
          (map #(cons zipname %)))))
 
 (defn- flatten-matches [matches]
-  ;; return a list of tuples [file-name line-no matched-line]
+  ;; return a list of tuples [filename line-no matched-line]
   (->> (map #(cartesian-product (list (key %)) (val %)) matches)
        (apply concat)
        (map flatten)))
 
-(defn- sort-file-matches [matches]
-  ;; sort by filename and line number
-  (sort-by #(str (first %) (second %)) matches))
-
-(defn- sort-zip-matches [matches]
-  ;; sort by zipname, filename, and line number
-  (sort-by #(str (first %) (second %) (third %)) matches))
-
 (defn- print-file-matches [matches]
-  (doseq [[file-name line-no matched-line] matches]
-         (printf "%s:%s:%s\n" file-name line-no matched-line)))
+  (docoll #(apply printf "%s:%s:%s\n" %) matches))
 
 (defn- print-zip-matches [matches]
-  (doseq [[zipname file-name line-no matched-line] matches]
-         (printf "%s!%s:%s:%s\n" zipname file-name line-no matched-line)))
+  (docoll #(apply printf "%s!%s:%s:%s\n" %) matches))
 
 (defn- process-matches [print? processor matches]
   (if print?

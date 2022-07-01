@@ -3018,8 +3018,13 @@ public class CoreFunctions {
                     .meta()
                     .arglists("(stack)")
                     .doc("Creates a new mutable threadsafe stack.")
-                    .examples("(let [s (stack)]\n   (push! s 4)\n   (push! s 3)\n   (pop! s)\n   s)")
-                    .seeAlso("peek", "pop!", "push!", "empty?", "count")
+                    .examples(
+                        "(let [s (stack)]   \n" +
+                        "   (push! s 1)     \n" +
+                        "   (push! s 2)     \n" +
+                        "   (push! s 3))      ")
+                    .seeAlso(
+                        "peek", "pop!", "push!", "empty?", "count")
                     .build()
         ) {
             @Override
@@ -6368,12 +6373,13 @@ public class CoreFunctions {
                     .arglists("(pop! stack)")
                     .doc("Pops an item from a stack.")
                     .examples(
-                            "(let [s (stack)]  \n" +
-                            "  (push! s 4)     \n" +
-                            "  (push! s 3)     \n" +
-                            "  (pop! s)        \n" +
-                            "  s)")
-                    .seeAlso("stack", "peek", "push!", "empty?", "count")
+                        "(let [s (stack)]   \n" +
+                        "   (push! s 1)     \n" +
+                        "   (push! s 2)     \n" +
+                        "   (push! s 3)     \n" +
+                        "   (pop! s))")
+                    .seeAlso(
+                        "stack", "peek", "push!", "empty?", "count")
                     .build()
         ) {
             @Override
@@ -6406,12 +6412,13 @@ public class CoreFunctions {
                         .arglists("(push! stack v)")
                         .doc("Pushes an item to a stack.")
                         .examples(
-                            "(let [s (stack)]  \n" +
-                            "  (push! s 4)     \n" +
-                            "  (push! s 3)     \n" +
-                            "  (pop! s)        \n" +
-                            "  s)")
-                        .seeAlso("stack", "peek", "pop!", "empty?", "count")
+                            "(let [s (stack)]   \n" +
+                            "   (push! s 1)     \n" +
+                            "   (push! s 2)     \n" +
+                            "   (push! s 3)     \n" +
+                            "   (pop! s))")
+                        .seeAlso(
+                            "stack", "peek", "pop!", "empty?", "count")
                         .build()
             ) {
                 @Override
@@ -6577,9 +6584,11 @@ public class CoreFunctions {
                     .examples(
                         "(peek '(1 2 3 4))",
                         "(peek [1 2 3 4])",
-                        "(let [s (stack)]  \n" +
-                        "  (push! s 4)     \n" +
-                        "  (peek s))")
+                        "(let [s (stack)]   \n" +
+                        "   (push! s 1)     \n" +
+                        "   (push! s 2)     \n" +
+                        "   (push! s 3)     \n" +
+                        "   (peek s))")
                     .build()
         ) {
             @Override
@@ -6661,31 +6670,49 @@ public class CoreFunctions {
                     .doc(
                         "Returns a sorted sequence of the items in coll, where the sort " +
                         "order is determined by comparing (keyfn item).  If no comparator is " +
-                        "supplied, uses compare.")
+                        "supplied, uses compare. \n\n" +
+                        "To sort by multiple values use `juxt`, see the examples below.")
                     .examples(
                         "(sort-by :id [{:id 2 :name \"Smith\"} {:id 1 :name \"Jones\"} ])",
 
                         "(sort-by count [\"aaa\" \"bb\" \"c\"])",
 
-                        "; reversed\n" +
-                        "(sort-by count (comp - compare) [\"aaa\" \"bb\" \"c\"])",
+                        "; reversed                                                            \n" +
+                        "(sort-by count (comp - compare) [\"aaa\" \"bb\" \"c\"])               ",
 
-                        "(sort-by first [[1 2] [3 4] [2 3]])",
+                        "(sort-by first [[1 2] [3 4] [2 3]])                                   ",
 
-                        "; reversed\n" +
-                        "(sort-by first (comp - compare) [[1 2] [3 4] [2 3]])",
-                        "(sort-by :rank [{:rank 2} {:rank 3} {:rank 1}])",
+                        "; sort tuples by first value, and where first value is equal,         \n" +
+                        "; sort by second value                                                \n" +
+                        "(sort-by (juxt first second) [[3 2] [1 3] [3 1] [1 2]])                ",
 
-                        "; reversed\n" +
-                        "(sort-by :rank (comp - compare) [{:rank 2} {:rank 3} {:rank 1}])",
+                        "; reversed                                                            \n" +
+                        "(sort-by first (comp - compare) [[1 2] [3 4] [2 3]])                  ",
+                        "(sort-by :rank [{:rank 2} {:rank 3} {:rank 1}])                       ",
 
-                        "; sort by :foo, and where :foo is equal, sort by :bar\n" +
-                        "(do \n" +
-                        "  (def x [ {:foo 2 :bar 11} \n" +
-                        "           {:foo 1 :bar 99} \n" +
-                        "           {:foo 2 :bar 55} \n" +
-                        "           {:foo 1 :bar 77} ])\n" +
-                        "  (sort-by (juxt :foo :bar) x))")
+                        "; reversed                                                            \n" +
+                        "(sort-by :rank (comp - compare) [{:rank 2} {:rank 3} {:rank 1}])      ",
+
+                        ";sort entries in a map by value                                       \n" +
+                        "(sort-by val {:foo 7, :bar 3, :baz 5})                                ",
+
+                        "; sort by :foo, and where :foo is equal, sort by :bar                 \n" +
+                        "(do                                                                   \n" +
+                        "  (def x [ {:foo 2 :bar 11}                                           \n" +
+                        "           {:foo 1 :bar 99}                                           \n" +
+                        "           {:foo 2 :bar 55}                                           \n" +
+                        "           {:foo 1 :bar 77} ])                                        \n" +
+                        "  (sort-by (juxt :foo :bar) x))                                       ",
+
+                        "; sort by a given key order                                           \n" +
+                        "(do                                                                   \n" +
+                        "  (def x [ {:foo 2 :bar 11}                                           \n" +
+                        "           {:foo 1 :bar 99}                                           \n" +
+                        "           {:foo 2 :bar 55}                                           \n" +
+                        "           {:foo 1 :bar 77} ])                                        \n" +
+                        "  (def order [55 77 99 11])                                           \n" +
+                        "  (sort-by #((into {} (map-indexed (fn [i e] [e i]) order)) (:bar %)) \n" +
+                        "           x))                                                         ")
                     .seeAlso("sort")
                     .build()
         ) {
