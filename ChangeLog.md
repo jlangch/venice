@@ -10,11 +10,20 @@ and this project adheres to
 
 
 
+## [1.10.17] - 2022-07-xx
+
+### Added
+
+- ...
+
+
+
+
 ## [1.10.16] - 2022-07-01
 
 ### Added
 
-- support for import aliases `(import :java.awt.Color :as :Col)`   
+- support for import aliases `(import :java.awt.Color :as :Col)`
   `(import :java.awt.Color)` is equivalent to `(import :java.awt.Color :as :Color)`
 - support for regex rematching in function `regex/matches?`
 - a *grep* module with grep like search for lines in text
