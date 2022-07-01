@@ -206,12 +206,12 @@ def getCheckedOutGitCommitHash() {
     def takeFromHash = 12
 
     try {
-        def process = 'git rev-parse --verify --short HEAD'.execute()      
+        def process = 'git rev-parse --verify --short HEAD'.execute()
         if (process.exitValue() == 0) {
             return process.text
                           .trim()
                           .take(takeFromHash)
-        }                                               
+        }
         else {
             throw new Exception()
         }
@@ -296,7 +296,7 @@ sourceSets {
                        'doc/examples/scripts']
         }
     }
-    
+
     test {
         java {
             srcDirs = ['src/test/java']
