@@ -115,6 +115,14 @@
 //       $> gradle init
 //
 // -----------------------------------------------------------------------------
+//
+// Git is not working after macOS Update (xcrun: error: invalid active developer 
+// path (/Library/Developer/CommandLineTools). 
+//
+// See: https://stackoverflow.com/questions/52522565/git-is-not-working-after-macos-update-xcrun-error-invalid-active-developer-pa
+//      https://stackoverflow.com/questions/32893412/command-line-tools-not-working-os-x-el-capitan-sierra-high-sierra-mojave/32894314#32894314
+//
+// -----------------------------------------------------------------------------
 // Gradle project configuration for Eclipse IDE
 //
 //    Requires the plugin 'eclipse' in the build.gradle
@@ -198,10 +206,14 @@ def getCheckedOutGitCommitHash() {
     def takeFromHash = 12
 
     try {
-        'git rev-parse --verify --short HEAD'.execute()
-                                             .text
-                                             .trim()
-                                             .take(takeFromHash)
+        def hash = 'git rev-parse --verify --short HEAD'.execute()
+                                                        .text
+                                                        .trim()
+                                                        .take(takeFromHash)
+                                                        
+        if (!hash?.trim()) {
+            throw new Exception("Failed to get commit hash!")
+        }
     }
     catch(Exception e) {
         println "getCheckedOutGitCommitId(): 'git' not installed, falling back to '.git' folder ..."
