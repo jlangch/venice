@@ -62,6 +62,7 @@ import java.nio.file.StandardOpenOption;
 import java.nio.file.StandardWatchEventKinds;
 import java.nio.file.WatchEvent;
 import java.nio.file.WatchService;
+import java.nio.file.attribute.FileTime;
 import java.time.Instant;
 import java.time.ZoneId;
 import java.util.ArrayList;
@@ -1449,7 +1450,7 @@ public class IOFunctions {
                         "a string (file path), or an `java.io.OutputStream`.\n\n" +
                         "Options: \n\n" +
                         "| :replace true/false | e.g.: if true replace an existing file, defaults to false |\n")
-                    .seeAlso("io/move-file", "io/delete-file", "io/copy-stream")
+                    .seeAlso("io/move-file", "io/delete-file", "io/touch-file", "io/copy-stream")
                     .build()
         ) {
             @Override
@@ -1536,7 +1537,7 @@ public class IOFunctions {
                     .doc(
                         "Moves source to target. Returns nil or throws a VncException. " +
                         "Source and target must be a file or a string (file path).")
-                    .seeAlso("io/copy-file", "io/delete-file")
+                    .seeAlso("io/copy-file", "io/delete-file", "io/touch-file")
                     .build()
         ) {
             @Override
@@ -1566,6 +1567,53 @@ public class IOFunctions {
                 }
 
                 return Nil;
+            }
+
+            private static final long serialVersionUID = -1848883965231344442L;
+        };
+
+    public static VncFunction io_touch_file =
+        new VncFunction(
+                "io/touch-file",
+                VncFunction
+                    .meta()
+                    .arglists("(io/touch-file file)")
+                    .doc(
+                        "Updates the *lastModifiedTime* of the file to the current time, or " +
+                        "creates a new empty file if the file doesn't already exist. " +
+                        "Returns nil." +
+                        "File must be a file or a string (file path).")
+                    .seeAlso("io/move-file", "io/copy-file", "io/delete-file")
+                    .build()
+        ) {
+            @Override
+            public VncVal apply(final VncList args) {
+                ArityExceptions.assertArity(this, args, 2);
+
+                sandboxFunctionCallValidation();
+
+                final File file = convertToFile(
+                                    args.first(),
+                                    "Function 'io/touch-file' does not allow %s as file");
+
+                final Path path = file.toPath();
+
+                try {
+                    if (Files.exists(path)) {
+                        Files.setLastModifiedTime(path, FileTime.fromMillis(System.currentTimeMillis()));
+                    }
+                    else {
+                        Files.createFile(path);
+                    }
+
+                    return Nil;
+                }
+                catch(Exception ex) {
+                    throw new VncException(
+                            String.format(
+                                "Failed to touch file %s", file.getPath()),
+                            ex);
+                }
             }
 
             private static final long serialVersionUID = -1848883965231344442L;
@@ -3182,6 +3230,7 @@ public class IOFunctions {
                     .add(io_delete_file_tree)
                     .add(io_copy_file)
                     .add(io_move_file)
+                    .add(io_touch_file)
                     .add(io_mkdir)
                     .add(io_mkdirs)
                     .add(io_temp_file)

@@ -64,6 +64,7 @@ public class IoFileSection implements ISectionBuilder {
         file_io.addItem(diBuilder.getDocItem("io/spit"));
         file_io.addItem(diBuilder.getDocItem("io/copy-file"));
         file_io.addItem(diBuilder.getDocItem("io/move-file"));
+        file_io.addItem(diBuilder.getDocItem("io/touch-file"));
         file_io.addItem(diBuilder.getDocItem("io/delete-file"));
         file_io.addItem(diBuilder.getDocItem("io/delete-file-on-exit"));
         file_io.addItem(diBuilder.getDocItem("io/delete-file-tree"));
