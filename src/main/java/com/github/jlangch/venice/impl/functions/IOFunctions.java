@@ -639,16 +639,42 @@ public class IOFunctions {
                     .meta()
                     .arglists("(io/glob-path-matcher pattern)")
                     .doc(
-                        "Returns a file matcher for glob file patterns.\n\n" +
-                        "Globbing patterns: \n\n" +
+                        "Returns a file matcher for glob file patterns.\n" +
+                        "\n" +
+                        "**Globbing patterns**\n" +
+                        "\n" +
                         "| [![width: 20%]] | [![width: 80%]] |\n" +
                         "| `*.txt`       | Matches a path that represents a file name ending in .txt |\n" +
                         "| `*.*`         | Matches file names containing a dot |\n" +
                         "| `*.{txt,xml}` | Matches file names ending with .txt or .xml |\n" +
-                        "| `foo.?`       | Matches file names starting with foo. and a single character extension |\n" +
+                        "| `foo.?[xy]`   | Matches file names starting with foo. and a single character extension followed by a 'x' or 'y' character |\n" +
                         "| `/home/*/*`   | Matches `/home/gus/data` on UNIX platforms |\n" +
                         "| `/home/**`    | Matches `/home/gus` and `/home/gus/data` on UNIX platforms |\n" +
-                        "| `C:\\\\*`     | Matches `C:\\\\foo` and `C:\\\\bar` on the Windows platform |\n")
+                        "| `C:\\\\*`     | Matches `C:\\\\foo` and `C:\\\\bar` on the Windows platform |\n" +
+                        "\n" +
+                        "*Ranges*\n" +
+                        "\n" +
+                        "The pattern `[A-E]` would match any starting character that included ABCDE. " +
+                        "Ranges can be used in conjunction with each other to make powerful patterns. " +
+                        "Alphanumerical strings are matched by `[A-Za-z0-9]`. This would match the " +
+                        "following:\n" +
+                        "\n" +
+                        " * `[A-Z]` All uppercase letters from A to Z\n" +
+                        " * `[a-z]` All lowercase letters from a to z\n" +
+                        " * `[0-9]` All numbers from 0 to 9\n" +
+                        "\n" +
+                        "*Complementation*\n" +
+                        "\n" +
+                        "Globs can be used in complement with special characters that can change how the " +
+                        "pattern works. The two complement characters are exclamation marks `(!)` and " +
+                        "backslashes `(\\)`.\n" +
+                        "\n" +
+                        "The exclamation mark can negate a pattern that it is put in front of. " +
+                        "As `[CBR]at` matches Cat, Bat, or Rat the negated pattern `[!CBR]at` matches\n" +
+                        "anything like Kat, Pat, or Vat.\n" +
+                        "\n" +
+                        "Backslashes are used to remove the special meaning of single characters " +
+                        "`'?'`, `'*'`, and `'['`, so that they can be used in patterns.")
                     .examples(
                         "(io/glob-path-matcher\"*.log\")",
                         "(io/glob-path-matcher\"**/*.log\")")
@@ -677,16 +703,42 @@ public class IOFunctions {
                     .meta()
                     .arglists("(io/file-matches-glob? glob f)")
                     .doc(
-                        "Returns true if the file f matches the glob pattern. f must be a file or a string (file path).\n\n" +
-                        "Globbing patterns: \n\n" +
+                        "Returns true if the file f matches the glob pattern. f must be a file or a string (file path).\n" +
+                        "\n" +
+                        "**Globbing patterns**\n" +
+                        "\n" +
                         "| [![width: 20%]] | [![width: 80%]] |\n" +
                         "| `*.txt`       | Matches a path that represents a file name ending in .txt |\n" +
                         "| `*.*`         | Matches file names containing a dot |\n" +
                         "| `*.{txt,xml}` | Matches file names ending with .txt or .xml |\n" +
-                        "| `foo.?`       | Matches file names starting with foo. and a single character extension |\n" +
+                        "| `foo.?[xy]`   | Matches file names starting with foo. and a single character extension followed by a 'x' or 'y' character |\n" +
                         "| `/home/*/*`   | Matches `/home/gus/data` on UNIX platforms |\n" +
                         "| `/home/**`    | Matches `/home/gus` and `/home/gus/data` on UNIX platforms |\n" +
-                        "| `C:\\\\*`     | Matches `C:\\\\foo` and `C:\\\\bar` on the Windows platform |\n")
+                        "| `C:\\\\*`     | Matches `C:\\\\foo` and `C:\\\\bar` on the Windows platform |\n" +
+                        "\n" +
+                        "*Ranges*\n" +
+                        "\n" +
+                        "The pattern `[A-E]` would match any starting character that included ABCDE. " +
+                        "Ranges can be used in conjunction with each other to make powerful patterns. " +
+                        "Alphanumerical strings are matched by `[A-Za-z0-9]`. This would match the " +
+                        "following:\n" +
+                        "\n" +
+                        " * `[A-Z]` All uppercase letters from A to Z\n" +
+                        " * `[a-z]` All lowercase letters from a to z\n" +
+                        " * `[0-9]` All numbers from 0 to 9\n" +
+                        "\n" +
+                        "*Complementation*\n" +
+                        "\n" +
+                        "Globs can be used in complement with special characters that can change how the " +
+                        "pattern works. The two complement characters are exclamation marks `(!)` and " +
+                        "backslashes `(\\)`.\n" +
+                        "\n" +
+                        "The exclamation mark can negate a pattern that it is put in front of. " +
+                        "As `[CBR]at` matches Cat, Bat, or Rat the negated pattern `[!CBR]at` matches\n" +
+                        "anything like Kat, Pat, or Vat.\n" +
+                        "\n" +
+                        "Backslashes are used to remove the special meaning of single characters " +
+                        "`'?'`, `'*'`, and `'['`, so that they can be used in patterns.")
                     .examples(
                         "(io/file-matches-glob? \"*.log\" \"file.log\")",
                         "(io/file-matches-glob? \"**/*.log\" \"x/y/file.log\")",
@@ -1389,16 +1441,42 @@ public class IOFunctions {
                     .doc(
                         "Lists all files in a directory that match the glob pattern. " +
                         "dir must be a file or a string (file path). " +
-                        "Returns files as `java.io.File`\n\n" +
-                        "Globbing patterns: \n\n" +
+                        "Returns files as `java.io.File`\n" +
+                        "\n" +
+                        "**Globbing patterns**\n" +
+                        "\n" +
                         "| [![width: 20%]] | [![width: 80%]] |\n" +
                         "| `*.txt`       | Matches a path that represents a file name ending in .txt |\n" +
                         "| `*.*`         | Matches file names containing a dot |\n" +
                         "| `*.{txt,xml}` | Matches file names ending with .txt or .xml |\n" +
-                        "| `foo.?`       | Matches file names starting with foo. and a single character extension |\n" +
+                        "| `foo.?[xy]`   | Matches file names starting with foo. and a single character extension followed by a 'x' or 'y' character |\n" +
                         "| `/home/*/*`   | Matches `/home/gus/data` on UNIX platforms |\n" +
                         "| `/home/**`    | Matches `/home/gus` and `/home/gus/data` on UNIX platforms |\n" +
-                        "| `C:\\\\*`     | Matches `C:\\\\foo` and `C:\\\\bar` on the Windows platform |\n")
+                        "| `C:\\\\*`     | Matches `C:\\\\foo` and `C:\\\\bar` on the Windows platform |\n" +
+                        "\n" +
+                        "*Ranges*\n" +
+                        "\n" +
+                        "The pattern `[A-E]` would match any starting character that included ABCDE. " +
+                        "Ranges can be used in conjunction with each other to make powerful patterns. " +
+                        "Alphanumerical strings are matched by `[A-Za-z0-9]`. This would match the " +
+                        "following:\n" +
+                        "\n" +
+                        " * `[A-Z]` All uppercase letters from A to Z\n" +
+                        " * `[a-z]` All lowercase letters from a to z\n" +
+                        " * `[0-9]` All numbers from 0 to 9\n" +
+                        "\n" +
+                        "*Complementation*\n" +
+                        "\n" +
+                        "Globs can be used in complement with special characters that can change how the " +
+                        "pattern works. The two complement characters are exclamation marks `(!)` and " +
+                        "backslashes `(\\)`.\n" +
+                        "\n" +
+                        "The exclamation mark can negate a pattern that it is put in front of. " +
+                        "As `[CBR]at` matches Cat, Bat, or Rat the negated pattern `[!CBR]at` matches\n" +
+                        "anything like Kat, Pat, or Vat.\n" +
+                        "\n" +
+                        "Backslashes are used to remove the special meaning of single characters " +
+                        "`'?'`, `'*'`, and `'['`, so that they can be used in patterns.")
                     .examples(
                         "(io/list-files-glob \".\" \"sample*.txt\")")
                     .seeAlso("io/list-files", "io/list-file-tree")
