@@ -138,6 +138,7 @@ public class RestrictedBlacklistedFunctions {
                     "io/temp-dir",
                     "io/temp-file",
                     "io/tmp-dir",
+                    "io/touch-file",
                     "io/uri-stream",
                     "io/user-dir",
                     "io/wait-for",
