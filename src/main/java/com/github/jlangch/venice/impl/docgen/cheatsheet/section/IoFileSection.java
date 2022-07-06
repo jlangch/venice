@@ -88,7 +88,7 @@ public class IoFileSection implements ISectionBuilder {
 
         final DocSection file_glob = new DocSection("file glob", "io.fileglob");
         all.addSection(file_glob);
-        file_glob.addItem(diBuilder.getDocItem("io/glob-path-matcher"));
+        file_glob.addItem(diBuilder.getDocItem("io/glob-path-matcher", false));
         file_glob.addItem(diBuilder.getDocItem("io/file-matches-glob?"));
         file_glob.addItem(diBuilder.getDocItem("io/list-files-glob", false));
 
