@@ -25,6 +25,44 @@
 
 
 (defn
+  ^{ :arglists '("(grep dir file-glob line-pattern & options)")
+     :doc
+        """
+        Search for lines that match a regular expression in text files. The
+        search starts from a base directory and chooses all files that match
+        a globbing pattern.
+
+        Options:
+
+        | :print b    | e.g :print false, defaults to true |
+
+        With the print option `:print true`, `grep` prints the matches in a
+        human readable form, one line per match in the format
+        "{{filename}}:{{lineno}}:{{line}}"
+
+        With the print option `:print false`, `grep` prints the matches in a
+        machine readable form. It returns a list of tuples holding _filename_,
+        _lineno_, and _line_.
+        """
+     :examples '(
+        """
+        (do
+          (load-module :grep)
+          (grep/grep "/Users/foo/logs" "*.log" ".*Error.*"))
+        """ )
+     :see-also '("grep/grep-zip", "io/file-matches-glob?") }
+
+  grep [dir file-glob line-pattern & options]
+
+  (let [opts    (apply hash-map options)
+        print?  (:print opts true)
+        matcher (regex/matcher line-pattern "")]
+    (->> (grep-in-dir dir file-glob matcher)
+         (sort-by (juxt first second))
+         (process-matches print? print-file-matches))))
+
+
+(defn
   ^{ :arglists '(
         "(grep/grep-zip dir zipfile-glob file-glob line-pattern & options)")
      :doc
@@ -65,44 +103,6 @@
          (apply concat)
          (sort-by (juxt first second third))
          (process-matches print? print-zip-matches))))
-
-
-(defn
-  ^{ :arglists '("(grep dir file-glob line-pattern & options)")
-     :doc
-        """
-        Search for lines that match a regular expression in text files. The
-        search starts from a base directory and chooses all files that match
-        a globbing pattern.
-
-        Options:
-
-        | :print b    | e.g :print false, defaults to true |
-
-        With the print option `:print true`, `grep` prints the matches in a
-        human readable form, one line per match in the format
-        "{{filename}}:{{lineno}}:{{line}}"
-
-        With the print option `:print false`, `grep` prints the matches in a
-        machine readable form. It returns a list of tuples holding _filename_,
-        _lineno_, and _line_.
-        """
-     :examples '(
-        """
-        (do
-          (load-module :grep)
-          (grep/grep "/Users/foo/logs" "*.log" ".*Error.*"))
-        """ )
-     :see-also '("grep/grep-zip", "io/file-matches-glob?") }
-
-  grep [dir file-glob line-pattern & options]
-
-  (let [opts    (apply hash-map options)
-        print?  (:print opts true)
-        matcher (regex/matcher line-pattern "")]
-    (->> (grep-in-dir dir file-glob matcher)
-         (sort-by (juxt first second))
-         (process-matches print? print-file-matches))))
 
 
 ;; -----------------------------------------------------------------------------
