@@ -654,7 +654,7 @@ public class IOFunctions {
                         "\n" +
                         "*Ranges*\n" +
                         "\n" +
-                        "The pattern `[A-E]` would match any starting character that included ABCDE. " +
+                        "The pattern `[A-E]` would match any character that included ABCDE. " +
                         "Ranges can be used in conjunction with each other to make powerful patterns. " +
                         "Alphanumerical strings are matched by `[A-Za-z0-9]`. This would match the " +
                         "following:\n" +
@@ -718,7 +718,7 @@ public class IOFunctions {
                         "\n" +
                         "*Ranges*\n" +
                         "\n" +
-                        "The pattern `[A-E]` would match any starting character that included ABCDE. " +
+                        "The pattern `[A-E]` would match any character that included ABCDE. " +
                         "Ranges can be used in conjunction with each other to make powerful patterns. " +
                         "Alphanumerical strings are matched by `[A-Za-z0-9]`. This would match the " +
                         "following:\n" +
@@ -1457,7 +1457,7 @@ public class IOFunctions {
                         "\n" +
                         "*Ranges*\n" +
                         "\n" +
-                        "The pattern `[A-E]` would match any starting character that included ABCDE. " +
+                        "The pattern `[A-E]` would match any character that included ABCDE. " +
                         "Ranges can be used in conjunction with each other to make powerful patterns. " +
                         "Alphanumerical strings are matched by `[A-Za-z0-9]`. This would match the " +
                         "following:\n" +
