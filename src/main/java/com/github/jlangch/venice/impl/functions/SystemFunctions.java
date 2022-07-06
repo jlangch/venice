@@ -714,7 +714,7 @@ public class SystemFunctions {
                 VncFunction
                     .meta()
                     .arglists("(os-type)")
-                    .doc("Returns the OS type")
+                    .doc("Returns the OS type. Type is one of :windows, :mac-osx, :linux, or :unknown")
                     .examples("(os-type)")
                     .seeAlso("os-type?", "os-arch", "os-name", "os-version")
                     .build()
@@ -765,7 +765,7 @@ public class SystemFunctions {
                 VncFunction
                     .meta()
                     .arglists("(os-arch)")
-                    .doc("Returns the OS architecture")
+                    .doc("Returns the OS architecture. E.g: \"x86_64\"")
                     .examples("(os-arch)")
                     .seeAlso("os-type", "os-type?", "os-name", "os-version")
                     .build()
@@ -786,7 +786,7 @@ public class SystemFunctions {
                 VncFunction
                     .meta()
                     .arglists("(os-name)")
-                    .doc("Returns the OS name")
+                    .doc("Returns the OS name. E.g.: \"Mac OS X\"")
                     .examples("(os-name)")
                     .seeAlso("os-type", "os-type?", "os-arch", "os-version")
                     .build()
