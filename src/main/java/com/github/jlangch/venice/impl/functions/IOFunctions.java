@@ -742,8 +742,9 @@ public class IOFunctions {
                     .examples(
                         "(io/file-matches-glob? \"*.log\" \"file.log\")",
                         "(io/file-matches-glob? \"**/*.log\" \"x/y/file.log\")",
-                        "(io/file-matches-glob? (io/glob-path-matcher\"*.log\") (io/file \"file.log\"))",
-                        "(io/file-matches-glob? (io/glob-path-matcher\"**/*.log\") (io/file \"x/y/file.log\"))")
+                        "(io/file-matches-glob? \"**/*.log\" \"file.log\") ; take care, doesn't macth!",
+                        "(io/file-matches-glob? (io/glob-path-matcher \"*.log\") (io/file \"file.log\"))",
+                        "(io/file-matches-glob? (io/glob-path-matcher \"**/*.log\") (io/file \"x/y/file.log\"))")
                     .seeAlso("io/glob-path-matcher", "io/list-files-glob")
                     .build()
         ) {
