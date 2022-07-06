@@ -59,6 +59,8 @@ public class RegexFunctions {
                         .arglists("(regex/pattern s)")
                         .doc(
                             "Returns an instance of `java.util.regex.Pattern`.\n\n"  +
+                            "Patterns are immutable and are safe for use by multiple " +
+                            "concurrent threads! \n\n" +
                             "JavaDoc: [Pattern](https://docs.oracle.com/javase/8/docs/api/java/util/regex/Pattern.html)")
                         .examples("(regex/pattern \"[0-9]+\")")
                         .seeAlso("regex/matcher", "regex/matches", "regex/find", "regex/find-all")
@@ -86,6 +88,8 @@ public class RegexFunctions {
                     .doc(
                         "Returns an instance of `java.util.regex.Matcher`.¶" +
                         "The pattern can be either a string or a pattern created by `(regex/pattern s)`.\n\n" +
+                        "Matchers are mutable and are not safe for use by multiple " +
+                        "concurrent threads! \n\n" +
                         "JavaDoc: [Pattern](https://docs.oracle.com/javase/8/docs/api/java/util/regex/Pattern.html)")
                     .examples(
                         "(regex/matcher \"[0-9]+\" \"100\")",
