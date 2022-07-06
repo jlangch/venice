@@ -1581,8 +1581,7 @@ public class IOFunctions {
                     .doc(
                         "Updates the *lastModifiedTime* of the file to the current time, or " +
                         "creates a new empty file if the file doesn't already exist. " +
-                        "Returns nil." +
-                        "File must be a file or a string (file path).")
+                        "Returns nil. File must be a file or a string (file path).")
                     .seeAlso("io/move-file", "io/copy-file", "io/delete-file")
                     .build()
         ) {

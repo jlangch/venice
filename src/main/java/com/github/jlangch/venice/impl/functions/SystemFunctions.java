@@ -714,7 +714,7 @@ public class SystemFunctions {
                 VncFunction
                     .meta()
                     .arglists("(os-type)")
-                    .doc("Returns the OS type. Type is one of :windows, :mac-osx, :linux, or :unknown")
+                    .doc("Returns the OS type. Type is one of `:windows`, `:mac-osx`, `:linux`, `:unix`, or `:unknown`")
                     .examples("(os-type)")
                     .seeAlso("os-type?", "os-arch", "os-name", "os-version")
                     .build()
@@ -737,7 +737,7 @@ public class SystemFunctions {
                     .arglists("(os-type? type)")
                     .doc(
                         "Returns true if the OS id of the type otherwise false. Type is one " +
-                        "of :windows, :mac-osx, or :linux")
+                        "of `:windows`, `:mac-osx`, `:linux`, or `:unix`")
                     .examples("(os-type? :mac-osx)", "(os-type? :windows)")
                     .seeAlso("os-type", "os-arch", "os-name", "os-version")
                     .build()
@@ -1258,15 +1258,18 @@ public class SystemFunctions {
     }
 
     public static String osType() {
-        final String osName = System.getProperty("os.name");
-        if (osName.startsWith("Windows")) {
+        final String osName = System.getProperty("os.name").toLowerCase();
+        if (osName.startsWith("windows")) {
             return "windows";
         }
-        else if (osName.startsWith("Mac OS X")) {
+        else if (osName.startsWith("mac os x")) {
             return "mac-osx";
         }
-        else if (osName.startsWith("Linux")) {
+        else if (osName.startsWith("linux")) {
             return "linux";
+        }
+        else if (osName.contains("nix") || osName.contains("nux") || osName.contains("aix"))  {
+            return "unix";
         }
         else {
             return "unknown";
