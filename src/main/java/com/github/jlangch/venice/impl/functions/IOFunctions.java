@@ -676,8 +676,8 @@ public class IOFunctions {
                         "Backslashes are used to remove the special meaning of single characters " +
                         "`'?'`, `'*'`, and `'['`, so that they can be used in patterns.")
                     .examples(
-                        "(io/glob-path-matcher\"*.log\")",
-                        "(io/glob-path-matcher\"**/*.log\")")
+                        "(io/glob-path-matcher \"*.log\")",
+                        "(io/glob-path-matcher \"**/*.log\")")
                     .seeAlso("io/file-matches-glob?", "io/list-files-glob")
                     .build()
         ) {
