@@ -38,6 +38,15 @@ $ java -jar {path-to-bfg}/bfg-1.14.0.jar  --delete-files my-file.txt
 
 [Gitpodifying — The Ultimate Guide](https://www.gitpod.io/blog/gitpodify/)
 
+[Gitpod - Java](https://www.gitpod.io/docs/languages/java)
+
+[Gitpod - Java](https://github.com/redhat-developer/vscode-java/wiki/JDK-Requirements#java.configuration.runtimes)
+
+[Gitpod - Java](https://hub.docker.com/r/gitpod/workspace-java-17)
+
+`docker pull gitpod/workspace-java-17`
+
+
 
 ### Java 9 Modules
 

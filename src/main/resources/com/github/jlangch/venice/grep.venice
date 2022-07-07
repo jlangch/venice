@@ -156,14 +156,11 @@
        (map flatten)))
 
 (defn- statistics [matches]
-  (let [cnt-items (fn [f] (->> matches (map f) distinct count))]
+  (let [cnt (fn [f] (->> matches (map f) distinct count))]
     (cond
-      (empty? matches)
-        [0 0 0]
-      (== 4 (count (first matches)))
-        [(cnt-items first) (cnt-items second) (count matches)]
-      :else
-        [0 (cnt-items first) (count matches)])))
+      (empty? matches)               [0 0 0]
+      (== 4 (count (first matches))) [(cnt first) (cnt second) (count matches)]
+      :else                          [0 (cnt first) (count matches)])))
 
 (defn- file-statistics [matches]
   [0 (->> matches (map first) distinct count) (count matches)])
