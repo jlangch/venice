@@ -134,7 +134,7 @@
                          "step.*.zip"
                          "step.log.*"
                          ".*AAA.*"
-                         :print false))))
+                         :print false))
   (assert (= 3 (count r1)))
   (assert (= "step.2022-05.zip::step.log.2022-04-01::2::line 2  AAA" (str/join "::" (first r1))))
   (assert (= "step.2022-05.zip::step.log.2022-04-01::8::line 8  AAA" (str/join "::" (second r1))))
@@ -145,7 +145,7 @@
                          "---step.*.zip"
                          "step.log.*"
                          ".*AAA.*"
-                         :print false))))
+                         :print false))
   (assert (= 0 (count r1)))
 
   ;; grep-zip machine readable (no matching files) ----------------------------
@@ -153,7 +153,7 @@
                          "step.*.zip"
                          "---step.log.*"
                          ".*AAA.*"
-                         :print false))))
+                         :print false))
   (assert (= 0 (count r1)))
 
   ;; grep-zip machine readable (no matching lines) ----------------------------
@@ -161,7 +161,7 @@
                          "step.*.zip"
                          "step.log.*"
                          ".*ZZZ.*"
-                         :print false))))
+                         :print false))
   (assert (= 0 (count r1)))
 
   ;; grep-zip human readable --------------------------------------------------
@@ -171,9 +171,9 @@
                                               ".*AAA.*"
                                               :print true))))
   (assert (= 3 (count r1)))
-  (assert (= "step.2022-05.zip!step.log.2022-04-01::2::line 2  AAA" (first r1)))
-  (assert (= "step.2022-05.zip!step.log.2022-04-01::8::line 8  AAA" (second r1)))
-  (assert (= "step.2022-05.zip!step.log.2022-05-01::8::line 8  AAA" (third r1)))
+  (assert (= "step.2022-05.zip!step.log.2022-04-01:2:line 2  AAA" (first r1)))
+  (assert (= "step.2022-05.zip!step.log.2022-04-01:8:line 8  AAA" (second r1)))
+  (assert (= "step.2022-05.zip!step.log.2022-05-01:8:line 8  AAA" (third r1)))
 
   ;; grep-zip machine readable (no matching zip) ------------------------------
   (def r1 (lines (with-out-str (grep/grep-zip dir
