@@ -21,12 +21,11 @@
  */
 package com.github.jlangch.venice.impl.docgen.cheatsheet;
 
-import static com.github.jlangch.venice.impl.VeniceClasspath.getVeniceBasePath;
-
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import com.github.jlangch.venice.Venice;
 import com.github.jlangch.venice.impl.util.StringUtil;
 import com.github.jlangch.venice.impl.util.io.ClassPathResource;
 
@@ -68,7 +67,7 @@ public class CodeSnippetReader {
 
     private List<String> load() {
         return StringUtil.splitIntoLines(
-                new ClassPathResource(getVeniceBasePath() + "docgen/cheatsheet.snippets")
+                new ClassPathResource(Venice.class.getPackage(), "docgen/cheatsheet.snippets")
                         .getResourceAsString("UTF-8"));
     }
 

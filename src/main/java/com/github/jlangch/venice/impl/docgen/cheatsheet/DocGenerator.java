@@ -21,8 +21,6 @@
  */
 package com.github.jlangch.venice.impl.docgen.cheatsheet;
 
-import static com.github.jlangch.venice.impl.VeniceClasspath.getVeniceBasePath;
-
 import java.io.File;
 import java.io.FileOutputStream;
 import java.nio.ByteBuffer;
@@ -36,6 +34,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+import com.github.jlangch.venice.Venice;
 import com.github.jlangch.venice.impl.RunMode;
 import com.github.jlangch.venice.impl.VeniceInterpreter;
 import com.github.jlangch.venice.impl.docgen.cheatsheet.modules.ModuleAnsiSection;
@@ -431,7 +430,7 @@ public class DocGenerator {
     private Markdown loadVeniceDocMarkdown() {
         try {
             return Markdown.parse(
-                        new ClassPathResource(getVeniceBasePath() + "docgen/venice-doc.md")
+                        new ClassPathResource(Venice.class.getPackage(), "docgen/venice-doc.md")
                             .getResourceAsString("UTF-8"));
         }
         catch(RuntimeException ex) {
@@ -442,7 +441,7 @@ public class DocGenerator {
     private Markdown loadMarkdownDoc() {
         try {
             return Markdown.parse(
-                        new ClassPathResource(getVeniceBasePath() + "docgen/markdown-doc.md")
+                        new ClassPathResource(Venice.class.getPackage(), "docgen/markdown-doc.md")
                             .getResourceAsString("UTF-8"));
         }
         catch(RuntimeException ex) {

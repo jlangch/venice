@@ -21,12 +21,11 @@
  */
 package com.github.jlangch.venice.impl;
 
-import static com.github.jlangch.venice.impl.VeniceClasspath.getVeniceBasePath;
-
 import java.io.File;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
+import com.github.jlangch.venice.Venice;
 import com.github.jlangch.venice.VncException;
 import com.github.jlangch.venice.impl.thread.ThreadContext;
 import com.github.jlangch.venice.impl.util.io.ClassPathResource;
@@ -47,7 +46,8 @@ public class ModuleLoader {
         try {
             return modules.computeIfAbsent(
                     name,
-                    k -> loadFromClasspathAsString(getVeniceBasePath() + k));
+                    k -> new ClassPathResource(Venice.class.getPackage(), k)
+                                .getResourceAsString("UTF-8"));
         }
         catch(Exception ex) {
             throw new VncException(String.format(
@@ -68,7 +68,7 @@ public class ModuleLoader {
         try {
             return classpathFiles.computeIfAbsent(
                     file,
-                    k -> loadFromClasspathAsString(file));
+                    k -> new ClassPathResource(file).getResourceAsString("UTF-8"));
         }
         catch(Exception ex) {
             throw new VncException(String.format(
@@ -125,11 +125,6 @@ public class ModuleLoader {
 
     public static String getCachedExternalFile(final String file) {
         return externalFiles.get(file);
-    }
-
-
-    private static String loadFromClasspathAsString(final String path) {
-        return new ClassPathResource(path).getResourceAsString("UTF-8");
     }
 
 

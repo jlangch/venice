@@ -21,11 +21,9 @@
  */
 package com.github.jlangch.venice.impl;
 
-import com.github.jlangch.venice.Venice;
-
 public class VeniceClasspath {
 
-    public static String getVeniceBasePath() {
-        return Venice.class.getPackage().getName().replace('.', '/') + "/";
-    }
+//    public static String getVeniceBasePath() {
+//        return Venice.class.getPackage().getName().replace('.', '/') + "/";
+//    }
 }

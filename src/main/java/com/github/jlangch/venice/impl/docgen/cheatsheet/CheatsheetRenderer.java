@@ -21,8 +21,6 @@
  */
 package com.github.jlangch.venice.impl.docgen.cheatsheet;
 
-import static com.github.jlangch.venice.impl.VeniceClasspath.getVeniceBasePath;
-
 import java.nio.ByteBuffer;
 import java.util.Map;
 
@@ -90,7 +88,7 @@ public class CheatsheetRenderer {
     }
 
     private static String loadCheatSheetTemplate() {
-        return new ClassPathResource(getVeniceBasePath() + "docgen/cheatsheet2.html")
+        return new ClassPathResource(Venice.class.getPackage(), "docgen/cheatsheet2.html")
                         .getResourceAsString("UTF-8");
     }
 }

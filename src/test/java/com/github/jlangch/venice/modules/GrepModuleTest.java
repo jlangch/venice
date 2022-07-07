@@ -49,12 +49,7 @@ public class GrepModuleTest {
 
 
     private String loadScript(final String name) {
-        final String scriptPath = getThisBasePath() + name;
-        return new ClassPathResource(scriptPath).getResourceAsString("UTF-8");
-    }
-
-    private String getThisBasePath() {
-        return this.getClass().getPackage().getName().replace('.', '/') + "/";
+        return new ClassPathResource(getClass().getPackage(), name).getResourceAsString("UTF-8");
     }
 
 }

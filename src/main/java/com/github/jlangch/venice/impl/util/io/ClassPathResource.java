@@ -33,6 +33,10 @@ public class ClassPathResource {
         this(path, null, null);
     }
 
+    public ClassPathResource(final Package pkg, final String name) {
+        this(toPath(pkg, name), null, null);
+    }
+
     public ClassPathResource(final String path, final Class<?> clazz) {
         this(path, clazz, null);
     }
@@ -162,6 +166,10 @@ public class ClassPathResource {
                         charsetName),
                     ex);
         }
+    }
+
+    public static String toPath(final Package pkg, final String name) {
+        return pkg.getName().replace('.', '/') + "/" + name;
     }
 
 

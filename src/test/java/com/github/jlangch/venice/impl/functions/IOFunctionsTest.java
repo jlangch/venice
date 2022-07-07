@@ -21,7 +21,6 @@
  */
 package com.github.jlangch.venice.impl.functions;
 
-import static com.github.jlangch.venice.impl.VeniceClasspath.getVeniceBasePath;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
@@ -35,6 +34,7 @@ import org.junit.jupiter.api.Test;
 
 import com.github.jlangch.venice.Parameters;
 import com.github.jlangch.venice.Venice;
+import com.github.jlangch.venice.impl.util.io.ClassPathResource;
 
 
 public class IOFunctionsTest {
@@ -583,7 +583,7 @@ public class IOFunctionsTest {
     public void test_io_load_classpath_resource() {
         final Venice venice = new Venice();
 
-        final String resource = getVeniceBasePath() + "test.venice";
+        final String resource = ClassPathResource.toPath(Venice.class.getPackage(), "test.venice");
 
         final String script =
                 "(do                                                     \n" +
