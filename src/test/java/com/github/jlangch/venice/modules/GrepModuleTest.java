@@ -24,6 +24,7 @@ package com.github.jlangch.venice.modules;
 import org.junit.jupiter.api.Test;
 
 import com.github.jlangch.venice.Venice;
+import com.github.jlangch.venice.VncException;
 import com.github.jlangch.venice.impl.util.io.ClassPathResource;
 
 
@@ -34,7 +35,12 @@ public class GrepModuleTest {
         final Venice venice = new Venice();
 
         try {
-            venice.eval(loadScript("grep-test.venice"));
+            venice.eval("grep-test.venice", loadScript("grep-test.venice"));
+        }
+        catch(VncException ex) {
+            System.err.println(ex.getMessage());
+            System.err.println(ex.getCallStackAsString("  "));
+            throw new RuntimeException(ex);
         }
         catch(Exception ex) {
             throw new RuntimeException(ex);

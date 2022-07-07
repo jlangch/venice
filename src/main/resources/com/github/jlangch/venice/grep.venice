@@ -155,16 +155,28 @@
        (apply concat)
        (map flatten)))
 
+(defn- statistics [matches]
+  (let [cnt-items (fn [f] (->> matches (map f) distinct count))]
+    (cond
+      (empty? matches)
+        [0 0 0]
+      (== 4 (count (first matches)))
+        [(cnt-items first) (cnt-items second) (count matches)]
+      :else
+        [0 (cnt-items first) (count matches)])))
+
+(defn- file-statistics [matches]
+  [0 (->> matches (map first) distinct count) (count matches)])
+
 (defn- print-file-matches [matches]
   (docoll #(apply printf "%s:%s:%s\n" %) matches))
 
 (defn- print-zip-matches [matches]
   (docoll #(apply printf "%s!%s:%s:%s\n" %) matches))
 
-(defn- process-matches [print? processor matches]
+(defn- process-matches [print? printer matches]
   (if print?
-    (do
-      (processor matches)
-      (println *err* "Done.")
-      nil)
+    (let [[z f c] (statistics matches)]
+      (printer matches)
+      (printf *err* "Done. Zips: %d, Files: %d, Matches: %d%n" z f c))
     matches))
