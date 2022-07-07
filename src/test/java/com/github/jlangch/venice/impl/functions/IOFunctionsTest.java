@@ -30,7 +30,6 @@ import java.io.File;
 import java.nio.charset.Charset;
 import java.nio.file.Files;
 import java.nio.file.StandardOpenOption;
-import java.util.Map;
 
 import org.junit.jupiter.api.Test;
 
@@ -286,49 +285,21 @@ public class IOFunctionsTest {
     }
 
     @Test
-    public void test_io_list_files_glob_1() throws Exception{
-        final Venice venice = new Venice();
-
-        final File file1 = File.createTempFile("spit-", "-1.txt");
-        final File file2 = File.createTempFile("spit-", "-2.txt");
-        final File file3 = File.createTempFile("spit-", "-2.xml");
-
-        file1.deleteOnExit();
-        file2.deleteOnExit();
-        file3.deleteOnExit();
-
-        try {
-            venice.eval("(io/spit file \"123\" :append true)", Parameters.of("file", file1));
-            venice.eval("(io/spit file \"123\" :append true)", Parameters.of("file", file2));
-            venice.eval("(io/spit file \"123\" :append true)", Parameters.of("file", file3));
-
-            final File dir = file1.getParentFile();
-
-            final Map<String,Object> params = Parameters.of("dir", dir);
-
-            assertEquals(3L, venice.eval("(count (io/list-files-glob dir \"spit-*.*\"))", params));
-            assertEquals(2L, venice.eval("(count (io/list-files-glob dir \"spit-*.txt\"))", params));
-            assertEquals(1L, venice.eval("(count (io/list-files-glob dir \"spit-*.?ml\"))", params));
-            assertEquals(3L, venice.eval("(count (io/list-files-glob dir \"spit-*.{txt,xml}\"))", params));
-        }
-        catch(Exception ex) {
-            throw new RuntimeException(ex);
-        }
-    }
-
-    @Test
-    public void test_io_list_files_glob_2() {
+    public void test_io_list_files_glob() throws Exception {
         final Venice venice = new Venice();
 
         try {
             venice.eval(
-                "(let [dir (io/file (io/temp-dir \"test-\"))                   \n" +
-                "      a1  (io/touch-file (io/file dir \"a1.txt\"))            \n" +
-                "      a2  (io/touch-file (io/file dir \"a2.txt\"))            \n" +
-                "      a3  (io/touch-file (io/file dir \"a3.txt\"))]           \n" +
-                "                                                              \n" +
-                "  (assert (== 3 (count (io/list-files-glob dir \"*.txt\"))))  \n" +
-                "  (io/delete-file-tree dir)                                   \n" +
+                "(let [dir (io/file (io/temp-dir \"test-\"))                           \n" +
+                "      a1  (io/touch-file (io/file dir \"s-a1.txt\"))                  \n" +
+                "      a2  (io/touch-file (io/file dir \"s-a2.txt\"))                  \n" +
+                "      a3  (io/touch-file (io/file dir \"s-a3.xml\"))]                 \n" +
+                "                                                                      \n" +
+                "  (assert (== 3, (count (io/list-files-glob dir \"s-*.*\"))))         \n" +
+                "  (assert (== 2, (count (io/list-files-glob dir \"s-*.txt\"))))       \n" +
+                "  (assert (== 1, (count (io/list-files-glob dir \"s-*.?ml\"))))       \n" +
+                "  (assert (== 3, (count (io/list-files-glob dir \"s-*.{txt,xml}\")))) \n" +
+                "  (io/delete-file-tree dir)                                           \n" +
                 ")");
         }
         catch(Exception ex) {
