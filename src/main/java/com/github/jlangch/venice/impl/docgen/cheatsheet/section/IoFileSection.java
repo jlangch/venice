@@ -65,9 +65,13 @@ public class IoFileSection implements ISectionBuilder {
         file_io.addItem(diBuilder.getDocItem("io/copy-file"));
         file_io.addItem(diBuilder.getDocItem("io/move-file"));
         file_io.addItem(diBuilder.getDocItem("io/touch-file"));
-        file_io.addItem(diBuilder.getDocItem("io/delete-file"));
-        file_io.addItem(diBuilder.getDocItem("io/delete-file-on-exit"));
-        file_io.addItem(diBuilder.getDocItem("io/delete-file-tree"));
+
+        final DocSection file_del = new DocSection("file delete", "io.filedelete");
+        all.addSection(file_del);
+        file_del.addItem(diBuilder.getDocItem("io/delete-file"));
+        file_del.addItem(diBuilder.getDocItem("io/delete-files-glob"));
+        file_del.addItem(diBuilder.getDocItem("io/delete-file-tree"));
+        file_del.addItem(diBuilder.getDocItem("io/delete-file-on-exit"));
 
         final DocSection file_list = new DocSection("file list", "io.filelist");
         all.addSection(file_list);
@@ -91,6 +95,7 @@ public class IoFileSection implements ISectionBuilder {
         file_glob.addItem(diBuilder.getDocItem("io/glob-path-matcher", false));
         file_glob.addItem(diBuilder.getDocItem("io/file-matches-glob?"));
         file_glob.addItem(diBuilder.getDocItem("io/list-files-glob", false));
+        file_glob.addItem(diBuilder.getDocItem("io/delete-files-glob", false));
 
         final DocSection file_uri = new DocSection("URL/URI", "io.url_uri");
         all.addSection(file_uri);

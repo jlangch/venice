@@ -27,7 +27,6 @@ import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.io.File;
-import java.nio.ByteBuffer;
 import java.nio.charset.Charset;
 import java.nio.file.Files;
 import java.nio.file.StandardOpenOption;
@@ -232,7 +231,7 @@ public class IOFunctionsTest {
    }
 
     @Test
-    public void test_io_list_files() throws Exception{
+    public void test_io_list_files_1() throws Exception{
         final Venice venice = new Venice();
 
         final File file1 = File.createTempFile("spit-list", "-1.txt");
@@ -267,7 +266,27 @@ public class IOFunctionsTest {
     }
 
     @Test
-    public void test_io_list_files_glob() throws Exception{
+    public void test_io_list_files_2() {
+        final Venice venice = new Venice();
+
+        try {
+            venice.eval(
+                "(let [dir (io/file (io/temp-dir \"test-\"))         \n" +
+                "      a1  (io/touch-file (io/file dir \"a1.txt\"))  \n" +
+                "      a2  (io/touch-file (io/file dir \"a2.txt\"))  \n" +
+                "      a3  (io/touch-file (io/file dir \"a3.txt\"))] \n" +
+                "                                                    \n" +
+                "  (assert (== 3 (count (io/list-files dir))))       \n" +
+                "  (io/delete-file-tree dir)                         \n" +
+                ")");
+        }
+        catch(Exception ex) {
+            throw new RuntimeException(ex);
+        }
+    }
+
+    @Test
+    public void test_io_list_files_glob_1() throws Exception{
         final Venice venice = new Venice();
 
         final File file1 = File.createTempFile("spit-", "-1.txt");
@@ -291,6 +310,69 @@ public class IOFunctionsTest {
             assertEquals(2L, venice.eval("(count (io/list-files-glob dir \"spit-*.txt\"))", params));
             assertEquals(1L, venice.eval("(count (io/list-files-glob dir \"spit-*.?ml\"))", params));
             assertEquals(3L, venice.eval("(count (io/list-files-glob dir \"spit-*.{txt,xml}\"))", params));
+        }
+        catch(Exception ex) {
+            throw new RuntimeException(ex);
+        }
+    }
+
+    @Test
+    public void test_io_list_files_glob_2() {
+        final Venice venice = new Venice();
+
+        try {
+            venice.eval(
+                "(let [dir (io/file (io/temp-dir \"test-\"))                   \n" +
+                "      a1  (io/touch-file (io/file dir \"a1.txt\"))            \n" +
+                "      a2  (io/touch-file (io/file dir \"a2.txt\"))            \n" +
+                "      a3  (io/touch-file (io/file dir \"a3.txt\"))]           \n" +
+                "                                                              \n" +
+                "  (assert (== 3 (count (io/list-files-glob dir \"*.txt\"))))  \n" +
+                "  (io/delete-file-tree dir)                                   \n" +
+                ")");
+        }
+        catch(Exception ex) {
+            throw new RuntimeException(ex);
+        }
+    }
+
+    @Test
+    public void test_io_delete_file_tree() {
+        final Venice venice = new Venice();
+
+        try {
+            venice.eval(
+                    "(let [dir (io/file (io/temp-dir \"test-\"))          \n" +
+                    "      a1  (io/touch-file (io/file dir \"a1.txt\"))   \n" +
+                    "      a2  (io/touch-file (io/file dir \"a2.txt\"))   \n" +
+                    "      a3  (io/touch-file (io/file dir \"a3.txt\"))]  \n" +
+                    "                                                     \n" +
+                    "  (io/delete-file-tree dir)                          \n" +
+                    "  (assert (== false (io/exists-dir? dir)))           \n" +
+                    ")");
+        }
+        catch(Exception ex) {
+            throw new RuntimeException(ex);
+        }
+    }
+
+    @Test
+    public void test_io_delete_files_glob() {
+        final Venice venice = new Venice();
+
+        try {
+            venice.eval(
+                    "(let [dir (io/file (io/temp-dir \"test-\"))          \n" +
+                    "      a1  (io/touch-file (io/file dir \"a1.txt\"))   \n" +
+                    "      a2  (io/touch-file (io/file dir \"a2.txt\"))   \n" +
+                    "      a3  (io/touch-file (io/file dir \"a3.txt\"))]  \n" +
+                    "                                                     \n" +
+                    "  (assert (== 3 (count (io/list-files dir))))        \n" +
+                    "  (io/delete-files-glob dir \"*.txt\")               \n" +
+                    "  (assert (== 0 (count (io/list-files dir))))        \n" +
+                    "  (assert (io/exists-dir? dir))                      \n" +
+                    "  (io/delete-file dir)                               \n" +
+                    ")");
         }
         catch(Exception ex) {
             throw new RuntimeException(ex);
@@ -576,17 +658,6 @@ public class IOFunctionsTest {
         assertEquals("s: hello\n", venice.eval("(str \"s: \" (with-err-str (println *err* \"hello\")))"));
 
         assertEquals("s: abc: 100", venice.eval("(str \"s: \" (with-err-str (printf *err* \"%s: %d\" \"abc\" 100)))"));
-    }
-
-    @Test
-    public void test_io_zip() throws Exception {
-        final Venice venice = new Venice();
-
-        assertEquals("abcdef", new String(
-                                    ((ByteBuffer)venice.eval(
-                                            "(-> (io/zip \"test\" (bytebuf-from-string \"abcdef\" :utf-8)) \n" +
-                                            "    (io/unzip \"test\"))")).array(),
-                                    "utf-8"));
     }
 
 }

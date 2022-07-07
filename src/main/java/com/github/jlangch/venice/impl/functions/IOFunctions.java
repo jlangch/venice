@@ -1195,6 +1195,7 @@ public class IOFunctions {
                         "does not exist. If f is a directory the directory must be empty. " +
                         "f must be a file or a string (file path)")
                     .seeAlso(
+                        "io/delete-files-glob",
                         "io/delete-file-tree",
                         "io/delete-file-on-exit",
                         "io/copy-file",
@@ -1237,7 +1238,10 @@ public class IOFunctions {
                     .doc(
                         "Deletes a file or a directory with all its content. Silently skips delete if " +
                         "the file or directory does not exist. f must be a file or a string (file path)")
-                    .seeAlso("io/delete-file", "io/delete-file-on-exit")
+                    .seeAlso(
+                        "io/delete-files-glob",
+                        "io/delete-file",
+                        "io/delete-file-on-exit")
                     .build()
         ) {
             @Override
@@ -1292,7 +1296,10 @@ public class IOFunctions {
                        "attempted only for normal termination of the virtual machine, as defined " +
                        "by the Java Language Specification.\n\n" +
                        "f must be a file or a string (file path).")
-                    .seeAlso("io/delete-file", "io/delete-file-tree")
+                    .seeAlso(
+                        "io/delete-file",
+                        "io/delete-file-tree",
+                        "io/delete-files-glob")
                     .build()
         ) {
             @Override
@@ -1497,25 +1504,118 @@ public class IOFunctions {
 
                 validateReadableDirectory(dir);
 
-                try {
-                    final List<VncVal> files = new ArrayList<>();
+                final List<VncVal> files = new ArrayList<>();
 
-                    try (DirectoryStream<Path> dirStream = Files.newDirectoryStream(dir.toPath(), glob)) {
-                        dirStream.forEach(path -> files.add(new VncJavaObject(path.toFile())));
-                    }
-
-                    return VncList.ofList(files);
+                try (DirectoryStream<Path> dirStream = Files.newDirectoryStream(dir.toPath(), glob)) {
+                    dirStream.forEach(path -> files.add(new VncJavaObject(path.toFile())));
                 }
                 catch(Exception ex) {
                     throw new VncException(
                             String.format("Failed to list files %s", dir.getPath()),
                             ex);
                 }
+
+                return VncList.ofList(files);
             }
 
             private static final long serialVersionUID = -1848883965231344442L;
         };
 
+    public static VncFunction io_delete_files_glob =
+        new VncFunction(
+                "io/delete-files-glob",
+                VncFunction
+                    .meta()
+                    .arglists("(io/delete-files-glob dir glob)")
+                    .doc(
+                        "Removes all files in a directory that match the glob pattern. " +
+                        "dir must be a file or a string (file path).\n" +
+                        "\n" +
+                        "**Globbing patterns**\n" +
+                        "\n" +
+                        "| [![width: 20%]] | [![width: 80%]] |\n" +
+                        "| `*.txt`       | Matches a path that represents a file name ending in .txt |\n" +
+                        "| `*.*`         | Matches file names containing a dot |\n" +
+                        "| `*.{txt,xml}` | Matches file names ending with .txt or .xml |\n" +
+                        "| `foo.?[xy]`   | Matches file names starting with foo. and a single character extension followed by a 'x' or 'y' character |\n" +
+                        "| `/home/*/*`   | Matches `/home/gus/data` on UNIX platforms |\n" +
+                        "| `/home/**`    | Matches `/home/gus` and `/home/gus/data` on UNIX platforms |\n" +
+                        "| `C:\\\\*`     | Matches `C:\\\\foo` and `C:\\\\bar` on the Windows platform |\n" +
+                        "\n" +
+                        "*Ranges*\n" +
+                        "\n" +
+                        "The pattern `[A-E]` would match any character that included ABCDE. " +
+                        "Ranges can be used in conjunction with each other to make powerful patterns. " +
+                        "Alphanumerical strings are matched by `[A-Za-z0-9]`. This would match the " +
+                        "following:\n" +
+                        "\n" +
+                        " * `[A-Z]` All uppercase letters from A to Z\n" +
+                        " * `[a-z]` All lowercase letters from a to z\n" +
+                        " * `[0-9]` All numbers from 0 to 9\n" +
+                        "\n" +
+                        "*Complementation*\n" +
+                        "\n" +
+                        "Globs can be used in complement with special characters that can change how the " +
+                        "pattern works. The two complement characters are exclamation marks `(!)` and " +
+                        "backslashes `(\\)`.\n" +
+                        "\n" +
+                        "The exclamation mark can negate a pattern that it is put in front of. " +
+                        "As `[CBR]at` matches Cat, Bat, or Rat the negated pattern `[!CBR]at` matches\n" +
+                        "anything like Kat, Pat, or Vat.\n" +
+                        "\n" +
+                        "Backslashes are used to remove the special meaning of single characters " +
+                        "`'?'`, `'*'`, and `'['`, so that they can be used in patterns.")
+                    .examples(
+                        "(io/delete-files-glob \".\" \"*.log\")")
+                    .seeAlso(
+                        "io/delete-file",
+                        "io/delete-file-tree",
+                        "io/list-files-glob")
+                    .build()
+        ) {
+            @Override
+            public VncVal apply(final VncList args) {
+                ArityExceptions.assertArity(this, args, 2);
+
+                sandboxFunctionCallValidation();
+
+                final File dir = convertToFile(
+                                    args.first(),
+                                    "Function 'io/remove-files-glob' does not allow %s as dir");
+
+                final String glob = Coerce.toVncString(args.second()).getValue();
+
+                validateReadableDirectory(dir);
+
+                final List<VncVal> files = new ArrayList<>();
+
+                try (DirectoryStream<Path> dirStream = Files.newDirectoryStream(dir.toPath(), glob)) {
+                    dirStream.forEach(path -> {
+                        files.add(new VncJavaObject(path.toFile()));
+                        try {
+                            Files.delete(path);
+                        }
+                        catch(IOException ex) {
+                            throw new VncException(
+                                    String.format("Failed to remove file %s", path),
+                                    ex);
+                                }
+                    });
+                }
+                catch(VncException ex) {
+                    throw ex;
+                }
+                catch(Exception ex) {
+                    throw new VncException(
+                            String.format("Failed to remove files from %s, glob: %s ", dir.getPath(), glob),
+                            ex);
+                }
+
+                return VncList.ofList(files);
+            }
+
+            private static final long serialVersionUID = -1848883965231344442L;
+        };
 
     public static VncFunction io_copy_file =
         new VncFunction(
@@ -1660,7 +1760,8 @@ public class IOFunctions {
                     .doc(
                         "Updates the *lastModifiedTime* of the file to the current time, or " +
                         "creates a new empty file if the file doesn't already exist. " +
-                        "Returns nil. File must be a file or a string (file path).")
+                        "File must be a file or a string (file path). \n" +
+                        "Returns the file")
                     .seeAlso("io/move-file", "io/copy-file", "io/delete-file")
                     .build()
         ) {
@@ -1684,7 +1785,7 @@ public class IOFunctions {
                         Files.createFile(path);
                     }
 
-                    return Nil;
+                    return new VncJavaObject(file);
                 }
                 catch(Exception ex) {
                     throw new VncException(
@@ -3306,6 +3407,7 @@ public class IOFunctions {
                     .add(io_delete_file)
                     .add(io_delete_file_on_exit)
                     .add(io_delete_file_tree)
+                    .add(io_delete_files_glob)
                     .add(io_copy_file)
                     .add(io_move_file)
                     .add(io_touch_file)

@@ -118,6 +118,7 @@ public class RestrictedBlacklistedFunctions {
                     "io/delete-file",
                     "io/delete-file-on-exit",
                     "io/delete-file-tree",
+                    "io/delete-files-glob",
                     "io/download",
                     "io/exists-dir?",
                     "io/exists-file?",
