@@ -59,7 +59,7 @@
         matcher (regex/matcher line-pattern "")]
     (->> (grep-in-dir dir file-glob matcher)
          (sort-by (juxt first second))
-         (process-matches print? print-file-matches))))
+         (process-matches print?))))
 
 
 (defn
@@ -102,7 +102,7 @@
          (map #(grep-in-zipfile % file-glob matcher))
          (apply concat)
          (sort-by (juxt first second third))
-         (process-matches print? print-zip-matches))))
+         (process-matches print?))))
 
 
 ;; -----------------------------------------------------------------------------
@@ -156,24 +156,20 @@
        (map flatten)))
 
 (defn- statistics [matches]
-  (let [cnt (fn [f] (->> matches (map f) distinct count))]
-    (cond
-      (empty? matches)               [0 0 0]
-      (== 4 (count (first matches))) [(cnt first) (cnt second) (count matches)]
-      :else                          [0 (cnt first) (count matches)])))
+  (let [matches-file (filter #(== 3 (count %)) matches)
+        matches-zip  (filter #(== 4 (count %)) matches)
+        cnt-fn       (fn [f m] (->> m (map f) distinct count))]
+    [(+ 0                           (cnt-fn first matches-zip))
+     (+ (cnt-fn first matches-file) (cnt-fn second matches-zip))
+     (+ (count matches-file)        (count matches-zip))]))
 
-(defn- file-statistics [matches]
-  [0 (->> matches (map first) distinct count) (count matches)])
+(defn- print-matches [matches]
+  (let [fmt (fn [m] (if (== 3 (count m)) "%s:%s:%s\n" "%s!%s:%s:%s\n"))]
+    (docoll #(apply printf (fmt %) %) matches)))
 
-(defn- print-file-matches [matches]
-  (docoll #(apply printf "%s:%s:%s\n" %) matches))
-
-(defn- print-zip-matches [matches]
-  (docoll #(apply printf "%s!%s:%s:%s\n" %) matches))
-
-(defn- process-matches [print? printer matches]
+(defn- process-matches [print? matches]
   (if print?
     (let [[z f c] (statistics matches)]
-      (printer matches)
+      (print-matches matches)
       (printf *err* "Done. Zips: %d, Files: %d, Matches: %d%n" z f c))
     matches))
