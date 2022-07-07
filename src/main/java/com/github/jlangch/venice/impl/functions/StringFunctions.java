@@ -30,6 +30,7 @@ import java.net.URLDecoder;
 import java.net.URLEncoder;
 import java.util.Arrays;
 import java.util.Base64;
+import java.util.IllegalFormatException;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
@@ -1203,10 +1204,15 @@ public class StringFunctions {
                                                             : v.toString(false))
                                                 .collect(Collectors.toList());
 
-                return new VncString(String.format(
-                                        locale == null ? Locale.getDefault() : locale,
-                                        fmt.getValue(),
-                                        params.toArray()));
+                try {
+                    return new VncString(String.format(
+                                            locale == null ? Locale.getDefault() : locale,
+                                            fmt.getValue(),
+                                            params.toArray()));
+                }
+                catch(IllegalFormatException ex) {
+                    throw new VncException(ex.getMessage());
+                }
             }
 
             private static final long serialVersionUID = -1848883965231344442L;

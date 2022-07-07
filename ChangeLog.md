@@ -16,6 +16,10 @@ and this project adheres to
 
 - functions `io/touch-file`, `io/delete-files-glob`
 
+### Fixed
+
+- exception message with `str/format` on illegal format exceptions
+
 
 
 ## [1.10.16] - 2022-07-01
