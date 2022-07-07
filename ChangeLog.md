@@ -18,7 +18,8 @@ and this project adheres to
 
 ### Fixed
 
-- exception message with `str/format` on illegal format exceptions
+- exception message with `str/format` on illegal format exceptions. The
+  exception provides now a Venice stack trace.
 
 
 
