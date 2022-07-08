@@ -44,7 +44,9 @@ $ java -jar {path-to-bfg}/bfg-1.14.0.jar  --delete-files my-file.txt
 
 [Gitpod - Java](https://hub.docker.com/r/gitpod/workspace-java-17)
 
-`docker pull gitpod/workspace-java-17`
+[Gitpod - workspace-images](https://bytemeta.vip/index.php/repo/gitpod-io/workspace-images)
+
+[see example](https://github.com/resilience4j/resilience4j/blob/master/.gitpod.yml)
 
 
 
