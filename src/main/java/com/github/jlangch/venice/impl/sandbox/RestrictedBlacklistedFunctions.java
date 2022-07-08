@@ -97,6 +97,7 @@ public class RestrictedBlacklistedFunctions {
                     "shutdown-agents?",
                     "await-termination-agents",
                     "await-termination-agents?",
+                    "thread",
 
                     // scheduler
                     "schedule-delay",

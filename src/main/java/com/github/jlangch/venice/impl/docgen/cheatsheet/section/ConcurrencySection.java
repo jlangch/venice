@@ -150,6 +150,7 @@ public class ConcurrencySection implements ISectionBuilder {
 
         final DocSection threads = new DocSection("Threads", "concurrency.threads");
         all.addSection(threads);
+        threads.addItem(diBuilder.getDocItem("thread"));
         threads.addItem(diBuilder.getDocItem("thread-id"));
         threads.addItem(diBuilder.getDocItem("thread-name"));
         threads.addItem(diBuilder.getDocItem("thread-daemon?"));

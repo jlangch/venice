@@ -38,11 +38,11 @@
 
         With the print option `:print true`, `grep` prints the matches in a
         human readable form, one line per match in the format
-        "{{filename}}:{{lineno}}:{{line}}"
+        `"{{filename}}:{{lineno}}:{{line}}"`.
 
         With the print option `:print false`, `grep` prints the matches in a
-        machine readable form. It returns a list of tuples holding _filename_,
-        _lineno_, and _line_.
+        machine readable form. It returns a list of tuples
+        `[{{filename}}, {{lineno}}, {{line}}]`.
         """
      :examples '(
         """
@@ -79,11 +79,11 @@
 
         With the print option `:print true`, `grep-zip` prints the matches in a
         human readable form, one line per match in the format
-        "{{zipfile}}!{{filename}}:{{lineno}}:{{line}}"
+        `"{{zipfile}}!{{filename}}:{{lineno}}:{{line}}"`.
 
         With the print option `:print false`, `grep-zip` prints the matches in a
-        machine readable form. It returns a list of tuples holding
-        _zipname_, _filename_, _lineno_, and _line_.
+        machine readable form. It returns a list of tuples
+        `[{{zipname}}, {{filename}}, {{lineno}}, {{line}}]`.
         """
     :examples '(
        """

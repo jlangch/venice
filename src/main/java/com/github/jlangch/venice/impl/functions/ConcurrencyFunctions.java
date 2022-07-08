@@ -2860,6 +2860,53 @@ public class ConcurrencyFunctions {
     // Thread
     ///////////////////////////////////////////////////////////////////////////
 
+
+    public static VncFunction thread =
+        new VncFunction(
+                "thread",
+                VncFunction
+                    .meta()
+                    .arglists("(thread f)")
+                    .doc(
+                        "Executes f in another thread, returning immediately to the calling " +
+                        "thread. Returns a `promise` which will receive the result of " +
+                        "calling f when completed.")
+                    .examples("@(thread #(do (sleep 100) 1))")
+                    .seeAlso("promise")
+                    .build()
+        ) {
+            @Override
+            public VncVal apply(final VncList args) {
+                ArityExceptions.assertArity(this, args, 1);
+
+                final IVncFunction fn = Coerce.toIVncFunction(args.first());
+                final CompletableFuture<VncVal> result = new CompletableFuture<>();
+
+                // Create a wrapper that inherits the Venice thread context
+                // from the parent thread to the executer thread!
+                final ThreadBridge threadBridge = ThreadBridge.create(
+                                                        "thread",
+                                                        new CallFrame[] {
+                                                            new CallFrame(this, args)});
+
+                final Runnable taskWrapper = threadBridge.bridgeRunnable(
+                        () -> { try {
+                                    result.complete(fn.apply(VncList.empty()));
+                                }
+                                catch(Exception ex) {
+                                  result.completeExceptionally(ex);
+                                }});
+
+                final Thread th = new Thread(taskWrapper);
+                th.setDaemon(true);
+                th.run();
+
+                return new VncJavaObject(result);
+            }
+
+            private static final long serialVersionUID = -1848883965231344442L;
+        };
+
     public static VncFunction thread_id =
         new VncFunction(
                 "thread-id",
@@ -3312,6 +3359,7 @@ public class ConcurrencyFunctions {
                     .add(cancel)
                     .add(cancelled_Q)
 
+                    .add(thread)
                     .add(thread_id)
                     .add(thread_daemon_Q)
                     .add(thread_name)
