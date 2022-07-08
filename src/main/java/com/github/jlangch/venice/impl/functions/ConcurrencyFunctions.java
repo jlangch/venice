@@ -2914,7 +2914,7 @@ public class ConcurrencyFunctions {
                                     result.complete(fn.apply(VncList.empty()));
                                 }
                                 catch(Exception ex) {
-                                  result.completeExceptionally(ex);
+                                    result.completeExceptionally(ex);
                                 }
                               });
 

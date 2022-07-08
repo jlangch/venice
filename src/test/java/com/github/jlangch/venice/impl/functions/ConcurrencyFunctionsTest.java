@@ -1543,7 +1543,18 @@ public class ConcurrencyFunctionsTest {
     }
 
     @Test
-    public void test_thread2() {
+    public void test_thread_2() {
+        final Venice venice = new Venice();
+
+        final String script =
+                "(let [p (thread #(thread-daemon?))]  \n" +
+                "  @p)                                ";
+
+        assertTrue((Boolean)venice.eval(script));
+    }
+
+    @Test
+    public void test_thread_3() {
         final Venice venice = new Venice();
 
         final String script =
@@ -1554,7 +1565,7 @@ public class ConcurrencyFunctionsTest {
     }
 
     @Test
-    public void test_thread3() {
+    public void test_thread_4() {
         final Venice venice = new Venice();
 
         final String script =
