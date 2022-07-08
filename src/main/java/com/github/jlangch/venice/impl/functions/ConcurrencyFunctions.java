@@ -1468,14 +1468,11 @@ public class ConcurrencyFunctions {
                 else {
                     final VncVal arg = args.first();
                     if (arg instanceof VncFunction) {
-                        final IVncFunction fn = Coerce.toIVncFunction(args.first());
+                        final VncFunction fn = Coerce.toVncFunction(args.first());
 
-                        final CallFrame[] cf = fn instanceof VncFunction
-                                                    ? new CallFrame[] {
-                                                            new CallFrame(this, args),
-                                                            new CallFrame((VncFunction)fn) }
-                                                    : new CallFrame[] {
-                                                            new CallFrame(this, args) };
+                        final CallFrame[] cf = new CallFrame[] {
+                                                    new CallFrame(this, args),
+                                                    new CallFrame(fn) };
 
                         // Create a wrapper that inherits the Venice thread context
                         // from the parent thread to the executer thread!
@@ -2250,14 +2247,11 @@ public class ConcurrencyFunctions {
 
                 sandboxFunctionCallValidation();
 
-                final IVncFunction fn = Coerce.toIVncFunction(args.first());
+                final VncFunction fn = Coerce.toVncFunction(args.first());
 
-                final CallFrame[] cf = fn instanceof VncFunction
-                                            ? new CallFrame[] {
-                                                    new CallFrame(this, args),
-                                                    new CallFrame((VncFunction)fn) }
-                                            : new CallFrame[] {
-                                                    new CallFrame(this, args) };
+                final CallFrame[] cf = new CallFrame[] {
+                                            new CallFrame(this, args),
+                                            new CallFrame(fn) };
 
                 // Create a wrapper that inherits the Venice thread context
                 // from the parent thread to the executer thread!
@@ -2897,14 +2891,11 @@ public class ConcurrencyFunctions {
             public VncVal apply(final VncList args) {
                 ArityExceptions.assertArity(this, args, 1);
 
-                final IVncFunction fn = Coerce.toIVncFunction(args.first());
+                final VncFunction fn = Coerce.toVncFunction(args.first());
 
-                final CallFrame[] cf = fn instanceof VncFunction
-                                            ? new CallFrame[] {
-                                                    new CallFrame(this, args),
-                                                    new CallFrame((VncFunction)fn) }
-                                            : new CallFrame[] {
-                                                    new CallFrame(this, args) };
+                final CallFrame[] cf = new CallFrame[] {
+                                            new CallFrame(this, args),
+                                            new CallFrame(fn) };
 
                 final CompletableFuture<VncVal> result = new CompletableFuture<>();
 
@@ -2923,7 +2914,7 @@ public class ConcurrencyFunctions {
 
                 final Thread th = new Thread(taskWrapper);
                 th.setDaemon(true);
-                th.run();
+                th.start();
 
                 return new VncJavaObject(result);
             }
