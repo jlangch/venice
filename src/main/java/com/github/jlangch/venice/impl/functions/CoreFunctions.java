@@ -3042,7 +3042,7 @@ public class CoreFunctions {
                 "queue",
                 VncFunction
                     .meta()
-                    .arglists("(queue)", "(queue 100)")
+                    .arglists("(queue)", "(queue capacity)")
                     .doc(
                         "Creates a new mutable threadsafe bounded or unbounded queue.\n\n" +
                         "The queue can be turned into a synchronous queue when using " +
@@ -3089,7 +3089,9 @@ public class CoreFunctions {
             public VncVal apply(final VncList args) {
                 ArityExceptions.assertArity(this, args, 0, 1);
 
-                return args.isEmpty() ? new VncQueue() : new VncQueue(Coerce.toVncLong(args.first()).getIntValue());
+                return args.isEmpty()
+                        ? new VncQueue()
+                        : new VncQueue(Coerce.toVncLong(args.first()).getIntValue());
             }
 
             private static final long serialVersionUID = -1848883965231344442L;
