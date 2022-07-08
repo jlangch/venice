@@ -2,3 +2,5 @@ tasks:
   - init: ./gradlew --warning-mode all clean shadowJar
     command: ./gitpod-init-repl.sh
     name: REPL
+    
+image: gitpod/workspace-java-17
