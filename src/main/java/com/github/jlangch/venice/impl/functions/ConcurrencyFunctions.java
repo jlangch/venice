@@ -38,6 +38,7 @@ import java.util.concurrent.FutureTask;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
+import java.util.concurrent.atomic.AtomicLong;
 import java.util.function.BiConsumer;
 import java.util.function.BiFunction;
 import java.util.function.Consumer;
@@ -2873,25 +2874,30 @@ public class ConcurrencyFunctions {
                 VncFunction
                     .meta()
                     .arglists(
-                        "(thread f)")
+                        "(thread f)", "(thread f name)")
                     .doc(
                         "Executes f in another thread, returning immediately to the calling " +
                         "thread. Returns a `promise` which will receive the result of " +
-                        "calling f when completed.\n\n" +
+                        "calling f when completed. An optional name can be assigned to the thread.\n\n" +
                         "*Note:* Each call to `thread` creates a new expensive system thread. " +
                         "Consider to use futures or promises that use an *ExecutorService* to deal " +
                         "efficiently with threads.")
                     .examples(
-                         "@(thread #(do (sleep 100) 1))")
+                         "@(thread #(do (sleep 100) 1))",
+                         "@(thread #(do (sleep 100) 1) \"job\")")
                     .seeAlso(
                          "future", "promise")
                     .build()
         ) {
             @Override
             public VncVal apply(final VncList args) {
-                ArityExceptions.assertArity(this, args, 1);
+                ArityExceptions.assertArity(this, args, 1, 2);
 
                 final VncFunction fn = Coerce.toVncFunction(args.first());
+
+                final String name = args.size() == 2
+                                        ? Coerce.toVncString(args.second()).getValue()
+                                        : "VeniceThread-" + nextThreadNum.getAndIncrement();
 
                 final CallFrame[] cf = new CallFrame[] {
                                             new CallFrame(this, args),
@@ -2912,7 +2918,7 @@ public class ConcurrencyFunctions {
                                 }
                               });
 
-                final Thread th = new Thread(taskWrapper);
+                final Thread th = new Thread(taskWrapper, name);
                 th.setDaemon(true);
                 th.start();
 
@@ -3391,6 +3397,8 @@ public class ConcurrencyFunctions {
 
                     .toMap();
 
+
+    private static AtomicLong nextThreadNum = new AtomicLong(1L);
 
     private static ManagedCachedThreadPoolExecutor mngdExecutor =
             new ManagedCachedThreadPoolExecutor("venice-future-pool", 200);

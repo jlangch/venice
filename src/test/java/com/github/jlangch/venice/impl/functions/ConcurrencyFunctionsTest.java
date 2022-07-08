@@ -1521,6 +1521,51 @@ public class ConcurrencyFunctionsTest {
     }
 
     @Test
+    public void test_thread_1a() {
+        final Venice venice = new Venice();
+
+        final String script =
+                "(let [p (thread #(thread-name)  \"AAA\")]   \n" +
+                "  @p)                                       ";
+
+        assertEquals("AAA", venice.eval(script));
+    }
+
+    @Test
+    public void test_thread_1b() {
+        final Venice venice = new Venice();
+
+        final String script =
+                "(let [p (thread #(thread-name))]   \n" +
+                "  @p)                               ";
+
+        assertTrue(((String)venice.eval(script)).matches("VeniceThread-[0-9]+"));
+    }
+
+    @Test
+    public void test_thread2() {
+        final Venice venice = new Venice();
+
+        final String script =
+                "(let [p (thread #(do (sleep 100) 30))]  \n" +
+                "  @p)                                        ";
+
+        assertEquals(30L, venice.eval(script));
+    }
+
+    @Test
+    public void test_thread3() {
+        final Venice venice = new Venice();
+
+        final String script =
+                "(let [p1 (thread #(do (sleep 300) 30))   \n" +
+                "      p2 (thread #(do (sleep 100) 10))]  \n" +
+                "  (str @p1 \":\" @p2))                    ";
+
+        assertEquals("30:10", venice.eval(script));
+    }
+
+    @Test
     public void test_thread_id() {
         final Venice venice = new Venice();
 
