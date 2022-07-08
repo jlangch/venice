@@ -1809,7 +1809,7 @@ public class ConcurrencyFunctions {
                     .arglists("(when-complete p f)")
                     .doc(
                         "Returns the promise p with the same result or exception at this stage, " +
-                        "that executes the action f. Passes the the current stage's result value as " +
+                        "that executes the action f. Passes the current stage's result value as " +
                         "first and a possible exception as second argument to the function. The " +
                         "asynchronous function f is called presumably for handling side effects.")
                     .examples(

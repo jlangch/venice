@@ -1577,6 +1577,19 @@ public class ConcurrencyFunctionsTest {
     }
 
     @Test
+    public void test_thread_5() {
+        final Venice venice = new Venice();
+
+        final String script =
+                "(let [q (queue)]                                \n" +
+                "  (-> (thread #(do (sleep 100) 30))             \n" +
+                "      (when-complete (fn [v,e] (offer! q v))))  \n" +
+                "  (poll! q 200))                                     ";
+
+        assertEquals(30L, venice.eval(script));
+    }
+
+    @Test
     public void test_thread_id() {
         final Venice venice = new Venice();
 
