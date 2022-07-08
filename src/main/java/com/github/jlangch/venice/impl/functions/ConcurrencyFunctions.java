@@ -2876,12 +2876,13 @@ public class ConcurrencyFunctions {
                     .arglists(
                         "(thread f)", "(thread f name)")
                     .doc(
-                        "Executes f in another thread, returning immediately to the calling " +
-                        "thread. Returns a `promise` which will receive the result of " +
-                        "calling f when completed. An optional name can be assigned to the thread.\n\n" +
+                        "Executes the function f in another thread, returning immediately to the " +
+                        "calling thread. Returns a `promise` which will receive the result of " +
+                        "calling f when completed. Optionally a name can be assigned to the thread." +
+                        "\n\n" +
                         "*Note:* Each call to `thread` creates a new expensive system thread. " +
-                        "Consider to use futures or promises that use an *ExecutorService* to deal " +
-                        "efficiently with threads.")
+                        "Consider to use futures or promises that use an *ExecutorService* to " +
+                        "deal efficiently with threads.")
                     .examples(
                          "@(thread #(do (sleep 100) 1))",
                          "@(thread #(do (sleep 100) 1) \"job\")")
