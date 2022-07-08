@@ -1441,8 +1441,11 @@ public class ConcurrencyFunctions {
 
                         ";; deliver the promise from a task's return value    \n" +
                         "(do                                                  \n" +
-                        "   (defn task [] (sleep 500) 10)                     \n" +
+                        "   (defn task [] (sleep 300) 10)                     \n" +
                         "   (def p (promise task))                            \n" +
+                        "   @p)                                                ",
+
+                        "(let [p (promise #(do (sleep 300) 10))]              \n" +
                         "   @p)                                                 ")
                     .seeAlso(
                         "deliver", "promise?", "realized?", "deref",
@@ -1465,15 +1468,18 @@ public class ConcurrencyFunctions {
                 else {
                     final VncVal arg = args.first();
                     if (arg instanceof VncFunction) {
-                        final VncFunction fn = Coerce.toVncFunction(arg);
+                        final IVncFunction fn = Coerce.toIVncFunction(args.first());
+
+                        final CallFrame[] cf = fn instanceof VncFunction
+                                                    ? new CallFrame[] {
+                                                            new CallFrame(this, args),
+                                                            new CallFrame((VncFunction)fn) }
+                                                    : new CallFrame[] {
+                                                            new CallFrame(this, args) };
 
                         // Create a wrapper that inherits the Venice thread context
                         // from the parent thread to the executer thread!
-                        final ThreadBridge threadBridge = ThreadBridge.create(
-                                                                "promise",
-                                                                new CallFrame[] {
-                                                                    new CallFrame(this, args),
-                                                                    new CallFrame(fn)});
+                        final ThreadBridge threadBridge = ThreadBridge.create("promise", cf);
                         final Supplier<VncVal> taskWrapper = threadBridge.bridgeSupplier(() -> fn.applyOf());
 
                         return new VncJavaObject(
@@ -2212,6 +2218,9 @@ public class ConcurrencyFunctions {
                         "   (let [f (future wait)]                 \n" +
                         "      (deref f)))                           ",
 
+                        "(let [f (future #(do (sleep 300) 100))]   \n" +
+                        "   (deref f))                               ",
+
                         "(do                                       \n" +
                         "   (defn wait [x] (sleep 300) (+ x 100))  \n" +
                         "   (let [f (future (partial wait 10))]    \n" +
@@ -2241,15 +2250,18 @@ public class ConcurrencyFunctions {
 
                 sandboxFunctionCallValidation();
 
-                final VncFunction fn = Coerce.toVncFunction(args.first());
+                final IVncFunction fn = Coerce.toIVncFunction(args.first());
+
+                final CallFrame[] cf = fn instanceof VncFunction
+                                            ? new CallFrame[] {
+                                                    new CallFrame(this, args),
+                                                    new CallFrame((VncFunction)fn) }
+                                            : new CallFrame[] {
+                                                    new CallFrame(this, args) };
 
                 // Create a wrapper that inherits the Venice thread context
                 // from the parent thread to the executer thread!
-                final ThreadBridge threadBridge = ThreadBridge.create(
-                                                        "future",
-                                                        new CallFrame[] {
-                                                            new CallFrame(this, args),
-                                                            new CallFrame(fn)});
+                final ThreadBridge threadBridge = ThreadBridge.create("future", cf);
                 final Callable<VncVal> taskWrapper = threadBridge.bridgeCallable(() -> fn.applyOf());
 
                 // Note: Do NOT use a CompletableFuture
@@ -2866,13 +2878,19 @@ public class ConcurrencyFunctions {
                 "thread",
                 VncFunction
                     .meta()
-                    .arglists("(thread f)")
+                    .arglists(
+                        "(thread f)")
                     .doc(
                         "Executes f in another thread, returning immediately to the calling " +
                         "thread. Returns a `promise` which will receive the result of " +
-                        "calling f when completed.")
-                    .examples("@(thread #(do (sleep 100) 1))")
-                    .seeAlso("promise")
+                        "calling f when completed.\n\n" +
+                        "*Note:* Each call to `thread` creates a new expensive system thread. " +
+                        "Consider to use futures or promises that use an *ExecutorService* to deal " +
+                        "efficiently with threads.")
+                    .examples(
+                         "@(thread #(do (sleep 100) 1))")
+                    .seeAlso(
+                         "future", "promise")
                     .build()
         ) {
             @Override
@@ -2880,14 +2898,19 @@ public class ConcurrencyFunctions {
                 ArityExceptions.assertArity(this, args, 1);
 
                 final IVncFunction fn = Coerce.toIVncFunction(args.first());
+
+                final CallFrame[] cf = fn instanceof VncFunction
+                                            ? new CallFrame[] {
+                                                    new CallFrame(this, args),
+                                                    new CallFrame((VncFunction)fn) }
+                                            : new CallFrame[] {
+                                                    new CallFrame(this, args) };
+
                 final CompletableFuture<VncVal> result = new CompletableFuture<>();
 
                 // Create a wrapper that inherits the Venice thread context
                 // from the parent thread to the executer thread!
-                final ThreadBridge threadBridge = ThreadBridge.create(
-                                                        "thread",
-                                                        new CallFrame[] {
-                                                            new CallFrame(this, args)});
+                final ThreadBridge threadBridge = ThreadBridge.create("thread", cf);
 
                 final Runnable taskWrapper = threadBridge.bridgeRunnable(
                         () -> { try {
@@ -2895,7 +2918,8 @@ public class ConcurrencyFunctions {
                                 }
                                 catch(Exception ex) {
                                   result.completeExceptionally(ex);
-                                }});
+                                }
+                              });
 
                 final Thread th = new Thread(taskWrapper);
                 th.setDaemon(true);
