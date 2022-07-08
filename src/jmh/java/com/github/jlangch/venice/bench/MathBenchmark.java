@@ -80,10 +80,10 @@ public class MathBenchmark {
      }
 
 
-     private Long d1 = new Long(1L);
-     private Long d2 = new Long(2L);
-     private Long d3 = new Long(3L);
-     private Long d4 = new Long(4L);
+     private Long d1 = Long.valueOf(1L);
+     private Long d2 = Long.valueOf(2L);
+     private Long d3 = Long.valueOf(3L);
+     private Long d4 = Long.valueOf(4L);
      private VncLong d5 = new VncLong(1L);
      private VncLong d6 = new VncLong(2L);
      private VncLong d7 = new VncLong(3L);
