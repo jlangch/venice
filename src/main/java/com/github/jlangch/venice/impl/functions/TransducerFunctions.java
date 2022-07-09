@@ -128,7 +128,7 @@ public class TransducerFunctions {
 
                 final VncFunction xform = Coerce.toVncFunction(args.first());
                 final VncFunction reduction_fn = Coerce.toVncFunction(args.second());
-                final VncSequence coll = VncSequence.coerceToSequence(args.last());
+                final VncCollection coll = Coerce.toVncCollection(args.last());
 
                 final VncVal init = args.size() == 4
                                         ? args.third()

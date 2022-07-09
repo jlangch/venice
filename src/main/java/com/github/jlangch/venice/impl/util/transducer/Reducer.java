@@ -21,10 +21,13 @@
  */
 package com.github.jlangch.venice.impl.util.transducer;
 
+import static com.github.jlangch.venice.impl.types.Constants.Nil;
+
 import com.github.jlangch.venice.impl.types.IVncFunction;
 import com.github.jlangch.venice.impl.types.VncFunction;
 import com.github.jlangch.venice.impl.types.VncVal;
 import com.github.jlangch.venice.impl.types.collections.VncList;
+import com.github.jlangch.venice.impl.types.collections.VncQueue;
 import com.github.jlangch.venice.impl.util.MeterRegistry;
 
 
@@ -57,6 +60,28 @@ public class Reducer {
                 if (Reduced.isReduced(value)) {
                     return Reduced.unreduced(value);
                 }
+            }
+        }
+
+        return value;
+    }
+
+    public static VncVal reduce(
+            final IVncFunction reduceFn,
+            final VncVal init,
+            final VncQueue queue,
+            final MeterRegistry meterRegistry
+    ) {
+        VncVal value = init;
+
+        while(true) {
+            final VncVal v = queue.take();
+            if (v == Nil) break;  // queue has been closed
+
+            value = reduceFn.apply(VncList.of(value, v));
+
+            if (Reduced.isReduced(value)) {
+                return Reduced.unreduced(value);
             }
         }
 

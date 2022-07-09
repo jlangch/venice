@@ -3600,18 +3600,54 @@ public class CoreFunctionsTest {
     }
 
     @Test
-    public void test_reduce() {
+    public void test_reduce_sequence() {
         final Venice venice = new Venice();
 
         // ((100 + 3) * 2) + 1 => 207
         assertEquals(Long.valueOf(207), venice.eval("((reduce comp [(partial + 1) (partial * 2) (partial + 3)]) 100)"));
 
-        assertEquals(Long.valueOf(15), venice.eval("(reduce + [1 2 3 4 5])"));
-        assertEquals(Long.valueOf(0),  venice.eval("(reduce + [])"));
-        assertEquals(Long.valueOf(1),  venice.eval("(reduce + [1])"));
-        assertEquals(Long.valueOf(3),  venice.eval("(reduce + [1 2])"));
-        assertEquals(Long.valueOf(3),  venice.eval("(reduce + 3 [])"));
-        assertEquals(Long.valueOf(9),  venice.eval("(reduce + 4 [2 3])"));
+        assertEquals( 0L,  venice.eval("(reduce + [])"));
+        assertEquals( 1L,  venice.eval("(reduce + [1])"));
+        assertEquals( 3L,  venice.eval("(reduce + [1 2])"));
+        assertEquals( 6L,  venice.eval("(reduce + [1 2 3])"));
+        assertEquals(10L,  venice.eval("(reduce + [1 2 3 4])"));
+        assertEquals(15L,  venice.eval("(reduce + [1 2 3 4 5])"));
+
+        assertEquals(100L,  venice.eval("(reduce + 100 [])"));
+        assertEquals(101L,  venice.eval("(reduce + 100 [1])"));
+        assertEquals(103L,  venice.eval("(reduce + 100 [1 2])"));
+        assertEquals(106L,  venice.eval("(reduce + 100 [1 2 3])"));
+        assertEquals(110L,  venice.eval("(reduce + 100 [1 2 3 4])"));
+        assertEquals(115L,  venice.eval("(reduce + 100 [1 2 3 4 5])"));
+    }
+
+    @Test
+    public void test_reduce_map() {
+        final Venice venice = new Venice();
+
+        assertEquals("{}",                venice.eval("(pr-str (sorted-map (reduce (fn [m [k v]] (assoc m k (inc v))) {} {})))"));
+        assertEquals("{:a 2}",            venice.eval("(pr-str (sorted-map (reduce (fn [m [k v]] (assoc m k (inc v))) {} {:a 1})))"));
+        assertEquals("{:a 2 :b 3}",       venice.eval("(pr-str (sorted-map (reduce (fn [m [k v]] (assoc m k (inc v))) {} {:a 1 :b 2})))"));
+        assertEquals("{:a 2 :b 3 :c 4}",  venice.eval("(pr-str (sorted-map (reduce (fn [m [k v]] (assoc m k (inc v))) {} {:a 1 :b 2 :c 3})))"));
+     }
+
+    @Test
+    public void test_reduce_queue() {
+        final Venice venice = new Venice();
+
+        assertEquals( 0L,  venice.eval("(reduce + (doto (queue) (offer! nil)))"));
+        assertEquals( 1L,  venice.eval("(reduce + (doto (queue) (offer! 1) (offer! nil)))"));
+        assertEquals( 3L,  venice.eval("(reduce + (doto (queue) (offer! 1) (offer! 2) (offer! nil))))"));
+        assertEquals( 6L,  venice.eval("(reduce + (doto (queue) (offer! 1) (offer! 2) (offer! 3) (offer! nil))))"));
+        assertEquals(10L,  venice.eval("(reduce + (doto (queue) (offer! 1) (offer! 2) (offer! 3) (offer! 4) (offer! nil))))"));
+        assertEquals(15L,  venice.eval("(reduce + (doto (queue) (offer! 1) (offer! 2) (offer! 3) (offer! 4) (offer! 5) (offer! nil))))"));
+
+        assertEquals(100L,  venice.eval("(reduce + 100 (doto (queue) (offer! nil)))"));
+        assertEquals(101L,  venice.eval("(reduce + 100 (doto (queue) (offer! 1) (offer! nil)))"));
+        assertEquals(103L,  venice.eval("(reduce + 100 (doto (queue) (offer! 1) (offer! 2) (offer! nil))))"));
+        assertEquals(106L,  venice.eval("(reduce + 100 (doto (queue) (offer! 1) (offer! 2) (offer! 3) (offer! nil))))"));
+        assertEquals(110L,  venice.eval("(reduce + 100 (doto (queue) (offer! 1) (offer! 2) (offer! 3) (offer! 4) (offer! nil))))"));
+        assertEquals(115L,  venice.eval("(reduce + 100 (doto (queue) (offer! 1) (offer! 2) (offer! 3) (offer! 4) (offer! 5) (offer! nil))))"));
     }
 
     @Test

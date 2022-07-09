@@ -7443,51 +7443,79 @@ public class CoreFunctions {
             public VncVal apply(final VncList args) {
                 ArityExceptions.assertArity(this, args, 2, 3);
 
-                final MeterRegistry meterRegistry = ThreadContext.getMeterRegistry();
-
                 final boolean noInitValue = args.size() < 3;
+
                 final IVncFunction reduceFn = Coerce.toIVncFunction(args.first());
+                final VncVal init = noInitValue ? null : args.second();
                 final VncVal coll = noInitValue ? args.second() : args.third();
 
-                VncSequence seq;
-
                 if (Types.isVncSequence(coll)) {
-                    seq = (VncSequence)coll;
+                    return reduce_sequence((VncSequence)coll, reduceFn, init);
                 }
                 else if (Types.isVncMap(coll)) {
-                    seq = ((VncMap)coll).toVncList();
+                    return reduce_sequence(((VncMap)coll).toVncList(), reduceFn, init);
+                }
+                else if (Types.isVncQueue(coll)) {
+                    return reduce_queue((VncQueue)coll, reduceFn, init);
                 }
                 else {
                     throw new VncException(String.format(
                             "reduce: collection type %s not supported",
                             Types.getType(args.last())));
                 }
-
-                if (noInitValue) {
-                    if (seq.isEmpty()) {
-                        return reduceFn.apply(VncList.empty());
-                    }
-                    else if (seq.size() == 1) {
-                        return seq.first();
-                    }
-                    else {
-                        return Reducer.reduce(reduceFn, seq.first(), seq.rest(), meterRegistry);
-                    }
-                }
-                else {
-                    final VncVal init = args.second();
-
-                    if (seq.isEmpty()) {
-                        return init;
-                    }
-                    else {
-                        return Reducer.reduce(reduceFn, init, seq, meterRegistry);
-                    }
-                }
             }
 
             private static final long serialVersionUID = -1848883965231344442L;
         };
+
+    private static VncVal reduce_sequence(
+            final VncSequence seq,
+            final IVncFunction reduceFn,
+            final VncVal init
+    ) {
+        final MeterRegistry meterRegistry = ThreadContext.getMeterRegistry();
+
+        if (init == null) {
+            if (seq.isEmpty()) {
+                return reduceFn.apply(VncList.empty());
+            }
+            else if (seq.size() == 1) {
+                return seq.first();
+            }
+            else {
+                return Reducer.reduce(reduceFn, seq.first(), seq.rest(), meterRegistry);
+            }
+        }
+        else {
+            if (seq.isEmpty()) {
+                return init;
+            }
+            else {
+                return Reducer.reduce(reduceFn, init, seq, meterRegistry);
+            }
+        }
+    }
+
+    private static VncVal reduce_queue(
+            final VncQueue queue,
+            final IVncFunction reduceFn,
+            final VncVal init
+    ) {
+        final MeterRegistry meterRegistry = ThreadContext.getMeterRegistry();
+
+        if (init == null) {
+            final VncVal init_ = queue.take();
+            if (init_ == Nil) {  // queue has been closed
+                return reduceFn.apply(VncList.empty());
+            }
+            else {
+                return Reducer.reduce(reduceFn, init_, queue, meterRegistry);
+            }
+        }
+        else {
+            return Reducer.reduce(reduceFn, init, queue, meterRegistry);
+        }
+    }
 
     public static VncFunction reduce_kv =
         new VncFunction(
