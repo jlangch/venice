@@ -22,23 +22,25 @@
 package com.github.jlangch.venice.impl.threadpool;
 
 import java.util.concurrent.ExecutorService;
-import java.util.concurrent.ThreadFactory;
 import java.util.concurrent.TimeUnit;
+import java.util.function.Supplier;
 
 import com.github.jlangch.venice.VncException;
 
 
 public abstract class ManagedExecutor {
 
-    public ManagedExecutor(final String threadPoolName) {
-        this.threadPoolName = threadPoolName;
+    public ManagedExecutor(
+            final Supplier<ExecutorService> supplier
+    ) {
+        this.supplier = supplier;
     }
 
 
     public ExecutorService getExecutor() {
         synchronized(this) {
             if (executor == null) {
-                executor = createExecutorService();
+                executor = supplier.get();
             }
             return executor;
         }
@@ -109,15 +111,8 @@ public abstract class ManagedExecutor {
         }
     }
 
-    abstract protected ExecutorService createExecutorService();
 
-    protected ThreadFactory createThreadFactory() {
-        return ThreadPoolUtil.createCountedThreadFactory(
-                    threadPoolName,
-                    true /* daemon threads */);
-    }
+    private final Supplier<ExecutorService> supplier;
 
-
-    private final String threadPoolName;
     private ExecutorService executor;
 }

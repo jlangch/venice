@@ -31,8 +31,7 @@ public class ManagedScheduledThreadPoolExecutor extends ManagedExecutor {
             final String threadPoolName,
             final int corePoolSize
     ) {
-        super(threadPoolName);
-        this.corePoolSize = corePoolSize;
+        super(() -> createExecutorService(threadPoolName, corePoolSize));
     }
 
     @Override
@@ -40,11 +39,14 @@ public class ManagedScheduledThreadPoolExecutor extends ManagedExecutor {
         return (ScheduledExecutorService)super.getExecutor();
     }
 
-    @Override
-    protected ScheduledExecutorService createExecutorService() {
-        return Executors.newScheduledThreadPool(corePoolSize, createThreadFactory());
-    }
 
-    final int corePoolSize;
+    private static ScheduledExecutorService createExecutorService(
+            final String threadPoolName,
+            final int corePoolSize
+    ) {
+        return Executors.newScheduledThreadPool(
+                    corePoolSize,
+                    ThreadPoolUtil.createCountedThreadFactory(threadPoolName, true));
+    }
 }
 

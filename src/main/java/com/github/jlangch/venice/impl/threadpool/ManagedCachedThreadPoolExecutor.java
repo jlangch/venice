@@ -36,23 +36,13 @@ public class ManagedCachedThreadPoolExecutor extends ManagedExecutor {
             final String threadPoolName,
             final int maxPoolSize
     ) {
-        super(threadPoolName);
+        super(() -> createExecutorService(threadPoolName, maxPoolSize));
         this.maximumThreadPoolSize = maxPoolSize;
     }
 
     @Override
     public ThreadPoolExecutor getExecutor() {
         return (ThreadPoolExecutor)super.getExecutor();
-    }
-
-    @Override
-    protected ThreadPoolExecutor createExecutorService() {
-        synchronized(this) {
-            final ThreadPoolExecutor es =
-                    (ThreadPoolExecutor)Executors.newCachedThreadPool(createThreadFactory());
-            es.setMaximumPoolSize(maximumThreadPoolSize);
-            return es;
-        }
     }
 
 
@@ -117,6 +107,16 @@ public class ManagedCachedThreadPoolExecutor extends ManagedExecutor {
                 new VncLong(getCompletedTaskCount()));
     }
 
+    private static ThreadPoolExecutor createExecutorService(
+            final String threadPoolName,
+            final int maxPoolSize
+    ) {
+        final ThreadPoolExecutor es = (ThreadPoolExecutor)Executors.newCachedThreadPool(
+                                            ThreadPoolUtil.createCountedThreadFactory(
+                                                    threadPoolName, true));
+        es.setMaximumPoolSize(maxPoolSize);
+        return es;
+    }
 
     private int maximumThreadPoolSize;
 }
