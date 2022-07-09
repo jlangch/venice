@@ -47,6 +47,7 @@ import com.github.jlangch.venice.VncException;
 import com.github.jlangch.venice.impl.javainterop.DynamicClassLoader2;
 import com.github.jlangch.venice.impl.thread.ThreadBridge;
 import com.github.jlangch.venice.impl.thread.ThreadContext;
+import com.github.jlangch.venice.impl.threadpool.GlobalThreadFactory;
 import com.github.jlangch.venice.impl.types.Constants;
 import com.github.jlangch.venice.impl.types.VncBoolean;
 import com.github.jlangch.venice.impl.types.VncDouble;
@@ -636,7 +637,7 @@ public class SystemFunctions {
                                                         new CallFrame(fn)});
                 final Runnable taskWrapper = threadBridge.bridgeRunnable(() -> fn.applyOf());
 
-                final Thread hook = new Thread(taskWrapper);
+                final Thread hook = GlobalThreadFactory.newThread("shutdown-hook", taskWrapper);
                 hook.setUncaughtExceptionHandler(ThreadBridge::handleUncaughtException);
 
                 Runtime.getRuntime().addShutdownHook(hook);

@@ -45,6 +45,7 @@ import java.util.function.Consumer;
 
 import com.github.jlangch.venice.FileException;
 import com.github.jlangch.venice.impl.thread.ThreadBridge;
+import com.github.jlangch.venice.impl.threadpool.GlobalThreadFactory;
 
 
 /**
@@ -598,9 +599,7 @@ public class FileUtil {
                 }
             };
 
-        final Thread th = new Thread(runnable);
-        th.setName("venice-watch-dir");
-        th.setDaemon(true);
+        final Thread th = GlobalThreadFactory.newThread("venice-watch-dir", runnable);
         th.setUncaughtExceptionHandler(ThreadBridge::handleUncaughtException);
         th.start();
 

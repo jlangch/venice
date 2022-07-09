@@ -31,6 +31,7 @@ import java.util.concurrent.atomic.AtomicReference;
 import com.github.jlangch.venice.Parameters;
 import com.github.jlangch.venice.PreCompiled;
 import com.github.jlangch.venice.Venice;
+import com.github.jlangch.venice.impl.threadpool.GlobalThreadFactory;
 import com.github.jlangch.venice.impl.util.StringUtil;
 import com.github.jlangch.venice.impl.util.io.ClassPathResource;
 import com.github.jlangch.venice.impl.util.markdown.block.TableColFmt.HorzAlignment;
@@ -180,7 +181,7 @@ public class TableColFmtParser {
     private <T> T runAsync(final Callable<T> callable)
     throws InterruptedException, ExecutionException {
         final FutureTask<T> futureTask = new FutureTask<>(callable);
-        final Thread t = new Thread(futureTask);
+        final Thread t = GlobalThreadFactory.newThread("venice-markdown-parser", futureTask);
         t.start();
 
         return futureTask.get();

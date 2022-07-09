@@ -38,7 +38,6 @@ import java.util.concurrent.FutureTask;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
-import java.util.concurrent.atomic.AtomicLong;
 import java.util.function.BiConsumer;
 import java.util.function.BiFunction;
 import java.util.function.Consumer;
@@ -50,6 +49,8 @@ import com.github.jlangch.venice.SecurityException;
 import com.github.jlangch.venice.ValueException;
 import com.github.jlangch.venice.VncException;
 import com.github.jlangch.venice.impl.thread.ThreadBridge;
+import com.github.jlangch.venice.impl.threadpool.GlobalThreadFactory;
+import com.github.jlangch.venice.impl.threadpool.ManagedCachedThreadPoolExecutor;
 import com.github.jlangch.venice.impl.types.IDeref;
 import com.github.jlangch.venice.impl.types.IVncFunction;
 import com.github.jlangch.venice.impl.types.VncAtom;
@@ -75,7 +76,6 @@ import com.github.jlangch.venice.impl.util.ArityExceptions;
 import com.github.jlangch.venice.impl.util.CallFrame;
 import com.github.jlangch.venice.impl.util.MetaUtil;
 import com.github.jlangch.venice.impl.util.SymbolMapBuilder;
-import com.github.jlangch.venice.impl.util.concurrent.ManagedCachedThreadPoolExecutor;
 
 
 public class ConcurrencyFunctions {
@@ -2900,7 +2900,7 @@ public class ConcurrencyFunctions {
 
                 final String name = args.size() == 2
                                         ? Coerce.toVncString(args.second()).getValue()
-                                        : "VeniceThread-" + nextThreadNum.getAndIncrement();
+                                        : null;
 
                 final CallFrame[] cf = new CallFrame[] {
                                             new CallFrame(this, args),
@@ -2921,8 +2921,8 @@ public class ConcurrencyFunctions {
                                 }
                               });
 
-                final Thread th = new Thread(taskWrapper, name);
-                th.setDaemon(true);
+
+                final Thread th = GlobalThreadFactory.newThread(name, taskWrapper);
                 th.start();
 
                 return new VncJavaObject(result);
@@ -3401,7 +3401,6 @@ public class ConcurrencyFunctions {
                     .toMap();
 
 
-    private static AtomicLong nextThreadNum = new AtomicLong(1L);
 
     private static ManagedCachedThreadPoolExecutor mngdExecutor =
             new ManagedCachedThreadPoolExecutor("venice-future-pool", 200);

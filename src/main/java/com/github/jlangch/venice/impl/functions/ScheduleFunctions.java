@@ -29,6 +29,7 @@ import java.util.concurrent.TimeUnit;
 
 import com.github.jlangch.venice.VncException;
 import com.github.jlangch.venice.impl.thread.ThreadBridge;
+import com.github.jlangch.venice.impl.threadpool.ManagedScheduledThreadPoolExecutor;
 import com.github.jlangch.venice.impl.types.VncFunction;
 import com.github.jlangch.venice.impl.types.VncJavaObject;
 import com.github.jlangch.venice.impl.types.VncKeyword;
@@ -39,7 +40,6 @@ import com.github.jlangch.venice.impl.types.util.Coerce;
 import com.github.jlangch.venice.impl.util.ArityExceptions;
 import com.github.jlangch.venice.impl.util.CallFrame;
 import com.github.jlangch.venice.impl.util.SymbolMapBuilder;
-import com.github.jlangch.venice.impl.util.concurrent.ManagedScheduledThreadPoolExecutor;
 
 
 public class ScheduleFunctions {

@@ -1528,7 +1528,7 @@ public class ConcurrencyFunctionsTest {
                 "(let [p (thread #(thread-name)  \"AAA\")]   \n" +
                 "  @p)                                       ";
 
-        assertEquals("AAA", venice.eval(script));
+        assertTrue(((String)venice.eval(script)).matches("AAA-[0-9]+"));
     }
 
     @Test
@@ -1539,7 +1539,7 @@ public class ConcurrencyFunctionsTest {
                 "(let [p (thread #(thread-name))]   \n" +
                 "  @p)                               ";
 
-        assertTrue(((String)venice.eval(script)).matches("VeniceThread-[0-9]+"));
+        assertTrue(((String)venice.eval(script)).matches("venice-thread-[0-9]+"));
     }
 
     @Test

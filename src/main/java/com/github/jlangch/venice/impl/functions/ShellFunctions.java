@@ -39,7 +39,7 @@ import java.util.stream.Collectors;
 
 import com.github.jlangch.venice.ShellException;
 import com.github.jlangch.venice.VncException;
-import com.github.jlangch.venice.impl.thread.ThreadPoolUtil;
+import com.github.jlangch.venice.impl.threadpool.ThreadPoolUtil;
 import com.github.jlangch.venice.impl.types.VncBoolean;
 import com.github.jlangch.venice.impl.types.VncByteBuffer;
 import com.github.jlangch.venice.impl.types.VncFunction;

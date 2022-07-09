@@ -35,7 +35,7 @@ import com.github.jlangch.venice.InterruptedException;
 import com.github.jlangch.venice.impl.IVeniceInterpreter;
 import com.github.jlangch.venice.impl.env.Env;
 import com.github.jlangch.venice.impl.thread.ThreadBridge;
-import com.github.jlangch.venice.impl.thread.ThreadPoolUtil;
+import com.github.jlangch.venice.impl.threadpool.ThreadPoolUtil;
 import com.github.jlangch.venice.impl.types.VncVal;
 
 
