@@ -58,6 +58,39 @@ public class TransducerFunctionsTest {
     }
 
     @Test
+    public void test_transduce_queue() {
+        final Venice venice = new Venice();
+
+        final String script1 =
+                "(do                                              \n" +
+                "  (def xf (comp (map #(+ % 10)) (filter odd?)))  \n" +
+                "  (let [q (queue)]                               \n" +
+                "    (doseq [x (range 1 7)] (offer! q x))         \n" +
+                "    (offer! q nil)                               \n" +
+                "    (pr-str (transduce xf conj q))))             ";
+
+        final String script2 =
+                "(do                                              \n" +
+                "  (def xf (comp (take 3) (drop 2)))              \n" +
+                "  (let [q (queue)]                               \n" +
+                "    (doseq [x (range 1 7)] (offer! q x))         \n" +
+                "    (offer! q nil)                               \n" +
+                "    (pr-str (transduce xf conj q))))             ";
+
+        final String script3 =
+                "(do                                              \n" +
+                "  (def xf (comp (drop 2) (take 3)))              \n" +
+                "  (let [q (queue)]                               \n" +
+                "    (doseq [x (range 1 7)] (offer! q x))         \n" +
+                "    (offer! q nil)                               \n" +
+                "    (pr-str (transduce xf conj q))))             ";
+
+        assertEquals("[11 13 15]", venice.eval(script1));
+        assertEquals("[3]", venice.eval(script2));
+        assertEquals("[3 4 5]", venice.eval(script3));
+    }
+
+    @Test
     public void test_transduce_2() {
         final Venice venice = new Venice();
 
@@ -78,6 +111,30 @@ public class TransducerFunctionsTest {
     }
 
     @Test
+    public void test_transduce_2_queue() {
+        final Venice venice = new Venice();
+
+        final String script1 =
+                "(do                                              \n" +
+                "  (def xf (comp (drop 2) (take 3)))              \n" +
+                "  (let [q (queue)]                               \n" +
+                "    (doseq [x (range 1 7)] (offer! q x))         \n" +
+                "    (offer! q nil)                               \n" +
+                "    (pr-str (transduce xf conj q))))             ";
+
+        final String script2 =
+                "(do                                                   \n" +
+                "  (def xf (comp (drop 2) (take 3) (drop 1) (take 1))) \n" +
+                "  (let [q (queue)]                                    \n" +
+                "    (doseq [x (range 1 7)] (offer! q x))              \n" +
+                "    (offer! q nil)                                    \n" +
+                "    (pr-str (transduce xf conj q))))                  ";
+
+        assertEquals("[3 4 5]", venice.eval(script1));
+        assertEquals("[4]", venice.eval(script2));
+    }
+
+    @Test
     public void test_transduce_3() {
         final Venice venice = new Venice();
 
@@ -91,7 +148,28 @@ public class TransducerFunctionsTest {
                 "            (take 2)                             \n" +
                 "            (reverse)))                          \n" +
                 "  (def coll [5 2 1 6 4 3])                       \n" +
-                "  (pr-str (transduce xf conj coll)))               ";
+                "  (pr-str (transduce xf conj coll)))             ";
+
+        assertEquals("[45 35]", venice.eval(script));
+    }
+
+    @Test
+    public void test_transduce_3_queue() {
+        final Venice venice = new Venice();
+
+        final String script =
+                "(do                                              \n" +
+                "  (def xf (comp                                  \n" +
+                "            (map #(* % 10))                      \n" +
+                "            (map #(- % 5))                       \n" +
+                "            (sorted compare)                     \n" +
+                "            (drop 3)                             \n" +
+                "            (take 2)                             \n" +
+                "            (reverse)))                          \n" +
+                "  (let [q (queue)]                               \n" +
+                "    (doseq [x [5 2 1 6 4 3]] (offer! q x))       \n" +
+                "    (offer! q nil)                               \n" +
+                "    (pr-str (transduce xf conj q))))             ";
 
         assertEquals("[45 35]", venice.eval(script));
     }

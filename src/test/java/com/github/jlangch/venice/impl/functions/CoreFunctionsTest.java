@@ -3651,7 +3651,7 @@ public class CoreFunctionsTest {
     }
 
     @Test
-    public void test_reduce_queue_with_threads() {
+    public void test_reduce_queue_feeded_with_threads() {
         final Venice venice = new Venice();
 
         final String script1 =
