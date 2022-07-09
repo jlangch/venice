@@ -30,9 +30,7 @@ import com.github.jlangch.venice.VncException;
 
 public abstract class ManagedExecutor {
 
-    public ManagedExecutor(
-            final Supplier<ExecutorService> supplier
-    ) {
+    public ManagedExecutor(final Supplier<ExecutorService> supplier) {
         this.supplier = supplier;
     }
 
@@ -46,19 +44,19 @@ public abstract class ManagedExecutor {
         }
     }
 
-    public boolean exists() {
+    public final boolean exists() {
         synchronized(this) {
             return executor != null;
         }
     }
 
-    public boolean isShutdown() {
+    public final boolean isShutdown() {
         synchronized(this) {
             return executor == null ? true : executor.isShutdown();
         }
     }
 
-    public void awaitTermination(final long timeoutMillis) {
+    public final void awaitTermination(final long timeoutMillis) {
         synchronized(this) {
             if (executor != null) {
                 try {
@@ -73,13 +71,13 @@ public abstract class ManagedExecutor {
         }
     }
 
-    public boolean isTerminated() {
+    public final boolean isTerminated() {
         synchronized(this) {
             return executor == null ? true : executor.isTerminated();
         }
     }
 
-    public void shutdown() {
+    public final void shutdown() {
         synchronized(this) {
             if (executor != null) {
                 try {
@@ -95,7 +93,7 @@ public abstract class ManagedExecutor {
         }
     }
 
-    public void shutdownNow() {
+    public final void shutdownNow() {
         synchronized(this) {
             if (executor != null) {
                 try {
