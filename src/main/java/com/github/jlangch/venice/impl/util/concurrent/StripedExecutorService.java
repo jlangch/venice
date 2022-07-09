@@ -87,8 +87,7 @@ public class StripedExecutorService extends AbstractExecutorService {
      * SerialExecutor is empty, the entry is removed from the map,
      * in order to avoid a memory leak.
      */
-    private final Map<Object, SerialExecutor> executors =
-            new IdentityHashMap<>();
+    private final Map<Object, SerialExecutor> executors = new IdentityHashMap<>();
 
     /**
      * The default submit() method creates a new FutureTask and
@@ -98,8 +97,7 @@ public class StripedExecutorService extends AbstractExecutorService {
      * thread returns from submitting the runnable, it will always
      * remove the thread local entry.
      */
-    private final static ThreadLocal<Object> stripes =
-            new ThreadLocal<>();
+    private final static ThreadLocal<Object> stripes = new ThreadLocal<>();
 
     /**
      * Valid states are RUNNING and SHUTDOWN.  We rely on the
@@ -108,7 +106,8 @@ public class StripedExecutorService extends AbstractExecutorService {
     private State state = State.RUNNING;
 
     private static enum State {
-        RUNNING, SHUTDOWN
+        RUNNING,
+        SHUTDOWN
     }
 
     /**
@@ -246,10 +245,12 @@ public class StripedExecutorService extends AbstractExecutorService {
             checkPoolIsRunning();
             if (isStripedObject(task)) {
                 return super.submit(task, result);
-            } else { // bypass the serial executors
+            }
+            else { // bypass the serial executors
                 return executor.submit(task, result);
             }
-        } finally {
+        }
+        finally {
             lock.unlock();
         }
     }
@@ -267,10 +268,12 @@ public class StripedExecutorService extends AbstractExecutorService {
             checkPoolIsRunning();
             if (isStripedObject(task)) {
                 return super.submit(task);
-            } else { // bypass the serial executors
+            }
+            else { // bypass the serial executors
                 return executor.submit(task);
             }
-        } finally {
+        }
+        finally {
             lock.unlock();
         }
     }
@@ -311,10 +314,12 @@ public class StripedExecutorService extends AbstractExecutorService {
                             new SerialExecutor(stripe));
                 }
                 ser_exec.execute(command);
-            } else {
+            }
+            else {
                 executor.execute(command);
             }
-        } finally {
+        }
+        finally {
             lock.unlock();
         }
     }
@@ -328,7 +333,8 @@ public class StripedExecutorService extends AbstractExecutorService {
         Object stripe;
         if (command instanceof StripedObject) {
             stripe = (((StripedObject) command).getStripe());
-        } else {
+        }
+        else {
             stripe = stripes.get();
         }
         stripes.remove();
@@ -345,10 +351,12 @@ public class StripedExecutorService extends AbstractExecutorService {
         lock.lock();
         try {
             state = State.SHUTDOWN;
+
             if (executors.isEmpty()) {
                 executor.shutdown();
             }
-        } finally {
+        }
+        finally {
             lock.unlock();
         }
     }
@@ -370,7 +378,8 @@ public class StripedExecutorService extends AbstractExecutorService {
             }
             result.addAll(executor.shutdownNow());
             return result;
-        } finally {
+        }
+        finally {
             lock.unlock();
         }
     }
@@ -384,7 +393,8 @@ public class StripedExecutorService extends AbstractExecutorService {
         lock.lock();
         try {
             return state == State.SHUTDOWN;
-        } finally {
+        }
+        finally {
             lock.unlock();
         }
     }
@@ -403,7 +413,8 @@ public class StripedExecutorService extends AbstractExecutorService {
                 if (!executor.isEmpty()) return false;
             }
             return executor.isTerminated();
-        } finally {
+        }
+        finally {
             lock.unlock();
         }
     }
@@ -450,6 +461,7 @@ public class StripedExecutorService extends AbstractExecutorService {
 
         executors.remove(stripe);
         terminating.signalAll();
+
         if (state == State.SHUTDOWN && executors.isEmpty()) {
             executor.shutdown();
         }
@@ -466,7 +478,8 @@ public class StripedExecutorService extends AbstractExecutorService {
             return "StripedExecutorService: state=" + state + ", " +
                     "executor=" + executor + ", " +
                     "serialExecutors=" + executors;
-        } finally {
+        }
+        finally {
             lock.unlock();
         }
 
@@ -527,15 +540,18 @@ public class StripedExecutorService extends AbstractExecutorService {
                     public void run() {
                         try {
                             r.run();
-                        } finally {
+                        }
+                        finally {
                             scheduleNext();
                         }
                     }
                 });
+
                 if (active == null) {
                     scheduleNext();
                 }
-            } finally {
+            }
+            finally {
                 lock.unlock();
             }
         }
@@ -551,10 +567,12 @@ public class StripedExecutorService extends AbstractExecutorService {
                 if ((active = tasks.poll()) != null) {
                     executor.execute(active);
                     terminating.signalAll();
-                } else {
+                }
+                else {
                     removeEmptySerialExecutor(stripe, this);
                 }
-            } finally {
+            }
+            finally {
                 lock.unlock();
             }
         }
@@ -567,7 +585,8 @@ public class StripedExecutorService extends AbstractExecutorService {
             lock.lock();
             try {
                 return active == null && tasks.isEmpty();
-            } finally {
+            }
+            finally {
                 lock.unlock();
             }
         }
@@ -575,8 +594,7 @@ public class StripedExecutorService extends AbstractExecutorService {
         @Override
         public String toString() {
             assert lock.isHeldByCurrentThread();
-            return "SerialExecutor: active=" + active + ", " +
-                    "tasks=" + tasks;
+            return "SerialExecutor: active=" + active + ", " + "tasks=" + tasks;
         }
     }
 }
