@@ -3651,6 +3651,36 @@ public class CoreFunctionsTest {
     }
 
     @Test
+    public void test_reduce_queue_with_threads() {
+        final Venice venice = new Venice();
+
+        final String script1 =
+                "(let [q (queue)]                      \n" +
+                "  (thread #(do                        \n" +
+                "             (doseq [x (range 10)]    \n" +
+                "                (sleep 100)           \n" +
+                "                (offer! q x))         \n" +
+                "             (offer! q nil)           \n" +
+                "             nil))                    \n" +
+                "  (reduce + q))                       ";
+
+        assertEquals(45L,  venice.eval(script1));
+
+
+        final String script2 =
+                "(let [q (queue)]                      \n" +
+                "  (thread #(do                        \n" +
+                "             (doseq [x (range 10)]    \n" +
+                "                (sleep 100)           \n" +
+                "                (offer! q x))         \n" +
+                "             (offer! q nil)           \n" +
+                "             nil))                    \n" +
+                "  (reduce + 100 q))                   ";
+
+        assertEquals(145L,  venice.eval(script2));
+   }
+
+    @Test
     public void test_reduce_kv() {
         final Venice venice = new Venice();
 
