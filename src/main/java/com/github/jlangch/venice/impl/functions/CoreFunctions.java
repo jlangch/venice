@@ -7494,7 +7494,7 @@ public class CoreFunctions {
 
         if (init == null) {
             final VncVal init_ = queue.take();
-            return init_ == Nil  // queue has been closed
+            return init_ == Nil  // queue has been closed -> empty
                     ? reduceFn.apply(VncList.empty())
                     : Reducer.reduce(reduceFn, init_, queue, meterRegistry);
         }

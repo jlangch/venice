@@ -22,9 +22,9 @@
 package com.github.jlangch.venice.impl.util.transducer;
 
 import static com.github.jlangch.venice.impl.types.Constants.Nil;
+import static com.github.jlangch.venice.impl.types.VncFunction.applyWithMeter;
 
 import com.github.jlangch.venice.impl.types.IVncFunction;
-import com.github.jlangch.venice.impl.types.VncFunction;
 import com.github.jlangch.venice.impl.types.VncVal;
 import com.github.jlangch.venice.impl.types.collections.VncList;
 import com.github.jlangch.venice.impl.types.collections.VncQueue;
@@ -41,25 +41,13 @@ public class Reducer {
     ) {
         VncVal value = init;
 
-        if (meterRegistry.enabled) {
-            for(VncVal v : coll) {
-                value = VncFunction.applyWithMeter(
-                                reduceFn,
-                                VncList.of(value, v),
-                                meterRegistry);
+        for(VncVal v : coll) {
+            value = meterRegistry.enabled
+                     ? applyWithMeter(reduceFn, VncList.of(value, v), meterRegistry)
+                     : reduceFn.apply(VncList.of(value, v));
 
-                if (Reduced.isReduced(value)) {
-                    return Reduced.unreduced(value);
-                }
-            }
-        }
-        else {
-            for(VncVal v : coll) {
-                value = reduceFn.apply(VncList.of(value, v));
-
-                if (Reduced.isReduced(value)) {
-                    return Reduced.unreduced(value);
-                }
+            if (Reduced.isReduced(value)) {
+                return Reduced.unreduced(value);
             }
         }
 
@@ -78,7 +66,9 @@ public class Reducer {
             final VncVal v = queue.take();
             if (v == Nil) break;  // queue has been closed
 
-            value = reduceFn.apply(VncList.of(value, v));
+            value = meterRegistry.enabled
+                     ? applyWithMeter(reduceFn, VncList.of(value, v), meterRegistry)
+                     : reduceFn.apply(VncList.of(value, v));
 
             if (Reduced.isReduced(value)) {
                 return Reduced.unreduced(value);
