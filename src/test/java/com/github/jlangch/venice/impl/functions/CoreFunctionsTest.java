@@ -1977,6 +1977,10 @@ public class CoreFunctionsTest {
         assertEquals("{:a 1 :b 2 :c 3}", venice.eval("(str (into (ordered-map) [{:a 1} {:b 2} {:c 3}] ))"));
         assertEquals("{:a 1 :b 2 :c 3}", venice.eval("(str (into (ordered-map) { :a 1 :b 2 :c 3} ))"));
         assertEquals("{:a 1 :b 2 :c 3}", venice.eval("(str (into (ordered-map) (ordered-map :a 1 :b 2 :c 3) ))"));
+
+        assertEquals("()", venice.eval("(str (into (queue) []))"));
+        assertEquals("(1)", venice.eval("(str (into (queue) [1]))"));
+        assertEquals("(1 2)", venice.eval("(str (into (queue) [1 2]))"));
     }
 
     @Test
@@ -3635,19 +3639,19 @@ public class CoreFunctionsTest {
     public void test_reduce_queue() {
         final Venice venice = new Venice();
 
-        assertEquals( 0L,  venice.eval("(reduce + (doto (queue) (offer! nil)))"));
-        assertEquals( 1L,  venice.eval("(reduce + (doto (queue) (offer! 1) (offer! nil)))"));
-        assertEquals( 3L,  venice.eval("(reduce + (doto (queue) (offer! 1) (offer! 2) (offer! nil))))"));
-        assertEquals( 6L,  venice.eval("(reduce + (doto (queue) (offer! 1) (offer! 2) (offer! 3) (offer! nil))))"));
-        assertEquals(10L,  venice.eval("(reduce + (doto (queue) (offer! 1) (offer! 2) (offer! 3) (offer! 4) (offer! nil))))"));
-        assertEquals(15L,  venice.eval("(reduce + (doto (queue) (offer! 1) (offer! 2) (offer! 3) (offer! 4) (offer! 5) (offer! nil))))"));
+        assertEquals( 0L,  venice.eval("(reduce + (into (queue) [nil]))"));
+        assertEquals( 1L,  venice.eval("(reduce + (into (queue) [1 nil]))"));
+        assertEquals( 3L,  venice.eval("(reduce + (into (queue) [1 2 nil]))"));
+        assertEquals( 6L,  venice.eval("(reduce + (into (queue) [1 2 3 nil]))"));
+        assertEquals(10L,  venice.eval("(reduce + (into (queue) [1 2 3 4 nil]))"));
+        assertEquals(15L,  venice.eval("(reduce + (into (queue) [1 2 3 4 5 nil]))"));
 
-        assertEquals(100L,  venice.eval("(reduce + 100 (doto (queue) (offer! nil)))"));
-        assertEquals(101L,  venice.eval("(reduce + 100 (doto (queue) (offer! 1) (offer! nil)))"));
-        assertEquals(103L,  venice.eval("(reduce + 100 (doto (queue) (offer! 1) (offer! 2) (offer! nil))))"));
-        assertEquals(106L,  venice.eval("(reduce + 100 (doto (queue) (offer! 1) (offer! 2) (offer! 3) (offer! nil))))"));
-        assertEquals(110L,  venice.eval("(reduce + 100 (doto (queue) (offer! 1) (offer! 2) (offer! 3) (offer! 4) (offer! nil))))"));
-        assertEquals(115L,  venice.eval("(reduce + 100 (doto (queue) (offer! 1) (offer! 2) (offer! 3) (offer! 4) (offer! 5) (offer! nil))))"));
+        assertEquals(100L,  venice.eval("(reduce + 100 (into (queue) [nil]))"));
+        assertEquals(101L,  venice.eval("(reduce + 100 (into (queue) [1 nil]))"));
+        assertEquals(103L,  venice.eval("(reduce + 100 (into (queue) [1 2 nil]))"));
+        assertEquals(106L,  venice.eval("(reduce + 100 (into (queue) [1 2 3 nil]))"));
+        assertEquals(110L,  venice.eval("(reduce + 100 (into (queue) [1 2 3 4 nil]))"));
+        assertEquals(115L,  venice.eval("(reduce + 100 (into (queue) [1 2 3 4 5 nil]))"));
     }
 
     @Test

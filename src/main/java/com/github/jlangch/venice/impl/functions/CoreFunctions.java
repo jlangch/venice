@@ -4403,13 +4403,14 @@ public class CoreFunctions {
                         "(into (sorted-map) [ {:a 1} {:c 3} {:b 2} ])",
                         "(into (sorted-map) [(map-entry :b 2) (map-entry :c 3) (map-entry :a 1)])",
                         "(into (sorted-map) {:b 2 :c 3 :a 1})",
-                        "(into [] {1 2, 3 4})",
+                        "(into [] {:a 1, :b 2})",
                         "(into '() '(1 2 3))",
                         "(into [1 2 3] '(4 5 6))",
                         "(into '() (bytebuf [0 1 2]))",
                         "(into [] (bytebuf [0 1 2]))",
                         "(into '() \"abc\")",
                         "(into [] \"abc\")",
+                        "(into (queue) [1 2 3 4])",
                         "(do\n" +
                         "   (into (. :java.util.concurrent.CopyOnWriteArrayList :new)\n" +
                         "         (doto (. :java.util.ArrayList :new)\n" +
@@ -4511,6 +4512,21 @@ public class CoreFunctions {
                     else {
                         throw new VncException(String.format(
                                 "Function 'into' does not allow %s as from-coll into a map",
+                                Types.getType(from)));
+                    }
+                }
+                else if (Types.isVncQueue(to)) {
+                    if (Types.isVncSequence(from)) {
+                        VncQueue queue = (VncQueue)to;
+                        for(VncVal it : ((VncSequence)from)) {
+                            queue.put(it);
+                        }
+
+                        return queue;
+                    }
+                    else {
+                        throw new VncException(String.format(
+                                "Function 'into' does not allow %s as from-coll into a queue",
                                 Types.getType(from)));
                     }
                 }

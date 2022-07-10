@@ -117,17 +117,13 @@ public class TransducerFunctionsTest {
         final String script1 =
                 "(do                                              \n" +
                 "  (def xf (comp (drop 2) (take 3)))              \n" +
-                "  (let [q (queue)]                               \n" +
-                "    (doseq [x (range 1 7)] (offer! q x))         \n" +
-                "    (offer! q nil)                               \n" +
+                "  (let [q (into (queue) [1 2 3 4 5 6 nil])]      \n" +
                 "    (pr-str (transduce xf conj q))))             ";
 
         final String script2 =
                 "(do                                                   \n" +
                 "  (def xf (comp (drop 2) (take 3) (drop 1) (take 1))) \n" +
-                "  (let [q (queue)]                                    \n" +
-                "    (doseq [x (range 1 7)] (offer! q x))              \n" +
-                "    (offer! q nil)                                    \n" +
+                "  (let [q (into (queue) [1 2 3 4 5 6 nil])]           \n" +
                 "    (pr-str (transduce xf conj q))))                  ";
 
         assertEquals("[3 4 5]", venice.eval(script1));
@@ -166,9 +162,7 @@ public class TransducerFunctionsTest {
                 "            (drop 3)                             \n" +
                 "            (take 2)                             \n" +
                 "            (reverse)))                          \n" +
-                "  (let [q (queue)]                               \n" +
-                "    (doseq [x [5 2 1 6 4 3]] (offer! q x))       \n" +
-                "    (offer! q nil)                               \n" +
+                "  (let [q (into (queue) [5 2 1 6 4 3 nil])]      \n" +
                 "    (pr-str (transduce xf conj q))))             ";
 
         assertEquals("[45 35]", venice.eval(script));
