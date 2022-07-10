@@ -7476,23 +7476,12 @@ public class CoreFunctions {
         final MeterRegistry meterRegistry = ThreadContext.getMeterRegistry();
 
         if (init == null) {
-            if (seq.isEmpty()) {
-                return reduceFn.apply(VncList.empty());
-            }
-            else if (seq.size() == 1) {
-                return seq.first();
-            }
-            else {
-                return Reducer.reduce(reduceFn, seq.first(), seq.rest(), meterRegistry);
-            }
+            return seq.isEmpty()
+                    ? reduceFn.apply(VncList.empty())
+                    : Reducer.reduce(reduceFn, seq.first(), seq.rest(), meterRegistry);
         }
         else {
-            if (seq.isEmpty()) {
-                return init;
-            }
-            else {
-                return Reducer.reduce(reduceFn, init, seq, meterRegistry);
-            }
+            return Reducer.reduce(reduceFn, init, seq, meterRegistry);
         }
     }
 
@@ -7505,12 +7494,9 @@ public class CoreFunctions {
 
         if (init == null) {
             final VncVal init_ = queue.take();
-            if (init_ == Nil) {  // queue has been closed
-                return reduceFn.apply(VncList.empty());
-            }
-            else {
-                return Reducer.reduce(reduceFn, init_, queue, meterRegistry);
-            }
+            return init_ == Nil  // queue has been closed
+                    ? reduceFn.apply(VncList.empty())
+                    : Reducer.reduce(reduceFn, init_, queue, meterRegistry);
         }
         else {
             return Reducer.reduce(reduceFn, init, queue, meterRegistry);
@@ -7558,7 +7544,6 @@ public class CoreFunctions {
                     for(VncMapEntry entry : values) {
                         final VncVal key = entry.getKey();
                         final VncVal val = entry.getValue();
-
                         value = reduceFn.apply(VncList.of(value, key, val));
                     }
 
