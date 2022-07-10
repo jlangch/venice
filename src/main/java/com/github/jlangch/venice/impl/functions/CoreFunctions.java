@@ -7441,7 +7441,11 @@ public class CoreFunctions {
                         "is returned and f is not called.  If val is supplied, returns the " +
                         "result of applying f to val and the first item in coll, then " +
                         "applying f to that result and the 2nd item, etc. If coll contains no " +
-                        "items, returns val and f is not called.")
+                        "items, returns val and f is not called.\n\n" +
+                        "`reduce` can work with queues as collection, given that the " +
+                        "end of the queue is marked by addding a `nil` element. Otherwise " +
+                        "the reducer does not not when to stop reading elements from " +
+                        "the queue.")
                     .examples(
                         "(reduce + [1 2 3 4 5 6 7])",
                         "(reduce + 10 [1 2 3 4 5 6 7])",

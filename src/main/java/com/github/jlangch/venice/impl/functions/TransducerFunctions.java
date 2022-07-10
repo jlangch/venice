@@ -77,7 +77,11 @@ public class TransducerFunctions {
                         "2 arguments. Returns the result of applying (the transformed) " +
                         "xf to init and the first item in coll, then applying xf to " +
                         "that result and the 2nd item, etc. If coll contains no items, " +
-                        "returns init and f is not called.\n\n"+
+                        "returns init and f is not called.\n\n" +
+                        "`transduce` can work with queues as collection, given that the " +
+                        "end of the queue is marked by addding a `nil` element. Otherwise " +
+                        "the transducer does not not when to stop reading elements from " +
+                        "the queue.\n\n" +
                         "```\n" +
                         "Transformations            Reductions            Control   \n" +
                         "----------------------     ------------------    --------- \n" +
