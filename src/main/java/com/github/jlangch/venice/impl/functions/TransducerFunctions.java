@@ -103,6 +103,10 @@ public class TransducerFunctions {
 
                         "(transduce (map inc) conj [1 2 3])",
 
+                        ";; queues (use nil to mark the end of the queue!) \n" +
+                        "(let [q (into (queue) [1 2 3 nil])]               \n" +
+                        "  (transduce (map inc) conj q))",
+
                         "(do                                       \n" +
                         "  (def xform (comp (drop 2) (take 3)))    \n" +
                         "  (transduce xform conj [1 2 3 4 5 6]))     ",
