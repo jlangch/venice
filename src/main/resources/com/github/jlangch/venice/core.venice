@@ -1037,8 +1037,8 @@
   ^{ :arglists '(
           "(load-module m)",
           "(load-module m force)",
-          "(load-module m alias)",
-          "(load-module m force alias)")
+          "(load-module m nsalias)",
+          "(load-module m force nsalias)")
      :doc """
           Loads a Venice predefined extension module.¶
           Returns `true` if the module has been successfully loaded and `false`
@@ -1086,6 +1086,8 @@
            (process-ns-alias-def* alias-err-msg# ~alias)
            (keyword (name ~m)))
          (process-ns-alias-def* alias-err-msg# ~alias)))))
+
+(def lm load-module)  ;; alias
 
 
 (defmacro
