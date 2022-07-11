@@ -214,7 +214,7 @@ public class SpecialForms_NamespaceFunctions {
                     	"(ns-list)",
                     	"(ns-list ns)")
                     .doc(
-                    	"Without arg list the loaded namespaces, else lists all " +
+                    	"Without arg lists the loaded namespaces, else lists all " +
                     	"the symbols in the specified namespace ns.")
                     .examples(
                     	"(ns-list 'regex)")
