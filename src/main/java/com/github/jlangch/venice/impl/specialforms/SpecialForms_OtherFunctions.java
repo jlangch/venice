@@ -111,6 +111,7 @@ public class SpecialForms_OtherFunctions {
                         "(do \n" +
                         "   (deftype :complex [real :long, imaginary :long]) \n" +
                         "   (doc :complex))")
+                    .seeAlso("ns-list", "modules")
                     .build()
         ) {
             @Override
@@ -378,7 +379,8 @@ public class SpecialForms_OtherFunctions {
                 VncSpecialForm
                     .meta()
                     .arglists("(modules)")
-                    .doc("Lists the available modules")
+                    .doc("Lists the available Venice modules")
+                    .seeAlso("doc", "ns-list")
                     .build()
         ) {
             @Override
