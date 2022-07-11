@@ -21,6 +21,7 @@
  */
 package com.github.jlangch.venice.impl.threadpool;
 
+import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ThreadPoolExecutor;
 
@@ -36,21 +37,31 @@ public class ManagedCachedThreadPoolExecutor extends ManagedExecutor {
             final String threadPoolName,
             final int maxPoolSize
     ) {
-        super(() -> createExecutorService(threadPoolName, maxPoolSize));
-        this.maximumThreadPoolSize = maxPoolSize;
+        this.threadPoolName = threadPoolName;
+    	this.maxThreadPoolSize = maxPoolSize;
     }
+
 
     @Override
     public ThreadPoolExecutor getExecutor() {
         return (ThreadPoolExecutor)super.getExecutor();
     }
 
+    @Override
+	protected ExecutorService createExecutorService() {
+        final ThreadPoolExecutor es = (ThreadPoolExecutor)Executors.newCachedThreadPool(
+                                            ThreadPoolUtil.createCountedThreadFactory(
+                                                    threadPoolName, true));
+        es.setMaximumPoolSize(maxThreadPoolSize);
+        return es;
+    }
 
-    public void setMaximumThreadPoolSize(final int maximumPoolSize) {
+
+    public void setMaximumThreadPoolSize(final int poolSize) {
         synchronized(this) {
+        	maxThreadPoolSize = Math.max(1, poolSize);
             if (super.exists()) {
-                maximumThreadPoolSize = Math.max(1, maximumPoolSize);
-                getExecutor().setMaximumPoolSize(maximumThreadPoolSize);
+                getExecutor().setMaximumPoolSize(maxThreadPoolSize);
             }
         }
     }
@@ -60,7 +71,7 @@ public class ManagedCachedThreadPoolExecutor extends ManagedExecutor {
     }
 
     public int getMaximumThreadPoolSize() {
-        return maximumThreadPoolSize;
+        return getExecutor().getMaximumPoolSize();
     }
 
     public int getLargestThreadPoolSize() {
@@ -107,17 +118,8 @@ public class ManagedCachedThreadPoolExecutor extends ManagedExecutor {
                 new VncLong(getCompletedTaskCount()));
     }
 
-    private static ThreadPoolExecutor createExecutorService(
-            final String threadPoolName,
-            final int maxPoolSize
-    ) {
-        final ThreadPoolExecutor es = (ThreadPoolExecutor)Executors.newCachedThreadPool(
-                                            ThreadPoolUtil.createCountedThreadFactory(
-                                                    threadPoolName, true));
-        es.setMaximumPoolSize(maxPoolSize);
-        return es;
-    }
 
-    private int maximumThreadPoolSize;
+    private final String threadPoolName;
+    private volatile int maxThreadPoolSize;
 }
 

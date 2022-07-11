@@ -21,6 +21,7 @@
  */
 package com.github.jlangch.venice.impl.threadpool;
 
+import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 
@@ -31,22 +32,25 @@ public class ManagedScheduledThreadPoolExecutor extends ManagedExecutor {
             final String threadPoolName,
             final int corePoolSize
     ) {
-        super(() -> createExecutorService(threadPoolName, corePoolSize));
+    	this.threadPoolName = threadPoolName;
+    	this.corePoolSize = corePoolSize;
     }
+
 
     @Override
     public ScheduledExecutorService getExecutor() {
         return (ScheduledExecutorService)super.getExecutor();
     }
 
-
-    private static ScheduledExecutorService createExecutorService(
-            final String threadPoolName,
-            final int corePoolSize
-    ) {
+    @Override
+	protected ExecutorService createExecutorService() {
         return Executors.newScheduledThreadPool(
                     corePoolSize,
                     ThreadPoolUtil.createCountedThreadFactory(threadPoolName, true));
     }
+
+
+    private final String threadPoolName;
+    private final int corePoolSize;
 }
 
