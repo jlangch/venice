@@ -70,7 +70,7 @@ public class ReplCompleter implements Completer {
                .map(s -> s.getName())
                .filter(s -> namePrefix == null ? true : s.startsWith(namePrefix))
                .filter(s -> !s.endsWith("__auto"))
-                .forEach(s -> candidates.add(new Candidate(s)));
+               .forEach(s -> candidates.add(new Candidate(s)));
          }
         else if (line.word().startsWith("(")) {
             final String sym = StringUtil.trimToNull(line.word().substring(1));
