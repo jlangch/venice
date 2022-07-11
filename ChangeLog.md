@@ -16,13 +16,13 @@ and this project adheres to
 
 - functions `io/touch-file`, `io/delete-files-glob`
 - support for queues to transducers and reducers
-- performance improvements to `grep` functions by using pmap instead of map 
-  in its implementation.
+- performance improvements to the `grep` functions by using `pmap` instead of 
+  `map` in its implementation.
 
 
 ### Fixed
 
-- exception message with `str/format` on illegal format exceptions. The
+- the message of exceptions raised by `str/format` on illegal formats. The
   exception provides now a Venice stack trace.
 
 
