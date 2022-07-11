@@ -57,7 +57,12 @@ public class ReplCompleter implements Completer {
         else if (line.line().endsWith("(load-module ")) {
             venice.getAvailableModules()
                   .forEach(m -> candidates.add(new Candidate(":" + m)));
-         }
+        }
+        else if (line.line().matches(" *[(](lm|load-module) [:].* +")) {
+            final String l = line.line().trim();
+            final String m = l.substring(l.indexOf(':') + 1);
+            candidates.add(new Candidate(String.format("['%s :as '%s])", m, m.substring(0,1))));
+        }
         else if (line.line().startsWith("(doc ")) {
             final String namePrefix = StringUtil.trimToNull(line.line().substring(5));
             env.getAllGlobalFunctionSymbols()
