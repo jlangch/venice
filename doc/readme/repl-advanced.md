@@ -114,7 +114,7 @@ venice> (load-module <TAB>
 :kira     :math     :ring     :maven    :tomcat   :webdav   :xchart
 ```
 
-The namespace alias for can be completed with a single char default:
+The namespace alias for a module can be completed with a single char default:
 
 ```text
 venice> (load-module :grep <TAB>
