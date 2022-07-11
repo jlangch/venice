@@ -35,6 +35,7 @@ import com.github.jlangch.venice.impl.functions.CoreFunctions;
 import com.github.jlangch.venice.impl.namespaces.Namespaces;
 import com.github.jlangch.venice.impl.specialforms.util.SpecialFormsContext;
 import com.github.jlangch.venice.impl.types.VncSpecialForm;
+import com.github.jlangch.venice.impl.types.VncString;
 import com.github.jlangch.venice.impl.types.VncSymbol;
 import com.github.jlangch.venice.impl.types.VncVal;
 import com.github.jlangch.venice.impl.types.collections.VncList;
@@ -209,10 +210,16 @@ public class SpecialForms_NamespaceFunctions {
                 "ns-list",
                 VncSpecialForm
                     .meta()
-                    .arglists("(ns-list ns)")
-                    .doc("Lists all the symbols in the namespace ns.")
-                    .examples("(ns-list 'regex)")
-                    .seeAlso("ns", "*ns*", "ns-unmap", "ns-remove", "namespace", "var-ns")
+                    .arglists(
+                    	"(ns-list)",
+                    	"(ns-list ns)")
+                    .doc(
+                    	"Without arg list the loaded namespaces, else lists all " +
+                    	"the symbols in the specified namespace ns.")
+                    .examples(
+                    	"(ns-list 'regex)")
+                    .seeAlso(
+                    	"ns", "*ns*", "ns-unmap", "ns-remove", "namespace", "var-ns")
                     .build()
         ) {
             @Override
@@ -223,21 +230,35 @@ public class SpecialForms_NamespaceFunctions {
                     final SpecialFormsContext ctx
             ) {
                 specialFormCallValidation("ns-list");
-                assertArity("ns-list", FnType.SpecialForm, args, 1);
+                assertArity("ns-list", FnType.SpecialForm, args, 0, 1);
 
-                final VncSymbol ns = Coerce.toVncSymbol(
-                                        ctx.getEvaluator().evaluate(args.first(), env, false));
-
-                final String nsCore = Namespaces.NS_CORE.getName();
-                final String nsName = nsCore.equals(ns.getName()) ? null : ns.getName();
-
-                return VncList.ofList(
+                if (args.isEmpty()) {
+	                return VncList.ofList(
                             env.getAllGlobalSymbols()
                                 .keySet()
                                 .stream()
-                                .filter(s -> Objects.equals(nsName, s.getNamespace()))
+                                .filter(s -> s.hasNamespace())
+                                .map(s -> s.getNamespace())
+                                .distinct()
                                 .sorted()
+                                .map(s -> new VncString(s))
                                 .collect(Collectors.toList()));
+                }
+                else {
+	                final VncSymbol ns = Coerce.toVncSymbol(
+	                                        ctx.getEvaluator().evaluate(args.first(), env, false));
+
+	                final String nsCore = Namespaces.NS_CORE.getName();
+	                final String nsName = nsCore.equals(ns.getName()) ? null : ns.getName();
+
+	                return VncList.ofList(
+	                            env.getAllGlobalSymbols()
+	                                .keySet()
+	                                .stream()
+	                                .filter(s -> Objects.equals(nsName, s.getNamespace()))
+	                                .sorted()
+                                    .collect(Collectors.toList()));
+                }
             }
 
             private static final long serialVersionUID = -1848883965231344442L;
