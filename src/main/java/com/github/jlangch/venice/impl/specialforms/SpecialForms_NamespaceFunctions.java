@@ -217,7 +217,8 @@ public class SpecialForms_NamespaceFunctions {
                     	"Without arg lists the loaded namespaces, else lists all " +
                     	"the symbols in the specified namespace ns.")
                     .examples(
-                    	"(ns-list 'regex)")
+                    	"(ns-list 'regex)",
+                    	"(ns-list)")
                     .seeAlso(
                     	"ns", "*ns*", "ns-unmap", "ns-remove", "namespace", "var-ns")
                     .build()
