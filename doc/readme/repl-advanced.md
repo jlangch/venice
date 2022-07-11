@@ -114,6 +114,18 @@ venice> (load-module <TAB>
 :kira     :math     :ring     :maven    :tomcat   :webdav   :xchart
 ```
 
+The namespace alias for can be completed with a single char default:
+
+```text
+venice> (load-module :grep <TAB>
+```
+
+auto completes to
+
+```text
+venice> (load-module :grep ['grep :as 'g])
+```
+ 
 
 ### Code completion for loading a Venice file
 
