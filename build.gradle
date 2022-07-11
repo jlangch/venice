@@ -44,7 +44,7 @@
 //     $> ./gradlew clean cheatsheet
 //
 //   - Run the unit tests
-//     $> ./gradlew test
+//     $> ./gradlew clean test
 //
 //   - Micro benchmarks
 //     $> ./gradlew jmh -Pinclude=".*PrecompileBenchmark"

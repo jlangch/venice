@@ -17,7 +17,7 @@
   "colors-darkmode": {
     "prompt": null,
     "result": "\u001b[38;5;39m",
-    "stdout": "\u001b[38;5;246m",
+    "stdout": "\u001b[38;5;253m",
     "stderr": "\u001b[38;5;199m",
     "debug": "\u001b[38;5;154m",
     "error": "\u001b[38;5;196m",
