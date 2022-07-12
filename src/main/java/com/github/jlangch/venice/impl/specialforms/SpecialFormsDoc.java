@@ -177,10 +177,10 @@ public class SpecialFormsDoc {
                         ";; tail recursion                                   \n" +
                         "(do                                                 \n" +
                         "   (defn sum [n]                                    \n" +
-                        "         (loop [cnt n acc 0]                        \n" +
-                        "            (if (zero? cnt)                         \n" +
-                        "                acc                                 \n" +
-                        "                (recur (dec cnt) (+ acc cnt)))))    \n" +
+                        "      (loop [cnt n acc 0]                           \n" +
+                        "         (if (zero? cnt)                            \n" +
+                        "             acc                                    \n" +
+                        "             (recur (dec cnt) (+ acc cnt)))))       \n" +
                         "   (sum 10000))                                       ")
                     .seeAlso("recur")
                     .build()

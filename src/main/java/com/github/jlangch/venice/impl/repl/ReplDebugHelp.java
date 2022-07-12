@@ -45,15 +45,17 @@ public class ReplDebugHelp {
             "  !terminate   Terminate a running debug session. Sends an interrupt to the\n" +
             "               script under debugging.\n" +
             "  !info        Print detail info on the current debug session.\n" +
-            "  !breakpoint  Manage breakpoints\n" +
+            "  !breakpoint  Manage breakpoints. Breakpoints can be set on functions and\n" +
+            "               on the special forms: 'if', 'let', 'loop', and 'recur'.\n" +
             "               o Add a breakpoint\n" +
-            "                  !breakpoint add n\n" +
+            "                  !breakpoint add fname\n" +
+            "                  !breakpoint add fname selector\n" +
             "                  E.g.: !breakpoint add foo/gauss\n" +
             "                        Ancestor selectors:\n" +
             "                          direct ancestor: !breakpoint add foo/gauss > filter\n" +
             "                          any ancestor:    !breakpoint add foo/gauss + filter\n" +
             "               o Remove a breakpoint\n" +
-            "                  !breakpoint remove n\n" +
+            "                  !breakpoint remove fname\n" +
             "                  E.g.: !breakpoint remove foo/gauss\n" +
             "               o Temporarily skip/unskip all breakpoints\n" +
             "                  !breakpoint skip\n" +
@@ -96,12 +98,14 @@ public class ReplDebugHelp {
             "               Short form: !l\n" +
             "  !callstack   Print the current callstack.\n" +
             "               Short form: !cs\n" +
-            "  !callstack x Callstack command\n" +
-            "               o Select a callframe. The !list and !params commands work on\n" +
-            "                 the current callstack  callframe if one is selected.\n" +
-            "                  !callstack select n\n" +
-            "               o Unselect the callframe\n" +
-            "                  !callstack unselect\n" +
+            "  !callstack c Callstack command\n" +
+            "               !callstack select x  Select the callframe at level x. The !list\n" +
+            "                                    and !params commands work on the current\n" +
+            "                                    selected callframe (if one is selected).\n"+
+            "               !callstack up        Move callframe level up.\n" +
+            "               !callstack down      Move callframe level down.\n" +
+            "               !callstack unselect  Unselect the current callframe\n" +
+            "               Short form: !cs cmd\n" +
             "  form         Runs a Venice form in the current break context. Useful to\n" +
             "               inspect parameters, return values, or global/local vars.\n" +
             "               Note: Debugging is suspended for evaluating the form if a\n" +
