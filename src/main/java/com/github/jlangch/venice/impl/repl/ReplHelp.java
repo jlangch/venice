@@ -38,6 +38,7 @@ public class ReplHelp {
             "  !lightmode   switch to Venice's light color theme\n" +
             "  !info        show REPL setup context data\n" +
             "  !config      show a sample REPL config\n" +
+            "  !colors      show the colors used with the REPL\n" +
             "  !classpath   show the REPL classpath\n" +
             "  !loadpath    show the REPL loadpath\n" +
             "  !highlight   turn highlighting dynamically on or off\n" +

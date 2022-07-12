@@ -54,6 +54,10 @@ public class ReplHighlighter implements Highlighter {
         theme = getAnsiColorTheme(config.getColorMode());
     }
 
+    public AnsiColorTheme getAnsiColorTheme() {
+        return theme;
+    }
+
     @Override
     public AttributedString highlight(
             final LineReader reader,

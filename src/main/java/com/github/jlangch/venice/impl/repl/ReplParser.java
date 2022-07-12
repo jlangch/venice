@@ -21,6 +21,8 @@
  */
 package com.github.jlangch.venice.impl.repl;
 
+import static com.github.jlangch.venice.impl.util.StringUtil.trimToEmpty;
+
 import org.jline.reader.EOFError;
 import org.jline.reader.ParsedLine;
 import org.jline.reader.SyntaxError;
@@ -81,6 +83,20 @@ public class ReplParser extends DefaultParser {
     public static boolean isCommand(final String buffer) {
         final String cmd = buffer.trim();
         return cmd.startsWith("!") || cmd.startsWith("$");
+    }
+
+    public static boolean isExitCommand(final String line) {
+        switch (trimToEmpty(line)) {
+	        case "!quit": return true;
+	        case "!q":    return true;
+			case "!exit": return true;
+			case "!e":    return true;
+	        case "$quit": return true;
+	        case "$q":    return true;
+			case "$exit": return true;
+			case "$e":    return true;
+			default:      return false;
+        }
     }
 
 

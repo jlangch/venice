@@ -287,12 +287,9 @@ public class REPL {
                     continue;
                 }
 
-                if (ReplParser.isCommand(line)) {
-                    final String cmd = trimToEmpty(line.trim().substring(1));
-                    if (cmd.equals("quit") || cmd.equals("q") || cmd.equals("exit") || cmd.equals("e")) {
-                        quitREPL( history);
-                        return; // quit the REPL
-                    }
+                if (ReplParser.isExitCommand(line)) {
+                    quitREPL( history);
+                    return; // quit the REPL
                 }
 
                 if (DebugAgent.isAttached()) {
@@ -558,34 +555,34 @@ public class REPL {
             }
             else {
                 switch(cmd) {
-                    case "macroexpand": handleMacroExpandCommand(env); break;
-                    case "me":          handleMacroExpandCommand(env); break;
-                    case "":            handleHelpCommand(); break;
-                    case "?":           handleHelpCommand(); break;
-                    case "help":        handleHelpCommand(); break;
-                    case "config":      handleConfigCommand(); break;
-                    case "dark":        handleColorModeCommand(ColorMode.Dark); break;
-                    case "darkmode":    handleColorModeCommand(ColorMode.Dark); break;
-                    case "light":       handleColorModeCommand(ColorMode.Light); break;
-                    case "lightmode":   handleColorModeCommand(ColorMode.Light); break;
-                    case "restartable": handleRestartableCommand(); break;
-                    case "setup":       handleSetupCommand(venice, env, Minimal, printer); break;
-                    case "setup-ext":   handleSetupCommand(venice, env, Extended, printer); break;
-                    case "classpath":   handleReplClasspathCommand(); break;
-                    case "cp":          handleReplClasspathCommand(); break;
-                    case "loadpath":    handleLoadPathsCommand(interceptor.getLoadPaths()); break;
-                    case "launcher":    handleLauncherCommand(); break;
-                    case "app":         handleAppCommand(args, terminal, env); break;
-                    case "manifest":    handleAppManifestCommand(args, terminal, env); break;
-                    case "env":         handleEnvCommand(args, env); break;
-                    case "hist":        handleHistoryCommand(args, terminal, history); break;
-                    case "sandbox":     handleSandboxCommand(args, terminal, env); break;
-                    case "colors":      handleConfiguredColorsCommand(); break;
-                    case "info":        handleInfoCommand(terminal); break;
-                    case "highlight":   handleHighlightCommand(args); break;
-                    case "java-ex":     handleJavaExCommand(args); break;
-                    case "debug":       handleDebugHelpCommand(); break;
-                    default:            handleInvalidCommand(cmd); break;
+                    case "macroexpand":   handleMacroExpandCommand(env); break;
+                    case "me":            handleMacroExpandCommand(env); break;
+                    case "":              handleHelpCommand(); break;
+                    case "?":             handleHelpCommand(); break;
+                    case "help":          handleHelpCommand(); break;
+                    case "config":        handleConfigCommand(); break;
+                    case "dark":          handleColorModeCommand(ColorMode.Dark); break;
+                    case "darkmode":      handleColorModeCommand(ColorMode.Dark); break;
+                    case "light":         handleColorModeCommand(ColorMode.Light); break;
+                    case "lightmode":     handleColorModeCommand(ColorMode.Light); break;
+                    case "restartable":   handleRestartableCommand(); break;
+                    case "setup":         handleSetupCommand(venice, env, Minimal, printer); break;
+                    case "setup-ext":     handleSetupCommand(venice, env, Extended, printer); break;
+                    case "classpath":     handleReplClasspathCommand(); break;
+                    case "cp":            handleReplClasspathCommand(); break;
+                    case "loadpath":      handleLoadPathsCommand(interceptor.getLoadPaths()); break;
+                    case "launcher":      handleLauncherCommand(); break;
+                    case "app":           handleAppCommand(args, terminal, env); break;
+                    case "manifest":      handleAppManifestCommand(args, terminal, env); break;
+                    case "env":           handleEnvCommand(args, env); break;
+                    case "hist":          handleHistoryCommand(args, terminal, history); break;
+                    case "sandbox":       handleSandboxCommand(args, terminal, env); break;
+                    case "colors":        handleConfiguredColorsCommand(); break;
+                    case "info":          handleInfoCommand(terminal); break;
+                    case "highlight":     handleHighlightCommand(args); break;
+                    case "java-ex":       handleJavaExCommand(args); break;
+                    case "debug":         handleDebugHelpCommand(); break;
+                    default:              handleInvalidCommand(cmd); break;
                 }
             }
         }
