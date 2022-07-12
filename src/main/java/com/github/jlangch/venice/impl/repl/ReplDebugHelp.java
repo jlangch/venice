@@ -99,11 +99,11 @@ public class ReplDebugHelp {
             "  !callstack   Print the current callstack.\n" +
             "               Short form: !cs\n" +
             "  !callstack c Callstack command\n" +
-            "               !callstack select x  Select the callframe at level x. The !list\n" +
-            "                                    and !params commands work on the current\n" +
+            "               !callstack select x  Select the callframe at level x. The !params\n" +
+            "                                    and !locals commands work on the current\n" +
             "                                    selected callframe (if one is selected).\n"+
-            "               !callstack up        Move callframe level up.\n" +
-            "               !callstack down      Move callframe level down.\n" +
+            "               !callstack up        Move one callframe level up.\n" +
+            "               !callstack down      Move one callframe level down.\n" +
             "               !callstack unselect  Unselect the current callframe\n" +
             "               Short form: !cs cmd\n" +
             "  form         Runs a Venice form in the current break context. Useful to\n" +
