@@ -3024,7 +3024,7 @@ public class CoreFunctions {
                         "   (push! s 2)     \n" +
                         "   (push! s 3))      ")
                     .seeAlso(
-                        "peek", "pop!", "push!", "empty?", "count")
+                        "peek", "pop!", "push!", "empty?", "count", "into", "conj!")
                     .build()
         ) {
             @Override
@@ -3057,7 +3057,7 @@ public class CoreFunctions {
                         "  (offer! q 2)     \n" +
                         "  (offer! q 3)     \n" +
                         "  (poll! q)        \n" +
-                        "   q)                ",
+                        "  q)                ",
 
                         "; bounded queue       \n" +
                         "(let [q (queue 10)]   \n" +
@@ -3065,7 +3065,7 @@ public class CoreFunctions {
                         "  (offer! q 1000 2)   \n" +
                         "  (offer! q 1000 3)   \n" +
                         "  (poll! q 1000)      \n" +
-                        "   q)                   ",
+                        "  q)                   ",
 
                         "; synchronous unbounded queue  \n" +
                         "(let [q (queue)]               \n" +
@@ -3073,7 +3073,7 @@ public class CoreFunctions {
                         "  (offer! q :indefinite 2)     \n" +
                         "  (offer! q :indefinite 3)     \n" +
                         "  (poll! q :indefinite)        \n" +
-                        "   q)                            ",
+                        "  q)                            ",
 
                         "; synchronous bounded queue  \n" +
                         "(let [q (queue 10)]          \n" +
@@ -3081,8 +3081,10 @@ public class CoreFunctions {
                         "  (offer! q :indefinite 2)   \n" +
                         "  (offer! q :indefinite 3)   \n" +
                         "  (poll! q :indefinite)      \n" +
-                        "   q)                          ")
-                    .seeAlso("peek", "poll!", "offer!", "empty?", "count")
+                        "  q)                          ")
+                    .seeAlso(
+                    	"peek", "poll!", "offer!", "empty?", "count",
+                    	"reduce", "transduce", "into", "conj!")
                     .build()
         ) {
             @Override
@@ -4411,6 +4413,7 @@ public class CoreFunctions {
                         "(into '() \"abc\")",
                         "(into [] \"abc\")",
                         "(into (queue) [1 2 3 4])",
+                        "(into (stack) [1 2 3 4])",
                         "(do\n" +
                         "   (into (. :java.util.concurrent.CopyOnWriteArrayList :new)\n" +
                         "         (doto (. :java.util.ArrayList :new)\n" +
@@ -4523,6 +4526,21 @@ public class CoreFunctions {
                         }
 
                         return queue;
+                    }
+                    else {
+                        throw new VncException(String.format(
+                                "Function 'into' does not allow %s as from-coll into a queue",
+                                Types.getType(from)));
+                    }
+                }
+                else if (Types.isVncStack(to)) {
+                    if (Types.isVncSequence(from)) {
+                    	VncStack stack = (VncStack)to;
+                        for(VncVal it : ((VncSequence)from)) {
+                            stack.push(it);
+                        }
+
+                        return stack;
                     }
                     else {
                         throw new VncException(String.format(
@@ -5338,6 +5356,8 @@ public class CoreFunctions {
                         "(conj! (mutable-map :a 1 :b 2) [:c 3])",
                         "(conj! (mutable-map :a 1 :b 2) {:c 3})",
                         "(conj! (mutable-map :a 1 :b 2) (map-entry :c 3))",
+                        "(conj! (stack) 1 2 3))",
+                        "(conj! (queue) 1 2 3))",
                         "(conj!)",
                         "(conj! 4)")
                     .build()
@@ -5385,6 +5405,20 @@ public class CoreFunctions {
                             }
                         }
                         return map;
+                    }
+                    else if (Types.isVncQueue(coll)) {
+                        VncQueue queue = (VncQueue)coll;
+                        for(VncVal it : args.rest()) {
+                            queue.put(it);
+                        }
+                        return queue;
+                    }
+                    else if (Types.isVncStack(coll)) {
+                    	VncStack stack = (VncStack)coll;
+                        for(VncVal it : args.rest()) {
+                            stack.push(it);
+                        }
+                        return stack;
                     }
                     else {
                         throw new VncException(String.format(
@@ -6478,11 +6512,13 @@ public class CoreFunctions {
                             "have any more capacity. " +
                             "Returns true if the element was added to this queue, else false.")
                         .examples(
-                            "(let [s (queue)]  \n" +
-                            "  (offer! s 4)    \n" +
-                            "  (offer! s 3)    \n" +
-                            "  (poll! s)       \n" +
-                            "  s)")
+                            "(let [q (queue)]           \n" +
+                            "  (offer! q 1)             \n" +
+                            "  (offer! q 1000 2)        \n" +
+                            "  (offer! q :indefinite 3) \n" +
+                            "  (offer! q 3)             \n" +
+                            "  (poll! q)                \n" +
+                            "  q)")
                         .seeAlso("queue", "peek", "poll!", "empty?", "count")
                         .build()
             ) {
@@ -6543,11 +6579,11 @@ public class CoreFunctions {
                             "returns nil. With a timeout returns the item if one is available within " +
                             "the given timeout else returns nil.")
                         .examples(
-                            "(let [s (queue)]  \n" +
-                            "  (offer! s 4)    \n" +
-                            "  (offer! s 3)    \n" +
-                            "  (poll! s)       \n" +
-                            "  s)")
+                            "(let [q (into (queue) [1 2 3 4])]  \n" +
+	                        "  (poll! q)                        \n" +
+	                        "  (poll! q 1000)                   \n" +
+	                        "  (poll! q :indefinite)            \n" +
+                            "  q)")
                         .seeAlso("queue", "peek", "offer!", "empty?", "count")
                         .build()
             ) {
@@ -6598,15 +6634,17 @@ public class CoreFunctions {
                 VncFunction
                     .meta()
                     .arglists("(peek coll)")
-                    .doc("For a list, same as first, for a vector, same as last, for a stack the top element")
+                    .doc(
+                    	"For a list, same as first, for a vector, same as last, " +
+                    	"for a stack the top element (or nil if the stack is empty), " +
+                    	"for a queue the head element (or nil if the queue is empty).")
                     .examples(
                         "(peek '(1 2 3 4))",
                         "(peek [1 2 3 4])",
-                        "(let [s (stack)]   \n" +
-                        "   (push! s 1)     \n" +
-                        "   (push! s 2)     \n" +
-                        "   (push! s 3)     \n" +
-                        "   (peek s))")
+                        "(let [s (into (stack) [1 2 3 4])] \n" +
+                        "   (peek s))                      ",
+                        "(let [q (into (queue) [1 2 3 4])] \n" +
+                        "   (peek q))                      ")
                     .build()
         ) {
             @Override
@@ -6628,6 +6666,9 @@ public class CoreFunctions {
                 }
                 else if (Types.isVncStack(val)) {
                     return ((VncStack)val).peek();
+                }
+                else if (Types.isVncQueue(val)) {
+                    return ((VncQueue)val).peek();
                 }
                 else {
                     throw new VncException(String.format(

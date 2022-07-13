@@ -615,6 +615,12 @@ public class CoreFunctionsTest {
         assertEquals("{:a 3}", venice.eval("(str (conj! (mutable-map) {:a 3}))"));
         assertEquals("{:a 3}", venice.eval("(str (conj! (mutable-map :a 1) {:a 3}))"));
         assertEquals("{:a 1 :b 2}", venice.eval("(str (conj! (mutable-map :a 1) {:b 2}))"));
+
+        // Stack
+        assertEquals("(3 2 1)", venice.eval("(str (conj! (stack) 1 2 3))"));
+
+        // Queue
+        assertEquals("(1 2 3)", venice.eval("(str (conj! (queue) 1 2 3))"));
     }
 
     @Test
@@ -1981,6 +1987,10 @@ public class CoreFunctionsTest {
         assertEquals("()", venice.eval("(str (into (queue) []))"));
         assertEquals("(1)", venice.eval("(str (into (queue) [1]))"));
         assertEquals("(1 2)", venice.eval("(str (into (queue) [1 2]))"));
+
+        assertEquals("()", venice.eval("(str (into (stack) []))"));
+        assertEquals("(1)", venice.eval("(str (into (stack) [1]))"));
+        assertEquals("(2 1)", venice.eval("(str (into (stack) [1 2]))"));
     }
 
     @Test
@@ -3492,20 +3502,20 @@ public class CoreFunctionsTest {
         assertEquals(null, venice.eval("(peek nil)"));
 
         assertEquals(null, venice.eval("(peek '())"));
-        assertEquals(Long.valueOf(1L), venice.eval("(peek '(1))"));
-        assertEquals(Long.valueOf(1L), venice.eval("(peek '(1 2))"));
-        assertEquals(Long.valueOf(1L), venice.eval("(peek '(1 2 3))"));
+        assertEquals(1L, venice.eval("(peek '(1))"));
+        assertEquals(1L, venice.eval("(peek '(1 2))"));
+        assertEquals(1L, venice.eval("(peek '(1 2 3))"));
 
         assertEquals(null, venice.eval("(peek [])"));
-        assertEquals(Long.valueOf(1L), venice.eval("(peek [1])"));
-        assertEquals(Long.valueOf(2L), venice.eval("(peek [1 2])"));
-        assertEquals(Long.valueOf(3L), venice.eval("(peek [1 2 3])"));
+        assertEquals(1L, venice.eval("(peek [1])"));
+        assertEquals(2L, venice.eval("(peek [1 2])"));
+        assertEquals(3L, venice.eval("(peek [1 2 3])"));
 
         assertEquals(null, venice.eval("(peek (stack))"));
-        assertEquals(Long.valueOf(1L), venice.eval("(peek (push! (stack) 1))"));
+        assertEquals(1L, venice.eval("(let [s (stack)] (push! s 1) (peek s))"));
 
         assertEquals(null, venice.eval("(peek (queue))"));
-        assertEquals(Long.valueOf(1L), venice.eval("(peek (offer! (queue) 1))"));
+        assertEquals(1L, venice.eval("(let [q (queue)] (offer! q 1) (peek q))"));
     }
 
     @Test
