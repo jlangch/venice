@@ -3503,6 +3503,9 @@ public class CoreFunctionsTest {
 
         assertEquals(null, venice.eval("(peek (stack))"));
         assertEquals(Long.valueOf(1L), venice.eval("(peek (push! (stack) 1))"));
+
+        assertEquals(null, venice.eval("(peek (queue))"));
+        assertEquals(Long.valueOf(1L), venice.eval("(peek (offer! (queue) 1))"));
     }
 
     @Test
