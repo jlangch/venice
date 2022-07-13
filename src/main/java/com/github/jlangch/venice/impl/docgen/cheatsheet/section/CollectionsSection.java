@@ -354,6 +354,8 @@ public class CollectionsSection implements ISectionBuilder {
         stacks_access.addItem(diBuilder.getDocItem("peek"));
         stacks_access.addItem(diBuilder.getDocItem("pop!"));
         stacks_access.addItem(diBuilder.getDocItem("push!"));
+        stacks_access.addItem(diBuilder.getDocItem("into"));
+        stacks_access.addItem(diBuilder.getDocItem("conj!"));
         stacks_access.addItem(diBuilder.getDocItem("count"));
 
         final DocSection stacks_test = new DocSection("Test", "collections.stack.test");
@@ -369,13 +371,20 @@ public class CollectionsSection implements ISectionBuilder {
         queues.addSection(queues_create);
         queues_create.addItem(diBuilder.getDocItem("queue"));
 
-
         final DocSection queues_access = new DocSection("Access", "collections.queue.access");
         queues.addSection(queues_access);
         queues_access.addItem(diBuilder.getDocItem("peek"));
         queues_access.addItem(diBuilder.getDocItem("poll!"));
         queues_access.addItem(diBuilder.getDocItem("offer!"));
+        queues_access.addItem(diBuilder.getDocItem("into"));
+        queues_access.addItem(diBuilder.getDocItem("conj!"));
         queues_access.addItem(diBuilder.getDocItem("count"));
+
+
+        final DocSection queues_process = new DocSection("Process", "collections.queue.process");
+        queues.addSection(queues_process);
+        queues_process.addItem(diBuilder.getDocItem("transduce"));
+        queues_process.addItem(diBuilder.getDocItem("reduce"));
 
 
         final DocSection queues_test = new DocSection("Test", "collections.queue.test");
