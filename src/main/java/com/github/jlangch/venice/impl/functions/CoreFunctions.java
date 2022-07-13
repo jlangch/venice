@@ -7500,7 +7500,7 @@ public class CoreFunctions {
                         "(->> (partition 3 1 (repeatedly 10 #(rand-long 30)))\n" +
                         "     (map (fn [window] (/ (reduce + window) (count window)))))",
                         ";; queues (use nil to mark the end of the queue!) \n" +
-                        "(let [q (into (queue) [1 2 3 4 5 6 7 nil])]       \n" +
+                        "(let [q (conj! (queue) 1 2 3 4 5 6 7 nil)]        \n" +
                         "  (reduce + q))")
                     .seeAlso("reduce-kv", "map", "filter")
                     .build()

@@ -108,7 +108,7 @@ public class TransducerFunctions {
                         "(transduce (map inc) conj [1 2 3])",
 
                         ";; queues (use nil to mark the end of the queue!) \n" +
-                        "(let [q (into (queue) [1 2 3 nil])]               \n" +
+                        "(let [q (conj! (queue) 1 2 3 nil)]                \n" +
                         "  (transduce (map inc) conj q))",
 
                         "(do                                       \n" +
