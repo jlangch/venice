@@ -260,7 +260,7 @@ public class VncKeyword extends VncString implements IVncFunction, INamespaceAwa
     }
 
     public boolean hasValue(final String value) {
-        return value != null && value.contentEquals(getValue());
+        return value != null && value.equals(qualifiedName);
     }
 
 
