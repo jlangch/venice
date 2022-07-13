@@ -86,7 +86,7 @@ public class ReplDebugHelp {
             "               Short form: !sx\n" +
             "  !breaks      List all breaks. The first break listed is the current break.\n" +
             "  !break n     Switch to break n as the current break. n is an index from the\n" +
-            "               !breaks command). \n" +
+            "               table listed in the !breaks command). \n" +
             "  !break?      Checks if the debugger is in a break.\n" +
             "  !params      Print the function's parameters.\n" +
             "               Short form: !p\n" +
