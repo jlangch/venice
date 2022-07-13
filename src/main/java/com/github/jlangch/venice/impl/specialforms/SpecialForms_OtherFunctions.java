@@ -567,7 +567,7 @@ public class SpecialForms_OtherFunctions {
                     .arglists("(quote form)")
                     .doc(
                         "There are two equivalent ways to quote a form either with " +
-                        "quote or with '. They prevent the quoted form from being " +
+                        "`quote` or with `'`. They prevent the quoted form from being " +
                         "evaluated.\n\n" +
                         "Regular quotes work recursively with any kind of forms and " +
                         "types: strings, maps, lists, vectors...")
