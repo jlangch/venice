@@ -261,7 +261,7 @@ Threadsafe mutable queue based on the Java type _LinkedBlockingDeque_.
 
 (queue 100) ;; bounded queue
 
-;; asynchronus access
+;; asynchronous access
 ;;   offer!  returns immediately with false if the queue is full otherwise
 ;;           adds the value to the tail of the queue and returns true
 ;;   poll!   returns immediately with nil if the queue is empty 
@@ -272,7 +272,7 @@ Threadsafe mutable queue based on the Java type _LinkedBlockingDeque_.
   (offer! q 3)
   (poll! q))    ;; => 1
 
-;; asynchronus access with timeouts
+;; asynchronous access with timeouts
 ;;   offer!  returns false the value cannot be added to the tail of the
 ;;           queue within the given timeout time, otherwise adds the 
 ;;           value to the tail of the queue and returns true
@@ -284,7 +284,7 @@ Threadsafe mutable queue based on the Java type _LinkedBlockingDeque_.
   (offer! q 500 3)
   (poll! q 500))    ;; => 1
   
-;; synchronus access
+;; synchronous access
 ;;   put!    adds the value to the tail of the queue, if necessary waits
 ;;           infinitely until the queue is not full
 ;;   take!   returns the head value, if necessary waits infinitely until
