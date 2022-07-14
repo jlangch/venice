@@ -2319,14 +2319,16 @@ public class CoreFunctions {
                         "empty lazy sequence\n\n" +
                         "`(lazy-seq f)`¶" +
                         "(theoretically) infinitely lazy sequence using a repeatedly " +
-                        "invoked supplier function for each next value. The sequence " +
-                        "ends if the supplier returns nil.\n\n" +
+                        "invoked supplier function for each next value. The supplier " +
+                        "function f is a no arg function. The sequence ends if the " +
+                        "supplier function returns nil. \n\n" +
                         "`(lazy-seq seed f)`¶\n" +
                         "(theoretically) infinitely lazy sequence with a seed value " +
-                        "and a function to calculate the next value based on the " +
-                        "previous.\n\n" +
+                        "and a supplier function to calculate the next value based on " +
+                        "the previous. f is a single arg function. The sequence ends if " +
+                        "the supplier function returns nil.\n\n" +
                         "`(lazy-seq head tail-lazy-seq)`¶" +
-                        "Constructs lazy sequence of a head element and a lazy " +
+                        "Constructs a lazy sequence of a head element and a lazy " +
                         "sequence tail supplier.")
                     .examples(
                         "; empty lazy sequence  \n" +
@@ -2358,11 +2360,6 @@ public class CoreFunctions {
                         "     (map #(* 10 %))                                   \n" +
                         "     (take 2)                                          \n" +
                         "     (doall))",
-                        "; lazy sequence from a head element and a tail lazy    \n" +
-                        "; sequence                                             \n" +
-                        "(->> (cons -1 (lazy-seq 0 #(+ % 1)))                   \n" +
-                        "     (take 5)                                          \n" +
-                        "     (doall))",
                         "; finite lazy sequence from a vector  \n" +
                         "(->> (lazy-seq [1 2 3 4])             \n" +
                         "     (doall))",
@@ -2373,7 +2370,17 @@ public class CoreFunctions {
                         "   (defn generate []                                   \n" +
                         "      (swap! counter dec)                              \n" +
                         "      (if (pos? @counter) @counter nil))               \n" +
-                        "   (doall (lazy-seq generate)))")
+                        "   (doall (lazy-seq generate)))",
+                        "; lazy sequence from a head element and a tail lazy    \n" +
+                        "; sequence                                             \n" +
+                        "(->> (cons -1 (lazy-seq 0 #(+ % 1)))                   \n" +
+                        "     (take 5)                                          \n" +
+                        "     (doall))",
+                        "; lazy sequence from a head element and a tail lazy    \n" +
+                        "; sequence                                             \n" +
+                        "(->> (lazy-seq -1 (lazy-seq 0 #(+ % 1)))               \n" +
+                        "     (take 5)                                          \n" +
+                        "     (doall))")
                     .seeAlso("doall", "lazy-seq?")
                     .build()
         ) {
