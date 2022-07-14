@@ -19,11 +19,14 @@ and this project adheres to
 - performance improvements to the `grep` functions by using `pmap` instead of 
   `map` in its implementation.
 
-
 ### Fixed
 
 - the message of exceptions raised by `str/format` on illegal formats. The
   exception provides now a Venice stack trace.
+
+### Updated dependencies:
+
+- Bump gradle from 7.4.1 to 7.5
 
 
 
