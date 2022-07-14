@@ -261,9 +261,37 @@ Threadsafe mutable queue based on the Java type _LinkedBlockingDeque_.
 
 (queue 100) ;; bounded queue
 
+;; asynchronus access
+;;   offer!  returns immediately with false if the queue is full otherwise
+;;           adds the value to the tail of the queue and returns true
+;;   poll!   returns immediately with nil if the queue is empty 
+;;           otherwise returns the head value 
 (let [q (queue 10)]
   (offer! q 1)
   (offer! q 2)
   (offer! q 3)
   (poll! q))    ;; => 1
+
+;; asynchronus access with timeouts
+;;   offer!  returns false the value cannot be added to the tail of the
+;;           queue within the given timeout time, otherwise adds the 
+;;           value to the tail of the queue and returns true
+;;   poll!   returns the head value of the queue if one is available
+;;           within the given timeout time, otherwise returns nil
+(let [q (queue 10)]
+  (offer! q 500 1)
+  (offer! q 500 2)
+  (offer! q 500 3)
+  (poll! q 500))    ;; => 1
+  
+;; synchronus access
+;;   put!    adds the value to the tail of the queue, if necessary waits
+;;           infinitely until the queue is not full
+;;   take!   returns the head value, if necessary waits infinitely until
+;;           a head value becomes available
+(let [q (queue 10)]
+  (put! q 1)
+  (put! q 2)
+  (put! q 3)
+  (take! q))    ;; => 1
 ```
