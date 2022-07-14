@@ -142,50 +142,50 @@ public class JavaInterop_java_types_Test {
         final Venice venice = new Venice();
 
         final String list1 =
-                "(do                                                                     " +
-                "   (str                                                                 " +
-                "      (into (doto (. :java.util.concurrent.CopyOnWriteArrayList :new)   " +
-                "                  (. :add 1)                                            " +
-                "                  (. :add 2))                                           " +
-                "            (doto (. :java.util.ArrayList :new)                         " +
-                "                  (. :add 3)                                            " +
-                "                  (. :add 4))))                                         " +
+                "(do                                                                      " +
+                "   (str                                                                  " +
+                "      (into! (doto (. :java.util.concurrent.CopyOnWriteArrayList :new)   " +
+                "                   (. :add 1)                                            " +
+                "                   (. :add 2))                                           " +
+                "             (doto (. :java.util.ArrayList :new)                         " +
+                "                   (. :add 3)                                            " +
+                "                   (. :add 4))))                                         " +
                 ") ";
 
         assertEquals("(1 2 3 4)", venice.eval(list1));
 
         final String list2 =
-                "(do                                               " +
-                "   (str                                           " +
-                "      (into (doto (. :java.util.ArrayList :new)   " +
-                "                  (. :add 1)                      " +
-                "                  (. :add 2))                     " +
-                "            (doto (. :java.util.ArrayList :new)   " +
-                "                  (. :add 3)                      " +
-                "                  (. :add 4))))                   " +
+                "(do                                                " +
+                "   (str                                            " +
+                "      (into! (doto (. :java.util.ArrayList :new)   " +
+                "                   (. :add 1)                      " +
+                "                   (. :add 2))                     " +
+                "             (doto (. :java.util.ArrayList :new)   " +
+                "                   (. :add 3)                      " +
+                "                   (. :add 4))))                   " +
                 ") ";
 
         assertEquals("(1 2 3 4)", venice.eval(list2));
 
         final String list3 =
-                "(do                                               " +
-                "   (str                                           " +
-                "      (into (doto (. :java.util.ArrayList :new)   " +
-                "                  (. :add 1)                      " +
-                "                  (. :add 2))                     " +
-                "            (doto (. :java.util.HashSet :new)     " +
-                "                  (. :add 3))))                   " +
+                "(do                                                " +
+                "   (str                                            " +
+                "      (into! (doto (. :java.util.ArrayList :new)   " +
+                "                   (. :add 1)                      " +
+                "                   (. :add 2))                     " +
+                "             (doto (. :java.util.HashSet :new)     " +
+                "                   (. :add 3))))                   " +
                 ") ";
 
         assertEquals("(1 2 3)", venice.eval(list3));
 
         final String list4 =
-                "(do                                               " +
-                "   (str                                           " +
-                "      (into (doto (. :java.util.ArrayList :new)   " +
-                "                  (. :add 1)                      " +
-                "                  (. :add 2))                     " +
-                "            '(3 4)))                              " +
+                "(do                                                " +
+                "   (str                                            " +
+                "      (into! (doto (. :java.util.ArrayList :new)   " +
+                "                   (. :add 1)                      " +
+                "                   (. :add 2))                     " +
+                "             '(3 4)))                              " +
                 ") ";
 
         assertEquals("(1 2 3 4)", venice.eval(list4));

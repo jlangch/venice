@@ -33,7 +33,7 @@ import com.github.jlangch.venice.impl.types.VncVal;
 import com.github.jlangch.venice.impl.util.MetaUtil;
 
 
-public class VncStack extends VncCollection {
+public class VncStack extends VncCollection implements VncMutable {
 
     public VncStack() {
         super(Constants.Nil);

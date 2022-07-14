@@ -41,7 +41,7 @@ import com.github.jlangch.venice.impl.types.util.Types;
 import com.github.jlangch.venice.impl.util.MetaUtil;
 
 
-public class VncJavaMap extends VncMap implements IVncJavaObject {
+public class VncJavaMap extends VncMap implements IVncJavaObject, VncMutable {
 
     public VncJavaMap() {
         this(null, null);

@@ -45,7 +45,7 @@ import com.github.jlangch.venice.impl.util.MetaUtil;
 import com.github.jlangch.venice.impl.util.StreamUtil;
 
 
-public class VncJavaList extends VncSequence implements IVncJavaObject {
+public class VncJavaList extends VncSequence implements IVncJavaObject, VncMutable {
 
     public VncJavaList() {
         this(null, null);

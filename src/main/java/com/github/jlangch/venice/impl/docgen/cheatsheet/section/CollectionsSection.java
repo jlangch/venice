@@ -47,8 +47,10 @@ public class CollectionsSection implements ISectionBuilder {
         generic.addItem(diBuilder.getDocItem("empty-to-nil"));
         generic.addItem(diBuilder.getDocItem("empty"));
         generic.addItem(diBuilder.getDocItem("into"));
+        generic.addItem(diBuilder.getDocItem("into!"));
         generic.addItem(diBuilder.getDocItem("cons"));
         generic.addItem(diBuilder.getDocItem("conj"));
+        generic.addItem(diBuilder.getDocItem("conj!"));
         generic.addItem(diBuilder.getDocItem("remove"));
         generic.addItem(diBuilder.getDocItem("repeat"));
         generic.addItem(diBuilder.getDocItem("repeatedly"));
@@ -120,9 +122,11 @@ public class CollectionsSection implements ISectionBuilder {
         lists.addSection(list_modify);
         list_modify.addItem(diBuilder.getDocItem("cons"));
         list_modify.addItem(diBuilder.getDocItem("conj"));
+        list_modify.addItem(diBuilder.getDocItem("conj!"));
         list_modify.addItem(diBuilder.getDocItem("rest"));
         list_modify.addItem(diBuilder.getDocItem("pop"));
         list_modify.addItem(diBuilder.getDocItem("into"));
+        list_modify.addItem(diBuilder.getDocItem("into!"));
         list_modify.addItem(diBuilder.getDocItem("concat"));
         list_modify.addItem(diBuilder.getDocItem("distinct"));
         list_modify.addItem(diBuilder.getDocItem("dedupe"));
@@ -185,9 +189,11 @@ public class CollectionsSection implements ISectionBuilder {
         vectors.addSection(vec_modify);
         vec_modify.addItem(diBuilder.getDocItem("cons"));
         vec_modify.addItem(diBuilder.getDocItem("conj"));
+        vec_modify.addItem(diBuilder.getDocItem("conj!"));
         vec_modify.addItem(diBuilder.getDocItem("rest"));
         vec_modify.addItem(diBuilder.getDocItem("pop"));
         vec_modify.addItem(diBuilder.getDocItem("into"));
+        vec_modify.addItem(diBuilder.getDocItem("into!"));
         vec_modify.addItem(diBuilder.getDocItem("concat"));
         vec_modify.addItem(diBuilder.getDocItem("distinct"));
         vec_modify.addItem(diBuilder.getDocItem("dedupe"));
@@ -244,6 +250,8 @@ public class CollectionsSection implements ISectionBuilder {
 
         final DocSection set_modify = new DocSection("Modify", "collections.sets.modify");
         sets.addSection(set_modify);
+        set_modify.addItem(diBuilder.getDocItem("into"));
+        set_modify.addItem(diBuilder.getDocItem("into!"));
         set_modify.addItem(diBuilder.getDocItem("cons"));
         set_modify.addItem(diBuilder.getDocItem("cons!"));
         set_modify.addItem(diBuilder.getDocItem("conj"));
@@ -295,6 +303,7 @@ public class CollectionsSection implements ISectionBuilder {
         maps.addSection(map_modify);
         map_modify.addItem(diBuilder.getDocItem("cons"));
         map_modify.addItem(diBuilder.getDocItem("conj"));
+        map_modify.addItem(diBuilder.getDocItem("conj!"));
         map_modify.addItem(diBuilder.getDocItem("assoc"));
         map_modify.addItem(diBuilder.getDocItem("assoc!"));
         map_modify.addItem(diBuilder.getDocItem("update"));
@@ -302,6 +311,7 @@ public class CollectionsSection implements ISectionBuilder {
         map_modify.addItem(diBuilder.getDocItem("dissoc"));
         map_modify.addItem(diBuilder.getDocItem("dissoc!"));
         map_modify.addItem(diBuilder.getDocItem("into"));
+        map_modify.addItem(diBuilder.getDocItem("into!"));
         map_modify.addItem(diBuilder.getDocItem("concat"));
         map_modify.addItem(diBuilder.getDocItem("flatten"));
         map_modify.addItem(diBuilder.getDocItem("filter-k"));
@@ -354,7 +364,7 @@ public class CollectionsSection implements ISectionBuilder {
         stacks_access.addItem(diBuilder.getDocItem("peek"));
         stacks_access.addItem(diBuilder.getDocItem("pop!"));
         stacks_access.addItem(diBuilder.getDocItem("push!"));
-        stacks_access.addItem(diBuilder.getDocItem("into"));
+        stacks_access.addItem(diBuilder.getDocItem("into!"));
         stacks_access.addItem(diBuilder.getDocItem("conj!"));
         stacks_access.addItem(diBuilder.getDocItem("count"));
 
@@ -374,18 +384,24 @@ public class CollectionsSection implements ISectionBuilder {
         final DocSection queues_access = new DocSection("Access", "collections.queue.access");
         queues.addSection(queues_access);
         queues_access.addItem(diBuilder.getDocItem("peek"));
-        queues_access.addItem(diBuilder.getDocItem("poll!"));
-        queues_access.addItem(diBuilder.getDocItem("offer!"));
-        queues_access.addItem(diBuilder.getDocItem("into"));
+        queues_access.addItem(diBuilder.getDocItem("into!"));
         queues_access.addItem(diBuilder.getDocItem("conj!"));
         queues_access.addItem(diBuilder.getDocItem("count"));
 
+        final DocSection queues_access_sync = new DocSection("Sync", "collections.queue.access.sync");
+        queues.addSection(queues_access_sync);
+        queues_access_sync.addItem(diBuilder.getDocItem("put!"));
+        queues_access_sync.addItem(diBuilder.getDocItem("take!"));
+
+        final DocSection queues_access_async = new DocSection("Async", "collections.queue.access.async");
+        queues.addSection(queues_access_async);
+        queues_access_async.addItem(diBuilder.getDocItem("offer!"));
+        queues_access_async.addItem(diBuilder.getDocItem("poll!"));
 
         final DocSection queues_process = new DocSection("Process", "collections.queue.process");
         queues.addSection(queues_process);
         queues_process.addItem(diBuilder.getDocItem("transduce"));
         queues_process.addItem(diBuilder.getDocItem("reduce"));
-
 
         final DocSection queues_test = new DocSection("Test", "collections.queue.test");
         queues.addSection(queues_test);

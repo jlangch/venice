@@ -1983,14 +1983,19 @@ public class CoreFunctionsTest {
         assertEquals("{:a 1 :b 2 :c 3}", venice.eval("(str (into (ordered-map) [{:a 1} {:b 2} {:c 3}] ))"));
         assertEquals("{:a 1 :b 2 :c 3}", venice.eval("(str (into (ordered-map) { :a 1 :b 2 :c 3} ))"));
         assertEquals("{:a 1 :b 2 :c 3}", venice.eval("(str (into (ordered-map) (ordered-map :a 1 :b 2 :c 3) ))"));
+    }
 
-        assertEquals("()", venice.eval("(str (into (queue) []))"));
-        assertEquals("(1)", venice.eval("(str (into (queue) [1]))"));
-        assertEquals("(1 2)", venice.eval("(str (into (queue) [1 2]))"));
+    @Test
+    public void test_into_BANG() {
+        final Venice venice = new Venice();
 
-        assertEquals("()", venice.eval("(str (into (stack) []))"));
-        assertEquals("(1)", venice.eval("(str (into (stack) [1]))"));
-        assertEquals("(2 1)", venice.eval("(str (into (stack) [1 2]))"));
+        assertEquals("()", venice.eval("(str (into! (queue) []))"));
+        assertEquals("(1)", venice.eval("(str (into! (queue) [1]))"));
+        assertEquals("(1 2)", venice.eval("(str (into! (queue) [1 2]))"));
+
+        assertEquals("()", venice.eval("(str (into! (stack) []))"));
+        assertEquals("(1)", venice.eval("(str (into! (stack) [1]))"));
+        assertEquals("(2 1)", venice.eval("(str (into! (stack) [1 2]))"));
     }
 
     @Test
@@ -2135,7 +2140,7 @@ public class CoreFunctionsTest {
     }
 
     @Test
-    public void test_queue() {
+    public void test_queue_sync() {
         final Venice venice = new Venice();
 
         assertTrue((Boolean)venice.eval("(queue? (queue))"));
@@ -2185,7 +2190,58 @@ public class CoreFunctionsTest {
     }
 
     @Test
-    public void test_queue_offer_return() {
+    public void test_queue_async() {
+        final Venice venice = new Venice();
+
+        // bounded
+
+        assertEquals(1L, venice.eval(
+                            "(let [s (queue 10)]  \n" +
+                            "    (put! s 1)       \n" +
+                            "    (take! s))       \n"));
+
+        assertEquals(1L, venice.eval(
+                            "(let [s (queue 10)]  \n" +
+                            "    (put! s 1)       \n" +
+                            "    (put! s 2)       \n" +
+                            "    (put! s 3)       \n" +
+                            "    (take! s))       \n"));
+
+        assertEquals(3L, venice.eval(
+                            "(let [s (queue 10)]  \n" +
+                            "    (put! s 1)       \n" +
+                            "    (put! s 2)       \n" +
+                            "    (put! s 3)       \n" +
+                            "    (take! s)        \n" +
+                            "    (take! s)        \n" +
+                            "    (take! s))       \n"));
+
+        // unbounded
+
+        assertEquals(1L, venice.eval(
+                            "(let [s (queue)]     \n" +
+                            "    (put! s 1)       \n" +
+                            "    (take! s))       \n"));
+
+        assertEquals(1L, venice.eval(
+                            "(let [s (queue)]     \n" +
+                            "    (put! s 1)       \n" +
+                            "    (put! s 2)       \n" +
+                            "    (put! s 3)       \n" +
+                            "    (take! s))       \n"));
+
+        assertEquals(3L, venice.eval(
+                            "(let [s (queue)]     \n" +
+                            "    (put! s 1)       \n" +
+                            "    (put! s 2)       \n" +
+                            "    (put! s 3)       \n" +
+                            "    (take! s)        \n" +
+                            "    (take! s)        \n" +
+                            "    (take! s))       \n"));
+    }
+
+    @Test
+    public void test_queue_offer() {
         final Venice venice = new Venice();
 
         assertEquals(true, venice.eval(
@@ -3652,19 +3708,19 @@ public class CoreFunctionsTest {
     public void test_reduce_queue() {
         final Venice venice = new Venice();
 
-        assertEquals( 0L,  venice.eval("(reduce + (into (queue) [nil]))"));
-        assertEquals( 1L,  venice.eval("(reduce + (into (queue) [1 nil]))"));
-        assertEquals( 3L,  venice.eval("(reduce + (into (queue) [1 2 nil]))"));
-        assertEquals( 6L,  venice.eval("(reduce + (into (queue) [1 2 3 nil]))"));
-        assertEquals(10L,  venice.eval("(reduce + (into (queue) [1 2 3 4 nil]))"));
-        assertEquals(15L,  venice.eval("(reduce + (into (queue) [1 2 3 4 5 nil]))"));
+        assertEquals( 0L,  venice.eval("(reduce + (conj! (queue) nil))"));
+        assertEquals( 1L,  venice.eval("(reduce + (conj! (queue) 1 nil))"));
+        assertEquals( 3L,  venice.eval("(reduce + (conj! (queue) 1 2 nil))"));
+        assertEquals( 6L,  venice.eval("(reduce + (conj! (queue) 1 2 3 nil))"));
+        assertEquals(10L,  venice.eval("(reduce + (conj! (queue) 1 2 3 4 nil))"));
+        assertEquals(15L,  venice.eval("(reduce + (conj! (queue) 1 2 3 4 5 nil))"));
 
-        assertEquals(100L,  venice.eval("(reduce + 100 (into (queue) [nil]))"));
-        assertEquals(101L,  venice.eval("(reduce + 100 (into (queue) [1 nil]))"));
-        assertEquals(103L,  venice.eval("(reduce + 100 (into (queue) [1 2 nil]))"));
-        assertEquals(106L,  venice.eval("(reduce + 100 (into (queue) [1 2 3 nil]))"));
-        assertEquals(110L,  venice.eval("(reduce + 100 (into (queue) [1 2 3 4 nil]))"));
-        assertEquals(115L,  venice.eval("(reduce + 100 (into (queue) [1 2 3 4 5 nil]))"));
+        assertEquals(100L,  venice.eval("(reduce + 100 (conj! (queue) nil))"));
+        assertEquals(101L,  venice.eval("(reduce + 100 (conj! (queue) 1 nil))"));
+        assertEquals(103L,  venice.eval("(reduce + 100 (conj! (queue) 1 2 nil))"));
+        assertEquals(106L,  venice.eval("(reduce + 100 (conj! (queue) 1 2 3 nil))"));
+        assertEquals(110L,  venice.eval("(reduce + 100 (conj! (queue) 1 2 3 4 nil))"));
+        assertEquals(115L,  venice.eval("(reduce + 100 (conj! (queue) 1 2 3 4 5 nil))"));
     }
 
     @Test

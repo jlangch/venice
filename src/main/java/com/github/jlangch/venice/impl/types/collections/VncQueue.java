@@ -35,7 +35,7 @@ import com.github.jlangch.venice.impl.types.VncVal;
 import com.github.jlangch.venice.impl.util.MetaUtil;
 
 
-public class VncQueue extends VncCollection {
+public class VncQueue extends VncCollection implements VncMutable {
 
     public VncQueue() {
         this(Integer.MAX_VALUE);

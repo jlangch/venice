@@ -44,7 +44,7 @@ import com.github.jlangch.venice.impl.util.MetaUtil;
 import com.github.jlangch.venice.impl.util.StreamUtil;
 
 
-public class VncJavaSet extends VncSet implements IVncJavaObject {
+public class VncJavaSet extends VncSet implements IVncJavaObject, VncMutable {
 
     public VncJavaSet() {
         this(null, null);

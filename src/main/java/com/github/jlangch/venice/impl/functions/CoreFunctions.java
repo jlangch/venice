@@ -79,6 +79,7 @@ import com.github.jlangch.venice.impl.types.collections.VncLazySeq;
 import com.github.jlangch.venice.impl.types.collections.VncList;
 import com.github.jlangch.venice.impl.types.collections.VncMap;
 import com.github.jlangch.venice.impl.types.collections.VncMapEntry;
+import com.github.jlangch.venice.impl.types.collections.VncMutable;
 import com.github.jlangch.venice.impl.types.collections.VncMutableList;
 import com.github.jlangch.venice.impl.types.collections.VncMutableMap;
 import com.github.jlangch.venice.impl.types.collections.VncMutableSet;
@@ -3024,7 +3025,7 @@ public class CoreFunctions {
                         "   (push! s 2)     \n" +
                         "   (push! s 3))      ")
                     .seeAlso(
-                        "peek", "pop!", "push!", "empty?", "count", "into", "conj!")
+                        "peek", "pop!", "push!", "empty?", "count", "into!", "conj!")
                     .build()
         ) {
             @Override
@@ -3046,9 +3047,8 @@ public class CoreFunctions {
                     .doc(
                         "Creates a new mutable threadsafe bounded or unbounded queue.\n\n" +
                         "The queue can be turned into a synchronous queue when using " +
-                        "indefinite timeouts for offering and polling values. With a " +
-                        "synchronous queue offer! waits until the value can be added " +
-                        "to the queue and poll! waits until a value is available from " +
+                        "the functions `put!` and `take!`. `put!` waits until the value " +
+                        "be added and `take! waits until a value is available from " +
                         "queue thus synchronizing the producer and consumer.")
                     .examples(
                         "; unbounded queue  \n" +
@@ -3069,22 +3069,22 @@ public class CoreFunctions {
 
                         "; synchronous unbounded queue  \n" +
                         "(let [q (queue)]               \n" +
-                        "  (offer! q :indefinite 1)     \n" +
-                        "  (offer! q :indefinite 2)     \n" +
-                        "  (offer! q :indefinite 3)     \n" +
-                        "  (poll! q :indefinite)        \n" +
+                        "  (put! q 1)                   \n" +
+                        "  (put! q 2)                   \n" +
+                        "  (put! q 3)                   \n" +
+                        "  (take! q)                    \n" +
                         "  q)                            ",
 
                         "; synchronous bounded queue  \n" +
                         "(let [q (queue 10)]          \n" +
-                        "  (offer! q :indefinite 1)   \n" +
-                        "  (offer! q :indefinite 2)   \n" +
-                        "  (offer! q :indefinite 3)   \n" +
-                        "  (poll! q :indefinite)      \n" +
+                        "  (put! q 1)                 \n" +
+                        "  (put! q 2)                 \n" +
+                        "  (put! q 3)                 \n" +
+                        "  (take! q)                  \n" +
                         "  q)                          ")
                     .seeAlso(
-                    	"peek", "poll!", "offer!", "empty?", "count",
-                    	"reduce", "transduce", "into", "conj!")
+                    	"peek", "put!", "take!", "offer!", "poll!", "empty?", "count",
+                    	"reduce", "transduce", "into!", "conj!")
                     .build()
         ) {
             @Override
@@ -4411,22 +4411,11 @@ public class CoreFunctions {
                         "(into '() (bytebuf [0 1 2]))",
                         "(into [] (bytebuf [0 1 2]))",
                         "(into '() \"abc\")",
-                        "(into [] \"abc\")",
-                        "(into (queue) [1 2 3 4])",
-                        "(into (stack) [1 2 3 4])",
-                        "(do\n" +
-                        "   (into (. :java.util.concurrent.CopyOnWriteArrayList :new)\n" +
-                        "         (doto (. :java.util.ArrayList :new)\n" +
-                        "               (. :add 3)\n" +
-                        "               (. :add 4))))",
-                        "(do\n" +
-                        "   (into (. :java.util.concurrent.CopyOnWriteArrayList :new)\n" +
-                        "         '(3 4)))")
+                        "(into [] \"abc\")")
                     .seeAlso("concat", "merge")
                     .build()
         ) {
             @Override
-            @SuppressWarnings("unchecked")
             public VncVal apply(final VncList args) {
                 ArityExceptions.assertArity(this, args, 0, 1, 2);
 
@@ -4442,6 +4431,12 @@ public class CoreFunctions {
                 }
 
                 final VncCollection to = Coerce.toVncCollection(args.first());
+
+                if (to instanceof VncMutable) {
+                    throw new VncException(String.format(
+                            "Function 'into' does not allow the mutable collection %s as to-coll",
+                            Types.getType(args.first())));
+                }
 
                 if (Types.isVncByteBuffer(args.second())) {
                     final VncList byteList = ((VncByteBuffer)args.second()).toVncList();
@@ -4481,13 +4476,6 @@ public class CoreFunctions {
                     // add reversed as defined by Clojure
                     return ((VncList)to).addAllAtStart(from.toVncList(), true);
                 }
-                else if (Types.isVncMutableList(to)) {
-                    // add reversed as defined by Clojure
-                    return ((VncMutableList)to).addAllAtStart(from.toVncList(), true);
-                }
-                else if (Types.isVncMutableVector(to)) {
-                    return ((VncMutableVector)to).addAllAtEnd(from.toVncList());
-                }
                 else if (Types.isVncSet(to)) {
                     return ((VncSet)to).addAll(from.toVncList());
                 }
@@ -4518,6 +4506,104 @@ public class CoreFunctions {
                                 Types.getType(from)));
                     }
                 }
+                else {
+                    throw new VncException(String.format(
+                            "Function 'into' does not allow %s as to-coll",
+                            Types.getType(args.first())));
+                }
+            }
+
+            private static final long serialVersionUID = -1848883965231344442L;
+        };
+
+    public static VncFunction into_BANG =
+        new VncFunction(
+                "into!",
+                VncFunction
+                    .meta()
+                    .arglists(
+                        "(into!)",
+                        "(into! to)",
+                        "(into! to from)")
+                    .doc(
+                        "Adds all of the items of 'from' conjoined to the mutable 'to' collection")
+                    .examples(
+                        "(into! (queue) [1 2 3 4])",
+                        "(into! (stack) [1 2 3 4])",
+                        "(do\n" +
+                        "   (into! (. :java.util.concurrent.CopyOnWriteArrayList :new)\n" +
+                        "          (doto (. :java.util.ArrayList :new)\n" +
+                        "                (. :add 3)\n" +
+                        "                (. :add 4))))",
+                        "(do\n" +
+                        "   (into! (. :java.util.concurrent.CopyOnWriteArrayList :new)\n" +
+                        "          '(3 4)))")
+                    .seeAlso("concat", "merge")
+                    .build()
+        ) {
+            @Override
+            @SuppressWarnings("unchecked")
+            public VncVal apply(final VncList args) {
+                ArityExceptions.assertArity(this, args, 0, 1, 2);
+
+                if (args.size() == 0) {
+                    return VncList.empty();
+                }
+                else if (args.size() == 1) {
+                    return args.first();
+                }
+
+                if (args.second() == Nil) {
+                    return args.first();
+                }
+
+                final VncCollection to = Coerce.toVncCollection(args.first());
+
+
+                if (!(to instanceof VncMutable)) {
+                    throw new VncException(String.format(
+                            "Function 'into!' does not allow mutable collections as to-coll " +
+                            "(%s is a persistent collection).",
+                            Types.getType(args.first())));
+                }
+
+                if (Types.isVncByteBuffer(args.second())) {
+                    final VncList byteList = ((VncByteBuffer)args.second()).toVncList();
+
+                    if (Types.isVncSequence(to)) {
+                        return ((VncSequence)to).addAllAtEnd(byteList);
+                    }
+                    else {
+                        throw new VncException(String.format(
+                                "Function 'into!' does only allow list and vector as to-coll if from-coll " +
+                                "is a bytebuf"));
+                    }
+                }
+                else if (Types.isVncString(args.second())) {
+                    final VncList charList = ((VncString)args.second()).toVncList();
+
+                    if (Types.isVncSequence(to)) {
+                        return ((VncSequence)to).addAllAtEnd(charList);
+                    }
+                    else if (Types.isVncSet(to)) {
+                        return ((VncSet)to).addAll(charList);
+                    }
+                    else {
+                        throw new VncException(String.format(
+                                "Function 'into!' does only allow list, vector, and set as to-coll if from-coll " +
+                                "is a string"));
+                    }
+                }
+
+                final VncCollection from = Coerce.toVncCollection(args.second());
+
+                if (Types.isVncMutableList(to)) {
+                    // add reversed as defined by Clojure
+                    return ((VncMutableList)to).addAllAtStart(from.toVncList(), true);
+                }
+                else if (Types.isVncMutableVector(to)) {
+                    return ((VncMutableVector)to).addAllAtEnd(from.toVncList());
+                }
                 else if (Types.isVncQueue(to)) {
                     if (Types.isVncSequence(from)) {
                         VncQueue queue = (VncQueue)to;
@@ -4529,7 +4615,7 @@ public class CoreFunctions {
                     }
                     else {
                         throw new VncException(String.format(
-                                "Function 'into' does not allow %s as from-coll into a queue",
+                                "Function 'into!' does not allow %s as from-coll into a queue",
                                 Types.getType(from)));
                     }
                 }
@@ -4544,7 +4630,37 @@ public class CoreFunctions {
                     }
                     else {
                         throw new VncException(String.format(
-                                "Function 'into' does not allow %s as from-coll into a queue",
+                                "Function 'into!' does not allow %s as from-coll into a queue",
+                                Types.getType(from)));
+                    }
+                }
+                else if (Types.isVncSet(to)) {
+                    return ((VncSet)to).addAll(from.toVncList());
+                }
+                else if (Types.isVncMap(to)) {
+                    if (Types.isVncSequence(from)) {
+                        VncMap toMap = (VncMap)to;
+                        for(VncVal it : ((VncSequence)from)) {
+                            if (Types.isVncSequence(it)) {
+                                toMap = toMap.assoc(((VncSequence)it).toVncList());
+                            }
+                            else if (Types.isVncMapEntry(it)) {
+                                final VncMapEntry entry = (VncMapEntry)it;
+                                toMap = toMap.assoc(entry.getKey(), entry.getValue());
+                            }
+                            else if (Types.isVncMap(it)) {
+                                toMap = toMap.putAll((VncMap)it);
+                            }
+                        }
+
+                        return toMap;
+                    }
+                    else if (Types.isVncMap(from)) {
+                        return ((VncMap)to).putAll((VncMap)from);
+                    }
+                    else {
+                        throw new VncException(String.format(
+                                "Function 'into!' does not allow %s as from-coll into a map",
                                 Types.getType(from)));
                     }
                 }
@@ -4584,13 +4700,14 @@ public class CoreFunctions {
                 }
                 else {
                     throw new VncException(String.format(
-                            "Function 'into' does not allow %s as to-coll",
+                            "Function 'into!' does not allow %s as to-coll",
                             Types.getType(args.first())));
                 }
             }
 
             private static final long serialVersionUID = -1848883965231344442L;
         };
+
 
     public static VncFunction sequential_Q =
         new VncFunction(
@@ -6519,7 +6636,7 @@ public class CoreFunctions {
                             "  (offer! q 3)             \n" +
                             "  (poll! q)                \n" +
                             "  q)")
-                        .seeAlso("queue", "peek", "poll!", "empty?", "count")
+                        .seeAlso("queue", "put!", "take!", "poll!", "peek", "empty?", "count")
                         .build()
             ) {
                 @Override
@@ -6564,6 +6681,47 @@ public class CoreFunctions {
                 private static final long serialVersionUID = -1848883965231344442L;
             };
 
+        public static VncFunction put_BANG =
+            new VncFunction(
+                    "put!",
+                    VncFunction
+                        .meta()
+                        .arglists(
+                            "(put! queue v)")
+                        .doc(
+                            "Puts an item to a queue. The operation is synchronous, it waits indefinitely " +
+                            "until the value can be placed on the queue. Returns always nil.")
+                        .examples(
+                            "(let [q (queue)]   \n" +
+                            "  (put! q 1)       \n" +
+                            "  (poll! q)        \n" +
+                            "  q)")
+                        .seeAlso("queue", "take!", "offer!", "poll!", "peek", "empty?", "count")
+                        .build()
+            ) {
+                @Override
+                public VncVal apply(final VncList args) {
+                    ArityExceptions.assertArity(this, args, 2);
+
+                    final VncVal val = args.first();
+                    if (val == Nil) {
+                        return Nil;
+                    }
+
+                    if (Types.isVncQueue(val)) {
+                       ((VncQueue)val).put(args.second());
+                       return Nil;
+                    }
+                    else {
+                        throw new VncException(String.format(
+                                "put!: type %s not supported",
+                                Types.getType(args.first())));
+                    }
+                }
+
+                private static final long serialVersionUID = -1848883965231344442L;
+            };
+
     public static VncFunction poll_BANG =
             new VncFunction(
                     "poll!",
@@ -6579,12 +6737,11 @@ public class CoreFunctions {
                             "returns nil. With a timeout returns the item if one is available within " +
                             "the given timeout else returns nil.")
                         .examples(
-                            "(let [q (into (queue) [1 2 3 4])]  \n" +
+                            "(let [q (conj! (queue) 1 2 3 4)]   \n" +
 	                        "  (poll! q)                        \n" +
 	                        "  (poll! q 1000)                   \n" +
-	                        "  (poll! q :indefinite)            \n" +
-                            "  q)")
-                        .seeAlso("queue", "peek", "offer!", "empty?", "count")
+                           "  q)")
+                        .seeAlso("queue", "put!", "take!", "offer!", "peek", "empty?", "count")
                         .build()
             ) {
                 @Override
@@ -6628,6 +6785,46 @@ public class CoreFunctions {
                 private static final long serialVersionUID = -1848883965231344442L;
             };
 
+        public static VncFunction take_BANG =
+            new VncFunction(
+                    "take!",
+                    VncFunction
+                        .meta()
+                        .arglists(
+                            "(take! queue)")
+                        .doc(
+                            "Retrieves and removes the head value of the queue, waiting if " +
+                            "necessary until a value becomes available.")
+                        .examples(
+                            "(let [q (queue)]   \n" +
+                            "  (put! q 1)       \n" +
+                            "  (take! q)        \n" +
+                            "  q)")
+                        .seeAlso("queue", "put!", "offer!", "poll!", "peek", "empty?", "count")
+                        .build()
+            ) {
+                @Override
+                public VncVal apply(final VncList args) {
+                    ArityExceptions.assertArity(this, args, 1);
+
+                    final VncVal val = args.first();
+                    if (val == Nil) {
+                        return Nil;
+                    }
+
+                    if (Types.isVncQueue(val)) {
+                       return ((VncQueue)val).take();
+                    }
+                    else {
+                        throw new VncException(String.format(
+                                "take!: type %s not supported",
+                                Types.getType(args.first())));
+                    }
+                }
+
+                private static final long serialVersionUID = -1848883965231344442L;
+            };
+
     public static VncFunction peek =
         new VncFunction(
                 "peek",
@@ -6641,9 +6838,9 @@ public class CoreFunctions {
                     .examples(
                         "(peek '(1 2 3 4))",
                         "(peek [1 2 3 4])",
-                        "(let [s (into (stack) [1 2 3 4])] \n" +
+                        "(let [s (conj! (stack) 1 2 3 4)] \n" +
                         "   (peek s))                      ",
-                        "(let [q (into (queue) [1 2 3 4])] \n" +
+                        "(let [q (conj! (queue) 1 2 3 4)] \n" +
                         "   (peek q))                      ")
                     .build()
         ) {
@@ -8700,6 +8897,7 @@ public class CoreFunctions {
                 .add(split_at)
                 .add(split_with)
                 .add(into)
+                .add(into_BANG)
                 .add(sequential_Q)
                 .add(coll_Q)
                 .add(cons)
@@ -8727,6 +8925,8 @@ public class CoreFunctions {
                 .add(nlast)
                 .add(emptyToNil)
                 .add(pop)
+                .add(put_BANG)
+                .add(take_BANG)
                 .add(pop_BANG)
                 .add(push_BANG)
                 .add(poll_BANG)

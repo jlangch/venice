@@ -44,7 +44,7 @@ import com.github.jlangch.venice.impl.util.EmptyIterator;
 import com.github.jlangch.venice.impl.util.MetaUtil;
 
 
-public class VncMutableVector extends VncSequence {
+public class VncMutableVector extends VncSequence implements VncMutable {
 
     public VncMutableVector() {
         this(null, null);
