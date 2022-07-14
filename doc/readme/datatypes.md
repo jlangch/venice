@@ -286,7 +286,7 @@ Threadsafe mutable queue based on the Java type _LinkedBlockingDeque_.
   
 ;; synchronous access
 ;;   put!    adds the value to the tail of the queue, if necessary waits
-;;           infinitely until the queue is not full
+;;           infinitely while the queue is full
 ;;   take!   returns the head value, if necessary waits infinitely until
 ;;           a head value becomes available
 (let [q (queue 10)]
