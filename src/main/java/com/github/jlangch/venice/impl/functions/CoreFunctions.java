@@ -2267,6 +2267,26 @@ public class CoreFunctions {
                 private static final long serialVersionUID = -1848883965231344442L;
             };
 
+    public static VncFunction mutable_Q =
+        new VncFunction(
+                "mutable?",
+                VncFunction
+                    .meta()
+                    .arglists("(mutable? val)")
+                    .doc("Returns true if val is mutable")
+                    .examples("(mutable? (queue))")
+                    .build()
+        ) {
+            @Override
+            public VncVal apply(final VncList args) {
+                ArityExceptions.assertArity(this, args, 1);
+
+                return VncBoolean.of(args.first() instanceof VncMutable);
+            }
+
+            private static final long serialVersionUID = -1848883965231344442L;
+        };
+
 
     ///////////////////////////////////////////////////////////////////////////
     // LazySeq functions
@@ -5260,7 +5280,15 @@ public class CoreFunctions {
                 if (coll == Nil) {
                     return VncList.of(x);
                 }
-                else if (Types.isVncVector(coll)) {
+
+
+                if (coll instanceof VncMutable) {
+                    throw new VncException(String.format(
+                            "Function 'cons' does not allow the mutable collection %s as coll",
+                            Types.getType(args.first())));
+                }
+
+                if (Types.isVncVector(coll)) {
                     return ((VncVector)coll).addAtStart(x);
                 }
                 else if (Types.isVncList(coll)) {
@@ -5355,6 +5383,12 @@ public class CoreFunctions {
                         coll = VncList.empty();
                     }
 
+                    if (coll instanceof VncMutable) {
+                        throw new VncException(String.format(
+                                "Function 'conj' does not allow the mutable collection %s as coll",
+                                Types.getType(args.first())));
+                    }
+
                     if (Types.isVncVector(coll)) {
                         return ((VncVector)coll).addAllAtEnd(args.rest());
                     }
@@ -5419,6 +5453,13 @@ public class CoreFunctions {
                 ArityExceptions.assertArity(this, args, 2);
 
                 final VncVal coll = args.second();
+
+                if (!(coll instanceof VncMutable)) {
+                    throw new VncException(String.format(
+                            "Function 'cons!' does not allow mutable collections as coll " +
+                            "(%s is a persistent collection).",
+                            Types.getType(args.first())));
+                }
 
                 if (Types.isVncMutableList(coll)) {
                     return ((VncMutableList)coll).addAtStart(args.first());
@@ -5491,6 +5532,13 @@ public class CoreFunctions {
                     VncVal coll = args.first();
                     if (coll == Nil) {
                         coll = new VncMutableList();
+                    }
+
+                    if (!(coll instanceof VncMutable)) {
+                        throw new VncException(String.format(
+                                "Function 'conj!' does not allow mutable collections as coll " +
+                                "(%s is a persistent collection).",
+                                Types.getType(args.first())));
                     }
 
                     if (Types.isVncMutableList(coll)) {
@@ -8827,6 +8875,8 @@ public class CoreFunctions {
                 .add(bigint_cast)
 
                 .add(char_literals)
+
+                .add(mutable_Q)
 
                 .add(new_list)
                 .add(new_list_ASTERISK)
