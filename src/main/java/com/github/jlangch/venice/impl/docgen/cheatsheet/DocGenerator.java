@@ -208,6 +208,7 @@ public class DocGenerator {
         collections.addSection(new DocSection("LazySeq", "lazyseq"));
         collections.addSection(new DocSection("Stack", "collections.stack"));
         collections.addSection(new DocSection("Queue", "collections.queue"));
+        collections.addSection(new DocSection("DelayQueue", "collections.delayqueue"));
         collections.addSection(new DocSection("DAG", "collections.dag"));
         collections.addSection(new DocSection("Array", "arrays"));
         collections.addSection(new DocSection("ByteBuf", "bytebuf"));

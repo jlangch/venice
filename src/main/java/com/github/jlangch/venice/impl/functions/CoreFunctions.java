@@ -3054,7 +3054,7 @@ public class CoreFunctions {
                         "   (push! s 2)     \n" +
                         "   (push! s 3))      ")
                     .seeAlso(
-                        "peek", "pop!", "push!", "empty?", "count", "into!", "conj!")
+                        "peek", "pop!", "push!", "empty?", "count", "into!", "conj!", "stack?")
                     .build()
         ) {
             @Override
@@ -3112,7 +3112,8 @@ public class CoreFunctions {
                         "  (take! q)                  \n" +
                         "  q)                          ")
                     .seeAlso(
-                    	"peek", "put!", "take!", "offer!", "poll!", "empty?", "count",
+                    	"peek", "put!", "take!", "offer!", "poll!",
+                    	"empty?", "count", "queue?",
                     	"reduce", "transduce", "into!", "conj!")
                     .build()
         ) {
@@ -3135,14 +3136,22 @@ public class CoreFunctions {
                     .meta()
                     .arglists("(delay-queue)")
                     .doc(
-                        "Creates a new mutable threadsafe delay queue.")
+                        "Creates a new delay queue.\n\n" +
+                    	"A delay-queue is an unbounded blocking queue of delayed elements, " +
+                        "in which an element can only be taken when its delay has expired. " +
+                        "The head of the queue is that delayed element whose delay expired " +
+                        "furthest in the past. If no delay has expired there is no head and " +
+                        "`poll!` will return nil. Unexpired elements cannot be removed using " +
+                        "`take!` or `poll!`, they are otherwise treated as normal elements. " +
+                        "For example, the `count` method returns the count of both expired and " +
+                        "unexpired elements. This queue does not permit `nil` elements.")
                     .examples(
                         "(let [q (delay-queue)]  \n" +
                         "  (put! q 1 100)        \n" +
                         "  (put! q 1 200)        \n" +
                         "  (take! q))              ")
                     .seeAlso(
-                    	"peek", "put!", "take!", "poll!", "empty?", "count")
+                    	"peek", "put!", "take!", "poll!", "empty?", "count", "delay-queue?")
                     .build()
         ) {
             @Override
@@ -3338,6 +3347,26 @@ public class CoreFunctions {
                 ArityExceptions.assertArity(this, args, 1);
 
                 return VncBoolean.of(Types.isVncQueue(args.first()));
+            }
+
+            private static final long serialVersionUID = -1848883965231344442L;
+        };
+
+    public static VncFunction delay_queue_Q =
+        new VncFunction(
+                "delay-queue?",
+                VncFunction
+                    .meta()
+                    .arglists("(delay-queue? coll)")
+                    .doc("Returns true if coll is a delay-queue")
+                    .examples("(delay-queue? (delay-queue))")
+                    .build()
+        ) {
+            @Override
+            public VncVal apply(final VncList args) {
+                ArityExceptions.assertArity(this, args, 1);
+
+                return VncBoolean.of(Types.isVncDelayQueue(args.first()));
             }
 
             private static final long serialVersionUID = -1848883965231344442L;
@@ -6658,306 +6687,316 @@ public class CoreFunctions {
         };
 
     public static VncFunction push_BANG =
-            new VncFunction(
-                    "push!",
-                    VncFunction
-                        .meta()
-                        .arglists("(push! stack v)")
-                        .doc("Pushes an item to a stack.")
-                        .examples(
-                            "(let [s (stack)]   \n" +
-                            "   (push! s 1)     \n" +
-                            "   (push! s 2)     \n" +
-                            "   (push! s 3)     \n" +
-                            "   (pop! s))")
-                        .seeAlso(
-                            "stack", "peek", "pop!", "empty?", "count")
-                        .build()
-            ) {
-                @Override
-                public VncVal apply(final VncList args) {
-                    ArityExceptions.assertArity(this, args, 2);
+        new VncFunction(
+                "push!",
+                VncFunction
+                    .meta()
+                    .arglists("(push! stack v)")
+                    .doc("Pushes an item to a stack.")
+                    .examples(
+                        "(let [s (stack)]   \n" +
+                        "   (push! s 1)     \n" +
+                        "   (push! s 2)     \n" +
+                        "   (push! s 3)     \n" +
+                        "   (pop! s))")
+                    .seeAlso(
+                        "stack", "peek", "pop!", "empty?", "count")
+                    .build()
+        ) {
+            @Override
+            public VncVal apply(final VncList args) {
+                ArityExceptions.assertArity(this, args, 2);
 
-                    final VncVal val = args.first();
-                    if (val == Nil) {
-                        return Nil;
-                    }
-
-                    if (Types.isVncStack(val)) {
-                        return ((VncStack)val).push(args.second());
-                    }
-                    else {
-                        throw new VncException(String.format(
-                                "push!: type %s not supported",
-                                Types.getType(args.first())));
-                    }
+                final VncVal val = args.first();
+                if (val == Nil) {
+                    return Nil;
                 }
 
-                private static final long serialVersionUID = -1848883965231344442L;
-            };
+                if (Types.isVncStack(val)) {
+                    return ((VncStack)val).push(args.second());
+                }
+                else {
+                    throw new VncException(String.format(
+                            "push!: type %s not supported",
+                            Types.getType(args.first())));
+                }
+            }
+
+            private static final long serialVersionUID = -1848883965231344442L;
+        };
 
     public static VncFunction offer_BANG =
-            new VncFunction(
-                    "offer!",
-                    VncFunction
-                        .meta()
-                        .arglists(
-                            "(offer! queue v)",
-                            "(offer! queue timeout v)")
-                        .doc(
-                            "Offers an item to a queue with an optional timeout in milliseconds. " +
-                            "If a timeout is given waits up to the specified wait time if necessary " +
-                            "for space to become available. For an indefinite timeout pass the timeout " +
-                            "value :indefinite. " +
-                            "If no timeout is given returns immediately false if the queue does not " +
-                            "have any more capacity. " +
-                            "Returns true if the element was added to this queue, else false.")
-                        .examples(
-                            "(let [q (queue)]           \n" +
-                            "  (offer! q 1)             \n" +
-                            "  (offer! q 1000 2)        \n" +
-                            "  (offer! q :indefinite 3) \n" +
-                            "  (offer! q 3)             \n" +
-                            "  (poll! q)                \n" +
-                            "  q)")
-                        .seeAlso("queue", "put!", "take!", "poll!", "peek", "empty?", "count")
-                        .build()
-            ) {
-                @Override
-                public VncVal apply(final VncList args) {
-                    ArityExceptions.assertArity(this, args, 2, 3);
+        new VncFunction(
+                "offer!",
+                VncFunction
+                    .meta()
+                    .arglists(
+                        "(offer! queue v)",
+                        "(offer! queue timeout v)")
+                    .doc(
+                        "Offers an item to a queue with an optional timeout in milliseconds. " +
+                        "If a timeout is given waits up to the specified wait time if necessary " +
+                        "for space to become available. For an indefinite timeout pass the timeout " +
+                        "value :indefinite. " +
+                        "If no timeout is given returns immediately false if the queue does not " +
+                        "have any more capacity. " +
+                        "Returns true if the element was added to this queue, else false.")
+                    .examples(
+                        "(let [q (queue)]           \n" +
+                        "  (offer! q 1)             \n" +
+                        "  (offer! q 1000 2)        \n" +
+                        "  (offer! q :indefinite 3) \n" +
+                        "  (offer! q 3)             \n" +
+                        "  (poll! q)                \n" +
+                        "  q)")
+                    .seeAlso("queue", "put!", "take!", "poll!", "peek", "empty?", "count")
+                    .build()
+        ) {
+            @Override
+            public VncVal apply(final VncList args) {
+                ArityExceptions.assertArity(this, args, 2, 3);
 
-                    final VncVal val = args.first();
-                    if (val == Nil) {
-                        return Nil;
-                    }
-
-                    if (Types.isVncQueue(val)) {
-                        if (args.size() == 2) {
-                            return ((VncQueue)val).offer(args.second());
-                        }
-                        else {
-                            final VncVal option = args.second();
-                            if (Types.isVncKeyword(option)) {
-                                if (((VncKeyword)option).hasValue("indefinite")) {
-                                    ((VncQueue)val).put(args.third());
-                                    return VncBoolean.True;
-                                }
-                                else {
-                                    throw new VncException(String.format(
-                                            "offer!: timeout value '%s' not supported",
-                                            option.toString()));
-                                }
-                            }
-                            else {
-                                final long timeout = Coerce.toVncLong(option).getValue();
-                                return ((VncQueue)val).offer(args.third(), timeout);
-                            }
-                        }
-                    }
-                    else {
-                        throw new VncException(String.format(
-                                "offer!: type %s not supported",
-                                Types.getType(args.first())));
-                    }
+                final VncVal val = args.first();
+                if (val == Nil) {
+                    return Nil;
                 }
 
-                private static final long serialVersionUID = -1848883965231344442L;
-            };
+                if (Types.isVncQueue(val)) {
+                    if (args.size() == 2) {
+                        return ((VncQueue)val).offer(args.second());
+                    }
+                    else {
+                        final VncVal option = args.second();
+                        if (Types.isVncKeyword(option)) {
+                            if (((VncKeyword)option).hasValue("indefinite")) {
+                                ((VncQueue)val).put(args.third());
+                                return VncBoolean.True;
+                            }
+                            else {
+                                throw new VncException(String.format(
+                                        "offer!: timeout value '%s' not supported",
+                                        option.toString()));
+                            }
+                        }
+                        else {
+                            final long timeout = Coerce.toVncLong(option).getValue();
+                            return ((VncQueue)val).offer(args.third(), timeout);
+                        }
+                    }
+                }
+                else {
+                    throw new VncException(String.format(
+                            "offer!: type %s not supported",
+                            Types.getType(args.first())));
+                }
+            }
 
-        public static VncFunction put_BANG =
-            new VncFunction(
-                    "put!",
-                    VncFunction
-                        .meta()
-                        .arglists(
-                            "(put! queue v)",
-                            "(put! queue v delay)")
-                        .doc(
-                            "Puts an item to a queue. The operation is synchronous, it waits indefinitely " +
-                            "until the value can be placed on the queue. Returns always nil.")
-                        .examples(
-                            "(let [q (queue)]   \n" +
-                            "  (put! q 1)       \n" +
-                            "  (poll! q)        \n" +
-                            "  q)",
-                            "(let [q (delay-queue)]   \n" +
-                            "  (put! q 1 100)         \n" +
-                            "  (take! q))             ")
-                        .seeAlso("queue", "take!", "offer!", "poll!", "peek", "empty?", "count")
-                        .build()
-            ) {
-                @Override
-                public VncVal apply(final VncList args) {
-                    ArityExceptions.assertArity(this, args, 2, 3);
+            private static final long serialVersionUID = -1848883965231344442L;
+        };
 
-                    final VncVal val = args.first();
-                    if (val == Nil) {
+    public static VncFunction put_BANG =
+        new VncFunction(
+                "put!",
+                VncFunction
+                    .meta()
+                    .arglists(
+                        "(put! queue val)",
+                        "(put! queue val delay)")
+                    .doc(
+                        "Puts an item to a queue. The operation is synchronous, it waits indefinitely " +
+                        "until the value can be placed on the queue. Returns always nil.\n\n" +
+                        "*queue:* `(put! queue val)`¶\n" +
+                        "Puts the value 'val' to the tail of the queue.\n\n" +
+                        "*delay-queue:* `(put! queue val delay)`¶\n" +
+                        "Puts the value 'val' with a delay of 'delay' milliseconds to a delay-queue")
+                    .examples(
+                        "(let [q (queue)]   \n" +
+                        "  (put! q 1)       \n" +
+                        "  (poll! q)        \n" +
+                        "  q)",
+                        "(let [q (delay-queue)]   \n" +
+                        "  (put! q 1 100)         \n" +
+                        "  (take! q))             ")
+                    .seeAlso("queue", "take!", "offer!", "poll!", "peek", "empty?", "count")
+                    .build()
+        ) {
+            @Override
+            public VncVal apply(final VncList args) {
+                ArityExceptions.assertArity(this, args, 2, 3);
+
+                final VncVal coll = args.first();
+                if (coll == Nil) {
+                    return Nil;
+                }
+
+                if (Types.isVncQueue(coll)) {
+                	if (args.size() == 2) {
+                        ((VncQueue)coll).put(args.second());
                         return Nil;
-                    }
-
-                    if (Types.isVncQueue(val)) {
-                    	if (args.size() == 2) {
-	                        ((VncQueue)val).put(args.second());
-	                        return Nil;
-                    	}
-                    	else {
-                            throw new VncException(String.format(
-                                    "put! for a queue requires two args (put! queue val)",
-                                    Types.getType(args.first())));
-                    	}
-                    }
-                    else if (Types.isVncDelayQueue(val)) {
-                    	if (args.size() == 3) {
-	                        ((VncDelayQueue)val).put(
-	                        		args.second(),
+                	}
+                	else {
+                        throw new VncException(String.format(
+                                "put! for a queue requires two args (put! queue val)",
+                                Types.getType(args.first())));
+                	}
+                }
+                else if (Types.isVncDelayQueue(coll)) {
+                	if (args.size() == 3) {
+                		final VncVal val = args.second();
+                		if (val == Nil) {
+                            throw new VncException("put! A delay-queue does not permit nil elements");
+                		}
+                		else {
+	                        ((VncDelayQueue)coll).put(
+	                        		val,
 	                        		Coerce.toVncLong(args.third()).getValue(),
 	                        		TimeUnit.MILLISECONDS);
 	                        return Nil;
-                    	}
-                    	else {
-                            throw new VncException(String.format(
-                                    "put! for a delay-queue requires three args (put! queue val delay)",
-                                    Types.getType(args.first())));
-                    	}
-                    }
-                    else {
+                		}
+                	}
+                	else {
                         throw new VncException(String.format(
-                                "put!: type %s not supported",
+                                "put! for a delay-queue requires three args (put! queue val delay)",
                                 Types.getType(args.first())));
-                    }
+                	}
                 }
+                else {
+                    throw new VncException(String.format(
+                            "put!: type %s not supported",
+                            Types.getType(args.first())));
+                }
+            }
 
-                private static final long serialVersionUID = -1848883965231344442L;
-            };
+            private static final long serialVersionUID = -1848883965231344442L;
+        };
 
     public static VncFunction poll_BANG =
-            new VncFunction(
-                    "poll!",
-                    VncFunction
-                        .meta()
-                        .arglists(
-                            "(poll! queue)",
-                            "(poll! queue timeout)")
-                        .doc(
-                            "Polls an item from a queue with an optional timeout in milliseconds. " +
-                            "For an indefinite timeout pass the timeout value :indefinite. " +
-                            "If no timeout is given returns the item if one is available else " +
-                            "returns nil. With a timeout returns the item if one is available within " +
-                            "the given timeout else returns nil.")
-                        .examples(
-                            "(let [q (conj! (queue) 1 2 3 4)]   \n" +
-	                        "  (poll! q)                        \n" +
-	                        "  (poll! q 1000)                   \n" +
-                           "  q)")
-                        .seeAlso("queue", "put!", "take!", "offer!", "peek", "empty?", "count")
-                        .build()
-            ) {
-                @Override
-                public VncVal apply(final VncList args) {
-                    ArityExceptions.assertArity(this, args, 1, 2);
+        new VncFunction(
+                "poll!",
+                VncFunction
+                    .meta()
+                    .arglists(
+                        "(poll! queue)",
+                        "(poll! queue timeout)")
+                    .doc(
+                        "Polls an item from a queue with an optional timeout in milliseconds. " +
+                        "For an indefinite timeout pass the timeout value :indefinite. " +
+                        "If no timeout is given returns the item if one is available else " +
+                        "returns nil. With a timeout returns the item if one is available within " +
+                        "the given timeout else returns nil.")
+                    .examples(
+                        "(let [q (conj! (queue) 1 2 3 4)]   \n" +
+                        "  (poll! q)                        \n" +
+                        "  (poll! q 1000)                   \n" +
+                       "  q)")
+                    .seeAlso("queue", "put!", "take!", "offer!", "peek", "empty?", "count")
+                    .build()
+        ) {
+            @Override
+            public VncVal apply(final VncList args) {
+                ArityExceptions.assertArity(this, args, 1, 2);
 
-                    final VncVal val = args.first();
-                    if (val == Nil) {
-                        return Nil;
-                    }
+                final VncVal val = args.first();
+                if (val == Nil) {
+                    return Nil;
+                }
 
-                    if (Types.isVncQueue(val)) {
-                        if (args.size() == 1) {
-                            return ((VncQueue)val).poll();
-                        }
-                        else {
-                            final VncVal option = args.second();
-                            if (Types.isVncKeyword(option)) {
-                                if (((VncKeyword)option).hasValue("indefinite")) {
-                                    return ((VncQueue)val).take();
-                                }
-                                else {
-                                    throw new VncException(String.format(
-                                            "poll!: timeout value '%s' not supported",
-                                            option.toString()));
-                                }
-                            }
-                            else {
-                                final long timeout = Coerce.toVncLong(option).getValue();
-                                return ((VncQueue)val).poll(timeout);
-                            }
-                        }
-                    }
-                    else if (Types.isVncDelayQueue(val)) {
-                        if (args.size() == 1) {
-                            return ((VncDelayQueue)val).poll();
-                        }
-                        else {
-                            final VncVal option = args.second();
-                            if (Types.isVncKeyword(option)) {
-                                if (((VncKeyword)option).hasValue("indefinite")) {
-                                    return ((VncDelayQueue)val).take();
-                                }
-                                else {
-                                    throw new VncException(String.format(
-                                            "poll!: timeout value '%s' not supported",
-                                            option.toString()));
-                                }
-                            }
-                            else {
-                                final long timeout = Coerce.toVncLong(option).getValue();
-                                return ((VncDelayQueue)val).poll(timeout);
-                            }
-                        }
+                if (Types.isVncQueue(val)) {
+                    if (args.size() == 1) {
+                        return ((VncQueue)val).poll();
                     }
                     else {
-                        throw new VncException(String.format(
-                                "poll!: type %s not supported",
-                                Types.getType(args.first())));
+                        final VncVal option = args.second();
+                        if (Types.isVncKeyword(option)) {
+                            if (((VncKeyword)option).hasValue("indefinite")) {
+                                return ((VncQueue)val).take();
+                            }
+                            else {
+                                throw new VncException(String.format(
+                                        "poll!: timeout value '%s' not supported",
+                                        option.toString()));
+                            }
+                        }
+                        else {
+                            final long timeout = Coerce.toVncLong(option).getValue();
+                            return ((VncQueue)val).poll(timeout);
+                        }
                     }
                 }
-
-                private static final long serialVersionUID = -1848883965231344442L;
-            };
-
-        public static VncFunction take_BANG =
-            new VncFunction(
-                    "take!",
-                    VncFunction
-                        .meta()
-                        .arglists(
-                            "(take! queue)")
-                        .doc(
-                            "Retrieves and removes the head value of the queue, waiting if " +
-                            "necessary until a value becomes available.")
-                        .examples(
-                            "(let [q (queue)]   \n" +
-                            "  (put! q 1)       \n" +
-                            "  (take! q)        \n" +
-                            "  q)")
-                        .seeAlso("queue", "put!", "offer!", "poll!", "peek", "empty?", "count")
-                        .build()
-            ) {
-                @Override
-                public VncVal apply(final VncList args) {
-                    ArityExceptions.assertArity(this, args, 1);
-
-                    final VncVal queue = args.first();
-                    if (queue == Nil) {
-                        return Nil;
+                else if (Types.isVncDelayQueue(val)) {
+                    if (args.size() == 1) {
+                        return ((VncDelayQueue)val).poll();
                     }
-
-                    if (Types.isVncQueue(queue)) {
-                       return ((VncQueue)queue).take();
-                    }
-                    if (Types.isVncDelayQueue(queue)) {
-                        return ((VncDelayQueue)queue).take();
-                     }
-                   else {
-                        throw new VncException(String.format(
-                                "take!: type %s not supported",
-                                Types.getType(args.first())));
+                    else {
+                        final VncVal option = args.second();
+                        if (Types.isVncKeyword(option)) {
+                            if (((VncKeyword)option).hasValue("indefinite")) {
+                                return ((VncDelayQueue)val).take();
+                            }
+                            else {
+                                throw new VncException(String.format(
+                                        "poll!: timeout value '%s' not supported",
+                                        option.toString()));
+                            }
+                        }
+                        else {
+                            final long timeout = Coerce.toVncLong(option).getValue();
+                            return ((VncDelayQueue)val).poll(timeout);
+                        }
                     }
                 }
+                else {
+                    throw new VncException(String.format(
+                            "poll!: type %s not supported",
+                            Types.getType(args.first())));
+                }
+            }
 
-                private static final long serialVersionUID = -1848883965231344442L;
-            };
+            private static final long serialVersionUID = -1848883965231344442L;
+        };
+
+    public static VncFunction take_BANG =
+        new VncFunction(
+                "take!",
+                VncFunction
+                    .meta()
+                    .arglists(
+                        "(take! queue)")
+                    .doc(
+                        "Retrieves and removes the head value of the queue, waiting if " +
+                        "necessary until a value becomes available.")
+                    .examples(
+                        "(let [q (queue)]   \n" +
+                        "  (put! q 1)       \n" +
+                        "  (take! q)        \n" +
+                        "  q)")
+                    .seeAlso("queue", "put!", "offer!", "poll!", "peek", "empty?", "count")
+                    .build()
+        ) {
+            @Override
+            public VncVal apply(final VncList args) {
+                ArityExceptions.assertArity(this, args, 1);
+
+                final VncVal queue = args.first();
+                if (queue == Nil) {
+                    return Nil;
+                }
+
+                if (Types.isVncQueue(queue)) {
+                   return ((VncQueue)queue).take();
+                }
+                if (Types.isVncDelayQueue(queue)) {
+                    return ((VncDelayQueue)queue).take();
+                 }
+               else {
+                    throw new VncException(String.format(
+                            "take!: type %s not supported",
+                            Types.getType(args.first())));
+                }
+            }
+
+            private static final long serialVersionUID = -1848883965231344442L;
+        };
 
     public static VncFunction peek =
         new VncFunction(
@@ -8987,6 +9026,7 @@ public class CoreFunctions {
                 .add(mutable_map_Q)
                 .add(stack_Q)
                 .add(queue_Q)
+                .add(delay_queue_Q)
                 .add(new_hash_map)
                 .add(new_ordered_map)
                 .add(new_sorted_map)

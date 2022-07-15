@@ -409,6 +409,33 @@ public class CollectionsSection implements ISectionBuilder {
         queues_test.addItem(diBuilder.getDocItem("queue?"));
 
 
+        final DocSection dqueues = new DocSection("DelayQueue", "collections.delayqueue");
+        section.addSection(dqueues);
+
+        final DocSection dqueues_create = new DocSection("Create", "collections.delayqueue.create");
+        dqueues.addSection(dqueues_create);
+        dqueues_create.addItem(diBuilder.getDocItem("delay-queue"));
+
+        final DocSection dqueues_access = new DocSection("Access", "collections.delayqueue.access");
+        dqueues.addSection(dqueues_access);
+        dqueues_access.addItem(diBuilder.getDocItem("peek"));
+        dqueues_access.addItem(diBuilder.getDocItem("count"));
+
+        final DocSection dqueues_access_sync = new DocSection("Sync", "collections.delayqueue.access.sync");
+        dqueues.addSection(dqueues_access_sync);
+        dqueues_access_sync.addItem(diBuilder.getDocItem("put!"));
+        dqueues_access_sync.addItem(diBuilder.getDocItem("take!"));
+
+        final DocSection dqueues_access_async = new DocSection("Async", "collections.delayqueue.access.async");
+        dqueues.addSection(dqueues_access_async);
+        dqueues_access_async.addItem(diBuilder.getDocItem("poll!"));
+
+        final DocSection dqueues_test = new DocSection("Test", "collections.delayqueue.test");
+        dqueues.addSection(dqueues_test);
+        dqueues_test.addItem(diBuilder.getDocItem("empty?"));
+        dqueues_test.addItem(diBuilder.getDocItem("delay-queue?"));
+
+
         final DocSection dag = new DocSection("DAG", "directed acyclic graph", "collections.dag");
         section.addSection(dag);
 
