@@ -5466,7 +5466,7 @@ public class CoreFunctions {
 
                 if (!(coll instanceof VncMutable)) {
                     throw new VncException(String.format(
-                            "Function 'cons!' does not persistent collections as coll. " +
+                            "Function 'cons!' does not allow persistent collections as coll. " +
                             "Please use 'cons' instead!",
                             Types.getType(args.first())));
                 }
@@ -5546,7 +5546,7 @@ public class CoreFunctions {
 
                     if (!(coll instanceof VncMutable)) {
                         throw new VncException(String.format(
-                                "Function 'conj!' does not persistent collections as coll. " +
+                                "Function 'conj!' does not allow persistent collections as coll. " +
                                 "Please use 'conj' instead!",
                                 Types.getType(args.first())));
                     }
