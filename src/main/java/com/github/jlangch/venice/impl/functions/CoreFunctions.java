@@ -3150,8 +3150,8 @@ public class CoreFunctions {
                         "(do                                                                \n" +
                         "  (defprotocol RateLimiter (init [x]) (aquire [x]))                \n" +
                         "                                                                   \n" +
-                        "  (deftype :rate-limiter [queue                :core/delay-queue,  \n" +
-                        "                          limit-for-period     :long,              \n" +
+                        "  (deftype :rate-limiter [queue                :core/delay-queue   \n" +
+                        "                          limit-for-period     :long               \n" +
                         "                          limit-refresh-period :long]              \n" +
                         "           RateLimiter                                             \n" +
                         "             (init [this]   (let [q (:queue this)                  \n" +
@@ -3170,7 +3170,7 @@ public class CoreFunctions {
                         "  (doseq [x (range 1 26)]                                          \n" +
                         "    (do                                                            \n" +
                         "      (aquire limiter)                                             \n" +
-                        "      (println \"running\" x))))                                   " +
+                        "      (println \"running\" x))))                                   \n" +
                         "```")
                     .examples(
                         "(let [q (delay-queue)]  \n" +
