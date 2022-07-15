@@ -2277,6 +2277,42 @@ public class CoreFunctionsTest {
     }
 
     @Test
+    public void test_delay_queue() {
+        final Venice venice = new Venice();
+
+        assertTrue((Boolean)venice.eval("(delay-queue? (delay-queue))"));
+
+        assertEquals(null, venice.eval("(poll! (queue))"));
+
+        assertEquals(1L, venice.eval(
+                            "(let [q (delay-queue)]  \n" +
+                            "  (put! q 1  100)       \n" +
+                            "  (take! q))              "));
+
+        assertEquals(1L, venice.eval(
+                            "(let [q (delay-queue)]  \n" +
+                            "  (put! q 1   50)       \n" +
+                            "  (put! q 2  100)       \n" +
+                            "  (take! q))              "));
+
+        assertEquals(2L, venice.eval(
+                            "(let [q (delay-queue)]  \n" +
+                            "  (put! q 1  100)       \n" +
+                            "  (put! q 2   50)       \n" +
+                            "  (take! q))              "));
+
+        assertEquals(1L, venice.eval(
+                            "(let [q (delay-queue)]  \n" +
+                            "  (put! q 1  100)       \n" +
+                            "  (put! q 2   50)       \n" +
+                            "  (take! q)             \n" +
+                            "  (take! q))              "));
+
+        assertThrows(VncException.class, () -> venice.eval("(put! (delay-queue) nil 100)"));
+
+    }
+
+    @Test
     public void test_keyword_Q() {
         final Venice venice = new Venice();
 
