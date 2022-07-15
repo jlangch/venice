@@ -296,5 +296,3 @@ Threadsafe mutable queue based on the Java type _LinkedBlockingDeque_.
   (take! q))    ;; => 1
 ```
 
-Inserts the specified element into this queue, waiting if necessary for 
-space to become available.
