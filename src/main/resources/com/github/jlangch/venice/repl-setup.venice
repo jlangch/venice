@@ -265,7 +265,7 @@
     (println )
     (println """
              ----------------------------------------------------------------
-             The Venice REPL has been successfuly configured and setup. The
+             The Venice REPL has been successfully configured and setup. The
              original Venice JAR is not needed anymore, it has been copied to
              the 'libs' directory that holds all JAR files and resources.
 
