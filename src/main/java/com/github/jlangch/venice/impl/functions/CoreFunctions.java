@@ -38,6 +38,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
 import com.github.jlangch.venice.ContinueException;
@@ -71,6 +72,7 @@ import com.github.jlangch.venice.impl.types.VncSymbol;
 import com.github.jlangch.venice.impl.types.VncThreadLocal;
 import com.github.jlangch.venice.impl.types.VncVal;
 import com.github.jlangch.venice.impl.types.collections.VncCollection;
+import com.github.jlangch.venice.impl.types.collections.VncDelayQueue;
 import com.github.jlangch.venice.impl.types.collections.VncHashMap;
 import com.github.jlangch.venice.impl.types.collections.VncHashSet;
 import com.github.jlangch.venice.impl.types.collections.VncJavaList;
@@ -3121,6 +3123,33 @@ public class CoreFunctions {
                 return args.isEmpty()
                         ? new VncQueue()
                         : new VncQueue(Coerce.toVncLong(args.first()).getIntValue());
+            }
+
+            private static final long serialVersionUID = -1848883965231344442L;
+        };
+
+    public static VncFunction new_delay_queue =
+        new VncFunction(
+                "delay-queue",
+                VncFunction
+                    .meta()
+                    .arglists("(delay-queue)")
+                    .doc(
+                        "Creates a new mutable threadsafe delay queue.")
+                    .examples(
+                        "(let [q (delay-queue)]  \n" +
+                        "  (put! q 1 100)        \n" +
+                        "  (put! q 1 200)        \n" +
+                        "  (take! q))              ")
+                    .seeAlso(
+                    	"peek", "put!", "take!", "poll!", "empty?", "count")
+                    .build()
+        ) {
+            @Override
+            public VncVal apply(final VncList args) {
+                ArityExceptions.assertArity(this, args, 0);
+
+                return new VncDelayQueue(null);
             }
 
             private static final long serialVersionUID = -1848883965231344442L;
@@ -6745,7 +6774,8 @@ public class CoreFunctions {
                     VncFunction
                         .meta()
                         .arglists(
-                            "(put! queue v)")
+                            "(put! queue v)",
+                            "(put! queue v delay)")
                         .doc(
                             "Puts an item to a queue. The operation is synchronous, it waits indefinitely " +
                             "until the value can be placed on the queue. Returns always nil.")
@@ -6753,13 +6783,16 @@ public class CoreFunctions {
                             "(let [q (queue)]   \n" +
                             "  (put! q 1)       \n" +
                             "  (poll! q)        \n" +
-                            "  q)")
+                            "  q)",
+                            "(let [q (delay-queue)]   \n" +
+                            "  (put! q 1 100)         \n" +
+                            "  (take! q))             ")
                         .seeAlso("queue", "take!", "offer!", "poll!", "peek", "empty?", "count")
                         .build()
             ) {
                 @Override
                 public VncVal apply(final VncList args) {
-                    ArityExceptions.assertArity(this, args, 2);
+                    ArityExceptions.assertArity(this, args, 2, 3);
 
                     final VncVal val = args.first();
                     if (val == Nil) {
@@ -6767,8 +6800,29 @@ public class CoreFunctions {
                     }
 
                     if (Types.isVncQueue(val)) {
-                       ((VncQueue)val).put(args.second());
-                       return Nil;
+                    	if (args.size() == 2) {
+	                        ((VncQueue)val).put(args.second());
+	                        return Nil;
+                    	}
+                    	else {
+                            throw new VncException(String.format(
+                                    "put! for a queue requires two args (put! queue val)",
+                                    Types.getType(args.first())));
+                    	}
+                    }
+                    else if (Types.isVncDelayQueue(val)) {
+                    	if (args.size() == 3) {
+	                        ((VncDelayQueue)val).put(
+	                        		args.second(),
+	                        		Coerce.toVncLong(args.third()).getValue(),
+	                        		TimeUnit.MILLISECONDS);
+	                        return Nil;
+                    	}
+                    	else {
+                            throw new VncException(String.format(
+                                    "put! for a delay-queue requires three args (put! queue val delay)",
+                                    Types.getType(args.first())));
+                    	}
                     }
                     else {
                         throw new VncException(String.format(
@@ -6833,6 +6887,28 @@ public class CoreFunctions {
                             }
                         }
                     }
+                    else if (Types.isVncDelayQueue(val)) {
+                        if (args.size() == 1) {
+                            return ((VncDelayQueue)val).poll();
+                        }
+                        else {
+                            final VncVal option = args.second();
+                            if (Types.isVncKeyword(option)) {
+                                if (((VncKeyword)option).hasValue("indefinite")) {
+                                    return ((VncDelayQueue)val).take();
+                                }
+                                else {
+                                    throw new VncException(String.format(
+                                            "poll!: timeout value '%s' not supported",
+                                            option.toString()));
+                                }
+                            }
+                            else {
+                                final long timeout = Coerce.toVncLong(option).getValue();
+                                return ((VncDelayQueue)val).poll(timeout);
+                            }
+                        }
+                    }
                     else {
                         throw new VncException(String.format(
                                 "poll!: type %s not supported",
@@ -6865,15 +6941,18 @@ public class CoreFunctions {
                 public VncVal apply(final VncList args) {
                     ArityExceptions.assertArity(this, args, 1);
 
-                    final VncVal val = args.first();
-                    if (val == Nil) {
+                    final VncVal queue = args.first();
+                    if (queue == Nil) {
                         return Nil;
                     }
 
-                    if (Types.isVncQueue(val)) {
-                       return ((VncQueue)val).take();
+                    if (Types.isVncQueue(queue)) {
+                       return ((VncQueue)queue).take();
                     }
-                    else {
+                    if (Types.isVncDelayQueue(queue)) {
+                        return ((VncDelayQueue)queue).take();
+                     }
+                   else {
                         throw new VncException(String.format(
                                 "take!: type %s not supported",
                                 Types.getType(args.first())));
@@ -6924,6 +7003,9 @@ public class CoreFunctions {
                 }
                 else if (Types.isVncQueue(val)) {
                     return ((VncQueue)val).peek();
+                }
+                else if (Types.isVncDelayQueue(val)) {
+                    return ((VncDelayQueue)val).peek();
                 }
                 else {
                     throw new VncException(String.format(
@@ -8915,6 +8997,7 @@ public class CoreFunctions {
                 .add(new_map_entry)
                 .add(new_stack)
                 .add(new_queue)
+                .add(new_delay_queue)
                 .add(assoc)
                 .add(assoc_BANG)
                 .add(assoc_in)
