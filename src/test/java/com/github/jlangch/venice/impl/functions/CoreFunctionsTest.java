@@ -2144,6 +2144,7 @@ public class CoreFunctionsTest {
         final Venice venice = new Venice();
 
         assertTrue((Boolean)venice.eval("(queue? (queue))"));
+        assertFalse((Boolean)venice.eval("(queue? (delay-queue))"));
 
         assertEquals(null, venice.eval("(poll! (queue))"));
 
@@ -2281,6 +2282,7 @@ public class CoreFunctionsTest {
         final Venice venice = new Venice();
 
         assertTrue((Boolean)venice.eval("(delay-queue? (delay-queue))"));
+        assertFalse((Boolean)venice.eval("(delay-queue? (queue))"));
 
         assertEquals(null, venice.eval("(poll! (queue))"));
 
