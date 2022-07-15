@@ -4618,9 +4618,9 @@ public class CoreFunctions {
 
 
                 if (!(to instanceof VncMutable)) {
-                    throw new VncException(String.format(
+                    throw new VncException(
                             "Function 'into!' does not allow persistent collections as to-coll. " +
-                            "Please use 'into' instead!"));
+                            "Please use 'into' instead!");
                 }
 
                 if (Types.isVncByteBuffer(args.second())) {
@@ -5493,9 +5493,9 @@ public class CoreFunctions {
                 final VncVal coll = args.second();
 
                 if (!(coll instanceof VncMutable)) {
-                    throw new VncException(String.format(
+                    throw new VncException(
                             "Function 'cons!' does not allow persistent collections as coll. " +
-                            "Please use 'cons' instead!"));
+                            "Please use 'cons' instead!");
                 }
 
                 if (Types.isVncMutableList(coll)) {
@@ -5572,9 +5572,9 @@ public class CoreFunctions {
                     }
 
                     if (!(coll instanceof VncMutable)) {
-                        throw new VncException(String.format(
+                        throw new VncException(
                                 "Function 'conj!' does not allow persistent collections as coll. " +
-                                "Please use 'conj' instead!"));
+                                "Please use 'conj' instead!");
                     }
 
                     if (Types.isVncMutableList(coll)) {
