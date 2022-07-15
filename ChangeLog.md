@@ -18,6 +18,7 @@ and this project adheres to
 - support for queues to transducers and reducers
 - performance improvements to the `grep` functions by using `pmap` instead of 
   `map` in its implementation.
+- a `delay-queue` that is based on the Java class `java.util.concurrent.DelayQueue`
 
 ### Fixed
 
