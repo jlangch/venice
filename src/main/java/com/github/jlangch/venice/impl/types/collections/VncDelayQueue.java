@@ -195,7 +195,7 @@ public class VncDelayQueue extends VncCollection implements VncMutable {
         @Override
         public long getDelay(final TimeUnit unit) {
             return unit.convert(
-                        System.currentTimeMillis() - delayTo,
+                        delayTo - System.currentTimeMillis(),
                         TimeUnit.MILLISECONDS);
         }
 

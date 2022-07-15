@@ -2310,8 +2310,21 @@ public class CoreFunctionsTest {
                             "  (take! q)             \n" +
                             "  (take! q))              "));
 
-        assertThrows(VncException.class, () -> venice.eval("(put! (delay-queue) nil 100)"));
+        assertEquals(1L, venice.eval(
+			                "(let [q (delay-queue)]  \n" +
+			                "  (put! q 1  0)         \n" +
+			                "  (put! q 1  0)         \n" +
+			                "  (put! q 1  0)         \n" +
+			                "  (take! q))              "));
 
+        assertEquals(1L, venice.eval(
+			                "(let [q (delay-queue)]  \n" +
+			                "  (put! q 1  10)         \n" +
+			                "  (put! q 1  10)         \n" +
+			                "  (put! q 1  10)         \n" +
+			                "  (take! q))              "));
+
+        assertThrows(VncException.class, () -> venice.eval("(put! (delay-queue) nil 100)"));
     }
 
     @Test

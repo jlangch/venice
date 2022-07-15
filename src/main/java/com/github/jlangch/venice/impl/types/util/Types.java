@@ -361,6 +361,7 @@ public class Types {
 
             case ":core/stack":         return Types.isVncStack(val);
             case ":core/queue":         return Types.isVncQueue(val);
+            case ":core/delay-queue":   return Types.isVncDelayQueue(val);
 
             case ":core/custom-type":   return Types.isVncCustomType(val);
 

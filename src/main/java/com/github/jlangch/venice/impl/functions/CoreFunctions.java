@@ -3144,7 +3144,34 @@ public class CoreFunctions {
                         "`poll!` will return nil. Unexpired elements cannot be removed using " +
                         "`take!` or `poll!`, they are otherwise treated as normal elements. " +
                         "For example, the `count` method returns the count of both expired and " +
-                        "unexpired elements. This queue does not permit `nil` elements.")
+                        "unexpired elements. This queue does not permit `nil` elements.\n\n" +
+                        "Example rate limiter:\n\n" +
+                        "```\n" +
+                        "(do                                                                \n" +
+                        "  (defprotocol RateLimiter (init [x]) (aquire [x]))                \n" +
+                        "                                                                   \n" +
+                        "  (deftype :rate-limiter [queue                :core/delay-queue,  \n" +
+                        "                          limit-for-period     :long,              \n" +
+                        "                          limit-refresh-period :long]              \n" +
+                        "           RateLimiter                                             \n" +
+                        "             (init [this]   (let [q (:queue this)                  \n" +
+                        "                                  n (:limit-for-period this)]      \n" +
+                        "                              (repeatedly n #(put! q :token 0))    \n" +
+                        "                              this))                               \n" +
+                        "             (aquire [this] (let [q (:queue this)                  \n" +
+                        "                                  p (:limit-refresh-period this)]  \n" +
+                        "                              (take! q)                            \n" +
+                        "                              (put! q :token p))))                 \n" +
+                        "                                                                   \n" +
+                        "  ;; create a limiter with a limit of 5 actions within a 2s period \n" +
+                        "  (def limiter (init (rate-limiter. (delay-queue) 5 2000)))        \n" +
+                        "                                                                   \n" +
+                        "  ;; test the limiter                                              \n" +
+                        "  (doseq [x (range 1 26)]                                          \n" +
+                        "    (do                                                            \n" +
+                        "      (aquire limiter)                                             \n" +
+                        "      (println \"running\" x))))                                   " +
+                        "```")
                     .examples(
                         "(let [q (delay-queue)]  \n" +
                         "  (put! q 1 100)        \n" +
