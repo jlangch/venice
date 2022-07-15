@@ -3169,7 +3169,7 @@ public class CoreFunctions {
                         "  ;; test the limiter                                              \n" +
                         "  (doseq [x (range 1 26)]                                          \n" +
                         "    (aquire limiter)                                               \n" +
-                        "    (println \"running\" x)))                                      \n" +
+                        "    (printf \"%s: run %2d%n\" (time/local-date-time) x)))          \n" +
                         "```")
                     .examples(
                         "(let [q (delay-queue)]  \n" +
