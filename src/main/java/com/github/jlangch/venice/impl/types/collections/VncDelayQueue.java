@@ -162,12 +162,12 @@ public class VncDelayQueue extends VncCollection implements VncMutable {
 
     @Override
     public String toString() {
-        return "DelayQueue";
+        return TYPE;
     }
 
     @Override
     public String toString(final boolean print_machine_readably) {
-        return "DelayQueue";
+        return TYPE;
     }
 
 
