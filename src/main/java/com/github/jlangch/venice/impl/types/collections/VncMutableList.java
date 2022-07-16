@@ -162,6 +162,7 @@ public class VncMutableList extends VncSequence implements VncMutable {
         return value.isEmpty();
     }
 
+    @Override
     public void clear() {
         value.clear();
     }

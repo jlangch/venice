@@ -143,6 +143,7 @@ public class VncDelayQueue extends VncCollection implements VncMutable {
         }
     }
 
+    @Override
     public void clear() {
         queue.clear();
     }

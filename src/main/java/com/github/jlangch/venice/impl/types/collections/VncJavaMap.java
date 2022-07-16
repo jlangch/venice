@@ -117,6 +117,11 @@ public class VncJavaMap extends VncMap implements IVncJavaObject, VncMutable {
     }
 
     @Override
+    public void clear() {
+        value.clear();
+    }
+
+    @Override
     public VncVal get(final VncVal key) {
         return JavaInteropUtil.convertToVncVal(
                     value.get(key.convertToJavaObject()));

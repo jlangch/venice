@@ -165,6 +165,7 @@ public class VncMutableVector extends VncSequence implements VncMutable {
         return value.isEmpty();
     }
 
+    @Override
     public void clear() {
         value.clear();
     }

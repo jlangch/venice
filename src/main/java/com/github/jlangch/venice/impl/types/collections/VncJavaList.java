@@ -141,6 +141,11 @@ public class VncJavaList extends VncSequence implements IVncJavaObject, VncMutab
     }
 
     @Override
+    public void clear() {
+        value.clear();
+    }
+
+    @Override
     public void forEach(Consumer<? super VncVal> action) {
         value.forEach(v -> action.accept(JavaInteropUtil.convertToVncVal(v)));
     }

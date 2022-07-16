@@ -194,6 +194,7 @@ public class VncMutableSet extends VncSet implements VncMutable {
         return value.isEmpty();
     }
 
+    @Override
     public void clear() {
         value.clear();
     }

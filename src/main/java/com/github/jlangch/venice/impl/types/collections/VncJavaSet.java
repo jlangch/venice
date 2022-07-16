@@ -125,6 +125,11 @@ public class VncJavaSet extends VncSet implements IVncJavaObject, VncMutable {
     }
 
     @Override
+    public void clear() {
+        value.clear();
+    }
+
+    @Override
     public VncJavaSet add(final VncVal val) {
         value.add(val.convertToJavaObject());
         return this;

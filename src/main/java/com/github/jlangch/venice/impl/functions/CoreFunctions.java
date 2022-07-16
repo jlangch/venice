@@ -5222,7 +5222,10 @@ public class CoreFunctions {
                 VncFunction
                     .meta()
                     .arglists("(empty coll)")
-                    .doc("Returns an empty collection of the same category as coll, or nil")
+                    .doc(
+                    	"Returns an empty collection of the same category as coll, or nil. " +
+                    	"If the collection is mutable clears the collection and returns the " +
+                    	"the empty collection.")
                     .examples("(empty {:a 1})", "(empty [1 2])", "(empty '(1 2))")
                     .build()
         ) {
@@ -5234,14 +5237,12 @@ public class CoreFunctions {
                 if (coll == Nil) {
                     return Nil;
                 }
-                else if (Types.isVncSequence(coll)) {
-                    return ((VncSequence)coll).emptyWithMeta();
+                else if (coll instanceof VncMutable) {
+                	((VncMutable)coll).clear();
+                	return coll;
                 }
-                else if (Types.isVncSet(coll)) {
-                    return ((VncSet)coll).emptyWithMeta();
-                }
-                else if (Types.isVncMap(coll)) {
-                    return ((VncMap)coll).emptyWithMeta();
+                else if (Types.isVncCollection(coll)) {
+                    return ((VncCollection)coll).emptyWithMeta();
                 }
                 else {
                     throw new VncException(String.format(

@@ -98,6 +98,7 @@ public class VncStack extends VncCollection implements VncMutable {
         return toNil(stack.peek());
     }
 
+    @Override
     public void clear() {
         stack.clear();
     }

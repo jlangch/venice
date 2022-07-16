@@ -22,4 +22,7 @@
 package com.github.jlangch.venice.impl.types.collections;
 
 public interface VncMutable  {
+
+    public void clear();
+
 }

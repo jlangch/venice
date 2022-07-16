@@ -203,6 +203,7 @@ public class VncQueue extends VncCollection implements VncMutable {
         }
     }
 
+    @Override
     public void clear() {
         queue.clear();
     }

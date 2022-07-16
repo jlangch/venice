@@ -224,6 +224,7 @@ public class VncMutableMap extends VncMap implements VncMutable {
         return value.isEmpty();
     }
 
+    @Override
     public void clear() {
         value.clear();
     }
