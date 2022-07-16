@@ -2887,9 +2887,19 @@ public class ConcurrencyFunctions {
                     .examples(
                          "@(thread #(do (sleep 100) 1))",
                          "@(thread #(do (sleep 100) (thread-name)))",
-                         "@(thread #(do (sleep 100) (thread-name)) \"job\")")
+                         "@(thread #(do (sleep 100) (thread-name)) \"job\")",
+                         ";; consumer / producer                            \n" +
+                         "(do                                               \n" +
+                         "  (defn produce [q]                               \n" +
+                         "    (doseq [x (range 4)] (put! q x) (sleep 100))  \n" +
+                         "    (put! q nil))                                 \n" +
+                         "  (defn consume [q]                               \n" +
+                         "    (transduce (map println) (constantly nil) q)) \n" +
+                         "  (let [q (queue 10)]                             \n" +
+                         "    (thread #(produce q))                         \n" +
+                         "    @(thread #(consume q))))")
                     .seeAlso(
-                         "future", "promise")
+                         "future", "promise", "agent")
                     .build()
         ) {
             @Override
