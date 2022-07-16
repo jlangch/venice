@@ -430,7 +430,8 @@ The `thread` function executes a function in another thread, returning immediate
 calling thread. Returns a _promise_ which will receive the result of the calling function 
 when completed.
 
-*Note:* Each call to `thread` creates a new expensive system thread. Consider to use futures or promises that use an *ExecutorService* to deal efficiently with threads. 
+**Note:** Each call to `thread` creates a new expensive system thread. Consider to use 
+futures or promises that use an *ExecutorService* to deal efficiently with threads. 
 
 Simple Thread:
 
