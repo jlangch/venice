@@ -3054,7 +3054,9 @@ public class CoreFunctions {
                         "   (push! s 2)     \n" +
                         "   (push! s 3))      ")
                     .seeAlso(
-                        "peek", "pop!", "push!", "empty?", "count", "into!", "conj!", "stack?")
+                        "peek", "pop!", "push!",
+                        "empty", "empty?", "count",
+                        "into!", "conj!", "stack?")
                     .build()
         ) {
             @Override
@@ -3113,7 +3115,7 @@ public class CoreFunctions {
                         "  q)                          ")
                     .seeAlso(
                     	"peek", "put!", "take!", "offer!", "poll!",
-                    	"empty?", "count", "queue?",
+                    	"empty", "empty?", "count", "queue?",
                     	"reduce", "transduce", "into!", "conj!")
                     .build()
         ) {
@@ -3156,6 +3158,7 @@ public class CoreFunctions {
                         "           RateLimiter                                             \n" +
                         "             (init [this]   (let [q (:queue this)                  \n" +
                         "                                  n (:limit-for-period this)]      \n" +
+                        "                              (empty q)                            \n" +
                         "                              (repeatedly n #(put! q :token 0))    \n" +
                         "                              this))                               \n" +
                         "             (aquire [this] (let [q (:queue this)                  \n" +
@@ -3177,7 +3180,7 @@ public class CoreFunctions {
                         "  (put! q 1 200)        \n" +
                         "  (take! q))              ")
                     .seeAlso(
-                    	"peek", "put!", "take!", "poll!", "empty?", "count", "delay-queue?")
+                    	"peek", "put!", "take!", "poll!", "empty", "empty?", "count", "delay-queue?")
                     .build()
         ) {
             @Override
