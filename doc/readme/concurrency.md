@@ -423,6 +423,35 @@ of 3s, and cancel it after 16s:
 ```
 
 
+## Bare Threads
+
+The `thread` function executes a function in another thread, returning immediately to the 
+calling thread. Returns a _promise_ which will receive the result of calling function when 
+completed. 
+
+Simple Thread:
+
+```clojure
+@(thread #(do (sleep 1000) 1))
+```
+
+Producer/Consumer:
+
+```clojure
+(do
+  (defn produce [q]
+    (doseq [x (range 4)] (put! q x) (sleep 1000))
+    (put! q nil))
+    
+  (defn consume [q]
+    (transduce (map println) (constantly nil) q))
+    
+  (let [q (queue 10)] 
+    (thread #(produce q))
+    @(thread #(consume q))))
+```
+
+
 
 ## Thread local vars
 
