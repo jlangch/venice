@@ -6861,9 +6861,7 @@ public class CoreFunctions {
                         return Nil;
                 	}
                 	else {
-                        throw new VncException(String.format(
-                                "put! for a queue requires two args (put! queue val)",
-                                Types.getType(args.first())));
+                        throw new VncException("put! for a queue requires two args (put! queue val)");
                 	}
                 }
                 else if (Types.isVncDelayQueue(coll)) {
@@ -6881,9 +6879,8 @@ public class CoreFunctions {
                 		}
                 	}
                 	else {
-                        throw new VncException(String.format(
-                                "put! for a delay-queue requires three args (put! queue val delay)",
-                                Types.getType(args.first())));
+                        throw new VncException(
+                                "put! for a delay-queue requires three args (put! queue val delay)");
                 	}
                 }
                 else {
