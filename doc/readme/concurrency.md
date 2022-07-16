@@ -427,7 +427,7 @@ of 3s, and cancel it after 16s:
 ## Bare Threads
 
 The `thread` function executes a function in another thread, returning immediately to the 
-calling thread. Returns a _promise_ which will receive the result of the calling function 
+calling thread. It returns a _promise_ which will receive the result of the calling function 
 when completed.
 
 **Note:** Each call to `thread` creates a new expensive system thread. Consider to use 
