@@ -464,12 +464,11 @@ public class DefTypeForm {
         }
 
         throw new VncException(String.format(
-                "The type %s requires arg %d of type %s "
-                        + "instead of the passed %s",
-                    type.toString(),
-                    fieldDef.getIndex().getValue() + 1,
-                    fieldDef.getType().toString(),
-                    argType.toString()));
+                "The type %s requires arg %d of type %s instead of the passed %s",
+                type.toString(),
+                fieldDef.getIndex().getValue() + 1,
+                fieldDef.getType().toString(),
+                argType.toString()));
     }
 
     private static void validateTypeCompatibility(
@@ -485,11 +484,10 @@ public class DefTypeForm {
         }
 
         throw new VncException(String.format(
-                "The type %s requires an arg of type %s "
-                        + "instead of the passed %s",
-                    typeDef.getType().toString(),
-                    typeDef.getBaseType().toString(),
-                    arg.getType().toString()));
+                "The type %s requires an arg of type %s instead of the passed %s",
+                typeDef.getType().toString(),
+                typeDef.getBaseType().toString(),
+                arg.getType().toString()));
     }
 
     private static VncKeyword qualifyBaseType(

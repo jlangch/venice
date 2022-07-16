@@ -5226,9 +5226,9 @@ public class CoreFunctions {
                     .meta()
                     .arglists("(empty coll)")
                     .doc(
-                    	"Returns an empty collection of the same category as coll, or nil. " +
-                    	"If the collection is mutable clears the collection and returns the " +
-                    	"the empty collection.")
+                    	"Returns an empty collection of the same category as coll, or nil if coll " +
+                    	"is nil. If the collection is mutable clears the collection and returns the " +
+                    	"the emptied collection.")
                     .examples("(empty {:a 1})", "(empty [1 2])", "(empty '(1 2))")
                     .build()
         ) {
