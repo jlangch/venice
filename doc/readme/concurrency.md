@@ -7,7 +7,7 @@
 * [Worker Threads](#worker-threads)
 * [Locking](#locking)
 * [Schedulers](#schedulers)
-* [Bare Threads](#bare-thread)
+* [Bare Threads](#bare-threads)
 * [Thread local vars](#thread-local-vars)
 * [Examples](#examples)
 
