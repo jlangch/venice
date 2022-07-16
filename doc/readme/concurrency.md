@@ -7,6 +7,7 @@
 * [Worker Threads](#worker-threads)
 * [Locking](#locking)
 * [Schedulers](#schedulers)
+* [Bare Threads](#bare-thread)
 * [Thread local vars](#thread-local-vars)
 * [Examples](#examples)
 
@@ -426,8 +427,10 @@ of 3s, and cancel it after 16s:
 ## Bare Threads
 
 The `thread` function executes a function in another thread, returning immediately to the 
-calling thread. Returns a _promise_ which will receive the result of calling function when 
-completed. 
+calling thread. Returns a _promise_ which will receive the result of the calling function 
+when completed.
+
+*Note:* Each call to `thread` creates a new expensive system thread. Consider to use futures or promises that use an *ExecutorService* to deal efficiently with threads. 
 
 Simple Thread:
 

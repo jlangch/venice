@@ -2878,8 +2878,8 @@ public class ConcurrencyFunctions {
                     .doc(
                         "Executes the function f in another thread, returning immediately to the " +
                         "calling thread. Returns a `promise` which will receive the result of " +
-                        "calling f when completed. Optionally a name can be assigned to the spawned " +
-                        "thread." +
+                        "calling the function f when completed. Optionally a name can be assigned " +
+                        "to the spawned thread." +
                         "\n\n" +
                         "*Note:* Each call to `thread` creates a new expensive system thread. " +
                         "Consider to use futures or promises that use an *ExecutorService* to " +
