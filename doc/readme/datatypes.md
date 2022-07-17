@@ -254,7 +254,7 @@ Threadsafe mutable stack based on the Java type _ConcurrentLinkedDeque_.
 
 ### queue
 
-Threadsafe mutable queue based on the Java type _LinkedBlockingDeque_.
+Threadsafe mutable queue based on the Java type _LinkedBlockingQueue_.
 
 ```clojure
 (queue) ;; unbounded queue

@@ -22,7 +22,7 @@
 package com.github.jlangch.venice.impl.types.collections;
 
 import java.util.Arrays;
-import java.util.concurrent.LinkedBlockingDeque;
+import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
@@ -44,7 +44,7 @@ public class VncQueue extends VncCollection implements VncMutable {
     public VncQueue(final int capacity) {
         super(Constants.Nil);
         this.capacity = capacity;
-        this.queue = new LinkedBlockingDeque<>(capacity);
+        this.queue = new LinkedBlockingQueue<>(capacity);
     }
 
     private VncQueue(final VncQueue queue, final VncVal meta) {
@@ -94,8 +94,8 @@ public class VncQueue extends VncCollection implements VncMutable {
     }
 
     /**
-     * Inserts the specified element into the queue represented by this deque
-     * (in other words, at the tail of this deque) if it is possible to do so
+     * Inserts the specified element into the queue represented by this queue
+     * (in other words, at the tail of this queue) if it is possible to do so
      * immediately without violating capacity restrictions, returning true
      * upon success and false if no space is currently available.
      *
@@ -107,8 +107,8 @@ public class VncQueue extends VncCollection implements VncMutable {
     }
 
     /**
-     * Inserts the specified element into the queue represented by this deque
-     * (in other words, at the tail of this deque), waiting up to the specified
+     * Inserts the specified element into the queue represented by this queue
+     * (in other words, at the tail of this queue), waiting up to the specified
      * wait time if necessary for space to become available.
      *
      * @param val the value to add
@@ -127,8 +127,8 @@ public class VncQueue extends VncCollection implements VncMutable {
     }
 
     /**
-     * Inserts the specified element into the queue represented by this deque
-     * (in other words, at the tail of this deque), waiting if necessary for
+     * Inserts the specified element into the queue represented by this queue
+     * (in other words, at the tail of this queue), waiting if necessary for
      * space to become available.
      *
      * @param val the value to add
@@ -145,23 +145,23 @@ public class VncQueue extends VncCollection implements VncMutable {
     }
 
     /**
-     * Retrieves and removes the head of the queue represented by this deque
-     * (in other words, the first element of this deque), or returns nil
-     * if this deque is empty.
+     * Retrieves and removes the head of the queue represented by this queue
+     * (in other words, the first element of this queue), or returns nil
+     * if this queue is empty.
      *
-     * @return the head of this deque, or nil if this deque is empty
+     * @return the head of this queue, or nil if this queue is empty
      */
     public VncVal poll() {
         return toNil(queue.poll());
     }
 
     /**
-     * Retrieves and removes the head of the queue represented by this deque
-     * (in other words, the first element of this deque), waiting up to the
+     * Retrieves and removes the head of the queue represented by this queue
+     * (in other words, the first element of this queue), waiting up to the
      * specified wait time if necessary for an element to become available.
      *
      * @param timeoutMillis timeout how long to wait before giving up, in units of milliseconds
-     * @return the head of this deque, or nil if the specified waiting time elapses before an element is available
+     * @return the head of this queue, or nil if the specified waiting time elapses before an element is available
      */
     public VncVal poll(final long timeoutMillis) {
         try {
@@ -176,21 +176,21 @@ public class VncQueue extends VncCollection implements VncMutable {
 
     /**
      * Retrieves, but does not remove, the head of the queue represented by this
-     * deque (in other words, the first element of this deque), or returns nil
-     * if this deque is empty.
+     * queue (in other words, the first element of this queue), or returns nil
+     * if this queue is empty.
      *
-     * @return the head of this deque, or nil if this deque is empty
+     * @return the head of this queue, or nil if this queue is empty
      */
     public VncVal peek() {
         return toNil(queue.peek());
     }
 
     /**
-     * Retrieves and removes the head of the queue represented by this deque
-     * (in other words, the first element of this deque), waiting if necessary
+     * Retrieves and removes the head of the queue represented by this queue
+     * (in other words, the first element of this queue), waiting if necessary
      * until an element becomes available.
      *
-     * @return the head of this deque
+     * @return the head of this queue
      */
     public VncVal take() {
         try {
@@ -242,5 +242,5 @@ public class VncQueue extends VncCollection implements VncMutable {
     private static final long serialVersionUID = -564531670922145260L;
 
     private final int capacity;
-    private final LinkedBlockingDeque<VncVal> queue;
+    private final LinkedBlockingQueue<VncVal> queue;
 }
