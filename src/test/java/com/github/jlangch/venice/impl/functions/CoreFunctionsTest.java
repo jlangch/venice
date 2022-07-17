@@ -809,6 +809,19 @@ public class CoreFunctionsTest {
                 ") ";
 
         assertEquals(Long.valueOf(10), venice.eval(script3));
+
+        // docoll on queue
+        final String script4 =
+                "(do                                                          " +
+                "   (def counter (atom 0))                                    " +
+                "                                                             " +
+                "   (def sum (fn [x] (swap! counter (fn [n] (+ n x)))))       " +
+                "                                                             " +
+                "   (docoll sum (conj! (queue) 1 2 3 4 nil))                  " +
+                "   (deref counter)                                           " +
+                ") ";
+
+        assertEquals(Long.valueOf(10), venice.eval(script4));
     }
 
     @Test

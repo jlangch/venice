@@ -3116,7 +3116,8 @@ public class CoreFunctions {
                     .seeAlso(
                     	"peek", "put!", "take!", "offer!", "poll!",
                     	"empty", "empty?", "count", "queue?",
-                    	"reduce", "transduce", "into!", "conj!")
+                    	"reduce", "transduce", "docoll",
+                    	"into!", "conj!")
                     .build()
         ) {
             @Override
@@ -7622,7 +7623,10 @@ public class CoreFunctions {
                         "(docoll #(println %) [1 2 3 4])",
                         "(docoll \n" +
                         "    (fn [[k v]] (println (pr-str k v)))  \n" +
-                        "    {:a 1 :b 2 :c 3 :d 4})")
+                        "    {:a 1 :b 2 :c 3 :d 4})",
+                        ";; queues (use nil to mark the end of the queue!) \n" +
+                        "(let [q (conj! (queue) 1 2 3 nil)]                \n" +
+                        "  (docoll println q))")
                     .build()
         ) {
             @Override
@@ -7650,6 +7654,19 @@ public class CoreFunctions {
                                                                 fn,
                                                                 VncList.of(VncVector.of(v.getKey(), v.getValue())),
                                                                 meterRegistry));
+                }
+                else if (Types.isVncQueue(coll)) {
+                	final VncQueue queue = (VncQueue)coll;
+
+                    while(true) {
+                        final VncVal v = queue.take();
+                        if (v == Nil) break;  // queue has been closed
+
+                        VncFunction.applyWithMeter(
+                                fn,
+                                VncList.of(v),
+                                meterRegistry);
+                    }
                 }
                 else {
                     throw new VncException(String.format(
