@@ -768,60 +768,99 @@ public class CoreFunctionsTest {
     }
 
     @Test
-    public void test_docoll() {
+    public void test_docoll_list() {
         final Venice venice = new Venice();
 
-        // docoll on list
+        final String script =
+                "(do                                                      \n" +
+                "   (def counter (atom 0))                                \n" +
+                "                                                         \n" +
+                "   (def sum (fn [x] (swap! counter (fn [n] (+ n x)))))   \n" +
+                "                                                         \n" +
+                "   (docoll sum '(1 2 3 4))                               \n" +
+                "   (deref counter)                                       \n" +
+                ") ";
+
+        assertEquals(Long.valueOf(10), venice.eval(script));
+    }
+
+    @Test
+    public void test_docoll_vector() {
+        final Venice venice = new Venice();
+
+        final String script =
+                "(do                                                      \n" +
+                "   (def counter (atom 0))                                \n" +
+                "                                                         \n" +
+                "   (def sum (fn [x] (swap! counter (fn [n] (+ n x)))))   \n" +
+                "                                                         \n" +
+                "   (docoll sum [1 2 3 4])                                \n" +
+                "   (deref counter)                                       \n" +
+                ") ";
+
+        assertEquals(Long.valueOf(10), venice.eval(script));
+    }
+
+    @Test
+    public void test_docoll_map() {
+        final Venice venice = new Venice();
+
+        final String script =
+                "(do                                                          \n" +
+                "   (def counter (atom 0))                                    \n" +
+                "                                                             \n" +
+                "   (def sum (fn [[k v]] (swap! counter (fn [n] (+ n v)))))   \n" +
+                "                                                             \n" +
+                "   (docoll sum {:a 1 :b 2 :c 3 :d 4})                        \n" +
+                "   (deref counter)                                           \n" +
+                ") ";
+
+        assertEquals(Long.valueOf(10), venice.eval(script));
+    }
+
+    @Test
+    public void test_docoll_queue_1() {
+        final Venice venice = new Venice();
+
         final String script1 =
-                "(do                                                      " +
-                "   (def counter (atom 0))                                " +
-                "                                                         " +
-                "   (def sum (fn [x] (swap! counter (fn [n] (+ n x)))))   " +
-                "                                                         " +
-                "   (docoll sum '(1 2 3 4))                               " +
-                "   (deref counter)                                       " +
+                "(do                                                          \n" +
+                "   (def counter (atom 0))                                    \n" +
+                "                                                             \n" +
+                "   (def sum (fn [x] (swap! counter (fn [n] (+ n x)))))       \n" +
+                "                                                             \n" +
+                "   (docoll sum (conj! (queue) 1 2 3 4 nil))                  \n" +
+                "   (deref counter)                                           \n" +
                 ") ";
 
         assertEquals(Long.valueOf(10), venice.eval(script1));
+    }
 
-        // docoll on vector
+    @Test
+    public void test_docoll_queue_2() {
+        final Venice venice = new Venice();
+
+        // producer/consumer example
         final String script2 =
-                "(do                                                      " +
-                "   (def counter (atom 0))                                " +
-                "                                                         " +
-                "   (def sum (fn [x] (swap! counter (fn [n] (+ n x)))))   " +
-                "                                                         " +
-                "   (docoll sum [1 2 3 4])                                " +
-                "   (deref counter)                                       " +
+                "(do                                                          \n" +
+                "   (def counter (atom 0))                                    \n" +
+                "                                                             \n" +
+                "   (def sum (fn [x] (swap! counter (fn [n] (+ n x)))))       \n" +
+                "                                                             \n" +
+                "   (defn produce [q]                                         \n" +
+                "      (doseq [x (range 1 5)] (sleep 100) (put! q x))         \n" +
+                "      (put! q nil))                                          \n" +
+                "                                                             \n" +
+                "   (defn consume [q]                                         \n" +
+                "      (docoll sum q))                                        \n" +
+                "                                                             \n" +
+                "   (let [q (queue 10)]                                       \n" +
+                "      (thread #(produce q))                                  \n" +
+                "      @(thread #(consume q)))                                \n" +
+                "                                                             \n" +
+                "   (deref counter)                                           \n" +
                 ") ";
 
         assertEquals(Long.valueOf(10), venice.eval(script2));
-
-        // docoll on map
-        final String script3 =
-                "(do                                                          " +
-                "   (def counter (atom 0))                                    " +
-                "                                                             " +
-                "   (def sum (fn [[k v]] (swap! counter (fn [n] (+ n v)))))   " +
-                "                                                             " +
-                "   (docoll sum {:a 1 :b 2 :c 3 :d 4})                        " +
-                "   (deref counter)                                           " +
-                ") ";
-
-        assertEquals(Long.valueOf(10), venice.eval(script3));
-
-        // docoll on queue
-        final String script4 =
-                "(do                                                          " +
-                "   (def counter (atom 0))                                    " +
-                "                                                             " +
-                "   (def sum (fn [x] (swap! counter (fn [n] (+ n x)))))       " +
-                "                                                             " +
-                "   (docoll sum (conj! (queue) 1 2 3 4 nil))                  " +
-                "   (deref counter)                                           " +
-                ") ";
-
-        assertEquals(Long.valueOf(10), venice.eval(script4));
     }
 
     @Test

@@ -107,12 +107,12 @@ public class TransducerFunctions {
 
                         "(transduce (map inc) conj [1 2 3])",
 
-                        ";; transduce all elements of a queue (uses the blocking take! to get the \n" +
-                        ";; elements of the queue).                                               \n" +
-                        ";; note: use nil to mark the end of the queue otherwise transduce will   \n" +
-                        ";;       wait forever!                                                   \n" +
-                        "(let [q (conj! (queue) 1 2 3 nil)]                                       \n" +
-                        "  (transduce (map inc) conj q))                                          ",
+                        ";; transduce all elements of a queue. calls (take! queue) to get the   \n" +
+                        ";; elements of the queue.                                              \n" +
+                        ";; note: use nil to mark the end of the queue otherwise transduce will \n" +
+                        ";;       block forever!                                                \n" +
+                        "(let [q (conj! (queue) 1 2 3 nil)]                                     \n" +
+                        "  (transduce (map inc) conj q))                                        ",
 
                         "(do                                       \n" +
                         "  (def xform (comp (drop 2) (take 3)))    \n" +

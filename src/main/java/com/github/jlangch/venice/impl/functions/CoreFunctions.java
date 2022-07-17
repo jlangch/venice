@@ -7627,12 +7627,12 @@ public class CoreFunctions {
                         "(docoll \n" +
                         "    (fn [[k v]] (println (pr-str k v)))  \n" +
                         "    {:a 1 :b 2 :c 3 :d 4})",
-                        ";; docoll all elements of a queue (uses the blocking take! to get the    \n" +
-                        ";; elements of the queue).                                               \n" +
-                        ";; note: use nil to mark the end of the queue otherwise docoll will      \n" +
-                        ";;       wait forever!                                                   \n" +
-                        "(let [q (conj! (queue) 1 2 3 nil)]                                       \n" +
-                        "  (docoll println q))                                                    ")
+                        ";; docoll all elements of a queue. calls (take! queue) to get the     \n" +
+                        ";; elements of the queue.                                             \n" +
+                        ";; note: use nil to mark the end of the queue otherwise docoll will   \n" +
+                        ";;       block forever!                                               \n" +
+                        "(let [q (conj! (queue) 1 2 3 nil)]                                    \n" +
+                        "  (docoll println q))                                                 ")
                     .build()
         ) {
             @Override
@@ -7922,10 +7922,10 @@ public class CoreFunctions {
                         ";; sliding window (width 3) average\n" +
                         "(->> (partition 3 1 (repeatedly 10 #(rand-long 30)))\n" +
                         "     (map (fn [window] (/ (reduce + window) (count window)))))",
-                        ";; reduce all elements of a queue (uses the blocking take! to get the \n" +
-                        ";; elements of the queue).                                            \n" +
-                        ";; note: use nil to mark the end of the queue otherwisereduce will    \n" +
-                        ";;       wait forever!                                                \n" +
+                        ";; reduce all elements of a queue. calls (take! queue) to get the     \n" +
+                        ";; elements of the queue.                                             \n" +
+                        ";; note: use nil to mark the end of the queue otherwise reduce will   \n" +
+                        ";;       block forever!                                               \n" +
                         "(let [q (conj! (queue) 1 2 3 4 5 6 7 nil)]                            \n" +
                         "  (reduce + q))                                                       ")
                     .seeAlso("reduce-kv", "map", "filter")
