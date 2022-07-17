@@ -107,10 +107,9 @@ public class TransducerFunctions {
 
                         "(transduce (map inc) conj [1 2 3])",
 
-                        ";; transduce all elements of a queue                      \n" +
-                        ";; note: use nil to mark the end of the queue otherwise   \n" +
-                        ";;       transduce will wait forever!                     \n" +
-                        "(let [q (conj! (queue) 1 2 3 nil)]                        \n" +
+                        ";; transduce all elements of a queue                                                 \n" +
+                        ";; note: use nil to mark the end of the queue otherwise transduce will wait forever! \n" +
+                        "(let [q (conj! (queue) 1 2 3 nil)]                                                   \n" +
                         "  (transduce (map inc) conj q))",
 
                         "(do                                       \n" +

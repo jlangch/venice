@@ -66,9 +66,7 @@ public class Reducer {
             final VncVal v = queue.take();
             if (v == Nil) break;  // queue has been closed
 
-            value = meterRegistry.enabled
-                     ? applyWithMeter(reduceFn, VncList.of(value, v), meterRegistry)
-                     : reduceFn.apply(VncList.of(value, v));
+            value = applyWithMeter(reduceFn, VncList.of(value, v), meterRegistry);
 
             if (Reduced.isReduced(value)) {
                 return Reduced.unreduced(value);
