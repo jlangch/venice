@@ -13,6 +13,7 @@ common features:
 
 Types supported in Venice:
 
+* [Nil](#nil)
 * [Boolean](#boolean)
 * [String](#string)
 * [Character](#character)
