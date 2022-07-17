@@ -11,6 +11,17 @@ common features:
 - collections support persistent manipulation
 - they support meta data
 
+Types supported in Venice:
+
+* [Boolean](#boolean)
+* [String](#string)
+* [Character](#character)
+* [Number Types](#number-types)
+* [Keyword](#keyword)
+* [Symbol](#symbol)
+* [Collections](#collections)
+* [Deques and Queues (mutable)](#deques-and-queues)
+
 
 ## nil
 
@@ -25,9 +36,9 @@ Java _nil_ is a first class value and has a type (:core/nil).
 ```
 
 
-## Booleans
+## Boolean
 
-Booleans are defined by constants _true_ and _false_.
+Booleans are defined by the constants _true_ and _false_.
 
 ```clojure
 (and true (== 1 1))
@@ -35,12 +46,12 @@ Booleans are defined by constants _true_ and _false_.
 ```
 
 
-## Strings
+## String
 
 ```clojure
 (println "abcd")
 (println "ab\"cd")
-(println "PI: \u03C0")
+(println "PI: \u03C0")  ;; string with unicode escaped characters
 (println """{ "age": 42 }""")
 
 (str "ab" "c" "d")  ;; => "abcd"
@@ -48,7 +59,7 @@ Booleans are defined by constants _true_ and _false_.
 ```
 
 
-## Characters
+## Character
 
 ```clojure
 ;; char literals
@@ -67,7 +78,7 @@ Booleans are defined by constants _true_ and _false_.
 ```
 
 
-## Numbers
+## Number Types
 
 ### long
 
@@ -120,7 +131,7 @@ Number types are implicitly coerced to the most complex type in an expression
 ```
 
 
-## Keywords
+## Keyword
 
 Keywords (e.g. `:a`) are symbolic identifiers.
 
@@ -130,7 +141,7 @@ Keywords (e.g. `:a`) are symbolic identifiers.
 [:a :b]
 ```
 
-## Symbols
+## Symbol
 
 Symbols are identifiers that are normally used to refer to function parameters, 
 let bindings, and global vars.
@@ -236,6 +247,8 @@ Immutable persistent sorted map.
 (get (sorted-map :a 1 :b 2) :b)       ;; => 2
 (:b (sorted-map :a 1 :b 2))           ;; => 2
 ```
+
+## Deques and Queues
 
 ### stack
 
