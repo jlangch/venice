@@ -2809,6 +2809,9 @@ public class CoreFunctions {
                         "positions (y, z). Note that the function f can take any number of " +
                         "arguments, not just the one(s) being nil-patched.")
                     .examples(
+                    	";; e.g.: change the `str/lower-case` handling of nil arguments by \n" +
+                    	";; returning an empty string instead of nil.                      \n" +
+                    	"((fnil str/lower-case \"\") nil)                                  ",
                         "((fnil + 10) nil)",
                         "((fnil + 10) nil 1)",
                         "((fnil + 10) nil 1 2)",
@@ -7624,8 +7627,9 @@ public class CoreFunctions {
                         "(docoll \n" +
                         "    (fn [[k v]] (println (pr-str k v)))  \n" +
                         "    {:a 1 :b 2 :c 3 :d 4})",
-                        ";; queues (use nil to mark the end of the queue!) \n" +
-                        "(let [q (conj! (queue) 1 2 3 nil)]                \n" +
+                        ";; queues, use nil to mark the end of the queue otherwise \n" +
+                        ";; docoll will wait forever for the next queue items!     \n" +
+                        "(let [q (conj! (queue) 1 2 3 nil)]                        \n" +
                         "  (docoll println q))")
                     .build()
         ) {
@@ -7916,8 +7920,9 @@ public class CoreFunctions {
                         ";; sliding window (width 3) average\n" +
                         "(->> (partition 3 1 (repeatedly 10 #(rand-long 30)))\n" +
                         "     (map (fn [window] (/ (reduce + window) (count window)))))",
-                        ";; queues (use nil to mark the end of the queue!) \n" +
-                        "(let [q (conj! (queue) 1 2 3 4 5 6 7 nil)]        \n" +
+                        ";; queues, use nil to mark the end of the queue otherwise \n" +
+                        ";; docoll will wait forever for the next queue items!     \n" +
+                        "(let [q (conj! (queue) 1 2 3 4 5 6 7 nil)]                \n" +
                         "  (reduce + q))")
                     .seeAlso("reduce-kv", "map", "filter")
                     .build()
