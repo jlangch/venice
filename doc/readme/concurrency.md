@@ -443,15 +443,15 @@ Producer/Consumer:
 
 ```clojure
 (do
-  (defn produce [q]
-    (doseq [x (range 4)] (sleep 1000) (put! q x))
+  (defn produce [q n]
+    (doseq [x (range n)] (sleep 1000) (put! q x))
     (put! q nil))
     
   (defn consume [q]
     (docoll println q))
     
   (let [q (queue 10)] 
-    (thread #(produce q))
+    (thread #(produce q 4))
     @(thread #(consume q))))
 ```
 
