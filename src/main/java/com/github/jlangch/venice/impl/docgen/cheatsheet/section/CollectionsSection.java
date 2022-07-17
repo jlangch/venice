@@ -400,6 +400,7 @@ public class CollectionsSection implements ISectionBuilder {
 
         final DocSection queues_process = new DocSection("Process", "collections.queue.process");
         queues.addSection(queues_process);
+        queues_process.addItem(diBuilder.getDocItem("docoll"));
         queues_process.addItem(diBuilder.getDocItem("transduce"));
         queues_process.addItem(diBuilder.getDocItem("reduce"));
 
