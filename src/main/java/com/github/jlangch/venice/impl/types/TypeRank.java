@@ -57,10 +57,12 @@ public enum TypeRank {
     JAVASET (232),
     MUTABLESET (233),
 
-    QUEUE (240),
-    DELAYQUEUE (241),
-    STACK (242),
-    DAG (243);
+    DAG (240),
+
+    QUEUE (250),
+    DELAYQUEUE (251),
+    STACK (252),
+    EXCHANGER (253);
 
 
     private TypeRank(final int rank) {

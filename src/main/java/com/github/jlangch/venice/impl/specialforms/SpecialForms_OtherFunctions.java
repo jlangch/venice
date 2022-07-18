@@ -695,46 +695,38 @@ public class SpecialForms_OtherFunctions {
                 specialFormCallValidation("dobench");
                 assertArity("dobench", FnType.SpecialForm, args, 2, 4, 5);
 
+                long warmUpIterations = 0L;
+                long gcRuns = 0L;
+                long iterations = 0L;
+                VncVal expr = Nil;
+                VncFunction statusFn = nilStatusFn;
+
                 if (args.size() == 2) {
-                    return dobench.apply(
-                            specialFormMeta,
-                            VncList.of(
-                                new VncLong(0),
-                                new VncLong(0),
-                                args.first(),
-                                args.second(),
-                                nilStatusFn),
-                            env,
-                            ctx);
+                    iterations = Coerce.toVncLong(args.first()).getValue();
+                    expr = args.second();
                 }
                 else if (args.size() == 4) {
-                    return dobench.apply(
-                            specialFormMeta,
-                            VncList.of(
-                                args.first(),
-                                args.second(),
-                                args.third(),
-                                args.fourth(),
-                                nilStatusFn),
-                            env,
-                            ctx);
+                    warmUpIterations = Coerce.toVncLong(args.first()).getValue();
+                    gcRuns = Coerce.toVncLong(args.second()).getValue();
+                    iterations = Coerce.toVncLong(args.third()).getValue();
+                    expr = args.fourth();
                 }
                 else {
-                    final long warmUpIterations = Coerce.toVncLong(args.first()).getValue();
-                    final long gcRuns = Coerce.toVncLong(args.second()).getValue();
-                    final long iterations = Coerce.toVncLong(args.third()).getValue();
-                    final VncVal expr = args.fourth();
-                    final VncFunction statusFn = Coerce.toVncFunction(args.nth(4));
-
-                    return Benchmark.benchmark(
-                                warmUpIterations,
-                                gcRuns,
-                                iterations,
-                                expr,
-                                statusFn,
-                                env,
-                                ctx.getEvaluator());
+                    warmUpIterations = Coerce.toVncLong(args.first()).getValue();
+                    gcRuns = Coerce.toVncLong(args.second()).getValue();
+                    iterations = Coerce.toVncLong(args.third()).getValue();
+                    expr = args.fourth();
+                    statusFn = Coerce.toVncFunction(args.nth(4));
                 }
+
+                return Benchmark.benchmark(
+                            warmUpIterations,
+                            gcRuns,
+                            iterations,
+                            expr,
+                            statusFn,
+                            env,
+                            ctx.getEvaluator());
             }
 
             private static final long serialVersionUID = -1848883965231344442L;

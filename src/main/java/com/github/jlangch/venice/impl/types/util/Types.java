@@ -38,6 +38,7 @@ import com.github.jlangch.venice.impl.types.VncByteBuffer;
 import com.github.jlangch.venice.impl.types.VncChar;
 import com.github.jlangch.venice.impl.types.VncConstant;
 import com.github.jlangch.venice.impl.types.VncDouble;
+import com.github.jlangch.venice.impl.types.VncExchanger;
 import com.github.jlangch.venice.impl.types.VncFunction;
 import com.github.jlangch.venice.impl.types.VncInteger;
 import com.github.jlangch.venice.impl.types.VncJavaObject;
@@ -243,6 +244,10 @@ public class Types {
         return val != null && (val instanceof VncDelayQueue);
     }
 
+    public static boolean isVncExchanger(final VncVal val) {
+        return val != null && (val instanceof VncExchanger);
+    }
+
     public static boolean isVncDAG(final VncVal val) {
         return val != null && (val instanceof VncDAG);
     }
@@ -346,6 +351,7 @@ public class Types {
             case ":core/vector":        return Types.isVncVector(val);
             case ":core/list":          return Types.isVncList(val);
             case ":core/mutable-list":  return Types.isVncMutableList(val);
+            case ":core/mutable-vector": return Types.isVncMutableVector(val);
 
             case ":core/set":           return Types.isVncSet(val);
             case ":core/hash-set":      return Types.isVncHashSet(val);
@@ -362,6 +368,7 @@ public class Types {
             case ":core/stack":         return Types.isVncStack(val);
             case ":core/queue":         return Types.isVncQueue(val);
             case ":core/delay-queue":   return Types.isVncDelayQueue(val);
+            case ":core/exchanger":     return Types.isVncExchanger(val);
 
             case ":core/custom-type":   return Types.isVncCustomType(val);
 
