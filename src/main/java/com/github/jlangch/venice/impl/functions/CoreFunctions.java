@@ -2810,9 +2810,9 @@ public class CoreFunctions {
                         "positions (y, z). Note that the function f can take any number of " +
                         "arguments, not just the one(s) being nil-patched.")
                     .examples(
-                    	";; e.g.: change the `str/lower-case` handling of nil arguments by \n" +
-                    	";; returning an empty string instead of nil.                      \n" +
-                    	"((fnil str/lower-case \"\") nil)                                  ",
+                        ";; e.g.: change the `str/lower-case` handling of nil arguments by \n" +
+                        ";; returning an empty string instead of nil.                      \n" +
+                        "((fnil str/lower-case \"\") nil)                                  ",
                         "((fnil + 10) nil)",
                         "((fnil + 10) nil 1)",
                         "((fnil + 10) nil 1 2)",
@@ -3118,10 +3118,10 @@ public class CoreFunctions {
                         "  (take! q)                  \n" +
                         "  q)                          ")
                     .seeAlso(
-                    	"peek", "put!", "take!", "offer!", "poll!",
-                    	"empty", "empty?", "count", "queue?",
-                    	"reduce", "transduce", "docoll",
-                    	"into!", "conj!")
+                        "peek", "put!", "take!", "offer!", "poll!",
+                        "empty", "empty?", "count", "queue?",
+                        "reduce", "transduce", "docoll",
+                        "into!", "conj!")
                     .build()
         ) {
             @Override
@@ -3144,7 +3144,7 @@ public class CoreFunctions {
                     .arglists("(delay-queue)")
                     .doc(
                         "Creates a new delay queue.\n\n" +
-                    	"A delay-queue is an unbounded blocking queue of delayed elements, " +
+                        "A delay-queue is an unbounded blocking queue of delayed elements, " +
                         "in which an element can only be taken when its delay has expired. " +
                         "The head of the queue is that delayed element whose delay expired " +
                         "furthest in the past. If no delay has expired there is no head and " +
@@ -3185,7 +3185,7 @@ public class CoreFunctions {
                         "  (put! q 1 200)        \n" +
                         "  (take! q))              ")
                     .seeAlso(
-                    	"peek", "put!", "take!", "poll!", "empty", "empty?", "count", "delay-queue?")
+                        "peek", "put!", "take!", "poll!", "empty", "empty?", "count", "delay-queue?")
                     .build()
         ) {
             @Override
@@ -3206,15 +3206,15 @@ public class CoreFunctions {
                     .arglists("(exchanger)")
                     .doc(
                         "Creates a new exchanger.\n\n" +
-                    	"A synchronization point at which threads can pair and swap elements " +
-                    	"within pairs. Each thread presents some value on entry to the " +
-                    	"exchange function, matches with a partner thread, " +
-                    	"and receives its partner's value on return. An Exchanger may be " +
-                    	"viewed as a bidirectional form of a synchronous queue. " +
-                    	"Exchangers may be useful in pipeline designs.")
+                        "A synchronization point at which threads can pair and swap elements " +
+                        "within pairs. Each thread presents some value on entry to the " +
+                        "exchange function, matches with a partner thread, " +
+                        "and receives its partner's value on return. An Exchanger may be " +
+                        "viewed as a bidirectional form of a synchronous queue. " +
+                        "Exchangers may be useful in pipeline designs.")
                     .examples()
                     .seeAlso(
-                    	"exchange!", "exchanger?")
+                        "exchange!", "exchanger?")
                     .build()
         ) {
             @Override
@@ -4789,7 +4789,7 @@ public class CoreFunctions {
                 }
                 else if (Types.isVncStack(to)) {
                     if (Types.isVncSequence(from)) {
-                    	VncStack stack = (VncStack)to;
+                        VncStack stack = (VncStack)to;
                         for(VncVal it : ((VncSequence)from)) {
                             stack.push(it);
                         }
@@ -5280,9 +5280,9 @@ public class CoreFunctions {
                     .meta()
                     .arglists("(empty coll)")
                     .doc(
-                    	"Returns an empty collection of the same category as coll, or nil if coll " +
-                    	"is nil. If the collection is mutable clears the collection and returns the " +
-                    	"the emptied collection.")
+                        "Returns an empty collection of the same category as coll, or nil if coll " +
+                        "is nil. If the collection is mutable clears the collection and returns the " +
+                        "the emptied collection.")
                     .examples("(empty {:a 1})", "(empty [1 2])", "(empty '(1 2))")
                     .build()
         ) {
@@ -5295,8 +5295,8 @@ public class CoreFunctions {
                     return Nil;
                 }
                 else if (coll instanceof VncMutable) {
-                	((VncMutable)coll).clear();
-                	return coll;
+                    ((VncMutable)coll).clear();
+                    return coll;
                 }
                 else if (Types.isVncCollection(coll)) {
                     return ((VncCollection)coll).emptyWithMeta();
@@ -5728,7 +5728,7 @@ public class CoreFunctions {
                         return queue;
                     }
                     else if (Types.isVncStack(coll)) {
-                    	VncStack stack = (VncStack)coll;
+                        VncStack stack = (VncStack)coll;
                         for(VncVal it : args.rest()) {
                             stack.push(it);
                         }
@@ -6914,32 +6914,32 @@ public class CoreFunctions {
                 }
 
                 if (Types.isVncQueue(coll)) {
-                	if (args.size() == 2) {
+                    if (args.size() == 2) {
                         ((VncQueue)coll).put(args.second());
                         return Nil;
-                	}
-                	else {
+                    }
+                    else {
                         throw new VncException("put! for a queue requires two args (put! queue val)");
-                	}
+                    }
                 }
                 else if (Types.isVncDelayQueue(coll)) {
-                	if (args.size() == 3) {
-                		final VncVal val = args.second();
-                		if (val == Nil) {
+                    if (args.size() == 3) {
+                        final VncVal val = args.second();
+                        if (val == Nil) {
                             throw new VncException("put! A delay-queue does not permit nil elements");
-                		}
-                		else {
-	                        ((VncDelayQueue)coll).put(
-	                        		val,
-	                        		Coerce.toVncLong(args.third()).getValue(),
-	                        		TimeUnit.MILLISECONDS);
-	                        return Nil;
-                		}
-                	}
-                	else {
+                        }
+                        else {
+                            ((VncDelayQueue)coll).put(
+                                    val,
+                                    Coerce.toVncLong(args.third()).getValue(),
+                                    TimeUnit.MILLISECONDS);
+                            return Nil;
+                        }
+                    }
+                    else {
                         throw new VncException(
                                 "put! for a delay-queue requires three args (put! queue val delay)");
-                	}
+                    }
                 }
                 else {
                     throw new VncException(String.format(
@@ -7086,9 +7086,9 @@ public class CoreFunctions {
                     .meta()
                     .arglists("(peek coll)")
                     .doc(
-                    	"For a list, same as first, for a vector, same as last, " +
-                    	"for a stack the top element (or nil if the stack is empty), " +
-                    	"for a queue the head element (or nil if the queue is empty).")
+                        "For a list, same as first, for a vector, same as last, " +
+                        "for a stack the top element (or nil if the stack is empty), " +
+                        "for a queue the head element (or nil if the queue is empty).")
                     .examples(
                         "(peek '(1 2 3 4))",
                         "(peek [1 2 3 4])",
@@ -7159,8 +7159,25 @@ public class CoreFunctions {
                         " * has its interrupted status set on entry to this method; or\n" +
                         " * is interrupted while waiting for the exchange, \n\n" +
                         "then an InterruptedException is thrown.")
-                    .examples()
-                    .seeAlso("exchanger", "exchanger?")
+                    .examples(
+                        "(do                                                       \n" +
+                        "  (defn producer [e vals]                                 \n" +
+                        "    (doseq [x vals]                                       \n" +
+                        "       (exchange! e x)                                    \n" +
+                        "       (sleep 100)))                                      \n" +
+                        "                                                          \n" +
+                        "  (defn consumer [e]                                      \n" +
+                        "    (loop []                                              \n" +
+                        "      (when-let [v (exchange! e \"\")]                    \n" +
+                        "        (println (str \"Got from Producer: \" v))         \n" +
+                        "        (recur)))                                         \n" +
+                        "    (println \"Done.\"))                                  \n" +
+                        "                                                          \n" +
+                        "  (let [e (exchanger)]                                    \n" +
+                        "    (thread #(producer e [1 2 3 4 nil]))                  \n" +
+                        "    @(thread #(consumer e))))                             ")
+                    .seeAlso(
+                        "exchanger", "exchanger?")
                     .build()
         ) {
             @Override
@@ -7769,7 +7786,7 @@ public class CoreFunctions {
                                                                 meterRegistry));
                 }
                 else if (Types.isVncQueue(coll)) {
-                	final VncQueue queue = (VncQueue)coll;
+                    final VncQueue queue = (VncQueue)coll;
 
                     while(true) {
                         final VncVal v = queue.take();

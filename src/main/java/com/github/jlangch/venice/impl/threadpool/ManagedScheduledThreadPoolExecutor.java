@@ -32,8 +32,8 @@ public class ManagedScheduledThreadPoolExecutor extends ManagedExecutor {
             final String threadPoolName,
             final int corePoolSize
     ) {
-    	this.threadPoolName = threadPoolName;
-    	this.corePoolSize = corePoolSize;
+        this.threadPoolName = threadPoolName;
+        this.corePoolSize = corePoolSize;
     }
 
 
@@ -43,7 +43,7 @@ public class ManagedScheduledThreadPoolExecutor extends ManagedExecutor {
     }
 
     @Override
-	protected ExecutorService createExecutorService() {
+    protected ExecutorService createExecutorService() {
         return Executors.newScheduledThreadPool(
                     corePoolSize,
                     ThreadPoolUtil.createCountedThreadFactory(threadPoolName, true));

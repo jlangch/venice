@@ -38,7 +38,7 @@ public class ManagedCachedThreadPoolExecutor extends ManagedExecutor {
             final int maxPoolSize
     ) {
         this.threadPoolName = threadPoolName;
-    	this.maxThreadPoolSize = maxPoolSize;
+        this.maxThreadPoolSize = maxPoolSize;
     }
 
 
@@ -48,7 +48,7 @@ public class ManagedCachedThreadPoolExecutor extends ManagedExecutor {
     }
 
     @Override
-	protected ExecutorService createExecutorService() {
+    protected ExecutorService createExecutorService() {
         final ThreadPoolExecutor es = (ThreadPoolExecutor)Executors.newCachedThreadPool(
                                             ThreadPoolUtil.createCountedThreadFactory(
                                                     threadPoolName, true));
@@ -59,7 +59,7 @@ public class ManagedCachedThreadPoolExecutor extends ManagedExecutor {
 
     public void setMaximumThreadPoolSize(final int poolSize) {
         synchronized(this) {
-        	maxThreadPoolSize = Math.max(1, poolSize);
+            maxThreadPoolSize = Math.max(1, poolSize);
             if (super.exists()) {
                 getExecutor().setMaximumPoolSize(maxThreadPoolSize);
             }

@@ -2363,18 +2363,18 @@ public class CoreFunctionsTest {
                             "  (take! q))              "));
 
         assertEquals(1L, venice.eval(
-			                "(let [q (delay-queue)]  \n" +
-			                "  (put! q 1  0)         \n" +
-			                "  (put! q 1  0)         \n" +
-			                "  (put! q 1  0)         \n" +
-			                "  (take! q))              "));
+                            "(let [q (delay-queue)]  \n" +
+                            "  (put! q 1  0)         \n" +
+                            "  (put! q 1  0)         \n" +
+                            "  (put! q 1  0)         \n" +
+                            "  (take! q))              "));
 
         assertEquals(1L, venice.eval(
-			                "(let [q (delay-queue)]  \n" +
-			                "  (put! q 1  10)        \n" +
-			                "  (put! q 1  10)        \n" +
-			                "  (put! q 1  10)        \n" +
-			                "  (take! q))              "));
+                            "(let [q (delay-queue)]  \n" +
+                            "  (put! q 1  10)        \n" +
+                            "  (put! q 1  10)        \n" +
+                            "  (put! q 1  10)        \n" +
+                            "  (take! q))              "));
     }
 
     @Test
@@ -2382,14 +2382,14 @@ public class CoreFunctionsTest {
         final Venice venice = new Venice();
 
         assertEquals(0L, venice.eval(
-			                "(let [q (delay-queue)]  \n" +
-			                "  (put! q 1  10)        \n" +
-			                "  (put! q 1  10)        \n" +
-			                "  (put! q 1  10)        \n" +
+                            "(let [q (delay-queue)]  \n" +
+                            "  (put! q 1  10)        \n" +
+                            "  (put! q 1  10)        \n" +
+                            "  (put! q 1  10)        \n" +
                             "  (take! q)             \n" +
                             "  (take! q)             \n" +
                             "  (take! q)             \n" +
-			                "  (count q))              "));
+                            "  (count q))              "));
 
         assertThrows(VncException.class, () -> venice.eval("(put! (delay-queue) nil 100)"));
     }

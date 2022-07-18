@@ -121,8 +121,8 @@ public class VncDelayQueue extends VncCollection implements VncMutable {
         }
         catch(InterruptedException ex) {
             throw new com.github.jlangch.venice.InterruptedException(
-            			"interrupted while calling (poll! delay-queue)",
-            			ex);
+                        "interrupted while calling (poll! delay-queue)",
+                        ex);
         }
     }
 
@@ -138,8 +138,8 @@ public class VncDelayQueue extends VncCollection implements VncMutable {
         }
         catch(InterruptedException ex) {
             throw new com.github.jlangch.venice.InterruptedException(
-            			"interrupted while calling (take! delay-queue)",
-            			ex);
+                        "interrupted while calling (take! delay-queue)",
+                        ex);
         }
     }
 

@@ -211,16 +211,16 @@ public class SpecialForms_NamespaceFunctions {
                 VncSpecialForm
                     .meta()
                     .arglists(
-                    	"(ns-list)",
-                    	"(ns-list ns)")
+                        "(ns-list)",
+                        "(ns-list ns)")
                     .doc(
-                    	"Without arg lists the loaded namespaces, else lists all " +
-                    	"the symbols in the specified namespace ns.")
+                        "Without arg lists the loaded namespaces, else lists all " +
+                        "the symbols in the specified namespace ns.")
                     .examples(
-                    	"(ns-list 'regex)",
-                    	"(ns-list)")
+                        "(ns-list 'regex)",
+                        "(ns-list)")
                     .seeAlso(
-                    	"ns", "*ns*", "ns-unmap", "ns-remove", "namespace", "var-ns")
+                        "ns", "*ns*", "ns-unmap", "ns-remove", "namespace", "var-ns")
                     .build()
         ) {
             @Override
@@ -234,7 +234,7 @@ public class SpecialForms_NamespaceFunctions {
                 assertArity("ns-list", FnType.SpecialForm, args, 0, 1);
 
                 if (args.isEmpty()) {
-	                return VncList.ofList(
+                    return VncList.ofList(
                             env.getAllGlobalSymbols()
                                 .keySet()
                                 .stream()
@@ -246,18 +246,18 @@ public class SpecialForms_NamespaceFunctions {
                                 .collect(Collectors.toList()));
                 }
                 else {
-	                final VncSymbol ns = Coerce.toVncSymbol(
-	                                        ctx.getEvaluator().evaluate(args.first(), env, false));
+                    final VncSymbol ns = Coerce.toVncSymbol(
+                                            ctx.getEvaluator().evaluate(args.first(), env, false));
 
-	                final String nsCore = Namespaces.NS_CORE.getName();
-	                final String nsName = nsCore.equals(ns.getName()) ? null : ns.getName();
+                    final String nsCore = Namespaces.NS_CORE.getName();
+                    final String nsName = nsCore.equals(ns.getName()) ? null : ns.getName();
 
-	                return VncList.ofList(
-	                            env.getAllGlobalSymbols()
-	                                .keySet()
-	                                .stream()
-	                                .filter(s -> Objects.equals(nsName, s.getNamespace()))
-	                                .sorted()
+                    return VncList.ofList(
+                                env.getAllGlobalSymbols()
+                                    .keySet()
+                                    .stream()
+                                    .filter(s -> Objects.equals(nsName, s.getNamespace()))
+                                    .sorted()
                                     .collect(Collectors.toList()));
                 }
             }

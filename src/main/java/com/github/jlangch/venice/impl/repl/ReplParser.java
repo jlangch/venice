@@ -87,15 +87,15 @@ public class ReplParser extends DefaultParser {
 
     public static boolean isExitCommand(final String line) {
         switch (trimToEmpty(line)) {
-	        case "!quit": return true;
-	        case "!q":    return true;
-			case "!exit": return true;
-			case "!e":    return true;
-	        case "$quit": return true;
-	        case "$q":    return true;
-			case "$exit": return true;
-			case "$e":    return true;
-			default:      return false;
+            case "!quit": return true;
+            case "!q":    return true;
+            case "!exit": return true;
+            case "!e":    return true;
+            case "$quit": return true;
+            case "$q":    return true;
+            case "$exit": return true;
+            case "$e":    return true;
+            default:      return false;
         }
     }
 

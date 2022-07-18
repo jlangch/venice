@@ -67,10 +67,10 @@ public class VncExchanger extends VncVal implements VncMutable {
                             new VncKeyword(VncVal.TYPE)));
     }
 
-	@Override
-	public void clear() {
-		// no-op
-	}
+    @Override
+    public void clear() {
+        // no-op
+    }
 
     /**
      * Waits for another thread to arrive at this exchange point (unless
@@ -104,15 +104,15 @@ public class VncExchanger extends VncVal implements VncMutable {
      *         current thread was interrupted while waiting
      */
     public VncVal exchange(final VncVal x)  {
-		try {
-			return exchanger.exchange(x);
-		}
+        try {
+            return exchanger.exchange(x);
+        }
         catch(InterruptedException ex) {
             throw new com.github.jlangch.venice.InterruptedException(
-            			"interrupted while calling (exchange! e val)",
-            			ex);
+                        "interrupted while calling (exchange! e val)",
+                        ex);
         }
-	}
+    }
 
     /**
      * Waits for another thread to arrive at this exchange point (unless
@@ -154,18 +154,18 @@ public class VncExchanger extends VncVal implements VncMutable {
      *         waiting time elapses before another thread enters the exchange
      */
     public VncVal exchange(final VncVal x, final long timeoutMillis)  {
-		try {
-			return exchanger.exchange(x, timeoutMillis, TimeUnit.MILLISECONDS);
-		}
+        try {
+            return exchanger.exchange(x, timeoutMillis, TimeUnit.MILLISECONDS);
+        }
         catch(InterruptedException ex) {
             throw new com.github.jlangch.venice.InterruptedException(
-            			"interrupted while calling (exchange! e val timeout)",
-            			ex);
+                        "interrupted while calling (exchange! e val timeout)",
+                        ex);
         }
         catch(TimeoutException ex) {
             throw new com.github.jlangch.venice.TimeoutException();
         }
-	}
+    }
 
     @Override
     public TypeRank typeRank() {

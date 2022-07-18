@@ -121,8 +121,8 @@ public class VncQueue extends VncCollection implements VncMutable {
         }
         catch(InterruptedException ex) {
             throw new com.github.jlangch.venice.InterruptedException(
-            			"interrupted while calling (offer! queue timeout val)",
-            			ex);
+                        "interrupted while calling (offer! queue timeout val)",
+                        ex);
         }
     }
 
@@ -139,8 +139,8 @@ public class VncQueue extends VncCollection implements VncMutable {
         }
         catch(InterruptedException ex) {
             throw new com.github.jlangch.venice.InterruptedException(
-            			"interrupted while calling (put! queue val)",
-            			ex);
+                        "interrupted while calling (put! queue val)",
+                        ex);
         }
     }
 
@@ -169,8 +169,8 @@ public class VncQueue extends VncCollection implements VncMutable {
         }
         catch(InterruptedException ex) {
             throw new com.github.jlangch.venice.InterruptedException(
-            			"interrupted while calling (poll! queue timeout)",
-            			ex);
+                        "interrupted while calling (poll! queue timeout)",
+                        ex);
         }
     }
 
@@ -198,8 +198,8 @@ public class VncQueue extends VncCollection implements VncMutable {
         }
         catch(InterruptedException ex) {
             throw new com.github.jlangch.venice.InterruptedException(
-            			"interrupted while calling (take! queue)",
-            			ex);
+                        "interrupted while calling (take! queue)",
+                        ex);
         }
     }
 
