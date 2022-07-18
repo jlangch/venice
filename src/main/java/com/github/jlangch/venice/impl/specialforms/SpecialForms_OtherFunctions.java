@@ -678,9 +678,7 @@ public class SpecialForms_OtherFunctions {
                     .doc(
                         "Runs the expr count times in the most effective way and returns a list of " +
                         "elapsed nanoseconds for each invocation. It's main purpose is supporting " +
-                        "benchmark test.\n\n" +
-                        "Returns a list with the elapsed times measured in nano seconds for each " +
-                        "expression run.\n\n" +
+                        "benchmark tests.\n\n" +
                         "*Note:* For best performance enable `macroexpand-on-load`!")
                     .examples(
                          "(dobench 100 (+ 1 1))",
