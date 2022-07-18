@@ -612,7 +612,7 @@ public class SpecialForms_OtherFunctions {
                     .meta()
                     .arglists("(quasiquote form)")
                     .doc(
-                        "Quasi quotes also called syntax quotes (a backquote) supress " +
+                        "Quasi quotes also called syntax quotes (a backquote) suppress " +
                         "evaluation of the form that follows it and all the nested forms." +
                         "\n\n" +
                         "unquote:¶\n" +
@@ -676,9 +676,9 @@ public class SpecialForms_OtherFunctions {
                         "(dobench iterations expr)",
                         "(dobench warm-up-iterations gc-runs iterations expr)")
                     .doc(
-                        "Runs the expr count times in the most effective way and returns a list of " +
-                        "elapsed nanoseconds for each invocation. It's main purpose is supporting " +
-                        "benchmark tests.\n\n" +
+                        "Runs the expr iterations times in the most effective way and returns a " +
+                        "list of elapsed nanoseconds for each invocation. It's main purpose is " +
+                        "supporting benchmark tests.\n\n" +
                         "*Note:* For best performance enable `macroexpand-on-load`!")
                     .examples(
                          "(dobench 100 (+ 1 1))",
@@ -856,7 +856,7 @@ public class SpecialForms_OtherFunctions {
                         "  (prof :clear)   ; clear profiler data captured so far  \n" +
                         "  (prof :data)   ; returns the profiler data as map  \n" +
                         "  (prof :data-formatted)   ; returns the profiler data as formatted text  \n" +
-                        "  (prof :data-formatted \"Metrics test\")   ; returns the profiler data as formatted text with a title  \n" +
+                        "  (prof :data-formatted \"Metrics\")   ; returns the profiler data as formatted text with a title  \n" +
                         "  nil)  ")
                     .seeAlso("perf", "time")
                     .build()
