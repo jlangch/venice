@@ -59,7 +59,6 @@ import com.github.jlangch.venice.impl.types.VncBoolean;
 import com.github.jlangch.venice.impl.types.VncByteBuffer;
 import com.github.jlangch.venice.impl.types.VncChar;
 import com.github.jlangch.venice.impl.types.VncDouble;
-import com.github.jlangch.venice.impl.types.VncExchanger;
 import com.github.jlangch.venice.impl.types.VncFunction;
 import com.github.jlangch.venice.impl.types.VncInteger;
 import com.github.jlangch.venice.impl.types.VncJavaObject;
@@ -3198,35 +3197,6 @@ public class CoreFunctions {
             private static final long serialVersionUID = -1848883965231344442L;
         };
 
-    public static VncFunction new_exchanger =
-        new VncFunction(
-                "exchanger",
-                VncFunction
-                    .meta()
-                    .arglists("(exchanger)")
-                    .doc(
-                        "Creates a new exchanger.\n\n" +
-                        "A synchronization point at which threads can pair and swap elements " +
-                        "within pairs. Each thread presents some value on entry to the " +
-                        "exchange function, matches with a partner thread, " +
-                        "and receives its partner's value on return. An Exchanger may be " +
-                        "viewed as a bidirectional form of a synchronous queue. " +
-                        "Exchangers may be useful in pipeline designs.")
-                    .examples()
-                    .seeAlso(
-                        "exchange!", "exchanger?")
-                    .build()
-        ) {
-            @Override
-            public VncVal apply(final VncList args) {
-                ArityExceptions.assertArity(this, args, 0);
-
-                return new VncExchanger(null);
-            }
-
-            private static final long serialVersionUID = -1848883965231344442L;
-        };
-
     public static VncFunction new_map_entry =
         new VncFunction(
                 "map-entry",
@@ -3430,26 +3400,6 @@ public class CoreFunctions {
                 ArityExceptions.assertArity(this, args, 1);
 
                 return VncBoolean.of(Types.isVncDelayQueue(args.first()));
-            }
-
-            private static final long serialVersionUID = -1848883965231344442L;
-        };
-
-    public static VncFunction exchanger_Q =
-        new VncFunction(
-                "exchanger?",
-                VncFunction
-                    .meta()
-                    .arglists("(exchanger? coll)")
-                    .doc("Returns true if coll is an exchanger")
-                    .examples("(exchanger? (exchanger))")
-                    .build()
-        ) {
-            @Override
-            public VncVal apply(final VncList args) {
-                ArityExceptions.assertArity(this, args, 1);
-
-                return VncBoolean.of(Types.isVncExchanger(args.first()));
             }
 
             private static final long serialVersionUID = -1848883965231344442L;
@@ -7134,80 +7084,6 @@ public class CoreFunctions {
             private static final long serialVersionUID = -1848883965231344442L;
         };
 
-    public static VncFunction exchange_BANG =
-        new VncFunction(
-                "exchange!",
-                VncFunction
-                    .meta()
-                    .arglists(
-                        "(exchange! exchanger val)",
-                        "(exchange! exchanger val timeout)")
-                    .doc(
-                        "Waits for another thread to arrive at this exchange point (unless " +
-                        "the current thread is interrupted, and then transfers the given value " +
-                        "to it, receiving its value in return.\n\n" +
-                        "If another thread is already waiting at the exchange point then " +
-                        "it is resumed for thread scheduling purposes and receives the value " +
-                        "passed in by the current thread. The current thread returns immediately, " +
-                        "receiving the value passed to the exchange by that other thread.\n\n" +
-                        "If no other thread is already waiting at the exchange then the " +
-                        "current thread is disabled for thread scheduling purposes and lies " +
-                        "dormant until one of two things happens:\n\n" +
-                        " * Some other thread enters the exchange; or \n" +
-                        " * Some other thread interrupts the current thread.\n\n" +
-                        "If the current thread:\n\n" +
-                        " * has its interrupted status set on entry to this method; or\n" +
-                        " * is interrupted while waiting for the exchange, \n\n" +
-                        "then an InterruptedException is thrown.")
-                    .examples(
-                        "(do                                                       \n" +
-                        "  (defn producer [e vals]                                 \n" +
-                        "    (doseq [x vals]                                       \n" +
-                        "       (exchange! e x)                                    \n" +
-                        "       (sleep 100)))                                      \n" +
-                        "                                                          \n" +
-                        "  (defn consumer [e]                                      \n" +
-                        "    (loop []                                              \n" +
-                        "      (when-let [v (exchange! e \"\")]                    \n" +
-                        "        (println (str \"Got from Producer: \" v))         \n" +
-                        "        (recur)))                                         \n" +
-                        "    (println \"Done.\"))                                  \n" +
-                        "                                                          \n" +
-                        "  (let [e (exchanger)]                                    \n" +
-                        "    (thread #(producer e [1 2 3 4 nil]))                  \n" +
-                        "    @(thread #(consumer e))))                             ")
-                    .seeAlso(
-                        "exchanger", "exchanger?")
-                    .build()
-        ) {
-            @Override
-            public VncVal apply(final VncList args) {
-                ArityExceptions.assertArity(this, args, 2, 3);
-
-                final VncVal val = args.first();
-                if (val == Nil) {
-                    return Nil;
-                }
-
-                if (Types.isVncExchanger(val)) {
-                    if (args.size() == 2) {
-                        return ((VncExchanger)val).exchange(args.second());
-                    }
-                    else {
-                        final long timeout = Coerce.toVncLong(args.third()).getValue();
-                        return ((VncExchanger)val).exchange(args.second(), timeout);
-                    }
-                }
-                else {
-                    throw new VncException(String.format(
-                            "exchange!: type %s not supported",
-                            Types.getType(args.first())));
-                }
-            }
-
-            private static final long serialVersionUID = -1848883965231344442L;
-        };
-
     public static VncFunction sort =
         new VncFunction(
                 "sort",
@@ -9326,10 +9202,6 @@ public class CoreFunctions {
                 .add(repeat)
                 .add(repeatedly)
                 .add(cycle)
-
-                .add(new_exchanger)
-                .add(exchange_BANG)
-                .add(exchanger_Q)
 
                 .add(meta)
                 .add(with_meta)

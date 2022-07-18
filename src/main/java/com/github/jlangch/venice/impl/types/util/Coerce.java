@@ -32,7 +32,6 @@ import com.github.jlangch.venice.impl.types.VncBoolean;
 import com.github.jlangch.venice.impl.types.VncByteBuffer;
 import com.github.jlangch.venice.impl.types.VncChar;
 import com.github.jlangch.venice.impl.types.VncDouble;
-import com.github.jlangch.venice.impl.types.VncExchanger;
 import com.github.jlangch.venice.impl.types.VncFunction;
 import com.github.jlangch.venice.impl.types.VncInteger;
 import com.github.jlangch.venice.impl.types.VncJavaObject;
@@ -676,22 +675,6 @@ public class Coerce {
             try (WithCallStack cs = new WithCallStack(callframe(val))) {
                 throw new VncException(String.format(
                         "Cannot coerce value of type %s to delay-queue.",
-                        Types.getType(val)));
-            }
-        }
-    }
-
-    public static VncExchanger toVncExchanger(final VncVal val) {
-        if (val == null) {
-            throw new VncException("Cannot coerce a null value to exchanger.");
-        }
-        else if (val instanceof VncExchanger) {
-            return (VncExchanger)val;
-        }
-        else {
-            try (WithCallStack cs = new WithCallStack(callframe(val))) {
-                throw new VncException(String.format(
-                        "Cannot coerce value of type %s to exchanger.",
                         Types.getType(val)));
             }
         }

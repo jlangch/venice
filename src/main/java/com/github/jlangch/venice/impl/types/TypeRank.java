@@ -61,8 +61,7 @@ public enum TypeRank {
 
     QUEUE (250),
     DELAYQUEUE (251),
-    STACK (252),
-    EXCHANGER (253);
+    STACK (252);
 
 
     private TypeRank(final int rank) {
