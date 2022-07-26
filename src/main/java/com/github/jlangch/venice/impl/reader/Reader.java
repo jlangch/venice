@@ -394,6 +394,7 @@ public class Reader {
             rdr.next();
             return read_char(token);
         }
+
         throw new ParseError(formatParseError(
                     token,
                     "Expected a valid reader macro '#{..}', '#(..)' or '#\\x'"));
