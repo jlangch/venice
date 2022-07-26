@@ -19,6 +19,7 @@ and this project adheres to
 - performance improvements to the `grep` functions by using `pmap` instead of 
   `map` in its implementation.
 - a `delay-queue` that is based on the Java class `java.util.concurrent.DelayQueue`
+- added reader macro for regex patterns: #"[0-9]+"
 
 ### Fixed
 
