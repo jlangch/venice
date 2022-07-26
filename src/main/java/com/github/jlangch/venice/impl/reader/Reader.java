@@ -25,6 +25,8 @@ import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.regex.Pattern;
+import java.util.regex.PatternSyntaxException;
 import java.util.stream.Collectors;
 
 import com.github.jlangch.venice.ContinueException;
@@ -38,6 +40,7 @@ import com.github.jlangch.venice.impl.types.VncBoolean;
 import com.github.jlangch.venice.impl.types.VncChar;
 import com.github.jlangch.venice.impl.types.VncDouble;
 import com.github.jlangch.venice.impl.types.VncInteger;
+import com.github.jlangch.venice.impl.types.VncJavaObject;
 import com.github.jlangch.venice.impl.types.VncKeyword;
 import com.github.jlangch.venice.impl.types.VncLong;
 import com.github.jlangch.venice.impl.types.VncString;
@@ -338,22 +341,38 @@ public class Reader {
                     rdr.next();
                     Token t = rdr.peek();
                     if (t != null) {
-                        if (t.charAt(0) == '{') {
-                            // set literal #{1 2}
-                            return VncHashSet.ofAll(read_list(rdr, VncList.empty(), '{' , '}'));
-                        }
-                        else if (t.charAt(0) == '(') {
-                            final VncVal meta = MetaUtil.toMeta(t);
-                            // anonymous function literal #(> % 2)
-                            if (rdr.anonymousFnArgs.isCapturing()) {
-                                throw new ParseError(formatParseError(t, " #() forms cannot be nested"));
+                    	if (t.getType() == TokenType.SPECIAL_CHAR) {
+	                        if (t.charAt(0) == '{') {
+	                            // set literal #{1 2}
+	                            return VncHashSet.ofAll(read_list(rdr, VncList.empty(), '{' , '}'));
+	                        }
+	                        else if (t.charAt(0) == '(') {
+	                            final VncVal meta = MetaUtil.toMeta(t);
+	                            // anonymous function literal #(> % 2)
+	                            if (rdr.anonymousFnArgs.isCapturing()) {
+	                                throw new ParseError(formatParseError(t, " #() forms cannot be nested"));
+	                            }
+	                            rdr.anonymousFnArgs.startCapture();
+	                            final VncVal body = read_list(rdr, VncList.empty(), '(' , ')').withMeta(meta);
+	                            final VncVector argsDef = rdr.anonymousFnArgs.buildArgDef().withMeta(meta);
+	                            final VncVal s_expr = VncList.of(new VncSymbol("fn", meta), argsDef, body);
+	                            rdr.anonymousFnArgs.stopCapture();
+	                            return s_expr;
+	                        }
+                    	}
+                        else if (t.getType() == TokenType.STRING) {
+                            rdr.next();
+                            try {
+                            	String s = t.getToken();
+                            	if (s.startsWith("\"")) s = s.substring(1);
+                            	if (s.endsWith("\"")) s = s.substring(0, s.length()-1);
+                                return new VncJavaObject(Pattern.compile(s));
                             }
-                            rdr.anonymousFnArgs.startCapture();
-                            final VncVal body = read_list(rdr, VncList.empty(), '(' , ')').withMeta(meta);
-                            final VncVector argsDef = rdr.anonymousFnArgs.buildArgDef().withMeta(meta);
-                            final VncVal s_expr = VncList.of(new VncSymbol("fn", meta), argsDef, body);
-                            rdr.anonymousFnArgs.stopCapture();
-                            return s_expr;
+                            catch (PatternSyntaxException ex) {
+                                throw new ParseError(formatParseError(
+                                        token,
+                                        "Illegal regex pattern in reader macro: " + ex.getMessage()));
+                            }
                         }
                     }
                 }
@@ -362,7 +381,9 @@ public class Reader {
                     rdr.next();
                     return read_char(token);
                 }
-                throw new ParseError(formatParseError(token, "Expected a valid reader macro '#{..}', '#(..)' or '#\\x'"));
+                throw new ParseError(formatParseError(
+                            token,
+                            "Expected a valid reader macro '#{..}', '#(..)' or '#\\x'"));
 
             case '(':
                 return read_list(rdr, VncList.empty(), '(' , ')');

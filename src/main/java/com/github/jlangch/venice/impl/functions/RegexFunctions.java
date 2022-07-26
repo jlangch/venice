@@ -28,7 +28,9 @@ import java.util.List;
 import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import java.util.regex.PatternSyntaxException;
 
+import com.github.jlangch.venice.VncException;
 import com.github.jlangch.venice.impl.types.VncBoolean;
 import com.github.jlangch.venice.impl.types.VncFunction;
 import com.github.jlangch.venice.impl.types.VncJavaObject;
@@ -70,10 +72,15 @@ public class RegexFunctions {
                 public VncVal apply(final VncList args) {
                     ArityExceptions.assertArity(this, args, 1);
 
-                    // "[Regex Pattern](https://docs.oracle.com/javase/8/docs/api/java/util/regex/Pattern.html)"
-                    return new VncJavaObject(
-                            Pattern.compile(
-                                    Coerce.toVncString(args.first()).getValue()));
+                    try {
+                        // "[Regex Pattern](https://docs.oracle.com/javase/8/docs/api/java/util/regex/Pattern.html)"
+                        return new VncJavaObject(
+                                Pattern.compile(
+                                        Coerce.toVncString(args.first()).getValue()));
+                    }
+                    catch (PatternSyntaxException ex) {
+                        throw new VncException("Illegal regex pattern: " + ex.getMessage(), ex);
+                    }
                 }
 
                 private static final long serialVersionUID = -1848883965231344442L;

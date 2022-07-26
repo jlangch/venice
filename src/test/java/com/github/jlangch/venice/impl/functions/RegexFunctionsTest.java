@@ -56,6 +56,13 @@ public class RegexFunctionsTest {
     }
 
     @Test
+    public void test_regex_matcher_1() {
+        final Venice venice = new Venice();
+
+        assertNotNull(venice.eval("(regex/matcher #\"[0-9]+\" \"100\")"));
+    }
+
+    @Test
     public void test_regex_matcher_2() {
         final Venice venice = new Venice();
 
@@ -67,11 +74,23 @@ public class RegexFunctionsTest {
     }
 
     @Test
-    public void test_regex_find_Q() {
+    public void test_regex_find_Q_1() {
         final Venice venice = new Venice();
 
         final String script =
                 "(let [p (regex/pattern \"[0-9]+\")    \n" +
+                "      m (regex/matcher p \"100\")]    \n" +
+                "   (regex/find? m))                     ";
+
+        assertTrue((Boolean)venice.eval(script));
+    }
+
+    @Test
+    public void test_regex_find_Q_2() {
+        final Venice venice = new Venice();
+
+        final String script =
+                "(let [p #\"[0-9]+\"                   \n" +
                 "      m (regex/matcher p \"100\")]    \n" +
                 "   (regex/find? m))                     ";
 
