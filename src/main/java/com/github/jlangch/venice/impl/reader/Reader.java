@@ -291,7 +291,6 @@ public class Reader {
                     // Note: auto gen symbols can not be used across nested syntax quotes.
                     //       Use gensym in these cases.
                     rdr.autoGenSym.enterSyntaxQuote();
-
                     return VncList.of(new VncSymbol("quasiquote"), read_form(rdr))
                                   .withMeta(MetaUtil.toMeta(token));
                 }
@@ -311,23 +310,8 @@ public class Reader {
                                   .withMeta(MetaUtil.toMeta(token));
                 }
 
-            case '^': {
-                rdr.next();
-                final Token metaToken = rdr.peek();
-                VncVal meta = read_form(rdr);
-                if (Types.isVncKeyword(meta)) {
-                    // allow ^:private is equivalent to ^{:private true}
-                    meta = VncHashMap.of(meta, VncBoolean.True);
-                }
-                if (Types.isVncMap(meta)) {
-                    final Token symToken = rdr.peek();
-                    return read_form(rdr).withMeta(MetaUtil.mergeMeta(meta, MetaUtil.toMeta(symToken)));
-                }
-                else {
-                    throw new ParseError(formatParseError(
-                            metaToken, "Invalid meta data type %s", Types.getType(meta)));
-                }
-            }
+            case '^':
+                return parseMetaData(rdr);
 
             case '@':
                 rdr.next();
@@ -364,7 +348,6 @@ public class Reader {
     }
 
     private static VncVal parseReaderMacro(final Reader rdr, final Token token) {
-        // Reader macros (built-in)
         final String sToken = token.getToken();
         if (sToken.length() == 1) {
             rdr.next();
@@ -414,7 +397,24 @@ public class Reader {
         throw new ParseError(formatParseError(
                     token,
                     "Expected a valid reader macro '#{..}', '#(..)' or '#\\x'"));
+    }
 
+    private static VncVal parseMetaData(final Reader rdr) {
+        rdr.next();
+        final Token metaToken = rdr.peek();
+        VncVal meta = read_form(rdr);
+        if (Types.isVncKeyword(meta)) {
+            // allow ^:private is equivalent to ^{:private true}
+            meta = VncHashMap.of(meta, VncBoolean.True);
+        }
+        if (Types.isVncMap(meta)) {
+            final Token symToken = rdr.peek();
+            return read_form(rdr).withMeta(MetaUtil.mergeMeta(meta, MetaUtil.toMeta(symToken)));
+        }
+        else {
+            throw new ParseError(formatParseError(
+                    metaToken, "Invalid meta data type %s", Types.getType(meta)));
+        }
     }
 
     private static VncChar read_char(final Token token) {
