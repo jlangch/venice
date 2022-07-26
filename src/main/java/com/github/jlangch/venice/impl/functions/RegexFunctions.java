@@ -63,7 +63,9 @@ public class RegexFunctions {
                             "Returns an instance of `java.util.regex.Pattern`.\n\n"  +
                             "Patterns are immutable and are safe for use by multiple " +
                             "concurrent threads! \n\n" +
-                            "JavaDoc: [Pattern](https://docs.oracle.com/javase/8/docs/api/java/util/regex/Pattern.html)")
+                            "Alternatively the reader macro for regex patterns can be used to " +
+                            "define a pattern: `#\"[0-9+]\"`\n\n" +
+                             "JavaDoc: [Pattern](https://docs.oracle.com/javase/8/docs/api/java/util/regex/Pattern.html)")
                         .examples("(regex/pattern \"[0-9]+\")")
                         .seeAlso("regex/matcher", "regex/matches", "regex/find", "regex/find-all")
                         .build()
