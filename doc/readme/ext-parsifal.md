@@ -44,28 +44,28 @@ The evaluator uses two Parsifal parsers. The up-front tokenizing parser operates
   ;;;
   ;;; [1] Tokenizer
   ;;; ----------------------------------------------------------------------------
-  ;;; Whitespace          = " " | "\t" | "\n" ;
-  ;;; Operator            = "+" | "-" | "*" | "/" ;
-  ;;; LParen              = "(" ;
-  ;;; RParen              = ")" ;
-  ;;; Digit               = "0" | "1" | "2" | "3" | "4" | "5" | "6" | "7" | "8" | "9" ;
-  ;;; Integer             = Digit { Digit } ;
-  ;;; Float               = Digit { Digit } "." Digit { Digit };
+  ;;; Whitespace      = " " | "\t" | "\n" ;
+  ;;; Operator        = "+" | "-" | "*" | "/" ;
+  ;;; LParen          = "(" ;
+  ;;; RParen          = ")" ;
+  ;;; Digit           = "0" | "1" | "2" | "3" | "4" | "5" | "6" | "7" | "8" | "9" ;
+  ;;; Integer         = Digit { Digit } ;
+  ;;; Float           = Digit { Digit } "." Digit { Digit };
   ;;;
-  ;;; Token               = Whitespace | Operator | ParOpen | ParClose | Float | Integer ;
-  ;;; Tokens              = { Token } EOI ;
+  ;;; Token           = Whitespace | Operator | LParen | RParen | Float | Integer ;
+  ;;; Tokens          = { Token } EOI ;
   ;;;
   ;;;
   ;;; [2] Expression Parser
   ;;; ----------------------------------------------------------------------------
   ;;;
-  ;;; Main                = Expression EOI ;
-  ;;; Expression          = AddExpression ;
-  ;;; AddExpression       = MulExpression { ( "+" | "-" ) MulExpression } ;
-  ;;; MulExpression       = UnaryExpression { ( "*" | "/" ) UnaryExpression } ;
-  ;;; UnaryExpression     = ( "+" | "-" ) UnaryExpression | ParExpression | Literal ;
-  ;;; ParExpression       = "(" Expression ")" ;
-  ;;; Literal             = Integer | Float ;
+  ;;; Main            = Expression EOI ;
+  ;;; Expression      = AddExpression ;
+  ;;; AddExpression   = MulExpression { ( "+" | "-" ) MulExpression } ;
+  ;;; MulExpression   = UnaryExpression { ( "*" | "/" ) UnaryExpression } ;
+  ;;; UnaryExpression = ( "+" | "-" ) UnaryExpression | ParExpression | Literal ;
+  ;;; ParExpression   = "(" Expression ")" ;
+  ;;; Literal         = Integer | Float ;
 
 
   (load-module :parsifal)
