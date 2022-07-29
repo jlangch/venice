@@ -21,7 +21,7 @@
 
 ## Vulnerability Disclojure
 
-[OWASP Vulnerability Disclojure](https://cheatsheetseries.owasp.org/cheatsheets/Vulnerability_Disclosure_Cheat_Sheet.html)
+[Vulnerability Disclojure Cheatsheet](https://cheatsheetseries.owasp.org/cheatsheets/Vulnerability_Disclosure_Cheat_Sheet.html)
 
 
 ## HTML Validator
