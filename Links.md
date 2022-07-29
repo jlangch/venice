@@ -19,6 +19,11 @@
 [My task… what’s wrong with your Gradle task?](https://blog.softwaremill.com/my-task-whats-wrong-with-your-gradle-task-82312100c595)
 
 
+## Vulnerability Disclojure
+
+[Vulnerability Disclojure Cheatsheet](https://cheatsheetseries.owasp.org/cheatsheets/Vulnerability_Disclosure_Cheat_Sheet.html)
+
+
 ## HTML Validator
 
 [HTML Validator](https://validator.w3.org/#validate_by_upload)
