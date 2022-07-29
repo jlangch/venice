@@ -15,7 +15,7 @@ and this project adheres to
 ### Added
 
 - functions `io/touch-file`, `io/delete-files-glob`
-- support for queues to transducers and reducers
+- support for queues with transducers and reducers
 - performance improvements to the `grep` functions by using `pmap` instead of 
   `map` in its implementation.
 - a `delay-queue` that is based on the Java class `java.util.concurrent.DelayQueue`
@@ -23,13 +23,16 @@ and this project adheres to
 
 ### Fixed
 
-- the message of exceptions raised by `str/format` on illegal formats. The
-  exception provides now a Venice stack trace.
+- the message of the exceptions raised by `str/format` on illegal formats. 
+  Additionally provide a Venice stack trace with these exceptions.
+
+### Security
+
+- Fix Partial Path Traversal Vulnerability submitted by [Jonathan Leitschuh](https://github.com/JLLeitschuh)
 
 ### Updated dependencies:
 
 - Bump gradle from 7.4.1 to 7.5
-
 
 
 ## [1.10.16] - 2022-07-01
