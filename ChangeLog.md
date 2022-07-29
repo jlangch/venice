@@ -10,7 +10,7 @@ and this project adheres to
 
 
 
-## [1.10.17] - 2022-07-xx
+## [1.10.17] - 2022-07-29
 
 ### Added
 
@@ -33,6 +33,7 @@ and this project adheres to
 ### Updated dependencies:
 
 - Bump gradle from 7.4.1 to 7.5
+
 
 
 ## [1.10.16] - 2022-07-01
