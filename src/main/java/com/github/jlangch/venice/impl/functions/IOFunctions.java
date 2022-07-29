@@ -1264,12 +1264,20 @@ public class IOFunctions {
                         }
                         catch(Exception ex) {
                             throw new VncException(
-                                    String.format("Failed to delete dir %s", file.toString()),
+                                    String.format("Failed to delete file tree from dir %s", file.toString()),
                                     ex);
+                        }
+
+                        if (file.isDirectory()) {
+                            throw new VncException(
+                                    String.format("Failed to delete file tree from dir %s", file.toString()));
                         }
                     }
                     else if (file.isFile()) {
-                        file.delete();
+                        if (!file.delete()) {
+                            throw new VncException(
+                                    String.format("Failed to delete file %s", file.toString()));
+                        }
                     }
                     else {
                         // ignore
@@ -1819,7 +1827,13 @@ public class IOFunctions {
                                     "Function 'io/mkdir' does not allow %s as dir");
 
                 try {
-                    dir.mkdir();
+                    if (!dir.mkdir()) {
+                        throw new VncException(
+                                String.format("Failed to create dir %s", dir.getPath()));
+                    }
+                }
+                catch(VncException ex) {
+                    throw ex;
                 }
                 catch(Exception ex) {
                     throw new VncException(
@@ -1856,7 +1870,13 @@ public class IOFunctions {
                                     "Function 'io/mkdirs' does not allow %s as dir");
 
                 try {
-                    dir.mkdirs();
+                    if (!dir.mkdirs()) {
+                        throw new VncException(
+                                String.format("Failed to create dir %s", dir.getPath()));
+                    }
+                }
+                catch(VncException ex) {
+                    throw ex;
                 }
                 catch(Exception ex) {
                     throw new VncException(
