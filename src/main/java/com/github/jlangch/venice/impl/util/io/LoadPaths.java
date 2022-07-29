@@ -258,7 +258,7 @@ public class LoadPaths implements ILoadPaths {
         if (dir_.isDirectory()) {
             final File fl = new File(dir_, file.getPath());
             if (fl.isFile()) {
-                if (fl.getCanonicalPath().startsWith(dir_.getCanonicalPath())) {
+                if (fl.getCanonicalFile().toPath().startsWith(dir_.getCanonicalFile().toPath())) {
                     // Prevent accessing files outside the load-path.
                     // E.g.: ../../coffee
                     return true;
