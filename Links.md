@@ -25,6 +25,8 @@
 
 [How to Discuss and Fix Vulnerabilities in Your Open Source Library](https://www.lunasec.io/docs/blog/how-to-mitigate-open-source/)
 
+[GitHub Repository security advisories](https://docs.github.com/en/code-security/repository-security-advisories/about-coordinated-disclosure-of-security-vulnerabilities)
+
 [GitHub Creating a repository security advisory](https://docs.github.com/en/code-security/repository-security-advisories/creating-a-repository-security-advisory)
 
 
