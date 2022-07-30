@@ -97,8 +97,8 @@ public class ModuleFunctions {
                     .meta()
                     .arglists("(load-classpath-file* name)")
                     .doc(
-                    	"Loads a Venice file from the classpath.\n\n" +
-                    	"Returns the loaded Venice code as `string` if the file exists.\n\n" +
+                        "Loads a Venice file from the classpath.\n\n" +
+                        "Returns the loaded Venice code as `string` if the file exists.\n\n" +
                         "Throws a `VncException` if the name of the passed file does not " +
                         "have the file extension '.venice' or if the file does not exist.")
                     .build()
@@ -115,10 +115,10 @@ public class ModuleFunctions {
                     if (file != null) {
                         final String res = ModuleLoader.loadClasspathVeniceFile(file);
                         if (res == null ) {
-                        	throw new VncException("Failed to load Venice classpath file");
+                            throw new VncException("Failed to load Venice classpath file");
                         }
                         else {
-                        	return new VncString(res);
+                            return new VncString(res);
                         }
                     }
                     else {
@@ -126,7 +126,7 @@ public class ModuleFunctions {
                     }
                 }
                 catch (VncException ex) {
-                	throw ex;
+                    throw ex;
                 }
                 catch (Exception ex) {
                     throw new VncException("Failed to load Venice classpath file", ex);
@@ -148,8 +148,8 @@ public class ModuleFunctions {
                     .meta()
                     .arglists("(load-file* file)")
                     .doc(
-                    	"Loads a venice file from the given load-paths.\n\n" +
-                    	"Returns the loaded Venice code as `string` if the file exists.\n\n" +
+                        "Loads a venice file from the given load-paths.\n\n" +
+                        "Returns the loaded Venice code as `string` if the file exists.\n\n" +
                         "Throws a `VncException` if the name of the passed file does not " +
                         "have the file extension '.venice' or if the file does not exist.")
                     .build()
