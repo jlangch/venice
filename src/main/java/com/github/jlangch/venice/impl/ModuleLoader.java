@@ -56,7 +56,7 @@ public class ModuleLoader {
         }
     }
 
-    public static String loadClasspathFile(final String file) {
+    public static String loadClasspathVeniceFile(final String file) {
         // For security reasons just allow to load venice scripts!
         if (!file.endsWith(".venice")) {
             throw new VncException(String.format(
@@ -77,7 +77,7 @@ public class ModuleLoader {
         }
     }
 
-    public static String loadExternalFile(final String file) {
+    public static String loadExternalVeniceFile(final String file) {
         // For security reasons just allow to load venice scripts!
         if (!file.endsWith(".venice")) {
             throw new VncException(String.format(

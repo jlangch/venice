@@ -149,12 +149,16 @@ public class LoadPaths implements ILoadPaths {
                                                  .orElse(null);
 
         if (dataFromLoadPath != null) {
+        	// prefer loading the file from the load paths
             return dataFromLoadPath;
         }
         else if (unlimitedAccess && file.isFile()) {
+        	// if the file has not been found on the load paths and 'unlimited'
+        	// file access is enabled load the file
             return loadFile(file);
         }
         else {
+        	// file is not available
             return null;
         }
     }

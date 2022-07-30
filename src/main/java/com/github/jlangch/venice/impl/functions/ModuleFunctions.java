@@ -96,7 +96,11 @@ public class ModuleFunctions {
                 VncFunction
                     .meta()
                     .arglists("(load-classpath-file* name)")
-                    .doc("Loads a Venice file from the classpath.")
+                    .doc(
+                    	"Loads a Venice file from the classpath.\n\n" +
+                    	"Returns the loaded Venice code as `string` if the file exists.\n\n" +
+                        "Throws a `VncException` if the name of the passed file does not " +
+                        "have the file extension '.venice' or if the file does not exist.")
                     .build()
         ) {
             @Override
@@ -106,15 +110,23 @@ public class ModuleFunctions {
                 sandboxFunctionCallValidation();
 
                 try {
-                    final String file = suffixWithVeniceFileExt(name(args.first()));
+                    final String file = name(args.first());
 
                     if (file != null) {
-                        final String res = ModuleLoader.loadClasspathFile(file);
-                        return res == null ? Nil : new VncString(res);
+                        final String res = ModuleLoader.loadClasspathVeniceFile(file);
+                        if (res == null ) {
+                        	throw new VncException("Failed to load Venice classpath file");
+                        }
+                        else {
+                        	return new VncString(res);
+                        }
                     }
                     else {
                         return Nil;
                     }
+                }
+                catch (VncException ex) {
+                	throw ex;
                 }
                 catch (Exception ex) {
                     throw new VncException("Failed to load Venice classpath file", ex);
@@ -135,7 +147,11 @@ public class ModuleFunctions {
                 VncFunction
                     .meta()
                     .arglists("(load-file* file)")
-                    .doc("Loads a venice file from the given load-paths")
+                    .doc(
+                    	"Loads a venice file from the given load-paths.\n\n" +
+                    	"Returns the loaded Venice code as `string` if the file exists.\n\n" +
+                        "Throws a `VncException` if the name of the passed file does not " +
+                        "have the file extension '.venice' or if the file does not exist.")
                     .build()
         ) {
             @Override
@@ -146,7 +162,7 @@ public class ModuleFunctions {
 
                 final String file = name(args.first());
                 try {
-                    final String data = ModuleLoader.loadExternalFile(file);
+                    final String data = ModuleLoader.loadExternalVeniceFile(file);
                     return new VncString(data);
                 }
                 catch (VncException ex) {
@@ -249,12 +265,6 @@ public class ModuleFunctions {
             return null;
         }
     }
-
-    private static String suffixWithVeniceFileExt(final String s) {
-        return s.endsWith(".venice") ? s : s + ".venice";
-    }
-
-
 
     private static String encoding(final VncVal enc) {
         return enc == Nil
