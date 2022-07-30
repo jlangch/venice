@@ -57,7 +57,11 @@ public class ModuleLoader {
     }
 
     public static String loadClasspathVeniceFile(final String file) {
-        // For security reasons just allow to load venice scripts!
+        // Just allow to load venice scripts!
+    	//
+    	// This function is exclusively called by the Venice function
+    	// `core/load-classpath-file` that will fail anyway if someone points
+    	// this file to a file with no valid Venice source content!
         if (!file.endsWith(".venice")) {
             throw new VncException(String.format(
                     "Must not load other than Venice (*.venice) resources from "
@@ -78,7 +82,11 @@ public class ModuleLoader {
     }
 
     public static String loadExternalVeniceFile(final String file) {
-        // For security reasons just allow to load venice scripts!
+        // Just allow to load venice scripts!
+    	//
+    	// This function is exclusively called by the Venice function
+    	// `core/load-file` that will fail anyway if someone points
+    	// this file to a file with no valid Venice source content!
         if (!file.endsWith(".venice")) {
             throw new VncException(String.format(
                     "Must not load other than Venice (*.venice) files. "
