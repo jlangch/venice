@@ -72,13 +72,6 @@ public interface ILoadPaths {
     List<File> getPaths();
 
     /**
-     *
-     * @param file a file to check
-     * @return true if the file is within the load paths
-     */
-    boolean isOnLoadPath(File file);
-
-    /**
      * @return {@code true} if the access to files is unlimited or
      *         {@code false} if the access is limited to the load paths.
      */

@@ -884,14 +884,17 @@
 
 (defmacro
   ^{ :arglists '("(load-string s)")
-     :doc "Sequentially read and evaluate the set of forms contained in the string."
+     :doc """
+          Sequentially read and evaluate the set of forms contained in the
+          string.
+          """
      :examples '(
           """
           (do
             (load-string "(def x 1)")
             (+ x 2))
           """ )
-     :see-also '("load-file" "load-classpath-file")  }
+     :see-also '("load-file" "load-classpath-file" "load-module")  }
 
   load-string [s]
 
@@ -921,15 +924,18 @@
   ^{ :arglists '(
           "(load-file file)",
           "(load-file file force)",
-          "(load-file file alias)",
-          "(load-file file force alias)")
+          "(load-file file nsalias)",
+          "(load-file file force nsalias)")
      :doc """
           Sequentially read and evaluate the set of forms contained in the file.
 
-          If the file can not be found on the global load paths and
-          and the sandbox permits the file is either loaded from the current
-          working directory if it has a relative path or it is loaded from its
-          absolute path.
+          If the file is found on one of the defined load paths it is read and
+          the forms it contains are evaluated.
+
+          If there are no load paths defined, the file must be specified with
+          an absolute path where it is loaded from.
+
+          If the file is not found an exception is raised.
 
           With 'force' set to false (the default) the file is only loaded once
           and then served from a cache. With 'force' set to true it is always
@@ -938,13 +944,36 @@
           The function is restricted to load files with the extension '.venice'.
           If the file extension is missing '.venice' will be implicitely added.
           Returns 'true' if the file has been successfully loaded and 'false' if
-          the file has been already loaded. Throws an exception on loading error.
+          the file has been already loaded.
+
+          An optional namespace alias can passed:
+          `(load-file "coffee.venice" ['coffee :as 'c])`
+
+          See the `load-paths` doc for a description of the *load path* feature.
           """
      :examples '(
-          """(load-file "coffee")""",
-          """(load-file "coffee.venice")""",
-          """(load-file "beverages/coffee")""" )
-     :see-also '("load-classpath-file" "load-string") }
+          """
+          ;; With load-paths: [/users/foo/scripts]
+          ;;        -> loads: /users/foo/scripts/coffee.venice
+          (load-file "coffee")
+          """,
+          """
+          ;; With load-paths: [/users/foo/scripts]
+          ;;        -> loads: /users/foo/scripts/coffee.venice
+          (load-file "coffee.venice")
+          """,
+          """
+          ;; With load-paths: [/users/foo/scripts]
+          ;;        -> loads: /users/foo/scripts/beverages/coffee.venice
+          (load-file "beverages/coffee")
+          """,
+          """
+          ;; With load-paths: [/users/foo/resources.zip]
+          ;;        -> loads: /users/foo/resources.zip!beverages/coffee.venice
+          (load-file "beverages/coffee")
+          """ )
+     :see-also '(
+          "load-classpath-file" "load-string" "load-module" "load-paths") }
 
   load-file
 
@@ -981,12 +1010,20 @@
   ^{ :arglists '(
           "(load-classpath-file name)",
           "(load-classpath-file name force)",
-          "(load-classpath-file name alias)",
-          "(load-classpath-file name force alias)")
+          "(load-classpath-file name nsalias)",
+          "(load-classpath-file name force nsalias)")
      :doc """
           Sequentially read and evaluate the set of forms contained in the
           classpath file. The function is restricted to classpath files with
           the extension '.venice'.
+
+          Loaded files are cached by Venice and subsequent loads are just
+          skipped. To enforce a reload call the file load with the force
+          flag set to true:
+          `(load-classpath-file "com/github/jlangch/venice/test.venice" true)`
+
+          An optional namespace alias can passed:
+          `(load-classpath-file "com/github/jlangch/venice/test.venice" ['test :as 't])`
           """
      :examples '(
           """
@@ -1002,8 +1039,15 @@
             (ns-remove 'test)
             (load-classpath-file "com/github/jlangch/venice/test.venice" true)
             (test/test-fn "hello"))
-          """ )
-     :see-also '("load-file" "load-string") }
+          """,
+          """
+          ;; namespace aliases
+          (do
+            (load-classpath-file "com/github/jlangch/venice/test.venice" ['test :as 't])
+            (t/test-fn "hello"))
+          """)
+     :see-also '(
+          "load-file" "load-string" "load-module") }
 
   load-classpath-file
 
@@ -1044,6 +1088,13 @@
           Returns `true` if the module has been successfully loaded and `false`
           if the module has been already loaded. Throws an exception on loading
           error.
+
+          Loaded modules are cached by Venice and subsequent loads are just
+          skipped. To enforce a reload call the module load with the force
+          flag set to true: `(load-module :trace true)`
+
+          An optional namespace alias can passed:
+          `(load-module :hexdump ['hexdump :as 'h])`
           """
      :examples '(
           """
@@ -1061,7 +1112,14 @@
             ; reload the module
             (ns-remove 'trace)
             (load-module :trace true))
-          """) }
+          """,
+          """
+          ;; namespace aliases
+          (do
+            (load-module :hexdump ['hexdump :as 'h])
+            (h/dump (range 32 64)))
+          """)
+     :see-also '("load-file" "load-classpath-file" "load-string") }
 
   load-module
 
@@ -1682,20 +1740,44 @@
 
 
 (defn
-  ^{ :arglists '("(load-resource res  & options)")
+  ^{ :arglists '("(load-resource file & options)")
      :doc """
-          Loads a resource from the defined load paths. Returns a string,
-          a bytebuffer or nil if the file does not exist.
+          Loads a resource from the defined load paths. Returns a string or
+          a bytebuffer dependent on the passed options.
+
+          If there are no load paths defined, the file must be specified with
+          an absolute path where it is loaded from.
+
+          If the file is not found an exception is raised.
 
           Options:
 
           | :binary b   | e.g :binary true, defaults to true |
           | :encoding e | e.g :encoding :utf-8, defaults to :utf-8 |
-          """ }
 
-  load-resource [res & options]
+          See the `load-paths` doc for a description of the *load path* feature.
+          """
+     :examples '(
+          """
+          ;; With load-paths: [/users/foo/images]
+          ;;        -> loads: /users/foo/images/coffee.png
+          (load-resource "coffee.png")
+          """,
+          """
+          ;; With load-paths: [/users/foo/images]
+          ;;        -> loads: /users/foo/images/small/coffee.png
+          (load-resource "small/coffee.png")
+          """,
+          """
+          ;; With load-paths: [/users/foo/images.zip]
+          ;;        -> loads: /users/foo/images.zip!small/coffee.png
+          (load-resource "small/coffee.png")
+          """ )
+     :see-also '("load-paths") }
 
-  (apply load-resource* res options))
+  load-resource [file & options]
+
+  (apply load-resource* file options))
 
 
 (defn-

@@ -29,8 +29,10 @@ import java.nio.file.Files;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import com.github.jlangch.venice.VncException;
+import com.github.jlangch.venice.impl.util.CollectionUtil;
 import com.github.jlangch.venice.impl.util.io.zip.ZipFileSystemUtil;
 import com.github.jlangch.venice.javainterop.ILoadPaths;
 
@@ -41,9 +43,7 @@ public class LoadPaths implements ILoadPaths {
             final List<File> paths,
             final boolean unlimitedAccess
     ) {
-        if (paths != null) {
-            this.paths.addAll(paths);
-        }
+        this.paths.addAll(paths);
         this.unlimitedAccess = unlimitedAccess;
     }
 
@@ -51,25 +51,14 @@ public class LoadPaths implements ILoadPaths {
             final List<File> paths,
             final boolean unlimitedAccess
     ) {
-        if (paths == null || paths.isEmpty()) {
-            return new LoadPaths(null, unlimitedAccess);
-        }
-        else {
-            final List<File> savePaths = new ArrayList<>();
-
-            for(File p : paths) {
-                if (p != null) {
-                    if (p.isFile() || p.isDirectory()) {
-                        savePaths.add(canonical(p.getAbsoluteFile()));
-                    }
-                    else {
-                        // skip silently
-                    }
-                }
-            }
-
-            return new LoadPaths(savePaths, unlimitedAccess);
-        }
+        return new LoadPaths(
+                        CollectionUtil
+                            .toEmpty(paths)
+                            .stream()
+                            .filter(p -> p.isFile() || p.isDirectory())
+                            .map(p -> canonical(p.getAbsoluteFile()))
+                            .collect(Collectors.toList()),
+                        unlimitedAccess);
     }
 
     @Override
@@ -79,60 +68,24 @@ public class LoadPaths implements ILoadPaths {
         }
         else {
             final String path = file.getPath();
-
-            final String vncFile = path.endsWith(".venice") ? path : path + ".venice";
-
-            final ByteBuffer data = load(new File(vncFile));
-
-            return data == null
-                    ? null
-                    : new String(data.array(), getCharset("UTF-8"));
+            final File veniceFile = path.endsWith(".venice") ? file : new File(path + ".venice");
+            return toString(load(veniceFile), "UTF-8");
         }
     }
 
     @Override
     public ByteBuffer loadBinaryResource(final File file) {
-        return load(file);
+        return file == null ? null : load(file);
     }
 
     @Override
     public String loadTextResource(final File file, final String encoding) {
-        final ByteBuffer data = load(file);
-
-        return data == null
-                ? null
-                : new String(data.array(), getCharset(encoding));
+        return file == null ? null : toString(load(file), encoding);
     }
 
     @Override
     public List<File> getPaths() {
         return Collections.unmodifiableList(paths);
-    }
-
-    @Override
-    public boolean isOnLoadPath(final File file) {
-        if (file == null) {
-            throw new IllegalArgumentException("A file must not be null");
-        }
-        else if (unlimitedAccess) {
-            return true;
-        }
-        else {
-            final File f = canonical(file);
-            final File dir = f.getParentFile();
-
-            // check load paths
-            for(File p : paths) {
-                if (p.isDirectory()) {
-                    if (dir.equals(p)) return true;
-                }
-                else if (p.isFile()) {
-                    if (f.equals(p)) return true;
-                }
-            }
-
-            return false;
-        }
     }
 
     @Override
@@ -142,6 +95,7 @@ public class LoadPaths implements ILoadPaths {
 
 
     private ByteBuffer load(final File file) {
+    	// try to load the file from one of the load paths
         final ByteBuffer dataFromLoadPath = paths.stream()
                                                  .map(p -> loadFromLoadPath(p, file))
                                                  .filter(d -> d != null)
@@ -149,16 +103,16 @@ public class LoadPaths implements ILoadPaths {
                                                  .orElse(null);
 
         if (dataFromLoadPath != null) {
-        	// prefer loading the file from the load paths
+            // prefer loading the file from the load paths
             return dataFromLoadPath;
         }
         else if (unlimitedAccess && file.isFile()) {
-        	// if the file has not been found on the load paths and 'unlimited'
-        	// file access is enabled load the file
-            return loadFile(file);
+            // if the file has not been found on the load paths and 'unlimited'
+            // file access is enabled load the file
+            return loadFileData(file);
         }
         else {
-        	// file is not available
+            // file is not available
             return null;
         }
     }
@@ -180,16 +134,13 @@ public class LoadPaths implements ILoadPaths {
                     return ByteBuffer.wrap(Files.readAllBytes(f.toPath()));
                 }
                 catch(IOException ex) {
-                    return null;
+                    return null; // just proceed and try with next load path
                 }
             }
-            else {
-                return null;
-            }
         }
-        else {
-            return null;
-        }
+
+        // not found on this load path, proceed and try with next load path
+        return null;
     }
 
     private ByteBuffer loadFileFromZip(
@@ -215,13 +166,13 @@ public class LoadPaths implements ILoadPaths {
         try {
             if (file.isAbsolute()) {
                 return isFileWithinDirectory(loadPath, file)
-                        ? loadFile(file)
+                        ? loadFileData(file)
                         : null;
             }
             else {
                 final File f = new File(loadPath, file.getPath());
                 return f.isFile()
-                        ? loadFile(new File(loadPath, file.getPath()))
+                        ? loadFileData(new File(loadPath, file.getPath()))
                         : null;
             }
         }
@@ -232,20 +183,7 @@ public class LoadPaths implements ILoadPaths {
         }
     }
 
-    private static File canonical(final File file) {
-        try {
-            return file.getCanonicalFile();
-        }
-        catch(IOException ex) {
-            throw new VncException(
-                    String.format(
-                            "The file '%s' can not be converted to a canonical path!",
-                            file.getPath()),
-                    ex);
-        }
-    }
-
-    private ByteBuffer loadFile(final File file) {
+    private ByteBuffer loadFileData(final File file) {
         try {
             return ByteBuffer.wrap(Files.readAllBytes(file.toPath()));
         }
@@ -264,7 +202,7 @@ public class LoadPaths implements ILoadPaths {
             if (fl.isFile()) {
                 if (fl.getCanonicalFile().toPath().startsWith(dir_.getCanonicalFile().toPath())) {
                     // Prevent accessing files outside the load-path.
-                    // E.g.: ../../coffee
+                    // E.g.: ../../foo.venice
                     return true;
                 }
             }
@@ -273,10 +211,29 @@ public class LoadPaths implements ILoadPaths {
         return false;
     }
 
-    private Charset getCharset(final String encoding) {
-        return encoding == null || encoding.isEmpty()
-                ? Charset.defaultCharset()
-                : Charset.forName(encoding);
+    private static File canonical(final File file) {
+        try {
+            return file.getCanonicalFile();
+        }
+        catch(IOException ex) {
+            throw new VncException(
+                    String.format(
+                            "The file '%s' can not be converted to a canonical path!",
+                            file.getPath()),
+                    ex);
+        }
+    }
+
+    private String toString(final ByteBuffer data, final String encoding) {
+        if (data == null) {
+            return null;
+        }
+        else {
+            final Charset charset = encoding == null || encoding.isEmpty()
+                                        ? Charset.defaultCharset()
+                                        : Charset.forName(encoding);
+            return new String(data.array(), charset);
+        }
     }
 
 

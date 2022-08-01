@@ -27,6 +27,7 @@ import java.io.File;
 import java.nio.ByteBuffer;
 import java.nio.charset.Charset;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 import com.github.jlangch.venice.VncException;
 import com.github.jlangch.venice.impl.ModuleLoader;
@@ -34,6 +35,7 @@ import com.github.jlangch.venice.impl.thread.ThreadContext;
 import com.github.jlangch.venice.impl.types.VncBoolean;
 import com.github.jlangch.venice.impl.types.VncByteBuffer;
 import com.github.jlangch.venice.impl.types.VncFunction;
+import com.github.jlangch.venice.impl.types.VncJavaObject;
 import com.github.jlangch.venice.impl.types.VncKeyword;
 import com.github.jlangch.venice.impl.types.VncString;
 import com.github.jlangch.venice.impl.types.VncSymbol;
@@ -45,6 +47,7 @@ import com.github.jlangch.venice.impl.types.util.Types;
 import com.github.jlangch.venice.impl.util.ArityExceptions;
 import com.github.jlangch.venice.impl.util.SymbolMapBuilder;
 import com.github.jlangch.venice.javainterop.IInterceptor;
+import com.github.jlangch.venice.javainterop.ILoadPaths;
 
 
 public class ModuleFunctions {
@@ -59,7 +62,10 @@ public class ModuleFunctions {
                 VncFunction
                     .meta()
                     .arglists("(load-module* name)")
-                    .doc("Loads a Venice extension module.")
+                    .doc(
+                    	"Loads a Venice extension module. Returns the module as an " +
+                    	"unevaluted string. Throws a `VncException` if the module " +
+                    	"does not exist.")
                     .build()
         ) {
             @Override
@@ -68,17 +74,22 @@ public class ModuleFunctions {
 
                 sandboxFunctionCallValidation();
 
-                try {
-                    final String name = Coerce.toVncString(CoreFunctions.name.apply(args)).getValue();
+                final String name = Coerce.toVncString(CoreFunctions.name.apply(args)).getValue();
 
+                try {
                     // sandbox: validate module load
                     final IInterceptor interceptor = ThreadContext.getInterceptor();
                     interceptor.validateLoadModule(name);
 
                     return new VncString(ModuleLoader.loadModule(name));
                 }
+                catch (VncException ex) {
+                    throw ex;
+                }
                 catch (Exception ex) {
-                    throw new VncException("Failed to load Venice module", ex);
+                    throw new VncException(
+                                String.format("Failed to load Venice module '%s'", name),
+                                ex);
                 }
             }
 
@@ -98,7 +109,8 @@ public class ModuleFunctions {
                     .arglists("(load-classpath-file* name)")
                     .doc(
                         "Loads a Venice file from the classpath.\n\n" +
-                        "Returns the loaded Venice code as `string` if the file exists.\n\n" +
+                        "Returns the loaded Venice code as an unevaluated `string` if the " +
+                        "file exists.\n\n" +
                         "Throws a `VncException` if the name of the passed file does not " +
                         "have the file extension '.venice' or if the file does not exist.")
                     .build()
@@ -149,9 +161,12 @@ public class ModuleFunctions {
                     .arglists("(load-file* file)")
                     .doc(
                         "Loads a venice file from the given load-paths.\n\n" +
-                        "Returns the loaded Venice code as `string` if the file exists.\n\n" +
+                        "Returns the loaded Venice code as as an unevaluated `string` if " +
+                        "the file exists.\n\n" +
                         "Throws a `VncException` if the name of the passed file does not " +
-                        "have the file extension '.venice' or if the file does not exist.")
+                        "have the file extension '.venice' or if the file does not exist.\n\n" +
+                        "See the `load-paths` doc for a description of the *load path* feature.")
+                    .seeAlso("load-paths", "load-resource*")
                     .build()
         ) {
             @Override
@@ -192,7 +207,9 @@ public class ModuleFunctions {
                         "or nil if the file does not exist. \n\n" +
                         "Options: \n\n" +
                         "| :binary b   | e.g :binary true, defaults to true |\n" +
-                        "| :encoding e | e.g :encoding :utf-8, defaults to :utf-8 |")
+                        "| :encoding e | e.g :encoding :utf-8, defaults to :utf-8 |\n\n" +
+                        "See the `load-paths` doc for a description of the *load path* feature.")
+                    .seeAlso("load-paths", "load-file*")
                     .build()
         ) {
             @Override
@@ -250,6 +267,81 @@ public class ModuleFunctions {
             private static final long serialVersionUID = -1848883965231344442L;
         };
 
+    public static VncFunction loadPaths =
+        new VncFunction(
+                "load-paths",
+                VncFunction
+                    .meta()
+                    .arglists("(load-paths)")
+                    .doc(
+                    	"Returns the list of the defined load paths. A load path is either " +
+                    	"a ZIP file, or a directory. \n\n" +
+                    	"The functions `load-file` and `load-resource` try sequentially every " +
+                    	"load path to read the file. If a load path is a directory the file is " +
+                    	"read from that directory. If a load path is a ZIP file the file is read " +
+                    	"from within that ZIP.\n\n" +
+                    	"Examples:")
+                    .seeAlso(
+                        "load-paths-unrestricted?",
+                        "load-file", "load-resource")
+                    .build()
+        ) {
+            @Override
+            public VncVal apply(final VncList args) {
+                ArityExceptions.assertArity(this, args, 0);
+
+                sandboxFunctionCallValidation();
+
+                final IInterceptor interceptor = ThreadContext.getInterceptor();
+                final ILoadPaths paths = interceptor.getLoadPaths();
+
+                return VncList.ofColl(
+                        paths.getPaths()
+                             .stream()
+                             .map(f -> new VncJavaObject(f))
+                             .collect(Collectors.toList()));
+            }
+
+            @Override
+            public boolean isRedefinable() {
+                return false;  // security
+            }
+
+            private static final long serialVersionUID = -1848883965231344442L;
+        };
+
+    public static VncFunction loadPathsUnrestricted_Q =
+        new VncFunction(
+                "load-paths-unrestricted?",
+                VncFunction
+                    .meta()
+                    .arglists("(load-paths-unrestricted?)")
+                    .doc("Returns true if the load paths are unrestricted.")
+                    .seeAlso(
+                        "load-paths",
+                        "load-file", "load-resource")
+                    .build()
+        ) {
+            @Override
+            public VncVal apply(final VncList args) {
+                ArityExceptions.assertArity(this, args, 0);
+
+                sandboxFunctionCallValidation();
+
+                final IInterceptor interceptor = ThreadContext.getInterceptor();
+                final ILoadPaths paths = interceptor.getLoadPaths();
+
+                return VncBoolean.of(paths.isUnlimitedAccess());
+            }
+
+            @Override
+            public boolean isRedefinable() {
+                return false;  // security
+            }
+
+            private static final long serialVersionUID = -1848883965231344442L;
+        };
+
 
     private static String name(final VncVal val) {
         if (Types.isVncString(val)) {
@@ -285,5 +377,7 @@ public class ModuleFunctions {
                     .add(loadFile)
                     .add(loadResource)
                     .add(loadClasspathFile)
+                    .add(loadPaths)
+                    .add(loadPathsUnrestricted_Q)
                     .toMap();
 }

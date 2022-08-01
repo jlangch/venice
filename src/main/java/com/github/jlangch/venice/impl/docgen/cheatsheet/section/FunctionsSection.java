@@ -77,7 +77,14 @@ public class FunctionsSection implements ISectionBuilder {
         misc.addItem(diBuilder.getDocItem("fn-name"));
         misc.addItem(diBuilder.getDocItem("callstack"));
         misc.addItem(diBuilder.getDocItem("coalesce"));
-        misc.addItem(diBuilder.getDocItem("load-resource"));
+
+        final DocSection loadpath = new DocSection("Load Paths", "functions.loadpath");
+        all.addSection(loadpath);
+        loadpath.addItem(diBuilder.getDocItem("load-paths", false));
+        loadpath.addItem(diBuilder.getDocItem("load-paths-unrestricted?", false));
+        loadpath.addItem(diBuilder.getDocItem("load-file", false));
+        loadpath.addItem(diBuilder.getDocItem("load-classpath-file"));
+        loadpath.addItem(diBuilder.getDocItem("load-resource", false));
 
         final DocSection env = new DocSection("Environment", "functions.environment");
         all.addSection(env);
