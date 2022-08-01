@@ -408,23 +408,23 @@ public class LoadPathsTest {
 
 
     private static byte[] zip(
-    		final String entry1, final String value1,
-    		final String entry2, final String value2
+            final String entry1, final String value1,
+            final String entry2, final String value2
     ) throws UnsupportedEncodingException {
-    	return zip(entry1, value1.getBytes("UTF-8"),
-    			   entry2, value2.getBytes("UTF-8"));
+        return zip(entry1, value1.getBytes("UTF-8"),
+                   entry2, value2.getBytes("UTF-8"));
     }
 
     private static byte[] zip(
-    		final String entry1, final byte[] value1,
-    		final String entry2, final byte[] value2
+            final String entry1, final byte[] value1,
+            final String entry2, final byte[] value2
     ) throws UnsupportedEncodingException {
-    	final  Map<String, Object> entries = new HashMap<>();
+        final  Map<String, Object> entries = new HashMap<>();
 
-    	entries.put(entry1, value1);
-    	entries.put(entry2, value2);
+        entries.put(entry1, value1);
+        entries.put(entry2, value2);
 
-    	return Zipper.zip(entries);
+        return Zipper.zip(entries);
     }
 
 }
