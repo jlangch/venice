@@ -404,7 +404,40 @@ public class LoadPathsTest {
         assertEquals("(def x :b)", data);
         data = lp.loadVeniceFile(new File("c.venice"));
         assertNull(data);
-   }
+    }
+
+    @Test
+    public void test_Partial_Path_Traversal_Vulnerability() throws IOException {
+        final File dir1 = Files.createTempDirectory("loadpath_test__").toFile().getCanonicalFile();
+        final File dir2 = Files.createTempDirectory("loadpath_test_alt__").toFile().getCanonicalFile();
+        final File bin1 = new File(dir1, "data1.venice");
+        FileUtil.save("(def x 1)".getBytes("UTF-8"), bin1, true);
+        final File bin2 = new File(dir2, "data2.venice");
+        FileUtil.save("(def x 2)".getBytes("UTF-8"), bin2, true);
+        dir1.deleteOnExit();
+        dir2.deleteOnExit();
+        bin1.deleteOnExit();
+        bin2.deleteOnExit();
+
+        final List<File> paths = new ArrayList<File>();
+        paths.add(dir1);
+        LoadPaths lp = LoadPaths.of(paths, false);
+
+
+        // relative file -> ok
+        String data = lp.loadVeniceFile(new File("data1"));
+        assertEquals("(def x 1)", data);
+        data = lp.loadVeniceFile(new File("data1.venice"));
+        assertEquals("(def x 1)", data);
+
+        // absolute file -> ok
+        data = lp.loadVeniceFile(bin1);
+        assertEquals("(def x 1)", data);
+
+        // absolute file -> fail
+        data = lp.loadVeniceFile(bin2);
+        assertNull(data);
+    }
 
 
     private static byte[] zip(
