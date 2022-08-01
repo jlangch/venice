@@ -200,8 +200,12 @@ public class LoadPaths implements ILoadPaths {
         if (dir_.isDirectory()) {
             final File file_ = file.getAbsoluteFile();
             if (file_.getCanonicalFile().toPath().startsWith(dir_.getCanonicalFile().toPath())) {
-                // Prevent accessing files outside the load-path.
-                // E.g.: ../../foo.venice
+                // Prevent accessing files outside the load-path
+            	//
+            	// Load path:  [/Users/pit/scripts]
+                // E.g.: foo.venice             =>  /Users/pit/scripts/foo.venice        (ok)
+            	//       ../../foo.venice       =>  /Users/pit/scripts/../../foo.venice  (!!!)
+                //       /Users/pit/foo.venice  =>  /Users/pit/foo.venice                (!!!)
                 return true;
             }
         }
