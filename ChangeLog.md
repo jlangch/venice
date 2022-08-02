@@ -10,11 +10,12 @@ and this project adheres to
 
 
 
-## [1.10.18] - 2022-08-xx
+## [1.10.18] - 2022-08-02
 
 ### Added
 
-- ...
+- better documentation for `load-file` and `load-resource` regarding load
+  paths
 
 ### Fixed
 

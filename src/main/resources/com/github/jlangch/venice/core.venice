@@ -932,9 +932,6 @@
           If the file is found on one of the defined load paths it is read and
           the forms it contains are evaluated.
 
-          If there are no load paths defined, the file must be specified with
-          an absolute path where it is loaded from.
-
           If the file is not found an exception is raised.
 
           With 'force' set to false (the default) the file is only loaded once
@@ -1744,9 +1741,6 @@
      :doc """
           Loads a resource from the defined load paths. Returns a string or
           a bytebuffer dependent on the passed options.
-
-          If there are no load paths defined, the file must be specified with
-          an absolute path where it is loaded from.
 
           If the file is not found an exception is raised.
 
