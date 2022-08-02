@@ -10,6 +10,15 @@ and this project adheres to
 
 
 
+## [1.10.19] - 2022-08-xx
+
+### Added
+
+- ...
+
+
+
+
 ## [1.10.18] - 2022-08-02
 
 ### Added
