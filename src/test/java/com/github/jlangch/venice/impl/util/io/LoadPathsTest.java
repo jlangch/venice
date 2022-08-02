@@ -430,11 +430,15 @@ public class LoadPathsTest {
         data = lp.loadVeniceFile(new File("data1.venice"));
         assertEquals("(def x 1)", data);
 
+        // relative file, access outside the load path!
+        data = lp.loadVeniceFile(new File("../" + dir2.getName() + "/data2.venice"));
+        assertNull(data);
+
         // absolute file -> ok
         data = lp.loadVeniceFile(bin1);
         assertEquals("(def x 1)", data);
 
-        // absolute file -> fail
+        // absolute file, access outside the load path!
         data = lp.loadVeniceFile(bin2);
         assertNull(data);
     }

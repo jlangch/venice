@@ -95,7 +95,7 @@ public class LoadPaths implements ILoadPaths {
 
 
     private ByteBuffer load(final File file) {
-    	// try to load the file from one of the load paths
+        // try to load the file from one of the load paths
         final ByteBuffer dataFromLoadPath = paths.stream()
                                                  .map(p -> loadFromLoadPath(p, file))
                                                  .filter(d -> d != null)
@@ -171,9 +171,14 @@ public class LoadPaths implements ILoadPaths {
             }
             else {
                 final File f = new File(loadPath, file.getPath());
-                return f.isFile()
-                        ? loadFileData(new File(loadPath, file.getPath()))
-                        : null;
+                if (f.isFile()) {
+                    return isFileWithinDirectory(loadPath, f)
+                            ? loadFileData(f)
+                            : null;
+                }
+                else {
+                    return null;
+                }
             }
         }
         catch (Exception ex) {
@@ -201,10 +206,10 @@ public class LoadPaths implements ILoadPaths {
             final File file_ = file.getAbsoluteFile();
             if (file_.getCanonicalFile().toPath().startsWith(dir_.getCanonicalFile().toPath())) {
                 // Prevent accessing files outside the load-path
-            	//
-            	// Load path:  [/Users/pit/scripts]
+                //
+                // Load path:  [/Users/pit/scripts]
                 // E.g.: foo.venice             =>  /Users/pit/scripts/foo.venice        (ok)
-            	//       ../../foo.venice       =>  /Users/pit/scripts/../../foo.venice  (!!!)
+                //       ../../foo.venice       =>  /Users/pit/scripts/../../foo.venice  (!!!)
                 //       /Users/pit/foo.venice  =>  /Users/pit/foo.venice                (!!!)
                 return true;
             }

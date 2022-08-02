@@ -16,6 +16,10 @@ and this project adheres to
 
 - ...
 
+### Fixed
+
+- load path access  
+
 
 
 ## [1.10.17] - 2022-07-29
