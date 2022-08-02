@@ -18,7 +18,7 @@ and this project adheres to
 
 ### Fixed
 
-- load path access  
+- load path access, ZIP files on the load path are now fully supported
 
 
 
