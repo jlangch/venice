@@ -211,9 +211,10 @@ public class TransducerFunctions {
                         "(map inc [1 2 3 4])",
                         "(map + [1 2 3 4] [10 20 30 40])",
                         "(map list '(1 2 3 4) '(10 20 30 40))",
+                        "(map vector (lazy-seq 1 inc) [10 20 30 40])",
                         "(map (fn [e] [(key e) (inc (val e))]) {:a 1 :b 2})",
                         "(map inc #{1 2 3})")
-                    .seeAlso("filter", "reduce")
+                    .seeAlso("filter", "reduce", "map-indexed")
                     .build()
         ) {
             @Override
@@ -312,15 +313,18 @@ public class TransducerFunctions {
                     .meta()
                     .arglists("(map-indexed f coll)")
                     .doc(
-                        "Retruns a collection of applying f to 0 and the first item of " +
+                        "Returns a collection of applying f to 0 and the first item of " +
                         "coll, followed by applying f to 1 and the second item of coll, etc. " +
                         "until coll is exhausted.¶" +
                         "Returns a stateful transducer when no collection is provided.")
                     .examples(
                         "(map-indexed (fn [idx val] [idx val]) [:a :b :c])",
                         "(map-indexed vector [:a :b :c])",
+                        ";; start at index 1 instead of zero \n" +
+                        "(map-indexed #(vector (inc %1) %2) [:a :b :c])",
                         "(map-indexed vector \"abcdef\")",
                         "(map-indexed hash-map [:a :b :c])")
+                    .seeAlso("map")
                     .build()
         ) {
             @Override
