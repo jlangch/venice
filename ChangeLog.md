@@ -12,16 +12,16 @@ and this project adheres to
 
 ## [1.10.19] - 2022-08-xx
 
-### Added
+### Improved
 
-- more fine grained control over `load-classpath-file` with an active sandbox.
-  Upto Venice 1.10.18 a sandbox could only allow or reject calls to `load-classpath-file`.
-  From this version on the sandbox follows the classpath rules when loading a classpath
-  resource on behalf `load-classpath-file`.
-  With a sandbox there are now three options:
-  * no restrictions at all
-  * all calls `load-classpath-file` get rejected
-  * calls to `load-classpath-file` are accepted based on the classpath resource 
+- the sandbox's control over `load-classpath-file`. Instead of just being able to
+  allow or reject calls to `load-classpath-file` the sandbox offers now a finer 
+  control over the function by applying the classpath access rules on classpath 
+  resource being loaded. 
+  The sandbox configuration offers now three options:
+    * no restrictions at all
+    * reject all calls to `load-classpath-file`
+    * accept calls to `load-classpath-file` on the classpath resource 
   
 
 
