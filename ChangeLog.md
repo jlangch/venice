@@ -16,7 +16,7 @@ and this project adheres to
 
 - the sandbox's control over `load-classpath-file`. Instead of just being able to
   allow or reject calls to `load-classpath-file` the sandbox offers now a finer 
-  control over the function by applying the classpath access rules on classpath 
+  control over the function by applying the classpath access rules on the 
   resource being loaded. 
   The sandbox configuration offers now three options:
     * no restrictions at all
