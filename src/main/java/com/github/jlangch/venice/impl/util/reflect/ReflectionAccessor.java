@@ -127,13 +127,10 @@ public class ReflectionAccessor {
         }
         catch (Exception ex) {
             throw new JavaMethodInvocationException(
-                    new StringBuilder()
-                            .append("Failed to invoke constructor ")
-                            .append(clazz.getName())
-                            .append("(")
-                            .append(formatArgTypes(args))
-                            .append(")")
-                            .toString(),
+            		String.format(
+            				"Failed to invoke constructor %s(%s)",
+            				clazz.getName(),
+            				formatArgTypes(args)),
                     ex);
         }
     }
