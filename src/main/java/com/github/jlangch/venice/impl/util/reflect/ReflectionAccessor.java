@@ -127,10 +127,10 @@ public class ReflectionAccessor {
         }
         catch (Exception ex) {
             throw new JavaMethodInvocationException(
-            		String.format(
-            				"Failed to invoke constructor %s(%s)",
-            				clazz.getName(),
-            				formatArgTypes(args)),
+                    String.format(
+                            "Failed to invoke constructor %s(%s)",
+                            clazz.getName(),
+                            formatArgTypes(args)),
                     ex);
         }
     }
@@ -587,13 +587,10 @@ public class ReflectionAccessor {
 
 
     private static String noMatchingConstructorErrMsg(final Class<?> clazz, final Object[] args) {
-        return new StringBuilder()
-                        .append("No matching public constructor found: ")
-                        .append(clazz.getName())
-                        .append("(")
-                        .append(formatArgTypes(args))
-                        .append(")")
-                        .toString();
+        return String.format(
+                "No matching public constructor found: %s(%s)",
+                clazz.getName(),
+                formatArgTypes(args));
     }
 
     private static String failedToGetBeanPropertyErrMsg(final Object target, final String propertyName) {
