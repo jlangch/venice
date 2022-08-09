@@ -22,9 +22,11 @@
 package com.github.jlangch.venice.impl;
 
 import java.io.File;
+import java.io.UnsupportedEncodingException;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
+import com.github.jlangch.venice.SecurityException;
 import com.github.jlangch.venice.Venice;
 import com.github.jlangch.venice.VncException;
 import com.github.jlangch.venice.impl.thread.ThreadContext;
@@ -61,7 +63,7 @@ public class ModuleLoader {
         //
         // This function is exclusively called by the Venice function
         // `core/load-classpath-file` that will fail anyway if someone points
-       // this file to a file with no valid Venice source content!
+        // to a file with no valid Venice source content!
         if (!file.endsWith(".venice")) {
             throw new VncException(String.format(
                     "Must not load other than Venice (*.venice) resources from "
@@ -70,9 +72,14 @@ public class ModuleLoader {
         }
 
         try {
+            final IInterceptor interceptor = ThreadContext.getInterceptor();
+
             return classpathFiles.computeIfAbsent(
                     file,
-                    k -> new ClassPathResource(file).getResourceAsString("UTF-8"));
+                    k -> loadClasspathVeniceFile(file, interceptor));
+        }
+        catch (SecurityException ex) {
+            throw ex;
         }
         catch(Exception ex) {
             throw new VncException(String.format(
@@ -131,6 +138,24 @@ public class ModuleLoader {
 
     public static String getCachedExternalFile(final String file) {
         return externalFiles.get(file);
+    }
+
+    public static void clear() {
+       	modules.clear();
+       	classpathFiles.clear();
+       	externalFiles.clear();
+    }
+
+    private static String loadClasspathVeniceFile(
+            final String file,
+            final IInterceptor interceptor
+    ) {
+        try {
+            return new String(interceptor.onLoadClassPathResource(file), "UTF-8");
+        }
+        catch(UnsupportedEncodingException ex) {
+            throw new RuntimeException("UnsupportedEncoding", ex);
+        }
     }
 
 

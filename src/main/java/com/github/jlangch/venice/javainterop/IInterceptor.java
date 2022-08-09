@@ -146,7 +146,7 @@ public interface IInterceptor {
     /**
      * Loads a classpath resource
      *
-     * @param resourceName a resource name (e.g.: /foo/org/image.png)
+     * @param resourceName a resource name (e.g.: foo/org/image.png)
      * @return the resource data
      * @throws SecurityException if the classpath resource is not whitelisted
      */

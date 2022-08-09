@@ -21,6 +21,7 @@
  */
 package com.github.jlangch.venice.sandbox;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
@@ -28,12 +29,14 @@ import org.junit.jupiter.api.Test;
 
 import com.github.jlangch.venice.SecurityException;
 import com.github.jlangch.venice.Venice;
+import com.github.jlangch.venice.impl.ModuleLoader;
 import com.github.jlangch.venice.impl.util.io.ClassPathResource;
 import com.github.jlangch.venice.javainterop.AcceptAllInterceptor;
 import com.github.jlangch.venice.javainterop.Interceptor;
 import com.github.jlangch.venice.javainterop.RejectAllInterceptor;
 import com.github.jlangch.venice.javainterop.SandboxInterceptor;
 import com.github.jlangch.venice.javainterop.SandboxRules;
+
 
 public class Sandbox_JavaClasspathResource_Test {
 
@@ -53,18 +56,21 @@ public class Sandbox_JavaClasspathResource_Test {
         assertTrue((Boolean)new Venice(new AcceptAllInterceptor()).eval(script));
 
         // [2] OK
+        ModuleLoader.clear();
         Interceptor interceptor = new SandboxInterceptor(
                                         new SandboxRules()
                                                 .withClasspathResources("com/github/jlangch/venice/test.venice"));
         assertTrue((Boolean)new Venice(interceptor).eval(script));
 
         // [3] OK
+        ModuleLoader.clear();
         interceptor = new SandboxInterceptor(
                                 new SandboxRules()
                                         .withClasspathResources("com/github/jlangch/venice/*.venice"));
         assertTrue((Boolean)new Venice(interceptor).eval(script));
 
         // [4] OK
+        ModuleLoader.clear();
         interceptor = new SandboxInterceptor(
                                 new SandboxRules()
                                         .withClasspathResources("**/github/jlangch/**/*.venice"));
@@ -73,12 +79,14 @@ public class Sandbox_JavaClasspathResource_Test {
 
 
         // [5] FAIL
+        ModuleLoader.clear();
         assertThrows(SecurityException.class, () -> {
             final Venice venice = new Venice(new RejectAllInterceptor());
             venice.eval(script);
         });
 
         // [6] FAIL
+        ModuleLoader.clear();
         assertThrows(SecurityException.class, () -> {
             Interceptor i2 = new SandboxInterceptor(
                                 new SandboxRules()
@@ -87,6 +95,7 @@ public class Sandbox_JavaClasspathResource_Test {
         });
 
         // [7] FAIL
+        ModuleLoader.clear();
         assertThrows(SecurityException.class, () -> {
             Interceptor i2 = new SandboxInterceptor(
                                 new SandboxRules()
@@ -95,6 +104,100 @@ public class Sandbox_JavaClasspathResource_Test {
         });
 
         // [8] FAIL
+        ModuleLoader.clear();
+        assertThrows(SecurityException.class, () -> {
+            Interceptor i2 = new SandboxInterceptor(
+                                new SandboxRules()
+                                		.rejectVeniceFunctions("io/load-classpath-resource") // this rules wins!
+                                        .withClasspathResources("com/github/jlangch/venice/test.venice"));
+            new Venice(i2).eval(script);
+        });
+
+        // [9] FAIL
+        ModuleLoader.clear();
+        assertThrows(SecurityException.class, () -> {
+            Interceptor i2 = new SandboxInterceptor(
+                                new SandboxRules()
+                                        .withClasspathResources("org/**/*.venice"));
+            new Venice(i2).eval(script);
+        });
+    }
+
+
+    @Test
+    public void test_load_classpath_file() {
+        final String resource = ClassPathResource.toPath(Venice.class.getPackage(), "test.venice");
+
+        final String script =
+                "(do                            \n" +
+                "  (->> \""+ resource + "\"     \n" +
+                "       (load-classpath-file))  \n" +
+                "  (test/test-fn 1)))           ";
+
+        // [1] OK
+        assertEquals("test: 1", new Venice().eval(script));
+        assertEquals("test: 1", new Venice(new AcceptAllInterceptor()).eval(script));
+
+        // [2] OK
+        ModuleLoader.clear();
+        Interceptor interceptor = new SandboxInterceptor(
+                                        new SandboxRules()
+                                                .withClasspathResources("com/github/jlangch/venice/test.venice"));
+        assertEquals("test: 1", new Venice(interceptor).eval(script));
+
+        // [3] OK
+        ModuleLoader.clear();
+        interceptor = new SandboxInterceptor(
+                                new SandboxRules()
+                                        .withClasspathResources("com/github/jlangch/venice/*.venice"));
+        assertEquals("test: 1", new Venice(interceptor).eval(script));
+
+        // [4] OK
+        ModuleLoader.clear();
+        interceptor = new SandboxInterceptor(
+                                new SandboxRules()
+                                        .withClasspathResources("**/github/jlangch/**/*.venice"));
+        assertEquals("test: 1", new Venice(interceptor).eval(script));
+
+
+
+        // [5] FAIL
+        ModuleLoader.clear();
+        assertThrows(SecurityException.class, () -> {
+            final Venice venice = new Venice(new RejectAllInterceptor());
+            venice.eval(script);
+        });
+
+        // [6] FAIL
+        ModuleLoader.clear();
+        assertThrows(SecurityException.class, () -> {
+            Interceptor i2 = new SandboxInterceptor(
+                                new SandboxRules()
+                                        .rejectVeniceFunctions("load-classpath-file"));
+            new Venice(i2).eval(script);
+        });
+
+        // [7] FAIL
+        ModuleLoader.clear();
+        assertThrows(SecurityException.class, () -> {
+            Interceptor i2 = new SandboxInterceptor(
+                                new SandboxRules()
+                                        .withClasspathResources("com/github/jlangch/venice/x*.venice"));
+            new Venice(i2).eval(script);
+        });
+
+        // [8] FAIL
+        ModuleLoader.clear();
+        assertThrows(SecurityException.class, () -> {
+            Interceptor i2 = new SandboxInterceptor(
+                                new SandboxRules()
+                                        .rejectVeniceFunctions("load-classpath-file") // this rules wins!
+                                        .withClasspathResources("com/github/jlangch/venice/*.venice"));
+            new Venice(i2).eval(script);
+        });
+
+        // [9] FAIL
+        ModuleLoader.clear();
         assertThrows(SecurityException.class, () -> {
             Interceptor i2 = new SandboxInterceptor(
                                 new SandboxRules()
