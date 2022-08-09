@@ -21,7 +21,7 @@ and this project adheres to
   The sandbox configuration provides now three options:
     * no restrictions at all
     * reject all calls to `load-classpath-file`
-    * accept calls to `load-classpath-file` on the classpath resource 
+    * accept calls to `load-classpath-file` based on the classpath resource 
   
 
 
