@@ -27,7 +27,7 @@ and this project adheres to
   The functions
     * `load-file`
     * `load-classpath-file`
-    * `load-resource`
+    * `load-resource`  
   exist also in their asterisk versions (e.g. `load-file*`).
   The sandbox ensure now that always both version are added to the black or
   white list. It's not the responsibility of the user anymore.
