@@ -18,10 +18,10 @@ and this project adheres to
   allow or reject calls to `load-classpath-file` the sandbox offers now a finer 
   control over the function by applying the classpath access rules on the 
   resource being loaded. 
-  The sandbox configuration offers now three options:
+  The sandbox configuration provides now three options:
     * no restrictions at all
     * reject all calls to `load-classpath-file`
-    * accept calls to `load-classpath-file` on the classpath resource 
+    * accept calls to `load-classpath-file` based on the classpath resource 
   
 
 
