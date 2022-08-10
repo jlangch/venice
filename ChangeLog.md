@@ -30,8 +30,8 @@ and this project adheres to
     * `load-resource` 
    
   exist also in their asterisk versions (e.g. `load-file*`).
-  The sandbox ensure now that always both version are added to the black or
-  white list. It's not the responsibility of the user anymore.
+  The sandbox ensures now that always both version are added to the black or
+  whitelist. It's not the responsibility of the user anymore.
 
 
 
