@@ -23,6 +23,15 @@ and this project adheres to
     * reject all calls to `load-classpath-file`
     * accept calls to `load-classpath-file` based on the classpath resource 
   
+- the error prone sandbox configuration for the load-xxxx functions.  
+  The functions
+    * `load-file`
+    * `load-classpath-file`
+    * `load-resource`
+  exist also in their asterisk versions (e.g. `load-file*`).
+  The sandbox ensure now that always both version are added to the black or
+  white list. It's not the responsibility of the user anymore.
+
 
 
 ## [1.10.18] - 2022-08-02
