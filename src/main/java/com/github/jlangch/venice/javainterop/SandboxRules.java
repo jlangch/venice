@@ -31,6 +31,7 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 import com.github.jlangch.venice.Venice;
+import com.github.jlangch.venice.impl.sandbox.RestrictedBlacklistedFunctions;
 
 
 /**
@@ -49,6 +50,16 @@ public class SandboxRules {
         if (withDefaults) {
             withDefaultClasses();
         }
+    }
+
+    private SandboxRules(
+            final List<String> rules,
+            final Integer maxExecTimeSeconds,
+            final Integer maxFutureThreadPoolSize
+    ) {
+        this.rules.addAll(rules);
+        this.maxExecTimeSeconds = maxExecTimeSeconds;
+        this.maxFutureThreadPoolSize = maxFutureThreadPoolSize;
     }
 
     /**
@@ -162,10 +173,10 @@ public class SandboxRules {
      *
      * E.g:
      * <ul>
-     *   <li>foo/org/image.png</li>
-     *   <li>foo/org/*.png</li>
-     *   <li>foo/org/*.jpg</li>
-     *   <li>foo/&#42;&#42;/*.jpg</li>
+     *   <li>"foo/org/image.png2</li>
+     *   <li>"foo/org/*.png"</li>
+     *   <li>"foo/org/*.jpg"</li>
+     *   <li>"foo/&#42;&#42;/*.jpg"</li>
      * </ul>
      *
      * @param rules rules
@@ -183,10 +194,10 @@ public class SandboxRules {
      *
      * E.g:
      * <ul>
-     *   <li>foo/org/image.png</li>
-     *   <li>foo/org/*.png</li>
-     *   <li>foo/org/*.jpg</li>
-     *   <li>foo/&#42;&#42;/*.jpg</li>
+     *   <li>"foo/org/image.png"</li>
+     *   <li>"foo/org/*.png"</li>
+     *   <li>"foo/org/*.jpg"</li>
+     *   <li>"foo/&#42;&#42;/*.jpg"</li>
      * </ul>
      *
      * @param rules rules
@@ -271,7 +282,7 @@ public class SandboxRules {
      * <p>
      * E.g: white listing environment variable
      * <ul>
-     *   <li>HOME</li>
+     *   <li>"HOME"</li>
      * </ul>
      *
      * @param rules rules
@@ -293,9 +304,9 @@ public class SandboxRules {
      * <p>
      * E.g:
      * <ul>
-     *   <li>io/slurp (reject calls to 'io/slurp')</li>
-     *   <li>*io* (reject all Venice I/O calls like 'io/slurp', 'create-file', ...)</li>
-     *   <li>. (reject java interop completely)</li>
+     *   <li>"io/slurp" (reject calls to 'io/slurp')</li>
+     *   <li>"*io*" (reject all Venice I/O calls like 'io/slurp', 'create-file', ...)</li>
+     *   <li>"." (reject java interop completely)</li>
      * </ul>
      *
      * @param rules rules
@@ -314,9 +325,9 @@ public class SandboxRules {
      * <p>
      * E.g:
      * <ul>
-     *   <li>io/slurp (reject calls to 'io/slurp')</li>
-     *   <li>*io* (reject all Venice I/O calls like 'io/slurp', 'create-file', ...)</li>
-     *   <li>. (reject java interop completely)</li>
+     *   <li>"io/slurp" (reject calls to 'io/slurp')</li>
+     *   <li>"*io*" (reject all Venice I/O calls like 'io/slurp', 'create-file', ...)</li>
+     *   <li>"." (reject java interop completely)</li>
      * </ul>
      *
      * @param rules rules
@@ -324,10 +335,31 @@ public class SandboxRules {
      */
     public SandboxRules rejectVeniceFunctions(final Collection<String> rules) {
         if (rules != null) {
-            this.rules.addAll(
-                rules.stream()
-                      .map(r -> r.startsWith("blacklist:venice:func:") ? r : "blacklist:venice:func:" + r)
-                     .collect(Collectors.toList()));
+            final String prefix = "blacklist:venice:func:";
+            rules.forEach(r_ -> {
+                String r = r_;
+
+                if (r.startsWith(prefix)) {
+                    r = r.substring(prefix.length());  // strip prefix
+                }
+
+                if (r.startsWith("core/")) {
+                    r = r.substring("core/".length());  // strip core
+                }
+
+                if (RestrictedBlacklistedFunctions.isIoAsteriskFunction(r)) {
+                    if (r.endsWith("*")) {
+                        r = r.substring(1);  // strip '*'
+                    }
+
+                    // !!! Must add both versions like: "load-file" and "load-file*"
+                    this.rules.add(prefix + r);
+                    this.rules.add(prefix + r + "*");
+               }
+                else {
+                    this.rules.add(prefix + r);
+                }
+            });
         }
         return this;
     }
@@ -339,8 +371,8 @@ public class SandboxRules {
      * <p>
      * E.g:
      * <ul>
-     *   <li>print</li>
-     *   <li>println</li>
+     *   <li>"print"</li>
+     *   <li>"println"</li>
      * </ul>
      *
      * @param rules rules
@@ -359,8 +391,8 @@ public class SandboxRules {
      * <p>
      * E.g:
      * <ul>
-     *   <li>print</li>
-     *   <li>println</li>
+     *   <li>"print"</li>
+     *   <li>"println"</li>
      * </ul>
      *
      * @param rules rules
@@ -368,10 +400,31 @@ public class SandboxRules {
      */
     public SandboxRules whitelistVeniceFunctions(final Collection<String> rules) {
         if (rules != null) {
-            this.rules.addAll(
-                rules.stream()
-                      .map(r -> r.startsWith("whitelist:venice:func:") ? r : "whitelist:venice:func:" + r)
-                     .collect(Collectors.toList()));
+            final String prefix = "whitelist:venice:func:";
+            rules.forEach(r_ -> {
+                String r = r_;
+
+                if (r.startsWith(prefix)) {
+                    r = r.substring(prefix.length());  // strip prefix
+                }
+
+                if (r.startsWith("core/")) {
+                    r = r.substring("core/".length());  // strip core
+                }
+
+                if (RestrictedBlacklistedFunctions.isIoAsteriskFunction(r)) {
+                    if (r.endsWith("*")) {
+                        r = r.substring(1);  // strip '*'
+                    }
+
+                    // !!! Must add both versions like: "load-file" and "load-file*"
+                    this.rules.add(prefix + r);
+                    this.rules.add(prefix + r + "*");
+               }
+                else {
+                    this.rules.add(prefix + r);
+                }
+            });
         }
         return this;
     }
@@ -517,14 +570,69 @@ public class SandboxRules {
      * Merges this {@code SandboxRules} with the passed other
      * {@code SandboxRules}
      *
+     * <p>Note: merges only the rules but not 'maxExecTimeSeconds'
+     * and 'maxFutureThreadPoolSize' !!
+     *
+     * <p>Note: you may end up with duplicates rules. For better
+     * performance use {@code SandboxRules.unique()} to get a new
+     * deduplicated {@code SandboxRules}.
+     *
      * @param other the other SandboxRules to merge with
      * @return the new merged {@code SandboxRules}
      */
     public SandboxRules merge(final SandboxRules other) {
-        final SandboxRules merged = new SandboxRules();
-        merged.rules.addAll(this.rules);
-        merged.rules.addAll(other.rules);
-        return merged;
+        final List<String> merged = new ArrayList<>(rules);
+        merged.addAll(other.rules);
+        return new SandboxRules(
+                    merged,
+                    this.maxExecTimeSeconds,
+                    this.maxFutureThreadPoolSize);
+    }
+
+    /**
+     * Remove duplicate rules from these {@code SandboxRules}
+     *
+     * @return the new unique rules {@code SandboxRules}
+     */
+    public SandboxRules unique() {
+        final List<String> unique = new ArrayList<>();
+
+        // Note: reverse the ordered rules list for deduplicating.
+        //       we are interested in the last occurence, because the order
+        //       is important. see example below!
+        //
+        // Access to println denied:
+        //   new SandboxInterceptor(
+        //         new SandboxRules()
+        //                .whitelistVeniceFunctions("println")
+        //                .rejectVeniceFunctions("*io*"));        // <- overules
+        //
+        // Access to println granted:
+        //   new SandboxInterceptor(
+        //         new SandboxRules()
+        //                .whitelistVeniceFunctions("println")
+        //                .rejectVeniceFunctions("*io*")          // <- overules
+        //                .whitelistVeniceFunctions("println"));  // <- overules again!
+
+        // remove the dublicate rules by keeping the order, keep always the last
+        // rules occurrence!
+        final List<String> rules = new ArrayList<>(this.rules);
+        Collections.reverse(rules);
+
+        final Set<String> check = new HashSet<>();
+        for(String rule : rules) {
+            if (check.contains(rule)) continue;
+
+            check.add(rule);
+            unique.add(rule);
+        }
+
+        Collections.reverse(unique);
+
+        return new SandboxRules(
+                    unique,
+                    this.maxExecTimeSeconds,
+                    this.maxFutureThreadPoolSize);
     }
 
     /**
@@ -702,6 +810,7 @@ public class SandboxRules {
                         "crypt",
                         "kira",
                         "xml")));
+
 
 
     private final List<String> rules = new ArrayList<>();

@@ -79,6 +79,7 @@ public class CompiledSandboxRules {
         }
 
         final List<String> rules = sandbox
+                                        .unique()
                                         .getRules()
                                         .stream()
                                         .filter(s -> s != null)
@@ -165,7 +166,6 @@ public class CompiledSandboxRules {
             return true;
         }
         else {
-
             final String className = clazz.getName();
             final boolean matches = whiteListClassPatterns
                                         .stream()

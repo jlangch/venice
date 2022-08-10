@@ -22,6 +22,7 @@
 package com.github.jlangch.venice.impl.sandbox;
 
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -44,123 +45,151 @@ public class RestrictedBlacklistedFunctions {
         return ALL.contains(funcName);
     }
 
+    public static boolean isIoAsteriskFunction(final String funcName) {
+    	String fnName = funcName;
+    	if (fnName.startsWith("core/")) {
+    		fnName.substring("core/".length());
+    	}
+
+    	if (fnName.endsWith("*")) {
+    		fnName.substring(0, fnName.length()-1);
+    	}
+
+    	if (fnName.endsWith("*")) {
+    		return false;  // ends with more than one asterisk
+    	}
+
+        return IO_ASTERISKS.contains(fnName);
+    }
+
+
+    private static Set<String> IO_ASTERISKS =
+        new HashSet<>(
+            Arrays.asList(
+                "load-file",
+                "load-file*",
+                "load-classpath-file",
+                "load-classpath-file*",
+                "load-resource",
+                "load-resource*"));
 
     private static Set<String> IO =
-        new HashSet<>(
-                Arrays.asList(
-                    // print
-                    "print",
-                    "printf",
-                    "println",
-                    "newline",
+        mergeToSet(
+            IO_ASTERISKS,
+            Arrays.asList(
+                // print
+                "print",
+                "printf",
+                "println",
+                "newline",
 
-                    // load
-                    "load-file",
-                    "load-classpath-file",
-                    "load-resource",
-                    "load-file*",
-                    "load-resource*",
-                    "load-classpath-file*",
+                // load
+                "load-file",
+                "load-file*",
+                "load-classpath-file",
+                "load-classpath-file*",
+                "load-resource",
+                "load-resource*",
 
-                    // classloader
-                    "load-jar",
-                    "classloader",
-                    "classloader-of",
+                // classloader
+                "load-jar",
+                "classloader",
+                "classloader-of",
 
-                    // system
-                    "gc",
-                    "shutdown-hook",
-                    "sh",
-                    "callstack",
+                // system
+                "gc",
+                "shutdown-hook",
+                "sh",
+                "callstack",
 
-                    // concurrency
-                    "deliver",
-                    "future",
-                    "future?",
-                    "future-cancel",
-                    "future-cancelled?",
-                    "future-done?",
-                    "futures-fork",
-                    "futures-wait",
-                    "promise",
-                    "promise?",
-                    "agent",
-                    "send",
-                    "send-off",
-                    "restart-agent",
-                    "set-error-handler!",
-                    "agent-error",
-                    "agent-error-mode",
-                    "await",
-                    "await-for",
-                    "shutdown-agents",
-                    "shutdown-agents?",
-                    "await-termination-agents",
-                    "await-termination-agents?",
-                    "thread",
+                // concurrency
+                "deliver",
+                "future",
+                "future?",
+                "future-cancel",
+                "future-cancelled?",
+                "future-done?",
+                "futures-fork",
+                "futures-wait",
+                "promise",
+                "promise?",
+                "agent",
+                "send",
+                "send-off",
+                "restart-agent",
+                "set-error-handler!",
+                "agent-error",
+                "agent-error-mode",
+                "await",
+                "await-for",
+                "shutdown-agents",
+                "shutdown-agents?",
+                "await-termination-agents",
+                "await-termination-agents?",
+                "thread",
 
-                    // scheduler
-                    "schedule-delay",
-                    "schedule-at-fixed-rate",
+                // scheduler
+                "schedule-delay",
+                "schedule-at-fixed-rate",
 
-                    // thread-local
-                    "thread-local",
-                    "thread-local?",
-                    "thread-local-map",
-                    "thread-local-clear",
+                // thread-local
+                "thread-local",
+                "thread-local?",
+                "thread-local-map",
+                "thread-local-clear",
 
-                    // miscellaneous
-                    "fn-body",
-                    "fn-pre-conditions",
+                // miscellaneous
+                "fn-body",
+                "fn-pre-conditions",
 
-                    // I/O
-                    "io/copy-file",
-                    "io/copy-stream",
-                    "io/delete-file",
-                    "io/delete-file-on-exit",
-                    "io/delete-file-tree",
-                    "io/delete-files-glob",
-                    "io/download",
-                    "io/exists-dir?",
-                    "io/exists-file?",
-                    "io/file-size",
-                    "io/file-in-stream",
-                    "io/list-file-tree",
-                    "io/list-files",
-                    "io/list-files-glob",
-                    "io/load-classpath-resource",
-                    "io/move-file",
-                    "io/mkdir",
-                    "io/mkdirs",
-                    "io/slurp",
-                    "io/slurp-lines",
-                    "io/slurp-stream",
-                    "io/spit",
-                    "io/spit-stream",
-                    "io/temp-dir",
-                    "io/temp-file",
-                    "io/tmp-dir",
-                    "io/touch-file",
-                    "io/uri-stream",
-                    "io/user-dir",
-                    "io/wait-for",
+                // I/O
+                "io/copy-file",
+                "io/copy-stream",
+                "io/delete-file",
+                "io/delete-file-on-exit",
+                "io/delete-file-tree",
+                "io/delete-files-glob",
+                "io/download",
+                "io/exists-dir?",
+                "io/exists-file?",
+                "io/file-size",
+                "io/file-in-stream",
+                "io/list-file-tree",
+                "io/list-files",
+                "io/list-files-glob",
+                "io/load-classpath-resource",
+                "io/move-file",
+                "io/mkdir",
+                "io/mkdirs",
+                "io/slurp",
+                "io/slurp-lines",
+                "io/slurp-stream",
+                "io/spit",
+                "io/spit-stream",
+                "io/temp-dir",
+                "io/temp-file",
+                "io/tmp-dir",
+                "io/touch-file",
+                "io/uri-stream",
+                "io/user-dir",
+                "io/wait-for",
 
-                    // I/O zip
-                    "io/zip",
-                    "io/zip-append",
-                    "io/zip-remove",
-                    "io/zip-file",
-                    "io/zip-list",
-                    "io/unzip",
-                    "io/unzip-first",
-                    "io/unzip-nth",
-                    "io/unzip-all",
-                    "io/unzip-to-dir",
-                    "io/zip-size",
-                    "io/gzip",
-                    "io/gzip-to-stream",
-                    "io/ungzip",
-                    "io/ungzip-to-stream"));
+                // I/O zip
+                "io/zip",
+                "io/zip-append",
+                "io/zip-remove",
+                "io/zip-file",
+                "io/zip-list",
+                "io/unzip",
+                "io/unzip-first",
+                "io/unzip-nth",
+                "io/unzip-all",
+                "io/unzip-to-dir",
+                "io/zip-size",
+                "io/gzip",
+                "io/gzip-to-stream",
+                "io/ungzip",
+                "io/ungzip-to-stream"));
 
     private static Set<String> SPECIAL_FORMS =
         new HashSet<>(
@@ -177,9 +206,12 @@ public class RestrictedBlacklistedFunctions {
                     "dobench",
                     "prof"));
 
-    private static Set<String> ALL = merge(IO, SPECIAL_FORMS);
 
-    private static Set<String> merge(final Set<String> s1, Set<String> s2) {
+
+
+    private static Set<String> ALL = mergeToSet(IO, SPECIAL_FORMS);
+
+    private static Set<String> mergeToSet(final Collection<String> s1, Collection<String> s2) {
         final HashSet<String> set = new HashSet<>(s1);
         set.addAll(s2);
         return set;
