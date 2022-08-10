@@ -349,7 +349,7 @@ public class SandboxRules {
 
                 if (RestrictedBlacklistedFunctions.isIoAsteriskFunction(r)) {
                     if (r.endsWith("*")) {
-                        r = r.substring(1);  // strip '*'
+                        r = r.substring(0, r.length()-1);  // strip '*'
                     }
 
                     // !!! Must add both versions like: "load-file" and "load-file*"

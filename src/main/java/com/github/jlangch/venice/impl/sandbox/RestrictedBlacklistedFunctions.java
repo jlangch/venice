@@ -51,11 +51,7 @@ public class RestrictedBlacklistedFunctions {
     		fnName.substring("core/".length());
     	}
 
-    	if (fnName.endsWith("*")) {
-    		fnName.substring(0, fnName.length()-1);
-    	}
-
-    	if (fnName.endsWith("*")) {
+    	if (fnName.endsWith("**")) {
     		return false;  // ends with more than one asterisk
     	}
 

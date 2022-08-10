@@ -170,4 +170,134 @@ public class SandboxRulesTest {
         assertTrue(wl.isWhiteListedSystemProperty("foo.com"));
     }
 
+    @Test
+    public void asterisk_load_file_Test() {
+        CompiledSandboxRules wl;
+
+
+        wl = CompiledSandboxRules.compile(
+                SandboxRules
+                    .noDefaults());
+
+        assertFalse(wl.isBlackListedVeniceFunction("load-file"));
+        assertFalse(wl.isBlackListedVeniceFunction("load-file*"));
+
+
+
+        wl = CompiledSandboxRules.compile(
+                SandboxRules
+                    .noDefaults()
+                    .rejectVeniceFunctions("load-file", "load-file*"));
+
+        assertTrue(wl.isBlackListedVeniceFunction("load-file"));
+        assertTrue(wl.isBlackListedVeniceFunction("load-file*"));
+
+
+
+        wl = CompiledSandboxRules.compile(
+                SandboxRules
+                    .noDefaults()
+                    .rejectVeniceFunctions("load-file"));
+
+        assertTrue(wl.isBlackListedVeniceFunction("load-file"));
+        assertTrue(wl.isBlackListedVeniceFunction("load-file*"));
+
+
+
+        wl = CompiledSandboxRules.compile(
+                SandboxRules
+                    .noDefaults()
+                    .rejectVeniceFunctions("load-file*"));
+
+        assertTrue(wl.isBlackListedVeniceFunction("load-file"));
+        assertTrue(wl.isBlackListedVeniceFunction("load-file*"));
+    }
+
+    @Test
+    public void asterisk_load_resource_Test() {
+        CompiledSandboxRules wl;
+
+
+        wl = CompiledSandboxRules.compile(
+                SandboxRules
+                    .noDefaults());
+
+        assertFalse(wl.isBlackListedVeniceFunction("load-resource"));
+        assertFalse(wl.isBlackListedVeniceFunction("load-resource*"));
+
+
+
+        wl = CompiledSandboxRules.compile(
+                SandboxRules
+                    .noDefaults()
+                    .rejectVeniceFunctions("load-resource", "load-resource*"));
+
+        assertTrue(wl.isBlackListedVeniceFunction("load-resource"));
+        assertTrue(wl.isBlackListedVeniceFunction("load-resource*"));
+
+
+
+        wl = CompiledSandboxRules.compile(
+                SandboxRules
+                    .noDefaults()
+                    .rejectVeniceFunctions("load-resource"));
+
+        assertTrue(wl.isBlackListedVeniceFunction("load-resource"));
+        assertTrue(wl.isBlackListedVeniceFunction("load-resource*"));
+
+
+
+        wl = CompiledSandboxRules.compile(
+                SandboxRules
+                    .noDefaults()
+                    .rejectVeniceFunctions("load-resource*"));
+
+        assertTrue(wl.isBlackListedVeniceFunction("load-resource"));
+        assertTrue(wl.isBlackListedVeniceFunction("load-resource*"));
+   }
+
+
+    @Test
+    public void asterisk_load_classpath_file_Test() {
+        CompiledSandboxRules wl;
+
+
+        wl = CompiledSandboxRules.compile(
+                SandboxRules
+                    .noDefaults());
+
+        assertFalse(wl.isBlackListedVeniceFunction("load-classpath-file"));
+        assertFalse(wl.isBlackListedVeniceFunction("load-classpath-file*"));
+
+
+
+        wl = CompiledSandboxRules.compile(
+                SandboxRules
+                    .noDefaults()
+                    .rejectVeniceFunctions("load-classpath-file", "load-classpath-file*"));
+
+        assertTrue(wl.isBlackListedVeniceFunction("load-classpath-file"));
+        assertTrue(wl.isBlackListedVeniceFunction("load-classpath-file*"));
+
+
+
+        wl = CompiledSandboxRules.compile(
+                SandboxRules
+                    .noDefaults()
+                    .rejectVeniceFunctions("load-classpath-file"));
+
+        assertTrue(wl.isBlackListedVeniceFunction("load-classpath-file"));
+        assertTrue(wl.isBlackListedVeniceFunction("load-classpath-file*"));
+
+
+
+        wl = CompiledSandboxRules.compile(
+                SandboxRules
+                    .noDefaults()
+                    .rejectVeniceFunctions("load-classpath-file*"));
+
+        assertTrue(wl.isBlackListedVeniceFunction("load-classpath-file"));
+        assertTrue(wl.isBlackListedVeniceFunction("load-classpath-file*"));
+    }
+
 }
