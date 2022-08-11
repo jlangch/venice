@@ -46,14 +46,14 @@ public class RestrictedBlacklistedFunctions {
     }
 
     public static boolean isIoAsteriskFunction(final String funcName) {
-    	String fnName = funcName;
-    	if (fnName.startsWith("core/")) {
-    		fnName.substring("core/".length());
-    	}
+        String fnName = funcName;
+        if (fnName.startsWith("core/")) {
+            fnName.substring("core/".length());
+        }
 
-    	if (fnName.endsWith("**")) {
-    		return false;  // ends with more than one asterisk
-    	}
+        if (fnName.endsWith("**")) {
+            return false;  // ends with more than one asterisk
+        }
 
         return IO_ASTERISKS.contains(fnName);
     }
@@ -62,6 +62,7 @@ public class RestrictedBlacklistedFunctions {
     private static Set<String> IO_ASTERISKS =
         new HashSet<>(
             Arrays.asList(
+                // load
                 "load-file",
                 "load-file*",
                 "load-classpath-file",
@@ -72,20 +73,13 @@ public class RestrictedBlacklistedFunctions {
     private static Set<String> IO =
         mergeToSet(
             IO_ASTERISKS,
+
             Arrays.asList(
                 // print
                 "print",
                 "printf",
                 "println",
                 "newline",
-
-                // load
-                "load-file",
-                "load-file*",
-                "load-classpath-file",
-                "load-classpath-file*",
-                "load-resource",
-                "load-resource*",
 
                 // classloader
                 "load-jar",
@@ -189,18 +183,18 @@ public class RestrictedBlacklistedFunctions {
 
     private static Set<String> SPECIAL_FORMS =
         new HashSet<>(
-                Arrays.asList(
-                    "set!",
-                    "ns-remove",
-                    "ns-unmap",
-                    "resolve",
-                    "var-get",
-                    "var-ns",
-                    "var-name",
-                    "inspect",
-                    "dorun",
-                    "dobench",
-                    "prof"));
+            Arrays.asList(
+                "set!",
+                "ns-remove",
+                "ns-unmap",
+                "resolve",
+                "var-get",
+                "var-ns",
+                "var-name",
+                "inspect",
+                "dorun",
+                "dobench",
+                "prof"));
 
 
 
