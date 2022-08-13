@@ -180,6 +180,7 @@ public class CustomREPL {
                                     .terminal(terminal)
                                     .history(history)
                                     .expander(new NullExpander())
+                                    .option(LineReader.Option.HISTORY_IGNORE_SPACE, false)
                                     .variable(LineReader.SECONDARY_PROMPT_PATTERN, secondaryPrompt)
                                     .build();
         final ReplResultHistory resultHistory = new ReplResultHistory(3);

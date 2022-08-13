@@ -288,7 +288,7 @@ public class REPL {
                 }
 
                 if (ReplParser.isExitCommand(line)) {
-                    quitREPL( history);
+                    quitREPL(history);
                     return; // quit the REPL
                 }
 
@@ -499,6 +499,7 @@ public class REPL {
                 .completer(completer)
                 .highlighter(highlighter)
                 .parser(parser)
+                .option(LineReader.Option.HISTORY_IGNORE_SPACE, false)
                 .variable(LineReader.SECONDARY_PROMPT_PATTERN, secondaryPrompt)
                 .variable(LineReader.INDENTATION, 2)
                 .variable(LineReader.LIST_MAX, 100)

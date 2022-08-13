@@ -37,6 +37,10 @@ and this project adheres to
   The sandbox ensures now that always both version are added to the black or
   whitelist. It's not the responsibility of the user anymore.
 
+### Fixed
+
+- REPL to put add expressions with leading spaces to the history too
+
 
 
 ## [1.10.18] - 2022-08-02
