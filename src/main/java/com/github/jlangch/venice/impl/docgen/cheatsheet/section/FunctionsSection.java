@@ -70,21 +70,19 @@ public class FunctionsSection implements ISectionBuilder {
         all.addSection(misc);
         misc.addItem(diBuilder.getDocItem("nil?"));
         misc.addItem(diBuilder.getDocItem("some?"));
-        misc.addItem(diBuilder.getDocItem("eval"));
-        misc.addItem(diBuilder.getDocItem("read-string"));
         misc.addItem(diBuilder.getDocItem("name"));
         misc.addItem(diBuilder.getDocItem("namespace"));
         misc.addItem(diBuilder.getDocItem("fn-name"));
         misc.addItem(diBuilder.getDocItem("callstack"));
         misc.addItem(diBuilder.getDocItem("coalesce"));
 
-        final DocSection loadpath = new DocSection("Load Paths", "functions.loadpath");
-        all.addSection(loadpath);
-        loadpath.addItem(diBuilder.getDocItem("load-paths", false));
-        loadpath.addItem(diBuilder.getDocItem("load-paths-unrestricted?", false));
-        loadpath.addItem(diBuilder.getDocItem("load-file", false));
-        loadpath.addItem(diBuilder.getDocItem("load-classpath-file"));
-        loadpath.addItem(diBuilder.getDocItem("load-resource", false));
+        final DocSection load = new DocSection("Load Source", "functions.load");
+        all.addSection(load);
+        load.addItem(diBuilder.getDocItem("load-module", false));
+        load.addItem(diBuilder.getDocItem("load-file", false));
+        load.addItem(diBuilder.getDocItem("load-classpath-file"));
+        load.addItem(diBuilder.getDocItem("read-string"));
+        load.addItem(diBuilder.getDocItem("eval"));
 
         final DocSection env = new DocSection("Environment", "functions.environment");
         all.addSection(env);
