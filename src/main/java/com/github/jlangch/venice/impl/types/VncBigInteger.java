@@ -131,7 +131,7 @@ public class VncBigInteger extends VncNumber {
         }
         else {
             throw new VncException(String.format(
-                    "Function + operand 2 (%s) is not a numeric type",
+                    "Function + operand of type %s is not a numeric type",
                     Types.getType(op)));
         }
     }
@@ -155,7 +155,7 @@ public class VncBigInteger extends VncNumber {
         }
         else {
             throw new VncException(String.format(
-                    "Function - operand 2 (%s) is not a numeric type",
+                    "Function - operand of type %s is not a numeric type",
                     Types.getType(op)));
         }
     }
@@ -179,7 +179,7 @@ public class VncBigInteger extends VncNumber {
         }
         else {
             throw new VncException(String.format(
-                    "Function * operand 2 (%s) is not a numeric type",
+                    "Function * operand of type %s is not a numeric type",
                     Types.getType(op)));
         }
     }
@@ -204,7 +204,7 @@ public class VncBigInteger extends VncNumber {
             }
             else {
                 throw new VncException(String.format(
-                        "Function / operand 2 (%s) is not a numeric type",
+                        "Function / operand of type %s is not a numeric type",
                         Types.getType(op)));
             }
         }
@@ -232,7 +232,7 @@ public class VncBigInteger extends VncNumber {
         }
         else {
             throw new VncException(String.format(
-                    "Function == operand 2 (%s) is not a numeric type",
+                    "Function == operand of type %s is not a numeric type",
                     Types.getType(other)));
         }
     }

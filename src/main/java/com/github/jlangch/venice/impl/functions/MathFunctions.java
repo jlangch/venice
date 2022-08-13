@@ -220,7 +220,7 @@ public class MathFunctions {
                     return Nil;
                 }
 
-                VncNumber n = validateNumber("*", args.first());
+                VncNumber n = validateNumber("/", args.first());
 
                 if (arity == 1) {
                     final VncVal first = args.first();
@@ -240,7 +240,7 @@ public class MathFunctions {
                         return new VncBigInteger(BigInteger.ONE).div(first);
                     }
                     else {
-                        return validateNumber("/", first);
+                        return n;
                     }
                 }
                 else if (arity == 2) {
@@ -1974,7 +1974,7 @@ public class MathFunctions {
     private static VncNumber validateNumber(final String fnName, final VncVal val) {
         if (!Types.isVncNumber(val)) {
             throw new VncException(String.format(
-                    "%s: Not a number. Got a %s",
+            		"Function %s operand of type %s is not a numeric type",
                     fnName,
                     Types.getType(val)));
         }
