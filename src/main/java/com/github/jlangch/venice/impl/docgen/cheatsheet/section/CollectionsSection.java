@@ -131,6 +131,7 @@ public class CollectionsSection implements ISectionBuilder {
         list_modify.addItem(diBuilder.getDocItem("distinct"));
         list_modify.addItem(diBuilder.getDocItem("dedupe"));
         list_modify.addItem(diBuilder.getDocItem("partition"));
+        list_modify.addItem(diBuilder.getDocItem("partition-all"));
         list_modify.addItem(diBuilder.getDocItem("partition-by"));
         list_modify.addItem(diBuilder.getDocItem("interpose"));
         list_modify.addItem(diBuilder.getDocItem("interleave"));

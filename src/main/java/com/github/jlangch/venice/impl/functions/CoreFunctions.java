@@ -6436,11 +6436,12 @@ public class CoreFunctions {
                         "(partition 3 1 [0 1 2 3 4 5 6])",
                         "(partition 3 6 [\"a\"] (range 20))",
                         "(partition 4 6 [\"a\" \"b\" \"c\" \"d\"] (range 20))")
+                    .seeAlso("partition-all", "partition-by")
                     .build()
         ) {
             @Override
             public VncVal apply(final VncList args) {
-                ArityExceptions.assertArity(this, args, 2, 3 ,4);
+                ArityExceptions.assertArity(this, args, 2, 3, 4);
 
                 final int n = Coerce.toVncLong(args.first()).getValue().intValue();
                 final int step = args.size() > 2 ? Coerce.toVncLong(args.second()).getValue().intValue() : n;
@@ -6489,6 +6490,64 @@ public class CoreFunctions {
             private static final long serialVersionUID = -1848883965231344442L;
         };
 
+    public static VncFunction partition_all =
+        new VncFunction(
+                "partition-all",
+                VncFunction
+                    .meta()
+                    .arglists("(partition-all n coll)", "(partition-all n step coll)")
+                    .doc(
+                        "Returns a collection of lists of n items each, at offsets step " +
+                        "apart. If step is not supplied, defaults to n, i.e. the partitions " +
+                        "do not overlap. May include partitions with fewer than n items " +
+                        "at the end.")
+                    .examples(
+                        "(partition-all 3 [0 1 2 3 4 5 6])",
+                        "(partition-all 2 3 [0 1 2 3 4 5 6])",
+                        "(partition-all 3 1 [0 1 2 3 4 5 6])",
+                        "(partition-all 3 6 [\"a\"])",
+                        "(partition-all 2 2 [\"a\" \"b\" \"c\" \"d\"])")
+                    .seeAlso("partition", "partition-by")
+                    .build()
+        ) {
+            @Override
+            public VncVal apply(final VncList args) {
+                ArityExceptions.assertArity(this, args, 2, 3);
+
+                final int n = Coerce.toVncLong(args.first()).getValue().intValue();
+                final int step = args.size() > 2 ? Coerce.toVncLong(args.second()).getValue().intValue() : n;
+                VncSequence seq = args.last() == Nil ? VncList.empty() : Coerce.toVncSequence(args.last());
+
+                if (n <= 0) {
+                    throw new VncException("partition-all: n must be greater than 0");
+                }
+                if (step <= 0) {
+                    throw new VncException("partition-all: step must be greater than 0");
+                }
+
+                VncList result = VncList.empty();
+
+                while (!seq.isEmpty()) {
+                    VncSequence part = seq.take(n);
+                    if (Types.isVncLazySeq(part)) {
+                        part = ((VncLazySeq)part).realize();
+                    }
+
+                    result = result.addAtEnd(part);
+
+                    if (part.size() < n) {
+                        break;
+                    }
+
+                    seq = seq.drop(step);
+                }
+
+                return result;
+            }
+
+            private static final long serialVersionUID = -1848883965231344442L;
+        };
+
     public static VncFunction partition_by =
         new VncFunction(
                 "partition-by",
@@ -6502,6 +6561,7 @@ public class CoreFunctions {
                         "(partition-by even? [1 2 4 3 5 6])",
                         "(partition-by identity (seq \"ABBA\"))",
                         "(partition-by identity [1 1 1 1 2 2 3])")
+                    .seeAlso("partition", "partition-all")
                     .build()
         ) {
             @Override
@@ -9180,6 +9240,7 @@ public class CoreFunctions {
                 .add(partial)
                 .add(mapv)
                 .add(partition)
+                .add(partition_all)
                 .add(partition_by)
                 .add(filter_k)
                 .add(filter_kv)

@@ -12,6 +12,10 @@ and this project adheres to
 
 ## [1.10.19] - 2022-08-xx
 
+### Added
+
+- function `partition-all`
+
 ### Improved
 
 - the sandbox's control over `load-classpath-file`. Instead of just being able to

@@ -3668,6 +3668,77 @@ public class CoreFunctionsTest {
     }
 
     @Test
+    public void test_partition_all() {
+        final Venice venice = new Venice();
+
+        assertEquals("()", venice.eval("(str (partition-all 1 nil))"));
+        assertEquals("()", venice.eval("(str (partition-all 1 '()))"));
+        assertEquals("((1))", venice.eval("(str (partition-all 1 '(1)))"));
+        assertEquals("((1) (2))", venice.eval("(str (partition-all 1 '(1 2)))"));
+        assertEquals("((1) (2) (3))", venice.eval("(str (partition-all 1 '(1 2 3)))"));
+
+        assertEquals("()", venice.eval("(str (partition-all 1 1 nil))"));
+        assertEquals("()", venice.eval("(str (partition-all 1 1 '()))"));
+        assertEquals("((1))", venice.eval("(str (partition-all 1 1 '(1)))"));
+        assertEquals("((1) (2))", venice.eval("(str (partition-all 1 1 '(1 2)))"));
+        assertEquals("((1) (2) (3))", venice.eval("(str (partition-all 1 1 '(1 2 3)))"));
+
+        assertEquals("()", venice.eval("(str (partition-all 3 nil))"));
+        assertEquals("()", venice.eval("(str (partition-all 3 '()))"));
+        assertEquals("((1))", venice.eval("(str (partition-all 3 '(1)))"));
+        assertEquals("((1 2))", venice.eval("(str (partition-all 3 '(1 2)))"));
+        assertEquals("((1 2 3))", venice.eval("(str (partition-all 3 '(1 2 3)))"));
+        assertEquals("((1 2 3) (4))", venice.eval("(str (partition-all 3 '(1 2 3 4)))"));
+        assertEquals("((1 2 3) (4 5))", venice.eval("(str (partition-all 3 '(1 2 3 4 5)))"));
+        assertEquals("((1 2 3) (4 5 6))", venice.eval("(str (partition-all 3 '(1 2 3 4 5 6)))"));
+        assertEquals("((1 2 3) (4 5 6) (7))", venice.eval("(str (partition-all 3 '(1 2 3 4 5 6 7)))"));
+
+        assertEquals("()", venice.eval("(str (partition-all 3 1 nil))"));
+        assertEquals("()", venice.eval("(str (partition-all 3 1 '()))"));
+        assertEquals("((1))", venice.eval("(str (partition-all 3 1 '(1)))"));
+        assertEquals("((1 2))", venice.eval("(str (partition-all 3 1 '(1 2)))"));
+        assertEquals("((1 2 3) (2 3))", venice.eval("(str (partition-all 3 1 '(1 2 3)))"));
+        assertEquals("((1 2 3) (2 3 4) (3 4))", venice.eval("(str (partition-all 3 1 '(1 2 3 4)))"));
+        assertEquals("((1 2 3) (2 3 4) (3 4 5) (4 5))", venice.eval("(str (partition-all 3 1 '(1 2 3 4 5)))"));
+        assertEquals("((1 2 3) (2 3 4) (3 4 5) (4 5 6) (5 6))", venice.eval("(str (partition-all 3 1 '(1 2 3 4 5 6)))"));
+        assertEquals("((1 2 3) (2 3 4) (3 4 5) (4 5 6) (5 6 7) (6 7))", venice.eval("(str (partition-all 3 1 '(1 2 3 4 5 6 7)))"));
+
+        assertEquals("()", venice.eval("(str (partition-all 3 2 nil))"));
+        assertEquals("()", venice.eval("(str (partition-all 3 2 '()))"));
+        assertEquals("((1))", venice.eval("(str (partition-all 3 2 '(1)))"));
+        assertEquals("((1 2))", venice.eval("(str (partition-all 3 2 '(1 2)))"));
+        assertEquals("((1 2 3) (3))", venice.eval("(str (partition-all 3 2 '(1 2 3)))"));
+        assertEquals("((1 2 3) (3 4))", venice.eval("(str (partition-all 3 2 '(1 2 3 4)))"));
+        assertEquals("((1 2 3) (3 4 5) (5))", venice.eval("(str (partition-all 3 2 '(1 2 3 4 5)))"));
+        assertEquals("((1 2 3) (3 4 5) (5 6))", venice.eval("(str (partition-all 3 2 '(1 2 3 4 5 6)))"));
+        assertEquals("((1 2 3) (3 4 5) (5 6 7) (7))", venice.eval("(str (partition-all 3 2 '(1 2 3 4 5 6 7)))"));
+
+        assertEquals("()", venice.eval("(str (partition-all 3 3 nil))"));
+        assertEquals("()", venice.eval("(str (partition-all 3 3 '()))"));
+        assertEquals("((1))", venice.eval("(str (partition-all 3 3 '(1)))"));
+        assertEquals("((1 2))", venice.eval("(str (partition-all 3 3 '(1 2)))"));
+        assertEquals("((1 2 3))", venice.eval("(str (partition-all 3 3 '(1 2 3)))"));
+        assertEquals("((1 2 3) (4))", venice.eval("(str (partition-all 3 3 '(1 2 3 4)))"));
+        assertEquals("((1 2 3) (4 5))", venice.eval("(str (partition-all 3 3 '(1 2 3 4 5)))"));
+        assertEquals("((1 2 3) (4 5 6))", venice.eval("(str (partition-all 3 3 '(1 2 3 4 5 6)))"));
+        assertEquals("((1 2 3) (4 5 6) (7))", venice.eval("(str (partition-all 3 3 '(1 2 3 4 5 6 7)))"));
+
+        assertEquals("()", venice.eval("(str (partition-all 3 4 nil))"));
+        assertEquals("()", venice.eval("(str (partition-all 3 4 '()))"));
+        assertEquals("((1))", venice.eval("(str (partition-all 3 4 '(1)))"));
+        assertEquals("((1 2))", venice.eval("(str (partition-all 3 4 '(1 2)))"));
+        assertEquals("((1 2 3))", venice.eval("(str (partition-all 3 4 '(1 2 3)))"));
+        assertEquals("((1 2 3))", venice.eval("(str (partition-all 3 4 '(1 2 3 4)))"));
+        assertEquals("((1 2 3) (5))", venice.eval("(str (partition-all 3 4 '(1 2 3 4 5)))"));
+        assertEquals("((1 2 3) (5 6))", venice.eval("(str (partition-all 3 4 '(1 2 3 4 5 6)))"));
+        assertEquals("((1 2 3) (5 6 7))", venice.eval("(str (partition-all 3 4 '(1 2 3 4 5 6 7)))"));
+        assertEquals("((1 2 3) (5 6 7))", venice.eval("(str (partition-all 3 4 '(1 2 3 4 5 6 7 8)))"));
+        assertEquals("((1 2 3) (5 6 7) (9))", venice.eval("(str (partition-all 3 4 '(1 2 3 4 5 6 7 8 9)))"));
+        assertEquals("((1 2 3) (5 6 7) (9 10))", venice.eval("(str (partition-all 3 4 '(1 2 3 4 5 6 7 8 9 10)))"));
+        assertEquals("((1 2 3) (5 6 7) (9 10 11))", venice.eval("(str (partition-all 3 4 '(1 2 3 4 5 6 7 8 9 10 11)))"));
+    }
+
+    @Test
     public void test_partition_by() {
         final Venice venice = new Venice();
 
