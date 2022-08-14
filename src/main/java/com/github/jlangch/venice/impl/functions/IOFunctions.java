@@ -1980,7 +1980,9 @@ public class IOFunctions {
                         "     io/string-in-stream  \n" +
                         "     io/slurp-lines)      ")
                     .seeAlso(
-                        "io/slurp", "io/slurp-stream", "io/spit", "io/string-in-stream")
+                    	"str/split-lines",
+                        "io/slurp", "io/slurp-stream",
+                        "io/spit", "io/string-in-stream")
                     .build()
         ) {
             @Override

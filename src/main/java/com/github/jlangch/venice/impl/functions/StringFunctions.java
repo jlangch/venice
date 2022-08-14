@@ -424,6 +424,7 @@ public class StringFunctions {
                         "forward from from-index. Return nil if value not found.")
                     .examples(
                         "(str/index-of \"abcdefabc\" \"ab\")")
+                    .seeAlso("str/last-index-of")
                     .build()
         ) {
             @Override
@@ -458,7 +459,8 @@ public class StringFunctions {
                         "searching backward from from-index. Return nil if value not found.")
                     .examples(
                         "(str/last-index-of \"abcdefabc\" \"ab\")")
-                    .build()
+                    .seeAlso("str/index-of")
+                   .build()
         ) {
             @Override
             public VncVal apply(final VncList args) {
@@ -497,6 +499,7 @@ public class StringFunctions {
                     .examples(
                         "(str/replace-all \"abcdefabc\" \"ab\" \"__\")",
                         "(str/replace-all \"a0b01c012d\" (regex/pattern \"[0-9]+\") \"_\")")
+                    .seeAlso("str/replace-first", "str/replace-last")
                     .build()
         ) {
             @Override
@@ -553,6 +556,7 @@ public class StringFunctions {
                         "(str/replace-first \"AB-CD-EF-AB-CD\" \"ab\" \"XYZ\" :ignore-case true)",
                         "(str/replace-first \"ab-ab-cd-ab-ef-ab-cd\" \"ab\" \"XYZ\" :nfirst 3)",
                         "(str/replace-first \"a0b01c012d\" (regex/pattern \"[0-9]+\") \"_\")")
+                    .seeAlso("str/replace-last", "str/replace-all")
                     .build()
         ) {
             @Override
@@ -605,6 +609,7 @@ public class StringFunctions {
                     .examples(
                         "(str/replace-last \"abcdefabc\" \"ab\" \"XYZ\")",
                         "(str/replace-last \"foo.JPG\" \".jpg\" \".png\" :ignore-case true)")
+                    .seeAlso("str/replace-first", "str/replace-all")
                     .build()
         ) {
             @Override
@@ -678,6 +683,7 @@ public class StringFunctions {
                         "(str/lower-case [ \"de\"] \"aBcDeF\")",
                         "(str/lower-case [ \"de\" \"DE\"] \"aBcDeF\")",
                         "(str/lower-case [ \"de\" \"DE\"] \"aBcDeF\")")
+                    .seeAlso("str/upper-case")
                     .build()
         ) {
             @Override
@@ -751,7 +757,8 @@ public class StringFunctions {
                         "(str/upper-case [ \"de\"] \"aBcDeF\")",
                         "(str/upper-case [ \"de\" \"DE\"] \"aBcDeF\")",
                         "(str/upper-case [ \"de\" \"DE\"] \"aBcDeF\")")
-                    .build()
+                    .seeAlso("str/lower-case")
+                   .build()
         ) {
             @Override
             public VncVal apply(final VncList args) {
@@ -967,6 +974,7 @@ public class StringFunctions {
                         "(str/split \"abc , def , ghi\" \"[ *],[ *]\")",
                         "(str/split \"abc,def,ghi\" \"((?<=,)|(?=,))\")",
                         "(str/split nil \",\")")
+                    .seeAlso("str/split-lines")
                     .build()
         ) {
             @Override
@@ -1000,6 +1008,7 @@ public class StringFunctions {
                     .arglists("(str/split-lines s)")
                     .doc("Splits s into lines.")
                     .examples("(str/split-lines \"line1\nline2\nline3\")")
+                    .seeAlso("str/split", "io/slurp-lines")
                     .build()
         ) {
             @Override
