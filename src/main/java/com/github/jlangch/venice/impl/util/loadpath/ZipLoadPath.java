@@ -55,7 +55,9 @@ public class ZipLoadPath extends LoadPath {
             throw new IllegalArgumentException("A file must not be null");
         }
 
-        return entries.contains(file.getPath());
+        return file.isAbsolute()
+                ? false
+                : entries.contains(file.getPath());
     }
 
     @Override
@@ -64,13 +66,18 @@ public class ZipLoadPath extends LoadPath {
             throw new IllegalArgumentException("A file must not be null");
         }
 
-        try {
-            return ZipFileSystemUtil
-                        .loadBinaryFileFromZip(zip, file)
-                        .getValue();
-        }
-        catch(Exception ex) {
+        if (file.isAbsolute()) {
             return null;
+        }
+        else {
+            try {
+                return ZipFileSystemUtil
+                            .loadBinaryFileFromZip(zip, file)
+                            .getValue();
+            }
+            catch(Exception ex) {
+                return null;
+            }
         }
     }
 

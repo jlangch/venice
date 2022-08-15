@@ -135,7 +135,7 @@ public class LoadPaths1Test {
                 // absolute files not on load path
                 assertFalse(loadPaths.isOnLoadPath(new File(root, "dir1/../foo/any.txt")));
                 assertFalse(loadPaths.isOnLoadPath(new File(root, "dir1/../foo/some/any.txt")));
-                assertFalse(loadPaths.isOnLoadPath(new File(root, "/tmp/any.txt")));
+                assertFalse(loadPaths.isOnLoadPath(new File("/tmp/any.txt")));
 
                 // relative files on load path
                 assertTrue(loadPaths.isOnLoadPath(new File("any.txt")));
