@@ -83,10 +83,10 @@ public class LoadPaths1Test {
 
             try {
                 assertThrows(
-                		VncException.class,
-                		() -> LoadPathsFactory.of(
-	                            Arrays.asList(new File(root, "dir-unknown")),
-	                            false));
+                        VncException.class,
+                        () -> LoadPathsFactory.of(
+                                Arrays.asList(new File(root, "dir-unknown")),
+                                false));
             }
             finally {
                 rmDir(root);
@@ -104,10 +104,10 @@ public class LoadPaths1Test {
 
             try {
                 assertThrows(
-                		VncException.class,
-                		() -> LoadPathsFactory.of(
-	                            Arrays.asList(new File(root, "dir1/file-unknown.zip")),
-	                            false));
+                        VncException.class,
+                        () -> LoadPathsFactory.of(
+                                Arrays.asList(new File(root, "dir1/file-unknown.zip")),
+                                false));
             }
             finally {
                 rmDir(root);
@@ -125,11 +125,11 @@ public class LoadPaths1Test {
 
             try {
                 final ILoadPaths loadPaths = LoadPathsFactory.of(
-						                        Arrays.asList(
-					                                new File(root, "dir1"),
-					                                new File(root, "dir2"),
-					                                new File(root, "res1.txt")),
-						                        true); // unlimited access: true
+                                                Arrays.asList(
+                                                    new File(root, "dir1"),
+                                                    new File(root, "dir2"),
+                                                    new File(root, "res1.txt")),
+                                                true); // unlimited access: true
 
                 // absolute files on load path
                 assertTrue(loadPaths.isOnLoadPath(new File(root, "dir1/any.txt")));
@@ -165,11 +165,11 @@ public class LoadPaths1Test {
 
             try {
                 final ILoadPaths loadPaths = LoadPathsFactory.of(
-						                        Arrays.asList(
-					                                new File(root, "dir1"),
-					                                new File(root, "dir2"),
-					                                new File(root, "res1.txt")),
-						                        false);  // unlimited access: false
+                                                Arrays.asList(
+                                                    new File(root, "dir1"),
+                                                    new File(root, "dir2"),
+                                                    new File(root, "res1.txt")),
+                                                false);  // unlimited access: false
 
                 // absolute files on load path
                 assertTrue(loadPaths.isOnLoadPath(new File(root, "dir1/any.txt")));
