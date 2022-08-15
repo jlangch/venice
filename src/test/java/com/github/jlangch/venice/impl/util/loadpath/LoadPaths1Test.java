@@ -87,7 +87,7 @@ public class LoadPaths1Test {
 					                                new File(root, "dir1"),
 					                                new File(root, "dir2"),
 					                                new File(root, "res1.txt")),
-						                        true); // unlimited access
+						                        true); // unlimited access: true
 
                 // absolute files on load path
                 assertTrue(loadPaths.isOnLoadPath(new File(root, "dir1/any.txt")));
@@ -126,7 +126,7 @@ public class LoadPaths1Test {
 					                                new File(root, "dir1"),
 					                                new File(root, "dir2"),
 					                                new File(root, "res1.txt")),
-						                        false);  // limited access
+						                        false);  // unlimited access: false
 
                 // absolute files on load path
                 assertTrue(loadPaths.isOnLoadPath(new File(root, "dir1/any.txt")));

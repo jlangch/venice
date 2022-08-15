@@ -45,11 +45,7 @@ public class FileLoadPath extends LoadPath {
         }
 
         final File f = canonical(file);
-        if (file.equals(f)) {
-            return true;
-        }
-
-        return false;
+        return this.file.equals(f);
     }
 
     @Override
@@ -59,7 +55,7 @@ public class FileLoadPath extends LoadPath {
         }
 
         final File f = canonical(file);
-        if (file.equals(f)) {
+        if (this.file.equals(f)) {
             try {
                 return ByteBuffer.wrap(Files.readAllBytes(f.toPath()));
             }
