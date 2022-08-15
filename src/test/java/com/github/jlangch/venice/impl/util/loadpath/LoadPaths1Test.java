@@ -52,7 +52,7 @@ import com.github.jlangch.venice.javainterop.SandboxRules;
 public class LoadPaths1Test {
 
     @Test
-    public void test_valid_LoadPaths_ok() {
+    public void test_valid_LoadPaths() {
          try {
             final File root = createFiles();
 
@@ -66,6 +66,48 @@ public class LoadPaths1Test {
                                 new File(root, "dir1/res2.txt"),
                                 new File(root, "dir1/res3.txt")),
                             false));
+            }
+            finally {
+                rmDir(root);
+            }
+        }
+        catch(Exception ex) {
+            throw new RuntimeException(ex);
+        }
+    }
+
+    @Test
+    public void test_invalid_LoadPaths_unknown_dir() {
+         try {
+            final File root = createFiles();
+
+            try {
+                assertThrows(
+                		VncException.class,
+                		() -> LoadPathsFactory.of(
+	                            Arrays.asList(new File(root, "dir-unknown")),
+	                            false));
+            }
+            finally {
+                rmDir(root);
+            }
+        }
+        catch(Exception ex) {
+            throw new RuntimeException(ex);
+        }
+    }
+
+    @Test
+    public void test_invalid_LoadPaths_unknown_file() {
+         try {
+            final File root = createFiles();
+
+            try {
+                assertThrows(
+                		VncException.class,
+                		() -> LoadPathsFactory.of(
+	                            Arrays.asList(new File(root, "dir1/file-unknown.zip")),
+	                            false));
             }
             finally {
                 rmDir(root);

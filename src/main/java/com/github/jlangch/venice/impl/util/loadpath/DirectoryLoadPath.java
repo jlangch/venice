@@ -72,9 +72,14 @@ public class DirectoryLoadPath extends LoadPath {
 
         try {
             if (file.isAbsolute()) {
-                return isFileWithinDirectory(file)
-                        ? ByteBuffer.wrap(Files.readAllBytes(file.toPath()))
-                        : null;
+                if (file.isFile()) {
+                    return isFileWithinDirectory(file)
+                            ? ByteBuffer.wrap(Files.readAllBytes(file.toPath()))
+                            : null;
+                }
+                else {
+                    return null;
+                }
             }
             else {
                 final File f = new File(dir, file.getPath());
