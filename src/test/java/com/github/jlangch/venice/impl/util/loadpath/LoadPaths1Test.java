@@ -92,6 +92,7 @@ public class LoadPaths1Test {
                 // absolute files on load path
                 assertTrue(loadPaths.isOnLoadPath(new File(root, "dir1/any.txt")));
                 assertTrue(loadPaths.isOnLoadPath(new File(root, "dir1/some/any.txt")));
+                assertTrue(loadPaths.isOnLoadPath(new File(root, "res1.txt")));
 
                 // absolute files not on load path but unlimited access turned on
                 assertTrue(loadPaths.isOnLoadPath(new File(root, "dir1/../foo/any.txt")));
@@ -131,6 +132,7 @@ public class LoadPaths1Test {
                 // absolute files on load path
                 assertTrue(loadPaths.isOnLoadPath(new File(root, "dir1/any.txt")));
                 assertTrue(loadPaths.isOnLoadPath(new File(root, "dir1/some/any.txt")));
+                assertTrue(loadPaths.isOnLoadPath(new File(root, "res1.txt")));
 
                 // absolute files not on load path
                 assertFalse(loadPaths.isOnLoadPath(new File(root, "dir1/../foo/any.txt")));

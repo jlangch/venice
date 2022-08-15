@@ -30,12 +30,12 @@ import java.nio.file.Files;
 public class FileLoadPath extends LoadPath {
 
     public FileLoadPath(final File file) {
-        this.file = canonical(file);
+        lpFile = canonical(file);
     }
 
     @Override
     public File path() {
-        return file;
+        return lpFile;
     }
 
     @Override
@@ -45,7 +45,7 @@ public class FileLoadPath extends LoadPath {
         }
 
         final File f = canonical(file);
-        return this.file.equals(f);
+        return lpFile.equals(f);
     }
 
     @Override
@@ -55,7 +55,7 @@ public class FileLoadPath extends LoadPath {
         }
 
         final File f = canonical(file);
-        if (this.file.equals(f)) {
+        if (lpFile.equals(f)) {
             try {
                 return ByteBuffer.wrap(Files.readAllBytes(f.toPath()));
             }
@@ -68,5 +68,5 @@ public class FileLoadPath extends LoadPath {
     }
 
 
-    private final File file;  // absolute & canonical -> see constructor!
+    private final File lpFile;  // absolute & canonical -> see constructor!
 }
