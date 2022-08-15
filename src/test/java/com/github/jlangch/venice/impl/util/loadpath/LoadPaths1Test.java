@@ -19,9 +19,12 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.github.jlangch.venice.javainterop;
+package com.github.jlangch.venice.impl.util.loadpath;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.junit.jupiter.api.Assertions.fail;
 
@@ -38,15 +41,146 @@ import org.junit.jupiter.api.Test;
 import com.github.jlangch.venice.SecurityException;
 import com.github.jlangch.venice.Venice;
 import com.github.jlangch.venice.VncException;
+import com.github.jlangch.venice.javainterop.AcceptAllInterceptor;
+import com.github.jlangch.venice.javainterop.ILoadPaths;
+import com.github.jlangch.venice.javainterop.LoadPathsFactory;
+import com.github.jlangch.venice.javainterop.RejectAllInterceptor;
+import com.github.jlangch.venice.javainterop.SandboxInterceptor;
+import com.github.jlangch.venice.javainterop.SandboxRules;
 
 
-public class LoadPathsTest {
+public class LoadPaths1Test {
+
+    @Test
+    public void test_valid_LoadPaths_ok() {
+         try {
+            final File root = createFiles();
+
+            try {
+                assertNotNull(
+                        LoadPathsFactory.of(
+                            Arrays.asList(
+                                new File(root, "dir1"),
+                                new File(root, "dir2"),
+                                new File(root, "res1.txt"),
+                                new File(root, "dir1/res2.txt"),
+                                new File(root, "dir1/res3.txt")),
+                            false));
+            }
+            finally {
+                rmDir(root);
+            }
+        }
+        catch(Exception ex) {
+            throw new RuntimeException(ex);
+        }
+    }
+
+    @Test
+    public void test_valid_isOnLoadPath_unlimitedAccess() {
+         try {
+            final File root = createFiles();
+
+            try {
+                final ILoadPaths loadPaths = LoadPathsFactory.of(
+						                        Arrays.asList(
+					                                new File(root, "dir1"),
+					                                new File(root, "dir2"),
+					                                new File(root, "res1.txt")),
+						                        true); // unlimited access
+
+                // absolute files on load path
+                assertTrue(loadPaths.isOnLoadPath(new File(root, "dir1/any.txt")));
+                assertTrue(loadPaths.isOnLoadPath(new File(root, "dir1/some/any.txt")));
+
+                // absolute files not on load path but unlimited access turned on
+                assertTrue(loadPaths.isOnLoadPath(new File(root, "dir1/../foo/any.txt")));
+                assertTrue(loadPaths.isOnLoadPath(new File(root, "dir1/../foo/some/any.txt")));
+                assertTrue(loadPaths.isOnLoadPath(new File(root, "/tmp/any.txt")));
+
+                // relative files on load path
+                assertTrue(loadPaths.isOnLoadPath(new File("any.txt")));
+                assertTrue(loadPaths.isOnLoadPath(new File("some/any.txt")));
+
+                // relative files not on load path but unlimited access turned on
+                assertTrue(loadPaths.isOnLoadPath(new File("../foo/any.txt")));
+                assertTrue(loadPaths.isOnLoadPath(new File("../foo/some/any.txt")));
+            }
+            finally {
+                rmDir(root);
+            }
+        }
+        catch(Exception ex) {
+            throw new RuntimeException(ex);
+        }
+    }
+
+    @Test
+    public void test_valid_isOnLoadPath_limitedAccess() {
+         try {
+            final File root = createFiles();
+
+            try {
+                final ILoadPaths loadPaths = LoadPathsFactory.of(
+						                        Arrays.asList(
+					                                new File(root, "dir1"),
+					                                new File(root, "dir2"),
+					                                new File(root, "res1.txt")),
+						                        false);  // limited access
+
+                // absolute files on load path
+                assertTrue(loadPaths.isOnLoadPath(new File(root, "dir1/any.txt")));
+                assertTrue(loadPaths.isOnLoadPath(new File(root, "dir1/some/any.txt")));
+
+                // absolute files not on load path
+                assertFalse(loadPaths.isOnLoadPath(new File(root, "dir1/../foo/any.txt")));
+                assertFalse(loadPaths.isOnLoadPath(new File(root, "dir1/../foo/some/any.txt")));
+                assertFalse(loadPaths.isOnLoadPath(new File(root, "/tmp/any.txt")));
+
+                // relative files on load path
+                assertTrue(loadPaths.isOnLoadPath(new File("any.txt")));
+                assertTrue(loadPaths.isOnLoadPath(new File("some/any.txt")));
+
+                // relative files not on load path
+                assertFalse(loadPaths.isOnLoadPath(new File("../foo/any.txt")));
+                assertFalse(loadPaths.isOnLoadPath(new File("../foo/some/any.txt")));
+            }
+            finally {
+                rmDir(root);
+            }
+        }
+        catch(Exception ex) {
+            throw new RuntimeException(ex);
+        }
+    }
+
+    @Test
+    public void test_valid_LoadPaths_invalid_dir() {
+        try {
+            final File root = createFiles();
+
+            try {
+                assertThrows(
+                        VncException.class,
+                        () -> LoadPathsFactory.of(
+                                Arrays.asList(
+                                    new File(root, "dir1"),
+                                    new File(root, "dir-not-exist")),
+                                true));
+            }
+            finally {
+                rmDir(root);
+            }
+        }
+        catch(Exception ex) {
+            throw new RuntimeException(ex);
+        }
+    }
 
     @Test
     public void test_AcceptAllInterceptor_LoadPaths_UnlimitedAccess() {
-        File root = null;
         try {
-            root = createFiles();
+            final File root = createFiles();
 
             try {
                 final ILoadPaths loadPaths = LoadPathsFactory.of(
@@ -92,9 +226,8 @@ public class LoadPathsTest {
 
     @Test
     public void test_AcceptAllInterceptor_LoadPaths_NoUnlimitedAccess() {
-        File root = null;
         try {
-            root = createFiles();
+            final File root = createFiles();
 
             try {
                 final ILoadPaths loadPaths = LoadPathsFactory.of(
@@ -145,9 +278,8 @@ public class LoadPathsTest {
 
     @Test
     public void test_AcceptAllInterceptor_NoLoadPaths_UnlimitedAccess() {
-        File root = null;
         try {
-            root = createFiles();
+            final File root = createFiles();
 
             try {
                 final ILoadPaths loadPaths = LoadPathsFactory.of(null, true);
@@ -192,9 +324,8 @@ public class LoadPathsTest {
 
     @Test
     public void test_AcceptAllInterceptor_NoLoadPaths_NoUnlimitedAccess() {
-        File root = null;
         try {
-            root = createFiles();
+            final File root = createFiles();
 
             try {
                 final ILoadPaths loadPaths = LoadPathsFactory.of(null, false);
@@ -243,9 +374,8 @@ public class LoadPathsTest {
 
     @Test
     public void test_RejectAllInterceptor() {
-        File root = null;
         try {
-            root = createFiles();
+            final File root = createFiles();
 
             try {
                 LoadPathsFactory.of(null, false);
@@ -294,9 +424,8 @@ public class LoadPathsTest {
 
     @Test
     public void test_SandboxInterceptor_LoadPaths_UnlimitedAccess() {
-        File root = null;
         try {
-            root = createFiles();
+            final File root = createFiles();
 
             try {
                 final ILoadPaths loadPaths = LoadPathsFactory.of(
@@ -342,9 +471,8 @@ public class LoadPathsTest {
 
     @Test
     public void test_SandboxInterceptor_LoadPaths_NoUnlimitedAccess() {
-        File root = null;
         try {
-            root = createFiles();
+            final File root = createFiles();
 
             try {
                 final ILoadPaths loadPaths = LoadPathsFactory.of(
@@ -395,9 +523,8 @@ public class LoadPathsTest {
 
     @Test
     public void test_SandboxInterceptor_NoLoadPaths_UnlimitedAccess() {
-        File root = null;
         try {
-            root = createFiles();
+            final File root = createFiles();
 
             try {
                 final ILoadPaths loadPaths = LoadPathsFactory.of(null, true);
@@ -442,9 +569,8 @@ public class LoadPathsTest {
 
     @Test
     public void test_SandboxInterceptor_NoLoadPaths_NoUnlimitedAccess() {
-        File root = null;
         try {
-            root = createFiles();
+            final File root = createFiles();
 
             try {
                 final ILoadPaths loadPaths = LoadPathsFactory.of(null, false);

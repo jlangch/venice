@@ -21,6 +21,7 @@
  */
 package com.github.jlangch.venice.javainterop;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -209,6 +210,18 @@ public class RejectAllInterceptor extends Interceptor {
                     PREFIX,
                     moduleName));
         }
+    }
+
+    @Override
+    public void validateFileRead(final File file) throws SecurityException {
+        throw new SecurityException(
+                    "Venice Sandbox: The sandbox denied reading the file: " + file);
+    }
+
+    @Override
+    public void validateFileWrite(final File file) throws SecurityException {
+        throw new SecurityException(
+                    "Venice Sandbox: The sandbox denied writing the file: " + file);
     }
 
     @Override

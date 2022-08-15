@@ -1074,6 +1074,49 @@
                fc#)))))))
 
 
+(defn
+  ^{ :arglists '("(load-resource file & options)")
+     :doc """
+          Loads a resource from the defined load paths. Returns a string or
+          a bytebuffer dependent on the passed options.
+
+          If the file is not found an exception is raised.
+
+          Options:
+
+          | :binary b   | e.g :binary true, defaults to true |
+          | :encoding e | e.g :encoding :utf-8, defaults to :utf-8 |
+
+          See the `load-paths` doc for a description of the *load path* feature.
+          """
+     :examples '(
+          """
+          ;; With load-paths: [/users/foo/images]
+          ;;        -> loads: /users/foo/images/coffee.png
+          (load-resource "coffee.png")  ; relative
+          """,
+          """
+          ;; With load-paths: [/users/foo/images]
+          ;;        -> loads: /users/foo/images/coffee.png
+          (load-resource "/users/foo/images/coffee.png")  ; absolute
+          """,
+          """
+          ;; With load-paths: [/users/foo/images]
+          ;;        -> loads: /users/foo/images/small/coffee.png
+          (load-resource "small/coffee.png")  ; relative in sub directory
+          """,
+          """
+          ;; With load-paths: [/users/foo/images.zip]
+          ;;        -> loads: /users/foo/images.zip!small/coffee.png
+          (load-resource "small/coffee.png")  ; in ZIP
+          """ )
+     :see-also '("load-paths") }
+
+  load-resource [file & options]
+
+  (apply load-resource* file options))
+
+
 (defmacro
   ^{ :arglists '(
           "(load-module m)",
@@ -1734,44 +1777,6 @@
           ret))))
   ([f & args]
      (trampoline #(apply f args))))
-
-
-(defn
-  ^{ :arglists '("(load-resource file & options)")
-     :doc """
-          Loads a resource from the defined load paths. Returns a string or
-          a bytebuffer dependent on the passed options.
-
-          If the file is not found an exception is raised.
-
-          Options:
-
-          | :binary b   | e.g :binary true, defaults to true |
-          | :encoding e | e.g :encoding :utf-8, defaults to :utf-8 |
-
-          See the `load-paths` doc for a description of the *load path* feature.
-          """
-     :examples '(
-          """
-          ;; With load-paths: [/users/foo/images]
-          ;;        -> loads: /users/foo/images/coffee.png
-          (load-resource "coffee.png")
-          """,
-          """
-          ;; With load-paths: [/users/foo/images]
-          ;;        -> loads: /users/foo/images/small/coffee.png
-          (load-resource "small/coffee.png")
-          """,
-          """
-          ;; With load-paths: [/users/foo/images.zip]
-          ;;        -> loads: /users/foo/images.zip!small/coffee.png
-          (load-resource "small/coffee.png")
-          """ )
-     :see-also '("load-paths") }
-
-  load-resource [file & options]
-
-  (apply load-resource* file options))
 
 
 (defn-

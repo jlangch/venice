@@ -22,6 +22,8 @@
 package com.github.jlangch.venice.javainterop;
 
 
+import java.io.File;
+
 import com.github.jlangch.venice.SecurityException;
 import com.github.jlangch.venice.impl.sandbox.CompiledSandboxRules;
 import com.github.jlangch.venice.impl.util.StringUtil;
@@ -180,6 +182,23 @@ public class SandboxInterceptor extends ValueFilterInterceptor {
                     "%s: Access denied to module %s",
                     PREFIX,
                     moduleName));
+        }
+    }
+    @Override
+    public void validateFileRead(final File file) throws SecurityException {
+        if (!getLoadPaths().isOnLoadPath(file)) {
+            throw new SecurityException(
+                    "Venice Sandbox: The sandbox denied reading the file: " + file +
+                    "! The file is not on the sandbox' load paths.");
+        }
+    }
+
+    @Override
+    public void validateFileWrite(final File file) throws SecurityException {
+        if (!getLoadPaths().isOnLoadPath(file)) {
+            throw new SecurityException(
+                    "Venice Sandbox: The sandbox denied writing the file: " + file +
+                    "! The file is not on the sandbox' load paths.");
         }
     }
 

@@ -19,7 +19,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.github.jlangch.venice.impl.util.io;
+package com.github.jlangch.venice.impl.util.loadpath;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
@@ -38,10 +38,11 @@ import java.util.Map;
 
 import org.junit.jupiter.api.Test;
 
+import com.github.jlangch.venice.impl.util.io.FileUtil;
 import com.github.jlangch.venice.impl.util.io.zip.Zipper;
 
 
-public class LoadPathsTest {
+public class LoadPaths2Test {
 
     @Test
     public void test_getPaths() throws IOException {
@@ -51,6 +52,8 @@ public class LoadPathsTest {
         zip.deleteOnExit();
         dir1.deleteOnExit();
         dir2.deleteOnExit();
+
+        FileUtil.save(zip("a", "1234", "b", "5678"), zip, true);
 
 
         // null path

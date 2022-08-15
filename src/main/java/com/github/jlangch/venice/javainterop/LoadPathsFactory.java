@@ -27,7 +27,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 import com.github.jlangch.venice.impl.util.StringUtil;
-import com.github.jlangch.venice.impl.util.io.LoadPaths;
+import com.github.jlangch.venice.impl.util.loadpath.LoadPaths;
 
 
 /**
