@@ -155,15 +155,15 @@ public class LoadPaths implements ILoadPaths {
     }
 
     private String toString(final ByteBuffer data, final String encoding) {
-        if (data == null) {
-            return null;
-        }
-        else {
-            final Charset charset = encoding == null || encoding.isEmpty()
-                                        ? Charset.defaultCharset()
-                                        : Charset.forName(encoding);
-            return new String(data.array(), charset);
-        }
+        return data == null
+        		? null
+        		: new String(data.array(), charset(encoding));
+    }
+
+    private Charset charset(final String encoding) {
+    	return encoding == null || encoding.isEmpty()
+                ? Charset.defaultCharset()
+                : Charset.forName(encoding);
     }
 
 
