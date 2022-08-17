@@ -39,7 +39,8 @@ and this project adheres to
 
 ### Fixed
 
-- REPL to add expressions with leading spaces to the history too
+- REPL to add expressions with leading spaces to the history too by overriding
+  `jline3`'s default configuration
 
 
 
