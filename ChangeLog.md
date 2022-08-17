@@ -39,7 +39,7 @@ and this project adheres to
 
 ### Fixed
 
-- REPL to put add expressions with leading spaces to the history too
+- REPL to add expressions with leading spaces to the history too
 
 
 
