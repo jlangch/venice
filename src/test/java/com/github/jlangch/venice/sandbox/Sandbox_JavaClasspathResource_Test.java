@@ -108,7 +108,7 @@ public class Sandbox_JavaClasspathResource_Test {
         assertThrows(SecurityException.class, () -> {
             Interceptor i2 = new SandboxInterceptor(
                                 new SandboxRules()
-                                		.rejectVeniceFunctions("io/load-classpath-resource") // this rules wins!
+                                        .rejectVeniceFunctions("io/load-classpath-resource") // this rules wins!
                                         .withClasspathResources("com/github/jlangch/venice/test.venice"));
             new Venice(i2).eval(script);
         });

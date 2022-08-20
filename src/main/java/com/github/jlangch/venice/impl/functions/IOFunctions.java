@@ -1980,7 +1980,7 @@ public class IOFunctions {
                         "     io/string-in-stream  \n" +
                         "     io/slurp-lines)      ")
                     .seeAlso(
-                    	"str/split-lines",
+                        "str/split-lines",
                         "io/slurp", "io/slurp-stream",
                         "io/spit", "io/string-in-stream")
                     .build()

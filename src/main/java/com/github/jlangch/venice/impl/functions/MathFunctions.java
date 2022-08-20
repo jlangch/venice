@@ -1974,7 +1974,7 @@ public class MathFunctions {
     private static VncNumber validateNumber(final String fnName, final VncVal val) {
         if (!Types.isVncNumber(val)) {
             throw new VncException(String.format(
-            		"Function %s operand of type %s is not a numeric type",
+                    "Function %s operand of type %s is not a numeric type",
                     fnName,
                     Types.getType(val)));
         }

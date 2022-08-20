@@ -141,9 +141,9 @@ public class ModuleLoader {
     }
 
     public static void clear() {
-       	modules.clear();
-       	classpathFiles.clear();
-       	externalFiles.clear();
+        modules.clear();
+        classpathFiles.clear();
+        externalFiles.clear();
     }
 
     private static String loadClasspathVeniceFile(

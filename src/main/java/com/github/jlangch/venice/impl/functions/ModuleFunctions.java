@@ -63,9 +63,9 @@ public class ModuleFunctions {
                     .meta()
                     .arglists("(load-module* name)")
                     .doc(
-                    	"Loads a Venice extension module. Returns the module as an " +
-                    	"unevaluted string. Throws a `VncException` if the module " +
-                    	"does not exist.")
+                        "Loads a Venice extension module. Returns the module as an " +
+                        "unevaluted string. Throws a `VncException` if the module " +
+                        "does not exist.")
                     .build()
         ) {
             @Override
@@ -274,13 +274,13 @@ public class ModuleFunctions {
                     .meta()
                     .arglists("(load-paths)")
                     .doc(
-                    	"Returns the list of the defined load paths. A load path is either " +
-                    	"a ZIP file, or a directory. \n\n" +
-                    	"The functions `load-file` and `load-resource` try sequentially every " +
-                    	"load path to read the file. If a load path is a directory the file is " +
-                    	"read from that directory. If a load path is a ZIP file the file is read " +
-                    	"from within that ZIP.\n\n" +
-                    	"Examples:")
+                        "Returns the list of the defined load paths. A load path is either " +
+                        "a ZIP file, or a directory. \n\n" +
+                        "The functions `load-file` and `load-resource` try sequentially every " +
+                        "load path to read the file. If a load path is a directory the file is " +
+                        "read from that directory. If a load path is a ZIP file the file is read " +
+                        "from within that ZIP.\n\n" +
+                        "Examples:")
                     .seeAlso(
                         "load-paths-unrestricted?",
                         "load-file", "load-resource")

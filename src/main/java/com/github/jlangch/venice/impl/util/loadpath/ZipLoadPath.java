@@ -80,7 +80,7 @@ public class ZipLoadPath extends LoadPath {
             }
         }
         else {
-        	return null;
+           return null;
         }
     }
 
@@ -122,7 +122,7 @@ public class ZipLoadPath extends LoadPath {
                 return buffer;
             }
             else {
-            	return null;
+                return null;
             }
         }
     }

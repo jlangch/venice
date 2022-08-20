@@ -145,7 +145,9 @@ public class LoadPaths implements ILoadPaths {
                 return ByteBuffer.wrap(Files.readAllBytes(file.toPath()));
             }
             catch(IOException ex) {
-                return null;
+                throw new VncException(
+                        String.format("Failed to load the file '%s'", file.getPath()),
+                        ex);
             }
         }
         else {
@@ -156,12 +158,12 @@ public class LoadPaths implements ILoadPaths {
 
     private String toString(final ByteBuffer data, final String encoding) {
         return data == null
-        		? null
-        		: new String(data.array(), charset(encoding));
+                ? null
+                : new String(data.array(), charset(encoding));
     }
 
     private Charset charset(final String encoding) {
-    	return encoding == null || encoding.isEmpty()
+        return encoding == null || encoding.isEmpty()
                 ? Charset.defaultCharset()
                 : Charset.forName(encoding);
     }

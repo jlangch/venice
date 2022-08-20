@@ -777,7 +777,7 @@ public class VeniceInterpreter implements IVeniceInterpreter, Serializable  {
             return ast;
         }
         else if (ast instanceof VncJavaObject) {
-        	return ast;
+            return ast;
         }
         else if (ast instanceof VncMap) {
             final VncMap map = (VncMap)ast;
