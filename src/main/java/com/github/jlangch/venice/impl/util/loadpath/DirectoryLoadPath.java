@@ -47,13 +47,8 @@ public class DirectoryLoadPath extends LoadPath {
         }
 
         try {
-            if (file.isAbsolute()) {
-                return isFileWithinDirectory(file);
-            }
-            else {
-                final File f = new File(dir, file.getPath());
-                return isFileWithinDirectory(f);
-            }
+            final File f = realFile(file);
+            return isFileWithinDirectory(f);
         }
         catch (Exception ex) {
             throw new VncException(
@@ -71,26 +66,14 @@ public class DirectoryLoadPath extends LoadPath {
         }
 
         try {
-            if (file.isAbsolute()) {
-                if (file.isFile()) {
-                    return isFileWithinDirectory(file)
-                            ? ByteBuffer.wrap(Files.readAllBytes(file.toPath()))
-                            : null;
-                }
-                else {
-                    return null;
-                }
+            final File f = realFile(file);
+            if (f.isFile()) {
+                return isFileWithinDirectory(f)
+                        ? ByteBuffer.wrap(Files.readAllBytes(f.toPath()))
+                        : null;
             }
             else {
-                final File f = new File(dir, file.getPath());
-                if (f.isFile()) {
-                    return isFileWithinDirectory(f)
-                            ? ByteBuffer.wrap(Files.readAllBytes(f.toPath()))
-                            : null;
-                }
-                else {
-                    return null;
-                }
+                return null;
             }
         }
         catch (Exception ex) {
@@ -100,15 +83,19 @@ public class DirectoryLoadPath extends LoadPath {
         }
     }
 
+    private File realFile(final File file) {
+        return file.isAbsolute() ? file : new File(dir, file.getPath());
+    }
 
     private boolean isFileWithinDirectory(final File file) throws IOException {
         if (canonical(file).toPath().startsWith(dir.toPath())) {
             // Prevent accessing files outside the load-path
             //
             // Load path:  [/Users/pit/scripts]
-            // E.g.: foo.venice             =>  /Users/pit/scripts/foo.venice        (ok)
-            //       ../../foo.venice       =>  /Users/pit/scripts/../../foo.venice  (!!!)
-            //       /Users/pit/foo.venice  =>  /Users/pit/foo.venice                (!!!)
+            // E.g.: foo.venice                     =>  /Users/pit/scripts/foo.venice          (ok)
+            //       /Users/pit/scripts/foo.venice  =>  /Users/pit/scripts/foo.venice          (ok)
+            //       ../bar/foo.venice              =>  /Users/pit/scripts/../bar/foo.venice   (!!!)
+            //       /Users/pit/foo.venice          =>  /Users/pit/foo.venice                  (!!!)
             return true;
         }
 

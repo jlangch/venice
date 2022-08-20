@@ -69,7 +69,7 @@ public class ZipLoadPath extends LoadPath {
         if (file.isAbsolute()) {
             return null;
         }
-        else {
+        else if (entries.contains(file.getPath())) {
             try {
                 return ZipFileSystemUtil
                             .loadBinaryFileFromZip(zip, file)
@@ -79,19 +79,17 @@ public class ZipLoadPath extends LoadPath {
                 return null;
             }
         }
+        else {
+        	return null;
+        }
     }
 
     public static boolean isZipFile(final File file) {
         if (file.getName().endsWith(".zip")) {
-            try (FileInputStream is = new FileInputStream(file)) {
-                final byte[] buffer = new byte[4];
-                if (is.read(buffer) == buffer.length) {
-                    return Zipper.isZipFile(buffer);
-                }
-
-                return false;
+            try {
+                return Zipper.isZipFile(readFirstNBytes(file, 4));
             }
-            catch(IOException ex) {
+            catch(Exception ex) {
                 throw new VncException(
                         String.format(
                                 "The file '%s' is not a valid load path. It is not a " +
@@ -104,6 +102,7 @@ public class ZipLoadPath extends LoadPath {
         }
     }
 
+
     private static List<String> list(final File zip) {
         try (ZipFile zf = new ZipFile(zip, ZipFile.OPEN_READ)) {
             return zf.stream()
@@ -113,6 +112,18 @@ public class ZipLoadPath extends LoadPath {
         catch(IOException ex) {
             throw new VncException(
                     String.format( "Failed list the zip file's '%s' entries!",zip.getPath()));
+        }
+    }
+
+    private static byte[] readFirstNBytes(final File file, final int n) throws Exception {
+        try (FileInputStream is = new FileInputStream(file)) {
+            final byte[] buffer = new byte[n];
+            if (is.read(buffer) == buffer.length) {
+                return buffer;
+            }
+            else {
+            	return null;
+            }
         }
     }
 

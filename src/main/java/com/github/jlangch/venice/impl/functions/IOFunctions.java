@@ -2079,6 +2079,7 @@ public class IOFunctions {
                         " * `java.io.File`, e.g: `(io/file \"/temp/foo.json\")`            \n" +
                         " * `java.io.InputStream`                                          \n" +
                         " * `java.io.Reader`                                               \n" +
+                        " * `java.nio.file.Path`                                           \n" +
                         " * `java.net.URL`                                                 \n" +
                         " * `java.net.URI`                                                 \n\n" +
                         "Options:                                                          \n\n" +
@@ -2097,10 +2098,28 @@ public class IOFunctions {
 
                 final VncHashMap options = VncHashMap.ofAll(args.rest());
 
-                if (Types.isVncString(arg) || Types.isVncJavaObject(arg, File.class)) {
-                    final File file = Types.isVncString(arg)
-                                        ? new File(((VncString)arg).getValue())
-                                        :  (File)(Coerce.toVncJavaObject(args.first()).getDelegate());
+                if (Types.isVncString(arg)) {
+                    final File file = new File(((VncString)arg).getValue());
+                    try {
+                        validateReadableFile(file);
+                        return slurp(options, new FileInputStream(file));
+                    }
+                    catch (Exception ex) {
+                        throw new VncException("Failed to slurp data from the file " + file.getPath(), ex);
+                    }
+                }
+                else if (Types.isVncJavaObject(arg, File.class)) {
+                    final File file = (File)(Coerce.toVncJavaObject(args.first()).getDelegate());
+                    try {
+                        validateReadableFile(file);
+                        return slurp(options, new FileInputStream(file));
+                    }
+                    catch (Exception ex) {
+                        throw new VncException("Failed to slurp data from the file " + file.getPath(), ex);
+                    }
+                }
+                else if (Types.isVncJavaObject(arg, Path.class)) {
+                    final File file = ((Path)((VncJavaObject)args.first()).getDelegate()).toFile();
                     try {
                         validateReadableFile(file);
                         return slurp(options, new FileInputStream(file));
@@ -2119,7 +2138,7 @@ public class IOFunctions {
                         throw new VncException("Failed to slurp text lines from a bytebuffer", ex);
                     }
                 }
-             else if (Types.isVncJavaObject(arg, InputStream.class)) {
+                else if (Types.isVncJavaObject(arg, InputStream.class)) {
                     try {
                         final InputStream is = (InputStream)(Coerce.toVncJavaObject(args.first()).getDelegate());
                         return slurp(options, is);

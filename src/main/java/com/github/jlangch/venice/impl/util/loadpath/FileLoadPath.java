@@ -55,7 +55,7 @@ public class FileLoadPath extends LoadPath {
         }
 
         final File f = canonical(file);
-        if (lpFile.equals(f)) {
+        if (lpFile.equals(f) && f.isFile()) {
             try {
                 return ByteBuffer.wrap(Files.readAllBytes(f.toPath()));
             }
