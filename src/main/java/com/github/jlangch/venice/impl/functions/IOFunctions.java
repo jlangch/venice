@@ -40,7 +40,6 @@ import java.io.OutputStreamWriter;
 import java.io.PrintWriter;
 import java.io.Reader;
 import java.io.StringReader;
-import java.io.UnsupportedEncodingException;
 import java.io.Writer;
 import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
@@ -99,6 +98,7 @@ import com.github.jlangch.venice.impl.util.CallFrame;
 import com.github.jlangch.venice.impl.util.MimeTypes;
 import com.github.jlangch.venice.impl.util.SymbolMapBuilder;
 import com.github.jlangch.venice.impl.util.VncPathMatcher;
+import com.github.jlangch.venice.impl.util.io.CharsetUtil;
 import com.github.jlangch.venice.impl.util.io.ClassPathResource;
 import com.github.jlangch.venice.impl.util.io.FileUtil;
 import com.github.jlangch.venice.impl.util.io.IOStreamUtil;
@@ -2216,12 +2216,12 @@ public class IOFunctions {
                     final VncHashMap options = VncHashMap.ofAll(args.slice(2));
                     final VncVal append = options.get(new VncKeyword("append"));
                     final VncVal encVal = options.get(new VncKeyword("encoding"));
-                    final String encoding = encoding(encVal);
+                    final Charset charset = CharsetUtil.charset(encVal);
 
                     byte[] data;
 
                     if (Types.isVncString(content)) {
-                        data = ((VncString)content).getValue().getBytes(encoding);
+                        data = ((VncString)content).getValue().getBytes(charset);
                     }
                     else if (Types.isVncByteBuffer(content)) {
                         data = ((VncByteBuffer)content).getBytes();
@@ -2706,15 +2706,10 @@ public class IOFunctions {
                 final VncHashMap options = VncHashMap.ofAll(args.rest());
 
                 final VncVal encVal = options.get(new VncKeyword("encoding"));
-                final String encoding = encoding(encVal);
+                final Charset charset = CharsetUtil.charset(encVal);
 
                 try {
-                    return new VncJavaObject(new ByteArrayInputStream(s.getValue().getBytes(encoding)));
-                }
-                catch (UnsupportedEncodingException ex) {
-                    throw new VncException(
-                            "Function 'io/string-in-stream' unsupported encoding '" + encoding + "'",
-                            ex);
+                    return new VncJavaObject(new ByteArrayInputStream(s.getValue().getBytes(charset)));
                 }
                 catch (Exception ex) {
                     throw new VncException(
@@ -3268,14 +3263,6 @@ public class IOFunctions {
         };
 
 
-    public static String encoding(final VncVal enc) {
-        return enc == Nil
-                ? "UTF-8"
-                : Types.isVncKeyword(enc)
-                    ? Coerce.toVncKeyword(enc).getValue()
-                    : Coerce.toVncString(enc).getValue();
-    }
-
     public static File convertToFile(final VncVal f, final String errFormat) {
         if (Types.isVncString(f)) {
             return new File(((VncString)f).getValue());
@@ -3334,9 +3321,9 @@ public class IOFunctions {
             }
             else {
                 final VncVal encVal = options.get(new VncKeyword("encoding"));
-                final String encoding = encoding(encVal);
+                final Charset charset = CharsetUtil.charset(encVal);
 
-                return new VncString(IOStreamUtil.copyIStoString(is, encoding));
+                return new VncString(IOStreamUtil.copyIStoString(is, charset));
             }
         }
     }
@@ -3352,9 +3339,9 @@ public class IOFunctions {
 
             if (VncBoolean.isTrue(binary)) {
                 final VncVal encVal = options.get(new VncKeyword("encoding"));
-                final String encoding = encoding(encVal);
+                final Charset charset = CharsetUtil.charset(encVal);
 
-                return new VncByteBuffer(s.getBytes(encoding));
+                return new VncByteBuffer(s.getBytes(charset));
             }
             else {
                 return new VncString(s);
@@ -3367,9 +3354,9 @@ public class IOFunctions {
             final InputStream inStream
     ) throws Exception {
         final VncVal encVal = options.get(new VncKeyword("encoding"));
-        final String encoding = encoding(encVal);
+        final Charset charset = CharsetUtil.charset(encVal);
 
-        try (BufferedReader rd = new BufferedReader(new InputStreamReader(inStream, encoding))) {
+        try (BufferedReader rd = new BufferedReader(new InputStreamReader(inStream, charset))) {
             return VncList.ofList(rd.lines().map(s -> new VncString(s)).collect(Collectors.toList()));
         }
     }

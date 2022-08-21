@@ -30,6 +30,7 @@ import java.nio.file.Files;
 import com.github.jlangch.venice.VncException;
 import com.github.jlangch.venice.impl.types.VncByteBuffer;
 import com.github.jlangch.venice.impl.types.VncString;
+import com.github.jlangch.venice.impl.util.io.CharsetUtil;
 
 
 public class ZipFileSystemUtil {
@@ -68,7 +69,7 @@ public class ZipFileSystemUtil {
         }
     }
 
-    public static VncString loadTextFileFromZip(final File zip, final File file, final String encoding) {
+    public static VncString loadTextFileFromZip(final File zip, final File file, final String charset) {
         if (!zip.exists()) {
             throw new VncException(String.format(
                     "The ZIP file '%s' does not exist",
@@ -78,7 +79,7 @@ public class ZipFileSystemUtil {
         try {
             try (FileSystem zipFS = mountZip(zip)) {
                 final byte[] data = Files.readAllBytes(zipFS.getPath(file.getPath()));
-                return new VncString(new String(data, encoding == null ? "utf-8" : encoding));
+                return new VncString(new String(data, CharsetUtil.charset(charset)));
             }
         }
         catch(Exception ex) {

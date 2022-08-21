@@ -41,6 +41,7 @@ import org.junit.jupiter.api.Test;
 import com.github.jlangch.venice.SecurityException;
 import com.github.jlangch.venice.Venice;
 import com.github.jlangch.venice.VncException;
+import com.github.jlangch.venice.impl.util.io.CharsetUtil;
 import com.github.jlangch.venice.javainterop.AcceptAllInterceptor;
 import com.github.jlangch.venice.javainterop.ILoadPaths;
 import com.github.jlangch.venice.javainterop.LoadPathsFactory;
@@ -672,23 +673,23 @@ public class LoadPaths1Test {
 
         // venice files
         final File file10 = new File(root, "div.venice");
-        Files.write(file10.toPath(), "(defn func [] (/ 10 2))".getBytes("UTF-8"), StandardOpenOption.CREATE);
+        Files.write(file10.toPath(), "(defn func [] (/ 10 2))".getBytes(CharsetUtil.DEFAULT_CHARSET), StandardOpenOption.CREATE);
 
         final File file11 = new File(dir1, "sum.venice");
-        Files.write(file11.toPath(), "(defn func [] (+ 10 1))".getBytes("UTF-8"), StandardOpenOption.CREATE);
+        Files.write(file11.toPath(), "(defn func [] (+ 10 1))".getBytes(CharsetUtil.DEFAULT_CHARSET), StandardOpenOption.CREATE);
 
         final File file12 = new File(dir1, "sub.venice");
-        Files.write(file12.toPath(), "(defn func [] (- 10 1)))".getBytes("UTF-8"), StandardOpenOption.CREATE);
+        Files.write(file12.toPath(), "(defn func [] (- 10 1)))".getBytes(CharsetUtil.DEFAULT_CHARSET), StandardOpenOption.CREATE);
 
         // resource files
         final File file20 = new File(root, "res1.txt");
-        Files.write(file20.toPath(), "111".getBytes("UTF-8"), StandardOpenOption.CREATE);
+        Files.write(file20.toPath(), "111".getBytes(CharsetUtil.DEFAULT_CHARSET), StandardOpenOption.CREATE);
 
         final File file21 = new File(dir1, "res2.txt");
-        Files.write(file21.toPath(), "222".getBytes("UTF-8"), StandardOpenOption.CREATE);
+        Files.write(file21.toPath(), "222".getBytes(CharsetUtil.DEFAULT_CHARSET), StandardOpenOption.CREATE);
 
         final File file22 = new File(dir1, "res3.txt");
-        Files.write(file22.toPath(), "333)".getBytes("UTF-8"), StandardOpenOption.CREATE);
+        Files.write(file22.toPath(), "333)".getBytes(CharsetUtil.DEFAULT_CHARSET), StandardOpenOption.CREATE);
 
         return root;
     }

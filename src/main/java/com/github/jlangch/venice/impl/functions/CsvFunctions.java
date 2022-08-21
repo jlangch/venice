@@ -48,6 +48,7 @@ import com.github.jlangch.venice.impl.util.ArityExceptions;
 import com.github.jlangch.venice.impl.util.SymbolMapBuilder;
 import com.github.jlangch.venice.impl.util.csv.CSVReader;
 import com.github.jlangch.venice.impl.util.csv.CSVWriter;
+import com.github.jlangch.venice.impl.util.io.CharsetUtil;
 
 
 public class CsvFunctions {
@@ -109,7 +110,7 @@ public class CsvFunctions {
                         final VncVal encVal = options.get(new VncKeyword("encoding"));
 
                         try(FileInputStream is = new FileInputStream(file)) {
-                            return map(parser.parse(is, IOFunctions.encoding(encVal)));
+                            return map(parser.parse(is, CharsetUtil.charset(encVal)));
                         }
                     }
                     else if (Types.isVncJavaObject(source, InputStream.class)) {
@@ -118,7 +119,7 @@ public class CsvFunctions {
                         final VncVal encVal = options.get(new VncKeyword("encoding"));
 
                         try(InputStream is_ = is) {
-                            return map(parser.parse(is_, IOFunctions.encoding(encVal)));
+                            return map(parser.parse(is_, CharsetUtil.charset(encVal)));
                         }
                     }
                     else if (Types.isVncJavaObject(source, URL.class)) {
@@ -127,7 +128,7 @@ public class CsvFunctions {
                         final VncVal encVal = options.get(new VncKeyword("encoding"));
 
                         try(InputStream is = url.openStream()) {
-                            return map(parser.parse(is, IOFunctions.encoding(encVal)));
+                            return map(parser.parse(is, CharsetUtil.charset(encVal)));
                         }
                     }
                     else if (Types.isVncJavaObject(source, URI.class)) {
@@ -136,7 +137,7 @@ public class CsvFunctions {
                         final VncVal encVal = options.get(new VncKeyword("encoding"));
 
                         try(InputStream is = uri.toURL().openStream()) {
-                            return map(parser.parse(is, IOFunctions.encoding(encVal)));
+                            return map(parser.parse(is, CharsetUtil.charset(encVal)));
                         }
                     }
                     else if (Types.isVncJavaObject(source, Reader.class)) {

@@ -90,13 +90,20 @@ public class IOStreamUtil {
 
     public static String copyIStoString(
             final InputStream is,
-            final String encoding
+            final String charsetName
+    ) throws IOException{
+    	return is == null
+                ? null
+                : new String(copyIStoByteArray(is), CharsetUtil.charset(charsetName));
+    }
+
+    public static String copyIStoString(
+            final InputStream is,
+            final Charset charset
     ) throws IOException{
         return is == null
                 ? null
-                : new String(
-                        IOStreamUtil.copyIStoByteArray(is),
-                        encoding == null ? Charset.defaultCharset().name() : encoding);
+                : new String(copyIStoByteArray(is), CharsetUtil.charset(charset));
     }
 
     public static void copyByteArrayToOS(
@@ -127,16 +134,13 @@ public class IOStreamUtil {
     public static void copyStringToOS(
             final String data,
             final OutputStream os,
-            final String encoding
+            final String charsetName
     ) throws IOException{
         if (os == null || data == null) {
             return;
         }
 
-        os.write(encoding == null
-                    ? data.getBytes(Charset.defaultCharset())
-                    : data.getBytes(encoding));
-
+        os.write(data.getBytes(CharsetUtil.charset(charsetName)));
         os.flush();
     }
 

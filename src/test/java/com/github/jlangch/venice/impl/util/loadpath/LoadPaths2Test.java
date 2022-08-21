@@ -38,6 +38,7 @@ import java.util.Map;
 
 import org.junit.jupiter.api.Test;
 
+import com.github.jlangch.venice.impl.util.io.CharsetUtil;
 import com.github.jlangch.venice.impl.util.io.FileUtil;
 import com.github.jlangch.venice.impl.util.io.zip.Zipper;
 
@@ -112,9 +113,9 @@ public class LoadPaths2Test {
         final File dir1 = Files.createTempDirectory("loadpath_").toFile().getCanonicalFile();
         final File dir2 = Files.createTempDirectory("loadpath_").toFile().getCanonicalFile();
         final File bin1 = new File(dir1, "data1.bin");
-        FileUtil.save("1234".getBytes("UTF-8"), bin1, true);
+        FileUtil.save("1234".getBytes(CharsetUtil.DEFAULT_CHARSET), bin1, true);
         final File bin2 = new File(dir2, "data2.bin");
-        FileUtil.save("5678".getBytes("UTF-8"), bin2, true);
+        FileUtil.save("5678".getBytes(CharsetUtil.DEFAULT_CHARSET), bin2, true);
         final File zip = File.createTempFile("loadpath_", ".zip").getCanonicalFile();
         FileUtil.save(zip("a", "1234", "b", "5678"), zip, true);
         dir1.deleteOnExit();
@@ -131,7 +132,7 @@ public class LoadPaths2Test {
 
         // relative file -> ok
         ByteBuffer data = lp.loadBinaryResource(new File(bin1.getName()));
-        assertEquals("1234", new String(data.array(), "UTF-8"));
+        assertEquals("1234", new String(data.array(), CharsetUtil.DEFAULT_CHARSET));
 
         // relative file -> fail
         data = lp.loadBinaryResource(new File(bin2.getName()));
@@ -139,7 +140,7 @@ public class LoadPaths2Test {
 
         // absolute file -> ok
         data = lp.loadBinaryResource(bin1);
-        assertEquals("1234", new String(data.array(), "UTF-8"));
+        assertEquals("1234", new String(data.array(), CharsetUtil.DEFAULT_CHARSET));
 
         // absolute file -> fail
         data = lp.loadBinaryResource(bin2);
@@ -147,9 +148,9 @@ public class LoadPaths2Test {
 
         // ZIP
         data = lp.loadBinaryResource(new File("a"));
-        assertEquals("1234", new String(data.array(), "UTF-8"));
+        assertEquals("1234", new String(data.array(), CharsetUtil.DEFAULT_CHARSET));
         data = lp.loadBinaryResource(new File("b"));
-        assertEquals("5678", new String(data.array(), "UTF-8"));
+        assertEquals("5678", new String(data.array(), CharsetUtil.DEFAULT_CHARSET));
         data = lp.loadBinaryResource(new File("c"));
         assertNull(data);
     }
@@ -159,9 +160,9 @@ public class LoadPaths2Test {
         final File dir1 = Files.createTempDirectory("loadpath_").toFile().getCanonicalFile();
         final File dir2 = Files.createTempDirectory("loadpath_").toFile().getCanonicalFile();
         final File bin1 = new File(dir1, "data1.bin");
-        FileUtil.save("1234".getBytes("UTF-8"), bin1, true);
+        FileUtil.save("1234".getBytes(CharsetUtil.DEFAULT_CHARSET), bin1, true);
         final File bin2 = new File(dir2, "data2.bin");
-        FileUtil.save("5678".getBytes("UTF-8"), bin2, true);
+        FileUtil.save("5678".getBytes(CharsetUtil.DEFAULT_CHARSET), bin2, true);
         final File zip = File.createTempFile("loadpath_", ".zip").getCanonicalFile();
         FileUtil.save(zip("a", "1234", "b", "5678"), zip, true);
         dir1.deleteOnExit();
@@ -178,7 +179,7 @@ public class LoadPaths2Test {
 
         // relative file -> ok
         ByteBuffer data = lp.loadBinaryResource(new File(bin1.getName()));
-        assertEquals("1234", new String(data.array(), "UTF-8"));
+        assertEquals("1234", new String(data.array(), CharsetUtil.DEFAULT_CHARSET));
 
         // relative file -> fail
         data = lp.loadBinaryResource(new File(bin2.getName()));
@@ -186,17 +187,17 @@ public class LoadPaths2Test {
 
         // absolute file -> ok
         data = lp.loadBinaryResource(bin1);
-        assertEquals("1234", new String(data.array(), "UTF-8"));
+        assertEquals("1234", new String(data.array(), CharsetUtil.DEFAULT_CHARSET));
 
         // absolute file -> ok
         data = lp.loadBinaryResource(bin2);
-        assertEquals("5678", new String(data.array(), "UTF-8"));
+        assertEquals("5678", new String(data.array(), CharsetUtil.DEFAULT_CHARSET));
 
         // ZIP
         data = lp.loadBinaryResource(new File("a"));
-        assertEquals("1234", new String(data.array(), "UTF-8"));
+        assertEquals("1234", new String(data.array(), CharsetUtil.DEFAULT_CHARSET));
         data = lp.loadBinaryResource(new File("b"));
-        assertEquals("5678", new String(data.array(), "UTF-8"));
+        assertEquals("5678", new String(data.array(), CharsetUtil.DEFAULT_CHARSET));
         data = lp.loadBinaryResource(new File("c"));
         assertNull(data);
     }
@@ -206,9 +207,9 @@ public class LoadPaths2Test {
         final File dir1 = Files.createTempDirectory("loadpath_").toFile().getCanonicalFile();
         final File dir2 = Files.createTempDirectory("loadpath_").toFile().getCanonicalFile();
         final File bin1 = new File(dir1, "data1.bin");
-        FileUtil.save("1234".getBytes("UTF-8"), bin1, true);
+        FileUtil.save("1234".getBytes(CharsetUtil.DEFAULT_CHARSET), bin1, true);
         final File bin2 = new File(dir2, "data2.bin");
-        FileUtil.save("5678".getBytes("UTF-8"), bin2, true);
+        FileUtil.save("5678".getBytes(CharsetUtil.DEFAULT_CHARSET), bin2, true);
         final File zip = File.createTempFile("loadpath_", ".zip").getCanonicalFile();
         FileUtil.save(zip("a", "1234", "b", "5678"), zip, true);
         dir1.deleteOnExit();
@@ -224,27 +225,27 @@ public class LoadPaths2Test {
 
 
         // relative file -> ok
-        String data = lp.loadTextResource(new File(bin1.getName()), "UTF-8");
+        String data = lp.loadTextResource(new File(bin1.getName()), CharsetUtil.DEFAULT_CHARSET);
         assertEquals("1234", data);
 
         // relative file -> fail
-        data = lp.loadTextResource(new File(bin2.getName()), "UTF-8");
+        data = lp.loadTextResource(new File(bin2.getName()), CharsetUtil.DEFAULT_CHARSET);
         assertNull(data);
 
         // absolute file -> ok
-        data = lp.loadTextResource(bin1, "UTF-8");
+        data = lp.loadTextResource(bin1, CharsetUtil.DEFAULT_CHARSET);
         assertEquals("1234", data);
 
         // absolute file -> fail
-        data = lp.loadTextResource(bin2, "UTF-8");
+        data = lp.loadTextResource(bin2, CharsetUtil.DEFAULT_CHARSET);
         assertNull(data);
 
         // ZIP
-        data = lp.loadTextResource(new File("a"), "UTF-8");
+        data = lp.loadTextResource(new File("a"), CharsetUtil.DEFAULT_CHARSET);
         assertEquals("1234", data);
-        data = lp.loadTextResource(new File("b"), "UTF-8");
+        data = lp.loadTextResource(new File("b"), CharsetUtil.DEFAULT_CHARSET);
         assertEquals("5678", data);
-        data = lp.loadTextResource(new File("c"), "UTF-8");
+        data = lp.loadTextResource(new File("c"), CharsetUtil.DEFAULT_CHARSET);
         assertNull(data);
     }
 
@@ -253,9 +254,9 @@ public class LoadPaths2Test {
         final File dir1 = Files.createTempDirectory("loadpath_").toFile().getCanonicalFile();
         final File dir2 = Files.createTempDirectory("loadpath_").toFile().getCanonicalFile();
         final File bin1 = new File(dir1, "data1.bin");
-        FileUtil.save("1234".getBytes("UTF-8"), bin1, true);
+        FileUtil.save("1234".getBytes(CharsetUtil.DEFAULT_CHARSET), bin1, true);
         final File bin2 = new File(dir2, "data2.bin");
-        FileUtil.save("5678".getBytes("UTF-8"), bin2, true);
+        FileUtil.save("5678".getBytes(CharsetUtil.DEFAULT_CHARSET), bin2, true);
         final File zip = File.createTempFile("loadpath_", ".zip").getCanonicalFile();
         FileUtil.save(zip("a", "1234", "b", "5678"), zip, true);
         dir1.deleteOnExit();
@@ -271,27 +272,27 @@ public class LoadPaths2Test {
 
 
         // relative file -> ok
-        String data = lp.loadTextResource(new File(bin1.getName()), "UTF-8");
+        String data = lp.loadTextResource(new File(bin1.getName()), CharsetUtil.DEFAULT_CHARSET);
         assertEquals("1234", data);
 
         // relative file -> fail
-        data = lp.loadTextResource(new File(bin2.getName()), "UTF-8");
+        data = lp.loadTextResource(new File(bin2.getName()), CharsetUtil.DEFAULT_CHARSET);
         assertNull(data);
 
         // absolute file -> ok
-        data = lp.loadTextResource(bin1, "UTF-8");
+        data = lp.loadTextResource(bin1, CharsetUtil.DEFAULT_CHARSET);
         assertEquals("1234", data);
 
         // absolute file -> ok
-        data = lp.loadTextResource(bin2, "UTF-8");
+        data = lp.loadTextResource(bin2, CharsetUtil.DEFAULT_CHARSET);
         assertEquals("5678", data);
 
         // ZIP
-        data = lp.loadTextResource(new File("a"), "UTF-8");
+        data = lp.loadTextResource(new File("a"), CharsetUtil.DEFAULT_CHARSET);
         assertEquals("1234", data);
-        data = lp.loadTextResource(new File("b"), "UTF-8");
+        data = lp.loadTextResource(new File("b"), CharsetUtil.DEFAULT_CHARSET);
         assertEquals("5678", data);
-        data = lp.loadTextResource(new File("c"), "UTF-8");
+        data = lp.loadTextResource(new File("c"), CharsetUtil.DEFAULT_CHARSET);
         assertNull(data);
     }
 
@@ -300,9 +301,9 @@ public class LoadPaths2Test {
         final File dir1 = Files.createTempDirectory("loadpath_").toFile().getCanonicalFile();
         final File dir2 = Files.createTempDirectory("loadpath_").toFile().getCanonicalFile();
         final File bin1 = new File(dir1, "data1.venice");
-        FileUtil.save("(def x 1)".getBytes("UTF-8"), bin1, true);
+        FileUtil.save("(def x 1)".getBytes(CharsetUtil.DEFAULT_CHARSET), bin1, true);
         final File bin2 = new File(dir2, "data2.venice");
-        FileUtil.save("(def x 2)".getBytes("UTF-8"), bin2, true);
+        FileUtil.save("(def x 2)".getBytes(CharsetUtil.DEFAULT_CHARSET), bin2, true);
         final File zip = File.createTempFile("loadpath_", ".zip").getCanonicalFile();
         FileUtil.save(zip("a.venice", "(def x :a)", "b.venice", "(def x :b)"), zip, true);
         dir1.deleteOnExit();
@@ -357,9 +358,9 @@ public class LoadPaths2Test {
         final File dir1 = Files.createTempDirectory("loadpath_").toFile().getCanonicalFile();
         final File dir2 = Files.createTempDirectory("loadpath_").toFile().getCanonicalFile();
         final File bin1 = new File(dir1, "data1.venice");
-        FileUtil.save("(def x 1)".getBytes("UTF-8"), bin1, true);
+        FileUtil.save("(def x 1)".getBytes(CharsetUtil.DEFAULT_CHARSET), bin1, true);
         final File bin2 = new File(dir2, "data2.venice");
-        FileUtil.save("(def x 2)".getBytes("UTF-8"), bin2, true);
+        FileUtil.save("(def x 2)".getBytes(CharsetUtil.DEFAULT_CHARSET), bin2, true);
         final File zip = File.createTempFile("loadpath_", ".zip").getCanonicalFile();
         FileUtil.save(zip("a.venice", "(def x :a)", "b.venice", "(def x :b)"), zip, true);
         dir1.deleteOnExit();
@@ -414,9 +415,9 @@ public class LoadPaths2Test {
         final File dir1 = Files.createTempDirectory("loadpath_test__").toFile().getCanonicalFile();
         final File dir2 = Files.createTempDirectory("loadpath_test_alt__").toFile().getCanonicalFile();
         final File bin1 = new File(dir1, "data1.venice");
-        FileUtil.save("(def x 1)".getBytes("UTF-8"), bin1, true);
+        FileUtil.save("(def x 1)".getBytes(CharsetUtil.DEFAULT_CHARSET), bin1, true);
         final File bin2 = new File(dir2, "data2.venice");
-        FileUtil.save("(def x 2)".getBytes("UTF-8"), bin2, true);
+        FileUtil.save("(def x 2)".getBytes(CharsetUtil.DEFAULT_CHARSET), bin2, true);
         dir1.deleteOnExit();
         dir2.deleteOnExit();
         bin1.deleteOnExit();
@@ -451,8 +452,8 @@ public class LoadPaths2Test {
             final String entry1, final String value1,
             final String entry2, final String value2
     ) throws UnsupportedEncodingException {
-        return zip(entry1, value1.getBytes("UTF-8"),
-                   entry2, value2.getBytes("UTF-8"));
+        return zip(entry1, value1.getBytes(CharsetUtil.DEFAULT_CHARSET),
+                   entry2, value2.getBytes(CharsetUtil.DEFAULT_CHARSET));
     }
 
     private static byte[] zip(

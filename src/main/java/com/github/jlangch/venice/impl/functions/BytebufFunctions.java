@@ -24,6 +24,7 @@ package com.github.jlangch.venice.impl.functions;
 import static com.github.jlangch.venice.impl.types.Constants.Nil;
 
 import java.nio.ByteBuffer;
+import java.nio.charset.Charset;
 import java.util.Arrays;
 import java.util.Map;
 import java.util.concurrent.atomic.AtomicLong;
@@ -45,6 +46,7 @@ import com.github.jlangch.venice.impl.types.util.Coerce;
 import com.github.jlangch.venice.impl.types.util.Types;
 import com.github.jlangch.venice.impl.util.ArityExceptions;
 import com.github.jlangch.venice.impl.util.SymbolMapBuilder;
+import com.github.jlangch.venice.impl.util.io.CharsetUtil;
 
 
 public class BytebufFunctions {
@@ -101,7 +103,7 @@ public class BytebufFunctions {
                     try {
                         return new VncByteBuffer(
                                         ByteBuffer.wrap(
-                                            ((VncString)arg).getValue().getBytes("UTF-8")));
+                                            ((VncString)arg).getValue().getBytes(CharsetUtil.DEFAULT_CHARSET)));
                     }
                     catch(Exception ex) {
                         throw new VncException(
@@ -228,10 +230,10 @@ public class BytebufFunctions {
                 final String s = Coerce.toVncString(args.first()).getValue();
 
                 final VncVal encVal = args.size() == 2 ? args.second() : Nil;
-                final String encoding = encoding(encVal);
+                final Charset charset = CharsetUtil.charset(encVal);
 
                 try {
-                    return new VncByteBuffer(ByteBuffer.wrap(s.getBytes(encoding)));
+                    return new VncByteBuffer(ByteBuffer.wrap(s.getBytes(charset)));
                 }
                 catch(Exception ex) {
                     throw new VncException(String.format(
@@ -259,10 +261,10 @@ public class BytebufFunctions {
                 final ByteBuffer buf = Coerce.toVncByteBuffer(args.first()).getValue();
 
                 final VncVal encVal = args.size() == 2 ? args.second() : Nil;
-                final String encoding = encoding(encVal);
+                final Charset charset = CharsetUtil.charset(encVal);
 
                 try {
-                    return new VncString(new String(buf.array(), encoding));
+                    return new VncString(new String(buf.array(), charset));
                 }
                 catch(Exception ex) {
                     throw new VncException(String.format(
@@ -796,15 +798,6 @@ public class BytebufFunctions {
             private static final long serialVersionUID = -1848883965231344442L;
         };
 
-
-
-    private static String encoding(final VncVal enc) {
-        return enc == Nil
-                ? "UTF-8"
-                : Types.isVncKeyword(enc)
-                    ? Coerce.toVncKeyword(enc).getValue()
-                    : Coerce.toVncString(enc).getValue();
-    }
 
 
     ///////////////////////////////////////////////////////////////////////////

@@ -46,6 +46,7 @@ import com.github.jlangch.venice.impl.types.util.Coerce;
 import com.github.jlangch.venice.impl.types.util.Types;
 import com.github.jlangch.venice.impl.util.ArityExceptions;
 import com.github.jlangch.venice.impl.util.SymbolMapBuilder;
+import com.github.jlangch.venice.impl.util.io.CharsetUtil;
 import com.github.jlangch.venice.javainterop.IInterceptor;
 import com.github.jlangch.venice.javainterop.ILoadPaths;
 
@@ -224,7 +225,7 @@ public class ModuleFunctions {
                     final boolean binary = VncBoolean.isTrue(options.get(
                                                                 new VncKeyword("binary"),
                                                                 VncBoolean.True));
-                    final String encoding = encoding(options.get(new VncKeyword("encoding")));
+                    final Charset charset = CharsetUtil.charset(options.get(new VncKeyword("encoding")));
 
                     final IInterceptor interceptor = ThreadContext.getInterceptor();
 
@@ -240,7 +241,7 @@ public class ModuleFunctions {
                         }
                     }
                     else {
-                        final String data = interceptor.getLoadPaths().loadTextResource(new File(file), encoding);
+                        final String data = interceptor.getLoadPaths().loadTextResource(new File(file), charset);
 
                         if (data == null) {
                             throw new VncException(
@@ -356,14 +357,6 @@ public class ModuleFunctions {
         else {
             return null;
         }
-    }
-
-    private static String encoding(final VncVal enc) {
-        return enc == Nil
-                ? Charset.defaultCharset().name()
-                : Types.isVncKeyword(enc)
-                    ? Coerce.toVncKeyword(enc).getValue()
-                    : Coerce.toVncString(enc).getValue();
     }
 
 

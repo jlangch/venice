@@ -26,13 +26,14 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.Reader;
 import java.io.StringReader;
-import java.io.UnsupportedEncodingException;
+import java.nio.charset.Charset;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import com.github.jlangch.venice.VncException;
+import com.github.jlangch.venice.impl.util.io.CharsetUtil;
 
 
 public class CSVReader {
@@ -53,13 +54,8 @@ public class CSVReader {
         return parse(new StringReader(csv));
     }
 
-    public List<List<String>> parse(final InputStream is, final String encoding) {
-        try {
-            return parse(new InputStreamReader(is, encoding == null ? "utf-8" : encoding));
-        }
-        catch(UnsupportedEncodingException ex) {
-            throw new VncException("Unsupported encoding '" + encoding + "'");
-        }
+    public List<List<String>> parse(final InputStream is, final Charset charset) {
+        return parse(new InputStreamReader(is, CharsetUtil.charset(charset)));
     }
 
     public List<List<String>> parse(final Reader reader) {

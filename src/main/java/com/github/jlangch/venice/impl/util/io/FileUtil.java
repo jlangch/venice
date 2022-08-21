@@ -25,7 +25,6 @@ import java.io.File;
 import java.io.FilenameFilter;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.UnsupportedEncodingException;
 import java.nio.file.ClosedWatchServiceException;
 import java.nio.file.FileSystems;
 import java.nio.file.Files;
@@ -201,12 +200,7 @@ public class FileUtil {
             final File destination,
             final boolean overwrite
     ) {
-        try {
-            save(text.getBytes("utf-8"), destination, overwrite);
-        }
-        catch (UnsupportedEncodingException ex) {
-            throw new FileException("Failed to save to file <" + destination + ">.", ex);
-        }
+        save(text.getBytes(CharsetUtil.DEFAULT_CHARSET), destination, overwrite);
     }
 
     /**

@@ -32,6 +32,7 @@ import java.util.stream.Collectors;
 
 import com.github.jlangch.venice.VncException;
 import com.github.jlangch.venice.impl.util.CollectionUtil;
+import com.github.jlangch.venice.impl.util.io.CharsetUtil;
 import com.github.jlangch.venice.javainterop.ILoadPaths;
 
 
@@ -67,7 +68,7 @@ public class LoadPaths implements ILoadPaths {
         else {
             final String path = file.getPath();
             final File veniceFile = path.endsWith(".venice") ? file : new File(path + ".venice");
-            return toString(load(veniceFile), "UTF-8");
+            return toString(load(veniceFile), CharsetUtil.DEFAULT_CHARSET);
         }
     }
 
@@ -77,8 +78,8 @@ public class LoadPaths implements ILoadPaths {
     }
 
     @Override
-    public String loadTextResource(final File file, final String encoding) {
-        return file == null ? null : toString(load(file), encoding);
+    public String loadTextResource(final File file, final Charset charset) {
+        return file == null ? null : toString(load(file), charset);
     }
 
     @Override
@@ -156,16 +157,10 @@ public class LoadPaths implements ILoadPaths {
         }
     }
 
-    private String toString(final ByteBuffer data, final String encoding) {
+    private String toString(final ByteBuffer data, final Charset charset) {
         return data == null
                 ? null
-                : new String(data.array(), charset(encoding));
-    }
-
-    private Charset charset(final String encoding) {
-        return encoding == null || encoding.isEmpty()
-                ? Charset.defaultCharset()
-                : Charset.forName(encoding);
+                : new String(data.array(), CharsetUtil.charset(charset));
     }
 
 

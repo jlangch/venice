@@ -23,6 +23,7 @@ package com.github.jlangch.venice.javainterop;
 
 import java.io.File;
 import java.nio.ByteBuffer;
+import java.nio.charset.Charset;
 import java.util.List;
 
 
@@ -60,11 +61,11 @@ public interface ILoadPaths {
      * Loads a text resources file from the load paths
      *
      * @param file A file to load.
-     * @param encoding an optional text encoding like 'UTF-8'. The platform's
-     *                 default encoding is used on passing {@code null}
+     * @param charset an optional text encoding like 'UTF-8'.
+     *                'UTF-8' on passing {@code null}
      * @return The text resource or {@code null} if not found
      */
-    String loadTextResource(File file, String encoding);
+    String loadTextResource(File file, Charset charset);
 
     /**
      * @return the file paths associated with this {@code ILoadPaths} object
