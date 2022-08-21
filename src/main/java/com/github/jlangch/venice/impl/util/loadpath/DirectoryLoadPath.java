@@ -24,9 +24,11 @@ package com.github.jlangch.venice.impl.util.loadpath;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.InputStream;
+import java.io.OutputStream;
 import java.nio.ByteBuffer;
 import java.nio.charset.Charset;
 import java.nio.file.Files;
+import java.nio.file.OpenOption;
 
 import com.github.jlangch.venice.VncException;
 
@@ -132,6 +134,45 @@ public class DirectoryLoadPath extends LoadPath {
                         ex);
         }
     }
+
+    @Override
+    public OutputStream getOutputStream(final File file, final OpenOption... options) {
+        if (file == null) {
+            throw new IllegalArgumentException("A file must not be null");
+        }
+
+
+        try {
+            final File f = realFile(file);
+            return isFileWithinDirectory(f)
+                    ? Files.newOutputStream(f.toPath(), options)
+                    : null;
+        }
+        catch (Exception ex) {
+            throw new VncException(
+                        String.format("Failed to get OutputStream for file '%s'", file.getPath()),
+                        ex);
+        }
+    }
+
+    @Override
+    public boolean isRegularFileOnLoadPath(final File file) {
+        if (file == null) {
+            throw new IllegalArgumentException("A file must not be null");
+        }
+
+        return isOnPath(file) && file.isDirectory();
+    }
+
+    @Override
+    public boolean isDirectoryOnLoadPath(final File file) {
+        if (file == null) {
+            throw new IllegalArgumentException("A file must not be null");
+        }
+
+        return false;
+    }
+
 
     private File realFile(final File file) {
         return file.isAbsolute() ? file : new File(dir, file.getPath());

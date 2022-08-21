@@ -25,8 +25,10 @@ import java.io.BufferedReader;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.OutputStream;
 import java.nio.ByteBuffer;
 import java.nio.charset.Charset;
+import java.nio.file.OpenOption;
 
 import com.github.jlangch.venice.VncException;
 
@@ -43,6 +45,11 @@ public abstract class LoadPath {
 
     abstract BufferedReader getBufferedReader(File file, Charset charset);
 
+    abstract OutputStream getOutputStream(File file, OpenOption... options);
+
+    abstract boolean isRegularFileOnLoadPath(File file);
+
+    abstract boolean isDirectoryOnLoadPath(File file);
 
     public File canonical(final File file) {
         try {

@@ -26,8 +26,10 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.OutputStream;
 import java.nio.ByteBuffer;
 import java.nio.charset.Charset;
+import java.nio.file.OpenOption;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -128,6 +130,29 @@ public class ZipLoadPath extends LoadPath {
         else {
            return null;
         }
+    }
+
+    @Override
+    public OutputStream getOutputStream(final File file, final OpenOption... options) {
+        return null;   // not supported
+    }
+
+    @Override
+    public boolean isRegularFileOnLoadPath(final File file) {
+        if (file == null) {
+            throw new IllegalArgumentException("A file must not be null");
+        }
+
+        return isOnPath(file);
+    }
+
+    @Override
+    public boolean isDirectoryOnLoadPath(final File file) {
+        if (file == null) {
+            throw new IllegalArgumentException("A file must not be null");
+        }
+
+        return false;
     }
 
 

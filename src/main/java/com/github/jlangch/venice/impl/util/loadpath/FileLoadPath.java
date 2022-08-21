@@ -25,9 +25,11 @@ import java.io.BufferedReader;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.OutputStream;
 import java.nio.ByteBuffer;
 import java.nio.charset.Charset;
 import java.nio.file.Files;
+import java.nio.file.OpenOption;
 
 
 public class FileLoadPath extends LoadPath {
@@ -106,6 +108,29 @@ public class FileLoadPath extends LoadPath {
         }
 
         return null;
+    }
+
+    @Override
+    public OutputStream getOutputStream(final File file, final OpenOption... options) {
+        return null;   // not supported
+    }
+
+    @Override
+    public boolean isRegularFileOnLoadPath(final File file) {
+        if (file == null) {
+            throw new IllegalArgumentException("A file must not be null");
+        }
+
+        return isOnPath(file) && file.isFile();
+    }
+
+    @Override
+    public boolean isDirectoryOnLoadPath(final File file) {
+        if (file == null) {
+            throw new IllegalArgumentException("A file must not be null");
+        }
+
+        return false;
     }
 
 

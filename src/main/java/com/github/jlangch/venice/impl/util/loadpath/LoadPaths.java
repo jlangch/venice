@@ -25,9 +25,11 @@ import java.io.BufferedReader;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.OutputStream;
 import java.nio.ByteBuffer;
 import java.nio.charset.Charset;
 import java.nio.file.Files;
+import java.nio.file.OpenOption;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -135,7 +137,30 @@ public class LoadPaths implements ILoadPaths {
             throw new IllegalArgumentException("A file must not be null");
         }
 
-        return null;
+        try {
+            for(LoadPath p : paths) {
+                final InputStream is = p.getInputStream(file);
+                if (is != null) {
+                    return is;
+                }
+            }
+
+            if (unlimitedAccess) {
+                return Files.newInputStream(file.toPath());
+            }
+
+            return null;
+        }
+        catch (VncException ex) {
+            throw ex;
+        }
+        catch (Exception ex) {
+            throw new VncException(
+                        String.format(
+                                "Failed to return an InputStream for the file '%s' on the load path",
+                                file.getPath()),
+                        ex);
+        }
     }
 
     @Override
@@ -144,8 +169,128 @@ public class LoadPaths implements ILoadPaths {
             throw new IllegalArgumentException("A file must not be null");
         }
 
-        return null;
+        try {
+            for(LoadPath p : paths) {
+                final BufferedReader br = p.getBufferedReader(file, charset);
+                if (br != null) {
+                    return br;
+                }
+            }
+
+            if (unlimitedAccess) {
+                return Files.newBufferedReader(file.toPath(), charset);
+            }
+
+            return null;
+        }
+        catch (VncException ex) {
+            throw ex;
+        }
+        catch (Exception ex) {
+            throw new VncException(
+                        String.format(
+                                "Failed to return a BufferedReader for the file '%s' on the load path",
+                                file.getPath()),
+                        ex);
+        }
     }
+
+    @Override
+    public OutputStream getOutputStream(final File file, final OpenOption... options) {
+        if (file == null) {
+            throw new IllegalArgumentException("A file must not be null");
+        }
+
+        try {
+            for(LoadPath p : paths) {
+                final OutputStream os = p.getOutputStream(file, options);
+                if (os != null) {
+                    return os;
+                }
+            }
+
+            if (unlimitedAccess) {
+                return Files.newOutputStream(file.toPath(), options);
+            }
+
+            return null;
+        }
+        catch (VncException ex) {
+            throw ex;
+        }
+        catch (Exception ex) {
+            throw new VncException(
+                        String.format(
+                                "Failed to return an OutputStream for the file '%s' on the load path",
+                                file.getPath()),
+                        ex);
+        }
+    }
+
+    @Override
+    public boolean isRegularFileOnLoadPath(final File file) {
+        if (file == null) {
+            throw new IllegalArgumentException("A file must not be null");
+        }
+
+        try {
+            for(LoadPath p : paths) {
+                final boolean exists = p.isRegularFileOnLoadPath(file);
+                if (exists) {
+                    return true;
+                }
+            }
+
+            if (unlimitedAccess) {
+                return file.isFile();
+            }
+
+            return false;
+        }
+        catch (VncException ex) {
+            throw ex;
+        }
+        catch (Exception ex) {
+            throw new VncException(
+                        String.format(
+                                "Failed to check if the regular file '%s' exists the load path",
+                                file.getPath()),
+                        ex);
+        }
+   }
+
+    @Override
+    public boolean isDirectoryOnLoadPath(final File file) {
+        if (file == null) {
+            throw new IllegalArgumentException("A file must not be null");
+        }
+
+        try {
+            for(LoadPath p : paths) {
+                final boolean exists = p.isDirectoryOnLoadPath(file);
+                if (exists) {
+                    return true;
+                }
+            }
+
+            if (unlimitedAccess) {
+                return file.isDirectory();
+            }
+
+            return false;
+        }
+        catch (VncException ex) {
+            throw ex;
+        }
+        catch (Exception ex) {
+            throw new VncException(
+                        String.format(
+                                "Failed to check if the directory '%s' exists the load path",
+                                file.getPath()),
+                        ex);
+        }
+   }
+
 
     private ByteBuffer load(final File file) {
         // try to load the file from one of the load paths
