@@ -21,7 +21,9 @@
  */
 package com.github.jlangch.venice.javainterop;
 
+import java.io.BufferedReader;
 import java.io.File;
+import java.io.InputStream;
 import java.nio.ByteBuffer;
 import java.nio.charset.Charset;
 import java.util.List;
@@ -66,6 +68,25 @@ public interface ILoadPaths {
      * @return The text resource or {@code null} if not found
      */
     String loadTextResource(File file, Charset charset);
+
+    /**
+     * Returns a {@code InputStream} for a file from the load paths
+     *
+     * @param file A file to return an {@code InputStream}.
+
+     * @return The {@code InputStream} or {@code null} if not found
+     */
+    InputStream getInputStream(File file);
+
+    /**
+     * Returns a {@code BufferedReader} for a file from the load paths
+     *
+     * @param file A file to return an {@code BufferedReader}.
+     * @param charset an optional text encoding like 'UTF-8'.
+     *                'UTF-8' on passing {@code null}
+     * @return The {@code BufferedReader} or {@code null} if not found
+     */
+    BufferedReader getBufferedReader(File file, Charset charset);
 
     /**
      * @return the file paths associated with this {@code ILoadPaths} object

@@ -36,11 +36,11 @@ import com.github.jlangch.venice.impl.functions.JsonFunctions;
 import com.github.jlangch.venice.impl.types.VncJavaObject;
 import com.github.jlangch.venice.impl.types.VncString;
 import com.github.jlangch.venice.impl.types.VncSymbol;
-import com.github.jlangch.venice.impl.types.VncVal;
 import com.github.jlangch.venice.impl.types.collections.VncList;
 import com.github.jlangch.venice.impl.types.collections.VncMap;
 import com.github.jlangch.venice.impl.types.util.Coerce;
 import com.github.jlangch.venice.impl.util.StringUtil;
+import com.github.jlangch.venice.impl.util.io.CharsetUtil;
 import com.github.jlangch.venice.impl.util.io.zip.ZipFileSystemUtil;
 import com.github.jlangch.venice.javainterop.AcceptAllInterceptor;
 import com.github.jlangch.venice.javainterop.IInterceptor;
@@ -96,8 +96,11 @@ public class AppRunner {
     private static VncMap getManifest(final File app) {
         if (app.exists()) {
             try {
-                final VncVal manifest = ZipFileSystemUtil.loadTextFileFromZip(app, new File("MANIFEST.MF"), "utf-8");
-                return Coerce.toVncMap(JsonFunctions.read_str.apply(VncList.of(manifest)));
+                final String manifest = ZipFileSystemUtil.loadTextFileFromZip(
+                							app,
+                							new File("MANIFEST.MF"),
+                							CharsetUtil.charset("UTF-8"));
+                return Coerce.toVncMap(JsonFunctions.read_str.apply(VncList.of(new VncString(manifest))));
             }
             catch (Exception ex) {
                 throw new VncException(String.format(

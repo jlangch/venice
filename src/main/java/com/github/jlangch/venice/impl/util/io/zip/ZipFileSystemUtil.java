@@ -21,16 +21,17 @@
  */
 package com.github.jlangch.venice.impl.util.io.zip;
 
+import java.io.BufferedReader;
 import java.io.File;
 import java.io.IOException;
+import java.io.InputStream;
+import java.nio.ByteBuffer;
+import java.nio.charset.Charset;
 import java.nio.file.FileSystem;
 import java.nio.file.FileSystems;
 import java.nio.file.Files;
 
 import com.github.jlangch.venice.VncException;
-import com.github.jlangch.venice.impl.types.VncByteBuffer;
-import com.github.jlangch.venice.impl.types.VncString;
-import com.github.jlangch.venice.impl.util.io.CharsetUtil;
 
 
 public class ZipFileSystemUtil {
@@ -48,7 +49,10 @@ public class ZipFileSystemUtil {
         }
     }
 
-    public static VncByteBuffer loadBinaryFileFromZip(final File zip, final File file) {
+    public static ByteBuffer loadBinaryFileFromZip(
+            final File zip,
+            final File file
+    ) {
         if (!zip.exists()) {
             throw new VncException(String.format(
                     "The ZIP file '%s' does not exist",
@@ -58,7 +62,7 @@ public class ZipFileSystemUtil {
         try {
             try (FileSystem zipFS = mountZip(zip)) {
                 final byte[] data = Files.readAllBytes(zipFS.getPath(file.getPath()));
-                return new VncByteBuffer(data);
+                return ByteBuffer.wrap(data);
             }
         }
         catch(Exception ex) {
@@ -69,7 +73,11 @@ public class ZipFileSystemUtil {
         }
     }
 
-    public static VncString loadTextFileFromZip(final File zip, final File file, final String charset) {
+    public static String loadTextFileFromZip(
+            final File zip,
+            final File file,
+            final Charset charset
+    ) {
         if (!zip.exists()) {
             throw new VncException(String.format(
                     "The ZIP file '%s' does not exist",
@@ -79,12 +87,59 @@ public class ZipFileSystemUtil {
         try {
             try (FileSystem zipFS = mountZip(zip)) {
                 final byte[] data = Files.readAllBytes(zipFS.getPath(file.getPath()));
-                return new VncString(new String(data, CharsetUtil.charset(charset)));
+                return new String(data, charset);
             }
         }
         catch(Exception ex) {
             throw new VncException(String.format(
                         "Failed to load file '%s' from ZIP '%s'",
+                        file.getPath(),
+                        zip.getPath()));
+        }
+    }
+
+    public static InputStream getInputStreamFromZip(
+            final File zip,
+            final File file
+    ) {
+        if (!zip.exists()) {
+            throw new VncException(String.format(
+                    "The ZIP file '%s' does not exist",
+                    zip.getPath()));
+        }
+
+        try {
+            try (FileSystem zipFS = mountZip(zip)) {
+                return Files.newInputStream(zipFS.getPath(file.getPath()));
+            }
+        }
+        catch(Exception ex) {
+            throw new VncException(String.format(
+                        "Failed to return an InputStream for file '%s' from ZIP '%s'",
+                        file.getPath(),
+                        zip.getPath()));
+        }
+    }
+
+    public static BufferedReader getBufferedReaderFromZip(
+            final File zip,
+            final File file,
+            final Charset charset
+    ) {
+        if (!zip.exists()) {
+            throw new VncException(String.format(
+                    "The ZIP file '%s' does not exist",
+                    zip.getPath()));
+        }
+
+        try {
+            try (FileSystem zipFS = mountZip(zip)) {
+                return Files.newBufferedReader(zipFS.getPath(file.getPath()), charset);
+            }
+        }
+        catch(Exception ex) {
+            throw new VncException(String.format(
+                        "Failed to return a BufferedReader for file '%s' from ZIP '%s'",
                         file.getPath(),
                         zip.getPath()));
         }

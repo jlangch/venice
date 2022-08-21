@@ -83,6 +83,7 @@ import com.github.jlangch.venice.impl.types.util.Coerce;
 import com.github.jlangch.venice.impl.types.util.Types;
 import com.github.jlangch.venice.impl.util.CommandLineArgs;
 import com.github.jlangch.venice.impl.util.StringUtil;
+import com.github.jlangch.venice.impl.util.io.CharsetUtil;
 import com.github.jlangch.venice.impl.util.io.zip.ZipFileSystemUtil;
 import com.github.jlangch.venice.javainterop.AcceptAllInterceptor;
 import com.github.jlangch.venice.javainterop.IInterceptor;
@@ -1399,8 +1400,11 @@ public class REPL {
     private VncMap getAppManifest(final File app) {
         if (app.exists()) {
             try {
-                final VncVal manifest = ZipFileSystemUtil.loadTextFileFromZip(app, new File("MANIFEST.MF"), "utf-8");
-                return Coerce.toVncMap(JsonFunctions.read_str.apply(VncList.of(manifest)));
+                final String manifest = ZipFileSystemUtil.loadTextFileFromZip(
+                							app,
+                							new File("MANIFEST.MF"),
+                							CharsetUtil.charset("UTF-8"));
+                return Coerce.toVncMap(JsonFunctions.read_str.apply(VncList.of(new VncString(manifest))));
             }
             catch (Exception ex) {
                 throw new VncException(String.format(

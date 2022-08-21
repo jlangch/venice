@@ -21,9 +21,11 @@
  */
 package com.github.jlangch.venice.impl.util.loadpath;
 
+import java.io.BufferedReader;
 import java.io.File;
-import java.io.IOException;
+import java.io.InputStream;
 import java.nio.ByteBuffer;
+import java.nio.charset.Charset;
 import java.nio.file.Files;
 
 import com.github.jlangch.venice.VncException;
@@ -83,11 +85,59 @@ public class DirectoryLoadPath extends LoadPath {
         }
     }
 
+    @Override
+    public InputStream getInputStream(final File file) {
+        if (file == null) {
+            throw new IllegalArgumentException("A file must not be null");
+        }
+
+        try {
+            final File f = realFile(file);
+            if (f.isFile()) {
+                return isFileWithinDirectory(f)
+                        ? Files.newInputStream(f.toPath())
+                        : null;
+            }
+            else {
+                return null;
+            }
+        }
+        catch (Exception ex) {
+            throw new VncException(
+                        String.format("Failed to get InputStream for file '%s'", file.getPath()),
+                        ex);
+        }
+    }
+
+    @Override
+    public BufferedReader getBufferedReader(final File file, final Charset charset) {
+        if (file == null) {
+            throw new IllegalArgumentException("A file must not be null");
+        }
+
+        try {
+            final File f = realFile(file);
+            if (f.isFile()) {
+                return isFileWithinDirectory(f)
+                        ? Files.newBufferedReader(f.toPath(), charset)
+                        : null;
+            }
+            else {
+                return null;
+            }
+        }
+        catch (Exception ex) {
+            throw new VncException(
+                        String.format("Failed to get BufferedReader for file '%s'", file.getPath()),
+                        ex);
+        }
+    }
+
     private File realFile(final File file) {
         return file.isAbsolute() ? file : new File(dir, file.getPath());
     }
 
-    private boolean isFileWithinDirectory(final File file) throws IOException {
+    private boolean isFileWithinDirectory(final File file) {
         if (canonical(file).toPath().startsWith(dir.toPath())) {
             // Prevent accessing files outside the load-path
             //

@@ -21,10 +21,13 @@
  */
 package com.github.jlangch.venice.impl.util.loadpath;
 
+import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.nio.ByteBuffer;
+import java.nio.charset.Charset;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -72,8 +75,7 @@ public class ZipLoadPath extends LoadPath {
         else if (entries.contains(file.getPath())) {
             try {
                 return ZipFileSystemUtil
-                            .loadBinaryFileFromZip(zip, file)
-                            .getValue();
+                            .loadBinaryFileFromZip(zip, file);
             }
             catch(Exception ex) {
                 return null;
@@ -83,6 +85,51 @@ public class ZipLoadPath extends LoadPath {
            return null;
         }
     }
+
+    @Override
+    public InputStream getInputStream(final File file) {
+        if (file == null) {
+            throw new IllegalArgumentException("A file must not be null");
+        }
+
+        if (file.isAbsolute()) {
+            return null;
+        }
+        else if (entries.contains(file.getPath())) {
+            try {
+                return ZipFileSystemUtil.getInputStreamFromZip(zip, file);
+            }
+            catch(Exception ex) {
+                return null;
+            }
+        }
+        else {
+           return null;
+        }
+    }
+
+    @Override
+    public BufferedReader getBufferedReader(final File file, final Charset charset) {
+        if (file == null) {
+            throw new IllegalArgumentException("A file must not be null");
+        }
+
+        if (file.isAbsolute()) {
+            return null;
+        }
+        else if (entries.contains(file.getPath())) {
+            try {
+                return ZipFileSystemUtil.getBufferedReaderFromZip(zip, file, charset);
+            }
+            catch(Exception ex) {
+                return null;
+            }
+        }
+        else {
+           return null;
+        }
+    }
+
 
     public static boolean isZipFile(final File file) {
         if (file.getName().endsWith(".zip")) {

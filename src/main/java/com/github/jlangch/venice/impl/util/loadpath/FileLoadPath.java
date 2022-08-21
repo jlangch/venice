@@ -21,9 +21,12 @@
  */
 package com.github.jlangch.venice.impl.util.loadpath;
 
+import java.io.BufferedReader;
 import java.io.File;
 import java.io.IOException;
+import java.io.InputStream;
 import java.nio.ByteBuffer;
+import java.nio.charset.Charset;
 import java.nio.file.Files;
 
 
@@ -58,6 +61,44 @@ public class FileLoadPath extends LoadPath {
         if (lpFile.equals(f) && f.isFile()) {
             try {
                 return ByteBuffer.wrap(Files.readAllBytes(f.toPath()));
+            }
+            catch(IOException ex) {
+                return null; // just proceed and try with next load path
+            }
+        }
+
+        return null;
+    }
+
+    @Override
+    public InputStream getInputStream(final File file) {
+        if (file == null) {
+            throw new IllegalArgumentException("A file must not be null");
+        }
+
+        final File f = canonical(file);
+        if (lpFile.equals(f) && f.isFile()) {
+            try {
+                return Files.newInputStream(f.toPath());
+            }
+            catch(IOException ex) {
+                return null; // just proceed and try with next load path
+            }
+        }
+
+        return null;
+    }
+
+    @Override
+    public BufferedReader getBufferedReader(final File file, final Charset charset) {
+        if (file == null) {
+            throw new IllegalArgumentException("A file must not be null");
+        }
+
+        final File f = canonical(file);
+        if (lpFile.equals(f) && f.isFile()) {
+            try {
+                return Files.newBufferedReader(f.toPath(), charset);
             }
             catch(IOException ex) {
                 return null; // just proceed and try with next load path

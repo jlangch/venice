@@ -21,8 +21,10 @@
  */
 package com.github.jlangch.venice.impl.util.loadpath;
 
+import java.io.BufferedReader;
 import java.io.File;
 import java.io.IOException;
+import java.io.InputStream;
 import java.nio.ByteBuffer;
 import java.nio.charset.Charset;
 import java.nio.file.Files;
@@ -79,7 +81,7 @@ public class LoadPaths implements ILoadPaths {
 
     @Override
     public String loadTextResource(final File file, final Charset charset) {
-        return file == null ? null : toString(load(file), charset);
+        return file == null ? null : toString(load(file), CharsetUtil.charset(charset));
     }
 
     @Override
@@ -125,6 +127,24 @@ public class LoadPaths implements ILoadPaths {
 
             return false;
         }
+    }
+
+    @Override
+    public InputStream getInputStream(final File file) {
+        if (file == null) {
+            throw new IllegalArgumentException("A file must not be null");
+        }
+
+        return null;
+    }
+
+    @Override
+    public BufferedReader getBufferedReader(final File file, final Charset charset) {
+        if (file == null) {
+            throw new IllegalArgumentException("A file must not be null");
+        }
+
+        return null;
     }
 
     private ByteBuffer load(final File file) {

@@ -21,9 +21,12 @@
  */
 package com.github.jlangch.venice.impl.util.loadpath;
 
+import java.io.BufferedReader;
 import java.io.File;
 import java.io.IOException;
+import java.io.InputStream;
 import java.nio.ByteBuffer;
+import java.nio.charset.Charset;
 
 import com.github.jlangch.venice.VncException;
 
@@ -35,6 +38,10 @@ public abstract class LoadPath {
     abstract boolean isOnPath(final File file);
 
     abstract ByteBuffer load(final File file);
+
+    abstract InputStream getInputStream(File file);
+
+    abstract BufferedReader getBufferedReader(File file, Charset charset);
 
 
     public File canonical(final File file) {
