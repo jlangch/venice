@@ -60,6 +60,7 @@ import com.github.jlangch.venice.impl.util.ArityExceptions;
 import com.github.jlangch.venice.impl.util.CallFrame;
 import com.github.jlangch.venice.impl.util.SymbolMapBuilder;
 import com.github.jlangch.venice.impl.util.WithCallStack;
+import com.github.jlangch.venice.impl.util.io.CharsetUtil;
 import com.github.jlangch.venice.impl.util.io.IOStreamUtil;
 
 
@@ -304,7 +305,7 @@ public class ShellFunctions {
 
                 if (Types.isVncString(in)) {
                     future_stdin = executor.submit(
-                                    () -> copyAndClose((VncString)in, getEncoding(inEnc), stdin));
+                                    () -> copyAndClose((VncString)in, CharsetUtil.charset(inEnc), stdin));
                 }
                 else if (Types.isVncByteBuffer(in)) {
                     future_stdin = executor.submit(
@@ -336,7 +337,7 @@ public class ShellFunctions {
                     future_stdout = executor.submit(() -> VncString.empty());
                 }
                 else {
-                    future_stdout = executor.submit(() -> slurpToString(stdout, enc));
+                    future_stdout = executor.submit(() -> slurpToString(stdout, CharsetUtil.charset(enc)));
                 }
 
                 // slurp the subprocess' stderr as string with platform default encoding
@@ -346,7 +347,7 @@ public class ShellFunctions {
                     future_stderr = executor.submit(() -> VncString.empty());
                 }
                 else {
-                    future_stderr = executor.submit(() -> slurpToString(stderr, enc));
+                    future_stderr = executor.submit(() -> slurpToString(stderr, CharsetUtil.charset(enc)));
                 }
 
                 // wait for the process to exit
@@ -498,10 +499,10 @@ public class ShellFunctions {
 
     private static Object copyAndClose(
             final VncString data,
-            final String encoding,
+            final Charset charset,
             final OutputStream os
     ) throws IOException {
-        IOStreamUtil.copyStringToOS(data.getValue(), os, encoding);
+        IOStreamUtil.copyStringToOS(data.getValue(), os, charset);
         os.flush();
         os.close();
         return null;
@@ -541,8 +542,11 @@ public class ShellFunctions {
         }
     }
 
-    private static VncString slurpToString(final InputStream is, final String enc) throws Exception{
-        return new VncString(IOStreamUtil.copyIStoString(is, enc));
+    private static VncString slurpToString(
+    		final InputStream is,
+    		final Charset charset
+    ) throws Exception{
+        return new VncString(IOStreamUtil.copyIStoString(is, charset));
     }
 
     private static VncByteBuffer slurpToBytes(final InputStream is) throws Exception{

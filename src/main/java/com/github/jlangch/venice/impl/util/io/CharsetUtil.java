@@ -34,14 +34,14 @@ import com.github.jlangch.venice.impl.util.StringUtil;
 public class CharsetUtil {
 
     public static Charset charset(final VncVal charsetName) {
-    	if (charsetName == null || charsetName == Nil) {
-    		return DEFAULT_CHARSET;
-    	}
-    	else {
-    		return Types.isVncKeyword(charsetName)
-	    			? charset(Coerce.toVncKeyword(charsetName).getValue())
-	    			: charset(Coerce.toVncString(charsetName).getValue());
-    	}
+        if (charsetName == null || charsetName == Nil) {
+            return DEFAULT_CHARSET;
+        }
+        else {
+            return Types.isVncKeyword(charsetName)
+                    ? charset(Coerce.toVncKeyword(charsetName).getValue())
+                    : charset(Coerce.toVncString(charsetName).getValue());
+        }
     }
 
     public static Charset charset(final String charsetName) {

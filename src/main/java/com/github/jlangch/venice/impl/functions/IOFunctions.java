@@ -2541,10 +2541,9 @@ public class IOFunctions {
                     }
                     else {
                         final VncVal encVal = options.get(new VncKeyword("encoding"));
+                        final Charset charset = CharsetUtil.charset(encVal);
 
-                        final String encoding = encVal == Nil ? "UTF-8" : Coerce.toVncString(encVal).getValue();
-
-                        return new VncString(IOStreamUtil.copyIStoString(is, encoding));
+                        return new VncString(IOStreamUtil.copyIStoString(is, charset));
                     }
                 }
                 catch (VncException ex) {
