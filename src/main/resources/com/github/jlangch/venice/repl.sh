@@ -18,14 +18,25 @@
 # ------------------------------------------------------------------------------
 
 
-cd /Users/foo/venice/
+REPL_HOME={{INSTALL_PATH}}
+
+if [ ! -d ${REPL_HOME} ]; then
+  echo "Error: The REPL home dir ${REPL_HOME} does not exist!"
+  exit 1
+fi
+
+if [ ! -d ${REPL_HOME}/tmp ]; then
+  mkdir ${REPL_HOME}/tmp
+fi
+
+cd $REPL_HOME
 
 while true; do
   java \
     -server \
     -Xmx4G \
     -XX:-OmitStackTraceInFastThrow \
-    -Djava.io.tmpdir=tmp \
+    -Djava.io.tmpdir=${REPL_HOME}/tmp \
     -cp "libs:libs/*" \
     com.github.jlangch.venice.Launcher \
     -loadpath "scripts" \

@@ -17,7 +17,14 @@ REM #    |
 REM #    +-- repl.sh
 REM # ------------------------------------------------------------------------------
 
-cd C:/Users/foo/venice
+set REPL_HOME={{INSTALL_PATH}}
+
+if not exist %REPL_HOME% exit 2
+
+if not exist %REPL_HOME%\tmp mkdir %REPL_HOME%\tmp
+
+cd %REPL_HOME%
+
 
 :start
 
@@ -25,7 +32,7 @@ java.exe ^
   -server ^
   -Xmx2G ^
   -XX:-OmitStackTraceInFastThrow ^
-  -Djava.io.tmpdir=tmp ^
+  -Djava.io.tmpdir=%REPL_HOME%\tmp ^
   -cp "libs;libs/*" com.github.jlangch.venice.Launcher ^
   -loadpath "scripts" ^
   -restartable ^

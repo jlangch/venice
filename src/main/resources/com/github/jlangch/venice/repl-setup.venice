@@ -188,8 +188,8 @@
          (bytebuf-to-string <> :utf-8)
          (repl-setup/cr-lf <>)
          (str/replace-all <>
-                          "cd C:/Users/foo/venice"
-                          (str "cd " (io/file-path (io/file-canonical-path "."))))
+                          "{{INSTALL_PATH}}"
+                          (str (io/file-path (io/file-canonical-path "."))))
          (change-repl-launcher-color <> color-mode)
          (io/spit "repl.bat" <> :encoding (charset-default-encoding)))))
 
@@ -201,8 +201,8 @@
          (bytebuf-to-string <> :utf-8)
          (repl-setup/cr-lf <>)
          (str/replace-all <>
-                          "cd /Users/foo/venice/"
-                          (str "cd " (io/file-path (io/file-canonical-path "."))))
+                          "{{INSTALL_PATH}}"
+                          (str (io/file-path (io/file-canonical-path "."))))
          (change-repl-launcher-color <> color-mode)
          (io/spit "repl.sh" <> :encoding (charset-default-encoding)))
     (when (io/exists-file? "repl.sh"))
