@@ -53,7 +53,6 @@ import java.nio.file.CopyOption;
 import java.nio.file.DirectoryStream;
 import java.nio.file.FileSystems;
 import java.nio.file.Files;
-import java.nio.file.OpenOption;
 import java.nio.file.Path;
 import java.nio.file.PathMatcher;
 import java.nio.file.StandardCopyOption;
@@ -102,6 +101,7 @@ import com.github.jlangch.venice.impl.util.io.CharsetUtil;
 import com.github.jlangch.venice.impl.util.io.ClassPathResource;
 import com.github.jlangch.venice.impl.util.io.FileUtil;
 import com.github.jlangch.venice.impl.util.io.IOStreamUtil;
+import com.github.jlangch.venice.javainterop.ILoadPaths;
 
 
 public class IOFunctions {
@@ -388,7 +388,7 @@ public class IOFunctions {
                 "io/file?",
                 VncFunction
                     .meta()
-                    .arglists("(io/file? x)")
+                    .arglists("(io/file? f)")
                     .doc("Returns true if x is a java.io.File.")
                     .examples("(io/file? (io/file \"/tmp/test.txt\"))")
                     .build()
@@ -422,7 +422,7 @@ public class IOFunctions {
 
                 final File f = convertToFile(
                                     args.first(),
-                                    "Function 'io/exists-file?' does not allow %s as x");
+                                    "Function 'io/exists-file?' does not allow %s as f");
 
                 return VncBoolean.of(f.isFile());
             }
@@ -478,7 +478,7 @@ public class IOFunctions {
 
                 final File f = convertToFile(
                                     args.first(),
-                                    "Function 'io/file-can-read?' does not allow %s as x");
+                                    "Function 'io/file-can-read?' does not allow %s as f");
 
                 return VncBoolean.of((f.isFile() || f.isDirectory()) && f.canRead());
             }
@@ -505,7 +505,7 @@ public class IOFunctions {
 
                 final File f = convertToFile(
                                     args.first(),
-                                    "Function 'io/file-can-write?' does not allow %s as x");
+                                    "Function 'io/file-can-write?' does not allow %s as f");
 
                 return VncBoolean.of((f.isFile() || f.isDirectory()) && f.canWrite());
             }
@@ -532,7 +532,7 @@ public class IOFunctions {
 
                 final File f = convertToFile(
                                     args.first(),
-                                    "Function 'io/file-can-execute?' does not allow %s as x");
+                                    "Function 'io/file-can-execute?' does not allow %s as f");
 
                 return VncBoolean.of((f.isFile() || f.isDirectory()) && f.canExecute());
             }
@@ -559,7 +559,7 @@ public class IOFunctions {
 
                 final File f = convertToFile(
                                     args.first(),
-                                    "Function 'io/file-hidden?' does not allow %s as x");
+                                    "Function 'io/file-hidden?' does not allow %s as f");
 
                 return VncBoolean.of((f.isFile() || f.isDirectory()) && f.isHidden());
             }
@@ -586,7 +586,7 @@ public class IOFunctions {
 
                 final File f = convertToFile(
                                     args.first(),
-                                    "Function 'io/symbolic-link?' does not allow %s as x");
+                                    "Function 'io/symbolic-link?' does not allow %s as f");
 
                 final Path p = f.toPath();
 
@@ -615,7 +615,7 @@ public class IOFunctions {
 
                 final File f = convertToFile(
                                     args.first(),
-                                    "Function 'io/file-last-modified' does not allow %s as x");
+                                    "Function 'io/file-last-modified' does not allow %s as f");
 
                 if (f.exists()) {
                     final long millis = f.lastModified();
@@ -1268,6 +1268,7 @@ public class IOFunctions {
                                     ex);
                         }
 
+                        // if the directory still exists -> failed to delete
                         if (file.isDirectory()) {
                             throw new VncException(
                                     String.format("Failed to delete file tree from dir %s", file.toString()));
@@ -1649,35 +1650,33 @@ public class IOFunctions {
                 final VncHashMap options = VncHashMap.ofAll(args.rest().rest());
                 final VncVal replaceOpt = options.get(new VncKeyword("replace"));
 
-                final File source = convertToFile(
-                                        args.first(),
-                                        "Function 'io/copy-file' does not allow %s as source");
+                final File sourceFile = convertToFile(
+                                            args.first(),
+                                            "Function 'io/copy-file' does not allow %s as source");
 
-                validateReadableFile(source);
+                validateReadableFile(sourceFile);
 
                 final VncVal destVal = args.second();
 
-                if (Types.isVncString(destVal) || Types.isVncJavaObject(destVal, File.class)) {
-                    final File dest = Types.isVncString(destVal)
-                                        ? new File(Coerce.toVncString(destVal).getValue())
-                                        : Coerce.toVncJavaObject(destVal, File.class);
+                final File destFile = convertToFile(destVal);
 
+                if (destFile != null) {
                     final List<CopyOption> copyOptions = new ArrayList<>();
                     if (VncBoolean.isTrue(replaceOpt)) {
                         copyOptions.add(StandardCopyOption.REPLACE_EXISTING);
                     }
 
                     try {
-                        if (dest.isDirectory()) {
+                        if (destFile.isDirectory()) {
                             Files.copy(
-                                source.toPath(),
-                                dest.toPath().resolve(source.getName()),
+                                    sourceFile.toPath(),
+                                destFile.toPath().resolve(sourceFile.getName()),
                                 copyOptions.toArray(new CopyOption[0]));
                         }
                         else {
                             Files.copy(
-                                source.toPath(),
-                                dest.toPath(),
+                                    sourceFile.toPath(),
+                                destFile.toPath(),
                                 copyOptions.toArray(new CopyOption[0]));
                         }
                     }
@@ -1685,7 +1684,7 @@ public class IOFunctions {
                         throw new VncException(
                                 String.format(
                                         "Failed to copy file %s to %s",
-                                        source.getPath(), dest.getPath()),
+                                        sourceFile.getPath(), destFile.getPath()),
                                 ex);
                     }
                 }
@@ -1693,13 +1692,13 @@ public class IOFunctions {
                     final OutputStream os = (OutputStream)((VncJavaObject)destVal).getDelegate();
 
                     try {
-                        IOStreamUtil.copyFileToOS(source, os);
+                        IOStreamUtil.copyFileToOS(sourceFile, os);
                     }
                     catch(Exception ex) {
                         throw new VncException(
                                 String.format(
                                         "Failed to copy file %s to stream",
-                                        source.getPath()),
+                                        sourceFile.getPath()),
                                 ex);
                     }
                 }
@@ -1971,6 +1970,7 @@ public class IOFunctions {
                         " * `java.io.File`, e.g: `(io/file \"/temp/foo.json\")`            \n" +
                         " * `java.io.InputStream`                                          \n" +
                         " * `java.io.Reader`                                               \n" +
+                        " * `java.nio.file.Path`                                           \n" +
                         " * `java.net.URL`                                                 \n" +
                         " * `java.net.URI`                                                 \n\n" +
                         "Options:                                                          \n\n" +
@@ -1995,12 +1995,17 @@ public class IOFunctions {
 
                 final VncHashMap options = VncHashMap.ofAll(args.rest());
 
-                if (Types.isVncString(arg) || Types.isVncJavaObject(arg, File.class)) {
-                    final File file = Types.isVncString(arg)
-                                        ? new File(((VncString)arg).getValue())
-                                        :  (File)(Coerce.toVncJavaObject(args.first()).getDelegate());
+                final ILoadPaths loadpaths = ThreadContext.getInterceptor().getLoadPaths();
+
+                final File file = convertToFile(arg);
+                if (file != null) {
                     try {
-                        validateReadableFile(file);
+                        final InputStream is = loadpaths.getInputStream(file);
+                        if (is == null) {
+                            throw new VncException(
+                                        "Failed to slurp data from the file " + file.getPath() +
+                                        ". The file does not exists!");
+                        }
                         return slurpLines(options, new FileInputStream(file));
                     }
                     catch (Exception ex) {
@@ -2098,31 +2103,18 @@ public class IOFunctions {
 
                 final VncHashMap options = VncHashMap.ofAll(args.rest());
 
-                if (Types.isVncString(arg)) {
-                    final File file = new File(((VncString)arg).getValue());
+                final ILoadPaths loadpaths = ThreadContext.getInterceptor().getLoadPaths();
+
+                final File file = convertToFile(arg);
+                if (file != null) {
                     try {
-                        validateReadableFile(file);
-                        return slurp(options, new FileInputStream(file));
-                    }
-                    catch (Exception ex) {
-                        throw new VncException("Failed to slurp data from the file " + file.getPath(), ex);
-                    }
-                }
-                else if (Types.isVncJavaObject(arg, File.class)) {
-                    final File file = (File)(Coerce.toVncJavaObject(args.first()).getDelegate());
-                    try {
-                        validateReadableFile(file);
-                        return slurp(options, new FileInputStream(file));
-                    }
-                    catch (Exception ex) {
-                        throw new VncException("Failed to slurp data from the file " + file.getPath(), ex);
-                    }
-                }
-                else if (Types.isVncJavaObject(arg, Path.class)) {
-                    final File file = ((Path)((VncJavaObject)args.first()).getDelegate()).toFile();
-                    try {
-                        validateReadableFile(file);
-                        return slurp(options, new FileInputStream(file));
+                        final InputStream is = loadpaths.getInputStream(file);
+                        if (is == null) {
+                            throw new VncException(
+                                        "Failed to slurp data from the file " + file.getPath() +
+                                        ". The file does not exists!");
+                        }
+                        return slurp(options, is);
                     }
                     catch (Exception ex) {
                         throw new VncException("Failed to slurp data from the file " + file.getPath(), ex);
@@ -2157,21 +2149,35 @@ public class IOFunctions {
                     }
                 }
                 else if (Types.isVncJavaObject(arg, URL.class)) {
-                    try {
-                        final URL url = (URL)(Coerce.toVncJavaObject(args.first()).getDelegate());
-                        return slurp(options, url.openStream());
+                    if (loadpaths.isUnlimitedAccess()) {
+                        try {
+                            final URL url = (URL)(Coerce.toVncJavaObject(args.first()).getDelegate());
+                            return slurp(options, url.openStream());
+                        }
+                        catch (Exception ex) {
+                            throw new VncException("Failed to slurp data from a :java.net.URL", ex);
+                        }
                     }
-                    catch (Exception ex) {
-                        throw new VncException("Failed to slurp data from a :java.net.URL", ex);
+                    else {
+                        throw new VncException(
+                                "Failed to slurp data from a :java.net.URL. " +
+                                "The load paths configuration (unlimited access is disabled) prevents this action!");
                     }
                 }
                 else if (Types.isVncJavaObject(arg, URI.class)) {
-                    try {
-                        final URI uri = (URI)(Coerce.toVncJavaObject(args.first()).getDelegate());
-                        return slurp(options, uri.toURL().openStream());
+                    if (loadpaths.isUnlimitedAccess()) {
+                        try {
+                            final URI uri = (URI)(Coerce.toVncJavaObject(args.first()).getDelegate());
+                            return slurp(options, uri.toURL().openStream());
+                        }
+                        catch (Exception ex) {
+                            throw new VncException("Failed to slurp data from a :java.net.URI", ex);
+                        }
                     }
-                    catch (Exception ex) {
-                        throw new VncException("Failed to slurp data from a :java.net.URI", ex);
+                    else {
+                        throw new VncException(
+                                "Failed to slurp data from a :java.net.URI. " +
+                                "The load paths configuration (unlimited access is disabled) prevents this action!");
                     }
                 }
                 else {
@@ -2206,51 +2212,90 @@ public class IOFunctions {
 
                 sandboxFunctionCallValidation();
 
-                final File file = convertToFile(
-                                    args.first(),
-                                    "Function 'io/spit' does not allow %s as f");
+                final ILoadPaths loadpaths = ThreadContext.getInterceptor().getLoadPaths();
 
-                try {
-                    final VncVal content = args.second();
+                final VncVal content = args.second();
 
-                    final VncHashMap options = VncHashMap.ofAll(args.slice(2));
-                    final VncVal append = options.get(new VncKeyword("append"));
-                    final VncVal encVal = options.get(new VncKeyword("encoding"));
-                    final Charset charset = CharsetUtil.charset(encVal);
+                final VncHashMap options = VncHashMap.ofAll(args.slice(2));
+                final VncVal append = options.get(new VncKeyword("append"));
+                final VncVal encVal = options.get(new VncKeyword("encoding"));
+                final Charset charset = CharsetUtil.charset(encVal);
 
-                    byte[] data;
-
-                    if (Types.isVncString(content)) {
-                        data = ((VncString)content).getValue().getBytes(charset);
-                    }
-                    else if (Types.isVncByteBuffer(content)) {
-                        data = ((VncByteBuffer)content).getBytes();
-                    }
-                    else {
-                        throw new VncException(String.format(
-                                "Function 'io/spit' does not allow %s as content",
-                                Types.getType(content)));
-                    }
-
-                    final List<OpenOption> openOptions = new ArrayList<>();
-                    openOptions.add(StandardOpenOption.CREATE);
-                    openOptions.add(StandardOpenOption.WRITE);
-                    openOptions.add(VncBoolean.isTrue(append)
-                                        ? StandardOpenOption.APPEND
-                                        : StandardOpenOption.TRUNCATE_EXISTING);
-
-                    Files.write(
-                            file.toPath(),
-                            data,
-                            openOptions.toArray(new OpenOption[0]));
-
-                    return Nil;
+                byte[] binaryData = null;
+                String stringData = null;
+                if (Types.isVncString(content)) {
+                    stringData = ((VncString)content).getValue();
                 }
-                catch (Exception ex) {
-                    throw new VncException(
-                            "Failed to spit data to the file " + file.getPath(),
-                            ex);
+                else if (Types.isVncByteBuffer(content)) {
+                    binaryData = ((VncByteBuffer)content).getBytes();
                 }
+                else {
+                    throw new VncException(String.format(
+                            "Function 'io/spit' does not allow %s as content",
+                            Types.getType(content)));
+                }
+
+                  final File file = convertToFile(args.first());
+                if (file != null) {
+                    try {
+                        final OutputStream outStream = loadpaths.getOutputStream(
+                                                            file,
+                                                            StandardOpenOption.CREATE,
+                                                            StandardOpenOption.WRITE,
+                                                            VncBoolean.isTrue(append)
+                                                                ? StandardOpenOption.APPEND
+                                                                : StandardOpenOption.TRUNCATE_EXISTING);
+                        if (outStream != null) {
+                            try (OutputStream os = outStream) {
+                                os.write(binaryData != null ? binaryData : stringData.getBytes(charset));
+                                os.flush();
+                            }
+                        }
+                        else {
+                            throw new VncException(
+                                    String.format(
+                                            "Failed to spit data to the file %s. " +
+                                            "The load paths configuration prevented this action!",
+                                            file.getPath()));
+                        }
+                    }
+                    catch (Exception ex) {
+                        throw new VncException(
+                                "Failed to spit data to the file " + file.getPath(),
+                                ex);
+                    }
+                }
+                else if (Types.isVncJavaObject(args.first(), OutputStream.class)) {
+                    try {
+                        final OutputStream os = (OutputStream)((VncJavaObject)args.first()).getDelegate();
+                        os.write(binaryData != null ? binaryData : stringData.getBytes(charset));
+                        os.flush();
+                    }
+                    catch (Exception ex) {
+                        throw new VncException(
+                                "Failed to spit data to the OutputStream!",
+                                ex);
+                    }
+                }
+                else if (Types.isVncJavaObject(args.first(), Writer.class)) {
+                    try {
+                           final Writer wr = (Writer)((VncJavaObject)args.first()).getDelegate();
+                        wr.write(binaryData != null ? new String(binaryData, charset) : stringData);
+                        wr.flush();
+                    }
+                    catch (Exception ex) {
+                        throw new VncException(
+                                "Failed to spit data to the Writer!",
+                                ex);
+                    }
+                }
+                else {
+                    throw new VncException(String.format(
+                            "Function 'io/spit' does not allow %s as f",
+                            Types.getType(args.first())));
+                }
+
+                return Nil;
             }
 
             private static final long serialVersionUID = -1848883965231344442L;
@@ -2313,8 +2358,8 @@ public class IOFunctions {
                     final VncVal progressVal = options.get(new VncKeyword("progress-fn"));
                     final VncVal connTimeoutMillisVal = options.get(new VncKeyword("conn-timeout"));
                     final VncVal readTimeoutMillisVal = options.get(new VncKeyword("read-timeout"));
+                    final Charset charset = CharsetUtil.charset(encVal);
 
-                    final String encoding = encVal == Nil ? "UTF-8" : Coerce.toVncString(encVal).getValue();
                     progressFn = progressVal == Nil
                                         ? new VncFunction("io/progress-default") {
                                             private static final long serialVersionUID = 1L;
@@ -2382,7 +2427,7 @@ public class IOFunctions {
 
                                 return VncBoolean.isTrue(binary)
                                             ? new VncByteBuffer(ByteBuffer.wrap(data))
-                                            : new VncString(new String(data, encoding));
+                                            : new VncString(new String(data, charset));
 
                             }
                             finally {
@@ -2507,7 +2552,12 @@ public class IOFunctions {
                         "For string data an optional encoding can be specified.\n\n" +
                         "Options: \n\n" +
                         "| :binary true/false | e.g.: `:binary true`, defaults to false |\n" +
-                        "| :encoding enc      | e.g.: `:encoding :utf-8`, defaults to :utf-8 |\n")
+                        "| :encoding enc      | e.g.: `:encoding :utf-8`, defaults to :utf-8 |\n\n" +
+                        "Note: \n\n" +
+                        "`io/slurp-stream` offers the same functionality as `io/slurp` but it " +
+                        "opens more flexibility with sandbox configuration. `io/slurp` can be " +
+                        "blacklisted to prevent reading data from the filesystem and still having " +
+                        "`io/slurp-stream` for stream input available!")
                     .examples(
                         "(do \n" +
                         "   (import :java.io.FileInputStream) \n" +
@@ -2572,7 +2622,12 @@ public class IOFunctions {
                         "the operation.\n\n" +
                         "Options: \n\n" +
                         "| :flush true/false | e.g.: :flush true, defaults to false |\n" +
-                        "| :encoding enc     | e.g.: :encoding :utf-8, defaults to :utf-8 |\n")
+                        "| :encoding enc     | e.g.: :encoding :utf-8, defaults to :utf-8 |\n\n" +
+                        "Note: \n\n" +
+                        "`io/spit-stream` offers the same functionality as `io/spit` but it " +
+                        "opens more flexibility with sandbox configuration. `io/spit` can be " +
+                        "blacklisted to prevent writing data to the filesystem and still having " +
+                        "`io/spit-stream` for stream output available!")
                     .examples(
                         "(do \n" +
                         "   (import :java.io.FileOutputStream) \n" +
@@ -2597,14 +2652,14 @@ public class IOFunctions {
 
                     final VncHashMap options = VncHashMap.ofAll(args.slice(2));
                     final VncVal encVal = options.get(new VncKeyword("encoding"));
-                    final String encoding = encVal == Nil ? "UTF-8" : ((VncString)encVal).getValue();
+                    final Charset charset = CharsetUtil.charset(encVal);
                     final VncVal flushVal = options.get(new VncKeyword("flush"));
                     final boolean flush = VncBoolean.isTrue(flushVal);
 
                     byte[] data;
 
                     if (Types.isVncString(content)) {
-                        data = ((VncString)content).getValue().getBytes(encoding);
+                        data = ((VncString)content).getValue().getBytes(charset);
                     }
                     else if (Types.isVncByteBuffer(content)) {
                         data = ((VncByteBuffer)content).getBytes();
@@ -2813,9 +2868,9 @@ public class IOFunctions {
 
                 try {
                     final OutputStream os = (OutputStream)(Coerce.toVncJavaObject(args.first()).getDelegate());
-                    final String encoding = args.size() == 1 ? "UTF-8" : ((VncString)args.second()).getValue();
+                    final Charset charset = CharsetUtil.charset(args.second());
 
-                    return new VncJavaObject(new BufferedWriter(new OutputStreamWriter(os, encoding)));
+                    return new VncJavaObject(new BufferedWriter(new OutputStreamWriter(os, charset)));
                 }
                 catch (Exception ex) {
                     throw new VncException(
@@ -2854,9 +2909,9 @@ public class IOFunctions {
 
                 try {
                     final OutputStream os = (OutputStream)(Coerce.toVncJavaObject(args.first()).getDelegate());
-                    final String encoding = args.size() == 1 ? "UTF-8" : ((VncString)args.second()).getValue();
+                    final Charset charset = CharsetUtil.charset(args.second());
 
-                    return new VncJavaObject(new PrintWriter(new OutputStreamWriter(os, encoding)));
+                    return new VncJavaObject(new PrintWriter(new OutputStreamWriter(os, charset)));
                 }
                 catch (Exception ex) {
                     throw new VncException(
@@ -2898,9 +2953,9 @@ public class IOFunctions {
                         if (delegate instanceof InputStream) {
                             try {
                                 final InputStream is = (InputStream)delegate;
-                                final String encoding = args.size() == 1 ? "UTF-8" : ((VncString)args.second()).getValue();
+                                final Charset charset = CharsetUtil.charset(args.second());
 
-                                return new VncJavaObject(new BufferedReader(new InputStreamReader(is, encoding)));
+                                return new VncJavaObject(new BufferedReader(new InputStreamReader(is, charset)));
                             }
                             catch (Exception ex) {
                                 throw new VncException(
@@ -2959,9 +3014,9 @@ public class IOFunctions {
                     if (delegate instanceof InputStream) {
                         try {
                             final InputStream is = (InputStream)delegate;
-                            final String encoding = args.size() == 1 ? "UTF-8" : ((VncString)args.second()).getValue();
+                            final Charset charset = CharsetUtil.charset(args.second());
 
-                            return new VncJavaObject(new BufferedReader(new InputStreamReader(is, encoding)));
+                            return new VncJavaObject(new BufferedReader(new InputStreamReader(is, charset)));
                         }
                         catch (Exception ex) {
                             throw new VncException(ex.getMessage(), ex);
@@ -3008,9 +3063,9 @@ public class IOFunctions {
                     if (delegate instanceof OutputStream) {
                         try {
                             final OutputStream os = (OutputStream)delegate;
-                            final String encoding = args.size() == 1 ? "UTF-8" : ((VncString)args.second()).getValue();
+                            final Charset charset = CharsetUtil.charset(args.second());
 
-                            return new VncJavaObject(new BufferedWriter(new OutputStreamWriter(os, encoding)));
+                            return new VncJavaObject(new BufferedWriter(new OutputStreamWriter(os, charset)));
                         }
                         catch (Exception ex) {
                             throw new VncException(ex.getMessage(), ex);
@@ -3263,6 +3318,16 @@ public class IOFunctions {
 
 
     public static File convertToFile(final VncVal f, final String errFormat) {
+        final File file = convertToFile(f);
+        if (file == null) {
+            throw new VncException(String.format(errFormat, Types.getType(f)));
+        }
+        else {
+            return file;
+        }
+    }
+
+    public static File convertToFile(final VncVal f) {
         if (Types.isVncString(f)) {
             return new File(((VncString)f).getValue());
         }
@@ -3273,7 +3338,7 @@ public class IOFunctions {
             return ((Path)((VncJavaObject)f).getDelegate()).toFile();
         }
         else {
-            throw new VncException(String.format(errFormat, Types.getType(f)));
+            return null;
         }
     }
 
