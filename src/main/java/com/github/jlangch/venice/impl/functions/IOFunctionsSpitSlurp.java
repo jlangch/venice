@@ -434,10 +434,10 @@ public class IOFunctionsSpitSlurp {
                     .examples(
                         "(do \n" +
                         "   (let [file (io/temp-file \"test-\", \".txt\")] \n" +
-                        "        (io/delete-file-on-exit file) \n" +
-                        "        (io/spit file \"123456789\" :append true) \n" +
-                        "        (try-with [is (io/file-in-stream file)] \n" +
-                        "           (io/slurp-stream is :binary false))) \n" +
+                        "      (io/delete-file-on-exit file) \n" +
+                        "      (io/spit file \"123456789\" :append true) \n" +
+                        "      (try-with [is (io/file-in-stream file)] \n" +
+                        "         (io/slurp-stream is :binary false))) \n" +
                         ")")
                     .seeAlso(
                         "io/slurp", "io/slurp-lines", "io/spit",
