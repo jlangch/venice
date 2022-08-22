@@ -85,6 +85,7 @@ public class IoSection implements ISectionBuilder {
         stream.addItem(diBuilder.getDocItem("io/file-out-stream", false));
         stream.addItem(diBuilder.getDocItem("io/string-in-stream", false));
         stream.addItem(diBuilder.getDocItem("io/bytebuf-in-stream", false));
+        stream.addItem(diBuilder.getDocItem("io/bytebuf-out-stream"));
         stream.addItem(diBuilder.getDocItem("io/wrap-os-with-buffered-writer"));
         stream.addItem(diBuilder.getDocItem("io/wrap-os-with-print-writer"));
         stream.addItem(diBuilder.getDocItem("io/wrap-is-with-buffered-reader"));

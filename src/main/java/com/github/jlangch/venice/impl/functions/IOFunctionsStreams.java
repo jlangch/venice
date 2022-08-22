@@ -26,6 +26,7 @@ import static com.github.jlangch.venice.impl.types.Constants.Nil;
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.InputStream;
@@ -261,6 +262,37 @@ public class IOFunctionsStreams {
 
                 try {
                     return new VncJavaObject(new ByteArrayInputStream(buf.array()));
+                }
+                catch(Exception ex) {
+                    throw new VncException(String.format(
+                            "Failed to create a :java.io.InputStream from a bytebuf"));
+                }
+            }
+
+            private static final long serialVersionUID = -1848883965231344442L;
+        };
+
+    public static VncFunction io_bytebuf_out_stream =
+        new VncFunction(
+                "io/bytebuf-out-stream",
+                VncFunction
+                    .meta()
+                    .arglists("(io/bytebuf-out-stream)")
+                    .doc("Returns a new `java.io.ByteArrayOutputStream`.")
+                    .examples(
+                        "(let [os (io/bytebuf-out-stream)]                       \n" +
+                        "   (io/spit-stream os (bytebuf [97 98 99]) :flush true) \n" +
+                        "   (str/format-bytebuf (bytebuf os) \", \" :prefix0x))  ")
+                    .seeAlso(
+                        "io/slurp-stream", "io/file-in-stream", "io/string-in-stream")
+                    .build()
+        ) {
+            @Override
+            public VncVal apply(final VncList args) {
+                ArityExceptions.assertArity(this, args, 0);
+
+                try {
+                    return new VncJavaObject(new ByteArrayOutputStream());
                 }
                 catch(Exception ex) {
                     throw new VncException(String.format(
@@ -602,6 +634,7 @@ public class IOFunctionsStreams {
                     .add(io_file_out_stream)
                     .add(io_string_in_stream)
                     .add(io_bytebuf_in_stream)
+                    .add(io_bytebuf_out_stream)
                     .add(io_wrap_os_with_buffered_writer)
                     .add(io_wrap_os_with_print_writer)
                     .add(io_wrap_is_with_buffered_reader)
