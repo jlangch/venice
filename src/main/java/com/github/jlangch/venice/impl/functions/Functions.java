@@ -60,6 +60,8 @@ public class Functions {
         functions.putAll(ArrayFunctions.ns);
         functions.putAll(MathFunctions.ns);
         functions.putAll(IOFunctions.ns);
+        functions.putAll(IOFunctionsSpitSlurp.ns);
+        functions.putAll(IOFunctionsStreams.ns);
         functions.putAll(ZipFunctions.ns);
         functions.putAll(TimeFunctions.ns);
         functions.putAll(ShellFunctions.ns);
