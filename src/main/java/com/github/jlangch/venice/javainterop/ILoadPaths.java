@@ -99,8 +99,8 @@ public interface ILoadPaths {
      * CREATE}, {@link StandardOpenOption#TRUNCATE_EXISTING TRUNCATE_EXISTING},
      * and {@link StandardOpenOption#WRITE WRITE} options are present. In other
      * words, it opens the file for writing, creating the file if it doesn't
-     * exist, or initially truncating an existing {@link #isRegularFile
-     * regular-file} to a size of {@code 0} if it exists.
+     * exist, or initially truncating an existing regular-file to a size of
+     * {@code 0} if it exists.
      *
      *
      * @param file A file to return an {@link BufferedReader}.
@@ -131,7 +131,8 @@ public interface ILoadPaths {
     List<File> getPaths();
 
     /**
-     * Checks if the passed file is within the load paths
+     * Checks if the passed file is within the load paths. The file must not
+     * exist though.
      *
      * @param file a file to check
      * @return true if the file is within the load paths

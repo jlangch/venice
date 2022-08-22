@@ -161,7 +161,7 @@ public class DirectoryLoadPath extends LoadPath {
             throw new IllegalArgumentException("A file must not be null");
         }
 
-        return isOnPath(file) && file.isDirectory();
+        return isOnPath(file) && file.isFile();
     }
 
     @Override
@@ -170,7 +170,7 @@ public class DirectoryLoadPath extends LoadPath {
             throw new IllegalArgumentException("A file must not be null");
         }
 
-        return false;
+        return isOnPath(file) && file.isDirectory();
     }
 
 

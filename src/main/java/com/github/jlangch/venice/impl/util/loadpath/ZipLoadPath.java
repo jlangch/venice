@@ -152,7 +152,7 @@ public class ZipLoadPath extends LoadPath {
             throw new IllegalArgumentException("A file must not be null");
         }
 
-        return false;
+        return false;  // not supported
     }
 
 
