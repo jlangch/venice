@@ -2205,7 +2205,8 @@ public class IOFunctions {
                 final String prefix = Coerce.toVncString(args.first()).getValue();
                 final String suffix = Coerce.toVncString(args.second()).getValue();
                 try {
-                    return new VncJavaObject(Files.createTempFile(prefix, suffix).normalize().toFile());
+                	final File file = Files.createTempFile(prefix, suffix).normalize().toFile();
+                    return new VncJavaObject(file);
                 }
                 catch (Exception ex) {
                     throw new VncException(ex.getMessage(), ex);

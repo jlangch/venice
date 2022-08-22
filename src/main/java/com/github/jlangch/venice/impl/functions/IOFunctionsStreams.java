@@ -39,10 +39,13 @@ import java.io.Writer;
 import java.net.URL;
 import java.nio.ByteBuffer;
 import java.nio.charset.Charset;
+import java.nio.file.Files;
 import java.nio.file.Path;
+import java.nio.file.StandardOpenOption;
 import java.util.Map;
 
 import com.github.jlangch.venice.VncException;
+import com.github.jlangch.venice.impl.types.VncBoolean;
 import com.github.jlangch.venice.impl.types.VncFunction;
 import com.github.jlangch.venice.impl.types.VncJavaObject;
 import com.github.jlangch.venice.impl.types.VncKeyword;
@@ -72,7 +75,8 @@ public class IOFunctionsStreams {
                     .meta()
                     .arglists("(io/copy-stream in-stream out-stream)")
                     .doc(
-                        "Copies the input stream to the output stream. Returns nil or throws a VncException. " +
+                        "Copies the input stream to the output stream. Returns `nil` on sucess or " +
+                        "throws a VncException on failure. " +
                         "Input and output must be a `java.io.InputStream` and `java.io.OutputStream`.")
                     .seeAlso("io/copy-file")
                     .build()
@@ -83,22 +87,11 @@ public class IOFunctionsStreams {
 
                 sandboxFunctionCallValidation();
 
-                final Object is = Coerce.toVncJavaObject(args.first()).getDelegate();
-                final Object os = Coerce.toVncJavaObject(args.second()).getDelegate();
-
-                if (!(is instanceof InputStream)) {
-                    throw new VncException(String.format(
-                            "Function 'io/copy-stream' does not allow %s as in-stream",
-                            Types.getType(args.first())));
-                }
-                if (!(os instanceof OutputStream)) {
-                    throw new VncException(String.format(
-                            "Function 'io/copy-stream' does not allow %s as out-stream",
-                            Types.getType(args.second())));
-                }
+                final InputStream is = Coerce.toVncJavaObject(args.first(), InputStream.class);
+                final OutputStream os = Coerce.toVncJavaObject(args.second(), OutputStream.class);
 
                 try {
-                    IOStreamUtil.copy((InputStream)is, (OutputStream)os);
+                    IOStreamUtil.copy(is, os);
                 }
                 catch(Exception ex) {
                     throw new VncException(
@@ -131,15 +124,10 @@ public class IOFunctionsStreams {
 
                 sandboxFunctionCallValidation();
 
-                final VncVal arg = args.first();
-
-                if (Types.isVncString(arg) || Types.isVncJavaObject(arg, File.class)) {
-                    final File file = Types.isVncString(arg)
-                                        ? new File(((VncString)arg).getValue())
-                                        :  (File)(Coerce.toVncJavaObject(args.first()).getDelegate());
+                final File file = convertToFile(args.first());
+                if (file != null) {
                     try {
                         validateReadableFile(file);
-
                         return new VncJavaObject(new FileInputStream(file));
                     }
                     catch (Exception ex) {
@@ -149,6 +137,60 @@ public class IOFunctionsStreams {
                 else {
                     throw new VncException(String.format(
                             "Function 'io/file-in-stream' does not allow %s as f",
+                            Types.getType(args.first())));
+                }
+            }
+
+            private static final long serialVersionUID = -1848883965231344442L;
+        };
+
+    public static VncFunction io_file_out_stream =
+        new VncFunction(
+                "io/file-out-stream",
+                VncFunction
+                    .meta()
+                    .arglists("(io/file-out-stream f options)")
+                    .doc(
+                        "Returns a `java.io.OutputStream` for the file f. \n\n" +
+                        "f may be a:  \n\n" +
+                        " * string file path, e.g: \"/temp/foo.json\" \n" +
+                        " * `java.io.File`, e.g: `(io/file \"/temp/foo.json\")` \n\n" +
+                        "Options: \n\n" +
+                        "| :append true/false | e.g.: `:append true`, defaults to false |\n" +
+                        "| :encoding enc      | e.g.: `:encoding :utf-8`, defaults to :utf-8 |\n")
+                    .seeAlso("io/slurp", "io/slurp-stream", "io/string-in-stream", "io/bytebuf-in-stream")
+                    .build()
+        ) {
+            @Override
+            public VncVal apply(final VncList args) {
+                ArityExceptions.assertMinArity(this, args, 1);
+
+                sandboxFunctionCallValidation();
+
+                final VncHashMap options = VncHashMap.ofAll(args.slice(2));
+                final VncVal append = options.get(new VncKeyword("append"));
+
+                final File file = convertToFile(args.first());
+                if (file != null) {
+                    try {
+                        validateReadableFile(file);
+
+                        return new VncJavaObject(
+                        		Files.newOutputStream(
+                        				file.toPath(),
+                        				StandardOpenOption.CREATE,
+                                        StandardOpenOption.WRITE,
+                                        VncBoolean.isTrue(append)
+                                            ? StandardOpenOption.APPEND
+                                            : StandardOpenOption.TRUNCATE_EXISTING));
+                     }
+                    catch (Exception ex) {
+                        throw new VncException("Failed to create a a `java.io.OutputStream` for the file " + file.getPath(), ex);
+                    }
+                }
+                else {
+                    throw new VncException(String.format(
+                            "Function 'io/file-out-stream' does not allow %s as f",
                             Types.getType(args.first())));
                 }
             }
@@ -546,27 +588,6 @@ public class IOFunctionsStreams {
         }
     }
 
-    public static void validateReadableDirectory(final File file) {
-        if (!file.isDirectory()) {
-            throw new VncException(String.format("'%s' is not a directory", file.getPath()));
-        }
-        if (!file.canRead()) {
-            throw new VncException(String.format("The directory '%s' has no read permission", file.getPath()));
-        }
-    }
-
-    public static void validateReadableFileOrDirectory(final File file) {
-        if (!(file.isDirectory() || file.isFile())) {
-            throw new VncException(String.format("'%s' is not a file or a directory", file.getPath()));
-        }
-        if (file.isFile() && !file.canRead()) {
-            throw new VncException(String.format("The file '%s' has no read permission", file.getPath()));
-        }
-        if (file.isDirectory() && !file.canRead()) {
-            throw new VncException(String.format("The directory '%s' has no read permission", file.getPath()));
-        }
-    }
-
 
 
     ///////////////////////////////////////////////////////////////////////////
@@ -578,6 +599,7 @@ public class IOFunctionsStreams {
                     .add(io_copy_stream)
                     .add(io_uri_stream)
                     .add(io_file_in_stream)
+                    .add(io_file_out_stream)
                     .add(io_string_in_stream)
                     .add(io_bytebuf_in_stream)
                     .add(io_wrap_os_with_buffered_writer)

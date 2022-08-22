@@ -433,11 +433,10 @@ public class IOFunctionsSpitSlurp {
                         "`io/slurp-stream` for stream input available!")
                     .examples(
                         "(do \n" +
-                        "   (import :java.io.FileInputStream) \n" +
                         "   (let [file (io/temp-file \"test-\", \".txt\")] \n" +
                         "        (io/delete-file-on-exit file) \n" +
                         "        (io/spit file \"123456789\" :append true) \n" +
-                        "        (try-with [is (. :FileInputStream :new file)] \n" +
+                        "        (try-with [is (io/file-in-stream file)] \n" +
                         "           (io/slurp-stream is :binary false))) \n" +
                         ")")
                     .seeAlso(
@@ -498,12 +497,11 @@ public class IOFunctionsSpitSlurp {
 	                    "`io/slurp-reader` for readers input available!")
 	                .examples(
 	                    "(do \n" +
-	                    "   (import :java.io.FileInputStream) \n" +
 	                    "   (let [file (io/temp-file \"test-\", \".txt\")] \n" +
-	                    "        (io/delete-file-on-exit file) \n" +
-	                    "        (io/spit file \"123456789\" :append true) \n" +
-	                    "        (try-with [is (. :FileInputStream :new file)] \n" +
-	                    "           (io/slurp-stream is :binary false))) \n" +
+	                    "      (io/delete-file-on-exit file) \n" +
+	                    "      (io/spit file \"123456789\" :append true) \n" +
+	                    "      (try-with [rd (io/buffered-reader (io/file-in-stream file) :utf-8)] \n" +
+	                    "         (io/slurp-reader rd))) \n" +
 	                    ")")
 	                .seeAlso(
 	                    "io/slurp", "io/slurp-lines", "io/spit",
@@ -564,10 +562,9 @@ public class IOFunctionsSpitSlurp {
                         "`io/spit-stream` for stream output available!")
                     .examples(
                         "(do \n" +
-                        "   (import :java.io.FileOutputStream) \n" +
                         "   (let [file (io/temp-file \"test-\", \".txt\")] \n" +
                         "        (io/delete-file-on-exit file) \n" +
-                        "        (try-with [os (. :FileOutputStream :new file)] \n" +
+                        "        (try-with [os (io/file-out-stream file)] \n" +
                         "           (io/spit-stream os \"123456789\" :flush true))) \n" +
                         ")")
                     .seeAlso("io/spit")
@@ -640,11 +637,10 @@ public class IOFunctionsSpitSlurp {
 		                "`io/spit-writer` for stream output available!")
 		            .examples(
 		                "(do \n" +
-		                "   (import :java.io.FileOutputStream) \n" +
 		                "   (let [file (io/temp-file \"test-\", \".txt\")] \n" +
 		                "        (io/delete-file-on-exit file) \n" +
-		                "        (try-with [os (. :FileOutputStream :new file)] \n" +
-		                "           (io/spit-stream os \"123456789\" :flush true))) \n" +
+		                "        (try-with [wr (io/buffered-writer (io/file-out-stream file) :utf-8)] \n" +
+		                "           (io/spit-writer wr \"123456789\" :flush true))) \n" +
 		                ")")
 		            .seeAlso("io/spit")
 		            .build()

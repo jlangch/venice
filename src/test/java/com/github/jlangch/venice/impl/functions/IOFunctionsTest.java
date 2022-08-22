@@ -368,12 +368,16 @@ public class IOFunctionsTest {
         final Venice venice = new Venice();
 
         final String script =
-                "(do                                               \n" +
-                "  (def f (io/temp-file \"test-\" \".txt\"))       \n" +
-                "  (assert (io/exists-file? f))                    \n" +
-                "  (io/spit f \"123456789\" :append true)          \n" +
-                "  (io/delete-file-on-exit f)                      \n" +
-                "  (assert (io/exists-file? f)))                   ";
+                "(do                                                         \n" +
+                "  (def f (io/temp-file \"test-\" \".txt\"))                 \n" +
+                "  (assert (io/exists-file? f))                              \n" +
+                "  (assert (io/file-absolute-path f))                        \n" +
+                "  (io/spit f \"123456789\" :append true)                    \n" +
+                "  (io/delete-file-on-exit f)                                \n" +
+                "  (assert (io/exists-file? f))                              \n" +
+                "  (assert (== \"123456789\"                                 \n" +
+                "              (io/slurp f :binary false :encoding :utf-8))) \n" +
+                "  (assert (io/exists-file? f)))                             ";
 
         venice.eval(script);
     }
