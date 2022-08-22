@@ -184,6 +184,7 @@
 (defn- setup-repl-launcher-windows [color-mode]
   (when-not (io/exists-file? "repl.bat")
     (println "Setting up 'repl.bat'...")
+    (println "REPL install dir:" (io/file-path (io/file-canonical-path ".")))
     (-<> (io/load-classpath-resource "com/github/jlangch/venice/repl.bat")
          (bytebuf-to-string <> :utf-8)
          (repl-setup/cr-lf <>)
@@ -197,6 +198,7 @@
 (defn- setup-repl-launcher-unix [color-mode]
   (when-not (io/exists-file? "repl.sh")
     (println "Setting up 'repl.sh'...")
+    (println "REPL install dir:" (io/file-path (io/file-canonical-path ".")))
     (-<> (io/load-classpath-resource "com/github/jlangch/venice/repl.sh")
          (bytebuf-to-string <> :utf-8)
          (repl-setup/cr-lf <>)
