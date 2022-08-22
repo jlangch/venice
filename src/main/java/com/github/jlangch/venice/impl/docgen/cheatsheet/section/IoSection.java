@@ -89,6 +89,7 @@ public class IoSection implements ISectionBuilder {
         stream.addItem(diBuilder.getDocItem("io/wrap-os-with-buffered-writer"));
         stream.addItem(diBuilder.getDocItem("io/wrap-os-with-print-writer"));
         stream.addItem(diBuilder.getDocItem("io/wrap-is-with-buffered-reader"));
+        stream.addItem(diBuilder.getDocItem("io/close"));
 
         final DocSection rd_wr = new DocSection("reader/writer", "io.readerwriter");
         all.addSection(rd_wr);

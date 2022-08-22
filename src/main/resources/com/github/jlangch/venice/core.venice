@@ -1507,13 +1507,15 @@
   ^{ :arglists '("(flush)", "(flush os)")
      :doc """
           Without arg flushes the output stream that is the current value
-          of `*out*`. With arg flushes the passed output stream.¶
+          of `*out*`. With arg flushes the passed `:java.io.OutputStream` or
+          `:java.io.Writer`.¶
           Returns `nil`.
           """
      :examples '(
           "(flush)"
           "(flush *out*)"
-          "(flush *err*)" ) }
+          "(flush *err*)" )
+      :see-also '("io/close") }
 
   flush
 

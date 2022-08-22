@@ -68,6 +68,74 @@ public class IOFunctionsStreams {
     ///////////////////////////////////////////////////////////////////////////
     // I/O functions
     ///////////////////////////////////////////////////////////////////////////
+    public static VncFunction io_close =
+        new VncFunction(
+                "io/close",
+                VncFunction
+                    .meta()
+                    .arglists("(io/close s)")
+                    .doc(
+                        "Closes an `:java.io.InputStream`, `:java.io.OutputStream`, " +
+                        "`:java.io.Reader`, or `:java.io.Writer`.")
+                    .seeAlso("flush")
+                    .build()
+        ) {
+            @Override
+            public VncVal apply(final VncList args) {
+                ArityExceptions.assertArity(this, args, 1);
+
+                sandboxFunctionCallValidation();
+
+                final VncVal arg = args.first();
+
+                if (Types.isVncJavaObject(arg, InputStream.class)) {
+                	final InputStream is = Coerce.toVncJavaObject(args.first(), InputStream.class);
+                    try {
+                    	is.close();
+                    }
+                    catch(Exception ex) {
+                        throw new VncException("Failed to close: " + is.getClass().getName());
+                    }
+                }
+                else if (Types.isVncJavaObject(arg, OutputStream.class)) {
+                	final OutputStream os = Coerce.toVncJavaObject(args.first(), OutputStream.class);
+                    try {
+                    	os.close();
+                    }
+                    catch(Exception ex) {
+                        throw new VncException("Failed to close: " + os.getClass().getName());
+                    }
+                }
+                else if (Types.isVncJavaObject(arg, Reader.class)) {
+                	final Reader rd = Coerce.toVncJavaObject(args.first(), Reader.class);
+                    try {
+                    	rd.close();
+                    }
+                    catch(Exception ex) {
+                        throw new VncException("Failed to close: " + rd.getClass().getName());
+                    }
+                }
+                else if (Types.isVncJavaObject(arg, Writer.class)) {
+                	final Writer wr = Coerce.toVncJavaObject(args.first(), Writer.class);
+                    try {
+                    	wr.close();
+                    }
+                    catch(Exception ex) {
+                        throw new VncException("Failed to close: " + wr.getClass().getName());
+                    }
+                }
+                else {
+	                throw new VncException(
+	                		String.format(
+	                			"Function 'io/close' does not allow %s as argument",
+		                        Types.getType(args.first())));
+	            }
+
+                return Nil;
+            }
+
+            private static final long serialVersionUID = -1848883965231344442L;
+        };
 
     public static VncFunction io_copy_stream =
         new VncFunction(
@@ -116,7 +184,9 @@ public class IOFunctionsStreams {
                         "f may be a:                                                           \n\n" +
                         " * string file path, e.g: \"/temp/foo.json\"                          \n" +
                         " * `java.io.File`, e.g: `(io/file \"/temp/foo.json\")`                \n")
-                    .seeAlso("io/slurp", "io/slurp-stream", "io/string-in-stream", "io/bytebuf-in-stream")
+                    .seeAlso(
+                    	"io/slurp", "io/slurp-stream",
+                    	"io/string-in-stream", "io/bytebuf-in-stream")
                     .build()
         ) {
             @Override
@@ -159,7 +229,9 @@ public class IOFunctionsStreams {
                         "Options: \n\n" +
                         "| :append true/false | e.g.: `:append true`, defaults to false |\n" +
                         "| :encoding enc      | e.g.: `:encoding :utf-8`, defaults to :utf-8 |\n")
-                    .seeAlso("io/slurp", "io/slurp-stream", "io/string-in-stream", "io/bytebuf-in-stream")
+                    .seeAlso(
+                    	"io/slurp", "io/slurp-stream",
+                    	"io/string-in-stream", "io/bytebuf-in-stream")
                     .build()
         ) {
             @Override
@@ -313,7 +385,8 @@ public class IOFunctionsStreams {
                     .examples(
                         "(-> (io/uri-stream \"https://www.w3schools.com/xml/books.xml\") \n" +
                         "    (io/slurp-stream :binary false :encoding :utf-8))             ")
-                    .seeAlso("io/slurp-stream")
+                    .seeAlso(
+                    	"io/slurp-stream")
                     .build()
         ) {
             @Override
@@ -640,5 +713,6 @@ public class IOFunctionsStreams {
                     .add(io_wrap_is_with_buffered_reader)
                     .add(io_buffered_reader)
                     .add(io_buffered_writer)
+                    .add(io_close)
                     .toMap();
 }
