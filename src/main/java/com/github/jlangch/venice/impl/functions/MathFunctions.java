@@ -1459,9 +1459,9 @@ public class MathFunctions {
                         "(rand-gaussian)",
                         "(rand-gaussian mean stddev)")
                     .doc(
-                        "Without argument returns a Gaussion distributed double value with " +
+                        "Without argument returns a Gaussian distributed double value with " +
                         "mean 0.0 and standard deviation 1.0. " +
-                        "With argument mean and stddev returns a Gaussion distributed double " +
+                        "With argument mean and stddev returns a Gaussian distributed double " +
                         "value with the given mean and standard deviation.\n\n" +
                         "This function is based on a cryptographically strong random number " +
                         "generator (RNG)")

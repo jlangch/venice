@@ -36,6 +36,7 @@ import java.io.OutputStreamWriter;
 import java.io.PrintWriter;
 import java.io.Reader;
 import java.io.StringReader;
+import java.io.StringWriter;
 import java.io.Writer;
 import java.net.URL;
 import java.nio.ByteBuffer;
@@ -690,6 +691,36 @@ public class IOFunctionsStreams {
             private static final long serialVersionUID = -1848883965231344442L;
         };
 
+    public static VncFunction io_string_writer =
+            new VncFunction(
+                    "io/string-writer",
+                    VncFunction
+                        .meta()
+                        .arglists(
+                            "(io/string-writer)" )
+                        .doc(
+                            "Creates a `java.io.StringWriter`.\n\n" +
+                            "Note: The caller is responsible for closing the writer!")
+                        .examples(
+                            "(try-with [sw (io/string-writer)]     \n" +
+                            "  (print sw 100)                      \n" +
+                            "  (print sw \"-\")                    \n" +
+                            "  (print sw 200)                      \n" +
+                            "  (flush sw)                          \n" +
+                            "  (println (str sw)))                 ")
+                        .seeAlso(
+                            "str")
+                        .build()
+            ) {
+                @Override
+                public VncVal apply(final VncList args) {
+                    ArityExceptions.assertArity(this, args, 0);
+
+                    return new VncJavaObject(new StringWriter());
+                }
+
+                private static final long serialVersionUID = -1848883965231344442L;
+            };
 
     public static File convertToFile(final VncVal f, final String errFormat) {
         final File file = convertToFile(f);
@@ -745,6 +776,7 @@ public class IOFunctionsStreams {
                     .add(io_wrap_is_with_buffered_reader)
                     .add(io_buffered_reader)
                     .add(io_buffered_writer)
+                    .add(io_string_writer)
                     .add(io_close)
                     .toMap();
 }

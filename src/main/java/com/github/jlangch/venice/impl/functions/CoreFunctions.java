@@ -27,6 +27,7 @@ import static com.github.jlangch.venice.impl.types.VncBoolean.False;
 import static com.github.jlangch.venice.impl.types.VncBoolean.True;
 import static com.github.jlangch.venice.impl.util.ArityExceptions.assertArity;
 
+import java.io.StringWriter;
 import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.math.RoundingMode;
@@ -877,7 +878,11 @@ public class CoreFunctions {
             public VncVal apply(final VncList args) {
                 final StringBuilder sb = new StringBuilder();
                 for(VncVal v : args) {
-                    if (v != Nil) {
+                	if (Types.isVncJavaObject(v, StringWriter.class)) {
+                		final StringWriter sw = Coerce.toVncJavaObject(v, StringWriter.class);
+                        sb.append(Printer.pr_str(new VncString(sw.getBuffer().toString()), false));
+                	}
+                	else if (v != Nil) {
                         sb.append(Printer.pr_str(v, false));
                     }
                 }
