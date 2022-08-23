@@ -870,19 +870,23 @@ public class CoreFunctions {
                         "(str +)",
                         "(str [1 2 3])",
                         "(str \"total \" 100)",
-                        "(str #\\h #\\i)")
-                    .seeAlso("pr-str")
+                        "(str #\\h #\\i)",
+                        "(try-with [sw (io/string-writer)]     \n" +
+                        "  (print sw 100)                      \n" +
+                        "  (flush sw)                          \n" +
+                        "  (println (str sw)))                 ")
+                    .seeAlso("pr-str", "io/string-writer")
                     .build()
         ) {
             @Override
             public VncVal apply(final VncList args) {
                 final StringBuilder sb = new StringBuilder();
                 for(VncVal v : args) {
-                	if (Types.isVncJavaObject(v, StringWriter.class)) {
-                		final StringWriter sw = Coerce.toVncJavaObject(v, StringWriter.class);
+                    if (Types.isVncJavaObject(v, StringWriter.class)) {
+                        final StringWriter sw = Coerce.toVncJavaObject(v, StringWriter.class);
                         sb.append(Printer.pr_str(new VncString(sw.getBuffer().toString()), false));
-                	}
-                	else if (v != Nil) {
+                    }
+                    else if (v != Nil) {
                         sb.append(Printer.pr_str(v, false));
                     }
                 }
