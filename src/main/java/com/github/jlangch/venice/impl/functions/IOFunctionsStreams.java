@@ -75,8 +75,15 @@ public class IOFunctionsStreams {
                     .meta()
                     .arglists("(io/close s)")
                     .doc(
-                        "Closes an `:java.io.InputStream`, `:java.io.OutputStream`, " +
-                        "`:java.io.Reader`, or `:java.io.Writer`.")
+                        "Closes a `:java.io.InputStream`, `:java.io.OutputStream`, " +
+                        "`:java.io.Reader`, or a `:java.io.Writer`.\n\n" +
+                        "Often it is more elegant to use try-with to let Venice implicitly " +
+                        "close the stream when its leaves the scope:  \n\n" +
+                        "```                                        \n" +
+                        "(let [file (io/file \"foo.txt\")]          \n" +
+                        "  (try-with [is (io/file-in-stream file)]  \n" +
+                        "     (io/slurp-stream is :binary false)))  \n" +
+                        "```")
                     .seeAlso("flush")
                     .build()
         ) {
@@ -180,10 +187,11 @@ public class IOFunctionsStreams {
                     .meta()
                     .arglists("(io/file-in-stream f)")
                     .doc(
-                        "Returns a `java.io.InputStream` for the file f.                       \n\n" +
-                        "f may be a:                                                           \n\n" +
-                        " * string file path, e.g: \"/temp/foo.json\"                          \n" +
-                        " * `java.io.File`, e.g: `(io/file \"/temp/foo.json\")`                \n")
+                        "Returns a `java.io.InputStream` for the file f.           \n\n" +
+                        "f may be a:                                               \n\n" +
+                        " * string file path, e.g: \"/temp/foo.json\"              \n" +
+                        " * `java.io.File`, e.g: `(io/file \"/temp/foo.json\")`    \n\n" +
+                        "Note: The caller is responsible for closing the stream!")
                     .seeAlso(
                     	"io/slurp", "io/slurp-stream",
                     	"io/string-in-stream", "io/bytebuf-in-stream")
@@ -228,7 +236,8 @@ public class IOFunctionsStreams {
                         " * `java.io.File`, e.g: `(io/file \"/temp/foo.json\")` \n\n" +
                         "Options: \n\n" +
                         "| :append true/false | e.g.: `:append true`, defaults to false |\n" +
-                        "| :encoding enc      | e.g.: `:encoding :utf-8`, defaults to :utf-8 |\n")
+                        "| :encoding enc      | e.g.: `:encoding :utf-8`, defaults to :utf-8 |\n\n" +
+                        "Note: The caller is responsible for closing the stream!")
                     .seeAlso(
                     	"io/slurp", "io/slurp-stream",
                     	"io/string-in-stream", "io/bytebuf-in-stream")
@@ -280,9 +289,13 @@ public class IOFunctionsStreams {
                     .doc(
                         "Returns a `java.io.InputStream` for the string s.                     \n\n" +
                         "Options:                                                              \n\n" +
-                        "| :encoding enc      | e.g.: `:encoding :utf-8`, defaults to :utf-8 | \n")
+                        "| :encoding enc      | e.g.: `:encoding :utf-8`, defaults to :utf-8 | \n\n" +
+                        "Note: The caller is responsible for closing the stream!")
                     .examples(
-                        "(io/string-in-stream \"The quick brown fox jumped over the lazy dog\")")
+                        "(let [text \"The quick brown fox jumped over the lazy dog\"]  \n" +
+                        "  (try-with [is (io/string-in-stream text)]                   \n" +
+                        "    ; do something with is                                    \n" +
+                        "  ))")
                     .seeAlso(
                         "io/slurp-stream", "io/file-in-stream", "io/bytebuf-in-stream")
                     .build()
@@ -319,9 +332,13 @@ public class IOFunctionsStreams {
                 VncFunction
                     .meta()
                     .arglists("(io/bytebuf-in-stream buf)")
-                    .doc("Returns a `java.io.InputStream` from a bytebuf.")
+                    .doc(
+                    	"Returns a `java.io.InputStream` from a bytebuf.\n\n" +
+                    	"Note: The caller is responsible for closing the stream!")
                     .examples(
-                        "(io/bytebuf-in-stream (bytebuf [97 98 99]))")
+                    	"(try-with [is (io/bytebuf-in-stream (bytebuf [97 98 99]))] \n"+
+                        "    ; do something with is                                 \n" +
+                        "  )")
                     .seeAlso(
                         "io/slurp-stream", "io/file-in-stream", "io/string-in-stream")
                     .build()
@@ -350,9 +367,11 @@ public class IOFunctionsStreams {
                 VncFunction
                     .meta()
                     .arglists("(io/bytebuf-out-stream)")
-                    .doc("Returns a new `java.io.ByteArrayOutputStream`.")
+                    .doc(
+                    	"Returns a new `java.io.ByteArrayOutputStream`.\n\n" +
+                    	"Note: The caller is responsible for closing the stream!")
                     .examples(
-                        "(let [os (io/bytebuf-out-stream)]                       \n" +
+                        "(try-with [os (io/bytebuf-out-stream)]                  \n" +
                         "   (io/spit-stream os (bytebuf [97 98 99]) :flush true) \n" +
                         "   (str/format-bytebuf (bytebuf os) \", \" :prefix0x))  ")
                     .seeAlso(
@@ -381,10 +400,13 @@ public class IOFunctionsStreams {
                 VncFunction
                     .meta()
                     .arglists("(io/uri-stream uri)")
-                    .doc("Returns a `java.io.InputStream` from the uri.")
+                    .doc(
+                    	"Returns a `java.io.InputStream` from the uri.\n\n" +
+                    	"Note: The caller is responsible for closing the stream!")
                     .examples(
-                        "(-> (io/uri-stream \"https://www.w3schools.com/xml/books.xml\") \n" +
-                        "    (io/slurp-stream :binary false :encoding :utf-8))             ")
+                    	"(let [url \"https://www.w3schools.com/xml/books.xm\"]     \n" +
+                        "  (try-with [is (io/uri-stream url)]                      \n" +
+                        "    (io/slurp-stream is :binary false :encoding :utf-8))) ")
                     .seeAlso(
                     	"io/slurp-stream")
                     .build()
@@ -418,18 +440,17 @@ public class IOFunctionsStreams {
                     .arglists("(io/wrap-os-with-buffered-writer os encoding?)")
                     .doc(
                         "Wraps a `java.io.OutputStream` os with a `java.io.BufferedWriter` using an optional " +
-                        "encoding (defaults to :utf-8).")
+                        "encoding (defaults to :utf-8).\n\n" +
+                    	"Note: The caller is responsible for closing the writer!")
                     .examples(
-                        "(do                                                         \n" +
-                        "   (import :java.io.ByteArrayOutputStream)                  \n" +
-                        "   (let [os (. :ByteArrayOutputStream :new)                 \n" +
-                        "         wr (io/wrap-os-with-buffered-writer os :utf-8)]    \n" +
-                        "      (. wr :write \"line 1\")                              \n" +
-                        "      (. wr :newLine)                                       \n" +
-                        "      (. wr :write \"line 2\")                              \n" +
-                        "      (. wr :flush)                                         \n" +
-                        "      (. os :toByteArray)))                                   ")
-                    .seeAlso("io/wrap-os-with-print-writer")
+                        "(let [os (io/bytebuf-out-stream)]                             \n" +
+                        "  (try-with [wr (io/wrap-os-with-buffered-writer os :utf-8)]  \n" +
+                        "    (println wr \"line 1\")                                   \n" +
+                        "    (println wr \"line 2\")                                   \n" +
+                        "    (flush wr)                                                \n" +
+                        "    (bytebuf os)))                                            ")
+                    .seeAlso(
+                    	"io/wrap-os-with-print-writer")
                     .build()
         ) {
             @Override
@@ -440,7 +461,9 @@ public class IOFunctionsStreams {
                     final OutputStream os = (OutputStream)(Coerce.toVncJavaObject(args.first()).getDelegate());
                     final Charset charset = CharsetUtil.charset(args.second());
 
-                    return new VncJavaObject(new BufferedWriter(new OutputStreamWriter(os, charset)));
+                    return new VncJavaObject(
+                    			new BufferedWriter(
+                    					new OutputStreamWriter(os, charset)));
                 }
                 catch (Exception ex) {
                     throw new VncException(
@@ -460,17 +483,17 @@ public class IOFunctionsStreams {
                     .arglists("(io/wrap-os-with-print-writer os encoding?)")
                     .doc(
                         "Wraps an `java.io.OutputStream` os with a `java.io.PrintWriter` using an optional " +
-                        "encoding (defaults to :utf-8).")
+                        "encoding (defaults to :utf-8).\n\n"  +
+                    	"Note: The caller is responsible for closing the writer!")
                     .examples(
-                        "(do                                                      \n" +
-                        "   (import :java.io.ByteArrayOutputStream)               \n" +
-                        "   (let [os (. :ByteArrayOutputStream :new)              \n" +
-                        "         wr (io/wrap-os-with-print-writer os :utf-8)]    \n" +
-                        "      (. wr :println \"line 1\")                         \n" +
-                        "      (. wr :println \"line 2\")                         \n" +
-                        "      (. wr :flush)                                      \n" +
-                        "      (. os :toByteArray)))                                ")
-                    .seeAlso("io/wrap-os-with-buffered-writer")
+                        "(let [os (io/bytebuf-out-stream)]                            \n" +
+                        "  (try-with [pr (io/wrap-os-with-print-writer os :utf-8)]    \n" +
+                        "    (println pr \"line 1\")                                  \n" +
+                        "    (println pr \"line 2\")                                  \n" +
+                        "    (flush pr)                                               \n" +
+                        "    (bytebuf os)))                                           ")
+                    .seeAlso(
+                    	"io/wrap-os-with-buffered-writer")
                     .build()
         ) {
             @Override
@@ -481,7 +504,9 @@ public class IOFunctionsStreams {
                     final OutputStream os = (OutputStream)(Coerce.toVncJavaObject(args.first()).getDelegate());
                     final Charset charset = CharsetUtil.charset(args.second());
 
-                    return new VncJavaObject(new PrintWriter(new OutputStreamWriter(os, charset)));
+                    return new VncJavaObject(
+                    			new PrintWriter(
+                    					new OutputStreamWriter(os, charset)));
                 }
                 catch (Exception ex) {
                     throw new VncException(
@@ -502,16 +527,16 @@ public class IOFunctionsStreams {
                             "(io/wrap-is-with-buffered-reader is encoding?)")
                         .doc(
                             "Wraps an `java.io.InputStream` is with a `java.io.BufferedReader` using an optional " +
-                            "encoding (defaults to :utf-8).")
+                            "encoding (defaults to :utf-8).\n\n" +
+                        	"Note: The caller is responsible for closing the reader!")
                         .examples(
-                            "(do                                                                          \n" +
-                            "   (import :java.io.ByteArrayInputStream)                                    \n" +
-                            "   (let [data (byte-array [108 105 110 101 32 49 10 108 105 110 101 32 50])  \n" +
-                            "         is (. :ByteArrayInputStream :new data)                              \n" +
-                            "         rd (io/wrap-is-with-buffered-reader is :utf-8)]                     \n" +
-                            "      (println (. rd :readLine))                                             \n" +
-                            "      (println (. rd :readLine))))                                             ")
-                        .seeAlso("io/buffered-reader")
+                            "(let [data (bytebuf [108 105 110 101 32 49 10 108 105 110 101 32 50])     \n" +
+                            "       is   (io/bytebuf-in-stream data)]                                  \n" +
+                            "  (try-with [rd (io/wrap-is-with-buffered-reader is :utf-8)]              \n" +
+                            "    (println (read-line rd))                                              \n" +
+                            "    (println (read-line rd))))                                            ")
+                        .seeAlso(
+                        	"io/buffered-reader")
                         .build()
             ) {
                 @Override
@@ -525,7 +550,9 @@ public class IOFunctionsStreams {
                                 final InputStream is = (InputStream)delegate;
                                 final Charset charset = CharsetUtil.charset(args.second());
 
-                                return new VncJavaObject(new BufferedReader(new InputStreamReader(is, charset)));
+                                return new VncJavaObject(
+                                			new BufferedReader(
+                                					new InputStreamReader(is, charset)));
                             }
                             catch (Exception ex) {
                                 throw new VncException(
@@ -554,20 +581,19 @@ public class IOFunctionsStreams {
                         "(io/buffered-reader rdr)")
                     .doc(
                         "Creates a `java.io.BufferedReader` from a `java.io.InputStream` is with optional " +
-                        "encoding (defaults to :utf-8), from a Reader or from a string.")
+                        "encoding (defaults to :utf-8), from a `java.io.Reader` or from a string.\n\n" +
+                        "Note: The caller is responsible for closing the reader!")
                     .examples(
-                        "(do                                                                          \n" +
-                        "   (import :java.io.ByteArrayInputStream)                                    \n" +
-                        "   (let [data (byte-array [108 105 110 101 32 49 10 108 105 110 101 32 50])  \n" +
-                        "         is (. :ByteArrayInputStream :new data)                              \n" +
-                        "         rd (io/buffered-reader is :utf-8)]                                  \n" +
-                        "      (println (. rd :readLine))                                             \n" +
-                        "      (println (. rd :readLine))))                                             ",
-                        "(do                                                                          \n" +
-                        "   (let [rd (io/buffered-reader \"1\\n2\\n3\\n4\")]                          \n" +
-                        "      (println (. rd :readLine))                                             \n" +
-                        "      (println (. rd :readLine))))                                             ")
-                    .seeAlso("io/buffered-writer")
+                        "(let [data (bytebuf [108 105 110 101 32 49 10 108 105 110 101 32 50])      \n" +
+                        "      is   (io/bytebuf-in-stream data)]                                    \n" +
+                        "  (try-with [rd (io/buffered-reader is :utf-8)]                            \n" +
+                        "    (println (read-line rd))                                               \n" +
+                        "    (println (read-line rd))))                                             ",
+                        "(try-with [rd (io/buffered-reader \"1\\n2\\n3\\n4\")]                      \n" +
+                        "  (println (read-line rd))                                                 \n" +
+                        "  (println (read-line rd)))                                                ")
+                    .seeAlso(
+                    	"io/buffered-writer")
                     .build()
         ) {
             @Override
@@ -586,7 +612,9 @@ public class IOFunctionsStreams {
                             final InputStream is = (InputStream)delegate;
                             final Charset charset = CharsetUtil.charset(args.second());
 
-                            return new VncJavaObject(new BufferedReader(new InputStreamReader(is, charset)));
+                            return new VncJavaObject(
+                            			new BufferedReader(
+                            					new InputStreamReader(is, charset)));
                         }
                         catch (Exception ex) {
                             throw new VncException(ex.getMessage(), ex);
@@ -619,9 +647,11 @@ public class IOFunctionsStreams {
                         "(io/buffered-writer wr)")
                     .doc(
                         "Creates a `java.io.BufferedWriter` from a `java.io.OutputStream` os with optional " +
-                        "encoding (defaults to :utf-8) or from a Writer.")
+                        "encoding (defaults to :utf-8) or from a `java.io.Writer`.\n\n" +
+                        "Note: The caller is responsible for closing the writer!")
                     .examples()
-                    .seeAlso("io/buffered-reader")
+                    .seeAlso(
+                    	"io/buffered-reader")
                     .build()
         ) {
             @Override
@@ -635,7 +665,9 @@ public class IOFunctionsStreams {
                             final OutputStream os = (OutputStream)delegate;
                             final Charset charset = CharsetUtil.charset(args.second());
 
-                            return new VncJavaObject(new BufferedWriter(new OutputStreamWriter(os, charset)));
+                            return new VncJavaObject(
+                            			new BufferedWriter(
+                            					new OutputStreamWriter(os, charset)));
                         }
                         catch (Exception ex) {
                             throw new VncException(ex.getMessage(), ex);

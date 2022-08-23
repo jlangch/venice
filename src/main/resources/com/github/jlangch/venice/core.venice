@@ -24,6 +24,11 @@
 
 (ns core)
 
+(import :java.io.PrintStream)
+(import :java.io.Writer)
+(import :java.io.Reader)
+(import :java.io.BufferedReader)
+
 
 (defmacro
   ^{ :arglists '("(comment & body)")
@@ -1328,8 +1333,9 @@
 (defn
   ^{ :arglists '("(print & xs)", "(print os & xs)")
      :doc """
-          Prints the values `xs` to the output stream that is the current value
-          of `*out*` or to the passed output stream `os` if given.
+          Prints the values `xs` to the stream that is the current value
+          of `*out*` or to the passed stream `os` that must be a subclass of
+          either `:java.io.PrintStream` or `:java.io.Writer`.
 
           Prints the values, separated by spaces if there is more than one.
           `print` and `println` print in a human readable form.
@@ -1348,23 +1354,36 @@
   print
 
   ([] nil)
-  ([x] (when-not (instance-of? :java.io.PrintStream x)
-         (. *out* :append (str (coalesce x "nil")))
-         nil))
-  ([& xs] (do
-            (if (instance-of? :java.io.PrintStream (first xs))
-              (. (first xs) :append (str/join " " (map #(str (coalesce % "nil")) (rest xs))))
-              (. *out* :append (str/join " " (map #(str (coalesce % "nil")) xs))))
-            nil)))
+  ([x]
+    (when-not (or (instance-of? :OutputStream x) (instance-of? :Writer x))
+      (cond
+        (instance-of? :PrintStream *out*)
+           (. (cast :PrintStream *out*) :print (str (coalesce x "nil")))
+        (instance-of? :Writer *out*)
+           (. (cast :Writer *out*) :write (str (coalesce x "nil"))))
+      nil))
+  ([& xs]
+    (let [ch  (first xs)
+          fmt (fn [zs] (str/join " " (map #(str (coalesce % "nil")) zs)))]
+      (cond
+        (instance-of? :PrintStream ch) (. (cast :PrintStream ch) :print (fmt (rest xs)))
+        (instance-of? :Writer ch)      (. (cast :Writer ch) :write (fmt (rest xs)))
+        :else
+          (cond
+            (instance-of? :PrintStream *out*) (. (cast :PrintStream *out*) :print (fmt xs))
+            (instance-of? :Writer *out*)      (. (cast :Writer *out*) :write (fmt xs))))
+      nil)))
 
 
 (defn
   ^{ :arglists '("(printf fmt & args)", "(printf os fmt & args)")
      :doc """
           Without output stream prints formatted output as per format to the
-          output stream that is the current value of `*out*`.
-          With an output stream prints to that output stream. Prints like
-          `print` and `println` in a human readable form.
+          stream that is the current value of `*out*`.
+          With a stream prints to that stream that must be a subclass of either
+          `:java.io.PrintStream` or `:java.io.Writer`.
+
+          Prints like `print` and `println` in a human readable form.
 
           Returns `nil`.
 
@@ -1379,20 +1398,22 @@
       :see-also '("print" "println" "newline") }
 
   printf [& xs]
-    (if (instance-of? :java.io.PrintStream (first xs))
-       (let [os (first xs), fmt (second xs), args (rest (rest xs))]
-         (print os (apply str/format fmt args)))
-       (let [fmt (first xs), args (rest xs)]
-         (print *out* (apply str/format fmt args))))
+    (let [ch (first xs)]
+      (if (or (instance-of? :PrintStream ch) (instance-of? :Writer ch))
+         (let [fmt (second xs), args (rest (rest xs))]
+           (print ch (apply str/format fmt args)))
+         (let [fmt (first xs), args (rest xs)]
+           (print *out* (apply str/format fmt args)))))
     nil)
 
 
 (defn
   ^{ :arglists '("(println & xs)", "(println os & xs)")
      :doc """
-          Prints the values `xs` to the output stream that is the current value
+          Prints the values `xs` to the stream that is the current value
           of `*out*` or to the passed output stream `os` if given followed by
-          a `(newline)`.
+          a `(newline)`. The passed stream must be a subclass of either
+          `:java.io.PrintStream` or `:java.io.Writer`.
 
           Prints the values, separated by spaces if there is more than one.
           `print` and `println` print in a human readable form.
@@ -1411,12 +1432,14 @@
 
   println
 
-  ([] (newline))
+  ([]
+    (newline))
   ([& xs]
     (apply print xs)
-    (if (instance-of? :java.io.PrintStream (first xs))
-      (newline (first xs))
-      (newline))
+    (let [ch (first xs)]
+      (if (or (instance-of? :PrintStream ch) (instance-of? :Writer ch))
+        (newline ch)
+        (newline)))
     nil))
 
 
@@ -1424,7 +1447,9 @@
   ^{ :arglists '("(pr & xs)", "(pr os & xs)")
      :doc """
           Prints the values `xs` to the output stream that is the current value
-          of `*out*` or to the passed output stream `os` if given.
+          of `*out*` or to the passed output stream `os` if given. The passed
+          stream must be a subclass of either `:java.io.PrintStream` or
+          `:java.io.Writer`.
 
           Prints the values, separated by spaces if there is more than one.
           `pr` and `prn` print in a way that objects can be read by the reader.
@@ -1442,22 +1467,34 @@
   pr
 
   ([] nil)
-  ([x] (when-not (instance-of? :java.io.PrintStream x)
-         (. *out* :append (pr-str x))
-         nil))
-  ([& xs] (do
-            (if (instance-of? :java.io.PrintStream (first xs))
-              (. (first xs) :append (str/join " " (map pr-str (rest xs))))
-              (. *out* :append (str/join " " (map pr-str xs))))
-            nil)))
+  ([x]
+    (when-not (or (instance-of? :OutputStream x) (instance-of? :Writer x))
+      (cond
+        (instance-of? :PrintStream *out*)
+           (. (cast :PrintStream *out*) :print (pr-str x))
+        (instance-of? :Writer *out*)
+           (. (cast :Writer *out*) :write (pr-str x)))
+      nil))
+  ([& xs]
+    (let [ch  (first xs)
+          fmt (fn [zs] (str/join " " (map pr-str zs)))]
+      (cond
+        (instance-of? :PrintStream ch) (. (cast :PrintStream ch) :print (fmt (rest xs)))
+        (instance-of? :Writer ch)      (. (cast :Writer ch) :write (fmt (rest xs)))
+        :else
+          (cond
+            (instance-of? :PrintStream *out*) (. (cast :PrintStream *out*) :print (fmt xs))
+            (instance-of? :Writer *out*)      (. (cast :Writer *out*) :write (fmt xs))))
+      nil)))
 
 
 (defn
   ^{ :arglists '("(prn & xs)", "(prn os & xs)")
      :doc """
           Prints the values `xs` to the output stream that is the current value
-          of `*out*` or to the passed output stream `os` if given followed by
-          a `(newline)`.
+          of `*out*` or to the passed stream `os` if given followed by
+          a `(newline)`. The passed stream must be a subclass of either
+          `:java.io.PrintStream` or `:java.io.Writer`.
 
           Prints the values, separated by spaces if there is more than one.
           `pr` and `prn` print in a way that objects can be read by the reader.
@@ -1474,21 +1511,25 @@
 
   prn
 
-  ([] (newline))
+  ([]
+    (newline))
   ([& xs]
     (apply pr xs)
-    (if (instance-of? :java.io.PrintStream (first xs))
-      (newline (first xs))
-      (newline))
+    (let [ch (first xs)]
+      (if (or (instance-of? :PrintStream ch) (instance-of? :Writer ch))
+        (newline ch)
+        (newline)))
     nil))
 
 
 (defn
   ^{ :arglists '("(newline)", "(newline os)")
      :doc """
-          Without arg writes a platform-specific newline to the output stream
+          Without arg writes a platform-specific newline to the output channel
           that is the current value of `*out*`. With arg writes a newline to the
-          passed output stream.¶
+          passed stream that must be a subclass of either `:java.io.PrintStream`
+          or `:java.io.Writer`.
+
           Returns `nil`.
           """
      :examples '(
@@ -1499,16 +1540,22 @@
 
   newline
 
-  ([] (newline *out*))
-  ([os] (. os :append *newline*) nil))
+  ([]
+    (newline *out*))
+  ([os]
+    (cond
+      (instance-of? :PrintStream os) (. (cast :PrintStream os) :print *newline*)
+      (instance-of? :Writer os)      (. (cast :Writer os) :write *newline*))
+    nil))
 
 
 (defn
   ^{ :arglists '("(flush)", "(flush os)")
      :doc """
           Without arg flushes the output stream that is the current value
-          of `*out*`. With arg flushes the passed `:java.io.OutputStream` or
-          `:java.io.Writer`.¶
+          of `*out*`. With arg flushes the passed stream that must be a subclass
+          of either `:java.io.OutputStream` or `:java.io.Writer`.
+
           Returns `nil`.
           """
      :examples '(
@@ -1524,36 +1571,66 @@
 
 
 (defn
-  ^{ :arglists '("(read-line)")
+  ^{ :arglists '("(read-line)" "(read-line is)")
      :doc """
-          Reads the next line from the stream that is the current value of
-          `*in*`.¶
+          Without arg reads the next line from the stream that is the current
+          value of `*in*`. With arg reads the next line from the passed stream
+          that must be a subclass of `:java.io.BufferedReader`.
+
           Returns `nil` if the end of the stream is reached.
           """
+     :examples '(
+          """
+          (try-with [rd (io/buffered-reader "1\\n2\\n3\\n4")]
+            (println (read-line rd))
+            (println (read-line rd)))
+          """ )
      :see-also '("read-char")  }
 
-  read-line  []
+  read-line
 
-  (try
-    (. *in* :readLine)
-    (catch :java.io.IOException e (ex :VncException (:message e)))))
+  ([]
+    (read-line  *in*))
+  ([is]
+    (if (instance-of? :BufferedReader is)
+      (try
+        (. (cast :BufferedReader is) :readLine)
+        (catch :java.io.IOException e (ex :VncException (:message e))))
+      (ex :VncException (str "Can not read a line from a stream of type "
+                             (type is) ". The stream must be a subclass of "
+                             ":java.io.BufferedReader")))))
 
 
 (defn
-  ^{ :arglists '("(read-char)")
+  ^{ :arglists '("(read-char)" "(read-char is)")
      :doc """
-          Reads the next char from the stream that is the current value of
-          `*in*`.¶
-          Returns `nil` if the of the stream is reached.
+          Without arg reads the next char from the stream that is the current
+          value of `*in*`. With arg reads the next char from the passed stream
+          that must be a subclass of `:java.io.Reader`.
+
+          Returns `nil` if the end of the stream is reached.
           """
+     :examples '(
+          """
+          (try-with [rd (io/buffered-reader "1234")]
+            (println (read-char rd))
+            (println (read-char rd)))
+          """ )
      :see-also '("read-line") }
 
-  read-char  []
+  read-char
 
-  (try
-    (let [ch (. *in* :read)]
-      (if (= -1I ch) nil (char ch)))
-    (catch :java.io.IOException e (ex :VncException (:message e)))))
+  ([]
+    (read-char *in*))
+  ([is]
+    (if (instance-of? :Reader is)
+      (try
+        (let [ch (. (cast :Reader is) :read)]
+          (if (= -1I ch) nil (char ch)))
+        (catch :java.io.IOException e (ex :VncException (:message e))))
+      (ex :VncException (str "Can not read a char from a stream of type "
+                             (type is) ". The stream must be a subclass of "
+                             ":java.io.Reader")))))
 
 
 (defn

@@ -562,11 +562,10 @@ public class IOFunctionsSpitSlurp {
                         "`io/spit-stream` for stream output available!")
                     .examples(
                         "(do \n" +
-                        "   (let [file (io/temp-file \"test-\", \".txt\")] \n" +
-                        "        (io/delete-file-on-exit file) \n" +
-                        "        (try-with [os (io/file-out-stream file)] \n" +
-                        "           (io/spit-stream os \"123456789\" :flush true))) \n" +
-                        ")")
+                        "   (let [file (io/temp-file \"test-\", \".txt\")]         \n" +
+                        "      (io/delete-file-on-exit file)                       \n" +
+                        "      (try-with [os (io/file-out-stream file)]            \n" +
+                        "         (io/spit-stream os \"123456789\" :flush true)))) ")
                     .seeAlso("io/spit")
                     .build()
         ) {
@@ -637,11 +636,11 @@ public class IOFunctionsSpitSlurp {
 		                "`io/spit-writer` for stream output available!")
 		            .examples(
 		                "(do \n" +
-		                "   (let [file (io/temp-file \"test-\", \".txt\")] \n" +
-		                "        (io/delete-file-on-exit file) \n" +
-		                "        (try-with [wr (io/buffered-writer (io/file-out-stream file) :utf-8)] \n" +
-		                "           (io/spit-writer wr \"123456789\" :flush true))) \n" +
-		                ")")
+		                "   (let [file (io/temp-file \"test-\", \".txt\")          \n" +
+		                "         os   (io/file-out-stream file)]                  \n" +
+		                "      (io/delete-file-on-exit file)                       \n" +
+		                "      (try-with [wr (io/buffered-writer os :utf-8)]       \n" +
+		                "         (io/spit-writer wr \"123456789\" :flush true)))) ")
 		            .seeAlso("io/spit")
 		            .build()
 		) {

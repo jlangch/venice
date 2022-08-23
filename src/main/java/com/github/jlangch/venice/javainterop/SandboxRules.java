@@ -737,9 +737,12 @@ public class SandboxRules {
                 "class:java.lang.SecurityException:*",
                 "class:java.io.IOException:*",
 
-                "class:java.io.PrintStream:append",
-                "class:java.io.InputStream",
-                "class:java.io.OutputStream",
+                "class:java.io.InputStream:*",
+                "class:java.io.OutputStream:*",
+                "class:java.io.PrintStream:*",
+                "class:java.io.BufferedReader:*",
+                "class:java.io.Reader:*",
+                "class:java.io.Writer:*",
 
                 "class:java.lang.Object",
                 "class:java.lang.Object:class",

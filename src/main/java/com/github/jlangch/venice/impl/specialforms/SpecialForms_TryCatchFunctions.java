@@ -205,12 +205,11 @@ public class SpecialForms_TryCatchFunctions {
                         "of that block. The resources declared must implement the Closeable or " +
                         "AutoCloseable interface.")
                     .examples(
-                        "(do                                                   \n" +
-                        "   (import :java.io.FileInputStream)                  \n" +
-                        "   (let [file (io/temp-file \"test-\", \".txt\")]     \n" +
-                        "        (io/spit file \"123456789\" :append true)     \n" +
-                        "        (try-with [is (. :FileInputStream :new file)] \n" +
-                        "           (io/slurp-stream is :binary false))))        ")
+                        "(do                                               \n" +
+                        "  (let [file (io/temp-file \"test-\", \".txt\")]  \n" +
+                        "    (io/spit file \"123456789\" :append true)     \n" +
+                        "    (try-with [is (io/file-in-stream file)]       \n" +
+                        "      (io/slurp-stream is :binary false))))        ")
                     .seeAlso("try", "throw", "ex")
                     .build()
         ) {
