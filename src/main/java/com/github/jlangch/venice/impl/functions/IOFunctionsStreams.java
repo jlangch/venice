@@ -171,7 +171,7 @@ public class IOFunctionsStreams {
                 }
                 catch(Exception ex) {
                     throw new VncException(
-                            "Failed to copy data from a :java.io.InputStream to an :java.io.OutputStream");
+                            "Failed to copy data from a :java.io.InputStream to a :java.io.OutputStream");
                 }
 
                 return Nil;
@@ -467,7 +467,7 @@ public class IOFunctionsStreams {
                 }
                 catch (Exception ex) {
                     throw new VncException(
-                            "Failed to wrap an :java.io.OutputStream with a :java.io.BufferedWriter",
+                            "Failed to wrap a :java.io.OutputStream with a :java.io.BufferedWriter",
                             ex);
                 }
             }
@@ -510,7 +510,7 @@ public class IOFunctionsStreams {
                 }
                 catch (Exception ex) {
                     throw new VncException(
-                            "Failed to wrap an :java.io.OutputStream with a :java.io.PrintWriter",
+                            "Failed to wrap a :java.io.OutputStream with a :java.io.PrintWriter",
                             ex);
                 }
             }
@@ -556,7 +556,7 @@ public class IOFunctionsStreams {
                             }
                             catch (Exception ex) {
                                 throw new VncException(
-                                        "Failed to wrap an :java.io.InputStream with a :java.io.BufferReader",
+                                        "Failed to wrap a :java.io.InputStream with a :java.io.BufferReader",
                                         ex);
                             }
                         }
