@@ -96,47 +96,47 @@ public class IOFunctionsStreams {
                 final VncVal arg = args.first();
 
                 if (Types.isVncJavaObject(arg, InputStream.class)) {
-                	final InputStream is = Coerce.toVncJavaObject(args.first(), InputStream.class);
+                    final InputStream is = Coerce.toVncJavaObject(args.first(), InputStream.class);
                     try {
-                    	is.close();
+                        is.close();
                     }
                     catch(Exception ex) {
                         throw new VncException("Failed to close: " + is.getClass().getName());
                     }
                 }
                 else if (Types.isVncJavaObject(arg, OutputStream.class)) {
-                	final OutputStream os = Coerce.toVncJavaObject(args.first(), OutputStream.class);
+                    final OutputStream os = Coerce.toVncJavaObject(args.first(), OutputStream.class);
                     try {
-                    	os.close();
+                        os.close();
                     }
                     catch(Exception ex) {
                         throw new VncException("Failed to close: " + os.getClass().getName());
                     }
                 }
                 else if (Types.isVncJavaObject(arg, Reader.class)) {
-                	final Reader rd = Coerce.toVncJavaObject(args.first(), Reader.class);
+                    final Reader rd = Coerce.toVncJavaObject(args.first(), Reader.class);
                     try {
-                    	rd.close();
+                        rd.close();
                     }
                     catch(Exception ex) {
                         throw new VncException("Failed to close: " + rd.getClass().getName());
                     }
                 }
                 else if (Types.isVncJavaObject(arg, Writer.class)) {
-                	final Writer wr = Coerce.toVncJavaObject(args.first(), Writer.class);
+                    final Writer wr = Coerce.toVncJavaObject(args.first(), Writer.class);
                     try {
-                    	wr.close();
+                        wr.close();
                     }
                     catch(Exception ex) {
                         throw new VncException("Failed to close: " + wr.getClass().getName());
                     }
                 }
                 else {
-	                throw new VncException(
-	                		String.format(
-	                			"Function 'io/close' does not allow %s as argument",
-		                        Types.getType(args.first())));
-	            }
+                    throw new VncException(
+                            String.format(
+                                "Function 'io/close' does not allow %s as argument",
+                                Types.getType(args.first())));
+                }
 
                 return Nil;
             }
@@ -193,8 +193,8 @@ public class IOFunctionsStreams {
                         " * `java.io.File`, e.g: `(io/file \"/temp/foo.json\")`    \n\n" +
                         "Note: The caller is responsible for closing the stream!")
                     .seeAlso(
-                    	"io/slurp", "io/slurp-stream",
-                    	"io/string-in-stream", "io/bytebuf-in-stream")
+                        "io/slurp", "io/slurp-stream",
+                        "io/string-in-stream", "io/bytebuf-in-stream")
                     .build()
         ) {
             @Override
@@ -239,8 +239,8 @@ public class IOFunctionsStreams {
                         "| :encoding enc      | e.g.: `:encoding :utf-8`, defaults to :utf-8 |\n\n" +
                         "Note: The caller is responsible for closing the stream!")
                     .seeAlso(
-                    	"io/slurp", "io/slurp-stream",
-                    	"io/string-in-stream", "io/bytebuf-in-stream")
+                        "io/slurp", "io/slurp-stream",
+                        "io/string-in-stream", "io/bytebuf-in-stream")
                     .build()
         ) {
             @Override
@@ -258,9 +258,9 @@ public class IOFunctionsStreams {
                         validateReadableFile(file);
 
                         return new VncJavaObject(
-                        		Files.newOutputStream(
-                        				file.toPath(),
-                        				StandardOpenOption.CREATE,
+                                Files.newOutputStream(
+                                        file.toPath(),
+                                        StandardOpenOption.CREATE,
                                         StandardOpenOption.WRITE,
                                         VncBoolean.isTrue(append)
                                             ? StandardOpenOption.APPEND
@@ -333,10 +333,10 @@ public class IOFunctionsStreams {
                     .meta()
                     .arglists("(io/bytebuf-in-stream buf)")
                     .doc(
-                    	"Returns a `java.io.InputStream` from a bytebuf.\n\n" +
-                    	"Note: The caller is responsible for closing the stream!")
+                        "Returns a `java.io.InputStream` from a bytebuf.\n\n" +
+                        "Note: The caller is responsible for closing the stream!")
                     .examples(
-                    	"(try-with [is (io/bytebuf-in-stream (bytebuf [97 98 99]))] \n"+
+                        "(try-with [is (io/bytebuf-in-stream (bytebuf [97 98 99]))] \n"+
                         "    ; do something with is                                 \n" +
                         "  )")
                     .seeAlso(
@@ -368,8 +368,8 @@ public class IOFunctionsStreams {
                     .meta()
                     .arglists("(io/bytebuf-out-stream)")
                     .doc(
-                    	"Returns a new `java.io.ByteArrayOutputStream`.\n\n" +
-                    	"Note: The caller is responsible for closing the stream!")
+                        "Returns a new `java.io.ByteArrayOutputStream`.\n\n" +
+                        "Note: The caller is responsible for closing the stream!")
                     .examples(
                         "(try-with [os (io/bytebuf-out-stream)]                  \n" +
                         "   (io/spit-stream os (bytebuf [97 98 99]) :flush true) \n" +
@@ -401,14 +401,14 @@ public class IOFunctionsStreams {
                     .meta()
                     .arglists("(io/uri-stream uri)")
                     .doc(
-                    	"Returns a `java.io.InputStream` from the uri.\n\n" +
-                    	"Note: The caller is responsible for closing the stream!")
+                        "Returns a `java.io.InputStream` from the uri.\n\n" +
+                        "Note: The caller is responsible for closing the stream!")
                     .examples(
-                    	"(let [url \"https://www.w3schools.com/xml/books.xm\"]     \n" +
+                        "(let [url \"https://www.w3schools.com/xml/books.xm\"]     \n" +
                         "  (try-with [is (io/uri-stream url)]                      \n" +
                         "    (io/slurp-stream is :binary false :encoding :utf-8))) ")
                     .seeAlso(
-                    	"io/slurp-stream")
+                        "io/slurp-stream")
                     .build()
         ) {
             @Override
@@ -441,7 +441,7 @@ public class IOFunctionsStreams {
                     .doc(
                         "Wraps a `java.io.OutputStream` os with a `java.io.BufferedWriter` using an optional " +
                         "encoding (defaults to :utf-8).\n\n" +
-                    	"Note: The caller is responsible for closing the writer!")
+                        "Note: The caller is responsible for closing the writer!")
                     .examples(
                         "(let [os (io/bytebuf-out-stream)]                             \n" +
                         "  (try-with [wr (io/wrap-os-with-buffered-writer os :utf-8)]  \n" +
@@ -450,7 +450,7 @@ public class IOFunctionsStreams {
                         "    (flush wr)                                                \n" +
                         "    (bytebuf os)))                                            ")
                     .seeAlso(
-                    	"io/wrap-os-with-print-writer")
+                        "io/wrap-os-with-print-writer")
                     .build()
         ) {
             @Override
@@ -462,8 +462,8 @@ public class IOFunctionsStreams {
                     final Charset charset = CharsetUtil.charset(args.second());
 
                     return new VncJavaObject(
-                    			new BufferedWriter(
-                    					new OutputStreamWriter(os, charset)));
+                                new BufferedWriter(
+                                        new OutputStreamWriter(os, charset)));
                 }
                 catch (Exception ex) {
                     throw new VncException(
@@ -484,7 +484,7 @@ public class IOFunctionsStreams {
                     .doc(
                         "Wraps an `java.io.OutputStream` os with a `java.io.PrintWriter` using an optional " +
                         "encoding (defaults to :utf-8).\n\n"  +
-                    	"Note: The caller is responsible for closing the writer!")
+                        "Note: The caller is responsible for closing the writer!")
                     .examples(
                         "(let [os (io/bytebuf-out-stream)]                            \n" +
                         "  (try-with [pr (io/wrap-os-with-print-writer os :utf-8)]    \n" +
@@ -493,7 +493,7 @@ public class IOFunctionsStreams {
                         "    (flush pr)                                               \n" +
                         "    (bytebuf os)))                                           ")
                     .seeAlso(
-                    	"io/wrap-os-with-buffered-writer")
+                        "io/wrap-os-with-buffered-writer")
                     .build()
         ) {
             @Override
@@ -505,8 +505,8 @@ public class IOFunctionsStreams {
                     final Charset charset = CharsetUtil.charset(args.second());
 
                     return new VncJavaObject(
-                    			new PrintWriter(
-                    					new OutputStreamWriter(os, charset)));
+                                new PrintWriter(
+                                        new OutputStreamWriter(os, charset)));
                 }
                 catch (Exception ex) {
                     throw new VncException(
@@ -528,7 +528,7 @@ public class IOFunctionsStreams {
                         .doc(
                             "Wraps an `java.io.InputStream` is with a `java.io.BufferedReader` using an optional " +
                             "encoding (defaults to :utf-8).\n\n" +
-                        	"Note: The caller is responsible for closing the reader!")
+                            "Note: The caller is responsible for closing the reader!")
                         .examples(
                             "(let [data (bytebuf [108 105 110 101 32 49 10 108 105 110 101 32 50])     \n" +
                             "       is   (io/bytebuf-in-stream data)]                                  \n" +
@@ -536,7 +536,7 @@ public class IOFunctionsStreams {
                             "    (println (read-line rd))                                              \n" +
                             "    (println (read-line rd))))                                            ")
                         .seeAlso(
-                        	"io/buffered-reader")
+                            "io/buffered-reader")
                         .build()
             ) {
                 @Override
@@ -551,8 +551,8 @@ public class IOFunctionsStreams {
                                 final Charset charset = CharsetUtil.charset(args.second());
 
                                 return new VncJavaObject(
-                                			new BufferedReader(
-                                					new InputStreamReader(is, charset)));
+                                            new BufferedReader(
+                                                    new InputStreamReader(is, charset)));
                             }
                             catch (Exception ex) {
                                 throw new VncException(
@@ -593,7 +593,7 @@ public class IOFunctionsStreams {
                         "  (println (read-line rd))                                                 \n" +
                         "  (println (read-line rd)))                                                ")
                     .seeAlso(
-                    	"io/buffered-writer")
+                        "io/buffered-writer")
                     .build()
         ) {
             @Override
@@ -613,8 +613,8 @@ public class IOFunctionsStreams {
                             final Charset charset = CharsetUtil.charset(args.second());
 
                             return new VncJavaObject(
-                            			new BufferedReader(
-                            					new InputStreamReader(is, charset)));
+                                        new BufferedReader(
+                                                new InputStreamReader(is, charset)));
                         }
                         catch (Exception ex) {
                             throw new VncException(ex.getMessage(), ex);
@@ -651,7 +651,7 @@ public class IOFunctionsStreams {
                         "Note: The caller is responsible for closing the writer!")
                     .examples()
                     .seeAlso(
-                    	"io/buffered-reader")
+                        "io/buffered-reader")
                     .build()
         ) {
             @Override
@@ -666,8 +666,8 @@ public class IOFunctionsStreams {
                             final Charset charset = CharsetUtil.charset(args.second());
 
                             return new VncJavaObject(
-                            			new BufferedWriter(
-                            					new OutputStreamWriter(os, charset)));
+                                        new BufferedWriter(
+                                                new OutputStreamWriter(os, charset)));
                         }
                         catch (Exception ex) {
                             throw new VncException(ex.getMessage(), ex);

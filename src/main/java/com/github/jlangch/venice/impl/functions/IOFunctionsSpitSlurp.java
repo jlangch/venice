@@ -359,7 +359,7 @@ public class IOFunctionsSpitSlurp {
                                                                 : StandardOpenOption.TRUNCATE_EXISTING);
                         if (outStream != null) {
                             try (OutputStream os = outStream) {
-                                os.write(binaryData != null ? binaryData : stringData.getBytes(charset));
+                                os.write(stringData != null ? stringData.getBytes(charset) : binaryData);
                                 os.flush();
                             }
                         }
@@ -380,7 +380,7 @@ public class IOFunctionsSpitSlurp {
                 else if (Types.isVncJavaObject(args.first(), OutputStream.class)) {
                     try {
                         final OutputStream os = Coerce.toVncJavaObject(args.first(), OutputStream.class);
-                        os.write(binaryData != null ? binaryData : stringData.getBytes(charset));
+                        os.write(stringData != null ? stringData.getBytes(charset) : binaryData);
                         os.flush();
                     }
                     catch (Exception ex) {
@@ -391,7 +391,7 @@ public class IOFunctionsSpitSlurp {
                 }
                 else if (Types.isVncJavaObject(args.first(), Writer.class)) {
                     try {
-                           final Writer wr =  Coerce.toVncJavaObject(args.first(), Writer.class);
+                        final Writer wr =  Coerce.toVncJavaObject(args.first(), Writer.class);
                         wr.write(binaryData != null ? new String(binaryData, charset) : stringData);
                         wr.flush();
                     }
@@ -482,64 +482,64 @@ public class IOFunctionsSpitSlurp {
         };
 
 
-	public static VncFunction io_slurp_reader =
-	    new VncFunction(
-	            "io/slurp-reader",
-	            VncFunction
-	                .meta()
-	                .arglists("(io/slurp-reader rd)")
-	                .doc(
-	                    "Slurps string data from a `java.io.Reader` rd." +
-	                    "Note: \n\n" +
-	                    "`io/slurp-reader` offers the same functionality as `io/slurp` but it " +
-	                    "opens more flexibility with sandbox configuration. `io/slurp` can be " +
-	                    "blacklisted to prevent reading data from the filesystem and still having " +
-	                    "`io/slurp-reader` for readers input available!")
-	                .examples(
-	                    "(do \n" +
-	                    "   (let [file (io/temp-file \"test-\", \".txt\")] \n" +
-	                    "      (io/delete-file-on-exit file) \n" +
-	                    "      (io/spit file \"123456789\" :append true) \n" +
-	                    "      (try-with [rd (io/buffered-reader (io/file-in-stream file) :utf-8)] \n" +
-	                    "         (io/slurp-reader rd))) \n" +
-	                    ")")
-	                .seeAlso(
-	                    "io/slurp", "io/slurp-lines", "io/spit",
-	                    "io/uri-stream",
-	                    "io/file-in-stream", "io/string-in-stream", "io/bytebuf-in-stream")
-	                .build()
-	    ) {
-	        @Override
-	        public VncVal apply(final VncList args) {
-	            ArityExceptions.assertMinArity(this, args, 1);
+    public static VncFunction io_slurp_reader =
+        new VncFunction(
+                "io/slurp-reader",
+                VncFunction
+                    .meta()
+                    .arglists("(io/slurp-reader rd)")
+                    .doc(
+                        "Slurps string data from a `java.io.Reader` rd." +
+                        "Note: \n\n" +
+                        "`io/slurp-reader` offers the same functionality as `io/slurp` but it " +
+                        "opens more flexibility with sandbox configuration. `io/slurp` can be " +
+                        "blacklisted to prevent reading data from the filesystem and still having " +
+                        "`io/slurp-reader` for readers input available!")
+                    .examples(
+                        "(do \n" +
+                        "   (let [file (io/temp-file \"test-\", \".txt\")] \n" +
+                        "      (io/delete-file-on-exit file) \n" +
+                        "      (io/spit file \"123456789\" :append true) \n" +
+                        "      (try-with [rd (io/buffered-reader (io/file-in-stream file) :utf-8)] \n" +
+                        "         (io/slurp-reader rd))) \n" +
+                        ")")
+                    .seeAlso(
+                        "io/slurp", "io/slurp-lines", "io/spit",
+                        "io/uri-stream",
+                        "io/file-in-stream", "io/string-in-stream", "io/bytebuf-in-stream")
+                    .build()
+        ) {
+            @Override
+            public VncVal apply(final VncList args) {
+                ArityExceptions.assertMinArity(this, args, 1);
 
-	            sandboxFunctionCallValidation();
+                sandboxFunctionCallValidation();
 
-	            try {
-	                final Reader rd = Coerce.toVncJavaObject(args.first(), Reader.class);
+                try {
+                    final Reader rd = Coerce.toVncJavaObject(args.first(), Reader.class);
 
-	                char[] buffer = new char[4096];
-	                StringBuilder builder = new StringBuilder();
-	                int numChars;
+                    char[] buffer = new char[4096];
+                    StringBuilder builder = new StringBuilder();
+                    int numChars;
 
-	                while ((numChars = rd.read(buffer)) >= 0) {
-	                    builder.append(buffer, 0, numChars);
-	                }
+                    while ((numChars = rd.read(buffer)) >= 0) {
+                        builder.append(buffer, 0, numChars);
+                    }
 
-	                return new VncString(builder.toString());
-	            }
-	            catch (VncException ex) {
-	                throw ex;
-	            }
-	            catch (Exception ex) {
-	                throw new VncException(
-	                        "Failed to slurp data from a :java.io.Reader",
-	                        ex);
-	            }
-	        }
+                    return new VncString(builder.toString());
+                }
+                catch (VncException ex) {
+                    throw ex;
+                }
+                catch (Exception ex) {
+                    throw new VncException(
+                            "Failed to slurp data from a :java.io.Reader",
+                            ex);
+                }
+            }
 
-	        private static final long serialVersionUID = -1848883965231344442L;
-	    };
+            private static final long serialVersionUID = -1848883965231344442L;
+        };
 
     public static VncFunction io_spit_stream =
         new VncFunction(
@@ -618,64 +618,64 @@ public class IOFunctionsSpitSlurp {
             private static final long serialVersionUID = -1848883965231344442L;
         };
 
-	public static VncFunction io_spit_writer =
-		new VncFunction(
-		        "io/spit-writer",
-		        VncFunction
-		            .meta()
-		            .arglists("(io/spit-writer wr text)")
-		            .doc(
-		                "Writes text to the `java.io.Writer` wr. The writer can optionally be " +
-		                "flushed after the operation.\n\n" +
+    public static VncFunction io_spit_writer =
+        new VncFunction(
+                "io/spit-writer",
+                VncFunction
+                    .meta()
+                    .arglists("(io/spit-writer wr text)")
+                    .doc(
+                        "Writes text to the `java.io.Writer` wr. The writer can optionally be " +
+                        "flushed after the operation.\n\n" +
                         "Options: \n\n" +
                         "| :flush true/false | e.g.: :flush true, defaults to false |\n" +
-		                "Note: \n\n" +
-		                "`io/spit-writer` offers the same functionality as `io/spit` but it " +
-		                "opens more flexibility with sandbox configuration. `io/spit` can be " +
-		                "blacklisted to prevent writing data to the filesystem and still having " +
-		                "`io/spit-writer` for stream output available!")
-		            .examples(
-		                "(do \n" +
-		                "   (let [file (io/temp-file \"test-\", \".txt\")          \n" +
-		                "         os   (io/file-out-stream file)]                  \n" +
-		                "      (io/delete-file-on-exit file)                       \n" +
-		                "      (try-with [wr (io/buffered-writer os :utf-8)]       \n" +
-		                "         (io/spit-writer wr \"123456789\" :flush true)))) ")
-		            .seeAlso("io/spit")
-		            .build()
-		) {
-		    @Override
-		    public VncVal apply(final VncList args) {
-		        ArityExceptions.assertMinArity(this, args, 2);
+                        "Note: \n\n" +
+                        "`io/spit-writer` offers the same functionality as `io/spit` but it " +
+                        "opens more flexibility with sandbox configuration. `io/spit` can be " +
+                        "blacklisted to prevent writing data to the filesystem and still having " +
+                        "`io/spit-writer` for stream output available!")
+                    .examples(
+                        "(do \n" +
+                        "   (let [file (io/temp-file \"test-\", \".txt\")          \n" +
+                        "         os   (io/file-out-stream file)]                  \n" +
+                        "      (io/delete-file-on-exit file)                       \n" +
+                        "      (try-with [wr (io/buffered-writer os :utf-8)]       \n" +
+                        "         (io/spit-writer wr \"123456789\" :flush true)))) ")
+                    .seeAlso("io/spit")
+                    .build()
+        ) {
+            @Override
+            public VncVal apply(final VncList args) {
+                ArityExceptions.assertMinArity(this, args, 2);
 
-		        sandboxFunctionCallValidation();
+                sandboxFunctionCallValidation();
 
-		        try {
-		            final Writer wr = Coerce.toVncJavaObject(args.first(), Writer.class);
+                try {
+                    final Writer wr = Coerce.toVncJavaObject(args.first(), Writer.class);
 
-		            final String text = Coerce.toVncString(args.second()).getValue();
+                    final String text = Coerce.toVncString(args.second()).getValue();
 
-		            final VncHashMap options = VncHashMap.ofAll(args.slice(2));
-		            final VncVal flushVal = options.get(new VncKeyword("flush"));
-		            final boolean flush = VncBoolean.isTrue(flushVal);
+                    final VncHashMap options = VncHashMap.ofAll(args.slice(2));
+                    final VncVal flushVal = options.get(new VncKeyword("flush"));
+                    final boolean flush = VncBoolean.isTrue(flushVal);
 
-		            wr.write(text);
+                    wr.write(text);
 
-		            if (flush) {
-		                wr.flush();
-		            }
+                    if (flush) {
+                        wr.flush();
+                    }
 
-		            return Nil;
-		        }
-		        catch (Exception ex) {
-		            throw new VncException(
-		                    "Failed to write text to a :java.io.Writer",
-		                    ex);
-		        }
-		    }
+                    return Nil;
+                }
+                catch (Exception ex) {
+                    throw new VncException(
+                            "Failed to write text to a :java.io.Writer",
+                            ex);
+                }
+            }
 
-		    private static final long serialVersionUID = -1848883965231344442L;
-		};
+            private static final long serialVersionUID = -1848883965231344442L;
+        };
 
 
     private static VncVal slurp(
