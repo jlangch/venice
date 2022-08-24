@@ -22,6 +22,7 @@ REPL_HOME={{INSTALL_PATH}}
 
 if [ ! -d ${REPL_HOME} ]; then
   echo "Error: The REPL home dir ${REPL_HOME} does not exist!"
+  sleep 5
   exit 1
 fi
 
