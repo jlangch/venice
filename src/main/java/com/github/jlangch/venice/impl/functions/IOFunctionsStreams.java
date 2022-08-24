@@ -728,14 +728,20 @@ public class IOFunctionsStreams {
                 VncFunction
                     .meta()
                     .arglists(
-                        "(io/string-reader)" )
+                        "(io/string-reader s)" )
                     .doc(
-                        "Creates a `java.io.StringReader`.\n\n" +
+                        "Creates a `java.io.StringReader` from a string.\n\n" +
                         "Note: The caller is responsible for closing the reader!")
                     .examples(
-                        "(try-with [rd (io/string-reader \"1\\n2\\n3\\n4\")]  \n" +
-	                    "  (println (read-line rd))                           \n" +
-	                    "  (println (read-line rd)))                          ")
+                    	"(try-with [rd (io/string-reader \"1234\")]       \n" +
+	                    "  (println (read-char rd))                       \n" +
+	                    "  (println (read-char rd))                       \n" +
+	                    "  (println (read-char rd)))                      ",
+                    	"(let [rd (io/string-reader \"1\\n2\\n3\\n4\")]   \n" +
+                        "  (try-with [br (io/buffered-reader rd)]         \n" +
+	                    "    (println (read-line br))                     \n" +
+	                    "    (println (read-line br))                     \n" +
+	                    "    (println (read-line br))))                   ")
                     .seeAlso(
                     	"io/string-writer", "io/buffered-reader")
                     .build()

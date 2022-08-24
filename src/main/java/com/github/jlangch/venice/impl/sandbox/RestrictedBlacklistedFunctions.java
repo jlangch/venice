@@ -81,6 +81,10 @@ public class RestrictedBlacklistedFunctions {
                 "println",
                 "newline",
 
+                // read
+                "read-line",
+                "read-char",
+
                 // classloader
                 "load-jar",
                 "classloader",
@@ -133,6 +137,12 @@ public class RestrictedBlacklistedFunctions {
                 "fn-pre-conditions",
 
                 // I/O
+                "io/buffered-reader",
+                "io/buffered-writer",
+                "io/bytebuf-in-stream",
+                "io/bytebuf-out-stream",
+                "io/close",
+                "io/close-watcher",
                 "io/copy-file",
                 "io/copy-stream",
                 "io/delete-file",
@@ -142,8 +152,15 @@ public class RestrictedBlacklistedFunctions {
                 "io/download",
                 "io/exists-dir?",
                 "io/exists-file?",
-                "io/file-size",
+                "io/file-can-execute?",
+                "io/file-can-read?",
+                "io/file-can-write?",
+                "io/file-hidden?",
                 "io/file-in-stream",
+                "io/file-last-modified",
+                "io/file-out-stream",
+                "io/file-size",
+                "io/file-symbolic-link?",
                 "io/list-file-tree",
                 "io/list-files",
                 "io/list-files-glob",
@@ -153,9 +170,14 @@ public class RestrictedBlacklistedFunctions {
                 "io/mkdirs",
                 "io/slurp",
                 "io/slurp-lines",
+                "io/slurp-reader",
                 "io/slurp-stream",
                 "io/spit",
                 "io/spit-stream",
+                "io/spit-writer",
+                "io/string-in-stream",
+                "io/string-reader",
+                "io/string-writer",
                 "io/temp-dir",
                 "io/temp-file",
                 "io/tmp-dir",
@@ -163,6 +185,10 @@ public class RestrictedBlacklistedFunctions {
                 "io/uri-stream",
                 "io/user-dir",
                 "io/wait-for",
+                "io/watch-dir",
+                "io/wrap-os-with-buffered-reader",
+                "io/wrap-os-with-buffered-writer",
+                "io/wrap-os-with-print-writer",
 
                 // I/O zip
                 "io/zip",
