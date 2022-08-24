@@ -95,6 +95,7 @@ public class IoSection implements ISectionBuilder {
         all.addSection(rd_wr);
         rd_wr.addItem(diBuilder.getDocItem("io/buffered-reader"));
         rd_wr.addItem(diBuilder.getDocItem("io/buffered-writer"));
+        rd_wr.addItem(diBuilder.getDocItem("io/string-reader"));
         rd_wr.addItem(diBuilder.getDocItem("io/string-writer"));
 
         final DocSection http = new DocSection("http", "io.http");
