@@ -1164,7 +1164,9 @@
             (load-module :hexdump ['hexdump :as 'h])
             (h/dump (range 32 64)))
           """)
-     :see-also '("load-file" "load-classpath-file" "load-string") }
+     :see-also '(
+          "load-file" "load-classpath-file" "load-string"
+          "loaded-modules") }
 
   load-module
 
@@ -1328,6 +1330,14 @@
 
   (toString [this] (. this :toString))
   (compareTo [this other] (. this :compareTo other)))
+
+
+(defn
+  ^{ :arglists '("(loaded-modules)")
+     :doc "Returns the names of the loaded modules."
+     :see-also '("load-module") }
+
+  loaded-modules [] core/*loaded-modules*)
 
 
 (defn

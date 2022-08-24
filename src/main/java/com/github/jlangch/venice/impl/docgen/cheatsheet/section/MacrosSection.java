@@ -102,6 +102,7 @@ public class MacrosSection implements ISectionBuilder {
         loading.addItem(diBuilder.getDocItem("load-file", false));
         loading.addItem(diBuilder.getDocItem("load-classpath-file"));
         loading.addItem(diBuilder.getDocItem("load-string"));
+        loading.addItem(diBuilder.getDocItem("loaded-modules"));
 
         final DocSection assert_ = new DocSection("Assert", "macros.assert");
         all.addSection(assert_);
