@@ -20,7 +20,7 @@ REM # --------------------------------------------------------------------------
 set REPL_HOME={{INSTALL_PATH}}
 
 if not exist %REPL_HOME% (
-  echo The REPL home dir  %REPL_HOME% does not exist
+  echo The REPL home dir %REPL_HOME% does not exist!
   timeout /t 10
   exit 2
 )
