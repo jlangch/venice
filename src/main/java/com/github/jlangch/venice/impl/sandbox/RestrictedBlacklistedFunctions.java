@@ -80,6 +80,8 @@ public class RestrictedBlacklistedFunctions {
                 "printf",
                 "println",
                 "newline",
+                "pr",
+                "prn",
 
                 // read
                 "read-line",
@@ -92,8 +94,14 @@ public class RestrictedBlacklistedFunctions {
 
                 // system
                 "gc",
+                "pid",
+                "total-memory",
+                "used-memory",
                 "shutdown-hook",
                 "sh",
+                "sh/open",
+                "sh/pwd",
+                "user-name",
                 "callstack",
 
                 // concurrency
