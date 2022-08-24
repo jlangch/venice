@@ -71,9 +71,11 @@ public abstract class LoadPath {
         }
 
         if (file.isDirectory()) {
+        	// existing directory
             return new DirectoryLoadPath(file);
         }
         else if (file.isFile()) {
+        	// existing regular file
             if (ZipLoadPath.isZipFile(file)) {
                 return new ZipLoadPath(file);
             }
@@ -85,7 +87,7 @@ public abstract class LoadPath {
         throw new VncException(
                 String.format(
                         "The file '%s' is not a valid load path. It is neither " +
-                        "an existing file or directory!",
+                        "an existing regular file or directory!",
                         file.getPath()));
     }
 

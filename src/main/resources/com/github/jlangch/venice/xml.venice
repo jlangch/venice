@@ -28,7 +28,7 @@
         :com.github.jlangch.venice.util.xml.XMLHandler
         :com.github.jlangch.venice.util.xml.XMLUtil
         :java.lang.StringBuilder
-        :java.io.StringReader
+        :java.io.InputStream
         :org.xml.sax.InputSource)
 
 
@@ -91,8 +91,8 @@
   ^{ :arglists '("(xml/parse s)" "(xml/parse s handler)")
      :doc """
           Parses and loads the XML from the source s with the parser
-          XMLHandler handler. The source may be an InputSource, an
-          InputStream, a File, or a string describing an URI.
+          XMLHandler handler. The source may be an InputSource or an
+          InputStream.
 
           Returns a tree of XML element maps with the keys :tag,
           :attrs, and :content.
@@ -103,12 +103,26 @@
   ([s] (xml/parse s (xml/handler)))
 
   ([s handler]
+    (when-not (instance-of? :IXMLHandler handler)
+      (throw (ex :VncException (str "A handler of type "
+                                    (type handler)
+                                    " is not supported! Please pass a "
+                                    ":com.github.jlangch.venice.util.xml.IXMLHandler. "
+                                    "See: (xml/handler)"))))
     (binding [xml/*stack* []
               xml/*current* {}
               xml/*state* :between
               xml/*sb* nil]
-      (. :XMLUtil :parse s false handler)
-      (first (:content xml/*current*)))))
+      (if (or (instance-of? :InputSource s) (instance-of? :InputStream s))
+        ;; limit the sources make it sandbox friendly
+        (do
+          (. :XMLUtil :parse s false handler)
+          (first (:content xml/*current*)))
+        (throw (ex :VncException (str "An input of type "
+                                      (type s)
+                                      " is not supported! Please pass a "
+                                      ":java.io.InputStream or an "
+                                      ":org.xml.sax.InputSource.")))))))
 
 
 (defn
@@ -136,7 +150,7 @@
 
   xml/input-source-from-str [s]
 
-  (->> (. :StringReader :new s)
+  (->> (io/string-reader s)
        (. :InputSource :new)))
 
 

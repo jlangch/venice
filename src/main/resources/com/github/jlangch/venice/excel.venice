@@ -55,7 +55,6 @@
 (import :java.io.File)
 (import :java.io.OutputStream)
 (import :java.io.InputStream)
-(import :java.io.FileOutputStream)
 
 
 ;; the indexed colors supported by XLS and XLSX Excel formats
@@ -189,7 +188,7 @@
   { :pre [(instance-of? :ExcelBuilder builder)
           (or (string? f) (instance-of? :File f)) ] }
 
-  (. builder :write (. :FileOutputStream :new f)))
+  (. builder :write (io/file-out-stream f)))
 
 
 (defn
@@ -199,7 +198,7 @@
         """
         (do
           (load-module :excel)
-          (let [os    (. :java.io.FileOutputStream :new "sample.xlsx")
+          (let [os    (io/file-out-stream "sample.xlsx")
                 data  [ {:first "John" :last "Doe"   :age 28 }
                         {:first "Sue"  :last "Ford"  :age 26 } ]
                 wbook (excel/writer :xlsx)
@@ -644,7 +643,7 @@
           """
           (do
             (load-module :excel)
-            (let [os    (. :java.io.FileOutputStream :new "sample.xlsx")
+            (let [os    (io/file-out-stream "sample.xlsx")
                   data  [ {:first "John" :last "Doe"   :age 28 }
                           {:first "Sue"  :last "Ford"  :age 26 } ]
                   wbook (excel/writer :xlsx)
@@ -1151,9 +1150,9 @@
   open [source]
 
   (cond
-    (string? source)                    (. :ExcelReader :open (io/file source))
-    (bytebuf? source)                   (. :ExcelReader :open source)
-    (instance-of? :File source)         (. :ExcelReader :open source)
+    (string? source)                    (. :ExcelReader :open (io/file-in-stream source))
+    (bytebuf? source)                   (. :ExcelReader :open (io/byte-in-stream source))
+    (instance-of? :File source)         (. :ExcelReader :open (io/file-in-stream source))
     (instance-of? :InputStream source)  (. :ExcelReader :open source)
     :else (throw (ex :VncException
                      (str "Invalid Excel open source " (type source) )))))

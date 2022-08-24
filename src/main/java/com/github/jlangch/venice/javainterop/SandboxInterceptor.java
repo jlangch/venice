@@ -184,6 +184,7 @@ public class SandboxInterceptor extends ValueFilterInterceptor {
                     moduleName));
         }
     }
+
     @Override
     public void validateFileRead(final File file) throws SecurityException {
         if (!getLoadPaths().isOnLoadPath(file)) {

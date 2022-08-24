@@ -202,10 +202,10 @@ public class IOFunctionsStreams {
             public VncVal apply(final VncList args) {
                 ArityExceptions.assertMinArity(this, args, 1);
 
-                sandboxFunctionCallValidation();
-
                 final File file = convertToFile(args.first());
                 if (file != null) {
+                    sandboxFunctionCallValidation(file, null);
+
                     try {
                         validateReadableFile(file);
                         return new VncJavaObject(new FileInputStream(file));
@@ -248,13 +248,13 @@ public class IOFunctionsStreams {
             public VncVal apply(final VncList args) {
                 ArityExceptions.assertMinArity(this, args, 1);
 
-                sandboxFunctionCallValidation();
-
                 final VncHashMap options = VncHashMap.ofAll(args.slice(2));
                 final VncVal append = options.get(new VncKeyword("append"));
 
                 final File file = convertToFile(args.first());
                 if (file != null) {
+                    sandboxFunctionCallValidation(null, file);
+
                     try {
                         validateReadableFile(file);
 
@@ -709,7 +709,7 @@ public class IOFunctionsStreams {
                             "  (flush sw)                          \n" +
                             "  (println (str sw)))                 ")
                         .seeAlso(
-                            "str")
+                            "str", "io/string-reader")
                         .build()
             ) {
                 @Override
@@ -721,6 +721,36 @@ public class IOFunctionsStreams {
 
                 private static final long serialVersionUID = -1848883965231344442L;
             };
+
+    public static VncFunction io_string_reader =
+        new VncFunction(
+                "io/string-reader",
+                VncFunction
+                    .meta()
+                    .arglists(
+                        "(io/string-reader)" )
+                    .doc(
+                        "Creates a `java.io.StringReader`.\n\n" +
+                        "Note: The caller is responsible for closing the reader!")
+                    .examples(
+                        "(try-with [rd (io/string-reader \"1\\n2\\n3\\n4\")]  \n" +
+	                    "  (println (read-line rd))                           \n" +
+	                    "  (println (read-line rd)))                          ")
+                    .seeAlso(
+                    	"io/string-writer", "io/buffered-reader")
+                    .build()
+        ) {
+            @Override
+            public VncVal apply(final VncList args) {
+                ArityExceptions.assertArity(this, args, 1);
+
+                return new VncJavaObject(
+                			new StringReader(
+                					Coerce.toVncString(args.first()).getValue()));
+            }
+
+            private static final long serialVersionUID = -1848883965231344442L;
+        };
 
     public static File convertToFile(final VncVal f, final String errFormat) {
         final File file = convertToFile(f);
@@ -777,6 +807,7 @@ public class IOFunctionsStreams {
                     .add(io_buffered_reader)
                     .add(io_buffered_writer)
                     .add(io_string_writer)
+                    .add(io_string_reader)
                     .add(io_close)
                     .toMap();
 }

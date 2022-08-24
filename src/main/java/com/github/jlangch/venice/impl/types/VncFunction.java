@@ -21,6 +21,7 @@
  */
 package com.github.jlangch.venice.impl.types;
 
+import java.io.File;
 import java.util.UUID;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.function.Function;
@@ -35,6 +36,7 @@ import com.github.jlangch.venice.impl.util.CallFrame;
 import com.github.jlangch.venice.impl.util.MetaUtil;
 import com.github.jlangch.venice.impl.util.MeterRegistry;
 import com.github.jlangch.venice.impl.util.StringUtil;
+import com.github.jlangch.venice.javainterop.IInterceptor;
 
 
 public abstract class VncFunction
@@ -279,6 +281,19 @@ public abstract class VncFunction
 
     protected void sandboxFunctionCallValidation() {
         ThreadContext.getInterceptor().validateVeniceFunction(qualifiedName);
+    }
+
+    protected void sandboxFunctionCallValidation(final File read, final File write) {
+    	final IInterceptor interceptor = ThreadContext.getInterceptor();
+
+    	interceptor.validateVeniceFunction(qualifiedName);
+
+    	if (read != null) {
+    		interceptor.validateFileRead(read);
+    	}
+    	if (write != null) {
+    		interceptor.validateFileWrite(write);
+    	}
     }
 
 

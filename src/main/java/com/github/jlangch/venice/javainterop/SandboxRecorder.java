@@ -21,6 +21,7 @@
  */
 package com.github.jlangch.venice.javainterop;
 
+import java.io.File;
 import java.io.OutputStream;
 import java.io.PrintWriter;
 import java.io.Writer;
@@ -158,6 +159,19 @@ public class SandboxRecorder extends Interceptor {
         format("system.env:%s", name);
         return super.onReadSystemEnv(name);
     }
+
+    @Override
+    public void validateFileRead(final File file) throws SecurityException {
+        writer.println(String.format("file.read:%s",file.getPath()));
+        writer.flush();
+    }
+
+    @Override
+    public void validateFileWrite(final File file) throws SecurityException {
+        writer.println(String.format("file.write:%s",file.getPath()));
+        writer.flush();
+    }
+
 
     private void format(final String fmt, final Object ... args) {
         writer.println(String.format(fmt,args));
