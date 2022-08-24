@@ -41,6 +41,7 @@ import java.nio.file.StandardOpenOption;
 import java.util.Map;
 import java.util.stream.Collectors;
 
+import com.github.jlangch.venice.SecurityException;
 import com.github.jlangch.venice.VncException;
 import com.github.jlangch.venice.impl.thread.ThreadContext;
 import com.github.jlangch.venice.impl.types.VncBoolean;
@@ -114,9 +115,16 @@ public class IOFunctionsSpitSlurp {
                     try {
                         final InputStream is = loadpaths.getInputStream(file);
                         if (is == null) {
-                            throw new VncException(
-                                        "Failed to slurp data from the file " + file.getPath() +
+                        	if (file.exists()) {
+	                            throw new VncException(
+                                        "Failed to slurp text lines from the file " + file.getPath() +
                                         ". The file does not exists!");
+                        	}
+                        	else {
+	                            throw new SecurityException(
+                                        "Failed to slurp text lines from the file " + file.getPath() +
+                                        ". The load paths configuration prevented this action!");
+                        	}
                         }
                         return slurpLines(options, new FileInputStream(file));
                     }
@@ -155,21 +163,36 @@ public class IOFunctionsSpitSlurp {
                     }
                 }
                 else if (Types.isVncJavaObject(arg, URL.class)) {
-                    try {
-                        final URL url = Coerce.toVncJavaObject(args.first(), URL.class);
-                        return slurpLines(options, url.openStream());
-                    }
-                    catch (Exception ex) {
-                        throw new VncException("Failed to slurp text lines from a :java.net.URL", ex);
+                	if (loadpaths.isUnlimitedAccess()) {
+	                    try {
+	                        final URL url = Coerce.toVncJavaObject(args.first(), URL.class);
+	                        return slurpLines(options, url.openStream());
+	                    }
+	                    catch (Exception ex) {
+	                        throw new VncException("Failed to slurp text lines from a :java.net.URL", ex);
+	                    }
+                	}
+                    else {
+                        throw new SecurityException(
+                                "Rejected to slurp text lines from a :java.net.URL. " +
+                                "The load paths configuration (unlimited access is disabled) prevented this action!");
                     }
                 }
                 else if (Types.isVncJavaObject(arg, URI.class)) {
-                    try {
-                        final URI uri = Coerce.toVncJavaObject(args.first(), URI.class);
-                        return slurpLines(options, uri.toURL().openStream());
-                    }
-                    catch (Exception ex) {
-                        throw new VncException("Failed to slurp text lines from a :java.net.URI", ex);
+                	if (loadpaths.isUnlimitedAccess()) {
+	                	try {
+
+	                        final URI uri = Coerce.toVncJavaObject(args.first(), URI.class);
+	                        return slurpLines(options, uri.toURL().openStream());
+	                    }
+	                    catch (Exception ex) {
+	                        throw new VncException("Failed to slurp text lines from a :java.net.URI", ex);
+	                    }
+                	}
+                    else {
+                        throw new SecurityException(
+                                "Rejected to slurp text lines from a :java.net.URI. " +
+                                "The load paths configuration (unlimited access is disabled) prevented this action!");
                     }
                 }
                 else {
@@ -222,9 +245,16 @@ public class IOFunctionsSpitSlurp {
                     try {
                         final InputStream is = loadpaths.getInputStream(file);
                         if (is == null) {
-                            throw new VncException(
+                        	if (file.exists()) {
+	                            throw new VncException(
                                         "Failed to slurp data from the file " + file.getPath() +
                                         ". The file does not exists!");
+                        	}
+                        	else {
+	                            throw new SecurityException(
+                                        "Failed to slurp data from the file " + file.getPath() +
+                                        ". The load paths configuration prevented this action!");
+                        	}
                         }
                         return slurp(options, is);
                     }
@@ -271,9 +301,9 @@ public class IOFunctionsSpitSlurp {
                         }
                     }
                     else {
-                        throw new VncException(
-                                "Failed to slurp data from a :java.net.URL. " +
-                                "The load paths configuration (unlimited access is disabled) prevents this action!");
+                        throw new SecurityException(
+                                "Rejected to slurp data from a :java.net.URL. " +
+                                "The load paths configuration (unlimited access is disabled) prevented this action!");
                     }
                 }
                 else if (Types.isVncJavaObject(arg, URI.class)) {
@@ -287,9 +317,9 @@ public class IOFunctionsSpitSlurp {
                         }
                     }
                     else {
-                        throw new VncException(
-                                "Failed to slurp data from a :java.net.URI. " +
-                                "The load paths configuration (unlimited access is disabled) prevents this action!");
+                        throw new SecurityException(
+                                "Rejected to slurp data from a :java.net.URI. " +
+                                "The load paths configuration (unlimited access is disabled) prevented this action!");
                     }
                 }
                 else {
@@ -347,7 +377,7 @@ public class IOFunctionsSpitSlurp {
                             Types.getType(content)));
                 }
 
-                  final File file = convertToFile(args.first());
+                final File file = convertToFile(args.first());
                 if (file != null) {
                     try {
                         final OutputStream outStream = loadpaths.getOutputStream(
@@ -364,7 +394,7 @@ public class IOFunctionsSpitSlurp {
                             }
                         }
                         else {
-                            throw new VncException(
+                            throw new SecurityException(
                                     String.format(
                                             "Failed to spit data to the file %s. " +
                                             "The load paths configuration prevented this action!",
