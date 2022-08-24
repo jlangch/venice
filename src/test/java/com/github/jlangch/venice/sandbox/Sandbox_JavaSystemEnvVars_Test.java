@@ -23,7 +23,6 @@ package com.github.jlangch.venice.sandbox;
 
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.util.HashMap;
 
@@ -44,16 +43,17 @@ public class Sandbox_JavaSystemEnvVars_Test {
     // ------------------------------------------------------------------------
 
     @Test
-    public void test_RejectAccessToAllSystemEnvs_RejectAllInterceptor() {
+    public void test_all_RejectAllInterceptor() {
         assertThrows(SecurityException.class, () -> {
-            new Venice(new RejectAllInterceptor()).eval("(system-env \"test\")");
+            new Venice(new RejectAllInterceptor()).eval("(system-env)");
         });
     }
 
     @Test
-    public void test_all_RejectAllInterceptor() {
-        final HashMap<?,?> env = (HashMap<?,?>)new Venice(new RejectAllInterceptor()).eval("(system-env)");
-        assertTrue(env.isEmpty());
+    public void test_RejectAccessToAllSystemEnvs_RejectAllInterceptor() {
+        assertThrows(SecurityException.class, () -> {
+            new Venice(new RejectAllInterceptor()).eval("(system-env \"test\")");
+        });
     }
 
     @Test

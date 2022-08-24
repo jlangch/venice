@@ -108,10 +108,14 @@ public class IoFileSection implements ISectionBuilder {
         file_watch.addItem(diBuilder.getDocItem("io/watch-dir", false));
         file_watch.addItem(diBuilder.getDocItem("io/close-watcher", false));
 
-        final DocSection file_other = new DocSection("file other", "io.fileother");
+        final DocSection file_tmp = new DocSection("file tmp", "io.filetmp");
+        all.addSection(file_tmp);
+        file_tmp.addItem(diBuilder.getDocItem("io/temp-file"));
+        file_tmp.addItem(diBuilder.getDocItem("io/temp-dir"));
+        file_tmp.addItem(diBuilder.getDocItem("io/tmp-dir"));
+
+        final DocSection file_other = new DocSection("file user", "io.fileuser");
         all.addSection(file_other);
-        file_other.addItem(diBuilder.getDocItem("io/temp-file"));
-        file_other.addItem(diBuilder.getDocItem("io/tmp-dir"));
         file_other.addItem(diBuilder.getDocItem("io/user-dir"));
         file_other.addItem(diBuilder.getDocItem("io/user-home-dir"));
 

@@ -23,7 +23,6 @@ package com.github.jlangch.venice.sandbox;
 
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.util.HashMap;
 
@@ -44,16 +43,17 @@ public class Sandbox_JavaSystemProperty_Test {
     // ------------------------------------------------------------------------
 
     @Test
-    public void test_RejectAccessToAllSystemProperties_RejectAllInterceptor() {
+    public void test_all_RejectAllInterceptor() {
         assertThrows(SecurityException.class, () -> {
-            new Venice(new RejectAllInterceptor()).eval("(system-prop \"db.password\")");
+            new Venice(new RejectAllInterceptor()).eval("(system-prop)");
         });
     }
 
     @Test
-    public void test_all_RejectAllInterceptor() {
-        final HashMap<?,?> env = (HashMap<?,?>)new Venice(new RejectAllInterceptor()).eval("(system-prop)");
-        assertTrue(env.isEmpty());
+    public void test_RejectAccessToAllSystemProperties_RejectAllInterceptor() {
+        assertThrows(SecurityException.class, () -> {
+            new Venice(new RejectAllInterceptor()).eval("(system-prop \"db.password\")");
+        });
     }
 
     @Test

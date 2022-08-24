@@ -93,16 +93,18 @@ public class RestrictedBlacklistedFunctions {
                 "classloader-of",
 
                 // system
+                "callstack",
                 "gc",
                 "pid",
-                "total-memory",
-                "used-memory",
-                "shutdown-hook",
                 "sh",
                 "sh/open",
                 "sh/pwd",
+                "shutdown-hook",
+                "system-env",
+                "system-prop",
+                "total-memory",
+                "used-memory",
                 "user-name",
-                "callstack",
 
                 // concurrency
                 "deliver",
@@ -192,6 +194,7 @@ public class RestrictedBlacklistedFunctions {
                 "io/touch-file",
                 "io/uri-stream",
                 "io/user-dir",
+                "io/user-home-dir",
                 "io/wait-for",
                 "io/watch-dir",
                 "io/wrap-os-with-buffered-reader",
