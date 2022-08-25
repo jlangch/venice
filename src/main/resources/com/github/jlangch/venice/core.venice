@@ -1184,7 +1184,7 @@
     `(let [modname#       (keyword (name ~m))
            alias-err-msg# (str/format "load-module '%s'" modname#)]
        (when (or ~force (not-contains? core/*loaded-modules* modname#))
-         (let [code#     (str "(do " (core/load-module* ~m) ")")
+         (let [code#     (str "(do " (core/load-module* modname#) ")")
                parsed#   (read-string code# modname#)
                expanded# (if (core/macroexpand-on-load?)
                            (macroexpand-all parsed#)
