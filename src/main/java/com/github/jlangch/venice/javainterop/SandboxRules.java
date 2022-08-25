@@ -820,6 +820,7 @@ public class SandboxRules {
                     Arrays.asList(
                         "crypt",
                         "kira",
+                        "parsifal",
                         "xml")));
 
 

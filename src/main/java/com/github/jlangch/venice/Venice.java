@@ -124,9 +124,10 @@ public class Venice {
             //       macros can execute code while being expanded.
             final IInterceptor sandbox = new SandboxInterceptor(
                                                new SandboxRules()
-                                                   .rejectAllJavaCalls()
-                                                   .rejectAllVeniceIoFunctions()
-                                                   .whitelistVeniceFunctions("load-module"));
+                                                       .rejectAllJavaCalls()
+                                                       .rejectAllVeniceIoFunctions()
+                                                       .withDefaultVeniceModules()
+                                                       .whitelistVeniceFunctions("load-module"));
 
             final IVeniceInterpreter venice = new VeniceInterpreter(
                                                     sandbox,

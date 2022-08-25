@@ -1176,23 +1176,23 @@
     `(load-module ~m false nil))
 
   ([m opt]
-    `(if (boolean? ~opt)
-       (load-module ~m ~opt nil)
-       (load-module ~m false ~opt)))
+    `(let [force# (if (boolean? ~opt) ~opt false)
+           alias# (if (boolean? ~opt) nil ~opt)]
+       (load-module ~m force# alias#)))
 
   ([m force alias]
-    `(let [modname        (keyword (name ~m))
-           alias-err-msg# (str/format "load-module '%s'" modname)]
-       (when (or ~force (not-contains? core/*loaded-modules* modname))
+    `(let [modname#       (keyword (name ~m))
+           alias-err-msg# (str/format "load-module '%s'" modname#)]
+       (when (or ~force (not-contains? core/*loaded-modules* modname#))
          (let [code#     (str "(do " (core/load-module* ~m) ")")
-               parsed#   (read-string code# ~m)
+               parsed#   (read-string code# modname#)
                expanded# (if (core/macroexpand-on-load?)
                            (macroexpand-all parsed#)
                            parsed#)]
-           (cons! modname core/*loaded-modules*)
+           (cons! modname# core/*loaded-modules*)
            (eval expanded#)))
        (process-ns-alias-def* alias-err-msg# ~alias)
-       modname)))
+       modname#)))
 
 (def lm load-module)  ;; alias
 

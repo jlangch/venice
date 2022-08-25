@@ -46,6 +46,37 @@ public class HexdumpModuleTest {
     }
 
     @Test
+    public void test_dump_simple_1() {
+        final Venice venice = new Venice();
+
+        final String script =
+                "(do                                    \n" +
+                "  (load-module :hexdump)               \n" +
+                "  (with-out-str                        \n" +
+                "    (hexdump/dump [0 1 2 3])))         ";
+
+        assertEquals(
+                "00000000: 0001 0203                                ....            \n\n",
+                venice.eval(script));
+    }
+
+    @Test
+    public void test_dump_simple_2() {
+        final Venice venice = new Venice();
+
+        final String script =
+                "(do                                    \n" +
+                "  (def mm :hexdump)                    \n" +
+                "  (load-module mm)                     \n" +
+                "  (with-out-str                        \n" +
+                "    (hexdump/dump [0 1 2 3])))         ";
+
+        assertEquals(
+                "00000000: 0001 0203                                ....            \n\n",
+                venice.eval(script));
+    }
+
+    @Test
     public void test_dump_single_line() {
         final Venice venice = new Venice();
 
