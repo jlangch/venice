@@ -63,6 +63,8 @@ public class RestrictedBlacklistedFunctions {
         new HashSet<>(
             Arrays.asList(
                 // load
+                "load-module",
+                "load-module*",
                 "load-file",
                 "load-file*",
                 "load-classpath-file",

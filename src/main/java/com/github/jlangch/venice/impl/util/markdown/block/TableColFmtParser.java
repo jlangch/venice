@@ -36,6 +36,9 @@ import com.github.jlangch.venice.impl.util.StringUtil;
 import com.github.jlangch.venice.impl.util.io.ClassPathResource;
 import com.github.jlangch.venice.impl.util.markdown.block.TableColFmt.HorzAlignment;
 import com.github.jlangch.venice.impl.util.markdown.block.TableColFmt.WidthUnit;
+import com.github.jlangch.venice.javainterop.IInterceptor;
+import com.github.jlangch.venice.javainterop.SandboxInterceptor;
+import com.github.jlangch.venice.javainterop.SandboxRules;
 
 
 public class TableColFmtParser {
@@ -78,9 +81,10 @@ public class TableColFmtParser {
                                     @Override
                                     public Map<String, Object> call() throws Exception {
                                        final PreCompiled precompiled = getCssParser();
-                                       return (Map<String,Object>)new Venice().eval(
-                                                                       precompiled,
-                                                                       Parameters.of("css", css));
+                                       final Venice venice = new Venice(getParserSandbox());
+                                       return (Map<String,Object>)venice.eval(
+                                                                          precompiled,
+                                                                          Parameters.of("css", css));
                                     }
                                 });
 
@@ -178,6 +182,22 @@ public class TableColFmtParser {
         return pc;
     }
 
+    private IInterceptor getParserSandbox() {
+        IInterceptor sb = sandbox.get();
+        if (sb == null) {
+            sb = new SandboxInterceptor(
+                        new SandboxRules()
+                            .rejectAllJavaCalls()
+                            .rejectAllVeniceIoFunctions()
+                            .whitelistVeniceFunctions("load-module")
+                            .withVeniceModules("parsifal"));
+
+             sandbox.set(sb);
+        }
+
+        return sb;
+    }
+
     private <T> T runAsync(final Callable<T> callable)
     throws InterruptedException, ExecutionException {
         final FutureTask<T> futureTask = new FutureTask<>(callable);
@@ -189,6 +209,7 @@ public class TableColFmtParser {
 
 
     private static AtomicReference<PreCompiled> cssParser = new AtomicReference<>();
+    private static AtomicReference<IInterceptor> sandbox = new AtomicReference<>();
 
     private static String CSS_PARSER =
             "com/github/jlangch/venice/docgen/table-col-css-parser.venice";

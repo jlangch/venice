@@ -50,7 +50,8 @@ import com.github.jlangch.venice.impl.util.MeterRegistry;
 import com.github.jlangch.venice.impl.util.StringUtil;
 import com.github.jlangch.venice.javainterop.AcceptAllInterceptor;
 import com.github.jlangch.venice.javainterop.IInterceptor;
-import com.github.jlangch.venice.javainterop.RejectAllInterceptor;
+import com.github.jlangch.venice.javainterop.SandboxInterceptor;
+import com.github.jlangch.venice.javainterop.SandboxRules;
 import com.github.jlangch.venice.util.FunctionExecutionMeter;
 import com.github.jlangch.venice.util.NullInputStream;
 import com.github.jlangch.venice.util.NullOutputStream;
@@ -119,12 +120,16 @@ public class Venice {
         try {
             ThreadContext.clear(true);
 
-            // Note: For security reasons use the RejectAllInterceptor because
-            //       macros can execute code while being expanded. Thus we need
-            //       to have a safe sandbox in-place if macros are misused to
-            //       execute code at expansion time.
+            // Note: For security reasons use a restrictive sandbox because
+            //       macros can execute code while being expanded.
+            final IInterceptor sandbox = new SandboxInterceptor(
+                                               new SandboxRules()
+                                                   .rejectAllJavaCalls()
+                                                   .rejectAllVeniceIoFunctions()
+                                                   .whitelistVeniceFunctions("load-module"));
+
             final IVeniceInterpreter venice = new VeniceInterpreter(
-                                                    new RejectAllInterceptor(),
+                                                    sandbox,
                                                     meterRegistry);
 
             final Env env = venice.createEnv(macroexpand, false, RunMode.PRECOMPILE)
