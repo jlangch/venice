@@ -745,7 +745,9 @@ public class CoreFunctions {
                 if (fn instanceof VncMultiArityFunction) {
                     final VncMultiArityFunction mafn = (VncMultiArityFunction)fn;
                     if (args.size() == 1) {
-                        return ((VncFunction)mafn.getFunctions().first()).getBody();
+                        throw new VncException(
+                        		"The passed function is a multi-arity function. Please " +
+                        		"pass the arity as second argument!");
                     }
                     else if (args.size() == 2) {
                         final int arity = Coerce.toVncLong(args.second()).getIntValue();

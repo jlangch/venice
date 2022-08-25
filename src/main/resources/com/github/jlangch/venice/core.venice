@@ -1002,10 +1002,12 @@
                                  parsed#)]
                  (cons! fc# core/*loaded-files*)
                  (eval expanded#)
-                 (process-ns-alias-def* alias-err-msg# ~alias)
                  fc#)))
+            (process-ns-alias-def* alias-err-msg# ~alias)
             true)
-        false))))
+         (do
+           (process-ns-alias-def* alias-err-msg# ~alias)
+           false)))))
 
 
 (defmacro
@@ -1074,9 +1076,9 @@
                                (macroexpand-all parsed#)
                                parsed#)]
                (cons! fc# core/*loaded-files*)
-               (eval expanded#)
-               (process-ns-alias-def* alias-err-msg# ~alias)
-               fc#)))))))
+               (eval expanded#)))))
+       (process-ns-alias-def* alias-err-msg# ~alias)
+       fc#)))
 
 
 (defn
@@ -1179,18 +1181,18 @@
        (load-module ~m false ~opt)))
 
   ([m force alias]
-    `(let [alias-err-msg# (str/format "load-module '%s'" (name ~m))]
-       (if (or ~force (not-contains? core/*loaded-modules* (keyword (name ~m))))
+    `(let [modname        (keyword (name ~m))
+           alias-err-msg# (str/format "load-module '%s'" modname)]
+       (when (or ~force (not-contains? core/*loaded-modules* modname))
          (let [code#     (str "(do " (core/load-module* ~m) ")")
                parsed#   (read-string code# ~m)
                expanded# (if (core/macroexpand-on-load?)
                            (macroexpand-all parsed#)
                            parsed#)]
-           (cons! (keyword (name ~m)) core/*loaded-modules*)
-           (eval expanded#)
-           (process-ns-alias-def* alias-err-msg# ~alias)
-           (keyword (name ~m)))
-         (process-ns-alias-def* alias-err-msg# ~alias)))))
+           (cons! modname core/*loaded-modules*)
+           (eval expanded#)))
+       (process-ns-alias-def* alias-err-msg# ~alias)
+       modname)))
 
 (def lm load-module)  ;; alias
 
