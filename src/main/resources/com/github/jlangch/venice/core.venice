@@ -935,13 +935,17 @@
           Sequentially read and evaluate the set of forms contained in the file.
 
           If the file is found on one of the defined load paths it is read and
-          the forms it contains are evaluated.
+          the forms it contains are evaluated. If the file is not found an
+          exception is raised.
 
-          If the file is not found an exception is raised.
+          Returns a tuple with the file's name and the keyword `:loaded`
+          if the file has been successfully loaded or `:already-loaded`
+          if the file has been already loaded. Throws an exception on any
+          loading error.
 
-          With 'force' set to false (the default) the file is only loaded once
-          and then served from a cache. With 'force' set to true it is always
-          loaded physically.
+          With 'force' set to `false` (the default) the file is only loaded
+          once and interpreted once. Subsequent load attempts will be skipped.
+          With 'force' set to `true` it is always loaded and interpreted.
 
           The function is restricted to load files with the extension '.venice'.
           If the file extension is missing '.venice' will be implicitely added.
@@ -1015,6 +1019,15 @@
           Sequentially read and evaluate the set of forms contained in the
           classpath file. The function is restricted to classpath files with
           the extension '.venice'.
+
+          Returns a tuple with the file's name and the keyword `:loaded`
+          if the file has been successfully loaded or `:already-loaded`
+          if the file has been already loaded. Throws an exception on any
+          loading error.
+
+          With 'force' set to `false` (the default) the file is only loaded
+          once and interpreted once. Subsequent load attempts will be skipped.
+          With 'force' set to `true` it is always loaded and interpreted.
 
           Loaded files are cached by Venice and subsequent loads are just
           skipped. To enforce a reload call the file load with the force
@@ -1128,10 +1141,16 @@
           "(load-module m nsalias)",
           "(load-module m force nsalias)")
      :doc """
-          Loads a Venice predefined extension module.¶
-          Returns `true` if the module has been successfully loaded and `false`
-          if the module has been already loaded. Throws an exception on loading
-          error.
+          Loads a Venice predefined extension module.
+
+          Returns a tuple with the module's name and the keyword `:loaded`
+          if the module has been successfully loaded or `:already-loaded`
+          if the module has been already loaded. Throws an exception on any
+          loading error.
+
+          With 'force' set to `false` (the default) the module is only loaded
+          once and interpreted once. Subsequent load attempts will be skipped.
+          With 'force' set to `true` it is always loaded and interpreted.
 
           Loaded modules are cached by Venice and subsequent loads are just
           skipped. To enforce a reload call the module load with the force
