@@ -233,16 +233,20 @@ This is ok:
 
 ```clojure
 (defmacro sum [x y] 
-  `(+ ~x ~y ~(inc 3)))
+   `(+ ~x ~y ~(inc 3)))
 ```
-
+   
+   
 Nested unquotes do not work:
 
 ```clojure
 (defmacro sum [x y] 
-  `(+ ~x ~y ~(inc ~y)))
+   `(+ ~x ~y ~(inc ~y)))
 ```
 
+Throws _SymbolNotFoundException_: Symbol 'unquote' not found.
+   
+   
 One might be tempted to write:
 
 ```clojure
@@ -252,14 +256,14 @@ One might be tempted to write:
 
 But this uses an unevaluated y argument. So `(sum 1 2)` yields 3, but `(sum 1 (* 3 4))` 
 fails because the function `inc` gets a list `'(* 3 4)` as argument.
-
+   
+   
 Rewrite it to get it work:
 
 ```clojure
 (defmacro sum [x y] 
   `(+ ~x ~y (inc ~y)))
 ```
-
 
 
 ### Unquote-splicing
