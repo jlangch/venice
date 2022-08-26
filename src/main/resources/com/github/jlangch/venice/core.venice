@@ -1154,7 +1154,7 @@
 
           Loaded modules are cached by Venice and subsequent loads are just
           skipped. To enforce a reload call the module load with the force
-          flag set to true: `(load-module :trace true)`
+          flag set to true: `(load-module :hexdump true)`
 
           An optional namespace alias can passed:
           `(load-module :hexdump ['hexdump :as 'h])`
