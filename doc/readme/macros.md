@@ -520,3 +520,13 @@ To work around this explicitly create a symbol name with `gensym`:
          (fn [n] `(+ ~x-sym ~n))
          (range 3))))
 ```
+
+Beware of code like this:
+
+```clojure
+`(let [a# 100] ~(dec a#))
+```
+
+It will result in a *SymbolNotFoundException* for the `dec` argument. The reason for 
+this behavior is that `(dec a#)` is executed before the symbol a# is created and 
+assigned the value 100 in `(let [a# 100] ...`

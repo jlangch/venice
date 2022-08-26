@@ -220,7 +220,7 @@ public class Reader {
             case SYMBOL: {
                     final VncSymbol sym = new VncSymbol(sToken);
                     if (rdr.autoGenSym.isWithinSyntaxQuote() && rdr.autoGenSym.isAutoGenSymbol(sym)) {
-                        // auto gen symbols within syntax quote
+                        // auto gen symbols within syntax quote:  aaa# -> aaa__42__auto
                         return rdr.autoGenSym.lookup(sym);
                     }
                     else {
