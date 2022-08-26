@@ -227,6 +227,41 @@ The unquote which is a tilde (~) then is how parts of the template are forced to
 be evaluated. It acts similarly to variable replacement in templates.
 
 
+#### Pitfalls with unquote
+
+This is ok:
+
+```clojure
+(defmacro sum [x y] 
+  `(+ ~x ~y ~(inc 3)))
+```
+
+Nested unquotes do not work:
+
+```clojure
+(defmacro sum [x y] 
+  `(+ ~x ~y ~(inc ~y)))
+```
+
+One might be tempted to write:
+
+```clojure
+(defmacro sum [x y] 
+  `(+ ~x ~y ~(inc y)))
+```
+
+This uses an unvaluated y argument. So `(sum 1 2)` yields 3, but `(sum 1 (* 3 4))` fails because 
+the function `inc` gets a list `'(* 3 4)` as argument
+
+Rewrite it to get it work:
+
+```clojure
+(defmacro sum [x y] 
+  `(+ ~x ~y (inc ~y)))
+```
+
+
+
 ### Unquote-splicing
 
 Unquote evaluates to a collection of values and inserts the collection into the
