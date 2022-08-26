@@ -986,22 +986,23 @@
        (load-file ~file force# alias#)))
 
   ([file force alias]
-    `(let [alias-err-msg# (str/format "load-file '%s'" (name ~file))
-           fc#            (if (str/ends-with? (name ~file) ".venice")
-                            (name ~file)
-                            (str (name ~file) ".venice"))]
-       (when (or ~force (not-contains? core/*loaded-files* fc#))
-         (let [code# (core/load-file* fc#)]
-           (when (some? code#)
-             (let [parsed#   (read-string (str "(do " code# ")") fc#)
-                   expanded# (if (core/macroexpand-on-load?)
-                               (macroexpand-all parsed#)
-                               parsed#)]
-               (cons! fc# core/*loaded-files*)
-               (eval expanded#)
-               fc#))))
-        (process-ns-alias-def* alias-err-msg# ~alias)
-        fc#)))
+    `(locking core/*loaded-files*
+       (let [alias-err-msg# (str/format "load-file '%s'" (name ~file))
+             fc#            (if (str/ends-with? (name ~file) ".venice")
+                              (name ~file)
+                              (str (name ~file) ".venice"))
+             load#          (or ~force (not-contains? core/*loaded-files* fc#))]
+         (when load#
+           (let [code# (core/load-file* fc#)]
+             (when (some? code#)
+               (let [parsed#   (read-string (str "(do " code# ")") fc#)
+                     expanded# (if (core/macroexpand-on-load?)
+                                 (macroexpand-all parsed#)
+                                 parsed#)]
+                 (cons! fc# core/*loaded-files*)
+                 (eval expanded#)))))
+         (process-ns-alias-def* alias-err-msg# ~alias)
+         [fc# (if load# :loaded :already-loaded)]))))
 
 
 (defmacro
@@ -1058,21 +1059,23 @@
        (load-classpath-file ~file force# alias#)))
 
   ([file force alias]
-    `(let [alias-err-msg# (str/format "load-classpath-file '%s'" (name ~file))
-           fc#            (if (str/ends-with? (name ~file) ".venice")
-                            (name ~file)
-                            (str (name ~file) ".venice"))]
-       (when (or ~force (not-contains? core/*loaded-files* fc#))
-         (let [code# (core/load-classpath-file* fc#)]
-           (when (some? code#)
-             (let [parsed#   (read-string (str "(do " code# ")") fc#)
-                   expanded# (if (core/macroexpand-on-load?)
-                               (macroexpand-all parsed#)
-                               parsed#)]
-               (cons! fc# core/*loaded-files*)
-               (eval expanded#)))))
-       (process-ns-alias-def* alias-err-msg# ~alias)
-       (str "classpath:" fc#))))
+    `(locking core/*loaded-files*
+       (let [alias-err-msg# (str/format "load-classpath-file '%s'" (name ~file))
+             fc#            (if (str/ends-with? (name ~file) ".venice")
+                              (name ~file)
+                              (str (name ~file) ".venice"))
+             load#          (or ~force (not-contains? core/*loaded-files* fc#))]
+         (when load#
+           (let [code# (core/load-classpath-file* fc#)]
+             (when (some? code#)
+               (let [parsed#   (read-string (str "(do " code# ")") fc#)
+                     expanded# (if (core/macroexpand-on-load?)
+                                 (macroexpand-all parsed#)
+                                 parsed#)]
+                 (cons! fc# core/*loaded-files*)
+                 (eval expanded#)))))
+         (process-ns-alias-def* alias-err-msg# ~alias)
+         [(str "classpath:" fc#) (if load# :loaded :already-loaded)]))))
 
 
 (defn
@@ -1175,18 +1178,20 @@
        (load-module ~m force# alias#)))
 
   ([m force alias]
-    `(let [modname#       (keyword (name ~m))
-           alias-err-msg# (str/format "load-module '%s'" modname#)]
-       (when (or ~force (not-contains? core/*loaded-modules* modname#))
-         (let [code#     (str "(do " (core/load-module* modname#) ")")
-               parsed#   (read-string code# modname#)
-               expanded# (if (core/macroexpand-on-load?)
-                           (macroexpand-all parsed#)
-                           parsed#)]
-           (cons! modname# core/*loaded-modules*)
-           (eval expanded#)))
-       (process-ns-alias-def* alias-err-msg# ~alias)
-       modname#)))
+    `(locking core/*loaded-modules*
+       (let [modname#       (keyword (name ~m))
+             alias-err-msg# (str/format "load-module '%s'" modname#)
+             load#          (or ~force (not-contains? core/*loaded-modules* modname#))]
+         (when load#
+           (let [code#     (str "(do " (core/load-module* modname#) ")")
+                 parsed#   (read-string code# modname#)
+                 expanded# (if (core/macroexpand-on-load?)
+                             (macroexpand-all parsed#)
+                             parsed#)]
+             (cons! modname# core/*loaded-modules*)
+             (eval expanded#)))
+          (process-ns-alias-def* alias-err-msg# ~alias)
+          [modname# (if load# :loaded :already-loaded)]))))
 
 (def lm load-module)  ;; alias
 

@@ -32,7 +32,8 @@ public class BenchmarkModuleTest {
 
     @Test
     public void test_load() {
-        assertEquals("benchmark", new Venice().eval("(load-module :benchmark)"));
+        assertEquals("[benchmark, loaded]", new Venice().eval("(load-module :benchmark)")
+                                                        .toString());
     }
 
     @Test
