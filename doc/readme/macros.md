@@ -223,7 +223,7 @@ The syntax quote is similar to templating languages where parts of the template
 are *fixed* and parts are *inserted*  (evaluated). 
 The syntax quote makes the form that follows it a *template*.
 
-The unquote which is a tilde (~) then is how parts of the template are forced to 
+The unquote which is a tilde `~` then is how parts of the template are forced to 
 be evaluated. It acts similarly to variable replacement in templates.
 
 
@@ -244,7 +244,7 @@ Nested unquotes do not work:
    `(+ ~x ~y ~(inc ~y)))
 ```
 
-Throws _SymbolNotFoundException_: Symbol 'unquote' not found.
+Throws a _SymbolNotFoundException_: Symbol 'unquote' not found.
    
    
 One might be tempted to write:
@@ -254,8 +254,9 @@ One might be tempted to write:
   `(+ ~x ~y ~(inc y)))
 ```
 
-But this uses an unevaluated y argument. So `(sum 1 2)` yields 3, but `(sum 1 (* 3 4))` 
-fails because the function `inc` gets a list `'(* 3 4)` as argument.
+But this uses an unevaluated y argument. So `(sum 1 2)` correctly yields 3, but 
+`(sum 1 (* 3 4))` fails because the function `inc` gets a list `'(* 3 4)` as 
+argument.
    
    
 Rewrite it to get it work:
