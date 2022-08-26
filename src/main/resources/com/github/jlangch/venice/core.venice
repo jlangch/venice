@@ -910,7 +910,7 @@
      (eval expanded#)))
 
 
-(defmacro process-ns-alias-def* [caller alias ]
+(defmacro process-ns-alias-def* [caller alias]
   `(when (some? ~alias)
     (if (and (vector? ~alias)
              (= 3 (count ~alias))
@@ -945,8 +945,6 @@
 
           The function is restricted to load files with the extension '.venice'.
           If the file extension is missing '.venice' will be implicitely added.
-          Returns 'true' if the file has been successfully loaded and 'false' if
-          the file has been already loaded.
 
           An optional namespace alias can passed:
           `(load-file "coffee.venice" ['coffee :as 'c])`
@@ -983,31 +981,27 @@
     `(load-file ~file false nil))
 
   ([file opt]
-    `(if (boolean? ~opt)
-       (load-file ~file ~opt nil)
-       (load-file ~file false ~opt)))
+    `(let [force# (if (boolean? ~opt) ~opt false)
+           alias# (if (boolean? ~opt) nil ~opt)]
+       (load-file ~file force# alias#)))
 
   ([file force alias]
     `(let [alias-err-msg# (str/format "load-file '%s'" (name ~file))
            fc#            (if (str/ends-with? (name ~file) ".venice")
                             (name ~file)
                             (str (name ~file) ".venice"))]
-       (if (or ~force (not-contains? core/*loaded-files* fc#))
-         (do
-           (let [code# (core/load-file* fc#)]
-             (when (some? code#)
-               (let [parsed#   (read-string (str "(do " code# ")") fc#)
-                     expanded# (if (core/macroexpand-on-load?)
-                                 (macroexpand-all parsed#)
-                                 parsed#)]
-                 (cons! fc# core/*loaded-files*)
-                 (eval expanded#)
-                 fc#)))
-            (process-ns-alias-def* alias-err-msg# ~alias)
-            true)
-         (do
-           (process-ns-alias-def* alias-err-msg# ~alias)
-           false)))))
+       (when (or ~force (not-contains? core/*loaded-files* fc#))
+         (let [code# (core/load-file* fc#)]
+           (when (some? code#)
+             (let [parsed#   (read-string (str "(do " code# ")") fc#)
+                   expanded# (if (core/macroexpand-on-load?)
+                               (macroexpand-all parsed#)
+                               parsed#)]
+               (cons! fc# core/*loaded-files*)
+               (eval expanded#)
+               fc#))))
+        (process-ns-alias-def* alias-err-msg# ~alias)
+        fc#)))
 
 
 (defmacro
@@ -1059,9 +1053,9 @@
     `(load-classpath-file ~file false nil))
 
   ([file opt]
-    `(if (boolean? ~opt)
-       (load-classpath-file ~file ~opt nil)
-       (load-classpath-file ~file false ~opt)))
+    `(let [force# (if (boolean? ~opt) ~opt false)
+           alias# (if (boolean? ~opt) nil ~opt)]
+       (load-classpath-file ~file force# alias#)))
 
   ([file force alias]
     `(let [alias-err-msg# (str/format "load-classpath-file '%s'" (name ~file))
@@ -1078,7 +1072,7 @@
                (cons! fc# core/*loaded-files*)
                (eval expanded#)))))
        (process-ns-alias-def* alias-err-msg# ~alias)
-       fc#)))
+       (str "classpath:" fc#))))
 
 
 (defn

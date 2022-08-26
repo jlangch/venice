@@ -235,9 +235,9 @@ public class LoadPaths1Test {
                                                 true);
 
                 final Venice venice1 = new Venice(new AcceptAllInterceptor(loadPaths));
-                assertEquals(true, venice1.eval("(load-file \"" + new File(root, "div.venice").getAbsolutePath() + "\")"));
-                assertEquals(true, venice1.eval("(load-file :sum)"));
-                assertEquals(true, venice1.eval("(load-file :sub)"));
+                assertNotNull(venice1.eval("(load-file \"" + new File(root, "div.venice").getAbsolutePath() + "\")"));
+                assertNotNull(venice1.eval("(load-file :sum)"));
+                assertNotNull(venice1.eval("(load-file :sub)"));
 
                 // not existing files
                 try {
@@ -282,8 +282,8 @@ public class LoadPaths1Test {
                                                 false);
 
                 final Venice venice1 = new Venice(new AcceptAllInterceptor(loadPaths));
-                assertEquals(true, venice1.eval("(load-file :sum)"));
-                assertEquals(true, venice1.eval("(load-file :sub)"));
+                assertNotNull(venice1.eval("(load-file :sum)"));
+                assertNotNull(venice1.eval("(load-file :sub)"));
 
                 // not existing files
                 try {
@@ -330,7 +330,7 @@ public class LoadPaths1Test {
                 final ILoadPaths loadPaths = LoadPathsFactory.of(null, true);
 
                 final Venice venice1 = new Venice(new AcceptAllInterceptor(loadPaths));
-                assertEquals(true, venice1.eval("(load-file \"" + new File(root, "div.venice").getAbsolutePath() + "\")"));
+                assertNotNull(venice1.eval("(load-file \"" + new File(root, "div.venice").getAbsolutePath() + "\")"));
 
                 // not existing files
                 try {
@@ -480,9 +480,9 @@ public class LoadPaths1Test {
                                                 true);
 
                 final Venice venice1 = new Venice(new SandboxInterceptor(new SandboxRules(), loadPaths));
-                assertEquals(true, venice1.eval("(load-file \"" + new File(root, "div.venice").getAbsolutePath() + "\")"));
-                assertEquals(true, venice1.eval("(load-file :sum)"));
-                assertEquals(true, venice1.eval("(load-file :sub)"));
+                assertNotNull(venice1.eval("(load-file \"" + new File(root, "div.venice").getAbsolutePath() + "\")"));
+                assertNotNull(venice1.eval("(load-file :sum)"));
+                assertNotNull(venice1.eval("(load-file :sub)"));
 
                 // not existing files
                 try {
@@ -527,8 +527,8 @@ public class LoadPaths1Test {
                                                 false);
 
                 final Venice venice1 = new Venice(new SandboxInterceptor(new SandboxRules(), loadPaths));
-                assertEquals(true, venice1.eval("(load-file :sum)"));
-                assertEquals(true, venice1.eval("(load-file :sub)"));
+                assertNotNull(venice1.eval("(load-file :sum)"));
+                assertNotNull(venice1.eval("(load-file :sub)"));
 
                 // not existing files
                 try {
@@ -575,7 +575,7 @@ public class LoadPaths1Test {
                 final ILoadPaths loadPaths = LoadPathsFactory.of(null, true);
 
                 final Venice venice1 = new Venice(new SandboxInterceptor(new SandboxRules(), loadPaths));
-                assertEquals(true, venice1.eval("(load-file \"" + new File(root, "div.venice").getAbsolutePath() + "\")"));
+                assertNotNull(venice1.eval("(load-file \"" + new File(root, "div.venice").getAbsolutePath() + "\")"));
 
                 // not existing files
                 try {

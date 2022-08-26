@@ -143,11 +143,9 @@ public class Venice {
                 ast = venice.MACROEXPAND(ast, env);
             }
 
-            final PreCompiled pc = new PreCompiled(scriptName, ast, macroexpand);
-
             meterRegistry.record("venice.precompile", System.nanoTime() - nanos);
 
-            return pc;
+            return new PreCompiled(scriptName, ast, macroexpand);
         }
         finally {
             ThreadContext.clear(false);
