@@ -263,7 +263,7 @@ Rewrite it to get it work:
 
 ```clojure
 (defmacro sum [x y] 
-  `(+ ~x ~y (inc ~y)))
+   `(+ ~x ~y (inc ~y)))
 ```
 
 
