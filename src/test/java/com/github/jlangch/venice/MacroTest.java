@@ -82,6 +82,55 @@ public class MacroTest {
     }
 
     @Test
+    public void testAutoGensym_1() {
+        final Venice venice = new Venice();
+
+        assertEquals(100L,  venice.eval("(let [a# 100] a#)"));
+    }
+
+    @Test
+    public void testAutoGensym_2() {
+        final Venice venice = new Venice();
+
+        // (let [a# 100] `(+ 10 ~(dec a#)))
+        //    expands to
+        // (let [a# 100] (quasiquote (+ 10 (unquote (dec a__44__auto)))))
+
+        try {
+            venice.eval("(let [a# 100] `(+ 10 ~(dec a#)))");
+
+            // SymbolNotFoundException: Symbol 'a__42__auto' not found.
+            fail("Expected SymbolNotFoundException");
+        }
+        catch(SymbolNotFoundException ex) {
+            assertTrue(true);
+        }
+    }
+
+    @Test
+    public void testAutoGensym_3() {
+        final Venice venice = new Venice();
+
+        // `(let [a# 100] ~(dec a#))
+        //    expands to
+        // (quasiquote (let [a__50__auto 100] (unquote (dec a__50__auto))))
+
+        try {
+            venice.eval("`(let [a# 100] ~(dec a#))");
+
+            // SymbolNotFoundException: Symbol 'a__42__auto' not found.
+            fail("Expected SymbolNotFoundException");
+
+
+            // The reason for  this behavior is that `(dec a#)` is executed before
+            // the symbol a# is created and assigned the value 100 in `(let [a# 100] ...`
+        }
+        catch(SymbolNotFoundException ex) {
+            assertTrue(true);
+        }
+    }
+
+    @Test
     public void test_assert() {
         final Venice venice = new Venice();
 
