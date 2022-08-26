@@ -250,8 +250,8 @@ One might be tempted to write:
   `(+ ~x ~y ~(inc y)))
 ```
 
-This uses an unvaluated y argument. So `(sum 1 2)` yields 3, but `(sum 1 (* 3 4))` fails because 
-the function `inc` gets a list `'(* 3 4)` as argument
+But this uses an unevaluated y argument. So `(sum 1 2)` yields 3, but `(sum 1 (* 3 4))` 
+fails because the function `inc` gets a list `'(* 3 4)` as argument.
 
 Rewrite it to get it work:
 
