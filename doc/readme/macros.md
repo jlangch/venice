@@ -252,6 +252,9 @@ One might be tempted to write:
 ```clojure
 (defmacro sum [x y] 
   `(+ ~x ~y ~(inc y)))
+  
+(macroexpand '(sum 1 2))        ;; => (+ 1 2 3)
+(macroexpand '(sum 1 (+ 1 1)))  ;; => VncException: Invalid argument type :core/list while calling function 'inc'
 ```
 
 But this uses an unevaluated y argument. So `(sum 1 2)` correctly yields 3, but 
@@ -264,6 +267,17 @@ Rewrite it to get it work:
 ```clojure
 (defmacro sum [x y] 
    `(+ ~x ~y (inc ~y)))
+   
+(macroexpand '(sum 1 2))        ;; => (+ 1 2 (inc 2))
+(macroexpand '(sum 1 (+ 1 1)))  ;; => (+ 1 (+ 1 1) (inc (+ 1 1)))
+```
+
+```clojure
+(defmacro sum [x y] 
+   `(+ ~x ~y ~(inc (eval y))))
+   
+(macroexpand '(sum 1 2))        ;; => (+ 1 2 3)
+(macroexpand '(sum 1 (+ 1 1)))  ;; => (+ 1 (+ 1 1) 3)
 ```
 
 
