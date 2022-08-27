@@ -24,7 +24,6 @@
 
 (ns test)
 
-
 (defmacro test/fn ([] `(+ 1 ~x)))
 
 
@@ -42,3 +41,6 @@
 
 (defn test/unexpected-error [msg]
   (test/error (str "Unexpected " msg)))
+
+;; used by macroexpand unit test
+(defn test/test-body-with-macro [] (when true 1))
