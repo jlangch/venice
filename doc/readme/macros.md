@@ -106,20 +106,45 @@ to the time the expanded macro body is evaluated whereas functions evaluate its
 arguments eagerly.
 
 
-### 2. The code has to run at read/compile time
+### 2. The code has to run at the macro expand time
 
-Macros are very flexible in controlling which parts are evaluated at read/compile time
+Macros are very flexible in controlling which parts are evaluated at expand time
 or at runtime.
 
-This is a macro that is completely evaluated at read/compile time. 
+This is a macro that is completely evaluated at expand time. 
 
 ```clojure
-(defmacro build-time []
+(defmacro expand-time []
   (str (time/local-date-time)))
 ```
 
-Another example for this kind of macros is performing expensive calculations at 
-read/compile time as an optimization.
+To test it in the REPL enable macro expansion at code loading time by running 
+the REPL command `!macroexpand`.
+
+```text
+venice> !macroexpand
+Macro expansion enabled
+
+venice> (defmacro expand-time [] (str (time/local-date-time)))
+=> macro user/expand-time
+
+venice> (defn test [] (expand-time))
+=> user/test
+
+venice> (test)
+=> "2022-08-27T20:26:09.114"
+
+venice> (test)
+=> "2022-08-27T20:26:09.114"
+
+venice> (test)
+=> "2022-08-27T20:26:09.114"
+```
+
+Note: Without the `!macroexpand` command one will see for every `(test)` run a
+different time. Because the macro is always expanded and evaluated! 
+
+
 
 
 ## The Macro toolbox
