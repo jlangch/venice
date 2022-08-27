@@ -260,7 +260,19 @@ One might be tempted to write:
 But this uses an unevaluated y argument. So `(sum 1 2)` correctly yields 3, but 
 `(sum 1 (* 3 4))` fails because the function `inc` gets a list `'(* 3 4)` as 
 argument.
+
+Trying to explicitly evaluate `y` does not work either. It fails while expanding 
+the macro. The macro arguments simply do not exist as local vars at this time:
+
+```clojure
+(defmacro sum [x y] 
+   `(+ ~x ~y ~(inc (eval y))))
    
+(macroexpand '(sum 1 2))        ;; => (+ 1 2 3)
+(macroexpand '(sum 1 (+ 1 1)))  ;; => (+ 1 (+ 1 1) 3)
+(macroexpand '(sum a b))        ;; => SymbolNotFoundException: Symbol 'b' not found!
+```
+
    
 Rewrite it to get it work:
 
@@ -270,18 +282,15 @@ Rewrite it to get it work:
    
 (macroexpand '(sum 1 2))        ;; => (+ 1 2 (inc 2))
 (macroexpand '(sum 1 (+ 1 1)))  ;; => (+ 1 (+ 1 1) (inc (+ 1 1)))
+(macroexpand '(sum a b))        ;; => (+ a b (inc b))
 ```
 
-```clojure
-(defmacro sum [x y] 
-   `(+ ~x ~y ~(inc (eval y))))
-   
-(macroexpand '(sum 1 2))        ;; => (+ 1 2 3)
-(macroexpand '(sum 1 (+ 1 1)))  ;; => (+ 1 (+ 1 1) 3)
-```
+Semantically this version slightly differs from the original version. `(inc ...)` is 
+not anymore executed at the time of expanding the macro.
 
 Note: `y` is evaluated twice in these scenarios, potentially leading to unexpected
 behavior if the evaluation of `y` has side effects.
+
 
 
 ### Unquote-splicing
