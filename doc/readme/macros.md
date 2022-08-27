@@ -617,12 +617,12 @@ Consider the following:
 ```
 
 ```clojure
-(macroexpand-all '(square (do (println "x..") 4)))
-;; => (* (do (println "x..") 4) (do (println "x..") 4))
+(macroexpand-all '(square (do (println "eval x..") 4)))
+;; => (* (do (println "eval x..") 4) (do (println "eval x..") 4))
 
 ```
 
-`(square (do (println "x..") 4))` results in:
+`(square (do (println "eval x..") 4))` results in:
 
 ```text
 x..
@@ -639,13 +639,13 @@ The problem can be fixed by placing the argument evaluation in a `let` expressio
 ```
 
 ```clojure
-(macroexpand-all '(square2 (do (println "x..") 4)))
+(macroexpand-all '(square2 (do (println "eval x..") 4)))
 
-;; => (let [x__119__auto (do (println "x..") 4)] (* x__119__auto x__119__auto))
+;; => (let [x__119__auto (do (println "eval x..") 4)] (* x__119__auto x__119__auto))
 ```
 
 
-`(square2 (do (println "x..") 4))` results in:
+`(square2 (do (println "eval x..") 4))` results in:
 
 ```text
 x..
