@@ -44,3 +44,6 @@
 
 ;; used by macroexpand unit test
 (defn test/test-body-with-macro [] (when true 1))
+
+;; used by macroexpand unit test
+(defmacro test/expand-time [] (str (time/local-date-time)))
