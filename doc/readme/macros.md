@@ -625,8 +625,8 @@ Consider the following:
 `(square (do (println "eval x..") 4))` results in:
 
 ```text
-x..
-x..
+eval x..
+eval x..
 => 16
 ```
 
@@ -648,6 +648,6 @@ The problem can be fixed by placing the argument evaluation in a `let` expressio
 `(square2 (do (println "eval x..") 4))` results in:
 
 ```text
-x..
+eval x..
 => 16
 ```
