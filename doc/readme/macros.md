@@ -280,6 +280,9 @@ Rewrite it to get it work:
 (macroexpand '(sum 1 (+ 1 1)))  ;; => (+ 1 (+ 1 1) 3)
 ```
 
+Note: `y` is evaluated twice in these scenarios, potentially leading to unexpected
+behavior if the evaluation of y has side effects.
+
 
 ### Unquote-splicing
 
