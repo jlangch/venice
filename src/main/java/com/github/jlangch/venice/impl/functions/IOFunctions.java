@@ -2205,7 +2205,7 @@ public class IOFunctions {
                 final String prefix = Coerce.toVncString(args.first()).getValue();
                 final String suffix = Coerce.toVncString(args.second()).getValue();
                 try {
-                	final File file = Files.createTempFile(prefix, suffix).normalize().toFile();
+                    final File file = Files.createTempFile(prefix, suffix).normalize().toFile();
                     return new VncJavaObject(file);
                 }
                 catch (Exception ex) {
@@ -2364,6 +2364,57 @@ public class IOFunctions {
             private static final long serialVersionUID = -1848883965231344442L;
         };
 
+    public static VncFunction io_make_venice_filename =
+            new VncFunction(
+                    "io/make-venice-filename",
+                    VncFunction
+                        .meta()
+                        .arglists(
+                            "(io/make-venice-filename f)")
+                        .doc(
+                            "Returns the file f with the extension '.venice'. f must " +
+                            "be a file or a string (file path).")
+                        .examples(
+                            "(io/make-venice-filename \"/tmp/foo\")",
+                            "(io/make-venice-filename \"/tmp/foo.venice\")")
+                        .build()
+            ) {
+                @Override
+                public VncVal apply(final VncList args) {
+                    ArityExceptions.assertArity(this, args, 1);
+
+                    final VncVal f = args.first();
+
+                    if (Types.isVncString(f)) {
+                        String s = Coerce.toVncString(f).getValue();
+                        return s.endsWith(".venice") ? f : new VncString(s + ".venice");
+                    }
+                    else if (Types.isVncJavaObject(f, File.class)) {
+                        final File file = Coerce.toVncJavaObject(f, File.class);
+                        final String name = file.getName();
+                        return name.endsWith(".venice")
+                                ? f
+                                : new VncJavaObject(
+                                        new File(file.getParentFile(), name + ".venice"));
+                    }
+                    else if (Types.isVncJavaObject(f, Path.class)) {
+                        final File file = Coerce.toVncJavaObject(f, Path.class).toFile();
+                        final String name = file.getName();
+                        return name.endsWith(".venice")
+                                ? f
+                                : new VncJavaObject(
+                                        new File(file.getParentFile(), name + ".venice").toPath());
+                    }
+                    else {
+                        throw new VncException(String.format(
+                                "Function 'io/make-venice-filename' does not allow %s as fs",
+                                Types.getType(f)));
+                    }
+                }
+
+                private static final long serialVersionUID = -1848883965231344442L;
+            };
+
 
     public static File convertToFile(final VncVal f, final String errFormat) {
         final File file = convertToFile(f);
@@ -2502,5 +2553,6 @@ public class IOFunctions {
                     .add(io_default_charset)
                     .add(io_load_classpath_resource)
                     .add(io_classpath_resource_Q)
+                    .add(io_make_venice_filename)
                     .toMap();
 }

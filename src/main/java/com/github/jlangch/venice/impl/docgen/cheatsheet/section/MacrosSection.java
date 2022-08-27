@@ -96,7 +96,7 @@ public class MacrosSection implements ISectionBuilder {
         call.addItem(diBuilder.getDocItem("some->"));
         call.addItem(diBuilder.getDocItem("some->>"));
 
-        final DocSection loading = new DocSection("Loading", "macros.loading");
+        final DocSection loading = new DocSection("Load Code", "macros.loadcode");
         all.addSection(loading);
         loading.addItem(diBuilder.getDocItem("load-module"));
         loading.addItem(diBuilder.getDocItem("load-file", false));

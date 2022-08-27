@@ -576,6 +576,23 @@ public class IOFunctionsTest {
     }
 
     @Test
+    public void test_io_make_venice_filename() {
+        final Venice venice = new Venice();
+
+        assertEquals(".venice", venice.eval("(io/make-venice-filename \"\")"));
+        assertEquals("foo.venice", venice.eval("(io/make-venice-filename \"foo.venice\")"));
+        assertEquals("foo.venice", venice.eval("(io/make-venice-filename \"foo\")"));
+        assertEquals("bar/foo.venice", venice.eval("(io/make-venice-filename \"bar/foo.venice\")"));
+        assertEquals("bar/foo.venice", venice.eval("(io/make-venice-filename \"bar/foo\")"));
+
+        assertEquals(new File("foo.venice"), venice.eval("(io/make-venice-filename (io/file \"foo.venice\"))"));
+        assertEquals(new File("foo.venice"), venice.eval("(io/make-venice-filename (io/file \"foo\"))"));
+        assertEquals(new File("bar/foo.venice"), venice.eval("(io/make-venice-filename (io/file \"bar/foo.venice\"))"));
+        assertEquals(new File("bar/foo.venice"), venice.eval("(io/make-venice-filename (io/file \"bar/foo\"))"));
+    }
+
+
+    @Test
     public void test_io_mime_type() {
         final Venice venice = new Venice();
 

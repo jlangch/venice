@@ -23,6 +23,8 @@ package com.github.jlangch.venice;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
+import java.util.List;
+
 import org.junit.jupiter.api.Test;
 
 import com.github.jlangch.venice.impl.RunMode;
@@ -190,33 +192,54 @@ public class MacroExpandTest {
                 venice.eval("test", script1, true, null));
     }
 
+    @Test
+    public void test_macroexpand_ns() {
+        final Venice venice = new Venice();
 
-//    @Test
-//    @SuppressWarnings("unchecked")
-//    public void test_macro_code_at_eval_time() {
-//        final Venice venice = new Venice(new AcceptAllInterceptor());
-//
-//        final String script1 = "(do                                    \n" +
-//                               "  (load-module :test)                  \n" +
-//                               "                                       \n" +
-//                               "  (defn test [] (test/expand-time))    \n" +
-//                               "                                       \n" +
-//                               "  (let [x1 (test)                      \n" +
-//                               "        _  (sleep 300)                 \n" +
-//                               "        x2 (test)                      \n" +
-//                               "        _  (sleep 300)                 \n" +
-//                               "        x3 (test)]                     \n" +
-//                               "    [x1 x2 x3]))                         ";
-//
-//        final List<String> l1 = (List<String>)venice.eval("test", script1, false, null);
+        final String s1 =
+                "(do                         \n" +
+                "   (ns foo)                 \n" +
+                "   (load-module :test)      \n" +
+                "   (test/macro-ns-expand))  ";
+
+        final String s2 =
+                "(do                         \n" +
+                "   (ns foo)                 \n" +
+                "   (load-module :test)      \n" +
+                "   (test/macro-ns-runtime)) ";
+
+        assertEquals("foo", venice.eval(s1));
+        assertEquals("foo", venice.eval(s2));
+    }
+
+    @Test
+    @SuppressWarnings("unchecked")
+    public void test_macro_code_at_eval_time() {
+        final Venice venice = new Venice(new AcceptAllInterceptor());
+
+        final String script1 = "(do                                    \n" +
+                               "  (load-module :test)                  \n" +
+                               "                                       \n" +
+                               "  (defn test [] (test/expand-time))    \n" +
+                               "                                       \n" +
+                               "  (let [x1 (test)                      \n" +
+                               "        _  (sleep 300)                 \n" +
+                               "        x2 (test)                      \n" +
+                               "        _  (sleep 300)                 \n" +
+                               "        x3 (test)]                     \n" +
+                               "    [x1 x2 x3]))                         ";
+
+        // TODO: make macro expand work on the current parse unit
+
+        final List<String> l1 = (List<String>)venice.eval("test", script1, false, null);
 //        assertFalse(l1.get(0).equals(l1.get(1)));
 //        assertFalse(l1.get(0).equals(l1.get(2)));
 //        assertFalse(l1.get(1).equals(l1.get(2)));
-//
-//        final List<String> l2 = (List<String>)venice.eval("test", script1, true, null);
+
+        final List<String> l2 = (List<String>)venice.eval("test", script1, true, null);
 //        assertTrue(l2.get(0).equals(l2.get(1)));
 //        assertTrue(l2.get(0).equals(l2.get(2)));
 //        assertTrue(l2.get(1).equals(l2.get(2)));
-//    }
+    }
 
 }

@@ -910,19 +910,17 @@
      (eval expanded#)))
 
 
-(defmacro process-ns-alias-def* [caller alias]
-  `(when (some? ~alias)
-    (if (and (vector? ~alias)
-             (= 3 (count ~alias))
-             (symbol? (first ~alias))
-             (keyword? (second ~alias))
-             (= "as" (name (second ~alias)))
-             (symbol? (third ~alias)))
-      (ns-alias (third ~alias) (first ~alias))
-      (throw (ex :VncException
-                 (str/format "Invalid ns alias definition '%s' for %s!"
-                             (pr-str ~alias)
-                             ~caller))))))
+(defn validate-ns-alias-def* [caller alias]
+  (when-not (and (vector? alias)
+                 (= 3 (count alias))
+                 (symbol? (first alias))
+                 (keyword? (second alias))
+                 (= "as" (name (second alias)))
+                 (symbol? (third alias)))
+    (throw (ex :VncException
+               (str/format "Invalid ns alias definition '%s' for %s!"
+                           (pr-str alias)
+                           caller)))))
 
 
 (defmacro
@@ -991,21 +989,20 @@
 
   ([file force alias]
     `(locking core/*loaded-files*
-       (let [alias-err-msg# (str/format "load-file '%s'" (name ~file))
-             fc#            (if (str/ends-with? (name ~file) ".venice")
-                              (name ~file)
-                              (str (name ~file) ".venice"))
+       (let [fc#            (io/make-venice-filename ~file)
+             alias-err-msg# (str/format "load-file '%s'" fc#)
              load#          (or ~force (not-contains? core/*loaded-files* fc#))]
          (when load#
-           (let [code# (core/load-file* fc#)]
-             (when (some? code#)
-               (let [parsed#   (read-string (str "(do " code# ")") fc#)
-                     expanded# (if (core/macroexpand-on-load?)
-                                 (macroexpand-all parsed#)
-                                 parsed#)]
-                 (cons! fc# core/*loaded-files*)
-                 (eval expanded#)))))
-         (process-ns-alias-def* alias-err-msg# ~alias)
+           (let [code#     (core/load-file* fc#)
+                 parsed#   (read-string (str "(do " code# ")") fc#)
+                 expanded# (if (core/macroexpand-on-load?)
+                             (macroexpand-all parsed#)
+                             parsed#)]
+             (eval expanded#))
+           (cons! fc# core/*loaded-files*))
+         (when (some? ~alias)
+           (validate-ns-alias-def* alias-err-msg# ~alias)
+           (ns-alias (third ~alias) (first ~alias)))
          [fc# (if load# :loaded :already-loaded)]))))
 
 
@@ -1073,65 +1070,21 @@
 
   ([file force alias]
     `(locking core/*loaded-files*
-       (let [alias-err-msg# (str/format "load-classpath-file '%s'" (name ~file))
-             fc#            (if (str/ends-with? (name ~file) ".venice")
-                              (name ~file)
-                              (str (name ~file) ".venice"))
+       (let [fc#            (io/make-venice-filename ~file)
+             alias-err-msg# (str/format "load-classpath-file '%s'" fc#)
              load#          (or ~force (not-contains? core/*loaded-files* fc#))]
          (when load#
-           (let [code# (core/load-classpath-file* fc#)]
-             (when (some? code#)
-               (let [parsed#   (read-string (str "(do " code# ")") fc#)
-                     expanded# (if (core/macroexpand-on-load?)
-                                 (macroexpand-all parsed#)
-                                 parsed#)]
-                 (cons! fc# core/*loaded-files*)
-                 (eval expanded#)))))
-         (process-ns-alias-def* alias-err-msg# ~alias)
+           (let [code#     (core/load-classpath-file* fc#)
+                 parsed#   (read-string (str "(do " code# ")") fc#)
+                 expanded# (if (core/macroexpand-on-load?)
+                             (macroexpand-all parsed#)
+                             parsed#)]
+             (eval expanded#))
+           (cons! fc# core/*loaded-files*))
+         (when (some? ~alias)
+           (validate-ns-alias-def* alias-err-msg# ~alias)
+           (ns-alias (third ~alias) (first ~alias)))
          [(str "classpath:" fc#) (if load# :loaded :already-loaded)]))))
-
-
-(defn
-  ^{ :arglists '("(load-resource file & options)")
-     :doc """
-          Loads a resource from the defined load paths. Returns a string or
-          a bytebuffer dependent on the passed options.
-
-          If the file is not found an exception is raised.
-
-          Options:
-
-          | :binary b   | e.g :binary true, defaults to true |
-          | :encoding e | e.g :encoding :utf-8, defaults to :utf-8 |
-
-          See the `load-paths` doc for a description of the *load path* feature.
-          """
-     :examples '(
-          """
-          ;; With load-paths: [/users/foo/images]
-          ;;        -> loads: /users/foo/images/coffee.png
-          (load-resource "coffee.png")  ; relative
-          """,
-          """
-          ;; With load-paths: [/users/foo/images]
-          ;;        -> loads: /users/foo/images/coffee.png
-          (load-resource "/users/foo/images/coffee.png")  ; absolute
-          """,
-          """
-          ;; With load-paths: [/users/foo/images]
-          ;;        -> loads: /users/foo/images/small/coffee.png
-          (load-resource "small/coffee.png")  ; relative in sub directory
-          """,
-          """
-          ;; With load-paths: [/users/foo/images.zip]
-          ;;        -> loads: /users/foo/images.zip!small/coffee.png
-          (load-resource "small/coffee.png")  ; in ZIP
-          """ )
-     :see-also '("load-paths") }
-
-  load-resource [file & options]
-
-  (apply load-resource* file options))
 
 
 (defmacro
@@ -1207,12 +1160,57 @@
                  expanded# (if (core/macroexpand-on-load?)
                              (macroexpand-all parsed#)
                              parsed#)]
-             (cons! modname# core/*loaded-modules*)
-             (eval expanded#)))
-          (process-ns-alias-def* alias-err-msg# ~alias)
-          [modname# (if load# :loaded :already-loaded)]))))
+             (eval expanded#))
+           (cons! modname# core/*loaded-modules*))
+         (when (some? ~alias)
+           (validate-ns-alias-def* alias-err-msg# ~alias)
+           (ns-alias (third ~alias) (first ~alias)))
+         [modname# (if load# :loaded :already-loaded)]))))
 
 (def lm load-module)  ;; alias
+
+
+(defn
+  ^{ :arglists '("(load-resource file & options)")
+     :doc """
+          Loads a resource from the defined load paths. Returns a string or
+          a bytebuffer dependent on the passed options.
+
+          If the file is not found an exception is raised.
+
+          Options:
+
+          | :binary b   | e.g :binary true, defaults to true |
+          | :encoding e | e.g :encoding :utf-8, defaults to :utf-8 |
+
+          See the `load-paths` doc for a description of the *load path* feature.
+          """
+     :examples '(
+          """
+          ;; With load-paths: [/users/foo/images]
+          ;;        -> loads: /users/foo/images/coffee.png
+          (load-resource "coffee.png")  ; relative
+          """,
+          """
+          ;; With load-paths: [/users/foo/images]
+          ;;        -> loads: /users/foo/images/coffee.png
+          (load-resource "/users/foo/images/coffee.png")  ; absolute
+          """,
+          """
+          ;; With load-paths: [/users/foo/images]
+          ;;        -> loads: /users/foo/images/small/coffee.png
+          (load-resource "small/coffee.png")  ; relative in sub directory
+          """,
+          """
+          ;; With load-paths: [/users/foo/images.zip]
+          ;;        -> loads: /users/foo/images.zip!small/coffee.png
+          (load-resource "small/coffee.png")  ; in ZIP
+          """ )
+     :see-also '("load-paths") }
+
+  load-resource [file & options]
+
+  (apply load-resource* file options))
 
 
 (defmacro
