@@ -423,6 +423,60 @@ expands all macros in a form.
 ```
 
 
+## Double Evaluation
+
+It's very easy to get trapped by _double evaluation_ when writing macros, which 
+occurs when a form passed to a macro as an argument gets evaluated more than once. 
+
+It affects code evaluation in two unexpected ways:
+
+ * Side effects are produced more than once giving unexpected results
+ * Bad performance for unnecessary additional evaluations of the passed forms
+
+Consider the following:
+
+```clojure
+(defmacro square [x] 
+   `(* ~x ~x))
+```
+
+```clojure
+(macroexpand-all '(square (do (println "x..") 4)))
+;; => (* (do (println "x..") 4) (do (println "x..") 4))
+
+```
+
+`(square (do (println "x..") 4))` results in:
+
+```text
+x..
+x..
+=> 16
+```
+
+The problem can be fixed by palcing the argument evaluation in a `let` expression:
+
+```clojure
+(defmacro square2 [x]
+   `(let [x# ~x]
+      (* x# x#)))
+```
+
+```clojure
+(macroexpand-all '(square2 (do (println "x..") 4)))
+
+;; => (let [x__119__auto (do (println "x..") 4)] (* x__119__auto x__119__auto))
+```
+
+
+`(square2 (do (println "x..") 4))` results in:
+
+```text
+x..
+=> 16
+```
+
+
 ## Macro hygiene
 
 So far we haven't used local variables within macros. Locals var names in macros
