@@ -857,6 +857,50 @@ public class MacroTest {
     }
 
     @Test
+    public void test_macroexpand_all_via_interpreter_2() {
+        final Venice venice = new Venice(new AcceptAllInterceptor());
+
+        final String script1 = "(do                      \n" +
+        		               "  (defn tt []            \n" +
+        		               "    (when true 1))       \n" +
+        		               "  (pr-str (fn-body tt))) ";
+
+        assertEquals(
+        		"((if true (do 1)))",
+        		venice.eval("test", script1, true, null));
+
+
+        final String script2 = "(do                                               \n" +
+        		               "  (defn tt []                                     \n" +
+        		               "    [(when true 1) (when true 2) (when true 3)])  \n" +
+        		               "  (pr-str (fn-body tt)))                          ";
+
+        assertEquals(
+        		"([(if true (do 1)) (if true (do 2)) (if true (do 3))])",
+        		venice.eval("test", script2, true, null));
+
+
+        final String script3 = "(do                                               \n" +
+        		               "  (defn tt []                                     \n" +
+        		               "    (when true 1) (when true 2) (when true 3))    \n" +
+        		               "  (pr-str (fn-body tt)))                          ";
+
+        assertEquals(
+        		"((if true (do 1)) (if true (do 2)) (if true (do 3)))",
+        		venice.eval("test", script3, true, null));
+
+
+        final String script4 = "(do                                               \n" +
+        		               "  (defn tt []                                     \n" +
+        		               "    (when true (when true (when true 3))))        \n" +
+        		               "  (pr-str (fn-body tt)))                          ";
+
+        assertEquals(
+        		"((if true (do (if true (do (if true (do 3)))))))",
+        		venice.eval("test", script4, true, null));
+    }
+
+    @Test
     public void test_list_comp() {
         final Venice venice = new Venice();
 
