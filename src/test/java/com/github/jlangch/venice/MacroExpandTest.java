@@ -133,43 +133,43 @@ public class MacroExpandTest {
         final Venice venice = new Venice(new AcceptAllInterceptor());
 
         final String script1 = "(do                      \n" +
-        		               "  (defn tt []            \n" +
-        		               "    (when true 1))       \n" +
-        		               "  (pr-str (fn-body tt))) ";
+                               "  (defn tt []            \n" +
+                               "    (when true 1))       \n" +
+                               "  (pr-str (fn-body tt))) ";
 
         assertEquals(
-        		"((if true (do 1)))",
-        		venice.eval("test", script1, true, null));
+                "((if true (do 1)))",
+                venice.eval("test", script1, true, null));
 
 
         final String script2 = "(do                                               \n" +
-        		               "  (defn tt []                                     \n" +
-        		               "    [(when true 1) (when true 2) (when true 3)])  \n" +
-        		               "  (pr-str (fn-body tt)))                          ";
+                               "  (defn tt []                                     \n" +
+                               "    [(when true 1) (when true 2) (when true 3)])  \n" +
+                               "  (pr-str (fn-body tt)))                          ";
 
         assertEquals(
-        		"([(if true (do 1)) (if true (do 2)) (if true (do 3))])",
-        		venice.eval("test", script2, true, null));
+                "([(if true (do 1)) (if true (do 2)) (if true (do 3))])",
+                venice.eval("test", script2, true, null));
 
 
         final String script3 = "(do                                               \n" +
-        		               "  (defn tt []                                     \n" +
-        		               "    (when true 1) (when true 2) (when true 3))    \n" +
-        		               "  (pr-str (fn-body tt)))                          ";
+                               "  (defn tt []                                     \n" +
+                               "    (when true 1) (when true 2) (when true 3))    \n" +
+                               "  (pr-str (fn-body tt)))                          ";
 
         assertEquals(
-        		"((if true (do 1)) (if true (do 2)) (if true (do 3)))",
-        		venice.eval("test", script3, true, null));
+                "((if true (do 1)) (if true (do 2)) (if true (do 3)))",
+                venice.eval("test", script3, true, null));
 
 
         final String script4 = "(do                                               \n" +
-        		               "  (defn tt []                                     \n" +
-        		               "    (when true (when true (when true 3))))        \n" +
-        		               "  (pr-str (fn-body tt)))                          ";
+                               "  (defn tt []                                     \n" +
+                               "    (when true (when true (when true 3))))        \n" +
+                               "  (pr-str (fn-body tt)))                          ";
 
         assertEquals(
-        		"((if true (do (if true (do (if true (do 3)))))))",
-        		venice.eval("test", script4, true, null));
+                "((if true (do (if true (do (if true (do 3)))))))",
+                venice.eval("test", script4, true, null));
     }
 
     @Test
@@ -177,17 +177,46 @@ public class MacroExpandTest {
         final Venice venice = new Venice(new AcceptAllInterceptor());
 
         final String script1 = "(do                                             \n" +
-        		               "  (load-module :test)                           \n" +
-        		               "                                                \n" +
-        		               "  (pr-str (fn-body test/test-body-with-macro))) ";
+                               "  (load-module :test)                           \n" +
+                               "                                                \n" +
+                               "  (pr-str (fn-body test/test-body-with-macro))) ";
 
         assertEquals(
-        		"((when true 1))",
-        		venice.eval("test", script1, false, null));
+                "((when true 1))",
+                venice.eval("test", script1, false, null));
 
         assertEquals(
-        		"((if true (do 1)))",
-        		venice.eval("test", script1, true, null));
+                "((if true (do 1)))",
+                venice.eval("test", script1, true, null));
     }
+
+
+//    @Test
+//    @SuppressWarnings("unchecked")
+//    public void test_macro_code_at_eval_time() {
+//        final Venice venice = new Venice(new AcceptAllInterceptor());
+//
+//        final String script1 = "(do                                    \n" +
+//                               "  (load-module :test)                  \n" +
+//                               "                                       \n" +
+//                               "  (defn test [] (test/expand-time))    \n" +
+//                               "                                       \n" +
+//                               "  (let [x1 (test)                      \n" +
+//                               "        _  (sleep 300)                 \n" +
+//                               "        x2 (test)                      \n" +
+//                               "        _  (sleep 300)                 \n" +
+//                               "        x3 (test)]                     \n" +
+//                               "    [x1 x2 x3]))                         ";
+//
+//        final List<String> l1 = (List<String>)venice.eval("test", script1, false, null);
+//        assertFalse(l1.get(0).equals(l1.get(1)));
+//        assertFalse(l1.get(0).equals(l1.get(2)));
+//        assertFalse(l1.get(1).equals(l1.get(2)));
+//
+//        final List<String> l2 = (List<String>)venice.eval("test", script1, true, null);
+//        assertTrue(l2.get(0).equals(l2.get(1)));
+//        assertTrue(l2.get(0).equals(l2.get(2)));
+//        assertTrue(l2.get(1).equals(l2.get(2)));
+//    }
 
 }
