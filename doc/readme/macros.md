@@ -454,7 +454,7 @@ x..
 => 16
 ```
 
-The problem can be fixed by palcing the argument evaluation in a `let` expression:
+The problem can be fixed by placing the argument evaluation in a `let` expression:
 
 ```clojure
 (defmacro square2 [x]
