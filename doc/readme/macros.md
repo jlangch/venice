@@ -121,6 +121,8 @@ This is a macro that is completely evaluated at expand time.
 To test it in the REPL enable macro expansion at code loading time by running 
 the REPL command `!macroexpand`.
 
+Start a REPL:
+
 ```text
 venice> !macroexpand
 Macro expansion enabled
@@ -142,7 +144,7 @@ venice> (test)
 ```
 
 Note: Without the `!macroexpand` command one will see for every `(test)` run a
-different time. Because the macro is always expanded and evaluated! 
+different time because the macro is always expanded and evaluated! 
 
 
 
