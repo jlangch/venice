@@ -229,13 +229,13 @@ public class MacroExpandTest {
                                "        x3 (test)]                     \n" +
                                "    [x1 x2 x3]))                         ";
 
-        // TODO: make macro expand work on the current parse unit
-
+        // macroexpand-on-load: disabled
         final List<String> l1 = (List<String>)venice.eval("test", script1, false, null);
 //        assertFalse(l1.get(0).equals(l1.get(1)));
 //        assertFalse(l1.get(0).equals(l1.get(2)));
 //        assertFalse(l1.get(1).equals(l1.get(2)));
 
+        // macroexpand-on-load: enabled
         final List<String> l2 = (List<String>)venice.eval("test", script1, true, null);
 //        assertTrue(l2.get(0).equals(l2.get(1)));
 //        assertTrue(l2.get(0).equals(l2.get(2)));

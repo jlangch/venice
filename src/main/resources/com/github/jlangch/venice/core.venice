@@ -909,17 +909,19 @@
                      parsed#)]
      (eval expanded#)))
 
+(defn ns-alias-def-unwrap* [x]
+  (if (list? x) (second x) x))
 
-(defn validate-ns-alias-def* [caller alias]
-  (when-not (and (vector? alias)
-                 (= 3 (count alias))
-                 (symbol? (first alias))
-                 (keyword? (second alias))
-                 (= "as" (name (second alias)))
-                 (symbol? (third alias)))
+(defn validate-ns-alias-def* [caller alias-def]
+  (when-not (and (vector? alias-def)
+                 (= 3 (count alias-def))
+                 (symbol? (ns-alias-def-unwrap* (first alias-def)))
+                 (keyword? (second alias-def))
+                 (= "as" (name (second alias-def)))
+                 (symbol? (ns-alias-def-unwrap* (third alias-def))))
     (throw (ex :VncException
                (str/format "Invalid ns alias definition '%s' for %s!"
-                           (pr-str alias)
+                           (pr-str alias-def)
                            caller)))))
 
 
@@ -1165,6 +1167,33 @@
          [modname# (if load# :loaded :already-loaded)]))))
 
 (def lm load-module)  ;; alias
+
+
+;; (defmacro load-module2
+;;   ([m] `(load-module2 ~m false nil))
+;;
+;;   ([m opt]
+;;     `(if (boolean? ~opt)
+;;        (load-module2 ~m ~opt nil)
+;;        (load-module2 ~m false ~opt)))
+;;
+;;   ([m force alias]
+;;     (locking core/*loaded-modules*
+;;       (let [modname_  (keyword (name m))
+;;             load_     (or force (not-contains? core/*loaded-modules* modname_))]
+;;         (when load_
+;;           (let [code_     (str "(do " (core/load-module* modname_) ")")
+;;                 parsed_   (read-string code_ modname_)
+;;                 expanded_ (if (core/macroexpand-on-load?)
+;;                             (macroexpand-all parsed_)
+;;                             parsed_)]
+;;             (eval expanded_))
+;;           (cons! modname_ core/*loaded-modules*))
+;;         (when (some? alias)
+;;           (validate-ns-alias-def* (str/format "load-module2 '%s'" modname_) alias)
+;;           (ns-alias (ns-alias-def-unwrap* (third alias))
+;;                     (ns-alias-def-unwrap* (first alias))))
+;;         [modname_ (if load_ :loaded :already-loaded)]))))
 
 
 (defn
