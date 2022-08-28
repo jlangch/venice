@@ -40,9 +40,9 @@ public class NamespaceRegistry implements Serializable {
     }
 
     public void add(final NamespaceRegistry nsRegistry) {
-    	for(Namespace ns : nsRegistry.namespaces.values()) {
-    		add(ns);
-    	}
+        for(Namespace ns : nsRegistry.namespaces.values()) {
+            add(ns);
+        }
     }
 
     public Namespace get(final VncSymbol sym) {

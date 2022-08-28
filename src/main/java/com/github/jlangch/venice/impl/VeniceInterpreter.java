@@ -168,8 +168,9 @@ public class VeniceInterpreter implements IVeniceInterpreter, Serializable  {
 
     @Override
     public void presetNS(final NamespaceRegistry nsRegistry) {
-    	if (nsRegistry != null) {
-    	}
+        if (nsRegistry != null) {
+            this.nsRegistry.add(nsRegistry);
+        }
     }
 
     @Override
@@ -336,7 +337,7 @@ public class VeniceInterpreter implements IVeniceInterpreter, Serializable  {
 
     @Override
     public NamespaceRegistry getNamespaceRegistry() {
-    	return nsRegistry;
+        return nsRegistry;
     }
 
 

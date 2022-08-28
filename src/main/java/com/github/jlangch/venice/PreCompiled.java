@@ -38,10 +38,10 @@ import com.github.jlangch.venice.impl.namespaces.NamespaceRegistry;
 public class PreCompiled implements Serializable {
 
     public PreCompiled(
-    		final String name,
-    		final Object precompiled,
-    		final boolean macroexpand,
-    		final NamespaceRegistry nsRegistry
+            final String name,
+            final Object precompiled,
+            final boolean macroexpand,
+            final NamespaceRegistry nsRegistry
     ) {
         this.name = name;
         this.precompiled = precompiled;

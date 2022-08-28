@@ -396,8 +396,10 @@ public class PrecompiledTest {
         // removing foo/x is okay, it's not part of the pre-compiled system symbols
         final PreCompiled precomp = venice.precompile("test", script, true);
 
+        final Object result = venice.eval(precomp);
+
         assertEquals(
                 "00000000: 0001 0203                                ....            \n\n",
-                venice.eval(precomp));
+                result);
     }
 }
