@@ -21,6 +21,7 @@
  */
 package com.github.jlangch.venice.impl.namespaces;
 
+import java.io.Serializable;
 import java.util.Map;
 import java.util.Objects;
 import java.util.concurrent.ConcurrentHashMap;
@@ -28,14 +29,20 @@ import java.util.concurrent.ConcurrentHashMap;
 import com.github.jlangch.venice.impl.types.VncSymbol;
 
 
-public class NamespaceRegistry {
+public class NamespaceRegistry implements Serializable {
 
-    public NamespaceRegistry() {
+	public NamespaceRegistry() {
     }
 
     public void add(final Namespace ns) {
         Objects.requireNonNull(ns);
         namespaces.put(ns.getNS(), ns);
+    }
+
+    public void add(final NamespaceRegistry nsRegistry) {
+    	for(Namespace ns : nsRegistry.namespaces.values()) {
+    		add(ns);
+    	}
     }
 
     public Namespace get(final VncSymbol sym) {
@@ -57,6 +64,8 @@ public class NamespaceRegistry {
         namespaces.clear();
     }
 
+
+    private static final long serialVersionUID = 672571759583276084L;
 
     private final Map<VncSymbol, Namespace> namespaces = new ConcurrentHashMap<>();
 }

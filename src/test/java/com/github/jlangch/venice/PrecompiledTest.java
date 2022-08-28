@@ -366,4 +366,39 @@ public class PrecompiledTest {
 
         assertThrows(VncException.class, () -> venice.eval(precomp));
     }
+
+    @Test
+    public void test_ns_alias_1() {
+        final Venice venice = new Venice();
+
+        final String script =
+                "(do                   \n" +
+                "  (ns foo)            \n" +
+                "  (def x 100)         \n" +
+                "  (ns bar)            \n" +
+                "  (ns-alias 'f 'foo)  \n" +
+                "  f/x)                ";
+
+        // removing foo/x is okay, it's not part of the pre-compiled system symbols
+        final PreCompiled precomp = venice.precompile("test", script, true);
+
+        assertEquals(100L, venice.eval(precomp));
+    }
+
+    @Test
+    public void test_ns_alias_2() {
+        final Venice venice = new Venice();
+
+        final String script =
+                "(do                                         \n" +
+                "  (load-module :hexdump ['hexdump :as 'h])  \n" +
+                "  (with-out-str (h/dump [0 1 2 3])))       ";
+
+        // removing foo/x is okay, it's not part of the pre-compiled system symbols
+        final PreCompiled precomp = venice.precompile("test", script, true);
+
+        assertEquals(
+                "00000000: 0001 0203                                ....            \n\n",
+                venice.eval(precomp));
+    }
 }

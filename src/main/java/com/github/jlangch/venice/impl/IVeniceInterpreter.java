@@ -24,6 +24,7 @@ package com.github.jlangch.venice.impl;
 import java.util.List;
 
 import com.github.jlangch.venice.impl.env.Env;
+import com.github.jlangch.venice.impl.namespaces.NamespaceRegistry;
 import com.github.jlangch.venice.impl.types.VncVal;
 import com.github.jlangch.venice.impl.util.CallFrame;
 
@@ -31,6 +32,8 @@ import com.github.jlangch.venice.impl.util.CallFrame;
 public interface IVeniceInterpreter {
 
     void initNS();
+
+    void presetNS(NamespaceRegistry nsRegistry);
 
     void sealSystemNS();
 
@@ -60,6 +63,8 @@ public interface IVeniceInterpreter {
             RunMode runMode);
 
     List<String> getAvailableModules();
+
+    NamespaceRegistry getNamespaceRegistry();
 
     VncVal macroexpand_all(
             CallFrame callframe,

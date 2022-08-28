@@ -167,6 +167,12 @@ public class VeniceInterpreter implements IVeniceInterpreter, Serializable  {
     }
 
     @Override
+    public void presetNS(final NamespaceRegistry nsRegistry) {
+    	if (nsRegistry != null) {
+    	}
+    }
+
+    @Override
     public void sealSystemNS() {
         sealedSystemNS.set(true);
     }
@@ -327,6 +333,12 @@ public class VeniceInterpreter implements IVeniceInterpreter, Serializable  {
         Collections.sort(modules);
         return modules;
     }
+
+    @Override
+    public NamespaceRegistry getNamespaceRegistry() {
+    	return nsRegistry;
+    }
+
 
     private VncVal evaluate(
             final VncVal ast_,

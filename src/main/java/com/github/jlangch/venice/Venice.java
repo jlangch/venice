@@ -41,6 +41,7 @@ import com.github.jlangch.venice.impl.env.Var;
 import com.github.jlangch.venice.impl.functions.ConcurrencyFunctions;
 import com.github.jlangch.venice.impl.functions.ScheduleFunctions;
 import com.github.jlangch.venice.impl.javainterop.JavaInteropUtil;
+import com.github.jlangch.venice.impl.namespaces.NamespaceRegistry;
 import com.github.jlangch.venice.impl.thread.ThreadContext;
 import com.github.jlangch.venice.impl.threadpool.ManagedCachedThreadPoolExecutor;
 import com.github.jlangch.venice.impl.types.VncSymbol;
@@ -145,7 +146,11 @@ public class Venice {
 
             meterRegistry.record("venice.precompile", System.nanoTime() - nanos);
 
-            return new PreCompiled(scriptName, ast, macroexpand);
+            return new PreCompiled(
+            			scriptName,
+            			ast,
+            			macroexpand,
+            			venice.getNamespaceRegistry());
         }
         finally {
             ThreadContext.clear(false);
@@ -193,6 +198,7 @@ public class Venice {
 
                 // re-init namespaces!
                 venice.initNS();
+                venice.presetNS((NamespaceRegistry)precompiled.getNamespaceRegistry());
                 venice.sealSystemNS();
 
                 if (meterRegistry.enabled) {

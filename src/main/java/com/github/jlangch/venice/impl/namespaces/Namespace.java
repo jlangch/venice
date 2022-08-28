@@ -21,6 +21,7 @@
  */
 package com.github.jlangch.venice.impl.namespaces;
 
+import java.io.Serializable;
 import java.util.concurrent.ConcurrentHashMap;
 
 import com.github.jlangch.venice.impl.javainterop.JavaImports;
@@ -30,9 +31,9 @@ import com.github.jlangch.venice.impl.types.collections.VncList;
 import com.github.jlangch.venice.impl.types.collections.VncMap;
 
 
-public class Namespace {
+public class Namespace implements Serializable {
 
-    public Namespace(final VncSymbol ns) {
+	public Namespace(final VncSymbol ns) {
         this.ns = ns == null ? Namespaces.NS_USER : ns;
     }
 
@@ -74,6 +75,7 @@ public class Namespace {
         return ns.getName();
     }
 
+    private static final long serialVersionUID = -6955287120175682059L;
 
     private final VncSymbol ns;
     private final JavaImports javaImports = new JavaImports();

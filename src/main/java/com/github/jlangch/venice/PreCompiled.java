@@ -29,16 +29,24 @@ import java.io.Serializable;
 import java.util.zip.GZIPInputStream;
 import java.util.zip.GZIPOutputStream;
 
+import com.github.jlangch.venice.impl.namespaces.NamespaceRegistry;
+
 
 /**
  * Holds a pre-compiled Venice script
  */
 public class PreCompiled implements Serializable {
 
-    public PreCompiled(final String name, final Object precompiled, final boolean macroexpand) {
+    public PreCompiled(
+    		final String name,
+    		final Object precompiled,
+    		final boolean macroexpand,
+    		final NamespaceRegistry nsRegistry
+    ) {
         this.name = name;
         this.precompiled = precompiled;
         this.macroexpand = macroexpand;
+        this.nsRegistry = nsRegistry;
         this.version = Version.VERSION;
     }
 
@@ -56,6 +64,10 @@ public class PreCompiled implements Serializable {
 
     public Object getPrecompiled() {
         return precompiled;
+    }
+
+    public Object getNamespaceRegistry() {
+        return  nsRegistry;
     }
 
     /**
@@ -115,4 +127,5 @@ public class PreCompiled implements Serializable {
     private final Object precompiled;
     private final String version;
     private final boolean macroexpand;
+    private final NamespaceRegistry nsRegistry;
 }
