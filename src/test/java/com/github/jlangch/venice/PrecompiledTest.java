@@ -379,7 +379,6 @@ public class PrecompiledTest {
                 "  (ns-alias 'f 'foo)  \n" +
                 "  f/x)                ";
 
-        // removing foo/x is okay, it's not part of the pre-compiled system symbols
         final PreCompiled precomp = venice.precompile("test", script, true);
 
         assertEquals(100L, venice.eval(precomp));
