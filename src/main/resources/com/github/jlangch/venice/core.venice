@@ -989,9 +989,8 @@
 
   ([file force alias]
     `(locking core/*loaded-files*
-       (let [fc#            (io/make-venice-filename ~file)
-             alias-err-msg# (str/format "load-file '%s'" fc#)
-             load#          (or ~force (not-contains? core/*loaded-files* fc#))]
+       (let [fc#   (io/make-venice-filename ~file)
+             load# (or ~force (not-contains? core/*loaded-files* fc#))]
          (when load#
            (let [code#     (core/load-file* fc#)
                  parsed#   (read-string (str "(do " code# ")") fc#)
@@ -1001,7 +1000,7 @@
              (eval expanded#))
            (cons! fc# core/*loaded-files*))
          (when (some? ~alias)
-           (validate-ns-alias-def* alias-err-msg# ~alias)
+           (validate-ns-alias-def* (str/format "load-file '%s'" fc#) ~alias)
            (ns-alias (third ~alias) (first ~alias)))
          [fc# (if load# :loaded :already-loaded)]))))
 
@@ -1070,9 +1069,8 @@
 
   ([file force alias]
     `(locking core/*loaded-files*
-       (let [fc#            (io/make-venice-filename ~file)
-             alias-err-msg# (str/format "load-classpath-file '%s'" fc#)
-             load#          (or ~force (not-contains? core/*loaded-files* fc#))]
+       (let [fc#   (io/make-venice-filename ~file)
+             load# (or ~force (not-contains? core/*loaded-files* fc#))]
          (when load#
            (let [code#     (core/load-classpath-file* fc#)
                  parsed#   (read-string (str "(do " code# ")") fc#)
@@ -1082,7 +1080,7 @@
              (eval expanded#))
            (cons! fc# core/*loaded-files*))
          (when (some? ~alias)
-           (validate-ns-alias-def* alias-err-msg# ~alias)
+           (validate-ns-alias-def* (str/format "load-classpath-file '%s'" fc#) ~alias)
            (ns-alias (third ~alias) (first ~alias)))
          [(str "classpath:" fc#) (if load# :loaded :already-loaded)]))))
 
@@ -1151,9 +1149,8 @@
 
   ([m force alias]
     `(locking core/*loaded-modules*
-       (let [modname#       (keyword (name ~m))
-             alias-err-msg# (str/format "load-module '%s'" modname#)
-             load#          (or ~force (not-contains? core/*loaded-modules* modname#))]
+       (let [modname# (keyword (name ~m))
+             load#    (or ~force (not-contains? core/*loaded-modules* modname#))]
          (when load#
            (let [code#     (str "(do " (core/load-module* modname#) ")")
                  parsed#   (read-string code# modname#)
@@ -1163,7 +1160,7 @@
              (eval expanded#))
            (cons! modname# core/*loaded-modules*))
          (when (some? ~alias)
-           (validate-ns-alias-def* alias-err-msg# ~alias)
+           (validate-ns-alias-def* (str/format "load-module '%s'" modname#) ~alias)
            (ns-alias (third ~alias) (first ~alias)))
          [modname# (if load# :loaded :already-loaded)]))))
 
