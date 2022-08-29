@@ -982,9 +982,9 @@
 
   with-out-str [& forms]
 
-  `(binding [*out* (. :com.github.jlangch.venice.util.CapturingPrintStream :new)]
+  `(binding [*out* (io/capturing-print-stream)]
      (do ~@forms)
-     (. *out* :getOutput)))
+     (str *out*)))
 
 
 (defmacro
@@ -999,9 +999,9 @@
 
   with-err-str [& forms]
 
-  `(binding [*err* (. :com.github.jlangch.venice.util.CapturingPrintStream :new)]
+  `(binding [*err* (io/capturing-print-stream)]
      (do ~@forms)
-     (. *err* :getOutput)))
+     (str *err*)))
 
 
 (defmacro

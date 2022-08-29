@@ -106,6 +106,7 @@ import com.github.jlangch.venice.impl.util.MeterRegistry;
 import com.github.jlangch.venice.impl.util.StringUtil;
 import com.github.jlangch.venice.impl.util.SymbolMapBuilder;
 import com.github.jlangch.venice.impl.util.transducer.Reducer;
+import com.github.jlangch.venice.util.CapturingPrintStream;
 
 
 public class CoreFunctions {
@@ -887,6 +888,10 @@ public class CoreFunctions {
                     if (Types.isVncJavaObject(v, StringWriter.class)) {
                         final StringWriter sw = Coerce.toVncJavaObject(v, StringWriter.class);
                         sb.append(Printer.pr_str(new VncString(sw.getBuffer().toString()), false));
+                    }
+                    else if (Types.isVncJavaObject(v, CapturingPrintStream.class)) {
+                        final CapturingPrintStream ps = Coerce.toVncJavaObject(v, CapturingPrintStream.class);
+                        sb.append(Printer.pr_str(new VncString(ps.getOutput()), false));
                     }
                     else if (v != Nil) {
                         sb.append(Printer.pr_str(v, false));

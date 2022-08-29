@@ -33,6 +33,7 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.io.OutputStreamWriter;
+import java.io.PrintStream;
 import java.io.PrintWriter;
 import java.io.Reader;
 import java.io.StringReader;
@@ -47,6 +48,7 @@ import java.nio.file.StandardOpenOption;
 import java.util.Map;
 
 import com.github.jlangch.venice.VncException;
+import com.github.jlangch.venice.impl.Printer;
 import com.github.jlangch.venice.impl.types.VncBoolean;
 import com.github.jlangch.venice.impl.types.VncFunction;
 import com.github.jlangch.venice.impl.types.VncJavaObject;
@@ -61,6 +63,7 @@ import com.github.jlangch.venice.impl.util.ArityExceptions;
 import com.github.jlangch.venice.impl.util.SymbolMapBuilder;
 import com.github.jlangch.venice.impl.util.io.CharsetUtil;
 import com.github.jlangch.venice.impl.util.io.IOStreamUtil;
+import com.github.jlangch.venice.util.CapturingPrintStream;
 
 
 public class IOFunctionsStreams {
@@ -758,6 +761,82 @@ public class IOFunctionsStreams {
             private static final long serialVersionUID = -1848883965231344442L;
         };
 
+    public static VncFunction io_capturing_print_stream =
+        new VncFunction(
+                "io/capturing-print-stream",
+                VncFunction
+                    .meta()
+                    .arglists(
+                        "(io/capturing-print-stream)" )
+                    .doc(
+                        "Creates a new capturing print stream.\n\n" +
+                        "Note: The caller is responsible for closing the stream!")
+                    .examples(
+                    	"(try-with [ps (io/capturing-print-stream)]    \n" +
+	                    "  (binding [*out* ps]                         \n" +
+	                    "    (println 100)                             \n" +
+	                    "    (println 200)                             \n" +
+	                    "    (flush)                                   \n" +
+	                    "    (str ps)))                                ",
+                    	"(try-with [ps (io/capturing-print-stream)]    \n" +
+	                    "  (println ps 100)                            \n" +
+	                    "  (println ps 200)                            \n" +
+	                    "  (flush ps)                                  \n" +
+	                    "  (str ps))                                   ")
+                    .build()
+        ) {
+            @Override
+            public VncVal apply(final VncList args) {
+                ArityExceptions.assertArity(this, args, 0);
+
+                return new VncJavaObject(
+                			new CapturingPrintStream());
+            }
+
+            private static final long serialVersionUID = -1848883965231344442L;
+        };
+
+    public static VncFunction io_print_ASTERISK =
+        new VncFunction(
+                "io/print*",
+                VncFunction
+                    .meta()
+                    .arglists(
+                        "(io/print* os s)" )
+                    .doc(
+                        "Prints a string s to an output stream. The output stream" +
+                        "may be a `:java.io.PrintWriter` or a `:java.io.PrintStream` !")
+                    .build()
+        ) {
+            @Override
+            public VncVal apply(final VncList args) {
+                ArityExceptions.assertArity(this, args, 2);
+
+                final VncVal v = args.first();
+                if (Types.isVncJavaObject(v, PrintStream.class)) {
+                    final PrintStream ps = Coerce.toVncJavaObject(v, PrintStream.class);
+                    ps.print(Printer.pr_str(args.second(), false));
+                }
+                else if (Types.isVncJavaObject(v, PrintWriter.class)) {
+                    final PrintWriter pw = Coerce.toVncJavaObject(v, PrintWriter.class);
+                    pw.print(Printer.pr_str(args.second(), false));
+                }
+                else {
+                    throw new VncException(String.format(
+                            "io/print* does not allow type %s as output stream arg",
+                            Types.getType(args.first())));
+
+                }
+
+                return new VncJavaObject(
+                			new CapturingPrintStream());
+            }
+
+            private static final long serialVersionUID = -1848883965231344442L;
+        };
+
+
+
     public static File convertToFile(final VncVal f, final String errFormat) {
         final File file = convertToFile(f);
         if (file == null) {
@@ -814,6 +893,8 @@ public class IOFunctionsStreams {
                     .add(io_buffered_writer)
                     .add(io_string_writer)
                     .add(io_string_reader)
+                    .add(io_capturing_print_stream)
+                    .add(io_print_ASTERISK)
                     .add(io_close)
                     .toMap();
-}
+	}
