@@ -27,6 +27,7 @@ import java.util.Map;
 import com.github.jlangch.venice.impl.javainterop.JavaInteropFunctions;
 import com.github.jlangch.venice.impl.specialforms.SpecialForms_DefFunctions;
 import com.github.jlangch.venice.impl.specialforms.SpecialForms_ImportFunctions;
+import com.github.jlangch.venice.impl.specialforms.SpecialForms_LoadCodeMacros;
 import com.github.jlangch.venice.impl.specialforms.SpecialForms_MethodFunctions;
 import com.github.jlangch.venice.impl.specialforms.SpecialForms_NamespaceFunctions;
 import com.github.jlangch.venice.impl.specialforms.SpecialForms_OtherFunctions;
@@ -49,6 +50,7 @@ public class Functions {
         functions.putAll(SpecialForms_TryCatchFunctions.ns);
         functions.putAll(SpecialForms_VarFunctions.ns);
         functions.putAll(SpecialForms_OtherFunctions.ns);
+        functions.putAll(SpecialForms_LoadCodeMacros.ns);
 
         functions.putAll(CoreFunctions.ns);
         functions.putAll(ExceptionFunctions.ns);

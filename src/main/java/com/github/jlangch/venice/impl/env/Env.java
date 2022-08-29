@@ -453,6 +453,35 @@ public class Env implements Serializable {
         globalSymbols.remove(sym);
     }
 
+    public Env precompiledEnv() {
+    	// remove all native global functions
+        Map<VncSymbol,Var> symbols = globalSymbols
+							         	.entrySet()
+							         	.stream()
+							         	.filter(e ->  {
+							         		final Var v = e.getValue();
+							         		if (v.getVal() instanceof VncFunction) {
+							         			return !((VncFunction)v.getVal()).isNative();
+							         		}
+							         		return true;
+							         	})
+							         	.collect(Collectors.toMap(e->e.getKey(), e->e.getValue()));
+
+        // remove system global vars
+        symbols.remove(new VncSymbol("*version*"));
+        symbols.remove(new VncSymbol("*ns*"));
+        symbols.remove(new VncSymbol("*newline*"));
+        symbols.remove(new VncSymbol("*ansi-term*"));
+        symbols.remove(new VncSymbol("*run-mode*"));
+        symbols.remove(new VncSymbol("*ARGV*"));
+
+        // keep, do not remove
+        // symbols.remove(new VncSymbol("*loaded-modules*"));
+        // symbols.remove(new VncSymbol("*loaded-files*"));
+
+	    return new Env(symbols);
+    }
+
     public void removeGlobalSymbolsByNS(final VncSymbol ns) {
         // Do not care about precompiledGlobalSymbols.
         // Only system namespaces like core, time, ... are part of the pre-compiled
