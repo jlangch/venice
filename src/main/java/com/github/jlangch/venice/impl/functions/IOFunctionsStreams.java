@@ -29,6 +29,7 @@ import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
@@ -50,6 +51,7 @@ import java.util.Map;
 import com.github.jlangch.venice.VncException;
 import com.github.jlangch.venice.impl.Printer;
 import com.github.jlangch.venice.impl.types.VncBoolean;
+import com.github.jlangch.venice.impl.types.VncChar;
 import com.github.jlangch.venice.impl.types.VncFunction;
 import com.github.jlangch.venice.impl.types.VncJavaObject;
 import com.github.jlangch.venice.impl.types.VncKeyword;
@@ -72,6 +74,56 @@ public class IOFunctionsStreams {
     ///////////////////////////////////////////////////////////////////////////
     // I/O functions
     ///////////////////////////////////////////////////////////////////////////
+    public static VncFunction io_flush =
+        new VncFunction(
+                "io/flush",
+                VncFunction
+                    .meta()
+                    .arglists("(io/flush s)")
+                    .doc(
+                        "Flushes a `:java.io.OutputStream` or a `:java.io.Writer`.")
+                    .seeAlso("io/close")
+                    .build()
+        ) {
+            @Override
+            public VncVal apply(final VncList args) {
+                ArityExceptions.assertArity(this, args, 1);
+
+                sandboxFunctionCallValidation();
+
+                final VncVal arg = args.first();
+
+                if (Types.isVncJavaObject(arg, OutputStream.class)) {
+                    final OutputStream os = Coerce.toVncJavaObject(args.first(), OutputStream.class);
+                    try {
+                        os.flush();
+                    }
+                    catch(Exception ex) {
+                        throw new VncException("Failed to close: " + os.getClass().getName());
+                    }
+                }
+                else if (Types.isVncJavaObject(arg, Writer.class)) {
+                    final Writer wr = Coerce.toVncJavaObject(args.first(), Writer.class);
+                    try {
+                        wr.flush();
+                    }
+                    catch(Exception ex) {
+                        throw new VncException("Failed to close: " + wr.getClass().getName());
+                    }
+                }
+                else {
+                    throw new VncException(
+                            String.format(
+                                "Function 'io/flush' does not allow %s as argument",
+                                Types.getType(args.first())));
+                }
+
+                return Nil;
+            }
+
+            private static final long serialVersionUID = -1848883965231344442L;
+        };
+
     public static VncFunction io_close =
         new VncFunction(
                 "io/close",
@@ -88,7 +140,7 @@ public class IOFunctionsStreams {
                         "  (try-with [is (io/file-in-stream file)]  \n" +
                         "     (io/slurp-stream is :binary false)))  \n" +
                         "```")
-                    .seeAlso("flush")
+                    .seeAlso("io/flush")
                     .build()
         ) {
             @Override
@@ -796,16 +848,16 @@ public class IOFunctionsStreams {
             private static final long serialVersionUID = -1848883965231344442L;
         };
 
-    public static VncFunction io_print_ASTERISK =
+    public static VncFunction io_print =
         new VncFunction(
-                "io/print*",
+                "io/print",
                 VncFunction
                     .meta()
                     .arglists(
-                        "(io/print* os s)" )
+                        "(io/print os s)" )
                     .doc(
                         "Prints a string s to an output stream. The output stream" +
-                        "may be a `:java.io.PrintWriter` or a `:java.io.PrintStream` !")
+                        "may be a `:java.io.Writer` or a `:java.io.PrintStream` !")
                     .build()
         ) {
             @Override
@@ -817,19 +869,100 @@ public class IOFunctionsStreams {
                     final PrintStream ps = Coerce.toVncJavaObject(v, PrintStream.class);
                     ps.print(Printer.pr_str(args.second(), false));
                 }
-                else if (Types.isVncJavaObject(v, PrintWriter.class)) {
-                    final PrintWriter pw = Coerce.toVncJavaObject(v, PrintWriter.class);
-                    pw.print(Printer.pr_str(args.second(), false));
+                else if (Types.isVncJavaObject(v, Writer.class)) {
+                    final Writer wr = Coerce.toVncJavaObject(v, Writer.class);
+                    try {
+                    	wr.write(Printer.pr_str(args.second(), false));
+                    }
+                    catch(IOException ex) {
+                        throw new VncException("Failed print string to a :java.io.Writer", ex);
+                    }
                 }
                 else {
                     throw new VncException(String.format(
-                            "io/print* does not allow type %s as output stream arg",
+                            "io/print does not allow type %s as output stream arg",
                             Types.getType(args.first())));
 
                 }
 
-                return new VncJavaObject(
-                			new CapturingPrintStream());
+                return Nil;
+            }
+
+            private static final long serialVersionUID = -1848883965231344442L;
+        };
+
+    public static VncFunction io_read_line =
+        new VncFunction(
+                "io/read-line",
+                VncFunction
+                    .meta()
+                    .arglists(
+                        "(io/read-line is)" )
+                    .doc(
+                        "Reads the next line from the passed stream " +
+                        "that must be a subclass of `:java.io.BufferedReader`.\n\n" +
+                        "Returns `nil` if the end of the stream is reached.")
+                    .build()
+        ) {
+            @Override
+            public VncVal apply(final VncList args) {
+                ArityExceptions.assertArity(this, args, 2);
+
+                final VncVal v = args.first();
+                if (Types.isVncJavaObject(v, BufferedReader.class)) {
+                    final BufferedReader br = Coerce.toVncJavaObject(v, BufferedReader.class);
+                    try {
+                    	return new VncString(br.readLine());
+                    }
+                    catch(IOException ex) {
+                        throw new VncException("Failed read line from a :java.io.BufferedReader", ex);
+                    }
+                }
+                else {
+                    throw new VncException(String.format(
+                            "io/read-line does not allow type %s as input stream arg",
+                            Types.getType(args.first())));
+
+                }
+            }
+
+            private static final long serialVersionUID = -1848883965231344442L;
+        };
+
+    public static VncFunction io_read_ch =
+        new VncFunction(
+                "io/read-ch",
+                VncFunction
+                    .meta()
+                    .arglists(
+                        "(io/read-ch is)" )
+                    .doc(
+                        "With arg reads the next char from the passed stream " +
+                        "that must be a subclass of `:java.io.Reader`.\n\n" +
+                        "Returns `nil` if the end of the stream is reached.")
+                    .build()
+        ) {
+            @Override
+            public VncVal apply(final VncList args) {
+                ArityExceptions.assertArity(this, args, 2);
+
+                final VncVal v = args.first();
+                if (Types.isVncJavaObject(v, Reader.class)) {
+                    final Reader rd = Coerce.toVncJavaObject(v, Reader.class);
+                    try {
+                        final int ch = rd.read();
+                        return ch == -1 ? Nil : new VncChar((char)ch);
+                    }
+                    catch(IOException ex) {
+                        throw new VncException("Failed print string to a :java.io.Writer", ex);
+                    }
+                }
+                else {
+                    throw new VncException(String.format(
+                            "io/read-ch does not allow type %s as output stream arg",
+                            Types.getType(args.first())));
+
+                }
             }
 
             private static final long serialVersionUID = -1848883965231344442L;
@@ -894,7 +1027,10 @@ public class IOFunctionsStreams {
                     .add(io_string_writer)
                     .add(io_string_reader)
                     .add(io_capturing_print_stream)
-                    .add(io_print_ASTERISK)
+                    .add(io_print)
+                    .add(io_read_line)
+                    .add(io_read_ch)
+                    .add(io_flush)
                     .add(io_close)
                     .toMap();
 	}

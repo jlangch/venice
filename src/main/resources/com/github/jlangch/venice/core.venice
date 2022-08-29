@@ -1102,21 +1102,19 @@
   ([x]
     (when-not (or (instance-of? :OutputStream x) (instance-of? :Writer x))
       (cond
-        (instance-of? :PrintStream *out*)
-           (. (cast :PrintStream *out*) :print (str (coalesce x "nil")))
-        (instance-of? :Writer *out*)
-           (. (cast :Writer *out*) :write (str (coalesce x "nil"))))
+        (instance-of? :PrintStream *out*) (io/print *out* (str (coalesce x "nil")))
+        (instance-of? :Writer *out*)      (io/print *out* (str (coalesce x "nil"))))
       nil))
   ([& xs]
     (let [ch  (first xs)
           fmt (fn [zs] (str/join " " (map #(str (coalesce % "nil")) zs)))]
       (cond
-        (instance-of? :PrintStream ch) (. (cast :PrintStream ch) :print (fmt (rest xs)))
-        (instance-of? :Writer ch)      (. (cast :Writer ch) :write (fmt (rest xs)))
+        (instance-of? :PrintStream ch) (io/print ch (fmt (rest xs)))
+        (instance-of? :Writer ch)      (io/print ch (fmt (rest xs)))
         :else
           (cond
-            (instance-of? :PrintStream *out*) (. (cast :PrintStream *out*) :print (fmt xs))
-            (instance-of? :Writer *out*)      (. (cast :Writer *out*) :write (fmt xs))))
+            (instance-of? :PrintStream *out*) (io/print *out* (fmt xs))
+            (instance-of? :Writer *out*)      (io/print *out* (fmt xs))))
       nil)))
 
 
@@ -1215,21 +1213,19 @@
   ([x]
     (when-not (or (instance-of? :OutputStream x) (instance-of? :Writer x))
       (cond
-        (instance-of? :PrintStream *out*)
-           (. (cast :PrintStream *out*) :print (pr-str x))
-        (instance-of? :Writer *out*)
-           (. (cast :Writer *out*) :write (pr-str x)))
+        (instance-of? :PrintStream *out*) (io/print *out* (pr-str x))
+        (instance-of? :Writer *out*)      (io/print *out* (pr-str x)))
       nil))
   ([& xs]
     (let [ch  (first xs)
           fmt (fn [zs] (str/join " " (map pr-str zs)))]
       (cond
-        (instance-of? :PrintStream ch) (. (cast :PrintStream ch) :print (fmt (rest xs)))
-        (instance-of? :Writer ch)      (. (cast :Writer ch) :write (fmt (rest xs)))
+        (instance-of? :PrintStream ch) (io/print ch (fmt (rest xs)))
+        (instance-of? :Writer ch)      (io/print ch (fmt (rest xs)))
         :else
           (cond
-            (instance-of? :PrintStream *out*) (. (cast :PrintStream *out*) :print (fmt xs))
-            (instance-of? :Writer *out*)      (. (cast :Writer *out*) :write (fmt xs))))
+            (instance-of? :PrintStream *out*) (io/print *out* (fmt xs))
+            (instance-of? :Writer *out*)      (io/print *out* (fmt xs))))
       nil)))
 
 
@@ -1289,8 +1285,8 @@
     (newline *out*))
   ([os]
     (cond
-      (instance-of? :PrintStream os) (. (cast :PrintStream os) :print *newline*)
-      (instance-of? :Writer os)      (. (cast :Writer os) :write *newline*))
+      (instance-of? :PrintStream os) (io/print os *newline*)
+      (instance-of? :Writer os)      (io/print os *newline*))
     nil))
 
 
@@ -1307,12 +1303,12 @@
           "(flush)"
           "(flush *out*)"
           "(flush *err*)" )
-      :see-also '("io/close") }
+      :see-also '("io/flush", "io/close") }
 
   flush
 
-  ([] (flush *out*))
-  ([os] (. os :flush) nil))
+  ([]   (io/flush *out*))
+  ([os] (io/flush os)))
 
 
 (defn
@@ -1334,26 +1330,18 @@
 
   read-line
 
-  ([]
-    (read-line  *in*))
-  ([is]
-    (if (instance-of? :BufferedReader is)
-      (try
-        (. (cast :BufferedReader is) :readLine)
-        (catch :java.io.IOException e (ex :VncException (:message e))))
-      (ex :VncException (str "Can not read a line from a stream of type "
-                             (type is) ". The stream must be a subclass of "
-                             ":java.io.BufferedReader")))))
+  ([]   (io/read-line  *in*))
+  ([is] (io/read-line  is)))
 
 
 (defn
   ^{ :arglists '("(read-char)" "(read-char is)")
      :doc """
-          Without arg reads the next char from the stream that is the current
-          value of `*in*`. With arg reads the next char from the passed stream
-          that must be a subclass of `:java.io.Reader`.
+Without arg reads the next char from the stream that is the current
+value of `*in*`. With arg reads the next char from the passed stream
+that must be a subclass of `:java.io.Reader`.
 
-          Returns `nil` if the end of the stream is reached.
+Returns `nil` if the end of the stream is reached.
           """
      :examples '(
           """
@@ -1365,17 +1353,8 @@
 
   read-char
 
-  ([]
-    (read-char *in*))
-  ([is]
-    (if (instance-of? :Reader is)
-      (try
-        (let [ch (. (cast :Reader is) :read)]
-          (if (= -1I ch) nil (char ch)))
-        (catch :java.io.IOException e (ex :VncException (:message e))))
-      (ex :VncException (str "Can not read a char from a stream of type "
-                             (type is) ". The stream must be a subclass of "
-                             ":java.io.Reader")))))
+  ([]   (io/read-char *in*))
+  ([is] (io/read-char is)))
 
 
 (defn
