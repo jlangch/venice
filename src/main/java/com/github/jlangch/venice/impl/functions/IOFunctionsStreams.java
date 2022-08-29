@@ -841,8 +841,7 @@ public class IOFunctionsStreams {
             public VncVal apply(final VncList args) {
                 ArityExceptions.assertArity(this, args, 0);
 
-                return new VncJavaObject(
-                            new CapturingPrintStream());
+                return new VncJavaObject(new CapturingPrintStream());
             }
 
             private static final long serialVersionUID = -1848883965231344442L;
@@ -882,7 +881,6 @@ public class IOFunctionsStreams {
                     throw new VncException(String.format(
                             "io/print does not allow type %s as output stream arg",
                             Types.getType(args.first())));
-
                 }
 
                 return Nil;
@@ -902,6 +900,7 @@ public class IOFunctionsStreams {
                         "Reads the next line from the passed stream " +
                         "that must be a subclass of `:java.io.BufferedReader`.\n\n" +
                         "Returns `nil` if the end of the stream is reached.")
+                    .seeAlso("io/read-char")
                     .build()
         ) {
             @Override
@@ -940,6 +939,7 @@ public class IOFunctionsStreams {
                         "With arg reads the next char from the passed stream " +
                         "that must be a subclass of `:java.io.Reader`.\n\n" +
                         "Returns `nil` if the end of the stream is reached.")
+                    .seeAlso("io/read-line")
                     .build()
         ) {
             @Override

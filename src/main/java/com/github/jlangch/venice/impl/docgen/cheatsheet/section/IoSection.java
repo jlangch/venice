@@ -71,21 +71,31 @@ public class IoSection implements ISectionBuilder {
         classpath.addItem(diBuilder.getDocItem("io/load-classpath-resource"));
         classpath.addItem(diBuilder.getDocItem("io/classpath-resource?"));
 
+        final DocSection slurp = new DocSection("slurp", "io.slurp");
+        all.addSection(slurp);
+        slurp.addItem(diBuilder.getDocItem("io/slurp"));
+        slurp.addItem(diBuilder.getDocItem("io/slurp-lines"));
+        slurp.addItem(diBuilder.getDocItem("io/slurp-stream"));
+        slurp.addItem(diBuilder.getDocItem("io/slurp-reader"));
+        slurp.addItem(diBuilder.getDocItem("io/read-line"));
+        slurp.addItem(diBuilder.getDocItem("io/read-char"));
+
+        final DocSection spit = new DocSection("spit", "io.spit");
+        all.addSection(spit);
+        spit.addItem(diBuilder.getDocItem("io/spit-stream"));
+        spit.addItem(diBuilder.getDocItem("io/spit-writer"));
+        spit.addItem(diBuilder.getDocItem("io/print"));
+
         final DocSection stream = new DocSection("stream", "io.stream");
         all.addSection(stream);
-        stream.addItem(diBuilder.getDocItem("io/slurp"));
-        stream.addItem(diBuilder.getDocItem("io/slurp-lines"));
         stream.addItem(diBuilder.getDocItem("io/copy-stream"));
-        stream.addItem(diBuilder.getDocItem("io/slurp-stream"));
-        stream.addItem(diBuilder.getDocItem("io/slurp-reader"));
-        stream.addItem(diBuilder.getDocItem("io/spit-stream"));
-        stream.addItem(diBuilder.getDocItem("io/spit-writer"));
         stream.addItem(diBuilder.getDocItem("io/uri-stream", false));
         stream.addItem(diBuilder.getDocItem("io/file-in-stream", false));
         stream.addItem(diBuilder.getDocItem("io/file-out-stream", false));
         stream.addItem(diBuilder.getDocItem("io/string-in-stream", false));
         stream.addItem(diBuilder.getDocItem("io/bytebuf-in-stream", false));
         stream.addItem(diBuilder.getDocItem("io/bytebuf-out-stream"));
+        stream.addItem(diBuilder.getDocItem("io/capturing-print-stream"));
         stream.addItem(diBuilder.getDocItem("io/wrap-os-with-buffered-writer"));
         stream.addItem(diBuilder.getDocItem("io/wrap-os-with-print-writer"));
         stream.addItem(diBuilder.getDocItem("io/wrap-is-with-buffered-reader"));
@@ -98,6 +108,8 @@ public class IoSection implements ISectionBuilder {
         rd_wr.addItem(diBuilder.getDocItem("io/buffered-writer"));
         rd_wr.addItem(diBuilder.getDocItem("io/string-reader"));
         rd_wr.addItem(diBuilder.getDocItem("io/string-writer"));
+        rd_wr.addItem(diBuilder.getDocItem("io/flush"));
+        rd_wr.addItem(diBuilder.getDocItem("io/close"));
 
         final DocSection http = new DocSection("http", "io.http");
         all.addSection(http);
