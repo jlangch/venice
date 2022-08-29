@@ -1022,9 +1022,7 @@
 
   delay [& body]
 
-  `(. :com.github.jlangch.venice.impl.types.concurrent.Delay
-      :new
-      (fn [] (do ~@body))))
+  `(delay* (fn [] (do ~@body))))
 
 
 (defprotocol
@@ -1063,8 +1061,8 @@
 
   Object
 
-  (toString [this] (. this :toString))
-  (compareTo [this other] (. this :compareTo other)))
+  (toString [this] (to-str false this))
+  (compareTo [this other] (compare this other)))
 
 
 (defn

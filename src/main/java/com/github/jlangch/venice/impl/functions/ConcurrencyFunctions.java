@@ -2676,6 +2676,26 @@ public class ConcurrencyFunctions {
     // Delay
     ///////////////////////////////////////////////////////////////////////////
 
+    public static VncFunction delay_ASTERISK =
+        new VncFunction(
+                "delay*",
+                VncFunction
+                    .meta()
+                    .arglists("(delay* fn)")
+                    .doc("Creates a new delay object for a function")
+                    .build()
+        ) {
+            @Override
+            public VncVal apply(final VncList args) {
+                ArityExceptions.assertMinArity(this, args, 1);
+
+                final VncFunction fn = Coerce.toVncFunction(args.first());
+                return new VncJavaObject(new Delay(fn));
+            }
+
+            private static final long serialVersionUID = -1848883965231344442L;
+        };
+
     public static VncFunction delay_Q =
         new VncFunction(
                 "delay?",
@@ -3386,6 +3406,7 @@ public class ConcurrencyFunctions {
                     .add(futures_wait)
                     .add(futures_thread_pool_info)
 
+                    .add(delay_ASTERISK)
                     .add(delay_Q)
                     .add(force)
 

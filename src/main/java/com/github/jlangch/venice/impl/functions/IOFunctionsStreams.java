@@ -788,17 +788,17 @@ public class IOFunctionsStreams {
                         "Creates a `java.io.StringReader` from a string.\n\n" +
                         "Note: The caller is responsible for closing the reader!")
                     .examples(
-                    	"(try-with [rd (io/string-reader \"1234\")]       \n" +
-	                    "  (println (read-char rd))                       \n" +
-	                    "  (println (read-char rd))                       \n" +
-	                    "  (println (read-char rd)))                      ",
-                    	"(let [rd (io/string-reader \"1\\n2\\n3\\n4\")]   \n" +
+                        "(try-with [rd (io/string-reader \"1234\")]       \n" +
+                        "  (println (read-char rd))                       \n" +
+                        "  (println (read-char rd))                       \n" +
+                        "  (println (read-char rd)))                      ",
+                        "(let [rd (io/string-reader \"1\\n2\\n3\\n4\")]   \n" +
                         "  (try-with [br (io/buffered-reader rd)]         \n" +
-	                    "    (println (read-line br))                     \n" +
-	                    "    (println (read-line br))                     \n" +
-	                    "    (println (read-line br))))                   ")
+                        "    (println (read-line br))                     \n" +
+                        "    (println (read-line br))                     \n" +
+                        "    (println (read-line br))))                   ")
                     .seeAlso(
-                    	"io/string-writer", "io/buffered-reader")
+                        "io/string-writer", "io/buffered-reader")
                     .build()
         ) {
             @Override
@@ -806,8 +806,8 @@ public class IOFunctionsStreams {
                 ArityExceptions.assertArity(this, args, 1);
 
                 return new VncJavaObject(
-                			new StringReader(
-                					Coerce.toVncString(args.first()).getValue()));
+                            new StringReader(
+                                    Coerce.toVncString(args.first()).getValue()));
             }
 
             private static final long serialVersionUID = -1848883965231344442L;
@@ -824,17 +824,17 @@ public class IOFunctionsStreams {
                         "Creates a new capturing print stream.\n\n" +
                         "Note: The caller is responsible for closing the stream!")
                     .examples(
-                    	"(try-with [ps (io/capturing-print-stream)]    \n" +
-	                    "  (binding [*out* ps]                         \n" +
-	                    "    (println 100)                             \n" +
-	                    "    (println 200)                             \n" +
-	                    "    (flush)                                   \n" +
-	                    "    (str ps)))                                ",
-                    	"(try-with [ps (io/capturing-print-stream)]    \n" +
-	                    "  (println ps 100)                            \n" +
-	                    "  (println ps 200)                            \n" +
-	                    "  (flush ps)                                  \n" +
-	                    "  (str ps))                                   ")
+                        "(try-with [ps (io/capturing-print-stream)]    \n" +
+                        "  (binding [*out* ps]                         \n" +
+                        "    (println 100)                             \n" +
+                        "    (println 200)                             \n" +
+                        "    (flush)                                   \n" +
+                        "    (str ps)))                                ",
+                        "(try-with [ps (io/capturing-print-stream)]    \n" +
+                        "  (println ps 100)                            \n" +
+                        "  (println ps 200)                            \n" +
+                        "  (flush ps)                                  \n" +
+                        "  (str ps))                                   ")
                     .build()
         ) {
             @Override
@@ -842,7 +842,7 @@ public class IOFunctionsStreams {
                 ArityExceptions.assertArity(this, args, 0);
 
                 return new VncJavaObject(
-                			new CapturingPrintStream());
+                            new CapturingPrintStream());
             }
 
             private static final long serialVersionUID = -1848883965231344442L;
@@ -872,7 +872,7 @@ public class IOFunctionsStreams {
                 else if (Types.isVncJavaObject(v, Writer.class)) {
                     final Writer wr = Coerce.toVncJavaObject(v, Writer.class);
                     try {
-                    	wr.write(Printer.pr_str(args.second(), false));
+                        wr.write(Printer.pr_str(args.second(), false));
                     }
                     catch(IOException ex) {
                         throw new VncException("Failed print string to a :java.io.Writer", ex);
@@ -912,7 +912,7 @@ public class IOFunctionsStreams {
                 if (Types.isVncJavaObject(v, BufferedReader.class)) {
                     final BufferedReader br = Coerce.toVncJavaObject(v, BufferedReader.class);
                     try {
-                    	return new VncString(br.readLine());
+                        return new VncString(br.readLine());
                     }
                     catch(IOException ex) {
                         throw new VncException("Failed read line from a :java.io.BufferedReader", ex);
@@ -1033,4 +1033,4 @@ public class IOFunctionsStreams {
                     .add(io_flush)
                     .add(io_close)
                     .toMap();
-	}
+    }

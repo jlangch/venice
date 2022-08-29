@@ -910,7 +910,7 @@ public class CoreFunctions {
                     .meta()
                     .arglists(
                         "(to-str x)",
-                        "(to-str print-readably x)")
+                        "(to-str print-machine-readably x)")
                     .doc(
                         "Returns the string representation of x.")
                     .examples(
@@ -927,10 +927,10 @@ public class CoreFunctions {
                     return new VncString(args.first().toString());
                 }
                 else {
-                    final boolean print_readably = Coerce.toVncBoolean(args.first()).getValue();
+                    final boolean print_machine_readably = Coerce.toVncBoolean(args.first()).getValue();
                     final VncVal v = args.second();
 
-                    return new VncString(v.toString(print_readably));
+                    return new VncString(v.toString(print_machine_readably));
                 }
             }
 
