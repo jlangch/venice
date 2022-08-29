@@ -81,7 +81,7 @@ public class Modules {
                         "xchart",
                         "xml")));
 
-    public static final Set<VncKeyword> PRELOADED_MODULES =
+    public static final Set<VncKeyword> NATIVE_MODULES =
             Collections.unmodifiableSet(
                 new HashSet<>(
                     Arrays.asList(

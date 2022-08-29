@@ -459,9 +459,12 @@ public class Env implements Serializable {
 							         	.entrySet()
 							         	.stream()
 							         	.filter(e ->  {
-							         		final Var v = e.getValue();
-							         		if (v.getVal() instanceof VncFunction) {
-							         			return !((VncFunction)v.getVal()).isNative();
+							         		final VncVal value = e.getValue().getVal();
+							         		if (value instanceof VncFunction) {
+							         			return !((VncFunction)value).isNative();
+							         		}
+							         		else if (value instanceof VncSpecialForm) {
+							         			return false;
 							         		}
 							         		return true;
 							         	})

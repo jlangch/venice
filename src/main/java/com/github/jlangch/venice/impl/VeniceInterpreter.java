@@ -262,8 +262,6 @@ public class VeniceInterpreter implements IVeniceInterpreter, Serializable  {
 
         final Env env = new Env(null);
 
-        // loaded modules: preset with implicitly preloaded modules
-        final VncMutableSet loadedModules = VncMutableSet.ofAll(Modules.PRELOADED_MODULES);
 
         for(Map.Entry<VncVal,VncVal> e: Functions.functions.entrySet()) {
             final VncSymbol sym = (VncSymbol)e.getKey();
@@ -299,6 +297,7 @@ public class VeniceInterpreter implements IVeniceInterpreter, Serializable  {
         env.setGlobal(new Var(new VncSymbol("*ARGV*"), Nil, true));
 
         // loaded modules & files
+        final VncMutableSet loadedModules = new VncMutableSet();
         env.setGlobal(new Var(new VncSymbol("*loaded-modules*"), loadedModules, true));
         env.setGlobal(new Var(new VncSymbol("*loaded-files*"), new VncMutableSet(), true));
 
@@ -307,6 +306,9 @@ public class VeniceInterpreter implements IVeniceInterpreter, Serializable  {
 
         // Activates macroexpand on load
         setMacroExpandOnLoad(macroExpandOnLoad, env);
+
+        // add all native modules (implicitly preloaded)
+        loadedModules.addAll(VncMutableSet.ofAll(Modules.NATIVE_MODULES));
 
         // load core modules
         loadModule("core", env, loadedModules);
