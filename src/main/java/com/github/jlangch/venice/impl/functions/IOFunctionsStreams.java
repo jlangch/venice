@@ -906,7 +906,7 @@ public class IOFunctionsStreams {
         ) {
             @Override
             public VncVal apply(final VncList args) {
-                ArityExceptions.assertArity(this, args, 2);
+                ArityExceptions.assertArity(this, args, 1);
 
                 final VncVal v = args.first();
                 if (Types.isVncJavaObject(v, BufferedReader.class)) {
@@ -929,13 +929,13 @@ public class IOFunctionsStreams {
             private static final long serialVersionUID = -1848883965231344442L;
         };
 
-    public static VncFunction io_read_ch =
+    public static VncFunction io_read_char =
         new VncFunction(
-                "io/read-ch",
+                "io/read-char",
                 VncFunction
                     .meta()
                     .arglists(
-                        "(io/read-ch is)" )
+                        "(io/read-char is)" )
                     .doc(
                         "With arg reads the next char from the passed stream " +
                         "that must be a subclass of `:java.io.Reader`.\n\n" +
@@ -944,7 +944,7 @@ public class IOFunctionsStreams {
         ) {
             @Override
             public VncVal apply(final VncList args) {
-                ArityExceptions.assertArity(this, args, 2);
+                ArityExceptions.assertArity(this, args, 1);
 
                 final VncVal v = args.first();
                 if (Types.isVncJavaObject(v, Reader.class)) {
@@ -959,7 +959,7 @@ public class IOFunctionsStreams {
                 }
                 else {
                     throw new VncException(String.format(
-                            "io/read-ch does not allow type %s as output stream arg",
+                            "io/read-char does not allow type %s as output stream arg",
                             Types.getType(args.first())));
 
                 }
@@ -1029,7 +1029,7 @@ public class IOFunctionsStreams {
                     .add(io_capturing_print_stream)
                     .add(io_print)
                     .add(io_read_line)
-                    .add(io_read_ch)
+                    .add(io_read_char)
                     .add(io_flush)
                     .add(io_close)
                     .toMap();

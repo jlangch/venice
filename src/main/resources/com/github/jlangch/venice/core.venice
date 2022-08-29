@@ -1101,9 +1101,7 @@
   ([] nil)
   ([x]
     (when-not (or (instance-of? :OutputStream x) (instance-of? :Writer x))
-      (cond
-        (instance-of? :PrintStream *out*) (io/print *out* (str (coalesce x "nil")))
-        (instance-of? :Writer *out*)      (io/print *out* (str (coalesce x "nil"))))
+      (io/print *out* (str (coalesce x "nil")))
       nil))
   ([& xs]
     (let [ch  (first xs)
@@ -1212,20 +1210,14 @@
   ([] nil)
   ([x]
     (when-not (or (instance-of? :OutputStream x) (instance-of? :Writer x))
-      (cond
-        (instance-of? :PrintStream *out*) (io/print *out* (pr-str x))
-        (instance-of? :Writer *out*)      (io/print *out* (pr-str x)))
+      (io/print *out* (pr-str x))
       nil))
   ([& xs]
     (let [ch  (first xs)
           fmt (fn [zs] (str/join " " (map pr-str zs)))]
-      (cond
-        (instance-of? :PrintStream ch) (io/print ch (fmt (rest xs)))
-        (instance-of? :Writer ch)      (io/print ch (fmt (rest xs)))
-        :else
-          (cond
-            (instance-of? :PrintStream *out*) (io/print *out* (fmt xs))
-            (instance-of? :Writer *out*)      (io/print *out* (fmt xs))))
+      (if (or (instance-of? :OutputStream ch) (instance-of? :Writer ch))
+        (io/print ch (fmt (rest xs)))
+        (io/print *out* (fmt xs)))
       nil)))
 
 
@@ -1281,13 +1273,8 @@
 
   newline
 
-  ([]
-    (newline *out*))
-  ([os]
-    (cond
-      (instance-of? :PrintStream os) (io/print os *newline*)
-      (instance-of? :Writer os)      (io/print os *newline*))
-    nil))
+  ([]   (newline *out*))
+  ([os] (io/print os *newline*)))
 
 
 (defn
