@@ -10,7 +10,7 @@ and this project adheres to
 
 
 
-## [1.10.19] - 2022-08-xx
+## [1.10.19] - 2022-09-xx
 
 ### Added
 
@@ -36,6 +36,9 @@ and this project adheres to
   exist also in their asterisk versions (e.g. `load-file*`).
   The sandbox ensures now that always both version are added to the black or
   whitelist. It's not the responsibility of the user anymore.
+
+- the core module to not relay on Java interop anymore. The core module
+  can now be used without restrictions when Java interop is disabled.  
 
 ### Fixed
 
