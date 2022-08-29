@@ -179,7 +179,6 @@ public class SpecialForms_LoadCodeMacros {
 
                 synchronized (this) {
                     final Namespace currNS = Namespaces.getCurrentNamespace();
-                    final String currNSname = Namespaces.getCurrentNamespace().getNS().getName();
                     try {
                         final VncKeyword moduleName = Coerce.toVncKeyword(args.first());
                         final Options options = parseOptions(args, "load-module");
@@ -607,8 +606,6 @@ public class SpecialForms_LoadCodeMacros {
     ///////////////////////////////////////////////////////////////////////////
     // types_ns is namespace of type functions
     ///////////////////////////////////////////////////////////////////////////
-
-    public static boolean ENABLED = true;
 
     public static Map<VncVal, VncVal> ns =
             new SymbolMapBuilder()

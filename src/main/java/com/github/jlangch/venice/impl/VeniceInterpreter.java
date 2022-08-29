@@ -904,19 +904,17 @@ public class VeniceInterpreter implements IVeniceInterpreter, Serializable  {
             final String a0SymName = a0Sym.getName();
             final VncList macroArgs = ((VncList)ast_).rest();
 
-            if (SpecialForms_LoadCodeMacros.ENABLED) {
-                if ("load-module".equals(a0SymName)) {
-                    return SpecialForms_LoadCodeMacros.load_module.apply(a0Sym, macroArgs, env, specialFormsContext);
-                }
-                else if ("load-file".equals(a0SymName)) {
-                    return SpecialForms_LoadCodeMacros.load_file.apply(a0Sym, macroArgs, env, specialFormsContext);
-                }
-                else if ("load-classpath-file".equals(a0SymName)) {
-                    return SpecialForms_LoadCodeMacros.load_classpath_file.apply(a0Sym, macroArgs, env, specialFormsContext);
-                }
-                else if ("load-string".equals(a0SymName)) {
-                    return SpecialForms_LoadCodeMacros.load_string.apply(a0Sym, macroArgs, env, specialFormsContext);
-                }
+            if ("load-module".equals(a0SymName)) {
+                return SpecialForms_LoadCodeMacros.load_module.apply(a0Sym, macroArgs, env, specialFormsContext);
+            }
+            else if ("load-file".equals(a0SymName)) {
+                return SpecialForms_LoadCodeMacros.load_file.apply(a0Sym, macroArgs, env, specialFormsContext);
+            }
+            else if ("load-classpath-file".equals(a0SymName)) {
+                return SpecialForms_LoadCodeMacros.load_classpath_file.apply(a0Sym, macroArgs, env, specialFormsContext);
+            }
+            else if ("load-string".equals(a0SymName)) {
+                return SpecialForms_LoadCodeMacros.load_string.apply(a0Sym, macroArgs, env, specialFormsContext);
             }
 
             final VncVal fn = env.getGlobalOrNull(a0Sym);

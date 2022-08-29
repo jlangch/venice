@@ -22,7 +22,9 @@
 package com.github.jlangch.venice.impl.functions;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 import com.github.jlangch.venice.impl.javainterop.JavaInteropFunctions;
 import com.github.jlangch.venice.impl.specialforms.SpecialForms_DefFunctions;
@@ -34,10 +36,26 @@ import com.github.jlangch.venice.impl.specialforms.SpecialForms_OtherFunctions;
 import com.github.jlangch.venice.impl.specialforms.SpecialForms_TryCatchFunctions;
 import com.github.jlangch.venice.impl.specialforms.SpecialForms_TypeFunctions;
 import com.github.jlangch.venice.impl.specialforms.SpecialForms_VarFunctions;
+import com.github.jlangch.venice.impl.types.VncSpecialForm;
 import com.github.jlangch.venice.impl.types.VncVal;
 
 
 public class Functions {
+
+	public static void main(String[] args){
+        System.out.println(
+        		String.join(",\n", getSpecialForms()));
+    }
+
+	public static List<String> getSpecialForms() {
+		return functions
+				.values()
+				.stream()
+				.filter(f -> f instanceof VncSpecialForm)
+				.map(f -> "\"" + ((VncSpecialForm)f).getName() +  "\"")
+				.sorted()
+				.collect(Collectors.toList());
+	}
 
     public static final Map<VncVal,VncVal> functions = new HashMap<>();
 
@@ -50,10 +68,7 @@ public class Functions {
         functions.putAll(SpecialForms_TryCatchFunctions.ns);
         functions.putAll(SpecialForms_VarFunctions.ns);
         functions.putAll(SpecialForms_OtherFunctions.ns);
-
-        if (SpecialForms_LoadCodeMacros.ENABLED) {
-        	functions.putAll(SpecialForms_LoadCodeMacros.ns);
-        }
+       	functions.putAll(SpecialForms_LoadCodeMacros.ns);
 
         functions.putAll(CoreFunctions.ns);
         functions.putAll(ExceptionFunctions.ns);
