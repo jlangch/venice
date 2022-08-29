@@ -34,6 +34,7 @@ import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.stream.Collectors;
 
+import com.github.jlangch.venice.PreCompiled;
 import com.github.jlangch.venice.SymbolNotFoundException;
 import com.github.jlangch.venice.VncException;
 import com.github.jlangch.venice.impl.namespaces.Namespaces;
@@ -77,20 +78,15 @@ public class Env implements Serializable {
         }
     }
 
-    private Env(final Map<VncSymbol,Var> precompiledGlobalSymbols) {
+    private Env(
+            final SymbolTable coreSystemGlobalSymbols,
+            final SymbolTable precompiledGlobalSymbols
+    ) {
         this.outer = null;
         this.level = 0;
-        this.precompiledGlobalSymbols = precompiledGlobalSymbols;
-        this.globalSymbols = new ConcurrentHashMap<>(256);
+        this.precompiledGlobalSymbols = new ConcurrentHashMap<>(precompiledGlobalSymbols.getSymbolMap());
+        this.globalSymbols = new ConcurrentHashMap<>(coreSystemGlobalSymbols.getSymbolMap());
         this.localSymbols = new ConcurrentHashMap<>(64);
-    }
-
-    public Env copyGlobalToPrecompiledSymbols() {
-        // Used for precompiled scripts.
-        // Move the global symbols to core global symbols so they remain untouched
-        // while running the precompiled script and thus can be reused by subsequent
-        // precompiled script invocations
-        return new Env(globalSymbols);
     }
 
     public Env parent() {
@@ -453,22 +449,46 @@ public class Env implements Serializable {
         globalSymbols.remove(sym);
     }
 
-    public Env precompiledEnv() {
-    	// remove all native global functions
+    public SymbolTable getGlobalSymbolTable() {
+        return new SymbolTable(globalSymbols);
+    }
+
+    public SymbolTable getPrecompiledGlobalSymbolTable() {
+        return new SymbolTable(precompiledGlobalSymbols);
+    }
+
+    public static Env createPrecompiledEnv(
+            final SymbolTable coreSystemGlobalSymbols,
+            final PreCompiled preCompiled
+    ) {
+        // Used for precompiled scripts.
+        // Move the global symbols to core global symbols so they remain untouched
+        // while running the precompiled script and thus can be reused by subsequent
+        // precompiled script invocations
+        return new Env(coreSystemGlobalSymbols, (SymbolTable)preCompiled.getSymbols());
+    }
+
+    public SymbolTable getGlobalSymbolTableWithoutCoreSystemSymbols() {
+        // remove all native global functions
         Map<VncSymbol,Var> symbols = globalSymbols
-							         	.entrySet()
-							         	.stream()
-							         	.filter(e ->  {
-							         		final VncVal value = e.getValue().getVal();
-							         		if (value instanceof VncFunction) {
-							         			return !((VncFunction)value).isNative();
-							         		}
-							         		else if (value instanceof VncSpecialForm) {
-							         			return false;
-							         		}
-							         		return true;
-							         	})
-							         	.collect(Collectors.toMap(e->e.getKey(), e->e.getValue()));
+                                         .entrySet()
+                                         .stream()
+                                         .filter(e ->  {
+                                             final VncSymbol sym = e.getKey();
+                                             final String symNS = sym.getNamespace();
+                                             final VncVal value = e.getValue().getVal();
+                                             if (symNS == null || "core".equals(symNS) || "math".equals(symNS)) {
+                                                 return false;
+                                             }
+                                             else if (value instanceof VncFunction) {
+                                                 return !((VncFunction)value).isNative();
+                                             }
+                                             else if (value instanceof VncSpecialForm) {
+                                                 return false;
+                                             }
+                                              return true;
+                                         })
+                                         .collect(Collectors.toMap(e->e.getKey(), e->e.getValue()));
 
         // remove system global vars
         symbols.remove(new VncSymbol("*version*"));
@@ -482,7 +502,7 @@ public class Env implements Serializable {
         // symbols.remove(new VncSymbol("*loaded-modules*"));
         // symbols.remove(new VncSymbol("*loaded-files*"));
 
-	    return new Env(symbols);
+        return new SymbolTable(symbols);
     }
 
     public void removeGlobalSymbolsByNS(final VncSymbol ns) {

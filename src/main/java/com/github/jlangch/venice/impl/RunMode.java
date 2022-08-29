@@ -29,7 +29,7 @@ public enum RunMode {
     SCRIPT("script"),
     APP("app"),
     DOCGEN("docgen"),
-    PRECOMPILE("macroexpand");
+    PRECOMPILE("precompile");
 
     public final VncKeyword mode;
 

@@ -384,7 +384,7 @@ public class NamespaceTest {
                 "    (alpha/whenn true (println 100)))))        ";
 
         // Switch to macroexpand = true
-        venice.setMacroExpandOnLoad(true, env);
+        venice.setMacroExpandOnLoad(true);
 
         final VncVal result2 = venice.RE(script, "test", env);
 

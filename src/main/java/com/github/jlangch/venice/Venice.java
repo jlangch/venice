@@ -37,6 +37,7 @@ import com.github.jlangch.venice.impl.IVeniceInterpreter;
 import com.github.jlangch.venice.impl.RunMode;
 import com.github.jlangch.venice.impl.VeniceInterpreter;
 import com.github.jlangch.venice.impl.env.Env;
+import com.github.jlangch.venice.impl.env.SymbolTable;
 import com.github.jlangch.venice.impl.env.Var;
 import com.github.jlangch.venice.impl.functions.ConcurrencyFunctions;
 import com.github.jlangch.venice.impl.functions.ScheduleFunctions;
@@ -134,23 +135,28 @@ public class Venice {
                                                     sandbox,
                                                     meterRegistry);
 
-            final Env env = venice.createEnv(macroexpand, false, RunMode.PRECOMPILE)
+            final boolean precompileMacroExpand = false;
+
+            // Note: macroexpand-on-load is always turned OFF for pre-compilation!!
+            final Env env = venice.createEnv(precompileMacroExpand, false, RunMode.PRECOMPILE)
                                   .setStdoutPrintStream(null)
                                   .setStderrPrintStream(null)
                                   .setStdinReader(null);
 
             VncVal ast = venice.READ(script, scriptName);
-            if (macroexpand) {
+            if (precompileMacroExpand) {
                 ast = venice.MACROEXPAND(ast, env);
             }
 
             meterRegistry.record("venice.precompile", System.nanoTime() - nanos);
 
             return new PreCompiled(
-            			scriptName,
-            			ast,
-            			macroexpand,
-            			venice.getNamespaceRegistry());
+                        scriptName,
+                        ast,
+                        macroexpand,  // remember for runtime
+                        venice.getNamespaceRegistry(),
+                        //new SymbolTable());
+                        env.getGlobalSymbolTableWithoutCoreSystemSymbols());
         }
         finally {
             ThreadContext.clear(false);
@@ -194,12 +200,21 @@ public class Venice {
             final IVeniceInterpreter venice = new VeniceInterpreter(interceptor, meterRegistry);
 
             return runWithSandbox(venice, () -> {
-                final Env env = addParams(getPrecompiledEnv(), params);
+                final SymbolTable coreSystemGlobalSymbols = getCoreSystemGlobalSymbols();
+
+                Env env = Env.createPrecompiledEnv(coreSystemGlobalSymbols, precompiled);
+                env = addParams(env, params);
+
+                // we're overwriting the run mode! PRECOMPILE -> SCRIPT
+                env.removeGlobalSymbol(new VncSymbol("*run-mode*"));
+                env.setGlobal(new Var(new VncSymbol("*run-mode*"), RunMode.SCRIPT.mode, false));
 
                 // re-init namespaces!
                 venice.initNS();
                 venice.presetNS((NamespaceRegistry)precompiled.getNamespaceRegistry());
                 venice.sealSystemNS();
+
+                venice.setMacroExpandOnLoad(precompiled.isMacroexpand());
 
                 if (meterRegistry.enabled) {
                     meterRegistry.record("venice.setup", System.nanoTime() - nanos);
@@ -502,20 +517,21 @@ public class Venice {
         }
     }
 
-    private Env getPrecompiledEnv() {
-        Env env = precompiledEnv.get();
-        if (env == null) {
-            env = new VeniceInterpreter(interceptor, meterRegistry)
-                        .createEnv(true, false, RunMode.SCRIPT)
-                        .setStdoutPrintStream(null)
-                        .setStderrPrintStream(null)
-                        .setStdinReader(null);
-            precompiledEnv.set(env);
+    private SymbolTable getCoreSystemGlobalSymbols() {
+        SymbolTable symbols = coreSystemGlobalSymbols.get();
+        if (symbols == null) {
+            Env env = new VeniceInterpreter(interceptor, meterRegistry)
+                            .createEnv(true, false, RunMode.SCRIPT)
+                            .setStdoutPrintStream(null)
+                            .setStderrPrintStream(null)
+                            .setStdinReader(null);
+
+            symbols = env.getGlobalSymbolTable();
+            coreSystemGlobalSymbols.set(symbols);
         }
 
-        // make the env safe for reuse
-        return env.copyGlobalToPrecompiledSymbols();
-    }
+        return symbols;
+     }
 
 
     private static ManagedCachedThreadPoolExecutor mngdExecutor =
@@ -523,7 +539,7 @@ public class Venice {
 
     private final IInterceptor interceptor;
     private final MeterRegistry meterRegistry;
-    private final AtomicReference<Env> precompiledEnv = new AtomicReference<>(null);
+    private final AtomicReference<SymbolTable> coreSystemGlobalSymbols = new AtomicReference<>(null);
     private final PrintStream stdout = new PrintStream(System.out, true);
     private final PrintStream stderr = new PrintStream(System.err, true);
     private final Reader stdin = new InputStreamReader(System.in);

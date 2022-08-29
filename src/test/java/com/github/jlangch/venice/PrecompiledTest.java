@@ -193,45 +193,64 @@ public class PrecompiledTest {
     }
 
     @Test
-    public void test_elapsed() {
+    public void test_elapsed_no_precompiled() {
+        final Venice venice = new Venice();
+
+        // warmup
+        for(int ii=0; ii<2_000; ii++) {
+            venice.eval("(do (nil? 1) (+ 1 3))");
+        }
+
+        System.gc();
+        final StopWatch sw = StopWatch.nanos();
+        for(int ii=0; ii<1_000; ii++) {
+            venice.eval("(do (nil? 1) (+ 1 3))");
+        }
+        sw.stop();
+
+        System.out.println("Elapsed (not pre-compiled, 1'000 calls): " + sw.toString());
+    }
+
+    @Test
+    public void test_elapsed_precompiled() {
         final Venice venice = new Venice();
 
         final PreCompiled precomp = venice.precompile("test", "(do (nil? 1) (+ 1 3))");
 
         // warmup
-        for(int ii=0; ii<40_000; ii++) {
+        for(int ii=0; ii<2_000; ii++) {
             venice.eval(precomp);
         }
 
         System.gc();
         final StopWatch sw = StopWatch.nanos();
-        for(int ii=0; ii<10_000; ii++) {
+        for(int ii=0; ii<1_000; ii++) {
             venice.eval(precomp);
         }
         sw.stop();
 
-        System.out.println("Elapsed (pre-compiled, 10'000 calls): " + sw.toString());
+        System.out.println("Elapsed (pre-compiled, 1'000 calls): " + sw.toString());
     }
 
     @Test
-    public void test_elapsed_with_params() {
+    public void test_elapsed_precompiled_with_params() {
         final Venice venice = new Venice();
 
         final PreCompiled precomp = venice.precompile("test", "(do (nil? 1) (+ x y))");
 
         // warmup
-        for(int ii=0; ii<40_000; ii++) {
+        for(int ii=0; ii<2_000; ii++) {
             venice.eval(precomp, Parameters.of("x", 100, "y", 200));
         }
 
         System.gc();
         final StopWatch sw = StopWatch.nanos();
-        for(int ii=0; ii<10_000; ii++) {
+        for(int ii=0; ii<1_000; ii++) {
             venice.eval(precomp, Parameters.of("x", 100, "y", 200));
         }
         sw.stop();
 
-        System.out.println("Elapsed (pre-compiled, params, 10'000 calls): " + sw.toString());
+        System.out.println("Elapsed (pre-compiled, params, 1'000 calls): " + sw.toString());
     }
 
     @Test
@@ -385,7 +404,25 @@ public class PrecompiledTest {
     }
 
     @Test
-    public void test_ns_alias_2() {
+    public void test_ns_alias_2a() {
+        final Venice venice = new Venice();
+
+        final String script =
+                "(do                                         \n" +
+                "  (load-module :hexdump)                    \n" +
+                "  (with-out-str (hexdump/dump [0 1 2 3])))       ";
+
+        final PreCompiled precomp = venice.precompile("test", script, false);
+
+        final Object result = venice.eval(precomp);
+
+        assertEquals(
+                "00000000: 0001 0203                                ....            \n\n",
+                result);
+    }
+
+    @Test
+    public void test_ns_alias_2b() {
         final Venice venice = new Venice();
 
         final String script =
@@ -393,7 +430,7 @@ public class PrecompiledTest {
                 "  (load-module :hexdump ['hexdump :as 'h])  \n" +
                 "  (with-out-str (h/dump [0 1 2 3])))       ";
 
-        // removing foo/x is okay, it's not part of the pre-compiled system symbols
+        // Note
         final PreCompiled precomp = venice.precompile("test", script, true);
 
         final Object result = venice.eval(precomp);
@@ -401,5 +438,76 @@ public class PrecompiledTest {
         assertEquals(
                 "00000000: 0001 0203                                ....            \n\n",
                 result);
+    }
+
+    @Test
+    public void test_ns_alias_2c() {
+        final Venice venice = new Venice();
+
+        final String script =
+                "(do                                         \n" +
+                "  (ns foo)                                  \n" +
+                "  (load-module :hexdump ['hexdump :as 'h])  \n" +
+                "  *ns*)       ";
+
+        // Note
+        final PreCompiled precomp = venice.precompile("test", script, true);
+
+        final Object result = venice.eval(precomp);
+
+        assertEquals("foo", result);
+    }
+
+    @Test
+    public void test_ns_alias_2d() {
+        final Venice venice = new Venice();
+
+        final String script =
+                "(do                                         \n" +
+                "  (ns foo)                                  \n" +
+                "  (load-module :hexdump ['hexdump :as 'h])  \n" +
+                "  (pr-str (ns-aliases)))                    ";
+
+        // Note
+        final PreCompiled precomp = venice.precompile("test", script, true);
+
+        final Object result = venice.eval(precomp);
+
+        assertEquals("{h hexdump}", result);
+    }
+
+    @Test
+    public void test_ns_alias_3a() {
+        final Venice venice = new Venice();
+
+        final String script =
+                "(do                      \n" +
+                "  (load-module :test)    \n" +
+                "  (test/add 1 2))        ";
+
+        PreCompiled precomp = venice.precompile("test", script, true);
+
+        byte[] data = precomp.serialize();
+        precomp = PreCompiled.deserialize(data);
+
+        final Object result = venice.eval(precomp);
+
+        assertEquals(3L, result);
+    }
+
+    @Test
+    public void test_ns_alias_3b() {
+        final Venice venice = new Venice();
+
+        final String script =
+                "(do                                   \n" +
+                "  (load-module :test ['test :as 't])  \n" +
+                "  (test/add 1 2))                     ";
+
+        final PreCompiled precomp = venice.precompile("test", script, false);
+
+        final Object result = venice.eval(precomp);
+
+        assertEquals(3L, result);
     }
 }

@@ -213,7 +213,7 @@ public class REPL {
         venice = new VeniceInterpreter(interceptor);
         // load the core functions without macro expansion! ==> check this!
         env = loadEnv(venice, cli, terminal, out, err, in, false);
-        venice.setMacroExpandOnLoad(macroexpand, env);
+        venice.setMacroExpandOnLoad(macroexpand);
 
         if (isSetupMode(cli)) {
             setupRepl(cli, venice, env, printer);
@@ -615,7 +615,7 @@ public class REPL {
     }
 
     private void handleMacroExpandCommand(final Env env) {
-        venice.setMacroExpandOnLoad(true, env);
+        venice.setMacroExpandOnLoad(true);
         printer.println("system", "Macro expansion enabled");
     }
 
@@ -1131,7 +1131,7 @@ public class REPL {
 
         this.interceptor = interceptor;
         this.venice = new VeniceInterpreter(interceptor);
-        this.venice.setMacroExpandOnLoad(macroExpandOnLoad, env);
+        this.venice.setMacroExpandOnLoad(macroExpandOnLoad);
 
         DebugAgent.register(agent);
     }

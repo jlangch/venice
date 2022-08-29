@@ -25,6 +25,8 @@ import static com.github.jlangch.venice.impl.types.Constants.Nil;
 import static com.github.jlangch.venice.impl.util.ArityExceptions.formatArityExMsg;
 import static com.github.jlangch.venice.impl.util.ArityExceptions.formatVariadicArityExMsg;
 
+import java.io.Serializable;
+
 import com.github.jlangch.venice.ArityException;
 import com.github.jlangch.venice.AssertionException;
 import com.github.jlangch.venice.impl.debug.agent.DebugAgent;
@@ -49,9 +51,9 @@ import com.github.jlangch.venice.impl.util.CallStack;
 import com.github.jlangch.venice.impl.util.WithCallStack;
 
 
-public class FunctionBuilder {
+public class FunctionBuilder implements Serializable {
 
-    public FunctionBuilder(
+	public FunctionBuilder(
             final IFormEvaluator evaluator,
             final boolean optimized
     ) {
@@ -199,8 +201,8 @@ public class FunctionBuilder {
             }
 
             private void validateFnPreconditions(final Env env) {
-                 final Env local = new Env(env);
-                 for(VncVal v : preConditions) {
+                final Env local = new Env(env);
+                for(VncVal v : preConditions) {
                     if (!isFnConditionTrue(evaluator.evaluate(v, local, false))) {
                         final CallFrame cf = new CallFrame(name, v.getMeta());
                         try (WithCallStack cs = new WithCallStack(cf)) {
@@ -209,7 +211,7 @@ public class FunctionBuilder {
                                     v.toString(true)));
                         }
                     }
-                 }
+                }
             }
 
             private static final long serialVersionUID = -1L;
@@ -275,6 +277,8 @@ public class FunctionBuilder {
         }
     }
 
+
+    private static final long serialVersionUID = -7383567149949961233L;
 
     private final IFormEvaluator evaluator;
     private final boolean optimized;

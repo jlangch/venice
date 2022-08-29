@@ -26,6 +26,7 @@
 
 (defmacro test/sum [x y] `(+  x ~y))
 
+(defn test/add [x y] (+ x y))
 
 (defn test/test-fn [x]
   (str "test: " x))

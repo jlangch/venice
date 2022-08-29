@@ -29,6 +29,7 @@ import java.nio.file.Path;
 import java.util.Map;
 
 import com.github.jlangch.venice.VncException;
+import com.github.jlangch.venice.impl.IVeniceInterpreter;
 import com.github.jlangch.venice.impl.Printer;
 import com.github.jlangch.venice.impl.env.Env;
 import com.github.jlangch.venice.impl.functions.ModuleFunctions;
@@ -97,25 +98,22 @@ public class SpecialForms_LoadCodeMacros {
                 specialFormCallValidation("load-string");
                 assertArity("load-string", FnType.SpecialForm, args, 1);
 
-                final Namespace currNS = Namespaces.getCurrentNamespace();
-                try {
-                    synchronized (this) {
+                synchronized (this) {
+                    final Namespace currNS = Namespaces.getCurrentNamespace();
+                    try {
                         final VncString s = Coerce.toVncString(args.first());
 
-                        @SuppressWarnings("unused")
-                        VncVal ast = ctx.getInterpreter().RE(
-                                            "(do " + s.getValue() + ")",
-                                            "string",
-                                            env);
+                        VncVal ast = loadCode(
+                                        s.getValue(),
+                                        "string",
+                                        ctx.getInterpreter(),
+                                        env);
 
-                        return VncVector
-                                    .empty()
-                                    .addAtEnd(new VncKeyword("string"))
-                                    .addAtEnd(new VncKeyword("loaded"));
+                        return ast;
                     }
-                }
-                finally {
-                     Namespaces.setCurrentNamespace(currNS);
+                    finally {
+                         Namespaces.setCurrentNamespace(currNS);
+                    }
                 }
             }
 
@@ -124,7 +122,7 @@ public class SpecialForms_LoadCodeMacros {
 
     public static VncSpecialForm load_module =
         new VncSpecialForm(
-                "load-module2",
+                "load-module",
                 VncSpecialForm
                     .meta()
                     .arglists(
@@ -179,9 +177,10 @@ public class SpecialForms_LoadCodeMacros {
                 assertArity("load-module", FnType.SpecialForm, args, 1, 2, 3);
 
 
-                final Namespace currNS = Namespaces.getCurrentNamespace();
-                try {
-                    synchronized (this) {
+                synchronized (this) {
+                    final Namespace currNS = Namespaces.getCurrentNamespace();
+                    final String currNSname = Namespaces.getCurrentNamespace().getNS().getName();
+                    try {
                         final VncKeyword moduleName = Coerce.toVncKeyword(args.first());
                         final Options options = parseOptions(args, "load-module");
                         final VncBoolean force = options.force;
@@ -195,10 +194,11 @@ public class SpecialForms_LoadCodeMacros {
                             final VncString code = (VncString)ModuleFunctions.loadModule.applyOf(moduleName);
 
                             @SuppressWarnings("unused")
-                            VncVal ast = ctx.getInterpreter().RE(
-                                                "(do " + code.getValue() + ")",
-                                                moduleName.getValue(),
-                                                env);
+                            VncVal ast = loadCode(
+                                            code.getValue(),
+                                            moduleName.getValue(),
+                                            ctx.getInterpreter(),
+                                            env);
 
                             loadedModules.add(moduleName);
                         }
@@ -218,9 +218,9 @@ public class SpecialForms_LoadCodeMacros {
                                     .addAtEnd(moduleName)
                                     .addAtEnd(new VncKeyword(load ? "loaded" : "already-loaded"));
                     }
-                }
-                finally {
-                     Namespaces.setCurrentNamespace(currNS);
+                    finally {
+                         Namespaces.setCurrentNamespace(currNS);
+                    }
                 }
             }
 
@@ -282,11 +282,11 @@ public class SpecialForms_LoadCodeMacros {
                     final SpecialFormsContext ctx
             ) {
                 specialFormCallValidation("load-file");
-                assertArity("load-file", FnType.SpecialForm, args, 1, 3);
+                assertArity("load-file", FnType.SpecialForm, args, 1, 2, 3);
 
-                final Namespace currNS = Namespaces.getCurrentNamespace();
-                try {
-                    synchronized (this) {
+                synchronized (this) {
+                    final Namespace currNS = Namespaces.getCurrentNamespace();
+                    try {
                         final VncString fileName = getVeniceFile(env, args.first(), "load-file");
                         final Options options = parseOptions(args, "load-file");
                         final VncBoolean force = options.force;
@@ -300,10 +300,11 @@ public class SpecialForms_LoadCodeMacros {
                             final VncString code = (VncString)ModuleFunctions.loadFile.applyOf(fileName);
 
                             @SuppressWarnings("unused")
-                            VncVal ast = ctx.getInterpreter().RE(
-                                                "(do " + code.getValue() + ")",
-                                                fileName.getValue(),
-                                                env);
+                            VncVal ast = loadCode(
+                                            code.getValue(),
+                                            fileName.getValue(),
+                                            ctx.getInterpreter(),
+                                            env);
 
                             loadedFunction.add(fileName);
                         }
@@ -322,12 +323,12 @@ public class SpecialForms_LoadCodeMacros {
                                     .empty()
                                     .addAtEnd(fileName)
                                     .addAtEnd(new VncKeyword(load ? "loaded" : "already-loaded"));
+                     }
+                    finally {
+                         Namespaces.setCurrentNamespace(currNS);
                     }
                 }
-                finally {
-                     Namespaces.setCurrentNamespace(currNS);
-                }
-            }
+           }
 
             private static final long serialVersionUID = -1848883965231344442L;
         };
@@ -388,7 +389,7 @@ public class SpecialForms_LoadCodeMacros {
                     final SpecialFormsContext ctx
             ) {
                 specialFormCallValidation("load-classpath-file");
-                assertArity("load-classpath-file", FnType.SpecialForm, args, 1, 3);
+                assertArity("load-classpath-file", FnType.SpecialForm, args, 1, 2, 3);
 
                 final Namespace currNS = Namespaces.getCurrentNamespace();
                 try {
@@ -406,10 +407,11 @@ public class SpecialForms_LoadCodeMacros {
                             final VncString code = (VncString)ModuleFunctions.loadClasspathFile.applyOf(fileName);
 
                             @SuppressWarnings("unused")
-                            VncVal ast = ctx.getInterpreter().RE(
-                                                "(do " + code.getValue() + ")",
-                                                fileName.getValue(),
-                                                env);
+                            VncVal ast = loadCode(
+                                            code.getValue(),
+                                            fileName.getValue(),
+                                            ctx.getInterpreter(),
+                                            env);
 
                             loadedFunction.add(fileName);
                         }
@@ -443,7 +445,6 @@ public class SpecialForms_LoadCodeMacros {
             final String caller,
             final VncVector alias_
     ) {
-
         final boolean ok = alias_.size() == 3
                             && (Types.isVncSymbol(alias_.first()) || isQuotedSymbol(alias_.first()))
                             && Types.isVncKeyword(alias_.second())  && "as".equals(Coerce.toVncKeyword(alias_.second()).getValue())
@@ -508,17 +509,17 @@ public class SpecialForms_LoadCodeMacros {
     }
 
     private static VncSet getLoadedFunctions(final Env env) {
-        return Coerce.toVncSet(env.getGlobalOrNull(new VncSymbol("*loaded-functions*")));
+        return Coerce.toVncSet(env.getGlobalOrNull(new VncSymbol("*loaded-files*")));
     }
 
     private static VncString getVeniceFile(final Env env, final VncVal arg, final String fnName) {
         if (Types.isVncSymbol(arg)) {
-        	// lookup symbol
-        	final VncVal v = env.get((VncSymbol)arg);
+            // lookup symbol
+            final VncVal v = env.get((VncSymbol)arg);
             return getVeniceFile(v, fnName);
         }
         else {
-        	return getVeniceFile(arg, fnName);
+            return getVeniceFile(arg, fnName);
         }
     }
 
@@ -576,6 +577,23 @@ public class SpecialForms_LoadCodeMacros {
         }
      }
 
+    private static VncVal loadCode(
+            final String code,
+            final String name,
+            final IVeniceInterpreter venice,
+            final Env env
+    ) {
+        VncVal ast = venice.READ("(do " + code + ")", name);
+
+        if (venice.isMacroExpandOnLoad()) {
+            ast = venice.MACROEXPAND(ast, env);
+        }
+
+        ast = venice.EVAL(ast, env);
+
+        return ast;
+    }
+
     private static class Options {
         public Options(final VncBoolean force, final VncVector alias) {
             this.force = force;
@@ -586,19 +604,17 @@ public class SpecialForms_LoadCodeMacros {
         final VncVector alias;
     }
 
-
-
     ///////////////////////////////////////////////////////////////////////////
     // types_ns is namespace of type functions
     ///////////////////////////////////////////////////////////////////////////
 
-    public static boolean ENABLED = false;
+    public static boolean ENABLED = true;
 
     public static Map<VncVal, VncVal> ns =
             new SymbolMapBuilder()
-//                    .add(load_string)
-//                    .add(load_module)
-//                    .add(load_file)
-//                    .add(load_classpath_file)
+                    .add(load_string)
+                    .add(load_module)
+                    .add(load_file)
+                    .add(load_classpath_file)
                     .toMap();
 }

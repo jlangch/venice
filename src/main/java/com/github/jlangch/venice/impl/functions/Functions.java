@@ -50,7 +50,10 @@ public class Functions {
         functions.putAll(SpecialForms_TryCatchFunctions.ns);
         functions.putAll(SpecialForms_VarFunctions.ns);
         functions.putAll(SpecialForms_OtherFunctions.ns);
-        functions.putAll(SpecialForms_LoadCodeMacros.ns);
+
+        if (SpecialForms_LoadCodeMacros.ENABLED) {
+        	functions.putAll(SpecialForms_LoadCodeMacros.ns);
+        }
 
         functions.putAll(CoreFunctions.ns);
         functions.putAll(ExceptionFunctions.ns);

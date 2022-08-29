@@ -180,7 +180,7 @@ public class VeniceInterpreter implements IVeniceInterpreter, Serializable  {
     }
 
     @Override
-    public void setMacroExpandOnLoad(final boolean macroExpandOnLoad, final Env env) {
+    public void setMacroExpandOnLoad(final boolean macroExpandOnLoad) {
         // Dynamically turn on/off macroexpand-on-load. The REPL makes use of this.
         this.macroExpandOnLoad = macroExpandOnLoad;
     }
@@ -188,6 +188,11 @@ public class VeniceInterpreter implements IVeniceInterpreter, Serializable  {
     @Override
     public boolean isMacroExpandOnLoad() {
         return macroExpandOnLoad;
+    }
+
+    @Override
+    public boolean isEvaluateDynamicallyLoadedCode() {
+        return true;
     }
 
     @Override
@@ -305,7 +310,7 @@ public class VeniceInterpreter implements IVeniceInterpreter, Serializable  {
         initNS();
 
         // Activates macroexpand on load
-        setMacroExpandOnLoad(macroExpandOnLoad, env);
+        setMacroExpandOnLoad(macroExpandOnLoad);
 
         // add all native modules (implicitly preloaded)
         loadedModules.addAll(VncMutableSet.ofAll(Modules.NATIVE_MODULES));
@@ -900,18 +905,18 @@ public class VeniceInterpreter implements IVeniceInterpreter, Serializable  {
             final VncList macroArgs = ((VncList)ast_).rest();
 
             if (SpecialForms_LoadCodeMacros.ENABLED) {
-	            if ("load-module".equals(a0SymName)) {
-	            	return SpecialForms_LoadCodeMacros.load_module.apply(a0Sym, macroArgs, env, specialFormsContext);
-	            }
-	            else if ("load-file".equals(a0SymName)) {
-	            	return SpecialForms_LoadCodeMacros.load_file.apply(a0Sym, macroArgs, env, specialFormsContext);
-	            }
-	            else if ("load-classpath-file".equals(a0SymName)) {
-	            	return SpecialForms_LoadCodeMacros.load_classpath_file.apply(a0Sym, macroArgs, env, specialFormsContext);
-	            }
-	            else if ("load-string".equals(a0SymName)) {
-	            	return SpecialForms_LoadCodeMacros.load_string.apply(a0Sym, macroArgs, env, specialFormsContext);
-	            }
+                if ("load-module".equals(a0SymName)) {
+                    return SpecialForms_LoadCodeMacros.load_module.apply(a0Sym, macroArgs, env, specialFormsContext);
+                }
+                else if ("load-file".equals(a0SymName)) {
+                    return SpecialForms_LoadCodeMacros.load_file.apply(a0Sym, macroArgs, env, specialFormsContext);
+                }
+                else if ("load-classpath-file".equals(a0SymName)) {
+                    return SpecialForms_LoadCodeMacros.load_classpath_file.apply(a0Sym, macroArgs, env, specialFormsContext);
+                }
+                else if ("load-string".equals(a0SymName)) {
+                    return SpecialForms_LoadCodeMacros.load_string.apply(a0Sym, macroArgs, env, specialFormsContext);
+                }
             }
 
             final VncVal fn = env.getGlobalOrNull(a0Sym);

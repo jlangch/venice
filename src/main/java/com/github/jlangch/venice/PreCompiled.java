@@ -29,6 +29,7 @@ import java.io.Serializable;
 import java.util.zip.GZIPInputStream;
 import java.util.zip.GZIPOutputStream;
 
+import com.github.jlangch.venice.impl.env.SymbolTable;
 import com.github.jlangch.venice.impl.namespaces.NamespaceRegistry;
 
 
@@ -41,12 +42,14 @@ public class PreCompiled implements Serializable {
             final String name,
             final Object precompiled,
             final boolean macroexpand,
-            final NamespaceRegistry nsRegistry
+            final NamespaceRegistry nsRegistry,
+            final SymbolTable symbols
     ) {
         this.name = name;
         this.precompiled = precompiled;
         this.macroexpand = macroexpand;
         this.nsRegistry = nsRegistry;
+        this.symbols = symbols;
         this.version = Version.VERSION;
     }
 
@@ -67,7 +70,11 @@ public class PreCompiled implements Serializable {
     }
 
     public Object getNamespaceRegistry() {
-        return  nsRegistry;
+        return nsRegistry;
+    }
+
+    public Object getSymbols() {
+        return symbols;
     }
 
     /**
@@ -128,4 +135,5 @@ public class PreCompiled implements Serializable {
     private final String version;
     private final boolean macroexpand;
     private final NamespaceRegistry nsRegistry;
+    private final SymbolTable symbols;
 }

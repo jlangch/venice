@@ -821,6 +821,7 @@ public class SandboxRules {
                         "crypt",
                         "kira",
                         "parsifal",
+                        "test",
                         "hexdump",
                         "xml")));
 

@@ -37,9 +37,11 @@ public interface IVeniceInterpreter {
 
     void sealSystemNS();
 
-    void setMacroExpandOnLoad(boolean macroExpandOnLoad, Env env);
+    void setMacroExpandOnLoad(boolean macroExpandOnLoad);
 
     boolean isMacroExpandOnLoad();
+
+    boolean isEvaluateDynamicallyLoadedCode();
 
     VncVal READ(String script, String filename);
 

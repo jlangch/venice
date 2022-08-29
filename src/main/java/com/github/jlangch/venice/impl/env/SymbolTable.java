@@ -19,17 +19,31 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.github.jlangch.venice.impl;
+package com.github.jlangch.venice.impl.env;
 
 import java.io.Serializable;
+import java.util.HashMap;
+import java.util.Map;
 
-import com.github.jlangch.venice.impl.env.Env;
-import com.github.jlangch.venice.impl.types.VncVal;
+import com.github.jlangch.venice.impl.types.VncSymbol;
 
 
-@FunctionalInterface
-public interface IFormEvaluator extends Serializable {
+public class SymbolTable implements Serializable {
 
-    VncVal evaluate(VncVal ast, Env env, boolean inTailPosition);
+	public SymbolTable() {
+		this.symbols = new HashMap<>();
+	}
 
+	public SymbolTable(final Map<VncSymbol,Var> symbols) {
+		this.symbols = symbols;
+	}
+
+	public Map<VncSymbol,Var> getSymbolMap() {
+		return symbols;
+	}
+
+
+	private static final long serialVersionUID = -6061770310338511676L;
+
+	private final Map<VncSymbol,Var> symbols;
 }
