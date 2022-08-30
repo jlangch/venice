@@ -855,8 +855,8 @@ public class IOFunctionsStreams {
                     .arglists(
                         "(io/print os s)" )
                     .doc(
-                        "Prints a string s to an output stream. The output stream" +
-                        "may be a `:java.io.Writer` or a `:java.io.PrintStream` !")
+                        "Prints a string s to an output stream. The output stream " +
+                        "may be a `:java.io.Writer` or a `:java.io.PrintStream`!")
                     .build()
         ) {
             @Override
