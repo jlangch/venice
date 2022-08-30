@@ -879,7 +879,8 @@ public class IOFunctionsStreams {
                 }
                 else {
                     throw new VncException(String.format(
-                            "io/print does not allow type %s as output stream arg",
+                            "io/print does not allow type %s as output stream arg. " +
+                            "Expected a :java.io.PrintStream or a :java.io.Writer.",
                             Types.getType(args.first())));
                 }
 
@@ -914,12 +915,15 @@ public class IOFunctionsStreams {
                         return new VncString(br.readLine());
                     }
                     catch(IOException ex) {
-                        throw new VncException("Failed read line from a :java.io.BufferedReader", ex);
+                        throw new VncException(
+                        		"Failed read the next line from a :java.io.BufferedReader.",
+                        		ex);
                     }
                 }
                 else {
                     throw new VncException(String.format(
-                            "io/read-line does not allow type %s as input stream arg",
+                            "io/read-line does not allow type %s as input stream arg. " +
+                            "Expected a :java.io.BufferedReader.",
                             Types.getType(args.first())));
 
                 }
@@ -954,12 +958,15 @@ public class IOFunctionsStreams {
                         return ch == -1 ? Nil : new VncChar((char)ch);
                     }
                     catch(IOException ex) {
-                        throw new VncException("Failed print string to a :java.io.Writer", ex);
+                        throw new VncException(
+                        		"Failed read the next a char from a :java.io.Reader",
+                        		ex);
                     }
                 }
                 else {
                     throw new VncException(String.format(
-                            "io/read-char does not allow type %s as output stream arg",
+                            "io/read-char does not allow type %s as input stream arg. " +
+                            "Expected a :java.io.Reader.",
                             Types.getType(args.first())));
 
                 }
