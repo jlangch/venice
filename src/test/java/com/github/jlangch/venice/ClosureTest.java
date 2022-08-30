@@ -71,16 +71,16 @@ public class ClosureTest {
                 "   (with-out-str (do-it)))                                 ";
 
         assertEquals(
-        		"[:counter 1 :foo a :bar x]\n" +
-        		"[:counter 2 :foo a :bar y]\n" +
-        		"[:counter 3 :foo a :bar z]\n" +
-        		"[:counter 1 :foo b :bar x]\n" +
-        		"[:counter 2 :foo b :bar y]\n" +
-        		"[:counter 3 :foo b :bar z]\n" +
-        		"[:counter 1 :foo c :bar x]\n" +
-        		"[:counter 2 :foo c :bar y]\n" +
-        		"[:counter 3 :foo c :bar z]\n",
-        		venice.eval(script));
+                "[:counter 1 :foo a :bar x]\n" +
+                "[:counter 2 :foo a :bar y]\n" +
+                "[:counter 3 :foo a :bar z]\n" +
+                "[:counter 1 :foo b :bar x]\n" +
+                "[:counter 2 :foo b :bar y]\n" +
+                "[:counter 3 :foo b :bar z]\n" +
+                "[:counter 1 :foo c :bar x]\n" +
+                "[:counter 2 :foo c :bar y]\n" +
+                "[:counter 3 :foo c :bar z]\n",
+                venice.eval(script));
     }
 
 }

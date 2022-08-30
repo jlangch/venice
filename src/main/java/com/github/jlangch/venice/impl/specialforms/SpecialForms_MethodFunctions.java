@@ -235,8 +235,8 @@ public class SpecialForms_MethodFunctions {
 
                         "(map #(* 2 %1) (range 1 5))",
 
-                        ";; anonymous function with two params, the second is destructured\n" +
-                        "(reduce (fn [m [k v]] (assoc m v k)) {} {:b 2 :a 1 :c 3})",
+                        ";; anonymous function with two params, the second is destructured  \n" +
+                        "(reduce (fn [m [k v]] (assoc m v k)) {} {:b 2 :a 1 :c 3})          ",
 
                         ";; defining a pre-condition                 \n" +
                         "(do                                         \n" +
@@ -245,6 +245,16 @@ public class SpecialForms_MethodFunctions {
                         "            { :pre [(>= x 0)] }             \n" +
                         "            (. :java.lang.Math :sqrt x)))   \n" +
                         "   (square-root 4))                           ",
+
+                        ";; closures                                                   \n" +
+                        "(do                                                           \n" +
+                        "  (defn pow [n]                                               \n" +
+                        "    (fn [x] (apply * (repeat n x))))  ; closes over n         \n" +
+                        "                                                              \n" +
+                        "  ;; n is provided here as 2 and 3, then n goes out of scope  \n" +
+                        "  (def square (pow 2))                                        \n" +
+                        "  (def cubic (pow 3))                                         \n" +
+                        "  (square 4))                                                 ",
 
                         ";; higher-order function                                           \n" +
                         "(do                                                                \n" +

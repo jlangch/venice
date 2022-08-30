@@ -916,8 +916,8 @@ public class IOFunctionsStreams {
                     }
                     catch(IOException ex) {
                         throw new VncException(
-                        		"Failed read the next line from a :java.io.BufferedReader.",
-                        		ex);
+                                "Failed read the next line from a :java.io.BufferedReader.",
+                                ex);
                     }
                 }
                 else {
@@ -959,8 +959,8 @@ public class IOFunctionsStreams {
                     }
                     catch(IOException ex) {
                         throw new VncException(
-                        		"Failed read the next a char from a :java.io.Reader",
-                        		ex);
+                                "Failed read the next a char from a :java.io.Reader",
+                                ex);
                     }
                 }
                 else {
