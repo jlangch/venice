@@ -52,17 +52,6 @@ import com.github.jlangch.venice.impl.util.ArityExceptions.FnType;
 import com.github.jlangch.venice.impl.util.SymbolMapBuilder;
 
 
-// ****************************************************************************
-// *  To activate the special form macros:
-// *
-// *    - enable in VeniceInterpreter::doMacroexpand(), line 905
-// *    - remove from core.venice, line 1090
-// *
-// *  Problems
-// *    - Precompilation with module loading and alias -> alias not working
-// *      see PrecompiledTest::test_ns_alias_2()
-// ****************************************************************************
-
 /**
  * Special form code loading functions
  *
@@ -203,13 +192,13 @@ public class SpecialForms_LoadCodeMacros {
                         }
 
                         if (alias != null) {
-                                validateNsAlias(
-                                    String.format("load-module '%s'", moduleName.getValue()),
-                                    alias);
+                            validateNsAlias(
+                                String.format("load-module '%s'", moduleName.getValue()),
+                                alias);
 
-                                final VncSymbol aliasName = unquoteSymbol(alias.third());
-                                final VncSymbol nsName = unquoteSymbol(alias.first());
-                                currNS.addAlias(aliasName.getName(), nsName.getName());
+                            final VncSymbol aliasName = unquoteSymbol(alias.third());
+                            final VncSymbol nsName = unquoteSymbol(alias.first());
+                            currNS.addAlias(aliasName.getName(), nsName.getName());
                         }
 
                         return VncVector
@@ -313,9 +302,9 @@ public class SpecialForms_LoadCodeMacros {
                                     String.format("load-file '%s'", fileName.getValue()),
                                     alias);
 
-                                final VncSymbol aliasName = unquoteSymbol(alias.third());
-                                final VncSymbol nsName = unquoteSymbol(alias.first());
-                                currNS.addAlias(aliasName.getName(), nsName.getName());
+                            final VncSymbol aliasName = unquoteSymbol(alias.third());
+                            final VncSymbol nsName = unquoteSymbol(alias.first());
+                            currNS.addAlias(aliasName.getName(), nsName.getName());
                         }
 
                         return VncVector
@@ -420,9 +409,9 @@ public class SpecialForms_LoadCodeMacros {
                                     String.format("load-classpath-file '%s'", fileName.getValue()),
                                     alias);
 
-                                final VncSymbol aliasName = unquoteSymbol(alias.third());
-                                final VncSymbol nsName = unquoteSymbol(alias.first());
-                                currNS.addAlias(aliasName.getName(), nsName.getName());
+                            final VncSymbol aliasName = unquoteSymbol(alias.third());
+                            final VncSymbol nsName = unquoteSymbol(alias.first());
+                            currNS.addAlias(aliasName.getName(), nsName.getName());
                         }
 
                         return VncVector

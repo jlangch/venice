@@ -26,8 +26,6 @@
 
 (import :java.io.PrintStream)
 (import :java.io.Writer)
-(import :java.io.Reader)
-(import :java.io.BufferedReader)
 
 
 (defmacro
@@ -1098,19 +1096,15 @@
 
   ([] nil)
   ([x]
-    (when-not (or (instance-of? :OutputStream x) (instance-of? :Writer x))
+    (when-not (or (instance-of? :PrintStream x) (instance-of? :Writer x))
       (io/print *out* (str (coalesce x "nil")))
       nil))
   ([& xs]
     (let [ch  (first xs)
           fmt (fn [zs] (str/join " " (map #(str (coalesce % "nil")) zs)))]
-      (cond
-        (instance-of? :PrintStream ch) (io/print ch (fmt (rest xs)))
-        (instance-of? :Writer ch)      (io/print ch (fmt (rest xs)))
-        :else
-          (cond
-            (instance-of? :PrintStream *out*) (io/print *out* (fmt xs))
-            (instance-of? :Writer *out*)      (io/print *out* (fmt xs))))
+      (if (or (instance-of? :PrintStream ch) (instance-of? :Writer ch))
+         (io/print ch (fmt (rest xs)))
+         (io/print *out* (fmt xs)))
       nil)))
 
 
@@ -1207,13 +1201,13 @@
 
   ([] nil)
   ([x]
-    (when-not (or (instance-of? :OutputStream x) (instance-of? :Writer x))
+    (when-not (or (instance-of? :PrintStream x) (instance-of? :Writer x))
       (io/print *out* (pr-str x))
       nil))
   ([& xs]
     (let [ch  (first xs)
           fmt (fn [zs] (str/join " " (map pr-str zs)))]
-      (if (or (instance-of? :OutputStream ch) (instance-of? :Writer ch))
+      (if (or (instance-of? :PrintStream ch) (instance-of? :Writer ch))
         (io/print ch (fmt (rest xs)))
         (io/print *out* (fmt xs)))
       nil)))
@@ -1315,8 +1309,8 @@
 
   read-line
 
-  ([]   (io/read-line  *in*))
-  ([is] (io/read-line  is)))
+  ([]   (io/read-line *in*))
+  ([is] (io/read-line is)))
 
 
 (defn
