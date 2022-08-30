@@ -92,7 +92,8 @@ final IInterceptor interceptor =
                  "print", 
                  "printf", 
                  "println", 
-                 "newline")
+                 "newline", 
+                 "io/print")
 
               // Generic rules	
               .withMaxFutureThreadPoolSize(20)

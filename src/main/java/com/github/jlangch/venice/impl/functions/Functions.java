@@ -36,6 +36,7 @@ import com.github.jlangch.venice.impl.specialforms.SpecialForms_OtherFunctions;
 import com.github.jlangch.venice.impl.specialforms.SpecialForms_TryCatchFunctions;
 import com.github.jlangch.venice.impl.specialforms.SpecialForms_TypeFunctions;
 import com.github.jlangch.venice.impl.specialforms.SpecialForms_VarFunctions;
+import com.github.jlangch.venice.impl.types.VncFunction;
 import com.github.jlangch.venice.impl.types.VncSpecialForm;
 import com.github.jlangch.venice.impl.types.VncVal;
 
@@ -45,6 +46,11 @@ public class Functions {
     public static void main(String[] args){
         System.out.println(
                 String.join(",\n", getSpecialForms()));
+
+        System.out.println();
+
+        System.out.println(
+                String.join(",\n", getIoFunctions()));
     }
 
     public static List<String> getSpecialForms() {
@@ -52,7 +58,18 @@ public class Functions {
                 .values()
                 .stream()
                 .filter(f -> f instanceof VncSpecialForm)
-                .map(f -> "\"" + ((VncSpecialForm)f).getName() +  "\"")
+                .map(f -> "\"" + ((VncSpecialForm)f).getName() + "\"")
+                .sorted()
+                .collect(Collectors.toList());
+    }
+
+    public static List<String> getIoFunctions() {
+        return functions
+                .values()
+                .stream()
+                .filter(f -> (f instanceof VncFunction)
+                				&& "io".equals(((VncFunction)f).getNamespace()))
+                .map(f -> "\"" + ((VncFunction)f).getQualifiedName() + "\"")
                 .sorted()
                 .collect(Collectors.toList());
     }
