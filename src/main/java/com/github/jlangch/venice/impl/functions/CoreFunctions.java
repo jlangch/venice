@@ -7548,6 +7548,31 @@ public class CoreFunctions {
             private static final long serialVersionUID = -1848883965231344442L;
         };
 
+     public static VncFunction run_BANG =
+        new VncFunction(
+                "run!",
+                VncFunction
+                    .meta()
+                    .arglists("(run f coll)")
+                    .doc(
+                        "Runs the supplied function, for purposes of side " +
+                        "effects, on successive items in the collection. Returns `nil`")
+                    .examples(
+                        "(run! prn [1 2 3 4])")
+                    .seeAlso("docoll", "mapv")
+                    .build()
+        ) {
+            @Override
+            public VncVal apply(final VncList args) {
+                ArityExceptions.assertArity(this, args, 2);
+
+                // It's an alias for 'docoll' -> clojure compatibility
+                return docoll.apply(args);
+            }
+
+            private static final long serialVersionUID = -1848883965231344442L;
+        };
+
     public static VncFunction mapv =
         new VncFunction(
                 "mapv",
@@ -7563,10 +7588,13 @@ public class CoreFunctions {
                         "(mapv inc [1 2 3 4])",
                         "(mapv + [1 2 3 4] [10 20 30 40])",
                         "(mapv vector [1 2 3 4] [10 20 30 40])")
+                    .seeAlso("docoll")
                     .build()
         ) {
             @Override
             public VncVal apply(final VncList args) {
+                ArityExceptions.assertMinArity(this, args, 2);
+
                 final MeterRegistry meterRegistry = ThreadContext.getMeterRegistry();
 
                 final IVncFunction fn = Coerce.toIVncFunction(args.first());
@@ -7709,6 +7737,7 @@ public class CoreFunctions {
                         ";;       block forever!                                               \n" +
                         "(let [q (conj! (queue) 1 2 3 nil)]                                    \n" +
                         "  (docoll println q))                                                 ")
+                    .seeAlso("mapv")
                     .build()
         ) {
             @Override
@@ -9270,6 +9299,7 @@ public class CoreFunctions {
                 .add(some)
                 .add(map_keys)
                 .add(map_vals)
+                .add(run_BANG)
 
                 .add(merge)
                 .add(merge_with)

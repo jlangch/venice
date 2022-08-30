@@ -90,7 +90,8 @@ public class CollectionsSection implements ISectionBuilder {
         coll_process.addItem(diBuilder.getDocItem("reduce"));
         coll_process.addItem(diBuilder.getDocItem("keep"));
         coll_process.addItem(diBuilder.getDocItem("docoll"));
-
+        coll_process.addItem(diBuilder.getDocItem("mapv"));
+        coll_process.addItem(diBuilder.getDocItem("run!"));
 
         final DocSection lists = new DocSection("Lists", "collections.lists");
         section.addSection(lists);

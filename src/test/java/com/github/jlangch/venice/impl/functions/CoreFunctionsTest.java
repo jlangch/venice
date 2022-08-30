@@ -4073,6 +4073,23 @@ public class CoreFunctionsTest {
     }
 
     @Test
+    public void test_run_BANG() {
+        final Venice venice = new Venice();
+
+        assertEquals("", venice.eval("(with-out-str (run! prn nil))"));
+
+        assertEquals("", venice.eval("(with-out-str (run! prn '()))"));
+        assertEquals("1\n", venice.eval("(with-out-str (run! prn '(1)))"));
+        assertEquals("1\n2\n", venice.eval("(with-out-str (run! prn '(1 2)))"));
+        assertEquals("1\n2\n3\n", venice.eval("(with-out-str (run! prn '(1 2 3)))"));
+
+        assertEquals("", venice.eval("(with-out-str (run! prn '[]))"));
+        assertEquals("1\n", venice.eval("(with-out-str (run! prn '[1]))"));
+        assertEquals("1\n2\n", venice.eval("(with-out-str (run! prn '[1 2]))"));
+        assertEquals("1\n2\n3\n", venice.eval("(with-out-str (run! prn '[1 2 3]))"));
+    }
+
+    @Test
     public void test_second() {
         final Venice venice = new Venice();
 
