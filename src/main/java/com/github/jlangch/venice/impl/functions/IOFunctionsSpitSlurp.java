@@ -115,16 +115,16 @@ public class IOFunctionsSpitSlurp {
                     try {
                         final InputStream is = loadpaths.getInputStream(file);
                         if (is == null) {
-                        	if (file.exists()) {
-	                            throw new VncException(
+                            if (file.exists()) {
+                                throw new VncException(
                                         "Failed to slurp text lines from the file " + file.getPath() +
                                         ". The file does not exists!");
-                        	}
-                        	else {
-	                            throw new SecurityException(
+                            }
+                            else {
+                                throw new SecurityException(
                                         "Failed to slurp text lines from the file " + file.getPath() +
                                         ". The load paths configuration prevented this action!");
-                        	}
+                            }
                         }
                         return slurpLines(options, new FileInputStream(file));
                     }
@@ -163,15 +163,15 @@ public class IOFunctionsSpitSlurp {
                     }
                 }
                 else if (Types.isVncJavaObject(arg, URL.class)) {
-                	if (loadpaths.isUnlimitedAccess()) {
-	                    try {
-	                        final URL url = Coerce.toVncJavaObject(args.first(), URL.class);
-	                        return slurpLines(options, url.openStream());
-	                    }
-	                    catch (Exception ex) {
-	                        throw new VncException("Failed to slurp text lines from a :java.net.URL", ex);
-	                    }
-                	}
+                    if (loadpaths.isUnlimitedAccess()) {
+                        try {
+                            final URL url = Coerce.toVncJavaObject(args.first(), URL.class);
+                            return slurpLines(options, url.openStream());
+                        }
+                        catch (Exception ex) {
+                            throw new VncException("Failed to slurp text lines from a :java.net.URL", ex);
+                        }
+                    }
                     else {
                         throw new SecurityException(
                                 "Rejected to slurp text lines from a :java.net.URL. " +
@@ -179,16 +179,16 @@ public class IOFunctionsSpitSlurp {
                     }
                 }
                 else if (Types.isVncJavaObject(arg, URI.class)) {
-                	if (loadpaths.isUnlimitedAccess()) {
-	                	try {
+                    if (loadpaths.isUnlimitedAccess()) {
+                        try {
 
-	                        final URI uri = Coerce.toVncJavaObject(args.first(), URI.class);
-	                        return slurpLines(options, uri.toURL().openStream());
-	                    }
-	                    catch (Exception ex) {
-	                        throw new VncException("Failed to slurp text lines from a :java.net.URI", ex);
-	                    }
-                	}
+                            final URI uri = Coerce.toVncJavaObject(args.first(), URI.class);
+                            return slurpLines(options, uri.toURL().openStream());
+                        }
+                        catch (Exception ex) {
+                            throw new VncException("Failed to slurp text lines from a :java.net.URI", ex);
+                        }
+                    }
                     else {
                         throw new SecurityException(
                                 "Rejected to slurp text lines from a :java.net.URI. " +
@@ -245,16 +245,16 @@ public class IOFunctionsSpitSlurp {
                     try {
                         final InputStream is = loadpaths.getInputStream(file);
                         if (is == null) {
-                        	if (file.exists()) {
-	                            throw new VncException(
+                            if (file.exists()) {
+                                throw new VncException(
                                         "Failed to slurp data from the file " + file.getPath() +
                                         ". The file does not exists!");
-                        	}
-                        	else {
-	                            throw new SecurityException(
+                            }
+                            else {
+                                throw new SecurityException(
                                         "Failed to slurp data from the file " + file.getPath() +
                                         ". The load paths configuration prevented this action!");
-                        	}
+                            }
                         }
                         return slurp(options, is);
                     }

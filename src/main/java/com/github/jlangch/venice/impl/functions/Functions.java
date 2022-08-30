@@ -42,20 +42,20 @@ import com.github.jlangch.venice.impl.types.VncVal;
 
 public class Functions {
 
-	public static void main(String[] args){
+    public static void main(String[] args){
         System.out.println(
-        		String.join(",\n", getSpecialForms()));
+                String.join(",\n", getSpecialForms()));
     }
 
-	public static List<String> getSpecialForms() {
-		return functions
-				.values()
-				.stream()
-				.filter(f -> f instanceof VncSpecialForm)
-				.map(f -> "\"" + ((VncSpecialForm)f).getName() +  "\"")
-				.sorted()
-				.collect(Collectors.toList());
-	}
+    public static List<String> getSpecialForms() {
+        return functions
+                .values()
+                .stream()
+                .filter(f -> f instanceof VncSpecialForm)
+                .map(f -> "\"" + ((VncSpecialForm)f).getName() +  "\"")
+                .sorted()
+                .collect(Collectors.toList());
+    }
 
     public static final Map<VncVal,VncVal> functions = new HashMap<>();
 
@@ -68,7 +68,7 @@ public class Functions {
         functions.putAll(SpecialForms_TryCatchFunctions.ns);
         functions.putAll(SpecialForms_VarFunctions.ns);
         functions.putAll(SpecialForms_OtherFunctions.ns);
-       	functions.putAll(SpecialForms_LoadCodeMacros.ns);
+        functions.putAll(SpecialForms_LoadCodeMacros.ns);
 
         functions.putAll(CoreFunctions.ns);
         functions.putAll(ExceptionFunctions.ns);

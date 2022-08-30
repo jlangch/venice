@@ -543,8 +543,8 @@ public class ShellFunctions {
     }
 
     private static VncString slurpToString(
-    		final InputStream is,
-    		final Charset charset
+            final InputStream is,
+            final Charset charset
     ) throws Exception{
         return new VncString(IOStreamUtil.copyIStoString(is, charset));
     }

@@ -71,11 +71,11 @@ public abstract class LoadPath {
         }
 
         if (file.isDirectory()) {
-        	// existing directory
+            // existing directory
             return new DirectoryLoadPath(file);
         }
         else if (file.isFile()) {
-        	// existing regular file
+            // existing regular file
             if (ZipLoadPath.isZipFile(file)) {
                 return new ZipLoadPath(file);
             }

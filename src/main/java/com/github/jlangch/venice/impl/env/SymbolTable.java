@@ -30,20 +30,20 @@ import com.github.jlangch.venice.impl.types.VncSymbol;
 
 public class SymbolTable implements Serializable {
 
-	public SymbolTable() {
-		this.symbols = new HashMap<>();
-	}
+    public SymbolTable() {
+        this.symbols = new HashMap<>();
+    }
 
-	public SymbolTable(final Map<VncSymbol,Var> symbols) {
-		this.symbols = symbols;
-	}
+    public SymbolTable(final Map<VncSymbol,Var> symbols) {
+        this.symbols = symbols;
+    }
 
-	public Map<VncSymbol,Var> getSymbolMap() {
-		return symbols;
-	}
+    public Map<VncSymbol,Var> getSymbolMap() {
+        return symbols;
+    }
 
 
-	private static final long serialVersionUID = -6061770310338511676L;
+    private static final long serialVersionUID = -6061770310338511676L;
 
-	private final Map<VncSymbol,Var> symbols;
+    private final Map<VncSymbol,Var> symbols;
 }

@@ -284,16 +284,16 @@ public abstract class VncFunction
     }
 
     protected void sandboxFunctionCallValidation(final File read, final File write) {
-    	final IInterceptor interceptor = ThreadContext.getInterceptor();
+        final IInterceptor interceptor = ThreadContext.getInterceptor();
 
-    	interceptor.validateVeniceFunction(qualifiedName);
+        interceptor.validateVeniceFunction(qualifiedName);
 
-    	if (read != null) {
-    		interceptor.validateFileRead(read);
-    	}
-    	if (write != null) {
-    		interceptor.validateFileWrite(write);
-    	}
+        if (read != null) {
+            interceptor.validateFileRead(read);
+        }
+        if (write != null) {
+            interceptor.validateFileWrite(write);
+        }
     }
 
 

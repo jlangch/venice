@@ -87,12 +87,12 @@ public class BytebufFunctions {
                     .meta()
                     .arglists("(bytebuf x)")
                     .doc(
-                    	"Converts x to bytebuf. x can be a bytebuf, a list/vector of longs, " +
-                    	"a string, or a `java.io.ByteArrayOutputStream`")
+                        "Converts x to bytebuf. x can be a bytebuf, a list/vector of longs, " +
+                        "a string, or a `java.io.ByteArrayOutputStream`")
                     .examples(
-                    	"(bytebuf [0 1 2])", "(bytebuf '(0 1 2))", "(bytebuf \"abc\")")
+                        "(bytebuf [0 1 2])", "(bytebuf '(0 1 2))", "(bytebuf \"abc\")")
                     .seeAlso(
-                    	"io/bytebuf-out-stream")
+                        "io/bytebuf-out-stream")
                     .build()
         ) {
             @Override
@@ -125,9 +125,9 @@ public class BytebufFunctions {
                         return new VncByteBuffer((ByteBuffer)delegate);
                     }
                     else if (delegate instanceof ByteArrayOutputStream) {
-                    	try(ByteArrayOutputStream os = (ByteArrayOutputStream)delegate) {
-                    		return new VncByteBuffer(ByteBuffer.wrap(os.toByteArray()));
-                    	}
+                        try(ByteArrayOutputStream os = (ByteArrayOutputStream)delegate) {
+                            return new VncByteBuffer(ByteBuffer.wrap(os.toByteArray()));
+                        }
                         catch(Exception ex) {
                             throw new VncException(
                                     "Failed to copy ByteArrayOutputStream data to bytebuf", ex);

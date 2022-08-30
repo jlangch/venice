@@ -31,7 +31,7 @@ import com.github.jlangch.venice.impl.types.VncSymbol;
 
 public class NamespaceRegistry implements Serializable {
 
-	public NamespaceRegistry() {
+    public NamespaceRegistry() {
     }
 
     public void add(final Namespace ns) {

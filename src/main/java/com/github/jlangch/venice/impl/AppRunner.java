@@ -97,9 +97,9 @@ public class AppRunner {
         if (app.exists()) {
             try {
                 final String manifest = ZipFileSystemUtil.loadTextFileFromZip(
-                							app,
-                							new File("MANIFEST.MF"),
-                							CharsetUtil.charset("UTF-8"));
+                                            app,
+                                            new File("MANIFEST.MF"),
+                                            CharsetUtil.charset("UTF-8"));
                 return Coerce.toVncMap(JsonFunctions.read_str.apply(VncList.of(new VncString(manifest))));
             }
             catch (Exception ex) {

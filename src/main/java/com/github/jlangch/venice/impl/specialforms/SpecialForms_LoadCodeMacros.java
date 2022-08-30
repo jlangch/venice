@@ -537,7 +537,7 @@ public class SpecialForms_LoadCodeMacros {
     }
 
     private static boolean isQuotedSymbol(final VncVal v) {
-       if (Types.isVncSequence(v)) {
+        if (Types.isVncSequence(v)) {
             VncSequence seq = (VncSequence)v;
             if (seq.size() == 2) {
                    VncVal v1 = seq.first();
@@ -547,7 +547,7 @@ public class SpecialForms_LoadCodeMacros {
                            && "quote".equals(((VncSymbol)v1).getValue())
                            && Types.isVncSymbol(v2);
             }
-       }
+        }
 
         return false;
     }
@@ -591,6 +591,8 @@ public class SpecialForms_LoadCodeMacros {
         final VncBoolean force;
         final VncVector alias;
     }
+
+
 
     ///////////////////////////////////////////////////////////////////////////
     // types_ns is namespace of type functions

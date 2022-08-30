@@ -33,7 +33,7 @@ import com.github.jlangch.venice.impl.types.collections.VncMap;
 
 public class Namespace implements Serializable {
 
-	public Namespace(final VncSymbol ns) {
+    public Namespace(final VncSymbol ns) {
         this.ns = ns == null ? Namespaces.NS_USER : ns;
     }
 
