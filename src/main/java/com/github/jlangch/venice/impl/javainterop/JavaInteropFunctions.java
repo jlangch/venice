@@ -138,7 +138,7 @@ public class JavaInteropFunctions {
                     .doc(
                         "Proxifies a Java interface to be passed as a Callback object to " +
                         "Java functions. The interface's methods are implemented by Venice " +
-                        "functions. \n" +
+                        "functions. \n\n" +
                         "The dynamic invocation handler takes care that the methods are " +
                         "called in the context of Venice sandbox even if the Java method " +
                         "that invokes the callback methods is running in another thread.\n\n" +
