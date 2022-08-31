@@ -30,6 +30,8 @@ import java.io.OutputStream;
 import java.nio.ByteBuffer;
 import java.nio.charset.Charset;
 import java.nio.file.OpenOption;
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -153,6 +155,15 @@ public class ZipLoadPath extends LoadPath {
         }
 
         return false;  // not supported
+    }
+
+    @Override
+    public String toString() {
+    	List<String> list = new ArrayList<>(entries);
+    	Collections.sort(list);
+    	list = list.subList(0, Math.min(6, list.size()));
+
+    	return String.join("\n", list);
     }
 
 

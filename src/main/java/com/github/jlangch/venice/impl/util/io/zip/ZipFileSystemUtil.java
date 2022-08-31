@@ -22,9 +22,11 @@
 package com.github.jlangch.venice.impl.util.io.zip;
 
 import java.io.BufferedReader;
+import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.StringReader;
 import java.nio.ByteBuffer;
 import java.nio.charset.Charset;
 import java.nio.file.FileSystem;
@@ -110,7 +112,9 @@ public class ZipFileSystemUtil {
 
         try {
             try (FileSystem zipFS = mountZip(zip)) {
-                return Files.newInputStream(zipFS.getPath(file.getPath()));
+                // The Inflater used with the zipFS is closed, create new stream
+                final byte[] data = Files.readAllBytes(zipFS.getPath(file.getPath()));
+                return new ByteArrayInputStream(data);
             }
         }
         catch(Exception ex) {
@@ -134,7 +138,9 @@ public class ZipFileSystemUtil {
 
         try {
             try (FileSystem zipFS = mountZip(zip)) {
-                return Files.newBufferedReader(zipFS.getPath(file.getPath()), charset);
+                // The Inflater used with the zipFS is closed, create new reader
+                final byte[] data = Files.readAllBytes(zipFS.getPath(file.getPath()));
+                return new BufferedReader(new StringReader(new String(data, charset)));
             }
         }
         catch(Exception ex) {

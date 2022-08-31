@@ -50,7 +50,12 @@ public class FileLoadPath extends LoadPath {
         }
 
         final File f = canonical(file);
-        return lpFile.equals(f);
+        if (lpFile.equals(f)) {
+        	return true;
+        }
+        else {
+        	return file.getParent() == null && lpFile.getName().equals(file.getName());
+        }
     }
 
     @Override
@@ -63,6 +68,14 @@ public class FileLoadPath extends LoadPath {
         if (lpFile.equals(f) && f.isFile()) {
             try {
                 return ByteBuffer.wrap(Files.readAllBytes(f.toPath()));
+            }
+            catch(IOException ex) {
+                return null; // just proceed and try with next load path
+            }
+        }
+        else if ((file.getParent() == null) && lpFile.getName().equals(file.getName())) {
+            try {
+                return ByteBuffer.wrap(Files.readAllBytes(lpFile.toPath()));
             }
             catch(IOException ex) {
                 return null; // just proceed and try with next load path
@@ -87,6 +100,14 @@ public class FileLoadPath extends LoadPath {
                 return null; // just proceed and try with next load path
             }
         }
+        else if ((file.getParent() == null) && lpFile.getName().equals(file.getName())) {
+            try {
+                return Files.newInputStream(lpFile.toPath());
+            }
+            catch(IOException ex) {
+                return null; // just proceed and try with next load path
+            }
+        }
 
         return null;
     }
@@ -101,6 +122,14 @@ public class FileLoadPath extends LoadPath {
         if (lpFile.equals(f) && f.isFile()) {
             try {
                 return Files.newBufferedReader(f.toPath(), charset);
+            }
+            catch(IOException ex) {
+                return null; // just proceed and try with next load path
+            }
+        }
+        else if ((file.getParent() == null) && lpFile.getName().equals(file.getName())) {
+            try {
+                return Files.newBufferedReader(lpFile.toPath(), charset);
             }
             catch(IOException ex) {
                 return null; // just proceed and try with next load path
@@ -131,6 +160,11 @@ public class FileLoadPath extends LoadPath {
         }
 
         return false;
+    }
+
+    @Override
+    public String toString() {
+    	return lpFile.getPath();
     }
 
 

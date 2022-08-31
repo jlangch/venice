@@ -173,6 +173,10 @@ public class DirectoryLoadPath extends LoadPath {
         return isOnPath(file) && file.isDirectory();
     }
 
+    @Override
+    public String toString() {
+    	return dir.getPath();
+    }
 
     private File realFile(final File file) {
         return file.isAbsolute() ? file : new File(dir, file.getPath());

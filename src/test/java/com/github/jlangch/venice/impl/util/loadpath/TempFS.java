@@ -26,6 +26,7 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.StandardOpenOption;
+import java.util.Arrays;
 import java.util.Comparator;
 import java.util.HashMap;
 import java.util.Map;
@@ -33,6 +34,8 @@ import java.util.function.BiConsumer;
 
 import com.github.jlangch.venice.impl.util.io.CharsetUtil;
 import com.github.jlangch.venice.impl.util.io.zip.Zipper;
+import com.github.jlangch.venice.javainterop.AcceptAllInterceptor;
+import com.github.jlangch.venice.javainterop.LoadPathsFactory;
 
 /**
  * Creates a set of files on the temp directory:
@@ -96,11 +99,26 @@ public class TempFS {
         return root;
     }
 
+    public AcceptAllInterceptor createSandbox(boolean unlimited) {
+    	return new AcceptAllInterceptor(
+    					LoadPathsFactory.of(
+					           Arrays.asList(
+						           new File(root, "res1.txt"),
+					               new File(root, "dir1"),
+					               new File(root, "dir1/res2.txt"),
+					               new File(root, "dir1/res3.txt"),
+					               new File(root, "zip1.zip"),
+					               new File(root, "dir1/zip2.zip")),
+					           unlimited));
+    }
+
     private TempFS init() {
         try {
-            final File dir1 = new File(root, "dir1");
-            final File dir2 = new File(root, "dir2");
+            final File dir1  = new File(root, "dir1");
+            final File dir11 = new File(root, "dir1/11");
+            final File dir2  = new File(root, "dir2");
             dir1.mkdir();
+            dir11.mkdir();
             dir2.mkdir();
 
             // venice files
@@ -117,15 +135,25 @@ public class TempFS {
 
             writeText("dir1/res3.txt", "res3");
 
+            writeText("dir1/11/res4.txt", "res4");
+
+
+            writeText("dir2/res5.txt", "res5");
+
             writeZip(
             	"zip1.zip",
-            	"z11-res11.txt",        "res11",
-            	"dir-z1/z12-res12.txt", "res12");
+            	"res11.txt",        "res11",
+            	"dir-z1/res12.txt", "res12");
 
             writeZip(
             	"dir1/zip2.zip",
-            	"z21-res21.txt",    "res21",
+            	"res21.txt",        "res21",
             	"dir-z2/res22.txt", "res22");
+
+            writeZip(
+            	"dir2/zip3.zip",
+            	"res31.txt",        "res31",
+            	"dir-z3/res32.txt", "res32");
         }
         catch(IOException ex) {
             remove();
