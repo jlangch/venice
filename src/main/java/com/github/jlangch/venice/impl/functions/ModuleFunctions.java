@@ -67,26 +67,26 @@ public class ModuleFunctions {
                         "| :encoding e | e.g :encoding :utf-8, defaults to :utf-8 |\n\n" +
                         "See the `load-paths` doc for a description of the *load path* feature.")
                     .examples(
-                            "(do                                                 \n" +
-                            "  ;; With load-paths: [/users/foo/images]           \n" +
-                            "  ;;        -> loads: /users/foo/images/coffee.png  \n" +
-                            "  (load-resource \"coffee.png\")  ; relative        \n" +
-                            ")",
-                            "(do                                                            \n" +
-                            "  ;; With load-paths: [/users/foo/images]                      \n" +
-                            "  ;;        -> loads: /users/foo/images/coffee.png             \n" +
-                            "  (load-resource \"/users/foo/images/coffee.png\")  ; absolute \n" +
-                            ")",
-                            "(do                                                                 \n" +
-                            "  ;; With load-paths: [/users/foo/images]                           \n" +
-                            "  ;;        -> loads: /users/foo/images/small/coffee.png            \n" +
-                            "  (load-resource \"small/coffee.png\")  ; relative in sub directory \n" +
-                            ")",
-                            "(do                                                              \n" +
-                            "  ;; With load-paths: [/users/foo/images.zip]                    \n" +
-                            "  ;;        -> loads: /users/foo/images.zip!small/coffee.png     \n" +
-                            "  (load-resource \"small/coffee.png\")  ; in ZIP                 \n" +
-                            ")")
+                        "(do                                                 \n" +
+                        "  ;; With load-paths: [/users/foo/images]           \n" +
+                        "  ;;        -> loads: /users/foo/images/coffee.png  \n" +
+                        "  (load-resource \"coffee.png\")  ; relative        \n" +
+                        ")",
+                        "(do                                                            \n" +
+                        "  ;; With load-paths: [/users/foo/images]                      \n" +
+                        "  ;;        -> loads: /users/foo/images/coffee.png             \n" +
+                        "  (load-resource \"/users/foo/images/coffee.png\")  ; absolute \n" +
+                        ")",
+                        "(do                                                                 \n" +
+                        "  ;; With load-paths: [/users/foo/images]                           \n" +
+                        "  ;;        -> loads: /users/foo/images/small/coffee.png            \n" +
+                        "  (load-resource \"small/coffee.png\")  ; relative in sub directory \n" +
+                        ")",
+                        "(do                                                              \n" +
+                        "  ;; With load-paths: [/users/foo/images.zip]                    \n" +
+                        "  ;;        -> loads: /users/foo/images.zip!small/coffee.png     \n" +
+                        "  (load-resource \"small/coffee.png\")  ; in ZIP                 \n" +
+                        ")")
                     .seeAlso("load-paths", "load-file")
                     .build()
         ) {
