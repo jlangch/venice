@@ -31,7 +31,6 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 import com.github.jlangch.venice.Venice;
-import com.github.jlangch.venice.impl.sandbox.RestrictedBlacklistedFunctions;
 
 
 /**
@@ -347,18 +346,7 @@ public class SandboxRules {
                     r = r.substring("core/".length());  // strip core
                 }
 
-                if (RestrictedBlacklistedFunctions.isIoAsteriskFunction(r)) {
-                    if (r.endsWith("*")) {
-                        r = r.substring(0, r.length()-1);  // strip '*'
-                    }
-
-                    // !!! Must add both versions like: "load-file" and "load-file*"
-                    this.rules.add(prefix + r);
-                    this.rules.add(prefix + r + "*");
-               }
-                else {
-                    this.rules.add(prefix + r);
-                }
+                this.rules.add(prefix + r);
             });
         }
         return this;
@@ -412,18 +400,7 @@ public class SandboxRules {
                     r = r.substring("core/".length());  // strip core
                 }
 
-                if (RestrictedBlacklistedFunctions.isIoAsteriskFunction(r)) {
-                    if (r.endsWith("*")) {
-                        r = r.substring(1);  // strip '*'
-                    }
-
-                    // !!! Must add both versions like: "load-file" and "load-file*"
-                    this.rules.add(prefix + r);
-                    this.rules.add(prefix + r + "*");
-               }
-                else {
-                    this.rules.add(prefix + r);
-                }
+                this.rules.add(prefix + r);
             });
         }
         return this;

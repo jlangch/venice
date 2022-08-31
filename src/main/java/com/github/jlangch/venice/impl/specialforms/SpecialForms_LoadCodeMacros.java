@@ -30,12 +30,13 @@ import java.util.Map;
 
 import com.github.jlangch.venice.VncException;
 import com.github.jlangch.venice.impl.IVeniceInterpreter;
+import com.github.jlangch.venice.impl.ModuleLoader;
 import com.github.jlangch.venice.impl.Printer;
 import com.github.jlangch.venice.impl.env.Env;
-import com.github.jlangch.venice.impl.functions.ModuleFunctions;
 import com.github.jlangch.venice.impl.namespaces.Namespace;
 import com.github.jlangch.venice.impl.namespaces.Namespaces;
 import com.github.jlangch.venice.impl.specialforms.util.SpecialFormsContext;
+import com.github.jlangch.venice.impl.thread.ThreadContext;
 import com.github.jlangch.venice.impl.types.VncBoolean;
 import com.github.jlangch.venice.impl.types.VncKeyword;
 import com.github.jlangch.venice.impl.types.VncSpecialForm;
@@ -50,6 +51,7 @@ import com.github.jlangch.venice.impl.types.util.Coerce;
 import com.github.jlangch.venice.impl.types.util.Types;
 import com.github.jlangch.venice.impl.util.ArityExceptions.FnType;
 import com.github.jlangch.venice.impl.util.SymbolMapBuilder;
+import com.github.jlangch.venice.javainterop.IInterceptor;
 
 
 /**
@@ -179,7 +181,11 @@ public class SpecialForms_LoadCodeMacros {
                         final boolean load = VncBoolean.isTrue(force) || !loadedModules.contains(moduleName);
 
                         if (load) {
-                            final VncString code = (VncString)ModuleFunctions.loadModule.applyOf(moduleName);
+                            // sandbox: validate module load
+                            final IInterceptor interceptor = ThreadContext.getInterceptor();
+                            interceptor.validateLoadModule(moduleName.getValue());
+
+                            final VncString code = new VncString(ModuleLoader.loadModule(moduleName.getValue()));
 
                             @SuppressWarnings("unused")
                             VncVal ast = loadCode(
@@ -206,6 +212,12 @@ public class SpecialForms_LoadCodeMacros {
                                     .addAtEnd(moduleName)
                                     .addAtEnd(new VncKeyword(load ? "loaded" : "already-loaded"));
                     }
+	                catch (VncException ex) {
+	                    throw ex;
+	                }
+	                catch (Exception ex) {
+	                    throw new VncException("Failed to load the Venice module '" + args.first() + "'", ex);
+	                }
                     finally {
                          Namespaces.setCurrentNamespace(currNS);
                     }
@@ -285,7 +297,12 @@ public class SpecialForms_LoadCodeMacros {
                         final boolean load = VncBoolean.isTrue(force) || !loadedFunction.contains(fileName);
 
                         if (load) {
-                            final VncString code = (VncString)ModuleFunctions.loadFile.applyOf(fileName);
+                            final String data = ModuleLoader.loadExternalVeniceFile(fileName.getValue());
+                            if (data == null ) {
+                                throw new VncException("Failed to load Venice file");
+                            }
+
+                            final VncString code = new VncString(data);
 
                             @SuppressWarnings("unused")
                             VncVal ast = loadCode(
@@ -311,7 +328,13 @@ public class SpecialForms_LoadCodeMacros {
                                     .empty()
                                     .addAtEnd(fileName)
                                     .addAtEnd(new VncKeyword(load ? "loaded" : "already-loaded"));
-                     }
+                    }
+	                catch (VncException ex) {
+	                    throw ex;
+	                }
+	                catch (Exception ex) {
+	                    throw new VncException("Failed to load the Venice file '" + args.first() + "'", ex);
+	                }
                     finally {
                          Namespaces.setCurrentNamespace(currNS);
                     }
@@ -392,7 +415,12 @@ public class SpecialForms_LoadCodeMacros {
                         final boolean load = VncBoolean.isTrue(force) || !loadedFunction.contains(fileName);
 
                         if (load) {
-                            final VncString code = (VncString)ModuleFunctions.loadClasspathFile.applyOf(fileName);
+                            final String res = ModuleLoader.loadClasspathVeniceFile(fileName.getValue());
+                            if (res == null ) {
+                                throw new VncException("Failed to load Venice classpath file");
+                            }
+
+                            final VncString code = new VncString(res);
 
                             @SuppressWarnings("unused")
                             VncVal ast = loadCode(
@@ -419,6 +447,12 @@ public class SpecialForms_LoadCodeMacros {
                                     .addAtEnd(fileName)
                                     .addAtEnd(new VncKeyword(load ? "loaded" : "already-loaded"));
                     }
+                }
+                catch (VncException ex) {
+                    throw ex;
+                }
+                catch (Exception ex) {
+                    throw new VncException("Failed to load the Venice classpath file '" + args.first() + "'", ex);
                 }
                 finally {
                      Namespaces.setCurrentNamespace(currNS);

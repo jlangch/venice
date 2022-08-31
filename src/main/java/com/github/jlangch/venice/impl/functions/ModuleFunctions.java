@@ -21,8 +21,6 @@
  */
 package com.github.jlangch.venice.impl.functions;
 
-import static com.github.jlangch.venice.impl.types.Constants.Nil;
-
 import java.io.File;
 import java.nio.ByteBuffer;
 import java.nio.charset.Charset;
@@ -30,7 +28,6 @@ import java.util.Map;
 import java.util.stream.Collectors;
 
 import com.github.jlangch.venice.VncException;
-import com.github.jlangch.venice.impl.ModuleLoader;
 import com.github.jlangch.venice.impl.thread.ThreadContext;
 import com.github.jlangch.venice.impl.types.VncBoolean;
 import com.github.jlangch.venice.impl.types.VncByteBuffer;
@@ -42,7 +39,6 @@ import com.github.jlangch.venice.impl.types.VncSymbol;
 import com.github.jlangch.venice.impl.types.VncVal;
 import com.github.jlangch.venice.impl.types.collections.VncHashMap;
 import com.github.jlangch.venice.impl.types.collections.VncList;
-import com.github.jlangch.venice.impl.types.util.Coerce;
 import com.github.jlangch.venice.impl.types.util.Types;
 import com.github.jlangch.venice.impl.util.ArityExceptions;
 import com.github.jlangch.venice.impl.util.SymbolMapBuilder;
@@ -57,152 +53,12 @@ public class ModuleFunctions {
     // Module load functions
     ///////////////////////////////////////////////////////////////////////////
 
-    public static VncFunction loadModule =
-        new VncFunction(
-                "load-module*",
-                VncFunction
-                    .meta()
-                    .arglists("(load-module* name)")
-                    .doc(
-                        "Loads a Venice extension module. Returns the module as an " +
-                        "unevaluted string. Throws a `VncException` if the module " +
-                        "does not exist.")
-                    .build()
-        ) {
-            @Override
-            public VncVal apply(final VncList args) {
-                ArityExceptions.assertArity(this, args, 1);
-
-                sandboxFunctionCallValidation();
-
-                final String name = Coerce.toVncString(CoreFunctions.name.apply(args)).getValue();
-
-                try {
-                    // sandbox: validate module load
-                    final IInterceptor interceptor = ThreadContext.getInterceptor();
-                    interceptor.validateLoadModule(name);
-
-                    return new VncString(ModuleLoader.loadModule(name));
-                }
-                catch (VncException ex) {
-                    throw ex;
-                }
-                catch (Exception ex) {
-                    throw new VncException(
-                                String.format("Failed to load Venice module '%s'", name),
-                                ex);
-                }
-            }
-
-            @Override
-            public boolean isRedefinable() {
-                return false;  // security
-            }
-
-            private static final long serialVersionUID = -1848883965231344442L;
-        };
-
-    public static VncFunction loadClasspathFile =
-        new VncFunction(
-                "load-classpath-file*",
-                VncFunction
-                    .meta()
-                    .arglists("(load-classpath-file* name)")
-                    .doc(
-                        "Loads a Venice file from the classpath.\n\n" +
-                        "Returns the loaded Venice code as an unevaluated `string` if the " +
-                        "file exists.\n\n" +
-                        "Throws a `VncException` if the name of the passed file does not " +
-                        "have the file extension '.venice' or if the file does not exist.")
-                    .build()
-        ) {
-            @Override
-            public VncVal apply(final VncList args) {
-                ArityExceptions.assertArity(this, args, 1);
-
-                sandboxFunctionCallValidation();
-
-                try {
-                    final String file = name(args.first());
-
-                    if (file != null) {
-                        final String res = ModuleLoader.loadClasspathVeniceFile(file);
-                        if (res == null ) {
-                            throw new VncException("Failed to load Venice classpath file");
-                        }
-                        else {
-                            return new VncString(res);
-                        }
-                    }
-                    else {
-                        return Nil;
-                    }
-                }
-                catch (VncException ex) {
-                    throw ex;
-                }
-                catch (Exception ex) {
-                    throw new VncException("Failed to load Venice classpath file", ex);
-                }
-            }
-
-            @Override
-            public boolean isRedefinable() {
-                return false;  // security
-            }
-
-            private static final long serialVersionUID = -1848883965231344442L;
-        };
-
-    public static VncFunction loadFile =
-        new VncFunction(
-                "load-file*",
-                VncFunction
-                    .meta()
-                    .arglists("(load-file* file)")
-                    .doc(
-                        "Loads a venice file from the given load-paths.\n\n" +
-                        "Returns the loaded Venice code as as an unevaluated `string` if " +
-                        "the file exists.\n\n" +
-                        "Throws a `VncException` if the name of the passed file does not " +
-                        "have the file extension '.venice' or if the file does not exist.\n\n" +
-                        "See the `load-paths` doc for a description of the *load path* feature.")
-                    .seeAlso("load-paths", "load-resource*")
-                    .build()
-        ) {
-            @Override
-            public VncVal apply(final VncList args) {
-                ArityExceptions.assertArity(this, args, 1);
-
-                sandboxFunctionCallValidation();
-
-                final String file = name(args.first());
-                try {
-                    final String data = ModuleLoader.loadExternalVeniceFile(file);
-                    return new VncString(data);
-                }
-                catch (VncException ex) {
-                    throw ex;
-                }
-                catch (Exception ex) {
-                    throw new VncException("Failed to load the Venice file '" + file + "'", ex);
-                }
-            }
-
-            @Override
-            public boolean isRedefinable() {
-                return false;  // security
-            }
-
-            private static final long serialVersionUID = -1848883965231344442L;
-        };
-
     public static VncFunction loadResource =
         new VncFunction(
-                "load-resource*",
+                "load-resource",
                 VncFunction
                     .meta()
-                    .arglists("(load-resource* file & options)")
+                    .arglists("(load-resource file & options)")
                     .doc(
                         "Loads a resource from the given load-paths. Returns a string, a bytebuffer " +
                         "or nil if the file does not exist. \n\n" +
@@ -210,6 +66,27 @@ public class ModuleFunctions {
                         "| :binary b   | e.g :binary true, defaults to true |\n" +
                         "| :encoding e | e.g :encoding :utf-8, defaults to :utf-8 |\n\n" +
                         "See the `load-paths` doc for a description of the *load path* feature.")
+                    .examples(
+                            "(do                                                 \n" +
+                            "  ;; With load-paths: [/users/foo/images]           \n" +
+                            "  ;;        -> loads: /users/foo/images/coffee.png  \n" +
+                            "  (load-resource \"coffee.png\")  ; relative        \n" +
+                            ")",
+                            "(do                                                            \n" +
+                            "  ;; With load-paths: [/users/foo/images]                      \n" +
+                            "  ;;        -> loads: /users/foo/images/coffee.png             \n" +
+                            "  (load-resource \"/users/foo/images/coffee.png\")  ; absolute \n" +
+                            ")",
+                            "(do                                                                 \n" +
+                            "  ;; With load-paths: [/users/foo/images]                           \n" +
+                            "  ;;        -> loads: /users/foo/images/small/coffee.png            \n" +
+                            "  (load-resource \"small/coffee.png\")  ; relative in sub directory \n" +
+                            ")",
+                            "(do                                                              \n" +
+                            "  ;; With load-paths: [/users/foo/images.zip]                    \n" +
+                            "  ;;        -> loads: /users/foo/images.zip!small/coffee.png     \n" +
+                            "  (load-resource \"small/coffee.png\")  ; in ZIP                 \n" +
+                            ")")
                     .seeAlso("load-paths", "load-file*")
                     .build()
         ) {
@@ -366,10 +243,7 @@ public class ModuleFunctions {
 
     public static Map<VncVal, VncVal> ns =
             new SymbolMapBuilder()
-                    .add(loadModule)
-                    .add(loadFile)
                     .add(loadResource)
-                    .add(loadClasspathFile)
                     .add(loadPaths)
                     .add(loadPathsUnrestricted_Q)
                     .toMap();

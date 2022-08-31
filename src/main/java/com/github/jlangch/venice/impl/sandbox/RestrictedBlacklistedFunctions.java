@@ -45,39 +45,14 @@ public class RestrictedBlacklistedFunctions {
         return ALL.contains(funcName);
     }
 
-    public static boolean isIoAsteriskFunction(final String funcName) {
-        String fnName = funcName;
-        if (fnName.startsWith("core/")) {
-            fnName.substring("core/".length());
-        }
-
-        if (fnName.endsWith("**")) {
-            return false;  // ends with more than one asterisk
-        }
-
-        return SPECIAL_FORM_ASTERISKS.contains(fnName);
-    }
-
-
-    private static Set<String> SPECIAL_FORM_ASTERISKS =
-        new HashSet<>(
-            Arrays.asList(
-                // load
-                "load-module",
-                "load-module*",
-                "load-file",
-                "load-file*",
-                "load-classpath-file",
-                "load-classpath-file*",
-                "load-resource",
-                "load-resource*"));
-
     private static Set<String> IO =
         new HashSet<>(
             Arrays.asList(
                 // miscellaneous
-                "fn-body",
-                "fn-pre-conditions",
+                "fn-body",              // from core functions
+                "fn-pre-conditions",    // from core functions
+                "load-resource",        // from module functions
+
 
                 // print
                 "print",
@@ -324,9 +299,7 @@ public class RestrictedBlacklistedFunctions {
     ));
 
     private static Set<String> SPECIAL_FORMS =
-            mergeToSet(
-                SPECIAL_FORM_ASTERISKS,
-
+            new HashSet<>(
                 Arrays.asList(
                     "dobench",
                     "dorun",
