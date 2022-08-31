@@ -15,6 +15,7 @@ and this project adheres to
 ### Added
 
 - function `partition-all`
+- load path support for `io/slurp` and `io/spit`
 
 ### Improved
 
