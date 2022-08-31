@@ -158,10 +158,10 @@ public class LoadPaths_slurp_Test {
 
             // URL/URI ----------------------------------------------------------------------
 
-            // URL (not allowed with limited load paths)
+            // URL
             assertNotNull(venice.eval("(io/slurp (io/->url \"http://www.google.com/robots.txt\"))"));
 
-            // URI (not allowed with limited load paths)
+            // URI
             assertNotNull(venice.eval("(io/slurp (io/->uri \"http://www.google.com/robots.txt\"))"));
         });
     }
