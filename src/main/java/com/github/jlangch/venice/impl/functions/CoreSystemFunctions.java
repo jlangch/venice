@@ -352,11 +352,14 @@ public class CoreSystemFunctions {
                         "(sleep n time-unit)")
                     .doc(
                         "Sleep for the time n. The default time unit is milliseconds.¶" +
-                        "Time unit is one of :milliseconds, :seconds, :minutes, :hours, or :days. ")
+                        "Time unit is one of :milliseconds, :seconds, :minutes, :hours, or :days or " +
+                        "their abbreviations :msec, :ms, :sec, :s, :min, :hr, :h, :d.")
                     .examples(
                         "(sleep 30)",
                         "(sleep 30 :milliseconds)",
-                        "(sleep 5 :seconds)")
+                        "(sleep 30 :msec)",
+                        "(sleep 5 :seconds)",
+                        "(sleep 5 :sec)")
                     .build()
         ) {
             @Override
@@ -405,14 +408,29 @@ public class CoreSystemFunctions {
 
     private static TimeUnit toTimeUnit(final VncKeyword unit) {
         switch(unit.getValue()) {
-            case "milliseconds": return TimeUnit.MILLISECONDS;
-            case "seconds": return TimeUnit.SECONDS;
-            case "minutes":  return TimeUnit.MINUTES;
-            case "hours": return TimeUnit.HOURS;
-            case "days": return TimeUnit.DAYS;
-            default: throw new VncException(
-                        "Invalid scheduler time-unit " + unit.getValue() + ". "
-                            + "Use one of {:milliseconds, :seconds, :minutes, :hours, :days}");
+            case "milliseconds":
+            case "msec":
+            case "ms":
+            	return TimeUnit.MILLISECONDS;
+            case "seconds":
+            case "sec":
+            case "s":
+            	return TimeUnit.SECONDS;
+            case "minutes":
+            case "min":
+            	return TimeUnit.MINUTES;
+            case "hours":
+            case "hr":
+            case "h":
+            	return TimeUnit.HOURS;
+            case "days":
+            case "d":
+            	return TimeUnit.DAYS;
+            default:
+            	throw new VncException(
+                        "Invalid scheduler time-unit " + unit.toString() + ". "
+                            + "Use one of {:milliseconds, :seconds, :minutes, :hours, :days} "
+                        	+ "or the abbreviations {:msec, :ms, :sec, :s, :min, :hr, :h, :d}");
         }
     }
 
