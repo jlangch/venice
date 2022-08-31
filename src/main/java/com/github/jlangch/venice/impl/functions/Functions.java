@@ -44,13 +44,39 @@ import com.github.jlangch.venice.impl.types.VncVal;
 public class Functions {
 
     public static void main(String[] args){
-        System.out.println(
-                String.join(",\n", getSpecialForms()));
+        System.out.println("// SpecialForms:");
+        System.out.print(String.join(",\n", getSpecialForms()));
+        System.out.println(",\n");
 
         System.out.println();
+        System.out.println("// I/O:");
+        System.out.print(String.join(",\n", getIoFunctions()));
+        System.out.println(",\n");
 
-        System.out.println(
-                String.join(",\n", getIoFunctions()));
+        System.out.println();
+        System.out.println("// Concurrency:");
+        System.out.print(String.join(",\n", getVncFunctions(ConcurrencyFunctions.ns)));
+        System.out.println(",\n");
+
+        System.out.println();
+        System.out.println("// Java Interop");
+        System.out.print(String.join(",\n", getVncFunctions(JavaInteropFunctions.ns)));
+        System.out.println(",\n");
+
+        System.out.println();
+        System.out.println("// Scheduler");
+        System.out.print(String.join(",\n", getVncFunctions(ScheduleFunctions.ns)));
+        System.out.println(",\n");
+
+        System.out.println();
+        System.out.println("// System");
+        System.out.print(String.join(",\n", getVncFunctions(SystemFunctions.ns)));
+        System.out.println(",\n");
+
+        System.out.println();
+        System.out.println("// Shell");
+        System.out.print(String.join(",\n", getVncFunctions(ShellFunctions.ns)));
+        System.out.println("\n");
     }
 
     public static List<String> getSpecialForms() {
@@ -68,10 +94,19 @@ public class Functions {
                 .values()
                 .stream()
                 .filter(f -> (f instanceof VncFunction)
-                				&& "io".equals(((VncFunction)f).getNamespace()))
+                                && "io".equals(((VncFunction)f).getNamespace()))
                 .map(f -> "\"" + ((VncFunction)f).getQualifiedName() + "\"")
                 .sorted()
                 .collect(Collectors.toList());
+    }
+
+    public static List<String> getVncFunctions(final Map<VncVal, VncVal> ns) {
+        return ns.values()
+                 .stream()
+                 .filter(f -> (f instanceof VncFunction))
+                 .map(f -> "\"" + ((VncFunction)f).getQualifiedName() + "\"")
+                 .sorted()
+                 .collect(Collectors.toList());
     }
 
     public static final Map<VncVal,VncVal> functions = new HashMap<>();
@@ -88,6 +123,7 @@ public class Functions {
         functions.putAll(SpecialForms_LoadCodeMacros.ns);
 
         functions.putAll(CoreFunctions.ns);
+        functions.putAll(CoreSystemFunctions.ns);
         functions.putAll(ExceptionFunctions.ns);
         functions.putAll(BytebufFunctions.ns);
         functions.putAll(TransducerFunctions.ns);

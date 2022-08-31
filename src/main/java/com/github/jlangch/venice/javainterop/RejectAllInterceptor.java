@@ -194,7 +194,7 @@ public class RejectAllInterceptor extends Interceptor {
     ) throws SecurityException {
         if (RestrictedBlacklistedFunctions.contains(funcName)) {
             throw new SecurityException(String.format(
-                    "%s: Access denied to Venice function %s.",
+                    "%s: Access denied to Venice function '%s'!",
                     PREFIX,
                     funcName));
         }
@@ -206,7 +206,7 @@ public class RejectAllInterceptor extends Interceptor {
     ) throws SecurityException {
         if (!SandboxRules.DEFAULT_WHITELISTED_MODULES.contains(moduleName)) {
             throw new SecurityException(String.format(
-                    "%s: Access denied to Venice module %s.",
+                    "%s: Access denied to Venice module :%s!",
                     PREFIX,
                     moduleName));
         }

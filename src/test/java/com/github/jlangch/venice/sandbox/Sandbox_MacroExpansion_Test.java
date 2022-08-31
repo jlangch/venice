@@ -104,10 +104,9 @@ public class Sandbox_MacroExpansion_Test {
         }
         catch(SecurityException ex) {
             assertEquals(
-                "Venice Sandbox (RejectAllInterceptor): Access denied to target java.lang.System. File <test> (6,7)",
+                "Venice Sandbox (RejectAllInterceptor): Access denied to Venice function '.'!",
                 ex.getMessage());
         }
     }
-
 
 }

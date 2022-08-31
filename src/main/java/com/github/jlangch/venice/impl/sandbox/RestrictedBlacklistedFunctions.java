@@ -55,11 +55,11 @@ public class RestrictedBlacklistedFunctions {
             return false;  // ends with more than one asterisk
         }
 
-        return IO_ASTERISKS.contains(fnName);
+        return SPECIAL_FORM_ASTERISKS.contains(fnName);
     }
 
 
-    private static Set<String> IO_ASTERISKS =
+    private static Set<String> SPECIAL_FORM_ASTERISKS =
         new HashSet<>(
             Arrays.asList(
                 // load
@@ -73,10 +73,12 @@ public class RestrictedBlacklistedFunctions {
                 "load-resource*"));
 
     private static Set<String> IO =
-        mergeToSet(
-            IO_ASTERISKS,
-
+        new HashSet<>(
             Arrays.asList(
+                // miscellaneous
+                "fn-body",
+                "fn-pre-conditions",
+
                 // print
                 "print",
                 "printf",
@@ -89,66 +91,8 @@ public class RestrictedBlacklistedFunctions {
                 "read-line",
                 "read-char",
 
-                // classloader
-                "load-jar",
-                "classloader",
-                "classloader-of",
 
-                // system
-                "callstack",
-                "gc",
-                "pid",
-                "sh",
-                "sh/open",
-                "sh/pwd",
-                "shutdown-hook",
-                "system-env",
-                "system-prop",
-                "total-memory",
-                "used-memory",
-                "user-name",
-
-                // concurrency
-                "deliver",
-                "future",
-                "future?",
-                "future-cancel",
-                "future-cancelled?",
-                "future-done?",
-                "futures-fork",
-                "futures-wait",
-                "promise",
-                "promise?",
-                "agent",
-                "send",
-                "send-off",
-                "restart-agent",
-                "set-error-handler!",
-                "agent-error",
-                "agent-error-mode",
-                "await",
-                "await-for",
-                "shutdown-agents",
-                "shutdown-agents?",
-                "await-termination-agents",
-                "await-termination-agents?",
-                "thread",
-
-                // scheduler
-                "schedule-delay",
-                "schedule-at-fixed-rate",
-
-                // thread-local
-                "thread-local",
-                "thread-local?",
-                "thread-local-map",
-                "thread-local-clear",
-
-                // miscellaneous
-                "fn-body",
-                "fn-pre-conditions",
-
-                // I/O
+                // I/O:
                 "io/->uri",
                 "io/->url",
                 "io/await-for",
@@ -242,23 +186,168 @@ public class RestrictedBlacklistedFunctions {
                 "io/zip-list-entry-names",
                 "io/zip-remove",
                 "io/zip-size",
-                "io/zip?"));
+                "io/zip?",
+
+                // Concurrency:
+                "accept-either",
+                "add-watch",
+                "agent",
+                "agent-error",
+                "agent-error-mode",
+                "agent-send-off-thread-pool-info",
+                "agent-send-thread-pool-info",
+                "all-of",
+                "any-of",
+                "apply-to-either",
+                "atom",
+                "atom?",
+                "await",
+                "await-for",
+                "await-termination-agents",
+                "await-termination-agents?",
+                "cancel",
+                "cancelled?",
+                "compare-and-set!",
+                "complete-on-timeout",
+                "delay*",
+                "delay?",
+                "deliver",
+                "deliver-ex",
+                "deref",
+                "deref?",
+                "done?",
+                "force",
+                "future",
+                "future-task",
+                "future?",
+                "futures-fork",
+                "futures-thread-pool-info",
+                "futures-wait",
+                "or-timeout",
+                "pcalls",
+                "pmap",
+                "promise",
+                "promise?",
+                "realized?",
+                "remove-watch",
+                "reset!",
+                "restart-agent",
+                "send",
+                "send-off",
+                "set-error-handler!",
+                "shutdown-agents",
+                "shutdown-agents?",
+                "swap!",
+                "swap-vals!",
+                "then-accept",
+                "then-accept-both",
+                "then-apply",
+                "then-combine",
+                "then-compose",
+                "thread",
+                "thread-daemon?",
+                "thread-id",
+                "thread-interrupted",
+                "thread-interrupted?",
+                "thread-local",
+                "thread-local-clear",
+                "thread-local-map",
+                "thread-local?",
+                "thread-name",
+                "timeout-after",
+                "volatile",
+                "volatile?",
+                "when-complete",
+
+                // Java Interop
+                ".",
+                "bases",
+                "cast",
+                "class",
+                "class-name",
+                "class-of",
+                "class-version",
+                "classloader",
+                "classloader-of",
+                "describe-class",
+                "exists-class?",
+                "formal-type",
+                "jar-maven-manifest-version",
+                "java-enumeration-to-list",
+                "java-iterator-to-list",
+                "java-obj?",
+                "java-package-version",
+                "java-unwrap",
+                "java-unwrap-optional",
+                "java-wrap",
+                "module-name",
+                "proxify",
+                "stacktrace",
+                "supers",
+
+                // Scheduler
+                "schedule-at-fixed-rate",
+                "schedule-delay",
+
+                // System
+                "callstack",
+                "cpus",
+                "gc",
+                "host-address",
+                "host-name",
+                "ip-private?",
+                "java-major-version",
+                "java-source-location",
+                "java-version",
+                "java-version-info",
+                "load-jar",
+                "os-arch",
+                "os-name",
+                "os-type",
+                "os-type?",
+                "os-version",
+                "pid",
+                "sandbox-type",
+                "sandboxed?",
+                "shutdown-hook",
+                "system-env",
+                "system-exit-code",
+                "system-prop",
+                "total-memory",
+                "used-memory",
+                "user-name",
+
+                // Shell
+                "sh",
+                "sh/open",
+                "sh/pwd"
+    ));
 
     private static Set<String> SPECIAL_FORMS =
-        new HashSet<>(
-            Arrays.asList(
-                "set!",
-                "ns-remove",
-                "ns-unmap",
-                "resolve",
-                "var-get",
-                "var-ns",
-                "var-name",
-                "inspect",
-                "dorun",
-                "dobench",
-                "prof"));
+            mergeToSet(
+                SPECIAL_FORM_ASTERISKS,
 
+                Arrays.asList(
+                    "dobench",
+                    "dorun",
+                    "inspect",
+                    "load-classpath-file",
+                    "load-file",
+                    "load-module",
+                    "load-string",
+                    "macroexpand-on-load?",
+                    "ns-list",
+                    "ns-remove",
+                    "ns-unmap",
+                    "print-highlight",
+                    "prof",
+                    "set!",
+                    "var-get",
+                    "var-global?",
+                    "var-local?",
+                    "var-name",
+                    "var-ns",
+                    "var-thread-local?"));
 
 
 
