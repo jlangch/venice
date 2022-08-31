@@ -351,7 +351,11 @@ public class IOFunctionsStreams {
                         }
                      }
                     catch (Exception ex) {
-                        throw new VncException("Failed to create a a `java.io.OutputStream` for the file " + file.getPath(), ex);
+                        throw new VncException(
+                        		String.format(
+                        				"Failed to create a `java.io.OutputStream` for the file '%s'",
+                        				file.getPath()),
+                        		ex);
                     }
                 }
                 else {
