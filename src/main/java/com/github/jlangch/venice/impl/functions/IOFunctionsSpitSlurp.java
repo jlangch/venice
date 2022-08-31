@@ -303,7 +303,8 @@ public class IOFunctionsSpitSlurp {
                     else {
                         throw new SecurityException(
                                 "Rejected to slurp data from a :java.net.URL. " +
-                                "The load paths configuration (unlimited access is disabled) prevented this action!");
+                                "The load paths configuration (unlimited access is disabled) " +
+                                "prevented this action!");
                     }
                 }
                 else if (Types.isVncJavaObject(arg, URI.class)) {
@@ -319,7 +320,8 @@ public class IOFunctionsSpitSlurp {
                     else {
                         throw new SecurityException(
                                 "Rejected to slurp data from a :java.net.URI. " +
-                                "The load paths configuration (unlimited access is disabled) prevented this action!");
+                                "The load paths configuration (unlimited access is disabled) " +
+                                "prevented this action!");
                     }
                 }
                 else {

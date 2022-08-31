@@ -2001,6 +2001,15 @@ public class IOFunctions {
                     final VncVal readTimeoutMillisVal = options.get(new VncKeyword("read-timeout"));
                     final Charset charset = CharsetUtil.charset(encVal);
 
+
+                    final URL url = new URL(uri);
+                    final String protocol = url.getProtocol();
+                    if (!("http".equals(protocol) || "https".equals(protocol))) {
+                        throw new VncException(String.format(
+                                "io/download does not support the protocol '%s'! " +
+                                "Please use 'http' or 'https'.", protocol));
+                    }
+
                     progressFn = progressVal == Nil
                                         ? new VncFunction("io/progress-default") {
                                             private static final long serialVersionUID = 1L;
@@ -2011,7 +2020,7 @@ public class IOFunctions {
 
                     updateDownloadProgress(progressFn, 0L, new VncKeyword("start"));
 
-                    final URLConnection conn = new URL(uri).openConnection();
+                    final URLConnection conn = url.openConnection();
                     if (Types.isVncString(useragent)) {
                         conn.addRequestProperty("User-Agent", ((VncString)useragent).getValue());
                     }

@@ -28,7 +28,6 @@ import java.io.BufferedWriter;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
@@ -40,16 +39,19 @@ import java.io.Reader;
 import java.io.StringReader;
 import java.io.StringWriter;
 import java.io.Writer;
+import java.net.MalformedURLException;
+import java.net.URI;
 import java.net.URL;
 import java.nio.ByteBuffer;
 import java.nio.charset.Charset;
-import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.StandardOpenOption;
 import java.util.Map;
 
+import com.github.jlangch.venice.SecurityException;
 import com.github.jlangch.venice.VncException;
 import com.github.jlangch.venice.impl.Printer;
+import com.github.jlangch.venice.impl.thread.ThreadContext;
 import com.github.jlangch.venice.impl.types.VncBoolean;
 import com.github.jlangch.venice.impl.types.VncChar;
 import com.github.jlangch.venice.impl.types.VncFunction;
@@ -65,6 +67,7 @@ import com.github.jlangch.venice.impl.util.ArityExceptions;
 import com.github.jlangch.venice.impl.util.SymbolMapBuilder;
 import com.github.jlangch.venice.impl.util.io.CharsetUtil;
 import com.github.jlangch.venice.impl.util.io.IOStreamUtil;
+import com.github.jlangch.venice.javainterop.ILoadPaths;
 import com.github.jlangch.venice.util.CapturingPrintStream;
 
 
@@ -262,8 +265,23 @@ public class IOFunctionsStreams {
                     sandboxFunctionCallValidation(file, null);
 
                     try {
-                        validateReadableFile(file);
-                        return new VncJavaObject(new FileInputStream(file));
+                        final ILoadPaths loadpaths = ThreadContext.getInterceptor().getLoadPaths();
+
+                        final InputStream is = loadpaths.getInputStream(file);
+                        if (is == null) {
+                            if (file.exists()) {
+                                throw new VncException(
+                                        "Failed to slurp data from the file " + file.getPath() +
+                                        ". The file does not exists!");
+                            }
+                            else {
+                                throw new SecurityException(
+                                        "Failed to slurp data from the file " + file.getPath() +
+                                        ". The load paths configuration prevented this action!");
+                            }
+                        }
+
+                        return new VncJavaObject(is);
                     }
                     catch (Exception ex) {
                         throw new VncException("Failed to create a a `java.io.InputStream` from the file " + file.getPath(), ex);
@@ -311,16 +329,26 @@ public class IOFunctionsStreams {
                     sandboxFunctionCallValidation(null, file);
 
                     try {
-                        validateReadableFile(file);
+                        final ILoadPaths loadpaths = ThreadContext.getInterceptor().getLoadPaths();
 
-                        return new VncJavaObject(
-                                Files.newOutputStream(
-                                        file.toPath(),
-                                        StandardOpenOption.CREATE,
-                                        StandardOpenOption.WRITE,
-                                        VncBoolean.isTrue(append)
-                                            ? StandardOpenOption.APPEND
-                                            : StandardOpenOption.TRUNCATE_EXISTING));
+                        final OutputStream outStream = loadpaths.getOutputStream(
+                                                            file,
+                                                            StandardOpenOption.CREATE,
+                                                            StandardOpenOption.WRITE,
+                                                            VncBoolean.isTrue(append)
+                                                                ? StandardOpenOption.APPEND
+                                                                : StandardOpenOption.TRUNCATE_EXISTING);
+
+                        if (outStream != null) {
+                            return new VncJavaObject(outStream);
+                        }
+                        else {
+                            throw new SecurityException(
+                                    String.format(
+                                            "Failed to spit data to the file %s. " +
+                                            "The load paths configuration prevented this action!",
+                                            file.getPath()));
+                        }
                      }
                     catch (Exception ex) {
                         throw new VncException("Failed to create a a `java.io.OutputStream` for the file " + file.getPath(), ex);
@@ -473,10 +501,47 @@ public class IOFunctionsStreams {
 
                 sandboxFunctionCallValidation();
 
-                final String uri = Coerce.toVncString(args.first()).getValue();
+                final VncVal arg = args.first();
+
+                final ILoadPaths loadpaths = ThreadContext.getInterceptor().getLoadPaths();
+
+                URL url = null;
+                try {
+                    if (Types.isVncString(arg)) {
+                        url = new URL(Coerce.toVncString(arg).getValue());
+                    }
+                    else if (Types.isVncJavaObject(arg, URL.class)) {
+                        url = Coerce.toVncJavaObject(arg, URL.class);
+                    }
+                    else if (Types.isVncJavaObject(arg, URI.class)) {
+                        url = Coerce.toVncJavaObject(arg, URI.class).toURL();
+                    }
+                    else {
+                        throw new VncException(String.format(
+                                "Function 'io/uri-stream' does not allow %s as argument",
+                                Types.getType(arg)));
+                    }
+                }
+                catch (VncException ex) {
+                    throw ex;
+                }
+                catch(MalformedURLException ex) {
+                    throw new VncException(
+                            "Function 'io/uri-stream' got a malformed uri as argument", ex);
+                }
+
+                if (!loadpaths.isUnlimitedAccess()) {
+                    final String protocol = url.getProtocol();
+                    if (!("http".equals(protocol) || "https".equals(protocol))) {
+                        throw new VncException(String.format(
+                                "io/uri-stream supports only the protocols 'http' and 'https' " +
+                                "if load paths 'limited access' is configured! " +
+                                "Rejected protocol '%s'.", protocol));
+                    }
+                }
 
                 try {
-                    return new VncJavaObject(new URL(uri).openStream());
+                    return new VncJavaObject(url.openStream());
                 }
                 catch (Exception ex) {
                     throw new VncException(
