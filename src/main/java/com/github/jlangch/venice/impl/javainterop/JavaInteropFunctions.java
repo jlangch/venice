@@ -142,7 +142,7 @@ public class JavaInteropFunctions {
                         "The dynamic invocation handler takes care that the methods are " +
                         "called in the context of Venice sandbox even if the Java method " +
                         "that invokes the callback methods is running in another thread.\n\n" +
-                        "In cases a Java `FunctionalInterface` is required the function " +
+                        "In cases a Java `FunctionalInterface` is required the proxy " +
                         "wrappers from the `:java` module are often simpler to use:\n\n" +
                         "* `java/as-runnable`       \n" +
                         "* `java/as-callable`       \n" +
