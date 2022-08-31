@@ -411,26 +411,31 @@ public class CoreSystemFunctions {
             case "milliseconds":
             case "msec":
             case "ms":
-            	return TimeUnit.MILLISECONDS;
+                return TimeUnit.MILLISECONDS;
+
             case "seconds":
             case "sec":
             case "s":
-            	return TimeUnit.SECONDS;
+                return TimeUnit.SECONDS;
+
             case "minutes":
             case "min":
-            	return TimeUnit.MINUTES;
+                return TimeUnit.MINUTES;
+
             case "hours":
             case "hr":
             case "h":
-            	return TimeUnit.HOURS;
+                return TimeUnit.HOURS;
+
             case "days":
             case "d":
-            	return TimeUnit.DAYS;
+                return TimeUnit.DAYS;
+
             default:
-            	throw new VncException(
+                throw new VncException(
                         "Invalid scheduler time-unit " + unit.toString() + ". "
                             + "Use one of {:milliseconds, :seconds, :minutes, :hours, :days} "
-                        	+ "or the abbreviations {:msec, :ms, :sec, :s, :min, :hr, :h, :d}");
+                            + "or the abbreviations {:msec, :ms, :sec, :s, :min, :hr, :h, :d}");
         }
     }
 
