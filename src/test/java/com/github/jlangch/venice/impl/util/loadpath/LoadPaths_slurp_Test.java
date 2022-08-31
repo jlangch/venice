@@ -22,6 +22,7 @@
 package com.github.jlangch.venice.impl.util.loadpath;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 import java.io.File;
 import java.util.Map;
@@ -30,6 +31,7 @@ import org.junit.jupiter.api.Test;
 
 import com.github.jlangch.venice.Parameters;
 import com.github.jlangch.venice.Venice;
+import com.github.jlangch.venice.VncException;
 
 
 public class LoadPaths_slurp_Test {
@@ -48,6 +50,10 @@ public class LoadPaths_slurp_Test {
             assertEquals("res4", venice.eval("(io/slurp src)", param(root, "dir1/11/res4.txt")));
 
             assertEquals("res5", venice.eval("(io/slurp src)", param(root, "dir2/res5.txt")));
+
+            assertThrows(
+                    VncException.class,
+                    () -> venice.eval("(io/slurp src)", param(root, "dir1/res999.txt")));
         });
     }
 
@@ -79,7 +85,20 @@ public class LoadPaths_slurp_Test {
 
             // from dir1/zip2.zip
             assertEquals("res22", venice.eval("(io/slurp \"dir-z2/res22.txt\")"));
-        });
+
+
+            // OUTSIDE load paths ---------------------------------------------------------
+
+            // from dir2/res5.txt
+            assertThrows(
+                    VncException.class,
+                    () -> venice.eval("(io/slurp src)", param(root, "dir2/res5.txt")));
+
+            // from dir1/res999.txt  (not existing)
+            assertThrows(
+                    VncException.class,
+                    () -> venice.eval("(io/slurp src)", param(root, "dir1/res999.txt")));
+      });
     }
 
     @Test
@@ -110,8 +129,20 @@ public class LoadPaths_slurp_Test {
 
             // from dir1/zip2.zip
             assertEquals("res22", venice.eval("(io/slurp \"dir-z2/res22.txt\")"));
+
+
+            // OUTSIDE load paths ---------------------------------------------------------
+
+            // from dir2/res5.txt (ok, because of 'unlimited' flag)
+            assertEquals("res5", venice.eval("(io/slurp src)", param(root, "dir2/res5.txt")));
+
+            // from dir1/res999.txt  (not existing)
+            assertThrows(
+                    VncException.class,
+                    () -> venice.eval("(io/slurp src)", param(root, "dir1/res999.txt")));
         });
     }
+
 
     private static Map<String,Object> param(final File root, final String file) {
     	return Parameters.of("src", new File(root, file));
