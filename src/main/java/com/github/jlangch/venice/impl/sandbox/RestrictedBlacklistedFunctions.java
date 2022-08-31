@@ -51,8 +51,6 @@ public class RestrictedBlacklistedFunctions {
                 // miscellaneous
                 "fn-body",              // from core functions
                 "fn-pre-conditions",    // from core functions
-                "load-resource",        // from module functions
-
 
                 // print
                 "print",
@@ -61,11 +59,18 @@ public class RestrictedBlacklistedFunctions {
                 "newline",
                 "pr",
                 "prn",
+                "flush",
 
                 // read
                 "read-line",
                 "read-char",
 
+
+
+                // Module functions:
+                "load-paths",
+                "load-paths-unrestricted?",
+                "load-resource",
 
                 // I/O:
                 "io/->uri",

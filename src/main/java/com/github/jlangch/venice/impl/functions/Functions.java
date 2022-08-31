@@ -48,6 +48,10 @@ public class Functions {
         System.out.print(String.join(",\n", getSpecialForms()));
         System.out.println(",\n");
 
+        System.out.println("// Module functions:");
+        System.out.print(String.join(",\n", getVncFunctions(ModuleFunctions.ns)));
+        System.out.println(",\n");
+
         System.out.println();
         System.out.println("// I/O:");
         System.out.print(String.join(",\n", getIoFunctions()));

@@ -87,7 +87,7 @@ public class ModuleFunctions {
                             "  ;;        -> loads: /users/foo/images.zip!small/coffee.png     \n" +
                             "  (load-resource \"small/coffee.png\")  ; in ZIP                 \n" +
                             ")")
-                    .seeAlso("load-paths", "load-file*")
+                    .seeAlso("load-paths", "load-file")
                     .build()
         ) {
             @Override
