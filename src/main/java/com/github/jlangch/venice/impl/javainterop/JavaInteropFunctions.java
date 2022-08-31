@@ -141,19 +141,51 @@ public class JavaInteropFunctions {
                         "functions. \n" +
                         "The dynamic invocation handler takes care that the methods are " +
                         "called in the context of Venice sandbox even if the Java method " +
-                        "that invokes the callback methods is running in another thread.")
+                        "that invokes the callback methods is running in another thread.\n\n" +
+                        "In cases a Java `FunctionalInterface` is required the function " +
+                        "wrappers from the `:java` module are often simpler to use:\n\n" +
+                        "* `java/as-runnable`       \n" +
+                        "* `java/as-callable`       \n" +
+                        "* `java/as-predicate`      \n" +
+                        "* `java/as-function`       \n" +
+                        "* `java/as-consumer`       \n" +
+                        "* `java/as-supplier`       \n" +
+                        "* `java/as-bipredicate`    \n" +
+                        "* `java/as-bifunction`     \n" +
+                        "* `java/as-biconsumer`     \n" +
+                        "* `java/as-binaryoperator` ")
                     .examples(
-                        "(do \n" +
-                        "   (import :java.io.File :java.io.FilenameFilter) \n" +
-                        "\n" +
-                        "   (def file-filter \n" +
-                        "      (fn [dir name] (str/ends-with? name \".xxx\"))) \n" +
-                        "\n" +
-                        "   (let [dir (io/tmp-dir)] \n" +
-                        "      ;; create a dynamic proxy for the interface FilenameFilter\n" +
-                        "      ;; and implement its function 'accept' by 'file-filter'\n" +
-                        "      (. dir :list (proxify :FilenameFilter {:accept file-filter}))) \n" +
-                        ")")
+                        "(do                                                                    \n" +
+                        "   (import :java.io.File :java.io.FilenameFilter)                      \n" +
+                        "                                                                       \n" +
+                        "   (def file-filter                                                    \n" +
+                        "      (fn [dir name] (str/ends-with? name \".xxx\")))                  \n" +
+                        "                                                                       \n" +
+                        "   (let [dir (io/tmp-dir)]                                             \n" +
+                        "      ;; create a dynamic proxy for the interface FilenameFilter       \n" +
+                        "      ;; and implement its function 'accept' by 'file-filter'          \n" +
+                        "      (. dir :list (proxify :FilenameFilter {:accept file-filter}))))  ",
+                        ";; Instead of explicit proxies, functional interface wrappers are      \n" +
+                        ";; often simpler to use                                                \n" +
+                        "(do                                                                    \n" +
+                        "   (load-module :java)                                                 \n" +
+                        "   (import :java.util.stream.Collectors)                               \n" +
+                        "                                                                       \n" +
+                        "   (-> (. [1 2 3 4] :stream)                                           \n" +
+                        "       (. :filter (java/as-predicate #(> % 2)))                        \n" +
+                        "       (. :map (java/as-function #(* % 10)))                           \n" +
+                        "       (. :collect (. :Collectors :toList))))                          ")
+                    .seeAlso(
+                        "java/as-runnable",
+                        "java/as-callable",
+                        "java/as-predicate",
+                        "java/as-function",
+                        "java/as-consumer",
+                        "java/as-supplier",
+                        "java/as-bipredicate",
+                        "java/as-bifunction",
+                        "java/as-biconsumer",
+                        "java/as-binaryoperator")
                     .build());
         }
 

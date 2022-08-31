@@ -1273,11 +1273,11 @@
 (defn
   ^{ :arglists '("(read-char)" "(read-char is)")
      :doc """
-Without arg reads the next char from the stream that is the current
-value of `*in*`. With arg reads the next char from the passed stream
-that must be a subclass of `:java.io.Reader`.
-
-Returns `nil` if the end of the stream is reached.
+          Without arg reads the next char from the stream that is the current
+          value of `*in*`. With arg reads the next char from the passed stream
+          that must be a subclass of `:java.io.Reader`.
+          
+          Returns `nil` if the end of the stream is reached.
           """
      :examples '(
           """
