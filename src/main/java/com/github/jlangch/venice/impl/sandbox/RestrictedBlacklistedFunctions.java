@@ -47,6 +47,11 @@ public class RestrictedBlacklistedFunctions {
 
     private static Set<String> IO =
         new HashSet<>(
+
+            // ************************************************************
+            // * Functions::main() helps with build this list
+        	// ************************************************************
+
             Arrays.asList(
                 // miscellaneous
                 "fn-body",              // from core functions
