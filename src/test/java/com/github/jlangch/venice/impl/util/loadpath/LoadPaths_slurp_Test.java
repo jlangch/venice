@@ -22,6 +22,7 @@
 package com.github.jlangch.venice.impl.util.loadpath;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
 import java.io.File;
@@ -98,6 +99,19 @@ public class LoadPaths_slurp_Test {
             assertThrows(
                     VncException.class,
                     () -> venice.eval("(io/slurp src)", param(root, "dir1/res999.txt")));
+
+
+            // URL/URI ----------------------------------------------------------------------
+
+            // URL (not allowed with limited load paths)
+            assertThrows(
+            		com.github.jlangch.venice.SecurityException.class,
+                    () -> venice.eval("(io/slurp (io/->url \"http://www.google.com/robots.txt\"))"));
+
+            // URI (not allowed with limited load paths)
+            assertThrows(
+            		com.github.jlangch.venice.SecurityException.class,
+                    () -> venice.eval("(io/slurp (io/->uri \"http://www.google.com/robots.txt\"))"));
       });
     }
 
@@ -140,6 +154,15 @@ public class LoadPaths_slurp_Test {
             assertThrows(
                     VncException.class,
                     () -> venice.eval("(io/slurp src)", param(root, "dir1/res999.txt")));
+
+
+            // URL/URI ----------------------------------------------------------------------
+
+            // URL (not allowed with limited load paths)
+            assertNotNull(venice.eval("(io/slurp (io/->url \"http://www.google.com/robots.txt\"))"));
+
+            // URI (not allowed with limited load paths)
+            assertNotNull(venice.eval("(io/slurp (io/->uri \"http://www.google.com/robots.txt\"))"));
         });
     }
 
