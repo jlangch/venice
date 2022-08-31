@@ -45,6 +45,7 @@
       15 "https://docs.oracle.com/en/java/javase/15/docs/api/~(module)/~{cname}"
       16 "https://docs.oracle.com/en/java/javase/16/docs/api/~(module)/~{cname}"
       17 "https://docs.oracle.com/en/java/javase/17/docs/api/~(module)/~{cname}"
+      18 "https://docs.oracle.com/en/java/javase/18/docs/api/~(module)/~{cname}"
       "http://docs.oracle.com/javase/8/docs/api/~{cname}")))
 
 
@@ -156,3 +157,83 @@
       (println)
       (println "[Setters]")
       (docoll #(println "  " (name (:property %)) "->" (:type %)) setters))))
+
+
+(defn
+  ^{ :arglists '("(as-runnable f)")
+     :doc "Wraps the function f in a [java.lang.Runnable](https://docs.oracle.com/javase/8/docs/api/java/lang/Runnable.html)"
+     :see-also '("java/as-callable" "java/as-predicate" "java/as-function" "java/as-consumer" "java/as-supplier") }
+
+  as-runnable [f] (proxify :java.lang.Runnable { :run f }))
+
+
+(defn
+  ^{ :arglists '("(as-callable f)")
+     :doc "Wraps the function f in a [java.util.concurrent.Callable](https://docs.oracle.com/javase/8/docs/api/java/util/concurrent/Callable.html)"
+     :see-also '("java/as-runnable" "java/as-predicate" "java/as-function" "java/as-consumer" "java/as-supplier") }
+
+  as-callable [f] (proxify :java.util.concurrent.Callable { :call f }))
+
+
+(defn
+  ^{ :arglists '("(as-predicate f)")
+     :doc "Wraps the function f in a [java.util.function.Predicate](https://docs.oracle.com/javase/8/docs/api/java/util/function/Predicate.html)"
+     :see-also '("java/as-runnable" "java/as-callable" "java/as-function" "java/as-consumer" "java/as-supplier") }
+
+  as-predicate [f] (proxify :java.util.function.Predicate { :test f }))
+
+
+(defn
+  ^{ :arglists '("(as-function f)")
+     :doc "Wraps the function f in a [java.util.function.Function](https://docs.oracle.com/javase/8/docs/api/java/util/function/Function.html)"
+     :see-also '("java/as-runnable" "java/as-callable" "java/as-predicate" "java/as-consumer" "java/as-supplier") }
+
+  as-function [f] (proxify :java.util.function.Function { :apply f }))
+
+
+(defn
+  ^{ :arglists '("(as-consumer f)")
+     :doc "Wraps the function f in a [java.util.function.Consumer](https://docs.oracle.com/javase/8/docs/api/java/util/function/Consumer.html)"
+     :see-also '("java/as-runnable" "java/as-callable" "java/as-predicate" "java/as-function" "java/as-supplier") }
+
+  as-consumer [f] (proxify :java.util.function.Consumer { :accept f }))
+
+
+(defn
+  ^{ :arglists '("(as-supplier f)")
+     :doc "Wraps the function f in a [java.util.function.Supplier](https://docs.oracle.com/javase/8/docs/api/java/util/function/Supplier.html)"
+     :see-also '("java/as-runnable" "java/as-callable" "java/as-predicate" "java/as-function" "java/as-consumer") }
+
+  as-supplier [f] (proxify :java.util.function.Supplier { :get f }))
+
+
+(defn
+  ^{ :arglists '("(as-bipredicate f)")
+     :doc "Wraps the function f in a [java.util.function.BiPredicate](https://docs.oracle.com/javase/8/docs/api/java/util/function/BiPredicate.html)"
+     :see-also '("java/as-bifunction" "java/as-biconsumer" "java/as-binaryoperator") }
+
+  as-bipredicate [f] (proxify :java.util.function.BiPredicate { :apply f }))
+
+
+(defn
+  ^{ :arglists '("(as-bifunction f)")
+     :doc "Wraps the function f in a [java.util.function.BiFunction](https://docs.oracle.com/javase/8/docs/api/java/util/function/BiFunction.html)"
+     :see-also '("java/as-bipredicate" "java/as-biconsumer" "java/as-binaryoperator") }
+
+  as-bifunction [f] (proxify :java.util.function.BiFunction { :apply f }))
+
+
+(defn
+  ^{ :arglists '("(as-biconsumer f)")
+     :doc "Wraps the function f in a [java.util.function.BiConsumer](https://docs.oracle.com/javase/8/docs/api/java/util/function/BiConsumer.html)"
+     :see-also '("java/as-bipredicate" "java/as-bifunction" "java/as-binaryoperator") }
+
+  as-biconsumer [f] (proxify :java.util.function.BiConsumer { :apply f }))
+
+
+(defn
+  ^{ :arglists '("(as-binaryoperator f)")
+     :doc "Wraps the function f in a [java.util.function.BinaryOperator](https://docs.oracle.com/javase/8/docs/api/java/util/function/BinaryOperator.html)"
+     :see-also '("java/as-bipredicate" "java/as-bifunction" "java/as-biconsumer" ) }
+
+  as-binaryoperator [f] (proxify :java.util.function.BinaryOperator { :apply f }))

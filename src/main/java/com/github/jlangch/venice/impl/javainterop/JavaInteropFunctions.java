@@ -111,7 +111,7 @@ public class JavaInteropFunctions {
                         ";; invoke method \n(. (. :java.lang.Long :new 10) :toString)",
                         ";; get class name \n(. :java.lang.Math :class)",
                         ";; get class name \n(. (. :java.io.File :new \"/temp\") :class)")
-                    .seeAlso("import", "proxify", "as-runnable", "as-callable")
+                    .seeAlso("import", "proxify", "java/as-runnable", "java/as-callable")
                     .build());
         }
 

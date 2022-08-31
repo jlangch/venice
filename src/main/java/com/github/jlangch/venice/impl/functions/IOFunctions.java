@@ -2011,12 +2011,12 @@ public class IOFunctions {
                     }
 
                     progressFn = progressVal == Nil
-                                        ? new VncFunction("io/progress-default") {
-                                            private static final long serialVersionUID = 1L;
-                                            @Override
-                                            public VncVal apply(final VncList args) { return Nil; }
-                                          }
-                                        : Coerce.toVncFunction(progressVal);
+                                    ? new VncFunction("io/progress-default") {
+                                        private static final long serialVersionUID = 1L;
+                                        @Override
+                                        public VncVal apply(final VncList args) { return Nil; }
+                                      }
+                                    : Coerce.toVncFunction(progressVal);
 
                     updateDownloadProgress(progressFn, 0L, new VncKeyword("start"));
 

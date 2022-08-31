@@ -151,11 +151,13 @@ public class JavaInterop_proxy_Test {
 
         final String script =
                 "(do                                                              " +
+                "    (load-module :java)                                          " +
                 "    (import :java.util.stream.Collectors)                        " +
+                "                                                                 " +
                 "    (defn pred [x] (> x 2))                                      " +
                 "                                                                 " +
                 "    (-> (. [1 2 3 4] :stream)                                    " +
-                "        (. :filter (as-predicate pred))                          " +
+                "        (. :filter (java/as-predicate pred))                     " +
                 "        (. :collect (. :Collectors :toList)))                    " +
                 ") ";
 
@@ -168,10 +170,11 @@ public class JavaInterop_proxy_Test {
 
         final String script =
                 "(do                                                              " +
+                "    (load-module :java)                                          " +
                 "    (import :java.util.stream.Collectors)                        " +
                 "                                                                 " +
                 "    (-> (. [1 2 3 4] :stream)                                    " +
-                "        (. :filter (as-predicate #(> % 2)))                      " +
+                "        (. :filter (java/as-predicate #(> % 2)))                 " +
                 "        (. :collect (. :Collectors :toList)))                    " +
                 ") ";
 
@@ -184,10 +187,11 @@ public class JavaInterop_proxy_Test {
 
         final String script =
                 "(do                                                              " +
+                "    (load-module :java)                                          " +
                 "    (import :java.util.stream.Collectors)                        " +
                 "                                                                 " +
                 "    (-> (. [1 2 3 4 5 6 7 8 9 10 11 12 13 14] :parallelStream)   " +
-                "        (. :filter (as-predicate #(> % 2)))                      " +
+                "        (. :filter (java/as-predicate #(> % 2)))                 " +
                 "        (. :collect (. :Collectors :toList)))                    " +
                 ") ";
 
@@ -221,13 +225,15 @@ public class JavaInterop_proxy_Test {
 
         final String script =
                 "(do                                                              " +
+                "    (load-module :java)                                          " +
                 "    (import :java.util.stream.Collectors)                        " +
+                "                                                                 " +
                 "    (defn pred [x] (> x 2))                                      " +
                 "    (defn mul [x] (* x 10))                                      " +
                 "                                                                 " +
                 "    (-> (. [1 2 3 4] :stream)                                    " +
-                "        (. :filter (as-predicate pred))                          " +
-                "        (. :map (as-function mul))                               " +
+                "        (. :filter (java/as-predicate pred))                     " +
+                "        (. :map (java/as-function mul))                          " +
                 "        (. :collect (. :Collectors :toList)))                    " +
                 ") ";
 
@@ -240,11 +246,12 @@ public class JavaInterop_proxy_Test {
 
         final String script =
                 "(do                                                              " +
+                "    (load-module :java)                                          " +
                 "    (import :java.util.stream.Collectors)                        " +
                 "                                                                 " +
                 "    (-> (. [1 2 3 4 5 6 7 8] :stream)                            " +
-                "        (. :filter (as-predicate #(> % 2)))                      " +
-                "        (. :map (as-function #(* % 10)))                         " +
+                "        (. :filter (java/as-predicate #(> % 2)))                 " +
+                "        (. :map (java/as-function #(* % 10)))                    " +
                 "        (. :collect (. :Collectors :toList)))                    " +
                 ") ";
 
@@ -257,11 +264,12 @@ public class JavaInterop_proxy_Test {
 
         final String script =
                 "(do                                                              " +
+                "    (load-module :java)                                          " +
                 "    (import :java.util.stream.Collectors)                        " +
                 "                                                                 " +
                 "    (-> (. [1 2 3 4 5 6 7 8] :parallelStream)                    " +
-                "        (. :filter (as-predicate #(> % 2)))                      " +
-                "        (. :map (as-function #(* % 10)))                         " +
+                "        (. :filter (java/as-predicate #(> % 2)))                 " +
+                "        (. :map (java/as-function #(* % 10)))                    " +
                 "        (. :collect (. :Collectors :toList)))                    " +
                 ") ";
 
@@ -288,9 +296,11 @@ public class JavaInterop_proxy_Test {
         final Venice venice = new Venice();
 
         final String script =
-                "(do                                                     " +
-                "    (-> (. [1 2 3 4] :stream)                           " +
-                "        (. :reduce 0 (as-binaryoperator #(+ %1 %2))))   " +
+                "(do                                                          " +
+                "    (load-module :java)                                      " +
+                "                                                             " +
+                "    (-> (. [1 2 3 4] :stream)                                " +
+                "        (. :reduce 0 (java/as-binaryoperator #(+ %1 %2))))   " +
                 ") ";
 
         assertEquals("10", venice.eval(script).toString());
@@ -301,9 +311,11 @@ public class JavaInterop_proxy_Test {
         final Venice venice = new Venice();
 
         final String script =
-                "(do                                                     " +
-                "    (-> (. [1 2 3 4] :parallelStream)                   " +
-                "        (. :reduce 0 (as-binaryoperator #(+ %1 %2))))   " +
+                "(do                                                          " +
+                "    (load-module :java)                                      " +
+                "                                                             " +
+                "    (-> (. [1 2 3 4] :parallelStream)                        " +
+                "        (. :reduce 0 (java/as-binaryoperator #(+ %1 %2))))   " +
                 ") ";
 
         assertEquals("10", venice.eval(script).toString());
@@ -330,10 +342,12 @@ public class JavaInterop_proxy_Test {
         final Venice venice = new Venice();
 
         final String script =
-                "(do                                                   " +
-                "    (-> (. [1 2 3 4] :stream)                         " +
-                "        (. :reduce (as-binaryoperator #(+ %1 %2)))    " +
-                "        (. :orElse 0))                                " +
+                "(do                                                        " +
+                "    (load-module :java)                                    " +
+                "                                                           " +
+                "    (-> (. [1 2 3 4] :stream)                              " +
+                "        (. :reduce (java/as-binaryoperator #(+ %1 %2)))    " +
+                "        (. :orElse 0))                                     " +
                 ") ";
 
         assertEquals("10", venice.eval(script).toString());

@@ -52,16 +52,16 @@ public class JavaInteropSection implements ISectionBuilder {
         final DocSection proxy = new DocSection("Proxify", "javainterop.proxify");
         all.addSection(proxy);
         proxy.addItem(diBuilder.getDocItem("proxify"));
-        proxy.addItem(diBuilder.getDocItem("as-runnable"));
-        proxy.addItem(diBuilder.getDocItem("as-callable"));
-        proxy.addItem(diBuilder.getDocItem("as-predicate"));
-        proxy.addItem(diBuilder.getDocItem("as-function"));
-        proxy.addItem(diBuilder.getDocItem("as-consumer"));
-        proxy.addItem(diBuilder.getDocItem("as-supplier"));
-        proxy.addItem(diBuilder.getDocItem("as-bipredicate"));
-        proxy.addItem(diBuilder.getDocItem("as-bifunction"));
-        proxy.addItem(diBuilder.getDocItem("as-biconsumer"));
-        proxy.addItem(diBuilder.getDocItem("as-binaryoperator"));
+        proxy.addItem(diBuilder.getDocItem("java/as-runnable"));
+        proxy.addItem(diBuilder.getDocItem("java/as-callable"));
+        proxy.addItem(diBuilder.getDocItem("java/as-predicate"));
+        proxy.addItem(diBuilder.getDocItem("java/as-function"));
+        proxy.addItem(diBuilder.getDocItem("java/as-consumer"));
+        proxy.addItem(diBuilder.getDocItem("java/as-supplier"));
+        proxy.addItem(diBuilder.getDocItem("java/as-bipredicate"));
+        proxy.addItem(diBuilder.getDocItem("java/as-bifunction"));
+        proxy.addItem(diBuilder.getDocItem("java/as-biconsumer"));
+        proxy.addItem(diBuilder.getDocItem("java/as-binaryoperator"));
 
         final DocSection test = new DocSection("Test", "javainterop.test");
         all.addSection(test);
