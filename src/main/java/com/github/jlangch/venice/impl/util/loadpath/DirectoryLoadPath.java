@@ -183,7 +183,8 @@ public class DirectoryLoadPath extends LoadPath {
     }
 
     private boolean isFileWithinDirectory(final File file) {
-        if (canonical(file).toPath().startsWith(dir.toPath())) {
+    	final File fileCanonical = canonical(file);
+        if (fileCanonical.toPath().startsWith(dir.toPath())) {
             // Prevent accessing files outside the load-path
             //
             // Load path:  [/Users/pit/scripts]

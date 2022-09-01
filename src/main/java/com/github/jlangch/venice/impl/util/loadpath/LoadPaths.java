@@ -146,7 +146,19 @@ public class LoadPaths implements ILoadPaths {
             }
 
             if (unlimitedAccess) {
-                return Files.newInputStream(file.toPath());
+                if (file.isAbsolute() && file.exists()) {
+                    return Files.newInputStream(file.toPath());
+                }
+                else {
+                    for(LoadPath p : paths) {
+                        if (p instanceof DirectoryLoadPath) {
+                            final File f = new File(p.path(), file.getPath());
+                            if (f.exists()) {
+                                return Files.newInputStream(f.toPath());
+                            }
+                        }
+                    }
+                }
             }
 
             return null;
@@ -178,7 +190,19 @@ public class LoadPaths implements ILoadPaths {
             }
 
             if (unlimitedAccess) {
-                return Files.newBufferedReader(file.toPath(), charset);
+                if (file.isAbsolute() && file.exists()) {
+                    return Files.newBufferedReader(file.toPath(), charset);
+                }
+                else {
+                    for(LoadPath p : paths) {
+                        if (p instanceof DirectoryLoadPath) {
+                            final File f = new File(p.path(), file.getPath());
+                            if (f.exists()) {
+                                return Files.newBufferedReader(f.toPath(), charset);
+                            }
+                        }
+                    }
+                }
             }
 
             return null;
@@ -210,7 +234,17 @@ public class LoadPaths implements ILoadPaths {
             }
 
             if (unlimitedAccess) {
-                return Files.newOutputStream(file.toPath(), options);
+                if (file.isAbsolute()) {
+                    return Files.newOutputStream(file.toPath(), options);
+                }
+                else {
+                    for(LoadPath p : paths) {
+                        if (p instanceof DirectoryLoadPath) {
+                            final File f = new File(p.path(), file.getPath());
+                            return Files.newOutputStream(f.toPath(), options);
+                        }
+                    }
+                }
             }
 
             return null;

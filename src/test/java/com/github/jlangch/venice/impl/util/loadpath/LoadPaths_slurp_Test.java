@@ -33,12 +33,13 @@ import org.junit.jupiter.api.Test;
 import com.github.jlangch.venice.Parameters;
 import com.github.jlangch.venice.Venice;
 import com.github.jlangch.venice.VncException;
+import com.github.jlangch.venice.impl.util.io.InternetUtil;
 
 
 public class LoadPaths_slurp_Test {
 
     @Test
-    public void test_no_loadpaths_1() {
+    public void test_no_loadpaths() {
         TempFS.with((tempFS, root) -> {
             final Venice venice = new Venice();
 
@@ -158,17 +159,83 @@ public class LoadPaths_slurp_Test {
 
             // URL/URI ----------------------------------------------------------------------
 
-            // URL
-            assertNotNull(venice.eval("(io/slurp (io/->url \"http://www.google.com/robots.txt\"))"));
+            if (InternetUtil.isInternetAvailable()) {
+	            // URL
+	            assertNotNull(venice.eval("(io/slurp (io/->url \"http://www.google.com/robots.txt\"))"));
 
-            // URI
-            assertNotNull(venice.eval("(io/slurp (io/->uri \"http://www.google.com/robots.txt\"))"));
+	            // URI
+	            assertNotNull(venice.eval("(io/slurp (io/->uri \"http://www.google.com/robots.txt\"))"));
+            }
         });
     }
 
 
-    private static Map<String,Object> param(final File root, final String file) {
-    	return Parameters.of("src", new File(root, file));
+    @Test
+    public void test_absolute_limited() {
+        TempFS.with((tempFS, root) -> {
+            final Venice venice = new Venice(tempFS.createSandbox(false));
+
+            // from root
+            assertEquals("res1", venice.eval("(io/slurp src)", param(root, "res1.txt")));
+
+            // from dir1
+            assertEquals("res2", venice.eval("(io/slurp src)", param(root, "dir1/res2.txt")));
+
+            // from dir1
+            assertEquals("res3", venice.eval("(io/slurp src)", param(root, "dir1/res3.txt")));
+
+            // from dir1
+            assertEquals("res4", venice.eval("(io/slurp src)", param(root, "dir1/11/res4.txt")));
+
+
+            // OUTSIDE load paths ---------------------------------------------------------
+
+            // from dir2/res5.txt
+            assertThrows(
+                    VncException.class,
+                    () -> venice.eval("(io/slurp src)", param(root, "dir2/res5.txt")));
+
+            // from dir1/res999.txt  (not existing)
+            assertThrows(
+                    VncException.class,
+                    () -> venice.eval("(io/slurp src)", param(root, "dir1/res999.txt")));
+        });
     }
+
+    @Test
+    public void test_absolute_unlimited() {
+        TempFS.with((tempFS, root) -> {
+            final Venice venice = new Venice(tempFS.createSandbox(true));
+
+            // from root
+            assertEquals("res1", venice.eval("(io/slurp src)", param(root, "res1.txt")));
+
+            // from dir1
+            assertEquals("res2", venice.eval("(io/slurp src)", param(root, "dir1/res2.txt")));
+
+            // from dir1
+            assertEquals("res3", venice.eval("(io/slurp src)", param(root, "dir1/res3.txt")));
+
+            // from dir1
+            assertEquals("res4", venice.eval("(io/slurp src)", param(root, "dir1/11/res4.txt")));
+
+
+            // OUTSIDE load paths ---------------------------------------------------------
+
+            // from dir2/res5.txt
+            assertEquals("res5", venice.eval("(io/slurp src)", param(root, "dir2/res5.txt")));
+
+            // from dir1/res999.txt  (not existing)
+            assertThrows(
+                    VncException.class,
+                    () -> venice.eval("(io/slurp src)", param(root, "dir1/res999.txt")));
+      });
+    }
+
+
+    private static Map<String,Object> param(final File root, final String file) {
+        return Parameters.of("src", new File(root, file));
+    }
+
 }
 

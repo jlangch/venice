@@ -223,9 +223,10 @@ public class IOFunctionsSpitSlurp {
                         " * `java.net.URL`                                                 \n" +
                         " * `java.net.URI`                                                 \n\n" +
                         "Options:                                                          \n\n" +
-                        "| :binary true/false | e.g.: `:binary true`, defaults to false |      \n" +
-                        "| :encoding enc      | e.g.: `:encoding :utf-8`, defaults to :utf-8 | \n")
-                    .seeAlso("io/slurp-lines", "io/slurp-stream", "io/spit")
+                        "| :binary true/false | e.g.: `:binary true`, defaults to false |     \n" +
+                        "| :encoding enc      | e.g.: `:encoding :utf-8`, defaults to :utf-8 |\n\n" +
+                        "Note: For HTTP and HTTPS downloads prefer to use `io/download`. ")
+                    .seeAlso("io/slurp-lines", "io/slurp-stream", "io/spit", "io/download")
                     .build()
         ) {
             @Override

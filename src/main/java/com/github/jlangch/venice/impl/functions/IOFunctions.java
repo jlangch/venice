@@ -22,8 +22,6 @@
 package com.github.jlangch.venice.impl.functions;
 
 import static com.github.jlangch.venice.impl.types.Constants.Nil;
-import static com.github.jlangch.venice.impl.types.VncBoolean.False;
-import static com.github.jlangch.venice.impl.types.VncBoolean.True;
 
 import java.io.BufferedInputStream;
 import java.io.ByteArrayOutputStream;
@@ -88,6 +86,7 @@ import com.github.jlangch.venice.impl.util.io.CharsetUtil;
 import com.github.jlangch.venice.impl.util.io.ClassPathResource;
 import com.github.jlangch.venice.impl.util.io.FileUtil;
 import com.github.jlangch.venice.impl.util.io.IOStreamUtil;
+import com.github.jlangch.venice.impl.util.io.InternetUtil;
 
 
 public class IOFunctions {
@@ -1950,7 +1949,7 @@ public class IOFunctions {
                     .arglists("(io/download uri & options)")
                     .doc(
                         "Downloads the content from the uri and reads it as text (string) " +
-                        "or binary (bytebuf). \n\n" +
+                        "or binary (bytebuf). Supports http and https protocols!\n\n" +
                         "Options: \n\n" +
                         "| :binary true/false | e.g.: `:binary true`, defaults to false |\n" +
                         "| :user-agent agent  | e.g.: `:user-agent \"Mozilla\"`, defaults to nil |\n" +
@@ -2114,9 +2113,11 @@ public class IOFunctions {
                 VncFunction
                     .meta()
                     .arglists("(io/internet-avail?)", "(io/internet-avail? url)")
-                    .doc("Checks if an internet connection is present for a given url. "
-                            + "Defaults to URL *http://www.google.com*.")
+                    .doc(
+                        "Checks if an internet connection is present for a given url. " +
+                        "Defaults to URL *http://www.google.com*.")
                     .examples(
+                    	"(io/internet-avail?)",
                         "(io/internet-avail? \"http://www.google.com\")")
                     .build()
         ) {
@@ -2124,21 +2125,11 @@ public class IOFunctions {
             public VncVal apply(final VncList args) {
                 ArityExceptions.assertArity(this, args, 0, 1);
 
-                final String sUrl = args.isEmpty()
+                final String sURL = args.isEmpty()
                                         ? "http://www.google.com"
                                         : Coerce.toVncString(args.first()).getValue();
 
-                try {
-                    final URL url = new URL(sUrl);
-                    final URLConnection connection = url.openConnection();
-                    connection.setConnectTimeout(3000);
-                    connection.connect();
-                    connection.getInputStream().close();
-                    return True;
-                }
-                catch (Exception e) {
-                    return False;
-                }
+                return VncBoolean.of(InternetUtil.isInternetAvailable(sURL));
             }
 
             private static final long serialVersionUID = -1848883965231344442L;
