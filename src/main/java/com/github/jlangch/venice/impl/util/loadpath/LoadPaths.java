@@ -46,12 +46,7 @@ public class LoadPaths implements ILoadPaths {
             final List<LoadPath> paths,
             final boolean unlimitedAccess
     ) {
-    	if (paths.isEmpty() && unlimitedAccess) {
-    		this.paths.add(new DirectoryLoadPath(new File(".")));
-    	}
-    	else {
-    		this.paths.addAll(paths);
-    	}
+    	this.paths.addAll(paths);
         this.unlimitedAccess = unlimitedAccess;
     }
 
@@ -154,6 +149,9 @@ public class LoadPaths implements ILoadPaths {
                 if (file.isAbsolute() && file.exists()) {
                     return Files.newInputStream(file.toPath());
                 }
+                else  if (paths.isEmpty()) {
+                    return Files.newInputStream(file.toPath());
+            	}
                 else {
                     for(LoadPath p : paths) {
                         if (p instanceof DirectoryLoadPath) {
@@ -198,6 +196,9 @@ public class LoadPaths implements ILoadPaths {
                 if (file.isAbsolute() && file.exists()) {
                     return Files.newBufferedReader(file.toPath(), charset);
                 }
+                else  if (paths.isEmpty()) {
+                    return Files.newBufferedReader(file.toPath(), charset);
+            	}
                 else {
                     for(LoadPath p : paths) {
                         if (p instanceof DirectoryLoadPath) {
@@ -242,6 +243,9 @@ public class LoadPaths implements ILoadPaths {
                 if (file.isAbsolute()) {
                     return Files.newOutputStream(file.toPath(), options);
                 }
+                else  if (paths.isEmpty()) {
+                    return Files.newOutputStream(file.toPath(), options);
+            	}
                 else {
                     for(LoadPath p : paths) {
                         if (p instanceof DirectoryLoadPath) {
