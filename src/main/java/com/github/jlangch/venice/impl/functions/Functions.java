@@ -127,6 +127,7 @@ public class Functions {
         functions.putAll(SpecialForms_LoadCodeMacros.ns);
 
         functions.putAll(CoreFunctions.ns);
+        functions.putAll(CoreConcurrencyFunctions.ns);
         functions.putAll(CoreSystemFunctions.ns);
         functions.putAll(ExceptionFunctions.ns);
         functions.putAll(BytebufFunctions.ns);

@@ -262,7 +262,7 @@ public class IOFunctionsStreams {
 
                 final File file = convertToFile(args.first());
                 if (file != null) {
-                    sandboxFunctionCallValidation(file, null);
+                    sandboxFunctionCallValidation();
 
                     try {
                         final ILoadPaths loadpaths = ThreadContext.getInterceptor().getLoadPaths();
