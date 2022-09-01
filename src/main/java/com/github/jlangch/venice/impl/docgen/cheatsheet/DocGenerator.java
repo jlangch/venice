@@ -252,8 +252,8 @@ public class DocGenerator {
         system.addSection(new DocSection("System\u00A0Vars", "sysvars"));
         system.addSection(new DocSection("Java\u00A0Interop", "javainterop"));
         system.addSection(new DocSection("REPL", "repl"));
-        system.addSection(new DocSection("Load\u00A0Paths", "loadpaths"));
         system.addSection(new DocSection("Sandbox", "sandbox"));
+        system.addSection(new DocSection("Load\u00A0Paths", "loadpaths"));
         content.add(system);
 
         final DocSection util = new DocSection("Util", "util");
