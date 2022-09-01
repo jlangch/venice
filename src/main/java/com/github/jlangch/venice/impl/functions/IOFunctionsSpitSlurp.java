@@ -401,8 +401,11 @@ public class IOFunctionsSpitSlurp {
                             throw new SecurityException(
                                     String.format(
                                             "Failed to spit data to the file %s. " +
-                                            "The load paths configuration prevented this action!",
-                                            file.getPath()));
+                                            "The load paths configuration prevented this action!\n" +
+                                            "Load-Paths:  unlimited-access=%b, paths=%s",
+                                            file.getPath(),
+                                            loadpaths.isUnlimitedAccess(),
+                                            loadpaths.getPaths().toString()));
                         }
                     }
                     catch (Exception ex) {
