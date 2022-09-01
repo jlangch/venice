@@ -43,11 +43,6 @@ public class SystemSection implements ISectionBuilder {
         all.addSection(venice);
         venice.addItem(diBuilder.getDocItem("version"));
 
-        final DocSection sandbox = new DocSection("Sandbox", "system.sandbox");
-        all.addSection(sandbox);
-        sandbox.addItem(diBuilder.getDocItem("sandboxed?"));
-        sandbox.addItem(diBuilder.getDocItem("sandbox-type"));
-
         final DocSection system = new DocSection("System", "system.system");
         all.addSection(system);
         system.addItem(diBuilder.getDocItem("system-prop"));

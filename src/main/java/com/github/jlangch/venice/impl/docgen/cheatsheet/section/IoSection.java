@@ -59,13 +59,6 @@ public class IoSection implements ISectionBuilder {
         from.addItem(diBuilder.getDocItem("read-line"));
         from.addItem(diBuilder.getDocItem("read-char"));
 
-        final DocSection loadpath = new DocSection("loadpath", "functions.loadpath");
-        all.addSection(loadpath);
-        loadpath.addItem(diBuilder.getDocItem("load-paths", false));
-        loadpath.addItem(diBuilder.getDocItem("load-paths-unrestricted?", false));
-        loadpath.addItem(diBuilder.getDocItem("load-file", false));
-        loadpath.addItem(diBuilder.getDocItem("load-resource", false));
-
         final DocSection classpath = new DocSection("classpath", "io.classpath");
         all.addSection(classpath);
         classpath.addItem(diBuilder.getDocItem("io/load-classpath-resource"));

@@ -70,6 +70,7 @@ import com.github.jlangch.venice.impl.docgen.cheatsheet.section.IoZipSection;
 import com.github.jlangch.venice.impl.docgen.cheatsheet.section.JavaInteropSection;
 import com.github.jlangch.venice.impl.docgen.cheatsheet.section.JsonSection;
 import com.github.jlangch.venice.impl.docgen.cheatsheet.section.LazySequencesSection;
+import com.github.jlangch.venice.impl.docgen.cheatsheet.section.LoadPathSection;
 import com.github.jlangch.venice.impl.docgen.cheatsheet.section.MacrosSection;
 import com.github.jlangch.venice.impl.docgen.cheatsheet.section.MathSection;
 import com.github.jlangch.venice.impl.docgen.cheatsheet.section.NamespaceSection;
@@ -78,6 +79,7 @@ import com.github.jlangch.venice.impl.docgen.cheatsheet.section.PrimitivesSectio
 import com.github.jlangch.venice.impl.docgen.cheatsheet.section.ProtocolsSection;
 import com.github.jlangch.venice.impl.docgen.cheatsheet.section.RegexSection;
 import com.github.jlangch.venice.impl.docgen.cheatsheet.section.ReplSection;
+import com.github.jlangch.venice.impl.docgen.cheatsheet.section.SandboxSection;
 import com.github.jlangch.venice.impl.docgen.cheatsheet.section.SpecialFormsSection;
 import com.github.jlangch.venice.impl.docgen.cheatsheet.section.SystemSection;
 import com.github.jlangch.venice.impl.docgen.cheatsheet.section.SystemVarSection;
@@ -250,6 +252,8 @@ public class DocGenerator {
         system.addSection(new DocSection("System\u00A0Vars", "sysvars"));
         system.addSection(new DocSection("Java\u00A0Interop", "javainterop"));
         system.addSection(new DocSection("REPL", "repl"));
+        system.addSection(new DocSection("Load\u00A0Paths", "loadpaths"));
+        system.addSection(new DocSection("Sandbox", "sandbox"));
         content.add(system);
 
         final DocSection util = new DocSection("Util", "util");
@@ -337,6 +341,8 @@ public class DocGenerator {
                 new NamespaceSection(diBuilder).section(),
                 new JavaInteropSection(diBuilder).section(),
                 new ReplSection(diBuilder).section(),
+                new SandboxSection(diBuilder).section(),
+                new LoadPathSection(diBuilder).section(),
                 new PdfSection(diBuilder).section(),
                 new IoZipSection(diBuilder).section());
     }
