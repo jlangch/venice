@@ -46,7 +46,12 @@ public class LoadPaths implements ILoadPaths {
             final List<LoadPath> paths,
             final boolean unlimitedAccess
     ) {
-        this.paths.addAll(paths);
+    	if (paths.isEmpty() && unlimitedAccess) {
+    		this.paths.add(new DirectoryLoadPath(new File(".")));
+    	}
+    	else {
+    		this.paths.addAll(paths);
+    	}
         this.unlimitedAccess = unlimitedAccess;
     }
 

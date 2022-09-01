@@ -58,12 +58,12 @@ public class LoadPaths2Test {
 
 
         // null path
-        assertTrue(LoadPaths.of(null, true).getPaths().isEmpty());
+        assertEquals(new File(".").getCanonicalFile(), LoadPaths.of(null, true).getPaths().get(0));
         assertTrue(LoadPaths.of(null, false).getPaths().isEmpty());
 
         // empty path
         final List<File> empty = new ArrayList<File>();
-        assertTrue(LoadPaths.of(empty, true).getPaths().isEmpty());
+        assertEquals(new File(".").getCanonicalFile(), LoadPaths.of(empty, true).getPaths().get(0));
         assertTrue(LoadPaths.of(empty, false).getPaths().isEmpty());
 
         // single dir path
