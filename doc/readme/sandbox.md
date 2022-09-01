@@ -81,7 +81,11 @@ final IInterceptor interceptor =
                 "math")
 
               // Venice functions: blacklist rules
+              .rejectAllJavaFunctions()
               .rejectAllVeniceIoFunctions()
+              .rejectAllVeniceConcurrencyFunctions()
+              .rejectAllVeniceSystemFunctions()
+              .rejectAllSenstiveSpecialForms()
               .rejectVeniceFunctions(
                 "time/date",
                 "time/zone-ids")

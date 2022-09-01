@@ -33,11 +33,23 @@ public class RestrictedBlacklistedFunctions {
         return IO;
     }
 
+    public static Set<String> getConcurrencyFunctions() {
+        return CONCURRENCY;
+    }
+
+    public static Set<String> getJavaInteropFunctions() {
+        return JAVA_INTEROP;
+    }
+
+    public static Set<String> getSystemFunctions() {
+        return SYSTEM;
+    }
+
     public static Set<String> getSpecialForms() {
         return SPECIAL_FORMS;
     }
 
-    public static Set<String> getAll() {
+    public static Set<String> getAllFunctions() {
         return ALL;
     }
 
@@ -50,7 +62,7 @@ public class RestrictedBlacklistedFunctions {
 
             // ************************************************************
             // * Functions::main() helps with build this list
-        	// ************************************************************
+            // ************************************************************
 
             Arrays.asList(
                 // miscellaneous
@@ -71,11 +83,11 @@ public class RestrictedBlacklistedFunctions {
                 "read-char",
 
 
-
                 // Module functions:
                 "load-paths",
                 "load-paths-unrestricted?",
                 "load-resource",
+
 
                 // I/O:
                 "io/->uri",
@@ -173,8 +185,62 @@ public class RestrictedBlacklistedFunctions {
                 "io/zip-size",
                 "io/zip?",
 
-                // Concurrency:  agents, futures, promises, thread, thread local, watches
-                //               parallel processing
+                // Shell
+                "sh",
+                "sh/open",
+                "sh/pwd"
+    ));
+
+
+    private static Set<String> SYSTEM =
+        new HashSet<>(
+
+            // ************************************************************
+            // * Functions::main() helps with build this list
+            // ************************************************************
+
+            Arrays.asList(
+
+                // System
+                "callstack",
+                "cpus",
+                "gc",
+                "host-address",
+                "host-name",
+                "ip-private?",
+                "java-major-version",
+                "java-source-location",
+                "java-version",
+                "java-version-info",
+                "load-jar",
+                "os-arch",
+                "os-name",
+                "os-type",
+                "os-type?",
+                "os-version",
+                "pid",
+                "sandbox-type",
+                "sandboxed?",
+                "shutdown-hook",
+                "system-env",
+                "system-exit-code",
+                "system-prop",
+                "total-memory",
+                "used-memory",
+                "user-name"
+    ));
+
+    private static Set<String> CONCURRENCY =
+        new HashSet<>(
+
+            // ************************************************************
+            // * Functions::main() helps with build this list
+            // ************************************************************
+
+            Arrays.asList(
+
+                // Concurrency: agents, futures, promises, thread, thread local, watches
+                //              parallel processing
                 "accept-either",
                 "add-watch",
                 "agent",
@@ -232,6 +298,21 @@ public class RestrictedBlacklistedFunctions {
                 "timeout-after",
                 "when-complete",
 
+                // Scheduler
+                "schedule-at-fixed-rate",
+                "schedule-delay"
+    ));
+
+
+    private static Set<String> JAVA_INTEROP =
+        new HashSet<>(
+
+            // ************************************************************
+            // * Functions::main() helps with build this list
+            // ************************************************************
+
+            Arrays.asList(
+
                 // Java Interop
                 ".",
                 "bases",
@@ -256,44 +337,7 @@ public class RestrictedBlacklistedFunctions {
                 "module-name",
                 "proxify",
                 "stacktrace",
-                "supers",
-
-                // Scheduler
-                "schedule-at-fixed-rate",
-                "schedule-delay",
-
-                // System
-                "callstack",
-                "cpus",
-                "gc",
-                "host-address",
-                "host-name",
-                "ip-private?",
-                "java-major-version",
-                "java-source-location",
-                "java-version",
-                "java-version-info",
-                "load-jar",
-                "os-arch",
-                "os-name",
-                "os-type",
-                "os-type?",
-                "os-version",
-                "pid",
-                "sandbox-type",
-                "sandboxed?",
-                "shutdown-hook",
-                "system-env",
-                "system-exit-code",
-                "system-prop",
-                "total-memory",
-                "used-memory",
-                "user-name",
-
-                // Shell
-                "sh",
-                "sh/open",
-                "sh/pwd"
+                "supers"
     ));
 
     private static Set<String> SPECIAL_FORMS =
@@ -322,11 +366,20 @@ public class RestrictedBlacklistedFunctions {
 
 
 
-    private static Set<String> ALL = mergeToSet(IO, SPECIAL_FORMS);
+    private static Set<String> ALL = mergeToSet(IO, CONCURRENCY, JAVA_INTEROP, SYSTEM, SPECIAL_FORMS);
 
-    private static Set<String> mergeToSet(final Collection<String> s1, Collection<String> s2) {
+    private static Set<String> mergeToSet(
+            final Collection<String> s1,
+            final Collection<String> s2,
+            final Collection<String> s3,
+            final Collection<String> s4,
+            final Collection<String> s5
+    ) {
         final HashSet<String> set = new HashSet<>(s1);
         set.addAll(s2);
+        set.addAll(s3);
+        set.addAll(s4);
+        set.addAll(s5);
         return set;
     }
 }

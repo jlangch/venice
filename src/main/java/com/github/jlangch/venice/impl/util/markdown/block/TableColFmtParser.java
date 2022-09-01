@@ -187,8 +187,7 @@ public class TableColFmtParser {
         if (sb == null) {
             sb = new SandboxInterceptor(
                         new SandboxRules()
-                                .rejectAllJavaCalls()
-                                .rejectAllVeniceIoFunctions()
+                                .rejectAllUnsafeFunctions()
                                 .whitelistVeniceFunctions("load-module")
                                 .withVeniceModules("parsifal"));
 

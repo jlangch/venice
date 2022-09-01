@@ -244,7 +244,7 @@ public class RejectAllInterceptor extends Interceptor {
 
 
     public List<String> getBlacklistedVeniceFunctions() {
-        final List<String> list = new ArrayList<>(RestrictedBlacklistedFunctions.getAll());
+        final List<String> list = new ArrayList<>(RestrictedBlacklistedFunctions.getAllFunctions());
         Collections.sort(list);
         return list;
     }

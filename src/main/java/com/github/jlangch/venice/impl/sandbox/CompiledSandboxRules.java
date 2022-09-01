@@ -295,6 +295,18 @@ public class CompiledSandboxRules {
                 else if (r.equals("*special-forms*")) {
                     blacklisted.addAll(RestrictedBlacklistedFunctions.getSpecialForms());
                 }
+                else if (r.equals("*concurrency*")) {
+                    blacklisted.addAll(RestrictedBlacklistedFunctions.getConcurrencyFunctions());
+                }
+                else if (r.equals("*system*")) {
+                    blacklisted.addAll(RestrictedBlacklistedFunctions.getSystemFunctions());
+                }
+                else if (r.equals("*java-interop*")) {
+                    blacklisted.addAll(RestrictedBlacklistedFunctions.getJavaInteropFunctions());
+                }
+                else if (r.equals("*unsafe*")) {
+                    blacklisted.addAll(RestrictedBlacklistedFunctions.getAllFunctions());
+                }
                 else {
                     blacklisted.add(r);
                 }
@@ -306,6 +318,18 @@ public class CompiledSandboxRules {
                 }
                 else if (r.equals("*special-forms*")) {
                     blacklisted.removeAll(RestrictedBlacklistedFunctions.getSpecialForms());
+                }
+                else if (r.equals("*concurrency*")) {
+                    blacklisted.removeAll(RestrictedBlacklistedFunctions.getConcurrencyFunctions());
+                }
+                else if (r.equals("*system*")) {
+                    blacklisted.removeAll(RestrictedBlacklistedFunctions.getSystemFunctions());
+                }
+                else if (r.equals("*java-interop*")) {
+                    blacklisted.removeAll(RestrictedBlacklistedFunctions.getJavaInteropFunctions());
+                }
+                else if (r.equals("*unsafe*")) {
+                    blacklisted.removeAll(RestrictedBlacklistedFunctions.getAllFunctions());
                 }
                 else {
                     blacklisted.remove(r);

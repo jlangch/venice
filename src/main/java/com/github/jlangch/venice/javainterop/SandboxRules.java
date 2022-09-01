@@ -475,12 +475,80 @@ public class SandboxRules {
     }
 
     /**
+     * Reject access to all concurrency related functions
+     *
+     * <ul>
+     *   <li>agents</li>
+     *   <li>futures</li>
+     *   <li>promises</li>
+     *   <li>thread</li>
+     *   <li>thread local</li>
+     *   <li>watches</li>
+     *   <li>parallel processing</li>
+     *   <li>scheduler</li>
+     * </ul>
+     *
+     * @return this {@code SandboxRules}
+     */
+    public SandboxRules rejectAllConcurrencyFunctions() {
+        rejectVeniceFunctions("*concurrency*");
+        return this;
+    }
+
+    /**
+     * Reject access to all system related functions
+     *
+     * @return this {@code SandboxRules}
+     */
+    public SandboxRules rejectAllSystemFunctions() {
+        rejectVeniceFunctions("*system*");
+        return this;
+    }
+
+    /**
      * Reject access to all Java related functions
      *
      * @return this {@code SandboxRules}
      */
     public SandboxRules rejectAllJavaCalls() {
-        rejectVeniceFunctions(".");
+        return rejectAllJavaFunctions();
+    }
+
+    /**
+     * Reject access to all Java related functions
+     *
+     * @return this {@code SandboxRules}
+     */
+    public SandboxRules rejectAllJavaFunctions() {
+        rejectVeniceFunctions("*java-interop*");
+        return this;
+    }
+
+    /**
+     * Reject access to all sensitive special forms
+     *
+     * <ul>
+     *   <li>dynamic code loading</li>
+     *   <li>ns manipulation</li>
+     *   <li>var manipulation</li>
+     *   <li>benchmark</li>
+     *   <li>profiling</li>
+     * </ul>
+     *
+     * @return this {@code SandboxRules}
+     */
+    public SandboxRules rejectAllSenstiveSpecialForms() {
+        rejectVeniceFunctions("*special-forms*");
+        return this;
+    }
+
+    /**
+     * Reject access to all unsafe functions
+     *
+     * @return this {@code SandboxRules}
+     */
+    public SandboxRules rejectAllUnsafeFunctions() {
+        rejectVeniceFunctions("*unsafe*");
         return this;
     }
 
