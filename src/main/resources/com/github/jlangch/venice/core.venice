@@ -939,7 +939,7 @@
 
   `(binding [*out* (io/capturing-print-stream)]
      (do ~@forms)
-     (str *out*)))
+     (deref *out*)))
 
 
 (defmacro
@@ -956,7 +956,7 @@
 
   `(binding [*err* (io/capturing-print-stream)]
      (do ~@forms)
-     (str *err*)))
+     (deref *err*)))
 
 
 (defmacro
@@ -1276,7 +1276,7 @@
           Without arg reads the next char from the stream that is the current
           value of `*in*`. With arg reads the next char from the passed stream
           that must be a subclass of `:java.io.Reader`.
-          
+
           Returns `nil` if the end of the stream is reached.
           """
      :examples '(

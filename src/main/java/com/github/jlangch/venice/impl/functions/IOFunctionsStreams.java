@@ -457,11 +457,13 @@ public class IOFunctionsStreams {
                     .arglists("(io/bytebuf-out-stream)")
                     .doc(
                         "Returns a new `java.io.ByteArrayOutputStream`.\n\n" +
+                        "Dereferencing a :ByteArrayOutputStream returns the " +
+                        "captured bytebuf.\n\n" +
                         "Note: The caller is responsible for closing the stream!")
                     .examples(
                         "(try-with [os (io/bytebuf-out-stream)]                  \n" +
                         "   (io/spit-stream os (bytebuf [97 98 99]) :flush true) \n" +
-                        "   (str/format-bytebuf (bytebuf os) \", \" :prefix0x))  ")
+                        "   (str/format-bytebuf @os \", \" :prefix0x))           ")
                     .seeAlso(
                         "io/slurp-stream", "io/file-in-stream", "io/string-in-stream")
                     .build()
@@ -573,7 +575,7 @@ public class IOFunctionsStreams {
                         "    (println wr \"line 1\")                                   \n" +
                         "    (println wr \"line 2\")                                   \n" +
                         "    (flush wr)                                                \n" +
-                        "    (bytebuf os)))                                            ")
+                        "    @os))                                                     ")
                     .seeAlso(
                         "io/wrap-os-with-print-writer")
                     .build()
@@ -616,7 +618,7 @@ public class IOFunctionsStreams {
                         "    (println pr \"line 1\")                                  \n" +
                         "    (println pr \"line 2\")                                  \n" +
                         "    (flush pr)                                               \n" +
-                        "    (bytebuf os)))                                           ")
+                        "    @os))                                                    ")
                     .seeAlso(
                         "io/wrap-os-with-buffered-writer")
                     .build()
@@ -824,6 +826,8 @@ public class IOFunctionsStreams {
                             "(io/string-writer)" )
                         .doc(
                             "Creates a `java.io.StringWriter`.\n\n" +
+                            "Dereferencing a string writer returns the " +
+                            "captured string.\n\n" +
                             "Note: The caller is responsible for closing the writer!")
                         .examples(
                             "(try-with [sw (io/string-writer)]     \n" +
@@ -831,7 +835,7 @@ public class IOFunctionsStreams {
                             "  (print sw \"-\")                    \n" +
                             "  (print sw 200)                      \n" +
                             "  (flush sw)                          \n" +
-                            "  (println (str sw)))                 ")
+                            "  (println @sw))                      ")
                         .seeAlso(
                             "str", "io/string-reader")
                         .build()
@@ -891,19 +895,21 @@ public class IOFunctionsStreams {
                         "(io/capturing-print-stream)" )
                     .doc(
                         "Creates a new capturing print stream.\n\n" +
+                        "Dereferencing a capturing print stream returns the " +
+                        "captured string.\n\n" +
                         "Note: The caller is responsible for closing the stream!")
                     .examples(
-                        "(try-with [ps (io/capturing-print-stream)]    \n" +
+                    	"(try-with [ps (io/capturing-print-stream)]    \n" +
                         "  (binding [*out* ps]                         \n" +
                         "    (println 100)                             \n" +
                         "    (println 200)                             \n" +
                         "    (flush)                                   \n" +
-                        "    (str ps)))                                ",
+                        "    @ps))                                     ",
                         "(try-with [ps (io/capturing-print-stream)]    \n" +
                         "  (println ps 100)                            \n" +
                         "  (println ps 200)                            \n" +
                         "  (flush ps)                                  \n" +
-                        "  (str ps))                                   ")
+                        "  @ps)                                        ")
                     .build()
         ) {
             @Override

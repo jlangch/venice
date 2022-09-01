@@ -27,7 +27,6 @@ import static com.github.jlangch.venice.impl.types.VncBoolean.False;
 import static com.github.jlangch.venice.impl.types.VncBoolean.True;
 import static com.github.jlangch.venice.impl.util.ArityExceptions.assertArity;
 
-import java.io.StringWriter;
 import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.math.RoundingMode;
@@ -106,7 +105,6 @@ import com.github.jlangch.venice.impl.util.MeterRegistry;
 import com.github.jlangch.venice.impl.util.StringUtil;
 import com.github.jlangch.venice.impl.util.SymbolMapBuilder;
 import com.github.jlangch.venice.impl.util.transducer.Reducer;
-import com.github.jlangch.venice.util.CapturingPrintStream;
 
 
 public class CoreFunctions {
@@ -873,27 +871,15 @@ public class CoreFunctions {
                         "(str +)",
                         "(str [1 2 3])",
                         "(str \"total \" 100)",
-                        "(str #\\h #\\i)",
-                        "(try-with [sw (io/string-writer)]     \n" +
-                        "  (print sw 100)                      \n" +
-                        "  (flush sw)                          \n" +
-                        "  (println (str sw)))                 ")
-                    .seeAlso("pr-str", "io/string-writer")
+                        "(str #\\h #\\i)")
+                    .seeAlso("pr-str")
                     .build()
         ) {
             @Override
             public VncVal apply(final VncList args) {
                 final StringBuilder sb = new StringBuilder();
                 for(VncVal v : args) {
-                    if (Types.isVncJavaObject(v, StringWriter.class)) {
-                        final StringWriter sw = Coerce.toVncJavaObject(v, StringWriter.class);
-                        sb.append(Printer.pr_str(new VncString(sw.getBuffer().toString()), false));
-                    }
-                    else if (Types.isVncJavaObject(v, CapturingPrintStream.class)) {
-                        final CapturingPrintStream ps = Coerce.toVncJavaObject(v, CapturingPrintStream.class);
-                        sb.append(Printer.pr_str(new VncString(ps.getOutput()), false));
-                    }
-                    else if (v != Nil) {
+                    if (v != Nil) {
                         sb.append(Printer.pr_str(v, false));
                     }
                 }

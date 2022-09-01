@@ -23,7 +23,6 @@ package com.github.jlangch.venice.impl.functions;
 
 import static com.github.jlangch.venice.impl.types.Constants.Nil;
 
-import java.io.ByteArrayOutputStream;
 import java.nio.ByteBuffer;
 import java.nio.charset.Charset;
 import java.util.Arrays;
@@ -88,9 +87,11 @@ public class BytebufFunctions {
                     .arglists("(bytebuf x)")
                     .doc(
                         "Converts x to bytebuf. x can be a bytebuf, a list/vector of longs, " +
-                        "a string, or a `java.io.ByteArrayOutputStream`")
+                        "a string")
                     .examples(
-                        "(bytebuf [0 1 2])", "(bytebuf '(0 1 2))", "(bytebuf \"abc\")")
+                        "(bytebuf [0 1 2])",
+                        "(bytebuf '(0 1 2))",
+                        "(bytebuf \"abc\")")
                     .seeAlso(
                         "io/bytebuf-out-stream")
                     .build()
@@ -123,15 +124,6 @@ public class BytebufFunctions {
                     }
                     else if (delegate instanceof ByteBuffer) {
                         return new VncByteBuffer((ByteBuffer)delegate);
-                    }
-                    else if (delegate instanceof ByteArrayOutputStream) {
-                        try(ByteArrayOutputStream os = (ByteArrayOutputStream)delegate) {
-                            return new VncByteBuffer(ByteBuffer.wrap(os.toByteArray()));
-                        }
-                        catch(Exception ex) {
-                            throw new VncException(
-                                    "Failed to copy ByteArrayOutputStream data to bytebuf", ex);
-                        }
                     }
                 }
                 else if (Types.isVncByteBuffer(arg)) {

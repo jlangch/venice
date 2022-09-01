@@ -25,6 +25,8 @@ import static com.github.jlangch.venice.impl.types.Constants.Nil;
 import static com.github.jlangch.venice.impl.types.VncBoolean.False;
 import static com.github.jlangch.venice.impl.types.VncBoolean.True;
 
+import java.io.ByteArrayOutputStream;
+import java.io.StringWriter;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -55,6 +57,7 @@ import com.github.jlangch.venice.impl.types.IDeref;
 import com.github.jlangch.venice.impl.types.IVncFunction;
 import com.github.jlangch.venice.impl.types.VncAtom;
 import com.github.jlangch.venice.impl.types.VncBoolean;
+import com.github.jlangch.venice.impl.types.VncByteBuffer;
 import com.github.jlangch.venice.impl.types.VncFunction;
 import com.github.jlangch.venice.impl.types.VncJavaObject;
 import com.github.jlangch.venice.impl.types.VncKeyword;
@@ -76,6 +79,7 @@ import com.github.jlangch.venice.impl.util.ArityExceptions;
 import com.github.jlangch.venice.impl.util.CallFrame;
 import com.github.jlangch.venice.impl.util.MetaUtil;
 import com.github.jlangch.venice.impl.util.SymbolMapBuilder;
+import com.github.jlangch.venice.util.CapturingPrintStream;
 
 
 public class ConcurrencyFunctions {
@@ -206,6 +210,15 @@ public class ConcurrencyFunctions {
                     }
                     else if (Types.isIDeref(delegate)) {
                         return ((IDeref)delegate).deref();
+                    }
+                    else if (delegate instanceof StringWriter) {
+                        return new VncString(((StringWriter)delegate).getBuffer().toString());
+                    }
+                    else if (delegate instanceof CapturingPrintStream) {
+                        return new VncString(((CapturingPrintStream)delegate).getOutput());
+                    }
+                    else if (delegate instanceof ByteArrayOutputStream) {
+                        return new VncByteBuffer(((ByteArrayOutputStream)delegate).toByteArray());
                     }
                 }
 
