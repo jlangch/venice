@@ -10,12 +10,13 @@ and this project adheres to
 
 
 
-## [1.10.19] - 2022-09-xx
+## [1.10.19] - 2022-09-02
 
 ### Added
 
 - function `partition-all`
-- load path support for `io/slurp` and `io/spit`
+- load path support for `io/slurp`, `io/spit`, `io/file-in-stream`, and
+  `io/file-out-stream`
 
 ### Improved
 
