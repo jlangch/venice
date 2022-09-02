@@ -67,18 +67,18 @@ final IInterceptor interceptor =
               .withSystemEnvs("SHELL", "HOME")
               .withClasspathResources("resources/images/*.png")
               .withClasses(
-                "java.lang.Math:PI"
-                "java.lang.Math:min", 
-                "java.time.ZonedDateTime:*", 
-                "java.awt.**:*", 
-                "java.util.ArrayList:new",
-                "java.util.ArrayList:add")
+                  "java.lang.Math:PI"
+                  "java.lang.Math:min", 
+                  "java.time.ZonedDateTime:*", 
+                  "java.awt.**:*", 
+                  "java.util.ArrayList:new",
+                  "java.util.ArrayList:add")
 
               // Venice extension modules: whitelist rules
               .withVeniceModules(
-                "crypt", 
-                "kira", 
-                "math")
+                  "crypt", 
+                  "kira", 
+                  "math")
 
               // Venice functions: blacklist rules
               .rejectAllJavaFunctions()
@@ -87,17 +87,12 @@ final IInterceptor interceptor =
               .rejectAllVeniceSystemFunctions()
               .rejectAllSenstiveSpecialForms()
               .rejectVeniceFunctions(
-                "time/date",
-                "time/zone-ids")
+                  "time/date",
+                  "time/zone-ids")
                 
-              // Venice functions: whitelist rules to offset 
+              // Venice functions: whitelist rules for print functions to offset
               // blacklist rules by individual functions
-              .whitelistVeniceFunctions(
-                 "print", 
-                 "printf", 
-                 "println", 
-                 "newline", 
-                 "io/print")
+              .whitelistVeniceFunctions("*print*")
 
               // Generic rules	
               .withMaxFutureThreadPoolSize(20)
