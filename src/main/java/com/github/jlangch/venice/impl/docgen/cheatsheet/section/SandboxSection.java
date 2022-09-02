@@ -42,7 +42,8 @@ public class SandboxSection implements ISectionBuilder {
         final DocSection sandbox = new DocSection("Sandbox", "sandbox.info");
         all.addSection(sandbox);
         sandbox.addItem(diBuilder.getDocItem("sandboxed?"));
-        sandbox.addItem(diBuilder.getDocItem("sandbox-type"));
+        sandbox.addItem(diBuilder.getDocItem("sandbox/type"));
+        sandbox.addItem(diBuilder.getDocItem("sandbox/functions", false));
 
         return section;
     }

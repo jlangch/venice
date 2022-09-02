@@ -60,11 +60,7 @@ import com.github.jlangch.venice.impl.util.ArityExceptions;
 import com.github.jlangch.venice.impl.util.CallFrame;
 import com.github.jlangch.venice.impl.util.CallStack;
 import com.github.jlangch.venice.impl.util.SymbolMapBuilder;
-import com.github.jlangch.venice.javainterop.AcceptAllInterceptor;
-import com.github.jlangch.venice.javainterop.IInterceptor;
-import com.github.jlangch.venice.javainterop.RejectAllInterceptor;
 import com.github.jlangch.venice.javainterop.ReturnValue;
-import com.github.jlangch.venice.javainterop.SandboxInterceptor;
 
 
 public class SystemFunctions {
@@ -72,7 +68,6 @@ public class SystemFunctions {
     ///////////////////////////////////////////////////////////////////////////
     // System
     ///////////////////////////////////////////////////////////////////////////
-
 
     public static VncFunction pid =
         new VncFunction(
@@ -466,65 +461,6 @@ public class SystemFunctions {
 
                 private static final long serialVersionUID = -1848883965231344442L;
             };
-
-    public static VncFunction sandboxed_Q =
-        new VncFunction(
-                "sandboxed?",
-                VncFunction
-                    .meta()
-                    .arglists("(sandboxed?)")
-                    .doc(
-                        "Returns true if there is a sandbox other than `:AcceptAllInterceptor` " +
-                        "otherwise false.")
-                    .examples("(sandboxed?)")
-                    .seeAlso("sandbox-type")
-                    .build()
-        ) {
-            @Override
-            public VncVal apply(final VncList args) {
-                ArityExceptions.assertArity(this, args, 0);
-
-                return VncBoolean.of(ThreadContext.isSandboxed());
-            }
-
-            private static final long serialVersionUID = -1848883965231344442L;
-        };
-
-    public static VncFunction sandbox_type =
-        new VncFunction(
-                "sandbox-type",
-                VncFunction
-                    .meta()
-                    .arglists("(sandbox-type)")
-                    .doc(
-                        "Returns the sandbox type. \n\n" +
-                        "Venice sandbox types:\n\n" +
-                        " * `:" + AcceptAllInterceptor.class.getSimpleName() + "` "
-                                + "- accepts all (no restrictions)\n" +
-                        " * `:" + RejectAllInterceptor.class.getSimpleName() + "` "
-                                + "- safe sandbox, rejects access to all I/O functions, "
-                                + "system properties, environment vars, extension modules, "
-                                + "dynamic code loading, multi-threaded functions (futures, agents, ...), "
-                                + "and Java calls\n" +
-                        " * `:" + SandboxInterceptor.class.getSimpleName() + "` "
-                                + "- customized sandbox")
-                    .examples("(sandbox-type)")
-                    .seeAlso("sandboxed?")
-                    .build()
-        ) {
-            @Override
-            public VncVal apply(final VncList args) {
-                ArityExceptions.assertArity(this, args, 0);
-
-                final IInterceptor interceptor = ThreadContext.getInterceptor();
-
-                return interceptor == null
-                        ? Constants.Nil
-                        : new VncKeyword(interceptor.getClass().getSimpleName());
-            }
-
-            private static final long serialVersionUID = -1848883965231344442L;
-        };
 
     public static VncFunction system_prop =
         new VncFunction(
@@ -921,8 +857,6 @@ public class SystemFunctions {
                     .add(gc)
                     .add(cpus)
                     .add(shutdown_hook)
-                    .add(sandboxed_Q)
-                    .add(sandbox_type)
                     .add(callstack)
                     .add(os_type)
                     .add(os_type_Q)
@@ -939,6 +873,7 @@ public class SystemFunctions {
                     .add(total_memory)
                     .add(used_memory)
                     .add(load_jar)
+
                     .toMap();
 
 

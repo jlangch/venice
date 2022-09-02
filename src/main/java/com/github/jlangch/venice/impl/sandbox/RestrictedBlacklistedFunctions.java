@@ -219,8 +219,6 @@ public class RestrictedBlacklistedFunctions {
                 "os-type?",
                 "os-version",
                 "pid",
-                "sandbox-type",
-                "sandboxed?",
                 "shutdown-hook",
                 "system-env",
                 "system-exit-code",

@@ -144,6 +144,7 @@ public class Functions {
         functions.putAll(TimeFunctions.ns);
         functions.putAll(ShellFunctions.ns);
         functions.putAll(SystemFunctions.ns);
+        functions.putAll(SandboxFunctions.ns);
         functions.putAll(ScheduleFunctions.ns);
         functions.putAll(ConcurrencyFunctions.ns);
         functions.putAll(JsonFunctions.ns);

@@ -22,7 +22,6 @@
 package com.github.jlangch.venice.impl.functions;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
@@ -55,13 +54,6 @@ public class SystemFunctionsTest {
         final Venice venice = new Venice();
 
         assertNull(venice.eval("(sleep 30)"));
-    }
-
-    @Test
-    public void test_sandboxed() {
-        final Venice venice = new Venice();
-
-        assertFalse((boolean)venice.eval("(sandboxed?)"));
     }
 
     @Test
