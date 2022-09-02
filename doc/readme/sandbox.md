@@ -42,9 +42,12 @@ that are available to the script in the JVM!
  - whitelist Java system property access down to individual properties
  - whitelist Java environment variables access down to individual vars
  - whitelist individual Venice extension modules like :shell, :maven, ...
- - blacklist all Venice I/O functions like spit, slurp, ...
- - blacklist individual Venice functions like time/date, ...
- - prohibit calls to all Venice I/O functions and Java fully
+ - blacklist all Venice I/O functions like `io/spit`, `io/slurp`, ...
+ - blacklist all unsafe system functions like running GC, reading system properties and
+   environment variables, ...
+ - blacklist all unsafe special forms for dynamically loading code, managing vars, 
+   namespaces, ...
+ - blacklist individual Venice functions like `time/date`, ...
  - limiting the execution time of a script
  
 
@@ -164,7 +167,7 @@ Prohibit all 'unsafe' functions:
 
 ```java
 import com.github.jlangch.venice.Venice;
-import com.github.jlangch.venice.javainterop.*;
+import com.github.jlangch.venice.javainterop.RejectAllInterceptor;
 
 final Venice venice = new Venice(new RejectAllInterceptor());
 
@@ -212,7 +215,8 @@ As mentioned above you can create your own threads if the configured
 sandbox allows it. 
 
 However what you can do within these threads is very limited because a 
-restricted sandbox is attached to this unmanaged threads.
+restricted sandbox (`:RejectAllInterceptor`)is attached to this unmanaged 
+threads.
 
 This means:
 
