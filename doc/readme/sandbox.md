@@ -148,10 +148,19 @@ venice.eval("(io/load-classpath-resource "resources/images/img.tiff")");
 ```
 
 
-#### Sandbox rejecting all I/O related functions
+#### Sandbox rejecting all 'unsafe' functions
 
-Prohibit Venice I/O functions, Venice I/O extension modules, 
-and Java Interop for completely safe scripting:
+Prohibit all 'unsafe' functions:
+
+ - Java interop
+ - all Venice I/O functions
+ - all Venice concurrency functions
+ - most Venice extension modules
+ - all unsafe system functions like running GC, reading system properties and
+   environment variables, ...
+ - all unsafe special forms for dynamically loading code, managing vars, 
+   namespaces, ...
+     
 
 ```java
 import com.github.jlangch.venice.Venice;
