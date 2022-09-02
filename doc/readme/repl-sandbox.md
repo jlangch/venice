@@ -104,7 +104,8 @@ venice> !sandbox customized
 * enable calls to _java.lang.Math_
 * enable access to system property _java.class.path_
 * enable access to system environment variable _JAVA_HOME_
-* blacklist all Venice I/O functions
+* blacklist all Venice I/O functions (using the group ref `*io*`)
+* whitelist rule `*print*` to offset the blacklisted `*io*` rule to allow printing values
 * blacklist the Venice 'count' function
 
 ```
@@ -113,6 +114,7 @@ venice> !sandbox add-rule class:java.lang.Math:*
 venice> !sandbox add-rule system.property:java.class.path
 venice> !sandbox add-rule system.env:JAVA_HOME
 venice> !sandbox add-rule blacklist:venice:func:*io*
+venice> !sandbox add-rule whitelist:venice:func:*print*
 venice> !sandbox add-rule blacklist:venice:func:count
 ```
 
@@ -134,8 +136,13 @@ venice> !sandbox add-rule blacklist:venice:func:count
 ```
 
 ```clojure
-; all Venice I/O functions are rejected
+; all Venice I/O functions are rejected (except the whitelisted printing functions)
 (io/exists-dir? (io/file "/tmp"))
+```
+
+```clojure
+; the Venice I/O function 'println' is allowed
+(println 1000)
 ```
 
 ```clojure
