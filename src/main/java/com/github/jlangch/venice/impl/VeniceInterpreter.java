@@ -853,29 +853,41 @@ public class VeniceInterpreter implements IVeniceInterpreter, Serializable  {
             final Env env,
             final VncMutableSet loadedModules
     ) {
-        try {
-            final long nanos = System.nanoTime();
+        synchronized (loadedModules) {
+            try {
+                final boolean load = !loadedModules.contains(new VncString(module));
 
-            // evaluate the module
-            final String code = ModuleLoader.loadModule(module);
-            RE("(eval " + code + ")", module, env);
+                if (load) {
+                    final long nanos = System.nanoTime();
 
-            final long elapsed = System.nanoTime() - nanos;
+                    // load the module's code
+                    final String code = ModuleLoader.loadModule(module);
 
-            // System.out.println("Loaded module :" + module + " in " + elapsed / 1_000_000 + "ms");
+                    // evaluate the module
+                    VncVal ast = READ("(do " + code + ")", module);
+                    if (isMacroExpandOnLoad()) {
+                        ast = MACROEXPAND(ast, env);
+                    }
+                    ast = EVAL(ast, env);
 
-            if (meterRegistry.enabled) {
-                meterRegistry.record("venice.module." + module + ".load", elapsed);
+                    final long elapsed = System.nanoTime() - nanos;
+
+                    // System.out.println("Loaded module :" + module + " in " + elapsed / 1_000_000 + "ms");
+
+                    if (meterRegistry.enabled) {
+                        meterRegistry.record("venice.module." + module + ".load", elapsed);
+                    }
+
+                    // remember the loaded module
+                    loadedModules.add(new VncKeyword(module));
+                }
             }
-
-            // remember the loaded module
-            loadedModules.add(new VncKeyword(module));
-        }
-        catch(VncException ex) {
-            throw ex;
-        }
-        catch(RuntimeException ex) {
-            throw new VncException("Failed to load module '" + module + "'", ex);
+            catch(VncException ex) {
+                throw ex;
+            }
+            catch(RuntimeException ex) {
+                throw new VncException("Failed to load module '" + module + "'", ex);
+            }
         }
     }
 

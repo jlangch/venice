@@ -167,16 +167,17 @@ public class SpecialForms_LoadCodeMacros {
                 specialFormCallValidation("load-module");
                 assertArity("load-module", FnType.SpecialForm, args, 1, 2, 3);
 
+                final long nanos = System.nanoTime();
 
-                synchronized (this) {
+                final VncSet loadedModules = getLoadedModules(env);
+
+                synchronized (loadedModules) {
                     final Namespace currNS = Namespaces.getCurrentNamespace();
                     try {
                         final VncKeyword moduleName = Coerce.toVncKeyword(args.first());
                         final Options options = parseOptions(args, "load-module");
                         final VncBoolean force = options.force;
                         final VncVector alias = options.alias;
-
-                        final VncSet loadedModules = getLoadedModules(env);
 
                         final boolean load = VncBoolean.isTrue(force) || !loadedModules.contains(moduleName);
 
@@ -195,6 +196,12 @@ public class SpecialForms_LoadCodeMacros {
                                             env);
 
                             loadedModules.add(moduleName);
+
+                            if (ctx.getMeterRegistry().enabled) {
+                                final long elapsed = System.nanoTime() - nanos;
+                            	ctx.getMeterRegistry().record("venice.module." + moduleName.getValue() + ".load", elapsed);
+                            }
+
                         }
 
                         if (alias != null) {
