@@ -105,7 +105,7 @@ venice> !sandbox customized
 * enable access to system property _java.class.path_
 * enable access to system environment variable _JAVA_HOME_
 * blacklist all Venice I/O functions (using the group ref `*io*`)
-* whitelist rule (`*print*`) to offset the blacklisted `*io*` rule to allow printing values
+* whitelist rule `*print*` to offset the blacklisted `*io*` rule to allow printing values
 * blacklist the Venice 'count' function
 
 ```
