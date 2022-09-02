@@ -105,6 +105,7 @@ venice> !sandbox customized
 * enable access to system property _java.class.path_
 * enable access to system environment variable _JAVA_HOME_
 * blacklist all Venice I/O functions (using the group ref `*io*`)
+* whitelist rules to offset the blacklisted `*io*` rule: `print`, `printf`, `println`, `newline`, `io/print` to allow printing values
 * blacklist the Venice 'count' function
 
 ```
@@ -113,6 +114,11 @@ venice> !sandbox add-rule class:java.lang.Math:*
 venice> !sandbox add-rule system.property:java.class.path
 venice> !sandbox add-rule system.env:JAVA_HOME
 venice> !sandbox add-rule blacklist:venice:func:*io*
+venice> !sandbox add-rule whitelist:venice:func:print
+venice> !sandbox add-rule whitelist:venice:func:printf
+venice> !sandbox add-rule whitelist:venice:func:println
+venice> !sandbox add-rule whitelist:venice:func:newline
+venice> !sandbox add-rule whitelist:venice:func:io/print
 venice> !sandbox add-rule blacklist:venice:func:count
 ```
 
