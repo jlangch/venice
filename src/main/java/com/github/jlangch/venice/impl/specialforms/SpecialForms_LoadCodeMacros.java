@@ -267,16 +267,6 @@ public class SpecialForms_LoadCodeMacros {
                         boolean loaded = new CodeLoader().loadVeniceFile(
                                                 file, ctx.getInterpreter(), interceptor, env, force, aliasOpt);
 
-//                        if (aliasOpt != null) {
-//                            validateNsAlias(
-//                                    String.format("load-file '%s'", file.getValue()),
-//                                    aliasOpt);
-//
-//                            final VncSymbol aliasName = unquoteSymbol(aliasOpt.third());
-//                            final VncSymbol nsName = unquoteSymbol(aliasOpt.first());
-//                            currNS.addAlias(aliasName.getName(), nsName.getName());
-//                        }
-
                         return VncVector
                                     .empty()
                                     .addAtEnd(file)
