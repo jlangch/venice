@@ -104,7 +104,7 @@ venice> !sandbox customized
 * enable calls to _java.lang.Math_
 * enable access to system property _java.class.path_
 * enable access to system environment variable _JAVA_HOME_
-* blacklist all Venice I/O functions
+* blacklist all Venice I/O functions (using the group ref `*io*`)
 * blacklist the Venice 'count' function
 
 ```
