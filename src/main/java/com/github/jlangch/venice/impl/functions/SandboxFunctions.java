@@ -120,12 +120,14 @@ public class SandboxFunctions {
                         "Lists the sandboxed functions defined by a sandbox function group.\n\n" +
                         "Groups:\n\n" +
                         " * :io \n" +
+                        " * :print \n" +
+                        " * :concurrency \n" +
                         " * :java-interop \n" +
                         " * :system \n" +
                         " * :special-forms \n" +
                         " * :unsafe")
                     .examples(
-                        "(sandbox/functions :io)")
+                        "(sandbox/functions :print)")
                     .seeAlso(
                     	"sandboxed?")
                     .build()
@@ -145,7 +147,9 @@ public class SandboxFunctions {
 
     private static VncList getGroup(final String group) {
         switch(group) {
-        	case "io":             return toVncList(RestrictedBlacklistedFunctions.getConcurrencyFunctions());
+	    	case "io":             return toVncList(RestrictedBlacklistedFunctions.getIoFunctions());
+	    	case "print":          return toVncList(RestrictedBlacklistedFunctions.getPrintFunctions());
+	    	case "concurrency":    return toVncList(RestrictedBlacklistedFunctions.getConcurrencyFunctions());
         	case "java-interop":   return toVncList(RestrictedBlacklistedFunctions.getJavaInteropFunctions());
         	case "system":         return toVncList(RestrictedBlacklistedFunctions.getSystemFunctions());
         	case "special-forms":  return toVncList(RestrictedBlacklistedFunctions.getSpecialForms());
