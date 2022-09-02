@@ -421,4 +421,64 @@ public class ComponentModuleTest {
         venice.eval(script);
     }
 
+    @Test
+    public void test_complex_component_with_ns_alias() {
+        final Venice venice = new Venice();
+
+        final String script =
+                  "(do                                                                               \n" +
+                  "  (load-module :component ['component :as 'c])                                    \n" +
+                  "                                                                                  \n" +
+                  "  (deftype :server [port :long]                                                   \n" +
+                  "     c/Component                                                                  \n" +
+                  "       (start [this]                                                              \n" +
+                  "         (let [store1 (-> (c/dep this :store1) :name)                             \n" +
+                  "               store2 (-> (c/dep this :store2) :name)]                            \n" +
+                  "           (println \"server started. using the stores\" store1 \",\" store2))    \n" +
+                  "         this)                                                                    \n" +
+                  "       (stop [this]                                                               \n" +
+                  "         (println \"server stopped\")                                             \n" +
+                  "         this))                                                                   \n" +
+                  "                                                                                  \n" +
+                  "  (deftype :database [name       :string                                          \n" +
+                  "                      user       :string                                          \n" +
+                  "                      password   :string]                                         \n" +
+                  "     c/Component                                                                  \n" +
+                  "       (start [this]                                                              \n" +
+                  "         (println \"database\" (:name this) \"started\")                          \n" +
+                  "         this)                                                                    \n" +
+                  "       (stop [this]                                                               \n" +
+                  "         (println \"database\" (:name this) \"stopped\")                          \n" +
+                  "         this))                                                                   \n" +
+                  "                                                                                  \n" +
+                  "  (defn create-system []                                                          \n" +
+                  "    (-> (c/system-map                                                             \n" +
+                  "          \"test\"                                                                \n" +
+                  "          :server (server. 4600)                                                  \n" +
+                  "          :store1 (database. \"store1\" \"foo\" \"123\")                          \n" +
+                  "          :store2 (database. \"store2\" \"foo\" \"123\"))                         \n" +
+                  "        (c/system-using {:server [:store1 :store2]})))                            \n" +
+                  "                                                                                  \n" +
+                  "  (defn start []                                                                  \n" +
+                  "    (-> (create-system)                                                           \n" +
+                  "        (c/start)))                                                               \n" +
+                  "                                                                                  \n" +
+                  "  (with-out-str                                                                   \n" +
+                  "    (let [system (start)                                                          \n" +
+                  "          server (-> system :components :server)]                                 \n" +
+                  "      ; access server component                                                   \n" +
+                  "      (println \"Accessing the system...\")                                       \n" +
+                  "      (c/stop system))))                                                          ";
+
+        assertEquals(
+        	"database store1 started\n" +
+        	"database store2 started\n" +
+        	"server started. using the stores store1 , store2\n" +
+        	"Accessing the system...\n" +
+        	"server stopped\n" +
+        	"database store2 stopped\n" +
+        	"database store1 stopped\n",
+        	venice.eval(script));
+    }
+
 }

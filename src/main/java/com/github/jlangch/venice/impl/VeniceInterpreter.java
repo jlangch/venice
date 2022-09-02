@@ -263,6 +263,8 @@ public class VeniceInterpreter implements IVeniceInterpreter, Serializable  {
             final boolean ansiTerminal,
             final RunMode runMode
     ) {
+    	final CodeLoader codeLoader = new CodeLoader();
+
         sealedSystemNS.set(false);
 
         final Env env = new Env(null);
@@ -315,14 +317,14 @@ public class VeniceInterpreter implements IVeniceInterpreter, Serializable  {
         loadedModules.addAll(VncMutableSet.ofAll(Modules.NATIVE_MODULES));
 
         // load core modules
-        loadModule("core", env, loadedModules);
+        codeLoader.loadModule(new VncKeyword("core"), this, null, env, false, null);
 
         // security: seal system namespaces (Namespaces::SYSTEM_NAMESPACES) - no further changes allowed!
         sealedSystemNS.set(true);
 
         // load other modules requested for preload
         CollectionUtil.toEmpty(preloadedExtensionModules)
-                      .forEach(m -> loadModule(m, env, loadedModules));
+                      .forEach(m -> codeLoader.loadModule(new VncKeyword(m), this, null, env, false, null));
 
         // set current namespace to 'user' after loading modules
         Namespaces.setCurrentNamespace(nsRegistry.computeIfAbsent(Namespaces.NS_USER));
@@ -339,10 +341,14 @@ public class VeniceInterpreter implements IVeniceInterpreter, Serializable  {
     }
 
     @Override
+    public MeterRegistry getMeterRegistry() {
+        return meterRegistry;
+    }
+
+    @Override
     public NamespaceRegistry getNamespaceRegistry() {
         return nsRegistry;
     }
-
 
     private VncVal evaluate(
             final VncVal ast_,
@@ -844,49 +850,6 @@ public class VeniceInterpreter implements IVeniceInterpreter, Serializable  {
                                 evaluate(seq.third(), env, false),
                                 evaluate(seq.fourth(), env, false));
                 default: return seq.map(v -> evaluate(v, env, false));
-            }
-        }
-    }
-
-    private void loadModule(
-            final String module,
-            final Env env,
-            final VncMutableSet loadedModules
-    ) {
-        synchronized (loadedModules) {
-            try {
-                final boolean load = !loadedModules.contains(new VncString(module));
-
-                if (load) {
-                    final long nanos = System.nanoTime();
-
-                    // load the module's code
-                    final String code = ModuleLoader.loadModule(module);
-
-                    // evaluate the module
-                    VncVal ast = READ("(do " + code + ")", module);
-                    if (isMacroExpandOnLoad()) {
-                        ast = MACROEXPAND(ast, env);
-                    }
-                    ast = EVAL(ast, env);
-
-                    final long elapsed = System.nanoTime() - nanos;
-
-                    // System.out.println("Loaded module :" + module + " in " + elapsed / 1_000_000 + "ms");
-
-                    if (meterRegistry.enabled) {
-                        meterRegistry.record("venice.module." + module + ".load", elapsed);
-                    }
-
-                    // remember the loaded module
-                    loadedModules.add(new VncKeyword(module));
-                }
-            }
-            catch(VncException ex) {
-                throw ex;
-            }
-            catch(RuntimeException ex) {
-                throw new VncException("Failed to load module '" + module + "'", ex);
             }
         }
     }

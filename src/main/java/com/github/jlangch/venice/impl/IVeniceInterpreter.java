@@ -27,6 +27,7 @@ import com.github.jlangch.venice.impl.env.Env;
 import com.github.jlangch.venice.impl.namespaces.NamespaceRegistry;
 import com.github.jlangch.venice.impl.types.VncVal;
 import com.github.jlangch.venice.impl.util.CallFrame;
+import com.github.jlangch.venice.impl.util.MeterRegistry;
 
 
 public interface IVeniceInterpreter {
@@ -67,6 +68,8 @@ public interface IVeniceInterpreter {
     List<String> getAvailableModules();
 
     NamespaceRegistry getNamespaceRegistry();
+
+    MeterRegistry getMeterRegistry();
 
     VncVal macroexpand_all(
             CallFrame callframe,
