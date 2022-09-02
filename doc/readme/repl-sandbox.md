@@ -140,8 +140,13 @@ venice> !sandbox add-rule blacklist:venice:func:count
 ```
 
 ```clojure
-; all Venice I/O functions are rejected
+; all Venice I/O functions are rejected (except the whitelisted printing functions)
 (io/exists-dir? (io/file "/tmp"))
+```
+
+```clojure
+; the Venice I/O function 'println' is allowed
+(println 1000)
 ```
 
 ```clojure
