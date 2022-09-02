@@ -35,8 +35,8 @@ import java.util.List;
 /**
  * Defines load paths for Venice.
  *
- * <p>The Venice functions 'load-file' and 'load-resource' can be
- * bound to load files and resources from restricted paths only.
+ * <p>The Venice function 'load-file' and file I/O functions can be
+ * bound to load resources from restricted paths only.
  * Load paths are part of Venice's {@code Sandbox} to control where
  * files can be loaded from.
  *

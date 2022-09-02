@@ -192,7 +192,7 @@ public class RejectAllInterceptor extends Interceptor {
     public void validateVeniceFunction(
             final String funcName
     ) throws SecurityException {
-        if (RestrictedBlacklistedFunctions.contains(funcName)) {
+        if (RestrictedBlacklistedFunctions.getAllFunctions().contains(funcName)) {
             throw new SecurityException(String.format(
                     "%s: Access denied to Venice function '%s'!",
                     PREFIX,

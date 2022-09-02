@@ -207,7 +207,8 @@ public class SandboxInterceptor extends ValueFilterInterceptor {
     public void validateMaxExecutionTime() throws SecurityException {
         if (executionTimeDeadline > 0 && System.currentTimeMillis() > executionTimeDeadline) {
             throw new SecurityException(
-                    "Venice Sandbox: The sandbox exceeded the max execution time");
+                    "Venice Sandbox: The sandbox exceeded the max execution time of " +
+                    getMaxExecutionTimeSeconds() + "s");
         }
     }
 

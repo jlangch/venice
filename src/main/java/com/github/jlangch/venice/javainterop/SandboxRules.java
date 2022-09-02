@@ -469,9 +469,20 @@ public class SandboxRules {
      *
      * @return this {@code SandboxRules}
      */
-    public SandboxRules rejectAllVeniceIoFunctions() {
+    public SandboxRules rejectAllIoFunctions() {
         rejectVeniceFunctions("*io*");
         return this;
+    }
+
+    /**
+     * Reject access to all Venice I/O related functions
+     *
+     * @return this {@code SandboxRules}
+     * @deprecated use {@link #rejectAllIoFunctions}
+     */
+    @Deprecated
+	public SandboxRules rejectAllVeniceIoFunctions() {
+        return rejectAllIoFunctions();
     }
 
     /**

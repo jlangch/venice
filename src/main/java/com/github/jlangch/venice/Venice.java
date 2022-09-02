@@ -28,6 +28,7 @@ import java.io.PrintStream;
 import java.io.Reader;
 import java.util.Map;
 import java.util.concurrent.Callable;
+import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
@@ -486,6 +487,18 @@ public class Venice {
             final Object value = ex.getValue();
             throw new ValueException(
                     value instanceof VncVal ? ((VncVal)value).convertToJavaObject() : value);
+        }
+        catch(com.github.jlangch.venice.SecurityException ex) {
+            throw ex;
+        }
+        catch(ExecutionException ex) {
+        	Throwable cause = ex.getCause();
+        	if (cause instanceof VncException) {
+        		throw (VncException)cause;
+        	}
+        	else {
+                throw new RuntimeException(ex.getMessage(), cause);
+        	}
         }
         catch(RuntimeException ex) {
             throw ex;

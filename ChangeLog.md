@@ -16,6 +16,11 @@ and this project adheres to
 
 - ...
 
+### Fixed
+
+- Venice to not wrap a `SecurityException` with a `VncException` on sandbox 
+  violations.
+
 
 
 

@@ -49,7 +49,7 @@ public class Functions {
         System.out.println(",\n");
 
         System.out.println("// Module functions:");
-        System.out.print(String.join(",\n", getVncFunctions(ModuleFunctions.ns)));
+        System.out.print(String.join(",\n", getVncFunctions(LoadPathFunctions.ns)));
         System.out.println(",\n");
 
         System.out.println();
@@ -132,7 +132,7 @@ public class Functions {
         functions.putAll(ExceptionFunctions.ns);
         functions.putAll(BytebufFunctions.ns);
         functions.putAll(TransducerFunctions.ns);
-        functions.putAll(ModuleFunctions.ns);
+        functions.putAll(LoadPathFunctions.ns);
         functions.putAll(StringFunctions.ns);
         functions.putAll(RegexFunctions.ns);
         functions.putAll(ArrayFunctions.ns);

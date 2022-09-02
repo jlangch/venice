@@ -267,7 +267,6 @@ public class VeniceInterpreter implements IVeniceInterpreter, Serializable  {
 
         final Env env = new Env(null);
 
-
         for(Map.Entry<VncVal,VncVal> e: Functions.functions.entrySet()) {
             final VncSymbol sym = (VncSymbol)e.getKey();
             final VncVal val = e.getValue();
@@ -324,6 +323,9 @@ public class VeniceInterpreter implements IVeniceInterpreter, Serializable  {
         // load other modules requested for preload
         CollectionUtil.toEmpty(preloadedExtensionModules)
                       .forEach(m -> loadModule(m, env, loadedModules));
+
+        // set current namespace to 'user' after loading modules
+        Namespaces.setCurrentNamespace(nsRegistry.computeIfAbsent(Namespaces.NS_USER));
 
         return env;
     }
@@ -855,14 +857,22 @@ public class VeniceInterpreter implements IVeniceInterpreter, Serializable  {
             final long nanos = System.nanoTime();
 
             // evaluate the module
-            RE("(eval " + ModuleLoader.loadModule(module) + ")", module, env);
+            final String code = ModuleLoader.loadModule(module);
+            RE("(eval " + code + ")", module, env);
+
+            final long elapsed = System.nanoTime() - nanos;
+
+            // System.out.println("Loaded module :" + module + " in " + elapsed / 1_000_000 + "ms");
 
             if (meterRegistry.enabled) {
-                meterRegistry.record("venice.module." + module + ".load", System.nanoTime() - nanos);
+                meterRegistry.record("venice.module." + module + ".load", elapsed);
             }
 
             // remember the loaded module
             loadedModules.add(new VncKeyword(module));
+        }
+        catch(VncException ex) {
+            throw ex;
         }
         catch(RuntimeException ex) {
             throw new VncException("Failed to load module '" + module + "'", ex);

@@ -33,6 +33,10 @@ public class RestrictedBlacklistedFunctions {
         return IO;
     }
 
+    public static Set<String> getPrintFunctions() {
+        return PRINT;
+    }
+
     public static Set<String> getConcurrencyFunctions() {
         return CONCURRENCY;
     }
@@ -53,12 +57,25 @@ public class RestrictedBlacklistedFunctions {
         return ALL;
     }
 
-    public static boolean contains(final String funcName) {
-        return ALL.contains(funcName);
-    }
+
+
+    private static Set<String> PRINT =
+        new HashSet<>(
+            Arrays.asList(
+                // print
+                "print",
+                "printf",
+                "println",
+                "newline",
+                "pr",
+                "prn",
+                "flush",
+                "io/print",
+                "io/flush"));
+
 
     private static Set<String> IO =
-        new HashSet<>(
+    	new HashSet<>(
 
             // ************************************************************
             // * Functions::main() helps with build this list
@@ -70,6 +87,10 @@ public class RestrictedBlacklistedFunctions {
                 "fn-pre-conditions",    // from core functions
 
                 // print
+                "flush",
+
+
+                // print
                 "print",
                 "printf",
                 "println",
@@ -77,16 +98,13 @@ public class RestrictedBlacklistedFunctions {
                 "pr",
                 "prn",
                 "flush",
+                "io/print",
+                "io/flush",
+
 
                 // read
                 "read-line",
                 "read-char",
-
-
-                // Module functions:
-                "load-paths",
-                "load-paths-unrestricted?",
-                "load-resource",
 
 
                 // I/O:
@@ -378,6 +396,6 @@ public class RestrictedBlacklistedFunctions {
         set.addAll(s3);
         set.addAll(s4);
         set.addAll(s5);
-        return set;
+         return set;
     }
 }
