@@ -83,11 +83,13 @@ final IInterceptor interceptor =
                   "kira", 
                   "math")
 
-              // Venice functions: blacklist rules
+              // Venice functions: blacklist group rules
               .rejectAllIoFunctions()
               .rejectAllConcurrencyFunctions()
               .rejectAllSystemFunctions()
               .rejectAllSenstiveSpecialForms()
+	      
+	      // Venice functions: blacklist rule for individual functions
               .rejectVeniceFunctions(
                   "time/date",
                   "time/zone-ids")
