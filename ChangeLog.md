@@ -21,16 +21,6 @@ and this project adheres to
 
 ## [1.10.20] - 2022-09-02
 
-### Fixed
-
-- Venice to not wrap a `SecurityException` with a `VncException` on sandbox 
-  violations.
-
-
-
-
-## [1.10.19] - 2022-09-02
-
 ### Added
 
 - function `partition-all`
@@ -55,6 +45,9 @@ and this project adheres to
 
 - REPL to add expressions with leading spaces to the history too by overriding
   `jline3`'s default configuration
+
+- Venice to not wrap a `SecurityException` with a `VncException` on sandbox 
+  violations.
 
 
 
