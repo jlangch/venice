@@ -46,7 +46,7 @@ public class DirectoryLoadPath extends LoadPath {
     }
 
     @Override
-    public boolean isOnPath(final File file) {
+    public boolean isOnPath(final File file, final Access mode) {
         try {
             final File f = realFile(file);
             return isFileWithinDirectory(f);
@@ -58,6 +58,16 @@ public class DirectoryLoadPath extends LoadPath {
                                 file.getPath()),
                         ex);
         }
+    }
+
+    @Override
+    public boolean isRegularFileOnLoadPath(final File file, final Access mode) {
+        return file.isFile() && isOnPath(file, mode);
+    }
+
+    @Override
+    public boolean isDirectoryOnLoadPath(final File file, final Access mode) {
+        return file.isDirectory() && isOnPath(file, mode);
     }
 
     @Override
@@ -93,18 +103,8 @@ public class DirectoryLoadPath extends LoadPath {
     }
 
     @Override
-    public boolean isRegularFileOnLoadPath(final File file) {
-        return isOnPath(file) && file.isFile();
-    }
-
-    @Override
-    public boolean isDirectoryOnLoadPath(final File file) {
-        return isOnPath(file) && file.isDirectory();
-    }
-
-    @Override
     public String toString() {
-    	return dir.getPath();
+        return dir.getPath();
     }
 
     private File realFile(final File file) {

@@ -31,6 +31,8 @@ import java.nio.file.OpenOption;
 import java.nio.file.StandardOpenOption;
 import java.util.List;
 
+import com.github.jlangch.venice.impl.util.loadpath.Access;
+
 
 /**
  * Defines load paths for Venice.
@@ -113,35 +115,38 @@ public interface ILoadPaths {
      * Returns {@code true} if the regular file exists on the load path
      *
      * @param file a file
+     * @param mode an access mode: read, write, read/write
      * @return {@code true} if the file exists on the load path
      */
-    boolean isRegularFileOnLoadPath(File file);
+    boolean isRegularFileOnLoadPath(File file, Access mode);
 
     /**
      * Returns {@code true} if the directory exists on the load path
      *
      * @param file a file
+     * @param mode an access mode: read, write, read/write
      * @return {@code true} if the file exists on the load path
      */
-    boolean isDirectoryOnLoadPath(File file);
-
-    /**
-     * @return the file paths associated with this {@code ILoadPaths} object
-     */
-    List<File> getPaths();
+    boolean isDirectoryOnLoadPath(File file, Access mode);
 
     /**
      * Checks if the passed file is within the load paths. The file must not
      * exist though.
      *
      * @param file a file to check
+     * @param mode an access mode: read, write, read/write
      * @return true if the file is within the load paths
      */
-    boolean isOnLoadPath(File file);
+    boolean isOnLoadPath(File file, Access mode);
 
     /**
      * @return {@code true} if the access to files is unlimited or
      *         {@code false} if the access is limited to the load paths.
      */
     boolean isUnlimitedAccess();
+
+    /**
+     * @return the file paths associated with this {@code ILoadPaths} object
+     */
+    List<File> getPaths();
 }

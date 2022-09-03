@@ -19,7 +19,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.github.jlangch.venice.impl.util.loadpath;
+package com.github.jlangch.venice.impl.util.loadpath.fn;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
@@ -32,16 +32,17 @@ import org.junit.jupiter.api.Test;
 import com.github.jlangch.venice.Parameters;
 import com.github.jlangch.venice.Venice;
 import com.github.jlangch.venice.VncException;
+import com.github.jlangch.venice.impl.util.loadpath.TempFS;
 
 
-public class LoadPaths_file_out_stream_Test {
+public class LoadPaths_spit_Test {
 
     @Test
     public void test_no_loadpaths() {
         TempFS.with((tempFS, root) -> {
             final Venice venice = new Venice();
 
-            venice.eval("(io/spit-stream (io/file-out-stream src) \"1234\" :flush true)", param(root, "spit.txt"));
+            venice.eval("(io/spit src \"1234\")", param(root, "spit.txt"));
             assertEquals("1234", venice.eval("(io/slurp src)", param(root, "spit.txt")));
         });
     }
@@ -53,11 +54,11 @@ public class LoadPaths_file_out_stream_Test {
             final Venice veniceWR = new Venice(tempFS.createSandbox(false));
 
             // to dir1/spit.txt
-            veniceWR.eval("(io/spit-stream (io/file-out-stream \"spit.txt\") \"1234\" :flush true)");
+            veniceWR.eval("(io/spit \"spit.txt\" \"1234\")");
             assertEquals("1234", veniceRD.eval("(io/slurp src)", param(root, "dir1/spit.txt")));
 
             // to dir1/11/spit.txt
-            veniceWR.eval("(io/spit-stream (io/file-out-stream \"11/spit.txt\") \"1234\" :flush true)");
+            veniceWR.eval("(io/spit \"11/spit.txt\" \"1234\")");
             assertEquals("1234", veniceRD.eval("(io/slurp src)", param(root, "dir1/11/spit.txt")));
 
 
@@ -66,7 +67,7 @@ public class LoadPaths_file_out_stream_Test {
             // to dir1/99/spit.txt
             assertThrows(
                     VncException.class,
-                    () -> veniceWR.eval("(io/spit-stream (io/file-out-stream \"99/spit.txt\") \"1234\" :flush true)"));
+                    () -> veniceWR.eval("(io/spit \"99/spit.txt\" \"1234\")"));
        });
     }
 
@@ -77,18 +78,18 @@ public class LoadPaths_file_out_stream_Test {
             final Venice veniceWR = new Venice(tempFS.createSandbox(true));
 
             // to dir1/spit.txt
-            veniceWR.eval("(io/spit-stream (io/file-out-stream \"spit.txt\") \"1234\" :flush true)");
+            veniceWR.eval("(io/spit \"spit.txt\" \"1234\")");
             assertEquals("1234", veniceRD.eval("(io/slurp src)", param(root, "dir1/spit.txt")));
 
             // to dir1/11/spit.txt
-            veniceWR.eval("(io/spit-stream (io/file-out-stream \"11/spit.txt\") \"1234\" :flush true)");
+            veniceWR.eval("(io/spit \"11/spit.txt\" \"1234\")");
             assertEquals("1234", veniceRD.eval("(io/slurp src)", param(root, "dir1/11/spit.txt")));
 
 
             // OUTSIDE load paths ---------------------------------------------------------
 
             // to dir1/../dir2/spit.txt
-            veniceWR.eval("(io/spit-stream (io/file-out-stream \"../dir2/spit.txt\") \"1234\" :flush true)");
+            veniceWR.eval("(io/spit \"../dir2/spit.txt\" \"1234\")");
             assertEquals("1234", veniceRD.eval("(io/slurp src)", param(root, "dir2/spit.txt")));
         });
     }
@@ -100,11 +101,11 @@ public class LoadPaths_file_out_stream_Test {
             final Venice veniceWR = new Venice(tempFS.createSandbox(false));
 
             // to dir1/spit.txt
-            veniceWR.eval("(io/spit-stream (io/file-out-stream src) \"1234\" :flush true)", param(root, "dir1/spit.txt"));
+            veniceWR.eval("(io/spit src \"1234\")", param(root, "dir1/spit.txt"));
             assertEquals("1234", veniceRD.eval("(io/slurp src)", param(root, "dir1/spit.txt")));
 
             // to dir1/11/spit.txt
-            veniceWR.eval("(io/spit-stream (io/file-out-stream src) \"1234\" :flush true)", param(root, "dir1/11/spit.txt"));
+            veniceWR.eval("(io/spit src \"1234\")", param(root, "dir1/11/spit.txt"));
             assertEquals("1234", veniceRD.eval("(io/slurp src)", param(root, "dir1/11/spit.txt")));
 
 
@@ -113,12 +114,12 @@ public class LoadPaths_file_out_stream_Test {
             // to dir1/../dir2/spit.txt => dir2/spit.txt
             assertThrows(
                     VncException.class,
-                    () -> veniceWR.eval("(io/spit-stream (io/file-out-stream src) \"1234\" :flush true)", param(root, "dir1/../dir2/spit.txt")));
+                    () -> veniceWR.eval("(io/spit src \"1234\")", param(root, "dir1/../dir2/spit.txt")));
 
             // to dir1/99/spit.txt
             assertThrows(
                     VncException.class,
-                    () -> veniceWR.eval("(io/spit-stream (io/file-out-stream src) \"1234\" :flush true)", param(root, "dir1/99/spit.txt")));
+                    () -> veniceWR.eval("(io/spit src \"1234\")", param(root, "dir1/99/spit.txt")));
        });
     }
 
@@ -129,24 +130,24 @@ public class LoadPaths_file_out_stream_Test {
             final Venice veniceWR = new Venice(tempFS.createSandbox(true));
 
             // to dir1/spit.txt
-            veniceWR.eval("(io/spit-stream (io/file-out-stream src) \"1234\" :flush true)", param(root, "dir1/spit.txt"));
+            veniceWR.eval("(io/spit src \"1234\")", param(root, "dir1/spit.txt"));
             assertEquals("1234", veniceRD.eval("(io/slurp src)", param(root, "dir1/spit.txt")));
 
             // to dir1/11/spit.txt
-            veniceWR.eval("(io/spit-stream (io/file-out-stream src) \"1234\" :flush true)", param(root, "dir1/11/spit.txt"));
+            veniceWR.eval("(io/spit src \"1234\")", param(root, "dir1/11/spit.txt"));
             assertEquals("1234", veniceRD.eval("(io/slurp src)", param(root, "dir1/11/spit.txt")));
 
 
             // OUTSIDE load paths ---------------------------------------------------------
 
             // to dir1/../dir2/spit.txt => dir2/spit.txt
-            veniceWR.eval("(io/spit-stream (io/file-out-stream src) \"1234\" :flush true)", param(root, "dir1/../dir2/spit.txt"));
+            veniceWR.eval("(io/spit src \"1234\")", param(root, "dir1/../dir2/spit.txt"));
             assertEquals("1234", veniceRD.eval("(io/slurp src)", param(root, "dir2/spit.txt")));
 
             // to dir1/99/spit.txt
             assertThrows(
                     VncException.class,
-                    () -> veniceWR.eval("(io/spit-stream (io/file-out-stream src) \"1234\" :flush true)", param(root, "dir1/99/spit.txt")));
+                    () -> veniceWR.eval("(io/spit src \"1234\")", param(root, "dir1/99/spit.txt")));
        });
     }
 

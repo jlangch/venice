@@ -19,7 +19,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.github.jlangch.venice.impl.util.loadpath;
+package com.github.jlangch.venice.impl.util.loadpath.fn;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
@@ -34,6 +34,7 @@ import com.github.jlangch.venice.Parameters;
 import com.github.jlangch.venice.Venice;
 import com.github.jlangch.venice.VncException;
 import com.github.jlangch.venice.impl.util.io.InternetUtil;
+import com.github.jlangch.venice.impl.util.loadpath.TempFS;
 
 
 public class LoadPaths_slurp_Test {

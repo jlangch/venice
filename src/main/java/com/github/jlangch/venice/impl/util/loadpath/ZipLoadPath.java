@@ -57,29 +57,39 @@ public class ZipLoadPath extends LoadPath {
     }
 
     @Override
-    public boolean isOnPath(final File file) {
-        return file.isAbsolute()
-                ? false
-                : entries.contains(file.getPath());
+    public boolean isOnPath(final File file, final Access mode) {
+        return mode == Access.Read && !file.isAbsolute()
+                ? entries.contains(file.getPath())
+                : false;
+    }
+
+    @Override
+    public boolean isRegularFileOnLoadPath(final File file, final Access mode) {
+        return mode == Access.Read && isOnPath(file, mode);
+    }
+
+    @Override
+    public boolean isDirectoryOnLoadPath(final File file, final Access mode) {
+        return false;  // not supported
     }
 
     @Override
     public ByteBuffer load(final File file) throws IOException {
-        return isOnPath(file)
+        return isOnPath(file, Access.Read)
                 ? ZipFileSystemUtil.loadBinaryFileFromZip(zip, file)
                 : null;
     }
 
     @Override
     public InputStream getInputStream(final File file) throws IOException {
-        return isOnPath(file)
+        return isOnPath(file, Access.Read)
                 ? ZipFileSystemUtil.getInputStreamFromZip(zip, file)
                 : null;
     }
 
     @Override
     public BufferedReader getBufferedReader(final File file, final Charset charset) throws IOException {
-        return isOnPath(file)
+        return isOnPath(file, Access.Read)
                 ? ZipFileSystemUtil.getBufferedReaderFromZip(zip, file, charset)
                 : null;
     }
@@ -90,18 +100,8 @@ public class ZipLoadPath extends LoadPath {
     }
 
     @Override
-    public boolean isRegularFileOnLoadPath(final File file) {
-        return isOnPath(file);
-    }
-
-    @Override
-    public boolean isDirectoryOnLoadPath(final File file) {
-        return false;  // not supported
-    }
-
-    @Override
     public String toString() {
-    	final int MAX = 10;
+        final int MAX = 10;
 
         List<String> list = new ArrayList<>(entries);
         Collections.sort(list);
@@ -109,8 +109,8 @@ public class ZipLoadPath extends LoadPath {
 
         int delta = list.size() - MAX;
         return delta > 0
-        	? String.join("\n", list) + String.format("\n...and %d more", delta)
-        	: String.join("\n", list);
+            ? String.join("\n", list) + String.format("\n...and %d more", delta)
+            : String.join("\n", list);
     }
 
 
@@ -142,8 +142,8 @@ public class ZipLoadPath extends LoadPath {
         catch(IOException ex) {
             throw new VncException(
                     String.format(
-	                        "Failed list the zip file's '%s' entries!",
-	                        zip.getPath()));
+                            "Failed list the zip file's '%s' entries!",
+                            zip.getPath()));
         }
     }
 

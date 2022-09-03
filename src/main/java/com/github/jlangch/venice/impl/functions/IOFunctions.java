@@ -1630,8 +1630,6 @@ public class IOFunctions {
             public VncVal apply(final VncList args) {
                 ArityExceptions.assertMinArity(this, args, 2);
 
-                sandboxFunctionCallValidation();
-
                 final VncHashMap options = VncHashMap.ofAll(args.rest().rest());
                 final VncVal replaceOpt = options.get(new VncKeyword("replace"));
 
@@ -1639,13 +1637,16 @@ public class IOFunctions {
                                             args.first(),
                                             "Function 'io/copy-file' does not allow %s as source");
 
-                validateReadableFile(sourceFile);
+                sandboxFunctionCallValidation(sourceFile, null);
+
 
                 final VncVal destVal = args.second();
 
                 final File destFile = convertToFile(destVal);
 
                 if (destFile != null) {
+                    sandboxFunctionCallValidation(null, destFile);
+
                     final List<CopyOption> copyOptions = new ArrayList<>();
                     if (VncBoolean.isTrue(replaceOpt)) {
                         copyOptions.add(StandardCopyOption.REPLACE_EXISTING);
@@ -1715,8 +1716,6 @@ public class IOFunctions {
             public VncVal apply(final VncList args) {
                 ArityExceptions.assertArity(this, args, 2);
 
-                sandboxFunctionCallValidation();
-
                 final File from = convertToFile(
                                     args.first(),
                                     "Function 'io/move-file' does not allow %s as source");
@@ -1725,7 +1724,7 @@ public class IOFunctions {
                                     args.second(),
                                     "Function 'io/move-file' does not allow %s as target");
 
-                validateReadableFile(from);
+                sandboxFunctionCallValidation(from, to);
 
                 try {
                     Files.move(from.toPath(), to.toPath());
@@ -1761,11 +1760,12 @@ public class IOFunctions {
             public VncVal apply(final VncList args) {
                 ArityExceptions.assertArity(this, args, 1);
 
-                sandboxFunctionCallValidation();
-
                 final File file = convertToFile(
                                     args.first(),
                                     "Function 'io/touch-file' does not allow %s as file");
+
+
+                sandboxFunctionCallValidation(null, file);
 
                 final Path path = file.toPath();
 

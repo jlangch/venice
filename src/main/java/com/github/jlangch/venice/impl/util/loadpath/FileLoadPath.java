@@ -44,13 +44,25 @@ public class FileLoadPath extends LoadPath {
     }
 
     @Override
-    public boolean isOnPath(final File file) {
+    public boolean isOnPath(final File file, final Access mode) {
+        // read / write to this load-path file allowed!
         if (file.isAbsolute()) {
             return lpFile.equals(canonical(file));
         }
         else {
-         	return file.getParent() == null && lpFile.getName().equals(file.getName());
+            return file.getParent() == null && lpFile.getName().equals(file.getName());
         }
+    }
+
+    @Override
+    public boolean isRegularFileOnLoadPath(final File file, final Access mode) {
+        // read / write to this load-path file allowed!
+        return file.isFile() && isOnPath(file, mode);
+    }
+
+    @Override
+    public boolean isDirectoryOnLoadPath(final File file, final Access mode) {
+        return false;
     }
 
     @Override
@@ -110,18 +122,8 @@ public class FileLoadPath extends LoadPath {
     }
 
     @Override
-    public boolean isRegularFileOnLoadPath(final File file) {
-        return isOnPath(file) && file.isFile();
-    }
-
-    @Override
-    public boolean isDirectoryOnLoadPath(final File file) {
-        return false;
-    }
-
-    @Override
     public String toString() {
-    	return lpFile.getPath();
+        return lpFile.getPath();
     }
 
 

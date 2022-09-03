@@ -99,7 +99,7 @@ public class LoadPaths implements ILoadPaths {
     }
 
     @Override
-    public boolean isOnLoadPath(final File file) {
+    public boolean isOnLoadPath(final File file, final Access mode) {
         if (file == null) {
             throw new IllegalArgumentException("A file must not be null");
         }
@@ -111,7 +111,7 @@ public class LoadPaths implements ILoadPaths {
                 // Check load paths. We do not care if the file exists its just
                 // important to be within one of the load paths
                 for(LoadPath p : paths) {
-                    if (p.isOnPath(file)) {
+                    if (p.isOnPath(file, mode)) {
                        return true;
                     }
                 }
@@ -128,6 +128,70 @@ public class LoadPaths implements ILoadPaths {
             }
 
             return false;
+        }
+    }
+
+    @Override
+    public boolean isRegularFileOnLoadPath(final File file, final Access mode) {
+        if (file == null) {
+            throw new IllegalArgumentException("A file must not be null");
+        }
+
+        try {
+            for(LoadPath p : paths) {
+                final boolean exists = p.isRegularFileOnLoadPath(file, mode);
+                if (exists) {
+                    return true;
+                }
+            }
+
+            if (unlimitedAccess) {
+                return file.isFile();
+            }
+
+            return false;
+        }
+        catch (VncException ex) {
+            throw ex;
+        }
+        catch (Exception ex) {
+            throw new VncException(
+                        String.format(
+                                "Failed to check if the regular file '%s' exists the load path",
+                                file.getPath()),
+                        ex);
+        }
+   }
+
+    @Override
+    public boolean isDirectoryOnLoadPath(final File file, final Access mode) {
+        if (file == null) {
+            throw new IllegalArgumentException("A file must not be null");
+        }
+
+        try {
+            for(LoadPath p : paths) {
+                final boolean exists = p.isDirectoryOnLoadPath(file, mode);
+                if (exists) {
+                    return true;
+                }
+            }
+
+            if (unlimitedAccess) {
+                return file.isDirectory();
+            }
+
+            return false;
+        }
+        catch (VncException ex) {
+            throw ex;
+        }
+        catch (Exception ex) {
+            throw new VncException(
+                        String.format(
+                                "Failed to check if the directory '%s' exists the load path",
+                                file.getPath()),
+                        ex);
         }
     }
 
@@ -269,70 +333,6 @@ public class LoadPaths implements ILoadPaths {
                         ex);
         }
     }
-
-    @Override
-    public boolean isRegularFileOnLoadPath(final File file) {
-        if (file == null) {
-            throw new IllegalArgumentException("A file must not be null");
-        }
-
-        try {
-            for(LoadPath p : paths) {
-                final boolean exists = p.isRegularFileOnLoadPath(file);
-                if (exists) {
-                    return true;
-                }
-            }
-
-            if (unlimitedAccess) {
-                return file.isFile();
-            }
-
-            return false;
-        }
-        catch (VncException ex) {
-            throw ex;
-        }
-        catch (Exception ex) {
-            throw new VncException(
-                        String.format(
-                                "Failed to check if the regular file '%s' exists the load path",
-                                file.getPath()),
-                        ex);
-        }
-   }
-
-    @Override
-    public boolean isDirectoryOnLoadPath(final File file) {
-        if (file == null) {
-            throw new IllegalArgumentException("A file must not be null");
-        }
-
-        try {
-            for(LoadPath p : paths) {
-                final boolean exists = p.isDirectoryOnLoadPath(file);
-                if (exists) {
-                    return true;
-                }
-            }
-
-            if (unlimitedAccess) {
-                return file.isDirectory();
-            }
-
-            return false;
-        }
-        catch (VncException ex) {
-            throw ex;
-        }
-        catch (Exception ex) {
-            throw new VncException(
-                        String.format(
-                                "Failed to check if the directory '%s' exists the load path",
-                                file.getPath()),
-                        ex);
-        }
-   }
 
 
     private ByteBuffer load(final File file) {

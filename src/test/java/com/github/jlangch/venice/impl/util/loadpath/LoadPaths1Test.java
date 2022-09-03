@@ -94,22 +94,36 @@ public class LoadPaths1Test {
                                             true); // unlimited access: true
 
             // absolute files on load path
-            assertTrue(loadPaths.isOnLoadPath(new File(root, "dir1/any.txt")));
-            assertTrue(loadPaths.isOnLoadPath(new File(root, "dir1/some/any.txt")));
-            assertTrue(loadPaths.isOnLoadPath(new File(root, "res1.txt")));
+            assertTrue(loadPaths.isOnLoadPath(new File(root, "dir1/any.txt"),      Access.Read));
+            assertTrue(loadPaths.isOnLoadPath(new File(root, "dir1/some/any.txt"), Access.Read));
+            assertTrue(loadPaths.isOnLoadPath(new File(root, "res1.txt"),          Access.Read));
+
+            assertTrue(loadPaths.isOnLoadPath(new File(root, "dir1/any.txt"),      Access.Write));
+            assertTrue(loadPaths.isOnLoadPath(new File(root, "dir1/some/any.txt"), Access.Write));
+            assertTrue(loadPaths.isOnLoadPath(new File(root, "res1.txt"),          Access.Write));
 
             // absolute files not on load path but unlimited access turned on
-            assertTrue(loadPaths.isOnLoadPath(new File(root, "dir1/../foo/any.txt")));
-            assertTrue(loadPaths.isOnLoadPath(new File(root, "dir1/../foo/some/any.txt")));
-            assertTrue(loadPaths.isOnLoadPath(new File(root, "/tmp/any.txt")));
+            assertTrue(loadPaths.isOnLoadPath(new File(root, "dir1/../foo/any.txt"),      Access.Read));
+            assertTrue(loadPaths.isOnLoadPath(new File(root, "dir1/../foo/some/any.txt"), Access.Read));
+            assertTrue(loadPaths.isOnLoadPath(new File(root, "/tmp/any.txt"),             Access.Read));
+
+            assertTrue(loadPaths.isOnLoadPath(new File(root, "dir1/../foo/any.txt"),      Access.Write));
+            assertTrue(loadPaths.isOnLoadPath(new File(root, "dir1/../foo/some/any.txt"), Access.Write));
+            assertTrue(loadPaths.isOnLoadPath(new File(root, "/tmp/any.txt"),             Access.Write));
 
             // relative files on load path
-            assertTrue(loadPaths.isOnLoadPath(new File("any.txt")));
-            assertTrue(loadPaths.isOnLoadPath(new File("some/any.txt")));
+            assertTrue(loadPaths.isOnLoadPath(new File("any.txt"),      Access.Read));
+            assertTrue(loadPaths.isOnLoadPath(new File("some/any.txt"), Access.Read));
+
+            assertTrue(loadPaths.isOnLoadPath(new File("any.txt"),      Access.Write));
+            assertTrue(loadPaths.isOnLoadPath(new File("some/any.txt"), Access.Write));
 
             // relative files not on load path but unlimited access turned on
-            assertTrue(loadPaths.isOnLoadPath(new File("../foo/any.txt")));
-            assertTrue(loadPaths.isOnLoadPath(new File("../foo/some/any.txt")));
+            assertTrue(loadPaths.isOnLoadPath(new File("../foo/any.txt"),      Access.Read));
+            assertTrue(loadPaths.isOnLoadPath(new File("../foo/some/any.txt"), Access.Read));
+
+            assertTrue(loadPaths.isOnLoadPath(new File("../foo/any.txt"),      Access.Write));
+            assertTrue(loadPaths.isOnLoadPath(new File("../foo/some/any.txt"), Access.Write));
         });
     }
 
@@ -124,22 +138,36 @@ public class LoadPaths1Test {
                                             false);  // unlimited access: false
 
             // absolute files on load path
-            assertTrue(loadPaths.isOnLoadPath(new File(root, "dir1/any.txt")));
-            assertTrue(loadPaths.isOnLoadPath(new File(root, "dir1/some/any.txt")));
-            assertTrue(loadPaths.isOnLoadPath(new File(root, "res1.txt")));
+            assertTrue(loadPaths.isOnLoadPath(new File(root, "dir1/any.txt"),      Access.Read));
+            assertTrue(loadPaths.isOnLoadPath(new File(root, "dir1/some/any.txt"), Access.Read));
+            assertTrue(loadPaths.isOnLoadPath(new File(root, "res1.txt"),          Access.Read));
+
+            assertTrue(loadPaths.isOnLoadPath(new File(root, "dir1/any.txt"),      Access.Write));
+            assertTrue(loadPaths.isOnLoadPath(new File(root, "dir1/some/any.txt"), Access.Write));
+            assertTrue(loadPaths.isOnLoadPath(new File(root, "res1.txt"),          Access.Write));
 
             // absolute files not on load path
-            assertFalse(loadPaths.isOnLoadPath(new File(root, "dir1/../foo/any.txt")));
-            assertFalse(loadPaths.isOnLoadPath(new File(root, "dir1/../foo/some/any.txt")));
-            assertFalse(loadPaths.isOnLoadPath(new File("/tmp/any.txt")));
+            assertFalse(loadPaths.isOnLoadPath(new File(root, "dir1/../foo/any.txt"),      Access.Read));
+            assertFalse(loadPaths.isOnLoadPath(new File(root, "dir1/../foo/some/any.txt"), Access.Read));
+            assertFalse(loadPaths.isOnLoadPath(new File("/tmp/any.txt"),                   Access.Read));
+
+            assertFalse(loadPaths.isOnLoadPath(new File(root, "dir1/../foo/any.txt"),      Access.Write));
+            assertFalse(loadPaths.isOnLoadPath(new File(root, "dir1/../foo/some/any.txt"), Access.Write));
+            assertFalse(loadPaths.isOnLoadPath(new File("/tmp/any.txt"),                   Access.Write));
 
             // relative files on load path
-            assertTrue(loadPaths.isOnLoadPath(new File("any.txt")));
-            assertTrue(loadPaths.isOnLoadPath(new File("some/any.txt")));
+            assertTrue(loadPaths.isOnLoadPath(new File("any.txt"),      Access.Read));
+            assertTrue(loadPaths.isOnLoadPath(new File("some/any.txt"), Access.Read));
+
+            assertTrue(loadPaths.isOnLoadPath(new File("any.txt"),      Access.Write));
+            assertTrue(loadPaths.isOnLoadPath(new File("some/any.txt"), Access.Write));
 
             // relative files not on load path
-            assertFalse(loadPaths.isOnLoadPath(new File("../foo/any.txt")));
-            assertFalse(loadPaths.isOnLoadPath(new File("../foo/some/any.txt")));
+            assertFalse(loadPaths.isOnLoadPath(new File("../foo/any.txt"),      Access.Read));
+            assertFalse(loadPaths.isOnLoadPath(new File("../foo/some/any.txt"), Access.Read));
+
+            assertFalse(loadPaths.isOnLoadPath(new File("../foo/any.txt"),      Access.Write));
+            assertFalse(loadPaths.isOnLoadPath(new File("../foo/some/any.txt"), Access.Write));
         });
     }
 

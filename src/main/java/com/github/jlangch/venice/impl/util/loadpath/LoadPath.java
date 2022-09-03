@@ -37,7 +37,11 @@ public abstract class LoadPath {
 
     abstract File path();
 
-    abstract boolean isOnPath(final File file);
+    abstract boolean isOnPath(final File file, final Access mode);
+
+    abstract boolean isRegularFileOnLoadPath(File file, final Access mode);
+
+    abstract boolean isDirectoryOnLoadPath(File file, final Access mode);
 
     abstract ByteBuffer load(final File file) throws IOException;
 
@@ -46,10 +50,6 @@ public abstract class LoadPath {
     abstract BufferedReader getBufferedReader(File file, Charset charset) throws IOException;
 
     abstract OutputStream getOutputStream(File file, OpenOption... options) throws IOException;
-
-    abstract boolean isRegularFileOnLoadPath(File file);
-
-    abstract boolean isDirectoryOnLoadPath(File file);
 
     public File canonical(final File file) {
         try {
