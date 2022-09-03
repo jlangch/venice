@@ -47,10 +47,6 @@ public class DirectoryLoadPath extends LoadPath {
 
     @Override
     public boolean isOnPath(final File file) {
-        if (file == null) {
-            throw new IllegalArgumentException("A file must not be null");
-        }
-
         try {
             final File f = realFile(file);
             return isFileWithinDirectory(f);
@@ -66,10 +62,6 @@ public class DirectoryLoadPath extends LoadPath {
 
     @Override
     public ByteBuffer load(final File file) throws IOException {
-        if (file == null) {
-            throw new IllegalArgumentException("A file must not be null");
-        }
-
         final File f = realFile(file);
         return f.isFile() && isFileWithinDirectory(f)
                 ? ByteBuffer.wrap(Files.readAllBytes(f.toPath()))
@@ -78,10 +70,6 @@ public class DirectoryLoadPath extends LoadPath {
 
     @Override
     public InputStream getInputStream(final File file) throws IOException {
-        if (file == null) {
-            throw new IllegalArgumentException("A file must not be null");
-        }
-
         final File f = realFile(file);
         return f.isFile() && isFileWithinDirectory(f)
                 ? Files.newInputStream(f.toPath())
@@ -90,10 +78,6 @@ public class DirectoryLoadPath extends LoadPath {
 
     @Override
     public BufferedReader getBufferedReader(final File file, final Charset charset) throws IOException {
-        if (file == null) {
-            throw new IllegalArgumentException("A file must not be null");
-        }
-
         final File f = realFile(file);
         return f.isFile() && isFileWithinDirectory(f)
                 ? Files.newBufferedReader(f.toPath(), charset)
@@ -102,11 +86,6 @@ public class DirectoryLoadPath extends LoadPath {
 
     @Override
     public OutputStream getOutputStream(final File file, final OpenOption... options) throws IOException {
-        if (file == null) {
-            throw new IllegalArgumentException("A file must not be null");
-        }
-
-
         final File f = realFile(file);
         return isFileWithinDirectory(f)
                 ? Files.newOutputStream(f.toPath(), options)
@@ -115,19 +94,11 @@ public class DirectoryLoadPath extends LoadPath {
 
     @Override
     public boolean isRegularFileOnLoadPath(final File file) {
-        if (file == null) {
-            throw new IllegalArgumentException("A file must not be null");
-        }
-
         return isOnPath(file) && file.isFile();
     }
 
     @Override
     public boolean isDirectoryOnLoadPath(final File file) {
-        if (file == null) {
-            throw new IllegalArgumentException("A file must not be null");
-        }
-
         return isOnPath(file) && file.isDirectory();
     }
 

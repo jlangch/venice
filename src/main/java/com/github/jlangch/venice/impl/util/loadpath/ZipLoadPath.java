@@ -58,10 +58,6 @@ public class ZipLoadPath extends LoadPath {
 
     @Override
     public boolean isOnPath(final File file) {
-        if (file == null) {
-            throw new IllegalArgumentException("A file must not be null");
-        }
-
         return file.isAbsolute()
                 ? false
                 : entries.contains(file.getPath());
@@ -69,10 +65,6 @@ public class ZipLoadPath extends LoadPath {
 
     @Override
     public ByteBuffer load(final File file) throws IOException {
-        if (file == null) {
-            throw new IllegalArgumentException("A file must not be null");
-        }
-
         return isOnPath(file)
                 ? ZipFileSystemUtil.loadBinaryFileFromZip(zip, file)
                 : null;
@@ -80,10 +72,6 @@ public class ZipLoadPath extends LoadPath {
 
     @Override
     public InputStream getInputStream(final File file) throws IOException {
-        if (file == null) {
-            throw new IllegalArgumentException("A file must not be null");
-        }
-
         return isOnPath(file)
                 ? ZipFileSystemUtil.getInputStreamFromZip(zip, file)
                 : null;
@@ -91,10 +79,6 @@ public class ZipLoadPath extends LoadPath {
 
     @Override
     public BufferedReader getBufferedReader(final File file, final Charset charset) throws IOException {
-        if (file == null) {
-            throw new IllegalArgumentException("A file must not be null");
-        }
-
         return isOnPath(file)
                 ? ZipFileSystemUtil.getBufferedReaderFromZip(zip, file, charset)
                 : null;
@@ -107,19 +91,11 @@ public class ZipLoadPath extends LoadPath {
 
     @Override
     public boolean isRegularFileOnLoadPath(final File file) {
-        if (file == null) {
-            throw new IllegalArgumentException("A file must not be null");
-        }
-
         return isOnPath(file);
     }
 
     @Override
     public boolean isDirectoryOnLoadPath(final File file) {
-        if (file == null) {
-            throw new IllegalArgumentException("A file must not be null");
-        }
-
         return false;  // not supported
     }
 

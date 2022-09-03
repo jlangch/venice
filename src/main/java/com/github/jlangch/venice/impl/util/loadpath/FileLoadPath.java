@@ -45,10 +45,6 @@ public class FileLoadPath extends LoadPath {
 
     @Override
     public boolean isOnPath(final File file) {
-        if (file == null) {
-            throw new IllegalArgumentException("A file must not be null");
-        }
-
         if (file.isAbsolute()) {
             return lpFile.equals(canonical(file));
         }
@@ -59,10 +55,6 @@ public class FileLoadPath extends LoadPath {
 
     @Override
     public ByteBuffer load(final File file) throws IOException {
-        if (file == null) {
-            throw new IllegalArgumentException("A file must not be null");
-        }
-
         if (file.isAbsolute()) {
             final File f = canonical(file);
             if (lpFile.equals(f) && f.isFile()) {
@@ -80,10 +72,6 @@ public class FileLoadPath extends LoadPath {
 
     @Override
     public InputStream getInputStream(final File file) throws IOException {
-        if (file == null) {
-            throw new IllegalArgumentException("A file must not be null");
-        }
-
         if (file.isAbsolute()) {
             final File f = canonical(file);
             if (lpFile.equals(f) && f.isFile()) {
@@ -101,10 +89,6 @@ public class FileLoadPath extends LoadPath {
 
     @Override
     public BufferedReader getBufferedReader(final File file, final Charset charset) throws IOException {
-        if (file == null) {
-            throw new IllegalArgumentException("A file must not be null");
-        }
-
         if (file.isAbsolute()) {
             final File f = canonical(file);
             if (lpFile.equals(f) && f.isFile()) {
@@ -127,19 +111,11 @@ public class FileLoadPath extends LoadPath {
 
     @Override
     public boolean isRegularFileOnLoadPath(final File file) {
-        if (file == null) {
-            throw new IllegalArgumentException("A file must not be null");
-        }
-
         return isOnPath(file) && file.isFile();
     }
 
     @Override
     public boolean isDirectoryOnLoadPath(final File file) {
-        if (file == null) {
-            throw new IllegalArgumentException("A file must not be null");
-        }
-
         return false;
     }
 
