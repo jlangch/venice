@@ -26,8 +26,6 @@ import static com.github.jlangch.venice.impl.types.Constants.Nil;
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
@@ -35,8 +33,6 @@ import java.io.OutputStreamWriter;
 import java.io.PrintStream;
 import java.io.Reader;
 import java.io.Writer;
-import java.net.URI;
-import java.net.URL;
 import java.util.Map;
 import java.util.function.BiFunction;
 import java.util.function.Function;
@@ -160,10 +156,12 @@ public class JsonFunctions {
                     final String encoding = encoding(options.get(new VncKeyword("encoding")));
 
                     if (out instanceof File) {
-                        try (FileOutputStream fos = new FileOutputStream((File)out);
-                             OutputStreamWriter osw = new OutputStreamWriter(fos, encoding);
-                             BufferedWriter wr = new BufferedWriter(osw)
-                        ) {
+                    	// Delegate to 'io/file-out-stream' for sandbox validation
+                        final OutputStream fileOS = Coerce.toVncJavaObject(
+                        							    IOFunctionsStreams.io_file_out_stream.applyOf(args.first()),
+                        							    OutputStream.class);
+
+                        try (BufferedWriter wr = new BufferedWriter(new OutputStreamWriter(fileOS, encoding))) {
                             final JsonAppendableWriter writer = prettyPrint
                                     ? JsonWriter.indent(INDENT).on(wr)
                                     : JsonWriter.on(wr);
@@ -289,9 +287,7 @@ public class JsonFunctions {
                         "The source may be a:                                         \n\n" +
                         " * `java.io.File`, e.g: `(io/file \"/temp/foo.json\")`       \n" +
                         " * `java.io.InputStream`                                     \n" +
-                        " * `java.io.Reader`                                          \n" +
-                        " * `java.net.URL`                                            \n" +
-                        " * `java.net.URI`                                            \n\n" +
+                        " * `java.io.Reader`                                          \n\n" +
                         "Options: \n\n" +
                         "| :key-fn fn   | Single-argument function called on JSON property " +
                         "                 names; return value will replace the property names " +
@@ -342,22 +338,17 @@ public class JsonFunctions {
                                 value_fn == null ? null : (k, v) -> value_fn.apply(VncList.of(k, v));
 
                         if (in instanceof File) {
-                            try (BufferedReader br = new BufferedReader(new InputStreamReader(new FileInputStream((File)in), encoding))) {
+                        	// Delegate to 'io/file-in-stream' for sandbox validation
+                            final InputStream fileIS = Coerce.toVncJavaObject(
+                            							    IOFunctionsStreams.io_file_in_stream.applyOf(args.first()),
+                            							    InputStream.class);
+
+                            try (BufferedReader br = new BufferedReader(new InputStreamReader(fileIS, encoding))) {
                                 return new VncJsonReader(JsonReader.from(br), keyFN, valueFN, toDecimal).read();
                             }
                         }
                         else if (in instanceof InputStream) {
                             try (BufferedReader br = new BufferedReader(new InputStreamReader((InputStream)in, encoding))) {
-                                return new VncJsonReader(JsonReader.from(br), keyFN, valueFN, toDecimal).read();
-                            }
-                        }
-                        else if (in instanceof URL) {
-                            try (BufferedReader br = new BufferedReader(new InputStreamReader(((URL)in).openStream(), encoding))) {
-                                return new VncJsonReader(JsonReader.from(br), keyFN, valueFN, toDecimal).read();
-                            }
-                        }
-                        else if (in instanceof URI) {
-                            try (BufferedReader br = new BufferedReader(new InputStreamReader(((URI)in).toURL().openStream(), encoding))) {
                                 return new VncJsonReader(JsonReader.from(br), keyFN, valueFN, toDecimal).read();
                             }
                         }

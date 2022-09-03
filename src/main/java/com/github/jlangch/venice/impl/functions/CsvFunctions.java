@@ -22,13 +22,10 @@
 package com.github.jlangch.venice.impl.functions;
 
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.InputStream;
 import java.io.Reader;
 import java.io.StringWriter;
 import java.io.Writer;
-import java.net.URI;
-import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -70,9 +67,7 @@ public class CsvFunctions {
                         " * `bytebuf`                                                      \n" +
                         " * `java.io.File`, e.g: `(io/file \"/temp/foo.json\")`            \n" +
                         " * `java.io.InputStream`                                          \n" +
-                        " * `java.io.Reader`                                               \n" +
-                        " * `java.net.URL`                                                 \n" +
-                        " * `java.net.URI`                                                 \n\n" +
+                        " * `java.io.Reader`                                               \n\n" +
                         "Options:\n\n" +
                         "| :encoding enc  | used when reading from a binary data source " +
                         "                   e.g :encoding :utf-8, defaults to :utf-8 |\n" +
@@ -101,15 +96,14 @@ public class CsvFunctions {
                         return map(parser.parse(((VncString)source).getValue()));
                     }
                     else if (Types.isVncJavaObject(source, File.class)) {
-                        final File file = Types.isVncString(source)
-                                            ? new File(((VncString)source).getValue())
-                                            : (File)(Coerce.toVncJavaObject(args.first()).getDelegate());
-
-                        IOFunctions.validateReadableFile(file);
+                    	// Delegate to 'io/file-in-stream' for sandbox validation
+                        final InputStream fileIS = Coerce.toVncJavaObject(
+                        							IOFunctionsStreams.io_file_in_stream.applyOf(source),
+                        							InputStream.class);
 
                         final VncVal encVal = options.get(new VncKeyword("encoding"));
 
-                        try(FileInputStream is = new FileInputStream(file)) {
+                        try(InputStream is = fileIS) {
                             return map(parser.parse(is, CharsetUtil.charset(encVal)));
                         }
                     }
@@ -120,24 +114,6 @@ public class CsvFunctions {
 
                         try(InputStream is_ = is) {
                             return map(parser.parse(is_, CharsetUtil.charset(encVal)));
-                        }
-                    }
-                    else if (Types.isVncJavaObject(source, URL.class)) {
-                        final URL url = (URL)(Coerce.toVncJavaObject(args.first()).getDelegate());
-
-                        final VncVal encVal = options.get(new VncKeyword("encoding"));
-
-                        try(InputStream is = url.openStream()) {
-                            return map(parser.parse(is, CharsetUtil.charset(encVal)));
-                        }
-                    }
-                    else if (Types.isVncJavaObject(source, URI.class)) {
-                        final URI uri = (URI)(Coerce.toVncJavaObject(args.first()).getDelegate());
-
-                        final VncVal encVal = options.get(new VncKeyword("encoding"));
-
-                        try(InputStream is = uri.toURL().openStream()) {
-                            return map(parser.parse(is, CharsetUtil.charset(encVal)));
                         }
                     }
                     else if (Types.isVncJavaObject(source, Reader.class)) {

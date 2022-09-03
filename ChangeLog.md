@@ -14,7 +14,9 @@ and this project adheres to
 
 ### Added
 
-- ...
+- CSV and JSON delegate now to the I/O module to do its file I/O.   
+  This way CSV and JSON can be controlled by the sandbox's I/O 
+  configuration
 
 
 
