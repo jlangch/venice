@@ -49,63 +49,50 @@ public class FileLoadPath extends LoadPath {
             throw new IllegalArgumentException("A file must not be null");
         }
 
-        final File f = canonical(file);
-        if (lpFile.equals(f)) {
-        	return true;
+        if (file.isAbsolute()) {
+            return lpFile.equals(canonical(file));
         }
         else {
-        	return file.getParent() == null && lpFile.getName().equals(file.getName());
+         	return file.getParent() == null && lpFile.getName().equals(file.getName());
         }
     }
 
     @Override
-    public ByteBuffer load(final File file) {
+    public ByteBuffer load(final File file) throws IOException {
         if (file == null) {
             throw new IllegalArgumentException("A file must not be null");
         }
 
-        final File f = canonical(file);
-        if (lpFile.equals(f) && f.isFile()) {
-            try {
+        if (file.isAbsolute()) {
+            final File f = canonical(file);
+            if (lpFile.equals(f) && f.isFile()) {
                 return ByteBuffer.wrap(Files.readAllBytes(f.toPath()));
             }
-            catch(IOException ex) {
-                return null; // just proceed and try with next load path
-            }
         }
-        else if ((file.getParent() == null) && lpFile.getName().equals(file.getName())) {
-            try {
+        else {
+            if ((file.getParent() == null) && lpFile.getName().equals(file.getName())) {
                 return ByteBuffer.wrap(Files.readAllBytes(lpFile.toPath()));
             }
-            catch(IOException ex) {
-                return null; // just proceed and try with next load path
-            }
         }
 
         return null;
     }
 
     @Override
-    public InputStream getInputStream(final File file) {
+    public InputStream getInputStream(final File file) throws IOException {
         if (file == null) {
             throw new IllegalArgumentException("A file must not be null");
         }
 
-        final File f = canonical(file);
-        if (lpFile.equals(f) && f.isFile()) {
-            try {
+        if (file.isAbsolute()) {
+            final File f = canonical(file);
+            if (lpFile.equals(f) && f.isFile()) {
                 return Files.newInputStream(f.toPath());
             }
-            catch(IOException ex) {
-                return null; // just proceed and try with next load path
-            }
         }
-        else if ((file.getParent() == null) && lpFile.getName().equals(file.getName())) {
-            try {
+        else {
+            if ((file.getParent() == null) && lpFile.getName().equals(file.getName())) {
                 return Files.newInputStream(lpFile.toPath());
-            }
-            catch(IOException ex) {
-                return null; // just proceed and try with next load path
             }
         }
 
@@ -113,26 +100,20 @@ public class FileLoadPath extends LoadPath {
     }
 
     @Override
-    public BufferedReader getBufferedReader(final File file, final Charset charset) {
+    public BufferedReader getBufferedReader(final File file, final Charset charset) throws IOException {
         if (file == null) {
             throw new IllegalArgumentException("A file must not be null");
         }
 
-        final File f = canonical(file);
-        if (lpFile.equals(f) && f.isFile()) {
-            try {
+        if (file.isAbsolute()) {
+            final File f = canonical(file);
+            if (lpFile.equals(f) && f.isFile()) {
                 return Files.newBufferedReader(f.toPath(), charset);
             }
-            catch(IOException ex) {
-                return null; // just proceed and try with next load path
-            }
         }
-        else if ((file.getParent() == null) && lpFile.getName().equals(file.getName())) {
-            try {
+        else {
+            if ((file.getParent() == null) && lpFile.getName().equals(file.getName())) {
                 return Files.newBufferedReader(lpFile.toPath(), charset);
-            }
-            catch(IOException ex) {
-                return null; // just proceed and try with next load path
             }
         }
 
@@ -140,7 +121,7 @@ public class FileLoadPath extends LoadPath {
     }
 
     @Override
-    public OutputStream getOutputStream(final File file, final OpenOption... options) {
+    public OutputStream getOutputStream(final File file, final OpenOption... options) throws IOException {
         return null;   // not supported
     }
 

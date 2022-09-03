@@ -68,74 +68,40 @@ public class ZipLoadPath extends LoadPath {
     }
 
     @Override
-    public ByteBuffer load(final File file) {
+    public ByteBuffer load(final File file) throws IOException {
         if (file == null) {
             throw new IllegalArgumentException("A file must not be null");
         }
 
-        if (file.isAbsolute()) {
-            return null;
-        }
-        else if (entries.contains(file.getPath())) {
-            try {
-                return ZipFileSystemUtil
-                            .loadBinaryFileFromZip(zip, file);
-            }
-            catch(Exception ex) {
-                return null;
-            }
-        }
-        else {
-           return null;
-        }
+        return isOnPath(file)
+            	? ZipFileSystemUtil.loadBinaryFileFromZip(zip, file)
+            	: null;
     }
 
     @Override
-    public InputStream getInputStream(final File file) {
+    public InputStream getInputStream(final File file) throws IOException {
         if (file == null) {
             throw new IllegalArgumentException("A file must not be null");
         }
 
-        if (file.isAbsolute()) {
-            return null;
-        }
-        else if (entries.contains(file.getPath())) {
-            try {
-                return ZipFileSystemUtil.getInputStreamFromZip(zip, file);
-            }
-            catch(Exception ex) {
-                return null;
-            }
-        }
-        else {
-           return null;
-        }
+        return isOnPath(file)
+            	? ZipFileSystemUtil.getInputStreamFromZip(zip, file)
+            	: null;
     }
 
     @Override
-    public BufferedReader getBufferedReader(final File file, final Charset charset) {
+    public BufferedReader getBufferedReader(final File file, final Charset charset) throws IOException {
         if (file == null) {
             throw new IllegalArgumentException("A file must not be null");
         }
 
-        if (file.isAbsolute()) {
-            return null;
-        }
-        else if (entries.contains(file.getPath())) {
-            try {
-                return ZipFileSystemUtil.getBufferedReaderFromZip(zip, file, charset);
-            }
-            catch(Exception ex) {
-                return null;
-            }
-        }
-        else {
-           return null;
-        }
+        return isOnPath(file)
+            	? ZipFileSystemUtil.getBufferedReaderFromZip(zip, file, charset)
+            	: null;
     }
 
     @Override
-    public OutputStream getOutputStream(final File file, final OpenOption... options) {
+    public OutputStream getOutputStream(final File file, final OpenOption... options) throws IOException {
         return null;   // not supported
     }
 

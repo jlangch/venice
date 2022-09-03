@@ -23,6 +23,7 @@ package com.github.jlangch.venice.impl.util.loadpath;
 
 import java.io.BufferedReader;
 import java.io.File;
+import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.nio.ByteBuffer;
@@ -64,95 +65,52 @@ public class DirectoryLoadPath extends LoadPath {
     }
 
     @Override
-    public ByteBuffer load(final File file) {
+    public ByteBuffer load(final File file) throws IOException {
         if (file == null) {
             throw new IllegalArgumentException("A file must not be null");
         }
 
-        try {
-            final File f = realFile(file);
-            if (f.isFile()) {
-                return isFileWithinDirectory(f)
-                        ? ByteBuffer.wrap(Files.readAllBytes(f.toPath()))
-                        : null;
-            }
-            else {
-                return null;
-            }
-        }
-        catch (Exception ex) {
-            throw new VncException(
-                        String.format("Failed to load file '%s'", file.getPath()),
-                        ex);
-        }
+        final File f = realFile(file);
+        return f.isFile() && isFileWithinDirectory(f)
+                ? ByteBuffer.wrap(Files.readAllBytes(f.toPath()))
+                : null;
     }
 
     @Override
-    public InputStream getInputStream(final File file) {
+    public InputStream getInputStream(final File file) throws IOException {
         if (file == null) {
             throw new IllegalArgumentException("A file must not be null");
         }
 
-        try {
-            final File f = realFile(file);
-            if (f.isFile()) {
-                return isFileWithinDirectory(f)
-                        ? Files.newInputStream(f.toPath())
-                        : null;
-            }
-            else {
-                return null;
-            }
-        }
-        catch (Exception ex) {
-            throw new VncException(
-                        String.format("Failed to get InputStream for file '%s'", file.getPath()),
-                        ex);
-        }
+        final File f = realFile(file);
+        return f.isFile() && isFileWithinDirectory(f)
+                ? Files.newInputStream(f.toPath())
+                : null;
     }
 
     @Override
-    public BufferedReader getBufferedReader(final File file, final Charset charset) {
+    public BufferedReader getBufferedReader(final File file, final Charset charset) throws IOException {
         if (file == null) {
             throw new IllegalArgumentException("A file must not be null");
         }
 
-        try {
-            final File f = realFile(file);
-            if (f.isFile()) {
-                return isFileWithinDirectory(f)
-                        ? Files.newBufferedReader(f.toPath(), charset)
-                        : null;
-            }
-            else {
-                return null;
-            }
-        }
-        catch (Exception ex) {
-            throw new VncException(
-                        String.format("Failed to get BufferedReader for file '%s'", file.getPath()),
-                        ex);
-        }
+        final File f = realFile(file);
+        return f.isFile() && isFileWithinDirectory(f)
+                ? Files.newBufferedReader(f.toPath(), charset)
+                : null;
     }
 
     @Override
-    public OutputStream getOutputStream(final File file, final OpenOption... options) {
+    public OutputStream getOutputStream(final File file, final OpenOption... options) throws IOException {
         if (file == null) {
             throw new IllegalArgumentException("A file must not be null");
         }
 
 
-        try {
-            final File f = realFile(file);
-            return isFileWithinDirectory(f)
-                    ? Files.newOutputStream(f.toPath(), options)
-                    : null;
-        }
-        catch (Exception ex) {
-            throw new VncException(
-                        String.format("Failed to get OutputStream for file '%s'", file.getPath()),
-                        ex);
-        }
+        final File f = realFile(file);
+        return isFileWithinDirectory(f)
+                ? Files.newOutputStream(f.toPath(), options)
+                : null;
     }
 
     @Override

@@ -336,33 +336,40 @@ public class LoadPaths implements ILoadPaths {
 
 
     private ByteBuffer load(final File file) {
-        // try to load the file from one of the load paths
-        final ByteBuffer dataFromLoadPath = paths.stream()
-                                                 .map(p -> p.load(file))
-                                                 .filter(d -> d != null)
-                                                 .findFirst()
-                                                 .orElse(null);
+        try {
+            // try to load the file from one of the load paths
+            final ByteBuffer dataFromLoadPath = loadBinary(file);
 
-        if (dataFromLoadPath != null) {
-            // prefer loading the file from the load paths
-            return dataFromLoadPath;
-        }
-        else if (unlimitedAccess && file.isFile()) {
-            // if the file has not been found on the load paths and 'unlimited'
-            // file access is enabled load the file
-            try {
+            if (dataFromLoadPath != null) {
+                // prefer loading the file from the load paths
+                return dataFromLoadPath;
+            }
+            else if (unlimitedAccess && file.isFile()) {
+                // if the file has not been found on the load paths and 'unlimited'
+                // file access is enabled load the file
                 return ByteBuffer.wrap(Files.readAllBytes(file.toPath()));
             }
-            catch(IOException ex) {
-                throw new VncException(
-                        String.format("Failed to load the file '%s'", file.getPath()),
-                        ex);
+            else {
+                // file is not available
+                return null;
             }
         }
-        else {
-            // file is not available
-            return null;
+        catch (VncException ex) {
+            throw ex;
         }
+        catch (Exception ex) {
+            throw new VncException(
+                        String.format("Failed to load the file '%s'", file.getPath()),
+                        ex);
+        }
+    }
+
+    private ByteBuffer loadBinary(final File file) throws IOException {
+        for(LoadPath p : paths) {
+            final ByteBuffer buf = p.load(file);
+            if (buf != null) return buf;
+        }
+        return null;
     }
 
     private String toString(final ByteBuffer data, final Charset charset) {

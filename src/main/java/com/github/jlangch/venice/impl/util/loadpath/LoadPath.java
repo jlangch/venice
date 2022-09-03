@@ -39,13 +39,13 @@ public abstract class LoadPath {
 
     abstract boolean isOnPath(final File file);
 
-    abstract ByteBuffer load(final File file);
+    abstract ByteBuffer load(final File file) throws IOException;
 
-    abstract InputStream getInputStream(File file);
+    abstract InputStream getInputStream(File file) throws IOException;
 
-    abstract BufferedReader getBufferedReader(File file, Charset charset);
+    abstract BufferedReader getBufferedReader(File file, Charset charset) throws IOException;
 
-    abstract OutputStream getOutputStream(File file, OpenOption... options);
+    abstract OutputStream getOutputStream(File file, OpenOption... options) throws IOException;
 
     abstract boolean isRegularFileOnLoadPath(File file);
 
