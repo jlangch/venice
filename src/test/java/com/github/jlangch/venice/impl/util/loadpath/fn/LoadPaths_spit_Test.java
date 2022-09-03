@@ -44,6 +44,9 @@ public class LoadPaths_spit_Test {
 
             venice.eval("(io/spit src \"1234\")", param(root, "spit.txt"));
             assertEquals("1234", venice.eval("(io/slurp src)", param(root, "spit.txt")));
+
+            venice.eval("(io/spit src (bytebuf-from-string \"1234\" :utf8))", param(root, "spit.txt"));
+            assertEquals("1234", venice.eval("(io/slurp src)", param(root, "spit.txt")));
         });
     }
 
@@ -55,6 +58,8 @@ public class LoadPaths_spit_Test {
 
             // to dir1/spit.txt
             veniceWR.eval("(io/spit \"spit.txt\" \"1234\")");
+            assertEquals("1234", veniceRD.eval("(io/slurp src)", param(root, "dir1/spit.txt")));
+            veniceWR.eval("(io/spit \"spit.txt\" (bytebuf-from-string\"1234\" :utf-8))");
             assertEquals("1234", veniceRD.eval("(io/slurp src)", param(root, "dir1/spit.txt")));
 
             // to dir1/11/spit.txt
@@ -80,6 +85,8 @@ public class LoadPaths_spit_Test {
             // to dir1/spit.txt
             veniceWR.eval("(io/spit \"spit.txt\" \"1234\")");
             assertEquals("1234", veniceRD.eval("(io/slurp src)", param(root, "dir1/spit.txt")));
+            veniceWR.eval("(io/spit \"spit.txt\" (bytebuf-from-string \"1234\" :utf-8))");
+            assertEquals("1234", veniceRD.eval("(io/slurp src)", param(root, "dir1/spit.txt")));
 
             // to dir1/11/spit.txt
             veniceWR.eval("(io/spit \"11/spit.txt\" \"1234\")");
@@ -102,6 +109,8 @@ public class LoadPaths_spit_Test {
 
             // to dir1/spit.txt
             veniceWR.eval("(io/spit src \"1234\")", param(root, "dir1/spit.txt"));
+            assertEquals("1234", veniceRD.eval("(io/slurp src)", param(root, "dir1/spit.txt")));
+            veniceWR.eval("(io/spit src (bytebuf-from-string \"1234\" :utf-8))", param(root, "dir1/spit.txt"));
             assertEquals("1234", veniceRD.eval("(io/slurp src)", param(root, "dir1/spit.txt")));
 
             // to dir1/11/spit.txt
@@ -131,6 +140,8 @@ public class LoadPaths_spit_Test {
 
             // to dir1/spit.txt
             veniceWR.eval("(io/spit src \"1234\")", param(root, "dir1/spit.txt"));
+            assertEquals("1234", veniceRD.eval("(io/slurp src)", param(root, "dir1/spit.txt")));
+            veniceWR.eval("(io/spit src (bytebuf-from-string \"1234\" :utf-8))", param(root, "dir1/spit.txt"));
             assertEquals("1234", veniceRD.eval("(io/slurp src)", param(root, "dir1/spit.txt")));
 
             // to dir1/11/spit.txt

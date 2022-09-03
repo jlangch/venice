@@ -21,7 +21,6 @@
  */
 package com.github.jlangch.venice.javainterop;
 
-import java.io.File;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -189,7 +188,7 @@ public class RejectAllInterceptor extends Interceptor {
     }
 
     @Override
-    public void validateVeniceFunction(
+    public IInterceptor validateVeniceFunction(
             final String funcName
     ) throws SecurityException {
         if (RestrictedBlacklistedFunctions.getAllFunctions().contains(funcName)) {
@@ -198,10 +197,11 @@ public class RejectAllInterceptor extends Interceptor {
                     PREFIX,
                     funcName));
         }
+        return this;
     }
 
     @Override
-    public void validateLoadModule(
+    public IInterceptor validateLoadModule(
             final String moduleName
     ) throws SecurityException {
         if (!SandboxRules.DEFAULT_WHITELISTED_MODULES.contains(moduleName)) {
@@ -210,26 +210,16 @@ public class RejectAllInterceptor extends Interceptor {
                     PREFIX,
                     moduleName));
         }
+        return this;
     }
 
     @Override
-    public void validateFileRead(final File file) throws SecurityException {
-        throw new SecurityException(
-                    "Venice Sandbox: The sandbox denied reading the file: " + file);
-    }
-
-    @Override
-    public void validateFileWrite(final File file) throws SecurityException {
-        throw new SecurityException(
-                    "Venice Sandbox: The sandbox denied writing the file: " + file);
-    }
-
-    @Override
-    public void validateMaxExecutionTime() throws SecurityException {
+    public IInterceptor validateMaxExecutionTime() throws SecurityException {
         if (executionTimeDeadline > 0 && System.currentTimeMillis() > executionTimeDeadline) {
             throw new SecurityException(
                     "Venice Sandbox: The sandbox exceeded the max execution time");
         }
+        return this;
     }
 
     @Override

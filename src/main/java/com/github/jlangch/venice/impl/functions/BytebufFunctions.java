@@ -228,6 +228,7 @@ public class BytebufFunctions {
                     .arglists("(bytebuf-from-string s encoding)")
                     .doc( "Converts a string to a bytebuf using an optional encoding. The encoding defaults to :UTF-8")
                     .examples("(bytebuf-from-string \"abcdef\" :UTF-8)")
+                    .seeAlso("bytebuf-to-string")
                     .build()
         ) {
             @Override
@@ -259,6 +260,7 @@ public class BytebufFunctions {
                     .arglists("(bytebuf-to-string buf encoding)")
                     .doc( "Converts a bytebuf to a string using an optional encoding. The encoding defaults to :UTF-8")
                     .examples("(bytebuf-to-string (bytebuf [97 98 99]) :UTF-8)")
+                    .seeAlso("bytebuf-from-string")
                     .build()
         ) {
             @Override

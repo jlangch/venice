@@ -74,6 +74,11 @@ public class ZipLoadPath extends LoadPath {
     }
 
     @Override
+    public File expand(final File file) {
+    	return null;  // not supported
+    }
+
+    @Override
     public ByteBuffer load(final File file) throws IOException {
         return isOnPath(file, Access.Read)
                 ? ZipFileSystemUtil.loadBinaryFileFromZip(zip, file)

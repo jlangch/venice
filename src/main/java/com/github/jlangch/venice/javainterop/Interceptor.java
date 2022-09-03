@@ -21,8 +21,6 @@
  */
 package com.github.jlangch.venice.javainterop;
 
-import java.io.File;
-
 import com.github.jlangch.venice.SecurityException;
 import com.github.jlangch.venice.impl.util.StringUtil;
 import com.github.jlangch.venice.impl.util.io.ClassPathResource;
@@ -132,32 +130,26 @@ public abstract class Interceptor implements IInterceptor {
     }
 
     @Override
-    public void validateVeniceFunction(
+    public IInterceptor validateVeniceFunction(
             final String funcName
     ) throws SecurityException {
         // ok, no black listed Venice functions
+    	return this;
     }
 
 
     @Override
-    public void validateLoadModule(
+    public IInterceptor validateLoadModule(
             final String moduleName
     ) throws SecurityException {
         // ok, no black listed Venice module
+    	return this;
     }
 
     @Override
-    public void validateFileRead(final File file) throws SecurityException {
-        // ok
-    }
-
-    @Override
-    public void validateFileWrite(final File file) throws SecurityException {
-        // ok
-    }
-
-    @Override
-    public void validateMaxExecutionTime() throws SecurityException {
+    public IInterceptor validateMaxExecutionTime() throws SecurityException {
+    	//ok
+    	return this;
     }
 
     @Override

@@ -140,6 +140,16 @@ public interface ILoadPaths {
     boolean isOnLoadPath(File file, Access mode);
 
     /**
+     * Expands a file regarding the load paths.
+     *
+     * <p>A file is not expanded if its an absolute file.
+     *
+     * @param file a file to expand
+     * @return the expanded file
+     */
+    File expand(File file);
+
+    /**
      * @return {@code true} if the access to files is unlimited or
      *         {@code false} if the access is limited to the load paths.
      */

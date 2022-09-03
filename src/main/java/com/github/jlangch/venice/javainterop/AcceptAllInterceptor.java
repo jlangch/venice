@@ -128,16 +128,18 @@ public class AcceptAllInterceptor extends Interceptor {
     }
 
     @Override
-    public void validateVeniceFunction(
+    public IInterceptor validateVeniceFunction(
             final String funcName
     ) throws SecurityException {
         // ok
+    	return this;
     }
 
     @Override
-    public void validateLoadModule(
+    public IInterceptor validateLoadModule(
             final String moduleName
     ) throws SecurityException {
         // ok
+    	return this;
     }
 }

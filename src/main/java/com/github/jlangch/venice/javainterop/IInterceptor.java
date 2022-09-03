@@ -21,8 +21,6 @@
  */
 package com.github.jlangch.venice.javainterop;
 
-import java.io.File;
-
 import com.github.jlangch.venice.SecurityException;
 
 
@@ -176,44 +174,28 @@ public interface IInterceptor {
      * Validates the load of a module
      *
      * @param moduleName the module name
+     * @return this interceptor, for chaining validation
      * @throws SecurityException if the module is blacklisted
      */
-    void validateLoadModule(String moduleName) throws SecurityException;
+    IInterceptor validateLoadModule(String moduleName) throws SecurityException;
 
     /**
      * Validates the invocation of a Venice function.
      *
      * @param funcName A venice function name
-     *
+     * @return this interceptor, for chaining validation
      * @throws SecurityException if the function is blacklisted and not
      *                           allowed to be invoked.
      */
-    void validateVeniceFunction(String funcName) throws SecurityException;
+    IInterceptor validateVeniceFunction(String funcName) throws SecurityException;
 
     /**
      * Validates the execution time
      *
+     * @return this interceptor, for chaining validation
      * @throws SecurityException if the execution time exceeds the configured limit.
      */
-    void validateMaxExecutionTime() throws SecurityException;
-
-    /**
-     * Validates that the file can be read
-     *
-     * @param file A file
-     *
-     * @throws SecurityException if the file can not be read.
-     */
-    void validateFileRead(File file) throws SecurityException;
-
-    /**
-     * Validates that the file can be written
-     *
-     * @param file A file
-
-     * @throws SecurityException if the file can not be written.
-     */
-    void validateFileWrite(File file) throws SecurityException;
+    IInterceptor validateMaxExecutionTime() throws SecurityException;
 
     /**
      * @return the load paths for loading Venice files and resources

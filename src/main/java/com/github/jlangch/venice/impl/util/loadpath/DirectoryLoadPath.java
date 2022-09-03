@@ -71,6 +71,21 @@ public class DirectoryLoadPath extends LoadPath {
     }
 
     @Override
+    public File expand(final File file) {
+        try {
+            final File f = realFile(file);
+            return isFileWithinDirectory(f) ? f : null;
+        }
+        catch (Exception ex) {
+            throw new VncException(
+                        String.format(
+                                "Failed to expand the file '%s' regarding the load path",
+                                file.getPath()),
+                        ex);
+        }
+    }
+
+    @Override
     public ByteBuffer load(final File file) throws IOException {
         final File f = realFile(file);
         return f.isFile() && isFileWithinDirectory(f)

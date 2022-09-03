@@ -43,6 +43,8 @@ public abstract class LoadPath {
 
     abstract boolean isDirectoryOnLoadPath(File file, final Access mode);
 
+    abstract File expand(final File file);
+
     abstract ByteBuffer load(final File file) throws IOException;
 
     abstract InputStream getInputStream(File file) throws IOException;

@@ -45,6 +45,7 @@ public class LoadPaths_slurp_Test {
             final Venice venice = new Venice();
 
             assertEquals("res1", venice.eval("(io/slurp src)", param(root, "res1.txt")));
+            assertEquals("res1", venice.eval("(bytebuf-to-string (io/slurp src :binary true) :utf-8)", param(root, "res1.txt")));
 
             assertEquals("res2", venice.eval("(io/slurp src)", param(root, "dir1/res2.txt")));
 
@@ -67,6 +68,7 @@ public class LoadPaths_slurp_Test {
 
             // from root
             assertEquals("res1", venice.eval("(io/slurp \"res1.txt\")"));
+            assertEquals("res1", venice.eval("(bytebuf-to-string (io/slurp \"res1.txt\" :binary true) :utf-8)"));
 
             // from dir1
             assertEquals("res2", venice.eval("(io/slurp \"res2.txt\")"));
@@ -124,6 +126,7 @@ public class LoadPaths_slurp_Test {
 
             // from root
             assertEquals("res1", venice.eval("(io/slurp \"res1.txt\")"));
+            assertEquals("res1", venice.eval("(bytebuf-to-string (io/slurp \"res1.txt\" :binary true) :utf-8)"));
 
             // from dir1
             assertEquals("res2", venice.eval("(io/slurp \"res2.txt\")"));
@@ -178,6 +181,7 @@ public class LoadPaths_slurp_Test {
 
             // from root
             assertEquals("res1", venice.eval("(io/slurp src)", param(root, "res1.txt")));
+            assertEquals("res1", venice.eval("(bytebuf-to-string (io/slurp src :binary true) :utf-8)", param(root, "res1.txt")));
 
             // from dir1
             assertEquals("res2", venice.eval("(io/slurp src)", param(root, "dir1/res2.txt")));
@@ -210,6 +214,7 @@ public class LoadPaths_slurp_Test {
 
             // from root
             assertEquals("res1", venice.eval("(io/slurp src)", param(root, "res1.txt")));
+            assertEquals("res1", venice.eval("(bytebuf-to-string (io/slurp src :binary true) :utf-8)", param(root, "res1.txt")));
 
             // from dir1
             assertEquals("res2", venice.eval("(io/slurp src)", param(root, "dir1/res2.txt")));

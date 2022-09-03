@@ -43,15 +43,34 @@ import com.github.jlangch.venice.javainterop.LoadPathsFactory;
  * <pre>
  *
  * root
- *  |
- *  +--- res1.txt
- *  |
- *  +--- dir1
- *  |     |
- *  |     +--- res2.txt
- *  |     +--- res3.txt
- *  |
- *  +--- dir2
+ *  │
+ *  ├─── res1.txt
+ *  ├─── zip1.zip
+ *  ├─── div.venice
+ *  │
+ *  ├─── /dir1
+ *  │     │
+ *  │     ├─── res2.txt
+ *  │     ├─── res3.txt
+ *  │     ├─── zip2.zip
+ *  │     ├─── sub.venice
+ *  │     ├─── sum.venice
+ *  │     │
+ *  │     └─── /11
+ *  │           │
+ *  │           └─── res4.txt
+ *  │
+ *  ├─── /dir2
+ *  │     |
+ *  │     ├─── res5.txt
+ *  │     ├─── res6.txt
+ *  │     ├─── zip3.zip
+ *  │     │
+ *  │     └─── /22
+ *  │           │
+ *  │           └─── res7.txt
+ *  │
+ *  └─── /tmp
  *
  * </pre>
  */
@@ -72,12 +91,12 @@ public class TempFS {
     }
 
     public static void with(BiConsumer<TempFS,File> run) {
-    	final TempFS tempFS = TempFS.create();
+        final TempFS tempFS = TempFS.create();
         try {
-        	run.accept(tempFS, tempFS.root);
+            run.accept(tempFS, tempFS.root);
         }
         finally {
-        	tempFS.remove();
+            tempFS.remove();
         }
     }
 
@@ -100,16 +119,14 @@ public class TempFS {
     }
 
     public AcceptAllInterceptor createSandbox(boolean unlimited) {
-    	return new AcceptAllInterceptor(
-    					LoadPathsFactory.of(
-					           Arrays.asList(
-						           new File(root, "res1.txt"),
-					               new File(root, "dir1"),
-					               new File(root, "dir1/res2.txt"),
-					               new File(root, "dir1/res3.txt"),
-					               new File(root, "zip1.zip"),
-					               new File(root, "dir1/zip2.zip")),
-					           unlimited));
+        return new AcceptAllInterceptor(
+                        LoadPathsFactory.of(
+                               Arrays.asList(
+                                   new File(root, "res1.txt"),
+                                   new File(root, "zip1.zip"),
+                                   new File(root, "dir1"),
+                                   new File(root, "dir1/zip2.zip")),
+                               unlimited));
     }
 
     private TempFS init() {
@@ -117,46 +134,48 @@ public class TempFS {
             final File dir1  = new File(root, "dir1");
             final File dir11 = new File(root, "dir1/11");
             final File dir2  = new File(root, "dir2");
+            final File dir22 = new File(root, "dir2/22");
+            final File tmp   = new File(root, "tmp");
+
             dir1.mkdir();
             dir11.mkdir();
             dir2.mkdir();
+            dir22.mkdir();
+            tmp.mkdir();
 
             // venice files
             writeText("div.venice", "(defn func [] (/ 10 2))");
-
             writeText("dir1/sum.venice", "(defn func [] (+ 10 1))");
-
             writeText("dir1/sub.venice", "(defn func [] (- 10 1))");
 
             // resource files
             writeText("res1.txt", "res1");
-
             writeText("dir1/res2.txt", "res2");
-
             writeText("dir1/res3.txt", "res3");
-
             writeText("dir1/11/res4.txt", "res4");
-
-
             writeText("dir2/res5.txt", "res5");
+            writeText("dir2/res6.txt", "res6");
+            writeText("dir2/22/res7.txt", "res7");
+
+            // zip files
+            writeZip(
+                "zip1.zip",
+                "res11.txt",        "res11",
+                "dir-z1/res12.txt", "res12");
 
             writeZip(
-            	"zip1.zip",
-            	"res11.txt",        "res11",
-            	"dir-z1/res12.txt", "res12");
+                "dir1/zip2.zip",
+                "res21.txt",        "res21",
+                "dir-z2/res22.txt", "res22");
 
             writeZip(
-            	"dir1/zip2.zip",
-            	"res21.txt",        "res21",
-            	"dir-z2/res22.txt", "res22");
-
-            writeZip(
-            	"dir2/zip3.zip",
-            	"res31.txt",        "res31",
-            	"dir-z3/res32.txt", "res32");
+                "dir2/zip3.zip",
+                "res31.txt",        "res31",
+                "dir-z3/res32.txt", "res32");
         }
         catch(IOException ex) {
             remove();
+            throw new RuntimeException("Failed to create TempFS!", ex);
         }
 
         return this;
@@ -171,18 +190,18 @@ public class TempFS {
     }
 
     private void writeZip(
-    		final String file,
-    		final String entry1,
-    		final String data1,
-    		final String entry2,
-    		final String data2
+            final String file,
+            final String entry1,
+            final String data1,
+            final String entry2,
+            final String data2
     ) throws IOException {
-    	final Map<String, Object> entries = new HashMap<>();
+        final Map<String, Object> entries = new HashMap<>();
 
-    	entries.put(entry1, data1.getBytes(CharsetUtil.DEFAULT_CHARSET));
-    	entries.put(entry2, data2.getBytes(CharsetUtil.DEFAULT_CHARSET));
+        entries.put(entry1, data1.getBytes(CharsetUtil.DEFAULT_CHARSET));
+        entries.put(entry2, data2.getBytes(CharsetUtil.DEFAULT_CHARSET));
 
-    	writeBinary(file, Zipper.zip(entries));
+        writeBinary(file, Zipper.zip(entries));
     }
 
     private final File root;

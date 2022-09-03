@@ -1637,7 +1637,7 @@ public class IOFunctions {
                                             args.first(),
                                             "Function 'io/copy-file' does not allow %s as source");
 
-                sandboxFunctionCallValidation(sourceFile, null);
+                sandboxFunctionCallValidation();
 
 
                 final VncVal destVal = args.second();
@@ -1645,7 +1645,7 @@ public class IOFunctions {
                 final File destFile = convertToFile(destVal);
 
                 if (destFile != null) {
-                    sandboxFunctionCallValidation(null, destFile);
+                    sandboxFunctionCallValidation();
 
                     final List<CopyOption> copyOptions = new ArrayList<>();
                     if (VncBoolean.isTrue(replaceOpt)) {
@@ -1724,7 +1724,7 @@ public class IOFunctions {
                                     args.second(),
                                     "Function 'io/move-file' does not allow %s as target");
 
-                sandboxFunctionCallValidation(from, to);
+                sandboxFunctionCallValidation();
 
                 try {
                     Files.move(from.toPath(), to.toPath());
@@ -1765,7 +1765,7 @@ public class IOFunctions {
                                     "Function 'io/touch-file' does not allow %s as file");
 
 
-                sandboxFunctionCallValidation(null, file);
+                sandboxFunctionCallValidation();
 
                 final Path path = file.toPath();
 

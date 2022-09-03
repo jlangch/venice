@@ -67,6 +67,7 @@ import com.github.jlangch.venice.impl.util.ArityExceptions;
 import com.github.jlangch.venice.impl.util.SymbolMapBuilder;
 import com.github.jlangch.venice.impl.util.io.CharsetUtil;
 import com.github.jlangch.venice.impl.util.io.IOStreamUtil;
+import com.github.jlangch.venice.javainterop.IInterceptor;
 import com.github.jlangch.venice.javainterop.ILoadPaths;
 import com.github.jlangch.venice.util.CapturingPrintStream;
 
@@ -262,12 +263,12 @@ public class IOFunctionsStreams {
 
                 final File file = convertToFile(args.first());
                 if (file != null) {
-                    sandboxFunctionCallValidation();
+                    final IInterceptor interceptor = sandboxFunctionCallValidation();
 
                     try {
-                        final ILoadPaths loadpaths = ThreadContext.getInterceptor().getLoadPaths();
-
-                        final InputStream is = loadpaths.getInputStream(file);
+                        final InputStream is = interceptor
+                                                .getLoadPaths()
+                                                .getInputStream(file);
                         if (is == null) {
                             if (file.exists()) {
                                 throw new VncException(
@@ -326,18 +327,18 @@ public class IOFunctionsStreams {
 
                 final File file = convertToFile(args.first());
                 if (file != null) {
-                    sandboxFunctionCallValidation(null, file);
+                    final IInterceptor interceptor = sandboxFunctionCallValidation();
 
                     try {
-                        final ILoadPaths loadpaths = ThreadContext.getInterceptor().getLoadPaths();
-
-                        final OutputStream outStream = loadpaths.getOutputStream(
-                                                            file,
-                                                            StandardOpenOption.CREATE,
-                                                            StandardOpenOption.WRITE,
-                                                            VncBoolean.isTrue(append)
-                                                                ? StandardOpenOption.APPEND
-                                                                : StandardOpenOption.TRUNCATE_EXISTING);
+                         final OutputStream outStream =  interceptor
+                                                             .getLoadPaths()
+                                                             .getOutputStream(
+                                                                file,
+                                                                StandardOpenOption.CREATE,
+                                                                StandardOpenOption.WRITE,
+                                                                VncBoolean.isTrue(append)
+                                                                    ? StandardOpenOption.APPEND
+                                                                    : StandardOpenOption.TRUNCATE_EXISTING);
 
                         if (outStream != null) {
                             return new VncJavaObject(outStream);
@@ -352,10 +353,10 @@ public class IOFunctionsStreams {
                      }
                     catch (Exception ex) {
                         throw new VncException(
-                        		String.format(
-                        				"Failed to create a `java.io.OutputStream` for the file '%s'",
-                        				file.getPath()),
-                        		ex);
+                                String.format(
+                                        "Failed to create a `java.io.OutputStream` for the file '%s'",
+                                        file.getPath()),
+                                ex);
                     }
                 }
                 else {
@@ -899,7 +900,7 @@ public class IOFunctionsStreams {
                         "captured string.\n\n" +
                         "Note: The caller is responsible for closing the stream!")
                     .examples(
-                    	"(try-with [ps (io/capturing-print-stream)]    \n" +
+                        "(try-with [ps (io/capturing-print-stream)]    \n" +
                         "  (binding [*out* ps]                         \n" +
                         "    (println 100)                             \n" +
                         "    (println 200)                             \n" +

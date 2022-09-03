@@ -196,6 +196,29 @@ public class LoadPaths implements ILoadPaths {
     }
 
     @Override
+    public File expand(final File file) {
+        if (file == null) {
+            throw new IllegalArgumentException("A file must not be null");
+        }
+
+        if (file.isAbsolute()) {
+        	return file;
+        }
+        else {
+        	// try to expand regardless of unlimited mode
+            for(LoadPath p : paths) {
+                File expanded = p.expand(file);
+                if (p != null) {
+                    return expanded;
+                }
+            }
+        }
+
+        return file;
+    }
+
+
+    @Override
     public InputStream getInputStream(final File file) {
         if (file == null) {
             throw new IllegalArgumentException("A file must not be null");
