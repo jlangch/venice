@@ -74,8 +74,8 @@ public class ZipLoadPath extends LoadPath {
         }
 
         return isOnPath(file)
-            	? ZipFileSystemUtil.loadBinaryFileFromZip(zip, file)
-            	: null;
+                ? ZipFileSystemUtil.loadBinaryFileFromZip(zip, file)
+                : null;
     }
 
     @Override
@@ -85,8 +85,8 @@ public class ZipLoadPath extends LoadPath {
         }
 
         return isOnPath(file)
-            	? ZipFileSystemUtil.getInputStreamFromZip(zip, file)
-            	: null;
+                ? ZipFileSystemUtil.getInputStreamFromZip(zip, file)
+                : null;
     }
 
     @Override
@@ -96,8 +96,8 @@ public class ZipLoadPath extends LoadPath {
         }
 
         return isOnPath(file)
-            	? ZipFileSystemUtil.getBufferedReaderFromZip(zip, file, charset)
-            	: null;
+                ? ZipFileSystemUtil.getBufferedReaderFromZip(zip, file, charset)
+                : null;
     }
 
     @Override
@@ -125,11 +125,16 @@ public class ZipLoadPath extends LoadPath {
 
     @Override
     public String toString() {
-    	List<String> list = new ArrayList<>(entries);
-    	Collections.sort(list);
-    	list = list.subList(0, Math.min(6, list.size()));
+    	final int MAX = 10;
 
-    	return String.join("\n", list);
+        List<String> list = new ArrayList<>(entries);
+        Collections.sort(list);
+        list = list.subList(0, Math.min(MAX, list.size()));
+
+        int delta = list.size() - MAX;
+        return delta > 0
+        	? String.join("\n", list) + String.format("\n...and %d more", delta)
+        	: String.join("\n", list);
     }
 
 
@@ -160,19 +165,18 @@ public class ZipLoadPath extends LoadPath {
         }
         catch(IOException ex) {
             throw new VncException(
-                    String.format( "Failed list the zip file's '%s' entries!",zip.getPath()));
+                    String.format(
+	                        "Failed list the zip file's '%s' entries!",
+	                        zip.getPath()));
         }
     }
 
     private static byte[] readFirstNBytes(final File file, final int n) throws Exception {
         try (FileInputStream is = new FileInputStream(file)) {
             final byte[] buffer = new byte[n];
-            if (is.read(buffer) == buffer.length) {
-                return buffer;
-            }
-            else {
-                return null;
-            }
+            return is.read(buffer) == buffer.length
+                    ? buffer
+                    : null;
         }
     }
 
