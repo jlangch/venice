@@ -45,8 +45,8 @@ public class IoFileSection implements ISectionBuilder {
         file.addItem(diBuilder.getDocItem("io/file-parent"));
         file.addItem(diBuilder.getDocItem("io/file-name"));
         file.addItem(diBuilder.getDocItem("io/file-path"));
-        file.addItem(diBuilder.getDocItem("io/file-absolute-path"));
-        file.addItem(diBuilder.getDocItem("io/file-canonical-path"));
+        file.addItem(diBuilder.getDocItem("io/file-absolute"));
+        file.addItem(diBuilder.getDocItem("io/file-canonical"));
         file.addItem(diBuilder.getDocItem("io/file-ext"));
         file.addItem(diBuilder.getDocItem("io/file-ext?"));
         file.addItem(diBuilder.getDocItem("io/file-size", false));

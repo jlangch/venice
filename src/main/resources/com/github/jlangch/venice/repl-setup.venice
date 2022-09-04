@@ -184,13 +184,13 @@
 (defn- setup-repl-launcher-windows [color-mode]
   (when-not (io/exists-file? "repl.bat")
     (println "Setting up 'repl.bat'...")
-    (println "REPL install dir:" (io/file-path (io/file-canonical-path ".")))
+    (println "REPL install dir:" (io/file-path (io/file-canonical ".")))
     (-<> (io/load-classpath-resource "com/github/jlangch/venice/repl.bat")
          (bytebuf-to-string <> :utf-8)
          (repl-setup/cr-lf <>)
          (str/replace-all <>
                           "{{INSTALL_PATH}}"
-                          (str (io/file-path (io/file-canonical-path "."))))
+                          (str (io/file-path (io/file-canonical "."))))
          (change-repl-launcher-color <> color-mode)
          (io/spit "repl.bat" <> :encoding (charset-default-encoding)))))
 
@@ -198,13 +198,13 @@
 (defn- setup-repl-launcher-unix [color-mode]
   (when-not (io/exists-file? "repl.sh")
     (println "Setting up 'repl.sh'...")
-    (println "REPL install dir:" (io/file-path (io/file-canonical-path ".")))
+    (println "REPL install dir:" (io/file-path (io/file-canonical ".")))
     (-<> (io/load-classpath-resource "com/github/jlangch/venice/repl.sh")
          (bytebuf-to-string <> :utf-8)
          (repl-setup/cr-lf <>)
          (str/replace-all <>
                           "{{INSTALL_PATH}}"
-                          (str (io/file-path (io/file-canonical-path "."))))
+                          (str (io/file-path (io/file-canonical "."))))
          (change-repl-launcher-color <> color-mode)
          (io/spit "repl.sh" <> :encoding (charset-default-encoding)))
     (when (io/exists-file? "repl.sh"))

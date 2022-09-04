@@ -117,7 +117,7 @@ public class IOFunctions {
                         "(io/file \"/temp\" \"test\" \"test.txt\")",
                         "(io/file (io/file \"/temp\") \"test\" \"test.txt\")",
                         "(io/file (. :java.io.File :new \"/tmp/test.txt\"))")
-                    .seeAlso("io/file-name", "io/file-parent", "io/file-path", "io/file-absolute-path", "io/file-canonical-path")
+                    .seeAlso("io/file-name", "io/file-parent", "io/file-path", "io/file-absolute", "io/file-canonical")
                     .build()
         ) {
             @Override
@@ -184,7 +184,7 @@ public class IOFunctions {
                     .arglists("(io/file-path f)")
                     .doc("Returns the path of the file f as a string. f must be a file or a string (file path).")
                     .examples("(io/file-path (io/file \"/tmp/test/x.txt\"))")
-                    .seeAlso("io/file-absolute-path", "io/file-canonical-path", "io/file")
+                    .seeAlso("io/file-absolute", "io/file-canonical", "io/file")
                     .build()
         ) {
             @Override
@@ -201,15 +201,15 @@ public class IOFunctions {
             private static final long serialVersionUID = -1848883965231344442L;
         };
 
-    public static VncFunction io_file_canonical_path =
+    public static VncFunction io_file_canonical =
         new VncFunction(
-                "io/file-canonical-path",
+                "io/file-canonical",
                 VncFunction
                     .meta()
-                    .arglists("(io/file-canonical-path f)")
+                    .arglists("(io/file-canonical f)")
                     .doc("Returns the canonical path of the file f. f must be a file or a string (file path).")
-                    .examples("(io/file-canonical-path (io/file \"/tmp/test/../x.txt\"))")
-                    .seeAlso("io/file-path", "io/file-absolute-path", "io/file")
+                    .examples("(io/file-canonical (io/file \"/tmp/test/../x.txt\"))")
+                    .seeAlso("io/file-path", "io/file-absolute", "io/file")
                     .build()
         ) {
             @Override
@@ -217,40 +217,79 @@ public class IOFunctions {
                 ArityExceptions.assertArity(this, args, 1);
 
                 try {
-                    final File f = convertToFile(
-                                        args.first(),
-                                        "Function 'io/file-canonical-path' does not allow %s as f");
+                    final VncVal f = args.first();
 
-                    return new VncString(f.getCanonicalPath());
+                    if (Types.isVncString(f)) {
+                        return new VncString(
+                                    new File(((VncString)f).getValue())
+                                        .getCanonicalFile()
+                                        .getPath());
+                    }
+                    else if (Types.isVncJavaObject(f, File.class)) {
+                        return new VncJavaObject(
+                                Coerce.toVncJavaObject(f, File.class)
+                                      .getCanonicalFile());
+                    }
+                    else if (Types.isVncJavaObject(f, Path.class)) {
+                        return new VncJavaObject(
+                                 Coerce.toVncJavaObject(f, Path.class)
+                                       .toFile()
+                                       .getCanonicalFile()
+                                       .toPath());
+                    }
+                    else {
+                        throw new VncException(String.format(
+                                "Function 'io/file-canonical' does not allow %s as file arg",
+                                Types.getType(f)));
+                    }
                 }
                 catch(IOException ex) {
-                    throw new VncException("Failed to get canonical file path", ex);
+                    throw new VncException("Failed to get canonical file", ex);
                 }
             }
 
             private static final long serialVersionUID = -1848883965231344442L;
         };
 
-    public static VncFunction io_file_absolute_path =
+    public static VncFunction io_file_absolute =
         new VncFunction(
-                "io/file-absolute-path",
+                "io/file-absolute",
                 VncFunction
                     .meta()
-                    .arglists("(io/file-absolute-path f)")
+                    .arglists("(io/file-absolute f)")
                     .doc("Returns the absolute path of the file f. f must be a file or a string (file path).")
-                    .examples("(io/file-absolute-path (io/file \"/tmp/test/x.txt\"))")
-                    .seeAlso("io/file-path", "io/file-canonical-path", "io/file")
+                    .examples("(io/file-absolute (io/file \"/tmp/test/x.txt\"))")
+                    .seeAlso("io/file-path", "io/file-canonical", "io/file")
                     .build()
         ) {
             @Override
             public VncVal apply(final VncList args) {
                 ArityExceptions.assertArity(this, args, 1);
 
-                final File f = convertToFile(
-                                    args.first(),
-                                    "Function 'io/file-absolute-path' does not allow %s as f");
+                final VncVal f = args.first();
 
-                return new VncString(f.getAbsolutePath());
+                if (Types.isVncString(f)) {
+                    return new VncString(
+                                new File(((VncString)f).getValue())
+                                    .getAbsolutePath());
+                }
+                else if (Types.isVncJavaObject(f, File.class)) {
+                    return new VncJavaObject(
+                            Coerce.toVncJavaObject(f, File.class)
+                                  .getAbsoluteFile());
+                }
+                else if (Types.isVncJavaObject(f, Path.class)) {
+                    return new VncJavaObject(
+                             Coerce.toVncJavaObject(f, Path.class)
+                                   .toFile()
+                                   .getAbsoluteFile()
+                                   .toPath());
+                }
+                else {
+                    throw new VncException(String.format(
+                            "Function 'io/file-absolute' does not allow %s as file arg",
+                            Types.getType(f)));
+                }
             }
 
             private static final long serialVersionUID = -1848883965231344442L;
@@ -1728,10 +1767,12 @@ public class IOFunctions {
 
                 final IInterceptor inteceptor = sandboxFunctionCallValidation();
 
-                final ILoadPaths loadpaths = inteceptor.getLoadPaths();
-
                 try {
-                    Files.move(from.toPath(), to.toPath());
+                    final ILoadPaths loadpaths = inteceptor.getLoadPaths();
+
+                    Files.move(
+                        loadpaths.normalize(from).toPath(),
+                        loadpaths.normalize(to).toPath());
                 }
                 catch(Exception ex) {
                     throw new VncException(
@@ -2121,7 +2162,7 @@ public class IOFunctions {
                         "Checks if an internet connection is present for a given url. " +
                         "Defaults to URL *http://www.google.com*.")
                     .examples(
-                    	"(io/internet-avail?)",
+                        "(io/internet-avail?)",
                         "(io/internet-avail? \"http://www.google.com\")")
                     .build()
         ) {
@@ -2512,8 +2553,8 @@ public class IOFunctions {
                     .add(io_file)
                     .add(io_file_Q)
                     .add(io_file_path)
-                    .add(io_file_canonical_path)
-                    .add(io_file_absolute_path)
+                    .add(io_file_canonical)
+                    .add(io_file_absolute)
                     .add(io_file_parent)
                     .add(io_file_name)
                     .add(io_file_ext_Q)

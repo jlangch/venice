@@ -21,15 +21,20 @@
  */
 package com.github.jlangch.venice.impl.functions;
 
+import java.io.File;
+import java.nio.file.Path;
 import java.util.Map;
 import java.util.stream.Collectors;
 
+import com.github.jlangch.venice.VncException;
 import com.github.jlangch.venice.impl.thread.ThreadContext;
 import com.github.jlangch.venice.impl.types.VncBoolean;
 import com.github.jlangch.venice.impl.types.VncFunction;
 import com.github.jlangch.venice.impl.types.VncJavaObject;
 import com.github.jlangch.venice.impl.types.VncVal;
 import com.github.jlangch.venice.impl.types.collections.VncList;
+import com.github.jlangch.venice.impl.types.util.Coerce;
+import com.github.jlangch.venice.impl.types.util.Types;
 import com.github.jlangch.venice.impl.util.ArityExceptions;
 import com.github.jlangch.venice.impl.util.SymbolMapBuilder;
 import com.github.jlangch.venice.javainterop.IInterceptor;
@@ -42,13 +47,12 @@ public class LoadPathFunctions {
     // LodPath load functions
     ///////////////////////////////////////////////////////////////////////////
 
-
-    public static VncFunction loadPaths =
+    public static VncFunction paths =
         new VncFunction(
-                "load-paths",
+                "loadpath/paths",
                 VncFunction
                     .meta()
-                    .arglists("(load-paths)")
+                    .arglists("(loadpath/paths)")
                     .doc(
                         "Returns the list of the defined load paths. A load path is either " +
                         "a ZIP file, or a directory. \n\n" +
@@ -58,7 +62,8 @@ public class LoadPathFunctions {
                         "from within that ZIP.\n\n" +
                         "Examples:")
                     .seeAlso(
-                        "load-paths-unrestricted?",
+                        "loadpath/unrestricted?",
+                        "loadpath/normalize",
                         "load-file")
                     .build()
         ) {
@@ -86,16 +91,66 @@ public class LoadPathFunctions {
             private static final long serialVersionUID = -1848883965231344442L;
         };
 
-    public static VncFunction loadPathsUnrestricted_Q =
+    public static VncFunction normalize =
         new VncFunction(
-                "load-paths-unrestricted?",
+                "loadpath/normalize",
                 VncFunction
                     .meta()
-                    .arglists("(load-paths-unrestricted?)")
+                    .arglists("(loadpath/normalize f)")
+                    .doc(
+                        "Normalizea a file regarding the load paths")
+                    .seeAlso(
+                        "loadpath/paths",
+                        "loadpath/unrestricted?")
+                    .build()
+        ) {
+            @Override
+            public VncVal apply(final VncList args) {
+                ArityExceptions.assertArity(this, args, 1);
+
+                sandboxFunctionCallValidation();
+
+                final IInterceptor interceptor = ThreadContext.getInterceptor();
+                final ILoadPaths paths = interceptor.getLoadPaths();
+
+                final VncVal f = args.first();
+
+                if (Types.isVncJavaObject(f, File.class)) {
+                    return new VncJavaObject(
+                    			paths.normalize(
+                    				Coerce.toVncJavaObject(f, File.class)));
+                }
+                else if (Types.isVncJavaObject(f, Path.class)) {
+                    return new VncJavaObject(
+                				paths.normalize(
+                						Coerce.toVncJavaObject(f, Path.class).toFile())
+                							  .toPath());
+                }
+                else {
+                    throw new VncException(String.format(
+                            "Function 'loadpath/normalize' does not allow %s as file arg",
+                            Types.getType(f)));
+                }
+            }
+
+            @Override
+            public boolean isRedefinable() {
+                return false;  // security
+            }
+
+            private static final long serialVersionUID = -1848883965231344442L;
+        };
+
+    public static VncFunction unrestricted_Q =
+        new VncFunction(
+                "loadpath/unrestricted?",
+                VncFunction
+                    .meta()
+                    .arglists("(loadpath/unrestricted?)")
                     .doc("Returns true if the load paths are unrestricted.")
                     .seeAlso(
-                        "load-paths",
-                        "load-file")
+                        "loadpath/paths",
+                        "loadpath/normalize")
                     .build()
         ) {
             @Override
@@ -126,7 +181,8 @@ public class LoadPathFunctions {
 
     public static Map<VncVal, VncVal> ns =
             new SymbolMapBuilder()
-                    .add(loadPaths)
-                    .add(loadPathsUnrestricted_Q)
+		            .add(paths)
+                    .add(unrestricted_Q)
+		            .add(normalize)
                     .toMap();
 }

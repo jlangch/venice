@@ -238,7 +238,7 @@ public class SpecialForms_LoadCodeMacros {
                         ";;        -> loads: /users/foo/resources.zip!beverages/coffee.venice  \n" +
                         "(load-file \"beverages/coffee\")                                      ")
                     .seeAlso(
-                        "load-classpath-file", "load-string", "load-module", "load-paths")
+                        "load-classpath-file", "load-string", "load-module", "loadpath/paths")
                     .build()
         ) {
             @Override

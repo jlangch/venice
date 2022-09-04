@@ -42,8 +42,9 @@ public class LoadPathSection implements ISectionBuilder {
 
         final DocSection loadpath = new DocSection("Load Paths", "loadpaths.info");
         all.addSection(loadpath);
-        loadpath.addItem(diBuilder.getDocItem("load-paths", false));
-        loadpath.addItem(diBuilder.getDocItem("load-paths-unrestricted?", false));
+        loadpath.addItem(diBuilder.getDocItem("loadpath/paths", false));
+        loadpath.addItem(diBuilder.getDocItem("loadpath/unrestricted?", false));
+        loadpath.addItem(diBuilder.getDocItem("loadpath/normalize", false));
 
         return section;
     }

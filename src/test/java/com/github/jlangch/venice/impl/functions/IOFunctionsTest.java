@@ -371,7 +371,7 @@ public class IOFunctionsTest {
                 "(do                                                         \n" +
                 "  (def f (io/temp-file \"test-\" \".txt\"))                 \n" +
                 "  (assert (io/exists-file? f))                              \n" +
-                "  (assert (io/file-absolute-path f))                        \n" +
+                "  (assert (io/file-absolute f))                             \n" +
                 "  (io/spit f \"123456789\" :append true)                    \n" +
                 "  (io/delete-file-on-exit f)                                \n" +
                 "  (assert (io/exists-file? f))                              \n" +

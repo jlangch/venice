@@ -201,20 +201,30 @@ public class LoadPaths implements ILoadPaths {
             throw new IllegalArgumentException("A file must not be null");
         }
 
-        // try to normalize regardless of unlimited mode
-        for(LoadPath p : paths) {
-            File normalized = p.normalize(file);
-            if (p != null) {
-                return normalized;
+        try {
+            if (paths.isEmpty()) {
+                return file;  // principle of least surprise
+            }
+            else {
+                // try to normalize regardless of unlimited mode
+                for(LoadPath p : paths) {
+                    File normalized = p.normalize(file);
+                    if (normalized != null) {
+                        return normalized.getCanonicalFile();
+                    }
+                }
+
+                if (unlimitedAccess) {
+                    return file;  // principle of least surprise
+                }
             }
         }
-
-        if (unlimitedAccess) {
-            return file;
+        catch(IOException ex) {
+            throw new VncException("Failed to get canonical file", ex);
         }
 
         throw new VncException(
-                String.format("Failed to normsalize the file '%s'", file.getPath()));
+                String.format("Failed to normalize the file '%s'", file.getPath()));
     }
 
 
