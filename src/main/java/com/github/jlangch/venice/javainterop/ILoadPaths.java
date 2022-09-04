@@ -42,6 +42,8 @@ import com.github.jlangch.venice.impl.util.loadpath.Access;
  * Load paths are part of Venice's {@code Sandbox} to control where
  * files can be loaded from.
  *
+ * <p>Use the {@link LoadPathsFactory} for creating load paths.
+ *
  * @see LoadPathsFactory
  * @author juerg
  */
