@@ -196,25 +196,25 @@ public class LoadPaths implements ILoadPaths {
     }
 
     @Override
-    public File expand(final File file) {
+    public File normalize(final File file) {
         if (file == null) {
             throw new IllegalArgumentException("A file must not be null");
         }
 
-        if (file.isAbsolute()) {
-        	return file;
-        }
-        else {
-        	// try to expand regardless of unlimited mode
-            for(LoadPath p : paths) {
-                File expanded = p.expand(file);
-                if (p != null) {
-                    return expanded;
-                }
+        // try to normalize regardless of unlimited mode
+        for(LoadPath p : paths) {
+            File normalized = p.normalize(file);
+            if (p != null) {
+                return normalized;
             }
         }
 
-        return file;
+        if (unlimitedAccess) {
+            return file;
+        }
+
+        throw new VncException(
+                String.format("Failed to normsalize the file '%s'", file.getPath()));
     }
 
 

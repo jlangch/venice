@@ -87,6 +87,8 @@ import com.github.jlangch.venice.impl.util.io.ClassPathResource;
 import com.github.jlangch.venice.impl.util.io.FileUtil;
 import com.github.jlangch.venice.impl.util.io.IOStreamUtil;
 import com.github.jlangch.venice.impl.util.io.InternetUtil;
+import com.github.jlangch.venice.javainterop.IInterceptor;
+import com.github.jlangch.venice.javainterop.ILoadPaths;
 
 
 public class IOFunctions {
@@ -1724,7 +1726,9 @@ public class IOFunctions {
                                     args.second(),
                                     "Function 'io/move-file' does not allow %s as target");
 
-                sandboxFunctionCallValidation();
+                final IInterceptor inteceptor = sandboxFunctionCallValidation();
+
+                final ILoadPaths loadpaths = inteceptor.getLoadPaths();
 
                 try {
                     Files.move(from.toPath(), to.toPath());

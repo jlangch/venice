@@ -74,7 +74,7 @@ public class ZipLoadPath extends LoadPath {
     }
 
     @Override
-    public File expand(final File file) {
+    public File normalize(final File file) {
     	return null;  // not supported
     }
 

@@ -71,7 +71,7 @@ public class DirectoryLoadPath extends LoadPath {
     }
 
     @Override
-    public File expand(final File file) {
+    public File normalize(final File file) {
         try {
             final File f = realFile(file);
             return isFileWithinDirectory(f) ? f : null;
@@ -79,7 +79,7 @@ public class DirectoryLoadPath extends LoadPath {
         catch (Exception ex) {
             throw new VncException(
                         String.format(
-                                "Failed to expand the file '%s' regarding the load path",
+                                "Failed to normalize the file '%s'!",
                                 file.getPath()),
                         ex);
         }

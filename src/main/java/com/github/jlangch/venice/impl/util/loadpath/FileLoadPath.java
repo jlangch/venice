@@ -68,14 +68,14 @@ public class FileLoadPath extends LoadPath {
     }
 
     @Override
-    public File expand(final File file) {
+    public File normalize(final File file) {
         try {
             return isOnPath(file, Access.ReadWrite) ? lpFile : null;
         }
         catch (Exception ex) {
             throw new VncException(
                         String.format(
-                                "Failed to expand the file '%s' regarding the load path",
+                                "Failed to normalize the file '%s'!",
                                 file.getPath()),
                         ex);
         }
