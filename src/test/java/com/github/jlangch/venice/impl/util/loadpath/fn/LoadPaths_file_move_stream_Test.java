@@ -23,6 +23,11 @@ package com.github.jlangch.venice.impl.util.loadpath.fn;
 
 public class LoadPaths_file_move_stream_Test {
 
+
+// Load paths for 'io/move-file' are NOT enabled!!
+
+
+
 //    @Test
 //    public void test_no_loadpaths() {
 //        TempFS.with((tempFS, root) -> {
