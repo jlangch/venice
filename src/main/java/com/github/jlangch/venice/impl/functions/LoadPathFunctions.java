@@ -55,11 +55,41 @@ public class LoadPathFunctions {
                     .arglists("(loadpath/paths)")
                     .doc(
                         "Returns the list of the defined load paths. A load path is either " +
-                        "a file, a ZIP file, or a directory. \n\n" +
+                        "a file, a ZIP file, or a directory. Load paths are defined at the " +
+                        "application level. They are passed as part of the sandbox to the" +
+                        "Venice evaluator.\n\n" +
                         "The functions that support load paths try sequentially every " +
-                        "load path to access files. If a load path is a ZIP file files can be " +
+                        "load path to access files. If a load path is a ZIP file, files can be " +
                         "read from within that ZIP file.\n\n" +
-                        "Examples:\n")
+                        "Example:\n\n" +
+                        "```                                \n" +
+                        "/Users/foo/demo                    \n" +
+                        "  |                                \n" +
+                        "  +--- resources.zip               \n" +
+                        "  |                                \n" +
+                        "  +--- /data                       \n" +
+                        "        |                          \n" +
+                        "        +--- config.json           \n" +
+                        "        |                          \n" +
+                        "        +--- /scripts              \n" +
+                        "              |                    \n" +
+                        "              +--- script1.venice  \n" +
+                        "```                                \n" +
+                        "                                   \n" +
+                        "With a load path configuration of `[\"/Users/foo/demo/resources.zip\", \"/Users/foo/demo/data\"]` \n\n" +
+                        " * `(io/slurp \"config.json\")` -> slurps /Users/foo/demo/data/config.json \n" +
+                        " * `(io/slurp \"scripts/script1.venice\")` -> slurps /Users/foo/demo/data/scripts/script1.venice \n" +
+                        " * `(io/slurp \"img1.png\")` -> slurps /Users/foo/demo/resources.zip!img1.png \n" +
+                        "\n" +
+                        "I/O Functions with support for load paths:\n\n" +
+                        " * `load-module`\n" +
+                        " * `load-file`\n" +
+                        " * `load-classpath-file`\n" +
+                        " * `io/slurp`\n" +
+                        " * `io/slurp-lines`\n" +
+                        " * `io/spit`\n" +
+                        " * `io/file-in-stream`\n" +
+                        " * `io/file-out-stream`\n")
                     .seeAlso(
                         "loadpath/unrestricted?",
                         "loadpath/normalize",

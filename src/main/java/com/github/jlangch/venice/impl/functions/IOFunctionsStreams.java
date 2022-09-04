@@ -251,10 +251,13 @@ public class IOFunctionsStreams {
                         "f may be a:                                               \n\n" +
                         " * string file path, e.g: \"/temp/foo.json\"              \n" +
                         " * `java.io.File`, e.g: `(io/file \"/temp/foo.json\")`    \n\n" +
+                        "`io/file-in-stream` supports load paths. See the `loadpath/paths` " +
+                        "doc for a description of the *load path* feature.\n\n" +
                         "Note: The caller is responsible for closing the stream!")
                     .seeAlso(
                         "io/slurp", "io/slurp-stream",
-                        "io/string-in-stream", "io/bytebuf-in-stream")
+                        "io/string-in-stream", "io/bytebuf-in-stream",
+                        "loadpath/paths")
                     .build()
         ) {
             @Override
@@ -312,10 +315,13 @@ public class IOFunctionsStreams {
                         "Options: \n\n" +
                         "| :append true/false | e.g.: `:append true`, defaults to false |\n" +
                         "| :encoding enc      | e.g.: `:encoding :utf-8`, defaults to :utf-8 |\n\n" +
-                        "Note: The caller is responsible for closing the stream!")
+                        "`io/file-out-stream` supports load paths. See the `loadpath/paths` " +
+                        "doc for a description of the *load path* feature.\n\n" +
+                       "Note: The caller is responsible for closing the stream!")
                     .seeAlso(
                         "io/slurp", "io/slurp-stream",
-                        "io/string-in-stream", "io/bytebuf-in-stream")
+                        "io/string-in-stream", "io/bytebuf-in-stream",
+                        "loadpath/paths")
                     .build()
         ) {
             @Override

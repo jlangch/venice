@@ -86,7 +86,9 @@ public class IOFunctionsSpitSlurp {
                         " * `java.net.URL`                                                 \n" +
                         " * `java.net.URI`                                                 \n\n" +
                         "Options:                                                          \n\n" +
-                        "| :encoding enc | e.g.: `:encoding :utf-8`, defaults to :utf-8 |\n")
+                        "| :encoding enc | e.g.: `:encoding :utf-8`, defaults to :utf-8 |  \n\n" +
+                        "`io/slurp-lines` supports load paths. See the `loadpath/paths` " +
+                        "doc for a description of the *load path* feature.")
                     .examples(
                         "(->> \"1\\n2\\n3\"        \n" +
                         "     io/string-in-stream  \n" +
@@ -94,7 +96,8 @@ public class IOFunctionsSpitSlurp {
                     .seeAlso(
                         "str/split-lines",
                         "io/slurp", "io/slurp-stream",
-                        "io/spit", "io/string-in-stream")
+                        "io/spit", "io/string-in-stream",
+                        "loadpath/paths")
                     .build()
         ) {
             @Override
@@ -224,8 +227,12 @@ public class IOFunctionsSpitSlurp {
                         "Options:                                                          \n\n" +
                         "| :binary true/false | e.g.: `:binary true`, defaults to false |     \n" +
                         "| :encoding enc      | e.g.: `:encoding :utf-8`, defaults to :utf-8 |\n\n" +
+                        "`io/slurp` supports load paths. See the `loadpath/paths` " +
+                        "doc for a description of the *load path* feature.\n\n" +
                         "Note: For HTTP and HTTPS downloads prefer to use `io/download`. ")
-                    .seeAlso("io/slurp-lines", "io/slurp-stream", "io/spit", "io/download")
+                    .seeAlso(
+                    	"io/slurp-lines", "io/slurp-stream", "io/spit", "io/download",
+                    	"loadpath/paths")
                     .build()
         ) {
             @Override
@@ -348,8 +355,12 @@ public class IOFunctionsSpitSlurp {
                         "The content may be a string or a bytebuf.\n\n" +
                         "Options: \n\n" +
                         "| :append true/false | e.g.: `:append true`, defaults to false |\n" +
-                        "| :encoding enc      | e.g.: `:encoding :utf-8`, defaults to :utf-8 |\n")
-                    .seeAlso("io/spit-stream", "io/slurp", "io/slurp-lines")
+                        "| :encoding enc      | e.g.: `:encoding :utf-8`, defaults to :utf-8 |\n\n" +
+                        "`io/spit` supports load paths. See the `loadpath/paths` " +
+                        "doc for a description of the *load path* feature.")
+                    .seeAlso(
+                    	"io/spit-stream", "io/slurp", "io/slurp-lines",
+                    	"loadpath/paths")
                     .build()
         ) {
             @Override

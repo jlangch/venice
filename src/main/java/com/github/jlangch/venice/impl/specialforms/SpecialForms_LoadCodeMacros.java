@@ -130,7 +130,9 @@ public class SpecialForms_LoadCodeMacros {
                         "skipped. To enforce a reload call the module load with the force " +
                         "flag set to true: `(load-module :hexdump true)`\n\n" +
                         "An optional namespace alias can passed:\n" +
-                        "`(load-module :hexdump ['hexdump :as 'h])`")
+                        "`(load-module :hexdump ['hexdump :as 'h])`\n\n" +
+                        "`load-module` supports load paths. See the `loadpath/paths` doc for a " +
+                        "description of the *load path* feature.")
                     .examples(
                         "(load-module :trace) ",
 
@@ -150,7 +152,8 @@ public class SpecialForms_LoadCodeMacros {
                         "  (load-module :hexdump ['hexdump :as 'h]) \n" +
                         "  (h/dump (range 32 64)))                  ")
                     .seeAlso(
-                        "load-file", "load-classpath-file", "load-string", "loaded-modules")
+                        "load-file", "load-classpath-file", "load-string", "loaded-modules",
+                        "loadpath/paths")
                     .build()
         ) {
             @Override
@@ -220,7 +223,8 @@ public class SpecialForms_LoadCodeMacros {
                         "If the file extension is missing '.venice' will be implicitely added.\n\n" +
                         "An optional namespace alias can passed:\n" +
                         "`(load-file \"coffee.venice\" ['coffee :as 'c])`\n\n" +
-                        "See the `load-paths` doc for a description of the *load path* feature.")
+                        "`load-file` supports load paths. See the `loadpath/paths` doc for a " +
+                        "description of the *load path* feature.")
                     .examples(
                         ";; With load-paths: [/users/foo/scripts]                              \n" +
                         ";;        -> loads: /users/foo/scripts/coffee.venice                  \n" +
@@ -313,7 +317,9 @@ public class SpecialForms_LoadCodeMacros {
                         "flag set to true:\n" +
                         "`(load-classpath-file \"com/github/jlangch/venice/test.venice\" true)`\n\n" +
                         "An optional namespace alias can passed:\n" +
-                        "`(load-classpath-file \"com/github/jlangch/venice/test.venice\" ['test :as 't])`")
+                        "`(load-classpath-file \"com/github/jlangch/venice/test.venice\" ['test :as 't])`\n\n" +
+                        "`load-classpath-file` supports load paths. See the `loadpath/paths` doc " +
+                        "for a description of the *load path* feature.")
                     .examples(
                         "(do                                                                              \n" +
                         "  (load-classpath-file \"com/github/jlangch/venice/test.venice\")                \n" +
@@ -332,7 +338,7 @@ public class SpecialForms_LoadCodeMacros {
                         "  (load-classpath-file \"com/github/jlangch/venice/test.venice\" ['test :as 't]) \n" +
                         "  (t/test-fn \"hello\"))                                                         ")
                     .seeAlso(
-                        "load-file", "load-string", "load-module")
+                        "load-file", "load-string", "load-module", "loadpath/paths")
                     .build()
         ) {
             @Override

@@ -87,8 +87,6 @@ import com.github.jlangch.venice.impl.util.io.ClassPathResource;
 import com.github.jlangch.venice.impl.util.io.FileUtil;
 import com.github.jlangch.venice.impl.util.io.IOStreamUtil;
 import com.github.jlangch.venice.impl.util.io.InternetUtil;
-import com.github.jlangch.venice.javainterop.IInterceptor;
-import com.github.jlangch.venice.javainterop.ILoadPaths;
 
 
 public class IOFunctions {
@@ -1671,7 +1669,7 @@ public class IOFunctions {
             public VncVal apply(final VncList args) {
                 ArityExceptions.assertMinArity(this, args, 2);
 
-                final IInterceptor inteceptor = sandboxFunctionCallValidation();
+                sandboxFunctionCallValidation();
 
                 final VncHashMap options = VncHashMap.ofAll(args.rest().rest());
                 final VncVal replaceOpt = options.get(new VncKeyword("replace"));
@@ -1684,11 +1682,6 @@ public class IOFunctions {
                 File destFile = convertToFile(destVal);
 
                 if (destFile != null) {
-                    // normalize files regarding loadpath
-                    final ILoadPaths loadpaths = inteceptor.getLoadPaths();
-                    sourceFile = loadpaths.normalize(sourceFile);
-                    destFile = loadpaths.normalize(destFile);
-
                     final List<CopyOption> copyOptions = new ArrayList<>();
                     if (VncBoolean.isTrue(replaceOpt)) {
                         copyOptions.add(StandardCopyOption.REPLACE_EXISTING);
@@ -1717,10 +1710,6 @@ public class IOFunctions {
                     }
                 }
                 else if (Types.isVncJavaObject(destVal, OutputStream.class)) {
-                    // normalize files regarding loadpath
-                    final ILoadPaths loadpaths = inteceptor.getLoadPaths();
-                    sourceFile = loadpaths.normalize(sourceFile);
-
                     final OutputStream os = (OutputStream)((VncJavaObject)destVal).getDelegate();
 
                     try {
@@ -1762,7 +1751,7 @@ public class IOFunctions {
             public VncVal apply(final VncList args) {
                 ArityExceptions.assertArity(this, args, 2);
 
-                final IInterceptor inteceptor = sandboxFunctionCallValidation();
+                sandboxFunctionCallValidation();
 
                 final File from = convertToFile(
                                     args.first(),
@@ -1773,11 +1762,9 @@ public class IOFunctions {
                                     "Function 'io/move-file' does not allow %s as target");
 
                 try {
-                    final ILoadPaths loadpaths = inteceptor.getLoadPaths();
-
                     Files.move(
-                        loadpaths.normalize(from).toPath(),
-                        loadpaths.normalize(to).toPath());
+                        from.toPath(),
+                        to.toPath());
                 }
                 catch(Exception ex) {
                     throw new VncException(
@@ -1810,16 +1797,14 @@ public class IOFunctions {
             public VncVal apply(final VncList args) {
                 ArityExceptions.assertArity(this, args, 1);
 
-                final IInterceptor inteceptor = sandboxFunctionCallValidation();
+                sandboxFunctionCallValidation();
 
                 final File file = convertToFile(
                                     args.first(),
                                     "Function 'io/touch-file' does not allow %s as file");
 
                 try {
-                    final ILoadPaths loadpaths = inteceptor.getLoadPaths();
-
-                    final Path path = loadpaths.normalize(file).toPath();
+                    final Path path = file.toPath();
 
                     if (Files.exists(path)) {
                         Files.setLastModifiedTime(path, FileTime.fromMillis(System.currentTimeMillis()));
