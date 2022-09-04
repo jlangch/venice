@@ -55,12 +55,11 @@ public class LoadPathFunctions {
                     .arglists("(loadpath/paths)")
                     .doc(
                         "Returns the list of the defined load paths. A load path is either " +
-                        "a ZIP file, or a directory. \n\n" +
-                        "The functions `load-file` and I/O functions try sequentially every " +
-                        "load path to read the file. If a load path is a directory the file is " +
-                        "read from that directory. If a load path is a ZIP file the file is read " +
-                        "from within that ZIP.\n\n" +
-                        "Examples:")
+                        "a file, a ZIP file, or a directory. \n\n" +
+                        "The functions that support load paths try sequentially every " +
+                        "load path to access files. If a load path is a ZIP file files can be " +
+                        "read from within that ZIP file.\n\n" +
+                        "Examples:\n")
                     .seeAlso(
                         "loadpath/unrestricted?",
                         "loadpath/normalize",
@@ -98,7 +97,11 @@ public class LoadPathFunctions {
                     .meta()
                     .arglists("(loadpath/normalize f)")
                     .doc(
-                        "Normalizea a file regarding the load paths")
+                        "Normalize a relative file regarding the load paths.\n\n" +
+                    	"With the load paths: `[\"/Users/foo/img.png\", \"/Users/foo/resources\"]`\n\n" +
+                        "  * `(loadpath/normalize \"img.png\")` -> \"/Users/foo/img.png\"\n" +
+                        "  * `(loadpath/normalize \"test.json\")` -> \"/Users/foo/resources/test.json\"\n" +
+                        "  * `(loadpath/normalize \"/tmp/data.json\")` -> \"/tmp/data.json\"")
                     .seeAlso(
                         "loadpath/paths",
                         "loadpath/unrestricted?")

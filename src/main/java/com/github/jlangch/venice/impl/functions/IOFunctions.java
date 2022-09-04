@@ -1671,22 +1671,23 @@ public class IOFunctions {
             public VncVal apply(final VncList args) {
                 ArityExceptions.assertMinArity(this, args, 2);
 
+                final IInterceptor inteceptor = sandboxFunctionCallValidation();
+
                 final VncHashMap options = VncHashMap.ofAll(args.rest().rest());
                 final VncVal replaceOpt = options.get(new VncKeyword("replace"));
 
-                final File sourceFile = convertToFile(
+                File sourceFile = convertToFile(
                                             args.first(),
                                             "Function 'io/copy-file' does not allow %s as source");
 
-                sandboxFunctionCallValidation();
-
-
                 final VncVal destVal = args.second();
-
-                final File destFile = convertToFile(destVal);
+                File destFile = convertToFile(destVal);
 
                 if (destFile != null) {
-                    sandboxFunctionCallValidation();
+                    // normalize files regarding loadpath
+                    final ILoadPaths loadpaths = inteceptor.getLoadPaths();
+                    sourceFile = loadpaths.normalize(sourceFile);
+                    destFile = loadpaths.normalize(destFile);
 
                     final List<CopyOption> copyOptions = new ArrayList<>();
                     if (VncBoolean.isTrue(replaceOpt)) {
@@ -1696,13 +1697,13 @@ public class IOFunctions {
                     try {
                         if (destFile.isDirectory()) {
                             Files.copy(
-                                    sourceFile.toPath(),
+                                sourceFile.toPath(),
                                 destFile.toPath().resolve(sourceFile.getName()),
                                 copyOptions.toArray(new CopyOption[0]));
                         }
                         else {
                             Files.copy(
-                                    sourceFile.toPath(),
+                                sourceFile.toPath(),
                                 destFile.toPath(),
                                 copyOptions.toArray(new CopyOption[0]));
                         }
@@ -1716,6 +1717,10 @@ public class IOFunctions {
                     }
                 }
                 else if (Types.isVncJavaObject(destVal, OutputStream.class)) {
+                    // normalize files regarding loadpath
+                    final ILoadPaths loadpaths = inteceptor.getLoadPaths();
+                    sourceFile = loadpaths.normalize(sourceFile);
+
                     final OutputStream os = (OutputStream)((VncJavaObject)destVal).getDelegate();
 
                     try {
@@ -1757,6 +1762,8 @@ public class IOFunctions {
             public VncVal apply(final VncList args) {
                 ArityExceptions.assertArity(this, args, 2);
 
+                final IInterceptor inteceptor = sandboxFunctionCallValidation();
+
                 final File from = convertToFile(
                                     args.first(),
                                     "Function 'io/move-file' does not allow %s as source");
@@ -1764,8 +1771,6 @@ public class IOFunctions {
                 final File to = convertToFile(
                                     args.second(),
                                     "Function 'io/move-file' does not allow %s as target");
-
-                final IInterceptor inteceptor = sandboxFunctionCallValidation();
 
                 try {
                     final ILoadPaths loadpaths = inteceptor.getLoadPaths();
@@ -1805,16 +1810,17 @@ public class IOFunctions {
             public VncVal apply(final VncList args) {
                 ArityExceptions.assertArity(this, args, 1);
 
+                final IInterceptor inteceptor = sandboxFunctionCallValidation();
+
                 final File file = convertToFile(
                                     args.first(),
                                     "Function 'io/touch-file' does not allow %s as file");
 
-
-                sandboxFunctionCallValidation();
-
-                final Path path = file.toPath();
-
                 try {
+                    final ILoadPaths loadpaths = inteceptor.getLoadPaths();
+
+                    final Path path = loadpaths.normalize(file).toPath();
+
                     if (Files.exists(path)) {
                         Files.setLastModifiedTime(path, FileTime.fromMillis(System.currentTimeMillis()));
                     }
