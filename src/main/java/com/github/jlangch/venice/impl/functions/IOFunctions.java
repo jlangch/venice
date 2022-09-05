@@ -816,10 +816,15 @@ public class IOFunctions {
                     .doc(
                         "Converts s to an URL or builds an URL from its spec elements. \n\n" +
                         "s may be:                   \n\n" +
-                        "  * a string (an URL spec)    \n" +
+                        "  * a string (a spec string to be parsed as a URL.)    \n" +
                         "  * a `java.io.File`          \n" +
                         "  * a `java.nio.file.Path`    \n" +
-                        "  * a `java.net.URI`")
+                        "  * a `java.net.URI`\n\n" +
+                        "Arguments:¶" +
+                        "\u2001**protocol**\u2003the name of the protocol to use.¶" +
+                        "\u2001**host**\u2003the name of the host.¶" +
+                        "\u2001**port**\u2003the port number on the host.¶" +
+                        "\u2001**file**\u2003the file on the host")
                     .examples(
                         "(io/->url \"file:/tmp/test.txt\")",
                         "(io/->url (io/file \"/tmp/test.txt\"))",
@@ -874,7 +879,7 @@ public class IOFunctions {
                     }
                 }
                 catch(MalformedURLException ex) {
-                    throw new VncException("Malformed URL: " + args.first(), ex);
+                    throw new VncException("Malformed URL: " + ex.getMessage(), ex);
                 }
             }
 
@@ -888,14 +893,24 @@ public class IOFunctions {
                     .meta()
                     .arglists(
                         "(io/->uri s)",
+                        "(io/->uri scheme user-info host port path)",
+                        "(io/->uri scheme user-info host port path query)",
                         "(io/->uri scheme user-info host port path query fragment)")
                     .doc(
                         "Converts s to an URI or builds an URI from its spec elements.\n\n" +
                         "s may be:                   \n\n" +
-                        "  * a string (an URI spec)    \n" +
+                        "  * a string (a spec string to be parsed as a URI.)    \n" +
                         "  * a `java.io.File`          \n" +
                         "  * a `java.nio.file.Path`    \n" +
-                        "  * a `java.net.URL`")
+                        "  * a `java.net.URL`        \n\n" +
+                        "Arguments:¶" +
+                        "\u2001**scheme**\u2003Scheme name¶" +
+                        "\u2001**userInfo**\u2003User name and authorization information¶" +
+                        "\u2001**host**\u2003Host name¶" +
+                        "\u2001**port**\u2003Port number¶" +
+                        "\u2001**path**\u2003Path¶" +
+                        "\u2001**query**\u2003Query¶" +
+                        "\u2001**fragment**\u2003Fragment")
                     .examples(
                         "(io/->uri \"file:/tmp/test.txt\")",
                         "(io/->uri (io/file \"/tmp/test.txt\"))",
@@ -908,7 +923,7 @@ public class IOFunctions {
         ) {
             @Override
             public VncVal apply(final VncList args) {
-                ArityExceptions.assertArity(this, args, 1, 7);
+                ArityExceptions.assertArity(this, args, 1, 5, 6, 7);
 
 
                 try {
@@ -946,8 +961,8 @@ public class IOFunctions {
                         final VncVal host = args.nth(2);
                         final VncVal port = args.nth(3);
                         final VncVal path = args.nth(4);
-                        final VncVal query = args.nth(5);
-                        final VncVal fragment = args.nth(6);
+                        final VncVal query = args.nthOrDefault(5, Nil);
+                        final VncVal fragment = args.nthOrDefault(6, Nil);
 
                         return new VncJavaObject(
                                 new URI(scheme == Nil   ? null : Coerce.toVncString(scheme).getValue(),
@@ -960,7 +975,7 @@ public class IOFunctions {
                     }
                 }
                 catch(URISyntaxException ex) {
-                    throw new VncException("Malformed URI: " + args.first(), ex);
+                    throw new VncException("Malformed URI: " + ex.getMessage(), ex);
                 }
             }
 
@@ -1089,7 +1104,9 @@ public class IOFunctions {
                         "                        #(log (str \"terminated watching \" %1)))] \n" +
                         "    (sleep 30 :seconds)                                            \n" +
                         "    (io/close-watcher w)))")
-                    .seeAlso("io/await-for")
+                    .seeAlso(
+                    	"io/close-watcher",
+                    	"io/await-for")
                     .build()
         ) {
             @Override
