@@ -154,10 +154,9 @@ public class CsvFunctions {
                         "| :quote val     | e.g. \"'\", defaults to a double quote |\n" +
                         "| :newline val   | :lf (default) or :cr+lf |")
                     .examples(
-                        "(let [file (io/file \"test.csv\")                                       \n" +
-                        "      fs (. :java.io.FileOutputStream :new file)]                       \n" +
-                        "  (try-with [writer (. :java.io.OutputStreamWriter :new fs \"utf-8\")]  \n" +
-                        "    (csv/write writer [[1 \"AC\" false] [2 \"WS\" true]])))               ")
+                        "(let [os (io/file-out-stream \"test.csv\")]                    \n" +
+                        "  (try-with [wr (io/wrap-os-with-buffered-writer os :utf-8)]  \n" +
+                        "    (csv/write wr [[1 \"AC\" false] [2 \"WS\" true]])))        ")
                     .build()
         ) {
             @Override

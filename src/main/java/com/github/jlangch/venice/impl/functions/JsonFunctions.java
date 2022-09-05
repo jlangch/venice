@@ -130,11 +130,12 @@ public class JsonFunctions {
                         "                         Defaults to false. |\n" +
                         "| :encoding e          | e.g :encoding :utf-8, defaults to :utf-8 |")
                     .examples(
-                        "(let [out (. :java.io.ByteArrayOutputStream :new)]           \n" +
-                        "  (json/spit out {:a 100 :b 100 :c [10 20 30]})              \n" +
-                        "  (. out :flush)                                             \n" +
-                        "  (. :java.lang.String :new (. out :toByteArray) \"utf-8\"))   ")
-                    .seeAlso("json/write-str", "json/read-str", "json/slurp", "json/pretty-print")
+                        "(try-with [out (io/bytebuf-out-stream)]            \n" +
+                        "  (json/spit out {:a 100 :b 100 :c [10 20 30]})    \n" +
+                        "  (flush out)                                      \n" +
+                        "  (bytebuf-to-string @out :utf-8))                 ")
+                    .seeAlso(
+                        "json/write-str", "json/read-str", "json/slurp", "json/pretty-print")
                     .build()
         ) {
             @Override
@@ -303,11 +304,12 @@ public class JsonFunctions {
                         "                 of Double. Default is false. |\n" +
                         "| :encoding e  | e.g :encoding :utf-8, defaults to :utf-8 |")
                     .examples(
-                        "(let [json (json/write-str {:a 100 :b 100})             \n" +
-                        "      data (bytebuf-from-string json :utf-8)            \n" +
-                        "      in   (. :java.io.ByteArrayInputStream :new data)] \n" +
-                        "  (str (json/slurp in)))                                  ")
-                    .seeAlso("json/write-str", "json/read-str", "json/spit", "json/pretty-print")
+                        "(let [json (json/write-str {:a 100 :b 100})       \n" +
+                        "      data (bytebuf-from-string json :utf-8)]     \n" +
+                        "  (try-with [in (io/bytebuf-in-stream data)]      \n" +
+                        "    (pr-str (json/slurp in))))                    ")
+                    .seeAlso(
+                    	"json/write-str", "json/read-str", "json/spit", "json/pretty-print")
                     .build()
         ) {
             @Override
