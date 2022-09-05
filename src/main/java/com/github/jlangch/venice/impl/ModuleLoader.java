@@ -108,7 +108,7 @@ public class ModuleLoader {
         final String data = interceptor.getLoadPaths().loadVeniceFile(f);
 
         if (data == null) {
-            throw new VncException("Failed to load the file '" + f + "'!");
+            throw new VncException("The file '" + f + "' does not exist!");
         }
         else {
             externalFiles.put(f.getName(), data);
