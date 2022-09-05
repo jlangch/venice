@@ -45,7 +45,7 @@ public class LoadPaths_delete_file_Test {
             venice.eval("(io/delete-file src)", param(root, "res1.txt"));
             venice.eval("(io/delete-file src)", param(root, "dir1/11/res4.txt"));
 
-            // non existing file
+            // non existing file -> silently ignored
             venice.eval("(io/delete-file src)", param(root, "unknown/res2.txt"));
         });
     }
@@ -57,6 +57,9 @@ public class LoadPaths_delete_file_Test {
 
             // inside
             venice.eval("(io/delete-file src)", param("11/res4.txt"));
+
+            // non existing file -> silently ignored
+            venice.eval("(io/delete-file src)", param("unknown/res2.txt"));
       });
     }
 
@@ -67,6 +70,9 @@ public class LoadPaths_delete_file_Test {
 
             // inside
             venice.eval("(io/delete-file src)", param("11/res4.txt"));
+
+            // non existing file -> silently ignored
+            venice.eval("(io/delete-file src)", param("unknown/res2.txt"));
         });
     }
 
