@@ -87,6 +87,8 @@ import com.github.jlangch.venice.impl.util.io.ClassPathResource;
 import com.github.jlangch.venice.impl.util.io.FileUtil;
 import com.github.jlangch.venice.impl.util.io.IOStreamUtil;
 import com.github.jlangch.venice.impl.util.io.InternetUtil;
+import com.github.jlangch.venice.javainterop.IInterceptor;
+import com.github.jlangch.venice.javainterop.ILoadPaths;
 
 
 public class IOFunctions {
@@ -1217,7 +1219,7 @@ public class IOFunctions {
                     .doc(
                         "Deletes one or multiple files. Silently skips delete if the file " +
                         "does not exist. If f is a directory the directory must be empty. " +
-                        "f must be a file or a string (file path)")
+                        "f must be a file or a string (file path).")
                     .seeAlso(
                         "io/delete-files-glob",
                         "io/delete-file-tree",
@@ -1230,22 +1232,26 @@ public class IOFunctions {
             public VncVal apply(final VncList args) {
                 ArityExceptions.assertMinArity(this, args, 0);
 
-                sandboxFunctionCallValidation();
+                final IInterceptor interceptor = sandboxFunctionCallValidation();
 
-                args.forEach(f -> {
+                final ILoadPaths loadpaths = interceptor.getLoadPaths();
+
+                for(VncVal f : args) {
                     try {
                         final File file = convertToFile(
                                             f,
                                             "Function 'io/delete-file' does not allow %s as f");
 
-                        Files.deleteIfExists(file.toPath());
+                        final Path path = loadpaths.normalize(file).toPath();
+
+                        Files.deleteIfExists(path);
                     }
                     catch(Exception ex) {
                         throw new VncException(
                                 String.format("Failed to delete file %s", f.toString()),
                                 ex);
                     }
-                });
+                }
 
                 return Nil;
             }

@@ -89,7 +89,8 @@ public class LoadPathFunctions {
                         " * `io/slurp-lines`\n" +
                         " * `io/spit`\n" +
                         " * `io/file-in-stream`\n" +
-                        " * `io/file-out-stream`\n")
+                        " * `io/file-out-stream`\n" +
+                        " * `io/delete-file`")
                     .seeAlso(
                         "loadpath/unrestricted?",
                         "loadpath/normalize",
