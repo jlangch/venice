@@ -12,6 +12,10 @@ and this project adheres to
 
 ## [1.10.21] - 2022-09-xx
 
+### Added
+
+- load path support for `io/delete-file`
+
 ### Improved
 
 - CSV and JSON to use the I/O module to handle its file I/O.   

@@ -38,7 +38,6 @@ java.exe ^
   -XX:-OmitStackTraceInFastThrow ^
   -Djava.io.tmpdir=%REPL_HOME%\tmp ^
   -cp "libs;libs/*" com.github.jlangch.venice.Launcher ^
-  -loadpath "scripts" ^
   -restartable ^
   -colors-darkmode
   

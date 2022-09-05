@@ -57,6 +57,7 @@ import com.github.jlangch.venice.impl.types.VncJavaObject;
 import com.github.jlangch.venice.impl.types.VncSymbol;
 import com.github.jlangch.venice.impl.util.CommandLineArgs;
 import com.github.jlangch.venice.javainterop.IInterceptor;
+import com.github.jlangch.venice.javainterop.ILoadPaths;
 
 public class CustomREPL {
 
@@ -72,6 +73,7 @@ public class CustomREPL {
         ThreadContext.setInterceptor(interceptor);
 
         final CommandLineArgs cli = new CommandLineArgs(args);
+        final ILoadPaths loadpaths = interceptor.getLoadPaths();
 
         try {
             config = ReplConfig.load(cli);
@@ -101,6 +103,11 @@ public class CustomREPL {
 
             System.out.println("Venice custom REPL: V" + Venice.getVersion() + (setupMode ? " (setup mode)": ""));
             System.out.println("Loading configuration from " + config.getConfigSource());
+            if (loadpaths.active()) {
+                System.out.print("Load paths: ");
+                System.out.println(loadpaths.isUnlimitedAccess() ? "unrestricted > " : "retricted > ");
+                loadpaths.getPaths().forEach(p ->  System.out.println("   " + p));
+            }
             System.out.println(getTerminalInfo());
             if (macroexpand) {
                 System.out.println("Macro expansion enabled");

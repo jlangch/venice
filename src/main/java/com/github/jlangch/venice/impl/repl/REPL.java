@@ -104,6 +104,7 @@ public class REPL {
         ThreadContext.setInterceptor(interceptor);
 
         final CommandLineArgs cli = new CommandLineArgs(args);
+        final ILoadPaths loadpaths = interceptor.getLoadPaths();
 
         try {
             boolean macroexpand = false;
@@ -153,6 +154,11 @@ public class REPL {
 
             System.out.println("Venice REPL: V" + Venice.getVersion() + (setupMode ? " (setup mode)": ""));
             System.out.println("Loading configuration from " + config.getConfigSource());
+            if (loadpaths.active()) {
+                System.out.print("Load paths: ");
+                System.out.println(loadpaths.isUnlimitedAccess() ? "unrestricted > " : "retricted > ");
+                loadpaths.getPaths().forEach(p ->  System.out.println("   " + p));
+            }
             System.out.println(getTerminalInfo());
             if (macroexpand) {
                 System.out.println("Macro expansion enabled");

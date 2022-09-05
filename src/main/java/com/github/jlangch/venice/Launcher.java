@@ -68,7 +68,7 @@ import com.github.jlangch.venice.javainterop.LoadPathsFactory;
  *
  *  <p>Launcher command line options:
  *  <pre>
- *  -loadpath path    defines a load path
+ *  -loadpath path    defines a load path, semi-colon delimited paths
  *                    E.g.: -loadpath "/users/foo/scripts;/users/foo/res"
  *
  *  -macroexpand      turns up-front macro expansion on, resulting in a

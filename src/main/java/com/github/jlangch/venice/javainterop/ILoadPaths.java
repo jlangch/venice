@@ -159,4 +159,9 @@ public interface ILoadPaths {
      * @return the file paths associated with this {@code ILoadPaths} object
      */
     List<File> getPaths();
+
+    /**
+     * @return true if load paths have been configured, else false
+     */
+    boolean active();
 }

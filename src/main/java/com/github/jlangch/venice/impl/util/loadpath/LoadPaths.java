@@ -367,6 +367,11 @@ public class LoadPaths implements ILoadPaths {
         }
     }
 
+    @Override
+    public boolean active() {
+    	return !getPaths().isEmpty();
+    }
+
 
     private ByteBuffer load(final File file) {
         try {

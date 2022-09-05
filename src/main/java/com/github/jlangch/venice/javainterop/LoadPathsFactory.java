@@ -121,7 +121,7 @@ public class LoadPathsFactory {
         }
         else {
             return LoadPaths.of(
-                    Arrays.stream(loadPaths.trim().split(";"))
+                    Arrays.stream(StringUtil.trimToEmpty(loadPaths).split(";"))
                           .map(p -> StringUtil.trimToNull(p))
                           .filter(p -> p != null)
                           .map(p -> new File(p))
