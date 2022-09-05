@@ -33,6 +33,7 @@ import java.io.OutputStreamWriter;
 import java.io.PrintStream;
 import java.io.Reader;
 import java.io.Writer;
+import java.nio.file.Path;
 import java.util.Map;
 import java.util.function.BiFunction;
 import java.util.function.Function;
@@ -121,8 +122,12 @@ public class JsonFunctions {
                     .arglists(
                         "(json/spit out val & options)")
                     .doc(
-                        "Spits the JSON converted val to the output. " +
-                        "out maybe a file, a Java OutputStream, or a Java Writer. \n\n" +
+                        "Spits the JSON converted val to the output.                  \n\n" +
+                        "The out may be a:                                            \n\n" +
+                        " * `java.io.File`, e.g: `(io/file \"/temp/foo.json\")`       \n" +
+                        " * `java.nio.Path`                                           \n" +
+                        " * `java.io.OutputStream`                                    \n" +
+                        " * `java.io.Writer`                                          \n\n" +
                         "Options: \n\n" +
                         "| :pretty b            | Enables/disables pretty printing. " +
                         "                         Defaults to false. |\n" +
@@ -156,7 +161,7 @@ public class JsonFunctions {
                     final boolean decimalAsDouble = isTrueOption(options, "decimal-as-double");
                     final String encoding = encoding(options.get(new VncKeyword("encoding")));
 
-                    if (out instanceof File) {
+                    if (out instanceof File || out instanceof Path) {
                     	// Delegate to 'io/file-out-stream' for sandbox validation
                         final OutputStream fileOS = Coerce.toVncJavaObject(
                         							    IOFunctionsStreams.io_file_out_stream.applyOf(args.first()),
@@ -287,6 +292,7 @@ public class JsonFunctions {
                         "data.                                                        \n\n" +
                         "The source may be a:                                         \n\n" +
                         " * `java.io.File`, e.g: `(io/file \"/temp/foo.json\")`       \n" +
+                        " * `java.nio.Path`                                           \n" +
                         " * `java.io.InputStream`                                     \n" +
                         " * `java.io.Reader`                                          \n\n" +
                         "Options: \n\n" +
@@ -339,7 +345,7 @@ public class JsonFunctions {
                         final BiFunction<VncVal,VncVal,VncVal> valueFN =
                                 value_fn == null ? null : (k, v) -> value_fn.apply(VncList.of(k, v));
 
-                        if (in instanceof File) {
+                        if (in instanceof File || in instanceof Path) {
                         	// Delegate to 'io/file-in-stream' for sandbox validation
                             final InputStream fileIS = Coerce.toVncJavaObject(
                             							    IOFunctionsStreams.io_file_in_stream.applyOf(args.first()),

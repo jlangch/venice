@@ -21,11 +21,16 @@
  */
 package com.github.jlangch.venice.impl.functions;
 
+import static com.github.jlangch.venice.impl.types.Constants.Nil;
+
 import java.io.File;
 import java.io.InputStream;
+import java.io.OutputStream;
+import java.io.OutputStreamWriter;
 import java.io.Reader;
 import java.io.StringWriter;
 import java.io.Writer;
+import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -66,6 +71,7 @@ public class CsvFunctions {
                         " * `string`                                                       \n" +
                         " * `bytebuf`                                                      \n" +
                         " * `java.io.File`, e.g: `(io/file \"/temp/foo.json\")`            \n" +
+                        " * `java.nio.Path`,                                  `            \n" +
                         " * `java.io.InputStream`                                          \n" +
                         " * `java.io.Reader`                                               \n\n" +
                         "Options:\n\n" +
@@ -95,7 +101,7 @@ public class CsvFunctions {
                     if (Types.isVncString(source)) {
                         return map(parser.parse(((VncString)source).getValue()));
                     }
-                    else if (Types.isVncJavaObject(source, File.class)) {
+                    else if (Types.isVncJavaObject(source, File.class) || Types.isVncJavaObject(source, Path.class)) {
                     	// Delegate to 'io/file-in-stream' for sandbox validation
                         final InputStream fileIS = Coerce.toVncJavaObject(
                         							IOFunctionsStreams.io_file_in_stream.applyOf(source),
@@ -124,7 +130,7 @@ public class CsvFunctions {
                     }
                     else {
                         throw new VncException(String.format(
-                                "Function 'csv/read' does not allow %s as f",
+                                "Function 'csv/read' does not allow %s as source",
                                 Types.getType(args.first())));
                     }
                 }
@@ -144,19 +150,22 @@ public class CsvFunctions {
                 "csv/write",
                 VncFunction
                     .meta()
-                    .arglists("(csv/write writer records & options)")
+                    .arglists("(csv/write sink records & options)")
                     .doc(
-                        "Writes data to a writer in CSV format. The writer is a\n" +
-                        "Java java.io.Writer\n" +
-                        "\n" +
+                        "Spits data to a sink in CSV format.\n\n" +
+                        "The sink may be a:                                            \n\n" +
+                        " * `java.io.File`, e.g: `(io/file \"/temp/foo.json\")`       \n" +
+                        " * `java.nio.Path`                                           \n" +
+                        " * `java.io.OutputStream`                                    \n" +
+                        " * `java.io.Writer`                                          \n\n" +
                         "Options:\n\n" +
                         "| :separator val | e.g. \",\", defaults to a comma |\n" +
                         "| :quote val     | e.g. \"'\", defaults to a double quote |\n" +
-                        "| :newline val   | :lf (default) or :cr+lf |")
+                        "| :newline val   | :lf (default) or :cr+lf |\n" +
+                        "| :encoding enc  | used when writing to binary data sink " +
+                        "                   e.g :encoding :utf-8, defaults to :utf-8 |")
                     .examples(
-                        "(let [os (io/file-out-stream \"test.csv\")]                    \n" +
-                        "  (try-with [wr (io/wrap-os-with-buffered-writer os :utf-8)]  \n" +
-                        "    (csv/write wr [[1 \"AC\" false] [2 \"WS\" true]])))        ")
+                        "(csv/write (io/file \"test.csv\") [[1 \"AC\" false] [2 \"WS\" true]])")
                     .build()
         ) {
             @Override
@@ -166,27 +175,42 @@ public class CsvFunctions {
                 sandboxFunctionCallValidation();
 
                 try {
-                    final VncVal vWriter = args.first();
+                    final Object out = Coerce.toVncJavaObject(args.first()).getDelegate();
 
                     final VncHashMap options = VncHashMap.ofAll(args.rest().rest());
                     final char separator = toChar(options.get(new VncKeyword("separator")), ',');
                     final char quote = toChar(options.get(new VncKeyword("quote")), '"');
                     final String newline = toNewLine(options.get(new VncKeyword("newline")));
+                    final String encoding = encoding(options.get(new VncKeyword("encoding")));
 
                     final CSVWriter csvWriter = new CSVWriter(separator, quote, newline);
 
-                    if (Types.isVncJavaObject(vWriter, Writer.class)) {
-                        final Writer writer = (Writer)(Coerce.toVncJavaObject(vWriter).getDelegate());
+                    if (out instanceof File || out instanceof Path) {
+                    	// Delegate to 'io/file-out-stream' for sandbox validation
+                        final OutputStream os = Coerce.toVncJavaObject(
+                    							    IOFunctionsStreams.io_file_out_stream.applyOf(args.first()),
+                    							    OutputStream.class);
 
-                        try(Writer wr = writer) {
+                        try (Writer wr = new OutputStreamWriter(os, encoding)) {
                             csvWriter.write(wr, Coerce.toVncSequence(args.second()));
+                            return Constants.Nil;
                         }
-
-                        return Constants.Nil;
+                    }
+                    else if (out instanceof OutputStream) {
+                        try (Writer wr = new OutputStreamWriter((OutputStream)out, encoding)) {
+                            csvWriter.write(wr, Coerce.toVncSequence(args.second()));
+                            return Constants.Nil;
+                        }
+                    }
+                    else if (out instanceof Writer) {
+                        try(Writer wr = (Writer)out) {
+                            csvWriter.write(wr, Coerce.toVncSequence(args.second()));
+                            return Constants.Nil;
+                        }
                     }
                     else {
                         throw new VncException(String.format(
-                                "Function 'csv/write' does not allow %s as writer",
+                                "Function 'csv/write' does not allow %s as sink",
                                 Types.getType(args.first())));
                     }
                 }
@@ -291,6 +315,14 @@ public class CsvFunctions {
         else {
             return "\n";
         }
+    }
+
+    private static String encoding(final VncVal enc) {
+        return enc == Nil
+                ? "UTF-8"
+                : Types.isVncKeyword(enc)
+                    ? Coerce.toVncKeyword(enc).getValue()
+                    : Coerce.toVncString(enc).getValue();
     }
 
 

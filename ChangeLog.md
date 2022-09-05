@@ -12,12 +12,14 @@ and this project adheres to
 
 ## [1.10.21] - 2022-09-xx
 
-### Added
+### Improved
 
-- CSV and JSON delegate now to the I/O module to handle its file I/O.   
+- CSV and JSON to use the I/O module to handle its file I/O.   
   This way CSV and JSON can be controlled by the sandbox's I/O 
   configuration
 
+- the types of data sources and sinks CSV and JSON functions can handle
+  to slurp or spit data.
 
 
 
