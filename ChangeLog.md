@@ -22,7 +22,7 @@ and this project adheres to
   This way CSV and JSON can be controlled by the sandbox's I/O 
   configuration
 
-- the types of data sources and sinks CSV and JSON functions can handle
+- the support for data sources and sinks CSV and JSON functions can handle
   to slurp or spit data.
 
 
