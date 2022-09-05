@@ -22,22 +22,22 @@ converted. E.g. there is no real decimal type and Venice `int` is converted to `
 
 ### Streams
 
-JSON can be spit to Java OutputStreams or Writers
+JSON can be spit to Java OutputStreams, Writers, or files
 
 ```clojure
-(let [out (. :java.io.ByteArrayOutputStream :new)]
+(let [out (io/bytebuf-out-stream)]
   (json/spit out {:a 100 :b 100 :c [10 20 30]})
-  (. :java.lang.String :new (. out :toByteArray) "utf-8"))
+  (try-with [in (io/bytebuf-in-stream @out)]
+     (pr-str (json/slurp in))))
 ;;=> "{\"a\":100,\"b\":100,\"c\":[10,20,30]}"
 ```
 
-JSON can be slurped from Java InputStreams or Readers
+JSON can be slurped from Java InputStreams, Readers, or files
 
 ```clojure
-(let [json (json/write-str {:a 100 :b 100})
-      data (bytebuf-from-string json :utf-8) 
-      in (. :java.io.ByteArrayInputStream :new data)]
-  (str (json/slurp in)))
+(let [json (json/write-str {:a 100 :b 100})]
+  (try-with [is (io/string-in-stream json)]
+    (pr-str (json/slurp is))))
 ;;=> "{a 100 b 100}"
 ```
 

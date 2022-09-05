@@ -62,8 +62,5 @@ With alternate quote, separator, and newline:
 Writes data in CSV format to a file:
 
 ```clojure
-(let [file (io/file "test.csv")
-      fs (. :java.io.FileOutputStream :new file)]
-  (try-with [writer (. :java.io.OutputStreamWriter :new fs "utf-8")]
-    (csv/write writer [[1 "AC" false] [2 "WS" true]])))
-  
+(csv/write (io/file "test.csv") [[1 "AC" false] [2 "WS" true]])
+``

@@ -162,7 +162,7 @@ public class CsvFunctions {
                         "| :separator val | e.g. \",\", defaults to a comma |\n" +
                         "| :quote val     | e.g. \"'\", defaults to a double quote |\n" +
                         "| :newline val   | :lf (default) or :cr+lf |\n" +
-                        "| :encoding enc  | used when writing to binary data sink " +
+                        "| :encoding enc  | used when writing to a binary data sink. " +
                         "                   e.g :encoding :utf-8, defaults to :utf-8 |")
                     .examples(
                         "(csv/write (io/file \"test.csv\") [[1 \"AC\" false] [2 \"WS\" true]])")
