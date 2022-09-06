@@ -64,6 +64,16 @@ public class NamespaceRegistry implements Serializable {
         namespaces.clear();
     }
 
+    public NamespaceRegistry copy() {
+        final NamespaceRegistry nsRegistry = new NamespaceRegistry();
+
+        for(Map.Entry<VncSymbol, Namespace> entry : namespaces.entrySet()) {
+            nsRegistry.namespaces.put(entry.getKey(), entry.getValue().copy());
+        }
+
+        return nsRegistry;
+    }
+
 
     private static final long serialVersionUID = 672571759583276084L;
 

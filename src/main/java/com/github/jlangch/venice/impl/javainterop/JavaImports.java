@@ -37,6 +37,10 @@ import com.github.jlangch.venice.impl.util.StringUtil;
 
 public class JavaImports implements Serializable {
 
+    private JavaImports(final Map<String,String> imports) {
+        this.imports.putAll(imports);
+    }
+
     public JavaImports() {
         // from java.lang
         add(Throwable.class.getName());
@@ -93,6 +97,10 @@ public class JavaImports implements Serializable {
 
     public void clear() {
         imports.clear();
+    }
+
+    public JavaImports copy() {
+       return new JavaImports(imports);
     }
 
     public VncList list() {

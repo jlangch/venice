@@ -169,8 +169,12 @@ public class VeniceInterpreter implements IVeniceInterpreter, Serializable  {
 
     @Override
     public void presetNS(final NamespaceRegistry nsRegistry) {
+    	final VncSymbol ns = Namespaces.getCurrentNS();
+
         if (nsRegistry != null) {
             this.nsRegistry.add(nsRegistry);
+
+            Namespaces.setCurrentNamespace(nsRegistry.computeIfAbsent(ns));
         }
     }
 

@@ -33,8 +33,19 @@ import com.github.jlangch.venice.impl.types.collections.VncMap;
 
 public class Namespace implements Serializable {
 
+    private Namespace(
+    	    final VncSymbol ns,
+    	    final JavaImports javaImports,
+    	    final ConcurrentHashMap<String,String> aliases
+    ) {
+        this.ns = ns;
+        this.javaImports = javaImports.copy();
+        this.aliases.putAll(aliases);
+    }
+
     public Namespace(final VncSymbol ns) {
         this.ns = ns == null ? Namespaces.NS_USER : ns;
+        this.javaImports = new JavaImports();
     }
 
     public VncSymbol getNS() {
@@ -70,14 +81,19 @@ public class Namespace implements Serializable {
         return javaImports.list();
     }
 
+    public Namespace copy() {
+        return new Namespace(ns, javaImports, aliases);
+    }
+
     @Override
     public String toString() {
         return ns.getName();
     }
 
+
     private static final long serialVersionUID = -6955287120175682059L;
 
     private final VncSymbol ns;
-    private final JavaImports javaImports = new JavaImports();
+    private final JavaImports javaImports;
     private final ConcurrentHashMap<String,String> aliases = new ConcurrentHashMap<>();
 }

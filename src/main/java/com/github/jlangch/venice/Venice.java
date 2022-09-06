@@ -53,8 +53,6 @@ import com.github.jlangch.venice.impl.util.MeterRegistry;
 import com.github.jlangch.venice.impl.util.StringUtil;
 import com.github.jlangch.venice.javainterop.AcceptAllInterceptor;
 import com.github.jlangch.venice.javainterop.IInterceptor;
-import com.github.jlangch.venice.javainterop.SandboxInterceptor;
-import com.github.jlangch.venice.javainterop.SandboxRules;
 import com.github.jlangch.venice.util.FunctionExecutionMeter;
 import com.github.jlangch.venice.util.NullInputStream;
 import com.github.jlangch.venice.util.NullOutputStream;
@@ -123,28 +121,17 @@ public class Venice {
         try {
             ThreadContext.clear(true);
 
-            // Note: For security reasons use a restrictive sandbox because
-            //       macros can execute code while being expanded.
-            final IInterceptor sandbox = new SandboxInterceptor(
-                                               new SandboxRules()
-		                                               .rejectAllUnsafeFunctions()
-                                                       .withDefaultVeniceModules()
-                                                       .whitelistVeniceFunctions("load-module"));
-
             final IVeniceInterpreter venice = new VeniceInterpreter(
-                                                    sandbox,
+            		                                interceptor,
                                                     meterRegistry);
 
-            // Note: macroexpand-on-load is always turned OFF for pre-compilation!!
-            final boolean precompileMacroExpand = false;
-
-            final Env env = venice.createEnv(precompileMacroExpand, false, RunMode.PRECOMPILE)
+            final Env env = venice.createEnv(macroexpand, false, RunMode.PRECOMPILE)
                                   .setStdoutPrintStream(null)
                                   .setStderrPrintStream(null)
                                   .setStdinReader(null);
 
             VncVal ast = venice.READ(script, scriptName);
-            if (precompileMacroExpand) {
+            if (macroexpand) {
                 ast = venice.MACROEXPAND(ast, env);
             }
 
@@ -154,7 +141,7 @@ public class Venice {
                         scriptName,
                         ast,
                         macroexpand,  // remember for runtime
-                        venice.getNamespaceRegistry(),
+                        venice.getNamespaceRegistry().copy(),
                         //new SymbolTable());
                         env.getGlobalSymbolTableWithoutCoreSystemSymbols());
         }
@@ -200,6 +187,8 @@ public class Venice {
             final IVeniceInterpreter venice = new VeniceInterpreter(interceptor, meterRegistry);
 
             return runWithSandbox(venice, () -> {
+                final NamespaceRegistry nsRegistryPrecompile = (NamespaceRegistry)precompiled.getNamespaceRegistry();
+
                 final SymbolTable coreSystemGlobalSymbols = getCoreSystemGlobalSymbols();
 
                 Env env = Env.createPrecompiledEnv(coreSystemGlobalSymbols, precompiled);
@@ -211,7 +200,7 @@ public class Venice {
 
                 // re-init namespaces!
                 venice.initNS();
-                venice.presetNS((NamespaceRegistry)precompiled.getNamespaceRegistry());
+                venice.presetNS(nsRegistryPrecompile);
                 venice.sealSystemNS();
 
                 venice.setMacroExpandOnLoad(precompiled.isMacroexpand());
@@ -492,13 +481,13 @@ public class Venice {
             throw ex;
         }
         catch(ExecutionException ex) {
-        	Throwable cause = ex.getCause();
-        	if (cause instanceof VncException) {
-        		throw (VncException)cause;
-        	}
-        	else {
+            Throwable cause = ex.getCause();
+            if (cause instanceof VncException) {
+                throw (VncException)cause;
+            }
+            else {
                 throw new RuntimeException(ex.getMessage(), cause);
-        	}
+            }
         }
         catch(RuntimeException ex) {
             throw ex;
