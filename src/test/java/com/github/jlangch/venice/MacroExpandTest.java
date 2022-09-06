@@ -22,6 +22,8 @@
 package com.github.jlangch.venice;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.util.List;
 
@@ -231,15 +233,15 @@ public class MacroExpandTest {
 
         // macroexpand-on-load: disabled
         final List<String> l1 = (List<String>)venice.eval("test", script1, false, null);
-//        assertFalse(l1.get(0).equals(l1.get(1)));
-//        assertFalse(l1.get(0).equals(l1.get(2)));
-//        assertFalse(l1.get(1).equals(l1.get(2)));
+        assertFalse(l1.get(0).equals(l1.get(1)));
+        assertFalse(l1.get(0).equals(l1.get(2)));
+        assertFalse(l1.get(1).equals(l1.get(2)));
 
         // macroexpand-on-load: enabled
         final List<String> l2 = (List<String>)venice.eval("test", script1, true, null);
-//        assertTrue(l2.get(0).equals(l2.get(1)));
-//        assertTrue(l2.get(0).equals(l2.get(2)));
-//        assertTrue(l2.get(1).equals(l2.get(2)));
+        assertTrue(l2.get(0).equals(l2.get(1)));
+        assertTrue(l2.get(0).equals(l2.get(2)));
+        assertTrue(l2.get(1).equals(l2.get(2)));
     }
 
 }
