@@ -268,7 +268,7 @@ public class PrecompileBenchmark {
         public PreCompiled precompiledNoMacroExpand_noparams = venice.precompile("example", expr2, false);
         public PreCompiled precompiledMacroExpand_noparams = venice.precompile("example", expr2, true);
         public PreCompiled precompiled_ref = venice.precompile("example", exprRef, true);
-     }
+    }
 }
 ```
 
