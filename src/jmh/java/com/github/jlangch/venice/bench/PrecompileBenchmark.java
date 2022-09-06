@@ -48,8 +48,8 @@ import com.github.jlangch.venice.Venice;
 // PrecompileBenchmark.no_precompilation_ref                   avgt    3  2274.765 ±  536.594  us/op
 // PrecompileBenchmark.precompilation_no_macroexpand_params    avgt    3    41.957 ±   11.971  us/op
 // PrecompileBenchmark.precompilation_no_macroexpand_noparams  avgt    3    40.418 ±    1.310  us/op
-// PrecompileBenchmark.precompilation_macroexpand_params       avgt    3     8.770 ±    3.409  us/op
-// PrecompileBenchmark.precompilation_macroexpand_noparams     avgt    3     7.683 ±    5.169  us/op
+// PrecompileBenchmark.precompilation_macroexpand_params       avgt    3     8.586 ±    1.368  us/op
+// PrecompileBenchmark.precompilation_macroexpand_noparams     avgt    3     7.330 ±    3.818  us/op
 // PrecompileBenchmark.precompilation_ref                      avgt    3     5.803 ±    1.008  us/op
 
 
