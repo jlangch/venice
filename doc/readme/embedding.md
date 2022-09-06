@@ -137,8 +137,6 @@ Precompiling Venice speeds up evaluation significantly when calling an expressio
 multiple times with different parameters. Running precompiled scripts is threadsafe. 
 Every evaluation gets its own private Venice context.
 
-If required precompiled scripts can be serialized/deserialized.
-
 ```java
 import java.util.stream.IntStream;
 import com.github.jlangch.venice.*;
