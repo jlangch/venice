@@ -59,9 +59,9 @@ public class Sandbox_VeniceFunction_Test {
 
     @Test
     public void test_rejectAllVeniceIoFunctions_slurp() {
-        // Sandbox::rejectAllVeniceIoFunctions() -> all Venice IO functions blacklisted
-        final Interceptor interceptor =
-                new SandboxInterceptor(new SandboxRules().rejectAllVeniceIoFunctions());
+        final Interceptor interceptor = new SandboxInterceptor(
+                                                new SandboxRules()
+                                                        .rejectAllIoFunctions());
 
         assertThrows(SecurityException.class, () -> {
             new Venice(interceptor).eval("(io/slurp \"/tmp/test\")");
