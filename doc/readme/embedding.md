@@ -188,6 +188,7 @@ The benchmark did run on a 2017 MacBook Pro (Mac OSX, Core i7 2.8 GHz).
 | precompilation_no_macroexpand_params   | avgt |     3 |     41.957 |  ±   11.971 |   us/op |
 | precompilation_ref                     | avgt |     3 |      5.803 |  ±    1.008 |   us/op |
 
+The benchmark can be run on the project's Gradle build: `./gradlew jmh -Pinclude=".*PrecompileBenchmark"`
 
 
 ### Benchmark
