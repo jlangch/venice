@@ -4,7 +4,6 @@
 * [Passing Parameters](#passing-parameters)
 * [stdout-stderr Redirection](#stdout-stderr-redirection)
 * [Precompiling](#precompiling)
-* [Serialize-Deserialize Precompiled Scripts](#serialize-deserialize-precompiled-scripts)
 * [Precompilation Benchmark](#precompilation-benchmark)
 * [Sandbox](#sandbox)
 
@@ -165,32 +164,6 @@ public class Embed_04_Precompile {
                   venice.eval(
                      precompiled, 
                      Parameters.of("x", ii))));
-    }
-}
-```
-
-
-### Serialize-Deserialize Precompiled Scripts
-
-Precompiled scripts can be serialized and deserialized to store them on
-a database for example.
-
-```java
-import com.github.jlangch.venice.*;
-
-public class Embed_11_PrecompileSerialize {
-    public static void main(final String[] args) {
-        final Venice venice = new Venice();
-
-        PreCompiled precompiled = venice.precompile("example", "(+ 1 x)", true);
-        
-        final byte[] data = precompiled.serialize();
-        
-        // ...
-        
-        precompiled = PreCompiled.deserialize(data);
-
-        System.out.println(venice.eval(precompiled, Parameters.of("x", 2)));
     }
 }
 ```
