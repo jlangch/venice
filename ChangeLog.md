@@ -16,6 +16,13 @@ and this project adheres to
 
 - ...
 
+### Fixed
+
+- pre-compiled scripts to support namespace aliases for loaded modules and 
+  files
+
+- pre-compiled scripts to support macro expansion for loaded modules and 
+  files
 
 
 
