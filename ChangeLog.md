@@ -12,14 +12,15 @@ and this project adheres to
 
 ## [1.10.22] - 2022-09-xx
 
-### Added
+### Improved
 
-- ...
+- pre-compiled scripts to reach the performance of _Venice_ V1.10.0 
+  scripts again.
 
 ### Fixed
 
 - pre-compiled scripts to support namespace aliases for loaded modules and 
-  files
+  files.
 
 - pre-compiled scripts to support macro expansion for loaded modules and 
   files
