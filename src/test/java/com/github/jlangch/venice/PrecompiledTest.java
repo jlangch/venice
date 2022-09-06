@@ -81,17 +81,6 @@ public class PrecompiledTest {
     }
 
     @Test
-    public void test_simple_serialize() {
-        final Venice venice = new Venice();
-
-        final PreCompiled precomp = venice.precompile("test", "(do (nil? 1) (+ 1 3))");
-
-        final byte[] data = precomp.serialize();
-        System.out.println("PreCompiled (simple) size: " + data.length);
-        assertEquals(4L, venice.eval(PreCompiled.deserialize(data)));
-    }
-
-    @Test
     public void test_version() {
         final Venice venice = new Venice();
 
@@ -143,17 +132,6 @@ public class PrecompiledTest {
     }
 
     @Test
-    public void test_with_fn_serialize() {
-        final Venice venice = new Venice();
-
-        final PreCompiled precomp = venice.precompile("test", "(do (defn sum [x y] (+ x y)) (sum 1 3))");
-
-        final byte[] data = precomp.serialize();
-        System.out.println("PreCompiled (defn) size: " + data.length);
-        assertEquals(4L, venice.eval(PreCompiled.deserialize(data)));
-    }
-
-    @Test
     public void test_with_java_import() {
         final Venice venice = new Venice();
 
@@ -170,26 +148,6 @@ public class PrecompiledTest {
         //       for the namespace registry while evaluating the s-expression
         //       from the precompiled AST.
         assertEquals("java.awt.Point[x=10,y=20]", venice.eval(precomp));
-    }
-
-    @Test
-    public void test_with_java_import_serialize() {
-        final Venice venice = new Venice();
-
-        final String script =
-                "(do                                     \n" +
-                "   (ns test)                            \n" +
-                "   (import :java.awt.Point)             \n" +
-                "   (. (. :Point :new 10 20) :toString))   ";
-
-        final PreCompiled precomp = venice.precompile("test", script);
-
-        final byte[] data = precomp.serialize();
-
-        // Note: Venice::eval will rebuild the namespace 'test' with the imports
-        //       for the namespace registry while evaluating the s-expression
-        //       from the precompiled AST.
-        assertEquals("java.awt.Point[x=10,y=20]", venice.eval(PreCompiled.deserialize(data)));
     }
 
     @Test
@@ -474,25 +432,6 @@ public class PrecompiledTest {
         final Object result = venice.eval(precomp);
 
         assertEquals("{h hexdump}", result);
-    }
-
-    @Test
-    public void test_ns_alias_3a() {
-        final Venice venice = new Venice();
-
-        final String script =
-                "(do                      \n" +
-                "  (load-module :test)    \n" +
-                "  (test/add 1 2))        ";
-
-        PreCompiled precomp = venice.precompile("test", script, true);
-
-        byte[] data = precomp.serialize();
-        precomp = PreCompiled.deserialize(data);
-
-        final Object result = venice.eval(precomp);
-
-        assertEquals(3L, result);
     }
 
     @Test

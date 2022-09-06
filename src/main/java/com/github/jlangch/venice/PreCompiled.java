@@ -21,13 +21,7 @@
  */
 package com.github.jlangch.venice;
 
-import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
-import java.io.ObjectInputStream;
-import java.io.ObjectOutputStream;
 import java.io.Serializable;
-import java.util.zip.GZIPInputStream;
-import java.util.zip.GZIPOutputStream;
 
 import com.github.jlangch.venice.impl.env.SymbolTable;
 import com.github.jlangch.venice.impl.namespaces.NamespaceRegistry;
@@ -75,56 +69,6 @@ public class PreCompiled implements Serializable {
 
     public Object getSymbols() {
         return symbols;
-    }
-
-    /**
-     * Serializes this pre-compiled Venice script
-     *
-     * @return the serialized byte array
-     */
-    public byte[] serialize() {
-        final ByteArrayOutputStream baos = new ByteArrayOutputStream();
-
-        try (GZIPOutputStream gzos = new GZIPOutputStream(baos, true)) {
-            new ObjectOutputStream(gzos).writeObject(this);
-            gzos.flush();
-            return baos.toByteArray();
-        }
-        catch (Exception ex) {
-            throw new RuntimeException("Failed to serialize pre-compiled Venice script", ex);
-        }
-    }
-
-    /**
-     * Deserializes a pre-compiled Venice script
-     *
-     * @param precompiled a serialized, pre-compiled Venice script
-     * @return the deserialized pre-compiled script
-     * @throws IncompatibleVersionException
-     *              if the Venice version of the deserialized script
-     *              does not match this Venice version
-     */
-    public static PreCompiled deserialize(final byte[] precompiled) {
-        final PreCompiled preCompiled = deserialize_(precompiled);
-        if (!preCompiled.version.equals(Version.VERSION)) {
-            throw new IncompatibleVersionException(String.format(
-                    "Failed to deserialize pre-compiled Venice script. "
-                        + "The pre-compiled version %s does not match this Venice version %s",
-                    preCompiled.version,
-                    Version.VERSION));
-        }
-        return preCompiled;
-    }
-
-    private static PreCompiled deserialize_(final byte[] precompiled) {
-        final ByteArrayInputStream bais = new ByteArrayInputStream(precompiled);
-
-        try (GZIPInputStream gzis = new GZIPInputStream(bais)) {
-            return (PreCompiled)new ObjectInputStream(gzis).readObject();
-        }
-        catch (Exception ex) {
-            throw new RuntimeException("Failed to deserialize pre-compiled Venice script", ex);
-        }
     }
 
 

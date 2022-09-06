@@ -364,6 +364,8 @@ public class VeniceInterpreter implements IVeniceInterpreter, Serializable  {
         while (true) {
             // System.out.println("EVAL:            " + Types.getType(orig_ast) + " > " + orig_ast.toString(true));
 
+            if (ast_ == Nil) return Nil;
+
             if (!(orig_ast instanceof VncList)) {
                 // not an s-expr
                 return evaluate_values(orig_ast, env);

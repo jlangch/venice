@@ -135,9 +135,9 @@ public class Venice {
                                                     sandbox,
                                                     meterRegistry);
 
+            // Note: macroexpand-on-load is always turned OFF for pre-compilation!!
             final boolean precompileMacroExpand = false;
 
-            // Note: macroexpand-on-load is always turned OFF for pre-compilation!!
             final Env env = venice.createEnv(precompileMacroExpand, false, RunMode.PRECOMPILE)
                                   .setStdoutPrintStream(null)
                                   .setStderrPrintStream(null)
