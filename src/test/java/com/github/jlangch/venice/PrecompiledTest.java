@@ -22,8 +22,10 @@
 package com.github.jlangch.venice;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -150,7 +152,7 @@ public class PrecompiledTest {
 
     @Test
     public void test_elapsed_precompiled() {
-        final PreCompiled precomp = new Venice().precompile("test", "(do (nil? 1) (+ 1 3))");
+        final PreCompiled precomp = new Venice().precompile("test", "(do (nil? 1) (+ 1 3))", true);
 
         Venice venice = new Venice();
 
@@ -173,7 +175,7 @@ public class PrecompiledTest {
 
     @Test
     public void test_elapsed_precompiled_with_params() {
-        final PreCompiled precomp = new Venice().precompile("test", "(do (nil? 1) (+ x y))");
+        final PreCompiled precomp = new Venice().precompile("test", "(do (nil? 1) (+ x y))", true);
 
         Venice venice = new Venice();
 
@@ -203,7 +205,8 @@ public class PrecompiledTest {
                                         "(do                          " +
                                         "  (defn sum [a b] (+ a b z)) " +
                                         "  (sleep (rand-long 50))     " +
-                                        "  (sum x y))                 ");
+                                        "  (sum x y))                 ",
+                                        true);
 
         final Venice venice = new Venice();
 
@@ -241,7 +244,8 @@ public class PrecompiledTest {
                                         "  (long (with-out-str               " +
                                         "           (do                      " +
                                         "             (sleep (rand-long 50)) " +
-                                        "             (print (sum x y))))))  ");
+                                        "             (print (sum x y))))))  ",
+                                        true);
 
         final Venice venice = new Venice();
 
@@ -273,6 +277,15 @@ public class PrecompiledTest {
         final PreCompiled precomp = new Venice().precompile("test", "(if (and true (= 1 1)) 4 0)", true);
 
         assertEquals(4L, new Venice().eval(precomp));
+    }
+
+    @Test
+    public void test_expand_macros_flag() {
+        final PreCompiled precomp1 = new Venice().precompile("test", "(macroexpand-on-load?)", false);
+        final PreCompiled precomp2 = new Venice().precompile("test", "(macroexpand-on-load?)", true);
+
+        assertFalse((Boolean)new Venice().eval(precomp1));
+        assertTrue((Boolean)new Venice().eval(precomp2));
     }
 
     @Test
