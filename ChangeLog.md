@@ -25,6 +25,11 @@ and this project adheres to
 - pre-compiled scripts to support macro expansion for loaded modules and 
   files
 
+### Incompatible Changes
+
+- renamed the public class 'com.github.jlangch.venice.PreCompiled' to 
+  'com.github.jlangch.venice.IPreCompiled' to pave the way for Java modules.
+
 
 
 ## [1.10.21] - 2022-09-05
