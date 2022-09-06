@@ -173,7 +173,7 @@ public class Venice {
     /**
      * Evaluates a pre-compiled script with parameters.
      *
-     * @param precompiled A mandatory pre-compiled script
+     * @param precompiledScript A mandatory pre-compiled script
      * @param params Optional parameters
      * @return the result
      */

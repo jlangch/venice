@@ -55,13 +55,13 @@ public class Example {
 **Precompiled
 
 import com.github.jlangch.venice.Venice;
-import com.github.jlangch.venice.PreCompiled;
+import com.github.jlangch.venice.IPreCompiled;
 
 public class Example {
    public static void main(String[] args) {
       Venice venice = new Venice();
 
-      PreCompiled precompiled = venice.precompile("example", "(+ 1 x)");
+      IPreCompiled precompiled = venice.precompile("example", "(+ 1 x)");
 
       for(int ii=0; ii<100; ii++) {
          venice.eval(precompiled, Parameters.of("x", ii));

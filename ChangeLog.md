@@ -10,11 +10,11 @@ and this project adheres to
 
 
 
-## [1.10.22] - 2022-09-xx
+## [1.10.22] - 2022-09-06
 
 ### Improved
 
-- pre-compiled scripts to reach the performance of _Venice_ V1.10.0 
+- pre-compiled scripts to reach the performance level of _Venice_ V1.10.0 
   scripts again.
 
 ### Fixed
