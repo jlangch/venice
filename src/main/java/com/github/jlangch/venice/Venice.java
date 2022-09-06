@@ -144,6 +144,7 @@ public class Venice {
 
             return new PreCompiled(
                         scriptName,
+                        script,
                         ast,
                         macroexpand,  // remember for runtime
                         nsRegistry,

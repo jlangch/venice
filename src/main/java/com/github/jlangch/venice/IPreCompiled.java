@@ -21,8 +21,17 @@
  */
 package com.github.jlangch.venice;
 
+
 public interface IPreCompiled {
 
+	/**
+	 * @return the script's name
+	 */
 	String scriptName();
+
+	/**
+	 * @return the script's Venice source code
+	 */
+	String script();
 
 }

@@ -34,13 +34,15 @@ import com.github.jlangch.venice.impl.types.VncVal;
 public class PreCompiled implements IPreCompiled {
 
     public PreCompiled(
-            final String name,
+            final String scriptName,
+            final String script,
             final VncVal precompiled,
             final boolean macroexpand,
             final NamespaceRegistry nsRegistry,
             final SymbolTable symbols
     ) {
-        this.name = name;
+        this.scriptName = scriptName;
+        this.script = script;
         this.precompiled = precompiled;
         this.macroexpand = macroexpand;
         this.nsRegistry = nsRegistry;
@@ -51,12 +53,16 @@ public class PreCompiled implements IPreCompiled {
 
     @Override
 	public String scriptName() {
-    	return name;
+    	return scriptName;
     }
 
+    @Override
+	public String script() {
+    	return script;
+    }
 
     public String getName() {
-        return name;
+        return scriptName;
     }
 
     public String getVersion() {
@@ -81,7 +87,8 @@ public class PreCompiled implements IPreCompiled {
 
 
 
-    private final String name;
+    private final String scriptName;
+    private final String script;
     private final VncVal precompiled;
     private final String version;
     private final boolean macroexpand;
