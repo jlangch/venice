@@ -65,14 +65,14 @@ public class Env implements Serializable {
         if (outer == null) {
             this.outer = null;
             this.level = 0;
-            this.precompiledGlobalSymbols = null;
+            this.safeGlobalSymbols = null;
             this.globalSymbols = new ConcurrentHashMap<>(2048);
             this.localSymbols = new ConcurrentHashMap<>(64);
         }
         else {
             this.outer = outer;
             this.level = outer.level() + 1;
-            this.precompiledGlobalSymbols = outer.precompiledGlobalSymbols;
+            this.safeGlobalSymbols = outer.safeGlobalSymbols;
             this.globalSymbols = outer.globalSymbols;
             this.localSymbols = new ConcurrentHashMap<>(64);
         }
@@ -81,11 +81,11 @@ public class Env implements Serializable {
     private Env(
             final SymbolTable coreSystemGlobalSymbols,
             final SymbolTable precompiledGlobalSymbols
-    ) {
+     ) {
         this.outer = null;
         this.level = 0;
-        this.precompiledGlobalSymbols = new ConcurrentHashMap<>(precompiledGlobalSymbols.getSymbolMap());
-        this.globalSymbols = new ConcurrentHashMap<>(coreSystemGlobalSymbols.getSymbolMap());
+        this.safeGlobalSymbols = coreSystemGlobalSymbols.getSymbolMap();
+        this.globalSymbols = new ConcurrentHashMap<>(precompiledGlobalSymbols.getSymbolMap());
         this.localSymbols = new ConcurrentHashMap<>(64);
     }
 
@@ -453,8 +453,8 @@ public class Env implements Serializable {
         return new SymbolTable(globalSymbols);
     }
 
-    public SymbolTable getPrecompiledGlobalSymbolTable() {
-        return new SymbolTable(precompiledGlobalSymbols);
+    public SymbolTable getSafeGlobalSymbolTable() {
+        return new SymbolTable(safeGlobalSymbols);
     }
 
     public static Env createPrecompiledEnv(
@@ -686,8 +686,8 @@ public class Env implements Serializable {
     }
 
     private Var getGlobalVarRaw(final VncSymbol sym) {
-        if (precompiledGlobalSymbols != null) {
-            final Var v = precompiledGlobalSymbols.get(sym);
+        if (safeGlobalSymbols != null) {
+            final Var v = safeGlobalSymbols.get(sym);
             if (v != null) return v;
         }
 
@@ -701,8 +701,8 @@ public class Env implements Serializable {
     public Map<VncSymbol,Var> getAllGlobalSymbols() {
         final Map<VncSymbol,Var> all = new HashMap<>();
 
-        if (precompiledGlobalSymbols != null) {
-            all.putAll(precompiledGlobalSymbols);
+        if (safeGlobalSymbols != null) {
+            all.putAll(safeGlobalSymbols);
         }
 
         all.putAll(globalSymbols);
@@ -762,7 +762,7 @@ public class Env implements Serializable {
 
     private final Env outer;
     private final int level;
-    private final Map<VncSymbol,Var> precompiledGlobalSymbols;
+    private final Map<VncSymbol,Var> safeGlobalSymbols;
     private final Map<VncSymbol,Var> globalSymbols;
     private final Map<VncSymbol,Var> localSymbols;
 }

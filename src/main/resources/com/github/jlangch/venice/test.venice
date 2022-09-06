@@ -24,7 +24,7 @@
 
 (ns test)
 
-(defmacro test/sum [x y] `(+  x ~y))
+(defmacro test/sum [x y] `(+  ~x ~y))
 
 (defn test/add [x y] (+ x y))
 

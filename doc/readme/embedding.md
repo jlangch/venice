@@ -177,19 +177,17 @@ The benchmark did run on a 2017 MacBook Pro (Mac OSX, Core i7 2.8 GHz).
 
 **Results Java 8 Server VM:**
 
-| Benchmark                     | Mode |  Cnt |    Score |      Error | Units |
-| :---                          | ---: | ---: |     ---: |       ---: |  ---: |
-| no_precompilation             | avgt |    3 | 3691.460 | ± 1149.737 | us/op |
-| precompilation_no_macroexpand | avgt |    3 |   45.714 | ±    1.468 | us/op |
-| precompilation_macroexpand    | avgt |    3 |    7.022 | ±    0.415 | us/op |
+| Benchmark                              | Mode |   Cnt |      Score |       Error |   Units |
+| :---                                   | ---: |  ---: |       ---: |        ---: |    ---: |
+| no_precompilation_noparams             | avgt |     3 |   2448.145 |  ± 1668.292 |   us/op |
+| no_precompilation_params               | avgt |     3 |   2452.398 |  ±  781.016 |   us/op |
+| no_precompilation_ref                  | avgt |     3 |   2274.765 |  ±  536.594 |   us/op |
+| precompilation_macroexpand_noparams    | avgt |     3 |      7.683 |  ±    5.169 |   us/op |
+| precompilation_macroexpand_params      | avgt |     3 |      8.770 |  ±    3.409 |   us/op |
+| precompilation_no_macroexpand_noparams | avgt |     3 |     40.418 |  ±    1.310 |   us/op |
+| precompilation_no_macroexpand_params   | avgt |     3 |     41.957 |  ±   11.971 |   us/op |
+| precompilation_ref                     | avgt |     3 |      5.803 |  ±    1.008 |   us/op |
 
-**Results Java 11 Server VM (-XX:+UseParallelGC):**
-
-| Benchmark                     | Mode |  Cnt |    Score |      Error | Units |
-| :---                          | ---: | ---: |     ---: |       ---: |  ---: |
-| no_precompilation             | avgt |    3 | 3949,762 |  ± 570,639 | us/op |
-| precompilation_no_macroexpand | avgt |    3 |   45,350 |  ±  13,561 | us/op |
-| precompilation_macroexpand    | avgt |    3 |    7,273 |  ±   1,652 | us/op |
 
 
 ### Benchmark
@@ -197,9 +195,8 @@ The benchmark did run on a 2017 MacBook Pro (Mac OSX, Core i7 2.8 GHz).
 ```java
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
-
-import com.github.jlangch.venice.*;
 import org.openjdk.jmh.annotations.*;
+import com.github.jlangch.venice.*;
 
 
 @Warmup(iterations=3, time=3, timeUnit=TimeUnit.SECONDS)
@@ -211,31 +208,66 @@ import org.openjdk.jmh.annotations.*;
 @Threads (1)
 public class PrecompileBenchmark {
     @Benchmark
-    public Object no_precompilation(State_ state) {
-        return state.venice.eval("test", state.expr, state.parameters);
+    public Object no_precompilation_ref(State_ state) {
+        return state.venice.eval("test", state.exprRef);
     }
 
     @Benchmark
-    public Object precompilation_no_macroexpand(State_ state) {
-        return state.venice.eval(state.precompiledNoMacroExpand, state.parameters);
+    public Object precompilation_ref(State_ state) {
+        return state.venice.eval(state.precompiled_ref);
     }
-    
+
     @Benchmark
-    public Object precompilation_macroexpand(State_ state) {
-        return state.venice.eval(state.precompiledMacroExpand, state.parameters);
+    public Object no_precompilation_params(State_ state) {
+        return state.venice.eval("test", state.expr1, state.parameters);
     }
-  
+
+    @Benchmark
+    public Object precompilation_no_macroexpand_params(State_ state) {
+        return state.venice.eval(state.precompiledNoMacroExpand_params, state.parameters);
+    }
+
+    @Benchmark
+    public Object precompilation_macroexpand_params(State_ state) {
+        return state.venice.eval(state.precompiledMacroExpand_params, state.parameters);
+    }
+
+    @Benchmark
+    public Object no_precompilation_noparams(State_ state) {
+        return state.venice.eval("test", state.expr2);
+    }
+
+    @Benchmark
+    public Object precompilation_no_macroexpand_noparams(State_ state) {
+        return state.venice.eval(state.precompiledNoMacroExpand_noparams);
+    }
+
+    @Benchmark
+    public Object precompilation_macroexpand_noparams(State_ state) {
+        return state.venice.eval(state.precompiledMacroExpand_noparams);
+    }
+
     @State(Scope.Benchmark)
     public static class State_ {
-        public String expr = "(+ (cond (< x 0) -1 (> x 0) 1 :else 0) " +
-                             "   (cond (< y 0) -1 (> y 0) 1 :else 0) " +
-                             "   (cond (< z 0) -1 (> z 0) 1 :else 0))";
+        public String expr1 = "(+ (cond (< x 0) -1 (> x 0) 1 :else 0) " +
+                              "   (cond (< y 0) -1 (> y 0) 1 :else 0) " +
+                              "   (cond (< z 0) -1 (> z 0) 1 :else 0))";
+
+        public String expr2 = "(+ (cond (< -10 0) -1 (> -10 0) 1 :else 0) " +
+                              "   (cond (< 0 0)   -1 (> 0 0)   1 :else 0) " +
+                              "   (cond (< 10 0)  -1 (> 10 0)  1 :else 0))";
+
+        public String exprRef = "nil";  // most simple expression, just return nil
 
         public Venice venice = new Venice();
-        public PreCompiled precompiledNoMacroExpand = venice.precompile("example", expr, false);
-        public PreCompiled precompiledMacroExpand = venice.precompile("example", expr, true);
         public Map<String,Object> parameters = Parameters.of("x", -10, "y", 0, "z", 10);
-    }
+
+        public PreCompiled precompiledNoMacroExpand_params = venice.precompile("example", expr1, false);
+        public PreCompiled precompiledMacroExpand_params = venice.precompile("example", expr1, true);
+        public PreCompiled precompiledNoMacroExpand_noparams = venice.precompile("example", expr2, false);
+        public PreCompiled precompiledMacroExpand_noparams = venice.precompile("example", expr2, true);
+        public PreCompiled precompiled_ref = venice.precompile("example", exprRef, true);
+     }
 }
 ```
 

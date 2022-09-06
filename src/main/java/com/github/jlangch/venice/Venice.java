@@ -137,11 +137,15 @@ public class Venice {
 
             meterRegistry.record("venice.precompile", System.nanoTime() - nanos);
 
+            NamespaceRegistry nsRegistry = venice.getNamespaceRegistry();
+            nsRegistry.remove(new VncSymbol("core"));
+            nsRegistry = nsRegistry.copy();
+
             return new PreCompiled(
                         scriptName,
                         ast,
                         macroexpand,  // remember for runtime
-                        venice.getNamespaceRegistry().copy(),
+                        nsRegistry,
                         //new SymbolTable());
                         env.getGlobalSymbolTableWithoutCoreSystemSymbols());
         }
@@ -195,12 +199,14 @@ public class Venice {
                 env = addParams(env, params);
 
                 // we're overwriting the run mode! PRECOMPILE -> SCRIPT
-                env.removeGlobalSymbol(new VncSymbol("*run-mode*"));
-                env.setGlobal(new Var(new VncSymbol("*run-mode*"), RunMode.SCRIPT.mode, false));
+//                env.removeGlobalSymbol(new VncSymbol("*run-mode*"));
+//                env.setGlobal(new Var(new VncSymbol("*run-mode*"), RunMode.SCRIPT.mode, false));
 
                 // re-init namespaces!
                 venice.initNS();
-                venice.presetNS(nsRegistryPrecompile);
+                if (!nsRegistryPrecompile.isEmpty()) {
+                	venice.presetNS(nsRegistryPrecompile);
+                }
                 venice.sealSystemNS();
 
                 venice.setMacroExpandOnLoad(precompiled.isMacroexpand());

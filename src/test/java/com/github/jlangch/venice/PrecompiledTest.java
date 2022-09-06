@@ -289,6 +289,61 @@ public class PrecompiledTest {
     }
 
     @Test
+    public void test_expand_macros_in_loaded_module_function_1a() {
+        final String script =
+                "(do                            \n" +
+                "  (load-module :test)          \n" +
+                "  (test/test-body-with-macro)) ";
+
+        // removing foo/x is okay, it's not part of the pre-compiled system symbols
+        final PreCompiled precomp = new Venice().precompile("test", script, true);
+
+        assertEquals(1L, new Venice().eval(precomp));
+    }
+
+    @Test
+    public void test_expand_macros_in_loaded_module_function_1b() {
+        final String script =
+                "(do                                             \n" +
+                "  (load-module :test)                           \n" +
+                "  (test/test-body-with-macro)                   \n" +
+                "  (pr-str (fn-body test/test-body-with-macro))) ";
+
+        // removing foo/x is okay, it's not part of the pre-compiled system symbols
+        final PreCompiled precomp = new Venice().precompile("test", script, true);
+
+        assertEquals("((if true (do 1)))", new Venice().eval(precomp));
+    }
+
+    @Test
+    public void test_expand_macros_in_loaded_module_macro_1a() {
+        final String script =
+                "(do                                 \n" +
+                "  (load-module :test)               \n" +
+                "  (defn plus [x y] (test/sum x y))  \n" +
+                "  (plus 1 2))                       ";
+
+        // removing foo/x is okay, it's not part of the pre-compiled system symbols
+        final PreCompiled precomp = new Venice().precompile("test", script, true);
+
+        assertEquals(3L, new Venice().eval(precomp));
+    }
+
+    @Test
+    public void test_expand_macros_in_loaded_module_macro_1b() {
+        final String script =
+                "(do                                 \n" +
+                "  (load-module :test)               \n" +
+                "  (defn plus [x y] (test/sum x y))  \n" +
+                "  (pr-str (fn-body plus))))         ";
+
+        // removing foo/x is okay, it's not part of the pre-compiled system symbols
+        final PreCompiled precomp = new Venice().precompile("test", script, true);
+
+        assertEquals("((+ x y))", new Venice().eval(precomp));
+    }
+
+    @Test
     public void test_remove_global_symbol_ok_1() {
         final String script =
                 "(do                 \n" +

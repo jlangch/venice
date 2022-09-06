@@ -64,6 +64,10 @@ public class NamespaceRegistry implements Serializable {
         namespaces.clear();
     }
 
+    public boolean isEmpty() {
+        return namespaces.isEmpty();
+    }
+
     public NamespaceRegistry copy() {
         final NamespaceRegistry nsRegistry = new NamespaceRegistry();
 
