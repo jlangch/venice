@@ -44,7 +44,7 @@ public class PrecompiledTest {
 
     @Test
     public void test_simple() {
-        final PreCompiled precomp = new Venice().precompile("test", "(do (nil? 1) (+ 1 3))");
+        final IPreCompiled precomp = new Venice().precompile("test", "(do (nil? 1) (+ 1 3))");
 
         assertEquals(4L, new Venice().eval(precomp));
     }
@@ -53,21 +53,29 @@ public class PrecompiledTest {
     public void test_simple2() throws Exception {
         final String script = "(do (defn sum [a b] (+ a b z)) (sum x y))";
 
-        final PreCompiled precomp = new Venice().precompile("test", script);
+        final IPreCompiled precomp = new Venice().precompile("test", script);
 
         assertEquals(103L, new Venice().eval(precomp, Parameters.of("x", 100L, "y", 1L, "z", 2L)));
     }
 
+
+    @Test
+    public void test_run_mode() {
+        final IPreCompiled precomp = new Venice().precompile("test", "*run-mode*");
+
+        assertEquals("script", new Venice().eval(precomp));
+    }
+
     @Test
     public void test_ns() throws Exception {
-        final PreCompiled precomp = new Venice().precompile("test", "(do (defn x [] *ns*) (x))");
+        final IPreCompiled precomp = new Venice().precompile("test", "(do (defn x [] *ns*) (x))");
 
         assertEquals("user", new Venice().eval(precomp));
     }
 
     @Test
     public void test_simple_with_params() {
-        final PreCompiled precomp = new Venice().precompile("test", "(do (+ x y))");
+        final IPreCompiled precomp = new Venice().precompile("test", "(do (+ x y))");
 
         assertEquals(300, new Venice().eval(precomp, Parameters.of("x", 100, "y", 200)));
         assertEquals(300L, new Venice().eval(precomp, Parameters.of("x", 100L, "y", 200L)));
@@ -75,21 +83,21 @@ public class PrecompiledTest {
 
     @Test
     public void test_version() {
-        final PreCompiled precomp = new Venice().precompile("test", "*version*");
+        final IPreCompiled precomp = new Venice().precompile("test", "*version*");
 
         assertEquals(Venice.getVersion(), new Venice().eval(precomp));
     }
 
     @Test
     public void test_loaded_modules() {
-        final PreCompiled precomp = new Venice().precompile("test", "(count (sort *loaded-modules*))");
+        final IPreCompiled precomp = new Venice().precompile("test", "(count (sort *loaded-modules*))");
 
         assertEquals(11L, new Venice().eval(precomp));
     }
 
     @Test
     public void test_stdout() {
-        final PreCompiled precomp = new Venice().precompile("test", "(print 23)");
+        final IPreCompiled precomp = new Venice().precompile("test", "(print 23)");
 
         final CapturingPrintStream ps = new CapturingPrintStream();
 
@@ -100,7 +108,7 @@ public class PrecompiledTest {
 
     @Test
     public void test_with_stdout_str() {
-        final PreCompiled precomp = new Venice().precompile("test", "(with-out-str (print 23))");
+        final IPreCompiled precomp = new Venice().precompile("test", "(with-out-str (print 23))");
 
         final CapturingPrintStream ps = new CapturingPrintStream();
 
@@ -109,7 +117,7 @@ public class PrecompiledTest {
 
     @Test
     public void test_with_fn() {
-        final PreCompiled precomp = new Venice().precompile("test", "(do (defn sum [x y] (+ x y)) (sum 1 3))");
+        final IPreCompiled precomp = new Venice().precompile("test", "(do (defn sum [x y] (+ x y)) (sum 1 3))");
 
         assertEquals(4L, new Venice().eval(precomp));
     }
@@ -122,7 +130,7 @@ public class PrecompiledTest {
                 "   (import :java.awt.Point)             \n" +
                 "   (. (. :Point :new 10 20) :toString))   ";
 
-        final PreCompiled precomp = new Venice().precompile("test", script);
+        final IPreCompiled precomp = new Venice().precompile("test", script);
 
 
         // Note: Venice::eval will rebuild the namespace 'test' with the imports
@@ -152,7 +160,7 @@ public class PrecompiledTest {
 
     @Test
     public void test_elapsed_precompiled() {
-        final PreCompiled precomp = new Venice().precompile("test", "(do (nil? 1) (+ 1 3))", true);
+        final IPreCompiled precomp = new Venice().precompile("test", "(do (nil? 1) (+ 1 3))", true);
 
         Venice venice = new Venice();
 
@@ -175,7 +183,7 @@ public class PrecompiledTest {
 
     @Test
     public void test_elapsed_precompiled_with_params() {
-        final PreCompiled precomp = new Venice().precompile("test", "(do (nil? 1) (+ x y))", true);
+        final IPreCompiled precomp = new Venice().precompile("test", "(do (nil? 1) (+ x y))", true);
 
         Venice venice = new Venice();
 
@@ -200,7 +208,7 @@ public class PrecompiledTest {
     public void test_multi_threaded() throws Exception {
         final ExecutorService es = Executors.newFixedThreadPool(10);
 
-        final PreCompiled precomp = new Venice().precompile(
+        final IPreCompiled precomp = new Venice().precompile(
                                         "test",
                                         "(do                          " +
                                         "  (defn sum [a b] (+ a b z)) " +
@@ -237,7 +245,7 @@ public class PrecompiledTest {
     public void test_multi_threaded_2() throws Exception {
         final ExecutorService es = Executors.newFixedThreadPool(10);
 
-        final PreCompiled precomp = new Venice().precompile(
+        final IPreCompiled precomp = new Venice().precompile(
                                         "test",
                                         "(do                                 " +
                                         "  (defn sum [a b] (+ a b z))        " +
@@ -274,15 +282,15 @@ public class PrecompiledTest {
 
     @Test
     public void test_expand_macros() {
-        final PreCompiled precomp = new Venice().precompile("test", "(if (and true (= 1 1)) 4 0)", true);
+        final IPreCompiled precomp = new Venice().precompile("test", "(if (and true (= 1 1)) 4 0)", true);
 
         assertEquals(4L, new Venice().eval(precomp));
     }
 
     @Test
     public void test_expand_macros_flag() {
-        final PreCompiled precomp1 = new Venice().precompile("test", "(macroexpand-on-load?)", false);
-        final PreCompiled precomp2 = new Venice().precompile("test", "(macroexpand-on-load?)", true);
+        final IPreCompiled precomp1 = new Venice().precompile("test", "(macroexpand-on-load?)", false);
+        final IPreCompiled precomp2 = new Venice().precompile("test", "(macroexpand-on-load?)", true);
 
         assertFalse((Boolean)new Venice().eval(precomp1));
         assertTrue((Boolean)new Venice().eval(precomp2));
@@ -296,7 +304,7 @@ public class PrecompiledTest {
                 "  (test/test-body-with-macro)) ";
 
         // removing foo/x is okay, it's not part of the pre-compiled system symbols
-        final PreCompiled precomp = new Venice().precompile("test", script, true);
+        final IPreCompiled precomp = new Venice().precompile("test", script, true);
 
         assertEquals(1L, new Venice().eval(precomp));
     }
@@ -310,7 +318,7 @@ public class PrecompiledTest {
                 "  (pr-str (fn-body test/test-body-with-macro))) ";
 
         // removing foo/x is okay, it's not part of the pre-compiled system symbols
-        final PreCompiled precomp = new Venice().precompile("test", script, true);
+        final IPreCompiled precomp = new Venice().precompile("test", script, true);
 
         assertEquals("((if true (do 1)))", new Venice().eval(precomp));
     }
@@ -324,7 +332,7 @@ public class PrecompiledTest {
                 "  (plus 1 2))                       ";
 
         // removing foo/x is okay, it's not part of the pre-compiled system symbols
-        final PreCompiled precomp = new Venice().precompile("test", script, true);
+        final IPreCompiled precomp = new Venice().precompile("test", script, true);
 
         assertEquals(3L, new Venice().eval(precomp));
     }
@@ -338,7 +346,7 @@ public class PrecompiledTest {
                 "  (pr-str (fn-body plus))))         ";
 
         // removing foo/x is okay, it's not part of the pre-compiled system symbols
-        final PreCompiled precomp = new Venice().precompile("test", script, true);
+        final IPreCompiled precomp = new Venice().precompile("test", script, true);
 
         assertEquals("((+ x y))", new Venice().eval(precomp));
     }
@@ -353,7 +361,7 @@ public class PrecompiledTest {
                 "  (ns-unmap 'foo 'x))";
 
         // removing foo/x is okay, it's not part of the pre-compiled system symbols
-        final PreCompiled precomp = new Venice().precompile("test", script, true);
+        final IPreCompiled precomp = new Venice().precompile("test", script, true);
 
         assertNull(new Venice().eval(precomp));
     }
@@ -368,7 +376,7 @@ public class PrecompiledTest {
                 "  (ns-remove 'foo))";
 
         // removing foo/x is okay, it's not part of the pre-compiled system symbols
-        final PreCompiled precomp = new Venice().precompile("test", script, true);
+        final IPreCompiled precomp = new Venice().precompile("test", script, true);
 
         assertNull(new Venice().eval(precomp));
     }
@@ -382,7 +390,7 @@ public class PrecompiledTest {
                 "  (def x 100)       \n" +
                 "  (ns-unmap 'core '+))";
 
-        final PreCompiled precomp = new Venice().precompile("test", script, true);
+        final IPreCompiled precomp = new Venice().precompile("test", script, true);
 
         assertThrows(VncException.class, () -> new Venice().eval(precomp));
     }
@@ -397,7 +405,7 @@ public class PrecompiledTest {
                 "  (ns-alias 'f 'foo)  \n" +
                 "  f/x)                ";
 
-        final PreCompiled precomp = new Venice().precompile("test", script, true);
+        final IPreCompiled precomp = new Venice().precompile("test", script, true);
 
         assertEquals(100L, new Venice().eval(precomp));
     }
@@ -409,7 +417,7 @@ public class PrecompiledTest {
                 "  (load-module :hexdump)                    \n" +
                 "  (with-out-str (hexdump/dump [0 1 2 3])))       ";
 
-        final PreCompiled precomp = new Venice().precompile("test", script, false);
+        final IPreCompiled precomp = new Venice().precompile("test", script, false);
 
         final Object result = new Venice().eval(precomp);
 
@@ -426,7 +434,7 @@ public class PrecompiledTest {
                 "  (with-out-str (h/dump [0 1 2 3])))       ";
 
         // Note
-        final PreCompiled precomp = new Venice().precompile("test", script, true);
+        final IPreCompiled precomp = new Venice().precompile("test", script, true);
 
         final Object result = new Venice().eval(precomp);
 
@@ -444,7 +452,7 @@ public class PrecompiledTest {
                 "  *ns*)       ";
 
         // Note
-        final PreCompiled precomp = new Venice().precompile("test", script, true);
+        final IPreCompiled precomp = new Venice().precompile("test", script, true);
 
         final Object result = new Venice().eval(precomp);
 
@@ -460,7 +468,7 @@ public class PrecompiledTest {
                 "  (pr-str (ns-aliases)))                    ";
 
         // Note
-        final PreCompiled precomp = new Venice().precompile("test", script, true);
+        final IPreCompiled precomp = new Venice().precompile("test", script, true);
 
         final Object result = new Venice().eval(precomp);
 
@@ -474,7 +482,7 @@ public class PrecompiledTest {
                 "  (load-module :test ['test :as 't])  \n" +
                 "  (test/add 1 2))                     ";
 
-        final PreCompiled precomp = new Venice().precompile("test", script, false);
+        final IPreCompiled precomp = new Venice().precompile("test", script, false);
 
         final Object result = new Venice().eval(precomp);
 

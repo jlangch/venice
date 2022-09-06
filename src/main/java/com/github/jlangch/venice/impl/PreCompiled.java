@@ -19,22 +19,23 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.github.jlangch.venice;
+package com.github.jlangch.venice.impl;
 
-import java.io.Serializable;
-
+import com.github.jlangch.venice.IPreCompiled;
+import com.github.jlangch.venice.Version;
 import com.github.jlangch.venice.impl.env.SymbolTable;
 import com.github.jlangch.venice.impl.namespaces.NamespaceRegistry;
+import com.github.jlangch.venice.impl.types.VncVal;
 
 
 /**
  * Holds a pre-compiled Venice script
  */
-public class PreCompiled implements Serializable {
+public class PreCompiled implements IPreCompiled {
 
     public PreCompiled(
             final String name,
-            final Object precompiled,
+            final VncVal precompiled,
             final boolean macroexpand,
             final NamespaceRegistry nsRegistry,
             final SymbolTable symbols
@@ -59,23 +60,22 @@ public class PreCompiled implements Serializable {
         return macroexpand;
     }
 
-    public Object getPrecompiled() {
+    public VncVal getPrecompiled() {
         return precompiled;
     }
 
-    public Object getNamespaceRegistry() {
+    public NamespaceRegistry getNamespaceRegistry() {
         return nsRegistry;
     }
 
-    public Object getSymbols() {
+    public SymbolTable getSymbols() {
         return symbols;
     }
 
 
-    private static final long serialVersionUID = -3044466744877602703L;
 
     private final String name;
-    private final Object precompiled;
+    private final VncVal precompiled;
     private final String version;
     private final boolean macroexpand;
     private final NamespaceRegistry nsRegistry;

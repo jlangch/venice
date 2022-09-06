@@ -147,7 +147,7 @@ public class Embed_04_Precompile {
 
 
         // turn up-front macro expansion on
-        final PreCompiled precompiled = venice.precompile("example", "(+ 1 x)", true);
+        final IPreCompiled precompiled = venice.precompile("example", "(+ 1 x)", true);
 
         // single-threaded
         IntStream.range(0, 100).sequential().forEach(
@@ -263,11 +263,11 @@ public class PrecompileBenchmark {
         public Venice venice = new Venice();
         public Map<String,Object> parameters = Parameters.of("x", -10, "y", 0, "z", 10);
 
-        public PreCompiled precompiledNoMacroExpand_params = venice.precompile("example", expr1, false);
-        public PreCompiled precompiledMacroExpand_params = venice.precompile("example", expr1, true);
-        public PreCompiled precompiledNoMacroExpand_noparams = venice.precompile("example", expr2, false);
-        public PreCompiled precompiledMacroExpand_noparams = venice.precompile("example", expr2, true);
-        public PreCompiled precompiled_ref = venice.precompile("example", exprRef, true);
+        public IPreCompiled precompiledNoMacroExpand_params = venice.precompile("example", expr1, false);
+        public IPreCompiled precompiledMacroExpand_params = venice.precompile("example", expr1, true);
+        public IPreCompiled precompiledNoMacroExpand_noparams = venice.precompile("example", expr2, false);
+        public IPreCompiled precompiledMacroExpand_noparams = venice.precompile("example", expr2, true);
+        public IPreCompiled precompiled_ref = venice.precompile("example", exprRef, true);
     }
 }
 ```

@@ -19,35 +19,8 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.github.jlangch.venice.impl.env;
+package com.github.jlangch.venice;
 
-import java.io.Serializable;
-import java.util.HashMap;
-import java.util.Map;
+public interface IPreCompiled {
 
-import com.github.jlangch.venice.impl.types.VncSymbol;
-
-
-public class SymbolTable implements Serializable {
-
-    public SymbolTable() {
-        this.symbols = new HashMap<>();
-    }
-
-    public SymbolTable(final Map<VncSymbol,Var> symbols) {
-        this.symbols = symbols;
-    }
-
-    public Map<VncSymbol,Var> getSymbolMap() {
-        return symbols;
-    }
-
-    public void put(final Var value) {
-    	symbols.put(value.getName(), value);
-    }
-
-
-    private static final long serialVersionUID = -6061770310338511676L;
-
-    private final Map<VncSymbol,Var> symbols;
 }

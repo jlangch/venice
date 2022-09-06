@@ -35,8 +35,8 @@ import org.openjdk.jmh.annotations.State;
 import org.openjdk.jmh.annotations.Threads;
 import org.openjdk.jmh.annotations.Warmup;
 
+import com.github.jlangch.venice.IPreCompiled;
 import com.github.jlangch.venice.Parameters;
-import com.github.jlangch.venice.PreCompiled;
 import com.github.jlangch.venice.Venice;
 
 // Run on a 2017 MacBook Pro (Mac OSX, Core i7 2.8 GHz).
@@ -116,10 +116,10 @@ public class PrecompileBenchmark {
         public Venice venice = new Venice();
         public Map<String,Object> parameters = Parameters.of("x", -10, "y", 0, "z", 10);
 
-        public PreCompiled precompiledNoMacroExpand_params = venice.precompile("example", expr1, false);
-        public PreCompiled precompiledMacroExpand_params = venice.precompile("example", expr1, true);
-        public PreCompiled precompiledNoMacroExpand_noparams = venice.precompile("example", expr2, false);
-        public PreCompiled precompiledMacroExpand_noparams = venice.precompile("example", expr2, true);
-        public PreCompiled precompiled_ref = venice.precompile("example", exprRef, true);
+        public IPreCompiled precompiledNoMacroExpand_params = venice.precompile("example", expr1, false);
+        public IPreCompiled precompiledMacroExpand_params = venice.precompile("example", expr1, true);
+        public IPreCompiled precompiledNoMacroExpand_noparams = venice.precompile("example", expr2, false);
+        public IPreCompiled precompiledMacroExpand_noparams = venice.precompile("example", expr2, true);
+        public IPreCompiled precompiled_ref = venice.precompile("example", exprRef, true);
     }
 }

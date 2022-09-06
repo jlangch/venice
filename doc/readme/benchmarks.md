@@ -254,8 +254,8 @@ public class PrecompileBenchmark {
                              "   (cond (< z 0) -1 (> z 0) 1 :else 0))";
 
         public Venice venice = new Venice();
-        public PreCompiled precompiledNoMacroExpand = venice.precompile("example", expr, false);
-        public PreCompiled precompiledMacroExpand = venice.precompile("example", expr, true);
+        public IPreCompiled precompiledNoMacroExpand = venice.precompile("example", expr, false);
+        public IPreCompiled precompiledMacroExpand = venice.precompile("example", expr, true);
         public Map<String,Object> parameters = Parameters.of("x", -10, "y", 0, "z", 10);
     }
 }

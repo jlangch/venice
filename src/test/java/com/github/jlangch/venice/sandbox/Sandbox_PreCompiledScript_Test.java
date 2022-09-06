@@ -25,7 +25,7 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 
 import org.junit.jupiter.api.Test;
 
-import com.github.jlangch.venice.PreCompiled;
+import com.github.jlangch.venice.IPreCompiled;
 import com.github.jlangch.venice.SecurityException;
 import com.github.jlangch.venice.Venice;
 import com.github.jlangch.venice.javainterop.AcceptAllInterceptor;
@@ -38,7 +38,7 @@ public class Sandbox_PreCompiledScript_Test {
 
     @Test
     public void test_RejectAllInterceptor_1() {
-        final PreCompiled pre = new Venice(new AcceptAllInterceptor())
+        final IPreCompiled pre = new Venice(new AcceptAllInterceptor())
                                     .precompile("test","(gc)");
 
         assertThrows(SecurityException.class, () -> {
@@ -49,7 +49,7 @@ public class Sandbox_PreCompiledScript_Test {
 
     @Test
     public void test_RejectAllInterceptor_2() {
-        final PreCompiled pre = new Venice(new RejectAllInterceptor())
+        final IPreCompiled pre = new Venice(new RejectAllInterceptor())
                                     .precompile("test","(gc)");
 
         assertThrows(SecurityException.class, () -> {
@@ -60,7 +60,7 @@ public class Sandbox_PreCompiledScript_Test {
 
     @Test
     public void test_AcceptAllInterceptor_1() {
-        final PreCompiled pre = new Venice(new AcceptAllInterceptor())
+        final IPreCompiled pre = new Venice(new AcceptAllInterceptor())
                                     .precompile("test","(gc)");
 
         new Venice(new AcceptAllInterceptor()).eval(pre);
@@ -68,7 +68,7 @@ public class Sandbox_PreCompiledScript_Test {
 
     @Test
     public void test_AcceptAllInterceptor_2() {
-        final PreCompiled pre = new Venice(new RejectAllInterceptor())
+        final IPreCompiled pre = new Venice(new RejectAllInterceptor())
                                     .precompile("test","(gc)");
 
         new Venice(new AcceptAllInterceptor()).eval(pre);
@@ -76,7 +76,7 @@ public class Sandbox_PreCompiledScript_Test {
 
     @Test
     public void test_SandboxInterceptor_1a() {
-        final PreCompiled pre = new Venice(new AcceptAllInterceptor())
+        final IPreCompiled pre = new Venice(new AcceptAllInterceptor())
                                     .precompile("test","(gc)");
 
         new Venice(new SandboxInterceptor(new SandboxRules())).eval(pre);
@@ -84,7 +84,7 @@ public class Sandbox_PreCompiledScript_Test {
 
     @Test
     public void test_SandboxInterceptor_1b() {
-        final PreCompiled pre = new Venice(new AcceptAllInterceptor())
+        final IPreCompiled pre = new Venice(new AcceptAllInterceptor())
                                     .precompile("test","(gc)");
 
         final SandboxRules rules = new SandboxRules()
@@ -99,7 +99,7 @@ public class Sandbox_PreCompiledScript_Test {
 
     @Test
     public void test_SandboxInterceptor_2a() {
-        final PreCompiled pre = new Venice(new RejectAllInterceptor())
+        final IPreCompiled pre = new Venice(new RejectAllInterceptor())
                                     .precompile("test","(gc)");
 
         new Venice(new SandboxInterceptor(new SandboxRules())).eval(pre);
@@ -107,7 +107,7 @@ public class Sandbox_PreCompiledScript_Test {
 
     @Test
     public void test_SandboxInterceptor_2b() {
-        final PreCompiled pre = new Venice(new RejectAllInterceptor())
+        final IPreCompiled pre = new Venice(new RejectAllInterceptor())
                                     .precompile("test","(gc)");
 
         final SandboxRules rules = new SandboxRules()

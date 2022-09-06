@@ -66,8 +66,8 @@ public class VeniceElapsedTest {
                 "    (== eventType \"ALERT\") " +
                 ")";
 
-        final PreCompiled compiled1 = venice.precompile("script1", script1);
-        final PreCompiled compiled2 = venice.precompile("script2", script2);
+        final IPreCompiled compiled1 = venice.precompile("script1", script1);
+        final IPreCompiled compiled2 = venice.precompile("script2", script2);
 
         // --------------------------------------------------------
         // Java
@@ -206,7 +206,7 @@ public class VeniceElapsedTest {
         final Venice venice = new Venice();
         final FunctionExecutionMeter meter = venice.getFunctionExecutionMeter();
 
-        final PreCompiled precomp = venice.precompile("test", "(+ 1 x)");
+        final IPreCompiled precomp = venice.precompile("test", "(+ 1 x)");
 
         meter.reset();
         meter.enable();
@@ -223,7 +223,7 @@ public class VeniceElapsedTest {
         final Venice venice = new Venice();
         final FunctionExecutionMeter meter = venice.getFunctionExecutionMeter();
 
-        final PreCompiled precomp = venice.precompile("test", "(+ 1 x)");
+        final IPreCompiled precomp = venice.precompile("test", "(+ 1 x)");
 
         // warmup
         for(int ii=0; ii<2000; ii++) {

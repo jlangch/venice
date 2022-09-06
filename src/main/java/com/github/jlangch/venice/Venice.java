@@ -35,6 +35,7 @@ import java.util.concurrent.TimeoutException;
 import java.util.concurrent.atomic.AtomicReference;
 
 import com.github.jlangch.venice.impl.IVeniceInterpreter;
+import com.github.jlangch.venice.impl.PreCompiled;
 import com.github.jlangch.venice.impl.RunMode;
 import com.github.jlangch.venice.impl.VeniceInterpreter;
 import com.github.jlangch.venice.impl.env.Env;
@@ -91,7 +92,7 @@ public class Venice {
      * @param script A mandatory script
      * @return the pre-compiled script
      */
-    public PreCompiled precompile(final String scriptName, final String script) {
+    public IPreCompiled precompile(final String scriptName, final String script) {
         return precompile(scriptName, script, false);
     }
 
@@ -104,7 +105,7 @@ public class Venice {
      *                    execution significantly)
      * @return the pre-compiled script
      */
-    public PreCompiled precompile(
+    public IPreCompiled precompile(
             final String scriptName,
             final String script,
             final boolean macroexpand
@@ -160,7 +161,7 @@ public class Venice {
      * @param precompiled A mandatory pre-compiled script
      * @return the result
      */
-    public Object eval(final PreCompiled precompiled) {
+    public Object eval(final IPreCompiled precompiled) {
         if (precompiled == null) {
             throw new IllegalArgumentException("A 'precompiled' script must not be null");
         }
@@ -176,12 +177,14 @@ public class Venice {
      * @return the result
      */
     public Object eval(
-            final PreCompiled precompiled,
+            final IPreCompiled precompiledScript,
             final Map<String,Object> params
     ) {
-        if (precompiled == null) {
+        if (precompiledScript == null) {
             throw new IllegalArgumentException("A 'precompiled' script must not be null");
         }
+
+        final PreCompiled precompiled = (PreCompiled)precompiledScript;
 
         final long nanos = System.nanoTime();
 
@@ -191,16 +194,17 @@ public class Venice {
             final IVeniceInterpreter venice = new VeniceInterpreter(interceptor, meterRegistry);
 
             return runWithSandbox(venice, () -> {
-                final NamespaceRegistry nsRegistryPrecompile = (NamespaceRegistry)precompiled.getNamespaceRegistry();
+                final NamespaceRegistry nsRegistryPrecompile = precompiled.getNamespaceRegistry();
 
                 final SymbolTable coreSystemGlobalSymbols = getCoreSystemGlobalSymbols();
 
                 Env env = Env.createPrecompiledEnv(coreSystemGlobalSymbols, precompiled);
                 env = addParams(env, params);
 
-                // we're overwriting the run mode! PRECOMPILE -> SCRIPT
-//                env.removeGlobalSymbol(new VncSymbol("*run-mode*"));
-//                env.setGlobal(new Var(new VncSymbol("*run-mode*"), RunMode.SCRIPT.mode, false));
+                precompiled.getSymbols().put(new Var(
+												new VncSymbol("*run-mode*"),
+												RunMode.SCRIPT.mode,
+												false));
 
                 // re-init namespaces!
                 venice.initNS();
@@ -215,7 +219,7 @@ public class Venice {
                     meterRegistry.record("venice.setup", System.nanoTime() - nanos);
                 }
 
-                final VncVal result = venice.EVAL((VncVal)precompiled.getPrecompiled(), env);
+                final VncVal result = venice.EVAL(precompiled.getPrecompiled(), env);
 
                 final Object jResult = result.convertToJavaObject();
 

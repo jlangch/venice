@@ -28,8 +28,8 @@ import java.util.concurrent.ExecutionException;
 import java.util.concurrent.FutureTask;
 import java.util.concurrent.atomic.AtomicReference;
 
+import com.github.jlangch.venice.IPreCompiled;
 import com.github.jlangch.venice.Parameters;
-import com.github.jlangch.venice.PreCompiled;
 import com.github.jlangch.venice.Venice;
 import com.github.jlangch.venice.impl.threadpool.GlobalThreadFactory;
 import com.github.jlangch.venice.impl.util.StringUtil;
@@ -80,7 +80,7 @@ public class TableColFmtParser {
                                 new Callable<Map<String,Object>>() {
                                     @Override
                                     public Map<String, Object> call() throws Exception {
-                                       final PreCompiled precompiled = getCssParser();
+                                       final IPreCompiled precompiled = getCssParser();
                                        final Venice venice = new Venice(getParserSandbox());
                                        return (Map<String,Object>)venice.eval(
                                                                           precompiled,
@@ -170,8 +170,8 @@ public class TableColFmtParser {
         return s.matches("-+[:]");
     }
 
-    private PreCompiled getCssParser() {
-        PreCompiled pc = cssParser.get();
+    private IPreCompiled getCssParser() {
+    	IPreCompiled pc = cssParser.get();
         if (pc == null) {
             final String parser = new ClassPathResource(CSS_PARSER).getResourceAsString();
 
@@ -207,7 +207,7 @@ public class TableColFmtParser {
     }
 
 
-    private static AtomicReference<PreCompiled> cssParser = new AtomicReference<>();
+    private static AtomicReference<IPreCompiled> cssParser = new AtomicReference<>();
     private static AtomicReference<IInterceptor> sandbox = new AtomicReference<>();
 
     private static String CSS_PARSER =
