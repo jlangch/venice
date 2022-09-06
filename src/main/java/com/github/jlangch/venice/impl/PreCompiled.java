@@ -48,6 +48,13 @@ public class PreCompiled implements IPreCompiled {
         this.version = Version.VERSION;
     }
 
+
+    @Override
+	public String scriptName() {
+    	return name;
+    }
+
+
     public String getName() {
         return name;
     }

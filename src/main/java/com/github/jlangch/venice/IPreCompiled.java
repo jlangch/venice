@@ -23,4 +23,6 @@ package com.github.jlangch.venice;
 
 public interface IPreCompiled {
 
+	String scriptName();
+
 }
