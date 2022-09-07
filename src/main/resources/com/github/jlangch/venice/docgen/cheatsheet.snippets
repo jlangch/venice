@@ -97,134 +97,29 @@ import com.github.jlangch.venice.javainterop.SandboxRules;
 
 
 public class SandboxExample {
-
     public static void main(final String[] args) {
-        final Venice venice = new Venice(createSandbox());
+        final SandboxInterceptor sandbox =
+                new SandboxInterceptor(
+                        new SandboxRules()
+                            // Venice functions: blacklist all unsafe functions
+                            .rejectAllUnsafeFunctions()
 
-        // rule: "java.lang.Math:PI"
-        // => OK (whitelisted static field)
-        venice.eval("(. :java.lang.Math :PI)");
-        System.out.println("OK      : (. :java.lang.Math :PI)");
+                            // Venice functions: whitelist rules for print functions to offset
+                            // blacklist rules by individual functions
+                            .whitelistVeniceFunctions("*print*"));
 
-        // rule: "java.lang.Math:min"
-        // => OK (whitelisted static method)
-        venice.eval("(. :java.lang.Math :min 20 30)");
-        System.out.println("OK      : (. :java.lang.Math :min 20 30)");
+        final Venice venice = new Venice(sandbox);
 
-        // rule: "java.time.ZonedDateTime:*
-        // => OK (whitelisted constructor & instance method)
-        venice.eval("(. (. :java.time.ZonedDateTime :now) :plusDays 5))");
-        System.out.println("OK      : (. (. :java.time.ZonedDateTime :now) :plusDays 5))");
 
-        // rule: "java.util.ArrayList:new" and "java.util.ArrayList:add"
-        // => OK (whitelisted constructor & instance method)
-        venice.eval(
-            "(doto (. :java.util.ArrayList :new)  " +
-            "      (. :add 1)                     " +
-            "      (. :add 2))                    ");
-        System.out.println("OK      : java.util.ArrayList::new()");
-
-        // rule: "java.awt.**:*"
-        // => OK (whitelisted)
-        venice.eval(
-            "(-<> (. :java.awt.color.ColorSpace :CS_LINEAR_RGB)      " +
-            "     (. :java.awt.color.ICC_ColorSpace :getInstance <>) " +
-            "     (. <> :getMaxValue 0))                             ");
-        System.out.println("OK      : use of java.awt.** classes");
-
-        // => FAIL (invoking non whitelisted static method)
-        try {
-            venice.eval("(. :java.lang.System :exit 0)");
-        }
-        catch(SecurityException ex) {
-            System.out.println("REJECTED: (. :java.lang.System :exit 0)");
-        }
-
-        // => FAIL (invoking blacklisted Venice I/O function)
-        try {
-            venice.eval("(io/slurp \"/tmp/file\")");
-        }
-        catch(SecurityException ex) {
-            System.out.println("REJECTED: (io/slurp ...)");
-        }
-
-        // => OK (invoking whitelisted Venice I/O function 'println')
+        // => OK, 'println' is part of the unsafe functions, but enabled by the 2nd rule
         venice.eval("(println 100)");
-        System.out.println("OK:  (println 100)");
 
-        // => FAIL exceeded max exec time of 3s
+        // => FAIL, 'read-line' is part of the unsafe functions
         try {
-            venice.eval("(sleep 10_000)");
+            venice.eval("(read-line)");
         }
         catch(SecurityException ex) {
-            System.out.println("EXCEEDED: max exec time on (sleep ...)");
+            System.out.println("REJECTED: (read-line)");
         }
-
-        // => FAIL (accessing non whitelisted system property)
-        try {
-            venice.eval("(system-prop \"db.password\")");
-        }
-        catch(SecurityException ex) {
-            System.out.println("REJECTED: (system-prop ...)");
-        }
-
-        // => FAIL (accessing non whitelisted system environment variable)
-        try {
-            venice.eval("(system-env \"USER\")");
-        }
-        catch(SecurityException ex) {
-            System.out.println("REJECTED: (system-env ...)");
-        }
-
-        // => FAIL (accessing non whitelisted classpath resources)
-        try {
-             venice.eval("(io/load-classpath-resource \"resources/images/img.tiff\")");
-        }
-        catch(SecurityException ex) {
-            System.out.println("REJECTED: (io/load-classpath-resource ...)");
-        }
-    }
-
-    private static SandboxInterceptor createSandbox() {
-        return new SandboxInterceptor(
-                    new SandboxRules()
-                        // Venice functions: blacklist all unsafe functions
-                        .rejectAllUnsafeFunctions()
-
-                        // Venice functions:  blacklist additional functions
-                        .rejectVeniceFunctions(
-                            "time/date",
-                            "time/zone-ids")
-
-                        // Venice functions: whitelist rules for print functions to offset
-                        // blacklist rules by individual functions
-                        .whitelistVeniceFunctions("*print*")
-
-                        // Venice functions: whitelist Java calls offsets the black list
-                        // rule for java interop from SandboxRules::rejectAllUnsafeFunctions()
-                        .whitelistVeniceFunctions(".")
-
-                        // Java interop: whitelist rules
-                        .withStandardSystemProperties()
-                        .withSystemProperties("db.name", "db.port")
-                        .withSystemEnvs("SHELL", "HOME")
-                        .withClasspathResources("resources/images/*.png")
-                        .withClasses(
-                            "java.lang.Math:PI",
-                            "java.lang.Math:min",
-                            "java.time.ZonedDateTime:*",
-                            "java.awt.**:*",
-                            "java.util.ArrayList:new",
-                            "java.util.ArrayList:add")
-
-                        // Venice extension modules: whitelist rules
-                        .withVeniceModules(
-                            "crypt",
-                            "kira",
-                            "math")
-
-                        // Generic rules
-                        .withMaxFutureThreadPoolSize(20)
-                        .withMaxExecTimeSeconds(3));
     }
 }
