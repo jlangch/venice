@@ -484,15 +484,17 @@ public class Venice {
             }
             else {
                 final Callable<Object> wrapped = () -> {
+                    final ThreadContext tc = ThreadContext.get();
                     try {
-                        ThreadContext.remove(); // clean thread locals
-                        ThreadContext.setInterceptor(interceptor);
-                        ThreadContext.setMeterRegistry(meterRegistry);
+                        tc.clear(true);
+                        tc.setInterceptor_(interceptor);
+                        tc.setMeterRegistry_(meterRegistry);
+
                         return callable.call();
                     }
                     finally {
                         // clean up
-                        ThreadContext.remove();
+                        tc.clear(false);
                     }
                 };
 
