@@ -42,5 +42,8 @@ public class Snippet_03_DealingWithJavaObjects {
       Point point = (Point)venice.eval(
                             "(. :java.awt.Point :new (+ x 10) (+ y 20))",
                             Parameters.of("x", 100, "y", 200));
+
+      System.out.println(ret);
+      System.out.println(point);
    }
 }

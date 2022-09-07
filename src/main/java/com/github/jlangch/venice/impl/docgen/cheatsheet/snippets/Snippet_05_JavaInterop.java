@@ -27,12 +27,15 @@ import com.github.jlangch.venice.Venice;
 
 
 public class Snippet_05_JavaInterop {
-   public static void main(String[] args) {
-      Venice venice = new Venice();
+    public static void main(String[] args) {
+        Venice venice = new Venice();
 
-      Long val = (Long)venice.eval("(. :java.lang.Math :min 20 30)");
+        Long val = (Long)venice.eval("(. :java.lang.Math :min 20 30)");
 
-      ZonedDateTime ts = (ZonedDateTime)venice.eval(
+        ZonedDateTime ts = (ZonedDateTime)venice.eval(
                              "(. (. :java.time.ZonedDateTime :now) :plusDays 5)");
-   }
+
+        System.out.println(val);
+        System.out.println(ts);
+    }
 }

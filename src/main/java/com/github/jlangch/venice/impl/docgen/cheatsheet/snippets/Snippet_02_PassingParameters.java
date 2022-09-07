@@ -32,5 +32,7 @@ public class Snippet_02_PassingParameters {
       final Long result = (Long)venice.eval(
                               "(+ x y 3)",
                               Parameters.of("x", 6, "y", 3L));
+
+      System.out.println(result);
    }
 }

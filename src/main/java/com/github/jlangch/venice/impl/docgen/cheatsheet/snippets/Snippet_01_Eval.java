@@ -30,5 +30,7 @@ public class Snippet_01_Eval {
         final Venice venice = new Venice();
 
         final Long result = (Long)venice.eval("(+ 1 2)");
+
+        System.out.println(result);
    }
 }
