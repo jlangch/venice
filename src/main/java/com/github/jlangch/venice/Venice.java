@@ -152,7 +152,7 @@ public class Venice {
                         symbols);
         }
         finally {
-            lastPrecompileElapsedMillis = System.currentTimeMillis() - startTime;
+            lastPrecompileElapsedTimeMillis = System.currentTimeMillis() - startTime;
             tc.clear(false);
         }
     }
@@ -350,8 +350,8 @@ public class Venice {
      * @return the elapsed time in milliseconds for the last pre-compilation, or -1
      *         if there wasn't a pre-compilation yet.
      */
-    public long getLastPrecompileElapsedMillis() {
-        return lastPrecompileElapsedMillis;
+    public long getLastPrecompileElapsedTimeMillis() {
+        return lastPrecompileElapsedTimeMillis;
     }
 
     /**
@@ -573,7 +573,7 @@ public class Venice {
             new ManagedCachedThreadPoolExecutor("venice-timeout-pool", 100);
 
 
-    private long lastPrecompileElapsedMillis = -1L;
+    private long lastPrecompileElapsedTimeMillis = -1L;
 
     private final IInterceptor interceptor;
     private final MeterRegistry meterRegistry;
