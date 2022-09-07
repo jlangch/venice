@@ -119,8 +119,9 @@ public class Venice {
 
         final long startTime = System.currentTimeMillis();
 
+        final ThreadContext tc = ThreadContext.get();
         try {
-            ThreadContext.clear(true);
+            tc.clear(true);
 
             final IVeniceInterpreter venice = new VeniceInterpreter(interceptor);
 
@@ -150,7 +151,7 @@ public class Venice {
         }
         finally {
             lastPrecompileElapsedMillis = System.currentTimeMillis() - startTime;
-            ThreadContext.clear(false);
+            tc.clear(false);
         }
     }
 
@@ -187,8 +188,11 @@ public class Venice {
 
         final long nanos = System.nanoTime();
 
+        final ThreadContext tc = ThreadContext.get();
         try {
-            ThreadContext.clear(true);
+            tc.clear(true);
+            tc.setInterceptor_(interceptor);
+            tc.setMeterRegistry_(meterRegistry);
 
             final IVeniceInterpreter venice = new VeniceInterpreter(interceptor, meterRegistry);
 
@@ -230,7 +234,7 @@ public class Venice {
             });
         }
         finally {
-            ThreadContext.clear(false);
+            tc.clear(false);
         }
     }
 
@@ -305,8 +309,11 @@ public class Venice {
 
         final long nanos = System.nanoTime();
 
+        final ThreadContext tc = ThreadContext.get();
         try {
-            ThreadContext.clear(true);
+            tc.clear(true);
+            tc.setInterceptor_(interceptor);
+            tc.setMeterRegistry_(meterRegistry);
 
             final IVeniceInterpreter venice = new VeniceInterpreter(interceptor, meterRegistry);
 
@@ -325,7 +332,7 @@ public class Venice {
             });
         }
         finally {
-            ThreadContext.clear(false);
+            tc.clear(false);
         }
     }
 
@@ -472,23 +479,23 @@ public class Venice {
                         interceptor.getMaxFutureThreadPoolSize());
             }
 
-            final Callable<Object> wrapped = () -> {
-                try {
-                    ThreadContext.remove(); // clean thread locals
-                    ThreadContext.setInterceptor(interceptor);
-                    ThreadContext.setMeterRegistry(meterRegistry);
-                    return callable.call();
-                }
-                finally {
-                    // clean up
-                    ThreadContext.remove();
-                }
-            };
-
             if (interceptor.getMaxExecutionTimeSeconds() == null) {
-                return wrapped.call();
+                return callable.call();
             }
             else {
+                final Callable<Object> wrapped = () -> {
+                    try {
+                        ThreadContext.remove(); // clean thread locals
+                        ThreadContext.setInterceptor(interceptor);
+                        ThreadContext.setMeterRegistry(meterRegistry);
+                        return callable.call();
+                    }
+                    finally {
+                        // clean up
+                        ThreadContext.remove();
+                    }
+                };
+
                 return runWithTimeout(
                         wrapped,
                         interceptor.getMaxExecutionTimeSeconds());

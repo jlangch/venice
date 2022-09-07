@@ -79,11 +79,33 @@ public class ThreadContext {
         return callStack;
     }
 
+
+    public MeterRegistry getMeterRegistry_() {
+        return meterRegistry;
+    }
+
+    public void setMeterRegistry_(final MeterRegistry registry) {
+        this.meterRegistry = registry == null
+	                            ? new MeterRegistry(false)
+	                            : registry;
+    }
+
+    public IInterceptor getInterceptor_() {
+        return interceptor;
+    }
+
+    public void setInterceptor_(final IInterceptor interceptor) {
+        this.interceptor = interceptor == null
+                            ? REJECT_ALL_INTERCEPTOR
+                            : interceptor;
+    }
+
     public CallFrameFnData getAndClearCallFrameFnData_() {
         final CallFrameFnData data = callFrameFnData;
         callFrameFnData = null;
         return data;
     }
+
     public CallFrameFnData getCallFrameFnData_() {
         return callFrameFnData;
     }
@@ -284,7 +306,7 @@ public class ThreadContext {
         }
     }
 
-    public static void clear(boolean inUse) {
+    public void clear(boolean inUse) {
         final ThreadContext ctx = ThreadContext.get();
 
         if (inUse && ctx.inUse) {
@@ -308,7 +330,9 @@ public class ThreadContext {
 
     public static void remove() {
         try {
-            clear(false);
+        	ThreadContext tc = ThreadContext.get();
+
+        	tc.clear(false);
 
             ThreadContext.context.set(null);
             ThreadContext.context.remove();

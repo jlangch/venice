@@ -189,11 +189,11 @@ The benchmark did run on a 2017 MacBook Pro (Mac OSX, Core i7 2.8 GHz).
 | no_precompilation_params               | avgt |     3 |   2452.398 |  ±  781.016 |   us/op |
 | no_precompilation_noparams             | avgt |     3 |   2448.145 |  ± 1668.292 |   us/op |
 | no_precompilation_ref                  | avgt |     3 |   2274.765 |  ±  536.594 |   us/op |
-| precompilation_no_macroexpand_params   | avgt |     3 |     41.957 |  ±   11.971 |   us/op |
-| precompilation_no_macroexpand_noparams | avgt |     3 |     40.418 |  ±    1.310 |   us/op |
-| precompilation_macroexpand_params      | avgt |     3 |      8.586 |  ±    1.368 |   us/op |
-| precompilation_macroexpand_noparams    | avgt |     3 |      7.330 |  ±    3.818 |   us/op |
-| precompilation_ref                     | avgt |     3 |      5.803 |  ±    1.008 |   us/op |
+| precompilation_no_macroexpand_params   | avgt |     3 |     38.511 |  ±    4.331 |   us/op |
+| precompilation_no_macroexpand_noparams | avgt |     3 |     37.198 |  ±    1.744 |   us/op |
+| precompilation_macroexpand_params      | avgt |     3 |      6.672 |  ±    0.173 |   us/op |
+| precompilation_macroexpand_noparams    | avgt |     3 |      5.682 |  ±    1.664 |   us/op |
+| precompilation_ref                     | avgt |     3 |      4.157 |  ±    0.339 |   us/op |
 
 The benchmark can be run on the project's Gradle build: `./gradlew jmh -Pinclude=".*PrecompileBenchmark"`
 
