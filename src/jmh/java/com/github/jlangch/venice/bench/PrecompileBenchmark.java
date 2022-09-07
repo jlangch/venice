@@ -40,7 +40,7 @@ import com.github.jlangch.venice.Parameters;
 import com.github.jlangch.venice.Venice;
 
 // Run on a 2017 MacBook Pro (Mac OSX, Core i7 2.8 GHz).
-// Venice 1.10.21, Java 8
+// Venice 1.10.23, Java 8
 //
 // Benchmark                                                   Mode  Cnt     Score      Error  Units
 // PrecompileBenchmark.no_precompilation_params                avgt    3  2452.398 ±  781.016  us/op
