@@ -21,29 +21,44 @@
  */
 package com.github.jlangch.venice.examples;
 
-import com.github.jlangch.venice.Venice;
-import com.github.jlangch.venice.VncException;
+import org.junit.jupiter.api.Test;
 
 
-public class Embed_01_Simple {
+public class ExamplesTest {
 
-    public static void main(final String[] args) {
-        try {
-            run();
-            System.exit(0);
-        }
-        catch(VncException ex) {
-            ex.printVeniceStackTrace();
-            System.exit(1);
-        }
-        catch(RuntimeException ex) {
-            ex.printStackTrace();
-            System.exit(1);
-        }
+    @Test
+    public void test_Embed_01_Simple() {
+    	Embed_01_Simple.run();
     }
 
-    public static void run() {
-        final Venice venice = new Venice();
-        System.out.println(venice.eval("(+ 1 1)"));
+    @Test
+    public void test_Embed_02_PassingParameters() {
+    	Embed_02_PassingParameters.run();
     }
+
+    @Test
+    public void test_Embed_03_StdOutRedirection() {
+    	Embed_03_StdOutRedirection.run();
+    }
+
+    @Test
+    public void test_Embed_04_Precompile() {
+    	Embed_04_Precompile.run();
+    }
+
+    @Test
+    public void test_Embed_08_JavaInterop() {
+    	Embed_08_JavaInterop.run();
+    }
+
+    @Test
+    public void test_Embed_09_StrictSandbox() {
+    	Embed_09_StrictSandbox.run();
+    }
+
+    @Test
+    public void test_Embed_10_CustomSandbox() {
+    	Embed_10_CustomSandbox.run();
+    }
+
 }

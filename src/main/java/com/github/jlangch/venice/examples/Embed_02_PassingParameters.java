@@ -25,11 +25,27 @@ import java.awt.Point;
 
 import com.github.jlangch.venice.Parameters;
 import com.github.jlangch.venice.Venice;
+import com.github.jlangch.venice.VncException;
 
 
 public class Embed_02_PassingParameters {
 
     public static void main(final String[] args) {
+        try {
+            run();
+            System.exit(0);
+        }
+        catch(VncException ex) {
+            ex.printVeniceStackTrace();
+            System.exit(1);
+        }
+        catch(RuntimeException ex) {
+            ex.printStackTrace();
+            System.exit(1);
+        }
+    }
+
+    public static void run() {
         final Venice venice = new Venice();
 
         // returns a long: 10

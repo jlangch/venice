@@ -21,20 +21,42 @@
  */
 package com.github.jlangch.venice.examples;
 
+import com.github.jlangch.venice.SecurityException;
 import com.github.jlangch.venice.Venice;
+import com.github.jlangch.venice.VncException;
 import com.github.jlangch.venice.javainterop.RejectAllInterceptor;
 
 
 public class Embed_09_StrictSandbox {
 
     public static void main(final String[] args) {
+        try {
+            run();
+            System.exit(0);
+        }
+        catch(VncException ex) {
+            ex.printVeniceStackTrace();
+            System.exit(1);
+        }
+        catch(RuntimeException ex) {
+            ex.printStackTrace();
+            System.exit(1);
+        }
+    }
+
+    public static void run() {
         // disable all Java calls and all Venice IO functions
         // like 'println', 'slurp', ...
         //
         final Venice venice = new Venice(new RejectAllInterceptor());
 
         // => FAIL (Venice IO function) with Sandbox SecurityException
-        venice.eval("(println 100)");
+        try {
+           venice.eval("(println 100)");
+        }
+        catch(SecurityException ex) {
+            System.out.println("REJECTED: (println 100)");
+        }
     }
 
 }

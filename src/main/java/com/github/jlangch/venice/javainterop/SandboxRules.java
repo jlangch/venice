@@ -554,7 +554,7 @@ public class SandboxRules {
     }
 
     /**
-     * Reject access to all unsafe functions
+     * Reject access to all unsafe functions.
      *
      * @return this {@code SandboxRules}
      */

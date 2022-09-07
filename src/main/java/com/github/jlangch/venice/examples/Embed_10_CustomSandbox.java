@@ -21,7 +21,9 @@
  */
 package com.github.jlangch.venice.examples;
 
+import com.github.jlangch.venice.SecurityException;
 import com.github.jlangch.venice.Venice;
+import com.github.jlangch.venice.VncException;
 import com.github.jlangch.venice.javainterop.SandboxInterceptor;
 import com.github.jlangch.venice.javainterop.SandboxRules;
 
@@ -29,19 +31,37 @@ import com.github.jlangch.venice.javainterop.SandboxRules;
 public class Embed_10_CustomSandbox {
 
     public static void main(final String[] args) {
+        try {
+            run();
+            System.exit(0);
+        }
+        catch(VncException ex) {
+            ex.printVeniceStackTrace();
+            System.exit(1);
+        }
+        catch(RuntimeException ex) {
+            ex.printStackTrace();
+            System.exit(1);
+        }
+    }
+
+    public static void run() {
         final Venice venice = new Venice(createSandbox());
 
         // rule: "java.lang.Math:PI"
         // => OK (whitelisted static field)
         venice.eval("(. :java.lang.Math :PI)");
+        System.out.println("OK      : (. :java.lang.Math :PI)");
 
         // rule: "java.lang.Math:min"
         // => OK (whitelisted static method)
         venice.eval("(. :java.lang.Math :min 20 30)");
+        System.out.println("OK      : (. :java.lang.Math :min 20 30)");
 
         // rule: "java.time.ZonedDateTime:*
         // => OK (whitelisted constructor & instance method)
         venice.eval("(. (. :java.time.ZonedDateTime :now) :plusDays 5))");
+        System.out.println("OK      : (. (. :java.time.ZonedDateTime :now) :plusDays 5))");
 
         // rule: "java.util.ArrayList:new" and "java.util.ArrayList:add"
         // => OK (whitelisted constructor & instance method)
@@ -49,6 +69,7 @@ public class Embed_10_CustomSandbox {
             "(doto (. :java.util.ArrayList :new)  " +
             "      (. :add 1)                     " +
             "      (. :add 2))                    ");
+        System.out.println("OK      : java.util.ArrayList::new()");
 
         // rule: "java.awt.**:*"
         // => OK (whitelisted)
@@ -56,39 +77,87 @@ public class Embed_10_CustomSandbox {
             "(-<> (. :java.awt.color.ColorSpace :CS_LINEAR_RGB)      " +
             "     (. :java.awt.color.ICC_ColorSpace :getInstance <>) " +
             "     (. <> :getMaxValue 0))                             ");
+        System.out.println("OK      : use of java.awt.** classes");
 
         // => FAIL (invoking non whitelisted static method)
-        venice.eval("(. :java.lang.System :exit 0)");
+        try {
+            venice.eval("(. :java.lang.System :exit 0)");
+        }
+        catch(SecurityException ex) {
+            System.out.println("REJECTED: (. :java.lang.System :exit 0)");
+        }
 
         // => FAIL (invoking blacklisted Venice I/O function)
-        venice.eval("(io/slurp \"/tmp/file\")");
+        try {
+            venice.eval("(io/slurp \"/tmp/file\")");
+        }
+        catch(SecurityException ex) {
+            System.out.println("REJECTED: (io/slurp ...)");
+        }
 
         // => OK (invoking whitelisted Venice I/O function 'println')
         venice.eval("(println 100)");
+        System.out.println("OK:  (println 100)");
 
         // => FAIL exceeded max exec time of 3s
-        venice.eval("(sleep 10_000)");
+        try {
+            venice.eval("(sleep 10_000)");
+        }
+        catch(SecurityException ex) {
+            System.out.println("EXCEEDED: max exec time on (sleep ...)");
+        }
 
         // => FAIL (accessing non whitelisted system property)
-        venice.eval("(system-prop \"db.password\")");
+        try {
+            venice.eval("(system-prop \"db.password\")");
+        }
+        catch(SecurityException ex) {
+            System.out.println("REJECTED: (system-prop ...)");
+        }
 
         // => FAIL (accessing non whitelisted system environment variable)
-        venice.eval("(system-env \"USER\")");
+        try {
+            venice.eval("(system-env \"USER\")");
+        }
+        catch(SecurityException ex) {
+            System.out.println("REJECTED: (system-env ...)");
+        }
 
         // => FAIL (accessing non whitelisted classpath resources)
-        venice.eval("(io/load-classpath-resource \"resources/images/img.tiff\")");
+        try {
+             venice.eval("(io/load-classpath-resource \"resources/images/img.tiff\")");
+        }
+        catch(SecurityException ex) {
+            System.out.println("REJECTED: (io/load-classpath-resource ...)");
+        }
     }
 
 
     private static SandboxInterceptor createSandbox() {
         return new SandboxInterceptor(
                     new SandboxRules()
-                          // Java interop: whitelist rules
-                          .withStandardSystemProperties()
-                          .withSystemProperties("db.name", "db.port")
-                          .withSystemEnvs("SHELL", "HOME")
-                          .withClasspathResources("resources/images/*.png")
-                          .withClasses(
+                        // Venice functions: blacklist all unsafe functions
+                        .rejectAllUnsafeFunctions()
+
+                        // Venice functions:  blacklist additional functions
+                        .rejectVeniceFunctions(
+                            "time/date",
+                            "time/zone-ids")
+
+                        // Venice functions: whitelist rules for print functions to offset
+                        // blacklist rules by individual functions
+                        .whitelistVeniceFunctions("*print*")
+
+                        // Venice functions: whitelist Java calls offsets the black list
+                        // rule for java interop from SandboxRules::rejectAllUnsafeFunctions()
+                        .whitelistVeniceFunctions(".")
+
+                        // Java interop: whitelist rules
+                        .withStandardSystemProperties()
+                        .withSystemProperties("db.name", "db.port")
+                        .withSystemEnvs("SHELL", "HOME")
+                        .withClasspathResources("resources/images/*.png")
+                        .withClasses(
                             "java.lang.Math:PI",
                             "java.lang.Math:min",
                             "java.time.ZonedDateTime:*",
@@ -96,27 +165,14 @@ public class Embed_10_CustomSandbox {
                             "java.util.ArrayList:new",
                             "java.util.ArrayList:add")
 
-                          // Venice extension modules: whitelist rules
-                          .withVeniceModules(
+                        // Venice extension modules: whitelist rules
+                        .withVeniceModules(
                             "crypt",
                             "kira",
                             "math")
 
-                          // Venice functions: blacklist rules
-                          .rejectAllIoFunctions()
-                          .rejectAllConcurrencyFunctions()
-                          .rejectAllSystemFunctions()
-                          .rejectAllSenstiveSpecialForms()
-                          .rejectVeniceFunctions(
-                            "time/date",
-                            "time/zone-ids")
-
-                          // Venice functions: whitelist rules for print functions to offset
-                          // blacklist rules by individual functions
-                          .whitelistVeniceFunctions("*print*")
-
-                          // Generic rules
-                          .withMaxFutureThreadPoolSize(20)
-                          .withMaxExecTimeSeconds(3));
+                        // Generic rules
+                        .withMaxFutureThreadPoolSize(20)
+                        .withMaxExecTimeSeconds(3));
     }
 }

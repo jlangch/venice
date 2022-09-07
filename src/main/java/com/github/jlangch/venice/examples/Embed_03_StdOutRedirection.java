@@ -23,12 +23,28 @@ package com.github.jlangch.venice.examples;
 
 import com.github.jlangch.venice.Parameters;
 import com.github.jlangch.venice.Venice;
+import com.github.jlangch.venice.VncException;
 import com.github.jlangch.venice.util.CapturingPrintStream;
 
 
 public class Embed_03_StdOutRedirection {
 
     public static void main(final String[] args) {
+        try {
+            run();
+            System.exit(0);
+        }
+        catch(VncException ex) {
+            ex.printVeniceStackTrace();
+            System.exit(1);
+        }
+        catch(RuntimeException ex) {
+            ex.printStackTrace();
+            System.exit(1);
+        }
+    }
+
+    public static void run() {
         final Venice venice = new Venice();
 
         // case 1: redirect stdout/stderr to the <null> device
