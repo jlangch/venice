@@ -50,21 +50,17 @@ public class Embed_04_Precompile {
         final Venice venice = new Venice();
 
         // turn up-front macro expansion on
-        final IPreCompiled precompiled = venice.precompile("example", "(+ 1 x)", true);
+        final IPreCompiled pc = venice.precompile("example", "(+ 1 x)", true);
 
         // single-threaded
         IntStream.range(0, 100).sequential().forEach(
           ii -> System.out.println(
-                  venice.eval(
-                     precompiled,
-                     Parameters.of("x", ii))));
+                  venice.eval(pc, Parameters.of("x", ii))));
 
         // multi-threaded
         IntStream.range(0, 100).parallel().forEach(
           ii -> System.out.println(
-                  venice.eval(
-                     precompiled,
-                     Parameters.of("x", ii))));
+                  venice.eval(pc, Parameters.of("x", ii))));
     }
 
 }

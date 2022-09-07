@@ -16,6 +16,9 @@ and this project adheres to
 
 - ...
 
+### Fixed
+
+- a cheatsheet example
 
 
 

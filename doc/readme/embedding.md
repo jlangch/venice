@@ -29,15 +29,25 @@ import com.github.jlangch.venice.VncException;
 public class Embed_01_Simple {
     public static void main(final String[] args) {
         try {
-           final Venice venice = new Venice();  
-           System.out.println(venice.eval("(+ 1 1)"));
-        } 
+            run();
+            System.exit(0);
+        }
         catch(VncException ex) {
-           ex.printVeniceStackTrace();
+            ex.printVeniceStackTrace();
+            System.exit(1);
         }
         catch(RuntimeException ex) {
-           ex.printStackTrace();
+            ex.printStackTrace();
+            System.exit(1);
         }
+    }
+
+    public static void run() {
+        final Venice venice = new Venice();
+
+        final Long result = (Long)venice.eval("(+ 1 2)");
+
+        System.out.println(result);
     }
 }
 ```
@@ -53,8 +63,9 @@ keys in Venice, so the getters can be accessed simply through `(:getterName bean
 
 ```java
 import java.awt.Point;
-import com.github.jlangch.venice.Venice;
+
 import com.github.jlangch.venice.Parameters;
+import com.github.jlangch.venice.Venice;
 
 public class Embed_02_PassingParameters {
     public static void main(final String[] args) {
@@ -96,8 +107,8 @@ public class Embed_02_PassingParameters {
 ## stdout-stderr Redirection
 
 ```java
-import com.github.jlangch.venice.Venice;
 import com.github.jlangch.venice.Parameters;
+import com.github.jlangch.venice.Venice;
 import com.github.jlangch.venice.util.CapturingPrintStream;
 
 public class Embed_03_StdOutRedirection {
@@ -106,8 +117,8 @@ public class Embed_03_StdOutRedirection {
 
         // case 1: redirect stdout/stderr to the <null> device
         venice.eval(
-           "(println [1 2])", 
-           Parameters.of("*out*", null, 
+           "(println [1 2])",
+           Parameters.of("*out*", null,
                          "*err*", null));
 
         // case 2: capture stdout within the script and return it as the result
@@ -115,12 +126,12 @@ public class Embed_03_StdOutRedirection {
            venice.eval("(with-out-str (println [1 2]))"));
 
         // case 3: capturing stdout/stderr preserving the script result
-        try(CapturingPrintStream ps_out = CapturingPrintStream.create();
-        	CapturingPrintStream ps_err = CapturingPrintStream.create()
+        try(CapturingPrintStream ps_out = new CapturingPrintStream();
+            CapturingPrintStream ps_err = new CapturingPrintStream()
         ) {
            final Object result = venice.eval(
-                                   "(do (println [1 2]) 100)", 
-                                   Parameters.of("*out*", ps_out, 
+                                   "(do (println [1 2]) 100)",
+                                   Parameters.of("*out*", ps_out,
                                                  "*err*", ps_err));
            System.out.println("result: " + result);
            System.out.println("stdout: " + ps_out.getOutput());
@@ -138,24 +149,26 @@ multiple times with different parameters. Running precompiled scripts is threads
 Every evaluation gets its own private Venice context.
 
 ```java
-import java.util.stream.IntStream;
-import com.github.jlangch.venice.*;
+import com.github.jlangch.venice.IPreCompiled;
+import com.github.jlangch.venice.Parameters;
+import com.github.jlangch.venice.Venice;
 
 public class Embed_04_Precompile {
     public static void main(final String[] args) {
         final Venice venice = new Venice();
 
-
-        // pre-compile and turn up-front macro expansion on
+        // turn up-front macro expansion on
         final IPreCompiled pc = venice.precompile("example", "(+ 1 x)", true);
 
         // single-threaded
         IntStream.range(0, 100).sequential().forEach(
-          ii -> System.out.println(venice.eval(pc, Parameters.of("x", ii))));
+          ii -> System.out.println(
+                  venice.eval(pc, Parameters.of("x", ii))));
 
         // multi-threaded
         IntStream.range(0, 100).parallel().forEach(
-          ii -> System.out.println(venice.eval(pc, Parameters.of("x", ii))));
+          ii -> System.out.println(
+                  venice.eval(pc, Parameters.of("x", ii))));
     }
 }
 ```
