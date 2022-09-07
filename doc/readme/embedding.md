@@ -316,8 +316,14 @@ public class Embed_10_CustomSandbox {
         final IInterceptor interceptor =
                 new SandboxInterceptor(
                         new SandboxRules()
-                                .rejectAllVeniceIoFunctions()
-                                .withClasses(
+                                 // blacklist all Venice I/O, system, and
+                                 // concurrency functions
+                                 .rejectAllIoFunctions()
+                                 .rejectAllConcurrencyFunctions()
+                                 .rejectAllSystemFunctions()
+                                 .rejectAllSenstiveSpecialForms()
+                                 // whitelist a few Java classes
+                                 .withClasses(
                                     "java.lang.Math:PI", 
                                     "java.lang.Math:min", 
                                     "java.lang.Math:max", 
