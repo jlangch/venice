@@ -122,6 +122,8 @@ public class Venice {
         final ThreadContext tc = ThreadContext.get();
         try {
             tc.clear(true);
+            tc.setInterceptor_(interceptor);
+            tc.setMeterRegistry_(meterRegistry);
 
             final IVeniceInterpreter venice = new VeniceInterpreter(interceptor);
 
@@ -390,24 +392,24 @@ public class Venice {
                 final Object val = entry.getValue();
 
                 if (key.charAt(0) == '*') {
-	                if (key.equals("*out*")) {
-	                    env.setStdoutPrintStream(buildPrintStream(val, "*out*"));
-	                    stdoutAdded = true;
-	                }
-	                else if (key.equals("*err*")) {
-	                    env.setStderrPrintStream(buildPrintStream(val, "*err*"));
-	                    stderrAdded = true;
-	                }
-	                else if (key.equals("*in*")) {
-	                    env.setStdinReader(buildIOReader(val, "*in*"));
-	                    stdinAdded = true;
-	                }
-	                else {
-	                    env.setGlobal(
-	                        new Var(
-	                            new VncSymbol(key),
-	                            JavaInteropUtil.convertToVncVal(val)));
-	                }
+                    if (key.equals("*out*")) {
+                        env.setStdoutPrintStream(buildPrintStream(val, "*out*"));
+                        stdoutAdded = true;
+                    }
+                    else if (key.equals("*err*")) {
+                        env.setStderrPrintStream(buildPrintStream(val, "*err*"));
+                        stderrAdded = true;
+                    }
+                    else if (key.equals("*in*")) {
+                        env.setStdinReader(buildIOReader(val, "*in*"));
+                        stdinAdded = true;
+                    }
+                    else {
+                        env.setGlobal(
+                            new Var(
+                                new VncSymbol(key),
+                                JavaInteropUtil.convertToVncVal(val)));
+                    }
                 }
                 else {
                     env.setGlobal(

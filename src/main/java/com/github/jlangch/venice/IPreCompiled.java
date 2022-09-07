@@ -22,6 +22,9 @@
 package com.github.jlangch.venice;
 
 
+/**
+ * A pre-compiled script.
+ */
 public interface IPreCompiled {
 
 	/**
