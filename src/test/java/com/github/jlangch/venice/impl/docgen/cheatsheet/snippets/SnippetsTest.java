@@ -19,46 +19,41 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.github.jlangch.venice.examples;
+package com.github.jlangch.venice.impl.docgen.cheatsheet.snippets;
 
 import org.junit.jupiter.api.Test;
 
 
-public class ExamplesTest {
+public class SnippetsTest {
 
     @Test
-    public void test_Embed_01_Simple() {
-        Embed_01_Simple.run();
+    public void test_Snippet_01_Eval() {
+        Snippet_01_Eval.main(new String[0]);
     }
 
     @Test
-    public void test_Embed_02_PassingParameters() {
-        Embed_02_PassingParameters.run();
+    public void test_Snippet_02_PassingParameters() {
+        Snippet_02_PassingParameters.main(new String[0]);
     }
 
     @Test
-    public void test_Embed_03_StdOutRedirection() {
-        Embed_03_StdOutRedirection.run();
+    public void test_Snippet_03_DealingWithJavaObjects() {
+        Snippet_03_DealingWithJavaObjects.main(new String[0]);
     }
 
     @Test
-    public void test_Embed_04_Precompile() {
-        Embed_04_Precompile.run();
+    public void test_Snippet_04_Precompiling() {
+        Snippet_04_Precompiling.main(new String[0]);
     }
 
     @Test
-    public void test_Embed_08_JavaInterop() {
-        Embed_08_JavaInterop.run();
+    public void test_Snippet_05_JavaInterop() {
+        Snippet_05_JavaInterop.main(new String[0]);
     }
 
     @Test
-    public void test_Embed_09_StrictSandbox() {
-        Embed_09_StrictSandbox.run();
-    }
-
-    @Test
-    public void test_Embed_10_CustomSandbox() {
-        Embed_10_CustomSandbox.run();
+    public void test_Snippet_06_Sandbox() {
+        Snippet_06_Sandbox.main(new String[0]);
     }
 
 }

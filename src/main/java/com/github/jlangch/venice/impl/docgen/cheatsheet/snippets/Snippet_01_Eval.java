@@ -19,34 +19,16 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.github.jlangch.venice.examples;
+package com.github.jlangch.venice.impl.docgen.cheatsheet.snippets;
+
 
 import com.github.jlangch.venice.Venice;
-import com.github.jlangch.venice.VncException;
 
+public class Snippet_01_Eval {
 
-public class Embed_01_Simple {
-
-    public static void main(final String[] args) {
-        try {
-            run();
-            System.exit(0);
-        }
-        catch(VncException ex) {
-            ex.printVeniceStackTrace();
-            System.exit(1);
-        }
-        catch(RuntimeException ex) {
-            ex.printStackTrace();
-            System.exit(1);
-        }
-    }
-
-    public static void run() {
+   public static void main(String[] args) {
         final Venice venice = new Venice();
 
         final Long result = (Long)venice.eval("(+ 1 2)");
-
-        System.out.println(result);
-    }
+   }
 }

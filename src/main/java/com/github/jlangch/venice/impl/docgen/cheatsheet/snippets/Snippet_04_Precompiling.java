@@ -19,34 +19,21 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.github.jlangch.venice.examples;
+package com.github.jlangch.venice.impl.docgen.cheatsheet.snippets;
 
+import com.github.jlangch.venice.IPreCompiled;
+import com.github.jlangch.venice.Parameters;
 import com.github.jlangch.venice.Venice;
-import com.github.jlangch.venice.VncException;
 
 
-public class Embed_01_Simple {
+public class Snippet_04_Precompiling {
+   public static void main(String[] args) {
+      Venice venice = new Venice();
 
-    public static void main(final String[] args) {
-        try {
-            run();
-            System.exit(0);
-        }
-        catch(VncException ex) {
-            ex.printVeniceStackTrace();
-            System.exit(1);
-        }
-        catch(RuntimeException ex) {
-            ex.printStackTrace();
-            System.exit(1);
-        }
-    }
+      IPreCompiled precompiled = venice.precompile("example", "(+ 1 x)");
 
-    public static void run() {
-        final Venice venice = new Venice();
-
-        final Long result = (Long)venice.eval("(+ 1 2)");
-
-        System.out.println(result);
-    }
+      for(int ii=0; ii<100; ii++) {
+         venice.eval(precompiled, Parameters.of("x", ii));
+      }
+   }
 }
