@@ -117,14 +117,12 @@ public class Venice {
             throw new IllegalArgumentException("A 'script' must not be blank");
         }
 
-        final long nanos = System.nanoTime();
+        final long startTime = System.currentTimeMillis();
 
         try {
             ThreadContext.clear(true);
 
-            final IVeniceInterpreter venice = new VeniceInterpreter(
-            		                                interceptor,
-                                                    meterRegistry);
+            final IVeniceInterpreter venice = new VeniceInterpreter(interceptor);
 
             final Env env = venice.createEnv(macroexpand, false, RunMode.PRECOMPILE)
                                   .setStdoutPrintStream(null)
@@ -136,11 +134,11 @@ public class Venice {
                 ast = venice.MACROEXPAND(ast, env);
             }
 
-            meterRegistry.record("venice.precompile", System.nanoTime() - nanos);
+            final NamespaceRegistry nsRegistry = venice.getNamespaceRegistry()
+                                                       .remove(new VncSymbol("core"))
+                                                       .copy();
 
-            NamespaceRegistry nsRegistry = venice.getNamespaceRegistry();
-            nsRegistry.remove(new VncSymbol("core"));
-            nsRegistry = nsRegistry.copy();
+            final SymbolTable symbols = env.getGlobalSymbolTableWithoutCoreSystemSymbols();
 
             return new PreCompiled(
                         scriptName,
@@ -148,10 +146,10 @@ public class Venice {
                         ast,
                         macroexpand,  // remember for runtime
                         nsRegistry,
-                        //new SymbolTable());
-                        env.getGlobalSymbolTableWithoutCoreSystemSymbols());
+                        symbols);
         }
         finally {
+            lastPrecompileElapsedMillis = System.currentTimeMillis() - startTime;
             ThreadContext.clear(false);
         }
     }
@@ -203,14 +201,14 @@ public class Venice {
                 env = addParams(env, params);
 
                 precompiled.getSymbols().put(new Var(
-												new VncSymbol("*run-mode*"),
-												RunMode.SCRIPT.mode,
-												false));
+                                                new VncSymbol("*run-mode*"),
+                                                RunMode.SCRIPT.mode,
+                                                false));
 
                 // re-init namespaces!
                 venice.initNS();
                 if (!nsRegistryPrecompile.isEmpty()) {
-                	venice.presetNS(nsRegistryPrecompile);
+                    venice.presetNS(nsRegistryPrecompile);
                 }
                 venice.sealSystemNS();
 
@@ -340,6 +338,14 @@ public class Venice {
     }
 
     /**
+     * @return the elapsed time in milliseconds for the last pre-compilation, or -1
+     *         if there wasn't a pre-compilation yet.
+     */
+    public long getLastPrecompileElapsedMillis() {
+        return lastPrecompileElapsedMillis;
+    }
+
+    /**
      * @return the Venice version
      */
     public static String getVersion() {
@@ -376,17 +382,25 @@ public class Venice {
                 final String key = entry.getKey();
                 final Object val = entry.getValue();
 
-                if (key.equals("*out*")) {
-                    env.setStdoutPrintStream(buildPrintStream(val, "*out*"));
-                    stdoutAdded = true;
-                }
-                else if (key.equals("*err*")) {
-                    env.setStderrPrintStream(buildPrintStream(val, "*err*"));
-                    stderrAdded = true;
-                }
-                else if (key.equals("*in*")) {
-                    env.setStdinReader(buildIOReader(val, "*in*"));
-                    stdinAdded = true;
+                if (key.charAt(0) == '*') {
+	                if (key.equals("*out*")) {
+	                    env.setStdoutPrintStream(buildPrintStream(val, "*out*"));
+	                    stdoutAdded = true;
+	                }
+	                else if (key.equals("*err*")) {
+	                    env.setStderrPrintStream(buildPrintStream(val, "*err*"));
+	                    stderrAdded = true;
+	                }
+	                else if (key.equals("*in*")) {
+	                    env.setStdinReader(buildIOReader(val, "*in*"));
+	                    stdinAdded = true;
+	                }
+	                else {
+	                    env.setGlobal(
+	                        new Var(
+	                            new VncSymbol(key),
+	                            JavaInteropUtil.convertToVncVal(val)));
+	                }
                 }
                 else {
                     env.setGlobal(
@@ -400,11 +414,9 @@ public class Venice {
         if (!stdoutAdded) {
             env.setStdoutPrintStream(stdout);
         }
-
         if (!stderrAdded) {
             env.setStderrPrintStream(stderr);
         }
-
         if (!stdinAdded) {
             env.setStdinReader(stdin);
         }
@@ -488,7 +500,7 @@ public class Venice {
             throw new ValueException(
                     value instanceof VncVal ? ((VncVal)value).convertToJavaObject() : value);
         }
-        catch(com.github.jlangch.venice.SecurityException ex) {
+        catch(SecurityException ex) {
             throw ex;
         }
         catch(ExecutionException ex) {
@@ -549,9 +561,14 @@ public class Venice {
     private static ManagedCachedThreadPoolExecutor mngdExecutor =
             new ManagedCachedThreadPoolExecutor("venice-timeout-pool", 100);
 
+
+    private long lastPrecompileElapsedMillis = -1L;
+
     private final IInterceptor interceptor;
     private final MeterRegistry meterRegistry;
     private final AtomicReference<SymbolTable> coreSystemGlobalSymbols = new AtomicReference<>(null);
+
+    // This is pretty expensive so just doit once at startup!
     private final PrintStream stdout = new PrintStream(System.out, true);
     private final PrintStream stderr = new PrintStream(System.err, true);
     private final Reader stdin = new InputStreamReader(System.in);

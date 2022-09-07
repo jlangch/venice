@@ -34,15 +34,23 @@ public class NamespaceRegistry implements Serializable {
     public NamespaceRegistry() {
     }
 
-    public void add(final Namespace ns) {
+    public NamespaceRegistry add(final Namespace ns) {
         Objects.requireNonNull(ns);
         namespaces.put(ns.getNS(), ns);
+        return this;
     }
 
-    public void add(final NamespaceRegistry nsRegistry) {
+    public NamespaceRegistry add(final NamespaceRegistry nsRegistry) {
         for(Namespace ns : nsRegistry.namespaces.values()) {
             add(ns);
         }
+        return this;
+    }
+
+    public NamespaceRegistry remove(final VncSymbol sym) {
+        Objects.requireNonNull(sym);
+        namespaces.remove(sym);
+        return this;
     }
 
     public Namespace get(final VncSymbol sym) {
@@ -53,11 +61,6 @@ public class NamespaceRegistry implements Serializable {
     public Namespace computeIfAbsent(final VncSymbol sym) {
         Objects.requireNonNull(sym);
         return namespaces.computeIfAbsent(sym, (s) -> new Namespace(s));
-    }
-
-    public Namespace remove(final VncSymbol sym) {
-        Objects.requireNonNull(sym);
-        return namespaces.remove(sym);
     }
 
     public void clear() {
