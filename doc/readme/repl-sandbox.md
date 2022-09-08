@@ -100,10 +100,21 @@ venice> !sandbox customized
 (. :java.lang.Math :min 2 3)
 ```
 
+#### Blacklisting/Whitelisting groups of functions
+To simplify sandbox configuration Venice supports function groups:
+* all Venice I/O functions (using the group ref `*io*`)
+* all Venice I/O printing functions (using the group ref `*print*`)
+* all Venice unsafe special forms (using the group ref `*special-forms*`)
+* all Venice concurrency functions (using the group ref `*concurrency*`)
+* all Venice system functions (using the group ref `*system*`)
+* all Venice Java Interop functions (using the group ref `*java-interop*`)
+* all Venice unsafe functions (using the group ref `*unsafe*`)
+
+
 #### Customize the sandbox...
 * enable calls to _java.lang.Math_
-* enable access to system property _java.class.path_
-* enable access to system environment variable _JAVA_HOME_
+* enable access to system property _venice.repl.home_
+* enable access to system environment variable _REPL_HOME_
 * blacklist all Venice I/O functions (using the group ref `*io*`)
 * whitelist rule `*print*` to offset the blacklisted `*io*` rule to allow printing values
 * blacklist the Venice 'count' function
@@ -111,8 +122,8 @@ venice> !sandbox customized
 ```
 venice> !sandbox customized
 venice> !sandbox add-rule class:java.lang.Math:*
-venice> !sandbox add-rule system.property:java.class.path
-venice> !sandbox add-rule system.env:JAVA_HOME
+venice> !sandbox add-rule system.property:venice.repl.home
+venice> !sandbox add-rule system.env:REPL_HOME
 venice> !sandbox add-rule blacklist:venice:func:*io*
 venice> !sandbox add-rule whitelist:venice:func:*print*
 venice> !sandbox add-rule blacklist:venice:func:count
@@ -126,13 +137,13 @@ venice> !sandbox add-rule blacklist:venice:func:count
 ```
 
 ```clojure
-; Accessing system property 'java.class.path'
-(system-prop :java.class.path)
+; Accessing system property 'venice.repl.home'
+(system-prop :venice.repl.home)
 ```
 
 ```clojure
-; Accessing environment variable 'JAVA_HOME'
-(system-env :JAVA_HOME)
+; Accessing environment variable 'REPL_HOME'
+(system-env :REPL_HOME)
 ```
 
 ```clojure
