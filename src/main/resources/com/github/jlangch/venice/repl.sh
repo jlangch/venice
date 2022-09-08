@@ -18,7 +18,7 @@
 # ------------------------------------------------------------------------------
 
 
-REPL_HOME={{INSTALL_PATH}}
+export REPL_HOME={{INSTALL_PATH}}
 
 if [ ! -d ${REPL_HOME} ]; then
   echo "Error: The REPL home dir ${REPL_HOME} does not exist!"
@@ -38,6 +38,7 @@ while true; do
     -Xmx4G \
     -XX:-OmitStackTraceInFastThrow \
     -Djava.io.tmpdir=${REPL_HOME}/tmp \
+    -Dvenice.repl.home=${REPL_HOME} \
     -cp "libs:libs/*" \
     com.github.jlangch.venice.Launcher \
     -loadpath "" \

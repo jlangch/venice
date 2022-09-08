@@ -71,6 +71,7 @@ import com.github.jlangch.venice.impl.functions.JsonFunctions;
 import com.github.jlangch.venice.impl.javainterop.DynamicClassLoader2;
 import com.github.jlangch.venice.impl.namespaces.Namespaces;
 import com.github.jlangch.venice.impl.repl.ReplConfig.ColorMode;
+import com.github.jlangch.venice.impl.sandbox.SandboxFunctionGroups;
 import com.github.jlangch.venice.impl.thread.ThreadContext;
 import com.github.jlangch.venice.impl.types.VncJavaObject;
 import com.github.jlangch.venice.impl.types.VncKeyword;
@@ -909,9 +910,29 @@ public class REPL {
                     return;
                 }
             }
+            else if (first(params).equals("fn-group")) {
+                printer.println("stdout", "Groups: " +  String.join(", ", SandboxFunctionGroups.getGroups()));
+                return;
+            }
         }
         else if (params.size() == 2) {
-            if (first(params).equals("add-rule")) {
+            if (first(params).equals("fn-group")) {
+                final String group = second(params);
+
+                if (SandboxFunctionGroups.isValidGroup(group)) {
+                	SandboxFunctionGroups
+                		.groupFunctionsSorted(group)
+                		.forEach(f -> printer.println("stdout", "   " + f));
+                }
+                else {
+                    printer.println(
+                    		"error",
+                    		"invalid sandbox function group: " + group +
+                    		". Use one of " + String.join(", ", SandboxFunctionGroups.getGroups()));
+                }
+                return;
+            }
+            else if (first(params).equals("add-rule")) {
                 final String rule = second(params);
                 if (!(interceptor instanceof SandboxInterceptor)) {
                     printer.println("system", "rules can only be added to a customized sandbox");

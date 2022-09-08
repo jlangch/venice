@@ -104,6 +104,7 @@ public class ReplHelp {
             "   !sandbox accept-all\n" +
             "   !sandbox reject-all\n" +
             "   !sandbox customized\n" +
+            "   !sandbox fn-group *print*\n" +
             "   !sandbox add-rule class:java.lang.Math:*\n" +
             "   !sandbox add-rule system.property:os.name\n" +
             "   !sandbox add-rule blacklist:venice:func:io/exists-dir?\n" +

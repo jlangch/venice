@@ -37,6 +37,7 @@ java.exe ^
   -Xmx2G ^
   -XX:-OmitStackTraceInFastThrow ^
   -Djava.io.tmpdir=%REPL_HOME%\tmp ^
+  -Dvenice.repl.home=%REPL_HOME% ^
   -cp "libs;libs/*" com.github.jlangch.venice.Launcher ^
   -restartable ^
   -colors-darkmode
