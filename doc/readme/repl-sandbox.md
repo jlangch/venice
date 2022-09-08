@@ -110,6 +110,12 @@ To simplify sandbox configuration Venice supports function groups:
 * all Venice Java Interop functions (using the group ref `*java-interop*`)
 * all Venice unsafe functions (using the group ref `*unsafe*`)
 
+Use the REPL sandbox command 'fn-group' to list the functions in a specific group
+
+```
+venice> !sandbox fn-group
+venice> !sandbox fn-group *print*
+```
 
 #### Customize the sandbox...
 * enable calls to _java.lang.Math_
