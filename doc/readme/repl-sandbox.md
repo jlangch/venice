@@ -101,7 +101,7 @@ venice> !sandbox customized
 ```
 
 #### Blacklisting/Whitelisting groups of functions
-To simplify sandbox configuration Venice supports function groups:
+To simplify sandbox configuration Venice supports predefined function groups:
 * all Venice I/O functions (using the group ref `*io*`)
 * all Venice I/O printing functions (using the group ref `*print*`)
 * all Venice unsafe special forms (using the group ref `*special-forms*`)
