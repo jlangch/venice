@@ -289,7 +289,6 @@ public class CompiledSandboxRules {
         for(String rule : rules) {
             if (rule.startsWith("blacklist:venice:func:")) {
                 final String r = rule.substring("blacklist:venice:func:".length());
-
                 if (SandboxFunctionGroups.isValidGroup(r)) {
                     blacklisted.addAll(SandboxFunctionGroups.groupFunctions(r));
                 }
