@@ -32,57 +32,57 @@ import com.github.jlangch.venice.VncException;
 
 public class SandboxFunctionGroups {
 
-	public static Set<String> groupFunctions(final String group) {
+    public static Set<String> groupFunctions(final String group) {
         if (group.equals("*io*")) {
             return RestrictedBlacklistedFunctions.getIoFunctions();
         }
         else if (group.equals("*print*")) {
-        	return RestrictedBlacklistedFunctions.getPrintFunctions();
+            return RestrictedBlacklistedFunctions.getPrintFunctions();
         }
         else if (group.equals("*special-forms*")) {
-        	return RestrictedBlacklistedFunctions.getSpecialForms();
+            return RestrictedBlacklistedFunctions.getSpecialForms();
         }
         else if (group.equals("*concurrency*")) {
-        	return RestrictedBlacklistedFunctions.getConcurrencyFunctions();
+            return RestrictedBlacklistedFunctions.getConcurrencyFunctions();
         }
         else if (group.equals("*system*")) {
-        	return RestrictedBlacklistedFunctions.getSystemFunctions();
+            return RestrictedBlacklistedFunctions.getSystemFunctions();
         }
         else if (group.equals("*java-interop*")) {
-        	return RestrictedBlacklistedFunctions.getJavaInteropFunctions();
+            return RestrictedBlacklistedFunctions.getJavaInteropFunctions();
         }
         else if (group.equals("*unsafe*")) {
-        	return RestrictedBlacklistedFunctions.getAllFunctions();
+            return RestrictedBlacklistedFunctions.getAllFunctions();
         }
         else {
-        	throw new VncException(String.format(
-        				"Invalid sandbox function group '%s", group));
+            throw new VncException(String.format(
+                        "Invalid sandbox function group '%s", group));
         }
-	}
+    }
 
-	public static List<String> groupFunctionsSorted(final String group) {
-		return groupFunctions(group).stream().sorted().collect(Collectors.toList());
-	}
+    public static List<String> groupFunctionsSorted(final String group) {
+        return groupFunctions(group).stream().sorted().collect(Collectors.toList());
+    }
 
-	public static boolean isValidGroup(final String group) {
-		return GROUPS.contains(group);
-	}
+    public static boolean isValidGroup(final String group) {
+        return GROUPS.contains(group);
+    }
 
 
-	public static List<String> getGroups() {
-		return GROUPS.stream().sorted().collect(Collectors.toList());
-	}
+    public static List<String> getGroups() {
+        return GROUPS.stream().sorted().collect(Collectors.toList());
+    }
 
 
     private static Set<String> GROUPS =
             new HashSet<>(
                 Arrays.asList(
-                		"*io*",
-                		"*print*",
-                		"*special-forms*",
-                		"*concurrency*",
-                		"*system*",
-                		"*java-interop*",
-                		"*unsafe*"));
+                        "*io*",
+                        "*print*",
+                        "*special-forms*",
+                        "*concurrency*",
+                        "*system*",
+                        "*java-interop*",
+                        "*unsafe*"));
 
 }
