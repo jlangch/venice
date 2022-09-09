@@ -16,10 +16,6 @@ and this project adheres to
 
 - ...
 
-### Improved
-
-- performance of pre-compiled scripts
-
 ### Fixed
 
 - a cheatsheet example
