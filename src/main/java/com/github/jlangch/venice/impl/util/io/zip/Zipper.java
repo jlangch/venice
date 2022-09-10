@@ -938,7 +938,6 @@ public class Zipper {
         }
     }
 
-
     private static void deletePath(Path p) {
         try {
             Files.delete(p);
