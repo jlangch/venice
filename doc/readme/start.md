@@ -148,7 +148,7 @@ If you see the Venice REPL prompt `venice> ` type an expression like `(+ 1 100)`
 <img src="https://github.com/jlangch/venice/blob/master/doc/assets/gitpod/gitpod-repl.png">
 
 
-### Manually create a new REPL terminal in the workspace
+### Manually start a new REPL terminal in the workspace
 
 Start a new terminal (menu Terminal -> New Terminal) ...
 
