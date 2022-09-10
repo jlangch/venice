@@ -670,7 +670,7 @@ public class SandboxRules {
         //                .rejectVeniceFunctions("*io*")          // <- overules
         //                .whitelistVeniceFunctions("println"));  // <- overules again!
 
-        // remove the dublicate rules by keeping the order, keep always the last
+        // remove the duplicate rules by keeping the order, keep always the last
         // rules occurrence!
         final List<String> rules = new ArrayList<>(this.rules);
         Collections.reverse(rules);
@@ -852,19 +852,19 @@ public class SandboxRules {
             Collections.unmodifiableSet(
                 new HashSet<>(
                     Arrays.asList(
-                            "file.separator",
-                            "java.home",
-                            "java.vendor",
-                            "java.vendor.url",
-                            "java.version",
-                            "line.separator",
-                            "os.arch",
-                            "os.name",
-                            "os.version",
-                            "path.separator",
-                            "user.dir",
-                            "user.home",
-                            "user.name")));
+                        "file.separator",
+                        "java.home",
+                        "java.vendor",
+                        "java.vendor.url",
+                        "java.version",
+                        "line.separator",
+                        "os.arch",
+                        "os.name",
+                        "os.version",
+                        "path.separator",
+                        "user.dir",
+                        "user.home",
+                        "user.name")));
 
     public static final Set<String> DEFAULT_SYSTEM_ENVS =
             Collections.unmodifiableSet(

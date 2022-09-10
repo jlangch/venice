@@ -26,7 +26,7 @@ import static com.github.jlangch.venice.impl.types.Constants.Nil;
 import com.github.jlangch.venice.impl.util.MetaUtil;
 
 
-public class VncConstant extends VncVal {
+public class VncConstant extends VncScalar {
 
     public VncConstant(final String name) {
         super(Nil);

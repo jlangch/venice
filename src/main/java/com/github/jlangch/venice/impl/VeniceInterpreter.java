@@ -169,7 +169,7 @@ public class VeniceInterpreter implements IVeniceInterpreter, Serializable  {
 
     @Override
     public void presetNS(final NamespaceRegistry nsRegistry) {
-    	final VncSymbol ns = Namespaces.getCurrentNS();
+        final VncSymbol ns = Namespaces.getCurrentNS();
 
         if (nsRegistry != null) {
             this.nsRegistry.add(nsRegistry);
@@ -267,7 +267,7 @@ public class VeniceInterpreter implements IVeniceInterpreter, Serializable  {
             final boolean ansiTerminal,
             final RunMode runMode
     ) {
-    	final CodeLoader codeLoader = new CodeLoader();
+        final CodeLoader codeLoader = new CodeLoader();
 
         sealedSystemNS.set(false);
 
@@ -840,22 +840,49 @@ public class VeniceInterpreter implements IVeniceInterpreter, Serializable  {
             // System.out.println("EVAL SEQ VALUES: " + Types.getType(seq) + " > " + seq.toString(true));
 
             switch(seq.size()) {
-                case 0: return seq;
-                case 1: return seq.withVariadicValues(
-                                evaluate(seq.first(), env, false));
-                case 2: return seq.withVariadicValues(
-                                evaluate(seq.first(), env, false),
-                                evaluate(seq.second(), env, false));
-                case 3: return seq.withVariadicValues(
-                                evaluate(seq.first(), env, false),
-                                evaluate(seq.second(), env, false),
-                                evaluate(seq.third(), env, false));
-                case 4: return seq.withVariadicValues(
+                case 0:
+                    return seq;
+
+                case 1: {
+                    final VncVal v1 = seq.first();
+                    return v1 instanceof VncScalar
+                            ? seq
+                            : seq.withVariadicValues(
+                                evaluate(v1, env, false));
+                }
+
+                case 2: {
+                    final VncVal v1 = seq.first();
+                    final VncVal v2 = seq.second();
+                    return v1 instanceof VncScalar && v2 instanceof VncScalar
+                            ? seq
+                            : seq.withVariadicValues(
+                                evaluate(v1, env, false),
+                                evaluate(v2, env, false));
+                }
+
+                case 3: {
+                    final VncVal v1 = seq.first();
+                    final VncVal v2 = seq.second();
+                    final VncVal v3 = seq.third();
+                    return v1 instanceof VncScalar && v2 instanceof VncScalar && v3 instanceof VncScalar
+                            ? seq
+                            : seq.withVariadicValues(
+                                evaluate(v1, env, false),
+                                evaluate(v2, env, false),
+                                evaluate(v3, env, false));
+                }
+
+                case 4: {
+                    return seq.withVariadicValues(
                                 evaluate(seq.first(), env, false),
                                 evaluate(seq.second(), env, false),
                                 evaluate(seq.third(), env, false),
                                 evaluate(seq.fourth(), env, false));
-                default: return seq.map(v -> evaluate(v, env, false));
+                }
+
+                default:
+                    return seq.map(v -> evaluate(v, env, false));
             }
         }
     }
