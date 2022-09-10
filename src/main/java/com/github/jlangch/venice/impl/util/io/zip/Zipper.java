@@ -298,6 +298,8 @@ public class Zipper {
                     break;
                 }
 
+                validatedEntryNameForUnzip(entry);
+
                 final byte[] data = slurpBytes(zis);
 
                 zis.closeEntry();
@@ -360,6 +362,8 @@ public class Zipper {
                 final byte[] data = slurpBytes(zis);
 
                 if (entryIdx == nth) {
+                    validatedEntryNameForUnzip(entry);
+
                     return data;
                 }
 
@@ -390,7 +394,10 @@ public class Zipper {
                 if (entry == null) {
                     break;
                 }
+
                 if (name.equals(entry.getName())) {
+                    validatedEntryNameForUnzip(entry);
+
                     return zis;
                 }
                 zis.closeEntry();
@@ -426,7 +433,10 @@ public class Zipper {
                 if (entry == null) {
                     break;
                 }
-                else if (!entry.isDirectory()) {
+
+                validatedEntryNameForUnzip(entry);
+
+                if (!entry.isDirectory()) {
                     return zis;
                 }
             }
@@ -479,6 +489,8 @@ public class Zipper {
                 if (entry == null) {
                     break;
                 }
+
+                validatedEntryNameForUnzip(entry);
 
                 final byte[] data = slurpBytes(zis);
 
@@ -674,7 +686,7 @@ public class Zipper {
             final ZipInputStream zis = new ZipInputStream(zipIS);
             ZipEntry zipEntry = zis.getNextEntry();
             while (zipEntry != null) {
-                final File f = newFile(destDir, zipEntry);
+            	final File f = zipValidatedExtractDestFile(destDir, zipEntry);
 
                 if (zipEntry.isDirectory()) {
                     f.mkdirs();
@@ -848,10 +860,13 @@ public class Zipper {
         }
     }
 
-    private static File newFile(File destinationDir, ZipEntry zipEntry) throws IOException {
-        final File destFile = new File(destinationDir, zipEntry.getName());
+    private static File zipValidatedExtractDestFile(
+    		final File destDir,
+    		final ZipEntry zipEntry
+    ) throws IOException {
+        final File destFile = new File(destDir, zipEntry.getName());
 
-        final Path destDirPath = destinationDir.getCanonicalFile().toPath();
+        final Path destDirPath = destDir.getCanonicalFile().toPath();
         final Path destFilePath = destFile.getCanonicalFile().toPath();
 
         // Sanitize zip entry name
@@ -860,12 +875,32 @@ public class Zipper {
         if (!destFilePath.startsWith(destDirPath)) {
             throw new IOException(
                     String.format(
-                        "ZIP entry slips %s target dir %s while unzipping it",
+                        "ZIP entry slips %s target dir %s while unzipping it!",
                         zipEntry.getName(),
-                        destDirPath.toFile().getPath()));
+                        destDir.getPath()));
         }
 
-        return destFile;
+        return destFilePath.toFile();
+    }
+
+    private static void validatedEntryNameForUnzip(
+    		final ZipEntry zipEntry
+    ) throws IOException {
+    	final File destDir = new File(".");  // hypothetical unzip dest dir
+        final File destFile = new File(destDir, zipEntry.getName());
+
+        final Path destDirPath = destDir.getCanonicalFile().toPath();
+        final Path destFilePath = destFile.getCanonicalFile().toPath();
+
+        // Sanitize zip entry name
+        // A zip entry name my contain malicious  ".." elements resulting the
+        // entry to be written outside of 'destDirPath'!
+        if (!destFilePath.startsWith(destDirPath)) {
+            throw new IOException(
+                    String.format(
+                        "ZIP entry slips %s a potential target dir!",
+                        zipEntry.getName()));
+        }
     }
 
 
