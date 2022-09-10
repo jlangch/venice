@@ -24,6 +24,7 @@ package com.github.jlangch.venice.impl.functions;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.fail;
 
 import java.nio.ByteBuffer;
 import java.util.Map;
@@ -31,6 +32,7 @@ import java.util.Map;
 import org.junit.jupiter.api.Test;
 
 import com.github.jlangch.venice.Venice;
+import com.github.jlangch.venice.VncException;
 
 
 public class ZipFunctionsTest {
@@ -283,6 +285,23 @@ public class ZipFunctionsTest {
     }
 
     @Test
+    public void test_io_unzip_first_maliciuos_entry() throws Exception {
+        final Venice venice = new Venice();
+
+        final String script = "(->> (io/zip \"../../a\" (bytebuf-from-string \"abc\" :utf-8)) \n" +
+                              "     (io/unzip-first))                                           ";
+
+        try {
+            venice.eval(script);
+
+            fail("Expected a VncException");
+        }
+        catch(VncException ex) {
+            assertEquals("ZIP entry slips ../../a a potential target dir!", ex.getMessage());
+        }
+    }
+
+    @Test
     public void test_io_unzip_nth() throws Exception {
         final Venice venice = new Venice();
 
@@ -317,6 +336,23 @@ public class ZipFunctionsTest {
         assertEquals("ghi", new String(data.get("c").array(), "utf-8"));
     }
 
+    @Test
+    public void test_io_unzip_all_maliciuos_entry() throws Exception {
+        final Venice venice = new Venice();
+
+        final String script = "(->> (io/zip \"../../a\" (bytebuf-from-string \"abc\" :utf-8)) \n" +
+                              "     (io/unzip-all))                                           ";
+
+        try {
+            venice.eval(script);
+
+            fail("Expected a VncException");
+        }
+        catch(VncException ex) {
+            assertEquals("ZIP entry slips ../../a a potential target dir!", ex.getMessage());
+        }
+    }
+
     @SuppressWarnings("unchecked")
     @Test
     public void test_io_unzip_all_glob() throws Exception {
@@ -331,6 +367,23 @@ public class ZipFunctionsTest {
         assertEquals(2, data.size());
         assertEquals("abc", new String(data.get("a.txt").array(), "utf-8"));
         assertEquals("def", new String(data.get("b.txt").array(), "utf-8"));
+    }
+
+    @Test
+    public void test_io_unzip_all_glob_maliciuos_entry() throws Exception {
+        final Venice venice = new Venice();
+
+        final String script = "(->> (io/zip \"../../a\" (bytebuf-from-string \"abc\" :utf-8)) \n" +
+                              "     (io/unzip-all \"*.txt\"))                                 ";
+
+        try {
+            venice.eval(script);
+
+            fail("Expected a VncException");
+        }
+        catch(VncException ex) {
+            assertEquals("ZIP entry slips ../../a a potential target dir!", ex.getMessage());
+        }
     }
 
     @Test
