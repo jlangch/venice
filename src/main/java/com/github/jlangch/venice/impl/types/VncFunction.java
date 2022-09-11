@@ -278,7 +278,7 @@ public abstract class VncFunction
                     : " defined at " + new CallFrame(this).getSourcePosInfo());
     }
 
-    protected IInterceptor sandboxFunctionCallValidation() {
+    public IInterceptor sandboxFunctionCallValidation() {
         return ThreadContext.getInterceptor()
         		            .validateVeniceFunction(qualifiedName);
     }

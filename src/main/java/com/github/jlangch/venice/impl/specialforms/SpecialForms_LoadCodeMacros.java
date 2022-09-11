@@ -82,7 +82,7 @@ public class SpecialForms_LoadCodeMacros {
                     final Env env,
                     final SpecialFormsContext ctx
             ) {
-                specialFormCallValidation("load-string");
+                specialFormCallValidation(ctx, "load-string");
                 assertArity("load-string", FnType.SpecialForm, args, 1);
 
                 synchronized (this) {
@@ -163,7 +163,7 @@ public class SpecialForms_LoadCodeMacros {
                     final Env env,
                     final SpecialFormsContext ctx
             ) {
-                specialFormCallValidation("load-module");
+                specialFormCallValidation(ctx, "load-module");
                 assertArity("load-module", FnType.SpecialForm, args, 1, 2, 3);
 
                 final VncKeyword module = Coerce.toVncKeyword(args.first());
@@ -252,7 +252,7 @@ public class SpecialForms_LoadCodeMacros {
                     final Env env,
                     final SpecialFormsContext ctx
             ) {
-                specialFormCallValidation("load-file");
+                specialFormCallValidation(ctx, "load-file");
                 assertArity("load-file", FnType.SpecialForm, args, 1, 2, 3);
 
                 final VncString file = getVeniceFile(env, args.first(), "load-file");
@@ -348,7 +348,7 @@ public class SpecialForms_LoadCodeMacros {
                     final Env env,
                     final SpecialFormsContext ctx
             ) {
-                specialFormCallValidation("load-classpath-file");
+                specialFormCallValidation(ctx, "load-classpath-file");
                 assertArity("load-classpath-file", FnType.SpecialForm, args, 1, 2, 3);
 
                 final VncString file = getVeniceFile(env, args.first(), "load-classpath-file");

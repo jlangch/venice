@@ -434,7 +434,8 @@ public class ConcurrencyFunctions {
 
                 if (Types.isVncJavaObject(args.first(), Agent.class)) {
                     final Agent agent = (Agent)Coerce.toVncJavaObject(args.first()).getDelegate();
-                    agent.setErrorHandler(Coerce.toVncFunction(args.second()));
+                    final VncFunction fn = Coerce.toVncFunction(args.second());
+                    agent.setErrorHandler(fn);
                     return args.first();
                 }
                 else {

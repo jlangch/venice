@@ -147,6 +147,7 @@ public class VeniceInterpreter implements IVeniceInterpreter, Serializable  {
                                         this::evaluate_values,
                                         this::evaluate_sequence_values,
                                         this.functionBuilder,
+                                        this.interceptor,
                                         this.nsRegistry,
                                         this.meterRegistry,
                                         this.sealedSystemNS);
@@ -342,6 +343,11 @@ public class VeniceInterpreter implements IVeniceInterpreter, Serializable  {
         modules.removeAll(Arrays.asList("core", "test", "http", "jackson"));
         Collections.sort(modules);
         return modules;
+    }
+
+    @Override
+    public IInterceptor getInterceptor() {
+        return interceptor;
     }
 
     @Override

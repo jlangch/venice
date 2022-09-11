@@ -31,6 +31,7 @@ import com.github.jlangch.venice.impl.IVeniceInterpreter;
 import com.github.jlangch.venice.impl.namespaces.NamespaceRegistry;
 import com.github.jlangch.venice.impl.types.custom.CustomWrappableTypes;
 import com.github.jlangch.venice.impl.util.MeterRegistry;
+import com.github.jlangch.venice.javainterop.IInterceptor;
 
 
 public class SpecialFormsContext {
@@ -41,6 +42,7 @@ public class SpecialFormsContext {
             final IValuesEvaluator valuesEvaluator,
             final ISequenceValuesEvaluator sequenceValuesEvaluator,
             final FunctionBuilder functionBuilder,
+            final IInterceptor interceptor,
             final NamespaceRegistry nsRegistry,
             final MeterRegistry meterRegistry,
             final AtomicBoolean sealedSystemNS
@@ -50,6 +52,7 @@ public class SpecialFormsContext {
         this.valuesEvaluator = valuesEvaluator;
         this.sequenceValuesEvaluator = sequenceValuesEvaluator;
         this.functionBuilder = functionBuilder;
+        this.interceptor = interceptor;
         this.nsRegistry = nsRegistry;
         this.meterRegistry = meterRegistry;
         this.sealedSystemNS = sealedSystemNS;
@@ -62,6 +65,10 @@ public class SpecialFormsContext {
 
     public NamespaceRegistry getNsRegistry() {
         return nsRegistry;
+    }
+
+    public IInterceptor getInterceptor() {
+        return interceptor;
     }
 
     public MeterRegistry getMeterRegistry() {
@@ -94,6 +101,7 @@ public class SpecialFormsContext {
 
 
     private final CustomWrappableTypes wrappableTypes = new CustomWrappableTypes();
+    private final IInterceptor interceptor;
     private final NamespaceRegistry nsRegistry;
     private final MeterRegistry meterRegistry;
     private final AtomicBoolean sealedSystemNS;

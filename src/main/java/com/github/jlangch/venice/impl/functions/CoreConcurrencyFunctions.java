@@ -103,9 +103,12 @@ public class CoreConcurrencyFunctions {
                 final VncVal meta = options.get(new VncKeyword("meta"));
                 final VncVal validator = options.get(new VncKeyword("validator"));
 
+                final VncFunction validatorFn = validator == Nil
+                                                    ? null
+                                                    : Coerce.toVncFunction(validator);
                 return new VncAtom(
                         args.first(),
-                        validator == Nil ? null : Coerce.toVncFunction(validator),
+                        validatorFn,
                         MetaUtil.mergeMeta(args.getMeta(), meta));
             }
 
@@ -659,22 +662,22 @@ public class CoreConcurrencyFunctions {
 
     public static Map<VncVal, VncVal> ns =
             new SymbolMapBuilder()
-	            .add(new_atom)
-	            .add(atom_Q)
-	            .add(reset_BANG)
-	            .add(swap_BANG)
-	            .add(swap_vals_BANG)
-	            .add(compare_and_set_BANG)
+                .add(new_atom)
+                .add(atom_Q)
+                .add(reset_BANG)
+                .add(swap_BANG)
+                .add(swap_vals_BANG)
+                .add(compare_and_set_BANG)
 
-	            .add(delay_ASTERISK)
-	            .add(delay_Q)
-	            .add(force)
+                .add(delay_ASTERISK)
+                .add(delay_Q)
+                .add(force)
 
-	            .add(new_volatile)
-	            .add(volatile_Q)
+                .add(new_volatile)
+                .add(volatile_Q)
 
-	            .add(deref)
-	            .add(deref_Q)
+                .add(deref)
+                .add(deref_Q)
 
-	            .toMap();
+                .toMap();
 }

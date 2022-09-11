@@ -77,7 +77,7 @@ public class SpecialForms_VarFunctions {
                     final Env env,
                     final SpecialFormsContext ctx
             ) {
-                specialFormCallValidation("var-get");
+                specialFormCallValidation(ctx, "var-get");
                 assertArity("var-get", FnType.SpecialForm, args, 1);
                 final VncSymbol sym = Types.isVncSymbol(args.first())
                                         ? (VncSymbol)args.first()
@@ -131,7 +131,7 @@ public class SpecialForms_VarFunctions {
                     final Env env,
                     final SpecialFormsContext ctx
             ) {
-                specialFormCallValidation("var-ns");
+                specialFormCallValidation(ctx, "var-ns");
                 assertArity("var-ns", FnType.SpecialForm, args, 1);
 
                 final VncSymbol sym = Types.isVncSymbol(args.first())
@@ -201,7 +201,7 @@ public class SpecialForms_VarFunctions {
                     final Env env,
                     final SpecialFormsContext ctx
             ) {
-                specialFormCallValidation("var-name");
+                specialFormCallValidation(ctx, "var-name");
                 assertArity("var-name", FnType.SpecialForm, args, 1);
                 final VncSymbol sym = Types.isVncSymbol(args.first())
                                         ? (VncSymbol)args.first()

@@ -190,7 +190,7 @@ public class SpecialForms_OtherFunctions {
                     final Env env,
                     final SpecialFormsContext ctx
             ) {
-                specialFormCallValidation("eval");
+                specialFormCallValidation(ctx, "eval");
                 assertMinArity("eval", FnType.SpecialForm, args, 0);
 
                 final Namespace ns = Namespaces.getCurrentNamespace();
@@ -420,7 +420,7 @@ public class SpecialForms_OtherFunctions {
                     final Env env,
                     final SpecialFormsContext ctx
             ) {
-                specialFormCallValidation("inspect");
+                specialFormCallValidation(ctx, "inspect");
                 assertArity("inspect", FnType.SpecialForm, args, 1);
                 final VncSymbol sym = Coerce.toVncSymbol(ctx.getEvaluator().evaluate(args.first(), env, false));
                 return Inspector.inspect(env.get(sym));
@@ -450,7 +450,7 @@ public class SpecialForms_OtherFunctions {
                     final Env env,
                     final SpecialFormsContext ctx
             ) {
-                specialFormCallValidation("resolve");
+                specialFormCallValidation(ctx, "resolve");
                 assertArity("resolve", FnType.SpecialForm, args, 1);
                 return env.getOrNil(Coerce.toVncSymbol(
                                         ctx.getEvaluator().evaluate(args.first(), env, false)));
@@ -529,7 +529,7 @@ public class SpecialForms_OtherFunctions {
                     final Env env,
                     final SpecialFormsContext ctx
             ) {
-                specialFormCallValidation("set!");
+                specialFormCallValidation(ctx, "set!");
                 assertArity("set!", FnType.SpecialForm, args, 2);
 
                 final VncSymbol sym = Types.isVncSymbol(args.first())
@@ -692,7 +692,7 @@ public class SpecialForms_OtherFunctions {
                     final Env env,
                     final SpecialFormsContext ctx
             ) {
-                specialFormCallValidation("dobench");
+                specialFormCallValidation(ctx, "dobench");
                 assertArity("dobench", FnType.SpecialForm, args, 2, 4, 5);
 
                 long warmUpIterations = 0L;
@@ -869,7 +869,7 @@ public class SpecialForms_OtherFunctions {
                 // See:  - https://smartbear.com/learn/code-profiling/fundamentals-of-performance-profiling/
                 //       - https://support.smartbear.com/aqtime/docs/profiling-with/profile-various-apps/recursive-routines.html
 
-                specialFormCallValidation("prof");
+                specialFormCallValidation(ctx, "prof");
                 assertArity("prof", FnType.SpecialForm, args, 1, 2, 3);
 
                 final MeterRegistry meterRegistry = ctx.getMeterRegistry();

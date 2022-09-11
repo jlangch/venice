@@ -79,7 +79,7 @@ public class SpecialForms_NamespaceFunctions {
                     final Env env,
                     final SpecialFormsContext ctx
             ) {
-                specialFormCallValidation("ns");
+                specialFormCallValidation(ctx, "ns");
                 assertArity("ns", FnType.SpecialForm, args, 1);
 
                 final VncVal name = args.first();
@@ -134,7 +134,7 @@ public class SpecialForms_NamespaceFunctions {
                     final Env env,
                     final SpecialFormsContext ctx
             ) {
-                specialFormCallValidation("ns-unmap");
+                specialFormCallValidation(ctx, "ns-unmap");
                 assertArity("ns-unmap", FnType.SpecialForm, args, 2);
 
                 final VncSymbol ns = Coerce.toVncSymbol(
@@ -181,7 +181,7 @@ public class SpecialForms_NamespaceFunctions {
                     final Env env,
                     final SpecialFormsContext ctx
             ) {
-                specialFormCallValidation("ns-remove");
+                specialFormCallValidation(ctx, "ns-remove");
                 assertArity("ns-remove", FnType.SpecialForm, args, 1);
 
                 final VncSymbol ns = Coerce.toVncSymbol(
@@ -230,7 +230,7 @@ public class SpecialForms_NamespaceFunctions {
                     final Env env,
                     final SpecialFormsContext ctx
             ) {
-                specialFormCallValidation("ns-list");
+                specialFormCallValidation(ctx, "ns-list");
                 assertArity("ns-list", FnType.SpecialForm, args, 0, 1);
 
                 if (args.isEmpty()) {

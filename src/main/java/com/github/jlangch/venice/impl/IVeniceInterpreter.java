@@ -28,6 +28,7 @@ import com.github.jlangch.venice.impl.namespaces.NamespaceRegistry;
 import com.github.jlangch.venice.impl.types.VncVal;
 import com.github.jlangch.venice.impl.util.CallFrame;
 import com.github.jlangch.venice.impl.util.MeterRegistry;
+import com.github.jlangch.venice.javainterop.IInterceptor;
 
 
 public interface IVeniceInterpreter {
@@ -66,6 +67,8 @@ public interface IVeniceInterpreter {
             RunMode runMode);
 
     List<String> getAvailableModules();
+
+    IInterceptor getInterceptor();
 
     NamespaceRegistry getNamespaceRegistry();
 

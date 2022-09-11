@@ -24,7 +24,6 @@ package com.github.jlangch.venice.impl.specialforms.util;
 import com.github.jlangch.venice.VncException;
 import com.github.jlangch.venice.impl.env.Env;
 import com.github.jlangch.venice.impl.namespaces.Namespaces;
-import com.github.jlangch.venice.impl.thread.ThreadContext;
 import com.github.jlangch.venice.impl.types.VncSymbol;
 import com.github.jlangch.venice.impl.types.VncVal;
 import com.github.jlangch.venice.impl.types.collections.VncList;
@@ -35,8 +34,11 @@ import com.github.jlangch.venice.impl.util.WithCallStack;
 
 public class SpecialFormsUtil {
 
-    public static void specialFormCallValidation(final String name) {
-        ThreadContext.getInterceptor().validateVeniceFunction(name);
+    public static void specialFormCallValidation(
+    		final SpecialFormsContext ctx,
+    		final String name
+    ) {
+        ctx.getInterceptor().validateVeniceFunction(name);
     }
 
     public static VncSymbol evaluateSymbolMetaData(
@@ -108,7 +110,7 @@ public class SpecialFormsUtil {
                 try (WithCallStack cs = new WithCallStack(new CallFrame(symbol.getQualifiedName(), symbol.getMeta()))) {
                     throw new VncException(
                             String.format(
-                                    "The special form name '%s' can not be used a symbol.",
+                                    "The special form name '%s' can not be used as a symbol.",
                                     symbol.getName()));
                 }
             }
@@ -116,7 +118,7 @@ public class SpecialFormsUtil {
                 try (WithCallStack cs = new WithCallStack(new CallFrame(symbol.getQualifiedName(), symbol.getMeta()))) {
                     throw new VncException(
                             String.format(
-                                    "Reserved name '%s' can not be used a symbol.",
+                                    "Reserved name '%s' can not be used as a symbol.",
                                     symbol.getName()));
                 }
             }

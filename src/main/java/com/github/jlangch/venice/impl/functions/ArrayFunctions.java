@@ -229,6 +229,8 @@ public class ArrayFunctions {
                 final VncFunction fn = Coerce.toVncFunction(args.first());
                 final VncJavaObject oArr = Coerce.toVncJavaObject(args.second());
 
+                fn.sandboxFunctionCallValidation();
+
                 final Object arr = oArr.getDelegate();
                 if (!ReflectionTypes.isArrayType(arr.getClass())) {
                     throw new VncException(String.format(
