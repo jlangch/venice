@@ -297,7 +297,7 @@ public class ZipFunctionsTest {
             fail("Expected a VncException");
         }
         catch(VncException ex) {
-            assertEquals("ZIP entry slips ../../a a potential target dir!", ex.getMessage());
+            assertEquals("ZIP entry '../../a' slips a potential target dir!", ex.getMessage());
         }
     }
 
@@ -349,7 +349,7 @@ public class ZipFunctionsTest {
             fail("Expected a VncException");
         }
         catch(VncException ex) {
-            assertEquals("ZIP entry slips ../../a a potential target dir!", ex.getMessage());
+            assertEquals("ZIP entry '../../a' slips a potential target dir!", ex.getMessage());
         }
     }
 
@@ -382,7 +382,7 @@ public class ZipFunctionsTest {
             fail("Expected a VncException");
         }
         catch(VncException ex) {
-            assertEquals("ZIP entry slips ../../a a potential target dir!", ex.getMessage());
+            assertEquals("ZIP entry '../../a' slips a potential target dir!", ex.getMessage());
         }
     }
 

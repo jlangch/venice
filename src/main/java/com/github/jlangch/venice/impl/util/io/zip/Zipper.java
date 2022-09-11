@@ -875,7 +875,7 @@ public class Zipper {
         if (!destFilePath.startsWith(destDirPath)) {
             throw new IOException(
                     String.format(
-                        "ZIP entry slips %s target dir %s while unzipping it!",
+                        "ZIP entry '%s' slips target dir %s while unzipping it!",
                         zipEntry.getName(),
                         destDir.getPath()));
         }
@@ -899,7 +899,7 @@ public class Zipper {
         if (!destFilePath.startsWith(destDirPath)) {
             throw new IOException(
                     String.format(
-                        "ZIP entry slips %s a potential target dir!",
+                        "ZIP entry '%s' slips a potential target dir!",
                         zipEntry.getName()));
         }
     }
