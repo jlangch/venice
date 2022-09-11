@@ -885,7 +885,7 @@ public class Zipper {
     		final ZipEntry zipEntry
     ) throws IOException {
         // A zip entry name my contain malicious  "../" elements resulting the
-        // entry file to be written outside of 'destDirPath'!
+        // entry file to be written outside of an extraction path!
 
     	final File destDir = new File(".");  // hypothetical unzip dest dir
         final Path destDirPath = destDir.getCanonicalFile().toPath();
