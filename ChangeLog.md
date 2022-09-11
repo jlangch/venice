@@ -14,7 +14,7 @@ and this project adheres to
 
 ### Added
 
-- ...
+- optimizations to pre-compiled execution
 
 ### Fixed
 
