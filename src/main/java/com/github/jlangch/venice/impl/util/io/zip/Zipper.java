@@ -867,9 +867,8 @@ public class Zipper {
         // A zip entry name my contain malicious  "../" elements resulting the
         // entry file to be written outside of 'destDirPath'!
 
-    	final Path destDirPath = destDir.getCanonicalFile().toPath();
-        final Path destFilePath = new File(destDir, zipEntry.getName()).getCanonicalFile().toPath();
-        if (!destFilePath.startsWith(destDirPath)) {
+    	final File destFile = new File(destDir, zipEntry.getName());
+        if (!destFile.getCanonicalFile().toPath().startsWith(destDir.getCanonicalFile().toPath())) {
             throw new IOException(
                     String.format(
                         "ZIP entry '%s' slips target dir %s while unzipping it!",
@@ -877,7 +876,7 @@ public class Zipper {
                         destDir.getPath()));
         }
         else {
-            return destFilePath.toFile();
+            return destFile;
         }
     }
 
@@ -888,9 +887,8 @@ public class Zipper {
         // entry file to be written outside of an extraction path!
 
     	final File destDir = new File(".");  // hypothetical unzip dest dir
-        final Path destDirPath = destDir.getCanonicalFile().toPath();
-        final Path destFilePath = new File(destDir, zipEntry.getName()).getCanonicalFile().toPath();
-        if (!destFilePath.startsWith(destDirPath)) {
+        final File destFile = new File(destDir, zipEntry.getName());
+        if (!destFile.getCanonicalFile().toPath().startsWith(destDir.getCanonicalFile().toPath())) {
             throw new IOException(
                     String.format(
                         "ZIP entry '%s' slips a potential target dir!",
