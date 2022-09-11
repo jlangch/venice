@@ -864,14 +864,11 @@ public class Zipper {
     		final File destDir,
     		final ZipEntry zipEntry
     ) throws IOException {
-    	// LGTM false positive 'destFile' is checked for a "Zip Slip" vulnerability on the lines below!
-        final File destFile = new File(destDir, zipEntry.getName());  // lgtm [java/zipslip]
-
-        final Path destDirPath = destDir.getCanonicalFile().toPath();
-        final Path destFilePath = destFile.getCanonicalFile().toPath();
-
         // A zip entry name my contain malicious  "../" elements resulting the
         // entry file to be written outside of 'destDirPath'!
+
+    	final Path destDirPath = destDir.getCanonicalFile().toPath();
+        final Path destFilePath = new File(destDir, zipEntry.getName()).getCanonicalFile().toPath();
         if (!destFilePath.startsWith(destDirPath)) {
             throw new IOException(
                     String.format(
@@ -879,23 +876,20 @@ public class Zipper {
                         zipEntry.getName(),
                         destDir.getPath()));
         }
-
-        return destFilePath.toFile();
+        else {
+            return destFilePath.toFile();
+        }
     }
 
     private static void validatedEntryNameForUnzip(
     		final ZipEntry zipEntry
     ) throws IOException {
-    	final File destDir = new File(".");  // hypothetical unzip dest dir
-
-    	// LGTM false positive 'destFile' is checked for a "Zip Slip" vulnerability on the lines below!
-        final File destFile = new File(destDir, zipEntry.getName());  // lgtm [java/zipslip]
-
-        final Path destDirPath = destDir.getCanonicalFile().toPath();
-        final Path destFilePath = destFile.getCanonicalFile().toPath();
-
         // A zip entry name my contain malicious  "../" elements resulting the
         // entry file to be written outside of 'destDirPath'!
+
+    	final File destDir = new File(".");  // hypothetical unzip dest dir
+        final Path destDirPath = destDir.getCanonicalFile().toPath();
+        final Path destFilePath = new File(destDir, zipEntry.getName()).getCanonicalFile().toPath();
         if (!destFilePath.startsWith(destDirPath)) {
             throw new IOException(
                     String.format(
