@@ -741,6 +741,8 @@ public class CoreFunctions {
                 }
 
                 final VncFunction fn = (VncFunction)args.first();
+                fn.sandboxFunctionCallValidation();
+
                 if (fn instanceof VncMultiArityFunction) {
                     final VncMultiArityFunction mafn = (VncMultiArityFunction)fn;
                     if (args.size() == 1) {
@@ -796,6 +798,9 @@ public class CoreFunctions {
                 }
 
                 final VncFunction fn = (VncFunction)args.first();
+
+                fn.sandboxFunctionCallValidation();
+
                 if (fn instanceof VncMultiArityFunction) {
                     final VncMultiArityFunction mafn = (VncMultiArityFunction)fn;
                     if (args.size() == 1) {
@@ -2399,7 +2404,10 @@ public class CoreFunctions {
                 else if (args.size() == 1) {
                     if (Types.isVncFunction(args.first())) {
                         // finite/infinite lazy sequence with a supplier function
-                        return VncLazySeq.iterate(Coerce.toVncFunction(args.first()), Nil);
+                       	final VncFunction fn = (VncFunction)args.first();
+                        fn.sandboxFunctionCallValidation();
+                        
+                        return VncLazySeq.iterate(fn, Nil);
                     }
                     else if (Types.isVncList(args.first())) {
                         // finite lazy sequence from list
@@ -2417,11 +2425,17 @@ public class CoreFunctions {
                 }
                 else if (args.second() == Nil) {
                     // finite/infinite lazy sequence with a supplier function
-                    return VncLazySeq.iterate(Coerce.toVncFunction(args.first()), Nil);
+                	final VncFunction fn = Coerce.toVncFunction(args.first());
+                    fn.sandboxFunctionCallValidation();
+                    
+                    return VncLazySeq.iterate(fn, Nil);
                 }
                 else if (Types.isVncFunction(args.second())) {
                     // infinite lazy sequence with a seed value and a function to compute the next value
-                    return VncLazySeq.iterate(args.first(), (VncFunction)args.second(), Nil);
+                	final VncFunction fn = (VncFunction)args.second();
+                    fn.sandboxFunctionCallValidation();
+                    
+                    return VncLazySeq.iterate(args.first(), fn, Nil);
                 }
                 else if (Types.isVncLazySeq(args.second())) {
                     // infinite lazy sequence from a value and lazy sequence building the tail
@@ -5429,7 +5443,10 @@ public class CoreFunctions {
                     //
                     //   (pr-str (doall (take 6 (fib)))))   ; -> (1 1 2 3 5 8)
 
-                    return VncLazySeq.cons(args.first(), (VncFunction)args.second(), Nil);
+                	final VncFunction fn = (VncFunction)args.second();
+                    fn.sandboxFunctionCallValidation();
+
+                    return VncLazySeq.cons(args.first(), fn, Nil);
                 }
                 else {
                     throw new VncException(String.format(
@@ -8847,7 +8864,10 @@ public class CoreFunctions {
                     return Nil;
                 }
                 else if (Types.isVncFunction(arg) || Types.isVncMacro(arg)) {
-                    return new VncString(((VncFunction)arg).getQualifiedName());
+                	final VncFunction fn = (VncFunction)arg;
+                    fn.sandboxFunctionCallValidation();
+
+                    return new VncString(fn.getQualifiedName());
                 }
                 else {
                     throw new VncException(String.format(

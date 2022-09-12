@@ -48,9 +48,12 @@ public class Inspector {
 
         }
         else if (Types.isVncMultiArityFunction(val)) {
+           	final VncMultiArityFunction fn = (VncMultiArityFunction)val;
+            fn.sandboxFunctionCallValidation();
+
             final List<VncVal> arityFunctions = new ArrayList<>();
 
-            ((VncMultiArityFunction)val).getFunctions().forEach(f -> {
+            fn.getFunctions().forEach(f -> {
                 arityFunctions.add(
                     VncOrderedMap.of(
                         new VncKeyword("arity"), new VncLong(((VncFunction)f).getFixedArgsCount()),
@@ -66,8 +69,11 @@ public class Inspector {
                     new VncKeyword("private?"), VncBoolean.of(((VncFunction)val).isPrivate()));
         }
         else if (Types.isVncMultiFunction(val)) {
+           	final VncFunction fn = (VncFunction)val;
+            fn.sandboxFunctionCallValidation();
+
             return VncOrderedMap.of(
-                    new VncKeyword("name"), new VncString(((VncFunction)val).getQualifiedName()),
+                    new VncKeyword("name"), new VncString(fn.getQualifiedName()),
                     new VncKeyword("type"), Types.getType(val),
                     new VncKeyword("meta"), toNil(val.getMeta()),
                     new VncKeyword("body"), toNil(((VncFunction)val).getBody()),
@@ -75,8 +81,11 @@ public class Inspector {
                     new VncKeyword("private?"), VncBoolean.of(((VncFunction)val).isPrivate()));
         }
         else if (Types.isVncMacro(val)) {
+           	final VncFunction fn = (VncFunction)val;
+            fn.sandboxFunctionCallValidation();
+
             return VncOrderedMap.of(
-                    new VncKeyword("name"), new VncString(((VncFunction)val).getQualifiedName()),
+                    new VncKeyword("name"), new VncString(fn.getQualifiedName()),
                     new VncKeyword("type"), Types.getType(val),
                     new VncKeyword("meta"), toNil(val.getMeta()),
                     new VncKeyword("body"), toNil(((VncFunction)val).getBody()),
@@ -84,8 +93,11 @@ public class Inspector {
                     new VncKeyword("private?"), VncBoolean.of(((VncFunction)val).isPrivate()));
         }
         else if (Types.isVncFunction(val)) {
+           	final VncFunction fn = (VncFunction)val;
+            fn.sandboxFunctionCallValidation();
+
             return VncOrderedMap.of(
-                    new VncKeyword("name"), new VncString(((VncFunction)val).getQualifiedName()),
+                    new VncKeyword("name"), new VncString(fn.getQualifiedName()),
                     new VncKeyword("type"), Types.getType(val),
                     new VncKeyword("meta"), toNil(val.getMeta()),
                     new VncKeyword("body"), toNil(((VncFunction)val).getBody()),

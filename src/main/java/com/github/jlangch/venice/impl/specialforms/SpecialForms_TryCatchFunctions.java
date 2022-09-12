@@ -395,6 +395,7 @@ public class SpecialForms_TryCatchFunctions {
         // Selector: predicate => (catch predicate-fn e (..))
         else if (Types.isVncFunction(selector)) {
             final VncFunction predicate = (VncFunction)selector;
+           	predicate.sandboxFunctionCallValidation();
 
             if (th instanceof ValueException) {
                 final VncVal exVal = getValueExceptionValue((ValueException)th);

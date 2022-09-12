@@ -780,6 +780,7 @@ public class SpecialForms_OtherFunctions {
                     if (Types.isVncFunction(v)) {
                         // run the function
                         final VncFunction fn = (VncFunction)v;
+                        fn.sandboxFunctionCallValidation();
 
                         if (fn.getFixedArgsCount() == 1) {
                             // one arg function: pass the counter value

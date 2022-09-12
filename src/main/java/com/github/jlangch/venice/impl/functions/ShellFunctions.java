@@ -333,7 +333,10 @@ public class ShellFunctions {
                     future_stdout = executor.submit(() -> slurpToBytes(stdout));
                 }
                 else if (Types.isVncFunction(slurpOutFn)) {
-                    slurp(stdout, enc, (VncFunction)slurpOutFn);
+                	final VncFunction fn = (VncFunction)slurpOutFn;
+                    fn.sandboxFunctionCallValidation();
+
+                    slurp(stdout, enc, fn);
                     future_stdout = executor.submit(() -> VncString.empty());
                 }
                 else {
@@ -343,7 +346,10 @@ public class ShellFunctions {
                 // slurp the subprocess' stderr as string with platform default encoding
                 Future<VncVal> future_stderr;
                 if (Types.isVncFunction(slurpErrFn)) {
-                    slurp(stderr, enc, (VncFunction)slurpErrFn);
+                	final VncFunction fn = (VncFunction)slurpErrFn;
+                    fn.sandboxFunctionCallValidation();
+
+                    slurp(stderr, enc, fn);
                     future_stderr = executor.submit(() -> VncString.empty());
                 }
                 else {
