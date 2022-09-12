@@ -42,9 +42,12 @@ import com.github.jlangch.venice.javainterop.SandboxRules;
 // Run on a 2017 MacBook Pro (Mac OSX, Core i7 2.8 GHz).
 // Venice 1.10.16, Java 8
 //
-// Benchmark                                Mode  Cnt  Score   Error  Units
-// ThreadLocalBenchmark.bare_interceptor    avgt    3  5.180 ± 0.296  ns/op
-// ThreadLocalBenchmark.thread_interceptor  avgt    3  9.314 ± 8.349  ns/op
+// Benchmark                                  Mode  Cnt  Score   Error  Units
+// ThreadLocalBenchmark.interceptor           avgt    3  5.370 ± 0.436  ns/op
+// ThreadLocalBenchmark.lookup                avgt    3  4.414 ± 0.583  ns/op
+// ThreadLocalBenchmark.thread_id             avgt    3  2.685 ± 0.106  ns/op
+// ThreadLocalBenchmark.thread_interceptor_1  avgt    3  9.749 ± 0.161  ns/op
+// ThreadLocalBenchmark.thread_interceptor_2  avgt    3  9.909 ± 0.856  ns/op
 
 
 @Warmup(iterations=3, time=3, timeUnit=TimeUnit.SECONDS)
