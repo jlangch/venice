@@ -955,6 +955,9 @@ public class REPL {
                 else if (rule.startsWith("blacklist:venice:func:")) {
                     rules.rejectVeniceFunctions(rule);
                 }
+                else if (rule.startsWith("whitelist:venice:func:")) {
+                    rules.whitelistVeniceFunctions(rule);
+                }
                 else {
                     terminal.writer().println(ReplHelp.SANDBOX);
                     return;

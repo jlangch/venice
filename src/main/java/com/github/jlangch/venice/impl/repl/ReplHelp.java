@@ -109,5 +109,6 @@ public class ReplHelp {
             "   !sandbox add-rule system.property:os.name\n" +
             "   !sandbox add-rule blacklist:venice:func:io/exists-dir?\n" +
             "   !sandbox add-rule blacklist:venice:func:*io*\n" +
+            "   !sandbox add-rule whitelist:venice:func:println\n" +
             "   !sandbox add-rule venice:module:shell\n";
 }
