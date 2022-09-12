@@ -517,20 +517,11 @@ public class SandboxRules {
     }
 
     /**
-     * Reject access to all Java related functions
+     * Reject access to all Java interop functions
      *
      * @return this {@code SandboxRules}
      */
-    public SandboxRules rejectAllJavaCalls() {
-        return rejectAllJavaFunctions();
-    }
-
-    /**
-     * Reject access to all Java related functions
-     *
-     * @return this {@code SandboxRules}
-     */
-    public SandboxRules rejectAllJavaFunctions() {
+    public SandboxRules rejectAllJavaInteropFunctions() {
         rejectVeniceFunctions("*java-interop*");
         return this;
     }
@@ -544,6 +535,7 @@ public class SandboxRules {
      *   <li>var manipulation</li>
      *   <li>benchmark</li>
      *   <li>profiling</li>
+     *   <li>...</li>
      * </ul>
      *
      * @return this {@code SandboxRules}

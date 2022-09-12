@@ -88,8 +88,8 @@ final IInterceptor interceptor =
               .rejectAllConcurrencyFunctions()
               .rejectAllSystemFunctions()
               .rejectAllSenstiveSpecialForms()
-	      
-	      // Venice functions: blacklist rule for individual functions
+
+              // Venice functions: blacklist rule for individual functions
               .rejectVeniceFunctions(
                   "time/date",
                   "time/zone-ids")
@@ -111,11 +111,11 @@ venice.eval("(. :java.lang.Math :PI)");
 // rule: "java.lang.Math:min"
 // => OK (whitelisted static method)
 venice.eval("(. :java.lang.Math :min 20 30)"); 
-    
+
 // rule: "java.time.ZonedDateTime:*
 // => OK (whitelisted constructor & instance method)
 venice.eval("(. (. :java.time.ZonedDateTime :now) :plusDays 5))"); 
- 
+
 // rule: "java.util.ArrayList:new" and "java.util.ArrayList:add"
 // => OK (whitelisted constructor & instance method)
 venice.eval(

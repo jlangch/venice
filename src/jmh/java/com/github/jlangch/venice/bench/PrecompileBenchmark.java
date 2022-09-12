@@ -50,7 +50,7 @@ import com.github.jlangch.venice.Venice;
 // PrecompileBenchmark.precompilation_no_macroexpand_noparams  avgt    3    37.198 ±    1.744  us/op
 // PrecompileBenchmark.precompilation_macroexpand_params       avgt    3     6.672 ±    0.173  us/op
 // PrecompileBenchmark.precompilation_macroexpand_noparams     avgt    3     5.682 ±    1.664  us/op
-// PrecompileBenchmark.precompilation_ref                      avgt    3     4.157 ±    0.339  us/op
+// PrecompileBenchmark.precompilation_ref                      avgt    3     3.928 ±    0.192  us/op
 
 
 @Warmup(iterations=3, time=3, timeUnit=TimeUnit.SECONDS)

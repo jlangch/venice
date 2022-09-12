@@ -261,6 +261,20 @@ public class Sandbox_VeniceFunction_Test {
         });
     }
 
+    @Test
+    public void test_blacklisted_add_with_core_ns() {
+        final Interceptor interceptor =
+                new SandboxInterceptor(
+                        new SandboxRules()
+                                .rejectVeniceFunctions("core/+"));
+
+        // denied
+        assertThrows(SecurityException.class, () -> {
+            new Venice(interceptor).eval("(+ 1 1)");
+        });
+    }
+
+
     // ------------------------------------------------------------------------
     // Helpers
     // ------------------------------------------------------------------------
