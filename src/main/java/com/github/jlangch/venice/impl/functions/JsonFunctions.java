@@ -421,7 +421,14 @@ public class JsonFunctions {
 
     private static VncFunction getFunctionOption(final VncHashMap options, final String optionName) {
         final VncVal val = options.get(new VncKeyword(optionName));
-        return val == Constants.Nil ? null : Coerce.toVncFunction(val);
+        if (val == Constants.Nil) {
+        	return null;
+        }
+        else {
+        	final VncFunction fn = Coerce.toVncFunction(val);
+            fn.sandboxFunctionCallValidation();
+        	return fn;
+        }
     }
 
     private static String encoding(final VncVal enc) {

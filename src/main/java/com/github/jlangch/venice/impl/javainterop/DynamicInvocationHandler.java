@@ -24,9 +24,9 @@ package com.github.jlangch.venice.impl.javainterop;
 import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.Method;
 import java.lang.reflect.Proxy;
+import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.Callable;
-import java.util.stream.Collectors;
 
 import com.github.jlangch.venice.VncException;
 import com.github.jlangch.venice.impl.thread.ThreadBridge;
@@ -133,12 +133,15 @@ public class DynamicInvocationHandler implements InvocationHandler {
     }
 
     private static Map<String, VncFunction> handlerMap(final VncMap handlers) {
-        return handlers
-                    .entries()
-                    .stream()
-                    .collect(Collectors.toMap(
-                        e -> name(e.getKey()),
-                        e -> Coerce.toVncFunction(e.getValue())));
+    	final Map<String, VncFunction> map = new HashMap<>();
+
+        handlers.entries().forEach(e -> {
+        	final VncFunction fn = Coerce.toVncFunction(e.getValue());
+        	fn.sandboxFunctionCallValidation();
+        	map.put(name(e.getKey()), fn);
+        });
+
+        return map;
     }
 
     private static VncList toVncArgs(final Object[] args) {

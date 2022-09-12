@@ -192,10 +192,12 @@ public class SpecialForms_MethodFunctions {
                 }
                 else if (Types.isVncSymbol(args.second())) {
                     dispatchFn = Coerce.toVncFunction(env.get((VncSymbol)args.second()));
+                    dispatchFn.sandboxFunctionCallValidation();
                 }
                 else {
                     final VncList fnAst = Coerce.toVncList(args.second());
                     dispatchFn = (IVncFunction)fn.apply(specialFormMeta, fnAst.rest(), env, ctx);
+                    dispatchFn.sandboxFunctionCallValidation();
                 }
 
                 final VncMultiFunction multiFn = new VncMultiFunction(name.getName(), dispatchFn)

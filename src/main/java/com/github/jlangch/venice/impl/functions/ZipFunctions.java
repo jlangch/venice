@@ -758,6 +758,9 @@ public class ZipFunctions {
                 final PrintStream ps = silent ? new PrintStream(new NullOutputStream(), true)
                                               : ThreadContext.getStdOut();
 
+                if (filterFn != null) filterFn.sandboxFunctionCallValidation();
+                if (mapperFn != null) mapperFn.sandboxFunctionCallValidation();
+
                 try {
                     if (Types.isVncJavaObject(dest, File.class)) {
                         Zipper.zipFileOrDir(

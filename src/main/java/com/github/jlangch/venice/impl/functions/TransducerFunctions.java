@@ -141,12 +141,16 @@ public class TransducerFunctions {
                 final VncFunction reduction_fn = Coerce.toVncFunction(args.second());
                 final VncCollection coll = Coerce.toVncCollection(args.last());
 
+                xform.sandboxFunctionCallValidation();
+                reduction_fn.sandboxFunctionCallValidation();
+
                 final VncVal init = args.size() == 4
                                         ? args.third()
                                         : reduction_fn.apply(VncList.empty());
 
 
                 final VncFunction xf = (VncFunction)xform.apply(VncList.of(reduction_fn));
+                xf.sandboxFunctionCallValidation();
 
                 // reduce the collection
                 final VncVal ret = CoreFunctions.reduce.apply(VncList.of(xf, init, coll));
@@ -226,6 +230,7 @@ public class TransducerFunctions {
                 }
                 else if (args.size() == 1) {
                     final IVncFunction fn = Coerce.toIVncFunction(args.first());
+                    fn.sandboxFunctionCallValidation();
 
                     // return a transducer
                     return new VncFunction(createAnonymousFuncName("map:transducer:wrapped")) {
@@ -234,6 +239,7 @@ public class TransducerFunctions {
                             ArityExceptions.assertArity(this, args, 1);
 
                             final IVncFunction rf = Coerce.toIVncFunction(args.first());
+                            rf.sandboxFunctionCallValidation();
 
                             return new VncFunction(createAnonymousFuncName("map:transducer")) {
                                 @Override
@@ -336,6 +342,7 @@ public class TransducerFunctions {
                 }
                 else if (args.size() == 1) {
                     final IVncFunction fn = Coerce.toIVncFunction(args.first());
+                    fn.sandboxFunctionCallValidation();
 
                     // return a transducer
                     return new VncFunction(createAnonymousFuncName("map-indexed:transducer:wrapped")) {
@@ -344,6 +351,8 @@ public class TransducerFunctions {
                             ArityExceptions.assertArity(this, args, 1);
 
                             final VncFunction rf = Coerce.toVncFunction(args.first());
+                            rf.sandboxFunctionCallValidation();
+
                             final AtomicLong idx = new AtomicLong(0);
 
                             return new VncFunction(createAnonymousFuncName("map-indexed:transducer")) {
@@ -378,6 +387,8 @@ public class TransducerFunctions {
                 }
                 else {
                     final VncFunction fn = Coerce.toVncFunction(args.first());
+                    fn.sandboxFunctionCallValidation();
+
                     final VncVal coll = args.second();
 
                     Iterable<VncVal> items;
@@ -443,6 +454,8 @@ public class TransducerFunctions {
                 final MeterRegistry meterRegistry = ThreadContext.getMeterRegistry();
 
                 final IVncFunction predicate = Coerce.toIVncFunction(args.first());
+                predicate.sandboxFunctionCallValidation();
+
 
                 if (args.size() == 1) {
                     // return a transducer
@@ -452,6 +465,7 @@ public class TransducerFunctions {
                             ArityExceptions.assertArity(this, args, 1);
 
                             final VncFunction rf = Coerce.toVncFunction(args.first());
+                            rf.sandboxFunctionCallValidation();
 
                             return new VncFunction(createAnonymousFuncName("filter:transducer")) {
                                 @Override
@@ -529,6 +543,8 @@ public class TransducerFunctions {
                             ArityExceptions.assertArity(this, args, 1);
 
                             final VncFunction rf = Coerce.toVncFunction(args.first());
+                            rf.sandboxFunctionCallValidation();
+
                             final AtomicLong nn = new AtomicLong(n);
 
                             return new VncFunction(createAnonymousFuncName("drop:transducer")) {
@@ -590,6 +606,7 @@ public class TransducerFunctions {
                 final MeterRegistry meterRegistry = ThreadContext.getMeterRegistry();
 
                 final IVncFunction predicate = Coerce.toIVncFunction(args.first());
+                predicate.sandboxFunctionCallValidation();
 
                 if (args.size() == 1) {
                     // return a transducer
@@ -599,6 +616,8 @@ public class TransducerFunctions {
                             ArityExceptions.assertArity(this, args, 1);
 
                             final VncFunction rf = Coerce.toVncFunction(args.first());
+                            rf.sandboxFunctionCallValidation();
+
                             final AtomicBoolean take = new AtomicBoolean(false);
 
                             return new VncFunction(createAnonymousFuncName("drop-while:transducer")) {
@@ -681,6 +700,8 @@ public class TransducerFunctions {
                             ArityExceptions.assertArity(this, args, 1);
 
                             final VncFunction rf = Coerce.toVncFunction(args.first());
+                            rf.sandboxFunctionCallValidation();
+
                             final List<VncVal> list = new ArrayList<>();
 
                             return new VncFunction(createAnonymousFuncName("drop-last:transducer")) {
@@ -760,6 +781,8 @@ public class TransducerFunctions {
                             ArityExceptions.assertArity(this, args, 1);
 
                             final VncFunction rf = Coerce.toVncFunction(args.first());
+                            rf.sandboxFunctionCallValidation();
+
                             final AtomicLong nn = new AtomicLong(n);
 
                             return new VncFunction(createAnonymousFuncName("take:transducer")) {
@@ -822,6 +845,7 @@ public class TransducerFunctions {
                 final MeterRegistry meterRegistry = ThreadContext.getMeterRegistry();
 
                 final IVncFunction predicate = Coerce.toIVncFunction(args.first());
+                predicate.sandboxFunctionCallValidation();
 
                 if (args.size() == 1) {
                     // return a transducer
@@ -831,6 +855,7 @@ public class TransducerFunctions {
                             ArityExceptions.assertArity(this, args, 1);
 
                             final VncFunction rf = Coerce.toVncFunction(args.first());
+                            rf.sandboxFunctionCallValidation();
 
                             return new VncFunction(createAnonymousFuncName("take-while:transducer")) {
                                 @Override
@@ -907,6 +932,8 @@ public class TransducerFunctions {
                             ArityExceptions.assertArity(this, args, 1);
 
                             final VncFunction rf = Coerce.toVncFunction(args.first());
+                            rf.sandboxFunctionCallValidation();
+
                             final LinkedList<VncVal> list = new LinkedList<>();
 
                             return new VncFunction(createAnonymousFuncName("take-last:transducer")) {
@@ -977,6 +1004,7 @@ public class TransducerFunctions {
 
                 if (args.size() == 1) {
                     final IVncFunction fn = Coerce.toIVncFunction(args.first());
+                    fn.sandboxFunctionCallValidation();
 
                     // return a transducer
                     return new VncFunction(createAnonymousFuncName("keep:transducer:wrapped")) {
@@ -985,6 +1013,7 @@ public class TransducerFunctions {
                             ArityExceptions.assertArity(this, args, 1);
 
                             final VncFunction rf = Coerce.toVncFunction(args.first());
+                            rf.sandboxFunctionCallValidation();
 
                             return new VncFunction(createAnonymousFuncName("keep:transducer")) {
                                 @Override
@@ -1053,6 +1082,8 @@ public class TransducerFunctions {
                             ArityExceptions.assertArity(this, args, 1);
 
                             final VncFunction rf = Coerce.toVncFunction(args.first());
+                            rf.sandboxFunctionCallValidation();
+
                             final AtomicReference<VncVal> seen = new AtomicReference<>(NONE);
 
                             return new VncFunction(createAnonymousFuncName("dedupe:transducer")) {
@@ -1133,6 +1164,7 @@ public class TransducerFunctions {
                 final MeterRegistry meterRegistry = ThreadContext.getMeterRegistry();
 
                 final IVncFunction predicate = Coerce.toIVncFunction(args.first());
+                predicate.sandboxFunctionCallValidation();
 
                 if (args.size() == 1) {
                     // return a transducer
@@ -1187,6 +1219,8 @@ public class TransducerFunctions {
                             ArityExceptions.assertArity(this, args, 1);
 
                             final VncFunction rf = Coerce.toVncFunction(args.first());
+                            rf.sandboxFunctionCallValidation();
+
                             final Set<VncVal> seen = new HashSet<>();
 
                             return new VncFunction(createAnonymousFuncName("distinct:transducer")) {
@@ -1260,6 +1294,8 @@ public class TransducerFunctions {
                             ArityExceptions.assertArity(this, args, 1);
 
                             final VncFunction rf = Coerce.toVncFunction(args.first());
+                            rf.sandboxFunctionCallValidation();
+
                             final List<VncVal> list = new ArrayList<>();
 
                             return new VncFunction(createAnonymousFuncName("sorted:transducer")) {
@@ -1331,6 +1367,8 @@ public class TransducerFunctions {
                             ArityExceptions.assertArity(this, args, 1);
 
                             final VncFunction rf = Coerce.toVncFunction(args.first());
+                            rf.sandboxFunctionCallValidation();
+
                             final List<VncVal> list = new ArrayList<>();
 
                             return new VncFunction(createAnonymousFuncName("reverse:transducer")) {
@@ -1423,6 +1461,7 @@ public class TransducerFunctions {
                             ArityExceptions.assertArity(this, args, 1);
 
                             final VncFunction rf = Coerce.toVncFunction(args.first());
+                            rf.sandboxFunctionCallValidation();
 
                             return new VncFunction(createAnonymousFuncName("flatten:transducer")) {
                                 @Override
@@ -1505,6 +1544,10 @@ public class TransducerFunctions {
                 final VncFunction halt_return_fn = args.size() > 1 ? Coerce.toVncFunction(args.second()) : null;
                 final VncFunction no_halt_return_fn = args.size() > 2 ? Coerce.toVncFunction(args.third()) : null;
 
+                predicate.sandboxFunctionCallValidation();
+                if (halt_return_fn != null) halt_return_fn.sandboxFunctionCallValidation();
+                if (no_halt_return_fn != null) no_halt_return_fn.sandboxFunctionCallValidation();
+
                 // return a transducer
                 return new VncFunction(createAnonymousFuncName("halt-when:transducer:wrapped")) {
                     @Override
@@ -1512,6 +1555,7 @@ public class TransducerFunctions {
                         ArityExceptions.assertArity(this, args, 1);
 
                         final VncFunction rf = Coerce.toVncFunction(args.first());
+                        rf.sandboxFunctionCallValidation();
 
                         return new VncFunction(createAnonymousFuncName("halt-when:transducer")) {
                             @Override

@@ -418,6 +418,8 @@ public class SpecialForms_TypeFunctions {
                                                                     args.third(), env, false))
                                                     : null;
 
+                if (validationFn != null) validationFn.sandboxFunctionCallValidation();
+
                 // custom type is a namespace qualified keyword
                 final VncVal customType = DefTypeForm.defineCustomType(
                                                 type, fields, validationFn, ctx.getInterpreter(), env);
@@ -648,6 +650,9 @@ public class SpecialForms_TypeFunctions {
                     final VncFunction validationFn = args.size() == 3
                                                         ? Coerce.toVncFunction(ctx.getEvaluator().evaluate(args.third(), env, false))
                                                         : null;
+
+                    if (validationFn != null) validationFn.sandboxFunctionCallValidation();
+
                     return DefTypeForm.defineCustomWrapperType(
                                 type,
                                 baseType,

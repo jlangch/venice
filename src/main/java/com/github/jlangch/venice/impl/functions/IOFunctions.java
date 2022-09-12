@@ -1130,6 +1130,11 @@ public class IOFunctions {
                 final VncFunction failFn = Coerce.toVncFunctionOptional(args.third());
                 final VncFunction termFn = Coerce.toVncFunctionOptional(args.fourth());
 
+                eventFn.sandboxFunctionCallValidation();
+                if (failFn != null) failFn.sandboxFunctionCallValidation();
+                if (termFn != null) termFn.sandboxFunctionCallValidation();
+
+
                 final Function<WatchEvent.Kind<?>, VncKeyword> convert = (event) -> {
                     switch(event.name()) {
                         case "ENTRY_CREATE": return new VncKeyword("created");
@@ -1421,6 +1426,9 @@ public class IOFunctions {
                     final VncFunction filterFn = args.size() == 2
                                                     ? Coerce.toVncFunction(args.second())
                                                     : null;
+                    if (filterFn != null) {
+                    	filterFn.sandboxFunctionCallValidation();
+                    }
 
                     final List<VncVal> files = new ArrayList<>();
                     for(File f : dir.listFiles()) {
@@ -1474,6 +1482,9 @@ public class IOFunctions {
 
                 try {
                     final VncFunction filterFn = (args.size() == 2) ? Coerce.toVncFunction(args.second()) : null;
+                    if (filterFn != null) {
+                    	filterFn.sandboxFunctionCallValidation();
+                    }
 
                     final List<VncVal> files = new ArrayList<>();
                     Files.walk(dir.toPath())
@@ -2075,6 +2086,8 @@ public class IOFunctions {
                                         public VncVal apply(final VncList args) { return Nil; }
                                       }
                                     : Coerce.toVncFunction(progressVal);
+
+                    progressFn.sandboxFunctionCallValidation();
 
                     updateDownloadProgress(progressFn, 0L, new VncKeyword("start"));
 

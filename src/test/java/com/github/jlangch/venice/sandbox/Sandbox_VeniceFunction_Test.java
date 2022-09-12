@@ -169,7 +169,7 @@ public class Sandbox_VeniceFunction_Test {
                 new SandboxInterceptor(
                         new SandboxRules()
                                 .rejectVeniceFunctions("*io*")
-                                .whitelistVeniceFunctions("println", "newline", "io/print"));
+                                .whitelistVeniceFunctions("println", "print", "newline", "io/print"));
 
         // allowed
         new Venice(interceptor).eval("(println 100)", Parameters.of("*out*", null));
@@ -196,9 +196,7 @@ public class Sandbox_VeniceFunction_Test {
                         new SandboxRules()
                                 .whitelistVeniceFunctions("println", "newline", "io/print")
                                 .rejectVeniceFunctions("*io*")
-                                .whitelistVeniceFunctions("println")
-                                .whitelistVeniceFunctions("newline")
-                                .whitelistVeniceFunctions("io/print"));
+                                .whitelistVeniceFunctions("println", "print", "newline", "io/print"));
 
         // allowed
         new Venice(interceptor).eval("(println 100)", Parameters.of("*out*", null));

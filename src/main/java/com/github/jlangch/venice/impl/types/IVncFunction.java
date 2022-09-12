@@ -22,6 +22,7 @@
 package com.github.jlangch.venice.impl.types;
 
 import com.github.jlangch.venice.impl.types.collections.VncList;
+import com.github.jlangch.venice.javainterop.IInterceptor;
 
 
 public interface IVncFunction {
@@ -29,6 +30,11 @@ public interface IVncFunction {
     VncList getArgLists();
 
     VncVal apply(VncList args);
+
+
+    default IInterceptor sandboxFunctionCallValidation() {
+    	return null;
+    }
 
     default VncVal applyOf(final VncVal... mvs) {
         return apply(VncList.of(mvs));

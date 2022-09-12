@@ -72,6 +72,8 @@ public class ScheduleFunctions {
                 final VncLong delay = Coerce.toVncLong(args.second());
                 final VncKeyword unit = Coerce.toVncKeyword(args.third());
 
+                fn.sandboxFunctionCallValidation();
+
                 // Create a wrapper that inherits the Venice thread context
                 // from the parent thread to the executer thread!
                 final ThreadBridge threadBridge = ThreadBridge.create(
@@ -125,6 +127,8 @@ public class ScheduleFunctions {
                 final VncLong delay = Coerce.toVncLong(args.second());
                 final VncLong period = Coerce.toVncLong(args.third());
                 final VncKeyword unit = Coerce.toVncKeyword(args.fourth());
+
+                fn.sandboxFunctionCallValidation();
 
                 // Create a wrapper that inherits the Venice thread context
                 // from the parent thread to the executer thread!

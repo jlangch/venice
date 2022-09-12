@@ -717,6 +717,8 @@ public class SpecialForms_OtherFunctions {
                     iterations = Coerce.toVncLong(args.third()).getValue();
                     expr = args.fourth();
                     statusFn = Coerce.toVncFunction(args.nth(4));
+
+                    statusFn.sandboxFunctionCallValidation();
                 }
 
                 return Benchmark.benchmark(

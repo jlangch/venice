@@ -267,7 +267,9 @@ public class Agent implements IDeref {
         if (options != null) {
             final VncVal errHandler = options.get(ERROR_HANDLER);
             if (errHandler != Constants.Nil) {
-                return Coerce.toVncFunction(errHandler);
+                final VncFunction fn = Coerce.toVncFunction(errHandler);
+                fn.sandboxFunctionCallValidation();
+                return fn;
             }
         }
 
@@ -278,7 +280,9 @@ public class Agent implements IDeref {
         if (options != null) {
             final VncVal validator = options.get(VALIDATOR);
             if (validator != Constants.Nil) {
-                return Coerce.toVncFunction(validator);
+            	final VncFunction fn = Coerce.toVncFunction(validator);
+                fn.sandboxFunctionCallValidation();
+                return fn;
             }
         }
 

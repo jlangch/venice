@@ -106,6 +106,10 @@ public class CoreConcurrencyFunctions {
                 final VncFunction validatorFn = validator == Nil
                                                     ? null
                                                     : Coerce.toVncFunction(validator);
+                if (validatorFn != null) {
+                	validatorFn.sandboxFunctionCallValidation();
+                }
+
                 return new VncAtom(
                         args.first(),
                         validatorFn,
@@ -226,11 +230,15 @@ public class CoreConcurrencyFunctions {
 
                 if (Types.isVncAtom(box)) {
                     final VncFunction fn = Coerce.toVncFunction(args.second());
+                    fn.sandboxFunctionCallValidation();
+
                     final VncList swapArgs = args.slice(2);
                     return ((VncAtom)box).swap(fn, swapArgs);
                 }
                 else if (Types.isVncVolatile(box)) {
                     final VncFunction fn = Coerce.toVncFunction(args.second());
+                    fn.sandboxFunctionCallValidation();
+
                     final VncList swapArgs = args.slice(2);
                     return ((VncVolatile)box).swap(fn, swapArgs);
                 }
@@ -271,6 +279,8 @@ public class CoreConcurrencyFunctions {
 
                 if (Types.isVncAtom(box)) {
                     final VncFunction fn = Coerce.toVncFunction(args.second());
+                    fn.sandboxFunctionCallValidation();
+
                     final VncList swapArgs = args.slice(2);
                     return ((VncAtom)box).swap_vals(fn, swapArgs);
                 }
@@ -522,6 +532,8 @@ public class CoreConcurrencyFunctions {
                 ArityExceptions.assertMinArity(this, args, 1);
 
                 final VncFunction fn = Coerce.toVncFunction(args.first());
+                fn.sandboxFunctionCallValidation();
+
                 return new VncJavaObject(new Delay(fn));
             }
 

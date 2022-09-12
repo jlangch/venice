@@ -2406,7 +2406,7 @@ public class CoreFunctions {
                         // finite/infinite lazy sequence with a supplier function
                        	final VncFunction fn = (VncFunction)args.first();
                         fn.sandboxFunctionCallValidation();
-                        
+
                         return VncLazySeq.iterate(fn, Nil);
                     }
                     else if (Types.isVncList(args.first())) {
@@ -2427,14 +2427,14 @@ public class CoreFunctions {
                     // finite/infinite lazy sequence with a supplier function
                 	final VncFunction fn = Coerce.toVncFunction(args.first());
                     fn.sandboxFunctionCallValidation();
-                    
+
                     return VncLazySeq.iterate(fn, Nil);
                 }
                 else if (Types.isVncFunction(args.second())) {
                     // infinite lazy sequence with a seed value and a function to compute the next value
                 	final VncFunction fn = (VncFunction)args.second();
                     fn.sandboxFunctionCallValidation();
-                    
+
                     return VncLazySeq.iterate(args.first(), fn, Nil);
                 }
                 else if (Types.isVncLazySeq(args.second())) {
@@ -2785,10 +2785,12 @@ public class CoreFunctions {
             public VncVal apply(final VncList args) {
                 ArityExceptions.assertMinArity(this, args, 1);
 
-                final List<IVncFunction> functions =
-                        args.stream()
-                            .map(v -> Coerce.toIVncFunction(v))
-                            .collect(Collectors.toList());
+                final List<IVncFunction> functions = new ArrayList<>();
+                for(VncVal a : args) {
+                	final IVncFunction fn = Coerce.toIVncFunction(a);
+                	fn.sandboxFunctionCallValidation();
+                	functions.add(fn);
+                }
 
                 return new VncFunction(createAnonymousFuncName("juxt:wrapped")) {
                     @Override
@@ -2848,6 +2850,7 @@ public class CoreFunctions {
                 final List<VncFunction> functions = new ArrayList<>();
 
                 final IVncFunction fn = Coerce.toIVncFunction(args.first());
+                fn.sandboxFunctionCallValidation();
 
                 if (args.size() == 2) {
                     final VncVal x = args.second();
@@ -3786,6 +3789,8 @@ public class CoreFunctions {
                         final VncFunction f_ = Coerce.toVncFunction(args.third());
                         final VncVal args_ = args.slice(3);
 
+                        f_.sandboxFunctionCallValidation();
+
                         if (!ks_.isEmpty()) {
                             return assoc.applyOf(
                                     m_,
@@ -4344,6 +4349,7 @@ public class CoreFunctions {
                     final VncSequence list = ((VncSequence)args.first());
                     final int idx = Coerce.toVncLong(args.second()).getValue().intValue();
                     final IVncFunction fn = Coerce.toIVncFunction(args.nth(2));
+                    fn.sandboxFunctionCallValidation();
 
                     if (idx < 0 || idx > list.size()) {
                         throw new VncException(String.format(
@@ -4364,6 +4370,8 @@ public class CoreFunctions {
                     final VncMap map = ((VncMap)args.first());
                     final VncVal key = args.second();
                     final IVncFunction fn = Coerce.toIVncFunction(args.nth(2));
+                    fn.sandboxFunctionCallValidation();
+
                     return map.assoc(key, VncFunction.applyWithMeter(fn, VncList.of(map.get(key)), meterRegistry));
                 }
                 else {
@@ -4406,12 +4414,16 @@ public class CoreFunctions {
                     final VncMutableMap map = (VncMutableMap)coll;
                     final VncVal key = args.second();
                     final IVncFunction fn = Coerce.toIVncFunction(args.third());
+                    fn.sandboxFunctionCallValidation();
+
                     return map.assoc(key, VncFunction.applyWithMeter(fn, VncList.of(map.get(key)), meterRegistry));
                 }
                 else if (Types.isVncMutableVector(coll) || Types.isVncMutableList(coll) || Types.isVncJavaList(coll)) {
                     final VncSequence seq = ((VncSequence)coll);
                     final int idx =  Coerce.toVncLong(args.second()).getValue().intValue();
                     final IVncFunction fn = Coerce.toIVncFunction(args.third());
+                    fn.sandboxFunctionCallValidation();
+
                     if (seq.size() > idx) {
                         seq.setAt(idx, VncFunction.applyWithMeter(fn, VncList.of(seq.nth(idx)), meterRegistry));
                     }
@@ -4488,6 +4500,8 @@ public class CoreFunctions {
 
                 final IVncFunction pred = Coerce.toIVncFunction(args.first());
                 final VncSequence coll = Coerce.toVncSequence(args.second());
+
+                pred.sandboxFunctionCallValidation();
 
                 int splitPos = coll.size();
 
@@ -4916,6 +4930,8 @@ public class CoreFunctions {
                     final IVncFunction pred = Coerce.toIVncFunction(args.first());
                     final VncCollection coll = Coerce.toVncCollection(args.second());
 
+                    pred.sandboxFunctionCallValidation();
+
                     if (coll.isEmpty()) {
                         return False;
                     }
@@ -4988,6 +5004,8 @@ public class CoreFunctions {
                 else {
                     final IVncFunction pred = Coerce.toIVncFunction(args.first());
                     final VncCollection coll = Coerce.toVncCollection(args.second());
+
+                    pred.sandboxFunctionCallValidation();
 
                     if (coll.isEmpty()) {
                         return False;
@@ -5062,6 +5080,8 @@ public class CoreFunctions {
                     final IVncFunction pred = Coerce.toIVncFunction(args.first());
                     final VncCollection coll = Coerce.toVncCollection(args.second());
 
+                    pred.sandboxFunctionCallValidation();
+
                     if (coll.isEmpty()) {
                         return Nil;
                     }
@@ -5113,9 +5133,12 @@ public class CoreFunctions {
             public VncVal apply(final VncList args) {
                 ArityExceptions.assertMinArity(this, args, 1);
 
-                final List<VncFunction> predicates = args.stream()
-                                                         .map(p -> Coerce.toVncFunction(p))
-                                                         .collect(Collectors.toList());
+                final List<VncFunction> predicates = new ArrayList<>();
+                args.forEach(p -> {
+                	final VncFunction fn = Coerce.toVncFunction(p);
+                	fn.sandboxFunctionCallValidation();
+                	predicates.add(fn);
+                });
 
                 return new VncFunction(createAnonymousFuncName("every-pred:wrapped")) {
                     @Override
@@ -5166,9 +5189,12 @@ public class CoreFunctions {
             public VncVal apply(final VncList args) {
                 ArityExceptions.assertMinArity(this, args, 1);
 
-                final List<VncFunction> predicates = args.stream()
-                                                         .map(p -> Coerce.toVncFunction(p))
-                                                         .collect(Collectors.toList());
+                final List<VncFunction> predicates = new ArrayList<>();
+                args.forEach(p -> {
+                	final VncFunction fn = Coerce.toVncFunction(p);
+                	fn.sandboxFunctionCallValidation();
+                	predicates.add(fn);
+                });
 
                 return new VncFunction(createAnonymousFuncName("any-pred:wrapped")) {
                     @Override
@@ -6592,6 +6618,8 @@ public class CoreFunctions {
                 final IVncFunction f = Coerce.toIVncFunction(args.first());
                 VncSequence seq = Coerce.toVncSequence(args.second());
 
+                f.sandboxFunctionCallValidation();
+
                 if (seq.isEmpty()) {
                     return VncList.empty();
                 }
@@ -7190,6 +7218,8 @@ public class CoreFunctions {
                                             ? compare // -> sort by natural order
                                             : Coerce.toIVncFunction(args.first());
 
+                compfn.sandboxFunctionCallValidation();
+
                 final VncVal coll = args.last();
 
                 return sort(
@@ -7267,6 +7297,9 @@ public class CoreFunctions {
                                                 ? compare
                                                 : Coerce.toIVncFunction(args.second());
 
+                keyfn.sandboxFunctionCallValidation();
+                compfn.sandboxFunctionCallValidation();
+
                 return sort(
                         "sort-by",
                         args.last(),
@@ -7306,6 +7339,8 @@ public class CoreFunctions {
 
                 final IVncFunction fn = Coerce.toIVncFunction(args.first());
                 final VncSequence coll = Coerce.toVncSequence(args.second());
+
+                fn.sandboxFunctionCallValidation();
 
                 VncMap map = new VncOrderedMap();
 
@@ -7386,6 +7421,8 @@ public class CoreFunctions {
                 final IVncFunction fn = Coerce.toIVncFunction(args.first());
                 final VncList fn_args = args.slice(1,args.size()-1);
 
+                fn.sandboxFunctionCallValidation();
+
                 final VncVal coll = args.last();
                 return coll == Nil
                         ? fn.apply(fn_args)
@@ -7432,7 +7469,10 @@ public class CoreFunctions {
                 else {
                     // the functions are applied right to left
                     for(int ii=0; ii<len; ii++) {
-                        fns[len-1-ii] = Coerce.toIVncFunction(args.nth(ii));
+                    	final IVncFunction fn = Coerce.toIVncFunction(args.nth(ii));
+                    	fn.sandboxFunctionCallValidation();
+
+                        fns[len-1-ii] = fn;
                     }
                 }
 
@@ -7522,6 +7562,8 @@ public class CoreFunctions {
                 final IVncFunction fn = Coerce.toIVncFunction(first);
                 final VncList fnArgs = args.rest();
 
+                fn.sandboxFunctionCallValidation();
+
                 return new VncFunction(createAnonymousFuncName("partial")) {
                     @Override
                     public VncVal apply(final VncList args) {
@@ -7604,6 +7646,8 @@ public class CoreFunctions {
                 final VncList lists = removeNilValues(args.rest());
                 final List<VncVal> result = new ArrayList<>();
 
+                fn.sandboxFunctionCallValidation();
+
                 if (lists.isEmpty()) {
                     return Nil;
                 }
@@ -7661,6 +7705,8 @@ public class CoreFunctions {
                 final IVncFunction fn = Coerce.toIVncFunction(args.first());
                 final VncMap map = Coerce.toVncMap(args.second());
 
+                fn.sandboxFunctionCallValidation();
+
                 VncMap newMap = map.emptyWithMeta();
 
                 for(VncMapEntry e : map.entries()) {
@@ -7701,6 +7747,8 @@ public class CoreFunctions {
 
                 final IVncFunction fn = Coerce.toIVncFunction(args.first());
                 final VncMap map = Coerce.toVncMap(args.second());
+
+                fn.sandboxFunctionCallValidation();
 
                 VncMap newMap = map.emptyWithMeta();
 
@@ -7751,6 +7799,8 @@ public class CoreFunctions {
 
                 final IVncFunction fn = Coerce.toIVncFunction(args.first());
                 final VncVal coll = args.second();
+
+                fn.sandboxFunctionCallValidation();
 
                 if (coll == Nil) {
                     // ok do nothing
@@ -7936,6 +7986,8 @@ public class CoreFunctions {
                 final IVncFunction filterFn = Coerce.toIVncFunction(args.first());
                 VncMap map = Coerce.toVncMap(args.second());
 
+                filterFn.sandboxFunctionCallValidation();
+
                 if (map.isEmpty()) {
                     return map;
                 }
@@ -7975,6 +8027,8 @@ public class CoreFunctions {
 
                 final IVncFunction filterFn = Coerce.toIVncFunction(args.first());
                 final VncMap map = Coerce.toVncMap(args.second());
+
+                filterFn.sandboxFunctionCallValidation();
 
                 if (map.isEmpty()) {
                     return map;
@@ -8048,6 +8102,8 @@ public class CoreFunctions {
                 final IVncFunction reduceFn = Coerce.toIVncFunction(args.first());
                 final VncVal init = noInitValue ? null : args.second();
                 final VncVal coll = noInitValue ? args.second() : args.third();
+
+                reduceFn.sandboxFunctionCallValidation();
 
                 if (Types.isVncSequence(coll)) {
                     return reduce_sequence((VncSequence)coll, reduceFn, init);
@@ -8134,6 +8190,8 @@ public class CoreFunctions {
 
                 final IVncFunction reduceFn = Coerce.toIVncFunction(args.first());
                 final List<VncMapEntry> values = Coerce.toVncMap(args.third()).entries();
+
+                reduceFn.sandboxFunctionCallValidation();
 
                 VncVal value = args.second();
 
@@ -8228,7 +8286,8 @@ public class CoreFunctions {
                     return rest.get(0);
                 }
 
-                final VncFunction f = Coerce.toVncFunction(args.first());
+                final VncFunction fn = Coerce.toVncFunction(args.first());
+                fn.sandboxFunctionCallValidation();
 
                 final Map<VncVal,VncVal> map = new HashMap<>();
 
@@ -8239,13 +8298,13 @@ public class CoreFunctions {
                         final VncVal val2 = e.getValue();
 
                         if (val1 == null) {
-                            map.put(key, f.apply(VncList.of(val2)));
+                            map.put(key, fn.apply(VncList.of(val2)));
                         }
                         else if (val2 == null) {
-                            map.put(key, f.apply(VncList.of(val1)));
+                            map.put(key, fn.apply(VncList.of(val1)));
                         }
                         else {
-                            map.put(key, f.apply(VncList.of(val1, val2)));
+                            map.put(key, fn.apply(VncList.of(val1, val2)));
                         }
                     }
                 }
@@ -8481,6 +8540,8 @@ public class CoreFunctions {
 
                 final long repeat = Coerce.toVncLong(args.first()).getValue();
                 final IVncFunction fn = Coerce.toIVncFunction(args.second());
+
+                fn.sandboxFunctionCallValidation();
 
                 if (repeat < 0) {
                     throw new VncException("repeatedly: a count n must be grater or equal to 0");

@@ -287,6 +287,7 @@ public class SystemFunctions {
                 sandboxFunctionCallValidation();
 
                 final VncFunction fn = Coerce.toVncFunction(args.first());
+                fn.sandboxFunctionCallValidation();
 
                 // Create a wrapper that inherits the Venice thread context
                 // from the parent thread to the executer thread!
