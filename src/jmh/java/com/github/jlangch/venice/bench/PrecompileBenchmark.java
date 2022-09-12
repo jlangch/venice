@@ -61,6 +61,7 @@ import com.github.jlangch.venice.Venice;
 @State (Scope.Benchmark)
 @Threads (1)
 public class PrecompileBenchmark {
+
     @Benchmark
     public Object no_precompilation_ref(State_ state) {
         return state.venice.eval("test", state.exprRef);
