@@ -202,6 +202,65 @@ public class Sandbox_VeniceFunction_Test {
         new Venice(interceptor).eval("(println 100)", Parameters.of("*out*", null));
     }
 
+
+
+    // ------------------------------------------------------------------------
+    // Blacklisted FAIL
+    // ------------------------------------------------------------------------
+
+    @Test
+    public void test_blacklisted_add() {
+        final Interceptor interceptor =
+                new SandboxInterceptor(
+                        new SandboxRules()
+                                .rejectVeniceFunctions("+"));
+
+        // denied
+        assertThrows(SecurityException.class, () -> {
+            new Venice(interceptor).eval("(+ 1 1)");
+        });
+
+        // denied
+        assertThrows(SecurityException.class, () -> {
+            new Venice(interceptor).eval("(core/+ 1 1)");
+        });
+
+        // denied
+        assertThrows(SecurityException.class, () -> {
+            new Venice(interceptor).eval("(do (ns-alias 'c 'core) (c/+ 1 1))");
+        });
+
+        // denied
+        assertThrows(SecurityException.class, () -> {
+            new Venice(interceptor).eval("(reduce + [1 2 3])");
+        });
+
+        // denied
+        assertThrows(SecurityException.class, () -> {
+            new Venice(interceptor).eval("(reduce core/+ [1 2 3])");
+        });
+
+        // denied
+        assertThrows(SecurityException.class, () -> {
+            new Venice(interceptor).eval("(do (ns-alias 'c 'core) (reduce c/+ [1 2 3]))");
+        });
+
+        // denied
+        assertThrows(SecurityException.class, () -> {
+            new Venice(interceptor).eval("(reduce #(+ %1 %2) 0 [1 2 3])");
+        });
+
+        // denied
+        assertThrows(SecurityException.class, () -> {
+            new Venice(interceptor).eval("((juxt +) 1)");
+        });
+
+        // denied
+        assertThrows(SecurityException.class, () -> {
+            new Venice(interceptor).eval("((juxt - +) 1)");
+        });
+    }
+
     // ------------------------------------------------------------------------
     // Helpers
     // ------------------------------------------------------------------------
