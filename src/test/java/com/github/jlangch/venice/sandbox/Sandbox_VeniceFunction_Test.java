@@ -230,6 +230,12 @@ public class Sandbox_VeniceFunction_Test {
                     "((resolve 'core/+) 2 3)",
                     "((resolve (symbol \"+\")) 2 3)",
                     "((resolve (symbol \"core/+\")) 2 3)",
+                    "(eval (read-string \"(+ 2 3)\"))",
+                    "(eval (read-string \"(core/+ 2 3)\"))",
+                    "(eval '(+ 2 3))",
+                    "(eval '(core/+ 2 3))",
+                    "(eval (list + 2 3))",
+                    "(eval (list core/+ 2 3))",
                     "(do                                 \n" +
                     "  (defmacro plus [x y] `(+ ~1 ~2))  \n" +
                     "  (plus 1 2))                       ",
@@ -255,7 +261,7 @@ public class Sandbox_VeniceFunction_Test {
                             "test",
                             "(do                                 \n" +
                             "  (defmacro plus [x y] (+ 1 2))     \n" +
-                            "  (plus 4 5))                       ",
+                            "  (plus 4 5))                       ",  // expands 'plus' at runtime
                             false, null));
 
         assertThrows(SecurityException.class, () ->
@@ -263,7 +269,7 @@ public class Sandbox_VeniceFunction_Test {
                             "test",
                             "(do                                 \n" +
                             "  (defmacro plus [x y] (+ 1 2))     \n" +
-                            "  (plus 4 5))                       ",
+                            "  (plus 4 5))                       ", // expands 'plus' at reader time
                             true, null));
     }
 
