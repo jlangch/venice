@@ -222,14 +222,22 @@ public class Sandbox_VeniceFunction_Test {
                     "(reduce + [1 2 3])",
                     "(reduce core/+ [1 2 3])",
                     "(do (ns-alias 'c 'core) (reduce c/+ [1 2 3]))",
+                    "(map #(+ %1 2) [1 2 3])",
                     "(reduce #(+ %1 %2) 0 [1 2 3])",
                     "((juxt +) 1)",
                     "((juxt - +) 1)",
                     "((resolve '+) 2 3)",
                     "((resolve 'core/+) 2 3)",
                     "((resolve (symbol \"+\")) 2 3)",
-                    "((resolve (symbol \"core/+\")) 2 3)"
-        		};
+                    "((resolve (symbol \"core/+\")) 2 3)",
+                    "(do                                 \n" +
+                    "  (defmacro plus [x y] `(+ ~1 ~2))  \n" +
+                    "  (plus 1 2))                       ",
+                    "(do                                 \n" +
+                    "  (defmacro plus [x y] (+ 1 2))     \n" +
+                    "  (plus 4 5))                       "
+
+               };
 
         final Venice venice = new Venice(interceptor);
 
@@ -237,6 +245,26 @@ public class Sandbox_VeniceFunction_Test {
         for(String e : expr) {
             assertThrows(SecurityException.class, () -> venice.eval(e));
         }
+
+        // macro expansion
+        venice.eval("test", "(defmacro plus [x y] (+ 1 2))", false, null);
+        venice.eval("test", "(defmacro plus [x y] (+ 1 2))", true, null);  // just defined, nothing to expand yet
+
+        assertThrows(SecurityException.class, () ->
+                        venice.eval(
+                            "test",
+                            "(do                                 \n" +
+                            "  (defmacro plus [x y] (+ 1 2))     \n" +
+                            "  (plus 4 5))                       ",
+                            false, null));
+
+        assertThrows(SecurityException.class, () ->
+                        venice.eval(
+                            "test",
+                            "(do                                 \n" +
+                            "  (defmacro plus [x y] (+ 1 2))     \n" +
+                            "  (plus 4 5))                       ",
+                            true, null));
     }
 
     @Test
