@@ -209,56 +209,34 @@ public class Sandbox_VeniceFunction_Test {
     // ------------------------------------------------------------------------
 
     @Test
-    public void test_blacklisted_add() {
+    public void test_blacklisted_add_variants() {
         final Interceptor interceptor =
                 new SandboxInterceptor(
                         new SandboxRules()
                                 .rejectVeniceFunctions("+"));
 
-        // denied
-        assertThrows(SecurityException.class, () -> {
-            new Venice(interceptor).eval("(+ 1 1)");
-        });
+        final String[] expr = new String[] {
+                    "(+ 1 1)",
+                    "(core/+ 1 1)",
+                    "(do (ns-alias 'c 'core) (c/+ 1 1))",
+                    "(reduce + [1 2 3])",
+                    "(reduce core/+ [1 2 3])",
+                    "(do (ns-alias 'c 'core) (reduce c/+ [1 2 3]))",
+                    "(reduce #(+ %1 %2) 0 [1 2 3])",
+                    "((juxt +) 1)",
+                    "((juxt - +) 1)",
+                    "((resolve '+) 2 3)",
+                    "((resolve 'core/+) 2 3)",
+                    "((resolve (symbol \"+\")) 2 3)",
+                    "((resolve (symbol \"core/+\")) 2 3)"
+        		};
 
-        // denied
-        assertThrows(SecurityException.class, () -> {
-            new Venice(interceptor).eval("(core/+ 1 1)");
-        });
+        final Venice venice = new Venice(interceptor);
 
-        // denied
-        assertThrows(SecurityException.class, () -> {
-            new Venice(interceptor).eval("(do (ns-alias 'c 'core) (c/+ 1 1))");
-        });
-
-        // denied
-        assertThrows(SecurityException.class, () -> {
-            new Venice(interceptor).eval("(reduce + [1 2 3])");
-        });
-
-        // denied
-        assertThrows(SecurityException.class, () -> {
-            new Venice(interceptor).eval("(reduce core/+ [1 2 3])");
-        });
-
-        // denied
-        assertThrows(SecurityException.class, () -> {
-            new Venice(interceptor).eval("(do (ns-alias 'c 'core) (reduce c/+ [1 2 3]))");
-        });
-
-        // denied
-        assertThrows(SecurityException.class, () -> {
-            new Venice(interceptor).eval("(reduce #(+ %1 %2) 0 [1 2 3])");
-        });
-
-        // denied
-        assertThrows(SecurityException.class, () -> {
-            new Venice(interceptor).eval("((juxt +) 1)");
-        });
-
-        // denied
-        assertThrows(SecurityException.class, () -> {
-            new Venice(interceptor).eval("((juxt - +) 1)");
-        });
+        // all denied
+        for(String e : expr) {
+            assertThrows(SecurityException.class, () -> venice.eval(e));
+        }
     }
 
     @Test
