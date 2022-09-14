@@ -10,11 +10,15 @@ and this project adheres to
 
 
 
-## [1.10.23] - 2022-09-xx
+## [1.10.23] - 2022-09-14
 
 ### Added
 
 - optimizations to pre-compiled execution
+
+### Improved
+
+- sandbox construction
 
 ### Fixed
 
