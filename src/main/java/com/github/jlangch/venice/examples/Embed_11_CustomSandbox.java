@@ -28,7 +28,7 @@ import com.github.jlangch.venice.javainterop.SandboxInterceptor;
 import com.github.jlangch.venice.javainterop.SandboxRules;
 
 
-public class Embed_10_CustomSandbox {
+public class Embed_11_CustomSandbox {
 
     public static void main(final String[] args) {
         try {

@@ -99,14 +99,15 @@ import com.github.jlangch.venice.javainterop.SandboxRules;
 public class SandboxExample {
     public static void main(final String[] args) {
         final SandboxInterceptor sandbox =
-                new SandboxInterceptor(
-                        new SandboxRules()
-                            // Venice functions: blacklist all unsafe functions
-                            .rejectAllUnsafeFunctions()
+                new SandboxRules()
+                    // Venice functions: blacklist all unsafe functions
+                    .rejectAllUnsafeFunctions()
 
-                            // Venice functions: whitelist rules for print functions to offset
-                            // blacklist rules by individual functions
-                            .whitelistVeniceFunctions("*print*"));
+                    // Venice functions: whitelist rules for print functions to offset
+                    // blacklist rules by individual functions
+                    .whitelistVeniceFunctions("*print*")
+                    
+                    .sandbox();
 
         final Venice venice = new Venice(sandbox);
 

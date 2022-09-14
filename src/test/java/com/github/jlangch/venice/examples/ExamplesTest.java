@@ -57,8 +57,13 @@ public class ExamplesTest {
     }
 
     @Test
-    public void test_Embed_10_CustomSandbox() {
-        Embed_10_CustomSandbox.run();
+    public void test_Embed_10_CustomMinimalSandbox() {
+        Embed_10_CustomMinimalSandbox.main(new String[0]);
+    }
+
+    @Test
+    public void test_Embed_11_CustomSandbox() {
+        Embed_11_CustomSandbox.run();
     }
 
 }
