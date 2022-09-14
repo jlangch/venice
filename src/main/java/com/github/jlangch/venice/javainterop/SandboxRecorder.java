@@ -47,7 +47,7 @@ public class SandboxRecorder extends Interceptor {
             final ILoadPaths loadPaths
     ) {
         super(loadPaths);
-        this.writer = new PrintWriter(writer);
+        this.writer = new PrintWriter(writer, true);
     }
 
     public SandboxRecorder(
@@ -55,7 +55,7 @@ public class SandboxRecorder extends Interceptor {
             final ILoadPaths loadPaths
     ) {
         super(loadPaths);
-        this.writer = new PrintWriter(os);
+        this.writer = new PrintWriter(os, true);
     }
 
 
@@ -68,7 +68,7 @@ public class SandboxRecorder extends Interceptor {
             final String method,
             final Object... args
     ) throws SecurityException {
-        format("%s:%s(%s)", type(receiver), method, arguments(args));
+        trace("%s:%s(%s)", type(receiver), method, arguments(args));
         return super.onInvokeInstanceMethod(invoker, receiver, receiverFormalType, method, args);
     }
 
@@ -79,7 +79,7 @@ public class SandboxRecorder extends Interceptor {
             final String method,
             final Object... args
     ) throws SecurityException {
-        format("%s:%s(%s)", type(receiver), method, arguments(args));
+        trace("%s:%s(%s)", type(receiver), method, arguments(args));
         return super.onInvokeStaticMethod(invoker, receiver, method, args);
     }
 
@@ -89,7 +89,7 @@ public class SandboxRecorder extends Interceptor {
             final Class<?> receiver,
             final Object... args
     ) throws SecurityException {
-        format("new %s(%s)", type(receiver), arguments(args));
+        trace("new %s(%s)", type(receiver), arguments(args));
         return super.onInvokeConstructor(invoker, receiver, args);
     }
 
@@ -99,7 +99,7 @@ public class SandboxRecorder extends Interceptor {
             final Object receiver,
             final String property
     ) throws SecurityException {
-        format("%s.!%s", type(receiver), property);
+        trace("%s.!%s", type(receiver), property);
         return super.onGetBeanProperty(invoker, receiver,property);
     }
 
@@ -110,7 +110,7 @@ public class SandboxRecorder extends Interceptor {
             final String property,
             final Object value
     ) throws SecurityException {
-        format("%s.!%s=%s", type(receiver), property, type(value));
+        trace("%s.!%s=%s", type(receiver), property, type(value));
         super.onSetBeanProperty(invoker, receiver, property, value);
     }
 
@@ -120,7 +120,7 @@ public class SandboxRecorder extends Interceptor {
             final Class<?> receiver,
             final String fieldName
     ) throws SecurityException {
-        format("%s.@%s", type(receiver), fieldName);
+        trace("%s.@%s", type(receiver), fieldName);
         return super.onGetStaticField(invoker, receiver, fieldName);
     }
 
@@ -131,7 +131,7 @@ public class SandboxRecorder extends Interceptor {
             final Class<?> receiverFormalType,
             final String fieldName
     ) throws SecurityException {
-        format("%s.%s", type(receiver), fieldName);
+        trace("%s.%s", type(receiver), fieldName);
         return super.onGetInstanceField(invoker, receiver, receiverFormalType, fieldName);
     }
 
@@ -139,7 +139,7 @@ public class SandboxRecorder extends Interceptor {
     public byte[] onLoadClassPathResource(
             final String resourceName
     ) throws SecurityException {
-        format("classpath:%s", resourceName);
+        trace("classpath:%s", resourceName);
         return super.onLoadClassPathResource(resourceName);
     }
 
@@ -147,7 +147,7 @@ public class SandboxRecorder extends Interceptor {
     public String onReadSystemProperty(
             final String propertyName
     ) throws SecurityException {
-        format("system.property:%s", propertyName);
+        trace("system.property:%s", propertyName);
         return super.onReadSystemProperty(propertyName);
     }
 
@@ -155,12 +155,12 @@ public class SandboxRecorder extends Interceptor {
     public String onReadSystemEnv(
             final String name
     ) throws SecurityException {
-        format("system.env:%s", name);
+        trace("system.env:%s", name);
         return super.onReadSystemEnv(name);
     }
 
 
-    private void format(final String fmt, final Object ... args) {
+    private void trace(final String fmt, final Object ... args) {
         writer.println(String.format(fmt,args));
         writer.flush();
     }
