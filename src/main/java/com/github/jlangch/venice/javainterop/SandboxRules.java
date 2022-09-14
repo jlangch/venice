@@ -62,6 +62,15 @@ public class SandboxRules {
     }
 
     /**
+     * Builds a sandbox from this rules.
+     *
+     * @return a SandboxInterceptor
+     */
+    public SandboxInterceptor sandbox() {
+    	return new SandboxInterceptor(this);
+    }
+
+    /**
      * Creates new SandboxRules starting without any defaults.
      *
      * @return {@code SandboxRules}

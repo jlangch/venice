@@ -134,45 +134,46 @@ public class Embed_10_CustomSandbox {
 
 
     private static SandboxInterceptor createSandbox() {
-        return new SandboxInterceptor(
-                    new SandboxRules()
-                        // Venice functions: blacklist all unsafe functions
-                        .rejectAllUnsafeFunctions()
+        return new SandboxRules()
+                    // Venice functions: blacklist all unsafe functions
+                    .rejectAllUnsafeFunctions()
 
-                        // Venice functions:  blacklist additional functions
-                        .rejectVeniceFunctions(
-                            "time/date",
-                            "time/zone-ids")
+                    // Venice functions:  blacklist additional functions
+                    .rejectVeniceFunctions(
+                        "time/date",
+                        "time/zone-ids")
 
-                        // Venice functions: whitelist rules for print functions to offset
-                        // blacklist rules by individual functions
-                        .whitelistVeniceFunctions("*print*")
+                    // Venice functions: whitelist rules for print functions to offset
+                    // blacklist rules by individual functions
+                    .whitelistVeniceFunctions("*print*")
 
-                        // Venice functions: whitelist Java calls offsets the black list
-                        // rule for java interop from SandboxRules::rejectAllUnsafeFunctions()
-                        .whitelistVeniceFunctions(".")
+                    // Venice functions: whitelist Java calls offsets the black list
+                    // rule for java interop from SandboxRules::rejectAllUnsafeFunctions()
+                    .whitelistVeniceFunctions(".")
 
-                        // Java interop: whitelist rules
-                        .withStandardSystemProperties()
-                        .withSystemProperties("db.name", "db.port")
-                        .withSystemEnvs("SHELL", "HOME")
-                        .withClasspathResources("resources/images/*.png")
-                        .withClasses(
-                            "java.lang.Math:PI",
-                            "java.lang.Math:min",
-                            "java.time.ZonedDateTime:*",
-                            "java.awt.**:*",
-                            "java.util.ArrayList:new",
-                            "java.util.ArrayList:add")
+                    // Java interop: whitelist rules
+                    .withStandardSystemProperties()
+                    .withSystemProperties("db.name", "db.port")
+                    .withSystemEnvs("SHELL", "HOME")
+                    .withClasspathResources("resources/images/*.png")
+                    .withClasses(
+                        "java.lang.Math:PI",
+                        "java.lang.Math:min",
+                        "java.time.ZonedDateTime:*",
+                        "java.awt.**:*",
+                        "java.util.ArrayList:new",
+                        "java.util.ArrayList:add")
 
-                        // Venice extension modules: whitelist rules
-                        .withVeniceModules(
-                            "crypt",
-                            "kira",
-                            "math")
+                    // Venice extension modules: whitelist rules
+                    .withVeniceModules(
+                        "crypt",
+                        "kira",
+                        "math")
 
-                        // Generic rules
-                        .withMaxFutureThreadPoolSize(20)
-                        .withMaxExecTimeSeconds(3));
+                    // Generic rules
+                    .withMaxFutureThreadPoolSize(20)
+                    .withMaxExecTimeSeconds(3)
+
+                    .sandbox();
     }
 }

@@ -210,32 +210,37 @@ public class Sandbox_VeniceFunction_Test {
 
     @Test
     public void test_blacklisted_add_variants() {
-        final Interceptor interceptor =
-                new SandboxInterceptor(
-                        new SandboxRules()
-                                .rejectVeniceFunctions("+"));
+        final Interceptor interceptor = new SandboxRules()
+                                             .rejectVeniceFunctions("+")
+                                             .sandbox();
 
         final String[] expr = new String[] {
                     "(+ 1 1)",
                     "(core/+ 1 1)",
+
                     "(do (ns-alias 'c 'core) (c/+ 1 1))",
+                    "(do (ns-alias 'c 'core) (reduce c/+ [1 2 3]))",
+
+                    "(map #(+ %1 2) [1 2 3])",
                     "(reduce + [1 2 3])",
                     "(reduce core/+ [1 2 3])",
-                    "(do (ns-alias 'c 'core) (reduce c/+ [1 2 3]))",
-                    "(map #(+ %1 2) [1 2 3])",
                     "(reduce #(+ %1 %2) 0 [1 2 3])",
+
                     "((juxt +) 1)",
                     "((juxt - +) 1)",
+
                     "((resolve '+) 2 3)",
                     "((resolve 'core/+) 2 3)",
                     "((resolve (symbol \"+\")) 2 3)",
                     "((resolve (symbol \"core/+\")) 2 3)",
+
                     "(eval (read-string \"(+ 2 3)\"))",
                     "(eval (read-string \"(core/+ 2 3)\"))",
                     "(eval '(+ 2 3))",
                     "(eval '(core/+ 2 3))",
                     "(eval (list + 2 3))",
                     "(eval (list core/+ 2 3))",
+
                     "(do                                 \n" +
                     "  (defmacro plus [x y] `(+ ~1 ~2))  \n" +
                     "  (plus 1 2))                       ",
@@ -275,15 +280,14 @@ public class Sandbox_VeniceFunction_Test {
 
     @Test
     public void test_blacklisted_add_with_core_ns() {
-        final Interceptor interceptor =
-                new SandboxInterceptor(
-                        new SandboxRules()
-                                .rejectVeniceFunctions("core/+"));
+        final Interceptor interceptor = new SandboxRules()
+                                              .rejectVeniceFunctions("core/+")
+                                              .sandbox();
+
+        final Venice venice = new Venice(interceptor);
 
         // denied
-        assertThrows(SecurityException.class, () -> {
-            new Venice(interceptor).eval("(+ 1 1)");
-        });
+        assertThrows(SecurityException.class, () -> venice.eval("(+ 1 1)"));
     }
 
 
