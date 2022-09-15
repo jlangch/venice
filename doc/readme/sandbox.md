@@ -62,7 +62,6 @@ import com.github.jlangch.venice.javainterop.*;
 
 // for details see javadoc of class "com.github.jlangch.venice.javainterop.SandboxRules"
 final IInterceptor interceptor =
-    new SandboxInterceptor(
         new SandboxRules()
               // Java interop: whitelist rules
               .withStandardSystemProperties()
@@ -100,7 +99,9 @@ final IInterceptor interceptor =
 
               // Generic rules	
               .withMaxFutureThreadPoolSize(20)
-              .withMaxExecTimeSeconds(5));
+              .withMaxExecTimeSeconds(5)
+
+              .sandbox();
 
 final Venice venice = new Venice(interceptor);
 
