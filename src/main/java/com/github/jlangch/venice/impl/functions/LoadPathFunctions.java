@@ -82,7 +82,6 @@ public class LoadPathFunctions {
                         " * `(io/slurp \"img1.png\")` -> slurps /Users/foo/demo/resources.zip!img1.png \n" +
                         "\n" +
                         "I/O Functions with support for load paths:\n\n" +
-                        " * `load-module`\n" +
                         " * `load-file`\n" +
                         " * `load-classpath-file`\n" +
                         " * `io/slurp`\n" +
