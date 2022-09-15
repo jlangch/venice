@@ -246,7 +246,13 @@ public class Sandbox_VeniceFunction_Test {
                     "  (plus 1 2))                       ",
                     "(do                                 \n" +
                     "  (defmacro plus [x y] (+ 1 2))     \n" +
-                    "  (plus 4 5))                       "
+                    "  (plus 4 5))                       ",
+
+                    "(do                                 \n" +
+                    "  (defn mul [x y]                   \n" +
+                    "    { :pre [(pos? (+ x y))] }       \n" +
+                    "    (* x y))                        \n" +
+                    "  (mul 1 2))                        ",
 
                };
 
