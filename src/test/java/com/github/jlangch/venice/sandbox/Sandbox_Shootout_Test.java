@@ -135,9 +135,12 @@ public class Sandbox_Shootout_Test {
 
         final String[] expr = new String[] {
 
-                    // pmap, pcalls
+                    // pmap
 
                     "(pmap #(+ 1 %) [1 2 3])",
+
+                    // pcalls
+
                     "(pcalls #(+ 1 2))",
                     "(pcalls #(- 1 2) #(+ 2 3))",
 
@@ -148,11 +151,17 @@ public class Sandbox_Shootout_Test {
                     "@(thread (fn [] @(thread (fn [] (+ 1 1)))))",
 
 
-                    // delay, future, promise
+                    // delay
 
                     "@(delay (+ 1 1))",
 
+
+                    // future
+
                     "@(future #(+ 1 1))",
+
+
+                    // promise
 
                     "@(promise #(+ 1 1))",
 
@@ -170,9 +179,9 @@ public class Sandbox_Shootout_Test {
                     "  (swap! c #(+ % 1))  \n" +
                     "  @c)                 ",
 
-                    "(let [c (atom    100)]        \n" +
-                    "  (swap-vals! c #(+ %1 %2) 2)  \n" +
-                    "  @c)                     ",
+                    "(let [c (atom 100)]                 \n" +
+                    "  (swap-vals! c #(+ %1 %2) 2)       \n" +
+                    "  @c)                               ",
 
                     "(do                                 \n" +
                     "  (def p (promise))                 \n" +
@@ -184,7 +193,7 @@ public class Sandbox_Shootout_Test {
                     "  (let [c (atom 100)]               \n" +
                     "    (add-watch c :test watcher)     \n" +
                     "    (swap! c inc)                   \n" +
-                    "    (deref p 1000 :failed)))         ",
+                    "    (deref p 1000 :failed)))        ",
 
 
                     // agent
@@ -203,7 +212,7 @@ public class Sandbox_Shootout_Test {
                     "  (let [a (agent 100)]              \n" +
                     "    (set-error-handler! a handler)  \n" +
                     "    (send a (fn [n] (/ n 0))))      \n" +
-                    "    (deref p 1000 :failed)))         ",
+                    "    (deref p 1000 :failed)))        ",
 
                     "(do                                 \n" +
                     "  (def p (promise))                 \n" +
@@ -215,10 +224,37 @@ public class Sandbox_Shootout_Test {
                     "  (let [a (agent 100)]              \n" +
                     "    (set-error-handler! a handler)  \n" +
                     "    (send-off a (fn [n] (/ n 0))))  \n" +
-                    "    (deref p 1000 :failed)))         ",
+                    "    (deref p 1000 :failed)))        ",
 
 
                     // scheduler
+
+                    "(do                                 \n" +
+                    "  (def p (promise))                 \n" +
+                    "  (defn handler []                  \n" +
+                    "    (try                            \n" +
+                    "      (+ 1 1)                       \n" +
+                    "      (catch :SecurityException ex  \n" +
+                    "        (deliver-ex p ex))))        \n" +
+                    "  (schedule-delay handler           \n" +
+                    "                  100               \n" +
+                    "                  :milliseconds)    \n" +
+                    "  (deref p 1000 :failed))           ",
+
+                    "(do                                                \n" +
+                    "  (def p (promise))                                \n" +
+                    "  (defn handler []                                 \n" +
+                    "    (try                                           \n" +
+                    "      (+ 1 1)                                      \n" +
+                    "      (catch :SecurityException ex                 \n" +
+                    "        (deliver-ex p ex))))                       \n" +
+                    "  (let [s (schedule-at-fixed-rate handler          \n" +
+                    "                                  10               \n" +
+                    "                                  200              \n" +
+                    "                                  :milliseconds)]  \n" +
+                    "    (sleep 100)                                    \n" +
+                    "    (cancel s)                                     \n" +
+                    "    (deref p 1000 :failed)))                       ",
                };
 
         final Venice venice = new Venice(interceptor);
