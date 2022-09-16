@@ -219,7 +219,7 @@ use
 ```clojure
 (do 
   (load-module :java ['java :as 'j])
-  (. (j/as-function #(+ % 1)) :apply 4)))
+  (. (j/as-function #(+ % 1)) :apply 4))
 ```
 
 
