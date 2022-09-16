@@ -61,6 +61,7 @@ public class JavaInteropSection implements ISectionBuilder {
         proxy.addItem(diBuilder.getDocItem("java/as-bipredicate"));
         proxy.addItem(diBuilder.getDocItem("java/as-bifunction"));
         proxy.addItem(diBuilder.getDocItem("java/as-biconsumer"));
+        proxy.addItem(diBuilder.getDocItem("java/as-unaryoperator"));
         proxy.addItem(diBuilder.getDocItem("java/as-binaryoperator"));
 
         final DocSection test = new DocSection("Test", "javainterop.test");

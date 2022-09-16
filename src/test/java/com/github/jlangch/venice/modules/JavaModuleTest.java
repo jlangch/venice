@@ -156,6 +156,20 @@ public class JavaModuleTest {
     }
 
     @Test
+    public void test_as_unaryoperator() {
+        final Venice venice = new Venice();
+
+        final String script =
+
+               "(do                                                              \n" +
+               "  (load-module :java ['java :as 'j])                             \n" +
+               "                                                                 \n" +
+               "  (. (j/as-unaryoperator (fn [x] (+ x 1))) :apply 1))            ";
+
+        assertEquals(2L, venice.eval(script));
+    }
+
+    @Test
     public void test_as_binaryoperator() {
         final Venice venice = new Venice();
 

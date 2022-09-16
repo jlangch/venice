@@ -464,6 +464,11 @@ public class Sandbox_Shootout_Test {
 	               "(do                                                              \n" +
 	               "  (load-module :java ['java :as 'j])                             \n" +
 	               "                                                                 \n" +
+	               "  (. (j/as-unaryoperator (fn [x] (+ x 1))) :apply 1))            ",
+
+	               "(do                                                              \n" +
+	               "  (load-module :java ['java :as 'j])                             \n" +
+	               "                                                                 \n" +
 	               "  (. (j/as-binaryoperator (fn [x y] (+ x y))) :apply 1 2))       "
         };
 
