@@ -187,6 +187,8 @@ with Java functional interfaces:
 - [java.util.function.BiConsumer](https://docs.oracle.com/javase/8/docs/api/java/util/function/BiConsumer.html) -> `(as-biconsumer f)`
 - [java.util.function.BinaryOperator](https://docs.oracle.com/javase/8/docs/api/java/util/function/BinaryOperator.html) -> `(as-binaryoperator f)`
 
+These functions are defined in the `:java` module.
+
 
 **Example 1:**
 
@@ -199,7 +201,9 @@ Instead of
 use
 
 ```clojure
-(as-runnable #(sleep 10))
+(do 
+  (load-module :java ['java :as 'j])
+  (j/as-runnable #(sleep 10)))
 ```
  
 **Example 2:**
@@ -213,7 +217,9 @@ Instead of
 use 
 
 ```clojure
-(as-function #(+ % 1))
+(do 
+  (load-module :java ['java :as 'j])
+  (j/as-function #(+ % 1)))
 ```
 
 
@@ -236,11 +242,12 @@ This can be simplified to:
 
 ```clojure
 (do
+    (load-module :java ['java :as 'j])
     (import :java.util.stream.Collectors)
 
     (-> (. [1 2 3 4] :stream)
-        (. :filter (as-predicate #(> % 2)))
-        (. :map (as-function #(* % 10)))
+        (. :filter (j/as-predicate #(> % 2)))
+        (. :map (j/as-function #(* % 10)))
         (. :collect (. :Collectors :toList))))
 ```
 
