@@ -201,6 +201,10 @@ Instead of
 use
 
 ```clojure
+(j/as-runnable #(sleep 10))
+```
+
+```clojure
 (do 
   (load-module :java ['java :as 'j])
   (. (j/as-runnable #(sleep 10)) :run))
@@ -215,6 +219,10 @@ Instead of
 ```
 
 use 
+
+```clojure
+(j/as-function #(+ % 1))
+```
 
 ```clojure
 (do 
