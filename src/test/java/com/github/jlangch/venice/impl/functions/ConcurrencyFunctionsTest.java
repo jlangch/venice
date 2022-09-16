@@ -1239,6 +1239,102 @@ public class ConcurrencyFunctionsTest {
     }
 
     @Test
+    public void test_promise_accept_either_1a() {
+        final Venice venice = new Venice();
+
+        final String script =
+        		"(let [result (promise)]                                  \n" +
+                "  (-> (promise (fn [] (sleep 200) 200))                  \n" +
+                "      (accept-either (promise (fn [] (sleep 100) 100))   \n" +
+                "                     (fn [v] (deliver result v))))       \n" +
+                "  @result)";
+
+        assertEquals(100L, venice.eval(script));
+    }
+
+    @Test
+    public void test_promise_accept_either_1b() {
+        final Venice venice = new Venice();
+
+        final String script =
+        		"(let [result (promise)]                                  \n" +
+                "  (-> (promise (fn [] (sleep 200) 200))                  \n" +
+                "      (accept-either (promise (fn [] (sleep 100) 100))   \n" +
+                "                     (fn [v] (deliver result v) v))      \n" +
+                "      (deref)))";
+
+        assertEquals(null, venice.eval(script));
+    }
+
+    @Test
+    public void test_promise_accept_either_2() {
+        final Venice venice = new Venice();
+
+        final String script =
+        		"(let [result (promise)]                                  \n" +
+                "  (-> (promise (fn [] (sleep 100) 100))                  \n" +
+                "      (accept-either (promise (fn [] (sleep 200) 200))   \n" +
+                "                     (fn [v] (deliver result v))))       \n" +
+                "  @result)";
+
+        assertEquals(100L, venice.eval(script));
+    }
+
+    @Test
+    public void test_promise_apply_to_either_1() {
+        final Venice venice = new Venice();
+
+        final String script =
+                "(-> (promise (fn [] (sleep 200) 200))                  \n" +
+                "    (apply-to-either (promise (fn [] (sleep 100) 100)) \n" +
+                "                     (fn [v] (+ v 1)))                 \n" +
+                "    (deref))";
+
+        assertEquals(101L, venice.eval(script));
+    }
+
+    @Test
+    public void test_promise_apply_to_either_2() {
+        final Venice venice = new Venice();
+
+        final String script =
+                "(-> (promise (fn [] (sleep 100) 100))                  \n" +
+                "    (apply-to-either (promise (fn [] (sleep 200) 200)) \n" +
+                "                     (fn [v] (+ v 1)))                 \n" +
+                "    (deref))";
+
+        assertEquals(101L, venice.eval(script));
+    }
+
+    @Test
+    public void test_promise_then_accep_both_1() {
+        final Venice venice = new Venice();
+
+        final String script =
+        		"(let [result (promise)]                                          \n" +
+                "  (-> (promise (fn [] (sleep 200) 200))                          \n" +
+                "      (then-accept-both (promise (fn [] (sleep 100) 100))        \n" +
+                "                        (fn [u v] (deliver result (+ u v)) 4)))  \n" +
+                "  @result)";
+
+        assertEquals(300L, venice.eval(script));
+    }
+
+    @Test
+    public void test_promise_then_accep_both_2() {
+        final Venice venice = new Venice();
+
+        final String script =
+        		"(let [result (promise)]                                          \n" +
+                "  (-> (promise (fn [] (sleep 200) 200))                          \n" +
+                "      (then-accept-both (promise (fn [] (sleep 100) 100))        \n" +
+                "                        (fn [u v] (deliver result (+ u v)) 4))   \n" +
+                "      (deref)))";
+
+        assertEquals(null, venice.eval(script));
+    }
+
+    @Test
     public void test_future_deref_1() {
         final Venice venice = new Venice();
 

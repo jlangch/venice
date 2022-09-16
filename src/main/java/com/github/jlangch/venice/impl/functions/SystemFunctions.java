@@ -276,7 +276,18 @@ public class SystemFunctions {
                 VncFunction
                     .meta()
                     .arglists("(shutdown-hook f)")
-                    .doc("Registers the function f as JVM shutdown hook.")
+                    .doc(
+                        "Registers the function f as a JVM shutdown hook.\n\n" +
+                        "Shutdown hooks can be tested in a REPL:\n\n" +
+                        "  * start a REPL\n" +
+                        "  * run `(shutdown-hook (fn [] (println \"SHUTDOWN\") (sleep 3000)))`\n" +
+                        "  * exit the REPL with `!exit`\n\n" +
+                        "The sandbox is active within the shutdown hook:\n\n" +
+                        "  * start a REPL\n" +
+                        "  * run `!sandbox customized`\n" +
+                        "  * run `!sandbox add-rule blacklist:venice:func:+`\n" +
+                        "  * run `(shutdown-hook (fn [] (try (+ 1 2) (catch :SecurityException ex (println ex) (sleep 3000)))))`\n" +
+                        "  * exit the REPL with `!exit`")
                     .examples("(shutdown-hook (fn [] (println \"shutdown\")))")
                     .build()
         ) {

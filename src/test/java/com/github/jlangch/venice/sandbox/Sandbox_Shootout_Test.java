@@ -202,7 +202,7 @@ public class Sandbox_Shootout_Test {
                     "                   (try                                         \n" +
                     "                     (deliver result (+ v 2))                   \n" +
                     "                     (catch :SecurityException ex               \n" +
-                    "                     (deliver-ex result ex)))))                 \n" +
+                    "                       (deliver-ex result ex)))))               \n" +
                     "  @result))                                                     ",
 
                     // promise -> then-compose
@@ -222,16 +222,54 @@ public class Sandbox_Shootout_Test {
                     "                       (try                                     \n" +
                     "                         (deliver result (+ v 2))               \n" +
                     "                         (catch :SecurityException ex           \n" +
-                    "                         (deliver-ex result ex)))))             \n" +
+                    "                           (deliver-ex result ex)))))           \n" +
                     "    @result))                                                   ",
 
-                    // promise -> accept-either
+                    // promise -> accept-either #1
+            		"(let [result (promise)]                                         \n" +
+                    "  (-> (promise (fn [] (sleep 200) 200))                         \n" +
+                    "      (accept-either (promise (fn [] (sleep 100) 100))          \n" +
+                    "                     (fn [v]                                    \n" +
+                    "                       (try                                     \n" +
+                    "                         (deliver result (+ v 2))               \n" +
+                    "                         (catch :SecurityException ex           \n" +
+                    "                           (deliver-ex result ex))))))          \n" +
+                    "  @result)                                                      ",
 
-                    // promise -> apply-either
+                    // promise -> accept-either #2
+            		"(let [result (promise)]                                         \n" +
+                    "  (-> (promise (fn [] (sleep 100) 100))                         \n" +
+                    "      (accept-either (promise (fn [] (sleep 200) 200))          \n" +
+                    "                     (fn [v]                                    \n" +
+                    "                       (try                                     \n" +
+                    "                         (deliver result (+ v 2))               \n" +
+                    "                         (catch :SecurityException ex           \n" +
+                    "                           (deliver-ex result ex))))))          \n" +
+                    "  @result)                                                      ",
 
-                    // promise -> apply-to-either
+                    // promise -> apply-to-either #1
+                    "(-> (promise (fn [] (sleep 200) 200))                           \n" +
+                    "    (apply-to-either (promise (fn [] (sleep 100) 100))          \n" +
+                    "                     (fn [v] (+ v 1)))                          \n" +
+                    "    (deref))                                                    ",
+
+                    // promise -> apply-to-either #2
+                    "(-> (promise (fn [] (sleep 100) 100))                           \n" +
+                    "    (apply-to-either (promise (fn [] (sleep 200) 200))          \n" +
+                    "                     (fn [v] (+ v 1)))                          \n" +
+                    "    (deref))                                                    ",
 
                     // promise -> then-accept-both
+            		"(let [result (promise)]                                         \n" +
+                    "  (-> (promise (fn [] (sleep 200) 200))                         \n" +
+                    "      (then-accept-both (promise (fn [] (sleep 100) 100))       \n" +
+                    "                        (fn [u v]                               \n" +
+                    "                          (try                                  \n" +
+                    "                            (deliver result (+ u v))            \n" +
+                    "                            4                                   \n" +
+                    "                            (catch :SecurityException ex        \n" +
+                    "                              (deliver-ex result ex))))))       \n" +
+                    "  @result)                                                      ",
 
 
                     // volatile
@@ -323,6 +361,18 @@ public class Sandbox_Shootout_Test {
                     "    (sleep 100)                                    \n" +
                     "    (cancel s)                                     \n" +
                     "    (deref p 1000 :failed)))                       ",
+
+
+                    // shutdown-hook
+
+                    // "(shutdown-hook #(+ 1 2))",  // this can not be tested in a unit test!
+                    // Test it manually:
+                    //  * start a REPL
+                    //  * run `!sandbox customized`
+                    //  * run `!sandbox add-rule blacklist:venice:func:+`
+                    //  * run `(shutdown-hook (fn [] (try (+ 1 2) (catch :SecurityException ex (println ex) (sleep 3000)))))`
+                    //  * exit the REPL with `!exit`
+
                };
 
         final Venice venice = new Venice(interceptor);

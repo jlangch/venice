@@ -1395,9 +1395,9 @@ public class ConcurrencyFunctions {
                         "given promise completess normally, is executed with the " +
                         "corresponding result as argument to the supplied function f.")
                     .examples(
-                        "(-> (promise (fn [] (sleep 200) \"The quick brown fox\"))                      \n" +
-                        "    (accept-either (promise (fn [] (sleep 100) \"jumps over the lazy dog\"))   \n" +
-                        "                   (fn [v] (println (pr-str v))))                              \n" +
+                        "(-> (promise (fn [] (sleep 200) 200))                  \n" +
+                        "    (accept-either (promise (fn [] (sleep 100) 100))   \n" +
+                        "                   (fn [v] (println (+ v 1))))         \n" +
                         "    (deref))")
                     .seeAlso(
                         "promise", "then-accept", "then-accept-both", "then-apply", "then-combine",
@@ -1451,9 +1451,9 @@ public class ConcurrencyFunctions {
                         "given promise completes normally, is executed with the " +
                         "corresponding result as argument to the supplied function f.")
                     .examples(
-                        "(-> (promise (fn [] (sleep 200) \"The quick brown fox\"))                      \n" +
-                        "    (apply-to-either (promise (fn [] (sleep 100) \"jumps over the lazy dog\")) \n" +
-                        "                     (fn [v] (str/upper-case v)))                              \n" +
+                        "(-> (promise (fn [] (sleep 200) 200))                  \n" +
+                        "    (apply-to-either (promise (fn [] (sleep 100) 100)) \n" +
+                        "                     (fn [v] (+ v 1)))                 \n" +
                         "    (deref))")
                     .seeAlso(
                         "promise", "then-accept", "then-accept-both", "then-apply", "then-combine",

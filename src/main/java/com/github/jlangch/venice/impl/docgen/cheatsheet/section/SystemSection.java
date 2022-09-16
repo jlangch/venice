@@ -48,6 +48,7 @@ public class SystemSection implements ISectionBuilder {
         system.addItem(diBuilder.getDocItem("system-prop"));
         system.addItem(diBuilder.getDocItem("system-env"));
         system.addItem(diBuilder.getDocItem("system-exit-code"));
+        system.addItem(diBuilder.getDocItem("shutdown-hook"));
         system.addItem(diBuilder.getDocItem("charset-default-encoding"));
 
         final DocSection java = new DocSection("Java", "system.java");
@@ -96,7 +97,6 @@ public class SystemSection implements ISectionBuilder {
         all.addSection(util);
         util.addItem(diBuilder.getDocItem("uuid"));
         util.addItem(diBuilder.getDocItem("sleep"));
-        util.addItem(diBuilder.getDocItem("shutdown-hook"));
 
         final DocSection shell = new DocSection("Shell", "system.shell");
         all.addSection(shell);
