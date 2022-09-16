@@ -53,8 +53,8 @@ public class ScheduleFunctions {
                     .doc(
                         "Creates and executes a one-shot action that becomes enabled " +
                         "after the given delay.¶" +
-                        "Returns a future. `(deref f)`, `(future? f)`, `(future-cancel f)`, " +
-                        "and `(future-done? f)` will work on the returned future.¶" +
+                        "Returns a future. `(deref f)`, `(future? f)`, `(cancel f)`, " +
+                        "and `(done? f)` will work on the returned future.¶" +
                         "Time unit is one of :milliseconds, :seconds, :minutes, :hours, or :days. ")
                     .examples(
                         "(schedule-delay (fn[] (println \"test\")) 1 :seconds)",
@@ -105,7 +105,7 @@ public class ScheduleFunctions {
                         "Creates and executes a periodic action that becomes enabled first " +
                         "after the given initial delay, and subsequently with the given " +
                         "period.¶" +
-                        "Returns a future. `(future? f)`, `(future-cancel f)`, and `(future-done? f)` " +
+                        "Returns a future. `(future? f)`, `(cancel f)`, and `(done? f)` " +
                         "will work on the returned future.¶" +
                         "Time unit is one of :milliseconds, :seconds, :minutes, :hours, or :days. ")
                     .examples(
@@ -113,7 +113,7 @@ public class ScheduleFunctions {
 
                         "(let [s (schedule-at-fixed-rate #(println \"test\") 1 2 :seconds)] \n" +
                         "   (sleep 16 :seconds) \n" +
-                        "   (future-cancel s))")
+                        "   (cancel s))")
                     .seeAlso("schedule-delay")
                     .build()
         ) {
