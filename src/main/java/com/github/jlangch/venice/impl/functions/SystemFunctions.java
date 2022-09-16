@@ -288,7 +288,8 @@ public class SystemFunctions {
                         "  * run `!sandbox add-rule blacklist:venice:func:+`\n" +
                         "  * run `(shutdown-hook (fn [] (try (+ 1 2) (catch :SecurityException ex (println ex) (sleep 3000)))))`\n" +
                         "  * exit the REPL with `!exit`")
-                    .examples("(shutdown-hook (fn [] (println \"shutdown\")))")
+                    .examples(
+                    	"(shutdown-hook (fn [] (println \"shutdown\")))")
                     .build()
         ) {
             @Override

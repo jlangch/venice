@@ -47,8 +47,8 @@ public class SystemSection implements ISectionBuilder {
         all.addSection(system);
         system.addItem(diBuilder.getDocItem("system-prop"));
         system.addItem(diBuilder.getDocItem("system-env"));
-        system.addItem(diBuilder.getDocItem("system-exit-code"));
-        system.addItem(diBuilder.getDocItem("shutdown-hook"));
+        system.addItem(diBuilder.getDocItem("system-exit-code", false));
+        system.addItem(diBuilder.getDocItem("shutdown-hook", false));
         system.addItem(diBuilder.getDocItem("charset-default-encoding"));
 
         final DocSection java = new DocSection("Java", "system.java");
