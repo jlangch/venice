@@ -44,8 +44,8 @@ A future takes a function and yields a future object that will invoke the functi
 in another thread, and will cache the result and return it on all subsequent calls 
 to deref. If the computation has not yet finished, calls to deref will block, 
 unless the variant of deref with timeout is used. 
-A future can be cancelled `(future-cancel f)` as long its computation has not yet 
-finished. A future can be checked if it has been cancelled `(future-cancelled? f)` or
+A future can be cancelled `(cancel f)` as long its computation has not yet 
+finished. A future can be checked if it has been cancelled `(cancelled? f)` or
 if its computation has finished `(realized? f)`.
 
 ```clojure
@@ -419,7 +419,7 @@ of 3s, and cancel it after 16s:
 ```clojure
 (let [s (schedule-at-fixed-rate (fn [] (println "test")) 1 3 :seconds)]
   (sleep 16000)
-  (future-cancel s)
+  (cancel s)
   (println "done."))
 ```
 
