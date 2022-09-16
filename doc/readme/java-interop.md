@@ -205,9 +205,16 @@ use
 ```
 
 ```clojure
-(do 
+(do
   (load-module :java ['java :as 'j])
-  (. (j/as-runnable #(sleep 10)) :run))
+  (import :com.github.jlangch.venice.demo.FunctionalInterfaces)
+
+  ;; public static void testRunnable(final Runnable r) {
+  ;;   r.run();
+  ;; }
+
+  (def op (j/as-runnable (fn [] (println "running"))))
+  (. :FunctionalInterfaces :testRunnable op))
 ```
  
 **Example 2:**
@@ -225,9 +232,16 @@ use
 ```
 
 ```clojure
-(do 
+(do
   (load-module :java ['java :as 'j])
-  (. (j/as-function #(+ % 1)) :apply 4))
+  (import :com.github.jlangch.venice.demo.FunctionalInterfaces)
+
+  ;; public static Long testFunction(Function<Long,Long> f, Long t) {
+  ;;   return f.apply(t);
+  ;; }
+
+  (def op (j/as-function (fn [t] (+ t 1))))
+  (. :FunctionalInterfaces :testFunction op 4))
 ```
 
 
