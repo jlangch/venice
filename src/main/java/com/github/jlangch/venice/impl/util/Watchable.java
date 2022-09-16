@@ -23,6 +23,7 @@ package com.github.jlangch.venice.impl.util;
 
 import java.util.concurrent.ConcurrentHashMap;
 
+import com.github.jlangch.venice.VncException;
 import com.github.jlangch.venice.impl.types.VncFunction;
 import com.github.jlangch.venice.impl.types.VncKeyword;
 import com.github.jlangch.venice.impl.types.VncVal;
@@ -44,8 +45,11 @@ public class Watchable {
             try {
                 e.getValue().apply(VncList.of(e.getKey(), ref, oldVal, newVal));
             }
+            catch(VncException ex) {
+                throw ex;
+            }
             catch(RuntimeException ex) {
-                /* just skip */
+                throw new VncException("Watcher failure!", ex);
             }
         });
     }

@@ -27,7 +27,6 @@ import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.stream.Collectors;
 
-import com.github.jlangch.venice.ValueException;
 import com.github.jlangch.venice.VncException;
 import com.github.jlangch.venice.impl.types.VncKeyword;
 import com.github.jlangch.venice.impl.types.collections.VncList;
@@ -50,8 +49,9 @@ public class JavaImports implements Serializable {
         add(IllegalArgumentException.class.getName());
 
         // from com.github.jlangch.venice
-        add(VncException.class.getName());
-        add(ValueException.class.getName());
+        add(com.github.jlangch.venice.VncException.class.getName());
+        add(com.github.jlangch.venice.ValueException.class.getName());
+        add(com.github.jlangch.venice.SecurityException.class.getName());
     }
 
 
