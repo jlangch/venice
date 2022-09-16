@@ -841,7 +841,7 @@ public class ConcurrencyFunctionsTest {
     }
 
     @Test
-    public void test_promise_then_apply_1() {
+    public void test_promise_then_apply_1a() {
         final Venice venice = new Venice();
 
         final String script =
@@ -1006,6 +1006,64 @@ public class ConcurrencyFunctionsTest {
                 "    (deref))";
 
         assertEquals(18L, venice.eval(script));
+    }
+
+    @Test
+    public void test_promise_then_compose_1() {
+        final Venice venice = new Venice();
+
+        final String script =
+                "(-> (promise (fn [] 5))                                           \n" +
+                "    (then-apply (fn [x] (* x 2)))                                 \n" +
+                "    (then-compose (fn [x] (-> (promise (fn [] 6))                 \n" +
+                "                              (then-apply (fn [y] (* y 3)))       \n" +
+                "                              (then-apply (fn [y] (+ x y))))))    \n" +
+                "    (deref))";
+
+        assertEquals(28L, venice.eval(script));  // 5 * 2 + 6 * 3
+    }
+
+    @Test
+    public void test_promise_when_complete_1() {
+        final Venice venice = new Venice();
+
+        final String script =
+                "(let [result (promise)                                     \n" +
+                "      p      (promise)]                                    \n" +
+                "  (thread #(deliver p 5))                                  \n" +
+                "  (let [q (then-apply p (fn [v] (* v 2)))]                 \n" +
+                "    (when-complete q (fn [v,e] (deliver result (+ v 1))))  \n" +
+                "    @result))                                               ";
+
+        assertEquals(11L, venice.eval(script));  // 5 * 2 + 1
+    }
+
+    @Test
+    public void test_promise_then_accept_1() {
+        final Venice venice = new Venice();
+
+        final String script =
+                "(let [result (promise)                                \n" +
+                "      p      (promise)]                               \n" +
+                "  (thread #(deliver p 5))                             \n" +
+                "  (then-accept p (fn [v] (deliver result (+ v 2))))   \n" +
+                "  @result))                                           ";
+
+        assertEquals(7L, venice.eval(script));
+    }
+
+    @Test
+    public void test_promise_then_accept_2() {
+        final Venice venice = new Venice();
+
+        final String script =
+                "(let [result (promise)                                \n" +
+                "      p      (promise)]                               \n" +
+                "  (thread #(deliver p 5))                             \n" +
+                "  (then-accept p (fn [v] (deliver result (+ v 2))))   \n" +
+                "  @p))                                           ";
+
+        assertEquals(5L, venice.eval(script));
     }
 
     @Test

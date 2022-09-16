@@ -1131,7 +1131,12 @@ public class ConcurrencyFunctions {
                     .examples(
                         "(-> (promise (fn [] \"the quick brown fox\"))    \n" +
                         "    (then-accept (fn [v] (println (pr-str v))))  \n" +
-                        "    (deref))")
+                        "    (deref))",
+                		"(let [result (promise)                                \n" +
+                        "      p      (promise)]                               \n" +
+                	    "  (thread #(deliver p 5))                             \n" +
+                        "  (then-accept p (fn [v] (deliver result (+ v 2))))   \n" +
+                        "  [@p @result]))                                      ")
                     .seeAlso(
                         "promise", "then-accept-both", "then-apply", "then-combine",
                         "then-compose", "when-complete", "accept-either", "apply-to-either",

@@ -165,6 +165,74 @@ public class Sandbox_Shootout_Test {
 
                     "@(promise #(+ 1 1))",
 
+                    // promise -> then-apply
+                    "(-> (promise (fn [] 5))      \n" +
+                    "    (then-apply #(+ % 3))    \n" +
+                    "    (deref))                 ",
+
+                    // promise -> then-combine #1
+                    "(-> (promise (fn [] (sleep 20) 5))                              \n" +
+                    "    (then-apply (fn [x] (sleep 20) (* x 3)))                    \n" +
+                    "    (then-combine (-> (promise (fn [] (sleep 20) 5))            \n" +
+                    "                      (then-apply (fn [x] (sleep 20) (* x 2)))) \n" +
+                    "                  #(+ %1 %2))                                   \n" +
+                    "    (deref))",
+
+                    // promise -> then-combine #2
+                    "(-> (promise (fn [] (sleep 20) 5))                              \n" +
+                    "    (then-apply (fn [x] (sleep 20) (* x 3)))                    \n" +
+                    "    (then-combine (-> (promise (fn [] (sleep 20) 5))            \n" +
+                    "                      (then-apply (fn [x] (sleep 20) (+ x 2)))) \n" +
+                    "                  #(* %1 %2))                                   \n" +
+                    "    (deref))",
+
+                    // promise -> then-combine #3
+                    "(-> (promise (fn [] (sleep 20) 5))                              \n" +
+                    "    (then-apply (fn [x] (sleep 20) (* x 3)))                    \n" +
+                    "    (then-combine (-> (promise (fn [] (sleep 20) (+ 1 1)))      \n" +
+                    "                      (then-apply (fn [x] (sleep 20) (* x 2)))) \n" +
+                    "                  #(* %1 %2))                                   \n" +
+                    "    (deref))",
+
+                    // promise -> then-accept
+                    "(let [result (promise)                                          \n" +
+                    "      p      (promise)]                                         \n" +
+                    "  (thread #(deliver p 5))                                       \n" +
+                    "  (then-accept p (fn [v]                                        \n" +
+                    "                   (try                                         \n" +
+                    "                     (deliver result (+ v 2))                   \n" +
+                    "                     (catch :SecurityException ex               \n" +
+                    "                     (deliver-ex result ex)))))                 \n" +
+                    "  @result))                                                     ",
+
+                    // promise -> then-compose
+                    "(-> (promise (fn [] 5))                                         \n" +
+                    "    (then-apply (fn [x] (* x 2)))                               \n" +
+                    "    (then-compose (fn [x] (-> (promise (fn [] 6))               \n" +
+                    "                              (then-apply (fn [y] (* y 3)))     \n" +
+                    "                              (then-apply (fn [y] (+ x y))))))  \n" +
+                    "    (deref))                                                    ",
+
+                    // promise -> when-complete
+                    "(let [result (promise)                                          \n" +
+                    "      p      (promise)]                                         \n" +
+                    "  (thread #(deliver p 5))                                       \n" +
+                    "  (let [q (then-apply p (fn [v] (* v 2)))]                      \n" +
+                    "    (when-complete q (fn [v,e]                                  \n" +
+                    "                       (try                                     \n" +
+                    "                         (deliver result (+ v 2))               \n" +
+                    "                         (catch :SecurityException ex           \n" +
+                    "                         (deliver-ex result ex)))))             \n" +
+                    "    @result))                                                   ",
+
+                    // promise -> accept-either
+
+                    // promise -> apply-either
+
+                    // promise -> apply-to-either
+
+                    // promise -> then-accept-both
+
 
                     // volatile
 
