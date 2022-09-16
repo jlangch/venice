@@ -17,6 +17,10 @@ and this project adheres to
 - ...
 
 
+### Fixed
+
+- Java functional interfaces for BiPredicate and BiConsumer
+
 
 
 ## [1.10.23] - 2022-09-14

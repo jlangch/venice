@@ -212,7 +212,7 @@
      :doc "Wraps the function f in a [java.util.function.BiPredicate](https://docs.oracle.com/javase/8/docs/api/java/util/function/BiPredicate.html)"
      :see-also '("java/as-bifunction" "java/as-biconsumer" "java/as-binaryoperator") }
 
-  as-bipredicate [f] (proxify :java.util.function.BiPredicate { :apply f }))
+  as-bipredicate [f] (proxify :java.util.function.BiPredicate { :test f }))
 
 
 (defn
@@ -228,7 +228,7 @@
      :doc "Wraps the function f in a [java.util.function.BiConsumer](https://docs.oracle.com/javase/8/docs/api/java/util/function/BiConsumer.html)"
      :see-also '("java/as-bipredicate" "java/as-bifunction" "java/as-binaryoperator") }
 
-  as-biconsumer [f] (proxify :java.util.function.BiConsumer { :apply f }))
+  as-biconsumer [f] (proxify :java.util.function.BiConsumer { :accept f }))
 
 
 (defn
