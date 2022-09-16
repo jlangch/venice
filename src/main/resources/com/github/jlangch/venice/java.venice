@@ -167,9 +167,10 @@
        """
        (do
          (load-module :java ['java :as 'j])
+         (import :com.github.jlangch.venice.demo.FunctionalInterfaces)
 
          (def op (j/as-runnable (fn [] (println "running"))))
-         (. op :run))
+         (. :FunctionalInterfaces :testRunnable op))
        """)
      :see-also '(
        "java/as-callable" "java/as-predicate" "java/as-function"
@@ -186,9 +187,10 @@
        """
        (do
          (load-module :java ['java :as 'j])
+         (import :com.github.jlangch.venice.demo.FunctionalInterfaces)
 
          (def op (j/as-callable (fn [] 4)))
-         (. op :call))
+         (. :FunctionalInterfaces :testCallable op))
        """)
      :see-also '(
        "java/as-runnable" "java/as-predicate" "java/as-function"
@@ -205,9 +207,10 @@
        """
        (do
          (load-module :java ['java :as 'j])
+         (import :com.github.jlangch.venice.demo.FunctionalInterfaces)
 
          (def op (j/as-predicate (fn [x] (pos? x))))
-         (. op :test 1))
+         (. :FunctionalInterfaces :testPredicate op 4))
        """)
      :see-also '(
        "java/as-runnable" "java/as-callable" "java/as-function"
@@ -224,9 +227,10 @@
        """
        (do
          (load-module :java ['java :as 'j])
+         (import :com.github.jlangch.venice.demo.FunctionalInterfaces)
 
          (def op (j/as-function (fn [x] (+ x 1))))
-         (. op :apply 4))
+         (. :FunctionalInterfaces :testFunction op 4))
        """)
      :see-also '(
        "java/as-runnable" "java/as-callable" "java/as-predicate"
@@ -243,9 +247,10 @@
        """
        (do
          (load-module :java ['java :as 'j])
+         (import :com.github.jlangch.venice.demo.FunctionalInterfaces)
 
          (def op (j/as-consumer (fn [x] (println "consumed" x))))
-         (. op :accept 4))
+         (. :FunctionalInterfaces :testConsumer op 4))
        """)
      :see-also '(
        "java/as-runnable" "java/as-callable" "java/as-predicate"
@@ -262,9 +267,10 @@
        """
        (do
          (load-module :java ['java :as 'j])
+         (import :com.github.jlangch.venice.demo.FunctionalInterfaces)
 
          (def op (j/as-supplier (fn [] 5)))
-         (. op :get))
+         (. :FunctionalInterfaces :testSupplier op))
        """)
      :see-also '(
        "java/as-runnable" "java/as-callable" "java/as-predicate"
@@ -281,9 +287,10 @@
        """
        (do
          (load-module :java ['java :as 'j])
+         (import :com.github.jlangch.venice.demo.FunctionalInterfaces)
 
          (def op (j/as-bipredicate (fn [x y] (> x y))))
-         (. op :test 2 1))
+         (. :FunctionalInterfaces :testBiPredicate op 1 2))
        """)
      :see-also '(
        "java/as-bifunction" "java/as-biconsumer" "java/as-binaryoperator") }
@@ -299,9 +306,10 @@
        """
        (do
          (load-module :java ['java :as 'j])
+         (import :com.github.jlangch.venice.demo.FunctionalInterfaces)
 
          (def op (j/as-bifunction (fn [x y] (+ x y))))
-         (. op :apply 1 2))
+         (. :FunctionalInterfaces :testBiFunction op 1 2))
        """)
      :see-also '(
        "java/as-bipredicate" "java/as-biconsumer" "java/as-binaryoperator") }
@@ -317,9 +325,10 @@
        """
        (do
          (load-module :java ['java :as 'j])
+         (import :com.github.jlangch.venice.demo.FunctionalInterfaces)
 
          (def op (j/as-biconsumer (fn [x y] (println "consumed" x y))))
-         (. op :accept 1 2))
+         (. :FunctionalInterfaces :testBiConsumer op 1 2))
        """)
      :see-also '(
        "java/as-bipredicate" "java/as-bifunction" "java/as-binaryoperator") }
@@ -335,9 +344,10 @@
        """
        (do
          (load-module :java ['java :as 'j])
+         (import :com.github.jlangch.venice.demo.FunctionalInterfaces)
 
          (def op (j/as-unaryoperator (fn [x] (+ x 1))))
-         (. op :apply 1))
+         (. :FunctionalInterfaces :testUnaryOperator op 1))
        """)
      :see-also '(
        "java/as-bipredicate" "java/as-bifunction" "java/as-biconsumer" ) }
@@ -353,9 +363,10 @@
        """
        (do
          (load-module :java ['java :as 'j])
+         (import :com.github.jlangch.venice.demo.FunctionalInterfaces)
 
          (def op (j/as-binaryoperator (fn [x y] (+ x y))))
-         (. op :apply 1 2))
+         (. :FunctionalInterfaces :testBinaryOperator op 1 2))
        """)
      :see-also '(
        "java/as-bipredicate" "java/as-bifunction" "java/as-biconsumer" ) }
