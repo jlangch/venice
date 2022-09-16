@@ -203,7 +203,7 @@ use
 ```clojure
 (do 
   (load-module :java ['java :as 'j])
-  (j/as-runnable #(sleep 10)))
+  (. (j/as-runnable #(sleep 10)) :run))
 ```
  
 **Example 2:**
@@ -219,7 +219,7 @@ use
 ```clojure
 (do 
   (load-module :java ['java :as 'j])
-  (j/as-function #(+ % 1)))
+  (. (j/as-function #(+ % 1)) :apply 4)))
 ```
 
 
