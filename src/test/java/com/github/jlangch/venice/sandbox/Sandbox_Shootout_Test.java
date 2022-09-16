@@ -386,8 +386,8 @@ public class Sandbox_Shootout_Test {
     @Test
     public void test_proxy() {
         final Interceptor interceptor = new SandboxRules()
-                .rejectVeniceFunctions("+")
-                .sandbox();
+                                             .rejectVeniceFunctions("+")
+                                             .sandbox();
 
        final Venice venice = new Venice(interceptor);
 
@@ -411,32 +411,75 @@ public class Sandbox_Shootout_Test {
     @Test
     public void test_java_proxy() {
         final Interceptor interceptor = new SandboxRules()
-                .rejectVeniceFunctions("+")
-                .sandbox();
+                                             .rejectVeniceFunctions("+")
+                                             .sandbox();
+
+        final String[] expr = new String[] {
+
+	               "(do                                                    \n" +
+	               "  (load-module :java ['java :as 'j])                   \n" +
+	               "                                                       \n" +
+	               "  (. (j/as-runnable (fn [] (+ 1 1) nil)) :run))        ",
+
+	               "(do                                                    \n" +
+	               "  (load-module :java ['java :as 'j])                   \n" +
+	               "                                                       \n" +
+	               "  (. (j/as-callable (fn [] (+ 1 1))) :call))           ",
+
+	               "(do                                                    \n" +
+	               "  (load-module :java ['java :as 'j])                   \n" +
+	               "                                                       \n" +
+	               "  (. (j/as-function (fn [x] (+ x 1))) :apply 4))       ",
+
+	               "(do                                                    \n" +
+	               "  (load-module :java ['java :as 'j])                   \n" +
+	               "                                                       \n" +
+	               "  (. (j/as-consumer (fn [x] (+ 1 1) nil)) :accept 4))   ",
+
+ 	               "(do                                                    \n" +
+	               "  (load-module :java ['java :as 'j])                   \n" +
+	               "                                                       \n" +
+	               "  (. (j/as-supplier (fn [] (+ 1 1))) :get))            ",
+
+	               "(do                                                              \n" +
+	               "  (load-module :java ['java :as 'j])                             \n" +
+	               "                                                                 \n" +
+	               "  (. (j/as-predicate (fn [x] (+ 1 1) (some? x))) :test 1))       ",
+
+	               "(do                                                              \n" +
+	               "  (load-module :java ['java :as 'j])                             \n" +
+	               "                                                                 \n" +
+	               "  (. (j/as-bipredicate (fn [x y] (+ 1 1) true)) :test 2 1))      ",
+
+	               "(do                                                              \n" +
+	               "  (load-module :java ['java :as 'j])                             \n" +
+	               "                                                                 \n" +
+	               "  (. (j/as-bifunction (fn [x y] (+ x y))) :apply 1 2))           ",
+
+	               "(do                                                              \n" +
+	               "  (load-module :java ['java :as 'j])                             \n" +
+	               "                                                                 \n" +
+	               "  (. (j/as-biconsumer (fn [x y] (+ 1 1) nil)) :accept 1 2))      ",
+
+	               "(do                                                              \n" +
+	               "  (load-module :java ['java :as 'j])                             \n" +
+	               "                                                                 \n" +
+	               "  (. (j/as-binaryoperator (fn [x y] (+ x y))) :apply 1 2))       "
+        };
 
         final Venice venice = new Venice(interceptor);
 
-        final String script1 =
-               "(do                                                              \n" +
-               "  (load-module :java ['java :as 'j])                             \n" +
-               "                                                                 \n" +
-               "  (. (j/as-runnable #(+ 1 1)) :run))                             ";
-
-        final String script2 =
-               "(do                                                              \n" +
-               "  (load-module :java ['java :as 'j])                             \n" +
-               "                                                                 \n" +
-               "  (. (j/as-function #(+ % 1)) :apply 4))                         ";
-
-        assertThrows(SecurityException.class, () -> venice.eval(script1));
-        assertThrows(SecurityException.class, () -> venice.eval(script2));
+        // all denied
+        for(String e : expr) {
+            assertThrows(SecurityException.class, () -> venice.eval(e));
+        }
     }
 
     @Test
     public void test_java_streams_proxy() {
         final Interceptor interceptor = new SandboxRules()
-                .rejectVeniceFunctions("+")
-                .sandbox();
+                                              .rejectVeniceFunctions("+")
+                                              .sandbox();
 
         final Venice venice = new Venice(interceptor);
 

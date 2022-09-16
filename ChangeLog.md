@@ -19,7 +19,7 @@ and this project adheres to
 
 ### Fixed
 
-- Java functional interfaces for BiPredicate and BiConsumer
+- proxies for Java functional BiPredicate and BiConsumer interfaces 
 
 
 
