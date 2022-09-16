@@ -104,8 +104,7 @@ be a list or a vector.
   (apply str '(1 2 3 4))    ;; same as (str 1 2 3 4)
   (apply str 1 '(2 3 4))    ;; same as (str 1 2 3 4)
   (apply str 1 2 '(3 4))    ;; same as (str 1 2 3 4)
-  (apply str 1 2 3 '(4))    ;; same as (str 1 2 3 4) 
- )
+  (apply str 1 2 3 '(4)))   ;; same as (str 1 2 3 4) 
 ```
 
 
@@ -163,8 +162,7 @@ created.
   
   ;; n value still available because square and cubic are closures
   (square 4) ; => 16   effectively as (apply * (repeat 2 4)) 
-  (cubic 4)  ; => 64   effectively as (apply * (repeat 3 4))
-)
+  (cubic 4)) ; => 64   effectively as (apply * (repeat 3 4))
 ```
 
 Even global functions can remember the context they have been created:
@@ -200,8 +198,7 @@ Vectors, maps, sets, and keywords are functions too.
    ([1 2 3] 1) ; -> 2
    
    ;; with default
-   ([1 2 3] 5 10) ; -> 10
-)
+   ([1 2 3] 5 10)) ; -> 10
 ```
 
 **Maps**
@@ -217,8 +214,7 @@ Vectors, maps, sets, and keywords are functions too.
 
    ;; accessing nested maps
    (let [m {:a {:b {:c 3}}}]
-      (-> m :a :b :c))  ; -> 3
-)
+      (-> m :a :b :c)))  ; -> 3
 ```
 
 **Sets**
@@ -229,9 +225,7 @@ Vectors, maps, sets, and keywords are functions too.
    (#{:a :b} :c)  ; -> nil
    
    ;; with default
-   (#{:a :b} :c 9)  ; -> 9
-
-)
+   (#{:a :b} :c 9))  ; -> 9
 ```
 
 **Keywords**
@@ -245,8 +239,7 @@ Vectors, maps, sets, and keywords are functions too.
  
    ;; with defaults
    (:c {:a 1 :b 2} 9)  ; -> 9
-   (:c #{:a :b} 9)  ; -> 9
-)
+   (:c #{:a :b} 9))    ; -> 9
 ```
 
 
