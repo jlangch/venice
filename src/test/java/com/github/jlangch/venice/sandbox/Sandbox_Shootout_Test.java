@@ -382,4 +382,60 @@ public class Sandbox_Shootout_Test {
             assertThrows(SecurityException.class, () -> venice.eval(e));
         }
     }
+
+    @Test
+    public void test_proxy() {
+        final Interceptor interceptor = new SandboxRules()
+                .rejectVeniceFunctions("+")
+                .sandbox();
+
+       final Venice venice = new Venice(interceptor);
+
+        final String script =
+                "(do                                                              \n" +
+                "    (import :com.github.jlangch.venice.support.Functions)        \n" +
+                "    (import :java.util.function.Predicate)                       \n" +
+                "                                                                 \n" +
+                "    (def pred-fn (fn [x] (+ 1 2) (== x \"abc\")))                \n" +
+                "                                                                 \n" +
+                "    (def pred-fn-proxy (proxify :Predicate { :test pred-fn }))   \n" +
+                "                                                                 \n" +
+                "    (let [functions (. :Functions :new)]                         \n" +
+                "         (. functions :evalPredicate                             \n" +
+                "                      pred-fn-proxy                              \n" +
+                "                      \"abc\" )))                                 ";
+
+        assertThrows(SecurityException.class, () -> venice.eval(script));
+    }
+
+    @Test
+    public void test_java_streams_proxy() {
+        final Interceptor interceptor = new SandboxRules()
+                .rejectVeniceFunctions("+")
+                .sandbox();
+
+        final Venice venice = new Venice(interceptor);
+
+        final String script1 =
+               "(do                                                              \n" +
+               "  (import :java.util.stream.Collectors)                          \n" +
+               "                                                                 \n" +
+               "  (-> (. [1 2 3 4] :stream)                                      \n" +
+               "      (. :filter (as-predicate (fn [x] (do (+ 1 2) (> % 2)))))   \n" +
+               "      (. :map (as-function (fn [x] (* % 10))))                   \n" +
+               "      (. :collect (. :Collectors :toList))))                     ";
+
+        final String script2 =
+               "(do                                                              \n" +
+               "  (import :java.util.stream.Collectors)                          \n" +
+               "                                                                 \n" +
+               "  (-> (. [1 2 3 4] :stream)                                      \n" +
+               "      (. :filter (as-predicate (fn [x] (> % 2))))                \n" +
+               "      (. :map (as-function (fn [x] (do (+ 1 2) (* % 10)))))      \n" +
+               "      (. :collect (. :Collectors :toList))))                     ";
+
+        assertThrows(SecurityException.class, () -> venice.eval(script1));
+        assertThrows(SecurityException.class, () -> venice.eval(script2));
+    }
+
 }
