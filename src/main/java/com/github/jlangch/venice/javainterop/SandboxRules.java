@@ -438,7 +438,7 @@ public class SandboxRules {
         if (rules != null) {
             this.rules.addAll(
                 rules.stream()
-                      .map(r -> r.startsWith("venice:module:") ? r : "venice:module:" + r)
+                     .map(r -> r.startsWith("venice:module:") ? r : "venice:module:" + r)
                      .collect(Collectors.toList()));
         }
         return this;
