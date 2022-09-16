@@ -169,6 +169,10 @@
          (load-module :java ['java :as 'j])
          (import :com.github.jlangch.venice.demo.FunctionalInterfaces)
 
+         ;; public static void testRunnable(final Runnable r) {
+         ;;   r.run();
+         ;; }
+
          (def op (j/as-runnable (fn [] (println "running"))))
          (. :FunctionalInterfaces :testRunnable op))
        """)
@@ -188,6 +192,10 @@
        (do
          (load-module :java ['java :as 'j])
          (import :com.github.jlangch.venice.demo.FunctionalInterfaces)
+
+         ;; public static Long testCallable(Callable<Long> c) throws Exception {
+         ;;   return c.call();
+         ;; }
 
          (def op (j/as-callable (fn [] 4)))
          (. :FunctionalInterfaces :testCallable op))
@@ -209,7 +217,11 @@
          (load-module :java ['java :as 'j])
          (import :com.github.jlangch.venice.demo.FunctionalInterfaces)
 
-         (def op (j/as-predicate (fn [x] (pos? x))))
+         ;; public static boolean testPredicate(Predicate<Long> p, Long t) {
+         ;;   return p.test(t);
+         ;; }
+
+         (def op (j/as-predicate (fn [t] (pos? t))))
          (. :FunctionalInterfaces :testPredicate op 4))
        """)
      :see-also '(
@@ -229,7 +241,11 @@
          (load-module :java ['java :as 'j])
          (import :com.github.jlangch.venice.demo.FunctionalInterfaces)
 
-         (def op (j/as-function (fn [x] (+ x 1))))
+         ;; public static Long testFunction(Function<Long,Long> f, Long t) {
+         ;;   return f.apply(t);
+         ;; }
+
+         (def op (j/as-function (fn [t] (+ t 1))))
          (. :FunctionalInterfaces :testFunction op 4))
        """)
      :see-also '(
@@ -249,7 +265,11 @@
          (load-module :java ['java :as 'j])
          (import :com.github.jlangch.venice.demo.FunctionalInterfaces)
 
-         (def op (j/as-consumer (fn [x] (println "consumed" x))))
+         ;; public static void testConsumer(Consumer<Long> f, Long t) {
+         ;;   f.accept(t);
+         ;; }
+
+         (def op (j/as-consumer (fn [t] (println "consumed" t))))
          (. :FunctionalInterfaces :testConsumer op 4))
        """)
      :see-also '(
@@ -268,6 +288,10 @@
        (do
          (load-module :java ['java :as 'j])
          (import :com.github.jlangch.venice.demo.FunctionalInterfaces)
+
+         ;; public static Long testSupplier(Supplier<Long> f) {
+         ;;   return f.get();
+         ;; }
 
          (def op (j/as-supplier (fn [] 5)))
          (. :FunctionalInterfaces :testSupplier op))
@@ -289,7 +313,11 @@
          (load-module :java ['java :as 'j])
          (import :com.github.jlangch.venice.demo.FunctionalInterfaces)
 
-         (def op (j/as-bipredicate (fn [x y] (> x y))))
+         ;; public static boolean testBiPredicate(BiPredicate<Long,Long> f, Long t, Long u) {
+         ;;   return f.test(t,u);
+         ;; }
+
+         (def op (j/as-bipredicate (fn [t u] (> t u))))
          (. :FunctionalInterfaces :testBiPredicate op 1 2))
        """)
      :see-also '(
@@ -308,7 +336,11 @@
          (load-module :java ['java :as 'j])
          (import :com.github.jlangch.venice.demo.FunctionalInterfaces)
 
-         (def op (j/as-bifunction (fn [x y] (+ x y))))
+         ;; public static Long testBiFunction(BiFunction<Long,Long,Long> f, Long t, Long u) {
+         ;;   return f.apply(t,u);
+         ;; }
+
+         (def op (j/as-bifunction (fn [t u] (+ t u))))
          (. :FunctionalInterfaces :testBiFunction op 1 2))
        """)
      :see-also '(
@@ -327,7 +359,11 @@
          (load-module :java ['java :as 'j])
          (import :com.github.jlangch.venice.demo.FunctionalInterfaces)
 
-         (def op (j/as-biconsumer (fn [x y] (println "consumed" x y))))
+         ;; public static void testBiConsumer(BiConsumer<Long,Long> f, Long t, Long u) {
+         ;;   f.accept(t,u);
+         ;; }
+
+         (def op (j/as-biconsumer (fn [t u] (println "consumed" t u))))
          (. :FunctionalInterfaces :testBiConsumer op 1 2))
        """)
      :see-also '(
@@ -346,7 +382,11 @@
          (load-module :java ['java :as 'j])
          (import :com.github.jlangch.venice.demo.FunctionalInterfaces)
 
-         (def op (j/as-unaryoperator (fn [x] (+ x 1))))
+         ;; public static Long testUnaryOperator(UnaryOperator<Long> f, Long t) {
+         ;;   return f.apply(t);
+         ;; }
+
+         (def op (j/as-unaryoperator (fn [t] (+ t 1))))
          (. :FunctionalInterfaces :testUnaryOperator op 1))
        """)
      :see-also '(
@@ -365,7 +405,11 @@
          (load-module :java ['java :as 'j])
          (import :com.github.jlangch.venice.demo.FunctionalInterfaces)
 
-         (def op (j/as-binaryoperator (fn [x y] (+ x y))))
+         ;; public static Long testBinaryOperator(BinaryOperator<Long> f, Long t, Long u) {
+         ;;   return f.apply(t,u);
+         ;; }
+
+         (def op (j/as-binaryoperator (fn [t u] (+ t u))))
          (. :FunctionalInterfaces :testBinaryOperator op 1 2))
        """)
      :see-also '(
