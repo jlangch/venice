@@ -48,14 +48,14 @@
         """
      :examples '(
         """
-        (maven/parse-artefact "org.knowm.xchart:xchart:3.6.1")
+        (maven/parse-artefact "org.knowm.xchart:xchart:3.8.1")
         """,
         """
-        (maven/parse-artefact "org.knowm.xchart:xchart:3.6.1"
+        (maven/parse-artefact "org.knowm.xchart:xchart:3.8.1"
                               ".jar")
         """
         """
-        (maven/parse-artefact "org.knowm.xchart:xchart:3.6.1"
+        (maven/parse-artefact "org.knowm.xchart:xchart:3.8.1"
                               ".jar"
                               "https://repo1.maven.org/maven2")
         """ )
@@ -64,10 +64,10 @@
   maven/parse-artefact
 
   ([artefact]
-    (let [elements (str/split artefact ":")
-          group-id (first elements)
+    (let [elements    (str/split artefact ":")
+          group-id    (first elements)
           artefact-id (second elements)
-          version (third elements) ]
+          version     (third elements) ]
       [group-id artefact-id version]))
 
   ([artefact file-suffix]
@@ -99,18 +99,18 @@
           | :silent {true,false}  | if silent is true does not show a progress bar, defaults to true |
           """
      :examples '(
-          """(maven/download "org.knowm.xchart:xchart:3.6.1")"""
-          """(maven/download "org.knowm.xchart:xchart:3.6.1" :sources true :pom true)"""
-          """(maven/download "org.knowm.xchart:xchart:3.6.1" :dir "." :jar false :sources true)"""
-          """(maven/download "org.knowm.xchart:xchart:3.6.1" :dir "." :sources true)"""
-          """(maven/download "org.knowm.xchart:xchart:3.6.1" :dir "." :sources true :repo "https://repo1.maven.org/maven2")"""
-          """(maven/download "org.knowm.xchart:xchart:3.6.1" :dir "." :silent false)""" )
+          """(maven/download "org.knowm.xchart:xchart:3.8.1")"""
+          """(maven/download "org.knowm.xchart:xchart:3.8.1" :sources true :pom true)"""
+          """(maven/download "org.knowm.xchart:xchart:3.8.1" :dir "." :jar false :sources true)"""
+          """(maven/download "org.knowm.xchart:xchart:3.8.1" :dir "." :sources true)"""
+          """(maven/download "org.knowm.xchart:xchart:3.8.1" :dir "." :sources true :repo "https://repo1.maven.org/maven2")"""
+          """(maven/download "org.knowm.xchart:xchart:3.8.1" :dir "." :silent false)""" )
      :see-also '("maven/get", "maven/uri", "maven/parse-artefact") }
 
   maven/download [artefact & options]
 
   (let [opts        (apply hash-map options)
-        silent      (:silent opts true)
+        silent      (or (:silent opts true) (not (repl?)))
         jar         (:jar opts true)
         sources     (:sources opts false)
         pom         (:pom opts false)
@@ -147,16 +147,16 @@
           | :silent {true,false} | if silent is true does not show a progress bar, defaults to true |
           """
      :examples '(
-          """(maven/get "org.knowm.xchart:xchart:3.6.1" :jar)"""
-          """(maven/get "org.knowm.xchart:xchart:3.6.1" :jar :silent false)"""
-          """(maven/get "org.knowm.xchart:xchart:3.6.1" :sources)"""
-          """(maven/get "org.knowm.xchart:xchart:3.6.1" :jar :repo "https://repo1.maven.org/maven2")""" )
+          """(maven/get "org.knowm.xchart:xchart:3.8.1" :jar)"""
+          """(maven/get "org.knowm.xchart:xchart:3.8.1" :jar :silent false)"""
+          """(maven/get "org.knowm.xchart:xchart:3.8.1" :sources)"""
+          """(maven/get "org.knowm.xchart:xchart:3.8.1" :jar :repo "https://repo1.maven.org/maven2")""" )
      :see-also '("maven/download", "maven/uri", "maven/parse-artefact") }
 
   maven/get [artefact type & options]
 
   (let [opts         (apply hash-map options)
-        silent       (:silent opts true)
+        silent       (or (:silent opts true) (not (repl?)))
         repo         (:repo opts maven/repo)
         suffix       (maven/artefact-suffix type)
         progress-fn  (maven/progress-bar silent)
@@ -177,16 +177,16 @@
           | :repo maven-repo | a maven repo, defaults to "https://repo1.maven.org/maven2" |
           """
      :examples '(
-          """(maven/uri "org.knowm.xchart:xchart:3.6.1" :jar)"""
-          """(maven/uri "org.knowm.xchart:xchart:3.6.1" :jar :repo "https://repo1.maven.org/maven2")""" )
+          """(maven/uri "org.knowm.xchart:xchart:3.8.1" :jar)"""
+          """(maven/uri "org.knowm.xchart:xchart:3.8.1" :jar :repo "https://repo1.maven.org/maven2")""" )
      :see-also '("maven/download", "maven/get", "maven/parse-artefact") }
 
   maven/uri [artefact type & options]
 
-  (let [opts         (apply hash-map options)
-        repo         (:repo opts maven/repo)
-        suffix       (maven/artefact-suffix type)
-        [uri _]      (maven/parse-artefact artefact repo suffix)]
+  (let [opts      (apply hash-map options)
+        repo      (:repo opts maven/repo)
+        suffix    (maven/artefact-suffix type)
+        [uri _]   (maven/parse-artefact artefact repo suffix)]
     uri))
 
 

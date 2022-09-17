@@ -1626,3 +1626,11 @@
 
   ;;(core/prewalk (fn [x] (if (list? x) (macroexpand x) x)) form))
   (macroexpand-all* form))
+
+
+(defn
+  ^{ :arglists '("(repl?)")
+     :doc "Returns true if running within a REPL."
+     :examples '("(repl?)") }
+
+  repl? [] (= :repl *run-mode*))

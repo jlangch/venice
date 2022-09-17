@@ -155,6 +155,7 @@ test {
 
 [Add images to the Wiki](https://github.com/RWTH-EBC/AixLib/wiki/How-to:-Add-images-to-the-Wiki)
 
+[Enabling pull requests on GitHub wikis](https://www.growingwiththeweb.com/2016/07/enabling-pull-requests-on-github-wikis.html)
 
 ## /etc
 

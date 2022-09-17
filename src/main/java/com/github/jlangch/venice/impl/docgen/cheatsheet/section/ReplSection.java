@@ -41,6 +41,7 @@ public class ReplSection implements ISectionBuilder {
 
         final DocSection repl = new DocSection("Info", "repl.info");
         all.addSection(repl);
+        repl.addItem(diBuilder.getDocItem("repl?", false));
         repl.addItem(diBuilder.getDocItem("repl/info", false));
 
         final DocSection term = new DocSection("Terminal", "repl.terminal");

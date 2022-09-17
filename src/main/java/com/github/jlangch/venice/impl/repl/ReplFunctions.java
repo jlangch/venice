@@ -85,6 +85,8 @@ public class ReplFunctions {
                         .arglists("(repl/info)")
                         .doc(
                             "Returns information on the REPL.\n\n" +
+                            "Note: This function is only available when called from " +
+                             "within a REPL!\n\n" +
                             "E.g.: \n\n" +
                             "```\n" +
                             "{ :term-name \"JLine terminal\" \n" +
@@ -94,7 +96,8 @@ public class ReplFunctions {
                             "  :term-colors 256 \n" +
                             "  :term-class :org.repackage.org.jline.terminal.impl.PosixSysTerminal \n" +
                             "  :color-mode :light }")
-                        .seeAlso("repl/term-rows", "repl/term-cols")
+                        .seeAlso(
+                            "repl?", "repl/term-rows", "repl/term-cols")
                         .build()
             ) {
                 @Override
@@ -127,8 +130,12 @@ public class ReplFunctions {
                     VncFunction
                         .meta()
                         .arglists("(repl/term-rows)")
-                        .doc("Returns number of rows in the REPL terminal.")
-                        .seeAlso("repl/term-cols", "repl/info")
+                        .doc(
+                            "Returns number of rows in the REPL terminal.\n\n" +
+                            "Note: This function is only available when called from " +
+                            "within a REPL!")
+                        .seeAlso(
+                            "repl?", "repl/term-cols", "repl/info")
                         .build()
             ) {
                 @Override
@@ -149,8 +156,12 @@ public class ReplFunctions {
                     VncFunction
                         .meta()
                         .arglists("(repl/term-cols)")
-                        .doc("Returns number of columns in the REPL terminal.")
-                        .seeAlso("repl/term-rows", "repl/info")
+                        .doc(
+                            "Returns number of columns in the REPL terminal.\n\n" +
+                            "Note: This function is only available when called from " +
+                            "within a REPL!")
+                        .seeAlso(
+                            "repl?", "repl/term-rows", "repl/info")
                         .build()
             ) {
                 @Override
