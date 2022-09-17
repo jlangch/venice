@@ -82,7 +82,8 @@ public class JsonFunctions {
                     .examples(
                         "(json/write-str {:a 100 :b 100})",
                         "(json/write-str {:a 100 :b 100} :pretty true)")
-                    .seeAlso("json/read-str", "json/spit", "json/slurp", "json/pretty-print")
+                    .seeAlso(
+                        "json/read-str", "json/spit", "json/slurp", "json/pretty-print")
                     .build()
         ) {
             @Override
@@ -162,10 +163,10 @@ public class JsonFunctions {
                     final String encoding = encoding(options.get(new VncKeyword("encoding")));
 
                     if (out instanceof File || out instanceof Path) {
-                    	// Delegate to 'io/file-out-stream' for sandbox validation
+                        // Delegate to 'io/file-out-stream' for sandbox validation
                         final OutputStream fileOS = Coerce.toVncJavaObject(
-                        							    IOFunctionsStreams.io_file_out_stream.applyOf(args.first()),
-                        							    OutputStream.class);
+                                                        IOFunctionsStreams.io_file_out_stream.applyOf(args.first()),
+                                                        OutputStream.class);
 
                         try (BufferedWriter wr = new BufferedWriter(new OutputStreamWriter(fileOS, encoding))) {
                             final JsonAppendableWriter writer = prettyPrint
@@ -242,7 +243,8 @@ public class JsonFunctions {
                         "(json/read-str (json/write-str {:a 100 :b 100}) :key-fn keyword)",
                         "(json/read-str (json/write-str {:a 100 :b 100}) \n" +
                         "                   :value-fn (fn [k v] (if (== \"a\" k) (inc v) v)))")
-                    .seeAlso("json/write-str", "json/spit", "json/slurp", "json/pretty-print")
+                    .seeAlso(
+                        "json/write-str", "json/spit", "json/slurp", "json/pretty-print")
                     .build()
         ) {
             @Override
@@ -310,12 +312,14 @@ public class JsonFunctions {
                         "                 of Double. Default is false. |\n" +
                         "| :encoding e  | e.g :encoding :utf-8, defaults to :utf-8 |")
                     .examples(
-                        "(let [json (json/write-str {:a 100 :b 100})       \n" +
-                        "      data (bytebuf-from-string json :utf-8)]     \n" +
-                        "  (try-with [in (io/bytebuf-in-stream data)]      \n" +
-                        "    (pr-str (json/slurp in))))                    ")
+                        "(let [json (json/write-str {:a 100 :b 100 :c 1.233})]        \n" +
+                        "  (try-with [in (io/string-reader json)]                     \n" +
+                        "    (pr-str (json/slurp in))))                               ",
+                        "(let [json (json/write-str {:a 100 :b 100 :c 1.233})]        \n" +
+                        "  (try-with [in (io/string-reader json)]                     \n" +
+                        "    (pr-str (json/slurp in :decimal true :key-fn keyword)))) ")
                     .seeAlso(
-                    	"json/write-str", "json/read-str", "json/spit", "json/pretty-print")
+                        "json/write-str", "json/read-str", "json/spit", "json/pretty-print")
                     .build()
         ) {
             @Override
@@ -333,7 +337,7 @@ public class JsonFunctions {
                     try {
                         final Object in = Coerce.toVncJavaObject(args.first()).getDelegate();
 
-                        final VncHashMap options = VncHashMap.ofAll(args.slice(1));
+                        final VncHashMap options = VncHashMap.ofAll(args.rest());
                         final VncFunction key_fn = getFunctionOption(options, "key-fn");
                         final VncFunction value_fn = getFunctionOption(options, "value-fn");
                         final boolean toDecimal = isTrueOption(options, "decimal");
@@ -346,10 +350,10 @@ public class JsonFunctions {
                                 value_fn == null ? null : (k, v) -> value_fn.apply(VncList.of(k, v));
 
                         if (in instanceof File || in instanceof Path) {
-                        	// Delegate to 'io/file-in-stream' for sandbox validation
+                            // Delegate to 'io/file-in-stream' for sandbox validation
                             final InputStream fileIS = Coerce.toVncJavaObject(
-                            							    IOFunctionsStreams.io_file_in_stream.applyOf(args.first()),
-                            							    InputStream.class);
+                                                            IOFunctionsStreams.io_file_in_stream.applyOf(args.first()),
+                                                            InputStream.class);
 
                             try (BufferedReader br = new BufferedReader(new InputStreamReader(fileIS, encoding))) {
                                 return new VncJsonReader(JsonReader.from(br), keyFN, valueFN, toDecimal).read();
@@ -386,21 +390,27 @@ public class JsonFunctions {
                 VncFunction
                     .meta()
                     .arglists(
-                    	"(json/pretty-print s)")
+                        "(json/pretty-print s & options)")
                     .doc(
-                    	"Pretty prints a JSON string")
+                        "Pretty prints a JSON string\n\n" +
+                        "Options: \n\n" +
+                        "| :indent s    | The indent for indented output. Must contain spaces or " +
+                        "                 tabs only. Defaults to two spaces. |")
                     .examples(
-                    	"(-> (json/write-str {:a 100 :b 100 :c [1 2 3]})   \n" +
+                        "(-> (json/write-str {:a 100 :b 100 :c [1 2 3]})   \n" +
                         "    (json/pretty-print)                           \n" +
-                    	"    (println))                                    ")
+                        "    (println))                                    ",
+                        "(-> (json/write-str {:a 100 :b 100 :c [1 2 3]})   \n" +
+                        "    (json/pretty-print :indent \"    \")          \n" +
+                        "    (println))                                    ")
                     .seeAlso(
-                    	"json/write-str", "json/read-str", "json/spit",
-                    	"json/slurp")
+                        "json/write-str", "json/read-str", "json/spit",
+                        "json/slurp")
                     .build()
         ) {
             @Override
             public VncVal apply(final VncList args) {
-                ArityExceptions.assertArity(this, args, 1);
+                ArityExceptions.assertMinArity(this, args, 1);
 
                 final VncVal val = args.first();
 
@@ -410,8 +420,20 @@ public class JsonFunctions {
                 else {
                     try {
                         final VncString s = Coerce.toVncString(val);
+
+                        final VncHashMap options = VncHashMap.ofAll(args.rest());
+                        final String indent = Coerce.toVncString(options.get(
+                                                                   new VncKeyword("indent"),
+                                                                   new VncString("  ")))
+                                                    .getValue();
+
                         final Object o = JsonParser.any().from(s.getValue());
-                        return new VncString(JsonWriter.indent("  ").string() .value(o).done());
+
+                        return new VncString(
+                                     JsonWriter.indent(indent)
+                                               .string()
+                                               .value(o)
+                                               .done());
                     }
                     catch(Exception ex) {
                         throw new VncException("Function 'json/pretty-print'. Failed to pretty print JSON", ex);
@@ -429,12 +451,12 @@ public class JsonFunctions {
     private static VncFunction getFunctionOption(final VncHashMap options, final String optionName) {
         final VncVal val = options.get(new VncKeyword(optionName));
         if (val == Constants.Nil) {
-        	return null;
+            return null;
         }
         else {
-        	final VncFunction fn = Coerce.toVncFunction(val);
+            final VncFunction fn = Coerce.toVncFunction(val);
             fn.sandboxFunctionCallValidation();
-        	return fn;
+            return fn;
         }
     }
 

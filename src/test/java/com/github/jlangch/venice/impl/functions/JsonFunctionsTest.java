@@ -168,7 +168,7 @@ public class JsonFunctionsTest {
     }
 
     @Test
-    public void test_pretty_print() {
+    public void test_pretty_print_1() {
         final Venice venice = new Venice();
 
         final String script =
@@ -178,6 +178,21 @@ public class JsonFunctionsTest {
             "{\n" +
             "  \"a\": 100,\n" +
             "  \"b\": 100\n" +
+            "}",
+            venice.eval(script));
+    }
+
+    @Test
+    public void test_pretty_print_2() {
+        final Venice venice = new Venice();
+
+        final String script =
+                "(json/pretty-print (json/write-str {:a 100 :b 100}) :indent \"   \")";
+
+        assertEquals(
+            "{\n" +
+            "   \"a\": 100,\n" +
+            "   \"b\": 100\n" +
             "}",
             venice.eval(script));
     }

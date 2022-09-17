@@ -14,7 +14,7 @@ and this project adheres to
 
 ### Added
 
-- ...
+- an optional customized indentation string to the JSON pretty printer
 
 
 ### Fixed
