@@ -173,8 +173,8 @@
          ;;   r.run();
          ;; }
 
-         (def op (j/as-runnable (fn [] (println "running"))))
-         (. :FunctionalInterfaces :testRunnable op))
+         (defn op [] (println "running"))
+         (. :FunctionalInterfaces :testRunnable (j/as-runnable op)))
        """)
      :see-also '(
        "java/as-callable" "java/as-predicate" "java/as-function"
@@ -197,8 +197,8 @@
          ;;   return c.call();
          ;; }
 
-         (def op (j/as-callable (fn [] 4)))
-         (. :FunctionalInterfaces :testCallable op))
+         (defn op [] 4)
+         (. :FunctionalInterfaces :testCallable (j/as-callable op)))
        """)
      :see-also '(
        "java/as-runnable" "java/as-predicate" "java/as-function"
@@ -221,8 +221,8 @@
          ;;   return p.test(t);
          ;; }
 
-         (def op (j/as-predicate (fn [t] (pos? t))))
-         (. :FunctionalInterfaces :testPredicate op 4))
+         (defn op [t] (pos? t))
+         (. :FunctionalInterfaces :testPredicate (j/as-predicate op) 4))
        """)
      :see-also '(
        "java/as-runnable" "java/as-callable" "java/as-function"
@@ -245,8 +245,8 @@
          ;;   return f.apply(t);
          ;; }
 
-         (def op (j/as-function (fn [t] (+ t 1))))
-         (. :FunctionalInterfaces :testFunction op 4))
+         (defn op [t] (+ t 1))
+         (. :FunctionalInterfaces :testFunction (j/as-function op) 4))
        """)
      :see-also '(
        "java/as-runnable" "java/as-callable" "java/as-predicate"
@@ -269,8 +269,8 @@
          ;;   f.accept(t);
          ;; }
 
-         (def op (j/as-consumer (fn [t] (println "consumed" t))))
-         (. :FunctionalInterfaces :testConsumer op 4))
+         (defn op [t] (println "consumed" t))
+         (. :FunctionalInterfaces :testConsumer (j/as-consumer op) 4))
        """)
      :see-also '(
        "java/as-runnable" "java/as-callable" "java/as-predicate"
@@ -293,8 +293,8 @@
          ;;   return f.get();
          ;; }
 
-         (def op (j/as-supplier (fn [] 5)))
-         (. :FunctionalInterfaces :testSupplier op))
+         (defn op [] 5)
+         (. :FunctionalInterfaces :testSupplier (j/as-supplier op)))
        """)
      :see-also '(
        "java/as-runnable" "java/as-callable" "java/as-predicate"
@@ -317,11 +317,12 @@
          ;;   return f.test(t,u);
          ;; }
 
-         (def op (j/as-bipredicate (fn [t u] (> t u))))
-         (. :FunctionalInterfaces :testBiPredicate op 1 2))
+         (defn op [t u] (> t u))
+         (. :FunctionalInterfaces :testBiPredicate (j/as-bipredicate op) 1 2))
        """)
      :see-also '(
-       "java/as-bifunction" "java/as-biconsumer" "java/as-binaryoperator") }
+       "java/as-bifunction" "java/as-biconsumer"
+       "java/as-unaryoperator" "java/as-binaryoperator") }
 
   as-bipredicate [f] (proxify :java.util.function.BiPredicate { :test f }))
 
@@ -340,11 +341,12 @@
          ;;   return f.apply(t,u);
          ;; }
 
-         (def op (j/as-bifunction (fn [t u] (+ t u))))
-         (. :FunctionalInterfaces :testBiFunction op 1 2))
+         (defn op [t u] (+ t u))
+         (. :FunctionalInterfaces :testBiFunction (j/as-bifunction op) 1 2))
        """)
      :see-also '(
-       "java/as-bipredicate" "java/as-biconsumer" "java/as-binaryoperator") }
+       "java/as-bipredicate" "java/as-biconsumer"
+       "java/as-unaryoperator" "java/as-binaryoperator") }
 
   as-bifunction [f] (proxify :java.util.function.BiFunction { :apply f }))
 
@@ -363,11 +365,12 @@
          ;;   f.accept(t,u);
          ;; }
 
-         (def op (j/as-biconsumer (fn [t u] (println "consumed" t u))))
-         (. :FunctionalInterfaces :testBiConsumer op 1 2))
+         (defn op [t u] (println "consumed" t u))
+         (. :FunctionalInterfaces :testBiConsumer (j/as-biconsumer op) 1 2))
        """)
      :see-also '(
-       "java/as-bipredicate" "java/as-bifunction" "java/as-binaryoperator") }
+       "java/as-bipredicate" "java/as-bifunction"
+       "java/as-unaryoperator" "java/as-binaryoperator") }
 
   as-biconsumer [f] (proxify :java.util.function.BiConsumer { :accept f }))
 
@@ -386,11 +389,12 @@
          ;;   return f.apply(t);
          ;; }
 
-         (def op (j/as-unaryoperator (fn [t] (+ t 1))))
-         (. :FunctionalInterfaces :testUnaryOperator op 1))
+         (defn op [t] (+ t 1))
+         (. :FunctionalInterfaces :testUnaryOperator (j/as-unaryoperator op) 1))
        """)
      :see-also '(
-       "java/as-bipredicate" "java/as-bifunction" "java/as-biconsumer" ) }
+       "java/as-bipredicate" "java/as-bifunction" "java/as-biconsumer"
+       "java/as-binaryoperator") }
 
   as-unaryoperator [f] (proxify :java.util.function.UnaryOperator { :apply f }))
 
@@ -409,10 +413,11 @@
          ;;   return f.apply(t,u);
          ;; }
 
-         (def op (j/as-binaryoperator (fn [t u] (+ t u))))
-         (. :FunctionalInterfaces :testBinaryOperator op 1 2))
+         (defn op [t u] (+ t u))
+         (. :FunctionalInterfaces :testBinaryOperator (j/as-binaryoperator op) 1 2))
        """)
      :see-also '(
-       "java/as-bipredicate" "java/as-bifunction" "java/as-biconsumer" ) }
+       "java/as-bipredicate" "java/as-bifunction" "java/as-biconsumer"
+       "java/as-unaryoperator") }
 
   as-binaryoperator [f] (proxify :java.util.function.BinaryOperator { :apply f }))

@@ -385,10 +385,17 @@ public class JsonFunctions {
                 "json/pretty-print",
                 VncFunction
                     .meta()
-                    .arglists("(json/pretty-print s)")
-                    .doc("Pretty prints a JSON string")
-                    .examples("(json/pretty-print (json/write-str {:a 100 :b 100}))")
-                    .seeAlso("json/write-str", "json/read-str", "json/spit", "json/slurp")
+                    .arglists(
+                    	"(json/pretty-print s)")
+                    .doc(
+                    	"Pretty prints a JSON string")
+                    .examples(
+                    	"(-> (json/write-str {:a 100 :b 100 :c [1 2 3]})   \n" +
+                        "    (json/pretty-print)                           \n" +
+                    	"    (println))                                    ")
+                    .seeAlso(
+                    	"json/write-str", "json/read-str", "json/spit",
+                    	"json/slurp")
                     .build()
         ) {
             @Override
