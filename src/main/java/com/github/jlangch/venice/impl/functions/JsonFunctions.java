@@ -400,9 +400,9 @@ public class JsonFunctions {
                         "(-> (json/write-str {:a 100 :b 100 :c [1 2 3]})   \n" +
                         "    (json/pretty-print)                           \n" +
                         "    (println))                                    ",
-                        "(-> (json/write-str {:a 100 :b 100 :c [1 2 3]})   \n" +
-                        "    (json/pretty-print :indent \"    \")          \n" +
-                        "    (println))                                    ")
+                        "(-> (json/write-str {:a 100 :b 100 :c [1 2 {:x 7 :y 8}] :d {:z 9}})   \n" +
+                        "    (json/pretty-print :indent \"    \")                              \n" +
+                        "    (println))                                                        ")
                     .seeAlso(
                         "json/write-str", "json/read-str", "json/spit",
                         "json/slurp")
