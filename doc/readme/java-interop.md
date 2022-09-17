@@ -250,27 +250,12 @@ use
 
 ```clojure
 (do
-    (import :java.util.function.Predicate)
-    (import :java.util.function.Function)
-    (import :java.util.stream.Collectors)
+  (load-module :java)
 
-    (-> (. [1 2 3 4] :stream)
-        (. :filter (proxify :Predicate { :test #(> % 2) }))
-        (. :map (proxify :Function { :apply #(* % 10) }))
-        (. :collect (. :Collectors :toList))))
-```
-
-This can be simplified to:
-
-```clojure
-(do
-    (load-module :java ['java :as 'j])
-    (import :java.util.stream.Collectors)
-
-    (-> (. [1 2 3 4] :stream)
-        (. :filter (j/as-predicate #(> % 2)))
-        (. :map (j/as-function #(* % 10)))
-        (. :collect (. :Collectors :toList))))
+  (-> (. [1 2 3 4 5 6 7 8] :stream)
+      (. :filter (java/as-predicate #(> % 2)))
+      (. :map (java/as-function #(* % 10)))
+      (. :reduce 0 (java/as-binaryoperator #(+ %1 %2)))))
 ```
 
 _Note:_  this is not the fastest way to filter/map collections
@@ -280,17 +265,18 @@ _Note:_  this is not the fastest way to filter/map collections
 
 ```clojure
 (do
-   (import :org.test.User :java.time.LocalDate)
+   (import :com.github.jlangch.venice.demo.Person)
+   (import :java.time.LocalDate)
 
    ;; get the first item of a Java list
    (first
       (doto (. :java.util.ArrayList :new)
             (. :add 1)
-            (. :add 2))))
+            (. :add 2)))
 
    (def users [
-        (. :User :new "john" 24 (. :LocalDate :of 1994 7 21)))
-        (. :User :new "pete" 48 (. :LocalDate :of 1970 1 12))) ])
+        (. :Person :new "John" "Smith" (. :LocalDate :of 1994 7 21) :Male)
+        (. :Person :new "Mary" "Johnson" (. :LocalDate :of 1970 1 12) :Female) ])
 
    (str (filter #(> (:age %) 30) users)))
 ```
