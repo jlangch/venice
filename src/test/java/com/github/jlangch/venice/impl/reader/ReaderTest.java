@@ -23,6 +23,7 @@ package com.github.jlangch.venice.impl.reader;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.math.BigDecimal;
@@ -30,6 +31,7 @@ import java.math.BigInteger;
 
 import org.junit.jupiter.api.Test;
 
+import com.github.jlangch.venice.ParseError;
 import com.github.jlangch.venice.Venice;
 import com.github.jlangch.venice.impl.ModuleLoader;
 import com.github.jlangch.venice.impl.VeniceInterpreter;
@@ -61,6 +63,11 @@ public class ReaderTest {
     }
 
     @Test
+    public void testAtomInteger() {
+        assertEquals(Integer.valueOf(100), new Venice().eval("(do 100I)"));
+    }
+
+    @Test
     public void testAtomLong() {
         assertEquals(Long.valueOf(100), new Venice().eval("(do 100)"));
     }
@@ -78,6 +85,13 @@ public class ReaderTest {
     @Test
     public void testAtomBigInteger() {
         assertEquals(new BigInteger("100"), new Venice().eval("(do 100N)"));
+    }
+
+    @Test
+    public void testAtomNumber_invalid() {
+    	assertThrows(
+    			ParseError.class,
+                () -> new Venice().eval("[0 1 2false]"));
     }
 
     @Test
