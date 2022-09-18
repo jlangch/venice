@@ -21,6 +21,7 @@
  */
 package com.github.jlangch.venice.impl.repl;
 
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
 import org.junit.jupiter.api.Test;
@@ -32,15 +33,34 @@ import com.github.jlangch.venice.Venice;
 public class ReplFunctionsTest {
 
     @Test
-    public void test() {
-        final Venice venice = new Venice();
+    public void test_1() {
+        assertFalse((Boolean)new Venice().eval("(repl?)"));
+    }
 
-        final String script = "(repl/info)";
-
+    @Test
+    public void test_info() {
         // ensure that REPL functions like 'repl/info are not available
         // if not run within a REPL!
         assertThrows(
                 SymbolNotFoundException.class,
-                () -> venice.eval(script));
+                () -> new Venice().eval("(repl/info)"));
+    }
+
+    @Test
+    public void test_term_rows() {
+        // ensure that REPL functions like 'repl/term-rows are not available
+        // if not run within a REPL!
+        assertThrows(
+                SymbolNotFoundException.class,
+                () -> new Venice().eval("(repl/term-rows)"));
+    }
+
+    @Test
+    public void test_term_cols() {
+        // ensure that REPL functions like 'repl/term-cols are not available
+        // if not run within a REPL!
+        assertThrows(
+                SymbolNotFoundException.class,
+                () -> new Venice().eval("(repl/term-cols)"));
     }
 }

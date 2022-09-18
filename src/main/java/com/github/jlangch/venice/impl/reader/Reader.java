@@ -149,92 +149,105 @@ public class Reader {
     private static VncVal read_atom(final Reader rdr) {
         final Token token = rdr.next();
 
-        final String sToken = token.getToken();
+        try {
+            final String sToken = token.getToken();
 
-        switch(getAtomType(token)) {
-            case NIL:
-                return Constants.Nil;
+            switch(getAtomType(token)) {
+                case NIL:
+                    return Constants.Nil;
 
-            case TRUE:
-                return VncBoolean.True;
+                case TRUE:
+                    return VncBoolean.True;
 
-            case FALSE:
-                return VncBoolean.False;
+                case FALSE:
+                    return VncBoolean.False;
 
-            case INTEGER: {
-                final boolean hex = isHexNumberLiteral(sToken);
-                return new VncInteger(
-                            hex ? Integer.parseInt(sToken.substring(2, sToken.length()-1), 16)
-                                : Integer.parseInt(butlast(sToken).replaceAll("_", "")),
-                            MetaUtil.toMeta(token));
-            }
-
-            case LONG: {
-                final boolean hex = isHexNumberLiteral(sToken);
-                return new VncLong(
-                            hex ? Long.parseLong(sToken.substring(2), 16)
-                                : Long.parseLong(sToken.replaceAll("_", "")),
-                            MetaUtil.toMeta(token));
-            }
-
-            case DOUBLE:
-                return new VncDouble(
-                            Double.parseDouble(sToken.replaceAll("_", "")),
-                            MetaUtil.toMeta(token));
-
-            case DECIMAL:
-                return new VncBigDecimal(
-                            new BigDecimal(butlast(sToken).replaceAll("_", "")),
-                            MetaUtil.toMeta(token));
-
-            case BIGINT: {
-                final boolean hex = isHexNumberLiteral(sToken);
-                return new VncBigInteger(
-                            hex ? new BigInteger(butlast(sToken.substring(2)).replaceAll("_", ""), 16)
-                                : new BigInteger(butlast(sToken).replaceAll("_", "")),
-                            MetaUtil.toMeta(token));
-            }
-
-            case STRING: {
-                    final String s = unescapeAndDecodeUnicode(
-                                        StringUtil.removeEnd(
-                                                sToken.substring(1),
-                                                "\""));
-                    return interpolate(s, rdr.filename, token.getLine(), token.getColumn())
-                            .withMeta(MetaUtil.toMeta(token));
+                case INTEGER: {
+                    final boolean hex = isHexNumberLiteral(sToken);
+                    return new VncInteger(
+                                hex ? Integer.parseInt(sToken.substring(2, sToken.length()-1), 16)
+                                    : Integer.parseInt(butlast(sToken).replaceAll("_", "")),
+                                MetaUtil.toMeta(token));
                 }
 
-            case STRING_BLOCK: {
-                    final String s = unescapeAndDecodeUnicode(
-                                        StringUtil.stripIndentIfFirstLineEmpty(
+                case LONG: {
+                    final boolean hex = isHexNumberLiteral(sToken);
+                    return new VncLong(
+                                hex ? Long.parseLong(sToken.substring(2), 16)
+                                    : Long.parseLong(sToken.replaceAll("_", "")),
+                                MetaUtil.toMeta(token));
+                }
+
+                case DOUBLE:
+                    return new VncDouble(
+                                Double.parseDouble(sToken.replaceAll("_", "")),
+                                MetaUtil.toMeta(token));
+
+                case DECIMAL:
+                    return new VncBigDecimal(
+                                new BigDecimal(butlast(sToken).replaceAll("_", "")),
+                                MetaUtil.toMeta(token));
+
+                case BIGINT: {
+                    final boolean hex = isHexNumberLiteral(sToken);
+                    return new VncBigInteger(
+                                hex ? new BigInteger(butlast(sToken.substring(2)).replaceAll("_", ""), 16)
+                                    : new BigInteger(butlast(sToken).replaceAll("_", "")),
+                                MetaUtil.toMeta(token));
+                }
+
+                case STRING: {
+                        final String s = unescapeAndDecodeUnicode(
                                             StringUtil.removeEnd(
-                                                        sToken.substring(3),
-                                                        "\"\"\"")));
-                    return interpolate(s, rdr.filename, token.getLine(), token.getColumn())
+                                                    sToken.substring(1),
+                                                    "\""));
+                        return interpolate(s, rdr.filename, token.getLine(), token.getColumn())
                                 .withMeta(MetaUtil.toMeta(token));
-                }
-
-            case KEYWORD:
-                return new VncKeyword(sToken, MetaUtil.toMeta(token));
-
-            case SYMBOL: {
-                    final VncSymbol sym = new VncSymbol(sToken);
-                    if (rdr.autoGenSym.isWithinSyntaxQuote() && rdr.autoGenSym.isAutoGenSymbol(sym)) {
-                        // auto gen symbols within syntax quote:  aaa# -> aaa__42__auto
-                        return rdr.autoGenSym.lookup(sym);
                     }
-                    else {
-                        rdr.anonymousFnArgs.addSymbol(sym);
-                        return sym.withMeta(MetaUtil.toMeta(token));
-                    }
-                }
 
-            case UNKNOWN:
-            default:
-                throw new ParseError(formatParseError(
-                        token,
-                        "Unrecognized token '%s'",
-                        token.getToken()));
+                case STRING_BLOCK: {
+                        final String s = unescapeAndDecodeUnicode(
+                                            StringUtil.stripIndentIfFirstLineEmpty(
+                                                StringUtil.removeEnd(
+                                                            sToken.substring(3),
+                                                            "\"\"\"")));
+                        return interpolate(s, rdr.filename, token.getLine(), token.getColumn())
+                                    .withMeta(MetaUtil.toMeta(token));
+                    }
+
+                case KEYWORD:
+                    return new VncKeyword(sToken, MetaUtil.toMeta(token));
+
+                case SYMBOL: {
+                        final VncSymbol sym = new VncSymbol(sToken);
+                        if (rdr.autoGenSym.isWithinSyntaxQuote() && rdr.autoGenSym.isAutoGenSymbol(sym)) {
+                            // auto gen symbols within syntax quote:  aaa# -> aaa__42__auto
+                            return rdr.autoGenSym.lookup(sym);
+                        }
+                        else {
+                            rdr.anonymousFnArgs.addSymbol(sym);
+                            return sym.withMeta(MetaUtil.toMeta(token));
+                        }
+                    }
+
+                case UNKNOWN:
+                default:
+                    throw new ParseError(formatParseError(
+                            token,
+                            "Unrecognized token '%s'",
+                            token.getToken()));
+            }
+        }
+        catch(ParseError ex) {
+            throw ex;
+        }
+        catch(NumberFormatException ex) {
+            throw new ParseError(formatParseError(
+                    token, "Failed to parse number atom: " + ex.getMessage()));
+        }
+        catch(Exception ex) {
+            throw new ParseError(formatParseError(
+                    token, "Failed to parse atom: " + ex.getMessage()));
         }
     }
 
