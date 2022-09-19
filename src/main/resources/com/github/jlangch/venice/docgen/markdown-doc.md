@@ -88,7 +88,7 @@ Ordered List
 ¶
 
 
-Mulitiline list items
+Mulitiline list items with explicit line breaks:
 
 ```
 * item 1
@@ -102,6 +102,27 @@ Mulitiline list items
 * item 2¶
   next line¶
   next line 
+* item 3
+
+
+Mulitiline list items with auto line breaks:
+
+```
+* item 1
+* Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod 
+  tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim 
+  veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex 
+  ea commodo consequat. Duis aute irure dolor in reprehenderit in 
+  voluptate velit esse cillum dolore eu fugiat nulla pariatur. 
+* item 3
+```
+
+* item 1
+* Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod 
+  tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim 
+  veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex 
+  ea commodo consequat. Duis aute irure dolor in reprehenderit in 
+  voluptate velit esse cillum dolore eu fugiat nulla pariatur. 
 * item 3
 
 ¶

@@ -15,11 +15,11 @@ and this project adheres to
 ### Added
 
 - an optional customized indentation string to the JSON pretty printer
-
+- proxy builder for Java functional UnaryPredicate interface
 
 ### Fixed
 
-- proxies for Java functional BiPredicate and BiConsumer interfaces 
+- proxy builder for Java functional BiPredicate and BiConsumer interfaces 
 
 
 
