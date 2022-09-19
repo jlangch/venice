@@ -191,7 +191,7 @@ public class TableBlockParserTest {
     @Test
     public void test_basic_2rows_3() {
         final String md = "|c1|c2|c3|\n" +
-                            "|d1|d2|d3|";
+                          "|d1|d2|d3|";
 
         Blocks blocks = new BlockParser(md).parse();
 
@@ -343,7 +343,7 @@ public class TableBlockParserTest {
     @Test
     public void test_format_1row_5() {
         final String md = "|:-|:-:|-:|\n" +
-                            "|c1|c2|c3|";
+                          "|c1|c2|c3|";
 
         Blocks blocks = new BlockParser(md).parse();
 
@@ -375,8 +375,8 @@ public class TableBlockParserTest {
     @Test
     public void test_format_2rows_1() {
         final String md = "|:-|:-:|-:|\n" +
-                              "|c1|c2|c3|\n" +
-                            "|d1|d2|d3|";
+                          "|c1|c2|c3|\n" +
+                          "|d1|d2|d3|";
 
         Blocks blocks = new BlockParser(md).parse();
 
@@ -420,8 +420,8 @@ public class TableBlockParserTest {
     @Test
     public void test_format_2rows_2() {
         final String md = "| :--- | :---: | ---: |\n" +
-                              "|c1|c2|c3|\n" +
-                            "|d1|d2|d3|";
+                          "|c1|c2|c3|\n" +
+                          "|d1|d2|d3|";
 
         Blocks blocks = new BlockParser(md).parse();
 
@@ -517,5 +517,46 @@ public class TableBlockParserTest {
     // Header - one row
     // -----------------------------------------------------------------------------
 
+    @Test
+    public void test_header() {
+        final String md = "|h1|h2|h3|\n" +
+        		          "| :-- | :--: | --: |\n" +
+                          "|c1|c2|c3|";
+
+        Blocks blocks = new BlockParser(md).parse();
+
+        assertEquals(1, blocks.size());
+
+        assertTrue(blocks.get(0) instanceof TableBlock);
+
+        TableBlock table = (TableBlock)blocks.get(0);
+
+        assertTrue(table.hasHeader());
+        assertEquals(3, table.cols());
+        assertEquals(1, table.bodyRows());
+
+        assertEquals(HorzAlignment.LEFT, table.format(0).horzAlignment());
+        assertEquals(HorzAlignment.CENTER, table.format(1).horzAlignment());
+        assertEquals(HorzAlignment.RIGHT, table.format(2).horzAlignment());
+
+
+        // header
+
+        assertEquals("h1", ((TextChunk)table.headerCell(0).getChunks().get(0)).getText());
+        assertEquals("h2", ((TextChunk)table.headerCell(1).getChunks().get(0)).getText());
+        assertEquals("h3", ((TextChunk)table.headerCell(2).getChunks().get(0)).getText());
+
+
+        // row 1
+
+        assertEquals("c1", ((TextChunk)table.bodyCell(0, 0).getChunks().get(0)).getText());
+        assertEquals(TextChunk.Format.NORMAL, ((TextChunk)table.bodyCell(0, 0).getChunks().get(0)).getFormat());
+
+        assertEquals("c2", ((TextChunk)table.bodyCell(0, 1).getChunks().get(0)).getText());
+        assertEquals(TextChunk.Format.NORMAL, ((TextChunk)table.bodyCell(0, 1).getChunks().get(0)).getFormat());
+
+        assertEquals("c3", ((TextChunk)table.bodyCell(0, 2).getChunks().get(0)).getText());
+        assertEquals(TextChunk.Format.NORMAL, ((TextChunk)table.bodyCell(0, 2).getChunks().get(0)).getFormat());
+    }
 
 }

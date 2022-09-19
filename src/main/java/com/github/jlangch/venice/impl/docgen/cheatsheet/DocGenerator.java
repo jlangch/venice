@@ -140,7 +140,7 @@ public class DocGenerator {
             final List<DocSection> right = getRightSections();
             final List<DocSection> leftModules = getModulesLeftSections();
             final List<DocSection> rightModules = getModulesRightSections();
-            final List<MarkdownDoc> topics = getTopics();
+            final List<MarkdownDoc> topics = getMarkdownTopics();
 
             validateUniqueSectionsId(left, right);
 
@@ -309,7 +309,7 @@ public class DocGenerator {
         return content;
     }
 
-    private List<MarkdownDoc> getTopics() {
+    private List<MarkdownDoc> getMarkdownTopics() {
         final List<MarkdownDoc> topics = new ArrayList<>();
 
         topics.add(new MarkdownDoc(

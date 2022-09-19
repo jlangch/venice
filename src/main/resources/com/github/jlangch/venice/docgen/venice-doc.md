@@ -17,17 +17,20 @@ Define a function `add` with documentation:
 
 ```venice
 (defn
-  ^{ :arglists '("(add)", "(add x)", "(add x y)", "(add x y & more)")
-     :doc """
-          Returns the sum of the numbers.
-          `(add)` returns 0.
-          """
+  ^{ :arglists '(
+        "(add)", "(add x)", "(add x y)", "(add x y & more)")
+     :doc 
+        """
+        Returns the sum of the numbers.
+        `(add)` returns 0.
+        """
      :examples '(
-         "(add)",
-         "(add 1)",
-         "(add 1 2)",
-         "(add 1 2 3 4)")
-     :see-also '("+", "-", "*", "/") }
+        "(add)",
+        "(add 1)",
+        "(add 1 2)",
+        "(add 1 2 3 4)")
+     :see-also '(
+        "+", "-", "*", "/") }
 
   add
 
@@ -85,7 +88,7 @@ The documentation is defined as a Venice metadata `map`:
 | [![text-align: left; width: 15%]] | [![text-align: left]]            |
 | :arglist  | the optional arglist, a list of variadic arg specs       |
 | :doc      | the documentation in [Venice markdown](#markdown) format |
-| :examples | optional examples, a list of Venice scripts. ¶ use triple quotes for multi-line scripts |
+| :examples | optional examples, a list of Venice scripts. ¶ Use triple quotes for multi-line scripts |
 | :see-also | an optional list of cross referenced functions           |
 
 
