@@ -192,6 +192,25 @@ Width header
 | 200   |  200  |   200 |
 | 30000 | 30000 | 30000 |
 
+
+PDF rendered tables have always a width of 100%. In some use 
+cases an additional left aligned column can trick the rendered 
+table:  
+
+```
+| Col 1 | Col 2 | Col 3 | &nbsp; |
+| :---  | :---: | ----: | :---   |
+| 1     |   1   |     1 | &nbsp; | 
+| 200   |  200  |   200 | &nbsp; |
+| 30000 | 30000 | 30000 | &nbsp; |
+```
+
+| Col 1 | Col 2 | Col 3 | &nbsp; |
+| :---  | :---: | ----: | :---   |
+| 1     |   1   |     1 | &nbsp; | 
+| 200   |  200  |   200 | &nbsp; |
+| 30000 | 30000 | 30000 | &nbsp; |
+
 ¶
 
 Line breaks in cells

@@ -27,6 +27,7 @@ import java.util.stream.Collectors;
 
 import com.github.jlangch.venice.impl.reader.CharacterReader;
 import com.github.jlangch.venice.impl.reader.LineReader;
+import com.github.jlangch.venice.impl.util.UTF8;
 import com.github.jlangch.venice.impl.util.markdown.chunk.Chunks;
 import com.github.jlangch.venice.impl.util.markdown.chunk.LineBreakChunk;
 import com.github.jlangch.venice.impl.util.markdown.chunk.RawChunk;
@@ -105,7 +106,7 @@ public class TableBlockParser {
         while(line != null && isRow(line)) {
             reader.consume();
 
-            rows.add(line.trim());
+            rows.add(line.trim().replaceAll("&nbsp;", String.valueOf(UTF8.ZERO_WIDTH_SPACE)));
 
             line = reader.peek();
         }

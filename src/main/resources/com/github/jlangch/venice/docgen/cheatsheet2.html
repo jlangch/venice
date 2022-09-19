@@ -464,7 +464,7 @@ ${ (when pdfmode }$<?xml version="1.0" encoding="UTF-8"?>${ ) }$${ (when-not pdf
                 margin: 0 0 0.8em 0;
             }           
             table.md-table {
-                width: fit-content;
+                width: ${= (if pdfmode "auto" "fit-content") }$;
                 border-collapse: collapse;
                 border-spacing: 0;
                 padding-left: 2em;

@@ -9150,6 +9150,8 @@ public class CoreFunctions {
     }
 
     private static String renderCharLiteralsMarkdownTable() {
+    	// note: set an explicit column width to prevent line breaks
+    	//       in the first column!
         return "| Char Literal                      | Unicode | Char | \n" +
                "| [![width: 25%; text-align: left]] | :------ | :--- | \n" +
                 VncChar
