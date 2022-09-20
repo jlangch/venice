@@ -48,6 +48,11 @@ public class FunctionMetaBuilder {
         return this;
     }
 
+    public FunctionMetaBuilder added(final String version) {
+        meta.put(MetaUtil.ADDED, new VncString(version));
+        return this;
+    }
+
     public FunctionMetaBuilder examples(final String... examples) {
         meta.put(MetaUtil.EXAMPLES, toVncList(examples));
         return this;

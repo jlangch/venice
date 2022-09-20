@@ -1152,6 +1152,7 @@ public class TransducerFunctions {
                         "`(predicate item)` returns logical false.¶" +
                         "Returns a transducer when no collection is provided.")
                     .examples(
+                        "(remove nil? [1 nil nil 4 5 6])",
                         "(remove even? [1 2 3 4 5 6 7])",
                         "(remove #{3 5} '(1 3 5 7 9))",
                         "(remove #(= 3 %) '(1 2 3 4 5 6))")

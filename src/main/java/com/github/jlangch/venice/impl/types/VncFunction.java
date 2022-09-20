@@ -211,6 +211,10 @@ public abstract class VncFunction
         return getMetaVal(MetaUtil.DOC);
     }
 
+    public VncVal getAdded() {
+        return getMetaVal(MetaUtil.ADDED);
+    }
+
     public VncList getExamples() {
         return (VncList)getMetaVal(MetaUtil.EXAMPLES, VncList.empty());
     }
