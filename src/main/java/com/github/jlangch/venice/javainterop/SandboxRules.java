@@ -754,7 +754,8 @@ public class SandboxRules {
                     .collect(Collectors.joining("\n"));
     }
 
-    private static String BASE = Venice.class.getPackage().getName();
+
+    private static final String BASE = Venice.class.getPackage().getName();
 
     private static final List<String> SYSTEM_CLASS_RULES =
             Arrays.asList(
@@ -870,7 +871,7 @@ public class SandboxRules {
             Collections.unmodifiableSet(
                 new HashSet<>());
 
-    public static Set<String> DEFAULT_WHITELISTED_MODULES =
+    public static final Set<String> DEFAULT_WHITELISTED_MODULES =
             Collections.unmodifiableSet(
                 new HashSet<>(
                     Arrays.asList(
