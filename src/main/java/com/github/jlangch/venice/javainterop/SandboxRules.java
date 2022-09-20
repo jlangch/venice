@@ -820,7 +820,6 @@ public class SandboxRules {
                 "class:java.lang.Float",
                 "class:java.lang.Double",
                 "class:java.lang.Byte",
-                "class:java.lang.StringBuffer",
                 "class:java.lang.StringBuilder",
 
                 "class:java.time.ZonedDateTime:*",
