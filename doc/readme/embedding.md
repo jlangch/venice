@@ -109,9 +109,12 @@ public class Embed_02_PassingParameters {
 ```java
 import com.github.jlangch.venice.Parameters;
 import com.github.jlangch.venice.Venice;
+import com.github.jlangch.venice.VncException;
 import com.github.jlangch.venice.util.CapturingPrintStream;
 
+
 public class Embed_03_StdOutRedirection {
+
     public static void main(final String[] args) {
         final Venice venice = new Venice();
 
@@ -123,21 +126,27 @@ public class Embed_03_StdOutRedirection {
 
         // case 2: capture stdout within the script and return it as the result
         System.out.println(
-           venice.eval("(with-out-str (println [1 2]))"));
+        		"stdout: " + venice.eval("(with-out-str (println [1 2]))"));
+        // stdout: [1 2]
 
         // case 3: capturing stdout/stderr preserving the script result
         try(CapturingPrintStream ps_out = new CapturingPrintStream();
             CapturingPrintStream ps_err = new CapturingPrintStream()
         ) {
            final Object result = venice.eval(
-                                   "(do (println [1 2]) 100)",
+                                   "(do (println [3 4]) (println *err* :failure) 100)",
                                    Parameters.of("*out*", ps_out,
                                                  "*err*", ps_err));
            System.out.println("result: " + result);
-           System.out.println("stdout: " + ps_out.getOutput());
-           System.out.println("stderr: " + ps_err.getOutput());
+           System.out.print("stdout: " + ps_out.getOutput());
+           System.out.print("stderr: " + ps_err.getOutput());
+
+           // result: 100
+           // stdout: [3 4]
+           // stderr: :failure
         }
     }
+
 }
 ```
 
