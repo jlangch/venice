@@ -55,7 +55,7 @@ public class Embed_03_StdOutRedirection {
 
         // case 2: capture stdout within the script and return it as the result
         System.out.println(
-        		"stdout: " + venice.eval("(with-out-str (println [1 2]))"));
+                "stdout: " + venice.eval("(with-out-str (println [1 2]))"));
         // stdout: [1 2]
 
         // case 3: capturing stdout/stderr preserving the script result
