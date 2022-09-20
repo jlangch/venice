@@ -116,7 +116,7 @@ public class RegexFunctions {
                 final VncVal pattern = args.first();
                 final Pattern p = Types.isVncString(pattern)
                                     ? Pattern.compile(((VncString)pattern).getValue())
-                                    : (Pattern)Coerce.toVncJavaObject(args.first()).getDelegate();
+                                    : Coerce.toVncJavaObject(args.first(), Pattern.class);
                 final String s = Coerce.toVncString(args.second()).getValue();
                 return new VncJavaObject(p.matcher(s));
             }
@@ -155,7 +155,7 @@ public class RegexFunctions {
                     return VncBoolean.of(m.matches());
                 }
                 else {
-                    final Matcher m = (Matcher)Coerce.toVncJavaObject(args.first()).getDelegate();
+                    final Matcher m = Coerce.toVncJavaObject(args.first(), Matcher.class);
                     final String s = Coerce.toVncString(args.second()).getValue();
                     return VncBoolean.of(m.reset(s).matches());
                 }
@@ -225,7 +225,7 @@ public class RegexFunctions {
                 final VncVal pattern = args.first();
                 final Pattern p = Types.isVncString(pattern)
                                     ? Pattern.compile(((VncString)pattern).getValue())
-                                    : (Pattern)Coerce.toVncJavaObject(args.first()).getDelegate();
+                                    : Coerce.toVncJavaObject(args.first(), Pattern.class);
                 final String s = Coerce.toVncString(args.second()).getValue();
                 final Matcher m = p.matcher(s);
 
@@ -318,7 +318,7 @@ public class RegexFunctions {
             public VncVal apply(final VncList args) {
                 ArityExceptions.assertArity(this, args, 1);
 
-                final Matcher m = (Matcher)Coerce.toVncJavaObject(args.first()).getDelegate();
+                final Matcher m = Coerce.toVncJavaObject(args.first(), Matcher.class);
                 if (m.find()) {
                     return new VncString(m.group());
                 }
@@ -353,7 +353,7 @@ public class RegexFunctions {
             public VncVal apply(final VncList args) {
                 ArityExceptions.assertArity(this, args, 1);
 
-                final Matcher m = (Matcher)Coerce.toVncJavaObject(args.first()).getDelegate();
+                final Matcher m = Coerce.toVncJavaObject(args.first(), Matcher.class);
                 if (m.find()) {
                     return VncHashMap.of(
                             new VncKeyword("start"), new VncLong(m.start()),
@@ -389,7 +389,7 @@ public class RegexFunctions {
             public VncVal apply(final VncList args) {
                 ArityExceptions.assertArity(this, args, 1);
 
-                final Matcher m = (Matcher)Coerce.toVncJavaObject(args.first()).getDelegate();
+                final Matcher m = Coerce.toVncJavaObject(args.first(), Matcher.class);
                 final List<VncVal> matches = new ArrayList<>();
                 while (m.find()) {
                     matches.add(new VncString(m.group()));
@@ -420,7 +420,7 @@ public class RegexFunctions {
             public VncVal apply(final VncList args) {
                 ArityExceptions.assertArity(this, args, 1);
 
-                final Matcher m = (Matcher)Coerce.toVncJavaObject(args.first()).getDelegate();
+                final Matcher m = Coerce.toVncJavaObject(args.first(), Matcher.class);
                 final List<VncVal> groups = new ArrayList<>();
                 while (m.find()) {
                     groups.add(
@@ -456,7 +456,7 @@ public class RegexFunctions {
             public VncVal apply(final VncList args) {
                 ArityExceptions.assertArity(this, args, 2);
 
-                final Matcher m = (Matcher)Coerce.toVncJavaObject(args.first()).getDelegate();
+                final Matcher m = Coerce.toVncJavaObject(args.first(), Matcher.class);
                 final String s = Coerce.toVncString(args.second()).getValue();
 
                 return new VncJavaObject(m.reset(s));
@@ -487,7 +487,7 @@ public class RegexFunctions {
             public VncVal apply(final VncList args) {
                 ArityExceptions.assertArity(this, args, 2);
 
-                final Matcher m = (Matcher)Coerce.toVncJavaObject(args.first()).getDelegate();
+                final Matcher m = Coerce.toVncJavaObject(args.first(), Matcher.class);
                 final int g = Coerce.toVncLong(args.second()).getValue().intValue();
 
                 if (g >= 0 && g <= m.groupCount()) {

@@ -523,7 +523,7 @@ public class StringFunctions {
                     return new VncString(StringUtil.replace(text, searchString, replacement, 1000000, ignoreCase));
                 }
                 else if (Types.isVncJavaObject(search, Pattern.class)) {
-                    final Pattern p = (Pattern)((VncJavaObject)search).getDelegate();
+                    final Pattern p = Coerce.toVncJavaObject(search, Pattern.class);
 
                     final Matcher m = p.matcher(text);
                     return new VncString(m.replaceAll(replacement));
@@ -581,7 +581,7 @@ public class StringFunctions {
                     return new VncString(StringUtil.replace(text, searchString, replacement, (int)nFirst, ignoreCase));
                 }
                 else if (Types.isVncJavaObject(search, Pattern.class)) {
-                    final Pattern p = (Pattern)((VncJavaObject)search).getDelegate();
+                    final Pattern p = Coerce.toVncJavaObject(search, Pattern.class);
 
                     final Matcher m = p.matcher(text);
                     return new VncString(m.replaceFirst(replacement));
@@ -985,15 +985,34 @@ public class StringFunctions {
                     return VncList.empty();
                 }
                 else {
-                    final VncString string = Coerce.toVncString(args.first());
-                    final VncString regex = Coerce.toVncString(args.second());
+                    final String str = Coerce.toVncString(args.first()).getValue();
 
-                    return VncList.ofList(
-                            Arrays
-                                .asList(string.getValue().split(regex.getValue()))
-                                .stream()
-                                .map(s -> new VncString(s))
-                                .collect(Collectors.toList()));
+                    if (Types.isVncString(args.second())) {
+                        final VncString regex = Coerce.toVncString(args.second());
+
+                        return VncList.ofList(
+                                Arrays
+                                    .asList(str.split(regex.getValue()))
+                                    .stream()
+                                    .map(s -> new VncString(s))
+                                    .collect(Collectors.toList()));
+                    }
+                    else if (Types.isVncJavaObject(args.second(), Pattern.class)) {
+                        final Pattern pattern = Coerce.toVncJavaObject(args.second(), Pattern.class);
+
+                        return VncList.ofList(
+                                Arrays
+                                    .asList(pattern.split(str))
+                                    .stream()
+                                    .map(s -> new VncString(s))
+                                    .collect(Collectors.toList()));
+                    }
+                    else {
+                        throw new VncException(String.format(
+                                "Function 'str/split' does not allow %s regex pattern. " +
+                                "Expected a string or a java.util.regex.Pattern",
+                                Types.getType(args.second())));
+                    }
                 }
             }
 
