@@ -270,6 +270,14 @@ public class HighlightParser {
                     else if (t.charAt(0) == '(') {  // anonymous function literal #(> % 2)
                         process_list('(' , ')');
                     }
+                    else if (t.getType() == TokenType.STRING) {
+                    	next();
+                        String s = t.getToken();
+                        if (s.startsWith("\"")) {
+                        	// regex pattern: #"[0-9]+"
+                            addItem(s, STRING);
+                        }
+                     }
                 }
                 else {
                     addItem(sToken, UNKNOWN);
