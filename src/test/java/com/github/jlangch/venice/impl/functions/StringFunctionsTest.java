@@ -558,6 +558,13 @@ public class StringFunctionsTest {
         assertEquals("(ab cd ef)", venice.eval("(str (str/split \"ab:cd:ef\" #\":\"))"));
         assertEquals("(ab cd ef)", venice.eval("(str (str/split \"ab:cd:ef\" #\" *: *\"))"));
         assertEquals("(ab:cd:ef)", venice.eval("(str (str/split \"ab:cd:ef\" #\" +\"))"));
+
+        assertEquals(
+            "(\"q\" \"w\" \"e\" \"r\" \"t\" \"y\" \"u\" \"i\" \"o\" \"p\")",
+            venice.eval("(pr-str (str/split \"q1w2e3r4t5y6u7i8o9p0\" #\"\\d+\"))"));
+        assertEquals(
+            "(\"q\" \"w\" \"e\" \"r\" \"t5y6u7i8o9p0\")",
+            venice.eval("(pr-str (str/split \"q1w2e3r4t5y6u7i8o9p0\" #\"\\d+\" 5))"));
     }
 
     @Test

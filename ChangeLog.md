@@ -17,6 +17,10 @@ and this project adheres to
 - an optional customized indentation string to the JSON pretty printer
 - proxy builder for Java functional UnaryPredicate interface
 
+### Improved
+
+- `str/split` to support an optional limit
+
 ### Fixed
 
 - proxy builder for Java functional BiPredicate and BiConsumer interfaces 

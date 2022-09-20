@@ -967,19 +967,26 @@ public class StringFunctions {
                 "str/split",
                 VncFunction
                     .meta()
-                    .arglists("(str/split s regex)")
-                    .doc("Splits string on a regular expression.")
+                    .arglists(
+                        "(str/split s regex)",
+                        "(str/split s regex limit)")
+                    .doc(
+                        "Splits string on a regular expression. Optional argument limit is "+
+                        "the maximum number of splits.  Returns a list of the splits.")
                     .examples(
                         "(str/split \"abc,def,ghi\" \",\")",
                         "(str/split \"abc , def , ghi\" \"[ *],[ *]\")",
                         "(str/split \"abc,def,ghi\" \"((?<=,)|(?=,))\")",
+                        "(str/split \"q1w2e3r4t5y6u7i8o9p0\" #\"\\d+\")",
+                        "(str/split \"q1w2e3r4t5y6u7i8o9p0\" #\"\\d+\" 5)",
+                        "(str/split \" q1w2 \" #\"\")",
                         "(str/split nil \",\")")
                     .seeAlso("str/split-lines")
                     .build()
         ) {
             @Override
             public VncVal apply(final VncList args) {
-                ArityExceptions.assertArity(this, args, 2);
+                ArityExceptions.assertArity(this, args, 2, 3);
 
                 if (args.first() == Nil) {
                     return VncList.empty();
@@ -987,12 +994,19 @@ public class StringFunctions {
                 else {
                     final String str = Coerce.toVncString(args.first()).getValue();
 
+                    final boolean limited = args.size() == 3;
+                    final long limit = limited ? Coerce.toVncLong(args.third()).getValue() : -1;
+
                     if (Types.isVncString(args.second())) {
                         final VncString regex = Coerce.toVncString(args.second());
 
+                        final String[] matches = limited
+                                                    ? str.split(regex.getValue(), (int)limit)
+                                                    : str.split(regex.getValue());
+
                         return VncList.ofList(
                                 Arrays
-                                    .asList(str.split(regex.getValue()))
+                                    .asList(matches)
                                     .stream()
                                     .map(s -> new VncString(s))
                                     .collect(Collectors.toList()));
@@ -1000,9 +1014,13 @@ public class StringFunctions {
                     else if (Types.isVncJavaObject(args.second(), Pattern.class)) {
                         final Pattern pattern = Coerce.toVncJavaObject(args.second(), Pattern.class);
 
+                        final String[] matches = limited
+                                                    ? pattern.split(str, (int)limit)
+                                                    : pattern.split(str);
+
                         return VncList.ofList(
                                 Arrays
-                                    .asList(pattern.split(str))
+                                    .asList(matches)
                                     .stream()
                                     .map(s -> new VncString(s))
                                     .collect(Collectors.toList()));
