@@ -498,8 +498,10 @@ public class StringFunctions {
                         "The search arg may be a string or a regex pattern")
                     .examples(
                         "(str/replace-all \"abcdefabc\" \"ab\" \"__\")",
-                        "(str/replace-all \"a0b01c012d\" (regex/pattern \"[0-9]+\") \"_\")")
-                    .seeAlso("str/replace-first", "str/replace-last")
+                        "(str/replace-all \"a0b01c012d\" (regex/pattern \"[0-9]+\") \"_\")",
+                        "(str/replace-all \"a0b01c012d\" #\"[0-9]+\" \"_\")")
+                    .seeAlso(
+                        "str/replace-first", "str/replace-last")
                     .build()
         ) {
             @Override
@@ -555,8 +557,10 @@ public class StringFunctions {
                         "(str/replace-first \"ab-cd-ef-ab-cd\" \"ab\" \"XYZ\")",
                         "(str/replace-first \"AB-CD-EF-AB-CD\" \"ab\" \"XYZ\" :ignore-case true)",
                         "(str/replace-first \"ab-ab-cd-ab-ef-ab-cd\" \"ab\" \"XYZ\" :nfirst 3)",
-                        "(str/replace-first \"a0b01c012d\" (regex/pattern \"[0-9]+\") \"_\")")
-                    .seeAlso("str/replace-last", "str/replace-all")
+                        "(str/replace-first \"a0b01c012d\" (regex/pattern \"[0-9]+\") \"_\")",
+                        "(str/replace-first \"a0b01c012d\" #\"[0-9]+\" \"_\")")
+                    .seeAlso(
+                        "str/replace-last", "str/replace-all")
                     .build()
         ) {
             @Override
@@ -609,7 +613,8 @@ public class StringFunctions {
                     .examples(
                         "(str/replace-last \"abcdefabc\" \"ab\" \"XYZ\")",
                         "(str/replace-last \"foo.JPG\" \".jpg\" \".png\" :ignore-case true)")
-                    .seeAlso("str/replace-first", "str/replace-all")
+                    .seeAlso(
+                        "str/replace-first", "str/replace-all")
                     .build()
         ) {
             @Override
@@ -1027,7 +1032,7 @@ public class StringFunctions {
                     }
                     else {
                         throw new VncException(String.format(
-                                "Function 'str/split' does not allow %s regex pattern. " +
+                                "Function 'str/split' does not allow %s as regex pattern. " +
                                 "Expected a string or a java.util.regex.Pattern",
                                 Types.getType(args.second())));
                     }

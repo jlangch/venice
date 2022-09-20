@@ -110,7 +110,7 @@ public class RegexFunctionsTest {
     }
 
     @Test
-    public void test_regex_find() {
+    public void test_regex_find_1() {
         final Venice venice = new Venice();
 
         final String script =
@@ -122,6 +122,16 @@ public class RegexFunctionsTest {
                 "     (regex/find m) ] )                                     ";
 
         assertEquals("[672, 345, 456, 3212, null]", venice.eval(script).toString());
+    }
+
+    @Test
+    public void test_regex_find_2() {
+        final Venice venice = new Venice();
+
+        final String script =
+                "(regex/find #\"[0-9]+\" \"672-345-456-3212\"))";
+
+        assertEquals("672", venice.eval(script).toString());
     }
 
     @Test

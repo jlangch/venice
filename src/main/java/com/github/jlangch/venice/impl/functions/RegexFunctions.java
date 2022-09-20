@@ -63,11 +63,25 @@ public class RegexFunctions {
                             "Returns an instance of `java.util.regex.Pattern`.\n\n"  +
                             "Patterns are immutable and are safe for use by multiple " +
                             "concurrent threads! \n\n" +
-                            "Alternatively the reader macro for regex patterns can be used to " +
+                            "Alternatively regex pattern literals can be used to " +
                             "define a pattern: `#\"[0-9+]\"`\n\n" +
-                             "JavaDoc: [Pattern](https://docs.oracle.com/javase/8/docs/api/java/util/regex/Pattern.html)")
-                        .examples("(regex/pattern \"[0-9]+\")")
-                        .seeAlso("regex/matcher", "regex/matches", "regex/find", "regex/find-all")
+                            "```                                                   \n" +
+                            "\"\\\\d\" ;; regex string to match one digit          \n" +
+                            "```                                                   \n" +
+                            "Notice that you have to escape the backslash to get a " +
+                            "literal backslash in the string. However, regex       " +
+                            "pattern literals are smart. They don't need to double escape: \n\n" +
+                            "```                                                   \n" +
+                            "#\"\\d\" ;; regex pattern literal to match one digit  \n" +
+                            "```                                                   \n" +
+                            "JavaDoc: [Pattern](https://docs.oracle.com/javase/8/docs/api/java/util/regex/Pattern.html)")
+                        .examples(
+                            "(regex/pattern \"[0-9]+\")",
+                            "(regex/pattern \"\\\\d+\")",
+                            "#\"[0-9]+\"",
+                            "#\"\\d+\"")
+                        .seeAlso(
+                            "regex/matcher", "regex/matches", "regex/find", "regex/find-all")
                         .build()
             ) {
                 @Override
@@ -101,9 +115,9 @@ public class RegexFunctions {
                         "concurrent threads! \n\n" +
                         "JavaDoc: [Pattern](https://docs.oracle.com/javase/8/docs/api/java/util/regex/Pattern.html)")
                     .examples(
-                        "(regex/matcher \"[0-9]+\" \"100\")",
-                        "(let [p (regex/pattern \"[0-9]+\")] \n" +
-                        "   (regex/matcher p \"100\"))")
+                        "(regex/matcher #\"[0-9]+\" \"100\")",
+                        "(regex/matcher (regex/pattern\"[0-9]+\") \"100\")",
+                        "(regex/matcher \"[0-9]+\" \"100\")")
                     .seeAlso(
                         "regex/pattern", "regex/matches?", "regex/find?", "regex/reset",
                         "regex/matches", "regex/find", "regex/find-all")
@@ -267,13 +281,13 @@ public class RegexFunctions {
                         "If the match succeeds then more information can be obtained via " +
                         "the `regex/group` function")
                     .examples(
-                        "(let [m (regex/matcher \"[0-9]+\" \"100\")] \n" +
+                        "(let [m (regex/matcher #\"[0-9]+\" \"100\")] \n" +
                         "  (regex/find? m))",
 
-                        "(let [m (regex/matcher \"[0-9]+\" \"xxx: 100\")] \n" +
+                        "(let [m (regex/matcher #\"[0-9]+\" \"xxx: 100\")] \n" +
                         "  (regex/find? m))",
 
-                        "(let [m (regex/matcher \"[0-9]+\" \"xxx: 100 200\")] \n" +
+                        "(let [m (regex/matcher #\"[0-9]+\" \"xxx: 100 200\")] \n" +
                         "  (when (regex/find? m) \n" +
                         "    (println (regex/group m 0))) \n" +
                         "  (when (regex/find? m) \n" +
@@ -300,25 +314,39 @@ public class RegexFunctions {
                 "regex/find",
                 VncFunction
                     .meta()
-                    .arglists("(regex/find matcher)")
+                    .arglists(
+                        "(regex/find matcher)",
+                        "(regex/find pattern s)")
                     .doc(
                         "Returns the next regex match or nil if there is no further match. \n\n" +
                         "To get the positional data for the matched group use `(regex/find+ matcher)`.")
                     .examples(
-                        "(let [m (regex/matcher \"[0-9]+\" \"672-345-456-3212\")]  \n" +
+                        "(regex/find #\"[0-9]+\" \"672-345-456-3212\")",
+                        "(let [m (regex/matcher #\"[0-9]+\" \"672-345-456-3212\")]  \n" +
                         "  (println (regex/find m))  \n" +
                         "  (println (regex/find m))  \n" +
                         "  (println (regex/find m))  \n" +
                         "  (println (regex/find m))  \n" +
                         "  (println (regex/find m)))")
-                    .seeAlso("regex/find-all", "regex/find+", "regex/matcher")
+                    .seeAlso(
+                        "regex/find-all", "regex/find+", "regex/matcher")
                     .build()
         ) {
             @Override
             public VncVal apply(final VncList args) {
-                ArityExceptions.assertArity(this, args, 1);
+                ArityExceptions.assertArity(this, args, 1, 2);
 
-                final Matcher m = Coerce.toVncJavaObject(args.first(), Matcher.class);
+                Matcher m;
+
+                if (args.size() == 1) {
+                    m = Coerce.toVncJavaObject(args.first(), Matcher.class);
+                }
+                else {
+                    final String s = Coerce.toVncString(args.second()).getValue();
+                    final Pattern p = Coerce.toVncJavaObject(args.first(), Pattern.class);
+                    m = p.matcher(s);
+                }
+
                 if (m.find()) {
                     return new VncString(m.group());
                 }
@@ -335,25 +363,39 @@ public class RegexFunctions {
                 "regex/find+",
                 VncFunction
                     .meta()
-                    .arglists("(regex/find+ matcher)")
+                    .arglists(
+                        "(regex/find+ matcher)",
+                        "(regex/find+ pattern s)")
                     .doc(
                         "Returns the next regex match and returns the group with " +
                         "its positional data.")
                     .examples(
-                        "(let [m (regex/matcher \"[0-9]+\" \"672-345-456-3212\")]  \n" +
+                        "(regex/find+ #\"[0-9]+\" \"672-345-456-3212\")",
+                        "(let [m (regex/matcher #\"[0-9]+\" \"672-345-456-3212\")]  \n" +
                         "   (println (regex/find+ m))  \n" +
                         "   (println (regex/find+ m))  \n" +
                         "   (println (regex/find+ m))  \n" +
                         "   (println (regex/find+ m))  \n" +
                         "   (println (regex/find+ m))) \n")
-                    .seeAlso("regex/find-all+", "regex/find", "regex/matcher")
+                    .seeAlso(
+                        "regex/find-all+", "regex/find", "regex/matcher")
                     .build()
         ) {
             @Override
             public VncVal apply(final VncList args) {
-                ArityExceptions.assertArity(this, args, 1);
+                ArityExceptions.assertArity(this, args, 1, 2);
 
-                final Matcher m = Coerce.toVncJavaObject(args.first(), Matcher.class);
+                Matcher m;
+
+                if (args.size() == 1) {
+                    m = Coerce.toVncJavaObject(args.first(), Matcher.class);
+                }
+                else {
+                    final String s = Coerce.toVncString(args.second()).getValue();
+                    final Pattern p = Coerce.toVncJavaObject(args.first(), Pattern.class);
+                    m = p.matcher(s);
+                }
+
                 if (m.find()) {
                     return VncHashMap.of(
                             new VncKeyword("start"), new VncLong(m.start()),
@@ -373,23 +415,37 @@ public class RegexFunctions {
                 "regex/find-all",
                 VncFunction
                     .meta()
-                    .arglists("(regex/find-all matcher)")
+                    .arglists(
+                        "(regex/find-all matcher)",
+                        "(regex/find-all pattern s)")
                     .doc(
                         "Returns all regex matches.\n\n" +
                         "To get the positional data for the matched groups use 'regex/find-all+'.")
                     .examples(
-                        "(->> (regex/matcher \"\\\\d+\" \"672-345-456-3212\") \n" +
+                        "(regex/find-all #\"\\d+\" \"672-345-456-3212\")",
+                        "(->> (regex/matcher #\"\\d+\" \"672-345-456-3212\") \n" +
                         "     (regex/find-all))                                 ",
                         "(->> (regex/matcher \"([^\\\"]\\\\S*|\\\".+?\\\")\\\\s*\" \"1 2 \\\"3 4\\\" 5\") \n" +
                         "     (regex/find-all))                                 ")
-                    .seeAlso("regex/find", "regex/find-all+", "regex/matcher")
+                    .seeAlso(
+                        "regex/find", "regex/find-all+", "regex/matcher")
                     .build()
         ) {
             @Override
             public VncVal apply(final VncList args) {
-                ArityExceptions.assertArity(this, args, 1);
+                ArityExceptions.assertArity(this, args, 1, 2);
 
-                final Matcher m = Coerce.toVncJavaObject(args.first(), Matcher.class);
+                Matcher m;
+
+                if (args.size() == 1) {
+                    m = Coerce.toVncJavaObject(args.first(), Matcher.class);
+                }
+                else {
+                    final String s = Coerce.toVncString(args.second()).getValue();
+                    final Pattern p = Coerce.toVncJavaObject(args.first(), Pattern.class);
+                    m = p.matcher(s);
+                }
+
                 final List<VncVal> matches = new ArrayList<>();
                 while (m.find()) {
                     matches.add(new VncString(m.group()));
@@ -406,21 +462,35 @@ public class RegexFunctions {
                 "regex/find-all+",
                 VncFunction
                     .meta()
-                    .arglists("(regex/find-all+ matcher)")
+                    .arglists(
+                        "(regex/find-all+ matcher)",
+                        "(regex/find-all+ pattern s)")
                     .doc(
                         "Returns the all regex matches and returns the groups " +
                         "with its positional data")
                     .examples(
-                        "(let [m (regex/matcher \"[0-9]+\" \"672-345-456-3212\")]  \n" +
+                        "(regex/find-all+ #\"[0-9]+\" \"672-345-456-3212\")",
+                        "(let [m (regex/matcher #\"[0-9]+\" \"672-345-456-3212\")] \n" +
                         "  (regex/find-all+ m))  \n")
-                    .seeAlso("regex/find+", "regex/find-all", "regex/matcher")
+                    .seeAlso(
+                        "regex/find+", "regex/find-all", "regex/matcher")
                     .build()
         ) {
             @Override
             public VncVal apply(final VncList args) {
-                ArityExceptions.assertArity(this, args, 1);
+                ArityExceptions.assertArity(this, args, 1, 2);
 
-                final Matcher m = Coerce.toVncJavaObject(args.first(), Matcher.class);
+                Matcher m;
+
+                if (args.size() == 1) {
+                    m = Coerce.toVncJavaObject(args.first(), Matcher.class);
+                }
+                else {
+                    final String s = Coerce.toVncString(args.second()).getValue();
+                    final Pattern p = Coerce.toVncJavaObject(args.first(), Pattern.class);
+                    m = p.matcher(s);
+                }
+
                 final List<VncVal> groups = new ArrayList<>();
                 while (m.find()) {
                     groups.add(
@@ -445,7 +515,7 @@ public class RegexFunctions {
                         "Resets the matcher with a new string")
                     .examples(
                         "(do  \n" +
-                        "  (let [m (regex/matcher \"[0-9]+\" \"100\")]  \n" +
+                        "  (let [m (regex/matcher #\"[0-9]+\" \"100\")] \n" +
                         "    (println (regex/find m))                   \n" +
                         "    (let [m (regex/reset m \"200\")]           \n" +
                         "      (println (regex/find m)))))" )
@@ -475,11 +545,10 @@ public class RegexFunctions {
                         "Returns the input subsequence captured by the given group during the " +
                         "previous match operation.")
                     .examples(
-                        "(let [p (regex/pattern \"([0-9]+)(.*)\")      \n" +
-                        "      m (regex/matcher p \"100abc\")]         \n" +
-                        "   (if (regex/matches? m)                     \n" +
-                        "      [(regex/group m 1) (regex/group m 2)]   \n" +
-                        "      []))                                      ")
+                        "(let [m (regex/matcher #\"([0-9]+)(.*)\" \"100abc\")] \n" +
+                        "   (if (regex/matches? m)                             \n" +
+                        "      [(regex/group m 1) (regex/group m 2)]           \n" +
+                        "      []))                                            ")
                     .seeAlso("regex/matcher", "regex/matches?")
                     .build()
         ) {
@@ -511,10 +580,10 @@ public class RegexFunctions {
                     .doc(
                         "Returns the matcher's group count.")
                     .examples(
-                        "(let [p (regex/pattern \"([0-9]+)(.*)\")  \n" +
-                        "      m (regex/matcher p \"100abc\")]     \n" +
+                        "(let [m (regex/matcher #\"([0-9]+)(.*)\" \"100abc\")]\n" +
                         "   (regex/count m))  ")
-                    .seeAlso("regex/matcher")
+                    .seeAlso(
+                        "regex/matcher")
                     .build()
         ) {
             @Override
