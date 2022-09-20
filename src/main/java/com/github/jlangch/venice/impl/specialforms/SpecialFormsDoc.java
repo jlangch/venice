@@ -446,7 +446,7 @@ public class SpecialFormsDoc {
     };
 
 
-    public static Map<VncVal, VncVal> ns =
+    public static final Map<VncVal, VncVal> ns =
             new SymbolMapBuilder()
                     .put(new VncSymbol("do"),               do_)
                     .put(new VncSymbol("if"),               if_)

@@ -329,7 +329,7 @@ public class SpecialForms_VarFunctions {
     // types_ns is namespace of type functions
     ///////////////////////////////////////////////////////////////////////////
 
-    public static Map<VncVal, VncVal> ns =
+    public static final Map<VncVal, VncVal> ns =
             new SymbolMapBuilder()
                     .add(var_get)
                     .add(var_globalQ)

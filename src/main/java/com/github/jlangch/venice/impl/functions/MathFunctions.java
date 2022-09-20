@@ -2035,7 +2035,7 @@ public class MathFunctions {
     // types_ns is namespace of type functions
     ///////////////////////////////////////////////////////////////////////////
 
-    public static Map<VncVal, VncVal> ns =
+    public static final Map<VncVal, VncVal> ns =
             new SymbolMapBuilder()
 
                     .put(new VncSymbol("math", "PI", null), new VncDouble(Math.PI))

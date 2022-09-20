@@ -672,7 +672,7 @@ public class CoreConcurrencyFunctions {
     // types_ns is namespace of type functions
     ///////////////////////////////////////////////////////////////////////////
 
-    public static Map<VncVal, VncVal> ns =
+    public static final Map<VncVal, VncVal> ns =
             new SymbolMapBuilder()
                 .add(new_atom)
                 .add(atom_Q)

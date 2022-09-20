@@ -860,7 +860,7 @@ public class SystemFunctions {
     // types_ns is namespace of type functions
     ///////////////////////////////////////////////////////////////////////////
 
-    public static Map<VncVal, VncVal> ns =
+    public static final Map<VncVal, VncVal> ns =
             new SymbolMapBuilder()
                     .add(pid)
                     .add(host_name)

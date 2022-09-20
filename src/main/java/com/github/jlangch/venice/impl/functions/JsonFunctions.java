@@ -476,7 +476,7 @@ public class JsonFunctions {
     // types_ns is namespace of type functions
     ///////////////////////////////////////////////////////////////////////////
 
-    public static Map<VncVal, VncVal> ns =
+    public static final Map<VncVal, VncVal> ns =
             new SymbolMapBuilder()
                     .add(write_str)
                     .add(spit)

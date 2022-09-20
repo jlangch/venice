@@ -813,7 +813,7 @@ public class BytebufFunctions {
     // types_ns is namespace of type functions
     ///////////////////////////////////////////////////////////////////////////
 
-    public static Map<VncVal, VncVal> ns =
+    public static final Map<VncVal, VncVal> ns =
             new SymbolMapBuilder()
                 .add(bytebuf_Q)
                 .add(bytebuf_cast)

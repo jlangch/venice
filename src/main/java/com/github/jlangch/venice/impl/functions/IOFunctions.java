@@ -2575,7 +2575,7 @@ public class IOFunctions {
     // types_ns is namespace of type functions
     ///////////////////////////////////////////////////////////////////////////
 
-    public static Map<VncVal, VncVal> ns =
+    public static final Map<VncVal, VncVal> ns =
             new SymbolMapBuilder()
                     .add(io_file)
                     .add(io_file_Q)

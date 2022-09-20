@@ -1470,7 +1470,7 @@ public class ZipFunctions {
     // types_ns is namespace of type functions
     ///////////////////////////////////////////////////////////////////////////
 
-    public static Map<VncVal, VncVal> ns =
+    public static final Map<VncVal, VncVal> ns =
             new SymbolMapBuilder()
                     .add(io_zip)
                     .add(io_zip_append)

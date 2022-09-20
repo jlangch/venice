@@ -272,7 +272,7 @@ public class SpecialForms_NamespaceFunctions {
     // types_ns is namespace of type functions
     ///////////////////////////////////////////////////////////////////////////
 
-    public static Map<VncVal, VncVal> ns =
+    public static final Map<VncVal, VncVal> ns =
             new SymbolMapBuilder()
                     .add(ns_new)
                     .add(ns_list)

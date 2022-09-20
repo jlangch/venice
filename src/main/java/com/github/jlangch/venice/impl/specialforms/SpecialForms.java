@@ -36,7 +36,7 @@ public class SpecialForms {
         return FORMS.contains(name);
     }
 
-    public static Set<String> FORMS = new HashSet<>(
+    public static final Set<String> FORMS = new HashSet<>(
             Arrays.asList(
                     // VeniceInterpreter
                     "do",

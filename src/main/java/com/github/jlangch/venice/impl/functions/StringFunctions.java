@@ -2356,7 +2356,7 @@ public class StringFunctions {
     // types_ns is namespace of type functions
     ///////////////////////////////////////////////////////////////////////////
 
-    public static Map<VncVal, VncVal> ns =
+    public static final Map<VncVal, VncVal> ns =
             new SymbolMapBuilder()
                     .add(str_blank_Q)
                     .add(str_not_blank_Q)
