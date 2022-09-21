@@ -170,6 +170,38 @@ public class Recursion_Loop_Recur_Test {
     }
 
     @Test
+    public void test_loop_destructure_ref() {
+        final Venice venice = new Venice();
+
+        final String lisp =
+                "(do                                               \n" +
+                "  (defn test [args]                               \n" +
+                "    (loop [acc [], x args]                        \n" +
+                "      (if (empty? x)                              \n" +
+                "        acc                                       \n" +
+                "        (recur (conj acc (first x)) (rest x)))))  \n" +
+                "  (pr-str (test [1 2 3 4])))                         ";
+
+        assertEquals("[1 2 3 4]", venice.eval(lisp));
+    }
+
+    @Test
+    public void test_loop_destructure_real() {
+        final Venice venice = new Venice();
+
+        final String lisp =
+                "(do                                               \n" +
+                "  (defn test [args]                               \n" +
+                "    (loop [acc [], [car & cdr] args]              \n" +
+                "      (if car                                     \n" +
+                "        (recur (conj acc car) cdr)                \n" +
+                "        acc)))                                    \n" +
+                "  (pr-str (test [1 2 3 4])))                      ";
+
+        assertEquals("[1 2 3 4]", venice.eval(lisp));
+    }
+
+    @Test
     public void test_loop_nested() {
         final Venice venice = new Venice();
 

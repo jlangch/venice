@@ -14,6 +14,7 @@ and this project adheres to
 
 ### Added
 
+- support for destructuring for `loop / recur` loops
 - an optional customized indentation string to the JSON pretty printer
 - proxy builder for Java functional UnaryPredicate interface
 

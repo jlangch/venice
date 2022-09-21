@@ -530,14 +530,13 @@ public class VeniceInterpreter implements IVeniceInterpreter, Serializable  {
                             }
                         }
 
-                        final List<VncSymbol> bindingNames = new ArrayList<>(bindings.size() / 2);
+                        final List<VncVal> bindingNames = new ArrayList<>(bindings.size() / 2);
                         final Iterator<VncVal> bindingsIter = bindings.iterator();
                         while(bindingsIter.hasNext()) {
-                            final VncSymbol sym = Coerce.toVncSymbol(bindingsIter.next());
-                            final VncVal val = evaluate(bindingsIter.next(), env, false);
-
-                            env.setLocal(new Var(sym, val));
-                            bindingNames.add(sym);
+                            final VncVal symVal = bindingsIter.next();
+                            final VncVal bindVal = evaluate(bindingsIter.next(), env, false);
+                            bindingNames.add(symVal);
+                            RecursionPoint.addToLocalEnv(symVal, bindVal, env);
                         }
 
                         final ThreadContext threadCtx = ThreadContext.get();
@@ -1155,18 +1154,22 @@ public class VeniceInterpreter implements IVeniceInterpreter, Serializable  {
 
             case 1:
                 // [1][2] calculate and bind the single new value
-                final VncVal v = evaluate(args.first(), env, false);
-                recur_env.setLocal(new Var(recursionPoint.getLoopBindingName(0), v));
+                final VncVal symVal0 = recursionPoint.getLoopBindingName(0);
+                final VncVal v0 = evaluate(args.first(), env, false);
+                RecursionPoint.addToLocalEnv(symVal0, v0, recur_env);
                 break;
 
             case 2:
+                final VncVal symVal1 = recursionPoint.getLoopBindingName(0);
+                final VncVal symVal2 = recursionPoint.getLoopBindingName(1);
+
                 // [1] calculate the new values
                 final VncVal v1 = evaluate(args.first(), env, false);
                 final VncVal v2 = evaluate(args.second(), env, false);
 
                 // [2] bind the new values
-                recur_env.setLocal(new Var(recursionPoint.getLoopBindingName(0), v1));
-                recur_env.setLocal(new Var(recursionPoint.getLoopBindingName(1), v2));
+                RecursionPoint.addToLocalEnv(symVal1, v1, recur_env);
+                RecursionPoint.addToLocalEnv(symVal2, v2, recur_env);
                 break;
 
             default:
@@ -1178,7 +1181,8 @@ public class VeniceInterpreter implements IVeniceInterpreter, Serializable  {
 
                 // [2] bind the new values
                 for(int ii=0; ii<argCount; ii++) {
-                    recur_env.setLocal(new Var(recursionPoint.getLoopBindingName(ii), newValues[ii]));
+                    final VncVal symVal = recursionPoint.getLoopBindingName(ii);
+                    RecursionPoint.addToLocalEnv(symVal, newValues[ii], recur_env);
                 }
                 break;
         }

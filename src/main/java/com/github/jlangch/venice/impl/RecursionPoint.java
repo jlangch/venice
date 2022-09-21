@@ -25,15 +25,17 @@ import java.util.List;
 
 import com.github.jlangch.venice.impl.debug.agent.DebugAgent;
 import com.github.jlangch.venice.impl.env.Env;
+import com.github.jlangch.venice.impl.env.Var;
 import com.github.jlangch.venice.impl.types.VncSymbol;
 import com.github.jlangch.venice.impl.types.VncVal;
 import com.github.jlangch.venice.impl.types.collections.VncList;
+import com.github.jlangch.venice.impl.types.util.Types;
 
 
 public class RecursionPoint {
 
     public RecursionPoint(
-            final List<VncSymbol> loopBindingNames,
+            final List<VncVal> loopBindingNames,
             final VncList loopExpressions,
             final Env loopEnv,
             final VncVal meta,
@@ -52,11 +54,11 @@ public class RecursionPoint {
         return loopBindingNamesCount;
     }
 
-    public VncSymbol getLoopBindingName(final int idx) {
+    public VncVal getLoopBindingName(final int idx) {
         return loopBindingNames.get(idx);
     }
 
-    public List<VncSymbol> getLoopBindingNames() {
+    public List<VncVal> getLoopBindingNames() {
         return loopBindingNames;
     }
 
@@ -80,8 +82,18 @@ public class RecursionPoint {
         return debugAgent != null;
     }
 
+    public static void addToLocalEnv(final VncVal symVal, final VncVal bindVal, final Env env) {
+        if (Types.isVncSymbol(symVal)) {
+            env.setLocal(new Var((VncSymbol)symVal, bindVal));
+        }
+        else {
+            // destructuring
+            env.addLocalVars(Destructuring.destructure(symVal, bindVal));
+        }
+    }
 
-    private final List<VncSymbol> loopBindingNames;
+
+    private final List<VncVal> loopBindingNames;
     private final int loopBindingNamesCount;
     private final VncList loopExpressions;
     private final Env loopEnv;

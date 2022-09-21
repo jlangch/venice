@@ -63,6 +63,7 @@ import com.github.jlangch.venice.impl.types.VncSymbol;
 import com.github.jlangch.venice.impl.types.VncVal;
 import com.github.jlangch.venice.impl.types.collections.VncList;
 import com.github.jlangch.venice.impl.types.collections.VncVector;
+import com.github.jlangch.venice.impl.types.util.Types;
 import com.github.jlangch.venice.impl.util.CallStack;
 
 
@@ -268,7 +269,12 @@ public class DebugAgent implements IDebugAgent {
             final CallStack callstack
     ) {
         if (isStopOnFunction("loop", true, FunctionEntry)) {
-            final List<VncSymbol> loopBindingNames = recursionPoint.getLoopBindingNames();
+            // we can only process symbols but not symbols vals used for destructuring
+            final List<VncSymbol> loopBindingNames = recursionPoint.getLoopBindingNames()
+                                                                   .stream()
+                                                                   .filter(v -> Types.isVncSymbol(v))
+                                                                   .map(v -> (VncSymbol)v)
+                                                                   .collect(Collectors.toList());
             final VncVal meta = recursionPoint.getMeta();
 
             handleBreak(
