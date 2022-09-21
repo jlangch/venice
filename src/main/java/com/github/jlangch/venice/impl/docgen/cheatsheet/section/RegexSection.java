@@ -47,6 +47,7 @@ public class RegexSection implements ISectionBuilder {
         general.addItem(diBuilder.getDocItem("regex/matches?"));
         general.addItem(diBuilder.getDocItem("regex/matches"));
         general.addItem(diBuilder.getDocItem("regex/group"));
+        general.addItem(diBuilder.getDocItem("regex/groups"));
         general.addItem(diBuilder.getDocItem("regex/count"));
         general.addItem(diBuilder.getDocItem("regex/find?"));
         general.addItem(diBuilder.getDocItem("regex/find"));

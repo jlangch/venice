@@ -546,13 +546,14 @@ public class RegexFunctions {
                     .arglists("(regex/group matcher group)")
                     .doc(
                         "Returns the input subsequence captured by the given group during the " +
-                        "previous match operation.")
+                        "previous match operation.\n\n" +
+                        "Note: Do not forget to call the `regex/matches?` function!")
                     .examples(
                         "(let [m (regex/matcher #\"([0-9]+)(.*)\" \"100abc\")] \n" +
                         "   (if (regex/matches? m)                             \n" +
                         "      [(regex/group m 1) (regex/group m 2)]           \n" +
                         "      []))                                            ")
-                    .seeAlso("regex/matcher", "regex/matches?")
+                    .seeAlso("regex/groups", "regex/matcher", "regex/matches?")
                     .build()
         ) {
             @Override
@@ -573,6 +574,40 @@ public class RegexFunctions {
 
             private static final long serialVersionUID = -1848883965231344442L;
         };
+
+    public static VncFunction groups =
+            new VncFunction(
+                    "regex/groups",
+                    VncFunction
+                        .meta()
+                        .arglists("(regex/groups matcher)")
+                        .doc(
+                            "Attempts to match the entire region against the pattern and returns all matched groups.")
+                        .examples(
+                            "(let [m (regex/matcher #\"([0-9]+)(.*)\" \"100abc\")] \n" +
+                            "   (regex/groups m))                                  ")
+                        .seeAlso("regex/group", "regex/matcher", "regex/matches?")
+                        .build()
+            ) {
+                @Override
+                public VncVal apply(final VncList args) {
+                    ArityExceptions.assertArity(this, args, 1);
+
+                    VncList list = VncList.empty();
+
+                    final Matcher m = Coerce.toVncJavaObject(args.first(), Matcher.class);
+                    if (m.matches()) {
+                        for(int ii=0; ii<=m.groupCount(); ii++) {
+                            final String group = m.group(ii);
+                            list = list.addAtEnd(group == null ? Nil : new VncString(group));
+                        }
+                    }
+
+                    return list;
+                }
+
+                private static final long serialVersionUID = -1848883965231344442L;
+            };
 
     public static VncFunction count =
         new VncFunction(
@@ -619,6 +654,7 @@ public class RegexFunctions {
                     .add(matches)
                     .add(matches_Q)
                     .add(group)
+                    .add(groups)
                     .add(count)
                     .toMap();
 }
