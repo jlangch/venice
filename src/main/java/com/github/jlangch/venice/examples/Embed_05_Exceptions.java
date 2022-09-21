@@ -31,9 +31,9 @@ public class Embed_05_Exceptions {
             final String script =
                     "(do                               \n" +
                     "  (defn speed [distance time]     \n" +
-                    "     (/ distance time))           \n" +
+                    "    (/ distance time))            \n" +
                     "                                  \n" +
-                    "   (str (speed 20 0) \"km/h\"))   ";
+                    "  (str (speed 20 0) \"km/h\"))    ";
 
             new Venice().eval("test", script);
         }

@@ -176,9 +176,9 @@ public class Embed_05_Exceptions {
             final String script =
                     "(do                               \n" +
                     "  (defn speed [distance time]     \n" +
-                    "     (/ distance time))           \n" +
+                    "    (/ distance time))            \n" +
                     "                                  \n" +
-                    "   (str (speed 20 0) \"km/h\"))   ";
+                    "  (str (speed 20 0) \"km/h\"))    ";
 
             new Venice().eval("test", script);
         }
@@ -195,20 +195,12 @@ public class Embed_05_Exceptions {
 This prints a nice stack trace with the name of the function 
 and the source location for every call stack level:
 
-```clojure
-(do                                 ;; line 1
-  (defn speed [distance time]       ;; line 2
-     (/ distance time))             ;; line 3
-                                    ;; line 4
-   (str (speed 20 0) "km/h"))       ;; line 5
-```
-
 ```text
 Exception in thread "main" VncException: / by zero
 
 [Callstack]
-    at: / (test: line 3, col 7)
-    at: user/speed (test: line 5, col 10)
+    at: / (test: line 3, col 6)
+    at: user/speed (test: line 5, col 9)
 ```
 
 On the other hand `VncException::printStackTrace()` prints a technical Java 
