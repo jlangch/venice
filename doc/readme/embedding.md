@@ -3,7 +3,7 @@
 * [Overview](#overview)
 * [Passing Parameters](#passing-parameters)
 * [stdout-stderr Redirection](#stdout-stderr-redirection)
-* [Handle exceptions](#handle-exceptions)
+* [Printing exceptions](#printing-exceptions)
 * [Precompiling](#precompiling)
 * [Precompilation Benchmark](#precompilation-benchmark)
 * [Sandbox](#sandbox)
@@ -160,7 +160,7 @@ public class Embed_03_StdOutRedirection {
 ```
 
 
-## Handle exceptions
+## Printing exceptions
 
 Venice prints informative stack traces with `VncException::printVeniceStackTrace()`. 
 _VncException_ is the superclass of all Venice exceptions.
