@@ -2597,6 +2597,44 @@ public class CoreFunctions {
             private static final long serialVersionUID = -1848883965231344442L;
         };
 
+    public static VncFunction distinct_Q =
+        new VncFunction(
+                "distinct?",
+                VncFunction
+                    .meta()
+                    .arglists("(distinct? x) (distinct? x y) (distinct? x y & more)")
+                    .doc("Returns true if no two of the arguments are equal")
+                    .examples(
+                        "(distinct? 1 2 3)",
+                        "(distinct? 1 2 3 3)",
+                        "(distinct? 1 2 3 1)")
+                    .seeAlso("distinct")
+                    .build()
+        ) {
+            @Override
+            public VncVal apply(final VncList args) {
+                ArityExceptions.assertMinArity(this, args, 1);
+
+                VncList vals = args;
+                Set<VncVal> visited = new HashSet<>();
+
+                while(!vals.isEmpty()) {
+                	final VncVal v = vals.first();
+                	vals = vals.rest();
+
+                	if (visited.contains(v)) {
+                		return VncBoolean.False;
+                	}
+
+                	visited.add(v);
+                }
+
+                return VncBoolean.True;
+            }
+
+            private static final long serialVersionUID = -1848883965231344442L;
+        };
+
     public static VncFunction difference =
         new VncFunction(
                 "difference",
@@ -9292,6 +9330,7 @@ public class CoreFunctions {
                 .add(new_set)
                 .add(new_sorted_set)
                 .add(new_mutable_set)
+                .add(distinct_Q)
                 .add(difference)
                 .add(union)
                 .add(intersection)

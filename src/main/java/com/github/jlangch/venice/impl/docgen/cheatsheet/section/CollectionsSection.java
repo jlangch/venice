@@ -68,6 +68,7 @@ public class CollectionsSection implements ISectionBuilder {
         collections.addSection(coll_test);
         coll_test.addItem(diBuilder.getDocItem("empty?"));
         coll_test.addItem(diBuilder.getDocItem("not-empty?"));
+        coll_test.addItem(diBuilder.getDocItem("distinct?"));
         coll_test.addItem(diBuilder.getDocItem("coll?"));
         coll_test.addItem(diBuilder.getDocItem("list?"));
         coll_test.addItem(diBuilder.getDocItem("vector?"));

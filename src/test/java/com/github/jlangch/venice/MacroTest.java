@@ -71,6 +71,23 @@ public class MacroTest {
         catch(AssertionException ex) {
             assertEquals("Assert failed (error): false", ex.getMessage());
         }
+
+
+        try {
+            venice.eval("(assert nil)");
+            fail("Expected AssertionException");
+        }
+        catch(AssertionException ex) {
+            assertEquals("Assert failed: nil", ex.getMessage());
+        }
+
+        try {
+            venice.eval("(assert nil \"error\")");
+            fail("Expected AssertionException");
+        }
+        catch(AssertionException ex) {
+            assertEquals("Assert failed (error): nil", ex.getMessage());
+        }
     }
 
     @Test

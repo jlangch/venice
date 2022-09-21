@@ -864,6 +864,19 @@ public class CoreFunctionsTest {
     }
 
     @Test
+    public void test_distinct_Q() {
+        final Venice venice = new Venice();
+
+        assertTrue((Boolean)venice.eval("(distinct? 1)))"));
+
+        assertTrue((Boolean)venice.eval("(distinct? 1 2 3)))"));
+        assertFalse((Boolean)venice.eval("(distinct? 1 2 3 3)))"));
+        assertFalse((Boolean)venice.eval("(distinct? 1 2 3 1)))"));
+
+        assertTrue((Boolean)venice.eval("(distinct? 1 2 1I 2I)))"));
+    }
+
+    @Test
     public void test_difference() {
         final Venice venice = new Venice();
 
