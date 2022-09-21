@@ -3,6 +3,7 @@
 * [Overview](#overview)
 * [Passing Parameters](#passing-parameters)
 * [stdout-stderr Redirection](#stdout-stderr-redirection)
+* [Handle exceptions](#handle-exceptions)
 * [Precompiling](#precompiling)
 * [Precompilation Benchmark](#precompilation-benchmark)
 * [Sandbox](#sandbox)
@@ -157,6 +158,82 @@ public class Embed_03_StdOutRedirection {
     }
 }
 ```
+
+
+## Handle exceptions
+
+Venice prints informative stack traces with `VncException::printVeniceStackTrace()` 
+
+
+```java
+import com.github.jlangch.venice.Venice;
+import com.github.jlangch.venice.VncException;
+
+public class Embed_05_Exceptions {
+    public static void main(final String[] args) {
+        try {
+            final String script =
+                    "(do                               \n" +
+                    "  (defn speed [distance time]     \n" +
+                    "     (/ distance time))           \n" +
+                    "                                  \n" +
+                    "   (str (speed 20 0) \"km/h\"))   ";
+
+            new Venice().eval("test", script);
+        }
+        catch(VncException ex) {
+            ex.printVeniceStackTrace();
+        }
+        catch(RuntimeException ex) {
+            ex.printStackTrace();
+        }
+    }
+}
+```
+
+This prints a nice stack trace with the name of the function 
+and the source location for every call stack level:
+
+```clojure
+(do                                 ;; line 1
+  (defn speed [distance time]       ;; line 2
+     (/ distance time))             ;; line 3
+                                    ;; line 4
+   (str (speed 20 0) \"km/h\"))     ;; line 5
+```
+
+```text
+Exception in thread "main" VncException: / by zero
+
+[Callstack]
+    at: / (test: line 3, col 7)
+    at: user/speed (test: line 5, col 10)
+```
+
+On the other hand `VncException::printStackTrace()` prints a technical Java 
+stack trace that is mostly not of much value:
+
+```text
+com.github.jlangch.venice.VncException: / by zero
+    at com.github.jlangch.venice.impl.types.VncLong.div(VncLong.java:205)
+    at com.github.jlangch.venice.impl.functions.MathFunctions$4.apply(MathFunctions.java:247)
+    at com.github.jlangch.venice.impl.VeniceInterpreter.evaluate(VeniceInterpreter.java:737)
+    at com.github.jlangch.venice.impl.FunctionBuilder.evaluateBody(FunctionBuilder.java:270)
+    at com.github.jlangch.venice.impl.FunctionBuilder.access$3(FunctionBuilder.java:264)
+    at com.github.jlangch.venice.impl.FunctionBuilder$1.apply(FunctionBuilder.java:157)
+    at com.github.jlangch.venice.impl.VeniceInterpreter.evaluate(VeniceInterpreter.java:745)
+    at com.github.jlangch.venice.impl.VeniceInterpreter.evaluate_sequence_values(VeniceInterpreter.java:866)
+    at com.github.jlangch.venice.impl.VeniceInterpreter.evaluate(VeniceInterpreter.java:680)
+    at com.github.jlangch.venice.impl.VeniceInterpreter.EVAL(VeniceInterpreter.java:225)
+    at com.github.jlangch.venice.impl.VeniceInterpreter.RE(VeniceInterpreter.java:247)
+    at com.github.jlangch.venice.Venice.lambda$1(Venice.java:328)
+    at com.github.jlangch.venice.Venice.runWithSandbox(Venice.java:485)
+    at com.github.jlangch.venice.Venice.eval(Venice.java:322)
+    at com.github.jlangch.venice.Venice.eval(Venice.java:261)
+    at com.github.jlangch.venice.examples.Embed_05_Exceptions.run(Embed_05_Exceptions.java:55)
+    at com.github.jlangch.venice.examples.Embed_05_Exceptions.main(Embed_05_Exceptions.java:32)
+```
+
 
 
 ## Precompiling
