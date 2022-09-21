@@ -318,7 +318,8 @@ public class RegexFunctions {
                         "(regex/find matcher)",
                         "(regex/find pattern s)")
                     .doc(
-                        "Returns the next regex match or nil if there is no further match. \n\n" +
+                        "Returns the next regex match or nil if there is no further match. " +
+                        "Returns `nil` if there is no match. \n\n" +
                         "To get the positional data for the matched group use `(regex/find+ matcher)`.")
                     .examples(
                         "(regex/find #\"[0-9]+\" \"672-345-456-3212\")",
@@ -368,7 +369,7 @@ public class RegexFunctions {
                         "(regex/find+ pattern s)")
                     .doc(
                         "Returns the next regex match and returns the group with " +
-                        "its positional data.")
+                        "its positional data. Returns `nil` if there is no match.")
                     .examples(
                         "(regex/find+ #\"[0-9]+\" \"672-345-456-3212\")",
                         "(let [m (regex/matcher #\"[0-9]+\" \"672-345-456-3212\")]  \n" +
@@ -419,7 +420,8 @@ public class RegexFunctions {
                         "(regex/find-all matcher)",
                         "(regex/find-all pattern s)")
                     .doc(
-                        "Returns all regex matches.\n\n" +
+                        "Returns all regex matches as list or an empty list if there " +
+                        "are no matches.\n\n" +
                         "To get the positional data for the matched groups use 'regex/find-all+'.")
                     .examples(
                         "(regex/find-all #\"\\d+\" \"672-345-456-3212\")",
@@ -467,7 +469,8 @@ public class RegexFunctions {
                         "(regex/find-all+ pattern s)")
                     .doc(
                         "Returns the all regex matches and returns the groups " +
-                        "with its positional data")
+                        "with its positional data. Returns an empty list if there " +
+                        "are no matches.")
                     .examples(
                         "(regex/find-all+ #\"[0-9]+\" \"672-345-456-3212\")",
                         "(let [m (regex/matcher #\"[0-9]+\" \"672-345-456-3212\")] \n" +
