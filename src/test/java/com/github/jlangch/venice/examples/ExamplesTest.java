@@ -47,6 +47,11 @@ public class ExamplesTest {
     }
 
     @Test
+    public void test_Embed_05_Exceptions() {
+    	Embed_05_Exceptions.main(new String[0]);
+    }
+
+    @Test
     public void test_Embed_08_JavaInterop() {
         Embed_08_JavaInterop.run();
     }

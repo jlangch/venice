@@ -162,7 +162,8 @@ public class Embed_03_StdOutRedirection {
 
 ## Handle exceptions
 
-Venice prints informative stack traces with `VncException::printVeniceStackTrace()` 
+Venice prints informative stack traces with `VncException::printVeniceStackTrace()`. 
+_VncException_ is the superclass of all Venice exceptions.
 
 
 ```java
