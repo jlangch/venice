@@ -38,7 +38,7 @@ public class ExamplesTest {
 
     @Test
     public void test_Embed_03_StdOutRedirection() {
-        Embed_03_StdOutRedirection.run();
+        Embed_03_StdOutRedirection.main(new String[0]);
     }
 
     @Test

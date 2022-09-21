@@ -23,60 +23,52 @@ package com.github.jlangch.venice.examples;
 
 import com.github.jlangch.venice.Parameters;
 import com.github.jlangch.venice.Venice;
-import com.github.jlangch.venice.VncException;
 import com.github.jlangch.venice.util.CapturingPrintStream;
 
 
 public class Embed_03_StdOutRedirection {
 
     public static void main(final String[] args) {
-        try {
-            run();
-            System.exit(0);
-        }
-        catch(VncException ex) {
-            ex.printVeniceStackTrace();
-            System.exit(1);
-        }
-        catch(RuntimeException ex) {
-            ex.printStackTrace();
-            System.exit(1);
-        }
-    }
-
-    public static void run() {
         final Venice venice = new Venice();
 
+        Object result;
+
         // #1: redirect stdout/stderr to the <null> device
-        venice.eval(
-           "(println [1 2])",
-           Parameters.of("*out*", null,
-                         "*err*", null));
+        result = venice.eval(
+                   "(do               \n" +
+                   "  (println [1 2]) \n" +
+                   "  10)             ",
+                   Parameters.of("*out*", null,
+                                 "*err*", null));
+        System.out.println("result: " + result);
+        System.out.println();
+        // result: 10
 
         // #2: capture stdout within the script and return it as the result
-        final Object result1 = venice.eval("(with-out-str (println [1 2]))");
-        System.out.println("stdout: " + result1);
-        // stdout: [1 2]
+        result = venice.eval(
+                    "(with-out-str     \n" +
+                    "  (println [1 2]) \n" +
+                    "  10)             ");
+        System.out.println("result: " + result);
+        // result: [1 2]
 
         // #3: capturing stdout/stderr preserving the script result
         try(CapturingPrintStream ps_out = new CapturingPrintStream();
             CapturingPrintStream ps_err = new CapturingPrintStream()
         ) {
-           final Object result2 = venice.eval(
-                                     "(do                        \n" +
-                                     "  (println [3 4])          \n" +
-                                     "  (println *err* :failure) \n" +
-                                     "  100)                     ",
-                                     Parameters.of("*out*", ps_out,
-                                                   "*err*", ps_err));
-           System.out.println("result: " + result2);
+           result = venice.eval(
+                         "(do                        \n" +
+                         "  (println [3 4])          \n" +
+                         "  (println *err* :failure) \n" +
+                         "  100)                     ",
+                         Parameters.of("*out*", ps_out,
+                                       "*err*", ps_err));
+           System.out.println("result: " + result);
            System.out.print("stdout: " + ps_out.getOutput());
            System.out.print("stderr: " + ps_err.getOutput());
-
            // result: 100
            // stdout: [3 4]
            // stderr: :failure
         }
     }
-
 }
