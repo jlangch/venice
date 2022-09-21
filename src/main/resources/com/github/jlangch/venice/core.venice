@@ -50,7 +50,8 @@
           """
      :examples '(
           "(assert (= 3 (+ 1 2)))"
-          "(assert (= 4 (+ 1 2)))" ) }
+          "(assert (= 4 (+ 1 2)))" )
+     :see-also '("assert-throws")  }
 
   assert
 
@@ -65,6 +66,47 @@
        (throw (ex :com.github.jlangch.venice.AssertionException
                   (str "Assert failed (" ~message "): " (pr-str '~expr))))
        true)))
+
+
+(defmacro
+  ^{ :arglists '(
+          "(assert-throws ex-type expr)" "(assert-throws ex-type expr message)")
+     :doc """
+          Evaluates expr and throws an `:com.github.jlangch.venice.AssertionException`
+          exception if it does not throw the expected exception of type ex-type.
+          """
+     :examples '(
+          "(assert-throws :VncException (/ 2 0))"
+          "(assert-throws :VncException (/ 2 1))" )
+     :see-also '("assert") }
+
+  assert-throws
+
+  ([ex-type expr]
+    `(try
+       ~expr
+       (throw (ex :com.github.jlangch.venice.AssertionException
+                  (str "Assert failed: " (pr-str '~expr))))
+       (catch :com.github.jlangch.venice.AssertionException ex
+              (throw ex))
+       (catch ~ex-type ex
+              true)
+       (catch :java.lang.Exception ex
+              (throw (ex :com.github.jlangch.venice.AssertionException
+                         (str "Assert failed: " (pr-str '~expr)))))))
+
+  ([ex-type expr message]
+    `(try
+       ~expr
+       (throw (ex :com.github.jlangch.venice.AssertionException
+                  (str "Assert failed (" ~message "): " (pr-str '~expr))))
+       (catch :com.github.jlangch.venice.AssertionException ex
+              (throw ex))
+       (catch ~ex-type ex
+              true)
+       (catch :java.lang.Exception ex
+              (throw (ex :com.github.jlangch.venice.AssertionException
+                         (str "Assert failed (" ~message "): " (pr-str '~expr))))))))
 
 
 (defmacro
