@@ -15,10 +15,8 @@ File "script.venice":
 
 ```clojure
 (do
-  (def PI (. :java.lang.Math :PI))
-  
   (defn circle-area [radius]
-    (* PI radius radius))
+    (* math/PI radius radius))
     
   (println (circle-area 2.5)))
 ```
@@ -66,10 +64,8 @@ File "/users/foo/venice/test.venice":
 
 ```clojure
 (do
-  (def PI (. :java.lang.Math :PI))
-  
   (defn circle-area [radius]
-    (* PI radius radius)))
+    (* math/PI radius radius)))
 ```
 
 File "/users/foo/venice/script.venice":
