@@ -368,7 +368,7 @@
     (when (seq unknown-keys)
       (let [msg (str "Warning: The following options to parse-opts are unrecognized: "
                      (str/join ", " unknown-keys))]
-        (binding [*out* *err*] (println msg)))))
+        (println *err* msg))))
 
   (select-keys map spec-keys))
 
@@ -379,9 +379,9 @@
         [short-opt long-opt desc] sopt-lopt-desc
         long-opt (or long-opt (:long-opt spec-map))
         [long-opt req] (when long-opt
-                         (rest (regex/find-all #"^(--[^ =]+)(?:[ =](.*))?" long-opt)))
+                         (rest (regex/groups (regex/matcher #"^(--[^ =]+)(?:[ =](.*))?" long-opt))))
         id (when long-opt
-             (keyword (nth (regex/find-all #"^--(\[no-\])?(.*)" long-opt) 2)))
+             (keyword (nth (regex/groups (regex/matcher #"^--(\[no-\])?(.*)" long-opt)) 2)))
         validate (:validate spec-map)
         [validate-fn validate-msg] (when (seq validate)
                                      (->> (partition 2 2 (repeat nil) validate)
@@ -460,20 +460,23 @@
 
   compile-option-specs [option-specs]
 
-  {:post [(every? :id %)
-          (distinct?* (map :id (filter :default %)))
-          (distinct?* (map :id (filter :default-fn %)))
-          (distinct?* (remove nil? (map :short-opt %)))
-          (distinct?* (remove nil? (map :long-opt %)))
-          (every? (comp not (partial every? identity))
-                  (map (juxt :assoc-fn :update-fn) %))]}
-  (map (fn [spec]
-         (-> (if (map? spec)
-               (select-spec-keys spec)
-               (compile-spec spec))
-             (wrap-val :validate-fn)
-             (wrap-val :validate-msg)))
-       option-specs))
+  (let [specs (map (fn [spec]
+                     (-> (if (map? spec)
+                           (select-spec-keys spec)
+                           (compile-spec spec))
+                         (wrap-val :validate-fn)
+                         (wrap-val :validate-msg)))
+                   option-specs)]
+
+    (assert (every? :id specs))
+    (assert (distinct?* (map :id (filter :default specs))))
+    (assert (distinct?* (map :id (filter :default-fn specs))))
+    (assert (distinct?* (remove nil? (map :short-opt specs))))
+    (assert (distinct?* (remove nil? (map :long-opt specs))))
+    (assert (every? (comp not (partial every? identity)))
+                    (map (juxt :assoc-fn :update-fn) specs))
+
+    (into [] specs)))
 
 
 (defn default-option-map [specs default-key]
@@ -503,7 +506,7 @@
    (filter
     (fn [spec]
       (when-let [spec-opt (get spec opt-type)]
-        (let [flag-tail (second (regex/find-all #"^--\[no-\](.*)" spec-opt))
+        (let [flag-tail (second (regex/groups (regex/matcher #"^--\[no-\](.*)" spec-opt)))
               candidates (if flag-tail
                            #{(str "--" flag-tail) (str "--no-" flag-tail)}
                            #{spec-opt})]
