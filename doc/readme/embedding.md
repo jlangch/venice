@@ -199,7 +199,7 @@ and the source location for every call stack level:
   (defn speed [distance time]       ;; line 2
      (/ distance time))             ;; line 3
                                     ;; line 4
-   (str (speed 20 0) \"km/h\"))     ;; line 5
+   (str (speed 20 0) "km/h"))       ;; line 5
 ```
 
 ```text
