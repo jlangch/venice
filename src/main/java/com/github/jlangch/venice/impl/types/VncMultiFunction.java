@@ -144,11 +144,6 @@ public class VncMultiFunction extends VncFunction {
         return TypeRank.MULTI_FUNCTION;
     }
 
-    @Override
-    public String toString() {
-        return "multi-fn " + getQualifiedName();
-    }
-
     private boolean isTypeKeyword(final VncVal val) {
         return (val instanceof VncKeyword) && MetaUtil.isType(val.getMeta());
     }

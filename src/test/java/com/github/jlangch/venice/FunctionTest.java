@@ -22,6 +22,7 @@
 package com.github.jlangch.venice;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import org.junit.jupiter.api.Test;
 
@@ -122,6 +123,17 @@ public class FunctionTest {
                 "     (swap! counter inc)               \n" +
                 "     (+ 1 2))                          \n" +
                 "  (pr-str [(foo) (deref counter)]))      "));
+    }
+
+    @Test
+    public void test_fn_name() {
+        final Venice venice = new Venice();
+
+        assertTrue(((String)venice.eval("(str +)")).contains(":name \"+\", :ns \"core\""));
+
+        assertTrue(((String)venice.eval("(str println)")).contains(":name \"println\", :ns \"core\""));
+
+        assertTrue(((String)venice.eval("(str or)")).contains(":name \"or\", :ns \"core\""));
     }
 
 }

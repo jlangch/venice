@@ -27,6 +27,8 @@ import java.util.function.Function;
 import java.util.function.Supplier;
 
 import com.github.jlangch.venice.impl.FunctionMetaBuilder;
+import com.github.jlangch.venice.impl.continuation.VncContinuationFunction;
+import com.github.jlangch.venice.impl.debug.util.SpecialFormVirtualFunction;
 import com.github.jlangch.venice.impl.thread.ThreadContext;
 import com.github.jlangch.venice.impl.types.collections.VncList;
 import com.github.jlangch.venice.impl.types.collections.VncVector;
@@ -264,53 +266,84 @@ public abstract class VncFunction
     }
 
     @Override
-	public int hashCode() {
-		final int prime = 31;
-		int result = super.hashCode();
-		result = prime * result + ((qualifiedName == null) ? 0 : qualifiedName.hashCode());
-		return result;
-	}
+    public int hashCode() {
+        final int prime = 31;
+        int result = super.hashCode();
+        result = prime * result + ((qualifiedName == null) ? 0 : qualifiedName.hashCode());
+        return result;
+    }
 
-	@Override
-	public boolean equals(Object obj) {
-		if (this == obj)
-			return true;
-		if (!super.equals(obj))
-			return false;
-		if (getClass() != obj.getClass())
-			return false;
-		VncFunction other = (VncFunction) obj;
-		if (qualifiedName == null) {
-			if (other.qualifiedName != null)
-				return false;
-		} else if (!qualifiedName.equals(other.qualifiedName))
-			return false;
-		return true;
-	}
+    @Override
+    public boolean equals(Object obj) {
+        if (this == obj)
+            return true;
+        if (!super.equals(obj))
+            return false;
+        if (getClass() != obj.getClass())
+            return false;
+        VncFunction other = (VncFunction) obj;
+        if (qualifiedName == null) {
+            if (other.qualifiedName != null)
+                return false;
+        } else if (!qualifiedName.equals(other.qualifiedName))
+            return false;
+        return true;
+    }
 
-	@Override
+    @Override
     public String toString() {
-        return String.format(
-                "%s %s %s%s",
-                isMacro() ? "macro" : "function",
-                getQualifiedName(),
-                new StringBuilder()
-                        .append("{")
-                        .append("visibility ")
-                        .append(isPrivate() ? ":private" : ":public")
-                        .append(", ns ")
-                        .append(StringUtil.quote(namespace == null ? "" : namespace, '\"'))
-                        .append(", native " + isNative())
-                        .append("}"),
-                isNative()
-                    ? ""
-                    : " defined at " + new CallFrame(this).getSourcePosInfo());
+        final CallFrame cf = new CallFrame(this);
+
+        final String fnName = ":name " + StringUtil.quote(getQualifiedName(), '"');
+        final String fnNS = ", :ns " + StringUtil.quote(namespace == null ? "core" : namespace, '"');
+        final String fnType = ", :type " + (isMacro() ? ":macro" : ":function");
+        final String fnVisibility = ", :visibility " + (isPrivate() ? ":private" : ":public");
+        final String fnNative = ", :native " + isNative();
+        final String fnClass = ", :class " + getFnClassType();
+
+        final String fnSource = isNative()
+                                    ? ""
+                                    : String.format(
+                                        ", :source {:file %s, :line %d, :column %d}",
+                                        StringUtil.quote(cf.getFile(), '"'),
+                                        cf.getLine(),
+                                        cf.getCol());
+
+        return "#FN{" + fnName + fnNS + fnType + fnVisibility + fnNative + fnClass + fnSource + "}";
     }
 
     @Override
     public IInterceptor sandboxFunctionCallValidation() {
         return ThreadContext.getInterceptor()
-        		            .validateVeniceFunction(qualifiedName);
+                            .validateVeniceFunction(qualifiedName);
+    }
+
+
+    private String getFnClassType() {
+    	if (this instanceof VncMultiArityFunction) {
+    		return ":VncMultiArityFunction";
+    	}
+    	else if (this instanceof VncProtocolFunction) {
+    		return ":VncProtocolFunction";
+    	}
+    	else if (this instanceof VncMultiFunction) {
+    		return ":VncMultiFunction";
+    	}
+    	else if (this instanceof VncContinuationFunction) {
+    		return ":VncContinuationFunction";
+    	}
+    	else if (this instanceof SpecialFormVirtualFunction) {
+    		return ":SpecialFormVirtualFunction";
+    	}
+    	else if (this instanceof VncFunction) {
+    		return ":VncFunction";
+    	}
+    	else if (this instanceof IVncFunction) {
+    		return ":IVncFunction";
+    	}
+    	else {
+    		return ":unknown";
+    	}
     }
 
 
