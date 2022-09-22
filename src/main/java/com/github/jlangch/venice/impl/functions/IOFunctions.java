@@ -259,7 +259,7 @@ public class IOFunctions {
                     .arglists("(io/file-absolute f)")
                     .doc("Returns the absolute path of the file f. f must be a file or a string (file path).")
                     .examples("(io/file-absolute (io/file \"/tmp/test/x.txt\"))")
-                    .seeAlso("io/file-path", "io/file-canonical", "io/file")
+                    .seeAlso("io/file-path", "io/file-canonical", "io/file", "io/file-absolute?")
                     .build()
         ) {
             @Override
@@ -288,6 +288,46 @@ public class IOFunctions {
                 else {
                     throw new VncException(String.format(
                             "Function 'io/file-absolute' does not allow %s as file arg",
+                            Types.getType(f)));
+                }
+            }
+
+            private static final long serialVersionUID = -1848883965231344442L;
+        };
+
+    public static VncFunction io_file_absolute_Q =
+        new VncFunction(
+                "io/file-absolute?",
+                VncFunction
+                    .meta()
+                    .arglists("(io/file-absolute? f)")
+                    .doc("Returns true if file f has an absolute path else false. f must be a file or a string (file path).")
+                    .examples("(io/file-absolute? (io/file \"/tmp/test/x.txt\"))")
+                    .seeAlso("io/file-path", "io/file-canonical", "io/file", "io/file-absolute")
+                    .build()
+        ) {
+            @Override
+            public VncVal apply(final VncList args) {
+                ArityExceptions.assertArity(this, args, 1);
+
+                final VncVal f = args.first();
+
+                if (Types.isVncString(f)) {
+                    return VncBoolean.of(
+                                new File(((VncString)f).getValue()).isAbsolute());
+                }
+                else if (Types.isVncJavaObject(f, File.class)) {
+                    return VncBoolean.of(
+                            Coerce.toVncJavaObject(f, File.class).isAbsolute());
+                }
+                else if (Types.isVncJavaObject(f, Path.class)) {
+                    return VncBoolean.of(
+                             Coerce.toVncJavaObject(f, Path.class)
+                                   .isAbsolute());
+                }
+                else {
+                    throw new VncException(String.format(
+                            "Function 'io/file-absolute?' does not allow %s as file arg",
                             Types.getType(f)));
                 }
             }
@@ -2595,6 +2635,7 @@ public class IOFunctions {
                     .add(io_file_can_execute_Q)
                     .add(io_file_hidden_Q)
                     .add(io_file_symbolicl_link_Q)
+                    .add(io_file_absolute_Q)
                     .add(io_glob_path_matcher)
                     .add(io_file_matches_globQ)
                     .add(io_to_url)
