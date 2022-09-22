@@ -362,15 +362,15 @@
           entries at development time.
           """ }
 
-  select-spec-keys [map]
+  select-spec-keys [spec-entries-map]
 
-  (let [unknown-keys (keys (apply dissoc map spec-keys))]
+  (let [unknown-keys (keys (apply dissoc spec-entries-map spec-keys))]
     (when (seq unknown-keys)
       (let [msg (str "Warning: The following options to parse-opts are unrecognized: "
-                     (str/join ", " unknown-keys))]
+                     (str/join ", " (map pr-str unknown-keys)))]
         (println *err* msg))))
 
-  (select-keys map spec-keys))
+  (select-keys spec-entries-map spec-keys))
 
 
 (defn compile-spec [spec]

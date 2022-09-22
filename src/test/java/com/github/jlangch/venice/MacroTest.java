@@ -194,13 +194,6 @@ public class MacroTest {
         // Assertion OK ---------------------------------------------
 
         try {
-            venice.eval("(assert-throws :AssertionException (/ 2 0))");
-        }
-        catch(Exception ex) {
-            fail("Unexpected Exception " + ex.getClass().getName());
-        }
-
-        try {
             venice.eval("(assert-throws :VncException (/ 2 0) \"error\")");
         }
         catch(Exception ex) {
