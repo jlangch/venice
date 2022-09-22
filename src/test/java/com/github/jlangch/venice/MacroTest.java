@@ -42,14 +42,14 @@ public class MacroTest {
             venice.eval("(assert true)");
         }
         catch(AssertionException ex) {
-        	 fail("Unexpected AssertionException");
+             fail("Unexpected AssertionException");
         }
 
         try {
             venice.eval("(assert true \"error\")");
         }
         catch(AssertionException ex) {
-        	 fail("Unexpected AssertionException");
+             fail("Unexpected AssertionException");
         }
 
 
@@ -98,14 +98,47 @@ public class MacroTest {
         // Assertion OK ---------------------------------------------
 
         try {
-            venice.eval("(assert-throws :VncException (/ 2 0))");
+            venice.eval(
+                    "(do                                                               \n" +
+                    "   (import :com.github.jlangch.venice.util.TestException)         \n" +
+                    "                                                                  \n" +
+                    "   ;; Venice converts RuntimeException -> VncException            \n" +
+                    "   (assert-throws :VncException (ex :TestException)))             ");
         }
         catch(Exception ex) {
             fail("Unexpected Exception " + ex.getClass().getName());
         }
 
         try {
-            venice.eval("(assert-throws :VncException (/ 2 0) \"error\")");
+            venice.eval(
+                    "(do                                                               \n" +
+                    "   (import :com.github.jlangch.venice.util.TestException)         \n" +
+                    "                                                                  \n" +
+                    "   ;; Venice converts RuntimeException -> VncException            \n" +
+                    "   (assert-throws :VncException (ex :TestException) \"error\"))   ");
+        }
+        catch(Exception ex) {
+            fail("Unexpected Exception " + ex.getClass().getName());
+        }
+
+
+        try {
+            venice.eval(
+                    "(do                                                               \n" +
+                    "   (import :com.github.jlangch.venice.AssertionException)         \n" +
+                    "                                                                  \n" +
+                    "   (assert-throws :AssertionException (assert false)))            ");
+        }
+        catch(Exception ex) {
+            fail("Unexpected Exception " + ex.getClass().getName());
+        }
+
+        try {
+            venice.eval(
+                    "(do                                                               \n" +
+                    "   (import :com.github.jlangch.venice.AssertionException)         \n" +
+                    "                                                                  \n" +
+                    "   (assert-throws :AssertionException (assert false) \"error\"))  ");
         }
         catch(Exception ex) {
             fail("Unexpected Exception " + ex.getClass().getName());
@@ -135,7 +168,7 @@ public class MacroTest {
             fail("Expected AssertionException");
         }
         catch(AssertionException ex) {
-            assertEquals("Assert failed: (/ 2 1)", ex.getMessage());
+            assertEquals("Assert failed, no exception thrown: (/ 2 1)", ex.getMessage());
         }
         catch(Exception ex) {
             fail("Unexpected Exception " + ex.getClass().getName());
@@ -146,12 +179,34 @@ public class MacroTest {
             fail("Expected AssertionException");
         }
         catch(AssertionException ex) {
-            assertEquals("Assert failed (error): (/ 2 1)", ex.getMessage());
+            assertEquals("Assert failed, no exception thrown, (error): (/ 2 1)", ex.getMessage());
         }
         catch(Exception ex) {
             fail("Unexpected Exception " + ex.getClass().getName());
         }
-   }
+    }
+
+    @Test
+    public void test_assert_throws_special() {
+        final Venice venice = new Venice();
+
+
+        // Assertion OK ---------------------------------------------
+
+        try {
+            venice.eval("(assert-throws :AssertionException (/ 2 0))");
+        }
+        catch(Exception ex) {
+            fail("Unexpected Exception " + ex.getClass().getName());
+        }
+
+        try {
+            venice.eval("(assert-throws :VncException (/ 2 0) \"error\")");
+        }
+        catch(Exception ex) {
+            fail("Unexpected Exception " + ex.getClass().getName());
+        }
+    }
 
     @Test
     public void test_and() {
@@ -933,5 +988,4 @@ public class MacroTest {
         assertEquals(Long.valueOf(1L), venice.eval("(coalesce 1)"));
         assertEquals(Long.valueOf(1L), venice.eval("(coalesce nil 1 2)"));
     }
-
 }

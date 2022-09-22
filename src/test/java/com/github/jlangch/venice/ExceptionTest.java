@@ -28,6 +28,8 @@ import java.util.List;
 
 import org.junit.jupiter.api.Test;
 
+import com.github.jlangch.venice.util.TestException;
+
 
 public class ExceptionTest {
 
@@ -56,4 +58,24 @@ public class ExceptionTest {
         }
     }
 
+
+    @Test
+    public void test_JavaException() {
+        final Venice venice = new Venice();
+
+        try {
+            venice.eval(
+                    "(do                                                          \n" +
+                    "   (import :com.github.jlangch.venice.util.TestException)    \n" +
+                    "                                                             \n" +
+                    "   (ex :TestException \"hello\"))                            ");
+        }
+        catch(TestException ex) {
+            assertEquals("hello", ex.getMessage());
+        }
+        catch(Exception ex) {
+        	ex.printStackTrace();
+            fail("Unexpected Exception " + ex.getClass().getName());
+        }
+    }
 }

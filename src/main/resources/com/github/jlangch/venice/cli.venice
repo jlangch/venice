@@ -468,13 +468,20 @@
                          (wrap-val :validate-msg)))
                    option-specs)]
 
+    ;; unset :id
     (assert (every? :id specs))
+
+    ;; multiple :default entries
     (assert (distinct?* (map :id (filter :default specs))))
     (assert (distinct?* (map :id (filter :default-fn specs))))
+
+    ;; duplicate :short-opt or :long-opt
     (assert (distinct?* (remove nil? (map :short-opt specs))))
     (assert (distinct?* (remove nil? (map :long-opt specs))))
-    (assert (every? (comp not (partial every? identity)))
-                    (map (juxt :assoc-fn :update-fn) specs))
+
+    ;; both :assoc-fn and :update-fn present
+    (assert (every? (comp not (partial every? identity))
+                    (map (juxt :assoc-fn :update-fn) specs)))
 
     (into [] specs)))
 
