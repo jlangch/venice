@@ -18,6 +18,7 @@ and this project adheres to
 - macro `assert-throws`
 - an optional customized indentation string to the JSON pretty printer
 - proxy builder for Java functional UnaryPredicate interface
+- file, line, and column information to the assert macro exceptions
 
 ### Improved
 

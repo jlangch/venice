@@ -28,8 +28,12 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 import com.github.jlangch.venice.impl.thread.ThreadContext;
+import com.github.jlangch.venice.impl.types.VncLong;
+import com.github.jlangch.venice.impl.types.VncString;
+import com.github.jlangch.venice.impl.types.collections.VncHashMap;
 import com.github.jlangch.venice.impl.util.CallFrame;
 import com.github.jlangch.venice.impl.util.CallStack;
+import com.github.jlangch.venice.impl.util.MetaUtil;
 import com.github.jlangch.venice.impl.util.StringUtil;
 import com.github.jlangch.venice.util.StackFrame;
 
@@ -47,6 +51,21 @@ public class VncException extends RuntimeException {
     public VncException(final String message) {
         super(message);
         callstack = ThreadContext.getCallStack().copy();
+    }
+
+    public VncException(
+            final String message,
+            final StackFrame stackFrame
+   ) {
+        super(message);
+        callstack = ThreadContext.getCallStack().copy();
+
+        final VncHashMap meta = VncHashMap.of(
+                                    MetaUtil.FILE, new VncString(stackFrame.getFile()),
+                                    MetaUtil.LINE, new VncLong(stackFrame.getLine()),
+                                    MetaUtil.COLUMN, new VncLong(stackFrame.getCol()));
+
+        callstack.push(new CallFrame(stackFrame.getFnName(), meta));
     }
 
     public VncException(final String message, final Throwable cause) {

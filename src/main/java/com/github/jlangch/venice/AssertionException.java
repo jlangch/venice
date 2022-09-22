@@ -21,6 +21,7 @@
  */
 package com.github.jlangch.venice;
 
+import com.github.jlangch.venice.util.StackFrame;
 
 /**
  * Thrown if an assertion validation fails.
@@ -35,6 +36,16 @@ public class AssertionException extends VncException {
 
     public AssertionException(final String message) {
         super(message);
+    }
+
+    public AssertionException(
+            final String message,
+            final String fnName,
+            final String file,
+            final int lineNr,
+            final int colNr
+    ) {
+        super(message, new StackFrame(fnName, file, lineNr, colNr));
     }
 
     public AssertionException(final String message, final Throwable cause) {
