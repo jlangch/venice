@@ -4383,11 +4383,16 @@ public class CoreFunctions {
 
                 final MeterRegistry meterRegistry = ThreadContext.getMeterRegistry();
 
-                if (Types.isVncSequence(args.first())) {
-                    final VncSequence list = ((VncSequence)args.first());
-                    final int idx = Coerce.toVncLong(args.second()).getValue().intValue();
-                    final IVncFunction fn = Coerce.toIVncFunction(args.nth(2));
-                    fn.sandboxFunctionCallValidation();
+                final VncVal m = args.first();
+                final VncVal k = args.second();
+                final VncVal f = args.third();
+
+                final IVncFunction fn = Coerce.toIVncFunction(f);
+                fn.sandboxFunctionCallValidation();
+
+                if (Types.isVncSequence(m)) {
+                    final VncSequence list = (VncSequence)m;
+                    final int idx = Coerce.toVncLong(k).getValue().intValue();
 
                     if (idx < 0 || idx > list.size()) {
                         throw new VncException(String.format(
@@ -4395,22 +4400,18 @@ public class CoreFunctions {
                                 idx));
                     }
                     else if (idx < list.size()) {
-                        return list.setAt(idx, VncFunction.applyWithMeter(
-                                                    fn,
-                                                    VncList.of(list.nth(idx)),
-                                                    meterRegistry));
+                    	final VncList fnArgs = VncList.of(list.nth(idx));
+                        return list.setAt(idx, VncFunction.applyWithMeter(fn, fnArgs, meterRegistry));
                     }
                     else {
-                        return list.addAtEnd(VncFunction.applyWithMeter(fn, VncList.of(Nil), meterRegistry));
+                    	final VncList fnArgs = VncList.of(Nil);
+                        return list.addAtEnd(VncFunction.applyWithMeter(fn, fnArgs, meterRegistry));
                     }
                 }
-                else if (Types.isVncMap(args.first())) {
-                    final VncMap map = ((VncMap)args.first());
-                    final VncVal key = args.second();
-                    final IVncFunction fn = Coerce.toIVncFunction(args.nth(2));
-                    fn.sandboxFunctionCallValidation();
-
-                    return map.assoc(key, VncFunction.applyWithMeter(fn, VncList.of(map.get(key)), meterRegistry));
+                else if (Types.isVncMap(m)) {
+                    final VncMap map = (VncMap)m;
+                    final VncList fnArgs = VncList.of(map.get(k));
+                    return map.assoc(k, VncFunction.applyWithMeter(fn, fnArgs, meterRegistry));
                 }
                 else {
                     throw new VncException(String.format(

@@ -544,7 +544,7 @@
           (when vfn
             (if (try (vfn value) (catch :VncException e nil))
               (recur vfns msgs)
-              [::error (validation-error value opt optarg msg)])))
+              [:error (validation-error value opt optarg msg)])))
         [value nil])))
 
 
@@ -557,7 +557,7 @@
                             [nil (parse-error opt optarg (str e))]))
                         [value nil])]
     (cond error
-          [::error error]
+          [:error error]
           (:post-validation spec)
           [value nil]
           :else
@@ -573,7 +573,7 @@
 (defn parse-optarg [spec opt optarg]
   (let [{:keys [required]} spec]
     (if (and required (nil? optarg))
-      [::error (missing-required-error opt required)]
+      [:error (missing-required-error opt required)]
       (let [value (if required
                     optarg
                     (not (neg-flag? spec opt)))]
@@ -609,7 +609,7 @@
             (if-let [spec (find-spec specs opt-type opt)]
               (let [[value error] (parse-optarg spec opt optarg)
                     id (:id spec)]
-                (if-not (= value ::error)
+                (if-not (= value :error)
                   (if (and strict
                            (or (find-spec specs :short-opt optarg)
                                (find-spec specs :long-opt optarg)))
@@ -621,7 +621,7 @@
                                ((:assoc-fn spec assoc) m id value))]
                       (if (:post-validation spec)
                         (let [[value error] (validate (get m2 id) spec opt optarg)]
-                          (if (= value ::error)
+                          (if (= value :error)
                             [m ids (conj errors error)]
                             [m2 (conj ids id) errors]))
                         [m2 (conj ids id) errors])))
