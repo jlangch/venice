@@ -522,7 +522,7 @@
 
 
 (defn pr-join [& xs]
-  (pr-str (str/join #\space xs)))
+  (pr-str (str/join " " xs)))
 
 
 (defn missing-required-error [opt example-required]
@@ -542,7 +542,7 @@
   (let [{:keys [validate-fn validate-msg]} spec]
     (or (loop [[vfn & vfns] validate-fn, [msg & msgs] validate-msg]
           (when vfn
-            (if (try (vfn value) (catch :VncExeption e nil))
+            (if (try (vfn value) (catch :VncException e nil))
               (recur vfns msgs)
               [::error (validation-error value opt optarg msg)])))
         [value nil])))
@@ -553,7 +553,7 @@
         [value error] (if parse-fn
                         (try
                           [(parse-fn value) nil]
-                          (catch :VncExeption e
+                          (catch :VncException e
                             [nil (parse-error opt optarg (str e))]))
                         [value nil])]
     (cond error

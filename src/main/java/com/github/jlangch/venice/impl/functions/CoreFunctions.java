@@ -8448,6 +8448,7 @@ public class CoreFunctions {
                         "Strings and converts Java streams to lists.")
                     .examples(
                         "(seq nil)",
+                        "(seq [])",
                         "(seq [1 2 3])",
                         "(seq '(1 2 3))",
                         "(seq {:a 1 :b 2})",
