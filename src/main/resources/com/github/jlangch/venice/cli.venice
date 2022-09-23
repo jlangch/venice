@@ -55,7 +55,7 @@
           parts (map (partial make-summary-part show-defaults?) specs)
           lens (apply map (fn [& cols] (apply max (map count cols))) parts)
           lines (format-lines lens parts)]
-      (str/join #\newline lines))
+      (str/join "\n" lines))
     ""))
 
 
@@ -616,8 +616,8 @@
                     [m ids (conj errors (missing-required-error opt (:required spec)))]
                     (let [m2 (if-let [update-fn (:update-fn spec)]
                                (if (:multi spec)
-                                 (update m id update-fn value)
-                                 (update m id update-fn))
+                                 (update m id #(update-fn % value))
+                                 (update m id #(update-fn %)))
                                ((:assoc-fn spec assoc) m id value))]
                       (if (:post-validation spec)
                         (let [[value error] (validate (get m2 id) spec opt optarg)]
@@ -633,13 +633,15 @@
              (if (contains? m id)
                [m ids errors]
                [m ids (conj errors error)]))
-           % requireds))
+           %
+           requireds))
         (#(reduce
            (fn [[m ids errors] [id f]]
              (if (contains? (set ids) id)
                [m ids errors]
                [(assoc m id (f (first %))) ids errors]))
-           % default-fns))
+           %
+           default-fns))
         (#(let [[m ids errors] %]
             (if no-defaults
               [(select-keys m ids) errors]
@@ -685,7 +687,7 @@
   format-lines [lens parts]
 
   (let [fmt (make-format lens)]
-    (map #(str/trim-right (apply format fmt %)) parts)))
+    (map #(str/trim-right (apply str/format fmt %)) parts)))
 
 
 (defn required-arguments [specs]

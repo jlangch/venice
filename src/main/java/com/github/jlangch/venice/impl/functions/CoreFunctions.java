@@ -4362,7 +4362,8 @@ public class CoreFunctions {
                 "update",
                 VncFunction
                     .meta()
-                    .arglists("(update m k f)")
+                    .arglists(
+                    	"(update m k f)")
                     .doc(
                         "Updates a value in an associative structure, where k is a " +
                         "key and f is a function that will take the old value " +
@@ -4374,7 +4375,8 @@ public class CoreFunctions {
                         "(update {} :a (fn [x] 5))",
                         "(update {:a 0} :b (fn [x] 5))",
                         "(update {:a 0 :b 1} :a (fn [x] 5))")
-                    .seeAlso("assoc", "dissoc")
+                    .seeAlso(
+                    	"assoc", "dissoc")
                     .build()
         ) {
             @Override
