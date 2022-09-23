@@ -4449,26 +4449,35 @@ public class CoreFunctions {
 
                 final MeterRegistry meterRegistry = ThreadContext.getMeterRegistry();
 
-                final VncVal coll = args.first();
+                final VncVal m = args.first();
+                final VncVal k = args.second();
+                final VncVal f = args.third();
 
-                if (Types.isVncMutableMap(coll)) {
-                    final VncMutableMap map = (VncMutableMap)coll;
-                    final VncVal key = args.second();
-                    final IVncFunction fn = Coerce.toIVncFunction(args.third());
-                    fn.sandboxFunctionCallValidation();
+                final IVncFunction fn = Coerce.toIVncFunction(f);
+                fn.sandboxFunctionCallValidation();
 
-                    return map.assoc(key, VncFunction.applyWithMeter(fn, VncList.of(map.get(key)), meterRegistry));
+                if (Types.isVncMutableMap(m)) {
+                    final VncMutableMap map = (VncMutableMap)m;
+                    final VncList fnArgs = VncList.of(map.get(k));
+                    return map.assoc(k, VncFunction.applyWithMeter(fn, fnArgs, meterRegistry));
                 }
-                else if (Types.isVncMutableVector(coll) || Types.isVncMutableList(coll) || Types.isVncJavaList(coll)) {
-                    final VncSequence seq = ((VncSequence)coll);
+                else if (Types.isVncMutableVector(m) || Types.isVncMutableList(m) || Types.isVncJavaList(m)) {
+                    final VncSequence seq = ((VncSequence)m);
                     final int idx =  Coerce.toVncLong(args.second()).getValue().intValue();
-                    final IVncFunction fn = Coerce.toIVncFunction(args.third());
-                    fn.sandboxFunctionCallValidation();
 
-                    if (seq.size() > idx) {
-                        seq.setAt(idx, VncFunction.applyWithMeter(fn, VncList.of(seq.nth(idx)), meterRegistry));
+                    if (idx < 0 || idx > seq.size()) {
+                        throw new VncException(String.format(
+                                "Function 'update' index %d out of bounds",
+                                idx));
                     }
-                    return seq;
+                    else if (idx < seq.size()) {
+                    	final VncList fnArgs = VncList.of(seq.nth(idx));
+                        return seq.setAt(idx, VncFunction.applyWithMeter(fn, fnArgs, meterRegistry));
+                    }
+                    else {
+                    	final VncList fnArgs = VncList.of(Nil);
+                        return seq.addAtEnd(VncFunction.applyWithMeter(fn, fnArgs, meterRegistry));
+                    }
                 }
                 else {
                     throw new VncException(String.format(
