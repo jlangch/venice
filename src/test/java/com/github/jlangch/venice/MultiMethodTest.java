@@ -37,9 +37,7 @@ public class MultiMethodTest {
                 "(do                                  \n" +
                 "   (defmulti math (fn [op _ _] op))) ";
 
-        assertEquals(
-        		"#FN{:name \"user/math\", :ns \"user\", :type :function, :visibility :public, :native false, :class :VncMultiFunction, :source {:file \"unknown\", :line 2, :column 14}}",
-        		venice.eval("(str " + s + ")"));
+        assertEquals("user/math", venice.eval("(str " + s + ")"));
     }
 
     @Test

@@ -711,6 +711,86 @@ public class CoreFunctions {
             private static final long serialVersionUID = -1848883965231344442L;
         };
 
+	public static VncFunction fn_name =
+	    new VncFunction(
+	            "fn-name",
+	            VncFunction
+	                .meta()
+	                .arglists("(fn-name f)")
+	                .doc("Returns the qualified name of a function or macro")
+	                .examples(
+	                	"(fn-name (fn sum [x y] (+ x y)))",
+	                    "(let [f str/digit?]  \n" +
+	                    "  (fn-name f))       ")
+	                .seeAlso(
+	                	"name", "namespace",
+	                	"fn-about", "fn-body", "fn-pre-conditions")
+	                .build()
+	    ) {
+	        @Override
+	        public VncVal apply(final VncList args) {
+	            ArityExceptions.assertArity(this, args, 1);
+
+	            final VncVal arg = args.first();
+
+	            if (arg == Nil) {
+	                return Nil;
+	            }
+	            else if (Types.isVncFunction(arg) || Types.isVncMacro(arg)) {
+	            	final VncFunction fn = (VncFunction)arg;
+	                fn.sandboxFunctionCallValidation();
+
+	                return new VncString(fn.getQualifiedName());
+	            }
+	            else {
+	                throw new VncException(String.format(
+	                        "Function 'fn-name' does not allow %s as parameter",
+	                        Types.getType(arg)));
+	            }
+	        }
+
+	        private static final long serialVersionUID = -1848883965231344442L;
+	    };
+
+	public static VncFunction fn_about =
+	    new VncFunction(
+	            "fn-about",
+	            VncFunction
+	                .meta()
+	                .arglists("(fn-about f)")
+	                .doc("Returns the meta information about a function")
+	                .examples(
+	                	"(fn-about and)",
+	                    "(fn-about println)",
+	    	            "(fn-about +)")
+	                .seeAlso("fn-name", "fn-body", "fn-pre-conditions")
+	                .build()
+	    ) {
+	        @Override
+	        public VncVal apply(final VncList args) {
+	            ArityExceptions.assertArity(this, args, 1);
+
+	            final VncVal arg = args.first();
+
+	            if (arg == Nil) {
+	                return Nil;
+	            }
+	            else if (Types.isVncFunction(arg) || Types.isVncMacro(arg)) {
+	            	final VncFunction fn = (VncFunction)arg;
+	                fn.sandboxFunctionCallValidation();
+
+	                return fn.about();
+	            }
+	            else {
+	                throw new VncException(String.format(
+	                        "Function 'fn-about' does not allow %s as parameter",
+	                        Types.getType(arg)));
+	            }
+	        }
+
+	        private static final long serialVersionUID = -1848883965231344442L;
+	    };
+
     public static VncFunction fn_body =
         new VncFunction(
                 "fn-body",
@@ -730,6 +810,8 @@ public class CoreFunctions {
                         "         (filter even?)     \n" +
                         "         (map #(* % 10))))  \n" +
                         "  (fn-body (var-get calc))) ")
+                    .seeAlso(
+                    	"fn-name", "fn-about", "fn-pre-conditions")
                     .build()
         ) {
             @Override
@@ -787,6 +869,8 @@ public class CoreFunctions {
                         "     { :pre [(> x 0) (> y 0)] }       \n" +
                         "     (+ x y))                         \n" +
                         "  (fn-pre-conditions (var-get sum)))  ")
+                    .seeAlso(
+                        	"fn-name", "fn-about", "fn-body")
                     .build()
         ) {
             @Override
@@ -8954,43 +9038,6 @@ public class CoreFunctions {
             private static final long serialVersionUID = -1848883965231344442L;
         };
 
-    public static VncFunction fn_name =
-        new VncFunction(
-                "fn-name",
-                VncFunction
-                    .meta()
-                    .arglists("(name x)")
-                    .doc("Returns the qualified name of a function or macro")
-                    .examples(
-                        "(fn-name str/digit?)")
-                    .seeAlso("name", "namespace")
-                    .build()
-        ) {
-            @Override
-            public VncVal apply(final VncList args) {
-                ArityExceptions.assertArity(this, args, 1);
-
-                final VncVal arg = args.first();
-
-                if (arg == Nil) {
-                    return Nil;
-                }
-                else if (Types.isVncFunction(arg) || Types.isVncMacro(arg)) {
-                	final VncFunction fn = (VncFunction)arg;
-                    fn.sandboxFunctionCallValidation();
-
-                    return new VncString(fn.getQualifiedName());
-                }
-                else {
-                    throw new VncException(String.format(
-                            "Function 'fn-name' does not allow %s as parameter",
-                            Types.getType(arg)));
-                }
-            }
-
-            private static final long serialVersionUID = -1848883965231344442L;
-        };
-
     public static VncFunction type =
         new VncFunction(
                 "type",
@@ -9245,8 +9292,11 @@ public class CoreFunctions {
                 .add(symbol_Q)
                 .add(keyword)
                 .add(keyword_Q)
+
                 .add(fn_Q)
                 .add(macro_Q)
+                .add(fn_name)
+                .add(fn_about)
                 .add(fn_body)
                 .add(fn_pre_conditions)
 
@@ -9439,7 +9489,6 @@ public class CoreFunctions {
                 .add(gensym)
                 .add(name)
                 .add(namespace)
-                .add(fn_name)
                 .add(type)
                 .add(supertype)
                 .add(supertypes)

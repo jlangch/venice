@@ -31,6 +31,8 @@ import com.github.jlangch.venice.impl.continuation.VncContinuationFunction;
 import com.github.jlangch.venice.impl.debug.util.SpecialFormVirtualFunction;
 import com.github.jlangch.venice.impl.thread.ThreadContext;
 import com.github.jlangch.venice.impl.types.collections.VncList;
+import com.github.jlangch.venice.impl.types.collections.VncMap;
+import com.github.jlangch.venice.impl.types.collections.VncOrderedMap;
 import com.github.jlangch.venice.impl.types.collections.VncVector;
 import com.github.jlangch.venice.impl.types.util.QualifiedName;
 import com.github.jlangch.venice.impl.util.CallFrame;
@@ -245,6 +247,24 @@ public abstract class VncFunction
         return preConditions != null && !preConditions.isEmpty();
     }
 
+    public VncMap about() {
+        final CallFrame cf = new CallFrame(this);
+
+        return VncOrderedMap.of(
+                new VncKeyword("name"),       new VncString(getQualifiedName()),
+                new VncKeyword("ns"),         new VncString(namespace == null ? "core" : namespace),
+                new VncKeyword("type"),       new VncKeyword(isMacro() ? "macro" : "function"),
+                new VncKeyword("visibility"), new VncKeyword(isPrivate() ? "private" : "public"),
+                new VncKeyword("native"),     VncBoolean.of(isNative()),
+                new VncKeyword("class"),      new VncKeyword(getFnClassType()),
+                new VncKeyword("source"),     isNative()
+                                                ? new VncOrderedMap()
+                                                : VncOrderedMap.of(
+                                                    new VncKeyword("file"),   new VncString(cf.getFile()),
+                                                    new VncKeyword("line"),   new VncLong(cf.getLine()),
+                                                    new VncKeyword("column"), new VncLong(cf.getCol())));
+    }
+
     @Override
     public VncVal getMeta() {
         return fnMeta.get();
@@ -292,24 +312,7 @@ public abstract class VncFunction
 
     @Override
     public String toString() {
-        final CallFrame cf = new CallFrame(this);
-
-        final String fnName = ":name " + StringUtil.quote(getQualifiedName(), '"');
-        final String fnNS = ", :ns " + StringUtil.quote(namespace == null ? "core" : namespace, '"');
-        final String fnType = ", :type " + (isMacro() ? ":macro" : ":function");
-        final String fnVisibility = ", :visibility " + (isPrivate() ? ":private" : ":public");
-        final String fnNative = ", :native " + isNative();
-        final String fnClass = ", :class " + getFnClassType();
-
-        final String fnSource = isNative()
-                                    ? ""
-                                    : String.format(
-                                        ", :source {:file %s, :line %d, :column %d}",
-                                        StringUtil.quote(cf.getFile(), '"'),
-                                        cf.getLine(),
-                                        cf.getCol());
-
-        return "#FN{" + fnName + fnNS + fnType + fnVisibility + fnNative + fnClass + fnSource + "}";
+        return getQualifiedName();
     }
 
     @Override
@@ -320,27 +323,27 @@ public abstract class VncFunction
 
 
     private String getFnClassType() {
-    	if (this instanceof VncMultiArityFunction) {
-    		return ":VncMultiArityFunction";
-    	}
-    	else if (this instanceof VncProtocolFunction) {
-    		return ":VncProtocolFunction";
-    	}
-    	else if (this instanceof VncMultiFunction) {
-    		return ":VncMultiFunction";
-    	}
-    	else if (this instanceof VncContinuationFunction) {
-    		return ":VncContinuationFunction";
-    	}
-    	else if (this instanceof SpecialFormVirtualFunction) {
-    		return ":SpecialFormVirtualFunction";
-    	}
-    	else if (this instanceof VncFunction) {
-    		return ":VncFunction";
-    	}
-    	else {
-    		return ":unknown";
-    	}
+        if (this instanceof VncMultiArityFunction) {
+            return ":VncMultiArityFunction";
+        }
+        else if (this instanceof VncProtocolFunction) {
+            return ":VncProtocolFunction";
+        }
+        else if (this instanceof VncMultiFunction) {
+            return ":VncMultiFunction";
+        }
+        else if (this instanceof VncContinuationFunction) {
+            return ":VncContinuationFunction";
+        }
+        else if (this instanceof SpecialFormVirtualFunction) {
+            return ":SpecialFormVirtualFunction";
+        }
+        else if (this instanceof VncFunction) {
+            return ":VncFunction";
+        }
+        else {
+            return ":unknown";
+        }
     }
 
 

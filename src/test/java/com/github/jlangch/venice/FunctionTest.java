@@ -22,7 +22,6 @@
 package com.github.jlangch.venice;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import org.junit.jupiter.api.Test;
 
@@ -129,11 +128,25 @@ public class FunctionTest {
     public void test_fn_name() {
         final Venice venice = new Venice();
 
-        assertTrue(((String)venice.eval("(str +)")).contains(":name \"+\", :ns \"core\""));
+        assertEquals("+", venice.eval("(fn-name +)"));
 
-        assertTrue(((String)venice.eval("(str println)")).contains(":name \"println\", :ns \"core\""));
+        assertEquals("println", venice.eval("(fn-name println)"));
 
-        assertTrue(((String)venice.eval("(str or)")).contains(":name \"or\", :ns \"core\""));
+        assertEquals("user/sum", venice.eval("(fn-name (fn sum [x y] (+ x y)))"));
+
+        assertEquals("user/math", venice.eval("(fn-name (defmulti math (fn [op _ _] op))))"));
+    }
+
+    @Test
+    public void test_fn_about() {
+        final Venice venice = new Venice();
+
+        venice.eval("(fn-about +)");
+
+        venice.eval("(fn-about println)");
+
+        venice.eval("(fn-about or)");
+
     }
 
 }
