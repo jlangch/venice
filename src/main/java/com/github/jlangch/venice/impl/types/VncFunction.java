@@ -338,9 +338,6 @@ public abstract class VncFunction
     	else if (this instanceof VncFunction) {
     		return ":VncFunction";
     	}
-    	else if (this instanceof IVncFunction) {
-    		return ":IVncFunction";
-    	}
     	else {
     		return ":unknown";
     	}
