@@ -4840,6 +4840,7 @@ public class CoreFunctionsTest {
         assertEquals("(3 1)", venice.eval("(str (update '(0 1) 0 (fn [x] 3)))"));
         assertEquals("(4 1)", venice.eval("(str (update '(0 1) 0 (fn [x] (+ x 4))))"));
 
+        assertEquals("(1 1)", venice.eval("(str (update '(0 1) 0 inc)))"));
         assertEquals("(4 1)", venice.eval("(str (update '(0 1) 0 + 4)))"));
         assertEquals("(9 1)", venice.eval("(str (update '(0 1) 0 + 4 5)))"));
 
@@ -4849,6 +4850,7 @@ public class CoreFunctionsTest {
         assertEquals("[3 1]", venice.eval("(str (update [0 1] 0 (fn [x] 3)))"));
         assertEquals("[4 1]", venice.eval("(str (update [0 1] 0 (fn [x] (+ x 4))))"));
 
+        assertEquals("[1 1]", venice.eval("(str (update [0 1] 0 inc))"));
         assertEquals("[4 1]", venice.eval("(str (update [0 1] 0 + 4))"));
         assertEquals("[9 1]", venice.eval("(str (update [0 1] 0 + 4 5))"));
 
@@ -4858,6 +4860,7 @@ public class CoreFunctionsTest {
         assertEquals("{:a 3 :b 1}", venice.eval("(str (update {:a 0 :b 1} :a (fn [x] 3)))"));
         assertEquals("{:a 4 :b 1}", venice.eval("(str (update {:a 0 :b 1} :a (fn [x] (+ x 4))))"));
 
+        assertEquals("{:a 1 :b 1}", venice.eval("(str (update {:a 0 :b 1} :a inc))"));
         assertEquals("{:a 4 :b 1}", venice.eval("(str (update {:a 0 :b 1} :a + 4))"));
         assertEquals("{:a 9 :b 1}", venice.eval("(str (update {:a 0 :b 1} :a + 4 5))"));
     }
@@ -4872,6 +4875,7 @@ public class CoreFunctionsTest {
         assertEquals("(3 1)", venice.eval("(str (update (mutable-list 0 1) 0 (fn [x] 3)))"));
         assertEquals("(4 1)", venice.eval("(str (update (mutable-list 0 1) 0 (fn [x] (+ x 4))))"));
 
+        assertEquals("(1 1)", venice.eval("(str (update (mutable-list 0 1) 0 inc)))"));
         assertEquals("(4 1)", venice.eval("(str (update (mutable-list 0 1) 0 + 4)))"));
         assertEquals("(9 1)", venice.eval("(str (update (mutable-list 0 1) 0 + 4 5)))"));
 
@@ -4881,6 +4885,7 @@ public class CoreFunctionsTest {
         assertEquals("[3 1]", venice.eval("(str (update (mutable-vector 0 1) 0 (fn [x] 3)))"));
         assertEquals("[4 1]", venice.eval("(str (update (mutable-vector 0 1) 0 (fn [x] (+ x 4))))"));
 
+        assertEquals("[1 1]", venice.eval("(str (update (mutable-vector 0 1) 0 inc))"));
         assertEquals("[4 1]", venice.eval("(str (update (mutable-vector 0 1) 0 + 4))"));
         assertEquals("[9 1]", venice.eval("(str (update (mutable-vector 0 1) 0 + 4 5))"));
 
@@ -4890,6 +4895,7 @@ public class CoreFunctionsTest {
         assertEquals("{:a 3 :b 1}", venice.eval("(str (update! (mutable-map :a 0 :b 1) :a (fn [x] 3)))"));
         assertEquals("{:a 4 :b 1}", venice.eval("(str (update! (mutable-map :a 0 :b 1) :a (fn [x] (+ x 4))))"));
 
+        assertEquals("{:a 1 :b 1}", venice.eval("(str (update! (mutable-map :a 0 :b 1) :a inc))"));
         assertEquals("{:a 4 :b 1}", venice.eval("(str (update! (mutable-map :a 0 :b 1) :a + 4))"));
         assertEquals("{:a 9 :b 1}", venice.eval("(str (update! (mutable-map :a 0 :b 1) :a + 4 5))"));
     }
