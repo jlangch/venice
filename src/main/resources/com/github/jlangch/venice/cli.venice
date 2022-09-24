@@ -263,7 +263,7 @@
                           you have a parse error).
 
             :summary-fn   A function that receives the sequence of compiled option specs
-                          (documented at #'clojure.tools.cli/compile-option-specs), and
+                          (documented at cli/compile-option-specs), and
                           returns a custom option summary string.
           """ }
 
@@ -420,14 +420,14 @@
            :long-opt     String     ; "--server"
            :required     String     ; "HOSTNAME"
            :desc         String     ; "Remote server"
-           :default      Object     ; #<Inet4Address example.com/93.184.216.119>
+           :default      Object     ; (cidr/inet-addr "93.184.216.119")
            :default-desc String     ; "example.com"
            :default-fn   Function   ; (constantly 0)
-           :parse-fn     Function   ; #(InetAddress/getByName %)
+           :parse-fn     Function   ; cidr/inet-addr
            :assoc-fn     Function   ; assoc
            :update-fn    Function   ; identity
-           :validate-fn  [Function] ; [#(instance? Inet4Address %)
-                                    ;  #(not (.isMulticastAddress %)]
+           :validate-fn  [Function] ; [#(cidr/ip4? %)
+                                    ;  #(not (cidr/multicast-addr? %)]
            :validate-msg [String]   ; ["Must be an IPv4 host"
                                     ;  "Must not be a multicast address"]
                                     ; can also be a function (of the invalid argument)

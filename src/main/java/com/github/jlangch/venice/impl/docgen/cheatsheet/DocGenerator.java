@@ -260,7 +260,7 @@ public class DocGenerator {
         util.addSection(new DocSection("Math", "math"));
         util.addSection(new DocSection("Time", "time"));
         util.addSection(new DocSection("Regex", "regex"));
-        util.addSection(new DocSection("CIDR", "cidr"));
+        util.addSection(new DocSection("CIDR/INET", "cidr"));
 
         content.add(util);
 

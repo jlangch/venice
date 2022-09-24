@@ -526,6 +526,129 @@ public class CidrFunctions {
             private static final long serialVersionUID = -1848883965231344442L;
         };
 
+    public static VncFunction multicast_addr_Q =
+        new VncFunction(
+                "cidr/multicast-addr?",
+                VncFunction
+                    .meta()
+                    .arglists("(cidr/multicast-addr? addr)")
+                    .doc("Returns true if addr is a multicast address.")
+                    .examples(
+                        "(cidr/multicast-addr? \"224.0.0.1\")",
+                        "(cidr/multicast-addr? (cidr/inet-addr \"224.0.0.1\"))")
+                    .build()
+        ) {
+            @Override
+            public VncVal apply(final VncList args) {
+                ArityExceptions.assertArity(this, args, 1);
+
+                final VncVal addr = args.first();
+
+                if (Types.isVncString(addr)) {
+                    final String ipAddr = ((VncString)addr).getValue();
+                    try {
+                        return VncBoolean.of(
+                                InetAddress.getByName(ipAddr)
+                                           .isMulticastAddress());
+                    }
+                    catch(Exception ex) {
+                        throw new VncException("Not an IP address: '" + ipAddr + "'");
+                    }
+                }
+                else if (Types.isVncJavaObject(addr, InetAddress.class)) {
+                    final InetAddress inet = Coerce.toVncJavaObject(addr, InetAddress.class);
+                    return VncBoolean.of(inet.isMulticastAddress());
+                }
+                else {
+                    throw new VncException("Not an IP address: '" + addr + "'");
+                }
+            }
+
+            private static final long serialVersionUID = -1848883965231344442L;
+        };
+
+    public static VncFunction linklocal_addr_Q =
+        new VncFunction(
+                "cidr/linklocal-addr?",
+                VncFunction
+                    .meta()
+                    .arglists("(cidr/linklocal-addr? addr)")
+                    .doc("Returns true if addr is a link local address.")
+                    .examples(
+                        "(cidr/linklocal-addr? \"169.254.0.0\")",
+                        "(cidr/linklocal-addr? (cidr/inet-addr \"169.254.0.0\"))")
+                    .build()
+        ) {
+            @Override
+            public VncVal apply(final VncList args) {
+                ArityExceptions.assertArity(this, args, 1);
+
+                final VncVal addr = args.first();
+
+                if (Types.isVncString(addr)) {
+                    final String ipAddr = ((VncString)addr).getValue();
+                    try {
+                        return VncBoolean.of(
+                                InetAddress.getByName(ipAddr)
+                                           .isLinkLocalAddress());
+                    }
+                    catch(Exception ex) {
+                        throw new VncException("Not an IP address: '" + ipAddr + "'");
+                    }
+                }
+                else if (Types.isVncJavaObject(addr, InetAddress.class)) {
+                    final InetAddress inet = Coerce.toVncJavaObject(addr, InetAddress.class);
+                    return VncBoolean.of(inet.isLinkLocalAddress());
+                }
+                else {
+                    throw new VncException("Not an IP address: '" + addr + "'");
+                }
+            }
+
+            private static final long serialVersionUID = -1848883965231344442L;
+        };
+
+    public static VncFunction sitelocal_addr_Q =
+        new VncFunction(
+                "cidr/sitelocal-addr?",
+                VncFunction
+                    .meta()
+                    .arglists("(cidr/sitelocal-addr? addr)")
+                    .doc("Returns true if addr is a site local address.")
+                    .examples(
+                        "(cidr/sitelocal-addr? \"192.168.0.0\")",
+                        "(cidr/sitelocal-addr? (cidr/inet-addr \"192.168.0.0\"))")
+                    .build()
+        ) {
+            @Override
+            public VncVal apply(final VncList args) {
+                ArityExceptions.assertArity(this, args, 1);
+
+                final VncVal addr = args.first();
+
+                if (Types.isVncString(addr)) {
+                    final String ipAddr = ((VncString)addr).getValue();
+                    try {
+                        return VncBoolean.of(
+                                InetAddress.getByName(ipAddr)
+                                           .isSiteLocalAddress());
+                    }
+                    catch(Exception ex) {
+                        throw new VncException("Not an IP address: '" + ipAddr + "'");
+                    }
+                }
+                else if (Types.isVncJavaObject(addr, InetAddress.class)) {
+                    final InetAddress inet = Coerce.toVncJavaObject(addr, InetAddress.class);
+                    return VncBoolean.of(inet.isSiteLocalAddress());
+                }
+                else {
+                    throw new VncException("Not an IP address: '" + addr + "'");
+                }
+            }
+
+            private static final long serialVersionUID = -1848883965231344442L;
+        };
+
     public static VncFunction inet_addr =
         new VncFunction(
                 "cidr/inet-addr",
@@ -657,6 +780,9 @@ public class CidrFunctions {
                     .add(inet_addr)
                     .add(ip4_Q)
                     .add(ip6_Q)
+                    .add(multicast_addr_Q)
+                    .add(linklocal_addr_Q)
+                    .add(sitelocal_addr_Q)
                     .add(inet_addr_to_bytes)
                     .add(inet_addr_from_bytes)
                     .add(trie)

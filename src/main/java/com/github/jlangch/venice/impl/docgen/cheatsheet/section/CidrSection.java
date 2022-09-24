@@ -35,7 +35,7 @@ public class CidrSection implements ISectionBuilder {
     @Override
     public DocSection section() {
         final DocSection section = new DocSection(
-                                            "CIDR",
+                                            "CIDR/INET",
                                             "classless inter-domain routing",
                                             "cidr");
 
@@ -48,9 +48,6 @@ public class CidrSection implements ISectionBuilder {
         cidr.addItem(diBuilder.getDocItem("cidr/in-range?"));
         cidr.addItem(diBuilder.getDocItem("cidr/start-inet-addr"));
         cidr.addItem(diBuilder.getDocItem("cidr/end-inet-addr"));
-        cidr.addItem(diBuilder.getDocItem("cidr/inet-addr"));
-        cidr.addItem(diBuilder.getDocItem("cidr/inet-addr-to-bytes"));
-        cidr.addItem(diBuilder.getDocItem("cidr/inet-addr-from-bytes"));
 
         final DocSection cidr_trie = new DocSection("CIDR Trie", "cidr.cidrtrie");
         all.addSection(cidr_trie);
@@ -59,6 +56,17 @@ public class CidrSection implements ISectionBuilder {
         cidr_trie.addItem(diBuilder.getDocItem("cidr/insert"));
         cidr_trie.addItem(diBuilder.getDocItem("cidr/lookup"));
         cidr_trie.addItem(diBuilder.getDocItem("cidr/lookup-reverse"));
+
+        final DocSection inet = new DocSection("INET", "cidr.inet");
+        all.addSection(inet);
+        inet.addItem(diBuilder.getDocItem("cidr/inet-addr"));
+        inet.addItem(diBuilder.getDocItem("cidr/inet-addr-to-bytes"));
+        inet.addItem(diBuilder.getDocItem("cidr/inet-addr-from-bytes"));
+        inet.addItem(diBuilder.getDocItem("cidr/ip4?"));
+        inet.addItem(diBuilder.getDocItem("cidr/ip6?"));
+        inet.addItem(diBuilder.getDocItem("cidr/linklocal-addr?"));
+        inet.addItem(diBuilder.getDocItem("cidr/sitelocal-addr?"));
+        inet.addItem(diBuilder.getDocItem("cidr/multicast-addr?"));
 
         return section;
     }
