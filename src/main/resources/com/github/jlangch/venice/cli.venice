@@ -616,8 +616,8 @@
                     [m ids (conj errors (missing-required-error opt (:required spec)))]
                     (let [m2 (if-let [update-fn (:update-fn spec)]
                                (if (:multi spec)
-                                 (update m id #(update-fn % value))
-                                 (update m id #(update-fn %)))
+                                 (update m id update-fn value)
+                                 (update m id update-fn))
                                ((:assoc-fn spec assoc) m id value))]
                       (if (:post-validation spec)
                         (let [[value error] (validate (get m2 id) spec opt optarg)]

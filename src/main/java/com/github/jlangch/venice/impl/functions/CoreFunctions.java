@@ -4447,31 +4447,40 @@ public class CoreFunctions {
                 VncFunction
                     .meta()
                     .arglists(
-                    	"(update m k f)")
+                    	"(update m k f)",
+                    	"(update m k f x)",
+                    	"(update m k f x y)",
+                    	"(update m k f x y & zs)")
                     .doc(
                         "Updates a value in an associative structure, where k is a " +
                         "key and f is a function that will take the old value " +
-                        "return the new value. Returns a new structure.")
+                        "return the new value. Returns a new structure. \n\n" +
+                        "If the key does not exist, `nil` is passed as the old value. " +
+                        "The optional args x, y, .. are passed to the function f as " +
+                        "`(f old-value x y ...)`.")
                     .examples(
                         "(update [] 0 (fn [x] 5))",
                         "(update [0 1 2] 0 (fn [x] 5))",
                         "(update [0 1 2] 0 (fn [x] (+ x 1)))",
                         "(update {} :a (fn [x] 5))",
                         "(update {:a 0} :b (fn [x] 5))",
-                        "(update {:a 0 :b 1} :a (fn [x] 5))")
+                        "(update {:a 0 :b 1} :a (fn [x] 5))",
+                        "(update [0 1 2] 0 + 1)",
+                        "(update {:a 0 :b 1} :b * 4)")
                     .seeAlso(
                     	"assoc", "dissoc")
                     .build()
         ) {
             @Override
             public VncVal apply(final VncList args) {
-                ArityExceptions.assertArity(this, args, 3);
+                ArityExceptions.assertMinArity(this, args, 3);
 
                 final MeterRegistry meterRegistry = ThreadContext.getMeterRegistry();
 
                 final VncVal m = args.first();
                 final VncVal k = args.second();
                 final VncVal f = args.third();
+                final VncList supplementalArgs = args.slice(3);
 
                 final IVncFunction fn = Coerce.toIVncFunction(f);
                 fn.sandboxFunctionCallValidation();
@@ -4486,17 +4495,20 @@ public class CoreFunctions {
                                 idx));
                     }
                     else if (idx < list.size()) {
-                    	final VncList fnArgs = VncList.of(list.nth(idx));
+                    	final VncList fnArgs = VncList.of(list.nth(idx))
+                    			                      .addAllAtEnd(supplementalArgs);
                         return list.setAt(idx, VncFunction.applyWithMeter(fn, fnArgs, meterRegistry));
                     }
                     else {
-                    	final VncList fnArgs = VncList.of(Nil);
+                    	final VncList fnArgs = VncList.of(Nil)
+			                                          .addAllAtEnd(supplementalArgs);
                         return list.addAtEnd(VncFunction.applyWithMeter(fn, fnArgs, meterRegistry));
                     }
                 }
                 else if (Types.isVncMap(m)) {
                     final VncMap map = (VncMap)m;
-                    final VncList fnArgs = VncList.of(map.get(k));
+                    final VncList fnArgs = VncList.of(map.get(k))
+		                                          .addAllAtEnd(supplementalArgs);
                     return map.assoc(k, VncFunction.applyWithMeter(fn, fnArgs, meterRegistry));
                 }
                 else {
@@ -4518,31 +4530,40 @@ public class CoreFunctions {
                     .doc(
                         "Updates a value in a mutable map, where k is a " +
                         "key and f is a function that will take the old value " +
-                        "return the new value.")
+                        "return the new value.\n\n" +
+                        "If the key does not exist, `nil` is passed as the old value. " +
+                        "The optional args x, y, .. are passed to the function f as " +
+                        "`(f old-value x y ...)`.")
                     .examples(
+                        "(update! (mutable-vector) 0 (fn [x] 5))",
+                        "(update! (mutable-vector 0 1 2) 0 (fn [x] 5))",
+                        "(update! (mutable-vector 0 1 2) 0 (fn [x] (+ x 1)))",
                         "(update! (mutable-map) :a (fn [x] 5))",
                         "(update! (mutable-map :a 0) :b (fn [x] 5))",
                         "(update! (mutable-map :a 0 :b 1) :a (fn [x] 5))",
-                        "(update! (mutable-vector 1 2 3) 0 (fn [x] 10))")
+                        "(update! (mutable-vector 0 1 2) 0 + 4)",
+                        "(update! (mutable-map :a 0 :b 1) :b * 4)")
                     .seeAlso("assoc!", "dissoc!")
                     .build()
         ) {
             @Override
             public VncVal apply(final VncList args) {
-                ArityExceptions.assertArity(this, args, 3);
+                ArityExceptions.assertMinArity(this, args, 3);
 
                 final MeterRegistry meterRegistry = ThreadContext.getMeterRegistry();
 
                 final VncVal m = args.first();
                 final VncVal k = args.second();
                 final VncVal f = args.third();
+                final VncList supplementalArgs = args.slice(3);
 
                 final IVncFunction fn = Coerce.toIVncFunction(f);
                 fn.sandboxFunctionCallValidation();
 
                 if (Types.isVncMutableMap(m)) {
                     final VncMutableMap map = (VncMutableMap)m;
-                    final VncList fnArgs = VncList.of(map.get(k));
+                    final VncList fnArgs = VncList.of(map.get(k))
+		                                          .addAllAtEnd(supplementalArgs);
                     return map.assoc(k, VncFunction.applyWithMeter(fn, fnArgs, meterRegistry));
                 }
                 else if (Types.isVncMutableVector(m) || Types.isVncMutableList(m) || Types.isVncJavaList(m)) {
@@ -4555,11 +4576,13 @@ public class CoreFunctions {
                                 idx));
                     }
                     else if (idx < seq.size()) {
-                    	final VncList fnArgs = VncList.of(seq.nth(idx));
+                    	final VncList fnArgs = VncList.of(seq.nth(idx))
+                                                      .addAllAtEnd(supplementalArgs);
                         return seq.setAt(idx, VncFunction.applyWithMeter(fn, fnArgs, meterRegistry));
                     }
                     else {
-                    	final VncList fnArgs = VncList.of(Nil);
+                    	final VncList fnArgs = VncList.of(Nil)
+			                                          .addAllAtEnd(supplementalArgs);
                         return seq.addAtEnd(VncFunction.applyWithMeter(fn, fnArgs, meterRegistry));
                     }
                 }

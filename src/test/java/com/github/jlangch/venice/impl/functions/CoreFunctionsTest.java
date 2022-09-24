@@ -624,6 +624,17 @@ public class CoreFunctionsTest {
     }
 
     @Test
+    public void test_constantly() {
+        final Venice venice = new Venice();
+
+        assertEquals(4L, venice.eval("(let [f (constantly 4)] (f))"));
+        assertEquals(4L, venice.eval("(let [f (constantly 4)] (f 1))"));
+        assertEquals(4L, venice.eval("(let [f (constantly 4)] (f 1 2))"));
+        assertEquals(4L, venice.eval("(let [f (constantly 4)] (f 1 2 3))"));
+        assertEquals(4L, venice.eval("(let [f (constantly 4)] (f 1 2 3 4))"));
+    }
+
+    @Test
     public void test_contains() {
         final Venice venice = new Venice();
 
@@ -4829,28 +4840,58 @@ public class CoreFunctionsTest {
         assertEquals("(3 1)", venice.eval("(str (update '(0 1) 0 (fn [x] 3)))"));
         assertEquals("(4 1)", venice.eval("(str (update '(0 1) 0 (fn [x] (+ x 4))))"));
 
+        assertEquals("(4 1)", venice.eval("(str (update '(0 1) 0 + 4)))"));
+        assertEquals("(9 1)", venice.eval("(str (update '(0 1) 0 + 4 5)))"));
+
         // vector
         assertEquals("[3]", venice.eval("(str (update [] 0 (fn [x] 3)))"));
         assertEquals("[0 1]", venice.eval("(str (update [0] 1 (fn [x] 1)))"));
         assertEquals("[3 1]", venice.eval("(str (update [0 1] 0 (fn [x] 3)))"));
         assertEquals("[4 1]", venice.eval("(str (update [0 1] 0 (fn [x] (+ x 4))))"));
 
+        assertEquals("[4 1]", venice.eval("(str (update [0 1] 0 + 4))"));
+        assertEquals("[9 1]", venice.eval("(str (update [0 1] 0 + 4 5))"));
+
         // map
         assertEquals("{:a 0}", venice.eval("(str (update {} :a (fn [x] 0)))"));
         assertEquals("{:a 1 :b 1}", venice.eval("(str (update {:a 0 :b 1} :a (fn [x] 1)))"));
         assertEquals("{:a 3 :b 1}", venice.eval("(str (update {:a 0 :b 1} :a (fn [x] 3)))"));
         assertEquals("{:a 4 :b 1}", venice.eval("(str (update {:a 0 :b 1} :a (fn [x] (+ x 4))))"));
+
+        assertEquals("{:a 4 :b 1}", venice.eval("(str (update {:a 0 :b 1} :a + 4))"));
+        assertEquals("{:a 9 :b 1}", venice.eval("(str (update {:a 0 :b 1} :a + 4 5))"));
     }
 
     @Test
     public void test_update_BANG() {
         final Venice venice = new Venice();
 
+        // list
+        assertEquals("(3)", venice.eval("(str (update (mutable-list) 0 (fn [x] 3)))"));
+        assertEquals("(0 1)", venice.eval("(str (update (mutable-list 0) 1 (fn [x] 1)))"));
+        assertEquals("(3 1)", venice.eval("(str (update (mutable-list 0 1) 0 (fn [x] 3)))"));
+        assertEquals("(4 1)", venice.eval("(str (update (mutable-list 0 1) 0 (fn [x] (+ x 4))))"));
+
+        assertEquals("(4 1)", venice.eval("(str (update (mutable-list 0 1) 0 + 4)))"));
+        assertEquals("(9 1)", venice.eval("(str (update (mutable-list 0 1) 0 + 4 5)))"));
+
+        // vector
+        assertEquals("[3]", venice.eval("(str (update (mutable-vector) 0 (fn [x] 3)))"));
+        assertEquals("[0 1]", venice.eval("(str (update (mutable-vector 0) 1 (fn [x] 1)))"));
+        assertEquals("[3 1]", venice.eval("(str (update (mutable-vector 0 1) 0 (fn [x] 3)))"));
+        assertEquals("[4 1]", venice.eval("(str (update (mutable-vector 0 1) 0 (fn [x] (+ x 4))))"));
+
+        assertEquals("[4 1]", venice.eval("(str (update (mutable-vector 0 1) 0 + 4))"));
+        assertEquals("[9 1]", venice.eval("(str (update (mutable-vector 0 1) 0 + 4 5))"));
+
         // map
         assertEquals("{:a 0}", venice.eval("(str (update! (mutable-map) :a (fn [x] 0)))"));
         assertEquals("{:a 1 :b 1}", venice.eval("(str (update! (mutable-map :a 0 :b 1) :a (fn [x] 1)))"));
         assertEquals("{:a 3 :b 1}", venice.eval("(str (update! (mutable-map :a 0 :b 1) :a (fn [x] 3)))"));
         assertEquals("{:a 4 :b 1}", venice.eval("(str (update! (mutable-map :a 0 :b 1) :a (fn [x] (+ x 4))))"));
+
+        assertEquals("{:a 4 :b 1}", venice.eval("(str (update! (mutable-map :a 0 :b 1) :a + 4))"));
+        assertEquals("{:a 9 :b 1}", venice.eval("(str (update! (mutable-map :a 0 :b 1) :a + 4 5))"));
     }
 
     @Test
