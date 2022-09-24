@@ -711,85 +711,85 @@ public class CoreFunctions {
             private static final long serialVersionUID = -1848883965231344442L;
         };
 
-	public static VncFunction fn_name =
-	    new VncFunction(
-	            "fn-name",
-	            VncFunction
-	                .meta()
-	                .arglists("(fn-name f)")
-	                .doc("Returns the qualified name of a function or macro")
-	                .examples(
-	                	"(fn-name (fn sum [x y] (+ x y)))",
-	                    "(let [f str/digit?]  \n" +
-	                    "  (fn-name f))       ")
-	                .seeAlso(
-	                	"name", "namespace",
-	                	"fn-about", "fn-body", "fn-pre-conditions")
-	                .build()
-	    ) {
-	        @Override
-	        public VncVal apply(final VncList args) {
-	            ArityExceptions.assertArity(this, args, 1);
+    public static VncFunction fn_name =
+        new VncFunction(
+                "fn-name",
+                VncFunction
+                    .meta()
+                    .arglists("(fn-name f)")
+                    .doc("Returns the qualified name of a function or macro")
+                    .examples(
+                        "(fn-name (fn sum [x y] (+ x y)))",
+                        "(let [f str/digit?]  \n" +
+                        "  (fn-name f))       ")
+                    .seeAlso(
+                        "name", "namespace",
+                        "fn-about", "fn-body", "fn-pre-conditions")
+                    .build()
+        ) {
+            @Override
+            public VncVal apply(final VncList args) {
+                ArityExceptions.assertArity(this, args, 1);
 
-	            final VncVal arg = args.first();
+                final VncVal arg = args.first();
 
-	            if (arg == Nil) {
-	                return Nil;
-	            }
-	            else if (Types.isVncFunction(arg) || Types.isVncMacro(arg)) {
-	            	final VncFunction fn = (VncFunction)arg;
-	                fn.sandboxFunctionCallValidation();
+                if (arg == Nil) {
+                    return Nil;
+                }
+                else if (Types.isVncFunction(arg) || Types.isVncMacro(arg)) {
+                    final VncFunction fn = (VncFunction)arg;
+                    fn.sandboxFunctionCallValidation();
 
-	                return new VncString(fn.getQualifiedName());
-	            }
-	            else {
-	                throw new VncException(String.format(
-	                        "Function 'fn-name' does not allow %s as parameter",
-	                        Types.getType(arg)));
-	            }
-	        }
+                    return new VncString(fn.getQualifiedName());
+                }
+                else {
+                    throw new VncException(String.format(
+                            "Function 'fn-name' does not allow %s as parameter",
+                            Types.getType(arg)));
+                }
+            }
 
-	        private static final long serialVersionUID = -1848883965231344442L;
-	    };
+            private static final long serialVersionUID = -1848883965231344442L;
+        };
 
-	public static VncFunction fn_about =
-	    new VncFunction(
-	            "fn-about",
-	            VncFunction
-	                .meta()
-	                .arglists("(fn-about f)")
-	                .doc("Returns the meta information about a function")
-	                .examples(
-	                	"(fn-about and)",
-	                    "(fn-about println)",
-	    	            "(fn-about +)")
-	                .seeAlso("fn-name", "fn-body", "fn-pre-conditions")
-	                .build()
-	    ) {
-	        @Override
-	        public VncVal apply(final VncList args) {
-	            ArityExceptions.assertArity(this, args, 1);
+    public static VncFunction fn_about =
+        new VncFunction(
+                "fn-about",
+                VncFunction
+                    .meta()
+                    .arglists("(fn-about f)")
+                    .doc("Returns the meta information about a function")
+                    .examples(
+                        "(fn-about and)",
+                        "(fn-about println)",
+                        "(fn-about +)")
+                    .seeAlso("fn-name", "fn-body", "fn-pre-conditions")
+                    .build()
+        ) {
+            @Override
+            public VncVal apply(final VncList args) {
+                ArityExceptions.assertArity(this, args, 1);
 
-	            final VncVal arg = args.first();
+                final VncVal arg = args.first();
 
-	            if (arg == Nil) {
-	                return Nil;
-	            }
-	            else if (Types.isVncFunction(arg) || Types.isVncMacro(arg)) {
-	            	final VncFunction fn = (VncFunction)arg;
-	                fn.sandboxFunctionCallValidation();
+                if (arg == Nil) {
+                    return Nil;
+                }
+                else if (Types.isVncFunction(arg) || Types.isVncMacro(arg)) {
+                    final VncFunction fn = (VncFunction)arg;
+                    fn.sandboxFunctionCallValidation();
 
-	                return fn.about();
-	            }
-	            else {
-	                throw new VncException(String.format(
-	                        "Function 'fn-about' does not allow %s as parameter",
-	                        Types.getType(arg)));
-	            }
-	        }
+                    return fn.about();
+                }
+                else {
+                    throw new VncException(String.format(
+                            "Function 'fn-about' does not allow %s as parameter",
+                            Types.getType(arg)));
+                }
+            }
 
-	        private static final long serialVersionUID = -1848883965231344442L;
-	    };
+            private static final long serialVersionUID = -1848883965231344442L;
+        };
 
     public static VncFunction fn_body =
         new VncFunction(
@@ -811,7 +811,7 @@ public class CoreFunctions {
                         "         (map #(* % 10))))  \n" +
                         "  (fn-body (var-get calc))) ")
                     .seeAlso(
-                    	"fn-name", "fn-about", "fn-pre-conditions")
+                        "fn-name", "fn-about", "fn-pre-conditions")
                     .build()
         ) {
             @Override
@@ -870,7 +870,7 @@ public class CoreFunctions {
                         "     (+ x y))                         \n" +
                         "  (fn-pre-conditions (var-get sum)))  ")
                     .seeAlso(
-                        	"fn-name", "fn-about", "fn-body")
+                            "fn-name", "fn-about", "fn-body")
                     .build()
         ) {
             @Override
@@ -2488,7 +2488,7 @@ public class CoreFunctions {
                 else if (args.size() == 1) {
                     if (Types.isVncFunction(args.first())) {
                         // finite/infinite lazy sequence with a supplier function
-                       	final VncFunction fn = (VncFunction)args.first();
+                           final VncFunction fn = (VncFunction)args.first();
                         fn.sandboxFunctionCallValidation();
 
                         return VncLazySeq.iterate(fn, Nil);
@@ -2509,14 +2509,14 @@ public class CoreFunctions {
                 }
                 else if (args.second() == Nil) {
                     // finite/infinite lazy sequence with a supplier function
-                	final VncFunction fn = Coerce.toVncFunction(args.first());
+                    final VncFunction fn = Coerce.toVncFunction(args.first());
                     fn.sandboxFunctionCallValidation();
 
                     return VncLazySeq.iterate(fn, Nil);
                 }
                 else if (Types.isVncFunction(args.second())) {
                     // infinite lazy sequence with a seed value and a function to compute the next value
-                	final VncFunction fn = (VncFunction)args.second();
+                    final VncFunction fn = (VncFunction)args.second();
                     fn.sandboxFunctionCallValidation();
 
                     return VncLazySeq.iterate(args.first(), fn, Nil);
@@ -2703,14 +2703,14 @@ public class CoreFunctions {
                 Set<VncVal> visited = new HashSet<>();
 
                 while(!vals.isEmpty()) {
-                	final VncVal v = vals.first();
-                	vals = vals.rest();
+                    final VncVal v = vals.first();
+                    vals = vals.rest();
 
-                	if (visited.contains(v)) {
-                		return VncBoolean.False;
-                	}
+                    if (visited.contains(v)) {
+                        return VncBoolean.False;
+                    }
 
-                	visited.add(v);
+                    visited.add(v);
                 }
 
                 return VncBoolean.True;
@@ -2909,9 +2909,9 @@ public class CoreFunctions {
 
                 final List<IVncFunction> functions = new ArrayList<>();
                 for(VncVal a : args) {
-                	final IVncFunction fn = Coerce.toIVncFunction(a);
-                	fn.sandboxFunctionCallValidation();
-                	functions.add(fn);
+                    final IVncFunction fn = Coerce.toIVncFunction(a);
+                    fn.sandboxFunctionCallValidation();
+                    functions.add(fn);
                 }
 
                 return new VncFunction(createAnonymousFuncName("juxt:wrapped")) {
@@ -3883,19 +3883,20 @@ public class CoreFunctions {
                 "update-in",
                 VncFunction
                     .meta()
-                    .arglists("(update-in [m ks f & args])")
+                    .arglists("(update-in [m ks f & fargs])")
                     .doc(
                         "Updates' a value in a nested associative structure, where ks is a " +
                         "sequence of keys and f is a function that will take the old value " +
-                        "and any supplied args and return the new value, and returns a new " +
-                        "nested structure.  If any levels do not exist, hash-maps will be " +
-                        "created.")
+                        "and any supplied fargs and return the new value, and returns a new " +
+                        "nested structure. \n\n" +
+                        "If any levels do not exist, hash-maps will be reated.")
                     .examples(
                         "(do                                               \n" +
                         "  (def users [ {:name \"James\" :age 26}          \n" +
                         "               {:name \"John\" :age 43} ])        \n" +
                         "  (update-in users [1 :age] inc))                   ",
-                        "(update-in {:a 12} [:a] / 4)")
+                        "(update-in {:a 12} [:a] * 4)",
+                        "(update-in {:a 12} [:a] + 3 4)")
                     .build()
         ) {
             @Override
@@ -4447,17 +4448,16 @@ public class CoreFunctions {
                 VncFunction
                     .meta()
                     .arglists(
-                    	"(update m k f)",
-                    	"(update m k f x)",
-                    	"(update m k f x y)",
-                    	"(update m k f x y & zs)")
+                        "(update m k f)",
+                        "(update m k f & fargs)")
                     .doc(
                         "Updates a value in an associative structure, where k is a " +
                         "key and f is a function that will take the old value " +
-                        "return the new value. Returns a new structure. \n\n" +
+                        "and any supplied fargs and return the new value. " +
+                        "Returns a new structure. \n\n" +
                         "If the key does not exist, `nil` is passed as the old value. " +
-                        "The optional args x, y, .. are passed to the function f as " +
-                        "`(f old-value x y ...)`.")
+                        "The optional fargs are passed to the function f as " +
+                        "`(f old-value (f old-value arg1 arg2 ...) ...)`.")
                     .examples(
                         "(update [] 0 (fn [x] 5))",
                         "(update [0 1 2] 0 (fn [x] 5))",
@@ -4468,7 +4468,7 @@ public class CoreFunctions {
                         "(update [0 1 2] 0 + 1)",
                         "(update {:a 0 :b 1} :b * 4)")
                     .seeAlso(
-                    	"assoc", "dissoc")
+                        "assoc", "dissoc")
                     .build()
         ) {
             @Override
@@ -4495,20 +4495,20 @@ public class CoreFunctions {
                                 idx));
                     }
                     else if (idx < list.size()) {
-                    	final VncList fnArgs = VncList.of(list.nth(idx))
-                    			                      .addAllAtEnd(supplementalArgs);
+                        final VncList fnArgs = VncList.of(list.nth(idx))
+                                                      .addAllAtEnd(supplementalArgs);
                         return list.setAt(idx, VncFunction.applyWithMeter(fn, fnArgs, meterRegistry));
                     }
                     else {
-                    	final VncList fnArgs = VncList.of(Nil)
-			                                          .addAllAtEnd(supplementalArgs);
+                        final VncList fnArgs = VncList.of(Nil)
+                                                      .addAllAtEnd(supplementalArgs);
                         return list.addAtEnd(VncFunction.applyWithMeter(fn, fnArgs, meterRegistry));
                     }
                 }
                 else if (Types.isVncMap(m)) {
                     final VncMap map = (VncMap)m;
                     final VncList fnArgs = VncList.of(map.get(k))
-		                                          .addAllAtEnd(supplementalArgs);
+                                                  .addAllAtEnd(supplementalArgs);
                     return map.assoc(k, VncFunction.applyWithMeter(fn, fnArgs, meterRegistry));
                 }
                 else {
@@ -4526,14 +4526,15 @@ public class CoreFunctions {
                 "update!",
                 VncFunction
                     .meta()
-                    .arglists("(update! m k f)")
+                    .arglists("(update! m k f & fargs)")
                     .doc(
-                        "Updates a value in a mutable map, where k is a " +
+                        "Updates a value in a mutable associative structure, where k is a " +
                         "key and f is a function that will take the old value " +
-                        "return the new value.\n\n" +
+                        "and any supplied fargs and return the new value. " +
+                        "Returns a new structure. \n\n" +
                         "If the key does not exist, `nil` is passed as the old value. " +
-                        "The optional args x, y, .. are passed to the function f as " +
-                        "`(f old-value x y ...)`.")
+                        "The optional fargs are passed to the function f as " +
+                        "`(f old-value arg1 arg2 ...)`.")
                     .examples(
                         "(update! (mutable-vector) 0 (fn [x] 5))",
                         "(update! (mutable-vector 0 1 2) 0 (fn [x] 5))",
@@ -4563,7 +4564,7 @@ public class CoreFunctions {
                 if (Types.isVncMutableMap(m)) {
                     final VncMutableMap map = (VncMutableMap)m;
                     final VncList fnArgs = VncList.of(map.get(k))
-		                                          .addAllAtEnd(supplementalArgs);
+                                                  .addAllAtEnd(supplementalArgs);
                     return map.assoc(k, VncFunction.applyWithMeter(fn, fnArgs, meterRegistry));
                 }
                 else if (Types.isVncMutableVector(m) || Types.isVncMutableList(m) || Types.isVncJavaList(m)) {
@@ -4576,13 +4577,13 @@ public class CoreFunctions {
                                 idx));
                     }
                     else if (idx < seq.size()) {
-                    	final VncList fnArgs = VncList.of(seq.nth(idx))
+                        final VncList fnArgs = VncList.of(seq.nth(idx))
                                                       .addAllAtEnd(supplementalArgs);
                         return seq.setAt(idx, VncFunction.applyWithMeter(fn, fnArgs, meterRegistry));
                     }
                     else {
-                    	final VncList fnArgs = VncList.of(Nil)
-			                                          .addAllAtEnd(supplementalArgs);
+                        final VncList fnArgs = VncList.of(Nil)
+                                                      .addAllAtEnd(supplementalArgs);
                         return seq.addAtEnd(VncFunction.applyWithMeter(fn, fnArgs, meterRegistry));
                     }
                 }
@@ -5292,9 +5293,9 @@ public class CoreFunctions {
 
                 final List<VncFunction> predicates = new ArrayList<>();
                 args.forEach(p -> {
-                	final VncFunction fn = Coerce.toVncFunction(p);
-                	fn.sandboxFunctionCallValidation();
-                	predicates.add(fn);
+                    final VncFunction fn = Coerce.toVncFunction(p);
+                    fn.sandboxFunctionCallValidation();
+                    predicates.add(fn);
                 });
 
                 return new VncFunction(createAnonymousFuncName("every-pred:wrapped")) {
@@ -5348,9 +5349,9 @@ public class CoreFunctions {
 
                 final List<VncFunction> predicates = new ArrayList<>();
                 args.forEach(p -> {
-                	final VncFunction fn = Coerce.toVncFunction(p);
-                	fn.sandboxFunctionCallValidation();
-                	predicates.add(fn);
+                    final VncFunction fn = Coerce.toVncFunction(p);
+                    fn.sandboxFunctionCallValidation();
+                    predicates.add(fn);
                 });
 
                 return new VncFunction(createAnonymousFuncName("any-pred:wrapped")) {
@@ -5626,7 +5627,7 @@ public class CoreFunctions {
                     //
                     //   (pr-str (doall (take 6 (fib)))))   ; -> (1 1 2 3 5 8)
 
-                	final VncFunction fn = (VncFunction)args.second();
+                    final VncFunction fn = (VncFunction)args.second();
                     fn.sandboxFunctionCallValidation();
 
                     return VncLazySeq.cons(args.first(), fn, Nil);
@@ -7626,8 +7627,8 @@ public class CoreFunctions {
                 else {
                     // the functions are applied right to left
                     for(int ii=0; ii<len; ii++) {
-                    	final IVncFunction fn = Coerce.toIVncFunction(args.nth(ii));
-                    	fn.sandboxFunctionCallValidation();
+                        final IVncFunction fn = Coerce.toIVncFunction(args.nth(ii));
+                        fn.sandboxFunctionCallValidation();
 
                         fns[len-1-ii] = fn;
                     }
@@ -9271,8 +9272,8 @@ public class CoreFunctions {
     }
 
     private static String renderCharLiteralsMarkdownTable() {
-    	// note: set an explicit column width to prevent line breaks
-    	//       in the first column!
+        // note: set an explicit column width to prevent line breaks
+        //       in the first column!
         return "| Char Literal                      | Unicode | Char | \n" +
                "| [![width: 25%; text-align: left]] | :------ | :--- | \n" +
                 VncChar
