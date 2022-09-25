@@ -15,7 +15,7 @@ and this project adheres to
 ### Added
 
 - support for destructuring in `loop / recur` loops
-- macro `assert-throws`
+- macro `assert-throws` and `assert-eq`
 - an optional customized indentation string to the JSON pretty printer
 - proxy builder for Java functional UnaryPredicate interface
 - file, line, and column information to the assert macro exceptions
