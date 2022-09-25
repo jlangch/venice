@@ -101,7 +101,7 @@
                     (str "Assert failed. "
                          "Expected: " (pr-str exp#)
                          ", Actual: " (pr-str act#))
-                    "assert"
+                    "assert-eq"
                     (:file (meta '~expected) "unknown")
                     (:line (meta '~expected) -1)
                     (:column (meta '~expected) -1)))
@@ -115,7 +115,7 @@
                     (str "Assert failed (" ~message "). "
                          "Expected: " (pr-str exp#)
                          ", Actual: " (pr-str act#))
-                    "assert"
+                    "assert-eq"
                     (:file (meta '~expected) "unknown")
                     (:line (meta '~expected) -1)
                     (:column (meta '~expected) -1)))
