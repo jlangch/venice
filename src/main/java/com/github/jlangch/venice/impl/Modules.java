@@ -94,6 +94,7 @@ public class Modules {
                         new VncKeyword("io"),
                         new VncKeyword("json"),
                         new VncKeyword("pdf"),
+                        new VncKeyword("inet"),
                         new VncKeyword("cidr"),
                         new VncKeyword("csv"))));
 }

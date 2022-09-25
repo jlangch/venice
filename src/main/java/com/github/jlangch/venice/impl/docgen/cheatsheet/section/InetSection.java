@@ -26,36 +26,35 @@ import com.github.jlangch.venice.impl.docgen.cheatsheet.DocSection;
 import com.github.jlangch.venice.impl.docgen.cheatsheet.ISectionBuilder;
 
 
-public class CidrSection implements ISectionBuilder {
+public class InetSection implements ISectionBuilder {
 
-    public CidrSection(final DocItemBuilder diBuilder) {
+    public InetSection(final DocItemBuilder diBuilder) {
         this.diBuilder = diBuilder;
     }
 
     @Override
     public DocSection section() {
-        final DocSection section = new DocSection(
-                                            "CIDR",
-                                            "classless inter-domain routing",
-                                            "cidr");
+        final DocSection section = new DocSection("INET", "inet");
 
         final DocSection all = new DocSection("", id());
         section.addSection(all);
 
-        final DocSection cidr = new DocSection("CIDR", "cidr.cidr");
-        all.addSection(cidr);
-        cidr.addItem(diBuilder.getDocItem("cidr/parse"));
-        cidr.addItem(diBuilder.getDocItem("cidr/in-range?"));
-        cidr.addItem(diBuilder.getDocItem("cidr/start-inet-addr"));
-        cidr.addItem(diBuilder.getDocItem("cidr/end-inet-addr"));
+        final DocSection create = new DocSection("Create", "inet.create");
+        all.addSection(create);
+        create.addItem(diBuilder.getDocItem("inet/inet-addr"));
 
-        final DocSection cidr_trie = new DocSection("CIDR Trie", "cidr.cidrtrie");
-        all.addSection(cidr_trie);
-        cidr_trie.addItem(diBuilder.getDocItem("cidr/trie"));
-        cidr_trie.addItem(diBuilder.getDocItem("cidr/size"));
-        cidr_trie.addItem(diBuilder.getDocItem("cidr/insert"));
-        cidr_trie.addItem(diBuilder.getDocItem("cidr/lookup"));
-        cidr_trie.addItem(diBuilder.getDocItem("cidr/lookup-reverse"));
+        final DocSection util = new DocSection("Util", "inet.util");
+        all.addSection(util);
+        util.addItem(diBuilder.getDocItem("inet/inet-addr-to-bytes"));
+        util.addItem(diBuilder.getDocItem("inet/inet-addr-from-bytes"));
+
+        final DocSection test = new DocSection("Test", "inet.test");
+        all.addSection(test);
+        test.addItem(diBuilder.getDocItem("inet/ip4?"));
+        test.addItem(diBuilder.getDocItem("inet/ip6?"));
+        test.addItem(diBuilder.getDocItem("inet/linklocal-addr?"));
+        test.addItem(diBuilder.getDocItem("inet/sitelocal-addr?"));
+        test.addItem(diBuilder.getDocItem("inet/multicast-addr?"));
 
         return section;
     }

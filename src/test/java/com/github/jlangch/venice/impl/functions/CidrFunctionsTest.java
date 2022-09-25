@@ -88,20 +88,4 @@ public class CidrFunctionsTest {
         assertFalse((Boolean)venice.eval(String.format(script_tpl, "\"240.0.0.0\"",       "\"222.192.0.0/11\"")));
     }
 
-
-    @Test
-    public void test_IP_type() {
-        final Venice venice = new Venice();
-
-        assertTrue((Boolean)venice.eval("(cidr/ip4? \"100.0.0.0\")"));
-        assertTrue((Boolean)venice.eval("(cidr/ip4? (cidr/inet-addr \"100.0.0.0\"))"));
-        assertFalse((Boolean)venice.eval("(cidr/ip6? \"100.0.0.0\")"));
-        assertFalse((Boolean)venice.eval("(cidr/ip6? (cidr/inet-addr \"100.0.0.0\"))"));
-
-        assertFalse((Boolean)venice.eval("(cidr/ip4? \"2001:db8:85a3:8d3:ffff:ffff:ffff:ffff\")"));
-        assertFalse((Boolean)venice.eval("(cidr/ip4? (cidr/inet-addr \"2001:db8:85a3:8d3:ffff:ffff:ffff:ffff\"))"));
-        assertTrue((Boolean)venice.eval("(cidr/ip6? \"2001:db8:85a3:8d3:ffff:ffff:ffff:ffff\")"));
-        assertTrue((Boolean)venice.eval("(cidr/ip6? (cidr/inet-addr \"2001:db8:85a3:8d3:ffff:ffff:ffff:ffff\"))"));
-    }
-
 }

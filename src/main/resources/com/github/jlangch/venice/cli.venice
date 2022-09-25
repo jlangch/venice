@@ -420,14 +420,14 @@
            :long-opt     String     ; "--server"
            :required     String     ; "HOSTNAME"
            :desc         String     ; "Remote server"
-           :default      Object     ; (cidr/inet-addr "93.184.216.119")
+           :default      Object     ; (inet/inet-addr "93.184.216.119")
            :default-desc String     ; "example.com"
            :default-fn   Function   ; (constantly 0)
-           :parse-fn     Function   ; cidr/inet-addr
+           :parse-fn     Function   ; inet/inet-addr
            :assoc-fn     Function   ; assoc
            :update-fn    Function   ; identity
-           :validate-fn  [Function] ; [#(cidr/ip4? %)
-                                    ;  #(not (cidr/multicast-addr? %)]
+           :validate-fn  [Function] ; [#(inet/ip4? %)
+                                    ;  #(not (inet/multicast-addr? %)]
            :validate-msg [String]   ; ["Must be an IPv4 host"
                                     ;  "Must not be a multicast address"]
                                     ; can also be a function (of the invalid argument)

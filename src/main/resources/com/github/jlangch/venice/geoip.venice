@@ -784,8 +784,8 @@
 
 
 (defn- geoip/find-ip-country [ip ip-data]
-  (let [inet     (cidr/inet-addr ip)
-        high     (first (cidr/inet-addr-to-bytes inet))
+  (let [inet     (inet/inet-addr ip)
+        high     (first (inet/inet-addr-to-bytes inet))
         ip-block (get ip-data high [])]
     (some (fn [x] (if (cidr/in-range? inet (first x)) (second x) nil))
           ip-block)))

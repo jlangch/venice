@@ -64,6 +64,7 @@ import com.github.jlangch.venice.impl.docgen.cheatsheet.section.ConcurrencySecti
 import com.github.jlangch.venice.impl.docgen.cheatsheet.section.CsvSection;
 import com.github.jlangch.venice.impl.docgen.cheatsheet.section.ExceptionsSection;
 import com.github.jlangch.venice.impl.docgen.cheatsheet.section.FunctionsSection;
+import com.github.jlangch.venice.impl.docgen.cheatsheet.section.InetSection;
 import com.github.jlangch.venice.impl.docgen.cheatsheet.section.IoFileSection;
 import com.github.jlangch.venice.impl.docgen.cheatsheet.section.IoSection;
 import com.github.jlangch.venice.impl.docgen.cheatsheet.section.IoZipSection;
@@ -260,7 +261,8 @@ public class DocGenerator {
         util.addSection(new DocSection("Math", "math"));
         util.addSection(new DocSection("Time", "time"));
         util.addSection(new DocSection("Regex", "regex"));
-        util.addSection(new DocSection("CIDR/INET", "cidr"));
+        util.addSection(new DocSection("INET", "inet"));
+        util.addSection(new DocSection("CIDR", "cidr"));
 
         content.add(util);
 
@@ -359,6 +361,7 @@ public class DocGenerator {
                 new IoSection(diBuilder).section(),
                 new IoFileSection(diBuilder).section(),
                 new JsonSection(diBuilder).section(),
+                new InetSection(diBuilder).section(),
                 new CidrSection(diBuilder).section(),
                 new CsvSection(diBuilder).section());
     }
