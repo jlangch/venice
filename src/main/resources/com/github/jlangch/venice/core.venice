@@ -59,7 +59,8 @@
   ([expr]
     `(if-not ~expr
        (throw (ex :com.github.jlangch.venice.AssertionException
-                  (str "Assert failed: " (pr-str '~expr))
+                  (str "Assert failed."
+                       "\nExpression:\n" (pr-str '~expr))
                   "assert"
                   (:file (meta '~expr) "unknown")
                   (:line (meta '~expr) -1)
@@ -69,7 +70,9 @@
   ([expr message]
     `(if-not ~expr
        (throw (ex :com.github.jlangch.venice.AssertionException
-                  (str "Assert failed (" ~message "): " (pr-str '~expr))
+                  (str "Assert failed."
+                       "\n" ~message
+                       "\nExpression:\n" (pr-str '~expr))
                   "assert"
                   (:file (meta '~expr) "unknown")
                   (:line (meta '~expr) -1)
@@ -98,9 +101,10 @@
            act#  ~actual]
        (if-not (= exp# act#)
          (throw (ex :com.github.jlangch.venice.AssertionException
-                    (str "Assert failed. "
-                         "Expected: " (pr-str exp#)
-                         ", Actual: " (pr-str act#))
+                    (str "Assert failed."
+                         "\nExpected: " (pr-str exp#)
+                         "\nActual:   " (pr-str act#)
+                         "\nExpression:\n" (pr-str '~actual))
                     "assert-eq"
                     (:file (meta '~expected) "unknown")
                     (:line (meta '~expected) -1)
@@ -112,9 +116,11 @@
            act# ~actual]
        (if-not (= exp# act#)
          (throw (ex :com.github.jlangch.venice.AssertionException
-                    (str "Assert failed (" ~message "). "
-                         "Expected: " (pr-str exp#)
-                         ", Actual: " (pr-str act#))
+                    (str "Assert failed."
+                         "\n" ~message
+                         "\nExpected: " (pr-str exp#)
+                         "\nActual:   " (pr-str act#)
+                         "\nExpression:\n" (pr-str '~actual))
                     "assert-eq"
                     (:file (meta '~expected) "unknown")
                     (:line (meta '~expected) -1)
@@ -142,8 +148,9 @@
        (throw :no-ex-thrown)
        (catch #(= % :no-ex-thrown) e
               (throw (ex :com.github.jlangch.venice.AssertionException
-                         (str "Assert failed, no exception thrown: "
-                              (pr-str '~expr))
+                         (str "Assert failed."
+                              "\nNo exception thrown"
+                              "\nExpression:\n" (pr-str '~expr))
                          "assert-throws"
                          (:file (meta '~expr) "unknown")
                          (:line (meta '~expr) -1)
@@ -152,9 +159,10 @@
               true)
        (catch :java.lang.Exception e
               (throw (ex :com.github.jlangch.venice.AssertionException
-                         (str "Assert failed, "
-                              "expected " ~ex-type " but caught " (class-name e) ": "
-                              (pr-str '~expr))
+                         (str "Assert failed."
+                              "\nExpected: " ~ex-type
+                              "\nCaught:   " (class-name e)
+                              "\nExpression:\n" (pr-str '~expr))
                          "assert-throws"
                          (:file (meta '~expr) "unknown")
                          (:line (meta '~expr) -1)
@@ -166,9 +174,10 @@
        (throw :no-ex-thrown)
        (catch #(= % :no-ex-thrown) e
               (throw (ex :com.github.jlangch.venice.AssertionException
-                         (str "Assert failed, no exception thrown, "
-                              "(" ~message "): "
-                              (pr-str '~expr))
+                         (str "Assert failed."
+                              "\n" ~message
+                              "\nNo exception thrown"
+                              "\nExpression:\n" (pr-str '~expr))
                          "assert-throws"
                          (:file (meta '~expr) "unknown")
                          (:line (meta '~expr) -1)
@@ -177,10 +186,11 @@
               true)
        (catch :java.lang.Exception e
               (throw (ex :com.github.jlangch.venice.AssertionException
-                         (str "Assert failed, "
-                              "expected " ~ex-type " but caught " (class-name e) ", "
-                              "(" ~message "): "
-                              (pr-str '~expr))
+                         (str "Assert failed."
+                              "\n" ~message
+                              "\nExpected: " ~ex-type
+                              "\nCaught:   " (class-name e)
+                              "\nExpression:\n" (pr-str '~expr))
                          "assert-throws"
                          (:file (meta '~expr) "unknown")
                          (:line (meta '~expr) -1)
