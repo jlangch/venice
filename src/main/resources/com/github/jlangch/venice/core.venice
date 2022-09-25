@@ -94,13 +94,13 @@
   assert-eq
 
   ([expected actual]
-    `(let [val-expected ~expected
-           val-actual ~actual]
-       (if-not (= val-expected val-actual)
+    `(let [exp#  ~expected
+           act#  ~actual]
+       (if-not (= exp# act#)
          (throw (ex :com.github.jlangch.venice.AssertionException
                     (str "Assert failed. "
-                         "Expected: " (pr-str val-expected)
-                         ", got: " (pr-str val-actual))
+                         "Expected: " (pr-str exp#)
+                         ", got: " (pr-str act#))
                     "assert"
                     (:file (meta '~expected) "unknown")
                     (:line (meta '~expected) -1)
@@ -108,13 +108,13 @@
          true)))
 
   ([expected actual message]
-    `(let [val-expected ~expected
-           val-actual ~actual]
-       (if-not (= ~expected ~actual)
+    `(let [exp# ~expected
+           act# ~actual]
+       (if-not (= exp# act#)
          (throw (ex :com.github.jlangch.venice.AssertionException
                     (str "Assert failed (" ~message "). "
-                         "Expected: " (pr-str val-expected)
-                         ", got: " (pr-str val-actual))
+                         "Expected: " (pr-str exp#)
+                         ", got: " (pr-str act#))
                     "assert"
                     (:file (meta '~expected) "unknown")
                     (:line (meta '~expected) -1)
