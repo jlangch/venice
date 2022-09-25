@@ -51,7 +51,8 @@
      :examples '(
           "(assert (= 3 (+ 1 2)))"
           "(assert (= 4 (+ 1 2)))" )
-     :see-also '("assert-throws")  }
+     :see-also '(
+          "assert-eq" "assert-throws")  }
 
   assert
 
@@ -78,6 +79,50 @@
 
 (defmacro
   ^{ :arglists '(
+          "(assert-eq expected actual)" "(assert expected actual message)")
+     :doc """
+          Assert that expected and actual are equal.
+          Throws an `:com.github.jlangch.venice.AssertionException`
+          exception if they are not equal.
+          """
+     :examples '(
+          "(assert-eq 3 (+ 1 2))"
+          "(assert-eq 4 (+ 1 2))" )
+     :see-also '(
+          "assert" "assert-throws")  }
+
+  assert-eq
+
+  ([expected actual]
+    `(let [val-expected ~expected
+           val-actual ~actual]
+       (if-not (= val-expected val-actual)
+         (throw (ex :com.github.jlangch.venice.AssertionException
+                    (str "Assert failed. "
+                         "Expected: " (pr-str val-expected)
+                         ", got: " (pr-str val-actual))
+                    "assert"
+                    (:file (meta '~expected) "unknown")
+                    (:line (meta '~expected) -1)
+                    (:column (meta '~expected) -1)))
+         true)))
+
+  ([expected actual message]
+    `(let [val-expected ~expected
+           val-actual ~actual]
+       (if-not (= ~expected ~actual)
+         (throw (ex :com.github.jlangch.venice.AssertionException
+                    (str "Assert failed (" ~message "). "
+                         "Expected: " (pr-str val-expected)
+                         ", got: " (pr-str val-actual))
+                    "assert"
+                    (:file (meta '~expected) "unknown")
+                    (:line (meta '~expected) -1)
+                    (:column (meta '~expected) -1)))
+         true))))
+
+(defmacro
+  ^{ :arglists '(
           "(assert-throws ex-type expr)" "(assert-throws ex-type expr message)")
      :doc """
           Evaluates expr and throws an `:com.github.jlangch.venice.AssertionException`
@@ -86,7 +131,8 @@
      :examples '(
           "(assert-throws :VncException (/ 2 0))"
           "(assert-throws :VncException (/ 2 1))" )
-     :see-also '("assert") }
+     :see-also '(
+          "assert" "assert-eq") }
 
   assert-throws
 

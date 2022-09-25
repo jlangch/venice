@@ -29,7 +29,6 @@ import java.util.stream.Collectors;
 
 import com.github.jlangch.venice.AssertionException;
 import com.github.jlangch.venice.VncException;
-import com.github.jlangch.venice.impl.types.Constants;
 import com.github.jlangch.venice.impl.types.VncBoolean;
 import com.github.jlangch.venice.impl.types.VncFunction;
 import com.github.jlangch.venice.impl.types.VncKeyword;
@@ -83,7 +82,7 @@ public class VncCustomTypeDef extends VncCustomBaseTypeDef {
         if (validationFn != null) {
             try {
                 final VncVal valid = validationFn.apply(VncList.of(val));
-                if (valid == Constants.Nil || VncBoolean.isFalse(valid)) {
+                if (VncBoolean.isFalseOrNil(valid)) {
                     throw new AssertionException(String.format(
                             "Invalid value for custom type :%s",
                             getType().getValue()));
