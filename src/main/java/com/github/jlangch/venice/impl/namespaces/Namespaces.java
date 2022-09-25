@@ -22,6 +22,7 @@
 package com.github.jlangch.venice.impl.namespaces;
 
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
@@ -95,22 +96,49 @@ public class Namespaces {
 
     public static final Set<String> SYSTEM_NAMESPACES =
             Collections.unmodifiableSet(
-                    new HashSet<>(
-                        Arrays.asList(
-                            "core", "cidr", "csv", "dag", "io", "json", "math",
-                            "pdf", "sh", "str", "regex", "time", "repl")));
+                toSet(
+                    Arrays.asList(
+                        "bench",
+                        "core", "cidr", "csv",
+                        "dag",
+                        "inet", "io",
+                        "json",
+                        "math",
+                        "sandbox", "sh", "shell", "str",
+                        "regex", "repl",
+                        "time")));
 
     public static final Set<String> RESERVED_NAMESPACES =
             Collections.unmodifiableSet(
-                new HashSet<>(
+                toSet(
+                    SYSTEM_NAMESPACES,
                     Arrays.asList(
+                        "component", "crypt",
+                        "docx",
+                        "excel",
+                        "http",
+                        "jackson",
+                        "kira",
                         "local",
-                        "core", "cidr", "csv", "io", "json", "math", "pdf", "sh", "str", "regex", "time", "repl",
-                        "crypt", "xml", "bench", "docx", "excel", "component", "dag",
-                        "test", "shell",
-                        "xchart", "kira", "parsatron",
-                        "tc", "ring",
-                        "http", "jackson",
-                        "webdav", "maven")));
+                        "maven",
+                        "parsatron", "pdf",
+                        "ring",
+                        "tc", "test",
+                        "xchart", "xml",
+                        "webdav")));
 
+    private static Set<String> toSet(
+            final Collection<String> l1
+    ) {
+        return new HashSet<>(l1);
+    }
+
+    private static Set<String> toSet(
+            final Collection<String> l1,
+            final Collection<String> l2
+    ) {
+        final HashSet<String> set = new HashSet<>(l1);
+        set.addAll(l2);
+        return set;
+    }
 }
