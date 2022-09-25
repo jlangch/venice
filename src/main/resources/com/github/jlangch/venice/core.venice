@@ -100,7 +100,7 @@
          (throw (ex :com.github.jlangch.venice.AssertionException
                     (str "Assert failed. "
                          "Expected: " (pr-str exp#)
-                         ", got: " (pr-str act#))
+                         ", Actual: " (pr-str act#))
                     "assert"
                     (:file (meta '~expected) "unknown")
                     (:line (meta '~expected) -1)
@@ -114,7 +114,7 @@
          (throw (ex :com.github.jlangch.venice.AssertionException
                     (str "Assert failed (" ~message "). "
                          "Expected: " (pr-str exp#)
-                         ", got: " (pr-str act#))
+                         ", Actual: " (pr-str act#))
                     "assert"
                     (:file (meta '~expected) "unknown")
                     (:line (meta '~expected) -1)

@@ -90,6 +90,48 @@ public class MacroTest {
         }
     }
 
+
+    @Test
+    public void test_assert_eq() {
+        final Venice venice = new Venice();
+
+        // Assertion OK ---------------------------------------------
+
+        try {
+            venice.eval("(assert-eq 1 1)");
+        }
+        catch(AssertionException ex) {
+             fail("Unexpected AssertionException");
+        }
+
+        try {
+            venice.eval("(assert-eq 1 1\"error\")");
+        }
+        catch(AssertionException ex) {
+             fail("Unexpected AssertionException");
+        }
+
+
+
+        // Assertion FAILED -----------------------------------------
+
+        try {
+            venice.eval("(assert-eq 1 2)");
+            fail("Expected AssertionException");
+        }
+        catch(AssertionException ex) {
+            assertEquals("Assert failed. Expected: 1, Actual: 2", ex.getMessage());
+        }
+
+        try {
+            venice.eval("(assert-eq 1 2 \"error\")");
+            fail("Expected AssertionException");
+        }
+        catch(AssertionException ex) {
+            assertEquals("Assert failed (error). Expected: 1, Actual: 2", ex.getMessage());
+        }
+    }
+
     @Test
     public void test_assert_throws() {
         final Venice venice = new Venice();
