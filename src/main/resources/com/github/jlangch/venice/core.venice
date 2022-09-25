@@ -43,7 +43,8 @@
 
 (defmacro
   ^{ :arglists '(
-          "(assert expr)" "(assert expr message)")
+          "(assert expr)"
+          "(assert expr message)")
      :doc """
           Evaluates expr and throws an `:com.github.jlangch.venice.AssertionException`
           exception if it does not evaluate to logical true.
@@ -82,7 +83,8 @@
 
 (defmacro
   ^{ :arglists '(
-          "(assert-eq expected actual)" "(assert expected actual message)")
+          "(assert-eq expected actual)"
+          "(assert expected actual message)")
      :doc """
           Assert that expected and actual are equal.
           Throws an `:com.github.jlangch.venice.AssertionException`
@@ -129,7 +131,8 @@
 
 (defmacro
   ^{ :arglists '(
-          "(assert-throws ex-type expr)" "(assert-throws ex-type expr message)")
+          "(assert-throws ex-type expr)"
+          "(assert-throws ex-type expr message)")
      :doc """
           Evaluates expr and throws an `:com.github.jlangch.venice.AssertionException`
           exception if it does not throw the expected exception of type ex-type.
