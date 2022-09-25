@@ -98,13 +98,12 @@ public class Namespaces {
             Collections.unmodifiableSet(
                 toSet(
                     Arrays.asList(
-                        "bench",
                         "core", "cidr", "csv",
                         "dag",
                         "inet", "io",
                         "json",
                         "math",
-                        "sandbox", "sh", "shell", "str",
+                        "sandbox", "sh", "str",
                         "regex", "repl",
                         "time")));
 
@@ -113,6 +112,7 @@ public class Namespaces {
                 toSet(
                     SYSTEM_NAMESPACES,
                     Arrays.asList(
+                        "bench",
                         "component", "crypt",
                         "docx",
                         "excel",
@@ -121,8 +121,9 @@ public class Namespaces {
                         "kira",
                         "local",
                         "maven",
-                        "parsatron", "pdf",
+                        "parsifal", "pdf",
                         "ring",
+                        "shell",
                         "tc", "test",
                         "xchart", "xml",
                         "webdav")));
