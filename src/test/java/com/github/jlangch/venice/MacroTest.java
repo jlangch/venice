@@ -61,7 +61,11 @@ public class MacroTest {
             fail("Expected AssertionException");
         }
         catch(AssertionException ex) {
-            assertEquals("Assert failed: false", ex.getMessage());
+            assertEquals(
+            		"Assert failed.\n"
+            		+ "Expression:\n"
+            		+ "false",
+            		ex.getMessage());
         }
 
         try {
@@ -69,7 +73,12 @@ public class MacroTest {
             fail("Expected AssertionException");
         }
         catch(AssertionException ex) {
-            assertEquals("Assert failed (error): false", ex.getMessage());
+            assertEquals(
+            		"Assert failed.\n"
+            		+ "error\n"
+            		+ "Expression:\n"
+            		+ "false",
+            		ex.getMessage());
         }
 
 
@@ -78,7 +87,11 @@ public class MacroTest {
             fail("Expected AssertionException");
         }
         catch(AssertionException ex) {
-            assertEquals("Assert failed: nil", ex.getMessage());
+            assertEquals(
+            		"Assert failed.\n"
+            		+ "Expression:\n"
+            		+ "nil",
+            		ex.getMessage());
         }
 
         try {
@@ -86,7 +99,12 @@ public class MacroTest {
             fail("Expected AssertionException");
         }
         catch(AssertionException ex) {
-            assertEquals("Assert failed (error): nil", ex.getMessage());
+            assertEquals(
+            		"Assert failed.\n"
+            		+ "error\n"
+            		+ "Expression:\n"
+            		+ "nil",
+            		ex.getMessage());
         }
     }
 
@@ -120,7 +138,13 @@ public class MacroTest {
             fail("Expected AssertionException");
         }
         catch(AssertionException ex) {
-            assertEquals("Assert failed. Expected: 1, Actual: 2", ex.getMessage());
+            assertEquals(
+            	"Assert failed.\n"
+            	+ "Expected: 1\n"
+            	+ "Actual:   2\n"
+            	+ "Expression:\n"
+            	+ "2",
+            	ex.getMessage());
         }
 
         try {
@@ -128,7 +152,14 @@ public class MacroTest {
             fail("Expected AssertionException");
         }
         catch(AssertionException ex) {
-            assertEquals("Assert failed (error). Expected: 1, Actual: 2", ex.getMessage());
+            assertEquals(
+            		"Assert failed.\n"
+            		+ "error\n"
+            		+ "Expected: 1\n"
+            		+ "Actual:   2\n"
+            		+ "Expression:\n"
+            		+ "2",
+            		ex.getMessage());
         }
     }
 
@@ -210,7 +241,13 @@ public class MacroTest {
             fail("Expected AssertionException");
         }
         catch(AssertionException ex) {
-            assertEquals("Assert failed, no exception thrown: (/ 2 1)", ex.getMessage());
+            assertEquals(
+            		"Assert failed.\n"
+            		+ "Expected: :VncException\n"
+            		+ "But no exception has been thrown!\n"
+            		+ "Expression:\n"
+            		+ "(/ 2 1)",
+            		ex.getMessage());
         }
         catch(Exception ex) {
             fail("Unexpected Exception " + ex.getClass().getName());
@@ -221,7 +258,13 @@ public class MacroTest {
             fail("Expected AssertionException");
         }
         catch(AssertionException ex) {
-            assertEquals("Assert failed, no exception thrown, (error): (/ 2 1)", ex.getMessage());
+            assertEquals(
+            		"Assert failed.\n"
+            		+ "error\n"
+            		+ "No exception thrown\n"
+            		+ "Expression:\n"
+            		+ "(/ 2 1)",
+            		ex.getMessage());
         }
         catch(Exception ex) {
             fail("Unexpected Exception " + ex.getClass().getName());

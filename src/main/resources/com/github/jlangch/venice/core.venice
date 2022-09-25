@@ -149,7 +149,8 @@
        (catch #(= % :no-ex-thrown) e
               (throw (ex :com.github.jlangch.venice.AssertionException
                          (str "Assert failed."
-                              "\nNo exception thrown"
+                              "\nExpected: " ~ex-type
+                              "\nBut no exception has been thrown!"
                               "\nExpression:\n" (pr-str '~expr))
                          "assert-throws"
                          (:file (meta '~expr) "unknown")
