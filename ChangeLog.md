@@ -19,6 +19,8 @@ and this project adheres to
 - an optional customized indentation string to the JSON pretty printer
 - proxy builder for Java functional UnaryPredicate interface
 - file, line, and column information to the assert macro exceptions
+- :com.github.jlangch.venice.AssertionException to the list of the 
+  default class imports
 
 ### Improved
 

@@ -46,7 +46,7 @@
           "(assert expr)"
           "(assert expr message)")
      :doc """
-          Evaluates expr and throws an `:com.github.jlangch.venice.AssertionException`
+          Evaluates expr and throws an `:AssertionException`
           exception if it does not evaluate to logical true.
           """
      :examples '(
@@ -59,7 +59,7 @@
 
   ([expr]
     `(if-not ~expr
-       (throw (ex :com.github.jlangch.venice.AssertionException
+       (throw (ex :AssertionException
                   (str "Assert failed."
                        "\nExpression:\n" (pr-str '~expr))
                   "assert"
@@ -70,7 +70,7 @@
 
   ([expr message]
     `(if-not ~expr
-       (throw (ex :com.github.jlangch.venice.AssertionException
+       (throw (ex :AssertionException
                   (str "Assert failed."
                        "\n" ~message
                        "\nExpression:\n" (pr-str '~expr))
@@ -87,7 +87,7 @@
           "(assert expected actual message)")
      :doc """
           Assert that expected and actual are equal.
-          Throws an `:com.github.jlangch.venice.AssertionException`
+          Throws an `:AssertionException`
           exception if they are not equal.
           """
      :examples '(
@@ -102,7 +102,7 @@
     `(let [exp#  ~expected
            act#  ~actual]
        (if-not (= exp# act#)
-         (throw (ex :com.github.jlangch.venice.AssertionException
+         (throw (ex :AssertionException
                     (str "Assert failed."
                          "\nExpected: " (pr-str exp#)
                          "\nActual:   " (pr-str act#)
@@ -117,7 +117,7 @@
     `(let [exp# ~expected
            act# ~actual]
        (if-not (= exp# act#)
-         (throw (ex :com.github.jlangch.venice.AssertionException
+         (throw (ex :AssertionException
                     (str "Assert failed."
                          "\n" ~message
                          "\nExpected: " (pr-str exp#)
@@ -134,7 +134,7 @@
           "(assert-throws ex-type expr)"
           "(assert-throws ex-type expr message)")
      :doc """
-          Evaluates expr and throws an `:com.github.jlangch.venice.AssertionException`
+          Evaluates expr and throws an `:AssertionException`
           exception if it does not throw the expected exception of type ex-type.
           """
      :examples '(
@@ -150,7 +150,7 @@
        ~expr
        (throw :no-ex-thrown)
        (catch #(= % :no-ex-thrown) e
-              (throw (ex :com.github.jlangch.venice.AssertionException
+              (throw (ex :AssertionException
                          (str "Assert failed."
                               "\nExpected: " ~ex-type
                               "\nBut no exception has been thrown!"
@@ -162,7 +162,7 @@
        (catch ~ex-type e
               true)
        (catch :java.lang.Exception e
-              (throw (ex :com.github.jlangch.venice.AssertionException
+              (throw (ex :AssertionException
                          (str "Assert failed."
                               "\nExpected: " ~ex-type
                               "\nCaught:   " (class-name e)
@@ -177,7 +177,7 @@
        ~expr
        (throw :no-ex-thrown)
        (catch #(= % :no-ex-thrown) e
-              (throw (ex :com.github.jlangch.venice.AssertionException
+              (throw (ex :AssertionException
                          (str "Assert failed."
                               "\n" ~message
                               "\nNo exception thrown"
@@ -189,7 +189,7 @@
        (catch ~ex-type e
               true)
        (catch :java.lang.Exception e
-              (throw (ex :com.github.jlangch.venice.AssertionException
+              (throw (ex :AssertionException
                          (str "Assert failed."
                               "\n" ~message
                               "\nExpected: " ~ex-type

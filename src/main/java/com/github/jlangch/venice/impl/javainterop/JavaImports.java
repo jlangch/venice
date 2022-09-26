@@ -50,6 +50,7 @@ public class JavaImports implements Serializable {
 
         // from com.github.jlangch.venice
         add(com.github.jlangch.venice.VncException.class.getName());
+        add(com.github.jlangch.venice.AssertionException.class.getName());
         add(com.github.jlangch.venice.ValueException.class.getName());
         add(com.github.jlangch.venice.SecurityException.class.getName());
     }

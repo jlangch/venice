@@ -4461,11 +4461,11 @@ public class CoreFunctions {
                     .examples(
                         "(update [] 0 (fn [x] 5))",
                         "(update [0 1 2] 0 (fn [x] 5))",
-                        "(update [0 1 2] 0 (fn [x] (+ x 1)))",
+                        "(update [0 1 2] 1 (fn [x] (+ x 3)))",
                         "(update {} :a (fn [x] 5))",
                         "(update {:a 0} :b (fn [x] 5))",
-                        "(update {:a 0 :b 1} :a (fn [x] 5))",
-                        "(update [0 1 2] 0 + 1)",
+                        "(update {:a 0 :b 1} :a (fn [x] (+ x 5)))",
+                        "(update [0 1 2] 1 + 3)",
                         "(update {:a 0 :b 1} :b * 4)")
                     .seeAlso(
                         "assoc", "dissoc")
