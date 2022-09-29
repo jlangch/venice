@@ -114,8 +114,8 @@ public class CompiledSandboxRules {
                     .map(s -> SandboxRuleCompiler.compile(s))
                     .collect(Collectors.toList()),
 
-                // blacklisted venice functions
-                blacklistedVeniceFunctions(rules),
+                // black & white listed Venice functions
+                veniceFunctions(rules),
 
                 // whitelisted venice modules
                 rules
@@ -283,7 +283,7 @@ public class CompiledSandboxRules {
         return rules.stream().anyMatch(s -> s.equals("system.env:*"));
     }
 
-    private static Set<String> blacklistedVeniceFunctions(final List<String> rules) {
+    private static Set<String> veniceFunctions(final List<String> rules) {
         final Set<String> blacklisted = new HashSet<>();
 
         for(String rule : rules) {

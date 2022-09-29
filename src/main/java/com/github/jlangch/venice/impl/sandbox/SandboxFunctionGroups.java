@@ -75,7 +75,7 @@ public class SandboxFunctionGroups {
     }
 
 
-    private static Set<String> GROUPS =
+    public static Set<String> GROUPS =
             new HashSet<>(
                 Arrays.asList(
                         "*io*",
