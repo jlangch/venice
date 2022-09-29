@@ -31,10 +31,10 @@ public class LoadModuleTest {
     @Test
     public void test_loadmodule() {
         final String script =
-                "(do                       \n" +
-                "  (ns foo)                \n" +
-                "  (load-module :test)     \n" +
-                "  (test/test-fn \"xxx\")) ";
+                "(do                               \n" +
+                "  (ns foo)                        \n" +
+                "  (load-module :test-support)     \n" +
+                "  (test-support/test-fn \"xxx\")) ";
 
         assertEquals("test: xxx", new Venice().eval(script));
     }
@@ -42,10 +42,10 @@ public class LoadModuleTest {
     @Test
     public void test_loadmodule_alias() {
         final String script =
-                "(do                                      \n" +
-                "  (ns foo)                               \n" +
-                "  (load-module :test ['test :as 't])     \n" +
-                "  (t/test-fn \"xxx\"))                   ";
+                "(do                                                      \n" +
+                "  (ns foo)                                               \n" +
+                "  (load-module :test-support ['test-support :as 't])     \n" +
+                "  (t/test-fn \"xxx\"))                                   ";
 
         assertEquals("test: xxx", new Venice().eval(script));
     }
@@ -54,9 +54,9 @@ public class LoadModuleTest {
     public void test_loadmodule_ns() {
         // verify that the namespace is not changed by 'load-module'
         final String script =
-                "(do                       \n" +
-                "  (ns foo)                \n" +
-                "  (load-module :test)     \n" +
+                "(do                               \n" +
+                "  (ns foo)                        \n" +
+                "  (load-module :test-support)     \n" +
                 "  *ns*)                   ";
 
         assertEquals("foo", new Venice().eval(script));

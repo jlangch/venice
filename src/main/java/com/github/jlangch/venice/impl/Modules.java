@@ -74,6 +74,7 @@ public class Modules {
                         "semver",
                         "shell",
                         "test",
+                        "test-support",
                         "tomcat",
                         "tomcat-util",
                         "tput",

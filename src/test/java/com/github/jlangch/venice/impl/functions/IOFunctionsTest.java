@@ -604,14 +604,14 @@ public class IOFunctionsTest {
     public void test_io_load_classpath_resource() {
         final Venice venice = new Venice();
 
-        final String resource = ClassPathResource.toPath(Venice.class.getPackage(), "test.venice");
+        final String resource = ClassPathResource.toPath(Venice.class.getPackage(), "test-support.venice");
 
         final String script =
-                "(do                                                     \n" +
-                "   (-<> (identity \"" + resource + "\")                 \n" +
-                "        (io/load-classpath-resource <>)                 \n" +
-                "        (bytebuf-to-string <> :UTF-8)                   \n" +
-                "        (str/contains? <> \"(defn test/test-fn \"))))     ";
+                "(do                                                               \n" +
+                "   (-<> (identity \"" + resource + "\")                           \n" +
+                "        (io/load-classpath-resource <>)                           \n" +
+                "        (bytebuf-to-string <> :UTF-8)                             \n" +
+                "        (str/contains? <> \"(defn test-support/test-fn \"))))     ";
 
         assertTrue((Boolean)venice.eval(script));
     }

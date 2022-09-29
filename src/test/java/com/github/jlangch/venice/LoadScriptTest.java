@@ -35,9 +35,9 @@ public class LoadScriptTest {
     @Test
     public void test_load_classpath_file() {
         final String script =
-                "(do                                                                \n" +
-                "  (load-classpath-file \"com/github/jlangch/venice/test.venice\")  \n" +
-                "  (test/test-fn \"hello\"))                                          ";
+                "(do                                                                        \n" +
+                "  (load-classpath-file \"com/github/jlangch/venice/test-support.venice\")  \n" +
+                "  (test-support/test-fn \"hello\"))                                        ";
 
         assertEquals("test: hello", new Venice().eval(script));
     }
@@ -45,9 +45,9 @@ public class LoadScriptTest {
     @Test
     public void test_load_classpath_file_with_ns() {
         final String script =
-                "(do                                                                               \n" +
-                "  (load-classpath-file \"com/github/jlangch/venice/test.venice\" ['test :as 't])  \n" +
-                "  (t/test-fn \"hello\"))                                                            ";
+                "(do                                                                                               \n" +
+                "  (load-classpath-file \"com/github/jlangch/venice/test-support.venice\" ['test-support :as 't])  \n" +
+                "  (t/test-fn \"hello\"))                                                                          ";
 
         assertEquals("test: hello", new Venice().eval(script));
     }

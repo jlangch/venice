@@ -19,33 +19,33 @@
 ;;;; See the License for the specific language governing permissions and
 ;;;; limitations under the License.
 
-;;;; Test Venice classpath script
+;;;; Test support for Venice unit tests
 
 
-(ns test)
+(ns test-support)
 
-(defmacro test/sum [x y] `(+  ~x ~y))
+(defmacro test-support/sum [x y] `(+  ~x ~y))
 
-(defn test/add [x y] (+ x y))
+(defn test-support/add [x y] (+ x y))
 
-(defn test/test-fn [x]
+(defn test-support/test-fn [x]
   (str "test: " x))
 
 
-(defn- test/test-fn-private [x]
+(defn- test-support/test-fn-private [x]
   (str "test: " x))
 
 
-(defn- test/error [msg]
+(defn- test-support/error [msg]
   msg)
 
 
-(defn test/unexpected-error [msg]
-  (test/error (str "Unexpected " msg)))
+(defn test-support/unexpected-error [msg]
+  (test-support/error (str "Unexpected " msg)))
 
 
 ;; used by macroexpand unit test
-(defn test/test-body-with-macro [] (when true 1))
-(defmacro test/expand-time [] (str (time/local-date-time)))
-(defmacro test/macro-ns-expand [] (str *ns*))
-(defmacro test/macro-ns-runtime [] `(str *ns*))
+(defn test-support/test-body-with-macro [] (when true 1))
+(defmacro test-support/expand-time [] (str (time/local-date-time)))
+(defmacro test-support/macro-ns-expand [] (str *ns*))
+(defmacro test-support/macro-ns-runtime [] `(str *ns*))

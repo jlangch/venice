@@ -299,9 +299,9 @@ public class PrecompiledTest {
     @Test
     public void test_expand_macros_in_loaded_module_function_1a() {
         final String script =
-                "(do                            \n" +
-                "  (load-module :test)          \n" +
-                "  (test/test-body-with-macro)) ";
+                "(do                                    \n" +
+                "  (load-module :test-support)          \n" +
+                "  (test-support/test-body-with-macro)) ";
 
         // removing foo/x is okay, it's not part of the pre-compiled system symbols
         final IPreCompiled precomp = new Venice().precompile("test", script, true);
@@ -312,10 +312,10 @@ public class PrecompiledTest {
     @Test
     public void test_expand_macros_in_loaded_module_function_1b() {
         final String script =
-                "(do                                             \n" +
-                "  (load-module :test)                           \n" +
-                "  (test/test-body-with-macro)                   \n" +
-                "  (pr-str (fn-body test/test-body-with-macro))) ";
+                "(do                                                     \n" +
+                "  (load-module :test-support)                           \n" +
+                "  (test-support/test-body-with-macro)                   \n" +
+                "  (pr-str (fn-body test-support/test-body-with-macro))) ";
 
         // removing foo/x is okay, it's not part of the pre-compiled system symbols
         final IPreCompiled precomp = new Venice().precompile("test", script, true);
@@ -326,10 +326,10 @@ public class PrecompiledTest {
     @Test
     public void test_expand_macros_in_loaded_module_macro_1a() {
         final String script =
-                "(do                                 \n" +
-                "  (load-module :test)               \n" +
-                "  (defn plus [x y] (test/sum x y))  \n" +
-                "  (plus 1 2))                       ";
+                "(do                                         \n" +
+                "  (load-module :test-support)               \n" +
+                "  (defn plus [x y] (test-support/sum x y))  \n" +
+                "  (plus 1 2))                               ";
 
         // removing foo/x is okay, it's not part of the pre-compiled system symbols
         final IPreCompiled precomp = new Venice().precompile("test", script, true);
@@ -340,10 +340,10 @@ public class PrecompiledTest {
     @Test
     public void test_expand_macros_in_loaded_module_macro_1b() {
         final String script =
-                "(do                                 \n" +
-                "  (load-module :test)               \n" +
-                "  (defn plus [x y] (test/sum x y))  \n" +
-                "  (pr-str (fn-body plus))))         ";
+                "(do                                         \n" +
+                "  (load-module :test-support)               \n" +
+                "  (defn plus [x y] (test-support/sum x y))  \n" +
+                "  (pr-str (fn-body plus))))                  ";
 
         // removing foo/x is okay, it's not part of the pre-compiled system symbols
         final IPreCompiled precomp = new Venice().precompile("test", script, true);
@@ -478,9 +478,9 @@ public class PrecompiledTest {
     @Test
     public void test_ns_alias_3b() {
         final String script =
-                "(do                                   \n" +
-                "  (load-module :test ['test :as 't])  \n" +
-                "  (test/add 1 2))                     ";
+                "(do                                           \n" +
+                "  (load-module :test-support ['test :as 't])  \n" +
+                "  (test-support/add 1 2))                     ";
 
         final IPreCompiled precomp = new Venice().precompile("test", script, false);
 

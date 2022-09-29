@@ -42,14 +42,14 @@ public class Sandbox_JavaClasspathResource_Test {
 
     @Test
     public void test_load_classpath_resource() {
-        final String resource = ClassPathResource.toPath(Venice.class.getPackage(), "test.venice");
+        final String resource = ClassPathResource.toPath(Venice.class.getPackage(), "test-support.venice");
 
         final String script =
-                "(do                                                        \n" +
-                "   (-<> \""+ resource + "\"                                \n" +
-                "        (io/load-classpath-resource <>)                    \n" +
-                "        (bytebuf-to-string <> :UTF-8)                      \n" +
-                "        (str/contains? <> \"(defn test/test-fn \"))))        ";
+                "(do                                                                 \n" +
+                "   (-<> \""+ resource + "\"                                          \n" +
+                "        (io/load-classpath-resource <>)                              \n" +
+                "        (bytebuf-to-string <> :UTF-8)                                \n" +
+                "        (str/contains? <> \"(defn test-support/test-fn \"))))        ";
 
         // [1] OK
         assertTrue((Boolean)new Venice().eval(script));
@@ -59,7 +59,7 @@ public class Sandbox_JavaClasspathResource_Test {
         ModuleLoader.clear();
         Interceptor interceptor = new SandboxInterceptor(
                                         new SandboxRules()
-                                                .withClasspathResources("com/github/jlangch/venice/test.venice"));
+                                                .withClasspathResources("com/github/jlangch/venice/test-support.venice"));
         assertTrue((Boolean)new Venice(interceptor).eval(script));
 
         // [3] OK
@@ -126,13 +126,13 @@ public class Sandbox_JavaClasspathResource_Test {
 
     @Test
     public void test_load_classpath_file() {
-        final String resource = ClassPathResource.toPath(Venice.class.getPackage(), "test.venice");
+        final String resource = ClassPathResource.toPath(Venice.class.getPackage(), "test-support.venice");
 
         final String script =
                 "(do                            \n" +
                 "  (->> \""+ resource + "\"     \n" +
                 "       (load-classpath-file))  \n" +
-                "  (test/test-fn 1)))           ";
+                "  (test-support/test-fn 1)))   ";
 
         // [1] OK
         assertEquals("test: 1", new Venice().eval(script));
@@ -142,7 +142,7 @@ public class Sandbox_JavaClasspathResource_Test {
         ModuleLoader.clear();
         Interceptor interceptor = new SandboxInterceptor(
                                         new SandboxRules()
-                                                .withClasspathResources("com/github/jlangch/venice/test.venice"));
+                                                .withClasspathResources("com/github/jlangch/venice/test-support.venice"));
         assertEquals("test: 1", new Venice(interceptor).eval(script));
 
         // [3] OK

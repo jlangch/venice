@@ -180,10 +180,10 @@ public class MacroExpandTest {
     public void test_load_module_with_macroexpand() {
         final Venice venice = new Venice(new AcceptAllInterceptor());
 
-        final String script1 = "(do                                             \n" +
-                               "  (load-module :test)                           \n" +
-                               "                                                \n" +
-                               "  (pr-str (fn-body test/test-body-with-macro))) ";
+        final String script1 = "(do                                                     \n" +
+                               "  (load-module :test-support)                           \n" +
+                               "                                                        \n" +
+                               "  (pr-str (fn-body test-support/test-body-with-macro))) ";
 
         assertEquals(
                 "((when true 1))",
@@ -199,16 +199,16 @@ public class MacroExpandTest {
         final Venice venice = new Venice();
 
         final String s1 =
-                "(do                         \n" +
-                "   (ns foo)                 \n" +
-                "   (load-module :test)      \n" +
-                "   (test/macro-ns-expand))  ";
+                "(do                                 \n" +
+                "   (ns foo)                         \n" +
+                "   (load-module :test-support)      \n" +
+                "   (test-support/macro-ns-expand))  ";
 
         final String s2 =
-                "(do                         \n" +
-                "   (ns foo)                 \n" +
-                "   (load-module :test)      \n" +
-                "   (test/macro-ns-runtime)) ";
+                "(do                                 \n" +
+                "   (ns foo)                         \n" +
+                "   (load-module :test-support)      \n" +
+                "   (test-support/macro-ns-runtime)) ";
 
         assertEquals("foo", venice.eval(s1));
         assertEquals("foo", venice.eval(s2));
@@ -219,17 +219,17 @@ public class MacroExpandTest {
     public void test_macro_code_at_eval_time() {
         final Venice venice = new Venice(new AcceptAllInterceptor());
 
-        final String script1 = "(do                                    \n" +
-                               "  (load-module :test)                  \n" +
-                               "                                       \n" +
-                               "  (defn test [] (test/expand-time))    \n" +
-                               "                                       \n" +
-                               "  (let [x1 (test)                      \n" +
-                               "        _  (sleep 300)                 \n" +
-                               "        x2 (test)                      \n" +
-                               "        _  (sleep 300)                 \n" +
-                               "        x3 (test)]                     \n" +
-                               "    [x1 x2 x3]))                         ";
+        final String script1 = "(do                                            \n" +
+                               "  (load-module :test-support)                  \n" +
+                               "                                               \n" +
+                               "  (defn test [] (test-support/expand-time))    \n" +
+                               "                                               \n" +
+                               "  (let [x1 (test)                              \n" +
+                               "        _  (sleep 300)                         \n" +
+                               "        x2 (test)                              \n" +
+                               "        _  (sleep 300)                         \n" +
+                               "        x3 (test)]                             \n" +
+                               "    [x1 x2 x3]))                               ";
 
         // macroexpand-on-load: disabled
         final List<String> l1 = (List<String>)venice.eval("test", script1, false, null);

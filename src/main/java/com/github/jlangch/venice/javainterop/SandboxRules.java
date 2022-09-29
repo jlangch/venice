@@ -879,6 +879,7 @@ public class SandboxRules {
                         "kira",
                         "parsifal",
                         "test",
+                        "test-support",
                         "hexdump",
                         "xml")));
 
