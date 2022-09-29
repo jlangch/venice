@@ -25,7 +25,6 @@ import static com.github.jlangch.venice.impl.functions.FunctionsUtil.removeNilVa
 import static com.github.jlangch.venice.impl.types.Constants.Nil;
 import static com.github.jlangch.venice.impl.types.VncBoolean.False;
 import static com.github.jlangch.venice.impl.types.VncBoolean.True;
-import static com.github.jlangch.venice.impl.util.ArityExceptions.assertArity;
 
 import java.math.BigDecimal;
 import java.math.BigInteger;
@@ -51,7 +50,6 @@ import com.github.jlangch.venice.impl.reader.HighlightItem;
 import com.github.jlangch.venice.impl.reader.HighlightParser;
 import com.github.jlangch.venice.impl.reader.Reader;
 import com.github.jlangch.venice.impl.thread.ThreadContext;
-import com.github.jlangch.venice.impl.types.INamespaceAware;
 import com.github.jlangch.venice.impl.types.IVncFunction;
 import com.github.jlangch.venice.impl.types.VncBigDecimal;
 import com.github.jlangch.venice.impl.types.VncBigInteger;
@@ -98,7 +96,6 @@ import com.github.jlangch.venice.impl.types.custom.VncCustomType;
 import com.github.jlangch.venice.impl.types.util.Coerce;
 import com.github.jlangch.venice.impl.types.util.Types;
 import com.github.jlangch.venice.impl.util.ArityExceptions;
-import com.github.jlangch.venice.impl.util.ArityExceptions.FnType;
 import com.github.jlangch.venice.impl.util.CallFrame;
 import com.github.jlangch.venice.impl.util.CallStack;
 import com.github.jlangch.venice.impl.util.MeterRegistry;
@@ -9030,38 +9027,6 @@ public class CoreFunctions {
             private static final long serialVersionUID = -1848883965231344442L;
         };
 
-    public static VncFunction namespace =
-        new VncFunction(
-                "namespace",
-                VncFunction
-                    .meta()
-                    .arglists("(namespace x)")
-                    .doc("Returns the namespace string of a symbol, keyword, or function.")
-                    .examples(
-                        "(namespace 'user/foo)",
-                        "(namespace :user/foo)",
-                        "(namespace str/digit?)")
-                    .seeAlso("name", "fn-name", "ns", "*ns*", "var-ns")
-                    .build()
-        ) {
-            @Override
-            public VncVal apply(final VncList args) {
-                assertArity("namespace", FnType.SpecialForm, args, 1);
-                final VncVal val = args.first();
-                if (val instanceof INamespaceAware) {
-                    final String ns = ((INamespaceAware)val).getNamespace();
-                    return ns == null ? Nil : new VncString(ns);
-                }
-                else {
-                    throw new VncException(String.format(
-                            "The type '%s' does not support namespaces!",
-                            Types.getType(val)));
-                }
-            }
-
-            private static final long serialVersionUID = -1848883965231344442L;
-        };
-
     public static VncFunction type =
         new VncFunction(
                 "type",
@@ -9512,7 +9477,6 @@ public class CoreFunctions {
                 .add(identity)
                 .add(gensym)
                 .add(name)
-                .add(namespace)
                 .add(type)
                 .add(supertype)
                 .add(supertypes)

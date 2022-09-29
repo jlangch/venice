@@ -19,7 +19,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.github.jlangch.venice;
+package com.github.jlangch.venice.impl.specialforms;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.fail;
@@ -29,6 +29,9 @@ import java.util.function.Supplier;
 
 import org.junit.jupiter.api.Test;
 
+import com.github.jlangch.venice.Parameters;
+import com.github.jlangch.venice.ValueException;
+import com.github.jlangch.venice.Venice;
 import com.github.jlangch.venice.util.CapturingPrintStream;
 
 

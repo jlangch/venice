@@ -32,8 +32,11 @@ import java.util.stream.Collectors;
 import com.github.jlangch.venice.VncException;
 import com.github.jlangch.venice.impl.env.Env;
 import com.github.jlangch.venice.impl.functions.CoreFunctions;
+import com.github.jlangch.venice.impl.namespaces.Namespace;
+import com.github.jlangch.venice.impl.namespaces.NamespaceRegistry;
 import com.github.jlangch.venice.impl.namespaces.Namespaces;
 import com.github.jlangch.venice.impl.specialforms.util.SpecialFormsContext;
+import com.github.jlangch.venice.impl.types.INamespaceAware;
 import com.github.jlangch.venice.impl.types.VncSpecialForm;
 import com.github.jlangch.venice.impl.types.VncString;
 import com.github.jlangch.venice.impl.types.VncSymbol;
@@ -266,6 +269,63 @@ public class SpecialForms_NamespaceFunctions {
         };
 
 
+    public static VncSpecialForm namespace =
+        new VncSpecialForm(
+                "namespace",
+                VncSpecialForm
+                    .meta()
+                    .arglists("(namespace x)")
+                    .doc(
+                    	"Returns the namespace string of a symbol, keyword, or function. " +
+                        "If x is a registered namespace returns x. \n\n" +
+                    	"Throws an exception if x does not support namespaces like " +
+                    	"`(namespace 2)`.")
+                    .examples(
+                        "(namespace 'user/foo)",
+                        "(namespace :user/foo)",
+                        "(namespace str/digit?)",
+                        "(namespace *ns*)")
+                    .seeAlso("name", "fn-name", "ns", "*ns*", "var-ns")
+                    .build()
+        ) {
+            @Override
+            public VncVal apply(
+                    final VncVal specialFormMeta,
+                    final VncList args,
+                    final Env env,
+                    final SpecialFormsContext ctx
+            ) {
+                specialFormCallValidation(ctx, "namespace");
+                assertArity("namespace", FnType.SpecialForm, args, 1);
+
+                final VncVal val = ctx.getEvaluator().evaluate(args.first(), env, false);
+
+                if (val instanceof VncSymbol) {
+                    final VncSymbol sym = (VncSymbol)val;
+                    if (!sym.hasNamespace()) {
+                        final NamespaceRegistry nsRegistry = ctx.getNsRegistry();
+                        final Namespace ns = nsRegistry.get((VncSymbol)val);
+                        if (ns != null) {
+                            return new VncString(((VncSymbol)val).getName());
+                        }
+                    }
+                }
+
+                if (val instanceof INamespaceAware) {
+                    final String ns = ((INamespaceAware)val).getNamespace();
+                    return ns == null ? Nil : new VncString(ns);
+                }
+                else {
+                    throw new VncException(String.format(
+                            "The type '%s' does not support namespaces!",
+                            Types.getType(val)));
+                }
+            }
+
+            private static final long serialVersionUID = -1848883965231344442L;
+        };
+
+
 
 
     ///////////////////////////////////////////////////////////////////////////
@@ -278,5 +338,6 @@ public class SpecialForms_NamespaceFunctions {
                     .add(ns_list)
                     .add(ns_remove)
                     .add(ns_unmap)
+                    .add(namespace)
                     .toMap();
 }
