@@ -322,21 +322,21 @@ public class SpecialForms_LoadCodeMacros {
                         "for a description of the *load path* feature.")
                     .examples(
                         "(do                                                                              \n" +
-                        "  (load-classpath-file \"com/github/jlangch/venice/test.venice\")                \n" +
-                        "  (test/test-fn \"hello\"))                                                      ",
+                        "  (load-classpath-file \"com/github/jlangch/venice/test-support.venice\")        \n" +
+                        "  (test-support/test-fn \"hello\"))                                              ",
 
                         "(do                                                                              \n" +
-                        "  (load-classpath-file \"com/github/jlangch/venice/test.venice\")                \n" +
-                        "  (test/test-fn \"hello\")                                                       \n" +
+                        "  (load-classpath-file \"com/github/jlangch/venice/test-support.venice\")        \n" +
+                        "  (test-support/test-fn \"hello\")                                               \n" +
                         "  ; reload the classpath file                                                    \n" +
-                        "  (ns-remove 'test)                                                              \n" +
-                        "  (load-classpath-file \"com/github/jlangch/venice/test.venice\" true)           \n" +
-                        "  (test/test-fn \"hello\"))                                                      ",
+                        "  (ns-remove 'test-support)                                                      \n" +
+                        "  (load-classpath-file \"com/github/jlangch/venice/test-support.venice\" true)   \n" +
+                        "  (test-support/test-fn \"hello\"))                                              ",
 
-                        ";; namespace aliases                                                             \n" +
-                        "(do                                                                              \n" +
-                        "  (load-classpath-file \"com/github/jlangch/venice/test.venice\" ['test :as 't]) \n" +
-                        "  (t/test-fn \"hello\"))                                                         ")
+                        ";; namespace aliases                                                                             \n" +
+                        "(do                                                                                              \n" +
+                        "  (load-classpath-file \"com/github/jlangch/venice/test-support.venice\" ['test-support :as 't]) \n" +
+                        "  (t/test-fn \"hello\"))                                                                         ")
                     .seeAlso(
                         "load-file", "load-string", "load-module", "loadpath/paths")
                     .build()
