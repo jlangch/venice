@@ -28,7 +28,7 @@ import java.util.stream.Collectors;
 
 import org.junit.jupiter.api.Test;
 
-import com.github.jlangch.venice.impl.ModuleLoader;
+import com.github.jlangch.venice.impl.modules.ModuleLoader;
 import com.github.jlangch.venice.impl.util.StopWatch;
 import com.github.jlangch.venice.impl.util.StringUtil;
 

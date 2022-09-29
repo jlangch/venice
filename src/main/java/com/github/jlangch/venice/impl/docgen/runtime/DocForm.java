@@ -26,13 +26,13 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 import com.github.jlangch.venice.VncException;
-import com.github.jlangch.venice.impl.ModuleLoader;
-import com.github.jlangch.venice.impl.Modules;
 import com.github.jlangch.venice.impl.ansi.AnsiColorTheme;
 import com.github.jlangch.venice.impl.ansi.AnsiColorThemes;
 import com.github.jlangch.venice.impl.env.Env;
 import com.github.jlangch.venice.impl.env.EnvSymbolLookupUtil;
 import com.github.jlangch.venice.impl.functions.CoreFunctions;
+import com.github.jlangch.venice.impl.modules.ModuleLoader;
+import com.github.jlangch.venice.impl.modules.Modules;
 import com.github.jlangch.venice.impl.reader.HighlightItem;
 import com.github.jlangch.venice.impl.reader.HighlightParser;
 import com.github.jlangch.venice.impl.specialforms.SpecialFormsDoc;

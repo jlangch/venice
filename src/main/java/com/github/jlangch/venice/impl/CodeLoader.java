@@ -23,6 +23,7 @@ package com.github.jlangch.venice.impl;
 
 import com.github.jlangch.venice.VncException;
 import com.github.jlangch.venice.impl.env.Env;
+import com.github.jlangch.venice.impl.modules.ModuleLoader;
 import com.github.jlangch.venice.impl.namespaces.Namespace;
 import com.github.jlangch.venice.impl.namespaces.Namespaces;
 import com.github.jlangch.venice.impl.types.VncKeyword;

@@ -33,8 +33,8 @@ import org.junit.jupiter.api.Test;
 
 import com.github.jlangch.venice.ParseError;
 import com.github.jlangch.venice.Venice;
-import com.github.jlangch.venice.impl.ModuleLoader;
 import com.github.jlangch.venice.impl.VeniceInterpreter;
+import com.github.jlangch.venice.impl.modules.ModuleLoader;
 import com.github.jlangch.venice.impl.types.VncVal;
 import com.github.jlangch.venice.impl.types.collections.VncList;
 import com.github.jlangch.venice.impl.util.StopWatch;

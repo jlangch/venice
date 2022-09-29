@@ -30,7 +30,7 @@ import javax.script.ScriptEngine;
 import javax.script.ScriptEngineFactory;
 
 import com.github.jlangch.venice.Venice;
-import com.github.jlangch.venice.impl.Modules;
+import com.github.jlangch.venice.impl.modules.Modules;
 
 
 public class VeniceScriptEngineFactory implements ScriptEngineFactory {

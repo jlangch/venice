@@ -34,7 +34,7 @@ import org.openjdk.jmh.annotations.State;
 import org.openjdk.jmh.annotations.Threads;
 import org.openjdk.jmh.annotations.Warmup;
 
-import com.github.jlangch.venice.impl.ModuleLoader;
+import com.github.jlangch.venice.impl.modules.ModuleLoader;
 import com.github.jlangch.venice.impl.reader.Reader;
 import com.github.jlangch.venice.impl.types.VncVal;
 import com.github.jlangch.venice.impl.util.StringUtil;

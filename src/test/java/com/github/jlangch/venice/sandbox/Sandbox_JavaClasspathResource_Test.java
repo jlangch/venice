@@ -29,7 +29,7 @@ import org.junit.jupiter.api.Test;
 
 import com.github.jlangch.venice.SecurityException;
 import com.github.jlangch.venice.Venice;
-import com.github.jlangch.venice.impl.ModuleLoader;
+import com.github.jlangch.venice.impl.modules.ModuleLoader;
 import com.github.jlangch.venice.impl.util.io.ClassPathResource;
 import com.github.jlangch.venice.javainterop.AcceptAllInterceptor;
 import com.github.jlangch.venice.javainterop.Interceptor;
