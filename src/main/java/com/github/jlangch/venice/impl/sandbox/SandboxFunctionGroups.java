@@ -68,7 +68,6 @@ public class SandboxFunctionGroups {
         return GROUPS.contains(group);
     }
 
-
     public static List<String> getGroups() {
         return GROUPS.stream().sorted().collect(Collectors.toList());
     }

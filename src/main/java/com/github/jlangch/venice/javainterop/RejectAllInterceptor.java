@@ -27,6 +27,7 @@ import java.util.List;
 
 import com.github.jlangch.venice.SecurityException;
 import com.github.jlangch.venice.impl.sandbox.RestrictedBlacklistedFunctions;
+import com.github.jlangch.venice.impl.sandbox.SandboxDefaultRules;
 
 
 /**
@@ -204,7 +205,7 @@ public class RejectAllInterceptor extends Interceptor {
     public IInterceptor validateLoadModule(
             final String moduleName
     ) throws SecurityException {
-        if (!SandboxRules.DEFAULT_WHITELISTED_MODULES.contains(moduleName)) {
+        if (!SandboxDefaultRules.DEFAULT_WHITELISTED_MODULES.contains(moduleName)) {
             throw new SecurityException(String.format(
                     "%s: Access denied to Venice module :%s!",
                     PREFIX,
@@ -240,7 +241,7 @@ public class RejectAllInterceptor extends Interceptor {
     }
 
     public List<String> getWhitelistedVeniceModules() {
-        final List<String> list = new ArrayList<>(SandboxRules.DEFAULT_WHITELISTED_MODULES);
+        final List<String> list = new ArrayList<>(SandboxDefaultRules.DEFAULT_WHITELISTED_MODULES);
         Collections.sort(list);
         return list;
     }
