@@ -56,7 +56,9 @@ public class SandboxFunctionGroups {
         }
         else {
             throw new VncException(String.format(
-                        "Invalid sandbox function group '%s", group));
+                        "Invalid sandbox function group '%s'. Use one of %s",
+                        group,
+                        GROUPS.toString()));
         }
     }
 
