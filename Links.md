@@ -112,6 +112,12 @@ test {
 
 [Clojure Style Guide](https://github.com/bbatsov/clojure-style-guide)
 
+[Install Clojure](https://ericnormand.me/guide/how-to-install-clojure#mac-clojure)
+
+[Deps and CLI Guide](https://clojure.org/guides/deps_and_cli)
+
+[Homebrew](https://brew.sh/)
+
 
 ### Socket REPL
 
