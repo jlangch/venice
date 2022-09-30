@@ -33,10 +33,8 @@ import com.github.jlangch.venice.Venice;
 public class AssertMacroTest {
 
     @Test
-    public void test_assert() {
+    public void test_assert_OK() {
         final Venice venice = new Venice();
-
-        // Assertion OK ---------------------------------------------
 
         try {
             venice.eval("(assert true)");
@@ -51,10 +49,11 @@ public class AssertMacroTest {
         catch(AssertionException ex) {
              fail("Unexpected AssertionException");
         }
+    }
 
-
-
-        // Assertion FAILED -----------------------------------------
+    @Test
+    public void test_assert_FAILED_expr_false() {
+        final Venice venice = new Venice();
 
         try {
             venice.eval("(assert false)");
@@ -62,10 +61,10 @@ public class AssertMacroTest {
         }
         catch(AssertionException ex) {
             assertEquals(
-            		"Assert failed.\n"
-            		+ "Expression:\n"
-            		+ "false",
-            		ex.getMessage());
+                    "Assert failed.\n"
+                    + "Expression:\n"
+                    + "false",
+                    ex.getMessage());
         }
 
         try {
@@ -74,13 +73,17 @@ public class AssertMacroTest {
         }
         catch(AssertionException ex) {
             assertEquals(
-            		"Assert failed.\n"
-            		+ "error\n"
-            		+ "Expression:\n"
-            		+ "false",
-            		ex.getMessage());
+                    "Assert failed.\n"
+                    + "error\n"
+                    + "Expression:\n"
+                    + "false",
+                    ex.getMessage());
         }
+    }
 
+    @Test
+    public void test_assert_FAILED_expr_nil() {
+        final Venice venice = new Venice();
 
         try {
             venice.eval("(assert nil)");
@@ -88,10 +91,10 @@ public class AssertMacroTest {
         }
         catch(AssertionException ex) {
             assertEquals(
-            		"Assert failed.\n"
-            		+ "Expression:\n"
-            		+ "nil",
-            		ex.getMessage());
+                    "Assert failed.\n"
+                    + "Expression:\n"
+                    + "nil",
+                    ex.getMessage());
         }
 
         try {
@@ -100,13 +103,17 @@ public class AssertMacroTest {
         }
         catch(AssertionException ex) {
             assertEquals(
-            		"Assert failed.\n"
-            		+ "error\n"
-            		+ "Expression:\n"
-            		+ "nil",
-            		ex.getMessage());
+                    "Assert failed.\n"
+                    + "error\n"
+                    + "Expression:\n"
+                    + "nil",
+                    ex.getMessage());
         }
+    }
 
+    @Test
+    public void test_assert_FAILED_exception() {
+        final Venice venice = new Venice();
 
         try {
             venice.eval("(assert (/ 1 0))");
@@ -114,11 +121,11 @@ public class AssertMacroTest {
         }
         catch(AssertionException ex) {
             assertEquals(
-            		"Assert failed.\n"
-            		+ "Unexpected exception: :com.github.jlangch.venice.VncException\n"
-            		+ "Expression:\n"
-            		+ "(/ 1 0)",
-            		ex.getMessage());
+                    "Assert failed.\n"
+                    + "Unexpected exception: :com.github.jlangch.venice.VncException\n"
+                    + "Expression:\n"
+                    + "(/ 1 0)",
+                    ex.getMessage());
         }
 
         try {
@@ -127,21 +134,18 @@ public class AssertMacroTest {
         }
         catch(AssertionException ex) {
             assertEquals(
-            		"Assert failed.\n"
-            		+ "error\n"
-            		+ "Unexpected exception: :com.github.jlangch.venice.VncException\n"
-            		+ "Expression:\n"
-            		+ "(/ 1 0)",
-            		ex.getMessage());
+                    "Assert failed.\n"
+                    + "error\n"
+                    + "Unexpected exception: :com.github.jlangch.venice.VncException\n"
+                    + "Expression:\n"
+                    + "(/ 1 0)",
+                    ex.getMessage());
         }
-   }
-
+    }
 
     @Test
-    public void test_assert_eq() {
+    public void test_assert_eq_OK() {
         final Venice venice = new Venice();
-
-        // Assertion OK ---------------------------------------------
 
         try {
             venice.eval("(assert-eq 1 1)");
@@ -156,10 +160,11 @@ public class AssertMacroTest {
         catch(AssertionException ex) {
              fail("Unexpected AssertionException");
         }
+    }
 
-
-
-        // Assertion FAILED -----------------------------------------
+    @Test
+    public void test_assert_eq_FAILED() {
+        final Venice venice = new Venice();
 
         try {
             venice.eval("(assert-eq 1 2)");
@@ -167,12 +172,12 @@ public class AssertMacroTest {
         }
         catch(AssertionException ex) {
             assertEquals(
-            	"Assert failed.\n"
-            	+ "Expected: 1\n"
-            	+ "Actual:   2\n"
-            	+ "Expression:\n"
-            	+ "2",
-            	ex.getMessage());
+                "Assert failed.\n"
+                + "Expected: 1\n"
+                + "Actual:   2\n"
+                + "Expression:\n"
+                + "2",
+                ex.getMessage());
         }
 
         try {
@@ -181,22 +186,51 @@ public class AssertMacroTest {
         }
         catch(AssertionException ex) {
             assertEquals(
-            		"Assert failed.\n"
-            		+ "error\n"
-            		+ "Expected: 1\n"
-            		+ "Actual:   2\n"
-            		+ "Expression:\n"
-            		+ "2",
-            		ex.getMessage());
+                    "Assert failed.\n"
+                    + "error\n"
+                    + "Expected: 1\n"
+                    + "Actual:   2\n"
+                    + "Expression:\n"
+                    + "2",
+                    ex.getMessage());
         }
     }
 
     @Test
-    public void test_assert_throws() {
+    public void test_assert_eq_FAILED_exception() {
         final Venice venice = new Venice();
 
+        try {
+            venice.eval("(assert-eq 1 (/ 1 0))");
+            fail("Expected AssertionException");
+        }
+        catch(AssertionException ex) {
+            assertEquals(
+                "Assert failed.\n"
+                + "Unexpected exception: :com.github.jlangch.venice.VncException\n"
+                + "Expression:\n"
+                + "(/ 1 0)",
+                ex.getMessage());
+        }
 
-        // Assertion OK ---------------------------------------------
+        try {
+            venice.eval("(assert-eq 1 (/ 1 0) \"error\")");
+            fail("Expected AssertionException");
+        }
+        catch(AssertionException ex) {
+            assertEquals(
+                    "Assert failed.\n"
+                    + "error\n"
+                    + "Unexpected exception: :com.github.jlangch.venice.VncException\n"
+                    + "Expression:\n"
+                    + "(/ 1 0)",
+                    ex.getMessage());
+        }
+    }
+
+    @Test
+    public void test_assert_throws_OK() {
+        final Venice venice = new Venice();
 
         try {
             venice.eval(
@@ -259,10 +293,12 @@ public class AssertMacroTest {
         catch(Exception ex) {
             fail("Unexpected Exception " + ex.getClass().getName());
         }
+    }
 
+    @Test
+    public void test_assert_throws_FAILED() {
+        final Venice venice = new Venice();
 
-
-        // Assertion FAILED -----------------------------------------
 
         try {
             venice.eval("(assert-throws :VncException (/ 2 1))");
@@ -270,12 +306,12 @@ public class AssertMacroTest {
         }
         catch(AssertionException ex) {
             assertEquals(
-            		"Assert failed.\n"
-            		+ "Expected: :VncException\n"
-            		+ "But no exception has been thrown!\n"
-            		+ "Expression:\n"
-            		+ "(/ 2 1)",
-            		ex.getMessage());
+                    "Assert failed.\n"
+                    + "Expected: :VncException\n"
+                    + "But no exception has been thrown!\n"
+                    + "Expression:\n"
+                    + "(/ 2 1)",
+                    ex.getMessage());
         }
         catch(Exception ex) {
             fail("Unexpected Exception " + ex.getClass().getName());
@@ -287,12 +323,12 @@ public class AssertMacroTest {
         }
         catch(AssertionException ex) {
             assertEquals(
-            		"Assert failed.\n"
-            		+ "error\n"
-            		+ "No exception thrown\n"
-            		+ "Expression:\n"
-            		+ "(/ 2 1)",
-            		ex.getMessage());
+                    "Assert failed.\n"
+                    + "error\n"
+                    + "No exception thrown\n"
+                    + "Expression:\n"
+                    + "(/ 2 1)",
+                    ex.getMessage());
         }
         catch(Exception ex) {
             fail("Unexpected Exception " + ex.getClass().getName());
@@ -300,11 +336,9 @@ public class AssertMacroTest {
     }
 
     @Test
-    public void test_assert_throws_special() {
+    public void test_assert_throws_OK_exception() {
         final Venice venice = new Venice();
 
-
-        // Assertion OK ---------------------------------------------
 
         try {
             venice.eval("(assert-throws :VncException (/ 2 0) \"error\")");
