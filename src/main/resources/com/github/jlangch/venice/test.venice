@@ -21,6 +21,24 @@
 
 ;;;; Unit tests
 
+;;;; (load-module :test)
+;;;; (test/deftest sum-tests (assert-eq 3 (+ 1 2)))
+;;;; (test/run-tests)
+;;;; ;; => Testing namespace user
+;;;; ;; => Ran 1 tests
+;;;; ;; => 0 failures, 0 errors.
+
+;;;; (load-module :test)
+;;;; (test/deftest sum-tests (assert-eq 0 (+ 1 2)))
+;;;; (test/run-tests)
+;;;; ;; => Testing user
+;;;; ;; => FAIL in (sum-tests) (file: :user, line: 4, column 20)
+;;;; ;; => expected: 0
+;;;; ;; => actual: 3
+;;;; ;; => expression: (+ 1 2)
+;;;; ;; => Ran 1 tests
+;;;; ;; => 1 failures, 0 errors
+
 
 ;;;; This is a Venice port of Clojure's test framework.
 ;;;; (https://github.com/clojure/clojure/blob/master/src/clj/clojure/test.clj)
@@ -34,13 +52,12 @@
 ;   You must not remove this notice, or any other, from this software.
 
 
+;; -----------------------------------------------------------------------------
+;;                      W O R K   I N   P R O G R E S S
+;; -----------------------------------------------------------------------------
+
 (ns test)
 
-
-(deftype :counters [test  :long
-                    pass  :long
-                    fail  :long
-                    error :long])
 
 
 (def-dynamic *testing-vars* (list))  ; bound to hierarchy of vars being tested
@@ -123,7 +140,7 @@
 
   test-ns [ns°]
 
-  (binding [*report-counters* (counters. 0 0 0 0)]
+  (binding [*report-counters*  {:test 0, :pass 0, :fail 0, :error 0}]
     (let [ns-sym (symbol (namespace ns°))]
       (do-report {:type :begin-test-ns, :ns ns-sym})
       (apply test-vars (ns-list ns-sym))
@@ -170,11 +187,17 @@
 
 (defn do-report [m]
   (with-test-out
-    (println (pr-str m))))
+    (report
+      (case (:type m)
+        :fail m  ;; todo
+        :err m   ;; todo
+        m))))
 
 
 (defn init-report-counters []
-  (set! *report-counters* (counters. 0 0 0 0)))
+  (set! *report-counters* {:test 0, :pass 0, :fail 0, :error 0}))
+
+
 
 
 (defn inc-report-counter [name]
@@ -185,40 +208,36 @@
 (defmulti report :type)
 
 (defmethod report :default [m]
-  (with-test-out (prn m)))
+  (prn m))
 
 (defmethod report :pass [m]
-  (with-test-out (inc-report-counter :pass)))
+  (inc-report-counter :pass))
 
 (defmethod report :fail [m]
-  (with-test-out
-    (inc-report-counter :fail)
-    (println "\nFAIL in" (testing-vars-str m))
-    (when-let [message (:message m)] (println message))
-    (println "expected:" (pr-str (:expected m)))
-    (println "  actual:" (pr-str (:actual m)))))
+  (inc-report-counter :fail)
+  (println "\nFAIL in" (testing-vars-str m))
+  (when-let [message (:message m)] (println message))
+  (println "expected:" (pr-str (:expected m)))
+  (println "  actual:" (pr-str (:actual m))))
 
 (defmethod report :error [m]
-  (with-test-out
-    (inc-report-counter :error)
-    (println "\nERROR in" (testing-vars-str m))
-    (when-let [message (:message m)] (println message))
-    (println "expected:" (pr-str (:expected m)))
-    (print "  actual: ")
-    (let [actual (:actual m)]
-      (if (instance? :VncException actual)
-        (println (ex-venice-stacktrace actual))
-        (prn actual)))))
+  (inc-report-counter :error)
+  (println "\nERROR in" (testing-vars-str m))
+  (when-let [message (:message m)] (println message))
+  (println "expected:" (pr-str (:expected m)))
+  (print "  actual: ")
+  (let [actual (:actual m)]
+    (if (instance? :VncException actual)
+      (println (ex-venice-stacktrace actual))
+      (prn actual))))
 
 (defmethod report :summary [m]
-  (with-test-out
-    (println "\nRan" (:test m) "tests containing"
-             (+ (:pass m) (:fail m) (:error m)) "assertions.")
-    (println (:fail m) "failures," (:error m) "errors.")))
+  (println "\nRan" (:test m) "tests containing"
+           (+ (:pass m) (:fail m) (:error m)) "assertions.")
+  (println (:fail m) "failures," (:error m) "errors."))
 
 (defmethod report :begin-test-ns [m]
-  (with-test-out
-    (println "\nTesting" (ns-name (:ns m)))))
+  (println "\nTesting" (namespace (:ns m))))
 
 ;; Ignore these message types:
 (defmethod report :end-test-ns [m])
