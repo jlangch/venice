@@ -130,37 +130,66 @@
   assert-eq
 
   ([expected actual]
-    `(let [exp#  ~expected
-           act#  ~actual]
-       (if-not (= exp# act#)
+    `(try
+       (let [exp#  ~expected
+             act#  ~actual]
+           (if-not (= exp# act#)
+             (throw (ex :AssertionException
+                        (str "Assert failed."
+                             "\nExpected: " (pr-str exp#)
+                             "\nActual:   " (pr-str act#)
+                             "\nExpression:\n" (pr-str '~actual))
+                        "assert-eq"
+                        (:file (meta '~expected) "unknown")
+                        (:line (meta '~expected) -1)
+                        (:column (meta '~expected) -1)
+                        (pr-str '~actual)))
+             true))
+       (catch :AssertionException e
+         (throw e))
+       (catch :Exception e
          (throw (ex :AssertionException
                     (str "Assert failed."
-                         "\nExpected: " (pr-str exp#)
-                         "\nActual:   " (pr-str act#)
+                         "\nUnexpected exception: " (type e)
                          "\nExpression:\n" (pr-str '~actual))
-                    "assert-eq"
+                    "assert"
                     (:file (meta '~expected) "unknown")
                     (:line (meta '~expected) -1)
                     (:column (meta '~expected) -1)
-                    (pr-str '~actual)))
-         true)))
+                    (pr-str '~actual)
+                    e)))))
 
   ([expected actual message]
-    `(let [exp# ~expected
-           act# ~actual]
-       (if-not (= exp# act#)
+    `(try
+       (let [exp# ~expected
+             act# ~actual]
+         (if-not (= exp# act#)
+           (throw (ex :AssertionException
+                      (str "Assert failed."
+                           "\n" ~message
+                           "\nExpected: " (pr-str exp#)
+                           "\nActual:   " (pr-str act#)
+                           "\nExpression:\n" (pr-str '~actual))
+                      "assert-eq"
+                      (:file (meta '~expected) "unknown")
+                      (:line (meta '~expected) -1)
+                      (:column (meta '~expected) -1)
+                      (pr-str '~actual)))
+           true))
+       (catch :AssertionException e
+         (throw e))
+       (catch :Exception e
          (throw (ex :AssertionException
                     (str "Assert failed."
                          "\n" ~message
-                         "\nExpected: " (pr-str exp#)
-                         "\nActual:   " (pr-str act#)
+                         "\nUnexpected exception: " (type e)
                          "\nExpression:\n" (pr-str '~actual))
-                    "assert-eq"
+                    "assert"
                     (:file (meta '~expected) "unknown")
                     (:line (meta '~expected) -1)
                     (:column (meta '~expected) -1)
-                    (pr-str '~actual)))
-         true))))
+                    (pr-str '~actual)
+                    e))))))
 
 (defmacro
   ^{ :arglists '(
