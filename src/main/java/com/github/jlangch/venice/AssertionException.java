@@ -36,6 +36,7 @@ public class AssertionException extends VncException {
 
     public AssertionException(final String message) {
         super(message);
+        this.expression = null;
     }
 
     public AssertionException(
@@ -43,19 +44,29 @@ public class AssertionException extends VncException {
             final String fnName,
             final String file,
             final int lineNr,
-            final int colNr
+            final int colNr,
+            final String expression
     ) {
         super(message, new StackFrame(fnName, file, lineNr, colNr));
+        this.expression = expression;
     }
 
     public AssertionException(final String message, final Throwable cause) {
         super(message, cause);
+        this.expression = null;
     }
 
     public AssertionException(final Throwable cause) {
         super(cause);
+        this.expression = null;
+    }
+
+    public String getExpression() {
+    	return expression;
     }
 
 
     private static final long serialVersionUID = 1349237272157335345L;
+
+    private final String expression;
 }
