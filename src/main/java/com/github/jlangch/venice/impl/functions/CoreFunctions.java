@@ -7753,13 +7753,15 @@ public class CoreFunctions {
                 "run!",
                 VncFunction
                     .meta()
-                    .arglists("(run f coll)")
+                    .arglists(
+                    	"(run! f coll)")
                     .doc(
                         "Runs the supplied function, for purposes of side " +
                         "effects, on successive items in the collection. Returns `nil`")
                     .examples(
                         "(run! prn [1 2 3 4])")
-                    .seeAlso("docoll", "mapv")
+                    .seeAlso(
+                    	"docoll", "mapv")
                     .build()
         ) {
             @Override
@@ -7778,7 +7780,8 @@ public class CoreFunctions {
                 "mapv",
                 VncFunction
                     .meta()
-                    .arglists("(mapv f coll colls*)")
+                    .arglists(
+                    	"(mapv f coll colls*)")
                     .doc(
                         "Returns a vector consisting of the result of applying f " +
                         "to the set of first items of each coll, followed by applying " +
@@ -7788,7 +7791,8 @@ public class CoreFunctions {
                         "(mapv inc [1 2 3 4])",
                         "(mapv + [1 2 3 4] [10 20 30 40])",
                         "(mapv vector [1 2 3 4] [10 20 30 40])")
-                    .seeAlso("docoll")
+                    .seeAlso(
+                    	"docoll")
                     .build()
         ) {
             @Override
@@ -8852,6 +8856,75 @@ public class CoreFunctions {
             private static final long serialVersionUID = -1848883965231344442L;
         };
 
+    public static VncFunction alter_meta_BANG =
+        new VncFunction(
+                "alter-meta!",
+                VncFunction
+                    .meta()
+                    .arglists(
+                        "(alter-meta! obj f & args)")
+                    .doc(
+                        "Atomically sets the metadata for a namespace/agent/atom/volatile \n" +
+                        "to be:                                                           \n\n" +
+                        "  `(apply f its-current-meta args)`                              \n\n" +
+                        "f must be free of side-effects.")
+                    .examples(
+                            "(do                                   \n" +
+                            "  (def counter (atom 0))              \n" +
+                            "  (alter-meta! counter assoc :a 1))   ",
+                            "(do                                   \n" +
+                            "  (def counter (atom 0))              \n" +
+                            "  (alter-meta! counter assoc :a 1)    \n" +
+                            "  (meta counter))                     ")
+                    .seeAlso("meta", "reset-meta!")
+                    .build()
+        ) {
+            @Override
+            public VncVal apply(final VncList args) {
+                ArityExceptions.assertMinArity(this, args, 2);
+
+                // TODO: implement
+
+                throw new VncException("The function alter-meta! is not yet implemented!");
+            }
+
+            private static final long serialVersionUID = -1848883965231344442L;
+        };
+
+    public static VncFunction reset_meta_BANG =
+        new VncFunction(
+                "reset-meta!",
+                VncFunction
+                    .meta()
+                    .arglists(
+                        "(reset-meta! obj metadata-map)")
+                    .doc(
+                        "Atomically resets the metadata for a namespace/agent/atom/volatile")
+                    .examples(
+                        "(do                                   \n" +
+                        "  (def counter (atom 0))              \n" +
+                        "  (alter-meta! counter assoc :a 1)    \n" +
+                        "  (reset-meta! counter {}))           ",
+	                    "(do                                   \n" +
+	                    "  (def counter (atom 0))              \n" +
+	                    "  (alter-meta! counter assoc :a 1)    \n" +
+	                    "  (reset-meta! counter {})            \n" +
+                        "  (meta counter))                     ")
+                    .seeAlso("meta", "alter-meta!")
+                    .build()
+        ) {
+            @Override
+            public VncVal apply(final VncList args) {
+                ArityExceptions.assertArity(this, args, 2);
+
+                // TODO: implement
+
+                throw new VncException("The function reset-meta! is not yet implemented!");
+            }
+
+            private static final long serialVersionUID = -1848883965231344442L;
+        };
+
 
 
 
@@ -9473,6 +9546,8 @@ public class CoreFunctions {
                 .add(meta)
                 .add(with_meta)
                 .add(vary_meta)
+                .add(alter_meta_BANG)
+                .add(reset_meta_BANG)
 
                 .add(identity)
                 .add(gensym)
