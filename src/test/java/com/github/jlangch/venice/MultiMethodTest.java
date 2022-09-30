@@ -57,6 +57,22 @@ public class MultiMethodTest {
     }
 
     @Test
+    public void test_defmulti_empty_fns() {
+        final Venice venice = new Venice();
+
+        final String s =
+                "(do                                     \n" +
+                "   (defmulti math (fn [op _ _] op))     \n" +
+                "   (defmethod math :+ [_ x y])          \n" +
+                "   (defmethod math :- [_ x y])          \n" +
+                "                                        \n" +
+                "   (math :+ 3 5)                        \n" +
+                ")                                      ";
+
+        assertEquals(null, venice.eval(s));
+    }
+
+    @Test
     public void test_defmulti_keyword() {
         final Venice venice = new Venice();
 
