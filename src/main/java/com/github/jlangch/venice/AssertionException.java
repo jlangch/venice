@@ -51,6 +51,19 @@ public class AssertionException extends VncException {
         this.expression = expression;
     }
 
+    public AssertionException(
+            final String message,
+            final String fnName,
+            final String file,
+            final int lineNr,
+            final int colNr,
+            final String expression,
+            final Throwable cause
+    ) {
+        super(message, new StackFrame(fnName, file, lineNr, colNr), cause);
+        this.expression = expression;
+    }
+
     public AssertionException(final String message, final Throwable cause) {
         super(message, cause);
         this.expression = null;

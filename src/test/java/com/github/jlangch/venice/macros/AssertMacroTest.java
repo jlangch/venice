@@ -106,7 +106,35 @@ public class AssertMacroTest {
             		+ "nil",
             		ex.getMessage());
         }
-    }
+
+
+        try {
+            venice.eval("(assert (/ 1 0))");
+            fail("Expected AssertionException");
+        }
+        catch(AssertionException ex) {
+            assertEquals(
+            		"Assert failed.\n"
+            		+ "Unexpected exception: :com.github.jlangch.venice.VncException\n"
+            		+ "Expression:\n"
+            		+ "(/ 1 0)",
+            		ex.getMessage());
+        }
+
+        try {
+            venice.eval("(assert (/ 1 0) \"error\")");
+            fail("Expected AssertionException");
+        }
+        catch(AssertionException ex) {
+            assertEquals(
+            		"Assert failed.\n"
+            		+ "error\n"
+            		+ "Unexpected exception: :com.github.jlangch.venice.VncException\n"
+            		+ "Expression:\n"
+            		+ "(/ 1 0)",
+            		ex.getMessage());
+        }
+   }
 
 
     @Test

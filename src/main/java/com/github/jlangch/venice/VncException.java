@@ -56,8 +56,25 @@ public class VncException extends RuntimeException {
     public VncException(
             final String message,
             final StackFrame stackFrame
-   ) {
+    ) {
         super(message);
+        callstack = ThreadContext.getCallStack().copy();
+
+        final VncHashMap meta = VncHashMap.of(
+                                    MetaUtil.FILE, new VncString(stackFrame.getFile()),
+                                    MetaUtil.LINE, new VncLong(stackFrame.getLine()),
+                                    MetaUtil.COLUMN, new VncLong(stackFrame.getCol()));
+
+        callstack.push(new CallFrame(stackFrame.getFnName(), meta));
+    }
+
+
+    public VncException(
+            final String message,
+            final StackFrame stackFrame,
+            final Throwable cause
+    ) {
+        super(message, cause);
         callstack = ThreadContext.getCallStack().copy();
 
         final VncHashMap meta = VncHashMap.of(

@@ -58,29 +58,58 @@
   assert
 
   ([expr]
-    `(if-not ~expr
-       (throw (ex :AssertionException
-                  (str "Assert failed."
-                       "\nExpression:\n" (pr-str '~expr))
-                  "assert"
-                  (:file (meta '~expr) "unknown")
-                  (:line (meta '~expr) -1)
-                  (:column (meta '~expr) -1)
-                  (pr-str '~expr)))
-       true))
+    `(try
+       (if-not ~expr
+         (throw (ex :AssertionException
+                    (str "Assert failed."
+                         "\nExpression:\n" (pr-str '~expr))
+                    "assert"
+                    (:file (meta '~expr) "unknown")
+                    (:line (meta '~expr) -1)
+                    (:column (meta '~expr) -1)
+                    (pr-str '~expr)))
+         true)
+       (catch :AssertionException e
+         (throw e))
+       (catch :Exception e
+         (throw (ex :AssertionException
+                    (str "Assert failed."
+                         "\nUnexpected exception: " (type e)
+                         "\nExpression:\n" (pr-str '~expr))
+                    "assert"
+                    (:file (meta '~expr) "unknown")
+                    (:line (meta '~expr) -1)
+                    (:column (meta '~expr) -1)
+                    (pr-str '~expr)
+                    e)))))
 
   ([expr message]
-    `(if-not ~expr
-       (throw (ex :AssertionException
-                  (str "Assert failed."
-                       "\n" ~message
-                       "\nExpression:\n" (pr-str '~expr))
-                  "assert"
-                  (:file (meta '~expr) "unknown")
-                  (:line (meta '~expr) -1)
-                  (:column (meta '~expr) -1)
-                  (pr-str '~expr)))
-       true)))
+    `(try
+       (if-not ~expr
+         (throw (ex :AssertionException
+                    (str "Assert failed."
+                         "\n" ~message
+                         "\nExpression:\n" (pr-str '~expr))
+                    "assert"
+                    (:file (meta '~expr) "unknown")
+                    (:line (meta '~expr) -1)
+                    (:column (meta '~expr) -1)
+                    (pr-str '~expr)))
+         true)
+       (catch :AssertionException e
+         (throw e))
+       (catch :Exception e
+         (throw (ex :AssertionException
+                    (str "Assert failed."
+                         "\n" ~message
+                         "\nUnexpected exception: " (type e)
+                         "\nExpression:\n" (pr-str '~expr))
+                    "assert"
+                    (:file (meta '~expr) "unknown")
+                    (:line (meta '~expr) -1)
+                    (:column (meta '~expr) -1)
+                    (pr-str '~expr)
+                    e))))))
 
 
 (defmacro
