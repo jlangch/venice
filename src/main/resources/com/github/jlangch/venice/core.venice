@@ -28,6 +28,9 @@
 (import :java.io.Writer)
 
 
+(def-dynamic *assertions* 0)  ; the number of successful assertions
+
+
 (defmacro
   ^{ :arglists '("(comment & body)")
      :doc "Ignores body, yields nil"
@@ -68,7 +71,9 @@
                     (:line (meta '~expr) -1)
                     (:column (meta '~expr) -1)
                     (pr-str '~expr)))
-         true)
+         (do
+           (set! *assertions* (inc *assertions*))
+           true))
        (catch :AssertionException e
          (throw e))
        (catch :Exception e
@@ -95,7 +100,9 @@
                     (:line (meta '~expr) -1)
                     (:column (meta '~expr) -1)
                     (pr-str '~expr)))
-         true)
+         (do
+           (set! *assertions* (inc *assertions*))
+           true))
        (catch :AssertionException e
          (throw e))
        (catch :Exception e
@@ -144,7 +151,9 @@
                         (:line (meta '~expected) -1)
                         (:column (meta '~expected) -1)
                         (pr-str '~actual)))
-             true))
+             (do
+               (set! *assertions* (inc *assertions*))
+              true)))
        (catch :AssertionException e
          (throw e))
        (catch :Exception e
@@ -175,7 +184,9 @@
                       (:line (meta '~expected) -1)
                       (:column (meta '~expected) -1)
                       (pr-str '~actual)))
-           true))
+           (do
+             (set! *assertions* (inc *assertions*))
+             true)))
        (catch :AssertionException e
          (throw e))
        (catch :Exception e
@@ -223,6 +234,7 @@
                          (:column (meta '~expr) -1)
                          (pr-str '~expr))))
        (catch ~ex-type e
+              (set! *assertions* (inc *assertions*))
               true)
        (catch :java.lang.Exception e
               (throw (ex :AssertionException
@@ -252,6 +264,7 @@
                          (:column (meta '~expr) -1)
                          (pr-str '~expr))))
        (catch ~ex-type e
+              (set! *assertions* (inc *assertions*))
               true)
        (catch :java.lang.Exception e
               (throw (ex :AssertionException

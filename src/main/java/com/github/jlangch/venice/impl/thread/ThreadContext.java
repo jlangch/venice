@@ -289,6 +289,7 @@ public class ThreadContext {
                 final VncVal stdIn = ctx.values.get(STD_IN);
                 final VncVal stdOut = ctx.values.get(STD_OUT);
                 final VncVal stdErr = ctx.values.get(STD_ERR);
+                final VncVal assertions = ctx.values.get(ASSERTIONS);
 
                 ctx.values = new HashMap<>();
 
@@ -296,6 +297,7 @@ public class ThreadContext {
                 ctx.values.put(STD_IN, stdIn);
                 ctx.values.put(STD_OUT, stdOut);
                 ctx.values.put(STD_ERR, stdErr);
+                ctx.values.put(ASSERTIONS, assertions);
             }
             else {
                 get().values = new HashMap<>();
@@ -419,6 +421,7 @@ public class ThreadContext {
     private static final VncKeyword STD_IN = new VncKeyword("*in*");
     private static final VncKeyword STD_OUT = new VncKeyword("*out*");
     private static final VncKeyword STD_ERR = new VncKeyword("*err*");
+    private static final VncKeyword ASSERTIONS = new VncKeyword("*assertions*");
 
 
     // Note: Do NOT use InheritableThreadLocal with ExecutorServices. It's not guaranteed

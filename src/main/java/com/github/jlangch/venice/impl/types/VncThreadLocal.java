@@ -95,7 +95,7 @@ public class VncThreadLocal extends VncVal {
             final VncKeyword key = Coerce.toVncKeyword(kvs[ii]);
             if (isSystemKey(key)) {
                 throw new VncException(String.format(
-                        "The %s value must be added/modifed on the thread local vars!",
+                        "The %s value must not be added/modifed on the thread local vars!",
                         key));
             }
             else {
@@ -111,7 +111,7 @@ public class VncThreadLocal extends VncVal {
             final VncKeyword key = Coerce.toVncKeyword(kv.first());
             if (isSystemKey(key)) {
                 throw new VncException(String.format(
-                        "The %s value must be added/modifed on the thread local vars!",
+                        "The %s value must be not added/modifed on the thread local vars!",
                         key));
             }
             else {
@@ -127,7 +127,7 @@ public class VncThreadLocal extends VncVal {
             final VncKeyword key = Coerce.toVncKeyword(v);
             if (isSystemKey(key)) {
                 throw new VncException(String.format(
-                        "The %s value must be removed from the thread local vars!",
+                        "The %s value must not be removed from the thread local vars!",
                         key));
             }
             else {

@@ -194,11 +194,6 @@
         m))))
 
 
-(defn init-report-counters []
-  (set! *report-counters* {:test 0, :pass 0, :fail 0, :error 0}))
-
-
-
 
 (defn inc-report-counter [name]
   (when *report-counters*
