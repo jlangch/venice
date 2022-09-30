@@ -1,0 +1,226 @@
+;;;;   __    __         _
+;;;;   \ \  / /__ _ __ (_) ___ ___
+;;;;    \ \/ / _ \ '_ \| |/ __/ _ \
+;;;;     \  /  __/ | | | | (_|  __/
+;;;;      \/ \___|_| |_|_|\___\___|
+;;;;
+;;;;
+;;;; Copyright 2017-2022 Venice
+;;;;
+;;;; Licensed under the Apache License, Version 2.0 (the "License");
+;;;; you may not use this file except in compliance with the License.
+;;;; You may obtain a copy of the License at
+;;;;
+;;;;     http://www.apache.org/licenses/LICENSE-2.0
+;;;;
+;;;; Unless required by applicable law or agreed to in writing, software
+;;;; distributed under the License is distributed on an "AS IS" BASIS,
+;;;; WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+;;;; See the License for the specific language governing permissions and
+;;;; limitations under the License.
+
+;;;; Unit tests
+
+
+;;;; This is a Venice port of Clojure's test framework.
+;;;; (https://github.com/clojure/clojure/blob/master/src/clj/clojure/test.clj)
+
+;   Copyright (c) Rich Hickey. All rights reserved.
+;   The use and distribution terms for this software are covered by the
+;   Eclipse Public License 1.0 (http://opensource.org/licenses/eclipse-1.0.php)
+;   which can be found in the file epl-v10.html at the root of this distribution.
+;   By using this software in any fashion, you are agreeing to be bound by
+;   the terms of this license.
+;   You must not remove this notice, or any other, from this software.
+
+
+(ns test)
+
+
+(deftype :counters [test  :long
+                    pass  :long
+                    fail  :long
+                    error :long])
+
+
+(def-dynamic *testing-vars* (list))  ; bound to hierarchy of vars being tested
+
+(def-dynamic *report-counters* nil)	 ; bound to a ref of a map in test-ns
+
+(def-dynamic *test-out* *out*)       ; PrintWriter for test reporting output
+
+(defmacro with-test-out [& forms]
+  `(binding [*out* *test-out*]
+     (do ~@forms)))
+
+
+(defmacro
+  ^{ :arglists '(
+          "(deftest name & body)" )
+     :doc """
+          Defines a test function with no arguments.
+
+          Note: Actually, the test body goes in the :test metadata on the var,
+          and the real function (the value of the var) calls test-var on
+          itself.
+          """
+     :examples '(
+          """
+          (deftest plus []
+            (assert-eq 3 (+ 1 2)))
+          """) }
+
+  deftest [test-name & body]
+
+  `(def ~(vary-meta test-name assoc :test-fn `(fn [] ~@body)
+                                    :test-fn-name (str *ns* "/" test-name))
+        (fn [] (test/test-var (var-get ~test-name)))))
+
+
+(defn
+  ^{ :arglists '(
+          "(test-var v)" )
+     :doc """
+          If v has a function in its :test metadata, calls that function,
+          with *testing-vars* bound to (conj *testing-vars* v).
+          """ }
+
+  test-var [v]
+
+  (when-let [test-fn (:test-fn (meta v))]
+    (let [test-name (:test-fn-name (meta v))]
+      (binding [*testing-vars* (conj *testing-vars* v)]
+        (do-report {:type :begin-test-var, :fn-name test-name, :var v})
+        (try (test-fn)
+             (do-report {:type :pass, :fn-name test-name, :var v})
+             (catch :AssertionException e
+               (do-report {:type :fail
+                           :fn-name test-name
+                           :message "Test assert failure."
+                           :ex e}))
+             (catch :VncException e
+               (do-report {:type :error
+                           :fn-name test-name
+                           :message "Uncaught exception, not in assertion."
+                           :ex e})))
+        (do-report {:type :end-test-var, :fn-name test-name, :var v})))))
+
+
+(defn
+  ^{ :arglists '("(test-vars & vars)" )
+     :doc "Calls test-vars on every test var in the list of vars." }
+
+  test-vars [& vars]
+
+  (->> vars
+       (filter #(some? (:test-fn (meta %))))
+       (docoll test-var)))
+
+
+(defn
+  ^{ :arglists '("(test-ns ns)" )
+     :doc "Calls `test-vars` with all vars in the namespace ns" }
+
+  test-ns [ns°]
+
+  (binding [*report-counters* (counters. 0 0 0 0)]
+    (let [ns-sym (symbol (namespace ns°))]
+      (do-report {:type :begin-test-ns, :ns ns-sym})
+      (apply test-vars (ns-list ns-sym))
+      (do-report {:type :end-test-ns, :ns ns-sym})
+      *report-counters*)))
+
+
+(defn
+  ^{ :arglists '(
+          "(run-tests)"
+          "(run-tests & namespaces)" )
+     :doc """
+          Runs all tests in the given namespaces; prints results.
+          Defaults to current namespace if none given.  Returns a map
+          summarizing test results..
+          """ }
+
+  run-tests
+
+  ([] (run-tests *ns*))
+
+  ([& namespaces]
+     (let [summary (assoc (apply merge-with + (map test-ns namespaces))
+                          :type :summary)]
+       (do-report summary)
+       summary)))
+
+
+(defn
+  ^{ :arglists '(
+          "(successful? summary)" )
+     :doc """
+          Returns true if the given test summary indicates all tests
+          were successful, false otherwise.
+          """ }
+
+  successful? [summary]
+
+  (and (zero? (:fail summary 0))
+       (zero? (:error summary 0))))
+
+
+;; reporting -------------------------------------------------------------------
+
+(defn do-report [m]
+  (with-test-out
+    (println (pr-str m))))
+
+
+(defn init-report-counters []
+  (set! *report-counters* (counters. 0 0 0 0)))
+
+
+(defn inc-report-counter [name]
+  (when *report-counters*
+    (set! *report-counters* (update *report-counters* name inc))))
+
+
+(defmulti report :type)
+
+(defmethod report :default [m]
+  (with-test-out (prn m)))
+
+(defmethod report :pass [m]
+  (with-test-out (inc-report-counter :pass)))
+
+(defmethod report :fail [m]
+  (with-test-out
+    (inc-report-counter :fail)
+    (println "\nFAIL in" (testing-vars-str m))
+    (when-let [message (:message m)] (println message))
+    (println "expected:" (pr-str (:expected m)))
+    (println "  actual:" (pr-str (:actual m)))))
+
+(defmethod report :error [m]
+  (with-test-out
+    (inc-report-counter :error)
+    (println "\nERROR in" (testing-vars-str m))
+    (when-let [message (:message m)] (println message))
+    (println "expected:" (pr-str (:expected m)))
+    (print "  actual: ")
+    (let [actual (:actual m)]
+      (if (instance? :VncException actual)
+        (println (ex-venice-stacktrace actual))
+        (prn actual)))))
+
+(defmethod report :summary [m]
+  (with-test-out
+    (println "\nRan" (:test m) "tests containing"
+             (+ (:pass m) (:fail m) (:error m)) "assertions.")
+    (println (:fail m) "failures," (:error m) "errors.")))
+
+(defmethod report :begin-test-ns [m]
+  (with-test-out
+    (println "\nTesting" (ns-name (:ns m)))))
+
+;; Ignore these message types:
+(defmethod report :end-test-ns [m])
+(defmethod report :begin-test-var [m])
+(defmethod report :end-test-var [m])
