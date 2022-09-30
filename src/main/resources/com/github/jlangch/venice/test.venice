@@ -23,14 +23,14 @@
 
 ;;;; (load-module :test)
 ;;;; (test/deftest sum-tests (assert-eq 3 (+ 1 2)))
-;;;; (test/run-tests)
+;;;; (test/run-tests 'user)
 ;;;; ;; => Testing namespace user
 ;;;; ;; => Ran 1 tests
 ;;;; ;; => 0 failures, 0 errors.
 
 ;;;; (load-module :test)
 ;;;; (test/deftest sum-tests (assert-eq 0 (+ 1 2)))
-;;;; (test/run-tests)
+;;;; (test/run-tests 'user)
 ;;;; ;; => Testing user
 ;;;; ;; => FAIL in (sum-tests) (file: :user, line: 4, column 20)
 ;;;; ;; => expected: 0
@@ -108,6 +108,7 @@
     (let [test-name (:test-fn-name (meta v))]
       (binding [*testing-vars* (conj *testing-vars* v)]
         (do-report {:type :begin-test-var, :fn-name test-name, :var v})
+        (inc-report-counter :test)
         (try (test-fn)
              (do-report {:type :pass, :fn-name test-name, :var v})
              (catch :AssertionException e
@@ -154,19 +155,15 @@
           "(run-tests & namespaces)" )
      :doc """
           Runs all tests in the given namespaces; prints results.
-          Defaults to current namespace if none given.  Returns a map
-          summarizing test results..
+          Returns a map summarizing test results.
           """ }
 
-  run-tests
-
-  ([] (run-tests *ns*))
-
-  ([& namespaces]
-     (let [summary (assoc (apply merge-with + (map test-ns namespaces))
-                          :type :summary)]
-       (do-report summary)
-       summary)))
+  run-tests [& namespaces]
+    (when (seq namespaces)
+      (let [summary (assoc (apply merge-with + (map test-ns namespaces))
+                            :type :summary)]
+        (do-report summary)
+        summary)))
 
 
 (defn
@@ -194,7 +191,6 @@
         m))))
 
 
-
 (defn inc-report-counter [name]
   (when *report-counters*
     (set! *report-counters* (update *report-counters* name inc))))
@@ -206,25 +202,20 @@
   (prn m))
 
 (defmethod report :pass [m]
+  (println "\nPASS" (:fn-name m))
   (inc-report-counter :pass))
 
 (defmethod report :fail [m]
   (inc-report-counter :fail)
-  (println "\nFAIL in" (testing-vars-str m))
-  (when-let [message (:message m)] (println message))
-  (println "expected:" (pr-str (:expected m)))
-  (println "  actual:" (pr-str (:actual m))))
+  (println "\nFAIL" (:fn-name m))
+  (println (:message m))
+  (println (ex-venice-stacktrace (:ex m))))
 
 (defmethod report :error [m]
   (inc-report-counter :error)
-  (println "\nERROR in" (testing-vars-str m))
-  (when-let [message (:message m)] (println message))
-  (println "expected:" (pr-str (:expected m)))
-  (print "  actual: ")
-  (let [actual (:actual m)]
-    (if (instance? :VncException actual)
-      (println (ex-venice-stacktrace actual))
-      (prn actual))))
+  (println "\nERROR in" (:fn-name m))
+  (println (:message m))
+  (println (ex-venice-stacktrace (:ex m))))
 
 (defmethod report :summary [m]
   (println "\nRan" (:test m) "tests containing"
@@ -232,7 +223,7 @@
   (println (:fail m) "failures," (:error m) "errors."))
 
 (defmethod report :begin-test-ns [m]
-  (println "\nTesting" (namespace (:ns m))))
+  (println "\nTesting namespace" (str "'" (namespace (:ns m)))))
 
 ;; Ignore these message types:
 (defmethod report :end-test-ns [m])
