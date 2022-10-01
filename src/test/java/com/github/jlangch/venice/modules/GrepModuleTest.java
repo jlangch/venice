@@ -21,30 +21,32 @@
  */
 package com.github.jlangch.venice.modules;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+
+import java.util.Map;
+
 import org.junit.jupiter.api.Test;
 
 import com.github.jlangch.venice.Venice;
-import com.github.jlangch.venice.VncException;
 import com.github.jlangch.venice.impl.util.io.ClassPathResource;
 
 
 public class GrepModuleTest {
 
-    @Test
+    @SuppressWarnings("unchecked")
+	@Test
     public void test_grep() {
         final Venice venice = new Venice();
 
-        try {
-            venice.eval("grep-test.venice", loadScript("grep-test.venice"));
-        }
-        catch(VncException ex) {
-            System.err.println(ex.getMessage());
-            System.err.println(ex.getCallStackAsString("  "));
-            throw new RuntimeException(ex);
-        }
-        catch(Exception ex) {
-            throw new RuntimeException(ex);
-        }
+        final Map<Object,Object> result = (Map<Object,Object>)venice.eval(
+        										"grep-test.venice",
+        										loadScript("grep-test.venice"));
+
+        assertEquals( 0, (long)result.get("fail"));
+        assertEquals( 2, (long)result.get("test"));
+        assertEquals( 2, (long)result.get("pass"));
+        assertEquals(25, (long)result.get("assert"));
+        assertEquals( 0, (long)result.get("error"));
     }
 
 

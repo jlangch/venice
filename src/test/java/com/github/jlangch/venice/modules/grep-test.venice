@@ -24,6 +24,10 @@
 
 (do
   (load-module :grep)
+  (load-module :test)
+
+  (ns grep-test)
+
 
   (def content1
         """
@@ -89,7 +93,7 @@
   ;; ===========================================================================
   ;; grep
 
-  (defn test-grep []
+  (test/deftest test-grep []
     ;; grep machine readable ---------------------------------------------------
     (def r1 (grep/grep dir "step.log.*" ".*AAA.*" :print false))
     (assert-eq 3 (count r1))
@@ -133,7 +137,7 @@
   ;; ===========================================================================
   ;; grep-zip
 
-  (defn test-grep-zip []
+  (test/deftest test-grep-zip []
     ;; grep-zip machine readable -----------------------------------------------
     (def r1 (grep/grep-zip dir
                            "step.*.zip"
@@ -206,5 +210,4 @@
 
 
   ;; run tests
-  (test-grep)
-  (test-grep-zip))
+  (test/run-tests 'grep-test))

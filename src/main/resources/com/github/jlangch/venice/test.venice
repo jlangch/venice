@@ -186,6 +186,10 @@
 ;; I M P L E M E N T A T I O N
 ;; -----------------------------------------------------------------------------
 
+(defn test-var? [v]
+  (and (some? v)
+       (some? (:test-fn (meta v)))))
+
 (defn
   ^{ :arglists '("(test-ns ns)" )
      :doc "Calls `test-vars` with all vars in the namespace ns" }
@@ -195,7 +199,7 @@
   (binding [*report-counters*  {:test 0, :pass 0, :fail 0, :error 0, :assert 0}]
     (let [ns-sym (symbol (namespace ns°))]
       (do-report {:type :begin-test-ns, :ns ns-sym})
-      (run! test-var (ns-list ns-sym))
+      (run! test-var (filter test-var? (ns-list ns-sym)))
       (do-report {:type :end-test-ns, :ns ns-sym})
       *report-counters*)))
 
