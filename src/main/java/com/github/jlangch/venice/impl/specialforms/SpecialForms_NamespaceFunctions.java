@@ -37,6 +37,7 @@ import com.github.jlangch.venice.impl.namespaces.NamespaceRegistry;
 import com.github.jlangch.venice.impl.namespaces.Namespaces;
 import com.github.jlangch.venice.impl.specialforms.util.SpecialFormsContext;
 import com.github.jlangch.venice.impl.types.INamespaceAware;
+import com.github.jlangch.venice.impl.types.VncBoolean;
 import com.github.jlangch.venice.impl.types.VncSpecialForm;
 import com.github.jlangch.venice.impl.types.VncString;
 import com.github.jlangch.venice.impl.types.VncSymbol;
@@ -71,7 +72,7 @@ public class SpecialForms_NamespaceFunctions {
                         "  (def foo 5)                     \n" +
                         "  (println xxx/foo foo yyy/foo))    ")
                     .seeAlso(
-                        "*ns*", "ns-unmap", "ns-remove",
+                        "*ns*", "ns?", "ns-unmap", "ns-remove",
                         "ns-list", "ns-alias", "namespace", "var-ns")
                     .build()
         ) {
@@ -268,7 +269,6 @@ public class SpecialForms_NamespaceFunctions {
             private static final long serialVersionUID = -1848883965231344442L;
         };
 
-
     public static VncSpecialForm namespace =
         new VncSpecialForm(
                 "namespace",
@@ -325,6 +325,56 @@ public class SpecialForms_NamespaceFunctions {
             private static final long serialVersionUID = -1848883965231344442L;
         };
 
+    public static VncSpecialForm ns_Q =
+        new VncSpecialForm(
+                "ns?",
+                VncSpecialForm
+                    .meta()
+                    .arglists("(ns? n)")
+                    .doc(
+                    	"Returns true if n is a namespace that has been defined " +
+                    	"with `(ns n)` else false.")
+                    .examples(
+                        "(do           \n" +
+                        "  (ns foo)    \n" +
+                        "  (ns? foo))  ")
+                    .seeAlso("ns")
+                    .build()
+        ) {
+            @Override
+            public VncVal apply(
+                    final VncVal specialFormMeta,
+                    final VncList args,
+                    final Env env,
+                    final SpecialFormsContext ctx
+            ) {
+                specialFormCallValidation(ctx, "ns?");
+                assertArity("ns?", FnType.SpecialForm, args, 1);
+
+                final VncVal name = args.first();
+                final VncSymbol ns = Types.isVncSymbol(name)
+                                        ? (VncSymbol)name
+                                        : (VncSymbol)CoreFunctions.symbol.apply(
+                                                        VncList.of(ctx.getEvaluator().evaluate(name, env, false)));
+
+                if (ns.hasNamespace() && !"core".equals(ns.getNamespace())) {
+                    throw new VncException(String.format(
+                            "A namespace '%s' must not have itself a namespace! However you can use '%s'.",
+                            ns.getQualifiedName(),
+                            ns.getNamespace() + "." + ns.getSimpleName()));
+                }
+                else {
+                    // clean
+                    final VncSymbol ns_ = new VncSymbol(ns.getSimpleName());
+
+                    final Namespace n = ctx.getNsRegistry().get(ns_);
+                    return VncBoolean.of(n != null);
+                }
+            }
+
+            private static final long serialVersionUID = -1848883965231344442L;
+        };
+
 
 
 
@@ -338,6 +388,7 @@ public class SpecialForms_NamespaceFunctions {
                     .add(ns_list)
                     .add(ns_remove)
                     .add(ns_unmap)
+                    .add(ns_Q)
                     .add(namespace)
                     .toMap();
 }

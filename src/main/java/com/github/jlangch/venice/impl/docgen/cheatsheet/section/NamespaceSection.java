@@ -52,6 +52,10 @@ public class NamespaceSection implements ISectionBuilder {
         remove.addItem(diBuilder.getDocItem("ns-unmap"));
         remove.addItem(diBuilder.getDocItem("ns-remove"));
 
+        final DocSection test = new DocSection("Test", "namespace.test");
+        all.addSection(test);
+        test.addItem(diBuilder.getDocItem("ns?"));
+
         final DocSection util = new DocSection("Util", "namespace.util");
         all.addSection(util);
         util.addItem(diBuilder.getDocItem("ns-list"));
