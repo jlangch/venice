@@ -23,6 +23,7 @@ package com.github.jlangch.venice.impl.namespaces;
 
 import java.io.Serializable;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.atomic.AtomicReference;
 
 import com.github.jlangch.venice.impl.javainterop.JavaImports;
 import com.github.jlangch.venice.impl.types.VncSymbol;
@@ -85,6 +86,14 @@ public class Namespace implements Serializable {
         return new Namespace(ns, javaImports, aliases);
     }
 
+    public VncHashMap getMeta() {
+        return metaRef.get();
+    }
+
+    public void setMeta(final VncHashMap meta) {
+        metaRef.set(meta == null ? VncHashMap.EMPTY : meta);
+    }
+
     @Override
     public String toString() {
         return ns.getName();
@@ -96,4 +105,5 @@ public class Namespace implements Serializable {
     private final VncSymbol ns;
     private final JavaImports javaImports;
     private final ConcurrentHashMap<String,String> aliases = new ConcurrentHashMap<>();
+    private final AtomicReference<VncHashMap> metaRef = new AtomicReference<>(VncHashMap.EMPTY);
 }

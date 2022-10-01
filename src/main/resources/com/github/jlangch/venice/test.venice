@@ -243,6 +243,40 @@
        (zero? (:error summary 0))))
 
 
+;; fixtures --------------------------------------------------------------------
+
+;; Adds elements in coll to the current namespace metadata as the
+;; value of key.
+(defn- add-ns-meta [key coll]
+  nil)
+  ;(alter-meta! *ns* assoc key coll))
+
+;; Wrap test runs in a fixture function to perform setup and
+;; teardown. Using a fixture-type of :each wraps every test
+;; individually, while :once wraps the whole run in a single function
+(defmulti use-fixtures
+  (fn [fixture-type & args] fixture-type))
+
+(defmethod use-fixtures :each [fixture-type & args]
+  (add-ns-meta :each-fixtures args))
+
+(defmethod use-fixtures :once [fixture-type & args]
+  (add-ns-meta :once-fixtures args))
+
+;; The default, empty, fixture function.  Just calls its argument.
+(defn- default-fixture [f] (f))
+
+;; Composes two fixture functions, creating a new fixture function
+;; that combines their behavior.
+(defn compose-fixtures [f1 f2]
+  (fn [g] (f1 (fn [] (f2 g)))))
+
+;; Composes a collection of fixtures, in order. Always returns a valid
+;; fixture function, even if the collection is empty.
+(defn join-fixtures [fixtures]
+  (reduce compose-fixtures default-fixture fixtures))
+
+
 ;; reporting -------------------------------------------------------------------
 
 (defn do-report [m]
