@@ -24,6 +24,7 @@ package com.github.jlangch.venice.impl.specialforms;
 import static com.github.jlangch.venice.impl.specialforms.util.SpecialFormsUtil.specialFormCallValidation;
 import static com.github.jlangch.venice.impl.types.Constants.Nil;
 import static com.github.jlangch.venice.impl.util.ArityExceptions.assertArity;
+import static com.github.jlangch.venice.impl.util.ArityExceptions.assertMinArity;
 
 import java.util.Map;
 import java.util.Objects;
@@ -38,10 +39,12 @@ import com.github.jlangch.venice.impl.namespaces.Namespaces;
 import com.github.jlangch.venice.impl.specialforms.util.SpecialFormsContext;
 import com.github.jlangch.venice.impl.types.INamespaceAware;
 import com.github.jlangch.venice.impl.types.VncBoolean;
+import com.github.jlangch.venice.impl.types.VncFunction;
 import com.github.jlangch.venice.impl.types.VncSpecialForm;
 import com.github.jlangch.venice.impl.types.VncString;
 import com.github.jlangch.venice.impl.types.VncSymbol;
 import com.github.jlangch.venice.impl.types.VncVal;
+import com.github.jlangch.venice.impl.types.collections.VncHashMap;
 import com.github.jlangch.venice.impl.types.collections.VncList;
 import com.github.jlangch.venice.impl.types.util.Coerce;
 import com.github.jlangch.venice.impl.types.util.Types;
@@ -73,7 +76,8 @@ public class SpecialForms_NamespaceFunctions {
                         "  (println xxx/foo foo yyy/foo))    ")
                     .seeAlso(
                         "*ns*", "ns?", "ns-unmap", "ns-remove",
-                        "ns-list", "ns-alias", "namespace", "var-ns")
+                        "ns-list", "ns-alias", "ns-meta",
+                        "namespace", "var-ns")
                     .build()
         ) {
             @Override
@@ -276,10 +280,10 @@ public class SpecialForms_NamespaceFunctions {
                     .meta()
                     .arglists("(namespace x)")
                     .doc(
-                    	"Returns the namespace string of a symbol, keyword, or function. " +
+                        "Returns the namespace string of a symbol, keyword, or function. " +
                         "If x is a registered namespace returns x. \n\n" +
-                    	"Throws an exception if x does not support namespaces like " +
-                    	"`(namespace 2)`.")
+                        "Throws an exception if x does not support namespaces like " +
+                        "`(namespace 2)`.")
                     .examples(
                         "(namespace 'user/foo)",
                         "(namespace :user/foo)",
@@ -332,8 +336,8 @@ public class SpecialForms_NamespaceFunctions {
                     .meta()
                     .arglists("(ns? n)")
                     .doc(
-                    	"Returns true if n is a namespace that has been defined " +
-                    	"with `(ns n)` else false.")
+                        "Returns true if n is an existing namespace that has been defined " +
+                        "with `(ns n)` else false.")
                     .examples(
                         "(do           \n" +
                         "  (ns foo)    \n" +
@@ -375,6 +379,190 @@ public class SpecialForms_NamespaceFunctions {
             private static final long serialVersionUID = -1848883965231344442L;
         };
 
+    public static VncSpecialForm ns_meta =
+        new VncSpecialForm(
+                "ns-meta",
+                VncSpecialForm
+                    .meta()
+                    .arglists("(ns-meta n)")
+                    .doc(
+                        "Returns the meta data of the namespace n or nil if n is " +
+                        "an existing namespace")
+                    .examples(
+                        "(do               \n" +
+                        "  (ns foo)        \n" +
+                        "  (ns-meta foo))  ")
+                    .seeAlso("alter-ns-meta!", "reset-ns-meta!", "ns")
+                    .build()
+        ) {
+            @Override
+            public VncVal apply(
+                    final VncVal specialFormMeta,
+                    final VncList args,
+                    final Env env,
+                    final SpecialFormsContext ctx
+            ) {
+                specialFormCallValidation(ctx, "ns-meta");
+                assertArity("ns-meta", FnType.SpecialForm, args, 1);
+
+                final VncVal name = args.first();
+                final VncSymbol ns = Types.isVncSymbol(name)
+                                        ? (VncSymbol)name
+                                        : (VncSymbol)CoreFunctions.symbol.apply(
+                                                        VncList.of(ctx.getEvaluator().evaluate(name, env, false)));
+
+                if (ns.hasNamespace() && !"core".equals(ns.getNamespace())) {
+                    throw new VncException(String.format(
+                            "A namespace '%s' must not have itself a namespace! However you can use '%s'.",
+                            ns.getQualifiedName(),
+                            ns.getNamespace() + "." + ns.getSimpleName()));
+                }
+                else {
+                    // clean
+                    final VncSymbol ns_ = new VncSymbol(ns.getSimpleName());
+
+                    final Namespace n = ctx.getNsRegistry().get(ns_);
+                    return n == null ? Nil : n.getMeta();
+                }
+            }
+
+            private static final long serialVersionUID = -1848883965231344442L;
+        };
+
+    public static VncSpecialForm reset_ns_meta_BANG =
+        new VncSpecialForm(
+                "reset-ns-meta!",
+                VncSpecialForm
+                    .meta()
+                    .arglists("(reset-ns-meta! n datamap)")
+                    .doc(
+                        "Resets the metadata for a namespace")
+                    .examples(
+                        "(do                         \n" +
+                        "  (ns foo)                  \n" +
+                        "  (reset-ns-meta! foo {}))  ")
+                    .seeAlso("ns-meta", "alter-ns-meta!", "ns")
+                    .build()
+        ) {
+            @Override
+            public VncVal apply(
+                    final VncVal specialFormMeta,
+                    final VncList args,
+                    final Env env,
+                    final SpecialFormsContext ctx
+            ) {
+                specialFormCallValidation(ctx, "reset-ns-meta!");
+                assertArity("reset-ns-meta!", FnType.SpecialForm, args, 2);
+
+                final VncVal name = args.first();
+                final VncHashMap meta = Coerce.toVncHashMap(args.second());
+
+                final VncSymbol ns = Types.isVncSymbol(name)
+                                        ? (VncSymbol)name
+                                        : (VncSymbol)CoreFunctions.symbol.apply(
+                                                        VncList.of(ctx.getEvaluator().evaluate(name, env, false)));
+
+                if (ns.hasNamespace() && !"core".equals(ns.getNamespace())) {
+                    throw new VncException(String.format(
+                            "A namespace '%s' must not have itself a namespace! However you can use '%s'.",
+                            ns.getQualifiedName(),
+                            ns.getNamespace() + "." + ns.getSimpleName()));
+                }
+                else {
+                    // clean
+                    final VncSymbol ns_ = new VncSymbol(ns.getSimpleName());
+
+                    final Namespace n = ctx.getNsRegistry().get(ns_);
+                    if (n != null) {
+                        n.setMeta(meta);
+                        return meta;
+                    }
+                    else {
+                        throw new VncException(String.format(
+                                "The namespace '%s does not exist. It has not been create with (ns %s)!",
+                                ns.getSimpleName(),
+                                ns.getSimpleName()));
+                    }
+                }
+            }
+
+            private static final long serialVersionUID = -1848883965231344442L;
+        };
+
+    public static VncSpecialForm alter_ns_meta_BANG =
+        new VncSpecialForm(
+                "alter-ns-meta!",
+                VncSpecialForm
+                    .meta()
+                    .arglists("(alter-ns-meta! n f & args)")
+                    .doc(
+                        "Alters the metadata for a namespace. f must be free of side-effects.")
+                    .examples(
+                        "(do                                 \n" +
+                        "  (ns foo)                          \n" +
+                        "  (alter-ns-meta! foo assoc :a 1))  ")
+                    .seeAlso("ns-meta", "reset-ns-meta!", "ns")
+                    .build()
+        ) {
+            @Override
+            public VncVal apply(
+                    final VncVal specialFormMeta,
+                    final VncList args,
+                    final Env env,
+                    final SpecialFormsContext ctx
+            ) {
+                specialFormCallValidation(ctx, "alter-ns-meta!");
+                assertMinArity("alter-ns-meta!", FnType.SpecialForm, args, 2);
+
+                final VncVal name = args.first();
+                final VncFunction f = Coerce.toVncFunction(ctx.getEvaluator().evaluate(args.second(), env, false));
+                final VncList fArgs = (VncList)ctx.getValuesEvaluator().evaluate_values(args.slice(2), env);
+
+                final VncSymbol ns = Types.isVncSymbol(name)
+                                        ? (VncSymbol)name
+                                        : (VncSymbol)CoreFunctions.symbol.apply(
+                                                        VncList.of(ctx.getEvaluator().evaluate(name, env, false)));
+
+                if (ns.hasNamespace() && !"core".equals(ns.getNamespace())) {
+                    throw new VncException(String.format(
+                            "A namespace '%s' must not have itself a namespace! However you can use '%s'.",
+                            ns.getQualifiedName(),
+                            ns.getNamespace() + "." + ns.getSimpleName()));
+                }
+                else {
+                    // clean
+                    final VncSymbol ns_ = new VncSymbol(ns.getSimpleName());
+
+                    final Namespace n = ctx.getNsRegistry().get(ns_);
+                    if (n != null) {
+                        final VncHashMap meta = n.getMeta();
+
+                        final VncList fnArgs = VncList.of(meta).addAllAtEnd(fArgs);
+
+                        final VncVal newMeta = f.apply(fnArgs);
+                        if (Types.isVncHashMap(newMeta)) {
+                            n.setMeta((VncHashMap)newMeta);
+                               return newMeta;
+                        }
+                        else {
+                            throw new VncException(String.format(
+                                    "The mapping function f that alters a namespace's meta data must " +
+                                    "return hash map instead of a value of type %s!",
+                                    Types.getType(newMeta)));
+                        }
+                    }
+                    else {
+                        throw new VncException(String.format(
+                                "The namespace '%s does not exist. It has not been create with (ns %s)!",
+                                ns.getSimpleName(),
+                                ns.getSimpleName()));
+                    }
+                }
+            }
+
+            private static final long serialVersionUID = -1848883965231344442L;
+        };
+
 
 
 
@@ -388,6 +576,9 @@ public class SpecialForms_NamespaceFunctions {
                     .add(ns_list)
                     .add(ns_remove)
                     .add(ns_unmap)
+                    .add(ns_meta)
+                    .add(alter_ns_meta_BANG)
+                    .add(reset_ns_meta_BANG)
                     .add(ns_Q)
                     .add(namespace)
                     .toMap();

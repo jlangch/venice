@@ -22,6 +22,8 @@
 package com.github.jlangch.venice.impl.specialforms;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import org.junit.jupiter.api.Test;
 
@@ -29,7 +31,6 @@ import com.github.jlangch.venice.Venice;
 
 
 public class SpecialFormsTest_namespace {
-
 
     @Test
     public void test_namespace() {
@@ -91,5 +92,75 @@ public class SpecialFormsTest_namespace {
 
         assertEquals("xxx", venice.eval(script));
     }
+
+    @Test
+    public void test_nsQ() {
+        final Venice venice = new Venice();
+
+        final String script =
+                "(do             \n" +
+                "   (ns foo)     \n" +
+                "   (ns? foo)) ";
+
+        assertTrue((Boolean)venice.eval(script));
+
+        assertTrue((Boolean)venice.eval("(ns? user)"));
+        assertTrue((Boolean)venice.eval("(ns? 'user)"));
+
+        assertFalse((Boolean)venice.eval("(ns? unknown_)"));
+        assertFalse((Boolean)venice.eval("(ns? 'unknown_)"));
+    }
+
+    @Test
+    public void test_ns_meta() {
+        final Venice venice = new Venice();
+
+        final String script =
+                "(do                        \n" +
+                "   (ns foo)                \n" +
+                "   (pr-str (ns-meta foo))) ";
+
+        assertEquals("{}", venice.eval(script));
+    }
+
+    @Test
+    public void test_reset_ns_meta() {
+        final Venice venice = new Venice();
+
+        final String script =
+                "(do                             \n" +
+                "   (ns foo)                     \n" +
+                "   (reset-ns-meta! foo {:a 1})  \n" +
+                "   (pr-str (ns-meta foo))) ";
+
+        assertEquals("{:a 1}", venice.eval(script));
+    }
+
+    @Test
+    public void test_alter_ns_meta_1() {
+        final Venice venice = new Venice();
+
+        final String script =
+                "(do                                 \n" +
+                "   (ns foo)                         \n" +
+                "   (alter-ns-meta! foo assoc :a 1)  \n" +
+                "   (pr-str (ns-meta foo))) ";
+
+        assertEquals("{:a 1}", venice.eval(script));
+   }
+
+    @Test
+    public void test_alter_ns_meta_2() {
+        final Venice venice = new Venice();
+
+        final String script =
+                "(do                                 \n" +
+                "   (ns foo)                         \n" +
+                "   (alter-ns-meta! foo assoc :a 1)  \n" +
+                "   (alter-ns-meta! foo assoc :b 2)  \n" +
+                "   (pr-str (ns-meta foo))) ";
+
+        assertEquals("{:a 1 :b 2}", venice.eval(script));
+   }
 
 }
