@@ -54,6 +54,7 @@ import com.github.jlangch.venice.impl.docgen.cheatsheet.modules.ModuleMavenSecti
 import com.github.jlangch.venice.impl.docgen.cheatsheet.modules.ModuleParsifalSection;
 import com.github.jlangch.venice.impl.docgen.cheatsheet.modules.ModuleSemverSection;
 import com.github.jlangch.venice.impl.docgen.cheatsheet.modules.ModuleShellSection;
+import com.github.jlangch.venice.impl.docgen.cheatsheet.modules.ModuleTestSection;
 import com.github.jlangch.venice.impl.docgen.cheatsheet.modules.ModuleTracingSection;
 import com.github.jlangch.venice.impl.docgen.cheatsheet.modules.ModuleXmlSection;
 import com.github.jlangch.venice.impl.docgen.cheatsheet.section.ArraySection;
@@ -91,6 +92,7 @@ import com.github.jlangch.venice.impl.env.Env;
 import com.github.jlangch.venice.impl.repl.ReplFunctions;
 import com.github.jlangch.venice.impl.util.StringUtil;
 import com.github.jlangch.venice.impl.util.io.ClassPathResource;
+import com.github.jlangch.venice.impl.util.io.IOStreamUtil;
 import com.github.jlangch.venice.impl.util.markdown.Markdown;
 import com.github.jlangch.venice.impl.util.markdown.renderer.html.HtmlRenderer;
 import com.github.jlangch.venice.javainterop.AcceptAllInterceptor;
@@ -108,16 +110,17 @@ public class DocGenerator {
                         "trace",  "ansi",     "maven",     "kira",
                         "java",   "semver",   "excel",     "hexdump",
                         "shell",  "geoip",    "benchmark", "component",
-                        "config", "parsifal", "grep"));
+                        "config", "parsifal", "grep",      "test"));
 
         final Env docEnv = new VeniceInterpreter(new AcceptAllInterceptor())
                             .createEnv(
                                 preloadedModules,
                                 false,
                                 false,
-                                RunMode.DOCGEN)
-                            .setStdoutPrintStream(null)
-                            .setStderrPrintStream(null);
+                                RunMode.DOCGEN,
+                                IOStreamUtil.nullPrintStream(),
+                                IOStreamUtil.nullPrintStream(),
+                                null);
 
         // make REPL specific functions available (e.g: 'repl/info')
         final Env env = ReplFunctions.register(docEnv, null, null);
@@ -297,6 +300,7 @@ public class DocGenerator {
         extmod.addSection(new DocSection("Ansi", "modules.ansi"));
         extmod.addSection(new DocSection("Gradle", "modules.gradle"));
         extmod.addSection(new DocSection("Maven", "modules.maven"));
+        extmod.addSection(new DocSection("Test", "modules.test"));
         extmod.addSection(new DocSection("Tracing", "modules.tracing"));
         extmod.addSection(new DocSection("Benchmark", "modules.benchmark"));
         extmod.addSection(new DocSection("App", "modules.app"));
@@ -387,6 +391,7 @@ public class DocGenerator {
                 new ModuleSemverSection(diBuilder).section(),
                 new ModuleGeoipSection(diBuilder).section(),
                 new ModuleExcelSection(diBuilder).section(),
+                new ModuleTestSection(diBuilder).section(),
                 new ModuleConfigSection(diBuilder).section(),
                 new ModuleComponentSection(diBuilder).section(),
                 new ModuleAppSection(diBuilder).section(),

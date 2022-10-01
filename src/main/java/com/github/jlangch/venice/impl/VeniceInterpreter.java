@@ -27,6 +27,8 @@ import static com.github.jlangch.venice.impl.types.VncFunction.createAnonymousFu
 import static com.github.jlangch.venice.impl.util.ArityExceptions.assertArity;
 import static com.github.jlangch.venice.impl.util.ArityExceptions.assertMinArity;
 
+import java.io.PrintStream;
+import java.io.Reader;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -54,7 +56,6 @@ import com.github.jlangch.venice.impl.modules.Modules;
 import com.github.jlangch.venice.impl.namespaces.Namespace;
 import com.github.jlangch.venice.impl.namespaces.NamespaceRegistry;
 import com.github.jlangch.venice.impl.namespaces.Namespaces;
-import com.github.jlangch.venice.impl.reader.Reader;
 import com.github.jlangch.venice.impl.specialforms.SpecialForms_LoadCodeMacros;
 import com.github.jlangch.venice.impl.specialforms.SpecialForms_OtherFunctions;
 import com.github.jlangch.venice.impl.specialforms.util.SpecialFormsContext;
@@ -205,12 +206,12 @@ public class VeniceInterpreter implements IVeniceInterpreter, Serializable  {
     public VncVal READ(final String script, final String filename) {
         if (meterRegistry.enabled) {
             final long nanos = System.nanoTime();
-            final VncVal val = Reader.read_str(script, filename);
+            final VncVal val = com.github.jlangch.venice.impl.reader.Reader.read_str(script, filename);
             meterRegistry.record("venice.read", System.nanoTime() - nanos);
             return val;
         }
         else {
-            return Reader.read_str(script, filename);
+            return com.github.jlangch.venice.impl.reader.Reader.read_str(script, filename);
         }
     }
 
@@ -259,7 +260,14 @@ public class VeniceInterpreter implements IVeniceInterpreter, Serializable  {
             final boolean ansiTerminal,
             final RunMode runMode
     ) {
-        return createEnv(null, macroexpandOnLoad, ansiTerminal, runMode);
+        return createEnv(
+                null,
+                macroexpandOnLoad,
+                ansiTerminal,
+                runMode,
+                null,
+                null,
+                null);
     }
 
     @Override
@@ -268,6 +276,26 @@ public class VeniceInterpreter implements IVeniceInterpreter, Serializable  {
             final boolean macroExpandOnLoad,
             final boolean ansiTerminal,
             final RunMode runMode
+    ) {
+        return createEnv(
+                preloadedExtensionModules,
+                macroExpandOnLoad,
+                ansiTerminal,
+                runMode,
+                null,
+                null,
+                null);
+    }
+
+    @Override
+    public Env createEnv(
+            final List<String> preloadedExtensionModules,
+            final boolean macroExpandOnLoad,
+            final boolean ansiTerminal,
+            final RunMode runMode,
+            final PrintStream stdOut,
+            final PrintStream stdErr,
+            final Reader stdIn
     ) {
         final CodeLoader codeLoader = new CodeLoader();
 
@@ -312,6 +340,16 @@ public class VeniceInterpreter implements IVeniceInterpreter, Serializable  {
         final VncMutableSet loadedModules = new VncMutableSet();
         env.setGlobal(new Var(new VncSymbol("*loaded-modules*"), loadedModules, true));
         env.setGlobal(new Var(new VncSymbol("*loaded-files*"), new VncMutableSet(), true));
+
+        if (stdOut != null) {
+            env.setStdoutPrintStream(stdOut);
+        }
+        if (stdErr != null) {
+            env.setStderrPrintStream(stdErr);
+        }
+        if (stdIn != null) {
+            env.setStdinReader(stdIn);
+        }
 
         // init namespaces
         initNS();

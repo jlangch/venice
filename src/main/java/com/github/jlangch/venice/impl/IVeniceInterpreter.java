@@ -21,6 +21,8 @@
  */
 package com.github.jlangch.venice.impl;
 
+import java.io.PrintStream;
+import java.io.Reader;
 import java.util.List;
 
 import com.github.jlangch.venice.impl.env.Env;
@@ -65,6 +67,15 @@ public interface IVeniceInterpreter {
             boolean macroExpandOnLoad,
             boolean ansiTerminal,
             RunMode runMode);
+
+    Env createEnv(
+            List<String> preloadedExtensionModules,
+            boolean macroExpandOnLoad,
+            boolean ansiTerminal,
+            RunMode runMode,
+            PrintStream stdOut,
+            PrintStream stdErr,
+            Reader stdIn);
 
     List<String> getAvailableModules();
 

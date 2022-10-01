@@ -93,9 +93,27 @@
           """
      :examples '(
           """
-          (deftest plus []
-            (assert-eq 3 (+ 1 2)))
-          """) }
+          (do
+            (load-module :test)
+
+            (ns foo)
+
+            (defn sum [x y] (+ x y))
+            (defn mul [x y] (* x y))
+
+            (ns foo-test)
+
+            (test/deftest sum-test []
+              (assert-eq 0 (foo/sum 0 0))
+              (assert-eq 3 (foo/sum 1 2)))
+
+            (test/deftest mul-test []
+              (assert-eq 6 (foo/mul 2 3)))
+
+            (ns bar)
+            (test/run-tests 'foo-test))
+          """)
+     :see-also '("test/run-tests", "test/run-test-var" ) }
 
   deftest [test-name & body]
 
@@ -109,7 +127,19 @@
      :doc """
           Runs all tests in the given namespaces; prints results.
           Returns a map summarizing test results.
-          """ }
+          """
+     :examples '(
+          """
+          (do
+            (ns foo)
+            (load-module :test)
+
+            (test/deftest plus-test []
+              (assert-eq 3 (+ 1 2)))
+
+            (test/run-tests 'foo))
+          """)
+     :see-also '("test/deftest", "test/run-test-var" ) }
 
   run-tests [& namespaces]
 
@@ -125,7 +155,18 @@
      :doc """
           Runs a single test; prints results. Returns a map summarizing the test
           results.
-          """ }
+          """
+     :examples '(
+          """
+          (do
+            (load-module :test)
+
+            (test/deftest plus-test []
+              (assert-eq 3 (+ 1 2)))
+
+            (test/run-test-var plus-test))
+          """)
+     :see-also '("test/deftest", "test/run-test-var" ) }
 
   run-test-var [v]
 
