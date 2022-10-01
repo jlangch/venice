@@ -72,8 +72,7 @@
 
 
 (defmacro
-  ^{ :arglists '(
-          "(deftest name & body)" )
+  ^{ :arglists '("(deftest name & body)" )
      :doc """
           Defines a test function with no arguments.
 
@@ -95,8 +94,7 @@
 
 
 (defn
-  ^{ :arglists '(
-          "(test-var v)" )
+  ^{ :arglists '("(test-var v)" )
      :doc """
           If v has a function in its :test metadata, calls that function,
           with *testing-vars* bound to (conj *testing-vars* v).
@@ -104,7 +102,7 @@
 
   test-var [v]
 
-  (when-let [test-fn (:test-fn (meta v))]
+  (if-let [test-fn (:test-fn (meta v))]
     (let [test-name (:test-fn-name (meta v))]
       (binding [*testing-vars* (conj *testing-vars* v)]
         (do-report {:type :begin-test-var, :fn-name test-name, :var v})
@@ -120,18 +118,8 @@
                            :fn-name test-name
                            :message "Uncaught exception, not in assertion."
                            :ex e})))
-        (do-report {:type :end-test-var, :fn-name test-name, :var v})))))
-
-
-(defn
-  ^{ :arglists '("(test-vars & vars)" )
-     :doc "Calls test-vars on every test var in the list of vars." }
-
-  test-vars [& vars]
-
-  (->> vars
-       (filter #(some? (:test-fn (meta %))))
-       (docoll test-var)))
+        (do-report {:type :end-test-var, :fn-name test-name, :var v})))
+    (println *err* "Unable to resolve" (qualified-name v) "to a test function!")))
 
 
 (defn
@@ -143,14 +131,13 @@
   (binding [*report-counters*  {:test 0, :pass 0, :fail 0, :error 0}]
     (let [ns-sym (symbol (namespace ns°))]
       (do-report {:type :begin-test-ns, :ns ns-sym})
-      (apply test-vars (ns-list ns-sym))
+      (run! test-var (ns-list ns-sym))
       (do-report {:type :end-test-ns, :ns ns-sym})
       *report-counters*)))
 
 
 (defn
-  ^{ :arglists '(
-          "(run-tests & namespaces)" )
+  ^{ :arglists '("(run-tests & namespaces)" )
      :doc """
           Runs all tests in the given namespaces; prints results.
           Returns a map summarizing test results.
@@ -166,11 +153,10 @@
 
 
 (defn
-  ^{ :arglists '(
-          "(run-test-var v)")
+  ^{ :arglists '("(run-test-var v)")
      :doc """
-          Runs a single test; prints results.
-          Returns a map summarizing test results.
+          Runs a single test; prints results. Returns a map summarizing the test
+          results.
           """ }
 
   run-test-var [v]
@@ -179,7 +165,7 @@
     (binding [*report-counters*  {:test 0, :pass 0, :fail 0, :error 0}]
       (let [ns-sym (symbol (namespace v))]
         (do-report {:type :begin-test-ns, :ns ns-sym})
-        (test-vars v)
+        (test-var v)
         (do-report {:type :end-test-ns, :ns ns-sym})
         (let [summary (assoc *report-counters* :type :summary)]
           (do-report summary)
@@ -187,8 +173,7 @@
 
 
 (defn
-  ^{ :arglists '(
-          "(successful? summary)" )
+  ^{ :arglists '("(successful? summary)" )
      :doc """
           Returns true if the given test summary indicates all tests
           were successful, false otherwise.

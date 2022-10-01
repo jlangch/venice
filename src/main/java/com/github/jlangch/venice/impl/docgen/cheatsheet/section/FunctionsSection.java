@@ -71,6 +71,7 @@ public class FunctionsSection implements ISectionBuilder {
         misc.addItem(diBuilder.getDocItem("nil?"));
         misc.addItem(diBuilder.getDocItem("some?"));
         misc.addItem(diBuilder.getDocItem("name"));
+        misc.addItem(diBuilder.getDocItem("qualified-name"));
         misc.addItem(diBuilder.getDocItem("namespace"));
         misc.addItem(diBuilder.getDocItem("fn-name"));
         misc.addItem(diBuilder.getDocItem("callstack"));

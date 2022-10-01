@@ -9062,11 +9062,11 @@ public class CoreFunctions {
                     .arglists("(name x)")
                     .doc("Returns the name String of a string, symbol, keyword, or function")
                     .examples(
-                        "(name :x)",
+                        "(name :user/x)",
                         "(name 'x)",
                         "(name \"x\")",
                         "(name str/digit?)")
-                    .seeAlso("namespace", "fn-name")
+                    .seeAlso("qualified-name", "namespace", "fn-name")
                     .build()
         ) {
             @Override
@@ -9093,6 +9093,52 @@ public class CoreFunctions {
                 else {
                     throw new VncException(String.format(
                             "Function 'name' does not allow %s as parameter",
+                            Types.getType(arg)));
+                }
+            }
+
+            private static final long serialVersionUID = -1848883965231344442L;
+        };
+
+    public static VncFunction qualified_name =
+        new VncFunction(
+                "qualified-name",
+                VncFunction
+                    .meta()
+                    .arglists("(name x)")
+                    .doc("Returns the qualified name String of a string, symbol, keyword, or function")
+                    .examples(
+                        "(qualified-name :user/x)",
+                        "(qualified-name 'x)",
+                        "(qualified-name \"x\")",
+                        "(qualified-name str/digit?)")
+                    .seeAlso("name", "namespace", "fn-name")
+                    .build()
+        ) {
+            @Override
+            public VncVal apply(final VncList args) {
+                ArityExceptions.assertArity(this, args, 1);
+
+                final VncVal arg = args.first();
+
+                if (arg == Nil) {
+                    return Nil;
+                }
+                else if (Types.isVncKeyword(arg)) {
+                    return new VncString(((VncKeyword)arg).getQualifiedName());
+                }
+                else if (Types.isVncSymbol(arg)) {
+                    return new VncString(((VncSymbol)arg).getQualifiedName());
+                }
+                else if (Types.isVncString(arg)) {
+                    return arg;
+                }
+                else if (Types.isVncFunction(arg) || Types.isVncMacro(arg)) {
+                    return new VncString(((VncFunction)arg).getQualifiedName());
+                }
+                else {
+                    throw new VncException(String.format(
+                            "Function 'qualified-name' does not allow %s as parameter",
                             Types.getType(arg)));
                 }
             }
@@ -9552,6 +9598,7 @@ public class CoreFunctions {
                 .add(identity)
                 .add(gensym)
                 .add(name)
+                .add(qualified_name)
                 .add(type)
                 .add(supertype)
                 .add(supertypes)
