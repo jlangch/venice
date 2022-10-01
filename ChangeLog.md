@@ -21,6 +21,7 @@ and this project adheres to
 - file, line, and column information to the assert macro exceptions
 - :com.github.jlangch.venice.AssertionException to the list of the 
   default class imports
+- a test framework
 
 ### Improved
 
