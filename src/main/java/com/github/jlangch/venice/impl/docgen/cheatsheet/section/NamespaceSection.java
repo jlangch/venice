@@ -67,7 +67,7 @@ public class NamespaceSection implements ISectionBuilder {
         alias.addItem(diBuilder.getDocItem("ns-aliases"));
         alias.addItem(diBuilder.getDocItem("ns-unalias"));
 
-        final DocSection meta = new DocSection("Test", "namespace.meta");
+        final DocSection meta = new DocSection("Meta", "namespace.meta");
         all.addSection(meta);
         meta.addItem(diBuilder.getDocItem("ns-meta"));
         meta.addItem(diBuilder.getDocItem("alter-ns-meta!"));
