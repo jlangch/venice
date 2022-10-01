@@ -21,6 +21,7 @@
  */
 package com.github.jlangch.venice;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.junit.jupiter.api.Assertions.fail;
 
@@ -87,5 +88,81 @@ public class ArityTest {
             final String msg = ex.getMessage();
             assertTrue(msg.startsWith("Wrong number of args (0) passed to function count."));
         }
+    }
+
+    @Test
+    public void test_multiarity_eval_args_problem_1() {
+        final Venice venice = new Venice();
+
+        final String script =
+                "(do                     \n" +
+                "  (ns foo)              \n" +
+                "  (defn m [n] n)        \n" +
+                "  (ns bar)              \n" +
+                "  (foo/m *ns*))         ";
+
+        assertEquals("bar", venice.eval(script));
+    }
+
+    @Test
+    public void test_multiarity_eval_args_problem_2() {
+        // (ns foo)
+        //
+        // (defn f
+        //   ([] (f *ns*))
+        //   ([n] n))
+        //
+        // (ns bar)
+        // (println (str (foo/f)))  ;; => "bar"
+
+        final Venice venice = new Venice();
+
+        final String script =
+                "(do                     \n" +
+                "  (ns foo)              \n" +
+                "                        \n" +
+                "  (defn m               \n" +
+                "    ([] (m *ns*))       \n" +
+                "    ([n] n))            \n" +
+                "                        \n" +
+                "  (ns bar)              \n" +
+                "                        \n" +
+                "  (foo/m))              ";
+
+        assertEquals("foo", venice.eval(script));
+    }
+
+    @Test
+    public void test_multiarity_eval_args_problem_3() {
+        // (ns foo)
+        // (def y "foo")
+        //
+        // (defn f
+        //   ([] (f y))
+        //   ([n] n))
+        //
+        // (ns bar)
+        // (def y "bar")
+        // (println (str (foo/f)))  ;; => "foo"
+
+        final Venice venice = new Venice();
+
+        final String script =
+                "(do                     \n" +
+                "  (ns foo)              \n" +
+                "                        \n" +
+                "  (def y \"foo\")       \n" +
+                "                        \n" +
+                "  (defn m               \n" +
+                "    ([] (m y))          \n" +
+                "    ([n] n))            \n" +
+                "                        \n" +
+                "  (ns bar)              \n" +
+                "                        \n" +
+                "  (def y \"bar\")       \n" +
+                "                        \n" +
+                "  (foo/m))              ";
+
+        assertEquals("foo", venice.eval(script));
     }
 }
