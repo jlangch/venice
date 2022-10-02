@@ -58,6 +58,18 @@ public class TestModuleTest {
         assertEquals( 4L, result.get("assert"));
     }
 
+    @Test
+    public void test_3() {
+        final Map<String,Long> result = run("test-module-test-3.venice");
+
+        assertEquals( 1L, result.get("test"));
+        assertEquals( 1L, result.get("fail"));
+        assertEquals( 0L, result.get("error"));
+
+        assertEquals( 0L, result.get("pass"));
+        assertEquals( 1L, result.get("assert"));
+    }
+
 
 
     @SuppressWarnings("unchecked")

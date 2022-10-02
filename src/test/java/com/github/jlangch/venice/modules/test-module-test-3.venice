@@ -27,21 +27,15 @@
 
   (ns m-test)
 
-  (test/deftest test-deftest-single-assert-ok []
-    (assert-eq 3 (+ 1 2)))
 
-  (test/deftest test-deftest-multi-assert-ok []
+  ;; ===========================================================================
+  ;; test/deftest
+  ;; ===========================================================================
+
+  (test/deftest test-deftest []
     (assert-eq 3 (+ 1 2))
-    (assert-eq 3 (+ 1 2)))
-
-  (test/deftest test-deftest-multi-assert-fail-1 []
-    (assert-eq 3 (+ 1 2))
-    (assert-eq 0 (+ 1 2)))
-
-  (test/deftest test-deftest-multi-assert-fail-2 []
-    (assert-eq 0 (+ 1 2))
     (assert-eq 0 (+ 1 2)))
 
 
   ;; run tests
-  (test/run-tests 'm-test))
+  (test/run-test-var test-deftest))
