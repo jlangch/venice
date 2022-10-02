@@ -22,6 +22,7 @@
 ;;;; TEST framework unit test
 
 
+;;; Testing run-test-var
 (do
   (load-module :test)
 
@@ -32,5 +33,5 @@
     (assert-eq 0 (+ 1 2)))
 
 
-  ;; run tests
+  ;; run a single test var
   (test/run-test-var test-deftest))

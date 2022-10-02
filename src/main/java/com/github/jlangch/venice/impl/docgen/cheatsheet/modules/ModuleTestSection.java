@@ -41,11 +41,19 @@ public class ModuleTestSection implements ISectionBuilder {
         final DocSection all = new DocSection("(load-module :test)", id());
         section.addSection(all);
 
-        final DocSection xml = new DocSection("Test", id());
-        all.addSection(xml);
-        xml.addItem(diBuilder.getDocItem("test/deftest"));
-        xml.addItem(diBuilder.getDocItem("test/run-tests"));
-        xml.addItem(diBuilder.getDocItem("test/run-test-var"));
+        final DocSection def = new DocSection("Define", id());
+        all.addSection(def);
+        def.addItem(diBuilder.getDocItem("test/deftest"));
+
+        final DocSection fixtures = new DocSection("Fixture", id());
+        all.addSection(fixtures);
+        fixtures.addItem(diBuilder.getDocItem("test/use-fixtures"));
+
+        final DocSection run = new DocSection("Run", id());
+        all.addSection(run);
+        run.addItem(diBuilder.getDocItem("test/run-tests"));
+        run.addItem(diBuilder.getDocItem("test/run-test-var"));
+        run.addItem(diBuilder.getDocItem("test/successful?"));
 
         return section;
     }

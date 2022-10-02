@@ -22,6 +22,7 @@
 ;;;; TEST framework unit test
 
 
+;;; Testing :once fixtures
 (do
   (load-module :test)
 

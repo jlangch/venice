@@ -36,6 +36,7 @@ public class TestModuleTest {
 
     @Test
     public void test_1() {
+        // Testing deftest with a single namespace
         final Map<String,Long> result = run("test-module-test-1.venice");
 
         assertEquals( 4L, result.get("test"));
@@ -49,6 +50,7 @@ public class TestModuleTest {
 
     @Test
     public void test_2() {
+        // Testing deftest with multiple namespaces
         final Map<String,Long> result = run("test-module-test-2.venice");
 
         assertEquals( 4L, result.get("test"));
@@ -62,6 +64,7 @@ public class TestModuleTest {
 
     @Test
     public void test_3() {
+        // Testing run-test-var
         final Map<String,Long> result = run("test-module-test-3.venice");
 
         assertEquals( 1L, result.get("test"));
@@ -75,6 +78,7 @@ public class TestModuleTest {
 
     @Test
     public void test_4() {
+        // Testing explicit setup / teardown
         final Map<String,Long> result = run("test-module-test-4.venice");
 
         assertEquals( 1L, result.get("test"));
@@ -88,6 +92,7 @@ public class TestModuleTest {
 
     @Test
     public void test_5() {
+        // Testing :once fixtures
         final Map<String,Long> result = run("test-module-test-5.venice");
 
         assertEquals( 1L, result.get("test"));
@@ -101,6 +106,7 @@ public class TestModuleTest {
 
     @Test
     public void test_6() {
+        // Testing :each fixtures
         final Map<String,Long> result = run("test-module-test-6.venice");
 
         assertEquals( 1L, result.get("test"));
@@ -114,6 +120,7 @@ public class TestModuleTest {
 
     @Test
     public void test_7() {
+        // Testing :once together with :each fixtures
         final Map<String,Long> result = run("test-module-test-7.venice");
 
         assertEquals( 1L, result.get("test"));

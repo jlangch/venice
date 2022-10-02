@@ -19,36 +19,7 @@
 ;;;; See the License for the specific language governing permissions and
 ;;;; limitations under the License.
 
-;;;; Unit tests
-
-;;;; (load-module :test)
-;;;; (test/deftest add (assert-eq 3 (+ 1 2)))
-;;;; (test/run-tests 'user)
-;;;; ;; => Testing namespace 'user
-;;;; ;; => PASS user/add
-;;;; ;; => Ran 1 tests containing 1 assertions.
-;;;; ;; => 0 failures, 0 errors.
-
-;;;; (load-module :test)
-;;;; (test/deftest add (assert-eq 3 (+ 1 2)))
-;;;; (add)
-;;;; ;; => PASS user/add
-
-;;;; (load-module :test)
-;;;; (test/deftest add (assert-eq 0 (+ 1 2)))
-;;;; (test/run-tests 'user)
-;;;; ;; => Testing namespace 'user
-;;;; ;; => FAIL user/add
-;;;; ;; => Test assert failure.
-;;;; ;; => Exception in thread "main" AssertionException: Assert failed.
-;;;; ;; => Expected: 0
-;;;; ;; => Actual:   3
-;;;; ;; => Expression:
-;;;; ;; => (+ 1 2)
-;;;; ;; =>
-;;;; ;; => [Callstack]
-;;;; ;; =>     at: assert-eq (user: line 1, col 30)
-;;;; ;; =>     ...
+;;;; Testing framework
 
 ;;;; This is a Venice port of Clojure's test framework.
 ;;;; (https://github.com/clojure/clojure/blob/master/src/clj/clojure/test.clj)
@@ -61,10 +32,6 @@
 ;   the terms of this license.
 ;   You must not remove this notice, or any other, from this software.
 
-
-;; -----------------------------------------------------------------------------
-;;                      W O R K   I N   P R O G R E S S
-;; -----------------------------------------------------------------------------
 
 (ns test)
 
@@ -123,7 +90,8 @@
 
             (test/run-tests *ns*))
           """)
-     :see-also '("test/run-tests", "test/run-test-var" ) }
+     :see-also '(
+          "test/run-tests", "test/run-test-var", "test/use-fixtures" ) }
 
   deftest [test-name & body]
 
@@ -149,7 +117,8 @@
 
             (test/run-tests 'foo))
           """)
-     :see-also '("test/deftest", "test/run-test-var" ) }
+     :see-also '(
+          "test/deftest", "test/run-test-var", "test/use-fixtures" ) }
 
   run-tests [& namespaces]
 
@@ -176,7 +145,8 @@
 
             (test/run-test-var plus-test))
           """)
-     :see-also '("test/deftest", "test/run-test-var" ) }
+     :see-also '(
+          "test/deftest", "test/run-tests", "test/use-fixtures" ) }
 
   run-test-var [v]
 
@@ -189,6 +159,122 @@
         (let [summary (assoc *report-counters* :type :summary)]
           (do-report summary)
           summary)))))
+
+
+(defn
+  ^{ :arglists '("(successful? summary)" )
+     :doc """
+          Returns true if the given test summary indicates all tests
+          were successful, false otherwise.
+          """
+     :examples '(
+          """
+          (do
+            (ns foo)
+            (load-module :test)
+
+            (test/deftest plus-test []
+              (assert-eq 3 (+ 1 2)))
+
+            (let [summary (test/run-tests 'foo)]
+              (test/successful? summary)))
+          """)
+     :see-also '(
+          "test/deftest",
+          "test/run-tests", "test/run-test-var",
+          "test/use-fixtures") }
+
+  successful? [summary]
+
+  (and (zero? (:fail summary 0))
+       (zero? (:error summary 0))))
+
+
+  ; fixtures -------------------------------------------------------------------
+
+  (defmulti
+    ^{ :arglists '("(use-fixtures ns fixture-type & fixture-fns)" )
+       :doc """
+            Wrap test runs in a fixture function to perform setup and
+            teardown. Using a fixture-type of `:each` wraps every test
+            individually, while `:once` wraps the whole run in a single
+            function.
+            """
+       :examples '(
+            """
+            ;; Fixtures :each
+            ;; Adds logic for a setup and teardown method that will be called
+            ;; before and after each test
+            (do
+              (load-module :test)
+
+              (defn each-time-setup []
+                (println "FIXTURE each time setup"))
+
+              (defn each-time-teardown []
+                (println "FIXTURE each time teardown"))
+
+              (defn each-fixture [f]
+                (each-time-setup)
+                (try
+                  (f)
+                  (finally (each-time-teardown))))
+
+              ;; register as a each-time callback
+              (test/use-fixtures *ns* :each each-fixture)
+
+              (test/deftest add-test []
+                (assert-eq 3 (+ 1 2)))
+
+              (test/deftest sub-test []
+                (assert-eq 3 (- 4 1)))
+
+              (test/run-tests *ns*))
+            """,
+            """
+            ;; Fixtures :once
+            ;; Adds logic for a setup and teardown method that will be called
+            ;; before the first and after the last test as an initial setup
+            ;; and final teardown
+            (do
+              (load-module :test)
+
+              (defn one-time-setup []
+                (println "FIXTURE one time setup"))
+
+              (defn one-time-teardown []
+                (println "FIXTURE one time teardown"))
+
+              (defn one-fixture [f]
+                (one-time-setup)
+                (try
+                  (f)
+                  (finally (one-time-teardown))))
+
+              ;; register as a one-time callback
+              (test/use-fixtures *ns* :once one-fixture)
+
+              (test/deftest add-test []
+                (assert-eq 3 (+ 1 2)))
+
+              (test/deftest sub-test []
+                (assert-eq 3 (- 4 1)))
+
+              (test/run-tests *ns*))
+            """)
+       :see-also '("test/deftest", "test/run-tests", "test/run-test-var") }
+
+    use-fixtures
+
+    (fn [ns° fixture-type & fixture-fns] fixture-type))
+
+
+  (defmethod use-fixtures :each [ns° fixture-type & fixture-fns]
+    (add-ns-meta (var-get ns°) :each-fixtures fixture-fns))
+
+  (defmethod use-fixtures :once [ns° fixture-type & fixture-fns]
+    (add-ns-meta (var-get ns°) :once-fixtures fixture-fns))
+
 
 
 
@@ -249,19 +335,6 @@
     (println *err* "Unable to resolve" (qualified-name v) "to a test function!")))
 
 
-(defn
-  ^{ :arglists '("(successful? summary)" )
-     :doc """
-          Returns true if the given test summary indicates all tests
-          were successful, false otherwise.
-          """ }
-
-  successful? [summary]
-
-  (and (zero? (:fail summary 0))
-       (zero? (:error summary 0))))
-
-
 ;; fixtures --------------------------------------------------------------------
 
 ;; Adds elements in coll to the current namespace metadata as the
@@ -269,29 +342,17 @@
 (defn- add-ns-meta [ns° key coll]
   (alter-ns-meta! (var-get ns°) assoc key coll))
 
-;; Wrap test runs in a fixture function to perform setup and
-;; teardown. Using a fixture-type of :each wraps every test
-;; individually, while :once wraps the whole run in a single function
-(defmulti use-fixtures
-  (fn [ns° fixture-type & args] fixture-type))
-
-(defmethod use-fixtures :each [ns° fixture-type & args]
-  (add-ns-meta (var-get ns°) :each-fixtures args))
-
-(defmethod use-fixtures :once [ns° fixture-type & args]
-  (add-ns-meta (var-get ns°) :once-fixtures args))
-
 ;; The default, empty, fixture function.  Just calls its argument.
 (defn- default-fixture [f] (f))
 
 ;; Composes two fixture functions, creating a new fixture function
 ;; that combines their behavior.
-(defn compose-fixtures [f1 f2]
+(defn- compose-fixtures [f1 f2]
   (fn [g] (f1 (fn [] (f2 g)))))
 
 ;; Composes a collection of fixtures, in order. Always returns a valid
 ;; fixture function, even if the collection is empty.
-(defn join-fixtures [fixtures]
+(defn- join-fixtures [fixtures]
   (reduce compose-fixtures default-fixture fixtures))
 
 
@@ -317,7 +378,7 @@
 (defmethod report :pass [m]
   (inc-report-counter :pass)
   (add-report-counter :assert *assertions*)
-  (println "\nPASS" (:fn-name m)))
+  (println "PASS" (:fn-name m)))
 
 (defmethod report :fail [m]
   (inc-report-counter :fail)
@@ -335,10 +396,10 @@
 
 (defmethod report :summary [m]
   (println "\nRan" (:test m) "tests with" (:assert m) "assertions")
-  (println (:fail m) "failures," (:error m) "errors."))
+  (println (:fail m) "failures," (:error m) "errors.\n"))
 
 (defmethod report :begin-test-ns [m]
-  (println "\nTesting namespace" (str "'" (namespace (:ns m)))))
+  (println "\nTesting namespace" (str "'" (namespace (:ns m)) "\n")))
 
 (defmethod report :begin-test-var [m]
   (inc-report-counter :test))

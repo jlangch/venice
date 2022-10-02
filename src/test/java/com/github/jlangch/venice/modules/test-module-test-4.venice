@@ -22,6 +22,7 @@
 ;;;; TEST framework unit test
 
 
+;;; Testing explicit setup / teardown
 (do
   (load-module :test)
 

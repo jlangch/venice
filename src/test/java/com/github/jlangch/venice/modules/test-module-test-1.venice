@@ -22,6 +22,7 @@
 ;;;; TEST framework unit test
 
 
+;;; Testing deftest with a single namespace
 (do
   (load-module :test)
 
