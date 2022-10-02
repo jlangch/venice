@@ -44,8 +44,9 @@
 
   (defn each-fixture [f]
     (each-time-setup)
-    (f)
-    (each-time-teardown))
+    (try
+      (f)
+      (finally (each-time-teardown))))
 
   ;; register as a each-time callback
   (test/use-fixtures 'm-test :each each-fixture)

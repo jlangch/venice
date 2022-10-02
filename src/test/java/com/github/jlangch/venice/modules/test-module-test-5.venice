@@ -44,8 +44,9 @@
 
   (defn once-fixture [f]
     (one-time-setup)
-    (f)
-    (one-time-teardown))
+    (try
+      (f)
+      (finally (one-time-teardown))))
 
   ;; register as a one-time callback
   (test/use-fixtures 'm-test :once once-fixture)
