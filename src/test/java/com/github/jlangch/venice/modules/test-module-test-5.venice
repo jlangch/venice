@@ -27,10 +27,14 @@
 
   (ns m-test)
 
-  (test/deftest test-deftest []
-    (assert-eq 3 (+ 1 2))
-    (assert-eq 0 (+ 1 2)))
+  (test/deftest explicit-setup-teardown []
+    (let [f (io/temp-file "test-", ".txt")]                  ;; setup
+      (try
+        (io/spit f "1234" :append true)                      ;; setup
+        (assert-eq "1234" (io/slurp f :binary false))        ;; test
+        (finally
+          (io/delete-file f)))))                             ;; teardown
 
 
   ;; run tests
-  (test/run-test-var test-deftest))
+  (test/run-tests 'm-test))

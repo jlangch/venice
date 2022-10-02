@@ -39,10 +39,11 @@ public class TestModuleTest {
         final Map<String,Long> result = run("test-module-test-1.venice");
 
         assertEquals( 4L, result.get("test"));
+
+        assertEquals( 2L, result.get("pass"));
         assertEquals( 2L, result.get("fail"));
         assertEquals( 0L, result.get("error"));
 
-        assertEquals( 2L, result.get("pass"));
         assertEquals( 4L, result.get("assert"));
     }
 
@@ -51,10 +52,11 @@ public class TestModuleTest {
         final Map<String,Long> result = run("test-module-test-2.venice");
 
         assertEquals( 4L, result.get("test"));
+
+        assertEquals( 2L, result.get("pass"));
         assertEquals( 2L, result.get("fail"));
         assertEquals( 0L, result.get("error"));
 
-        assertEquals( 2L, result.get("pass"));
         assertEquals( 4L, result.get("assert"));
     }
 
@@ -63,10 +65,37 @@ public class TestModuleTest {
         final Map<String,Long> result = run("test-module-test-3.venice");
 
         assertEquals( 1L, result.get("test"));
+
+        assertEquals( 0L, result.get("pass"));
         assertEquals( 1L, result.get("fail"));
         assertEquals( 0L, result.get("error"));
 
-        assertEquals( 0L, result.get("pass"));
+        assertEquals( 1L, result.get("assert"));
+    }
+
+    @Test
+    public void test_4() {
+        final Map<String,Long> result = run("test-module-test-4.venice");
+
+        assertEquals( 1L, result.get("test"));
+
+        assertEquals( 1L, result.get("pass"));
+        assertEquals( 0L, result.get("fail"));
+        assertEquals( 0L, result.get("error"));
+
+        assertEquals( 1L, result.get("assert"));
+    }
+
+    @Test
+    public void test_5() {
+        final Map<String,Long> result = run("test-module-test-5.venice");
+
+        assertEquals( 1L, result.get("test"));
+
+        assertEquals( 1L, result.get("pass"));
+        assertEquals( 0L, result.get("fail"));
+        assertEquals( 0L, result.get("error"));
+
         assertEquals( 1L, result.get("assert"));
     }
 
@@ -78,9 +107,9 @@ public class TestModuleTest {
 
         final Map<String,Long> result = new HashMap<>();
         result.put("test",   (Long)tmp.get("test"));
+        result.put("pass",   (Long)tmp.get("pass"));
         result.put("fail",   (Long)tmp.get("fail"));
         result.put("error",  (Long)tmp.get("error"));
-        result.put("pass",   (Long)tmp.get("pass"));
         result.put("assert", (Long)tmp.get("assert"));
         return result;
     }
