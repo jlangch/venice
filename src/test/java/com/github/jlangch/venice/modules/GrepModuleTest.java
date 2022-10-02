@@ -33,14 +33,14 @@ import com.github.jlangch.venice.impl.util.io.ClassPathResource;
 
 public class GrepModuleTest {
 
-	@Test
+    @Test
     @SuppressWarnings("unchecked")
     public void test() {
         final Venice venice = new Venice();
 
         final Map<Object,Object> result = (Map<Object,Object>)venice.eval(
-        										"grep-module-test.venice",
-        										loadScript("grep-module-test.venice"));
+                                                "grep-module-test.venice",
+                                                loadScript("grep-module-test.venice"));
 
         assertEquals( 2, (long)result.get("test"));
         assertEquals( 0, (long)result.get("fail"));

@@ -23,6 +23,7 @@ package com.github.jlangch.venice.modules;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
+import java.util.HashMap;
 import java.util.Map;
 
 import org.junit.jupiter.api.Test;
@@ -33,39 +34,46 @@ import com.github.jlangch.venice.impl.util.io.ClassPathResource;
 
 public class TestModuleTest {
 
-	@Test
+    @Test
     public void test_1() {
-        final Map<Object,Object> result = run("test-module-test-1.venice");
+        final Map<String,Long> result = run("test-module-test-1.venice");
 
-        assertEquals( 4, (long)result.get("test"));
-        assertEquals( 2, (long)result.get("fail"));
-        assertEquals( 0, (long)result.get("error"));
+        assertEquals( 4L, result.get("test"));
+        assertEquals( 2L, result.get("fail"));
+        assertEquals( 0L, result.get("error"));
 
-        assertEquals( 2, (long)result.get("pass"));
-        assertEquals( 4, (long)result.get("assert"));
+        assertEquals( 2L, result.get("pass"));
+        assertEquals( 4L, result.get("assert"));
     }
 
-	@Test
+    @Test
     public void test_2() {
-        final Map<Object,Object> result = run("test-module-test-2.venice");
+        final Map<String,Long> result = run("test-module-test-2.venice");
 
-        assertEquals( 4, (long)result.get("test"));
-        assertEquals( 2, (long)result.get("fail"));
-        assertEquals( 0, (long)result.get("error"));
+        assertEquals( 4L, result.get("test"));
+        assertEquals( 2L, result.get("fail"));
+        assertEquals( 0L, result.get("error"));
 
-        assertEquals( 2, (long)result.get("pass"));
-        assertEquals( 4, (long)result.get("assert"));
+        assertEquals( 2L, result.get("pass"));
+        assertEquals( 4L, result.get("assert"));
     }
 
 
 
     @SuppressWarnings("unchecked")
-    private Map<Object,Object> run(final String file) {
-        return (Map<Object,Object>)new Venice().eval(file, loadScript(file));
+    private Map<String,Long> run(final String file) {
+        final Map<Object,Object> tmp = (Map<Object,Object>)new Venice().eval(file, loadScript(file));
+
+        final Map<String,Long> result = new HashMap<>();
+        result.put("test",   (Long)tmp.get("test"));
+        result.put("fail",   (Long)tmp.get("fail"));
+        result.put("error",  (Long)tmp.get("error"));
+        result.put("pass",   (Long)tmp.get("pass"));
+        result.put("assert", (Long)tmp.get("assert"));
+        return result;
     }
 
     private String loadScript(final String name) {
         return new ClassPathResource(getClass().getPackage(), name).getResourceAsString("UTF-8");
     }
-
 }
