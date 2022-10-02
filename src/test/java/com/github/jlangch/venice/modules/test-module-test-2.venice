@@ -1,0 +1,52 @@
+;;;;   __    __         _
+;;;;   \ \  / /__ _ __ (_) ___ ___
+;;;;    \ \/ / _ \ '_ \| |/ __/ _ \
+;;;;     \  /  __/ | | | | (_|  __/
+;;;;      \/ \___|_| |_|_|\___\___|
+;;;;
+;;;;
+;;;; Copyright 2017-2022 Venice
+;;;;
+;;;; Licensed under the Apache License, Version 2.0 (the "License");
+;;;; you may not use this file except in compliance with the License.
+;;;; You may obtain a copy of the License at
+;;;;
+;;;;     http://www.apache.org/licenses/LICENSE-2.0
+;;;;
+;;;; Unless required by applicable law or agreed to in writing, software
+;;;; distributed under the License is distributed on an "AS IS" BASIS,
+;;;; WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+;;;; See the License for the specific language governing permissions and
+;;;; limitations under the License.
+
+;;;; GREP unit test
+
+
+(do
+  (load-module :test)
+
+
+  (ns m-test-1)
+
+  (test/deftest test-deftest-single-assert-ok []
+    (assert-eq 3 (+ 1 2)))
+
+  (test/deftest test-deftest-multi-assert-fail-1 []
+    (assert-eq 3 (+ 1 2))
+    (assert-eq 0 (+ 1 2)))
+
+
+
+  (ns m-test-2)
+
+  (test/deftest test-deftest-multi-assert-ok []
+    (assert-eq 3 (+ 1 2))
+    (assert-eq 3 (+ 1 2)))
+
+  (test/deftest test-deftest-multi-assert-fail-2 []
+    (assert-eq 0 (+ 1 2))
+    (assert-eq 0 (+ 1 2)))
+
+
+  ;; run tests
+  (test/run-tests 'm-test-1 'm-test-2))

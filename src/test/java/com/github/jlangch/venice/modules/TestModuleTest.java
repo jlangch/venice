@@ -31,25 +31,38 @@ import com.github.jlangch.venice.Venice;
 import com.github.jlangch.venice.impl.util.io.ClassPathResource;
 
 
-public class GrepModuleTest {
+public class TestModuleTest {
 
 	@Test
-    @SuppressWarnings("unchecked")
-    public void test() {
-        final Venice venice = new Venice();
+    public void test_1() {
+        final Map<Object,Object> result = run("test-module-test-1.venice");
 
-        final Map<Object,Object> result = (Map<Object,Object>)venice.eval(
-        										"grep-module-test.venice",
-        										loadScript("grep-module-test.venice"));
-
-        assertEquals( 2, (long)result.get("test"));
-        assertEquals( 0, (long)result.get("fail"));
+        assertEquals( 4, (long)result.get("test"));
+        assertEquals( 2, (long)result.get("fail"));
         assertEquals( 0, (long)result.get("error"));
 
         assertEquals( 2, (long)result.get("pass"));
-        assertEquals(25, (long)result.get("assert"));
+        assertEquals( 4, (long)result.get("assert"));
     }
 
+	@Test
+    public void test_2() {
+        final Map<Object,Object> result = run("test-module-test-2.venice");
+
+        assertEquals( 4, (long)result.get("test"));
+        assertEquals( 2, (long)result.get("fail"));
+        assertEquals( 0, (long)result.get("error"));
+
+        assertEquals( 2, (long)result.get("pass"));
+        assertEquals( 4, (long)result.get("assert"));
+    }
+
+
+
+    @SuppressWarnings("unchecked")
+    private Map<Object,Object> run(final String file) {
+        return (Map<Object,Object>)new Venice().eval(file, loadScript(file));
+    }
 
     private String loadScript(final String name) {
         return new ClassPathResource(getClass().getPackage(), name).getResourceAsString("UTF-8");

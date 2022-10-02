@@ -321,12 +321,14 @@
 
 (defmethod report :fail [m]
   (inc-report-counter :fail)
+  (add-report-counter :assert *assertions*)
   (println "\nFAIL" (:fn-name m))
   (println (:message m))
   (println (ex-venice-stacktrace (:ex m))))
 
 (defmethod report :error [m]
   (inc-report-counter :error)
+  (add-report-counter :assert *assertions*)
   (println "\nERROR in" (:fn-name m))
   (println (:message m))
   (println (ex-venice-stacktrace (:ex m))))
