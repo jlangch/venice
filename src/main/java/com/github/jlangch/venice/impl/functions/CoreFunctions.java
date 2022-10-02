@@ -8273,6 +8273,9 @@ public class CoreFunctions {
                 else if (Types.isVncQueue(coll)) {
                     return reduce_queue((VncQueue)coll, reduceFn, init);
                 }
+                else if (coll == Nil) {
+                    return reduce_sequence(VncList.empty(), reduceFn, init);
+                }
                 else {
                     throw new VncException(String.format(
                             "reduce: collection type %s not supported",

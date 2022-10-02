@@ -28,7 +28,7 @@ import org.junit.jupiter.api.Test;
 import com.github.jlangch.venice.Venice;
 
 
-public class TestModuleTest {
+public class TestSupportModuleTest {
 
     @Test
     public void test_load() {

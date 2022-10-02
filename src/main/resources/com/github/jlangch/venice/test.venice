@@ -96,22 +96,32 @@
           (do
             (load-module :test)
 
-            (ns foo)
-
-            (defn sum [x y] (+ x y))
-            (defn mul [x y] (* x y))
-
             (ns foo-test)
 
-            (test/deftest sum-test []
-              (assert-eq 0 (foo/sum 0 0))
-              (assert-eq 3 (foo/sum 1 2)))
+            (test/deftest add-test []
+              (assert-eq 0 (+ 0 0))
+              (assert-eq 3 (+ 1 2)))
 
             (test/deftest mul-test []
-              (assert-eq 6 (foo/mul 2 3)))
+              (assert-eq 6 (* 2 3)))
 
             (ns bar)
             (test/run-tests 'foo-test))
+          """,
+          """
+          ;; Explicit setup/teardown
+          (do
+            (load-module :test)
+
+            (test/deftest sum-test []
+              (let [f (io/temp-file "test-", ".txt")]
+                (try
+                  (io/spit f "1234" :append true)
+                  (assert-eq "1234" (io/slurp f :binary false))
+                  (finally
+                    (io/delete-file f)))))
+
+            (test/run-tests *ns*))
           """)
      :see-also '("test/run-tests", "test/run-test-var" ) }
 
@@ -174,7 +184,7 @@
     (binding [*report-counters*  {:test 0, :pass 0, :fail 0, :error 0, :assert 0}]
       (let [ns-sym (symbol (namespace v))]
         (do-report {:type :begin-test-ns, :ns ns-sym})
-        (test-var v)
+        (test-vars [v])
         (do-report {:type :end-test-ns, :ns ns-sym})
         (let [summary (assoc *report-counters* :type :summary)]
           (do-report summary)
@@ -199,9 +209,18 @@
   (binding [*report-counters*  {:test 0, :pass 0, :fail 0, :error 0, :assert 0}]
     (let [ns-sym (symbol (namespace ns°))]
       (do-report {:type :begin-test-ns, :ns ns-sym})
-      (run! test-var (filter test-var? (ns-list ns-sym)))
+      (test-vars (ns-list ns-sym))
       (do-report {:type :end-test-ns, :ns ns-sym})
       *report-counters*)))
+
+
+(defn test-vars [vars]
+  (doseq [[ns° vars] (group-by (comp symbol :ns meta) vars)]
+    (let [once-fixture-fn (join-fixtures (:once-fixtures (ns-meta ns°)))
+          each-fixture-fn (join-fixtures (:each-fixtures (ns-meta ns°)))]
+      (once-fixture-fn (fn []
+                         (doseq [v (filter test-var? vars)]
+                           (each-fixture-fn (fn [] (test-var v)))))))))
 
 
 (defn
