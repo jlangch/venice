@@ -50,6 +50,7 @@
   ;; register as a each-time callback
   (test/use-fixtures 'm-test :each each-fixture)
 
+
   (test/deftest test-deftest-fixture-1 []
     (assert-eq 3 (+ 1 2)))
 
@@ -67,5 +68,5 @@
 
 
   ;; run tests
-  (test/run-tests 'm-test)     ;; run test with once-fixture
+  (test/run-tests 'm-test)     ;; run test with fixtures
   (test/run-tests 'm-result))  ;; verify setup/teardown counts
