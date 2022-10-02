@@ -215,9 +215,9 @@
 
 
 (defn test-vars [vars]
-  (doseq [[ns° vars] (group-by (comp symbol :ns meta) vars)]
-    (let [once-fixture-fn (join-fixtures (:once-fixtures (ns-meta ns°)))
-          each-fixture-fn (join-fixtures (:each-fixtures (ns-meta ns°)))]
+  (doseq [[ns° vars] (group-by (comp :ns meta) vars)]
+    (let [once-fixture-fn (join-fixtures (:once-fixtures (ns-meta (symbol ns°))))
+          each-fixture-fn (join-fixtures (:each-fixtures (ns-meta (symbol ns°))))]
       (once-fixture-fn (fn []
                          (doseq [v (filter test-var? vars)]
                            (each-fixture-fn (fn [] (test-var v)))))))))
@@ -266,20 +266,20 @@
 
 ;; Adds elements in coll to the current namespace metadata as the
 ;; value of key.
-(defn- add-ns-meta [n key coll]
-  (alter-ns-meta! n assoc key coll))
+(defn- add-ns-meta [ns° key coll]
+  (alter-ns-meta! (var-get ns°) assoc key coll))
 
 ;; Wrap test runs in a fixture function to perform setup and
 ;; teardown. Using a fixture-type of :each wraps every test
 ;; individually, while :once wraps the whole run in a single function
 (defmulti use-fixtures
-  (fn [n fixture-type & args] fixture-type))
+  (fn [ns° fixture-type & args] fixture-type))
 
-(defmethod use-fixtures :each [n fixture-type & args]
-  (add-ns-meta n :each-fixtures args))
+(defmethod use-fixtures :each [ns° fixture-type & args]
+  (add-ns-meta (var-get ns°) :each-fixtures args))
 
-(defmethod use-fixtures :once [n fixture-type & args]
-  (add-ns-meta n :once-fixtures args))
+(defmethod use-fixtures :once [ns° fixture-type & args]
+  (add-ns-meta (var-get ns°) :once-fixtures args))
 
 ;; The default, empty, fixture function.  Just calls its argument.
 (defn- default-fixture [f] (f))

@@ -96,7 +96,33 @@ public class TestModuleTest {
         assertEquals( 0L, result.get("fail"));
         assertEquals( 0L, result.get("error"));
 
-        assertEquals( 1L, result.get("assert"));
+        assertEquals( 2L, result.get("assert"));
+    }
+
+    @Test
+    public void test_6() {
+        final Map<String,Long> result = run("test-module-test-6.venice");
+
+        assertEquals( 1L, result.get("test"));
+
+        assertEquals( 1L, result.get("pass"));
+        assertEquals( 0L, result.get("fail"));
+        assertEquals( 0L, result.get("error"));
+
+        assertEquals( 2L, result.get("assert"));
+    }
+
+    @Test
+    public void test_7() {
+        final Map<String,Long> result = run("test-module-test-7.venice");
+
+        assertEquals( 1L, result.get("test"));
+
+        assertEquals( 1L, result.get("pass"));
+        assertEquals( 0L, result.get("fail"));
+        assertEquals( 0L, result.get("error"));
+
+        assertEquals( 2L, result.get("assert"));
     }
 
 

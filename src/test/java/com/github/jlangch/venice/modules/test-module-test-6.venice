@@ -34,21 +34,21 @@
 
   (ns m-test)
 
-  (defn one-time-setup []
+  (defn each-time-setup []
     (swap! counter/cnt-setup inc)
-    (println "one time setup"))
+    (println "each time setup"))
 
-  (defn one-time-teardown []
+  (defn each-time-teardown []
     (swap! counter/cnt-teardown inc)
-    (println "one time teardown"))
+    (println "each time teardown"))
 
-  (defn once-fixture [f]
-    (one-time-setup)
+  (defn each-fixture [f]
+    (each-time-setup)
     (f)
-    (one-time-teardown))
+    (each-time-teardown))
 
-  ;; register as a one-time callback
-  (test/use-fixtures 'm-test :once once-fixture)
+  ;; register as a each-time callback
+  (test/use-fixtures 'm-test :each each-fixture)
 
   (test/deftest test-deftest-fixture-1 []
     (assert-eq 3 (+ 1 2)))
@@ -61,8 +61,8 @@
   (ns m-result)
 
   (test/deftest test-counter-result []
-    (assert-eq 1 @counter/cnt-setup)
-    (assert-eq 1 @counter/cnt-teardown))
+    (assert-eq 2 @counter/cnt-setup)
+    (assert-eq 2 @counter/cnt-teardown))
 
 
 

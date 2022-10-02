@@ -391,7 +391,11 @@ public class SpecialForms_NamespaceFunctions {
                     .examples(
                         "(do               \n" +
                         "  (ns foo)        \n" +
-                        "  (ns-meta foo))  ")
+                        "  (ns-meta foo))  ",
+                        "(do                        \n" +
+                        "  (ns foo)                 \n" +
+                        "  (def n 'foo)             \n" +
+                         " (ns-meta (var-get n)))   ")
                     .seeAlso("alter-ns-meta!", "reset-ns-meta!", "ns")
                     .build()
         ) {
@@ -440,7 +444,13 @@ public class SpecialForms_NamespaceFunctions {
                     .examples(
                         "(do                         \n" +
                         "  (ns foo)                  \n" +
-                        "  (reset-ns-meta! foo {}))  ")
+                        "  (reset-ns-meta! foo {}))  ",
+                        "(do                                  \n" +
+                        "  (ns foo)                           \n" +
+                        "  (def n 'foo)                       \n" +
+                        "  (reset-ns-meta! (var-get n) {})    \n" +
+                        "  (pr-str (ns-meta (var-get n))))    ")
+
                     .seeAlso("ns-meta", "alter-ns-meta!", "ns")
                     .build()
         ) {
@@ -500,7 +510,12 @@ public class SpecialForms_NamespaceFunctions {
                     .examples(
                         "(do                                 \n" +
                         "  (ns foo)                          \n" +
-                        "  (alter-ns-meta! foo assoc :a 1))  ")
+                        "  (alter-ns-meta! foo assoc :a 1))  ",
+                        "(do                                          \n" +
+                        "  (ns foo)                                   \n" +
+                        "  (def n 'foo)                               \n" +
+                        "  (alter-ns-meta! (var-get n) assoc :a 1)    \n" +
+                        "  (pr-str (ns-meta (var-get n))))            ")
                     .seeAlso("ns-meta", "reset-ns-meta!", "ns")
                     .build()
         ) {

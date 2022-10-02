@@ -163,4 +163,18 @@ public class SpecialFormsTest_namespace {
         assertEquals("{:a 1 :b 2}", venice.eval(script));
    }
 
+    @Test
+    public void test_alter_ns_meta_3() {
+        final Venice venice = new Venice();
+
+        final String script =
+                "(do                                           \n" +
+                "   (ns foo)                                   \n" +
+                "   (def n 'foo)                               \n" +
+                "   (alter-ns-meta! (var-get n) assoc :a 1)    \n" +
+                "   (pr-str (ns-meta (var-get n))))            ";
+
+        assertEquals("{:a 1}", venice.eval(script));
+   }
+
 }
