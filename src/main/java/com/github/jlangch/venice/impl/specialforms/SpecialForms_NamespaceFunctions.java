@@ -399,7 +399,8 @@ public class SpecialForms_NamespaceFunctions {
                         "  (ns foo)                 \n" +
                         "  (def n 'foo)             \n" +
                         "  (ns-meta (var-get n)))   ")
-                    .seeAlso("alter-ns-meta!", "reset-ns-meta!", "ns")
+                    .seeAlso(
+                        "alter-ns-meta!", "reset-ns-meta!", "ns")
                     .build()
         ) {
             @Override
@@ -453,8 +454,8 @@ public class SpecialForms_NamespaceFunctions {
                         "  (def n 'foo)                       \n" +
                         "  (reset-ns-meta! (var-get n) {})    \n" +
                         "  (pr-str (ns-meta (var-get n))))    ")
-
-                    .seeAlso("ns-meta", "alter-ns-meta!", "ns")
+                    .seeAlso(
+                        "ns-meta", "alter-ns-meta!", "ns")
                     .build()
         ) {
             @Override
@@ -519,7 +520,8 @@ public class SpecialForms_NamespaceFunctions {
                         "  (def n 'foo)                               \n" +
                         "  (alter-ns-meta! (var-get n) assoc :a 1)    \n" +
                         "  (pr-str (ns-meta (var-get n))))            ")
-                    .seeAlso("ns-meta", "reset-ns-meta!", "ns")
+                    .seeAlso(
+                        "ns-meta", "reset-ns-meta!", "ns")
                     .build()
         ) {
             @Override
