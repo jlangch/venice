@@ -386,16 +386,19 @@ public class SpecialForms_NamespaceFunctions {
                     .meta()
                     .arglists("(ns-meta n)")
                     .doc(
-                        "Returns the meta data of the namespace n or nil if n is " +
+                        "Returns the meta data of the namespace n or `nil` if n is " +
                         "an existing namespace")
                     .examples(
                         "(do               \n" +
                         "  (ns foo)        \n" +
                         "  (ns-meta foo))  ",
+                        "(do               \n" +
+                        "  (ns foo)        \n" +
+                        "  (ns-meta 'foo)) ",
                         "(do                        \n" +
                         "  (ns foo)                 \n" +
                         "  (def n 'foo)             \n" +
-                         " (ns-meta (var-get n)))   ")
+                        "  (ns-meta (var-get n)))   ")
                     .seeAlso("alter-ns-meta!", "reset-ns-meta!", "ns")
                     .build()
         ) {
