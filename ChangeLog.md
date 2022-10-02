@@ -15,10 +15,11 @@ and this project adheres to
 ### Added
 
 - support for destructuring in `loop / recur` loops
-- macro `assert-throws` and `assert-eq`
+- macro `assert-eq` and `assert-throws`
 - an optional customized indentation string to the JSON pretty printer
 - proxy builder for Java functional UnaryPredicate interface
-- file, line, and column information to the assert macro exceptions
+- file, line, and column information to the exceptions raised by the assert 
+  macros `assert`, `assert-eq`, and `assert-throws`
 - :com.github.jlangch.venice.AssertionException to the list of the 
   default class imports
 - a test framework
