@@ -10,14 +10,14 @@ and this project adheres to
 
 
 
-## [1.10.24] - 2022-09-xx
+## [1.10.24] - 2022-10-03
 
 ### Added
 
 - support for destructuring in `loop / recur` loops
-- macro `assert-eq` and `assert-throws`
 - an optional customized indentation string to the JSON pretty printer
 - proxy builder for Java functional UnaryPredicate interface
+- macro `assert-eq` and `assert-throws`
 - file, line, and column information to the exceptions raised by the assert 
   macros `assert`, `assert-eq`, and `assert-throws`
 - :com.github.jlangch.venice.AssertionException to the list of the 
