@@ -96,42 +96,42 @@
 
   (test/deftest test-grep []
     ;; grep machine readable ---------------------------------------------------
-    (def r1 (grep/grep dir "step.log.*" ".*AAA.*" :print false))
-    (assert-eq 3 (count r1))
-    (assert-eq "step.log.2022-04-01::2::line 2  AAA" (str/join "::" (first r1)))
-    (assert-eq "step.log.2022-04-01::8::line 8  AAA" (str/join "::" (second r1)))
-    (assert-eq "step.log.2022-05-01::8::line 8  AAA" (str/join "::" (third r1)))
+    (let [r1 (grep/grep dir "step.log.*" ".*AAA.*" :print false)]
+      (assert-eq 3 (count r1))
+      (assert-eq "step.log.2022-04-01::2::line 2  AAA" (str/join "::" (first r1)))
+      (assert-eq "step.log.2022-04-01::8::line 8  AAA" (str/join "::" (second r1)))
+      (assert-eq "step.log.2022-05-01::8::line 8  AAA" (str/join "::" (third r1))))
 
     ;; grep machine readable (no matching files) -------------------------------
-    (def r1 (grep/grep dir "---step.log.*" ".*AAA.*" :print false))
-    (assert-eq 0 (count r1))
+    (let [r1 (grep/grep dir "---step.log.*" ".*AAA.*" :print false)]
+      (assert-eq 0 (count r1)))
 
     ;; grep machine readable (no matching lines) -------------------------------
-    (def r1 (grep/grep dir "step.log.*" ".*ZZZ.*" :print false))
-    (assert-eq 0 (count r1))
+    (let [r1 (grep/grep dir "step.log.*" ".*ZZZ.*" :print false)]
+      (assert-eq 0 (count r1)))
 
     ;; grep human readable -----------------------------------------------------
-    (def r1 (lines (with-out-str (grep/grep dir
+    (let [r1 (lines (with-out-str (grep/grep dir
                                             "step.log.*"
                                             ".*AAA.*"
-                                            :print true))))
-    (assert-eq "step.log.2022-04-01:2:line 2  AAA" (first r1))
-    (assert-eq "step.log.2022-04-01:8:line 8  AAA" (second r1))
-    (assert-eq "step.log.2022-05-01:8:line 8  AAA" (third r1))
+                                            :print true)))]
+      (assert-eq "step.log.2022-04-01:2:line 2  AAA" (first r1))
+      (assert-eq "step.log.2022-04-01:8:line 8  AAA" (second r1))
+      (assert-eq "step.log.2022-05-01:8:line 8  AAA" (third r1)))
 
     ;; grep human readable (no matching files) ---------------------------------
-    (def r1 (lines (with-out-str (grep/grep dir
+    (let [r1 (lines (with-out-str (grep/grep dir
                                             "---step.log.*"
                                             ".*AAA.*"
-                                            :print true))))
-    (assert-eq 0 (count r1))
+                                            :print true)))]
+      (assert-eq 0 (count r1)))
 
     ;; grep human readable (no matching lines) ---------------------------------
-    (def r1 (lines (with-out-str (grep/grep dir
+    (let [r1 (lines (with-out-str (grep/grep dir
                                             "step.log.*"
                                             ".*ZZZ.*"
-                                            :print true))))
-    (assert-eq 0 (count r1)))
+                                            :print true)))]
+      (assert-eq 0 (count r1))))
 
 
 
@@ -141,74 +141,74 @@
 
   (test/deftest test-grep-zip []
     ;; grep-zip machine readable -----------------------------------------------
-    (def r1 (grep/grep-zip dir
+    (let [r1 (grep/grep-zip dir
                            "step.*.zip"
                            "step.log.*"
                            ".*AAA.*"
-                           :print false))
-    (assert-eq 3 (count r1))
-    (assert-eq "step.2022-05.zip::step.log.2022-04-01::2::line 2  AAA" (str/join "::" (first r1)))
-    (assert-eq "step.2022-05.zip::step.log.2022-04-01::8::line 8  AAA" (str/join "::" (second r1)))
-    (assert-eq "step.2022-05.zip::step.log.2022-05-01::8::line 8  AAA" (str/join "::" (third r1)))
+                           :print false)]
+      (assert-eq 3 (count r1))
+      (assert-eq "step.2022-05.zip::step.log.2022-04-01::2::line 2  AAA" (str/join "::" (first r1)))
+      (assert-eq "step.2022-05.zip::step.log.2022-04-01::8::line 8  AAA" (str/join "::" (second r1)))
+      (assert-eq "step.2022-05.zip::step.log.2022-05-01::8::line 8  AAA" (str/join "::" (third r1))))
 
     ;; grep-zip machine readable (no matching zip) -----------------------------
-    (def r1 (grep/grep-zip dir
+    (let [r1 (grep/grep-zip dir
                            "---step.*.zip"
                            "step.log.*"
                            ".*AAA.*"
-                           :print false))
-    (assert-eq 0 (count r1))
+                           :print false)]
+      (assert-eq 0 (count r1)))
 
     ;; grep-zip machine readable (no matching files) ---------------------------
-    (def r1 (grep/grep-zip dir
+    (let [r1 (grep/grep-zip dir
                            "step.*.zip"
                            "---step.log.*"
                            ".*AAA.*"
-                           :print false))
-    (assert-eq 0 (count r1))
+                           :print false)]
+      (assert-eq 0 (count r1)))
 
     ;; grep-zip machine readable (no matching lines) ---------------------------
-    (def r1 (grep/grep-zip dir
+    (let [r1 (grep/grep-zip dir
                            "step.*.zip"
                            "step.log.*"
                            ".*ZZZ.*"
-                           :print false))
-    (assert-eq 0 (count r1))
+                           :print false)]
+      (assert-eq 0 (count r1)))
 
     ;; grep-zip human readable -------------------------------------------------
-    (def r1 (lines (with-out-str (grep/grep-zip dir
+    (let [r1 (lines (with-out-str (grep/grep-zip dir
                                                 "step.*.zip"
                                                 "step.log.*"
                                                 ".*AAA.*"
-                                                :print true))))
-    (assert-eq 3 (count r1))
-    (assert-eq "step.2022-05.zip!step.log.2022-04-01:2:line 2  AAA" (first r1))
-    (assert-eq "step.2022-05.zip!step.log.2022-04-01:8:line 8  AAA" (second r1))
-    (assert-eq "step.2022-05.zip!step.log.2022-05-01:8:line 8  AAA" (third r1))
+                                                :print true)))]
+      (assert-eq 3 (count r1))
+      (assert-eq "step.2022-05.zip!step.log.2022-04-01:2:line 2  AAA" (first r1))
+      (assert-eq "step.2022-05.zip!step.log.2022-04-01:8:line 8  AAA" (second r1))
+      (assert-eq "step.2022-05.zip!step.log.2022-05-01:8:line 8  AAA" (third r1)))
 
     ;; grep-zip machine readable (no matching zip) -----------------------------
-    (def r1 (lines (with-out-str (grep/grep-zip dir
+    (let [r1 (lines (with-out-str (grep/grep-zip dir
                                                 "---step.*.zip"
                                                 "step.log.*"
                                                 ".*AAA.*"
-                                                :print true))))
-    (assert-eq 0 (count r1))
+                                                :print true)))]
+      (assert-eq 0 (count r1)))
 
     ;; grep-zip machine readable (no matching files) ---------------------------
-    (def r1 (lines (with-out-str (grep/grep-zip dir
+    (let [r1 (lines (with-out-str (grep/grep-zip dir
                                                 "step.*.zip"
                                                 "---step.log.*"
                                                 ".*AAA.*"
-                                                :print true))))
-    (assert-eq 0 (count r1))
+                                                :print true)))]
+      (assert-eq 0 (count r1)))
 
     ;; grep-zip machine readable (no matching lines) ---------------------------
-    (def r1 (lines (with-out-str (grep/grep-zip dir
+    (let [r1 (lines (with-out-str (grep/grep-zip dir
                                                 "step.*.zip"
                                                 "step.log.*"
                                                 ".*ZZZ.*"
-                                                :print true))))
-    (assert-eq 0 (count r1)))
+                                                :print true)))]
+      (assert-eq 0 (count r1))))
 
 
   ;; run tests

@@ -55,6 +55,12 @@ public class ModuleTestSection implements ISectionBuilder {
         run.addItem(diBuilder.getDocItem("test/run-test-var"));
         run.addItem(diBuilder.getDocItem("test/successful?"));
 
+        final DocSection asserts = new DocSection("Assert", id());
+        all.addSection(asserts);
+        asserts.addItem(diBuilder.getDocItem("assert"));
+        asserts.addItem(diBuilder.getDocItem("assert-eq"));
+        asserts.addItem(diBuilder.getDocItem("assert-throws"));
+
         return section;
     }
 
