@@ -61,39 +61,14 @@
   assert
 
   ([expr]
-    `(try
-       (if-not ~expr
-         (throw (ex :AssertionException
-                    (str "Assert failed."
-                         "\nExpression:\n" (pr-str '~expr))
-                    "assert"
-                    (:file (meta '~expr) "unknown")
-                    (:line (meta '~expr) -1)
-                    (:column (meta '~expr) -1)
-                    (pr-str '~expr)))
-         (do
-           (set! *assertions* (inc *assertions*))
-           true))
-       (catch :AssertionException e
-         (throw e))
-       (catch :Exception e
-         (throw (ex :AssertionException
-                    (str "Assert failed."
-                         "\nUnexpected exception: " (type e)
-                         "\nExpression:\n" (pr-str '~expr))
-                    "assert"
-                    (:file (meta '~expr) "unknown")
-                    (:line (meta '~expr) -1)
-                    (:column (meta '~expr) -1)
-                    (pr-str '~expr)
-                    e)))))
+    `(assert ~expr nil))
 
   ([expr message]
     `(try
        (if-not ~expr
          (throw (ex :AssertionException
                     (str "Assert failed."
-                         "\n" ~message
+                         (if (some? ~message) (str "\n" ~message) "")
                          "\nExpression:\n" (pr-str '~expr))
                     "assert"
                     (:file (meta '~expr) "unknown")
@@ -108,7 +83,7 @@
        (catch :Exception e
          (throw (ex :AssertionException
                     (str "Assert failed."
-                         "\n" ~message
+                         (if (some? ~message) (str "\n" ~message) "")
                          "\nUnexpected exception: " (type e)
                          "\nExpression:\n" (pr-str '~expr))
                     "assert"
@@ -137,36 +112,7 @@
   assert-eq
 
   ([expected actual]
-    `(try
-       (let [exp#  ~expected
-             act#  ~actual]
-           (if-not (= exp# act#)
-             (throw (ex :AssertionException
-                        (str "Assert failed."
-                             "\nExpected: " (pr-str exp#)
-                             "\nActual:   " (pr-str act#)
-                             "\nExpression:\n" (pr-str '~actual))
-                        "assert-eq"
-                        (:file (meta '~expected) "unknown")
-                        (:line (meta '~expected) -1)
-                        (:column (meta '~expected) -1)
-                        (pr-str '~actual)))
-             (do
-               (set! *assertions* (inc *assertions*))
-              true)))
-       (catch :AssertionException e
-         (throw e))
-       (catch :Exception e
-         (throw (ex :AssertionException
-                    (str "Assert failed."
-                         "\nUnexpected exception: " (type e)
-                         "\nExpression:\n" (pr-str '~actual))
-                    "assert"
-                    (:file (meta '~expected) "unknown")
-                    (:line (meta '~expected) -1)
-                    (:column (meta '~expected) -1)
-                    (pr-str '~actual)
-                    e)))))
+    `(assert-eq ~expected ~actual nil))
 
   ([expected actual message]
     `(try
@@ -175,7 +121,7 @@
          (if-not (= exp# act#)
            (throw (ex :AssertionException
                       (str "Assert failed."
-                           "\n" ~message
+                           (if (some? ~message) (str "\n" ~message) "")
                            "\nExpected: " (pr-str exp#)
                            "\nActual:   " (pr-str act#)
                            "\nExpression:\n" (pr-str '~actual))
@@ -192,7 +138,7 @@
        (catch :Exception e
          (throw (ex :AssertionException
                     (str "Assert failed."
-                         "\n" ~message
+                         (if (some? ~message) (str "\n" ~message) "")
                          "\nUnexpected exception: " (type e)
                          "\nExpression:\n" (pr-str '~actual))
                     "assert"
@@ -219,12 +165,16 @@
   assert-throws
 
   ([ex-type expr]
+    `(assert-throws ~ex-type ~expr nil))
+
+  ([ex-type expr message]
     `(try
        ~expr
        (throw :no-ex-thrown)
        (catch #(= % :no-ex-thrown) e
               (throw (ex :AssertionException
                          (str "Assert failed."
+                              (if (some? ~message) (str "\n" ~message) "")
                               "\nExpected: " ~ex-type
                               "\nBut no exception has been thrown!"
                               "\nExpression:\n" (pr-str '~expr))
@@ -239,37 +189,7 @@
        (catch :java.lang.Exception e
               (throw (ex :AssertionException
                          (str "Assert failed."
-                              "\nExpected: " ~ex-type
-                              "\nCaught:   " (class-name e)
-                              "\nExpression:\n" (pr-str '~expr))
-                         "assert-throws"
-                         (:file (meta '~expr) "unknown")
-                         (:line (meta '~expr) -1)
-                         (:column (meta '~expr) -1)
-                         (pr-str '~expr))))))
-
-  ([ex-type expr message]
-    `(try
-       ~expr
-       (throw :no-ex-thrown)
-       (catch #(= % :no-ex-thrown) e
-              (throw (ex :AssertionException
-                         (str "Assert failed."
-                              "\n" ~message
-                              "\nNo exception thrown"
-                              "\nExpression:\n" (pr-str '~expr))
-                         "assert-throws"
-                         (:file (meta '~expr) "unknown")
-                         (:line (meta '~expr) -1)
-                         (:column (meta '~expr) -1)
-                         (pr-str '~expr))))
-       (catch ~ex-type e
-              (set! *assertions* (inc *assertions*))
-              true)
-       (catch :java.lang.Exception e
-              (throw (ex :AssertionException
-                         (str "Assert failed."
-                              "\n" ~message
+                              (if (some? ~message) (str "\n" ~message) "")
                               "\nExpected: " ~ex-type
                               "\nCaught:   " (class-name e)
                               "\nExpression:\n" (pr-str '~expr))

@@ -325,7 +325,8 @@ public class AssertMacroTest {
             assertEquals(
                     "Assert failed.\n"
                     + "error\n"
-                    + "No exception thrown\n"
+                    + "Expected: :VncException\n"
+                    + "But no exception has been thrown!\n"
                     + "Expression:\n"
                     + "(/ 2 1)",
                     ex.getMessage());
