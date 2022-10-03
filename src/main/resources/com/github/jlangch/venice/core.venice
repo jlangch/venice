@@ -56,7 +56,7 @@
           "(assert (= 3 (+ 1 2)))"
           "(assert (= 4 (+ 1 2)))" )
      :see-also '(
-          "assert-eq", "assert-throws", "test/deftest")  }
+          "assert-eq", "assert-ne", "assert-throws", "test/deftest")  }
 
   assert
 
@@ -97,17 +97,17 @@
 (defmacro
   ^{ :arglists '(
           "(assert-eq expected actual)"
-          "(assert expected actual message)")
+          "(assert-eq expected actual message)")
      :doc """
           Assert that expected and actual are equal.
-          Throws an `:AssertionException`
-          exception if they are not equal.
+          Throws an `:AssertionException` exception if they are not equal.
           """
      :examples '(
           "(assert-eq 3 (+ 1 2))"
           "(assert-eq 4 (+ 1 2))" )
      :see-also '(
-          "assert", "assert-throws", "test/deftest")  }
+          "assert", "assert-ne", "assert-throws", "assert-does-not-throw",
+          "test/deftest")  }
 
   assert-eq
 
@@ -148,6 +148,62 @@
                     (pr-str '~actual)
                     e))))))
 
+
+(defmacro
+  ^{ :arglists '(
+          "(assert-ne unexpected actual)"
+          "(assert-ne unexpected actual message)")
+     :doc """
+          Assert that unexpected and actual are not equal.
+          Throws an `:AssertionException` exception if they are equal.
+          """
+     :examples '(
+          "(assert-ne :foo :bar)"
+          "(assert-ne :foo :foo)" )
+     :see-also '(
+          "assert", "assert-eq", "assert-throws", "assert-does-not-throw",
+          "test/deftest")  }
+
+  assert-ne
+
+  ([unexpected actual]
+    `(assert-ne ~unexpected ~actual nil))
+
+  ([unexpected actual message]
+    `(try
+       (let [nexp# ~unexpected
+             act# ~actual]
+         (if (= nexp# act#)
+           (throw (ex :AssertionException
+                      (str "Assert failed."
+                           (if (some? ~message) (str "\n" ~message) "")
+                           "\nUnexpected: " (pr-str nexp#)
+                           "\nActual:     " (pr-str act#)
+                           "\nExpression:\n" (pr-str '~actual))
+                      "assert-ne"
+                      (:file (meta '~unexpected) "unknown")
+                      (:line (meta '~unexpected) -1)
+                      (:column (meta '~unexpected) -1)
+                      (pr-str '~actual)))
+           (do
+             (set! *assertions* (inc *assertions*))
+             true)))
+       (catch :AssertionException e
+         (throw e))
+       (catch :Exception e
+         (throw (ex :AssertionException
+                    (str "Assert failed."
+                         (if (some? ~message) (str "\n" ~message) "")
+                         "\nUnexpected exception: " (type e)
+                         "\nExpression:\n" (pr-str '~actual))
+                    "assert"
+                    (:file (meta '~unexpected) "unknown")
+                    (:line (meta '~unexpected) -1)
+                    (:column (meta '~unexpected) -1)
+                    (pr-str '~actual)
+                    e))))))
+
+
 (defmacro
   ^{ :arglists '(
           "(assert-throws ex-type expr)"
@@ -160,7 +216,8 @@
           "(assert-throws :VncException (/ 2 0))"
           "(assert-throws :VncException (/ 2 1))" )
      :see-also '(
-          "assert", "assert-eq", "test/deftest") }
+          "assert", "assert-eq", "assert-ne", "assert-does-not-throw",
+          "test/deftest") }
 
   assert-throws
 
@@ -194,6 +251,45 @@
                               "\nCaught:   " (class-name e)
                               "\nExpression:\n" (pr-str '~expr))
                          "assert-throws"
+                         (:file (meta '~expr) "unknown")
+                         (:line (meta '~expr) -1)
+                         (:column (meta '~expr) -1)
+                         (pr-str '~expr)))))))
+
+
+
+(defmacro
+  ^{ :arglists '(
+          "(assert-does-not-throw expr)"
+          "(assert-does-not-throw expr message)")
+     :doc """
+          Evaluates expr and throws an `:AssertionException`
+          exception if it does throw any kind of exception.
+          """
+     :examples '(
+          "(assert-does-not-throw (/ 2 1))"
+          "(assert-does-not-throw (/ 2 0))" )
+     :see-also '(
+          "assert", "assert-eq", "assert-ne", "assert-throws",
+          "test/deftest") }
+
+  assert-does-not-throw
+
+  ([expr]
+    `(assert-does-not-throw ~expr nil))
+
+  ([expr message]
+    `(try
+       ~expr
+       (set! *assertions* (inc *assertions*))
+       true
+       (catch :java.lang.Exception e
+              (throw (ex :AssertionException
+                         (str "Assert failed."
+                              (if (some? ~message) (str "\n" ~message) "")
+                              "\nUnexpected exception: " (type e)
+                              "\nExpression:\n" (pr-str '~expr))
+                         "assert-does-not-throw"
                          (:file (meta '~expr) "unknown")
                          (:line (meta '~expr) -1)
                          (:column (meta '~expr) -1)

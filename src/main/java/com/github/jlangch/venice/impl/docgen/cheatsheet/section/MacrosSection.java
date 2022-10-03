@@ -104,11 +104,13 @@ public class MacrosSection implements ISectionBuilder {
         loading.addItem(diBuilder.getDocItem("load-string"));
         loading.addItem(diBuilder.getDocItem("loaded-modules"));
 
-        final DocSection assert_ = new DocSection("Assert", "macros.assert");
-        all.addSection(assert_);
-        assert_.addItem(diBuilder.getDocItem("assert", true, true));
-        assert_.addItem(diBuilder.getDocItem("assert-eq", true, true));
-        assert_.addItem(diBuilder.getDocItem("assert-throws", true, true));
+        final DocSection asserts = new DocSection("Assert", "macros.assert");
+        all.addSection(asserts);
+        asserts.addItem(diBuilder.getDocItem("assert", true, true));
+        asserts.addItem(diBuilder.getDocItem("assert-eq", true, true));
+        asserts.addItem(diBuilder.getDocItem("assert-ne", true, true));
+        asserts.addItem(diBuilder.getDocItem("assert-throws", true, true));
+        asserts.addItem(diBuilder.getDocItem("assert-does-not-throw", true, true));
 
         final DocSection util = new DocSection("Util", "macros.util");
         all.addSection(util);
