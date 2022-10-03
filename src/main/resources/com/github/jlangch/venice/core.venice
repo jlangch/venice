@@ -56,7 +56,7 @@
           "(assert (= 3 (+ 1 2)))"
           "(assert (= 4 (+ 1 2)))" )
      :see-also '(
-          "assert-eq" "assert-throws")  }
+          "assert-eq", "assert-throws", "test/deftest")  }
 
   assert
 
@@ -132,7 +132,7 @@
           "(assert-eq 3 (+ 1 2))"
           "(assert-eq 4 (+ 1 2))" )
      :see-also '(
-          "assert" "assert-throws")  }
+          "assert", "assert-throws", "test/deftest")  }
 
   assert-eq
 
@@ -214,7 +214,7 @@
           "(assert-throws :VncException (/ 2 0))"
           "(assert-throws :VncException (/ 2 1))" )
      :see-also '(
-          "assert" "assert-eq") }
+          "assert", "assert-eq", "test/deftest") }
 
   assert-throws
 

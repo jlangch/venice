@@ -39,7 +39,7 @@
 
 (def-dynamic *testing-vars* (list))  ; bound to hierarchy of vars being tested
 
-(def-dynamic *report-counters* nil)	 ; bound to a ref of a map in test-ns
+(def-dynamic *report-counters* nil)	 ; bound to a map in test-ns
 
 (def-dynamic *test-out* *out*)       ; PrintWriter for test reporting output
 
@@ -91,7 +91,8 @@
             (test/run-tests *ns*))
           """)
      :see-also '(
-          "test/run-tests", "test/run-test-var", "test/use-fixtures" ) }
+          "test/run-tests", "test/run-test-var", "test/use-fixtures",
+          "assert", "assert-eq", "assert-throws" ) }
 
   deftest [test-name & body]
 
