@@ -54,6 +54,17 @@
      :doc """
           Defines a test function with no arguments.
 
+          All assertion macros are available for test assertions within the test
+          function body:
+
+           * `assert`
+           * `assert-eq`
+           * `assert-ne`
+           * `assert-throws`
+           * `assert-does-not-throw`
+
+          It's recommended to use dedicated test namespaces for the tests.
+
           Note: Actually, the test body goes in the :test metadata on the var,
           and the real function (the value of the var) calls test-var on
           itself.
@@ -78,6 +89,7 @@
           """
           ;; Explicit setup/teardown
           (do
+            (ns foo-test)
             (load-module :test)
 
             (test/deftest sum-test []
@@ -92,7 +104,8 @@
           """)
      :see-also '(
           "test/run-tests", "test/run-test-var", "test/use-fixtures",
-          "assert", "assert-eq", "assert-throws" ) }
+          "test/successful?", "assert", "assert-eq", "assert-ne",
+          "assert-throws", "assert-does-not-throw" ) }
 
   deftest [test-name & body]
 
@@ -112,13 +125,13 @@
      :examples '(
           """
           (do
-            (ns foo)
+            (ns foo-test)
             (load-module :test)
 
             (test/deftest plus-test []
               (assert-eq 3 (+ 1 2)))
 
-            (test/run-tests 'foo))
+            (test/run-tests 'foo-test))
           """)
      :see-also '(
           "test/deftest", "test/run-test-var", "test/use-fixtures" ) }
@@ -141,6 +154,7 @@
      :examples '(
           """
           (do
+            (ns foo-test)
             (load-module :test)
 
             (test/deftest plus-test []
@@ -173,13 +187,13 @@
      :examples '(
           """
           (do
-            (ns foo)
+            (ns foo-test)
             (load-module :test)
 
             (test/deftest plus-test []
               (assert-eq 3 (+ 1 2)))
 
-            (let [summary (test/run-tests 'foo)]
+            (let [summary (test/run-tests 'foo-test)]
               (test/successful? summary)))
           """)
      :see-also '(
