@@ -14,7 +14,7 @@ and this project adheres to
 
 ### Added
 
-- ...
+- macros `assert-ne` and `assert-does-not-throw`
 
 
 
@@ -25,7 +25,7 @@ and this project adheres to
 - support for destructuring in `loop / recur` loops
 - an optional customized indentation string to the JSON pretty printer
 - proxy builder for Java functional UnaryPredicate interface
-- macro `assert-eq` and `assert-throws`
+- macros `assert-eq` and `assert-throws`
 - file, line, and column information to the exceptions raised by the assert 
   macros `assert`, `assert-eq`, and `assert-throws`
 - :com.github.jlangch.venice.AssertionException to the list of the 
