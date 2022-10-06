@@ -285,6 +285,7 @@ public class PrimitivesSection implements ISectionBuilder {
         other.addSection(symbols);
         symbols.addItem(new DocItem("'a 'blue", null));
         symbols.addItem(diBuilder.getDocItem("symbol?"));
+        symbols.addItem(diBuilder.getDocItem("qualified-symbol?"));
         symbols.addItem(diBuilder.getDocItem("symbol"));
 
         final DocSection just = new DocSection("Just", "primitives.other.just");

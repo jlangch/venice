@@ -15,6 +15,7 @@ and this project adheres to
 ### Added
 
 - macros `assert-ne` and `assert-does-not-throw`
+- function `qualified-symbol?`
 
 
 

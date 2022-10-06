@@ -4632,6 +4632,32 @@ public class CoreFunctionsTest {
     }
 
     @Test
+    public void test_qualified_symbol_Q() {
+        final Venice venice = new Venice();
+
+        assertTrue((Boolean)venice.eval("(qualified-symbol? (symbol :foo/a))"));
+        assertTrue((Boolean)venice.eval("(qualified-symbol? (symbol 'foo/a))"));
+        assertTrue((Boolean)venice.eval("(qualified-symbol? 'foo/a)"));
+        assertTrue((Boolean)venice.eval("(qualified-symbol? 'foo/<>)"));
+
+        assertFalse((Boolean)venice.eval("(qualified-symbol? (symbol :a))"));
+        assertFalse((Boolean)venice.eval("(qualified-symbol? (symbol 'a))"));
+        assertFalse((Boolean)venice.eval("(qualified-symbol? 'a)"));
+        assertFalse((Boolean)venice.eval("(qualified-symbol? '<>)"));
+
+        assertFalse((Boolean)venice.eval("(qualified-symbol? nil)"));
+        assertFalse((Boolean)venice.eval("(qualified-symbol? true)"));
+        assertFalse((Boolean)venice.eval("(qualified-symbol? 1)"));
+        assertFalse((Boolean)venice.eval("(qualified-symbol? -3.0)"));
+        assertFalse((Boolean)venice.eval("(qualified-symbol? -3.0M)"));
+        assertFalse((Boolean)venice.eval("(qualified-symbol? \"ABC\")"));
+        assertFalse((Boolean)venice.eval("(qualified-symbol? :a)"));
+        assertFalse((Boolean)venice.eval("(qualified-symbol? '())"));
+        assertFalse((Boolean)venice.eval("(qualified-symbol? [])"));
+        assertFalse((Boolean)venice.eval("(qualified-symbol? {})"));
+    }
+
+    @Test
     public void test_trampoline() {
         final Venice venice = new Venice();
 

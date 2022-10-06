@@ -593,8 +593,8 @@ public class CoreFunctions {
                     .arglists("(symbol? x)")
                     .doc("Returns true if x is a symbol")
                     .examples(
-                        "(symbol? (symbol \"a\"))",
                         "(symbol? 'a)",
+                        "(symbol? (symbol \"a\"))",
                         "(symbol? nil)",
                         "(symbol? :a)")
                     .build()
@@ -604,6 +604,37 @@ public class CoreFunctions {
                 ArityExceptions.assertArity(this, args, 1);
 
                 return VncBoolean.of(Types.isVncSymbol(args.first()));
+            }
+
+            private static final long serialVersionUID = -1848883965231344442L;
+        };
+
+    public static VncFunction qualified_symbol_Q =
+        new VncFunction(
+                "qualified-symbol?",
+                VncFunction
+                    .meta()
+                    .arglists("(qualified-symbol? x)")
+                    .doc("Returns true if x is a qualified symbol")
+                    .examples(
+                        "(qualified-symbol? 'foo/a)",
+                        "(qualified-symbol? (symbol \"foo/a\"))",
+                        "(qualified-symbol? 'a)",
+                        "(qualified-symbol? nil)",
+                        "(qualified-symbol? :a)")
+                    .build()
+        ) {
+            @Override
+            public VncVal apply(final VncList args) {
+                ArityExceptions.assertArity(this, args, 1);
+
+                final VncVal s = args.first();
+                if (Types.isVncSymbol(s)) {
+                	return VncBoolean.of(((VncSymbol)s).hasNamespace());
+                }
+                else {
+                	return VncBoolean.False;
+                }
             }
 
             private static final long serialVersionUID = -1848883965231344442L;
@@ -9401,6 +9432,7 @@ public class CoreFunctions {
                 .add(char_Q)
                 .add(symbol)
                 .add(symbol_Q)
+                .add(qualified_symbol_Q)
                 .add(keyword)
                 .add(keyword_Q)
 

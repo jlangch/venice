@@ -63,7 +63,8 @@
            * `assert-throws`
            * `assert-does-not-throw`
 
-          It's recommended to use dedicated test namespaces for the tests.
+          It's recommended to use dedicated test namespaces for the tests and
+          to group tests by namespaces.
 
           Note: Actually, the test body goes in the :test metadata on the var,
           and the real function (the value of the var) calls test-var on
