@@ -44,7 +44,7 @@ public class CommandLineArgs {
         return new CommandLineArgs(args);
     }
 
-    public void parse(final String[] arguments){
+    private void parse(final String[] arguments){
         switchIndexes.clear();
         takenIndexes.clear();
         for(int ii=0; ii < args.length; ii++) {
@@ -56,7 +56,9 @@ public class CommandLineArgs {
     }
 
     public String[] args() {
-        return args;
+    	final String[] copy = new String[args.length];
+    	System.arraycopy(args, 0, copy, 0, args.length);
+        return copy;
     }
 
 
@@ -88,8 +90,8 @@ public class CommandLineArgs {
 
         final int switchIndex = switchIndexes.get(switchName);
         if (switchIndex + 1 < args.length) {
-            takenIndexes.add(switchIndex +1);
-            return args[switchIndex +1];
+            takenIndexes.add(switchIndex + 1);
+            return args[switchIndex + 1];
         }
         return defaultValue;
     }
@@ -116,18 +118,20 @@ public class CommandLineArgs {
 
 
     public String[] switchValues(final String switchName) {
-        if(!switchIndexes.containsKey(switchName)) return new String[0];
+        if (!switchIndexes.containsKey(switchName)) {
+        	return new String[0];
+        }
 
         final int switchIndex = switchIndexes.get(switchName);
 
         int nextArgIndex = switchIndex + 1;
-        while(nextArgIndex < args.length && !args[nextArgIndex].startsWith("-")){
+        while (nextArgIndex < args.length && !args[nextArgIndex].startsWith("-")) {
             takenIndexes.add(nextArgIndex);
             nextArgIndex++;
         }
 
         final String[] values = new String[nextArgIndex - switchIndex - 1];
-        for(int jj=0; jj < values.length; jj++){
+        for (int jj=0; jj < values.length; jj++) {
             values[jj] = args[switchIndex + jj + 1];
         }
         return values;
@@ -136,8 +140,8 @@ public class CommandLineArgs {
     public String[] targets() {
         final String[] targetArray = new String[args.length - takenIndexes.size()];
         int targetIndex = 0;
-        for(int ii=0; ii < args.length ; ii++) {
-            if( !takenIndexes.contains(ii) ) {
+        for (int ii=0; ii < args.length ; ii++) {
+            if (!takenIndexes.contains(ii)) {
                 targetArray[targetIndex++] = args[ii];
             }
         }

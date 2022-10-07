@@ -49,16 +49,12 @@ public class ErrorMessage {
     }
 
     public static String buildErrLocation(final VncVal val) {
-        final VncVal meta = val.getMeta();
-
-        final String file = MetaUtil.getFile(meta);
-        final int line =  MetaUtil.getLine(meta);
-        final int column =  MetaUtil.getCol(meta);
+        final SourcePos pos = SourcePos.fromVal(val);
 
         return String.format(
                 "File <%s> (%d,%d)",
-                file == null || file.isEmpty()? "unknown" : file,
-                line == -1 ? 1 : line,
-                column == -1 ? 1 : column);
+                pos.getFile(),
+                pos.getLineOrElse(1),
+                pos.getColumnOrElse(1));
     }
 }

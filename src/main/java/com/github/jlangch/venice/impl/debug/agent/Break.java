@@ -34,7 +34,7 @@ import com.github.jlangch.venice.impl.types.VncVal;
 import com.github.jlangch.venice.impl.types.collections.VncList;
 import com.github.jlangch.venice.impl.util.CallStack;
 import com.github.jlangch.venice.impl.util.CollectionUtil;
-import com.github.jlangch.venice.impl.util.MetaUtil;
+import com.github.jlangch.venice.impl.util.SourcePos;
 
 
 /**
@@ -135,12 +135,14 @@ public class Break {
                         fn.getQualifiedName());
         }
         else if (fn.isMacro()) {
+            final SourcePos pos = SourcePos.fromVal(fn);
+
             return String.format(
                         "%s %s defined in %s at line %d",
                         padRight("Macro:", padLen),
                         fn.getQualifiedName(),
-                        MetaUtil.getFile(fn.getMeta()),
-                        MetaUtil.getLine(fn.getMeta()));
+                        pos.getFile(),
+                        pos.getLine());
         }
         else if (fn.isNative()) {
             return String.format(
@@ -149,12 +151,14 @@ public class Break {
                         fn.getQualifiedName());
         }
         else {
+            final SourcePos pos = SourcePos.fromVal(fn);
+
             return String.format(
                         "%s %s defined in %s at line %d",
                         padRight("Function:", padLen),
                         fn.getQualifiedName(),
-                        MetaUtil.getFile(fn.getMeta()),
-                        MetaUtil.getLine(fn.getMeta()));
+                        pos.getFile(),
+                        pos.getLine());
         }
     }
 

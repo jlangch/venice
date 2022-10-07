@@ -21,6 +21,7 @@
  */
 package com.github.jlangch.venice.impl.util;
 
+import static org.junit.jupiter.api.Assertions.assertArrayEquals;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
@@ -67,6 +68,47 @@ public class CommandLineArgsTest {
         assertEquals(1.5D, cli.switchDoubleValue("-double"));
         assertEquals(null, cli.switchDoubleValue("-double-unknown"));
         assertEquals(2.5D, cli.switchDoubleValue("-double-unknown", 2.5D));
+    }
+
+    @Test
+    public void test_targets_1() {
+        final CommandLineArgs cli = CommandLineArgs.of("-file", "a.txt", "1");
+
+        assertEquals("a.txt", cli.switchValue("-file"));
+        assertArrayEquals(new String[] {"1"}, cli.targets());
+    }
+
+    @Test
+    public void test_targets_2() {
+        final CommandLineArgs cli = CommandLineArgs.of("-file", "a.txt", "1", "2");
+
+        assertEquals("a.txt", cli.switchValue("-file"));
+        assertArrayEquals(new String[] {"1", "2"}, cli.targets());
+    }
+
+    @Test
+    public void test_targets_3() {
+        final CommandLineArgs cli = CommandLineArgs.of("-file", "a.txt", "-c", "1", "2");
+
+        assertEquals("a.txt", cli.switchValue("-file"));
+        assertTrue(cli.switchPresent("-c"));
+        assertArrayEquals(new String[] {"1", "2"}, cli.targets());
+    }
+
+    @Test
+    public void test_targets_4() {
+        final CommandLineArgs cli = CommandLineArgs.of("-file", "a.txt", "-c", "-d", "1", "2");
+
+        assertEquals("a.txt", cli.switchValue("-file"));
+        assertTrue(cli.switchPresent("-c"));
+        assertArrayEquals(new String[] {"1", "2"}, cli.targets());
+    }
+
+    @Test
+    public void test_targets_5() {
+        final CommandLineArgs cli = CommandLineArgs.of("1", "2");
+
+        assertArrayEquals(new String[] {"1", "2"}, cli.targets());
     }
 
 }
