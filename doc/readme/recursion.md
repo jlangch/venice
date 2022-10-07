@@ -39,7 +39,7 @@ because of added stack frames for each recursion iteration.
 
 Functional languages with immutable data structures support **tail call optimization**
 (TCO) to provide memory efficient recursion. While Venice supports 
-automated tail call optimization and self recursion through the
+tail call optimization and self recursion through the
 *loop..recur* syntax. The latter is a way to mimic TCO. 
 
 In addition Venice provides the *trampoline* function for mutual recursion for more 
@@ -240,9 +240,9 @@ Examples:
 ```
 
 
-## Automated tail call optimization (TCO) 
+## Tail Call Optimization (TCO) 
 
-Venice has support for automated tail call optimization. The recursive 
+Venice has support for tail call optimization. The recursive 
 call must be in tail position.
 
 
