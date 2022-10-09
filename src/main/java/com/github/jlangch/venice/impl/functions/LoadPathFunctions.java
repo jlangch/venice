@@ -79,17 +79,23 @@ public class LoadPathFunctions {
                         "With a load path configuration of `[\"/Users/foo/demo/resources.zip\", \"/Users/foo/demo/data\"]` \n\n" +
                         " * `(io/slurp \"config.json\")` -> slurps /Users/foo/demo/data/config.json \n" +
                         " * `(io/slurp \"scripts/script1.venice\")` -> slurps /Users/foo/demo/data/scripts/script1.venice \n" +
-                        " * `(io/slurp \"img1.png\")` -> slurps /Users/foo/demo/resources.zip!img1.png \n" +
-                        "\n" +
-                        "I/O Functions with support for load paths:\n\n" +
+                        " * `(io/slurp \"img1.png\")` -> slurps /Users/foo/demo/resources.zip!img1.png" +
+                        "\n\n" +
+                        "I/O functions with support for load paths:" +
+                        "\n\n" +
                         " * `load-file`\n" +
-                        " * `load-classpath-file`\n" +
                         " * `io/slurp`\n" +
                         " * `io/slurp-lines`\n" +
                         " * `io/spit`\n" +
                         " * `io/file-in-stream`\n" +
                         " * `io/file-out-stream`\n" +
-                        " * `io/delete-file`")
+                        " * `io/delete-file`" +
+                        "\n\n" +
+                    	"To enforce a Venice script to read/write files on the load paths only:" +
+                        "\n\n" +
+                        " * Define a custom sandbox\n" +
+                        " * Disable all I/O functions\n" +
+                        " * Enable the I/O functions that support load paths\n")
                     .seeAlso(
                         "loadpath/unrestricted?",
                         "loadpath/normalize",

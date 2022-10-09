@@ -145,7 +145,7 @@ Example 2: Recursively compute the factorial of a number:
 ```
 
 
-Example 3: Recursively compute the fibonacci numbers (0 1 1 2 3 5 ...):
+Example 3: Recursively compute the Fibonacci numbers (0 1 1 2 3 5 8 ...):
 
 ```clojure
 ;; Definition:
@@ -242,8 +242,8 @@ Examples:
 
 ## Tail Call Optimization (TCO) 
 
-Venice has support for tail call optimization. The recursive 
-call must be in tail position.
+Venice has support for tail call optimization. The recursive call must be in tail 
+position.
 
 
 ```clojure
@@ -254,8 +254,8 @@ call must be in tail position.
                acc
                (factorial (dec n) (* acc n)))))
  
-   (factorial 5)       ; => 120N 
-   (factorial 10000))  ; => 284625968091...00000N  (35661 digits)
+  (factorial 5)       ; => 120N 
+  (factorial 10000))  ; => 284625968091...00000N  (35661 digits)
 ```
 
 
@@ -270,7 +270,8 @@ function. E.g.:
     ;; reducing factorial
     (reduce * 1N (range 1 (inc n))))
     
-(factorial 5)) 
+  (factorial 5)       ; => 120N 
+  (factorial 10000))  ; => 284625968091...00000N  (35661 digits)
 ```
 
 But not all recursive functions can be transformed into a tail recursive function
@@ -280,8 +281,7 @@ is such an example of a non [primitive recursive function](https://en.wikipedia.
 
 ## Recursion and Memoization
 
-While *memoization* is doing a good job computing fibonacci numbers using 
-simple recursion it has to raise its arms with the *Ackermann* function.
+For some recursive algorithms *memoization* can speed up computation dramatically:
 
 ```clojure
 (do
@@ -296,11 +296,14 @@ simple recursion it has to raise its arms with the *Ackermann* function.
   (time (fibonacci 25)))
 ```
 
+While *memoization* is doing a good job computing fibonacci numbers using 
+simple recursion it has to raise its arms with the *Ackermann* function.
+
 
 ## Compare recursion efficiency
 
 To see how efficient tail call optimization for recursion is we compare 
-simple recursion with self recursion applied to computing fibonacci numbers. 
+simple recursion with self recursion applied to computing Fibonacci numbers. 
 
 _Note: all examples run with upfront macro expansion enabled._
 
@@ -349,6 +352,6 @@ _Note: all examples run with upfront macro expansion enabled._
 | `(fib-simple 30)`     | 2.447s    |  
 | `(fib-tco 30)`        | 56.484µs |   
 | `(fib-loop-recur 30)` | 41.270µs  |  
-| `(fib-memoize 30)`    | 31.49µs  |     
+| `(fib-memoize 30)`    | 23.89µs  |     
 
 
