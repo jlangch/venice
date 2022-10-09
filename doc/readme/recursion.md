@@ -301,9 +301,8 @@ simple recursion it has to raise its arms with the *Ackermann* function.
 
 To see how efficient tail call optimization for recursion is we compare 
 simple recursion with self recursion applied to computing fibonacci numbers. 
-See the execution time and the number of function calls the profiler reveals.
 
-*Note: both examples run with upfront macro expansion enabled.*
+_Note: all examples run with upfront macro expansion enabled._
 
 ```clojure
 (do
@@ -311,83 +310,45 @@ See the execution time and the number of function calls the profiler reveals.
     (if (< n 2)
       n
       (+ (fib-simple (- n 1)) (fib-simple (- n 2)))))
+
+  (defn fib-tco 
+    ([n]  
+      (fib-tco n 0N 1N))
+    ([n a b]
+      (case n
+        0  a
+        1  b
+        (fib-tco (dec n) b (+ a b)))))
  
-  (defn fib-tco [x]
+  (defn fib-loop-recur [x]
     (loop [n x, a 0N, b 1N]
       (case n
         0  a
         1  b
         (recur (dec n) b (+ a b)))))
 
-  (perf (fib-simple 20) 100 100)
-  (println (prof :data-formatted "Metrics: fib-simple"))
- 
-  (println)
-  
-  (perf (fib-tco 20) 100 100)
-  (println (prof :data-formatted "Metrics: fib-tco")))
-```
-
-The profiler reveals that the TCO variant is way more efficient. The simple recursion 
-computes the same fibonacci number over and over again. Only with memoization it almost
-competes with the TCO variant. Moreover the simple recursion suffers from a memory problem 
-and stack overflow when applied for larger numbers.
-
-The TCO variant is more than 200 times faster than the simple recursion.
-
-```text
-Elapsed time for a single invocation
-  fib-simple:   16.61 ms   (1661.10 ms / 100)
-  fib-tco:      70.43 us
-```
-
-The simple recursive functions 'fib-simple' is called 13'529 times to calculate
-(fib-simple 20) a single time! This is the reason for being so much slower - it's
-the price for the elegance.
-
-The number of recursive calls to 'fib-simple':
-
-```text
-                  value   #calls  
-(fib-simple 1)       1        1
-(fib-simple 2)       1        3
-(fib-simple 3)       2        5 
-(fib-simple 4)       3        9
-(fib-simple 5)       5       15
-(fib-simple 6)       8       25
-(fib-simple 7)      13       41
-(fib-simple 8)      21       67
-(fib-simple 9)      34      109
-(fib-simple 10)     55      177
-(fib-simple 11)     89      287
-(fib-simple 12)    144      465
-(fib-simple 13)    233      753
-(fib-simple 14)    377     1219
-(fib-simple 15)    610     1973
+  (def fib-memoize
+    (memoize
+      (fn [n]
+        (case n
+          0  0
+          1  1
+          (+ (fib-memoize (- n 1)) (fib-memoize (- n 2)))))))
+         
+   ; (load-module :benchmark ['benchmark :as 'b])
+   ; (b/benchmark (fib-simple 30) 5 5)
+   ; (b/benchmark (fib-tco 30) 5000 1000)
+   ; (b/benchmark (fib-loop-recur 30) 5000 1000)
+   ; (time (fib-memoize 30))  ;; note: memoizing functions cannot be benchmarked!
+)
 ```
 
 
-```text
----------------------------------------------------
-Metrics: fib-simple    100 calls to (fib-simple 20)
----------------------------------------------------
-user/fib-simple  [1352900]:    21.02 s     15.54 us
-user/_test       [      1]:  1661.10 ms           
--                [1352800]:    97.24 ms       71 ns
-<=               [1352900]:    94.24 ms       69 ns
-+                [ 676400]:    47.95 ms       70 ns
----------------------------------------------------
+| Recursion            | Elapsed  |
+| :---                 | ---:     |
+| `(fib-simple 30)`     | 2.447s    |  
+| `(fib-tco 30)`        | 56.484µs |   
+| `(fib-loop-recur 30)` | 41.270µs  |  
+| `(fib-memoize 30)`    | 31.49µs  |     
 
----------------------------------------------------
-Metrics: fib-tco          100 calls to (fib-tco 20)
----------------------------------------------------
-user/_test       [   1]:        7.20 ms           
-user/fib-tco     [ 100]:        7.04 ms    70.43 us
-==               [4000]:      390.69 us       97 ns
-+                [1900]:      310.55 us      163 ns
-dec              [1900]:      251.60 us      132 ns
----------------------------------------------------
-```
-
-*Please note that the Venice profiler is also accumulating the elapsed time recursively for simple recursive functions resulting in a wrong value! The Venice profiler always reports the 'time with children' for a function.*
 
