@@ -42,12 +42,9 @@ import com.github.jlangch.venice.impl.thread.ThreadContext;
 import com.github.jlangch.venice.impl.types.Constants;
 import com.github.jlangch.venice.impl.types.VncFunction;
 import com.github.jlangch.venice.impl.types.VncJavaObject;
-import com.github.jlangch.venice.impl.types.VncKeyword;
 import com.github.jlangch.venice.impl.types.VncSpecialForm;
-import com.github.jlangch.venice.impl.types.VncString;
 import com.github.jlangch.venice.impl.types.VncSymbol;
 import com.github.jlangch.venice.impl.types.VncVal;
-import com.github.jlangch.venice.impl.types.collections.VncHashMap;
 import com.github.jlangch.venice.impl.types.util.Types;
 import com.github.jlangch.venice.impl.util.CallFrame;
 import com.github.jlangch.venice.impl.util.CallStack;
@@ -465,7 +462,7 @@ public class Env implements Serializable {
         // Move the global symbols to core global symbols so they remain untouched
         // while running the precompiled script and thus can be reused by subsequent
         // precompiled script invocations
-        return new Env(coreSystemGlobalSymbols, (SymbolTable)preCompiled.getSymbols());
+        return new Env(coreSystemGlobalSymbols, preCompiled.getSymbols());
     }
 
     public SymbolTable getGlobalSymbolTableWithoutCoreSystemSymbols() {
@@ -714,18 +711,14 @@ public class Env implements Serializable {
         return getAllGlobalSymbols()
                 .entrySet()
                 .stream()
-                .filter(e -> e.getValue().getVal() instanceof VncFunction)
-                .map(e -> {
-                        final VncFunction fn = (VncFunction)e.getValue().getVal();
-                        return e.getKey()
-                                .withMeta(VncHashMap.of(
-                                    new VncKeyword("group"), new VncString(fn.getNamespace()),
-                                    new VncKeyword("arglists"), fn.getArgLists(),
-                                    new VncKeyword("doc"), fn.getDoc()));
-                     })
+                .filter(e -> isFunctionOrSpecialForm(e.getValue().getVal()))
+                .map(e -> e.getKey())
                 .collect(Collectors.toList());
     }
 
+    private boolean isFunctionOrSpecialForm(final VncVal val) {
+    	return val instanceof VncFunction || val instanceof VncSpecialForm;
+    }
 
     private void rejectPrivateSymbolAccess(final VncSymbol sym, final Var globalVar) {
         final VncSymbol globalVarSym = globalVar.getName();

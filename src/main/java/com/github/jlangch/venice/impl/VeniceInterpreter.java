@@ -665,7 +665,7 @@ public class VeniceInterpreter implements IVeniceInterpreter, Serializable  {
                 case "tail-pos":
                     return tail_pos_check_(tailPosition, args, env, a0meta);
 
-                default: { // functions, macros, collections/keywords as functions
+                default: { // special forms, functions, macros, collections/keywords as functions
                     final VncVal fn0 = a0 instanceof VncSymbol
                                             ? env.get((VncSymbol)a0)
                                             : evaluate(a0, env, false); // ((resolve '+) 1 2)

@@ -17,6 +17,10 @@ and this project adheres to
 - macros `assert-ne` and `assert-does-not-throw`
 - function `qualified-symbol?`
 
+### Fixed
+
+- REPL command completer to consider special forms as well 
+
 
 
 ## [1.10.24] - 2022-10-03
