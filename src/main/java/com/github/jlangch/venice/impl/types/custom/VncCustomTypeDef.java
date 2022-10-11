@@ -109,7 +109,7 @@ public class VncCustomTypeDef extends VncCustomBaseTypeDef {
                                     .collect(Collectors.toList());
 
         return VncOrderedMap.of(
-                new VncKeyword(":type"),        getType(),
+                new VncKeyword(":type"),            getType(),
                 new VncKeyword(":custom-type"),     new VncKeyword(":record"),
                 new VncKeyword(":field-defs"),      VncList.ofColl(defs),
                 new VncKeyword(":validation-fn"),   validationFn == null ? Nil : validationFn);

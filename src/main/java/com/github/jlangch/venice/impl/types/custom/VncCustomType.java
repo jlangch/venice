@@ -115,6 +115,18 @@ public class VncCustomType extends VncMap {
         return values.getJavaMap();
     }
 
+    public VncMap getValuesAsMap() {
+        return values;
+    }
+
+    public VncVector getValuesAsVector() {
+    	VncVector vec = VncVector.empty();
+    	for(VncCustomTypeFieldDef f : typeDef.getFieldDefs()) {
+    		vec = vec.addAtEnd(values.get(f.getName()));
+    	}
+        return vec;
+    }
+
     @Override
     public VncVal containsKey(final VncVal key) {
         return values.containsKey(key);

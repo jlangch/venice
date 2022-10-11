@@ -379,7 +379,7 @@ public class VeniceInterpreter implements IVeniceInterpreter, Serializable  {
     @Override
     public List<String> getAvailableModules() {
         final List<String> modules = new ArrayList<>(Modules.VALID_MODULES);
-        modules.removeAll(Arrays.asList("core", "test", "http", "jackson"));
+        modules.removeAll(Arrays.asList("core", "test-support", "http", "jackson"));
         Collections.sort(modules);
         return modules;
     }
