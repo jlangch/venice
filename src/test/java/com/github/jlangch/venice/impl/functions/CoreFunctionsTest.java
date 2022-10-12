@@ -1125,6 +1125,12 @@ public class CoreFunctionsTest {
         assertFalse((Boolean)venice.eval("(== [1 2] [])"));
         assertFalse((Boolean)venice.eval("(== [1 2] nil)"));
 
+        // Nested Vectors
+        assertTrue((Boolean)venice.eval("(== [[1 2] 3 4] [[1 2] 3 4])"));
+        assertTrue((Boolean)venice.eval("(== [[1 2] 3 4] [[1I 2I] 3I 4I])"));
+        assertTrue((Boolean)venice.eval("(== [1 [2 3] 4] [1 [2 3] 4])"));
+        assertTrue((Boolean)venice.eval("(== [1 [2 3] 4] [1I [2I 3I] 4I])"));
+
         // Map
         assertTrue((Boolean)venice.eval("(== {:a 1 :b 2} {:a 1 :b 2})"));
         assertFalse((Boolean)venice.eval("(== {:a 1 :b 2} {:a 1 :b 3})"));
@@ -1132,7 +1138,25 @@ public class CoreFunctionsTest {
         assertFalse((Boolean)venice.eval("(== {:a 1 :b 2} {:a 1})"));
         assertFalse((Boolean)venice.eval("(== {:a 1 :b 2} {})"));
         assertFalse((Boolean)venice.eval("(== {:a 1 :b 2} nil)"));
-    }
+
+        // Volatile
+        assertTrue((Boolean)venice.eval("(== (volatile 3) (volatile 3))"));
+        assertTrue((Boolean)venice.eval("(== (volatile 3) (volatile 3I))"));
+        assertTrue((Boolean)venice.eval("(== (volatile [1 [2 3] 4]) (volatile [1 [2 3] 4]))"));
+        assertTrue((Boolean)venice.eval("(== (volatile [1 [2 3] 4]) (volatile [1I [2I 3I] 4I]))"));
+
+        // Atom
+        assertTrue((Boolean)venice.eval("(== (atom 3) (atom 3))"));
+        assertTrue((Boolean)venice.eval("(== (atom 3) (atom 3I))"));
+        assertTrue((Boolean)venice.eval("(== (atom [1 [2 3] 4]) (atom [1 [2 3] 4]))"));
+        assertTrue((Boolean)venice.eval("(== (atom [1 [2 3] 4]) (atom [1I [2I 3I] 4I]))"));
+
+        // Just
+        assertTrue((Boolean)venice.eval("(== (just 3) (just 3))"));
+        assertTrue((Boolean)venice.eval("(== (just 3) (just 3I))"));
+        assertTrue((Boolean)venice.eval("(== (just [1 [2 3] 4]) (just [1 [2 3] 4]))"));
+        assertTrue((Boolean)venice.eval("(== (just [1 [2 3] 4]) (just [1I [2I 3I] 4I]))"));
+   }
 
     @Test
     public void test_equals_strict_Q() {
@@ -1236,6 +1260,12 @@ public class CoreFunctionsTest {
         assertFalse((Boolean)venice.eval("(= [1 2] [])"));
         assertFalse((Boolean)venice.eval("(= [1 2] nil)"));
 
+        // Nested Vectors
+        assertTrue((Boolean)venice.eval("(= [[1 2] 3 4] [[1 2] 3 4])"));
+        assertFalse((Boolean)venice.eval("(= [[1 2] 3 4] [[1I 2I] 3I 4I])"));
+        assertTrue((Boolean)venice.eval("(= [1 [2 3] 4] [1 [2 3] 4])"));
+        assertFalse((Boolean)venice.eval("(= [1 [2 3] 4] [1I [2I 3I] 4I])"));
+
         // Map
         assertTrue((Boolean)venice.eval("(= {:a 1 :b 2} {:a 1 :b 2})"));
         assertFalse((Boolean)venice.eval("(= {:a 1 :b 2} {:a 1 :b 3})"));
@@ -1243,6 +1273,24 @@ public class CoreFunctionsTest {
         assertFalse((Boolean)venice.eval("(= {:a 1 :b 2} {:a 1})"));
         assertFalse((Boolean)venice.eval("(= {:a 1 :b 2} {})"));
         assertFalse((Boolean)venice.eval("(= {:a 1 :b 2} nil)"));
+
+        // Volatile
+        assertTrue((Boolean)venice.eval("(= (volatile 3) (volatile 3))"));
+        assertFalse((Boolean)venice.eval("(= (volatile 3) (volatile 3I))"));
+        assertTrue((Boolean)venice.eval("(= (volatile [1 [2 3] 4]) (volatile [1 [2 3] 4]))"));
+        assertFalse((Boolean)venice.eval("(= (volatile [1 [2 3] 4]) (volatile [1I [2I 3I] 4I]))"));
+
+        // Atom
+        assertTrue((Boolean)venice.eval("(= (atom 3) (atom 3))"));
+        assertFalse((Boolean)venice.eval("(= (atom 3) (atom 3I))"));
+        assertTrue((Boolean)venice.eval("(= (atom [1 [2 3] 4]) (atom [1 [2 3] 4]))"));
+        assertFalse((Boolean)venice.eval("(= (atom [1 [2 3] 4]) (atom [1I [2I 3I] 4I]))"));
+
+        // Just
+        assertTrue((Boolean)venice.eval("(= (just 3) (just 3))"));
+        assertFalse((Boolean)venice.eval("(= (just 3) (just 3I))"));
+        assertTrue((Boolean)venice.eval("(= (just [1 [2 3] 4]) (just [1 [2 3] 4]))"));
+        assertFalse((Boolean)venice.eval("(= (just [1 [2 3] 4]) (just [1I [2I 3I] 4I]))"));
     }
 
     @Test

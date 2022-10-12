@@ -56,7 +56,8 @@
           "(assert (= 3 (+ 1 2)))"
           "(assert (= 4 (+ 1 2)))" )
      :see-also '(
-          "assert-eq", "assert-ne", "assert-throws", "test/deftest")  }
+          "assert-false", "assert-eq", "assert-ne",
+          "assert-throws", "assert-does-not-throw", "test/deftest") }
 
   assert
 
@@ -96,6 +97,57 @@
 
 (defmacro
   ^{ :arglists '(
+          "(assert-false expr)"
+          "(assert-false expr message)")
+     :doc """
+          Evaluates expr and throws an `:AssertionException`
+          exception if it does not evaluate to logical false.
+          """
+     :examples '(
+          "(assert-false (= 3 (+ 1 3)))"
+          "(assert-false (= 4 (+ 1 3)))" )
+     :see-also '(
+         "assert", "assert-eq", "assert-ne",
+         "assert-throws", "assert-does-not-throw", "test/deftest") }
+
+  assert-false
+
+  ([expr]
+    `(assert-false ~expr nil))
+
+  ([expr message]
+    `(try
+       (if ~expr
+         (throw (ex :AssertionException
+                    (str "Assert failed."
+                         (if (some? ~message) (str "\n" ~message) "")
+                         "\nExpression:\n" (pr-str '~expr))
+                    "assert-false"
+                    (:file (meta '~expr) "unknown")
+                    (:line (meta '~expr) -1)
+                    (:column (meta '~expr) -1)
+                    (pr-str '~expr)))
+         (do
+           (set! *assertions* (inc *assertions*))
+           true))
+       (catch :AssertionException e
+         (throw e))
+       (catch :Exception e
+         (throw (ex :AssertionException
+                    (str "Assert failed."
+                         (if (some? ~message) (str "\n" ~message) "")
+                         "\nUnexpected exception: " (type e)
+                         "\nExpression:\n" (pr-str '~expr))
+                    "assert-false"
+                    (:file (meta '~expr) "unknown")
+                    (:line (meta '~expr) -1)
+                    (:column (meta '~expr) -1)
+                    (pr-str '~expr)
+                    e))))))
+
+
+(defmacro
+  ^{ :arglists '(
           "(assert-eq expected actual)"
           "(assert-eq expected actual message)")
      :doc """
@@ -106,8 +158,8 @@
           "(assert-eq 3 (+ 1 2))"
           "(assert-eq 4 (+ 1 2))" )
      :see-also '(
-          "assert", "assert-ne", "assert-throws", "assert-does-not-throw",
-          "test/deftest")  }
+       "assert", "assert-false", "assert-ne",
+       "assert-throws", "assert-does-not-throw", "test/deftest") }
 
   assert-eq
 
@@ -161,8 +213,8 @@
           "(assert-ne :foo :bar)"
           "(assert-ne :foo :foo)" )
      :see-also '(
-          "assert", "assert-eq", "assert-throws", "assert-does-not-throw",
-          "test/deftest")  }
+          "assert", "assert-false", "assert-eq",
+          "assert-throws", "assert-does-not-throw", "test/deftest") }
 
   assert-ne
 
@@ -216,8 +268,8 @@
           "(assert-throws :VncException (/ 2 0))"
           "(assert-throws :VncException (/ 2 1))" )
      :see-also '(
-          "assert", "assert-eq", "assert-ne", "assert-does-not-throw",
-          "test/deftest") }
+          "assert", "assert-false", "assert-eq", "assert-ne",
+          "assert-does-not-throw", "test/deftest") }
 
   assert-throws
 
@@ -270,8 +322,8 @@
           "(assert-does-not-throw (/ 2 1))"
           "(assert-does-not-throw (/ 2 0))" )
      :see-also '(
-          "assert", "assert-eq", "assert-ne", "assert-throws",
-          "test/deftest") }
+       "assert", "assert-false", "assert-eq", "assert-ne",
+       "assert-throws", "test/deftest") }
 
   assert-does-not-throw
 

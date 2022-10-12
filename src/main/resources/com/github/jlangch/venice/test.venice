@@ -105,7 +105,8 @@
           """)
      :see-also '(
           "test/run-tests", "test/run-test-var", "test/use-fixtures",
-          "test/successful?", "assert", "assert-eq", "assert-ne",
+          "test/successful?",
+          "assert", "assert-false", "assert-eq", "assert-ne",
           "assert-throws", "assert-does-not-throw" ) }
 
   deftest [test-name & body]
@@ -126,13 +127,19 @@
      :examples '(
           """
           (do
-            (ns foo-test)
             (load-module :test)
 
-            (test/deftest plus-test []
+            (ns foo-test)
+            (test/deftest add-test []
               (assert-eq 3 (+ 1 2)))
+            (test/deftest sub-test []
+              (assert-eq 1 (- 2 1)))
 
-            (test/run-tests 'foo-test))
+            (ns bar-test)
+            (test/deftest mul-test []
+              (assert-eq 2 (* 1 2)))
+
+            (test/run-tests 'foo-test 'bar-test))
           """)
      :see-also '(
           "test/deftest", "test/run-test-var", "test/use-fixtures" ) }

@@ -58,6 +58,7 @@ public class ModuleTestSection implements ISectionBuilder {
         final DocSection asserts = new DocSection("Assert", "macros.assert");
         all.addSection(asserts);
         asserts.addItem(diBuilder.getDocItem("assert", true, true));
+        asserts.addItem(diBuilder.getDocItem("assert-false", true, true));
         asserts.addItem(diBuilder.getDocItem("assert-eq", true, true));
         asserts.addItem(diBuilder.getDocItem("assert-ne", true, true));
         asserts.addItem(diBuilder.getDocItem("assert-throws", true, true));
