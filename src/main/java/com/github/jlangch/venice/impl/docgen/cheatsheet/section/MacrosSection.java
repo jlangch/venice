@@ -112,6 +112,7 @@ public class MacrosSection implements ISectionBuilder {
         asserts.addItem(diBuilder.getDocItem("assert-ne", true, true));
         asserts.addItem(diBuilder.getDocItem("assert-throws", true, true));
         asserts.addItem(diBuilder.getDocItem("assert-does-not-throw", true, true));
+        asserts.addItem(diBuilder.getDocItem("assert-throws-with-msg", true, true));
 
         final DocSection util = new DocSection("Util", "macros.util");
         all.addSection(util);

@@ -81,7 +81,7 @@ public class RegexFunctions {
                             "#\"[0-9]+\"",
                             "#\"\\d+\"")
                         .seeAlso(
-                            "regex/matcher", "regex/matches", "regex/find", "regex/find-all")
+                            "match?", "regex/matcher", "regex/matches", "regex/find", "regex/find-all")
                         .build()
             ) {
                 @Override
@@ -119,6 +119,7 @@ public class RegexFunctions {
                         "(regex/matcher (regex/pattern\"[0-9]+\") \"100\")",
                         "(regex/matcher \"[0-9]+\" \"100\")")
                     .seeAlso(
+                        "match?",
                         "regex/pattern", "regex/matches?", "regex/find?", "regex/reset",
                         "regex/matches", "regex/find", "regex/find-all")
                     .build()
@@ -157,7 +158,8 @@ public class RegexFunctions {
                         "  (regex/matches? m))                               ",
                         "(let [m (regex/matcher \"[0-9]+\" \"\")]                     \n" +
                         "  (filter #(regex/matches? m %) [\"100\" \"1a1\" \"200\"]))  ")
-                    .seeAlso("regex/matcher", "regex/matches", "regex/pattern")
+                    .seeAlso(
+                        "match?", "regex/matcher", "regex/matches", "regex/pattern")
                     .build()
         ) {
             @Override
@@ -229,7 +231,8 @@ public class RegexFunctions {
                         "  (println \"               \" (pr-str (nth matches 2)) (meta (nth matches 2))) \n" +
                         "  (println \"               \" (pr-str (nth matches 3)) (meta (nth matches 3))) \n" +
                         "  (println \"               \" (pr-str (nth matches 4)) (meta (nth matches 4))))")
-                    .seeAlso("regex/pattern")
+                    .seeAlso(
+                        "match?", "regex/pattern")
                     .build()
         ) {
             @Override
@@ -294,7 +297,8 @@ public class RegexFunctions {
                         "    (println (regex/group m 0))) \n" +
                         "  (when (regex/find? m) \n" +
                         "    (println (regex/group m 0))))")
-                    .seeAlso("regex/group", "regex/matches?", "regex/pattern")
+                    .seeAlso(
+                        "match?", "regex/group", "regex/matches?", "regex/pattern")
                     .build()
         ) {
             @Override
@@ -330,7 +334,7 @@ public class RegexFunctions {
                         "  (println (regex/find m))  \n" +
                         "  (println (regex/find m)))")
                     .seeAlso(
-                        "regex/find-all", "regex/find+", "regex/matcher", "regex/pattern")
+                        "match?", "regex/find-all", "regex/find+", "regex/matcher", "regex/pattern")
                     .build()
         ) {
             @Override
@@ -379,6 +383,7 @@ public class RegexFunctions {
                         "   (println (regex/find+ m))  \n" +
                         "   (println (regex/find+ m))) \n")
                     .seeAlso(
+                        "match?",
                         "regex/find-all+", "regex/find", "regex/matcher",
                         "regex/pattern")
                     .build()
@@ -431,6 +436,7 @@ public class RegexFunctions {
                         "(->> (regex/matcher \"([^\\\"]\\\\S*|\\\".+?\\\")\\\\s*\" \"1 2 \\\"3 4\\\" 5\") \n" +
                         "     (regex/find-all))                                 ")
                     .seeAlso(
+                        "match?",
                         "regex/find", "regex/find-all+", "regex/groups",
                         "regex/matcher", "regex/pattern")
                     .build()
@@ -478,6 +484,7 @@ public class RegexFunctions {
                         "(let [m (regex/matcher #\"[0-9]+\" \"672-345-456-3212\")] \n" +
                         "  (regex/find-all+ m))  \n")
                     .seeAlso(
+                        "match?",
                         "regex/find+", "regex/find-all", "regex/groups",
                         "regex/matcher", "regex/pattern")
                     .build()
@@ -525,7 +532,8 @@ public class RegexFunctions {
                         "    (println (regex/find m))                   \n" +
                         "    (let [m (regex/reset m \"200\")]           \n" +
                         "      (println (regex/find m)))))" )
-                    .seeAlso("regex/matcher", "regex/pattern")
+                    .seeAlso(
+                        "match?", "regex/matcher", "regex/pattern")
                     .build()
         ) {
             @Override
@@ -565,8 +573,9 @@ public class RegexFunctions {
                         "        s)))                                            \n" +
                         "  (swap \"100::200\"))                                  ")
                     .seeAlso(
-                    	"regex/groups", "regex/matcher", "regex/matches?",
-                    	"regex/pattern")
+                        "match?",
+                        "regex/groups", "regex/matcher", "regex/matches?",
+                        "regex/pattern")
                     .build()
         ) {
             @Override
@@ -605,8 +614,9 @@ public class RegexFunctions {
                             "(let [m (regex/matcher #\"(\\d+)([a-z]+)\" \"100abc:\")] \n" +
                             "  (regex/groups m))                                      ")
                         .seeAlso(
-                        	"regex/group", "regex/find-all", "regex/matcher",
-                        	"regex/matches?", "regex/pattern")
+                            "match?",
+                            "regex/group", "regex/find-all", "regex/matcher",
+                            "regex/matches?", "regex/pattern")
                         .build()
             ) {
                 @Override
@@ -641,7 +651,7 @@ public class RegexFunctions {
                         "(let [m (regex/matcher #\"([0-9]+)(.*)\" \"100abc\")]\n" +
                         "   (regex/count m))  ")
                     .seeAlso(
-                        "regex/matcher", "regex/pattern")
+                        "match?", "regex/matcher", "regex/pattern")
                     .build()
         ) {
             @Override

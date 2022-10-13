@@ -58,10 +58,12 @@
           function body:
 
            * `assert`
+           * `assert-false`
            * `assert-eq`
            * `assert-ne`
            * `assert-throws`
            * `assert-does-not-throw`
+           * `assert-throws-with-msg`
 
           It's recommended to use dedicated test namespaces for the tests and
           to group tests by namespaces.

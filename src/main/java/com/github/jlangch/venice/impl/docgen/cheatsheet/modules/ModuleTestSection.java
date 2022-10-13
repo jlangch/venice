@@ -63,6 +63,7 @@ public class ModuleTestSection implements ISectionBuilder {
         asserts.addItem(diBuilder.getDocItem("assert-ne", true, true));
         asserts.addItem(diBuilder.getDocItem("assert-throws", true, true));
         asserts.addItem(diBuilder.getDocItem("assert-does-not-throw", true, true));
+        asserts.addItem(diBuilder.getDocItem("assert-throws-with-msg", true, true));
 
         return section;
     }

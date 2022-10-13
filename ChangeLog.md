@@ -17,6 +17,11 @@ and this project adheres to
 - macros `assert-ne` and `assert-does-not-throw`
 - function `qualified-symbol?`
 
+### Improved
+
+- functions `match?` and `not-match?` to support also regex patterns 
+  (:java.util.regex.Pattern)
+
 ### Fixed
 
 - REPL command completer to consider special forms as well 

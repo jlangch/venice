@@ -38,6 +38,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.TimeUnit;
+import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
 import com.github.jlangch.venice.ContinueException;
@@ -630,10 +631,10 @@ public class CoreFunctions {
 
                 final VncVal s = args.first();
                 if (Types.isVncSymbol(s)) {
-                	return VncBoolean.of(((VncSymbol)s).hasNamespace());
+                    return VncBoolean.of(((VncSymbol)s).hasNamespace());
                 }
                 else {
-                	return VncBoolean.False;
+                    return VncBoolean.False;
                 }
             }
 
@@ -1224,10 +1225,19 @@ public class CoreFunctions {
                 VncFunction
                     .meta()
                     .arglists("(match? s regex)")
-                    .doc("Returns true if the string s matches the regular expression regex")
+                    .doc(
+                        "Returns true if the string s matches the regular expression " +
+                        "regex.\n\n" +
+                        "The argument 'regex' may be a string representing a regular " +
+                        "expression or a :java.util.regex.Pattern.")
                     .examples(
-                            "(match? \"1234\" \"[0-9]+\")",
-                            "(match? \"1234ss\" \"[0-9]+\")")
+                        "(match? \"1234\" \"[0-9]+\")",
+                        "(match? \"1234ss\" \"[0-9]+\")",
+                        "(match? \"1234\" #\"[0-9]+\")")
+                    .seeAlso(
+                        "not-match?",
+                        "regex/pattern", "regex/matcher", "regex/matches",
+                        "regex/find", "regex/find-all")
                     .build()
         ) {
             @Override
@@ -1239,13 +1249,22 @@ public class CoreFunctions {
                             "Invalid first argument type %s while calling function 'match?'",
                             Types.getType(args.first())));
                 }
-                if (!Types.isVncString(args.second())) {
+
+                final String s = ((VncString)args.first()).getValue();
+
+                if (Types.isVncString(args.second())) {
+                    final String regex = ((VncString)args.second()).getValue();
+                    return VncBoolean.of(s.matches(regex));
+                }
+                else if (Types.isVncJavaObject(args.second(), Pattern.class)) {
+                    final Pattern p = Coerce.toVncJavaObject(args.second(), Pattern.class);
+                    return VncBoolean.of(p.matcher(s).matches());
+                }
+                else {
                     throw new VncException(String.format(
                             "Invalid second argument type %s while calling function 'match?'",
                             Types.getType(args.second())));
                 }
-
-                return VncBoolean.of(matchesRegex(args.first(), args.second()));
             }
 
             private static final long serialVersionUID = -1848883965231344442L;
@@ -1257,10 +1276,19 @@ public class CoreFunctions {
                 VncFunction
                     .meta()
                     .arglists("(not-match? s regex)")
-                    .doc("Returns true if the string s does not match the regular expression regex")
+                    .doc(
+                        "Returns true if the string s does not match the regular " +
+                        "expression regex.\n\n" +
+                        "The argument 'regex' may be a string representing a regular " +
+                        "expression or a :java.util.regex.Pattern.")
                     .examples(
                         "(not-match? \"1234\" \"[0-9]+\")",
-                        "(not-match? \"1234ss\" \"[0-9]+\")")
+                        "(not-match? \"1234ss\" \"[0-9]+\")",
+                        "(not-match? \"1234\" #\"[0-9]+\")")
+                    .seeAlso(
+                        "match?",
+                        "regex/pattern", "regex/matcher", "regex/matches",
+                        "regex/find", "regex/find-all")
                     .build()
         ) {
             @Override
@@ -1272,13 +1300,22 @@ public class CoreFunctions {
                             "Invalid first argument type %s while calling function 'not-match?'",
                             Types.getType(args.first())));
                 }
-                if (!Types.isVncString(args.second())) {
+
+                final String s = ((VncString)args.first()).getValue();
+
+                if (Types.isVncString(args.second())) {
+                    final String regex = ((VncString)args.second()).getValue();
+                    return VncBoolean.of(!s.matches(regex));
+                }
+                else if (Types.isVncJavaObject(args.second(), Pattern.class)) {
+                    final Pattern p = Coerce.toVncJavaObject(args.second(), Pattern.class);
+                    return VncBoolean.of(!p.matcher(s).matches());
+                }
+                else {
                     throw new VncException(String.format(
-                            "Invalid second argument type %s while calling function 'not-match?'",
+                            "Invalid second argument type %s while calling function 'match?'",
                             Types.getType(args.second())));
                 }
-
-                return VncBoolean.of(!matchesRegex(args.first(), args.second()));
             }
 
             private static final long serialVersionUID = -1848883965231344442L;
@@ -7785,14 +7822,14 @@ public class CoreFunctions {
                 VncFunction
                     .meta()
                     .arglists(
-                    	"(run! f coll)")
+                        "(run! f coll)")
                     .doc(
                         "Runs the supplied function, for purposes of side " +
                         "effects, on successive items in the collection. Returns `nil`")
                     .examples(
                         "(run! prn [1 2 3 4])")
                     .seeAlso(
-                    	"docoll", "mapv")
+                        "docoll", "mapv")
                     .build()
         ) {
             @Override
@@ -7812,7 +7849,7 @@ public class CoreFunctions {
                 VncFunction
                     .meta()
                     .arglists(
-                    	"(mapv f coll colls*)")
+                        "(mapv f coll colls*)")
                     .doc(
                         "Returns a vector consisting of the result of applying f " +
                         "to the set of first items of each coll, followed by applying " +
@@ -7823,7 +7860,7 @@ public class CoreFunctions {
                         "(mapv + [1 2 3 4] [10 20 30 40])",
                         "(mapv vector [1 2 3 4] [10 20 30 40])")
                     .seeAlso(
-                    	"docoll")
+                        "docoll")
                     .build()
         ) {
             @Override
@@ -8939,10 +8976,10 @@ public class CoreFunctions {
                         "  (def counter (atom 0))              \n" +
                         "  (alter-meta! counter assoc :a 1)    \n" +
                         "  (reset-meta! counter {}))           ",
-	                    "(do                                   \n" +
-	                    "  (def counter (atom 0))              \n" +
-	                    "  (alter-meta! counter assoc :a 1)    \n" +
-	                    "  (reset-meta! counter {})            \n" +
+                        "(do                                   \n" +
+                        "  (def counter (atom 0))              \n" +
+                        "  (alter-meta! counter assoc :a 1)    \n" +
+                        "  (reset-meta! counter {})            \n" +
                         "  (meta counter))                     ")
                     .seeAlso("meta", "alter-meta!")
                     .build()
@@ -9377,15 +9414,6 @@ public class CoreFunctions {
             throw new VncException(String.format(
                     "%s: collection type %s not supported",
                     fnName, Types.getType(coll)));
-        }
-    }
-
-    private static boolean matchesRegex(VncVal text, VncVal regex) {
-        if (text instanceof VncString) {
-            return ((VncString)text).getValue().matches(((VncString)regex).getValue());
-        }
-        else {
-            return false;
         }
     }
 

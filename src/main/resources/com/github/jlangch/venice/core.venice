@@ -77,7 +77,7 @@
                     (:column (meta '~expr) -1)
                     (pr-str '~expr)))
          (do
-           (set! *assertions* (inc *assertions*))
+           (set! core/*assertions* (inc core/*assertions*))
            true))
        (catch :AssertionException e
          (throw e))
@@ -128,7 +128,7 @@
                     (:column (meta '~expr) -1)
                     (pr-str '~expr)))
          (do
-           (set! *assertions* (inc *assertions*))
+           (set! core/*assertions* (inc core/*assertions*))
            true))
        (catch :AssertionException e
          (throw e))
@@ -183,7 +183,7 @@
                       (:column (meta '~expected) -1)
                       (pr-str '~actual)))
            (do
-             (set! *assertions* (inc *assertions*))
+             (set! core/*assertions* (inc core/*assertions*))
              true)))
        (catch :AssertionException e
          (throw e))
@@ -238,7 +238,7 @@
                       (:column (meta '~unexpected) -1)
                       (pr-str '~actual)))
            (do
-             (set! *assertions* (inc *assertions*))
+             (set! core/*assertions* (inc core/*assertions*))
              true)))
        (catch :AssertionException e
          (throw e))
@@ -293,14 +293,14 @@
                          (:column (meta '~expr) -1)
                          (pr-str '~expr))))
        (catch ~ex-type e
-              (set! *assertions* (inc *assertions*))
+              (set! core/*assertions* (inc core/*assertions*))
               true)
        (catch :java.lang.Exception e
               (throw (ex :AssertionException
                          (str "Assert failed."
                               (if (some? ~message) (str "\n" ~message) "")
                               "\nExpected: " ~ex-type
-                              "\nCaught:   " (class-name e)
+                              "\nCaught:   :" (class-name e)
                               "\nExpression:\n" (pr-str '~expr))
                          "assert-throws"
                          (:file (meta '~expr) "unknown")
@@ -308,6 +308,70 @@
                          (:column (meta '~expr) -1)
                          (pr-str '~expr)))))))
 
+
+(defmacro
+  ^{ :arglists '(
+          "(assert-throws-with-msg ex-type ex-msg-regexp expr)"
+          "(assert-throws-with-msg ex-type ex-msg-regexp expr message)")
+     :doc """
+          Evaluates expr and throws an `:AssertionException`
+          exception if it does not throw the expected exception of type ex-type.
+          """
+     :examples '(
+          """(assert-throws-with-msg :VncException #"/ by zero" (/ 2 0))""" )
+     :see-also '(
+          "assert", "assert-false", "assert-eq", "assert-ne",
+          "assert-does-not-throw", "test/deftest") }
+
+  assert-throws-with-msg
+
+  ([ex-type ex-msg-regexp expr]
+    `(assert-throws-with-msg ~ex-type ~ex-msg-regexp ~expr nil))
+
+  ([ex-type ex-msg-regexp expr message]
+    `(try
+       ~expr
+       (throw :no-ex-thrown)
+       (catch #(= % :no-ex-thrown) e
+              (throw (ex :AssertionException
+                         (str "Assert failed."
+                              (if (some? ~message) (str "\n" ~message) "")
+                              "\nExpected: " ~ex-type
+                              "\nBut no exception has been thrown!"
+                              "\nExpression:\n" (pr-str '~expr))
+                         "assert-throws"
+                         (:file (meta '~expr) "unknown")
+                         (:line (meta '~expr) -1)
+                         (:column (meta '~expr) -1)
+                         (pr-str '~expr))))
+       (catch ~ex-type e
+              (if (match? (:message e) ~ex-msg-regexp)
+                (do
+                  (set! core/*assertions* (inc core/*assertions*))
+                  true)
+                (throw (ex :AssertionException
+                           (str "Assert failed."
+                                (if (some? ~message) (str "\n" ~message) "")
+                                "\nExpected: #\"" ~ex-msg-regexp "\""
+                                "\nActual:   " (pr-str (:message e))
+                                "\nExpression:\n" (pr-str '~expr))
+                           "assert-throws"
+                           (:file (meta '~expr) "unknown")
+                           (:line (meta '~expr) -1)
+                           (:column (meta '~expr) -1)
+                           (pr-str '~expr)))))
+       (catch :java.lang.Exception e
+              (throw (ex :AssertionException
+                         (str "Assert failed."
+                              (if (some? ~message) (str "\n" ~message) "")
+                              "\nExpected: " ~ex-type
+                              "\nCaught:   :" (class-name e)
+                              "\nExpression:\n" (pr-str '~expr))
+                         "assert-throws"
+                         (:file (meta '~expr) "unknown")
+                         (:line (meta '~expr) -1)
+                         (:column (meta '~expr) -1)
+                         (pr-str '~expr)))))))
 
 
 (defmacro
@@ -333,7 +397,7 @@
   ([expr message]
     `(try
        ~expr
-       (set! *assertions* (inc *assertions*))
+       (set! core/*assertions* (inc core/*assertions*))
        true
        (catch :java.lang.Exception e
               (throw (ex :AssertionException

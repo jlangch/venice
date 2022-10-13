@@ -3026,6 +3026,9 @@ public class CoreFunctionsTest {
 
         assertTrue((Boolean)venice.eval("(match? \"123\" \"[0-9]+\")"));
         assertFalse((Boolean)venice.eval("(match? \"123a\" \"[0-9]+\")"));
+
+        assertTrue((Boolean)venice.eval("(match? \"123\" #\"[0-9]+\")"));
+        assertFalse((Boolean)venice.eval("(match? \"123a\" #\"[0-9]+\")"));
     }
 
     @Test
@@ -3034,6 +3037,9 @@ public class CoreFunctionsTest {
 
         assertFalse((Boolean)venice.eval("(not-match? \"123\" \"[0-9]+\")"));
         assertTrue((Boolean)venice.eval("(not-match? \"123a\" \"[0-9]+\")"));
+
+        assertFalse((Boolean)venice.eval("(not-match? \"123\" #\"[0-9]+\")"));
+        assertTrue((Boolean)venice.eval("(not-match? \"123a\" #\"[0-9]+\")"));
     }
 
     @Test

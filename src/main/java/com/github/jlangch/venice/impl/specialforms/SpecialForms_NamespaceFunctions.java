@@ -387,7 +387,7 @@ public class SpecialForms_NamespaceFunctions {
                     .arglists("(ns-meta n)")
                     .doc(
                         "Returns the meta data of the namespace n or `nil` if n is " +
-                        "an existing namespace")
+                        "not an existing namespace")
                     .examples(
                         "(do               \n" +
                         "  (ns foo)        \n" +
