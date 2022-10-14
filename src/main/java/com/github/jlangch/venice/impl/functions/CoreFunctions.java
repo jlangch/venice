@@ -38,6 +38,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.TimeUnit;
+import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
@@ -97,11 +98,11 @@ import com.github.jlangch.venice.impl.types.custom.VncCustomType;
 import com.github.jlangch.venice.impl.types.util.Coerce;
 import com.github.jlangch.venice.impl.types.util.Types;
 import com.github.jlangch.venice.impl.util.ArityExceptions;
-import com.github.jlangch.venice.impl.util.CallFrame;
-import com.github.jlangch.venice.impl.util.CallStack;
 import com.github.jlangch.venice.impl.util.MeterRegistry;
 import com.github.jlangch.venice.impl.util.StringUtil;
 import com.github.jlangch.venice.impl.util.SymbolMapBuilder;
+import com.github.jlangch.venice.impl.util.callstack.CallFrame;
+import com.github.jlangch.venice.impl.util.callstack.CallStack;
 import com.github.jlangch.venice.impl.util.transducer.Reducer;
 
 
@@ -1229,13 +1230,20 @@ public class CoreFunctions {
                         "Returns true if the string s matches the regular expression " +
                         "regex.\n\n" +
                         "The argument 'regex' may be a string representing a regular " +
-                        "expression or a :java.util.regex.Pattern.")
+                        "expression or a :java.util.regex.Pattern. \n\n" +
+                        "See the functions in the 'regex' namespace if more than a " +
+                        "simple regex match is required! E.g. `regex/matches?` performs " +
+                        "much better on matching many strings against the same pattern: \n\n" +
+                        "```                                                          \n" +
+                        "(let [m (regex/matcher #\"[0-9]+\" \"\")]                    \n" +
+                        "  (filter #(regex/matches? m %) [\"100\" \"1a1\" \"200\"]))  \n" +
+                        "```")
                     .examples(
                         "(match? \"1234\" \"[0-9]+\")",
                         "(match? \"1234ss\" \"[0-9]+\")",
                         "(match? \"1234\" #\"[0-9]+\")")
                     .seeAlso(
-                        "not-match?",
+                        "not-match?", "regex/matches?", "regex/matches-not?",
                         "regex/pattern", "regex/matcher", "regex/matches",
                         "regex/find", "regex/find-all")
                     .build()
@@ -1260,6 +1268,10 @@ public class CoreFunctions {
                     final Pattern p = Coerce.toVncJavaObject(args.second(), Pattern.class);
                     return VncBoolean.of(p.matcher(s).matches());
                 }
+                else if (Types.isVncJavaObject(args.second(), Matcher.class)) {
+                    final Matcher m = Coerce.toVncJavaObject(args.second(), Matcher.class);
+                    return VncBoolean.of(m.reset(s).matches());
+                }
                 else {
                     throw new VncException(String.format(
                             "Invalid second argument type %s while calling function 'match?'",
@@ -1280,13 +1292,20 @@ public class CoreFunctions {
                         "Returns true if the string s does not match the regular " +
                         "expression regex.\n\n" +
                         "The argument 'regex' may be a string representing a regular " +
-                        "expression or a :java.util.regex.Pattern.")
+                        "expression or a :java.util.regex.Pattern.\n\n" +
+                        "See the functions in the 'regex' namespace if more than a " +
+                        "simple regex match is required! E.g. `regex/matches-not?` performs " +
+                        "much better on matching many strings against the same pattern: \n\n" +
+                        "```                                                              \n" +
+                        "(let [m (regex/matcher #\"[0-9]+\" \"\")]                        \n" +
+                        "  (filter #(regex/matches-not? m %) [\"100\" \"1a1\" \"200\"]))  \n" +
+                        "```")
                     .examples(
-                        "(not-match? \"1234\" \"[0-9]+\")",
-                        "(not-match? \"1234ss\" \"[0-9]+\")",
-                        "(not-match? \"1234\" #\"[0-9]+\")")
+                        "(not-match? \"S1000\" \"[0-9]+\")",
+                        "(not-match? \"S1000\" #\"[0-9]+\")",
+                        "(not-match? \"1000\" \"[0-9]+\")")
                     .seeAlso(
-                        "match?",
+                        "match?", "regex/matches-not?", "regex/matches?",
                         "regex/pattern", "regex/matcher", "regex/matches",
                         "regex/find", "regex/find-all")
                     .build()
@@ -1310,6 +1329,10 @@ public class CoreFunctions {
                 else if (Types.isVncJavaObject(args.second(), Pattern.class)) {
                     final Pattern p = Coerce.toVncJavaObject(args.second(), Pattern.class);
                     return VncBoolean.of(!p.matcher(s).matches());
+                }
+                else if (Types.isVncJavaObject(args.second(), Matcher.class)) {
+                    final Matcher m = Coerce.toVncJavaObject(args.second(), Matcher.class);
+                    return VncBoolean.of(!m.reset(s).matches());
                 }
                 else {
                     throw new VncException(String.format(

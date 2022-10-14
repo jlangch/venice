@@ -30,6 +30,8 @@ import java.util.List;
 import org.junit.jupiter.api.Test;
 
 import com.github.jlangch.venice.impl.types.VncLong;
+import com.github.jlangch.venice.impl.util.callstack.CallFrame;
+import com.github.jlangch.venice.impl.util.callstack.CallStack;
 
 
 public class CallstackTest {

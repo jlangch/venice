@@ -149,14 +149,13 @@ public class RegexFunctions {
                         "(regex/matches? matcher str)")
                     .doc(
                         "Attempts to match the entire region against the pattern. " +
-                        "If the match succeeds then more information can be obtained " +
-                        "via the regex/group function")
+                        "Returns true if the patterns matches the string else false.")
                     .examples(
-                        "(let [m (regex/matcher \"[0-9]+\" \"100\")]         \n" +
+                        "(let [m (regex/matcher #\"[0-9]+\" \"100\")]        \n" +
                         "  (regex/matches? m))                               ",
-                        "(let [m (regex/matcher \"[0-9]+\" \"value: 100\")]  \n" +
+                        "(let [m (regex/matcher #\"[0-9]+\" \"value: 100\")] \n" +
                         "  (regex/matches? m))                               ",
-                        "(let [m (regex/matcher \"[0-9]+\" \"\")]                     \n" +
+                        "(let [m (regex/matcher #\"[0-9]+\" \"\")]           \n" +
                         "  (filter #(regex/matches? m %) [\"100\" \"1a1\" \"200\"]))  ")
                     .seeAlso(
                         "match?", "regex/matcher", "regex/matches", "regex/pattern")
@@ -174,6 +173,46 @@ public class RegexFunctions {
                     final Matcher m = Coerce.toVncJavaObject(args.first(), Matcher.class);
                     final String s = Coerce.toVncString(args.second()).getValue();
                     return VncBoolean.of(m.reset(s).matches());
+                }
+            }
+
+            private static final long serialVersionUID = -1848883965231344442L;
+        };
+
+    public static VncFunction matches_not_Q =
+        new VncFunction(
+                "regex/matches-not?",
+                VncFunction
+                    .meta()
+                    .arglists(
+                        "(regex/matches-not? matcher)",
+                        "(regex/matches-not? matcher str)")
+                    .doc(
+                        "Attempts to match the entire region against the pattern. " +
+                        "Returns false if the patterns matches the string else true.")
+                    .examples(
+                        "(let [m (regex/matcher #\"[0-9]+\" \"10A\")]         \n" +
+                        "  (regex/matches-not? m))                            ",
+                        "(let [m (regex/matcher #\"[0-9]+\" \"value: 10A\")]  \n" +
+                        "  (regex/matches-not? m))                            ",
+                        "(let [m (regex/matcher #\"[0-9]+\" \"\")]                        \n" +
+                        "  (filter #(regex/matches-not? m %) [\"100\" \"10A\" \"200\"]))  ")
+                    .seeAlso(
+                        "match?", "regex/matcher", "regex/matches", "regex/pattern")
+                    .build()
+        ) {
+            @Override
+            public VncVal apply(final VncList args) {
+                ArityExceptions.assertArity(this, args, 1, 2);
+
+                if (args.size() == 1) {
+                    final Matcher m = (Matcher)Coerce.toVncJavaObject(args.first()).getDelegate();
+                    return VncBoolean.of(!m.matches());
+                }
+                else {
+                    final Matcher m = Coerce.toVncJavaObject(args.first(), Matcher.class);
+                    final String s = Coerce.toVncString(args.second()).getValue();
+                    return VncBoolean.of(!m.reset(s).matches());
                 }
             }
 
@@ -683,6 +722,7 @@ public class RegexFunctions {
                     .add(find_Q)
                     .add(matches)
                     .add(matches_Q)
+                    .add(matches_not_Q)
                     .add(group)
                     .add(groups)
                     .add(count)

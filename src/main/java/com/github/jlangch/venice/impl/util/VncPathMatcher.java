@@ -23,11 +23,16 @@ package com.github.jlangch.venice.impl.util;
 
 import java.nio.file.PathMatcher;
 
+
 public class VncPathMatcher {
     public VncPathMatcher(final PathMatcher matcher) {
         this.matcher = matcher;
     }
 
-    public final PathMatcher matcher;
+    public PathMatcher getPathMatcher() {
+        return matcher;
+    }
 
+
+    private final PathMatcher matcher;
 }

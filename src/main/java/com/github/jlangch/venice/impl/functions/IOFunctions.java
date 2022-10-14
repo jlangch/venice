@@ -78,10 +78,10 @@ import com.github.jlangch.venice.impl.types.collections.VncList;
 import com.github.jlangch.venice.impl.types.util.Coerce;
 import com.github.jlangch.venice.impl.types.util.Types;
 import com.github.jlangch.venice.impl.util.ArityExceptions;
-import com.github.jlangch.venice.impl.util.CallFrame;
 import com.github.jlangch.venice.impl.util.MimeTypes;
 import com.github.jlangch.venice.impl.util.SymbolMapBuilder;
 import com.github.jlangch.venice.impl.util.VncPathMatcher;
+import com.github.jlangch.venice.impl.util.callstack.CallFrame;
 import com.github.jlangch.venice.impl.util.io.CharsetUtil;
 import com.github.jlangch.venice.impl.util.io.ClassPathResource;
 import com.github.jlangch.venice.impl.util.io.FileUtil;
@@ -505,8 +505,10 @@ public class IOFunctions {
                     .doc(
                         "Returns true if the file f exists and is a directory. " +
                         "f must be a file or a string (file path).")
-                    .examples("(io/exists-dir? (io/file \"/temp\"))")
-                    .seeAlso("io/exists-file?", "io/file-symbolic-link?")
+                    .examples(
+                        "(io/exists-dir? (io/file \"/temp\"))")
+                    .seeAlso(
+                        "io/exists-file?", "io/file-symbolic-link?")
                     .build()
         ) {
             @Override
@@ -534,8 +536,10 @@ public class IOFunctions {
                     .doc(
                         "Returns true if the file or directory f exists and can be read. " +
                         "f must be a file or a string (file path).")
-                    .examples("(io/file-can-read? \"/tmp/test.txt\")")
-                    .seeAlso("io/file-can-write?", "io/file-can-execute?", "io/file-hidden?", "io/file-symbolic-link?")
+                    .examples(
+                        "(io/file-can-read? \"/tmp/test.txt\")")
+                    .seeAlso(
+                        "io/file-can-write?", "io/file-can-execute?", "io/file-hidden?", "io/file-symbolic-link?")
                     .build()
         ) {
             @Override
@@ -561,8 +565,10 @@ public class IOFunctions {
                     .doc(
                         "Returns true if the file or directory f exists and can be written. " +
                         "f must be a file or a string (file path).")
-                    .examples("(io/file-can-write? \"/tmp/test.txt\")")
-                    .seeAlso("io/file-can-read?", "io/file-can-execute?", "io/file-hidden?", "io/file-symbolic-link?")
+                    .examples(
+                        "(io/file-can-write? \"/tmp/test.txt\")")
+                    .seeAlso(
+                        "io/file-can-read?", "io/file-can-execute?", "io/file-hidden?", "io/file-symbolic-link?")
                     .build()
         ) {
             @Override
@@ -588,8 +594,10 @@ public class IOFunctions {
                     .doc(
                         "Returns true if the file or directory f exists and can be executed. " +
                         "f must be a file or a string (file path).")
-                    .examples("(io/file-can-execute? \"/tmp/test.txt\")")
-                    .seeAlso("io/file-can-read?", "io/file-can-write?", "io/file-hidden?", "io/file-symbolic-link?")
+                    .examples(
+                        "(io/file-can-execute? \"/tmp/test.txt\")")
+                    .seeAlso(
+                        "io/file-can-read?", "io/file-can-write?", "io/file-hidden?", "io/file-symbolic-link?")
                     .build()
         ) {
             @Override
@@ -615,8 +623,10 @@ public class IOFunctions {
                     .doc(
                         "Returns true if the file or directory f exists and is hidden. " +
                         "f must be a file or a string (file path).")
-                    .examples("(io/file-hidden? \"/tmp/test.txt\")")
-                    .seeAlso("io/file-can-read?", "io/file-can-write?", "io/file-can-execute?", "io/file-symbolic-link?")
+                    .examples(
+                        "(io/file-hidden? \"/tmp/test.txt\")")
+                    .seeAlso(
+                        "io/file-can-read?", "io/file-can-write?", "io/file-can-execute?", "io/file-symbolic-link?")
                     .build()
         ) {
             @Override
@@ -642,8 +652,10 @@ public class IOFunctions {
                     .doc(
                         "Returns true if the file f exists and is a symbolic link. " +
                         "f must be a file or a string (file path).")
-                    .examples("(io/file-symbolic-link? \"/tmp/test.txt\")")
-                    .seeAlso("io/file-hidden?", "io/file-can-read?", "io/file-can-write?", "io/file-can-execute?")
+                    .examples(
+                        "(io/file-symbolic-link? \"/tmp/test.txt\")")
+                    .seeAlso(
+                        "io/file-hidden?", "io/file-can-read?", "io/file-can-write?", "io/file-can-execute?")
                     .build()
         ) {
             @Override
@@ -671,8 +683,10 @@ public class IOFunctions {
                     .doc(
                         "Returns the last modification time (a Java LocalDateTime) of f or nil " +
                         "if f does not exist. f must be a file or a string (file path).")
-                    .examples("(io/file-last-modified \"/tmp/test.txt\")")
-                    .seeAlso("io/file-can-read?", "io/file-can-write?", "io/file-can-execute?")
+                    .examples(
+                        "(io/file-last-modified \"/tmp/test.txt\")")
+                    .seeAlso(
+                        "io/file-can-read?", "io/file-can-write?", "io/file-can-execute?")
                     .build()
         ) {
             @Override
@@ -744,7 +758,8 @@ public class IOFunctions {
                     .examples(
                         "(io/glob-path-matcher \"*.log\")",
                         "(io/glob-path-matcher \"**/*.log\")")
-                    .seeAlso("io/file-matches-glob?", "io/list-files-glob")
+                    .seeAlso(
+                        "io/file-matches-glob?", "io/list-files-glob")
                     .build()
         ) {
             @Override
@@ -811,7 +826,8 @@ public class IOFunctions {
                         "(io/file-matches-glob? \"**/*.log\" \"file.log\") ; take care, doesn't match!",
                         "(io/file-matches-glob? (io/glob-path-matcher \"*.log\") (io/file \"file.log\"))",
                         "(io/file-matches-glob? (io/glob-path-matcher \"**/*.log\") (io/file \"x/y/file.log\"))")
-                    .seeAlso("io/glob-path-matcher", "io/list-files-glob")
+                    .seeAlso(
+                        "io/glob-path-matcher", "io/list-files-glob")
                     .build()
         ) {
             @Override
@@ -826,7 +842,8 @@ public class IOFunctions {
                                    .getPathMatcher("glob:" + searchPattern);
                 }
                 else if (Types.isVncJavaObject(args.first(),VncPathMatcher.class)) {
-                    m = Coerce.toVncJavaObject(args.first(),VncPathMatcher.class).matcher;
+                    m = Coerce.toVncJavaObject(args.first(),VncPathMatcher.class)
+                              .getPathMatcher();
                 }
                 else {
                     throw new VncException(
@@ -872,7 +889,8 @@ public class IOFunctions {
                         "(str (io/->url (io/file \"/tmp/test.txt\")))",
                         ";; to create an URL from spec details: \n" +
                         "(io/->url \"http\" \"foo.org\" 8080 \"/info.html\")")
-                    .seeAlso("io/file", "io/->uri")
+                    .seeAlso(
+                        "io/file", "io/->uri")
                     .build()
         ) {
             @Override
@@ -958,7 +976,8 @@ public class IOFunctions {
                         "(str (io/->uri (io/file \"/tmp/test.txt\")))",
                         ";; to create an URL from spec details: \n" +
                         "(io/->uri \"http\" nil \"foo.org\" 8080 \"/info.html\" nil nil)")
-                    .seeAlso("io/file", "io/->url")
+                    .seeAlso(
+                        "io/file", "io/->url")
                     .build()
         ) {
             @Override
@@ -1037,7 +1056,8 @@ public class IOFunctions {
                         "Supported time units are: {:milliseconds, :seconds, :minutes, :hours, :days}")
                     .examples(
                         "(io/await-for 10 :seconds \"/tmp/data.json\" :created)")
-                    .seeAlso("io/watch-dir")
+                    .seeAlso(
+                        "io/watch-dir")
                     .build()
         ) {
             @Override
@@ -1145,8 +1165,8 @@ public class IOFunctions {
                         "    (sleep 30 :seconds)                                            \n" +
                         "    (io/close-watcher w)))")
                     .seeAlso(
-                    	"io/close-watcher",
-                    	"io/await-for")
+                        "io/close-watcher",
+                        "io/await-for")
                     .build()
         ) {
             @Override
@@ -1467,7 +1487,7 @@ public class IOFunctions {
                                                     ? Coerce.toVncFunction(args.second())
                                                     : null;
                     if (filterFn != null) {
-                    	filterFn.sandboxFunctionCallValidation();
+                        filterFn.sandboxFunctionCallValidation();
                     }
 
                     final List<VncVal> files = new ArrayList<>();
@@ -1523,7 +1543,7 @@ public class IOFunctions {
                 try {
                     final VncFunction filterFn = (args.size() == 2) ? Coerce.toVncFunction(args.second()) : null;
                     if (filterFn != null) {
-                    	filterFn.sandboxFunctionCallValidation();
+                        filterFn.sandboxFunctionCallValidation();
                     }
 
                     final List<VncVal> files = new ArrayList<>();

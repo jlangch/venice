@@ -82,12 +82,12 @@ import com.github.jlangch.venice.impl.types.collections.VncVector;
 import com.github.jlangch.venice.impl.types.util.Coerce;
 import com.github.jlangch.venice.impl.types.util.Types;
 import com.github.jlangch.venice.impl.util.ArityExceptions.FnType;
-import com.github.jlangch.venice.impl.util.CallFrame;
-import com.github.jlangch.venice.impl.util.CallFrameFnData;
-import com.github.jlangch.venice.impl.util.CallStack;
+import com.github.jlangch.venice.impl.util.callstack.CallFrame;
+import com.github.jlangch.venice.impl.util.callstack.CallFrameFnData;
+import com.github.jlangch.venice.impl.util.callstack.CallStack;
+import com.github.jlangch.venice.impl.util.callstack.WithCallStack;
 import com.github.jlangch.venice.impl.util.CollectionUtil;
 import com.github.jlangch.venice.impl.util.MeterRegistry;
-import com.github.jlangch.venice.impl.util.WithCallStack;
 import com.github.jlangch.venice.javainterop.AcceptAllInterceptor;
 import com.github.jlangch.venice.javainterop.IInterceptor;
 

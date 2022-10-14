@@ -603,7 +603,8 @@ public class ZipFunctions {
                                        .getPathMatcher("glob:" + searchPattern);
                     }
                     else if (Types.isVncJavaObject(args.first(), VncPathMatcher.class)) {
-                        m = Coerce.toVncJavaObject(args.first(), VncPathMatcher.class).matcher;
+                        m = Coerce.toVncJavaObject(args.first(), VncPathMatcher.class)
+                                  .getPathMatcher();
                     }
                     else {
                         throw new VncException(

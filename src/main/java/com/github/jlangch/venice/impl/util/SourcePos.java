@@ -31,9 +31,9 @@ public class SourcePos {
             final int line,
             final int column
     ) {
-        this.file = file == null || file.isEmpty()? "unknown" : file;
-        this.line = line;
-        this.column = column;
+        this.file = file == null || file.isEmpty() ? "unknown" : file;
+        this.line = line <= 0 ? -1 : line;
+        this.column = column <= 0 ? -1 : column;
     }
 
 

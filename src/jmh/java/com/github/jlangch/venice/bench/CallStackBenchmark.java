@@ -35,8 +35,8 @@ import org.openjdk.jmh.annotations.Threads;
 import org.openjdk.jmh.annotations.Warmup;
 
 import com.github.jlangch.venice.impl.types.Constants;
-import com.github.jlangch.venice.impl.util.CallFrame;
-import com.github.jlangch.venice.impl.util.CallStack;
+import com.github.jlangch.venice.impl.util.callstack.CallFrame;
+import com.github.jlangch.venice.impl.util.callstack.CallStack;
 
 // Run on a 2017 MacBook Pro (Mac OSX, Core i7 2.8 GHz).
 // Venice 1.10.16, Java 8

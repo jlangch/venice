@@ -110,6 +110,17 @@ public class RegexFunctionsTest {
     }
 
     @Test
+    public void test_regex_matches_not_Q() {
+        final Venice venice = new Venice();
+
+        final String script =
+                "(let [m (regex/matcher #\"[0-9]+\" \"10A\")]  \n" +
+                "   (regex/matches-not? m))                    ";
+
+        assertTrue((Boolean)venice.eval(script));
+    }
+
+    @Test
     public void test_regex_find_1() {
         final Venice venice = new Venice();
 
