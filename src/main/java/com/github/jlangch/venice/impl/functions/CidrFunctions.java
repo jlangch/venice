@@ -38,7 +38,7 @@ import com.github.jlangch.venice.impl.types.util.Types;
 import com.github.jlangch.venice.impl.util.ArityExceptions;
 import com.github.jlangch.venice.impl.util.SymbolMapBuilder;
 import com.github.jlangch.venice.impl.util.cidr.CIDR;
-import com.github.jlangch.venice.impl.util.cidr.collect.CidrTrie;
+import com.github.jlangch.venice.impl.util.cidr.CidrTrie;
 
 
 public class CidrFunctions {

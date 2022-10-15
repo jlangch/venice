@@ -27,6 +27,7 @@ import static org.junit.jupiter.api.Assertions.assertNull;
 import org.junit.jupiter.api.Test;
 
 import com.github.jlangch.venice.impl.util.cidr.CIDR;
+import com.github.jlangch.venice.impl.util.cidr.CidrTrie;
 
 
 public class Ip4CidrTrieTest {

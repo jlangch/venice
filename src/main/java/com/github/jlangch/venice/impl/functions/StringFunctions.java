@@ -1164,7 +1164,10 @@ public class StringFunctions {
                     .meta()
                     .arglists("(str/nfirst s n)")
                     .doc("Returns a string of the n first characters of s.")
-                    .examples("(str/nfirst \"abcdef\" 2)")
+                    .examples(
+                        "(str/nfirst \"abcdef\" 2)",
+                        "(str/nfirst \"abcdef\" 10)",
+                        "(str/nfirst \"abcdef\" 0)")
                     .build()
         ) {
             @Override
@@ -1195,7 +1198,10 @@ public class StringFunctions {
                     .meta()
                     .arglists("(str/nlast s n)")
                     .doc("Returns a string of the n last characters of s.")
-                    .examples("(str/nlast \"abcdef\" 2)")
+                    .examples(
+                        "(str/nlast \"abcdef\" 2)",
+                        "(str/nlast \"abcdef\" 10)",
+                        "(str/nlast \"abcdef\" 0)")
                     .build()
         ) {
             @Override
@@ -2005,7 +2011,8 @@ public class StringFunctions {
                         "If the :upper options is passed the hex digits `0123456789ABCDEF` " +
                         "are used.")
                     .examples(
-                        "(str/bytebuf-to-hex (bytebuf [0 1 2 3 4 5 6]))")
+                        "(str/bytebuf-to-hex (bytebuf [0 1 2 3 4 5 6]))",
+                        "(str/bytebuf-to-hex (bytebuf [202 254]) :upper)")
                     .build()
         ) {
             @Override

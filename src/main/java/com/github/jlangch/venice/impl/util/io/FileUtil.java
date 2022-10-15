@@ -256,27 +256,6 @@ public class FileUtil {
     }
 
     /**
-     * @param path a path
-     * @return true if the path is an absolute file path
-     */
-    public static boolean isAbsoultePath(final String path) {
-        if (path == null) {
-            throw new IllegalArgumentException("A 'path' must not be <null>");
-        }
-
-        if (path.startsWith("/") || path.startsWith("\\")) {
-            return true;
-        }
-        else {
-            if (path.matches("^[A-Z]:.*")) {
-                return true;
-            }
-        }
-
-        return false;
-    }
-
-    /**
      * Touches a file. Creates the file if does not exist.
      *
      * @param file A file (The parent directory must exist)

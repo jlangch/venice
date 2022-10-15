@@ -1090,8 +1090,8 @@ public class CoreFunctionsTest {
         assertFalse((Boolean)venice.eval("(== \"aa\" \"zz\")"));
 
         // String/Keyword
-        assertTrue((Boolean)venice.eval("(== \"aa\" :aa)"));
-        assertTrue((Boolean)venice.eval("(== :aa \"aa\")"));
+        assertFalse((Boolean)venice.eval("(== \"aa\" :aa)"));
+        assertFalse((Boolean)venice.eval("(== :aa \"aa\")"));
 
         // String/Char
         assertTrue((Boolean)venice.eval("(== \"a\" (char \"a\"))"));
@@ -1243,8 +1243,8 @@ public class CoreFunctionsTest {
         assertFalse((Boolean)venice.eval("(= :a :b)"));
 
         // String/Keyword
-        assertTrue((Boolean)venice.eval("(= \"aa\" :aa)"));
-        assertTrue((Boolean)venice.eval("(= :aa \"aa\")"));
+        assertFalse((Boolean)venice.eval("(= \"aa\" :aa)"));
+        assertFalse((Boolean)venice.eval("(= :aa \"aa\")"));
 
         // List
         assertTrue((Boolean)venice.eval("(= '(1 2) '(1 2))"));
@@ -1580,6 +1580,12 @@ public class CoreFunctionsTest {
         assertEquals(null, venice.eval("(get (sorted-map ) :z)"));
         assertEquals(9L, venice.eval("(get (sorted-map :a 1 :b 2) :z 9)"));
         assertEquals(9L, venice.eval("(get (sorted-map ) :z 9)"));
+
+        // maps (string,keyword keys)
+        assertEquals(1L, venice.eval("(get {:a 1 :b 2} :a)"));
+        assertEquals(null, venice.eval("(get {:a 1 :b 2} \"a\")"));
+        assertEquals(null, venice.eval("(get {\"a\" 1 :b 2} :a)"));
+        assertEquals(1L, venice.eval("(get {\"a\" 1 :b 2} \"a\")"));
 
         // sets
         assertEquals(2L, venice.eval("(get #{1 2} 2)"));

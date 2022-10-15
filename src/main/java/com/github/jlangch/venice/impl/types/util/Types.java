@@ -47,6 +47,7 @@ import com.github.jlangch.venice.impl.types.VncLong;
 import com.github.jlangch.venice.impl.types.VncMultiArityFunction;
 import com.github.jlangch.venice.impl.types.VncMultiFunction;
 import com.github.jlangch.venice.impl.types.VncNumber;
+import com.github.jlangch.venice.impl.types.VncScalar;
 import com.github.jlangch.venice.impl.types.VncSpecialForm;
 import com.github.jlangch.venice.impl.types.VncString;
 import com.github.jlangch.venice.impl.types.VncSymbol;
@@ -481,24 +482,26 @@ public class Types {
             }
     	}
 
-        if (a instanceof VncString && b instanceof VncString) {
-            // allow true: (== \"aa\" \"aa\" ), (== :aa :aa ), (== :aa \"aa\" )
-            return ((VncString)a).getValue().equals(((VncString)b).getValue());
+        if (a instanceof VncKeyword) {
+            return a.equals(b);
         }
-        else if (a instanceof VncChar && b instanceof VncChar) {
-            return ((VncChar)a).getValue().equals(((VncChar)b).getValue());
+        else if (a instanceof VncString) {
+            return a.equals(b);
+        }
+        else if (a instanceof VncChar) {
+            return a.equals(b);
+        }
+        else if (a instanceof VncScalar) {
+            return a.equals(b);
         }
         else if (a instanceof VncConstant && b instanceof VncConstant) {
             return ((VncConstant)a) == ((VncConstant)b);
         }
-        else if (a instanceof VncBoolean && b instanceof VncBoolean) {
-            return ((VncBoolean)a).getValue() == ((VncBoolean)b).getValue();
+        else if (a instanceof VncBoolean) {
+            return a.equals(b);
         }
-        else if (a instanceof VncSymbol && b instanceof VncSymbol) {
-            return ((VncSymbol)a).getName().equals(((VncSymbol)b).getName());
-        }
-        else if (a instanceof VncKeyword && b instanceof VncKeyword) {
-            return ((VncKeyword)a).getValue().equals(((VncKeyword)b).getValue());
+        else if (a instanceof VncSymbol) {
+            return a.equals(b);
         }
         else if (a instanceof VncSequence && b instanceof VncSequence) {
             if (((VncSequence)a).size() != ((VncSequence)b).size()) {
@@ -551,7 +554,7 @@ public class Types {
             return true;
         }
         else if (a instanceof VncByteBuffer && b instanceof VncByteBuffer) {
-            return ((VncByteBuffer)a).equals(b);
+            return a.equals(b);
         }
         else if (a instanceof VncVolatile && b instanceof VncVolatile) {
             return _equal_Q(((VncVolatile)a).deref(), ((VncVolatile)b).deref(), strict);

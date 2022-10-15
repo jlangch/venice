@@ -528,8 +528,7 @@
   (print (ansi/style " bold " :bold))
   (print (ansi/style " underline " :underline))
   (print (ansi/style " reversed " :reverse))
-  (println)
-)
+  (println))
 
 
 (defn demo-cursor []

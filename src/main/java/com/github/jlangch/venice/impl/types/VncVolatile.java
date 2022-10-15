@@ -83,6 +83,31 @@ public class VncVolatile extends VncVal implements IDeref {
         return "(volatile " + Printer.pr_str(state, print_machine_readably) + ")";
     }
 
+    @Override
+    public int hashCode() {
+        final int prime = 31;
+        int result = super.hashCode();
+        result = prime * result + ((state == null) ? 0 : state.hashCode());
+        return result;
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (this == obj)
+            return true;
+        if (!super.equals(obj))
+            return false;
+        if (getClass() != obj.getClass())
+            return false;
+        VncVolatile other = (VncVolatile) obj;
+        if (state == null) {
+            if (other.state != null)
+                return false;
+        } else if (!state.equals(other.state))
+            return false;
+        return true;
+    }
+
 
     public static final String TYPE = ":core/volatile";
 

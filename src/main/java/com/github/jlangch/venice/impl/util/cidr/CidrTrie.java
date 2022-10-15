@@ -19,13 +19,11 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.github.jlangch.venice.impl.util.cidr.collect;
+package com.github.jlangch.venice.impl.util.cidr;
 
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
-
-import com.github.jlangch.venice.impl.util.cidr.CIDR;
 
 
 /**
