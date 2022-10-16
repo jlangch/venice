@@ -277,20 +277,18 @@
 ;; Main
 ;; -----------------------------------------------------------------------------
 
-(def routes [
-  [:get  "/**"                (logged-in-filter main-handler)      ]
-  [:get  "/login"             login-handler                        ]
-  [:post "/login"             do-login-handler                     ]
-  [:get  "/checkout"          (logged-in-filter checkout-handler)  ]
-  [:post "/logout"            do-logout-handler                    ]
-  [:get  "/rest"              not-found-handler                    ]
-  [:get  "/rest/**"           not-found-handler                    ]
-  [:get  "/rest/users/:id"    rest-user-handler                    ]
-  [:get  "/static/style.css"  style-css-handler                    ]
-  [:get  "/favicon.ico"       not-found-handler                    ]
-])
+(def routes [[:get  "/**"                (logged-in-filter main-handler)     ]
+             [:get  "/login"             login-handler                       ]
+             [:post "/login"             do-login-handler                    ]
+             [:get  "/checkout"          (logged-in-filter checkout-handler) ]
+             [:post "/logout"            do-logout-handler                   ]
+             [:get  "/rest"              not-found-handler                   ]
+             [:get  "/rest/**"           not-found-handler                   ]
+             [:get  "/rest/users/:id"    rest-user-handler                   ]
+             [:get  "/static/style.css"  style-css-handler                   ]
+             [:get  "/favicon.ico"       not-found-handler                   ]])
 
-(tc/run-tomcat
+(tc/start
   (ring/create-servlet (-> (ring/match-routes routes)  ; >--+
                                                        ;    |
                            (ring/mw-dump-response)     ; ^  |

@@ -531,6 +531,23 @@ public class ReflectionUtil {
         return getAllPublicMethods(clazz, methodName, arity, includeInheritedClasses, false, true, true, true);
     }
 
+    public static List<Method> getAllPublicDefaultMethods(
+            final Class<?> clazz,
+            final String methodName,
+            final Integer arity,
+            final boolean includeInheritedClasses
+    ) {
+        final Method[] methods = includeInheritedClasses ? clazz.getMethods() : clazz.getDeclaredMethods();
+
+        return Arrays
+                .stream(methods)
+                .filter(m -> methodName == null || methodName.equals(m.getName()))
+                .filter(m -> m.isDefault())
+                .filter(m -> arity == null || arity == arity(m))
+                //.filter(m -> arity == null  || arity == arity(m) || (m.isVarArgs() && arity >= (arity(m) - 1)))
+                .collect(Collectors.toList());
+    }
+
     public static List<Method> getAllPublicMethods(
             final Class<?> clazz,
             final String methodName,

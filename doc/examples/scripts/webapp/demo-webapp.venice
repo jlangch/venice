@@ -25,13 +25,11 @@
 ;; function.
 ;; If multiple routes match the route with the longest URI filter
 ;; will be chosen
-(def routes [
-  [:get "/**"                   hello-world-handler]
-  [:get "/test"                 test-handler]
-  [:get "/test/**"              test-handler]
-])
+(def routes [[:get "/**"       hello-world-handler]
+             [:get "/test"     test-handler]
+             [:get "/test/**"  test-handler]])
 
-(tc/run-tomcat
+(tc/start
   (ring/create-servlet (-> (ring/match-routes routes)  ; >--+
                                                        ;    |
                            (ring/mw-dump-response)     ; ^  |

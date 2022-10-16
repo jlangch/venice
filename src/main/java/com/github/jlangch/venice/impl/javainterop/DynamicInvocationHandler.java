@@ -41,6 +41,8 @@ import com.github.jlangch.venice.impl.types.util.Coerce;
 import com.github.jlangch.venice.impl.types.util.Types;
 import com.github.jlangch.venice.impl.util.callstack.CallFrame;
 import com.github.jlangch.venice.impl.util.callstack.CallStack;
+import com.github.jlangch.venice.impl.util.reflect.ReflectionAccessor;
+import com.github.jlangch.venice.javainterop.ReturnValue;
 
 
 /**
@@ -58,12 +60,14 @@ import com.github.jlangch.venice.impl.util.callstack.CallStack;
 public class DynamicInvocationHandler implements InvocationHandler {
 
     private DynamicInvocationHandler(
-            final CallFrame callFrameProxy,
-            final Map<String, VncFunction> methods
+    		final Class<?> clazz,
+            final Map<String, VncFunction> methods,
+            final CallFrame callFrameProxy
     ) {
-        this.callFrameProxy = callFrameProxy;
+        this.clazz = clazz;
         this.methods = methods;
         this.threadBridge = ThreadBridge.create("proxy");
+        this.callFrameProxy = callFrameProxy;
     }
 
     @Override
@@ -103,7 +107,17 @@ public class DynamicInvocationHandler implements InvocationHandler {
                                    .call();
             }
         }
+        else if (method.isDefault()) {
+        	final ReturnValue ret = ReflectionAccessor.invokeDefaultMethod(
+        			                    proxy,
+        								clazz,
+        								method.getName(),
+        								args == null ? new Object[0] : args);
+
+        	return JavaInteropUtil.convertToVncVal(ret);
+        }
         else {
+
             throw new UnsupportedOperationException(
                     String.format("ProxyMethod %s", method.getName()));
         }
@@ -117,7 +131,7 @@ public class DynamicInvocationHandler implements InvocationHandler {
         return Proxy.newProxyInstance(
                 DynamicInvocationHandler.class.getClassLoader(),
                 new Class[] { clazz },
-                new DynamicInvocationHandler(callFrame, handlerMap(handlers)));
+                new DynamicInvocationHandler(clazz, handlerMap(handlers), callFrame));
     }
 
     private static String name(final VncVal val) {
@@ -158,7 +172,8 @@ public class DynamicInvocationHandler implements InvocationHandler {
     }
 
 
-    private final CallFrame callFrameProxy;
+    private final Class<?> clazz;
     private final Map<String, VncFunction> methods;
     private final ThreadBridge threadBridge;
+    private final CallFrame callFrameProxy;
 }

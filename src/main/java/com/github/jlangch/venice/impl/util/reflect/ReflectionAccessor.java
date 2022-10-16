@@ -213,6 +213,30 @@ public class ReflectionAccessor {
         }
     }
 
+    public static ReturnValue invokeDefaultMethod(
+    		final Object target,
+            final Class<?> clazz,
+            final String methodName,
+            final Object[] args
+    ) {
+        try {
+            final List<Method> methods = memoizedDefaultMethod(clazz, methodName, args.length, true);
+
+            return invokeMatchingMethod(methodName, methods, clazz, target, args);
+        }
+        catch (JavaMethodInvocationException ex) {
+            throw ex;
+        }
+        catch (Exception ex) {
+            throw new JavaMethodInvocationException(
+                    String.format(
+                            "Failed to invoke default method '%s' on class '%s'",
+                            methodName,
+                            clazz.getName()),
+                    ex);
+        }
+    }
+
     public static ReturnValue getStaticField(final Class<?> clazz, String fieldName) {
         try {
             final MethodHandle mh = memoizedStaticFieldGet(clazz, fieldName);
@@ -679,6 +703,17 @@ public class ReflectionAccessor {
                     k ->  ReflectionUtil.getAllPublicInstanceMethods(k._1, k._2, k._3, k._4));
     }
 
+    private static List<Method> memoizedDefaultMethod(
+            final Class<?> clazz,
+            final String methodName,
+            final Integer arity,
+            final boolean includeInheritedClasses
+    ) {
+        return defaultMethodCache.computeIfAbsent(
+                    new Tuple4<>(clazz,methodName,arity,includeInheritedClasses),
+                    k ->  ReflectionUtil.getAllPublicDefaultMethods(k._1, k._2, k._3, k._4));
+    }
+
     private static String formatArgTypes(final Object[] args) {
         return Arrays
                 .stream(args)
@@ -705,4 +740,5 @@ public class ReflectionAccessor {
     private static final Map<Tuple2<Class<?>,String>,MethodHandle> instanceFieldCache = new ConcurrentHashMap<>();
     private static final Map<Tuple4<Class<?>,String,Integer,Boolean>,List<Method>> staticMethodCache = new ConcurrentHashMap<>();
     private static final Map<Tuple4<Class<?>,String,Integer,Boolean>,List<Method>> instanceMethodCache = new ConcurrentHashMap<>();
+    private static final Map<Tuple4<Class<?>,String,Integer,Boolean>,List<Method>> defaultMethodCache = new ConcurrentHashMap<>();
 }

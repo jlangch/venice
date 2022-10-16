@@ -5,7 +5,7 @@ Tomcat server and running servlets.
 
 Dependencies:
 
- - org.apache.tomcat.embed:tomcat-embed-core:9.0.27
+ - org.apache.tomcat.embed:tomcat-embed-core:9.0.68
  - javax.annotation:javax.annotation-api:1.3.2
 
 To simplify things there is a 
@@ -17,23 +17,23 @@ To simplify things there is a
 Start a REPL:
 
 ```text
-venice> (load-module :tomcat)
-venice> (tc/run-tomcat (tc/hello-world-servlet) {:await? false})
+venice> (load-module :tomcat ['tomcat :as 'tc])
+venice> (def server (tc/start (tc/hello-world-servlet) {:await? false}))
+  :
+venice> (tc/shutdown server)
 ```
 
 Open a browser with the URL `http://localhost:8080`
-
-Type `ctrl-c` in the REPL to shutdown the server.
 
 
 ## Define a servlet
 
 ```clojure
 (do
-  (import :com.github.jlangch.venice.servlet.IVeniceServlet
-          :com.github.jlangch.venice.servlet.VeniceServlet)
+  (import :com.github.jlangch.venice.util.servlet.IVeniceServlet
+          :com.github.jlangch.venice.util.servlet.VeniceServlet)
 
-  (load-module :tomcat)
+  (load-module :tomcat ['tomcat :as 'tc])
 
   (defn send-text
     [res status text]
@@ -57,8 +57,15 @@ Type `ctrl-c` in the REPL to shutdown the server.
           :doTrace (fn [req res servlet] (send-text res 404 "Not Found"))
           :getLastModified (fn [req] -1) })))
 
-  ; run Tomcat
-  (tc/run-tomcat (my-hello-world-servlet) {:await? false}))
+  (defn stop []
+    (tc/shutdown server))
+ 
+  ; start Tomcat
+  (def server (tc/start (my-hello-world-servlet) {:await? false}))
+  
+  (println "Tomcat started.")
+  (println "Open a browser at:   http://localhost:8080")
+  (println "Stop it by calling:  (stop)"))
 ```
 
 
@@ -68,6 +75,6 @@ Type `ctrl-c` in the REPL to shutdown the server.
 (do
   (load-module :maven)
   
-  (maven/download "org.apache.tomcat.embed:tomcat-embed-core:9.0.27")
+  (maven/download "org.apache.tomcat.embed:tomcat-embed-core:9.0.68")
   (maven/download "javax.annotation:javax.annotation-api:1.3.2"))
 ```

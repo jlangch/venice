@@ -44,6 +44,7 @@
         :org.apache.catalina.core.JreMemoryLeakPreventionListener
         :org.apache.catalina.core.StandardThreadExecutor
         :org.apache.catalina.connector.Connector
+        :org.apache.catalina.LifecycleException
         :org.apache.catalina.Server.Service
         :org.apache.coyote.AbstractProtocol
         :org.apache.coyote.http11.Http11NioProtocol
@@ -208,6 +209,10 @@
       (. :println """<html><body><p>~(str/escape-html text)</p></body></html>""")))
 
 
+(defn reply-not-found [res]
+  (reply-text res 404 "Not Found"))
+
+
 (defn
   ^{ :doc "'Hello World' demo servlet" }
 
@@ -217,14 +222,14 @@
     (proxify :IVeniceServlet
       { :init            (fn [config] nil)
         :destroy         (fn [] nil)
-        :doGet           (fn [req res _] (tomcat/reply-text res 200 "Hello World"))
-        :doHead          (fn [req res _] (tomcat/reply-text res 404 "Not Found"))
-        :doPost          (fn [req res _] (tomcat/reply-text res 404 "Not Found"))
-        :doPut           (fn [req res _] (tomcat/reply-text res 404 "Not Found"))
-        :doDelete        (fn [req res _] (tomcat/reply-text res 404 "Not Found"))
-        :doOptions       (fn [req res _] (tomcat/reply-text res 404 "Not Found"))
-        :doTrace         (fn [req res _] (tomcat/reply-text res 404 "Not Found"))
-        :getLastModified (fn [] -1) })))
+        :doGet           (fn [req res _] (reply-text res 200 "Hello World"))
+        :doHead          (fn [req res _] (reply-not-found res))
+        :doPost          (fn [req res _] (reply-not-found res))
+        :doPut           (fn [req res _] (reply-not-found res))
+        :doDelete        (fn [req res _] (reply-not-found res))
+        :doOptions       (fn [req res _] (reply-not-found res))
+        :doTrace         (fn [req res _] (reply-not-found res))
+        :getLastModified (fn [req] -1) })))
 
 
 (defn
@@ -248,10 +253,10 @@
           :max-idle-time - max milliseconds before an idle thread shutsdown (default: 60000)
           """ }
 
-  run-tomcat
+  start
 
   ([servlet options]
-    (tomcat/run-tomcat servlet nil nil options))
+    (tomcat/start servlet nil nil options))
 
   ([servlet context-path context-doc-base options]
     (let [server (tomcat/create-server options)
@@ -260,15 +265,39 @@
                             (coalesce context-doc-base tomcat/default-context-doc-base))]
       (. server :addServlet "" "venice-servlet" servlet)
       (. context :addServletMappingDecoded "/*" "venice-servlet" false)
+
+      ;; need for proper destroying servlets
+      (shutdown-hook (fn []
+                       (println "Shutting down Tomcat...")
+                       (case (state server)
+                         :STARTED   (. server :stop)
+                         :STOPPED   nil
+                         :DESTROYED nil
+                         nil)))
+
       (. server :start)
       (when (:await? options true)
         (. (. server :getServer) :await))
-    server)))
+
+      server)))
 
 
-(defn stop-tomcat [server]
+(defn state [server]
+  ;; :NEW  :INITIALIZING  :INITIALIZED
+  ;; :STARTING_PREP  :STARTING  :STARTED
+  ;; :STOPPING_PREP  :STOPPING  :STOPPED
+  ;; :DESTROYING  :DESTROYED  :FAILED
+  (keyword (. (. server :getServer) :getState)))
+
+
+(defn stop [server]
   (. server :stop))
 
 
-(defn destroy-tomcat [server]
+(defn destroy [server]
+  (. server :destroy))
+
+
+(defn shutdown [server]
+  (. server :stop)
   (. server :destroy))

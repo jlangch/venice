@@ -353,4 +353,67 @@ public class JavaInterop_proxy_Test {
         assertEquals("10", venice.eval(script).toString());
     }
 
+
+    @Test
+    public void test_proxy_with_default_1() {
+        final Venice venice = new Venice();
+
+        final String script =
+                "(do                                                                              \n" +
+                "  (load-module :java)                                                            \n" +
+                "  (import :com.github.jlangch.venice.javainterop.JavaInterop_proxy_Test$Fruit)   \n" +
+                "                                                                                 \n" +
+                "  (def apple                                                                     \n" +
+                "     (proxify (class :JavaInterop_proxy_Test$Fruit)                              \n" +
+                "              { :sweet (fn [] true) } ))                                         \n" +
+                "                                                                                 \n" +
+                "  (. apple :sweet))                                                              \n";
+
+        assertEquals(true, venice.eval(script));
+    }
+
+    @Test
+    public void test_proxy_with_default_2() {
+        final Venice venice = new Venice();
+
+        final String script =
+                "(do                                                                              \n" +
+                "  (load-module :java)                                                            \n" +
+                "  (import :com.github.jlangch.venice.javainterop.JavaInterop_proxy_Test$Fruit)   \n" +
+                "                                                                                 \n" +
+                "  (def apple                                                                     \n" +
+                "     (proxify (class :JavaInterop_proxy_Test$Fruit)                              \n" +
+                "              { :sweet (fn [] true)                                              \n" +
+                "                :color (fn [] \"red\") } ))                                      \n" +
+                "                                                                                 \n" +
+                "  (. apple :color))                                                              \n";
+
+        assertEquals("red", venice.eval(script));
+    }
+
+//    @Test
+//    public void test_proxy_with_default_3() {
+//        final Venice venice = new Venice();
+//
+//        final String script =
+//                "(do                                                                              \n" +
+//                "  (load-module :java)                                                            \n" +
+//                "  (import :com.github.jlangch.venice.javainterop.JavaInterop_proxy_Test$Fruit)   \n" +
+//                "                                                                                 \n" +
+//                "  (def apple                                                                     \n" +
+//                "     (proxify (class :JavaInterop_proxy_Test$Fruit)                              \n" +
+//                "              { :sweet (fn [] true) } ))                                         \n" +
+//                "                                                                                 \n" +
+//                "  (. apple :color))                                                              \n";
+//
+//        assertEquals("red", venice.eval(script));
+//    }
+
+
+    public static interface Fruit {
+    	boolean sweet();
+    	default String color() {
+    		return "green";
+    	}
+    }
 }
