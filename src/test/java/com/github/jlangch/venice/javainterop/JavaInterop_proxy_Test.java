@@ -391,23 +391,23 @@ public class JavaInterop_proxy_Test {
         assertEquals("red", venice.eval(script));
     }
 
-//    @Test
-//    public void test_proxy_with_default_3() {
-//        final Venice venice = new Venice();
-//
-//        final String script =
-//                "(do                                                                              \n" +
-//                "  (load-module :java)                                                            \n" +
-//                "  (import :com.github.jlangch.venice.javainterop.JavaInterop_proxy_Test$Fruit)   \n" +
-//                "                                                                                 \n" +
-//                "  (def apple                                                                     \n" +
-//                "     (proxify (class :JavaInterop_proxy_Test$Fruit)                              \n" +
-//                "              { :sweet (fn [] true) } ))                                         \n" +
-//                "                                                                                 \n" +
-//                "  (. apple :color))                                                              \n";
-//
-//        assertEquals("red", venice.eval(script));
-//    }
+    @Test
+    public void test_proxy_with_default_3() {
+        final Venice venice = new Venice();
+
+        final String script =
+                "(do                                                                              \n" +
+                "  (load-module :java)                                                            \n" +
+                "  (import :com.github.jlangch.venice.javainterop.JavaInterop_proxy_Test$Fruit)   \n" +
+                "                                                                                 \n" +
+                "  (def apple                                                                     \n" +
+                "     (proxify (class :JavaInterop_proxy_Test$Fruit)                              \n" +
+                "              { :sweet (fn [] true) } ))                                         \n" +
+                "                                                                                 \n" +
+                "  (. apple :color))                                                              \n";
+
+        assertEquals("green", venice.eval(script));
+    }
 
 
     public static interface Fruit {

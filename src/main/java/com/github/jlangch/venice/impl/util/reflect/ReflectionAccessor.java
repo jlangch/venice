@@ -220,7 +220,7 @@ public class ReflectionAccessor {
             final Object[] args
     ) {
         try {
-            final List<Method> methods = memoizedDefaultMethod(clazz, methodName, args.length, true);
+            final List<Method> methods = memoizedDefaultMethod(clazz, methodName, args.length, false);
 
             return invokeMatchingMethod(methodName, methods, clazz, target, args);
         }

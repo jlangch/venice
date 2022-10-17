@@ -46,8 +46,12 @@ public class VeniceServlet extends HttpServlet {
 
     @Override
     public void destroy() {
-        super.destroy();
-        delegate.destroy();
+        try {
+            delegate.destroy();
+        }
+        finally {
+            super.destroy();
+        }
     }
 
     @Override

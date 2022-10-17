@@ -21,10 +21,15 @@
  */
 package com.github.jlangch.venice.impl.javainterop;
 
+import java.lang.invoke.MethodHandles;
+import java.lang.invoke.MethodHandles.Lookup;
+import java.lang.invoke.MethodType;
+import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.Method;
 import java.lang.reflect.Proxy;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.concurrent.Callable;
 
@@ -41,8 +46,8 @@ import com.github.jlangch.venice.impl.types.util.Coerce;
 import com.github.jlangch.venice.impl.types.util.Types;
 import com.github.jlangch.venice.impl.util.callstack.CallFrame;
 import com.github.jlangch.venice.impl.util.callstack.CallStack;
-import com.github.jlangch.venice.impl.util.reflect.ReflectionAccessor;
-import com.github.jlangch.venice.javainterop.ReturnValue;
+import com.github.jlangch.venice.impl.util.reflect.Boxing;
+import com.github.jlangch.venice.impl.util.reflect.ReflectionUtil;
 
 
 /**
@@ -60,7 +65,7 @@ import com.github.jlangch.venice.javainterop.ReturnValue;
 public class DynamicInvocationHandler implements InvocationHandler {
 
     private DynamicInvocationHandler(
-    		final Class<?> clazz,
+            final Class<?> clazz,
             final Map<String, VncFunction> methods,
             final CallFrame callFrameProxy
     ) {
@@ -68,6 +73,7 @@ public class DynamicInvocationHandler implements InvocationHandler {
         this.methods = methods;
         this.threadBridge = ThreadBridge.create("proxy");
         this.callFrameProxy = callFrameProxy;
+        this.java8 = "1.8".equals(System.getProperty("java.specification.version"));
     }
 
     @Override
@@ -108,16 +114,9 @@ public class DynamicInvocationHandler implements InvocationHandler {
             }
         }
         else if (method.isDefault()) {
-        	final ReturnValue ret = ReflectionAccessor.invokeDefaultMethod(
-        			                    proxy,
-        								clazz,
-        								method.getName(),
-        								args == null ? new Object[0] : args);
-
-        	return JavaInteropUtil.convertToVncVal(ret);
+            return invokeDefaultMethod(proxy, method, args);
         }
         else {
-
             throw new UnsupportedOperationException(
                     String.format("ProxyMethod %s", method.getName()));
         }
@@ -147,12 +146,12 @@ public class DynamicInvocationHandler implements InvocationHandler {
     }
 
     private static Map<String, VncFunction> handlerMap(final VncMap handlers) {
-    	final Map<String, VncFunction> map = new HashMap<>();
+        final Map<String, VncFunction> map = new HashMap<>();
 
         handlers.entries().forEach(e -> {
-        	final VncFunction fn = Coerce.toVncFunction(e.getValue());
-        	fn.sandboxFunctionCallValidation();
-        	map.put(name(e.getKey()), fn);
+            final VncFunction fn = Coerce.toVncFunction(e.getValue());
+            fn.sandboxFunctionCallValidation();
+            map.put(name(e.getKey()), fn);
         });
 
         return map;
@@ -171,9 +170,60 @@ public class DynamicInvocationHandler implements InvocationHandler {
         }
     }
 
+    private Object invokeDefaultMethod(
+            final Object proxy,
+            final Method method,
+            final Object[] args
+    ) throws Throwable {
+        final List<Method> methods = ReflectionUtil.getAllPublicDefaultMethods(
+                                        clazz,
+                                        method.getName(),
+                                        args == null ? 0 : args.length,
+                                        false);
+
+        if (methods.size() == 0) {
+            throw new UnsupportedOperationException(
+                    String.format("ProxyMethod %s", method.getName()));
+        }
+
+        final Method m = methods.get(0);
+
+        final Object[] boxedArgs = Boxing.boxArgs(
+                                    m.getParameterTypes(),
+                                    args);
+
+        if (java8) {
+            // Java 8
+            final Constructor<Lookup> ctor = Lookup.class
+                                                   .getDeclaredConstructor(Class.class);
+            ctor.setAccessible(true);
+
+            return ctor.newInstance(clazz)
+                       .in(clazz)
+                       .unreflectSpecial(m, clazz)
+                       .bindTo(proxy)
+                       .invokeWithArguments(boxedArgs);
+        }
+        else {
+            // Java 9, 10, 11, ....
+            return MethodHandles
+                        .lookup()
+                        .findSpecial(
+                             clazz,
+                             m.getName(),
+                             MethodType.methodType(
+                                 m.getReturnType(),
+                                 m.getParameterTypes()),
+                             clazz)
+                        .bindTo(proxy)
+                        .invokeWithArguments(boxedArgs);
+        }
+    }
+
 
     private final Class<?> clazz;
     private final Map<String, VncFunction> methods;
     private final ThreadBridge threadBridge;
     private final CallFrame callFrameProxy;
+    private final boolean java8;
 }

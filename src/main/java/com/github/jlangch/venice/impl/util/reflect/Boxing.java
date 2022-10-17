@@ -32,7 +32,7 @@ public class Boxing {
 
     public static Object[] boxArgs(final Class<?>[] params, final Object[] args) {
         if (params.length == 0) {
-            return null;
+            return new Object[0];
         }
 
         final Object[] ret = new Object[params.length];
