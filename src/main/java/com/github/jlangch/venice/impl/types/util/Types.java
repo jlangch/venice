@@ -453,7 +453,7 @@ public class Types {
     }
 
     private static boolean _equal_Q(final VncVal a, final VncVal b, final boolean strict) {
-    	if (!strict) {
+        if (!strict) {
             if (Types.isVncNumber(a) && Types.isVncNumber(b)) {
                 return VncBoolean.isTrue(((VncNumber)a).equ(b));
             }
@@ -463,38 +463,9 @@ public class Types {
             else if (Types.isVncChar(a) && Types.isVncString(b)) {
                 return ((VncChar)a).getValue().toString().equals(((VncString)b).getValue());
             }
-    	}
-    	else {
-            if (a instanceof VncLong && b instanceof VncLong) {
-                return ((VncLong)a).toJavaLong() == (((VncLong)b).toJavaLong());
-            }
-            else if (a instanceof VncInteger && b instanceof VncInteger) {
-                return ((VncInteger)a).toJavaInteger() == (((VncInteger)b).toJavaInteger());
-            }
-            else if (a instanceof VncDouble && b instanceof VncDouble) {
-                return ((VncDouble)a).toJavaDouble() == (((VncDouble)b).toJavaDouble());
-            }
-            else if (a instanceof VncBigDecimal && b instanceof VncBigDecimal) {
-                return ((VncBigDecimal)a).getValue().equals(((VncBigDecimal)b).getValue());
-            }
-            else if (a instanceof VncBigInteger && b instanceof VncBigInteger) {
-                return ((VncBigInteger)a).getValue().equals(((VncBigInteger)b).getValue());
-            }
-    	}
+        }
 
-        if (a instanceof VncKeyword) {
-            return a.equals(b);
-        }
-        else if (a instanceof VncString) {
-            return a.equals(b);
-        }
-        else if (a instanceof VncChar) {
-            return a.equals(b);
-        }
-        else if (a instanceof VncConstant && b instanceof VncConstant) {
-            return ((VncConstant)a) == ((VncConstant)b);
-        }
-        else if (a instanceof VncScalar) {
+        if (a instanceof VncScalar) {
             return a.equals(b);
         }
         else if (a instanceof VncSymbol) {
@@ -522,7 +493,7 @@ public class Types {
             final VncCustomType valB = (VncCustomType)b;
 
             if (!valA.getTypeDef().getType().getValue().equals(valB.getTypeDef().getType().getValue())) {
-            	return false;
+                return false;
             }
 
             return _equal_Q(valA.getValuesAsVector(), valB.getValuesAsVector(), strict);

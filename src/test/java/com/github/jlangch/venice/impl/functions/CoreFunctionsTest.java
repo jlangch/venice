@@ -1018,6 +1018,7 @@ public class CoreFunctionsTest {
 
         // Nil
         assertTrue((Boolean)venice.eval("(== nil nil)"));
+        assertFalse((Boolean)venice.eval("(== nil 0)"));
 
         // Boolean
         assertTrue((Boolean)venice.eval("(== true true)"));
@@ -1164,6 +1165,7 @@ public class CoreFunctionsTest {
 
         // Nil
         assertTrue((Boolean)venice.eval("(= nil nil)"));
+        assertFalse((Boolean)venice.eval("(= nil 0)"));
 
         // Boolean
         assertTrue((Boolean)venice.eval("(= true true)"));
