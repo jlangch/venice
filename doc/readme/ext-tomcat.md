@@ -23,7 +23,7 @@ venice> (def server (tc/start (tc/hello-world-servlet) {:await? false}))
 venice> (tc/shutdown server)
 ```
 
-Open a browser with the URL `http://localhost:8080`
+Open a browser with the URL `http://localhost:8080` or from the REPL: `(sh/open "http://localhost:8080")`
 
 
 ## Define a servlet
@@ -35,15 +35,13 @@ Open a browser with the URL `http://localhost:8080`
 
   (load-module :tomcat ['tomcat :as 'tc])
 
-  (defn send-text
-    [res status text]
+  (defn send-text [res status text]
     (. res :setStatus status)
     (. res :setContentType "text/html")
     (-> (. res :getWriter)
         (. :println """<html><body><p>~(str/escape-html text)</p></body></html>""")))
 
-  (defn my-hello-world-servlet
-    []
+  (defn my-hello-world-servlet  []
     (. :VeniceServlet :new
       (proxify :IVeniceServlet
         { :init (fn [config] nil)
@@ -64,7 +62,7 @@ Open a browser with the URL `http://localhost:8080`
   (def server (tc/start (my-hello-world-servlet) {:await? false}))
   
   (println "Tomcat started.")
-  (println "Open a browser at:   http://localhost:8080")
+  (println "Open a browser:      (sh/open \"http://localhost:8080\")")
   (println "Stop it by calling:  (stop)"))
 ```
 

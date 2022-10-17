@@ -23,12 +23,12 @@
 
 ;;;; start an embedded Tomcat server:
 ;;;;   (load-module :tomcat ['tomcat :as 'tc])
-;;;;   (tc/run-tomcat (tc/hello-world-servlet) {:await? false})
+;;;;   (tc/start (tc/hello-world-servlet) {:await? false})
 ;;;;
 ;;;; required JARs on the classpath:
 ;;;;   - javax.annotation-api-1.3.2.jar
-;;;;   - tomcat-embed-core-9.0.30.jar
-;;;;   - tomcat-embed-websocket-9.0.30.jar (optional)
+;;;;   - tomcat-embed-core-9.0.68.jar
+;;;;   - tomcat-embed-websocket-9.0.68.jar (optional)
 ;;;;
 ;;;; Thanks to Clojure ring Tomcat adapter. Venice's tomcat
 ;;;; builds heavily on this work.
@@ -100,7 +100,7 @@
                ---------------------------------------------------------------------
                (do
                  (load-module :maven)
-                 (maven/download "org.apache.tomcat.embed:tomcat-embed-core:9.0.34")
+                 (maven/download "org.apache.tomcat.embed:tomcat-embed-core:9.0.68")
                  (maven/download "javax.annotation-api-1.3.2.jar"))
                ---------------------------------------------------------------------
                """))))
@@ -219,17 +219,17 @@
   hello-world-servlet []
 
   (. :VeniceServlet :new
-    (proxify :IVeniceServlet
-      { :init            (fn [config] nil)
-        :destroy         (fn [] nil)
-        :doGet           (fn [req res _] (reply-text res 200 "Hello World"))
-        :doHead          (fn [req res _] (reply-not-found res))
-        :doPost          (fn [req res _] (reply-not-found res))
-        :doPut           (fn [req res _] (reply-not-found res))
-        :doDelete        (fn [req res _] (reply-not-found res))
-        :doOptions       (fn [req res _] (reply-not-found res))
-        :doTrace         (fn [req res _] (reply-not-found res))
-        :getLastModified (fn [req] -1) })))
+     (proxify :IVeniceServlet
+       { :init            (fn [config] nil)
+         :destroy         (fn [] nil)
+         :doGet           (fn [req res _] (reply-text res 200 "Hello World"))
+         :doHead          (fn [req res _] (reply-not-found res))
+         :doPost          (fn [req res _] (reply-not-found res))
+         :doPut           (fn [req res _] (reply-not-found res))
+         :doDelete        (fn [req res _] (reply-not-found res))
+         :doOptions       (fn [req res _] (reply-not-found res))
+         :doTrace         (fn [req res _] (reply-not-found res))
+         :getLastModified (fn [req] -1) })))
 
 
 (defn

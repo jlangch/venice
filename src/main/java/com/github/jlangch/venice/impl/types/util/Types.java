@@ -491,13 +491,10 @@ public class Types {
         else if (a instanceof VncChar) {
             return a.equals(b);
         }
-        else if (a instanceof VncScalar) {
-            return a.equals(b);
-        }
         else if (a instanceof VncConstant && b instanceof VncConstant) {
             return ((VncConstant)a) == ((VncConstant)b);
         }
-        else if (a instanceof VncBoolean) {
+        else if (a instanceof VncScalar) {
             return a.equals(b);
         }
         else if (a instanceof VncSymbol) {

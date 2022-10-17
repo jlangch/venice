@@ -205,7 +205,7 @@
             (pg 100 :progress)
             (pg 100 :end))))))
 
-  (defn load-country-vaccinations! []
+  (def load-country-vaccinations!
     ;; returns a map with country iso code and vaccinated (all doses) rate
     ;; { "CHE" 54.18, "AUT" 58.97, ... }
     ;;
@@ -230,21 +230,23 @@
     ;;           "daily_people_vaccinated": 3223,
     ;;           "daily_people_vaccinated_per_hundred": 0.037
     ;;         }
-    (let [caption  (str/expand "Loading country vaccination data:" 38 " ")
-          format   #(str/format "%.1f%%" %)]
-      (ansi/without-cursor
-        (->> (io/download vaccinations-url
-                          :user-agent "Mozilla"
-                          :progress-fn (ansi/progress :caption caption
-                                                      :end-col :green
-                                                      :failed-col :red))
-             (json/read-str)
-             (map #(list (get % "iso_code")
-                         (format (get (last (get % "data"))
-                                      "people_fully_vaccinated_per_hundred"
-                                      0.00))))
-             (flatten)
-             (apply hash-map)))))
+    (memoize
+      (fn []
+        (let [caption  (str/expand "Loading country vaccination data:" 38 " ")
+              format   #(str/format "%.1f%%" %)]
+          (ansi/without-cursor
+            (->> (io/download vaccinations-url
+                              :user-agent "Mozilla"
+                              :progress-fn (ansi/progress :caption caption
+                                                          :end-col :green
+                                                          :failed-col :red))
+                 (json/read-str)
+                 (map #(list (get % "iso_code")
+                             (format (get (last (get % "data"))
+                                          "people_fully_vaccinated_per_hundred"
+                                          0.00))))
+                 (flatten)
+                 (apply hash-map)))))))
 
 
 
