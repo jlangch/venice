@@ -134,15 +134,19 @@ public class JavaInteropFunctions {
                 "proxify",
                 VncFunction
                     .meta()
-                    .arglists("(proxify classname method-map)")
+                    .arglists("(proxify interface method-map)")
                     .doc(
                         "Proxifies a Java interface to be passed as a Callback object to " +
                         "Java functions. The interface's methods are implemented by Venice " +
                         "functions. \n\n" +
                         "The dynamic invocation handler takes care that the methods are " +
-                        "called in the context of Venice sandbox even if the Java method " +
+                        "called in the context of a Venice sandbox even if the Java method " +
                         "that invokes the callback methods is running in another thread.\n\n" +
-                        "In cases a Java `FunctionalInterface` is required the proxy " +
+                        "Supports default method implementations in the proxied Java interface. " +
+                        "These Java interface methods can be either overriden by a Venice " +
+                        "function or just be omitted. In the latter case the return value of " +
+                        "methods default implementation will be handed back.\n\n" +
+                        "In case a Java `FunctionalInterface` is required the proxy " +
                         "wrappers from the `:java` module are often simpler to use:\n\n" +
                         "* `java/as-runnable`       \n" +
                         "* `java/as-callable`       \n" +

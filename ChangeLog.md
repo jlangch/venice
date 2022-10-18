@@ -14,8 +14,8 @@ and this project adheres to
 
 ### Added
 
-- support for interfaces with default implementations for Java 
-  interop dynamic proxies 
+- support for interfaces with default implementations that are not
+  overridden for Java  interop dynamic proxies 
 - macros `assert-ne` and `assert-does-not-throw`
 - function `qualified-symbol?`, `regex/matches-not?`
 
