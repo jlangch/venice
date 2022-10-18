@@ -6,6 +6,10 @@
 [![Total alerts](https://img.shields.io/lgtm/alerts/g/jlangch/venice.svg?logo=lgtm&logoWidth=18)](https://lgtm.com/projects/g/jlangch/venice/alerts/)
 [![CI](https://github.com/jlangch/venice/actions/workflows/ci.yml/badge.svg?branch=master)](https://github.com/jlangch/venice/actions/workflows/ci.yml)
 
+[![Release (latest by date)](https://img.shields.io/github/v/release/jlangch/venice)](https://github.com/jlangch/venice/releases/latest)
+[![Release Date](https://img.shields.io/github/release-date/jlangch/venice?color=blue)](https://github.com/jlangch/venice/releases/latest)
+[![GitHub commits since latest release (by date)](https://img.shields.io/github/commits-since/jlangch/venice/latest)](https://github.com/jlangch/venice/commits/)
+
 
 # Venice
 
