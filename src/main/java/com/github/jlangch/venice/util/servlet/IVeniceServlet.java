@@ -103,17 +103,21 @@ public interface IVeniceServlet {
         resp.setStatus(404);
         resp.setContentType("text/html");
         resp.getWriter().println(
-                "<html>" +
-                "  <body>" +
-                "    <div style=\"text-align: center; margin-top: 120px; background-color: #f8f8f8; padding: 100px;\">" +
-                "      <div style=\"font-family: Arial, Helvetica, sans-serif; color: #CCCCCC; font-size: 90px;\">" +
-                "        Not Found" +
-                "      </div>" +
-                "      <div style=\"font-family: Arial, Helvetica, sans-serif; color: #999999; font-size: 36px; margin-top: 20px;\">" +
-                "        the requested webpage was not found" +
-                "      </div>" +
-                "    </div>" +
-                "  </body>" +
-                "</html>");
+        		  "<html>\n"
+        		+ "  <head>\n"
+        		+ "    <style>\n"
+        		+ "      body    {font-family: Arial, Helvetica, sans-serif;}\n"
+        		+ "      .box    {margin-top: 120px; padding: 100px; text-align: center; background-color: #f8f8f8;}\n"
+        		+ "      .title  {color: #cccccc; font-size: 90px;}\n"
+        		+ "      .msg    {margin-top: 20px; color: #999999; font-size: 36px;}\n"
+        		+ "    </style>\n"
+        		+ "  </head>\n"
+        		+ "  <body>\n"
+        		+ "    <div class=\"box\">\n"
+        		+ "      <div class=\"title\">Not Found</div>\n"
+        		+ "      <div class=\"msg\">the requested webpage was not found</div>\n"
+        		+ "    </div>\n"
+        		+ "  </body>\n"
+        		+ "</html>\n");
     }
 }
