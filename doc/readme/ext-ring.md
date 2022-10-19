@@ -143,7 +143,7 @@ Venice Ring is a port of Clojure's Ring web applications library.
 
 ## Demo WEB App with navigation and login/logout
 
-Download the [Demo WEB App](../examples/webapp/login-webapp.venice) to the 
+Download the [Demo WEB App](../examples/scripts/webapp/login-webapp.venice) to the 
 local filesystem as 'login-webapp.venice' and run the WebApp from the REPL:
 
 ```text
