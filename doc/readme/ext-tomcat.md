@@ -47,10 +47,10 @@ Open a browser with the URL `http://localhost:8080` or from the REPL: `(sh/open 
         { :init (fn [config] nil)
           :destroy (fn [] nil)
           :doGet (fn [req res servlet] (send-text res "Demo" "Hello World"))
-          :doHead (fn [req res servlet] (tc/send-not-found res))
-          :doPost (fn [req res servlet] (tc/send-not-found res))
-          :doPut (fn [req res servlet] (tc/send-not-found res))
-          :doDelete (fn [req res servlet] (tc/send-not-found res))
+          :doHead (fn [req res servlet] (tc/send-not-implemented res "HTTP Method HEAD"))
+          :doPost (fn [req res servlet] (tc/send-not-implemented res "HTTP Method POST"))
+          :doPut (fn [req res servlet] (tc/send-not-implemented res "HTTP Method PUT"))
+          :doDelete (fn [req res servlet] (tc/send-not-implemented res "HTTP Method DELETE")
           :getLastModified (fn [req] -1) })))
 
   (defn stop []

@@ -43,7 +43,7 @@ public interface IVeniceServlet {
             final HttpServletResponse resp,
             final HttpServlet servlet
     ) throws ServletException, IOException {
-        sendNotFound(resp);
+        sendNotImplemented(resp, "GET");
     }
 
     default void doHead(
@@ -51,7 +51,7 @@ public interface IVeniceServlet {
             final HttpServletResponse resp,
             final HttpServlet servlet
     ) throws ServletException, IOException {
-        sendNotFound(resp);
+        sendNotImplemented(resp, "HEAD");
     }
 
     default void doPost(
@@ -59,7 +59,7 @@ public interface IVeniceServlet {
             final HttpServletResponse resp,
             final HttpServlet servlet
     ) throws ServletException, IOException {
-        sendNotFound(resp);
+        sendNotImplemented(resp, "POST");
     }
 
     default void doPut(
@@ -67,7 +67,7 @@ public interface IVeniceServlet {
             final HttpServletResponse resp,
             final HttpServlet servlet
     ) throws ServletException, IOException {
-        sendNotFound(resp);
+        sendNotImplemented(resp, "PUT");
     }
 
     default void doDelete(
@@ -75,7 +75,7 @@ public interface IVeniceServlet {
             final HttpServletResponse resp,
             final HttpServlet servlet
     ) throws ServletException, IOException {
-        sendNotFound(resp);
+        sendNotImplemented(resp, "DELETE");
     }
 
     default void doOptions(
@@ -83,7 +83,7 @@ public interface IVeniceServlet {
             final HttpServletResponse resp,
             final HttpServlet servlet
     ) throws ServletException, IOException {
-        sendNotFound(resp);
+        sendNotImplemented(resp, "OPTIONS");
     }
 
     default void doTrace(
@@ -91,7 +91,7 @@ public interface IVeniceServlet {
             final HttpServletResponse resp,
             final HttpServlet servlet
     ) throws ServletException, IOException {
-        sendNotFound(resp);
+        sendNotImplemented(resp, "TRACE");
     }
 
     default long getLastModified(final HttpServletRequest req) {
@@ -99,8 +99,11 @@ public interface IVeniceServlet {
     }
 
 
-    static void sendNotFound(final HttpServletResponse resp) throws IOException {
-        resp.setStatus(404);
+    static void sendNotImplemented(
+    		final HttpServletResponse resp,
+    		final String method
+    ) throws IOException {
+        resp.setStatus(501);
         resp.setContentType("text/html");
         resp.getWriter().println(
         		  "<html>\n"
@@ -114,8 +117,8 @@ public interface IVeniceServlet {
         		+ "  </head>\n"
         		+ "  <body>\n"
         		+ "    <div class=\"box\">\n"
-        		+ "      <div class=\"title\">Not Found</div>\n"
-        		+ "      <div class=\"msg\">the requested webpage was not found</div>\n"
+        		+ "      <div class=\"title\">Not Implemented</div>\n"
+        		+ "      <div class=\"msg\">HTTP Method "+ method + "</div>\n"
         		+ "    </div>\n"
         		+ "  </body>\n"
         		+ "</html>\n");

@@ -211,11 +211,11 @@
      (proxify :IVeniceServlet
        { :init            (fn [config] nil)
          :destroy         (fn [] nil)
-         :doGet           (fn [req res _] (send-text res "Demo" "Hello World"))
-         :doHead          (fn [req res _] (send-not-found res))
-         :doPost          (fn [req res _] (send-not-found res))
-         :doPut           (fn [req res _] (send-not-found res))
-         :doDelete        (fn [req res _] (send-not-found res))
+         :doGet           (fn [req res _] (send-ok res "Demo" "Hello World"))
+         :doHead          (fn [req res _] (send-not-implemented res "HTTP Method HEAD"))
+         :doPost          (fn [req res _] (send-not-implemented res "HTTP Method POST"))
+         :doPut           (fn [req res _] (send-not-implemented res "HTTP Method PUT"))
+         :doDelete        (fn [req res _] (send-not-implemented res "HTTP Method DELETE"))
          :getLastModified (fn [req] -1) })))
 
 
@@ -299,27 +299,32 @@
   (. res :sendRedirect (str (. req :getContextPath) redirect-uri)))
 
 
-(defn send-not-found [res]
-  (. res :setStatus 404)
-  (. res :setContentType "text/html; charset=utf-8")
-  (-> (. res :getWriter)
-      (. :println (html-box-page "Not Found"
-                                 "the requested webpage was not found"))))
-
-
-(defn send-internal-error [res]
-  (. res :setStatus 500)
-  (. res :setContentType "text/html; charset=utf-8")
-  (-> (. res :getWriter)
-      (. :println (html-box-page "Internal Error"
-                                 "the request processing failed"))))
-
-
-(defn send-text [res title text]
+(defn send-ok [res title text]
   (. res :setStatus 200)
   (. res :setContentType "text/html; charset=utf-8")
   (-> (. res :getWriter)
       (. :println (html-box-page title text))))
+
+
+(defn send-not-found [res msg]
+  (. res :setStatus 404)
+  (. res :setContentType "text/html; charset=utf-8")
+  (-> (. res :getWriter)
+      (. :println (html-box-page "Not Found" msg))))
+
+
+(defn send-internal-error [res msg]
+  (. res :setStatus 500)
+  (. res :setContentType "text/html; charset=utf-8")
+  (-> (. res :getWriter)
+      (. :println (html-box-page "Internal Error" msg))))
+
+
+(defn send-not-implemented [res msg]
+  (. res :setStatus 501)
+  (. res :setContentType "text/html; charset=utf-8")
+  (-> (. res :getWriter)
+      (. :println (html-box-page "Not Implemented" msg))))
 
 
 (defn html-box-page [title message]
