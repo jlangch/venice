@@ -7,13 +7,13 @@ Venice Ring is a port of Clojure's Ring web applications library.
 
 ```clojure
 (do
-  (load-module :tomcat)
+  (load-module :tomcat ['tomcat :as 'tc])
   (load-module :ring)
 
   (defn hello-world-handler [request]
     { :status 200
-      :headers { "Content-Type" "text/plain; charset=utf-8" }
-      :body (str/escape-html "Hello World") })
+      :headers { "Content-Type" "text/html; charset=utf-8" }
+      :body (ring/html-box-page "Demo" "Hello World") })
 
   ;; A route is defined by a HTTP verb, a URI filter and a handle function.
   ;; If multiple routes match the route with the longest URI filter will be 
@@ -22,12 +22,22 @@ Venice Ring is a port of Clojure's Ring web applications library.
     [:get "/**"  hello-world-handler]
   ])
 
-  (tc/run-tomcat
-    (ring/create-servlet (-> (ring/match-routes routes)  ; >--+
-                                                         ;    |
-                             (ring/mw-print-uri)         ; ^  |
-                             (ring/mw-debug :on)))       ; +--+
-    {:await? false}))
+  (defn start []
+    (tc/start (ring/create-servlet (-> (ring/match-routes routes)  ; >--+
+                                                                   ;    |
+                                       (ring/mw-print-uri)         ; ^  |
+                                       (ring/mw-debug :on)))       ; +--+
+              {:await? false}))
+  
+  (defn stop []
+    (tc/shutdown server))
+
+  ;; start Tomcat
+  (def server (start))
+
+  (println "Tomcat started.")
+  (println "Open a browser:      (sh/open \"http://localhost:8080\")")
+  (println "Stop it by calling:  (stop)"))
 ```
 
 
@@ -35,13 +45,13 @@ Venice Ring is a port of Clojure's Ring web applications library.
 
 ```clojure
 (do
-  (load-module :tomcat)
+  (load-module :tomcat ['tomcat :as 'tc])
   (load-module :ring)
 
   (defn hello-world-handler [request]
     { :status 200
-      :headers { "Content-Type" "text/plain; charset=utf-8" }
-      :body (str/escape-html "Hello World") })
+      :headers { "Content-Type" "text/html; charset=utf-8" }
+      :body (ring/html-box-page "Demo" "Hello World") })
 
   ;; A route is defined by a HTTP verb, a URI filter and a handle function.
   ;; If multiple routes match the route with the longest URI filter will be 
@@ -52,15 +62,26 @@ Venice Ring is a port of Clojure's Ring web applications library.
 
   ;; The 'mw-request-counter' middlware uses the session to store the 
   ;; session's request count and prints it if debug is :on
-  (tc/run-tomcat
-    (ring/create-servlet (-> (ring/match-routes routes)  ; >--+
-                                                         ;    |
-                             (ring/mw-request-counter)   ; ^  |
-                             (ring/mw-add-session 3600)  ; |  |
-                             (ring/mw-print-uri)         ; |  |
-                             (ring/mw-debug :on)))       ; +--+
-    {:await? false}))
+  (defn start []
+    (tc/start (ring/create-servlet (-> (ring/match-routes routes)  ; >--+
+                                                                   ;    |
+                                       (ring/mw-request-counter)   ; ^  |
+                                       (ring/mw-add-session 3600)  ; |  |
+                                       (ring/mw-print-uri)         ; |  |
+                                       (ring/mw-debug :on)))       ; +--+
+              {:await? false}))
+  
+  (defn stop []
+    (tc/shutdown server))
+
+  ;; start Tomcat
+  (def server (start))
+
+  (println "Tomcat started.")
+  (println "Open a browser:      (sh/open \"http://localhost:8080\")")
+  (println "Stop it by calling:  (stop)"))
 ```
+
 
 ## Hello World WEB App with request/response dump
 
@@ -71,8 +92,8 @@ Venice Ring is a port of Clojure's Ring web applications library.
 
   (defn hello-world-handler [request]
     { :status 200
-      :headers { "Content-Type" "text/plain; charset=utf-8" }
-      :body (str/escape-html "Hello World") })
+      :headers { "Content-Type" "text/html; charset=utf-8" }
+      :body (ring/html-box-page "Demo" "Hello World") })
 
   ;; A route is defined by a HTTP verb, a URI filter and a handle function.
   ;; If multiple routes match the route with the longest URI filter will be 
@@ -81,14 +102,24 @@ Venice Ring is a port of Clojure's Ring web applications library.
     [:get "/**"  hello-world-handler]
   ])
 
-  (tc/run-tomcat
-    (ring/create-servlet (-> (ring/match-routes routes)  ; >--+
-                                                         ;    |
-                             (ring/mw-dump-response)     ; ^  |
-                             (ring/mw-dump-request)      ; |  |
-                             (ring/mw-print-uri)         ; |  |
-                             (ring/mw-debug :on)))       ; +--+
-    {:await? false}))
+  (defn start []
+    (tc/start (ring/create-servlet (-> (ring/match-routes routes)  ; >--+
+                                                                   ;    |
+                                       (ring/mw-dump-response)     ; ^  |
+                                       (ring/mw-dump-request)      ; |  |
+                                       (ring/mw-print-uri)         ; |  |
+                                       (ring/mw-debug :on)))       ; +--+
+              {:await? false}))
+  
+  (defn stop []
+    (tc/shutdown server))
+
+  ;; start Tomcat
+  (def server (start))
+
+  (println "Tomcat started.")
+  (println "Open a browser:      (sh/open \"http://localhost:8080\")")
+  (println "Stop it by calling:  (stop)"))
 ```
 
 
@@ -96,18 +127,18 @@ Venice Ring is a port of Clojure's Ring web applications library.
 
 ```clojure
 (do
-  (load-module :tomcat)
+  (load-module :tomcat ['tomcat :as 'tc])
   (load-module :ring)
 
   (defn hello-world-handler [request]
     { :status 200
-      :headers { "Content-Type" "text/plain; charset=utf-8" }
-      :body (str/escape-html "Hello World") })
+      :headers { "Content-Type" "text/html; charset=utf-8" }
+      :body (ring/html-box-page "Demo" "Hello World") })
 
   (defn test-handler [request]
     { :status 200
-      :headers { "Content-Type" "text/plain; charset=utf-8" }
-      :body (str/escape-html "Test") })
+      :headers { "Content-Type" "text/html; charset=utf-8" }
+      :body (ring/html-box-page "Demo" "Test") })
 
   (defn image-handler [request]
     (let [name (last (str/split (:uri request) "/"))
@@ -116,7 +147,10 @@ Venice Ring is a port of Clojure's Ring web applications library.
         { :status 200
           :headers { "Content-Type" (io/mime-type name) }
           :body file }
-        (ring/not-found-response "File not found"))))
+        { :status 404
+          :headers { "Content-Type" "text/html; charset=utf-8" }
+          :body (ring/html-box-page "Not Found" 
+                                    "The file \"~{name}\" does not exist!") })))
 
   ;; A route is defined by a HTTP verb, a URI filter and a handle function.
   ;; If multiple routes match the route with the longest URI filter will be 
@@ -128,16 +162,28 @@ Venice Ring is a port of Clojure's Ring web applications library.
     [:get "/static/images/*.png"  image-handler]
   ])
 
-  (tc/run-tomcat
-    (ring/create-servlet (-> (ring/match-routes routes)  ; >--+
-                                                         ;    |
-                             (ring/mw-dump-response)     ; ^  |
-                             (ring/mw-dump-request)      ; |  |
-                             (ring/mw-request-counter)   ; |  |
-                             (ring/mw-add-session 3600)  ; |  |
-                             (ring/mw-print-uri)         ; |  |
-                             (ring/mw-debug :on)))       ; +--+
-    {:await? false}))
+  (defn start []
+    (tc/start (ring/create-servlet (-> (ring/match-routes routes)  ; >--+
+                                                                   ;    |
+                                       (ring/mw-dump-response)     ; ^  |
+                                       (ring/mw-dump-request)      ; |  |
+                                       (ring/mw-request-counter)   ; |  |
+                                       (ring/mw-add-session 3600)  ; |  |
+                                       (ring/mw-print-uri)         ; |  |
+                                       (ring/mw-debug :on)))       ; +--+
+              {:await? false}))
+  
+  (defn stop []
+    (tc/shutdown server))
+
+  ;; start Tomcat
+  (def server (start))
+
+  (println "Tomcat started.")
+  (println "Open a browser:      (sh/open \"http://localhost:8080\")")
+  (println "                     (sh/open \"http://localhost:8080/test\")")
+  (println "                     (sh/open \"http://localhost:8080/static/images/foo.png\")")
+  (println "Stop it by calling:  (stop)"))
 ```
 
 
