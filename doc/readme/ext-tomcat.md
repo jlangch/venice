@@ -50,7 +50,7 @@ Open a browser with the URL `http://localhost:8080` or from the REPL: `(sh/open 
           :doHead (fn [req res servlet] (tc/send-not-implemented res "HTTP Method HEAD"))
           :doPost (fn [req res servlet] (tc/send-not-implemented res "HTTP Method POST"))
           :doPut (fn [req res servlet] (tc/send-not-implemented res "HTTP Method PUT"))
-          :doDelete (fn [req res servlet] (tc/send-not-implemented res "HTTP Method DELETE")
+          :doDelete (fn [req res servlet] (tc/send-not-implemented res "HTTP Method DELETE"))
           :getLastModified (fn [req] -1) })))
 
   (defn stop []
