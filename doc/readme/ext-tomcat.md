@@ -35,22 +35,22 @@ Open a browser with the URL `http://localhost:8080` or from the REPL: `(sh/open 
 
   (load-module :tomcat ['tomcat :as 'tc])
 
-  (defn send-text [res status text]
-    (. res :setStatus status)
-    (. res :setContentType "text/html")
+  (defn send-text [res title text]
+    (. res :setStatus 200)
+    (. res :setContentType "text/html; charset=utf-8")
     (-> (. res :getWriter)
-        (. :println """<html><body><p>~(str/escape-html text)</p></body></html>""")))
+        (. :println (tc/html-box-page title text))))
 
   (defn my-hello-world-servlet  []
     (. :VeniceServlet :new
       (proxify :IVeniceServlet
         { :init (fn [config] nil)
           :destroy (fn [] nil)
-          :doGet (fn [req res servlet] (send-text res 200 "Hello World"))
-          :doHead (fn [req res servlet] (send-text res 404 "Not Found"))
-          :doPost (fn [req res servlet] (send-text res 404 "Not Found"))
-          :doPut (fn [req res servlet] (send-text res 404 "Not Found"))
-          :doDelete (fn [req res servlet] (send-text res 404 "Not Found"))
+          :doGet (fn [req res servlet] (send-text res "Demo" "Hello World"))
+          :doHead (fn [req res servlet] (tc/send-not-found res))
+          :doPost (fn [req res servlet] (tc/send-not-found res))
+          :doPut (fn [req res servlet] (tc/send-not-found res))
+          :doDelete (fn [req res servlet] (tc/send-not-found res))
           :getLastModified (fn [req] -1) })))
 
   (defn stop []

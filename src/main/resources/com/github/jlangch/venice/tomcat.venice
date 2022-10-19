@@ -202,17 +202,6 @@
     tomcat))
 
 
-(defn reply-text [res status text]
-  (. res :setStatus status)
-  (. res :setContentType "text/html")
-  (-> (. res :getWriter)
-      (. :println """<html><body><p>~(str/escape-html text)</p></body></html>""")))
-
-
-(defn reply-not-found [res]
-  (reply-text res 404 "Not Found"))
-
-
 (defn
   ^{ :doc "'Hello World' demo servlet" }
 
@@ -222,13 +211,11 @@
      (proxify :IVeniceServlet
        { :init            (fn [config] nil)
          :destroy         (fn [] nil)
-         :doGet           (fn [req res _] (reply-text res 200 "Hello World"))
-         :doHead          (fn [req res _] (reply-not-found res))
-         :doPost          (fn [req res _] (reply-not-found res))
-         :doPut           (fn [req res _] (reply-not-found res))
-         :doDelete        (fn [req res _] (reply-not-found res))
-         :doOptions       (fn [req res _] (reply-not-found res))
-         :doTrace         (fn [req res _] (reply-not-found res))
+         :doGet           (fn [req res _] (send-text res "Demo" "Hello World"))
+         :doHead          (fn [req res _] (send-not-found res))
+         :doPost          (fn [req res _] (send-not-found res))
+         :doPut           (fn [req res _] (send-not-found res))
+         :doDelete        (fn [req res _] (send-not-found res))
          :getLastModified (fn [req] -1) })))
 
 
@@ -301,3 +288,57 @@
 (defn shutdown [server]
   (. server :stop)
   (. server :destroy))
+
+
+
+;; -----------------------------------------------------------------------------
+;; Request/Response functions
+;; -----------------------------------------------------------------------------
+
+(defn send-redirect [req res redirect-uri]
+  (. res :sendRedirect (str (. req :getContextPath) redirect-uri)))
+
+
+(defn send-not-found [res]
+  (. res :setStatus 404)
+  (. res :setContentType "text/html; charset=utf-8")
+  (-> (. res :getWriter)
+      (. :println (html-box-page "Not Found"
+                                 "the requested webpage was not found"))))
+
+
+(defn send-internal-error [res]
+  (. res :setStatus 500)
+  (. res :setContentType "text/html; charset=utf-8")
+  (-> (. res :getWriter)
+      (. :println (html-box-page "Internal Error"
+                                 "the request processing failed"))))
+
+
+(defn send-text [res title text]
+  (. res :setStatus 200)
+  (. res :setContentType "text/html; charset=utf-8")
+  (-> (. res :getWriter)
+      (. :println (html-box-page title text))))
+
+
+(defn html-box-page [title message]
+  """
+  <html>
+    <head>
+      <title>Tomcat</title>
+      <style>
+        body    {font-family: Arial, Helvetica, sans-serif;}
+        .box    {margin-top: 120px; padding: 100px; text-align: center; background-color: #f8f8f8;}
+        .title  {color: #cccccc; font-size: 90px;}
+        .msg    {margin-top: 20px; color: #999999; font-size: 36px;}
+      </style>
+    </head>
+    <body>
+      <div class="box">
+        <div class="title">~(str/escape-html (str title))</div>
+        <div class="msg">~(str/escape-html (str message))</div>
+      </div>
+    </body>
+  </html>
+  """)

@@ -30,9 +30,9 @@
 
 (import :com.github.jlangch.venice.RingRedirectException
         :com.github.jlangch.venice.VncException
-        :com.github.jlangch.venice.servlet.IVeniceServlet
-        :com.github.jlangch.venice.servlet.VeniceServlet
-        :com.github.jlangch.venice.servlet.FilterOutputStreamCloseCB
+        :com.github.jlangch.venice.util.servlet.IVeniceServlet
+        :com.github.jlangch.venice.util.servlet.VeniceServlet
+        :com.github.jlangch.venice.util.servlet.FilterOutputStreamCloseCB
         :java.io.BufferedWriter
         :java.io.OutputStreamWriter
         :java.util.Collections
@@ -779,62 +779,6 @@
       routes)))
 
 
-;; -----------------------------------------------------------------------------
-;; Servlet (internal)
-;; -----------------------------------------------------------------------------
-
-(defn- send-redirect [req res redirect-uri]
-  (. res :sendRedirect (str (. req :getContextPath) redirect-uri)))
-
-
-(defn- send-not-found [res]
-  (. res :setStatus 404)
-  (. res :setContentType "text/html")
-  (-> (. res :getWriter)
-      (. :println """
-                  <html>
-                    <head>
-                      <style>
-                        body    {font-family: Arial, Helvetica, sans-serif;}
-                        .box    {margin-top: 120px; padding: 100px; text-align: center; background-color: #f8f8f8;}
-                        .title  {color: #cccccc; font-size: 90px;}
-                        .msg    {margin-top: 20px; color: #999999; font-size: 36px;}
-                      </style>
-                    </head>
-                    <body>
-                      <div class="box">
-                        <div class="title">Not Found</div>
-                        <div class="msg">the requested webpage was not found</div>
-                      </div>
-                    </body>
-                  </html>
-                  """)))
-
-
-(defn- send-error [res]
-  (. res :setStatus 500)
-  (. res :setContentType "text/html")
-  (-> (. res :getWriter)
-      (. :println """
-                  <html>
-                    <head>
-                      <style>
-                        body    {font-family: Arial, Helvetica, sans-serif;}
-                        .box    {margin-top: 120px; padding: 100px; text-align: center; background-color: #f8f8f8;}
-                        .title  {color: #cccccc; font-size: 90px;}
-                        .msg    {margin-top: 20px; color: #999999; font-size: 36px;}
-                      </style>
-                    </head>
-                    <body>
-                      <div class="box">
-                        <div class="title">Internal Error</div>
-                        <div class="msg">the request processing failed</div>
-                      </div>
-                    </body>
-                  </html>
-                  """)))
-
-
 (defn
   ^{ :doc """
           Bootstrap the handler chain. Builds the request from then
@@ -865,3 +809,50 @@
     (catch :Exception ex
       (. ex :printStackTrace)
       (ring/send-error res))))
+
+
+
+;; -----------------------------------------------------------------------------
+;; Request/Response functions
+;; -----------------------------------------------------------------------------
+
+(defn- send-redirect [req res redirect-uri]
+  (. res :sendRedirect (str (. req :getContextPath) redirect-uri)))
+
+
+(defn- send-not-found [res]
+  (. res :setStatus 404)
+  (. res :setContentType "text/html; charset=utf-8")
+  (-> (. res :getWriter)
+      (. :println (html-box-page "Not Found"
+                                 "the requested webpage was not found"))))
+
+
+(defn- send-error [res]
+  (. res :setStatus 500)
+  (. res :setContentType "text/html; charset=utf-8")
+  (-> (. res :getWriter)
+      (. :println (html-box-page "Internal Error"
+                                 "the request processing failed"))))
+
+
+(defn html-box-page [title message]
+  """
+  <html>
+    <head>
+      <title>Tomcat/Ring</title>
+      <style>
+        body    {font-family: Arial, Helvetica, sans-serif;}
+        .box    {margin-top: 120px; padding: 100px; text-align: center; background-color: #f8f8f8;}
+        .title  {color: #cccccc; font-size: 90px;}
+        .msg    {margin-top: 20px; color: #999999; font-size: 36px;}
+      </style>
+    </head>
+    <body>
+      <div class="box">
+        <div class="title">~(str/escape-html (str title))</div>
+        <div class="msg">~(str/escape-html (str message))</div>
+      </div>
+    </body>
+  </html>
+  """)
