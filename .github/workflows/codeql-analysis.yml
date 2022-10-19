@@ -30,7 +30,6 @@ jobs:
     - name: Initialize CodeQL
       uses: github/codeql-action/init@v2
       with:
-          queries: +security-extended
           languages: java
       # Override language selection by uncommenting this and choosing your languages
       # with:
