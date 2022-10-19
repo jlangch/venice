@@ -141,6 +141,7 @@ Venice Ring is a port of Clojure's Ring web applications library.
       :body (ring/html-box-page "Demo" "Test") })
 
   (defn image-handler [request]
+    ;; for simplicity, there is no Path-Traversal check!
     (let [name (last (str/split (:uri request) "/"))
           file (io/file (io/user-dir) name)]
       (if (io/exists-file? file)
