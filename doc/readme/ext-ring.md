@@ -152,6 +152,7 @@ venice> (load-file "login-webapp.venice")
 
 Tomcat logs the startup like:
 
+```
 Oct 19, 2022 8:19:30 PM org.apache.coyote.AbstractProtocol init
 INFO: Initializing ProtocolHandler ["http-nio-8080"]
 Oct 19, 2022 8:19:31 PM org.apache.catalina.core.StandardService startInternal
