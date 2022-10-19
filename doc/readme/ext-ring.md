@@ -152,16 +152,16 @@ venice> (load-file "login-webapp.venice")
 
 Tomcat logs the startup like:
 
-```
-Aug 08, 2019 9:19:52 PM org.apache.coyote.AbstractProtocol init
+Oct 19, 2022 8:19:30 PM org.apache.coyote.AbstractProtocol init
 INFO: Initializing ProtocolHandler ["http-nio-8080"]
-Aug 08, 2019 9:19:52 PM org.apache.catalina.core.StandardService startInternal
+Oct 19, 2022 8:19:31 PM org.apache.catalina.core.StandardService startInternal
 INFO: Starting service [Tomcat]
-Aug 08, 2019 9:19:52 PM org.apache.catalina.core.StandardEngine startInternal
-INFO: Starting Servlet engine: [Apache Tomcat/9.0.19]
-Aug 08, 2019 9:19:52 PM org.apache.coyote.AbstractProtocol start
+Oct 19, 2022 8:19:31 PM org.apache.catalina.core.StandardEngine startInternal
+INFO: Starting Servlet engine: [Apache Tomcat/9.0.68]
+Oct 19, 2022 8:19:31 PM org.apache.coyote.AbstractProtocol start
 INFO: Starting ProtocolHandler ["http-nio-8080"]
-=> org.apache.catalina.startup.Tomcat@22df874e
-``
-
-Stop the WebApp with `ctrl-c`.
+Tomcat started.
+Open a browser:      (sh/open "http://localhost:8080")
+Stop it by calling:  (stop)
+=> nil
+```
