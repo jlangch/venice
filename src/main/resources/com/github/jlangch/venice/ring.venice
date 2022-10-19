@@ -382,8 +382,6 @@
         :doPost    (fn [req res servlet] (ring/handle req res servlet handler))
         :doPut     (fn [req res servlet] (ring/handle req res servlet handler))
         :doDelete  (fn [req res servlet] (ring/handle req res servlet handler))
-        :doOptions (fn [req res servlet] (ring/handle req res servlet handler))
-        :doTrace   (fn [req res servlet] (ring/handle req res servlet handler))
         :getLastModified (fn [req] -1) })))
 
 
@@ -417,7 +415,7 @@
 (defn-
   ^{ :doc """
           Gets the character encoding of a Ring response.
-          
+
           E.g.: Content-Type: text/html; charset=utf-8
           """ }
 
@@ -576,8 +574,8 @@
 
 (defn
   ^{ :doc """
-          Turns a handler into a function that takes the same arguments \
-          and has the same return value as the service method in the \
+          Turns a handler into a function that takes the same arguments
+          and has the same return value as the service method in the
           HttpServlet class.
           """ }
   make-service-method
@@ -805,12 +803,12 @@
 
 (defn
   ^{ :doc """
-          Bootstrap the handler chain. Builds the request from then \
-          HttpServletRequest and calls the handler with the request. \
-          Builds the HttpServletResponse from the handler's response. \
-          Sends a not-found HTTP response if the handler returned a \
-          nil response. Sends a redirect if a handler raises a \
-          RingRedirectException. In case of any other exception sends \
+          Bootstrap the handler chain. Builds the request from then
+          HttpServletRequest and calls the handler with the request.
+          Builds the HttpServletResponse from the handler's response.
+          Sends a not-found HTTP response if the handler returned a
+          nil response. Sends a redirect if a handler raises a
+          RingRedirectException. In case of any other exception sends
           an internal-error (HTTP status 500) response.
           """ }
 

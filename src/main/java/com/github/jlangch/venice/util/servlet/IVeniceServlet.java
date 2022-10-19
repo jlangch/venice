@@ -32,23 +32,88 @@ import javax.servlet.http.HttpServletResponse;
 
 public interface IVeniceServlet {
 
-    void init(ServletConfig config) throws ServletException;
+    default void init(final ServletConfig config) throws ServletException {
+    }
 
-    void destroy();
+    default void destroy() {
+    }
 
-    void doGet(HttpServletRequest req, HttpServletResponse resp, HttpServlet servlet) throws ServletException, IOException;
+    default void doGet(
+            final HttpServletRequest req,
+            final HttpServletResponse resp,
+            final HttpServlet servlet
+    ) throws ServletException, IOException {
+        sendNotFound(resp);
+    }
 
-    void doHead(HttpServletRequest req, HttpServletResponse resp, HttpServlet servle) throws ServletException, IOException;
+    default void doHead(
+            final HttpServletRequest req,
+            final HttpServletResponse resp,
+            final HttpServlet servlet
+    ) throws ServletException, IOException {
+        sendNotFound(resp);
+    }
 
-    void doPost(HttpServletRequest req, HttpServletResponse resp, HttpServlet servle) throws ServletException, IOException;
+    default void doPost(
+            final HttpServletRequest req,
+            final HttpServletResponse resp,
+            final HttpServlet servlet
+    ) throws ServletException, IOException {
+        sendNotFound(resp);
+    }
 
-    void doPut(HttpServletRequest req, HttpServletResponse resp, HttpServlet servle) throws ServletException, IOException;
+    default void doPut(
+            final HttpServletRequest req,
+            final HttpServletResponse resp,
+            final HttpServlet servlet
+    ) throws ServletException, IOException {
+        sendNotFound(resp);
+    }
 
-    void doDelete(HttpServletRequest req, HttpServletResponse resp, HttpServlet servle) throws ServletException, IOException;
+    default void doDelete(
+            final HttpServletRequest req,
+            final HttpServletResponse resp,
+            final HttpServlet servlet
+    ) throws ServletException, IOException {
+        sendNotFound(resp);
+    }
 
-    void doOptions(HttpServletRequest req, HttpServletResponse resp, HttpServlet servle) throws ServletException, IOException;
+    default void doOptions(
+            final HttpServletRequest req,
+            final HttpServletResponse resp,
+            final HttpServlet servlet
+    ) throws ServletException, IOException {
+        sendNotFound(resp);
+    }
 
-    void doTrace(HttpServletRequest req, HttpServletResponse resp, HttpServlet servle) throws ServletException, IOException;
+    default void doTrace(
+            final HttpServletRequest req,
+            final HttpServletResponse resp,
+            final HttpServlet servlet
+    ) throws ServletException, IOException {
+        sendNotFound(resp);
+    }
 
-    long getLastModified(HttpServletRequest req);
+    default long getLastModified(final HttpServletRequest req) {
+        return -1;
+    }
+
+
+    static void sendNotFound(final HttpServletResponse resp) throws IOException {
+        resp.setStatus(404);
+        resp.setContentType("text/html");
+        resp.getWriter().println(
+                "<html>" +
+                "  <body>" +
+                "    <div style=\"text-align: center; margin-top: 120px; background-color: #f8f8f8; padding: 100px;\">" +
+                "      <div style=\"font-family: Arial, Helvetica, sans-serif; color: #CCCCCC; font-size: 90px;\">" +
+                "        Not Found" +
+                "      </div>" +
+                "      <div style=\"font-family: Arial, Helvetica, sans-serif; color: #999999; font-size: 36px; margin-top: 20px;\">" +
+                "        the requested webpage was not found" +
+                "      </div>" +
+                "    </div>" +
+                "  </body>" +
+                "</html>");
+    }
 }

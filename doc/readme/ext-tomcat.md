@@ -51,8 +51,6 @@ Open a browser with the URL `http://localhost:8080` or from the REPL: `(sh/open 
           :doPost (fn [req res servlet] (send-text res 404 "Not Found"))
           :doPut (fn [req res servlet] (send-text res 404 "Not Found"))
           :doDelete (fn [req res servlet] (send-text res 404 "Not Found"))
-          :doOptions (fn [req res servlet] (send-text res 404 "Not Found"))
-          :doTrace (fn [req res servlet] (send-text res 404 "Not Found"))
           :getLastModified (fn [req] -1) })))
 
   (defn stop []
