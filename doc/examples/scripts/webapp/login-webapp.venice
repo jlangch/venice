@@ -53,7 +53,7 @@
 ;; Alternatively templates can be loaded from classpath or filesystem if
 ;; required so.
 
-(def tpl-login-screen
+(def tpl-main
   """
   <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "//www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
   <html xmlns="//www.w3.org/1999/xhtml">
@@ -63,68 +63,53 @@
     <link rel="stylesheet" type="text/css" href="/static/style.css" />
   </head>
   <body>
-    <form action="/login" method="post">
-      <div class="container">
-        <label for="user"><b>Username</b></label>
-        <input type="text" placeholder="Enter username" name="user" required>
-
-        <label for="pwd"><b>Password</b></label>
-        <input type="password" placeholder="Enter password" name="pwd" required>
-
-        <button type="submit">Login</button>
-      </div>
-    </form>
-    <%(when (== type :failure) %>
-    <font color=red>Either user name or password is wrong.</font>
-    <%)%>
-    <%(when (== type :missing) %>
-    <font color=red>Either user name or password is missing.</font>
-    <%)%>
+  <%= body %>
   </body>
   </html>
+  """)
+
+(def tpl-login-screen
+  """
+  <form action="/login" method="post">
+    <div class="container">
+      <label for="user"><b>Username</b></label>
+      <input type="text" placeholder="Enter username" name="user" required>
+
+      <label for="pwd"><b>Password</b></label>
+      <input type="password" placeholder="Enter password" name="pwd" required>
+
+      <button type="submit">Login</button>
+    </div>
+  </form>
+  <%(when (== type :failure) %>
+  <font color=red>Either user name or password is wrong.</font>
+  <%)%>
+  <%(when (== type :missing) %>
+  <font color=red>Either user name or password is missing.</font>
+  <%)%>
   """)
 
 (def tpl-main-screen
   """
-  <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "//www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
-  <html xmlns="//www.w3.org/1999/xhtml">
-  <head>
-    <meta charset="UTF-8">
-    <title>Main</title>
-    <link rel="stylesheet" type="text/css" href="/static/style.css" />
-  </head>
-  <body>
-    <h3>Hi <%=(str/escape-html username)%></h3>
-    <p>Login successful</p>
-    <p>Your Session ID=<%=(str/escape-html session-id)%></p>
-    <p/>
-    <a href="/checkout">Checkout</a>
-    <p/>
-    <form action="/logout" method="post">
-      <button type="submit">Logout</button>
-    </form>
-  </body>
-  </html>
+  <h3>Hi <%=(str/escape-html username)%></h3>
+  <p>Login successful</p>
+  <p>Your Session ID=<%=(str/escape-html session-id)%></p>
+  <p/>
+  <a href="/checkout">Checkout</a>
+  <p/>
+  <form action="/logout" method="post">
+    <button type="submit">Logout</button>
+  </form>
   """)
 
 (def tpl-checkout-screen
   """
-  <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "//www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
-  <html xmlns="//www.w3.org/1999/xhtml">
-  <head>
-    <meta charset="UTF-8">
-    <title>Checkout</title>
-    <link rel="stylesheet" type="text/css" href="/static/style.css" />
-  </head>
-  <body>
-    <h3>Hi <%=(str/escape-html username)%></h3>
-    <p>Please checkout.</p>
-    <p/>
-    <form action="/logout" method="post">
-      <button type="submit">Logout</button>
-    </form>
-  </body>
-  </html>
+  <h3>Hi <%=(str/escape-html username)%></h3>
+  <p>Checked out. Please logout.</p>
+  <p/>
+  <form action="/logout" method="post">
+    <button type="submit">Logout</button>
+  </form>
   """)
 
 (def style-css
@@ -173,11 +158,21 @@
 ;; HTML renderers
 ;; -----------------------------------------------------------------------------
 
-(def render-login-screen (kira/fn [type] tpl-login-screen))
+;; (render-login-screen type)  ; type is one of:  [:ok :error :failure]
+(def render-login-screen
+  (comp (kira/fn [body] tpl-main)
+        (kira/fn [type] tpl-login-screen)))
 
-(def render-checkout-screen (kira/fn [username] tpl-checkout-screen))
+;; (render-checkout-screen "arthur")
+(def render-checkout-screen
+  (comp (kira/fn [body] tpl-main)
+        (kira/fn [username] tpl-checkout-screen)))
 
-(def render-main-screen (kira/fn [username session-id] tpl-main-screen))
+;; (render-main-screen "arthur" "SESSION-8350B77178F97")
+(def render-main-screen
+  (comp (kira/fn [body] tpl-main)
+        (kira/fn [username session-id] tpl-main-screen)))
+
 
 
 ;; -----------------------------------------------------------------------------
