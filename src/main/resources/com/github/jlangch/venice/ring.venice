@@ -36,10 +36,10 @@
         :java.io.BufferedWriter
         :java.io.OutputStreamWriter
         :java.util.Collections
-        :javax.servlet.ServletConfig
-        :javax.servlet.ServletException
-        :javax.servlet.http.HttpServletRequest
-        :javax.servlet.http.HttpServletResponse)
+        :javakarta.servlet.ServletConfig
+        :javakarta.servlet.ServletException
+        :javakarta.servlet.http.HttpServletRequest
+        :javakarta.servlet.http.HttpServletResponse)
 
 
 ;; -----------------------------------------------------------------------------

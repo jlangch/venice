@@ -3,10 +3,15 @@
 The Apache Tomcat extension module provides functions to start an embedded 
 Tomcat server and running servlets.
 
-Dependencies:
+Dependencies (Java 8):
 
- - org.apache.tomcat.embed:tomcat-embed-core:9.0.68
- - javax.annotation:javax.annotation-api:1.3.2
+ - org.apache.tomcat.embed:tomcat-embed-core:10.0.27
+ - jakarta.annotation:jakarta.annotation-api:2.1.1
+
+Dependencies (Java 11+):
+
+ - org.apache.tomcat.embed:tomcat-embed-core:10.1.1
+ - jakarta.annotation:jakarta.annotation-api:2.1.1
 
 To simplify things there is a 
 [Ring style WEB App module](ext-ring.md) available.
@@ -67,10 +72,20 @@ Open a browser with the URL `http://localhost:8080` or from the REPL: `(sh/open 
 
 ## Download required 3rd party libs
 
+Java 8:
+
 ```clojure
 (do
-  (load-module :maven)
-  
-  (maven/download "org.apache.tomcat.embed:tomcat-embed-core:9.0.68")
-  (maven/download "javax.annotation:javax.annotation-api:1.3.2"))
+  (load-module :maven ['maven :as 'm])
+  (m/download "org.apache.tomcat.embed:tomcat-embed-core:10.0.27")
+  (m/download "jakarta.annotation:jakarta.annotation-api:2.1.1"))
+```
+
+Java 11+:
+
+```clojure
+(do
+  (load-module :maven ['maven :as 'm])
+  (m/download "org.apache.tomcat.embed:tomcat-embed-core:10.1.1")
+  (m/download "jakarta.annotation:jakarta.annotation-api:2.1.1"))
 ```

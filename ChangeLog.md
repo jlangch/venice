@@ -28,6 +28,12 @@ and this project adheres to
 
 - REPL command completer to consider special forms as well 
 
+### Migrated
+
+- the *Tomcat* WebApp modules `:tomcat` and `:ring` to the Java EE 9 Jakarta
+  versions of *Tomcat*. Tomcat 9 is not supported anymore. Use Tomcat 10.0.x
+  with Java 8 and Tomcat 10.1.x with Java 11+.
+
 
 
 ## [1.10.24] - 2022-10-03

@@ -179,7 +179,7 @@ ext {
     jupiter_Version = '5.8.2'
     openpdf_Version = '1.3.28'
     poi_Version = '4.1.2'
-    servletApi_Version = '4.0.1'
+    servletApi_Version = '5.0.0'
     springExpression_Version = '5.2.0.RELEASE'
     vavr_Version = '0.10.4'
     xchart_Version = '3.8.1'
@@ -739,7 +739,7 @@ dependencies {
     }
 
     // WebApp support
-    compileOnly "javax.servlet:javax.servlet-api:${servletApi_Version}"
+    compileOnly "jakarta.servlet:jakarta.servlet-api:${servletApi_Version}"
 
     // runtime dependencies (repackaged)
     implementation "io.vavr:vavr:${vavr_Version}"
