@@ -23,7 +23,7 @@ Start a REPL:
 
 ```text
 venice> (load-module :tomcat ['tomcat :as 'tc])
-venice> (def server (tc/start (tc/hello-world-servlet) {:await? false}))
+venice> (def server (tc/start (tc/hello-world-servlet) {:await? false, :base-dir "."}))
   :
 venice> (tc/shutdown server)
 ```
@@ -62,7 +62,8 @@ Open a browser with the URL `http://localhost:8080` or from the REPL: `(sh/open 
     (tc/shutdown server))
  
   ; start Tomcat
-  (def server (tc/start (my-hello-world-servlet) {:await? false}))
+  (def server (tc/start (my-hello-world-servlet) 
+                        {:await? false, :base-dir "."}))
   
   (println "Tomcat started.")
   (println "Open a browser:      (sh/open \"http://localhost:8080\")")

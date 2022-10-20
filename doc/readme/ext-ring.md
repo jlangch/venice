@@ -27,7 +27,7 @@ Venice Ring is a port of Clojure's Ring web applications library.
                                                                    ;    |
                                        (ring/mw-print-uri)         ; ^  |
                                        (ring/mw-debug :on)))       ; +--+
-              {:await? false}))
+              {:await? false, :base-dir "."}))
   
   (defn stop []
     (tc/shutdown server))
@@ -69,7 +69,7 @@ Venice Ring is a port of Clojure's Ring web applications library.
                                        (ring/mw-add-session 3600)  ; |  |
                                        (ring/mw-print-uri)         ; |  |
                                        (ring/mw-debug :on)))       ; +--+
-              {:await? false}))
+              {:await? false, :base-dir "."}))
   
   (defn stop []
     (tc/shutdown server))
@@ -109,7 +109,7 @@ Venice Ring is a port of Clojure's Ring web applications library.
                                        (ring/mw-dump-request)      ; |  |
                                        (ring/mw-print-uri)         ; |  |
                                        (ring/mw-debug :on)))       ; +--+
-              {:await? false}))
+              {:await? false, :base-dir "."}))
   
   (defn stop []
     (tc/shutdown server))
@@ -172,7 +172,7 @@ Venice Ring is a port of Clojure's Ring web applications library.
                                        (ring/mw-add-session 3600)  ; |  |
                                        (ring/mw-print-uri)         ; |  |
                                        (ring/mw-debug :on)))       ; +--+
-              {:await? false}))
+              {:await? false, :base-dir "."}))
   
   (defn stop []
     (tc/shutdown server))

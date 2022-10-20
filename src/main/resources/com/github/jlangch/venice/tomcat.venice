@@ -197,20 +197,27 @@
 
 
 (defn- create-server [options]
-  (let [base-dir (:base-dir options tomcat/default-base-dir)
-        resources-dir (io/file base-dir "resources")
-        tomcat (doto (. :Tomcat :new)
-                     (. :setBaseDir base-dir))
-        service (. tomcat :getService)]
+  (let [base-dir      (io/file-canonical (:base-dir options tomcat/default-base-dir))
+        resources-dir (io/file base-dir "resources") ]
+    (when-not (io/exists-dir? base-dir)
+      (throw (ex :VncException
+                 """
+                 The Tomcat's configured base directory ~{base-dir} does not \
+                 exist! Please create it before starting the Tomcat server.
+                 """)))
+    (println "Tomcat uses the base directory ~{base-dir}.")    
     (when-not (io/exists-dir? resources-dir)
-      (throw (ex :RuntimeException
-                 (str "The resources dir " base-dir " does not exist"))))
-    (if (:executor? options true)
-      (tomcat/create-executored-connectors tomcat/create-connector service options)
-      (tomcat/create-connector service options))
-    (. (. tomcat :getServer) :addLifecycleListener (. :JreMemoryLeakPreventionListener :new))
-    (. (. tomcat :getHost) :setAppBase  "resources")
-    tomcat))
+      (io/mkdir resources-dir))
+
+    (let [tomcat  (doto (. :Tomcat :new)
+                        (. :setBaseDir (io/file-path base-dir)))
+          service (. tomcat :getService)]
+      (if (:executor? options true)
+        (tomcat/create-executored-connectors tomcat/create-connector service options)
+        (tomcat/create-connector service options))
+      (. (. tomcat :getServer) :addLifecycleListener (. :JreMemoryLeakPreventionListener :new))
+      (. (. tomcat :getHost) :setAppBase  "resources")
+    tomcat)))
 
 
 (defn
