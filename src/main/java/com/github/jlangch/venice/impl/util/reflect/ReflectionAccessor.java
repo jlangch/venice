@@ -23,6 +23,7 @@ package com.github.jlangch.venice.impl.util.reflect;
 
 import java.lang.invoke.MethodHandle;
 import java.lang.reflect.Constructor;
+import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.Arrays;
 import java.util.Comparator;
@@ -124,6 +125,51 @@ public class ReflectionAccessor {
         }
         catch (JavaMethodInvocationException ex) {
             throw ex;
+        }
+        catch (IllegalAccessException ex) {
+            throw new JavaMethodInvocationException(
+                    String.format(
+                            "Failed to invoke constructor %s(%s). " +
+                            "Violated the VM's access control.",
+                            clazz.getName(),
+                            formatArgTypes(args)),
+                    ex);
+        }
+        catch (IllegalArgumentException ex) {
+            throw new JavaMethodInvocationException(
+                    String.format(
+                            "Failed to invoke constructor %s(%s). " +
+                            "Unable to match the constructor's formal parameters.",
+                            clazz.getName(),
+                            formatArgTypes(args)),
+                    ex);
+        }
+        catch (InstantiationException ex) {
+            throw new JavaMethodInvocationException(
+                    String.format(
+                            "Failed to invoke constructor %s(%s). " +
+                            "The class is abstract.",
+                            clazz.getName(),
+                            formatArgTypes(args)),
+                    ex);
+        }
+        catch (InvocationTargetException ex) {
+            throw new JavaMethodInvocationException(
+                    String.format(
+                            "Failed to invoke constructor %s(%s). "
+                    		+ "The constructor throwed an exception.",
+                            clazz.getName(),
+                            formatArgTypes(args)),
+                    ex);
+        }
+        catch (ExceptionInInitializerError ex) {
+            throw new JavaMethodInvocationException(
+                    String.format(
+                            "Failed to invoke constructor %s(%s). "
+                            + "JVM initialization error on a static initializer.",
+                            clazz.getName(),
+                            formatArgTypes(args)),
+                    ex);
         }
         catch (Exception ex) {
             throw new JavaMethodInvocationException(
