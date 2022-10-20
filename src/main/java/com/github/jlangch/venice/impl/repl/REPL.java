@@ -349,10 +349,9 @@ public class REPL {
                             case "restart":
                                 if (restartable) {
                                     printer.println("system", "restarting...");
-                                    ReplRestart.write(
-                                        venice.isMacroExpandOnLoad(),
-                                        config.getColorMode());
-                                    System.exit(RESTART_EXIT_CODE);
+                                    ReplRestart.restart(
+                                            venice.isMacroExpandOnLoad(),
+                                            config.getColorMode());
                                     return;
                                 }
                                 else {
@@ -1150,7 +1149,7 @@ public class REPL {
                     .setStderrPrintStream(err)
                     .setStdinReader(in);
 
-        return ReplFunctions.register(env, terminal, config);
+        return ReplFunctions.register(env, terminal, config, venice.isMacroExpandOnLoad());
     }
 
     private void reconfigureVenice(
@@ -1454,8 +1453,6 @@ public class REPL {
 
     private static final SetupMode Minimal = SetupMode.Minimal;
     private static final SetupMode Extended = SetupMode.Extended;
-
-    private final static int RESTART_EXIT_CODE = 99;
 
     private final static String HISTORY_FILE = ".repl.history";
 

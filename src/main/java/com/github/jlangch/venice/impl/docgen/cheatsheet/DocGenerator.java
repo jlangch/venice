@@ -35,6 +35,7 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 import com.github.jlangch.venice.Venice;
+import com.github.jlangch.venice.impl.IVeniceInterpreter;
 import com.github.jlangch.venice.impl.RunMode;
 import com.github.jlangch.venice.impl.VeniceInterpreter;
 import com.github.jlangch.venice.impl.docgen.cheatsheet.modules.ModuleAnsiSection;
@@ -112,8 +113,9 @@ public class DocGenerator {
                         "shell",  "geoip",    "benchmark", "component",
                         "config", "parsifal", "grep",      "test"));
 
-        final Env docEnv = new VeniceInterpreter(new AcceptAllInterceptor())
-                            .createEnv(
+        final IVeniceInterpreter venice = new VeniceInterpreter(new AcceptAllInterceptor());
+
+        final Env docEnv = venice.createEnv(
                                 preloadedModules,
                                 false,
                                 false,
@@ -123,7 +125,7 @@ public class DocGenerator {
                                 null);
 
         // make REPL specific functions available (e.g: 'repl/info')
-        final Env env = ReplFunctions.register(docEnv, null, null);
+        final Env env = ReplFunctions.register(docEnv, null, null, false);
 
         this.diBuilder = new DocItemBuilder(
                                 env,

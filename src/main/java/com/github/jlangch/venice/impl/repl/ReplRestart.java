@@ -42,6 +42,15 @@ public class ReplRestart {
         this.createdAt = lines.isEmpty() ? null : parse(lines.get(0));
     }
 
+    public static void restart(
+    		final boolean macroExpandOnLoad,
+    		final ColorMode colorMode
+    ) {
+        ReplRestart.write(macroExpandOnLoad, colorMode);
+
+        System.exit(RESTART_EXIT_CODE);
+    }
+
     public static ReplRestart read() {
         try {
             return new ReplRestart(
@@ -146,6 +155,8 @@ public class ReplRestart {
         }
     }
 
+
+    public final static int RESTART_EXIT_CODE = 99;
 
     private final static File RESTART_FILE = new File(".repl.restart");
     private final static DateTimeFormatter dtFormatter =

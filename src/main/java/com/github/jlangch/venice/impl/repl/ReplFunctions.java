@@ -30,6 +30,7 @@ import org.jline.utils.InfoCmp.Capability;
 import com.github.jlangch.venice.VncException;
 import com.github.jlangch.venice.impl.env.Env;
 import com.github.jlangch.venice.impl.env.Var;
+import com.github.jlangch.venice.impl.types.Constants;
 import com.github.jlangch.venice.impl.types.VncFunction;
 import com.github.jlangch.venice.impl.types.VncKeyword;
 import com.github.jlangch.venice.impl.types.VncLong;
@@ -46,10 +47,11 @@ public class ReplFunctions {
     public static Env register(
             final Env env,
             final Terminal terminal,
-            final ReplConfig config
+            final ReplConfig config,
+            final boolean macroExpandOnLoad
     ) {
         Env e = env;
-        for(VncFunction fn : createFunctions(terminal, config)) {
+        for(VncFunction fn : createFunctions(terminal, config, macroExpandOnLoad)) {
             e = registerFn(e,fn);
         }
         return e;
@@ -62,11 +64,13 @@ public class ReplFunctions {
 
     private static List<VncFunction> createFunctions(
             final Terminal terminal,
-            final ReplConfig config
+            final ReplConfig config,
+            final boolean macroExpandOnLoad
     ) {
         final List<VncFunction> fns = new ArrayList<>();
 
         fns.add(createReplInfoFn(terminal, config));
+        fns.add(createReplRestartFn(terminal, config, macroExpandOnLoad));
         fns.add(createTermRowsFn(terminal));
         fns.add(createTermColsFn(terminal));
 
@@ -86,7 +90,7 @@ public class ReplFunctions {
                         .doc(
                             "Returns information on the REPL.\n\n" +
                             "Note: This function is only available when called from " +
-                             "within a REPL!\n\n" +
+                            "within a REPL!\n\n" +
                             "E.g.: \n\n" +
                             "```\n" +
                             "{ :term-name \"JLine terminal\" \n" +
@@ -117,6 +121,38 @@ public class ReplFunctions {
                     catch(Exception ex) {
                         throw new VncException("Failed to get the REPL terminal info", ex);
                     }
+                }
+
+                private static final long serialVersionUID = -1L;
+            };
+    }
+
+    private static VncFunction createReplRestartFn(
+            final Terminal terminal,
+            final ReplConfig config,
+            final boolean macroExpandOnLoad
+    ) {
+        return
+            new VncFunction(
+                    "repl/restart",
+                    VncFunction
+                        .meta()
+                        .arglists("(repl/restart)")
+                        .doc(
+                            "Restarts the REPL.\n\n" +
+                            "Note: This function is only available when called from " +
+                            "within a REPL!")
+                        .seeAlso(
+                            "repl?")
+                        .build()
+            ) {
+                @Override
+                public VncVal apply(final VncList args) {
+                    ArityExceptions.assertArity(this, args, 0);
+
+                    ReplRestart.restart(macroExpandOnLoad, config.getColorMode());
+
+                    return Constants.Nil;
                 }
 
                 private static final long serialVersionUID = -1L;
