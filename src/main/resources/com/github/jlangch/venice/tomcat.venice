@@ -223,7 +223,30 @@
     tomcat)))
 
 
-(defn servlet [handler-map]
+(defn
+  ^{ :arglists '("(create-servlet handler-map)")
+     :doc "Creates a servlet from a HTTP method handler map"
+     :examples '(
+         """
+         ;; minimal servlet
+         (tomcat/create-servlet
+           { :doGet (fn [req res servlet] (tomcat/send-ok res "Hello World")) })
+         """,
+         """
+         ;; servlet with lifecycle and all HTTP methods
+         (tomcat/create-servlet
+            { :init (fn [config] nil)
+              :destroy (fn [servlet] nil)
+              :doGet (fn [req res servlet] (tomcat/send-ok res "Hello World"))
+              :doHead (fn [req res servlet] (tomcat/send-not-implemented res "HTTP Method HEAD"))
+              :doPost (fn [req res servlet] (tomcat/send-not-implemented res "HTTP Method POST"))
+              :doPut (fn [req res servlet] (tomcat/send-not-implemented res "HTTP Method PUT"))
+              :doDelete (fn [req res servlet] (tomcat/send-not-implemented res "HTTP Method DELETE"))
+              :getLastModified (fn [req] -1) })
+          """ ) }
+
+  create-servlet [handler-map]
+
   (. :VeniceServlet :new (proxify :IVeniceServlet handler-map)))
 
 
@@ -232,16 +255,15 @@
 
   hello-world-servlet []
 
-  (. :VeniceServlet :new
-     (proxify :IVeniceServlet
-       { :init            (fn [config] nil)
-         :destroy         (fn [] nil)
-         :doGet           (fn [req res _] (send-ok res "Demo" "Hello World"))
-         :doHead          (fn [req res _] (send-not-implemented res "HTTP Method HEAD"))
-         :doPost          (fn [req res _] (send-not-implemented res "HTTP Method POST"))
-         :doPut           (fn [req res _] (send-not-implemented res "HTTP Method PUT"))
-         :doDelete        (fn [req res _] (send-not-implemented res "HTTP Method DELETE"))
-         :getLastModified (fn [req] -1) })))
+  (create-servlet
+     { :init            (fn [config] nil)
+       :destroy         (fn [servlet] nil)
+       :doGet           (fn [req res _] (send-ok res "Demo" "Hello World"))
+       :doHead          (fn [req res _] (send-not-implemented res "HTTP Method HEAD"))
+       :doPost          (fn [req res _] (send-not-implemented res "HTTP Method POST"))
+       :doPut           (fn [req res _] (send-not-implemented res "HTTP Method PUT"))
+       :doDelete        (fn [req res _] (send-not-implemented res "HTTP Method DELETE"))
+       :getLastModified (fn [req] -1) }))
 
 
 (defn

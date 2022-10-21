@@ -35,7 +35,7 @@ public interface IVeniceServlet {
     default void init(final ServletConfig config) throws ServletException {
     }
 
-    default void destroy() {
+    default void destroy(final HttpServlet servlet) {
     }
 
     default void doGet(

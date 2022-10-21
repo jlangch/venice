@@ -190,9 +190,10 @@
   (ring/session-invalidate req))
 
 (def users
-   { "1000"  { :id "1000" :firstname "John" :lastname "Doe" }
-     "1001"  { :id "1001" :firstname "Ford" :lastname "Prefect" }
-     "1002"  { :id "1002" :firstname "Zaphod" :lastname "Beeblebrox" } } )
+   [ { :id "1000" :loginname "admin"     :firstname "Admin" :lastname "Admin"   }
+     { :id "1001" :loginname "j.doe"     :firstname "John"  :lastname "Doe"     }
+     { :id "1002" :loginname "f.prefect" :firstname "Ford"  :lastname "Prefect" }
+   ] )
 
 
 ;; -----------------------------------------------------------------------------
@@ -232,7 +233,7 @@
 
 (defn rest-user-handler [request]
   (let [user-id (-> request :parameters :id)
-        user (get users user-id)]
+        user (first (filter #(= user-id (:id %)) users))]
     (if user
       { :status 200
         :headers { "Content-Type" "application/json; charset=utf-8" }

@@ -18,27 +18,33 @@ To simplify things there is a
  
  
  
-## Start Tomcat from the REPL with the built-in 'HelloWorld' demo 
+## Start Tomcat from the REPL with a minimal servlet
 
 Start a REPL:
 
-```text
-venice> (load-module :tomcat ['tomcat :as 'tc])
-venice> (def server (tc/start (tc/hello-world-servlet) {:await? false, :base-dir "."}))
-  :
-venice> (tc/shutdown server)
-```
+```clojure
+(do
+  (load-module :tomcat ['tomcat :as 'tc])
 
-Open a browser with the URL `http://localhost:8080` or from the REPL: `(sh/open "http://localhost:8080")`
+  (def opts {:await? false, :base-dir ".", :port 8080})
+
+  (defn my-servlet []
+    (tc/create-servlet {:doGet (fn [req res _] (tc/send-ok res "Hello World"))}))
+
+  ; start the Tomcat server
+  (let [server (tc/start (my-servlet) opts)]
+    (defn stop [] (tc/shutdown server)))
+  
+  (println "Tomcat started on port ~(:port opts).")
+  (println "Open a browser:      (sh/open \"http://localhost:8080\")")
+  (println "Stop it by calling:  (stop)"))
+```
 
 
 ## Define a servlet
 
 ```clojure
 (do
-  (import :com.github.jlangch.venice.util.servlet.IVeniceServlet
-          :com.github.jlangch.venice.util.servlet.VeniceServlet)
-
   (load-module :tomcat ['tomcat :as 'tc])
 
   (def opts {:await? false, :base-dir ".", :port 8080})
@@ -50,16 +56,15 @@ Open a browser with the URL `http://localhost:8080` or from the REPL: `(sh/open 
         (. :println (tc/html-box-page title text))))
 
   (defn my-servlet []
-    (. :VeniceServlet :new
-      (proxify :IVeniceServlet
+    (tc/create-servlet
         { :init (fn [config] nil)
-          :destroy (fn [] nil)
+          :destroy (fn [servlet] nil)
           :doGet (fn [req res servlet] (send-text res "Demo" "Hello World"))
           :doHead (fn [req res servlet] (tc/send-not-implemented res "HTTP Method HEAD"))
           :doPost (fn [req res servlet] (tc/send-not-implemented res "HTTP Method POST"))
           :doPut (fn [req res servlet] (tc/send-not-implemented res "HTTP Method PUT"))
           :doDelete (fn [req res servlet] (tc/send-not-implemented res "HTTP Method DELETE"))
-          :getLastModified (fn [req] -1) })))
+          :getLastModified (fn [req] -1) }))
 
   ; start the Tomcat server
   (let [server (tc/start (my-servlet) opts)]
@@ -98,12 +103,14 @@ Java 11+:
 
 ### Start a Venice Gitpod workspace
 
-*TODO*
+Start a new Venice Gitpod workspace from [Venice Github Project](https://github.com/jlangch/venice).
+
+Wait until the project has been checked out, compiled and the REPL started.
 
 
 ### Setup the required libraries and directory
 
-Run the script from the REPL:
+Run this script from the REPL:
 
 ```clojure
 (do
@@ -116,7 +123,7 @@ Run the script from the REPL:
   ;; Create the Tomcat base directory
   (io/mkdir "/workspace/repl/tomcat")
   
-  ;; Restart the REPL
+  ;; Restart the REPL to make the new libs available to the REPL Java VM
   (repl/restart))
 ```
 
@@ -146,7 +153,7 @@ Run the script from the REPL:
   (def opts {:await? false, :base-dir "/workspace/repl/tomcat", :port 8080})
 
   (defn my-servlet []
-    (tc/servlet {:doGet (fn [req res _] (tc/send-ok res "Hello World"))}))
+    (tc/create-servlet {:doGet (fn [req res _] (tc/send-ok res "Hello World"))}))
 
   ; start the Tomcat server
   (let [server (tc/start (my-servlet) opts)]

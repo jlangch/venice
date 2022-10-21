@@ -375,8 +375,8 @@
 
   (. :VeniceServlet :new
     (proxify :IVeniceServlet
-      { :init (fn [config] nil)
-        :destroy (fn [] nil)
+      { :init      (fn [config] nil)
+        :destroy   (fn [servlet] nil)
         :doGet     (fn [req res servlet] (ring/handle req res servlet handler))
         :doHead    (fn [req res servlet] (ring/handle req res servlet handler))
         :doPost    (fn [req res servlet] (ring/handle req res servlet handler))

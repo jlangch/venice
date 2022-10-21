@@ -198,7 +198,8 @@ public class ShellFunctions {
                     	"Uses the OS commands:\n\n" +
                     	"* *MacOS*: `/usr/bin/open f`\n" +
                     	"* *Windows*: `cmd /C start f`\n" +
-                    	"* *Linux*: `/usr/bin/xdg-open f`")
+                    	"* *Linux*: `/usr/bin/xdg-open f`\n\n" +
+                    	"Note: `sh/open` can only be run from a REPL!")
                     .examples(
                         "(sh/open \"sample.pdf\")",
                         "(sh/open \"https://github.com/jlangch/venice\")")
