@@ -24,9 +24,9 @@
 ;; Employee database
 ;; -----------------------------------------------------------------------------
 
-(def employees (atom [ { :id (gen-id)  :name "susan"  :role "secretary"  }
-                       { :id (gen-id)  :name "john"   :role "assistant"  }
-                       { :id (gen-id)  :name "mary"   :role "team-lead"  } ]))
+(def employees (atom [ { :id (gen-id)  :name "susan"  :role "secretary" }
+                       { :id (gen-id)  :name "john"   :role "assistant" }
+                       { :id (gen-id)  :name "mary"   :role "team-lead" } ]))
 
 
 (defn find-employee-by-id [id]
@@ -73,12 +73,12 @@
         body     (if json? (json/slurp (:body request) :key-fn keyword) nil)
         employee (if body {:name (:name body), :role (:role body)})]
     (cond
-      (not json?)     { :status 404
-                        :headers { "Content-Type" "text/plain; charset=utf-8" }
-                        :body "Not a json request!" }
-      :else           { :status 200
-                        :headers { "Content-Type" "application/json; charset=utf-8" }
-                        :body (json/write-str (add-employee employee)) } )))
+      (not json?) { :status 400
+                    :headers { "Content-Type" "text/plain; charset=utf-8" }
+                    :body "Not a json request!" }
+      :else       { :status 200
+                    :headers { "Content-Type" "application/json; charset=utf-8" }
+                    :body (json/write-str (add-employee employee)) } )))
 
 
 (defn update-employee [request]
@@ -91,7 +91,7 @@
       (nil? employee) { :status 404
                         :headers { "Content-Type" "text/plain; charset=utf-8" }
                         :body "Employee with the id ~{id} not found!" }
-      (not json?)     { :status 404
+      (not json?)     { :status 400
                         :headers { "Content-Type" "text/plain; charset=utf-8" }
                         :body "Not a json request!" }
       :else           { :status 200
