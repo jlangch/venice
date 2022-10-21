@@ -189,12 +189,6 @@
   (ring/session-clear req)
   (ring/session-invalidate req))
 
-(def users
-   [ { :id "1000" :loginname "admin"     :firstname "Admin" :lastname "Admin"   }
-     { :id "1001" :loginname "j.doe"     :firstname "John"  :lastname "Doe"     }
-     { :id "1002" :loginname "f.prefect" :firstname "Ford"  :lastname "Prefect" }
-   ] )
-
 
 ;; -----------------------------------------------------------------------------
 ;; Handler
@@ -231,18 +225,6 @@
             (ring/session-get-value request ":user")
             (ring/session-id request))})
 
-(defn rest-user-handler [request]
-  (let [user-id (-> request :parameters :id)
-        user (first (filter #(= user-id (:id %)) users))]
-    (if user
-      { :status 200
-        :headers { "Content-Type" "application/json; charset=utf-8" }
-        :body (json/write-str user) }
-      { :status 404
-        :headers { "Content-Type" "application/json; charset=utf-8" }
-        :body """{ "error": "user not found", "id": "~{user-id}"}""" })
-  ))
-
 (defn checkout-handler [request]
   { :status 200
     :headers { "Content-Type" "text/html; charset=utf-8" }
@@ -278,9 +260,6 @@
              [:post "/login"             do-login-handler                    ]
              [:get  "/checkout"          (logged-in-filter checkout-handler) ]
              [:post "/logout"            do-logout-handler                   ]
-             [:get  "/rest"              not-found-handler                   ]
-             [:get  "/rest/**"           not-found-handler                   ]
-             [:get  "/rest/users/:id"    rest-user-handler                   ]
              [:get  "/static/style.css"  style-css-handler                   ]
              [:get  "/favicon.ico"       not-found-handler                   ]])
 

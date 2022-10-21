@@ -128,6 +128,23 @@
   debug? [req] (:debug req false))
 
 
+(defn
+  ^{ :doc "Returns true if the request has content type 'text/html'" }
+
+  html-request? [req]
+
+  (match? (:content-type req) #"text/html(;.*)?"))
+
+
+(defn
+  ^{ :doc "Returns true if the request has content type 'application/json'" }
+
+  json-request? [req]
+
+  (match? (:content-type req) #"application/json(;.*)?"))
+
+
+
 ;; -----------------------------------------------------------------------------
 ;; Session utils
 ;; -----------------------------------------------------------------------------

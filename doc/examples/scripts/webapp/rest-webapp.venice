@@ -1,0 +1,154 @@
+;; -----------------------------------------------------------------------------
+;; Demo REST Service
+;; -----------------------------------------------------------------------------
+;;
+
+(load-module :tomcat ['tomcat :as 'tc])
+(load-module :ring)
+
+
+; ensure the Tomcat libs are on the classpath
+(tc/check-required-libs)
+
+
+;; -----------------------------------------------------------------------------
+;; ID generator
+;; -----------------------------------------------------------------------------
+
+(def id-cnt (atom 999))
+
+(defn gen-id [] (str (swap! id-cnt inc)))
+
+
+;; -----------------------------------------------------------------------------
+;; Employee database
+;; -----------------------------------------------------------------------------
+
+(def employees (atom [ { :id (gen-id)  :name "susan"  :role "secretary"  }
+                       { :id (gen-id)  :name "john"   :role "assistant"  }
+                       { :id (gen-id)  :name "mary"   :role "team-lead"  } ]))
+
+
+(defn find-employee-by-id [id]
+  (first (filter #(= id (:id %)) @employees)))
+
+(defn delete-employee-by-id [id]
+  (swap! employees #(filter (fn [e] (not (= id (:id e)))) %)))
+
+(defn add-employee [employee]
+  (let [id*  (:id employee)
+        id   (if (some? id*) id* (gen-id))
+        name (:name employee)
+        role (:role employee)]
+     (delete-employee-by-id id)
+     (let [employee {:id id, :name name, :role role}]
+       (swap! employees #(conj % employee))
+       employee)))
+
+
+;; -----------------------------------------------------------------------------
+;; Ring handler
+;; -----------------------------------------------------------------------------
+
+(defn get-all-employees [request]
+  { :status 200
+    :headers { "Content-Type" "application/json; charset=utf-8" }
+    :body (json/write-str  @employees)})
+
+
+(defn get-employee [request]
+  (let [id       (-> request :parameters :id)
+        employee (find-employee-by-id id)]
+    (if employee
+      { :status 200
+        :headers { "Content-Type" "application/json; charset=utf-8" }
+        :body (json/write-str employee) }
+      { :status 404
+        :headers { "Content-Type" "text/plain; charset=utf-8" }
+        :body "Employee with the id ~{id} not found!" })))
+
+
+(defn create-employee [request]
+  (let [json?    (ring/json-request? request)
+        body     (if json? (json/slurp (:body request) :key-fn keyword) nil)
+        employee (if body {:name (:name body), :role (:role body)})]
+    (cond
+      (not json?)     { :status 404
+                        :headers { "Content-Type" "text/plain; charset=utf-8" }
+                        :body "Not a json request!" }
+      :else           { :status 200
+                        :headers { "Content-Type" "application/json; charset=utf-8" }
+                        :body (json/write-str (add-employee employee)) } )))
+
+
+(defn update-employee [request]
+  (let [id        (-> request :parameters :id)
+        employee  (find-employee-by-id id)
+        json?     (ring/json-request? request)
+        body      (if json? (json/slurp (:body request) :key-fn keyword) nil)
+        employee* (if body {:id id, :name (:name body), :role (:role body)})]
+    (cond
+      (nil? employee) { :status 404
+                        :headers { "Content-Type" "text/plain; charset=utf-8" }
+                        :body "Employee with the id ~{id} not found!" }
+      (not json?)     { :status 404
+                        :headers { "Content-Type" "text/plain; charset=utf-8" }
+                        :body "Not a json request!" }
+      :else           { :status 200
+                        :headers { "Content-Type" "application/json; charset=utf-8" }
+                        :body (json/write-str (add-employee employee*)) } )))
+
+
+(defn delete-employee [request]
+  (let [id       (-> request :parameters :id)
+        employee (find-employee-by-id id)
+        _        (delete-employee-by-id id)]
+    (if employee
+      { :status 200
+        :headers { "Content-Type" "application/json; charset=utf-8" }
+        :body "{}" }
+      { :status 404
+        :headers { "Content-Type" "text/plain; charset=utf-8" }
+        :body "Employee with the id ~{id} not found!" })))
+
+
+;; -----------------------------------------------------------------------------
+;; Middleware configuration
+;; -----------------------------------------------------------------------------
+
+(def routes [[:get    "/employees"      get-all-employees]
+             [:get    "/employees/:id"  get-employee]
+             [:post   "/employees"      create-employee]
+             [:put    "/employees/:id"  update-employee]
+             [:delete "/employees/:id"  delete-employee]])
+
+(def opts {:await? false, :base-dir ".", :port 8080})
+
+(defn my-servlet []
+  (ring/create-servlet (-> (ring/match-routes routes)  ; >--+
+                                                       ;    |
+                           (ring/mw-dump-response)     ; ^  |
+                           (ring/mw-dump-request)      ; |  |
+                           (ring/mw-request-counter)   ; |  |
+                           (ring/mw-add-session 3600)  ; |  |
+                           (ring/mw-print-uri)         ; |  |
+                           (ring/mw-debug :on))))      ; +--+
+
+;; start Tomcat
+(let [server (tc/start (my-servlet) opts)]
+  (defn stop [] (tc/shutdown server)))
+
+
+;; -----------------------------------------------------------------------------
+;; Curl commands for testing
+;;
+;; curl -i -X GET http://localhost:8080/employees
+;; curl -i -X GET http://localhost:8080/employees/1000
+;; curl -i -X DELETE http://localhost:8080/employees/1000
+;; curl -i -X POST -H 'Content-Type: application/json' -d '{"name": "hanna", "role": "secretary"}' http://localhost:8080/employees
+;; curl -i -X PUT -H 'Content-Type: application/json' -d '{"id": "1001", "name": "john", "role": "clerk"}' http://localhost:8080/employees/1001
+;; -----------------------------------------------------------------------------
+
+(println "Tomcat started on port ~(:port opts).")
+(println "Open a browser:      (sh/open \"http://localhost:8080\")")
+(println "Stop it by calling:  (stop)")
