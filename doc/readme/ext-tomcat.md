@@ -167,11 +167,19 @@ Run the script from the REPL:
 
 ### Make the HTTP Port public available
 
-*TODO*
+Navigate to the **PORTS** section and make the 8080 port public.
+
+<img src="https://github.com/jlangch/venice/blob/master/doc/assets/gitpod/gitpod-repl-tomcat-ports.png">
+
 
 
 ### Access the WebApp
 
-*TODO*
+From the **PORTS** section copy the URL for port 8080 (its an URL like *https://8080-jlangch-venice-7kxstp3pfji.ws-eu72.gitpod.io/*). 
+
+This URL can now be put to any local browser to access the WebApp.
+
+<img src="https://github.com/jlangch/venice/blob/master/doc/assets/gitpod/gitpod-repl-tomcat-webapp.png">
+
 
 
