@@ -191,8 +191,14 @@ public class ShellFunctions {
                 "sh/open",
                 VncFunction
                     .meta()
-                    .arglists("(sh/open)")
-                    .doc("Opens a *file* or an *URL* with the associated platform specific application.")
+                    .arglists("(sh/open f)")
+                    .doc(
+                    	"Opens a *file* or an *URL* with the associated platform specific " +
+                    	"application. \n\n" +
+                    	"Uses the OS commands:\n\n" +
+                    	"* *MacOS*: `/usr/bin/open f`\n" +
+                    	"* *Windows*: `cmd /C start f`\n" +
+                    	"* *Linux*: `/usr/bin/xdg-open f`")
                     .examples(
                         "(sh/open \"sample.pdf\")",
                         "(sh/open \"https://github.com/jlangch/venice\")")

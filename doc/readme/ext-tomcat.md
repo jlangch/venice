@@ -17,6 +17,7 @@ To simplify things there is a
 [Ring style WEB App module](ext-ring.md) available.
  
  
+ 
 ## Start Tomcat from the REPL with the built-in 'HelloWorld' demo 
 
 Start a REPL:
@@ -40,13 +41,15 @@ Open a browser with the URL `http://localhost:8080` or from the REPL: `(sh/open 
 
   (load-module :tomcat ['tomcat :as 'tc])
 
+  (def opts {:await? false, :base-dir ".", :port 8080})
+
   (defn send-text [res title text]
     (. res :setStatus 200)
     (. res :setContentType "text/html; charset=utf-8")
     (-> (. res :getWriter)
         (. :println (tc/html-box-page title text))))
 
-  (defn my-hello-world-servlet  []
+  (defn my-servlet []
     (. :VeniceServlet :new
       (proxify :IVeniceServlet
         { :init (fn [config] nil)
@@ -58,17 +61,15 @@ Open a browser with the URL `http://localhost:8080` or from the REPL: `(sh/open 
           :doDelete (fn [req res servlet] (tc/send-not-implemented res "HTTP Method DELETE"))
           :getLastModified (fn [req] -1) })))
 
-  (defn stop []
-    (tc/shutdown server))
- 
-  ; start Tomcat
-  (def server (tc/start (my-hello-world-servlet) 
-                        {:await? false, :base-dir "."}))
+  ; start the Tomcat server
+  (let [server (tc/start (my-servlet) opts)]
+    (defn stop [] (tc/shutdown server)))
   
-  (println "Tomcat started.")
+  (println "Tomcat started on port ~(:port opts).")
   (println "Open a browser:      (sh/open \"http://localhost:8080\")")
   (println "Stop it by calling:  (stop)"))
 ```
+
 
 
 ## Download required 3rd party libs
@@ -90,3 +91,80 @@ Java 11+:
   (m/download "org.apache.tomcat.embed:tomcat-embed-core:10.1.1")
   (m/download "jakarta.annotation:jakarta.annotation-api:2.1.1"))
 ```
+
+
+
+## Starting a Tomcat Server from a REPL on a Gitpod workspace
+
+### Start a Venice Gitpod workspace
+
+*TODO*
+
+
+### Setup the required libraries and directory
+
+Run the script from the REPL:
+
+```clojure
+(do
+  (load-module :maven ['maven :as 'm])
+  
+  ;; Download the Tomcat libs
+  (m/download "org.apache.tomcat.embed:tomcat-embed-core:10.1.1" :dir "/workspace/repl/libs")
+  (m/download "jakarta.annotation:jakarta.annotation-api:2.1.1" :dir "/workspace/repl/libs")
+  
+  ;; Create the Tomcat base directory
+  (io/mkdir "/workspace/repl/tomcat")
+  
+  ;; Restart the REPL
+  (repl/restart))
+```
+
+*Note: The Tomcat base directory "/workspace/repl/tomcat" will also be used when starting the server!*
+
+The changed classpath (after the REPL restart) can be checked with
+
+```shell
+venice> !classpath
+REPL classpath:
+  libs
+  libs/jakarta.annotation-api-2.1.1.jar
+  libs/jansi-2.4.0.jar
+  libs/tomcat-embed-core-10.1.1.jar
+  libs/venice-1.10.25-SNAPSHOT.jar
+```
+
+
+### Start a Tomcat server
+
+Run the script from the REPL:
+
+```clojure
+(do
+  (load-module :tomcat ['tomcat :as 'tc])
+  
+  (def opts {:await? false, :base-dir "/workspace/repl/tomcat", :port 8080})
+
+  (defn my-servlet []
+    (tc/servlet {:doGet (fn [req res _] (tc/send-ok res "Hello World"))}))
+
+  ; start the Tomcat server
+  (let [server (tc/start (my-servlet) opts)]
+    (defn stop [] (tc/shutdown server)))
+  
+  (println)
+  (println "Tomcat started on port ~(:port opts).")
+  (println "Stop it by calling: (stop)"))
+```
+
+
+### Make the HTTP Port public available
+
+*TODO*
+
+
+### Access the WebApp
+
+*TODO*
+
+

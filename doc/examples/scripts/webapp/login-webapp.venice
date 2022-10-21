@@ -283,25 +283,23 @@
              [:get  "/static/style.css"  style-css-handler                   ]
              [:get  "/favicon.ico"       not-found-handler                   ]])
 
-(defn start []
-  (tc/start
-    (ring/create-servlet (-> (ring/match-routes routes)  ; >--+
-                                                         ;    |
-                             (ring/mw-dump-response)     ; ^  |
-                             (ring/mw-dump-request)      ; |  |
-                             (ring/mw-request-counter)   ; |  |
-                             (ring/mw-add-session 3600)  ; |  |
-                             (ring/mw-print-uri)         ; |  |
-                             (ring/mw-debug :on)))       ; +--+
-    {:await? false}))
+(def opts {:await? false, :base-dir ".", :port 8080})
 
-(defn stop []
-  (tc/shutdown server))
-
+(defn my-servlet []
+  (ring/create-servlet (-> (ring/match-routes routes)  ; >--+
+                                                       ;    |
+                           (ring/mw-dump-response)     ; ^  |
+                           (ring/mw-dump-request)      ; |  |
+                           (ring/mw-request-counter)   ; |  |
+                           (ring/mw-add-session 3600)  ; |  |
+                           (ring/mw-print-uri)         ; |  |
+                           (ring/mw-debug :on))))      ; +--+
 
 ;; start Tomcat
-(def server (start))
+(let [server (tc/start (my-servlet) opts)]
+  (defn stop [] (tc/shutdown server)))
 
-(println "Tomcat started.")
+
+(println "Tomcat started on port ~(:port opts).")
 (println "Open a browser:      (sh/open \"http://localhost:8080\")")
 (println "Stop it by calling:  (stop)")

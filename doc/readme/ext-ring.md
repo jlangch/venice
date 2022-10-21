@@ -22,18 +22,15 @@ Venice Ring is a port of Clojure's Ring web applications library.
     [:get "/**"  hello-world-handler]
   ])
 
-  (defn start []
-    (tc/start (ring/create-servlet (-> (ring/match-routes routes)  ; >--+
-                                                                   ;    |
-                                       (ring/mw-print-uri)         ; ^  |
-                                       (ring/mw-debug :on)))       ; +--+
-              {:await? false, :base-dir "."}))
+  (defn my-servlet []
+    (ring/create-servlet (-> (ring/match-routes routes)  ; >--+
+                                                         ;    |
+                             (ring/mw-print-uri)         ; ^  |
+                             (ring/mw-debug :on))))      ; +--+
   
-  (defn stop []
-    (tc/shutdown server))
-
-  ;; start Tomcat
-  (def server (start))
+  ; start the Tomcat server
+  (let [server (tc/start (my-servlet) {:await? false, :base-dir "."})]
+    (defn stop [] (tc/shutdown server)))
 
   (println "Tomcat started.")
   (println "Open a browser:      (sh/open \"http://localhost:8080\")")
@@ -62,21 +59,18 @@ Venice Ring is a port of Clojure's Ring web applications library.
 
   ;; The 'mw-request-counter' middlware uses the session to store the 
   ;; session's request count and prints it if debug is :on
-  (defn start []
-    (tc/start (ring/create-servlet (-> (ring/match-routes routes)  ; >--+
-                                                                   ;    |
-                                       (ring/mw-request-counter)   ; ^  |
-                                       (ring/mw-add-session 3600)  ; |  |
-                                       (ring/mw-print-uri)         ; |  |
-                                       (ring/mw-debug :on)))       ; +--+
-              {:await? false, :base-dir "."}))
-  
-  (defn stop []
-    (tc/shutdown server))
+  (defn my-servlet []
+    (ring/create-servlet (-> (ring/match-routes routes)  ; >--+
+                                                         ;    |
+                             (ring/mw-request-counter)   ; ^  |
+                             (ring/mw-add-session 3600)  ; |  |
+                             (ring/mw-print-uri)         ; |  |
+                             (ring/mw-debug :on))))      ; +--+
 
-  ;; start Tomcat
-  (def server (start))
-
+  ; start the Tomcat server
+  (let [server (tc/start (my-servlet) {:await? false, :base-dir "."})]
+    (defn stop [] (tc/shutdown server)))
+ 
   (println "Tomcat started.")
   (println "Open a browser:      (sh/open \"http://localhost:8080\")")
   (println "Stop it by calling:  (stop)"))
@@ -102,20 +96,17 @@ Venice Ring is a port of Clojure's Ring web applications library.
     [:get "/**"  hello-world-handler]
   ])
 
-  (defn start []
-    (tc/start (ring/create-servlet (-> (ring/match-routes routes)  ; >--+
-                                                                   ;    |
-                                       (ring/mw-dump-response)     ; ^  |
-                                       (ring/mw-dump-request)      ; |  |
-                                       (ring/mw-print-uri)         ; |  |
-                                       (ring/mw-debug :on)))       ; +--+
-              {:await? false, :base-dir "."}))
-  
-  (defn stop []
-    (tc/shutdown server))
+  (defn my-servlet []
+    (ring/create-servlet (-> (ring/match-routes routes)  ; >--+
+                                                         ;    |
+                             (ring/mw-dump-response)     ; ^  |
+                             (ring/mw-dump-request)      ; |  |
+                             (ring/mw-print-uri)         ; |  |
+                             (ring/mw-debug :on))))      ; +--+
 
-  ;; start Tomcat
-  (def server (start))
+  ; start the Tomcat server
+  (let [server (tc/start (my-servlet) {:await? false, :base-dir "."})]
+    (defn stop [] (tc/shutdown server)))
 
   (println "Tomcat started.")
   (println "Open a browser:      (sh/open \"http://localhost:8080\")")
@@ -163,22 +154,20 @@ Venice Ring is a port of Clojure's Ring web applications library.
     [:get "/static/images/*.png"  image-handler]
   ])
 
-  (defn start []
-    (tc/start (ring/create-servlet (-> (ring/match-routes routes)  ; >--+
-                                                                   ;    |
-                                       (ring/mw-dump-response)     ; ^  |
-                                       (ring/mw-dump-request)      ; |  |
-                                       (ring/mw-request-counter)   ; |  |
-                                       (ring/mw-add-session 3600)  ; |  |
-                                       (ring/mw-print-uri)         ; |  |
-                                       (ring/mw-debug :on)))       ; +--+
-              {:await? false, :base-dir "."}))
-  
-  (defn stop []
-    (tc/shutdown server))
+  (defn my-servlet []
+    (ring/create-servlet (-> (ring/match-routes routes)  ; >--+
+                                                         ;    |
+                             (ring/mw-dump-response)     ; ^  |
+                             (ring/mw-dump-request)      ; |  |
+                             (ring/mw-request-counter)   ; |  |
+                             (ring/mw-add-session 3600)  ; |  |
+                             (ring/mw-print-uri)         ; |  |
+                             (ring/mw-debug :on))))      ; +--+
+   
+  ; start the Tomcat server
+  (let [server (tc/start (my-servlet) {:await? false, :base-dir "."})]
+    (defn stop [] (tc/shutdown server)))
 
-  ;; start Tomcat
-  (def server (start))
 
   (println "Tomcat started.")
   (println "Open a browser:      (sh/open \"http://localhost:8080\")")

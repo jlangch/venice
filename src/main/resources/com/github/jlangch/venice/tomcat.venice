@@ -223,6 +223,10 @@
     tomcat)))
 
 
+(defn servlet [handler-map]
+  (. :VeniceServlet :new (proxify :IVeniceServlet handler-map)))
+
+
 (defn
   ^{ :doc "'Hello World' demo servlet" }
 
@@ -242,23 +246,24 @@
 
 (defn
   ^{ :doc """
-          Start a Tomcat to serve given servlet with supplied options
-          :base-dir - the server's base directory (default: ".")
-          :await? - block the thread until server get shutdown command (default: true)
-          :http? - create http connector (default: true)
-          :port - the port to listen on http connector (default: 8080)
-          :https? - create https connector (default: false)
-          :https-port - the port to listen on https connector (default: 8443)
-          :keystore - path to keystore file include server certificate
-          :key-pass - password of keystore file
-          :tls-hostname - hostname to listen for https connector (default: _default_)
-          :tls-protocol - list of SSL/TLS protocol to support for https connector (default: TLS)
-          :tls-ciphers - list of SSL/TLS ciphers to support for https connector (default: too long. ECDHE-ECDSA and ECDHE-RSA ciphers)
-          :executor? - use executor (default: true)
-          :executor-name - name of executor (default: tc-executor)
-          :max-threads - max number of threads in executor (default: 200)
-          :min-spare-threads - minimum number of spare threads in executor (default: 25)
-          :max-idle-time - max milliseconds before an idle thread shutsdown (default: 60000)
+          Start a Tomcat to serve given servlet with supplied options:
+
+          :base-dir - the server's base directory (default: ".")¶
+          :await? - block the thread until server get shutdown command (default: true)¶
+          :http? - create http connector (default: true)¶
+          :port - the port to listen on http connector (default: 8080)¶
+          :https? - create https connector (default: false)¶
+          :https-port - the port to listen on https connector (default: 8443)¶
+          :keystore - path to keystore file include server certificate¶
+          :key-pass - password of keystore file¶
+          :tls-hostname - hostname to listen for https connector (default: _default_)¶
+          :tls-protocol - list of SSL/TLS protocol to support for https connector (default: TLS)¶
+          :tls-ciphers - list of SSL/TLS ciphers to support for https connector (default: too long. ECDHE-ECDSA and ECDHE-RSA ciphers)¶
+          :executor? - use executor (default: true)¶
+          :executor-name - name of executor (default: tc-executor)¶
+          :max-threads - max number of threads in executor (default: 200)¶
+          :min-spare-threads - minimum number of spare threads in executor (default: 25)¶
+          :max-idle-time - max milliseconds before an idle thread shutsdown (default: 60000)¶
           """ }
 
   start
@@ -276,14 +281,16 @@
 
       ;; need for proper destroying servlets
       (shutdown-hook (fn []
-                       (println "Shutting down Tomcat...")
                        (case (state server)
-                         :STARTED   (. server :stop)
+                         :STARTED   (do
+                                      (println "Shutting down Tomcat...")
+                                      (. server :stop))
                          :STOPPED   nil
                          :DESTROYED nil
                          nil)))
 
       (. server :start)
+
       (when (:await? options true)
         (. (. server :getServer) :await))
 
@@ -319,33 +326,23 @@
 (defn send-redirect [req res redirect-uri]
   (. res :sendRedirect (str (. req :getContextPath) redirect-uri)))
 
-
-(defn send-ok [res title text]
-  (. res :setStatus 200)
+(defn send-html [res status html]
+  (. res :setStatus status)
   (. res :setContentType "text/html; charset=utf-8")
   (-> (. res :getWriter)
-      (. :println (html-box-page title text))))
+      (. :println html)))
 
+(defn send-ok [res msg]
+  (send-html res 200 (html-box-page "OK (200)" msg)))
 
 (defn send-not-found [res msg]
-  (. res :setStatus 404)
-  (. res :setContentType "text/html; charset=utf-8")
-  (-> (. res :getWriter)
-      (. :println (html-box-page "Not Found" msg))))
-
+  (send-html res 404 (html-box-page "Not Found (404)" msg)))
 
 (defn send-internal-error [res msg]
-  (. res :setStatus 500)
-  (. res :setContentType "text/html; charset=utf-8")
-  (-> (. res :getWriter)
-      (. :println (html-box-page "Internal Error" msg))))
-
+  (send-html res 500 (html-box-page "Internal Error (501)" msg)))
 
 (defn send-not-implemented [res msg]
-  (. res :setStatus 501)
-  (. res :setContentType "text/html; charset=utf-8")
-  (-> (. res :getWriter)
-      (. :println (html-box-page "Not Implemented" msg))))
+  (send-html res 501 (html-box-page "Not Implemented (501)" msg)))
 
 
 (defn html-box-page [title message]
