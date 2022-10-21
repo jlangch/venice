@@ -101,14 +101,14 @@ Java 11+:
 
 ## Starting a Tomcat Server from a REPL on a Gitpod workspace
 
-### Start a Venice Gitpod workspace
+### 1. Start a Venice Gitpod workspace
 
 Start a new Venice Gitpod workspace from [Venice Github Project](https://github.com/jlangch/venice).
 
 Wait until the project has been checked out, compiled and the REPL started.
 
 
-### Setup the required libraries and directory
+### 2. Setup the required libraries and directory
 
 Run this script from the REPL:
 
@@ -127,7 +127,7 @@ Run this script from the REPL:
   (repl/restart))
 ```
 
-*Note: The Tomcat base directory "/workspace/repl/tomcat" will also be used when starting the server!*
+*Note: The Tomcat base directory "/workspace/repl/tomcat" will also be used when starting the Tomcat server!*
 
 The changed classpath (after the REPL restart) can be checked with
 
@@ -142,7 +142,7 @@ REPL classpath:
 ```
 
 
-### Start a Tomcat server
+### 3. Start a Tomcat server
 
 Run the script from the REPL:
 
@@ -165,7 +165,7 @@ Run the script from the REPL:
 ```
 
 
-### Make the HTTP Port public available
+### 4. Make the HTTP Port public available
 
 Navigate to the **PORTS** section and make the 8080 port public.
 
@@ -173,11 +173,13 @@ Navigate to the **PORTS** section and make the 8080 port public.
 
 
 
-### Access the WebApp
+### 5. Access the WebApp
 
-From the **PORTS** section copy the URL for port 8080 (its an URL like *https://8080-jlangch-venice-7kxstp3pfji.ws-eu72.gitpod.io/*). 
+From the **PORTS** section copy the URL for port 8080. 
 
-This URL can now be put to any local browser to access the WebApp.
+This URL can now be put to any local browser to access the WebApp on the remote Gitpod workspace server.
+
+The WebApp in the Safari browser:
 
 <img src="https://github.com/jlangch/venice/blob/master/doc/assets/gitpod/gitpod-repl-tomcat-webapp.png">
 
