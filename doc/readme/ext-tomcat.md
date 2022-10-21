@@ -131,7 +131,7 @@ Run this script from the REPL:
 
 The changed classpath (after the REPL restart) can be checked with
 
-```shell
+```text
 venice> !classpath
 REPL classpath:
   libs
@@ -144,7 +144,7 @@ REPL classpath:
 
 ### 3. Start a Tomcat server
 
-Run the script from the REPL:
+Run this script from the REPL:
 
 ```clojure
 (do
