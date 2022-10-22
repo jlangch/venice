@@ -272,7 +272,7 @@
   mw-request-counter [handler]
 
   (fn [req]
-    (let [id (ring/session-id req)
+    (let [id      (ring/session-id req)
           counter (inc (coalesce (ring/session-get-value req "request-counter") 0))]
       (ring/session-set-value req "request-counter" counter)
       (when (ring/debug? req)
@@ -364,16 +364,16 @@
 
   (let [compiled (ring/compile-routes routes)]
     (fn [req]
-      (let [verb (:request-method req)
-            uri (:uri req)
+      (let [verb       (:request-method req)
+            uri        (:uri req)
             req-params (:parameters req)
-            route (ring/get-route verb uri compiled)]
+            route      (ring/get-route verb uri compiled)]
         (if route
-          (let [handler (:handler route)
+          (let [handler    (:handler route)
                 uri-params (zipmap (:uri-param-names route '())
                                     ((:uri-param-values route) uri))
-                params (merge req-params uri-params)
-                req (assoc req :parameters params)]
+                params     (merge req-params uri-params)
+                req        (assoc req :parameters params)]
             (when (ring/debug? req)
                   (println (str "Route: " verb " \"" uri "\" -> " (name handler)))
                   (println (str "URI parameters: " uri-params)))

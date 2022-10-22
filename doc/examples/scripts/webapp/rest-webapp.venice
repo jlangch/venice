@@ -36,14 +36,11 @@
   (swap! employees #(filter (fn [e] (not (= id (:id e)))) %)))
 
 (defn add-employee [employee]
-  (let [id*  (:id employee)
-        id   (if (some? id*) id* (gen-id))
-        name (:name employee)
-        role (:role employee)]
-     (delete-employee-by-id id)
-     (let [employee {:id id, :name name, :role role}]
-       (swap! employees #(conj % employee))
-       employee)))
+  (let [id (coalesce (:id employee) (gen-id))
+        e  (assoc (select-keys employee [:name :role]) :id id)]
+    (delete-employee-by-id id)
+    (swap! employees #(conj % e))
+    e))
 
 
 ;; -----------------------------------------------------------------------------
