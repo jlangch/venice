@@ -17,7 +17,7 @@ and this project adheres to
 - support for interfaces with default implementations that are not
   overridden for Java  interop dynamic proxies 
 - macros `assert-ne` and `assert-does-not-throw`
-- function `qualified-symbol?`, `regex/matches-not?`
+- function `qualified-symbol?`, `regex/matches-not?`, `io/file-within-dir?`
 
 ### Improved
 

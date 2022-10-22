@@ -90,6 +90,7 @@ public class IoFileSection implements ISectionBuilder {
         file_test.addItem(diBuilder.getDocItem("io/file-can-execute?", false));
         file_test.addItem(diBuilder.getDocItem("io/file-hidden?", false));
         file_test.addItem(diBuilder.getDocItem("io/file-symbolic-link?", false));
+        file_test.addItem(diBuilder.getDocItem("io/file-within-path?"));
 
         final DocSection file_glob = new DocSection("file glob", "io.fileglob");
         all.addSection(file_glob);

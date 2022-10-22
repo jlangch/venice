@@ -23,6 +23,7 @@ package com.github.jlangch.venice.impl.functions;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.io.File;
@@ -34,6 +35,7 @@ import org.junit.jupiter.api.Test;
 
 import com.github.jlangch.venice.Parameters;
 import com.github.jlangch.venice.Venice;
+import com.github.jlangch.venice.VncException;
 import com.github.jlangch.venice.impl.util.io.ClassPathResource;
 
 
@@ -189,6 +191,45 @@ public class IOFunctionsTest {
 
         assertEquals("png", venice.eval("(io/file-ext (io/file \"/tmp/some.png\"))"));
         assertEquals(null, venice.eval("(io/file-ext (io/file \"/tmp/some\"))"));
+    }
+
+    @Test
+    public void test_io_file_within_dir_Q() {
+        final Venice venice = new Venice();
+
+        assertTrue((Boolean)venice.eval("(io/file-within-dir? (io/file \"/temp/foo\")          \n" +
+                                        "                     (io/file \"/temp/foo/img.png\")) "));
+
+        assertTrue((Boolean)venice.eval("(io/file-within-dir? (io/file \"/temp/foo\")              \n" +
+                                        "                     (io/file \"/temp/foo/bar/img.png\")) "));
+
+        assertTrue((Boolean)venice.eval("(io/file-within-dir? (io/file \"/temp/foo\")                 \n" +
+                                        "                     (io/file \"/temp/foo/../foo/img.png\")) "));
+
+        assertTrue((Boolean)venice.eval("(io/file-within-dir? (io/file \"/temp/foo\")                     \n" +
+                                        "                     (io/file \"/temp/foo/../foo/bar/img.png\")) "));
+
+
+
+        assertFalse((Boolean)venice.eval("(io/file-within-dir? (io/file \"/temp/foo\")          \n" +
+                                         "                     (io/file \"/temp/zoo/img.png\")) "));
+
+        assertFalse((Boolean)venice.eval("(io/file-within-dir? (io/file \"/temp/foo\")              \n" +
+                                         "                     (io/file \"/temp/zoo/bar/img.png\")) "));
+
+        assertFalse((Boolean)venice.eval("(io/file-within-dir? (io/file \"/temp/foo\")                 \n" +
+                                         "                     (io/file \"/temp/foo/../bar/img.png\")) "));
+
+        assertFalse((Boolean)venice.eval("(io/file-within-dir? (io/file \"/temp/foo\")                     \n" +
+                                         "                     (io/file \"/temp/foo/../zoo/bar/img.png\")) "));
+
+
+
+        assertThrows(VncException.class, () -> venice.eval("(io/file-within-dir? (io/file \"foo\")                \n" +
+                                                           "                     (io/file \"/temp/foo/img.png\")) "));
+
+        assertThrows(VncException.class, () -> venice.eval("(io/file-within-dir? (io/file \"/temp/foo\")          \n" +
+                                                           "                     (io/file \"foo/img.png\"))       "));
     }
 
     @Test

@@ -712,6 +712,61 @@ public class IOFunctions {
             private static final long serialVersionUID = -1848883965231344442L;
         };
 
+    public static VncFunction io_file_within_dir_Q =
+        new VncFunction(
+                "io/file-within-dir?",
+                VncFunction
+                    .meta()
+                    .arglists(
+                        "(io/file-within-path? dir file)")
+                    .doc(
+                        "Returns true if the file is within the dir else false.\n\n" +
+                        "The file and dir args must be absolute paths.")
+                    .examples(
+                        "(io/file-within-dir? (io/file \"/temp/foo\")          \n" +
+                        "                     (io/file \"/temp/foo/img.png\")) ",
+                        "(io/file-within-dir? (io/file \"/temp/foo\")                 \n" +
+                        "                     (io/file \"/temp/foo/../bar/img.png\")) ")
+                    .seeAlso("io/file")
+                    .build()
+        ) {
+            @Override
+            public VncVal apply(final VncList args) {
+                ArityExceptions.assertArity(this, args, 2);
+
+                final Path dir = convertToPath(args.first());
+                final Path file = convertToPath(args.second());
+
+                if (file == null) {
+                    throw new VncException(
+                            String.format(
+                                "Function 'io/file-within-dir?' does not allow %s as file arg",
+                                Types.getType(args.second())));
+                }
+
+                if (dir == null) {
+                    throw new VncException(
+                            String.format(
+                                "Function 'io/file-within-dir?' does not allow %s as dir arg",
+                                Types.getType(args.first())));
+                }
+
+                if (!file.isAbsolute()) {
+                    throw new VncException(
+                            "Function 'io/file-within-dir?' required an absolute path for file");
+                }
+
+                if (!dir.isAbsolute()) {
+                    throw new VncException(
+                            "Function 'io/file-within-dir?' required an absolute path for dir");
+                }
+
+                return VncBoolean.of(file.normalize().startsWith(dir.normalize()));
+            }
+
+            private static final long serialVersionUID = -1848883965231344442L;
+        };
+
     public static VncFunction io_glob_path_matcher =
         new VncFunction(
                 "io/glob-path-matcher",
@@ -2573,6 +2628,21 @@ public class IOFunctions {
         }
     }
 
+    private static Path convertToPath(final VncVal f) {
+        if (Types.isVncString(f)) {
+            return new File(((VncString)f).getValue()).toPath();
+        }
+        else if (Types.isVncJavaObject(f, File.class)) {
+            return Coerce.toVncJavaObject(f, File.class).toPath();
+        }
+        else if (Types.isVncJavaObject(f, Path.class)) {
+            return Coerce.toVncJavaObject(f, Path.class);
+        }
+        else {
+            return null;
+        }
+    }
+
     public static void validateReadableFile(final File file) {
         if (!file.isFile()) {
             throw new VncException(String.format("'%s' is not a file", file.getPath()));
@@ -2658,6 +2728,7 @@ public class IOFunctions {
                     .add(io_file_absolute_Q)
                     .add(io_glob_path_matcher)
                     .add(io_file_matches_globQ)
+                    .add(io_file_within_dir_Q)
                     .add(io_to_url)
                     .add(io_to_uri)
                     .add(io_await_for)
