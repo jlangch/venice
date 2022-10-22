@@ -727,7 +727,8 @@ public class IOFunctions {
                         "                     (io/file \"/temp/foo/img.png\")) ",
                         "(io/file-within-dir? (io/file \"/temp/foo\")                 \n" +
                         "                     (io/file \"/temp/foo/../bar/img.png\")) ")
-                    .seeAlso("io/file")
+                    .seeAlso(
+                        "io/file")
                     .build()
         ) {
             @Override
