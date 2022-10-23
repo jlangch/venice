@@ -34,8 +34,8 @@
 (defn my-servlet []
   (ring/create-servlet (-> (ring/match-routes routes)  ; >--+
                                                        ;    |
-                           (ring/mw-dump-response)     ; ^  |
-                           (ring/mw-dump-request)      ; |  |
+                           ;(ring/mw-dump-response)    ; ^  |
+                           ;(ring/mw-dump-request)     ; |  |
                            (ring/mw-request-counter)   ; |  |
                            (ring/mw-add-session 3600)  ; |  |
                            (ring/mw-print-uri)         ; |  |
