@@ -26,16 +26,16 @@ Start a REPL:
 (do
   (load-module :tomcat ['tomcat :as 'tc])
 
-  (def opts {:await? false, :base-dir ".", :port 8080})
+  (def tomcat-opts {:await? false, :base-dir ".", :port 8080})
 
   (defn my-servlet []
     (tc/create-servlet {:doGet (fn [req res _] (tc/send-ok res "Hello World"))}))
 
   ; start the Tomcat server
-  (let [server (tc/start (my-servlet) opts)]
+  (let [server (tc/start (my-servlet) tomcat-opts)]
     (defn stop [] (tc/shutdown server)))
   
-  (println "Tomcat started on port ~(:port opts).")
+  (println "Tomcat started on port ~(:port tomcat-opts).")
   (println "Open a browser:      (sh/open \"http://localhost:8080\")")
   (println "Stop it by calling:  (stop)"))
 ```
@@ -47,7 +47,7 @@ Start a REPL:
 (do
   (load-module :tomcat ['tomcat :as 'tc])
 
-  (def opts {:await? false, :base-dir ".", :port 8080})
+  (def tomcat-opts {:await? false, :base-dir ".", :port 8080})
 
   (defn send-text [res title text]
     (. res :setStatus 200)
@@ -67,10 +67,10 @@ Start a REPL:
           :getLastModified (fn [req] -1) }))
 
   ; start the Tomcat server
-  (let [server (tc/start (my-servlet) opts)]
+  (let [server (tc/start (my-servlet) tomcat-opts)]
     (defn stop [] (tc/shutdown server)))
   
-  (println "Tomcat started on port ~(:port opts).")
+  (println "Tomcat started on port ~(:port tomcat-opts).")
   (println "Open a browser:      (sh/open \"http://localhost:8080\")")
   (println "Stop it by calling:  (stop)"))
 ```
@@ -116,7 +116,7 @@ Run this script from the REPL:
 (do
   (load-module :maven ['maven :as 'm])
   
-  ;; Download the Tomcat libs
+  ;; Download the Tomcat libs from Maven
   (m/download "org.apache.tomcat.embed:tomcat-embed-core:10.1.1" :dir "/workspace/repl/libs")
   (m/download "jakarta.annotation:jakarta.annotation-api:2.1.1" :dir "/workspace/repl/libs")
   
@@ -150,17 +150,17 @@ Run this script from the REPL:
 (do
   (load-module :tomcat ['tomcat :as 'tc])
   
-  (def opts {:await? false, :base-dir "/workspace/repl/tomcat", :port 8080})
+  (def tomcat-opts {:await? false, :base-dir "/workspace/repl/tomcat", :port 8080})
 
   (defn my-servlet []
     (tc/create-servlet {:doGet (fn [req res _] (tc/send-ok res "Hello World"))}))
 
   ; start the Tomcat server
-  (let [server (tc/start (my-servlet) opts)]
+  (let [server (tc/start (my-servlet) tomcat-opts)]
     (defn stop [] (tc/shutdown server)))
   
   (println)
-  (println "Tomcat started on port ~(:port opts).")
+  (println "Tomcat started on port ~(:port tomcat-opts).")
   (println "Stop it by calling: (stop)"))
 ```
 
@@ -177,9 +177,9 @@ Navigate to the **PORTS** section and make the 8080 port public.
 
 From the **PORTS** section copy the URL for port 8080. 
 
-This URL can now be put to any local browser to access the WebApp on the remote Gitpod workspace server.
+This URL can now be used with any local browser to access the WebApp on the remote Gitpod workspace server.
 
-The WebApp in the Safari browser:
+The simple WebApp looks like this in the Safari browser:
 
 <img src="https://github.com/jlangch/venice/blob/master/doc/assets/gitpod/gitpod-repl-tomcat-webapp.png">
 
