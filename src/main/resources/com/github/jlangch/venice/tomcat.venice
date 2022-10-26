@@ -36,6 +36,7 @@
 
 (import :com.github.jlangch.venice.util.servlet.IVeniceServlet
         :com.github.jlangch.venice.util.servlet.VeniceServlet
+        :jakarta.servlet.MultipartConfigElement
         :org.apache.catalina.startup.Tomcat
         :org.apache.catalina.core.JreMemoryLeakPreventionListener
         :org.apache.catalina.core.StandardThreadExecutor
@@ -220,6 +221,26 @@
       (. (. tomcat :getHost) :setAppBase  "resources")
     tomcat)))
 
+(defn- create-multipart-config [file-upload-opts]
+  (. :MultipartConfigElement :new
+                             (:location file-upload-opts "")
+                             (long (:max-file-size file-upload-opts -1))
+                             (long (:max-request-size file-upload-opts -1))
+                             (int (:file-size-threshold file-upload-opts 0I))))
+
+(defn- add-servlet [server context ctx-path
+                    servlet servlet-name servlet-mapping]
+  (. server :addServlet ctx-path servlet-name servlet)
+  (. context :addServletMappingDecoded servlet-mapping servlet-name))
+
+
+(defn- add-fileupload-servlet [server context ctx-path
+                               servlet servlet-name servlet-mapping
+                               upload-opts]
+  (let [wrapper (. server :addServlet ctx-path servlet-name servlet)]
+    (. wrapper :setMultipartConfigElement (create-multipart-config upload-opts)))
+  (. context :addServletMappingDecoded servlet-mapping servlet-name))
+
 
 (defn
   ^{ :arglists '("(create-servlet handler-map)")
@@ -265,7 +286,10 @@
 
 
 (defn
-  ^{ :doc """
+  ^{ :arglists '(
+          "(start servlet options)"
+          "(start servlet context-path context-doc-base options)")
+     :doc """
           Start a Tomcat to serve given servlet with supplied options:
 
           :base-dir - the server's base directory (default: ".")¶
@@ -284,7 +308,24 @@
           :max-threads - max number of threads in executor (default: 200)¶
           :min-spare-threads - minimum number of spare threads in executor (default: 25)¶
           :max-idle-time - max milliseconds before an idle thread shutsdown (default: 60000)¶
-          """ }
+          """
+      :examples '(
+          """
+          (tomcat/start (tomcat/hello-world-servlet)
+                        {:await? false, :base-dir ".", :port 8080})
+          """,
+          """
+          (tomcat/start (tomcat/hello-world-servlet)
+                        ""
+                        "."
+                        {:await? false, :base-dir ".", :port 8080})
+          """,
+          """
+          (tomcat/start [[(tomcat/hello-world-servlet) "hello-servlet" "/*"]]
+                        ""
+                        "."
+                        {:await? false, :base-dir ".", :port 8080})
+          """ ) }
 
   start
 
@@ -296,8 +337,21 @@
           ctx-doc-base (coalesce context-doc-base tomcat/default-context-doc-base)
           server       (tomcat/create-server options)
           context      (. server :addContext ctx-path ctx-doc-base)]
-      (. server :addServlet ctx-path "venice-servlet" servlet)
-      (. context :addServletMappingDecoded "/*" "venice-servlet")
+      (cond
+        (instance-of? :VeniceServlet servlet)
+            (add-servlet server context ctx-path servlet "venice-servlet" "/*")
+        (sequential? servlet)
+            (docoll (fn [[servlet servlet-name servlet-mapping]]
+                      (add-servlet server context ctx-path
+                                   servlet servlet-name servlet-mapping))
+                    servlet)
+        :else
+            (throw (ex :VncException
+                       """
+                       Expected either a servlet or a list/vector of one or \
+                       multiple [servlet servlet-name servlet-mapping] servlet \
+                       definitions!
+                       """)))
 
       ;; need for proper destroying servlets
       (shutdown-hook (fn []
