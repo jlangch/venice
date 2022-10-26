@@ -109,7 +109,6 @@ public class MimeTypes {
     public static final String TEXT_CSS            = "text/css";
     public static final String TEXT_PLAIN          = "text/plain";
     public static final String TEXT_URL            = "text/url";
-    public static final String TEXT_GROOVY         = "text/groovy";
     public static final String IMAGE_JPEG          = "image/jpeg";
     public static final String IMAGE_PNG           = "image/png";
     public static final String IMAGE_GIF           = "image/gif";
@@ -123,6 +122,7 @@ public class MimeTypes {
     static {
         mimeTypeFileExtMap.put(APPLICATION_PDF,    Arrays.asList("pdf"));
         mimeTypeFileExtMap.put(APPLICATION_XML,    Arrays.asList("xml"));
+        mimeTypeFileExtMap.put(APPLICATION_JSON,   Arrays.asList("json"));
         mimeTypeFileExtMap.put(APPLICATION_ZIP,    Arrays.asList("zip"));
         mimeTypeFileExtMap.put(APPLICATION_TTF,    Arrays.asList("ttf"));
         mimeTypeFileExtMap.put(APPLICATION_BINARY, Arrays.asList("exe"));
@@ -132,7 +132,6 @@ public class MimeTypes {
         mimeTypeFileExtMap.put(TEXT_CSS,           Arrays.asList("css"));
         mimeTypeFileExtMap.put(TEXT_PLAIN,         Arrays.asList("txt"));
         mimeTypeFileExtMap.put(TEXT_URL,           Arrays.asList("url"));
-        mimeTypeFileExtMap.put(TEXT_GROOVY,        Arrays.asList("groovy"));
         mimeTypeFileExtMap.put(IMAGE_JPEG,         Arrays.asList("jpg"));
         mimeTypeFileExtMap.put(IMAGE_PNG,          Arrays.asList("png"));
         mimeTypeFileExtMap.put(IMAGE_GIF,          Arrays.asList("gif"));

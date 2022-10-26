@@ -29,10 +29,6 @@
 ;;;;   - jakarta.annotation-api:2.1.1.jar
 ;;;;   - tomcat-embed-core-10.0.27.jar
 ;;;;   - tomcat-embed-websocket-10.0.27.jar (optional)
-;;;;
-;;;; Thanks to Clojure ring Tomcat adapter. Venice's tomcat
-;;;; builds heavily on this work.
-;;;; https://github.com/marchrock/ring-tomcat-adapter/blob/master/src/ring/adapter/tomcat.clj
 
 
 (ns tomcat)
@@ -183,7 +179,9 @@
 (defmacro create-connector-fn
   [create-fn service options & executor]
   `(. ~service :addConnector (if (:executor? ~options true)
-                               (tomcat/create-executored-connector ~create-fn (first ~@executor) ~options)
+                               (tomcat/create-executored-connector ~create-fn
+                                                                   (first ~@executor)
+                                                                   ~options)
                                (~create-fn ~options))))
 
 
@@ -294,12 +292,12 @@
     (tomcat/start servlet nil nil options))
 
   ([servlet context-path context-doc-base options]
-    (let [server (tomcat/create-server options)
-          context (. server :addContext
-                            (coalesce context-path tomcat/default-context-path)
-                            (coalesce context-doc-base tomcat/default-context-doc-base))]
-      (. server :addServlet "" "venice-servlet" servlet)
-      (. context :addServletMappingDecoded "/*" "venice-servlet" false)
+    (let [ctx-path     (coalesce context-path tomcat/default-context-path)
+          ctx-doc-base (coalesce context-doc-base tomcat/default-context-doc-base)
+          server       (tomcat/create-server options)
+          context      (. server :addContext ctx-path ctx-doc-base)]
+      (. server :addServlet ctx-path "venice-servlet" servlet)
+      (. context :addServletMappingDecoded "/*" "venice-servlet")
 
       ;; need for proper destroying servlets
       (shutdown-hook (fn []

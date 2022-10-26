@@ -22,17 +22,17 @@
 
 
 (defn file-handler [request]
-  (if-not (str/starts-with? (:uri request) "/static/")
-    (not-found-handler request)
+  (if (str/starts-with? (:uri request) "/static/")
     (let [uri  (:uri request)
-          file (io/file files-base-dir (str/strip-start uri "/static"))]
+          file (io/file files-base-dir (str/strip-start uri "/static/"))]
       (if (and (io/exists-file? file)
                (io/file-can-read? file)
                (io/file-within-dir? files-base-dir file))
         { :status 200
           :headers { "Content-Type" (io/mime-type (io/file-name file)) }
           :body file }
-        (not-found-handler request)))))
+        (not-found-handler request)))
+    (not-found-handler request)))
 
 
 ;; A route is defined by a HTTP verb, a URI filter and a handle
@@ -62,6 +62,6 @@
   (defn stop [] (tc/shutdown server)))
 
 
-(println "Tomcat started on port ~(:port opts).")
+(println "Tomcat started on port ~(:port tomcat-opts).")
 (println "Open a browser:      (sh/open \"http://localhost:8080\")")
 (println "Stop it by calling:  (stop)")
