@@ -222,11 +222,15 @@
     tomcat)))
 
 (defn- create-multipart-config [file-upload-opts]
-  (. :MultipartConfigElement :new
-                             (:location file-upload-opts "")
-                             (long (:max-file-size file-upload-opts -1))
-                             (long (:max-request-size file-upload-opts -1))
-                             (int (:file-size-threshold file-upload-opts 0I))))
+  (let [location (:location file-upload-opts "")]
+    (when-not (and (= location "") (not (io/dir-exists? location)))
+      (throw (ex :VncException
+                 "The file upload directory ~{location} does not exist!")))
+    (. :MultipartConfigElement :new
+                               location
+                               (long (:max-file-size file-upload-opts -1))
+                               (long (:max-request-size file-upload-opts -1))
+                               (int (:file-size-threshold file-upload-opts 0I)))))
 
 (defn- add-servlet [server context ctx-path
                     servlet servlet-name servlet-mapping]
@@ -240,6 +244,23 @@
   (let [wrapper (. server :addServlet ctx-path servlet-name servlet)]
     (. wrapper :setMultipartConfigElement (create-multipart-config upload-opts)))
   (. context :addServletMappingDecoded servlet-mapping servlet-name))
+
+
+(defn process-upload-files [req upload-dir]
+  ;; see https://github.com/jakartaee/servlet/blob/master/api/src/main/java/jakarta/servlet/http/Part.java
+  (when-not (io/exists-dir? upload-dir)
+    (throw (ex :VncException
+               "The file upload directory ~{upload-dir} does not exist! ")))
+
+  ;; loop through all :jakarta.servlet.http.Part parts of a HTTP request
+  (loop [parts (. req :getParts)]
+    (if-let [p (first parts) uploads '()]
+      (let [file-name (. p :getSubmittedFileName)
+            file      (io/file upload-dir file-name)]
+        (. p :write (io/file-path file))
+        (. p :delete)
+        (recur (rest parts) (conj uploads file-name)))
+      uploads)))
 
 
 (defn
@@ -292,6 +313,8 @@
      :doc """
           Start a Tomcat to serve given servlet with supplied options:
 
+          Server options:
+
           :base-dir - the server's base directory (default: ".")¶
           :await? - block the thread until server get shutdown command (default: true)¶
           :http? - create http connector (default: true)¶
@@ -308,6 +331,16 @@
           :max-threads - max number of threads in executor (default: 200)¶
           :min-spare-threads - minimum number of spare threads in executor (default: 25)¶
           :max-idle-time - max milliseconds before an idle thread shutsdown (default: 60000)¶
+
+          Servlet options:
+
+          :name - the servlet's name (default: "venice-servlet")¶
+          :mapping - the servlet's mapping (default: "/*")¶
+          :file-upload - if true configure as file-upload servlet (default: false)¶
+          :location - file-upload location (default: "")¶
+          :max-file-size - file-upload max file size in bytes (default: -1)¶
+          :max-request-size - file-upload max request size in bytes (default: -1)¶
+          :file-size-threshold - file-upload max file threshold in bytes (default: 0I)¶
           """
       :examples '(
           """
@@ -315,13 +348,16 @@
                         {:await? false, :base-dir ".", :port 8080})
           """,
           """
+          ;; passing a context-path and a context-doc-base
           (tomcat/start (tomcat/hello-world-servlet)
                         ""
                         "."
                         {:await? false, :base-dir ".", :port 8080})
           """,
           """
-          (tomcat/start [[(tomcat/hello-world-servlet) "hello-servlet" "/*"]]
+          ;; passing servlet options
+          (tomcat/start [[(tomcat/hello-world-servlet) { :name "hello-servlet"
+                                                         :mapping "/*"}]]
                         ""
                         "."
                         {:await? false, :base-dir ".", :port 8080})
@@ -341,10 +377,24 @@
         (instance-of? :VeniceServlet servlet)
             (add-servlet server context ctx-path servlet "venice-servlet" "/*")
         (sequential? servlet)
-            (docoll (fn [[servlet servlet-name servlet-mapping]]
-                      (add-servlet server context ctx-path
-                                   servlet servlet-name servlet-mapping))
-                    servlet)
+            (docoll (fn [s]
+                      (let [servlet          (first s)
+                            opts             (coalesce (second s) {})
+                            name             (:name opts "venice-servlet")
+                            mapping          (:mapping opts "/*")
+                            file-upload      (:file-upload opts false)
+                            file-upload-opts (select-keys opts
+                                                          [:location
+                                                           :max-file-size
+                                                           :max-request-size
+                                                           :file-size-threshold])]
+                        (if-not file-upload
+                          (add-servlet server context ctx-path
+                                       servlet name mapping)
+                          (add-fileupload-servlet server context ctx-path
+                                                  servlet name mapping
+                                                  file-upload-opts))
+                        servlet)))
         :else
             (throw (ex :VncException
                        """
