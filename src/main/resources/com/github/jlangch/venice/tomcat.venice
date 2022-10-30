@@ -139,8 +139,7 @@
     ssl-host-config))
 
 
-(defmacro create-executored-connector
-  [connector-generator executor options]
+(defmacro create-executored-connector [connector-generator executor options]
   `(let [connector# (~connector-generator ~options)]
      (. (. connector# :getProtocolHandler) :setExecutor ~executor)
      connector#))
@@ -148,15 +147,13 @@
 
 (defn- create-http-connector [options]
   (let [connector (. :Connector :new tomcat/http-connector)]
-    (doto connector
-      (. :setPort (:port options tomcat/default-http-port)))
+    (. connector :setPort (:port options tomcat/default-http-port))
     (when (:https? options false)
       (. connector :setRedirectPort (:https-port options tomcat/default-https-port)))
     connector))
 
 
-(defn- create-https-connector
-  [options]
+(defn- create-https-connector [options]
   (let [connector (. :Connector :new tomcat/http-connector)
         ssl-config (tomcat/create-ssl-host-config options)
         protocol-handler (. connector :getProtocolHandler)]
@@ -165,29 +162,27 @@
       (. :setSecure true)
       (. :addSslHostConfig ssl-config)
       (. :setPort (:https-port options tomcat/default-https-port)))
-    (. (. connector :getProtocolHandler) :setSSLEnabled  true)
+    (. protocol-handler :setSSLEnabled  true)
     connector))
 
 
-(defmacro create-executored-connectors
-  [body service options]
+(defmacro create-executored-connectors [body service options]
   `(let [executor# (tomcat/create-executor ~options)]
      (. ~service :addExecutor executor#)
      (~body ~service ~options executor#)
      ~service))
 
 
-(defmacro create-connector-fn
-  [create-fn service options & executor]
-  `(. ~service :addConnector (if (:executor? ~options true)
-                               (tomcat/create-executored-connector ~create-fn
-                                                                   (first ~@executor)
-                                                                   ~options)
-                               (~create-fn ~options))))
+(defmacro create-connector-fn [create-fn service options & executor]
+  `(. ~service :addConnector
+               (if (:executor? ~options true)
+                 (tomcat/create-executored-connector ~create-fn
+                                                     (first ~@executor)
+                                                     ~options)
+                 (~create-fn ~options))))
 
 
-(defn- create-connector
-  [service options & executor]
+(defn- create-connector [service options & executor]
   (when (:http? options true)
     (tomcat/create-connector-fn tomcat/create-http-connector service options executor))
   (when (:https? options false)
@@ -221,6 +216,7 @@
       (. (. tomcat :getHost) :setAppBase  "resources")
     tomcat)))
 
+
 (defn- create-multipart-config [file-upload-opts]
   (let [location (:location file-upload-opts "")]
     (when-not (and (= location "") (not (io/dir-exists? location)))
@@ -231,6 +227,7 @@
                                (long (:max-file-size file-upload-opts -1))
                                (long (:max-request-size file-upload-opts -1))
                                (int (:file-size-threshold file-upload-opts 0I)))))
+
 
 (defn- add-servlet [server context ctx-path
                     servlet servlet-name servlet-mapping]
