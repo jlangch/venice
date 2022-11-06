@@ -718,7 +718,7 @@ public class IOFunctions {
                 VncFunction
                     .meta()
                     .arglists(
-                        "(io/file-within-path? dir file)")
+                        "(io/file-within-dir? dir file)")
                     .doc(
                         "Returns true if the file is within the dir else false.\n\n" +
                         "The file and dir args must be absolute paths.")
