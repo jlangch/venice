@@ -231,7 +231,7 @@ public class StringFunctions {
                     .doc("True if s contains with substr.")
                     .examples(
                         "(str/contains? \"abc\" \"ab\")",
-                        "(str/contains? \"abc\" #\\b))")
+                        "(str/contains? \"abc\" #\\b)")
                     .build()
         ) {
             @Override
