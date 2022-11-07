@@ -44,6 +44,10 @@ public class ExcelSheetReader {
         return sheet.getName();
     }
 
+    public int getIndex() {
+    	return sheet.getIndex();
+    }
+
     public int getFirstRowNum() {
         final int n = sheet.getFirstRowNum();
         return n < 0 ? n : n + 1;
