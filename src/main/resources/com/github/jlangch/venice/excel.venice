@@ -1151,7 +1151,7 @@
 
   (cond
     (string? source)                    (. :ExcelReader :open (io/file-in-stream source))
-    (bytebuf? source)                   (. :ExcelReader :open (io/byte-in-stream source))
+    (bytebuf? source)                   (. :ExcelReader :open (io/bytebuf-in-stream source))
     (instance-of? :File source)         (. :ExcelReader :open (io/file-in-stream source))
     (instance-of? :InputStream source)  (. :ExcelReader :open source)
     :else (throw (ex :VncException
