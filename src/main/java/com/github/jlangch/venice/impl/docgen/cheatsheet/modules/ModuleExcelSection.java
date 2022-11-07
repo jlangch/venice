@@ -95,6 +95,7 @@ public class ModuleExcelSection implements ISectionBuilder {
         all.addSection(rd_util);
         rd_util.addItem(diBuilder.getDocItem("excel/sheet-count", false));
         rd_util.addItem(diBuilder.getDocItem("excel/sheet-name", false));
+        rd_util.addItem(diBuilder.getDocItem("excel/sheet-index", false));
         rd_util.addItem(diBuilder.getDocItem("excel/sheet-row-range", false));
         rd_util.addItem(diBuilder.getDocItem("excel/sheet-col-range", false));
         rd_util.addItem(diBuilder.getDocItem("excel/evaluate-formulas", false));

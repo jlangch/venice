@@ -1227,11 +1227,10 @@
 
 
 (defn
-  ^{ :arglists '("(sheet-name sheet)")
+  ^{ :arglists '("(sheet-index sheet)")
      :doc
         """
-        Returns a sheet from the Excel reader referenced by its name or
-        sheet index.
+        Returns the index of a sheet.
         """
      :examples '(
         """
@@ -1245,14 +1244,42 @@
 
           (let [wbook (excel/open (test-xls))
                 sheet (excel/sheet wbook "Data")]
-            (excel/sheet-name sheet)))
+            (excel/sheet-index sheet)))
         """ ) }
 
-  sheet-name [sheet]
+  sheet-index [sheet]
 
   { :pre [(instance-of? :ExcelSheetReader sheet)] }
 
-  (. sheet :getName))
+  (. sheet :getIndex))
+
+
+  (defn
+    ^{ :arglists '("(sheet-name sheet)")
+       :doc
+          """
+          Returns the name of a sheet.
+          """
+       :examples '(
+          """
+          (do
+            (load-module :excel)
+
+            (defn test-xls []
+              (let [wbook (excel/writer :xlsx)]
+                (excel/write-data wbook "Data" [[100 101 102] [200 201 202]])
+                (excel/write->bytebuf wbook)))
+
+            (let [wbook (excel/open (test-xls))
+                  sheet (excel/sheet wbook "Data")]
+              (excel/sheet-name sheet)))
+          """ ) }
+
+    sheet-name [sheet]
+
+    { :pre [(instance-of? :ExcelSheetReader sheet)] }
+
+    (. sheet :getName))
 
 
 (defn

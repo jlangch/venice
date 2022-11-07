@@ -66,6 +66,10 @@ public class ExcelSheet {
         return sheet.getSheetName();
     }
 
+    public int getIndex() {
+    	return sheet.getWorkbook().getSheetIndex(sheet);
+    }
+
     public int getFirstRowNum() {
         return sheet.getFirstRowNum();
     }
