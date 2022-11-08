@@ -14,8 +14,11 @@ and this project adheres to
 
 ### Added
 
-- ...
+- the function 'excel/sheet-index' to get an excel sheet's index
 
+### Fixed
+
+- 'excel/open' when passing a bytebuf
 
 
 
