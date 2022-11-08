@@ -338,7 +338,7 @@
   { :pre [(instance-of? :ExcelSheetBuilder builder)] }
 
   (->> (map #(. :DataRecord :of %) items)
-       (into (. :java.util.ArrayList :new))
+       (into! (. :java.util.ArrayList :new))
        (. builder :renderItems)))
 
 
@@ -1035,6 +1035,10 @@
      :doc
         """
         Defines a column with optional attributes.
+
+        *Note:* The column cell value is just read from the passed tabular
+        dataset. If there is any mapping or conversion needed it has to be
+        applied to the dataset before writing it to the sheet! 
 
         Options:
 
