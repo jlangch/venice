@@ -980,6 +980,7 @@ public class StringFunctions {
                         "the maximum number of splits.  Returns a list of the splits.")
                     .examples(
                         "(str/split \"abc,def,ghi\" \",\")",
+                        "(str/split \"James Peter Robert\" \" \", 2)",
                         "(str/split \"abc , def , ghi\" \"[ *],[ *]\")",
                         "(str/split \"abc,def,ghi\" \"((?<=,)|(?=,))\")",
                         "(str/split \"q1w2e3r4t5y6u7i8o9p0\" #\"\\d+\")",
