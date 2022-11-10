@@ -90,6 +90,7 @@ public class SourceCodeRenderer {
 
             new SourceCodeRenderer().renderSourceCode(
                 read(sourceFile),
+                sourceFile.getName(),
                 new File(dir, name + ".html"),
                 new File(dir, name + ".pdf"),
                 fontDir,
@@ -102,6 +103,7 @@ public class SourceCodeRenderer {
 
     public void renderSourceCode(
             final String source,
+            final String srcFileName,
             final File htmlFile,
             final File pdfFile,
             final File fontDir,
@@ -130,6 +132,7 @@ public class SourceCodeRenderer {
         final Map<String,Object> data = new HashMap<>();
         data.put("meta-author", "Venice");
         data.put("version", Venice.getVersion());
+        data.put("filename", srcFileName);
         data.put("code", codeHighlighted);
 
         // [1] create a HTML

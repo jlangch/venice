@@ -33,8 +33,32 @@ ${ (when pdfmode }$<?xml version="1.0" encoding="UTF-8"?>${ ) }$${ (when-not pdf
             
             @page {
                 size: A4 portrait;
-                margin: 2cm 1cm 1cm 1cm;
+                margin: 1.5cm 1cm 1.5cm 1cm;
                 padding: 0;
+                @bottom-left { content: element(footer_left); }
+                @bottom-right { content: element(footer_right); }
+            }
+            
+            span.page:before {
+                content: counter(page);
+            }
+            
+            span.pagecount:before {
+                content: counter(pages);
+            }
+            
+            #footer_left {
+                color: #8080;
+                position: running(footer_left);
+                text-align: left;
+                padding-left: 2mm;
+            }
+            
+            #footer_right {
+                color: #8080;
+                position: running(footer_right);
+                text-align: right;
+                padding-right: 2mm;
             }
             
             body {
@@ -44,6 +68,12 @@ ${ (when pdfmode }$<?xml version="1.0" encoding="UTF-8"?>${ ) }$${ (when-not pdf
                 font-size: ${= (if pdfmode "9px" "14px") }$;
                 line-height: 1.4em;
                 font-weight: 400;
+            }
+            
+            hr {
+               border: none;
+               height: 1px;
+               background-color: #FFFFFF;
             }
              
             code {
@@ -56,7 +86,11 @@ ${ (when pdfmode }$<?xml version="1.0" encoding="UTF-8"?>${ ) }$${ (when-not pdf
     </head>
     
     <body>
-       <code>${= code }$</code>
+         <!-- Footer -->
+         <div id="footer_left"><hr/>${= (kira/escape-xml filename) }$</div>
+         <div id="footer_right"><hr/><span class="page"/> / <span class="pagecount"/></div>
+
+         <code>${= code }$</code>
     </body>
     
 </html>
