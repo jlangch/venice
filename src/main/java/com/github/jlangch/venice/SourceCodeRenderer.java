@@ -28,9 +28,12 @@ import java.nio.charset.Charset;
 import java.nio.file.Files;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.concurrent.atomic.AtomicLong;
+import java.util.stream.Collectors;
 
 import com.github.jlangch.venice.impl.docgen.util.CodeHighlighter;
 import com.github.jlangch.venice.impl.docgen.util.ColorTheme;
+import com.github.jlangch.venice.impl.util.StringUtil;
 import com.github.jlangch.venice.impl.util.io.ClassPathResource;
 import com.github.jlangch.venice.util.pdf.PdfRenderer;
 import com.lowagie.text.pdf.PdfReader;
@@ -42,11 +45,21 @@ public class SourceCodeRenderer {
         this.codeHighlighter = new CodeHighlighter(ColorTheme.getLightTheme());
     }
 
-    public static void render(final String sourceFile, final String destDir, final String fontDir) {
-        render(new File(sourceFile), new File(destDir), new File(fontDir));
+    public static void render(
+            final String sourceFile,
+            final String destDir,
+            final String fontDir,
+            final boolean lineNumbering
+    ) {
+        render(new File(sourceFile), new File(destDir), new File(fontDir), lineNumbering);
     }
 
-    public static void render(final File sourceFile, final File destDir, final File fontDir) {
+    public static void render(
+            final File sourceFile,
+            final File destDir,
+            final File fontDir,
+            final boolean lineNumbering
+    ) {
         try {
             if (sourceFile == null) {
                 throw new IllegalArgumentException("A 'sourceFile' must not be null!");
@@ -75,7 +88,8 @@ public class SourceCodeRenderer {
                 read(sourceFile),
                 new File(dir, name + ".html"),
                 new File(dir, name + ".pdf"),
-                fontDir);
+                fontDir,
+                lineNumbering);
         }
         catch(Exception ex) {
             ex.printStackTrace();
@@ -86,13 +100,25 @@ public class SourceCodeRenderer {
             final String source,
             final File htmlFile,
             final File pdfFile,
-            final File fontDir
+            final File fontDir,
+            final boolean lineNumbering
     ) throws Exception {
         System.out.println("Rendering HTML source code to: " + htmlFile.getAbsolutePath());
         System.out.println("Rendering PDF source code to:  " + pdfFile.getAbsolutePath());
         System.out.println("Using font dir:                " + fontDir.getAbsolutePath());
 
-        final String codeHighlighted = codeHighlighter.highlight(source);
+        String codeHighlighted = codeHighlighter.highlight(source);
+
+        if (lineNumbering) {
+            final AtomicLong line = new AtomicLong(1);
+           codeHighlighted = StringUtil.splitIntoLines(codeHighlighted)
+                                       .stream()
+                                       .map(s -> String.format(
+                                                    "<span style=\"color: #808080\">%04d   </span>%s",
+                                                    line.getAndIncrement(),
+                                                    s))
+                                       .collect(Collectors.joining("\n"));
+        }
 
         // final String baseURL = "classpath:/fonts/";
         final String baseURL = fontDir.toURI().toURL().toString();

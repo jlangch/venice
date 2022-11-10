@@ -922,15 +922,15 @@ public class REPL {
                 final String group = second(params);
 
                 if (SandboxFunctionGroups.isValidGroup(group)) {
-                	SandboxFunctionGroups
-                		.groupFunctionsSorted(group)
-                		.forEach(f -> printer.println("stdout", "   " + f));
+                    SandboxFunctionGroups
+                        .groupFunctionsSorted(group)
+                        .forEach(f -> printer.println("stdout", "   " + f));
                 }
                 else {
                     printer.println(
-                    		"error",
-                    		"invalid sandbox function group: " + group +
-                    		". Use one of " + String.join(", ", SandboxFunctionGroups.getGroups()));
+                            "error",
+                            "invalid sandbox function group: " + group +
+                            ". Use one of " + String.join(", ", SandboxFunctionGroups.getGroups()));
                 }
                 return;
             }
@@ -1030,10 +1030,10 @@ public class REPL {
 
     private void handleSourcePdfCommand(final List<String> params) {
         if (params.size() == 3) {
-        	final String sourceFile = trimToEmpty(first(params));
-        	final String destDir = trimToEmpty(second(params));
-        	final String fontDir = trimToEmpty(third(params));
-        	SourceCodeRenderer.render(sourceFile, destDir, fontDir);
+            final String sourceFile = trimToEmpty(first(params));
+            final String destDir = trimToEmpty(second(params));
+            final String fontDir = trimToEmpty(third(params));
+            SourceCodeRenderer.render(sourceFile, destDir, fontDir, true);
         }
         else {
             printer.println("error", "Invalid parameter. Use !source-pdf ./foo/bar.venice ./foo ./fonts");
