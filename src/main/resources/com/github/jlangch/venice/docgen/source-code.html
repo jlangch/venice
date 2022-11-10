@@ -33,7 +33,7 @@ ${ (when pdfmode }$<?xml version="1.0" encoding="UTF-8"?>${ ) }$${ (when-not pdf
             
             @page {
                 size: A4 portrait;
-                margin: 2cm 1.0cm;
+                margin: 2cm 1cm 1cm 1cm;
                 padding: 0;
             }
             
@@ -41,13 +41,12 @@ ${ (when pdfmode }$<?xml version="1.0" encoding="UTF-8"?>${ ) }$${ (when-not pdf
                 background-color: white;
                 font-family: 'Open Sans', sans-serif;
                 color: #444;
-                font-size: ${= (if pdfmode "9px" "16px") }$;
+                font-size: ${= (if pdfmode "9px" "14px") }$;
                 line-height: 1.4em;
                 font-weight: 400;
             }
              
             code {
-                margin: 1em;
                 display: block;
                 white-space: pre-wrap;
                 font-family: 'Source Code Pro', sans-serif;
