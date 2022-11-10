@@ -85,7 +85,7 @@ public class SourceCodeRenderer {
             }
 
             if (!areFontsAvailable(fontDir)) {
-            	return;
+                return;
             }
 
             new SourceCodeRenderer().renderSourceCode(
@@ -197,23 +197,23 @@ public class SourceCodeRenderer {
     }
 
     private static boolean areFontsAvailable(final File fontDir) {
-    	boolean ok = true;
+        boolean ok = true;
 
-    	File font = new File (fontDir, fontOpenSans);
-    	if (!font.canRead()) {
+        File font = new File (fontDir, fontOpenSans);
+        if (!font.canRead()) {
             System.out.println("Error: Font " + font.getAbsolutePath() + " is not available!");
             System.out.println("    -> Download from " + fontOpenSansDownload);
             ok = false;
-    	}
+        }
 
-    	font = new File (fontDir, fontSourceCodePro);
-    	if (!font.canRead()) {
+        font = new File (fontDir, fontSourceCodePro);
+        if (!font.canRead()) {
             System.out.println("Error: Font " + font.getAbsolutePath() + " is not available!");
             System.out.println("    -> Download from " + fontSourceCodeProDownload);
-    		ok = false;
-    	}
+            ok = false;
+        }
 
-    	return ok;
+        return ok;
     }
 
     private static String read(final File file) throws Exception {

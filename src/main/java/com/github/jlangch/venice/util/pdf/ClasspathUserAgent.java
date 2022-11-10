@@ -97,7 +97,7 @@ public class ClasspathUserAgent extends ITextUserAgent {
             final String path = stripLeadingSlashes(stripScheme(uri));
             data = slurp(new ClassPathResource(path));
             if (data != null) {
-            	final byte[] bytes = data.array();
+                final byte[] bytes = data.array();
                 log(debug, String.format("FlyingSaucer: Resolved reource '%s' (%d bytes) from classpath.", path, bytes.length));
 
                 cachedResources.put(uri, data);
@@ -116,7 +116,7 @@ public class ClasspathUserAgent extends ITextUserAgent {
             // try to get the resource from the cached resources
             final ByteBuffer data = cachedResources.get(path);
             if (data != null) {
-            	final byte[] bytes = data.array();
+                final byte[] bytes = data.array();
                 log(debug, String.format("FlyingSaucer: Resolved '%s' (%d bytes) from memory.", path, bytes.length));
 
                 return new ByteArrayInputStream(bytes);
@@ -139,14 +139,14 @@ public class ClasspathUserAgent extends ITextUserAgent {
             // [2] try to get the resource from the file
             final String path = stripScheme(uri);
             try {
-	            data = ByteBuffer.wrap(Files.readAllBytes(new File(path).toPath()));
-	            if (data != null) {
-	            	final byte[] bytes = data.array();
-	                log(debug, String.format("FlyingSaucer: Resolved reource '%s' (%d bytes) from file.", path, bytes.length));
+                data = ByteBuffer.wrap(Files.readAllBytes(new File(path).toPath()));
+                if (data != null) {
+                    final byte[] bytes = data.array();
+                    log(debug, String.format("FlyingSaucer: Resolved reource '%s' (%d bytes) from file.", path, bytes.length));
 
-	                cachedResources.put(uri, data);
-	                return new ByteArrayInputStream(bytes);
-	            }
+                    cachedResources.put(uri, data);
+                    return new ByteArrayInputStream(bytes);
+                }
             }
             catch(Exception ex) { /*not handled here*/ }
 
