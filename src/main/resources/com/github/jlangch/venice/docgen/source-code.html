@@ -45,29 +45,19 @@ ${ (when pdfmode }$<?xml version="1.0" encoding="UTF-8"?>${ ) }$${ (when-not pdf
                 line-height: 1.5em;
                 font-weight: 400;
             }
-                        
+             
             code {
+                margin: 1em;
                 display: block;
                 white-space: pre-wrap;
                 font-family: 'Source Code Pro', sans-serif;
                 font-weight: 400;
             }
-            
-            .source {
-                margin: 0.5em 0 0.5em 0;
-                padding: 0.5em;
-            }
-            
-            .source code {
-                margin-top: 2em;
-            }
         </style>
     </head>
     
     <body>
-       <div class="source">
-           <code>${= code }$</code>
-       </div>
+       <code>${= code }$</code>
     </body>
     
 </html>

@@ -24,6 +24,7 @@ package com.github.jlangch.venice.impl.repl;
 import static com.github.jlangch.venice.impl.util.CollectionUtil.drop;
 import static com.github.jlangch.venice.impl.util.CollectionUtil.first;
 import static com.github.jlangch.venice.impl.util.CollectionUtil.second;
+import static com.github.jlangch.venice.impl.util.CollectionUtil.third;
 import static com.github.jlangch.venice.impl.util.StringUtil.trimToEmpty;
 import static com.github.jlangch.venice.impl.util.StringUtil.trimToNull;
 
@@ -57,6 +58,7 @@ import org.jline.utils.OSUtils;
 
 import com.github.jlangch.venice.ContinueException;
 import com.github.jlangch.venice.ParseError;
+import com.github.jlangch.venice.SourceCodeRenderer;
 import com.github.jlangch.venice.SymbolNotFoundException;
 import com.github.jlangch.venice.Venice;
 import com.github.jlangch.venice.VncException;
@@ -590,6 +592,7 @@ public class REPL {
                     case "highlight":     handleHighlightCommand(args); break;
                     case "java-ex":       handleJavaExCommand(args); break;
                     case "debug":         handleDebugHelpCommand(); break;
+                    case "source-pdf":    handleSourcePdfCommand(args); break;
                     default:              handleInvalidCommand(cmd); break;
                 }
             }
@@ -1022,6 +1025,18 @@ public class REPL {
                     printer.println("error", "Invalid parameter. Use !java-ex {on|off}.");
                     break;
             }
+        }
+    }
+
+    private void handleSourcePdfCommand(final List<String> params) {
+        if  (params.size() == 3) {
+        	final String sourceFile = trimToEmpty(first(params));
+        	final String destDir = trimToEmpty(second(params));
+        	final String fontDir = trimToEmpty(third(params));
+        	SourceCodeRenderer.render(sourceFile, destDir, fontDir);
+        }
+        else {
+            printer.println("error", "Invalid parameter. Use !source-pdf ./foo/bar.venice ./foo ./fonts");
         }
     }
 

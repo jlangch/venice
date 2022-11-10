@@ -22,8 +22,10 @@
 package com.github.jlangch.venice.util.pdf;
 
 import java.io.ByteArrayInputStream;
+import java.io.File;
 import java.io.InputStream;
 import java.nio.ByteBuffer;
+import java.nio.file.Files;
 import java.util.Arrays;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
@@ -86,7 +88,7 @@ public class ClasspathUserAgent extends ITextUserAgent {
             // [1] try to get the resource from the cached resources
             ByteBuffer data = cachedResources.get(uri);
             if (data != null) {
-                log(debug, "FlyingSaucer: Resolved '" + uri + "' from cache.");
+                log(debug, String.format("FlyingSaucer: Resolved '" + uri + "' from cache."));
 
                 return new ByteArrayInputStream(data.array());
             }
@@ -95,14 +97,15 @@ public class ClasspathUserAgent extends ITextUserAgent {
             final String path = stripLeadingSlashes(stripScheme(uri));
             data = slurp(new ClassPathResource(path));
             if (data != null) {
-                log(debug, "FlyingSaucer: Resolved reource '" + path + "' from classpath.");
+            	final byte[] bytes = data.array();
+                log(debug, String.format("FlyingSaucer: Resolved reource '%s' (%d bytes) from classpath.", path, bytes.length));
 
                 cachedResources.put(uri, data);
-                return new ByteArrayInputStream(data.array());
+                return new ByteArrayInputStream(bytes);
             }
 
-            // [4] the resource has not been found
-            log(debug, "FlyingSaucer: Resource '" + path + "' not found on classpath.");
+            // [3] the resource has not been found
+            log(debug, String.format("FlyingSaucer: Resource '%s' not found on classpath.", path));
             return null;
         }
         else if (isMemoryScheme(uri)) {
@@ -113,22 +116,52 @@ public class ClasspathUserAgent extends ITextUserAgent {
             // try to get the resource from the cached resources
             final ByteBuffer data = cachedResources.get(path);
             if (data != null) {
-                log(debug, "FlyingSaucer: Resolved '" + path + "' from memory.");
+            	final byte[] bytes = data.array();
+                log(debug, String.format("FlyingSaucer: Resolved '%s' (%d bytes) from memory.", path, bytes.length));
+
+                return new ByteArrayInputStream(bytes);
+            }
+
+            log(debug, String.format("FlyingSaucer: Resource '%s' not found in memory.", path));
+            return null; // the resource has not been found
+        }
+        else if (isFileScheme(uri)) {
+            log(debug, "FlyingSaucer: File URI=" + uri);
+
+            // [1] try to get the resource from the cached resources
+            ByteBuffer data = cachedResources.get(uri);
+            if (data != null) {
+                log(debug, String.format("FlyingSaucer: Resolved '%s' from cache.", uri));
 
                 return new ByteArrayInputStream(data.array());
             }
 
-            log(debug, "FlyingSaucer: Resource '" + path + "' not found in memory.");
-            return null; // the resource has not been found
+            // [2] try to get the resource from the file
+            final String path = stripScheme(uri);
+            try {
+	            data = ByteBuffer.wrap(Files.readAllBytes(new File(path).toPath()));
+	            if (data != null) {
+	            	final byte[] bytes = data.array();
+	                log(debug, String.format("FlyingSaucer: Resolved reource '%s' (%d bytes) from file.", path, bytes.length));
+
+	                cachedResources.put(uri, data);
+	                return new ByteArrayInputStream(bytes);
+	            }
+            }
+            catch(Exception ex) { /*not handled here*/ }
+
+            // [3] the resource has not been found
+            log(debug, String.format("FlyingSaucer: Resource '%s' not found as file.", uri));
+            return null;
         }
-        else {
+       else {
             log(debug, "FlyingSaucer: Unknown URI=" + uri);
             return super.resolveAndOpenStream(uri);
         }
     }
 
     private boolean isDebugScheme(final String uri) {
-        return isScheme(uri, "classpath-debug:", "memory-debug:");
+        return isScheme(uri, "classpath-debug:", "memory-debug:", "file-debug:");
     }
 
     private boolean isClasspathScheme(final String uri) {
@@ -137,6 +170,10 @@ public class ClasspathUserAgent extends ITextUserAgent {
 
     private boolean isMemoryScheme(final String uri) {
         return isScheme(uri, "memory:", "memory-debug:");
+    }
+
+    private boolean isFileScheme(final String uri) {
+        return isScheme(uri, "file:", "file-debug:");
     }
 
     private boolean isScheme(final String uri, final String ... scheme) {
