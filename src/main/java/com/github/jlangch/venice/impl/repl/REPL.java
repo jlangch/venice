@@ -1029,7 +1029,7 @@ public class REPL {
     }
 
     private void handleSourcePdfCommand(final List<String> params) {
-        if  (params.size() == 3) {
+        if (params.size() == 3) {
         	final String sourceFile = trimToEmpty(first(params));
         	final String destDir = trimToEmpty(second(params));
         	final String fontDir = trimToEmpty(third(params));
