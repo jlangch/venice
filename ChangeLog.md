@@ -15,7 +15,7 @@ and this project adheres to
 ### Added
 
 - the function 'excel/sheet-index' to get an excel sheet's index
-- a HTML and PDF render for syntax highlighted Venice source code
+- a HTML and PDF renderer for syntax highlighted Venice source code
 
 ### Fixed
 
