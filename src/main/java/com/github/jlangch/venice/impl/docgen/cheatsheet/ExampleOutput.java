@@ -21,6 +21,7 @@
  */
 package com.github.jlangch.venice.impl.docgen.cheatsheet;
 
+import com.github.jlangch.venice.impl.docgen.util.CodeHighlighter;
 import com.github.jlangch.venice.impl.util.StringEscapeUtil;
 import com.github.jlangch.venice.impl.util.StringUtil;
 
@@ -148,12 +149,12 @@ public class ExampleOutput {
 
         if (stdout != null) {
             sb.append("\n");
-            sb.append(DocHighlighter.style(stdout, "#808080"));
+            sb.append(CodeHighlighter.style(stdout, "#808080"));
         }
 
         if (stderr != null) {
             sb.append("\n");
-            sb.append(DocHighlighter.style(stderr, "#808080"));
+            sb.append(CodeHighlighter.style(stderr, "#808080"));
         }
 
         if (result != null) {
@@ -165,7 +166,7 @@ public class ExampleOutput {
         if (ex != null) {
             sb.append("\n");
             sb.append(StringEscapeUtil.escapeXml("=> "));
-            sb.append(DocHighlighter.style(getExString(), "#808080"));
+            sb.append(CodeHighlighter.style(getExString(), "#808080"));
         }
 
         return sb.toString();

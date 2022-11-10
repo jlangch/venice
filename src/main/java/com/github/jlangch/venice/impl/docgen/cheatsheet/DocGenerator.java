@@ -89,6 +89,9 @@ import com.github.jlangch.venice.impl.docgen.cheatsheet.section.SystemVarSection
 import com.github.jlangch.venice.impl.docgen.cheatsheet.section.TimeSection;
 import com.github.jlangch.venice.impl.docgen.cheatsheet.section.TransducersSection;
 import com.github.jlangch.venice.impl.docgen.cheatsheet.section.TypesSection;
+import com.github.jlangch.venice.impl.docgen.util.ColorTheme;
+import com.github.jlangch.venice.impl.docgen.util.CodeHighlighter;
+import com.github.jlangch.venice.impl.docgen.util.MarkdownDoc;
 import com.github.jlangch.venice.impl.env.Env;
 import com.github.jlangch.venice.impl.repl.ReplFunctions;
 import com.github.jlangch.venice.impl.util.StringUtil;
@@ -129,7 +132,7 @@ public class DocGenerator {
 
         this.diBuilder = new DocItemBuilder(
                                 env,
-                                new DocHighlighter(DocColorTheme.getLightTheme()),
+                                new CodeHighlighter(ColorTheme.getLightTheme()),
                                 preloadedModules,
                                 runExamples);
     }

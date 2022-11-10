@@ -1,0 +1,73 @@
+${ (when pdfmode }$<?xml version="1.0" encoding="UTF-8"?>${ ) }$${ (when-not pdfmode }$<!doctype html>${ ) }$
+<html lang="en" xmlns="http://www.w3.org/1999/xhtml">
+    <head>
+        <meta name="author" content="${ (kira/escape-xml meta-author) }$"/>
+        <meta charset="UTF-8"/>
+       
+        <title>Source Code</title>
+        
+        <style>
+            ${ (when-not pdfmode }$
+            /* see https://fonts.google.com/ */ 
+            @import url('https://fonts.googleapis.com/css?family=Audiowide|Open+Sans|Source+Code+Pro&display=swap');
+            ${ ) }$
+           
+            ${ (when pdfmode }$
+            @font-face {
+                font-family: 'Open Sans';
+                src: url('OpenSans-Regular.ttf');
+                font-style: normal;
+                font-weight: normal;
+                -fs-pdf-font-embed: embed;
+                -fs-pdf-font-encoding: Identity-H;
+            }
+            @font-face {
+                font-family: 'Source Code Pro';
+                src: url('SourceCodePro-Regular.ttf');
+                font-style: normal;
+                font-weight: normal;
+                -fs-pdf-font-embed: embed;
+                -fs-pdf-font-encoding: Identity-H;
+            }
+            ${ ) }$
+            
+            @page {
+                size: A4 portrait;
+                margin: 2cm 1.0cm;
+                padding: 0;
+            }
+            
+            body {
+                background-color: white;
+                font-family: 'Open Sans', sans-serif;
+                color: #444;
+                font-size: ${= (if pdfmode "10px" "16px") }$;
+                line-height: 1.5em;
+                font-weight: 400;
+            }
+                        
+            code {
+                display: block;
+                white-space: pre-wrap;
+                font-family: 'Source Code Pro', sans-serif;
+                font-weight: 400;
+            }
+            
+            .source {
+                margin: 0.5em 0 0.5em 0;
+                padding: 0.5em;
+            }
+            
+            .source code {
+                margin-top: 2em;
+            }
+        </style>
+    </head>
+    
+    <body>
+       <div class="source">
+           <code>${= code }$</code>
+       </div>
+    </body>
+    
+</html>

@@ -19,7 +19,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.github.jlangch.venice.impl.docgen.cheatsheet;
+package com.github.jlangch.venice.impl.docgen.util;
 
 import static com.github.jlangch.venice.impl.reader.HighlightClass.AT;
 import static com.github.jlangch.venice.impl.reader.HighlightClass.BRACE_BEGIN;
@@ -54,9 +54,9 @@ import java.util.Map;
 import com.github.jlangch.venice.impl.reader.HighlightClass;
 
 
-public class DocColorTheme {
+public class ColorTheme {
 
-    public DocColorTheme(
+    public ColorTheme(
             final String name,
             final Map<HighlightClass,String> colors
     ) {
@@ -73,7 +73,7 @@ public class DocColorTheme {
     }
 
 
-    public static DocColorTheme getLightTheme() {
+    public static ColorTheme getLightTheme() {
         final Map<HighlightClass,String> colors = new HashMap<>();
 
         colors.put(COMMENT,                 GREY_LIGHT);
@@ -109,7 +109,7 @@ public class DocColorTheme {
 
         colors.put(UNPROCESSED,             RED);
 
-        return new DocColorTheme("light", colors);
+        return new ColorTheme("light", colors);
     }
 
 

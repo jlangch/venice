@@ -31,6 +31,7 @@ import java.util.stream.Collectors;
 
 import com.github.jlangch.venice.Parameters;
 import com.github.jlangch.venice.Venice;
+import com.github.jlangch.venice.impl.docgen.util.CodeHighlighter;
 import com.github.jlangch.venice.impl.env.Env;
 import com.github.jlangch.venice.impl.specialforms.SpecialFormsDoc;
 import com.github.jlangch.venice.impl.types.Constants;
@@ -51,7 +52,7 @@ public class DocItemBuilder {
 
     public DocItemBuilder(
             final Env env,
-            final DocHighlighter codeHighlighter,
+            final CodeHighlighter codeHighlighter,
             final List<String> preloadedModules,
             final boolean runExamples
     ) {
@@ -397,7 +398,7 @@ public class DocItemBuilder {
     private final List<String> preloadedModules = new ArrayList<>();
 
     private final Map<String, DocItem> docItems = new HashMap<>();
-    private final DocHighlighter codeHighlighter;
+    private final CodeHighlighter codeHighlighter;
 
     private final IdGen idgen = new IdGen();
 }

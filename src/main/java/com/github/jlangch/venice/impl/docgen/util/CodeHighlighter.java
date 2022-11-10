@@ -19,7 +19,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.github.jlangch.venice.impl.docgen.cheatsheet;
+package com.github.jlangch.venice.impl.docgen.util;
 
 import java.util.stream.Collectors;
 
@@ -28,9 +28,9 @@ import com.github.jlangch.venice.impl.reader.HighlightParser;
 import com.github.jlangch.venice.impl.util.StringEscapeUtil;
 
 
-public class DocHighlighter {
+public class CodeHighlighter {
 
-    public DocHighlighter(final DocColorTheme theme) {
+    public CodeHighlighter(final ColorTheme theme) {
         this.theme = theme;
     }
 
@@ -54,6 +54,6 @@ public class DocHighlighter {
     }
 
 
-    private final DocColorTheme theme;
+    private final ColorTheme theme;
     private final static String TEMPLATE = "<span style=\"color: %s\">%s</span>";
 }

@@ -19,7 +19,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.github.jlangch.venice.impl.docgen.cheatsheet;
+package com.github.jlangch.venice.impl.docgen.source;
 
 import java.nio.ByteBuffer;
 import java.util.Map;
@@ -31,7 +31,7 @@ import com.github.jlangch.venice.impl.util.io.ClassPathResource;
 import com.github.jlangch.venice.util.pdf.PdfRenderer;
 
 
-public class CheatsheetRenderer {
+public class SourceCodeRenderer {
 
     public static String parseTemplate() {
         try {
@@ -48,12 +48,12 @@ public class CheatsheetRenderer {
         }
         catch(VncException ex) {
             throw new RuntimeException(
-                        "Failed to parse cheatsheet template. \n" +
+                        "Failed to parse source code template. \n" +
                         "Venice Callstack: \n" + ex.getCallStackAsString("   "),
                         ex);
         }
         catch(Exception ex) {
-            throw new RuntimeException("Failed to parse cheatsheet template", ex);
+            throw new RuntimeException("Failed to parse source code template", ex);
         }
     }
 
@@ -72,12 +72,12 @@ public class CheatsheetRenderer {
         }
         catch(VncException ex) {
             throw new RuntimeException(
-                        "Failed to render cheatsheet XHTML. \n" +
+                        "Failed to render source code XHTML. \n" +
                         "Venice Callstack: \n" + ex.getCallStackAsString("   "),
                         ex);
         }
         catch(Exception ex) {
-            throw new RuntimeException("Failed to render cheatsheet XHTML", ex);
+            throw new RuntimeException("Failed to render source code XHTML", ex);
         }
     }
 
@@ -88,7 +88,8 @@ public class CheatsheetRenderer {
     }
 
     private static String loadCheatSheetTemplate() {
-        return new ClassPathResource(Venice.class.getPackage(), "docgen/cheatsheet2.html")
+        return new ClassPathResource(Venice.class.getPackage(), "docgen/source-code.html")
                         .getResourceAsString("UTF-8");
     }
+
 }
