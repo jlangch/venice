@@ -19,7 +19,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.github.jlangch.venice.impl.docgen.source;
+package com.github.jlangch.venice.impl.docgen.sourcecode;
 
 import java.nio.ByteBuffer;
 import java.util.Map;
