@@ -31,3 +31,29 @@ The PDF renderer requires two specific fonts in the passed font directory '/User
  - [OpenSans-Regular.ttf](https://fonts.google.com/specimen/Open+Sans)
  - [SourceCodePro-Regular.ttf](https://fonts.google.com/specimen/Source+Sans+Pro)
  
+
+Venice supports generating PDF files if the [Flying Saucer](https://github.com/flyingsaucerproject/flyingsaucer) 
+libs are on the runtime classpath:
+
+ - org.xhtmlrenderer:flying-saucer-core:9.1.22
+ - org.xhtmlrenderer:flying-saucer-pdf-openpdf:9.1.22
+ - com.github.librepdf:openpdf:1.3.26
+ - com.github.librepdf:pdf-toolbox:1.3.26
+ 
+ 
+Run this script from the REPL to download the fonts and PDF libraries:
+
+```clojure
+(do
+  (load-module :maven ['maven :as 'm])
+  
+  ;; Download the PDF libs from Maven
+  (m/download "org.xhtmlrenderer:flying-saucer-core:9.1.22" :dir "/workspace/repl/libs")
+  (m/download "org.xhtmlrenderer:flying-saucer-pdf-openpdf:9.1.22" :dir "/workspace/repl/libs")
+  (m/download "com.github.librepdf:openpdf:1.3.26" :dir "/workspace/repl/libs")
+  (m/download "com.github.librepdf:pdf-toolbox:1.3.26" :dir "/workspace/repl/libs")
+  
+  ;; Restart the REPL to make the new libs available to the REPL Java VM
+  (repl/restart))
+```
+ 

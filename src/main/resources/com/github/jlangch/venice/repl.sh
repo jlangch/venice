@@ -39,7 +39,7 @@ while true; do
     -XX:-OmitStackTraceInFastThrow \
     -Djava.io.tmpdir=${REPL_HOME}/tmp \
     -Dvenice.repl.home=${REPL_HOME} \
-    -cp "libs:libs/*" \
+    -cp "libs:libs/*:fonts" \
     com.github.jlangch.venice.Launcher \
     -loadpath "" \
     -restartable \

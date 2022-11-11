@@ -32,6 +32,7 @@ import com.github.jlangch.venice.impl.env.Env;
 import com.github.jlangch.venice.impl.env.Var;
 import com.github.jlangch.venice.impl.types.Constants;
 import com.github.jlangch.venice.impl.types.VncFunction;
+import com.github.jlangch.venice.impl.types.VncJavaObject;
 import com.github.jlangch.venice.impl.types.VncKeyword;
 import com.github.jlangch.venice.impl.types.VncLong;
 import com.github.jlangch.venice.impl.types.VncString;
@@ -48,10 +49,11 @@ public class ReplFunctions {
             final Env env,
             final Terminal terminal,
             final ReplConfig config,
-            final boolean macroExpandOnLoad
+            final boolean macroExpandOnLoad,
+            final ReplDirs replDirs
     ) {
         Env e = env;
-        for(VncFunction fn : createFunctions(terminal, config, macroExpandOnLoad)) {
+        for(VncFunction fn : createFunctions(terminal, config, macroExpandOnLoad, replDirs)) {
             e = registerFn(e,fn);
         }
         return e;
@@ -65,7 +67,8 @@ public class ReplFunctions {
     private static List<VncFunction> createFunctions(
             final Terminal terminal,
             final ReplConfig config,
-            final boolean macroExpandOnLoad
+            final boolean macroExpandOnLoad,
+            final ReplDirs replDirs
     ) {
         final List<VncFunction> fns = new ArrayList<>();
 
@@ -73,6 +76,9 @@ public class ReplFunctions {
         fns.add(createReplRestartFn(terminal, config, macroExpandOnLoad));
         fns.add(createTermRowsFn(terminal));
         fns.add(createTermColsFn(terminal));
+        fns.add(createReplHomeDirFn(replDirs));
+        fns.add(createReplLibsDirFn(replDirs));
+        fns.add(createReplFontsDirFn(replDirs));
 
         return fns;
     }
@@ -205,6 +211,84 @@ public class ReplFunctions {
                     ArityExceptions.assertArity(this, args, 0);
 
                     return new VncLong(terminal.getSize().getColumns());
+                }
+
+                private static final long serialVersionUID = -1L;
+            };
+    }
+
+    private static VncFunction createReplHomeDirFn(final ReplDirs replDirs) {
+        return
+            new VncFunction(
+                    "repl/home-dir",
+                    VncFunction
+                        .meta()
+                        .arglists("(repl/home-dir)")
+                        .doc(
+                            "Returns the REPL home directory!")
+                        .seeAlso(
+                            "repl?", "repl/libs-dir", "repl/fonts-dir")
+                        .build()
+            ) {
+                @Override
+                public VncVal apply(final VncList args) {
+                    ArityExceptions.assertArity(this, args, 0);
+
+                    return replDirs.getHomeDir() == null
+                            ? Constants.Nil
+                            : new VncJavaObject(replDirs.getHomeDir());
+                }
+
+                private static final long serialVersionUID = -1L;
+            };
+    }
+
+    private static VncFunction createReplLibsDirFn(final ReplDirs replDirs) {
+        return
+            new VncFunction(
+                    "repl/libs-dir",
+                    VncFunction
+                        .meta()
+                        .arglists("(repl/libs-dir)")
+                        .doc(
+                            "Returns the REPL libs directory!")
+                        .seeAlso(
+                            "repl?", "repl/home-dir", "repl/fonts-dir")
+                        .build()
+            ) {
+                @Override
+                public VncVal apply(final VncList args) {
+                    ArityExceptions.assertArity(this, args, 0);
+
+                    return replDirs.getLibsDir() == null
+                            ? Constants.Nil
+                            : new VncJavaObject(replDirs.getLibsDir());
+                }
+
+                private static final long serialVersionUID = -1L;
+            };
+    }
+
+    private static VncFunction createReplFontsDirFn(final ReplDirs replDirs) {
+        return
+            new VncFunction(
+                    "repl/fonts-dir",
+                    VncFunction
+                        .meta()
+                        .arglists("(repl/fonts-dir)")
+                        .doc(
+                            "Returns the REPL fonts directory!")
+                        .seeAlso(
+                            "repl?", "repl/home-dir", "repl/libs-dir")
+                        .build()
+            ) {
+                @Override
+                public VncVal apply(final VncList args) {
+                    ArityExceptions.assertArity(this, args, 0);
+
+                    return replDirs.getFontsDir() == null
+                            ? Constants.Nil
+                            : new VncJavaObject(replDirs.getFontsDir());
                 }
 
                 private static final long serialVersionUID = -1L;

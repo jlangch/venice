@@ -89,10 +89,11 @@ import com.github.jlangch.venice.impl.docgen.cheatsheet.section.SystemVarSection
 import com.github.jlangch.venice.impl.docgen.cheatsheet.section.TimeSection;
 import com.github.jlangch.venice.impl.docgen.cheatsheet.section.TransducersSection;
 import com.github.jlangch.venice.impl.docgen.cheatsheet.section.TypesSection;
-import com.github.jlangch.venice.impl.docgen.util.ColorTheme;
 import com.github.jlangch.venice.impl.docgen.util.CodeHighlighter;
+import com.github.jlangch.venice.impl.docgen.util.ColorTheme;
 import com.github.jlangch.venice.impl.docgen.util.MarkdownDoc;
 import com.github.jlangch.venice.impl.env.Env;
+import com.github.jlangch.venice.impl.repl.ReplDirs;
 import com.github.jlangch.venice.impl.repl.ReplFunctions;
 import com.github.jlangch.venice.impl.util.StringUtil;
 import com.github.jlangch.venice.impl.util.io.ClassPathResource;
@@ -128,7 +129,7 @@ public class DocGenerator {
                                 null);
 
         // make REPL specific functions available (e.g: 'repl/info')
-        final Env env = ReplFunctions.register(docEnv, null, null, false);
+        final Env env = ReplFunctions.register(docEnv, null, null, false, ReplDirs.notavail());
 
         this.diBuilder = new DocItemBuilder(
                                 env,

@@ -170,6 +170,8 @@ public class REPL {
                 System.out.println("Type '!' for help.");
             }
 
+            replDirs = ReplDirs.create();
+
             repl(cli, macroexpand);
         }
         catch (Exception ex) {
@@ -1165,7 +1167,8 @@ public class REPL {
                     .setStderrPrintStream(err)
                     .setStdinReader(in);
 
-        return ReplFunctions.register(env, terminal, config, venice.isMacroExpandOnLoad());
+        return ReplFunctions.register(
+        			env, terminal, config, venice.isMacroExpandOnLoad(), replDirs);
     }
 
     private void reconfigureVenice(
@@ -1489,6 +1492,7 @@ public class REPL {
     private String secondaryPrompt;
     private String resultPrefix = "=> ";
     private ReplDebugClient debugClient = null;
+    private ReplDirs replDirs;
 
     private final ScriptExecuter scriptExec = new ScriptExecuter();
 }
