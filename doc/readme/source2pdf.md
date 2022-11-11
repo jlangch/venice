@@ -1,7 +1,7 @@
 # Source Code as PDF
 
 For documentation purposes Venice source code can be rendered 
-to HTML or PDF document. The rendering process is started from a
+to HTML or PDF documents. The rendering process is started from a
 REPL.
 
 
