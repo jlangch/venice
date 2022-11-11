@@ -36,6 +36,7 @@ import com.github.jlangch.venice.impl.docgen.util.CodeHighlighter;
 import com.github.jlangch.venice.impl.docgen.util.ColorTheme;
 import com.github.jlangch.venice.impl.util.StringUtil;
 import com.github.jlangch.venice.impl.util.io.ClassPathResource;
+import com.github.jlangch.venice.impl.util.kira.KiraTemplateEvaluator;
 import com.github.jlangch.venice.util.pdf.PdfRenderer;
 import com.lowagie.text.pdf.PdfReader;
 
@@ -90,26 +91,27 @@ public class SourceCodeRenderer {
             }
 
             new SourceCodeRenderer().renderSourceCode(
-                read(sourceFile),
-                sourceFile.getName(),
-                new File(dir, name + ".html"),
-                new File(dir, name + ".pdf"),
-                fontDir,
-                lineNumbering);
+                    read(sourceFile),
+                    sourceFile,
+                    new File(dir, name + ".html"),
+                    new File(dir, name + ".pdf"),
+                    fontDir,
+                    lineNumbering);
         }
         catch(Exception ex) {
-            ex.printStackTrace();
+            throw new RuntimeException("Failed to Venice source file as HTML/PDF", ex);
         }
     }
 
     public void renderSourceCode(
             final String source,
-            final String srcFileName,
+            final File srcFile,
             final File htmlFile,
             final File pdfFile,
             final File fontDir,
             final boolean lineNumbering
     ) throws Exception {
+        System.out.println("Processing Venice file:        " + srcFile.getAbsolutePath());
         System.out.println("Rendering HTML source code to: " + htmlFile.getAbsolutePath());
         System.out.println("Rendering PDF source code to:  " + pdfFile.getAbsolutePath());
         System.out.println("Using font dir:                " + fontDir.getAbsolutePath());
@@ -139,7 +141,7 @@ public class SourceCodeRenderer {
         final Map<String,Object> data = new HashMap<>();
         data.put("meta-author", "Venice");
         data.put("version", Venice.getVersion());
-        data.put("filename", srcFileName);
+        data.put("filename", srcFile.getName());
         data.put("code", codeHighlighted);
 
         // [1] create a HTML
@@ -162,14 +164,13 @@ public class SourceCodeRenderer {
         try {
             final String template = loadCheatSheetTemplate();
 
-            final String script = "(do                                           \n" +
-                                  "   (load-module :kira)                        \n" +
-                                  "   (kira/eval template [\"${\" \"}$\"] data))   ";
+            // Need to run the template evaluation in its own thread because
+            // it runs a Venice interpreter, that must not conflict with this
+            // Venice interpreter.
+            final KiraTemplateEvaluator evaluator = new KiraTemplateEvaluator();
+            final String xhtml = evaluator.runAsync(() -> evaluator.evaluateKiraTemplate(template, data));
 
-            // apply the template
-            return (String)new Venice().eval(
-                            script,
-                            Parameters.of("template", template, "data", data));
+            return xhtml;
         }
         catch(VncException ex) {
             throw new RuntimeException(

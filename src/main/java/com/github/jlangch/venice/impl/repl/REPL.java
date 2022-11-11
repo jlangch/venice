@@ -1033,6 +1033,7 @@ public class REPL {
             final String sourceFile = trimToEmpty(first(params));
             final String destDir = trimToEmpty(second(params));
             final String fontDir = trimToEmpty(third(params));
+
             SourceCodeRenderer.render(sourceFile, destDir, fontDir, true);
         }
         else {

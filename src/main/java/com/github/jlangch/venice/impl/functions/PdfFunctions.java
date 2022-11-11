@@ -31,13 +31,8 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.concurrent.Callable;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
 import java.util.stream.Collectors;
 
-import com.github.jlangch.venice.Parameters;
-import com.github.jlangch.venice.Venice;
 import com.github.jlangch.venice.VncException;
 import com.github.jlangch.venice.impl.types.VncBoolean;
 import com.github.jlangch.venice.impl.types.VncByteBuffer;
@@ -58,6 +53,7 @@ import com.github.jlangch.venice.impl.util.ArityExceptions;
 import com.github.jlangch.venice.impl.util.StringUtil;
 import com.github.jlangch.venice.impl.util.SymbolMapBuilder;
 import com.github.jlangch.venice.impl.util.io.ClassPathResource;
+import com.github.jlangch.venice.impl.util.kira.KiraTemplateEvaluator;
 import com.github.jlangch.venice.impl.util.reflect.ReflectionAccessor;
 import com.github.jlangch.venice.util.pdf.HtmlColor;
 import com.github.jlangch.venice.util.pdf.PdfRenderer;
@@ -519,7 +515,8 @@ public class PdfFunctions {
                     // Need to run the template evaluation in its own thread because
                     // it runs a Venice interpreter, that must not conflict with this
                     // Venice interpreter.
-                    final String xhtml = runAsync(() -> evaluateTemplate(template, data));
+                    final KiraTemplateEvaluator evaluator = new KiraTemplateEvaluator();
+                    final String xhtml = evaluator.runAsync(() -> evaluator.evaluateKiraTemplate(template, data));
 
                     return new VncByteBuffer(PdfRenderer.render(xhtml));
                 }
@@ -548,31 +545,6 @@ public class PdfFunctions {
     private static String loadText2PdfTemplate() {
         return new ClassPathResource("com/github/jlangch/venice/templates/text-2-pdf.kira")
                         .getResourceAsString();
-    }
-
-    private static String evaluateTemplate(
-            final String template,
-            final Map<String,Object> data
-    ) {
-        final String script =
-                "(do                                           \n" +
-                "   (load-module :kira)                        \n" +
-                "   (kira/eval template [\"${\" \"}$\"] data))   ";
-
-        return (String)new Venice().eval(
-                            script,
-                            Parameters.of("template", template, "data", data));
-    }
-
-    private static <T> T runAsync(final Callable<T> callable) throws Exception {
-        final ExecutorService executor = Executors.newSingleThreadExecutor();
-        try {
-            return executor.submit(callable)
-                           .get();
-        }
-        finally {
-            executor.shutdownNow();
-        }
     }
 
     private static List<String> splitIntoPages(final String text) {
