@@ -105,7 +105,7 @@
         glob   (:glob family)
         prefix (:prefix family)
         url    (str fonts-familiy-url name)]
-    (println (str "Downloading font family '" family "'..."))
+    (println (str "Downloading font family '" name "'..."))
     (try
       (->> (io/download url :binary true :user-agent "Mozilla")
            (io/unzip-all glob)
