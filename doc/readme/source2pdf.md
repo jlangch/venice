@@ -7,7 +7,7 @@ REPL.
 
 ### Example
 
-Open a REPL and use the command `!source-pdf` the three arguments:
+Open a REPL and use the command `!source-pdf` with three arguments:
 
  1. the path to the Venice source file (e.g.: /Users/foo/scripts/sudoku.venice)
  2. the destination dir for the PDF (e.g.: /Users/foo/scripts/)
