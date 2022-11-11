@@ -26,9 +26,10 @@ if [ ! -d ${REPL_HOME} ]; then
   exit 1
 fi
 
-if [ ! -d ${REPL_HOME}/tmp ]; then
-  mkdir ${REPL_HOME}/tmp
-fi
+[ ! -d ${REPL_HOME}/tmp ] && mkdir ${REPL_HOME}/tmp
+[ ! -d ${REPL_HOME}/fonts ] && mkdir ${REPL_HOME}/fonts
+[ ! -d ${REPL_HOME}/scripts ] && mkdir ${REPL_HOME}/scripts
+
 
 cd $REPL_HOME
 

@@ -26,6 +26,8 @@ if not exist %REPL_HOME% (
 )
 
 if not exist %REPL_HOME%\tmp mkdir %REPL_HOME%\tmp
+if not exist %REPL_HOME%\fonts mkdir %REPL_HOME%\fonts
+if not exist %REPL_HOME%\scripts mkdir %REPL_HOME%\scripts
 
 cd %REPL_HOME%
 
