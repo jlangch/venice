@@ -85,6 +85,7 @@ Cheat Sheet: [HTML](https://htmlpreview.github.io/?https://cdn.rawgit.com/jlangc
 * [PDF](doc/readme/pdf.md)
 * [Shell Scripts](doc/readme/shell-scripts.md)
 * [Extension modules](doc/readme/extension-modules.md)
+* [Source Code as PDF](source2pdf.md)
 * [Tree walker](doc/readme/walk.md)
 * [Benchmarks](doc/readme/benchmarks.md)
 * [Multi-File Apps](doc/readme/multi-file-app.md)
