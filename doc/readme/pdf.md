@@ -12,6 +12,24 @@ Flying Saucer is a pure-Java library for rendering XHTML using CSS 2.1 for layou
 
 Flying Saucer documentation is available in the user guide, linked from their website at [Flying Saucer](https://code.google.com/archive/p/flying-saucer/)
 
+Run this script from the REPL to download the PDF libraries:
+
+```clojure
+(do
+  (load-module :maven ['maven :as 'm])
+  
+  ;; Download the PDF libs from Maven
+  (println "Downloading PDF libs...")
+  (m/download "org.xhtmlrenderer:flying-saucer-core:9.1.22" :dir (repl/libs-dir))
+  (m/download "org.xhtmlrenderer:flying-saucer-pdf-openpdf:9.1.22" :dir (repl/libs-dir))
+  (m/download "com.github.librepdf:openpdf:1.3.26" :dir (repl/libs-dir))
+  (m/download "com.github.librepdf:pdf-toolbox:1.3.26" :dir (repl/libs-dir))
+
+  ;; Restart the REPL to make the new libs available to the REPL Java VM
+  (println "Restarting...")
+  (repl/restart))
+```
+
 
 ## PDF Generation
 
@@ -35,7 +53,6 @@ References:
 * [Merge PDFs](#merge-pdfs)
 * [Copy PDF](#copy-pdf)
 * [Kira Template Engine](ext-kira.md)
-* [Download Libraries](#download-required-3rd-party-libs)
 
 
 
@@ -1143,17 +1160,3 @@ Copy pages from a PDF to a new PDF
 [Generated PDF](https://github.com/jlangch/venice/blob/master/doc/pdfs/copy-example.pdf)
 
 [top](#pdf-generation)
-
-
-
-## Download required 3rd party libs
-
-```clojure
-(do
-  (load-module :maven)
-  
-  (maven/download "org.xhtmlrenderer:flying-saucer-core:9.1.20")
-  (maven/download "org.xhtmlrenderer:flying-saucer-pdf-openpdf:9.1.20")
-  (maven/download "com.github.librepdf:openpdf:1.3.22")
-  (maven/download "com.github.librepdf:pdf-toolbox:1.3.22"))
-```
