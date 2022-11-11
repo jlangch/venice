@@ -16,7 +16,7 @@ venice> !source-pdf /Users/foo/scripts/sudoku.venice /Users/foo/scripts/ /Users/
 
 [Sudoku PDF](https://github.com/jlangch/venice/blob/master/doc/assets/source-to-pdf/sudoku.venice.pdf)
 
-[Sudoku HTML](https://github.com/jlangch/venice/blob/master/doc/assets/source-to-pdf/sudoku.venice.html)
+[Sudoku HTML](https://htmlpreview.github.io/?https://github.com/jlangch/venice/blob/master/doc/assets/source-to-pdf/sudoku.venice.html)
 
 
 ### Prerequisites
