@@ -42,28 +42,19 @@
                 "com.github.librepdf:openpdf:1.3.28",
                 "com.github.librepdf:pdf-toolbox:1.3.28" ])
 
-(def fonts-base-url "https://github.com/")
+(def fonts-familiy-url "https://fonts.google.com/download?family=")
 
-(def fonts-min [])
+(def font-families-min [])
 
-(def fonts-ext [ "googlefonts/opensans/tree/main/fonts/ttf/OpenSans-Regular.ttf"
-                 "googlefonts/opensans/tree/main/fonts/ttf/OpenSans-Italic.ttf"
-                 "googlefonts/opensans/tree/main/fonts/ttf/OpenSans-Light.ttf"
-                 "googlefonts/opensans/tree/main/fonts/ttf/OpenSans-Bold.ttf"
-                 "google/fonts/tree/main/ofl/sourcecodepro/SourceCodePro[wght].ttf"
-                 "google/fonts/tree/main/ofl/audiowide/Audiowide-Regular.ttf"
-                 "google/fonts/tree/main/apache/roboto/static/Roboto-Black.ttf"
-                 "google/fonts/tree/main/apache/roboto/static/Roboto-BlackItalic.ttf"
-                 "google/fonts/tree/main/apache/roboto/static/Roboto-Bold.ttf"
-                 "google/fonts/tree/main/apache/roboto/static/Roboto-BoldItalic.ttf"
-                 "google/fonts/tree/main/apache/roboto/static/Roboto-Italic.ttf"
-                 "google/fonts/tree/main/apache/roboto/static/Roboto-Light.ttf"
-                 "google/fonts/tree/main/apache/roboto/static/Roboto-LightItalic.ttf"
-                 "google/fonts/tree/main/apache/roboto/static/Roboto-Medium.ttf"
-                 "google/fonts/tree/main/apache/roboto/static/Roboto-MediumItalic.ttf"
-                 "google/fonts/tree/main/apache/roboto/static/Roboto-Regular.ttf"
-                 "google/fonts/tree/main/apache/roboto/static/Roboto-Thin.ttf"
-                 "google/fonts/tree/main/apache/roboto/static/Roboto-ThinItalic.ttf" ])
+(def font-families-ext [
+               {:name "Open%20Sans"
+                :glob "static/OpenSans/*.ttf" :prefix "static/OpenSans/" }
+               {:name "Source%20Code%20Pro"
+                :glob "static/*.ttf" :prefix "static/" }
+               {:name "Audiowide"
+                :glob "*.ttf" :prefix "" }
+               {:name "Roboto"
+                :glob "*.ttf" :prefix "" } ] )
 
 (def scripts [ "chart.venice"
                "chart-swing.venice"
@@ -109,42 +100,26 @@
          (println *err* "Internet is not available!")))))
 
 
-(defn- missing-fonts [dir fonts]
-  (->> fonts
-       (map (fn [f] [f (io/file-name f)]))
-       (filter #(not (io/exists-file? (io/file dir (second %)))))
-       (map first)))
-
-
-(defn- download-font [uri dir font-name show-progress]
-  (let [target (io/file dir font-name)
-        progress-fn (if show-progress
-                      (ansi/progress-bar
-                              :caption     (str "   " font-name " ")
-                              :start-msg   "   "
-                              :end-msg     (str "   " font-name " ok")
-                              :failed-msg  (str "   " font-name " failed"))
-                      nil)]
+(defn download-font-family [dir family]
+  (let [name   (:name family)
+        glob   (:glob family)
+        prefix (:prefix family)
+        url    (str fonts-familiy-url name)]
+    (println (str "Downloading font family '" family "'..."))
     (try
-      (io/spit target (io/download uri
-                          :binary true
-                          :user-agent "Mozilla"
-                          :progress-fn progress-fn))
+      (->> (io/download url :binary true :user-agent "Mozilla")
+           (io/unzip-all glob)
+           (map-keys #(str/strip-start % prefix))
+           (docoll (fn [[k v]] (io/spit (io/file dir k) v))))
       (catch :VncException ex
              (println *err* (ex-venice-stacktrace ex))))))
 
 
-(defn download-fonts [dir fonts show-progress]
-  (let [required-fonts (repl-setup/missing-fonts dir fonts)]
-    (when-not (empty? required-fonts)
-      (println (str "Downloading fonts from '" fonts-base-url "'..."))
-      (if (io/internet-avail?)
-          (docoll #(repl-setup/download-font (str fonts-base-url %)
-                                             dir
-                                             (io/file-name %)
-                                             show-progress)
-                  required-fonts)
-          (println *err* "Internet is not available!")))))
+(defn download-font-families [dir families]
+  (println (str "Downloading font families..."))
+  (if (io/internet-avail?)
+      (docoll #(download-font-family dir %) families)
+      (println *err* "Internet is not available!")))
 
 
 (defn setup-scripts [dir]
@@ -282,7 +257,7 @@
         color-mode    (:color-mode options :none)      ;; {:none :light :dark}
         show-progress (:ansi-terminal options false)   ;; {true false}
         libs          (if (= setup-mode :extended) libs-ext libs-min)
-        fonts         (if (= setup-mode :extended) fonts-ext fonts-min)
+        font-families (if (= setup-mode :extended) font-families-ext font-families-min)
         charset       (name (charset-default-encoding))]
     (when-not (io/exists-dir? "./libs")
       (io/mkdirs "./libs"))
@@ -296,7 +271,7 @@
     (when-not (io/exists-dir? "./scripts/webapp")
       (io/mkdirs "./scripts/webapp"))
 
-    (when-not (empty? fonts)
+    (when-not (empty? font-families)
       (when-not (io/exists-dir? "./fonts")
         (io/mkdirs "./fonts")))
 
@@ -313,7 +288,7 @@
 
     (repl-setup/copy-venice-jar "libs")
     (repl-setup/download-libs "libs" libs show-progress)
-    (repl-setup/download-fonts "fonts" fonts show-progress)
+    (repl-setup/download-font-families "fonts" font-families)
     (repl-setup/setup-repl-config "libs" )
     (repl-setup/setup-repl-launcher color-mode)
     (repl-setup/setup-scripts "scripts")

@@ -22,8 +22,8 @@ Run this script from the REPL to download the PDF libraries:
   (println "Downloading PDF libs...")
   (m/download "org.xhtmlrenderer:flying-saucer-core:9.1.22" :dir (repl/libs-dir))
   (m/download "org.xhtmlrenderer:flying-saucer-pdf-openpdf:9.1.22" :dir (repl/libs-dir))
-  (m/download "com.github.librepdf:openpdf:1.3.26" :dir (repl/libs-dir))
-  (m/download "com.github.librepdf:pdf-toolbox:1.3.26" :dir (repl/libs-dir))
+  (m/download "com.github.librepdf:openpdf:1.3.30" :dir (repl/libs-dir))
+  (m/download "com.github.librepdf:pdf-toolbox:1.3.30" :dir (repl/libs-dir))
 
   ;; Restart the REPL to make the new libs available to the REPL Java VM
   (println "Restarting...")
