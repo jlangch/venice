@@ -14,7 +14,7 @@ To create a HTML and PDF representation from the 'sudoku.venice' script run:
 venice> !source-pdf /Users/foo/scripts/sudoku.venice /Users/foo/scripts/ /Users/foo/fonts
 ```
 
-[Sudoku PDF](https://github.com/jlangch/venice/blob/master/doc/assets/source-to-pdf/sudoku.venice.pdf)
+[Sudoku PDF](https://htmlpreview.github.io/?https://github.com/jlangch/venice/blob/master/doc/assets/source-to-pdf/sudoku.venice.pdf)
 
 [Sudoku HTML](https://htmlpreview.github.io/?https://github.com/jlangch/venice/blob/master/doc/assets/source-to-pdf/sudoku.venice.html)
 
