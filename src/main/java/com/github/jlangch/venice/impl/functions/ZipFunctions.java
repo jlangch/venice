@@ -566,6 +566,7 @@ public class ZipFunctions {
                         "f may be a bytebuf, a file, a string (file path) or an InputStream.\n\n" +
                         "An optional globbing pattern can be passed to filter the files to be " +
                         "unzipped.\n\n" +
+                        "Note: globbing patterns with unzip are always relative. E.g. `static/**/*.png` \n\n" +
                         "Globbing patterns: \n\n" +
                         "| [![width: 20%]] | [![width: 80%]] |\n" +
                         "| `*.txt`       | Matches a path that represents a file name ending in .txt |\n" +
@@ -580,10 +581,10 @@ public class ZipFunctions {
                         "            \"b.txt\" (bytebuf-from-string \"def\" :utf-8)  \n" +
                         "            \"c.txt\" (bytebuf-from-string \"ghi\" :utf-8)) \n" +
                         "    (io/unzip-all))",
-                        "(->> (io/zip \"a.txt\" (bytebuf-from-string \"abc\" :utf-8)  \n" +
-                        "             \"b.txt\" (bytebuf-from-string \"def\" :utf-8)  \n" +
-                        "             \"c.log\" (bytebuf-from-string \"ghi\" :utf-8)) \n" +
-                        "     (io/unzip-all \"*.txt\"))")
+                        "(->> (io/zip \"foo/a.txt\" (bytebuf-from-string \"abc\" :utf-8)  \n" +
+                        "             \"bar/b.txt\" (bytebuf-from-string \"def\" :utf-8)  \n" +
+                        "             \"bar/c.log\" (bytebuf-from-string \"ghi\" :utf-8)) \n" +
+                        "     (io/unzip-all \"bar/*.txt\"))")
                     .seeAlso("io/unzip-to-dir", "io/unzip-nth", "io/unzip-first", "io/zip", "io/zip?")
                     .build()
         ) {
@@ -969,7 +970,7 @@ public class ZipFunctions {
                     .meta()
                     .arglists("(io/unzip-to-dir f dir)")
                     .doc(
-                        "Unzips f to a directory. f may be a file, a string (file path), " +
+                        "Unzips the zip f to a directory. f may be a file, a string (file path), " +
                         "a bytebuf, or an InputStream.")
                     .examples(
                         "(-> (io/zip \"a.txt\" (bytebuf-from-string \"abc\" :utf-8)  \n" +

@@ -117,17 +117,18 @@ Run this script from the REPL:
   (load-module :maven ['maven :as 'm])
   
   ;; Download the Tomcat libs from Maven
-  (m/download "org.apache.tomcat.embed:tomcat-embed-core:10.1.1" :dir "/workspace/repl/libs")
-  (m/download "jakarta.annotation:jakarta.annotation-api:2.1.1" :dir "/workspace/repl/libs")
+  (m/download "org.apache.tomcat.embed:tomcat-embed-core:10.1.1" :dir (repl/libs-dir))
+  (m/download "jakarta.annotation:jakarta.annotation-api:2.1.1" :dir (repl/libs-dir))
   
   ;; Create the Tomcat base directory
-  (io/mkdir "/workspace/repl/tomcat")
+  (def tomcat-base-dir (io/file (repl/home-dir) "tomcat"))
+  (io/mkdir tomcat-base-dir)
   
   ;; Restart the REPL to make the new libs available to the REPL Java VM
   (repl/restart))
 ```
 
-*Note: The Tomcat base directory "/workspace/repl/tomcat" will also be used when starting the Tomcat server!*
+*Note: The Tomcat base directory will also be used when starting the Tomcat server!*
 
 The changed classpath (after the REPL restart) can be checked with
 
@@ -149,8 +150,10 @@ Run this script from the REPL:
 ```clojure
 (do
   (load-module :tomcat ['tomcat :as 'tc])
+
+  (def tomcat-base-dir (io/file-path (io/file (repl/home-dir) "tomcat")))
   
-  (def tomcat-opts {:await? false, :base-dir "/workspace/repl/tomcat", :port 8080})
+  (def tomcat-opts {:await? false, :base-dir tomcat-base-dir", :port 8080})
 
   (defn my-servlet []
     (tc/create-servlet {:doGet (fn [req res _] (tc/send-ok res "Hello World"))}))

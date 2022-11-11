@@ -48,12 +48,30 @@ Run this script from the REPL to download the fonts and PDF libraries:
   (load-module :maven ['maven :as 'm])
   
   ;; Download the PDF libs from Maven
-  (m/download "org.xhtmlrenderer:flying-saucer-core:9.1.22" :dir "/workspace/repl/libs")
-  (m/download "org.xhtmlrenderer:flying-saucer-pdf-openpdf:9.1.22" :dir "/workspace/repl/libs")
-  (m/download "com.github.librepdf:openpdf:1.3.26" :dir "/workspace/repl/libs")
-  (m/download "com.github.librepdf:pdf-toolbox:1.3.26" :dir "/workspace/repl/libs")
-  
+  (println "Downloading PDF libs...")
+  (m/download "org.xhtmlrenderer:flying-saucer-core:9.1.22" :dir (repl/libs-dir))
+  (m/download "org.xhtmlrenderer:flying-saucer-pdf-openpdf:9.1.22" :dir (repl/libs-dir))
+  (m/download "com.github.librepdf:openpdf:1.3.26" :dir (repl/libs-dir))
+  (m/download "com.github.librepdf:pdf-toolbox:1.3.26" :dir (repl/libs-dir))
+
+  ;; Download and unzip the OpenSans font familiy
+  (println "Downloading OpenSans font familiy...")
+  (-<> "https://fonts.google.com/download?family=Open%20Sans"
+       (io/download <> :binary true :user-agent "Mozilla")
+       (io/unzip-all "static/OpenSans/*.ttf" <>)
+       (map-keys #(str/strip-start % "static/OpenSans/") <>)
+       (docoll (fn [[k v]] (io/spit (io/file (repl/fonts-dir) k) v)) <>))
+
+  ;; Download and unzip the SourceCodePro font familiy
+  (println "Downloading SourceCodePro font familiy...")
+  (-<> "https://fonts.google.com/download?family=Source%20Code%20Pro"
+       (io/download <> :binary true :user-agent "Mozilla")
+       (io/unzip-all "static/*.ttf" <>)
+       (map-keys #(str/strip-start % "static/") <>)
+       (docoll (fn [[k v]] (io/spit (io/file (repl/fonts-dir) k) v)) <>))
+
   ;; Restart the REPL to make the new libs available to the REPL Java VM
+  (println "Restarting...")
   (repl/restart))
 ```
  
