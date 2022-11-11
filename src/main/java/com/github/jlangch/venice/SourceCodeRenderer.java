@@ -27,6 +27,7 @@ import java.nio.ByteBuffer;
 import java.nio.charset.Charset;
 import java.nio.file.Files;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.concurrent.atomic.AtomicLong;
 import java.util.stream.Collectors;
@@ -113,18 +114,24 @@ public class SourceCodeRenderer {
         System.out.println("Rendering PDF source code to:  " + pdfFile.getAbsolutePath());
         System.out.println("Using font dir:                " + fontDir.getAbsolutePath());
 
-        String codeHighlighted = codeHighlighter.highlight(source);
+        String wrapped = "(do\n" + source + "\n)";
+
+        String codeHighlighted = codeHighlighter.highlight(wrapped);
+
+        List<String> lines = StringUtil.splitIntoLines(codeHighlighted);
+        lines = lines.subList(1, lines.size()-1); // unwrap
 
         if (lineNumbering) {
             final AtomicLong line = new AtomicLong(1);
-           codeHighlighted = StringUtil.splitIntoLines(codeHighlighted)
-                                       .stream()
-                                       .map(s -> String.format(
-                                                    "<span style=\"color: #808080\">%04d   </span>%s",
-                                                    line.getAndIncrement(),
-                                                    s))
-                                       .collect(Collectors.joining("\n"));
+            lines = lines.stream()
+                         .map(s -> String.format(
+                                        "<span style=\"color: #808080\">%04d   </span>%s",
+                                        line.getAndIncrement(),
+                                        s))
+                         .collect(Collectors.toList());
         }
+
+        codeHighlighted = String.join("\n", lines);
 
         // final String baseURL = "classpath:/fonts/";
         final String baseURL = fontDir.toURI().toURL().toString();
