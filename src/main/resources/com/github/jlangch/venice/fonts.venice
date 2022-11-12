@@ -1,0 +1,86 @@
+;;;;   __    __         _
+;;;;   \ \  / /__ _ __ (_) ___ ___
+;;;;    \ \/ / _ \ '_ \| |/ __/ _ \
+;;;;     \  /  __/ | | | | (_|  __/
+;;;;      \/ \___|_| |_|_|\___\___|
+;;;;
+;;;;
+;;;; Copyright 2017-2022 Venice
+;;;;
+;;;; Licensed under the Apache License, Version 2.0 (the "License");
+;;;; you may not use this file except in compliance with the License.
+;;;; You may obtain a copy of the License at
+;;;;
+;;;;     http://www.apache.org/licenses/LICENSE-2.0
+;;;;
+;;;; Unless required by applicable law or agreed to in writing, software
+;;;; distributed under the License is distributed on an "AS IS" BASIS,
+;;;; WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+;;;; See the License for the specific language governing permissions and
+;;;; limitations under the License.
+
+;;;; Fonts management
+
+
+(ns fonts)
+
+(def fonts-familiy-url "https://fonts.google.com/download?family=")
+
+(def families { "OpenSans"       { :name "OpenSans"
+                                   :google-name-enc "Open%20Sans"
+                                   :glob "static/OpenSans/*.ttf"
+                                   :prefix "static/OpenSans/"}
+
+                "SourceCodePro"  { :name "SourceCodePro"
+                                   :google-name-enc "Source%20Code%20Pro"
+                                   :glob "static/*.ttf"
+                                   :prefix "static/" }
+
+                "Audiowide"      { :name "Audiowide"
+                                   :google-name-enc "Audiowide"
+                                   :glob "*.ttf"
+                                   :prefix "" }
+
+                "Roboto"         { :name "Roboto"
+                                   :google-name-enc "Roboto"
+                                   :glob "*.ttf"
+                                   :prefix "" } } )
+
+
+(defn download-font-family [family-name dir extract?]
+  (let [family   (get families family-name)
+        name     (:name family)
+        name-enc (:google-name-enc family)
+        glob     (:glob family)
+        prefix   (:prefix family)
+        url      (str fonts-familiy-url name-enc)]
+
+    (when-not family
+      (throw (ex :VncException
+                 """
+                 The font ~{family-name} is not defined! Use one of \
+                 ~(pr-str (sort (keys families))).
+                 """)))
+
+    (if extract?
+      (try
+        (->> (io/download url :binary true :user-agent "Mozilla")
+             (io/unzip-all glob)
+             (map-keys #(str/strip-start % prefix))
+             (map-keys #(io/file dir %))
+             (docoll (fn [[k v]] (io/spit k v))))
+        (catch :VncException e
+          (throw (ex :VncException
+                     """
+                     Failed to download and extract the font famliy \
+                     ~{family-name}!
+                     """
+                     e))))
+      (try
+        (let [file (io/file dir (str name ".zip"))]
+          (->> (io/download url :binary true :user-agent "Mozilla")
+               (io/spit file)))
+        (catch :VncException e
+          (throw (ex :VncException
+                     "Failed to download the font familiy ~{family-name} zip!"
+                     e)))))))

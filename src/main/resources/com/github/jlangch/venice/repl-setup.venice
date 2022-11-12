@@ -25,6 +25,7 @@
 (ns repl-setup)
 
 (load-module :maven)
+(load-module :fonts)
 (load-module :ansi)
 
 
@@ -42,19 +43,9 @@
                 "com.github.librepdf:openpdf:1.3.28",
                 "com.github.librepdf:pdf-toolbox:1.3.28" ])
 
-(def fonts-familiy-url "https://fonts.google.com/download?family=")
-
 (def font-families-min [])
 
-(def font-families-ext [
-               {:name "Open%20Sans"
-                :glob "static/OpenSans/*.ttf" :prefix "static/OpenSans/" }
-               {:name "Source%20Code%20Pro"
-                :glob "static/*.ttf" :prefix "static/" }
-               {:name "Audiowide"
-                :glob "*.ttf" :prefix "" }
-               {:name "Roboto"
-                :glob "*.ttf" :prefix "" } ] )
+(def font-families-ext [ "OpenSans" "SourceCodePro" ]) ;; see fonts module
 
 (def scripts [ "chart.venice"
                "chart-swing.venice"
@@ -100,25 +91,17 @@
          (println *err* "Internet is not available!")))))
 
 
-(defn download-font-family [dir family]
-  (let [name   (:name family)
-        glob   (:glob family)
-        prefix (:prefix family)
-        url    (str fonts-familiy-url name)]
-    (println (str "Downloading font family '" name "'..."))
-    (try
-      (->> (io/download url :binary true :user-agent "Mozilla")
-           (io/unzip-all glob)
-           (map-keys #(str/strip-start % prefix))
-           (docoll (fn [[k v]] (io/spit (io/file dir k) v))))
-      (catch :VncException ex
-             (println *err* (ex-venice-stacktrace ex))))))
+(defn download-fonts [dir family]
+  (try
+    (fonts/download-font-family family dir true)
+    (catch :VncException ex
+           (println *err* (ex-venice-stacktrace ex)))))
 
 
 (defn download-font-families [dir families]
   (println (str "Downloading font families..."))
   (if (io/internet-avail?)
-      (docoll #(download-font-family dir %) families)
+      (docoll #(download-fonts dir %) families)
       (println *err* "Internet is not available!")))
 
 

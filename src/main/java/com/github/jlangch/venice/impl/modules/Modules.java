@@ -57,6 +57,7 @@ public class Modules {
                         "excel",
                         "esr",
                         "fam",
+                        "fonts",
                         "geoip",
                         "gradle",
                         "grep",

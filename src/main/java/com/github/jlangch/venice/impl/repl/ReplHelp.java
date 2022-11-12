@@ -63,8 +63,7 @@ public class ReplHelp {
             "                 !java-ex\n" +
             "                 !java-ex {on/off}\n" +
             "  !source-pdf  render Venice source code to PDF\n" +
-            "                 !source-pdf {source-file} {dest-dir} {fonts-dir}\n" +
-            "                 !source-pdf ./foo/example.venice ./foo ./fonts\n" +
+            "                 !source-pdf {source-file} {dest-dir}\n" +
             "  !app         run an app archive:  !app test\n" +
             "  !manifest    print the app archive manifest:  !manifest test\n" +
             "  !hist clear  clear the history\n" +

@@ -46,6 +46,7 @@ Run this script from the REPL to download the fonts and PDF libraries:
 ```clojure
 (do
   (load-module :maven ['maven :as 'm])
+  (load-module :fonts ['fonts :as 'f])
   
   ;; Download the PDF libs from Maven
   (println "Downloading PDF libs...")
@@ -54,21 +55,13 @@ Run this script from the REPL to download the fonts and PDF libraries:
   (m/download "com.github.librepdf:openpdf:1.3.30" :dir (repl/libs-dir))
   (m/download "com.github.librepdf:pdf-toolbox:1.3.30" :dir (repl/libs-dir))
 
-  ;; Download and unzip the OpenSans font familiy
+  ;; Download and unzip the OpenSans font family
   (println "Downloading OpenSans font familiy...")
-  (-<> "https://fonts.google.com/download?family=Open%20Sans"
-       (io/download <> :binary true :user-agent "Mozilla")
-       (io/unzip-all "static/OpenSans/*.ttf" <>)
-       (map-keys #(str/strip-start % "static/OpenSans/") <>)
-       (docoll (fn [[k v]] (io/spit (io/file (repl/fonts-dir) k) v)) <>))
+  (fonts/download-font-family "OpenSans" (repl/fonts-dir) true)
 
-  ;; Download and unzip the SourceCodePro font familiy
+  ;; Download and unzip the SourceCodePro font family
   (println "Downloading SourceCodePro font familiy...")
-  (-<> "https://fonts.google.com/download?family=Source%20Code%20Pro"
-       (io/download <> :binary true :user-agent "Mozilla")
-       (io/unzip-all "static/*.ttf" <>)
-       (map-keys #(str/strip-start % "static/") <>)
-       (docoll (fn [[k v]] (io/spit (io/file (repl/fonts-dir) k) v)) <>))
+  (fonts/download-font-family "SourceCodePro" (repl/fonts-dir) true)
 
   ;; Restart the REPL to make the new libs available to the REPL Java VM
   (println "Restarting...")
