@@ -11,13 +11,14 @@ Open a REPL and use the command `!source-pdf` with three arguments:
 
  1. the path to the Venice source file (e.g.: /Users/foo/scripts/sudoku.venice)
  2. the destination dir for the PDF (e.g.: /Users/foo/scripts/)
- 3. the dir to the fonts (e.g.: /Users/foo/fonts)
 
 To create a HTML and PDF representation from the 'sudoku.venice' script run:
 
 ```clojure
-venice> !source-pdf /Users/foo/scripts/sudoku.venice /Users/foo/scripts/ /Users/foo/fonts
+venice> !source-pdf /Users/foo/scripts/sudoku.venice /Users/foo/scripts
 ```
+
+Output Examples:
 
 [Sudoku PDF](https://raw.githubusercontent.com/jlangch/venice/master/doc/assets/source-to-pdf/sudoku.venice.pdf)
 
@@ -26,10 +27,10 @@ venice> !source-pdf /Users/foo/scripts/sudoku.venice /Users/foo/scripts/ /Users/
 
 ### Prerequisites
 
-The PDF renderer requires two specific fonts in the passed font directory '/Users/foo/fonts':
+The PDF renderer requires two specific fonts in the REPL's font directory:
 
- - [OpenSans-Regular.ttf](https://fonts.google.com/specimen/Open+Sans)
- - [SourceCodePro-Regular.ttf](https://fonts.google.com/specimen/Source+Sans+Pro)
+ - OpenSans-Regular.ttf
+ - SourceCodePro-Regular.ttf
  
 
 Venice supports generating PDF files if the [Flying Saucer](https://github.com/flyingsaucerproject/flyingsaucer) 
@@ -37,8 +38,8 @@ libs are on the runtime classpath:
 
  - org.xhtmlrenderer:flying-saucer-core:9.1.22
  - org.xhtmlrenderer:flying-saucer-pdf-openpdf:9.1.22
- - com.github.librepdf:openpdf:1.3.26
- - com.github.librepdf:pdf-toolbox:1.3.26
+ - com.github.librepdf:openpdf:1.3.30
+ - com.github.librepdf:pdf-toolbox:1.3.30
  
  
 Run this script from the REPL to download the fonts and PDF libraries:
