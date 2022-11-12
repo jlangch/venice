@@ -34,15 +34,13 @@ public class ModuleExcelSection implements ISectionBuilder {
 
     @Override
     public DocSection section() {
-        final String footer = "Required 3rd party libraries:\n\n" +
-                              "* org.apache.poi:poi:4.1.2\n" +
-                              "* org.apache.poi:ooxml:4.1.2\n" +
-                              "* org.apache.poi:ooxml-schemas:4.1.2\n" +
-                              "* commons-codec:commons-codec:1.15\n" +
-                              "* org.apache.commons:commons-collections:4.4.4\n" +
-                              "* org.apache.commons:commons-compress:1.20\n" +
-                              "* org.apache.commons:commons-math3:3.6.1\n" +
-                              "* org.apache.xmlbeans:xmlbeans:3.1.0\n";
+        final String footer = "Install the required *Apache POI 5.x* libraries:\n\n" +
+        		              "```                                        \n" +
+           		              "(do                                        \n" +
+           		              "  (load-module :excel ['excel :as 'e])     \n" +
+           		              "  (e/download-libs-5x :dir (repl/libs-dir) \n" +
+           		              "                      :silent false))      \n" +
+                              "```\n";
 
         final DocSection section = new DocSection("Excel", "Read/Write Excel files", "modules.excel", null, footer);
 
