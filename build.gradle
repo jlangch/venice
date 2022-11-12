@@ -560,6 +560,15 @@ task updateReleaseVersion {
             fileset(dir: 'doc/readme', includes: 'start.md')
         }
 
+        println "Updating version ${project.version} -> 'Launcher.java'"
+        ant.replaceregexp(
+                match:   "venice-${version_regex}[.]jar",
+                replace: "venice-${project.version}.jar",
+                flags:   'g'
+        ) {
+            fileset(dir: 'src/main/java', includes: 'com/github/jlangch/venice/Launcher.java')
+        }
+
         println "Updating version ${project.version} -> 'repl.sh', 'repl.bat'"
         ant.replaceregexp(
                 match:   "venice-${version_regex}[.]jar",
