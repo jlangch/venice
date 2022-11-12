@@ -167,7 +167,7 @@ plugins {
 
 
 ext {
-    commonsIo_Version = '2.6'
+    commonsIo_Version = '2.11.0'
     docx4j_Version_Java8 = '8.3.4'
     docx4j_Version_Java11 = '11.4.5'
     docxStamper_Version = '1.4.0'
@@ -178,7 +178,7 @@ ext {
     jline_Version = '3.21.0'
     jupiter_Version = '5.8.2'
     openpdf_Version = '1.3.28'
-    poi_Version = '4.1.2'
+    poi_Version = '5.2.3' // '4.1.2'
     servletApi_Version = '5.0.0'
     springExpression_Version = '5.2.0.RELEASE'
     vavr_Version = '0.10.4'
@@ -732,7 +732,7 @@ dependencies {
     // MS Excel support
     compileOnly "org.apache.poi:poi:${poi_Version}"
     compileOnly "org.apache.poi:poi-ooxml:${poi_Version}"
-    compileOnly "org.apache.poi:poi-ooxml-schemas:${poi_Version}"
+    // compileOnly "org.apache.poi:poi-ooxml-schemas:${poi_Version}" // only for POI 4.x
 
     // MS Word support
     compileOnly "org.wickedsource.docx-stamper:docx-stamper:${docxStamper_Version}"
