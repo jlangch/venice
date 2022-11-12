@@ -7,15 +7,12 @@ REPL.
 
 ### Example
 
-Open a REPL and use the command `!source-pdf` with three arguments:
-
- 1. the path to the Venice source file (e.g.: /Users/foo/scripts/sudoku.venice)
- 2. the destination dir for the PDF (e.g.: /Users/foo/scripts/)
+Open a REPL and use the command `!source-pdf`:
 
 To create a HTML and PDF representation from the 'sudoku.venice' script run:
 
 ```clojure
-venice> !source-pdf /Users/foo/scripts/sudoku.venice /Users/foo/scripts
+venice> !source-pdf ./sudoku.venice
 ```
 
 Output Examples:

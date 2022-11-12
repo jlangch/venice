@@ -1031,7 +1031,14 @@ public class REPL {
     }
 
     private void handleSourcePdfCommand(final List<String> params) {
-        if (params.size() == 2) {
+        if (params.size() == 1) {
+            final String sourceFile = trimToEmpty(first(params));
+            final String destDir = ".";
+            final String fontDir = replDirs.getFontsDir().getAbsolutePath();
+
+            SourceCodeRenderer.render(sourceFile, destDir, fontDir, true);
+        }
+        else if (params.size() == 2) {
             final String sourceFile = trimToEmpty(first(params));
             final String destDir = trimToEmpty(second(params));
             final String fontDir = replDirs.getFontsDir().getAbsolutePath();
@@ -1046,7 +1053,8 @@ public class REPL {
             SourceCodeRenderer.render(sourceFile, destDir, fontDir, true);
         }
         else {
-            printer.println("error", "Invalid parameter. Use !source-pdf ./foo/bar.venice ./foo ./fonts");
+            printer.println(
+            	"error", "Invalid parameter. Use !source-pdf ./foo/bar.venice ./foo");
         }
     }
 
@@ -1086,6 +1094,11 @@ public class REPL {
         printer.println("stdout", "Macro Expansion: " + (venice.isMacroExpandOnLoad() ? "on" : "off"));
         printer.println("stdout", "Restartable:     " + (restartable ? "yes" : "no"));
         printer.println("stdout", "Debugger:        " + getDebuggerStatus());
+        printer.println("stdout", "");
+        printer.println("stdout", "Home dir:        " + replDirs.getHomeDir());
+        printer.println("stdout", "Libs dir:        " + replDirs.getLibsDir());
+        printer.println("stdout", "Fonts dir:       " + replDirs.getFontsDir());
+        printer.println("stdout", "Scripts dir:     " + replDirs.getScriptsDir());
         printer.println("stdout", "");
         printer.println("stdout", "Env TERM:        " + System.getenv("TERM"));
         printer.println("stdout", "Env GITPOD:      " + isRunningOnLinuxGitPod());
