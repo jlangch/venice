@@ -47,8 +47,40 @@
                                    :prefix "" } } )
 
 
-(defn download-font-family [family-name dir extract?]
-  (let [family   (get families family-name)
+(defn
+  ^{ :arglists '("(download-font-family family-name options*)")
+     :doc
+       """
+       Download a font family from the
+       [Google fonts](https://fonts.google.com/) repository
+
+       The supported font families:
+
+         * "OpenSans"
+         * "SourceCodePro"
+         * "Audiowide"
+         * "Roboto"
+
+       Options:
+
+       | :extract {true,false} | if true extract the TTF files from the font family ZIP, else just download the ZIP |
+       | :dir path             | download dir, defaults to "." |
+       | :silent {true,false}  | if silent is true does not show a progress bar, defaults to true |
+       """
+     :examples '(
+       """
+       (do
+         (load-module :fonts)
+         (fonts/download-font-family "OpenSans" :dir (repl/fonts-dir) :extract true :silent false))
+       """) }
+
+  download-font-family [family-name & options]
+
+  (let [opts     (apply hash-map options)
+        extract  (:extract opts false)
+        silent   (:silent opts true)
+        dir      (:dir opts ".")
+        family   (get families family-name)
         name     (:name family)
         name-enc (:google-name-enc family)
         glob     (:glob family)
@@ -62,7 +94,10 @@
                  ~(pr-str (sort (keys families))).
                  """)))
 
-    (if extract?
+    (when-not silent
+      (println "Downloading '~{family-name}' font family..."))
+
+    (if extract
       (try
         (->> (io/download url :binary true :user-agent "Mozilla")
              (io/unzip-all glob)

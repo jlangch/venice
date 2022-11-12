@@ -2,7 +2,21 @@
 
 Venice supports rendering charts if the [XChart](https://knowm.org/open-source/xchart/) library is on the runtime classpath:
 
-- org.knowm.xchart:xchart:3.8.1
+- org.knowm.xchart:xchart:3.8.2
+
+Run this script from the REPL to download the XChart libraries:
+
+```clojure
+(do
+  (load-module :xchart)
+  
+  ;; Download the XChart libs from Maven
+  (xchart/download-libs :dir (repl/libs-dir) :silent false))
+
+  ;; Restart the REPL to make the new libs available to the REPL Java VM
+  (println "Restarting...")
+  (repl/restart))
+```
 
 Examples:
 

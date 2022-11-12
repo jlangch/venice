@@ -24,6 +24,8 @@
 
 (ns pdf-tools)
 
+(load-module :maven ['maven :as 'm])
+
 
 (defn
   ^{ :arglists '("(download-libs options*)")
@@ -45,8 +47,6 @@
 
   download-libs [ & options]
 
-  (load-module :maven ['maven :as 'm])
-
   (let [opts        (apply hash-map options)
         silent      (:silent opts true)
         dir         (:dir opts ".")]
@@ -54,4 +54,5 @@
     (m/download "org.xhtmlrenderer:flying-saucer-core:9.1.22" :dir dir :silent silent)
     (m/download "org.xhtmlrenderer:flying-saucer-pdf-openpdf:9.1.22" :dir dir :silent silent)
     (m/download "com.github.librepdf:openpdf:1.3.30" :dir dir :silent silent)
-    (m/download "com.github.librepdf:pdf-toolbox:1.3.30" :dir dir :silent silent)))
+    (m/download "com.github.librepdf:pdf-toolbox:1.3.30" :dir dir :silent silent)
+    (m/download "org.knowm.xchart:xchart:3.8.2" :dir dir :silent silent)))

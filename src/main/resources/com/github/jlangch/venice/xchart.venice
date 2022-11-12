@@ -893,3 +893,30 @@
           title (. :setTitle title)
           (-> styling :x-axis :title) (. :setXAxisTitle (-> styling :x-axis :title))
           (-> styling :y-axis :title) (. :setYAxisTitle (-> styling :y-axis :title)))))
+
+
+(defn
+  ^{ :arglists '("(download-libs options*)")
+     :doc
+       """
+       Download the XChart Java libraries
+
+       Options:
+
+       | :dir path             | download dir, defaults to "." |
+       | :silent {true,false}  | if silent is true does not show a progress bar, defaults to true |
+       """
+     :examples '(
+       """
+       (do
+         (load-module :xchart)
+         (xchart/download-libs :dir (repl/libs-dir) :silent false))
+       """) }
+
+  xchart/download-libs [ & options]
+
+  (let [opts        (apply hash-map options)
+        silent      (:silent opts true)
+        dir         (:dir opts ".")]
+    ;; Download the XChart libs from Maven
+    (m/download "org.knowm.xchart:xchart:3.8.2" :dir dir :silent silent)))

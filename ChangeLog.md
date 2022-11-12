@@ -14,11 +14,13 @@ and this project adheres to
 
 ### Added
 
-- ...
+- functions to automate downloading 3rd party Java libraries and fonts 
+  required for PDF, Excel, Chart, and Tomcat modules
 
 ### Updated dependencies:
 
-- Bump Apache POI from 4.1.2 to 5.2.3 (compatibility with 4.1.2 is still given)
+- Bump Apache POI from 4.1.2 to 5.2.3 (compatibility with POI 4.1.2 is 
+  still provided)
 
 
 
