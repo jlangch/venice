@@ -34,12 +34,12 @@ public class ModuleExcelSection implements ISectionBuilder {
 
     @Override
     public DocSection section() {
-        final String footer = "Install the required *Apache POI 5.x* libraries:\n\n" +
-        		              "```                                        \n" +
-           		              "(do                                        \n" +
-           		              "  (load-module :excel ['excel :as 'e])     \n" +
-           		              "  (e/download-libs-5x :dir (repl/libs-dir) \n" +
-           		              "                      :silent false))      \n" +
+        final String footer = "Install the required Apache POI 5.x libraries:\n\n" +
+                              "```                                        \n" +
+                              "(do                                        \n" +
+                              "  (load-module :excel ['excel :as 'e])     \n" +
+                              "  (e/download-libs-5x :dir (repl/libs-dir) \n" +
+                              "                      :silent false))      \n" +
                               "```\n";
 
         final DocSection section = new DocSection("Excel", "Read/Write Excel files", "modules.excel", null, footer);

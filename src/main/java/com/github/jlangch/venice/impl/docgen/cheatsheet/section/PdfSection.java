@@ -34,11 +34,14 @@ public class PdfSection implements ISectionBuilder {
 
     @Override
     public DocSection section() {
-        final String footer = "Required 3rd party libraries:\n\n" +
-                              "* org.xhtmlrenderer:flying-saucer-core:9.1.22\n" +
-                              "* org.xhtmlrenderer:flying-saucer-pdf-openpdf:9.1.22\n" +
-                              "* com.github.librepdf:openpdf:1.3.26\n" +
-                              "* com.github.librepdf:pdf-toolbox:1.3.26\n";
+        final String footer = "Install the required PDF libraries:\n\n" +
+                              "```                                              \n" +
+                              "(do                                              \n" +
+                              "  (load-module :pdf-tools ['pdf-tools :as 'pt])  \n" +
+                              "  (pt/download-libs :dir (repl/libs-dir))        \n" +
+                              "                    :silent false))              \n" +
+                              "```\n";
+
 
         final DocSection section = new DocSection("PDF", null, "pdf", null, footer);
 
@@ -53,12 +56,12 @@ public class PdfSection implements ISectionBuilder {
         pdf.addItem(diBuilder.getDocItem("pdf/available?", false));
         pdf.addItem(diBuilder.getDocItem("pdf/check-required-libs", false));
 
-        final DocSection pdf_tools = new DocSection("PDF Tools", "pdf.pdftools");
-        all.addSection(pdf_tools);
-        pdf_tools.addItem(diBuilder.getDocItem("pdf/merge", false));
-        pdf_tools.addItem(diBuilder.getDocItem("pdf/copy", false));
-        pdf_tools.addItem(diBuilder.getDocItem("pdf/pages"));
-        pdf_tools.addItem(diBuilder.getDocItem("pdf/watermark", false));
+        final DocSection tools = new DocSection("PDF Tools", "pdf.pdftools");
+        all.addSection(tools);
+        tools.addItem(diBuilder.getDocItem("pdf/merge", false));
+        tools.addItem(diBuilder.getDocItem("pdf/copy", false));
+        tools.addItem(diBuilder.getDocItem("pdf/pages"));
+        tools.addItem(diBuilder.getDocItem("pdf/watermark", false));
 
         return section;
     }

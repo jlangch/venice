@@ -17,41 +17,39 @@ venice> !source-pdf ./sudoku.venice
 
 Output Examples:
 
-[Sudoku PDF](https://raw.githubusercontent.com/jlangch/venice/master/doc/assets/source-to-pdf/sudoku.venice.pdf)
-
+[Sudoku PDF](https://raw.githubusercontent.com/jlangch/venice/master/doc/assets/source-to-pdf/sudoku.venice.pdf)  
 [Sudoku HTML](https://htmlpreview.github.io/?https://github.com/jlangch/venice/blob/master/doc/assets/source-to-pdf/sudoku.venice.html)
 
 
 ### Prerequisites
 
-The PDF renderer requires two specific fonts in the REPL's font directory:
-
- - OpenSans-Regular.ttf
- - SourceCodePro-Regular.ttf
- 
-
-Venice supports generating PDF files if the [Flying Saucer](https://github.com/flyingsaucerproject/flyingsaucer) 
-libs are on the runtime classpath:
+The Venice PDF renderer is based on the [Flying Saucer](https://github.com/flyingsaucerproject/flyingsaucer) 
+project and requires these Java libraries:
 
  - org.xhtmlrenderer:flying-saucer-core:9.1.22
  - org.xhtmlrenderer:flying-saucer-pdf-openpdf:9.1.22
  - com.github.librepdf:openpdf:1.3.30
  - com.github.librepdf:pdf-toolbox:1.3.30
  
- 
+and the fonts:
+
+ - OpenSans-Regular.ttf
+ - SourceCodePro-Regular.ttf
+
+
 Run this script from the REPL to download the fonts and PDF libraries:
 
 ```clojure
 (do
-  (load-module :maven ['maven :as 'm])
-  (load-module :fonts ['fonts :as 'f])
+  (load-module :maven)
+  (load-module :fonts)
   
   ;; Download the PDF libs from Maven
-  (println "Downloading PDF libs...")
-  (m/download "org.xhtmlrenderer:flying-saucer-core:9.1.22" :dir (repl/libs-dir))
-  (m/download "org.xhtmlrenderer:flying-saucer-pdf-openpdf:9.1.22" :dir (repl/libs-dir))
-  (m/download "com.github.librepdf:openpdf:1.3.30" :dir (repl/libs-dir))
-  (m/download "com.github.librepdf:pdf-toolbox:1.3.30" :dir (repl/libs-dir))
+  (docoll #(maven/download % :dir (repl/libs-dir) :silent false) 
+          [ "org.xhtmlrenderer:flying-saucer-core:9.1.22"
+            "org.xhtmlrenderer:flying-saucer-pdf-openpdf:9.1.22"
+            "com.github.librepdf:openpdf:1.3.30"
+            "com.github.librepdf:pdf-toolbox:1.3.30" ])
 
   ;; Download and unzip the OpenSans font family
   (println "Downloading OpenSans font familiy...")

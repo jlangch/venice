@@ -5,8 +5,8 @@ libs are on the runtime classpath:
 
  - org.xhtmlrenderer:flying-saucer-core:9.1.22
  - org.xhtmlrenderer:flying-saucer-pdf-openpdf:9.1.22
- - com.github.librepdf:openpdf:1.3.26
- - com.github.librepdf:pdf-toolbox:1.3.26
+ - com.github.librepdf:openpdf:1.3.30
+ - com.github.librepdf:pdf-toolbox:1.3.30
  
 Flying Saucer is a pure-Java library for rendering XHTML using CSS 2.1 for layout and formatting with output to PDF.
 
@@ -16,14 +16,10 @@ Run this script from the REPL to download the PDF libraries:
 
 ```clojure
 (do
-  (load-module :maven ['maven :as 'm])
+  (load-module :pdf-tools)
   
   ;; Download the PDF libs from Maven
-  (println "Downloading PDF libs...")
-  (m/download "org.xhtmlrenderer:flying-saucer-core:9.1.22" :dir (repl/libs-dir))
-  (m/download "org.xhtmlrenderer:flying-saucer-pdf-openpdf:9.1.22" :dir (repl/libs-dir))
-  (m/download "com.github.librepdf:openpdf:1.3.30" :dir (repl/libs-dir))
-  (m/download "com.github.librepdf:pdf-toolbox:1.3.30" :dir (repl/libs-dir))
+  (pdf-tools/download-libs :dir (repl/libs-dir) :silent false)
 
   ;; Restart the REPL to make the new libs available to the REPL Java VM
   (println "Restarting...")

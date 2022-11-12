@@ -70,6 +70,7 @@ public class Modules {
                         "maven",
                         "mercator",
                         "parsifal",
+                        "pdf-tools",
                         "repl-setup",
                         "ring",
                         "semver",
