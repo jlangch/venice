@@ -41,15 +41,11 @@ Run this script from the REPL to download the fonts and PDF libraries:
 
 ```clojure
 (do
-  (load-module :maven)
+  (load-module :pdf-tools)
   (load-module :fonts)
   
   ;; Download the PDF libs from Maven
-  (docoll #(maven/download % :dir (repl/libs-dir) :silent false) 
-          [ "org.xhtmlrenderer:flying-saucer-core:9.1.22"
-            "org.xhtmlrenderer:flying-saucer-pdf-openpdf:9.1.22"
-            "com.github.librepdf:openpdf:1.3.30"
-            "com.github.librepdf:pdf-toolbox:1.3.30" ])
+  (pdf-tools/download-libs :dir (repl/libs-dir) :silent false)
 
   ;; Download and unzip the OpenSans font family
   (println "Downloading OpenSans font familiy...")
