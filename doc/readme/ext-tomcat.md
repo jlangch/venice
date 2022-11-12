@@ -83,18 +83,16 @@ Java 8:
 
 ```clojure
 (do
-  (load-module :maven ['maven :as 'm])
-  (m/download "org.apache.tomcat.embed:tomcat-embed-core:10.0.27")
-  (m/download "jakarta.annotation:jakarta.annotation-api:2.1.1"))
+  (load-module :tomcat)
+  (tomcat/download-libs-10.0.x :dir (repl/libs-dir) :silent false))
 ```
 
 Java 11+:
 
 ```clojure
 (do
-  (load-module :maven ['maven :as 'm])
-  (m/download "org.apache.tomcat.embed:tomcat-embed-core:10.1.1")
-  (m/download "jakarta.annotation:jakarta.annotation-api:2.1.1"))
+  (load-module :tomcat)
+  (tomcat/download-libs-10.1.x :dir (repl/libs-dir) :silent false))
 ```
 
 
@@ -114,11 +112,10 @@ Run this script from the REPL:
 
 ```clojure
 (do
-  (load-module :maven ['maven :as 'm])
-  
-  ;; Download the Tomcat libs from Maven
-  (m/download "org.apache.tomcat.embed:tomcat-embed-core:10.1.1" :dir (repl/libs-dir))
-  (m/download "jakarta.annotation:jakarta.annotation-api:2.1.1" :dir (repl/libs-dir))
+  (load-module :tomcat ['tomcat :as 'tc])
+    
+  ;; Download the Tomcat 10.1.x libs for Java 11+ from Maven
+  (tc/download-libs-10.1.x :dir (repl/libs-dir) :silent false)
   
   ;; Create the Tomcat base directory
   (def tomcat-base-dir (io/file (repl/home-dir) "tomcat"))

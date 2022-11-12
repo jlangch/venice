@@ -16,6 +16,10 @@ and this project adheres to
 
 - ...
 
+### Updated dependencies:
+
+- Bump Apache POI from 4.1.2 to 5.2.3 (compatibility with 4.1.2 is still given)
+
 
 
 
