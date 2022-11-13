@@ -24,23 +24,8 @@
 
 (ns fonts)
 
+
 (def fonts-family-url "https://fonts.google.com/download?family=")
-
-(def families { "OpenSans"       { :name "OpenSans"
-                                   :google-name "Open Sans"
-                                   :glob "static/OpenSans/*.ttf" }
-
-                "SourceCodePro"  { :name "SourceCodePro"
-                                   :google-name "Source Code Pro"
-                                   :glob "static/*.ttf" }
-
-                "Audiowide"      { :name "Audiowide"
-                                   :google-name "Audiowide"
-                                   :glob "*.ttf" }
-
-                "Roboto"         { :name "Roboto"
-                                   :google-name "Roboto"
-                                   :glob "*.ttf" } } )
 
 
 (defn
@@ -50,26 +35,40 @@
        Download a font family from the
        [Google fonts](https://fonts.google.com/) repository
 
-       The supported font families:
+       Some useful font family definitions:
 
-         * "OpenSans"
-         * "SourceCodePro"
-         * "Audiowide"
-         * "Roboto"
+       | Family            | TTF glob pattern        |
+       | :---------------- | :---------------------- |
+       | "Open Sans"       | "static/OpenSans/*.ttf" |
+       | "Source Code Pro" | "static/*.ttf"          |
+       | "Audiowide"       | "*.ttf"                 |
+       | "Roboto"          | "*.ttf"                 |
 
        Options:
 
        | :extract {true,false} | if true extract the TTF files from the font family ZIP, else just download the ZIP |
+       | :glob-pattern {pat}   | an optional glob pattern to select the TTF files to be extracted. E.g.: "*.ttf" |
        | :dir path             | download dir, defaults to "." |
-       | :silent {true,false}  | if silent is true does not show a progress bar, defaults to true |
+       | :silent {true,false}  | if silent is true does not print download info, defaults to true |
        """
      :examples '(
        """
        (do
          (load-module :fonts)
-         (fonts/download-font-family "OpenSans"
+         (fonts/download-font-family "Open Sans"
                                      :dir (repl/fonts-dir)
                                      :extract true
+                                     :glob-pattern "static/OpenSans/*.ttf"
+                                     :silent false)
+         (fonts/download-font-family "Source Code Pro"
+                                     :dir (repl/fonts-dir)
+                                     :extract true
+                                     :glob-pattern "static/*.ttf"
+                                     :silent false)
+         (fonts/download-font-family "Roboto"
+                                     :dir (repl/fonts-dir)
+                                     :extract true
+                                     :glob-pattern "*.ttf"
                                      :silent false))
        """) }
 
@@ -79,19 +78,10 @@
         extract  (:extract opts false)
         silent   (:silent opts true)
         dir      (:dir opts ".")
-        family   (get families family-name)
-        name     (:name family)
-        glob     (:glob family)
-        url      (str fonts-family-url (str/encode-url (:google-name family)))
-        log      (fn [font] (when-not silent
-                               (println " Extracting '~{font}'...")))]
-
-    (when-not family
-      (throw (ex :VncException
-                 """
-                 The font ~{family-name} is not defined! Use one of \
-                 ~(pr-str (sort (keys families))).
-                 """)))
+        glob     (:glob-pattern opts "*.ttf")
+        url      (str fonts-family-url (str/encode-url family-name))
+        log      (fn [font]
+                   (when-not silent (println " Extracting '~{font}'...")))]
 
     (when-not silent
       (println "Downloading '~{family-name}' font family..."))

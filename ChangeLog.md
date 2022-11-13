@@ -12,10 +12,15 @@ and this project adheres to
 
 ## [1.10.27] - 2022-11-xx
 
-### Added
+### Added 
 
 - functions to automate downloading 3rd party Java libraries and fonts 
   required for PDF, Excel, Chart, and Tomcat modules
+
+### Improved
+
+- True Type font management. The download and configuration of True Type 
+  fonts for Venice is now much simpler.
 
 ### Updated dependencies:
 

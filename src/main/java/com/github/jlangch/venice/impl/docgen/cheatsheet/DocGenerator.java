@@ -45,6 +45,7 @@ import com.github.jlangch.venice.impl.docgen.cheatsheet.modules.ModuleComponentS
 import com.github.jlangch.venice.impl.docgen.cheatsheet.modules.ModuleConfigSection;
 import com.github.jlangch.venice.impl.docgen.cheatsheet.modules.ModuleCryptographySection;
 import com.github.jlangch.venice.impl.docgen.cheatsheet.modules.ModuleExcelSection;
+import com.github.jlangch.venice.impl.docgen.cheatsheet.modules.ModuleFontsSection;
 import com.github.jlangch.venice.impl.docgen.cheatsheet.modules.ModuleGeoipSection;
 import com.github.jlangch.venice.impl.docgen.cheatsheet.modules.ModuleGradleSection;
 import com.github.jlangch.venice.impl.docgen.cheatsheet.modules.ModuleGrepSection;
@@ -115,7 +116,8 @@ public class DocGenerator {
                         "trace",  "ansi",     "maven",     "kira",
                         "java",   "semver",   "excel",     "hexdump",
                         "shell",  "geoip",    "benchmark", "component",
-                        "config", "parsifal", "grep",      "test"));
+                        "config", "parsifal", "grep",      "test",
+                        "fonts"));
 
         final IVeniceInterpreter venice = new VeniceInterpreter(new AcceptAllInterceptor());
 
@@ -297,6 +299,7 @@ public class DocGenerator {
         extmod.addSection(new DocSection("Component", "modules.component"));
         extmod.addSection(new DocSection("XML", "modules.xml"));
         extmod.addSection(new DocSection("Grep", "modules.grep"));
+        extmod.addSection(new DocSection("Fonts", "modules.fonts"));
         extmod.addSection(new DocSection("Cryptography", "modules.cryptography"));
         extmod.addSection(new DocSection("Java", "modules.java"));
         extmod.addSection(new DocSection("Semver", "modules.semver"));
@@ -397,6 +400,7 @@ public class DocGenerator {
                 new ModuleSemverSection(diBuilder).section(),
                 new ModuleGeoipSection(diBuilder).section(),
                 new ModuleExcelSection(diBuilder).section(),
+                new ModuleFontsSection(diBuilder).section(),
                 new ModuleTestSection(diBuilder).section(),
                 new ModuleConfigSection(diBuilder).section(),
                 new ModuleComponentSection(diBuilder).section(),

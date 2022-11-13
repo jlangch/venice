@@ -1986,6 +1986,25 @@
 
 
 (defn
+  ^{ :arglists '("(print-info-box text)")
+     :doc "Prints an info to *out*." }
+
+  print-info-box [text]
+
+  (let [title      "Info: "
+        hline      (apply str (repeat 70 "-"))
+        indent-len (count title)
+        indent     (apply str (repeat indent-len " "))
+        block-len  (- 70 (count title))
+        block      (str/split-lines (str/wrap text
+                                              :maxlen block-len
+                                              :line-wrap :break-word))]
+    (println *out* hline)
+    (println *out* (str title (first block)))
+    (docoll #(println *out* (str indent %)) (rest block))
+    (println *out* hline)))
+
+(defn
   ^{ :arglists '("(print-warn-box text)")
      :doc "Prints a warning to *err*." }
 

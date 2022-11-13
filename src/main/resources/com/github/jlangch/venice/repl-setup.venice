@@ -45,7 +45,10 @@
 
 (def font-families-min [])
 
-(def font-families-ext [ "OpenSans" "SourceCodePro" ]) ;; see fonts module
+(def font-families-ext [
+               { :name "Open Sans"       :glob-pattern "static/OpenSans/*.ttf" }
+               { :name "Source Code Pro" :glob-pattern "static/*.ttf" }
+               { :name "Audiowide"       :glob-pattern "*.ttf" } ] )
 
 (def scripts [ "chart.venice"
                "chart-swing.venice"
@@ -91,9 +94,13 @@
          (println *err* "Internet is not available!")))))
 
 
-(defn download-fonts [dir family]
+(defn download-fonts [dir font-family-name glob-pattern]
   (try
-    (fonts/download-font-family family dir true)
+    (fonts/download-font-family font-family-name
+                                :dir dir
+                                :extract true
+                                :glob-pattern glob-pattern
+                                :silent false)
     (catch :VncException ex
            (println *err* (ex-venice-stacktrace ex)))))
 
@@ -101,7 +108,7 @@
 (defn download-font-families [dir families]
   (println (str "Downloading font families..."))
   (if (io/internet-avail?)
-      (docoll #(download-fonts dir %) families)
+      (docoll #(download-fonts dir (:name %) (:glob-pattern %)) families)
       (println *err* "Internet is not available!")))
 
 
@@ -210,28 +217,24 @@
           jansi-jar (io/file dir jansi-name)]
       (when-not (io/exists-file? jansi-jar)
         (println )
-        (println *err*
-                 """
-                 -------------------------------------------------------------
-                 !WARNING! The Jansi JAR could not be downloaded. Without this
-                           JAR the REPL has limited features!
-                 -------------------------------------------------------------
-                 """)
-        (println )))))
+        (print-warn-box """
+                        The Jansi JAR could not be downloaded. Without this \
+                        JAR the REPL has limited features!
+                        """)
+        (println)))))
 
 
 (defn print-success-message []
   (let [launch-script (if (os-type? :windows) "repl.bat" "./repl.sh")]
     (println )
-    (println """
-             ----------------------------------------------------------------
-             The Venice REPL has been successfully configured and setup. The
-             original Venice JAR is not needed anymore, it has been copied to
-             the 'libs' directory that holds all JAR files and resources.
+    (print-info-box """
+                    The Venice REPL has been successfully configured and setup. \
+                    The original Venice JAR is not needed anymore, it has been \
+                    copied to the 'libs' directory that holds all JAR files and \
+                    resources.
 
-             !!! Start the REPL with ~{launch-script}
-             ----------------------------------------------------------------
-             """)))
+                    !!! Start the REPL with ~{launch-script}
+                    """)))
 
 
 (defn setup [& options]

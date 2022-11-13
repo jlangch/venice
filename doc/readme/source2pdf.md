@@ -48,13 +48,15 @@ Run this script from the REPL to download the fonts and PDF libraries:
   (pdf-tools/download-libs :dir (repl/libs-dir) :silent false)
 
   ;; Download and unzip the font families
-  (fonts/download-font-family "OpenSans" 
+  (fonts/download-font-family "Open Sans" 
                               :dir (repl/fonts-dir) 
                               :extract true 
+                              :glob-pattern "static/OpenSans/*.ttf"
                               :silent false)
-  (fonts/download-font-family "SourceCodePro" 
+  (fonts/download-font-family "Source Code Pro" 
                               :dir (repl/fonts-dir) 
                               :extract true 
+                              :glob-pattern "static/*.ttf"
                               :silent false)
 
   ;; Restart the REPL to make the new libs available to the REPL Java VM
