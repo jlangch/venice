@@ -40,6 +40,31 @@ public class LoadModuleTest {
     }
 
     @Test
+    public void test_loadmodule_2() {
+        final String script =
+                "(do                                  \n" +
+                "  (ns foo)                           \n" +
+                "  (let [m :test-support]             \n" +
+                "    (load-module m)                  \n" +
+                "    (test-support/test-fn \"xxx\"))) ";
+
+        assertEquals("test: xxx", new Venice().eval(script));
+    }
+
+    @Test
+    public void test_loadmodule_3() {
+        final String script =
+                "(do                                                        \n" +
+                "  (ns foo)                                                 \n" +
+                "  (let [m :test-support]                                   \n" +
+                "    (load-module m)                                        \n" +
+                "    (let [f (var-get (symbol (name m) \"test-fn\"))]       \n" +
+                "      (f \"xxx\"))))                                       ";
+
+        assertEquals("test: xxx", new Venice().eval(script));
+    }
+
+    @Test
     public void test_loadmodule_alias() {
         final String script =
                 "(do                                                      \n" +

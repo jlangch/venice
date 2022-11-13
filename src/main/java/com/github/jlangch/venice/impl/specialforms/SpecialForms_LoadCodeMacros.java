@@ -166,8 +166,11 @@ public class SpecialForms_LoadCodeMacros {
                 specialFormCallValidation(ctx, "load-module");
                 assertArity("load-module", FnType.SpecialForm, args, 1, 2, 3);
 
-                final VncKeyword module = Coerce.toVncKeyword(args.first());
-                final VncKeyword moduleName = Coerce.toVncKeyword(args.first());
+                final VncVal mod = Types.isVncSymbol(args.first())
+                						? ctx.getEvaluator().evaluate(args.first(), env, false)
+                						: args.first();
+
+                final VncKeyword module = Coerce.toVncKeyword(mod);
                 final Options options = parseOptions(args, "load-module");
                 final VncVector aliasOpt = options.alias;
                 final VncBoolean forceOpt = options.force;
@@ -183,7 +186,7 @@ public class SpecialForms_LoadCodeMacros {
 
                     return VncVector
                                 .empty()
-                                .addAtEnd(moduleName)
+                                .addAtEnd(module)
                                 .addAtEnd(new VncKeyword(loaded ? "loaded" : "already-loaded"));
                 }
                 catch (VncException ex) {

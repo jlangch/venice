@@ -25,10 +25,11 @@
 ;;;;   (load-module :tomcat ['tomcat :as 'tc])
 ;;;;   (tc/start (tc/hello-world-servlet) {:await? false})
 ;;;;
-;;;; required JARs on the classpath:
-;;;;   - jakarta.annotation-api:2.1.1.jar
-;;;;   - tomcat-embed-core-10.0.27.jar
-;;;;   - tomcat-embed-websocket-10.0.27.jar (optional)
+
+;;;; Install Tomcat 3rd party libraries:
+;;;;
+;;;;   (load-module :tomcat-install)
+;;;;   (tomcat-install/install :dir (repl/libs-dir) :silent false)
 
 
 (ns tomcat)
@@ -476,66 +477,3 @@
     </body>
   </html>
   """)
-
-
-
-;; ---------------------------------------------------------------------------
-;; installation
-;; ---------------------------------------------------------------------------
-
-(defn
-  ^{ :arglists '("(download-libs-10.0.x options*)")
-     :doc
-       """
-       Download the Tomcat Java 10.0.x libraries for Java 8
-
-       Options:
-
-       | :dir path             | download dir, defaults to "." |
-       | :silent {true,false}  | if silent is true does not show a progress bar, defaults to true |
-       """
-     :examples '(
-       """
-       (do
-         (load-module :tomcat)
-         (tomcat/download-libs-10.0.x :dir (repl/libs-dir) :silent false))
-       """) }
-
-  download-libs-10.0.x [ & options]
-
-  (load-module :maven ['maven :as 'm])
-
-  (let [opts        (apply hash-map options)
-        silent      (:silent opts true)
-        dir         (:dir opts ".")]
-    (m/download "org.apache.tomcat.embed:tomcat-embed-core:10.0.27" :dir dir :silent silent)
-    (m/download "jakarta.annotation:jakarta.annotation-api:2.1.1" :dir dir :silent silent)))
-
-
-(defn
-  ^{ :arglists '("(download-libs-10.1.x options*)")
-     :doc
-       """
-       Download the Tomcat Java 10.1.x libraries for Java 11+
-
-       Options:
-
-       | :dir path             | download dir, defaults to "." |
-       | :silent {true,false}  | if silent is true does not show a progress bar, defaults to true |
-       """
-     :examples '(
-       """
-       (do
-         (load-module :tomcat)
-         (tomcat/download-libs-10.1.x :dir (repl/libs-dir) :silent false))
-       """) }
-
-  download-libs-10.1.x [ & options]
-
-  (load-module :maven ['maven :as 'm])
-
-  (let [opts        (apply hash-map options)
-        silent      (:silent opts true)
-        dir         (:dir opts ".")]
-    (m/download "org.apache.tomcat.embed:tomcat-embed-core:10.1.1" :dir dir :silent silent)
-    (m/download "jakarta.annotation:jakarta.annotation-api:2.1.1" :dir dir :silent silent)))

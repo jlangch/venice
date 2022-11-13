@@ -16,10 +16,10 @@ Run this script from the REPL to download the PDF libraries:
 
 ```clojure
 (do
-  (load-module :pdf-tools)
+  (load-module :pdf-install)
   
   ;; Download the PDF libs from Maven
-  (pdf-tools/download-libs :dir (repl/libs-dir) :silent false)
+  (pdf-install/install :dir (repl/libs-dir) :silent false)
 
   ;; Restart the REPL to make the new libs available to the REPL Java VM
   (println "Restarting...")

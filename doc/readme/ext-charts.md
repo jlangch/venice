@@ -8,10 +8,10 @@ Run this script from the REPL to download the XChart libraries:
 
 ```clojure
 (do
-  (load-module :xchart)
+  (load-module :xchart-install)
   
   ;; Download the XChart libs from Maven
-  (xchart/download-libs :dir (repl/libs-dir) :silent false))
+  (xchart-install/install :dir (repl/libs-dir) :silent false))
 
   ;; Restart the REPL to make the new libs available to the REPL Java VM
   (println "Restarting...")

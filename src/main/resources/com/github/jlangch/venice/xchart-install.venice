@@ -19,19 +19,25 @@
 ;;;; See the License for the specific language governing permissions and
 ;;;; limitations under the License.
 
-;;;; PDF Tools
+;;;; XChart
+
+;;;; Install XChart 3rd party libraries:
+;;;;
+;;;;   (load-module :xchart-install)
+;;;;   (xchart-install/install :dir (repl/libs-dir) :silent false)
 
 
-(ns pdf-tools)
+(ns xchart-install)
 
-(load-module :maven ['maven :as 'm])
 
+(defn libraries []
+  [ "org.knowm.xchart:xchart:3.8.2" ])
 
 (defn
-  ^{ :arglists '("(download-libs options*)")
+  ^{ :arglists '("(install options*)")
      :doc
        """
-       Download the PDF Java libraries
+       Install the Java 3rd party libraries for the XChart module.
 
        Options:
 
@@ -41,18 +47,14 @@
      :examples '(
        """
        (do
-         (load-module :pdf-tools)
-         (pdf-tools/download-libs :dir (repl/libs-dir) :silent false))
+         (load-module :xchart)
+         (xchart/install :dir (repl/libs-dir) :silent false))
        """) }
 
-  download-libs [ & options]
+  install [ & options]
 
-  (let [opts        (apply hash-map options)
-        silent      (:silent opts true)
-        dir         (:dir opts ".")]
-    ;; Download the PDF libs from Maven
-    (m/download "org.xhtmlrenderer:flying-saucer-core:9.1.22" :dir dir :silent silent)
-    (m/download "org.xhtmlrenderer:flying-saucer-pdf-openpdf:9.1.22" :dir dir :silent silent)
-    (m/download "com.github.librepdf:openpdf:1.3.30" :dir dir :silent silent)
-    (m/download "com.github.librepdf:pdf-toolbox:1.3.30" :dir dir :silent silent)
-    (m/download "org.knowm.xchart:xchart:3.8.2" :dir dir :silent silent)))
+  (let [opts     (apply hash-map options)
+        silent   (:silent opts true)
+        dir      (:dir opts ".")]
+    (load-module :maven ['maven :as 'm])
+    (run! #(m/download % :dir dir :silent silent) (libraries))))

@@ -112,10 +112,10 @@ Run this script from the REPL:
 
 ```clojure
 (do
-  (load-module :tomcat ['tomcat :as 'tc])
+  (load-module :tomcat-install)
     
-  ;; Download the Tomcat 10.1.x libs for Java 11+ from Maven
-  (tc/download-libs-10.1.x :dir (repl/libs-dir) :silent false)
+  ;; Download the Tomcat libs from Maven
+  (tomcat-install/install :dir (repl/libs-dir) :silent false)
   
   ;; Create the Tomcat base directory
   (def tomcat-base-dir (io/file (repl/home-dir) "tomcat"))

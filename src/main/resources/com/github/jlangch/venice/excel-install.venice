@@ -1,0 +1,111 @@
+;;;;   __    __         _
+;;;;   \ \  / /__ _ __ (_) ___ ___
+;;;;    \ \/ / _ \ '_ \| |/ __/ _ \
+;;;;     \  /  __/ | | | | (_|  __/
+;;;;      \/ \___|_| |_|_|\___\___|
+;;;;
+;;;;
+;;;; Copyright 2017-2022 Venice
+;;;;
+;;;; Licensed under the Apache License, Version 2.0 (the "License");
+;;;; you may not use this file except in compliance with the License.
+;;;; You may obtain a copy of the License at
+;;;;
+;;;;     http://www.apache.org/licenses/LICENSE-2.0
+;;;;
+;;;; Unless required by applicable law or agreed to in writing, software
+;;;; distributed under the License is distributed on an "AS IS" BASIS,
+;;;; WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+;;;; See the License for the specific language governing permissions and
+;;;; limitations under the License.
+
+;;;; Venice Excel functions
+
+;;;; Install Apache POI 3rd party libraries:
+;;;;
+;;;;   (load-module :excel-install)
+;;;;   (excel-install/install :dir (repl/libs-dir) :silent false)
+
+
+(ns excel-install)
+
+
+(defn libraries []
+  [ "org.apache.poi:poi:5.2.3"
+    "org.apache.poi:poi-ooxml:5.2.3"
+    "org.apache.poi:poi-ooxml-lite:5.2.3"
+    "org.apache.commons:commons-collections4:4.4"
+    "org.apache.commons:commons-compress:1.21"
+    "org.apache.commons:commons-math3:3.6.1"
+    "org.apache.xmlbeans:xmlbeans:5.1.1"
+    "commons-codec:commons-codec:1.15"
+    "commons-io:commons-io:2.11.0"
+    "org.apache.logging.log4j:log4j-api:2.19.0"
+    "org.apache.logging.log4j:log4j-core:2.19.0" ] )
+
+(defn libraries-4.x []
+  [ "org.apache.poi:poi:4.1.2"
+    "org.apache.poi:ooxml:4.1.2"
+    "org.apache.poi:ooxml-schemas:4.1.2"
+    "org.apache.commons:commons-collections4:4.4"
+    "org.apache.commons:commons-compress:1.20"
+    "org.apache.commons:commons-math3:3.6.1"
+    "org.apache.xmlbeans:xmlbeans:3.1.0"
+    "commons-codec:commons-codec:1.15"
+    "commons-io:commons-io:2.11.0" ] )
+
+
+(defn
+  ^{ :arglists '("(install options*)")
+     :doc
+       """
+       Install the Java 3rd party libraries for the Excel module.
+
+       Options:
+
+       | :dir path             | download dir, defaults to "." |
+       | :silent {true,false}  | if silent is true does not show a progress bar, defaults to true |
+       """
+     :examples '(
+       """
+       (do
+         (load-module :excel)
+         (excel/install :dir (repl/libs-dir) :silent false))
+       """) }
+
+  install [ & options]
+
+  (let [opts     (apply hash-map options)
+        silent   (:silent opts true)
+        dir      (:dir opts ".")]
+    (load-module :maven ['maven :as 'm])
+    (run! #(m/download % :dir dir :silent silent) (libraries))))
+
+
+(defn
+  ^{ :arglists '("(install-4.x options*)")
+     :doc
+       """
+       Install the Java 3rd party libraries for the Excel module.
+
+       Install Apache POI 4.1.x
+
+       Options:
+
+       | :dir path             | download dir, defaults to "." |
+       | :silent {true,false}  | if silent is true does not show a progress bar, defaults to true |
+       """
+     :examples '(
+       """
+       (do
+         (load-module :excel)
+         (excel/install :dir (repl/libs-dir) :silent false))
+       """) }
+
+  install-4.x [ & options]
+
+  (let [opts     (apply hash-map options)
+        silent   (:silent opts true)
+        dir      (:dir opts ".")]
+    (load-module :maven ['maven :as 'm])
+    (run! #(m/download % :dir dir :silent silent) (libraries-4.x))))

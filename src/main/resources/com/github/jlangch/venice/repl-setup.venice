@@ -33,15 +33,16 @@
 
 (def libs-min [ lib-jansi ])
 
-(def libs-ext [ lib-jansi,
-                "org.knowm.xchart:xchart:3.8.1",
-                "org.apache.tomcat.embed:tomcat-embed-core:10.0.27",
-                "org.apache.tomcat.embed:tomcat-embed-websocket:10.0.27",
-                "jakarta.annotation:jakarta.annotation-api:2.1.1",
-                "org.xhtmlrenderer:flying-saucer-core:9.1.22",
-                "org.xhtmlrenderer:flying-saucer-pdf-openpdf:9.1.22",
-                "com.github.librepdf:openpdf:1.3.28",
-                "com.github.librepdf:pdf-toolbox:1.3.28" ])
+(def libs-ext [ lib-jansi ])
+
+
+(def modules-min [ ])
+
+(def modules-ext [ :xchart-install
+                   :tomcat-install
+                   :excel-install
+                   :pdf-install ])
+
 
 (def font-families-min [])
 
@@ -93,6 +94,17 @@
                  artefacts)
          (println *err* "Internet is not available!")))))
 
+(defn download-module-libs [module_ dir silent]
+  (println "Downloading module ~{module_} Java libraries...")
+  (load-module module_)
+  (let [install-fn (var-get (symbol (name module_) "install"))]
+    (install-fn :dir dir :silent silent)))
+
+(defn download-modules-libs [dir modules_ show-progress]
+  (println "Downloading module Java libraries...")
+  (if (io/internet-avail?)
+     (docoll #(download-module-libs % dir (not show-progress)) modules_)
+     (println *err* "Internet is not available!")))
 
 (defn download-fonts [dir font-family-name glob-pattern]
   (try
@@ -245,6 +257,7 @@
         color-mode    (:color-mode options :none)      ;; {:none :light :dark}
         show-progress (:ansi-terminal options false)   ;; {true false}
         libs          (if (= setup-mode :extended) libs-ext libs-min)
+        modules_      (if (= setup-mode :extended) modules-ext modules-min)
         font-families (if (= setup-mode :extended) font-families-ext font-families-min)
         charset       (name (charset-default-encoding))]
     (when-not (io/exists-dir? "./libs")
@@ -276,6 +289,7 @@
 
     (repl-setup/copy-venice-jar "libs")
     (repl-setup/download-libs "libs" libs show-progress)
+    (repl-setup/download-modules-libs "libs" modules_ show-progress)
     (repl-setup/download-font-families "fonts" font-families)
     (repl-setup/setup-repl-config "libs" )
     (repl-setup/setup-repl-launcher color-mode)

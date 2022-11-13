@@ -21,39 +21,18 @@
 
 ;;;; XChart
 
-;;;; Required 3rd party libraries
-;;;;   org.knowm.xchart:xchart:3.8.1
-
 ;;;; Thanks to Jean Niklas L'orange and his clojure xchart project
 ;;;; (https://github.com/hypirion/clj-xchart). Venice's xchart
 ;;;; builds heavily on Jean Niklas' smart work.
 ;;;; See: https://hypirion.github.io/clj-xchart/examples
 
+;;;; Install XChart 3rd party libraries:
+;;;;
+;;;;   (load-module :xchart-install)
+;;;;   (xchart-install/install :dir (repl/libs-dir) :silent false)
 
 ;; !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-;; XChart 3.7.0
-;;
-;; XChart 3.7.0 introduced incompatible changes
-;;
-;;  - Class org.knowm.xchart.style.Styler$CardinalPosition
-;;    (previous org.knowm.xchart.style.Styler$LegendPosition)
-;;  - Theme classes are in package org.knowm.xchart.style.theme
-;;    (previous package org.knowm.xchart.style)
-;; !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-
-;; !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-;; XChart 3.8.0
-;;
-;; XChart 3.8.0 introduced incompatible changes
-;;
-;;  - Class org.knowm.xchart.style.Styler$LegendPosition
-;;    (previous org.knowm.xchart.style.Styler$CardinalPosition)
-;;  - Enum org.knowm.xchart.style.AxesChartStyler$TextAlignment
-;;    (previously in org.knowm.xchart.style.Styler$TextAlignment)
-;; !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-
-;; !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-;; Requires XChart 3.8.1
+;; Requires XChart 3.8.1 or newer
 ;;
 ;; XChart 3.8.1 introduced incompatible changes
 ;;
@@ -68,33 +47,6 @@
 (ns xchart)
 
 (load-module :semver)
-
-
-;; ---------------------------------------------------------------------------
-;; verify XChart 3.8.1+ libs are available
-;; ---------------------------------------------------------------------------
-
-(defn throw-3rdparty-lib-ex [msg]
-  (throw (ex :VncException
-             """
-             ~{msg}
-
-             ---------------------------------------------------
-             (do
-              (load-module :maven)
-              (maven/download "org.knowm.xchart:xchart:3.8.1"))
-             ---------------------------------------------------
-             """)))
-
-(when-not (exists-class? :org.knowm.xchart.PieChart)
-  (throw-3rdparty-lib-ex
-    "The XChart library is missing. Venice requires XChart 3.8.1+"))
-
-(let [version (jar-maven-manifest-version :org.knowm.xchart :xchart)]
-  (when (semver/older? version "3.8.1")
-    (throw-3rdparty-lib-ex
-      "The XChart ~{version} library is too old. Venice requires XChart 3.8.1+")))
-
 
 
 ;; ---------------------------------------------------------------------------
@@ -159,9 +111,24 @@
 
 
 
+
 ;; ---------------------------------------------------------------------------
 ;; utils
 ;; ---------------------------------------------------------------------------
+
+(defn
+   ^{ :arglists '("(xchart/available?)")
+      :doc "Returns true if XChart 3.8.1 or newer is available (libs on classpath) otherwise false"
+      :examples '("(xchart/available?)") }
+
+   xchart/available? []
+
+   (when-not (exists-class? :org.knowm.xchart.PieChart)
+     false)
+
+   (let [version (jar-maven-manifest-version :org.knowm.xchart :xchart)]
+     (if (semver/older? version "3.8.1") false true)))
+
 
 ;; Example: (xchart/doto-cond     =>    (let [e expr]
 ;;             expr                        (when cond1 (my e call))
@@ -893,35 +860,3 @@
           title (. :setTitle title)
           (-> styling :x-axis :title) (. :setXAxisTitle (-> styling :x-axis :title))
           (-> styling :y-axis :title) (. :setYAxisTitle (-> styling :y-axis :title)))))
-
-
-
-;; ---------------------------------------------------------------------------
-;; installation
-;; ---------------------------------------------------------------------------
-
-(defn
-  ^{ :arglists '("(download-libs options*)")
-     :doc
-       """
-       Download the XChart Java libraries
-
-       Options:
-
-       | :dir path             | download dir, defaults to "." |
-       | :silent {true,false}  | if silent is true does not show a progress bar, defaults to true |
-       """
-     :examples '(
-       """
-       (do
-         (load-module :xchart)
-         (xchart/download-libs :dir (repl/libs-dir) :silent false))
-       """) }
-
-  xchart/download-libs [ & options]
-
-  (let [opts        (apply hash-map options)
-        silent      (:silent opts true)
-        dir         (:dir opts ".")]
-    ;; Download the XChart libs from Maven
-    (m/download "org.knowm.xchart:xchart:3.8.2" :dir dir :silent silent)))

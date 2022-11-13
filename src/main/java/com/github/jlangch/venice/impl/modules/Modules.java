@@ -55,6 +55,7 @@ public class Modules {
                         "dag",
                         "docx",
                         "excel",
+                        "excel-install",
                         "esr",
                         "fam",
                         "fonts",
@@ -70,7 +71,7 @@ public class Modules {
                         "maven",
                         "mercator",
                         "parsifal",
-                        "pdf-tools",
+                        "pdf-install",
                         "repl-setup",
                         "ring",
                         "semver",
@@ -78,11 +79,13 @@ public class Modules {
                         "test",
                         "test-support",
                         "tomcat",
+                        "tomcat-install",
                         "tomcat-util",
                         "tput",
                         "trace",
                         "webdav",
                         "xchart",
+                        "xchart-install",
                         "xml")));
 
     public static final Set<VncKeyword> NATIVE_MODULES =
