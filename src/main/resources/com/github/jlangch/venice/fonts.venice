@@ -24,22 +24,22 @@
 
 (ns fonts)
 
-(def fonts-familiy-url "https://fonts.google.com/download?family=")
+(def fonts-family-url "https://fonts.google.com/download?family=")
 
 (def families { "OpenSans"       { :name "OpenSans"
-                                   :google-name-enc "Open%20Sans"
+                                   :google-name "Open Sans"
                                    :glob "static/OpenSans/*.ttf" }
 
                 "SourceCodePro"  { :name "SourceCodePro"
-                                   :google-name-enc "Source%20Code%20Pro"
+                                   :google-name "Source Code Pro"
                                    :glob "static/*.ttf" }
 
                 "Audiowide"      { :name "Audiowide"
-                                   :google-name-enc "Audiowide"
+                                   :google-name "Audiowide"
                                    :glob "*.ttf" }
 
                 "Roboto"         { :name "Roboto"
-                                   :google-name-enc "Roboto"
+                                   :google-name "Roboto"
                                    :glob "*.ttf" } } )
 
 
@@ -67,7 +67,10 @@
        """
        (do
          (load-module :fonts)
-         (fonts/download-font-family "OpenSans" :dir (repl/fonts-dir) :extract true :silent false))
+         (fonts/download-font-family "OpenSans"
+                                     :dir (repl/fonts-dir)
+                                     :extract true
+                                     :silent false))
        """) }
 
   download-font-family [family-name & options]
@@ -78,10 +81,10 @@
         dir      (:dir opts ".")
         family   (get families family-name)
         name     (:name family)
-        name-enc (:google-name-enc family)
         glob     (:glob family)
-        url      (str fonts-familiy-url name-enc)
-        log      (fn [font] (when-not silent (println " Extracting '~{font}'...")))]
+        url      (str fonts-family-url (str/encode-url (:google-name family)))
+        log      (fn [font] (when-not silent
+                               (println " Extracting '~{font}'...")))]
 
     (when-not family
       (throw (ex :VncException
@@ -102,7 +105,7 @@
         (catch :VncException e
           (throw (ex :VncException
                      """
-                     Failed to download and extract the font famliy \
+                     Failed to download and extract the font family \
                      ~{family-name}!
                      """
                      e))))
@@ -112,5 +115,5 @@
                (io/spit file)))
         (catch :VncException e
           (throw (ex :VncException
-                     "Failed to download the font familiy ~{family-name} zip!"
+                     "Failed to download the font family ~{family-name} zip!"
                      e)))))))
