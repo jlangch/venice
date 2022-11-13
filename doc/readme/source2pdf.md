@@ -41,11 +41,11 @@ Run this script from the REPL to download the fonts and PDF libraries:
 
 ```clojure
 (do
-  (load-module :pdf-tools)
+  (load-module :pdf-install)
   (load-module :fonts)
   
   ;; Download the PDF libs from Maven
-  (pdf-tools/download-libs :dir (repl/libs-dir) :silent false)
+  (pdf-install/install :dir (repl/libs-dir) :silent false)
 
   ;; Download and unzip the font families
   (fonts/download-font-family "Open Sans" 
