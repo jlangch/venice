@@ -1983,3 +1983,43 @@
      :examples '("(repl?)") }
 
   repl? [] (= :repl *run-mode*))
+
+
+(defn
+  ^{ :arglists '("(print-warn-box text)")
+     :doc "Prints a warning to *err*." }
+
+  print-warn-box [text]
+
+  (let [title      "Warning: "
+        hline      (apply str (repeat 70 "-"))
+        indent-len (count title)
+        indent     (apply str (repeat indent-len " "))
+        block-len  (- 70 (count title))
+        block      (str/split-lines (str/wrap text
+                                              :maxlen block-len
+                                              :line-wrap :break-word))]
+    (println *err* hline)
+    (println *err* (str title (first block)))
+    (docoll #(println *err* (str indent %)) (rest block))
+    (println *err* hline)))
+
+
+(defn
+  ^{ :arglists '("(print-error-box text)")
+     :doc "Prints an error to *err*." }
+
+  print-error-box [text]
+
+  (let [title      "Error: "
+        hline      (apply str (repeat 70 "-"))
+        indent-len (count title)
+        indent     (apply str (repeat indent-len " "))
+        block-len  (- 70 (count title))
+        block      (str/split-lines (str/wrap text
+                                              :maxlen block-len
+                                              :line-wrap :break-word))]
+    (println *err* hline)
+    (println *err* (str title (first block)))
+    (docoll #(println *err* (str indent %)) (rest block))
+    (println *err* hline)))

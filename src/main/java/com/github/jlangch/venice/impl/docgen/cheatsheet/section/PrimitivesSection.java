@@ -152,6 +152,7 @@ public class PrimitivesSection implements ISectionBuilder {
         use.addItem(diBuilder.getDocItem("str/truncate"));
         use.addItem(diBuilder.getDocItem("str/expand"));
         use.addItem(diBuilder.getDocItem("str/lorem-ipsum"));
+        use.addItem(diBuilder.getDocItem("str/wrap"));
 
         final DocSection split = new DocSection("Split/Join", "primitives.strings.splitjoin");
         strings.addSection(split);

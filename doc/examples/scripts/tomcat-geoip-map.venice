@@ -162,26 +162,18 @@
 
   (when-not (macroexpand-on-load?)
     (println)
-    (println *err*
-             """
-             -------------------------------------------------------------------
-             Warning: macroexpand-on-load is not activated. To get a much better
-                      performance activate macroexpand-on-load before loading
-                      this script.
+    (print-warn-box """
+                    macroexpand-on-load is not activated. To get a better \
+                    performance activate it before loading this script.
 
-                      From the REPL run: !macroexpand
-             -------------------------------------------------------------------
-             """))
+                    From the REPL run the command: !macroexpand
+                    """))
 
   (when-not (io/exists-file? maxmind-country-zip)
     (println)
-    (println *err*
-             """
-             -------------------------------------------------------------------
-             Error: The MaxMind country file does not exist!
+    (print-error-box """
+                     The MaxMind country file does not exist!
 
-                    ~{maxmind-country-zip}
-             -------------------------------------------------------------------
-             """))
-
+                     ~{maxmind-country-zip}
+                     """))
 )

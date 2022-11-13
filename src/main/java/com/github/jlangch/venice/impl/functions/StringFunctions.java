@@ -64,6 +64,7 @@ import com.github.jlangch.venice.impl.util.LoremIpsum;
 import com.github.jlangch.venice.impl.util.StringEscapeUtil;
 import com.github.jlangch.venice.impl.util.StringUtil;
 import com.github.jlangch.venice.impl.util.SymbolMapBuilder;
+import com.github.jlangch.venice.impl.util.markdown.renderer.text.LineWrap;
 
 
 public class StringFunctions {
@@ -1998,6 +1999,54 @@ public class StringFunctions {
                 private static final long serialVersionUID = -1848883965231344442L;
             };
 
+    public static VncFunction str_wrap =
+        new VncFunction(
+                "str/wrap",
+                VncFunction
+                    .meta()
+                    .arglists("(str/wrap text & options)")
+                    .doc(
+                        "Wraps ascii text to lines with a length of maxlen characters . \n\n" +
+                        "Options: \n\n" +
+                        "| :maxlen n                           | the max len of line (default 80) |\n" +
+        				"| :line-wrap {:anywhere, :break-word} | controls the line wrap |\n")
+                     .examples
+                        ("(-> (str/lorem-ipsum :paragraphs 1)               \n" +
+                         "    (str/wrap :maxlen 80 :line-wrap :break-word)) ")
+                    .build()
+        ) {
+            @Override
+            public VncVal apply(final VncList args) {
+                ArityExceptions.assertMinArity(this, args, 1);
+
+                final VncString text = Coerce.toVncString(args.first());
+                final VncHashMap options = VncHashMap.ofAll(args.rest());
+
+                long maxlen = 80;
+                boolean breakword = true;
+
+                final VncVal maxlen_ = options.get(new VncKeyword(":maxlen"));
+                if (Types.isVncLong(maxlen_)) {
+                	maxlen = ((VncLong)maxlen_).toJavaLong();
+                	maxlen = Math.max(2, maxlen);
+                }
+
+                final VncVal linewrap_ = options.get(new VncKeyword(":line-wrap"));
+                if (Types.isVncKeyword(linewrap_)) {
+                	breakword = "break-word".equals(((VncKeyword)linewrap_).getValue());
+                }
+
+                final String s = text.getValue();
+                final List<String> lines = breakword
+						                		? LineWrap.softWrap(s, (int)maxlen)
+						                		: LineWrap.hardWrap(s, (int) maxlen);
+
+                return new VncString(String.join("\n", lines));
+            }
+
+            private static final long serialVersionUID = -1848883965231344442L;
+        };
+
     public static VncFunction str_bytebuf_to_hex =
         new VncFunction(
                 "str/bytebuf-to-hex",
@@ -2460,6 +2509,7 @@ public class StringFunctions {
                     .add(str_strip_margin)
                     .add(str_repeat)
                     .add(str_lorem_ipsum)
+                    .add(str_wrap)
                     .add(str_hex_to_bytebuf)
                     .add(str_bytebuf_to_hex)
                     .add(str_format_bytebuf)
