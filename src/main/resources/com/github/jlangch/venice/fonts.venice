@@ -28,23 +28,19 @@
 
 (def families { "OpenSans"       { :name "OpenSans"
                                    :google-name-enc "Open%20Sans"
-                                   :glob "static/OpenSans/*.ttf"
-                                   :prefix "static/OpenSans/"}
+                                   :glob "static/OpenSans/*.ttf" }
 
                 "SourceCodePro"  { :name "SourceCodePro"
                                    :google-name-enc "Source%20Code%20Pro"
-                                   :glob "static/*.ttf"
-                                   :prefix "static/" }
+                                   :glob "static/*.ttf" }
 
                 "Audiowide"      { :name "Audiowide"
                                    :google-name-enc "Audiowide"
-                                   :glob "*.ttf"
-                                   :prefix "" }
+                                   :glob "*.ttf" }
 
                 "Roboto"         { :name "Roboto"
                                    :google-name-enc "Roboto"
-                                   :glob "*.ttf"
-                                   :prefix "" } } )
+                                   :glob "*.ttf" } } )
 
 
 (defn
@@ -84,8 +80,8 @@
         name     (:name family)
         name-enc (:google-name-enc family)
         glob     (:glob family)
-        prefix   (:prefix family)
-        url      (str fonts-familiy-url name-enc)]
+        url      (str fonts-familiy-url name-enc)
+        log      (fn [font] (when-not silent (println " Extracting '~{font}'...")))]
 
     (when-not family
       (throw (ex :VncException
@@ -101,9 +97,8 @@
       (try
         (->> (io/download url :binary true :user-agent "Mozilla")
              (io/unzip-all glob)
-             (map-keys #(str/strip-start % prefix))
-             (map-keys #(io/file dir %))
-             (docoll (fn [[k v]] (io/spit k v))))
+             (map-keys #(io/file-name (io/file %)))
+             (docoll (fn [[k v]] (log k) (io/spit (io/file dir k) v))))
         (catch :VncException e
           (throw (ex :VncException
                      """
