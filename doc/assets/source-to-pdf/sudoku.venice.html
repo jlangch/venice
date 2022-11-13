@@ -203,18 +203,19 @@
 <span style="color: #808080">0127   </span>
 <span style="color: #808080">0128   </span>
 <span style="color: #808080">0129   </span><span style="color: #404040">(</span><span style="color: #4169E1">when-not</span> <span style="color: #404040">(</span><span style="color: #9932CC">macroexpand-on-load?</span><span style="color: #404040">)</span>
-<span style="color: #808080">0130   </span>  <span style="color: #404040">(</span><span style="color: #4169E1">print-warn-box</span> <span style="color: #2E8B57">&quot;&quot;&quot;
-<span style="color: #808080">0131   </span>                  macroexpand-on-load is not activated. To get a better \
-<span style="color: #808080">0132   </span>                  performance activate it before loading this script.
-<span style="color: #808080">0133   </span>
-<span style="color: #808080">0134   </span>                  From the REPL run the command: !macroexpand
-<span style="color: #808080">0135   </span>                  &quot;&quot;&quot;</span><span style="color: #404040">)</span><span style="color: #404040">)</span>
-<span style="color: #808080">0136   </span>
-<span style="color: #808080">0137   </span><span style="color: #404040">(</span><span style="color: #9932CC">let</span> <span style="color: #404040">[</span><span style="color: #404040">board</span> <span style="color: #404040">board-1</span><span style="color: #404040">]</span>
-<span style="color: #808080">0138   </span>  <span style="color: #404040">(</span><span style="color: #4169E1">print-board</span> <span style="color: #404040">board</span><span style="color: #404040">)</span>
-<span style="color: #808080">0139   </span>  <span style="color: #404040">(</span><span style="color: #4169E1">solve</span> <span style="color: #404040">board</span><span style="color: #404040">)</span>
-<span style="color: #808080">0140   </span>  <span style="color: #404040">(</span><span style="color: #4169E1">println</span><span style="color: #404040">)</span><span style="color: #404040">)</span>
-<span style="color: #808080">0141   </span></code>
+<span style="color: #808080">0130   </span>  <span style="color: #404040">(</span><span style="color: #4169E1">print-msg-box</span> <span style="color: #E9967A">:warn</span>
+<span style="color: #808080">0131   </span>                 <span style="color: #2E8B57">&quot;&quot;&quot;
+<span style="color: #808080">0132   </span>                 macroexpand-on-load is not activated. To get a better \
+<span style="color: #808080">0133   </span>                 performance activate it before loading this script.
+<span style="color: #808080">0134   </span>
+<span style="color: #808080">0135   </span>                 From the REPL run the command: !macroexpand
+<span style="color: #808080">0136   </span>                 &quot;&quot;&quot;</span><span style="color: #404040">)</span><span style="color: #404040">)</span>
+<span style="color: #808080">0137   </span>
+<span style="color: #808080">0138   </span><span style="color: #404040">(</span><span style="color: #9932CC">let</span> <span style="color: #404040">[</span><span style="color: #404040">board</span> <span style="color: #404040">board-1</span><span style="color: #404040">]</span>
+<span style="color: #808080">0139   </span>  <span style="color: #404040">(</span><span style="color: #4169E1">print-board</span> <span style="color: #404040">board</span><span style="color: #404040">)</span>
+<span style="color: #808080">0140   </span>  <span style="color: #404040">(</span><span style="color: #4169E1">solve</span> <span style="color: #404040">board</span><span style="color: #404040">)</span>
+<span style="color: #808080">0141   </span>  <span style="color: #404040">(</span><span style="color: #4169E1">println</span><span style="color: #404040">)</span><span style="color: #404040">)</span>
+<span style="color: #808080">0142   </span></code>
     </body>
     
 </html>

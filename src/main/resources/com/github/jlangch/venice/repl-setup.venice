@@ -217,24 +217,26 @@
           jansi-jar (io/file dir jansi-name)]
       (when-not (io/exists-file? jansi-jar)
         (println )
-        (print-warn-box """
-                        The Jansi JAR could not be downloaded. Without this \
-                        JAR the REPL has limited features!
-                        """)
+        (print-msg-box :warn
+                       """
+                       The Jansi JAR could not be downloaded. Without this \
+                       JAR the REPL has limited features!
+                       """)
         (println)))))
 
 
 (defn print-success-message []
   (let [launch-script (if (os-type? :windows) "repl.bat" "./repl.sh")]
     (println )
-    (print-info-box """
-                    The Venice REPL has been successfully configured and setup. \
-                    The original Venice JAR is not needed anymore, it has been \
-                    copied to the 'libs' directory that holds all JAR files and \
-                    resources.
+    (print-msg-box :info
+                   """
+                   The Venice REPL has been successfully configured and setup. \
+                   The original Venice JAR is not needed anymore, it has been \
+                   copied to the 'libs' directory that holds all JAR files and \
+                   resources.
 
-                    !!! Start the REPL with ~{launch-script}
-                    """)))
+                   !!! Start the REPL with ~{launch-script}
+                   """)))
 
 
 (defn setup [& options]

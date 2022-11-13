@@ -1985,60 +1985,47 @@
   repl? [] (= :repl *run-mode*))
 
 
-(defn
-  ^{ :arglists '("(print-info-box text)")
-     :doc "Prints an info to *out*." }
 
-  print-info-box [text]
-
-  (let [title      "Info: "
-        hline      (apply str (repeat 70 "-"))
-        indent-len (count title)
-        indent     (apply str (repeat indent-len " "))
-        block-len  (- 70 (count title))
-        block      (str/split-lines (str/wrap text
-                                              :maxlen block-len
-                                              :line-wrap :break-word))]
-    (println *out* hline)
-    (println *out* (str title (first block)))
-    (docoll #(println *out* (str indent %)) (rest block))
-    (println *out* hline)))
+;; ---------------------------------------------------------------------------
+;; message box
+;; ---------------------------------------------------------------------------
 
 (defn
-  ^{ :arglists '("(print-warn-box text)")
-     :doc "Prints a warning to *err*." }
+  ^{ :arglists '(
+        "(print-msg-box type text)")
+     :doc
+        """
+        Prints an info, warning, or error message box.
 
-  print-warn-box [text]
+        Info message are printed to `*out*` while warning and error messages
+        are printed `*err*`. The text is wrapped at word boundaries to 70
+        chars per line. Linefeeds in the text are honored.
 
-  (let [title      "Warning: "
-        hline      (apply str (repeat 70 "-"))
-        indent-len (count title)
-        indent     (apply str (repeat indent-len " "))
-        block-len  (- 70 (count title))
+        The type classifies the message and is one of: `:info`, `:warn`, or
+        `:error`.
+        """
+       }
+
+  print-msg-box [type text]
+
+  (let [title      (case type
+                     :info   "Info: "
+                     :warn   "Warning: "
+                     :error  "Error: "
+                     "Info: ")
+        horz-line  (apply str (repeat 70 "-"))
+        offset     (count title)
+        indent     (apply str (repeat offset " "))
+        block-len  (- 70 offset)
         block      (str/split-lines (str/wrap text
                                               :maxlen block-len
-                                              :line-wrap :break-word))]
-    (println *err* hline)
-    (println *err* (str title (first block)))
-    (docoll #(println *err* (str indent %)) (rest block))
-    (println *err* hline)))
-
-
-(defn
-  ^{ :arglists '("(print-error-box text)")
-     :doc "Prints an error to *err*." }
-
-  print-error-box [text]
-
-  (let [title      "Error: "
-        hline      (apply str (repeat 70 "-"))
-        indent-len (count title)
-        indent     (apply str (repeat indent-len " "))
-        block-len  (- 70 (count title))
-        block      (str/split-lines (str/wrap text
-                                              :maxlen block-len
-                                              :line-wrap :break-word))]
-    (println *err* hline)
-    (println *err* (str title (first block)))
-    (docoll #(println *err* (str indent %)) (rest block))
-    (println *err* hline)))
+                                              :line-wrap :break-word))
+        ostream    (case type
+                     :info   *out*
+                     :warn   *err*
+                     :error  *err*
+                     *out*)]
+    (println ostream horz-line)
+    (println ostream (str title (first block)))
+    (docoll #(println ostream (str indent %)) (rest block))
+    (println ostream horz-line)))

@@ -35,7 +35,8 @@
        Download a font family from the
        [Google fonts](https://fonts.google.com/) repository
 
-       Some useful font family definitions:
+       Some useful font families with name and the true type font files
+       globbing pattern to extract the files from the family zip file:
 
        | Family            | TTF glob pattern        |
        | :---------------- | :---------------------- |

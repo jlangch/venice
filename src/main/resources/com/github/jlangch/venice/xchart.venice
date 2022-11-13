@@ -895,6 +895,11 @@
           (-> styling :y-axis :title) (. :setYAxisTitle (-> styling :y-axis :title)))))
 
 
+
+;; ---------------------------------------------------------------------------
+;; installation
+;; ---------------------------------------------------------------------------
+
 (defn
   ^{ :arglists '("(download-libs options*)")
      :doc

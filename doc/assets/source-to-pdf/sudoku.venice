@@ -127,12 +127,13 @@
 
 
 (when-not (macroexpand-on-load?)
-  (print-warn-box """
-                  macroexpand-on-load is not activated. To get a better \
-                  performance activate it before loading this script.
+  (print-msg-box :warn
+                 """
+                 macroexpand-on-load is not activated. To get a better \
+                 performance activate it before loading this script.
 
-                  From the REPL run the command: !macroexpand
-                  """))
+                 From the REPL run the command: !macroexpand
+                 """))
 
 (let [board board-1]
   (print-board board)
