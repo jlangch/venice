@@ -101,10 +101,11 @@
     (install-fn :dir dir :silent silent)))
 
 (defn download-modules-libs [dir modules_ show-progress]
-  (println "Downloading module Java libraries...")
-  (if (io/internet-avail?)
-     (docoll #(download-module-libs % dir (not show-progress)) modules_)
-     (println *err* "Internet is not available!")))
+  (when-not (empty? modules_)
+    (println "Downloading module Java libraries...")
+    (if (io/internet-avail?)
+       (docoll #(download-module-libs % dir (not show-progress)) modules_)
+       (println *err* "Internet is not available!"))))
 
 (defn download-fonts [dir font-family-name glob-pattern]
   (try
@@ -118,10 +119,11 @@
 
 
 (defn download-font-families [dir families]
-  (println (str "Downloading font families..."))
-  (if (io/internet-avail?)
-      (docoll #(download-fonts dir (:name %) (:glob-pattern %)) families)
-      (println *err* "Internet is not available!")))
+  (when-not (empty? families)
+    (println (str "Downloading font families..."))
+    (if (io/internet-avail?)
+        (docoll #(download-fonts dir (:name %) (:glob-pattern %)) families)
+        (println *err* "Internet is not available!"))))
 
 
 (defn setup-scripts [dir]
