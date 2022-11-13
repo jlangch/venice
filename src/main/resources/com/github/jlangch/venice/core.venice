@@ -2008,23 +2008,18 @@
 
   print-msg-box [type text]
 
-  (let [title      (case type
-                     :info   "Info: "
-                     :warn   "Warning: "
-                     :error  "Error: "
-                     "Info: ")
-        horz-line  (apply str (repeat 70 "-"))
-        offset     (count title)
-        indent     (apply str (repeat offset " "))
-        block-len  (- 70 offset)
-        block      (str/split-lines (str/wrap text
-                                              :maxlen block-len
-                                              :line-wrap :break-word))
-        ostream    (case type
-                     :info   *out*
-                     :warn   *err*
-                     :error  *err*
-                     *out*)]
+  (let [[ostream title] (case type
+                          :info   [*out* "Info: "   ]
+                          :warn   [*err* "Warning: "]
+                          :error  [*err* "Error: "  ]
+                                  [*out* "Info: "   ])
+        horz-line       (apply str (repeat 70 "-"))
+        offset          (count title)
+        indent          (apply str (repeat offset " "))
+        block-len       (- 70 offset)
+        block           (str/split-lines (str/wrap text
+                                                   :maxlen block-len
+                                                   :line-wrap :break-word))]
     (println ostream horz-line)
     (println ostream (str title (first block)))
     (docoll #(println ostream (str indent %)) (rest block))
