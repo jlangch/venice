@@ -35,11 +35,11 @@ public class PdfSection implements ISectionBuilder {
     @Override
     public DocSection section() {
         final String footer = "Install the required PDF libraries:\n\n" +
-                              "```                                              \n" +
-                              "(do                                              \n" +
-                              "  (load-module :pdf-tools ['pdf-tools :as 'pt])  \n" +
-                              "  (pt/download-libs :dir (repl/libs-dir))        \n" +
-                              "                    :silent false))              \n" +
+                              "```                                           \n" +
+                              "(do                                           \n" +
+                              "  (load-module :pdf-install)                  \n" +
+                              "  (pdf-install/install :dir (repl/libs-dir))  \n" +
+                              "                       :silent false))        \n" +
                               "```\n";
 
 
