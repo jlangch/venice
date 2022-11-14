@@ -99,7 +99,7 @@
        """
        (do
          (load-module :excel)
-         (excel/install :dir (repl/libs-dir) :silent false))
+         (excel/install-4.x :dir (repl/libs-dir) :silent false))
        """) }
 
   install-4.x [ & options]
