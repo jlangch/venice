@@ -231,8 +231,8 @@ public class IOFunctionsSpitSlurp {
                         "doc for a description of the *load path* feature.\n\n" +
                         "Note: For HTTP and HTTPS downloads prefer to use `io/download`. ")
                     .seeAlso(
-                    	"io/slurp-lines", "io/slurp-stream", "io/spit", "io/download",
-                    	"loadpath/paths")
+                    	"io/slurp-lines", "io/slurp-stream", "io/slurp-reader",
+                    	"io/spit", "io/download", "loadpath/paths")
                     .build()
         ) {
             @Override
@@ -359,7 +359,8 @@ public class IOFunctionsSpitSlurp {
                         "`io/spit` supports load paths. See the `loadpath/paths` " +
                         "doc for a description of the *load path* feature.")
                     .seeAlso(
-                    	"io/spit-stream", "io/slurp", "io/slurp-lines",
+                    	"io/spit-stream", "io/spit-writer",
+                    	"io/slurp", "io/slurp-lines",
                     	"loadpath/paths")
                     .build()
         ) {
@@ -488,7 +489,7 @@ public class IOFunctionsSpitSlurp {
                         "         (io/slurp-stream is :binary false))) \n" +
                         ")")
                     .seeAlso(
-                        "io/slurp", "io/slurp-lines", "io/spit",
+                    	"io/slurp-reader", "io/slurp", "io/slurp-lines", "io/spit",
                         "io/uri-stream",
                         "io/file-in-stream", "io/string-in-stream", "io/bytebuf-in-stream")
                     .build()
@@ -552,8 +553,8 @@ public class IOFunctionsSpitSlurp {
                         "         (io/slurp-reader rd))) \n" +
                         ")")
                     .seeAlso(
-                        "io/slurp", "io/slurp-lines", "io/spit",
-                        "io/uri-stream",
+                    	"io/slurp-stream", "io/slurp", "io/slurp-lines",
+                    	"io/spit", "io/uri-stream",
                         "io/file-in-stream", "io/string-in-stream", "io/bytebuf-in-stream")
                     .build()
         ) {
@@ -614,7 +615,7 @@ public class IOFunctionsSpitSlurp {
                         "      (io/delete-file-on-exit file)                       \n" +
                         "      (try-with [os (io/file-out-stream file)]            \n" +
                         "         (io/spit-stream os \"123456789\" :flush true)))) ")
-                    .seeAlso("io/spit")
+                    .seeAlso("io/spit-writer", "io/spit")
                     .build()
         ) {
             @Override
@@ -689,7 +690,7 @@ public class IOFunctionsSpitSlurp {
                         "      (io/delete-file-on-exit file)                       \n" +
                         "      (try-with [wr (io/buffered-writer os :utf-8)]       \n" +
                         "         (io/spit-writer wr \"123456789\" :flush true)))) ")
-                    .seeAlso("io/spit")
+                    .seeAlso("io/spit-stream", "io/spit")
                     .build()
         ) {
             @Override
