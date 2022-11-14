@@ -83,6 +83,7 @@ Cheat Sheet: [HTML](https://htmlpreview.github.io/?https://cdn.rawgit.com/jlangc
 * [JSON](doc/readme/json.md)
 * [CSV](doc/readme/csv.md)
 * [PDF](doc/readme/pdf.md)
+* [EXCEL](doc/readme/excel.md)
 * [Shell Scripts](doc/readme/shell-scripts.md)
 * [Extension modules](doc/readme/extension-modules.md)
 * [Source Code as PDF](doc/readme/source2pdf.md)
