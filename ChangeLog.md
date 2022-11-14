@@ -10,6 +10,14 @@ and this project adheres to
 
 
 
+## [1.10.28] - 2022-11-xx
+
+### Added 
+
+- ...
+
+
+
 ## [1.10.27] - 2022-11-14
 
 ### Added 
@@ -21,7 +29,6 @@ and this project adheres to
 
 - Bump Apache POI from 4.1.2 to 5.2.3 (compatibility with POI 4.1.2 is 
   still provided)
-
 
 
 
