@@ -56,16 +56,19 @@
        """
        (do
          (load-module :fonts)
+
          (fonts/download-font-family "Open Sans"
                                      :dir (repl/fonts-dir)
                                      :extract true
                                      :glob-pattern "static/OpenSans/*.ttf"
                                      :silent false)
+
          (fonts/download-font-family "Source Code Pro"
                                      :dir (repl/fonts-dir)
                                      :extract true
                                      :glob-pattern "static/*.ttf"
                                      :silent false)
+
          (fonts/download-font-family "Roboto"
                                      :dir (repl/fonts-dir)
                                      :extract true
