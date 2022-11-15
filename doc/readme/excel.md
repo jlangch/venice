@@ -21,7 +21,12 @@ Run this script from the REPL to download the newest Apache POI 5.2.x libraries:
 ```
 
 
-## Writing EXCEL files
+* [Writing Excel files](#writing-excel-files)
+* [Reading Excel files](#reading-excel-files)
+
+
+
+## Writing Excel files
 
 
 ### Introduction Example
@@ -127,8 +132,6 @@ To omit the header row pass the option `:no-header-row true` the excel sheet:
 
 #### Write to multiple sheets
 
-To omit the header row pass the option `:no-header-row true` the excel sheet:
-
 ```clojure
 (do
   (ns test)
@@ -193,9 +196,9 @@ To omit the header row pass the option `:no-header-row true` the excel sheet:
 ```
 
 
-### Styling EXCEL files
+### Styling Excel files
 
 
-## Reading EXCEL files
+## Reading Excel files
 
 
