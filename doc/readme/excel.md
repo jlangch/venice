@@ -107,7 +107,7 @@ the `.xls` file name extension.
 
 #### Omit the header row
 
-To omit the header row pass the option `:no-header-row true` the excel sheet:
+To omit the header row pass the option `:no-header-row true` to the excel sheet:
 
 ```clojure
 (do
@@ -163,7 +163,44 @@ To omit the header row pass the option `:no-header-row true` the excel sheet:
 
 
 
-#### Datatypes
+#### Supported datatypes
+
+The Excel writer supports the Venice data types:
+
+ - string
+ - integer
+ - long
+ - double
+ - boolean
+ - :java.time.LocalDate
+ - :java.time.LocalDateTime
+ 
+```clojure
+(do
+  (ns test)
+
+  (load-module :excel)
+
+  (let [data  [ {:t-str "text" :t-int 100I :t-long 200 :t-double 1.23  :t-bool true 
+                 :t-local-date (time/local-date 2021 1 1)
+                 :t-local-ts (time/local-date-time 2021 1 1 15 30 45) } ]
+        wbook (excel/writer :xlsx)
+        sheet (excel/add-sheet wbook "Sheet 1")]
+    (excel/add-column sheet "string" { :field :t-str })
+    (excel/add-column sheet "integer" { :field :t-int })
+    (excel/add-column sheet "long" { :field :t-long })
+    (excel/add-column sheet "double" { :field :t-double })
+    (excel/add-column sheet "boolean" { :field :t-bool })
+    (excel/add-column sheet ":LocalDate" { :field :t-local-date })
+    (excel/add-column sheet ":LocalDateTime" { :field :t-local-ts })
+    (excel/write-items sheet data)
+    (excel/auto-size-columns sheet)
+    (excel/write->file wbook "sample.xlsx")))
+```
+
+<img src="https://github.com/jlangch/venice/blob/master/doc/assets/excel/excel-write-006.png" width="400">
+
+ 
 
 
 
@@ -193,7 +230,7 @@ Write the data of a 2D vector to an excel sheet.
 
 #### Writing to individual cells
 
-The functions `excel/write-value` To write values to cells 
+The functions `excel/write-value` To write values to cells. The row and col numbers are 1-based!
 
 ```clojure
 (do
