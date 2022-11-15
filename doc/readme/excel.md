@@ -82,6 +82,7 @@ the `.xls` file name extension.
 ```
 
 
+
 #### Write to a byte buffer
 
 ```clojure
@@ -166,8 +167,56 @@ To omit the header row pass the option `:no-header-row true` the excel sheet:
 
 
 
+#### Writing 2D vector data
+
+Write the data of a 2D vector to an excel sheet.
+
+```clojure
+(do
+  (ns test)
+
+  (load-module :excel)
+
+  (let [wbook (excel/writer :xlsx)
+        dt    (time/local-date 2021 1 1)
+        ts    (time/local-date-time 2021 1 1 15 30 45)
+        data  [[100  101  102  103  104  105]
+               [200  "ab" 1.23 dt   ts   false]]]
+    (excel/write-data wbook "Data" data)
+    (excel/auto-size-columns sheet)
+    (excel/write->file wbook "sample.xlsx")))
+```
+
+<img src="https://github.com/jlangch/venice/blob/master/doc/assets/excel/excel-write-005.png" width="400">
+
+
+
 #### Writing to individual cells
 
+The functions `excel/write-value` To write values to cells 
+
+```clojure
+(do
+  (ns test)
+
+  (load-module :excel)
+
+  (let [wbook (excel/writer :xlsx)
+        sheet (excel/add-sheet wbook "Sheet 1")]
+    (excel/add-column sheet "First Name" { :field :first })
+    (excel/add-column sheet "Last Name" { :field :last })
+    (excel/add-column sheet "Age" { :field :age })
+    (excel/write-value sheet 1 1 "John")
+    (excel/write-value sheet 1 2 "Doe")
+    (excel/write-value sheet 1 3 28)
+    (excel/write-value sheet 2 1 "Sue")
+    (excel/write-value sheet 2 2 "Ford")
+    (excel/write-value sheet 2 3 26)
+    (excel/auto-size-columns sheet)
+    (excel/write->file wbook "sample.xlsx")))
+```
+
+<img src="https://github.com/jlangch/venice/blob/master/doc/assets/excel/excel-write-003.png" width="400">
 
 
 #### Using formulas
@@ -194,6 +243,9 @@ To omit the header row pass the option `:no-header-row true` the excel sheet:
     (excel/auto-size-columns sheet)
     (excel/write->file wbook "sample.xlsx")))
 ```
+
+<img src="https://github.com/jlangch/venice/blob/master/doc/assets/excel/excel-write-004.png" width="400">
+
 
 
 ### Styling Excel files
