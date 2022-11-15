@@ -54,31 +54,6 @@ old style XLS use `(excel/writer :xls)` and ensure it is written to a file with
 the `.xls` file name extension.
 
 
-#### Omit the header row
-
-To omit the header row pass the option `:no-header-row true` the excel sheet:
-
-```clojure
-(do
-  (ns test)
-
-  (load-module :excel)
-
-  (let [data  [ {:first "John" :last "Doe"   :age 28 }
-                {:first "Sue"  :last "Ford"  :age 26 } ]
-        wbook (excel/writer :xlsx)
-        sheet (excel/add-sheet wbook "Sheet 1" { :no-header-row true })]
-    (excel/add-column sheet "First Name" { :field :first })
-    (excel/add-column sheet "Last Name" { :field :last })
-    (excel/add-column sheet "Age" { :field :age })
-    (excel/write-items sheet data)
-    (excel/auto-size-columns sheet)
-    (excel/write->file wbook "sample.xlsx")))
-```
-
-<img src="https://github.com/jlangch/venice/blob/master/doc/assets/excel/excel-write-002.png" width="300">
-
-
 
 #### Write to an output stream
 
@@ -123,6 +98,67 @@ To omit the header row pass the option `:no-header-row true` the excel sheet:
 ```
 
 
+
+#### Omit the header row
+
+To omit the header row pass the option `:no-header-row true` the excel sheet:
+
+```clojure
+(do
+  (ns test)
+
+  (load-module :excel)
+
+  (let [data  [ {:first "John" :last "Doe"   :age 28 }
+                {:first "Sue"  :last "Ford"  :age 26 } ]
+        wbook (excel/writer :xlsx)
+        sheet (excel/add-sheet wbook "Sheet 1" { :no-header-row true })]
+    (excel/add-column sheet "First Name" { :field :first })
+    (excel/add-column sheet "Last Name" { :field :last })
+    (excel/add-column sheet "Age" { :field :age })
+    (excel/write-items sheet data)
+    (excel/auto-size-columns sheet)
+    (excel/write->file wbook "sample.xlsx")))
+```
+
+<img src="https://github.com/jlangch/venice/blob/master/doc/assets/excel/excel-write-002.png" width="300">
+
+
+
+#### Write to multiple sheets
+
+To omit the header row pass the option `:no-header-row true` the excel sheet:
+
+```clojure
+(do
+  (ns test)
+
+  (load-module :excel)
+
+  (let [data1  [ {:first "John" :last "Doe"   :age 28 }
+                 {:first "Sue"  :last "Ford"  :age 26 } ]
+        data2  [ {:first "Mark" :last "Smith" :age 40 }
+                 {:first "Mary" :last "Jones" :age 42 } ]
+        wbook  (excel/writer :xlsx)
+        sheet1 (excel/add-sheet wbook "Sheet 1")
+        sheet2 (excel/add-sheet wbook "Sheet 2")]
+    (excel/add-column sheet1 "First Name" { :field :first })
+    (excel/add-column sheet1 "Last Name" { :field :last })
+    (excel/add-column sheet1 "Age" { :field :age })
+    (excel/add-column sheet2 "First Name" { :field :first })
+    (excel/add-column sheet2 "Last Name" { :field :last })
+    (excel/add-column sheet2 "Age" { :field :age })
+    (excel/write-items sheet1 data1)
+    (excel/write-items sheet2 data2)
+    (excel/auto-size-columns sheet1)
+    (excel/auto-size-columns sheet2)
+    (excel/write->file wbook "sample.xlsx")))
+```
+
+<img src="https://github.com/jlangch/venice/blob/master/doc/assets/excel/excel-write-003.png" width="300">
+
+
+
 #### Datatypes
 
 
@@ -143,8 +179,7 @@ To omit the header row pass the option `:no-header-row true` the excel sheet:
                 {:a 101 :b 201 }
                 {:a 102 :b 202 } ]
         wbook (excel/writer :xlsx)
-        sheet (excel/add-sheet wbook "Sheet 1"
-                               { :no-header-row true })]
+        sheet (excel/add-sheet wbook "Sheet 1" { :no-header-row true })]
     (excel/add-column sheet "A" { :field :a })
     (excel/add-column sheet "B" { :field :b })
     (excel/add-column sheet "C" { :field :c })
