@@ -246,9 +246,11 @@
           (load-module :excel)
           (let [wbook (excel/writer :xlsx)
                 dt    (time/local-date 2021 1 1)
-                ts    (time/local-date-time 2021 1 1 15 30 45)]
-            (excel/write-data wbook "Data" [[100  101  102  103  104  105]
-                                            [200  "ab" 1.23 dt   ts   false]])
+                ts    (time/local-date-time 2021 1 1 15 30 45)
+                data  [[100  101  102  103  104  105]
+                       [200  "ab" 1.23 dt   ts   false]]]
+            (excel/write-data wbook "Data" data)
+            (excel/auto-size-columns sheet)
             (excel/write->file wbook "sample.xlsx")))
         """ )
      :see-also '("excel/write->stream", "excel/write->bytebuf")}
