@@ -58,6 +58,7 @@ References:
 (do
   (ns test)
 
+  (load-module :pdf)
   (load-module :kira)
 
   ;; ensure PDF libs are available when loading this file
@@ -140,6 +141,7 @@ References:
 (do
   (ns test)
 
+  (load-module :pdf)
   (load-module :kira)
 
   ;; ensure PDF libs are available when loading this file
@@ -362,6 +364,7 @@ These images are then referred to as:
 (do
   (ns test)
 
+  (load-module :pdf)
   (load-module :kira)
   (load-module :xchart)
 
@@ -532,6 +535,7 @@ Google hosts Open Source fonts at [Google Fonts](https://fonts.google.com)
 (do
   (ns test)
 
+  (load-module :pdf)
   (load-module :kira)
 
   ;; ensure PDF libs are available when loading this file
@@ -670,6 +674,7 @@ Google hosts Open Source fonts at [Google Fonts](https://fonts.google.com)
 (do
   (ns test)
 
+  (load-module :pdf)
   (load-module :kira)
 
   ;; ensure PDF libs are available when loading this file
@@ -834,6 +839,7 @@ Google hosts Open Source fonts at [Google Fonts](https://fonts.google.com)
 (do
   (ns test)
 
+  (load-module :pdf)
   (load-module :kira)
 
   ;; ensure PDF libs are available when loading this file
@@ -964,6 +970,7 @@ Google hosts Open Source fonts at [Google Fonts](https://fonts.google.com)
 (do
   (ns test)
 
+  (load-module :pdf)
   (load-module :kira)
 
   ;; ensure PDF libs are available when loading this file
@@ -1068,6 +1075,7 @@ Venice supports simplified text to PDF
 (do 
   (ns test)
   
+  (load-module :pdf)
   (load-module :kira)
   
   ; define the template
@@ -1119,7 +1127,9 @@ Venice supports simplified text to PDF
 Merge multiple PDFs into a single one
 
 ```clojure
-(do 
+(do
+  (load-module :pdf)
+ 
   (let [pdf (pdf/merge (pdf/text-to-pdf "PDF #1" :font-size 64)
                        (pdf/text-to-pdf "PDF #2" :font-size 64)
                        (pdf/text-to-pdf "PDF #3" :font-size 64)
@@ -1140,6 +1150,8 @@ Copy pages from a PDF to a new PDF
 
 ```clojure
 (do 
+  (load-module :pdf)
+
   (let [pdf (pdf/merge (pdf/text-to-pdf "PDF #1" :font-size 64)
                        (pdf/text-to-pdf "PDF #2" :font-size 64)
                        (pdf/text-to-pdf "PDF #3" :font-size 64)

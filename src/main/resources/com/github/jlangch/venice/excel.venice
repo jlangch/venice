@@ -126,7 +126,7 @@
           (load-module :excel)
           (let [data  [ {:first "John" :last "Doe"   :age 28 }
                         {:first "Sue"  :last "Ford"  :age 26 } ]
-                wbook (excel/writer :xls)
+                wbook (excel/writer :xlsx)
                 sheet (excel/add-sheet wbook "Sheet 1")]
             (excel/add-column sheet "First Name" { :field :first })
             (excel/add-column sheet "Last Name" { :field :last })
