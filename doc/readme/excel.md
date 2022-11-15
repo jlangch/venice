@@ -47,7 +47,7 @@ a table data set and map the sheet columns to the map keys in the table.
     (excel/write->file wbook "sample.xlsx")))
 ```
 
-[Generated Excel](https://github.com/jlangch/venice/blob/master/doc/assets/excel/excel-write-001.png)
+<img src="https://github.com/jlangch/venice/blob/master/doc/assets/excel/excel-write-001.png" width="300">
 
 To create an XLSX use `(excel/writer :xlsx)` to create a workbook. To create an 
 old style XLS use `(excel/writer :xls)` and ensure it is written to a file with 
