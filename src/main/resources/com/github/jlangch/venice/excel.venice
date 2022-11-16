@@ -433,8 +433,7 @@
                         {:a 101 :b 201 }
                         {:a 102 :b 202 } ]
                 wbook (excel/writer :xlsx)
-                sheet (excel/add-sheet wbook "Sheet 1"
-                                       { :no-header-row true })]
+                sheet (excel/add-sheet wbook "Sheet 1" { :no-header-row true })]
             (excel/add-column sheet "A" { :field :a })
             (excel/add-column sheet "B" { :field :b })
             (excel/add-column sheet "C" { :field :c })
@@ -453,8 +452,7 @@
                         {:a 101 :b 201 }
                         {:a 102 :b 202 } ]
                 wbook (excel/writer :xlsx)
-                sheet (excel/add-sheet wbook "Sheet 1"
-                                       { :no-header-row true })]
+                sheet (excel/add-sheet wbook "Sheet 1" { :no-header-row true })]
             (excel/add-font wbook :bold { :bold true })
             (excel/add-style wbook :bold { :font :bold })
             (excel/add-column sheet "A" { :field :a })
@@ -501,8 +499,7 @@
                         {:a 101 :b 201 }
                         {:a 102 :b 202 } ]
                 wbook (excel/writer :xlsx)
-                sheet (excel/add-sheet wbook "Sheet 1"
-                                       { :no-header-row true })]
+                sheet (excel/add-sheet wbook "Sheet 1" { :no-header-row true })]
             (excel/add-column sheet "A" { :field :a })
             (excel/add-column sheet "B" { :field :b })
             (excel/add-column sheet "C" { :field :c })
@@ -538,8 +535,7 @@
                         {:a 101 :b 201 }
                         {:a 102 :b 202 } ]
                 wbook (excel/writer :xlsx)
-                sheet (excel/add-sheet wbook "Sheet 1"
-                                       { :no-header-row true })
+                sheet (excel/add-sheet wbook "Sheet 1" { :no-header-row true })
                 addr  #(excel/cell-address sheet %1 %2)
                 sum   #(str "SUM\u0028" %1 "," %2 ")")]
             (excel/add-column sheet "A" { :field :a })

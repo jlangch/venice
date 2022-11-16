@@ -24,21 +24,21 @@ Run this script from the REPL to download the newest Apache POI 5.2.x libraries:
 
 ## Content
 
-* [Writing Excel files](#writing-excel-files)
-  * [Introduction Example](#introduction-example)
-  * [Examples](#write-examples)
-     * [Write to an output stream](#write-to-an-output-stream)
-     * [Write to a byte buffer](#write-to-a-byte-buffer)
-     * [Omit the header row](#omit-the-header-row)
-     * [Write to multiple sheets](#write-to-multiple-sheets)
-     * [Supported datatypes](#supported-datatypes)
-     * [Writing 2D vector data](#writing-2d-vector-data)
-     * [Writing to individual cells](#writing-to-individual-cells)
-     * [Using formulas](#using-formulas)
-  * [Styling](#styling)
-     * [Fonts](#fonts)
-     * [Cell Styles](#cell-styles)
-* [Reading Excel files](#reading-excel-files)
+1. [Writing Excel files](#writing-excel-files)
+    * [Introduction Example](#introduction-example)
+    * [Examples](#write-examples)
+       * [Write to an output stream](#write-to-an-output-stream)
+       * [Write to a byte buffer](#write-to-a-byte-buffer)
+       * [Omit the header row](#omit-the-header-row)
+       * [Write to multiple sheets](#write-to-multiple-sheets)
+       * [Supported datatypes](#supported-datatypes)
+       * [Writing 2D vector data](#writing-2d-vector-data)
+       * [Writing to individual cells](#writing-to-individual-cells)
+       * [Using formulas](#using-formulas)
+    * [Styling](#styling)
+       * [Fonts](#fonts)
+       * [Cell Styles](#cell-styles)
+2. [Reading Excel files](#reading-excel-files)
 
 
 
@@ -315,6 +315,34 @@ The functions `excel/write-value` To write values to cells. The row and col numb
 ```
 
 <img src="https://github.com/jlangch/venice/blob/master/doc/assets/excel/excel-write-004.png" width="400">
+
+Venice provides the function `excel/cell-address` to help with building logical cell addresses
+for formulas:
+
+```clojure
+(do
+  (ns test)
+
+  (load-module :excel)
+
+  (let [data  [ {:a 100 :b 200 }
+                {:a 101 :b 201 }
+                {:a 102 :b 202 } ]
+        wbook (excel/writer :xlsx)
+        sheet (excel/add-sheet wbook "Sheet 1" { :no-header-row true })
+        addr  #(excel/cell-address sheet %1 %2)  ;; build logical cell addresses
+        sum   #(str "SUM(" %1 "," %2 ")")]       ;; build SUM formula
+    (excel/add-column sheet "A" { :field :a })
+    (excel/add-column sheet "B" { :field :b })
+    (excel/add-column sheet "C" { :field :c })
+    (excel/write-items sheet data)
+    (excel/cell-formula sheet 1 3 (sum (addr 1 1) (addr 1 2)))
+    (excel/cell-formula sheet 2 3 (sum (addr 2 1) (addr 2 2)))
+    (excel/cell-formula sheet 3 3 (sum (addr 3 1) (addr 3 2)))
+    (excel/evaluate-formulas wbook)
+    (excel/auto-size-columns sheet)
+    (excel/write->file wbook "sample.xlsx")))
+```
 
 [top](#content)
 
