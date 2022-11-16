@@ -72,6 +72,7 @@ public class TimeSection implements ISectionBuilder {
         fields.addItem(diBuilder.getDocItem("time/hour"));
         fields.addItem(diBuilder.getDocItem("time/minute"));
         fields.addItem(diBuilder.getDocItem("time/second"));
+        fields.addItem(diBuilder.getDocItem("time/milli"));
 
         final DocSection etc = new DocSection("Fields etc", "time.fieldsetc");
         all.addSection(etc);

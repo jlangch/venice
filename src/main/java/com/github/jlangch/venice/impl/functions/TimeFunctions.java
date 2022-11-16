@@ -159,8 +159,11 @@ public class TimeFunctions {
                         "(time/local-date)",
                         "(time/local-date 2018 8 1)",
                         "(time/local-date \"2018-08-01\")",
+                        "(time/local-date (time/local-date-time 2018 8 1 14 20 10))",
                         "(time/local-date 1375315200000)",
                         "(time/local-date (. :java.util.Date :new))")
+                    .seeAlso(
+                        "time/local-date-time", "time/zoned-date-time")
                     .build()
         ) {
             @Override
@@ -298,9 +301,12 @@ public class TimeFunctions {
                         "(time/local-date-time 2018 8 1 14 20 10)",
                         "(time/local-date-time 2018 8 1 14 20 10 200)",
                         "(time/local-date-time \"2018-08-01T14:20:10.200\")",
+                        "(time/local-date-time (time/local-date 2018 8 1))",
                         "(time/local-date-time 1375315200000)",
                         "(time/local-date-time (. :java.util.Date :new))")
-                    .build()
+                    .seeAlso(
+                        "time/local-date", "time/zoned-date-time")
+                     .build()
         ) {
             @Override
             public VncVal apply(final VncList args) {
@@ -467,6 +473,8 @@ public class TimeFunctions {
                         "(time/zoned-date-time 2018 8 1 14 20 10)",
                         "(time/zoned-date-time 2018 8 1 14 20 10 200)",
                         "(time/zoned-date-time \"2018-08-01T14:20:10.200+01:00\")",
+                        "(time/zoned-date-time (time/local-date 2018 8 1))",
+                        "(time/zoned-date-time (time/local-date-time 2018 8 1 14 20 10))",
                         "(time/zoned-date-time 1375315200000)",
                         "(time/zoned-date-time (. :java.util.Date :new))",
 
@@ -475,8 +483,12 @@ public class TimeFunctions {
                         "(time/zoned-date-time \"UTC\" 2018 8 1 14 20 10)",
                         "(time/zoned-date-time \"UTC\" 2018 8 1 14 20 10 200)",
                         "(time/zoned-date-time \"UTC\" \"2018-08-01T14:20:10.200+01:00\")",
+                        "(time/zoned-date-time \"UTC\" (time/local-date 2018 8 1))",
+                        "(time/zoned-date-time \"UTC\" (time/local-date-time 2018 8 1 14 20 10))",
                         "(time/zoned-date-time \"UTC\" 1375315200000)",
                         "(time/zoned-date-time \"UTC\" (. :java.util.Date :new))")
+                    .seeAlso(
+                        "time/local-date", "time/local-date-time")
                     .build()
         ) {
             @Override
@@ -657,6 +669,8 @@ public class TimeFunctions {
                         "             (time/local-date-time \"2018-01-01T10:00:00.000\"))",
                         "(time/after? (time/zoned-date-time \"2019-01-01T10:00:00.000+01:00\") \n" +
                         "             (time/zoned-date-time \"2018-01-01T10:00:00.000+01:00\"))")
+                    .seeAlso(
+                        "time/before?", "time/not-after?", "time/not-before?")
                     .build()
         ) {
             @Override
@@ -711,6 +725,8 @@ public class TimeFunctions {
                         "                 (time/local-date-time \"2019-01-01T10:00:00.000\"))",
                         "(time/not-after? (time/zoned-date-time \"2018-01-01T10:00:00.000+01:00\") \n" +
                         "                 (time/zoned-date-time \"2019-01-01T10:00:00.000+01:00\"))")
+                    .seeAlso(
+                        "time/after?", "time/before?", "time/not-before?")
                     .build()
         ) {
             @Override
@@ -758,6 +774,8 @@ public class TimeFunctions {
                         "              (time/local-date-time \"2019-01-01T10:00:00.000\"))",
                         "(time/before? (time/zoned-date-time \"2018-01-01T10:00:00.000+01:00\") \n" +
                         "              (time/zoned-date-time \"2019-01-01T10:00:00.000+01:00\"))")
+                    .seeAlso(
+                        "time/after?", "time/not-after?", "time/not-before?")
                     .build()
         ) {
             @Override
@@ -811,6 +829,8 @@ public class TimeFunctions {
                         "                  (time/local-date-time \"2018-01-01T10:00:00.000\"))",
                         "(time/not-before? (time/zoned-date-time \"2019-01-01T10:00:00.000+01:00\") \n" +
                         "                  (time/zoned-date-time \"2018-01-01T10:00:00.000+01:00\"))")
+                    .seeAlso(
+                        "time/after?", "time/before?", "time/not-after?")
                     .build()
         ) {
             @Override
@@ -856,7 +876,9 @@ public class TimeFunctions {
                         "(time/plus (time/local-date) :days 2)",
                         "(time/plus (time/local-date-time) :days 2)",
                         "(time/plus (time/zoned-date-time) :days 2)")
-                        .build()
+                    .seeAlso(
+                        "time/minus")
+                    .build()
         ) {
             @Override
             public VncVal apply(final VncList args) {
@@ -902,6 +924,8 @@ public class TimeFunctions {
                         "(time/minus (time/local-date) :days 2)",
                         "(time/minus (time/local-date-time) :days 2)",
                         "(time/minus (time/zoned-date-time) :days 2)")
+                    .seeAlso(
+                        "time/plus")
                     .build()
         ) {
             @Override
@@ -951,6 +975,8 @@ public class TimeFunctions {
                         "(time/period (time/local-date) (time/plus (time/local-date) :days 3) :days)",
                         "(time/period (time/local-date-time) (time/plus (time/local-date-time) :days 3) :days)",
                         "(time/period (time/zoned-date-time) (time/plus (time/zoned-date-time) :days 3) :days)")
+                    .seeAlso(
+                        "time/local-date", "time/local-date-time", "time/zoned-date-time")
                     .build()
         ) {
             @Override
@@ -1003,6 +1029,11 @@ public class TimeFunctions {
                         "(time/year (time/local-date))",
                         "(time/year (time/local-date-time))",
                         "(time/year (time/zoned-date-time))")
+                    .seeAlso(
+                         "time/month",
+                         "time/day-of-year",
+                         "time/day-of-month", "time/first-day-of-month", "time/last-day-of-month",
+                         "time/day-of-week")
                     .build()
         ) {
             @Override
@@ -1041,6 +1072,11 @@ public class TimeFunctions {
                         "(time/month (time/local-date))",
                         "(time/month (time/local-date-time))",
                         "(time/month (time/zoned-date-time))")
+                    .seeAlso(
+                        "time/year",
+                        "time/day-of-year",
+                        "time/day-of-month", "time/first-day-of-month", "time/last-day-of-month",
+                        "time/day-of-week")
                     .build()
         ) {
             @Override
@@ -1079,6 +1115,10 @@ public class TimeFunctions {
                         "(time/day-of-week (time/local-date))",
                         "(time/day-of-week (time/local-date-time))",
                         "(time/day-of-week (time/zoned-date-time))")
+                    .seeAlso(
+                        "time/year", "time/month",
+                        "time/day-of-year",
+                        "time/day-of-month", "time/first-day-of-month", "time/last-day-of-month")
                     .build()
         ) {
             @Override
@@ -1117,6 +1157,11 @@ public class TimeFunctions {
                         "(time/day-of-month (time/local-date))",
                         "(time/day-of-month (time/local-date-time))",
                         "(time/day-of-month (time/zoned-date-time))")
+                    .seeAlso(
+                        "time/year", "time/month",
+                        "time/day-of-year",
+                        "time/first-day-of-month", "time/last-day-of-month",
+                        "time/day-of-week")
                     .build()
         ) {
             @Override
@@ -1155,6 +1200,10 @@ public class TimeFunctions {
                         "(time/day-of-year (time/local-date))",
                         "(time/day-of-year (time/local-date-time))",
                         "(time/day-of-year (time/zoned-date-time))")
+                    .seeAlso(
+                        "time/year", "time/month",
+                        "time/day-of-month", "time/first-day-of-month", "time/last-day-of-month",
+                        "time/day-of-week")
                     .build()
         ) {
             @Override
@@ -1193,6 +1242,11 @@ public class TimeFunctions {
                         "(time/first-day-of-month (time/local-date))",
                         "(time/first-day-of-month (time/local-date-time))",
                         "(time/first-day-of-month (time/zoned-date-time))")
+                    .seeAlso(
+                        "time/year", "time/month",
+                        "time/day-of-year",
+                        "time/day-of-month", "time/last-day-of-month",
+                        "time/day-of-week")
                     .build()
         ) {
             @Override
@@ -1234,6 +1288,11 @@ public class TimeFunctions {
                         "(time/last-day-of-month (time/local-date))",
                         "(time/last-day-of-month (time/local-date-time))",
                         "(time/last-day-of-month (time/zoned-date-time))")
+                    .seeAlso(
+                        "time/year", "time/month",
+                        "time/day-of-year",
+                        "time/day-of-month", "time/first-day-of-month",
+                        "time/day-of-week")
                     .build()
         ) {
             @Override
@@ -1275,6 +1334,8 @@ public class TimeFunctions {
                         "(time/hour (time/local-date))",
                         "(time/hour (time/local-date-time))",
                         "(time/hour (time/zoned-date-time))")
+                    .seeAlso(
+                         "time/minute", "time/second", "time/milli")
                     .build()
         ) {
             @Override
@@ -1313,6 +1374,8 @@ public class TimeFunctions {
                         "(time/minute (time/local-date))",
                         "(time/minute (time/local-date-time))",
                         "(time/minute (time/zoned-date-time))")
+                    .seeAlso(
+                        "time/hour", "time/second", "time/milli")
                     .build()
         ) {
             @Override
@@ -1351,7 +1414,9 @@ public class TimeFunctions {
                         "(time/second (time/local-date))",
                         "(time/second (time/local-date-time))",
                         "(time/second (time/zoned-date-time))")
-                    .build()
+                    .seeAlso(
+                        "time/hour", "time/minute", "time/milli")
+                   .build()
         ) {
             @Override
             public VncVal apply(final VncList args) {
@@ -1378,6 +1443,46 @@ public class TimeFunctions {
             private static final long serialVersionUID = -1848883965231344442L;
         };
 
+    public static VncFunction milli =
+        new VncFunction(
+                "time/milli",
+                VncFunction
+                    .meta()
+                    .arglists("(time/milli date)")
+                    .doc("Returns the millis of the date 0..999")
+                    .examples(
+                        "(time/milli (time/local-date))",
+                        "(time/milli (time/local-date-time))",
+                        "(time/milli (time/zoned-date-time))")
+                    .seeAlso(
+                        "time/hour", "time/minute", "time/second")
+                   .build()
+        ) {
+            @Override
+            public VncVal apply(final VncList args) {
+                ArityExceptions.assertArity(this, args, 1);
+
+                final Object date = Coerce.toVncJavaObject(args.first()).getDelegate();
+
+                if (date instanceof ZonedDateTime) {
+                    return new VncLong(((ZonedDateTime)date).getNano() / 1_000_000);
+                }
+                else if (date instanceof LocalDateTime) {
+                    return new VncLong(((LocalDateTime)date).getNano() / 1_000_000);
+                }
+                else if (date instanceof LocalDate) {
+                    return new VncLong(0);
+                }
+                else {
+                    throw new VncException(String.format(
+                            "Function 'time/milli' does not allow %s as parameter",
+                            Types.getType(args.first())));
+                }
+            }
+
+            private static final long serialVersionUID = -1848883965231344442L;
+        };
+
     public static VncFunction length_of_year =
         new VncFunction(
                 "time/length-of-year",
@@ -1392,6 +1497,8 @@ public class TimeFunctions {
                         "(time/length-of-year (time/local-date 2001 1 1))",
                         "(time/length-of-year (time/local-date-time))",
                         "(time/length-of-year (time/zoned-date-time))")
+                    .seeAlso(
+                        "time/length-of-month", "time/leap-year?")
                     .build()
         ) {
             @Override
@@ -1435,6 +1542,8 @@ public class TimeFunctions {
                         "(time/length-of-month (time/local-date 2001 2 1))",
                         "(time/length-of-month (time/local-date-time))",
                         "(time/length-of-month (time/zoned-date-time))")
+                    .seeAlso(
+                        "time/length-of-year", "time/leap-year?")
                     .build()
         ) {
             @Override
@@ -1475,6 +1584,8 @@ public class TimeFunctions {
                         "(time/leap-year? (time/local-date 2000 1 1))",
                         "(time/leap-year? (time/local-date-time))",
                         "(time/leap-year? (time/zoned-date-time))")
+                    .seeAlso(
+                        "time/length-of-year", "time/length-of-month")
                     .build()
         ) {
             @Override
@@ -1526,6 +1637,8 @@ public class TimeFunctions {
                         "(time/with-time (time/local-date) 22 00 15 333)",
                         "(time/with-time (time/local-date-time) 22 00 15 333)",
                         "(time/with-time (time/zoned-date-time) 22 00 15 333)")
+                    .seeAlso(
+                        "time/local-date", "time/local-date-time", "time/zoned-date-time")
                     .build()
         ) {
             @Override
@@ -1748,6 +1861,7 @@ public class TimeFunctions {
                     .arglists("(time/zone-offset date)")
                     .doc("Returns the zone-offset of the date in minutes")
                     .examples("(time/zone-offset (time/zoned-date-time))")
+                    .seeAlso("time/zoned-date-time")
                     .build()
         ) {
             @Override
@@ -2113,6 +2227,7 @@ public class TimeFunctions {
                     .add(hour)
                     .add(minute)
                     .add(second)
+                    .add(milli)
                     .add(leap_yearQ)
                     .add(length_of_year)
                     .add(length_of_month)
