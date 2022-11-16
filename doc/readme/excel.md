@@ -350,7 +350,46 @@ for formulas:
 
 ### Styling
 
+#### Row height
+
+Set the height of individual rows:
+
+```clojure
+(do
+  (ns test)
+
+  (load-module :excel)
+
+
+  (let [data  [ {:first "John" :last "Doe"   :age 28 }
+                {:first "Sue"  :last "Ford"  :age 26 } ]
+        wbook (excel/writer :xlsx)
+        sheet (excel/add-sheet wbook "Sheet 1")]
+    (excel/add-column sheet "First Name" { :field :first })
+    (excel/add-column sheet "Last Name" { :field :last })
+    (excel/add-column sheet "Age" { :field :age })
+    (excel/write-items sheet data)
+    (excel/auto-size-columns sheet)
+    (excel/row-height sheet 2 100)
+    (excel/write->file wbook "sample.xlsx")))
+```
+
+<img src="https://github.com/jlangch/venice/blob/master/doc/assets/excel/excel-write-007.png" width="400">
+
+[top](#content)
+
+
+
 #### Fonts
+
+```clojure
+(do
+  (ns test)
+
+  (load-module :excel)
+
+
+```
 
 [top](#content)
 
