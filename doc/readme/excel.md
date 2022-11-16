@@ -21,6 +21,9 @@ Run this script from the REPL to download the newest Apache POI 5.2.x libraries:
 ```
 
 
+
+## Content
+
 * [Writing Excel files](#writing-excel-files)
   * [Introduction Example](#introduction-example)
   * [Examples](#write-examples)
@@ -71,6 +74,7 @@ To create an XLSX use `(excel/writer :xlsx)` to create a workbook. To create an
 old style XLS use `(excel/writer :xls)` and ensure it is written to a file with 
 the `.xls` file name extension.
 
+[top](#content)
 
 
 ### Write Examples
@@ -96,6 +100,8 @@ the `.xls` file name extension.
     (excel/write->stream wbook os)))
 ```
 
+[top](#content)
+
 
 
 #### Write to a byte buffer
@@ -117,6 +123,8 @@ the `.xls` file name extension.
     (excel/auto-size-columns sheet)
     (excel/write->bytebuf wbook)))
 ```
+
+[top](#content)
 
 
 
@@ -143,6 +151,8 @@ To omit the header row pass the option `:no-header-row true` to the excel sheet:
 ```
 
 <img src="https://github.com/jlangch/venice/blob/master/doc/assets/excel/excel-write-002.png" width="400">
+
+[top](#content)
 
 
 
@@ -175,6 +185,8 @@ To omit the header row pass the option `:no-header-row true` to the excel sheet:
 ```
 
 <img src="https://github.com/jlangch/venice/blob/master/doc/assets/excel/excel-write-003.png" width="400">
+
+[top](#content)
 
 
 
@@ -215,6 +227,8 @@ The Excel writer supports the Venice data types:
 
 <img src="https://github.com/jlangch/venice/blob/master/doc/assets/excel/excel-write-006.png" width="400">
 
+[top](#content)
+
  
 
 
@@ -239,6 +253,8 @@ Write the data of a 2D vector to an excel sheet.
 ```
 
 <img src="https://github.com/jlangch/venice/blob/master/doc/assets/excel/excel-write-005.png" width="400">
+
+[top](#content)
 
 
 
@@ -269,6 +285,8 @@ The functions `excel/write-value` To write values to cells. The row and col numb
 
 <img src="https://github.com/jlangch/venice/blob/master/doc/assets/excel/excel-write-003.png" width="400">
 
+[top](#content)
+
 
 
 #### Using formulas
@@ -298,16 +316,25 @@ The functions `excel/write-value` To write values to cells. The row and col numb
 
 <img src="https://github.com/jlangch/venice/blob/master/doc/assets/excel/excel-write-004.png" width="400">
 
+[top](#content)
+
 
 
 ### Styling
 
 #### Fonts
 
+[top](#content)
+
+
+
 #### Cell styles
 
+[top](#content)
 
 
 ## Reading Excel files
+
+[top](#content)
 
 
