@@ -503,7 +503,7 @@ Available border styles:
                                      :border-bottom :thin })
                                      
     ;; define a style to be used with the 'weight' column
-    (excel/add-style wbook :weight { :format, "#,##0.0"
+    (excel/add-style wbook :weight { :format "#,##0.0"
                                      :h-align :right })
 
     (let [sheet (excel/add-sheet wbook "Sheet 1"

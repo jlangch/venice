@@ -88,6 +88,7 @@ public class ModuleExcelSection implements ISectionBuilder {
         rd.addItem(diBuilder.getDocItem("excel/read-long-val", false));
         rd.addItem(diBuilder.getDocItem("excel/read-double-val", false));
         rd.addItem(diBuilder.getDocItem("excel/read-date-val", false));
+        rd.addItem(diBuilder.getDocItem("excel/read-datetime-val", false));
 
         final DocSection rd_util = new DocSection("Reader Util", id());
         all.addSection(rd_util);
