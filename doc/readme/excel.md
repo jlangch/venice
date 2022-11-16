@@ -462,14 +462,14 @@ Define a named font with optional attributes on the workbook.
 
 | Option           |                                                |
 | ---------------- | ---------------------------------------------- |
-| :format s        | cell format, e.g. "#0"
-                     Default formats by data type :
-                       - long: "#0"
-                       - integer: "#0"
-                       - float: "#,##0.00"
-                       - double: "#,##0.00"
-                       - date: "d.m.yyyy"
-                       - datetime: "d.m.yyyy hh:mm:ss"             |
+| :format s        | <div>cell format, e.g. "#0"<br>
+                     <ul>Default formats by data type :
+                       <li>long: "#0"</li>
+                       <li>integer: "#0"</li>
+                       <li>float: "#,##0.00"</li>
+                       <li>double: "#,##0.00"</li>
+                       <li>date: "d.m.yyyy"</li>
+                       <li>datetime: "d.m.yyyy hh:mm:ss"</li></ul></div> |
 | :font r          | font name, e.g. :header                       |
 | :bg-color c      | background color, either an Excel indexed
                      color or   a HTML color, e.g. :PLUM, "#00FF00"
