@@ -2035,7 +2035,11 @@ public class TimeFunctions {
                     .meta()
                     .arglists("(time/to-millis date)")
                     .doc("Converts the passed date to milliseconds since epoch")
-                    .examples("(time/to-millis (time/local-date))")
+                    .examples(
+                        "(time/to-millis (time/date))",
+                    	"(time/to-millis (time/local-date))",
+                    	"(time/to-millis (time/local-date-time))",
+                    	"(time/to-millis (time/zoned-date-time))")
                     .build()
         ) {
             @Override
