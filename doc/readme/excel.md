@@ -481,9 +481,47 @@ Available border styles:
 :medium, :double, :medium-dash-dot,
 :dashed, :hair, :dash-dot-dot
 
+```clojure
+(do
+  (ns test)
 
+  (load-module :excel)
+
+  (let [data  [ {:first "John" :last "Doe"   :weight 70.5 }
+                {:first "Sue"  :last "Ford"  :weight 54.2 } ]
+        wbook (excel/writer :xlsx)]
+
+    ;; define a font ':header-font'
+    (excel/add-font wbook :header-font { :bold true })
+    
+   ;; define a sheet style ':header' referencing the font ':header-font'
+    (excel/add-style wbook :header { :font :header-font
+                                     :bg-color :GREY_25_PERCENT
+                                     :h-align :center
+                                     :rotation 0
+                                     :border-top :thin
+                                     :border-bottom :thin })
+                                     
+    ;; define a style to be used with the 'weight' column
+    (excel/add-style wbook :weight { :format, "#,##0.0"
+                                     :h-align :right })
+
+    (let [sheet (excel/add-sheet wbook "Sheet 1"
+                                 { :no-header-row false
+                                   :default-header-style :header })]
+      (excel/add-column sheet "First Name" { :field :first })
+      (excel/add-column sheet "Last Name" { :field :last })
+      (excel/add-column sheet "Weight" { :field :weight
+                                         :body-style :weight })
+      (excel/write-items sheet data)
+      (excel/auto-size-columns sheet)
+      (excel/write->file wbook "sample.xlsx"))))
+```
+
+<img src="https://github.com/jlangch/venice/blob/master/doc/assets/excel/excel-write-009.png" width="400">
 
 [top](#content)
+
 
 
 ## Reading Excel files
