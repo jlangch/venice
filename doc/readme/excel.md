@@ -36,6 +36,7 @@ Run this script from the REPL to download the newest Apache POI 5.2.x libraries:
        * [Writing to individual cells](#writing-to-individual-cells)
        * [Using formulas](#using-formulas)
     * [Styling](#styling)
+       * [Row height](#row-height)
        * [Fonts](#fonts)
        * [Cell Styles](#cell-styles)
 2. [Reading Excel files](#reading-excel-files)
@@ -360,7 +361,6 @@ Set the height of individual rows:
 
   (load-module :excel)
 
-
   (let [data  [ {:first "John" :last "Doe"   :age 28 }
                 {:first "Sue"  :last "Ford"  :age 26 } ]
         wbook (excel/writer :xlsx)
@@ -369,8 +369,8 @@ Set the height of individual rows:
     (excel/add-column sheet "Last Name" { :field :last })
     (excel/add-column sheet "Age" { :field :age })
     (excel/write-items sheet data)
-    (excel/auto-size-columns sheet)
     (excel/row-height sheet 2 100)
+    (excel/auto-size-columns sheet)
     (excel/write->file wbook "sample.xlsx")))
 ```
 
@@ -382,14 +382,55 @@ Set the height of individual rows:
 
 #### Fonts
 
+Define a named font with optional attributes on the workbook.
+
+```
+  (excel/add-font wbook :header-font { :height 12
+                                       :bold true
+                                       :italic false
+                                       :color :BLUE })
+```
+
+| Option    | Description                           |
+| --------- | ------------------------------------- |
+| :name s   | font name, e.g. 'Arial'               |
+| :height n | height in points, e.g. 12             |
+| :bold b   | bold, e.g. true, false                |
+| :italic b | italic, e.g. true, false              |
+| :color c  | color, either an Excel indexed color or a HTML color, e.g. :BLUE, "#0000FF" |
+
+
 ```clojure
 (do
   (ns test)
 
   (load-module :excel)
 
+  (let [data  [ {:first "John" :last "Doe"   :age 28 }
+                {:first "Sue"  :last "Ford"  :age 26 } ]
+        wbook (excel/writer :xlsx)]
+        
+    ;; define a font ':header-font'
+    (excel/add-font wbook :header-font { :height 12
+                                         :bold true
+                                         :italic false
+                                         :color :BLUE })
+   
+    ;; define a sheet style ':header using the font
+    (excel/add-style wbook :header { :font :header-font })
 
+    (let [sheet (excel/add-sheet wbook "Sheet 1"
+                                 { :no-header-row false
+                                   :default-header-style :header })]
+      (excel/add-column sheet "First Name" { :field :first })
+      (excel/add-column sheet "Last Name" { :field :last })
+      (excel/add-column sheet "Age" { :field :age })
+      (excel/write-items sheet data)
+      (excel/auto-size-columns sheet)
+      (excel/write->file wbook "sample.xlsx"))))
 ```
+
+<img src="https://github.com/jlangch/venice/blob/master/doc/assets/excel/excel-write-008.png" width="400">
 
 [top](#content)
 
