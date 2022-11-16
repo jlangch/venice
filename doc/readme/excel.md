@@ -416,7 +416,7 @@ Define a named font with optional attributes on the workbook.
                                          :italic false
                                          :color :BLUE })
    
-    ;; define a sheet style ':header using the font
+    ;; define a sheet style ':header' referencing the font ':header-font'
     (excel/add-style wbook :header { :font :header-font })
 
     (let [sheet (excel/add-sheet wbook "Sheet 1"
@@ -437,6 +437,60 @@ Define a named font with optional attributes on the workbook.
 
 
 #### Cell styles
+
+Define a named font with optional attributes on the workbook.
+
+```
+  ;; define a font ':header-font'
+  (excel/add-font wbook :header-font { :height 12
+                                       :bold true
+                                       :italic false
+                                       :color :BLUE })
+  
+  ;; define a style to be used with the header row
+  (excel/add-style wbook :header { :font :header-font
+                                   :bg-color :GREY_25_PERCENT
+                                   :h-align :center
+                                   :rotation 0
+                                   :border-top :thin
+                                   :border-bottom :thin })
+  
+  ;; define a style to be used with the 'weight' column
+  (excel/add-style wbook :weight { :format, "#,##0.0"
+                                   :h-align :right })
+```
+
+| Option           |                                                |
+| ---------------- | ---------------------------------------------- |
+| :format s        | cell format, e.g. "#0"
+                     Default formats by data type :
+                       - long: "#0"
+                       - integer: "#0"
+                       - float: "#,##0.00"
+                       - double: "#,##0.00"
+                       - date: "d.m.yyyy"
+                       - datetime: "d.m.yyyy hh:mm:ss"             |
+| :font r          | font name, e.g. :header                       |
+| :bg-color c      | background color, either an Excel indexed
+                     color or   a HTML color, e.g. :PLUM, "#00FF00"
+                     Note: only XLSX supports 24 bit colors        |
+| :wrap-text b     | wrap text, e.g. true, false                   |
+| :h-align e       | horizontal alignment {:left, :center, :right} |
+| :v-align e       | vertical alignment {:top, :middle, :bottom}   |
+| :rotation r      | rotation angle [degree], e.g. 45              |
+| :border-top s    | border top style, e.g. :thin                  |
+| :border-right s  | border right style, e.g. :none                |
+| :border-bottom s | border bottom style, e.g. :thin               |
+| :border-left s   | border left style, e.g. :none                 |
+
+Available border styles:
+
+:none, :dotted, :medium-dashed, :medium-dash-dot-dot,
+:thin, :thick, :dash-dot, :slanted-dash-dot,
+:medium, :double, :medium-dash-dot,
+:dashed, :hair, :dash-dot-dot
+
+
 
 [top](#content)
 
