@@ -3,7 +3,7 @@
 Venice supports generating Excel files if the [Apache POI](https://poi.apache.org/) 
 libs are on the runtime classpath.
 
-Venice can work with Apache POI 4.1.x and 5.2.x.
+Venice is compatible with Apache POI 4.1.x and 5.2.x.
 
 
 Run this script from the REPL to download the newest Apache POI 5.2.x libraries:
@@ -22,6 +22,19 @@ Run this script from the REPL to download the newest Apache POI 5.2.x libraries:
 
 
 * [Writing Excel files](#writing-excel-files)
+  * [Introduction Example](#introduction-example)
+  * [Examples](#write-examples)
+     * [Write to an output stream](#write-to-an-output-stream)
+     * [Write to a byte buffer](#write-to-a-byte-buffer)
+     * [Omit the header row](#omit-the-header-row)
+     * [Write to multiple sheets](#write-to-multiple-sheets)
+     * [Supported datatypes](#supported-datatypes)
+     * [Writing 2D vector data](#writing-2d-vector-data)
+     * [Writing to individual cells](#writing-to-individual-cells)
+     * [Using formulas](#using-formulas)
+  * [Styling](#styling)
+     * [Fonts](#fonts)
+     * [Cell Styles](#cell-styles)
 * [Reading Excel files](#reading-excel-files)
 
 
@@ -59,6 +72,8 @@ old style XLS use `(excel/writer :xls)` and ensure it is written to a file with
 the `.xls` file name extension.
 
 
+
+### Write Examples
 
 #### Write to an output stream
 
@@ -203,7 +218,6 @@ The Excel writer supports the Venice data types:
  
 
 
-
 #### Writing 2D vector data
 
 Write the data of a 2D vector to an excel sheet.
@@ -256,6 +270,7 @@ The functions `excel/write-value` To write values to cells. The row and col numb
 <img src="https://github.com/jlangch/venice/blob/master/doc/assets/excel/excel-write-003.png" width="400">
 
 
+
 #### Using formulas
 
 ```clojure
@@ -285,7 +300,12 @@ The functions `excel/write-value` To write values to cells. The row and col numb
 
 
 
-### Styling Excel files
+### Styling
+
+#### Fonts
+
+#### Cell styles
+
 
 
 ## Reading Excel files
