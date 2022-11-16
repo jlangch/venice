@@ -462,18 +462,9 @@ Define a named font with optional attributes on the workbook.
 
 | Option           |                                                |
 | ---------------- | ---------------------------------------------- |
-| :format s        | <div>cell format, e.g. "#0"<br>
-                     <ul>Default formats by data type :
-                       <li>long: "#0"</li>
-                       <li>integer: "#0"</li>
-                       <li>float: "#,##0.00"</li>
-                       <li>double: "#,##0.00"</li>
-                       <li>date: "d.m.yyyy"</li>
-                       <li>datetime: "d.m.yyyy hh:mm:ss"</li></ul></div> |
+| :format s        | <div>cell format, e.g. "#0"<br>Default formats by data type :<br> <ul><li>long: "#0"</li> <li>integer: "#0"</li> <li>float: "#,##0.00"</li> <li>double: "#,##0.00"</li> <li>date: "d.m.yyyy"</li> <li>datetime: "d.m.yyyy hh:mm:ss"</li></ul></div> |
 | :font r          | font name, e.g. :header                       |
-| :bg-color c      | background color, either an Excel indexed
-                     color or   a HTML color, e.g. :PLUM, "#00FF00"
-                     Note: only XLSX supports 24 bit colors        |
+| :bg-color c      | background color, either an Excel indexed<br>color or   a HTML color, e.g. :PLUM, "#00FF00"<br>Note: only XLSX supports 24 bit colors |
 | :wrap-text b     | wrap text, e.g. true, false                   |
 | :h-align e       | horizontal alignment {:left, :center, :right} |
 | :v-align e       | vertical alignment {:top, :middle, :bottom}   |
