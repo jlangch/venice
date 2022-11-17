@@ -465,8 +465,8 @@ Define a named font with optional attributes on the workbook.
 | Option           | Description                                    |
 | ---------------- | ---------------------------------------------- |
 | :format s        | <div>cell format, e.g. "#0"<br><br>Default formats by data type :<br> <ul><li>long: "#0"</li> <li>integer: "#0"</li> <li>float: "#,##0.00"</li> <li>double: "#,##0.00"</li> <li>date: "d.m.yyyy"</li> <li>datetime: "d.m.yyyy hh:mm:ss"</li></ul></div> |
-| :font r          | font name, e.g. :header                       |
-| :bg-color c      | background color, either an Excel indexed color<br>or a HTML color, e.g. :PLUM, "#00FF00"<br>Note: only XLSX supports 24 bit colors |
+| :font r          | font reference, e.g. :header                  |
+| :bg-color c      | background color, either an Excel indexed color<br>or a HTML color, e.g. :PLUM, "#00FF00"<br>Note: only XLSX supports 24 bit colors    |
 | :wrap-text b     | wrap text, e.g. true, false                   |
 | :h-align e       | horizontal alignment {:left, :center, :right} |
 | :v-align e       | vertical alignment {:top, :middle, :bottom}   |
@@ -656,6 +656,49 @@ Cell (1,9) empty:  true
 
 
 ### Reading Cells
+
+```clojure
+(do
+  (ns test)
+
+  (load-module :excel)
+  
+  (defn create-excel []
+    (let [wbook (excel/writer :xlsx)]
+      (excel/write-data wbook "Data" [["foo" 
+                                       false 
+                                       100 
+                                       100.123
+                                       (time/local-date 2021 1 1)
+                                       (time/local-date-time 2021 1 1 15 30 45)
+                                       "" 
+                                       nil]])
+      (excel/write->bytebuf wbook)))
+
+  (let [wbook (excel/open (create-excel))
+        sheet (excel/sheet wbook "Data")]
+    (println "Cell (1,1): " (pr-str (excel/read-string-val sheet 1 1)))
+    (println "Cell (1,2): " (pr-str (excel/read-boolean-val sheet 1 2)))
+    (println "Cell (1,3): " (pr-str (excel/read-long-val sheet 1 3)))
+    (println "Cell (1,4): " (pr-str (excel/read-double-val sheet 1 4)))
+    (println "Cell (1,5): " (pr-str (excel/read-date-val sheet 1 5)))
+    (println "Cell (1,6): " (pr-str (excel/read-datetime-val sheet 1 6)))
+    (println "Cell (1,7): " (pr-str (excel/read-string-val sheet 1 7)))
+    (println "Cell (1,8): " (pr-str (excel/read-string-val sheet 1 8)))))
+```
+
+Prints to:
+
+```
+Cell (1,1):  "foo"
+Cell (1,2):  false
+Cell (1,3):  100
+Cell (1,4):  100.123
+Cell (1,5):  2021-01-01
+Cell (1,6):  2021-01-01T15:30:45
+Cell (1,7):  ""
+Cell (1,8):  nil
+```
 
 [top](#content)
 
