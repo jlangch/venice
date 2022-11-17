@@ -40,7 +40,7 @@ Run this script from the REPL to download the newest Apache POI 5.2.x libraries:
        * [Fonts](#fonts)
        * [Cell Styles](#cell-styles)
 2. [Reading Excel files](#reading-excel-files)
-
+    * [Open Excel](#open-excel)
 
 
 ## Writing Excel files
@@ -525,6 +525,59 @@ Available border styles:
 
 
 ## Reading Excel files
+
+### Open Excel
+
+```clojure
+(do
+  (ns test)
+
+  (load-module :excel)
+  
+  (defn create-excel []
+  	(let [wbook (excel/writer :xlsx)]
+      (excel/write-data wbook "Data1" [[100 101]])
+      (excel/write-data wbook "Data2" [[300 301 302] [400 401 402]])
+	  (excel/write->bytebuf wbook)))
+  
+
+  (let [wbook (excel/open (create-excel))]
+    (println "Sheet count: " (excel/sheet-count wbook))
+     
+    (println)
+    (println "Sheet \"Data1\" (referenced by name):")
+    (let [sheet (excel/sheet wbook "Data1")]
+         (println "Sheet name : " (excel/sheet-name sheet))
+    		(println "Sheet index: " (excel/sheet-index sheet))
+    		(println "Row range  : " (excel/sheet-row-range sheet))
+    		(println "Col range  : " (excel/sheet-col-range sheet 1)))
+     
+    (println)
+    (println "Sheet \"Data2\" (referenced by index):")
+    (let [sheet (excel/sheet wbook 2)]
+         (println "Sheet name : " (excel/sheet-name sheet))
+    		(println "Sheet index: " (excel/sheet-index sheet))
+    		(println "Row range  : " (excel/sheet-row-range sheet))
+    		(println "Col range  : " (excel/sheet-col-range sheet 1)))))
+```
+
+Prints to:
+
+```
+Sheet count:  2
+
+Sheet "Data1" (referenced by name):
+Sheet name :  Data1
+Sheet index:  1I
+Row range  :  [1 1]
+Col range  :  [1 2]
+
+Sheet "Data2" (referenced by index):
+Sheet name :  Data2
+Sheet index:  2I
+Row range  :  [1 2]
+Col range  :  [1 3]
+```
 
 [top](#content)
 
