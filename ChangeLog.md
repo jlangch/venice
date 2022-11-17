@@ -16,6 +16,10 @@ and this project adheres to
 
 - ...
 
+### Fixed
+
+- Fixed `excel/sheet-index` (must be 1-based)
+
 
 
 ## [1.10.27] - 2022-11-14
