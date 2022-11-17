@@ -465,16 +465,16 @@ Define a named font with optional attributes on the workbook.
 | Option           | Description                                    |
 | ---------------- | ---------------------------------------------- |
 | :format s        | <div>cell format, e.g. "#0"<br><br>Default formats by data type :<br> <ul><li>long: "#0"</li> <li>integer: "#0"</li> <li>float: "#,##0.00"</li> <li>double: "#,##0.00"</li> <li>date: "d.m.yyyy"</li> <li>datetime: "d.m.yyyy hh:mm:ss"</li></ul></div> |
-| :font r          | font reference, e.g. :header                  |
-| :bg-color c      | background color, either an Excel indexed color<br>or a HTML color, e.g. :PLUM, "#00FF00"<br>Note: only XLSX supports 24 bit colors    |
-| :wrap-text b     | wrap text, e.g. true, false                   |
-| :h-align e       | horizontal alignment {:left, :center, :right} |
-| :v-align e       | vertical alignment {:top, :middle, :bottom}   |
-| :rotation r      | rotation angle [degree], e.g. 45              |
-| :border-top s    | border top style, e.g. :thin                  |
-| :border-right s  | border right style, e.g. :none                |
-| :border-bottom s | border bottom style, e.g. :thin               |
-| :border-left s   | border left style, e.g. :none                 |
+| :font r          | font reference, e.g. :header-font              |
+| :bg-color c      | background color, either an Excel indexed color<br>or a HTML color, e.g. :PLUM, "#00FF00"<br>Note: only XLSX supports 24 bit colors     |
+| :wrap-text b     | wrap text, e.g. true, false                    |
+| :h-align e       | horizontal alignment {:left, :center, :right}  |
+| :v-align e       | vertical alignment {:top, :middle, :bottom}    |
+| :rotation r      | rotation angle [degree], e.g. 45               |
+| :border-top s    | border top style, e.g. :thin                   |
+| :border-right s  | border right style, e.g. :none                 |
+| :border-bottom s | border bottom style, e.g. :thin                |
+| :border-left s   | border left style, e.g. :none                  |
 
 Available border styles:
 
@@ -549,18 +549,19 @@ Available border styles:
     (println)
     (println "Sheet \"Data1\" (referenced by name):")
     (let [sheet (excel/sheet wbook "Data1")]
-       (println "Sheet name : " (excel/sheet-name sheet))
-       (println "Sheet index: " (excel/sheet-index sheet))
-       (println "Row range  : " (excel/sheet-row-range sheet))
-       (println "Col range  : " (excel/sheet-col-range sheet 1)))
+      (println "Sheet name : " (excel/sheet-name sheet))
+      (println "Sheet index: " (excel/sheet-index sheet))
+      (println "Row range  : " (excel/sheet-row-range sheet))
+      (println "Col range  : " (excel/sheet-col-range sheet 1) "(row 1)"))
      
     (println)
     (println "Sheet \"Data2\" (referenced by index):")
     (let [sheet (excel/sheet wbook 2)]
-       (println "Sheet name : " (excel/sheet-name sheet))
-       (println "Sheet index: " (excel/sheet-index sheet))
-       (println "Row range  : " (excel/sheet-row-range sheet))
-       (println "Col range  : " (excel/sheet-col-range sheet 1)))))
+      (println "Sheet name : " (excel/sheet-name sheet))
+      (println "Sheet index: " (excel/sheet-index sheet))
+      (println "Row range  : " (excel/sheet-row-range sheet))
+      (println "Col range  : " (excel/sheet-col-range sheet 1) "(row 1)")
+      (println "Col range  : " (excel/sheet-col-range sheet 2) "(row 2)"))))
 ```
 
 Prints to:
@@ -572,13 +573,14 @@ Sheet "Data1" (referenced by name):
 Sheet name :  Data1
 Sheet index:  1I
 Row range  :  [1 1]
-Col range  :  [1 2]
+Col range  :  [1 2] (row 1)
 
 Sheet "Data2" (referenced by index):
 Sheet name :  Data2
 Sheet index:  2I
 Row range  :  [1 2]
-Col range  :  [1 3]
+Col range  :  [1 3] (row 1)
+Col range  :  [1 3] (row 2)
 ```
 
 [top](#content)
