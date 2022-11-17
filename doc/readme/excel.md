@@ -41,6 +41,8 @@ Run this script from the REPL to download the newest Apache POI 5.2.x libraries:
        * [Cell Styles](#cell-styles)
 2. [Reading Excel files](#reading-excel-files)
     * [Open Excel](#open-excel)
+    * [Reading Cell Metadata](#reading-cell-metadata)
+    * [Reading Cells](#reading-cells)
 
 
 ## Writing Excel files
@@ -535,10 +537,10 @@ Available border styles:
   (load-module :excel)
   
   (defn create-excel []
-  	(let [wbook (excel/writer :xlsx)]
+    (let [wbook (excel/writer :xlsx)]
       (excel/write-data wbook "Data1" [[100 101]])
       (excel/write-data wbook "Data2" [[300 301 302] [400 401 402]])
-	  (excel/write->bytebuf wbook)))
+      (excel/write->bytebuf wbook)))
   
 
   (let [wbook (excel/open (create-excel))]
@@ -547,18 +549,18 @@ Available border styles:
     (println)
     (println "Sheet \"Data1\" (referenced by name):")
     (let [sheet (excel/sheet wbook "Data1")]
-         (println "Sheet name : " (excel/sheet-name sheet))
-    		(println "Sheet index: " (excel/sheet-index sheet))
-    		(println "Row range  : " (excel/sheet-row-range sheet))
-    		(println "Col range  : " (excel/sheet-col-range sheet 1)))
+       (println "Sheet name : " (excel/sheet-name sheet))
+       (println "Sheet index: " (excel/sheet-index sheet))
+       (println "Row range  : " (excel/sheet-row-range sheet))
+       (println "Col range  : " (excel/sheet-col-range sheet 1)))
      
     (println)
     (println "Sheet \"Data2\" (referenced by index):")
     (let [sheet (excel/sheet wbook 2)]
-         (println "Sheet name : " (excel/sheet-name sheet))
-    		(println "Sheet index: " (excel/sheet-index sheet))
-    		(println "Row range  : " (excel/sheet-row-range sheet))
-    		(println "Col range  : " (excel/sheet-col-range sheet 1)))))
+       (println "Sheet name : " (excel/sheet-name sheet))
+       (println "Sheet index: " (excel/sheet-index sheet))
+       (println "Row range  : " (excel/sheet-row-range sheet))
+       (println "Col range  : " (excel/sheet-col-range sheet 1)))))
 ```
 
 Prints to:
@@ -581,4 +583,79 @@ Col range  :  [1 3]
 
 [top](#content)
 
+
+
+### Reading Cell Metadata
+
+Each cell has one of the predefined cell data types:
+
+  - `:notfound`
+  - `:blank`
+  - `:string`
+  - `:boolean`
+  - `:numeric`
+  - `:formula`
+  - `:error`
+  - `:unknown`
+
+
+```clojure
+(do
+  (ns test)
+
+  (load-module :excel)
+  
+  (defn create-excel []
+    (let [wbook (excel/writer :xlsx)]
+      (excel/write-data wbook "Data" [["foo" 
+                                       false 
+                                       100 
+                                       100.123
+                                       (time/local-date 2021 1 1)
+                                       (time/local-date-time 2021 1 1 15 30 45)
+                                       "" 
+                                       nil]])
+      (excel/write->bytebuf wbook)))
+
+  (let [wbook (excel/open (create-excel))
+        sheet (excel/sheet wbook "Data")]
+    (list-comp [r (range 1 2) c (range 1 9)]
+      (println "Cell (~{r},~{c}): " (excel/cell-type sheet r c)))
+
+    (println)
+
+    (list-comp [r (range 1 2) c (range 1 10)]
+      (println "Cell (~{r},~{c}) empty: " (excel/cell-empty? sheet r c)))))
+```
+
+Prints to:
+
+```
+Cell (1,1):  :string
+Cell (1,2):  :boolean
+Cell (1,3):  :numeric
+Cell (1,4):  :numeric
+Cell (1,5):  :numeric
+Cell (1,6):  :numeric
+Cell (1,7):  :string
+Cell (1,8):  :unknown
+
+Cell (1,1) empty:  false
+Cell (1,2) empty:  false
+Cell (1,3) empty:  false
+Cell (1,4) empty:  false
+Cell (1,5) empty:  false
+Cell (1,6) empty:  false
+Cell (1,7) empty:  false
+Cell (1,8) empty:  true
+Cell (1,9) empty:  true
+```
+
+[top](#content)
+
+
+
+### Reading Cells
+
+[top](#content)
 
