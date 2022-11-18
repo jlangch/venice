@@ -31,14 +31,13 @@
 
 (import :com.github.jlangch.venice.util.excel.ExcelReader)
 (import :com.github.jlangch.venice.util.excel.ExcelSheetReader)
-(import :com.github.jlangch.venice.util.excel.ExcelBuilder)
-(import :com.github.jlangch.venice.util.excel.ExcelSheetBuilder)
+(import :com.github.jlangch.venice.util.excel.ExcelWriter)
+(import :com.github.jlangch.venice.util.excel.ExcelSheetWriter)
 (import :com.github.jlangch.venice.util.excel.ExcelFontBuilder)
 (import :com.github.jlangch.venice.util.excel.ExcelCellStyleBuilder)
 (import :com.github.jlangch.venice.util.excel.ExcelColumnBuilder)
 (import :com.github.jlangch.venice.util.excel.ExcelColumnBuilder)
 (import :com.github.jlangch.venice.util.excel.DataRecord)
-(import :java.io.File)
 (import :java.io.OutputStream)
 (import :java.io.InputStream)
 
@@ -112,7 +111,7 @@
 
 
 ;; -----------------------------------------------------------------------------
-;; ExcelBuilder
+;; ExcelWriter
 ;; -----------------------------------------------------------------------------
 
 (defn
@@ -143,14 +142,14 @@
   writer [type]
 
   (case type
-    :xls  (. :ExcelBuilder :createXls)
-    :xlsx (. :ExcelBuilder :createXlsx)
+    :xls  (. :ExcelWriter :createXls)
+    :xlsx (. :ExcelWriter :createXlsx)
     (throw (ex :VncException
                (str "Invalid Excel type " type ". Use :xls or :xlsx")))))
 
 
 (defn
-  ^{ :arglists '("(write->file builder f)")
+  ^{ :arglists '("(write->file wbook f)")
      :doc "Writes the excel to a file."
      :examples '(
          """
@@ -169,16 +168,16 @@
         """ )
      :see-also '("excel/write->stream", "excel/write->bytebuf")}
 
-  write->file [builder f]
+  write->file [wbook f]
 
-  { :pre [(instance-of? :ExcelBuilder builder)
-          (or (string? f) (instance-of? :File f)) ] }
+  { :pre [(instance-of? :ExcelWriter wbook)
+          (or (string? f) (io/file? f)) ] }
 
-  (. builder :write (io/file-out-stream f)))
+  (. wbook :write (io/file-out-stream f)))
 
 
 (defn
-  ^{ :arglists '("(write->stream builder os)")
+  ^{ :arglists '("(write->stream wbook os)")
      :doc "Writes the excel to a Java :OutputStream."
      :examples '(
         """
@@ -198,16 +197,16 @@
         """ )
      :see-also '("excel/write->file", "excel/write->bytebuf")}
 
-  write->stream [builder os]
+  write->stream [wbook os]
 
-  { :pre [(instance-of? :ExcelBuilder builder)
+  { :pre [(instance-of? :ExcelWriter wbook)
           (instance-of? :OutputStream os)] }
 
-  (. builder :write os))
+  (. wbook :write os))
 
 
 (defn
-  ^{ :arglists '("(write->bytebuf builder os)")
+  ^{ :arglists '("(write->bytebuf wbook os)")
      :doc "Writes the excel to a bytebuf. Returns the bytebuf."
      :examples '(
         """
@@ -226,15 +225,15 @@
         """ )
      :see-also '("excel/write->file", "excel/write->stream")}
 
-  write->bytebuf [builder]
+  write->bytebuf [wbook]
 
-  { :pre [(instance-of? :ExcelBuilder builder)] }
+  { :pre [(instance-of? :ExcelWriter wbook)] }
 
-  (. builder :writeToBytes))
+  (. wbook :writeToBytes))
 
 
 (defn
-  ^{ :arglists '("(write-data builder sheet-name data)")
+  ^{ :arglists '("(write-data wbook sheet-name data)")
      :doc
         """
         Writes the data of a 2D array to an excel sheet. Creates a new
@@ -250,17 +249,17 @@
                 data  [[100  101  102  103  104  105]
                        [200  "ab" 1.23 dt   ts   false]]]
             (excel/write-data wbook "Data" data)
-            (excel/auto-size-columns sheet)
+            (excel/auto-size-columns (excel/sheet "Data"))
             (excel/write->file wbook "sample.xlsx")))
         """ )
      :see-also '("excel/write->stream", "excel/write->bytebuf")}
 
-  write-data [builder sheet-name data ]
+  write-data [wbook sheet-name data ]
 
-  { :pre [(instance-of? :ExcelBuilder builder)
-          (string? sheet-name) ] }
+  { :pre [(instance-of? :ExcelWriter wbook)
+          (string? sheet-name)] }
 
-  (let [sheet (excel/add-sheet builder sheet-name { :no-header-row true })
+  (let [sheet (excel/add-sheet wbook sheet-name { :no-header-row true })
         cell  (fn [r c val] (excel/write-value sheet (inc r) (inc c) val))]
     (map-indexed (fn [row rv] (map-indexed (fn [col cv] (cell row col cv)) rv))
                  data)))
@@ -286,7 +285,7 @@
 
   evaluate-formulas [it]
 
-  { :pre [(or (instance-of? :ExcelBuilder it)
+  { :pre [(or (instance-of? :ExcelWriter it)
               (instance-of? :ExcelReader it)
               (instance-of? :ExcelSheetReader it))] }
 
@@ -295,11 +294,11 @@
 
 
 ;; -----------------------------------------------------------------------------
-;; ExcelSheetBuilder
+;; ExcelSheetWriter
 ;; -----------------------------------------------------------------------------
 
 (defn
-  ^{ :arglists '("(write-items builder items)")
+  ^{ :arglists '("(write-items sheet items)")
      :doc "Writes the passed data items to the sheet"
      :examples '(
         """
@@ -321,17 +320,17 @@
         "excel/auto-size-columns", "excel/auto-size-column",
         "excel/row-height") }
 
-  write-items [builder items]
+  write-items [sheet items]
 
-  { :pre [(instance-of? :ExcelSheetBuilder builder)] }
+  { :pre [(instance-of? :ExcelSheetWriter sheet)] }
 
   (->> (map #(. :DataRecord :of %) items)
        (into! (. :java.util.ArrayList :new))
-       (. builder :renderItems)))
+       (. sheet :renderItems)))
 
 
 (defn
-  ^{ :arglists '("(write-item builder item)")
+  ^{ :arglists '("(write-item sheet item)")
      :doc "Render a single data item to the sheet"
      :examples '(
         """
@@ -352,16 +351,16 @@
         "excel/auto-size-columns", "excel/auto-size-column",
         "excel/row-height") }
 
-  write-item [builder item]
+  write-item [sheet item]
 
-  { :pre [(instance-of? :ExcelSheetBuilder builder) (map? item)] }
+  { :pre [(instance-of? :ExcelSheetWriter sheet) (map? item)] }
 
   (->> (. :DataRecord :of item)
-       (. builder :renderItem)))
+       (. sheet :renderItem)))
 
 
 (defn
-  ^{ :arglists '("(write-value builder row col val)")
+  ^{ :arglists '("(write-value sheet row col val)")
      :doc "Writes a value to a specific cell given by its row and col."
      :examples '(
         """
@@ -409,21 +408,25 @@
 
   write-value
 
-  ([builder row col val]
-    { :pre [(instance-of? :ExcelSheetBuilder builder)
+  ([sheet row col val]
+    { :pre [(instance-of? :ExcelSheetWriter sheet)
             (long? row) (long? col) (pos? row) (pos? col)] }
-    (. builder :value row col val))
+    (if (and (map? val) (contains? val :formula))
+      (cell-formula sheet row col (:formula val))
+      (. sheet :value row col val)))
 
-  ([builder row col val style]
-    { :pre [(instance-of? :ExcelSheetBuilder builder)
+  ([sheet row col val style]
+    { :pre [(instance-of? :ExcelSheetWriter sheet)
             (long? row) (long? col)
             (pos? row) (pos? col)
             (keyword? style)] }
-    (. builder :value row col val (name style))))
+    (if (and (map? val) (contains? val :formula))
+      (cell-formula sheet row col (:formula val) style)
+      (. sheet :value row col val (name style)))))
 
 
 (defn
-  ^{ :arglists '("(cell-formula builder row col formula)")
+  ^{ :arglists '("(cell-formula sheet row col formula)")
      :doc "Set a formula for a specific cell given by its row and col."
      :examples '(
         """
@@ -474,23 +477,23 @@
 
   cell-formula
 
-  ([builder row col formula]
-    { :pre [(instance-of? :ExcelSheetBuilder builder)
+  ([sheet row col formula]
+    { :pre [(instance-of? :ExcelSheetWriter sheet)
             (long? row) (long? col) (pos? row) (pos? col)
             (string? formula)] }
-    (. builder :formula row col formula))
+    (. sheet :formula row col formula))
 
-  ([builder row col formula style]
-    { :pre [(instance-of? :ExcelSheetBuilder builder)
+  ([sheet row col formula style]
+    { :pre [(instance-of? :ExcelSheetWriter sheet)
             (long? row) (long? col)
             (pos? row) (pos? col)
             (string? formula) (keyword? style)] }
-    (. builder :formula row col formula (name style))))
+    (. sheet :formula row col formula (name style))))
 
 
 (defn
-  ^{ :arglists '("(sum-formula builder row-from row-to col-from col-to)")
-     :doc "Returns a sum formula"
+  ^{ :arglists '("(sum-formula sheet row-from row-to col-from col-to)")
+     :doc "Returns a sum formula for the given cell area"
      :examples '(
         """
         (do
@@ -513,19 +516,19 @@
         """ )
      :see-also '("excel/cell-address") }
 
-  sum-formula [builder row-from row-to col-from col-to]
+  sum-formula [sheet row-from row-to col-from col-to]
 
-  { :pre [(instance-of? :ExcelSheetBuilder builder)
+  { :pre [(instance-of? :ExcelSheetWriter sheet)
           (long? row-from) (long? row-to)
           (long? col-from) (long? col-to)
           (pos? row-from) (pos? row-to)
           (pos? col-from) (pos? col-to)] }
 
-  (. builder :sumFormula row-from row-to col-from col-to))
+  (. sheet :sumFormula row-from row-to col-from col-to))
 
 
 (defn
-  ^{ :arglists '("(cell-address builder row col)")
+  ^{ :arglists '("(cell-address sheet row col)")
      :doc "Returns the cell address for a cell at row/col in a sheet"
      :examples '(
         """
@@ -551,17 +554,17 @@
         """ )
      :see-also '("excel/cell-formula") }
 
-  cell-address [builder row col]
+  cell-address [sheet row col]
 
-  { :pre [(instance-of? :ExcelSheetBuilder builder)
+  { :pre [(instance-of? :ExcelSheetWriter sheet)
           (long? row) (long? col) (pos? row) (pos? col)] }
 
-  (. builder :cellAddress row col))
+  (. sheet :cellAddress row col))
 
 
 (defn
-  ^{ :arglists '("(auto-size-columns builder)")
-     :doc "Auto size the width of all columns."
+  ^{ :arglists '("(auto-size-columns sheet)")
+     :doc "Auto size the width of all columns in the sheet."
      :examples '(
         """
         (do
@@ -581,16 +584,16 @@
         "excel/auto-size-column", "excel/write-items", "excel/write-item",
         "excel/write-value", "excel/cell-formula", "excel/row-height") }
 
-  auto-size-columns [builder]
+  auto-size-columns [sheet]
 
-  { :pre [(instance-of? :ExcelSheetBuilder builder)] }
+  { :pre [(instance-of? :ExcelSheetWriter sheet)] }
 
-  (. builder :autoSizeColumns))
+  (. sheet :autoSizeColumns))
 
 
 (defn
-  ^{ :arglists '("(auto-size-column builder col)")
-     :doc "Auto size the width of column col (1..n)."
+  ^{ :arglists '("(auto-size-column sheet col)")
+     :doc "Auto size the width of column col (1..n) in the sheet."
      :examples '(
         """
         (do
@@ -612,17 +615,17 @@
         "excel/auto-size-columns", "excel/write-items", "excel/write-item",
         "excel/write-value", "excel/cell-formula", "excel/row-height") }
 
-  auto-size-column [builder col]
+  auto-size-column [sheet col]
 
-  { :pre [(instance-of? :ExcelSheetBuilder builder)
+  { :pre [(instance-of? :ExcelSheetWriter sheet)
           (long? col) (pos? col)] }
 
-  (. builder :autoSizeColumn col))
+  (. sheet :autoSizeColumn col))
 
 
   (defn
-    ^{ :arglists '("(row-height builder row height)")
-       :doc "Set the height of a row (1..n)."
+    ^{ :arglists '("(row-height sheet row height)")
+       :doc "Set the height of a row (1..n) in the sheet."
        :examples '(
           """
           (do
@@ -644,12 +647,12 @@
           "excel/auto-size-columns", "excel/write-items", "excel/write-item",
           "excel/write-value", "excel/cell-formula", "excel/auto-size-column") }
 
-    row-height [builder row height]
+    row-height [sheet row height]
 
-    { :pre [(instance-of? :ExcelSheetBuilder builder)
+    { :pre [(instance-of? :ExcelSheetWriter sheet)
             (long? row) (pos? row)] }
 
-    (. builder :rowHeightInPoints row height))
+    (. sheet :rowHeightInPoints row height))
 
 
 (defn
@@ -683,8 +686,8 @@
 
   convert->reader [builder]
 
-  { :pre [(or (instance-of? :ExcelBuilder builder)
-              (instance-of? :ExcelSheetBuilder builder))] }
+  { :pre [(or (instance-of? :ExcelWriter builder)
+              (instance-of? :ExcelSheetWriter builder))] }
 
   (. builder :reader))
 
@@ -696,8 +699,8 @@
 
 (defn
   ^{ :arglists '(
-        "(add-sheet writer title)"
-        "(add-sheet writer title options)" )
+        "(add-sheet wbook title)"
+        "(add-sheet wbook title options)" )
      :doc
         """
         Adds a sheet with optional attributes to an Excel.
@@ -764,30 +767,30 @@
 
   add-sheet
 
-  ([writer title]
-    (add-sheet writer title {}))
+  ([wbook title]
+    (add-sheet wbook title {}))
 
-  ([writer title options]
-    { :pre [(instance-of? :ExcelBuilder writer)
+  ([wbook title options]
+    { :pre [(instance-of? :ExcelWriter wbook)
             (string? title)] }
-    (let [builder (. writer :withSheet (name title) (class :DataRecord))]
+    (let [sheet (. wbook :withSheet (name title) (class :DataRecord))]
       (when-let [x (:no-header-row options)]
-        (. builder :noHeader))
+        (. sheet :noHeader))
       (when-let [x (:default-column-width options)]
-        (. builder :setDefaultColumnWidthInPoints x))
+        (. sheet :setDefaultColumnWidthInPoints x))
       (when-let [x (:default-header-style options)]
-        (. builder :defaultHeaderStyle (name x)))
+        (. sheet :defaultHeaderStyle (name x)))
       (when-let [x (:default-body-style options)]
-        (. builder :defaultBodyStyle (name x)))
+        (. sheet :defaultBodyStyle (name x)))
       (when-let [x (:default-footer-style options)]
-        (. builder :defaultFooterStyle (name x)))
+        (. sheet :defaultFooterStyle (name x)))
       (when-let [x (:merged-region options)]
-        (. builder :addMergedRegion (first x) (second x) (third x) (fourth x)))
+        (. sheet :addMergedRegion (first x) (second x) (third x) (fourth x)))
       (when-let [x (:display-zeros options)]
-        (. builder :displayZeros x))
+        (. sheet :displayZeros x))
 
-      (. builder :end)
-      builder)))
+      (. sheet :end)
+      sheet)))
 
 
 
@@ -797,8 +800,8 @@
 
 (defn
   ^{ :arglists '(
-        "(add-font writer font-id)"
-        "(add-font writer font-id options)")
+        "(add-font wbook font-id)"
+        "(add-font wbook font-id options)")
      :doc
         """
         Add font with optional attributes to an Excel.
@@ -840,13 +843,13 @@
 
   add-font
 
-  ([writer font-id]
-    (add-font writer font-key {}))
+  ([wbook font-id]
+    (add-font wbook font-key {}))
 
-  ([writer font-id options]
-    { :pre [(instance-of? :ExcelBuilder writer)
+  ([wbook font-id options]
+    { :pre [(instance-of? :ExcelWriter wbook)
             (keyword? font-id)] }
-    (let [builder (. writer :withFont (name font-id))]
+    (let [builder (. wbook :withFont (name font-id))]
       (when-let [x (:height options)] (. builder :heightInPoints x))
       (when-let [x (:bold options)]   (. builder :bold))
       (when-let [x (:italic options)] (. builder :italic))
@@ -867,8 +870,8 @@
 
 (defn
   ^{ :arglists '(
-        "(add-style writer style-id)"
-        "(add-style writer style-id options)")
+        "(add-style wbook style-id)"
+        "(add-style wbook style-id options)")
      :doc
         """
         Add a style with optional attributes to an Excel.
@@ -936,13 +939,13 @@
 
   add-style
 
-  ([writer style-id]
-    (add-style writer style-id {}))
+  ([wbook style-id]
+    (add-style wbook style-id {}))
 
-  ([writer style-id options]
-    { :pre [(instance-of? :ExcelBuilder writer)
+  ([wbook style-id options]
+    { :pre [(instance-of? :ExcelWriter wbook)
             (keyword? style-id)] }
-    (let [builder (. writer :withCellStyle (name style-id))]
+    (let [builder (. wbook :withCellStyle (name style-id))]
       (when-let [x (:format options)]
         (. builder :format x))
       (when-let [x (:font options)]
@@ -1014,11 +1017,11 @@
 
 (defn
   ^{ :arglists '(
-        "(add-column sheet-builder title)"
-        "(add-column sheet-builder title options)")
+        "(add-column sheet title)"
+        "(add-column sheet title options)")
      :doc
         """
-        Defines a column with optional attributes.
+        Defines a column with optional attributes on the sheet.
 
         *Note:* The column cell value is just read from the passed tabular
         dataset. If there is any mapping or conversion needed it has to be
@@ -1066,13 +1069,13 @@
 
   add-column
 
-  ([sheet-builder title]
-    (add-columnn sheet-builder title {}))
+  ([sheet title]
+    (add-columnn sheet title {}))
 
-  ([sheet-builder title options]
-    { :pre [(instance-of? :ExcelSheetBuilder sheet-builder)
+  ([sheet title options]
+    { :pre [(instance-of? :ExcelSheetWriter sheet)
             (string? title)] }
-    (let [builder (. sheet-builder :withColumn title)]
+    (let [builder (. sheet :withColumn title)]
       (when-let [x (:field options)]
          (cond
            (keyword? x) (. builder :colMapper x)
@@ -1140,7 +1143,7 @@
   (cond
     (string? source)                    (. :ExcelReader :open (io/file-in-stream source))
     (bytebuf? source)                   (. :ExcelReader :open (io/bytebuf-in-stream source))
-    (instance-of? :File source)         (. :ExcelReader :open (io/file-in-stream source))
+    (io/file? source)                   (. :ExcelReader :open (io/file-in-stream source))
     (instance-of? :InputStream source)  (. :ExcelReader :open source)
     :else (throw (ex :VncException
                      (str "Invalid Excel open source " (type source) )))))
@@ -1205,7 +1208,8 @@
 
   sheet [wbook s]
 
-  { :pre [(instance-of? :ExcelReader wbook)] }
+  { :pre [(or (instance-of? :ExcelReader wbook)
+              (instance-of? :ExcelWriter wbook))] }
 
   (cond
     (string? s)  (. wbook :getSheet s)

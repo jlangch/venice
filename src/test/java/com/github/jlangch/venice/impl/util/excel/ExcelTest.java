@@ -34,7 +34,7 @@ import org.junit.jupiter.api.Test;
 
 import com.github.jlangch.venice.support.Person;
 import com.github.jlangch.venice.util.excel.DataRecord;
-import com.github.jlangch.venice.util.excel.ExcelBuilder;
+import com.github.jlangch.venice.util.excel.ExcelWriter;
 
 
 public class ExcelTest {
@@ -65,7 +65,7 @@ public class ExcelTest {
 
     @Test
     public void test_Builder_binary() {
-        final byte[] data = ExcelBuilder
+        final byte[] data = ExcelWriter
                                 .createXlsx()
                                 .withSheet("Persons", Person.class)
                                     .withColumn("FirstName", Person::getFirstName)
@@ -84,7 +84,7 @@ public class ExcelTest {
 
     @Test
     public void test_Builder_binary_2sheets() {
-        final byte[] data = ExcelBuilder
+        final byte[] data = ExcelWriter
                                 .createXlsx()
                                 .withSheet("Persons 1", Person.class)
                                     .end()
@@ -99,7 +99,7 @@ public class ExcelTest {
     public void test_Builder_excel() {
         final List<Person> persons = persons();
 
-        final Excel excel = ExcelBuilder
+        final Excel excel = ExcelWriter
                                 .createXlsx()
                                 .withSheet("Persons", Person.class)
                                     .withColumn("FirstName", Person::getFirstName)
@@ -126,7 +126,7 @@ public class ExcelTest {
     public void test_Builder_with_GenericEntity() {
         final List<DataRecord> persons = personMap();
 
-        final Excel excel = ExcelBuilder
+        final Excel excel = ExcelWriter
                                 .createXlsx()
                                 .withSheet("Persons", DataRecord.class)
                                     .withColumn("FirstName", "firstName")
@@ -153,7 +153,7 @@ public class ExcelTest {
     public void test_BuilderWithMin() {
         final List<Person> persons = persons();
 
-        final Excel excel = ExcelBuilder
+        final Excel excel = ExcelWriter
                                 .createXlsx()
                                 .withSheet("Persons", Person.class)
                                     .withColumn("FirstName", Person::getFirstName)
@@ -178,7 +178,7 @@ public class ExcelTest {
     public void test_BuilderWithMax() {
         final List<Person> persons = persons();
 
-        final Excel excel = ExcelBuilder
+        final Excel excel = ExcelWriter
                                 .createXlsx()
                                 .withSheet("Persons", Person.class)
                                     .withColumn("FirstName", Person::getFirstName)
@@ -203,7 +203,7 @@ public class ExcelTest {
     public void test_BuilderWithAvg() {
         final List<Person> persons = persons();
 
-        final Excel excel = ExcelBuilder
+        final Excel excel = ExcelWriter
                                 .createXlsx()
                                 .withSheet("Persons", Person.class)
                                     .withColumn("FirstName", Person::getFirstName)
@@ -228,7 +228,7 @@ public class ExcelTest {
     public void test_BuilderWithSum() {
         final List<Person> persons = persons();
 
-        final Excel excel = ExcelBuilder
+        final Excel excel = ExcelWriter
                                 .createXlsx()
                                 .withSheet("Persons", Person.class)
                                     .withColumn("FirstName", Person::getFirstName)
@@ -255,7 +255,7 @@ public class ExcelTest {
 
         final int footerRow1 = persons.size()+2;
 
-        final Excel excel = ExcelBuilder
+        final Excel excel = ExcelWriter
                                 .createXlsx()
                                 .withSheet("Persons", Person.class)
                                     .withColumn("FirstName", Person::getFirstName)
@@ -283,7 +283,7 @@ public class ExcelTest {
     public void test_BuilderWithFont_HTMLColor() {
         final List<Person> persons = persons();
 
-        final Excel excel = ExcelBuilder
+        final Excel excel = ExcelWriter
                                 .createXlsx()
                                 .withFont("bold")
                                     .bold()
@@ -328,7 +328,7 @@ public class ExcelTest {
     public void test_BuilderWithSumWithStyles1() {
         final List<Person> persons = persons();
 
-        final Excel excel = ExcelBuilder
+        final Excel excel = ExcelWriter
                                 .createXlsx()
                                 .withFont("bold")
                                     .bold()
@@ -385,7 +385,7 @@ public class ExcelTest {
 
         final int footerRow1 = persons.size()+2;
 
-        final Excel excel = ExcelBuilder
+        final Excel excel = ExcelWriter
                                 .createXlsx()
                                 .withFont("bold")
                                     .bold()

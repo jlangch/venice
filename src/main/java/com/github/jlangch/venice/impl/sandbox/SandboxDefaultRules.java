@@ -57,6 +57,9 @@ public class SandboxDefaultRules {
                 "class:" + BASE + ".impl.types.concurrent.Delay:*",
                 "class:" + BASE + ".impl.types.concurrent.Agent:*",
 
+                // Excel adapter classes
+                "class:" + BASE + ".util.excel.*:*",
+
                 // Venice dynamic proxies
                 "class:com.sun.proxy.$Proxy*:*",  // Java 8,11
                 "class:jdk.proxy.$Proxy*:*",      // Java 17

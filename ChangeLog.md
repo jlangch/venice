@@ -18,7 +18,8 @@ and this project adheres to
 
 ### Fixed
 
-- Fixed `excel/sheet-index` (must be 1-based)
+- `excel/sheet-index` (must be 1-based)
+- Excel formula cell evaluation
 
 
 

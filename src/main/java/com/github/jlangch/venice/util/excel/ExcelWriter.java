@@ -120,21 +120,20 @@ import com.github.jlangch.venice.impl.util.excel.Excel;
  *
  * @author juerg
  */
-public class ExcelBuilder {
+public class ExcelWriter {
 
-    private ExcelBuilder(final Excel managedExcel) {
+    private ExcelWriter(final Excel managedExcel) {
         this.managedExcel = managedExcel;
     }
 
 
-    public static ExcelBuilder createXls() {
-        return new ExcelBuilder(Excel.createXls());
+    public static ExcelWriter createXls() {
+        return new ExcelWriter(Excel.createXls());
     }
 
-    public static ExcelBuilder createXlsx() {
-        return new ExcelBuilder(Excel.createXlsx());
+    public static ExcelWriter createXlsx() {
+        return new ExcelWriter(Excel.createXlsx());
     }
-
 
     public ExcelFontBuilder withFont(final String name) {
         return new ExcelFontBuilder(this, managedExcel, name);
@@ -144,12 +143,12 @@ public class ExcelBuilder {
         return new ExcelCellStyleBuilder(this, managedExcel, name);
     }
 
-    public <T> ExcelSheetBuilder<T> withSheet(final String name, final Class<T> type) {
-        return new ExcelSheetBuilder<T>(this, managedExcel.createSheet(name));
+    public <T> ExcelSheetWriter<T> withSheet(final String name, final Class<T> type) {
+        return new ExcelSheetWriter<T>(this, managedExcel.createSheet(name));
     }
 
     public void evaluateAllFormulas() {
-        managedExcel.evaluateAllFormulas();;
+        managedExcel.evaluateAllFormulas();
     }
 
     public Excel toExcel() {
@@ -169,11 +168,18 @@ public class ExcelBuilder {
         return new ExcelReader(managedExcel);
     }
 
-    public ExcelBuilder end() {
+    public ExcelWriter end() {
         managedExcel.close();
         return this;
     }
 
+    public <T> ExcelSheetWriter<T> getSheet(final String name) {
+        return new ExcelSheetWriter<T>(this, managedExcel.getSheet(name));
+    }
+
+    public <T> ExcelSheetWriter<T> getSheetAt(final int sheetIdx) {
+        return new ExcelSheetWriter<T>(this, managedExcel.getSheetAt(sheetIdx-1));
+    }
 
     private final Excel managedExcel;
 }

@@ -67,7 +67,7 @@ public class ExcelSheet {
     }
 
     public int getIndex() {
-    	return sheet.getWorkbook().getSheetIndex(sheet);
+        return sheet.getWorkbook().getSheetIndex(sheet);
     }
 
     public int getFirstRowNum() {
@@ -100,9 +100,9 @@ public class ExcelSheet {
     public String getCellType(final int row, final int col) {
         final Cell cell = getCell(row, col);
         if (cell == null) {
-            return "inexistent";
+            return "notfound";
         }
-        if (cell.getCellType() == CellType.BLANK) {
+        else if (cell.getCellType() == CellType.BLANK) {
             return "blank";
         }
         else if (cell.getCellType() == CellType.STRING) {
@@ -130,38 +130,24 @@ public class ExcelSheet {
         if (cell == null) {
             return null;
         }
-        if (cell.getCellType() == CellType.BLANK) {
-            return null;
-        }
-        else if (cell.getCellType() == CellType.STRING) {
-            return cell.getStringCellValue();
-        }
-        else if (cell.getCellType() == CellType.BOOLEAN) {
-            return Boolean.toString(cell.getBooleanCellValue());
-        }
-        else if (cell.getCellType() == CellType.NUMERIC) {
-            return Double.toString(cell.getNumericCellValue());
+        else if (cell.getCellType() == CellType.FORMULA) {
+            return getString(evaluator.evaluateInCell(cell));
         }
         else {
-            throw new ExcelException(String.format(
-                "The Excel cell [%d,%d] does not contain a string value", row, col));
+            return getString(cell);
         }
     }
 
     public Boolean getBoolean(final int row, final int col) {
         final Cell cell = getCell(row, col);
         if (cell == null) {
-            return NULL_BOOLEAN;  // fooling 'Find Bugs' :-)
+            return NULL_BOOLEAN;
         }
-        if (cell.getCellType() == CellType.BLANK) {
-            return NULL_BOOLEAN;  // fooling 'Find Bugs' :-)
-        }
-        else if (cell.getCellType() == CellType.BOOLEAN) {
-            return cell.getBooleanCellValue();
+        else if (cell.getCellType() == CellType.FORMULA) {
+            return getBoolean(evaluator.evaluateInCell(cell));
         }
         else {
-            throw new ExcelException(String.format(
-                "The Excel cell [%d,%d] does not contain a boolean value", row, col));
+            return getBoolean(cell);
         }
     }
 
@@ -170,25 +156,11 @@ public class ExcelSheet {
         if (cell == null) {
             return null;
         }
-        if (cell.getCellType() == CellType.BLANK) {
-            return null;
-        }
-        else if (cell.getCellType() == CellType.NUMERIC) {
-            return (long)(cell.getNumericCellValue() + 0.5);
-        }
         else if (cell.getCellType() == CellType.FORMULA) {
-            final CellValue cellValue = evaluator.evaluate(cell);
-            if (cellValue.getCellType() == CellType.NUMERIC) {
-                return (long)(cellValue.getNumberValue() + 0.5);
-            }
-            else {
-                throw new ExcelException(String.format(
-                        "The Excel cell [%d,%d] formula does not evaluate to an integer value", row, col));
-            }
+            return getInteger(evaluator.evaluateInCell(cell));
         }
         else {
-            throw new ExcelException(String.format(
-                "The Excel cell [%d,%d] does not contain an integer value", row, col));
+            return getInteger(cell);
         }
     }
 
@@ -197,22 +169,30 @@ public class ExcelSheet {
         if (cell == null) {
             return null;
         }
-        if (cell.getCellType() == CellType.BLANK) {
-            return null;
-        }
-        else if (cell.getCellType() == CellType.NUMERIC) {
-            return cell.getNumericCellValue();
+        else if (cell.getCellType() == CellType.FORMULA) {
+            return getFloat(evaluator.evaluateInCell(cell));
         }
         else {
-            throw new ExcelException(String.format(
-                "The Excel cell [%d,%d] does not contain a float value", row, col));
+            return getFloat(cell);
         }
     }
 
     public LocalDateTime getDate(final int row, final int col) {
         final Cell cell = getCell(row, col);
-        final Date date = cell == null ? null : cell.getDateCellValue();
-        return date == null ? null : TimeUtil.convertDateToLocalDateTime(date);
+        if (cell == null) {
+            return null;
+        }
+        else if (cell.getCellType() == CellType.FORMULA) {
+            return getDate(evaluator.evaluateInCell(cell));
+        }
+        else {
+            return getDate(cell);
+        }
+    }
+
+    public String getFormula(final int row, final int col) {
+        final Cell cell = getCell(row, col);
+        return getFormula(cell);
     }
 
     public void setString(
@@ -444,6 +424,125 @@ public class ExcelSheet {
 
     private String coalesce(final String s1, final String s2) {
         return s1 != null ? s1 : s2;
+    }
+
+
+
+    private String getString(final Cell cell) {
+        if (cell == null) {
+            return null;
+        }
+        if (cell.getCellType() == CellType.BLANK) {
+            return null;
+        }
+        else if (cell.getCellType() == CellType.STRING) {
+            return cell.getStringCellValue();
+        }
+        else if (cell.getCellType() == CellType.BOOLEAN) {
+            return Boolean.toString(cell.getBooleanCellValue());
+        }
+        else if (cell.getCellType() == CellType.NUMERIC) {
+            return Double.toString(cell.getNumericCellValue());
+        }
+        else {
+            throw new ExcelException(String.format(
+                "The Excel cell [%d,%d] does not contain a string value",
+                cell.getRowIndex(),
+                cell.getColumnIndex()));
+        }
+    }
+
+    private Boolean getBoolean(final Cell cell) {
+        if (cell == null) {
+            return NULL_BOOLEAN;  // fooling 'Find Bugs' :-)
+        }
+        if (cell.getCellType() == CellType.BLANK) {
+            return NULL_BOOLEAN;  // fooling 'Find Bugs' :-)
+        }
+        else if (cell.getCellType() == CellType.BOOLEAN) {
+            return cell.getBooleanCellValue();
+        }
+        else {
+            throw new ExcelException(String.format(
+                "The Excel cell [%d,%d] does not contain a boolean value",
+                cell.getRowIndex(),
+                cell.getColumnIndex()));
+        }
+    }
+
+    private Long getInteger(final Cell cell) {
+        if (cell == null) {
+            return null;
+        }
+        if (cell.getCellType() == CellType.BLANK) {
+            return null;
+        }
+        else if (cell.getCellType() == CellType.NUMERIC) {
+            return (long)(cell.getNumericCellValue() + 0.5);
+        }
+        else if (cell.getCellType() == CellType.FORMULA) {
+            final CellValue cellValue = evaluator.evaluate(cell);
+            if (cellValue.getCellType() == CellType.NUMERIC) {
+                return (long)(cellValue.getNumberValue() + 0.5);
+            }
+            else {
+                throw new ExcelException(String.format(
+                        "The Excel cell [%d,%d] formula does not evaluate to an integer value",
+                        cell.getRowIndex(),
+                        cell.getColumnIndex()));
+            }
+        }
+        else {
+            throw new ExcelException(String.format(
+                "The Excel cell [%d,%d] does not contain an integer value",
+                cell.getRowIndex(),
+                cell.getColumnIndex()));
+        }
+    }
+
+    private Double getFloat(final Cell cell) {
+        if (cell == null) {
+            return null;
+        }
+        if (cell.getCellType() == CellType.BLANK) {
+            return null;
+        }
+        else if (cell.getCellType() == CellType.NUMERIC) {
+            return cell.getNumericCellValue();
+        }
+        else {
+            throw new ExcelException(String.format(
+                    "The Excel cell [%d,%d] does not contain a float value. "
+                        + "It actually holds a %s.",
+                    cell.getRowIndex(),
+                    cell.getColumnIndex(),
+                    cell.getCellType().name()));
+        }
+    }
+
+    private LocalDateTime getDate(final Cell cell) {
+        final Date date = cell == null ? null : cell.getDateCellValue();
+        return date == null ? null : TimeUtil.convertDateToLocalDateTime(date);
+    }
+
+    private String getFormula(final Cell cell) {
+        if (cell == null) {
+            return null;
+        }
+        if (cell.getCellType() == CellType.BLANK) {
+            return null;
+        }
+        else if (cell.getCellType() == CellType.FORMULA) {
+            return cell.getCellFormula();
+        }
+        else {
+            throw new ExcelException(String.format(
+                    "The Excel cell [%d,%d] does not contain a formula. "
+                        + "It actually holds a %s.",
+                    cell.getRowIndex(),
+                    cell.getColumnIndex(),
+                    cell.getCellType().name()));
+        }
     }
 
 

@@ -251,7 +251,7 @@ Write the data of a 2D vector to an excel sheet.
         data  [[100  101  102  103  104  105]
                [200  "ab" 1.23 dt   ts   false]]]
     (excel/write-data wbook "Data" data)
-    (excel/auto-size-columns sheet)
+    (excel/auto-size-columns (excel/sheet wbook "Data"))
     (excel/write->file wbook "sample.xlsx")))
 ```
 
@@ -282,7 +282,7 @@ The functions `excel/write-value` To write values to cells. The row and col numb
     (excel/write-value sheet 2 1 "Sue")
     (excel/write-value sheet 2 2 "Ford")
     (excel/write-value sheet 2 3 26)
-    (excel/auto-size-columns sheet)
+    (excel/auto-size-columns (excel/sheet wbook "Sheet 1"))
     (excel/write->file wbook "sample.xlsx")))
 ```
 
@@ -549,19 +549,19 @@ Available border styles:
     (println)
     (println "Sheet \"Data1\" (referenced by name):")
     (let [sheet (excel/sheet wbook "Data1")]
-      (println "Sheet name : " (excel/sheet-name sheet))
-      (println "Sheet index: " (excel/sheet-index sheet))
-      (println "Row range  : " (excel/sheet-row-range sheet))
-      (println "Col range  : " (excel/sheet-col-range sheet 1) "(row 1)"))
+      (println "Sheet name : ~(excel/sheet-name sheet)")
+      (println "Sheet index: ~(excel/sheet-index sheet)")
+      (println "Row range  : ~(excel/sheet-row-range sheet)")
+      (println "Col range  : ~(excel/sheet-col-range sheet 1) (row 1)"))
      
     (println)
     (println "Sheet \"Data2\" (referenced by index):")
     (let [sheet (excel/sheet wbook 2)]
-      (println "Sheet name : " (excel/sheet-name sheet))
-      (println "Sheet index: " (excel/sheet-index sheet))
-      (println "Row range  : " (excel/sheet-row-range sheet))
-      (println "Col range  : " (excel/sheet-col-range sheet 1) "(row 1)")
-      (println "Col range  : " (excel/sheet-col-range sheet 2) "(row 2)"))))
+      (println "Sheet name : ~(excel/sheet-name sheet)")
+      (println "Sheet index: ~(excel/sheet-index sheet)")
+      (println "Row range  : ~(excel/sheet-row-range sheet)")
+      (println "Col range  : ~(excel/sheet-col-range sheet 1) (row 1)")
+      (println "Col range  : ~(excel/sheet-col-range sheet 2) (row 2)"))))
 ```
 
 Prints to:
@@ -591,14 +591,14 @@ Col range  :  [1 3] (row 2)
 
 Each cell has one of the predefined cell data types:
 
-  - `:notfound`
-  - `:blank`
-  - `:string`
-  - `:boolean`
-  - `:numeric`
-  - `:formula`
-  - `:error`
-  - `:unknown`
+  - `:notfound` (cell does not exist)
+  - `:blank` (blank cell)
+  - `:string` (string cell)
+  - `:boolean` (boolean cell)
+  - `:numeric` (numeric cell type: integer numbers, fractional numbers, dates)
+  - `:formula`  (formula cell)
+  - `:error`  (formula error)
+  - `:unknown` (unknown cell type)
 
 
 ```clojure
@@ -615,19 +615,21 @@ Each cell has one of the predefined cell data types:
                                        100.123
                                        (time/local-date 2021 1 1)
                                        (time/local-date-time 2021 1 1 15 30 45)
+                                       {:formula "SUM(C1,D1)"}
                                        "" 
                                        nil]])
       (excel/write->bytebuf wbook)))
 
   (let [wbook (excel/open (create-excel))
         sheet (excel/sheet wbook "Data")]
-    (list-comp [r (range 1 2) c (range 1 9)]
-      (println "Cell (~{r},~{c}): " (excel/cell-type sheet r c)))
+    (list-comp [r (range 1 2) c (range 1 10)]
+      (println "Cell (~{r},~{c}): ~(excel/cell-type sheet r c)"))
 
     (println)
 
     (list-comp [r (range 1 2) c (range 1 10)]
-      (println "Cell (~{r},~{c}) empty: " (excel/cell-empty? sheet r c)))))
+      (println "Cell (~{r},~{c}) empty: ~(excel/cell-empty? sheet r c)"))
+    nil))
 ```
 
 Prints to:
@@ -639,8 +641,9 @@ Cell (1,3):  :numeric
 Cell (1,4):  :numeric
 Cell (1,5):  :numeric
 Cell (1,6):  :numeric
-Cell (1,7):  :string
-Cell (1,8):  :unknown
+Cell (1,7):  :formula
+Cell (1,8):  :string
+Cell (1,9):  :unknown
 
 Cell (1,1) empty:  false
 Cell (1,2) empty:  false
@@ -649,8 +652,9 @@ Cell (1,4) empty:  false
 Cell (1,5) empty:  false
 Cell (1,6) empty:  false
 Cell (1,7) empty:  false
-Cell (1,8) empty:  true
+Cell (1,8) empty:  false
 Cell (1,9) empty:  true
+Cell (1,10) empty:  true
 ```
 
 [top](#content)
@@ -658,6 +662,8 @@ Cell (1,9) empty:  true
 
 
 ### Reading Cells
+
+If the Excel document contains formulas call `excel/evaluate-formulas` before reading the cells to get the evaluated formula values, otherwise the cell returns the formula itself!
 
 ```clojure
 (do
@@ -673,33 +679,37 @@ Cell (1,9) empty:  true
                                        100.123
                                        (time/local-date 2021 1 1)
                                        (time/local-date-time 2021 1 1 15 30 45)
+                                       {:formula "SUM(C1,D1)"}
                                        "" 
                                        nil]])
       (excel/write->bytebuf wbook)))
 
   (let [wbook (excel/open (create-excel))
         sheet (excel/sheet wbook "Data")]
-    (println "Cell (1,1): " (pr-str (excel/read-string-val sheet 1 1)))
-    (println "Cell (1,2): " (pr-str (excel/read-boolean-val sheet 1 2)))
-    (println "Cell (1,3): " (pr-str (excel/read-long-val sheet 1 3)))
-    (println "Cell (1,4): " (pr-str (excel/read-double-val sheet 1 4)))
-    (println "Cell (1,5): " (pr-str (excel/read-date-val sheet 1 5)))
-    (println "Cell (1,6): " (pr-str (excel/read-datetime-val sheet 1 6)))
-    (println "Cell (1,7): " (pr-str (excel/read-string-val sheet 1 7)))
-    (println "Cell (1,8): " (pr-str (excel/read-string-val sheet 1 8)))))
+    (excel/evaluate-formulas wbook) ;; evaluate the formulas!
+    (println "Cell (1,1): ~(pr-str (excel/read-string-val sheet 1 1))")
+    (println "Cell (1,2): ~(pr-str (excel/read-boolean-val sheet 1 2))")
+    (println "Cell (1,3): ~(pr-str (excel/read-long-val sheet 1 3))")
+    (println "Cell (1,4): ~(pr-str (excel/read-double-val sheet 1 4))")
+    (println "Cell (1,5): ~(pr-str (excel/read-date-val sheet 1 5))")
+    (println "Cell (1,6): ~(pr-str (excel/read-datetime-val sheet 1 6))")
+    (println "Cell (1,7): ~(pr-str (excel/read-double-val sheet 1 7))")
+    (println "Cell (1,8): ~(pr-str (excel/read-string-val sheet 1 8))")
+    (println "Cell (1,9): ~(pr-str (excel/read-string-val sheet 1 9))")))
 ```
 
 Prints to:
 
 ```
-Cell (1,1):  "foo"
-Cell (1,2):  false
-Cell (1,3):  100
-Cell (1,4):  100.123
-Cell (1,5):  2021-01-01
-Cell (1,6):  2021-01-01T15:30:45
-Cell (1,7):  ""
-Cell (1,8):  nil
+Cell (1,1): "foo"
+Cell (1,2): false
+Cell (1,3): 100
+Cell (1,4): 100.123
+Cell (1,5): 2021-01-01
+Cell (1,6): 2021-01-01T15:30:45
+Cell (1,7): 200.123
+Cell (1,8): ""
+Cell (1,9): nil
 ```
 
 [top](#content)

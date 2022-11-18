@@ -26,7 +26,7 @@ import com.github.jlangch.venice.impl.util.excel.ExcelSheet;
 public class ExcelSumFormulaBuilder<T> {
 
     public ExcelSumFormulaBuilder(
-            final ExcelSheetBuilder<T> parentBuilder,
+            final ExcelSheetWriter<T> parentBuilder,
             final ExcelSheet sheet,
             final int row1,
             final int col1
@@ -54,7 +54,7 @@ public class ExcelSumFormulaBuilder<T> {
         return this;
     }
 
-    public ExcelSheetBuilder<T> end() {
+    public ExcelSheetWriter<T> end() {
         final String formula = String.format(
                                 "SUM(%s:%s)",
                                 sheet.getCellAddress(rowFrom0, colFrom0),
@@ -66,7 +66,7 @@ public class ExcelSumFormulaBuilder<T> {
     }
 
 
-    private final ExcelSheetBuilder<T> parentBuilder;
+    private final ExcelSheetWriter<T> parentBuilder;
     private final ExcelSheet sheet;
     private final int row0;
     private final int col0;

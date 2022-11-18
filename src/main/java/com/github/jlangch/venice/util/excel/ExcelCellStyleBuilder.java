@@ -35,7 +35,7 @@ import com.github.jlangch.venice.util.pdf.HtmlColor;
 public class ExcelCellStyleBuilder {
 
     public ExcelCellStyleBuilder(
-            final ExcelBuilder excelBuilder,
+            final ExcelWriter excelBuilder,
             final Excel managedExcel,
             final String id
     ) {
@@ -145,7 +145,7 @@ public class ExcelCellStyleBuilder {
         return this;
     }
 
-    public ExcelBuilder end() {
+    public ExcelWriter end() {
         if (bgColorIndex != null) {
             managedExcel.registerCellFormat(
                     id, format, fontRefName, bgColorIndex, wrapText, hAlign, vAlign, rotation,
@@ -166,7 +166,7 @@ public class ExcelCellStyleBuilder {
     }
 
 
-    private final ExcelBuilder parentBuilder;
+    private final ExcelWriter parentBuilder;
     private final Excel managedExcel;
     private final String id;
     private String format;

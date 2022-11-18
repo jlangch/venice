@@ -161,6 +161,7 @@ public class Excel implements Closeable {
     }
 
     public void evaluateAllFormulas() {
+        evaluator.clearAllCachedResultValues();
         evaluator.evaluateAll();
     }
 

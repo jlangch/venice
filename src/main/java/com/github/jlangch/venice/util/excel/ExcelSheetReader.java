@@ -33,9 +33,7 @@ import com.github.jlangch.venice.impl.util.excel.ExcelSheet;
  */
 public class ExcelSheetReader {
 
-    public ExcelSheetReader(
-        final ExcelSheet sheet
-    ) {
+    public ExcelSheetReader(final ExcelSheet sheet) {
         this.sheet = sheet;
     }
 
@@ -99,6 +97,10 @@ public class ExcelSheetReader {
 
     public LocalDateTime getDate(final int row1, final int col1) {
         return sheet.getDate(row1-1, col1-1);
+    }
+
+    public String getFormula(final int row1, final int col1) {
+        return sheet.getFormula(row1-1, col1-1);
     }
 
     public void evaluateAllFormulas() {

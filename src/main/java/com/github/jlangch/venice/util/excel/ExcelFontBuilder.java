@@ -32,7 +32,7 @@ import com.github.jlangch.venice.util.pdf.HtmlColor;
 public class ExcelFontBuilder {
 
     public ExcelFontBuilder(
-            final ExcelBuilder excelBuilder,
+            final ExcelWriter excelBuilder,
             final Excel managedExcel,
             final String id
     ) {
@@ -83,7 +83,7 @@ public class ExcelFontBuilder {
         return this;
     }
 
-    public ExcelBuilder end() {
+    public ExcelWriter end() {
         if (colorIndex != null) {
             managedExcel.registerFont(id, fontName, heightInPoints, bold, italic, colorIndex);
         }
@@ -98,7 +98,7 @@ public class ExcelFontBuilder {
     }
 
 
-    private final ExcelBuilder parentBuilder;
+    private final ExcelWriter parentBuilder;
     private final Excel managedExcel;
     private final String id;
     private String fontName;

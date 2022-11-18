@@ -34,32 +34,41 @@ import com.github.jlangch.venice.impl.util.excel.ExcelSheet;
 
 
 
-public class ExcelSheetBuilder<T> {
+public class ExcelSheetWriter<T> {
 
-    public ExcelSheetBuilder(
-            final ExcelBuilder excelBuilder,
+    public ExcelSheetWriter(
+            final ExcelWriter excelBuilder,
             final ExcelSheet sheet
     ) {
         this.parentBuilder = excelBuilder;
         this.sheet = sheet;
     }
 
-    public ExcelSheetBuilder<T> noHeader() {
+
+    public String getName() {
+        return sheet.getName();
+    }
+
+    public int getIndex() {
+    	return sheet.getIndex() + 1;  // 1-based
+    }
+
+    public ExcelSheetWriter<T> noHeader() {
         this.noHeader = true;
         return this;
     }
 
-    public ExcelSheetBuilder<T> defaultHeaderStyle(final String style) {
+    public ExcelSheetWriter<T> defaultHeaderStyle(final String style) {
         this.defaultHeaderStyle = style;
         return this;
     }
 
-    public ExcelSheetBuilder<T> defaultBodyStyle(final String style) {
+    public ExcelSheetWriter<T> defaultBodyStyle(final String style) {
         this.defaultBodyStyle = style;
         return this;
     }
 
-    public ExcelSheetBuilder<T> defaultFooterStyle(final String style) {
+    public ExcelSheetWriter<T> defaultFooterStyle(final String style) {
         this.defaultFooterStyle = style;
         return this;
     }
@@ -84,7 +93,7 @@ public class ExcelSheetBuilder<T> {
                     .colMapper(e -> ((DataRecord)e).get(fieldName));
     }
 
-    public ExcelSheetBuilder<T> renderItems(final List<T> items) {
+    public ExcelSheetWriter<T> renderItems(final List<T> items) {
         renderHeader();
 
         final int bodyRowStart = currRow0;
@@ -98,28 +107,28 @@ public class ExcelSheetBuilder<T> {
         return this;
     }
 
-    public ExcelSheetBuilder<T> renderItem(final T item) {
+    public ExcelSheetWriter<T> renderItem(final T item) {
         renderHeader();
         renderBodyItem(item);
         return this;
     }
 
-    public ExcelSheetBuilder<T> value(final int row1, final int col1, final Object value) {
+    public ExcelSheetWriter<T> value(final int row1, final int col1, final Object value) {
         sheet.setValue(row1-1, col1-1, value);
         return this;
     }
 
-    public ExcelSheetBuilder<T> value(final int row1, final int col1, final Object value, final String stylename) {
+    public ExcelSheetWriter<T> value(final int row1, final int col1, final Object value, final String stylename) {
         sheet.setValue(row1-1, col1-1, value, stylename);
         return this;
     }
 
-    public ExcelSheetBuilder<T> formula(final int row1, final int col1, final String formula) {
+    public ExcelSheetWriter<T> formula(final int row1, final int col1, final String formula) {
         sheet.setFormula(row1-1, col1-1, formula);
         return this;
     }
 
-    public ExcelSheetBuilder<T> formula(final int row1, final int col1, final String formula, final String stylename) {
+    public ExcelSheetWriter<T> formula(final int row1, final int col1, final String formula, final String stylename) {
         sheet.setFormula(row1-1, col1-1, formula, stylename);
         return this;
     }
@@ -128,42 +137,42 @@ public class ExcelSheetBuilder<T> {
         return new ExcelSumFormulaBuilder<T>(this, sheet, row1, col1);
     }
 
-    public ExcelSheetBuilder<T> skipRows(final int count) {
+    public ExcelSheetWriter<T> skipRows(final int count) {
         skipRows = Math.max(0, count);
         return this;
     }
 
-    public ExcelSheetBuilder<T> rowHeightInPoints(final int row1, final int height) {
+    public ExcelSheetWriter<T> rowHeightInPoints(final int row1, final int height) {
         sheet.rowHeightInPoints(row1-1, height);
         return this;
     }
 
-    public ExcelSheetBuilder<T> autoSizeColumns() {
+    public ExcelSheetWriter<T> autoSizeColumns() {
         sheet.autoSizeColumns();
         return this;
     }
 
-    public ExcelSheetBuilder<T> autoSizeColumn(final int col1) {
+    public ExcelSheetWriter<T> autoSizeColumn(final int col1) {
         sheet.autoSizeColumn(col1-1);
         return this;
     }
 
-    public ExcelSheetBuilder<T> addMergedRegion(final int rowFrom1, final int rowTo1, final int colFrom1, final int colTo1) {
+    public ExcelSheetWriter<T> addMergedRegion(final int rowFrom1, final int rowTo1, final int colFrom1, final int colTo1) {
         sheet.addMergedRegion(rowFrom1, rowTo1, colFrom1, colTo1);
         return this;
     }
 
-    public ExcelSheetBuilder<T> evaluateAllFormulas() {
+    public ExcelSheetWriter<T> evaluateAllFormulas() {
         sheet.evaluateAllFormulas();
         return this;
     }
 
-    public ExcelSheetBuilder<T> displayZeros(final boolean value) {
+    public ExcelSheetWriter<T> displayZeros(final boolean value) {
         sheet.setDisplayZeros(value);
         return this;
     }
 
-    public ExcelSheetBuilder<T> setDefaultColumnWidthInPoints(final int width) {
+    public ExcelSheetWriter<T> setDefaultColumnWidthInPoints(final int width) {
         columnWidth = width;
         return this;
     }
@@ -183,7 +192,7 @@ public class ExcelSheetBuilder<T> {
         return new ExcelSheetReader(sheet);
     }
 
-    public ExcelBuilder end() {
+    public ExcelWriter end() {
         return parentBuilder;
     }
 
@@ -350,7 +359,7 @@ public class ExcelSheetBuilder<T> {
 
     public static final int DEFAULT_FONT_SIZE = XSSFFont.DEFAULT_FONT_SIZE;
 
-    private final ExcelBuilder parentBuilder;
+    private final ExcelWriter parentBuilder;
     private final ExcelSheet sheet;
     private final List<ExcelColumnDef<T>> columnDefs = new ArrayList<>();
     private boolean noHeader = false;
