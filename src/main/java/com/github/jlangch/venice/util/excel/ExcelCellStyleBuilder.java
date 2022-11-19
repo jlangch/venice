@@ -110,7 +110,7 @@ public class ExcelCellStyleBuilder {
         return this;
     }
 
-    public ExcelCellStyleBuilder vAlignCenter() {
+    public ExcelCellStyleBuilder vAlignMiddle() {
         this.vAlign = VerticalAlignment.CENTER;
         return this;
     }

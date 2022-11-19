@@ -36,7 +36,6 @@
 (import :com.github.jlangch.venice.util.excel.ExcelFontBuilder)
 (import :com.github.jlangch.venice.util.excel.ExcelCellStyleBuilder)
 (import :com.github.jlangch.venice.util.excel.ExcelColumnBuilder)
-(import :com.github.jlangch.venice.util.excel.ExcelColumnBuilder)
 (import :com.github.jlangch.venice.util.excel.DataRecord)
 (import :java.io.OutputStream)
 (import :java.io.InputStream)
@@ -881,18 +880,18 @@
   ([wbook font-id options]
     { :pre [(instance-of? :ExcelWriter wbook)
             (keyword? font-id)] }
-    (let [builder (. wbook :withFont (name font-id))]
-      (when-let [x (:height options)] (. builder :heightInPoints x))
-      (when-let [x (:bold options)]   (. builder :bold))
-      (when-let [x (:italic options)] (. builder :italic))
+    (let [font-builder (. wbook :withFont (name font-id))]
+      (when-let [x (:height options)] (. font-builder :heightInPoints x))
+      (when-let [x (:bold options)]   (. font-builder :bold))
+      (when-let [x (:italic options)] (. font-builder :italic))
       (when-let [x (:color options)]  (cond
-                                        (string? x)  (. builder :colorHtml x)
-                                        (keyword? x) (. builder :color (x colors))
-                                        (long? x)    (. builder :color x))
+                                        (string? x)  (. font-builder :colorHtml x)
+                                        (keyword? x) (. font-builder :color (x colors))
+                                        (long? x)    (. font-builder :color x))
                                         :else        (ex :VncException "Invalid font color"))
 
-      (. builder :end)
-      builder)))
+      (. font-builder :end)
+      font-builder)))
 
 
 
@@ -977,50 +976,50 @@
   ([wbook style-id options]
     { :pre [(instance-of? :ExcelWriter wbook)
             (keyword? style-id)] }
-    (let [builder (. wbook :withCellStyle (name style-id))]
+    (let [cell-style-builder (. wbook :withCellStyle (name style-id))]
       (when-let [x (:format options)]
-        (. builder :format x))
+        (. cell-style-builder :format x))
       (when-let [x (:font options)]
-        (. builder :font x))
+        (. cell-style-builder :font x))
       (when-let [x (:bg-color options)]
         (cond
-          (string? x)  (. builder :bgColorHtml x)
-          (keyword? x) (. builder :bgColor (x colors))
-          (long? x)    (. builder :bgColor x))
+          (string? x)  (. cell-style-builder :bgColorHtml x)
+          (keyword? x) (. cell-style-builder :bgColor (x colors))
+          (long? x)    (. cell-style-builder :bgColor x))
           :else        (ex :VncException "Invalid style bg color"))
       (when-let [x (:wrap-text options)]
-        (. builder :wrapText))
+        (. cell-style-builder :wrapText))
       (when-let [x (:h-align options)]
         (case x
-          :left     (. builder :hAlignLeft)
-          :center   (. builder :hAlignCenter)
-          :right    (. builder :hAlignRight)
+          :left     (. cell-style-builder :hAlignLeft)
+          :center   (. cell-style-builder :hAlignCenter)
+          :right    (. cell-style-builder :hAlignRight)
           (throw    (ex :VncException
                         (str "Invalid horizontal alignment "
                              align
                             ". Use one of :left, :center, or :right")))))
       (when-let [x (:v-align options)]
-        (case align
-          :top      (. builder :vAlignTop)
-          :midddle  (. builder :vAlignMiddle)
-          :bottom   (. builder :hAlignBottom)
+        (case x
+          :top      (. cell-style-builder :vAlignTop)
+          :middle   (. cell-style-builder :vAlignMiddle)
+          :bottom   (. cell-style-builder :vAlignBottom)
           (throw    (ex :VncException
                         (str "Invalid vertical alignment "
-                             align
+                             x
                              ". Use one of :top, :middle, or :bottom")))))
       (when-let [x (:rotation options)]
-        (. builder :rotation x))
+        (. cell-style-builder :rotation x))
       (when-let [x (:border-top options)]
-        (. builder :borderTopStyle (map-border-style x)))
+        (. cell-style-builder :borderTopStyle (map-border-style x)))
       (when-let [x (:border-right options)]
-        (. builder :borderRightStyle (map-border-style x)))
+        (. cell-style-builder :borderRightStyle (map-border-style x)))
       (when-let [x (:border-bottom options)]
-        (. builder :borderBottomStyle (map-border-style x)))
+        (. cell-style-builder :borderBottomStyle (map-border-style x)))
       (when-let [x (:border-left options)]
-        (. builder :borderLeftStyle (map-border-style x)))
+        (. cell-style-builder :borderLeftStyle (map-border-style x)))
 
-      (. builder :end)
-      builder)))
+      (. cell-style-builder :end)
+      cell-style-builder)))
 
 
 (defn- map-border-style [style]

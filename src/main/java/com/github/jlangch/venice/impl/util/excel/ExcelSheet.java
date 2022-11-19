@@ -191,69 +191,69 @@ public class ExcelSheet {
     }
 
     public void setString(
-        final int row, final int col, final String value, final String format
+        final int row, final int col, final String value, final String styleName
     ) {
-        setCellValue(getCellCreate(row, col), value, format);
+        setCellValue(getCellCreate(row, col), value, styleName);
     }
 
     public void setString(final int row, final int col, final String value) {
         setCellValue(getCellCreate(row, col), value, "string");
     }
 
-    public void setBoolean(final int row, final int col, final Boolean value, final String format) {
-        setCellValue(getCellCreate(row, col), value, format);
+    public void setBoolean(final int row, final int col, final Boolean value, final String styleName) {
+        setCellValue(getCellCreate(row, col), value, styleName);
     }
 
     public void setBoolean(final int row, final int col, final Boolean value) {
         setCellValue(getCellCreate(row, col), value, "boolean");
     }
 
-    public void setInteger(final int row, final int col, final Integer value, final String format) {
-        setCellValue(getCellCreate(row, col), value, format);
+    public void setInteger(final int row, final int col, final Integer value, final String styleName) {
+        setCellValue(getCellCreate(row, col), value, styleName);
     }
 
     public void setInteger(final int row, final int col, final Integer value ) {
         setCellValue(getCellCreate(row, col), value, "integer");
     }
 
-    public void setInteger(final int row, final int col, final Long value, final String format) {
-        setCellValue(getCellCreate(row, col), value, format);
+    public void setInteger(final int row, final int col, final Long value, final String styleName) {
+        setCellValue(getCellCreate(row, col), value, styleName);
     }
 
     public void setInteger(final int row, final int col, final Long value ) {
         setCellValue(getCellCreate(row, col), value, "integer");
     }
 
-    public void setFloat(final int row, final int col, final Float value, final String format) {
-        setCellValue(getCellCreate(row, col), value, format);
+    public void setFloat(final int row, final int col, final Float value, final String styleName) {
+        setCellValue(getCellCreate(row, col), value, styleName);
     }
 
     public void setFloat(final int row, final int col, final Float value) {
         setCellValue(getCellCreate(row, col), value, "float");
     }
 
-    public void setFloat(final int row, final int col, final Double value, final String format) {
-        setCellValue(getCellCreate(row, col), value, format);
+    public void setFloat(final int row, final int col, final Double value, final String styleName) {
+        setCellValue(getCellCreate(row, col), value, styleName);
     }
 
     public void setFloat(final int row, final int col, final Double value) {
         setCellValue(getCellCreate(row, col), value, "float");
     }
 
-    public void setDate(final int row, final int col, final Date value, final String format) {
-        setCellValue(getCellCreate(row, col), value, format);
+    public void setDate(final int row, final int col, final Date value, final String styleName) {
+        setCellValue(getCellCreate(row, col), value, styleName);
     }
 
-    public void setDate(final int row, final int col, final LocalDate value, final String format) {
-        setCellValue(getCellCreate(row, col), value, format);
+    public void setDate(final int row, final int col, final LocalDate value, final String styleName) {
+        setCellValue(getCellCreate(row, col), value, styleName);
     }
 
-    public void setDate(final int row, final int col, final LocalDateTime value, final String format) {
-        setCellValue(getCellCreate(row, col), value, format);
+    public void setDate(final int row, final int col, final LocalDateTime value, final String styleName) {
+        setCellValue(getCellCreate(row, col), value, styleName);
     }
 
-    public void setDate(final int row, final int col, final ZonedDateTime value, final String format) {
-        setCellValue(getCellCreate(row, col), value, format);
+    public void setDate(final int row, final int col, final ZonedDateTime value, final String styleName) {
+        setCellValue(getCellCreate(row, col), value, styleName);
     }
 
     public void setDate(final int row, final int col, final Date value) {
@@ -279,30 +279,30 @@ public class ExcelSheet {
     public void rowHeightInPoints(final int row, final int height) {
         // Set the row's height or set to ff (-1) for undefined/default-height.
         // Set the height in "twips" or 1/20th of a point.
-        sheet.getRow(row).setHeight((short)(height * 20));
+    	getRowCreate(row).setHeight((short)(height * 20));
     }
 
     public void setValue(final int row, final int col, final Object value) {
         setValue(row, col, value, null);
     }
 
-    public void setValue(final int row, final int col, final Object value, final String format) {
+    public void setValue(final int row, final int col, final Object value, final String styleName) {
         if (value == null) {
             setCellValue(getCellCreate(row, col), null, null);
         }
         else {
-            if (value instanceof String) setString(row, col, (String)value, coalesce(format, "string"));
-            else if (value instanceof Boolean) setBoolean(row, col, (Boolean)value, coalesce(format, "boolean"));
-            else if (value instanceof Integer) setInteger(row, col, (Integer)value, coalesce(format, "integer"));
-            else if (value instanceof Long) setInteger(row, col, (Long)value, coalesce(format, "integer"));
-            else if (value instanceof Float) setFloat(row, col, (Float)value, coalesce(format, "float"));
-            else if (value instanceof Double) setFloat(row, col, (Double)value, coalesce(format, "float"));
-            else if (value instanceof BigDecimal) setFloat(row, col, ((BigDecimal)value).doubleValue(), coalesce(format, "float"));
-            else if (value instanceof BigInteger) setInteger(row, col, ((BigInteger)value).longValue(), coalesce(format, "integer"));
-            else if (value instanceof LocalDate) setDate(row, col, (LocalDate)value, coalesce(format, "date"));
-            else if (value instanceof LocalDateTime) setDate(row, col, (LocalDateTime)value, coalesce(format, "datetime"));
-            else if (value instanceof ZonedDateTime) setDate(row, col, (ZonedDateTime)value, coalesce(format, "datetime"));
-            else if (value instanceof Date) setDate(row, col, (Date)value, coalesce(format, "datetime"));
+            if (value instanceof String)             setString(row, col,  (String)value,                     coalesce(styleName, "string"));
+            else if (value instanceof Boolean)       setBoolean(row, col, (Boolean)value,                    coalesce(styleName, "boolean"));
+            else if (value instanceof Integer)       setInteger(row, col, (Integer)value,                    coalesce(styleName, "integer"));
+            else if (value instanceof Long)          setInteger(row, col, (Long)value,                       coalesce(styleName, "integer"));
+            else if (value instanceof Float)         setFloat(row, col,   (Float)value,                      coalesce(styleName, "float"));
+            else if (value instanceof Double)        setFloat(row, col,   (Double)value,                     coalesce(styleName, "float"));
+            else if (value instanceof BigDecimal)    setFloat(row, col,   ((BigDecimal)value).doubleValue(), coalesce(styleName, "float"));
+            else if (value instanceof BigInteger)    setInteger(row, col, ((BigInteger)value).longValue(),   coalesce(styleName, "integer"));
+            else if (value instanceof LocalDate)     setDate(row, col,    (LocalDate)value,                  coalesce(styleName, "date"));
+            else if (value instanceof LocalDateTime) setDate(row, col,    (LocalDateTime)value,              coalesce(styleName, "datetime"));
+            else if (value instanceof ZonedDateTime) setDate(row, col,    (ZonedDateTime)value,              coalesce(styleName, "datetime"));
+            else if (value instanceof Date)          setDate(row, col,    (Date)value,                       coalesce(styleName, "datetime"));
             else throw new IllegalArgumentException("Invalid value type " + value.getClass().getSimpleName());
         }
     }
@@ -354,8 +354,8 @@ public class ExcelSheet {
     }
 
 
-    private void setCellValue(Cell cell, Object value, String format) {
-        final CellStyle style = cellStyles.getCellStyle(format);
+    private void setCellValue(Cell cell, Object value, String styleName) {
+        final CellStyle style = cellStyles.getCellStyle(styleName);
         if (style != null) {
             cell.setCellStyle(style);
         }

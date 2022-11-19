@@ -512,6 +512,8 @@ Available border styles:
 :medium, :double, :medium-dash-dot,
 :dashed, :hair, :dash-dot-dot
 
+**Example 1:**
+
 ```clojure
 (do
   (ns test)
@@ -550,6 +552,55 @@ Available border styles:
 ```
 
 <img src="https://github.com/jlangch/venice/blob/master/doc/assets/excel/excel-write-009.png" width="400">
+
+[top](#content)
+
+
+**Example 2:**
+
+```clojure
+(do
+  (ns test)
+
+  (load-module :excel)
+
+  (let [wbook (excel/writer :xlsx)
+        sheet (excel/add-sheet wbook "Population")]
+    
+    (excel/add-font wbook :title       { :bold true 
+                                         :color :WHITE })  
+    (excel/add-style wbook :title      { :font :title 
+                                         :bg-color "#282e9c"
+                                         :h-align :center
+                                         :v-align :middle })
+    (excel/add-style wbook :subtitle   { :bg-color "#cfd1fc"
+                                         :h-align :center })
+    (excel/add-style wbook :country    { :bg-color "#f2f3fc" })                        
+    (excel/add-style wbook :population { :format "#'###'##0"
+                                         :bg-color "#f2f3fc" })
+
+    
+    (excel/row-height sheet 2 20)
+    (excel/row-height sheet 3 10)
+    
+    (excel/column-width sheet 2 70)
+    (excel/column-width sheet 3 70)
+    
+    (excel/add-merge-region sheet 2 2 2 3)
+    
+    (excel/write-value sheet 2 2 "Country Population" :title)
+    (excel/write-value sheet 4 2 "Country" :subtitle)
+    (excel/write-value sheet 4 3 "Population" :subtitle)
+    (excel/write-value sheet 5 2 "Germany" :country)
+    (excel/write-value sheet 5 3 83_783_942 :population)
+    (excel/write-value sheet 6 2 "Italy" :country)
+    (excel/write-value sheet 6 3 60_461_826 :population)
+    (excel/write-value sheet 7 2 "Austria" :country)
+    (excel/write-value sheet 7 3 9_006_398 :population)
+    (excel/write->file wbook "sample.xlsx")))
+```
+
+<img src="https://github.com/jlangch/venice/blob/master/doc/assets/excel/excel-write-011.png" width="400">
 
 [top](#content)
 
