@@ -576,7 +576,7 @@ Available border styles:
     (excel/add-style wbook :subtitle   { :bg-color "#cfd1fc"
                                          :h-align :center })
     (excel/add-style wbook :country    { :bg-color "#f2f3fc" })                        
-    (excel/add-style wbook :population { :format "#'###'##0"
+    (excel/add-style wbook :population { :format "#,###0"
                                          :bg-color "#f2f3fc" })
 
     
