@@ -34,6 +34,7 @@ Run this script from the REPL to download the newest Apache POI 5.2.x libraries:
        * [Supported datatypes](#supported-datatypes)
        * [Writing 2D vector data](#writing-2d-vector-data)
        * [Writing to individual cells](#writing-to-individual-cells)
+       * [Merge Cells](#merge-cells)
        * [Using formulas](#using-formulas)
     * [Styling](#styling)
        * [Row height](#row-height)
@@ -273,9 +274,6 @@ The functions `excel/write-value` To write values to cells. The row and col numb
 
   (let [wbook (excel/writer :xlsx)
         sheet (excel/add-sheet wbook "Sheet 1")]
-    (excel/add-column sheet "First Name" { :field :first })
-    (excel/add-column sheet "Last Name" { :field :last })
-    (excel/add-column sheet "Age" { :field :age })
     (excel/write-value sheet 1 1 "John")
     (excel/write-value sheet 1 2 "Doe")
     (excel/write-value sheet 1 3 28)
@@ -287,6 +285,37 @@ The functions `excel/write-value` To write values to cells. The row and col numb
 ```
 
 <img src="https://github.com/jlangch/venice/blob/master/doc/assets/excel/excel-write-003.png" width="400">
+
+[top](#content)
+
+
+
+#### Merge cells
+
+```clojure
+(do
+  (ns test)
+
+  (load-module :excel)
+
+  (let [wbook (excel/writer :xlsx)
+        sheet (excel/add-sheet wbook "Population")]
+    (excel/column-width sheet 2 70)
+    (excel/column-width sheet 3 70)
+    (excel/add-merge-region sheet 2 2 2 3)
+    (excel/write-value sheet 2 2 "Contry Population")
+    (excel/write-value sheet 3 2 "Country")
+    (excel/write-value sheet 3 3 "Population")
+    (excel/write-value sheet 4 2 "Germany")
+    (excel/write-value sheet 4 3 83_783_942)
+    (excel/write-value sheet 5 2 "Italy")
+    (excel/write-value sheet 5 3 60_461_826)
+    (excel/write-value sheet 6 2 "Austria")
+    (excel/write-value sheet 6 3 9_006_398)
+    (excel/write->file wbook "sample.xlsx")))
+```
+
+<img src="https://github.com/jlangch/venice/blob/master/doc/assets/excel/excel-write-010.png" width="400">
 
 [top](#content)
 
@@ -622,13 +651,16 @@ Each cell has one of the predefined cell data types:
 
   (let [wbook (excel/open (create-excel))
         sheet (excel/sheet wbook "Data")]
+    (excel/evaluate-formulas wbook)
     (list-comp [r (range 1 2) c (range 1 10)]
       (println "Cell (~{r},~{c}): ~(excel/cell-type sheet r c)"))
-
+    (println "Cell (1,7): ~(excel/cell-formula-result-type sheet 1 7) (formula result type)")
+    
     (println)
 
     (list-comp [r (range 1 2) c (range 1 10)]
       (println "Cell (~{r},~{c}) empty: ~(excel/cell-empty? sheet r c)"))
+    
     nil))
 ```
 

@@ -75,6 +75,10 @@ public class ExcelSheetReader {
         return sheet.getCellType(row1-1, col1-1);
     }
 
+    public String getCellFormulaResultType(final int row1, final int col1) {
+        return sheet.getCellFormulaResultType(row1-1, col1-1);
+    }
+
     public String getCellAddress(final int row1, final int col1) {
         return sheet.getCellAddress(row1-1, col1-1);
     }

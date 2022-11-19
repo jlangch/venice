@@ -102,26 +102,21 @@ public class ExcelSheet {
         if (cell == null) {
             return "notfound";
         }
-        else if (cell.getCellType() == CellType.BLANK) {
-            return "blank";
+        else {
+            return getCellType(cell.getCellType());
         }
-        else if (cell.getCellType() == CellType.STRING) {
-            return "string";
-        }
-        else if (cell.getCellType() == CellType.BOOLEAN) {
-            return "boolean";
-        }
-        else if (cell.getCellType() == CellType.NUMERIC) {
-            return "numeric";
+    }
+
+    public String getCellFormulaResultType(final int row, final int col) {
+        final Cell cell = getCell(row, col);
+        if (cell == null) {
+            return "notfound";
         }
         else if (cell.getCellType() == CellType.FORMULA) {
-            return "formula";
-        }
-        else if (cell.getCellType() == CellType.ERROR) {
-            return "error";
+            return getCellType(cell.getCachedFormulaResultType());
         }
         else {
-            return "unknown";
+            return getCellType(cell.getCellType());
         }
     }
 
@@ -545,6 +540,29 @@ public class ExcelSheet {
         }
     }
 
+    public String getCellType(final CellType type) {
+        if (type == CellType.BLANK) {
+            return "blank";
+        }
+        else if (type == CellType.STRING) {
+            return "string";
+        }
+        else if (type == CellType.BOOLEAN) {
+            return "boolean";
+        }
+        else if (type == CellType.NUMERIC) {
+            return "numeric";
+        }
+        else if (type == CellType.FORMULA) {
+            return "formula";
+        }
+        else if (type == CellType.ERROR) {
+            return "error";
+        }
+        else {
+            return "unknown";
+        }
+    }
 
     // The Excel's magic conversion factor
     public static final float COL_WIDTH_MAGIC_FACTOR = 46.4f; // to points (1/72 inch)

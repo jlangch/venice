@@ -93,6 +93,12 @@ public class ExcelSheetWriter<T> {
                     .colMapper(e -> ((DataRecord)e).get(fieldName));
     }
 
+    public ExcelSheetWriter<T> columnWidth(final int col1, final int width) {
+    	sheet.setColumnWidthInPoints(col1-1, width);
+        return this;
+    }
+
+
     public ExcelSheetWriter<T> renderItems(final List<T> items) {
         renderHeader();
 
@@ -158,7 +164,7 @@ public class ExcelSheetWriter<T> {
     }
 
     public ExcelSheetWriter<T> addMergedRegion(final int rowFrom1, final int rowTo1, final int colFrom1, final int colTo1) {
-        sheet.addMergedRegion(rowFrom1, rowTo1, colFrom1, colTo1);
+        sheet.addMergedRegion(rowFrom1-1, rowTo1-1, colFrom1-1, colTo1-1);
         return this;
     }
 

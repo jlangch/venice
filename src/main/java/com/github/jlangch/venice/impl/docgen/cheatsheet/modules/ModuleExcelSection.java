@@ -54,6 +54,8 @@ public class ModuleExcelSection implements ISectionBuilder {
         wr.addItem(diBuilder.getDocItem("excel/add-font", false));
         wr.addItem(diBuilder.getDocItem("excel/add-style", false));
         wr.addItem(diBuilder.getDocItem("excel/add-column", false));
+        wr.addItem(diBuilder.getDocItem("excel/add-merge-region", false));
+
 
         final DocSection wr_data = new DocSection("Writer Data", id());
         all.addSection(wr_data);
@@ -70,6 +72,7 @@ public class ModuleExcelSection implements ISectionBuilder {
 
         final DocSection wr_util = new DocSection("Writer Util", id());
         all.addSection(wr_util);
+        wr_util.addItem(diBuilder.getDocItem("excel/column-width", false));
         wr_util.addItem(diBuilder.getDocItem("excel/cell-formula", false));
         wr_util.addItem(diBuilder.getDocItem("excel/sum-formula", false));
         wr_util.addItem(diBuilder.getDocItem("excel/cell-address", false));
@@ -100,6 +103,7 @@ public class ModuleExcelSection implements ISectionBuilder {
         rd_util.addItem(diBuilder.getDocItem("excel/evaluate-formulas", false));
         rd_util.addItem(diBuilder.getDocItem("excel/cell-empty?", false));
         rd_util.addItem(diBuilder.getDocItem("excel/cell-type", false));
+        rd_util.addItem(diBuilder.getDocItem("excel/cell-formula-result-type", false));
 
         return section;
     }

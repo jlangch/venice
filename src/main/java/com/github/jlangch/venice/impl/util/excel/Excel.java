@@ -40,6 +40,7 @@ import org.apache.poi.ss.usermodel.BorderStyle;
 import org.apache.poi.ss.usermodel.Font;
 import org.apache.poi.ss.usermodel.FormulaEvaluator;
 import org.apache.poi.ss.usermodel.HorizontalAlignment;
+import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.ss.usermodel.VerticalAlignment;
 import org.apache.poi.ss.usermodel.Workbook;
 import org.apache.poi.ss.usermodel.WorkbookFactory;
@@ -149,11 +150,23 @@ public class Excel implements Closeable {
     }
 
     public ExcelSheet getSheet(final String name) {
-        return new ExcelSheet(workbook.getSheet(name), cellDataStyles, evaluator);
+    	final Sheet sheet = workbook.getSheet(name);
+    	if (sheet == null) {
+    		throw new ExcelException(String.format("The sheet '%s' does not exist", name));
+    	}
+    	else {
+    		return new ExcelSheet(sheet, cellDataStyles, evaluator);
+    	}
     }
 
     public ExcelSheet getSheetAt(final int sheetIdx) {
-        return new ExcelSheet(workbook.getSheetAt(sheetIdx), cellDataStyles, evaluator);
+    	final Sheet sheet = workbook.getSheetAt(sheetIdx);
+    	if (sheet == null) {
+    		throw new ExcelException(String.format("The sheet at the index '%d' does not exist", sheetIdx+1));
+    	}
+    	else {
+    		return new ExcelSheet(sheet, cellDataStyles, evaluator);
+    	}
     }
 
     public int getNumberOfSheets() {

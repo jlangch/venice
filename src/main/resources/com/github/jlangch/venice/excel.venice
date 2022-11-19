@@ -287,7 +287,8 @@
 
   { :pre [(or (instance-of? :ExcelWriter it)
               (instance-of? :ExcelReader it)
-              (instance-of? :ExcelSheetReader it))] }
+              (instance-of? :ExcelSheetReader it)
+              (instance-of? :ExcelSheetWriter it))] }
 
   (. it :evaluateAllFormulas))
 
@@ -763,7 +764,7 @@
               (excel/write->file wbook "sample.xlsx"))))
         """ )
      :see-also '(
-       "excel/add-column", "excel/add-font", "excel/add-style") }
+       "excel/add-column", "excel/add-merge-region") }
 
   add-sheet
 
@@ -792,6 +793,37 @@
       (. sheet :end)
       sheet)))
 
+
+(defn
+  ^{ :arglists '(
+        "(add-merge-region sheet row-from row-to col-from col-to)")
+     :doc
+        "Add a merge region to the sheet."
+     :examples '(
+        """
+        (do
+          (load-module :excel)
+          (let [wbook (excel/writer :xlsx)
+                sheet (excel/add-sheet wbook "Population")]
+            (excel/column-width sheet 2 70)
+            (excel/column-width sheet 3 70)
+            (excel/add-merge-region sheet 2 2 2 3)
+            (excel/write-value sheet 2 2 "Contry Population")
+            (excel/write-value sheet 3 2 "Country")
+            (excel/write-value sheet 3 3 "Population")
+            (excel/write-value sheet 4 2 "Germany")
+            (excel/write-value sheet 4 3 83_783_942)
+            (excel/write-value sheet 5 2 "Italy")
+            (excel/write-value sheet 5 3 60_461_826)
+            (excel/write-value sheet 6 2 "Austria")
+            (excel/write-value sheet 6 3 9_006_398)
+            (excel/write->file wbook "sample.xlsx")))
+     """ )
+     :see-also '("excel/add-sheet") }
+
+  add-merge-region [sheet row-from row-to col-from col-to]
+
+  (. sheet :addMergedRegion row-from row-to col-from col-to))
 
 
 ;; -----------------------------------------------------------------------------
@@ -839,7 +871,7 @@
               (excel/auto-size-columns sheet)
               (excel/write->file wbook "sample.xlsx"))))
         """ )
-     :see-also '("excel/add-sheet", "excel/add-style") }
+     :see-also '("excel/add-style", "excel/add-sheet") }
 
   add-font
 
@@ -935,7 +967,7 @@
               (excel/auto-size-columns sheet)
               (excel/write->file wbook "sample.xlsx"))))
         """ )
-     :see-also '("excel/add-sheet", "excel/add-font") }
+     :see-also '("excel/add-font", "excel/add-sheet") }
 
   add-style
 
@@ -1017,6 +1049,36 @@
 
 (defn
   ^{ :arglists '(
+        "(column-width sheet col width)")
+     :doc
+        "Set the width of a column. The width is given in points."
+     :examples '(
+        """
+        (do
+          (load-module :excel)
+          (let [wbook (excel/writer :xlsx)
+                sheet (excel/add-sheet wbook "Sheet 1")]
+            (excel/column-width sheet 1 60)
+            (excel/column-width sheet 2 60)
+            (excel/column-width sheet 3 60)
+            (excel/write-value sheet 1 1 "John")
+            (excel/write-value sheet 1 2 "Doe")
+            (excel/write-value sheet 1 3 28)
+            (excel/write-value sheet 2 1 "Sue")
+            (excel/write-value sheet 2 2 "Ford")
+            (excel/write-value sheet 2 3 26)
+            (excel/write->file wbook "sample.xlsx")))
+        """ )
+     :see-also '("excel/add-sheet", "excel/add-font", "excel/add-style") }
+
+  column-width [sheet col width]
+    { :pre [(instance-of? :ExcelSheetWriter sheet)] }
+
+    (. sheet :columnWidth col (int width)))
+
+
+(defn
+  ^{ :arglists '(
         "(add-column sheet title)"
         "(add-column sheet title options)")
      :doc
@@ -1065,7 +1127,7 @@
               (excel/auto-size-columns sheet)
               (excel/write->file wbook "sample.xlsx"))))
         """ )
-     :see-also '("excel/add-sheet") }
+     :see-also '("excel/add-sheet", "excel/add-font", "excel/add-style") }
 
   add-column
 
@@ -1406,10 +1468,10 @@
              (excel/cell-type sheet 1 4)]))
         """ )
      :see-also '(
-        "excel/cell-empty?", "excel/read-string-val",
-        "excel/read-boolean-val", "excel/read-long-val",
-        "excel/read-double-val", "excel/read-date-val",
-        "excel/read-datetime-val") }
+        "excel/cell-formula-result-type", "excel/cell-empty?",
+        "excel/read-string-val", "excel/read-boolean-val",
+        "excel/read-long-val", "excel/read-double-val",
+        "excel/read-date-val", "excel/read-datetime-val") }
 
   cell-type [sheet row col]
 
@@ -1417,6 +1479,55 @@
           (long? row) (long? col) (pos? row) (pos? col)] }
 
   (case (. sheet :getCellType row col)
+    "notfound"  :notfound
+    "blank"     :blank
+    "string"    :string
+    "boolean"   :boolean
+    "numeric"   :numeric
+    "formula"   :formula
+    "error"     :error
+    "unknown"   :unknown
+    :unknown))
+
+
+(defn
+  ^{ :arglists '("(cell-formula-result-type sheet row col)")
+     :doc
+        """
+        Returns the sheet cell type as one of { :notfound, :blank, :string,
+        :boolean, :numeric, :formula, :error, or :unknown } after formula
+        cell evaluation. For non formula cells this function is the same as
+        the  `cell-type` function.
+        """
+     :examples '(
+        """
+        (do
+          (load-module :excel)
+
+          (defn create-excel []
+            (let [wbook (excel/writer :xlsx)]
+              (excel/write-data wbook "Data" [[10 20.123 {:formula "SUM(A1,B1)"}]])
+              (excel/write->bytebuf wbook)))
+
+          (let [wbook (excel/open (create-excel))
+                sheet (excel/sheet wbook "Data")]
+            (excel/evaluate-formulas wbook)
+            (printf "Cell (1,3): %s%n" (excel/cell-type sheet 1 3))
+            (printf "Cell (1,3): %s (formula result type)%n"
+                    (excel/cell-formula-result-type sheet 1 3))))
+        """ )
+     :see-also '(
+        "excel/cell-type", "excel/cell-empty?",
+        "excel/read-string-val", "excel/read-boolean-val",
+        "excel/read-long-val", "excel/read-double-val",
+        "excel/read-date-val", "excel/read-datetime-val") }
+
+  cell-formula-result-type [sheet row col]
+
+  { :pre [(instance-of? :ExcelSheetReader sheet)
+          (long? row) (long? col) (pos? row) (pos? col)] }
+
+  (case (. sheet :getCellFormulaResultType row col)
     "notfound"  :notfound
     "blank"     :blank
     "string"    :string
