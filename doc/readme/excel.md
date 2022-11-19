@@ -629,19 +629,19 @@ Available border styles:
     (println)
     (println "Sheet \"Data1\" (referenced by name):")
     (let [sheet (excel/sheet wbook "Data1")]
-      (println "Sheet name : ~(excel/sheet-name sheet)")
-      (println "Sheet index: ~(excel/sheet-index sheet)")
-      (println "Row range  : ~(excel/sheet-row-range sheet)")
-      (println "Col range  : ~(excel/sheet-col-range sheet 1) (row 1)"))
+      (println "  Sheet name : ~(excel/sheet-name sheet)")
+      (println "  Sheet index: ~(excel/sheet-index sheet)")
+      (println "  Row range  : ~(excel/sheet-row-range sheet)")
+      (println "  Col range  : ~(excel/sheet-col-range sheet 1) (row 1)"))
      
     (println)
     (println "Sheet \"Data2\" (referenced by index):")
     (let [sheet (excel/sheet wbook 2)]
-      (println "Sheet name : ~(excel/sheet-name sheet)")
-      (println "Sheet index: ~(excel/sheet-index sheet)")
-      (println "Row range  : ~(excel/sheet-row-range sheet)")
-      (println "Col range  : ~(excel/sheet-col-range sheet 1) (row 1)")
-      (println "Col range  : ~(excel/sheet-col-range sheet 2) (row 2)"))))
+      (println "  Sheet name : ~(excel/sheet-name sheet)")
+      (println "  Sheet index: ~(excel/sheet-index sheet)")
+      (println "  Row range  : ~(excel/sheet-row-range sheet)")
+      (println "  Col range  : ~(excel/sheet-col-range sheet 1) (row 1)")
+      (println "  Col range  : ~(excel/sheet-col-range sheet 2) (row 2)"))))
 ```
 
 Prints to:
@@ -650,17 +650,17 @@ Prints to:
 Sheet count:  2
 
 Sheet "Data1" (referenced by name):
-Sheet name :  Data1
-Sheet index:  1I
-Row range  :  [1 1]
-Col range  :  [1 2] (row 1)
+  Sheet name : Data1
+  Sheet index: 1I
+  Row range  : [1 1]
+  Col range  : [1 2] (row 1)
 
 Sheet "Data2" (referenced by index):
-Sheet name :  Data2
-Sheet index:  2I
-Row range  :  [1 2]
-Col range  :  [1 3] (row 1)
-Col range  :  [1 3] (row 2)
+  Sheet name : Data2
+  Sheet index: 2I
+  Row range  : [1 2]
+  Col range  : [1 3] (row 1)
+  Col range  : [1 3] (row 2)
 ```
 
 [top](#content)
@@ -718,26 +718,26 @@ Each cell has one of the predefined cell data types:
 Prints to:
 
 ```
-Cell (1,1):  :string
-Cell (1,2):  :boolean
-Cell (1,3):  :numeric
-Cell (1,4):  :numeric
-Cell (1,5):  :numeric
-Cell (1,6):  :numeric
-Cell (1,7):  :formula
-Cell (1,8):  :string
-Cell (1,9):  :unknown
+Cell (1,1): :string
+Cell (1,2): :boolean
+Cell (1,3): :numeric
+Cell (1,4): :numeric
+Cell (1,5): :numeric
+Cell (1,6): :numeric
+Cell (1,7): :formula
+Cell (1,8): :string
+Cell (1,9): :notfound
+Cell (1,7): :numeric (formula result type)
 
-Cell (1,1) empty:  false
-Cell (1,2) empty:  false
-Cell (1,3) empty:  false
-Cell (1,4) empty:  false
-Cell (1,5) empty:  false
-Cell (1,6) empty:  false
-Cell (1,7) empty:  false
-Cell (1,8) empty:  false
-Cell (1,9) empty:  true
-Cell (1,10) empty:  true
+Cell (1,1) empty: false
+Cell (1,2) empty: false
+Cell (1,3) empty: false
+Cell (1,4) empty: false
+Cell (1,5) empty: false
+Cell (1,6) empty: false
+Cell (1,7) empty: false
+Cell (1,8) empty: false
+Cell (1,9) empty: true
 ```
 
 [top](#content)
