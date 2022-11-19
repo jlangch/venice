@@ -579,13 +579,10 @@ Available border styles:
     (excel/add-style wbook :population { :format "#,###0"
                                          :bg-color "#f2f3fc" })
 
-    
     (excel/row-height sheet 2 20)
     (excel/row-height sheet 3 10)
-    
     (excel/column-width sheet 2 70)
-    (excel/column-width sheet 3 70)
-    
+    (excel/column-width sheet 3 70)    
     (excel/add-merge-region sheet 2 2 2 3)
     
     (excel/write-value sheet 2 2 "Country Population" :title)
@@ -597,6 +594,7 @@ Available border styles:
     (excel/write-value sheet 6 3 60_461_826 :population)
     (excel/write-value sheet 7 2 "Austria" :country)
     (excel/write-value sheet 7 3 9_006_398 :population)
+    
     (excel/write->file wbook "sample.xlsx")))
 ```
 
@@ -608,6 +606,14 @@ Available border styles:
 
 ## Reading Excel files
 
+The function `excel/open` opens an XLS or XLSX Excel file specified by:
+
+- a string file path: `"./sample.xlsx"`
+- a file: `(io/file "./sample.xlsx")`
+- a byte buffer
+- a input stream: `(io/file-in-stream "./sample.xlsx")`
+
+        
 ### Open Excel
 
 ```clojure
