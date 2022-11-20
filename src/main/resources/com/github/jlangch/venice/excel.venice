@@ -485,8 +485,7 @@
 
   ([sheet row col formula style]
     { :pre [(instance-of? :ExcelSheetWriter sheet)
-            (long? row) (long? col)
-            (pos? row) (pos? col)
+            (long? row) (long? col) (pos? row) (pos? col)
             (string? formula) (keyword? style)] }
     (. sheet :formula row col formula (name style))))
 
@@ -822,6 +821,12 @@
 
   add-merge-region [sheet row-from row-to col-from col-to]
 
+  { :pre [(instance-of? :ExcelSheetWriter sheet)
+          (long? row-from) (long? row-to)
+          (long? col-from) (long? col-to)
+          (pos? row-from) (pos? row-to)
+          (pos? col-from) (pos? col-to)] }
+
   (. sheet :addMergedRegion row-from row-to col-from col-to))
 
 
@@ -1071,7 +1076,8 @@
      :see-also '("excel/add-sheet", "excel/add-font", "excel/add-style") }
 
   column-width [sheet col width]
-    { :pre [(instance-of? :ExcelSheetWriter sheet)] }
+    { :pre [(instance-of? :ExcelSheetWriter sheet)
+            (long? col) (pos? col)] }
 
     (. sheet :columnWidth col (int width)))
 
@@ -1334,7 +1340,7 @@
 
   { :pre [(instance-of? :ExcelSheetReader sheet)] }
 
-  (. sheet :getIndex))
+  (long (. sheet :getIndex)))
 
 
   (defn
@@ -1686,7 +1692,7 @@
   { :pre [(instance-of? :ExcelSheetReader sheet)
           (long? row) (long? col) (pos? row) (pos? col)] }
 
-  (. sheet :getInteger row col))
+  (long (. sheet :getInteger row col)))
 
 
 (defn

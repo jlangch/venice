@@ -668,13 +668,13 @@ Sheet count:  2
 
 Sheet "Data1" (referenced by name):
   Sheet name : Data1
-  Sheet index: 1I
+  Sheet index: 1
   Row range  : [1 1]
   Col range  : [1 2] (row 1)
 
 Sheet "Data2" (referenced by index):
   Sheet name : Data2
-  Sheet index: 2I
+  Sheet index: 2
   Row range  : [1 2]
   Col range  : [1 3] (row 1)
   Col range  : [1 3] (row 2)
