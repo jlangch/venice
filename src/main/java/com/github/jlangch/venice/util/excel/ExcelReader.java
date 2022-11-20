@@ -68,13 +68,17 @@ public class ExcelReader {
     }
 
     public ExcelSheetReader getSheet(final String name) {
-        return new ExcelSheetReader(excel.getSheet(name));
+        return new ExcelSheetReader(this, excel.getSheet(name));
     }
 
     public ExcelSheetReader getSheetAt(final int sheetIdx) {
-        return new ExcelSheetReader(excel.getSheetAt(sheetIdx-1));
+        return new ExcelSheetReader(this, excel.getSheetAt(sheetIdx-1));
     }
 
+
+    public ExcelWriter writer() {
+        return new ExcelWriter(excel);
+    }
 
 
     private final Excel excel;

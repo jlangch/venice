@@ -131,7 +131,7 @@
             (excel/add-column sheet "Age" { :field :age })
             (excel/write-items sheet data)
             (excel/auto-size-columns sheet)
-            (excel/write->file wbook "sample.xls")))
+            (excel/write->file wbook "sample.xlsx")))
         """)
      :see-also '(
         "excel/add-sheet", "excel/add-font", "excel/add-style",
@@ -1194,7 +1194,9 @@
         """
         (do
           (load-module :excel)
-          (excel/open "sample.xls"))
+
+          (let [wbook (excel/open "sample.xlsx")]
+            (println "Sheet count: " (excel/sheet-count wbook)))
         """ )
      :see-also '(
         "excel/sheet-count", "excel/sheet", "excel/evaluate-formulas") }
@@ -1208,6 +1210,34 @@
     (instance-of? :InputStream source)  (. :ExcelReader :open source)
     :else (throw (ex :VncException
                      (str "Invalid Excel open source " (type source) )))))
+
+
+(defn
+  ^{ :arglists '("(convert->writer reader)")
+     :doc
+        """
+        Converts an excel or sheet reader to the corresponding writer.
+        """
+     :examples '(
+        """
+        (do
+          (load-module :excel)
+
+          (let [wbook-rd  (excel/open "sample.xlsx")
+                wbook-wr  (excel/convert->writer wbook-rd)
+                sheet-wr  (excel/sheet wbook-wr 1) ]
+            (excel/write-value sheet-wr 1 1 "foo")
+            (excel/auto-size-columns sheet-wr)
+            (excel/write->file wbook-wr "sample.xlsx")))
+          """ )
+       :see-also '() }
+
+  convert->writer [reader]
+
+  { :pre [(or (instance-of? :ExcelReader reader)
+              (instance-of? :ExcelSheetReader reader))] }
+
+  (. reader :writer))
 
 
 (defn

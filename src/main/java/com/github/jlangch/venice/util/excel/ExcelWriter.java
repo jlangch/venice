@@ -122,7 +122,7 @@ import com.github.jlangch.venice.impl.util.excel.Excel;
  */
 public class ExcelWriter {
 
-    private ExcelWriter(final Excel managedExcel) {
+    public ExcelWriter(final Excel managedExcel) {
         this.managedExcel = managedExcel;
     }
 

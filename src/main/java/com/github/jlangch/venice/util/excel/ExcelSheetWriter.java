@@ -194,14 +194,14 @@ public class ExcelSheetWriter<T> {
         return sheet.getCellAddress(row1-1, col1-1);
     }
 
-    public ExcelSheetReader reader() {
-        return new ExcelSheetReader(sheet);
-    }
-
     public ExcelWriter end() {
         return parentBuilder;
     }
 
+
+    public ExcelSheetReader reader() {
+        return new ExcelSheetReader(parentBuilder.reader(), sheet);
+    }
 
 
     private String getColumnHeaderStyle(final int col0) {

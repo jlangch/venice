@@ -33,7 +33,11 @@ import com.github.jlangch.venice.impl.util.excel.ExcelSheet;
  */
 public class ExcelSheetReader {
 
-    public ExcelSheetReader(final ExcelSheet sheet) {
+    public ExcelSheetReader(
+            final ExcelReader reader,
+            final ExcelSheet sheet
+    ) {
+    	this.parentBuilder = reader;
         this.sheet = sheet;
     }
 
@@ -112,6 +116,11 @@ public class ExcelSheetReader {
     }
 
 
+    public ExcelSheetWriter<DataRecord> writer() {
+        return new ExcelSheetWriter<DataRecord>(parentBuilder.writer(), sheet);
+    }
 
+
+    private final ExcelReader parentBuilder;
     private final ExcelSheet sheet;
 }

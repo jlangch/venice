@@ -44,9 +44,14 @@ Run this script from the REPL to download the newest Apache POI 5.2.x libraries:
     * [Open Excel](#open-excel)
     * [Reading Cell Metadata](#reading-cell-metadata)
     * [Reading Cells](#reading-cells)
+3. [Modifying Excel files](#modifying-excel-files)
+    * [Example](#modify-example)
+
 
 
 ## Writing Excel files
+
+The function `excel/writer` opens a new XLS or XLSX Excel file for writing. 
 
 
 ### Introduction Example
@@ -606,7 +611,9 @@ Available border styles:
 
 ## Reading Excel files
 
-The function `excel/open` opens an XLS or XLSX Excel file specified by:
+The function `excel/open` opens an XLS or XLSX Excel file for reading. 
+
+The file is specified by:
 
 - a string file path: `"./sample.xlsx"`
 - a file: `(io/file "./sample.xlsx")`
@@ -802,4 +809,36 @@ Cell (1,9): nil
 ```
 
 [top](#content)
+
+
+
+## Modifying Excel files
+
+To modify an existing Excel: open it and convert the workbook for writing:
+
+
+### Modify Example
+
+```clojure
+(do
+  (ns test)
+
+  (load-module :excel)
+  
+  (defn create-excel []
+    (let [wbook (excel/writer :xlsx)]
+      (excel/write-data wbook "Data1" [[100 101]])
+      (excel/write-data wbook "Data2" [[300 301 302] [400 401 402]])
+      (excel/write->file wbook "sample.xlsx")))
+      
+  (create-excel)
+  
+  (let [wbook-rd  (excel/open "sample.xlsx")
+        wbook-wr  (excel/convert->writer wbook-rd)
+        sheet-wr  (excel/sheet wbook-wr 1) ]
+    (excel/write-value sheet-wr 1 1 "foo")
+    (excel/auto-size-columns sheet-wr)
+    (excel/write->file wbook-wr "sample.xlsx")))
+```
+
 

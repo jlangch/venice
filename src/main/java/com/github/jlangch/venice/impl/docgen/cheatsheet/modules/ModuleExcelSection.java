@@ -104,6 +104,7 @@ public class ModuleExcelSection implements ISectionBuilder {
         rd_util.addItem(diBuilder.getDocItem("excel/cell-empty?", false));
         rd_util.addItem(diBuilder.getDocItem("excel/cell-type", false));
         rd_util.addItem(diBuilder.getDocItem("excel/cell-formula-result-type", false));
+        rd_util.addItem(diBuilder.getDocItem("excel/convert->writer", false));
 
         return section;
     }
