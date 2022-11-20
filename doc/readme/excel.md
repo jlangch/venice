@@ -814,7 +814,7 @@ Cell (1,9): nil
 
 ## Modifying Excel files
 
-To modify an existing Excel: open it and convert the workbook for writing:
+To modify an existing Excel: open it and convert the workbook for writing.
 
 
 ### Modify Example
