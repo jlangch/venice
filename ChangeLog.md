@@ -14,12 +14,13 @@ and this project adheres to
 
 ### Added 
 
-- ...
+- Excel reader / writer converter
 
 ### Fixed
 
 - `excel/sheet-index` (must be 1-based)
 - Excel formula cell evaluation
+- Excel vertical middle alignment
 
 
 
