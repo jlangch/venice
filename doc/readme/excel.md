@@ -1,12 +1,14 @@
 # Excel
 
-Venice supports generating Excel files if the [Apache POI](https://poi.apache.org/) 
-libs are on the runtime classpath.
+Venice supports reading and writing Excel files if the
+[Apache POI](https://poi.apache.org/) libraries are on the runtime 
+classpath.
 
 Venice is compatible with Apache POI 4.1.x and 5.2.x.
 
 
-Run this script from the REPL to download the newest Apache POI 5.2.x libraries:
+Run this script from the REPL to download the newest Apache POI 5.2.x 
+libraries:
 
 ```clojure
 (do
@@ -585,12 +587,14 @@ Available border styles:
                                          :bg-color "#f2f3fc" })
 
     (excel/row-height sheet 2 20)
-    (excel/row-height sheet 3 10)
+    (excel/row-height sheet 3 7)
     (excel/column-width sheet 2 70)
     (excel/column-width sheet 3 70)    
     (excel/add-merge-region sheet 2 2 2 3)
     
     (excel/write-value sheet 2 2 "Country Population" :title)
+    (excel/write-value sheet 3 2 "" :country)
+    (excel/write-value sheet 3 3 "" :population)
     (excel/write-value sheet 4 2 "Country" :subtitle)
     (excel/write-value sheet 4 3 "Population" :subtitle)
     (excel/write-value sheet 5 2 "Germany" :country)
