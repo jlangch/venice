@@ -82,12 +82,12 @@ import com.github.jlangch.venice.impl.types.collections.VncVector;
 import com.github.jlangch.venice.impl.types.util.Coerce;
 import com.github.jlangch.venice.impl.types.util.Types;
 import com.github.jlangch.venice.impl.util.ArityExceptions.FnType;
+import com.github.jlangch.venice.impl.util.CollectionUtil;
+import com.github.jlangch.venice.impl.util.MeterRegistry;
 import com.github.jlangch.venice.impl.util.callstack.CallFrame;
 import com.github.jlangch.venice.impl.util.callstack.CallFrameFnData;
 import com.github.jlangch.venice.impl.util.callstack.CallStack;
 import com.github.jlangch.venice.impl.util.callstack.WithCallStack;
-import com.github.jlangch.venice.impl.util.CollectionUtil;
-import com.github.jlangch.venice.impl.util.MeterRegistry;
 import com.github.jlangch.venice.javainterop.AcceptAllInterceptor;
 import com.github.jlangch.venice.javainterop.IInterceptor;
 
@@ -1112,6 +1112,18 @@ public class VeniceInterpreter implements IVeniceInterpreter, Serializable  {
                         return CoreFunctions.new_map_entry.applyOf(
                                     inner.applyOf(((VncMapEntry)form).getKey()),
                                     inner.applyOf(((VncMapEntry)form).getValue()));
+                    }
+                    else if (Types.isVncJavaObject(form)
+                                || Types.isVncJavaList(form)
+                                || Types.isVncJavaSet(form)
+                                || Types.isVncJavaMap(form)
+                                || Types.isVncStack(form)
+                                || Types.isVncQueue(form)
+                                || Types.isVncDelayQueue(form)
+                                || Types.isVncCustomType(form)
+                                || Types.isVncDAG(form)
+                ) {
+                        return form;
                     }
                     else if (Types.isVncCollection(form)) {
                         // (outer (into (empty form) (map inner form)))

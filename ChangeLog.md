@@ -16,6 +16,11 @@ and this project adheres to
 
 - ...
 
+### Fixed
+
+- an edge case in `macroexpand-all` when the macro expansion meets java 
+  data structures
+
 
 
 ## [1.10.28] - 2022-11-21

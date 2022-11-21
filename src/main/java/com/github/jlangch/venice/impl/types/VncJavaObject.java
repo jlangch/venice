@@ -86,11 +86,11 @@ public class VncJavaObject extends VncMap implements IVncJavaObject {
 
     @Override
     public VncMap emptyWithMeta() {
-        throw new VncException("not supported");
+        throw new VncException("VncJavaObject::emptyWithMeta() is not supported");
     }
     @Override
     public VncHashMap withValues(final Map<VncVal,VncVal> replaceVals) {
-        throw new VncException("not supported");
+        throw new VncException("VncJavaObject::withValues() is not supported");
     }
 
     @Override
@@ -98,7 +98,7 @@ public class VncJavaObject extends VncMap implements IVncJavaObject {
             final Map<VncVal,VncVal> replaceVals,
             final VncVal meta
     ) {
-        throw new VncException("not supported");
+        throw new VncException("VncJavaObject::withValues() is not supported");
     }
 
     @Override
@@ -177,27 +177,27 @@ public class VncJavaObject extends VncMap implements IVncJavaObject {
 
     @Override
     public VncMap putAll(final VncMap map) {
-        throw new VncException("not supported");
+        throw new VncException("VncJavaObject::assoc() is not supported");
     }
 
     @Override
     public VncMap assoc(final VncVal... mvs) {
-        throw new VncException("not supported");
+        throw new VncException("VncJavaObject::assoc() is not supported");
     }
 
     @Override
     public VncMap assoc(final VncSequence mvs) {
-        throw new VncException("not supported");
+        throw new VncException("VncJavaObject::assoc() is not supported");
     }
 
     @Override
     public VncMap dissoc(final VncVal... keys) {
-        throw new VncException("not supported");
+        throw new VncException("VncJavaObject::dissoc() is not supported");
     }
 
     @Override
     public VncMap dissoc(final VncSequence keys) {
-        throw new VncException("not supported");
+        throw new VncException("VncJavaObject::dissoc() is not supported");
     }
 
     @Override
