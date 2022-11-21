@@ -1995,7 +1995,7 @@ public class CoreFunctions {
                         "(list* nil)",
                         "(list* nil [2 3])",
                         "(list* 1 2 nil)")
-                    .seeAlso("cons", "conj", "vector*")
+                    .seeAlso("cons", "conj", "concat", "vector*")
                     .build()
         ) {
             @Override
@@ -2141,7 +2141,7 @@ public class CoreFunctions {
                         "(vector* nil)",
                         "(vector* nil [2 3])",
                         "(vector* 1 2 nil)")
-                    .seeAlso("cons", "conj", "list*")
+                    .seeAlso("cons", "conj", "concat", "list*")
                     .build()
         ) {
             @Override
@@ -5757,7 +5757,7 @@ public class CoreFunctions {
                         "(conj {:a 1 :b 2} (map-entry :c 3))",
                         "(conj)",
                         "(conj 4)")
-                    .seeAlso("cons", "into", "list*", "vector*")
+                    .seeAlso("cons", "into", "concat", "list*", "vector*")
                     .build()
         ) {
             @Override
