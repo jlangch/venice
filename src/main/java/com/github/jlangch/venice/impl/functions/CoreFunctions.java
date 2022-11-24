@@ -3642,7 +3642,8 @@ public class CoreFunctions {
                     .arglists("(contains? coll key)")
                     .doc(
                         "Returns true if key is present in the given collection, otherwise " +
-                        "returns false.")
+                        "returns false.\n\n" +
+                        "Note: To test if a value is in a vector or list use `any?` ")
                     .examples(
                         "(contains? #{:a :b} :a)",
                         "(contains? {:a 1 :b 2} :a)",
@@ -3650,6 +3651,7 @@ public class CoreFunctions {
                         "(contains? [10 11 12] 5)",
                         "(contains? \"abc\" 1)",
                         "(contains? \"abc\" 5)")
+                    .seeAlso("any?")
                     .build()
         ) {
             @Override
@@ -3664,7 +3666,7 @@ public class CoreFunctions {
                 }
                 else if (Types.isVncVector(coll)) {
                     final VncVector v = (VncVector)coll;
-                    final VncLong k = (VncLong)key;
+                    final VncLong k = Coerce.toVncLong(key);
                     return VncBoolean.of(v.size() > k.getValue().intValue());
                 }
                 else if (Types.isVncSet(coll)) {
@@ -3672,12 +3674,12 @@ public class CoreFunctions {
                 }
                 else if (Types.isVncString(coll)) {
                     final VncString s = (VncString)coll;
-                    final VncLong k = (VncLong)key;
+                    final VncLong k = Coerce.toVncLong(key);
                     return VncBoolean.of(s.getValue().length() > k.getValue().intValue());
                 }
                 else {
                     throw new VncException(String.format(
-                            "Function 'contains?' does not allow %s as coll",
+                            "Function 'contains?' does not allow %s as coll. ",
                             Types.getType(coll)));
                 }
             }
