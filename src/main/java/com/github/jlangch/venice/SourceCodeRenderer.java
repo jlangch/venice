@@ -51,16 +51,18 @@ public class SourceCodeRenderer {
             final String sourceFile,
             final String destDir,
             final String fontDir,
-            final boolean lineNumbering
+            final boolean lineNumbering,
+            final boolean syntaxHighlighted
     ) {
-        render(new File(sourceFile), new File(destDir), new File(fontDir), lineNumbering);
+        render(new File(sourceFile), new File(destDir), new File(fontDir), lineNumbering, syntaxHighlighted);
     }
 
     public static void render(
             final File sourceFile,
             final File destDir,
             final File fontDir,
-            final boolean lineNumbering
+            final boolean lineNumbering,
+            final boolean syntaxHighlighted
     ) {
         try {
             if (sourceFile == null) {
@@ -96,20 +98,22 @@ public class SourceCodeRenderer {
                     new File(dir, name + ".html"),
                     new File(dir, name + ".pdf"),
                     fontDir,
-                    lineNumbering);
+                    lineNumbering,
+                    syntaxHighlighted);
         }
         catch(Exception ex) {
             throw new RuntimeException("Failed to Venice source file as HTML/PDF", ex);
         }
     }
 
-    public void renderSourceCode(
+    private void renderSourceCode(
             final String source,
             final File srcFile,
             final File htmlFile,
             final File pdfFile,
             final File fontDir,
-            final boolean lineNumbering
+            final boolean lineNumbering,
+            final boolean syntaxHighlighted
     ) throws Exception {
         System.out.println("Processing Venice file:        " + srcFile.getAbsolutePath());
         System.out.println("Rendering HTML source code to: " + htmlFile.getAbsolutePath());
@@ -118,18 +122,19 @@ public class SourceCodeRenderer {
 
         String wrapped = "(do\n" + source + "\n)";
 
-        String codeHighlighted = codeHighlighter.highlight(wrapped);
+        String codeHighlighted = syntaxHighlighted ? codeHighlighter.highlight(wrapped) : wrapped;
 
         List<String> lines = StringUtil.splitIntoLines(codeHighlighted);
         lines = lines.subList(1, lines.size()-1); // unwrap
 
         if (lineNumbering) {
+        	final String lineNrFormat = syntaxHighlighted
+        									? "<span style=\"color: #808080\">%04d   </span>%s"
+        									: "%04d   ";
+
             final AtomicLong line = new AtomicLong(1);
             lines = lines.stream()
-                         .map(s -> String.format(
-                                        "<span style=\"color: #808080\">%04d   </span>%s",
-                                        line.getAndIncrement(),
-                                        s))
+                         .map(s -> String.format(lineNrFormat, line.getAndIncrement(), s))
                          .collect(Collectors.toList());
         }
 

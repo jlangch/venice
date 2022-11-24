@@ -1103,7 +1103,19 @@ public class VeniceInterpreter implements IVeniceInterpreter, Serializable  {
                     final VncFunction inner = (VncFunction)args.first();
                     final VncVal form = args.second();
 
-                    if (Types.isVncList(form)) {
+                   if (Types.isVncJavaObject(form)
+                            || Types.isVncJavaList(form)
+                            || Types.isVncJavaSet(form)
+                            || Types.isVncJavaMap(form)
+                            || Types.isVncStack(form)
+                            || Types.isVncQueue(form)
+                            || Types.isVncDelayQueue(form)
+                            || Types.isVncCustomType(form)
+                            || Types.isVncDAG(form)
+                    ) {
+                        return form;
+                    }
+                    else if (Types.isVncList(form)) {
                         // (outer (apply list (map inner form)))
                         return TransducerFunctions.map.applyOf(inner, form);
                     }
@@ -1112,18 +1124,6 @@ public class VeniceInterpreter implements IVeniceInterpreter, Serializable  {
                         return CoreFunctions.new_map_entry.applyOf(
                                     inner.applyOf(((VncMapEntry)form).getKey()),
                                     inner.applyOf(((VncMapEntry)form).getValue()));
-                    }
-                    else if (Types.isVncJavaObject(form)
-                                || Types.isVncJavaList(form)
-                                || Types.isVncJavaSet(form)
-                                || Types.isVncJavaMap(form)
-                                || Types.isVncStack(form)
-                                || Types.isVncQueue(form)
-                                || Types.isVncDelayQueue(form)
-                                || Types.isVncCustomType(form)
-                                || Types.isVncDAG(form)
-                ) {
-                        return form;
                     }
                     else if (Types.isVncCollection(form)) {
                         // (outer (into (empty form) (map inner form)))
