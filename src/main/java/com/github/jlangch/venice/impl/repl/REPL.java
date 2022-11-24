@@ -24,7 +24,6 @@ package com.github.jlangch.venice.impl.repl;
 import static com.github.jlangch.venice.impl.util.CollectionUtil.drop;
 import static com.github.jlangch.venice.impl.util.CollectionUtil.first;
 import static com.github.jlangch.venice.impl.util.CollectionUtil.second;
-import static com.github.jlangch.venice.impl.util.CollectionUtil.third;
 import static com.github.jlangch.venice.impl.util.StringUtil.trimToEmpty;
 import static com.github.jlangch.venice.impl.util.StringUtil.trimToNull;
 
@@ -1045,16 +1044,9 @@ public class REPL {
 
             SourceCodeRenderer.render(sourceFile, destDir, fontDir, true, true);
         }
-        else if (params.size() == 3) {
-            final String sourceFile = trimToEmpty(first(params));
-            final String destDir = trimToEmpty(second(params));
-            final String fontDir = trimToEmpty(third(params));
-
-            SourceCodeRenderer.render(sourceFile, destDir, fontDir, true, true);
-        }
         else {
             printer.println(
-            	"error", "Invalid parameter. Use !source-pdf ./foo/bar.venice ./foo");
+            	"error", "Invalid parameter. Use !source-pdf {source-file} {dest-dir}");
         }
     }
 
