@@ -353,6 +353,28 @@ The functions `excel/write-value` To write values to cells. The row and col numb
     (excel/write->file wbook "sample.xlsx")))
 ```
 
+This can be further simplified to:
+
+```clojure
+(do
+  (ns test)
+
+  (load-module :excel)
+
+  (let [data  [ {:a 100 :b 200 {:formula "SUM(A1,B1)"}}
+                {:a 101 :b 201 {:formula "SUM(A2,B2)"}}
+                {:a 102 :b 202 {:formula "SUM(A3,B3)"}} ]
+        wbook (excel/writer :xlsx)
+        sheet (excel/add-sheet wbook "Sheet 1" { :no-header-row true })]
+    (excel/add-column sheet "A" { :field :a })
+    (excel/add-column sheet "B" { :field :b })
+    (excel/add-column sheet "C" { :field :c })
+    (excel/write-items sheet data)
+    (excel/evaluate-formulas wbook)
+    (excel/auto-size-columns sheet)
+    (excel/write->file wbook "sample.xlsx"))){:formula "SUM(A1,B1)"}
+```
+
 <img src="https://github.com/jlangch/venice/blob/master/doc/assets/excel/excel-write-004.png" width="400">
 
 Venice provides the function `excel/cell-address` to help with building logical cell addresses
