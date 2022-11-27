@@ -14,7 +14,7 @@ and this project adheres to
 
 ### Added 
 
-- ...
+- an optional start row/col to `excel/write-data`
 
 ### Fixed
 
