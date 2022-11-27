@@ -40,3 +40,22 @@ _time and turned into a_ `(str args)` _expression._
       (println """x: ~{x}""")
       (println """f(x): ~(inc x)""")))
 ```
+
+The eager parsing by the reader macro can be avoided:
+
+
+```clojure
+(do
+   (def t '"y ~{y}")
+   
+   (let [y 100] (println (eval t)))  
+   (let [y 200] (println (eval t))))
+```
+
+```clojure
+(do
+   (def t '"y ~(inc y)")
+   
+   (let [y 100] (println (eval t)))  
+   (let [y 200] (println (eval t))))
+```
