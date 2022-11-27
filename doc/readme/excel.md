@@ -34,7 +34,7 @@ libraries:
        * [Omit the header row](#omit-the-header-row)
        * [Write to multiple sheets](#write-to-multiple-sheets)
        * [Supported datatypes](#supported-datatypes)
-       * [Writing 2D vector data](#writing-2d-vector-data)
+       * [Writing 2D vector data](#writing-2d-tabular-data)
        * [Writing to individual cells](#writing-to-individual-cells)
        * [Merge Cells](#merge-cells)
        * [Using formulas](#using-formulas)
@@ -243,27 +243,41 @@ The Excel writer supports the Venice data types:
  
 
 
-#### Writing 2D vector data
+#### Writing 2D tabular data
 
 Write the data of a 2D vector to an excel sheet.
 
 ```clojure
 (do
-  (ns test)
-
   (load-module :excel)
-
   (let [wbook (excel/writer :xlsx)
+        sheet (excel/add-sheet wbook "Data")
         dt    (time/local-date 2021 1 1)
         ts    (time/local-date-time 2021 1 1 15 30 45)
         data  [[100  101  102  103  104  105]
                [200  "ab" 1.23 dt   ts   false]]]
-    (excel/write-data wbook "Data" data)
-    (excel/auto-size-columns (excel/sheet wbook "Data"))
+    (excel/write-data wbook sheet data)
+    (excel/auto-size-columns sheet)
     (excel/write->file wbook "sample.xlsx")))
 ```
 
 <img src="https://github.com/jlangch/venice/blob/master/doc/assets/excel/excel-write-005.png" width="400">
+
+[top](#content)
+
+
+```clojure
+(do
+  (load-module :excel)
+  (let [wbook (excel/writer :xlsx)
+        sheet (excel/add-sheet wbook "Data")]
+    (excel/write-data wbook sheet [[100 101 102] [200 201 203]])
+    (excel/write-data wbook sheet [[300 301 302] [400 401 403]] 3 4)
+    (excel/auto-size-columns sheet)
+    (excel/write->file wbook "sample.xlsx")))
+```
+
+<img src="https://github.com/jlangch/venice/blob/master/doc/assets/excel/excel-write-012.png" width="400">
 
 [top](#content)
 
