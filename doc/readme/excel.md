@@ -670,9 +670,11 @@ The file is specified by:
   (load-module :excel)
   
   (defn create-excel []
-    (let [wbook (excel/writer :xlsx)]
-      (excel/write-data wbook "Data1" [[100 101]])
-      (excel/write-data wbook "Data2" [[300 301 302] [400 401 402]])
+    (let [wbook  (excel/writer :xlsx)
+          sheet1 (excel/add-sheet wbook "Data1")
+          sheet2 (excel/add-sheet wbook "Data2")]
+      (excel/write-data wbook sheet1 [[100 101]])
+      (excel/write-data wbook sheet2 [[300 301 302] [400 401 402]])
       (excel/write->bytebuf wbook)))
   
 
@@ -741,16 +743,17 @@ Each cell has one of the predefined cell data types:
   (load-module :excel)
   
   (defn create-excel []
-    (let [wbook (excel/writer :xlsx)]
-      (excel/write-data wbook "Data" [["foo" 
-                                       false 
-                                       100 
-                                       100.123
-                                       (time/local-date 2021 1 1)
-                                       (time/local-date-time 2021 1 1 15 30 45)
-                                       {:formula "SUM(C1,D1)"}
-                                       "" 
-                                       nil]])
+    (let [wbook (excel/writer :xlsx)
+          sheet (excel/add-sheet wbook "Data")]
+      (excel/write-data wbook sheet [["foo" 
+                                      false 
+                                      100 
+                                      100.123
+                                      (time/local-date 2021 1 1)
+                                      (time/local-date-time 2021 1 1 15 30 45)
+                                      {:formula "SUM(C1,D1)"}
+                                      "" 
+                                      nil]])
       (excel/write->bytebuf wbook)))
 
   (let [wbook (excel/open (create-excel))
@@ -808,16 +811,17 @@ If the Excel document contains formulas call `excel/evaluate-formulas` before re
   (load-module :excel)
   
   (defn create-excel []
-    (let [wbook (excel/writer :xlsx)]
-      (excel/write-data wbook "Data" [["foo" 
-                                       false 
-                                       100 
-                                       100.123
-                                       (time/local-date 2021 1 1)
-                                       (time/local-date-time 2021 1 1 15 30 45)
-                                       {:formula "SUM(C1,D1)"}
-                                       "" 
-                                       nil]])
+    (let [wbook (excel/writer :xlsx)
+          sheet (excel/add-sheet wbook "Data")]
+      (excel/write-data wbook sheet [["foo" 
+                                      false 
+                                      100 
+                                      100.123
+                                      (time/local-date 2021 1 1)
+                                      (time/local-date-time 2021 1 1 15 30 45)
+                                      {:formula "SUM(C1,D1)"}
+                                      "" 
+                                      nil]])
       (excel/write->bytebuf wbook)))
 
   (let [wbook (excel/open (create-excel))
@@ -866,9 +870,11 @@ To modify an existing Excel: open it and convert the workbook for writing.
   (load-module :excel)
   
   (defn create-excel []
-    (let [wbook (excel/writer :xlsx)]
-      (excel/write-data wbook "Data1" [[100 101]])
-      (excel/write-data wbook "Data2" [[300 301 302] [400 401 402]])
+    (let [wbook  (excel/writer :xlsx)
+          sheet1 (excel/add-sheet wbook "Data1")
+          sheet2 (excel/add-sheet wbook "Data2")]
+      (excel/write-data wbook sheet1 [[100 101]])
+      (excel/write-data wbook sheet2 [[300 301 302] [400 401 402]])
       (excel/write->file wbook "sample.xlsx")))
       
   (create-excel)

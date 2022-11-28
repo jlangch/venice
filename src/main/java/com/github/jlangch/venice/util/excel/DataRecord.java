@@ -32,10 +32,24 @@ public class DataRecord {
 
     public static DataRecord of(final Map<String,Object> fields) {
         final DataRecord ge = new DataRecord();
-        fields.forEach((k,v) -> ge.fields.put(k, v));
+        fields.forEach((k,v) -> ge.put(k, v));
         return ge;
     }
 
+    public void put(final String key, final Object value) {
+        if (value instanceof Map) {
+            final Object formula = ((Map<?,?>)value).get("formula");
+            if (formula instanceof String) {
+                fields.put(key, new Formula((String)formula));
+            }
+            else {
+                fields.put(key, null);
+            }
+        }
+        else {
+            fields.put(key, value);
+        }
+    }
     public Object get(final String fieldName) {
         return fields.get(fieldName);
     }

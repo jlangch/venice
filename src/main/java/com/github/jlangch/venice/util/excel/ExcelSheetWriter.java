@@ -50,7 +50,7 @@ public class ExcelSheetWriter<T> {
     }
 
     public int getIndex() {
-    	return sheet.getIndex() + 1;  // 1-based
+        return sheet.getIndex() + 1;  // 1-based
     }
 
     public ExcelSheetWriter<T> noHeader() {
@@ -94,7 +94,7 @@ public class ExcelSheetWriter<T> {
     }
 
     public ExcelSheetWriter<T> columnWidth(final int col1, final int width) {
-    	sheet.setColumnWidthInPoints(col1-1, width);
+        sheet.setColumnWidthInPoints(col1-1, width);
         return this;
     }
 
@@ -336,11 +336,17 @@ public class ExcelSheetWriter<T> {
                 int col0 = 0;
                 for(ExcelColumnDef<T> colDef : columnDefs) {
                     if (colDef.colMapper != null) {
-                        sheet.setValue(
-                                currRow0,
-                                col0,
-                                colDef.colMapper.apply(item),
-                                getColumnBodyStyle(col0));
+                        final Object cellVal = colDef.colMapper.apply(item);
+                        if (cellVal instanceof Formula) {
+                            sheet.setFormula(currRow0, col0, ((Formula)cellVal).getFormula());
+                        }
+                        else {
+                            sheet.setValue(
+                                    currRow0,
+                                    col0,
+                                    cellVal,
+                                    getColumnBodyStyle(col0));
+                        }
                     }
                     col0++;
                 }

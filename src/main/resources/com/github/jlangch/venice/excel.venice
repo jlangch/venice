@@ -1164,42 +1164,42 @@
   ([sheet title options]
     { :pre [(instance-of? :ExcelSheetWriter sheet)
             (string? title)] }
-    (let [builder (. sheet :withColumn title)]
+    (let [col-builder (. sheet :withColumn title)]
       (when-let [x (:field options)]
          (cond
-           (keyword? x) (. builder :colMapper x)
-           (string? x)  (. builder :colMapper x)
+           (keyword? x) (. col-builder :colMapper x)
+           (string? x)  (. col-builder :colMapper x)
            :else        (throw (ex :VncException
                                    (str "A column field must be either a keyword "
                                         "or a string acting as a key to get the "
                                         "column's value from the row data map")))))
-      (when-let [x (:data-field options)]   (. builder :colMapper x)) ;; compatibility
-      (when-let [x (:width options)]        (. builder :widthInPoints x))
-      (when-let [x (:hidden options)]       (. builder :hidden x))
-      (when-let [x (:header-style options)] (. builder :headerStyle (name x)))
-      (when-let [x (:body-style options)]   (. builder :bodyStyle (name x)))
-      (when-let [x (:footer-style options)] (. builder :footerStyle (name x)))
+      (when-let [x (:data-field options)]   (. col-builder :colMapper x)) ;; compatibility
+      (when-let [x (:width options)]        (. col-builder :widthInPoints x))
+      (when-let [x (:hidden options)]       (. col-builder :hidden x))
+      (when-let [x (:header-style options)] (. col-builder :headerStyle (name x)))
+      (when-let [x (:body-style options)]   (. col-builder :bodyStyle (name x)))
+      (when-let [x (:footer-style options)] (. col-builder :footerStyle (name x)))
       (when-let [x (:footer-value options)]
         (cond
           (nil? x)    nil
-          (string? x) (. builder :footerTextValue x)
-          (number? x) (. builder :footerNumberValue x)
+          (string? x) (. col-builder :footerTextValue x)
+          (number? x) (. col-builder :footerNumberValue x)
           :else       (throw (ex :VncException
                                  (str "An explicit column footer value must be "
                                       "nil, a string, or a number")))))
       (when-let [x (:footer-aggregate options)]
         (case x
-          :min  (. builder :footerMin)
-          :max  (. builder :footerMax)
-          :avg  (. builder :footerAverage)
-          :sum  (. builder :footerSum)
+          :min  (. col-builder :footerMin)
+          :max  (. col-builder :footerMax)
+          :avg  (. col-builder :footerAverage)
+          :sum  (. col-builder :footerSum)
           (throw (ex :VncException
                      (str "Invalid aggregate mode "
                           x
                           ". Use one of :min, :max, :avg, or :sum")))))
 
-      (. builder :end)
-      builder)))
+      (. col-builder :end)
+      col-builder)))
 
 
 
