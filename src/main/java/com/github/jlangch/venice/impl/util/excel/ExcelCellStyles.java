@@ -206,7 +206,7 @@ public class ExcelCellStyles {
         final Map<String,String> cellDataFormats = new HashMap<>();
         cellDataFormats.put("string", null);
         cellDataFormats.put("boolean", null);
-        cellDataFormats.put("integer", "#0");
+        cellDataFormats.put("integer", "#,###0");
         cellDataFormats.put("float", "#,##0.00");
         cellDataFormats.put("date", "d.m.yyyy");
         cellDataFormats.put("datetime", "d.m.yyyy hh:mm:ss");

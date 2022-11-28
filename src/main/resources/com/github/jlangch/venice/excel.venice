@@ -939,7 +939,7 @@
         | :format s        | cell format, e.g. "#0"¶\
                              Default formats:¶\
                              &ensp; - long: "#0"¶\
-                             &ensp; - integer: "#0"¶\
+                             &ensp; - integer: "#,##0"¶\
                              &ensp; - float: "#,##0.00"¶\
                              &ensp; - double: "#,##0.00"¶\
                              &ensp; - date: "d.m.yyyy"¶\
@@ -1047,6 +1047,17 @@
 
       (. cell-style-builder :end)
       cell-style-builder)))
+
+(defn bg-color
+  ([sheet row col color]
+    { :pre [(instance-of? :ExcelSheetWriter sheet)
+            (long? row) (long? col) (pos? row) (pos? col)] }
+    (. sheet :bgColor row col color))
+  ([sheet row col-start col-end color]
+    { :pre [(instance-of? :ExcelSheetWriter sheet)
+            (long? row) (long? col-start) (long? col-end) 
+            (pos? row) (pos? col-start) (pos? col-end)] }
+    (run! #(. sheet :bgColor row % color) (range col-start (inc col-end)))))
 
 
 (defn- map-border-style [style]

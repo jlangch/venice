@@ -21,6 +21,7 @@
  */
 package com.github.jlangch.venice.util.excel;
 
+import java.awt.Color;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Function;
@@ -31,6 +32,7 @@ import org.apache.poi.xssf.usermodel.XSSFFont;
 
 import com.github.jlangch.venice.impl.util.excel.ExcelColumnDef;
 import com.github.jlangch.venice.impl.util.excel.ExcelSheet;
+import com.github.jlangch.venice.util.pdf.HtmlColor;
 
 
 
@@ -131,6 +133,21 @@ public class ExcelSheetWriter<T> {
 
     public ExcelSheetWriter<T> formula(final int row1, final int col1, final String formula) {
         sheet.setFormula(row1-1, col1-1, formula);
+        return this;
+    }
+
+    public ExcelSheetWriter<T> bgColor(final int row1, final int col1, final Color bgColor) {
+        sheet.setBgColor(row1-1, col1-1, bgColor);
+        return this;
+    }
+
+    public ExcelSheetWriter<T> bgColor(final int row1, final int col1, final String bgColorHtml) {
+        sheet.setBgColor(row1-1, col1-1, HtmlColor.getColor(bgColorHtml));
+        return this;
+    }
+
+    public ExcelSheetWriter<T> bgColor(final int row1, final int col1, final short bgColor) {
+        sheet.setBgColorIndex(row1-1, col1-1, bgColor);
         return this;
     }
 

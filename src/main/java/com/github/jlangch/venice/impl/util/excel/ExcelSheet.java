@@ -21,6 +21,7 @@
  */
 package com.github.jlangch.venice.impl.util.excel;
 
+import java.awt.Color;
 import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.time.LocalDate;
@@ -28,16 +29,22 @@ import java.time.LocalDateTime;
 import java.time.ZonedDateTime;
 import java.util.Date;
 
+import org.apache.poi.hssf.usermodel.HSSFWorkbook;
+import org.apache.poi.hssf.util.HSSFColor;
 import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.CellStyle;
 import org.apache.poi.ss.usermodel.CellType;
 import org.apache.poi.ss.usermodel.CellValue;
+import org.apache.poi.ss.usermodel.FillPatternType;
 import org.apache.poi.ss.usermodel.FormulaEvaluator;
 import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Row.MissingCellPolicy;
 import org.apache.poi.ss.usermodel.Sheet;
+import org.apache.poi.ss.usermodel.Workbook;
 import org.apache.poi.ss.util.CellAddress;
 import org.apache.poi.ss.util.CellRangeAddress;
+import org.apache.poi.xssf.usermodel.XSSFCellStyle;
+import org.apache.poi.xssf.usermodel.XSSFColor;
 import org.apache.poi.xssf.usermodel.XSSFRichTextString;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 
@@ -279,7 +286,7 @@ public class ExcelSheet {
     public void rowHeightInPoints(final int row, final int height) {
         // Set the row's height or set to ff (-1) for undefined/default-height.
         // Set the height in "twips" or 1/20th of a point.
-    	getRowCreate(row).setHeight((short)(height * 20));
+        getRowCreate(row).setHeight((short)(height * 20));
     }
 
     public void setValue(final int row, final int col, final Object value) {
@@ -305,6 +312,14 @@ public class ExcelSheet {
             else if (value instanceof Date)          setDate(row, col,    (Date)value,                       coalesce(styleName, "datetime"));
             else throw new IllegalArgumentException("Invalid value type " + value.getClass().getSimpleName());
         }
+    }
+
+    public void setBgColor(final int row, final int col, final Color bgColor) {
+        setBgColor(getCell(row, col), bgColor);
+    }
+
+    public void setBgColorIndex(final int row, final int col, final short bgColor) {
+        setBgColorIndex(getCell(row, col), bgColor);
     }
 
     public void setFormula(final int row, final int col, final String formula) {
@@ -421,7 +436,39 @@ public class ExcelSheet {
         return s1 != null ? s1 : s2;
     }
 
+    private void setBgColor(final Cell cell, final Color bgColor) {
+        final Workbook workbook = sheet.getWorkbook();
 
+        final CellStyle style = workbook.createCellStyle();
+        style.cloneStyleFrom(cell.getCellStyle());
+
+        if (workbook instanceof XSSFWorkbook) {
+            ((XSSFCellStyle)style).setFillForegroundColor(
+                    new XSSFColor(bgColor, null));
+
+        }
+        else if (workbook instanceof HSSFWorkbook) {
+            final HSSFColor hssfColor = ColorUtil.bestHSSFColor((HSSFWorkbook)workbook, bgColor);
+            style.setFillForegroundColor(hssfColor.getIndex());
+        }
+
+        style.setFillPattern(FillPatternType.SOLID_FOREGROUND);
+
+        cell.setCellStyle(style);
+    }
+
+
+    private void setBgColorIndex(final Cell cell, final short bgColor) {
+        final Workbook workbook = sheet.getWorkbook();
+
+        final CellStyle style = workbook.createCellStyle();;
+        style.cloneStyleFrom(cell.getCellStyle());
+
+        style.setFillForegroundColor(bgColor);
+        style.setFillPattern(FillPatternType.SOLID_FOREGROUND);
+
+        cell.setCellStyle(style);
+    }
 
     private String getString(final Cell cell) {
         if (cell == null) {
