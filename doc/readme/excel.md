@@ -375,9 +375,9 @@ This can be further simplified to:
 
   (load-module :excel)
 
-  (let [data  [ {:a 100 :b 200 {:formula "SUM(A1,B1)"}}
-                {:a 101 :b 201 {:formula "SUM(A2,B2)"}}
-                {:a 102 :b 202 {:formula "SUM(A3,B3)"}} ]
+  (let [data  [ {:a 100, :b 200, :c {:formula "SUM(A1,B1)"}}
+                {:a 101, :b 201, :c {:formula "SUM(A2,B2)"}}
+                {:a 102, :b 202, :c {:formula "SUM(A3,B3)"}} ]
         wbook (excel/writer :xlsx)
         sheet (excel/add-sheet wbook "Sheet 1" { :no-header-row true })]
     (excel/add-column sheet "A" { :field :a })
@@ -386,7 +386,7 @@ This can be further simplified to:
     (excel/write-items sheet data)
     (excel/evaluate-formulas wbook)
     (excel/auto-size-columns sheet)
-    (excel/write->file wbook "sample.xlsx"))){:formula "SUM(A1,B1)"}
+    (excel/write->file wbook "sample.xlsx")))
 ```
 
 <img src="https://github.com/jlangch/venice/blob/master/doc/assets/excel/excel-write-004.png" width="400">
