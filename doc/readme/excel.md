@@ -661,14 +661,20 @@ Available border styles:
 
   (let [wbook (excel/writer :xlsx)
         sheet (excel/add-sheet wbook "Data")]
-    (excel/write-data wbook sheet [[100 101 102]
-                                   [200 201 203]
-                                   [300 301 303]
-                                   [400 401 403]
-                                   [500 501 503]
-                                   [600 601 603]])
+    (excel/write-data wbook sheet [[100 101 102 nil 103 104 105]
+                                   [200 201 202 nil 203 204 205]
+                                   [300 301 302 nil 303 304 305]
+                                   [400 401 402 nil 403 404 405]
+                                   [500 501 502 nil 503 504 505]
+                                   [600 601 602 nil 603 604 605]])
+    ;; left
     (run! #(excel/bg-color sheet % 1 3 "#a9cafc") (range 1 7 2))
     (run! #(excel/bg-color sheet % 1 3 "#d9e7fc") (range 2 7 2))
+    
+    ;; right
+    (run! #(excel/bg-color sheet % 5 7 "#fcaedc") (range 1 7 2))
+    (run! #(excel/bg-color sheet % 5 7 "#fce3f2") (range 2 7 2))
+    
     (excel/write->file wbook "sample.xlsx")))
 ```
 
