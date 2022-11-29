@@ -21,6 +21,7 @@ and this project adheres to
 - an edge case in `macroexpand-all` when the upfront macro expansion 
   meets java data structures. Runtime macro expansion works fine
   in these cases.
+- function `excel/write-items` handling formulas
 
 
 
