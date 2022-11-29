@@ -75,12 +75,14 @@ public class ModuleExcelSection implements ISectionBuilder {
         wr_util.addItem(diBuilder.getDocItem("excel/column-width", false));
         wr_util.addItem(diBuilder.getDocItem("excel/cell-formula", false));
         wr_util.addItem(diBuilder.getDocItem("excel/sum-formula", false));
-        wr_util.addItem(diBuilder.getDocItem("excel/cell-address", false));
         wr_util.addItem(diBuilder.getDocItem("excel/auto-size-columns", false));
         wr_util.addItem(diBuilder.getDocItem("excel/auto-size-column", false));
         wr_util.addItem(diBuilder.getDocItem("excel/row-height", false));
         wr_util.addItem(diBuilder.getDocItem("excel/evaluate-formulas", false));
         wr_util.addItem(diBuilder.getDocItem("excel/convert->reader", false));
+        wr_util.addItem(diBuilder.getDocItem("excel/col->string", false));
+        wr_util.addItem(diBuilder.getDocItem("excel/addr->string", false));
+        wr_util.addItem(diBuilder.getDocItem("excel/bg-color", false));
 
         final DocSection rd = new DocSection("Reader", id());
         all.addSection(rd);

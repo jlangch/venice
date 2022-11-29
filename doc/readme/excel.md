@@ -6,6 +6,8 @@ classpath.
 
 Venice is compatible with Apache POI 4.1.x and 5.2.x.
 
+*Note:* Use Venice 1.10.29 or newer to have all features demonstrated here
+available.
 
 Run this script from the REPL to download the newest Apache POI 5.2.x 
 libraries:
@@ -391,7 +393,7 @@ This can be further simplified to:
 
 <img src="https://github.com/jlangch/venice/blob/master/doc/assets/excel/excel-write-004.png" width="400">
 
-Venice provides the function `excel/cell-address` to help with building logical cell addresses
+Venice provides the function `excel/addr->string` to help with building logical 'A1' style cell addresses
 for formulas:
 
 ```clojure
@@ -405,8 +407,8 @@ for formulas:
                 {:a 102 :b 202 } ]
         wbook (excel/writer :xlsx)
         sheet (excel/add-sheet wbook "Sheet 1" { :no-header-row true })
-        addr  #(excel/cell-address sheet %1 %2)  ;; build logical cell addresses
-        sum   #(str "SUM(" %1 "," %2 ")")]       ;; build SUM formula
+        addr  #(excel/addr->string %1 %2)      ;; build logical cell addresses
+        sum   #(str "SUM(" %1 "," %2 ")")]     ;; build SUM formula
     (excel/add-column sheet "A" { :field :a })
     (excel/add-column sheet "B" { :field :b })
     (excel/add-column sheet "C" { :field :c })
@@ -443,7 +445,7 @@ Set the height of individual rows:
     (excel/add-column sheet "Last Name" { :field :last })
     (excel/add-column sheet "Age" { :field :age })
     (excel/write-items sheet data)
-    (excel/row-height sheet 2 100)
+    (excel/row-height sheet 2 50)
     (excel/auto-size-columns sheet)
     (excel/write->file wbook "sample.xlsx")))
 ```
