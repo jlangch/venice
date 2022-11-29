@@ -158,7 +158,14 @@ public class VncJavaObject extends VncMap implements IVncJavaObject {
 
     @Override
     public VncVal get(final VncVal key) {
-        return getProperty((VncString)key);
+    	if (key instanceof VncString) {
+    		return getProperty((VncString)key);
+    	}
+    	else {
+    	      throw new VncException(
+    	    		  "VncJavaObject::get() requires a string or keyword as argument. "
+    	    		  + "Got a " + Types.getType(key));
+    	}
     }
 
     @Override

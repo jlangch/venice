@@ -55,6 +55,27 @@ public class ExcelSheetWriter<T> {
         return sheet.getIndex() + 1;  // 1-based
     }
 
+    public int getFirstRowNum() {
+        final int n = sheet.getFirstRowNum();
+        return n < 0 ? n : n + 1;  // 1-based
+    }
+
+    public int getLastRowNum() {
+        final int n = sheet.getLastRowNum();
+        return n < 0 ? n : n + 1;  // 1-based
+    }
+
+    public int getFirstCellNum(final int row1) {
+        final int n = sheet.getFirstCellNum(row1-1);
+        return n < 0 ? n : n + 1;  // 1-based
+    }
+
+    public int getLastCellNum(final int row1) {
+        // returns the last cell number PLUS ONE
+        final int n = sheet.getLastCellNum(row1-1);
+        return n; // no correction
+    }
+
     public ExcelSheetWriter<T> noHeader() {
         this.noHeader = true;
         return this;

@@ -1092,7 +1092,27 @@
             (excel/bg-color sheet 3 4 6 "#c9dcfa")
             (excel/auto-size-columns sheet)
             (excel/write->file wbook "sample.xlsx")))
-        """ )
+        """
+        """
+        (do
+          (load-module :excel)
+          (let [wbook (excel/writer :xlsx)
+                sheet (excel/add-sheet wbook "Data")]
+            (excel/write-data wbook sheet [[100 101 102]
+                                           [200 201 203]
+                                           [300 301 303]
+                                           [400 401 403]
+                                           [500 501 503]
+                                           [600 601 603]])
+            (let [[r-first r-last] (excel/sheet-row-range sheet)
+                  [c-first c-last] (excel/sheet-col-range sheet 1)]
+              (run! #(excel/bg-color sheet % c-first c-last "#a9cafc")
+                    (range r-first (inc r-last) 2))
+              (run! #(excel/bg-color sheet % c-first c-last "#d9e7fc")
+                    (range (inc r-first) (inc r-last) 2)))
+            (excel/write->file wbook "sample.xlsx")))
+        """
+        )
      :see-also '(
         ) }
 
@@ -1470,7 +1490,8 @@
 
   sheet-index [sheet]
 
-  { :pre [(instance-of? :ExcelSheetReader sheet)] }
+  { :pre [(or (instance-of? :ExcelSheetReader sheet)
+              (instance-of? :ExcelSheetWriter sheet))] }
 
   (long (. sheet :getIndex)))
 
@@ -1498,7 +1519,8 @@
 
     sheet-name [sheet]
 
-    { :pre [(instance-of? :ExcelSheetReader sheet)] }
+    { :pre [(or (instance-of? :ExcelSheetReader sheet)
+                (instance-of? :ExcelSheetWriter sheet))] }
 
     (. sheet :getName))
 
@@ -1528,7 +1550,8 @@
 
   sheet-row-range [sheet]
 
-  { :pre [(instance-of? :ExcelSheetReader sheet)] }
+  { :pre [(or (instance-of? :ExcelSheetReader sheet)
+              (instance-of? :ExcelSheetWriter sheet))] }
 
   [(long (. sheet :getFirstRowNum)) (long (. sheet :getLastRowNum))])
 
@@ -1559,7 +1582,8 @@
 
   sheet-col-range [sheet row]
 
-  { :pre [(instance-of? :ExcelSheetReader sheet)
+  { :pre [(or (instance-of? :ExcelSheetReader sheet)
+              (instance-of? :ExcelSheetWriter sheet))
           (long? row) (pos? row)] }
 
   [(long (. sheet :getFirstCellNum row)) (long (. sheet :getLastCellNum row))])

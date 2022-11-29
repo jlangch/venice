@@ -44,6 +44,7 @@ libraries:
        * [Row height](#row-height)
        * [Fonts](#fonts)
        * [Cell Styles](#cell-styles)
+       * [Shading alternate rows](#shading-alternate-rows)
 2. [Reading Excel files](#reading-excel-files)
     * [Open Excel](#open-excel)
     * [Reading Cell Metadata](#reading-cell-metadata)
@@ -646,6 +647,32 @@ Available border styles:
 ```
 
 <img src="https://github.com/jlangch/venice/blob/master/doc/assets/excel/excel-write-011.png" width="400">
+
+[top](#content)
+
+
+### Shading alternate rows
+
+```clojure
+(do
+  (ns test)
+
+  (load-module :excel)
+
+  (let [wbook (excel/writer :xlsx)
+        sheet (excel/add-sheet wbook "Data")]
+    (excel/write-data wbook sheet [[100 101 102]
+                                   [200 201 203]
+                                   [300 301 303]
+                                   [400 401 403]
+                                   [500 501 503]
+                                   [600 601 603]])
+    (run! #(excel/bg-color sheet % 1 3 "#a9cafc") (range 1 7 2))
+    (run! #(excel/bg-color sheet % 1 3 "#d9e7fc") (range 2 7 2))
+    (excel/write->file wbook "sample.xlsx")))
+```
+
+<img src="https://github.com/jlangch/venice/blob/master/doc/assets/excel/excel-write-013.png" width="400">
 
 [top](#content)
 
