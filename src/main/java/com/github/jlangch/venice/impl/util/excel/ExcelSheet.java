@@ -35,6 +35,7 @@ import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.CellStyle;
 import org.apache.poi.ss.usermodel.CellType;
 import org.apache.poi.ss.usermodel.CellValue;
+import org.apache.poi.ss.usermodel.DateUtil;
 import org.apache.poi.ss.usermodel.FillPatternType;
 import org.apache.poi.ss.usermodel.FormulaEvaluator;
 import org.apache.poi.ss.usermodel.Row;
@@ -132,9 +133,6 @@ public class ExcelSheet {
         if (cell == null) {
             return null;
         }
-        else if (cell.getCellType() == CellType.FORMULA) {
-            return getString(evaluator.evaluateInCell(cell));
-        }
         else {
             return getString(cell);
         }
@@ -144,9 +142,6 @@ public class ExcelSheet {
         final Cell cell = getCell(row, col);
         if (cell == null) {
             return NULL_BOOLEAN;
-        }
-        else if (cell.getCellType() == CellType.FORMULA) {
-            return getBoolean(evaluator.evaluateInCell(cell));
         }
         else {
             return getBoolean(cell);
@@ -158,9 +153,6 @@ public class ExcelSheet {
         if (cell == null) {
             return null;
         }
-        else if (cell.getCellType() == CellType.FORMULA) {
-            return getInteger(evaluator.evaluateInCell(cell));
-        }
         else {
             return getInteger(cell);
         }
@@ -171,9 +163,6 @@ public class ExcelSheet {
         if (cell == null) {
             return null;
         }
-        else if (cell.getCellType() == CellType.FORMULA) {
-            return getFloat(evaluator.evaluateInCell(cell));
-        }
         else {
             return getFloat(cell);
         }
@@ -183,9 +172,6 @@ public class ExcelSheet {
         final Cell cell = getCell(row, col);
         if (cell == null) {
             return null;
-        }
-        else if (cell.getCellType() == CellType.FORMULA) {
-            return getDate(evaluator.evaluateInCell(cell));
         }
         else {
             return getDate(cell);
@@ -484,17 +470,20 @@ public class ExcelSheet {
         if (cell == null) {
             return null;
         }
-        if (cell.getCellType() == CellType.BLANK) {
+
+        final CellValue cellValue = evaluator.evaluate(cell);
+
+        if (cellValue.getCellType() == CellType.BLANK) {
             return null;
         }
-        else if (cell.getCellType() == CellType.STRING) {
-            return cell.getStringCellValue();
+        else if (cellValue.getCellType() == CellType.STRING) {
+            return cellValue.getStringValue();
         }
-        else if (cell.getCellType() == CellType.BOOLEAN) {
-            return Boolean.toString(cell.getBooleanCellValue());
+        else if (cellValue.getCellType() == CellType.BOOLEAN) {
+            return Boolean.toString(cellValue.getBooleanValue());
         }
-        else if (cell.getCellType() == CellType.NUMERIC) {
-            return Double.toString(cell.getNumericCellValue());
+        else if (cellValue.getCellType() == CellType.NUMERIC) {
+            return Double.toString(cellValue.getNumberValue());
         }
         else {
             throw new ExcelException(String.format(
@@ -508,11 +497,14 @@ public class ExcelSheet {
         if (cell == null) {
             return NULL_BOOLEAN;  // fooling 'Find Bugs' :-)
         }
-        if (cell.getCellType() == CellType.BLANK) {
+
+        final CellValue cellValue = evaluator.evaluate(cell);
+
+        if (cellValue.getCellType() == CellType.BLANK) {
             return NULL_BOOLEAN;  // fooling 'Find Bugs' :-)
         }
-        else if (cell.getCellType() == CellType.BOOLEAN) {
-            return cell.getBooleanCellValue();
+        else if (cellValue.getCellType() == CellType.BOOLEAN) {
+            return cellValue.getBooleanValue();
         }
         else {
             throw new ExcelException(String.format(
@@ -526,23 +518,14 @@ public class ExcelSheet {
         if (cell == null) {
             return null;
         }
-        if (cell.getCellType() == CellType.BLANK) {
+
+        final CellValue cellValue = evaluator.evaluate(cell);
+
+        if (cellValue.getCellType() == CellType.BLANK) {
             return null;
         }
-        else if (cell.getCellType() == CellType.NUMERIC) {
-            return (long)(cell.getNumericCellValue() + 0.5);
-        }
-        else if (cell.getCellType() == CellType.FORMULA) {
-            final CellValue cellValue = evaluator.evaluate(cell);
-            if (cellValue.getCellType() == CellType.NUMERIC) {
-                return (long)(cellValue.getNumberValue() + 0.5);
-            }
-            else {
-                throw new ExcelException(String.format(
-                        "The Excel cell [%d,%d] formula does not evaluate to an integer value",
-                        cell.getRowIndex(),
-                        cell.getColumnIndex()));
-            }
+        else if (cellValue.getCellType() == CellType.NUMERIC) {
+            return (long)(cellValue.getNumberValue() + 0.5);
         }
         else {
             throw new ExcelException(String.format(
@@ -556,11 +539,14 @@ public class ExcelSheet {
         if (cell == null) {
             return null;
         }
-        if (cell.getCellType() == CellType.BLANK) {
+
+        final CellValue cellValue = evaluator.evaluate(cell);
+
+        if (cellValue.getCellType() == CellType.BLANK) {
             return null;
         }
-        else if (cell.getCellType() == CellType.NUMERIC) {
-            return cell.getNumericCellValue();
+        else if (cellValue.getCellType() == CellType.NUMERIC) {
+            return cellValue.getNumberValue();
         }
         else {
             throw new ExcelException(String.format(
@@ -573,8 +559,40 @@ public class ExcelSheet {
     }
 
     private LocalDateTime getDate(final Cell cell) {
-        final Date date = cell == null ? null : cell.getDateCellValue();
-        return date == null ? null : TimeUtil.convertDateToLocalDateTime(date);
+        if (cell == null) {
+            return null;
+        }
+
+
+        if (cell.getCellType() == CellType.BLANK) {
+            return null;
+        }
+        else if (cell.getCellType() == CellType.NUMERIC && DateUtil.isCellDateFormatted(cell)) {
+            return cell.getLocalDateTimeCellValue();
+        }
+        else if (cell.getCellType() == CellType.FORMULA) {
+            final Cell cellEval = evaluator.evaluateInCell(cell);
+
+        	switch (cellEval.getCachedFormulaResultType()) {
+	            case BLANK:   return null;
+	            case NUMERIC: return cellEval.getLocalDateTimeCellValue();
+	            default:
+	                throw new ExcelException(String.format(
+	                        "The Excel formula cell [%d,%d] does not contain a date. "
+	                            + "It actually holds a %s.",
+	                        cell.getRowIndex(),
+	                        cell.getColumnIndex(),
+	                        cell.getCellType().name()));
+        	}
+        }
+        else {
+            throw new ExcelException(String.format(
+                    "The Excel cell [%d,%d] does not contain a date. "
+                        + "It actually holds a %s.",
+                    cell.getRowIndex(),
+                    cell.getColumnIndex(),
+                    cell.getCellType().name()));
+        }
     }
 
     private String getFormula(final Cell cell) {
