@@ -147,6 +147,10 @@ public class ExcelWriter {
         return new ExcelSheetWriter<T>(this, managedExcel.createSheet(name));
     }
 
+    public int getNumberOfSheets() {
+        return managedExcel.getNumberOfSheets();
+    }
+
     public void evaluateAllFormulas() {
         managedExcel.evaluateAllFormulas();
     }

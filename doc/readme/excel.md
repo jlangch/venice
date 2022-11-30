@@ -45,6 +45,8 @@ libraries:
        * [Fonts](#fonts)
        * [Cell Styles](#cell-styles)
        * [Shading alternate rows](#shading-alternate-rows)
+       * [Styling cells](#styling-cells)
+       * [Styling cell region](#styling-cell-region)
 2. [Reading Excel files](#reading-excel-files)
     * [Open Excel](#open-excel)
     * [Reading Cell Metadata](#reading-cell-metadata)
@@ -682,6 +684,76 @@ Available border styles:
 
 [top](#content)
 
+
+### Styling cells
+
+*Note:* This feature requires Venice 1.10.30+
+
+```clojure
+(do
+  (load-module :excel)
+  (let [wbook (excel/writer :xlsx)
+        sheet (excel/add-sheet wbook "Sheet 1" { :no-header-row false })]
+    (excel/add-font wbook :bold { :bold true
+                                  :color "#54039c" })
+    (excel/add-style wbook :style-1 { :font :bold
+                                      :h-align :left
+                                      :rotation 0 })
+    (excel/add-style wbook :style-2 { :bg-color "#cae1fa"
+                                      :h-align :center
+                                      :rotation 0
+                                      :border-top :thin
+                                      :border-left :thin
+                                      :border-bottom :thin
+                                      :border-right :thin})
+    (excel/add-style wbook :style-3 { :h-align :right
+                                      :format "#,##0.00" })
+
+    (excel/write-value sheet 2 1 100)
+    (excel/write-value sheet 2 2 200)
+    (excel/write-value sheet 2 3 300)
+
+    (excel/cell-style sheet 2 1 :style-1)
+    (excel/cell-style sheet 2 2 :style-2)
+    (excel/cell-style sheet 2 3 :style-3)
+
+    (excel/write->file wbook "sample.xlsx"))))
+```
+
+<img src="https://github.com/jlangch/venice/blob/master/doc/assets/excel/excel-write-014.png" width="400">
+
+[top](#content)
+
+
+
+### Styling cell region
+
+*Note:* This feature requires Venice 1.10.30+
+
+```clojure
+(do
+  (load-module :excel)
+  (let [wbook (excel/writer :xlsx)
+        sheet (excel/add-sheet wbook "Sheet 1" { :no-header-row false })]
+    (excel/add-style wbook :style { :bg-color "#cae1fa"
+                                    :h-align :center
+                                    :format "#,##0.00" })
+
+    (excel/write-value sheet 2 2 100)
+    (excel/write-value sheet 2 3 200)
+    (excel/write-value sheet 2 4 300)
+    (excel/write-value sheet 3 2 101)
+    (excel/write-value sheet 3 3 201)
+    (excel/write-value sheet 3 4 301)
+
+    (excel/cell-style sheet 2 3 2 4 :style)
+
+    (excel/write->file wbook "sample.xlsx"))))
+```
+
+<img src="https://github.com/jlangch/venice/blob/master/doc/assets/excel/excel-write-015.png" width="400">
+
+[top](#content)
 
 
 ## Reading Excel files

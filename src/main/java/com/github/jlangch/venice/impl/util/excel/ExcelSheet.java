@@ -322,6 +322,10 @@ public class ExcelSheet {
         setBgColorIndex(getCell(row, col), bgColor);
     }
 
+    public void setStyle(final int row, final int col, final String styleName) {
+        setStyle(getCell(row, col), styleName);
+    }
+
     public void setFormula(final int row, final int col, final String formula) {
         setFormula(row, col, formula, null);
     }
@@ -457,7 +461,6 @@ public class ExcelSheet {
         cell.setCellStyle(style);
     }
 
-
     private void setBgColorIndex(final Cell cell, final short bgColor) {
         final Workbook workbook = sheet.getWorkbook();
 
@@ -468,6 +471,13 @@ public class ExcelSheet {
         style.setFillPattern(FillPatternType.SOLID_FOREGROUND);
 
         cell.setCellStyle(style);
+    }
+
+    private void setStyle(final Cell cell, final String styleName) {
+        final CellStyle style = cellStyles.getCellStyle(styleName);
+        if (style != null) {
+            cell.setCellStyle(style);
+        }
     }
 
     private String getString(final Cell cell) {

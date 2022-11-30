@@ -3651,7 +3651,7 @@ public class CoreFunctions {
                         "(contains? [10 11 12] 5)",
                         "(contains? \"abc\" 1)",
                         "(contains? \"abc\" 5)")
-                    .seeAlso("any?")
+                    .seeAlso("not-contains?", "any?")
                     .build()
         ) {
             @Override
@@ -3704,6 +3704,8 @@ public class CoreFunctions {
                         "(not-contains? [10 11 12] 5)",
                         "(not-contains? \"abc\" 1)",
                         "(not-contains? \"abc\" 5)")
+                    .seeAlso(
+                        "contains?")
                     .build()
         ) {
             @Override
@@ -5165,6 +5167,10 @@ public class CoreFunctions {
                         "(every? number? [1 2 3 4])",
                         "(every? number? [1 2 3 :a])",
                         "(every? #(>= % 10) [10 11 12])")
+                    .seeAlso(
+                    	"any?",
+                    	"not-any?",
+                        "not-every?")
                     .build()
         ) {
             @Override
@@ -5211,7 +5217,11 @@ public class CoreFunctions {
                         "(not-every? number? [1 2 3 4])",
                         "(not-every? number? [1 2 3 :a])",
                         "(not-every? #(>= % 10) [10 11 12])")
-                    .build()
+                    .seeAlso(
+                        "every?",
+                        "any?",
+                    	"not-any?")
+                   .build()
         ) {
             @Override
             public VncVal apply(final VncList args) {
@@ -5239,6 +5249,10 @@ public class CoreFunctions {
                         "(any? number? [1 2 3])",
                         "(any? #(== % 10) [10 20 30])",
                         "(any? #(>= % 10) [1 5 10])")
+                    .seeAlso(
+                    	"every?",
+                    	"not-any?",
+                    	"not-every?")
                     .build()
         ) {
             @Override
@@ -5286,6 +5300,10 @@ public class CoreFunctions {
                         "(not-any? number? [1 :a :b])",
                         "(not-any? number? [1 2 3])",
                         "(not-any? #(>= % 10) [1 5 10])")
+                    .seeAlso(
+                        "any?",
+                        "every?",
+                        "not-every?")
                     .build()
         ) {
             @Override
@@ -5563,6 +5581,8 @@ public class CoreFunctions {
                         "(empty? [])",
                         "(empty? '())",
                         "(empty? \"\")")
+                    .seeAlso(
+                        "not-empty?")
                     .build()
         ) {
             @Override
@@ -5602,6 +5622,8 @@ public class CoreFunctions {
                         "(not-empty? [1 2])",
                         "(not-empty? '(1 2))",
                         "(not-empty? \"abc\")")
+                    .seeAlso(
+                        "empty?")
                     .build()
         ) {
             @Override

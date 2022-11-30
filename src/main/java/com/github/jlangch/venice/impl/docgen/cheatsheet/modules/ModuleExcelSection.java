@@ -51,11 +51,8 @@ public class ModuleExcelSection implements ISectionBuilder {
         all.addSection(wr);
         wr.addItem(diBuilder.getDocItem("excel/writer", false));
         wr.addItem(diBuilder.getDocItem("excel/add-sheet", false));
-        wr.addItem(diBuilder.getDocItem("excel/add-font", false));
-        wr.addItem(diBuilder.getDocItem("excel/add-style", false));
         wr.addItem(diBuilder.getDocItem("excel/add-column", false));
         wr.addItem(diBuilder.getDocItem("excel/add-merge-region", false));
-
 
         final DocSection wr_data = new DocSection("Writer Data", id());
         all.addSection(wr_data);
@@ -72,17 +69,31 @@ public class ModuleExcelSection implements ISectionBuilder {
 
         final DocSection wr_util = new DocSection("Writer Util", id());
         all.addSection(wr_util);
-        wr_util.addItem(diBuilder.getDocItem("excel/column-width", false));
-        wr_util.addItem(diBuilder.getDocItem("excel/cell-formula", false));
-        wr_util.addItem(diBuilder.getDocItem("excel/sum-formula", false));
-        wr_util.addItem(diBuilder.getDocItem("excel/auto-size-columns", false));
-        wr_util.addItem(diBuilder.getDocItem("excel/auto-size-column", false));
-        wr_util.addItem(diBuilder.getDocItem("excel/row-height", false));
-        wr_util.addItem(diBuilder.getDocItem("excel/evaluate-formulas", false));
+        wr_util.addItem(diBuilder.getDocItem("excel/sheet-count", false));
+        wr_util.addItem(diBuilder.getDocItem("excel/sheet-name", false));
+        wr_util.addItem(diBuilder.getDocItem("excel/sheet-index", false));
+        wr_util.addItem(diBuilder.getDocItem("excel/sheet-row-range", false));
+        wr_util.addItem(diBuilder.getDocItem("excel/sheet-col-range", false));
         wr_util.addItem(diBuilder.getDocItem("excel/convert->reader", false));
         wr_util.addItem(diBuilder.getDocItem("excel/col->string", false));
         wr_util.addItem(diBuilder.getDocItem("excel/addr->string", false));
-        wr_util.addItem(diBuilder.getDocItem("excel/bg-color", false));
+
+        final DocSection wr_fromula = new DocSection("Writer Formulas", id());
+        all.addSection(wr_fromula);
+        wr_fromula.addItem(diBuilder.getDocItem("excel/cell-formula", false));
+        wr_fromula.addItem(diBuilder.getDocItem("excel/sum-formula", false));
+        wr_fromula.addItem(diBuilder.getDocItem("excel/evaluate-formulas", false));
+
+        final DocSection wr_style = new DocSection("Writer Styling", id());
+        all.addSection(wr_style);
+        wr_style.addItem(diBuilder.getDocItem("excel/add-font", false));
+        wr_style.addItem(diBuilder.getDocItem("excel/add-style", false));
+        wr_style.addItem(diBuilder.getDocItem("excel/row-height", false));
+        wr_style.addItem(diBuilder.getDocItem("excel/column-width", false));
+        wr_style.addItem(diBuilder.getDocItem("excel/cell-style", false));
+        wr_style.addItem(diBuilder.getDocItem("excel/bg-color", false));
+        wr_style.addItem(diBuilder.getDocItem("excel/auto-size-columns", false));
+        wr_style.addItem(diBuilder.getDocItem("excel/auto-size-column", false));
 
         final DocSection rd = new DocSection("Reader", id());
         all.addSection(rd);
@@ -114,6 +125,7 @@ public class ModuleExcelSection implements ISectionBuilder {
     private String id() {
         return diBuilder.id();
     }
+
 
     private final DocItemBuilder diBuilder;
 }
