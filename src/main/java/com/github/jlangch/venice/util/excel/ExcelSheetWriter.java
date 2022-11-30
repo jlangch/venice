@@ -157,6 +157,11 @@ public class ExcelSheetWriter<T> {
         return this;
     }
 
+    public ExcelSheetWriter<T> formula(final int row1, final int col1, final String formula, final String stylename) {
+        sheet.setFormula(row1-1, col1-1, formula, stylename);
+        return this;
+    }
+
     public ExcelSheetWriter<T> style(final int row1, final int col1, final String stylename) {
         sheet.setStyle(row1-1, col1-1, stylename);
         return this;
@@ -174,11 +179,6 @@ public class ExcelSheetWriter<T> {
 
     public ExcelSheetWriter<T> bgColor(final int row1, final int col1, final short bgColor) {
         sheet.setBgColorIndex(row1-1, col1-1, bgColor);
-        return this;
-    }
-
-    public ExcelSheetWriter<T> formula(final int row1, final int col1, final String formula, final String stylename) {
-        sheet.setFormula(row1-1, col1-1, formula, stylename);
         return this;
     }
 
