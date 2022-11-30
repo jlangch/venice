@@ -78,7 +78,6 @@ public class PrimitivesSection implements ISectionBuilder {
         numbers.addSection(compare);
         compare.addItem(diBuilder.getDocItem("=="));
         compare.addItem(diBuilder.getDocItem("="));
-        compare.addItem(diBuilder.getDocItem("not=="));
         compare.addItem(diBuilder.getDocItem("not="));
         compare.addItem(diBuilder.getDocItem("<"));
         compare.addItem(diBuilder.getDocItem(">"));

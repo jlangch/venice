@@ -1159,7 +1159,7 @@ public class CoreFunctions {
                         "(= 4)",
                         "(= 4 4 4)")
                     .seeAlso(
-                    	"==", "not=", "not==")
+                    	"==", "not=")
                     .build()
         ) {
             @Override
@@ -1203,7 +1203,7 @@ public class CoreFunctions {
                         "(== \"0\" 0)",
                         "(== 4)",
                         "(== 4I 4 4.0 4.0M 4N)")
-                    .seeAlso("=", "not=", "not==")
+                    .seeAlso("=", "not=")
                     .build()
         ) {
             @Override
@@ -1247,7 +1247,7 @@ public class CoreFunctions {
                         "(not= \"0\" 0)",
                         "(not= 4)",
                         "(not= 1 2 3)")
-                    .seeAlso("not==", "=", "==")
+                    .seeAlso("=", "==")
                     .build()
         ) {
             @Override
@@ -1262,45 +1262,6 @@ public class CoreFunctions {
                 }
                 else {
                 	return ((VncBoolean)equal_strict_Q.apply(args)).not();
-                }
-            }
-
-            private static final long serialVersionUID = -1848883965231344442L;
-        };
-
-    public static VncFunction not_equal_Q =
-        new VncFunction(
-                "not==",
-                VncFunction
-                    .meta()
-                    .arglists(
-                    	"(not== x)", "(not== x y)", "(not== x y & more)")
-                    .doc(
-                    	"Same as (not (== x y))")
-                    .examples(
-                        "(not== \"abc\" \"abc\")",
-                        "(not== 0 0)",
-                        "(not== 0 1)",
-                        "(not== 0 0.0)",
-                        "(not== 0 0.0M)",
-                        "(not== \"0\" 0)",
-                        "(not== 4)",
-                        "(not== 1 2 3)")
-                    .seeAlso("not=", "=", "==")
-                    .build()
-        ) {
-            @Override
-            public VncVal apply(final VncList args) {
-                ArityExceptions.assertMinArity(this, args, 1);
-
-                if (args.size() == 2) {
-                    return VncBoolean.of(!Types._equal_Q(args.first(), args.second()));
-                }
-                else if (args.size() == 1) {
-                    return False;
-                }
-                else {
-                	return ((VncBoolean)equal_Q.apply(args)).not();
                 }
             }
 
@@ -9626,7 +9587,6 @@ public class CoreFunctions {
 
                 .add(equal_Q)
                 .add(equal_strict_Q)
-                .add(not_equal_Q)
                 .add(not_equal_strict_Q)
                 .add(match_Q)
                 .add(not_match_Q)
