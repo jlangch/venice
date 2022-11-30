@@ -137,6 +137,25 @@ Suppose we want to make coffee. This involves 4 steps:
 * 2  mix the hot water with the ground beans
 * 3  filter the coffee
 
+```
+        +------------------------+       +------------------------+
+        | 1a) grind coffee beans |       |     1b) heat water     |
+        +------------------------+       +------------------------+
+                            |                |
+                            |                |
+                            |                |
+                            v                v
+                        +------------------------+
+                        | 2) mix water and beans |
+                        +------------------------+
+                                    |
+                                    v
+                        +------------------------+
+                        | 3) filter the coffee   |
+                        +------------------------+
+```
+
+
 All these steps take varying time, so they run asynchronously and have to be 
 orchestrated. 
 
@@ -170,14 +189,15 @@ orchestrated.
     (trace "3)  filtering coffee...") 
     (filtered-coffee.))
 
+  ;; make coffee: version with promises 
   (defn make-coffee []
-	;; the processing, wiring the steps
-	(-> (promise #(grind-beans (coffee-beans.)))             ;; 1a
-	    (then-combine (promise #(heat-water (cold-water.)))  ;; 1b
-	                  #(mix %1 %2))                          ;; 2
-	    (then-apply #(filter-coffee %1))                     ;; 3
-	    (deref)))
+    (-> (promise #(grind-beans (coffee-beans.)))             ;; 1a
+        (then-combine (promise #(heat-water (cold-water.)))  ;; 1b
+                      #(mix %1 %2))                          ;; 2
+        (then-apply #(filter-coffee %1))                     ;; 3
+        (deref)))
 
+  ;; make coffee: version with futures and promises
   (defn make-coffee-2 []
     (let [step_1a (promise)
           step_1b (promise)
