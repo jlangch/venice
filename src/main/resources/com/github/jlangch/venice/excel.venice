@@ -1104,7 +1104,7 @@
             (excel/cell-style sheet 2 2 :style-2)
             (excel/cell-style sheet 2 3 :style-3)
 
-            (excel/write->file wbook "sample.xlsx"))))
+            (excel/write->file wbook "sample.xlsx")))
         """,
         """
         (do
@@ -1124,7 +1124,7 @@
 
             (excel/cell-style sheet 2 3 2 4 :style)
 
-            (excel/write->file wbook "sample.xlsx"))))
+            (excel/write->file wbook "sample.xlsx")))
         """ )
      :see-also '(
         "excel/add-style", "excel/add-font", "excel/write-value") }
