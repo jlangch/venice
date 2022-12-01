@@ -853,6 +853,46 @@
   (. sheet :addMergedRegion row-from row-to col-from col-to))
 
 
+(defn
+  ^{ :arglists '(
+        "(freeze-pane sheet rows cols)")
+     :doc
+        """
+        Creates a split (freezepane). Any existing freezepane or split pane
+        is overwritten.
+
+        If both rows and cols are 0 then the existing freeze pane is removed.
+
+        rows: the number of rows to freeze (starting from the first row)
+        cols: the number of columns to freeze (starting from the first column)
+        """
+     :examples '(
+        """
+        (do
+          (load-module :excel)
+          (let [data  [ {:first "John" :last "Doe"   :age 28 }
+                        {:first "Sue"  :last "Ford"  :age 26 } ]
+                wbook (excel/writer :xlsx)
+                sheet (excel/add-sheet wbook "Sheet 1" { :no-header-row false })]
+              (excel/add-column sheet "First Name" { :field :first })
+              (excel/add-column sheet "Last Name" { :field :last })
+              (excel/add-column sheet "Age" { :field :age })
+              (excel/write-items sheet data)
+              (excel/freeze-pane sheet 1 0)
+              (excel/auto-size-columns sheet)
+              (excel/write->file wbook "sample.xlsx"))))
+     """ )
+     :see-also '("excel/aadd-merge-region") }
+
+  freeze-pane [sheet rows cols ]
+
+  { :pre [(instance-of? :ExcelSheetWriter sheet)
+          (long? rows) (long? cols)
+          (>= rows 0) (>= cols 0)] }
+
+  (. sheet :createFreezePane cols rows))
+
+
 ;; -----------------------------------------------------------------------------
 ;; Font
 ;; -----------------------------------------------------------------------------

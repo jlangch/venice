@@ -81,6 +81,11 @@ public class ExcelSheetWriter<T> {
         return this;
     }
 
+    public ExcelSheetWriter<T> createFreezePane(final int cols, final int rows) {
+        sheet.createFreezePane(Math.max(0, cols), Math.max(0, rows));
+        return this;
+    }
+
     public ExcelSheetWriter<T> defaultHeaderStyle(final String style) {
         this.defaultHeaderStyle = style;
         return this;

@@ -96,6 +96,10 @@ public class ExcelSheet {
         return r == null ? -1 : r.getLastCellNum();
     }
 
+    public void createFreezePane(final int colSplit, final int rowSplit) {
+    	sheet.createFreezePane(colSplit, rowSplit);
+    }
+
     public boolean isCellEmpty(final int row, final int col) {
         final Cell cell = getCell(row, col);
         return cell == null || cell.getCellType() == CellType.BLANK;
