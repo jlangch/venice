@@ -15,6 +15,7 @@ and this project adheres to
 ### Added 
 
 - improvements `:excel` module cell styling
+- support for freeze panes to `:excel` module 
 
 
 
