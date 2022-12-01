@@ -1179,7 +1179,7 @@ public class CoreFunctionsTest {
         assertTrue((Boolean)venice.eval("(== (just 3) (just 3I))"));
         assertTrue((Boolean)venice.eval("(== (just [1 [2 3] 4]) (just [1 [2 3] 4]))"));
         assertTrue((Boolean)venice.eval("(== (just [1 [2 3] 4]) (just [1I [2I 3I] 4I]))"));
-   }
+    }
 
     @Test
     public void test_equals_strict_Q() {
@@ -1337,6 +1337,165 @@ public class CoreFunctionsTest {
         assertFalse((Boolean)venice.eval("(= (just 3) (just 3I))"));
         assertTrue((Boolean)venice.eval("(= (just [1 [2 3] 4]) (just [1 [2 3] 4]))"));
         assertFalse((Boolean)venice.eval("(= (just [1 [2 3] 4]) (just [1I [2I 3I] 4I]))"));
+    }
+
+    @Test
+    public void test_not_equals_strict_Q() {
+        final Venice venice = new Venice();
+
+        // Nil
+        assertFalse((Boolean)venice.eval("(not= nil nil)"));
+        assertTrue((Boolean)venice.eval("(not= nil 0)"));
+
+        // Boolean
+        assertFalse((Boolean)venice.eval("(not= true true)"));
+        assertTrue((Boolean)venice.eval("(not= true false)"));
+
+        assertFalse((Boolean)venice.eval("(not= true)"));
+        assertFalse((Boolean)venice.eval("(not= true true true true true)"));
+        assertTrue((Boolean)venice.eval("(not= true true true true true false)"));
+
+        // Integer
+        assertFalse((Boolean)venice.eval("(not= 2I 2I)"));
+        assertTrue((Boolean)venice.eval("(not= 2I 2)"));
+        assertTrue((Boolean)venice.eval("(not= 2I 2.0)"));
+        assertTrue((Boolean)venice.eval("(not= 2I 2.0M)"));
+        assertTrue((Boolean)venice.eval("(not= 2I 2N)"));
+        assertTrue((Boolean)venice.eval("(not= 2I 3I)"));
+        assertTrue((Boolean)venice.eval("(not= 2I 3)"));
+        assertTrue((Boolean)venice.eval("(not= 2I 3.0)"));
+        assertTrue((Boolean)venice.eval("(not= 2I 3.0M)"));
+        assertTrue((Boolean)venice.eval("(not= 2I 3N)"));
+
+        assertFalse((Boolean)venice.eval("(not= 2I)"));
+        assertFalse((Boolean)venice.eval("(not= 2I 2I 2I 2I)"));
+        assertTrue((Boolean)venice.eval("(not= 2I 2 2.0 2M 2N)"));
+
+        // Long
+        assertFalse((Boolean)venice.eval("(not= 2 2)"));
+        assertTrue((Boolean)venice.eval("(not= 2 2I)"));
+        assertTrue((Boolean)venice.eval("(not= 2 2.0)"));
+        assertTrue((Boolean)venice.eval("(not= 2 2.0M)"));
+        assertTrue((Boolean)venice.eval("(not= 2 2N)"));
+        assertTrue((Boolean)venice.eval("(not= 2 2N)"));
+        assertTrue((Boolean)venice.eval("(not= 2 3)"));
+        assertTrue((Boolean)venice.eval("(not= 2 3I)"));
+        assertTrue((Boolean)venice.eval("(not= 2 3.0)"));
+        assertTrue((Boolean)venice.eval("(not= 2 3.0M)"));
+        assertTrue((Boolean)venice.eval("(not= 2 3N)"));
+
+        assertFalse((Boolean)venice.eval("(not= 2)"));
+        assertFalse((Boolean)venice.eval("(not= 2 2 2 2)"));
+
+        // Double
+        assertFalse((Boolean)venice.eval("(not= 2.0 2.0)"));
+        assertTrue((Boolean)venice.eval("(not= 2.0 2)"));
+        assertTrue((Boolean)venice.eval("(not= 2.0 2I)"));
+        assertTrue((Boolean)venice.eval("(not= 2.0 2.0M)"));
+        assertTrue((Boolean)venice.eval("(not= 2.0 2N)"));
+        assertTrue((Boolean)venice.eval("(not= 2.0 3.0)"));
+        assertTrue((Boolean)venice.eval("(not= 2.0 3)"));
+        assertTrue((Boolean)venice.eval("(not= 2.0 3I)"));
+        assertTrue((Boolean)venice.eval("(not= 2.0 3.0M)"));
+        assertTrue((Boolean)venice.eval("(not= 2.0 3N)"));
+
+        assertFalse((Boolean)venice.eval("(not= 2.0)"));
+        assertFalse((Boolean)venice.eval("(not= 2.0 2.0 2.0 2.0)"));
+
+        // Decimal
+        assertFalse((Boolean)venice.eval("(not= 2.0M 2.0M)"));
+        assertTrue((Boolean)venice.eval("(not= 2.0M 2)"));
+        assertTrue((Boolean)venice.eval("(not= 2.0M 2I)"));
+        assertTrue((Boolean)venice.eval("(not= 2.0M 2.0)"));
+        assertTrue((Boolean)venice.eval("(not= 2.0M 2N)"));
+        assertTrue((Boolean)venice.eval("(not= 2.0M 3.0M)"));
+        assertTrue((Boolean)venice.eval("(not= 2.0M 3)"));
+        assertTrue((Boolean)venice.eval("(not= 2.0M 3I)"));
+        assertTrue((Boolean)venice.eval("(not= 2.0M 3.0)"));
+        assertTrue((Boolean)venice.eval("(not= 2.0M 3N)"));
+
+        assertFalse((Boolean)venice.eval("(not= 2.0M)"));
+        assertFalse((Boolean)venice.eval("(not= 2.0M 2.0M 2.0M 2.0M)"));
+
+        // BigInteger
+        assertFalse((Boolean)venice.eval("(not= 2N 2N)"));
+        assertTrue((Boolean)venice.eval("(not= 2N 2)"));
+        assertTrue((Boolean)venice.eval("(not= 2N 2I)"));
+        assertTrue((Boolean)venice.eval("(not= 2N 2.0)"));
+        assertTrue((Boolean)venice.eval("(not= 2N 2.0M)"));
+        assertTrue((Boolean)venice.eval("(not= 2N 3N)"));
+        assertTrue((Boolean)venice.eval("(not= 2N 3)"));
+        assertTrue((Boolean)venice.eval("(not= 2N 3I)"));
+        assertTrue((Boolean)venice.eval("(not= 2N 3.0)"));
+        assertTrue((Boolean)venice.eval("(not= 2N 3.0M)"));
+
+        assertFalse((Boolean)venice.eval("(not= 2N)"));
+        assertFalse((Boolean)venice.eval("(not= 2N 2N 2N 2N)"));
+
+        // String
+        assertFalse((Boolean)venice.eval("(not= \"aa\" \"aa\")"));
+        assertTrue((Boolean)venice.eval("(not= \"aa\" \"zz\")"));
+
+        assertFalse((Boolean)venice.eval("(not= \"aa\")"));
+        assertFalse((Boolean)venice.eval("(not= \"aa\" \"aa\" \"aa\")"));
+
+        // Char
+        assertFalse((Boolean)venice.eval("(not= (char \"a\") (char \"a\"))"));
+        assertTrue((Boolean)venice.eval("(not= (char \"a\") (char \"z\"))"));
+
+        // Keyword
+        assertFalse((Boolean)venice.eval("(not= :a :a)"));
+        assertTrue((Boolean)venice.eval("(not= :a :b)"));
+
+        // String/Keyword
+        assertTrue((Boolean)venice.eval("(not= \"aa\" :aa)"));
+        assertTrue((Boolean)venice.eval("(not= :aa \"aa\")"));
+
+        // List
+        assertFalse((Boolean)venice.eval("(not= '(1 2) '(1 2))"));
+        assertTrue((Boolean)venice.eval("(not= '(1 2) '(1 4))"));
+        assertTrue((Boolean)venice.eval("(not= '(1 2) '(1))"));
+        assertTrue((Boolean)venice.eval("(not= '(1 2) '())"));
+        assertTrue((Boolean)venice.eval("(not= '(1 2) nil)"));
+
+        // Vector
+        assertFalse((Boolean)venice.eval("(not= [1 2] [1 2])"));
+        assertTrue((Boolean)venice.eval("(not= [1 2] [1 4])"));
+        assertTrue((Boolean)venice.eval("(not= [1 2] [1])"));
+        assertTrue((Boolean)venice.eval("(not= [1 2] [])"));
+        assertTrue((Boolean)venice.eval("(not= [1 2] nil)"));
+
+        // Nested Vectors
+        assertFalse((Boolean)venice.eval("(not= [[1 2] 3 4] [[1 2] 3 4])"));
+        assertTrue((Boolean)venice.eval("(not= [[1 2] 3 4] [[1I 2I] 3I 4I])"));
+        assertFalse((Boolean)venice.eval("(not= [1 [2 3] 4] [1 [2 3] 4])"));
+        assertTrue((Boolean)venice.eval("(not= [1 [2 3] 4] [1I [2I 3I] 4I])"));
+
+        // Map
+        assertFalse((Boolean)venice.eval("(not= {:a 1 :b 2} {:a 1 :b 2})"));
+        assertTrue((Boolean)venice.eval("(not= {:a 1 :b 2} {:a 1 :b 3})"));
+        assertTrue((Boolean)venice.eval("(not= {:a 1 :b 2} {:a 1 :c 2})"));
+        assertTrue((Boolean)venice.eval("(not= {:a 1 :b 2} {:a 1})"));
+        assertTrue((Boolean)venice.eval("(not= {:a 1 :b 2} {})"));
+        assertTrue((Boolean)venice.eval("(not= {:a 1 :b 2} nil)"));
+
+        // Volatile
+        assertFalse((Boolean)venice.eval("(not= (volatile 3) (volatile 3))"));
+        assertTrue((Boolean)venice.eval("(not= (volatile 3) (volatile 3I))"));
+        assertFalse((Boolean)venice.eval("(not= (volatile [1 [2 3] 4]) (volatile [1 [2 3] 4]))"));
+        assertTrue((Boolean)venice.eval("(not= (volatile [1 [2 3] 4]) (volatile [1I [2I 3I] 4I]))"));
+
+        // Atom
+        assertFalse((Boolean)venice.eval("(not= (atom 3) (atom 3))"));
+        assertTrue((Boolean)venice.eval("(not= (atom 3) (atom 3I))"));
+        assertFalse((Boolean)venice.eval("(not= (atom [1 [2 3] 4]) (atom [1 [2 3] 4]))"));
+        assertTrue((Boolean)venice.eval("(not= (atom [1 [2 3] 4]) (atom [1I [2I 3I] 4I]))"));
+
+        // Just
+        assertFalse((Boolean)venice.eval("(not= (just 3) (just 3))"));
+        assertTrue((Boolean)venice.eval("(not= (just 3) (just 3I))"));
+        assertFalse((Boolean)venice.eval("(not= (just [1 [2 3] 4]) (just [1 [2 3] 4]))"));
+        assertTrue((Boolean)venice.eval("(not= (just [1 [2 3] 4]) (just [1I [2I 3I] 4I]))"));
     }
 
     @Test
