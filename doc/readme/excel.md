@@ -692,7 +692,10 @@ Available border styles:
 
 ```clojure
 (do
+  (ns test)
+  
   (load-module :excel)
+  
   (let [wbook (excel/writer :xlsx)
         sheet (excel/add-sheet wbook "Sheet 1" { :no-header-row false })]
     (excel/add-font wbook :bold { :bold true
@@ -733,7 +736,10 @@ Available border styles:
 
 ```clojure
 (do
+  (ns test)
+          
   (load-module :excel)
+          
   (let [wbook (excel/writer :xlsx)
         sheet (excel/add-sheet wbook "Sheet 1" { :no-header-row false })]
     (excel/add-style wbook :style { :bg-color "#cae1fa"
@@ -766,7 +772,10 @@ Freeze the top row:
 
 ```clojure
         (do
+          (ns test)
+          
           (load-module :excel)
+          
           (let [wbook (excel/writer :xlsx)
                 sheet (excel/add-sheet wbook "Sheet 1" { :no-header-row false })]
               (excel/write-data wbook sheet [(map #(str "Col " %) (range 1 11))])
