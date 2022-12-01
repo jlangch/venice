@@ -47,6 +47,7 @@ libraries:
        * [Shading alternate rows](#shading-alternate-rows)
        * [Styling cells](#styling-cells)
        * [Styling cell region](#styling-cell-region)
+       * [Freeze Panes](#freeze-panes)
 2. [Reading Excel files](#reading-excel-files)
     * [Open Excel](#open-excel)
     * [Reading Cell Metadata](#reading-cell-metadata)
@@ -754,6 +755,31 @@ Available border styles:
 <img src="https://github.com/jlangch/venice/blob/master/doc/assets/excel/excel-write-015.png" width="400">
 
 [top](#content)
+
+
+
+### Freeze Panes
+
+*Note:* This feature requires Venice 1.10.30+
+
+Freeze the top row:
+
+```clojure
+        (do
+          (load-module :excel)
+          (let [wbook (excel/writer :xlsx)
+                sheet (excel/add-sheet wbook "Sheet 1" { :no-header-row false })]
+              (excel/write-data wbook sheet [(map #(str "Col " %) (range 1 11))])
+              (excel/write-data wbook sheet (partition 10 (range 100 500)) 2 1)
+              (excel/freeze-pane sheet 1 0)
+              (excel/auto-size-columns sheet)
+              (excel/write->file wbook "sample.xlsx")))
+```
+
+<img src="https://github.com/jlangch/venice/blob/master/doc/assets/excel/excel-write-016.png" width="400">
+
+[top](#content)
+
 
 
 ## Reading Excel files

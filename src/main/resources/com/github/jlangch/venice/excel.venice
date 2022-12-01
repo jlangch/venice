@@ -870,17 +870,13 @@
         """
         (do
           (load-module :excel)
-          (let [data  [ {:first "John" :last "Doe"   :age 28 }
-                        {:first "Sue"  :last "Ford"  :age 26 } ]
-                wbook (excel/writer :xlsx)
+          (let [wbook (excel/writer :xlsx)
                 sheet (excel/add-sheet wbook "Sheet 1" { :no-header-row false })]
-              (excel/add-column sheet "First Name" { :field :first })
-              (excel/add-column sheet "Last Name" { :field :last })
-              (excel/add-column sheet "Age" { :field :age })
-              (excel/write-items sheet data)
+              (excel/write-data wbook sheet [(map #(str "Col " %) (range 1 11))])
+              (excel/write-data wbook sheet (partition 10 (range 100 500)) 2 1)
               (excel/freeze-pane sheet 1 0)
               (excel/auto-size-columns sheet)
-              (excel/write->file wbook "sample.xlsx"))))
+              (excel/write->file wbook "sample.xlsx")))
      """ )
      :see-also '("excel/aadd-merge-region") }
 
