@@ -1412,6 +1412,7 @@ public class CoreFunctions {
                         "(< 2 3 4 5 6 7)",
                         "(let [x 10] \n" +
                         "  (< 0 x 100)) ")
+                    .seeAlso("<=", ">", ">=")
                     .build()
         ) {
             @Override
@@ -1469,6 +1470,7 @@ public class CoreFunctions {
                         "(<= 2 3 4 5 6 7)",
                         "(let [x 10] \n" +
                         "  (<= 0 x 100)) ")
+                    .seeAlso("<", ">", ">=")
                     .build()
         ) {
             @Override
@@ -1524,6 +1526,7 @@ public class CoreFunctions {
                         "(> 3.0 2)",
                         "(> 3.0M 2)",
                         "(> 7 6 5 4 3 2)")
+                    .seeAlso("<", "<=", ">=")
                     .build()
         ) {
             @Override
@@ -1579,6 +1582,7 @@ public class CoreFunctions {
                         "(>= 3.0 2)",
                         "(>= 3.0M 2)",
                         "(>= 7 6 5 4 3 2)")
+                    .seeAlso("<", "<=", ">")
                     .build()
         ) {
             @Override
