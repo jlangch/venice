@@ -20,12 +20,12 @@
     "prompt": null,
     "command": "\u001b[38;5;45m",
     "result": "\u001b[38;5;39m",
-    "stdout": "\u001b[38;5;249m",
+    "stdout": "\u001b[38;5;231m",
     "stderr": "\u001b[38;5;202m",
     "debug": "\u001b[38;5;154m",
     "error": "\u001b[38;5;196m",
-    "system": "\u001b[48;5;35m\u001b[38;5;231m",
-    "interrupt": "\u001b[48;5;196m\u001b[38;5;231m"
+    "system": "\u001b[48;5;35m\u001b[38;5;255m",
+    "interrupt": "\u001b[48;5;196m\u001b[38;5;255m"
   },
     
   "syntax-highlighting": {
