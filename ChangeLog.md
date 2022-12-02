@@ -14,7 +14,7 @@ and this project adheres to
 
 ### Added 
 
-- improvements `:excel` module cell styling
+- improvements to `:excel` module cell styling
 - support for freeze panes to `:excel` module 
 - function `excel/read-error-code` to the read the error code from a formula cell
 - function `excel/read-val` to have an option to read data from cells generically
