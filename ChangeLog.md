@@ -16,6 +16,13 @@ and this project adheres to
 
 - improvements `:excel` module cell styling
 - support for freeze panes to `:excel` module 
+- function `excel/read-error-code` to the read the error code from a formula cell
+- function `excel/read-val` to have an option to read data from cells generically
+
+### Improved
+
+- and simplified the function `excel/write-data` for writing 2 dimension tabular 
+  data to an excel sheet
 
 
 

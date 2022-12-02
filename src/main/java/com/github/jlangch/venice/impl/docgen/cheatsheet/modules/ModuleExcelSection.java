@@ -89,23 +89,27 @@ public class ModuleExcelSection implements ISectionBuilder {
         all.addSection(wr_style);
         wr_style.addItem(diBuilder.getDocItem("excel/add-font", false));
         wr_style.addItem(diBuilder.getDocItem("excel/add-style", false));
+        wr_style.addItem(diBuilder.getDocItem("excel/add-merge-region", false));
         wr_style.addItem(diBuilder.getDocItem("excel/row-height", false));
         wr_style.addItem(diBuilder.getDocItem("excel/column-width", false));
         wr_style.addItem(diBuilder.getDocItem("excel/cell-style", false));
         wr_style.addItem(diBuilder.getDocItem("excel/bg-color", false));
         wr_style.addItem(diBuilder.getDocItem("excel/auto-size-columns", false));
         wr_style.addItem(diBuilder.getDocItem("excel/auto-size-column", false));
+        wr_style.addItem(diBuilder.getDocItem("excel/freeze-pane", false));
 
         final DocSection rd = new DocSection("Reader", id());
         all.addSection(rd);
         rd.addItem(diBuilder.getDocItem("excel/open", false));
         rd.addItem(diBuilder.getDocItem("excel/sheet", false));
+        rd.addItem(diBuilder.getDocItem("excel/read-val", false));
         rd.addItem(diBuilder.getDocItem("excel/read-string-val", false));
         rd.addItem(diBuilder.getDocItem("excel/read-boolean-val", false));
         rd.addItem(diBuilder.getDocItem("excel/read-long-val", false));
         rd.addItem(diBuilder.getDocItem("excel/read-double-val", false));
         rd.addItem(diBuilder.getDocItem("excel/read-date-val", false));
         rd.addItem(diBuilder.getDocItem("excel/read-datetime-val", false));
+        rd.addItem(diBuilder.getDocItem("excel/read-error-code", false));
 
         final DocSection rd_util = new DocSection("Reader Util", id());
         all.addSection(rd_util);
