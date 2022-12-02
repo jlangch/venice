@@ -492,29 +492,24 @@ public class ExcelSheet {
 
         final CellValue cellValue = evaluator.evaluate(cell);
 
-        if (cellValue.getCellType() == CellType.BLANK) {
-            return null;
-        }
-        else if (cellValue.getCellType() == CellType.STRING) {
-            return cellValue.getStringValue();
-        }
-        else if (cellValue.getCellType() == CellType.BOOLEAN) {
-            return cellValue.getBooleanValue();
-        }
-        else if (cell.getCellType() == CellType.NUMERIC && DateUtil.isCellDateFormatted(cell)) {
-            return cell.getLocalDateTimeCellValue();
-        }
-        else if (cellValue.getCellType() == CellType.NUMERIC) {
-            return cellValue.getNumberValue();
-        }
-        else if (cellValue.getCellType() == CellType.ERROR) {
-            return null;
-        }
-        else {
-            throw new ExcelException(String.format(
-                "The Excel cell [%d,%d]: failed to read value",
-                cell.getRowIndex(),
-                cell.getColumnIndex()));
+        switch (cellValue.getCellType()) {
+	        case BLANK:
+	        	return null;
+	        case STRING:
+	        	return cellValue.getStringValue();
+	        case BOOLEAN:
+	        	return cellValue.getBooleanValue();
+	        case NUMERIC:
+		        return DateUtil.isCellDateFormatted(cell)
+		        		? cell.getLocalDateTimeCellValue()
+		        		: cellValue.getNumberValue();
+	        case ERROR:
+	        	return null;
+	        default:
+	            throw new ExcelException(String.format(
+	                "The Excel cell [%d,%d]: failed to read value",
+	                cell.getRowIndex(),
+	                cell.getColumnIndex()));
         }
     }
 
@@ -525,23 +520,22 @@ public class ExcelSheet {
 
         final CellValue cellValue = evaluator.evaluate(cell);
 
-        if (cellValue.getCellType() == CellType.BLANK) {
-            return null;
-        }
-        else if (cellValue.getCellType() == CellType.STRING) {
-            return cellValue.getStringValue();
-        }
-        else if (cellValue.getCellType() == CellType.BOOLEAN) {
-            return Boolean.toString(cellValue.getBooleanValue());
-        }
-        else if (cellValue.getCellType() == CellType.NUMERIC) {
-            return Double.toString(cellValue.getNumberValue());
-        }
-        else {
-            throw new ExcelException(String.format(
-                "The Excel cell [%d,%d] does not contain a string value",
-                cell.getRowIndex(),
-                cell.getColumnIndex()));
+        switch (cellValue.getCellType()) {
+	        case BLANK:
+	        	return null;
+	        case STRING:
+	        	return cellValue.getStringValue();
+	        case BOOLEAN:
+	        	return Boolean.toString(cellValue.getBooleanValue());
+	        case NUMERIC:
+		        return DateUtil.isCellDateFormatted(cell)
+		        		? cell.getLocalDateTimeCellValue().toString()
+		        		: Double.toString(cellValue.getNumberValue());
+	        default:
+	            throw new ExcelException(String.format(
+	                    "The Excel cell [%d,%d] does not contain a string value",
+	                    cell.getRowIndex(),
+	                    cell.getColumnIndex()));
         }
     }
 
@@ -614,7 +608,6 @@ public class ExcelSheet {
         if (cell == null) {
             return null;
         }
-
 
         if (cell.getCellType() == CellType.BLANK) {
             return null;
