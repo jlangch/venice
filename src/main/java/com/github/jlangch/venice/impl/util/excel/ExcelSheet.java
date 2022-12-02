@@ -197,6 +197,11 @@ public class ExcelSheet {
         return getFormula(cell);
     }
 
+    public String getErrorCode(final int row, final int col) {
+        final Cell cell = getCell(row, col);
+        return getErrorCode(cell);
+    }
+
     public void setString(
         final int row, final int col, final String value, final String styleName
     ) {
@@ -496,6 +501,9 @@ public class ExcelSheet {
         else if (cellValue.getCellType() == CellType.BOOLEAN) {
             return cellValue.getBooleanValue();
         }
+        else if (cell.getCellType() == CellType.NUMERIC && DateUtil.isCellDateFormatted(cell)) {
+            return cell.getLocalDateTimeCellValue();
+        }
         else if (cellValue.getCellType() == CellType.NUMERIC) {
             return cellValue.getNumberValue();
         }
@@ -656,6 +664,21 @@ public class ExcelSheet {
                     cell.getRowIndex(),
                     cell.getColumnIndex(),
                     cell.getCellType().name()));
+        }
+    }
+
+    private String getErrorCode(final Cell cell) {
+        if (cell == null) {
+            return null;
+        }
+
+        final CellValue cellValue = evaluator.evaluate(cell);
+
+        if (cellValue.getCellType() == CellType.ERROR) {
+            return cellValue.formatAsString();
+        }
+        else {
+            return null;
         }
     }
 

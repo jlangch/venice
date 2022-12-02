@@ -234,8 +234,8 @@
 
 (defn
   ^{ :arglists '(
-        "(write-data wbook sheet data)"
-        "(write-data wbook sheet data row col)")
+        "(write-data sheet data)"
+        "(write-data sheet data row col)")
      :doc
         """
         Writes the data of a 2D array to an excel sheet.
@@ -253,7 +253,7 @@
                 ts    (time/local-date-time 2021 1 1 15 30 45)
                 data  [[100  101  102  103  104  105]
                        [200  "ab" 1.23 dt   ts   false]]]
-            (excel/write-data wbook sheet data)
+            (excel/write-data sheet data)
             (excel/auto-size-columns sheet)
             (excel/write->file wbook "sample.xlsx")))
         """,
@@ -262,8 +262,8 @@
           (load-module :excel)
           (let [wbook (excel/writer :xlsx)
                 sheet (excel/add-sheet wbook "Data")]
-            (excel/write-data wbook sheet [[100 101 102] [200 201 203]])
-            (excel/write-data wbook sheet [[300 301 302] [400 401 403]] 3 4)
+            (excel/write-data sheet [[100 101 102] [200 201 203]])
+            (excel/write-data sheet [[300 301 302] [400 401 403]] 3 4)
             (excel/auto-size-columns sheet)
             (excel/write->file wbook "sample.xlsx")))
         """)
@@ -271,18 +271,14 @@
 
   write-data
 
-  ([wbook sheet data]
-    (write-data wbook sheet data 1 1))
+  ([sheet data]
+    (write-data sheet data 1 1))
 
-  ([wbook sheet data row col]
-    { :pre [(instance-of? :ExcelWriter wbook)
-            (or (string? sheet) (instance-of? :ExcelSheetWriter sheet))
+  ([sheet data row col]
+    { :pre [(instance-of? :ExcelSheetWriter sheet)
             (pos? row) (pos? col)] }
 
-    (let [sheet (if (string? sheet)
-                  (excel/add-sheet wbook sheet-name { :no-header-row true })
-                  sheet)
-          cell  (fn [r c val] (excel/write-value sheet (+ r row) (+ c col) val))]
+    (let [cell (fn [r c val] (excel/write-value sheet (+ r row) (+ c col) val))]
       (map-indexed (fn [r rv] (map-indexed (fn [c cv] (cell r c cv)) rv))
                    data))))
 
@@ -296,8 +292,9 @@
           (load-module :excel)
 
           (defn test-xls []
-            (let [wbook (excel/writer :xlsx)]
-              (excel/write-data wbook "Data" [[100 101 102] [200 201 202]])
+            (let [wbook (excel/writer :xlsx)
+                  sheet (excel/add-sheet wbook "Data")]
+              (excel/write-data sheet [[100 101 102] [200 201 202]])
               (excel/write->bytebuf wbook)))
 
           (let [wbook (excel/open (test-xls))]
@@ -872,8 +869,8 @@
           (load-module :excel)
           (let [wbook (excel/writer :xlsx)
                 sheet (excel/add-sheet wbook "Sheet 1" { :no-header-row false })]
-              (excel/write-data wbook sheet [(map #(str "Col " %) (range 1 11))])
-              (excel/write-data wbook sheet (partition 10 (range 100 500)) 2 1)
+              (excel/write-data sheet [(map #(str "Col " %) (range 1 11))])
+              (excel/write-data sheet (partition 10 (range 100 500)) 2 1)
               (excel/freeze-pane sheet 1 0)
               (excel/auto-size-columns sheet)
               (excel/write->file wbook "sample.xlsx")))
@@ -1198,8 +1195,8 @@
           (load-module :excel)
           (let [wbook (excel/writer :xlsx)
                 sheet (excel/add-sheet wbook "Data")]
-            (excel/write-data wbook sheet [[100 101 102] [200 201 203]])
-            (excel/write-data wbook sheet [[300 301 302] [400 401 403]] 3 4)
+            (excel/write-data sheet [[100 101 102] [200 201 203]])
+            (excel/write-data sheet [[300 301 302] [400 401 403]] 3 4)
             (excel/bg-color sheet 1 1 "#c9fad4")
             (excel/bg-color sheet 1 2 "#d6f9de")
             (excel/bg-color sheet 1 3 "#e6f9ea")
@@ -1212,12 +1209,12 @@
           (load-module :excel)
           (let [wbook (excel/writer :xlsx)
                 sheet (excel/add-sheet wbook "Data")]
-            (excel/write-data wbook sheet [[100 101 102]
-                                           [200 201 203]
-                                           [300 301 303]
-                                           [400 401 403]
-                                           [500 501 503]
-                                           [600 601 603]])
+            (excel/write-data sheet [[100 101 102]
+                                     [200 201 203]
+                                     [300 301 303]
+                                     [400 401 403]
+                                     [500 501 503]
+                                     [600 601 603]])
             (let [[r-first r-last] (excel/sheet-row-range sheet)
                   [c-first c-last] (excel/sheet-col-range sheet 1)]
               (run! #(excel/bg-color sheet % c-first c-last "#a9cafc")
@@ -1521,8 +1518,9 @@
           (load-module :excel)
 
           (defn test-xls []
-            (let [wbook (excel/writer :xlsx)]
-              (excel/write-data wbook "Data" [[100 101 102] [200 201 202]])
+            (let [wbook (excel/writer :xlsx)
+                  sheet (excel/add-sheet wbook "Data")]
+              (excel/write-data sheet [[100 101 102] [200 201 202]])
               (excel/write->bytebuf wbook)))
 
           (let [wbook (excel/open (test-xls))]
@@ -1551,9 +1549,11 @@
           (load-module :excel)
 
           (defn test-xls []
-            (let [wbook (excel/writer :xlsx)]
-              (excel/write-data wbook "Data1" [[100 101 102] [200 201 202]])
-              (excel/write-data wbook "Data2" [[100 101 102] [200 201 202]])
+            (let [wbook (excel/writer :xlsx)
+                  sheet1 (excel/add-sheet wbook "Data1")
+                  sheet2 (excel/add-sheet wbook "Data2")]
+              (excel/write-data sheet1 [[100 101 102] [200 201 202]])
+              (excel/write-data sheet2 [[100 101 102] [200 201 202]])
               (excel/write->bytebuf wbook)))
 
           (let [wbook  (excel/open (test-xls))
@@ -1594,8 +1594,9 @@
           (load-module :excel)
 
           (defn test-xls []
-            (let [wbook (excel/writer :xlsx)]
-              (excel/write-data wbook "Data" [[100 101 102] [200 201 202]])
+            (let [wbook (excel/writer :xlsx)
+                  sheet (excel/add-sheet wbook "Data")]
+              (excel/write-data sheet [[100 101 102] [200 201 202]])
               (excel/write->bytebuf wbook)))
 
           (let [wbook (excel/open (test-xls))
@@ -1623,8 +1624,9 @@
             (load-module :excel)
 
             (defn test-xls []
-              (let [wbook (excel/writer :xlsx)]
-                (excel/write-data wbook "Data" [[100 101 102] [200 201 202]])
+              (let [wbook (excel/writer :xlsx)
+                    sheet (excel/add-sheet wbook "Data")]
+                (excel/write-data sheet [[100 101 102] [200 201 202]])
                 (excel/write->bytebuf wbook)))
 
             (let [wbook (excel/open (test-xls))
@@ -1653,8 +1655,9 @@
           (load-module :excel)
 
           (defn test-xls []
-            (let [wbook (excel/writer :xlsx)]
-              (excel/write-data wbook "Data" [[100 101 102] [200 201 202]])
+            (let [wbook (excel/writer :xlsx)
+                  sheet (excel/add-sheet wbook "Data")]
+              (excel/write-data sheet [[100 101 102] [200 201 202]])
               (excel/write->bytebuf wbook)))
 
           (let [wbook (excel/open (test-xls))
@@ -1685,8 +1688,9 @@
           (load-module :excel)
 
           (defn test-xls []
-            (let [wbook (excel/writer :xlsx)]
-              (excel/write-data wbook "Data" [[100 101 102] [200 201 202]])
+            (let [wbook (excel/writer :xlsx)
+                  sheet (excel/add-sheet wbook "Data")]
+              (excel/write-data sheet [[100 101 102] [200 201 202]])
               (excel/write->bytebuf wbook)))
 
           (let [wbook (excel/open (test-xls))
@@ -1716,8 +1720,9 @@
           (load-module :excel)
 
           (defn test-xls []
-            (let [wbook (excel/writer :xlsx)]
-              (excel/write-data wbook "Data" [[100 101 102] [200 201 202]])
+            (let [wbook (excel/writer :xlsx)
+                  sheet (excel/add-sheet wbook "Data")]
+              (excel/write-data sheet [[100 101 102] [200 201 202]])
               (excel/write->bytebuf wbook)))
 
           (let [wbook (excel/open (test-xls))
@@ -1762,8 +1767,9 @@
           (load-module :excel)
 
           (defn test-xls []
-            (let [wbook (excel/writer :xlsx)]
-              (excel/write-data wbook "Data" [[100 "101" 102.0]])
+            (let [wbook (excel/writer :xlsx)
+                  sheet (excel/add-sheet wbook "Data")]
+              (excel/write-data sheet [[100 "101" 102.0]])
               (excel/write->bytebuf wbook)))
 
           (let [wbook (excel/open (test-xls))
@@ -1811,8 +1817,9 @@
           (load-module :excel)
 
           (defn create-excel []
-            (let [wbook (excel/writer :xlsx)]
-              (excel/write-data wbook "Data" [[10 20.123 {:formula "SUM(A1,B1)"}]])
+            (let [wbook (excel/writer :xlsx)
+                  sheet (excel/add-sheet wbook "Data")]
+              (excel/write-data sheet [[10 20.123 {:formula "SUM(A1,B1)"}]])
               (excel/write->bytebuf wbook)))
 
           (let [wbook (excel/open (create-excel))
@@ -1860,8 +1867,9 @@
           (load-module :excel)
 
           (defn test-xls []
-            (let [wbook (excel/writer :xlsx)]
-              (excel/write-data wbook "Data" [[100 "101" 102.0]])
+            (let [wbook (excel/writer :xlsx)
+                  sheet (excel/add-sheet wbook "Data")]
+              (excel/write-data sheet [[100 "101" 102.0]])
               (excel/write->bytebuf wbook)))
 
           (let [wbook (excel/open (test-xls))
@@ -1881,6 +1889,7 @@
 
   (. sheet :getValue row col))
 
+
 (defn
   ^{ :arglists '("(read-string-val sheet row col)")
      :doc
@@ -1893,8 +1902,9 @@
           (load-module :excel)
 
           (defn test-xls []
-            (let [wbook (excel/writer :xlsx)]
-              (excel/write-data wbook "Data" [[100 "101" 102.0]])
+            (let [wbook (excel/writer :xlsx)
+                  sheet (excel/add-sheet wbook "Data")]
+              (excel/write-data sheet [[100 "101" 102.0]])
               (excel/write->bytebuf wbook)))
 
           (let [wbook (excel/open (test-xls))
@@ -1927,8 +1937,9 @@
           (load-module :excel)
 
           (defn test-xls []
-            (let [wbook (excel/writer :xlsx)]
-              (excel/write-data wbook "Data" [[100 true 102]])
+            (let [wbook (excel/writer :xlsx)
+                  sheet (excel/add-sheet wbook "Data")]
+              (excel/write-data sheet [[100 true 102]])
               (excel/write->bytebuf wbook)))
 
           (let [wbook (excel/open (test-xls))
@@ -1961,8 +1972,9 @@
           (load-module :excel)
 
           (defn test-xls []
-            (let [wbook (excel/writer :xlsx)]
-              (excel/write-data wbook "Data" [[100 101 102]])
+            (let [wbook (excel/writer :xlsx)
+                  sheet (excel/add-sheet wbook "Data")]
+              (excel/write-data sheet [[100 101 102]])
               (excel/write->bytebuf wbook)))
 
           (let [wbook (excel/open (test-xls))
@@ -1974,10 +1986,10 @@
           (load-module :excel)
 
           (defn test-xls []
-            (let [data [ {:a 100 :b 200 } ]
-                wbook (excel/writer :xlsx)
-                sheet (excel/add-sheet wbook "Data"
-                                       { :no-header-row true })]
+            (let [data  [ {:a 100 :b 200 } ]
+                  wbook (excel/writer :xlsx)
+                  sheet (excel/add-sheet wbook "Data"
+                                         { :no-header-row true })]
               (excel/add-column sheet "A" { :field :a })
               (excel/add-column sheet "B" { :field :b })
               (excel/write-items sheet data)
@@ -2014,8 +2026,9 @@
           (load-module :excel)
 
           (defn test-xls []
-            (let [wbook (excel/writer :xlsx)]
-              (excel/write-data wbook "Data" [[100 101.23 102]])
+            (let [wbook (excel/writer :xlsx)
+                 sheet  (excel/add-sheet wbook "Data")]
+              (excel/write-data sheet [[100 101.23 102]])
               (excel/write->bytebuf wbook)))
 
           (let [wbook (excel/open (test-xls))
@@ -2048,9 +2061,10 @@
 
           (defn test-xls []
             (let [wbook (excel/writer :xlsx)
+                  sheet  (excel/add-sheet wbook "Data")
                   dt1    (time/local-date 2021 1 1)
                   dt2    (time/local-date 2022 4 15)]
-              (excel/write-data wbook "Data" [[100 dt1 dt2 102]])
+              (excel/write-data sheet [[100 dt1 dt2 102]])
               (excel/write->bytebuf wbook)))
 
           (let [wbook (excel/open (test-xls))
@@ -2086,9 +2100,10 @@
 
           (defn test-xls []
             (let [wbook (excel/writer :xlsx)
+                  sheet (excel/add-sheet wbook "Data")
                   ts1   (time/local-date-time 2021 1 1 15 30 45)
                   ts2   (time/local-date-time 2021 1 31 08 00 00)]
-              (excel/write-data wbook "Data" [[100 ts1 ts2 102]])
+              (excel/write-data sheet [[100 ts1 ts2 102]])
               (excel/write->bytebuf wbook)))
 
           (let [wbook (excel/open (test-xls))
@@ -2108,3 +2123,40 @@
           (long? row) (long? col) (pos? row) (pos? col)] }
 
   (. sheet :getDate row col))
+
+
+(defn
+  ^{ :arglists '("(read-error-code sheet row col)")
+     :doc
+        """
+        Reads the error code from a cell. Returns a string indicating the error
+        or nil if the cell is nozt in error state.
+        """
+     :examples '(
+        """
+        (do
+          (load-module :excel)
+
+          (defn test-xls []
+            (let [wbook (excel/writer :xlsx)
+                  sheet (excel/add-sheet wbook "Data")]
+              (excel/write-data sheet [[100 200 {:formula "1 / 0"}]])
+              (excel/write->bytebuf wbook)))
+
+          (let [wbook (excel/open (test-xls))
+                sheet (excel/sheet wbook "Data")]
+            (excel/evaluate-formulas wbook)
+            (excel/read-error-code sheet 1 3))) ;; #DIV/0!
+          """ )
+     :see-also '(
+        "excel/cell-empty?", "excel/cell-type", "excel/read-string-val",
+        "excel/read-boolean-val", "excel/read-long-val",
+        "excel/read-double-val", "excel/read-date-val",
+        "excel/read-datetime-val")}
+
+  read-error-code [sheet row col]
+
+  { :pre [(instance-of? :ExcelSheetReader sheet)
+          (long? row) (long? col) (pos? row) (pos? col)] }
+
+  (. sheet :getErrorCode row col))

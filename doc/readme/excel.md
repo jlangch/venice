@@ -6,7 +6,7 @@ classpath.
 
 Venice is compatible with Apache POI 4.1.x and 5.2.x.
 
-*Note:* Use Venice 1.10.29 or newer to have all features demonstrated here
+*Note:* Use Venice 1.10.30+ or newer to have all features demonstrated here
 available.
 
 Run this script from the REPL to download the newest Apache POI 5.2.x 
@@ -262,7 +262,7 @@ Write the data of a 2D vector to an excel sheet.
         ts    (time/local-date-time 2021 1 1 15 30 45)
         data  [[100  101  102  103  104  105]
                [200  "ab" 1.23 dt   ts   false]]]
-    (excel/write-data wbook sheet data)
+    (excel/write-data sheet data)
     (excel/auto-size-columns sheet)
     (excel/write->file wbook "sample.xlsx")))
 ```
@@ -277,8 +277,8 @@ Write the data of a 2D vector to an excel sheet.
   (load-module :excel)
   (let [wbook (excel/writer :xlsx)
         sheet (excel/add-sheet wbook "Data")]
-    (excel/write-data wbook sheet [[100 101 102] [200 201 203]])
-    (excel/write-data wbook sheet [[300 301 302] [400 401 403]] 3 4)
+    (excel/write-data sheet [[100 101 102] [200 201 203]])
+    (excel/write-data sheet [[300 301 302] [400 401 403]] 3 4)
     (excel/auto-size-columns sheet)
     (excel/write->file wbook "sample.xlsx")))
 ```
@@ -576,7 +576,7 @@ Available border styles:
     ;; define a font ':header-font'
     (excel/add-font wbook :header-font { :bold true })
     
-   ;; define a sheet style ':header' referencing the font ':header-font'
+    ;; define a sheet style ':header' referencing the font ':header-font'
     (excel/add-style wbook :header { :font :header-font
                                      :bg-color :GREY_25_PERCENT
                                      :h-align :center
@@ -664,12 +664,12 @@ Available border styles:
 
   (let [wbook (excel/writer :xlsx)
         sheet (excel/add-sheet wbook "Data")]
-    (excel/write-data wbook sheet [[100 101 102 nil 103 104 105]
-                                   [200 201 202 nil 203 204 205]
-                                   [300 301 302 nil 303 304 305]
-                                   [400 401 402 nil 403 404 405]
-                                   [500 501 502 nil 503 504 505]
-                                   [600 601 602 nil 603 604 605]])
+    (excel/write-data sheet [[100 101 102 nil 103 104 105]
+                             [200 201 202 nil 203 204 205]
+                                [300 301 302 nil 303 304 305]
+                                [400 401 402 nil 403 404 405]
+                                [500 501 502 nil 503 504 505]
+                                [600 601 602 nil 603 604 605]])
     ;; left
     (run! #(excel/bg-color sheet % 1 3 "#a9cafc") (range 1 7 2))
     (run! #(excel/bg-color sheet % 1 3 "#d9e7fc") (range 2 7 2))
@@ -687,8 +687,6 @@ Available border styles:
 
 
 ### Styling cells
-
-*Note:* This feature requires Venice 1.10.30+
 
 ```clojure
 (do
@@ -721,7 +719,7 @@ Available border styles:
     (excel/cell-style sheet 2 2 :style-2)
     (excel/cell-style sheet 2 3 :style-3)
 
-    (excel/write->file wbook "sample.xlsx"))))
+    (excel/write->file wbook "sample.xlsx")))
 ```
 
 <img src="https://github.com/jlangch/venice/blob/master/doc/assets/excel/excel-write-014.png" width="400">
@@ -731,8 +729,6 @@ Available border styles:
 
 
 ### Styling cell region
-
-*Note:* This feature requires Venice 1.10.30+
 
 ```clojure
 (do
@@ -755,7 +751,7 @@ Available border styles:
 
     (excel/cell-style sheet 2 3 2 4 :style)
 
-    (excel/write->file wbook "sample.xlsx"))))
+    (excel/write->file wbook "sample.xlsx")))
 ```
 
 <img src="https://github.com/jlangch/venice/blob/master/doc/assets/excel/excel-write-015.png" width="400">
@@ -766,23 +762,21 @@ Available border styles:
 
 ### Freeze Panes
 
-*Note:* This feature requires Venice 1.10.30+
-
 Freeze the top row:
 
 ```clojure
-        (do
-          (ns test)
-          
-          (load-module :excel)
-          
-          (let [wbook (excel/writer :xlsx)
-                sheet (excel/add-sheet wbook "Sheet 1" { :no-header-row false })]
-              (excel/write-data wbook sheet [(map #(str "Col " %) (range 1 11))])
-              (excel/write-data wbook sheet (partition 10 (range 100 500)) 2 1)
-              (excel/freeze-pane sheet 1 0)
-              (excel/auto-size-columns sheet)
-              (excel/write->file wbook "sample.xlsx")))
+(do
+  (ns test)
+  
+  (load-module :excel)
+  
+  (let [wbook (excel/writer :xlsx)
+        sheet (excel/add-sheet wbook "Sheet 1" { :no-header-row false })]
+      (excel/write-data sheet [(map #(str "Col " %) (range 1 11))])
+      (excel/write-data sheet (partition 10 (range 100 500)) 2 1)
+      (excel/freeze-pane sheet 1 0)
+      (excel/auto-size-columns sheet)
+      (excel/write->file wbook "sample.xlsx")))
 ```
 
 <img src="https://github.com/jlangch/venice/blob/master/doc/assets/excel/excel-write-016.png" width="400">
@@ -815,8 +809,8 @@ The file is specified by:
     (let [wbook  (excel/writer :xlsx)
           sheet1 (excel/add-sheet wbook "Data1")
           sheet2 (excel/add-sheet wbook "Data2")]
-      (excel/write-data wbook sheet1 [[100 101]])
-      (excel/write-data wbook sheet2 [[300 301 302] [400 401 402]])
+      (excel/write-data sheet1 [[100 101]])
+      (excel/write-data sheet2 [[300 301 302] [400 401 402]])
       (excel/write->bytebuf wbook)))
   
 
@@ -887,15 +881,15 @@ Each cell has one of the predefined cell data types:
   (defn create-excel []
     (let [wbook (excel/writer :xlsx)
           sheet (excel/add-sheet wbook "Data")]
-      (excel/write-data wbook sheet [["foo" 
-                                      false 
-                                      100 
-                                      100.123
-                                      (time/local-date 2021 1 1)
-                                      (time/local-date-time 2021 1 1 15 30 45)
-                                      {:formula "SUM(C1,D1)"}
-                                      "" 
-                                      nil]])
+      (excel/write-data sheet [["foo" 
+                                false 
+                                100 
+                                100.123
+                                (time/local-date 2021 1 1)
+                                (time/local-date-time 2021 1 1 15 30 45)
+                                {:formula "SUM(C1,D1)"}
+                                "" 
+                                nil]])
       (excel/write->bytebuf wbook)))
 
   (let [wbook (excel/open (create-excel))
@@ -958,15 +952,15 @@ If the Excel document contains formulas call `excel/evaluate-formulas` before re
   (defn create-excel []
     (let [wbook (excel/writer :xlsx)
           sheet (excel/add-sheet wbook "Data")]
-      (excel/write-data wbook sheet [["foo" 
-                                      false 
-                                      100 
-                                      100.123
-                                      (time/local-date 2021 1 1)
-                                      (time/local-date-time 2021 1 1 15 30 45)
-                                      {:formula "SUM(C1,D1)"}
-                                      "" 
-                                      nil]])
+      (excel/write-data sheet [["foo" 
+                                false 
+                                100 
+                                100.123
+                                (time/local-date 2021 1 1)
+                                (time/local-date-time 2021 1 1 15 30 45)
+                                {:formula "SUM(C1,D1)"}
+                                "" 
+                                nil]])
       (excel/write->bytebuf wbook)))
 
   (let [wbook (excel/open (create-excel))
@@ -999,9 +993,8 @@ Cell (1,9): nil
 
 **Reading generic values:**
 
-The Excel module provides the function `excel/read-val` to read the generic raw value of a cell and returning a Venice nil, string boolean or double value. Actually Excel just supports blank, string, boolean and number cells. Integer and date cells are just number cells of type double with a format.
+The Excel module provides the function `excel/read-val` to read the generic raw value of a cell and returning a Venice nil, string boolean, double or timestamp value. Actually Excel just supports blank, string, boolean and number cells. Integer and date cells are just number cells of type double with a format. The function returns a timestamp if a number cell has a date format attached.
 
-*Note:* This feature requires Venice 1.10.30+
 
 ```clojure
 (do
@@ -1012,15 +1005,15 @@ The Excel module provides the function `excel/read-val` to read the generic raw 
   (defn create-excel []
     (let [wbook (excel/writer :xlsx)
           sheet (excel/add-sheet wbook "Data")]
-      (excel/write-data wbook sheet [["foo" 
-                                      false 
-                                      100 
-                                      100.123
-                                      (time/local-date 2021 1 1)
-                                      (time/local-date-time 2021 1 1 15 30 45)
-                                      {:formula "SUM(C1,D1)"}
-                                      "" 
-                                      nil]])
+      (excel/write-data sheet [["foo" 
+                                false 
+                                100 
+                                100.123
+                                (time/local-date 2021 1 1)
+                                (time/local-date-time 2021 1 1 15 30 45)
+                                {:formula "SUM(C1,D1)"}
+                                "" 
+                                nil]])
       (excel/write->bytebuf wbook)))
 
   (let [wbook (excel/open (create-excel))
@@ -1039,8 +1032,8 @@ Cell (1,1): "foo"
 Cell (1,2): false
 Cell (1,3): 100.0
 Cell (1,4): 100.123
-Cell (1,5): 44197.0
-Cell (1,6): 44197.64635416667
+Cell (1,5): 2021-01-01T00:00
+Cell (1,6): 2021-01-01T15:30:45
 Cell (1,7): 200.123
 Cell (1,8): ""
 Cell (1,9): nil
@@ -1068,8 +1061,8 @@ To modify an existing Excel: open it and convert the workbook for writing.
     (let [wbook  (excel/writer :xlsx)
           sheet1 (excel/add-sheet wbook "Data1")
           sheet2 (excel/add-sheet wbook "Data2")]
-      (excel/write-data wbook sheet1 [[100 101]])
-      (excel/write-data wbook sheet2 [[300 301 302] [400 401 402]])
+      (excel/write-data sheet1 [[100 101]])
+      (excel/write-data sheet2 [[300 301 302] [400 401 402]])
       (excel/write->file wbook "sample.xlsx")))
       
   (create-excel)
