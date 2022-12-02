@@ -515,6 +515,7 @@ public class REPL {
                 .variable(LineReader.LIST_MAX, 100)
 //              .variable(LineReader.HISTORY_SIZE, 20)
                 .variable(LineReader.HISTORY_FILE, HISTORY_FILE)
+                .variable(LineReader.FEATURES_MAX_BUFFER_SIZE, 5000)
 //              .variable(LineReader.HISTORY_FILE_SIZE, 25)
                 .build();
     }
