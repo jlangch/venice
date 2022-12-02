@@ -946,6 +946,9 @@ Cell (1,9) empty: true
 
 If the Excel document contains formulas call `excel/evaluate-formulas` before reading the cells to get the evaluated formula values, otherwise the cell returns the formula itself!
 
+
+**Reading typed values:**
+
 ```clojure
 (do
   (ns test)
@@ -993,6 +996,56 @@ Cell (1,7): 200.123
 Cell (1,8): ""
 Cell (1,9): nil
 ```
+
+**Reading generic values:**
+
+The Excel module provides the function `excel/read-val` to read the generic raw value of a cell and returning a Venice nil, string boolean or double value. Actually Excel just supports blank, string, boolean and number cells. Integer and date cells are just number cells of type double with a format.
+
+*Note:* This feature requires Venice 1.10.30+
+
+```clojure
+(do
+  (ns test)
+
+  (load-module :excel)
+  
+  (defn create-excel []
+    (let [wbook (excel/writer :xlsx)
+          sheet (excel/add-sheet wbook "Data")]
+      (excel/write-data wbook sheet [["foo" 
+                                      false 
+                                      100 
+                                      100.123
+                                      (time/local-date 2021 1 1)
+                                      (time/local-date-time 2021 1 1 15 30 45)
+                                      {:formula "SUM(C1,D1)"}
+                                      "" 
+                                      nil]])
+      (excel/write->bytebuf wbook)))
+
+  (let [wbook (excel/open (create-excel))
+        sheet (excel/sheet wbook "Data")]
+    (excel/evaluate-formulas wbook) ;; evaluate the formulas!
+    
+    (list-comp [c (range 1 10)]      
+      (printf "Cell (1,%d): %s%n" c (excel/read-val sheet 1 c)))
+    nil))
+```
+
+Prints to:
+
+```
+Cell (1,1): "foo"
+Cell (1,2): false
+Cell (1,3): 100.0
+Cell (1,4): 100.123
+Cell (1,5): 44197.0
+Cell (1,6): 44197.64635416667
+Cell (1,7): 200.123
+Cell (1,8): ""
+Cell (1,9): nil
+```
+
 
 [top](#content)
 

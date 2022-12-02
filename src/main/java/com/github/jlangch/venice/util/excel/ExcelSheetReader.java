@@ -87,6 +87,10 @@ public class ExcelSheetReader {
         return sheet.getCellAddress(row1-1, col1-1);
     }
 
+    public Object getValue(final int row1, final int col1) {
+        return sheet.getValue(row1-1, col1-1);
+    }
+
     public String getString(final int row1, final int col1) {
         return sheet.getString(row1-1, col1-1);
     }

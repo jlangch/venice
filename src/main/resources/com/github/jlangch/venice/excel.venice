@@ -1846,6 +1846,42 @@
 
 
 (defn
+  ^{ :arglists '("(read-val sheet row col)")
+     :doc
+        """
+        Returns the sheet cell value.
+
+        Returns a *nil*, *string*, *boolean*, or *double* value depending on
+        the cell's excel type *:blank*, *:string*, *:boolean*, or *:numeri*.
+        """
+     :examples '(
+        """
+        (do
+          (load-module :excel)
+
+          (defn test-xls []
+            (let [wbook (excel/writer :xlsx)]
+              (excel/write-data wbook "Data" [[100 "101" 102.0]])
+              (excel/write->bytebuf wbook)))
+
+          (let [wbook (excel/open (test-xls))
+                sheet (excel/sheet wbook "Data")]
+            (excel/read-val sheet 1 2)))
+          """ )
+     :see-also '(
+        "excel/cell-empty?", "excel/cell-type", "excel/read-string-val",
+        "excel/read-boolean-val", "excel/read-long-val",
+        "excel/read-double-val", "excel/read-date-val",
+        "excel/read-datetime-val")}
+
+  read-val [sheet row col]
+
+  { :pre [(instance-of? :ExcelSheetReader sheet)
+          (long? row) (long? col) (pos? row) (pos? col)] }
+
+  (. sheet :getValue row col))
+
+(defn
   ^{ :arglists '("(read-string-val sheet row col)")
      :doc
         """
@@ -1869,7 +1905,7 @@
         "excel/cell-empty?", "excel/cell-type",
         "excel/read-boolean-val", "excel/read-long-val",
         "excel/read-double-val", "excel/read-date-val",
-        "excel/read-datetime-val")}
+        "excel/read-datetime-val", "excel/read-val")}
 
   read-string-val [sheet row col]
 
@@ -1903,7 +1939,7 @@
         "excel/cell-empty?", "excel/cell-type",
         "excel/read-string-val", "excel/read-long-val",
         "excel/read-double-val", "excel/read-date-val",
-        "excel/read-datetime-val")}
+        "excel/read-datetime-val", "excel/read-val")}
 
   read-boolean-val [sheet row col]
 
@@ -1956,7 +1992,7 @@
         "excel/cell-empty?", "excel/cell-type",
         "excel/read-string-val", "excel/read-boolean-val",
         "excel/read-double-val", "excel/read-date-val",
-        "excel/read-datetime-val")}
+        "excel/read-datetime-val", "excel/read-val")}
 
   read-long-val [sheet row col]
 
@@ -1989,7 +2025,7 @@
      :see-also '(
         "excel/cell-empty?", "excel/cell-type",
         "excel/read-string-val", "excel/read-boolean-val",
-        "excel/read-long-val", "excel/read-date-val") }
+        "excel/read-long-val", "excel/read-date-val", "excel/read-val") }
 
   read-double-val [sheet row col]
 
@@ -2026,7 +2062,7 @@
         "excel/cell-empty?", "excel/cell-type",
         "excel/read-string-val", "excel/read-boolean-val",
         "excel/read-long-val", "excel/read-double-val",
-        "excel/read-datetime-val") }
+        "excel/read-datetime-val", "excel/read-val") }
 
   read-date-val [sheet row col]
 
@@ -2064,7 +2100,7 @@
         "excel/cell-empty?", "excel/cell-type",
         "excel/read-string-val", "excel/read-boolean-val",
         "excel/read-long-val", "excel/read-double-val",
-        "excel/read-date-val") }
+        "excel/read-date-val", "excel/read-val") }
 
   read-datetime-val [sheet row col]
 

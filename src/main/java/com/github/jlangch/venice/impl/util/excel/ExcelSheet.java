@@ -132,6 +132,16 @@ public class ExcelSheet {
         }
     }
 
+    public Object getValue(final int row, final int col) {
+        final Cell cell = getCell(row, col);
+        if (cell == null) {
+            return null;
+        }
+        else {
+            return getValue(cell);
+        }
+    }
+
     public String getString(final int row, final int col) {
         final Cell cell = getCell(row, col);
         if (cell == null) {
@@ -467,6 +477,36 @@ public class ExcelSheet {
         final CellStyle style = cellStyles.getCellStyle(styleName);
         if (style != null) {
             cell.setCellStyle(style);
+        }
+    }
+
+    private Object getValue(final Cell cell) {
+        if (cell == null) {
+            return null;
+        }
+
+        final CellValue cellValue = evaluator.evaluate(cell);
+
+        if (cellValue.getCellType() == CellType.BLANK) {
+            return null;
+        }
+        else if (cellValue.getCellType() == CellType.STRING) {
+            return cellValue.getStringValue();
+        }
+        else if (cellValue.getCellType() == CellType.BOOLEAN) {
+            return cellValue.getBooleanValue();
+        }
+        else if (cellValue.getCellType() == CellType.NUMERIC) {
+            return cellValue.getNumberValue();
+        }
+        else if (cellValue.getCellType() == CellType.ERROR) {
+            return null;
+        }
+        else {
+            throw new ExcelException(String.format(
+                "The Excel cell [%d,%d]: failed to read value",
+                cell.getRowIndex(),
+                cell.getColumnIndex()));
         }
     }
 
