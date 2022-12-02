@@ -65,10 +65,15 @@ public class ReplHighlighter implements Highlighter {
     ) {
         final AttributedStringBuilder sb = new AttributedStringBuilder();
 
-        if (enabled && !ReplParser.isCommand(buffer)) {
-            HighlightParser
-                .parse(buffer)
-                .forEach(it -> sb.ansiAppend(highlight(it)));
+        if (enabled) {
+            if (ReplParser.isCommand(buffer)) {
+                sb.ansiAppend(highlightCommand(buffer));
+            }
+            else {
+                HighlightParser
+                    .parse(buffer)
+                    .forEach(it -> sb.ansiAppend(highlightCode(it)));
+            }
         }
         else {
             sb.append(buffer);
@@ -86,10 +91,23 @@ public class ReplHighlighter implements Highlighter {
     }
 
 
-    private String highlight(final HighlightItem item) {
+    private String highlightCode(final HighlightItem item) {
         return theme == null
                 ? item.getForm()
                 : theme.style(item.getForm(), item.getClazz());
+    }
+
+    private String highlightCommand(final String cmd) {
+        if (theme == null || cmd == null || cmd.isEmpty()) {
+           return cmd;
+        }
+        else {
+            final String color = config.getColor("command");
+
+            return color == null
+                    ? cmd
+                    : color + cmd + ReplConfig.ANSI_RESET;
+        }
     }
 
     private AnsiColorTheme getAnsiColorTheme(final ColorMode mode) {

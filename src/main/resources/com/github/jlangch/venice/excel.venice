@@ -1300,13 +1300,14 @@
   col->string [col]
 
   { :pre [(long? col) (pos? col)] }
-  (loop [s "" c col]
+
+  (loop [acc "" c col]
     (if (pos? c)
-      (let [c-     (dec c)
-            ch     (char (+ (mod c- col-radix) (long #\A)))
-            remain (/ c- col-radix)]
-        (recur (str ch s) remain))
-      s)))
+      (let [col0   (dec c)
+            ch     (char (+ (mod col0 col-radix) (long #\A)))
+            remain (/ col0 col-radix)]
+        (recur (str ch acc) remain))
+      acc)))
 
 
 

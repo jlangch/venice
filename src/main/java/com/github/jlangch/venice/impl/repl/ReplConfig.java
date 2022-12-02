@@ -352,6 +352,7 @@ public class ReplConfig {
     private static final String DEFAULT_RESULT_PREFIX = "=> ";
 
     private static final List<String> COLOR_NAMES = Arrays.asList(
+                                                        "command",
                                                         "result",
                                                         "stdout",
                                                         "stderr",

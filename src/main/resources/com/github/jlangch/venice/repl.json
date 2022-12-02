@@ -6,6 +6,7 @@
 
   "colors": {
     "prompt": null,
+    "command": "\u001b[38;5;21m",
     "result": "\u001b[38;5;20m",
     "stdout": "\u001b[38;5;243m",
     "stderr": "\u001b[38;5;199m",
@@ -17,6 +18,7 @@
 
   "colors-darkmode": {
     "prompt": null,
+    "command": "\u001b[38;5;45m",
     "result": "\u001b[38;5;39m",
     "stdout": "\u001b[38;5;249m",
     "stderr": "\u001b[38;5;202m",
