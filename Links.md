@@ -1,5 +1,9 @@
 # Links
 
+## GitHub
+
+[Code Scanning](https://docs.github.com/en/code-security/code-scanning/automatically-scanning-your-code-for-vulnerabilities-and-errors/setting-up-code-scanning-for-a-repository)
+
 
 ## Release to Maven
 
