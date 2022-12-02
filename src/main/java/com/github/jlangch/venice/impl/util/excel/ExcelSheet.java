@@ -288,7 +288,7 @@ public class ExcelSheet {
         sheet.setColumnWidth(col, (int)(width * COL_WIDTH_MAGIC_FACTOR));
     }
 
-    public void rowHeightInPoints(final int row, final int height) {
+    public void setRowHeightInPoints(final int row, final int height) {
         // Set the row's height or set to ff (-1) for undefined/default-height.
         // Set the height in "twips" or 1/20th of a point.
         getRowCreate(row).setHeight((short)(height * 20));

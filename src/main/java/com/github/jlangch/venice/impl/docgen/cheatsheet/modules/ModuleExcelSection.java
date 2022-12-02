@@ -91,7 +91,7 @@ public class ModuleExcelSection implements ISectionBuilder {
         wr_style.addItem(diBuilder.getDocItem("excel/add-style", false));
         wr_style.addItem(diBuilder.getDocItem("excel/add-merge-region", false));
         wr_style.addItem(diBuilder.getDocItem("excel/row-height", false));
-        wr_style.addItem(diBuilder.getDocItem("excel/column-width", false));
+        wr_style.addItem(diBuilder.getDocItem("excel/col-width", false));
         wr_style.addItem(diBuilder.getDocItem("excel/cell-style", false));
         wr_style.addItem(diBuilder.getDocItem("excel/bg-color", false));
         wr_style.addItem(diBuilder.getDocItem("excel/auto-size-columns", false));

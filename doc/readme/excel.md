@@ -42,6 +42,7 @@ libraries:
        * [Using formulas](#using-formulas)
     * [Styling](#styling)
        * [Row height](#row-height)
+       * [Col width](#col-width)
        * [Fonts](#fonts)
        * [Cell Styles](#cell-styles)
        * [Shading alternate rows](#shading-alternate-rows)
@@ -411,15 +412,16 @@ for formulas:
                 {:a 102 :b 202 } ]
         wbook (excel/writer :xlsx)
         sheet (excel/add-sheet wbook "Sheet 1" { :no-header-row true })
-        addr  #(excel/addr->string %1 %2)      ;; build logical cell addresses
-        sum   #(str "SUM(" %1 "," %2 ")")]     ;; build SUM formula
+        sum   #(str/format "SUM(%s,%s)" 
+                           (excel/addr->string (first %1) (second %1))
+                           (excel/addr->string (first %2) (second %2)))]
     (excel/add-column sheet "A" { :field :a })
     (excel/add-column sheet "B" { :field :b })
     (excel/add-column sheet "C" { :field :c })
     (excel/write-items sheet data)
-    (excel/cell-formula sheet 1 3 (sum (addr 1 1) (addr 1 2)))
-    (excel/cell-formula sheet 2 3 (sum (addr 2 1) (addr 2 2)))
-    (excel/cell-formula sheet 3 3 (sum (addr 3 1) (addr 3 2)))
+    (excel/cell-formula sheet 1 3 (sum [1 1] [1 2]))
+    (excel/cell-formula sheet 2 3 (sum [2 1] [2 2]))
+    (excel/cell-formula sheet 3 3 (sum [3 1] [3 2]))
     (excel/evaluate-formulas wbook)
     (excel/auto-size-columns sheet)
     (excel/write->file wbook "sample.xlsx")))
@@ -455,6 +457,34 @@ Set the height of individual rows:
 ```
 
 <img src="https://github.com/jlangch/venice/blob/master/doc/assets/excel/excel-write-007.png" width="400">
+
+[top](#content)
+
+
+
+#### Col width
+
+Set the width of individual columns:
+
+```clojure
+(do
+  (load-module :excel)
+  (let [os    (io/file-out-stream "sample.xlsx")
+        data  [ {:first "John" :last "Doe"   :age 28 }
+                {:first "Sue"  :last "Ford"  :age 26 } ]
+        wbook (excel/writer :xlsx)
+        sheet (excel/add-sheet wbook "Sheet 1")]
+    (excel/add-column sheet "First Name" { :field :first })
+    (excel/add-column sheet "Last Name" { :field :last })
+    (excel/add-column sheet "Age" { :field :age })
+    (excel/write-items sheet data)
+    (excel/col-width sheet 1 80)
+    (excel/col-width sheet 2 80)
+    (excel/col-width sheet 3 60)
+    (excel/write->file wbook "sample.xlsx")))
+```
+
+<img src="https://github.com/jlangch/venice/blob/master/doc/assets/excel/excel-write-017.png" width="400">
 
 [top](#content)
 
@@ -617,21 +647,21 @@ Available border styles:
         sheet (excel/add-sheet wbook "Population")]
     
     (excel/add-font wbook :title       { :bold true 
-                                         :color :WHITE })  
-    (excel/add-style wbook :title      { :font :title 
+                                         :color :WHITE })
+    (excel/add-style wbook :title      { :font :title
                                          :bg-color "#282e9c"
                                          :h-align :center
                                          :v-align :middle })
     (excel/add-style wbook :subtitle   { :bg-color "#cfd1fc"
                                          :h-align :center })
-    (excel/add-style wbook :country    { :bg-color "#f2f3fc" })                        
+    (excel/add-style wbook :country    { :bg-color "#f2f3fc" })
     (excel/add-style wbook :population { :format "#,###0"
                                          :bg-color "#f2f3fc" })
 
     (excel/row-height sheet 2 20)
     (excel/row-height sheet 3 7)
     (excel/column-width sheet 2 70)
-    (excel/column-width sheet 3 70)    
+    (excel/column-width sheet 3 70)
     (excel/add-merge-region sheet 2 2 2 3)
     
     (excel/write-value sheet 2 2 "Country Population" :title)
@@ -666,10 +696,10 @@ Available border styles:
         sheet (excel/add-sheet wbook "Data")]
     (excel/write-data sheet [[100 101 102 nil 103 104 105]
                              [200 201 202 nil 203 204 205]
-                                [300 301 302 nil 303 304 305]
-                                [400 401 402 nil 403 404 405]
-                                [500 501 502 nil 503 504 505]
-                                [600 601 602 nil 603 604 605]])
+                             [300 301 302 nil 303 304 305]
+                             [400 401 402 nil 403 404 405]
+                             [500 501 502 nil 503 504 505]
+                             [600 601 602 nil 603 604 605]])
     ;; left
     (run! #(excel/bg-color sheet % 1 3 "#a9cafc") (range 1 7 2))
     (run! #(excel/bg-color sheet % 1 3 "#d9e7fc") (range 2 7 2))

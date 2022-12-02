@@ -659,10 +659,11 @@
               (excel/add-column sheet "Age" { :field :age })
               (excel/write-items sheet data)
               (excel/auto-size-columns sheet)
-              (excel/row-height sheet 2 100)
-              (excel/write->stream wbook os)))
+              (excel/row-height sheet 2 50)
+              (excel/write->file wbook "sample.xlsx")))
           """ )
        :see-also '(
+          "excel/col-width",
           "excel/auto-size-columns", "excel/write-items", "excel/write-item",
           "excel/write-value", "excel/cell-formula", "excel/auto-size-column") }
 
@@ -672,6 +673,40 @@
             (long? row) (pos? row)] }
 
     (. sheet :rowHeightInPoints row height))
+
+
+(defn
+  ^{ :arglists '("(col-width sheet col width)")
+     :doc "Set the width of a column (1..n) in the sheet."
+     :examples '(
+        """
+        (do
+          (load-module :excel)
+          (let [os    (io/file-out-stream "sample.xlsx")
+                data  [ {:first "John" :last "Doe"   :age 28 }
+                        {:first "Sue"  :last "Ford"  :age 26 } ]
+                wbook (excel/writer :xlsx)
+                sheet (excel/add-sheet wbook "Sheet 1")]
+            (excel/add-column sheet "First Name" { :field :first })
+            (excel/add-column sheet "Last Name" { :field :last })
+            (excel/add-column sheet "Age" { :field :age })
+            (excel/write-items sheet data)
+            (excel/col-width sheet 1 80)
+            (excel/col-width sheet 2 80)
+            (excel/col-width sheet 3 60)
+            (excel/write->file wbook "sample.xlsx")))
+        """ )
+     :see-also '(
+        "excel/row-height",
+        "excel/auto-size-columns", "excel/write-items", "excel/write-item",
+        "excel/write-value", "excel/cell-formula", "excel/auto-size-column") }
+
+  col-width [sheet col width]
+
+  { :pre [(instance-of? :ExcelSheetWriter sheet)
+          (long? col) (pos? col)] }
+
+  (. sheet :colWidthInPoints col width))
 
 
 (defn
@@ -1314,37 +1349,6 @@
 ;; -----------------------------------------------------------------------------
 ;; Column
 ;; -----------------------------------------------------------------------------
-
-(defn
-  ^{ :arglists '(
-        "(column-width sheet col width)")
-     :doc
-        "Set the width of a column. The width is given in points."
-     :examples '(
-        """
-        (do
-          (load-module :excel)
-          (let [wbook (excel/writer :xlsx)
-                sheet (excel/add-sheet wbook "Sheet 1")]
-            (excel/column-width sheet 1 60)
-            (excel/column-width sheet 2 60)
-            (excel/column-width sheet 3 60)
-            (excel/write-value sheet 1 1 "John")
-            (excel/write-value sheet 1 2 "Doe")
-            (excel/write-value sheet 1 3 28)
-            (excel/write-value sheet 2 1 "Sue")
-            (excel/write-value sheet 2 2 "Ford")
-            (excel/write-value sheet 2 3 26)
-            (excel/write->file wbook "sample.xlsx")))
-        """ )
-     :see-also '("excel/add-sheet", "excel/add-font", "excel/add-style") }
-
-  column-width [sheet col width]
-    { :pre [(instance-of? :ExcelSheetWriter sheet)
-            (long? col) (pos? col)] }
-
-    (. sheet :columnWidth col (int width)))
-
 
 (defn
   ^{ :arglists '(

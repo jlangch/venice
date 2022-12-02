@@ -121,12 +121,6 @@ public class ExcelSheetWriter<T> {
                     .colMapper(e -> ((DataRecord)e).get(fieldName));
     }
 
-    public ExcelSheetWriter<T> columnWidth(final int col1, final int width) {
-        sheet.setColumnWidthInPoints(col1-1, width);
-        return this;
-    }
-
-
     public ExcelSheetWriter<T> renderItems(final List<T> items) {
         renderHeader();
 
@@ -197,7 +191,12 @@ public class ExcelSheetWriter<T> {
     }
 
     public ExcelSheetWriter<T> rowHeightInPoints(final int row1, final int height) {
-        sheet.rowHeightInPoints(row1-1, height);
+        sheet.setRowHeightInPoints(row1-1, height);
+        return this;
+    }
+
+    public ExcelSheetWriter<T> colWidthInPoints(final int row1, final int width) {
+        sheet.setColumnWidthInPoints(row1-1, width);
         return this;
     }
 
