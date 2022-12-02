@@ -468,7 +468,10 @@ Set the width of individual columns:
 
 ```clojure
 (do
+  (ns test)
+
   (load-module :excel)
+
   (let [os    (io/file-out-stream "sample.xlsx")
         data  [ {:first "John" :last "Doe"   :age 28 }
                 {:first "Sue"  :last "Ford"  :age 26 } ]

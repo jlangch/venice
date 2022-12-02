@@ -910,7 +910,7 @@
               (excel/auto-size-columns sheet)
               (excel/write->file wbook "sample.xlsx")))
      """ )
-     :see-also '("excel/aadd-merge-region") }
+     :see-also '("excel/add-merge-region") }
 
   freeze-pane [sheet rows cols ]
 
