@@ -1055,6 +1055,7 @@ public class REPL {
 
     private void handleConfiguredColorsCommand() {
         printer.println("default",   "default");
+        printer.println("command",   "command");
         printer.println("result",    "result");
         printer.println("stdout",    "stdout");
         printer.println("stderr",    "stderr");
