@@ -1218,11 +1218,12 @@
 (defn
   ^{ :arglists '(
        "(bg-color sheet row col color)"
-       "(bg-color sheet row col-start col-end color)")
+       "(bg-color sheet row col-start col-end color)"
+       "(bg-color sheet row-start row-end col-start col-end color & colors)")
      :doc
         """
-        Sets a background color for a single cell or a range of columns within
-        a row.
+        Sets a background color for a single cell, a range of columns within
+        a row, or region of cells.
         """
      :examples '(
         """
@@ -1230,15 +1231,21 @@
           (load-module :excel)
           (let [wbook (excel/writer :xlsx)
                 sheet (excel/add-sheet wbook "Data")]
-            (excel/write-data sheet [[100 101 102] [200 201 203]])
-            (excel/write-data sheet [[300 301 302] [400 401 403]] 3 4)
-            (excel/bg-color sheet 1 1 "#c9fad4")
-            (excel/bg-color sheet 1 2 "#d6f9de")
-            (excel/bg-color sheet 1 3 "#e6f9ea")
-            (excel/bg-color sheet 3 4 6 "#c9dcfa")
-            (excel/auto-size-columns sheet)
+
+            ;; single cell
+            (excel/bg-color sheet 1 1 "#27ae60")
+            (excel/bg-color sheet 1 2 "#52be80")
+            (excel/bg-color sheet 1 3 "#7dcea0")
+
+            ;; range of cells in row
+            (excel/bg-color sheet 1 4 6 "#3498db")
+
+            ;; area of cells
+            (excel/bg-color sheet 1 6 7 9 "#aed6f1")
+            (excel/bg-color sheet 1 6 10 12 "#bb8fce" "#d2b4de")
+            (excel/bg-color sheet 1 6 13 15 "#f1c40f" "#f4d03f" "#f7dc6f")
             (excel/write->file wbook "sample.xlsx")))
-        """
+        """,
         """
         (do
           (load-module :excel)
@@ -1250,15 +1257,9 @@
                                      [400 401 403]
                                      [500 501 503]
                                      [600 601 603]])
-            (let [[r-first r-last] (excel/sheet-row-range sheet)
-                  [c-first c-last] (excel/sheet-col-range sheet 1)]
-              (run! #(excel/bg-color sheet % c-first c-last "#a9cafc")
-                    (range r-first (inc r-last) 2))
-              (run! #(excel/bg-color sheet % c-first c-last "#d9e7fc")
-                    (range (inc r-first) (inc r-last) 2)))
+            (excel/bg-color sheet 1 6 1 3 "#a9cafc" "#d9e7fc")
             (excel/write->file wbook "sample.xlsx")))
-        """
-        )
+        """)
      :see-also '(
        "excel/add-style", "excel/add-font", "excel/cell-style" ) }
 
@@ -1268,11 +1269,30 @@
     { :pre [(instance-of? :ExcelSheetWriter sheet)
             (long? row) (long? col) (pos? row) (pos? col)] }
     (. sheet :bgColor row col color))
+
   ([sheet row col-start col-end color]
     { :pre [(instance-of? :ExcelSheetWriter sheet)
             (long? row) (long? col-start) (long? col-end)
-            (pos? row) (pos? col-start) (pos? col-end)] }
-    (run! #(. sheet :bgColor row % color) (range col-start (inc col-end)))))
+            (pos? row) (pos? col-start) (pos? col-end)
+            (<= col-start col-end)] }
+    (if (= col-start col-end)
+      (. sheet :bgColor row col-start color)
+      (run! #(. sheet :bgColor row % color) (range col-start (inc col-end)))))
+
+  ([sheet row-start row-end col-start col-end color & colors]
+    { :pre [(instance-of? :ExcelSheetWriter sheet)
+            (long? row-start) (long? row-end)
+            (long? col-start) (long? col-end)
+            (pos? row-start) (pos? row-end)
+            (pos? col-start) (pos? col-end)
+            (<= row-start row-end) (<= col-start col-end)] }
+    (let [colors (cons color colors)]
+      (list-comp [row (range 0 (inc (- row-end row-start)))]
+        (run! (fn [col] (. sheet :bgColor
+                                 (+ row row-start)
+                                 col
+                                 (nth colors (mod row (count colors)))))
+              (range col-start (inc col-end)))))))
 
 
 ;; -----------------------------------------------------------------------------
