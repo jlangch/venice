@@ -712,7 +712,7 @@ Available border styles:
     (excel/write->file wbook "sample.xlsx")))
 ```
 
-<img src="https://github.com/jlangch/venice/blob/master/doc/assets/excel/excel-write-018.png" width="520">
+<img src="https://github.com/jlangch/venice/blob/master/doc/assets/excel/excel-write-018.png" width="600">
 
 [top](#content)
 
