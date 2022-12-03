@@ -45,6 +45,7 @@ libraries:
        * [Col width](#col-width)
        * [Fonts](#fonts)
        * [Cell Styles](#cell-styles)
+       * [Background colors](#background-colors)
        * [Shading alternate rows](#shading-alternate-rows)
        * [Styling cells](#styling-cells)
        * [Styling cell region](#styling-cell-region)
@@ -687,6 +688,36 @@ Available border styles:
 [top](#content)
 
 
+
+### Background colors
+
+```clojure
+(do
+  (load-module :excel)
+  (let [wbook (excel/writer :xlsx)
+        sheet (excel/add-sheet wbook "Data")]
+
+    ;; single cell
+    (excel/bg-color sheet 1 1 "#27ae60")
+    (excel/bg-color sheet 1 2 "#52be80")
+    (excel/bg-color sheet 1 3 "#7dcea0")
+
+    ;; range of cells in row
+    (excel/bg-color sheet 1 4 6 "#3498db")
+
+    ;; area of cells
+    (excel/bg-color sheet 1 6 7 9 "#aed6f1")
+    (excel/bg-color sheet 1 6 10 12 "#bb8fce" "#d2b4de")
+    (excel/bg-color sheet 1 6 13 15 "#f1c40f" "#f4d03f" "#f7dc6f")
+    (excel/write->file wbook "sample.xlsx")))
+```
+
+<img src="https://github.com/jlangch/venice/blob/master/doc/assets/excel/excel-write-018.png" width="400">
+
+[top](#content)
+
+
+
 ### Shading alternate rows
 
 ```clojure
@@ -703,14 +734,8 @@ Available border styles:
                              [400 401 402 nil 403 404 405]
                              [500 501 502 nil 503 504 505]
                              [600 601 602 nil 603 604 605]])
-    ;; left
-    (run! #(excel/bg-color sheet % 1 3 "#a9cafc") (range 1 7 2))
-    (run! #(excel/bg-color sheet % 1 3 "#d9e7fc") (range 2 7 2))
-    
-    ;; right
-    (run! #(excel/bg-color sheet % 5 7 "#fcaedc") (range 1 7 2))
-    (run! #(excel/bg-color sheet % 5 7 "#fce3f2") (range 2 7 2))
-    
+    (excel/bg-color sheet 1 6 1 3 "#a9cafc" "#d9e7fc")    ;; left
+    (excel/bg-color sheet 1 6 5 7 "#fcaedc" "#fce3f2")  ;; right 
     (excel/write->file wbook "sample.xlsx")))
 ```
 
