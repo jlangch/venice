@@ -734,7 +734,7 @@ Available border styles:
                              [400 401 402 nil 403 404 405]
                              [500 501 502 nil 503 504 505]
                              [600 601 602 nil 603 604 605]])
-    (excel/bg-color sheet 1 6 1 3 "#a9cafc" "#d9e7fc")    ;; left
+    (excel/bg-color sheet 1 6 1 3 "#a9cafc" "#d9e7fc")  ;; left
     (excel/bg-color sheet 1 6 5 7 "#fcaedc" "#fce3f2")  ;; right 
     (excel/write->file wbook "sample.xlsx")))
 ```
