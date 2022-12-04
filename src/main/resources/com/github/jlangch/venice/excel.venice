@@ -1232,7 +1232,7 @@
           (let [wbook (excel/writer :xlsx)
                 sheet (excel/add-sheet wbook "Data")]
 
-            ;; single cell
+            ;; single cells
             (excel/bg-color sheet 1 1 "#27ae60")
             (excel/bg-color sheet 1 2 "#52be80")
             (excel/bg-color sheet 1 3 "#7dcea0")

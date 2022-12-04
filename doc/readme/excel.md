@@ -218,8 +218,8 @@ The Excel writer supports the Venice data types:
  - long
  - double
  - boolean
- - :java.time.LocalDate
- - :java.time.LocalDateTime
+ - date (:java.time.LocalDate)
+ - datetime (:java.time.LocalDateTime)
  
 ```clojure
 (do
@@ -227,9 +227,13 @@ The Excel writer supports the Venice data types:
 
   (load-module :excel)
 
-  (let [data  [ {:t-str "text" :t-int 100I :t-long 200 :t-double 1.23  :t-bool true 
-                 :t-local-date (time/local-date 2021 1 1)
-                 :t-local-ts (time/local-date-time 2021 1 1 15 30 45) } ]
+  (let [data  [ {:t-str "text" 
+                 :t-int 100I 
+                 :t-long 200 
+                 :t-double 1.23  
+                 :t-bool true 
+                 :t-date (time/local-date 2021 1 1)
+                 :t-datetime (time/local-date-time 2021 1 1 15 30 45) } ]
         wbook (excel/writer :xlsx)
         sheet (excel/add-sheet wbook "Sheet 1")]
     (excel/add-column sheet "string" { :field :t-str })
@@ -237,8 +241,8 @@ The Excel writer supports the Venice data types:
     (excel/add-column sheet "long" { :field :t-long })
     (excel/add-column sheet "double" { :field :t-double })
     (excel/add-column sheet "boolean" { :field :t-bool })
-    (excel/add-column sheet ":LocalDate" { :field :t-local-date })
-    (excel/add-column sheet ":LocalDateTime" { :field :t-local-ts })
+    (excel/add-column sheet "date" { :field :t-date })
+    (excel/add-column sheet "datetime" { :field :t-datetime })
     (excel/write-items sheet data)
     (excel/auto-size-columns sheet)
     (excel/write->file wbook "sample.xlsx")))
@@ -452,7 +456,9 @@ Set the height of individual rows:
     (excel/add-column sheet "Last Name" { :field :last })
     (excel/add-column sheet "Age" { :field :age })
     (excel/write-items sheet data)
-    (excel/row-height sheet 2 50)
+    
+    (excel/row-height sheet 2 50) ;; set the height of row 2 to 50
+    
     (excel/auto-size-columns sheet)
     (excel/write->file wbook "sample.xlsx")))
 ```
@@ -482,9 +488,12 @@ Set the width of individual columns:
     (excel/add-column sheet "Last Name" { :field :last })
     (excel/add-column sheet "Age" { :field :age })
     (excel/write-items sheet data)
+    
+    ;; column width
     (excel/col-width sheet 1 80)
     (excel/col-width sheet 2 80)
     (excel/col-width sheet 3 60)
+    
     (excel/write->file wbook "sample.xlsx")))
 ```
 
@@ -534,8 +543,7 @@ Define a named font with optional attributes on the workbook.
     (excel/add-style wbook :header { :font :header-font })
 
     (let [sheet (excel/add-sheet wbook "Sheet 1"
-                                 { :no-header-row false
-                                   :default-header-style :header })]
+                                 { :default-header-style :header })]
       (excel/add-column sheet "First Name" { :field :first })
       (excel/add-column sheet "Last Name" { :field :last })
       (excel/add-column sheet "Age" { :field :age })
@@ -623,8 +631,7 @@ Available border styles:
                                      :h-align :right })
 
     (let [sheet (excel/add-sheet wbook "Sheet 1"
-                                 { :no-header-row false
-                                   :default-header-style :header })]
+                                 { :default-header-style :header })]
       (excel/add-column sheet "First Name" { :field :first })
       (excel/add-column sheet "Last Name" { :field :last })
       (excel/add-column sheet "Weight" { :field :weight
@@ -668,6 +675,7 @@ Available border styles:
     (excel/column-width sheet 3 70)
     (excel/add-merge-region sheet 2 2 2 3)
     
+    ;; write values to cell with associated cell style
     (excel/write-value sheet 2 2 "Country Population" :title)
     (excel/write-value sheet 3 2 "" :country)
     (excel/write-value sheet 3 3 "" :population)
@@ -697,12 +705,12 @@ Available border styles:
   (let [wbook (excel/writer :xlsx)
         sheet (excel/add-sheet wbook "Data")]
 
-    ;; single cell
+    ;; single cells
     (excel/bg-color sheet 1 1 "#27ae60")
     (excel/bg-color sheet 1 2 "#52be80")
     (excel/bg-color sheet 1 3 "#7dcea0")
 
-    ;; range of cells in row
+    ;; range of cells in row 1
     (excel/bg-color sheet 1 4 6 "#3498db")
 
     ;; area of cells
@@ -734,8 +742,10 @@ Available border styles:
                              [400 401 402 nil 403 404 405]
                              [500 501 502 nil 503 504 505]
                              [600 601 602 nil 603 604 605]])
-    (excel/bg-color sheet 1 6 1 3 "#a9cafc" "#d9e7fc")  ;; left
-    (excel/bg-color sheet 1 6 5 7 "#fcaedc" "#fce3f2")  ;; right 
+                             
+    (excel/bg-color sheet 1 6 1 3 "#a9cafc" "#d9e7fc")  ;; left box
+    (excel/bg-color sheet 1 6 5 7 "#fcaedc" "#fce3f2")  ;; right box
+    
     (excel/write->file wbook "sample.xlsx")))
 ```
 
@@ -753,7 +763,7 @@ Available border styles:
   (load-module :excel)
   
   (let [wbook (excel/writer :xlsx)
-        sheet (excel/add-sheet wbook "Sheet 1" { :no-header-row false })]
+        sheet (excel/add-sheet wbook "Sheet 1")]
     (excel/add-font wbook :bold { :bold true
                                   :color "#54039c" })
     (excel/add-style wbook :style-1 { :font :bold
@@ -769,10 +779,12 @@ Available border styles:
     (excel/add-style wbook :style-3 { :h-align :right
                                       :format "#,##0.00" })
 
+    ;; write cell values
     (excel/write-value sheet 2 1 100)
     (excel/write-value sheet 2 2 200)
     (excel/write-value sheet 2 3 300)
 
+    ;; sytle the cells
     (excel/cell-style sheet 2 1 :style-1)
     (excel/cell-style sheet 2 2 :style-2)
     (excel/cell-style sheet 2 3 :style-3)
@@ -795,11 +807,12 @@ Available border styles:
   (load-module :excel)
           
   (let [wbook (excel/writer :xlsx)
-        sheet (excel/add-sheet wbook "Sheet 1" { :no-header-row false })]
+        sheet (excel/add-sheet wbook "Sheet 1")]
     (excel/add-style wbook :style { :bg-color "#cae1fa"
                                     :h-align :center
                                     :format "#,##0.00" })
 
+    ;; write cell values
     (excel/write-value sheet 2 2 100)
     (excel/write-value sheet 2 3 200)
     (excel/write-value sheet 2 4 300)
@@ -807,6 +820,7 @@ Available border styles:
     (excel/write-value sheet 3 3 201)
     (excel/write-value sheet 3 4 301)
 
+    ;; set the style for a cell region
     (excel/cell-style sheet 2 3 2 4 :style)
 
     (excel/write->file wbook "sample.xlsx")))
@@ -829,10 +843,12 @@ Freeze the top row:
   (load-module :excel)
   
   (let [wbook (excel/writer :xlsx)
-        sheet (excel/add-sheet wbook "Sheet 1" { :no-header-row false })]
+        sheet (excel/add-sheet wbook "Sheet 1")]
       (excel/write-data sheet [(map #(str "Col " %) (range 1 11))])
       (excel/write-data sheet (partition 10 (range 100 500)) 2 1)
-      (excel/freeze-pane sheet 1 0)
+      
+      (excel/freeze-pane sheet 1 0) ;; freeze the first row
+      
       (excel/auto-size-columns sheet)
       (excel/write->file wbook "sample.xlsx")))
 ```
