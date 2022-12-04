@@ -1,8 +1,7 @@
 # Excel
 
-Venice supports reading and writing Excel files if the
-[Apache POI](https://poi.apache.org/) libraries are on the runtime 
-classpath.
+Venice's *:excel* module provides functions to read and write Excel files. 
+It is based on the [Apache POI](https://poi.apache.org/) library.
 
 Venice is compatible with Apache POI 4.1.x and 5.2.x.
 

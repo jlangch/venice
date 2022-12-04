@@ -1,7 +1,8 @@
 # PDF
 
-Venice supports generating PDF files if the [Flying Saucer](https://github.com/flyingsaucerproject/flyingsaucer) 
-libs are on the runtime classpath:
+Venice's *:pdf* module provides functions to create PDF files. 
+It is based on the [Flying Saucer](https://github.com/flyingsaucerproject/flyingsaucer) 
+library:
 
  - org.xhtmlrenderer:flying-saucer-core:9.1.22
  - org.xhtmlrenderer:flying-saucer-pdf-openpdf:9.1.22
