@@ -35,7 +35,7 @@ libraries:
        * [Write to a byte buffer](#write-to-a-byte-buffer)
        * [Omit the header row](#omit-the-header-row)
        * [Write to multiple sheets](#write-to-multiple-sheets)
-       * [Supported datatypes](#supported-datatypes)
+       * [Supported datat ypes](#supported-data-types)
        * [Writing 2D vector data](#writing-2d-tabular-data)
        * [Writing to individual cells](#writing-to-individual-cells)
        * [Merge Cells](#merge-cells)
@@ -209,7 +209,7 @@ To omit the header row pass the option `:no-header-row true` to the excel sheet:
 
 
 
-#### Supported datatypes
+#### Supported data types
 
 The Excel writer supports the Venice data types:
 
