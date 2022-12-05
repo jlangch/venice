@@ -39,6 +39,7 @@ import org.apache.poi.ss.usermodel.DateUtil;
 import org.apache.poi.ss.usermodel.FillPatternType;
 import org.apache.poi.ss.usermodel.FormulaEvaluator;
 import org.apache.poi.ss.usermodel.Row;
+import org.apache.poi.ss.usermodel.Row.MissingCellPolicy;
 import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.ss.usermodel.Workbook;
 import org.apache.poi.ss.util.CellAddress;
@@ -407,7 +408,7 @@ public class ExcelSheet {
 
     private Cell getCell(final int row, final int col) {
         final Row r = sheet.getRow(row);
-        return r == null ? null : r.getCell(col);
+        return r == null ? null : r.getCell(col, MissingCellPolicy.RETURN_BLANK_AS_NULL);
     }
 
     private Cell getCellCreate(final int row, final int col) {
@@ -491,9 +492,10 @@ public class ExcelSheet {
                 return null;
             default:
                 throw new ExcelException(String.format(
-                    "The Excel cell [%d,%d]: failed to read value",
+                    "Excel cell [%d,%d] in sheet '%s': failed to read value",
                     cell.getRowIndex(),
-                    cell.getColumnIndex()));
+                    cell.getColumnIndex(),
+                    sheet.getSheetName()));
         }
     }
 
@@ -517,9 +519,10 @@ public class ExcelSheet {
                         : Double.toString(cellValue.getNumberValue());
             default:
                 throw new ExcelException(String.format(
-                        "The Excel cell [%d,%d] does not contain a string value",
+                        "Excel cell [%d,%d] in sheet '%s': does not contain a string value",
                         cell.getRowIndex(),
-                        cell.getColumnIndex()));
+                        cell.getColumnIndex(),
+                        sheet.getSheetName()));
         }
     }
 
@@ -538,9 +541,10 @@ public class ExcelSheet {
         }
         else {
             throw new ExcelException(String.format(
-                "The Excel cell [%d,%d] does not contain a boolean value",
+                "Excel cell [%d,%d] in sheet '%s': does not contain a boolean value",
                 cell.getRowIndex(),
-                cell.getColumnIndex()));
+                cell.getColumnIndex(),
+                sheet.getSheetName()));
         }
     }
 
@@ -559,9 +563,10 @@ public class ExcelSheet {
         }
         else {
             throw new ExcelException(String.format(
-                "The Excel cell [%d,%d] does not contain an integer value",
+                "Excel cell [%d,%d] in sheet '%s': does not contain an integer value",
                 cell.getRowIndex(),
-                cell.getColumnIndex()));
+                cell.getColumnIndex(),
+                sheet.getSheetName()));
         }
     }
 
@@ -580,10 +585,11 @@ public class ExcelSheet {
         }
         else {
             throw new ExcelException(String.format(
-                    "The Excel cell [%d,%d] does not contain a float value. "
+                    "Excel cell [%d,%d] in sheet '%s': does not contain a float value. "
                         + "It actually holds a %s.",
                     cell.getRowIndex(),
                     cell.getColumnIndex(),
+                    sheet.getSheetName(),
                     cell.getCellType().name()));
         }
     }
@@ -607,19 +613,21 @@ public class ExcelSheet {
                 case NUMERIC: return cellEval.getLocalDateTimeCellValue();
                 default:
                     throw new ExcelException(String.format(
-                            "The Excel formula cell [%d,%d] does not contain a date. "
+                            "Excel formula cell [%d,%d] in sheet '%s': does not contain a date. "
                                 + "It actually holds a %s.",
                             cell.getRowIndex(),
                             cell.getColumnIndex(),
+                            sheet.getSheetName(),
                             cell.getCellType().name()));
             }
         }
         else {
             throw new ExcelException(String.format(
-                    "The Excel cell [%d,%d] does not contain a date. "
+                    "Excel cell [%d,%d] in sheet '%s': does not contain a date. "
                         + "It actually holds a %s.",
                     cell.getRowIndex(),
                     cell.getColumnIndex(),
+                    sheet.getSheetName(),
                     cell.getCellType().name()));
         }
     }
@@ -636,10 +644,11 @@ public class ExcelSheet {
         }
         else {
             throw new ExcelException(String.format(
-                    "The Excel cell [%d,%d] does not contain a formula. "
+                    "Excel cell [%d,%d] in sheet '%s': does not contain a formula. "
                         + "It actually holds a %s.",
                     cell.getRowIndex(),
                     cell.getColumnIndex(),
+                    sheet.getSheetName(),
                     cell.getCellType().name()));
         }
     }
