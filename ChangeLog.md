@@ -10,13 +10,22 @@ and this project adheres to
 
 
 
+
+## [1.10.31] - 2022-12-xx
+
+### Added 
+
+- ...
+
+
+
 ## [1.10.30] - 2022-12-07
 
 ### Added 
 
 - improvements to `:excel` module cell styling
 - support for freeze panes to `:excel` module 
-- function `excel/read-error-code` to the read the error code from a formula cell
+- function `excel/read-error-code` to read the error code from a formula cell
 - function `excel/read-val` to have an option to read data from cells generically
 
 ### Improved
