@@ -556,6 +556,42 @@ public class TokenizerTest {
     }
 
     @Test
+    public void test_list_CR() {
+        List<Token> tokens = tokenize("'(1\r2\r3)", "test");
+        assertEquals(6,      tokens.size());
+        assertEquals("'",    tokens.get(0).getToken());
+        assertEquals("(",    tokens.get(1).getToken());
+        assertEquals("1",    tokens.get(2).getToken());
+        assertEquals("2",    tokens.get(3).getToken());
+        assertEquals("3",    tokens.get(4).getToken());
+        assertEquals(")",    tokens.get(5).getToken());
+    }
+
+    @Test
+    public void test_list_LF() {
+        List<Token> tokens = tokenize("'(1\n2\n3)", "test");
+        assertEquals(6,      tokens.size());
+        assertEquals("'",    tokens.get(0).getToken());
+        assertEquals("(",    tokens.get(1).getToken());
+        assertEquals("1",    tokens.get(2).getToken());
+        assertEquals("2",    tokens.get(3).getToken());
+        assertEquals("3",    tokens.get(4).getToken());
+        assertEquals(")",    tokens.get(5).getToken());
+    }
+
+    @Test
+    public void test_list_CRLF() {
+        List<Token> tokens = tokenize("'(1\r\n2\r\n3)", "test");
+        assertEquals(6,      tokens.size());
+        assertEquals("'",    tokens.get(0).getToken());
+        assertEquals("(",    tokens.get(1).getToken());
+        assertEquals("1",    tokens.get(2).getToken());
+        assertEquals("2",    tokens.get(3).getToken());
+        assertEquals("3",    tokens.get(4).getToken());
+        assertEquals(")",    tokens.get(5).getToken());
+    }
+
+    @Test
     public void test_set() {
         List<Token> tokens = tokenize("#{1 2}", "test");
         assertEquals(5, tokens.size());
