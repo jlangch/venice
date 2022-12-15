@@ -36,16 +36,19 @@
 
 ## Variadic Functions
 
-A variadic function is a function of indefinite arity, accepting 
-a variable number of arguments.
+A variadic function is a function of indefinite arity, accepting a 
+variable number of arguments. A variadic function can have any number
+of fixed arguments.
 
 ```clojure
 (do
-   (defn log
-      [message & args]
-      (apply println (cons message (cons ": " args))))
+   ;; variadic sum with a single fixed arg
+   (defn sum [x & xs]
+      (reduce + x xs))
 
-   (log "message from" "192.0.0.76" "12:00" "Hello"))
+   (sum 1)
+   (sum 1 2)
+   (sum 1 2 3 4 5 6 7 8 9 10))
 ```
 
 
