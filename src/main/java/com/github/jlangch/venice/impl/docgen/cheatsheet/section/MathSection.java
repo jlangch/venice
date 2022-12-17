@@ -46,11 +46,12 @@ public class MathSection implements ISectionBuilder {
 
         final DocSection arithmetic = new DocSection("Arithmetic", "math.arithmetic");
         all.addSection(arithmetic);
-        arithmetic.addItem(diBuilder.getDocItem("mod"));
         arithmetic.addItem(diBuilder.getDocItem("inc"));
         arithmetic.addItem(diBuilder.getDocItem("dec"));
         arithmetic.addItem(diBuilder.getDocItem("min"));
         arithmetic.addItem(diBuilder.getDocItem("max"));
+        arithmetic.addItem(diBuilder.getDocItem("mod"));
+        arithmetic.addItem(diBuilder.getDocItem("mod-floor"));
         arithmetic.addItem(diBuilder.getDocItem("abs"));
         arithmetic.addItem(diBuilder.getDocItem("sgn"));
         arithmetic.addItem(diBuilder.getDocItem("negate"));

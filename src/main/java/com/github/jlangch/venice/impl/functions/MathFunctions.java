@@ -266,6 +266,7 @@ public class MathFunctions {
                         "(mod 10 4)",
                         "(mod -1 5)",
                         "(mod 10I 4I)")
+                    .seeAlso("mod-floor")
                     .build()
         ) {
             @Override
@@ -303,7 +304,66 @@ public class MathFunctions {
                 }
                 else {
                     throw new VncException(String.format(
-                            "Function 'mod' does not allow %s as numerator",
+                            "Function 'mod' does not allow %s as numerator."
+                                + "long and integer are supported only",
+                            Types.getType(args.first())));
+                }
+            }
+
+            private static final long serialVersionUID = -1848883965231344442L;
+        };
+
+    public static VncFunction modulo_floor =
+        new VncFunction(
+                "mod-floor",
+                VncFunction
+                    .meta()
+                    .arglists("(mod-floor n m)")
+                    .doc("floor a number towards 0 to the nearest multiple of a number")
+                    .examples(
+                        "(mod-floor 9 3)",
+                        "(mod-floor 10 3)",
+                        "(mod-floor 11 3)",
+                        "(mod-floor -11 3)")
+                    .seeAlso("mod")
+                    .build()
+        ) {
+            @Override
+            public VncVal apply(final VncList args) {
+                ArityExceptions.assertArity(this, args, 2);
+
+                final VncVal n = args.first();
+                final VncVal m = args.second();
+
+                if (Types.isVncLong(n)) {
+                    if (Types.isVncLong(m)) {
+                        final long n_ = ((VncLong)n).getValue().longValue();
+                        final long m_ = ((VncLong)m).getValue().longValue();
+
+                        return new VncLong((n_ / m_) * m_);
+                    }
+                    else {
+                        throw new VncException(String.format(
+                                "Function 'mod-floor' does not allow %s as multiple if number is a long",
+                                Types.getType(args.second())));
+                    }
+                }
+                else if (Types.isVncInteger(n)) {
+                    if (Types.isVncInteger(m)) {
+                        final int n_ = ((VncInteger)n).getValue().intValue();
+                        final int m_ = ((VncInteger)m).getValue().intValue();
+                        return new VncInteger((n_ / m_) * m_);
+                     }
+                    else {
+                        throw new VncException(String.format(
+                                "Function 'mod-floor' does not allow %s as multiple if number is an int",
+                                Types.getType(args.second())));
+                    }
+                }
+                else {
+                    throw new VncException(String.format(
+                            "Function 'mod-floor' does not allow %s as number. "
+                                + "long and integer are supported only",
                             Types.getType(args.first())));
                 }
             }
@@ -2052,6 +2112,7 @@ public class MathFunctions {
                     .add(multiply)
                     .add(divide)
                     .add(modulo)
+                    .add(modulo_floor)
                     .add(inc)
                     .add(dec)
                     .add(abs)
