@@ -273,40 +273,45 @@ public class MathFunctions {
             public VncVal apply(final VncList args) {
                 ArityExceptions.assertArity(this, args, 2);
 
-                final VncVal n = args.first();
-                final VncVal d = args.second();
+                try {
+	                final VncVal n = args.first();
+	                final VncVal d = args.second();
 
-                if (Types.isVncLong(n)) {
-                    if (Types.isVncLong(d)) {
-                        return new VncLong(
-                                Math.floorMod(
-                                    ((VncLong)n).getValue().longValue(),
-                                    ((VncLong)d).getValue().longValue()));
-                    }
-                    else {
-                        throw new VncException(String.format(
-                                "Function 'mod' does not allow %s as denominator if nominator is a long",
-                                Types.getType(args.second())));
-                    }
+	                if (Types.isVncLong(n)) {
+	                    if (Types.isVncLong(d)) {
+	                        return new VncLong(
+	                                Math.floorMod(
+	                                    ((VncLong)n).getValue().longValue(),
+	                                    ((VncLong)d).getValue().longValue()));
+	                    }
+	                    else {
+	                        throw new VncException(String.format(
+	                                "Function 'mod' does not allow %s as denominator if nominator is a long",
+	                                Types.getType(args.second())));
+	                    }
+	                }
+	                else if (Types.isVncInteger(n)) {
+	                    if (Types.isVncInteger(d)) {
+	                        return new VncInteger(
+	                                Math.floorMod(
+	                                    ((VncInteger)n).getValue().intValue(),
+	                                    ((VncInteger)d).getValue().intValue()));
+	                    }
+	                    else {
+	                        throw new VncException(String.format(
+	                                "Function 'mod' does not allow %s as denominator if nominator is an int",
+	                                Types.getType(args.second())));
+	                    }
+	                }
+	                else {
+	                    throw new VncException(String.format(
+	                            "Function 'mod' does not allow %s as numerator."
+	                                + "long and integer are supported only",
+	                            Types.getType(args.first())));
+	                }
                 }
-                else if (Types.isVncInteger(n)) {
-                    if (Types.isVncInteger(d)) {
-                        return new VncInteger(
-                                Math.floorMod(
-                                    ((VncInteger)n).getValue().intValue(),
-                                    ((VncInteger)d).getValue().intValue()));
-                    }
-                    else {
-                        throw new VncException(String.format(
-                                "Function 'mod' does not allow %s as denominator if nominator is an int",
-                                Types.getType(args.second())));
-                    }
-                }
-                else {
-                    throw new VncException(String.format(
-                            "Function 'mod' does not allow %s as numerator."
-                                + "long and integer are supported only",
-                            Types.getType(args.first())));
+                catch (ArithmeticException ex) {
+                    throw new VncException(ex.getMessage());
                 }
             }
 
@@ -332,39 +337,44 @@ public class MathFunctions {
             public VncVal apply(final VncList args) {
                 ArityExceptions.assertArity(this, args, 2);
 
-                final VncVal n = args.first();
-                final VncVal m = args.second();
+                try {
+	                final VncVal n = args.first();
+	                final VncVal m = args.second();
 
-                if (Types.isVncLong(n)) {
-                    if (Types.isVncLong(m)) {
-                        final long n_ = ((VncLong)n).getValue().longValue();
-                        final long m_ = ((VncLong)m).getValue().longValue();
+	                if (Types.isVncLong(n)) {
+	                    if (Types.isVncLong(m)) {
+	                        final long n_ = ((VncLong)n).getValue().longValue();
+	                        final long m_ = ((VncLong)m).getValue().longValue();
 
-                        return new VncLong((n_ / m_) * m_);
-                    }
-                    else {
-                        throw new VncException(String.format(
-                                "Function 'mod-floor' does not allow %s as multiple if number is a long",
-                                Types.getType(args.second())));
-                    }
+	                        return new VncLong((n_ / m_) * m_);
+	                    }
+	                    else {
+	                        throw new VncException(String.format(
+	                                "Function 'mod-floor' does not allow %s as multiple if number is a long",
+	                                Types.getType(args.second())));
+	                    }
+	                }
+	                else if (Types.isVncInteger(n)) {
+	                    if (Types.isVncInteger(m)) {
+	                        final int n_ = ((VncInteger)n).getValue().intValue();
+	                        final int m_ = ((VncInteger)m).getValue().intValue();
+	                        return new VncInteger((n_ / m_) * m_);
+	                     }
+	                    else {
+	                        throw new VncException(String.format(
+	                                "Function 'mod-floor' does not allow %s as multiple if number is an int",
+	                                Types.getType(args.second())));
+	                    }
+	                }
+	                else {
+	                    throw new VncException(String.format(
+	                            "Function 'mod-floor' does not allow %s as number. "
+	                                + "long and integer are supported only",
+	                            Types.getType(args.first())));
+	                }
                 }
-                else if (Types.isVncInteger(n)) {
-                    if (Types.isVncInteger(m)) {
-                        final int n_ = ((VncInteger)n).getValue().intValue();
-                        final int m_ = ((VncInteger)m).getValue().intValue();
-                        return new VncInteger((n_ / m_) * m_);
-                     }
-                    else {
-                        throw new VncException(String.format(
-                                "Function 'mod-floor' does not allow %s as multiple if number is an int",
-                                Types.getType(args.second())));
-                    }
-                }
-                else {
-                    throw new VncException(String.format(
-                            "Function 'mod-floor' does not allow %s as number. "
-                                + "long and integer are supported only",
-                            Types.getType(args.first())));
+                catch (ArithmeticException ex) {
+                    throw new VncException(ex.getMessage());
                 }
             }
 
