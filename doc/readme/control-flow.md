@@ -58,7 +58,7 @@ false, nil is returned.
 (let [x 6]
   (when (pos? x)
     (println x "is positive")
-   x))
+    x))
 ```
 
 ## cond
