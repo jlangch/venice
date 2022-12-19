@@ -20,9 +20,6 @@ However if you create your own, unmanaged threads, given the sandbox allows it,
 these threads have always a restricted sandbox attached rejecting all Java calls 
 and Venice I/O functions and prohibiting access to stdin, stdout and stderr.
 
-The "Dining Philosophers" example in the [Concurrency](concurrency.md) section 
-demonstrates how to use Venice futures instead of bare Java threads.
-
 
 ### No blacklisting for Java interop
 
