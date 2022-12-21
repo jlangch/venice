@@ -1,6 +1,6 @@
 # Control Flow
 
-Venice like any other lisp dialect does not have any explicit flow 
+Venice, like any other lisp dialect, does not have any explicit flow 
 control operators as imperative languages do. Everything in Venice
 is an expression and returns a value.
 
@@ -58,7 +58,7 @@ false, nil is returned.
 (let [x 6]
   (when (pos? x)
     (println x "is positive")
-   x))
+    x))
 ```
 
 ## cond

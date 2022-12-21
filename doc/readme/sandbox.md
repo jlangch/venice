@@ -20,9 +20,6 @@ However if you create your own, unmanaged threads, given the sandbox allows it,
 these threads have always a restricted sandbox attached rejecting all Java calls 
 and Venice I/O functions and prohibiting access to stdin, stdout and stderr.
 
-The "Dining Philosophers" example in the [Concurrency](concurrency.md) section 
-demonstrates how to use Venice futures instead of bare Java threads.
-
 
 ### No blacklisting for Java interop
 
@@ -43,9 +40,9 @@ that are available to the script in the JVM!
  - whitelist Java environment variables access down to individual vars
  - whitelist individual Venice extension modules like :shell, :maven, ...
  - blacklist all Venice I/O functions like `io/spit`, `io/slurp`, ...
- - blacklist all unsafe system functions like running GC, reading system properties and
+ - blacklist all unsafe Venice system functions like running GC, reading system properties and
    environment variables, ...
- - blacklist all unsafe special forms for dynamically loading code, managing vars, 
+ - blacklist all unsafe Venice special forms for dynamically loading code, managing vars, 
    namespaces, ...
  - blacklist individual Venice functions like `time/date`, ...
  - limiting the execution time of a script
