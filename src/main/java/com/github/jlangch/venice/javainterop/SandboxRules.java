@@ -549,9 +549,13 @@ public class SandboxRules {
      *
      * @return this {@code SandboxRules}
      */
-    public SandboxRules rejectAllSenstiveSpecialForms() {
+    public SandboxRules rejectAllSensitiveSpecialForms() {
         rejectVeniceFunctions("*special-forms*");
         return this;
+    }
+    public SandboxRules rejectAllSenstiveSpecialForms() {
+    	// keep typo in function name for compatibility
+        return rejectAllSensitiveSpecialForms();
     }
 
     /**
