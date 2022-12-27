@@ -90,8 +90,20 @@
     b))
 
 
+(defn canvas-empty-A4 []
+  (. :PDFCanvas :new 210.0 297.0))
+
+
+(defn canvas-pdf-page-last [pdf-file]
+  (. :PDFCanvas :new (. pdf-file :toPath) -1))
+
+
+(defn canvas-pdf-new-page-at-end [pdf-file]
+  (. :PDFCanvas :new (. pdf-file :toPath) -2))
+
+
 (defn
-  ^{ :arglists '("(write invoice-raw-pdf-file bill invoice-file page-no)")
+  ^{ :arglists '("(write canvas bill invoice-file)")
      :doc "Write the bill to a file"
      :examples '(
        """
@@ -109,15 +121,14 @@
                                       "Testrechnung"
                                       debtor
                                       creditor)]
-           (qrbill/write "./PeterMeier-Rechnung-004.pdf"
+           (qrbill/write (qrbill/canvas-pdf-new-page-at-end "./PeterMeier-Rechnung-004.pdf")
                          bill
-                         "./PeterMeier-Rechnung-004-Invoice.pdf"
-                         qrbill/page-new-at-end)))
+                         "./PeterMeier-Rechnung-004-Invoice.pdf")))
        """) }
 
-  write [invoice-raw-pdf-file bill invoice-file page-no]
+  write [canvas bill invoice-file]
 
-  (try-with [canvas (. :PDFCanvas :new (. invoice-raw-pdf-file :toPath) page-no)]
-    (. :QRBill :draw bill canvas)
-    (. canvas :saveAs (. invoice-file :toPath))
+  (try-with [c canvas]
+    (. :QRBill :draw bill c)
+    (. c :saveAs (. invoice-file :toPath))
     (println "Bill saved at " invoice-file)))
