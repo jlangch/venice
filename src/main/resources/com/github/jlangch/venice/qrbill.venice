@@ -38,8 +38,10 @@
 (import :net.codecrete.qrbill.generator.SeparatorType)
 
 
-(def PAGE-LAST -1I)
-(def NEW-PAGE-AT-END -2I)
+(deftype-or :language :DE :FR :IT :EN)
+
+(deftype-or :separator :NONE :DASHED_LINE_WITH_SCISSORS :DASHED_LINE)
+
 
 (defn
   ^{ :arglists '("(address name line line2)")
@@ -77,9 +79,9 @@
   bill [account amount qr-ref msg debtor creditor]
   (let [b (. :Bill :new)]
     (doto (. b :getFormat)
-          (. :setLanguage :DE)
+          (. :setLanguage :DE) ; :FR, :IT, :EN
           (. :setOutputSize :A4_PORTRAIT_SHEET)
-          (. :setSeparatorType :DASHED_LINE_WITH_SCISSORS))  ; :DASHED_LINE  :NONE
+          (. :setSeparatorType :DASHED_LINE_WITH_SCISSORS))  ; :DASHED_LINE, :NONE
     (. b :setAccount account)
     (. b :setAmount amount)
     (. b :setCurrency "CHF")
@@ -118,7 +120,7 @@
                bill      (qrbill/bill "CH00 3000 2000 1000 0000 0"
                                       300.00M
                                       "000004"
-                                      "Testrechnung"
+                                      "Testrechnung 4"
                                       debtor
                                       creditor)]
            (qrbill/write (qrbill/canvas-pdf-new-page-at-end "./PeterMeier-Rechnung-004.pdf")
