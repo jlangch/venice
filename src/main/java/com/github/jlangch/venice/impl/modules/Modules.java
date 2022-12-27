@@ -72,6 +72,8 @@ public class Modules {
                         "mercator",
                         "parsifal",
                         "pdf-install",
+                        "qrbill",
+                        "qrbill-install",
                         "repl-setup",
                         "ring",
                         "semver",

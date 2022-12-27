@@ -38,20 +38,21 @@
 (import :net.codecrete.qrbill.generator.SeparatorType)
 
 
-(def page-last -1I)
-(def page-new-at-end -2I)
+(def PAGE-LAST -1I)
+(def NEW-PAGE-AT-END -2I)
 
 (defn
   ^{ :arglists '("(address name line line2)")
      :doc "QR bill address for debtor/creditor"
      :examples '("""(qrbill/address "Peter Meier" "Bahnhofstrasse 2" "8000 Zürich")""") }
 
-  address [name line line2]
+  address [name line1 line2]
 
   (doto (. :Address :new)
         (. :setName name)
         (. :setAddressLine1 line1)
-        (. :setAddressLine2 line2)))
+        (. :setAddressLine2 line2)
+        (. :setCountryCode "CH")))
 
 
 (defn
@@ -77,7 +78,7 @@
   (let [b (. :Bill :new)]
     (doto (. b :getFormat)
           (. :setLanguage :DE)
-          (. :setLanguage :A4_PORTRAIT_SHEET)
+          (. :setOutputSize :A4_PORTRAIT_SHEET)
           (. :setSeparatorType :DASHED_LINE_WITH_SCISSORS))  ; :DASHED_LINE  :NONE
     (. b :setAccount account)
     (. b :setAmount amount)
@@ -85,7 +86,8 @@
     (. b :createAndSetQRReference qr-ref)
     (. b :setUnstructuredMessage msg)
     (. b :setCreditor creditor)
-    (. b :setDebtor debtor)))
+    (. b :setDebtor debtor)
+    b))
 
 
 (defn

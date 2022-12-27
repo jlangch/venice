@@ -61,8 +61,8 @@
      :examples '(
        """
        (do
-         (load-module :excel)
-         (qrbill/install :dir (repl/libs-dir) :silent false))
+         (load-module :qrbill-install)
+         (qrbill-install/install :dir (repl/libs-dir) :silent false))
        """) }
 
   install [ & options]
