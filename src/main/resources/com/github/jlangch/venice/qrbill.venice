@@ -21,7 +21,7 @@
 
 ;;;; Venice QR Bill functions
 
-;;;; Install QR Bill party libraries:
+;;;; Install QR Bill 3rd party libraries:
 ;;;;
 ;;;;   (load-module :qrbill-install)
 ;;;;   (qrbill-install/install :dir (repl/libs-dir) :silent false)
@@ -32,24 +32,10 @@
 (import :net.codecrete.qrbill.canvas.PDFCanvas)
 (import :net.codecrete.qrbill.generator.Address)
 (import :net.codecrete.qrbill.generator.Bill)
-(import :net.codecrete.qrbill.generator.Language)
-(import :net.codecrete.qrbill.generator.OutputSize)
 (import :net.codecrete.qrbill.generator.QRBill)
-(import :net.codecrete.qrbill.generator.SeparatorType)
 
 
-(deftype-or :language :DE :FR :IT :EN)
-
-(deftype-or :separator-type :NONE :DASHED_LINE_WITH_SCISSORS :DASHED_LINE)
-
-
-(defn
-  ^{ :arglists '("(address name line line2)")
-     :doc "QR bill address for debtor/creditor"
-     :examples '("""(qrbill/address "Peter Meier" "Bahnhofstrasse 2" "8000 Zürich")""") }
-
-  address [name line1 line2]
-
+(defn address [name line1 line2]
   (doto (. :Address :new)
         (. :setName name)
         (. :setAddressLine1 line1)
@@ -57,39 +43,20 @@
         (. :setCountryCode "CH")))
 
 
-(defn
-  ^{ :arglists '("(bill account amount qr-ref msg debtor creditor)")
-     :doc "Create a bill"
-     :examples '(
-       """
-       (do
-         (load-module :qrbill)
-         (qrbill/bill "CH00 3000 2000 1000 0000 0"
-                      300.00M
-                      "000004"
-                      "Testrechnung"
-                      (qrbill/address "Peter Meier"
-                                      "Bahnhofstrasse 2"
-                                      "8000 Wil")
-                      (qrbill/address "Travag GmbH"
-                                      "Bahnhofstrasse 3"
-                                      "8000 Wil")))
-       """) }
-
-  bill [account amount qr-ref msg debtor creditor]
+(defn bill [account amount qr-ref msg debtor creditor]
   (let [b (. :Bill :new)]
     (doto (. b :getFormat)
           (. :setLanguage :DE) ; :FR, :IT, :EN
           (. :setOutputSize :A4_PORTRAIT_SHEET)
           (. :setSeparatorType :DASHED_LINE_WITH_SCISSORS))  ; :DASHED_LINE, :NONE
-    (. b :setAccount account)
-    (. b :setAmount amount)
-    (. b :setCurrency "CHF")
-    (. b :createAndSetQRReference qr-ref)
-    (. b :setUnstructuredMessage msg)
-    (. b :setCreditor creditor)
-    (. b :setDebtor debtor)
-    b))
+    (doto b
+          (. :setAccount account)
+          (. :setAmount amount)
+          (. :setCurrency "CHF")
+          (. :createAndSetQRReference qr-ref)
+          (. :setUnstructuredMessage msg)
+          (. :setCreditor creditor)
+          (. :setDebtor debtor))))
 
 
 (defn- write-canvas [canvas bill out-file]
@@ -121,38 +88,31 @@
      :examples '(
        """
        (do
-         (load-module :qrbill)
+         (load-module :qrbill ['qrbill :as 'q])
 
-         (let [debtor    (qrbill/address "Peter Meier"
-                                         "Bahnhofstrasse 2"
-                                         "8000 Wil")
-               creditor  (qrbill/address "Travag GmbH"
-                                         "Bahnhofstrasse 3"
-                                         "8000 Wil")
-               bill      (qrbill/bill "CH00 3000 2000 1000 0000 0"
-                                      300.00M
-                                      "000004"
-                                      "Testrechnung 4"
-                                      debtor
-                                      creditor)]
+         (let [debtor    (q/address "Peter Meier"
+                                    "Bahnhofstrasse 2"
+                                    "8000 Wil")
+               creditor  (q/address "Travag GmbH"
+                                    "Bahnhofstrasse 3"
+                                    "8000 Wil")
+               bill      (q/bill "CH00 3000 2000 1000 0000 0"
+                                 300.00M
+                                 "000004"
+                                 "Testrechnung 4"
+                                 debtor
+                                 creditor)]
 
            ;; create a PDF invoice with just the payment slip
-           (qrbill/write bill
-                         "./PeterMeier-Rechnung-1.pdf")
+           (q/write bill "./Meier-Rechnung-1.pdf")
 
            ;; create a PDF invoice with the payment slip added on the last
-           ;; page of the file "./PeterMeier-Rechnung-2.pdf"
-           (qrbill/write bill
-                         :last-page-at-end
-                         "./PeterMeier-Rechnung-2.pdf")
-                         ".")
+           ;; page of the file "./Meier-Rechnung-2.pdf"
+           (q/write bill :last-page "./Meier-Rechnung-2.pdf" ".")
 
            ;; create a PDF invoice with the payment slip added on a new
-           ;; page to the file "./PeterMeier-Rechnung-3.pdf"
-           (qrbill/write bill
-                         :new-page-at-end
-                         "./PeterMeier-Rechnung-3.pdf")
-                         ".")))
+           ;; page to the file "./Meier-Rechnung-3.pdf"
+           (q/write bill :new-page-at-end "./Meier-Rechnung-3.pdf" ".")))
        """) }
 
   write
@@ -161,7 +121,7 @@
     (write-canvas (. :PDFCanvas :new 210.0 297.0) bill out-file))
 
   ([bill payment-slip-pdf-type invoice-pdf-file out-dir]
-    (let [page-no  (if (= :last-page-at-end payment-slip-pdf-type) -1 -2)
+    (let [page-no  (if (= :last-page payment-slip-pdf-type) -1 -2)
           out-file (io/file out-dir (make-outfile-name invoice-pdf-file))
           canvas   (. :PDFCanvas :new (. invoice-pdf-file :toPath) page-no)]
       (write-canvas canvas bill out-file))))
