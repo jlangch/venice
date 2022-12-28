@@ -11,6 +11,7 @@ All notable changes to this project will be documented in this file.
 ### Added 
 
 - module `:qrbill` to create Swiss QR bills
+- function `io/file-basename`
 
 
 

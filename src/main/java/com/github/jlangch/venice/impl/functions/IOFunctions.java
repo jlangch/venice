@@ -369,7 +369,7 @@ public class IOFunctions {
                     .arglists("(io/file-name f)")
                     .doc("Returns the name of the file f as a string. f must be a file or a string (file path).")
                     .examples("(io/file-name (io/file \"/tmp/test/x.txt\"))")
-                    .seeAlso("io/file-parent", "io/file")
+                    .seeAlso("io/file-basename", "io/file-parent", "io/file")
                     .build()
         ) {
             @Override
@@ -385,6 +385,35 @@ public class IOFunctions {
 
             private static final long serialVersionUID = -1848883965231344442L;
         };
+
+
+	public static VncFunction io_file_basename =
+	    new VncFunction(
+	            "io/file-basename",
+	            VncFunction
+	                .meta()
+	                .arglists("(io/file-basename f)")
+	                .doc(
+	                	"Returns the base name (file name without file extension) "
+	                	+ "of the file f as a string. f must be a file or a string "
+	                	+ "(file path).")
+	                .examples("(io/file-basename (io/file \"/tmp/test/x.txt\"))")
+	                .seeAlso("io/file-name", "io/file-parent", "io/file-ext", "io/file")
+	                .build()
+	    ) {
+	        @Override
+	        public VncVal apply(final VncList args) {
+	            ArityExceptions.assertArity(this, args, 1);
+
+	            final File f = convertToFile(
+	                                args.first(),
+	                                "Function 'io/file-basename' does not allow %s as f");
+
+	            return new VncString(FileUtil.getFileBaseName(f.getName()));
+	        }
+
+	        private static final long serialVersionUID = -1848883965231344442L;
+	    };
 
     public static VncFunction io_file_ext_Q =
         new VncFunction(
@@ -431,7 +460,7 @@ public class IOFunctions {
                         "(io/file-ext \"some.txt\")",
                         "(io/file-ext \"/tmp/test/some.txt\")",
                         "(io/file-ext \"/tmp/test/some\")")
-                    .seeAlso("io/file-ext?")
+                    .seeAlso("io/file-ext?", "io/file-basename")
                     .build()
         ) {
             @Override
@@ -2715,6 +2744,7 @@ public class IOFunctions {
                     .add(io_file_absolute)
                     .add(io_file_parent)
                     .add(io_file_name)
+                    .add(io_file_basename)
                     .add(io_file_ext_Q)
                     .add(io_file_ext)
                     .add(io_file_size)
