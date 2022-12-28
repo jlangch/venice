@@ -40,7 +40,7 @@
 
 (deftype-or :language :DE :FR :IT :EN)
 
-(deftype-or :separator :NONE :DASHED_LINE_WITH_SCISSORS :DASHED_LINE)
+(deftype-or :separator-type :NONE :DASHED_LINE_WITH_SCISSORS :DASHED_LINE)
 
 
 (defn
@@ -92,25 +92,37 @@
     b))
 
 
-(defn canvas-empty-A4 []
-  (. :PDFCanvas :new 210.0 297.0))
+(defn- write-canvas [canvas bill out-file]
+  (try-with [c canvas]
+    (. :QRBill :draw bill c)
+    (. c :saveAs (. out-file :toPath))
+    (println "==> " out-file)))
 
 
-(defn canvas-pdf-page-last [pdf-file]
-  (. :PDFCanvas :new (. pdf-file :toPath) -1))
-
-
-(defn canvas-pdf-new-page-at-end [pdf-file]
-  (. :PDFCanvas :new (. pdf-file :toPath) -2))
+(defn- make-outfile-name [invoice-pdf-file]
+  (let [f (io/file-name invoice-pdf-file)
+        b (io/file-basename f)
+        e (io/file-ext f)]
+    (if (match? b #".*-[0-9]*")
+      (let [idx (str/last-index-of b "-")]
+        (str (str/subs b 0 idx)
+             "-QR"
+             (str/subs b idx)
+             "."
+             e))
+      (str b "-QR" "." e))))
 
 
 (defn
-  ^{ :arglists '("(write canvas bill invoice-file)")
+  ^{ :arglists '(
+       "(write bill out-file)"
+       "(write bill payment-slip-pdf-type invoice-pdf-file out-dir)")
      :doc "Write the bill to a file"
      :examples '(
        """
        (do
          (load-module :qrbill)
+
          (let [debtor    (qrbill/address "Peter Meier"
                                          "Bahnhofstrasse 2"
                                          "8000 Wil")
@@ -123,14 +135,33 @@
                                       "Testrechnung 4"
                                       debtor
                                       creditor)]
-           (qrbill/write (qrbill/canvas-pdf-new-page-at-end "./PeterMeier-Rechnung-004.pdf")
-                         bill
-                         "./PeterMeier-Rechnung-004-Invoice.pdf")))
+
+           ;; create a PDF invoice with just the payment slip
+           (qrbill/write bill
+                         "./PeterMeier-Rechnung-1.pdf")
+
+           ;; create a PDF invoice with the payment slip added on the last
+           ;; page of the file "./PeterMeier-Rechnung-2.pdf"
+           (qrbill/write bill
+                         :last-page-at-end
+                         "./PeterMeier-Rechnung-2.pdf")
+                         ".")
+
+           ;; create a PDF invoice with the payment slip added on a new
+           ;; page to the file "./PeterMeier-Rechnung-3.pdf"
+           (qrbill/write bill
+                         :new-page-at-end
+                         "./PeterMeier-Rechnung-3.pdf")
+                         ".")))
        """) }
 
-  write [canvas bill invoice-file]
+  write
 
-  (try-with [c canvas]
-    (. :QRBill :draw bill c)
-    (. c :saveAs (. invoice-file :toPath))
-    (println "Bill saved at " invoice-file)))
+  ([bill out-file]
+    (write-canvas (. :PDFCanvas :new 210.0 297.0) bill out-file))
+
+  ([bill payment-slip-pdf-type invoice-pdf-file out-dir]
+    (let [page-no  (if (= :last-page-at-end payment-slip-pdf-type) -1 -2)
+          out-file (io/file out-dir (make-outfile-name invoice-pdf-file))
+          canvas   (. :PDFCanvas :new (. invoice-pdf-file :toPath) page-no)]
+      (write-canvas canvas bill out-file))))
