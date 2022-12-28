@@ -70,7 +70,7 @@
   (let [f (io/file-name invoice-pdf-file)
         b (io/file-basename f)
         e (io/file-ext f)]
-    (if (match? b #".*-[0-9]*")
+    (if (match? b #".*-[0-9]+")
       (let [idx (str/last-index-of b "-")]
         (str (str/subs b 0 idx) "-QR" (str/subs b idx) "." e))
       (str b "-QR" "." e))))
