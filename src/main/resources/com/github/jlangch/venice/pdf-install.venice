@@ -55,14 +55,10 @@
      :examples '(
        """
        (do
-         (load-module :pdf-tools)
-         (pdf-tools/install :dir (repl/libs-dir) :silent false))
+         (load-module :pdf-install)
+         (pdf-install/install :dir (repl/libs-dir) :silent false))
        """) }
 
   install [ & options]
 
-  (let [opts     (apply hash-map options)
-        silent   (:silent opts true)
-        dir      (:dir opts ".")]
-    (load-module :maven ['maven :as 'm])
-    (run! #(m/download % :dir dir :silent silent) (libraries))))
+  (apply core/install-libs (libraries) options))

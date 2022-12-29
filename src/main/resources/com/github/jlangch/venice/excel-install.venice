@@ -75,11 +75,7 @@
 
   install [ & options]
 
-  (let [opts     (apply hash-map options)
-        silent   (:silent opts true)
-        dir      (:dir opts ".")]
-    (load-module :maven ['maven :as 'm])
-    (run! #(m/download % :dir dir :silent silent) (libraries))))
+  (apply core/install-libs (libraries) options))
 
 
 (defn
@@ -98,14 +94,10 @@
      :examples '(
        """
        (do
-         (load-module :excel)
-         (excel/install-4.x :dir (repl/libs-dir) :silent false))
+         (load-module :excel-install)
+         (excel-install/install-4.x :dir (repl/libs-dir) :silent false))
        """) }
 
   install-4.x [ & options]
 
-  (let [opts     (apply hash-map options)
-        silent   (:silent opts true)
-        dir      (:dir opts ".")]
-    (load-module :maven ['maven :as 'm])
-    (run! #(m/download % :dir dir :silent silent) (libraries-4.x))))
+  (apply core/install-libs (libraries-4.x) options))

@@ -59,18 +59,16 @@
      :examples '(
        """
        (do
-         (load-module :tomcat)
-         (tomcat/install :dir (repl/libs-dir) :silent false))
+         (load-module :tomcat-install)
+         (tomcat-install/install :dir (repl/libs-dir) :silent false))
        """) }
 
   install [ & options]
 
   (let [opts       (apply hash-map options)
         silent     (:silent opts true)
-        dir        (:dir opts ".")
         java-major (java-major-version)
         tc-version (if (= java-major 8) "10.0.x" "10.1.x")]
     (when-not silent
       (println "Installing Tomcat ~{tc-version} for Java ~{java-major}"))
-    (load-module :maven ['maven :as 'm])
-    (run! #(m/download % :dir dir :silent silent) (libraries))))
+    (apply core/install-libs (libraries) options)))

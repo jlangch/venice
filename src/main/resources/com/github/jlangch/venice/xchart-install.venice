@@ -47,14 +47,10 @@
      :examples '(
        """
        (do
-         (load-module :xchart)
-         (xchart/install :dir (repl/libs-dir) :silent false))
+         (load-module :xchart-install)
+         (xchart-install/install :dir (repl/libs-dir) :silent false))
        """) }
 
   install [ & options]
 
-  (let [opts     (apply hash-map options)
-        silent   (:silent opts true)
-        dir      (:dir opts ".")]
-    (load-module :maven ['maven :as 'm])
-    (run! #(m/download % :dir dir :silent silent) (libraries))))
+  (apply core/install-libs (libraries) options))

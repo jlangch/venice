@@ -67,8 +67,4 @@
 
   install [ & options]
 
-  (let [opts     (apply hash-map options)
-        silent   (:silent opts true)
-        dir      (:dir opts ".")]
-    (load-module :maven ['maven :as 'm])
-    (run! #(m/download % :dir dir :silent silent) (libraries))))
+  (apply core/install-libs (libraries) options))
