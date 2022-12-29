@@ -71,4 +71,8 @@
         tc-version (if (= java-major 8) "10.0.x" "10.1.x")]
     (when-not silent
       (println "Installing Tomcat ~{tc-version} for Java ~{java-major}"))
-    (apply core/install-libs (libraries) options)))
+    (let [opts     (apply hash-map options)
+          silent   (:silent opts true)
+          dir      (:dir opts ".")]
+      (load-module :maven)
+      (run! #(maven/download % :dir dir :silent silent) (libraries)))))

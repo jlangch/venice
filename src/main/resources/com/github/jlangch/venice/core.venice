@@ -1985,37 +1985,6 @@
   repl? [] (= :repl *run-mode*))
 
 
-(defn
-  ^{ :arglists '("(install-libs libraries options*)")
-     :doc
-       """
-       Install Java 3rd party libraries.
-
-       Options:
-
-       | :dir path             | download dir, defaults to "." |
-       | :silent {true,false}  | if silent is true does not show a progress bar, defaults to true |
-       """
-     :examples '(
-       """
-       (do
-         (def libraries  [ "org.bouncycastle:bcmail-jdk15on:1.60"
-                           "org.bouncycastle:bcpg-jdk15on:1.60"
-                           "org.bouncycastle:bcprov-jdk15on:1.60"
-                           "org.bouncycastle:bcpkix-jdk15on:1.60"
-                           "org.bouncycastle:bctls-jdk15on:1.60" ])
-         (install-libs libraries :dir (repl/libs-dir) :silent false))
-       """) }
-
-  install-libs [libraries & options]
-
-  (let [opts     (apply hash-map options)
-        silent   (:silent opts true)
-        dir      (:dir opts ".")]
-    (load-module :maven ['maven :as 'm])
-    (run! #(m/download % :dir dir :silent silent) libraries)))
-
-
 
 ;; ---------------------------------------------------------------------------
 ;; message box
