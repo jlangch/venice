@@ -74,10 +74,12 @@
         (str (str/subs basename 0 idx) "-QR" (str/subs basename idx) "." ext))
       (str basename "-QR" "." ext))))
 
+
 (defn- address-spec [key spec]
-  (address (-> spec key :address :name)
-           (-> spec key :address :line1)
-           (-> spec key :address :line2)))
+  (address (-> spec key :name)
+           (-> spec key :line1)
+           (-> spec key :line2)))
+
 
 (defn- write-spec [spec]
   (let [bill       (bill (-> spec :bill :account)
@@ -134,13 +136,13 @@
        (do
          (load-module :qrbill ['qrbill :as 'q])
 
-         (q/write  { :debtor      { :address   { :name  "Peter Meier"
-                                                 :line1 "Aarestrasse 2"
-                                                 :line2 "9500 Wil" } }
+         (q/write  { :debtor      { :name  "Peter Meier"
+                                    :line1 "Aarestrasse 2"
+                                    :line2 "9500 Wil" }
 
-                     :creditor    { :address   { :name  "Kenag GmbH"
-                                                 :line1 "Aarestrasse 3"
-                                                 :line2 "9500 Wil" } }
+                     :creditor    { :name  "Kenag GmbH"
+                                    :line1 "Aarestrasse 3"
+                                    :line2 "9500 Wil" }
 
                      :bill        { :account   "CH00 3000 2000 1000 0000 0"
                                     :amount    "300.00"
