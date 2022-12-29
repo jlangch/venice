@@ -139,21 +139,16 @@
          (q/write  { :debtor      { :name  "Peter Meier"
                                     :line1 "Aarestrasse 2"
                                     :line2 "9500 Wil" }
-
                      :creditor    { :name  "Kenag GmbH"
                                     :line1 "Aarestrasse 3"
                                     :line2 "9500 Wil" }
-
                      :bill        { :account   "CH00 3000 2000 1000 0000 0"
                                     :amount    "300.00"
                                     :reference "000004"
                                     :message   "Testrechnung 4" }
-
                      :qr-slip-pos :new-page-at-end    ;; :last-page
-
                      :file-in     "./Meier-Rechnung-1.pdf"
-
-                     :file-out    "./Meier-Rechnung-1-QR.pdf" }))
+                     :file-out    "./Meier-Rechnung-QR-1.pdf" }))
        """) }
 
   write
