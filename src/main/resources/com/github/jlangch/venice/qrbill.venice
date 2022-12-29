@@ -75,6 +75,27 @@
         (str (str/subs b 0 idx) "-QR" (str/subs b idx) "." e))
       (str b "-QR" "." e))))
 
+(defn- address-spec [key spec]
+  (address (-> spec key :address :name)
+           (-> spec key :address :line1)
+           (-> spec key :address :line2)))
+
+(defn- write-spec [spec]
+  (let [bill       (bill (-> spec :bill :account)
+                         (decimal (-> spec :bill :amount) 2 :HALF_UP)
+                         (-> spec :bill :reference)
+                         (-> spec :bill :message)
+                         (address-spec :debtor spec)
+                         (address-spec :creditor spec))
+       qr-slip-pos (:qr-slip-pos spec)
+       file-in     (io/file (:file-in spec))
+       file-out    (io/file (:file-out spec))
+       page-no     (if (= :last-page qr-slip-pos) -1I -2I)
+       canvas      (if file-in
+                     (. :PDFCanvas :new (. file-in :toPath) page-no)
+                     (. :PDFCanvas :new 210.0 297.0))]
+      (write-canvas canvas bill file-out)))
+
 
 (defn
   ^{ :arglists '(
@@ -109,15 +130,41 @@
            ;; create a PDF invoice with the payment slip added on a new
            ;; page to the file "./Meier-Rechnung-3.pdf"
            (q/write bill :new-page-at-end "./Meier-Rechnung-3.pdf" ".")))
+       """,
+       """
+       (do
+         (load-module :qrbill ['qrbill :as 'q])
+
+         (q/write  { :debtor      { :address   { :name  "Peter Meier"
+                                                 :line1 "Aarestrasse 2"
+                                                 :line2 "9500 Wil" } }
+
+                     :creditor    { :address   { :name  "Kenag GmbH"
+                                                 :line1 "Aarestrasse 3"
+                                                 :line2 "9500 Wil" } }
+
+                     :bill        { :account   "CH00 3000 2000 1000 0000 0"
+                                    :amount    "300.00"
+                                    :reference "000004"
+                                    :message   "Testrechnung 4" }
+
+                     :qr-slip-pos :new-page-at-end    ;; :last-page
+
+                     :file-in     "./Meier-Rechnung-1.pdf"
+
+                     :file-out    "./Meier-Rechnung-1-QR.pdf" }))
        """) }
 
   write
 
+  ([spec]
+    (write-spec spec))
+
   ([bill out-file]
-    (write-canvas (. :PDFCanvas :new 210.0 297.0) bill out-file))
+    (write-canvas (. :PDFCanvas :new 210.0 297.0) bill (io/file out-file)))
 
   ([bill payment-slip-pdf-type invoice-pdf-file out-dir]
-    (let [page-no  (if (= :last-page payment-slip-pdf-type) -1 -2)
+    (let [page-no  (if (= :last-page payment-slip-pdf-type) -1I -2I)
           out-file (io/file out-dir (make-outfile-name invoice-pdf-file))
-          canvas   (. :PDFCanvas :new (. invoice-pdf-file :toPath) page-no)]
+          canvas   (. :PDFCanvas :new (. (io/file invoice-pdf-file) :toPath) page-no)]
       (write-canvas canvas bill out-file))))
