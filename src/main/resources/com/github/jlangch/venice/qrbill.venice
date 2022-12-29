@@ -67,13 +67,12 @@
 
 
 (defn- make-outfile-name [invoice-pdf-file]
-  (let [f (io/file-name invoice-pdf-file)
-        b (io/file-basename f)
-        e (io/file-ext f)]
-    (if (match? b #".*-[0-9]+")
-      (let [idx (str/last-index-of b "-")]
-        (str (str/subs b 0 idx) "-QR" (str/subs b idx) "." e))
-      (str b "-QR" "." e))))
+  (let [basename (io/file-basename invoice-pdf-file)
+        ext      (io/file-ext invoice-pdf-file)]
+    (if (match? basename #".*-[0-9]+")
+      (let [idx (str/last-index-of basename "-")]
+        (str (str/subs basename 0 idx) "-QR" (str/subs basename idx) "." ext))
+      (str basename "-QR" "." ext))))
 
 (defn- address-spec [key spec]
   (address (-> spec key :address :name)
@@ -166,5 +165,6 @@
   ([bill payment-slip-pdf-type invoice-pdf-file out-dir]
     (let [page-no  (if (= :last-page payment-slip-pdf-type) -1I -2I)
           out-file (io/file out-dir (make-outfile-name invoice-pdf-file))
-          canvas   (. :PDFCanvas :new (. (io/file invoice-pdf-file) :toPath) page-no)]
+          canvas   (. :PDFCanvas :new (. (io/file invoice-pdf-file) :toPath)
+                                      page-no)]
       (write-canvas canvas bill out-file))))
