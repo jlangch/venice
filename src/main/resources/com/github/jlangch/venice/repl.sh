@@ -6,7 +6,7 @@
 #    |
 #    +-- libs
 #    |    +-- repl.json
-#    |    +-- venice-1.10.30.jar
+#    |    +-- venice-1.10.31.jar
 #    |
 #    +-- scripts
 #    |    +-- script-1.venice
