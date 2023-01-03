@@ -42,7 +42,7 @@
 ;;; ----------------------------------------------------------------------------
 ;;;
 ;;; [1] Start a REPL and load the expression parser script
-;;;     (load-file "path-to-venice/doc/examples/scripts/parser-2.venice")
+;;;     (load-file "path-to-venice/doc/examples/scripts/expr-parser-2.venice")
 ;;;
 ;;; [2] Test the tokenizer:
 ;;;     (tokenize "3 + 4.2")        ; => [[:int "3"] [:op "+"] [:float "4.2"]]

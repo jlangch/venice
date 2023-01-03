@@ -36,7 +36,7 @@
 ;;; ----------------------------------------------------------------------------
 ;;;
 ;;; [1] Start a REPL and load the expression parser script
-;;;     (load-file "path-to-venice/doc/examples/scripts/parser-1.venice")
+;;;     (load-file "path-to-venice/doc/examples/scripts/expr-parser-1.venice")
 ;;;
 ;;; [2] Test the expression parser:
 ;;;     (evaluate "1")                    ; => 1
