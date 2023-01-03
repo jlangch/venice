@@ -1,42 +1,56 @@
-# Parsifal Parser Combinator
+;;;;   __    __         _
+;;;;   \ \  / /__ _ __ (_) ___ ___
+;;;;    \ \/ / _ \ '_ \| |/ __/ _ \
+;;;;     \  /  __/ | | | | (_|  __/
+;;;;      \/ \___|_| |_|_|\___\___|
+;;;;
+;;;;
+;;;; Copyright 2017-2023 Venice
+;;;;
+;;;; Licensed under the Apache License, Version 2.0 (the "License");
+;;;; you may not use this file except in compliance with the License.
+;;;; You may obtain a copy of the License at
+;;;;
+;;;;     http://www.apache.org/licenses/LICENSE-2.0
+;;;;
+;;;; Unless required by applicable law or agreed to in writing, software
+;;;; distributed under the License is distributed on an "AS IS" BASIS,
+;;;; WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+;;;; See the License for the specific language governing permissions and
+;;;; limitations under the License.
 
-*Parsifal* is a port of Nate Young's Parsatron
-Clojure [parser combinator library](https://github.com/youngnh/parsatron) 
-project. 
+;;; ----------------------------------------------------------------------------
+;;; Parsifal expression evaluator example
+;;; ----------------------------------------------------------------------------
+;;;
+;;; The expression evaluator evaluates expressions like `"(3 + 4) * 5"`. It
+;;; supports the math operators `+`, `-`, `*`, and `/`, `long` and `double`
+;;; numbers, and the parenthesis `(` and `)`.
+;;;
+;;; The evaluator uses two Parsifal parsers. The up-front tokenizing parser
+;;; operates on a string (stream of characters) and returns a list of tokens.
+;;; The expression parser operates on a stream of tokens and returns a number.
+;;;
+;;; Parsifal does not handle whitespaces on its own. The particular parser
+;;; has to deal with whitespaces.
+;;; In the subsequent expression parser the up-front tokenizing parser
+;;; handles the whitespaces to free the main expression from dealing with
+;;; whitespaces.
 
-See [A Guide to Parsifal](ext-parsifal-guide.md)
+;;; ----------------------------------------------------------------------------
+;;; Usage
+;;; ----------------------------------------------------------------------------
+;;;
+;;; [1] Start a REPL and load the expression parser script
+;;;     (load-file "path-to-venice/doc/examples/scripts/parser-2.venice")
+;;;
+;;; [2] Test the tokenizer:
+;;;     (tokenize "3 + 4.2")        ; => [[:int "3"] [:op "+"] [:float "4.2"]]
+;;;
+;;; [3] Test the expression parser:
+;;;     (evaluate "3 + 4.1 - 5 * 3.2")    ; => -8.9
+;;;     (evaluate "3 + (4.1 - 5) * 3.2")  ; => 0.11999999999999877
 
-
-## Example
-
-Parsifal expression evaluator example
-
-The expression evaluator evaluates expressions like `"(3 + 4) * 5"`. It supports the math operators `+`, `-`, `*`, and `/`, `long` and `double` numbers, and the parenthesis `(` and `)`.
-
-The evaluator uses two Parsifal parsers. The up-front tokenizing parser operates on a string (stream of characters) and returns a list of tokens. The expression parser operates on a stream of tokens and returns a number.
-
-
-**Usage**
-
-[1] Load the expression parser below in a REPL
-
-[2] Test the tokenizer:
-
-```clojure
-(tokenize "3 + 4.2")  ; => [[:int "3" (1,1)] [:op "+" (1,3)] [:float "4.2" (1,5)]]
-```
-
-[3] Test the expression parser:
-
-```clojure
-(evaluate "")                      ; => nil
-(evaluate "3 + 4.1 - 5 * 3.2")     ; => -8.9
-(evaluate "3 + (4.1 - 5) * 3.2")   ; => 0.11999999999999877
-```
-
-**Expression Parser**
-
-```clojure
 (do
   ;;; ----------------------------------------------------------------------------
   ;;; EBNF
@@ -59,13 +73,10 @@ The evaluator uses two Parsifal parsers. The up-front tokenizing parser operates
   ;;; [2] Expression Parser
   ;;; ----------------------------------------------------------------------------
   ;;;
-  ;;; Main            = Expression EOI ;
-  ;;; Expression      = AddExpression ;
-  ;;; AddExpression   = MulExpression { ( "+" | "-" ) MulExpression } ;
-  ;;; MulExpression   = UnaryExpression { ( "*" | "/" ) UnaryExpression } ;
-  ;;; UnaryExpression = ( "+" | "-" ) UnaryExpression | ParExpression | Literal ;
-  ;;; ParExpression   = "(" Expression ")" ;
-  ;;; Literal         = Integer | Float ;
+  ;;; Main            = Expr EOI ;
+  ;;; Expr            = Term ( "+" | "-" ) Expr | Term ;
+  ;;; Term            = Factor ( "*" | "/" ) Term | Factor ;
+  ;;; Factor          = "(" Expr ")" | Float | Integer ;
 
 
   (load-module :parsifal ['parsifal :as 'p])
@@ -112,12 +123,12 @@ The evaluator uses two Parsifal parsers. The up-front tokenizing parser operates
 
   (p/defparser lparen-tok []
     (p/let->> [[l c] (p/pos)
-               t     (p/char #\lparen)]
+               t     (p/char "(")]
       (p/always (Token. :lparen (str t) l c))))
 
   (p/defparser rparen-tok []
     (p/let->> [[l c] (p/pos)
-               t     (p/char #\rparen)]
+               t     (p/char ")")]
       (p/always (Token. :rparen (str t) l c))))
 
   (p/defparser int-tok []
@@ -128,7 +139,7 @@ The evaluator uses two Parsifal parsers. The up-front tokenizing parser operates
   (p/defparser float-tok []
     (p/attempt (p/let->> [[l c] (p/pos)
                           i     (p/many1 (p/digit))
-                          d     (p/char #\.)
+                          d     (p/char ".")
                           f     (p/many1 (p/digit))]
                   (p/always (Token. :float
                                     (apply str (flatten (list i d f)))
@@ -141,17 +152,17 @@ The evaluator uses two Parsifal parsers. The up-front tokenizing parser operates
 
   (p/defparser token []
     (p/many (ws-tok))
-    (p/choice (op-tok) 
-              (lparen-tok) 
-              (rparen-tok) 
-              (float-tok) 
-              (int-tok) 
+    (p/choice (op-tok)
+              (lparen-tok)
+              (rparen-tok)
+              (float-tok)
+              (int-tok)
               (unknown-tok)))
 
   (p/defparser tokens []
-    (p/let->> [t (p/many (p/attempt (token)))
-               _ (p/many (p/attempt (ws-tok)))
-               _ (p/eof)]
+    (p/let->> [t  (p/many (p/attempt (token)))
+               _  (p/many (p/attempt (ws-tok)))
+               _  (p/eof)]
       (p/always t)))
 
   (defn tokenize [expression]
@@ -163,12 +174,8 @@ The evaluator uses two Parsifal parsers. The up-front tokenizing parser operates
   ;;; Expression Parser
   ;;; ----------------------------------------------------------------------------
 
-  (defn chained-math [seed-val tuples]
-    ;; (chained-math 1 [["+" 6] ["-" 4]]) ; => (1 + 6 - 4) => 3
-    (reduce (fn [acc t] (let [op (resolve (symbol (first t)))]
-                          (op acc (second t))))
-            seed-val
-            tuples))
+  (defn eval-op [op-name x y]
+    ((resolve (symbol op-name)) x y))
 
   (defn op [sym]
     (p/token #(token? % :op sym)))
@@ -188,33 +195,23 @@ The evaluator uses two Parsifal parsers. The up-front tokenizing parser operates
       (p/always (double (:val i)))))
 
   (p/defparser expr []
-    ; no EOF handling in this parser! It's recursively called.
-    (add-expr))
+    (p/either (p/attempt (p/let->> [x   (term)
+                                    opc (p/either (op "+") (op "-"))
+                                    y   (expr)]
+                           (p/always (eval-op (:val opc) x y))))
+              (term)))
 
-  (p/defparser add-expr []
-    (p/let->> [seed   (mul-expr)
-               tuples (p/many (p/let->> [opc (p/either (op "+") (op "-"))
-                                         val (mul-expr)]
-                                (p/always [(:val opc) val])))]
-       (p/always (chained-math seed tuples))))
+  (p/defparser term []
+    (p/either (p/attempt (p/let->> [x   (factor)
+                                    opc (p/either (op "*") (op "/"))
+                                    y   (term)]
+                           (p/always (eval-op (:val opc) x y))))
+              (factor)))
 
-  (p/defparser mul-expr []
-    (p/let->> [seed   (unary-expr)
-               tuples (p/many (p/let->> [opc (p/either (op "*") (op "/"))
-                                         val (unary-expr)]
-                                (p/always [(:val opc) val])))]
-       (p/always (chained-math seed tuples))))
-
-  (p/defparser unary-expr []
-    (p/choice (p/let->> [opc (p/either (op "+") (op "-"))
-                         val (unary-expr)]
-                 (p/always (if (token-value? opc "+") val (negate val))))
-              (paren-expr)
+  (p/defparser factor []
+    (p/choice (p/between (lparen) (rparen) (expr))
               (float)
               (int)))
-
-  (p/defparser paren-expr []
-    (p/between (lparen) (rparen) (expr)))
 
   (p/defparser main []
     ;; 1) parse empty expressions:    ""           => OK, value => nil
@@ -230,6 +227,3 @@ The evaluator uses two Parsifal parsers. The up-front tokenizing parser operates
   (defn evaluate [expression]
     (p/run (main) (tokenize expression)))
 )
-```
-
-
