@@ -39,6 +39,10 @@
 ;;;     (load-file "path-to-venice/doc/examples/scripts/parser-1.venice")
 ;;;
 ;;; [2] Test the expression parser:
+;;;     (evaluate "1")                    ; => 1
+;;;     (evaluate "1 + 2")                ; => 3
+;;;     (evaluate "1 + 2 * 3 + 4")        ; => 11
+;;;     (evaluate "(1 + 2) * (3 + 4)")    ; => 21
 ;;;     (evaluate "3 + 4.1 - 5 * 3.2")    ; => -8.9
 ;;;     (evaluate "3 + (4.1 - 5) * 3.2")  ; => 0.11999999999999877
 
@@ -76,19 +80,13 @@
     (p/many (p/any-char-of " \t\r\n")))
 
   (p/defparser lparen []
-    (p/attempt (p/let->> [_  (ws)
-                          p  (p/char "(")]
-                 (p/always p))))
+    (p/attempt (p/>> (ws) (p/char "("))))
 
   (p/defparser rparen []
-    (p/attempt (p/let->> [_  (ws)
-                          p  (p/char ")")]
-                 (p/always p))))
+    (p/attempt (p/>> (ws) (p/char ")"))))
 
   (p/defparser op [ch]
-    (p/attempt (p/let->> [_  (ws)
-                          p  (p/char ch)]
-                 (p/always p))))
+    (p/attempt (p/>> (ws) (p/char ch))))
 
   (p/defparser int []
     (p/attempt (p/let->> [_  (ws)

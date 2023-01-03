@@ -42,14 +42,23 @@
 ;;; ----------------------------------------------------------------------------
 ;;;
 ;;; [1] Start a REPL and load the expression parser script
-;;;     (load-file "path-to-venice/doc/examples/scripts/parser-2.venice")
+;;;     (load-file "path-to-venice/doc/examples/scripts/parser-3.venice")
 ;;;
 ;;; [2] Test the tokenizer:
 ;;;     (tokenize "3 + 4.2")        ; => [[:int "3"] [:op "+"] [:float "4.2"]]
 ;;;
 ;;; [3] Test the expression parser:
+;;;     (evaluate "1")                    ; => 1
+;;;     (evaluate "1 + 2")                ; => 3
+;;;     (evaluate "1 + 2 * 3 + 4")        ; => 11
+;;;     (evaluate "(1 + 2) * (3 + 4)")    ; => 21
 ;;;     (evaluate "3 + 4.1 - 5 * 3.2")    ; => -8.9
 ;;;     (evaluate "3 + (4.1 - 5) * 3.2")  ; => 0.11999999999999877
+;;;     ;; unary
+;;;     (evaluate "-1")                   ; => -1
+;;;     (evaluate "1 + -2")               ; => -1
+;;;     (evaluate "1 + 2 * -3 + 4")       ; => -1
+;;;     (evaluate "-(-1 + 2) * (-3 + 4)") ; => -1
 
 (do
   ;;; ----------------------------------------------------------------------------
@@ -73,10 +82,13 @@
   ;;; [2] Expression Parser
   ;;; ----------------------------------------------------------------------------
   ;;;
-  ;;; Main            = Expr EOI ;
-  ;;; Expr            = Term ( "+" | "-" ) Expr | Term ;
-  ;;; Term            = Factor ( "*" | "/" ) Term | Factor ;
-  ;;; Factor          = "(" Expr ")" | Float | Integer ;
+  ;;; Main            = Expression EOI ;
+  ;;; Expression      = AddExpression ;
+  ;;; AddExpression   = MulExpression { ( "+" | "-" ) MulExpression } ;
+  ;;; MulExpression   = UnaryExpression { ( "*" | "/" ) UnaryExpression } ;
+  ;;; UnaryExpression = ( "+" | "-" ) UnaryExpression | ParExpression | Literal ;
+  ;;; ParExpression   = "(" Expression ")" ;
+  ;;; Literal         = Integer | Float ;
 
 
   (load-module :parsifal ['parsifal :as 'p])
@@ -174,8 +186,12 @@
   ;;; Expression Parser
   ;;; ----------------------------------------------------------------------------
 
-  (defn eval-op [op-name x y]
-    ((resolve (symbol op-name)) x y))
+  (defn chained-math [seed-val tuples]
+    ;; (chained-math 1 [["+" 6] ["-" 4]]) ; => (1 + 6 - 4) => 3
+    (reduce (fn [acc t] (let [op (resolve (symbol (first t)))]
+                          (op acc (second t))))
+            seed-val
+            tuples))
 
   (defn op [sym]
     (p/token #(token? % :op sym)))
@@ -195,23 +211,33 @@
       (p/always (double (:val i)))))
 
   (p/defparser expr []
-    (p/either (p/attempt (p/let->> [x   (term)
-                                    opc (p/either (op "+") (op "-"))
-                                    y   (expr)]
-                           (p/always (eval-op (:val opc) x y))))
-              (term)))
+    ; no EOF handling in this parser! It's recursively called.
+    (add-expr))
 
-  (p/defparser term []
-    (p/either (p/attempt (p/let->> [x   (factor)
-                                    opc (p/either (op "*") (op "/"))
-                                    y   (term)]
-                           (p/always (eval-op (:val opc) x y))))
-              (factor)))
+  (p/defparser add-expr []
+    (p/let->> [seed   (mul-expr)
+               tuples (p/many (p/let->> [opc (p/either (op "+") (op "-"))
+                                         val (mul-expr)]
+                                (p/always [(:val opc) val])))]
+       (p/always (chained-math seed tuples))))
 
-  (p/defparser factor []
-    (p/choice (p/between (lparen) (rparen) (expr))
+  (p/defparser mul-expr []
+    (p/let->> [seed   (unary-expr)
+               tuples (p/many (p/let->> [opc (p/either (op "*") (op "/"))
+                                         val (unary-expr)]
+                                (p/always [(:val opc) val])))]
+       (p/always (chained-math seed tuples))))
+
+  (p/defparser unary-expr []
+    (p/choice (p/let->> [opc (p/either (op "+") (op "-"))
+                         val (unary-expr)]
+                 (p/always (if (token-value? opc "+") val (negate val))))
+              (paren-expr)
               (float)
               (int)))
+
+  (p/defparser paren-expr []
+    (p/between (lparen) (rparen) (expr)))
 
   (p/defparser main []
     ;; 1) parse empty expressions:    ""           => OK, value => nil
