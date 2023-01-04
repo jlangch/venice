@@ -104,7 +104,7 @@
           check     (char->long (third meta))
           raw-ref   (str/butlast ref-norm)
           check-eff (mod-10-checksum raw-ref)
-          bill-nr   (str/nbutlast ref-norm 3)]
+          bill-nr   (str/butnlast ref-norm 3)]
       (when-not (= check check-eff)
         (throw (ex :VncException
                    (str/format "Invalid QR-Reference checksum '%d' for ref '%s'. Effective checksum is '%d'!")
