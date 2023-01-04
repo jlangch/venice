@@ -38,6 +38,7 @@
 
 (def- checksum-table [0, 9, 4, 6, 8, 2, 7, 1, 3, 5])
 
+
 (defn- char->long [c] (- (long c) (long #\0)))
 
 
@@ -46,10 +47,12 @@
     t
     (throw (ex :VncException (str "Invalid bill type index '" n "'!")))))
 
+
 (defn- bill-type->long [t]
   (if-let [n (get bill-types t)]
     n
     (throw (ex :VncException (str "Invalid bill type '" (pr-str t) "'!")))))
+
 
 (defn- remove-leading-zeroes [s]
   (loop [s s]
@@ -57,13 +60,6 @@
       (recur (str/rest s))
       s)))
 
-(defn format [s]
-  (->> (seq s)
-       (reverse)
-       (partition-all 5)
-       (map #(apply str (reverse %)))
-       (reverse)
-       (str/join " ")))
 
 (defn mod-10-checksum [s]
   (if-not (match? s #"[ 0-9]+")
@@ -74,9 +70,6 @@
                                     (get checksum-table)))
                  0))))
 
-(defn qr-ref [version bill-type bill-nr]
-  (let [ref (qr-ref-raw version bill-type bill-nr)]
-    (str ref (mod-10-checksum ref))))
 
 (defn- qr-ref-raw [version bill-type bill-nr]
   (let [padding-zeros (- qr-ref-len num-meta-chars (count bill-nr))]
@@ -87,12 +80,71 @@
            (bill-type->long bill-type)
            version))))
 
-(defn parse [ref]
+
+(defn
+  ^{ :arglists '("(format s)")
+     :doc "Format a QR reference."
+     :examples '(
+         """
+         (do
+           (load-module :qrref ['qrref :as 'qr])
+           (qr/format (qr/qr-ref 1 :bill "1234")))
+         """ ) }
+
+  format [s]
+
+  (->> (seq s)
+       (reverse)
+       (partition-all 5)
+       (map #(apply str (reverse %)))
+       (reverse)
+       (str/join " ")))
+
+(defn
+  ^{ :arglists '("(qr-ref version bill-type bill-nr)")
+     :doc """
+          Creates a QR reference.
+
+          The Version is an integer [1..9]. The bill type is one of {:bill,
+          :reminder-1, :reminder-2 , :reminder-3}. The bill number is a string
+          with up to 24 digits '0'..'9'.
+          """
+     :examples '(
+         """
+         (do
+           (load-module :qrref ['qrref :as 'qr])
+           (qr/qr-ref 1 :bill "1234"))
+         """ ) }
+
+  qr-ref [version bill-type bill-nr]
+
+  (when-not (< 0 version 10)
+    (throw (ex :VncException
+               (str/format "Unsupported QR-Reference version %d! Must be [1..9]."
+                           version))))
+
+  (let [ref (qr-ref-raw version bill-type bill-nr)]
+    (str ref (mod-10-checksum ref))))
+
+
+(defn
+  ^{ :arglists '("(parse ref)")
+     :doc "Parse a QR reference. The reference my be formatted."
+     :examples '(
+         """
+         (do
+           (load-module :qrref ['qrref :as 'qr])
+           (qr/parse (qr/qr-ref 1 :bill "1234")))
+         """ ) }
+
+  parse [ref]
+
   (when (str/blank? ref)
     (throw (ex :VncException "A QR-Reference must not be blank!")))
 
   (when-not (match? ref #"[ 0-9]+")
-    (throw (ex :VncException "A QR-Reference must be built from spaces and digits only!")))
+    (throw (ex :VncException
+               "A QR-Reference must be built from spaces and digits only!")))
 
   (let [ref-norm (str/replace-all ref " " "")]
     (when (< (count ref-norm) 10)
@@ -107,13 +159,11 @@
           bill-nr   (str/butnlast ref-norm 3)]
       (when-not (= check check-eff)
         (throw (ex :VncException
-                   (str/format "Invalid QR-Reference checksum '%d' for ref '%s'. Effective checksum is '%d'!")
+                   (str/format (str "Invalid QR-Reference checksum '%d' for ref "
+                                    "'%s'. The effective checksum is '%d'!")
                    check
                    raw-ref
-                   check-eff)))
-      (when-not (= version 1)
-        (throw (ex :VncException (str/format "Unsupported QR-Reference version %d!"
-                                             version))))
+                   check-eff))))
      { :version  version
        :bill-typ (long->bill-type type)
        :bill-nr  (remove-leading-zeroes bill-nr) })))
