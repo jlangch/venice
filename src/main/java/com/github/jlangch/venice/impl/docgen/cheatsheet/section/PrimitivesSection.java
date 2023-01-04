@@ -147,7 +147,7 @@ public class PrimitivesSection implements ISectionBuilder {
         use.addItem(diBuilder.getDocItem("str/rest"));
         use.addItem(diBuilder.getDocItem("str/nrest"));
         use.addItem(diBuilder.getDocItem("str/butlast"));
-        use.addItem(diBuilder.getDocItem("str/nbutlast"));
+        use.addItem(diBuilder.getDocItem("str/butnlast"));
         use.addItem(diBuilder.getDocItem("str/chars"));
         use.addItem(diBuilder.getDocItem("str/pos"));
         use.addItem(diBuilder.getDocItem("str/repeat"));

@@ -1133,14 +1133,14 @@ public class StringFunctions {
             private static final long serialVersionUID = -1848883965231344442L;
         };
 
-    public static VncFunction str_nbutlast =
+    public static VncFunction str_butnlast =
         new VncFunction(
-                "str/nbutlast",
+                "str/butnlast",
                 VncFunction
                     .meta()
-                    .arglists("(str/nbutlast s n)")
+                    .arglists("(str/butnlast s n)")
                     .doc("Returns a possibly empty string of the characters without the n last characters.")
-                    .examples("(str/nbutlast \"abcdef\" 3)")
+                    .examples("(str/butnlast \"abcdef\" 3)")
                     .build()
         ) {
             @Override
@@ -2551,7 +2551,7 @@ public class StringFunctions {
                     .add(str_nfirst)
                     .add(str_nlast)
                     .add(str_butlast)
-                    .add(str_nbutlast)
+                    .add(str_butnlast)
                     .add(str_quote)
                     .add(str_double_quote)
                     .add(str_double_unquote)
