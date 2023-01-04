@@ -526,15 +526,84 @@ public class StringFunctionsTest {
     }
 
     @Test
+    public void test_str_butlast() {
+        final Venice venice = new Venice();
+
+        assertEquals("12", venice.eval("(str/butlast \"123\")"));
+        assertEquals("1",  venice.eval("(str/butlast \"12\")"));
+        assertEquals("",   venice.eval("(str/butlast \"1\")"));
+        assertEquals("",   venice.eval("(str/butlast \"\")"));
+        assertEquals(null, venice.eval("(str/butlast nil)"));
+    }
+
+    @Test
+    public void test_str_nbutlast() {
+        final Venice venice = new Venice();
+
+        assertEquals("123", venice.eval("(str/nbutlast \"123\" 0)"));
+        assertEquals("12",  venice.eval("(str/nbutlast \"12\" 0)"));
+        assertEquals("1",   venice.eval("(str/nbutlast \"1\" 0)"));
+        assertEquals("",    venice.eval("(str/nbutlast \"\" 0)"));
+        assertEquals(null,  venice.eval("(str/nbutlast nil 0)"));
+
+        assertEquals("12", venice.eval("(str/nbutlast \"123\" 1)"));
+        assertEquals("1",  venice.eval("(str/nbutlast \"12\" 1)"));
+        assertEquals("",   venice.eval("(str/nbutlast \"1\" 1)"));
+        assertEquals("",   venice.eval("(str/nbutlast \"\" 1)"));
+        assertEquals(null, venice.eval("(str/nbutlast nil 1)"));
+
+        assertEquals("1",  venice.eval("(str/nbutlast \"123\" 2)"));
+        assertEquals("",   venice.eval("(str/nbutlast \"12\" 2)"));
+        assertEquals("",   venice.eval("(str/nbutlast \"1\" 2)"));
+        assertEquals("",   venice.eval("(str/nbutlast \"\" 2)"));
+        assertEquals(null, venice.eval("(str/nrest nil 2)"));
+
+        assertEquals("",   venice.eval("(str/nbutlast \"123\" 3)"));
+        assertEquals("",   venice.eval("(str/nbutlast \"12\" 3)"));
+        assertEquals("",   venice.eval("(str/nbutlast \"1\" 3)"));
+        assertEquals("",   venice.eval("(str/nbutlast \"\" 3)"));
+        assertEquals(null, venice.eval("(str/nbutlast nil 3)"));
+   }
+
+    @Test
     public void test_str_rest() {
         final Venice venice = new Venice();
 
         assertEquals("23", venice.eval("(str/rest \"123\")"));
-        assertEquals("2", venice.eval("(str/rest \"12\")"));
-        assertEquals("", venice.eval("(str/rest \"1\")"));
-        assertEquals("", venice.eval("(str/rest \"\")"));
+        assertEquals("2",  venice.eval("(str/rest \"12\")"));
+        assertEquals("",   venice.eval("(str/rest \"1\")"));
+        assertEquals("",   venice.eval("(str/rest \"\")"));
         assertEquals(null, venice.eval("(str/rest nil)"));
     }
+
+    @Test
+    public void test_str_nrest() {
+        final Venice venice = new Venice();
+
+        assertEquals("123", venice.eval("(str/nrest \"123\" 0)"));
+        assertEquals("12",  venice.eval("(str/nrest \"12\" 0)"));
+        assertEquals("1",   venice.eval("(str/nrest \"1\" 0)"));
+        assertEquals("",    venice.eval("(str/nrest \"\" 0)"));
+        assertEquals(null,  venice.eval("(str/nrest nil 0)"));
+
+        assertEquals("23", venice.eval("(str/nrest \"123\" 1)"));
+        assertEquals("2",  venice.eval("(str/nrest \"12\" 1)"));
+        assertEquals("",   venice.eval("(str/nrest \"1\" 1)"));
+        assertEquals("",   venice.eval("(str/nrest \"\" 1)"));
+        assertEquals(null, venice.eval("(str/nrest nil 1)"));
+
+        assertEquals("3",  venice.eval("(str/nrest \"123\" 2)"));
+        assertEquals("",   venice.eval("(str/nrest \"12\" 2)"));
+        assertEquals("",   venice.eval("(str/nrest \"1\" 2)"));
+        assertEquals("",   venice.eval("(str/nrest \"\" 2)"));
+        assertEquals(null, venice.eval("(str/nrest nil 2)"));
+
+        assertEquals("",   venice.eval("(str/nrest \"123\" 3)"));
+        assertEquals("",   venice.eval("(str/nrest \"12\" 3)"));
+        assertEquals("",   venice.eval("(str/nrest \"1\" 3)"));
+        assertEquals("",   venice.eval("(str/nrest \"\" 3)"));
+        assertEquals(null, venice.eval("(str/nrest nil 3)"));
+   }
 
     @Test
     public void test_str_reverse() {

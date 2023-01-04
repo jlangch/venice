@@ -1126,7 +1126,34 @@ public class StringFunctions {
                 }
                 else {
                     final String s = Coerce.toVncString(args.first()).getValue();
-                    return new VncString(s.length() < 2 ? "" : s.substring(0, s.length()-1));
+                    return new VncString(s.length() <= 1 ? "" : s.substring(0, s.length()-1));
+                }
+            }
+
+            private static final long serialVersionUID = -1848883965231344442L;
+        };
+
+    public static VncFunction str_nbutlast =
+        new VncFunction(
+                "str/nbutlast",
+                VncFunction
+                    .meta()
+                    .arglists("(str/nbutlast s n)")
+                    .doc("Returns a possibly empty string of the characters without the n last characters.")
+                    .examples("(str/nbutlast \"abcdef\" 3)")
+                    .build()
+        ) {
+            @Override
+            public VncVal apply(final VncList args) {
+                ArityExceptions.assertArity(this, args, 2);
+
+                if (args.first() == Nil) {
+                    return Nil;
+                }
+                else {
+                    final String s = Coerce.toVncString(args.first()).getValue();
+                    final long n = Coerce.toVncLong(args.second()).getValue();
+                   return new VncString(s.length() <= n ? "" : s.substring(0, s.length()-(int)n));
                 }
             }
 
@@ -1153,6 +1180,33 @@ public class StringFunctions {
                 else {
                     final String s = Coerce.toVncString(args.first()).getValue();
                     return new VncString(s.length() < 2 ? "" : s.substring(1));
+                }
+            }
+
+            private static final long serialVersionUID = -1848883965231344442L;
+        };
+
+    public static VncFunction str_nrest =
+        new VncFunction(
+                "str/nrest",
+                VncFunction
+                    .meta()
+                    .arglists("(str/nrest s n)")
+                    .doc("Returns a possibly empty string of the characters after the n first characters.")
+                    .examples("(str/nrest \"abcdef\" 3)")
+                    .build()
+        ) {
+            @Override
+            public VncVal apply(final VncList args) {
+                ArityExceptions.assertArity(this, args, 2);
+
+                if (args.first() == Nil) {
+                    return Nil;
+                }
+                else {
+                    final String s = Coerce.toVncString(args.first()).getValue();
+                    final long n = Coerce.toVncLong(args.second()).getValue();
+                    return new VncString(s.length() < n ? "" : s.substring((int)n));
                 }
             }
 
@@ -2493,9 +2547,11 @@ public class StringFunctions {
                     .add(str_cr_lf)
                     .add(str_format)
                     .add(str_rest)
+                    .add(str_nrest)
                     .add(str_nfirst)
                     .add(str_nlast)
                     .add(str_butlast)
+                    .add(str_nbutlast)
                     .add(str_quote)
                     .add(str_double_quote)
                     .add(str_double_unquote)

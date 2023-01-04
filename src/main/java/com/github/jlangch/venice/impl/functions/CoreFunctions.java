@@ -4306,6 +4306,7 @@ public class CoreFunctions {
                         "Note: `(get :x foo)` is almost twice as fast as `(:x foo)`")
                     .examples(
                         "(get {:a 1 :b 2} :b)",
+                        "(get [0 1 2 3] 1)",
                         ";; keywords act like functions on maps \n" +
                         "(:b {:a 1 :b 2})")
                     .build()
