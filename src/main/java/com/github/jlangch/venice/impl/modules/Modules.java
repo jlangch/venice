@@ -74,6 +74,7 @@ public class Modules {
                         "pdf-install",
                         "qrbill",
                         "qrbill-install",
+                        "qrref",
                         "repl-setup",
                         "ring",
                         "semver",
