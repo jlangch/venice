@@ -31,7 +31,10 @@
                   :reminder-3  3 })
 
 
-;; bill type digit, version digit, checksum digit
+;; the number of meta digits in the QR reference:
+;;    - bill type digit
+;;    - version digit
+;;    - checksum digit
 (def- num-meta-chars 3)
 
 (def- qr-ref-len 27)
@@ -39,7 +42,7 @@
 (def- checksum-table [0, 9, 4, 6, 8, 2, 7, 1, 3, 5])
 
 
-(defn- char->long [c] (- (long c) (long #\0)))
+(defn- digit->long [c] (- (long c) (long #\0)))
 
 
 (defn- long->bill-type [n]
@@ -64,11 +67,9 @@
 (defn mod-10-checksum [s]
   (if-not (match? s #"[ 0-9]+")
     (throw (ex :VncException "The string must only contain spaces and digits!"))
-    (->> (seq s)
-         (filter str/digit?)
-         (reduce (fn [carry d] (->> (mod (+ carry (char->long d)) 10)
-                                    (get checksum-table)))
-                 0))))
+    (reduce (fn [carry d] (get checksum-table (mod (+ carry (digit->long d)) 10)))
+            0
+            (filter str/digit? (seq s)))))
 
 
 (defn- qr-ref-raw [version bill-type bill-nr]
@@ -89,7 +90,8 @@
          (do
            (load-module :qrref ['qrref :as 'qr])
            (qr/format (qr/qr-ref 1 :bill "1234")))
-         """ ) }
+         """ )
+     :see-also '("qrref/qr-ref", "qrref/parse") }
 
   format [s]
 
@@ -114,7 +116,8 @@
          (do
            (load-module :qrref ['qrref :as 'qr])
            (qr/qr-ref 1 :bill "1234"))
-         """ ) }
+         """ )
+     :see-also '("qrref/parse", "qrref/format") }
 
   qr-ref [version bill-type bill-nr]
 
@@ -135,7 +138,8 @@
          (do
            (load-module :qrref ['qrref :as 'qr])
            (qr/parse (qr/qr-ref 1 :bill "1234")))
-         """ ) }
+         """ )
+     :see-also '("qrref/qr-ref", "qrref/format") }
 
   parse [ref]
 
@@ -151,9 +155,9 @@
       (throw (ex :VncException "A QR-Reference must have more than 10 digits!")))
 
     (let [meta      (str/nlast ref-norm 3)
-          type      (char->long (first meta))
-          version   (char->long (second meta))
-          check     (char->long (third meta))
+          type      (digit->long (first meta))
+          version   (digit->long (second meta))
+          check     (digit->long (third meta))
           raw-ref   (str/butlast ref-norm)
           check-eff (mod-10-checksum raw-ref)
           bill-nr   (str/butnlast ref-norm 3)]
