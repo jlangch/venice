@@ -54,6 +54,7 @@ import com.github.jlangch.venice.impl.docgen.cheatsheet.modules.ModuleJavaSectio
 import com.github.jlangch.venice.impl.docgen.cheatsheet.modules.ModuleKiraSection;
 import com.github.jlangch.venice.impl.docgen.cheatsheet.modules.ModuleMavenSection;
 import com.github.jlangch.venice.impl.docgen.cheatsheet.modules.ModuleParsifalSection;
+import com.github.jlangch.venice.impl.docgen.cheatsheet.modules.ModuleQrRefSection;
 import com.github.jlangch.venice.impl.docgen.cheatsheet.modules.ModuleSemverSection;
 import com.github.jlangch.venice.impl.docgen.cheatsheet.modules.ModuleShellSection;
 import com.github.jlangch.venice.impl.docgen.cheatsheet.modules.ModuleTestSection;
@@ -117,7 +118,7 @@ public class DocGenerator {
                         "java",   "semver",   "excel",     "hexdump",
                         "shell",  "geoip",    "benchmark", "component",
                         "config", "parsifal", "grep",      "test",
-                        "fonts"));
+                        "fonts",  "qrref"));
 
         final IVeniceInterpreter venice = new VeniceInterpreter(new AcceptAllInterceptor());
 
@@ -313,6 +314,7 @@ public class DocGenerator {
         extmod.addSection(new DocSection("Tracing", "modules.tracing"));
         extmod.addSection(new DocSection("Benchmark", "modules.benchmark"));
         extmod.addSection(new DocSection("App", "modules.app"));
+        extmod.addSection(new DocSection("QR\u00A0Ref", "modules.qrref"));
         content.add(extmod);
 
         final DocSection others = new DocSection("Others", "others");
@@ -391,7 +393,8 @@ public class DocGenerator {
                 new ModuleTracingSection(diBuilder).section(),
                 new ModuleShellSection(diBuilder).section(),
                 new ModuleAnsiSection(diBuilder).section(),
-                new ModuleGrepSection(diBuilder).section());
+                new ModuleGrepSection(diBuilder).section(),
+        		new ModuleQrRefSection(diBuilder).section());
     }
 
     private List<DocSection> getModulesRightSections() {

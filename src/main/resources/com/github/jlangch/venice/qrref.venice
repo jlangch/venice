@@ -89,6 +89,11 @@
          """
          (do
            (load-module :qrref ['qrref :as 'qr])
+           (qr/format "000000000000000000001234011"))
+         """,
+         """
+         (do
+           (load-module :qrref ['qrref :as 'qr])
            (qr/format (qr/qr-ref 1 :bill "1234")))
          """ )
      :see-also '("qrref/qr-ref", "qrref/parse") }
@@ -105,11 +110,15 @@
 (defn
   ^{ :arglists '("(qr-ref version bill-type bill-nr)")
      :doc """
-          Creates a QR reference.
+          Creates a QR reference according to the Swiss payment standards.
 
-          The Version is an integer [1..9]. The bill type is one of {:bill,
-          :reminder-1, :reminder-2 , :reminder-3}. The bill number is a string
-          with up to 24 digits '0'..'9'.
+          &ensp; - *version*, an integer [1..9]¶
+          &ensp; - *bill-type*, one of {:bill, :reminder-1, :reminder-2, :reminder-3}¶
+          &ensp; - *bill-nr*, a string with up to 24 digits '0'..'9'
+
+          [Swiss Payment Standards / de](https://www.paymentstandards.ch/dam/downloads/ig-qr-bill-de.pdf)
+
+          [Swiss Payment Standards / en](https://www.paymentstandards.ch/dam/downloads/ig-qr-bill-en.pdf)
           """
      :examples '(
          """
@@ -132,12 +141,22 @@
 
 (defn
   ^{ :arglists '("(parse ref)")
-     :doc "Parse a QR reference. The reference my be formatted."
+     :doc "Parse a QR reference. The reference may be formatted."
      :examples '(
          """
          (do
            (load-module :qrref ['qrref :as 'qr])
            (qr/parse (qr/qr-ref 1 :bill "1234")))
+         """,
+         """
+         (do
+           (load-module :qrref ['qrref :as 'qr])
+           (qr/parse "000000000000000000001234011"))
+         """,
+         """
+         (do
+           (load-module :qrref ['qrref :as 'qr])
+           (qr/parse "00 00000 00000 00000 00012 34011"))
          """ )
      :see-also '("qrref/qr-ref", "qrref/format") }
 
