@@ -10,7 +10,7 @@ All notable changes to this project will be documented in this file.
 ### Added 
 
 - functions `str/nrest` and `str/butnlast`
-- module :qrref
+- module `:qrref`
 
 
 
