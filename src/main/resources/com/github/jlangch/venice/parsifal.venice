@@ -316,7 +316,8 @@
 
           The parser `let->>` does not rewind the input state if one of the sub
           parsers fails. `let->>*` is the backtracking version of `let->>` that
-          wraps the parsers within a call to `attempt`.
+          wraps the parsers within a call to `attempt`. See the backtracking
+          example below.
           """
      :examples '(
           """
@@ -349,10 +350,9 @@
           )
           """,
           """
+          ; Backtracking demo
           (do
             (load-module :parsifal ['parsifal :as 'p])
-
-            ; Backtracking demo
 
             ; No backtracking with `let->>` parser!
             (p/run (p/either (p/let->> [c (p/letter)
@@ -845,7 +845,8 @@
 
           The parser `>>` does not rewind the input state if any of the sub
           parsers fails. `>>*` is the backtracking version of `>>` that
-          wraps the parsers within a call to `attempt`.
+          wraps the parsers within a call to `attempt`. See the backtracking
+          example below.
           """
      :examples '(
           """
@@ -865,10 +866,9 @@
           )
           """,
           """
+          ; Backtracking demo
           (do
             (load-module :parsifal ['parsifal :as 'p])
-
-            ; Backtracking demo
 
             ; No backtracking with `>>` parser
             (p/run (p/either (p/>> (p/letter) (p/digit))
