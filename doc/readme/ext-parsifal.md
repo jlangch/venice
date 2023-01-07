@@ -7,9 +7,119 @@ project.
 See [A Guide to Parsifal](ext-parsifal-guide.md)
 
 
-## Example
+## Example 1
 
 Parsifal expression evaluator example
+
+The expression evaluator evaluates expressions like `"(3 + 4) * 5"`. It supports the math operators `+`, `-`, `*`, and `/`, `long` and `double` numbers, and the parenthesis `(` and `)`.
+
+**Usage**
+
+[1] Load the expression parser below in a REPL
+
+[2] Test the expression parser:
+
+```clojure
+(evaluate "1")                    ; => 1
+(evaluate "1 + 2")                ; => 3
+(evaluate "1 + 2 * 3 + 4")        ; => 11
+(evaluate "(1 + 2) * (3 + 4)")    ; => 21
+(evaluate "3 + 4.1 - 5 * 3.2")    ; => -8.9
+(evaluate "3 + (4.1 - 5) * 3.2")  ; => 0.11999999999999877
+```
+
+**Expression Parser**
+
+```clojure
+(do
+  ;;; ----------------------------------------------------------------------------
+  ;;; EBNF
+  ;;; ----------------------------------------------------------------------------
+  ;;;
+  ;;; Whitespace      = " " | "\t" | "\r" | "\n" ;
+  ;;; LParen          = "(" ;
+  ;;; RParen          = ")" ;
+  ;;; Digit           = "0" | "1" | "2" | "3" | "4" | "5" | "6" | "7" | "8" | "9" ;
+  ;;; Integer         = Digit { Digit } ;
+  ;;; Float           = Digit { Digit } "." Digit { Digit };
+  ;;;
+  ;;; Expr            = Term ( "+" | "-" ) Expr | Term ;
+  ;;; Term            = Factor ( "*" | "/" ) Term | Factor ;
+  ;;; Factor          = "(" Expr ")" | Float | Integer ;
+  ;;;
+  ;;; Main            = Expr EOI ;
+
+
+  (load-module :parsifal ['parsifal :as 'p])
+
+
+  (defn eval-op [op-name x y]
+    ((resolve (symbol op-name)) x y))
+
+  (p/defparser ws []
+    (p/many (p/any-char-of " \t\r\n")))
+
+  (p/defparser lparen []
+    (p/>>* (ws) (p/char "(")))
+
+  (p/defparser rparen []
+    (p/>>* (ws) (p/char ")")))
+
+  (p/defparser op [ch]
+    (p/>>* (ws) (p/char ch)))
+
+  (p/defparser int []
+    (p/let->>* [_  (ws)
+                i  (p/many1 (p/digit))]
+      (p/always (long (apply str i)))))
+
+  (p/defparser float []
+    (p/let->>* [_  (ws)
+                i  (p/many1 (p/digit))
+                d  (p/char ".")
+                f  (p/many1 (p/digit))]
+      (p/always (double (apply str (flatten (list i d f)))))))
+
+  (p/defparser expr []
+    (p/either (p/let->>* [x   (term)
+                          op  (p/either (op "+") (op "-"))
+                          y   (expr)]
+                (p/always (eval-op (str op) x y)))
+              (term)))
+
+  (p/defparser term []
+    (p/either (p/let->>* [x   (factor)
+                          op  (p/either (op "*") (op "/"))
+                          y   (term)]
+                (p/always (eval-op (str op) x y)))
+              (factor)))
+
+  (p/defparser factor []
+    (p/choice (p/between (lparen) (rparen) (expr))
+              (float)
+              (int)))
+
+  (p/defparser main []
+    ;; 1) parse empty expressions:    ""           => OK, value => nil
+    ;; 2) parse valid expressions:    "3 + 4"      => OK, value => 7
+    ;; 3) parse left over tokens:     "(3 + 4) 9"  => ERR, Unexpected token '9'
+    (p/either (p/eof)
+              (p/let->> [e  (expr)
+                         _  (ws)
+                         t  (p/either (p/eof) (p/any))]
+                 (if (nil? t)
+                   (p/always e)
+                   (p/never (str "Unexpected token '" t "'"))))))
+
+  (defn evaluate [expression]
+    (p/run (main) expression))
+)
+```
+
+
+## Example 2
+
+Parsifal expression evaluator example with tokenizer and unary expressions
 
 The expression evaluator evaluates expressions like `"(3 + 4) * 5"`. It supports the math operators `+`, `-`, `*`, and `/`, `long` and `double` numbers, and the parenthesis `(` and `)`.
 

@@ -68,11 +68,6 @@
   (load-module :parsifal ['parsifal :as 'p])
 
 
-
-  ;;; ----------------------------------------------------------------------------
-  ;;; Expression Parser
-  ;;; ----------------------------------------------------------------------------
-
   (defn eval-op [op-name x y]
     ((resolve (symbol op-name)) x y))
 
@@ -80,38 +75,38 @@
     (p/many (p/any-char-of " \t\r\n")))
 
   (p/defparser lparen []
-    (p/attempt (p/>> (ws) (p/char "("))))
+    (p/>>* (ws) (p/char "(")))
 
   (p/defparser rparen []
-    (p/attempt (p/>> (ws) (p/char ")"))))
+    (p/>>* (ws) (p/char ")")))
 
   (p/defparser op [ch]
-    (p/attempt (p/>> (ws) (p/char ch))))
+    (p/>>* (ws) (p/char ch)))
 
   (p/defparser int []
-    (p/attempt (p/let->> [_  (ws)
-                          i  (p/many1 (p/digit))]
-                 (p/always (long (apply str i))))))
+    (p/let->>* [_  (ws)
+                i  (p/many1 (p/digit))]
+      (p/always (long (apply str i)))))
 
   (p/defparser float []
-    (p/attempt (p/let->> [_  (ws)
-                          i  (p/many1 (p/digit))
-                          d  (p/char ".")
-                          f  (p/many1 (p/digit))]
-                 (p/always (double (apply str (flatten (list i d f))))))))
+    (p/let->>* [_  (ws)
+                i  (p/many1 (p/digit))
+                d  (p/char ".")
+                f  (p/many1 (p/digit))]
+      (p/always (double (apply str (flatten (list i d f)))))))
 
   (p/defparser expr []
-    (p/either (p/attempt (p/let->> [x   (term)
-                                    op  (p/either (op "+") (op "-"))
-                                    y   (expr)]
-                           (p/always (eval-op (str op) x y))))
+    (p/either (p/let->>* [x   (term)
+                          op  (p/either (op "+") (op "-"))
+                          y   (expr)]
+                (p/always (eval-op (str op) x y)))
               (term)))
 
   (p/defparser term []
-    (p/either (p/attempt (p/let->> [x   (factor)
-                                    op  (p/either (op "*") (op "/"))
-                                    y   (term)]
-                           (p/always (eval-op (str op) x y))))
+    (p/either (p/let->>* [x   (factor)
+                          op  (p/either (op "*") (op "/"))
+                          y   (term)]
+                (p/always (eval-op (str op) x y)))
               (factor)))
 
   (p/defparser factor []

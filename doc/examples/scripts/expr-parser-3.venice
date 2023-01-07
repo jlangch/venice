@@ -149,13 +149,13 @@
       (p/always (Token. :int (apply str i) l c))))
 
   (p/defparser float-tok []
-    (p/attempt (p/let->> [[l c] (p/pos)
-                          i     (p/many1 (p/digit))
-                          d     (p/char ".")
-                          f     (p/many1 (p/digit))]
-                  (p/always (Token. :float
-                                    (apply str (flatten (list i d f)))
-                                    l c)))))
+    (p/let->>* [[l c] (p/pos)
+                i     (p/many1 (p/digit))
+                d     (p/char ".")
+                f     (p/many1 (p/digit))]
+        (p/always (Token. :float
+                          (apply str (flatten (list i d f)))
+                          l c))))
 
   (p/defparser unknown-tok []
     (p/let->> [[l c] (p/pos)

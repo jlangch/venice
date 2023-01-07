@@ -315,8 +315,8 @@
           constructs like `lookahead` and `attempt`.
 
           The parser `let->>` does not rewind the input state if one of the sub
-          parsers fails. To add backtracking parsers can be wrapped with
-          `attempt`!
+          parsers fails. `let->>*` is the backtracking version of `let->>` that
+          wraps the parsers within a call to `attempt`.
           """
      :examples '(
           """
@@ -352,9 +352,9 @@
           (do
             (load-module :parsifal ['parsifal :as 'p])
 
-            ; Backtracking
+            ; Backtracking demo
 
-            ; No implicit backtracking with `let->>` parser!
+            ; No backtracking with `let->>` parser!
             (p/run (p/either (p/let->> [c (p/letter)
                                         d (p/digit)]
                                 (p/always (list c d)))
@@ -362,10 +362,10 @@
                    "abc")
             ; => ParseError: Unexpected token 'b' at line: 1 column: 2
 
-            ; Explicit backtracking using `attempt`!
-            (p/run (p/either (p/attempt (p/let->> [c (p/letter)
-                                                   d (p/digit)]
-                                           (p/always (list c d))))
+            ; Backtracking with `let->>*` parser
+            (p/run (p/either (p/let->>* [c (p/letter)
+                                         d (p/digit)]
+                               (p/always (list c d)))
                              (p/letter))
                    "abc")
             ; => #\\a
@@ -380,8 +380,8 @@
        `(parsifal/bind ~p (fn [~bind-form]
                              (parsifal/let->> ~(drop 2 bindings_) ~@body))))))
 
-(defmacro let->>* [[& bindings_] & body]
-  `(parsifal/attempt (let->> ~@bindings_ ~@body)))
+(defmacro let->>* [bindings_ & body]
+  `(parsifal/attempt (parsifal/let->> ~bindings_ ~@body)))
 
 
 (defn
@@ -844,8 +844,8 @@
           constructs like `lookahead` and `attempt`.
 
           The parser `>>` does not rewind the input state if any of the sub
-          parsers fails. To add backtracking parsers can be wrapped with
-          `attempt`!
+          parsers fails. `>>*` is the backtracking version of `>>` that
+          wraps the parsers within a call to `attempt`.
           """
      :examples '(
           """
@@ -868,16 +868,16 @@
           (do
             (load-module :parsifal ['parsifal :as 'p])
 
-            ; Backtracking
+            ; Backtracking demo
 
-            ; No implicit backtracking with `>>` parser!
+            ; No backtracking with `>>` parser
             (p/run (p/either (p/>> (p/letter) (p/digit))
                              (p/letter))
                    "abc")
             ; => ParseError: Unexpected token 'b' at line: 1 column: 2
 
-            ; Explicit backtracking with `>>` parser using `attempt`!
-            (p/run (p/either (p/attempt (p/>> (p/letter) (p/digit)))
+            ; Backtracking with `>>*` parser
+            (p/run (p/either (p/>>* (p/letter) (p/digit))
                              (p/letter))
                    "abc")
             ; => #\\a

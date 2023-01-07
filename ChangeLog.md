@@ -12,6 +12,10 @@ All notable changes to this project will be documented in this file.
 - functions `str/nrest` and `str/butnlast`
 - module `:qrref`
 
+### Fixed 
+
+- fixed parsifal parser `let->>*` and `>>*` macros
+
 
 
 ## [1.10.32] - 2023-01-03

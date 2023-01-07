@@ -141,13 +141,13 @@
       (p/always (Token. :int (apply str i) l c))))
 
   (p/defparser float-tok []
-    (p/attempt (p/let->> [[l c] (p/pos)
-                          i     (p/many1 (p/digit))
-                          d     (p/char ".")
-                          f     (p/many1 (p/digit))]
-                  (p/always (Token. :float
-                                    (apply str (flatten (list i d f)))
-                                    l c)))))
+    (p/let->>* [[l c] (p/pos)
+                i     (p/many1 (p/digit))
+                d     (p/char ".")
+                f     (p/many1 (p/digit))]
+        (p/always (Token. :float
+                          (apply str (flatten (list i d f)))
+                          l c))))
 
   (p/defparser unknown-tok []
     (p/let->> [[l c] (p/pos)
@@ -199,17 +199,17 @@
       (p/always (double (:val i)))))
 
   (p/defparser expr []
-    (p/either (p/attempt (p/let->> [x   (term)
-                                    opc (p/either (op "+") (op "-"))
-                                    y   (expr)]
-                           (p/always (eval-op (:val opc) x y))))
+    (p/either (p/let->>* [x   (term)
+                          opc (p/either (op "+") (op "-"))
+                          y   (expr)]
+                 (p/always (eval-op (:val opc) x y)))
               (term)))
 
   (p/defparser term []
-    (p/either (p/attempt (p/let->> [x   (factor)
-                                    opc (p/either (op "*") (op "/"))
-                                    y   (term)]
-                           (p/always (eval-op (:val opc) x y))))
+    (p/either (p/let->>* [x   (factor)
+                          opc (p/either (op "*") (op "/"))
+                          y   (term)]
+                 (p/always (eval-op (:val opc) x y)))
               (factor)))
 
   (p/defparser factor []
