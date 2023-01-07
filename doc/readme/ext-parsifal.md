@@ -139,9 +139,17 @@ The evaluator uses two Parsifal parsers. The up-front tokenizing parser operates
 [3] Test the expression parser:
 
 ```clojure
-(evaluate "")                      ; => nil
-(evaluate "3 + 4.1 - 5 * 3.2")     ; => -8.9
-(evaluate "3 + (4.1 - 5) * 3.2")   ; => 0.11999999999999877
+(evaluate "1")                    ; => 1
+(evaluate "1 + 2")                ; => 3
+(evaluate "1 + 2 * 3 + 4")        ; => 11
+(evaluate "(1 + 2) * (3 + 4)")    ; => 21
+(evaluate "3 + 4.1 - 5 * 3.2")    ; => -8.9
+(evaluate "3 + (4.1 - 5) * 3.2")  ; => 0.11999999999999877
+;; unary
+(evaluate "-1")                   ; => -1
+(evaluate "1 + -2")               ; => -1
+(evaluate "1 + 2 * -3 + 4")       ; => -1
+(evaluate "-(-1 + 2) * (-3 + 4)") ; => -1
 ```
 
 **Expression Parser**
