@@ -84,6 +84,6 @@ public class FunctionMetaBuilder {
                                     .collect(Collectors.toList()));
     }
 
-    private final HashMap<VncVal,VncVal> meta = new HashMap<>();
 
+    private final HashMap<VncVal,VncVal> meta = new HashMap<>();
 }
