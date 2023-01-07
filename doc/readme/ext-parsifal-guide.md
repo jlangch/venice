@@ -15,6 +15,13 @@ This document will show you the basics of how to use _Parsifal_ as an end user.
 
 [talk]: http://www.infoq.com/presentations/Parser-Combinators
 
+List of Parsifal changes in regard of the original Parsatron parser combinator
+- Added protocol 'SourcePosition' and changed function `inc-sourcepos` to support error message for source line/column nr if item types other than char are used.
+- Deduping the error message list, to avoid repeated error messages
+- Enhanced the `never` parser to accept an optional customized error message
+- Changed the behaviour of the built-in `string`, `between`, and `times` parser to not consume any input upon failure to follow the principle of least surprise.
+- Added an `any` parser to consume a token with any value
+- Added a `hexdigit` parser to consume hexdigit chars
 
 
 Importing

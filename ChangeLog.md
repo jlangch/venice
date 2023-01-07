@@ -14,7 +14,7 @@ All notable changes to this project will be documented in this file.
 
 ### Fixed 
 
-- fixed parsifal parser `let->>*` and `>>*` macros
+- parsifal parser combinator `let->>*` and `>>*` macros
 
 
 
