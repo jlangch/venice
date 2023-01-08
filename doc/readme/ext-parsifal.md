@@ -121,7 +121,7 @@ The expression evaluator evaluates expressions like `"(3 + 4) * 5"`. It supports
 
 Parsifal expression evaluator example with tokenizer and unary expressions
 
-The expression evaluator evaluates expressions like `"(3 + 4) * 5"`. It supports the math operators `+`, `-`, `*`, and `/`, `long` and `double` numbers, and the parenthesis `(` and `)`.
+The expression evaluator evaluates expressions like `"(3 + 4) * 5"`. It supports unary expression like `-4`, the math operators `+`, `-`, `*`, `/`,  the number types `long` and `double`, and the parenthesis `(` and `)`.
 
 The evaluator uses two Parsifal parsers. The up-front tokenizing parser operates on a string (stream of characters) and returns a list of tokens. The expression parser operates on a stream of tokens and returns a number.
 
@@ -177,7 +177,7 @@ The evaluator uses two Parsifal parsers. The up-front tokenizing parser operates
   ;;; [2] Expression Parser
   ;;; ----------------------------------------------------------------------------
   ;;;
-  ;;; Main            = Expression EOI ;
+  ;;; Main            = Expression EOI;
   ;;; Expression      = AddExpression ;
   ;;; AddExpression   = MulExpression { ( "+" | "-" ) MulExpression } ;
   ;;; MulExpression   = UnaryExpression { ( "*" | "/" ) UnaryExpression } ;
@@ -204,14 +204,6 @@ The evaluator uses two Parsifal parsers. The up-front tokenizing parser operates
       (line [this] (:line this))
       (column [this] (:column this)))
 
-  (defn token-type? [token type]
-    (= type (:type token)))
-
-  (defn token-value? [token value]
-    (= value (:val token)))
-
-  (defn token? [token type value]
-    (and (= type (:type token)) (= value (:val token))))
 
 
   ;;; ----------------------------------------------------------------------------
@@ -289,20 +281,20 @@ The evaluator uses two Parsifal parsers. The up-front tokenizing parser operates
             tuples))
 
   (defn op [sym]
-    (p/token #(token? % :op sym)))
+    (p/token #(and (= :op (:type %)) (= sym (:val %)))))
 
   (defn lparen []
-    (p/token #(token-type? % :lparen)))
+    (p/token #(= :lparen (:type %))))
 
   (defn rparen []
-    (p/token #(token-type? % :rparen)))
+    (p/token #(= :rparen (:type %))))
 
   (p/defparser int []
-    (p/let->> [i (p/token #(token-type? % :int))]
+    (p/let->> [i (p/token #(= :int (:type %)))]
        (p/always (long (:val i)))))
 
   (p/defparser float []
-   (p/let->> [i (p/token #(token-type? % :float))]
+   (p/let->> [i (p/token #(= :float (:type %)))]
       (p/always (double (:val i)))))
 
   (p/defparser expr []
@@ -326,7 +318,7 @@ The evaluator uses two Parsifal parsers. The up-front tokenizing parser operates
   (p/defparser unary-expr []
     (p/choice (p/let->> [opc (p/either (op "+") (op "-"))
                          val (unary-expr)]
-                 (p/always (if (token-value? opc "+") val (negate val))))
+                 (p/always (if (= "+" (:val opc)) val (negate val))))
               (paren-expr)
               (float)
               (int)))

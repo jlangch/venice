@@ -24,8 +24,8 @@
 ;;; ----------------------------------------------------------------------------
 ;;;
 ;;; The expression evaluator evaluates expressions like `"(3 + 4) * 5"`. It
-;;; supports the math operators `+`, `-`, `*`, and `/`, `long` and `double`
-;;; numbers, and the parenthesis `(` and `)`.
+;;; supports the math operators `+`, `-`, `*`, `/`, the number types `long`
+;;; and `double`, and parenthesis `(` and `)`.
 ;;;
 ;;; The evaluator uses two Parsifal parsers. The up-front tokenizing parser
 ;;; operates on a string (stream of characters) and returns a list of tokens.
@@ -34,8 +34,8 @@
 ;;; Parsifal does not handle whitespaces on its own. The particular parser
 ;;; has to deal with whitespaces.
 ;;; In the subsequent expression parser the up-front tokenizing parser
-;;; handles the whitespaces to free the main expression from dealing with
-;;; whitespaces.
+;;; handles the whitespaces to free the main expression parser from dealing
+;;; with whitespaces.
 
 ;;; ----------------------------------------------------------------------------
 ;;; Usage
@@ -101,14 +101,6 @@
       (line [this] (:line this))
       (column [this] (:column this)))
 
-  (defn token-type? [token type]
-    (= type (:type token)))
-
-  (defn token-value? [token value]
-    (= value (:val token)))
-
-  (defn token? [token type value]
-    (and (= type (:type token)) (= value (:val token))))
 
 
   ;;; ----------------------------------------------------------------------------
@@ -182,20 +174,20 @@
     ((resolve (symbol op-name)) x y))
 
   (defn op [sym]
-    (p/token #(token? % :op sym)))
+    (p/token #(and (= :op (:type %)) (= sym (:val %)))))
 
   (defn lparen []
-    (p/token #(token-type? % :lparen)))
+    (p/token #(= :lparen (:type %))))
 
   (defn rparen []
-    (p/token #(token-type? % :rparen)))
+    (p/token #(= :rparen (:type %))))
 
   (p/defparser int []
-    (p/let->> [i (p/token #(token-type? % :int))]
+    (p/let->> [i (p/token #(= :int (:type %)))]
        (p/always (long (:val i)))))
 
   (p/defparser float []
-   (p/let->> [i (p/token #(token-type? % :float))]
+   (p/let->> [i (p/token #(= :float (:type %)))]
       (p/always (double (:val i)))))
 
   (p/defparser expr []
