@@ -30,8 +30,7 @@ Importing
 You can grab all the things you'll need by loading the `parsifal` module:
 
 ```clojure
-(load-module :parsifal)
-(ns-alias 'p 'parsifal)
+(load-module :parsifal ['parsifal :as 'p])
 ```
 
 Running
