@@ -5,7 +5,7 @@
 ;;;;      \/ \___|_| |_|_|\___\___|
 ;;;;
 ;;;;
-;;;; Copyright 2017-2023 Venice
+;;;; Copyright 2017-2020 Venice
 ;;;;
 ;;;; Licensed under the Apache License, Version 2.0 (the "License");
 ;;;; you may not use this file except in compliance with the License.
@@ -21,8 +21,8 @@
 
 (do
   (load-module :tomcat-util ['tomcat-util :as 'tc-util])
-  (load-module :mercator)
   (load-module :geoip)
+  (load-module :kira)
 
 
   ;; The MaxMind country database.
@@ -39,6 +39,52 @@
 
   (def resolver (delay (create-resolver)))
 
+  (def svg-map-tpl
+    """
+    <!DOCTYPE html>
+    <html lang="en">
+      <head>
+        <title>STEP Access World Map <%= (kira/escape-xml year) %></title>
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
+        <link href="https://cdn.jsdelivr.net/gh/StephanWagner/svgMap@v2.7.2/dist/svgMap.min.css" rel="stylesheet">
+        <script src="https://code.jquery.com/jquery-3.6.3.min.js"></script>
+        <script src="https://cdn.jsdelivr.net/npm/svg-pan-zoom@3.6.1/dist/svg-pan-zoom.min.js"></script>
+        <script src="https://cdn.jsdelivr.net/gh/StephanWagner/svgMap@v2.7.2/dist/svgMap.min.js"></script>
+        <style>
+          body { font-family: Arial, Helvetica, sans-serif; color: #0a3aac; text-align: center; }
+        </style>
+        <!-- see: https://github.com/StephanWagner/svgMap -->
+      </head>
+
+      <body>
+        <h1>STEP Access World Map <%= (kira/escape-xml year) %></h1>
+        <div id="svgMap"></div>
+        <script>
+          $('document').ready(function () {
+            new svgMap({
+                  targetElementID: 'svgMap',
+                  data: {
+                    data: {
+                      step: {
+                        name: 'HTTP Access',
+                        format: '{0}',
+                        thousandSeparator: '\\'',
+                        thresholdMax: 10000,
+                        thresholdMin: 10
+                      }
+                    },
+                    applyData: 'step',
+                    values: { <%= country-data %> }
+                  }
+                });
+          });
+        </script>
+      </body>
+    </html>
+    """
+    )
+
   (defn create-resolver[]
     ; this may take some time
     (println "Loading Google country DB ...")
@@ -48,12 +94,6 @@
 
   (defn public-ip? [ip]
     (nil? (cidr/lookup-reverse private-ip4-trie ip)))
-
-  (defn format-label [country-iso freq]
-    (cond
-      (> freq 1000000) (str/format "%s %.1fm" country-iso (/ freq 1000000.0))
-      (> freq 1000)    (str/format "%s %.1fk" country-iso (/ freq 1000.0))
-      :else            (str/format "%s %d" country-iso freq)))
 
   (defn merge-freq-maps [freq-maps]
     (apply (partial merge-with +) freq-maps))
@@ -65,20 +105,6 @@
          (map #(let [sum (apply + (map :freq %))
                      location (dissoc (first %) :ip)]
                  (assoc location :freq sum)))))
-
-  (defn get-mercator-img [mercator-img]
-    (if (some? mercator-img)
-      mercator-img
-      (do
-        (println "Downloading Mercator image...")
-        (mercator/load-mercator-image))))
-
-  (defn draw [styles mercator-img format file locations]
-    (println "Drawing Mercator map ...")
-    (-> (get-mercator-img mercator-img)
-        (mercator/draw-locations locations styles)
-        (mercator/crop-image 400 600)
-        (mercator/save-image format file)))
 
   (defn parse-ip-logs [log]
     (let [parser (tc-util/simple-ipaddr-access-log-entry-parser)
@@ -113,27 +139,33 @@
         :country     (:country-name data)
         :country-iso (:country-iso data) } ))
 
-  (defn create-map [styles mercator-img ip-freq-map ip-loc-resolver out-file]
+  (defn map-data-by-country [ip-freq-map ip-loc-resolver]
     (printf "Mapping %d IP addresses ...%n" (count ip-freq-map))
     (->> (entries ip-freq-map)
          (map #(map-ip-to-location % ip-loc-resolver)) ;; this is very slow
          (merge-ip-locations-by-country)
          (map #(let [[lat lon] (:loc %)
                      country   (:country-iso %)
-                     frequency (:freq %)
-                     label     (format-label country frequency)]
-                 [lat lon {:label label :font-size-px 14}]))
-         (draw styles mercator-img :png out-file)))
+                     frequency (:freq %)]
+                 [country frequency]))))
 
-  (defn process [styles mercator-img out-file log-files]
+  (defn svg-country-data [country-iso count]
+    (if (= country-iso "CH")
+      (str/format "%s: { step: %d, color: '#2E9444' }" country-iso count)
+      (str/format "%s: { step: %d }" country-iso count)))
+
+  (defn create-svg-map [ip-freq-map ip-loc-resolver out-file]
+    (let [data (->> (map-data-by-country ip-freq-map ip-loc-resolver)
+                    (map #(svg-country-data (first %) (second %)))
+                    (str/join ", "))
+          svg  (kira/eval svg-map-tpl { :country-data data, :year 2022 })]
+      (io/spit out-file svg)))
+
+  (defn process [out-file log-files]
      (println "Processing log files...")
      (-<> (map io/file log-files)
           (parse-log-files <>)
-          (create-map styles mercator-img <> @resolver out-file)))
-
-  (defn load-image [file]
-    (println "Loading Mercator image...")
-    (mercator/load-image file))
+          (create-svg-map <> @resolver out-file)))
 
   (defn download-maxmind-db [lic-key]
     (->> (geoip/download-maxmind-db :country lic-key)
@@ -141,41 +173,37 @@
 
   (defn lookup-ip [ip] (@resolver ip))
 
-  (defn run-custom [styles mercator-img out-file & log-files]
-    (process styles mercator-img out-file log-files))
-
   (defn run [out-file & log-files]
-    (process nil nil out-file log-files))
+    (process out-file log-files))
 
   (println """
            Actions:
               [1] (lookup-ip "41.216.186.131")
               [2] (download-maxmind-db "YOUR-MAXMIND-KEY")
-              [3] (run "./ip-map.png"
-                       "resources/localhost_access_log.2019-12.zip")
-              [4] (run "./ip-map.png"
-                       "resources/localhost_access_log.2019-12-01.log")
-              [5] (apply run "./ip-map.png"
-                             (io/list-files-glob "resources"
-                                                 "localhost_access_log.2020-*"))
+              [3] (run "./ip-map.html"
+                       "resources/step-logs/localhost_access_log.2022-12.zip")
+              [4] (run "./ip-map.html"
+                       "resources/step-logs/localhost_access_log.2022-12-01.log")
+              [5] (apply run "./ip-map.html"
+                             (io/list-files-glob "resources/step-logs/"
+                                                 "localhost_access_log.2022-*"))
            """)
 
   (when-not (macroexpand-on-load?)
     (println)
-    (print-msg-box :warn
-                   """
-                   macroexpand-on-load is not activated. To get a better \
-                   performance activate it before loading this script.
+    (print-warn-box """
+                    macroexpand-on-load is not activated. To get a better \
+                    performance activate it before loading this script.
 
-                   From the REPL run the command: !macroexpand
-                   """))
+                    From the REPL run the command: !macroexpand
+                    """))
 
   (when-not (io/exists-file? maxmind-country-zip)
     (println)
-    (print-msg-box :error
-                   """
-                   The MaxMind country file does not exist!
+    (print-error-box """
+                     The MaxMind country file does not exist!
 
-                   ~{maxmind-country-zip}
-                   """))
+                     ~{maxmind-country-zip}
+                     """))
+
 )

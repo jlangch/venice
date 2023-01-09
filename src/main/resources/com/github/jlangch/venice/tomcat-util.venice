@@ -477,9 +477,14 @@
                         (filter not-empty?))
     :else          (throw (ex :VncException "Invalid log data type!"))))
 
+(defn parse-long [s]
+  (try
+    (long s)
+    (catch :Exception e nil)))
 
 (defn default-access-log-entry-parser []
   ;; 0:0:0:0:0:0:0:1 [2020-12-31T19:30:30.074] - - "GET / HTTP/1.1" 200 842 731
+  ;; 10.49.5.11 [2022-12-01T23:24:42.334] - - "POST /app HTTP/1.1" 200 - 0
   (let [regex """^(\\S+) \\[(.*?)\\] (\\S+) (\\S+) "(.*?)" (\\S+) (\\S+) (\\S+)"""
         pattern (regex/pattern regex)]
     (fn [entry]
@@ -488,14 +493,16 @@
           (let [[_ ip timestamp _ user url status bytes millis] matches]
             { :ip ip
               :timestamp timestamp
+              :user user
               :url url
-              :status status
-              :bytes bytes
-              :millis millis } ))))))
+              :status (parse-long status)
+              :bytes (parse-long bytes)
+              :millis (parse-long millis) } ))))))
 
 
 (defn simple-ipaddr-access-log-entry-parser []
   ;; 0:0:0:0:0:0:0:1 [2020-12-31T19:30:30.074] - - "GET / HTTP/1.1" 200 842 731
+  ;; 10.49.5.11 [2022-12-01T23:24:42.334] - - "POST /app HTTP/1.1" 200 - 0
   (fn [entry]
     (let [pos (str/index-of entry " ")]
       (when (long? pos)
