@@ -44,7 +44,7 @@
     <!DOCTYPE html>
     <html lang="en">
       <head>
-        <title>STEP Access World Map <%= (kira/escape-xml year) %></title>
+        <title>WebApp Access World Map <%= (kira/escape-xml year) %></title>
         <meta charset="utf-8">
         <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
         <link href="https://cdn.jsdelivr.net/gh/StephanWagner/svgMap@v2.7.2/dist/svgMap.min.css" rel="stylesheet">
@@ -58,7 +58,7 @@
       </head>
 
       <body>
-        <h1>STEP Access World Map <%= (kira/escape-xml year) %></h1>
+        <h1>WebApp Access World Map <%= (kira/escape-xml year) %></h1>
         <div id="svgMap"></div>
         <script>
           $('document').ready(function () {
@@ -66,16 +66,51 @@
                   targetElementID: 'svgMap',
                   data: {
                     data: {
-                      step: {
+                      total: {
                         name: 'HTTP Access',
                         format: '{0}',
                         thousandSeparator: '\\'',
                         thresholdMax: 10000,
                         thresholdMin: 10
+                      },
+                      _1xx: {
+                        name: '1xx',
+                        format: '{0}',
+                        thousandSeparator: '\\''
+                      },
+                      _2xx: {
+                        name: '2xx',
+                        format: '{0}',
+                        thousandSeparator: '\\''
+                      },
+                      _3xx: {
+                        name: '3xx',
+                        format: '{0}',
+                        thousandSeparator: '\\''
+                      },
+                      _4xx: {
+                        name: '4xx',
+                        format: '{0}',
+                        thousandSeparator: '\\''
+                      },
+                      _5xx: {
+                        name: '5xx',
+                        format: '{0}',
+                        thousandSeparator: '\\''
+                      },
+                      webapp: {
+                        name: 'WebApp',
+                        format: '{0}',
+                        thousandSeparator: '\\''
+                      },
+                      vpn: {
+                        name: 'VPN',
+                        format: '{0}',
+                        thousandSeparator: '\\''
                       }
                     },
-                    applyData: 'step',
-                    values: { <%= country-data %> }
+                    applyData: 'total',
+                    values: { <%= countries %> }
                   }
                 });
           });
@@ -95,26 +130,58 @@
   (defn public-ip? [ip]
     (nil? (cidr/lookup-reverse private-ip4-trie ip)))
 
-  (defn merge-freq-maps [freq-maps]
-    (apply (partial merge-with +) freq-maps))
+  (defn webapp-req? [url]
+    (str/contains? url "/add-webapp-name/"))
 
-  (defn merge-ip-locations-by-country [ip-locations]
-    ;; ip-locations: list of map with keys :loc :ip :freq :country :country-iso
-    ;; group by :country-iso and sum up :freq
-    (->> (vals (group-by :country-iso ip-locations))
-         (map #(let [sum (apply + (map :freq %))
-                     location (dissoc (first %) :ip)]
-                 (assoc location :freq sum)))))
+  (defn freq-map [ip status public webapp-req]
+    { :ip     ip
+      :1xx    (if (<= 100 status 199) 1 0)
+      :2xx    (if (<= 200 status 299) 1 0)
+      :3xx    (if (<= 300 status 399) 1 0)
+      :4xx    (if (<= 400 status 499) 1 0)
+      :5xx    (if (<= 500 status 599) 1 0)
+      :webapp (if webapp-req 1 0)
+      :public public
+      :tot    1 })
+
+  (defn freq-aggregate [f1 f2]
+    { :ip           (:ip f2)
+      :1xx          (+ (:1xx f1 0) (:1xx f2 0))
+      :2xx          (+ (:2xx f1 0) (:2xx f2 0))
+      :3xx          (+ (:3xx f1 0) (:3xx f2 0))
+      :4xx          (+ (:4xx f1 0) (:4xx f2 0))
+      :5xx          (+ (:5xx f1 0) (:5xx f2 0))
+      :tot          (+ (:tot f1 0) (:tot f2 0))
+      :webapp       (+ (:webapp f1 0) (:webapp f2 0))
+      :webapp       (:public f2)
+      :country      (:country f2)
+      :country-iso  (:country-iso f2)})
+
+  (defn frequencies-ip [items]
+    (reduce (fn [acc i]
+              (let [ip (:ip i)]
+                (assoc acc ip (freq-aggregate (get acc ip {}) i))))
+            {}
+            items))
+
+  (defn frequencies-country [items]
+    (reduce (fn [acc i]
+              (let [country (:country-iso i)]
+                (assoc acc country (freq-aggregate (get acc country {}) i))))
+            {}
+            items))
 
   (defn parse-ip-logs [log]
-    (let [parser (tc-util/simple-ipaddr-access-log-entry-parser)
+    (let [parser (tc-util/default-access-log-entry-parser)
           data   (bytebuf-to-string log :utf-8)]
       (->> (str/split-lines data)
-           (transduce (comp (map parser)
-                            (map :ip)
-                            (filter public-ip?))
-                      conj)
-           (frequencies))))
+           (map parser)
+           (map #(freq-map (:ip %)
+                           (or (:status %) 0)
+                           (public-ip? (:ip %))
+                           (webapp-req? (:url %))))
+           (frequencies-ip)
+           (vals))))
 
   (defn parse-log-file [log-file]
     (println "Parsing" log-file "...")
@@ -123,49 +190,70 @@
            (vals)
            (map #(parse-ip-logs %)))
       (->> (io/slurp log-file :binary true)
-           (parse-ip-logs ))))
+           (parse-ip-logs))))
 
   (defn parse-log-files [log-files]
-    ;; returns an aggregated map with IP frequencies:
-    ;;    { "196.52.43.56" 3 "178.197.226.244" 8 }
-    (merge-freq-maps (flatten (map parse-log-file log-files))))
+    (->> (map parse-log-file log-files)
+         (flatten)))
 
-  (defn map-ip-to-location [ip-freq ip-loc-resolver]
-    (let [ip   (key ip-freq)
-          data (ip-loc-resolver ip)]
-      { :loc         (geoip/map-location-to-numerics (:loc data))
-        :ip          ip
-        :freq        (val ip-freq)
-        :country     (:country-name data)
-        :country-iso (:country-iso data) } ))
+  (defn map-ip-to-location [item ip-loc-resolver]
+    (if (:public item)
+      (let [data (ip-loc-resolver (:ip item))]
+        (merge (dissoc item :ip)
+               { :country     (:country-name data)
+                 :country-iso (:country-iso data) }))
+      (merge (dissoc item :ip)
+             { :country     "VPN"
+               :country-iso "VPN" } )))
 
-  (defn map-data-by-country [ip-freq-map ip-loc-resolver]
-    (printf "Mapping %d IP addresses ...%n" (count ip-freq-map))
-    (->> (entries ip-freq-map)
-         (map #(map-ip-to-location % ip-loc-resolver)) ;; this is very slow
-         (merge-ip-locations-by-country)
-         (map #(let [[lat lon] (:loc %)
-                     country   (:country-iso %)
-                     frequency (:freq %)]
-                 [country frequency]))))
+  (defn svg-country-data [item]
+    (let [country (:country-iso item)
+          s       (str/format "total: %d, _1xx: %d, _2xx: %d, _3xx: %d, _4xx: %d, _5xx: %d, webapp: %d"
+                              (:tot item) (:1xx item) (:2xx item)
+                              (:3xx item) (:4xx item) (:5xx item)
+                              (:webapp item))]
+      (if (= country "CH")
+        (str/format "%s: { %s, vpn: %d, color: '#2E9444' }" country s (:vpn item 0))
+        (str/format "%s: { %s, vpn: 0 }" country s))))
 
-  (defn svg-country-data [country-iso count]
-    (if (= country-iso "CH")
-      (str/format "%s: { step: %d, color: '#2E9444' }" country-iso count)
-      (str/format "%s: { step: %d }" country-iso count)))
+  (defn svg-countries-data [items year]
+    { :countries (str/join ", " (map svg-country-data items))
+      :year      year })
 
-  (defn create-svg-map [ip-freq-map ip-loc-resolver out-file]
-    (let [data (->> (map-data-by-country ip-freq-map ip-loc-resolver)
-                    (map #(svg-country-data (first %) (second %)))
-                    (str/join ", "))
-          svg  (kira/eval svg-map-tpl { :country-data data, :year 2022 })]
-      (io/spit out-file svg)))
+  (defn create-html-svg-map [items]
+    (let [year   2022
+          ch     (first (filter #(= (:country-iso %) "CH" ) items))
+          vpn    (first (filter #(= (:country-iso %) "VPN") items))
+          others (filter #(nil? ((set "CH" "VPN") (:country-iso %))) items)]
+      (cond
+        (and (nil? ch) (nil? vpn))
+          (kira/eval svg-map-tpl (svg-countries-data others year))
+
+        (and (some? ch) (some? vpn))
+          (let [ch+ (assoc (freq-aggregate vpn ch) :vpn (:tot vpn 0))]
+            (kira/eval svg-map-tpl (svg-countries-data (conj others ch+) year)))
+
+        (some? ch)
+          (kira/eval svg-map-tpl (svg-countries-data (conj others ch) year))
+
+        (some? vpn)
+          (let [ch+ (assoc vpn :country-iso "CH")]
+            (kira/eval svg-map-tpl (svg-countries-data (conj others ch+) year)))
+
+        :else
+          (kira/eval svg-map-tpl (svg-countries-data [] year)))))
 
   (defn process [out-file log-files]
      (println "Processing log files...")
-     (-<> (map io/file log-files)
-          (parse-log-files <>)
-          (create-svg-map <> @resolver out-file)))
+     (->> (map io/file log-files)
+          (parse-log-files)                        ;; parse log files -> entries
+          (frequencies-ip)                         ;; aggregate by IP address
+          (vals)
+          (map #(map-ip-to-location % @resolver))  ;; map IP to country
+          (frequencies-country)                    ;; aggregate by country
+          (vals)
+          (create-html-svg-map)                    ;; HTML with SVG map
+          (io/spit out-file)))
 
   (defn download-maxmind-db [lic-key]
     (->> (geoip/download-maxmind-db :country lic-key)
@@ -181,11 +269,11 @@
               [1] (lookup-ip "41.216.186.131")
               [2] (download-maxmind-db "YOUR-MAXMIND-KEY")
               [3] (run "./ip-map.html"
-                       "resources/step-logs/localhost_access_log.2022-12.zip")
+                       "resources/logs/localhost_access_log.2022-12.zip")
               [4] (run "./ip-map.html"
-                       "resources/step-logs/localhost_access_log.2022-12-01.log")
+                       "resources/logs/localhost_access_log.2022-12-01.log")
               [5] (apply run "./ip-map.html"
-                             (io/list-files-glob "resources/step-logs/"
+                             (io/list-files-glob "resources/logs/"
                                                  "localhost_access_log.2022-*"))
            """)
 
