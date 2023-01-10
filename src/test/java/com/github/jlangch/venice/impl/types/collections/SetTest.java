@@ -35,6 +35,8 @@ public class SetTest {
         final Venice venice = new Venice();
 
         assertEquals(":a", venice.eval("(pr-str (#{:a :b :c} :a))"));
+        assertEquals(":b", venice.eval("(pr-str (#{:a :b :c} :b))"));
+        assertEquals(":c", venice.eval("(pr-str (#{:a :b :c} :c))"));
         assertEquals("nil", venice.eval("(pr-str (#{:a :b :c} :d))"));
         assertEquals("nil", venice.eval("(pr-str (#{:a :b :c} nil))"));
         assertEquals("nil", venice.eval("(pr-str (#{:a :b :c nil} nil))"));
