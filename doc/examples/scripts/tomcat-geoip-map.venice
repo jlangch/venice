@@ -98,12 +98,12 @@
                         thousandSeparator: '\\''
                       },
                       app: {
-                        name: 'APP',
+                        name: 'Application',
                         format: '{0}',
                         thousandSeparator: '\\''
                       },
-                      vpn: {
-                        name: 'VPN',
+                      _private: {
+                        name: 'Private',
                         format: '{0}',
                         thousandSeparator: '\\''
                       }
@@ -151,8 +151,8 @@
                         thresholdMax: 10000,
                         thresholdMin: 10
                       },
-                      vpn: {
-                        name: 'VPN',
+                      _private: {
+                        name: 'Private',
                         format: '{0}',
                         thousandSeparator: '\\''
                       }
@@ -235,7 +235,7 @@
     (println "Parsing zip " f "...")
     (->> (io/unzip-all f)
          (vals)
-         (map #(parse-ip-logs %))))
+         (map #(parse-ip-logs %))))   ;; use pmap to parallelize
 
   (defmethod parse-log-file "log" [f]
     (println "Parsing log " f "...")
@@ -249,7 +249,7 @@
   (defn map-ip-to-country [item ip-country-resolver]
     (let [data (if (:public item) (ip-country-resolver (:ip item)) nil)]
       (-> (dissoc item :ip)
-          (assoc :country-iso (:country-iso data "VPN")))))
+          (assoc :country-iso (:country-iso data "PRIVATE")))))
 
   (defn svg-country-data-full [item]
     (let [country (:country-iso item)
@@ -258,16 +258,16 @@
                               (:3xx item) (:4xx item) (:5xx item)
                               (:app item))]
       (if (= country "CH")
-        (str/format "%s: { %s, vpn: %d, color: '#2E9444' }" country s (:vpn item 0))
-        (str/format "%s: { %s, vpn: 0 }" country s))))
+        (str/format "%s: { %s, _private: %d, color: '#2E9444' }" country s (:private item 0))
+        (str/format "%s: { %s, _private: 0 }" country s))))
 
   (defn svg-country-data-light [item]
     (let [country (:country-iso item)
           tot     (:tot item)
-          vpn     (:vpn item 0)]
+          prv     (:private item 0)]
       (if (= country "CH")
-        (str/format "%s: { total: %d, vpn: %d, color: '#2E9444' }" country tot vpn)
-        (str/format "%s: { total: %d, vpn: 0 }" country tot))))
+        (str/format "%s: { total: %d, _private: %d, color: '#2E9444' }" country tot prv)
+        (str/format "%s: { total: %d, _private: 0 }" country tot))))
 
   (defn svg-countries-data [mode app-name year items]
     (let [svg-formatter (if (= mode :full) svg-country-data-full svg-country-data-light)]
@@ -278,21 +278,21 @@
   (defn create-html-svg-map [mode app-name year items]
     (let [template (if (= mode :full) svg-map-tpl-full svg-map-tpl-light)
           ch       (first (filter #(= (:country-iso %) "CH" ) items))
-          vpn      (first (filter #(= (:country-iso %) "VPN") items))
-          others   (filter #(nil? ((set "CH" "VPN") (:country-iso %))) items)]
+          private  (first (filter #(= (:country-iso %) "PRIVATE") items))
+          others   (filter #(nil? ((set "CH" "PRIVATE") (:country-iso %))) items)]
       (cond
-        (and (nil? ch) (nil? vpn))
+        (and (nil? ch) (nil? private))
           (kira/eval template (svg-countries-data mode app-name year others))
 
-        (and (some? ch) (some? vpn))
-          (let [ch+ (assoc (freq-aggregate vpn ch) :vpn (:tot vpn 0))]
+        (and (some? ch) (some? private))
+          (let [ch+ (assoc (freq-aggregate private ch) :private (:tot private 0))]
             (kira/eval template (svg-countries-data mode app-name year (conj others ch+))))
 
         (some? ch)
           (kira/eval template (svg-countries-data mode app-name year (conj others ch)))
 
-        (some? vpn)
-          (let [ch+ (assoc vpn :country-iso "CH")]
+        (some? private)
+          (let [ch+ (assoc private :country-iso "CH")]
             (kira/eval template (svg-countries-data mode app-name year (conj others ch+))))
 
         :else
