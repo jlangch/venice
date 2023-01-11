@@ -39,7 +39,7 @@
 
   (def resolver (delay (create-resolver)))
 
-  (def svg-map-tpl
+  (def svg-map-tpl-full
     """
     <!DOCTYPE html>
     <html lang="en">
@@ -101,6 +101,55 @@
                         name: 'APP',
                         format: '{0}',
                         thousandSeparator: '\\''
+                      },
+                      vpn: {
+                        name: 'VPN',
+                        format: '{0}',
+                        thousandSeparator: '\\''
+                      }
+                    },
+                    applyData: 'total',
+                    values: { <%= countries %> }
+                  }
+                });
+          });
+        </script>
+      </body>
+    </html>
+    """)
+
+  (def svg-map-tpl-light
+    """
+    <!DOCTYPE html>
+    <html lang="en">
+      <head>
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
+        <link href="https://cdn.jsdelivr.net/gh/StephanWagner/svgMap@v2.7.2/dist/svgMap.min.css" rel="stylesheet">
+        <script src="https://code.jquery.com/jquery-3.6.3.min.js"></script>
+        <script src="https://cdn.jsdelivr.net/npm/svg-pan-zoom@3.6.1/dist/svg-pan-zoom.min.js"></script>
+        <script src="https://cdn.jsdelivr.net/gh/StephanWagner/svgMap@v2.7.2/dist/svgMap.min.js"></script>
+        <style>
+          body { font-family: Arial, Helvetica, sans-serif; color: #0a3aac; text-align: center; }
+        </style>
+        <!-- see: https://github.com/StephanWagner/svgMap -->
+      </head>
+
+      <body>
+        <h1><%= (kira/escape-xml app-name) %> Access World Map <%= (kira/escape-xml year) %></h1>
+        <div id="svgMap"></div>
+        <script>
+          $('document').ready(function () {
+            new svgMap({
+                  targetElementID: 'svgMap',
+                  data: {
+                    data: {
+                      total: {
+                        name: 'HTTP Access',
+                        format: '{0}',
+                        thousandSeparator: '\\'',
+                        thresholdMax: 10000,
+                        thresholdMin: 10
                       },
                       vpn: {
                         name: 'VPN',
@@ -202,7 +251,7 @@
       (-> (dissoc item :ip)
           (assoc :country-iso (:country-iso data "VPN")))))
 
-  (defn svg-country-data [item]
+  (defn svg-country-data-full [item]
     (let [country (:country-iso item)
           s       (str/format "total: %d, _1xx: %d, _2xx: %d, _3xx: %d, _4xx: %d, _5xx: %d, app: %d"
                               (:tot item) (:1xx item) (:2xx item)
@@ -212,34 +261,44 @@
         (str/format "%s: { %s, vpn: %d, color: '#2E9444' }" country s (:vpn item 0))
         (str/format "%s: { %s, vpn: 0 }" country s))))
 
-  (defn svg-countries-data [app-name year items]
-    { :app-name  app-name
-      :year      year
-      :countries (str/join ", " (map svg-country-data items)) })
+  (defn svg-country-data-light [item]
+    (let [country (:country-iso item)
+          tot     (:tot item)
+          vpn     (:vpn item 0)]
+      (if (= country "CH")
+        (str/format "%s: { total: %d, vpn: %d, color: '#2E9444' }" country tot vpn)
+        (str/format "%s: { total: %d, vpn: 0 }" country tot))))
 
-  (defn create-html-svg-map [app-name year items]
-    (let [ch     (first (filter #(= (:country-iso %) "CH" ) items))
-          vpn    (first (filter #(= (:country-iso %) "VPN") items))
-          others (filter #(nil? ((set "CH" "VPN") (:country-iso %))) items)]
+  (defn svg-countries-data [mode app-name year items]
+    (let [svg-formatter (if (= mode :full) svg-country-data-full svg-country-data-light)]
+      { :app-name  app-name
+        :year      year
+        :countries (str/join ", " (map svg-formatter items)) }))
+
+  (defn create-html-svg-map [mode app-name year items]
+    (let [template (if (= mode :full) svg-map-tpl-full svg-map-tpl-light)
+          ch       (first (filter #(= (:country-iso %) "CH" ) items))
+          vpn      (first (filter #(= (:country-iso %) "VPN") items))
+          others   (filter #(nil? ((set "CH" "VPN") (:country-iso %))) items)]
       (cond
         (and (nil? ch) (nil? vpn))
-          (kira/eval svg-map-tpl (svg-countries-data app-name year others))
+          (kira/eval template (svg-countries-data mode app-name year others))
 
         (and (some? ch) (some? vpn))
           (let [ch+ (assoc (freq-aggregate vpn ch) :vpn (:tot vpn 0))]
-            (kira/eval svg-map-tpl (svg-countries-data app-name year (conj others ch+))))
+            (kira/eval template (svg-countries-data mode app-name year (conj others ch+))))
 
         (some? ch)
-          (kira/eval svg-map-tpl (svg-countries-data app-name year (conj others ch)))
+          (kira/eval template (svg-countries-data mode app-name year (conj others ch)))
 
         (some? vpn)
           (let [ch+ (assoc vpn :country-iso "CH")]
-            (kira/eval svg-map-tpl (svg-countries-data app-name year (conj others ch+))))
+            (kira/eval template (svg-countries-data mode app-name year (conj others ch+))))
 
         :else
-          (kira/eval svg-map-tpl (svg-countries-data app-name year [])))))
+          (kira/eval template (svg-countries-data mode app-name year [])))))
 
-  (defn process [app-name year out-file log-files]
+  (defn process [mode app-name year out-file log-files]
      (println "Processing log files...")
      (->> (map io/file log-files)
           (parse-log-files)                        ;; parse log files -> entries
@@ -248,7 +307,7 @@
           (map #(map-ip-to-country % @resolver))   ;; map IP to country
           (frequencies-country)                    ;; aggregate by country
           (vals)
-          (create-html-svg-map app-name year)      ;; HTML with SVG map
+          (create-html-svg-map mode app-name year) ;; HTML with SVG map
           (io/spit out-file)))
 
   (defn download-maxmind-db [lic-key]
@@ -257,18 +316,18 @@
 
   (defn lookup-ip [ip] (@resolver ip))
 
-  (defn run [out-file & log-files]
-    (process "STEP" 2022 out-file log-files))
+  (defn run [mode app-name year out-file & log-files]
+    (process mode app-name year out-file log-files))
 
   (println """
            Actions:
               [1] (lookup-ip "41.216.186.131")
               [2] (download-maxmind-db "YOUR-MAXMIND-KEY")
-              [3] (run "./ip-map.html"
+              [3] (run :full "STEP" 2022 "./ip-map.html"
                        "resources/step-logs/localhost_access_log.2022-12.zip")
-              [4] (run "./ip-map.html"
+              [4] (run :full "STEP" 2022 "./ip-map.html"
                        "resources/step-logs/localhost_access_log.2022-12-01.log")
-              [5] (apply run "./ip-map.html"
+              [5] (apply run :full "STEP" 2022 "./ip-map.html"
                              (io/list-files-glob "resources/step-logs/"
                                                  "localhost_access_log.2022-*"))
            """)
