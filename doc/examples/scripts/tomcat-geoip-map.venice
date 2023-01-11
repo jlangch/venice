@@ -44,7 +44,6 @@
     <!DOCTYPE html>
     <html lang="en">
       <head>
-        <title>WebApp Access World Map <%= (kira/escape-xml year) %></title>
         <meta charset="utf-8">
         <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
         <link href="https://cdn.jsdelivr.net/gh/StephanWagner/svgMap@v2.7.2/dist/svgMap.min.css" rel="stylesheet">
@@ -58,7 +57,7 @@
       </head>
 
       <body>
-        <h1>WebApp Access World Map <%= (kira/escape-xml year) %></h1>
+        <h1><%= (kira/escape-xml app-name) %> Access World Map <%= (kira/escape-xml year) %></h1>
         <div id="svgMap"></div>
         <script>
           $('document').ready(function () {
@@ -98,8 +97,8 @@
                         format: '{0}',
                         thousandSeparator: '\\''
                       },
-                      webapp: {
-                        name: 'WebApp',
+                      app: {
+                        name: 'APP',
                         format: '{0}',
                         thousandSeparator: '\\''
                       },
@@ -117,11 +116,9 @@
         </script>
       </body>
     </html>
-    """
-    )
+    """)
 
   (defn create-resolver[]
-    ; this may take some time
     (println "Loading Google country DB ...")
     (let [country-db (geoip/download-google-country-db)]
       (println "Parsing MaxMind DB ...")
@@ -130,17 +127,17 @@
   (defn public-ip? [ip]
     (nil? (cidr/lookup-reverse private-ip4-trie ip)))
 
-  (defn webapp-req? [url]
-    (str/contains? url "/add-webapp-name/"))
+  (defn app-req? [url]
+    (str/contains? url "/step/"))
 
-  (defn freq-map [ip status public webapp-req]
+  (defn freq-map [ip status public app-req]
     { :ip     ip
       :1xx    (if (<= 100 status 199) 1 0)
       :2xx    (if (<= 200 status 299) 1 0)
       :3xx    (if (<= 300 status 399) 1 0)
       :4xx    (if (<= 400 status 499) 1 0)
       :5xx    (if (<= 500 status 599) 1 0)
-      :webapp (if webapp-req 1 0)
+      :app    (if app-req 1 0)
       :public public
       :tot    1 })
 
@@ -152,8 +149,8 @@
       :4xx          (+ (:4xx f1 0) (:4xx f2 0))
       :5xx          (+ (:5xx f1 0) (:5xx f2 0))
       :tot          (+ (:tot f1 0) (:tot f2 0))
-      :webapp       (+ (:webapp f1 0) (:webapp f2 0))
-      :webapp       (:public f2)
+      :app          (+ (:app f1 0) (:app f2 0))
+      :public       (:public f2)
       :country      (:country f2)
       :country-iso  (:country-iso f2)})
 
@@ -172,87 +169,86 @@
             items))
 
   (defn parse-ip-logs [log]
-    (let [parser (tc-util/default-access-log-entry-parser)
-          data   (bytebuf-to-string log :utf-8)]
-      (->> (str/split-lines data)
+    (let [parser (tc-util/default-access-log-entry-parser)]
+      (->> (bytebuf-to-string log :utf-8)
+           (str/split-lines)
            (map parser)
            (map #(freq-map (:ip %)
                            (or (:status %) 0)
                            (public-ip? (:ip %))
-                           (webapp-req? (:url %))))
+                           (app-req? (:url %))))
            (frequencies-ip)
            (vals))))
 
-  (defn parse-log-file [log-file]
-    (println "Parsing" log-file "...")
-    (if (io/file-ext? log-file "zip")
-      (->> (io/unzip-all log-file)
-           (vals)
-           (map #(parse-ip-logs %)))
-      (->> (io/slurp log-file :binary true)
-           (parse-ip-logs))))
+  (defmulti parse-log-file (fn [f] (io/file-ext f)))
+
+  (defmethod parse-log-file "zip" [f]
+    (println "Parsing zip " f "...")
+    (->> (io/unzip-all f)
+         (vals)
+         (map #(parse-ip-logs %))))
+
+  (defmethod parse-log-file "log" [f]
+    (println "Parsing log " f "...")
+    (->> (io/slurp f :binary true)
+         (parse-ip-logs)))
 
   (defn parse-log-files [log-files]
     (->> (map parse-log-file log-files)
          (flatten)))
 
-  (defn map-ip-to-location [item ip-loc-resolver]
-    (if (:public item)
-      (let [data (ip-loc-resolver (:ip item))]
-        (merge (dissoc item :ip)
-               { :country     (:country-name data)
-                 :country-iso (:country-iso data) }))
-      (merge (dissoc item :ip)
-             { :country     "VPN"
-               :country-iso "VPN" } )))
+  (defn map-ip-to-country [item ip-country-resolver]
+    (let [data (if (:public item) (ip-country-resolver (:ip item)) nil)]
+      (-> (dissoc item :ip)
+          (assoc :country-iso (:country-iso data "VPN")))))
 
   (defn svg-country-data [item]
     (let [country (:country-iso item)
-          s       (str/format "total: %d, _1xx: %d, _2xx: %d, _3xx: %d, _4xx: %d, _5xx: %d, webapp: %d"
+          s       (str/format "total: %d, _1xx: %d, _2xx: %d, _3xx: %d, _4xx: %d, _5xx: %d, app: %d"
                               (:tot item) (:1xx item) (:2xx item)
                               (:3xx item) (:4xx item) (:5xx item)
-                              (:webapp item))]
+                              (:app item))]
       (if (= country "CH")
         (str/format "%s: { %s, vpn: %d, color: '#2E9444' }" country s (:vpn item 0))
         (str/format "%s: { %s, vpn: 0 }" country s))))
 
-  (defn svg-countries-data [items year]
-    { :countries (str/join ", " (map svg-country-data items))
-      :year      year })
+  (defn svg-countries-data [app-name year items]
+    { :app-name  app-name
+      :year      year
+      :countries (str/join ", " (map svg-country-data items)) })
 
-  (defn create-html-svg-map [items]
-    (let [year   2022
-          ch     (first (filter #(= (:country-iso %) "CH" ) items))
+  (defn create-html-svg-map [app-name year items]
+    (let [ch     (first (filter #(= (:country-iso %) "CH" ) items))
           vpn    (first (filter #(= (:country-iso %) "VPN") items))
           others (filter #(nil? ((set "CH" "VPN") (:country-iso %))) items)]
       (cond
         (and (nil? ch) (nil? vpn))
-          (kira/eval svg-map-tpl (svg-countries-data others year))
+          (kira/eval svg-map-tpl (svg-countries-data app-name year others))
 
         (and (some? ch) (some? vpn))
           (let [ch+ (assoc (freq-aggregate vpn ch) :vpn (:tot vpn 0))]
-            (kira/eval svg-map-tpl (svg-countries-data (conj others ch+) year)))
+            (kira/eval svg-map-tpl (svg-countries-data app-name year (conj others ch+))))
 
         (some? ch)
-          (kira/eval svg-map-tpl (svg-countries-data (conj others ch) year))
+          (kira/eval svg-map-tpl (svg-countries-data app-name year (conj others ch)))
 
         (some? vpn)
           (let [ch+ (assoc vpn :country-iso "CH")]
-            (kira/eval svg-map-tpl (svg-countries-data (conj others ch+) year)))
+            (kira/eval svg-map-tpl (svg-countries-data app-name year (conj others ch+))))
 
         :else
-          (kira/eval svg-map-tpl (svg-countries-data [] year)))))
+          (kira/eval svg-map-tpl (svg-countries-data app-name year [])))))
 
-  (defn process [out-file log-files]
+  (defn process [app-name year out-file log-files]
      (println "Processing log files...")
      (->> (map io/file log-files)
           (parse-log-files)                        ;; parse log files -> entries
           (frequencies-ip)                         ;; aggregate by IP address
           (vals)
-          (map #(map-ip-to-location % @resolver))  ;; map IP to country
+          (map #(map-ip-to-country % @resolver))   ;; map IP to country
           (frequencies-country)                    ;; aggregate by country
           (vals)
-          (create-html-svg-map)                    ;; HTML with SVG map
+          (create-html-svg-map app-name year)      ;; HTML with SVG map
           (io/spit out-file)))
 
   (defn download-maxmind-db [lic-key]
@@ -262,36 +258,37 @@
   (defn lookup-ip [ip] (@resolver ip))
 
   (defn run [out-file & log-files]
-    (process out-file log-files))
+    (process "STEP" 2022 out-file log-files))
 
   (println """
            Actions:
               [1] (lookup-ip "41.216.186.131")
               [2] (download-maxmind-db "YOUR-MAXMIND-KEY")
               [3] (run "./ip-map.html"
-                       "resources/logs/localhost_access_log.2022-12.zip")
+                       "resources/step-logs/localhost_access_log.2022-12.zip")
               [4] (run "./ip-map.html"
-                       "resources/logs/localhost_access_log.2022-12-01.log")
+                       "resources/step-logs/localhost_access_log.2022-12-01.log")
               [5] (apply run "./ip-map.html"
-                             (io/list-files-glob "resources/logs/"
+                             (io/list-files-glob "resources/step-logs/"
                                                  "localhost_access_log.2022-*"))
            """)
 
   (when-not (macroexpand-on-load?)
     (println)
-    (print-warn-box """
-                    macroexpand-on-load is not activated. To get a better \
-                    performance activate it before loading this script.
+    (print-msg-box :warn
+                   """
+                   macroexpand-on-load is not activated. To get a better \
+                   performance activate it before loading this script.
 
-                    From the REPL run the command: !macroexpand
-                    """))
+                   From the REPL run the command: !macroexpand
+                   """))
 
   (when-not (io/exists-file? maxmind-country-zip)
     (println)
-    (print-error-box """
-                     The MaxMind country file does not exist!
+    (print-msg-box :error
+                   """
+                   The MaxMind country file does not exist!
 
-                     ~{maxmind-country-zip}
-                     """))
-
+                   ~{maxmind-country-zip}
+                   """))
 )
