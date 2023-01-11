@@ -82,8 +82,39 @@
 
 (def geoip/stats (atom {}))
 
+;; Private IPv4 Address Ranges (RFC 1918)
+(def private-ip4-addresses [ "10.0.0.0/8"
+                             "172.16.0.0/12"
+                             "192.168.0.0/16" ])
+
+;; Private IPv6 Address Ranges (RFC 4193)
+(def private-ip6-addresses [ "fc00::/7" ])
+
 
 (defn geoip/statistics [] @geoip/stats)
+
+
+(defn
+  ^{ :arglists '("(geoip/addr-ranges->trie ranges)")
+     :doc """
+          Creates a trie map from a sequence of address ranges.
+          """
+     :examples '(
+           """
+           (do
+             (def private-ip4-trie (geoip/addr-ranges->trie geoip/private-ip4-addresses))
+
+             (defn private-ip? [ip]
+                (some? (cidr/lookup-reverse private-ip4-trie ip)))
+
+             (private-ip? "192.168.0.1"))
+           """) }
+
+  addr-ranges->trie [ranges]
+
+  (let [trie (cidr/trie)]
+    (docoll #(cidr/insert trie (cidr/parse %) "") ranges)
+    trie))
 
 
 (defn

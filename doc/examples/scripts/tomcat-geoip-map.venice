@@ -25,20 +25,16 @@
   (load-module :kira)
 
 
-  ;; The MaxMind country database.
+  ;; The MaxMind country database
   (def maxmind-country-zip "resources/geoip-country.zip")
 
-  (def private-ip4-addresses [ "10.0.0.0/8"
-                               "172.16.0.0/12"
-                               "192.168.0.0/16" ])
+  ;; A Trie Map with the private IPv4 Address Ranges (check private/public IPs)
+  (def private-ip4-trie (geoip/addr-ranges->trie geoip/private-ip4-addresses))
 
-  (def private-ip4-trie (let [trie (cidr/trie)]
-                          (docoll #(cidr/insert trie (cidr/parse %) "")
-                                  private-ip4-addresses)
-                          trie))
-
+  ;; IP to country resolver
   (def resolver (delay (create-resolver)))
 
+  ;; SVG map template (full)
   (def svg-map-tpl-full
     """
     <!DOCTYPE html>
@@ -118,6 +114,7 @@
     </html>
     """)
 
+  ;; SVG map template (light)
   (def svg-map-tpl-light
     """
     <!DOCTYPE html>

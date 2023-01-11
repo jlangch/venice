@@ -68,6 +68,7 @@ public class ModuleGeoipSection implements ISectionBuilder {
         util.addItem(diBuilder.getDocItem("geoip/build-maxmind-city-db-url"));
         util.addItem(diBuilder.getDocItem("geoip/map-location-to-numerics"));
         util.addItem(diBuilder.getDocItem("geoip/country-to-location-resolver", false));
+        util.addItem(diBuilder.getDocItem("geoip/addr-ranges->trie"));
 
         return section;
     }
