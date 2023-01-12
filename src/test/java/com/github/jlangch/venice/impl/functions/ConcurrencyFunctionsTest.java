@@ -715,6 +715,32 @@ public class ConcurrencyFunctionsTest {
     }
 
     @Test
+    public void test_preduce() {
+        final Venice venice = new Venice();
+
+        assertEquals(15L, venice.eval("(preduce 1 + 0 + 0 [1 2 3 4 5])"));
+        assertEquals(15L, venice.eval("(preduce 2 + 0 + 0 [1 2 3 4 5])"));
+        assertEquals(15L, venice.eval("(preduce 3 + 0 + 0 [1 2 3 4 5])"));
+        assertEquals(15L, venice.eval("(preduce 4 + 0 + 0 [1 2 3 4 5])"));
+        assertEquals(15L, venice.eval("(preduce 5 + 0 + 0 [1 2 3 4 5])"));
+        assertEquals(15L, venice.eval("(preduce 6 + 0 + 0 [1 2 3 4 5])"));
+
+        assertEquals(1015L, venice.eval("(preduce 1 + 1000 + 0 [1 2 3 4 5])"));
+        assertEquals(1015L, venice.eval("(preduce 2 + 1000 + 0 [1 2 3 4 5])"));
+        assertEquals(1015L, venice.eval("(preduce 3 + 1000 + 0 [1 2 3 4 5])"));
+        assertEquals(1015L, venice.eval("(preduce 4 + 1000 + 0 [1 2 3 4 5])"));
+        assertEquals(1015L, venice.eval("(preduce 5 + 1000 + 0 [1 2 3 4 5])"));
+        assertEquals(1015L, venice.eval("(preduce 6 + 1000 + 0 [1 2 3 4 5])"));
+
+        assertEquals(5015L, venice.eval("(preduce 1 + 0 + 1000 [1 2 3 4 5])"));
+        assertEquals(3015L, venice.eval("(preduce 2 + 0 + 1000 [1 2 3 4 5])"));
+        assertEquals(2015L, venice.eval("(preduce 3 + 0 + 1000 [1 2 3 4 5])"));
+        assertEquals(2015L, venice.eval("(preduce 4 + 0 + 1000 [1 2 3 4 5])"));
+        assertEquals(1015L, venice.eval("(preduce 5 + 0 + 1000 [1 2 3 4 5])"));
+        assertEquals(1015L, venice.eval("(preduce 6 + 0 + 1000 [1 2 3 4 5])"));
+    }
+
+    @Test
     public void test_promise_1() {
         final Venice venice = new Venice();
 
