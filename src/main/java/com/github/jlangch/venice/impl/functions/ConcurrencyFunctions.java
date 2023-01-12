@@ -2577,7 +2577,7 @@ public class ConcurrencyFunctions {
                         "    (sleep 2000)  ; wait for 2 seconds       \n" +
                         "    (+ n 10))                                \n" +
                         "  (time (map long-running-job (range 4))))  ")
-                    .seeAlso("pcalls", "map", "cpus")
+                    .seeAlso("pcalls", "preduce", "map", "cpus")
                     .build()
         ) {
             @Override
@@ -2668,7 +2668,7 @@ public class ConcurrencyFunctions {
                         "`(+ 2 (cpus))` functions in parallel.")
                     .examples(
                         "(pcalls #(+ 1 2) #(+ 2 3) #(+ 3 4))")
-                    .seeAlso("pmap", "cpus")
+                    .seeAlso("pmap", "preduce", "cpus")
                     .build()
         ) {
             @Override
@@ -2699,7 +2699,7 @@ public class ConcurrencyFunctions {
                     .examples(
                         "(preduce 3 + 0 + 0 [1 2 3 4 5])",
                         "(preduce 3 (fn [acc x] (+ acc x)) 0 (fn [acc x] (+ acc x)) 0 [1 2 3 4 5])")
-                    .seeAlso("reduce", "map", "filter")
+                    .seeAlso("reduce", "map", "filter", "pmap", "pcalls")
                     .build()
         ) {
             @Override
@@ -2713,7 +2713,7 @@ public class ConcurrencyFunctions {
                 final VncVal reduceSeed = args.nth(4);
                 final VncSequence seq = Coerce.toVncSequence(args.nth(5));
 
-                // reducing
+                // reducing (parallel)
                 final VncList chunks = (VncList)CoreFunctions.partition_all.applyOf(n, seq);
                 final List<VncVal> jobs = new ArrayList<>();
                 chunks.forEach(c ->
@@ -2727,7 +2727,7 @@ public class ConcurrencyFunctions {
                     reductions = reductions.addAtEnd(CoreConcurrencyFunctions.deref.applyOf(job));
                 }
 
-                // combining
+                // combining (sequential)
                 return CoreFunctions.reduce.applyOf(combineFn, combineSeed, reductions);
             }
 
