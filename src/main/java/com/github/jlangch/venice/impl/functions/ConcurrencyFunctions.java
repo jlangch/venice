@@ -1132,9 +1132,9 @@ public class ConcurrencyFunctions {
                         "(-> (promise (fn [] \"the quick brown fox\"))    \n" +
                         "    (then-accept (fn [v] (println (pr-str v))))  \n" +
                         "    (deref))",
-                		"(let [result (promise)                                \n" +
+                        "(let [result (promise)                                \n" +
                         "      p      (promise)]                               \n" +
-                	    "  (thread #(deliver p 5))                             \n" +
+                        "  (thread #(deliver p 5))                             \n" +
                         "  (then-accept p (fn [v] (deliver result (+ v 2))))   \n" +
                         "  [@p @result]))                                      ")
                     .seeAlso(
@@ -2684,6 +2684,57 @@ public class ConcurrencyFunctions {
             private static final long serialVersionUID = -1848883965231344442L;
         };
 
+    public static VncFunction preduce =
+        new VncFunction(
+                "preduce",
+                VncFunction
+                    .meta()
+                    .arglists("(preduce n combine-fn combine-seed reduce-fn reduce-seed coll)")
+                    .doc(
+                        "Reduces a collection using a parallel reduce-combine strategy. " +
+                        "The collection is partitioned into groups of approximately " +
+                        "n items, each of which is reduced with reduce-fn (with reduce-seed " +
+                        "as its seed value). The results of these reductions are then reduced " +
+                        "with combine-fn (with combine-seed as its seed value).")
+                    .examples(
+                        "(preduce 3 + 0 + 0 [1 2 3 4 5])",
+                        "(preduce 3 (fn [acc x] (+ acc x)) 0 (fn [acc x] (+ acc x)) 0 [1 2 3 4 5])")
+                    .seeAlso("reduce", "map", "filter")
+                    .build()
+        ) {
+            @Override
+            public VncVal apply(final VncList args) {
+                ArityExceptions.assertArity(this, args, 6);
+
+                final VncVal n = Coerce.toVncLong(args.nth(0));
+                final VncVal combineFn = args.nth(1);
+                final VncVal combineSeed = args.nth(2);
+                final VncVal reduceFn = args.nth(3);
+                final VncVal reduceSeed = args.nth(4);
+                final VncSequence seq = Coerce.toVncSequence(args.nth(5));
+
+                // reducing
+                final VncList chunks = (VncList)CoreFunctions.partition_all.applyOf(n, seq);
+                final List<VncVal> jobs = new ArrayList<>();
+                chunks.forEach(c ->
+                	jobs.add(
+                		future.applyOf(
+                			VncFunction.of(
+                				() -> CoreFunctions.reduce.applyOf(reduceFn, reduceSeed, c)))));
+
+                VncList reductions = VncList.empty();
+                for(VncVal job : jobs) {
+                    reductions = reductions.addAtEnd(CoreConcurrencyFunctions.deref.applyOf(job));
+                }
+
+                // combining
+                return CoreFunctions.reduce.applyOf(combineFn, combineSeed, reductions);
+            }
+
+            private static final long serialVersionUID = -1848883965231344442L;
+        };
+
+
 
 
     ///////////////////////////////////////////////////////////////////////////
@@ -2866,6 +2917,7 @@ public class ConcurrencyFunctions {
 
                     .add(pmap)
                     .add(pcalls)
+                    .add(preduce)
 
                     .toMap();
 

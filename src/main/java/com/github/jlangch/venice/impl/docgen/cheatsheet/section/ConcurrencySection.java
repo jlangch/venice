@@ -159,8 +159,9 @@ public class ConcurrencySection implements ISectionBuilder {
 
         final DocSection parallel = new DocSection("Parallel", "concurrency.parallel");
         all.addSection(parallel);
-        parallel.addItem(diBuilder.getDocItem("pmap"));
         parallel.addItem(diBuilder.getDocItem("pcalls"));
+        parallel.addItem(diBuilder.getDocItem("pmap"));
+        parallel.addItem(diBuilder.getDocItem("preduce"));
 
         return section;
     }
