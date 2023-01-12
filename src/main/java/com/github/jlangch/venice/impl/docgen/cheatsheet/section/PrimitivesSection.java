@@ -160,6 +160,7 @@ public class PrimitivesSection implements ISectionBuilder {
         final DocSection split = new DocSection("Split/Join", "primitives.strings.splitjoin");
         strings.addSection(split);
         split.addItem(diBuilder.getDocItem("str/split"));
+        split.addItem(diBuilder.getDocItem("str/split-at"));
         split.addItem(diBuilder.getDocItem("str/split-lines"));
         split.addItem(diBuilder.getDocItem("str/join"));
 

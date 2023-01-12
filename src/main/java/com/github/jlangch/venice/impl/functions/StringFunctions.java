@@ -978,7 +978,7 @@ public class StringFunctions {
                         "(str/split s regex limit)")
                     .doc(
                         "Splits string on a regular expression. Optional argument limit is "+
-                        "the maximum number of splits.  Returns a list of the splits.")
+                        "the maximum number of splits. Returns a list of the splits.")
                     .examples(
                         "(str/split \"abc,def,ghi\" \",\")",
                         "(str/split \"James Peter Robert\" \" \" 2)",
@@ -1037,6 +1037,54 @@ public class StringFunctions {
                                 "Function 'str/split' does not allow %s as regex pattern. " +
                                 "Expected a string or a java.util.regex.Pattern",
                                 Types.getType(args.second())));
+                    }
+                }
+            }
+
+            private static final long serialVersionUID = -1848883965231344442L;
+        };
+
+
+    public static VncFunction str_split_at =
+        new VncFunction(
+                "str/split-at",
+                VncFunction
+                    .meta()
+                    .arglists(
+                        "(str/split-at s pos)")
+                    .doc(
+                        "Splits string at the given position. Returns a list of the splits.")
+                    .examples(
+                        "(str/split-at nil 1)",
+                        "(str/split-at \"\" 1)",
+                        "(str/split-at \"abc\" 0)",
+                        "(str/split-at \"abc\" 1)",
+                        "(str/split-at \"abc\" 2)",
+                        "(str/split-at \"abc\" 3)")
+                    .seeAlso("str/split-lines")
+                    .build()
+        ) {
+            @Override
+            public VncVal apply(final VncList args) {
+                ArityExceptions.assertArity(this, args, 2);
+
+                if (args.first() == Nil) {
+                    return VncList.of(new VncString(""), new VncString(""));
+                }
+                else {
+                    final String str = Coerce.toVncString(args.first()).getValue();
+                    final long pos = Coerce.toVncLong(args.second()).getValue();
+
+                    if (pos <= 0) {
+                        return VncList.of(new VncString(""), args.first());
+                    }
+                    else if (pos >= str.length()) {
+                        return VncList.of(args.first(), new VncString(""));
+                    }
+                    else {
+                        return VncList.of(
+                                    new VncString(str.substring(0, (int)pos)),
+                                    new VncString(str.substring((int)pos)));
                     }
                 }
             }
@@ -2543,6 +2591,7 @@ public class StringFunctions {
                     .add(str_pos)
                     .add(str_chars)
                     .add(str_split)
+                    .add(str_split_at)
                     .add(str_split_lines)
                     .add(str_cr_lf)
                     .add(str_format)

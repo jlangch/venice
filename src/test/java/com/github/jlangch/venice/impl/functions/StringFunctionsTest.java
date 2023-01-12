@@ -637,6 +637,18 @@ public class StringFunctionsTest {
     }
 
     @Test
+    public void test_str_split_at() {
+        final Venice venice = new Venice();
+
+        assertEquals("(\"\" \"\")", venice.eval("(pr-str (str/split-at nil 1))"));
+        assertEquals("(\"\" \"\")", venice.eval("(pr-str (str/split-at \"\" 1))"));
+        assertEquals("(\"\" \"abc\")", venice.eval("(pr-str (str/split-at \"abc\" 0))"));
+        assertEquals("(\"a\" \"bc\")", venice.eval("(pr-str (str/split-at \"abc\" 1))"));
+        assertEquals("(\"ab\" \"c\")", venice.eval("(pr-str (str/split-at \"abc\" 2))"));
+        assertEquals("(\"abc\" \"\")", venice.eval( "(pr-str (str/split-at \"abc\" 3))"));
+    }
+
+    @Test
     public void test_str_split_lines() {
         final Venice venice = new Venice();
 
