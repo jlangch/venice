@@ -752,8 +752,7 @@ public class ConcurrencyFunctionsTest {
                 "      (deliver p 123))       " +
                 "                             " +
                 "   (future task)             " +
-                "   (deref p))                " +
-                ") ";
+                "   (deref p))";
 
         assertEquals(123L, venice.eval(script));
     }
@@ -765,8 +764,7 @@ public class ConcurrencyFunctionsTest {
         final String script =
                 "(do                             " +
                 "   (def p (promise (fn [] 10))) " +
-                "   (deref p))                   " +
-                ") ";
+                "   (deref p))";
 
         assertEquals(10L, venice.eval(script));
     }
@@ -782,8 +780,7 @@ public class ConcurrencyFunctionsTest {
                 "      (deliver p 123))       " +
                 "                             " +
                 "   (def p (promise task))    " +
-                "   (deref p))                " +
-                ") ";
+                "   (deref p))";
 
         assertEquals(123L, venice.eval(script));
     }
@@ -1493,8 +1490,7 @@ public class ConcurrencyFunctionsTest {
                 "   (defn wait [] (sleep 500) 100)          " +
                 "                                           " +
                 "   (let [f (future wait)]                  " +
-                "      (deref f 300 :timeout))              " +
-                ") ";
+                "      (deref f 300 :timeout))) ";
 
         assertEquals("timeout", venice.eval(script));
     }
@@ -1581,8 +1577,7 @@ public class ConcurrencyFunctionsTest {
                 "   (assoc! (thread-local) :a 10 :b 20)                   \n" +
                 "   (assoc! (thread-local) :a 11)                         \n" +
                 "   (let [f (future (fn [] (get (thread-local) :a)))]     \n" +
-                "        @f)                                              \n" +
-                ") ";
+                "        @f)) ";
 
         assertEquals(11L, venice.eval(script));
     }
@@ -1694,8 +1689,7 @@ public class ConcurrencyFunctionsTest {
                 "                                            \n" +
                 "      (locking x                            \n" +
                 "         (sleep 1000)                       \n" +
-                "         (println \"done2\")))              \n" +
-                ") ";
+                "         (println \"done2\")))) ";
 
         assertEquals("done1\ndone2\n", venice.eval(script));
     }
