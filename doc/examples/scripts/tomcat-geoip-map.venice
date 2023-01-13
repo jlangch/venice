@@ -18,6 +18,16 @@
 ;;;; WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 ;;;; See the License for the specific language governing permissions and
 ;;;; limitations under the License.
+;;;;
+;;;; Creates a HTML world map with the number of HTTP accesses per country.
+;;;; The map can be viewed with a HTML browser.
+;;;;
+;;;; To lookup countries by IP addresses the MaxMind GeoLite databases is
+;;;; required.
+;;;; To download the free MaxMind GeoLite databases you need a license key that
+;;;; can be obtained from the MaxMind 'https://www.maxmind.com/en/home' home
+;;;; page.
+;;;; Doc: https://dev.maxmind.com/geoip/geoip2/geoip2-city-country-csv-databases/
 
 (do
   (load-module :tomcat-util ['tomcat-util :as 'tc-util])
@@ -176,16 +186,17 @@
   (defn app-req? [url]
     (str/contains? url "/step/"))
 
-  (defn freq-map [ip status public app-req]
-    { :ip     ip
-      :1xx    (if (<= 100 status 199) 1 0)
-      :2xx    (if (<= 200 status 299) 1 0)
-      :3xx    (if (<= 300 status 399) 1 0)
-      :4xx    (if (<= 400 status 499) 1 0)
-      :5xx    (if (<= 500 status 599) 1 0)
-      :app    (if app-req 1 0)
-      :public public
-      :tot    1 })
+  (defn freq-map [ip status public-ip app-req]
+    { :ip           ip
+      :1xx          (if (<= 100 status 199) 1 0)
+      :2xx          (if (<= 200 status 299) 1 0)
+      :3xx          (if (<= 300 status 399) 1 0)
+      :4xx          (if (<= 400 status 499) 1 0)
+      :5xx          (if (<= 500 status 599) 1 0)
+      :tot          1
+      :app          (if app-req 1 0)
+      :public-ip    public-ip
+      :country-iso  nil })
 
   (defn freq-aggregate [f1 f2]
     { :ip           (:ip f2)
@@ -196,21 +207,18 @@
       :5xx          (+ (:5xx f1 0) (:5xx f2 0))
       :tot          (+ (:tot f1 0) (:tot f2 0))
       :app          (+ (:app f1 0) (:app f2 0))
-      :public       (:public f2)
-      :country      (:country f2)
-      :country-iso  (:country-iso f2)})
+      :public-ip    (:public-ip f2)
+      :country-iso  (:country-iso f2) })
 
-  (defn frequencies-ip [items]
-    (reduce (fn [acc i]
-              (let [ip (:ip i)]
-                (assoc acc ip (freq-aggregate (get acc ip {}) i))))
+  (defn frequencies-by-ip [items]
+    (reduce (fn [acc i] (->> (freq-aggregate (get acc (:ip i) {}) i)
+                             (assoc acc (:ip i))))
             {}
             items))
 
-  (defn frequencies-country [items]
-    (reduce (fn [acc i]
-              (let [country (:country-iso i)]
-                (assoc acc country (freq-aggregate (get acc country {}) i))))
+  (defn frequencies-by-country [items]
+    (reduce (fn [acc i] (->> (freq-aggregate (get acc (:country-iso i) {}) i)
+                             (assoc acc (:country-iso i))))
             {}
             items))
 
@@ -223,45 +231,46 @@
                            (or (:status %) 0)
                            (public-ip? (:ip %))
                            (app-req? (:url %))))
-           (frequencies-ip)
+           (frequencies-by-ip)
            (vals))))
 
   (defmulti parse-log-file (fn [f] (io/file-ext f)))
 
   (defmethod parse-log-file "zip" [f]
-    (println "Parsing zip " f "...")
+    (println "Parsing zip:" f "...")
     (->> (io/unzip-all f)
          (vals)
-         (map #(parse-ip-logs %))))   ;; use pmap to parallelize
+         (map #(parse-ip-logs %))))
 
   (defmethod parse-log-file "log" [f]
-    (println "Parsing log " f "...")
+    (println "Parsing log:" f "...")
     (->> (io/slurp f :binary true)
          (parse-ip-logs)))
 
   (defn parse-log-files [log-files]
-    (->> (map parse-log-file log-files)
+    (->> (map parse-log-file log-files)   ;; use pmap to parallelize
          (flatten)))
 
   (defn map-ip-to-country [item ip-country-resolver]
-    (let [data (if (:public item) (ip-country-resolver (:ip item)) nil)]
-      (-> (dissoc item :ip)
-          (assoc :country-iso (:country-iso data "PRIVATE")))))
+    (let [location (if (:public-ip item) (ip-country-resolver (:ip item)) nil)]
+      (-> (dissoc item :ip :public-ip)
+          (assoc :country-iso (:country-iso location "PRIVATE")))))
 
   (defn svg-country-data-full [item]
     (let [country (:country-iso item)
           s       (str/format "total: %d, _1xx: %d, _2xx: %d, _3xx: %d, _4xx: %d, _5xx: %d, app: %d"
                               (:tot item) (:1xx item) (:2xx item)
                               (:3xx item) (:4xx item) (:5xx item)
-                              (:app item))]
+                              (:app item))
+          prv     (:private-ip item 0)]
       (if (= country "CH")
-        (str/format "%s: { %s, _private: %d, color: '#2E9444' }" country s (:private item 0))
+        (str/format "%s: { %s, _private: %d, color: '#2E9444' }" country s prv)
         (str/format "%s: { %s, _private: 0 }" country s))))
 
   (defn svg-country-data-light [item]
     (let [country (:country-iso item)
           tot     (:tot item)
-          prv     (:private item 0)]
+          prv     (:private-ip item 0)]
       (if (= country "CH")
         (str/format "%s: { total: %d, _private: %d, color: '#2E9444' }" country tot prv)
         (str/format "%s: { total: %d, _private: 0 }" country tot))))
@@ -273,36 +282,48 @@
         :countries (str/join ", " (map svg-formatter items)) }))
 
   (defn create-html-svg-map [mode app-name year items]
+    (println "Creating HTML SVG map...")
     (let [template (if (= mode :full) svg-map-tpl-full svg-map-tpl-light)
           ch       (first (filter #(= (:country-iso %) "CH" ) items))
           private  (first (filter #(= (:country-iso %) "PRIVATE") items))
           others   (filter #(nil? ((set "CH" "PRIVATE") (:country-iso %))) items)]
       (cond
         (and (nil? ch) (nil? private))
-          (kira/eval template (svg-countries-data mode app-name year others))
+          (->> others
+               (svg-countries-data mode app-name year)
+               (kira/eval template))
 
         (and (some? ch) (some? private))
-          (let [ch+ (assoc (freq-aggregate private ch) :private (:tot private 0))]
-            (kira/eval template (svg-countries-data mode app-name year (conj others ch+))))
+          (->> (assoc (freq-aggregate private ch) :private-ip (:tot private 0))
+               (conj others)
+               (svg-countries-data mode app-name year)
+               (kira/eval template))
 
         (some? ch)
-          (kira/eval template (svg-countries-data mode app-name year (conj others ch)))
+          (->> ch
+               (conj others)
+               (svg-countries-data mode app-name year)
+               (kira/eval template))
 
         (some? private)
-          (let [ch+ (assoc private :country-iso "CH")]
-            (kira/eval template (svg-countries-data mode app-name year (conj others ch+))))
+          (->> (assoc private :country-iso "CH")  ;; rename country to "CH"
+               (conj others)
+               (svg-countries-data mode app-name year)
+               (kira/eval template))
 
         :else
-          (kira/eval template (svg-countries-data mode app-name year [])))))
+          (->> []
+               (svg-countries-data mode app-name year)
+               (kira/eval template)))))
 
   (defn process [mode app-name year out-file log-files]
      (println "Processing log files...")
      (->> (map io/file log-files)
           (parse-log-files)                        ;; parse log files -> entries
-          (frequencies-ip)                         ;; aggregate by IP address
+          (frequencies-by-ip)                      ;; aggregate by IP address
           (vals)
           (map #(map-ip-to-country % @resolver))   ;; map IP to country
-          (frequencies-country)                    ;; aggregate by country
+          (frequencies-by-country)                 ;; aggregate by country
           (vals)
           (create-html-svg-map mode app-name year) ;; HTML with SVG map
           (io/spit out-file)))
@@ -346,5 +367,7 @@
                    The MaxMind country file does not exist!
 
                    ~{maxmind-country-zip}
+
+                   Use `(download-maxmind-db "YOUR-MAXMIND-KEY")` to download it.
                    """))
 )
