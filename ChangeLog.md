@@ -10,6 +10,7 @@ All notable changes to this project will be documented in this file.
 ### Added 
 
 - functions `str/nrest`, `str/butnlast`, and `str/split-at`
+- a parallel reduce `preduce` based on a reduce / combine strategy
 - module `:qrref`
 
 ### Fixed 
