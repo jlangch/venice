@@ -2696,8 +2696,8 @@ public class ConcurrencyFunctions {
                         "Reduces a collection using a parallel reduce-combine strategy. " +
                         "The collection is partitioned into groups of approximately " +
                         "n items, each of which is reduced with reduce-fn (with reduce-seed " +
-                        "as its seed value). The results of these reductions are then reduced " +
-                        "with combine-fn (with combine-seed as its seed value).\n" +
+                        "as its seed value) in parallel. The results of these reductions are " +
+                        "then reduced with the combine-fn (with combine-seed as its seed value).\n" +
                         "Withhout an explicit combine-fn the reduce-fn and its seed reduce-seed " +
                         "will be used as combine-fn and combine-seed.")
                     .examples(
@@ -2713,7 +2713,7 @@ public class ConcurrencyFunctions {
                 ArityExceptions.assertArity(this, args, 4, 6);
 
                 if (args.size() == 4) {
-                    final VncVal n = Coerce.toVncLong(args.nth(0));
+                    final VncLong n = Coerce.toVncLong(args.nth(0));
                     final VncVal reduceFn = args.nth(1);
                     final VncVal reduceSeed = args.nth(2);
                     final VncSequence seq = Coerce.toVncSequence(args.nth(3));
@@ -2721,7 +2721,7 @@ public class ConcurrencyFunctions {
                     return preduce(n, reduceFn, reduceSeed, reduceFn, reduceSeed, seq);
                 }
                 else {
-                    final VncVal n = Coerce.toVncLong(args.nth(0));
+                    final VncLong n = Coerce.toVncLong(args.nth(0));
                     final VncVal combineFn = args.nth(1);
                     final VncVal combineSeed = args.nth(2);
                     final VncVal reduceFn = args.nth(3);
