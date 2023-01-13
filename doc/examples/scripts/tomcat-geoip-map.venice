@@ -35,6 +35,7 @@
   (load-module :kira)
 
 
+
   ;; The MaxMind country database
   (def maxmind-country-zip "resources/geoip-country.zip")
 
@@ -173,6 +174,42 @@
       </body>
     </html>
     """)
+
+
+  (defn- print-help []
+    (println """
+             Actions:
+                [1] (lookup-ip "41.216.186.131")
+                [2] (download-maxmind-db "YOUR-MAXMIND-KEY")
+                [3] (run :full "STEP" 2022 "./ip-map.html"
+                         "resources/logs/localhost_access_log.2022-12.zip")
+                [4] (run :full "STEP" 2022 "./ip-map.html"
+                         "resources/logs/localhost_access_log.2022-12-01.log")
+                [5] (apply run :full "STEP" 2022 "./ip-map.html"
+                               (io/list-files-glob "resources/logs/"
+                                                   "localhost_access_log.2022-*"))
+             """))
+
+  (defn- print-warn-macroexpand-on-load []
+    (println)
+    (print-msg-box :warn
+                   """
+                   macroexpand-on-load is not activated. To get a better \
+                   performance activate it before loading this script.
+
+                   From the REPL run the command: !macroexpand
+                   """))
+
+  (defn- print-error-maxmind-data-missing []
+    (println)
+    (print-msg-box :error
+                   """
+                   The MaxMind country file does not exist!
+
+                   ~{maxmind-country-zip}
+
+                   Use `(download-maxmind-db "YOUR-MAXMIND-KEY")` to download it.
+                   """))
 
   (defn create-resolver[]
     (println "Loading Google country DB ...")
@@ -337,37 +374,13 @@
   (defn run [mode app-name year out-file & log-files]
     (process mode app-name year out-file log-files))
 
-  (println """
-           Actions:
-              [1] (lookup-ip "41.216.186.131")
-              [2] (download-maxmind-db "YOUR-MAXMIND-KEY")
-              [3] (run :full "STEP" 2022 "./ip-map.html"
-                       "resources/step-logs/localhost_access_log.2022-12.zip")
-              [4] (run :full "STEP" 2022 "./ip-map.html"
-                       "resources/step-logs/localhost_access_log.2022-12-01.log")
-              [5] (apply run :full "STEP" 2022 "./ip-map.html"
-                             (io/list-files-glob "resources/step-logs/"
-                                                 "localhost_access_log.2022-*"))
-           """)
+
+      ;;; MAIN ---------------------------------------------------------------------
+
+  (print-help)
 
   (when-not (macroexpand-on-load?)
-    (println)
-    (print-msg-box :warn
-                   """
-                   macroexpand-on-load is not activated. To get a better \
-                   performance activate it before loading this script.
-
-                   From the REPL run the command: !macroexpand
-                   """))
+    (print-warn-macroexpand-on-load))
 
   (when-not (io/exists-file? maxmind-country-zip)
-    (println)
-    (print-msg-box :error
-                   """
-                   The MaxMind country file does not exist!
-
-                   ~{maxmind-country-zip}
-
-                   Use `(download-maxmind-db "YOUR-MAXMIND-KEY")` to download it.
-                   """))
-)
+    (print-error-maxmind-data-missing)))
