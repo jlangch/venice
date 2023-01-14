@@ -245,13 +245,7 @@ public class LoadPaths implements ILoadPaths {
             }
 
             if (unlimitedAccess) {
-                if (file.isAbsolute() && file.exists()) {
-                    return Files.newInputStream(file.toPath());
-                }
-                else if (paths.isEmpty()) {
-                    return Files.newInputStream(file.toPath());
-                }
-                else {
+                if (!file.isAbsolute()) {
                     for(LoadPath p : paths) {
                         if (p instanceof DirectoryLoadPath) {
                             final File f = new File(p.path(), file.getPath());
@@ -261,9 +255,13 @@ public class LoadPaths implements ILoadPaths {
                         }
                     }
                 }
+
+                if (file.exists()) {
+                    return Files.newInputStream(file.toPath());
+                }
             }
 
-            return null;
+            throw new VncException("No such file: '" + file.getPath() + "'");
         }
         catch (VncException ex) {
             throw ex;
@@ -271,7 +269,7 @@ public class LoadPaths implements ILoadPaths {
         catch (FileNotFoundException | NoSuchFileException ex) {
             throw new VncException(
                         String.format(
-                                "File not found: '%s'",
+                                "No such file: '%s'",
                                 file.getPath()),
                         ex);
         }
@@ -299,13 +297,7 @@ public class LoadPaths implements ILoadPaths {
             }
 
             if (unlimitedAccess) {
-                if (file.isAbsolute() && file.exists()) {
-                    return Files.newBufferedReader(file.toPath(), charset);
-                }
-                else if (paths.isEmpty()) {
-                    return Files.newBufferedReader(file.toPath(), charset);
-                }
-                else {
+                if (!file.isAbsolute()) {
                     for(LoadPath p : paths) {
                         if (p instanceof DirectoryLoadPath) {
                             final File f = new File(p.path(), file.getPath());
@@ -315,18 +307,20 @@ public class LoadPaths implements ILoadPaths {
                         }
                     }
                 }
+
+                if (file.exists()) {
+                    return Files.newBufferedReader(file.toPath(), charset);
+                }
             }
 
-            return null;
+            throw new VncException("No such file: '" + file.getPath() + "'");
         }
         catch (VncException ex) {
             throw ex;
         }
         catch (FileNotFoundException | NoSuchFileException ex) {
             throw new VncException(
-                        String.format(
-                                "File not found: '%s'",
-                                file.getPath()),
+                        String.format("No such file: '%s'",file.getPath()),
                         ex);
         }
         catch (Exception ex) {
@@ -353,13 +347,7 @@ public class LoadPaths implements ILoadPaths {
             }
 
             if (unlimitedAccess) {
-                if (file.isAbsolute()) {
-                    return Files.newOutputStream(file.toPath(), options);
-                }
-                else if (paths.isEmpty()) {
-                    return Files.newOutputStream(file.toPath(), options);
-                }
-                else {
+                if (!file.isAbsolute()) {
                     for(LoadPath p : paths) {
                         if (p instanceof DirectoryLoadPath) {
                             final File f = new File(p.path(), file.getPath());
@@ -367,6 +355,8 @@ public class LoadPaths implements ILoadPaths {
                         }
                     }
                 }
+
+                return Files.newOutputStream(file.toPath(), options);
             }
 
             return null;
@@ -385,7 +375,7 @@ public class LoadPaths implements ILoadPaths {
 
     @Override
     public boolean active() {
-    	return !getPaths().isEmpty();
+        return !getPaths().isEmpty();
     }
 
 
