@@ -82,19 +82,24 @@
 
 
 (defn- write-spec [spec]
-  (let [bill       (bill (-> spec :bill :account)
-                         (decimal (-> spec :bill :amount) 2 :HALF_UP)
-                         (-> spec :bill :reference)
-                         (-> spec :bill :message)
-                         (address-spec :debtor spec)
-                         (address-spec :creditor spec))
-       qr-slip-pos (:qr-slip-pos spec)
-       file-in     (io/file (:file-in spec))
-       file-out    (io/file (:file-out spec))
-       page-no     (if (= :last-page qr-slip-pos) -1I -2I)
-       canvas      (if file-in
-                     (. :PDFCanvas :new (. file-in :toPath) page-no)
-                     (. :PDFCanvas :new 210.0 297.0))]
+  (let [spec-amount (-> spec :bill :amount)
+        bill        (bill (-> spec :bill :account)
+                          (if spec-amount
+                            (decimal spec-amount 2 :HALF_UP)
+                            nil)
+                          (-> spec :bill :reference)
+                          (-> spec :bill :message)
+                          (if (contains? spec :debtor)
+                            (address-spec :debtor spec)
+                            nil)
+                          (address-spec :creditor spec))
+       qr-slip-pos  (:qr-slip-pos spec)
+       file-in      (if (:file-in spec) (io/file (:file-in spec)) nil)
+       file-out     (io/file (:file-out spec))
+       page-no      (if (= :last-page qr-slip-pos) -1I -2I)
+       canvas       (if file-in
+                      (. :PDFCanvas :new (. file-in :toPath) page-no)
+                      (. :PDFCanvas :new 210.0 297.0))]
       (write-canvas canvas bill file-out)))
 
 
@@ -136,6 +141,7 @@
        (do
          (load-module :qrbill ['qrbill :as 'q])
 
+         ;; the fields :debtor, :amount, and :message may left out
          (q/write  { :debtor      { :name  "Peter Meier"
                                     :line1 "Aarestrasse 2"
                                     :line2 "9500 Wil" }
