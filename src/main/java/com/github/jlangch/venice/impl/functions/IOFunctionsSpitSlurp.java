@@ -130,6 +130,9 @@ public class IOFunctionsSpitSlurp {
                         }
                         return slurpLines(options, is);
                     }
+                    catch (VncException ex) {
+                        throw ex;
+                    }
                     catch (Exception ex) {
                         throw new VncException(
                                 "Failed to slurp text lines from the file " + file.getPath(),
@@ -142,6 +145,9 @@ public class IOFunctionsSpitSlurp {
                         final InputStream is = new ByteArrayInputStream(buf.getBytes());
                         return slurpLines(options, is);
                     }
+                    catch (VncException ex) {
+                        throw ex;
+                    }
                     catch (Exception ex) {
                         throw new VncException("Failed to slurp text lines from a bytebuffer", ex);
                     }
@@ -150,6 +156,9 @@ public class IOFunctionsSpitSlurp {
                     try {
                         final InputStream is = Coerce.toVncJavaObject(args.first(), InputStream.class);
                         return slurpLines(options, is);
+                    }
+                    catch (VncException ex) {
+                        throw ex;
                     }
                     catch (Exception ex) {
                         throw new VncException("Failed to slurp text lines from a :java.io.InputStream", ex);
@@ -160,6 +169,9 @@ public class IOFunctionsSpitSlurp {
                         final Reader rd = Coerce.toVncJavaObject(args.first(), Reader.class);
                         return slurpLines(options, rd);
                     }
+                    catch (VncException ex) {
+                        throw ex;
+                    }
                     catch (Exception ex) {
                         throw new VncException("Failed to slurp text lines from a :java.io.Reader", ex);
                     }
@@ -169,6 +181,9 @@ public class IOFunctionsSpitSlurp {
                         try {
                             final URL url = Coerce.toVncJavaObject(args.first(), URL.class);
                             return slurpLines(options, url.openStream());
+                        }
+                        catch (VncException ex) {
+                            throw ex;
                         }
                         catch (Exception ex) {
                             throw new VncException("Failed to slurp text lines from a :java.net.URL", ex);
@@ -186,6 +201,9 @@ public class IOFunctionsSpitSlurp {
 
                             final URI uri = Coerce.toVncJavaObject(args.first(), URI.class);
                             return slurpLines(options, uri.toURL().openStream());
+                        }
+                        catch (VncException ex) {
+                            throw ex;
                         }
                         catch (Exception ex) {
                             throw new VncException("Failed to slurp text lines from a :java.net.URI", ex);
@@ -265,6 +283,9 @@ public class IOFunctionsSpitSlurp {
                         }
                         return slurp(options, is);
                     }
+                    catch (VncException ex) {
+                        throw ex;
+                    }
                     catch (Exception ex) {
                         throw new VncException("Failed to slurp data from the file " + file.getPath(), ex);
                     }
@@ -275,6 +296,9 @@ public class IOFunctionsSpitSlurp {
                         final InputStream is = new ByteArrayInputStream(buf.getBytes());
                         return slurp(options, is);
                     }
+                    catch (VncException ex) {
+                        throw ex;
+                    }
                     catch (Exception ex) {
                         throw new VncException("Failed to slurp text lines from a bytebuffer", ex);
                     }
@@ -283,6 +307,9 @@ public class IOFunctionsSpitSlurp {
                     try {
                         final InputStream is = Coerce.toVncJavaObject(args.first(), InputStream.class);
                         return slurp(options, is);
+                    }
+                    catch (VncException ex) {
+                        throw ex;
                     }
                     catch (Exception ex) {
                         throw new VncException("Failed to slurp data from a :java.io.InputStream", ex);
@@ -293,6 +320,9 @@ public class IOFunctionsSpitSlurp {
                         final Reader rd = Coerce.toVncJavaObject(args.first(), Reader.class);
                         return slurp(options, rd);
                     }
+                    catch (VncException ex) {
+                        throw ex;
+                    }
                     catch (Exception ex) {
                         throw new VncException("Failed to slurp data from a :java.io.Reader", ex);
                     }
@@ -302,6 +332,9 @@ public class IOFunctionsSpitSlurp {
                         try {
                             final URL url = Coerce.toVncJavaObject(args.first(), URL.class);
                             return slurp(options, url.openStream());
+                        }
+                        catch (VncException ex) {
+                            throw ex;
                         }
                         catch (Exception ex) {
                             throw new VncException("Failed to slurp data from a :java.net.URL", ex);
@@ -320,6 +353,9 @@ public class IOFunctionsSpitSlurp {
                         try {
                             final URI uri = Coerce.toVncJavaObject(args.first(), URI.class);
                             return slurp(options, uri.toURL().openStream());
+                        }
+                        catch (VncException ex) {
+                            throw ex;
                         }
                         catch (Exception ex) {
                             throw new VncException("Failed to slurp data from a :java.net.URI", ex);
@@ -420,6 +456,9 @@ public class IOFunctionsSpitSlurp {
                                             loadpaths.getPaths().toString()));
                         }
                     }
+                    catch (VncException ex) {
+                        throw ex;
+                    }
                     catch (Exception ex) {
                         throw new VncException(
                                 "Failed to spit data to the file " + file.getPath(),
@@ -431,6 +470,9 @@ public class IOFunctionsSpitSlurp {
                         final OutputStream os = Coerce.toVncJavaObject(args.first(), OutputStream.class);
                         os.write(stringData != null ? stringData.getBytes(charset) : binaryData);
                         os.flush();
+                    }
+                    catch (VncException ex) {
+                        throw ex;
                     }
                     catch (Exception ex) {
                         throw new VncException(
@@ -444,7 +486,10 @@ public class IOFunctionsSpitSlurp {
                         wr.write(binaryData != null ? new String(binaryData, charset) : stringData);
                         wr.flush();
                     }
-                    catch (Exception ex) {
+                    catch (VncException ex) {
+                        throw ex;
+                    }
+                   catch (Exception ex) {
                         throw new VncException(
                                 "Failed to spit data to the Writer!",
                                 ex);
@@ -657,6 +702,9 @@ public class IOFunctionsSpitSlurp {
 
                     return Nil;
                 }
+                catch (VncException ex) {
+                    throw ex;
+                }
                 catch (Exception ex) {
                     throw new VncException(
                             "Failed to spit data to a :java.io.OutputStream",
@@ -715,6 +763,9 @@ public class IOFunctionsSpitSlurp {
                     }
 
                     return Nil;
+                }
+                catch (VncException ex) {
+                    throw ex;
                 }
                 catch (Exception ex) {
                     throw new VncException(

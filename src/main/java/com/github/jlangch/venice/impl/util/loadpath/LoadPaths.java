@@ -23,12 +23,14 @@ package com.github.jlangch.venice.impl.util.loadpath;
 
 import java.io.BufferedReader;
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.nio.ByteBuffer;
 import java.nio.charset.Charset;
 import java.nio.file.Files;
+import java.nio.file.NoSuchFileException;
 import java.nio.file.OpenOption;
 import java.util.ArrayList;
 import java.util.List;
@@ -266,6 +268,13 @@ public class LoadPaths implements ILoadPaths {
         catch (VncException ex) {
             throw ex;
         }
+        catch (FileNotFoundException | NoSuchFileException ex) {
+            throw new VncException(
+                        String.format(
+                                "File not found: '%s'",
+                                file.getPath()),
+                        ex);
+        }
         catch (Exception ex) {
             throw new VncException(
                         String.format(
@@ -312,6 +321,13 @@ public class LoadPaths implements ILoadPaths {
         }
         catch (VncException ex) {
             throw ex;
+        }
+        catch (FileNotFoundException | NoSuchFileException ex) {
+            throw new VncException(
+                        String.format(
+                                "File not found: '%s'",
+                                file.getPath()),
+                        ex);
         }
         catch (Exception ex) {
             throw new VncException(
