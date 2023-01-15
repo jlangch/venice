@@ -141,7 +141,7 @@
        (do
          (load-module :qrbill ['qrbill :as 'q])
 
-         ;; the fields :debtor, :amount, and :message may left out
+         ;; the fields :debtor, :amount, :message, and :file-in are optional
          (q/write  { :debtor      { :name  "Peter Meier"
                                     :line1 "Aarestrasse 2"
                                     :line2 "9500 Wil" }
