@@ -7,7 +7,64 @@ project.
 See [A Guide to Parsifal](ext-parsifal-guide.md)
 
 
-## Example 1
+## Simple Examples
+
+### Parse a float number
+
+```clojure
+(do
+  (load-module :parsifal ['parsifal :as 'p])
+  
+  (p/defparser float []
+    (p/let->>* [i  (p/many1 (p/digit))
+                d  (p/char ".")
+                f  (p/many1 (p/digit))]
+      (p/always (apply str (flatten (list i d f))))))
+  
+  (defn evaluate [expression]
+    (p/run (float) expression)))
+```
+
+```clojure
+(evaluate "1.0")       ; => "1.0"
+(evaluate "120.468")   ; => "120.468
+(evaluate "1.2---")    ; => 1.2
+(evaluate "abc")       ; => ParseError: Unexpected token 'a' at line: 1 column: 1
+```
+
+### Parse a quoted string with escaped chars
+
+```clojure
+(do
+  (load-module :parsifal ['parsifal :as 'p])
+
+  (p/defparser escape []
+    (p/let->>* [e  (p/char #\backslash)
+                c  (p/any-char-of "\\0nrvtbf\"")]
+      (p/always (char-escaped c))))
+
+  (p/defparser character []
+    (p/none-char-of "\\\""))
+
+  (p/defparser quoted-string []
+    (p/between (p/char #\")
+               (p/char #\")
+               (p/many (p/either (escape) (character)))))
+
+  ;; (evaluate (apply str [#\" #\1 #\\ #\n #\2 #\"]))
+  ;; (evaluate (apply str [#\" #\1 #\\ #\f #\2 #\"]))
+  ;; (evaluate (apply str [#\" #\1 #\\ #\" #\2 #\"]))
+  (defn evaluate [expression]
+    (p/run (quoted-string) expression)))
+```
+
+```clojure
+(evaluate (apply str [#\" #\1 #\\ #\n #\2 #\"]))  ; => [#\1 #\newline #\2]
+(evaluate (apply str [#\" #\1 #\\ #\f #\2 #\"]))  ; => [#\1 #\formfeed #\2]
+(evaluate (apply str [#\" #\1 #\\ #\" #\2 #\"]))  ; => [#\1 #\" #\2]
+```
+
+## Expression evaluator 1
 
 Parsifal expression evaluator example
 
@@ -117,7 +174,7 @@ The expression evaluator evaluates expressions like `"(3 + 4) * 5"`. It supports
 ```
 
 
-## Example 2
+## Expression evaluator 2
 
 Parsifal expression evaluator example with tokenizer and unary expressions
 
