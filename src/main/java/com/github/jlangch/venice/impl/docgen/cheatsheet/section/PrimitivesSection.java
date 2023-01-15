@@ -252,6 +252,7 @@ public class PrimitivesSection implements ISectionBuilder {
         chars.addSection(charuse);
         charuse.addItem(diBuilder.getDocItem("char"));
         charuse.addItem(diBuilder.getDocItem("char?"));
+        charuse.addItem(diBuilder.getDocItem("char-escaped"));
         charuse.addItem(diBuilder.getDocItem("char-literals", false));
 
         final DocSection charconv = new DocSection("Conversion", "primitives.chars.conversion");

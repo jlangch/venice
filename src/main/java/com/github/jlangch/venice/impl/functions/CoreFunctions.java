@@ -535,6 +535,52 @@ public class CoreFunctions {
             private static final long serialVersionUID = -1848883965231344442L;
         };
 
+    public static VncFunction char_escaped =
+        new VncFunction(
+                "char-escaped",
+                VncFunction
+                    .meta()
+                    .arglists("(char-escaped c)")
+                    .doc(
+                        "Returns the ASCII escaped character for c. \n\n" +
+                        "  -  `\\'` single quote¶\n" +
+                        "  -  `\\\"` double quote¶\n" +
+                        "  -  `\\\\` backslash¶\n" +
+                        "  -  `\\n` new line¶\n" +
+                        "  -  `\\r` carriage return¶\n" +
+                        "  -  `\\t` tab¶\n" +
+                        "  -  `\\b` backspace¶\n" +
+                        "  -  `\\f` form feed¶\n" +
+                        "  -  `\\0` null character¶\n" +
+                        "  -  in all other cases returns the character c")
+                    .examples(
+                        "(char-escaped #\\n)",
+                        "(char-escaped #\\a)")
+                    .seeAlso("char", "char?")
+                    .build()
+        ) {
+            @Override
+            public VncVal apply(final VncList args) {
+                ArityExceptions.assertArity(this, args, 1);
+
+                final char ch = Coerce.toVncChar(args.first()).getValue();
+                switch (ch) {
+                    case '\'':  return new VncChar('\'');
+                    case '\"':  return new VncChar('"');
+                    case '\\':  return new VncChar('\\');
+                    case 'n':   return new VncChar('\n');
+                    case 'r':   return new VncChar('\r');
+                    case 't':   return new VncChar('\t');
+                    case 'b':   return new VncChar('\b');
+                    case 'f':   return new VncChar('\f');
+                    case '0':   return new VncChar('\0');
+                    default:    return new VncChar(ch);
+                }
+            }
+
+            private static final long serialVersionUID = -1848883965231344442L;
+        };
+
     public static VncFunction symbol =
         new VncFunction(
                 "symbol",
@@ -1146,9 +1192,9 @@ public class CoreFunctions {
                 VncFunction
                     .meta()
                     .arglists(
-                    	"(= x)", "(= x y)", "(= x y & more)")
+                        "(= x)", "(= x y)", "(= x y & more)")
                     .doc(
-                    	"Returns true if both operands have equivalent type and value")
+                        "Returns true if both operands have equivalent type and value")
                     .examples(
                         "(= \"abc\" \"abc\")",
                         "(= 0 0)",
@@ -1159,7 +1205,7 @@ public class CoreFunctions {
                         "(= 4)",
                         "(= 4 4 4)")
                     .seeAlso(
-                    	"==", "not=")
+                        "==", "not=")
                     .build()
         ) {
             @Override
@@ -1190,7 +1236,7 @@ public class CoreFunctions {
                 VncFunction
                     .meta()
                     .arglists(
-                    	"(== x)", "(== x y)", "(== x y & more)")
+                        "(== x)", "(== x y)", "(== x y & more)")
                     .doc(
                         "Returns true if both operands have equivalent value. \n\n" +
                         "Numbers of different types can be checked for value equality.")
@@ -1235,9 +1281,9 @@ public class CoreFunctions {
                 VncFunction
                     .meta()
                     .arglists(
-                    	"(not= x)", "(not= x y)", "(not= x y & more)")
+                        "(not= x)", "(not= x y)", "(not= x y & more)")
                     .doc(
-                    	"Same as (not (= x y))")
+                        "Same as (not (= x y))")
                     .examples(
                         "(not= \"abc\" \"abc\")",
                         "(not= 0 0)",
@@ -1261,7 +1307,7 @@ public class CoreFunctions {
                     return False;
                 }
                 else {
-                	return ((VncBoolean)equal_strict_Q.apply(args)).not();
+                    return ((VncBoolean)equal_strict_Q.apply(args)).not();
                 }
             }
 
@@ -1394,9 +1440,9 @@ public class CoreFunctions {
 
 
 
-	///////////////////////////////////////////////////////////////////////////
-	// Number functions
-	///////////////////////////////////////////////////////////////////////////
+    ///////////////////////////////////////////////////////////////////////////
+    // Number functions
+    ///////////////////////////////////////////////////////////////////////////
 
     public static VncFunction lt =
         new VncFunction(
@@ -5227,8 +5273,8 @@ public class CoreFunctions {
                         "(every? number? [1 2 3 :a])",
                         "(every? #(>= % 10) [10 11 12])")
                     .seeAlso(
-                    	"any?",
-                    	"not-any?",
+                        "any?",
+                        "not-any?",
                         "not-every?")
                     .build()
         ) {
@@ -5279,7 +5325,7 @@ public class CoreFunctions {
                     .seeAlso(
                         "every?",
                         "any?",
-                    	"not-any?")
+                        "not-any?")
                    .build()
         ) {
             @Override
@@ -5309,15 +5355,14 @@ public class CoreFunctions {
                         "(any? #(== % 10) [10 20 30])",
                         "(any? #(>= % 10) [1 5 10])")
                     .seeAlso(
-                    	"every?",
-                    	"not-any?",
-                    	"not-every?")
+                        "every?",
+                        "not-any?",
+                        "not-every?")
                     .build()
         ) {
             @Override
             public VncVal apply(final VncList args) {
                 ArityExceptions.assertArity(this, args, 1, 2);
-
 
                 if (args.second() == Nil) {
                     return False;
@@ -9608,6 +9653,7 @@ public class CoreFunctions {
                 .add(decimal_cast)
                 .add(bigint_cast)
 
+                .add(char_escaped)
                 .add(char_literals)
 
                 .add(mutable_Q)
