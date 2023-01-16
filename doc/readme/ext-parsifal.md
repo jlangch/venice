@@ -42,9 +42,11 @@ See [A Guide to Parsifal](ext-parsifal-guide.md)
   (load-module :parsifal ['parsifal :as 'p])
 
   (p/defparser integer []
-    (p/let->>* [i  (p/either (p/char "0") (p/any-char-of "123456789"))
-                d  (p/many (p/digit))]
-      (p/always (apply str (flatten (list i d))))))
+    (p/either (p/let->>* [z  (p/char "0")]
+                (p/always (str z)))
+              (p/let->>* [i  (p/any-char-of "123456789")
+                          d  (p/many (p/digit))]
+                (p/always (apply str (flatten (list i d)))))))
 
   (p/defparser signed-integer []
     (p/either (p/let->>* [s  (p/any-char-of "-+")
