@@ -52,7 +52,7 @@ See [A Guide to Parsifal](ext-parsifal-guide.md)
     (p/either (p/let->>* [s  (p/any-char-of "-+")
                           i  (integer)]
                 (p/always (str s i)))
-               (integer)))
+              (integer)))
   
   (p/defparser mantissa []
     (p/either (p/let->>* [i  (signed-integer)
@@ -60,18 +60,11 @@ See [A Guide to Parsifal](ext-parsifal-guide.md)
                           f  (p/many1 (p/digit))]
                 (p/always (apply str (flatten (list i d f)))))
               (signed-integer)))
- 
-  (p/defparser exponent []
-    (p/either (p/let->>* [s  (p/any-char-of "-+")
-                          i  (p/many1 (p/digit))]
-                (p/always (apply str (flatten (list s i)))))
-              (p/let->>* [i  (p/many1 (p/digit))]
-                (p/always (apply str i)))))
 
   (p/defparser float []
     (p/either (p/let->>* [m  (mantissa)
                           p  (p/any-char-of "Ee")
-                          e  (exponent)]
+                          e  (signed-integer)]
                 (p/always (str m p e)))
               (mantissa)))
 
