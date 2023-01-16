@@ -22,14 +22,73 @@ See [A Guide to Parsifal](ext-parsifal-guide.md)
       (p/always (apply str (flatten (list i d f))))))
   
   (defn evaluate [expression]
-    (p/run (float) expression)))
+    (p/run (p/let->> [f (float) 
+                      _ (p/eof)]
+             (p/always f)) 
+           expression)))
 ```
 
 ```clojure
 (evaluate "1.0")       ; => "1.0"
-(evaluate "120.468")   ; => "120.468
-(evaluate "1.2---")    ; => 1.2
+(evaluate "120.468")   ; => "120.468"
+(evaluate "1.2---")    ; => ParseError: Expected end of input at line: 1 column: 4
 (evaluate "abc")       ; => ParseError: Unexpected token 'a' at line: 1 column: 1
+```
+
+### Parse a float number in scientific notation
+
+```clojure
+(do
+  (load-module :parsifal ['parsifal :as 'p])
+
+  (p/defparser integer []
+    (p/let->>* [i  (p/either (p/char "0") (p/any-char-of "123456789"))
+                d  (p/many (p/digit))]
+      (p/always (apply str (flatten (list i d))))))
+
+  (p/defparser signed-integer []
+    (p/either (p/let->>* [s  (p/any-char-of "-+")
+                          i  (integer)]
+                (p/always (if (= s #\+) i (str s i))))
+               (integer)))
+  
+  (p/defparser mantissa []
+    (p/let->>* [i  (signed-integer)
+                d  (p/char ".")
+                f  (p/many1 (p/digit))]
+      (p/always (apply str (flatten (list i d f))))))
+ 
+  (p/defparser exponent []
+    (p/either (p/let->>* [s  (p/any-char-of "-+")
+                          i  (p/many1 (p/digit))]
+                (p/always (if (= s #\+)
+                            (apply str i)
+                            (apply str (flatten (list s i))))))
+              (p/let->>* [i  (p/many1 (p/digit))]
+                (p/always (apply str i)))))
+
+  (p/defparser float []
+    (p/either (p/let->>* [m  (mantissa)
+                          p  (p/any-char-of "Ee")
+                          e  (exponent)]
+                (p/always (str m p e)))
+              (mantissa)))
+
+  (defn evaluate [expression]
+    (p/run (p/let->> [f (float) 
+                      _ (p/eof)]
+             (p/always f)) 
+           expression)))
+```
+
+```clojure
+(evaluate "1.0")          ; => "1.0"
+(evaluate "-1.0")         ; => "-1.0"
+(evaluate "+1.0")         ; => "1.0"
+(evaluate "120.468")      ; => "120.468"
+(evaluate "120.468E3")    ; => "120.468E3"
+(evaluate "-120.468E-3")  ; => "-120.468E-3"
+(evaluate "-120.468E+3")  ; => "-120.468E3"
 ```
 
 ### Parse a quoted string with escaped chars
@@ -38,22 +97,22 @@ See [A Guide to Parsifal](ext-parsifal-guide.md)
 (do
   (load-module :parsifal ['parsifal :as 'p])
 
-  (p/defparser escape []
+  (p/defparser escaped []
     (p/let->>* [e  (p/char #\backslash)
                 c  (p/any-char-of "\\0nrvtbf\"")]
       (p/always (char-escaped c))))
 
-  (p/defparser character []
+  (p/defparser not-escaped []
     (p/none-char-of "\\\""))
 
   (p/defparser quoted-string []
     (p/between (p/char #\")
                (p/char #\")
-               (p/many (p/either (escape) (character)))))
+               (p/many (p/either (escaped) (not-escaped)))))
 
-  ;; (evaluate (apply str [#\" #\1 #\\ #\n #\2 #\"]))
-  ;; (evaluate (apply str [#\" #\1 #\\ #\f #\2 #\"]))
-  ;; (evaluate (apply str [#\" #\1 #\\ #\" #\2 #\"]))
+  ;; (evaluate (apply str [#\" #\1 #\\ #\n #\2 #\"]))  -  "1\n2"
+  ;; (evaluate (apply str [#\" #\1 #\\ #\f #\2 #\"]))  -  "1\f2"
+  ;; (evaluate (apply str [#\" #\1 #\\ #\" #\2 #\"]))  -  "1\"2"
   (defn evaluate [expression]
     (p/run (quoted-string) expression)))
 ```
