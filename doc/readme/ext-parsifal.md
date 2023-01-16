@@ -49,7 +49,7 @@ See [A Guide to Parsifal](ext-parsifal-guide.md)
   (p/defparser signed-integer []
     (p/either (p/let->>* [s  (p/any-char-of "-+")
                           i  (integer)]
-                (p/always (if (= s #\+) i (str s i))))
+                (p/always (str s i)))
                (integer)))
   
   (p/defparser mantissa []
@@ -61,9 +61,7 @@ See [A Guide to Parsifal](ext-parsifal-guide.md)
   (p/defparser exponent []
     (p/either (p/let->>* [s  (p/any-char-of "-+")
                           i  (p/many1 (p/digit))]
-                (p/always (if (= s #\+)
-                            (apply str i)
-                            (apply str (flatten (list s i))))))
+                (p/always (apply str (flatten (list s i)))))
               (p/let->>* [i  (p/many1 (p/digit))]
                 (p/always (apply str i)))))
 
@@ -84,11 +82,11 @@ See [A Guide to Parsifal](ext-parsifal-guide.md)
 ```clojure
 (evaluate "1.0")          ; => "1.0"
 (evaluate "-1.0")         ; => "-1.0"
-(evaluate "+1.0")         ; => "1.0"
+(evaluate "+1.0")         ; => "+1.0"
 (evaluate "120.468")      ; => "120.468"
 (evaluate "120.468E3")    ; => "120.468E3"
 (evaluate "-120.468E-3")  ; => "-120.468E-3"
-(evaluate "-120.468E+3")  ; => "-120.468E3"
+(evaluate "-120.468E+3")  ; => "-120.468E+3"
 ```
 
 ### Parse a quoted string with escaped chars
