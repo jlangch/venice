@@ -35,7 +35,7 @@ See [A Guide to Parsifal](ext-parsifal-guide.md)
 (evaluate "abc")       ; => ParseError: Unexpected token 'a' at line: 1 column: 1
 ```
 
-### Parse a float number in scientific notation
+### Parse a number in scientific notation
 
 ```clojure
 (do
@@ -55,10 +55,11 @@ See [A Guide to Parsifal](ext-parsifal-guide.md)
                (integer)))
   
   (p/defparser mantissa []
-    (p/let->>* [i  (signed-integer)
-                d  (p/char ".")
-                f  (p/many1 (p/digit))]
-      (p/always (apply str (flatten (list i d f))))))
+    (p/either (p/let->>* [i  (signed-integer)
+                          d  (p/char ".")
+                          f  (p/many1 (p/digit))]
+                (p/always (apply str (flatten (list i d f)))))
+              (signed-integer)))
  
   (p/defparser exponent []
     (p/either (p/let->>* [s  (p/any-char-of "-+")
@@ -82,6 +83,7 @@ See [A Guide to Parsifal](ext-parsifal-guide.md)
 ```
 
 ```clojure
+(evaluate "1")            ; => "1"
 (evaluate "1.0")          ; => "1.0"
 (evaluate "-1.0")         ; => "-1.0"
 (evaluate "+1.0")         ; => "+1.0"
@@ -89,6 +91,7 @@ See [A Guide to Parsifal](ext-parsifal-guide.md)
 (evaluate "120.468E3")    ; => "120.468E3"
 (evaluate "-120.468E-3")  ; => "-120.468E-3"
 (evaluate "-120.468E+3")  ; => "-120.468E+3"
+(evaluate "-1E4")         ; => "-1E4"
 ```
 
 ### Parse a quoted string with escaped chars
