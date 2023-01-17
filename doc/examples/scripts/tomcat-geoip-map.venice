@@ -64,7 +64,7 @@
       </head>
 
       <body>
-        <h1><%= (kira/escape-xml app-name) %> Access World Map <%= (kira/escape-xml year) %></h1>
+        <h1><%= (kira/escape-xml app-name) %> Access World Map <%= year %></h1>
         <div id="svgMap"></div>
         <script>
           $('document').ready(function () {
@@ -76,8 +76,8 @@
                         name: 'HTTP Access',
                         format: '{0}',
                         thousandSeparator: '\\'',
-                        thresholdMax: 10000,
-                        thresholdMin: 10
+                        thresholdMax: <%= threshold-max %>,
+                        thresholdMin: <%= threshold-min %>
                       },
                       _1xx: {
                         name: '1xx',
@@ -144,7 +144,7 @@
       </head>
 
       <body>
-        <h1><%= (kira/escape-xml app-name) %> Access World Map <%= (kira/escape-xml year) %></h1>
+        <h1><%= (kira/escape-xml app-name) %> Access World Map <%= year %></h1>
         <div id="svgMap"></div>
         <script>
           $('document').ready(function () {
@@ -156,8 +156,8 @@
                         name: 'HTTP Access',
                         format: '{0}',
                         thousandSeparator: '\\'',
-                        thresholdMax: 10000,
-                        thresholdMin: 10
+                        thresholdMax: <%= threshold-max %>,
+                        thresholdMin: <%= threshold-min %>
                       },
                       _private: {
                         name: 'Private',
@@ -313,15 +313,20 @@
         (str/format "%s: { total: %d, _private: 0 }" country tot))))
 
   (defn svg-countries-data [mode app-name year items]
-    (let [svg-formatter (if (= mode :full) svg-country-data-full svg-country-data-light)]
-      { :app-name  app-name
-        :year      year
-        :countries (str/join ", " (map svg-formatter items)) }))
+    (let [max_      (->> (filter #(not (= (:country-iso %) "CH")) items)
+                         (map :tot)
+                         (apply max))
+          formatter (if (= mode :full) svg-country-data-full svg-country-data-light)]
+      { :app-name       app-name
+        :year           year
+        :countries      (str/join ", " (map formatter items))
+        :threshold-min  1
+        :threshold-max  max_ }))
 
   (defn create-html-svg-map [mode app-name year items]
     (println "Creating HTML SVG map...")
     (let [template (if (= mode :full) svg-map-tpl-full svg-map-tpl-light)
-          ch       (first (filter #(= (:country-iso %) "CH" ) items))
+          ch       (first (filter #(= (:country-iso %) "CH") items))
           private  (first (filter #(= (:country-iso %) "PRIVATE") items))
           others   (filter #(nil? ((set "CH" "PRIVATE") (:country-iso %))) items)]
       (cond
@@ -375,7 +380,7 @@
     (process mode app-name year out-file log-files))
 
 
-      ;;; MAIN ---------------------------------------------------------------------
+  ;;; MAIN ---------------------------------------------------------------------
 
   (print-help)
 

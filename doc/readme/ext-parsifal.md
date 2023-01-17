@@ -211,21 +211,12 @@ The expression evaluator evaluates expressions like `"(3 + 4) * 5"`. It supports
               (float)
               (int)))
 
-  (p/defparser main []
-    ;; 1) parse empty expressions:    ""           => OK, value => nil
-    ;; 2) parse valid expressions:    "3 + 4"      => OK, value => 7
-    ;; 3) parse left over tokens:     "(3 + 4) 9"  => ERR, Unexpected token '9'
-    (p/either (p/eof)
-              (p/let->> [e  (expr)
-                         _  (ws)
-                         t  (p/either (p/eof) (p/any))]
-                 (if (nil? t)
-                   (p/always e)
-                   (p/never (str "Unexpected token '" t "'"))))))
-
   (defn evaluate [expression]
-    (p/run (main) expression))
-)
+    (p/run (p/let->> [e  (expr)
+                      _  (ws) 
+                      _  (p/eof)]
+             (p/always e)) 
+           expression)))
 ```
 
 
@@ -280,7 +271,7 @@ The evaluator uses two Parsifal parsers. The up-front tokenizing parser operates
   ;;; RParen          = ")" ;
   ;;; Digit           = "0" | "1" | "2" | "3" | "4" | "5" | "6" | "7" | "8" | "9" ;
   ;;; Integer         = Digit { Digit } ;
-  ;;; Float           = Digit { Digit } "." Digit { Digit };
+  ;;; Float           = Digit { Digit } "." Digit { Digit } ;
   ;;;
   ;;; Token           = Whitespace | Operator | LParen | RParen | Float | Integer ;
   ;;; Tokens          = { Token } EOI ;
@@ -450,8 +441,7 @@ The evaluator uses two Parsifal parsers. The up-front tokenizing parser operates
                    (p/never (str "Unexpected token '" (:val t) "'"))))))
 
   (defn evaluate [expression]
-    (p/run (main) (tokenize expression)))
-)
+    (p/run (main) (tokenize expression))))
 ```
 
 
