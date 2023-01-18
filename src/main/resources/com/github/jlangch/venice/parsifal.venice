@@ -73,6 +73,7 @@
 ;;;  - Added an `any` parser to consume a token with any value
 ;;;  - Added a `hexdigit` parser to consume hexdigit chars
 
+;;; Tracing parsers: https://www.quanttec.com/fparsec/users-guide/debugging-a-parser.html
 
 (ns parsifal)
 
@@ -131,7 +132,7 @@
 ;; -----------------------------------------------------------------------------
 ;; internal types
 (deftype :source-pos [line :long, column :long])
-(deftype :input-state [input :any, pos :source-pos])
+(deftype :input-state [input :any, pos :source-pos, trace :boolean])
 
 (deftype :continue [func :function])
 (deftype :ok [item :any])
@@ -206,6 +207,11 @@
 
 ;; -----------------------------------------------------------------------------
 ;; util  (internal use)
+(defn format-pos [state]
+  (str/format "[Line: %d, Col: %d]"
+              (-> state :pos :line)
+              (-> state :pos :column)))
+
 (defn fail [message] (ex :ParseError message))
 
 (defn digit? [c] (str/digit? c))
@@ -617,11 +623,11 @@
 
   token [consume?]
 
-  (fn [{:keys [input pos] :as state} cok cerr eok eerr]
+  (fn [{:keys [input pos trace] :as state} cok cerr eok eerr]
     (if-not (empty? input)
       (let [tok (first input)]
         (if (consume? tok)
-          (cok tok (input-state. (rest input) (inc-sourcepos pos tok)))
+          (cok tok (input-state. (rest input) (inc-sourcepos pos tok) trace))
           (eerr (unexpect-error (str "token '" tok "'") pos))))
       (eerr (unexpect-error "end of input" pos)))))
 
@@ -655,7 +661,8 @@
      :doc """
           Returns a new parser that will parse zero or more items that match
           the given parser `p`. The matched items are concatenated into a
-          sequence.¶
+          sequence.
+
           *Note*: A ParseError will be thrown if this combinator is applied to
           a parser that accepts the empty string, as that would cause the parser
           to loop forever.
@@ -691,7 +698,8 @@
      :doc """
           Returns a new parser that will parse one or more items that match
           the given parser `p`. The matched items are concatenated into a
-          sequence.¶
+          sequence.
+
           *Note*: A ParseError will be thrown if this combinator is applied to
           a parser that accepts the empty string, as that would cause the parser
           to loop forever.
@@ -1241,11 +1249,11 @@
   ; Execute a parser p, given some state, Returns Ok or Err
   [p state]
   (parsifal-poline p
-                    state
-                    (fn cok [it _] (ok. it))
-                    (fn cerr [err] (err. (show-error err)))
-                    (fn eok [it _] (ok. it))
-                    (fn eerr [err] (err. (show-error err)))))
+                   state
+                   (fn cok [it _] (ok. it))
+                   (fn cerr [err] (err. (show-error err)))
+                   (fn eok [it _] (ok. it))
+                   (fn eerr [err] (err. (show-error err)))))
 
 
 (defn
@@ -1278,11 +1286,13 @@
           ```
           """}
 
-  run [p input]
+  run
 
-  (let [result (-<> (source-pos. 1 1)
-                    (input-state. input <>)
-                    (run-parser p <>))]
-    (cond
-      (ok? result)  (:item result)
-      (err? result) (throw (fail (:errmsg result))))))
+  ([p input] (run p input false))
+
+  ([p input trace]
+    (let [state  (input-state. input (source-pos. 1 1) trace)
+          result (run-parser p state)]
+      (cond
+        (ok? result)  (:item result)
+        (err? result) (throw (fail (:errmsg result)))))))
