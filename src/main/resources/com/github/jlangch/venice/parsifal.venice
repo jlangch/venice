@@ -936,11 +936,15 @@
 
 
 (defn
-  ^{ :arglists '("(eof)")
+  ^{ :arglists '(
+        "(eof)",
+        "(eof err-msg)")
      :doc """
           A parser to detect the end of input. If there is nothing more to
           consume from the underlying input, this parser suceeds with a `nil`
           value, otherwise it fails.
+
+          A custom error message can be provided for the case the parser fails.
           """
      :examples '(
           """
@@ -955,12 +959,19 @@
           )
           """)}
 
-  eof []
+  eof
 
-  (fn [state cok cerr eok eerr]
-    (if (empty? (:input state))
-      (eok nil state)
-      (eerr (expect-error "end of input" (:pos state))))))
+  ([]
+    (fn [state cok cerr eok eerr]
+      (if (empty? (:input state))
+        (eok nil state)
+        (eerr (expect-error "end of input" (:pos state))))))
+
+  ([err-msg]
+    (fn [state cok cerr eok eerr]
+      (if (empty? (:input state))
+        (eok nil state)
+        (eerr (error err-msg (:pos state)))))))
 
 
 (defn

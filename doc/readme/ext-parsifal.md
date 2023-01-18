@@ -339,31 +339,31 @@ The evaluator uses two Parsifal parsers. The up-front tokenizing parser operates
       (p/always (Token. :int (apply str i) l c))))
 
   (p/defparser float-tok []
-    (p/attempt (p/let->> [[l c] (p/pos)
-                          i     (p/many1 (p/digit))
-                          d     (p/char #\.)
-                          f     (p/many1 (p/digit))]
-                  (p/always (Token. :float
-                                    (apply str (flatten (list i d f)))
-                                    l c)))))
+    (p/let->>* [[l c] (p/pos)
+                i     (p/many1 (p/digit))
+                d     (p/char #\.)
+                f     (p/many1 (p/digit))]
+      (p/always (Token. :float
+                        (apply str (flatten (list i d f)))
+                        l c))))
 
   (p/defparser unknown-tok []
     (p/let->> [[l c] (p/pos)
                s     (p/many1 (p/none-char-of " \t\r\n"))]
-      (p/always (Token. :unknown (apply str s) l c))))
+      (p/never (str "Unknown token «" (apply str s) "»") l c)))
 
   (p/defparser token []
-    (p/many (ws-tok))
-    (p/choice (op-tok) 
-              (lparen-tok) 
-              (rparen-tok) 
-              (float-tok) 
-              (int-tok) 
-              (unknown-tok)))
+    (p/>> (p/many (ws-tok))
+          (p/choice (op-tok)
+                    (lparen-tok)
+                    (rparen-tok)
+                    (float-tok)
+                    (int-tok)
+                    (unknown-tok))))
 
   (p/defparser tokens []
-    (p/let->> [t (p/many (p/attempt (token)))
-               _ (p/many (p/attempt (ws-tok)))
+    (p/let->> [t (p/many (token))
+               _ (p/many (ws-tok))
                _ (p/eof)]
       (p/always t)))
 
@@ -405,23 +405,23 @@ The evaluator uses two Parsifal parsers. The up-front tokenizing parser operates
     (add-expr))
 
   (p/defparser add-expr []
-    (p/let->> [seed   (mul-expr)
-               tuples (p/many (p/let->> [opc (p/either (op "+") (op "-"))
-                                         val (mul-expr)]
-                                (p/always [(:val opc) val])))]
+    (p/let->>* [seed   (mul-expr)
+                tuples (p/many (p/let->>* [opc (p/either (op "+") (op "-"))
+                                          val (mul-expr)]
+                                 (p/always [(:val opc) val])))]
        (p/always (chained-math seed tuples))))
 
   (p/defparser mul-expr []
-    (p/let->> [seed   (unary-expr)
-               tuples (p/many (p/let->> [opc (p/either (op "*") (op "/"))
-                                         val (unary-expr)]
-                                (p/always [(:val opc) val])))]
+    (p/let->>* [seed   (unary-expr)
+                tuples (p/many (p/let->>* [opc (p/either (op "*") (op "/"))
+                                           val (unary-expr)]
+                                 (p/always [(:val opc) val])))]
        (p/always (chained-math seed tuples))))
 
   (p/defparser unary-expr []
-    (p/choice (p/let->> [opc (p/either (op "+") (op "-"))
-                         val (unary-expr)]
-                 (p/always (if (= "+" (:val opc)) val (negate val))))
+    (p/choice (p/let->>* [opc (p/either (op "+") (op "-"))
+                          val (unary-expr)]
+                (p/always (if (= "+" (:val opc)) val (negate val))))
               (paren-expr)
               (float)
               (int)))
@@ -430,15 +430,10 @@ The evaluator uses two Parsifal parsers. The up-front tokenizing parser operates
     (p/between (lparen) (rparen) (expr)))
 
   (p/defparser main []
-    ;; 1) parse empty expressions:    ""           => OK, value => nil
-    ;; 2) parse valid expressions:    "3 + 4"      => OK, value => 7
-    ;; 3) parse left over tokens:     "(3 + 4) 9"  => ERR, Unexpected token '9'
-    (p/either (p/eof)
-              (p/let->> [e (expr)
-                         t (p/either (p/eof) (p/any))]
-                 (if (nil? t)
-                   (p/always e)
-                   (p/never (str "Unexpected token '" (:val t) "'"))))))
+    (p/let->> [e  (expr)
+               _  (p/eof "End of input. No valid expression read")]
+      (p/always e)))
+
 
   (defn evaluate [expression]
     (p/run (main) (tokenize expression))))
