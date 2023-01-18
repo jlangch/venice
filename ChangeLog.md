@@ -11,6 +11,11 @@ All notable changes to this project will be documented in this file.
 
 - ...
 
+### Updated dependencies:
+
+- Bump gradle from 7.5 to 7.6
+
+
 
 
 ## [1.10.33] - 2023-01-18
