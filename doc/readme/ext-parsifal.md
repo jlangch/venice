@@ -9,14 +9,46 @@ See [A Guide to Parsifal](ext-parsifal-guide.md)
 
 ## Simple Examples
 
-### Parse a float number
+### Parse an integer number
 
 ```clojure
 (do
   (load-module :parsifal ['parsifal :as 'p])
   
+  (p/defparser integer []
+    (p/either (p/let->>* [z  (p/char "0")]
+                (p/always "0"))
+              (p/let->>* [i  (p/any-char-of "123456789")
+                          d  (p/many (p/digit))]
+                (p/always (apply str (flatten (list i d)))))))
+  
+  (defn evaluate [expression]
+    (p/run (p/let->> [f (integer) 
+                      _ (p/eof)]
+             (p/always f)) 
+           expression)))
+```
+
+```clojure
+(evaluate "0")       ; => "0"
+(evaluate "12345")   ; => "12345"
+```
+
+### Parse a float number
+
+```clojure
+(do
+  (load-module :parsifal ['parsifal :as 'p])
+
+  (p/defparser integer []
+    (p/either (p/let->>* [z  (p/char "0")]
+                (p/always "0"))
+              (p/let->>* [i  (p/any-char-of "123456789")
+                          d  (p/many (p/digit))]
+                (p/always (apply str (flatten (list i d)))))))
+  
   (p/defparser float []
-    (p/let->>* [i  (p/many1 (p/digit))
+    (p/let->>* [i  (integer)
                 d  (p/char ".")
                 f  (p/many1 (p/digit))]
       (p/always (apply str (flatten (list i d f))))))
@@ -31,8 +63,9 @@ See [A Guide to Parsifal](ext-parsifal-guide.md)
 ```clojure
 (evaluate "1.0")       ; => "1.0"
 (evaluate "120.468")   ; => "120.468"
-(evaluate "1.2---")    ; => ParseError: Expected end of input at line: 1 column: 4
+(evaluate "001.2")     ; => ParseError: Unexpected token '0' at line: 1 column: 2
 (evaluate "abc")       ; => ParseError: Unexpected token 'a' at line: 1 column: 1
+(evaluate "1.2---")    ; => ParseError: Expected end of input at line: 1 column: 4
 ```
 
 ### Parse a number in scientific notation
@@ -43,16 +76,16 @@ See [A Guide to Parsifal](ext-parsifal-guide.md)
 
   (p/defparser integer []
     (p/either (p/let->>* [z  (p/char "0")]
-                (p/always (str z)))
+                (p/always "0"))
               (p/let->>* [i  (p/any-char-of "123456789")
                           d  (p/many (p/digit))]
                 (p/always (apply str (flatten (list i d)))))))
 
   (p/defparser signed-integer []
-    (p/either (p/let->>* [s  (p/any-char-of "-+")
+    (p/either (integer)
+              (p/let->>* [s  (p/any-char-of "-+")
                           i  (integer)]
-                (p/always (str s i)))
-              (integer)))
+                (p/always (str s i)))))
   
   (p/defparser mantissa []
     (p/either (p/let->>* [i  (signed-integer)
@@ -401,22 +434,21 @@ The evaluator uses two Parsifal parsers. The up-front tokenizing parser operates
       (p/always (double (:val i)))))
 
   (p/defparser expr []
-    ; no EOF handling in this parser! It's recursively called.
     (add-expr))
 
   (p/defparser add-expr []
     (p/let->>* [seed   (mul-expr)
                 tuples (p/many (p/let->>* [opc (p/either (op "+") (op "-"))
-                                          val (mul-expr)]
+                                           val (mul-expr)]
                                  (p/always [(:val opc) val])))]
-       (p/always (chained-math seed tuples))))
+      (p/always (chained-math seed tuples))))
 
   (p/defparser mul-expr []
     (p/let->>* [seed   (unary-expr)
                 tuples (p/many (p/let->>* [opc (p/either (op "*") (op "/"))
                                            val (unary-expr)]
                                  (p/always [(:val opc) val])))]
-       (p/always (chained-math seed tuples))))
+      (p/always (chained-math seed tuples))))
 
   (p/defparser unary-expr []
     (p/choice (p/let->>* [opc (p/either (op "+") (op "-"))
