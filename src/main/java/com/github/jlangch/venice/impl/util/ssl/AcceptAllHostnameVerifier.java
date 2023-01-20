@@ -25,9 +25,9 @@ import javax.net.ssl.HostnameVerifier;
 import javax.net.ssl.SSLSession;
 
 
-public class DefaultHostnameVerifier implements HostnameVerifier {
+public class AcceptAllHostnameVerifier implements HostnameVerifier {
 
-    public DefaultHostnameVerifier() {
+    public AcceptAllHostnameVerifier() {
     }
 
 
