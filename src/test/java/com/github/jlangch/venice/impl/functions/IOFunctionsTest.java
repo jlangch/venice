@@ -617,6 +617,22 @@ public class IOFunctionsTest {
     }
 
     @Test
+    public void test_io_filesystem_usable_space() {
+        final Venice venice = new Venice();
+
+        assertTrue(venice.eval("(io/filesystem-usable-space)") instanceof Long);
+        assertTrue(venice.eval("(io/filesystem-usable-space (io/file \".\"))") instanceof Long);
+    }
+
+    @Test
+    public void test_io_filesystem_total_space() {
+        final Venice venice = new Venice();
+
+        assertTrue(venice.eval("(io/filesystem-total-space)") instanceof Long);
+        assertTrue(venice.eval("(io/filesystem-total-space (io/file \".\"))") instanceof Long);
+    }
+
+    @Test
     public void test_io_make_venice_filename() {
         final Venice venice = new Venice();
 
