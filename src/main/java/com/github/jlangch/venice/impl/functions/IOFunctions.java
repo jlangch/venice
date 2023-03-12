@@ -2476,6 +2476,8 @@ public class IOFunctions {
                         "With no args returns the total disk space of the current working " +
                         "directory's file store. With a file argument returns the total " +
                         "disk space of the file store the file is located.")
+                    .examples("(io/filesystem-total-space)")
+                    .seeAlso("io/filesystem-usable-space")
                     .build()
         ) {
             @Override
@@ -2513,6 +2515,8 @@ public class IOFunctions {
                         "With no args returns the usable disk space of the current working " +
                         "directory's file store. With a file argument returns the usable " +
                         "disk space of the file store the file is located.")
+                    .examples("(io/filesystem-usable-space)")
+                    .seeAlso("io/filesystem-total-space")
                     .build()
         ) {
             @Override
