@@ -9,7 +9,9 @@ All notable changes to this project will be documented in this file.
 
 ### Added 
 
-- ...
+- functions `io/filesystem-total-space`, `io/filesystem-usable-space`
+- function `inet/reachable?` to check if an INET addr is reachable
+- improvements to Excel renderer regarding column hiding
 
 ### Updated dependencies:
 
