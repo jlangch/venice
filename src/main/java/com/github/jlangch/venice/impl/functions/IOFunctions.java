@@ -38,6 +38,7 @@ import java.nio.ByteBuffer;
 import java.nio.charset.Charset;
 import java.nio.file.CopyOption;
 import java.nio.file.DirectoryStream;
+import java.nio.file.FileStore;
 import java.nio.file.FileSystems;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -387,33 +388,33 @@ public class IOFunctions {
         };
 
 
-	public static VncFunction io_file_basename =
-	    new VncFunction(
-	            "io/file-basename",
-	            VncFunction
-	                .meta()
-	                .arglists("(io/file-basename f)")
-	                .doc(
-	                	"Returns the base name (file name without file extension) "
-	                	+ "of the file f as a string. f must be a file or a string "
-	                	+ "(file path).")
-	                .examples("(io/file-basename (io/file \"/tmp/test/x.txt\"))")
-	                .seeAlso("io/file-name", "io/file-parent", "io/file-ext", "io/file")
-	                .build()
-	    ) {
-	        @Override
-	        public VncVal apply(final VncList args) {
-	            ArityExceptions.assertArity(this, args, 1);
+    public static VncFunction io_file_basename =
+        new VncFunction(
+                "io/file-basename",
+                VncFunction
+                    .meta()
+                    .arglists("(io/file-basename f)")
+                    .doc(
+                        "Returns the base name (file name without file extension) "
+                        + "of the file f as a string. f must be a file or a string "
+                        + "(file path).")
+                    .examples("(io/file-basename (io/file \"/tmp/test/x.txt\"))")
+                    .seeAlso("io/file-name", "io/file-parent", "io/file-ext", "io/file")
+                    .build()
+        ) {
+            @Override
+            public VncVal apply(final VncList args) {
+                ArityExceptions.assertArity(this, args, 1);
 
-	            final File f = convertToFile(
-	                                args.first(),
-	                                "Function 'io/file-basename' does not allow %s as f");
+                final File f = convertToFile(
+                                    args.first(),
+                                    "Function 'io/file-basename' does not allow %s as f");
 
-	            return new VncString(FileUtil.getFileBaseName(f.getName()));
-	        }
+                return new VncString(FileUtil.getFileBaseName(f.getName()));
+            }
 
-	        private static final long serialVersionUID = -1848883965231344442L;
-	    };
+            private static final long serialVersionUID = -1848883965231344442L;
+        };
 
     public static VncFunction io_file_ext_Q =
         new VncFunction(
@@ -2462,6 +2463,80 @@ public class IOFunctions {
             private static final long serialVersionUID = -1848883965231344442L;
         };
 
+    public static VncFunction io_filesystem_total_space =
+        new VncFunction(
+                "io/filesystem-total-space",
+                VncFunction
+                    .meta()
+                    .arglists(
+                        "(io/filesystem-total-space)",
+                        "(io/filesystem-total-space file)")
+                    .doc(
+                        "Returns the total diskspace in bytes. \n" +
+                        "With no args returns the total disk space of the current working " +
+                        "directory's file store. With a file argument returns the total " +
+                        "disk space of the file store the file is located.")
+                    .build()
+        ) {
+            @Override
+            public VncVal apply(final VncList args) {
+                ArityExceptions.assertArity(this, args, 0, 1);
+
+                final File file = args.isEmpty()
+                                    ? new File(".")
+                                    : convertToFile(
+                                         args.first(),
+                                         "Function 'io/filesystem-total-space' does not allow %s as file");
+
+                try {
+                    final FileStore store = Files.getFileStore(file.toPath());
+                    return new VncLong(store.getTotalSpace());
+                }
+                catch(Exception ex) {
+                    throw new VncException("Failed to get total disk space", ex);
+                }
+             }
+
+            private static final long serialVersionUID = -1848883965231344442L;
+        };
+
+    public static VncFunction io_filesystem_usable_space =
+        new VncFunction(
+                "io/filesystem-usable-space",
+                VncFunction
+                    .meta()
+                    .arglists(
+                        "(io/filesystem-usable-space)",
+                        "(io/filesystem-usable-space file)")
+                    .doc(
+                        "Returns the usable diskspace in bytes. \n" +
+                        "With no args returns the usable disk space of the current working " +
+                        "directory's file store. With a file argument returns the usable " +
+                        "disk space of the file store the file is located.")
+                    .build()
+        ) {
+            @Override
+            public VncVal apply(final VncList args) {
+                ArityExceptions.assertArity(this, args, 0, 1);
+
+                final File file = args.isEmpty()
+                                    ? new File(".")
+                                    : convertToFile(
+                                         args.first(),
+                                         "Function 'io/filesystem-usable-space' does not allow %s as file");
+
+                try {
+                    final FileStore store = Files.getFileStore(file.toPath());
+                    return new VncLong(store.getUsableSpace());
+                }
+                catch(Exception ex) {
+                    throw new VncException("Failed to get usable disk space", ex);
+                }
+             }
+
+            private static final long serialVersionUID = -1848883965231344442L;
+        };
+
     public static VncFunction io_load_classpath_resource =
         new VncFunction(
                 "io/load-classpath-resource",
@@ -2782,6 +2857,8 @@ public class IOFunctions {
                     .add(io_tmp_dir)
                     .add(io_user_dir)
                     .add(io_user_home_dir)
+                    .add(io_filesystem_usable_space)
+                    .add(io_filesystem_total_space)
                     .add(io_download)
                     .add(io_internet_avail_Q)
                     .add(io_mime_type)

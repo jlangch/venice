@@ -31,6 +31,7 @@ import com.github.jlangch.venice.impl.types.VncBoolean;
 import com.github.jlangch.venice.impl.types.VncFunction;
 import com.github.jlangch.venice.impl.types.VncInteger;
 import com.github.jlangch.venice.impl.types.VncJavaObject;
+import com.github.jlangch.venice.impl.types.VncLong;
 import com.github.jlangch.venice.impl.types.VncString;
 import com.github.jlangch.venice.impl.types.VncVal;
 import com.github.jlangch.venice.impl.types.collections.VncList;
@@ -354,6 +355,48 @@ public class InetFunctions {
             private static final long serialVersionUID = -1848883965231344442L;
         };
 
+    public static VncFunction inet_reachable_Q =
+        new VncFunction(
+                "inet/reachable?",
+                VncFunction
+                    .meta()
+                    .arglists("(inet/reachable? addr timeout)")
+                    .doc(
+                        "Test whether that address is reachable. Best effort is made by the "
+                        + "implementation to try to reach the host, but firewalls and server "
+                        + "configuration may block requests resulting in a unreachable status "
+                        + "while some specific ports may be accessible. "
+                        + "A typical implementation will use ICMP ECHO REQUESTs if the "
+                        + "privilege can be obtained, otherwise it will try to establish "
+                        + "a TCP connection on port 7 (Echo) of the destination host."
+                        + "\n\n"
+                        + "The timeout value, in milliseconds, indicates the maximum amount of time "
+                        + "the try should take. If the operation times out before getting an "
+                        + "answer, the host is deemed unreachable.")
+                    .examples(
+                        "(inet/reachable? \"google.com\" 500)",
+                        "(inet/reachable? \"74.125.193.113\" 500)")
+                    .build()
+        ) {
+            @Override
+            public VncVal apply(final VncList args) {
+                ArityExceptions.assertArity(this, args, 2);
+
+                final VncString addr = Coerce.toVncString(args.first());
+                final VncLong timeoutMillis = Coerce.toVncLong(args.second());
+
+                try {
+    				final InetAddress inet = InetAddress.getByName(addr.getValue());
+
+    				return VncBoolean.of(inet.isReachable(timeoutMillis.toJavaInteger()));
+                }
+                catch(Exception ex) {
+                    throw new VncException("Failed to check address: '" + args.first() + "'");
+                }
+            }
+
+            private static final long serialVersionUID = -1848883965231344442L;
+        };
 
 
     ///////////////////////////////////////////////////////////////////////////
@@ -370,5 +413,6 @@ public class InetFunctions {
                     .add(sitelocal_addr_Q)
                     .add(inet_addr_to_bytes)
                     .add(inet_addr_from_bytes)
+                    .add(inet_reachable_Q)
                     .toMap();
 }

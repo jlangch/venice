@@ -55,6 +55,7 @@ public class InetSection implements ISectionBuilder {
         test.addItem(diBuilder.getDocItem("inet/linklocal-addr?"));
         test.addItem(diBuilder.getDocItem("inet/sitelocal-addr?"));
         test.addItem(diBuilder.getDocItem("inet/multicast-addr?"));
+        test.addItem(diBuilder.getDocItem("inet/reachable?"));
 
         return section;
     }

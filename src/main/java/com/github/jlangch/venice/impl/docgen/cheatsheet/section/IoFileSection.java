@@ -100,6 +100,11 @@ public class IoFileSection implements ISectionBuilder {
         file_glob.addItem(diBuilder.getDocItem("io/list-files-glob", false));
         file_glob.addItem(diBuilder.getDocItem("io/delete-files-glob", false));
 
+        final DocSection diskspace = new DocSection("disk space", "io.diskspace");
+        all.addSection(diskspace);
+        diskspace.addItem(diBuilder.getDocItem("io/filesystem-total-space", false));
+        diskspace.addItem(diBuilder.getDocItem("io/filesystem-usable-space", false));
+
         final DocSection file_uri = new DocSection("URL/URI", "io.url_uri");
         all.addSection(file_uri);
         file_uri.addItem(diBuilder.getDocItem("io/->url"));
