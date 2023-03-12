@@ -210,6 +210,16 @@ public class ExcelSheetWriter<T> {
         return this;
     }
 
+	public ExcelSheetWriter<T> hideColumn(final int col1) {
+		sheet.setColumnHidden(col1-1, true);
+        return this;
+	}
+
+	public ExcelSheetWriter<T> hideColumns(final int... col1s) {
+		for(int c : col1s) hideColumn(c);
+		return this;
+	}
+
     public ExcelSheetWriter<T> addMergedRegion(final int rowFrom1, final int rowTo1, final int colFrom1, final int colTo1) {
         sheet.addMergedRegion(rowFrom1-1, rowTo1-1, colFrom1-1, colTo1-1);
         return this;

@@ -340,6 +340,10 @@ public class ExcelSheet {
         sheet.autoSizeColumn(col);
     }
 
+    public void setColumnHidden(final int col, final boolean hidden) {
+        sheet.setColumnHidden(col, hidden);
+    }
+
     public void autoSizeColumns() {
         final int firstRow = sheet.getFirstRowNum();
         if (firstRow >= 0) {
