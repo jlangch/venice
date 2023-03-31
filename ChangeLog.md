@@ -15,7 +15,8 @@ All notable changes to this project will be documented in this file.
 
 ### Updated dependencies:
 
-- Bump gradle from 7.5 to 7.6
+- Bump com.github.johnrengelman.shadow gradle plugin from 7.1.2 to 8.1.1
+- Bump gradle from 7.5 to 8.0.2
 
 
 
