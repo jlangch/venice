@@ -106,7 +106,14 @@ For details see: The [Shell Extension Module ](ext-shell.md)
 
 ## Example
 
-A larger example that zips Tomcat log files
+A larger example that zips Tomcat log files on a monthly base:
+
+ * catalina.yyyy-mm-*.log  -> catalina.yyyy-mm.zip
+ * host-manager.yyyy-mm-*.log  -> host-manager.yyyy-mm.zip
+ * localhost_access.yyyy-mm-*.log  -> localhost_access.yyyy-mm.zip
+ * localhost.yyyy-mm-*.log  -> localhost.yyyy-mm.zip
+ * manager.yyyy-mm-*.log  -> host-manager.yyyy-mm.zip
+
 
 ```clojure
 ;; -------------------------------------------------------------------------------
@@ -129,9 +136,9 @@ A larger example that zips Tomcat log files
 
    (defn zip-tomcat-logs [prefix dir year month]
      (try
-        (let [zip (tomcat-log-file-zip prefix dir year month)
+        (let [zip    (tomcat-log-file-zip prefix dir year month)
               filter (tomcat-log-file-filter prefix year month)
-              logs (io/list-files dir filter)]
+              logs   (io/list-files dir filter)]
            (printf "Compacting %s ...\n" prefix)
            (printf "   Found %d log files\n" (count logs))
            (when-not (empty? logs)
@@ -147,9 +154,9 @@ A larger example that zips Tomcat log files
          (time/first-day-of-month) 
          (time/plus :month offset)))
 
-   (let [dir (io/file (nth *ARGV* 2))
-         date (first-day-of-month -1)
-         year (time/year date)
+   (let [dir   (io/file (nth *ARGV* 2))
+         date  (first-day-of-month -1)
+         year  (time/year date)
          month (time/month date)]
       (if (io/exists-dir? dir)
          (do

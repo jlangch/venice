@@ -59,7 +59,7 @@ venice>
 
 #### 3.2 Windows
 
-On Windows the 'jansi' library is required. Download the library from
+On Windows the 'jansi' library is required to run the REPL. Download the library from
 Maven: [jansi](https://search.maven.org/artifact/org.fusesource.jansi/jansi/2.4.0/jar)
 
 Open a terminal, move to the directory the Venice and the 'jansi' JAR is located, 
