@@ -154,6 +154,8 @@ plugins {
     id 'eclipse'
 
     // https://github.com/johnrengelman/shadow/
+    // note: the shadow plugin does not work for jline3 3.22.0+
+    //       jline3 3.22.0+ has a new service file structure under META-INF/services
     id 'com.github.johnrengelman.shadow' version '8.1.1'
 
 /*
