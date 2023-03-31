@@ -853,6 +853,24 @@ public class TransducerFunctionsTest {
     }
 
     @Test
+    public void test_map_types() {
+        final Venice venice = new Venice();
+
+        assertEquals("core/long", venice.eval("(type (first (map inc '(1 2 3))))"));
+        assertEquals("core/long", venice.eval("(type (first (map inc [1 2 3])))"));
+
+        assertEquals("core/list", venice.eval("(type (map inc '(1 2 3))))"));
+        assertEquals("core/list", venice.eval("(type (map inc [1 2 3])))"));
+
+        assertEquals("core/list", venice.eval("(type (first (map (fn [x] '(1)) [1 2 3])))"));
+        assertEquals("core/vector", venice.eval("(type (first (map (fn [x] [1]) [1 2 3])))"));
+
+        // Note: to keep java compatibility as much as possible the mapper turns the mapped data to java data structures!!
+        assertEquals("java.util.ArrayList", venice.eval("(type (first (map (fn [x] '(1)) (doto (. :java.util.ArrayList :new) (. :add 1)))))"));
+        assertEquals("java.util.ArrayList", venice.eval("(type (first (map (fn [x] [1])  (doto (. :java.util.ArrayList :new) (. :add 1)))))"));
+    }
+
+    @Test
     public void test_map_multi() {
         final Venice venice = new Venice();
 

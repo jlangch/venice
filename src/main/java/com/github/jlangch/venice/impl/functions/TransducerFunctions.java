@@ -210,14 +210,32 @@ public class TransducerFunctions {
                         "Applys f to the set of first items of each coll, followed by applying " +
                         "f to the set of second items in each coll, until any one of the colls " +
                         "is exhausted. Any remaining items in other colls are ignored.¶" +
-                        "Returns a transducer when no collection is provided.")
+                        "Returns a transducer when no collection is provided.¶" +
+                        "Note: if Java collections are used the mapper converts all mapped items " +
+                        "back to Java data types to keep Java compatibilty as much as possible! " +
+                        "To avoid this just convert the Java collection to a Venice collection. " +
+                        "E.g.: `(into [] ...)`.")
                     .examples(
                         "(map inc [1 2 3 4])",
                         "(map + [1 2 3 4] [10 20 30 40])",
                         "(map list '(1 2 3 4) '(10 20 30 40))",
                         "(map vector (lazy-seq 1 inc) [10 20 30 40])",
                         "(map (fn [e] [(key e) (inc (val e))]) {:a 1 :b 2})",
-                        "(map inc #{1 2 3})")
+                        "(map inc #{1 2 3})",
+                        ";; Venice enforces Java types when using java collections instead \n" +
+                        ";; of Venice collections!                                         \n" +
+                        ";; -> The returned element type is a 'java.util.ArrayList'        \n" +
+                        ";;    and not a 'core/vector'                                     \n" +
+                        "(->> (doto (. :java.util.ArrayList :new) (. :add 1) (. :add 2))   \n" +
+                        "     (map (fn [x] [(inc x)]))  ;; map to a 'core/vector'          \n" +
+                        "     (first)                                                      \n" +
+                        "     (type))                                                      ",
+                        ";; Same example with a Venice collection!                         \n" +
+                        ";; -> The returned element type is a 'core/vector'                \n" +
+                        "(->> [1 2]                                                        \n" +
+                        "     (map (fn [x] [(inc x)]))  ;; map to a 'core/vector'          \n" +
+                        "     (first)                                                      \n" +
+                        "     (type))                                                      ")
                     .seeAlso("filter", "reduce", "map-indexed")
                     .build()
         ) {
