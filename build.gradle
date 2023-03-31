@@ -154,7 +154,7 @@ plugins {
     id 'eclipse'
 
     // https://github.com/johnrengelman/shadow/
-    id 'com.github.johnrengelman.shadow' version '7.1.2'
+    id 'com.github.johnrengelman.shadow' version '8.1.1'
 
 /*
     // https://github.com/kordamp/jdeps-gradle-plugin
@@ -370,7 +370,7 @@ shadowJar {
     mergeServiceFiles()
 
     archiveFileName = "venice-${project.version}.jar"
-    classifier = ''  // default is '-all'
+    //classifier = ''  // default is '-all'
 }
 
 
