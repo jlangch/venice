@@ -32,6 +32,9 @@ import org.apache.poi.xssf.usermodel.XSSFFont;
 
 import com.github.jlangch.venice.impl.util.excel.ExcelColumnDef;
 import com.github.jlangch.venice.impl.util.excel.ExcelSheet;
+import com.github.jlangch.venice.util.excel.chart.ImageType;
+import com.github.jlangch.venice.util.excel.chart.LineDataSeries;
+import com.github.jlangch.venice.util.excel.chart.Position;
 import com.github.jlangch.venice.util.pdf.HtmlColor;
 
 
@@ -156,6 +159,33 @@ public class ExcelSheetWriter<T> {
         return this;
     }
 
+    public ExcelSheetWriter<T> lineChart(
+            final String title,
+            final CellRangeAddr areaCellRange,
+            final Position legendPosition,
+            final String categoryAxisTitle,
+            final Position categoryAxisPosition,
+            final String valueAxisTitle,
+            final Position valueAxisPosition,
+            final boolean threeDimensional,
+            final CellRangeAddr categoriesCellRange,
+            final List<LineDataSeries> series
+    ) {
+        sheet.setLineChart(
+        		title,
+        		areaCellRange.mapToZeroBasedAddresses(),
+                legendPosition,
+                categoryAxisTitle,
+                categoryAxisPosition,
+                valueAxisTitle,
+                valueAxisPosition,
+                threeDimensional,
+                categoriesCellRange.mapToZeroBasedAddresses(),
+                series.stream().map(s -> s.mapToZeroBasedAddresses()).collect(Collectors.toList()));
+
+        return this;
+    }
+
     public ExcelSheetWriter<T> formula(final int row1, final int col1, final String formula) {
         sheet.setFormula(row1-1, col1-1, formula);
         return this;
@@ -215,15 +245,15 @@ public class ExcelSheetWriter<T> {
         return this;
     }
 
-	public ExcelSheetWriter<T> hideColumn(final int col1) {
-		sheet.setColumnHidden(col1-1, true);
+    public ExcelSheetWriter<T> hideColumn(final int col1) {
+        sheet.setColumnHidden(col1-1, true);
         return this;
-	}
+    }
 
-	public ExcelSheetWriter<T> hideColumns(final int... col1s) {
-		for(int c : col1s) hideColumn(c);
-		return this;
-	}
+    public ExcelSheetWriter<T> hideColumns(final int... col1s) {
+        for(int c : col1s) hideColumn(c);
+        return this;
+    }
 
     public ExcelSheetWriter<T> addMergedRegion(final int rowFrom1, final int rowTo1, final int colFrom1, final int colTo1) {
         sheet.addMergedRegion(rowFrom1-1, rowTo1-1, colFrom1-1, colTo1-1);
