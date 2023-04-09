@@ -35,9 +35,13 @@ import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.CellStyle;
 import org.apache.poi.ss.usermodel.CellType;
 import org.apache.poi.ss.usermodel.CellValue;
+import org.apache.poi.ss.usermodel.ClientAnchor;
+import org.apache.poi.ss.usermodel.CreationHelper;
 import org.apache.poi.ss.usermodel.DateUtil;
+import org.apache.poi.ss.usermodel.Drawing;
 import org.apache.poi.ss.usermodel.FillPatternType;
 import org.apache.poi.ss.usermodel.FormulaEvaluator;
+import org.apache.poi.ss.usermodel.Picture;
 import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Row.MissingCellPolicy;
 import org.apache.poi.ss.usermodel.Sheet;
@@ -51,6 +55,7 @@ import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 
 import com.github.jlangch.venice.ExcelException;
 import com.github.jlangch.venice.impl.util.TimeUtil;
+import com.github.jlangch.venice.util.excel.ImageType;
 
 
 /**
@@ -254,6 +259,23 @@ public class ExcelSheet {
         setCellValue(getCellCreate(row, col), value, "date");
     }
 
+    public void setImage(final int row, final int col, final byte[] data, final ImageType type, final Double scaleX, final Double scaleY) {
+    	switch(type) {
+	    	case PNG:
+	    		setImage(row, col, data, Workbook.PICTURE_TYPE_PNG, scaleX, scaleY);
+	    		break;
+	    	case JPEG:
+	    		setImage(row, col, data, Workbook.PICTURE_TYPE_JPEG, scaleX, scaleY);
+	    		break;
+	    	default:
+                throw new ExcelException(String.format(
+                        "Excel cell [%d,%d] in sheet '%s': Invalid image type. Use PNG or JPEG",
+                        row,
+                        col,
+                        sheet.getSheetName()));
+    	}
+    }
+
     public void setColumnWidthInPoints(final int col, final int width) {
         sheet.setColumnWidth(col, (int)(width * COL_WIDTH_MAGIC_FACTOR));
     }
@@ -360,8 +382,33 @@ public class ExcelSheet {
         evaluator.evaluateAll();
     }
 
+    private void setImage(
+    		final int row,
+    		final int col,
+    		final byte[] data,
+    		final int imageType,
+       		final Double scaleX,
+       		final Double scaleY
+    ) {
+    	final CreationHelper helper = sheet.getWorkbook().getCreationHelper();
+    	final Drawing<?> drawing = sheet.createDrawingPatriarch();
 
-    private void setCellValue(Cell cell, Object value, String styleName) {
+    	final int pictureIdx = sheet.getWorkbook().addPicture(data, imageType);
+
+    	final ClientAnchor anchor = helper.createClientAnchor();
+    	anchor.setCol1(col);
+		anchor.setRow1(row);
+
+		final Picture pict = drawing.createPicture(anchor, pictureIdx);
+		if (scaleX == null || scaleY== null) {
+			pict.resize();
+		}
+		else {
+			pict.resize(scaleX, scaleY);
+		}
+    }
+
+    private void setCellValue(final Cell cell, final Object value, final String styleName) {
         final CellStyle style = cellStyles.getCellStyle(styleName);
         if (style != null) {
             cell.setCellStyle(style);

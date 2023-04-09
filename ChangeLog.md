@@ -5,13 +5,14 @@ All notable changes to this project will be documented in this file.
 
 
 
-## [1.10.34] - 2023-03-xx
+## [1.10.34] - 2023-04-xx
 
 ### Added 
 
 - functions `io/filesystem-total-space`, `io/filesystem-usable-space`
 - function `inet/reachable?` to check if an INET addr is reachable
 - improvements to Excel renderer regarding column hiding
+- support for PNG and JPEG to `:excel` module
 
 ### Updated dependencies:
 

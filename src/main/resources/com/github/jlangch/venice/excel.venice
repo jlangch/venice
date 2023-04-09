@@ -446,6 +446,54 @@
 
 
 (defn
+  ^{ :arglists '(
+          "(write-image sheet row col data type)",
+          "(write-image sheet row col data type scale-X scale-Y)")
+     :doc "Writes an image to a specific cell given by its row and col."
+     :examples '(
+        """
+        (do
+          (load-module :excel)
+          (let [wbook (excel/writer :xlsx)
+                sheet (excel/add-sheet wbook "Sheet 1")
+                image "com/github/jlangch/venice/images/venice.png"
+                data  (io/load-classpath-resource image)]
+            (excel/write-image sheet 2 2 data :PNG)
+            (excel/write->file wbook "sample.xlsx")))
+        """,
+        """
+        (do
+          (load-module :excel)
+          (let [wbook (excel/writer :xlsx)
+                sheet (excel/add-sheet wbook "Sheet 1")
+                image "com/github/jlangch/venice/images/venice.png"
+                data  (io/load-classpath-resource image)]
+            (excel/write-image sheet 2 2 data :PNG 0.5 0.5)
+            (excel/write->file wbook "sample.xlsx")))
+        """)
+     :see-also '(
+        "excel/write-items", "excel/write-item", "excel/cell-formula",
+        "excel/auto-size-columns", "excel/auto-size-column",
+        "excel/row-height") }
+
+  write-image
+
+  ([sheet row col data type]
+    { :pre [(instance-of? :ExcelSheetWriter sheet)
+            (long? row) (long? col) (pos? row) (pos? col)
+            (bytebuf? data)
+            (keyword? type) (or (== :PNG type) (== :JPEG type))] }
+      (. sheet :image row col data type nil nil))
+
+  ([sheet row col data type scale-x scale-y]
+    { :pre [(instance-of? :ExcelSheetWriter sheet)
+            (long? row) (long? col) (pos? row) (pos? col)
+            (bytebuf? data)
+            (keyword? type) (or (== :PNG type) (== :JPEG type))] }
+      (. sheet :image row col data type scale-x scale-y)))
+
+
+(defn
   ^{ :arglists '("(cell-formula sheet row col formula)")
      :doc "Set a formula for a specific cell given by its row and col."
      :examples '(

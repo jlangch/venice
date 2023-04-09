@@ -151,6 +151,11 @@ public class ExcelSheetWriter<T> {
         return this;
     }
 
+    public ExcelSheetWriter<T> image(final int row1, final int col1, final byte[] data, final ImageType type, final Double scaleX, final Double scaleY) {
+        sheet.setImage(row1-1, col1-1, data, type, scaleX, scaleY);
+        return this;
+    }
+
     public ExcelSheetWriter<T> formula(final int row1, final int col1, final String formula) {
         sheet.setFormula(row1-1, col1-1, formula);
         return this;
