@@ -12,7 +12,7 @@ All notable changes to this project will be documented in this file.
 - functions `io/filesystem-total-space`, `io/filesystem-usable-space`
 - function `inet/reachable?` to check if an INET addr is reachable
 - improvements to Excel renderer regarding column hiding
-- support for PNG and JPEG to `:excel` module
+- support for PNG and JPEG images to `:excel` module
 
 ### Updated dependencies:
 
