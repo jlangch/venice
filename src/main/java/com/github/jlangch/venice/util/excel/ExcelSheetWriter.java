@@ -161,26 +161,26 @@ public class ExcelSheetWriter<T> {
 
     public ExcelSheetWriter<T> lineChart(
             final String title,
-            final CellRangeAddr areaCellRange,
+            final CellRangeAddr areaCellRangeAddr,
             final Position legendPosition,
             final String categoryAxisTitle,
             final Position categoryAxisPosition,
             final String valueAxisTitle,
             final Position valueAxisPosition,
             final boolean threeDimensional,
-            final CellRangeAddr categoriesCellRange,
+            final CellRangeAddr categoriesCellRangeAddr,
             final List<LineDataSeries> series
     ) {
         sheet.setLineChart(
         		title,
-        		areaCellRange.mapToZeroBasedAddresses(),
+        		areaCellRangeAddr.mapToZeroBasedAddresses(),
                 legendPosition,
                 categoryAxisTitle,
                 categoryAxisPosition,
                 valueAxisTitle,
                 valueAxisPosition,
                 threeDimensional,
-                categoriesCellRange.mapToZeroBasedAddresses(),
+                categoriesCellRangeAddr.mapToZeroBasedAddresses(),
                 series.stream().map(s -> s.mapToZeroBasedAddresses()).collect(Collectors.toList()));
 
         return this;
