@@ -37,6 +37,7 @@ libraries:
        * [Supported data types](#supported-data-types)
        * [Writing 2D vector data](#writing-2d-tabular-data)
        * [Writing to individual cells](#writing-to-individual-cells)
+       * [Writing images](#writing-images)
        * [Merge Cells](#merge-cells)
        * [Using formulas](#using-formulas)
     * [Styling](#styling)
@@ -321,6 +322,26 @@ The functions `excel/write-value` To write values to cells. The row and col numb
 [top](#content)
 
 
+#### Writing images
+
+```clojure
+(do
+  (load-module :excel)
+  (let [wbook (excel/writer :xlsx)
+        sheet (excel/add-sheet wbook "Sheet 1")
+        image "com/github/jlangch/venice/images/venice.png"
+        data  (io/load-classpath-resource image)]
+    (excel/write-image sheet  2 2 data :PNG)
+    (excel/write-image sheet 12 2 data :PNG 0.8 0.8)
+    (excel/write-image sheet 20 2 data :PNG 0.4 0.4)
+    (excel/write->file wbook "sample.xlsx")))
+```
+
+<img src="https://github.com/jlangch/venice/blob/master/doc/assets/excel/excel-write-019.png" width="800">
+
+[top](#content)
+
+
 
 #### Merge cells
 
@@ -432,7 +453,6 @@ for formulas:
 ```
 
 [top](#content)
-
 
 
 ### Styling
