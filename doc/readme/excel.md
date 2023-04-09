@@ -337,7 +337,7 @@ The functions `excel/write-value` To write values to cells. The row and col numb
     (excel/write->file wbook "sample.xlsx")))
 ```
 
-<img src="https://github.com/jlangch/venice/blob/master/doc/assets/excel/excel-write-019.png" width="800">
+<img src="https://github.com/jlangch/venice/blob/master/doc/assets/excel/excel-write-019.png" width="500">
 
 [top](#content)
 
