@@ -98,6 +98,10 @@ public class ModuleExcelSection implements ISectionBuilder {
         wr_style.addItem(diBuilder.getDocItem("excel/auto-size-column", false));
         wr_style.addItem(diBuilder.getDocItem("excel/freeze-pane", false));
 
+        final DocSection wr_image = new DocSection("Writer Images", id());
+        all.addSection(wr_image);
+        wr_image.addItem(diBuilder.getDocItem("excel/add-image", false));
+
         final DocSection rd = new DocSection("Reader", id());
         all.addSection(rd);
         rd.addItem(diBuilder.getDocItem("excel/open", false));

@@ -447,9 +447,15 @@
 
 (defn
   ^{ :arglists '(
-          "(write-image sheet row col data type)",
-          "(write-image sheet row col data type scale-X scale-Y)")
-     :doc "Writes an image to a specific cell given by its row and col."
+        "(add-image sheet row col data type)",
+        "(add-image sheet row col data type scale-X scale-Y)")
+     :doc
+        """
+        Adds an image given by its binary data (a `bytebuf) to a specific
+        anchor cell given by its row and col. Optionally the image can be
+        scaled by an X and Y axis factor. The image types `:PNG` and `:JPEG`
+        are supported.
+        """
      :examples '(
         """
         (do
@@ -458,7 +464,7 @@
                 sheet (excel/add-sheet wbook "Sheet 1")
                 image "com/github/jlangch/venice/images/venice.png"
                 data  (io/load-classpath-resource image)]
-            (excel/write-image sheet 2 2 data :PNG)
+            (excel/add-image sheet 2 2 data :PNG)
             (excel/write->file wbook "sample.xlsx")))
         """,
         """
@@ -468,7 +474,7 @@
                 sheet (excel/add-sheet wbook "Sheet 1")
                 image "com/github/jlangch/venice/images/venice.png"
                 data  (io/load-classpath-resource image)]
-            (excel/write-image sheet 2 2 data :PNG 0.5 0.5)
+            (excel/add-image sheet 2 2 data :PNG 0.5 0.5)
             (excel/write->file wbook "sample.xlsx")))
         """)
      :see-also '(
@@ -476,7 +482,7 @@
         "excel/auto-size-columns", "excel/auto-size-column",
         "excel/row-height") }
 
-  write-image
+  add-image
 
   ([sheet row col data type]
     { :pre [(instance-of? :ExcelSheetWriter sheet)
