@@ -535,7 +535,7 @@
             (excel/add-line-chart sheet
                                   "Population & Area by Country"
                                   (excel/cell-address-range 5 20 1 5)
-                                  :TOP_RIGHT
+                                  :RIGHT
                                   "Country"
                                   :BOTTOM
                                   "Area & Population"
@@ -594,6 +594,7 @@
                               value-axis-position
                               three-dimensional?
                               direction-bar?
+                              grouping
                               categories-addr-range
                               series)")
      :doc
@@ -614,13 +615,14 @@
             (excel/add-bar-chart sheet
                                  "Population & Area by Country"
                                  (excel/cell-address-range 5 20 1 5)
-                                 :TOP_RIGHT
+                                 :RIGHT
                                  "Country"
                                  :BOTTOM
                                  "Area & Population"
                                  :LEFT
                                  false
-                                 true
+                                 false
+                                 :STANDARD
                                  (excel/cell-address-range 1 1 1 5)
                                  [ (excel/bar-data-series
                                      "Area"
@@ -643,6 +645,7 @@
                        value-axis-position
                        three-dimensional?
                        direction-bar?
+                       grouping
                        categories-addr-range
                        series]
 
@@ -657,6 +660,7 @@
                        value-axis-position
                        three-dimensional?
                        direction-bar?
+                       grouping
                        categories-addr-range
                        series))
 
@@ -691,7 +695,7 @@
             (excel/add-area-chart sheet
                                   "Population & Area by Country"
                                   (excel/cell-address-range 5 20 1 5)
-                                  :TOP_RIGHT
+                                  :RIGHT
                                   "Country"
                                   :BOTTOM
                                   "Area & Population"
@@ -761,7 +765,7 @@
             (excel/add-pie-chart sheet
                                  "Population"
                                  (excel/cell-address-range 5 20 1 5)
-                                 :TOP_RIGHT
+                                 :RIGHT
                                  false
                                  true
                                  (excel/cell-address-range 1 1 1 5)

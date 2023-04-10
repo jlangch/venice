@@ -81,6 +81,7 @@ import com.github.jlangch.venice.util.excel.CellAddr;
 import com.github.jlangch.venice.util.excel.CellRangeAddr;
 import com.github.jlangch.venice.util.excel.chart.AreaDataSeries;
 import com.github.jlangch.venice.util.excel.chart.BarDataSeries;
+import com.github.jlangch.venice.util.excel.chart.BarGrouping;
 import com.github.jlangch.venice.util.excel.chart.ImageType;
 import com.github.jlangch.venice.util.excel.chart.LineDataSeries;
 import com.github.jlangch.venice.util.excel.chart.MarkerStyle;
@@ -391,6 +392,7 @@ public class ExcelSheet {
             final Position valueAxisPosition,
             final boolean threeDimensional,
             final boolean directionBar,
+            final BarGrouping grouping,
             final CellRangeAddr categoriesCellRangeAddr,
             final List<BarDataSeries> series
     ) {
@@ -423,6 +425,7 @@ public class ExcelSheet {
                                                 categoryAxis,
                                                 valueAxis);
             data_.setBarDirection(directionBar ? BarDirection.BAR : BarDirection.COL);
+            data_.setBarGrouping(toBarGrouping(grouping));
             data = data_;
         }
         else {
@@ -431,6 +434,7 @@ public class ExcelSheet {
                                                 categoryAxis,
                                                 valueAxis);
             data_.setBarDirection(directionBar ? BarDirection.BAR : BarDirection.COL);
+            data_.setBarGrouping(toBarGrouping(grouping));
             data = data_;
         }
 
@@ -439,6 +443,11 @@ public class ExcelSheet {
 
             final XDDFChartData.Series series_ = data.addSeries(categories, values);
             series_.setTitle(s.getTitle(), null);
+        }
+
+        final boolean stacked = grouping == BarGrouping.STACKED || grouping == BarGrouping.PERCENT_STACKED;
+        if (stacked) {
+        	chart.getCTChart().getPlotArea().getBarChartArray(0).addNewOverlap().setVal((byte)100);
         }
 
         chart.plot(data);
@@ -1051,6 +1060,21 @@ public class ExcelSheet {
                 case TRIANGLE:  return org.apache.poi.xddf.usermodel.chart.MarkerStyle.TRIANGLE;
                 case X:          return org.apache.poi.xddf.usermodel.chart.MarkerStyle.X;
                 default:        return org.apache.poi.xddf.usermodel.chart.MarkerStyle.NONE;
+            }
+        }
+    }
+
+    private org.apache.poi.xddf.usermodel.chart.BarGrouping toBarGrouping(final BarGrouping grouping) {
+        if (grouping == null) {
+            return org.apache.poi.xddf.usermodel.chart.BarGrouping.STANDARD;
+        }
+        else {
+            switch(grouping) {
+                case STANDARD:         return org.apache.poi.xddf.usermodel.chart.BarGrouping.STANDARD;
+                case CLUSTERED:        return org.apache.poi.xddf.usermodel.chart.BarGrouping.CLUSTERED;
+                case STACKED:          return org.apache.poi.xddf.usermodel.chart.BarGrouping.STACKED;
+                case PERCENT_STACKED:  return org.apache.poi.xddf.usermodel.chart.BarGrouping.PERCENT_STACKED;
+                default:               return org.apache.poi.xddf.usermodel.chart.BarGrouping.STANDARD;
             }
         }
     }

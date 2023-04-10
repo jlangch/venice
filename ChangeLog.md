@@ -15,6 +15,10 @@ All notable changes to this project will be documented in this file.
 - support for PNG and JPEG images to `:excel` module
 - support for line, bar, area, and pie charts to `:excel` module
 
+### Fixed
+
+- :excel module 3rd-party library dependencies
+
 ### Updated dependencies:
 
 - Bump com.github.johnrengelman.shadow gradle plugin from 7.1.2 to 8.1.1

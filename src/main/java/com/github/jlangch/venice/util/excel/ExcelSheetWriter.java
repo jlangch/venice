@@ -34,6 +34,7 @@ import com.github.jlangch.venice.impl.util.excel.ExcelColumnDef;
 import com.github.jlangch.venice.impl.util.excel.ExcelSheet;
 import com.github.jlangch.venice.util.excel.chart.AreaDataSeries;
 import com.github.jlangch.venice.util.excel.chart.BarDataSeries;
+import com.github.jlangch.venice.util.excel.chart.BarGrouping;
 import com.github.jlangch.venice.util.excel.chart.ImageType;
 import com.github.jlangch.venice.util.excel.chart.LineDataSeries;
 import com.github.jlangch.venice.util.excel.chart.PieDataSeries;
@@ -212,6 +213,7 @@ public class ExcelSheetWriter<T> {
             final Position valueAxisPosition,
             final boolean threeDimensional,
             final boolean directionBar,
+            final BarGrouping grouping,
             final CellRangeAddr categoriesCellRangeAddr,
             final List<BarDataSeries> series
     ) {
@@ -231,6 +233,7 @@ public class ExcelSheetWriter<T> {
                 valueAxisPosition,
                 threeDimensional,
                 directionBar,
+                grouping,
                 categoriesCellRangeAddr.mapToZeroBased(),
                 series.stream().map(s -> s.mapToZeroBasedAddresses()).collect(Collectors.toList()));
 
