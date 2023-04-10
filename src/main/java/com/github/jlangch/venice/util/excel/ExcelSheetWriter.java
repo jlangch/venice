@@ -155,7 +155,7 @@ public class ExcelSheetWriter<T> {
     }
 
     public ExcelSheetWriter<T> image(final int row1, final int col1, final byte[] data, final ImageType type, final Double scaleX, final Double scaleY) {
-        sheet.addImage(new CellAddr(row1, col1).mapToZeroBased(), data, type, scaleX, scaleY);
+        sheet.addImage(new CellAddr(row1, col1), data, type, scaleX, scaleY);
         return this;
     }
 
@@ -278,12 +278,12 @@ public class ExcelSheetWriter<T> {
     public String sumFormula(final int rowFrom1, final int rowTo1, final int colFrom1, final int colTo1) {
         return String.format(
                 "SUM(%s:%s)",
-                sheet.getCellAddress(rowFrom1-1, colFrom1-1),
-                sheet.getCellAddress(rowTo1-1, colTo1-1));
+                sheet.getCellAddress_A1_style(rowFrom1-1, colFrom1-1),
+                sheet.getCellAddress_A1_style(rowTo1-1, colTo1-1));
     }
 
-    public String cellAddress(final int row1, final int col1) {
-        return sheet.getCellAddress(row1-1, col1-1);
+    public String cellAddress_A1_style(final int row1, final int col1) {
+        return sheet.getCellAddress_A1_style(row1-1, col1-1);
     }
 
     public ExcelWriter end() {

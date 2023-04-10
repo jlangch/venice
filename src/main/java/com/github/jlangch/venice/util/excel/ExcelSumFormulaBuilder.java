@@ -57,8 +57,8 @@ public class ExcelSumFormulaBuilder<T> {
     public ExcelSheetWriter<T> end() {
         final String formula = String.format(
                                 "SUM(%s:%s)",
-                                sheet.getCellAddress(rowFrom0, colFrom0),
-                                sheet.getCellAddress(rowTo0, colTo0));
+                                sheet.getCellAddress_A1_style(rowFrom0, colFrom0),
+                                sheet.getCellAddress_A1_style(rowTo0, colTo0));
 
         sheet.setFormula(row0, col0, formula, style);
 

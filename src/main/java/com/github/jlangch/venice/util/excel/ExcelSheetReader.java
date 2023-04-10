@@ -83,8 +83,8 @@ public class ExcelSheetReader {
         return sheet.getCellFormulaResultType(row1-1, col1-1);
     }
 
-    public String getCellAddress(final int row1, final int col1) {
-        return sheet.getCellAddress(row1-1, col1-1);
+    public String getCellAddress_A1_style(final int row1, final int col1) {
+        return sheet.getCellAddress_A1_style(row1-1, col1-1);
     }
 
     public Object getValue(final int row1, final int col1) {

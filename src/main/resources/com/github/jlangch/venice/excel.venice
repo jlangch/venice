@@ -596,7 +596,7 @@
 
 (defn
   ^{ :arglists '("(cell-address sheet row col)")
-     :doc "Returns the cell address for a cell at row/col in a sheet"
+     :doc "Returns the cell address in A1 style for a cell at row/col in a sheet"
      :examples '(
         """
         (do
@@ -626,7 +626,7 @@
   { :pre [(instance-of? :ExcelSheetWriter sheet)
           (long? row) (long? col) (pos? row) (pos? col)] }
 
-  (. sheet :cellAddress row col))
+  (. sheet :cellAddress_A1_style row col))
 
 
 (defn

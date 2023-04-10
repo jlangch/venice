@@ -130,7 +130,7 @@ public class ExcelSheet {
         return cell == null || cell.getCellType() == CellType.BLANK;
     }
 
-    public String getCellAddress(final int row, final int col) {
+    public String getCellAddress_A1_style(final int row, final int col) {
         return new CellAddress(row, col).formatAsString();
     }
 
