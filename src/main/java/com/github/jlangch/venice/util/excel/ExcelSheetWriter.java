@@ -32,6 +32,7 @@ import org.apache.poi.xssf.usermodel.XSSFFont;
 
 import com.github.jlangch.venice.impl.util.excel.ExcelColumnDef;
 import com.github.jlangch.venice.impl.util.excel.ExcelSheet;
+import com.github.jlangch.venice.util.excel.chart.BarDataSeries;
 import com.github.jlangch.venice.util.excel.chart.ImageType;
 import com.github.jlangch.venice.util.excel.chart.LineDataSeries;
 import com.github.jlangch.venice.util.excel.chart.Position;
@@ -193,6 +194,41 @@ public class ExcelSheetWriter<T> {
                 valueAxisTitle,
                 valueAxisPosition,
                 threeDimensional,
+                categoriesCellRangeAddr.mapToZeroBased(),
+                series.stream().map(s -> s.mapToZeroBasedAddresses()).collect(Collectors.toList()));
+
+        return this;
+    }
+
+    public ExcelSheetWriter<T> barChart(
+            final String title,
+            final CellRangeAddr areaCellRangeAddr,
+            final Position legendPosition,
+            final String categoryAxisTitle,
+            final Position categoryAxisPosition,
+            final String valueAxisTitle,
+            final Position valueAxisPosition,
+            final boolean threeDimensional,
+            final boolean directionBar,
+            final CellRangeAddr categoriesCellRangeAddr,
+            final List<BarDataSeries> series
+    ) {
+    	final CellRangeAddr area = areaCellRangeAddr.mapToZeroBased();
+
+    	sheet.addBarChart(
+                title,
+                new CellRangeAddr(
+                		area.getFirstRow(),
+                		area.getLastRow()+1,
+                		area.getFirstCol(),
+                		area.getLastCol()+1),
+                legendPosition,
+                categoryAxisTitle,
+                categoryAxisPosition,
+                valueAxisTitle,
+                valueAxisPosition,
+                threeDimensional,
+                directionBar,
                 categoriesCellRangeAddr.mapToZeroBased(),
                 series.stream().map(s -> s.mapToZeroBasedAddresses()).collect(Collectors.toList()));
 

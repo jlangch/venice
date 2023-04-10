@@ -50,9 +50,12 @@ import org.apache.poi.ss.usermodel.Workbook;
 import org.apache.poi.ss.util.CellAddress;
 import org.apache.poi.ss.util.CellRangeAddress;
 import org.apache.poi.xddf.usermodel.chart.AxisPosition;
+import org.apache.poi.xddf.usermodel.chart.BarDirection;
 import org.apache.poi.xddf.usermodel.chart.ChartTypes;
 import org.apache.poi.xddf.usermodel.chart.LegendPosition;
+import org.apache.poi.xddf.usermodel.chart.XDDFBarChartData;
 import org.apache.poi.xddf.usermodel.chart.XDDFCategoryAxis;
+import org.apache.poi.xddf.usermodel.chart.XDDFChartData;
 import org.apache.poi.xddf.usermodel.chart.XDDFChartLegend;
 import org.apache.poi.xddf.usermodel.chart.XDDFDataSource;
 import org.apache.poi.xddf.usermodel.chart.XDDFDataSourcesFactory;
@@ -72,6 +75,7 @@ import com.github.jlangch.venice.ExcelException;
 import com.github.jlangch.venice.impl.util.TimeUtil;
 import com.github.jlangch.venice.util.excel.CellAddr;
 import com.github.jlangch.venice.util.excel.CellRangeAddr;
+import com.github.jlangch.venice.util.excel.chart.BarDataSeries;
 import com.github.jlangch.venice.util.excel.chart.ImageType;
 import com.github.jlangch.venice.util.excel.chart.LineDataSeries;
 import com.github.jlangch.venice.util.excel.chart.MarkerStyle;
@@ -318,12 +322,7 @@ public class ExcelSheet {
         }
 
         final XSSFDrawing drawing = (XSSFDrawing)sheet.createDrawingPatriarch();
-        final XSSFClientAnchor anchor = drawing.createAnchor(
-                                                0, 0, 0, 0,
-                                                areaCellRangeAddr.getFirstCol(),
-                                                areaCellRangeAddr.getFirstRow(),
-                                                areaCellRangeAddr.getLastCol(),
-                                                areaCellRangeAddr.getLastRow());
+        final XSSFClientAnchor anchor = drawingAnchor(drawing, areaCellRangeAddr);
 
         final XSSFChart chart = drawing.createChart(anchor);
         chart.setTitleText(title);
@@ -337,13 +336,7 @@ public class ExcelSheet {
         final XDDFValueAxis valueAxis = chart.createValueAxis(toAxisPosition(valueAxisPosition));
         valueAxis.setTitle(valueAxisTitle);
 
-        final XDDFDataSource<String> categories = XDDFDataSourcesFactory.fromStringCellRange(
-                                                    (XSSFSheet)sheet,
-                                                    new CellRangeAddress(
-                                                            categoriesCellRangeAddr.getFirstRow(),
-                                                            categoriesCellRangeAddr.getLastRow(),
-                                                            categoriesCellRangeAddr.getFirstCol(),
-                                                            categoriesCellRangeAddr.getLastCol()));
+        final XDDFDataSource<String> categories = stringDataSource(categoriesCellRangeAddr);
 
         final XDDFLineChartData data = (XDDFLineChartData)chart.createData(
                                             threeDimensional ? ChartTypes.LINE3D :  ChartTypes.LINE,
@@ -351,18 +344,63 @@ public class ExcelSheet {
                                             valueAxis);
 
         for(LineDataSeries s : series) {
-            final XDDFNumericalDataSource<Double> values = XDDFDataSourcesFactory.fromNumericCellRange(
-                                                                    (XSSFSheet)sheet,
-                                                                    new CellRangeAddress(
-                                                                            s.getCellRangeAddr().getFirstRow(),
-                                                                            s.getCellRangeAddr().getLastRow(),
-                                                                            s.getCellRangeAddr().getFirstCol(),
-                                                                            s.getCellRangeAddr().getLastCol()));
+            final XDDFNumericalDataSource<Double> values = numericalDataSource(s.getCellRangeAddr());
 
             final XDDFLineChartData.Series series_ = (XDDFLineChartData.Series)data.addSeries(categories, values);
             series_.setTitle(s.getTitle(), null);
             series_.setSmooth(s.isSmooth());
             series_.setMarkerStyle(toMarkerStyle(s.getMarkerStyle()));
+        }
+
+        chart.plot(data);
+    }
+
+    public void addBarChart(
+            final String title,
+            final CellRangeAddr areaCellRangeAddr,
+            final Position legendPosition,
+            final String categoryAxisTitle,
+            final Position categoryAxisPosition,
+            final String valueAxisTitle,
+            final Position valueAxisPosition,
+            final boolean threeDimensional,
+            final boolean directionBar,
+            final CellRangeAddr categoriesCellRangeAddr,
+            final List<BarDataSeries> series
+    ) {
+        if (!(sheet.getWorkbook() instanceof XSSFWorkbook)) {
+            throw new ExcelException("Excel bar charts only work with Excel of type XLSX!");
+        }
+
+        final XSSFDrawing drawing = (XSSFDrawing)sheet.createDrawingPatriarch();
+        final XSSFClientAnchor anchor = drawingAnchor(drawing, areaCellRangeAddr);
+
+        final XSSFChart chart = drawing.createChart(anchor);
+        chart.setTitleText(title);
+        chart.setTitleOverlay(false);
+
+        final XDDFChartLegend legend = chart.getOrAddLegend();
+        legend.setPosition(toLegendPosition(legendPosition));
+
+        final XDDFCategoryAxis categoryAxis = chart.createCategoryAxis(toAxisPosition(categoryAxisPosition));
+        categoryAxis.setTitle(categoryAxisTitle);
+        final XDDFValueAxis valueAxis = chart.createValueAxis(toAxisPosition(valueAxisPosition));
+        valueAxis.setTitle(valueAxisTitle);
+
+        final XDDFDataSource<String> categories = stringDataSource(categoriesCellRangeAddr);
+
+        final XDDFBarChartData data = (XDDFBarChartData)chart.createData(
+                                            threeDimensional ? ChartTypes.BAR3D :  ChartTypes.BAR,
+                                            categoryAxis,
+                                            valueAxis);
+
+        data.setBarDirection(directionBar ? BarDirection.BAR : BarDirection.COL);
+
+        for(BarDataSeries s : series) {
+            final XDDFNumericalDataSource<Double> values = numericalDataSource(s.getCellRangeAddr());
+
+            final XDDFChartData.Series series_ = data.addSeries(categories, values);
+            series_.setTitle(s.getTitle(), null);
         }
 
         chart.plot(data);
@@ -879,6 +917,39 @@ public class ExcelSheet {
             }
         }
     }
+
+    private XSSFClientAnchor drawingAnchor(
+    		final XSSFDrawing drawing,
+    		final CellRangeAddr addr
+    ) {
+        return drawing.createAnchor(
+                0, 0, 0, 0,
+                addr.getFirstCol(),
+                addr.getFirstRow(),
+                addr.getLastCol(),
+                addr.getLastRow());
+    }
+
+    private XDDFNumericalDataSource<Double> numericalDataSource(final CellRangeAddr addr) {
+        return XDDFDataSourcesFactory.fromNumericCellRange(
+                (XSSFSheet)sheet,
+                new CellRangeAddress(
+                		addr.getFirstRow(),
+                		addr.getLastRow(),
+                		addr.getFirstCol(),
+                		addr.getLastCol()));
+    }
+
+    private XDDFDataSource<String> stringDataSource(final CellRangeAddr addr) {
+        return XDDFDataSourcesFactory.fromStringCellRange(
+                (XSSFSheet)sheet,
+                new CellRangeAddress(
+                		addr.getFirstRow(),
+                		addr.getLastRow(),
+                		addr.getFirstCol(),
+                		addr.getLastCol()));
+    }
+
 
     // The Excel's magic conversion factor
     public static final float COL_WIDTH_MAGIC_FACTOR = 46.4f; // to points (1/72 inch)
