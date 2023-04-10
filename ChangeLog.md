@@ -13,7 +13,7 @@ All notable changes to this project will be documented in this file.
 - function `inet/reachable?` to check if an INET addr is reachable
 - improvements to Excel renderer regarding column hiding
 - support for PNG and JPEG images to `:excel` module
-- support for line and bar charts to `:excel` module
+- support for line, bar, area, and pie charts to `:excel` module
 
 ### Updated dependencies:
 

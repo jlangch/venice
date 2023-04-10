@@ -40,6 +40,8 @@
 (import :com.github.jlangch.venice.util.excel.CellRangeAddr)
 (import :com.github.jlangch.venice.util.excel.chart.LineDataSeries)
 (import :com.github.jlangch.venice.util.excel.chart.BarDataSeries)
+(import :com.github.jlangch.venice.util.excel.chart.AreaDataSeries)
+(import :com.github.jlangch.venice.util.excel.chart.PieDataSeries)
 
 (import :java.io.OutputStream)
 (import :java.io.InputStream)
@@ -554,9 +556,7 @@
             (excel/write->file wbook "sample.xlsx")))
         """)
      :see-also '(
-        "excel/write-items", "excel/write-item", "excel/cell-formula",
-        "excel/auto-size-columns", "excel/auto-size-column",
-        "excel/row-height") }
+        "excel/line-data-series", "excel/cell-address-range") }
 
   add-line-chart [sheet chart-title
                         chart-addr-range
@@ -586,16 +586,16 @@
 (defn
   ^{ :arglists '(
         "(add-bar-chart sheet chart-title
-                               chart-addr-range
-                               legend-position
-                               category-axis-title
-                               category-axis-position
-                               value-axis-title
-                               value-axis-position
-                               three-dimensional?
-                               direction-bar?
-                               categories-addr-range
-                               series)")
+                              chart-addr-range
+                              legend-position
+                              category-axis-title
+                              category-axis-position
+                              value-axis-title
+                              value-axis-position
+                              three-dimensional?
+                              direction-bar?
+                              categories-addr-range
+                              series)")
      :doc
         """
         Adds a bar chart.
@@ -612,6 +612,83 @@
             (excel/write-data sheet data)
 
             (excel/add-bar-chart sheet
+                                 "Population & Area by Country"
+                                 (excel/cell-address-range 5 20 1 5)
+                                 :TOP_RIGHT
+                                 "Country"
+                                 :BOTTOM
+                                 "Area & Population"
+                                 :LEFT
+                                 false
+                                 true
+                                 (excel/cell-address-range 1 1 1 5)
+                                 [ (excel/bar-data-series
+                                     "Area"
+                                     (excel/cell-address-range 2 2 1 5))
+                                   (excel/bar-data-series
+                                     "Population"
+                                     (excel/cell-address-range 3 3 1 5)) ])
+
+            (excel/write->file wbook "sample.xlsx")))
+        """)
+     :see-also '(
+        "excel/bar-data-series", "excel/cell-address-range") }
+
+  add-bar-chart [sheet chart-title
+                       chart-addr-range
+                       legend-position
+                       category-axis-title
+                       category-axis-position
+                       value-axis-title
+                       value-axis-position
+                       three-dimensional?
+                       direction-bar?
+                       categories-addr-range
+                       series]
+
+    { :pre [(instance-of? :ExcelSheetWriter sheet)] }
+
+    (. sheet :barChart chart-title
+                       chart-addr-range
+                       legend-position
+                       category-axis-title
+                       category-axis-position
+                       value-axis-title
+                       value-axis-position
+                       three-dimensional?
+                       direction-bar?
+                       categories-addr-range
+                       series))
+
+
+(defn
+  ^{ :arglists '(
+        "(add-area-chart sheet chart-title
+                               chart-addr-range
+                               legend-position
+                               category-axis-title
+                               category-axis-position
+                               value-axis-title
+                               value-axis-position
+                               three-dimensional?
+                               categories-addr-range
+                               series)")
+     :doc
+        """
+        Adds an area chart.
+        """
+     :examples '(
+        """
+        (do
+          (load-module :excel)
+          (let [wbook (excel/writer :xlsx)
+                sheet (excel/add-sheet wbook "Sheet 1")
+                data  [["Germany" "France" "Italy" "Spain" "Austria"]
+                       [356       644      301      506    84]
+                       [83.2      68.0     58.9    47.3    9.0]]]
+            (excel/write-data sheet data)
+
+            (excel/add-area-chart sheet
                                   "Population & Area by Country"
                                   (excel/cell-address-range 5 20 1 5)
                                   :TOP_RIGHT
@@ -620,23 +697,20 @@
                                   "Area & Population"
                                   :LEFT
                                   false
-                                  true
                                   (excel/cell-address-range 1 1 1 5)
-                                  [ (excel/bar-data-series
-                                       "Area"
-                                       (excel/cell-address-range 2 2 1 5))
-                                    (excel/bar-data-series
-                                       "Population"
-                                       (excel/cell-address-range 3 3 1 5)) ])
+                                  [ (excel/area-data-series
+                                      "Area"
+                                      (excel/cell-address-range 2 2 1 5))
+                                    (excel/area-data-series
+                                      "Population"
+                                      (excel/cell-address-range 3 3 1 5)) ])
 
             (excel/write->file wbook "sample.xlsx")))
         """)
      :see-also '(
-        "excel/write-items", "excel/write-item", "excel/cell-formula",
-        "excel/auto-size-columns", "excel/auto-size-column",
-        "excel/row-height") }
+        "excel/area-data-series", "excel/cell-address-range") }
 
-  add-bar-chart [sheet chart-title
+  add-area-chart [sheet chart-title
                         chart-addr-range
                         legend-position
                         category-axis-title
@@ -644,13 +718,12 @@
                         value-axis-title
                         value-axis-position
                         three-dimensional?
-                        direction-bar?
                         categories-addr-range
                         series]
 
     { :pre [(instance-of? :ExcelSheetWriter sheet)] }
 
-    (. sheet :barChart chart-title
+    (. sheet :areaChart chart-title
                         chart-addr-range
                         legend-position
                         category-axis-title
@@ -658,9 +731,65 @@
                         value-axis-title
                         value-axis-position
                         three-dimensional?
-                        direction-bar?
                         categories-addr-range
                         series))
+
+
+(defn
+  ^{ :arglists '(
+        "(add-pie-chart sheet chart-title
+                               chart-addr-range
+                               legend-position
+                               three-dimensional?
+                               direction-bar?
+                               categories-addr-range
+                               series)")
+     :doc
+        """
+        Adds a pie chart.
+        """
+     :examples '(
+        """
+        (do
+          (load-module :excel)
+          (let [wbook (excel/writer :xlsx)
+                sheet (excel/add-sheet wbook "Sheet 1")
+                data  [["Germany" "France" "Italy" "Spain" "Austria"]
+                       [83.2      68.0     58.9    47.3    9.0]]]
+            (excel/write-data sheet data)
+
+            (excel/add-pie-chart sheet
+                                 "Population"
+                                 (excel/cell-address-range 5 20 1 5)
+                                 :TOP_RIGHT
+                                 false
+                                 true
+                                 (excel/cell-address-range 1 1 1 5)
+                                 [ (excel/pie-data-series
+                                     (excel/cell-address-range 2 2 1 5)) ])
+
+            (excel/write->file wbook "sample.xlsx")))
+        """)
+     :see-also '(
+        "excel/pie-data-series", "excel/cell-address-range") }
+
+  add-pie-chart [sheet chart-title
+                       chart-addr-range
+                       legend-position
+                       three-dimensional?
+                       direction-bar?
+                       categories-addr-range
+                       series]
+
+    { :pre [(instance-of? :ExcelSheetWriter sheet)] }
+
+    (. sheet :pieChart chart-title
+                       chart-addr-range
+                       legend-position
+                       three-dimensional?
+                       direction-bar?
+                       categories-addr-range
+                       series))
 
 
 (defn
@@ -817,10 +946,10 @@
 
 (defn
   ^{ :arglists '("(line-data-series title smooth? marker data-address-range)")
-     :doc "Build a line data series"
+     :doc "Build a line chart data series"
      :examples '(
         """
-        (excel/line-data-series "Area"
+        (excel/line-data-series "Countries"
                                 false
                                 :SQUARE
                                 (excel/cell-address-range 2 2 1 5))
@@ -834,16 +963,44 @@
 
 (defn
   ^{ :arglists '("(bar-data-series title data-address-range)")
-     :doc "Build a bar data series"
+     :doc "Build a bar chart data series"
      :examples '(
         """
-        (excel/bar-data-series "Area" (excel/cell-address-range 2 2 1 5))
+        (excel/bar-data-series "Countries" (excel/cell-address-range 2 2 1 5))
         """ )
      :see-also '("excel/cell-address-range") }
 
   bar-data-series [title data-address-range]
 
   (. :BarDataSeries :new title data-address-range))
+
+
+(defn
+  ^{ :arglists '("(area-data-series title data-address-range)")
+     :doc "Build an area chart data series"
+     :examples '(
+        """
+        (excel/area-data-series "Countries" (excel/cell-address-range 2 2 1 5))
+        """ )
+     :see-also '("excel/cell-address-range") }
+
+  area-data-series [title data-address-range]
+
+  (. :AreaDataSeries :new title data-address-range))
+
+
+(defn
+  ^{ :arglists '("(pie-data-series data-address-range)")
+     :doc "Build a pie chart data series"
+     :examples '(
+        """
+        (excel/pie-data-series (excel/cell-address-range 2 2 1 5))
+        """ )
+     :see-also '("excel/cell-address-range") }
+
+  pie-data-series [data-address-range]
+
+  (. :PieDataSeries :new "" data-address-range))
 
 
 (defn

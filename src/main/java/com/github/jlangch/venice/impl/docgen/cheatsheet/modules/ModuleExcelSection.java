@@ -102,6 +102,21 @@ public class ModuleExcelSection implements ISectionBuilder {
         all.addSection(wr_image);
         wr_image.addItem(diBuilder.getDocItem("excel/add-image", false));
 
+        final DocSection wr_charts = new DocSection("Writer Charts", id());
+        all.addSection(wr_charts);
+        wr_charts.addItem(diBuilder.getDocItem("excel/add-line-chart", false));
+        wr_charts.addItem(diBuilder.getDocItem("excel/add-bar-chart", false));
+        wr_charts.addItem(diBuilder.getDocItem("excel/add-area-chart", false));
+        wr_charts.addItem(diBuilder.getDocItem("excel/add-pie-chart", false));
+
+        final DocSection wr_charts_util = new DocSection("Writer Charts Util", id());
+        all.addSection(wr_charts_util);
+        wr_charts_util.addItem(diBuilder.getDocItem("excel/line-data-series", false));
+        wr_charts_util.addItem(diBuilder.getDocItem("excel/bar-data-series", false));
+        wr_charts_util.addItem(diBuilder.getDocItem("excel/area-data-series", false));
+        wr_charts_util.addItem(diBuilder.getDocItem("excel/pie-data-series", false));
+        wr_charts_util.addItem(diBuilder.getDocItem("excel/cell-address-range", false));
+
         final DocSection rd = new DocSection("Reader", id());
         all.addSection(rd);
         rd.addItem(diBuilder.getDocItem("excel/open", false));

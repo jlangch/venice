@@ -32,9 +32,11 @@ import org.apache.poi.xssf.usermodel.XSSFFont;
 
 import com.github.jlangch.venice.impl.util.excel.ExcelColumnDef;
 import com.github.jlangch.venice.impl.util.excel.ExcelSheet;
+import com.github.jlangch.venice.util.excel.chart.AreaDataSeries;
 import com.github.jlangch.venice.util.excel.chart.BarDataSeries;
 import com.github.jlangch.venice.util.excel.chart.ImageType;
 import com.github.jlangch.venice.util.excel.chart.LineDataSeries;
+import com.github.jlangch.venice.util.excel.chart.PieDataSeries;
 import com.github.jlangch.venice.util.excel.chart.Position;
 import com.github.jlangch.venice.util.pdf.HtmlColor;
 
@@ -179,15 +181,15 @@ public class ExcelSheetWriter<T> {
             final CellRangeAddr categoriesCellRangeAddr,
             final List<LineDataSeries> series
     ) {
-    	final CellRangeAddr area = areaCellRangeAddr.mapToZeroBased();
+        final CellRangeAddr area = areaCellRangeAddr.mapToZeroBased();
 
-    	sheet.addLineChart(
+        sheet.addLineChart(
                 title,
                 new CellRangeAddr(
-                		area.getFirstRow(),
-                		area.getLastRow()+1,
-                		area.getFirstCol(),
-                		area.getLastCol()+1),
+                        area.getFirstRow(),
+                        area.getLastRow()+1,
+                        area.getFirstCol(),
+                        area.getLastCol()+1),
                 legendPosition,
                 categoryAxisTitle,
                 categoryAxisPosition,
@@ -213,15 +215,15 @@ public class ExcelSheetWriter<T> {
             final CellRangeAddr categoriesCellRangeAddr,
             final List<BarDataSeries> series
     ) {
-    	final CellRangeAddr area = areaCellRangeAddr.mapToZeroBased();
+        final CellRangeAddr area = areaCellRangeAddr.mapToZeroBased();
 
-    	sheet.addBarChart(
+        sheet.addBarChart(
                 title,
                 new CellRangeAddr(
-                		area.getFirstRow(),
-                		area.getLastRow()+1,
-                		area.getFirstCol(),
-                		area.getLastCol()+1),
+                        area.getFirstRow(),
+                        area.getLastRow()+1,
+                        area.getFirstCol(),
+                        area.getLastCol()+1),
                 legendPosition,
                 categoryAxisTitle,
                 categoryAxisPosition,
@@ -229,6 +231,66 @@ public class ExcelSheetWriter<T> {
                 valueAxisPosition,
                 threeDimensional,
                 directionBar,
+                categoriesCellRangeAddr.mapToZeroBased(),
+                series.stream().map(s -> s.mapToZeroBasedAddresses()).collect(Collectors.toList()));
+
+        return this;
+    }
+
+    public ExcelSheetWriter<T> areaChart(
+            final String title,
+            final CellRangeAddr areaCellRangeAddr,
+            final Position legendPosition,
+            final String categoryAxisTitle,
+            final Position categoryAxisPosition,
+            final String valueAxisTitle,
+            final Position valueAxisPosition,
+            final boolean threeDimensional,
+            final CellRangeAddr categoriesCellRangeAddr,
+            final List<AreaDataSeries> series
+    ) {
+        final CellRangeAddr area = areaCellRangeAddr.mapToZeroBased();
+
+        sheet.addAreaChart(
+                title,
+                new CellRangeAddr(
+                        area.getFirstRow(),
+                        area.getLastRow()+1,
+                        area.getFirstCol(),
+                        area.getLastCol()+1),
+                legendPosition,
+                categoryAxisTitle,
+                categoryAxisPosition,
+                valueAxisTitle,
+                valueAxisPosition,
+                threeDimensional,
+                categoriesCellRangeAddr.mapToZeroBased(),
+                series.stream().map(s -> s.mapToZeroBasedAddresses()).collect(Collectors.toList()));
+
+        return this;
+    }
+
+    public ExcelSheetWriter<T> pieChart(
+            final String title,
+            final CellRangeAddr areaCellRangeAddr,
+            final Position legendPosition,
+            final boolean threeDimensional,
+            final boolean varyColors,
+            final CellRangeAddr categoriesCellRangeAddr,
+            final List<PieDataSeries> series
+    ) {
+        final CellRangeAddr area = areaCellRangeAddr.mapToZeroBased();
+
+        sheet.addPieChart(
+                title,
+                new CellRangeAddr(
+                        area.getFirstRow(),
+                        area.getLastRow()+1,
+                        area.getFirstCol(),
+                        area.getLastCol()+1),
+                legendPosition,
+                threeDimensional,
+                varyColors,
                 categoriesCellRangeAddr.mapToZeroBased(),
                 series.stream().map(s -> s.mapToZeroBasedAddresses()).collect(Collectors.toList()));
 
