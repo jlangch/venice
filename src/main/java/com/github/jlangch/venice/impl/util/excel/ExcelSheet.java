@@ -280,11 +280,11 @@ public class ExcelSheet {
     }
 
     public void addImage(
-    		final CellAddr anchor,
-    		final byte[] data,
-    		final ImageType type,
-    		final Double scaleX,
-    		final Double scaleY
+            final CellAddr anchor,
+            final byte[] data,
+            final ImageType type,
+            final Double scaleX,
+            final Double scaleY
     ) {
         switch(type) {
             case PNG:

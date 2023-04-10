@@ -154,7 +154,14 @@ public class ExcelSheetWriter<T> {
         return this;
     }
 
-    public ExcelSheetWriter<T> image(final int row1, final int col1, final byte[] data, final ImageType type, final Double scaleX, final Double scaleY) {
+    public ExcelSheetWriter<T> image(
+            final int row1,
+            final int col1,
+            final byte[] data,
+            final ImageType type,
+            final Double scaleX,
+            final Double scaleY
+    ) {
         sheet.addImage(new CellAddr(row1, col1), data, type, scaleX, scaleY);
         return this;
     }
