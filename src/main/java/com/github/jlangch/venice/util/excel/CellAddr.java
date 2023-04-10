@@ -23,30 +23,35 @@ package com.github.jlangch.venice.util.excel;
 
 public class CellAddr {
 
-	public CellAddr(final int row, final int col) {
-		this.row = row;
-		this.col = col;
-	}
+    public CellAddr(final int row, final int col) {
+        this.row = row;
+        this.col = col;
+    }
 
 
-	public int getRow() {
-		return row;
-	}
+    public int getRow() {
+        return row;
+    }
 
-	public int getCol() {
-		return col;
-	}
-
-
-	public CellAddr mapToZeroBased() {
-		return new CellAddr(row-1, col-1);
-	}
-
-	public CellAddr mapToOneBased() {
-		return new CellAddr(row+1, col+1);
-	}
+    public int getCol() {
+        return col;
+    }
 
 
-	private final int row;
-	private final int col;
+    public CellAddr mapToZeroBased() {
+        return new CellAddr(row-1, col-1);
+    }
+
+    public CellAddr mapToOneBased() {
+        return new CellAddr(row+1, col+1);
+    }
+
+    @Override
+    public String toString() {
+        return String.format("[%d,%d]", row, col);
+    }
+
+
+    private final int row;
+    private final int col;
 }

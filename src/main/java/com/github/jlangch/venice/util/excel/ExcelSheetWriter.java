@@ -155,7 +155,7 @@ public class ExcelSheetWriter<T> {
     }
 
     public ExcelSheetWriter<T> image(final int row1, final int col1, final byte[] data, final ImageType type, final Double scaleX, final Double scaleY) {
-        sheet.setImage(row1-1, col1-1, data, type, scaleX, scaleY);
+        sheet.addImage(new CellAddr(row1, col1).mapToZeroBased(), data, type, scaleX, scaleY);
         return this;
     }
 
@@ -171,16 +171,16 @@ public class ExcelSheetWriter<T> {
             final CellRangeAddr categoriesCellRangeAddr,
             final List<LineDataSeries> series
     ) {
-        sheet.setLineChart(
-        		title,
-        		areaCellRangeAddr.mapToZeroBasedAddresses(),
+        sheet.addLineChart(
+                title,
+                areaCellRangeAddr.mapToZeroBased(),
                 legendPosition,
                 categoryAxisTitle,
                 categoryAxisPosition,
                 valueAxisTitle,
                 valueAxisPosition,
                 threeDimensional,
-                categoriesCellRangeAddr.mapToZeroBasedAddresses(),
+                categoriesCellRangeAddr.mapToZeroBased(),
                 series.stream().map(s -> s.mapToZeroBasedAddresses()).collect(Collectors.toList()));
 
         return this;

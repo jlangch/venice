@@ -25,44 +25,56 @@ import com.github.jlangch.venice.util.excel.CellRangeAddr;
 
 public class LineDataSeries {
 
-	public LineDataSeries(
-			final String title,
-			final boolean smooth,
-			final MarkerStyle markerStyle,
-			final CellRangeAddr cellRangeAddr
-	) {
-		this.title = title;
-		this.smooth = smooth;
-		this.markerStyle = markerStyle;
-		this.cellRangeAddr = cellRangeAddr;
-	}
+    public LineDataSeries(
+            final String title,
+            final boolean smooth,
+            final MarkerStyle markerStyle,
+            final CellRangeAddr cellRangeAddr
+    ) {
+        this.title = title;
+        this.smooth = smooth;
+        this.markerStyle = markerStyle;
+        this.cellRangeAddr = cellRangeAddr;
+    }
 
 
-	public String getTitle() {
-		return title;
-	}
+    public String getTitle() {
+        return title;
+    }
 
-	public boolean isSmooth() {
-		return smooth;
-	}
+    public boolean isSmooth() {
+        return smooth;
+    }
 
-	public MarkerStyle getMarkerStyle() {
-		return markerStyle;
-	}
+    public MarkerStyle getMarkerStyle() {
+        return markerStyle;
+    }
 
-	public CellRangeAddr getCellRangeAddr() {
-		return cellRangeAddr;
-	}
-
-
-	public LineDataSeries mapToZeroBasedAddresses() {
-		return new LineDataSeries(title, smooth, markerStyle, cellRangeAddr.mapToZeroBasedAddresses());
-	}
+    public CellRangeAddr getCellRangeAddr() {
+        return cellRangeAddr;
+    }
 
 
+    public LineDataSeries mapToZeroBasedAddresses() {
+        return new LineDataSeries(
+                    title,
+                    smooth,
+                    markerStyle,
+                    cellRangeAddr.mapToZeroBased());
+    }
 
-	private final String title;
-	private final boolean smooth;
-	private final MarkerStyle markerStyle;
+    public LineDataSeries mapToOneBasedAddresses() {
+        return new LineDataSeries(
+                    title,
+                    smooth,
+                    markerStyle,
+                    cellRangeAddr.mapToOneBased());
+    }
+
+
+
+    private final String title;
+    private final boolean smooth;
+    private final MarkerStyle markerStyle;
     private final CellRangeAddr cellRangeAddr;
 }

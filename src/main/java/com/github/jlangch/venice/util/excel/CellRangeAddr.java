@@ -23,42 +23,48 @@ package com.github.jlangch.venice.util.excel;
 
 public class CellRangeAddr {
 
-	public CellRangeAddr(final int firstRow, final int lastRow, final int firstCol, final int lastCol) {
-		this.firstRow = firstRow;
-		this.lastRow = lastRow;
-		this.firstCol = firstCol;
-		this.lastCol = lastCol;
-	}
+    public CellRangeAddr(final int firstRow, final int lastRow, final int firstCol, final int lastCol) {
+        this.firstRow = firstRow;
+        this.lastRow = lastRow;
+        this.firstCol = firstCol;
+        this.lastCol = lastCol;
+    }
 
 
-	public int getFirstRow() {
-		return firstRow;
-	}
+    public int getFirstRow() {
+        return firstRow;
+    }
 
-	public int getLastRow() {
-		return lastRow;
-	}
+    public int getLastRow() {
+        return lastRow;
+    }
 
-	public int getFirstCol() {
-		return firstCol;
-	}
+    public int getFirstCol() {
+        return firstCol;
+    }
 
-	public int getLastCol() {
-		return lastCol;
-	}
-
-
-	public CellRangeAddr mapToZeroBasedAddresses() {
-		return new CellRangeAddr(firstRow-1, lastRow-1, firstCol-1, lastCol-1);
-	}
-
-	public CellRangeAddr mapToOneBasedAddresses() {
-		return new CellRangeAddr(firstRow+1, lastRow+1, firstCol+1, lastCol+1);
-	}
+    public int getLastCol() {
+        return lastCol;
+    }
 
 
-	private final int firstRow;
-	private final int lastRow;
-	private final int firstCol;
-	private final int lastCol;
+    public CellRangeAddr mapToZeroBased() {
+        return new CellRangeAddr(firstRow-1, lastRow-1, firstCol-1, lastCol-1);
+    }
+
+    public CellRangeAddr mapToOneBased() {
+        return new CellRangeAddr(firstRow+1, lastRow+1, firstCol+1, lastCol+1);
+    }
+
+
+    @Override
+    public String toString() {
+        return String.format("[[%d,%d],[%d,%d]]", firstRow, firstCol, lastRow, lastCol);
+    }
+
+
+    private final int firstRow;
+    private final int lastRow;
+    private final int firstCol;
+    private final int lastCol;
 }

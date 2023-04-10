@@ -70,6 +70,7 @@ import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 
 import com.github.jlangch.venice.ExcelException;
 import com.github.jlangch.venice.impl.util.TimeUtil;
+import com.github.jlangch.venice.util.excel.CellAddr;
 import com.github.jlangch.venice.util.excel.CellRangeAddr;
 import com.github.jlangch.venice.util.excel.chart.ImageType;
 import com.github.jlangch.venice.util.excel.chart.LineDataSeries;
@@ -278,24 +279,29 @@ public class ExcelSheet {
         setCellValue(getCellCreate(row, col), value, "date");
     }
 
-    public void setImage(final int row, final int col, final byte[] data, final ImageType type, final Double scaleX, final Double scaleY) {
+    public void addImage(
+    		final CellAddr anchor,
+    		final byte[] data,
+    		final ImageType type,
+    		final Double scaleX,
+    		final Double scaleY
+    ) {
         switch(type) {
             case PNG:
-                setImage(row, col, data, Workbook.PICTURE_TYPE_PNG, scaleX, scaleY);
+                setImage(anchor, data, Workbook.PICTURE_TYPE_PNG, scaleX, scaleY);
                 break;
             case JPEG:
-                setImage(row, col, data, Workbook.PICTURE_TYPE_JPEG, scaleX, scaleY);
+                setImage(anchor, data, Workbook.PICTURE_TYPE_JPEG, scaleX, scaleY);
                 break;
             default:
                 throw new ExcelException(String.format(
-                        "Excel cell [%d,%d] in sheet '%s': Invalid image type. Use PNG or JPEG",
-                        row,
-                        col,
+                        "Excel cell %s in sheet '%s': Invalid image type. Use PNG or JPEG",
+                        anchor.mapToOneBased(),
                         sheet.getSheetName()));
         }
     }
 
-    public void setLineChart(
+    public void addLineChart(
             final String title,
             final CellRangeAddr areaCellRangeAddr,
             final Position legendPosition,
@@ -328,38 +334,38 @@ public class ExcelSheet {
 
         final XDDFCategoryAxis categoryAxis = chart.createCategoryAxis(toAxisPosition(categoryAxisPosition));
         categoryAxis.setTitle(categoryAxisTitle);
-		final XDDFValueAxis valueAxis = chart.createValueAxis(toAxisPosition(valueAxisPosition));
-		valueAxis.setTitle(valueAxisTitle);
+        final XDDFValueAxis valueAxis = chart.createValueAxis(toAxisPosition(valueAxisPosition));
+        valueAxis.setTitle(valueAxisTitle);
 
-		final XDDFDataSource<String> categories = XDDFDataSourcesFactory.fromStringCellRange(
-													(XSSFSheet)sheet,
-													new CellRangeAddress(
-															categoriesCellRangeAddr.getFirstRow(),
-															categoriesCellRangeAddr.getLastRow(),
-															categoriesCellRangeAddr.getFirstCol(),
-															categoriesCellRangeAddr.getLastCol()));
+        final XDDFDataSource<String> categories = XDDFDataSourcesFactory.fromStringCellRange(
+                                                    (XSSFSheet)sheet,
+                                                    new CellRangeAddress(
+                                                            categoriesCellRangeAddr.getFirstRow(),
+                                                            categoriesCellRangeAddr.getLastRow(),
+                                                            categoriesCellRangeAddr.getFirstCol(),
+                                                            categoriesCellRangeAddr.getLastCol()));
 
-		final XDDFLineChartData data = (XDDFLineChartData)chart.createData(
-											threeDimensional ? ChartTypes.LINE3D :  ChartTypes.LINE,
-											categoryAxis,
-											valueAxis);
+        final XDDFLineChartData data = (XDDFLineChartData)chart.createData(
+                                            threeDimensional ? ChartTypes.LINE3D :  ChartTypes.LINE,
+                                            categoryAxis,
+                                            valueAxis);
 
-		for(LineDataSeries s : series) {
-			final XDDFNumericalDataSource<Double> values = XDDFDataSourcesFactory.fromNumericCellRange(
-																	(XSSFSheet)sheet,
-																	new CellRangeAddress(
-																			s.getCellRangeAddr().getFirstRow(),
-																			s.getCellRangeAddr().getLastRow(),
-																			s.getCellRangeAddr().getFirstCol(),
-																			s.getCellRangeAddr().getLastCol()));
+        for(LineDataSeries s : series) {
+            final XDDFNumericalDataSource<Double> values = XDDFDataSourcesFactory.fromNumericCellRange(
+                                                                    (XSSFSheet)sheet,
+                                                                    new CellRangeAddress(
+                                                                            s.getCellRangeAddr().getFirstRow(),
+                                                                            s.getCellRangeAddr().getLastRow(),
+                                                                            s.getCellRangeAddr().getFirstCol(),
+                                                                            s.getCellRangeAddr().getLastCol()));
 
-			final XDDFLineChartData.Series series_ = (XDDFLineChartData.Series)data.addSeries(categories, values);
-			series_.setTitle(s.getTitle(), null);
-			series_.setSmooth(s.isSmooth());
-			series_.setMarkerStyle(toMarkerStyle(s.getMarkerStyle()));
-		}
+            final XDDFLineChartData.Series series_ = (XDDFLineChartData.Series)data.addSeries(categories, values);
+            series_.setTitle(s.getTitle(), null);
+            series_.setSmooth(s.isSmooth());
+            series_.setMarkerStyle(toMarkerStyle(s.getMarkerStyle()));
+        }
 
-		chart.plot(data);
+        chart.plot(data);
     }
 
     public void setColumnWidthInPoints(final int col, final int width) {
@@ -469,12 +475,11 @@ public class ExcelSheet {
     }
 
     private void setImage(
-            final int row,
-            final int col,
+            final CellAddr anchorAddr,
             final byte[] data,
             final int imageType,
-               final Double scaleX,
-               final Double scaleY
+            final Double scaleX,
+            final Double scaleY
     ) {
         final CreationHelper helper = sheet.getWorkbook().getCreationHelper();
         final Drawing<?> drawing = sheet.createDrawingPatriarch();
@@ -482,8 +487,8 @@ public class ExcelSheet {
         final int pictureIdx = sheet.getWorkbook().addPicture(data, imageType);
 
         final ClientAnchor anchor = helper.createClientAnchor();
-        anchor.setCol1(col);
-        anchor.setRow1(row);
+        anchor.setCol1(anchorAddr.getCol());
+        anchor.setRow1(anchorAddr.getRow());
 
         final Picture pict = drawing.createPicture(anchor, pictureIdx);
         if (scaleX == null || scaleY== null) {
@@ -629,9 +634,8 @@ public class ExcelSheet {
                 return null;
             default:
                 throw new ExcelException(String.format(
-                    "Excel cell [%d,%d] in sheet '%s': failed to read value",
-                    cell.getRowIndex(),
-                    cell.getColumnIndex(),
+                    "Excel cell %s in sheet '%s': failed to read value",
+                    new CellAddr(cell.getRowIndex(),cell.getColumnIndex()).mapToOneBased(),
                     sheet.getSheetName()));
         }
     }
@@ -656,9 +660,8 @@ public class ExcelSheet {
                         : Double.toString(cellValue.getNumberValue());
             default:
                 throw new ExcelException(String.format(
-                        "Excel cell [%d,%d] in sheet '%s': does not contain a string value",
-                        cell.getRowIndex(),
-                        cell.getColumnIndex(),
+                        "Excel cell %s in sheet '%s': does not contain a string value",
+                        new CellAddr(cell.getRowIndex(),cell.getColumnIndex()).mapToOneBased(),
                         sheet.getSheetName()));
         }
     }
@@ -678,9 +681,8 @@ public class ExcelSheet {
         }
         else {
             throw new ExcelException(String.format(
-                "Excel cell [%d,%d] in sheet '%s': does not contain a boolean value",
-                cell.getRowIndex(),
-                cell.getColumnIndex(),
+                "Excel cell %s in sheet '%s': does not contain a boolean value",
+                new CellAddr(cell.getRowIndex(),cell.getColumnIndex()).mapToOneBased(),
                 sheet.getSheetName()));
         }
     }
@@ -700,9 +702,8 @@ public class ExcelSheet {
         }
         else {
             throw new ExcelException(String.format(
-                "Excel cell [%d,%d] in sheet '%s': does not contain an integer value",
-                cell.getRowIndex(),
-                cell.getColumnIndex(),
+                "Excel cell [%s in sheet '%s': does not contain an integer value",
+                new CellAddr(cell.getRowIndex(),cell.getColumnIndex()).mapToOneBased(),
                 sheet.getSheetName()));
         }
     }
@@ -722,10 +723,9 @@ public class ExcelSheet {
         }
         else {
             throw new ExcelException(String.format(
-                    "Excel cell [%d,%d] in sheet '%s': does not contain a float value. "
+                    "Excel cell %s in sheet '%s': does not contain a float value. "
                         + "It actually holds a %s.",
-                    cell.getRowIndex(),
-                    cell.getColumnIndex(),
+                    new CellAddr(cell.getRowIndex(),cell.getColumnIndex()).mapToOneBased(),
                     sheet.getSheetName(),
                     cell.getCellType().name()));
         }
@@ -750,20 +750,18 @@ public class ExcelSheet {
                 case NUMERIC: return cellEval.getLocalDateTimeCellValue();
                 default:
                     throw new ExcelException(String.format(
-                            "Excel formula cell [%d,%d] in sheet '%s': does not contain a date. "
+                            "Excel formula cell %s in sheet '%s': does not contain a date. "
                                 + "It actually holds a %s.",
-                            cell.getRowIndex(),
-                            cell.getColumnIndex(),
+                            new CellAddr(cell.getRowIndex(),cell.getColumnIndex()).mapToOneBased(),
                             sheet.getSheetName(),
                             cell.getCellType().name()));
             }
         }
         else {
             throw new ExcelException(String.format(
-                    "Excel cell [%d,%d] in sheet '%s': does not contain a date. "
+                    "Excel cell %s in sheet '%s': does not contain a date. "
                         + "It actually holds a %s.",
-                    cell.getRowIndex(),
-                    cell.getColumnIndex(),
+                    new CellAddr(cell.getRowIndex(),cell.getColumnIndex()).mapToOneBased(),
                     sheet.getSheetName(),
                     cell.getCellType().name()));
         }
@@ -781,10 +779,9 @@ public class ExcelSheet {
         }
         else {
             throw new ExcelException(String.format(
-                    "Excel cell [%d,%d] in sheet '%s': does not contain a formula. "
+                    "Excel cell %s in sheet '%s': does not contain a formula. "
                         + "It actually holds a %s.",
-                    cell.getRowIndex(),
-                    cell.getColumnIndex(),
+                    new CellAddr(cell.getRowIndex(),cell.getColumnIndex()).mapToOneBased(),
                     sheet.getSheetName(),
                     cell.getCellType().name()));
         }
@@ -830,57 +827,57 @@ public class ExcelSheet {
     }
 
     private LegendPosition toLegendPosition(final Position pos) {
-    	if (pos == null) {
-    		return LegendPosition.TOP;
-    	}
-    	else {
-	        switch(pos) {
-		        case BOTTOM:    return LegendPosition.BOTTOM;
-		        case LEFT:      return LegendPosition.LEFT;
-		        case RIGHT:     return LegendPosition.RIGHT;
-		        case TOP:       return LegendPosition.TOP;
-		        case TOP_RIGHT: return LegendPosition.TOP_RIGHT;
-		        default:        return LegendPosition.TOP;
-	        }
-	    }
+        if (pos == null) {
+            return LegendPosition.TOP;
+        }
+        else {
+            switch(pos) {
+                case BOTTOM:    return LegendPosition.BOTTOM;
+                case LEFT:      return LegendPosition.LEFT;
+                case RIGHT:     return LegendPosition.RIGHT;
+                case TOP:       return LegendPosition.TOP;
+                case TOP_RIGHT: return LegendPosition.TOP_RIGHT;
+                default:        return LegendPosition.TOP;
+            }
+        }
     }
 
     private AxisPosition toAxisPosition(final Position pos) {
-    	if (pos == null) {
-    		return AxisPosition.TOP;
-    	}
-    	else {
-	        switch(pos) {
-		        case BOTTOM:    return AxisPosition.BOTTOM;
-		        case LEFT:      return AxisPosition.LEFT;
-		        case RIGHT:     return AxisPosition.RIGHT;
-		        case TOP:       return AxisPosition.TOP;
-		        case TOP_RIGHT: return AxisPosition.TOP;
-		        default:        return AxisPosition.TOP;
-	        }
-	    }
+        if (pos == null) {
+            return AxisPosition.TOP;
+        }
+        else {
+            switch(pos) {
+                case BOTTOM:    return AxisPosition.BOTTOM;
+                case LEFT:      return AxisPosition.LEFT;
+                case RIGHT:     return AxisPosition.RIGHT;
+                case TOP:       return AxisPosition.TOP;
+                case TOP_RIGHT: return AxisPosition.TOP;
+                default:        return AxisPosition.TOP;
+            }
+        }
     }
 
     private org.apache.poi.xddf.usermodel.chart.MarkerStyle toMarkerStyle(final MarkerStyle style) {
-    	if (style == null) {
-    		return org.apache.poi.xddf.usermodel.chart.MarkerStyle.NONE;
-    	}
-    	else {
-	        switch(style) {
-		        case CIRCLE:	return org.apache.poi.xddf.usermodel.chart.MarkerStyle.CIRCLE;
-		        case DASH:		return org.apache.poi.xddf.usermodel.chart.MarkerStyle.DASH;
-		        case DIAMOND:	return org.apache.poi.xddf.usermodel.chart.MarkerStyle.DIAMOND;
-		        case DOT:		return org.apache.poi.xddf.usermodel.chart.MarkerStyle.DOT;
-		        case NONE:		return org.apache.poi.xddf.usermodel.chart.MarkerStyle.NONE;
-		        case PICTURE:	return org.apache.poi.xddf.usermodel.chart.MarkerStyle.PICTURE;
-		        case PLUS:		return org.apache.poi.xddf.usermodel.chart.MarkerStyle.PLUS;
-		        case SQUARE:	return org.apache.poi.xddf.usermodel.chart.MarkerStyle.SQUARE;
-		        case STAR:		return org.apache.poi.xddf.usermodel.chart.MarkerStyle.STAR;
-		        case TRIANGLE:	return org.apache.poi.xddf.usermodel.chart.MarkerStyle.TRIANGLE;
-		        case X:			return org.apache.poi.xddf.usermodel.chart.MarkerStyle.X;
-		        default:        return org.apache.poi.xddf.usermodel.chart.MarkerStyle.NONE;
-	        }
-	    }
+        if (style == null) {
+            return org.apache.poi.xddf.usermodel.chart.MarkerStyle.NONE;
+        }
+        else {
+            switch(style) {
+                case CIRCLE:    return org.apache.poi.xddf.usermodel.chart.MarkerStyle.CIRCLE;
+                case DASH:      return org.apache.poi.xddf.usermodel.chart.MarkerStyle.DASH;
+                case DIAMOND:   return org.apache.poi.xddf.usermodel.chart.MarkerStyle.DIAMOND;
+                case DOT:       return org.apache.poi.xddf.usermodel.chart.MarkerStyle.DOT;
+                case NONE:      return org.apache.poi.xddf.usermodel.chart.MarkerStyle.NONE;
+                case PICTURE:   return org.apache.poi.xddf.usermodel.chart.MarkerStyle.PICTURE;
+                case PLUS:      return org.apache.poi.xddf.usermodel.chart.MarkerStyle.PLUS;
+                case SQUARE:    return org.apache.poi.xddf.usermodel.chart.MarkerStyle.SQUARE;
+                case STAR:      return org.apache.poi.xddf.usermodel.chart.MarkerStyle.STAR;
+                case TRIANGLE:  return org.apache.poi.xddf.usermodel.chart.MarkerStyle.TRIANGLE;
+                case X:          return org.apache.poi.xddf.usermodel.chart.MarkerStyle.X;
+                default:        return org.apache.poi.xddf.usermodel.chart.MarkerStyle.NONE;
+            }
+        }
     }
 
     // The Excel's magic conversion factor
