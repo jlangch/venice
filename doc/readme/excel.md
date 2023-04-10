@@ -459,7 +459,7 @@ for formulas:
 
 #### Charts
 
-**Line Charts**
+**Line Chart**
 
 ```clojure
 (do
@@ -507,7 +507,123 @@ for formulas:
 
 <img src="https://github.com/jlangch/venice/blob/master/doc/assets/excel/excel-write-020.png" width="400">
 
+
+**Bar Chart**
+
+```clojure
+(do
+  (load-module :excel)
+  (let [wbook (excel/writer :xlsx)
+        sheet (excel/add-sheet wbook "Sheet 1")
+        data  [[""       "Bears" "Dolphins" "Whales"]
+               ["2017"        8        150       80 ]
+               ["2018"       54         77       54 ]
+               ["2019"       93         32      100 ]
+               ["2020"      116         11       76 ]
+               ["2021"      137          6       93 ]
+               ["2022"      184          1       72 ]]]
+    (excel/write-data sheet data)
+
+    (excel/add-bar-chart sheet
+                         "Bears Population"
+                         (excel/cell-address-range 10 25 1 7)
+                         :RIGHT
+                         "Year"
+                         :BOTTOM
+                         "Population"
+                         :LEFT
+                         false
+                         false
+                         :STANDARD
+                         false
+                         (excel/cell-address-range 2 7 1 1)
+                         [ (excel/bar-data-series
+                             "Bears"
+                             (excel/cell-address-range 2 7 2 2))
+                           (excel/bar-data-series
+                             "Dolphins"
+                             (excel/cell-address-range 2 7 3 3))
+                           (excel/bar-data-series
+                             "Whales"
+                             (excel/cell-address-range 2 7 4 4)) ])
+
+    (excel/write->file wbook "sample.xlsx")))
+```
+
+<img src="https://github.com/jlangch/venice/blob/master/doc/assets/excel/excel-write-021.png" width="400">
+
+
+**Area Chart**
+
+```clojure
+(do
+  (load-module :excel)
+  (let [wbook (excel/writer :xlsx)
+        sheet (excel/add-sheet wbook "Sheet 1")
+        data  [[""       "Bears" "Dolphins" "Whales"]
+               ["2017"        8        150       80 ]
+               ["2018"       54         77       54 ]
+               ["2019"       93         32      100 ]
+               ["2020"      116         11       76 ]
+               ["2021"      137          6       93 ]
+               ["2022"      184          1       72 ]]]
+    (excel/write-data sheet data)
+
+    (excel/add-area-chart sheet
+                          "Bears Population"
+                          (excel/cell-address-range 10 25 1 7)
+                          :RIGHT
+                          "Year"
+                          :BOTTOM
+                          "Population"
+                          :LEFT
+                          false
+                          (excel/cell-address-range 2 7 1 1)
+                          [ (excel/area-data-series
+                              "Bears"
+                              (excel/cell-address-range 2 7 2 2)) ])
+
+    (excel/write->file wbook "sample.xlsx")))
+```
+
+<img src="https://github.com/jlangch/venice/blob/master/doc/assets/excel/excel-write-022.png" width="400">
+
+
+**Pie Chart**
+
+```clojure
+(do
+  (load-module :excel)
+  (let [wbook (excel/writer :xlsx)
+        sheet (excel/add-sheet wbook "Sheet 1")
+        data  [[""       "Bears" "Dolphins" "Whales"]
+               ["2017"        8        150       80 ]
+               ["2018"       54         77       54 ]
+               ["2019"       93         32      100 ]
+               ["2020"      116         11       76 ]
+               ["2021"      137          6       93 ]
+               ["2022"      184          1       72 ]]]
+    (excel/write-data sheet data)
+
+    (excel/add-pie-chart sheet
+                         "Wildlife Population 2017"
+                         (excel/cell-address-range 10 25 1 7)
+                         :RIGHT
+                         false
+                         true
+                         (excel/cell-address-range 1 1 2 4)
+                         [ (excel/pie-data-series
+                             (excel/cell-address-range 2 2 2 4)) ])
+
+    (excel/write->file wbook "sample.xlsx")))
+```
+
+<img src="https://github.com/jlangch/venice/blob/master/doc/assets/excel/excel-write-023.png" width="400">
+
 [top](#content)
+
+
+
 
 ### Styling
 
