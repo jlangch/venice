@@ -23,6 +23,7 @@ package com.github.jlangch.venice.util.excel.chart;
 
 import com.github.jlangch.venice.util.excel.CellRangeAddr;
 
+
 public class LineDataSeries {
 
     public LineDataSeries(

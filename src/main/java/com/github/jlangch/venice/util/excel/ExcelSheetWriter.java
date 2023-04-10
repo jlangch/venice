@@ -178,9 +178,15 @@ public class ExcelSheetWriter<T> {
             final CellRangeAddr categoriesCellRangeAddr,
             final List<LineDataSeries> series
     ) {
-        sheet.addLineChart(
+    	final CellRangeAddr area = areaCellRangeAddr.mapToZeroBased();
+
+    	sheet.addLineChart(
                 title,
-                areaCellRangeAddr.mapToZeroBased(),
+                new CellRangeAddr(
+                		area.getFirstRow(),
+                		area.getLastRow()+1,
+                		area.getFirstCol(),
+                		area.getLastCol()+1),
                 legendPosition,
                 categoryAxisTitle,
                 categoryAxisPosition,
