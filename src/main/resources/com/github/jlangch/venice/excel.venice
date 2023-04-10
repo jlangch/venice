@@ -515,6 +515,7 @@
                                value-axis-title
                                value-axis-position
                                three-dimensional?
+                               vary-colors?
                                categories-addr-range
                                series)")
      :doc
@@ -527,31 +528,41 @@
           (load-module :excel)
           (let [wbook (excel/writer :xlsx)
                 sheet (excel/add-sheet wbook "Sheet 1")
-                data  [["Germany" "France" "Italy" "Spain" "Austria"]
-                       [356       644      301      506    84]
-                       [83.2      68.0     58.9    47.3    9.0]]]
+                data  [[""       "Bears" "Dolphins" "Whales"]
+                       ["2017"        8        150       80 ]
+                       ["2018"       54         77       54 ]
+                       ["2019"       93         32      100 ]
+                       ["2020"      116         11       76 ]
+                       ["2021"      137          6       93 ]
+                       ["2022"      184          1       72 ]]]
             (excel/write-data sheet data)
 
             (excel/add-line-chart sheet
-                                  "Population & Area by Country"
-                                  (excel/cell-address-range 5 20 1 5)
+                                  "Wildlife Population"
+                                  (excel/cell-address-range 10 25 1 10)
                                   :RIGHT
-                                  "Country"
+                                  "Year"
                                   :BOTTOM
-                                  "Area & Population"
+                                  "Population"
                                   :LEFT
                                   false
-                                  (excel/cell-address-range 1 1 1 5)
+                                  true
+                                  (excel/cell-address-range 2 7 1 1)
                                   [ (excel/line-data-series
-                                       "Area"
-                                       false
-                                       :SQUARE
-                                       (excel/cell-address-range 2 2 1 5))
-                                    (excel/line-data-series
-                                       "Population"
+                                       "Bears"
                                        true
                                        :CIRCLE
-                                       (excel/cell-address-range 3 3 1 5)) ])
+                                       (excel/cell-address-range 2 7 2 2))
+                                    (excel/line-data-series
+                                       "Dolphins"
+                                       true
+                                       :CIRCLE
+                                       (excel/cell-address-range 2 7 3 3))
+                                    (excel/line-data-series
+                                       "Whales"
+                                       true
+                                       :CIRCLE
+                                       (excel/cell-address-range 2 7 4 4)) ])
 
             (excel/write->file wbook "sample.xlsx")))
         """)
@@ -566,6 +577,7 @@
                         value-axis-title
                         value-axis-position
                         three-dimensional?
+                        vary-colors?
                         categories-addr-range
                         series]
 
@@ -579,6 +591,7 @@
                         value-axis-title
                         value-axis-position
                         three-dimensional?
+                        vary-colors?
                         categories-addr-range
                         series))
 
@@ -595,6 +608,7 @@
                               three-dimensional?
                               direction-bar?
                               grouping
+                              vary-colors?
                               categories-addr-range
                               series)")
      :doc
@@ -607,29 +621,37 @@
           (load-module :excel)
           (let [wbook (excel/writer :xlsx)
                 sheet (excel/add-sheet wbook "Sheet 1")
-                data  [["Germany" "France" "Italy" "Spain" "Austria"]
-                       [356       644      301      506    84]
-                       [83.2      68.0     58.9    47.3    9.0]]]
+                data  [[""       "Bears" "Dolphins" "Whales"]
+                       ["2017"        8        150       80 ]
+                       ["2018"       54         77       54 ]
+                       ["2019"       93         32      100 ]
+                       ["2020"      116         11       76 ]
+                       ["2021"      137          6       93 ]
+                       ["2022"      184          1       72 ]]]
             (excel/write-data sheet data)
 
             (excel/add-bar-chart sheet
-                                 "Population & Area by Country"
-                                 (excel/cell-address-range 5 20 1 5)
+                                 "Bears Population"
+                                 (excel/cell-address-range 10 25 1 7)
                                  :RIGHT
-                                 "Country"
+                                 "Year"
                                  :BOTTOM
-                                 "Area & Population"
+                                 "Population"
                                  :LEFT
                                  false
                                  false
                                  :STANDARD
-                                 (excel/cell-address-range 1 1 1 5)
+                                 false
+                                 (excel/cell-address-range 2 7 1 1)
                                  [ (excel/bar-data-series
-                                     "Area"
-                                     (excel/cell-address-range 2 2 1 5))
+                                     "Bears"
+                                     (excel/cell-address-range 2 7 2 2))
                                    (excel/bar-data-series
-                                     "Population"
-                                     (excel/cell-address-range 3 3 1 5)) ])
+                                     "Dolphins"
+                                     (excel/cell-address-range 2 7 3 3))
+                                   (excel/bar-data-series
+                                     "Whales"
+                                     (excel/cell-address-range 2 7 4 4)) ])
 
             (excel/write->file wbook "sample.xlsx")))
         """)
@@ -646,6 +668,7 @@
                        three-dimensional?
                        direction-bar?
                        grouping
+                       vary-colors?
                        categories-addr-range
                        series]
 
@@ -661,6 +684,7 @@
                        three-dimensional?
                        direction-bar?
                        grouping
+                       vary-colors?
                        categories-addr-range
                        series))
 
@@ -687,27 +711,28 @@
           (load-module :excel)
           (let [wbook (excel/writer :xlsx)
                 sheet (excel/add-sheet wbook "Sheet 1")
-                data  [["Germany" "France" "Italy" "Spain" "Austria"]
-                       [356       644      301      506    84]
-                       [83.2      68.0     58.9    47.3    9.0]]]
+                data  [[""       "Bears" "Dolphins" "Whales"]
+                       ["2017"        8        150       80 ]
+                       ["2018"       54         77       54 ]
+                       ["2019"       93         32      100 ]
+                       ["2020"      116         11       76 ]
+                       ["2021"      137          6       93 ]
+                       ["2022"      184          1       72 ]]]
             (excel/write-data sheet data)
 
             (excel/add-area-chart sheet
-                                  "Population & Area by Country"
-                                  (excel/cell-address-range 5 20 1 5)
+                                  "Bears Population"
+                                  (excel/cell-address-range 10 25 1 7)
                                   :RIGHT
-                                  "Country"
+                                  "Year"
                                   :BOTTOM
-                                  "Area & Population"
+                                  "Population"
                                   :LEFT
                                   false
-                                  (excel/cell-address-range 1 1 1 5)
+                                  (excel/cell-address-range 2 7 1 1)
                                   [ (excel/area-data-series
-                                      "Area"
-                                      (excel/cell-address-range 2 2 1 5))
-                                    (excel/area-data-series
-                                      "Population"
-                                      (excel/cell-address-range 3 3 1 5)) ])
+                                      "Bears"
+                                      (excel/cell-address-range 2 7 2 2)) ])
 
             (excel/write->file wbook "sample.xlsx")))
         """)
@@ -758,19 +783,24 @@
           (load-module :excel)
           (let [wbook (excel/writer :xlsx)
                 sheet (excel/add-sheet wbook "Sheet 1")
-                data  [["Germany" "France" "Italy" "Spain" "Austria"]
-                       [83.2      68.0     58.9    47.3    9.0]]]
+                data  [[""       "Bears" "Dolphins" "Whales"]
+                       ["2017"        8        150       80 ]
+                       ["2018"       54         77       54 ]
+                       ["2019"       93         32      100 ]
+                       ["2020"      116         11       76 ]
+                       ["2021"      137          6       93 ]
+                       ["2022"      184          1       72 ]]]
             (excel/write-data sheet data)
 
             (excel/add-pie-chart sheet
-                                 "Population"
-                                 (excel/cell-address-range 5 20 1 5)
+                                 "Wildlife Population 2017"
+                                 (excel/cell-address-range 10 25 1 7)
                                  :RIGHT
                                  false
                                  true
-                                 (excel/cell-address-range 1 1 1 5)
+                                 (excel/cell-address-range 1 1 2 4)
                                  [ (excel/pie-data-series
-                                     (excel/cell-address-range 2 2 1 5)) ])
+                                     (excel/cell-address-range 2 2 2 4)) ])
 
             (excel/write->file wbook "sample.xlsx")))
         """)
@@ -781,7 +811,7 @@
                        chart-addr-range
                        legend-position
                        three-dimensional?
-                       direction-bar?
+                       vary-colors?
                        categories-addr-range
                        series]
 
@@ -791,7 +821,7 @@
                        chart-addr-range
                        legend-position
                        three-dimensional?
-                       direction-bar?
+                       vary-colors?
                        categories-addr-range
                        series))
 

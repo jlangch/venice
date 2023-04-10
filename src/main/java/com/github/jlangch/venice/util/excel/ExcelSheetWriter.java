@@ -179,6 +179,7 @@ public class ExcelSheetWriter<T> {
             final String valueAxisTitle,
             final Position valueAxisPosition,
             final boolean threeDimensional,
+            final boolean varyColors,
             final CellRangeAddr categoriesCellRangeAddr,
             final List<LineDataSeries> series
     ) {
@@ -197,6 +198,7 @@ public class ExcelSheetWriter<T> {
                 valueAxisTitle,
                 valueAxisPosition,
                 threeDimensional,
+                varyColors,
                 categoriesCellRangeAddr.mapToZeroBased(),
                 series.stream().map(s -> s.mapToZeroBasedAddresses()).collect(Collectors.toList()));
 
@@ -214,6 +216,7 @@ public class ExcelSheetWriter<T> {
             final boolean threeDimensional,
             final boolean directionBar,
             final BarGrouping grouping,
+            final boolean varyColors,
             final CellRangeAddr categoriesCellRangeAddr,
             final List<BarDataSeries> series
     ) {
@@ -234,6 +237,7 @@ public class ExcelSheetWriter<T> {
                 threeDimensional,
                 directionBar,
                 grouping,
+                varyColors,
                 categoriesCellRangeAddr.mapToZeroBased(),
                 series.stream().map(s -> s.mapToZeroBasedAddresses()).collect(Collectors.toList()));
 

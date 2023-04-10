@@ -49,6 +49,7 @@ import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.ss.usermodel.Workbook;
 import org.apache.poi.ss.util.CellAddress;
 import org.apache.poi.ss.util.CellRangeAddress;
+import org.apache.poi.xddf.usermodel.chart.AxisCrossBetween;
 import org.apache.poi.xddf.usermodel.chart.AxisPosition;
 import org.apache.poi.xddf.usermodel.chart.BarDirection;
 import org.apache.poi.xddf.usermodel.chart.ChartTypes;
@@ -321,6 +322,7 @@ public class ExcelSheet {
             final String valueAxisTitle,
             final Position valueAxisPosition,
             final boolean threeDimensional,
+            final boolean varyColors,
             final CellRangeAddr categoriesCellRangeAddr,
             final List<LineDataSeries> series
     ) {
@@ -361,6 +363,7 @@ public class ExcelSheet {
                                                 valueAxis);
             data = data_;
         }
+        data.setVaryColors(varyColors);
 
         for(LineDataSeries s : series) {
             final XDDFNumericalDataSource<Double> values = numericalDataSource(s.getCellRangeAddr());
@@ -393,6 +396,7 @@ public class ExcelSheet {
             final boolean threeDimensional,
             final boolean directionBar,
             final BarGrouping grouping,
+            final boolean varyColors,
             final CellRangeAddr categoriesCellRangeAddr,
             final List<BarDataSeries> series
     ) {
@@ -414,6 +418,7 @@ public class ExcelSheet {
         categoryAxis.setTitle(categoryAxisTitle);
         final XDDFValueAxis valueAxis = chart.createValueAxis(toAxisPosition(valueAxisPosition));
         valueAxis.setTitle(valueAxisTitle);
+        valueAxis.setCrossBetween(AxisCrossBetween.BETWEEN);
 
         final XDDFDataSource<String> categories = stringDataSource(categoriesCellRangeAddr);
 
@@ -437,6 +442,7 @@ public class ExcelSheet {
             data_.setBarGrouping(toBarGrouping(grouping));
             data = data_;
         }
+        data.setVaryColors(varyColors);
 
         for(BarDataSeries s : series) {
             final XDDFNumericalDataSource<Double> values = numericalDataSource(s.getCellRangeAddr());
