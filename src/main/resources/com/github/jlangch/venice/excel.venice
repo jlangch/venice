@@ -451,7 +451,7 @@
         "(add-image sheet row col data type scale-X scale-Y)")
      :doc
         """
-        Adds an image given by its binary data (a `bytebuf) to a specific
+        Adds an image given by its binary data (a `bytebuf`) to a specific
         anchor cell given by its row and col. Optionally the image can be
         scaled by an X and Y axis factor. The image types `:PNG` and `:JPEG`
         are supported.
