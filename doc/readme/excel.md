@@ -37,9 +37,10 @@ libraries:
        * [Supported data types](#supported-data-types)
        * [Writing 2D vector data](#writing-2d-tabular-data)
        * [Writing to individual cells](#writing-to-individual-cells)
-       * [Add images](#add-images)
        * [Merge Cells](#merge-cells)
        * [Using formulas](#using-formulas)
+       * [Images](#images)
+       * [Charts](#charts)
     * [Styling](#styling)
        * [Row height](#row-height)
        * [Col width](#col-width)
@@ -322,26 +323,6 @@ The functions `excel/write-value` To write values to cells. The row and col numb
 [top](#content)
 
 
-#### Add images
-
-```clojure
-(do
-  (load-module :excel)
-  (let [wbook (excel/writer :xlsx)
-        sheet (excel/add-sheet wbook "Sheet 1")
-        image "com/github/jlangch/venice/images/venice.png"
-        data  (io/load-classpath-resource image)]
-    (excel/add-image sheet  2 2 data :PNG)
-    (excel/add-image sheet 12 2 data :PNG 0.8 0.8)  ;; scale by factor 0.8
-    (excel/add-image sheet 20 2 data :PNG 0.4 0.4)  ;; scale by factor 0.4
-    (excel/write->file wbook "sample.xlsx")))
-```
-
-<img src="https://github.com/jlangch/venice/blob/master/doc/assets/excel/excel-write-019.png" width="400">
-
-[top](#content)
-
-
 
 #### Merge cells
 
@@ -454,6 +435,79 @@ for formulas:
 
 [top](#content)
 
+
+
+#### Images
+
+```clojure
+(do
+  (load-module :excel)
+  (let [wbook (excel/writer :xlsx)
+        sheet (excel/add-sheet wbook "Sheet 1")
+        image "com/github/jlangch/venice/images/venice.png"
+        data  (io/load-classpath-resource image)]
+    (excel/add-image sheet  2 2 data :PNG)
+    (excel/add-image sheet 12 2 data :PNG 0.8 0.8)  ;; scale by factor 0.8
+    (excel/add-image sheet 20 2 data :PNG 0.4 0.4)  ;; scale by factor 0.4
+    (excel/write->file wbook "sample.xlsx")))
+```
+
+<img src="https://github.com/jlangch/venice/blob/master/doc/assets/excel/excel-write-019.png" width="400">
+
+[top](#content)
+
+
+#### Charts
+
+**Line Charts**
+
+```clojure
+(do
+  (load-module :excel)
+  (let [wbook (excel/writer :xlsx)
+        sheet (excel/add-sheet wbook "Sheet 1")
+        data  [[""       "Bears" "Dolphins" "Whales"]
+               ["2017"        8        150       80 ]
+               ["2018"       54         77       54 ]
+               ["2019"       93         32      100 ]
+               ["2020"      116         11       76 ]
+               ["2021"      137          6       93 ]
+               ["2022"      184          1       72 ]]]
+    (excel/write-data sheet data)
+
+    (excel/add-line-chart sheet
+                          "Wildlife Population"
+                          (excel/cell-address-range 10 25 1 10)
+                          :RIGHT
+                          "Year"
+                          :BOTTOM
+                          "Population"
+                          :LEFT
+                          false
+                          true
+                          (excel/cell-address-range 2 7 1 1)
+                          [ (excel/line-data-series
+                               "Bears"
+                               true
+                               :CIRCLE
+                               (excel/cell-address-range 2 7 2 2))
+                            (excel/line-data-series
+                               "Dolphins"
+                               true
+                               :CIRCLE
+                               (excel/cell-address-range 2 7 3 3))
+                            (excel/line-data-series
+                               "Whales"
+                               true
+                               :CIRCLE
+                               (excel/cell-address-range 2 7 4 4)) ])
+
+    (excel/write->file wbook "sample.xlsx")))
+```
+
+<img src="https://github.com/jlangch/venice/blob/master/doc/assets/excel/excel-write-020.png" width="400">
+
+[top](#content)
 
 ### Styling
 
