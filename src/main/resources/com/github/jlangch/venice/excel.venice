@@ -521,6 +521,20 @@
      :doc
         """
         Adds a line chart.
+
+        Arguments:
+
+        | chart-title            | The chart title                                                                |
+        | chart-addr-range       | The chart position in the Excel                                                |
+        | legend-position        | The legend position: `:TOP`, `:TOP_RIGHT`, `:RIGHT`, `:BOTTOM`, `:LEFT`        |
+        | category-axis-title    | The category axis title                                                        |
+        | category-axis-position | The category axis position: `:TOP`, `:TOP_RIGHT`, `:RIGHT`, `:BOTTOM`, `:LEFT` |
+        | value-axis-title       | The value axis title                                                           |
+        | value-axis-position    | The value axis position: `:TOP`, `:TOP_RIGHT`, `:RIGHT`, `:BOTTOM`, `:LEFT`    |
+        | three-dimensional?     | Render in 3D: `true` or `false`                                                |
+        | vary-colors?           | Vary the colors: `true` or `false`                                             |
+        | categories-addr-range  | The category names in the Excel                                                |
+        | series                 | The value series data. 1 to N series                                           |
         """
      :examples '(
         """
@@ -528,7 +542,7 @@
           (load-module :excel)
           (let [wbook (excel/writer :xlsx)
                 sheet (excel/add-sheet wbook "Sheet 1")
-                data  [[""       "Bears" "Dolphins" "Whales"]
+                data  [["Year"   "Bears" "Dolphins" "Whales"]
                        ["2017"        8        150       80 ]
                        ["2018"       54         77       54 ]
                        ["2019"       93         32      100 ]
@@ -567,6 +581,7 @@
             (excel/write->file wbook "sample.xlsx")))
         """)
      :see-also '(
+        "excel/add-bar-chart", "excel/add-area-chart", "excel/add-pie-chart",
         "excel/line-data-series", "excel/cell-address-range") }
 
   add-line-chart [sheet chart-title
@@ -614,6 +629,22 @@
      :doc
         """
         Adds a bar chart.
+
+        Arguments:
+
+        | chart-title            | The chart title                                                                |
+        | chart-addr-range       | The chart position in the Excel                                                |
+        | legend-position        | The legend position: `:TOP`, `:TOP_RIGHT`, `:RIGHT`, `:BOTTOM`, `:LEFT`        |
+        | category-axis-title    | The category axis title                                                        |
+        | category-axis-position | The category axis position: `:TOP`, `:TOP_RIGHT`, `:RIGHT`, `:BOTTOM`, `:LEFT` |
+        | value-axis-title       | The value axis title                                                           |
+        | value-axis-position    | The value axis position: `:TOP`, `:TOP_RIGHT`, `:RIGHT`, `:BOTTOM`, `:LEFT`    |
+        | three-dimensional?     | Render in 3D: `true` or `false`                                                |
+        | direction-bar?         | Render as horizintal bars or vertical columns: `true` or `false`               |
+        | grouping               | Bar grouping: `:STANDARD`, `:CLUSTERED`, `:STACKED`, `:PERCENT_STACKED`        |
+        | vary-colors?           | Vary the colors: `true` or `false`                                             |
+        | categories-addr-range  | The category names in the Excel                                                |
+        | series                 | The value series data. 1 to N series                                           |
         """
      :examples '(
         """
@@ -621,7 +652,7 @@
           (load-module :excel)
           (let [wbook (excel/writer :xlsx)
                 sheet (excel/add-sheet wbook "Sheet 1")
-                data  [[""       "Bears" "Dolphins" "Whales"]
+                data  [["Year"   "Bears" "Dolphins" "Whales"]
                        ["2017"        8        150       80 ]
                        ["2018"       54         77       54 ]
                        ["2019"       93         32      100 ]
@@ -656,6 +687,7 @@
             (excel/write->file wbook "sample.xlsx")))
         """)
      :see-also '(
+        "excel/add-line-chart", "excel/add-area-chart", "excel/add-pie-chart",
         "excel/bar-data-series", "excel/cell-address-range") }
 
   add-bar-chart [sheet chart-title
@@ -704,6 +736,19 @@
      :doc
         """
         Adds an area chart.
+
+        Arguments:
+
+        | chart-title            | The chart title                                                                |
+        | chart-addr-range       | The chart position in the Excel                                                |
+        | legend-position        | The legend position: `:TOP`, `:TOP_RIGHT`, `:RIGHT`, `:BOTTOM`, `:LEFT`        |
+        | category-axis-title    | The category axis title                                                        |
+        | category-axis-position | The category axis position: `:TOP`, `:TOP_RIGHT`, `:RIGHT`, `:BOTTOM`, `:LEFT` |
+        | value-axis-title       | The value axis title                                                           |
+        | value-axis-position    | The value axis position: `:TOP`, `:TOP_RIGHT`, `:RIGHT`, `:BOTTOM`, `:LEFT`    |
+        | three-dimensional?     | Render in 3D: `true` or `false`                                                |
+        | categories-addr-range  | The category names in the Excel                                                |
+        | series                 | The value series data. 1 to N series                                           |
         """
      :examples '(
         """
@@ -711,7 +756,7 @@
           (load-module :excel)
           (let [wbook (excel/writer :xlsx)
                 sheet (excel/add-sheet wbook "Sheet 1")
-                data  [[""       "Bears" "Dolphins" "Whales"]
+                data  [["Year"   "Bears" "Dolphins" "Whales"]
                        ["2017"        8        150       80 ]
                        ["2018"       54         77       54 ]
                        ["2019"       93         32      100 ]
@@ -737,6 +782,7 @@
             (excel/write->file wbook "sample.xlsx")))
         """)
      :see-also '(
+        "excel/add-line-chart", "excel/add-bar-chart", "excel/add-pie-chart",
         "excel/area-data-series", "excel/cell-address-range") }
 
   add-area-chart [sheet chart-title
@@ -770,12 +816,22 @@
                                chart-addr-range
                                legend-position
                                three-dimensional?
-                               direction-bar?
+                               vary-colors?
                                categories-addr-range
                                series)")
      :doc
         """
         Adds a pie chart.
+
+        Arguments:
+
+        | chart-title            | The chart title                                                         |
+        | chart-addr-range       | The chart position in the Excel                                         |
+        | legend-position        | The legend position: `:TOP`, `:TOP_RIGHT`, `:RIGHT`, `:BOTTOM`, `:LEFT` |
+        | three-dimensional?     | Render in 3D: `true` or `false`                                         |
+        | vary-colors?           | Vary the colors: `true` or `false`                                      |
+        | categories-addr-range  | The category names in the Excel                                         |
+        | series                 | The value series data. 1 series required                                |
         """
      :examples '(
         """
@@ -783,7 +839,7 @@
           (load-module :excel)
           (let [wbook (excel/writer :xlsx)
                 sheet (excel/add-sheet wbook "Sheet 1")
-                data  [[""       "Bears" "Dolphins" "Whales"]
+                data  [["Year"   "Bears" "Dolphins" "Whales"]
                        ["2017"        8        150       80 ]
                        ["2018"       54         77       54 ]
                        ["2019"       93         32      100 ]
@@ -805,6 +861,7 @@
             (excel/write->file wbook "sample.xlsx")))
         """)
      :see-also '(
+        "excel/add-line-chart", "excel/add-bar-chart", "excel/add-area-chart",
         "excel/pie-data-series", "excel/cell-address-range") }
 
   add-pie-chart [sheet chart-title
@@ -980,7 +1037,17 @@
 
 (defn
   ^{ :arglists '("(line-data-series title smooth? marker data-address-range)")
-     :doc "Build a line chart data series"
+     :doc
+        """
+        Build a line chart data series
+
+        Arguments:
+
+        | title              | The series title                                                                                           |
+        | smooth?            | Smooth rendering (splines): `true` or `false`                                                              |
+        | marker             | The marker type: `:CIRCLE`, `:DASH`, `:DIAMOND`, `:DOT`, `:NONE`, `:PLUS`, `:SQUARE`, `:STAR`, `:TRIANGLE` |
+        | data-address-range | The series data in the Excel                                                                               |
+        """
      :examples '(
         """
         (excel/line-data-series "Countries"
@@ -997,7 +1064,15 @@
 
 (defn
   ^{ :arglists '("(bar-data-series title data-address-range)")
-     :doc "Build a bar chart data series"
+     :doc
+        """
+        Build a bar chart data series
+
+        Arguments:
+
+        | title              | The series title             |
+        | data-address-range | The series data in the Excel |
+        """
      :examples '(
         """
         (excel/bar-data-series "Countries" (excel/cell-address-range 2 2 1 5))
@@ -1011,7 +1086,15 @@
 
 (defn
   ^{ :arglists '("(area-data-series title data-address-range)")
-     :doc "Build an area chart data series"
+     :doc
+        """
+        Build an area chart data series
+
+        Arguments:
+
+        | title              | The series title             |
+        | data-address-range | The series data in the Excel |
+        """
      :examples '(
         """
         (excel/area-data-series "Countries" (excel/cell-address-range 2 2 1 5))
@@ -1025,7 +1108,14 @@
 
 (defn
   ^{ :arglists '("(pie-data-series data-address-range)")
-     :doc "Build a pie chart data series"
+     :doc
+        """
+        Build a pie chart data series
+
+        Arguments:
+
+        | data-address-range | The series data in the Excel |
+        """
      :examples '(
         """
         (excel/pie-data-series (excel/cell-address-range 2 2 1 5))
