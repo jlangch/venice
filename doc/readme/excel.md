@@ -476,16 +476,16 @@ for formulas:
     (excel/write-data sheet data)
 
     (excel/add-line-chart sheet
-                          "Wildlife Population"
-                          (excel/cell-address-range 10 25 1 10)
-                          :RIGHT
-                          "Year"
-                          :BOTTOM
-                          "Population"
-                          :LEFT
-                          false
-                          true
-                          (excel/cell-address-range 2 7 1 1)
+                          "Wildlife Population"                   ;; chart title 
+                          (excel/cell-address-range 10 25 1 10)   ;; chart position
+                          :RIGHT                                  ;; legend position
+                          "Year"                                  ;; category axis title 
+                          :BOTTOM                                 ;; category axis position
+                          "Population"                            ;; value axis title
+                          :LEFT                                   ;; value axis position
+                          false                                   ;; 3D
+                          true                                    ;; vary colors
+                          (excel/cell-address-range 2 7 1 1)      ;; category names
                           [ (excel/line-data-series
                                "Bears"
                                true
@@ -525,18 +525,18 @@ for formulas:
     (excel/write-data sheet data)
 
     (excel/add-bar-chart sheet
-                         "Bears Population"
-                         (excel/cell-address-range 10 25 1 7)
-                         :RIGHT
-                         "Year"
-                         :BOTTOM
-                         "Population"
-                         :LEFT
-                         false
-                         false
-                         :STANDARD
-                         false
-                         (excel/cell-address-range 2 7 1 1)
+                         "Wildlife Population"                   ;; chart title 
+                         (excel/cell-address-range 10 25 1 7)    ;; chart position
+                         :RIGHT                                  ;; legend position
+                         "Year"                                  ;; category axis title 
+                         :BOTTOM                                 ;; category axis position
+                         "Population"                            ;; value axis title
+                         :LEFT                                   ;; value axis position
+                         false                                   ;; 3D
+                         false                                   ;; bar horizontal
+                         :STANDARD                               ;; grouping
+                         false                                   ;; vary colors
+                         (excel/cell-address-range 2 7 1 1)      ;; category names
                          [ (excel/bar-data-series
                              "Bears"
                              (excel/cell-address-range 2 7 2 2))
@@ -570,15 +570,15 @@ for formulas:
     (excel/write-data sheet data)
 
     (excel/add-area-chart sheet
-                          "Bears Population"
-                          (excel/cell-address-range 10 25 1 7)
-                          :RIGHT
-                          "Year"
-                          :BOTTOM
-                          "Population"
-                          :LEFT
-                          false
-                          (excel/cell-address-range 2 7 1 1)
+                          "Bears Population"                      ;; chart title
+                          (excel/cell-address-range 10 25 1 7)    ;; chart position
+                          :RIGHT                                  ;; legend position
+                          "Year"                                  ;; category axis title 
+                          :BOTTOM                                 ;; category axis position
+                          "Population"                            ;; value axis title
+                          :LEFT                                   ;; value axis position
+                          false                                   ;; 3D
+                          (excel/cell-address-range 2 7 1 1)      ;; category names
                           [ (excel/area-data-series
                               "Bears"
                               (excel/cell-address-range 2 7 2 2)) ])
@@ -606,12 +606,12 @@ for formulas:
     (excel/write-data sheet data)
 
     (excel/add-pie-chart sheet
-                         "Wildlife Population 2017"
-                         (excel/cell-address-range 10 25 1 7)
-                         :RIGHT
-                         false
-                         true
-                         (excel/cell-address-range 1 1 2 4)
+                         "Wildlife Population 2017"              ;; chart title 
+                         (excel/cell-address-range 10 25 1 7)    ;; chart position
+                         :RIGHT                                  ;; legend position
+                         false                                   ;; 3D
+                         true                                    ;; vary colors
+                         (excel/cell-address-range 1 1 2 4)      ;; category names
                          [ (excel/pie-data-series
                              (excel/cell-address-range 2 2 2 4)) ])
 
