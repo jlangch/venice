@@ -488,7 +488,7 @@ public class PdfFunctions {
                     .examples(
                         "(->> (pdf/text-to-pdf \"Lorem Ipsum...\")   \n" +
                         "     (io/spit \"text.pdf\"))                  ")
-                    .seeAlso("pdf/render")
+                    .seeAlso("pdf/render", "pdf/to-text")
                     .build()
         ) {
             @Override
