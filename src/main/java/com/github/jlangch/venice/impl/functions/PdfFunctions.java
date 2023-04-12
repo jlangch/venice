@@ -25,7 +25,10 @@ import static com.github.jlangch.venice.impl.types.Constants.Nil;
 
 import java.awt.Color;
 import java.io.ByteArrayOutputStream;
+import java.io.File;
+import java.io.InputStream;
 import java.nio.ByteBuffer;
+import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -34,6 +37,7 @@ import java.util.Map;
 import java.util.stream.Collectors;
 
 import com.github.jlangch.venice.VncException;
+import com.github.jlangch.venice.impl.thread.ThreadContext;
 import com.github.jlangch.venice.impl.types.VncBoolean;
 import com.github.jlangch.venice.impl.types.VncByteBuffer;
 import com.github.jlangch.venice.impl.types.VncDouble;
@@ -55,6 +59,7 @@ import com.github.jlangch.venice.impl.util.SymbolMapBuilder;
 import com.github.jlangch.venice.impl.util.io.ClassPathResource;
 import com.github.jlangch.venice.impl.util.kira.KiraTemplateEvaluator;
 import com.github.jlangch.venice.impl.util.reflect.ReflectionAccessor;
+import com.github.jlangch.venice.javainterop.ILoadPaths;
 import com.github.jlangch.venice.util.pdf.HtmlColor;
 import com.github.jlangch.venice.util.pdf.PdfRenderer;
 import com.github.jlangch.venice.util.pdf.PdfTextStripper;
@@ -541,19 +546,43 @@ public class PdfFunctions {
 	                .doc("Extracts the text from a PDF.")
 	                .examples(
 	                    "(->> (pdf/text-to-pdf \"Lorem Ipsum...\")   \n" +
-	                    "     (io/spit \"text.pdf\"))                  ")
+		                "     (pdf/to-text)                          \n" +
+                		"     (println))                             ")
 	                .seeAlso("pdf/render")
 	                .build()
 	    ) {
 	        @Override
 	        public VncVal apply(final VncList args) {
-	            ArityExceptions.assertMinArity(this, args, 1);
+	            ArityExceptions.assertArity(this, args, 1);
 
 	            sandboxFunctionCallValidation();
 
+                final ILoadPaths loadpaths = ThreadContext.getInterceptor().getLoadPaths();
+
+                final VncVal arg = args.first();
+
 	            try {
-	            	final String text = PdfTextStripper.text(new byte[0]);
-	                return new VncString(text);
+	                final File file = convertToFile(arg);
+	                if (file != null) {
+	                    final ByteBuffer data = loadpaths.loadBinaryResource(file);
+	                    final String text = PdfTextStripper.text(data.array());
+		                return new VncString(text);
+	                }
+	                else if (Types.isVncByteBuffer(arg)) {
+	                     final VncByteBuffer data = (VncByteBuffer)arg;
+		                    final String text = PdfTextStripper.text(data.getBytes());
+			                return new VncString(text);
+	                }
+	                else if (Types.isVncJavaObject(arg, InputStream.class)) {
+	                    final InputStream is = Coerce.toVncJavaObject(args.first(), InputStream.class);
+	                    final String text = PdfTextStripper.text(is);
+		                return new VncString(text);
+	                }
+	                else {
+	                    throw new VncException(String.format(
+	                            "Function 'pdf/to-tex' does not allow %s as pdf input",
+	                            Types.getType(args.first())));
+	                }
 	            }
 	            catch(VncException ex) {
 	                throw ex;
@@ -695,6 +724,20 @@ public class PdfFunctions {
         }
     }
 
+    private static File convertToFile(final VncVal f) {
+        if (Types.isVncString(f)) {
+            return new File(((VncString)f).getValue());
+        }
+        else if (Types.isVncJavaObject(f, File.class)) {
+            return Coerce.toVncJavaObject(f, File.class);
+        }
+        else if (Types.isVncJavaObject(f, Path.class)) {
+            return Coerce.toVncJavaObject(f, Path.class).toFile();
+        }
+        else {
+            return null;
+        }
+    }
 
 
     ///////////////////////////////////////////////////////////////////////////
