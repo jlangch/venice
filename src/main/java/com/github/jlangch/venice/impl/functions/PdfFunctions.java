@@ -547,7 +547,7 @@ public class PdfFunctions {
 	                	"Extracts the text from a PDF.                           \n\n" +
                         "pdf may be a:                                           \n\n" +
                         " * string file path, e.g: \"/temp/foo.pdf\"             \n" +
-                        " * bytebuffer                                        `  \n" +
+                        " * bytebuffer                                           \n" +
                         " * `java.io.File`, e.g: `(io/file \"/temp/foo.pdf\")`   \n" +
                         " * `java.io.InputStream`                                ")
 	                .examples(

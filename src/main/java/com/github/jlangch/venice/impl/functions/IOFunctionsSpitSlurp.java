@@ -78,7 +78,7 @@ public class IOFunctionsSpitSlurp {
                         "Read all lines from f.                                            \n\n" +
                         "f may be a:                                                       \n\n" +
                         " * string file path, e.g: \"/temp/foo.json\"                      \n" +
-                        " * bytebuffer                                        `            \n" +
+                        " * bytebuffer                                                     \n" +
                         " * `java.io.File`, e.g: `(io/file \"/temp/foo.json\")`            \n" +
                         " * `java.io.InputStream`                                          \n" +
                         " * `java.io.Reader`                                               \n" +
@@ -235,7 +235,7 @@ public class IOFunctionsSpitSlurp {
                         "Reads the content of file f as text (string) or binary (bytebuf). \n\n" +
                         "f may be a:                                                       \n\n" +
                         " * string file path, e.g: \"/temp/foo.json\"                      \n" +
-                        " * bytebuffer                                        `            \n" +
+                        " * bytebuffer                                                     \n" +
                         " * `java.io.File`, e.g: `(io/file \"/temp/foo.json\")`            \n" +
                         " * `java.io.InputStream`                                          \n" +
                         " * `java.io.Reader`                                               \n" +
