@@ -543,7 +543,13 @@ public class PdfFunctions {
 	            VncFunction
 	                .meta()
 	                .arglists("(pdf/to-text pdf)")
-	                .doc("Extracts the text from a PDF.")
+	                .doc(
+	                	"Extracts the text from a PDF.                           \n\n" +
+                        "pdf may be a:                                           \n\n" +
+                        " * string file path, e.g: \"/temp/foo.pdf\"             \n" +
+                        " * bytebuffer                                        `  \n" +
+                        " * `java.io.File`, e.g: `(io/file \"/temp/foo.pdf\")`   \n" +
+                        " * `java.io.InputStream`                                ")
 	                .examples(
 	                    "(->> (pdf/text-to-pdf \"Lorem Ipsum...\")   \n" +
 		                "     (pdf/to-text)                          \n" +
