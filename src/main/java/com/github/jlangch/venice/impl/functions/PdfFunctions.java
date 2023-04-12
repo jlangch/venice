@@ -551,10 +551,10 @@ public class PdfFunctions {
                         " * `java.io.File`, e.g: `(io/file \"/temp/foo.pdf\")`   \n" +
                         " * `java.io.InputStream`                                ")
 	                .examples(
-	                    "(->> (pdf/text-to-pdf \"Lorem Ipsum...\")   \n" +
-		                "     (pdf/to-text)                          \n" +
-                		"     (println))                             ")
-	                .seeAlso("pdf/render")
+	                    "(-> (pdf/text-to-pdf \"Lorem Ipsum...\")   \n" +
+		                "    (pdf/to-text)                          \n" +
+                		"    (println))                             ")
+	                .seeAlso("pdf/text-to-pdf", "pdf/render")
 	                .build()
 	    ) {
 	        @Override
