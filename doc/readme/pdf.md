@@ -1126,7 +1126,7 @@ Venice supports simplified text to PDF
 
 ## PDF to Text
 
-Using the PDF from the tables example above
+With the [PDF](https://github.com/jlangch/venice/blob/master/doc/pdfs/tables-example.pdf) from the tables example above
 
 ```clojure
 (do
@@ -1137,7 +1137,7 @@ Using the PDF from the tables example above
   (println (pdf/to-text "tables-example.pdf")))
 ```
 
-the _PDF to text tool_ produces:
+the text extraction tool produces:
 
 ```text
                                                                                                                                                     
