@@ -325,6 +325,101 @@ References:
 
 
 
+## PDF to Text
+
+Using the PDF from the tables example above
+
+```clojure
+(do
+  (ns test)
+
+  (load-module :pdf)
+  
+  (println (pdf/to-text "tables-example.pdf")))
+```
+
+produces 
+
+```text
+                                                                                                                                                    
+                                               Venice               PDF           Tables                                                            
+                                                                                                                                                    
+                                                              Example                                                                               
+                                                                                                                                                    
+                                                                                                                                                    
+                                                                                                                                                    
+                                                                                                                                                    
+                                                                                                                                                    
+                                                                                                                                                    
+                                                                                                                                                    
+                                                                                                                                                    
+                                                                                                                                                    
+                                                                                                                                                    
+                                                                                                                                                    
+                                                                                                                                                    
+                                                                                                                                                    
+                                                                                                                                                    
+                                                                                                                                                    
+                                                                                                                                                    
+                                                                                                                                                    
+                                                                                                                                                    
+                                                                                                                                                    
+                                                                                                                                                    
+                                                                                                                                                    
+                                                                                                                                                    
+         Last Name                 First Name                City                         Gender            Age                  Birthdate          
+                                                                                                                                                    
+         Meier                     Peter                     Bern                            m                42                1977-10-01          
+                                                                                                                                                    
+         Schmid                    Hans                      Luzern                          m                56                1963-08-12          
+                                                                                                                                                    
+         Winter                    Maria                     Aarau                           f                23                1996-04-08          
+                                                                                                                                                    
+         Halter                    Carla                     Zürich                          f                 9                2010-09-28          
+                                                                                                                                                    
+                                                                                                                                                    
+                                                                                                                                                    
+                                                                                                                                                    
+                                                                                                                                                    
+                                                                                                                                                    
+                                                                                                                                                    
+                                                                                                                                                    
+                                                                                                                                                    
+                                                                                                                                                    
+                                                                                                                                                    
+         Last Name                 First Name                 City                        Gender            Age                  Birthdate          
+                                                                                                                                                    
+         Meier                     Peter                      Bern                           m                42               1977-10-01           
+                                                                                                                                                    
+         Schmid                    Hans                       Luzern                         m                56               1963-08-12           
+                                                                                                                                                    
+         Winter                    Maria                      Aarau                          f                23               1996-04-08           
+                                                                                                                                                    
+         Halter                    Carla                      Zürich                         f                 9               2010-09-28           
+                                                                                                                                                    
+                                                                                                                                                    
+                                                                                                                                                    
+                                                                                                                                                    
+                                                                                                                                                    
+                                                                                                                                                    
+                                                                                                                                                    
+                                                                                                                                                    
+                                                                                                                                                    
+                                                                                                                                                    
+                                                                                                                                                    
+         Last Name                 First Name                 City                        Gender            Age                  Birthdate          
+                                                                                                                                                    
+         Meier                     Peter                      Bern                           m                42               1977-10-01           
+                                                                                                                                                    
+         Schmid                    Hans                       Luzern                         m                56               1963-08-12           
+                                                                                                                                                    
+         Winter                    Maria                      Aarau                          f                23               1996-04-08           
+                                                                                                                                                    
+         Halter                    Carla                      Zürich                         f                 9               2010-09-28           
+
+```
+
+
 ## Images
 
 Images can be loaded from the classpath or from a memory resource pool. The ladder
