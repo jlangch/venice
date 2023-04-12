@@ -180,11 +180,14 @@ ext {
     jline_Version = '3.21.0'
     jupiter_Version = '5.8.2'
     openpdf_Version = '1.3.28'
+    pdfbox_Version = '2.0.27'
+    jbig2_imageio_Version = '3.0.4'
+    pdfTextStripper_Version = '2.2.4'
     poi_Version = '5.2.3' // '4.1.2'
     servletApi_Version = '5.0.0'
     springExpression_Version = '5.2.0.RELEASE'
     vavr_Version = '0.10.4'
-    xchart_Version = '3.8.1'
+    xchart_Version = '3.8.2'
 }
 
 
@@ -730,7 +733,13 @@ dependencies {
     compileOnly "org.xhtmlrenderer:flying-saucer-pdf-openpdf:${flyingSaucer_Version}"
     compileOnly "com.github.librepdf:openpdf:${openpdf_Version}"
     compileOnly "org.knowm.xchart:xchart:${xchart_Version}"
-
+    
+    // PDF text extractor
+    compileOnly "org.apache.pdfbox:pdfbox:${pdfbox_Version}"
+    compileOnly "org.apache.pdfbox:fontbox:${pdfbox_Version}"
+    compileOnly "org.apache.pdfbox:jbig2-imageio:${jbig2_imageio_Version}"
+    compileOnly "io.github.jonathanlink:PDFLayoutTextStripper:${pdfTextStripper_Version}"
+   
     // MS Excel support
     compileOnly "org.apache.poi:poi:${poi_Version}"
     compileOnly "org.apache.poi:poi-ooxml:${poi_Version}"

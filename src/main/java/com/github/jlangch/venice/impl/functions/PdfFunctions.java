@@ -57,6 +57,7 @@ import com.github.jlangch.venice.impl.util.kira.KiraTemplateEvaluator;
 import com.github.jlangch.venice.impl.util.reflect.ReflectionAccessor;
 import com.github.jlangch.venice.util.pdf.HtmlColor;
 import com.github.jlangch.venice.util.pdf.PdfRenderer;
+import com.github.jlangch.venice.util.pdf.PdfTextStripper;
 import com.github.jlangch.venice.util.pdf.PdfWatermark;
 import com.lowagie.text.Document;
 import com.lowagie.text.pdf.PdfCopy;
@@ -531,6 +532,40 @@ public class PdfFunctions {
             private static final long serialVersionUID = -1848883965231344442L;
         };
 
+	public static VncFunction pdf_to_text =
+	    new VncFunction(
+	            "pdf/to-text",
+	            VncFunction
+	                .meta()
+	                .arglists("(pdf/to-text pdf)")
+	                .doc("Extracts the text from a PDF.")
+	                .examples(
+	                    "(->> (pdf/text-to-pdf \"Lorem Ipsum...\")   \n" +
+	                    "     (io/spit \"text.pdf\"))                  ")
+	                .seeAlso("pdf/render")
+	                .build()
+	    ) {
+	        @Override
+	        public VncVal apply(final VncList args) {
+	            ArityExceptions.assertMinArity(this, args, 1);
+
+	            sandboxFunctionCallValidation();
+
+	            try {
+	            	final String text = PdfTextStripper.text(new byte[0]);
+	                return new VncString(text);
+	            }
+	            catch(VncException ex) {
+	                throw ex;
+	            }
+	            catch(Exception ex) {
+	                throw new VncException("Failed to extract text from PDF", ex);
+	            }
+	        }
+
+	        private static final long serialVersionUID = -1848883965231344442L;
+	    };
+
 
     private static Map<String,ByteBuffer> mapResources(final VncMap resourceMap) {
         final Map<String,ByteBuffer> resources = new HashMap<>();
@@ -676,6 +711,7 @@ public class PdfFunctions {
                     .add(pdf_copy)
                     .add(pdf_pages)
                     .add(pdf_text_to_pdf)
+                    .add(pdf_to_text)
                     .toMap();
 
 }
