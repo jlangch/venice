@@ -5,7 +5,7 @@ It is based on the [Apache POI](https://poi.apache.org/) library.
 
 Venice is compatible with Apache POI 4.1.x and 5.2.x.
 
-*Note:* Use Venice 1.10.30+ or newer to have all features demonstrated here
+*Note:* Use Venice 1.10.33+ or newer to have all features demonstrated here
 available.
 
 Run this script from the REPL to download the newest Apache POI 5.2.x 
