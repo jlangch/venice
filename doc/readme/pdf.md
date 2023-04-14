@@ -13,7 +13,7 @@ Flying Saucer is a pure-Java library for rendering XHTML using CSS 2.1 for layou
 
 Flying Saucer documentation is available in the user guide, linked from their website at [Flying Saucer](https://code.google.com/archive/p/flying-saucer/)
 
-Note: Use Venice 1.10.33+ or newer to have all features demonstrated here available.
+Note: Use Venice 1.10.35+ or newer to have all features demonstrated here available.
 
 Run this script from the REPL to download the PDF libraries:
 
