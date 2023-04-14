@@ -325,7 +325,11 @@
 
 (defn
   ^{ :arglists '("(write-items sheet items)")
-     :doc "Writes the passed data items to the sheet"
+     :doc
+        """
+        Writes the passed data items, a sequence of maps of name/value pairs,
+        to the sheet.
+        """
      :examples '(
         """
         (do
