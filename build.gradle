@@ -353,6 +353,7 @@ jar {
 
 shadowJar {
     // https://github.com/johnrengelman/shadow/
+    // https://docs.gradle.org/current/dsl/org.gradle.api.tasks.bundling.Jar.html
 
     relocate 'io.vavr', 'org.repackage.io.vavr'
     relocate 'org.jline', 'org.repackage.org.jline'
@@ -375,7 +376,7 @@ shadowJar {
     mergeServiceFiles()
 
     archiveFileName = "venice-${project.version}.jar"
-    //classifier = ''  // default is '-all'
+    archiveClassifier = ''  // default is '-all'
 }
 
 

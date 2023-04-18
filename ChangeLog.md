@@ -5,11 +5,13 @@ All notable changes to this project will be documented in this file.
 
 
 
-## [1.10.36] - 2023-04-xx
+## [1.10.36] - 2023-04-18
 
-### Added 
+### Fixed 
 
-- ...
+- Gradle build shadow jar task. Gradle 8.0.x does not accept the `classifier` property
+  anymore. Renamed to `archiveClassifier` and use `archiveClassifier = ''` to prevent
+  the shadow jar task to add the '-all' classifier to the jar name.
 
 
 
