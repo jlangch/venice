@@ -98,14 +98,14 @@ foo
 ├── billing.zip
 └── libs
     ├── ...
-    └── venice-1.10.35.jar
+    └── venice-1.10.36.jar
 ```
 
 It can be started from a terminal with
 
 ```shell
 mars$ cd ~/foo
-mars$ java -jar libs/venice-1.10.35.jar -app billing.zip
+mars$ java -jar libs/venice-1.10.36.jar -app billing.zip
 ```
 
 or
@@ -174,7 +174,7 @@ The billing application JAR may be deployed to a file structure like
 foo
 └── libs
     ├── billing.jar
-    ├── venice-1.10.35.jar
+    ├── venice-1.10.36.jar
     └── openpdf-1.3.22.jar
 ```
 
