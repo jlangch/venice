@@ -290,10 +290,10 @@ public class ExcelCharts {
             final List<PieDataSeries> series
     ) {
         if (!(sheet.getWorkbook() instanceof XSSFWorkbook)) {
-            throw new ExcelException("Excel bar charts only work with Excel of type XLSX!");
+            throw new ExcelException("Excel pie charts only work with Excel of type XLSX!");
         }
         if (series.size() != 1) {
-            throw new ExcelException("Excel area chart must have exactly one series!");
+            throw new ExcelException("Excel pie chart must have exactly one series!");
         }
 
         final XSSFDrawing drawing = (XSSFDrawing)sheet.createDrawingPatriarch();
