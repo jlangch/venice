@@ -11,8 +11,8 @@ All notable changes to this project will be documented in this file.
 
 ### Fixed 
 
-- Excel module to work with Apache POI 4.1.x again. But Excel chart functionality 
-  requires Apache POI 5.2.0 or newer!!
+- Excel module to work with Apache POI 4.1.x again. To use charts with Excel
+  documents Apache POI 5.2.0 or newer is required!
 
 
 

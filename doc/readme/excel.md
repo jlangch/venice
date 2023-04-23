@@ -3,7 +3,8 @@
 Venice's *:excel* module provides functions to read and write Excel files. 
 It is based on the [Apache POI](https://poi.apache.org/) library.
 
-Venice is compatible with Apache POI 4.1.x and 5.2.x.
+Venice is compatible with Apache POI 4.1.x and 5.2.x. To use charts with Excel
+documents Apache POI 5.2.0 or newer is required.
 
 *Note:* Use Venice 1.10.35+ or newer to have all features demonstrated here
 available.
