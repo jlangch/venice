@@ -9,9 +9,10 @@ All notable changes to this project will be documented in this file.
 
 ## [1.10.37] - 2023-04-xx
 
-### Added 
+### Fixed 
 
-- ...
+- Excel module to work with Apache POI 4.1.x again. But Excel chart functionality 
+  requires Apache POI 5.2.0 or newer!!
 
 
 
