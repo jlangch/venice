@@ -23,7 +23,7 @@ package com.github.jlangch.venice;
 
 
 /**
- * A service registry for service discovery and regisration
+ * A service registry for service discovery and registration
  *
  * @author juerg
  */
