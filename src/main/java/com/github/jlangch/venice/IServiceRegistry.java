@@ -29,23 +29,23 @@ package com.github.jlangch.venice;
  */
 public interface IServiceRegistry {
 
-	/**
-	 * Register a service
-	 *
-	 * @param name The service's name
-	 * @param service The service
-	 */
+    /**
+     * Register a service
+     *
+     * @param name The service's name
+     * @param service The service
+     */
     void register(String name, Object service);
 
-	/**
-	 * Unregister a service
-	 *
-	 * @param name The service's name
-	 */
+    /**
+     * Unregister a service
+     *
+     * @param name The service's name
+     */
     void unregister(String name);
 
     /**
-	 * Looking up a service
+     * Looking up a service
      *
      * @param name
      * @return the service or <code>null</code> if not found
