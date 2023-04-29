@@ -37,6 +37,7 @@ import java.util.concurrent.atomic.AtomicReference;
 import com.github.jlangch.venice.impl.IVeniceInterpreter;
 import com.github.jlangch.venice.impl.PreCompiled;
 import com.github.jlangch.venice.impl.RunMode;
+import com.github.jlangch.venice.impl.ServiceRegistry;
 import com.github.jlangch.venice.impl.VeniceInterpreter;
 import com.github.jlangch.venice.impl.env.Env;
 import com.github.jlangch.venice.impl.env.SymbolTable;
@@ -196,7 +197,8 @@ public class Venice {
             tc.setInterceptor_(interceptor);
             tc.setMeterRegistry_(meterRegistry);
 
-            final IVeniceInterpreter venice = new VeniceInterpreter(interceptor, meterRegistry);
+            final IVeniceInterpreter venice = new VeniceInterpreter(
+                                                    interceptor, meterRegistry, serviceRegistry);
 
             return runWithSandbox(venice, () -> {
                 final NamespaceRegistry nsRegistryPrecompile = precompiled.getNamespaceRegistry();
@@ -317,7 +319,8 @@ public class Venice {
             tc.setInterceptor_(interceptor);
             tc.setMeterRegistry_(meterRegistry);
 
-            final IVeniceInterpreter venice = new VeniceInterpreter(interceptor, meterRegistry);
+            final IVeniceInterpreter venice = new VeniceInterpreter(
+                                                    interceptor, meterRegistry, serviceRegistry);
 
             return runWithSandbox(venice, () -> {
                 final Env env = createEnv(venice, macroexpand, params);
@@ -352,6 +355,13 @@ public class Venice {
      */
     public long getLastPrecompileElapsedTimeMillis() {
         return lastPrecompileElapsedTimeMillis;
+    }
+
+    /**
+     * @return the service registry
+     */
+    public IServiceRegistry getServiceRegistry() {
+        return serviceRegistry;
     }
 
     /**
@@ -555,7 +565,7 @@ public class Venice {
     private SymbolTable getCoreSystemGlobalSymbols() {
         SymbolTable symbols = coreSystemGlobalSymbols.get();
         if (symbols == null) {
-            Env env = new VeniceInterpreter(interceptor, meterRegistry)
+            Env env = new VeniceInterpreter(interceptor, meterRegistry, serviceRegistry)
                             .createEnv(true, false, RunMode.SCRIPT)
                             .setStdoutPrintStream(null)
                             .setStderrPrintStream(null)
@@ -577,6 +587,7 @@ public class Venice {
 
     private final IInterceptor interceptor;
     private final MeterRegistry meterRegistry;
+    private final IServiceRegistry serviceRegistry = new ServiceRegistry();
     private final AtomicReference<SymbolTable> coreSystemGlobalSymbols = new AtomicReference<>(null);
 
     // This is pretty expensive so just doit once at startup!
