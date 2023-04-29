@@ -22,6 +22,8 @@
 package com.github.jlangch.venice;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import org.junit.jupiter.api.Test;
 
@@ -39,6 +41,16 @@ public class ServiceRegistryTest {
         assertEquals(30L,  venice.eval("(service :Calculator :add 10 20)"));
     }
 
+    @Test
+    public void test_service_exists() {
+        final Venice venice = new Venice();
+
+        final IServiceRegistry registry = venice.getServiceRegistry();
+        registry.register("Calculator", new Calculator());
+
+        assertTrue((Boolean)venice.eval("(service? :Calculator)"));
+        assertFalse((Boolean)venice.eval("(service? :Xxxxxxxx)"));
+    }
 
 
     public static class Calculator {
