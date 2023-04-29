@@ -9,6 +9,10 @@ All notable changes to this project will be documented in this file.
 
 ## [1.10.37] - 2023-04-xx
 
+### Added 
+
+- a service registry that is used with application scripting
+
 ### Fixed 
 
 - Excel module to work with Apache POI 4.1.x again. To use charts with Excel
