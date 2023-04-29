@@ -2000,6 +2000,16 @@
   (apply . ((keyword name) *service-registry*) method args))
 
 
+(defn
+  ^{ :arglists '("(service? name)")
+     :doc "Returns true if the named service exists otherwise false "
+     :examples '("(service? :user-service") }
+
+  service? [name]
+
+  (some? ((keyword name) *service-registry*)))
+
+
 
 ;; ---------------------------------------------------------------------------
 ;; message box

@@ -52,4 +52,12 @@ public interface IServiceRegistry {
      */
     Object lookup(String name);
 
+    /**
+     * Returns true if the service with the name exists otherwise false
+     *
+     * @param name
+     * @return <code>null</code> if the service exists otherwise <code>false</code>
+     */
+    boolean exists(String name);
+
 }

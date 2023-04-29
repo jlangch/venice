@@ -9,6 +9,7 @@ help () {
   echo ""
   echo "Gradle commands:"
   echo "./gradlew test"
+  echo "./gradlew clean shadowJar sourceJar"
   echo "./gradlew cheatsheet"
   echo "./gradlew updateReleaseVersion"
   echo "./gradlew -Dorg.gradle.internal.publish.checksums.insecure=true \\"
@@ -21,7 +22,7 @@ help () {
   echo "          clean shadowJar publish"
   echo "./gradlew eclipse"
   echo "./gradlew jmh -Pinclude=\".*PrecompileBenchmark\""
-  echo "./gradlew -Dorg.gradle.java.home=\${JAVA_17_ZULU_HOME} clean test\"" 
+  echo "./gradlew -Dorg.gradle.java.home=\${JAVA_17_ZULU_HOME} clean test\""
   echo "./gradlew -Dorg.gradle.java.home=\${JAVA_11_ZULU_HOME} jmh -Pinclude=\".*PrecompileBenchmark\""
   echo "-------------------------------------------------------------------------"
   echo

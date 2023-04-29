@@ -38,7 +38,7 @@ public class ServiceRegistry extends VncMutableMap implements IServiceRegistry {
 	}
 
 	@Override
-    public void register(String name, Object service) {
+    public void register(final String name, final Object service) {
         if (StringUtil.isBlank(name)) {
             throw new AssertionException(
                     "A service name for the service registry must not be blank!");
@@ -52,7 +52,7 @@ public class ServiceRegistry extends VncMutableMap implements IServiceRegistry {
     }
 
     @Override
-    public void unregister(String name) {
+    public void unregister(final String name) {
         if (name == null) {
             throw new AssertionException(
                     "A service name for unregistering a service in the service registry must not be null!");
@@ -62,7 +62,7 @@ public class ServiceRegistry extends VncMutableMap implements IServiceRegistry {
     }
 
     @Override
-    public Object lookup(String name) {
+    public Object lookup(final String name) {
         if (name == null) {
             throw new AssertionException(
                     "A service name for looking up a service in the service registry must not be null!");
@@ -71,6 +71,18 @@ public class ServiceRegistry extends VncMutableMap implements IServiceRegistry {
         final VncVal service = get(new VncKeyword(name));
         return service == Constants.Nil ? null : ((VncJavaObject)service).getDelegate();
     }
+
+    @Override
+    public boolean exists(final String name) {
+        if (name == null) {
+            throw new AssertionException(
+                    "A service name for testing existence in the service registry must not be null!");
+        }
+
+        final VncVal service = get(new VncKeyword(name));
+        return service != Constants.Nil && service instanceof VncJavaObject;
+    }
+
 
 
     private static final long serialVersionUID = 1L;
