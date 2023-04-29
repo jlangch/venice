@@ -40,6 +40,7 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.concurrent.atomic.AtomicBoolean;
 
+import com.github.jlangch.venice.IServiceRegistry;
 import com.github.jlangch.venice.NotInTailPositionException;
 import com.github.jlangch.venice.SecurityException;
 import com.github.jlangch.venice.Version;
@@ -117,12 +118,13 @@ public class VeniceInterpreter implements IVeniceInterpreter, Serializable  {
     public VeniceInterpreter(
             final IInterceptor interceptor
     ) {
-        this(interceptor, null);
+        this(interceptor, null, null);
     }
 
     public VeniceInterpreter(
             final IInterceptor interceptor,
-            final MeterRegistry meterRegistry
+            final MeterRegistry meterRegistry,
+            final IServiceRegistry serviceRegistry
     ) {
         if (interceptor == null) {
             throw new SecurityException("VeniceInterpreter can not run without an interceptor");
@@ -134,6 +136,7 @@ public class VeniceInterpreter implements IVeniceInterpreter, Serializable  {
 
         this.interceptor = interceptor;
         this.meterRegistry = mr;
+        this.serviceRegistry = serviceRegistry == null ? new ServiceRegistry() : serviceRegistry;
         this.nsRegistry = new NamespaceRegistry();
         this.sealedSystemNS = new AtomicBoolean(false);
 
@@ -335,6 +338,9 @@ public class VeniceInterpreter implements IVeniceInterpreter, Serializable  {
 
         // command line args (default nil)
         env.setGlobal(new Var(new VncSymbol("*ARGV*"), Nil, true));
+
+        // service registry
+        env.setGlobal(new Var(new VncSymbol("*service-registry*"), (ServiceRegistry)serviceRegistry, false));
 
         // loaded modules & files
         final VncMutableSet loadedModules = new VncMutableSet();
@@ -1250,6 +1256,7 @@ public class VeniceInterpreter implements IVeniceInterpreter, Serializable  {
     private final boolean checkSandbox;
     private final MeterRegistry meterRegistry;
     private final NamespaceRegistry nsRegistry;
+    private final IServiceRegistry serviceRegistry;
 
     private final SpecialFormsContext specialFormsContext;
     private final FunctionBuilder functionBuilder;

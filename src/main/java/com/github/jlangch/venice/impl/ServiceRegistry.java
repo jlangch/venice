@@ -21,17 +21,23 @@
  */
 package com.github.jlangch.venice.impl;
 
-import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
-
 import com.github.jlangch.venice.AssertionException;
 import com.github.jlangch.venice.IServiceRegistry;
+import com.github.jlangch.venice.impl.types.Constants;
+import com.github.jlangch.venice.impl.types.VncJavaObject;
+import com.github.jlangch.venice.impl.types.VncKeyword;
+import com.github.jlangch.venice.impl.types.VncVal;
+import com.github.jlangch.venice.impl.types.collections.VncMutableMap;
 import com.github.jlangch.venice.impl.util.StringUtil;
 
 
-public class ServiceRegistry implements IServiceRegistry {
+public class ServiceRegistry extends VncMutableMap implements IServiceRegistry {
 
-    @Override
+	public ServiceRegistry() {
+
+	}
+
+	@Override
     public void register(String name, Object service) {
         if (StringUtil.isBlank(name)) {
             throw new AssertionException(
@@ -42,7 +48,7 @@ public class ServiceRegistry implements IServiceRegistry {
                     "A service for the service registry must not be null!");
         }
 
-        registry.put(name, service);
+        assoc(new VncKeyword(name), new VncJavaObject(service));
     }
 
     @Override
@@ -52,7 +58,7 @@ public class ServiceRegistry implements IServiceRegistry {
                     "A service name for unregistering a service in the service registry must not be null!");
         }
 
-        registry.remove(name);
+        dissoc(new VncKeyword(name));
     }
 
     @Override
@@ -62,9 +68,10 @@ public class ServiceRegistry implements IServiceRegistry {
                     "A service name for looking up a service in the service registry must not be null!");
         }
 
-        return registry.get(name);
+        final VncVal service = get(new VncKeyword(name));
+        return service == Constants.Nil ? null : ((VncJavaObject)service).getDelegate();
     }
 
 
-    private final Map<String,Object> registry = new ConcurrentHashMap<>();
+    private static final long serialVersionUID = 1L;
 }

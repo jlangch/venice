@@ -1986,6 +1986,21 @@
 
 
 
+  ;; ---------------------------------------------------------------------------
+  ;; registered service  (service registry)
+  ;; ---------------------------------------------------------------------------
+
+(defn
+  ^{ :arglists '("(service name method & args)")
+     :doc "Calls a registered service with the name, method, and the arguments"
+     :examples '("(service :user-service :find \"smith\" \"john\")") }
+
+  service [name method & args]
+
+  (apply . ((keyword name) *service-registry*) method args))
+
+
+
 ;; ---------------------------------------------------------------------------
 ;; message box
 ;; ---------------------------------------------------------------------------
