@@ -21,6 +21,8 @@
  */
 package com.github.jlangch.venice.impl;
 
+import java.util.Map;
+
 import com.github.jlangch.venice.AssertionException;
 import com.github.jlangch.venice.IServiceRegistry;
 import com.github.jlangch.venice.impl.types.Constants;
@@ -50,6 +52,15 @@ public class ServiceRegistry extends VncMutableMap implements IServiceRegistry {
 
         assoc(new VncKeyword(name), new VncJavaObject(service));
     }
+
+	@Override
+    public void registerAll(final Map<String,Object> services) {
+		if (services == null) {
+			return;
+		}
+
+		services.forEach((k,v) -> register(k,v));
+	}
 
     @Override
     public void unregister(final String name) {

@@ -23,7 +23,12 @@ package com.github.jlangch.venice;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
+
+import java.util.HashMap;
+import java.util.Map;
 
 import org.junit.jupiter.api.Test;
 
@@ -31,11 +36,25 @@ import org.junit.jupiter.api.Test;
 public class ServiceRegistryTest {
 
     @Test
-    public void test_service() {
+    public void test_service_register() {
         final Venice venice = new Venice();
 
         final IServiceRegistry registry = venice.getServiceRegistry();
         registry.register("Calculator", new Calculator());
+
+        assertEquals(200L, venice.eval("(service :Calculator :mul 10 20)"));
+        assertEquals(30L,  venice.eval("(service :Calculator :add 10 20)"));
+    }
+
+    @Test
+    public void test_service_register_all() {
+        final Venice venice = new Venice();
+
+        final Map<String,Object> services = new HashMap<>();
+        services.put("Calculator", new Calculator());
+
+        final IServiceRegistry registry = venice.getServiceRegistry();
+        registry.registerAll(services);
 
         assertEquals(200L, venice.eval("(service :Calculator :mul 10 20)"));
         assertEquals(30L,  venice.eval("(service :Calculator :add 10 20)"));
@@ -50,6 +69,62 @@ public class ServiceRegistryTest {
 
         assertTrue((Boolean)venice.eval("(service? :Calculator)"));
         assertFalse((Boolean)venice.eval("(service? :Xxxxxxxx)"));
+    }
+
+    @Test
+    public void test_service_lookup() {
+        final Venice venice = new Venice();
+
+        final IServiceRegistry registry = venice.getServiceRegistry();
+        registry.register("Calculator", new Calculator());
+
+        assertNotNull(registry.lookup("Calculator"));
+        assertTrue(registry.lookup("Calculator") instanceof Calculator);
+    }
+
+    @Test
+    public void test_service_clear() {
+        final Venice venice = new Venice();
+
+        final IServiceRegistry registry = venice.getServiceRegistry();
+        registry.register("Calculator", new Calculator());
+
+        assertTrue((Boolean)venice.eval("(service? :Calculator)"));
+
+        registry.unregisterAll();
+
+        assertFalse((Boolean)venice.eval("(service? :Calculator)"));
+    }
+
+    @Test
+    public void test_service_register_blank_name() {
+        final Venice venice = new Venice();
+
+        final IServiceRegistry registry = venice.getServiceRegistry();
+
+        assertThrows(AssertionException.class, () -> registry.register(null, new Calculator()));
+        assertThrows(AssertionException.class, () -> registry.register("", new Calculator()));
+        assertThrows(AssertionException.class, () -> registry.register("  ", new Calculator()));
+    }
+
+    @Test
+    public void test_service_register_null_service() {
+        final Venice venice = new Venice();
+
+        final IServiceRegistry registry = venice.getServiceRegistry();
+
+        assertThrows(AssertionException.class, () -> registry.register("Calculator", null));
+    }
+
+    @Test
+    public void test_service_register_blank_name_and_null_service() {
+        final Venice venice = new Venice();
+
+        final IServiceRegistry registry = venice.getServiceRegistry();
+
+        assertThrows(AssertionException.class, () -> registry.register(null, null));
+        assertThrows(AssertionException.class, () -> registry.register("", null));
+        assertThrows(AssertionException.class, () -> registry.register("  ", null));
     }
 
 

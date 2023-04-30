@@ -21,6 +21,7 @@
  */
 package com.github.jlangch.venice;
 
+import java.util.Map;
 
 /**
  * A service registry for service discovery and registration
@@ -38,6 +39,15 @@ public interface IServiceRegistry {
      * @param service The service, any non <code>null</code> Java object
      */
     void register(String name, Object service);
+
+    /**
+     * Register named services.
+     *
+      * @param services A map of named services.
+     *                 The <code>key</code> holds the service's name (a non blank string).
+     *                 The <code>value</code> holds the service, any non <code>null</code> Java object
+     */
+    void registerAll(Map<String,Object> services);
 
     /**
      * Unregister a service.
