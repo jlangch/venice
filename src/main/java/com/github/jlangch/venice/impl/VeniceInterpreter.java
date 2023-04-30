@@ -340,7 +340,7 @@ public class VeniceInterpreter implements IVeniceInterpreter, Serializable  {
         env.setGlobal(new Var(new VncSymbol("*ARGV*"), Nil, true));
 
         // service registry
-        env.setGlobal(new Var(new VncSymbol("*service-registry*"), (ServiceRegistry)serviceRegistry, false));
+        env.setGlobal(new Var(new VncSymbol("*service-registry*"), ((ServiceRegistry)serviceRegistry).get(), false));
 
         // loaded modules & files
         final VncMutableSet loadedModules = new VncMutableSet();

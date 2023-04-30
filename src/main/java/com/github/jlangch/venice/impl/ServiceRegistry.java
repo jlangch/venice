@@ -29,14 +29,13 @@ import com.github.jlangch.venice.impl.types.Constants;
 import com.github.jlangch.venice.impl.types.VncJavaObject;
 import com.github.jlangch.venice.impl.types.VncKeyword;
 import com.github.jlangch.venice.impl.types.VncVal;
-import com.github.jlangch.venice.impl.types.collections.VncMutableMap;
+import com.github.jlangch.venice.impl.types.collections.VncHashMap;
 import com.github.jlangch.venice.impl.util.StringUtil;
 
 
-public class ServiceRegistry extends VncMutableMap implements IServiceRegistry {
+public class ServiceRegistry implements IServiceRegistry {
 
 	public ServiceRegistry() {
-
 	}
 
 	@Override
@@ -50,7 +49,7 @@ public class ServiceRegistry extends VncMutableMap implements IServiceRegistry {
                     "A service for the service registry must not be null!");
         }
 
-        assoc(new VncKeyword(name), new VncJavaObject(service));
+        registry = registry.assoc(new VncKeyword(name), new VncJavaObject(service));
     }
 
 	@Override
@@ -69,12 +68,12 @@ public class ServiceRegistry extends VncMutableMap implements IServiceRegistry {
                     "A service name for unregistering a service in the service registry must not be null!");
         }
 
-        dissoc(new VncKeyword(name));
+        registry = registry.dissoc(new VncKeyword(name));
     }
 
     @Override
     public void unregisterAll() {
-        clear();
+    	registry = new VncHashMap();
     }
 
     @Override
@@ -84,7 +83,7 @@ public class ServiceRegistry extends VncMutableMap implements IServiceRegistry {
                     "A service name for looking up a service in the service registry must not be null!");
         }
 
-        final VncVal service = get(new VncKeyword(name));
+        final VncVal service = registry.get(new VncKeyword(name));
         return service == Constants.Nil ? null : ((VncJavaObject)service).getDelegate();
     }
 
@@ -95,11 +94,14 @@ public class ServiceRegistry extends VncMutableMap implements IServiceRegistry {
                     "A service name for testing existence in the service registry must not be null!");
         }
 
-        final VncVal service = get(new VncKeyword(name));
+        final VncVal service = registry.get(new VncKeyword(name));
         return service != Constants.Nil && service instanceof VncJavaObject;
     }
 
+    public VncHashMap get() {
+    	return registry;
+    }
 
 
-    private static final long serialVersionUID = 1L;
-}
+    private VncHashMap registry = new VncHashMap();
+ }
