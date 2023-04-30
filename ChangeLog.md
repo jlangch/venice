@@ -11,7 +11,7 @@ All notable changes to this project will be documented in this file.
 
 ### Added 
 
-- a service registry that is used with application scripting
+- a service registry to simplify Venice integration in application scripting scenarios
 
 ### Fixed 
 

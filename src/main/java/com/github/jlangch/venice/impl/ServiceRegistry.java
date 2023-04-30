@@ -62,6 +62,11 @@ public class ServiceRegistry extends VncMutableMap implements IServiceRegistry {
     }
 
     @Override
+    public void unregisterAll() {
+        clear();
+    }
+
+    @Override
     public Object lookup(final String name) {
         if (name == null) {
             throw new AssertionException(

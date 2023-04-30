@@ -30,32 +30,41 @@ package com.github.jlangch.venice;
 public interface IServiceRegistry {
 
     /**
-     * Register a service
+     * Register a named service.
      *
-     * @param name The service's name
-     * @param service The service
+     * <p>Services can be replaced by registering them anew with another service object.
+     *
+     * @param name The service's name. A service name must be a non blank string.
+     * @param service The service, any non <code>null</code> Java object
      */
     void register(String name, Object service);
 
     /**
-     * Unregister a service
+     * Unregister a service.
+     *
+     * <p>Unregistering an unknown service is silently skipped.
      *
      * @param name The service's name
      */
     void unregister(String name);
 
     /**
+     * Unregister all services.
+     */
+    void unregisterAll();
+
+    /**
      * Looking up a service
      *
-     * @param name
-     * @return the service or <code>null</code> if not found
+     * @param name The service's name
+     * @return the service or <code>null</code> if not registered
      */
     Object lookup(String name);
 
     /**
-     * Returns true if the service with the name exists otherwise false
+     * Returns true if the service exists otherwise false
      *
-     * @param name
+     * @param name The service's name
      * @return <code>null</code> if the service exists otherwise <code>false</code>
      */
     boolean exists(String name);
