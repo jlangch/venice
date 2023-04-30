@@ -1991,9 +1991,43 @@
   ;; ---------------------------------------------------------------------------
 
 (defn
-  ^{ :arglists '("(service name method & args)")
-     :doc "Calls a registered service with the name, method, and the arguments"
-     :examples '("(service :user-service :find \"smith\" \"john\")") }
+  ^{ :arglists '(
+       "(service name method & args)")
+     :doc
+       """
+       Calls a service with the specified name from the Venice's service
+       registry.
+
+       Venice's service registry is used with application scripting scenarios.
+       I.e. the registry can be used to register an application's
+       *Spring Framework* services and make them discoverable by a Venice
+       script.
+
+       Example:
+
+       ```
+       Venice venice = new Venice();
+
+       IServiceRegistry registry = venice.getServiceRegistry();
+       registry.register("Calculator", new Calculator());
+
+       venice.eval("(service :Calculator :multiply 10 20)");
+       ```
+
+       while `Calculator` is defined as:
+
+       ```
+       public class Calculator {
+         public long multiply(final long v1, final long v2) {
+           return v1 * v2;
+         }
+       }
+       ```
+       """
+     :examples '(
+       "(service :UserService :find \"smith\" \"john\")")
+     :see-also '(
+       "service?") }
 
   service [name method & args]
 
@@ -2003,7 +2037,8 @@
 (defn
   ^{ :arglists '("(service? name)")
      :doc "Returns true if the named service exists otherwise false "
-     :examples '("(service? :user-service") }
+     :examples '("(service? :UserService")
+     :see-also '( "service") }
 
   service? [name]
 
