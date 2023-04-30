@@ -98,6 +98,11 @@ public class SystemSection implements ISectionBuilder {
         util.addItem(diBuilder.getDocItem("uuid"));
         util.addItem(diBuilder.getDocItem("sleep"));
 
+        final DocSection services = new DocSection("Services", "service");
+        all.addSection(services);
+        services.addItem(diBuilder.getDocItem("service", false));
+        services.addItem(diBuilder.getDocItem("service?", false));
+
         final DocSection shell = new DocSection("Shell", "system.shell");
         all.addSection(shell);
         shell.addItem(diBuilder.getDocItem("sh", false));
