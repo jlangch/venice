@@ -2011,7 +2011,7 @@
        IServiceRegistry registry = venice.getServiceRegistry();
        registry.register("Calculator", new Calculator());
 
-       venice.eval("(service :Calculator :multiply 10 20)");
+       long r = (Long)venice.eval("(service :Calculator :multiply 10 20)");
        ```
 
        while `Calculator` is defined as:
