@@ -23,8 +23,33 @@ package com.github.jlangch.venice;
 
 import java.util.Map;
 
+
 /**
- * A service registry for service discovery and registration
+ * A service registry for service discovery and registration.
+ *
+ * <p><b>Note:</b> Registrations can only be managed through {@link IServiceRegistry}.
+ * Venice scripts have access to {@link IServiceRegistry#lookup(String)} only.
+ *
+ * <p>Example:
+ *
+ * <pre>
+ * Venice venice = new Venice();
+ *
+ * IServiceRegistry registry = venice.getServiceRegistry();
+ * registry.register("Calculator", new Calculator());
+ *
+ * long r = (Long)venice.eval("(service :Calculator :multiply 10 20)");
+ * </pre>
+ *
+ * While `Calculator` is defined as:
+ *
+ * <pre>
+ * public class Calculator {
+ *   public long multiply(long v1, long v2) {
+ *     return v1 * v2;
+ *   }
+ * }
+ * </pre>
  *
  * @author juerg
  */
