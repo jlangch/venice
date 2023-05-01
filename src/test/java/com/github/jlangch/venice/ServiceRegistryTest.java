@@ -42,8 +42,11 @@ public class ServiceRegistryTest {
         final IServiceRegistry registry = venice.getServiceRegistry();
         registry.register("Calculator", new Calculator());
 
-        assertEquals(200L, venice.eval("(service :Calculator :mul 10 20)"));
-        assertEquals(30L,  venice.eval("(service :Calculator :add 10 20)"));
+        final long r1 = (Long)venice.eval("(service :Calculator :mul 10 20)");
+        final long r2 = (Long)venice.eval("(service :Calculator :add 10 20)");
+
+        assertEquals(200L, r1);
+        assertEquals(30L,  r2);
     }
 
     @Test
