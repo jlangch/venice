@@ -157,6 +157,7 @@ public class SandboxDefaultRules {
                     Arrays.asList(
                         "crypt",
                         "kira",
+                        "mimetypes",
                         "parsifal",
                         "test",
                         "test-support",

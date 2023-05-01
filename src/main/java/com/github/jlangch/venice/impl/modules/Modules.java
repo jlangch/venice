@@ -70,6 +70,7 @@ public class Modules {
                         "math",
                         "maven",
                         "mercator",
+                        "mimetypes",
                         "parsifal",
                         "pdf-install",
                         "qrbill",
