@@ -1044,7 +1044,6 @@ public class StringFunctions {
             private static final long serialVersionUID = -1848883965231344442L;
         };
 
-
     public static VncFunction str_split_at =
         new VncFunction(
                 "str/split-at",
@@ -1116,6 +1115,42 @@ public class StringFunctions {
                                     .map(s -> new VncString(s))
                                     .collect(Collectors.toList()));
             }
+
+            private static final long serialVersionUID = -1848883965231344442L;
+        };
+
+    public static VncFunction str_split_columns =
+        new VncFunction(
+                "str/split-columns",
+                VncFunction
+                    .meta()
+                    .arglists("(str/split-columns s cols)")
+                    .doc("Splits a string into columns. The columns are given by their start positions.")
+                    .examples("(str/split-columns \"1abc  2d    3gh\" [0 6 12])")
+                    .seeAlso("str/split")
+                    .build()
+        ) {
+            @Override
+            public VncVal apply(final VncList args) {
+                ArityExceptions.assertArity(this, args, 2);
+
+                final String text = Coerce.toVncString(args.first()).getValue();
+                final List<VncVal> colList =  Coerce.toVncSequence(args.second()).getJavaList();
+
+                final VncVal[] colStartPos_ = colList.toArray(new VncVal[0]);
+                final int[] colStartPos = new int[colList.size()];
+
+                for(int ii=0; ii<colList.size(); ii++) {
+                    colStartPos[ii] = Coerce.toVncLong(colStartPos_[ii]).toJavaInteger();
+                }
+
+                final List<String> cols = StringUtil.splitColumns(text, colStartPos);
+
+                return VncList.ofColl(
+                        cols.stream()
+                            .map(s -> new VncString(s))
+                            .collect(Collectors.toList()));
+             }
 
             private static final long serialVersionUID = -1848883965231344442L;
         };
@@ -2595,6 +2630,7 @@ public class StringFunctions {
                     .add(str_split)
                     .add(str_split_at)
                     .add(str_split_lines)
+                    .add(str_split_columns)
                     .add(str_cr_lf)
                     .add(str_format)
                     .add(str_rest)

@@ -658,6 +658,25 @@ public class StringFunctionsTest {
     }
 
     @Test
+    public void test_str_split_columns() {
+        final Venice venice = new Venice();
+
+        assertEquals("||",       venice.eval("(str/join \"|\" (str/split-columns \"\"        [0 1 2]))"));
+        assertEquals("||",       venice.eval("(str/join \"|\" (str/split-columns \" \",      [0 1 2]))"));
+        assertEquals("||",       venice.eval("(str/join \"|\" (str/split-columns \"  \",     [0 1 2]))"));
+        assertEquals("||",       venice.eval("(str/join \"|\" (str/split-columns \"   \",    [0 1 2]))"));
+        assertEquals("||",       venice.eval("(str/join \"|\" (str/split-columns \"    \",   [0 1 2]))"));
+
+        assertEquals("1|2|3",    venice.eval("(str/join \"|\" (str/split-columns \"123\",    [0 1 2]))"));
+        assertEquals("12|34|56", venice.eval("(str/join \"|\" (str/split-columns \"123456\", [0 2 4]))"));
+        assertEquals("1|2|3",    venice.eval("(str/join \"|\" (str/split-columns \"1 2 3 \", [0 2 4]))"));
+
+        assertEquals("123|456|", venice.eval("(str/join \"|\" (str/split-columns \"123456\", [0 3 6]))"));
+        assertEquals("123456||", venice.eval("(str/join \"|\" (str/split-columns \"123456\", [0 6 12]))"));
+        assertEquals("||",       venice.eval("(str/join \"|\" (str/split-columns \"123456\", [20 30 40]))"));
+    }
+
+    @Test
     public void test_starts_with() {
         final Venice venice = new Venice();
 

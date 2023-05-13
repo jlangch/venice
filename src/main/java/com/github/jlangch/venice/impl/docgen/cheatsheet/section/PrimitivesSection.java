@@ -162,6 +162,7 @@ public class PrimitivesSection implements ISectionBuilder {
         split.addItem(diBuilder.getDocItem("str/split"));
         split.addItem(diBuilder.getDocItem("str/split-at"));
         split.addItem(diBuilder.getDocItem("str/split-lines"));
+        split.addItem(diBuilder.getDocItem("str/split-columns"));
         split.addItem(diBuilder.getDocItem("str/join"));
 
         final DocSection replace = new DocSection("Replace", "primitives.strings.replace");
