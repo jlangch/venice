@@ -30,8 +30,6 @@ import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-import org.apache.commons.lang3.StringUtils;
-
 
 public class StringUtil {
 
@@ -154,14 +152,14 @@ public class StringUtil {
 		for(int ii=colStartPos.length-1; ii>=0; ii--) {
 			int pos = colStartPos[ii];
 			if (pos <= 0) {
-				columns.add(StringUtils.trimToEmpty(tmp));
+				columns.add(StringUtil.trimToEmpty(tmp));
 				tmp = "";
 			}
 			else if (pos >= tmp.length()) {
 				columns.add("");
 			}
 			else {
-				columns.add(StringUtils.trimToEmpty(tmp.substring(pos)));
+				columns.add(StringUtil.trimToEmpty(tmp.substring(pos)));
 				tmp = tmp.substring(0, pos);
 			}
 		}
