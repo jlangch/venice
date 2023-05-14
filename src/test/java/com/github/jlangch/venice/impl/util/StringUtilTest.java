@@ -123,7 +123,6 @@ public class StringUtilTest {
         assertEquals("3", lines.get(2));
     }
 
-
     @Test
     public void splitColumns() {
         assertEquals("||", String.join("|", StringUtil.splitColumns("",     new int[] {0,1,2})));
@@ -135,6 +134,11 @@ public class StringUtilTest {
         assertEquals("1|2|3", String.join("|", StringUtil.splitColumns("123", new int[] {0,1,2})));
         assertEquals("12|34|56", String.join("|", StringUtil.splitColumns("123456", new int[] {0,2,4})));
         assertEquals("1|2|3", String.join("|", StringUtil.splitColumns("1 2 3 ", new int[] {0,2,4})));
+
+        assertEquals("||123", String.join("|", StringUtil.splitColumns("123", new int[] {1,0,0})));
+        assertEquals("||123", String.join("|", StringUtil.splitColumns("123", new int[] {0,1,0})));
+        assertEquals("||123", String.join("|", StringUtil.splitColumns("123", new int[] {0,0,0})));
+        assertEquals("|12|3", String.join("|", StringUtil.splitColumns("123", new int[] {0,0,2})));
 
         assertEquals("123|456|", String.join("|", StringUtil.splitColumns("123456", new int[] {0,3,6})));
         assertEquals("123456||", String.join("|", StringUtil.splitColumns("123456", new int[] {0,6,12})));

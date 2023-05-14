@@ -671,6 +671,11 @@ public class StringFunctionsTest {
         assertEquals("12|34|56", venice.eval("(str/join \"|\" (str/split-columns \"123456\", [0 2 4]))"));
         assertEquals("1|2|3",    venice.eval("(str/join \"|\" (str/split-columns \"1 2 3 \", [0 2 4]))"));
 
+        assertEquals("||123",    venice.eval("(str/join \"|\" (str/split-columns \"123\",    [1 0 0]))"));
+        assertEquals("||123",    venice.eval("(str/join \"|\" (str/split-columns \"123\",    [0 1 0]))"));
+        assertEquals("||123",    venice.eval("(str/join \"|\" (str/split-columns \"123\",    [0 0 0]))"));
+        assertEquals("|12|3",    venice.eval("(str/join \"|\" (str/split-columns \"123\",    [0 0 2]))"));
+
         assertEquals("123|456|", venice.eval("(str/join \"|\" (str/split-columns \"123456\", [0 3 6]))"));
         assertEquals("123456||", venice.eval("(str/join \"|\" (str/split-columns \"123456\", [0 6 12]))"));
         assertEquals("||",       venice.eval("(str/join \"|\" (str/split-columns \"123456\", [20 30 40]))"));
