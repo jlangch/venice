@@ -362,10 +362,12 @@ shadowJar {
 
     manifest {
         attributes 'Main-Class':             'com.github.jlangch.venice.Launcher',
-                   'Build-Date':             buildTimestamp,
+                   'Build-Date':             new Date().format("yyyy-MM-dd'T'HH:mm:ss"),
                    'Implementation-Vendor':  'com.github.jlangch',
                    'Implementation-Title':   'Venice',
-                   'Implementation-Version': "${project.version}"
+                   'Implementation-Version': "${project.version}",
+                   'Specification-Vendor':   'com.github.jlangch',
+                   'Application-Name':       'Venice'
     }
 
     exclude 'com/github/jlangch/venice/fonts/OpenSans-*.ttf'
