@@ -48,6 +48,7 @@ public class Modules {
                         "app",
                         "benchmark",
                         "cli",
+                        "clipboard",
                         "config",
                         "core",
                         "component",
