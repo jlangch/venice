@@ -166,7 +166,7 @@
 (defn
   ^{ :arglists '("(geoip/ip-to-city-loc-resolver geoip-zip)")
      :doc """
-          Returns a resolve function that resolves IP an address to its
+          Returns a resolve function that resolves an IP address to its
           associated city and latitude/longitude location. The resolve
           function returns the city and the latitude/longitude or nil
           if no data is found.
@@ -231,7 +231,7 @@
   (defn
     ^{ :arglists '("(geoip/ip-to-city-loc-resolver-mem-optimized geoip-zip)")
        :doc """
-            Returns a resolve function that resolves IP an address to its
+            Returns a resolve function that resolves an IP address to its
             associated city and latitude/longitude location. The resolve
             function returns the city and the latitude/longitude or nil
             if no data is found.
