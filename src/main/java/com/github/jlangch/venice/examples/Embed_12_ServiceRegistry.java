@@ -48,6 +48,7 @@ public class Embed_12_ServiceRegistry {
 
         final IServiceRegistry registry = venice.getServiceRegistry();
         registry.register("Calculator", new Calculator());
+        registry.register("Logger", new Logger());
 
         // returns a long: 30
         System.out.println(
@@ -56,12 +57,10 @@ public class Embed_12_ServiceRegistry {
         // returns a long: 200
         System.out.println(
                 venice.eval("(service :Calculator :multiply 10 20)"));
+
+        venice.eval("(service :Logger :log \"Test message\")");
     }
 
-
-    public static interface ICalculator {
-        long multiply(long v1, long v2);
-    }
 
     public static class Calculator {
         public long add(long v1, long v2) {
@@ -69,6 +68,12 @@ public class Embed_12_ServiceRegistry {
         }
         public long multiply(long v1, long v2) {
             return v1 * v2;
+        }
+    }
+
+    public static class Logger {
+        public void log(String message) {
+            System.out.println(message);
         }
     }
 

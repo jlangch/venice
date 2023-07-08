@@ -1998,8 +1998,9 @@
        Calls a service with the specified name from the Venice's service
        registry.
 
-       Venice's service registry is used with application scripting scenarios.
-       I.e. the registry can be used to register an application's
+       Venice's service registry is used with application scripting scenarios
+       where multiple external services must be made available to Venice.
+       E.g.: the service registry can be used to register an application's
        *Spring Framework* services and make them discoverable by a Venice
        script.
 

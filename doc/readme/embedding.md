@@ -2,6 +2,7 @@
 
 * [Overview](#overview)
 * [Passing Parameters](#passing-parameters)
+* [Service Registry](#service-registry)
 * [stdout-stderr Redirection](#stdout-stderr-redirection)
 * [Printing exceptions](#printing-exceptions)
 * [Precompiling](#precompiling)
@@ -56,11 +57,9 @@ public class Embed_01_Simple {
 
 ## Passing Parameters
 
-Venice expects Java objects as parameters and returns Java objects as the expression result. It coerces 
-Java data types to/from Venice data types implicitly. Basic types as Boolean, Long, Double, String, 
-BigDecimal, List, Map, ... are coerced to Venice types like long, double, decimal, string, list, ... 
-All other types can be accessed through Java interop. Java bean parameters expose its getters as Map 
-keys in Venice, so the getters can be accessed simply through `(:getterName bean)`
+The Venice evaluator expects any number of named Java objects as parameters and returns a Java object as the expression result.
+
+It coerces Java data types to/from Venice data types implicitly. Basic types as Boolean, Long, Double, String, BigDecimal, List, Map, ... are coerced to Venice types like long, double, decimal, string, list, map, etc. All other types can be accessed through Java interop. Java bean parameters expose its getters as Map keys in Venice, so the getters can be accessed simply through `(:getterName bean)`
 
 ```java
 import java.awt.Point;
@@ -101,6 +100,61 @@ public class Embed_02_PassingParameters {
                         "(. :java.awt.Point :new x y)", 
                         Parameters.of("x", 100, "y", 200)));
     }
+}
+```
+
+
+## Service Registry
+
+While parameters are simple to use when used as plain data, dealing with an external services is cumbersome.
+
+Venice's service registry is used with application scripting scenarios where multiple external services must be made available to Venice. E.g.: the service registry can be used to register an application's *Spring Framework* services and make them discoverable by a Venice script.
+
+The built-in `service` function is used to call a method of a registered named service with the required arguments. The  _service_  function is defined as `(service name method & args)`.
+
+
+```java
+import com.github.jlangch.venice.IServiceRegistry;
+import com.github.jlangch.venice.Venice;
+import com.github.jlangch.venice.VncException;
+
+
+public class Embed_12_ServiceRegistry {
+
+    public static void main(final String[] args) {
+        final Venice venice = new Venice();
+
+        final IServiceRegistry registry = venice.getServiceRegistry();
+        registry.register("Calculator", new Calculator());
+        registry.register("Logger", new Logger());
+
+        // returns a long: 30
+        System.out.println(
+                venice.eval("(service :Calculator :add 10 20)"));
+
+        // returns a long: 200
+        System.out.println(
+                venice.eval("(service :Calculator :multiply 10 20)"));
+
+        venice.eval("(service :Logger :log \"Test message\")");
+    }
+
+
+    public static class Calculator {
+        public long add(long v1, long v2) {
+            return v1 + v2;
+        }
+        public long multiply(long v1, long v2) {
+            return v1 * v2;
+        }
+    }
+
+    public static class Logger {
+        public void log(String message) {
+            System.out.println(message);
+        }
+    }
+
 }
 ```
 
