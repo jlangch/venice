@@ -106,7 +106,7 @@ public class Embed_02_PassingParameters {
 
 ## Service Registry
 
-While parameters are simple to use when used as plain data, dealing with an external services is cumbersome.
+While parameters are simple to use when used as plain data, dealing with external services is cumbersome.
 
 Venice's service registry is used with application scripting scenarios where multiple external services must be made available to Venice. E.g.: the service registry can be used to register an application's *Spring Framework* services and make them discoverable by a Venice script.
 
