@@ -68,7 +68,6 @@ public abstract class UTF8 {
     public static char RIGHT_GUILLEMET       = '\u00BB';  // check mark '»'
     public static char LEFT_GUILLEMET        = '\u00AB';  // check mark '«'
     public static char COPYRIGHT             = '\u00A9';  // check mark '©'
-    public static char PI                    = '\u03C0';  // check mark 'π'
     public static char BULLET                = '\u2022';  // bullet '•'
     public static char HORZ_ELLIPSIS         = '\u2026';  // horizontal ellipsis '…'
     public static char PER_MILLE_SIGN        = '\u2030';  // per mille sign '‰'
@@ -76,4 +75,24 @@ public abstract class UTF8 {
     public static char CHECK_MARK            = '\u2713';  // check mark '✓'
     public static char CROSS_MARK            = '\u2717';  // check mark '✗'
 
+    // Greek letters
+    public static char ALPHA                 = '\u03B1';  // alpha 'α'
+    public static char BETA                  = '\u03B2';  // beta 'β'
+    public static char GAMMA                 = '\u03B3';  // gamma 'γ'
+    public static char DELTA                 = '\u03B4';  // delta 'δ'
+    public static char EPSILON               = '\u03B5';  // epsilon 'ε'
+    public static char LAMDA                 = '\u03BB';  // lamda 'λ'
+    public static char MU                    = '\u03BC';  // mu 'μ'
+    public static char PI                    = '\u03C0';  // pi 'π'
+    public static char SIGMA                 = '\u03C3';  // sigma 'σ'
+    public static char TAU                   = '\u03C4';  // tau 'τ'
+    
+    public static char DELTA_UPPER           = '\u0394';  // uppercase greek delta 'Δ'
+
+
+    public static String TABLE               = "┌───┬───┐"
+                                             + "│   │   │"
+                                             + "├───┼───┤"
+                                             + "│   │   │"
+                                             + "└───┴───┘";
 }
