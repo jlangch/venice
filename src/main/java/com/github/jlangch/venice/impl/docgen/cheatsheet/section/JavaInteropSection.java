@@ -75,6 +75,7 @@ public class JavaInteropSection implements ISectionBuilder {
         support.addItem(diBuilder.getDocItem("supers"));
         support.addItem(diBuilder.getDocItem("bases"));
         support.addItem(diBuilder.getDocItem("formal-type"));
+        support.addItem(diBuilder.getDocItem("remove-formal-type"));
         support.addItem(diBuilder.getDocItem("stacktrace", false, false));
 
         final DocSection clazz = new DocSection("Classes", "javainterop.classes");

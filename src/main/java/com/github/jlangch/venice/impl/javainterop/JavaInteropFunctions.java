@@ -231,6 +231,7 @@ public class JavaInteropFunctions {
                             "         gd (cast :Graphics (. img :createGraphics))] \n" +
                             "     (. gd :fillOval 10 20 5 5)\n" +
                             "     img))")
+                    .seeAlso("class", "formal-type", "remove-formal-type")
                     .build());
         }
 
@@ -276,6 +277,7 @@ public class JavaInteropFunctions {
                             "   (let [img (. :BufferedImage :new 40 40 1) \n" +
                             "         gd (cast :Graphics (. img :createGraphics))] \n" +
                             "     (formal-type gd)))")
+                    .seeAlso("remove-formal-type", "cast", "class")
                     .build());
         }
 
@@ -316,6 +318,7 @@ public class JavaInteropFunctions {
                             "     (println \"p0:\" (formal-type p0))   \n" +
                             "     (println \"p1:\" (formal-type p1))   \n" +
                             "     (println \"p2:\" (formal-type p2)))) ")
+                    .seeAlso("formal-type", "cast", "class")
                     .build());
         }
 
@@ -346,7 +349,8 @@ public class JavaInteropFunctions {
                     .arglists("(class name)")
                     .doc("Returns the Java class for the given name. Throws an exception if the class is not found.")
                     .examples("(class :java.util.ArrayList)")
-                    .seeAlso("class-of", "class-name", "class-version")
+                    .seeAlso("class-of", "class-name", "class-version",
+                             "cast", "formal-type", "remove-formal-type")
                     .build());
         }
 
