@@ -124,9 +124,9 @@ public class Embed_12_ServiceRegistry {
     public static void main(final String[] args) {
         final Venice venice = new Venice();
 
-        final IServiceRegistry registry = venice.getServiceRegistry();
-        registry.register("Calculator", new Calculator());
-        registry.register("Logger", new Logger());
+        venice.getServiceRegistry()
+              .register("Calculator", new Calculator())
+              .register("Logger", new Logger());
 
         // returns a long: 30
         System.out.println(
@@ -154,7 +154,74 @@ public class Embed_12_ServiceRegistry {
             System.out.println(message);
         }
     }
+}
+```
 
+In some integration scenarios it might easier to use dynamic service
+discovery (delegating to a native service registry):
+
+```java
+import com.github.jlangch.venice.IServiceRegistry;
+import com.github.jlangch.venice.Venice;
+import com.github.jlangch.venice.VncException;
+
+
+public class Embed_13_ServiceRegistry {
+
+    public static void main(final String[] args) {
+        final Venice venice = new Venice();
+
+        venice.getServiceRegistry()
+              .register("Calculator", new Calculator())
+              .register("Logger", new Logger());
+
+        venice.getServiceRegistry()
+              .registerServiceDiscovery(new TestServiceDiscovery());
+
+        // returns a long: 30
+        System.out.println(
+                venice.eval("(service :Calculator :add 10 20)"));
+
+        // returns a long: 200
+        System.out.println(
+                venice.eval("(service :Calculator :multiply 10 20)"));
+
+        venice.eval("(service :Logger :log \"Test message\")");
+    }
+
+
+    public static class TestServiceDiscovery implements IServiceDiscovery {
+        @Override
+        public Object lookup(final String name) {
+            if (name == null) {
+                throw new IllegalArgumentException("A service name must not be null");
+            }
+
+            switch(name) {
+                case "Calculator": return calculator;
+                case "Logger":     return logger;
+                default:           return null;
+            }
+        }
+
+        private final Calculator calculator = new Calculator();
+        private final Logger logger = new Logger();
+    }
+
+    public static class Calculator {
+        public long add(long v1, long v2) {
+            return v1 + v2;
+        }
+        public long multiply(long v1, long v2) {
+            return v1 * v2;
+        }
+    }
+
+    public static class Logger {
+        public void log(String message) {
+            System.out.println(message);
+        }
+    }
 }
 ```
 

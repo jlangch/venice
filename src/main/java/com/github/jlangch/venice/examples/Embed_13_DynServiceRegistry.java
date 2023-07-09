@@ -21,11 +21,12 @@
  */
 package com.github.jlangch.venice.examples;
 
+import com.github.jlangch.venice.IServiceDiscovery;
 import com.github.jlangch.venice.Venice;
 import com.github.jlangch.venice.VncException;
 
 
-public class Embed_12_ServiceRegistry {
+public class Embed_13_DynServiceRegistry {
 
     public static void main(final String[] args) {
         try {
@@ -46,8 +47,7 @@ public class Embed_12_ServiceRegistry {
         final Venice venice = new Venice();
 
         venice.getServiceRegistry()
-              .register("Calculator", new Calculator())
-              .register("Logger", new Logger());
+              .registerServiceDiscovery(new TestServiceDiscovery());
 
         // returns a long: 30
         System.out.println(
@@ -60,6 +60,24 @@ public class Embed_12_ServiceRegistry {
         venice.eval("(service :Logger :log \"Test message\")");
     }
 
+
+    public static class TestServiceDiscovery implements IServiceDiscovery {
+        @Override
+        public Object lookup(final String name) {
+            if (name == null) {
+                throw new IllegalArgumentException("A service name must not be null");
+            }
+
+            switch(name) {
+                case "Calculator": return calculator;
+                case "Logger":     return logger;
+                default:           return null;
+            }
+        }
+
+        private final Calculator calculator = new Calculator();
+        private final Logger logger = new Logger();
+    }
 
     public static class Calculator {
         public long add(long v1, long v2) {

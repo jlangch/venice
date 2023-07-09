@@ -2009,8 +2009,8 @@
        ```
        Venice venice = new Venice();
 
-       IServiceRegistry registry = venice.getServiceRegistry();
-       registry.register("Calculator", new Calculator());
+       venice.getServiceRegistry()
+             .register("Calculator", new Calculator());
 
        long r = (Long)venice.eval("(service :Calculator :multiply 10 20)");
        ```
@@ -2032,7 +2032,8 @@
 
   service [name method & args]
 
-  (apply . ((keyword name) *service-registry*) method args))
+  (let [s (. *service-registry* :lookup (keyword name))]
+    (apply . s method args)))
 
 
 (defn
@@ -2043,7 +2044,7 @@
 
   service? [name]
 
-  (some? ((keyword name) *service-registry*)))
+  (. *service-registry* :exists (keyword name)))
 
 
 

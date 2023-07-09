@@ -62,17 +62,31 @@ public interface IServiceRegistry {
      *
      * @param name The service's name. A service name must be a non blank string.
      * @param service The service, any non <code>null</code> Java object
+     * @return this registry to allow builder style configuration
      */
-    void register(String name, Object service);
+	IServiceRegistry register(String name, Object service);
 
     /**
      * Register named services.
      *
-      * @param services A map of named services.
+     * @param services A map of named services.
      *                 The <code>key</code> holds the service's name (a non blank string).
      *                 The <code>value</code> holds the service, any non <code>null</code> Java object
+    * @return this registry to allow builder style configuration
      */
-    void registerAll(Map<String,Object> services);
+	IServiceRegistry registerAll(Map<String,Object> services);
+
+    /**
+     * Register a dynamic service lookup.
+     *
+     * <p>Note: Services registered through {@link #register(String,Object)} have
+     * precedence over services available provided by the custom service discovery via
+     * {@link IServiceDiscovery}
+     *
+     * @param serviceDiscovery The custom service discovery mechanism
+    * @return this registry to allow builder style configuration
+     */
+	IServiceRegistry registerServiceDiscovery(IServiceDiscovery serviceDiscovery);
 
     /**
      * Unregister a service.
@@ -80,13 +94,23 @@ public interface IServiceRegistry {
      * <p>Unregistering an unknown service is silently skipped.
      *
      * @param name The service's name
+     * @return this registry to allow builder style configuration
      */
-    void unregister(String name);
+	IServiceRegistry unregister(String name);
 
     /**
-     * Unregister all services.
+     * Unregister all services and the service discovery
+     *
+     * @return this registry to allow builder style configuration
      */
-    void unregisterAll();
+	IServiceRegistry unregisterAll();
+
+    /**
+     * Unregister the dynamic service lookup.
+     *
+     * @return this registry to allow builder style configuration
+     */
+	IServiceRegistry unregisterServiceDiscovery();
 
     /**
      * Looking up a service

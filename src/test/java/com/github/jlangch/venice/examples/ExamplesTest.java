@@ -71,4 +71,14 @@ public class ExamplesTest {
         Embed_11_CustomSandbox.run();
     }
 
+    @Test
+    public void test_Embed_12_ServiceRegistry() {
+    	Embed_12_ServiceRegistry.run();
+    }
+
+    @Test
+    public void test_Embed_13_DynServiceRegistry() {
+    	Embed_13_DynServiceRegistry.run();
+    }
+
 }

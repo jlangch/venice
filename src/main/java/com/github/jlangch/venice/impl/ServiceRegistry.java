@@ -22,24 +22,24 @@
 package com.github.jlangch.venice.impl;
 
 import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.atomic.AtomicReference;
 
 import com.github.jlangch.venice.AssertionException;
+import com.github.jlangch.venice.IServiceDiscovery;
 import com.github.jlangch.venice.IServiceRegistry;
-import com.github.jlangch.venice.impl.types.Constants;
-import com.github.jlangch.venice.impl.types.VncJavaObject;
-import com.github.jlangch.venice.impl.types.VncKeyword;
-import com.github.jlangch.venice.impl.types.VncVal;
-import com.github.jlangch.venice.impl.types.collections.VncHashMap;
+import com.github.jlangch.venice.VncException;
 import com.github.jlangch.venice.impl.util.StringUtil;
 
 
 public class ServiceRegistry implements IServiceRegistry {
 
 	public ServiceRegistry() {
+		clear();
 	}
 
 	@Override
-    public void register(final String name, final Object service) {
+    public ServiceRegistry register(final String name, final Object service) {
         if (StringUtil.isBlank(name)) {
             throw new AssertionException(
                     "A service name for the service registry must not be blank!");
@@ -49,31 +49,56 @@ public class ServiceRegistry implements IServiceRegistry {
                     "A service for the service registry must not be null!");
         }
 
-        registry = registry.assoc(new VncKeyword(name), new VncJavaObject(service));
+        staticRegistry.put(name, service);
+
+        return this;
     }
 
 	@Override
-    public void registerAll(final Map<String,Object> services) {
-		if (services == null) {
-			return;
+    public ServiceRegistry registerAll(final Map<String,Object> services) {
+		if (services != null) {
+			services.forEach((k,v) -> register(k,v));
 		}
 
-		services.forEach((k,v) -> register(k,v));
+        return this;
+	}
+
+	@Override
+    public ServiceRegistry registerServiceDiscovery(final IServiceDiscovery serviceDiscovery) {
+		if (serviceDiscovery == null) {
+            throw new AssertionException(
+                    "A service discovery for the service registry must not be null!");
+		}
+
+ 		replaceDynamicRegistry(serviceDiscovery);
+
+        return this;
 	}
 
     @Override
-    public void unregister(final String name) {
+    public ServiceRegistry unregister(final String name) {
         if (name == null) {
             throw new AssertionException(
                     "A service name for unregistering a service in the service registry must not be null!");
         }
 
-        registry = registry.dissoc(new VncKeyword(name));
+        staticRegistry.remove(name);
+
+        return this;
     }
 
     @Override
-    public void unregisterAll() {
-    	registry = new VncHashMap();
+    public ServiceRegistry unregisterAll() {
+    	clear();
+
+        return this;
+   }
+
+    @Override
+    public ServiceRegistry unregisterServiceDiscovery() {
+    	replaceDynamicRegistry(null);
+
+        return this;
     }
 
     @Override
@@ -83,8 +108,20 @@ public class ServiceRegistry implements IServiceRegistry {
                     "A service name for looking up a service in the service registry must not be null!");
         }
 
-        final VncVal service = registry.get(new VncKeyword(name));
-        return service == Constants.Nil ? null : ((VncJavaObject)service).getDelegate();
+        // primary lookup on static registry
+        final Object service = staticRegistry.get(name);
+        if (service != null) {
+             return service;
+        }
+
+        // secondary lookup on dynamic registry
+        final IServiceDiscovery sd = getDynamicRegistry();
+        if (sd != null) {
+            return sd.lookup(name);
+        }
+
+        throw new VncException(
+                "No registered service available under the name '" + name + "'!");
     }
 
     @Override
@@ -94,14 +131,30 @@ public class ServiceRegistry implements IServiceRegistry {
                     "A service name for testing existence in the service registry must not be null!");
         }
 
-        final VncVal service = registry.get(new VncKeyword(name));
-        return service != Constants.Nil && service instanceof VncJavaObject;
+        if (staticRegistry.containsKey(name)) {
+        	return true;
+        }
+        else {
+            final IServiceDiscovery sd = getDynamicRegistry();
+            return sd != null && sd.lookup(name) != null;
+        }
+     }
+
+
+    private void clear() {
+    	staticRegistry.clear();
+    	replaceDynamicRegistry(null);
     }
 
-    public VncHashMap get() {
-    	return registry;
+    private IServiceDiscovery getDynamicRegistry() {
+     	return serviceDiscovery.get();
+    }
+
+    private void replaceDynamicRegistry(final IServiceDiscovery sd) {
+    	serviceDiscovery.set(sd);
     }
 
 
-    private VncHashMap registry = new VncHashMap();
+    private Map<String,Object> staticRegistry = new ConcurrentHashMap<>();
+    private AtomicReference<IServiceDiscovery> serviceDiscovery = new AtomicReference<>();
  }

@@ -7,11 +7,13 @@ All notable changes to this project will be documented in this file.
 
 
 
-## [1.10.38] - 2023-05-xx
+## [1.10.38] - 2023-07-xx
 
 ### Added 
 
 - function `str/split-columns`
+- the ability to use dynamic service discovery with Venice service 
+  registry to simplify Venice embedding use cases
 
 
 

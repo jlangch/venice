@@ -339,8 +339,9 @@ public class VeniceInterpreter implements IVeniceInterpreter, Serializable  {
         // command line args (default nil)
         env.setGlobal(new Var(new VncSymbol("*ARGV*"), Nil, true));
 
-        // service registry
-        env.setGlobal(new Var(new VncSymbol("*service-registry*"), ((ServiceRegistry)serviceRegistry).get(), false));
+        // service registry (make it immutable)
+        final VncJavaObject servicRegistry = new VncJavaObject(new ImmutableServiceRegistry(serviceRegistry));
+        env.setGlobal(new Var(new VncSymbol("*service-registry*"), servicRegistry, false));
 
         // loaded modules & files
         final VncMutableSet loadedModules = new VncMutableSet();
