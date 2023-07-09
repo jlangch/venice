@@ -225,6 +225,62 @@ public class Embed_13_ServiceRegistry {
 
 ## stdout-stderr Redirection
 
+As default Venice uses the *stdout* / *stderr* streams from the hosting Java VM. Nevertheless they can be replaced with dedicated streams if required so.
+
+
+**Redirect to null device**
+
+Redirect *stdout* / *stderr* to the *null* device, effectively swalling everything sent
+to these streams.
+
+```java
+venice.eval(
+    "(println 100)",  
+    Parameters.of("*out*", null,
+                   *err*", null));
+```
+
+
+**Redirect stdout/stderr in the script**
+
+The macros `with-out-str` and `with-err-str` capture all output written to
+*stdout* or *stderr*r respectively in the macro's context and return it as the macros 
+return value for further processing.
+
+```java
+venice.eval("(with-out-str (println 100))");
+
+venice.eval("(with-out-str (println *out* 100))");
+
+venice.eval("(with-err-str (println *err* 100))");
+```
+
+
+**Redirect stdout and stderr to capturing streams at call level**
+
+At the Java VM level *stdout* / *stderr* of the invoked script can be redirected
+to dedicated streams.
+
+```java
+try(CapturingPrintStream ps_out = new CapturingPrintStream();
+    CapturingPrintStream ps_err = new CapturingPrintStream()
+) {
+   result = venice.eval(
+                 "(do                        \n" +
+                 "  (println [3 4])          \n" +
+                 "  (println *err* :failure) \n" +
+                 "  100)                     ",
+                 Parameters.of("*out*", ps_out,
+                               "*err*", ps_err));
+   System.out.println("result: " + result);
+   System.out.print("stdout: " + ps_out.getOutput());
+   System.out.print("stderr: " + ps_err.getOutput());
+}
+```
+
+
+### stdout-stderr redirection example
+
 ```java
 import com.github.jlangch.venice.Parameters;
 import com.github.jlangch.venice.Venice;
