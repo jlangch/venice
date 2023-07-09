@@ -50,7 +50,6 @@ public class ServiceRegistry implements IServiceRegistry {
         }
 
         staticRegistry.put(name, service);
-
         return this;
     }
 
@@ -70,8 +69,7 @@ public class ServiceRegistry implements IServiceRegistry {
                     "A service discovery for the service registry must not be null!");
 		}
 
- 		replaceDynamicRegistry(serviceDiscovery);
-
+		this.serviceDiscovery.set(serviceDiscovery);
         return this;
 	}
 
@@ -83,21 +81,18 @@ public class ServiceRegistry implements IServiceRegistry {
         }
 
         staticRegistry.remove(name);
-
         return this;
     }
 
     @Override
     public ServiceRegistry unregisterAll() {
     	clear();
-
         return this;
    }
 
     @Override
     public ServiceRegistry unregisterServiceDiscovery() {
-    	replaceDynamicRegistry(null);
-
+    	serviceDiscovery.set(null);
         return this;
     }
 
@@ -115,7 +110,7 @@ public class ServiceRegistry implements IServiceRegistry {
         }
 
         // secondary lookup on dynamic registry
-        final IServiceDiscovery sd = getDynamicRegistry();
+        final IServiceDiscovery sd = serviceDiscovery.get();
         if (sd != null) {
             return sd.lookup(name);
         }
@@ -137,22 +132,14 @@ public class ServiceRegistry implements IServiceRegistry {
         }
 
         // secondary check on dynamic registry
-        final IServiceDiscovery sd = getDynamicRegistry();
+        final IServiceDiscovery sd = serviceDiscovery.get();
         return sd != null && sd.exists(name);
      }
 
 
     private void clear() {
     	staticRegistry.clear();
-    	replaceDynamicRegistry(null);
-    }
-
-    private IServiceDiscovery getDynamicRegistry() {
-     	return serviceDiscovery.get();
-    }
-
-    private void replaceDynamicRegistry(final IServiceDiscovery sd) {
-    	serviceDiscovery.set(sd);
+    	serviceDiscovery.set(null);
     }
 
 
