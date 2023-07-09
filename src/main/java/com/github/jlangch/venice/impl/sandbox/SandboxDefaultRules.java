@@ -38,15 +38,17 @@ public class SandboxDefaultRules {
             Arrays.asList(
                 "class:" + BASE + ".*Exception:*",
                 "class:" + BASE + ".*Error:*",
+                "class:" + BASE + ".IServiceDiscovery:*",
 
                 "class:" + BASE + ".impl.repl.ReplPrintStream:*",
                 "class:" + BASE + ".util.CapturingPrintStream:*",
                 "class:" + BASE + ".util.CallbackPrintStream:*",
                 "class:" + BASE + ".util.*XMLHandler*:*",
 
-                "class:" + BASE + ".servlet.*:*",
+                "class:" + BASE + ".util.CapturingPrintStream:*",
+                "class:" + BASE + ".util.ImmutableServiceDiscovery:*",
 
-                "class:" + BASE + ".impl.util.crypt.*:*",
+                "class:" + BASE + ".servlet.*:*",
 
                 // Dynamic proxies based on venice' DynamicInvocationHandler
                 "class:" + BASE + ".impl.javainterop.DynamicInvocationHandler*:*",
