@@ -2010,17 +2010,39 @@
        Venice venice = new Venice();
 
        venice.getServiceRegistry()
-             .register("Calculator", new Calculator());
+            .register("Calculator", new Calculator())
+            .registerServiceDiscovery(new TestServiceDiscovery());
 
        long r = (Long)venice.eval("(service :Calculator :multiply 10 20)");
        ```
 
-       while `Calculator` is defined as:
+       while `Calculator` and `TestServiceDiscovery` are defined as:
 
        ```
+       public static class TestServiceDiscovery implements IServiceDiscovery {
+           @Override public Object lookup(final String name) {
+               if (name == null) {
+                   throw new IllegalArgumentException("A service name must not be null");
+               }
+               else if (name.equals("Logger")) {
+                 return logger;
+               }
+               else {
+                 throw new VncException("Service " + name + " is not registered");
+               }
+           }
+           private final Logger logger = new Logger();
+       }
+
        public class Calculator {
          public long multiply(long v1, long v2) {
            return v1 * v2;
+         }
+       }
+
+       public static class Logger {
+         public void log(String message) {
+           System.out.println(message);
          }
        }
        ```
