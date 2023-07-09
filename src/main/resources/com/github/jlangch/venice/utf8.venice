@@ -23,7 +23,7 @@
 
 (ns utf8)
 
-;; See:  https://unicode-table.com/en/#200B
+;; See: https://www.compart.com/en/unicode/
 
 ;; White Spaces
 ;;
@@ -72,7 +72,7 @@
 (def per-mille-sign        #\u2030)  ;; per mille sign '‰'
 (def diameter-sign         #\u2300)  ;; diameter sign '⌀'
 (def check-mark            #\u2713)  ;; check mark '✓'
-(def cross-mark            #\u2717)  ;; check mark '✗'
+(def cross-mark            #\u2717)  ;; cross mark '✗'
 
 ;; Greek letters
 (def alpha                 #\u03B1)  ;; alpha 'α'

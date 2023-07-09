@@ -24,7 +24,7 @@ package com.github.jlangch.venice.impl.util;
 
 public abstract class UTF8 {
 
-    // See:  https://unicode-table.com/en/#200B
+    // See:  https://www.compart.com/de/unicode/
 
     // White Spaces
     //
@@ -73,7 +73,7 @@ public abstract class UTF8 {
     public static char PER_MILLE_SIGN        = '\u2030';  // per mille sign '‰'
     public static char DIAMETER_SIGN         = '\u2300';  // diameter sign '⌀'
     public static char CHECK_MARK            = '\u2713';  // check mark '✓'
-    public static char CROSS_MARK            = '\u2717';  // check mark '✗'
+    public static char CROSS_MARK            = '\u2717';  // cross mark '✗'
 
     // Greek letters
     public static char ALPHA                 = '\u03B1';  // alpha 'α'
@@ -86,7 +86,7 @@ public abstract class UTF8 {
     public static char PI                    = '\u03C0';  // pi 'π'
     public static char SIGMA                 = '\u03C3';  // sigma 'σ'
     public static char TAU                   = '\u03C4';  // tau 'τ'
-    
+
     public static char DELTA_UPPER           = '\u0394';  // uppercase greek delta 'Δ'
 
 
