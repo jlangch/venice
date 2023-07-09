@@ -91,6 +91,7 @@ import com.github.jlangch.venice.impl.util.callstack.CallStack;
 import com.github.jlangch.venice.impl.util.callstack.WithCallStack;
 import com.github.jlangch.venice.javainterop.AcceptAllInterceptor;
 import com.github.jlangch.venice.javainterop.IInterceptor;
+import com.github.jlangch.venice.util.ImmutableServiceRegistry;
 
 /**
  * The Venice interpreter runs the scripts and handles the special forms
