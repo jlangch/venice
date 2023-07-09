@@ -2014,6 +2014,7 @@
             .registerServiceDiscovery(new TestServiceDiscovery());
 
        long r = (Long)venice.eval("(service :Calculator :multiply 10 20)");
+       venice.eval("(service :Logger :log (version))");
        ```
 
        while `Calculator` and `TestServiceDiscovery` are defined as:
