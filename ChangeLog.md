@@ -14,7 +14,7 @@ All notable changes to this project will be documented in this file.
 
 ### Fixed 
 
-- service registry lookup when sandbox is active
+- not working service registry lookup when sandbox is active
 
 
 
