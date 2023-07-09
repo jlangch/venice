@@ -550,7 +550,8 @@ if the expressions or rules come from an untrusted source.
 
 ### Strict Sandbox
 
-Disables all Java calls and all Venice IO functions
+Prohibits all 'unsafe' functions like Java calls, IO related functions, ... to provide
+a safe environment for running scripts.
 
 
 ```java
@@ -575,6 +576,8 @@ public class Embed_09_StrictSandbox {
     }
 }
 ```
+
+For details on strict sandboxes see [Sandbox](sandbox.md)
 
 
 ### Customized Sandbox
@@ -736,4 +739,8 @@ public class Embed_10_CustomSandbox {
     }
 }
 ```
+
+For details on customized sandboxes see [Sandbox](sandbox.md)
+
+
 
