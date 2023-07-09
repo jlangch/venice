@@ -226,7 +226,7 @@ public class CoreSystemFunctions {
                         "(format-micro-time time & options)")
                     .doc(
                         "Formats a time given in microseconds as long or double. \n\n" +
-                        "Options: \n\\n" +
+                        "Options: \n\n" +
                         "| :precision p | e.g :precision 4 (defaults to 3)|")
                     .examples(
                         "(format-micro-time 203)",
