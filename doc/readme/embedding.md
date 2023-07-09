@@ -544,8 +544,8 @@ public class PrecompileBenchmark {
 
 ## Sandbox
 
-If the expressions or rules come from an untrusted source a sandbox should be set in
-place to prevent malicious actions.
+A Venice [Sandbox](sandbox.md) allows a program to execute _Venice_ in a restricted sandbox 
+if the expressions or rules come from an untrusted source.
 
 
 ### Strict Sandbox
