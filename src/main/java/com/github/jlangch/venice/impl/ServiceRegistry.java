@@ -128,16 +128,17 @@ public class ServiceRegistry implements IServiceRegistry {
     public boolean exists(final String name) {
         if (name == null) {
             throw new AssertionException(
-                    "A service name for testing existence in the service registry must not be null!");
+                    "A service name for checking service availability in the service registry must not be null!");
         }
 
+        // primary check on static registry
         if (staticRegistry.containsKey(name)) {
         	return true;
         }
-        else {
-            final IServiceDiscovery sd = getDynamicRegistry();
-            return sd != null && sd.lookup(name) != null;
-        }
+
+        // secondary check on dynamic registry
+        final IServiceDiscovery sd = getDynamicRegistry();
+        return sd != null && sd.exists(name);
      }
 
 

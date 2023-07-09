@@ -91,7 +91,7 @@ import com.github.jlangch.venice.impl.util.callstack.CallStack;
 import com.github.jlangch.venice.impl.util.callstack.WithCallStack;
 import com.github.jlangch.venice.javainterop.AcceptAllInterceptor;
 import com.github.jlangch.venice.javainterop.IInterceptor;
-import com.github.jlangch.venice.util.ImmutableServiceRegistry;
+import com.github.jlangch.venice.util.ImmutableServiceDiscovery;
 
 /**
  * The Venice interpreter runs the scripts and handles the special forms
@@ -340,8 +340,8 @@ public class VeniceInterpreter implements IVeniceInterpreter, Serializable  {
         // command line args (default nil)
         env.setGlobal(new Var(new VncSymbol("*ARGV*"), Nil, true));
 
-        // service registry (make it immutable)
-        final VncJavaObject servicRegistry = new VncJavaObject(new ImmutableServiceRegistry(serviceRegistry));
+        // service discovery (lookup access on the service registry only)
+        final VncJavaObject servicRegistry = new VncJavaObject(new ImmutableServiceDiscovery(serviceRegistry));
         env.setGlobal(new Var(new VncSymbol("*service-registry*"), servicRegistry, false));
 
         // loaded modules & files

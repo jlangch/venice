@@ -22,29 +22,31 @@
 package com.github.jlangch.venice.util;
 
 import com.github.jlangch.venice.AssertionException;
+import com.github.jlangch.venice.IServiceDiscovery;
 import com.github.jlangch.venice.IServiceRegistry;
-import com.github.jlangch.venice.impl.types.VncJavaObject;
 
 
-public class ImmutableServiceRegistry {
+public class ImmutableServiceDiscovery implements IServiceDiscovery {
 
-    public ImmutableServiceRegistry(final IServiceRegistry registry) {
+    public ImmutableServiceDiscovery(final IServiceRegistry registry) {
         this.registry = registry;
     }
 
-    public VncJavaObject lookup(final String name) {
+    @Override
+    public Object lookup(final String name) {
         if (name == null) {
             throw new AssertionException(
                     "A service name for looking up a service in the service registry must not be null!");
         }
 
-        return new VncJavaObject(registry.lookup(name));
+        return registry.lookup(name);
     }
 
+    @Override
     public boolean exists(final String name) {
         if (name == null) {
             throw new AssertionException(
-                    "A service name for looking up a service in the service registry must not be null!");
+                    "A service name for checking service availability in the service registry must not be null!");
         }
 
         return registry.exists(name);

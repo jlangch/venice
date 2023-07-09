@@ -300,6 +300,43 @@ public class JavaInteropFunctions {
         private static final long serialVersionUID = -1848883965231344442L;
     }
 
+    public static class RemoveFormalTypeFn extends AbstractJavaFn {
+        public RemoveFormalTypeFn() {
+            super(
+                "remove-formal-type",
+                VncFunction
+                    .meta()
+                    .arglists("(remove-formal-type object)")
+                    .doc("Removes the formal type from a Java object")
+                    .examples(
+                            "(do                                       \n" +
+                            "   (let [p0 (. :java.awt.Point :new 0 0)  \n" +
+                            "         p1 (cast :java.lang.Object p0)   \n" +
+                            "         p2 (remove-formal-type p1)]      \n" +
+                            "     (println \"p0:\" (formal-type p0))   \n" +
+                            "     (println \"p1:\" (formal-type p1))   \n" +
+                            "     (println \"p2:\" (formal-type p2)))) ")
+                    .build());
+        }
+
+        @Override
+        public VncVal apply(final VncList args) {
+            ArityExceptions.assertArity(this, args, 1);
+
+            if (Types.isVncJavaObject(args.first())) {
+                final VncJavaObject obj = (VncJavaObject)args.first();
+                return new VncJavaObject(obj.getDelegate());
+            }
+            else {
+                throw new VncException(String.format(
+                        "Function 'remove-formal-type' is not supported on non Java object (%s)",
+                        Types.getType(args.first())));
+            }
+        }
+
+        private static final long serialVersionUID = -1848883965231344442L;
+    }
+
     public static class JavaClassFn extends AbstractJavaFn {
         public JavaClassFn() {
             super(
@@ -1186,6 +1223,7 @@ public class JavaInteropFunctions {
                     .add(new ProxifyFn())
                     .add(new CastFn())
                     .add(new FormalTypeFn())
+                    .add(new RemoveFormalTypeFn())
                     .add(new SupersFn())
                     .add(new BasesFn())
                     .add(new DescribeJavaClassFn())

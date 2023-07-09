@@ -37,4 +37,14 @@ public interface IServiceDiscovery {
      */
     Object lookup(String name);
 
+    /**
+     * Returns true if the service exists otherwise false
+     *
+     * @param name The service's name
+     * @return <code>true</code> if the service exists otherwise <code>false</code>
+     */
+    default boolean exists(String name) {
+    	return lookup(name) != null;
+    }
+
 }

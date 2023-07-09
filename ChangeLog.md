@@ -10,6 +10,11 @@ All notable changes to this project will be documented in this file.
 ### Added 
 
 - UTF-8 module with common UTF-8 character constants
+- function `remove-formal-type`
+
+### Fixed 
+
+- service registry lookup when sandbox is active
 
 
 

@@ -2055,7 +2055,11 @@
 
   service [name method & args]
 
-  (let [s (. *service-registry* :lookup (keyword name))]
+  ;; Note: the service registry lookup function returns a java.lang.Object
+  ;; hence the objects formal type is :java.lang.Object, actually we
+  ;; need its real type for Java reflective method invocation under a
+  ;; sandbox. `remove-formal-type` solves the problem
+  (let [s (remove-formal-type (. *service-registry* :lookup (keyword name)))]
     (apply . s method args)))
 
 

@@ -54,6 +54,10 @@ public class VncJavaObject extends VncMap implements IVncJavaObject {
         this(obj, null, Constants.Nil);
     }
 
+    public VncJavaObject(final Object obj, final Class<?> formalType) {
+        this(obj, formalType, Constants.Nil);
+    }
+
     public VncJavaObject(final Object obj, final VncVal meta) {
         this(obj, null, meta);
     }

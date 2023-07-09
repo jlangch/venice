@@ -65,4 +65,40 @@ public class JavaInterop_formal_type_Test {
         assertEquals(40, img.getWidth());
     }
 
+    @Test
+    public void test_cast() {
+        final Venice venice = new Venice();
+
+        final String script =
+                "(->> (. :java.awt.Point :new 0 0)  \n" +
+                "     (cast :java.lang.Object)      \n" +
+                "     (formal-type)                 \n" +
+                "     (class))                      ";
+
+        assertEquals(java.lang.Object.class, venice.eval(script));
+    }
+
+    @Test
+    public void test_remove_formal_type() {
+        final Venice venice = new Venice();
+
+        final String script1 =
+                "(->> (. :java.awt.Point :new 0 0)  \n" +
+                "     (cast :java.lang.Object)      \n" +
+                "     (formal-type)                 \n" +
+                "     (class))                      ";
+
+        assertEquals(java.lang.Object.class, venice.eval(script1));
+
+
+        final String script2 =
+                "(->> (. :java.awt.Point :new 0 0)  \n" +
+                "     (cast :java.lang.Object)      \n" +
+                "     (remove-formal-type)          \n" +
+                "     (formal-type)                 \n" +
+                "     (class))                      ";
+
+        assertEquals(java.awt.Point.class, venice.eval(script2));
+    }
+
 }

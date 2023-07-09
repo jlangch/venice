@@ -124,7 +124,7 @@ public interface IServiceRegistry {
      * Returns true if the service exists otherwise false
      *
      * @param name The service's name
-     * @return <code>null</code> if the service exists otherwise <code>false</code>
+     * @return <code>true</code> if the service exists otherwise <code>false</code>
      */
     boolean exists(String name);
 
