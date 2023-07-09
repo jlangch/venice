@@ -39,60 +39,60 @@
 ;;   0.125 em, as opposite to the suggested 0.2 em) and “hair space” only 1/24 em
 ;;   (i.e. about 0.042 em, whereas the width of a THIN SPACE glyph typically
 ;;   varies between 0.1 em and 0.2 em).
-(def nbsp                  #\u00A0)  ;; no break space
-(def en-quad               #\u2000)  ;;
-(def em-quad               #\u2001)  ;;
-(def en-space              #\u2002)  ;; en space
-(def em-space              #\u2003)  ;; em space, 1 en (= 1/2 em)
-(def three-per-em-space    #\u2004)  ;; three-per-em space
-(def four-per-em-space     #\u2005)  ;; four-per-em space
-(def six-per-em-space      #\u2006)  ;; six-per-em space
-(def figure-space          #\u2007)  ;; figure space
-(def punctuation-space     #\u2008)  ;; punctuation space
-(def thin-space            #\u2009)  ;; thin space
-(def hair-space            #\u200A)  ;; hair space
-(def zero-width-space      #\u200B)  ;; zero width space
-(def zero-width-non-joiner #\u200C)  ;; zero width non-joiner
-(def zero-width-joiner     #\u200D)  ;; zero width joiner
-(def line-separator        #\u2028)  ;; line separator
-(def paragtaph-separator   #\u2029)  ;; paragraph separator
-(def narrow-no-break-space #\u202F)  ;; narrow no-break space
-(def medium-math-space     #\u205F)  ;; medium mathematical space
-(def word-jpiner           #\u2060)  ;; word joiner
+(defonce nbsp                  #\u00A0)  ;; no break space
+(defonce en-quad               #\u2000)  ;;
+(defonce em-quad               #\u2001)  ;;
+(defonce en-space              #\u2002)  ;; en space
+(defonce em-space              #\u2003)  ;; em space, 1 en (= 1/2 em)
+(defonce three-per-em-space    #\u2004)  ;; three-per-em space
+(defonce four-per-em-space     #\u2005)  ;; four-per-em space
+(defonce six-per-em-space      #\u2006)  ;; six-per-em space
+(defonce figure-space          #\u2007)  ;; figure space
+(defonce punctuation-space     #\u2008)  ;; punctuation space
+(defonce thin-space            #\u2009)  ;; thin space
+(defonce hair-space            #\u200A)  ;; hair space
+(defonce zero-width-space      #\u200B)  ;; zero width space
+(defonce zero-width-non-joiner #\u200C)  ;; zero width non-joiner
+(defonce zero-width-joiner     #\u200D)  ;; zero width joiner
+(defonce line-separator        #\u2028)  ;; line separator
+(defonce paragtaph-separator   #\u2029)  ;; paragraph separator
+(defonce narrow-no-break-space #\u202F)  ;; narrow no-break space
+(defonce medium-math-space     #\u205F)  ;; medium mathematical space
+(defonce word-jpiner           #\u2060)  ;; word joiner
 
 
 ;; Varia
-(def pilcrow               #\u00B6)  ;; check mark '¶'
-(def middle-dot            #\u00B7)  ;; check mark '·'
-(def right-guillemet       #\u00BB)  ;; check mark '»'
-(def left-guillemet        #\u00AB)  ;; check mark '«'
-(def copyright             #\u00A9)  ;; check mark '©'
-(def bullet                #\u2022)  ;; bullet '•'
-(def horz-ellipsis         #\u2026)  ;; horizontal ellipsis '…'
-(def per-mille-sign        #\u2030)  ;; per mille sign '‰'
-(def diameter-sign         #\u2300)  ;; diameter sign '⌀'
-(def check-mark            #\u2713)  ;; check mark '✓'
-(def cross-mark            #\u2717)  ;; cross mark '✗'
+(defonce pilcrow               #\u00B6)  ;; check mark '¶'
+(defonce middle-dot            #\u00B7)  ;; check mark '·'
+(defonce right-guillemet       #\u00BB)  ;; check mark '»'
+(defonce left-guillemet        #\u00AB)  ;; check mark '«'
+(defonce copyright             #\u00A9)  ;; check mark '©'
+(defonce bullet                #\u2022)  ;; bullet '•'
+(defonce horz-ellipsis         #\u2026)  ;; horizontal ellipsis '…'
+(defonce per-mille-sign        #\u2030)  ;; per mille sign '‰'
+(defonce diameter-sign         #\u2300)  ;; diameter sign '⌀'
+(defonce check-mark            #\u2713)  ;; check mark '✓'
+(defonce cross-mark            #\u2717)  ;; cross mark '✗'
 
 ;; Greek letters
-(def alpha                 #\u03B1)  ;; alpha 'α'
-(def beta                  #\u03B2)  ;; beta 'β'
-(def gamma                 #\u03B3)  ;; gamma 'γ'
-(def delta                 #\u03B4)  ;; delta 'δ'
-(def epsilon               #\u03B5)  ;; epsilon 'ε'
-(def lamda                 #\u03BB)  ;; lamda 'λ'
-(def mu                    #\u03BC)  ;; mu 'μ'
-(def pi                    #\u03C0)  ;; pi 'π'
-(def sigma                 #\u03C3)  ;; sigma 'σ'
-(def tau                   #\u03C4)  ;; tau 'τ'
+(defonce alpha                 #\u03B1)  ;; alpha 'α'
+(defonce beta                  #\u03B2)  ;; beta 'β'
+(defonce gamma                 #\u03B3)  ;; gamma 'γ'
+(defonce delta                 #\u03B4)  ;; delta 'δ'
+(defonce epsilon               #\u03B5)  ;; epsilon 'ε'
+(defonce lamda                 #\u03BB)  ;; lamda 'λ'
+(defonce mu                    #\u03BC)  ;; mu 'μ'
+(defonce pi                    #\u03C0)  ;; pi 'π'
+(defonce sigma                 #\u03C3)  ;; sigma 'σ'
+(defonce tau                   #\u03C4)  ;; tau 'τ'
 
-(def delta-upper           #\u0394)  ;; uppercase greek delta 'Δ'
+(defonce delta-upper           #\u0394)  ;; uppercase greek delta 'Δ'
 
 
-(def table                """
-                          ┌───┬───┐
-                          │   │   │
-                          ├───┼───┤
-                          │   │   │
-                          └───┴───┘
-                          """)
+(defonce table                """
+                              ┌───┬───┐
+                              │   │   │
+                              ├───┼───┤
+                              │   │   │
+                              └───┴───┘
+                              """)
