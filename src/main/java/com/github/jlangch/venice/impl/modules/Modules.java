@@ -88,6 +88,7 @@ public class Modules {
                         "tomcat-util",
                         "tput",
                         "trace",
+                        "utf8",
                         "webdav",
                         "xchart",
                         "xchart-install",
