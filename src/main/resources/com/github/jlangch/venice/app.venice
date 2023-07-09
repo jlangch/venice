@@ -64,7 +64,7 @@
           to "billing.venice".
 
           The app can be run from the command line as:¶
-          `> java -jar venice-1.10.37.jar -app billing.zip`¶
+          `> java -jar venice-1.10.38.jar -app billing.zip`¶
           Venice reads the archive and loads the archive's main file.
 
           Or with additional Java libraries (all JARs in 'libs' dir):¶
