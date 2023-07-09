@@ -172,10 +172,6 @@ public class Embed_13_ServiceRegistry {
         final Venice venice = new Venice();
 
         venice.getServiceRegistry()
-              .register("Calculator", new Calculator())
-              .register("Logger", new Logger());
-
-        venice.getServiceRegistry()
               .registerServiceDiscovery(new TestServiceDiscovery());
 
         // returns a long: 30
