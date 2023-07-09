@@ -71,14 +71,15 @@ public class Embed_02_PassingParameters {
     public static void main(final String[] args) {
         final Venice venice = new Venice();
 
-        // pass two long parameters
+        // pass two numbers
         // returns a long: 10
         System.out.println(
                 venice.eval(
                         "(+ x y 1)", 
                         Parameters.of("x", 6, "y", 3L)));
 
-        // up-front macro expansion, returns a long: 10 
+        // pass two numbers, activated up-front macro expansion
+        // returns a long: 10 
         System.out.println(
                 venice.eval(
                         "test",
@@ -93,7 +94,7 @@ public class Embed_02_PassingParameters {
                         "(str \"Point=(x: \" (:x point) \", y: \" (:y point) \")\")", 
                         Parameters.of("point", new Point(100, 200))));
 
-        // pass two long parameters
+        // pass two numbers
         // returns a java.awt.Point: [x=100,y=200]
         System.out.println(
                 venice.eval(
