@@ -163,6 +163,7 @@ public class SandboxDefaultRules {
                         "parsifal",
                         "test",
                         "test-support",
+                        "utf8",
                         "hexdump",
                         "xml")));
 
