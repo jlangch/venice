@@ -292,7 +292,7 @@ public class JavaInteropFunctions {
                         "**Venice**                                                    \n" +
                         "                                                              \n" +
                         "```                                                           \n" +
-                        ";; Thw Circle constructor returns an object of type Circle    \n" +
+                        ";; The Circle constructor returns an object of type Circle    \n" +
                         "(let [c (. :Circle :new 1.5)]                                 \n" +
                         "  (. c :area)      ;; OK    Circle::area()                    \n" +
                         "  (. c :radius))   ;; OK    Circle::radius()                  \n" +
