@@ -23,8 +23,7 @@ All notable changes to this project will be documented in this file.
 ### Added 
 
 - function `str/split-columns`
-- the ability to use dynamic service discovery with Venice service 
-  registry to simplify Venice embedding use cases
+- the ability to use dynamic service discovery with Venice service registry to simplify Venice embedding use cases
 
 
 
