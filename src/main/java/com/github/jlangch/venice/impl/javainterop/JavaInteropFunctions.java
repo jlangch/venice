@@ -229,17 +229,17 @@ public class JavaInteropFunctions {
                             "   (import :java.awt.geom.Point2D)                            \n" +
                             "                                                              \n" +
                             "   ;; upcasting :java.awt.Point to :java.awt.geom.Point2D     \n" +
-                            "   ;; Point2D does not define the translate method            \n" +
+                            "   ;; Point2D does not define the translate method!           \n" +
                             "   (let [p1 (. :Point :new 1.0 1.0)                           \n" +
                             "         p2 (cast :Point2D p1)]                               \n" +
-                            "     (println \"p1 > \" p1)                                   \n" +
-                            "     (println \"p2 > \" p2)                                   \n" +
-                            "     (println \"Formal type p1 > \" (formal-type p1))         \n" +
-                            "     (println \"Formal type p2 > \" (formal-type p2))         \n" +
-                            "     (println \"p1' > \" (. p1 :translate 2.0 2.0))           \n" +
+                            "     (println \"p1 -> \" p1)                                  \n" +
+                            "     (println \"p2 -> \" p2)                                  \n" +
+                            "     (println \"Formal type p1 -> \" (formal-type p1))        \n" +
+                            "     (println \"Formal type p2 -> \" (formal-type p2))        \n" +
+                            "     (println \"p1' -> \" (doto p1 (. :translate 2.0 2.0)))   \n" +
                             "     ;; the translate method is not defined by Point2D        \n" +
-                            "     ;; and will fail with a JavaMethodInvocationExceptio!    \n" +
-                            "     ;; (. p2 :translate 2.0 2.0)                             \n" +
+                            "     ;; and will fail with a JavaMethodInvocationException!   \n" +
+                            "     ;; (doto p2 (. :translate 2.0 2.0))                      \n" +
                             "))")
                     .seeAlso("formal-type", "remove-formal-type", "class")
                     .build());
@@ -277,7 +277,7 @@ public class JavaInteropFunctions {
                     .meta()
                     .arglists("(formal-type object)")
                     .doc(
-                        "Returns the formal type of a Java object. " +
+                        "Returns the *formal type* of a Java object. " +
                         "\n\n" +
                         "The *formal type* of an object is defined as the explicit Java " +
                         "return type defined by the function's definition. The " +
@@ -285,7 +285,7 @@ public class JavaInteropFunctions {
                         "Java object. Also a cast will change the object's formal type and " +
                         "set it to the cast type." +
                         "\n\n" +
-                        "Venice is allowed to call functions defined by the formal type " +
+                        "Venice is allowed to call functions defined by the *formal type* " +
                         "only! This is to honor the rules of the underlying Java type " +
                         "system when executing reflective Java calls." +
                         "\n\n" +
@@ -323,23 +323,23 @@ public class JavaInteropFunctions {
                         "}                                                             \n" +
                         "```")
                     .examples(
-                        "(do                                                           \n" +
-                        "   (import :java.awt.Point)                                   \n" +
-                        "   (import :java.awt.geom.Point2D)                            \n" +
-                        "                                                              \n" +
-                        "   ;; upcasting :java.awt.Point to :java.awt.geom.Point2D     \n" +
-                        "   ;; Point2D does not define the translate method            \n" +
-                        "   (let [p1 (. :Point :new 1.0 1.0)                           \n" +
-                        "         p2 (cast :Point2D p1)]                               \n" +
-                        "     (println \"p1 > \" p1)                                   \n" +
-                        "     (println \"p2 > \" p2)                                   \n" +
-                        "     (println \"Formal type p1 > \" (formal-type p1))         \n" +
-                        "     (println \"Formal type p2 > \" (formal-type p2))         \n" +
-                        "     (println \"p1' > \" (. p1 :translate 2.0 2.0))           \n" +
-                        "     ;; the translate method is not defined by Point2D        \n" +
-                        "     ;; and will fail with a JavaMethodInvocationExceptio!    \n" +
-                        "     ;; (. p2 :translate 2.0 2.0)                             \n" +
-                        "))")
+                            "(do                                                           \n" +
+                            "   (import :java.awt.Point)                                   \n" +
+                            "   (import :java.awt.geom.Point2D)                            \n" +
+                            "                                                              \n" +
+                            "   ;; upcasting :java.awt.Point to :java.awt.geom.Point2D     \n" +
+                            "   ;; Point2D does not define the translate method!           \n" +
+                            "   (let [p1 (. :Point :new 1.0 1.0)                           \n" +
+                            "         p2 (cast :Point2D p1)]                               \n" +
+                            "     (println \"p1 -> \" p1)                                  \n" +
+                            "     (println \"p2 -> \" p2)                                  \n" +
+                            "     (println \"Formal type p1 -> \" (formal-type p1))        \n" +
+                            "     (println \"Formal type p2 -> \" (formal-type p2))        \n" +
+                            "     (println \"p1' -> \" (doto p1 (. :translate 2.0 2.0)))   \n" +
+                            "     ;; the translate method is not defined by Point2D        \n" +
+                            "     ;; and will fail with a JavaMethodInvocationException!   \n" +
+                            "     ;; (doto p2 (. :translate 2.0 2.0))                      \n" +
+                            "))")
                     .seeAlso("remove-formal-type", "cast", "class")
                     .build());
         }
@@ -372,15 +372,17 @@ public class JavaInteropFunctions {
                 VncFunction
                     .meta()
                     .arglists("(remove-formal-type object)")
-                    .doc("Removes the formal type from a Java object")
+                    .doc(
+                    	"Removes the formal type from a Java object.\n\n" +
+                    	"This identical to casting the object back to its real type.")
                     .examples(
                             "(do                                       \n" +
                             "   (let [p0 (. :java.awt.Point :new 0 0)  \n" +
                             "         p1 (cast :java.lang.Object p0)   \n" +
                             "         p2 (remove-formal-type p1)]      \n" +
-                            "     (println \"p0:\" (formal-type p0))   \n" +
-                            "     (println \"p1:\" (formal-type p1))   \n" +
-                            "     (println \"p2:\" (formal-type p2)))) ")
+                            "     (println \"p0 -> \" (formal-type p0))   \n" +
+                            "     (println \"p1 -> \" (formal-type p1))   \n" +
+                            "     (println \"p2 -> \" (formal-type p2)))) ")
                     .seeAlso("formal-type", "cast", "class")
                     .build());
         }
