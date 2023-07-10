@@ -266,17 +266,60 @@ public class JavaInteropFunctions {
                 VncFunction
                     .meta()
                     .arglists("(formal-type object)")
-                    .doc("Returns the formal type of a Java object")
+                    .doc(
+                        "Returns the formal type of a Java object. " +
+                        "\n\n" +
+                        "The *formal type* of an object is defined as the explicit Java " +
+                        "return type defined by the function's definition. The " +
+                        "*formal type* may differ from the real type of the returned " +
+                        "Java object. " +
+                        "\n\n" +
+                        "Venice is allowed to call functions defined by the formal type " +
+                        "only! This is to honor the rules of the underlying Java type " +
+                        "system when executing reflective Java calls." +
+                        "\n\n" +
+                        "**Venice**                                                    \n" +
+                        "                                                              \n" +
+                        "```                                                           \n" +
+                        ";; Thw Circle constructor returns an object of type Circle    \n" +
+                        "(let [c (. :Circle :new 1.5)]                                 \n" +
+                        "  (. c :area)      ;; OK    Circle::area()                    \n" +
+                        "  (. c :radius))   ;; OK    Circle::radius()                  \n" +
+                        "                                                              \n" +
+                        ";; Builder::circle returns an object of the formal type Shape \n" +
+                        "(let [c (. :Builder :circle 1.5)]                             \n" +
+                        "  (. c :area)      ;; OK    Shape::area()                     \n" +
+                        "  (. c :radius))   ;; FAIL  Shape::radius(), undefined method \n" +
+                        "```                                                           \n" +
+                        "                                                              \n" +
+                        "**Java**                                                      \n" +
+                        "                                                              \n" +
+                        "```                                                           \n" +
+                        "public class Builder {                                        \n" +
+                        "  public static Shape circle(double radius) {                 \n" +
+                        "    return new Circle(radius);                                \n" +
+                        "  }                                                           \n" +
+                        "}                                                             \n" +
+                        "                                                              \n" +
+                        "public interface Shape {                                      \n" +
+                        "  double area();                                              \n" +
+                        "}                                                             \n" +
+                        "public class Circle implements Shape {                        \n" +
+                        "  public Circle(double radius) {...}                          \n" +
+                        "  public double area() {...}                                  \n" +
+                        "  public double radius() {...}                                \n" +
+                        "}                                                             \n" +
+                        "```")
                     .examples(
-                            "(do \n" +
-                            "   (import :java.awt.image.BufferedImage) \n" +
-                            "   (import :java.awt.Graphics) \n" +
-                            "\n" +
-                            "   ;; cast the graphics context to 'java.awt.Graphics' instead of the \n" +
-                            "   ;; implicit cast to 'java.awt.Graphics2D' as Venice is doing \n" +
-                            "   (let [img (. :BufferedImage :new 40 40 1) \n" +
-                            "         gd (cast :Graphics (. img :createGraphics))] \n" +
-                            "     (formal-type gd)))")
+                        "(do \n" +
+                        "   (import :java.awt.image.BufferedImage) \n" +
+                        "   (import :java.awt.Graphics) \n" +
+                        "\n" +
+                        "   ;; cast the graphics context to 'java.awt.Graphics' instead of the \n" +
+                        "   ;; implicit cast to 'java.awt.Graphics2D' as Venice is doing \n" +
+                        "   (let [img (. :BufferedImage :new 40 40 1) \n" +
+                        "         gd (cast :Graphics (. img :createGraphics))] \n" +
+                        "     (formal-type gd)))")
                     .seeAlso("remove-formal-type", "cast", "class")
                     .build());
         }

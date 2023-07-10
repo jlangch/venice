@@ -69,23 +69,27 @@ public class JavaInteropSection implements ISectionBuilder {
         test.addItem(diBuilder.getDocItem("java-obj?"));
         test.addItem(diBuilder.getDocItem("exists-class?"));
 
-        final DocSection support = new DocSection("Support", "javainterop.support");
-        all.addSection(support);
-        support.addItem(diBuilder.getDocItem("imports"));
-        support.addItem(diBuilder.getDocItem("supers"));
-        support.addItem(diBuilder.getDocItem("bases"));
-        support.addItem(diBuilder.getDocItem("formal-type"));
-        support.addItem(diBuilder.getDocItem("remove-formal-type"));
-        support.addItem(diBuilder.getDocItem("stacktrace", false, false));
-
         final DocSection clazz = new DocSection("Classes", "javainterop.classes");
         all.addSection(clazz);
         clazz.addItem(diBuilder.getDocItem("class"));
         clazz.addItem(diBuilder.getDocItem("class-of"));
         clazz.addItem(diBuilder.getDocItem("class-name"));
         clazz.addItem(diBuilder.getDocItem("class-version"));
-        clazz.addItem(diBuilder.getDocItem("classloader"));
-        clazz.addItem(diBuilder.getDocItem("classloader-of"));
+
+        final DocSection types = new DocSection("Types", "javainterop.types");
+        all.addSection(types);
+        types.addItem(diBuilder.getDocItem("formal-type"));
+        types.addItem(diBuilder.getDocItem("remove-formal-type"));
+        types.addItem(diBuilder.getDocItem("class"));
+        types.addItem(diBuilder.getDocItem("supers"));
+        types.addItem(diBuilder.getDocItem("bases"));
+
+        final DocSection support = new DocSection("Support", "javainterop.support");
+        all.addSection(support);
+        support.addItem(diBuilder.getDocItem("imports"));
+        support.addItem(diBuilder.getDocItem("stacktrace", false, false));
+        support.addItem(diBuilder.getDocItem("classloader"));
+        support.addItem(diBuilder.getDocItem("classloader-of"));
 
         final DocSection jar = new DocSection("JARs", "javainterop.jar");
         all.addSection(jar);
