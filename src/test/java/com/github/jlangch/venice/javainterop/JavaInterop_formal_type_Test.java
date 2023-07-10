@@ -22,11 +22,13 @@
 package com.github.jlangch.venice.javainterop;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 import java.awt.image.BufferedImage;
 
 import org.junit.jupiter.api.Test;
 
+import com.github.jlangch.venice.JavaMethodInvocationException;
 import com.github.jlangch.venice.Venice;
 
 
@@ -99,6 +101,83 @@ public class JavaInterop_formal_type_Test {
                 "     (class))                      ";
 
         assertEquals(java.awt.Point.class, venice.eval(script2));
+    }
+
+
+    @Test
+    public void test_formal_type() {
+        final Venice venice = new Venice();
+
+        // OK   Circle::area
+        final String script1 =
+        		"(do                                                                                    \n" +
+                "  (import :com.github.jlangch.venice.javainterop.JavaInterop_formal_type_Test$Circle)  \n" +
+                "  (let [c (. :JavaInterop_formal_type_Test$Circle :new 1.5)]                           \n" +
+                "    (. c :area)))                                                                      ";
+
+        // OK   Circle::radius
+        final String script2 =
+        		"(do                                                                                    \n" +
+                "  (import :com.github.jlangch.venice.javainterop.JavaInterop_formal_type_Test$Circle)  \n" +
+                "  (let [c (. :JavaInterop_formal_type_Test$Circle :new 1.5)]                           \n" +
+                "    (. c :radius)))                                                                    ";
+
+        assertEquals(7.06858D, new Circle(1.5D).area(),      0.00001D);
+        assertEquals(1.5D,     new Circle(1.5D).radius(),    0.00001D);
+
+        assertEquals(7.06858D, (Double)venice.eval(script1), 0.00001D);
+        assertEquals(1.5D,     (Double)venice.eval(script2), 0.00001D);
+
+
+
+        // OK    Shape::area
+        final String script3 =
+        		"(do                                                                                             \n" +
+                "  (import :com.github.jlangch.venice.javainterop.JavaInterop_formal_type_Test$ShapeBuilder)     \n" +
+                "  (let [c (. :JavaInterop_formal_type_Test$ShapeBuilder :circle 1.5)]                           \n" +
+                "    (. c :area)))                                                                               ";
+
+        // FAIL  Shape::radius is not defined
+        final String script4 =
+        		"(do                                                                                             \n" +
+                "  (import :com.github.jlangch.venice.javainterop.JavaInterop_formal_type_Test$ShapeBuilder)     \n" +
+                "  (let [c (. :JavaInterop_formal_type_Test$ShapeBuilder :circle 1.5)]                           \n" +
+                "    (. c :radius)))                                                                             ";
+
+        assertEquals(7.06858D, new Circle(1.5D).area(),      0.00001D);
+        assertEquals(1.5D,     new Circle(1.5D).radius(),    0.00001D);
+
+        assertEquals(7.06858D, (Double)venice.eval(script3), 0.00001D);
+        assertThrows(JavaMethodInvocationException.class, () -> venice.eval(script4));
+    }
+
+
+
+    public static interface Shape {
+        double area();
+    }
+
+    public static class Circle implements Shape {
+        public Circle(double radius) {
+            this.radius = radius;
+        }
+
+        @Override
+        public double area() {
+            return Math.PI * radius * radius;
+        }
+
+        public double radius() {
+            return radius;
+        }
+
+        private final double radius;
+    }
+
+    public static class ShapeBuilder {
+        public static Shape circle(double radius) {
+            return new Circle(radius);
+        }
     }
 
 }
