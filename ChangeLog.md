@@ -9,7 +9,7 @@ All notable changes to this project will be documented in this file.
 
 ### Added 
 
-- ...
+- a detailed explanation to formal types. (See the functions: `formal-type`, `cast`, and `remove-formal-type`)t
 
 
 
