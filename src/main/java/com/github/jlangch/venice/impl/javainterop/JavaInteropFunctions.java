@@ -286,7 +286,7 @@ public class JavaInteropFunctions {
                         "and set it to the cast type." +
                         "\n\n" +
                         "Venice must honor Java's static type system while interacting " +
-                        "with Java objects. Therefor Venice adheres to *formal types* " +
+                        "with Java objects. Therefore Venice adheres to *formal types* " +
                         "strictly when calling methods of Java objects. " +
                         "\n\n" +
                         "**Venice**                                                    \n" +
