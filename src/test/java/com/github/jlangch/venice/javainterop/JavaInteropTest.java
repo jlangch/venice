@@ -326,8 +326,30 @@ public class JavaInteropTest {
         assertEquals("123", venice.eval("(. :com.github.jlangch.venice.support.JavaObject :staticVoid)"));
     }
 
+    @Test
+    public void testStaticNestedClass() {
+        final Venice venice = new Venice();
+
+        final String script =
+                "(do                                                                                 \n" +
+                "  (import :com.github.jlangch.venice.javainterop.JavaInteropTest$NestedStaticClass) \n" +
+                "                                                                                    \n" +
+                "  (-> (. :JavaInteropTest$NestedStaticClass :new)                                   \n" +
+                "      (. :message)))                                                                \n";
+
+        assertEquals("NestedStaticClass::message()", venice.eval(script));
+    }
+
+
     private Map<String, Object> symbols() {
         return Parameters.of("jobj", new JavaObject());
+    }
+
+
+    public static class NestedStaticClass {
+        public String message() {
+           return "NestedStaticClass::message()";
+        }
     }
 
 }

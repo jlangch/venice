@@ -105,6 +105,41 @@ can be sorted and Java types can be used with sets and maps.
       (hash-map b1 1 b2 2 b3 3)))
 ```
 
+## Dealing with static nested classes
+
+*Venice*
+
+```
+(do
+  (import :foo.OuterClass)
+  (import :foo.OuterClass$NestedStaticClass)
+
+  (-> (. :OuterClass :new)
+      (. :message))
+      
+  (-> (. :OuterClass$NestedStaticClass :new)
+      (. :message)))
+```
+
+*Java*
+
+```
+package foo;
+
+public class OuterClass {
+  public String message() {
+    return "OuterClass::message()";
+  }
+
+  public static class NestedStaticClass {
+    public String message() {
+      return "NestedStaticClass::message()";
+    }
+  }
+}
+```
+
+
 
 ## Java VarArgs
 

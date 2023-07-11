@@ -64,16 +64,68 @@ public class SpecialForms_ImportFunctions {
                         "(import class :as alias)")
                     .doc(
                         "Imports one or multiple Java classes. Imports are bound to the current " +
-                        "namespace.\n\n" +
-                        "Aliases are helpful if Java classes have the same name but different " +
-                        "packages like `java.util.Date` and `java.sql.Date`:\n\n" +
-                        "```                                                  \n" +
-                        "(do                                                  \n" +
-                        "  (import :java.util.Date)                           \n" +
-                        "  (import :java.sql.Date :as :sql.Date)              \n" +
-                        "                                                     \n" +
-                        "  (println (. :Date :new))                           \n" +
-                        "  (println (. :sql.Date :valueOf \"2022-06-24\")))   \n" +
+                        "namespace." +
+                        "\n\n" +
+                        "**Example**                                                   \n" +
+                        "                                                              \n" +
+                        "*Without import*                                              \n" +
+                        "                                                              \n" +
+                        "```                                                           \n" +
+                        "(. :java.lang.Math :max 2 10)                                 \n" +
+                        "```                                                           \n" +
+                        "                                                              \n" +
+                        "*With import*                                                 \n" +
+                        "                                                              \n" +
+                        "```                                                           \n" +
+                        "(do                                                           \n" +
+                        "  (import :java.lang.Math)                                    \n" +
+                        "  (. :Math :max 2 10))                                        \n" +
+                        "```                                                           \n" +
+                        "\n\n" +
+                        "**Aliases**                                                   \n" +
+                        "                                                              \n" +
+                        "Aliases are helpful if Java classes have the same name but " +
+                        "different packages like `java.util.Date` and `java.sql.Date`: \n" +
+                        "                                                              \n" +
+                        "```                                                           \n" +
+                        "(do                                                           \n" +
+                        "  (import :java.util.Date)                                    \n" +
+                        "  (import :java.sql.Date :as :SqlDate)                        \n" +
+                        "                                                              \n" +
+                        "  (println (. :Date :new))                                    \n" +
+                        "  (println (. :SqlDate :valueOf \"2022-06-24\")))             \n" +
+                        "```                                                           \n" +
+                        "\n\n" +
+                        "**Static nested classes**                                     \n" +
+                        "                                                              \n" +
+                        "*Venice*                                                      \n" +
+                        "                                                              \n" +
+                        "```                                                           \n" +
+                        "(do                                                           \n" +
+                        "  (import :foo.OuterClass)                                    \n" +
+                        "  (import :foo.OuterClass$NestedStaticClass)                  \n" +
+                        "                                                              \n" +
+                        "  (-> (. :OuterClass :new)                                    \n" +
+                        "      (. :message))                                           \n" +
+                        "  (-> (. :OuterClass$NestedStaticClass :new)                  \n" +
+                        "      (. :message)))                                          \n" +
+                        "```                                                           \n" +
+                        "                                                              \n" +
+                        "*Java*                                                        \n" +
+                        "                                                              \n" +
+                        "```                                                           \n" +
+                        "package foo;                                                  \n" +
+                        "public class OuterClass {                                     \n" +
+                        "  public String message() {                                   \n" +
+                        "    return \"OuterClass::message()\";                         \n" +
+                        "  }                                                           \n" +
+                        "                                                              \n" +
+                        "  public static class NestedStaticClass {                     \n" +
+                        "    public String message() {                                 \n" +
+                        "      return \"NestedStaticClass::message()\";                \n" +
+                        "    }                                                         \n" +
+                        "  }                                                           \n" +
+                        "}                                                             \n" +
                         "```")
                     .examples(
                         "(do                        \n" +
