@@ -230,7 +230,7 @@ As default Venice uses the *stdout* / *stderr* streams from the hosting Java VM.
 
 **Redirect to null device**
 
-Redirect *stdout* / *stderr* to the *null* device, effectively swalling everything sent
+Redirect *stdout* / *stderr* to the *null* device, effectively swallowing everything sent
 to these streams.
 
 ```java
