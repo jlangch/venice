@@ -47,6 +47,8 @@ public class Modules {
                         "ansi",
                         "app",
                         "benchmark",
+                        "chatgpt",
+                        "chatgpt-install",
                         "cli",
                         "clipboard",
                         "config",
