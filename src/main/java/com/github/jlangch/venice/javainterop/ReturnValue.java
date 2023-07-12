@@ -28,19 +28,19 @@ public class ReturnValue {
     public ReturnValue(final Object value) {
         this.value = value;
         this.formalType = null;
-        this.genericReturnType = null;
+        this.genericType = null;
     }
 
     public ReturnValue(final Object value, final Class<?> formalType) {
         this.value = value;
         this.formalType = formalType;
-        this.genericReturnType = null;
+        this.genericType = null;
     }
 
-    public ReturnValue(final Object value, final Class<?> formalType, final Type genericReturnType) {
+    public ReturnValue(final Object value, final Class<?> formalType, final Type genericType) {
         this.value = value;
         this.formalType = formalType;
-        this.genericReturnType = genericReturnType;
+        this.genericType = genericType;
     }
 
     public Object getValue() {
@@ -51,12 +51,12 @@ public class ReturnValue {
         return formalType;
     }
 
-    public Type getGenericReturnType() {
-        return genericReturnType;
+    public Type getGenericType() {
+        return genericType;
     }
 
 
     private final Object value;
     private final Class<?> formalType;
-    private final Type genericReturnType;
+    private final Type genericType;
 }

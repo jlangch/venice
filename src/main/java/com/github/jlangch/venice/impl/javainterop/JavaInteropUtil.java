@@ -305,7 +305,7 @@ public class JavaInteropUtil {
             return convertToVncVal(
                         ((ReturnValue)value).getValue(),
                         ((ReturnValue)value).getFormalType(),
-                        ((ReturnValue)value).getGenericReturnType(),
+                        ((ReturnValue)value).getGenericType(),
                         recursive);
         }
         else if (value instanceof VncVal) {
