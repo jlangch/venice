@@ -41,11 +41,11 @@
 
     "com.squareup.retrofit2:adapter-rxjava2:2.9.0"
     "com.squareup.retrofit2:retrofit:2.9.0"
-    "com.squareup.retrofit2:converter-jackson:2.9.0"   
+    "com.squareup.retrofit2:converter-jackson:2.9.0"
     "com.squareup.okhttp3:okhttp:3.14.9"
     "com.squareup.okio:okio:1.17.2"
 
-    "com.kjetland:mbknor-jackson-jsonschema_2.12:1.0.34"
+    "com.kjetland:mbknor-jackson-jsonschema_2.12:1.0.39"
 
     "com.fasterxml.jackson.core:jackson-annotations:2.14.2"
     "com.fasterxml.jackson.core:jackson-databind:2.14.2"
