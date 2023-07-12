@@ -23,7 +23,7 @@ All notable changes to this project will be documented in this file.
 
 ### Fixed 
 
-- not working service registry lookup when sandbox is active
+- not working service registry lookup when any sandbox is active. The affected Java classes are white-listed as default and the service registry sandboxing is simply controlled through black-listing the `service` function.
 
 
 
