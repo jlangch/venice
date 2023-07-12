@@ -21,6 +21,7 @@
  */
 package com.github.jlangch.venice.impl.types;
 
+import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
@@ -58,6 +59,10 @@ public class VncJavaObject extends VncMap implements IVncJavaObject {
         this(obj, formalType, Constants.Nil);
     }
 
+    public VncJavaObject(final Object obj, final Class<?> formalType, final Type genericType) {
+        this(obj, formalType, genericType, Constants.Nil);
+    }
+
     public VncJavaObject(final Object obj, final VncVal meta) {
         this(obj, null, meta);
     }
@@ -67,15 +72,20 @@ public class VncJavaObject extends VncMap implements IVncJavaObject {
 
         this.delegate = obj instanceof VncVal ? ((VncVal)obj).convertToJavaObject() : obj;
         this.delegateFormalType = formalType;
+        this.delegateGenericType = null;
+    }
+
+    private VncJavaObject(final Object obj, final Class<?> formalType, final Type genericType, final VncVal meta) {
+        super(meta);
+
+        this.delegate = obj instanceof VncVal ? ((VncVal)obj).convertToJavaObject() : obj;
+        this.delegateFormalType = formalType;
+        this.delegateGenericType = genericType;
     }
 
 
     public static VncJavaObject from(final ReturnValue val) {
         return new VncJavaObject(val.getValue(), val.getFormalType(), Constants.Nil);
-    }
-
-    public static VncJavaObject from(final Object val, final Class<?> formalType) {
-        return new VncJavaObject(val, formalType, Constants.Nil);
     }
 
     @Override
@@ -86,6 +96,11 @@ public class VncJavaObject extends VncMap implements IVncJavaObject {
     @Override
     public Class<?> getDelegateFormalType() {
         return delegateFormalType;
+    }
+
+    @Override
+    public Type getDelegateGenericType() {
+        return delegateGenericType;
     }
 
     @Override
@@ -127,7 +142,7 @@ public class VncJavaObject extends VncMap implements IVncJavaObject {
     }
 
     public VncJavaObject castTo(final Class<?> clazz) {
-        return VncJavaObject.from(delegate, clazz);
+        return new VncJavaObject(delegate, clazz);
     }
 
     public VncVal getProperty(final VncString name) {
@@ -333,4 +348,5 @@ public class VncJavaObject extends VncMap implements IVncJavaObject {
 
     private final Object delegate;
     private final Class<?> delegateFormalType;
+    private final Type delegateGenericType;
 }

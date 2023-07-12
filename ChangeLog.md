@@ -10,6 +10,7 @@ All notable changes to this project will be documented in this file.
 ### Added 
 
 - a detailed explanation of formal types in Venice. (See the functions: `formal-type`, `cast`, and `remove-formal-type`)
+- The function `java-unwrap-optional` for unwrapping a Java object of type `Optional<T>` supports now its generic type as formal type
 
 
 

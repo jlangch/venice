@@ -23,6 +23,7 @@ package com.github.jlangch.venice.impl.javainterop;
 
 import java.lang.reflect.Array;
 import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Type;
 import java.math.BigDecimal;
 import java.nio.ByteBuffer;
 import java.util.ArrayList;
@@ -287,13 +288,14 @@ public class JavaInteropUtil {
     }
 
     public static VncVal convertToVncVal(final Object value) {
-        return convertToVncVal(value, null, false);
+        return convertToVncVal(value, null, null, false);
     }
 
     @SuppressWarnings("unchecked")
     private static VncVal convertToVncVal(
             final Object value,
             final Class<?> formalType,
+            final Type genericType,
             final boolean recursive
     ) {
         if (value == null) {
@@ -303,6 +305,7 @@ public class JavaInteropUtil {
             return convertToVncVal(
                         ((ReturnValue)value).getValue(),
                         ((ReturnValue)value).getFormalType(),
+                        ((ReturnValue)value).getGenericReturnType(),
                         recursive);
         }
         else if (value instanceof VncVal) {
@@ -350,7 +353,7 @@ public class JavaInteropUtil {
             if (recursive) {
                 final List<VncVal> list = new ArrayList<>();
                 for(Object o : (List<Object>)value) {
-                    list.add(convertToVncVal(o, null, recursive));
+                    list.add(convertToVncVal(o, null, null, recursive));
                 }
                 return VncList.ofList(list);
             }
@@ -362,7 +365,7 @@ public class JavaInteropUtil {
             if (recursive) {
                 final Set<VncVal> set = new HashSet<>();
                 for(Object o : (Set<Object>)value) {
-                    set.add(convertToVncVal(o, null, recursive));
+                    set.add(convertToVncVal(o, null, null, recursive));
                 }
                 return VncHashSet.ofAll(set);
             }
@@ -375,8 +378,8 @@ public class JavaInteropUtil {
                 final HashMap<VncVal,VncVal> map = new HashMap<>();
                 for(Map.Entry<Object, Object> o : ((Map<Object,Object>)value).entrySet()) {
                     map.put(
-                        convertToVncVal(o.getKey(), null, recursive),
-                        convertToVncVal(o.getValue(), null, recursive));
+                        convertToVncVal(o.getKey(), null, null, recursive),
+                        convertToVncVal(o.getValue(), null, null, recursive));
                 }
                 return new VncHashMap(map);
             }
@@ -406,7 +409,7 @@ public class JavaInteropUtil {
         else {
             return formalType == null
                         ? new VncJavaObject(value)
-                        : VncJavaObject.from(value, formalType);
+                        : new VncJavaObject(value, formalType, genericType);
         }
     }
 

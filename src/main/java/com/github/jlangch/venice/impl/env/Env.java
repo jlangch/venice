@@ -522,7 +522,7 @@ public class Env implements Serializable {
     public Env setStdoutPrintStream(final PrintStream ps) {
         replaceGlobalDynamic(
                 new VncSymbol("*out*"),
-                VncJavaObject.from(
+                new VncJavaObject(
                         ps != null ? ps : IOStreamUtil.nullPrintStream(),
                         PrintStream.class));
 
@@ -532,7 +532,7 @@ public class Env implements Serializable {
     public Env setStderrPrintStream(final PrintStream ps) {
         replaceGlobalDynamic(
                 new VncSymbol("*err*"),
-                VncJavaObject.from(
+                new VncJavaObject(
                         ps != null ? ps : IOStreamUtil.nullPrintStream(),
                         PrintStream.class));
 
@@ -543,17 +543,17 @@ public class Env implements Serializable {
         if (rd == null) {
             replaceGlobalDynamic(
                     new VncSymbol("*in*"),
-                    VncJavaObject.from(IOStreamUtil.nullBufferedReader(), Reader.class));
+                    new VncJavaObject(IOStreamUtil.nullBufferedReader(), Reader.class));
         }
         else if (rd instanceof BufferedReader) {
             replaceGlobalDynamic(
                     new VncSymbol("*in*"),
-                    VncJavaObject.from(rd, Reader.class));
+                    new VncJavaObject(rd, Reader.class));
         }
         else {
             replaceGlobalDynamic(
                     new VncSymbol("*in*"),
-                    VncJavaObject.from(new BufferedReader(rd), Reader.class));
+                    new VncJavaObject(new BufferedReader(rd), Reader.class));
         }
 
         return this;

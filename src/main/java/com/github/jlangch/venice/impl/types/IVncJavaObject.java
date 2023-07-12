@@ -21,11 +21,15 @@
  */
 package com.github.jlangch.venice.impl.types;
 
+import java.lang.reflect.Type;
+
 
 public interface IVncJavaObject {
 
     Object getDelegate();
 
     default Class<?> getDelegateFormalType() { return null; }
+
+    default Type getDelegateGenericType() { return null; }
 
 }

@@ -220,9 +220,9 @@ public class JavaInteropFunctions {
                     .meta()
                     .arglists("(cast class object)")
                     .doc(
-                    	"Casts a Java object to a specific type\n\n" +
+                        "Casts a Java object to a specific type\n\n" +
                         "Note: Casting a Java object will change the object's *formal type*. " +
-                    	"See the `formal-type` function for detailed information.")
+                        "See the `formal-type` function for detailed information.")
                     .examples(
                             "(do                                                           \n" +
                             "   (import :java.awt.Point)                                   \n" +
@@ -373,9 +373,9 @@ public class JavaInteropFunctions {
                     .meta()
                     .arglists("(remove-formal-type object)")
                     .doc(
-                    	"Removes the *formal type* from a Java object.\n\n" +
-                    	"This is identical to casting an object back to its real type " +
-                    	"without knowing its real type.")
+                        "Removes the *formal type* from a Java object.\n\n" +
+                        "This is identical to casting an object back to its real type " +
+                        "without knowing its real type.")
                     .examples(
                         "(do                                         \n" +
                         "   (let [p0 (. :java.awt.Point :new 0 0)    \n" +
@@ -1195,12 +1195,36 @@ public class JavaInteropFunctions {
             sandboxFunctionCallValidation();
 
             if (Types.isVncJavaObject(args.first(), java.util.Optional.class)) {
-                // TODO: handle the formal type
-                final Optional<Object> optional = (Optional<Object>)((VncJavaObject)args.first()).getDelegate();
+                final VncJavaObject obj = (VncJavaObject)args.first();
+
+                 final Optional<Object> optional = (Optional<Object>)obj.getDelegate();
 
                 final Object val = optional.isPresent() ? optional.get() : null;
 
-                return JavaInteropUtil.convertToVncVal(val);
+                if (val instanceof VncVal || val instanceof Iterable) {
+                    return JavaInteropUtil.convertToVncVal(val);
+                }
+                else {
+                    // handle the formal type for non collection Java object
+                    final Type type = obj.getDelegateGenericType();
+                    if (type != null) {
+                        try {
+                            final Type genericType = ReflectionUtil.getTypeArguments(type)[0];
+                            final Class<?> formalType = Class.forName(genericType.getTypeName());
+                            return new VncJavaObject(val, formalType);
+                        }
+                        catch(Exception ex) {
+                            throw new VncException(
+                                        String.format(
+                                            "Function 'java-unwrap-optional' failed to unwrap generic type %s",
+                                            obj.getDelegateGenericType().getTypeName()),
+                                        ex);
+                        }
+                    }
+                    else {
+                        return JavaInteropUtil.convertToVncVal(val);
+                    }
+                }
             }
             else {
                 throw new VncException(String.format(
