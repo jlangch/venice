@@ -21,17 +21,26 @@
  */
 package com.github.jlangch.venice.javainterop;
 
+import java.lang.reflect.Type;
 
 public class ReturnValue {
 
     public ReturnValue(final Object value) {
         this.value = value;
         this.formalType = null;
+        this.genericReturnType = null;
     }
 
     public ReturnValue(final Object value, final Class<?> formalType) {
         this.value = value;
         this.formalType = formalType;
+        this.genericReturnType = null;
+    }
+
+    public ReturnValue(final Object value, final Class<?> formalType, final Type genericReturnType) {
+        this.value = value;
+        this.formalType = formalType;
+        this.genericReturnType = genericReturnType;
     }
 
     public Object getValue() {
@@ -42,7 +51,12 @@ public class ReturnValue {
         return formalType;
     }
 
+    public Type getGenericReturnType() {
+        return genericReturnType;
+    }
+
 
     private final Object value;
     private final Class<?> formalType;
+    private final Type genericReturnType;
 }

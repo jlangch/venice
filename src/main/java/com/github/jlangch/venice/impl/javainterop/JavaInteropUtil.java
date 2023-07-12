@@ -175,6 +175,7 @@ public class JavaInteropUtil {
                             methodArgs.length > 0
                                 || (targetFormalType != null && ReflectionAccessor.isInstanceMethod(targetFormalType, methodName, methodArgs))
                                 || ReflectionAccessor.isInstanceMethod(target, methodName, methodArgs);
+
                     if (isInstanceMethod) {
                         // instance method
                         return JavaInteropUtil.convertToVncVal(

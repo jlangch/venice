@@ -527,9 +527,10 @@ public class ReflectionAccessor {
                             method.getReturnType());
             }
             else {
-                return new ReturnValue(
+                 return new ReturnValue(
                             method.invoke(target, args),
-                            method.getReturnType());
+                            method.getReturnType(),
+                            method.getGenericReturnType());
             }
         }
         catch (SecurityException ex) {
