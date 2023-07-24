@@ -81,7 +81,7 @@ import com.github.jlangch.venice.impl.util.MimeTypes;
  *    sheet.setString(0, 4, "Avg [ms]");
  *
  *    stats.stream()
- *         .collect(Collectors.toMap(stats::indexOf, a -> a))
+ *         .collect(Collectors.toMap(stats::indexOf, Function.identity()))
  *         .forEach((idx2, v) -> {
  *             sheet.setString( idx2+1, 0, v.getName());
  *             sheet.setInteger(idx2+1, 1, v.getHits());
