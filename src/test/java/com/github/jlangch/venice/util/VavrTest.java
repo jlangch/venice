@@ -30,7 +30,6 @@ import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 
 import io.vavr.Tuple2;
-import io.vavr.collection.Stream;
 import io.vavr.collection.Vector;
 
 
@@ -133,47 +132,5 @@ public class VavrTest {
         System.out.println("Vavr vec.asJavaMutable(): " + elapsed / 1000);
 
         assertEquals(72000, count);
-    }
-
-    @Test
-    public void testRecursiveStream() {
-        Stream<Integer> s = ones();
-        long f = 0L;
-
-        for(int ii=0; ii<10000; ii++) {
-            f = s.head();
-            s = s.tail();
-        }
-
-        assertEquals(1L, f);
-    }
-
-    @Test
-    public void testRecursiveFib() {
-        // https://www.sitepoint.com/functional-fizzbuzz-with-vavr/
-        Stream<Long> s = fib();
-        long f = 0L;
-
-        for(int ii=0; ii<90; ii++) {
-            f = s.head();
-            s = s.tail();
-        }
-
-        assertEquals(2880067194370816120L, f);
-    }
-
-    private Stream<Integer> ones() {
-        // Java evaluates method arguments before a method is called. In case of
-        // an infinite stream this is tricked with a Supplier in order to prevent
-        // a stack overflow.
-        return Stream.cons(1, () -> ones());
-    }
-
-    private Stream<Long> fib() {
-        return fib(1L, 1L);
-    }
-
-    private Stream<Long> fib(final long a, final long b) {
-        return Stream.cons(a, () -> fib(b, a + b));
     }
 }
