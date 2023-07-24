@@ -118,7 +118,15 @@ Implicitly realizing elements of a lazy sequence
 (interleave [:a :b :c] (lazy-seq 1 inc))  ; => (:a 1 :b 2 :c 3)
 ```
 
-Realizing finite lazy sequences built from a functions returning `nil` to end the sequence
+
+### Realizing Finite Lazy Sequences
+
+Finite lazy sequences are built from element producing functions (eg.: `#(if (< % 5) (inc %) nil)`) returning `nil` to end the sequence. 
+
+```clojure
+(doall (lazy-seq 1 #(if (< % 5) (inc %) nil)))
+; => (1 2 3 4 5)
+```
 
 ```clojure
 (->> (lazy-seq 1 #(if (< % 5) (inc %) nil))
@@ -128,11 +136,10 @@ Realizing finite lazy sequences built from a functions returning `nil` to end th
 ; => (3 4 5)
 ```
 
-```clojure
-(doall (lazy-seq 1 #(if (< % 5) (inc %) nil)))
-; => (1 2 3 4 5)
-```
+Note that the producing function receives the last element as input to produce the next element. This is why the function `#(if (< % 5) (inc %) nil)` produces the elements `..,3,4,5` (up to 5). The last input element that matches the expression `(< % 5)` is 4, hence 5 is the last produced element (It's simply a producing function and not a filter).
 
+
+## Implicit Memoization
 
 Remember that elements are just realized once and then memorized for further access
 
@@ -303,7 +310,7 @@ Functions that return lazy sequences when their input is a lazy sequence:
 	- drop
 	- drop-while
 	- rest
- 	- repeat
+	- repeat
 
 Functions that return realized elements from a lazy sequences:
 	
