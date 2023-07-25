@@ -9,9 +9,12 @@ All notable changes to this project will be documented in this file.
 
 ### Added 
 
-- detailed explanation of the role of Java formal types in Venice. (See the functions: `formal-type`, `cast`, and `remove-formal-type`)
 - formal type support for unwrapping a Java object of type `Optional<T>` through the function `java-unwrap-optional`.
-- improved documentation for lazy sequences
+- detailed explanation of the role of Java formal types in Venice. (See the functions: `formal-type`, `cast`, and `remove-formal-type`)
+
+### Improved 
+
+- documentation for lazy sequences
 
 
 
