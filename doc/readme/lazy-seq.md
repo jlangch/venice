@@ -130,7 +130,7 @@ The `(take n)` turns the infinite lazy sequence to a finite lazy sequence with n
 
 Lazy sequences show its power to generate the Fibonacci sequence
 
-```
+```clojure
 (do 
   (def fib (map first (lazy-seq [0N 1N] (fn [[a b]] [b (+ a b)]))))
   
@@ -139,7 +139,7 @@ Lazy sequences show its power to generate the Fibonacci sequence
 
 Approximate Pi to the 1/n decimal with the Leibniz formula
 
-```
+```clojure
 ;; Do no forget to enable upfront macro expansion in the REPL
 (do
   (defn pi [n]
