@@ -92,27 +92,8 @@ Realizing a lazy sequence to a list is done by applying the `doall` function.
 (doall (lazy-seq 1 inc)) ; continues realizing elements until the memory is exhausted
  ```
 
-Realizing finite lazy sequences
 
-```clojure
-(->> (lazy-seq rand-long)  ; infinite lazy seq producing random numbers
-     (take 4)              ; finite lazy seq with 4 elements not yet realized
-     (doall))              ; realize the 4 elements
-     
-; => (1818406514169153152 8927930230538774116 713188723202483350 1539851250757480188)
-```
-
-```clojure
-(->> (lazy-seq 1 inc)      ; infinite lazy seq of positive numbers
-     (map #(* 10 %))       ; map elements, no elements realized yet
-     (drop 2)              ; drop the first 2 elements producing a new infinite lazy seq
-     (take 2)              ; finite lazy seq with 2 elements not yet realized
-     (doall))              ; realize the 2 elements
-     
-; => (30 40)
-```
-
-Implicitly realizing elements of a lazy sequence
+Implicitly realizing elements of an infinite lazy sequence
 
 ```clojure
 (interleave [:a :b :c] (lazy-seq 1 inc))  ; => (:a 1 :b 2 :c 3)
@@ -127,6 +108,27 @@ Finite lazy sequences are built from lists and vectors or from element producing
 (doall (lazy-seq [1 2 3 4]))
 ; => (1 2 3 4)
 ```
+
+The `(take n)` turns the infinite lazy sequence to a finite lazy sequence with n items
+
+```clojure
+(->> (lazy-seq (time/local-date 2023 7 1) #(time/plus % :days 1))
+     (take 3)
+     (doall))  
+; => (2023-07-01 2023-07-02 2023-07-03)
+```
+
+```clojure
+(->> (lazy-seq 1 inc)      ; infinite lazy seq of positive numbers
+     (map #(* 10 %))       ; map elements, no elements realized yet
+     (drop 2)              ; drop the first 2 elements producing a new infinite lazy seq
+     (take 2)              ; finite lazy seq with 2 elements not yet realized
+     (doall))              ; realize the 2 elements
+     
+; => (30 40)
+```
+
+An item producing function returning `nil` to make the lazy sequence finite
 
 ```clojure
 (doall (lazy-seq 1 #(if (< % 5) (inc %) nil)))
