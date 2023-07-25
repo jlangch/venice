@@ -305,8 +305,11 @@ Creating and realizing lazy sequences:
  
 
 Functions that return lazy sequences when their input is a lazy sequence:
- 
+
 	- cons
+	- cycle
+	- repeat
+ 
 	- map
 	- filter
 	- remove
@@ -315,7 +318,6 @@ Functions that return lazy sequences when their input is a lazy sequence:
 	- drop
 	- drop-while
 	- rest
-	- repeat
 
 Functions that return realized elements from a lazy sequences:
 	

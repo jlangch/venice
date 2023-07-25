@@ -2666,7 +2666,7 @@ public class CoreFunctions {
                         "(->> (lazy-seq -1 (lazy-seq 0 #(+ % 1)))               \n" +
                         "     (take 5)                                          \n" +
                         "     (doall))")
-                    .seeAlso("doall", "lazy-seq?")
+                    .seeAlso("doall", "lazy-seq?", "cons", "cycle", "repeat")
                     .build()
         ) {
             @Override
@@ -8154,7 +8154,7 @@ public class CoreFunctions {
                     .arglists("(docoll f coll)")
                     .doc(
                         "Applies f to the items of the collection presumably for side effects. " +
-                        "Returns nil. ")
+                        "Returns nil.")
                     .examples(
                         "(docoll #(println %) [1 2 3 4])",
                         "(docoll \n" +
@@ -8231,22 +8231,24 @@ public class CoreFunctions {
                         "(doall coll)",
                         "(doall n coll)")
                     .doc(
-                        "When lazy sequences are produced doall can be used to force " +
-                        "any effects and realize the lazy sequence.")
+                        "When lazy sequences are produced `doall` can be used to force " +
+                        "any effects and realize the lazy sequence.\n" +
+                        "Returns the relaized items in a list!")
                     .examples(
                         "(->> (lazy-seq #(rand-long 100))  \n" +
                         "     (take 4)                     \n" +
                         "     (doall))",
                         "(->> (lazy-seq #(rand-long 100))  \n" +
                         "     (doall 4))")
-                    .seeAlso("lazy-seq")
+                    .seeAlso("lazy-seq", "cycle", "repeat", "cons")
                     .build()
-        ) {
+       ) {
             @Override
             public VncVal apply(final VncList args) {
                 ArityExceptions.assertArity(this, args, 1, 2);
 
                 if (args.size() == 1) {
+                    // (doall coll)
                     if (Types.isVncLazySeq(args.first())) {
                         final VncLazySeq seq = (VncLazySeq)args.first();
                         return seq.realize();
@@ -8256,29 +8258,38 @@ public class CoreFunctions {
                     }
                     else {
                         throw new VncException(String.format(
-                                "doall: type %s not supported",
+                                "doall: type %s not supported as first argument",
                                 Types.getType(args.first())));
                     }
                 }
-                else {
-                    final int n = Coerce.toVncLong(args.first()).getIntValue();
-                    if (Types.isVncLazySeq(args.second())) {
-                        final VncLazySeq seq = (VncLazySeq)args.second();
-                        return seq.realize(n);
-                    }
-                    else if (Types.isVncSequence(args.second())) {
-                        final VncSequence seq = (VncSequence)args.second();
-                        return seq.toVncList().slice(0, n);
-                    }
-                    else if (Types.isVncCollection(args.second())) {
-                        final VncCollection coll = (VncCollection)args.second();
-                        return coll.toVncList().slice(0, n);
+                else if (args.size() == 2) {
+                    if (Types.isVncNumber(args.first())) {
+                        // (doall n coll)
+                        final int n = Coerce.toVncLong(args.first()).getIntValue();
+                        if (Types.isVncLazySeq(args.second())) {
+                            final VncLazySeq seq = (VncLazySeq)args.second();
+                            return seq.realize(n);
+                        }
+                        else if (Types.isVncCollection(args.second())) {
+                            final VncCollection coll = (VncCollection)args.second();
+                            return coll.toVncList().slice(0, n);
+                        }
+                        else {
+                            throw new VncException(String.format(
+                                    "doall: type %s not supported as first argument",
+                                    Types.getType(args.second())));
+                        }
                     }
                     else {
                         throw new VncException(String.format(
-                                "doall: type %s not supported",
+                                "doall: type %s not supported as second argument",
                                 Types.getType(args.second())));
                     }
+                }
+                else {
+                    throw new VncException(String.format(
+                            "doall: invalid number of arguments %d",
+                            args.size()));
                 }
             }
 
