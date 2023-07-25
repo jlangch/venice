@@ -128,6 +128,15 @@ The `(take n)` turns the infinite lazy sequence to a finite lazy sequence with n
 ; => (30 40)
 ```
 
+Lazy sequences show its power to generate the Fibonacci sequence
+
+```
+(do 
+  (def fib (map first (lazy-seq [0N 1N] (fn [[a b]] [b (+ a b)]))))
+  
+  (doall (take 10 fib)))
+```
+
 An item producing function returning `nil` to make the lazy sequence finite
 
 ```clojure

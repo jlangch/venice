@@ -2665,7 +2665,11 @@ public class CoreFunctions {
                         "; sequence                                             \n" +
                         "(->> (lazy-seq -1 (lazy-seq 0 #(+ % 1)))               \n" +
                         "     (take 5)                                          \n" +
-                        "     (doall))")
+                        "     (doall))",
+                        "; lazy sequence show its power to generate the Fibonacci sequence   \n" +
+                        "(do                                                                 \n" +
+                        "  (def fib (map first (lazy-seq [0N 1N] (fn [[a b]] [b (+ a b)])))) \n" +
+                        "  (doall (take 10 fib)))")
                     .seeAlso("doall", "lazy-seq?", "cons", "cycle", "repeat")
                     .build()
         ) {
