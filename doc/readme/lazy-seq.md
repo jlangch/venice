@@ -55,7 +55,7 @@ Finite lazy sequence from lists and vectors
 (lazy-seq [1 2 3 4]) ; => (...)
  ```
 
-Finite lazy sequence from a function returning `nil` to end the sequence
+Finite lazy sequence from an item producing function returning `nil` to end the sequence
 
 ```clojure
 ; 1, 2, 3, 4, 5
