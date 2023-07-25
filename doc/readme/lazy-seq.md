@@ -137,6 +137,20 @@ Lazy sequences show its power to generate the Fibonacci sequence
   (doall (take 10 fib)))
 ```
 
+Approximate Pi to the 1/n decimal with the Leibniz formula
+
+```
+;; Do no forget to enable upfront macro expansion in the REPL
+(do
+  (defn pi [n]
+     (transduce
+       (comp (map #(/ 4 %)) (take n))
+       +
+     (lazy-seq 1.0 #(* ((if (pos? %) + -) % 2) -1))))
+     
+  (pi 1000000))
+```
+
 An item producing function returning `nil` to make the lazy sequence finite
 
 ```clojure
