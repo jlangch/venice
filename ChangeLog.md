@@ -14,7 +14,7 @@ All notable changes to this project will be documented in this file.
 
 ### Improved 
 
-- documentation for lazy sequences
+- documentation and examples for lazy sequences
 
 
 
