@@ -141,6 +141,7 @@ Approximate Pi to the 1/n decimal with the [Leibniz](https://en.wikipedia.org/wi
 `π/4 = 1 - 1/3 + 1/5 - 1/7 + 1/9 - ...`
 
 ```clojure
+;; Leibniz's formula converges extremely slowly.
 ;; Do no forget to enable upfront macro expansion in the REPL
 (do
   (defn pi [n]
