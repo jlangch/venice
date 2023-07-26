@@ -146,7 +146,7 @@ Approximate Pi to the 1/n decimal with the [Leibniz](https://en.wikipedia.org/wi
      (transduce
        (comp (map #(/ 4 %)) (take n))
        +
-     (lazy-seq 1.0 #(* ((if (pos? %) + -) % 2) -1))))
+       (lazy-seq 1.0 #(* ((if (pos? %) + -) % 2) -1))))
      
   (pi 1000000))
 ```
