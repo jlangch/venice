@@ -137,7 +137,8 @@ Lazy sequences show its power to generate the Fibonacci sequence
   (doall (take 10 fib)))
 ```
 
-Approximate Pi to the 1/n decimal with the [Leibniz](https://en.wikipedia.org/wiki/Leibniz_formula_for_%CF%80) formula
+Approximate Pi to the 1/n decimal with the [Leibniz](https://en.wikipedia.org/wiki/Leibniz_formula_for_%CF%80) formula 
+`π/4 = 1 - 1/3 + 1/5 - 1/7 + 1/9 - ...`
 
 ```clojure
 ;; Do no forget to enable upfront macro expansion in the REPL
