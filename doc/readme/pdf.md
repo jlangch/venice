@@ -1,14 +1,8 @@
 # PDF
 
 Venice's *:pdf* module provides functions to create PDF files. 
-It is based on the [Flying Saucer](https://github.com/flyingsaucerproject/flyingsaucer) 
-library:
+It is based on the [Flying Saucer](https://github.com/flyingsaucerproject/flyingsaucer) library.
 
- - org.xhtmlrenderer:flying-saucer-core:9.1.22
- - org.xhtmlrenderer:flying-saucer-pdf-openpdf:9.1.22
- - com.github.librepdf:openpdf:1.3.30
- - com.github.librepdf:pdf-toolbox:1.3.30
- 
 Flying Saucer is a pure-Java library for rendering XHTML using CSS 2.1 for layout and formatting with output to PDF.
 
 Flying Saucer documentation is available in the user guide, linked from their website at [Flying Saucer](https://code.google.com/archive/p/flying-saucer/)
