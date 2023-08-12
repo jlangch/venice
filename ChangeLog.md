@@ -16,6 +16,10 @@ All notable changes to this project will be documented in this file.
 
 - documentation and examples for lazy sequences
 
+### Fixed 
+
+- Fixed 'str/split' doc examples
+
 
 
 ## [1.10.39] - 2023-07-10

@@ -982,7 +982,7 @@ public class StringFunctions {
                     .examples(
                         "(str/split \"abc,def,ghi\" \",\")",
                         "(str/split \"James Peter Robert\" \" \" 2)",
-                        "(str/split \"abc , def , ghi\" \"[ *],[ *]\")",
+                        "(str/split \"abc , def ,  ghi\" \" *, *\")",
                         "(str/split \"abc,def,ghi\" \"((?<=,)|(?=,))\")",
                         "(str/split \"q1w2e3r4t5y6u7i8o9p0\" #\"\\d+\")",
                         "(str/split \"q1w2e3r4t5y6u7i8o9p0\" #\"\\d+\" 5)",
