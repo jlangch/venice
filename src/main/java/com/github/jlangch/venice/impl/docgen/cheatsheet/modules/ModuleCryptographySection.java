@@ -43,7 +43,7 @@ public class ModuleCryptographySection implements ISectionBuilder {
 
         final DocSection ciphers = new DocSection("Ciphers", id());
         all.addSection(ciphers);
-        ciphers.addItem(diBuilder.getDocItem("crypt/ciphers"));
+        ciphers.addItem(diBuilder.getDocItem("crypt/ciphers", false, false));
 
         final DocSection hashes = new DocSection("Hashes", id());
         all.addSection(hashes);
