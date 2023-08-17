@@ -41,6 +41,10 @@ public class ModuleCryptographySection implements ISectionBuilder {
         final DocSection all = new DocSection("(load-module :crypt)", id());
         section.addSection(all);
 
+        final DocSection ciphers = new DocSection("Ciphers", id());
+        all.addSection(ciphers);
+        ciphers.addItem(diBuilder.getDocItem("crypt/ciphers"));
+
         final DocSection hashes = new DocSection("Hashes", id());
         all.addSection(hashes);
         hashes.addItem(diBuilder.getDocItem("crypt/md5-hash"));

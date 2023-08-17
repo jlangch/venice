@@ -35,6 +35,7 @@
 (import :javax.crypto.spec.PBEKeySpec)
 (import :javax.crypto.spec.PBEParameterSpec)
 (import :javax.crypto.spec.SecretKeySpec)
+(import :javax.net.ssl.SSLServerSocketFactory)
 
 
 (defn
@@ -221,6 +222,36 @@
   (let [url-safe (:url-safe (apply hash-map options) false)]
     (create-decrypt-fn algorithm passphrase url-safe)))
 
+
+(defn
+  ^{ :arglists '("(crypt/ciphers opt)")
+  :doc "Returns a list of the ciphers the Java VM supports"
+  :examples (list
+        """
+        (do
+          (load-module :crypt)
+          (crypt/ciphers :default))
+        """,
+        """
+        (do
+          (load-module :crypt)
+          (crypt/ciphers :available))
+        """,
+        """
+        (do
+          (load-module :crypt)
+          (docoll println (crypt/ciphers :available)))
+        """ ) }
+
+  crypt/ciphers [opt]
+
+  (let [ssf    (cast :SSLServerSocketFactory
+                     (. :SSLServerSocketFactory :getDefault))
+        method (if (= opt :default)
+                   :getDefaultCipherSuites
+                   :getSupportedCipherSuites)]
+
+    (sort (. ssf method))))
 
 
 ;; -----------------------------------------------------------------------------
