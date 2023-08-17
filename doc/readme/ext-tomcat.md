@@ -136,7 +136,7 @@ REPL classpath:
   libs/jakarta.annotation-api-2.1.1.jar
   libs/jansi-2.4.0.jar
   libs/tomcat-embed-core-10.1.1.jar
-  libs/venice-1.10.39.jar
+  libs/venice-1.10.40.jar
 ```
 
 
