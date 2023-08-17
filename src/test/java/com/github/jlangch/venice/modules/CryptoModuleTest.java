@@ -276,6 +276,32 @@ public class CryptoModuleTest {
 
         venice.eval(script);
     }
+
+    @Test
+    public void test_ciphers_default() {
+        final Venice venice = new Venice();
+
+        final String script =
+                "(do                                                \n" +
+                "  (load-module :crypt)                             \n" +
+                "  (assert (> (count (crypt/ciphers :default)) 1))  \n" +
+                ")";
+
+        venice.eval(script);
+    }
+
+    @Test
+    public void test_ciphers_available() {
+        final Venice venice = new Venice();
+
+        final String script =
+                "(do                                                  \n" +
+                "  (load-module :crypt)                               \n" +
+                "  (assert (> (count (crypt/ciphers :available)) 1))  \n" +
+                ")";
+
+        venice.eval(script);
+    }
 }
 
 
