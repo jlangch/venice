@@ -9,7 +9,7 @@ All notable changes to this project will be documented in this file.
 
 ### Added 
 
-- ...
+- a no arg function variant to `crypt/ciphers`
 
 
 
@@ -20,7 +20,6 @@ All notable changes to this project will be documented in this file.
 - formal type support for unwrapping a Java object of type `Optional<T>` through the function `java-unwrap-optional`.
 - detailed explanation of the role of Java formal types in Venice. (See the functions: `formal-type`, `cast`, and `remove-formal-type`)
 - function `crypt/ciphers` to list the available ciphers
-- a no arg function variant to `ciphers`
 
 ### Improved 
 
