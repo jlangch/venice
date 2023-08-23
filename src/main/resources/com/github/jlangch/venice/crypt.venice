@@ -224,8 +224,16 @@
 
 
 (defn
-  ^{ :arglists '("(crypt/ciphers opt)")
-  :doc "Returns a list of the ciphers the Java VM supports"
+  ^{ :arglists '("(crypt/ciphers)",
+                 "(crypt/ciphers opt)")
+  :doc """
+       Returns a list of the ciphers the Java VM supports
+
+       Argument opt
+
+       | :default   | returns the names of the cipher suites which are enabled by default. |
+       | :available | returns the names of the cipher suites which could be enabled for use on an SSL connection created by this `SSLServerSocketFactory`. |
+       """
   :examples (list
         """
         (do
@@ -243,15 +251,16 @@
           (docoll println (crypt/ciphers :available)))
         """ ) }
 
-  crypt/ciphers [opt]
+  crypt/ciphers
 
-  (let [ssf    (cast :SSLServerSocketFactory
-                     (. :SSLServerSocketFactory :getDefault))
-        method (if (= opt :default)
-                   :getDefaultCipherSuites
-                   :getSupportedCipherSuites)]
+  ([] (crypt/ciphers :available))
 
-    (sort (. ssf method))))
+  ([opt]  (let [ssf    (cast :SSLServerSocketFactory
+                             (. :SSLServerSocketFactory :getDefault))
+                method (if (== opt :default)
+                          :getDefaultCipherSuites
+                          :getSupportedCipherSuites)]
+            (sort (. ssf method)))))
 
 
 ;; -----------------------------------------------------------------------------
