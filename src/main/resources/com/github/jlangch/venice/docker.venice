@@ -142,7 +142,7 @@
           "(docker/ps :quiet true :format :json)"
           "(docker/ps :last 3 :format :json)"
           "(println (docker/ps :all true :format :json))" )
-     :see-also '("docker/start" "docker/stop") }
+     :see-also '("docker/start" "docker/stop" "docker/cp") }
 
   ps [& options]
 
@@ -212,16 +212,72 @@
 
 
 (defn
-  ^{ :arglists '("(docker/cmd & options)")
+  ^{ :arglists '("(docker/cp src-path dst-path & options)")
      :doc """
-          Returns a Docker command.
+          Copy files/folders between a container and the local filesystem
+
+          Options:
+
+          | :archive {true,false}     | Archive mode (copy all uid/gid information) |
+          | :follow-link {true,false} | Always follow symbol link in SRC_PATH|
+          | :quiet {true,false}       | Suppress progress output during copy. Progress output is automatically suppressed if no terminal is attached |
+          """
+     :examples '(
+          """
+          ;; Copy file from host to docker container
+          (docker cp data.txt 74789744g489:/data.txt)
+          """,
+          """
+          ;; Copy file from docker container to host
+          (docker cp 74789744g489:/data.txt data.txt)
+          """,
+          """
+          ;; Copy a folder from host to docker container
+          (docker cp Desktop/images 74789744g489:/root/img_files/car_photos/images
+          """,
+          """
+          ;; Copy a folder from docker container to host
+          (docker cp 74789744g489:/root/img_files/car_photos/images Desktop/images
+          """ )
+     :see-also '("docker/ps") }
+
+  cp [src-path dst-path & options]
+
+  (let [opts        (apply hash-map options)
+        archive     (:archive opts false)
+        follow-link (:follow-link  opts false)
+        quiet       (:quiet opts false)]
+    (->> (docker/cmd "stop"
+                     (if archive "--archive" nil)
+                     (if follow-link "--follow-link" nil)
+                     (if quiet "--quiet" nil)
+                     src-path
+                     dst-path)
+         (:out))))
+
+
+(defn
+  ^{ :arglists '("(docker/cmd & args)")
+     :doc """
+          Runs any Docker command.
           """
      :examples '(
           """
           (docker/cmd "version" "--format" "json")
+          """,
+          """
+          (apply docker/cmd ["version" "--format" "json"])
+          """,
+          """
+          ;; run a command with JSON output and parse the JSON output into
+          ;; Venice data
+          (->> (docker/ps :all true :format :json)
+               (:out)
+               (str/split-lines)
+               (map json/read-str))
           """ ) }
 
-   cmd [& options]
+   cmd [& args]
 
    ((docker/exec) (str "docker " (str/join " " (filter some? options)))
                   :throw-ex true))

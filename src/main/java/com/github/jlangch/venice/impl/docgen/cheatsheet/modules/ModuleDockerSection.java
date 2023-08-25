@@ -44,6 +44,7 @@ public class ModuleDockerSection implements ISectionBuilder {
         final DocSection docker = new DocSection("Docker", id());
         all.addSection(docker);
         docker.addItem(diBuilder.getDocItem("docker/version", false));
+        docker.addItem(diBuilder.getDocItem("docker/cmd", false));
 
         final DocSection images = new DocSection("Images", id());
         all.addSection(images);
@@ -56,6 +57,7 @@ public class ModuleDockerSection implements ISectionBuilder {
         containers.addItem(diBuilder.getDocItem("docker/ps", false));
         containers.addItem(diBuilder.getDocItem("docker/start", false));
         containers.addItem(diBuilder.getDocItem("docker/stop", false));
+        containers.addItem(diBuilder.getDocItem("docker/cp", false));
 
         return section;
     }
