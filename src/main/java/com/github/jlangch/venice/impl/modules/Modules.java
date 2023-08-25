@@ -56,6 +56,7 @@ public class Modules {
                         "component",
                         "crypt",
                         "dag",
+                        "docker",
                         "docx",
                         "excel",
                         "excel-install",

@@ -114,7 +114,7 @@ public class Namespaces {
                     Arrays.asList(
                         "bench",
                         "component", "crypt",
-                        "docx",
+                        "docker", "docx",
                         "excel",
                         "http",
                         "jackson",

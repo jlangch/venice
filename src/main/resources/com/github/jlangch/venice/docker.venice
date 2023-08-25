@@ -1,0 +1,234 @@
+;;;;   __    __         _
+;;;;   \ \  / /__ _ __ (_) ___ ___
+;;;;    \ \/ / _ \ '_ \| |/ __/ _ \
+;;;;     \  /  __/ | | | | (_|  __/
+;;;;      \/ \___|_| |_|_|\___\___|
+;;;;
+;;;;
+;;;; Copyright 2017-2023 Venice
+;;;;
+;;;; Licensed under the Apache License, Version 2.0 (the "License");
+;;;; you may not use this file except in compliance with the License.
+;;;; You may obtain a copy of the License at
+;;;;
+;;;;     http://www.apache.org/licenses/LICENSE-2.0
+;;;;
+;;;; Unless required by applicable law or agreed to in writing, software
+;;;; distributed under the License is distributed on an "AS IS" BASIS,
+;;;; WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+;;;; See the License for the specific language governing permissions and
+;;;; limitations under the License.
+
+;;;; Docker utilities
+
+
+(ns docker)
+
+
+(defn
+  ^{ :arglists '("(docker/version & options)")
+     :doc """
+          Returns the Docker version.
+
+          Options:
+
+          | :format {:pretty,:json} | Returns the output either as a pretty printed string or as Json data |
+          """
+     :examples '(
+          "(docker/version)"
+          "(docker/version :format :json)"
+          "(println (docker/version :format :pretty))" ) }
+
+  version [& options]
+
+  (let [opts   (apply hash-map options)
+        format (:format opts :json)]
+    (->> (docker/cmd "version" "--format" (name format))
+         (:out)
+         (parse-output format))))
+
+
+(defn
+  ^{ :arglists '("(docker/images & options)")
+     :doc """
+          List images.
+
+          Options:
+
+          | :all {true,false}      | Show all images (default hides intermediate images) |
+          | :digests {true,false}  | Show digests |
+          | :quiet {true,false}    | If true only display image IDs |
+          | :format {:table,:json} | Returns the output either as a table string or as Json data |
+          """
+     :examples '(
+          "(println (docker/images :format :table))"
+          "(docker/images :quiet true :format :json)"
+          "(println (docker/images :format :json))" ) }
+
+  images [& options]
+
+  (let [opts    (apply hash-map options)
+        all     (:all opts false)
+        digests (:digests opts false)
+        quiet   (:quiet opts false)
+        format  (:format opts :json)]
+    (->> (docker/cmd "images"
+                     ;; (if all "--all" nil)  ;; hangs on MacOSX
+                     (if digests "--digests" nil)
+                     (if quiet "--quiet" nil)
+                     "--format" (name format))
+         (:out)
+         (parse-output format))))
+
+
+(defn
+  ^{ :arglists '("(docker/image-remove id)")
+     :doc """
+          Remove an image given by its image id.
+          """
+     :examples '(
+          """(docker/image-rm "28e52b5cecd8")""" ) }
+
+  image-remove [id]
+
+  (->> (docker/cmd "image" "rm" id)
+       (:out)))
+
+
+(defn
+  ^{ :arglists '("(docker/image-prune & options)")
+     :doc """
+          Remove unused images.
+
+          Options:
+
+          | :all {true,false}      | Remove all unused images, not just dangling ones |
+          """
+     :examples '(
+          "(println (docker/images :format :table))"
+          "(docker/images :quiet true :format :json)"
+          "(println (docker/images :format :json))" ) }
+
+  image-prune [& options]
+
+  (let [opts    (apply hash-map options)
+        all     (:all opts false)]
+    (->> (docker/cmd "image"
+                     "prune"
+                     "--force"   ;; Do not prompt for confirmation
+                     (if all "--all" nil))
+         (:out))))
+
+
+(defn
+  ^{ :arglists '("(docker/ps & options)")
+     :doc """
+          List containers.
+
+          Options:
+
+          | :all {true,false}      | Show all containers (default shows just running) |
+          | :last n                | Show n last created containers |
+          | :quiet {true,false}    | If true only display container IDs |
+          | :format {:table,:json} | Returns the output either as a table string or as Json data |
+          """
+     :examples '(
+          "(println (docker/ps :format :table))"
+          "(docker/ps :all true :format :json)"
+          "(docker/ps :quiet true :format :json)"
+          "(docker/ps :last 3 :format :json)"
+          "(println (docker/ps :all true :format :json))" ) }
+
+  ps [& options]
+
+  (let [opts   (apply hash-map options)
+        all    (:all opts false)
+        lastn  (:last opts -1)
+        quiet  (:quiet opts false)
+        format (:format opts :json)]
+    (->> (docker/cmd "ps"
+                     (if all "--all" nil)
+                     "--last" lastn
+                     (if quiet "--quiet" nil)
+                     "--format" (name format))
+         (:out)
+         (parse-output format))))
+
+
+(defn
+  ^{ :arglists '("(docker/start id & options)")
+     :doc """
+          Start a stopped container given by its container id.
+
+          Options:
+
+          | :attach {true,false} | Attach STDOUT/STDERR and forward signals |
+          """
+     :examples '(
+          """(docker/start id "b19b498c670b")""" ) }
+
+  image-start [id & options]
+
+  (let [opts    (apply hash-map options)
+        attach  (:attach opts false)]
+    (->> (docker/cmd "start"
+                     (if attach "--attach" nil)
+                     id)
+         (:out))))
+
+
+(defn
+  ^{ :arglists '("(docker/stop id & options)")
+     :doc """
+          Stop a container given by its container id.
+
+          Options:
+
+          | :signal name | Attach STDOUT/STDERR and forward signals |
+          | :time n | Seconds to wait before killing the container |
+          """
+     :examples '(
+          """(docker/stop id "b19b498c670b" :time 30)""" ) }
+
+  image-start [id & options]
+
+  (let [opts    (apply hash-map options)
+        signal  (:signal opts nil)
+        time    (:time opts 0)]
+    (->> (docker/cmd "stop"
+                     (if (and (some? signal) (string? signal)) "--signal" nil)
+                     (if (and (some? signal) (string? signal)) signal nil)
+                     (if (and (number? time) (pos? time)) "--time" nil)
+                     (if (and (number? time) (pos? time)) time nil)
+                     id)
+         (:out))))
+
+
+(defn
+  ^{ :arglists '("(docker/cmd & options)")
+     :doc """
+          Returns a Docker command.
+          """
+     :examples '(
+          """
+          (docker/cmd "version" "--format" "json")
+          """ ) }
+
+   cmd [& options]
+
+   ((docker/exec) (str "docker " (str/join " " (filter some? options)))
+                  :throw-ex true))
+
+
+(defn- parse-output [format output]
+  (if (= format :json)
+    (->> (str/split-lines output)  ;; docker you're kidding
+         (map json/read-str))
+    output))
+
+
+(defn- exec []
+  (case (os-type)
+    :mac-osx (partial sh "/bin/sh" "-c")
+    :linux   (partial sh "/bin/sh" "-c")
+    :windows (partial sh "cmd" "/C")))

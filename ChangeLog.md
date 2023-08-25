@@ -10,6 +10,7 @@ All notable changes to this project will be documented in this file.
 ### Added 
 
 - a no arg function variant to `crypt/ciphers`
+- a `docker` module to script the management of docker images and containers
 
 
 
