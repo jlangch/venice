@@ -1197,22 +1197,31 @@ public class JavaInteropFunctions {
             if (Types.isVncJavaObject(args.first(), java.util.Optional.class)) {
                 final VncJavaObject obj = (VncJavaObject)args.first();
 
-                 final Optional<Object> optional = (Optional<Object>)obj.getDelegate();
+                final Optional<Object> optional = (Optional<Object>)obj.getDelegate();
 
                 final Object val = optional.isPresent() ? optional.get() : null;
 
-                if (val instanceof VncVal || val instanceof Iterable) {
+                if (val == null) {
+                    return Constants.Nil;
+                }
+                else if (val instanceof VncVal) {
+                    return (VncVal)val;
+                }
+                if (val instanceof Iterable) {
+                    return JavaInteropUtil.convertToVncVal(val);
+                }
+                else if (val.getClass().isArray()) {
                     return JavaInteropUtil.convertToVncVal(val);
                 }
                 else {
-                    // handle the formal type for non collection Java object
+                    // handle the formal type
                     final Type type = obj.getDelegateGenericType();
                     if (type != null) {
                         try {
                             final Type genericType = ReflectionUtil.getTypeArguments(type)[0];
                             final Class<?> formalType = Class.forName(genericType.getTypeName());
-                            return new VncJavaObject(val, formalType);
-                        }
+                            return JavaInteropUtil.convertToVncVal(val, formalType);
+                     	}
                         catch(Exception ex) {
                             throw new VncException(
                                         String.format(

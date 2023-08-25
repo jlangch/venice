@@ -24,6 +24,7 @@ package com.github.jlangch.venice.javainterop;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
+import java.util.List;
 import java.util.Optional;
 
 import org.junit.jupiter.api.Test;
@@ -118,6 +119,24 @@ public class JavaInterop_Optional_Test {
         assertThrows(JavaMethodInvocationException.class, () -> venice.eval(script2));
     }
 
+
+    @SuppressWarnings("unchecked")
+	@Test
+    public void test_optional_string_array() {
+        final Venice venice = new Venice();
+
+        final String script =
+                "(do                                                                                            \n" +
+                "  (import :com.github.jlangch.venice.javainterop.JavaInterop_Optional_Test$OptionalFunctions)  \n" +
+                "                                                                                               \n" +
+                "  (-> (. :JavaInterop_Optional_Test$OptionalFunctions :new)                                    \n" +
+                "      (. :optionalStringArray)                                                                 \n" +
+                "      (java-unwrap-optional)))                                                                 \n";
+
+        assertEquals("hello", ((List<String>)venice.eval(script)).get(0));
+    }
+
+
 //    @Test
 //    public void test_optional_parameterized_type() throws Exception {
 //        final Optional<Circle> ret1 = new OptionalFunctions().optionalCircle();
@@ -162,6 +181,11 @@ public class JavaInterop_Optional_Test {
         public Optional<Shape> optionalShapeNull() {
             return Optional.empty();
         }
+
+        public Optional<String[]> optionalStringArray() {
+            return Optional.of(new String[] {"hello"});
+        }
+
     }
 
 

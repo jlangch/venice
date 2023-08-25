@@ -12,6 +12,10 @@ All notable changes to this project will be documented in this file.
 - a no arg function variant to `crypt/ciphers`
 - a `docker` module to script the management of docker images and containers
 
+### Fixed 
+
+- unwrapping a Java object of type `Optional<T>` if `T` is a Java array type
+
 
 
 ## [1.10.40] - 2023-08-17
@@ -28,7 +32,7 @@ All notable changes to this project will be documented in this file.
 
 ### Fixed 
 
-- Fixed 'str/split' doc examples
+- 'str/split' doc examples
 
 
 

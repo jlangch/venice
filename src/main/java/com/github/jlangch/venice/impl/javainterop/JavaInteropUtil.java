@@ -291,6 +291,10 @@ public class JavaInteropUtil {
         return convertToVncVal(value, null, null, false);
     }
 
+    public static VncVal convertToVncVal(final Object value, final Class<?> formalType) {
+        return convertToVncVal(value, formalType, null, false);
+    }
+
     @SuppressWarnings("unchecked")
     private static VncVal convertToVncVal(
             final Object value,
