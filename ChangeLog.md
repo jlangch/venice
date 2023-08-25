@@ -10,7 +10,7 @@ All notable changes to this project will be documented in this file.
 ### Added 
 
 - a no arg function variant to `crypt/ciphers`
-- a `docker` module to manage of docker images and containers from Venice scripts. The functions support both TEXT and JSON output of the docker commands. The JSON output is parsed and converted to Venice data for further processing. The module currently supports the Docker commands:
+- a `docker` module to manage docker images and containers from Venice scripts. The functions support both TEXT and JSON output of the docker commands. The JSON output is parsed and converted to Venice data for further processing. The module currently supports the Docker commands:
     - docker version, 
     - docker images, docker image prune, docker image rm
     - docker ps, docker start, docker stop, docker cp
