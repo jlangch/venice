@@ -37,7 +37,8 @@
      :examples '(
           "(docker/version)"
           "(docker/version :format :json)"
-          "(println (docker/version :format :pretty))" ) }
+          "(println (docker/version :format :pretty))" )
+     :see-also '("docker/images" "docker/ps")}
 
   version [& options]
 
@@ -63,7 +64,8 @@
      :examples '(
           "(println (docker/images :format :table))"
           "(docker/images :quiet true :format :json)"
-          "(println (docker/images :format :json))" ) }
+          "(println (docker/images :format :json))" )
+     :see-also '("docker/image-remove" "docker/image-prune") }
 
   images [& options]
 
@@ -87,7 +89,8 @@
           Remove an image given by its image id.
           """
      :examples '(
-          """(docker/image-rm "28e52b5cecd8")""" ) }
+          """(docker/image-rm "28e52b5cecd8")""" )
+     :see-also '("docker/images" "docker/image-prune") }
 
   image-remove [id]
 
@@ -107,7 +110,8 @@
      :examples '(
           "(println (docker/images :format :table))"
           "(docker/images :quiet true :format :json)"
-          "(println (docker/images :format :json))" ) }
+          "(println (docker/images :format :json))" )
+     :see-also '("docker/images" "docker/image-remove") }
 
   image-prune [& options]
 
@@ -137,7 +141,8 @@
           "(docker/ps :all true :format :json)"
           "(docker/ps :quiet true :format :json)"
           "(docker/ps :last 3 :format :json)"
-          "(println (docker/ps :all true :format :json))" ) }
+          "(println (docker/ps :all true :format :json))" )
+     :see-also '("docker/start" "docker/stop") }
 
   ps [& options]
 
@@ -165,9 +170,10 @@
           | :attach {true,false} | Attach STDOUT/STDERR and forward signals |
           """
      :examples '(
-          """(docker/start id "b19b498c670b")""" ) }
+          """(docker/start id "b19b498c670b")""" )
+     :see-also '("docker/stop" "docker/ps") }
 
-  image-start [id & options]
+  start [id & options]
 
   (let [opts    (apply hash-map options)
         attach  (:attach opts false)]
@@ -184,13 +190,14 @@
 
           Options:
 
-          | :signal name | Attach STDOUT/STDERR and forward signals |
-          | :time n | Seconds to wait before killing the container |
+          | :signal name | Signal to send to the container |
+          | :time n      | Seconds to wait before killing the container |
           """
      :examples '(
-          """(docker/stop id "b19b498c670b" :time 30)""" ) }
+          """(docker/stop id "b19b498c670b" :time 30)""" )
+     :see-also '("docker/start" "docker/ps") }
 
-  image-start [id & options]
+  stop [id & options]
 
   (let [opts    (apply hash-map options)
         signal  (:signal opts nil)
