@@ -426,6 +426,23 @@
 
 
 (defn
+  ^{ :arglists '("(docker/volumes-list)")
+     :doc """
+          List all the volumes known to Docker.
+          """
+     :examples '(
+          """
+          (docker/volumes-list)
+          """ )
+     :see-also '("docker/ps") }
+
+  volumes-list []
+
+  (let [cmdargs* ["volumes" "list"]]
+    (:out (apply docker/cmd cmdargs*))))
+
+
+(defn
   ^{ :arglists '("(docker/cmd & args)")
      :doc """
           Runs any Docker command.

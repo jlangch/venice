@@ -44,8 +44,9 @@ public class ModuleDockerSection implements ISectionBuilder {
         final DocSection docker = new DocSection("Docker", id());
         all.addSection(docker);
         docker.addItem(diBuilder.getDocItem("docker/version", false));
-        docker.addItem(diBuilder.getDocItem("docker/cmd", false));
+        docker.addItem(diBuilder.getDocItem("docker/volumes-list", false));
         docker.addItem(diBuilder.getDocItem("docker/debug", false));
+        docker.addItem(diBuilder.getDocItem("docker/cmd", false));
 
         final DocSection images = new DocSection("Images", id());
         all.addSection(images);
