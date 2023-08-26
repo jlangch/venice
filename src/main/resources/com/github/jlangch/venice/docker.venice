@@ -95,11 +95,12 @@
           | :all {true, false}      | Show all images (default hides intermediate images) |
           | :digests {true, false}  | Show digests |
           | :quiet {true, false}    | If true only display image IDs |
+          | :no-trunc {true, false} | Don't truncate output |
           | :format {:table, :json} | Returns the output either as a table string or as JSON data |
           """
      :examples '(
           "(println (docker/images :format :table))"
-          "(docker/images :quiet true :format :json)"
+          "(docker/images :quiet true :no-trunc true :format :json)"
           "(println (docker/images :format :json))" )
      :see-also '("docker/image-remove" "docker/image-prune") }
 
@@ -109,10 +110,12 @@
         all      (:all opts false)      ;; (if all "--all" nil)  ;; hangs on MacOSX
         digests  (:digests opts false)
         quiet    (:quiet opts false)
+        no-trunc (:no-trunc opts false)
         format   (:format opts :json)
         cmdargs* ["images"]
         cmdargs* (if digests (conj cmdargs* "--digests") cmdargs*)
         cmdargs* (if quiet (conj cmdargs* "--quiet") cmdargs*)
+        cmdargs* (if no-trunc (conj cmdargs* "--no-trunc") cmdargs*)
         cmdargs* (into cmdargs* ["--format" (name format)])]
     (->> (apply docker/cmd cmdargs*)
          (:out)
@@ -190,7 +193,7 @@
 
           Options:
 
-          | :detach {true, false}   | Run container in background and print container ID |
+          | :detach {true, false}   | Run container in background and return container ID |
           | :publish port           | Publish a container's port(s) to the host |
           | :envs vars              | Set environment variable (a sequence of env var defs) |
           | :memory limit           | Memory limit |
@@ -208,9 +211,19 @@
                       :detach true
                       :envs ["ARANGO_ROOT_PASSWORD=xxxxxx"
                              "ARANGODB_OVERRIDE_DETECTED_TOTAL_MEMORY=8G"
+                             "ARANGODB_OVERRIDE_DETECTED_NUMBER_OF_CORES=1"])
+          """,
+          """
+          ;; Run an ArangoDB container
+          (docker/run "arangodb/arangodb:3.10.10"
+                      :publish "8529:8529"
+                      :detach true
+                      :envs ["ARANGO_ROOT_PASSWORD=xxxxxx"
+                             "ARANGODB_OVERRIDE_DETECTED_TOTAL_MEMORY=8G"
                              "ARANGODB_OVERRIDE_DETECTED_NUMBER_OF_CORES=1"]
                       :args ["--database.auto-upgrade"])
-          """)
+          """
+          )
      :see-also '("docker/start" "docker/stop" "docker/cp") }
 
   run [image-tag-or-id & options]
@@ -253,13 +266,14 @@
           | :all {true, false}      | Show all containers (default shows just running) |
           | :last n                 | Show n last created containers |
           | :quiet {true, false}    | If true only display container IDs |
+          | :no-trunc {true, false} | Don't truncate output |
           | :format {:table, :json} | Returns the output either as a table string or as JSON data |
           """
      :examples '(
           "(println (docker/ps :format :table))"
           "(docker/ps :all true :format :json)"
-          "(docker/ps :quiet true :format :json)"
-          "(docker/ps :last 3 :format :json)"
+          "(docker/ps :all true :no-trunc true :format :json)"
+          "(docker/ps :all true :no-trunc true :last 3 :format :json)"
           "(println (docker/ps :all true :format :json))" )
      :see-also '("docker/start" "docker/stop" "docker/cp") }
 
@@ -269,10 +283,12 @@
         all      (:all opts false)
         lastn    (:last opts -1)
         quiet    (:quiet opts false)
+        no-trunc (:no-trunc opts false)
         format   (:format opts :json)
         cmdargs* ["ps"]
         cmdargs* (if all (conj cmdargs* "--all") cmdargs*)
         cmdargs* (if quiet (conj cmdargs* "--quiet") cmdargs*)
+        cmdargs* (if quiet (conj cmdargs* "--no-trunc") cmdargs*)
         cmdargs* (into cmdargs* ["--last" lastn])
         cmdargs* (into cmdargs* ["--format" (name format)])]
     (->> (apply docker/cmd cmdargs*)
@@ -295,10 +311,11 @@
 
   start [id & options]
 
-  (let [opts    (apply hash-map options)
-        attach  (:attach opts false)
+  (let [opts     (apply hash-map options)
+        attach   (:attach opts false)
         cmdargs* ["start"]
-        cmdargs* (if attach (conj cmdargs* "--attach") cmdargs*)]
+        cmdargs* (if attach (conj cmdargs* "--attach") cmdargs*)
+        cmdargs* (conj cmdargs* id)]
     (:out (apply docker/cmd cmdargs*))))
 
 
@@ -318,16 +335,17 @@
 
   stop [id & options]
 
-  (let [opts    (apply hash-map options)
-        signal  (:signal opts nil)
-        time    (:time opts 0)
+  (let [opts     (apply hash-map options)
+        signal   (:signal opts nil)
+        time     (:time opts 0)
         cmdargs* ["stop"]
         cmdargs* (if (and (some? signal) (string? signal))
                    (into cmdargs* ["--signal" signal])
                    cmdargs*)
         cmdargs* (if (and (number? time) (pos? time))
                    (into cmdargs* ["--time" time])
-                   cmdargs*)]
+                   cmdargs*)
+        cmdargs* (conj cmdargs* id)]
     (:out (apply docker/cmd cmdargs*))))
 
 
