@@ -27,6 +27,13 @@
 (ns docker)
 
 
+(def-dynamic *debug* false)
+
+
+(defn debug [on]
+  (set! docker/*debug* on))
+
+
 (defn
   ^{ :arglists '("(docker/version & options)")
      :doc """
@@ -44,9 +51,10 @@
 
   version [& options]
 
-  (let [opts   (apply hash-map options)
-        format (:format opts :json)]
-    (->> (docker/cmd "version" "--format" (name format))
+  (let [opts     (apply hash-map options)
+        format   (:format opts :json)
+        cmdargs* ["version" "--format" (name format)]]
+    (->> (apply docker/cmd cmdargs*)
          (:out)
          (parse-output format))))
 
@@ -71,16 +79,16 @@
 
   images [& options]
 
-  (let [opts    (apply hash-map options)
-        all     (:all opts false)
-        digests (:digests opts false)
-        quiet   (:quiet opts false)
-        format  (:format opts :json)]
-    (->> (docker/cmd "images"
-                     ;; (if all "--all" nil)  ;; hangs on MacOSX
-                     (if digests "--digests" nil)
-                     (if quiet "--quiet" nil)
-                     "--format" (name format))
+  (let [opts     (apply hash-map options)
+        all      (:all opts false)      ;; (if all "--all" nil)  ;; hangs on MacOSX
+        digests  (:digests opts false)
+        quiet    (:quiet opts false)
+        format   (:format opts :json)
+        cmdargs* ["images"]
+        cmdargs* (if digests (conj cmdargs* "--digests") cmdargs*)
+        cmdargs* (if quiet (conj cmdargs* "--quiet") cmdargs*)
+        cmdargs* (into cmdargs* ["--format" (name format)])]
+    (->> (apply docker/cmd cmdargs*)
          (:out)
          (parse-output format))))
 
@@ -96,8 +104,8 @@
 
   image-remove [id]
 
-  (->> (docker/cmd "image" "rm" id)
-       (:out)))
+  (let [cmdargs* ["image" "rm" id]]
+    (:out (apply docker/cmd cmdargs*))))
 
 
 (defn
@@ -117,13 +125,63 @@
 
   image-prune [& options]
 
-  (let [opts    (apply hash-map options)
-        all     (:all opts false)]
-    (->> (docker/cmd "image"
-                     "prune"
-                     "--force"   ;; Do not prompt for confirmation
-                     (if all "--all" nil))
-         (:out))))
+  (let [opts     (apply hash-map options)
+        all      (:all opts false)
+        cmdargs* ["image" "prune" "--force"]  ;; Do not prompt for confirmation
+        cmdargs* (if all (conj cmdargs* "--all") cmdargs*)]
+    (:out (apply docker/cmd cmdargs*))))
+
+
+(defn
+  ^{ :arglists '("(docker/run image-id & options)")
+     :doc """
+          Create and run a new container from an image.
+
+          Options:
+
+          | :detach {true, false}   | Run container in background and print container ID |
+          | :envs vars              | Set environment variable (a sequence of env var defs) |
+          | :memory limit           | Memory limit |
+          | :name name              | Assign a name to the container |
+          | :quiet {true, false}    | Suppress the pull output |
+          | :volumes vol            | Bind mount a volume (a sequence of volume defs)|
+          | :workdir dir            | Working directory inside the container |
+          | :args arg               | Argument passed to container process (a sequence of args) |
+          """
+     :examples '(
+          "(println (docker/ps :format :table))"
+          "(docker/ps :all true :format :json)"
+          "(docker/ps :quiet true :format :json)"
+          "(docker/ps :last 3 :format :json)"
+          "(println (docker/ps :all true :format :json))" )
+     :see-also '("docker/start" "docker/stop" "docker/cp") }
+
+  run [& options]
+
+  (let [opts     (apply hash-map options)
+        detach   (:detach opts false)
+        envs     (:envs opts [])
+        memory   (:memory opts 0)
+        name     (:name opts nil)
+        quiet    (:quiet opts false)
+        volumes  (:volumes opts [])
+        workdir  (:workdir opts nil)
+        args     (:args opts [])
+        cmdargs* ["run"]
+        cmdargs* (if detach (conj cmdargs* "--detach") cmdargs*)
+        cmdargs* (if quiet (conj cmdargs* "--quiet") cmdargs*)
+        cmdargs* (if (pos? memory) (conj cmdargs* "--memory" memory) cmdargs*)
+        cmdargs* (if (some? name) (conj cmdargs* "--name" name) cmdargs*)
+        cmdargs* (if (some? workdir) (conj cmdargs* "--workdir" workdir) cmdargs*)
+        cmdargs* (if (and (some? volumes) (vector? volumes))
+                   (into cmdargs* (interleave (lazy-seq (constantly "--volume")) volumes))
+                   cmdargs*)
+        cmdargs* (if (and (some? envs) (vector? envs))
+                   (into cmdargs* (interleave (lazy-seq (constantly "--env")) envs))
+                   cmdargs*)
+        cmdargs* (conj cmdargs* image-id)
+        cmdargs* (if (and (some? args) (vector?)) (into cmdargs* args) cmdargs*)]
+    (:out (apply docker/cmd cmdargs*))))
 
 
 (defn
@@ -148,16 +206,17 @@
 
   ps [& options]
 
-  (let [opts   (apply hash-map options)
-        all    (:all opts false)
-        lastn  (:last opts -1)
-        quiet  (:quiet opts false)
-        format (:format opts :json)]
-    (->> (docker/cmd "ps"
-                     (if all "--all" nil)
-                     "--last" lastn
-                     (if quiet "--quiet" nil)
-                     "--format" (name format))
+  (let [opts     (apply hash-map options)
+        all      (:all opts false)
+        lastn    (:last opts -1)
+        quiet    (:quiet opts false)
+        format   (:format opts :json)
+        cmdargs* ["ps"]
+        cmdargs* (if all (conj cmdargs* "--all") cmdargs*)
+        cmdargs* (if quiet (conj cmdargs* "--quiet") cmdargs*)
+        cmdargs* (into cmdargs* ["--last" lastn])
+        cmdargs* (into cmdargs* ["--format" (name format)])]
+    (->> (apply docker/cmd cmdargs*)
          (:out)
          (parse-output format))))
 
@@ -178,11 +237,10 @@
   start [id & options]
 
   (let [opts    (apply hash-map options)
-        attach  (:attach opts false)]
-    (->> (docker/cmd "start"
-                     (if attach "--attach" nil)
-                     id)
-         (:out))))
+        attach  (:attach opts false)
+        cmdargs* ["start"]
+        cmdargs* (if attach (conj cmdargs* "--attach") cmdargs*)]
+    (:out (apply docker/cmd cmdargs*))))
 
 
 (defn
@@ -203,14 +261,15 @@
 
   (let [opts    (apply hash-map options)
         signal  (:signal opts nil)
-        time    (:time opts 0)]
-    (->> (docker/cmd "stop"
-                     (if (and (some? signal) (string? signal)) "--signal" nil)
-                     (if (and (some? signal) (string? signal)) signal nil)
-                     (if (and (number? time) (pos? time)) "--time" nil)
-                     (if (and (number? time) (pos? time)) time nil)
-                     id)
-         (:out))))
+        time    (:time opts 0)
+        cmdargs* ["stop"]
+        cmdargs* (if (and (some? signal) (string? signal))
+                   (into cmdargs* ["--signal" signal])
+                   cmdargs*)
+        cmdargs* (if (and (number? time) (pos? time))
+                   (into cmdargs* ["--time" time])
+                   cmdargs*)]
+    (:out (apply docker/cmd cmdargs*))))
 
 
 (defn
@@ -248,14 +307,13 @@
   (let [opts        (apply hash-map options)
         archive     (:archive opts false)
         follow-link (:follow-link  opts false)
-        quiet       (:quiet opts false)]
-    (->> (docker/cmd "stop"
-                     (if archive "--archive" nil)
-                     (if follow-link "--follow-link" nil)
-                     (if quiet "--quiet" nil)
-                     src-path
-                     dst-path)
-         (:out))))
+        quiet       (:quiet opts false)
+        cmdargs*    ["cp"]
+        cmdargs*    (if archive (conj cmdargs* "--archive") cmdargs*)
+        cmdargs*    (if follow-link (conj cmdargs* "--follow-link") cmdargs*)
+        cmdargs*    (if quiet (conj cmdargs* "--quiet") cmdargs*)
+        cmdargs*    (into cmdargs* [src-path dst-path])]
+    (:out (apply docker/cmd cmdargs*))))
 
 
 (defn
@@ -280,13 +338,14 @@
 
   (let [opts     (apply hash-map options)
         format   (:format opts :string)
-        output   (:out (docker/cmd "diff" container-id))
-        actions  {"A" :added, "C" :changed, "D" :deleted}]
-    (if (= format :json)
-      (->> (str/split-lines output)
-           (map #(str/split-at % 1))
-           (map #(vector (get actions (first %)) (str/trim (second %)))))
-      output)))
+        actions  {"A" :added, "C" :changed, "D" :deleted}
+        cmdargs* ["diff" container-id]]
+    (let [output (:out (apply docker/cmd cmdargs*))]
+      (if (= format :json)
+        (->> (str/split-lines output)
+             (map #(str/split-at % 1))
+             (map #(vector (get actions (first %)) (str/trim (second %)))))
+        output))))
 
 
 (defn
@@ -302,7 +361,8 @@
 
   pause [container-id]
 
-  (:out (docker/cmd "pause" container-id)))
+  (let [cmdargs* ["pause" container-id]]
+    (:out (apply docker/cmd cmdargs*))))
 
 
 (defn
@@ -318,7 +378,8 @@
 
   unpause [container-id]
 
-  (:out (docker/cmd "unpause" container-id)))
+  (let [cmdargs* ["unpause" container-id]]
+    (:out (apply docker/cmd cmdargs*))))
 
 
 (defn
@@ -334,7 +395,8 @@
 
   wait [&container-ids]
 
-  (:out (docker/cmd "wait" (apply str container-ids))))
+  (let [cmdargs* (into ["wait"] container-ids)]
+    (:out (apply docker/cmd cmdargs*))))
 
 
 (defn
@@ -344,24 +406,27 @@
           """
      :examples '(
           """
-          (docker/cmd "version" "--format" "json")
+          (println (docker/cmd "version" "--format" "string"))
           """,
           """
-          (apply docker/cmd ["version" "--format" "json"])
+          (println (docker/cmd "version --format string"))
+          """,
+          """
+          (println (docker/cmd "version" "--format" "json"))
           """,
           """
           ;; run a command with JSON output and parse the JSON output into
           ;; Venice data
-          (->> (docker/ps :all true :format :json)
-               (:out)
-               (str/split-lines)
-               (map json/read-str))
+          (-<> (apply docker/cmd ["ps" "--all" "--format" "json"])
+               (:out <>)
+               (json/read-str (str "[" <> "]")))
           """ ) }
 
    cmd [& args]
 
-   ((docker/exec) (str "docker " (str/join " " (filter some? options)))
-                  :throw-ex true))
+   (let [cmd* (apply str "docker " (interpose " " args))]
+     (when docker/*debug* (println "DEBUG:" cmd*))
+     ((docker/exec) cmd* :throw-ex true)))
 
 
 (defn- parse-output [format output]
