@@ -180,9 +180,37 @@
 
   (let [opts     (apply hash-map options)
         quiet    (:quiet opts false)
-        cmdargs* ["image" "pull" ]
+        cmdargs* ["image" "pull"]
         cmdargs* (if quiet (conj cmdargs* "--quiet") cmdargs*)
         cmdargs* (conj cmdargs* image-tag-or-digest)]
+    (:out (apply docker/cmd cmdargs*))))
+
+
+(defn
+  ^{ :arglists '("(docker/rmi image-id & options)")
+     :doc """
+          Remove an image.
+
+          Options:
+
+          | :force {true, false} | Force removal of the image |
+          | :no-prune {true, false} | Do not delete untagged parents |
+          """
+     :examples '(
+          """
+          (docker/rmi "arangodb/arangodb:3.10.10" :force true)
+          """ )
+     :see-also '("docker/images" "docker/image-remove") }
+
+  rmi [image-id & options]
+
+  (let [opts     (apply hash-map options)
+        force    (:force opts false)
+        no-prune (:no-prune opts false)
+        cmdargs* ["rmi"]
+        cmdargs* (if force (conj cmdargs* "--force") cmdargs*)
+        cmdargs* (if no-prune (conj cmdargs* "--no-prune") cmdargs*)
+        cmdargs* (conj cmdargs* image-id)]
     (:out (apply docker/cmd cmdargs*))))
 
 
@@ -297,16 +325,16 @@
 
 
 (defn
-  ^{ :arglists '("(docker/start id & options)")
+  ^{ :arglists '("(docker/start container & options)")
      :doc """
-          Start a stopped container given by its container id.
+          Start a stopped container.
 
           Options:
 
           | :attach {true, false} | Attach STDOUT/STDERR and forward signals |
           """
      :examples '(
-          """(docker/start id "b19b498c670b")""" )
+          """(docker/start "b19b498c670b")""" )
      :see-also '("docker/stop" "docker/ps") }
 
   start [id & options]
@@ -315,14 +343,14 @@
         attach   (:attach opts false)
         cmdargs* ["start"]
         cmdargs* (if attach (conj cmdargs* "--attach") cmdargs*)
-        cmdargs* (conj cmdargs* id)]
+        cmdargs* (conj cmdargs* container)]
     (:out (apply docker/cmd cmdargs*))))
 
 
 (defn
-  ^{ :arglists '("(docker/stop id & options)")
+  ^{ :arglists '("(docker/stop container & options)")
      :doc """
-          Stop a container given by its container id.
+          Stop a container.
 
           Options:
 
@@ -330,10 +358,12 @@
           | :time n      | Seconds to wait before killing the container |
           """
      :examples '(
-          """(docker/stop id "b19b498c670b" :time 30)""" )
+          """
+          (docker/stop "b19b498c670b" :time 30)
+          """ )
      :see-also '("docker/start" "docker/ps") }
 
-  stop [id & options]
+  stop [container & options]
 
   (let [opts     (apply hash-map options)
         signal   (:signal opts nil)
@@ -345,7 +375,54 @@
         cmdargs* (if (and (number? time) (pos? time))
                    (into cmdargs* ["--time" time])
                    cmdargs*)
-        cmdargs* (conj cmdargs* id)]
+        cmdargs* (conj cmdargs* container)]
+    (:out (apply docker/cmd cmdargs*))))
+
+
+(defn
+  ^{ :arglists '("(docker/rm container & options)")
+     :doc """
+          Remove a container.
+
+          Options:
+
+          | :force {true, false}   | Force the removal of a running container (uses SIGKILL) |
+          | :link link             | Remove the specified link |
+          | :volumes {true, false} | Remove anonymous volumes associated with the container |
+          """
+     :examples '(
+          """
+          (docker/rm "b19b498c670b")
+          """ ) }
+
+  rm [container & options]
+
+  (let [opts     (apply hash-map options)
+        force    (:force opts false)
+        link     (:link opts nil)
+        volumes  (:volumes opts false)
+        cmdargs* ["rm"]
+        cmdargs* (if force (conj cmdargs* "--force") cmdargs*)
+        cmdargs* (if volumes (conj cmdargs* "--volumes") cmdargs*)
+        cmdargs* (if (some? link) (into cmdargs* ["--link" link]) cmdargs*)
+        cmdargs* (conj cmdargs* "container")]
+    (:out (apply docker/cmd cmdargs*))))
+
+
+(defn
+  ^{ :arglists '("(docker/prune)")
+     :doc """
+          Remove all stopped containers.
+          """
+     :examples '(
+          """
+          (docker/prune)
+          """ )
+     :see-also '("docker/images" "docker/image-remove") }
+
+  prune []
+
+  (let [cmdargs* ["prune" "--force"]]       ;; Do not prompt for confirmation
     (:out (apply docker/cmd cmdargs*))))
 
 
@@ -394,7 +471,7 @@
 
 
 (defn
-  ^{ :arglists '("(docker/diff container-id & options)")
+  ^{ :arglists '("(docker/diff container & options)")
      :doc """
           Inspect changes to files or directories on a container's filesystem.
 
@@ -411,12 +488,12 @@
           """ )
      :see-also '("docker/ps") }
 
-  diff [container-id & options]
+  diff [container & options]
 
   (let [opts     (apply hash-map options)
         format   (:format opts :string)
         actions  {"A" :added, "C" :changed, "D" :deleted}
-        cmdargs* ["diff" container-id]]
+        cmdargs* ["diff" container]]
     (let [output (:out (apply docker/cmd cmdargs*))]
       (if (= format :json)
         (->> (str/split-lines output)
@@ -426,7 +503,7 @@
 
 
 (defn
-  ^{ :arglists '("(docker/pause container-id)")
+  ^{ :arglists '("(docker/pause container)")
      :doc """
           Pause all processes within a container
           """
@@ -436,14 +513,14 @@
           """ )
      :see-also '("docker/ps") }
 
-  pause [container-id]
+  pause [container]
 
-  (let [cmdargs* ["pause" container-id]]
+  (let [cmdargs* ["pause" container]]
     (:out (apply docker/cmd cmdargs*))))
 
 
 (defn
-  ^{ :arglists '("(docker/unpause container-id)")
+  ^{ :arglists '("(docker/unpause container)")
      :doc """
           Unpause all processes within a container
           """
@@ -455,12 +532,12 @@
 
   unpause [container-id]
 
-  (let [cmdargs* ["unpause" container-id]]
+  (let [cmdargs* ["unpause" container]]
     (:out (apply docker/cmd cmdargs*))))
 
 
 (defn
-  ^{ :arglists '("(docker/wait &container-ids)")
+  ^{ :arglists '("(docker/wait &containers)")
      :doc """
           Block until one or more containers stop, then return their exit codes
           """
@@ -470,9 +547,9 @@
           """ )
      :see-also '("docker/ps") }
 
-  wait [&container-ids]
+  wait [&containers]
 
-  (let [cmdargs* (into ["wait"] container-ids)]
+  (let [cmdargs* (into ["wait"] containers)]
     (:out (apply docker/cmd cmdargs*))))
 
 
