@@ -27,11 +27,37 @@
 (ns docker)
 
 
-(def-dynamic *debug* false)
+(defonce debug-modes #{:off :on :on-no-exec})
+
+(def-dynamic *debug* :off)
 
 
-(defn debug [on]
-  (set! docker/*debug* on))
+(defn
+  ^{ :arglists '("(docker/debug mode)")
+     :doc """
+          Sets the debugging mode.
+
+          Without argument returns the current debug mode.
+
+          Mode:
+
+          | :off        | No debug output |
+          | :on         | Prints the raw docker command line to the current stdout channel ahead of running the command |
+          | :on-no-exec | Prints the raw docker command line to the current stdout channel without running the command |
+          """
+     :examples '(
+          "(docker/debug :on)"
+          "(docker/debug :on-no-exec)"
+          "(docker/debug :off)") }
+
+  debug
+
+  ([] docker/*debug*)
+
+  ([mode]
+    (assert (contains? debug-modes mode)
+            "A debug mode must be one of {:off, :on, :on-no-exec}")
+    (set! docker/*debug* mode)))
 
 
 (defn
@@ -425,8 +451,13 @@
    cmd [& args]
 
    (let [cmd* (apply str "docker " (interpose " " args))]
-     (when docker/*debug* (println "DEBUG:" cmd*))
-     ((docker/exec) cmd* :throw-ex true)))
+     (case docker/*debug*
+       :off          ((docker/exec) cmd* :throw-ex true)
+       :on           (do
+                       (println "DEBUG (no exec):"  cmd*)
+                       ((docker/exec) cmd* :throw-ex true))
+       :on-no-exec   (println "DEBUG:"  cmd*)
+       :else)))
 
 
 (defn- parse-output [format output]
