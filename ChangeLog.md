@@ -13,7 +13,7 @@ All notable changes to this project will be documented in this file.
 - a `docker` module to manage docker images and containers from Venice scripts. The functions support both TEXT and JSON output of the docker commands. The JSON output is parsed and converted to Venice data for further processing. The module currently supports the Docker commands:
     - docker version, 
     - docker images, docker image prune, docker image rm
-    - docker ps, docker start, docker stop, docker cp
+    - docker ps, docker start, docker stop, docker cp, docker diff, docker pause, docker unpause, docker wait
 
 ### Fixed 
 
