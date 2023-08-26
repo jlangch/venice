@@ -205,6 +205,7 @@
           ;; Run an ArangoDB container
           (docker/run "arangodb/arangodb:3.10.10"
                       :publish "8529:8529"
+                      :detach true
                       :envs ["ARANGO_ROOT_PASSWORD=xxxxxx"
                              "ARANGODB_OVERRIDE_DETECTED_TOTAL_MEMORY=8G"
                              "ARANGODB_OVERRIDE_DETECTED_NUMBER_OF_CORES=1"]
@@ -238,7 +239,7 @@
                    (into cmdargs* (interleave (lazy-seq (constantly "--env")) envs))
                    cmdargs*)
         cmdargs* (conj cmdargs* image-tag-or-id)
-        cmdargs* (if (and (some? args) (vector?)) (into cmdargs* args) cmdargs*)]
+        cmdargs* (if (and (some? args) (vector? args)) (into cmdargs* args) cmdargs*)]
     (:out (apply docker/cmd cmdargs*))))
 
 
