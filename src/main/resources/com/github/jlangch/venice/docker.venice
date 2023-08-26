@@ -380,6 +380,22 @@
 
 
 (defn
+  ^{ :arglists '("(docker/exec container command)")
+     :doc """
+          Execute a command in a running container (always in detached mode).
+          """
+     :examples '(
+          """
+          (docker/exec mycontainer "touch /tmp/execWorks")
+          """ ) }
+
+  exec [container command]
+
+  (let [cmdargs* ["exec" "--detach" container command]]
+   (:out (apply docker/cmd cmdargs*))))
+
+
+(defn
   ^{ :arglists '("(docker/rm container & options)")
      :doc """
           Remove a container.
@@ -440,19 +456,19 @@
      :examples '(
           """
           ;; Copy file from host to docker container
-          (docker cp data.txt 74789744g489:/data.txt)
+          (docker/cp data.txt 74789744g489:/data.txt)
           """,
           """
           ;; Copy file from docker container to host
-          (docker cp 74789744g489:/data.txt data.txt)
+          (docker/cp 74789744g489:/data.txt data.txt)
           """,
           """
           ;; Copy a folder from host to docker container
-          (docker cp Desktop/images 74789744g489:/root/img_files/car_photos/images
+          (docker/cp Desktop/images 74789744g489:/root/img_files/car_photos/images
           """,
           """
           ;; Copy a folder from docker container to host
-          (docker cp 74789744g489:/root/img_files/car_photos/images Desktop/images
+          (docker/cp 74789744g489:/root/img_files/car_photos/images Desktop/images
           """ )
      :see-also '("docker/ps") }
 
@@ -481,10 +497,10 @@
           """
      :examples '(
           """
-          (println (docker diff 74789744g489))
+          (println (docker/diff 74789744g489))
           """,
           """
-          (docker diff 74789744g489 :format :json)
+          (docker/diff 74789744g489 :format :json)
           """ )
      :see-also '("docker/ps") }
 
@@ -509,7 +525,7 @@
           """
      :examples '(
           """
-          (docker pause 74789744g489)
+          (docker/pause 74789744g489)
           """ )
      :see-also '("docker/ps") }
 
@@ -526,7 +542,7 @@
           """
      :examples '(
           """
-          (docker unpause 74789744g489)
+          (docker/unpause 74789744g489)
           """ )
      :see-also '("docker/ps") }
 
@@ -543,7 +559,7 @@
           """
      :examples '(
           """
-          (docker wait 74789744g489)
+          (docker/wait 74789744g489)
           """ )
      :see-also '("docker/ps") }
 
@@ -597,10 +613,10 @@
 
    (let [cmd* (apply str "docker " (interpose " " args))]
      (case docker/*debug*
-       :off          ((docker/exec) cmd* :throw-ex true)
+       :off          ((docker/os-exec) cmd* :throw-ex true)
        :on           (do
                        (println "DEBUG (no exec):"  cmd*)
-                       ((docker/exec) cmd* :throw-ex true))
+                       ((docker/os-exec) cmd* :throw-ex true))
        :on-no-exec   (println "DEBUG:"  cmd*)
        :else)))
 
@@ -614,7 +630,7 @@
     output))
 
 
-(defn- exec []
+(defn- os-exec []
   (case (os-type)
     :mac-osx (partial sh "/bin/sh" "-c")
     :linux   (partial sh "/bin/sh" "-c")

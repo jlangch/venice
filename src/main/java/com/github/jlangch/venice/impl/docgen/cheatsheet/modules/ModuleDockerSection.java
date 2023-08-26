@@ -60,6 +60,7 @@ public class ModuleDockerSection implements ISectionBuilder {
         containers.addItem(diBuilder.getDocItem("docker/ps", false));
         containers.addItem(diBuilder.getDocItem("docker/start", false));
         containers.addItem(diBuilder.getDocItem("docker/stop", false));
+        containers.addItem(diBuilder.getDocItem("docker/exec", false));
         containers.addItem(diBuilder.getDocItem("docker/rm", false));
         containers.addItem(diBuilder.getDocItem("docker/prune", false));
         containers.addItem(diBuilder.getDocItem("docker/cp", false));
