@@ -159,6 +159,31 @@
 
 
 (defn
+  ^{ :arglists '("(docker/image-pull image-tag-or-digest & options)")
+     :doc """
+          Download an image from a registry.
+
+          Options:
+
+          | :quiet {true, false} | Suppress verbose output |
+          """
+     :examples '(
+          """
+          (docker/image-pull "arangodb/arangodb:3.10.10")
+          """ )
+     :see-also '("docker/images" "docker/image-remove") }
+
+  image-pull [image-tag-or-digest & options]
+
+  (let [opts     (apply hash-map options)
+        quiet    (:quiet opts false)
+        cmdargs* ["image" "pull" ]
+        cmdargs* (if quiet (conj cmdargs* "--quiet") cmdargs*)
+        cmdargs* (conj cmdargs* image-tag-or-digest)]
+    (:out (apply docker/cmd cmdargs*))))
+
+
+(defn
   ^{ :arglists '("(docker/run image-tag-or-id & options)")
      :doc """
           Create and run a new container from an image.
