@@ -159,13 +159,14 @@
 
 
 (defn
-  ^{ :arglists '("(docker/run image-id & options)")
+  ^{ :arglists '("(docker/run image-tag-or-id & options)")
      :doc """
           Create and run a new container from an image.
 
           Options:
 
           | :detach {true, false}   | Run container in background and print container ID |
+          | :publish port           | Publish a container's port(s) to the host |
           | :envs vars              | Set environment variable (a sequence of env var defs) |
           | :memory limit           | Memory limit |
           | :name name              | Assign a name to the container |
@@ -175,17 +176,22 @@
           | :args arg               | Argument passed to container process (a sequence of args) |
           """
      :examples '(
-          "(println (docker/ps :format :table))"
-          "(docker/ps :all true :format :json)"
-          "(docker/ps :quiet true :format :json)"
-          "(docker/ps :last 3 :format :json)"
-          "(println (docker/ps :all true :format :json))" )
+          """
+          ;; Run an ArangoDB container
+          (docker/run "arangodb/arangodb:3.10.10"
+                      :publish "8529:8529"
+                      :envs ["ARANGO_ROOT_PASSWORD=xxxxxx"
+                             "ARANGODB_OVERRIDE_DETECTED_TOTAL_MEMORY=8G"
+                             "ARANGODB_OVERRIDE_DETECTED_NUMBER_OF_CORES=1"]
+                      :args ["--database.auto-upgrade"])
+          """)
      :see-also '("docker/start" "docker/stop" "docker/cp") }
 
-  run [& options]
+  run [image-tag-or-id & options]
 
   (let [opts     (apply hash-map options)
         detach   (:detach opts false)
+        publish  (:publish opts nil)
         envs     (:envs opts [])
         memory   (:memory opts 0)
         name     (:name opts nil)
@@ -196,6 +202,7 @@
         cmdargs* ["run"]
         cmdargs* (if detach (conj cmdargs* "--detach") cmdargs*)
         cmdargs* (if quiet (conj cmdargs* "--quiet") cmdargs*)
+        cmdargs* (if (some? publish) (conj cmdargs* "--publish" publish) cmdargs*)
         cmdargs* (if (pos? memory) (conj cmdargs* "--memory" memory) cmdargs*)
         cmdargs* (if (some? name) (conj cmdargs* "--name" name) cmdargs*)
         cmdargs* (if (some? workdir) (conj cmdargs* "--workdir" workdir) cmdargs*)
@@ -205,7 +212,7 @@
         cmdargs* (if (and (some? envs) (vector? envs))
                    (into cmdargs* (interleave (lazy-seq (constantly "--env")) envs))
                    cmdargs*)
-        cmdargs* (conj cmdargs* image-id)
+        cmdargs* (conj cmdargs* image-tag-or-id)
         cmdargs* (if (and (some? args) (vector?)) (into cmdargs* args) cmdargs*)]
     (:out (apply docker/cmd cmdargs*))))
 
