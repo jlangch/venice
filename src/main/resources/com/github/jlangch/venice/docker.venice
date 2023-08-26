@@ -21,6 +21,8 @@
 
 ;;;; Docker utilities
 
+;;;; See:  https://docs.docker.com/engine/reference/commandline/
+
 
 (ns docker)
 
@@ -32,7 +34,7 @@
 
           Options:
 
-          | :format {:pretty,:json} | Returns the output either as a pretty printed string or as Json data |
+          | :format {:pretty, :json} | Returns the output either as a pretty printed string or as JSON data |
           """
      :examples '(
           "(docker/version)"
@@ -56,10 +58,10 @@
 
           Options:
 
-          | :all {true,false}      | Show all images (default hides intermediate images) |
-          | :digests {true,false}  | Show digests |
-          | :quiet {true,false}    | If true only display image IDs |
-          | :format {:table,:json} | Returns the output either as a table string or as Json data |
+          | :all {true, false}      | Show all images (default hides intermediate images) |
+          | :digests {true, false}  | Show digests |
+          | :quiet {true, false}    | If true only display image IDs |
+          | :format {:table, :json} | Returns the output either as a table string or as JSON data |
           """
      :examples '(
           "(println (docker/images :format :table))"
@@ -105,7 +107,7 @@
 
           Options:
 
-          | :all {true,false}      | Remove all unused images, not just dangling ones |
+          | :all {true, false}      | Remove all unused images, not just dangling ones |
           """
      :examples '(
           "(println (docker/images :format :table))"
@@ -131,10 +133,10 @@
 
           Options:
 
-          | :all {true,false}      | Show all containers (default shows just running) |
-          | :last n                | Show n last created containers |
-          | :quiet {true,false}    | If true only display container IDs |
-          | :format {:table,:json} | Returns the output either as a table string or as Json data |
+          | :all {true, false}      | Show all containers (default shows just running) |
+          | :last n                 | Show n last created containers |
+          | :quiet {true, false}    | If true only display container IDs |
+          | :format {:table, :json} | Returns the output either as a table string or as JSON data |
           """
      :examples '(
           "(println (docker/ps :format :table))"
@@ -167,7 +169,7 @@
 
           Options:
 
-          | :attach {true,false} | Attach STDOUT/STDERR and forward signals |
+          | :attach {true, false} | Attach STDOUT/STDERR and forward signals |
           """
      :examples '(
           """(docker/start id "b19b498c670b")""" )
@@ -218,9 +220,9 @@
 
           Options:
 
-          | :archive {true,false}     | Archive mode (copy all uid/gid information) |
-          | :follow-link {true,false} | Always follow symbol link in SRC_PATH|
-          | :quiet {true,false}       | Suppress progress output during copy. Progress output is automatically suppressed if no terminal is attached |
+          | :archive {true, false}     | Archive mode (copy all uid/gid information) |
+          | :follow-link {true, false} | Always follow symbol link in SRC_PATH|
+          | :quiet {true, false}       | Suppress progress output during copy. Progress output is automatically suppressed if no terminal is attached |
           """
      :examples '(
           """
@@ -257,6 +259,85 @@
 
 
 (defn
+  ^{ :arglists '("(docker/diff container-id & options)")
+     :doc """
+          Inspect changes to files or directories on a container's filesystem.
+
+          Options:
+
+          | :format {:string, :json} | Returns the output either as a string or as JSON data |
+          """
+     :examples '(
+          """
+          (println (docker diff 74789744g489))
+          """,
+          """
+          (docker diff 74789744g489 :format :json)
+          """ )
+     :see-also '("docker/ps") }
+
+  diff [container-id & options]
+
+  (let [opts     (apply hash-map options)
+        format   (:format opts :string)
+        output   (:out (docker/cmd "diff" container-id))
+        actions  {"A" :added, "C" :changed, "D" :deleted}]
+    (if (= format :json)
+      (->> (str/split-lines output)
+           (map #(str/split-at % 1))
+           (map #(vector (get actions (first %)) (str/trim (second %)))))
+      output)))
+
+
+(defn
+  ^{ :arglists '("(docker/pause container-id)")
+     :doc """
+          Pause all processes within a container
+          """
+     :examples '(
+          """
+          (docker pause 74789744g489)
+          """ )
+     :see-also '("docker/ps") }
+
+  pause [container-id]
+
+  (:out (docker/cmd "pause" container-id)))
+
+
+(defn
+  ^{ :arglists '("(docker/unpause container-id)")
+     :doc """
+          Unpause all processes within a container
+          """
+     :examples '(
+          """
+          (docker unpause 74789744g489)
+          """ )
+     :see-also '("docker/ps") }
+
+  unpause [container-id]
+
+  (:out (docker/cmd "unpause" container-id)))
+
+
+(defn
+  ^{ :arglists '("(docker/wait &container-ids)")
+     :doc """
+          Block until one or more containers stop, then return their exit codes
+          """
+     :examples '(
+          """
+          (docker wait 74789744g489)
+          """ )
+     :see-also '("docker/ps") }
+
+  wait [&container-ids]
+
+  (:out (docker/cmd "wait" (apply str container-ids))))
+
+
+(defn
   ^{ :arglists '("(docker/cmd & args)")
      :doc """
           Runs any Docker command.
@@ -285,8 +366,7 @@
 
 (defn- parse-output [format output]
   (if (= format :json)
-    (->> (str/split-lines output)  ;; docker you're kidding
-         (map json/read-str))
+    (json/read-str (str "[" output "]"))  ;; docker you're kidding
     output))
 
 
