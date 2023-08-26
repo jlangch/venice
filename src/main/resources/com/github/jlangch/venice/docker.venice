@@ -512,7 +512,10 @@
 
 (defn- parse-output [format output]
   (if (= format :json)
-    (json/read-str (str "[" output "]"))  ;; docker you're kidding
+    (-<> (str/split-lines output)            ;; docker you're kidding
+         (str/join "," <>)
+         (str "[" <> "]")
+         (json/read-str <>))
     output))
 
 
