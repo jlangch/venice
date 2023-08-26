@@ -6180,7 +6180,8 @@ public class CoreFunctions {
                         "is not a lazy sequence.")
                     .examples(
                         "(interleave [:a :b :c] [1 2])",
-                        "(interleave [:a :b :c] (lazy-seq 1 inc))")
+                        "(interleave [:a :b :c] (lazy-seq 1 inc))",
+                        "(interleave (lazy-seq (constantly :v)) [1 2 3])")
                     .build()
         ) {
             @Override
