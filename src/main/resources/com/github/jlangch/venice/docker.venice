@@ -374,7 +374,7 @@
           """(docker/start "b19b498c670b")""" )
      :see-also '("docker/stop" "docker/ps") }
 
-  start [id & options]
+  start [container & options]
 
   (let [opts     (apply hash-map options)
         attach   (:attach opts false)
@@ -741,12 +741,12 @@
 
   container-start-by-name [name]
 
-  (let [container (container-find-by-name name)
+  (let [container (first (container-find-by-name name))
         id        (get container "ID")
         status    (get container "State")]
     (assert (some? container)
             "There is no container with the name \"~{name}\" available!")
-    (assert (= status "running")
+    (assert (not= status "running")
             "There is already a container running with the name \"~{name}\"!")
 
     (start id)))
@@ -768,21 +768,19 @@
   container-stop-by-name
 
   ([name]
-    (let [container (container-find-by-name name)
+    (let [container (first (container-find-by-name name))
           id        (get container "ID")
           status    (get container "State")]
-      (assert (not= status "running")
+      (assert (= status "running")
               "There is no container running with the name \"~{name}\"!")
-
       (stop id)))
 
   ([name time]
-    (let [container (container-find-by-name name)
+    (let [container (first (container-find-by-name name))
           id        (get container "ID")
           status    (get container "State")]
-      (assert (not= status "running")
+      (assert (= status "running")
               "There is no container running with the name \"~{name}\"!")
-
       (stop id :time time))))
 
 
