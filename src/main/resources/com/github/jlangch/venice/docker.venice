@@ -23,6 +23,14 @@
 
 ;;;; See:  https://docs.docker.com/engine/reference/commandline/
 
+;;;; Most used commands
+;;;; ---------------------------------------------------------------------------
+;;;; Images     (println (docker/images :format :table))
+;;;;            (println (docker/image-pull "arangodb/arangodb:3.10.10"))
+;;;;            (println (docker/image-rm "184e47dd1c58"))
+;;;;            (println (docker/image-prune :all true))
+;;;;
+;;;; Containers
 
 (ns docker)
 
@@ -102,7 +110,7 @@
           "(println (docker/images :format :table))"
           "(docker/images :quiet true :no-trunc true :format :json)"
           "(println (docker/images :format :json))" )
-     :see-also '("docker/image-remove" "docker/image-prune") }
+     :see-also '("docker/image-rm" "docker/image-prune") }
 
   images [& options]
 
@@ -123,17 +131,49 @@
 
 
 (defn
-  ^{ :arglists '("(docker/image-remove id)")
+  ^{ :arglists '("(docker/image-pull name & options)")
      :doc """
-          Remove an image given by its image id.
+          Download an image from a registry.
+
+          Images can be pulled by name, name and tag, or digest
+
+          Returns the stdout text from the command.
+
+          Options:
+
+          | :quiet {true, false} | Suppress verbose output |
           """
      :examples '(
-          """(docker/image-rm "28e52b5cecd8")""" )
+          """
+          (println (docker/image-pull "arangodb/arangodb:3.10.10"))
+          (println (docker/image-pull "arangodb/arangodb"))
+          """ )
+     :see-also '("docker/images" "docker/image-rm") }
+
+  image-pull [name & options]
+
+  (let [opts     (apply hash-map options)
+        quiet    (:quiet opts false)
+        cmdargs* ["image" "pull"]
+        cmdargs* (if quiet (conj cmdargs* "--quiet") cmdargs*)
+        cmdargs* (conj cmdargs* name)]
+    (:out (apply docker/cmd cmdargs*))))
+
+
+(defn
+  ^{ :arglists '("(docker/image-rm image-id)")
+     :doc """
+          Remove an image.
+          """
+     :examples '(
+          """
+          (println (docker/image-rm "184e47dd1c58"))
+          """ )
      :see-also '("docker/images" "docker/image-prune") }
 
-  image-remove [id]
+  image-rm [image-id]
 
-  (let [cmdargs* ["image" "rm" id]]
+  (let [cmdargs* ["image" "rm" image-id]]
     (:out (apply docker/cmd cmdargs*))))
 
 
@@ -142,15 +182,19 @@
      :doc """
           Remove unused images.
 
+          If `:all true` is specified, will also remove all images not
+          referenced by any container. This is what you usually expect
+
+          Returns the stdout text from the command.
+
           Options:
 
           | :all {true, false}      | Remove all unused images, not just dangling ones |
           """
      :examples '(
-          "(println (docker/images :format :table))"
-          "(docker/images :quiet true :format :json)"
-          "(println (docker/images :format :json))" )
-     :see-also '("docker/images" "docker/image-remove") }
+          "(println (docker/image-prune))"
+          "(println (docker/image-prune :all true))" )
+     :see-also '("docker/images" "docker/image-rm") }
 
   image-prune [& options]
 
@@ -162,34 +206,11 @@
 
 
 (defn
-  ^{ :arglists '("(docker/image-pull image-tag-or-digest & options)")
-     :doc """
-          Download an image from a registry.
-
-          Options:
-
-          | :quiet {true, false} | Suppress verbose output |
-          """
-     :examples '(
-          """
-          (docker/image-pull "arangodb/arangodb:3.10.10")
-          """ )
-     :see-also '("docker/images" "docker/image-remove") }
-
-  image-pull [image-tag-or-digest & options]
-
-  (let [opts     (apply hash-map options)
-        quiet    (:quiet opts false)
-        cmdargs* ["image" "pull"]
-        cmdargs* (if quiet (conj cmdargs* "--quiet") cmdargs*)
-        cmdargs* (conj cmdargs* image-tag-or-digest)]
-    (:out (apply docker/cmd cmdargs*))))
-
-
-(defn
-  ^{ :arglists '("(docker/rmi image-id & options)")
+  ^{ :arglists '("(docker/rmi image & options)")
      :doc """
           Remove an image.
+
+          Images can be removed by name, name and tag, or image id
 
           Options:
 
@@ -198,11 +219,11 @@
           """
      :examples '(
           """
-          (docker/rmi "arangodb/arangodb:3.10.10" :force true)
+          (println (docker/rmi "arangodb/arangodb:3.10.10" :force true))
           """ )
-     :see-also '("docker/images" "docker/image-remove") }
+     :see-also '("docker/images" "docker/image-rm") }
 
-  rmi [image-id & options]
+  rmi [image & options]
 
   (let [opts     (apply hash-map options)
         force    (:force opts false)
@@ -210,14 +231,16 @@
         cmdargs* ["rmi"]
         cmdargs* (if force (conj cmdargs* "--force") cmdargs*)
         cmdargs* (if no-prune (conj cmdargs* "--no-prune") cmdargs*)
-        cmdargs* (conj cmdargs* image-id)]
+        cmdargs* (conj cmdargs* image)]
     (:out (apply docker/cmd cmdargs*))))
 
 
 (defn
-  ^{ :arglists '("(docker/run image-tag-or-id & options)")
+  ^{ :arglists '("(docker/run image & options)")
      :doc """
           Create and run a new container from an image.
+
+          Images can be run by name, name and tag, or image id
 
           Options:
 
@@ -235,26 +258,34 @@
           """
           ;; Run an ArangoDB container
           (docker/run "arangodb/arangodb:3.10.10"
-                      :publish "8529:8529"
-                      :detach true
-                      :envs ["ARANGO_ROOT_PASSWORD=xxxxxx"
-                             "ARANGODB_OVERRIDE_DETECTED_TOTAL_MEMORY=8G"
-                             "ARANGODB_OVERRIDE_DETECTED_NUMBER_OF_CORES=1"])
-          """,
-          """
-          ;; Run an ArangoDB container
-          (docker/run "arangodb/arangodb:3.10.10"
+                      :name "myapp"
                       :publish "8529:8529"
                       :detach true
                       :envs ["ARANGO_ROOT_PASSWORD=xxxxxx"
                              "ARANGODB_OVERRIDE_DETECTED_TOTAL_MEMORY=8G"
                              "ARANGODB_OVERRIDE_DETECTED_NUMBER_OF_CORES=1"]
-                      :args ["--database.auto-upgrade"])
+                      :volumes ["/Users/foo/arangodb/db:/var/lib/arangodb3"
+                                "/Users/foo/arangodb/apps:/var/lib/arangodb3-apps"])
+          """,
           """
-          )
-     :see-also '("docker/start" "docker/stop" "docker/cp") }
+          ;; Run an ArangoDB container
+          (docker/run "arangodb/arangodb:3.10.10"
+                      :name "myapp"
+                      :publish "8529:8529"
+                      :detach true
+                      :envs ["ARANGO_ROOT_PASSWORD=xxxxxx"
+                             "ARANGODB_OVERRIDE_DETECTED_TOTAL_MEMORY=8G"
+                             "ARANGODB_OVERRIDE_DETECTED_NUMBER_OF_CORES=1"]
+                      :volumes ["/Users/foo/arangodb/db:/var/lib/arangodb3"
+                                "/Users/foo/arangodb/apps:/var/lib/arangodb3-apps"]
+                      :args ["--database.auto-upgrade"])
+          """ )
+     :see-also '(
+          "docker/start" "docker/stop"
+          "docker/find-containers-by-name"
+          "docker/cp") }
 
-  run [image-tag-or-id & options]
+  run [image & options]
 
   (let [opts     (apply hash-map options)
         detach   (:detach opts false)
@@ -279,8 +310,14 @@
         cmdargs* (if (and (some? envs) (vector? envs))
                    (into cmdargs* (interleave (lazy-seq (constantly "--env")) envs))
                    cmdargs*)
-        cmdargs* (conj cmdargs* image-tag-or-id)
+        cmdargs* (conj cmdargs* image)
         cmdargs* (if (and (some? args) (vector? args)) (into cmdargs* args) cmdargs*)]
+    ;; check if there is a already container with the name
+    (when (some? name)
+      (assert (not (container-running-with-name? name))
+              "There is already a container running with the name \"~{name}\"!")
+      (assert (not (container-exists-with-name? name))
+              "There is already a container with the name \"~{name}\"! You can use `docker/start` instead."))
     (:out (apply docker/cmd cmdargs*))))
 
 
@@ -298,7 +335,7 @@
           | :format {:table, :json} | Returns the output either as a table string or as JSON data |
           """
      :examples '(
-          "(println (docker/ps :format :table))"
+          "(println (docker/ps :all true :format :table))"
           "(docker/ps :all true :format :json)"
           "(docker/ps :all true :no-trunc true :format :json)"
           "(docker/ps :all true :no-trunc true :last 3 :format :json)"
@@ -316,7 +353,7 @@
         cmdargs* ["ps"]
         cmdargs* (if all (conj cmdargs* "--all") cmdargs*)
         cmdargs* (if quiet (conj cmdargs* "--quiet") cmdargs*)
-        cmdargs* (if quiet (conj cmdargs* "--no-trunc") cmdargs*)
+        cmdargs* (if no-trunc (conj cmdargs* "--no-trunc") cmdargs*)
         cmdargs* (into cmdargs* ["--last" lastn])
         cmdargs* (into cmdargs* ["--format" (name format)])]
     (->> (apply docker/cmd cmdargs*)
@@ -434,7 +471,7 @@
           """
           (docker/prune)
           """ )
-     :see-also '("docker/images" "docker/image-remove") }
+     :see-also '("docker/images" "docker/image-rm") }
 
   prune []
 
@@ -553,7 +590,7 @@
 
 
 (defn
-  ^{ :arglists '("(docker/wait &containers)")
+  ^{ :arglists '("(docker/wait & containers)")
      :doc """
           Block until one or more containers stop, then return their exit codes
           """
@@ -570,20 +607,32 @@
 
 
 (defn
-  ^{ :arglists '("(docker/volumes-list)")
+  ^{ :arglists '("(docker/volume-list & options)")
      :doc """
           List all the volumes known to Docker.
+
+          Options:
+
+          | :quiet {true, false} | Only display volume names |
+          | :format {:table, :json} | Returns the output either as a ascii table or as JSON data |
           """
      :examples '(
           """
-          (docker/volumes-list)
+          (docker/volume-list)
           """ )
      :see-also '("docker/ps") }
 
-  volumes-list []
+  volume-list []
 
-  (let [cmdargs* ["volumes" "list"]]
-    (:out (apply docker/cmd cmdargs*))))
+  (let [opts     (apply hash-map options)
+        quiet    (:quiet opts false)
+        format   (:format opts :json)
+        cmdargs* ["volume" "ls"]
+        cmdargs* (if quiet (conj cmdargs* "--quiet") cmdargs*)
+        cmdargs* (into cmdargs* ["--format" (name format)])]
+    (->> (apply docker/cmd cmdargs*)
+         (:out)
+         (parse-output format))))
 
 
 (defn
@@ -620,6 +669,126 @@
        :on-no-exec   (println "DEBUG:"  cmd*)
        :else)))
 
+
+
+;; -----------------------------------------------------------------------------
+;; Utility functions
+;; -----------------------------------------------------------------------------
+
+(defn
+  ^{ :arglists '("(docker/container-find-by-name name)")
+     :doc """
+          Find all containers with a specified name
+          """
+     :examples '(
+          """
+          (docker/container-find-by-name "myapp")
+          """ )
+     :see-also '("docker/run") }
+
+  container-find-by-name [name]
+
+  (->> (docker/ps :all true :format :json)
+       (filter #(== name (get % "Names")))))
+
+(defn
+  ^{ :arglists '("(docker/container-exists-with-name? name)")
+     :doc """
+          Returns true if there is container with the specified name else false.
+          """
+     :examples '(
+          """
+          (docker/container-exists-with-name? "myapp")
+          """ )
+     :see-also '("docker/run") }
+
+  container-exists-with-name? [name]
+
+  (pos? (count (container-find-by-name name))))
+
+
+(defn
+  ^{ :arglists '("(docker/container-running-with-name? name)")
+     :doc """
+          Checks if there is container with the specified name in 'running'
+          state.
+
+          Returns true if running else false.
+          """
+     :examples '(
+          """
+          (docker/container-running-with-name? "myapp")
+          """ )
+     :see-also '("docker/run") }
+
+  container-running-with-name? [name]
+
+  (->> (docker/ps :all true :format :json)
+       (filter #(== name (get % "Names")))
+       (filter #(== "running" (get % "State")))))
+
+
+(defn
+  ^{ :arglists '("(docker/container-start-by-name name)")
+     :doc """
+          Starts a container with the specified name.
+          """
+     :examples '(
+          """
+          (docker/container-start-by-name "myapp")
+          """ )
+     :see-also '("docker/run") }
+
+  container-start-by-name [name]
+
+  (let [container (container-find-by-name name)
+        id        (get container "ID")
+        status    (get container "State")]
+    (assert (some? container)
+            "There is no container with the name \"~{name}\" available!")
+    (assert (= status "running")
+            "There is already a container running with the name \"~{name}\"!")
+
+    (start id)))
+
+
+(defn
+  ^{ :arglists '(
+          "(docker/container-stop-by-name name)"
+          "(docker/container-stop-by-name name time)")
+     :doc """
+          Stops a container with the specified name.
+          """
+     :examples '(
+          """
+          (docker/container-stop-by-name "myapp")
+          """ )
+     :see-also '("docker/run") }
+
+  container-stop-by-name
+
+  ([name]
+    (let [container (container-find-by-name name)
+          id        (get container "ID")
+          status    (get container "State")]
+      (assert (not= status "running")
+              "There is no container running with the name \"~{name}\"!")
+
+      (stop id)))
+
+  ([name time]
+    (let [container (container-find-by-name name)
+          id        (get container "ID")
+          status    (get container "State")]
+      (assert (not= status "running")
+              "There is no container running with the name \"~{name}\"!")
+
+      (stop id :time time))))
+
+
+;; -----------------------------------------------------------------------------
+;; Private helpers
+;; -----------------------------------------------------------------------------
 
 (defn- parse-output [format output]
   (if (= format :json)

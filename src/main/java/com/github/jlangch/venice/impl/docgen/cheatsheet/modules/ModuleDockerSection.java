@@ -44,15 +44,15 @@ public class ModuleDockerSection implements ISectionBuilder {
         final DocSection docker = new DocSection("Docker", id());
         all.addSection(docker);
         docker.addItem(diBuilder.getDocItem("docker/version", false));
-        docker.addItem(diBuilder.getDocItem("docker/volumes-list", false));
-        docker.addItem(diBuilder.getDocItem("docker/debug", false));
         docker.addItem(diBuilder.getDocItem("docker/cmd", false));
+        docker.addItem(diBuilder.getDocItem("docker/volume-list", false));
+        docker.addItem(diBuilder.getDocItem("docker/debug", false));
 
         final DocSection images = new DocSection("Images", id());
         all.addSection(images);
         images.addItem(diBuilder.getDocItem("docker/images", false));
         images.addItem(diBuilder.getDocItem("docker/image-pull", false));
-        images.addItem(diBuilder.getDocItem("docker/image-remove", false));
+        images.addItem(diBuilder.getDocItem("docker/image-rm", false));
         images.addItem(diBuilder.getDocItem("docker/image-prune", false));
 
         final DocSection containers = new DocSection("Containers", id());
@@ -68,6 +68,14 @@ public class ModuleDockerSection implements ISectionBuilder {
         containers.addItem(diBuilder.getDocItem("docker/pause", false));
         containers.addItem(diBuilder.getDocItem("docker/unpause", false));
         containers.addItem(diBuilder.getDocItem("docker/wait", false));
+
+        final DocSection utils = new DocSection("Utils", id());
+        all.addSection(utils);
+        utils.addItem(diBuilder.getDocItem("docker/container-find-by-name", false));
+        utils.addItem(diBuilder.getDocItem("docker/container-exists-with-name?", false));
+        utils.addItem(diBuilder.getDocItem("docker/container-running-with-name?", false));
+        utils.addItem(diBuilder.getDocItem("docker/container-start-by-name", false));
+        utils.addItem(diBuilder.getDocItem("docker/container-stop-by-name", false));
 
         return section;
     }
