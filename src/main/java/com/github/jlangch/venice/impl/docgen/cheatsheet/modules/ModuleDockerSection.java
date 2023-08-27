@@ -76,6 +76,7 @@ public class ModuleDockerSection implements ISectionBuilder {
         utils.addItem(diBuilder.getDocItem("docker/container-running-with-name?", false));
         utils.addItem(diBuilder.getDocItem("docker/container-start-by-name", false));
         utils.addItem(diBuilder.getDocItem("docker/container-stop-by-name", false));
+        utils.addItem(diBuilder.getDocItem("docker/container-exec-by-name", false));
 
         return section;
     }

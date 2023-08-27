@@ -784,6 +784,45 @@
       (stop id :time time))))
 
 
+(defn
+  ^{ :arglists '("(docker/container-status-by-name name)")
+     :doc """
+          Returns the status of container with the specified name.
+          """
+     :examples '(
+          """
+          (docker/container-status-by-name  "myapp")
+          """ )
+     :see-also '("docker/run") }
+
+  container-status-by-name  [name]
+
+  (-<> (container-find-by-name name)
+       (first <>)
+       (get <> "State" "unavailable")))
+
+
+(defn
+  ^{ :arglists '("(docker/container-exec-by-name name command)")
+     :doc """
+          Execute a command in the running container with the specified name.
+          """
+     :examples '(
+          """
+          (docker/container-exec-by-name  "myapp" "touch /tmp/execWorks")
+          """ )
+     :see-also '("docker/run") }
+
+  container-exec-by-name  [name]
+
+  (let [container (first (container-find-by-name name))
+        status    (get container "State")]
+    (assert (= status "running")
+            "There is no container running with the name \"~{name}\"!")
+    (exec c command)))
+
+
+
 ;; -----------------------------------------------------------------------------
 ;; Private helpers
 ;; -----------------------------------------------------------------------------
