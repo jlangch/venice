@@ -81,7 +81,9 @@
           "(docker/version)"
           "(docker/version :format :json)"
           "(println (docker/version :format :pretty))" )
-     :see-also '("docker/images" "docker/ps")}
+     :see-also '(
+          "docker/images"
+          "docker/run")}
 
   version [& options]
 
@@ -92,6 +94,16 @@
          (:out)
          (parse-output format))))
 
+
+
+;; -----------------------------------------------------------------------------
+;; Image functions
+;;   - docker/images
+;;   - docker/rmi
+;;   - docker/image-rm
+;;   - docker/image-pull
+;;   - docker/image-prune
+;; -----------------------------------------------------------------------------
 
 (defn
   ^{ :arglists '("(docker/images & options)")
@@ -110,7 +122,12 @@
           "(println (docker/images :format :table))"
           "(docker/images :quiet true :no-trunc true :format :json)"
           "(println (docker/images :format :json))" )
-     :see-also '("docker/image-rm" "docker/image-prune") }
+     :see-also '(
+          "docker/image-pull"
+          "docker/rmi"
+          "docker/image-rm"
+          "docker/image-prune"
+          "docker/run" ) }
 
   images [& options]
 
@@ -148,7 +165,11 @@
           (println (docker/image-pull "arangodb/arangodb:3.10.10"))
           (println (docker/image-pull "arangodb/arangodb"))
           """ )
-     :see-also '("docker/images" "docker/image-rm") }
+     :see-also '(
+          "docker/images"
+          "docker/rmi"
+          "docker/image-rm"
+          "docker/image-prune" ) }
 
   image-pull [name & options]
 
@@ -161,6 +182,40 @@
 
 
 (defn
+  ^{ :arglists '("(docker/rmi image & options)")
+     :doc """
+          Remove an image.
+
+          Images can be removed by name, name and tag, or image id
+
+          Options:
+
+          | :force {true, false} | Force removal of the image |
+          | :no-prune {true, false} | Do not delete untagged parents |
+          """
+     :examples '(
+          """
+          (println (docker/rmi "arangodb/arangodb:3.10.10" :force true))
+          """ )
+     :see-also '(
+          "docker/images"
+          "docker/image-pull"
+          "docker/image-rm"
+          "docker/image-prune" ) }
+
+  rmi [image & options]
+
+  (let [opts     (apply hash-map options)
+        force    (:force opts false)
+        no-prune (:no-prune opts false)
+        cmdargs* ["rmi"]
+        cmdargs* (if force (conj cmdargs* "--force") cmdargs*)
+        cmdargs* (if no-prune (conj cmdargs* "--no-prune") cmdargs*)
+        cmdargs* (conj cmdargs* image)]
+    (:out (apply docker/cmd cmdargs*))))
+
+
+(defn
   ^{ :arglists '("(docker/image-rm image-id)")
      :doc """
           Remove an image.
@@ -169,7 +224,11 @@
           """
           (println (docker/image-rm "184e47dd1c58"))
           """ )
-     :see-also '("docker/images" "docker/image-prune") }
+     :see-also '(
+          "docker/images"
+          "docker/image-pull"
+          "docker/rmi"
+          "docker/image-prune" ) }
 
   image-rm [image-id]
 
@@ -194,7 +253,11 @@
      :examples '(
           "(println (docker/image-prune))"
           "(println (docker/image-prune :all true))" )
-     :see-also '("docker/images" "docker/image-rm") }
+     :see-also '(
+         "docker/images"
+         "docker/image-pull"
+         "docker/rmi"
+         "docker/image-rm" ) }
 
   image-prune [& options]
 
@@ -205,35 +268,23 @@
     (:out (apply docker/cmd cmdargs*))))
 
 
-(defn
-  ^{ :arglists '("(docker/rmi image & options)")
-     :doc """
-          Remove an image.
 
-          Images can be removed by name, name and tag, or image id
-
-          Options:
-
-          | :force {true, false} | Force removal of the image |
-          | :no-prune {true, false} | Do not delete untagged parents |
-          """
-     :examples '(
-          """
-          (println (docker/rmi "arangodb/arangodb:3.10.10" :force true))
-          """ )
-     :see-also '("docker/images" "docker/image-rm") }
-
-  rmi [image & options]
-
-  (let [opts     (apply hash-map options)
-        force    (:force opts false)
-        no-prune (:no-prune opts false)
-        cmdargs* ["rmi"]
-        cmdargs* (if force (conj cmdargs* "--force") cmdargs*)
-        cmdargs* (if no-prune (conj cmdargs* "--no-prune") cmdargs*)
-        cmdargs* (conj cmdargs* image)]
-    (:out (apply docker/cmd cmdargs*))))
-
+;; -----------------------------------------------------------------------------
+;; Container functions
+;;   - docker/run
+;;   - docker/ps
+;;   - docker/start
+;;   - docker/stop
+;;   - docker/rm
+;;   - docker/prune
+;;   - docker/exec
+;;   - docker/cp
+;;   - docker/diff
+;;   - docker/pause
+;;   - docker/unpause
+;;   - docker/cp
+;;   - docker/volume-list
+;; -----------------------------------------------------------------------------
 
 (defn
   ^{ :arglists '("(docker/run image & options)")
@@ -281,9 +332,20 @@
                       :args ["--database.auto-upgrade"])
           """ )
      :see-also '(
+          "docker/images"
+          "docker/ps"
           "docker/start" "docker/stop"
-          "docker/find-containers-by-name"
-          "docker/cp") }
+          "docker/rm" "docker/prune"
+          "docker/exec" "docker/cp" "docker/diff"
+          "docker/pause" "docker/unpause"
+          "docker/cp"
+          "docker/container-find-by-name"
+          "docker/container-exists-with-name?"
+          "docker/container-running-with-name?"
+          "docker/container-start-by-name"
+          "docker/container-stop-by-name"
+          "docker/container-status-by-name"
+          "docker/container-exec-by-name" ) }
 
   run [image & options]
 
@@ -340,7 +402,11 @@
           "(docker/ps :all true :no-trunc true :format :json)"
           "(docker/ps :all true :no-trunc true :last 3 :format :json)"
           "(println (docker/ps :all true :format :json))" )
-     :see-also '("docker/start" "docker/stop" "docker/cp") }
+     :see-also '(
+          "docker/start"
+          "docker/stop"
+          "docker/rm"
+          "docker/run" ) }
 
   ps [& options]
 
@@ -372,7 +438,10 @@
           """
      :examples '(
           """(docker/start "b19b498c670b")""" )
-     :see-also '("docker/stop" "docker/ps") }
+     :see-also '(
+          "docker/stop"
+          "docker/ps"
+          "docker/run" ) }
 
   start [container & options]
 
@@ -398,7 +467,10 @@
           """
           (docker/stop "b19b498c670b" :time 30)
           """ )
-     :see-also '("docker/start" "docker/ps") }
+     :see-also '(
+          "docker/start"
+          "docker/ps"
+          "docker/run" ) }
 
   stop [container & options]
 
@@ -424,7 +496,10 @@
      :examples '(
           """
           (docker/exec mycontainer "touch /tmp/execWorks")
-          """ ) }
+          """ )
+     :see-also '(
+          "docker/ps"
+          "docker/run" ) }
 
   exec [container command]
 
@@ -446,7 +521,11 @@
      :examples '(
           """
           (docker/rm "b19b498c670b")
-          """ ) }
+          """ )
+     :see-also '(
+          "docker/prune"
+          "docker/ps"
+          "docker/run" ) }
 
   rm [container & options]
 
@@ -471,7 +550,10 @@
           """
           (docker/prune)
           """ )
-     :see-also '("docker/images" "docker/image-rm") }
+     :see-also '(
+          "docker/rm"
+          "docker/ps"
+          "docker/run" ) }
 
   prune []
 
@@ -507,7 +589,10 @@
           ;; Copy a folder from docker container to host
           (docker/cp 74789744g489:/root/img_files/car_photos/images Desktop/images
           """ )
-     :see-also '("docker/ps") }
+     :see-also '(
+          "docker/diff"
+          "docker/ps"
+          "docker/run" ) }
 
   cp [src-path dst-path & options]
 
@@ -539,7 +624,10 @@
           """
           (docker/diff 74789744g489 :format :json)
           """ )
-     :see-also '("docker/ps") }
+     :see-also '(
+          "docker/cp"
+          "docker/ps"
+          "docker/run" ) }
 
   diff [container & options]
 
@@ -564,7 +652,10 @@
           """
           (docker/pause 74789744g489)
           """ )
-     :see-also '("docker/ps") }
+     :see-also '(
+          "docker/unpause"
+          "docker/ps"
+          "docker/run" ) }
 
   pause [container]
 
@@ -581,7 +672,10 @@
           """
           (docker/unpause 74789744g489)
           """ )
-     :see-also '("docker/ps") }
+     :see-also '(
+          "docker/pause"
+          "docker/ps"
+          "docker/run" ) }
 
   unpause [container-id]
 
@@ -598,7 +692,10 @@
           """
           (docker/wait 74789744g489)
           """ )
-     :see-also '("docker/ps") }
+     :see-also '(
+          "docker/ps"
+          "docker/rm"
+          "docker/run" ) }
 
   wait [&containers]
 
@@ -620,7 +717,9 @@
           """
           (docker/volume-list)
           """ )
-     :see-also '("docker/ps") }
+     :see-also '(
+          "docker/images"
+          "docker/run" ) }
 
   volume-list []
 
@@ -635,6 +734,11 @@
          (parse-output format))))
 
 
+
+;; -----------------------------------------------------------------------------
+;; Generic docker command
+;; -----------------------------------------------------------------------------
+
 (defn
   ^{ :arglists '("(docker/cmd & args)")
      :doc """
@@ -645,6 +749,7 @@
           (println (docker/cmd "version" "--format" "string"))
           """,
           """
+          ;; a single string argument works as well
           (println (docker/cmd "version --format string"))
           """,
           """
@@ -653,9 +758,13 @@
           """
           ;; run a command with JSON output and parse the JSON output into
           ;; Venice data
+          ;; use `apply` to apply a vector of arguments
           (-<> (apply docker/cmd ["ps" "--all" "--format" "json"])
                (:out <>)
-               (json/read-str (str "[" <> "]")))
+               (str/split-lines <>)
+               (str/join "," <>)
+               (str "[" <> "]")
+               (json/read-str <>))
           """ ) }
 
    cmd [& args]
@@ -673,6 +782,13 @@
 
 ;; -----------------------------------------------------------------------------
 ;; Utility functions
+;;   - docker/container-find-by-name
+;;   - docker/container-exists-with-name?
+;;   - docker/container-running-with-name?
+;;   - docker/container-start-by-name
+;;   - docker/container-stop-by-name
+;;   - docker/container-status-by-name
+;;   - docker/container-exec-by-name
 ;; -----------------------------------------------------------------------------
 
 (defn
@@ -684,7 +800,14 @@
           """
           (docker/container-find-by-name "myapp")
           """ )
-     :see-also '("docker/run") }
+     :see-also '(
+          "docker/run"
+          "docker/container-exists-with-name?"
+          "docker/container-running-with-name?"
+          "docker/container-start-by-name"
+          "docker/container-stop-by-name"
+          "docker/container-status-by-name"
+          "docker/container-exec-by-name") }
 
   container-find-by-name [name]
 
@@ -700,7 +823,14 @@
           """
           (docker/container-exists-with-name? "myapp")
           """ )
-     :see-also '("docker/run") }
+     :see-also '(
+          "docker/run"
+          "docker/container-find-by-name"
+          "docker/container-running-with-name?"
+          "docker/container-start-by-name"
+          "docker/container-stop-by-name"
+          "docker/container-status-by-name"
+          "docker/container-exec-by-name") }
 
   container-exists-with-name? [name]
 
@@ -719,7 +849,14 @@
           """
           (docker/container-running-with-name? "myapp")
           """ )
-     :see-also '("docker/run") }
+     :see-also '(
+          "docker/run"
+          "docker/container-find-by-name"
+          "docker/container-exists-with-name?"
+          "docker/container-start-by-name"
+          "docker/container-stop-by-name"
+          "docker/container-status-by-name"
+          "docker/container-exec-by-name") }
 
   container-running-with-name? [name]
 
@@ -737,7 +874,15 @@
           """
           (docker/container-start-by-name "myapp")
           """ )
-     :see-also '("docker/run") }
+     :see-also '(
+          "docker/run"
+          "docker/container-find-by-name"
+          "docker/container-exists-with-name?"
+          "docker/container-running-with-name?"
+          "docker/container-start-by-name"
+          "docker/container-stop-by-name"
+          "docker/container-status-by-name"
+          "docker/container-exec-by-name") }
 
   container-start-by-name [name]
 
@@ -763,7 +908,14 @@
           """
           (docker/container-stop-by-name "myapp")
           """ )
-     :see-also '("docker/run") }
+     :see-also '(
+          "docker/run"
+          "docker/container-find-by-name"
+          "docker/container-exists-with-name?"
+          "docker/container-running-with-name?"
+          "docker/container-start-by-name"
+          "docker/container-status-by-name"
+          "docker/container-exec-by-name") }
 
   container-stop-by-name
 
@@ -793,7 +945,14 @@
           """
           (docker/container-status-by-name  "myapp")
           """ )
-     :see-also '("docker/run") }
+     :see-also '(
+       "docker/run"
+       "docker/container-find-by-name"
+       "docker/container-exists-with-name?"
+       "docker/container-running-with-name?"
+       "docker/container-start-by-name"
+       "docker/container-stop-by-name"
+       "docker/container-exec-by-name" ) }
 
   container-status-by-name  [name]
 
@@ -811,7 +970,14 @@
           """
           (docker/container-exec-by-name  "myapp" "touch /tmp/execWorks")
           """ )
-     :see-also '("docker/run") }
+     :see-also '(
+          "docker/run"
+          "docker/container-find-by-name"
+          "docker/container-exists-with-name?"
+          "docker/container-running-with-name?"
+          "docker/container-start-by-name"
+          "docker/container-stop-by-name"
+          "docker/container-status-by-name" ) }
 
   container-exec-by-name  [name]
 
