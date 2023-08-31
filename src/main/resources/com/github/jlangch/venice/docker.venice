@@ -304,7 +304,7 @@
           | :quiet {true, false}    | Suppress the pull output |
           | :volumes vol            | Bind mount a volume (a sequence of volume defs)|
           | :workdir dir            | Working directory inside the container |
-          | :args arg               | Argument passed to container process (a sequence of args) |
+          | :args args              | Arguments passed to container process (a sequence of args or a string) |
           """
      :examples '(
           """
