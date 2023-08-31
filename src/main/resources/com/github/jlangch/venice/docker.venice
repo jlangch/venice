@@ -88,8 +88,9 @@
   version [& options]
 
   (let [opts     (apply hash-map options)
-        format   (:format opts :json)
-        cmdargs* ["version" "--format" (name format)]]
+        format   (name (:format opts nil))
+        cmdargs* ["version"]
+        cmdargs* (if (some? format) (conj cmdargs* "--format" format) cmdargs*)]
     (->> (apply docker/cmd cmdargs*)
          (:out)
          (parse-output format))))
