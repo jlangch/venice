@@ -52,11 +52,13 @@ public class ModuleDockerSection implements ISectionBuilder {
         all.addSection(images);
         images.addItem(diBuilder.getDocItem("docker/images", false));
         images.addItem(diBuilder.getDocItem("docker/image-pull", false));
+        images.addItem(diBuilder.getDocItem("docker/rmi", false));
         images.addItem(diBuilder.getDocItem("docker/image-rm", false));
         images.addItem(diBuilder.getDocItem("docker/image-prune", false));
 
         final DocSection containers = new DocSection("Containers", id());
         all.addSection(containers);
+        containers.addItem(diBuilder.getDocItem("docker/run", false));
         containers.addItem(diBuilder.getDocItem("docker/ps", false));
         containers.addItem(diBuilder.getDocItem("docker/start", false));
         containers.addItem(diBuilder.getDocItem("docker/stop", false));
