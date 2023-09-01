@@ -98,7 +98,7 @@
         (parse-output format (:out (apply docker/cmd cmdargs*))))
       (let [out    (parse-output :json (:out (docker/cmd "version -f json")))
             field  (if (== :server type) "Server" "Client")]
-        (get-in (first out) [field "Version"])))))
+        (get-in out [field "Version"])))))
 
 
 
@@ -1001,10 +1001,14 @@
 
 (defn- parse-output [format output]
   (if (= format :json)
-    (-<> (str/split-lines output)            ;; docker you're kidding
-         (str/join "," <>)
-         (str "[" <> "]")
-         (json/read-str <>))
+    ;; docker you're kidding
+    (let [lines (str/split-lines output)]
+      (if (== 1 (count lines))
+        (json/read-str output)
+        (as-> lines $
+              (str/join "," $)
+              (str "[" $ "]")
+              (json/read-str $))))
     output))
 
 
