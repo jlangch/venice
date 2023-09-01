@@ -34,9 +34,7 @@ public class ModuleDockerSection implements ISectionBuilder {
 
     @Override
     public DocSection section() {
-        final DocSection section = new DocSection(
-                                            "Docker",
-                                            "modules.docker");
+        final DocSection section = new DocSection("Docker", "modules.docker");
 
         final DocSection all = new DocSection("(load-module :docker)", id());
         section.addSection(all);
