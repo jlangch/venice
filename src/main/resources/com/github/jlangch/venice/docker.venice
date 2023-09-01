@@ -76,9 +76,12 @@
           Options:
 
           | :format {:pretty, :json} | Returns the output either as a pretty printed string or as JSON data |
+          | :type {:full, :server, :client} | Returns full (default), server, or client version |
           """
      :examples '(
           "(docker/version)"
+          "(docker/version :type :client)"
+          "(docker/version :type :server)"
           "(docker/version :format :json)"
           "(println (docker/version :format :pretty))" )
      :see-also '(
@@ -88,12 +91,14 @@
   version [& options]
 
   (let [opts     (apply hash-map options)
-        format   (name (:format opts nil))
-        cmdargs* ["version"]
-        cmdargs* (if (some? format) (conj cmdargs* "--format" format) cmdargs*)]
-    (->> (apply docker/cmd cmdargs*)
-         (:out)
-         (parse-output format))))
+        format   (:format opts nil)
+        type     (:type opts :full)]
+    (if (== type :full)
+      (let [cmdargs* (if (some? format) ["version" "--format" (name format)] ["version"])]
+        (parse-output format (:out (apply docker/cmd cmdargs*))))
+      (let [out    (parse-output :json (:out (docker/cmd "version -f json")))
+            field  (if (== :server type) "Server" "Client")]
+        (get-in (first out) [field "Version"])))))
 
 
 
