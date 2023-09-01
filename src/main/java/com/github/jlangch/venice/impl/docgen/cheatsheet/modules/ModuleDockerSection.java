@@ -75,7 +75,7 @@ public class ModuleDockerSection implements ISectionBuilder {
         volume.addItem(diBuilder.getDocItem("docker/volume-list", false));
         volume.addItem(diBuilder.getDocItem("docker/volume-create", false));
         volume.addItem(diBuilder.getDocItem("docker/volume-rm", false));
-        volume.addItem(diBuilder.getDocItem("docker/volume-exist?", false));
+        volume.addItem(diBuilder.getDocItem("docker/volume-exists?", false));
 
         final DocSection utils = new DocSection("Utils", id());
         all.addSection(utils);
