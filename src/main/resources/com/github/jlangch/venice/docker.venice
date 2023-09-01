@@ -811,7 +811,7 @@
   volume-exists? [name]
 
   (->> (docker/volume-list ":format" ":json")
-       (filter #(if (== name) (get % "Name")))
+       (filter #(== name (get % "Name")))
        (count)
        (pos?)))
 
