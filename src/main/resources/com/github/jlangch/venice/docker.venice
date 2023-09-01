@@ -75,15 +75,15 @@
 
           Options:
 
-          | :format {:pretty, :json} | Returns the output either as a pretty printed string or as JSON data |
-          | :type {:full, :server, :client} | Returns full (default), server, or client version |
+          | :format {:string, :json} | Returns the output either as a string or as JSON data |
+          | :version {:full, :server, :client} | Returns full (default), server, or client version |
           """
      :examples '(
           "(docker/version)"
-          "(docker/version :type :client)"
-          "(docker/version :type :server)"
+          "(docker/version :version :client)"
+          "(docker/version :version :server)"
           "(docker/version :format :json)"
-          "(println (docker/version :format :pretty))" )
+          "(println (docker/version :format :string))" )
      :see-also '(
           "docker/images"
           "docker/run")}
@@ -92,13 +92,17 @@
 
   (let [opts     (apply hash-map options)
         format   (:format opts nil)
-        type     (:type opts :full)]
-    (if (== type :full)
-      (let [cmdargs* (if (some? format) ["version" "--format" (name format)] ["version"])]
-        (parse-output format (:out (apply docker/cmd cmdargs*))))
-      (let [out    (parse-output :json (:out (docker/cmd "version -f json")))
-            field  (if (== :server type) "Server" "Client")]
-        (get-in out [field "Version"])))))
+        version  (:version opts :full)]
+    (case version
+      :full   (as-> (if (= format :json) "version -f json" "version") $
+                    (docker/cmd $)
+                    (:out $)
+                    (parse-output-object format $))
+      :server (as-> (docker/version :version :full :format :json) $
+                    (get-in $ ["Server" "Version"]))
+      :client (as-> (docker/version :version :full :format :json) $
+                    (get-in $ ["Client" "Version"]))
+      (throw (ex :VncException "Please use a format of {:string, :json}")))))
 
 
 
@@ -150,7 +154,7 @@
         cmdargs* (into cmdargs* ["--format" (name format)])]
     (->> (apply docker/cmd cmdargs*)
          (:out)
-         (parse-output format))))
+         (parse-output-list format))))
 
 
 (defn
@@ -430,7 +434,7 @@
         cmdargs* (into cmdargs* ["--format" (name format)])]
     (->> (apply docker/cmd cmdargs*)
          (:out)
-         (parse-output format))))
+         (parse-output-list format))))
 
 
 (defn
@@ -737,7 +741,7 @@
         cmdargs* (into cmdargs* ["--format" (name format)])]
     (->> (apply docker/cmd cmdargs*)
          (:out)
-         (parse-output format))))
+         (parse-output-list format))))
 
 
 
@@ -752,14 +756,11 @@
           """
      :examples '(
           """
-          (println (docker/cmd "version" "--format" "string"))
+          (println (docker/cmd "ps" "--all"))
           """,
           """
           ;; a single string argument works as well
-          (println (docker/cmd "version --format string"))
-          """,
-          """
-          (println (docker/cmd "version" "--format" "json"))
+          (println (docker/cmd "ps --all"))
           """,
           """
           ;; run a command with JSON output and parse the JSON output into
@@ -813,7 +814,7 @@
           "docker/container-start-by-name"
           "docker/container-stop-by-name"
           "docker/container-status-by-name"
-          "docker/container-exec-by-name") }
+          "docker/container-exec-by-name" ) }
 
   container-find-by-name [name]
 
@@ -836,7 +837,7 @@
           "docker/container-start-by-name"
           "docker/container-stop-by-name"
           "docker/container-status-by-name"
-          "docker/container-exec-by-name") }
+          "docker/container-exec-by-name" ) }
 
   container-exists-with-name? [name]
 
@@ -862,7 +863,7 @@
           "docker/container-start-by-name"
           "docker/container-stop-by-name"
           "docker/container-status-by-name"
-          "docker/container-exec-by-name") }
+          "docker/container-exec-by-name" ) }
 
   container-running-with-name? [name]
 
@@ -888,7 +889,7 @@
           "docker/container-start-by-name"
           "docker/container-stop-by-name"
           "docker/container-status-by-name"
-          "docker/container-exec-by-name") }
+          "docker/container-exec-by-name" ) }
 
   container-start-by-name [name]
 
@@ -921,7 +922,7 @@
           "docker/container-running-with-name?"
           "docker/container-start-by-name"
           "docker/container-status-by-name"
-          "docker/container-exec-by-name") }
+          "docker/container-exec-by-name" ) }
 
   container-stop-by-name
 
@@ -999,16 +1000,19 @@
 ;; Private helpers
 ;; -----------------------------------------------------------------------------
 
-(defn- parse-output [format output]
+(defn- parse-output-object [format output]
   (if (= format :json)
-    ;; docker you're kidding
-    (let [lines (str/split-lines output)]
-      (if (== 1 (count lines))
-        (json/read-str output)
-        (as-> lines $
-              (str/join "," $)
-              (str "[" $ "]")
-              (json/read-str $))))
+    (json/read-str output)
+    output))
+
+
+(defn- parse-output-list [format output]
+  (if (= format :json)
+    (as-> output $
+          (str/split-lines $)      ;; docker you're kidding
+          (str/join "," $)
+          (str "[" $ "]")
+          (json/read-str $))
     output))
 
 
