@@ -713,6 +713,15 @@
     (:out (apply docker/cmd cmdargs*))))
 
 
+
+;; -----------------------------------------------------------------------------
+;; Volume functions
+;;   - docker/volume-list
+;;   - docker/volume-create
+;;   - docker/volume-rm
+;;   - docker/volume-exists?
+;; -----------------------------------------------------------------------------
+
 (defn
   ^{ :arglists '("(docker/volume-list & options)")
      :doc """
@@ -728,10 +737,13 @@
           (docker/volume-list)
           """ )
      :see-also '(
+          "docker/volume-create"
+          "docker/volume-rm"
+          "docker/volume-exists?"
           "docker/images"
           "docker/run" ) }
 
-  volume-list []
+  volume-list [& options]
 
   (let [opts     (apply hash-map options)
         quiet    (:quiet opts false)
@@ -742,6 +754,67 @@
     (->> (apply docker/cmd cmdargs*)
          (:out)
          (parse-output-list format))))
+
+
+(defn
+  ^{ :arglists '("(docker/volume-create name)")
+     :doc """
+          Create a volume.
+          """
+     :examples '(
+          """
+          (docker/volume-create "hello")
+          """ )
+     :see-also '(
+          "docker/volume-list"
+          "docker/volume-rm"
+          "docker/volume-exists?" ) }
+
+  volume-create [name]
+
+  (->> (apply docker/cmd ["volume" "create" name])
+       (:out)))
+
+
+(defn
+  ^{ :arglists '("(docker/volume-rm name)")
+     :doc """
+          Remove a volume.
+          """
+     :examples '(
+          """
+          (docker/volume-remove "hello")
+          """ )
+     :see-also '(
+          "docker/volume-list"
+          "docker/volume-create"
+          "docker/volume-exists?" ) }
+
+  volume-rm [name]
+
+  (->> (apply docker/cmd ["volume" "rm" name])
+       (:out)))
+
+
+(defn
+  ^{ :arglists '("(docker/volume-exists? name)")
+     :doc """
+          Returns true if the volume with the specified name exists.
+          """
+     :examples '(
+          """
+          (docker/volume-exists?  "hello")
+          """ )
+     :see-also '(
+          "docker/volume-list" ) }
+
+  volume-exists? [name]
+
+  (->> (docker/volume-list ":format" ":json")
+       (filter #(if (== name (get % name))))
+       (count)
+       (pos?)))
+
 
 
 
