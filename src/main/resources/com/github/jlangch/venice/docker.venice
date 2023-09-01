@@ -293,7 +293,7 @@
 ;;   - docker/pause
 ;;   - docker/unpause
 ;;   - docker/cp
-;;   - docker/volume-list
+;;   - docker/logs
 ;; -----------------------------------------------------------------------------
 
 (defn
@@ -344,13 +344,12 @@
                       :args ["--database.auto-upgrade"])
           """ )
      :see-also '(
-          "docker/images"
-          "docker/ps"
-          "docker/start" "docker/stop"
-          "docker/rm" "docker/prune"
-          "docker/exec" "docker/cp" "docker/diff"
-          "docker/pause" "docker/unpause"
-          "docker/cp"
+          "docker/images" "docker/ps"
+          "docker/start"  "docker/stop"
+          "docker/rm"     "docker/prune"
+          "docker/exec"   "docker/cp"   "docker/diff"
+          "docker/pause"  "docker/unpause"
+          "docker/cp"     "docker/logs"
           "docker/container-find-by-name"
           "docker/container-exists-with-name?"
           "docker/container-running-with-name?"
@@ -449,7 +448,9 @@
           | :attach {true, false} | Attach STDOUT/STDERR and forward signals |
           """
      :examples '(
-          """(docker/start "b19b498c670b")""" )
+          """
+          (docker/start "74789744g489")
+          """ )
      :see-also '(
           "docker/stop"
           "docker/ps"
@@ -477,7 +478,7 @@
           """
      :examples '(
           """
-          (docker/stop "b19b498c670b" :time 30)
+          (docker/stop "74789744g489" :time 30)
           """ )
      :see-also '(
           "docker/start"
@@ -507,7 +508,7 @@
           """
      :examples '(
           """
-          (docker/exec mycontainer "touch /tmp/execWorks")
+          (docker/exec "74789744g489" "touch /tmp/execWorks")
           """ )
      :see-also '(
           "docker/ps"
@@ -532,7 +533,7 @@
           """
      :examples '(
           """
-          (docker/rm "b19b498c670b")
+          (docker/rm "74789744g489")
           """ )
      :see-also '(
           "docker/prune"
@@ -587,19 +588,19 @@
      :examples '(
           """
           ;; Copy file from host to docker container
-          (docker/cp data.txt 74789744g489:/data.txt)
+          (docker/cp "data.txt" "74789744g489:/data.txt")
           """,
           """
           ;; Copy file from docker container to host
-          (docker/cp 74789744g489:/data.txt data.txt)
+          (docker/cp "74789744g489:/data.txt" "data.txt")
           """,
           """
           ;; Copy a folder from host to docker container
-          (docker/cp Desktop/images 74789744g489:/root/img_files/car_photos/images
+          (docker/cp "Desktop/images" "74789744g489:/root/img_files/car_photos/images")
           """,
           """
           ;; Copy a folder from docker container to host
-          (docker/cp 74789744g489:/root/img_files/car_photos/images Desktop/images
+          (docker/cp "74789744g489:/root/img_files/car_photos/images Desktop/images")
           """ )
      :see-also '(
           "docker/diff"
@@ -631,10 +632,10 @@
           """
      :examples '(
           """
-          (println (docker/diff 74789744g489))
+          (println (docker/diff "74789744g489"))
           """,
           """
-          (docker/diff 74789744g489 :format :json)
+          (docker/diff "74789744g4892" :format :json)
           """ )
      :see-also '(
           "docker/cp"
@@ -662,7 +663,7 @@
           """
      :examples '(
           """
-          (docker/pause 74789744g489)
+          (docker/pause "74789744g489")
           """ )
      :see-also '(
           "docker/unpause"
@@ -682,7 +683,7 @@
           """
      :examples '(
           """
-          (docker/unpause 74789744g489)
+          (docker/unpause "74789744g489")
           """ )
      :see-also '(
           "docker/pause"
@@ -702,7 +703,7 @@
           """
      :examples '(
           """
-          (docker/wait 74789744g489)
+          (docker/wait "74789744g4892")
           """ )
      :see-also '(
           "docker/ps"
@@ -714,6 +715,47 @@
   (let [cmdargs* (into ["wait"] containers)]
     (:out (apply docker/cmd cmdargs*))))
 
+
+(defn
+  ^{ :arglists '("(docker/logs container & options)")
+     :doc """
+          Get the logs of a container
+
+          Options:
+
+          | :tail n | Number of lines to show from the end of the logs |
+          | :since ts | Show logs since timestamp |
+          | :until ts | Show logs until timestamp |
+          """
+     :examples '(
+          """
+          (docker/logs "74789744g489")
+          """,
+          """
+          (docker/logs "74789744g489" :tail 100)
+          """,
+          """
+          (let [since (time/minus (time/local-date-time) :hours 2)
+                until (time/local-date-time)]
+            (docker/logs "74789744g489" :since since :until until))
+          """)
+     :see-also '(
+          "docker/pause"
+          "docker/ps"
+          "docker/run" ) }
+
+  logs [container & options]
+
+  (let [opts     (apply hash-map options)
+        tail     (:tail opts nil)
+        since    (:since opts nil)
+        until    (:until opts nil)
+        cmdargs* ["logs"]
+        cmdargs* (if (some? tail)  (into cmdargs* ["--tail" tail]) cmdargs*)
+        cmdargs* (if (some? since) (into cmdargs* ["--since" (format-ts since)]) cmdargs*)
+        cmdargs* (if (some? until) (into cmdargs* ["--until" (format-ts until)]) cmdargs*)
+        cmdargs* (into cmdargs* [container])]
+    (:out (apply docker/cmd cmdargs*))))
 
 
 ;; -----------------------------------------------------------------------------
@@ -1092,6 +1134,9 @@
           (json/read-str $))
     output))
 
+(defn- format-ts [ts]
+  (assert (time/local-date-time? ts))
+  (time/format ts "yyyy-MM-dd'T'HH:mm:ss'Z'"))
 
 (defn- os-exec []
   (case (os-type)

@@ -67,6 +67,7 @@ public class ModuleDockerSection implements ISectionBuilder {
         containers.addItem(diBuilder.getDocItem("docker/pause", false));
         containers.addItem(diBuilder.getDocItem("docker/unpause", false));
         containers.addItem(diBuilder.getDocItem("docker/wait", false));
+        containers.addItem(diBuilder.getDocItem("docker/logs", false));
 
         final DocSection volume = new DocSection("Volumes", id());
         all.addSection(volume);
