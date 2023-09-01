@@ -317,7 +317,7 @@
           """
      :examples '(
           """
-          ;; Run an ArangoDB container
+          ;; Run an ArangoDB container (use bind mounts, very slow on macOSX)
           (docker/run "arangodb/arangodb:3.10.10"
                       :name "myapp"
                       :publish "8529:8529"
@@ -329,7 +329,9 @@
                                 "/Users/foo/arangodb/apps:/var/lib/arangodb3-apps"])
           """,
           """
-          ;; Run an ArangoDB container
+          ;; Run an ArangoDB container (use docker volume, faster than bind mount)
+          (docker/volume-create "arangodb-db")
+          (docker/volume-create "arangodb-apps")
           (docker/run "arangodb/arangodb:3.10.10"
                       :name "myapp"
                       :publish "8529:8529"
@@ -337,8 +339,8 @@
                       :envs ["ARANGO_ROOT_PASSWORD=xxxxxx"
                              "ARANGODB_OVERRIDE_DETECTED_TOTAL_MEMORY=8G"
                              "ARANGODB_OVERRIDE_DETECTED_NUMBER_OF_CORES=1"]
-                      :volumes ["/Users/foo/arangodb/db:/var/lib/arangodb3"
-                                "/Users/foo/arangodb/apps:/var/lib/arangodb3-apps"]
+                      :volumes ["arangodb-db:/var/lib/arangodb3"
+                                "arangodb-apps:/var/lib/arangodb3-apps"]
                       :args ["--database.auto-upgrade"])
           """ )
      :see-also '(
@@ -942,7 +944,9 @@
 
   (->> (docker/ps :all true :format :json)
        (filter #(== name (get % "Names")))
-       (filter #(== "running" (get % "State")))))
+       (filter #(== "running" (get % "State")))
+       (count)
+       (pos?)))
 
 
 (defn
