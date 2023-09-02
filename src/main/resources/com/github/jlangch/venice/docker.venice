@@ -104,6 +104,8 @@
                     (get-in $ ["Client" "Version"]))
       (throw (ex :VncException "Please use a format of {:string, :json}")))))
 
+(defn version* [] (println (version :version :client)))
+
 
 
 ;; -----------------------------------------------------------------------------
@@ -155,6 +157,8 @@
     (->> (apply docker/cmd cmdargs*)
          (:out)
          (parse-output-list format))))
+
+(defn images* [] (println (docker/images :format :table)))
 
 
 (defn
@@ -224,9 +228,11 @@
         cmdargs* (conj cmdargs* image)]
     (:out (apply docker/cmd cmdargs*))))
 
+(defn rmi* [image] (println (docker/rmi :force true)))
+
 
 (defn
-  ^{ :arglists '("(docker/image-rm image-id)")
+  ^{ :arglists '("(docker/image-rm image)")
      :doc """
           Remove an image.
           """
@@ -240,9 +246,9 @@
           "docker/rmi"
           "docker/image-prune" ) }
 
-  image-rm [image-id]
+  image-rm [image]
 
-  (let [cmdargs* ["image" "rm" image-id]]
+  (let [cmdargs* ["image" "rm" image]]
     (:out (apply docker/cmd cmdargs*))))
 
 
@@ -437,6 +443,8 @@
          (:out)
          (parse-output-list format))))
 
+(defn ps* [image] (println (docker/ps :all true :format :table)))
+
 
 (defn
   ^{ :arglists '("(docker/start container & options)")
@@ -464,6 +472,8 @@
         cmdargs* (if attach (conj cmdargs* "--attach") cmdargs*)
         cmdargs* (conj cmdargs* container)]
     (:out (apply docker/cmd cmdargs*))))
+
+(defn start* [container] (println (docker/start container)))
 
 
 (defn
@@ -499,6 +509,8 @@
                    cmdargs*)
         cmdargs* (conj cmdargs* container)]
     (:out (apply docker/cmd cmdargs*))))
+
+(defn stop* [container] (println (docker/stop container)))
 
 
 (defn
