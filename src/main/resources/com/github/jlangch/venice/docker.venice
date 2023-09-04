@@ -35,8 +35,6 @@
 (ns docker)
 
 
-(defonce debug-modes #{:off :on :on-no-exec})
-
 (def-dynamic *debug* :off)
 
 
@@ -63,7 +61,7 @@
   ([] docker/*debug*)
 
   ([mode]
-    (assert (contains? debug-modes mode)
+    (assert (contains? #{:off :on :on-no-exec} mode)
             "A debug mode must be one of {:off, :on, :on-no-exec}")
     (set! docker/*debug* mode)))
 
@@ -86,11 +84,14 @@
           "(println (docker/version :format :string))" )
      :see-also '(
           "docker/images"
-          "docker/run")}
+          "docker/run" )
+     :spec { :options { :format  [:optional #{:string, :json}]
+                        :version [:optional #{:full, :server, :client}] } } }
 
   version [& options]
 
   (let [opts     (apply hash-map options)
+        _        (validate-map "option" opts (-> docker/version meta :spec :options))
         format   (:format opts nil)
         version  (:version opts :full)]
     (case version
@@ -101,8 +102,7 @@
       :server (as-> (docker/version :version :full :format :json) $
                     (get-in $ ["Server" "Version"]))
       :client (as-> (docker/version :version :full :format :json) $
-                    (get-in $ ["Client" "Version"]))
-      (throw (ex :VncException "Please use a format of {:string, :json}")))))
+                    (get-in $ ["Client" "Version"])))))
 
 (defn version* [] (println (version :version :client)))
 
@@ -139,11 +139,17 @@
           "docker/rmi"
           "docker/image-rm"
           "docker/image-prune"
-          "docker/run" ) }
+          "docker/run" )
+     :spec { :options { :all      [:optional #{true, false}]
+                        :digests  [:optional #{true, false}]
+                        :quiet    [:optional #{true, false}]
+                        :no-trunc [:optional #{true, false}]
+                        :format   [:optional #{:table, :json}] } } }
 
   images [& options]
 
   (let [opts     (apply hash-map options)
+        _        (validate-map "option" opts (-> docker/images meta :spec :options))
         all      (:all opts false)      ;; (if all "--all" nil)  ;; hangs on MacOSX
         digests  (:digests opts false)
         quiet    (:quiet opts false)
@@ -183,11 +189,15 @@
           "docker/images"
           "docker/rmi"
           "docker/image-rm"
-          "docker/image-prune" ) }
+          "docker/image-prune" )
+     :spec { :options { :quiet [:optional #{true, false}] } } }
 
   image-pull [name & options]
 
+  { :pre [(string? name)] }
+
   (let [opts     (apply hash-map options)
+        _        (validate-map "option" opts (-> docker/image-pull meta :spec :options))
         quiet    (:quiet opts false)
         cmdargs* ["image" "pull"]
         cmdargs* (if quiet (conj cmdargs* "--quiet") cmdargs*)
@@ -215,11 +225,16 @@
           "docker/images"
           "docker/image-pull"
           "docker/image-rm"
-          "docker/image-prune" ) }
+          "docker/image-prune" )
+     :spec { :options { :force    [:optional #{true, false}]
+                        :no-prune [:optional #{true, false}] } } }
 
   rmi [image & options]
 
+  { :pre [(string? image)] }
+
   (let [opts     (apply hash-map options)
+        _        (validate-map "option" opts (-> docker/rmi meta :spec :options))
         force    (:force opts false)
         no-prune (:no-prune opts false)
         cmdargs* ["rmi"]
@@ -248,6 +263,8 @@
 
   image-rm [image]
 
+  { :pre [(string? image)] }
+
   (let [cmdargs* ["image" "rm" image]]
     (:out (apply docker/cmd cmdargs*))))
 
@@ -273,11 +290,13 @@
          "docker/images"
          "docker/image-pull"
          "docker/rmi"
-         "docker/image-rm" ) }
+         "docker/image-rm" )
+    :spec { :options { :all [:optional #{true, false}] } } }
 
   image-prune [& options]
 
   (let [opts     (apply hash-map options)
+        _        (validate-map "option" opts (-> docker/image-prune meta :spec :options))
         all      (:all opts false)
         cmdargs* ["image" "prune" "--force"]  ;; Do not prompt for confirmation
         cmdargs* (if all (conj cmdargs* "--all") cmdargs*)]
@@ -362,11 +381,23 @@
           "docker/container-start-by-name"
           "docker/container-stop-by-name"
           "docker/container-status-by-name"
-          "docker/container-exec-by-name" ) }
+          "docker/container-exec-by-name" )
+     :spec { :options { :detach  [:optional #{true, false}]
+                        :publish [:optional #(and (long? %) (pos? %))]
+                        :envs    [:optional #(and (vector? %) (every? string? %))]
+                        :memory  [:optional #(string? %)]
+                        :name    [:optional #(string? %)]
+                        :quiet   [:optional #{true, false}]
+                        :volumes [:optional #(and (vector? %) (every? string? %))]
+                        :workdir [:optional #(string? %)]
+                        :args    [:optional #(and (vector? %) (every? string? %))] } } }
 
   run [image & options]
 
+  { :pre [(string? image)] }
+
   (let [opts     (apply hash-map options)
+        _        (validate-map "option" opts (-> docker/run meta :spec :options))
         detach   (:detach opts false)
         publish  (:publish opts nil)
         envs     (:envs opts [])
@@ -423,11 +454,17 @@
           "docker/start"
           "docker/stop"
           "docker/rm"
-          "docker/run" ) }
+          "docker/run" )
+     :spec { :options { :all      [:optional #{true, false}]
+                        :last     [:optional #(and (long? %) (pos? %))]
+                        :quiet    [:optional #{true, false}]
+                        :no-trunc [:optional #{true, false}]
+                        :format   [:optional #{:table, :json}] } } }
 
   ps [& options]
 
   (let [opts     (apply hash-map options)
+        _        (validate-map "option" opts (-> docker/ps meta :spec :options))
         all      (:all opts false)
         lastn    (:last opts -1)
         quiet    (:quiet opts false)
@@ -462,11 +499,15 @@
      :see-also '(
           "docker/stop"
           "docker/ps"
-          "docker/run" ) }
+          "docker/run" )
+     :spec { :options { :attach [:optional #{true, false}] } } }
 
   start [container & options]
 
+  { :pre [(string? container)] }
+
   (let [opts     (apply hash-map options)
+        _        (validate-map "option" opts (-> docker/start meta :spec :options))
         attach   (:attach opts false)
         cmdargs* ["start"]
         cmdargs* (if attach (conj cmdargs* "--attach") cmdargs*)
@@ -493,11 +534,16 @@
      :see-also '(
           "docker/start"
           "docker/ps"
-          "docker/run" ) }
+          "docker/run" )
+     :spec { :options { :signal [:optional #(string? %)]
+                        :time   [:optional #(and (long? %) (pos? %))] } } }
 
   stop [container & options]
 
+  { :pre [(string? container)] }
+
   (let [opts     (apply hash-map options)
+        _        (validate-map "option" opts (-> docker/stop meta :spec :options))
         signal   (:signal opts nil)
         time     (:time opts 0)
         cmdargs* ["stop"]
@@ -550,11 +596,17 @@
      :see-also '(
           "docker/prune"
           "docker/ps"
-          "docker/run" ) }
+          "docker/run" )
+     :spec { :options { :force   [:optional #{true, false}]
+                        :link    [:optional #(string? %)]
+                        :volumes [:optional #{true, false}] } } }
 
   rm [container & options]
 
+  { :pre [(string? container)] }
+
   (let [opts     (apply hash-map options)
+        _        (validate-map "option" opts (-> docker/rm meta :spec :options))
         force    (:force opts false)
         link     (:link opts nil)
         volumes  (:volumes opts false)
@@ -617,11 +669,17 @@
      :see-also '(
           "docker/diff"
           "docker/ps"
-          "docker/run" ) }
+          "docker/run" )
+     :spec { :options { :archive     [:optional #{true, false}]
+                        :follow-link [:optional #{true, false}]
+                        :quiet       [:optional #{true, false}] } } }
 
   cp [src-path dst-path & options]
 
+  { :pre [(string? src-path) (string? dst-path)] }
+
   (let [opts        (apply hash-map options)
+        _           (validate-map "option" opts (-> docker/cp meta :spec :options))
         archive     (:archive opts false)
         follow-link (:follow-link  opts false)
         quiet       (:quiet opts false)
@@ -652,11 +710,15 @@
      :see-also '(
           "docker/cp"
           "docker/ps"
-          "docker/run" ) }
+          "docker/run" )
+     :spec { :options { :format [:optional #{:string, :json}] } } }
 
   diff [container & options]
 
+  { :pre [(string? container)] }
+
   (let [opts     (apply hash-map options)
+        _        (validate-map "option" opts (-> docker/diff meta :spec :options))
         format   (:format opts :string)
         actions  {"A" :added, "C" :changed, "D" :deleted}
         cmdargs* ["diff" container]]
@@ -684,6 +746,8 @@
 
   pause [container]
 
+  { :pre [(string? container)] }
+
   (let [cmdargs* ["pause" container]]
     (:out (apply docker/cmd cmdargs*))))
 
@@ -702,7 +766,9 @@
           "docker/ps"
           "docker/run" ) }
 
-  unpause [container-id]
+  unpause [container]
+
+  { :pre [(string? container)] }
 
   (let [cmdargs* ["unpause" container]]
     (:out (apply docker/cmd cmdargs*))))
@@ -715,7 +781,7 @@
           """
      :examples '(
           """
-          (docker/wait "74789744g4892")
+          (docker/wait "74789744g4892" "2341428e53535")
           """ )
      :see-also '(
           "docker/ps"
@@ -723,6 +789,8 @@
           "docker/run" ) }
 
   wait [&containers]
+
+  { :pre [(seq? containers) (every? string? containers)] }
 
   (let [cmdargs* (into ["wait"] containers)]
     (:out (apply docker/cmd cmdargs*))))
@@ -754,11 +822,17 @@
      :see-also '(
           "docker/pause"
           "docker/ps"
-          "docker/run" ) }
+          "docker/run" )
+     :spec { :options { :tail  [:optional #(and (long? %) (pos? %))]
+                        :since [:optional #(time/local-date-time? %)]
+                        :until [:optional #(time/local-date-time? %)] } } }
 
   logs [container & options]
 
+  { :pre [(string? container)] }
+
   (let [opts     (apply hash-map options)
+        _        (validate-map "option" opts (-> docker/logs meta :spec :options))
         tail     (:tail opts nil)
         since    (:since opts nil)
         until    (:until opts nil)
@@ -797,11 +871,14 @@
           "docker/volume-rm"
           "docker/volume-exists?"
           "docker/images"
-          "docker/run" ) }
+          "docker/run" )
+     :spec { :options { :quiet  [:optional #{true, false}]
+                        :format [:optional #{:table, :json}] } } }
 
   volume-list [& options]
 
   (let [opts     (apply hash-map options)
+        _        (validate-map "option" opts (-> docker/volume-list meta :spec :options))
         quiet    (:quiet opts false)
         format   (:format opts :json)
         cmdargs* ["volume" "ls"]
@@ -828,6 +905,8 @@
 
   volume-create [name]
 
+  { :pre [(string? name)] }
+
   (->> (apply docker/cmd ["volume" "create" name])
        (:out)))
 
@@ -848,6 +927,8 @@
 
   volume-rm [name]
 
+  { :pre [(string? name)] }
+
   (->> (apply docker/cmd ["volume" "rm" name])
        (:out)))
 
@@ -865,6 +946,8 @@
           "docker/volume-list" ) }
 
   volume-exists? [name]
+
+  { :pre [(string? name)] }
 
   (->> (docker/volume-list ":format" ":json")
        (filter #(== name (get % "Name")))
@@ -911,7 +994,7 @@
        :on           (do
                        (println "DEBUG (no exec):"  cmd*)
                        ((docker/os-exec) cmd* :throw-ex true))
-       :on-no-exec   (println "DEBUG:"  cmd*)
+       :on-no-exec   (do (println "DEBUG:"  cmd*) nil)
        :else)))
 
 
@@ -947,6 +1030,8 @@
 
   container-find-by-name [name]
 
+  { :pre [(string? name)] }
+
   (->> (docker/ps :all true :format :json)
        (filter #(== name (get % "Names")))))
 
@@ -969,6 +1054,8 @@
           "docker/container-exec-by-name" ) }
 
   container-exists-with-name? [name]
+
+  { :pre [(string? name)] }
 
   (pos? (count (container-find-by-name name))))
 
@@ -995,6 +1082,8 @@
           "docker/container-exec-by-name" ) }
 
   container-running-with-name? [name]
+
+  { :pre [(string? name)] }
 
   (->> (docker/ps :all true :format :json)
        (filter #(== name (get % "Names")))
@@ -1023,6 +1112,8 @@
           "docker/container-exec-by-name" ) }
 
   container-start-by-name [name]
+
+  { :pre [(string? name)] }
 
   (let [container (first (container-find-by-name name))
         id        (get container "ID")
@@ -1092,7 +1183,9 @@
        "docker/container-stop-by-name"
        "docker/container-exec-by-name" ) }
 
-  container-status-by-name  [name]
+  container-status-by-name [name]
+
+  { :pre [(string? name)] }
 
   (-<> (container-find-by-name name)
        (first <>)
@@ -1118,6 +1211,8 @@
           "docker/container-status-by-name" ) }
 
   container-exec-by-name  [name]
+
+  { :pre [(string? name)] }
 
   (let [container (first (container-find-by-name name))
         status    (get container "State")]
@@ -1146,9 +1241,41 @@
           (json/read-str $))
     output))
 
+
+(defn- validate-map [name map_ spec]
+  (assert (map? map_) "Argument 'map_' must be a map!")
+  (assert (map? spec) "Argument 'spec' must be a map!")
+  (let [spec-keys    (keys spec)
+        map-keys     (keys map_)
+        invalid-keys (difference (into #{} map-keys) (into #{} spec-keys))]
+    (when (not-empty? invalid-keys)
+       (throw (ex :VncException "Invalid option ~(pr-str (first (into [] invalid-keys)))")))
+    (loop [ks spec-keys]
+      (if (empty? ks)
+        true
+        (let [k         (first ks)
+              mandatory (== :mandatory (first (get spec k)))
+              key-spec  (second (get spec k))
+              v         (get map_ k)]
+          (when (and mandatory (nil? v))
+            (throw (ex :VncException
+                       "Missing value for mandatory ~{name} \"~(pr-str k)\"")))
+          (if (some? v)
+            (cond
+              (set? key-spec) (when-not (contains? key-spec v)
+                                (let [v_ (str/truncate (pr-str v) 50 "...")
+                                      k_ (pr-str k)]
+                                  (throw (ex :VncException
+                                             (str "Invalid value \"~{v_}\" "
+                                             "for ~{name} \"~{k_}\"")))))
+              (fn? key-spec) (key-spec v)))
+          (recur (rest ks)))))))
+
+
 (defn- format-ts [ts]
   (assert (time/local-date-time? ts))
   (time/format ts "yyyy-MM-dd'T'HH:mm:ss'Z'"))
+
 
 (defn- os-exec []
   (case (os-type)

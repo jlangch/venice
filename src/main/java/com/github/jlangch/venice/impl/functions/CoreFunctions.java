@@ -52,6 +52,7 @@ import com.github.jlangch.venice.impl.reader.HighlightItem;
 import com.github.jlangch.venice.impl.reader.HighlightParser;
 import com.github.jlangch.venice.impl.reader.Reader;
 import com.github.jlangch.venice.impl.thread.ThreadContext;
+import com.github.jlangch.venice.impl.types.Constants;
 import com.github.jlangch.venice.impl.types.IVncFunction;
 import com.github.jlangch.venice.impl.types.VncBigDecimal;
 import com.github.jlangch.venice.impl.types.VncBigInteger;
@@ -4165,6 +4166,10 @@ public class CoreFunctions {
             @Override
             public VncVal apply(final VncList args) {
                 ArityExceptions.assertArity(this, args, 2, 3);
+
+                if (args.first() == Constants.Nil) {
+                	return Constants.Nil;
+                }
 
                 VncCollection coll = Coerce.toVncCollection(args.first());
                 VncSequence keys = Coerce.toVncSequence(args.second());

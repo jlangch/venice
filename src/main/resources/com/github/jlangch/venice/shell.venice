@@ -93,7 +93,8 @@
      :examples '(
         """(shell/open "img.png")"""
         """(shell/open "https://www.heise.de/")""")
-     :see-also '("shell/open-macos-app") }
+     :see-also '(
+        "shell/open-macos-app") }
 
   open [url]
 
@@ -104,10 +105,11 @@
   ^{ :arglists '("(open-macos-app name & args)")
      :doc "Opens a Mac OSX app."
      :examples '(
-       """(shell/open-macos-app "Calendar")""",
-       """(shell/open-macos-app "Maps")""",
-       """(shell/open-macos-app "TextEdit" "example.txt")""")
-     :see-also '("shell/open") }
+        """(shell/open-macos-app "Calendar")""",
+        """(shell/open-macos-app "Maps")""",
+        """(shell/open-macos-app "TextEdit" "example.txt")""")
+     :see-also '(
+        "shell/open") }
 
   open-macos-app [name & args]
 
@@ -131,13 +133,14 @@
 
         Requires Java 9+.
         """
-     :examples '("(shell/pid)")
+     :examples '(
+        "(shell/pid)")
      :see-also '(
-       "shell/process-handle"
-       "shell/process-info"
-       "shell/alive?"
-       "shell/kill"
-       "shell/processes" ) }
+        "shell/process-handle"
+        "shell/process-info"
+        "shell/alive?"
+        "shell/kill"
+        "shell/processes" ) }
 
   pid
 
@@ -160,12 +163,13 @@
 
         Requires Java 9+.
         """
-     :examples '("(shell/process-handle 4556)")
+     :examples '(
+        "(shell/process-handle 4556)")
      :see-also '(
-       "shell/pid"
-       "shell/alive?"
-       "shell/process-info"
-       "shell/kill" ) }
+        "shell/pid"
+        "shell/alive?"
+        "shell/process-info"
+        "shell/kill" ) }
 
   process-handle [pid]
 
@@ -212,7 +216,8 @@
              (filter #(str/contains? (:command-line %) "ArangoDB3"))
              (map :pid))
         """)
-     :see-also '("shell/processes-info") }
+     :see-also '(
+        "shell/processes-info") }
 
   processes []
 
@@ -253,7 +258,8 @@
              (filter #(str/contains? (:command-line %) "ArangoDB3"))
              (map :pid))
         """)
-     :see-also '("shell/processes") }
+     :see-also '(
+        "shell/processes") }
 
   processes-info []
 
@@ -319,7 +325,8 @@
              (filter #(str/contains? (:command-line %) "ArangoDB3"))
              (map :pid))
         """)
-     :see-also '("shell/pid" "shell/process-handle") }
+     :see-also '(
+        "shell/pid" "shell/process-handle ") }
 
   process-info [p]
 
@@ -357,7 +364,8 @@
      :examples '(
         "(shell/current-process)"
         "(shell/process-info (shell/current-process))")
-     :see-also '("shell/current-process-info" "shell/process-info") }
+     :see-also '(
+        "shell/current-process-info" "shell/process-info") }
 
   current-process []
 
@@ -383,7 +391,8 @@
              (shell/descendant-processes)
              (map shell/process-info))
         """ )
-     :see-also '("shell/process-info" "shell/pid") }
+     :see-also '(
+        "shell/process-info" "shell/pid") }
 
   descendant-processes [p]
 
@@ -412,7 +421,8 @@
              (shell/parent-process)
              (shell/process-info))
         """)
-     :see-also '("shell/process-info" "shell/pid" "shell/processes") }
+     :see-also '(
+        "shell/process-info" "shell/pid" "shell/processes") }
 
   parent-process [p]
 
@@ -438,7 +448,8 @@
         """
      :examples '(
         "(shell/kill 4556)")
-     :see-also '("shell/pid" "shell/kill-forcibly" "shell/processes") }
+     :see-also '(
+        "shell/pid" "shell/kill-forcibly" "shell/processes") }
 
   kill [p]
 
@@ -462,7 +473,8 @@
         """
      :examples '(
         "(shell/kill-forcibly 4556)")
-     :see-also '("shell/pid" "shell/kill" "shell/processes") }
+     :see-also '(
+        "shell/pid" "shell/kill" "shell/processes") }
 
   kill-forcibly [p]
 
@@ -481,12 +493,13 @@
         seconds. Returns nil if the process exits before reaching the
         timeout, else the pid is returned. Accepts a PID or a
         process handle (:java.lang.ProcessHandle).
-        
+
         Requires Java 9+.
         """
      :examples '(
         "(shell/wait-for-process-exit 12345 20)")
-     :see-also '("shell/pid" "shell/kill" "shell/processes") }
+     :see-also '(
+        "shell/pid" "shell/kill" "shell/processes") }
 
   wait-for-process-exit [p timeout]
 
