@@ -38,13 +38,16 @@ import com.github.jlangch.venice.impl.namespaces.Namespaces;
 import com.github.jlangch.venice.impl.thread.ThreadContext;
 import com.github.jlangch.venice.impl.types.VncBoolean;
 import com.github.jlangch.venice.impl.types.VncFunction;
+import com.github.jlangch.venice.impl.types.VncKeyword;
 import com.github.jlangch.venice.impl.types.VncSymbol;
 import com.github.jlangch.venice.impl.types.VncVal;
 import com.github.jlangch.venice.impl.types.collections.VncList;
 import com.github.jlangch.venice.impl.types.collections.VncSequence;
 import com.github.jlangch.venice.impl.types.collections.VncVector;
+import com.github.jlangch.venice.impl.types.util.QualifiedName;
 import com.github.jlangch.venice.impl.types.util.Types;
 import com.github.jlangch.venice.impl.util.ArityExceptions.FnType;
+import com.github.jlangch.venice.impl.util.MetaUtil;
 import com.github.jlangch.venice.impl.util.callstack.CallFrame;
 import com.github.jlangch.venice.impl.util.callstack.CallFrameFnData;
 import com.github.jlangch.venice.impl.util.callstack.CallStack;
@@ -97,6 +100,8 @@ public class FunctionBuilder implements Serializable {
 
         // Param access optimizations
         final VncVal[] paramArr = params.getJavaList().toArray(new  VncVal[] {});
+
+        final VncKeyword[] paramTypesArr = getParamTypes(paramArr);
 
         return new VncFunction(name, params, macro, preConditions, meta) {
             @Override
@@ -189,10 +194,14 @@ public class FunctionBuilder implements Serializable {
                 // destructuring fn params -> args
                 if (plainSymbolParams) {
                     for(int ii=0; ii<paramArr.length; ii++) {
-                        env.setLocal(
-                            new Var(
-                                (VncSymbol)paramArr[ii],
-                                args.nthOrDefault(ii, Nil)));
+                        final VncSymbol sym = (VncSymbol)paramArr[ii];
+                        final VncVal val = args.nthOrDefault(ii, Nil);
+
+                        final VncKeyword typeMeta = paramTypesArr[ii];
+                        if (typeMeta != null) {
+                            // TODO: check 'val' type against 'typeMeta'
+                        }
+                        env.setLocal(new Var(sym, val));
                     }
                 }
                 else {
@@ -218,6 +227,35 @@ public class FunctionBuilder implements Serializable {
         };
     }
 
+    private VncKeyword[] getParamTypes(final VncVal[] paramArr) {
+        final VncKeyword[] types = new VncKeyword[paramArr.length];
+
+        for(int ii=0; ii<paramArr.length; ii++) {
+            final VncVal p = paramArr[ii];
+            if (Types.isVncSymbol(p)) {
+                final VncVal t = p.getMetaVal(MetaUtil.TYPE);
+                if (Types.isVncKeyword(t)) {
+                	final VncKeyword tkw = (VncKeyword)t;
+                    final QualifiedName qn = QualifiedName.parse(tkw.getQualifiedName());
+                    if (qn.isQualified()) {
+                        types[ii] = tkw;
+                    }
+                    else if (Types.isCoreType(qn.getSimpleName())) {
+                        // if it's a core type qualify it with core namespace
+                    	types[ii] = new VncKeyword("core/" + qn.getSimpleName());
+                    }
+                }
+                else {
+                	types[ii] = null;
+                }
+            }
+            else {
+            	types[ii] = null;
+            }
+       }
+
+        return types;
+    }
 
     private void throwVariadicArityException(
             final VncFunction fn,

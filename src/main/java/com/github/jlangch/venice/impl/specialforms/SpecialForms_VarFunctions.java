@@ -216,17 +216,17 @@ public class SpecialForms_VarFunctions {
             private static final long serialVersionUID = -1848883965231344442L;
         };
 
-    public static VncSpecialForm var_sym =
+    public static VncSpecialForm var_sym_meta =
         new VncSpecialForm(
-                "var-sym",
+                "var-sym-meta",
                 VncSpecialForm
                     .meta()
-                    .arglists("(var-sym v)")
-                    .doc("Returns the var's symbol")
+                    .arglists("(var-sym-meta v)")
+                    .doc("Returns the var's symbol meta data")
                     .examples(
-                        "(var-sym +)",
-                        "(var-sym '+)",
-                        "(var-sym (symbol \"+\"))")
+                        "(do                         \n" +
+                        "  (def ^{:foo :test} x 100) \n" +
+                        "  (:foo (var-sym-meta 'x))) ")
                     .seeAlso(
                         "name", "var-get", "var-name", "var-ns", "var-local?", "var-global?", "var-thread-local?")
                     .build()
@@ -238,14 +238,14 @@ public class SpecialForms_VarFunctions {
                     final Env env,
                     final SpecialFormsContext ctx
             ) {
-                specialFormCallValidation(ctx, "var-sym");
-                assertArity("var-sym", FnType.SpecialForm, args, 1);
+                specialFormCallValidation(ctx, "var-sym-meta");
+                assertArity("var-sym-meta", FnType.SpecialForm, args, 1);
 
                 final VncSymbol sym = Types.isVncSymbol(args.first())
                                         ? (VncSymbol)args.first()
                                         : Coerce.toVncSymbol(
                                                 ctx.getEvaluator().evaluate(args.first(), env, false));
-                return env.getSymbol(sym);
+                return env.getSymbol(sym).getMeta();
             }
 
             private static final long serialVersionUID = -1848883965231344442L;
@@ -374,7 +374,7 @@ public class SpecialForms_VarFunctions {
             new SymbolMapBuilder()
                     .add(var_get)
                     .add(var_name)
-                    .add(var_sym)
+                    .add(var_sym_meta)
                     .add(var_ns)
                     .add(var_globalQ)
                     .add(var_localQ)

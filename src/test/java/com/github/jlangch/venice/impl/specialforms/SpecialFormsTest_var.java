@@ -33,6 +33,24 @@ import com.github.jlangch.venice.Venice;
 public class SpecialFormsTest_var {
 
     @Test
+    public void test_var_get() {
+        assertEquals(100L, new Venice().eval("(do (def x 100) (var-get x))"));
+        assertEquals(100L, new Venice().eval("(do (let [x 100] (var-get x)))"));
+        assertEquals(100L, new Venice().eval("(do (binding [x 100] (var-get x)))"));
+    }
+
+    @Test
+    public void test_var_name() {
+        assertEquals("x", new Venice().eval("(do (def x 100) (var-name x))"));
+        assertEquals("x", new Venice().eval("(do (let [x 100] (var-name x)))"));
+        assertEquals("x", new Venice().eval("(do (binding [x 100] (var-name x)))"));
+
+        assertEquals("+", new Venice().eval("(var-name +)"));
+        assertEquals("+", new Venice().eval("(var-name core/+)"));
+        assertEquals("split", new Venice().eval("(var-name str/split)"));
+    }
+
+    @Test
     public void test_var_ns() {
         assertEquals("core", new Venice().eval("(var-ns +)"));
         assertEquals("core", new Venice().eval("(var-ns core/+)"));
@@ -41,11 +59,9 @@ public class SpecialFormsTest_var {
     }
 
     @Test
-    public void test_var_name() {
-        assertEquals("+", new Venice().eval("(var-name +)"));
-        assertEquals("+", new Venice().eval("(var-name core/+)"));
-        assertEquals("split", new Venice().eval("(var-name str/split)"));
-        assertEquals("x", new Venice().eval("(let [x 100] (var-name x))"));
+    public void test_var_sym_meta() {
+        assertEquals(true, new Venice().eval("(do (def ^:private x 100) (:private (var-sym-meta 'x)))"));
+        assertEquals(3L, new Venice().eval("(do (def ^{:foo 3} x 100) (:foo (var-sym-meta 'x)))"));
     }
 
     @Test
