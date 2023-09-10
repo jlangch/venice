@@ -448,6 +448,86 @@ public class Types {
         }
     }
 
+    public static boolean isCoreType(final VncVal val) {
+        if (val == null) {
+            return false;
+        }
+
+        return isCoreType(Types.isVncKeyword(val)
+                                ? ((VncKeyword)val).getQualifiedName()
+                                : val.getType().getQualifiedName());
+    }
+
+    public static boolean isCoreType(final String type) {
+        if (type == null) {
+            return false;
+        }
+
+        if (type.startsWith("core/")) {
+            return true;
+        }
+
+        switch(type) {
+            case "nil":            return true;
+
+            case "char":           return true;
+            case "string":         return true;
+            case "boolean":        return true;
+            case "number":         return true;
+            case "integer":        return true;
+            case "long":           return true;
+            case "double":         return true;
+            case "decimal":        return true;
+            case "bigint":         return true;
+            case "bytebuf":        return true;
+
+            case "symbol":         return true;
+            case "keyword":        return true;
+
+            case "atom":           return true;
+            case "volatile":       return true;
+            case "thread-local":   return true;
+
+            case "java-object":    return true;
+
+            case "just":           return true;
+            case "function":       return true;
+            case "macro":          return true;
+
+            case "collection":     return true;
+
+            case "sequence":       return true;
+            case "vector":         return true;
+            case "list":           return true;
+            case "mutable-list":   return true;
+            case "mutable-vector": return true;
+
+            case "lazyseq":        return true;
+
+            case "set":            return true;
+            case "hash-set":       return true;
+            case "sorted-set":     return true;
+            case "mutable-set":    return true;
+
+            case "map":            return true;
+            case "hash-map":       return true;
+            case "ordered-map":    return true;
+            case "sorted-map":     return true;
+            case "mutable-map":    return true;
+            case "map-entry":      return true;
+
+            case "stack":          return true;
+            case "queue":          return true;
+            case "delay-queue":    return true;
+
+            case "custom-type":    return true;
+
+            case "protocol":       return true;
+
+            default:               return false;
+        }
+    }
+
     public static boolean _equal_Q(final VncVal a, final VncVal b) {
         return _equal_Q(a, b, false);
     }
