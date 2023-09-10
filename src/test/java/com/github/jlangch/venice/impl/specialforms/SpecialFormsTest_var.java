@@ -22,6 +22,8 @@
 package com.github.jlangch.venice.impl.specialforms;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import org.junit.jupiter.api.Test;
 
@@ -44,5 +46,30 @@ public class SpecialFormsTest_var {
         assertEquals("+", new Venice().eval("(var-name core/+)"));
         assertEquals("split", new Venice().eval("(var-name str/split)"));
         assertEquals("x", new Venice().eval("(let [x 100] (var-name x))"));
+    }
+
+    @Test
+    public void test_var_global() {
+        assertTrue( (Boolean)new Venice().eval("(do (def x 100) (var-global? x))"));
+        assertFalse((Boolean)new Venice().eval("(do (def x 100) (var-local? x))"));
+        assertFalse((Boolean)new Venice().eval("(do (def x 100) (var-thread-local? x))"));
+    }
+
+    @Test
+    public void test_var_local() {
+    	assertFalse((Boolean)new Venice().eval("(do (let [x 100] (var-global? x)))"));
+        assertTrue( (Boolean)new Venice().eval("(do (let [x 100] (var-local? x)))"));
+        assertFalse((Boolean)new Venice().eval("(do (let [x 100] (var-thread-local? x)))"));
+
+    	assertFalse((Boolean)new Venice().eval("(do (defn foo [x] (var-global? x)) (foo 0))"));
+        assertTrue( (Boolean)new Venice().eval("(do (defn foo [x] (var-local? x)) (foo 0))"));
+        assertFalse((Boolean)new Venice().eval("(do (defn foo [x] (var-thread-local? x)) (foo 0))"));
+    }
+
+    @Test
+    public void test_var_threadlocal() {
+    	assertFalse((Boolean)new Venice().eval("(do (binding [x 100] (var-global? x)))"));
+        assertFalse((Boolean)new Venice().eval("(do (binding [x 100] (var-local? x)))"));
+        assertTrue( (Boolean)new Venice().eval("(do (binding [x 100] (var-thread-local? x)))"));
     }
 }

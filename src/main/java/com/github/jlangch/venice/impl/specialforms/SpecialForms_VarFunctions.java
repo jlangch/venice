@@ -67,7 +67,7 @@ public class SpecialForms_VarFunctions {
                         "  (def x 10) \n" +
                         "  (var-get 'x))")
                     .seeAlso(
-                        "var-ns", "var-name", "var-local?", "var-global?", "var-thread-local?")
+                        "var-name", "var-ns", "var-local?", "var-global?", "var-thread-local?")
                     .build()
         ) {
             @Override
@@ -79,6 +79,7 @@ public class SpecialForms_VarFunctions {
             ) {
                 specialFormCallValidation(ctx, "var-get");
                 assertArity("var-get", FnType.SpecialForm, args, 1);
+
                 final VncSymbol sym = Types.isVncSymbol(args.first())
                                         ? (VncSymbol)args.first()
                                         : Coerce.toVncSymbol(
@@ -87,6 +88,62 @@ public class SpecialForms_VarFunctions {
             }
 
             private static final long serialVersionUID = -1848883965231344442L;
+        };
+
+    public static VncSpecialForm var_name =
+        new VncSpecialForm(
+                "var-name",
+                VncSpecialForm
+                    .meta()
+                    .arglists("(var-name v)")
+                    .doc("Returns the name of the var's symbol")
+                    .examples(
+                        "(var-name +)",
+                        "(var-name '+)",
+                        "(var-name (symbol \"+\"))",
+                        ";; aliased function \n" +
+                        "(do \n" +
+                        "  (ns foo) \n" +
+                        "  (def add +)\n" +
+                        "  (var-name add))",
+                        "(do \n" +
+                        "  (def x 10) \n" +
+                        "  (var-name x))",
+                        "(let [x 10] \n" +
+                        "  (var-name x))",
+                        ";; compare with name \n" +
+                        "(do \n" +
+                        "  (ns foo) \n" +
+                        "  (def add +)\n" +
+                        "  (name add))",
+                        ";; compare aliased function with name \n" +
+                        "(do \n" +
+                        "  (ns foo) \n" +
+                        "  (def add +)\n" +
+                        "  (name add))")
+                    .seeAlso(
+                        "name", "var-get", "var-ns", "var-local?", "var-global?", "var-thread-local?")
+                    .build()
+        ) {
+            @Override
+            public VncVal apply(
+                    final VncVal specialFormMeta,
+                    final VncList args,
+                    final Env env,
+                    final SpecialFormsContext ctx
+            ) {
+                specialFormCallValidation(ctx, "var-name");
+                assertArity("var-name", FnType.SpecialForm, args, 1);
+
+                final VncSymbol sym = Types.isVncSymbol(args.first())
+                                        ? (VncSymbol)args.first()
+                                        : Coerce.toVncSymbol(
+                                                ctx.getEvaluator().evaluate(args.first(), env, false));
+                return new VncString(sym.getSimpleName());
+            }
+
+            private static final long serialVersionUID = -1848883965231344442L;
+
         };
 
     public static VncSpecialForm var_ns =
@@ -159,39 +216,19 @@ public class SpecialForms_VarFunctions {
             private static final long serialVersionUID = -1848883965231344442L;
         };
 
-    public static VncSpecialForm var_name =
+    public static VncSpecialForm var_sym =
         new VncSpecialForm(
-                "var-name",
+                "var-sym",
                 VncSpecialForm
                     .meta()
-                    .arglists("(var-name v)")
-                    .doc("Returns the name of the var's symbol")
+                    .arglists("(var-sym v)")
+                    .doc("Returns the var's symbol")
                     .examples(
-                        "(var-name +)",
-                        "(var-name '+)",
-                        "(var-name (symbol \"+\"))",
-                        ";; aliased function \n" +
-                        "(do \n" +
-                        "  (ns foo) \n" +
-                        "  (def add +)\n" +
-                        "  (var-name add))",
-                        "(do \n" +
-                        "  (def x 10) \n" +
-                        "  (var-name x))",
-                        "(let [x 10] \n" +
-                        "  (var-name x))",
-                        ";; compare with name \n" +
-                        "(do \n" +
-                        "  (ns foo) \n" +
-                        "  (def add +)\n" +
-                        "  (name add))",
-                        ";; compare aliased function with name \n" +
-                        "(do \n" +
-                        "  (ns foo) \n" +
-                        "  (def add +)\n" +
-                        "  (name add))")
+                        "(var-sym +)",
+                        "(var-sym '+)",
+                        "(var-sym (symbol \"+\"))")
                     .seeAlso(
-                        "name", "var-get", "var-ns", "var-local?", "var-global?", "var-thread-local?")
+                        "name", "var-get", "var-name", "var-ns", "var-local?", "var-global?", "var-thread-local?")
                     .build()
         ) {
             @Override
@@ -201,13 +238,14 @@ public class SpecialForms_VarFunctions {
                     final Env env,
                     final SpecialFormsContext ctx
             ) {
-                specialFormCallValidation(ctx, "var-name");
-                assertArity("var-name", FnType.SpecialForm, args, 1);
+                specialFormCallValidation(ctx, "var-sym");
+                assertArity("var-sym", FnType.SpecialForm, args, 1);
+
                 final VncSymbol sym = Types.isVncSymbol(args.first())
                                         ? (VncSymbol)args.first()
                                         : Coerce.toVncSymbol(
                                                 ctx.getEvaluator().evaluate(args.first(), env, false));
-                return new VncString(sym.getSimpleName());
+                return env.getSymbol(sym);
             }
 
             private static final long serialVersionUID = -1848883965231344442L;
@@ -225,13 +263,13 @@ public class SpecialForms_VarFunctions {
                         "(var-local? +)",
                         "(var-local? '+)",
                         "(var-local? (symbol \"+\"))",
+                        "(let [x 10]       \n" +
+                        "  (var-local? x))   ",
                         "(do               \n" +
                         "  (def x 10)      \n" +
-                        "  (var-local? x))   ",
-                        "(let [x 10]       \n" +
                         "  (var-local? x))   ")
                     .seeAlso(
-                        "var-get", "var-ns", "var-name", "var-global?", "var-thread-local?")
+                        "var-get", "var-name", "var-ns", "var-global?", "var-thread-local?")
                     .build()
         ) {
             @Override
@@ -242,6 +280,7 @@ public class SpecialForms_VarFunctions {
                     final SpecialFormsContext ctx
             ) {
                 assertArity("var-local?", FnType.SpecialForm, args, 1);
+
                 final VncSymbol sym = Types.isVncSymbol(args.first())
                                         ? (VncSymbol)args.first()
                                         : Coerce.toVncSymbol(
@@ -261,9 +300,9 @@ public class SpecialForms_VarFunctions {
                     .doc("Returns true if the var is thread-local else false")
                     .examples(
                         "(binding [x 100] \n" +
-                        "  (var-local? x))")
+                        "  (var-thread-local? x))")
                     .seeAlso(
-                        "var-get", "var-ns", "var-name", "var-local?", "var-global?")
+                        "var-get", "var-name", "var-ns", "var-local?", "var-global?")
                     .build()
         ) {
             @Override
@@ -274,6 +313,7 @@ public class SpecialForms_VarFunctions {
                     final SpecialFormsContext ctx
             ) {
                 assertArity("var-thread-local?", FnType.SpecialForm, args, 1);
+
                 final VncSymbol sym = Types.isVncSymbol(args.first())
                                         ? (VncSymbol)args.first()
                                         : Coerce.toVncSymbol(
@@ -301,7 +341,7 @@ public class SpecialForms_VarFunctions {
                         "(let [x 10]        \n" +
                         "  (var-global? x))   ")
                     .seeAlso(
-                        "var-get", "var-ns", "var-name", "var-local?", "var-thread-local?")
+                        "var-get", "var-name", "var-ns", "var-local?", "var-thread-local?")
                     .build()
         ) {
             @Override
@@ -312,6 +352,7 @@ public class SpecialForms_VarFunctions {
                     final SpecialFormsContext ctx
             ) {
                 assertArity("var-global?", FnType.SpecialForm, args, 1);
+
                 final VncSymbol sym = Types.isVncSymbol(args.first())
                                         ? (VncSymbol)args.first()
                                         : Coerce.toVncSymbol(
@@ -332,10 +373,11 @@ public class SpecialForms_VarFunctions {
     public static final Map<VncVal, VncVal> ns =
             new SymbolMapBuilder()
                     .add(var_get)
+                    .add(var_name)
+                    .add(var_sym)
+                    .add(var_ns)
                     .add(var_globalQ)
                     .add(var_localQ)
-                    .add(var_name)
-                    .add(var_ns)
                     .add(var_thread_localQ)
                     .toMap();
 }
