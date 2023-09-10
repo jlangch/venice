@@ -47,7 +47,20 @@ public class TypesTest {
     public void test_Type() {
         assertEquals(":core/nil", Types.getType(Constants.Nil).toString(true));
 
+        assertEquals(":core/boolean", Types.getType(VncBoolean.True).toString(true));
+        assertEquals(":core/boolean", Types.getType(VncBoolean.False).toString(true));
+
+        assertEquals(":core/integer", Types.getType(new VncInteger(1)).toString(true));
         assertEquals(":core/long", Types.getType(new VncLong(1L)).toString(true));
+        assertEquals(":core/double", Types.getType(new VncDouble(1D)).toString(true));
+        assertEquals(":core/decimal", Types.getType(new VncBigDecimal(1L)).toString(true));
+        assertEquals(":core/bigint", Types.getType(new VncBigInteger(1L)).toString(true));
+
+        assertEquals(":core/char", Types.getType(new VncChar('a')).toString(true));
+        assertEquals(":core/string", Types.getType(new VncString("abc")).toString(true));
+
+        assertEquals(":core/keyword", Types.getType(new VncKeyword("x")).toString(true));
+        assertEquals(":core/symbol", Types.getType(new VncSymbol("x")).toString(true));
     }
 
     @Test
