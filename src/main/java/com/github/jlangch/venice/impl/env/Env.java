@@ -117,9 +117,10 @@ public class Env implements Serializable {
      * @throws SymbolNotFoundException if the symbol does not exist.
      */
     public VncVal get(final VncSymbol sym) {
-        final VncVal val = getOrElse(sym, null);
-        if (val != null) {
-            return val;
+    	final Var v = getVar(sym);
+
+        if (v != null) {
+            return v.getVal();
         }
         else {
             try (WithCallStack cs = new WithCallStack(CallFrame.from(sym))) {
@@ -193,14 +194,8 @@ public class Env implements Serializable {
      * @return returns true if a symbol is bound to a value else false
      */
     public boolean isBound(final VncSymbol sym) {
-        if (sym.hasNamespace()) {
-            // if we got a namespace it must be a global var
-            return getGlobalVar(sym) != null;
-        }
-        else {
-            final Var v = findLocalVar(sym);
-            return v != null ? true : getGlobalVar(sym) != null;
-        }
+    	final Var v = getVar(sym);
+    	return v != null;
     }
 
     /**
@@ -222,7 +217,31 @@ public class Env implements Serializable {
      * @return the value or <code>Nil</code> if not found
      */
     public VncVal getOrNil(final VncSymbol sym) {
-        return getOrElse(sym, Nil);
+    	final Var v = getVar(sym);
+    	return v == null ? Nil : v.getVal();
+    }
+
+    /**
+     * Look up a symbol
+     *
+     * <p>Unqualified symbol resolution:
+     * <ol>
+     *  <li>try to resolve the symbol from the local namespace</li>
+     *  <li>try to resolve the symbol from the global current namespace defined by *ns*</li>
+     *  <li>try to resolve the symbol from the global 'core' namespace</li>
+     * </ol>
+     *
+     * <p>Qualified symbol resolution:
+     * <ol>
+     *  <li>qualified symbols are resolved exclusively from the global symbols</li>
+     * </ol>
+     *
+     * @param sym a symbol
+     * @return the value or <code>Nil</code> if not found
+     */
+    public VncVal getSymbol(final VncSymbol sym) {
+        final Var v = getVar(sym);
+        return v != null ? v.getVal() : Nil;
     }
 
     /**
@@ -569,44 +588,31 @@ public class Env implements Serializable {
         return null;
     }
 
-    private VncVal getOrElse(final VncSymbol sym, final VncVal defaultVal) {
+    private Var getVar(final VncSymbol sym) {
         if (sym.hasNamespace()) {
             // if we got a namespace it must be a global var
-            final Var glob = getGlobalVar(sym);
-            return glob == null ? defaultVal : glob.getVal();
+            return getGlobalVar(sym);
         }
         else {
             final Var local = findLocalVar(sym);
 
             if (globalVarLookupOptimization) {
                 if (local != null) {
-                    if (local instanceof GlobalRefVar) {
-                        final Var glob = getGlobalVar(sym);
-                        return glob == null ? defaultVal : glob.getVal();
-                    }
-                    else {
-                        return local.getVal();
-                    }
-                }
+                    return local instanceof GlobalRefVar ? getGlobalVar(sym) : local;
+               }
                 else {
                     final Var glob = getGlobalVar(sym);
                     if (glob != null) {
                         localSymbols.put(sym, new GlobalRefVar(sym));
-                        return glob.getVal();
+                        return glob;
                     }
                     else {
-                        return defaultVal;
+                        return null;
                     }
                 }
             }
             else {
-                if (local != null) {
-                    return local.getVal();
-                }
-                else {
-                    final Var glob = getGlobalVar(sym);
-                    return glob == null ? defaultVal : glob.getVal();
-                }
+                return local != null ? local : getGlobalVar(sym);
             }
         }
     }

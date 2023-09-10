@@ -64,12 +64,12 @@ import com.github.jlangch.venice.impl.types.collections.VncSequence;
 import com.github.jlangch.venice.impl.types.util.Coerce;
 import com.github.jlangch.venice.impl.types.util.Types;
 import com.github.jlangch.venice.impl.util.ArityExceptions.FnType;
-import com.github.jlangch.venice.impl.util.callstack.CallFrame;
-import com.github.jlangch.venice.impl.util.callstack.CallStack;
-import com.github.jlangch.venice.impl.util.callstack.WithCallStack;
 import com.github.jlangch.venice.impl.util.Inspector;
 import com.github.jlangch.venice.impl.util.MeterRegistry;
 import com.github.jlangch.venice.impl.util.SymbolMapBuilder;
+import com.github.jlangch.venice.impl.util.callstack.CallFrame;
+import com.github.jlangch.venice.impl.util.callstack.CallStack;
+import com.github.jlangch.venice.impl.util.callstack.WithCallStack;
 
 
 /**
@@ -410,7 +410,10 @@ public class SpecialForms_OtherFunctions {
                     .meta()
                     .arglists("(inspect val)")
                     .doc("Inspect a value")
-                    .examples("(inspect '+)")
+                    .examples(
+                    		"(inspect '+)",
+                    		"(inspect (symbol \"+\"))"
+                    		)
                     .build()
         ) {
             @Override
@@ -422,6 +425,7 @@ public class SpecialForms_OtherFunctions {
             ) {
                 specialFormCallValidation(ctx, "inspect");
                 assertArity("inspect", FnType.SpecialForm, args, 1);
+
                 final VncSymbol sym = Coerce.toVncSymbol(ctx.getEvaluator().evaluate(args.first(), env, false));
                 return Inspector.inspect(env.get(sym));
             }
@@ -452,8 +456,9 @@ public class SpecialForms_OtherFunctions {
             ) {
                 specialFormCallValidation(ctx, "resolve");
                 assertArity("resolve", FnType.SpecialForm, args, 1);
-                return env.getOrNil(Coerce.toVncSymbol(
-                                        ctx.getEvaluator().evaluate(args.first(), env, false)));
+
+                final VncSymbol sym = Coerce.toVncSymbol(ctx.getEvaluator().evaluate(args.first(), env, false));
+                return env.getOrNil(sym);
             }
 
             private static final long serialVersionUID = -1848883965231344442L;
@@ -483,10 +488,10 @@ public class SpecialForms_OtherFunctions {
                     final Env env,
                     final SpecialFormsContext ctx
             ) {
-                return VncBoolean.of(
-                            env.isBound(
-                                Coerce.toVncSymbol(
-                                    ctx.getEvaluator().evaluate(args.first(), env, false))));
+                assertArity("bound?", FnType.SpecialForm, args, 1);
+
+                final VncSymbol sym = Coerce.toVncSymbol(ctx.getEvaluator().evaluate(args.first(), env, false));
+                return VncBoolean.of(env.isBound(sym));
             }
 
             private static final long serialVersionUID = -1848883965231344442L;
