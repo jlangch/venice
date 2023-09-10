@@ -81,7 +81,7 @@ public class QualifiedName {
         }
         else if (name_.equals("core//")) {
             // special case core function "/" (division)
-            return new QualifiedName("/", null, "/");
+            return new QualifiedName("core//", "core", "/");
         }
         else {
             final int pos = name_.lastIndexOf("/");
@@ -132,6 +132,10 @@ public class QualifiedName {
 
     public String getSimpleName() {
         return simpleName;
+    }
+
+    public boolean isQualified() {
+    	return namespace != null;
     }
 
 
