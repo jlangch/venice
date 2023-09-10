@@ -418,10 +418,19 @@ public class Reader {
         rdr.next();
         final Token metaToken = rdr.peek();
         VncVal meta = read_form(rdr);
+
         if (Types.isVncKeyword(meta)) {
-            // allow ^:private is equivalent to ^{:private true}
-            meta = VncHashMap.of(meta, VncBoolean.True);
+        	final String qName = ((VncKeyword)meta).getQualifiedName();
+        	if (qName.equals("private") || qName.equals("dynamic")) {
+                // allow ^:private is equivalent to ^{:private true}
+                // allow ^:dynamic is equivalent to ^{:dynamic true}
+                meta = VncHashMap.of(meta, VncBoolean.True);
+        	}
+        	else {
+                meta = VncHashMap.of(MetaUtil.TYPE, meta);
+        	}
         }
+
         if (Types.isVncMap(meta)) {
             final Token symToken = rdr.peek();
             return read_form(rdr).withMeta(MetaUtil.mergeMeta(meta, MetaUtil.toMeta(symToken)));
