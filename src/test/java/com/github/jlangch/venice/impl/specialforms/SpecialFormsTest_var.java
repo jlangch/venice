@@ -60,7 +60,7 @@ public class SpecialFormsTest_var {
 
     @Test
     public void test_var_sym_meta() {
-    	// def
+        // def
         assertEquals(true, new Venice().eval("(do                            " +
                                              "  (def ^:private x 100)        " +
                                              "  (:private (var-sym-meta 'x)))"));
@@ -69,26 +69,31 @@ public class SpecialFormsTest_var {
                                            "  (def ^{:foo 3} x 100)    " +
                                            "  (:foo (var-sym-meta 'x)))"));
 
-    	// let
+        // let
         assertEquals(3L, new Venice().eval("(do                           " +
                                            "  (let [^{:foo 3} x 100]      " +
                                            "    (:foo (var-sym-meta 'x))))"));
 
-    	// binding
+        // binding
         assertEquals(3L, new Venice().eval("(do                           " +
                                            "  (binding [^{:foo 3} x 100]  " +
                                            "    (:foo (var-sym-meta 'x))))"));
 
-    	// function arg
+        // function arg
         assertEquals(3L, new Venice().eval("(do                           " +
                                            "  (defn bar [^{:foo 3} x]     " +
                                            "    (:foo (var-sym-meta 'x))) " +
                                            "  (bar 100))                  "));
+
+        assertEquals(3L, new Venice().eval("(do                                  " +
+                                           "  (defn bar [^{:foo 3} x]            " +
+                                           "    (:foo (var-sym-meta 'x)))        " +
+                                           "  (bar (vary-meta 100 assoc :foo 4)))"));
     }
 
     @Test
     public void test_var_val_meta() {
-    	// def
+        // def
         assertEquals(4L, new Venice().eval("(do                                    " +
                                            "  (def x (vary-meta 100 assoc :foo 4)) " +
                                            "  (:foo (var-val-meta 'x)))            "));
@@ -101,22 +106,27 @@ public class SpecialFormsTest_var {
                                            "  (def ^{:foo 3} x (vary-meta 100 assoc :bar 4)) " +
                                            "  (:foo (var-sym-meta 'x)))                      "));
 
-    	// let
+        // let
         assertEquals(3L, new Venice().eval("(do                           " +
                                            "  (let [x ^{:foo 3} 100]      " +
                                            "    (:foo (var-val-meta 'x))))"));
 
-    	// binding
+        // binding
         assertEquals(3L, new Venice().eval("(do                           " +
                                            "  (binding [x ^{:foo 3} 100]  " +
                                            "    (:foo (var-val-meta 'x))))"));
 
-    	// function arg
+        // function arg
         assertEquals(3L, new Venice().eval("(do                                  " +
                                            "  (defn bar [x]                      " +
                                            "    (:foo (var-val-meta 'x)))        " +
                                            "  (bar (vary-meta 100 assoc :foo 3)))"));
-    }
+
+        assertEquals(3L, new Venice().eval("(do                                  " +
+                                           "  (defn bar [^{:foo 4} x]            " +
+                                           "    (:foo (var-val-meta 'x)))        " +
+                                           "  (bar (vary-meta 100 assoc :foo 3)))"));
+   }
 
     @Test
     public void test_var_global() {
