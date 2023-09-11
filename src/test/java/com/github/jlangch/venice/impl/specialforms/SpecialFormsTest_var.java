@@ -95,6 +95,10 @@ public class SpecialFormsTest_var {
     public void test_var_val_meta() {
         // def
         assertEquals(4L, new Venice().eval("(do                                    " +
+                                           "  (def x ^{:foo 4} 100)                " +
+                                           "  (:foo (var-val-meta 'x)))            "));
+
+        assertEquals(4L, new Venice().eval("(do                                    " +
                                            "  (def x (vary-meta 100 assoc :foo 4)) " +
                                            "  (:foo (var-val-meta 'x)))            "));
 

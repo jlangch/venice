@@ -224,9 +224,16 @@ public class SpecialForms_VarFunctions {
                     .arglists("(var-sym-meta v)")
                     .doc("Returns the var's symbol meta data")
                     .examples(
-                        "(do                         \n" +
-                        "  (def ^{:foo :test} x 100) \n" +
-                        "  (:foo (var-sym-meta 'x))) ")
+                        "(do                           \n" +
+                        "  (def ^{:foo 3} x 100)       \n" +
+                        "  (:foo (var-sym-meta 'x)))   ",
+                        "(do                           \n" +
+                        "  (let [^{:foo 3} x 100]      \n" +
+                        "    (:foo (var-sym-meta 'x))))",
+                        "(do                           \n" +
+                        "  (defn bar [^{:foo 3} x]     \n" +
+                        "    (:foo (var-sym-meta 'x))) \n" +
+                        "  (bar 100))                  ")
                     .seeAlso(
                         "var-val-meta", "var-get", "var-name")
                     .build()
@@ -261,9 +268,19 @@ public class SpecialForms_VarFunctions {
                     .doc("Returns the var's value meta data")
                     .examples(
                         "(do                                    \n" +
+                        "  (def x ^{:foo 4} 100)                \n" +
+                        "  (:foo (var-val-meta 'x)))            ",
+                        "(do                                    \n" +
                         "  (def x (vary-meta 100 assoc :foo 4)) \n" +
-                        "  (:foo (var-val-meta 'x)))            ")
-                    .seeAlso(
+                        "  (:foo (var-val-meta 'x)))            ",
+                        "(do                                    \n" +
+                        "  (let [x ^{:foo 4} 100]               \n" +
+                        "    (:foo (var-val-meta 'x))))         ",
+                        "(do                                    \n" +
+                        "  (defn bar [x]                        \n" +
+                        "    (:foo (var-val-meta 'x)))          \n" +
+                        "  (bar (vary-meta 100 assoc :foo 4)))")
+                   .seeAlso(
                         "var-sym-meta", "var-get", "var-name")
                     .build()
         ) {
