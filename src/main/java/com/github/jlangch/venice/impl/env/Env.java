@@ -222,29 +222,6 @@ public class Env implements Serializable {
     }
 
     /**
-     * Look up a symbol
-     *
-     * <p>Unqualified symbol resolution:
-     * <ol>
-     *  <li>try to resolve the symbol from the local namespace</li>
-     *  <li>try to resolve the symbol from the global current namespace defined by *ns*</li>
-     *  <li>try to resolve the symbol from the global 'core' namespace</li>
-     * </ol>
-     *
-     * <p>Qualified symbol resolution:
-     * <ol>
-     *  <li>qualified symbols are resolved exclusively from the global symbols</li>
-     * </ol>
-     *
-     * @param sym a symbol
-     * @return the value or <code>Nil</code> if not found
-     */
-    public VncVal getSymbol(final VncSymbol sym) {
-        final Var v = getVar(sym);
-        return v != null ? v.getVal() : Nil;
-    }
-
-    /**
      * Look up a global symbol's value
      *
      * <p>Unqualified symbol resolution:
@@ -588,7 +565,25 @@ public class Env implements Serializable {
         return null;
     }
 
-    private Var getVar(final VncSymbol sym) {
+    /**
+     * Look up a var
+     *
+     * <p>Unqualified symbol resolution:
+     * <ol>
+     *  <li>try to resolve the var from the local namespace</li>
+     *  <li>try to resolve the var from the global current namespace defined by *ns*</li>
+     *  <li>try to resolve the var from the global 'core' namespace</li>
+     * </ol>
+     *
+     * <p>Qualified symbol resolution:
+     * <ol>
+     *  <li>qualified symbols are resolved exclusively from the global symbols</li>
+     * </ol>
+     *
+     * @param sym a symbol
+     * @return the var or <code>null</code> if not found
+     */
+    public Var getVar(final VncSymbol sym) {
         if (sym.hasNamespace()) {
             // if we got a namespace it must be a global var
             return getGlobalVar(sym);

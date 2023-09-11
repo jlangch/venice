@@ -93,6 +93,8 @@ public class FunctionsSection implements ISectionBuilder {
         env.addItem(diBuilder.getDocItem("var-get"));
         env.addItem(diBuilder.getDocItem("var-name"));
         env.addItem(diBuilder.getDocItem("var-ns"));
+        env.addItem(diBuilder.getDocItem("var-sym-meta"));
+        env.addItem(diBuilder.getDocItem("var-val-meta"));
         env.addItem(diBuilder.getDocItem("var-thread-local?"));
         env.addItem(diBuilder.getDocItem("var-local?"));
         env.addItem(diBuilder.getDocItem("var-global?"));

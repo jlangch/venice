@@ -228,7 +228,7 @@ public class SpecialForms_VarFunctions {
                         "  (def ^{:foo :test} x 100) \n" +
                         "  (:foo (var-sym-meta 'x))) ")
                     .seeAlso(
-                        "name", "var-get", "var-name", "var-ns", "var-local?", "var-global?", "var-thread-local?")
+                        "var-val-meta", "var-get", "var-name")
                     .build()
         ) {
             @Override
@@ -245,7 +245,43 @@ public class SpecialForms_VarFunctions {
                                         ? (VncSymbol)args.first()
                                         : Coerce.toVncSymbol(
                                                 ctx.getEvaluator().evaluate(args.first(), env, false));
-                return env.getSymbol(sym).getMeta();
+                return env.getVar(sym).getName().getMeta();
+            }
+
+            private static final long serialVersionUID = -1848883965231344442L;
+
+        };
+
+    public static VncSpecialForm var_val_meta =
+        new VncSpecialForm(
+                "var-val-meta",
+                VncSpecialForm
+                    .meta()
+                    .arglists("(var-val-meta v)")
+                    .doc("Returns the var's value meta data")
+                    .examples(
+                        "(do                                    \n" +
+                        "  (def x (vary-meta 100 assoc :foo 4)) \n" +
+                        "  (:foo (var-val-meta 'x)))            ")
+                    .seeAlso(
+                        "var-sym-meta", "var-get", "var-name")
+                    .build()
+        ) {
+            @Override
+            public VncVal apply(
+                    final VncVal specialFormMeta,
+                    final VncList args,
+                    final Env env,
+                    final SpecialFormsContext ctx
+            ) {
+                specialFormCallValidation(ctx, "var-val-meta");
+                assertArity("var-val-meta", FnType.SpecialForm, args, 1);
+
+                final VncSymbol sym = Types.isVncSymbol(args.first())
+                                        ? (VncSymbol)args.first()
+                                        : Coerce.toVncSymbol(
+                                                ctx.getEvaluator().evaluate(args.first(), env, false));
+                return env.getVar(sym).getVal().getMeta();
             }
 
             private static final long serialVersionUID = -1848883965231344442L;
@@ -375,6 +411,7 @@ public class SpecialForms_VarFunctions {
                     .add(var_get)
                     .add(var_name)
                     .add(var_sym_meta)
+                    .add(var_val_meta)
                     .add(var_ns)
                     .add(var_globalQ)
                     .add(var_localQ)
