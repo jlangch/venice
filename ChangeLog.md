@@ -5,7 +5,7 @@ All notable changes to this project will be documented in this file.
 
 
 
-## [1.10.41] - 2023-08-xx
+## [1.10.41] - 2023-09-12
 
 ### Added 
 
@@ -16,6 +16,7 @@ Venice supports the most used docker commands with some explicit functions:
     - docker version, 
     - docker images, docker rmi, docker image prune/rm/pull
     - docker run, docker ps, docker start, docker stop, docker cp, docker exec, docker diff, docker pause, docker unpause, docker wait
+- functions `var-sym-meta` and `var-val-meta` to access the meta data of the symbol add the value of a var.
 
 
 ### Fixed 
