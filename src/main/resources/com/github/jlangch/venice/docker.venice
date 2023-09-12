@@ -168,44 +168,6 @@
 
 
 (defn
-  ^{ :arglists '("(docker/image-pull name & options)")
-     :doc """
-          Download an image from a registry.
-
-          Images can be pulled by name, name and tag, or digest
-
-          Returns the stdout text from the command.
-
-          Options:
-
-          | :quiet {true, false} | Suppress verbose output |
-          """
-     :examples '(
-          """
-          (println (docker/image-pull "arangodb/arangodb:3.10.10"))
-          (println (docker/image-pull "arangodb/arangodb"))
-          """ )
-     :see-also '(
-          "docker/images"
-          "docker/rmi"
-          "docker/image-rm"
-          "docker/image-prune" )
-     :spec { :options { :quiet [:optional #{true, false}] } } }
-
-  image-pull [name & options]
-
-  { :pre [(string? name)] }
-
-  (let [opts     (apply hash-map options)
-        _        (validate-map "option" opts (-> docker/image-pull meta :spec :options))
-        quiet    (:quiet opts false)
-        cmdargs* ["image" "pull"]
-        cmdargs* (if quiet (conj cmdargs* "--quiet") cmdargs*)
-        cmdargs* (conj cmdargs* name)]
-    (:out (apply docker/cmd cmdargs*))))
-
-
-(defn
   ^{ :arglists '("(docker/rmi image & options)")
      :doc """
           Remove an image.
@@ -244,6 +206,44 @@
     (:out (apply docker/cmd cmdargs*))))
 
 (defn rmi* [image] (println (docker/rmi :force true)))
+
+
+(defn
+  ^{ :arglists '("(docker/image-pull name & options)")
+     :doc """
+          Download an image from a registry.
+
+          Images can be pulled by name, name and tag, or digest
+
+          Returns the stdout text from the command.
+
+          Options:
+
+          | :quiet {true, false} | Suppress verbose output |
+          """
+     :examples '(
+          """
+          (println (docker/image-pull "arangodb/arangodb:3.10.10"))
+          (println (docker/image-pull "arangodb/arangodb"))
+          """ )
+     :see-also '(
+          "docker/images"
+          "docker/rmi"
+          "docker/image-rm"
+          "docker/image-prune" )
+     :spec { :options { :quiet [:optional #{true, false}] } } }
+
+  image-pull [name & options]
+
+  { :pre [(string? name)] }
+
+  (let [opts     (apply hash-map options)
+        _        (validate-map "option" opts (-> docker/image-pull meta :spec :options))
+        quiet    (:quiet opts false)
+        cmdargs* ["image" "pull"]
+        cmdargs* (if quiet (conj cmdargs* "--quiet") cmdargs*)
+        cmdargs* (conj cmdargs* name)]
+    (:out (apply docker/cmd cmdargs*))))
 
 
 (defn
