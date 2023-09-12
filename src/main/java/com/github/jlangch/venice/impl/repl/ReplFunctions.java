@@ -61,7 +61,7 @@ public class ReplFunctions {
 
 
     private static Env registerFn(final Env env, final VncFunction fn) {
-        return env.setGlobal(new Var(new VncSymbol(fn.getQualifiedName()), fn, false));
+        return env.setGlobal(new Var(new VncSymbol(fn.getQualifiedName()), fn, false, Var.Scope.Global));
     }
 
     private static List<VncFunction> createFunctions(

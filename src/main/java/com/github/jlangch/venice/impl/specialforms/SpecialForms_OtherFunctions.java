@@ -268,7 +268,7 @@ public class SpecialForms_OtherFunctions {
                         if (sym instanceof VncSymbol) {
                             // optimization if not destructuring
                             bind_env.pushGlobalDynamic((VncSymbol)sym, val);
-                            bindingVars.add(new Var((VncSymbol)sym, val));
+                            bindingVars.add(new Var((VncSymbol)sym, val, Var.Scope.Local));
                         }
                         else {
                             final List<Var> vars = Destructuring.destructure(sym, val);
@@ -550,7 +550,7 @@ public class SpecialForms_OtherFunctions {
                         env.pushGlobalDynamic(globVar.getName(), val);
                     }
                     else {
-                        env.setGlobal(new Var(globVar.getName(), val, globVar.isOverwritable()));
+                        env.setGlobal(new Var(globVar.getName(), val, globVar.isOverwritable(), Var.Scope.Global));
                     }
                     return val;
                 }

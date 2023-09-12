@@ -262,7 +262,7 @@ public class Launcher {
     }
 
     private static Var convertCliArgsToVar(final CommandLineArgs cli) {
-        return new Var(new VncSymbol("*ARGV*"), cli.argsAsList(), false);
+        return new Var(new VncSymbol("*ARGV*"), cli.argsAsList(), false, Var.Scope.Global);
     }
 
     private static String suffixWithVeniceFileExt(final String s) {

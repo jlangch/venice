@@ -39,10 +39,10 @@ public class EnvTest {
     public void testSingleLevel() {
         final Env env = new Env();
 
-        env.setLocal(new Var(new VncSymbol("a"), new VncLong(100)));
-        env.setLocal(new Var(new VncSymbol("b"), new VncLong(200)));
-        env.setLocal(new Var(new VncSymbol("c"), new VncLong(300)));
-        env.setGlobal(new Var(new VncSymbol("g"), new VncLong(900)));
+        env.setLocal(new Var(new VncSymbol("a"), new VncLong(100), Var.Scope.Local));
+        env.setLocal(new Var(new VncSymbol("b"), new VncLong(200), Var.Scope.Local));
+        env.setLocal(new Var(new VncSymbol("c"), new VncLong(300), Var.Scope.Local));
+        env.setGlobal(new Var(new VncSymbol("g"), new VncLong(900), Var.Scope.Global));
 
         assertEquals(new VncLong(100), env.get(new VncSymbol("a")));
         assertEquals(new VncLong(200), env.get(new VncSymbol("b")));
@@ -55,15 +55,15 @@ public class EnvTest {
     @Test
     public void testMultiLevel() {
         final Env env_0 = new Env();
-        env_0.setLocal(new Var(new VncSymbol("a"), new VncLong(100)));
+        env_0.setLocal(new Var(new VncSymbol("a"), new VncLong(100), Var.Scope.Local));
 
         final Env env_1 = new Env(env_0);
-        env_1.setLocal(new Var(new VncSymbol("b"), new VncLong(200)));
+        env_1.setLocal(new Var(new VncSymbol("b"), new VncLong(200), Var.Scope.Local));
 
         final Env env_2 = new Env(env_1);
-        env_2.setLocal(new Var(new VncSymbol("c"), new VncLong(300)));
+        env_2.setLocal(new Var(new VncSymbol("c"), new VncLong(300), Var.Scope.Local));
 
-        env_2.setGlobal(new Var(new VncSymbol("g"), new VncLong(900)));
+        env_2.setGlobal(new Var(new VncSymbol("g"), new VncLong(900), Var.Scope.Global));
 
         assertEquals(new VncLong(100), env_0.get(new VncSymbol("a")));
         assertEquals(new VncLong(900), env_0.get(new VncSymbol("g")));
@@ -81,8 +81,8 @@ public class EnvTest {
         assertThrows(VncException.class, () -> env_1.get(new VncSymbol("x")));
         assertThrows(VncException.class, () -> env_2.get(new VncSymbol("x")));
 
-        env_2.setLocal(new Var(new VncSymbol("a"), new VncLong(101)));
-        env_2.setGlobal(new Var(new VncSymbol("g"), new VncLong(901)));
+        env_2.setLocal(new Var(new VncSymbol("a"), new VncLong(101), Var.Scope.Local));
+        env_2.setGlobal(new Var(new VncSymbol("g"), new VncLong(901), Var.Scope.Global));
         assertEquals(new VncLong(100), env_0.get(new VncSymbol("a")));
         assertEquals(new VncLong(100), env_1.get(new VncSymbol("a")));
         assertEquals(new VncLong(101), env_2.get(new VncSymbol("a")));
@@ -94,14 +94,14 @@ public class EnvTest {
     @Test
     public void testMultiLevel_OverwriteGlobal() {
         final Env env_0 = new Env();
-        env_0.setLocal(new Var(new VncSymbol("a"), new VncLong(100)));
+        env_0.setLocal(new Var(new VncSymbol("a"), new VncLong(100), Var.Scope.Local));
 
         final Env env_1 = new Env(env_0);
-        env_1.setLocal(new Var(new VncSymbol("b"), new VncLong(200)));
+        env_1.setLocal(new Var(new VncSymbol("b"), new VncLong(200), Var.Scope.Local));
 
         final Env env_2 = new Env(env_1);
-        env_2.setGlobal(new Var(new VncSymbol("g"), new VncLong(900)));
-        env_2.setLocal(new Var(new VncSymbol("g"), new VncLong(300)));
+        env_2.setGlobal(new Var(new VncSymbol("g"), new VncLong(900), Var.Scope.Global));
+        env_2.setLocal(new Var(new VncSymbol("g"), new VncLong(300), Var.Scope.Local));
 
         assertEquals(new VncLong(900), env_0.get(new VncSymbol("g")));
 

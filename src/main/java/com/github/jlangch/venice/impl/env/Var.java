@@ -23,6 +23,7 @@ package com.github.jlangch.venice.impl.env;
 
 import static com.github.jlangch.venice.impl.types.Constants.Nil;
 
+import java.beans.Transient;
 import java.io.Serializable;
 import java.util.List;
 
@@ -32,14 +33,15 @@ import com.github.jlangch.venice.impl.types.VncVal;
 
 public class Var implements Serializable {
 
-    public Var(final VncSymbol name, final VncVal val) {
-        this(name, val, true);
+    public Var(final VncSymbol name, final VncVal val, final Scope scope) {
+        this(name, val, true, scope);
     }
 
-    public Var(final VncSymbol name, final VncVal val, final boolean overwritable) {
+    public Var(final VncSymbol name, final VncVal val, final boolean overwritable, final Scope scope) {
         this.name = name;
         this.val = val == null ? Nil : val;
         this.overwritable = overwritable;
+        this.scope = scope;
     }
 
     public VncVal getVal() {
@@ -52,6 +54,20 @@ public class Var implements Serializable {
 
     public boolean isOverwritable() {
         return overwritable;
+    }
+
+    public Scope getScope() {
+        return scope;
+    }
+
+    @Transient
+    public boolean isGlobal() {
+        return scope == Scope.Global;
+    }
+
+    @Transient
+    public boolean isLocall() {
+        return scope == Scope.Local;
     }
 
     @Override
@@ -91,9 +107,13 @@ public class Var implements Serializable {
     }
 
 
+    public static enum Scope { Global, Local };
+
+
     private static final long serialVersionUID = 1598432086227773369L;
 
     private final VncSymbol name;
     private final VncVal val;
     private final boolean overwritable;
+    private final Scope scope;
 }

@@ -112,7 +112,7 @@ public class DefTypeForm {
 
         final VncCustomTypeDef typeDef = new VncCustomTypeDef(qualifiedType, fieldDefs, validationFn);
 
-        env.setGlobal(new Var(qualifiedType.toSymbol(), typeDef));
+        env.setGlobal(new Var(qualifiedType.toSymbol(), typeDef, Var.Scope.Global));
 
         // create builder and type check function for the custom type
         createBuildAndCheckFn(qualifiedType.toSymbol().getName(), fieldDefs.size(), interpreter, env);
@@ -149,7 +149,7 @@ public class DefTypeForm {
 
         final VncWrappingTypeDef typeDef = new VncWrappingTypeDef(qualifiedType, qualifiedBaseType, validationFn);
 
-        env.setGlobal(new Var(qualifiedType.toSymbol(), typeDef));
+        env.setGlobal(new Var(qualifiedType.toSymbol(), typeDef, Var.Scope.Global));
 
         // create builder and type check function for the custom type
         createBuildAndCheckFn(qualifiedType.toSymbol().getName(), 1, interpreter, env);
@@ -218,7 +218,7 @@ public class DefTypeForm {
                                                 VncHashSet.ofAll(choiceTypes),
                                                 VncHashSet.ofAll(choiceValues));
 
-        env.setGlobal(new Var(qualifiedType.toSymbol(), typeDef));
+        env.setGlobal(new Var(qualifiedType.toSymbol(), typeDef, Var.Scope.Global));
 
         // create builder and type check function for the custom type
         createBuildAndCheckFn(qualifiedType.toSymbol().getName(), 1, interpreter, env);

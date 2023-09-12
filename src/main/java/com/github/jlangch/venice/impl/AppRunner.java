@@ -134,15 +134,15 @@ public class AppRunner {
     }
 
     private static Var convertAppNameToVar(final String appName) {
-        return new Var(new VncSymbol("*app-name*"), new VncString(appName), false);
+        return new Var(new VncSymbol("*app-name*"), new VncString(appName), false, Var.Scope.Global);
     }
 
     private static Var convertAppArchiveToVar(final File appArchive) {
-        return new Var(new VncSymbol("*app-archive*"), new VncJavaObject(appArchive), false);
+        return new Var(new VncSymbol("*app-archive*"), new VncJavaObject(appArchive), false, Var.Scope.Global);
     }
 
     private static Var convertCliArgsToVar(final VncList cmdLineArgs) {
-        return new Var(new VncSymbol("*ARGV*"), cmdLineArgs, false);
+        return new Var(new VncSymbol("*ARGV*"), cmdLineArgs, false, Var.Scope.Global);
     }
 
     private static String stripVeniceFileExt(final String s) {

@@ -32,9 +32,10 @@ public class ComputedVar extends Var {
 
     public ComputedVar(
             final VncSymbol name,
-            final Supplier<VncVal> supplier
+            final Supplier<VncVal> supplier,
+            final Scope scope
     ) {
-        super(name, Constants.Nil);
+        super(name, Constants.Nil, scope);
 
         this.supplier = supplier;
     }
@@ -42,9 +43,10 @@ public class ComputedVar extends Var {
     public ComputedVar(
             final VncSymbol name,
             final Supplier<VncVal> supplier,
-            final boolean overwritable
+            final boolean overwritable,
+            final Scope scope
     ) {
-        super(name, Constants.Nil, overwritable);
+        super(name, Constants.Nil, overwritable, scope);
 
         this.supplier = supplier;
     }

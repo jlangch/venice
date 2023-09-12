@@ -28,7 +28,7 @@ import com.github.jlangch.venice.impl.types.VncSymbol;
 public class GlobalRefVar extends Var {
 
     public GlobalRefVar(final VncSymbol name) {
-        super(name, Constants.Nil);
+        super(name, Constants.Nil, Var.Scope.Global);
     }
 
 

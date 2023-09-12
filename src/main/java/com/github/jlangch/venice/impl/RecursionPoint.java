@@ -84,7 +84,7 @@ public class RecursionPoint {
 
     public static void addToLocalEnv(final VncVal symVal, final VncVal bindVal, final Env env) {
         if (Types.isVncSymbol(symVal)) {
-            env.setLocal(new Var((VncSymbol)symVal, bindVal));
+            env.setLocal(new Var((VncSymbol)symVal, bindVal, Var.Scope.Local));
         }
         else {
             // destructuring

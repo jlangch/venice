@@ -61,10 +61,10 @@ import com.github.jlangch.venice.impl.types.custom.VncProtocol;
 import com.github.jlangch.venice.impl.types.util.Coerce;
 import com.github.jlangch.venice.impl.types.util.Types;
 import com.github.jlangch.venice.impl.util.ArityExceptions.FnType;
-import com.github.jlangch.venice.impl.util.callstack.CallFrame;
-import com.github.jlangch.venice.impl.util.callstack.WithCallStack;
 import com.github.jlangch.venice.impl.util.MetaUtil;
 import com.github.jlangch.venice.impl.util.SymbolMapBuilder;
+import com.github.jlangch.venice.impl.util.callstack.CallFrame;
+import com.github.jlangch.venice.impl.util.callstack.WithCallStack;
 
 
 /**
@@ -175,14 +175,14 @@ public class SpecialForms_TypeFunctions {
                             }
                         }
 
-                        env.setGlobal(new Var(fnName, fnProtocol));
+                        env.setGlobal(new Var(fnName, fnProtocol, Var.Scope.Global));
 
                         protocolFns = protocolFns.assoc(new VncString(fn.getSimpleName()), fn);
                     }
 
                     final VncProtocol protocol = new VncProtocol(protocolName, protocolFns, protocolName.getMeta());
 
-                    env.setGlobal(new Var(protocolName, protocol));
+                    env.setGlobal(new Var(protocolName, protocol, Var.Scope.Global));
 
                     return protocol;
                 }

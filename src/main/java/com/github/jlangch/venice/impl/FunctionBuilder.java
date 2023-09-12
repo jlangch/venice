@@ -201,7 +201,7 @@ public class FunctionBuilder implements Serializable {
                         if (typeMeta != null) {
                             // TODO: check 'val' type against 'typeMeta'
                         }
-                        env.setLocal(new Var(sym, val));
+                        env.setLocal(new Var(sym, val, Var.Scope.Local));
                     }
                 }
                 else {

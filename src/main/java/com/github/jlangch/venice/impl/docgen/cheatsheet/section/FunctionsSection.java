@@ -91,6 +91,7 @@ public class FunctionsSection implements ISectionBuilder {
         env.addItem(diBuilder.getDocItem("resolve"));
         env.addItem(diBuilder.getDocItem("bound?"));
         env.addItem(diBuilder.getDocItem("var-get"));
+        env.addItem(diBuilder.getDocItem("var-sym"));
         env.addItem(diBuilder.getDocItem("var-name"));
         env.addItem(diBuilder.getDocItem("var-ns"));
         env.addItem(diBuilder.getDocItem("var-sym-meta"));

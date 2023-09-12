@@ -202,7 +202,7 @@ public class SpecialForms_MethodFunctions {
 
                 final VncMultiFunction multiFn = new VncMultiFunction(name.getName(), dispatchFn)
                                                             .withMeta(name.getMeta());
-                env.setGlobal(new Var(name, multiFn, true));
+                env.setGlobal(new Var(name, multiFn, true, Var.Scope.Global));
                 return multiFn;
             }
 

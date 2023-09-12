@@ -211,7 +211,8 @@ public class Venice {
                 precompiled.getSymbols().put(new Var(
                                                 new VncSymbol("*run-mode*"),
                                                 RunMode.SCRIPT.mode,
-                                                false));
+                                                false,
+                                                Var.Scope.Global));
 
                 // re-init namespaces!
                 venice.initNS();
@@ -418,14 +419,16 @@ public class Venice {
                         env.setGlobal(
                             new Var(
                                 new VncSymbol(key),
-                                JavaInteropUtil.convertToVncVal(val)));
+                                JavaInteropUtil.convertToVncVal(val),
+                                Var.Scope.Global));
                     }
                 }
                 else {
                     env.setGlobal(
                         new Var(
                             new VncSymbol(key),
-                            JavaInteropUtil.convertToVncVal(val)));
+                            JavaInteropUtil.convertToVncVal(val),
+                            Var.Scope.Global));
                 }
             }
         }

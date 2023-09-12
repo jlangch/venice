@@ -40,6 +40,23 @@ public class SpecialFormsTest_var {
     }
 
     @Test
+    public void test_var_sym() {
+    	// global var
+        assertEquals("core/+",   new Venice().eval("(var-sym '+)"));
+        assertEquals("str/trim", new Venice().eval("(var-sym 'str/trim)"));
+        assertEquals("user/x",   new Venice().eval("(do (def x 100) (var-sym x))"));
+        assertEquals("user/x",   new Venice().eval("(do (defn x [] nil) (var-sym x))"));
+
+    	// global dynamic var
+        assertEquals("user/x",   new Venice().eval("(do (def-dynamic x 100) (var-sym x))"));
+
+        // local var
+        assertEquals("x",        new Venice().eval("(do (let [x 100] (var-sym x)))"));
+        assertEquals("x",        new Venice().eval("(do (binding [x 100] (var-sym x)))"));
+        assertEquals("x",        new Venice().eval("(do (defn foo [x] (var-sym x)) (foo nil))"));
+    }
+
+    @Test
     public void test_var_name() {
         assertEquals("x", new Venice().eval("(do (def x 100) (var-name x))"));
         assertEquals("x", new Venice().eval("(do (let [x 100] (var-name x)))"));

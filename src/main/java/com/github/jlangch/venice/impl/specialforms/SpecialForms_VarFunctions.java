@@ -27,6 +27,7 @@ import static com.github.jlangch.venice.impl.util.ArityExceptions.assertArity;
 
 import java.util.Map;
 
+import com.github.jlangch.venice.impl.env.DynamicVar;
 import com.github.jlangch.venice.impl.env.Env;
 import com.github.jlangch.venice.impl.env.Var;
 import com.github.jlangch.venice.impl.namespaces.Namespaces;
@@ -57,7 +58,9 @@ public class SpecialForms_VarFunctions {
                 VncSpecialForm
                     .meta()
                     .arglists("(var-get v)")
-                    .doc("Returns a var's value.")
+                    .doc(
+                        "Returns a var's value.\n\n" +
+                        "The var must exist (bound with a value) otherwise nil is returned.")
                     .examples(
                         "(var-get +)",
                         "(var-get '+)",
@@ -67,7 +70,7 @@ public class SpecialForms_VarFunctions {
                         "  (def x 10) \n" +
                         "  (var-get 'x))")
                     .seeAlso(
-                        "var-name", "var-ns", "var-val-meta", "var-local?", "var-global?", "var-thread-local?")
+                        "var-sym", "var-name", "var-ns", "var-val-meta", "var-local?", "var-global?", "var-thread-local?")
                     .build()
         ) {
             @Override
@@ -84,8 +87,68 @@ public class SpecialForms_VarFunctions {
                                         ? (VncSymbol)args.first()
                                         : Coerce.toVncSymbol(
                                                 ctx.getEvaluator().evaluate(args.first(), env,  false));
-                return env.getOrNil(sym);
+
+                final Var v = env.getVar(sym);
+                return v == null ? Nil : v.getVal();
             }
+
+            private static final long serialVersionUID = -1848883965231344442L;
+        };
+
+    public static VncSpecialForm var_sym =
+        new VncSpecialForm(
+                "var-sym",
+                VncSpecialForm
+                    .meta()
+                    .arglists("(var-sym v)")
+                    .doc(
+                        "Returns the var's symbol.\n\n" +
+                        "The var must exist (bound with a value) otherwise nil is returned.")
+                    .examples(
+                        "(var-sym +)",
+                        "(var-sym '+)",
+                        "(var-sym (symbol \"+\"))",
+                        "(do                 \n" +
+                        "  (ns test)         \n" +
+                        "  (defn x [] nil)   \n" +
+                        "  (var-sym x))",
+                        "(let [x 100] (var-sym x))",
+                        "(binding [x 100] (var-sym x))",
+                        "(do                          \n" +
+                        "  (defn foo [x] (var-sym x)) \n" +
+                        "  (foo nil))")
+                    .seeAlso(
+                        "var-get", "var-name", "var-ns", "var-sym-meta", "var-local?", "var-global?", "var-thread-local?")
+                    .build()
+        ) {
+            @Override
+            public VncVal apply(
+                    final VncVal specialFormMeta,
+                    final VncList args,
+                    final Env env,
+                    final SpecialFormsContext ctx
+            ) {
+                specialFormCallValidation(ctx, "var-sym");
+                assertArity("var-sym", FnType.SpecialForm, args, 1);
+
+                final VncSymbol sym = Types.isVncSymbol(args.first())
+                                        ? (VncSymbol)args.first()
+                                        : Coerce.toVncSymbol(
+                                                ctx.getEvaluator().evaluate(args.first(), env, false));
+
+                final Var v = env.getVar(sym);
+                if (v == null) {
+                    return Nil;
+                }
+                else {
+                	final VncSymbol s = v.getName();
+                    return s.hasNamespace()
+                                ? s
+                                : v.isGlobal() && !(v instanceof DynamicVar)
+                                        ? s.withNamespace(Namespaces.NS_CORE.getName())
+                                        : s;
+                }
+           }
 
             private static final long serialVersionUID = -1848883965231344442L;
         };
@@ -96,7 +159,9 @@ public class SpecialForms_VarFunctions {
                 VncSpecialForm
                     .meta()
                     .arglists("(var-name v)")
-                    .doc("Returns the name of the var's symbol name")
+                    .doc(
+                        "Returns the unqualified name of the var's symbol.\n\n" +
+                        "The var must exist (bound with a value) otherwise nil is returned.")
                     .examples(
                         "(var-name +)",
                         "(var-name '+)",
@@ -122,7 +187,7 @@ public class SpecialForms_VarFunctions {
                         "  (def add +)\n" +
                         "  (name add))")
                     .seeAlso(
-                        "name", "var-get", "var-ns", "var-sym-meta", "var-local?", "var-global?", "var-thread-local?")
+                        "name", "var-get", "var-sym", "var-ns", "var-sym-meta", "var-local?", "var-global?", "var-thread-local?")
                     .build()
         ) {
             @Override
@@ -139,8 +204,10 @@ public class SpecialForms_VarFunctions {
                                         ? (VncSymbol)args.first()
                                         : Coerce.toVncSymbol(
                                                 ctx.getEvaluator().evaluate(args.first(), env, false));
-                return new VncString(sym.getSimpleName());
-            }
+
+                final Var v = env.getVar(sym);
+                return v == null ? Nil : new VncString(v.getName().getSimpleName());
+           }
 
             private static final long serialVersionUID = -1848883965231344442L;
 
@@ -152,7 +219,9 @@ public class SpecialForms_VarFunctions {
                 VncSpecialForm
                     .meta()
                     .arglists("(var-ns v)")
-                    .doc("Returns the namespace of the var's symbol")
+                    .doc(
+                        "Returns the namespace of the var's symbol.\n\n" +
+                        "The var must exist (bound with a value) otherwise nil is returned.")
                     .examples(
                         "(var-ns +)",
                         "(var-ns '+)",
@@ -196,20 +265,16 @@ public class SpecialForms_VarFunctions {
                                         : Coerce.toVncSymbol(
                                                 ctx.getEvaluator().evaluate(args.first(), env, false));
 
-                if (sym.hasNamespace()) {
-                    return new VncString(sym.getNamespace());
-                }
-                else if (env.isLocal(sym)) {
+                final Var v = env.getVar(sym);
+                if (v == null) {
                     return Nil;
                 }
                 else {
-                    final Var v = env.getGlobalVarOrNull(sym);
-                    return v == null
-                            ? Nil
-                            : new VncString(
-                                        v.getName().hasNamespace()
-                                            ? v.getName().getNamespace()
-                                            : Namespaces.NS_CORE.getName());
+                    return v.getName().hasNamespace()
+                                ? new VncString(v.getName().getNamespace())
+                                : v.isGlobal()
+                                        ? new VncString(Namespaces.NS_CORE.getName())
+                                        : Nil;
                 }
             }
 
@@ -222,7 +287,9 @@ public class SpecialForms_VarFunctions {
                 VncSpecialForm
                     .meta()
                     .arglists("(var-sym-meta v)")
-                    .doc("Returns the var's symbol meta data")
+                    .doc(
+                       "Returns the var's symbol meta data.\n\n" +
+                       "The var must exist (bound with a value) otherwise nil is returned.")
                     .examples(
                         "(do                           \n" +
                         "  (def ^{:foo 3} x 100)       \n" +
@@ -235,7 +302,7 @@ public class SpecialForms_VarFunctions {
                         "    (:foo (var-sym-meta 'x))) \n" +
                         "  (bar 100))                  ")
                     .seeAlso(
-                        "var-val-meta", "var-get", "var-name")
+                        "var-val-meta", "var-get", "var-sym", "var-name", "bound?")
                     .build()
         ) {
             @Override
@@ -252,7 +319,8 @@ public class SpecialForms_VarFunctions {
                                         ? (VncSymbol)args.first()
                                         : Coerce.toVncSymbol(
                                                 ctx.getEvaluator().evaluate(args.first(), env, false));
-                return env.getVar(sym).getName().getMeta();
+                final Var v = env.getVar(sym);
+                return v == null ? Nil : v.getName().getMeta();
             }
 
             private static final long serialVersionUID = -1848883965231344442L;
@@ -265,7 +333,9 @@ public class SpecialForms_VarFunctions {
                 VncSpecialForm
                     .meta()
                     .arglists("(var-val-meta v)")
-                    .doc("Returns the var's value meta data")
+                    .doc(
+                        "Returns the var's value meta data.\n\n" +
+                        "The var must exist (bound with a value) otherwise nil is returned.")
                     .examples(
                         "(do                                    \n" +
                         "  (def x ^{:foo 4} 100)                \n" +
@@ -281,7 +351,7 @@ public class SpecialForms_VarFunctions {
                         "    (:foo (var-val-meta 'x)))          \n" +
                         "  (bar (vary-meta 100 assoc :foo 4)))")
                    .seeAlso(
-                        "var-sym-meta", "var-get", "var-name")
+                        "var-sym-meta", "var-get", "var-sym", "var-name", "bound?")
                     .build()
         ) {
             @Override
@@ -298,7 +368,9 @@ public class SpecialForms_VarFunctions {
                                         ? (VncSymbol)args.first()
                                         : Coerce.toVncSymbol(
                                                 ctx.getEvaluator().evaluate(args.first(), env, false));
-                return env.getVar(sym).getVal().getMeta();
+
+                final Var v = env.getVar(sym);
+                return v == null ? Nil : v.getVal().getMeta();
             }
 
             private static final long serialVersionUID = -1848883965231344442L;
@@ -322,7 +394,7 @@ public class SpecialForms_VarFunctions {
                         "  (def x 10)      \n" +
                         "  (var-local? x))   ")
                     .seeAlso(
-                        "var-get", "var-name", "var-ns", "var-global?", "var-thread-local?")
+                        "var-get", "var-name", "var-ns", "var-global?", "var-thread-local?", "bound?")
                     .build()
         ) {
             @Override
@@ -355,7 +427,7 @@ public class SpecialForms_VarFunctions {
                         "(binding [x 100] \n" +
                         "  (var-thread-local? x))")
                     .seeAlso(
-                        "var-get", "var-name", "var-ns", "var-local?", "var-global?")
+                        "var-get", "var-name", "var-ns", "var-local?", "var-global?", "bound?")
                     .build()
         ) {
             @Override
@@ -394,7 +466,7 @@ public class SpecialForms_VarFunctions {
                         "(let [x 10]        \n" +
                         "  (var-global? x))   ")
                     .seeAlso(
-                        "var-get", "var-name", "var-ns", "var-local?", "var-thread-local?")
+                        "var-get", "var-name", "var-ns", "var-local?", "var-thread-local?", "bound?")
                     .build()
         ) {
             @Override
@@ -426,6 +498,7 @@ public class SpecialForms_VarFunctions {
     public static final Map<VncVal, VncVal> ns =
             new SymbolMapBuilder()
                     .add(var_get)
+                    .add(var_sym)
                     .add(var_name)
                     .add(var_sym_meta)
                     .add(var_val_meta)

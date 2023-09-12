@@ -231,8 +231,8 @@ public class CustomREPL {
             final BufferedReader in
     ) {
         return venice.createEnv(macroexpand, ansiTerminal, RunMode.REPL)
-                     .setGlobal(new Var(new VncSymbol("*ARGV*"), cli.argsAsList(), false))
-                     .setGlobal(new Var(new VncSymbol("*REPL*"), new VncJavaObject(this), false))
+                     .setGlobal(new Var(new VncSymbol("*ARGV*"), cli.argsAsList(), false, Var.Scope.Global))
+                     .setGlobal(new Var(new VncSymbol("*REPL*"), new VncJavaObject(this), false, Var.Scope.Global))
                      .setStdoutPrintStream(out)
                      .setStderrPrintStream(err)
                      .setStdinReader(in);

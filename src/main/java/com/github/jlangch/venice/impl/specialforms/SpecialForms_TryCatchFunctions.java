@@ -229,7 +229,7 @@ public class SpecialForms_TryCatchFunctions {
                     final VncVal val = ctx.getEvaluator().evaluate(bindings.nth(i+1), localEnv, false);
 
                     if (Types.isVncSymbol(sym)) {
-                        final Var binding = new Var((VncSymbol)sym, val);
+                        final Var binding = new Var((VncSymbol)sym, val, Var.Scope.Local);
                         localEnv.setLocal(binding);
                         boundResources.add(binding);
                     }
@@ -317,7 +317,7 @@ public class SpecialForms_TryCatchFunctions {
             }
             else {
                 final Env catchEnv = new Env(env);
-                catchEnv.setLocal(new Var(catchBlock.getExSym(), new VncJavaObject(wrappedEx)));
+                catchEnv.setLocal(new Var(catchBlock.getExSym(), new VncJavaObject(wrappedEx), Var.Scope.Local));
                 catchBlockDebug(threadCtx, debugAgent, catchBlock.getMeta(), catchEnv, catchBlock.getExSym(), wrappedEx);
                 return evaluateBody(catchBlock.getBody(), ctx, catchEnv, false);
             }

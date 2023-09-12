@@ -287,7 +287,14 @@ public class Env implements Serializable {
     }
 
     public Env setLocal(final Var localVar) {
-        final VncSymbol sym = localVar.getName();
+    	if (localVar.getScope() != Var.Scope.Local) {
+            throw new VncException(String.format(
+                    "The var must be of local scope! Got %s.",
+                    localVar.getScope()));
+    	}
+
+
+    	final VncSymbol sym = localVar.getName();
 
         if (sym.isReservedName()) {
             try (WithCallStack cs = new WithCallStack(CallFrame.from(sym))) {
@@ -326,6 +333,12 @@ public class Env implements Serializable {
     }
 
     public Env setGlobal(final Var val) {
+    	if (val.getScope() != Var.Scope.Global) {
+            throw new VncException(String.format(
+                    "The var must be of global scope! Got %s.",
+                    val.getScope()));
+    	}
+
         final VncSymbol sym = val.getName();
 
         if (sym.isSpecialFormName() && !(val.getVal() instanceof VncSpecialForm)) {
@@ -391,7 +404,7 @@ public class Env implements Serializable {
             dv.pushVal(val);
         }
         else {
-            final DynamicVar nv = new DynamicVar(sym, Nil);
+            final DynamicVar nv = new DynamicVar(sym, Nil, Var.Scope.Global);
             setGlobalVar(sym, nv);
             nv.pushVal(val);
         }
@@ -410,7 +423,7 @@ public class Env implements Serializable {
     public void setGlobalDynamic(final VncSymbol sym, final VncVal val) {
         final Var gv = getGlobalVar(sym);
         if (gv == null) {
-            final DynamicVar nv = new DynamicVar(sym, Nil);
+            final DynamicVar nv = new DynamicVar(sym, Nil, Var.Scope.Global );
             setGlobalVar(sym, nv);
             nv.pushVal(val);
         }
@@ -419,14 +432,14 @@ public class Env implements Serializable {
             nv.pushVal(val);
         }
         else {
-            final DynamicVar nv = new DynamicVar(sym, gv.getVal());
+            final DynamicVar nv = new DynamicVar(sym, gv.getVal(), Var.Scope.Global);
             setGlobalVar(sym, nv);
             nv.pushVal(val);
         }
     }
 
     public void replaceGlobalDynamic(final VncSymbol sym, final VncVal val) {
-        final DynamicVar nv = new DynamicVar(sym, Nil);
+        final DynamicVar nv = new DynamicVar(sym, Nil, Var.Scope.Global);
         setGlobalVar(sym, nv);
         nv.pushVal(val);
     }

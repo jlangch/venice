@@ -57,7 +57,7 @@ public class ReplResultHistory {
     }
 
     public void addToEnv(final Env env, final String name, final VncVal val) {
-        env.setGlobal(new Var(new VncSymbol(name), val));
+        env.setGlobal(new Var(new VncSymbol(name), val, Var.Scope.Global));
     }
 
     public boolean isResultHistorySymbol(final String symbol) {

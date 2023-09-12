@@ -623,7 +623,8 @@ public class REPL {
         env.setGlobal(new Var(
                 new VncSymbol("*repl-color-theme*"),
                 new VncKeyword(mode.name().toLowerCase()),
-                true));
+                true,
+                Var.Scope.Global));
 
     }
 
@@ -726,10 +727,10 @@ public class REPL {
                 venice.isMacroExpandOnLoad());
 
             env.removeGlobalSymbol(new VncSymbol("*run-mode*"));
-            env.setGlobal(new Var(new VncSymbol("*run-mode*"), RunMode.APP.mode));
+            env.setGlobal(new Var(new VncSymbol("*run-mode*"), RunMode.APP.mode, Var.Scope.Global));
 
-            env.setGlobal(new Var(new VncSymbol("*app-name*"), new VncString(appName), false));
-            env.setGlobal(new Var(new VncSymbol("*app-archive*"), new VncJavaObject(appArchive), false));
+            env.setGlobal(new Var(new VncSymbol("*app-name*"), new VncString(appName), false, Var.Scope.Global));
+            env.setGlobal(new Var(new VncSymbol("*app-archive*"), new VncJavaObject(appArchive), false, Var.Scope.Global));
 
             final String expr = String.format("(do (load-file \"%s\") nil)", mainFileBasename);
 
@@ -744,7 +745,7 @@ public class REPL {
                     venice.isMacroExpandOnLoad());
 
             env.removeGlobalSymbol(new VncSymbol("*run-mode*"));
-            env.setGlobal(new Var(new VncSymbol("*run-mode*"), oldRunMode));
+            env.setGlobal(new Var(new VncSymbol("*run-mode*"), oldRunMode, Var.Scope.Global));
 
             env.removeGlobalSymbol(new VncSymbol("*app-name*"));
             env.removeGlobalSymbol(new VncSymbol("*app-archive*"));
@@ -1174,11 +1175,13 @@ public class REPL {
                     .setGlobal(new Var(
                                      new VncSymbol("*ARGV*"),
                                      cli.argsAsList(),
-                                     false))
+                                     false,
+                                     Var.Scope.Global))
                     .setGlobal(new Var(
                                     new VncSymbol("*repl-color-theme*"),
                                     new VncKeyword(config.getColorMode().name().toLowerCase()),
-                                    true))
+                                    true,
+                                    Var.Scope.Global))
                     .setStdoutPrintStream(out)
                     .setStderrPrintStream(err)
                     .setStdinReader(in);

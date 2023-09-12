@@ -31,8 +31,8 @@ import com.github.jlangch.venice.impl.types.VncVal;
 
 public class DynamicVar extends Var {
 
-    public DynamicVar(final VncSymbol name, final VncVal val) {
-        super(name, val);
+    public DynamicVar(final VncSymbol name, final VncVal val, final Scope scope) {
+        super(name, val, scope);
         th_keyword = new VncKeyword(name.getQualifiedName());
     }
 

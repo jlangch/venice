@@ -312,42 +312,42 @@ public class VeniceInterpreter implements IVeniceInterpreter, Serializable  {
             final VncVal val = e.getValue();
             if (val instanceof VncFunction) {
                 final VncFunction fn = (VncFunction)e.getValue();
-                env.setGlobal(new Var(sym, fn, fn.isRedefinable()));
+                env.setGlobal(new Var(sym, fn, fn.isRedefinable(), Var.Scope.Global));
             }
             else if (val instanceof VncSpecialForm) {
-                env.setGlobal(new Var(sym, val, false)); // not redefinable
+                env.setGlobal(new Var(sym, val, false, Var.Scope.Global)); // not redefinable
             }
             else {
-                env.setGlobal(new Var(sym, val, true));
+                env.setGlobal(new Var(sym, val, true, Var.Scope.Global));
             }
         }
 
         // set Venice version
-        env.setGlobal(new Var(new VncSymbol("*version*"), new VncString(Version.VERSION), false));
+        env.setGlobal(new Var(new VncSymbol("*version*"), new VncString(Version.VERSION), false, Var.Scope.Global));
 
         // set current namespace
-        env.setGlobal(new ComputedVar(new VncSymbol("*ns*"), () -> Namespaces.getCurrentNS(), false));
+        env.setGlobal(new ComputedVar(new VncSymbol("*ns*"), () -> Namespaces.getCurrentNS(), false, Var.Scope.Global));
 
         // set system newline
-        env.setGlobal(new Var(new VncSymbol("*newline*"), new VncString(System.lineSeparator()), false));
+        env.setGlobal(new Var(new VncSymbol("*newline*"), new VncString(System.lineSeparator()), false, Var.Scope.Global));
 
         // ansi terminal (set when run from a REPL in an ANSI terminal)
-        env.setGlobal(new Var(new VncSymbol("*ansi-term*"), VncBoolean.of(ansiTerminal), false));
+        env.setGlobal(new Var(new VncSymbol("*ansi-term*"), VncBoolean.of(ansiTerminal), false, Var.Scope.Global));
 
         // set the run mode
-        env.setGlobal(new Var(new VncSymbol("*run-mode*"), runMode == null ? Nil : runMode.mode, false));
+        env.setGlobal(new Var(new VncSymbol("*run-mode*"), runMode == null ? Nil : runMode.mode, false, Var.Scope.Global));
 
         // command line args (default nil)
-        env.setGlobal(new Var(new VncSymbol("*ARGV*"), Nil, true));
+        env.setGlobal(new Var(new VncSymbol("*ARGV*"), Nil, true, Var.Scope.Global));
 
         // service discovery (lookup access on the service registry only)
         final VncJavaObject servicRegistry = new VncJavaObject(new ImmutableServiceDiscovery(serviceRegistry));
-        env.setGlobal(new Var(new VncSymbol("*service-registry*"), servicRegistry, false));
+        env.setGlobal(new Var(new VncSymbol("*service-registry*"), servicRegistry, false, Var.Scope.Global));
 
         // loaded modules & files
         final VncMutableSet loadedModules = new VncMutableSet();
-        env.setGlobal(new Var(new VncSymbol("*loaded-modules*"), loadedModules, true));
-        env.setGlobal(new Var(new VncSymbol("*loaded-files*"), new VncMutableSet(), true));
+        env.setGlobal(new Var(new VncSymbol("*loaded-modules*"), loadedModules, true, Var.Scope.Global));
+        env.setGlobal(new Var(new VncSymbol("*loaded-files*"), new VncMutableSet(), true, Var.Scope.Global));
 
         if (stdOut != null) {
             env.setStdoutPrintStream(stdOut);
@@ -524,9 +524,9 @@ public class VeniceInterpreter implements IVeniceInterpreter, Serializable  {
                             final VncVal val = evaluate(bindingsIter.next(), env, false);
                             if (symIsSymbol) {
                                 // optimized with plain symbol when destructuring is not used
-                                env.setLocal(new Var((VncSymbol)sym, val));
+                                env.setLocal(new Var((VncSymbol)sym, val, Var.Scope.Local));
                                 if (debugAgent != null) {
-                                    vars.add(new Var((VncSymbol)sym, val));
+                                    vars.add(new Var((VncSymbol)sym, val, Var.Scope.Local));
                                 }
                             }
                             else {
@@ -767,7 +767,7 @@ public class VeniceInterpreter implements IVeniceInterpreter, Serializable  {
 
                                             if (debugAgent != null && debugAgent.hasBreakpointFor(new BreakpointFnRef(fnName))) {
                                                 // Debugging handled for native functions only.
-                                                env.setLocal(new Var(new VncSymbol("debug::fn-args"), fnArgs));
+                                                env.setLocal(new Var(new VncSymbol("debug::fn-args"), fnArgs, Var.Scope.Local));
                                                 try {
                                                     debugAgent.onBreakFnEnter(fnName, fn, fnArgs, env, callStack);
                                                     final VncVal retVal = fn.apply(fnArgs);

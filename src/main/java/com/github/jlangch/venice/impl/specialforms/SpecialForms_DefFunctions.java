@@ -98,7 +98,7 @@ public class SpecialForms_DefFunctions {
 
                 res = res.withMeta(MetaUtil.mergeMeta(res.getMeta(), name.getMeta()));
 
-                env.setGlobal(new Var(name, res, true));
+                env.setGlobal(new Var(name, res, true, Var.Scope.Global));
                 return name;
             }
 
@@ -134,7 +134,7 @@ public class SpecialForms_DefFunctions {
                 final VncVal val = args.second();
 
                 final VncVal res = ctx.getEvaluator().evaluate(val, env, false).withMeta(name.getMeta());
-                env.setGlobal(new Var(name, res, false));
+                env.setGlobal(new Var(name, res, false, Var.Scope.Global));
                 return name;
             }
 
@@ -255,7 +255,7 @@ public class SpecialForms_DefFunctions {
                                                     meta,
                                                     env);
 
-                    env.setGlobal(new Var(macroName_, macroFn.withMeta(meta), false));
+                    env.setGlobal(new Var(macroName_, macroFn.withMeta(meta), false, Var.Scope.Global));
 
                     return macroFn;
                 }
@@ -288,7 +288,7 @@ public class SpecialForms_DefFunctions {
                                                         true,
                                                         meta);
 
-                    env.setGlobal(new Var(macroName_, macroFn, false));
+                    env.setGlobal(new Var(macroName_, macroFn, false, Var.Scope.Global));
 
                     return macroFn;
                 }

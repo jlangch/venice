@@ -98,15 +98,15 @@ public class EnvGlobalBenchmark {
         for(int ii=1; ii<levels; ii++) {
             env = createEnv(env);
         }
-        env.setGlobal(new Var(GLOBAL_SYMBOL, new VncLong(900)));
+        env.setGlobal(new Var(GLOBAL_SYMBOL, new VncLong(900), Var.Scope.Global));
         return env;
     }
 
     private Env createEnv(final Env parent) {
         final Env env = new Env(parent);
-        env.setLocal(new Var(new VncSymbol("a"), new VncLong(100)));
-        env.setLocal(new Var(new VncSymbol("b"), new VncLong(200)));
-        env.setLocal(new Var(new VncSymbol("c"), new VncLong(300)));
+        env.setLocal(new Var(new VncSymbol("a"), new VncLong(100), Var.Scope.Local));
+        env.setLocal(new Var(new VncSymbol("b"), new VncLong(200), Var.Scope.Local));
+        env.setLocal(new Var(new VncSymbol("c"), new VncLong(300), Var.Scope.Local));
         return env;
     }
 
