@@ -11,11 +11,13 @@ All notable changes to this project will be documented in this file.
 
 - a no arg function variant to `crypt/ciphers`
 - a `docker` module to manage docker images and containers from Venice scripts. The functions support both TEXT and JSON output of the docker commands. The JSON output is parsed and converted to Venice data for further processing. 
-A generic docker function can run any docker command with a parameter list.
-Venice supports the most used docker commands with some explicit functions:
+A generic docker function can run any docker command with a parameter list.  
+Requires a local docker installation.  
+Venice supports the most used docker commands:
     - docker version, 
     - docker images, docker rmi, docker image prune/rm/pull
-    - docker run, docker ps, docker start, docker stop, docker cp, docker exec, docker diff, docker pause, docker unpause, docker wait
+    - docker run/ps/start/stop/cp/exec/diff/logs/pause/unpause/wait/prune
+    - docker volume list/create/rm/exists  
 - functions `var-sym-meta` and `var-val-meta` to access the meta data of the symbol add the value of a var.
 
 
