@@ -9307,12 +9307,17 @@ public class CoreFunctions {
                 VncFunction
                     .meta()
                     .arglists("(name x)")
-                    .doc("Returns the name String of a string, symbol, keyword, or function")
+                    .doc("Returns the name string of a string, symbol, keyword, or function. "
+                            + "If applied to a string it returns the string itself.")
                     .examples(
-                        "(name :user/x)",
-                        "(name 'x)",
-                        "(name \"x\")",
-                        "(name str/digit?)")
+                        "(name 'foo)  ;; symbol ",
+                        "(name 'user/foo)  ;; symbol ",
+                        "(name (symbol \"user/foo\"))  ;; symbol ",
+                        "(name :foo)  ;; keyword",
+                        "(name :user/foo)  ;; keyword",
+                        "(name +)  ;; function",
+                        "(name str/digit?)  ;; function",
+                        "(name \"ab/text\")  ;; string")
                     .seeAlso("qualified-name", "namespace", "fn-name")
                     .build()
         ) {

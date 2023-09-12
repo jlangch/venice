@@ -285,10 +285,11 @@ public class SpecialForms_NamespaceFunctions {
                         "Throws an exception if x does not support namespaces like " +
                         "`(namespace 2)`.")
                     .examples(
-                        "(namespace 'user/foo)",
-                        "(namespace :user/foo)",
-                        "(namespace str/digit?)",
-                        "(namespace *ns*)")
+                        "(namespace 'user/foo)  ;; symbol ",
+                        "(namespace (symbol \"user/foo\"))  ;; symbol ",
+                        "(namespace :user/foo)  ;; keyword",
+                        "(namespace str/digit?)  ;; function",
+                        "(namespace *ns*)  ;; symbol")
                     .seeAlso("name", "fn-name", "ns", "*ns*", "var-ns")
                     .build()
         ) {
@@ -303,6 +304,10 @@ public class SpecialForms_NamespaceFunctions {
                 assertArity("namespace", FnType.SpecialForm, args, 1);
 
                 final VncVal val = ctx.getEvaluator().evaluate(args.first(), env, false);
+
+                if (val == Nil) {
+                    return Nil;
+                }
 
                 if (val instanceof VncSymbol) {
                     final VncSymbol sym = (VncSymbol)val;

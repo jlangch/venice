@@ -3445,16 +3445,25 @@ public class CoreFunctionsTest {
     public void test_name() {
         final Venice venice = new Venice();
 
+        // nil
+        assertEquals(null, venice.eval("(name nil)"));
+
+        // keyword
         assertEquals("alpha", venice.eval("(name :alpha)"));
         assertEquals("alpha", venice.eval("(name :foo/alpha)"));
 
+        // keyword
         assertEquals("alpha", venice.eval("(name 'alpha)"));
         assertEquals("alpha", venice.eval("(name 'foo/alpha)"));
 
-        assertEquals("alpha", venice.eval("(name \"alpha\")"));
-
+        // function
         assertEquals("alpha", venice.eval("(do (defn alpha [] 100) (name alpha)))"));
         assertEquals("alpha", venice.eval("(do (let [x (fn alpha [] 100)] (name x)))"));
+
+        // string
+        assertEquals("alpha", venice.eval("(name \"alpha\")"));
+        assertEquals("a/alpha", venice.eval("(name \"a/alpha\")"));
+        assertEquals("a/b/alpha", venice.eval("(name \"a/b/alpha\")"));
     }
 
     @Test

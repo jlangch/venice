@@ -36,12 +36,18 @@ public class SpecialFormsTest_namespace {
     public void test_namespace() {
         final Venice venice = new Venice();
 
+        // nil
+        assertEquals(null, venice.eval("(namespace nil)"));
+
+        // keyword
         assertEquals(null, venice.eval("(namespace :alpha)"));
         assertEquals("foo", venice.eval("(namespace :foo/alpha)"));
 
+        // symbol
         assertEquals(null, venice.eval("(namespace 'alpha)"));
         assertEquals("foo", venice.eval("(namespace 'foo/alpha)"));
 
+        // function
         assertEquals("user", venice.eval("(do (defn alpha [] 100) (namespace alpha)))"));
         assertEquals("user", venice.eval("(do (let [x (fn alpha [] 100)] (namespace x)))"));
 
