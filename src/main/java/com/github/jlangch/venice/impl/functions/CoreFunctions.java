@@ -9042,7 +9042,8 @@ public class CoreFunctions {
                     .meta()
                     .arglists("(meta obj)")
                     .doc("Returns the metadata of obj, returns nil if there is no metadata.")
-                    .examples("(meta (vary-meta [1 2] assoc :a 1))")
+                    .examples("(meta (vary-meta [1 2] assoc :foo 3))")
+                    .seeAlso("vary-meta", "with-meta", "var-val-meta", "var-sym-meta")
                     .build()
         ) {
             @Override
@@ -9062,7 +9063,9 @@ public class CoreFunctions {
                     .meta()
                     .arglists("(with-meta obj m)")
                     .doc("Returns a copy of the object obj, with a map m as its metadata.")
-                    .build()
+                    .examples("(meta (with-meta [1 2] {:foo 3}))")
+                    .seeAlso("meta", "vary-meta", "var-val-meta", "var-sym-meta")
+                   .build()
         ) {
             @Override
             public VncVal apply(final VncList args) {
@@ -9081,7 +9084,8 @@ public class CoreFunctions {
                     .meta()
                     .arglists("(vary-meta obj f & args)")
                     .doc("Returns a copy of the object obj, with (apply f (meta obj) args) as its metadata.")
-                    .examples("(meta (vary-meta [1 2] assoc :a 1))")
+                    .examples("(meta (vary-meta [1 2] assoc :foo 3))")
+                    .seeAlso("meta", "with-meta", "var-val-meta", "var-sym-meta")
                     .build()
         ) {
             @Override

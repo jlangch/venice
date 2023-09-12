@@ -67,7 +67,7 @@ public class SpecialForms_VarFunctions {
                         "  (def x 10) \n" +
                         "  (var-get 'x))")
                     .seeAlso(
-                        "var-name", "var-ns", "var-local?", "var-global?", "var-thread-local?")
+                        "var-name", "var-ns", "var-val-meta", "var-local?", "var-global?", "var-thread-local?")
                     .build()
         ) {
             @Override
@@ -96,7 +96,7 @@ public class SpecialForms_VarFunctions {
                 VncSpecialForm
                     .meta()
                     .arglists("(var-name v)")
-                    .doc("Returns the name of the var's symbol")
+                    .doc("Returns the name of the var's symbol name")
                     .examples(
                         "(var-name +)",
                         "(var-name '+)",
@@ -122,7 +122,7 @@ public class SpecialForms_VarFunctions {
                         "  (def add +)\n" +
                         "  (name add))")
                     .seeAlso(
-                        "name", "var-get", "var-ns", "var-local?", "var-global?", "var-thread-local?")
+                        "name", "var-get", "var-ns", "var-sym-meta", "var-local?", "var-global?", "var-thread-local?")
                     .build()
         ) {
             @Override
