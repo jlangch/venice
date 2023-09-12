@@ -3452,9 +3452,10 @@ public class CoreFunctionsTest {
         assertEquals("alpha", venice.eval("(name :alpha)"));
         assertEquals("alpha", venice.eval("(name :foo/alpha)"));
 
-        // keyword
+        // symbol
         assertEquals("alpha", venice.eval("(name 'alpha)"));
         assertEquals("alpha", venice.eval("(name 'foo/alpha)"));
+        assertEquals("alpha", venice.eval("(name (symbol \"foo/alpha\"))"));
 
         // function
         assertEquals("alpha", venice.eval("(do (defn alpha [] 100) (name alpha)))"));

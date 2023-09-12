@@ -46,6 +46,7 @@ public class SpecialFormsTest_namespace {
         // symbol
         assertEquals(null, venice.eval("(namespace 'alpha)"));
         assertEquals("foo", venice.eval("(namespace 'foo/alpha)"));
+        assertEquals("foo", venice.eval("(namespace (symbol \"foo/alpha\"))"));
 
         // function
         assertEquals("user", venice.eval("(do (defn alpha [] 100) (namespace alpha)))"));
