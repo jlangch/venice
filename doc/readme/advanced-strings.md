@@ -49,8 +49,10 @@ interpolation string:
 (do
    (def template '"y ~{y}")
    
-   (let [y 100] (println (eval template)))  
-   (let [y 200] (println (eval template))))
+   (defn evaluate [y] (eval template))
+   
+   (println (evaluate 100)) 
+   (println (evaluate 200)))
 ```
 
 ```clojure
