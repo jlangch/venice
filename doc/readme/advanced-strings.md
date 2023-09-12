@@ -42,7 +42,7 @@ _time and turned into a_ `(str args)` _expression._
 ```
 
 The eager parsing by the reader macro can be avoided by quoting the 
-interpolation string thus allowing reusing it:
+interpolation string, thus allow reusing it:
 
 
 ```clojure
