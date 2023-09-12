@@ -41,21 +41,22 @@ _time and turned into a_ `(str args)` _expression._
       (println """f(x): ~(inc x)""")))
 ```
 
-The eager parsing by the reader macro can be avoided:
+The eager parsing by the reader macro can be avoided by quoting the 
+interpolation string:
 
 
 ```clojure
 (do
-   (def t '"y ~{y}")
+   (def template '"y ~{y}")
    
-   (let [y 100] (println (eval t)))  
-   (let [y 200] (println (eval t))))
+   (let [y 100] (println (eval template)))  
+   (let [y 200] (println (eval template))))
 ```
 
 ```clojure
 (do
-   (def t '"y ~(inc y)")
+   (def template '"y ~(inc y)")
    
-   (let [y 100] (println (eval t)))  
-   (let [y 200] (println (eval t))))
+   (let [y 100] (println (eval template)))  
+   (let [y 200] (println (eval template))))
 ```
