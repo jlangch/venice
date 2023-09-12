@@ -19,7 +19,7 @@ All notable changes to this project will be documented in this file.
 
 - a no arg function variant to `crypt/ciphers`
 - a `docker` module to manage docker images and containers from Venice scripts. The functions support both TEXT and JSON output of the docker commands. The JSON output is parsed and converted to Venice data for further processing. 
-A generic docker function can run any docker command with a parameter list.  
+A generic docker function can run any docker command.  
 Requires a local docker installation.  
 Venice supports the most used docker commands:
     - docker version, 
