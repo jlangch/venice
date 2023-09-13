@@ -184,4 +184,98 @@ public class FunctionArgTypeTest {
         assertThrows(AssertionException.class, () -> venice.eval(script));
     }
 
+
+    // ------------------------------------------------------------------------
+    // Multi arity tests
+    // ------------------------------------------------------------------------
+
+    @Test
+    public void test_fn_call_multiarity_ok_1() {
+        final Venice venice = new Venice();
+
+        final String script1 =
+                "(do                                                 \n" +
+                "   (defn f                                          \n" +
+                "      ([] 0)                                        \n" +
+                "      ([^:long x] x)                                \n" +
+                "      ([^:long x ^:long y] (+ x y))                 \n" +
+                "      ([^:long x ^:long y & xs] (apply + x y xs)))  \n" +
+                "   (f))                                             ";
+
+        assertEquals(0L, venice.eval(script1));
+
+        final String script2 =
+                "(do                                                 \n" +
+                "   (defn f                                          \n" +
+                "      ([] 0)                                        \n" +
+                "      ([^:long x] x)                                \n" +
+                "      ([^:long x ^:long y] (+ x y))                 \n" +
+                "      ([^:long x ^:long y & xs] (apply + x y xs)))  \n" +
+                "   (f 1))                                           ";
+
+        assertEquals(1L, venice.eval(script2));
+
+        final String script3 =
+                "(do                                                 \n" +
+                "   (defn f                                          \n" +
+                "      ([] 0)                                        \n" +
+                "      ([^:long x] x)                                \n" +
+                "      ([^:long x ^:long y] (+ x y))                 \n" +
+                "      ([^:long x ^:long y & xs] (apply + x y xs)))  \n" +
+                "   (f 1 2))                                         ";
+
+        assertEquals(3L, venice.eval(script3));
+
+        final String script4 =
+                "(do                                                 \n" +
+                "   (defn f                                          \n" +
+                "      ([] 0)                                        \n" +
+                "      ([^:long x] x)                                \n" +
+                "      ([^:long x ^:long y] (+ x y))                 \n" +
+                "      ([^:long x ^:long y & xs] (apply + x y xs)))  \n" +
+                "   (f 1 2 3 4 5))                                   ";
+
+        assertEquals(15L, venice.eval(script4));
+    }
+
+    @Test
+    public void test_fn_call_multiarity_fail_1() {
+        final Venice venice = new Venice();
+
+        final String script2 =
+                "(do                                                 \n" +
+                "   (defn f                                          \n" +
+                "      ([] 0)                                        \n" +
+                "      ([^:long x] x)                                \n" +
+                "      ([^:long x ^:long y] (+ x y))                 \n" +
+                "      ([^:long x ^:long y & xs] (apply + x y xs)))  \n" +
+                "   (f :foo))                                        ";
+
+        assertThrows(AssertionException.class, () -> venice.eval(script2));
+
+
+        final String script3 =
+                "(do                                                 \n" +
+                "   (defn f                                          \n" +
+                "      ([] 0)                                        \n" +
+                "      ([^:long x] x)                                \n" +
+                "      ([^:long x ^:long y] (+ x y))                 \n" +
+                "      ([^:long x ^:long y & xs] (apply + x y xs)))  \n" +
+                "   (f 1 :foo))                                      ";
+
+        assertThrows(AssertionException.class, () -> venice.eval(script3));
+
+
+        final String script4 =
+                "(do                                                 \n" +
+                "   (defn f                                          \n" +
+                "      ([] 0)                                        \n" +
+                "      ([^:long x] x)                                \n" +
+                "      ([^:long x ^:long y] (+ x y))                 \n" +
+                "      ([^:long x ^:long y & xs] (apply + x y xs)))  \n" +
+                "   (f 1 :foo 3 4 5))                                ";
+
+        assertThrows(AssertionException.class, () -> venice.eval(script4));
+    }
+
 }

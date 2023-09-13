@@ -221,6 +221,22 @@ are available with Venice 1.11.x.
      
   (sum (complex. 1 2) (complex. 5 8)))
 ```
+
+Type hints with multi-arity functions:
+
+```clojure
+(do
+   (defn foo
+      ([] 0)
+      ([^:long x] x)
+      ([^:long x ^:long y] (+ x y))
+      ([^:long x ^:long y & xs] (apply + x y xs)))
+   (foo )
+   (foo 1)
+   (foo 1 2)
+   (foo 1 2 3 4 5))
+```
+
                    
                    
 For datatypes of the *core* namespace the namespace can be omitted.

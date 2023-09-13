@@ -220,6 +220,7 @@ public class Destructuring {
                     final VncSymbol sym = (VncSymbol)symVal;
                     final VncVal bindVal = bindValsRest.first();
                     bindValsRest = bindValsRest.rest();
+                    FunctionArgsTypeHints.validate(sym, bindVal);
                     bindings.add(new Var(sym, bindVal, Var.Scope.Local));
                 }
             }

@@ -44,10 +44,8 @@ import com.github.jlangch.venice.impl.types.VncVal;
 import com.github.jlangch.venice.impl.types.collections.VncList;
 import com.github.jlangch.venice.impl.types.collections.VncSequence;
 import com.github.jlangch.venice.impl.types.collections.VncVector;
-import com.github.jlangch.venice.impl.types.util.QualifiedName;
 import com.github.jlangch.venice.impl.types.util.Types;
 import com.github.jlangch.venice.impl.util.ArityExceptions.FnType;
-import com.github.jlangch.venice.impl.util.MetaUtil;
 import com.github.jlangch.venice.impl.util.callstack.CallFrame;
 import com.github.jlangch.venice.impl.util.callstack.CallFrameFnData;
 import com.github.jlangch.venice.impl.util.callstack.CallStack;
@@ -101,7 +99,7 @@ public class FunctionBuilder implements Serializable {
         // Param access optimizations
         final VncVal[] paramArr = params.getJavaList().toArray(new  VncVal[] {});
 
-        final VncKeyword[] paramTypesArr = getParamTypes(paramArr);
+        final VncKeyword[] paramTypesArr = FunctionArgsTypeHints.getParamTypes(paramArr);
 
         return new VncFunction(name, params, macro, preConditions, meta) {
             @Override
@@ -200,13 +198,7 @@ public class FunctionBuilder implements Serializable {
                         final VncKeyword typeMeta = paramTypesArr[ii];
                         if (typeMeta != null) {
                             // check 'val' type against 'typeMeta'
-                            if (!Types.isInstanceOf(typeMeta, val)) {
-                                throw new AssertionException(String.format(
-                                        "function argument type not compatible: arg-name=%s, arg-type=%s, expected-type=%s ",
-                                        sym.getSimpleName(),
-                                        Types.getType(val).toString(true),
-                                        typeMeta.toString(true)));
-                            }
+                        	FunctionArgsTypeHints.validate(sym, val, typeMeta);
                         }
                         env.setLocal(new Var(sym, val, Var.Scope.Local));
                     }
@@ -232,36 +224,6 @@ public class FunctionBuilder implements Serializable {
 
             private static final long serialVersionUID = -1L;
         };
-    }
-
-    private VncKeyword[] getParamTypes(final VncVal[] paramArr) {
-        final VncKeyword[] types = new VncKeyword[paramArr.length];
-
-        for(int ii=0; ii<paramArr.length; ii++) {
-            final VncVal p = paramArr[ii];
-            if (Types.isVncSymbol(p)) {
-                final VncVal t = p.getMetaVal(MetaUtil.TYPE);
-                if (Types.isVncKeyword(t)) {
-                	final VncKeyword tkw = (VncKeyword)t;
-                    final QualifiedName qn = QualifiedName.parse(tkw.getQualifiedName());
-                    if (qn.isQualified()) {
-                        types[ii] = tkw;
-                    }
-                    else if (Types.isCoreType(qn.getSimpleName())) {
-                        // if it's a core type qualify it with core namespace
-                    	types[ii] = new VncKeyword("core/" + qn.getSimpleName());
-                    }
-                }
-                else {
-                	types[ii] = null;
-                }
-            }
-            else {
-            	types[ii] = null;
-            }
-       }
-
-        return types;
     }
 
     private void throwVariadicArityException(
