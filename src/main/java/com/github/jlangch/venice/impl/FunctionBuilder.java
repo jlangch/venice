@@ -199,7 +199,14 @@ public class FunctionBuilder implements Serializable {
 
                         final VncKeyword typeMeta = paramTypesArr[ii];
                         if (typeMeta != null) {
-                            // TODO: check 'val' type against 'typeMeta'
+                            // check 'val' type against 'typeMeta'
+                            if (!Types.isInstanceOf(typeMeta, val)) {
+                                throw new AssertionException(String.format(
+                                        "function argument type not compatible: arg-name=%s, arg-type=%s, expected-type=%s ",
+                                        sym.getSimpleName(),
+                                        Types.getType(val).toString(true),
+                                        typeMeta.toString(true)));
+                            }
                         }
                         env.setLocal(new Var(sym, val, Var.Scope.Local));
                     }

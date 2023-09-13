@@ -7,6 +7,7 @@
 * [Applying Functions](#applying-functions)
 * [Locals and Closures](#locals-and-closures)
 * [Functions with preconditions](#functions-with-preconditions)
+* [Argument type hints](#argument-type-hints)
 * [Collections and Keywords as functions](#collections-and-keywords-as-functions)
 * [Function resolved from a string](#function-resolved-from-a-string)
 * [Partial Functions](#partial-functions)
@@ -186,6 +187,46 @@ Even global functions can remember the context they have been created:
    (defn sum [x y] 
       { :pre [(number? x) (number? y)] } 
       (+ x y)))
+```
+
+## Argument type hints
+
+Venice supports function argument type hints through argument metadata.
+
+```clojure
+(do
+  (defn sum [^:long x ^:long y] (+ x y))
+  (sum 1 2))
+```
+
+```clojure
+(do
+  (defn sum [^:number x ^:number y] (+ x y))
+  
+  (sum 1 2)
+  (sum 1.0 2)
+  (sum 1.1M 2.6M))
+```
+
+```clojure
+(do
+  (ns foo)
+  (deftype :complex [real      :long
+                     imaginary :long])
+                     
+  (defn sum [^:foo/complex x ^:foo/complex y] 
+     (complex. (+ (:real x) (:imaginary x)) (+ (:real y) (:imaginary y))))
+     
+  (sum (complex. 1 2) (complex. 5 8)))
+```
+                   
+                   
+For datatypes of the *core* namespace the namespace can be omitted.
+
+```clojure
+;; these two function definitions are equivalent
+(defn sum [^:long x ^:long y] (+ x y)))
+(defn sum [^:core/long x ^:core/long y] (+ x y)))
 ```
 
 
