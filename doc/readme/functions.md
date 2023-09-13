@@ -237,6 +237,23 @@ Type hints with multi-arity functions:
    (foo 1 2 3 4 5))
 ```
 
+
+Type hints with sequential destructuring:
+
+```clojure
+(do
+   (defn f [[^:long x ^:long y]] (+ x y))
+   (f [1 2]))
+```
+
+
+Type hints with associative destructuring:
+
+```clojure
+(do
+   (defn f [{:keys [^:long x ^:long y]}] (+ x y))
+   (f {:x 1 :y 2}))
+```
                    
                    
 For datatypes of the *core* namespace the namespace can be omitted.
