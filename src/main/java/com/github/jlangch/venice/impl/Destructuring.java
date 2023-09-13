@@ -270,6 +270,7 @@ public class Destructuring {
                     for(VncVal sym : ((VncVector)symbol)) {
                         final VncSymbol s = (VncSymbol)sym;
                         final VncVal v = bindVals.get(new VncKeyword(s.getName()));
+                        FunctionArgsTypeHints.validate(s, v);
                         local_bindings.add(new Var(s, v, Var.Scope.Local));
                     }
                 }
@@ -289,6 +290,7 @@ public class Destructuring {
                     for(VncVal sym : ((VncVector)symbol)) {
                         final VncSymbol s = (VncSymbol)sym;
                         final VncVal v = bindVals.get(s);
+                        FunctionArgsTypeHints.validate(s, v);
                         local_bindings.add(new Var(s, v, Var.Scope.Local));
                     }
                 }
@@ -308,6 +310,7 @@ public class Destructuring {
                     for(VncVal sym : ((VncVector)symbol)) {
                         final VncSymbol s = (VncSymbol)sym;
                         final VncVal v = bindVals.get(new VncString(s.getName()));
+                        FunctionArgsTypeHints.validate(s, v);
                         local_bindings.add(new Var(s, v, Var.Scope.Local));
                     }
                 }

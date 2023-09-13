@@ -185,6 +185,7 @@ public class FunctionArgTypeTest {
     }
 
 
+
     // ------------------------------------------------------------------------
     // Multi arity tests
     // ------------------------------------------------------------------------
@@ -276,6 +277,186 @@ public class FunctionArgTypeTest {
                 "   (f 1 :foo 3 4 5))                                ";
 
         assertThrows(AssertionException.class, () -> venice.eval(script4));
+    }
+
+
+
+    // ------------------------------------------------------------------------
+    // Sequential destructuring tests
+    // ------------------------------------------------------------------------
+
+    @Test
+    public void test_fn_call_sequential_destructure_ok_1() {
+        final Venice venice = new Venice();
+
+        final String script1 =
+                "(do                                                 \n" +
+                "   (defn f [[^:long x ^:long y]] (+ x y))           \n" +
+                "   (f [1 2]))                                       ";
+
+        assertEquals(3L, venice.eval(script1));
+    }
+
+    @Test
+    public void test_fn_call_sequential_destructure_ok_2() {
+        final Venice venice = new Venice();
+
+        final String script1 =
+                "(do                                                 \n" +
+                "   (defn f [[^:long x _ ^:long y]] (+ x y))         \n" +
+                "   (f [1 2 3]))                                     ";
+
+        assertEquals(4L, venice.eval(script1));
+    }
+
+    @Test
+    public void test_fn_call_sequential_destructure_ok_3() {
+        final Venice venice = new Venice();
+
+        final String script1 =
+                "(do                                                      \n" +
+                "   (defn f [[^:long x ^:long y & xs]] (apply + x y xs))  \n" +
+                "   (f [1 2 3 4 5]))                                      ";
+
+        assertEquals(15L, venice.eval(script1));
+    }
+
+    @Test
+    public void test_fn_call_sequential_destructure_ok_4() {
+        final Venice venice = new Venice();
+
+        final String script1 =
+                "(do                                                    \n" +
+                "   (defn f [[^:long x [^:long y ^:long z]]] (+ x y z)) \n" +
+                "   (f [1 [2 3]]))                                      ";
+
+        assertEquals(6L, venice.eval(script1));
+    }
+
+    @Test
+    public void test_fn_call_sequential_destructure_fail_1() {
+        final Venice venice = new Venice();
+
+        final String script1 =
+                "(do                                                 \n" +
+                "   (defn f [[^:long x ^:long y]] (+ x y))           \n" +
+                "   (f [1 :foo]))                                       ";
+
+        assertThrows(AssertionException.class, () -> venice.eval(script1));
+    }
+
+    @Test
+    public void test_fn_call_sequential_destructure_fail_2() {
+        final Venice venice = new Venice();
+
+        final String script1 =
+                "(do                                                 \n" +
+                "   (defn f [[^:long x _ ^:long y]] (+ x y))         \n" +
+                "   (f [1 2 :foo]))                                     ";
+
+        assertThrows(AssertionException.class, () -> venice.eval(script1));
+    }
+
+    @Test
+    public void test_fn_call_sequential_destructure_fail_3() {
+        final Venice venice = new Venice();
+
+        final String script1 =
+                "(do                                                      \n" +
+                "   (defn f [[^:long x ^:long y & xs]] (apply + x y xs))  \n" +
+                "   (f [1 :foo 3 4 5]))                                      ";
+
+        assertThrows(AssertionException.class, () -> venice.eval(script1));
+    }
+
+    @Test
+    public void test_fn_call_sequential_destructure_fail_4() {
+        final Venice venice = new Venice();
+
+        final String script1 =
+                "(do                                                    \n" +
+                "   (defn f [[^:long x [^:long y ^:long z]]] (+ x y z)) \n" +
+                "   (f [1 [2 :foo]]))                                      ";
+
+        assertThrows(AssertionException.class, () -> venice.eval(script1));
+    }
+
+
+    // ------------------------------------------------------------------------
+    // Associative destructuring tests
+    // ------------------------------------------------------------------------
+
+    @Test
+    public void test_fn_call_associative_destructure_ok_1() {
+        final Venice venice = new Venice();
+
+        final String script1 =
+                "(do                                                 \n" +
+                "   (defn f [{:keys [^:long x ^:long y]}] (+ x y))   \n" +
+                "   (f {:x 1 :y 2}))                                 ";
+
+        assertEquals(3L, venice.eval(script1));
+    }
+
+    @Test
+    public void test_fn_call_associative_destructure_ok_2() {
+        final Venice venice = new Venice();
+
+        final String script1 =
+                "(do                                                 \n" +
+                "   (defn f [{:syms [^:long x ^:long y]}] (+ x y))   \n" +
+                "   (f {'x 1 'y 2}))                                 ";
+
+        assertEquals(3L, venice.eval(script1));
+    }
+
+    @Test
+    public void test_fn_call_associative_destructure_ok_3() {
+        final Venice venice = new Venice();
+
+        final String script1 =
+                "(do                                                 \n" +
+                "   (defn f [{:strs [^:long x ^:long y]}] (+ x y))   \n" +
+                "   (f {\"x\" 1 \"y\" 2}))                           ";
+
+        assertEquals(3L, venice.eval(script1));
+    }
+
+
+    @Test
+    public void test_fn_call_associative_destructure_fail_1() {
+        final Venice venice = new Venice();
+
+        final String script1 =
+                "(do                                                 \n" +
+                "   (defn f [{:keys [^:long x ^:long y]}] (+ x y))   \n" +
+                "   (f {:x 1 :y :foo}))                              ";
+
+        assertThrows(AssertionException.class, () -> venice.eval(script1));
+    }
+
+    @Test
+    public void test_fn_call_associative_destructure_fail_2() {
+        final Venice venice = new Venice();
+
+        final String script1 =
+                "(do                                                 \n" +
+                "   (defn f [{:syms [^:long x ^:long y]}] (+ x y))   \n" +
+                "   (f {'x 1 'y :foo}))                              ";
+
+        assertThrows(AssertionException.class, () -> venice.eval(script1));
+    }
+
+    @Test
+    public void test_fn_call_associative_destructure_fail_3() {
+        final Venice venice = new Venice();
+
+        final String script1 =
+                "(do                                                 \n" +
+                "   (defn f [{:strs [^:long x ^:long y]}] (+ x y))   \n" +
+                "   (f {\"x\" 1 \"y\" :foo}))                        ";
+
+        assertThrows(AssertionException.class, () -> venice.eval(script1));
     }
 
 }
