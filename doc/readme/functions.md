@@ -242,8 +242,8 @@ Type hints with sequential destructuring:
 
 ```clojure
 (do
-   (defn f [[^:long x ^:long y]] (+ x y))
-   (f [1 2]))
+   (defn foo [[^:long x ^:long y]] (+ x y))
+   (foo [1 2]))
 ```
 
 
@@ -251,8 +251,8 @@ Type hints with associative destructuring:
 
 ```clojure
 (do
-   (defn f [{:keys [^:long x ^:long y]}] (+ x y))
-   (f {:x 1 :y 2}))
+   (defn foo [{:keys [^:long x ^:long y]}] (+ x y))
+   (foo {:x 1 :y 2}))
 ```
                    
                    
