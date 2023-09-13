@@ -216,7 +216,8 @@ are available with Venice 1.11.x.
                      imaginary :long])
                      
   (defn sum [^:foo/complex x ^:foo/complex y] 
-     (complex. (+ (:real x) (:imaginary x)) (+ (:real y) (:imaginary y))))
+     (complex. (+ (:real x) (:imaginary x)) 
+               (+ (:real y) (:imaginary y))))
      
   (sum (complex. 1 2) (complex. 5 8)))
 ```
