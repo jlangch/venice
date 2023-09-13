@@ -191,7 +191,8 @@ Even global functions can remember the context they have been created:
 
 ## Argument type hints
 
-Venice supports function argument type hints through argument metadata.
+Venice supports function argument type hints through argument metadata. Type hints
+are available with Venice 1.11.x.
 
 ```clojure
 (do
