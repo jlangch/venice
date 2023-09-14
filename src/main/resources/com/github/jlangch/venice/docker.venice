@@ -806,6 +806,8 @@
           | :tail n | Number of lines to show from the end of the logs |
           | :since ts | Show logs since timestamp |
           | :until ts | Show logs until timestamp |
+          | :follow {true, false} | Follow log output |
+          | :details {true, false} | Show extra details provided to logs |
           """
      :examples '(
           """
@@ -823,9 +825,11 @@
           "docker/pause"
           "docker/ps"
           "docker/run" )
-     :spec { :options { :tail  [:optional #(and (long? %) (pos? %))]
-                        :since [:optional #(time/local-date-time? %)]
-                        :until [:optional #(time/local-date-time? %)] } } }
+     :spec { :options { :tail    [:optional #(and (long? %) (pos? %))]
+                        :since   [:optional #(time/local-date-time? %)]
+                        :until   [:optional #(time/local-date-time? %)]
+                        :follow  [:optional #{true, false}]
+                        :details [:optional #{true, false}] } } }
 
   logs [container & options]
 
@@ -836,10 +840,14 @@
         tail     (:tail opts nil)
         since    (:since opts nil)
         until    (:until opts nil)
+        follow   (:follow opts false)
+        details  (:details opts false)
         cmdargs* ["logs"]
         cmdargs* (if (some? tail)  (into cmdargs* ["--tail" tail]) cmdargs*)
         cmdargs* (if (some? since) (into cmdargs* ["--since" (format-ts since)]) cmdargs*)
         cmdargs* (if (some? until) (into cmdargs* ["--until" (format-ts until)]) cmdargs*)
+        cmdargs* (if follow (conj cmdargs* "--follow") cmdargs*)
+        cmdargs* (if details (conj cmdargs* "--details") cmdargs*)
         cmdargs* (into cmdargs* [container])]
     (:out (apply docker/cmd cmdargs*))))
 
