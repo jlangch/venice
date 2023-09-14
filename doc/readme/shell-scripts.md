@@ -70,6 +70,17 @@ underlying operating system (see the Venice _cheatsheet_ for details).
 (println (with-sh-dir "/tmp" (sh "ls" "-l") (sh "pwd")))
 (println (sh "pwd" :dir "/tmp"))
 
+;; asynchronously slurping stdout and stderr from a unix shell command
+(sh "/bin/sh" "-c" "for i in {1..5}; do sleep 1; echo \"Hello $i\"; done"
+              :out-fn println
+              :err-fn println)
+
+;; asynchronously slurping stdout and stderr from a unix shell command with timeout
+(sh "/bin/sh" "-c" "for i in {1..5}; do sleep 1; echo \"Hello $i\"; done"
+              :out-fn println
+              :err-fn println
+              :timeout 2500)
+
 ;; list files in a directory with a glob pattern
 (->> (io/list-files-glob "." "*.png")
      (docoll println))
