@@ -30,6 +30,7 @@ import org.junit.jupiter.api.Test;
 
 import com.github.jlangch.venice.ShellException;
 import com.github.jlangch.venice.Venice;
+import com.github.jlangch.venice.VncException;
 import com.github.jlangch.venice.impl.util.junit.EnableOnMacOrLinux;
 
 
@@ -92,5 +93,63 @@ public class ShellFunctionsTest {
         assertThrows(
                 ShellException.class,
                 () -> venice.eval("(sh \"rm\" \"xxxxxxxxxxxxxxxxxxxxxxxxx.any\" :throw-ex true)"));
+    }
+
+    @Test
+    @EnableOnMacOrLinux
+    public void test_shell_stdout() {
+        final Venice venice = new Venice();
+
+        final String script =
+        		"(:out \n" +
+                "  (sh \"/bin/sh\" \n" +
+                "      \"-c\" \"for i in {1..3}; do sleep 1; echo \\\"Hello $i\\\"; done\"))";
+
+        assertEquals("Hello 1\nHello 2\nHello 3\n", venice.eval(script));
+    }
+
+    @Test
+    @EnableOnMacOrLinux
+    public void test_shell_stdout_timeout() {
+        final Venice venice = new Venice();
+
+        final String script =
+        		"(:out \n" +
+                "  (sh \"/bin/sh\" \n" +
+                "      \"-c\" \"for i in {1..3}; do sleep 1; echo \\\"Hello $i\\\"; done\" \n" +
+                "      :timeout 1500))";
+
+        assertThrows(VncException.class, () -> venice.eval(script));
+    }
+
+    @Test
+    @EnableOnMacOrLinux
+    public void test_shell_stdout_fn() {
+        final Venice venice = new Venice();
+
+        final String script =
+        		"(with-out-str \n" +
+                "  (sh \"/bin/sh\" \n" +
+                "      \"-c\" \"for i in {1..3}; do sleep 1; echo \\\"Hello $i\\\"; done\" \n" +
+                "      :out-fn println \n" +
+                "      :err-fn println))";
+
+        assertEquals("Hello 1\nHello 2\nHello 3\n", venice.eval(script));
+    }
+
+    @Test
+    @EnableOnMacOrLinux
+    public void test_shell_stdout_fn_timeout() {
+        final Venice venice = new Venice();
+
+        final String script =
+        		"(with-out-str \n" +
+                "  (sh \"/bin/sh\" \n" +
+                "      \"-c\" \"for i in {1..3}; do sleep 1; echo \\\"Hello $i\\\"; done\" \n" +
+                "      :out-fn println \n" +
+                "      :err-fn println \n" +
+                "      :timeout 1500))";
+
+        assertThrows(VncException.class, () -> venice.eval(script));
     }
 }
