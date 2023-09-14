@@ -38,14 +38,13 @@ public class ShellFunctionsTest {
 
     @Test
     @EnableOnMacOrLinux
-    public void test_shell() {
+    public void test_shell_exit_ok() {
         final Venice venice = new Venice();
 
-        final Map<?,?> result = (Map<?,?>)venice.eval("(sh \"ls\" \"-l\")");
+        final String script = "(:exit (sh \"ls\" \"-l\"))";
 
-        assertEquals(0L, result.get("exit"));
+        assertEquals(0L, venice.eval(script));
     }
-
 
     @Test
     @EnableOnMacOrLinux
