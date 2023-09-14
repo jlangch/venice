@@ -110,6 +110,19 @@ public class ShellFunctionsTest {
 
     @Test
     @EnableOnMacOrLinux
+    public void test_shell_stderr() {
+        final Venice venice = new Venice();
+
+        final String script =
+        		"(:err \n" +
+                "  (sh \"/bin/sh\" \n" +
+                "      \"-c\" \"for i in {1..3}; do sleep 1; >&2 echo \\\"Hello $i\\\"; done\"))";
+
+        assertEquals("Hello 1\nHello 2\nHello 3\n", venice.eval(script));
+    }
+
+    @Test
+    @EnableOnMacOrLinux
     public void test_shell_stdout_timeout() {
         final Venice venice = new Venice();
 
@@ -131,6 +144,21 @@ public class ShellFunctionsTest {
         		"(with-out-str \n" +
                 "  (sh \"/bin/sh\" \n" +
                 "      \"-c\" \"for i in {1..3}; do sleep 1; echo \\\"Hello $i\\\"; done\" \n" +
+                "      :out-fn println \n" +
+                "      :err-fn println))";
+
+        assertEquals("Hello 1\nHello 2\nHello 3\n", venice.eval(script));
+    }
+
+    @Test
+    @EnableOnMacOrLinux
+    public void test_shell_stderr_fn() {
+        final Venice venice = new Venice();
+
+        final String script =
+        		"(with-out-str \n" +
+                "  (sh \"/bin/sh\" \n" +
+                "      \"-c\" \"for i in {1..3}; do sleep 1; >&2 echo \\\"Hello $i\\\"; done\" \n" +
                 "      :out-fn println \n" +
                 "      :err-fn println))";
 
