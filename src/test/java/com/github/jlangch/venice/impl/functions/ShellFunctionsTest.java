@@ -29,8 +29,8 @@ import java.util.Map;
 import org.junit.jupiter.api.Test;
 
 import com.github.jlangch.venice.ShellException;
+import com.github.jlangch.venice.TimeoutException;
 import com.github.jlangch.venice.Venice;
-import com.github.jlangch.venice.VncException;
 import com.github.jlangch.venice.impl.util.junit.EnableOnMacOrLinux;
 
 
@@ -44,6 +44,17 @@ public class ShellFunctionsTest {
         final Map<?,?> result = (Map<?,?>)venice.eval("(sh \"ls\" \"-l\")");
 
         assertEquals(0L, result.get("exit"));
+    }
+
+
+    @Test
+    @EnableOnMacOrLinux
+    public void test_shell_exit_code() {
+        final Venice venice = new Venice();
+
+        final String script = "(:exit (sh \"/bin/sh\" \"-c\" \"exit 2\"))";
+
+        assertEquals(2L, venice.eval(script));
     }
 
     @Test
@@ -132,7 +143,7 @@ public class ShellFunctionsTest {
                 "      \"-c\" \"for i in {1..3}; do sleep 1; echo \\\"Hello $i\\\"; done\" \n" +
                 "      :timeout 1500))";
 
-        assertThrows(VncException.class, () -> venice.eval(script));
+        assertThrows(TimeoutException.class, () -> venice.eval(script));
     }
 
     @Test
@@ -178,6 +189,6 @@ public class ShellFunctionsTest {
                 "      :err-fn println \n" +
                 "      :timeout 1500))";
 
-        assertThrows(VncException.class, () -> venice.eval(script));
+        assertThrows(TimeoutException.class, () -> venice.eval(script));
     }
 }

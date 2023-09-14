@@ -423,13 +423,13 @@ public class ShellFunctions {
                 	future_stdout.cancel(true);
                 	future_stderr.cancel(true);
 
-                    try (WithCallStack cs = new WithCallStack(new CallFrame("sh", cmd.getMeta()))) {
+                    //try (WithCallStack cs = new WithCallStack(new CallFrame("sh", cmd.getMeta()))) {
                         throw new TimeoutException(
                                 String.format("Shell execution timeout after %ds", timeoutMillis));
-                    }
+                    //}
                 }
                 else if (exitCode != 0 && throwExOnFailure) {
-                    try (WithCallStack cs = new WithCallStack(new CallFrame("sh", cmd.getMeta()))) {
+                    //try (WithCallStack cs = new WithCallStack(new CallFrame("sh", cmd.getMeta()))) {
                         throw new ShellException(
                                 String.format(
                                     "Shell execution failed: (sh %s). Exit code: %d",
@@ -438,7 +438,7 @@ public class ShellFunctions {
                                        .collect(Collectors.joining(" ")),
                                     exitCode),
                                 exitCode);
-                    }
+                    //}
                 }
                 else {
                     return VncHashMap.of(
@@ -451,9 +451,12 @@ public class ShellFunctions {
         catch(ShellException ex) {
             throw ex;
         }
+        catch(TimeoutException ex) {
+            throw ex;
+        }
         catch(Exception ex) {
             try (WithCallStack cs = new WithCallStack(new CallFrame("sh", cmd))) {
-                throw new VncException(
+                throw new ShellException(
                         String.format(
                                 "Shell execution processing failed: (sh %s)",
                                 cmd.stream()
