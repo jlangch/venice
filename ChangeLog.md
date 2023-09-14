@@ -13,6 +13,11 @@ All notable changes to this project will be documented in this file.
 - an optional timeout to `sh` function
 
 
+### Enhanced 
+
+- the functions `time/plus` and `time/minus` to accept `:java.time.Period` and `:java.time.Duration` as the amount of time to add or subtract
+
+
 
 ## [1.10.41] - 2023-09-12
 

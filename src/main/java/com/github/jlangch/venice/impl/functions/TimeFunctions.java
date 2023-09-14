@@ -32,6 +32,8 @@ import java.time.ZoneOffset;
 import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
 import java.time.temporal.ChronoUnit;
+import java.time.temporal.Temporal;
+import java.time.temporal.TemporalAmount;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
@@ -882,31 +884,25 @@ public class TimeFunctions {
         ) {
             @Override
             public VncVal apply(final VncList args) {
-                ArityExceptions.assertArity(this, args, 3);
+                ArityExceptions.assertArity(this, args, 2, 3);
 
-                final Object date = Coerce.toVncJavaObject(args.first()).getDelegate();
-                final ChronoUnit unit = toChronoUnit(Coerce.toVncKeyword(args.second()).getValue());
-                final long n = Coerce.toVncLong(args.nth(2)).getValue();
-
-                if (unit == null) {
-                    throw new VncException(String.format(
-                            "Function 'time/plus' invalid time unit %s",
-                            Coerce.toVncKeyword(args.second()).getValue()));
-                }
-
-                if (date instanceof ZonedDateTime) {
-                    return new VncJavaObject(((ZonedDateTime)date).plus(n, unit));
-                }
-                else if (date instanceof LocalDateTime) {
-                    return new VncJavaObject(((LocalDateTime)date).plus(n, unit));
-                }
-                else if (date instanceof LocalDate) {
-                    return new VncJavaObject(((LocalDate)date).plus(n, unit));
+                if (args.size() == 2) {
+                    final Temporal temporal = Coerce.toVncJavaObject(args.first(), Temporal.class);
+                    final TemporalAmount amount = Coerce.toVncJavaObject(args.second(), TemporalAmount.class);
+                    return new VncJavaObject(temporal.plus(amount));
                 }
                 else {
-                    throw new VncException(String.format(
-                            "Function 'time/plus' does not allow %s as date parameter",
-                            Types.getType(args.first())));
+                    final Temporal temporal = Coerce.toVncJavaObject(args.first(), Temporal.class);
+                    final ChronoUnit unit = toChronoUnit(Coerce.toVncKeyword(args.second()).getValue());
+                    final long n = Coerce.toVncLong(args.nth(2)).getValue();
+
+                    if (unit == null) {
+                        throw new VncException(String.format(
+                                "Function 'time/plus' invalid time unit %s",
+                                Coerce.toVncKeyword(args.second()).getValue()));
+                    }
+
+                    return new VncJavaObject(temporal.plus(n, unit));
                 }
             }
 
@@ -930,31 +926,25 @@ public class TimeFunctions {
         ) {
             @Override
             public VncVal apply(final VncList args) {
-                ArityExceptions.assertArity(this, args, 3);
+                ArityExceptions.assertArity(this, args, 2, 3);
 
-                final Object date = Coerce.toVncJavaObject(args.first()).getDelegate();
-                final ChronoUnit unit = toChronoUnit(Coerce.toVncKeyword(args.second()).getValue());
-                final long n = Coerce.toVncLong(args.nth(2)).getValue();
-
-                if (unit == null) {
-                    throw new VncException(String.format(
-                            "Function 'time/minus' invalid time unit %ss",
-                            Coerce.toVncKeyword(args.second()).getValue()));
-                }
-
-                if (date instanceof ZonedDateTime) {
-                    return new VncJavaObject(((ZonedDateTime)date).minus(n, unit));
-                }
-                else if (date instanceof LocalDateTime) {
-                    return new VncJavaObject(((LocalDateTime)date).minus(n, unit));
-                }
-                else if (date instanceof LocalDate) {
-                    return new VncJavaObject(((LocalDate)date).minus(n, unit));
+                if (args.size() == 2) {
+                    final Temporal temporal = Coerce.toVncJavaObject(args.first(), Temporal.class);
+                    final TemporalAmount amount = Coerce.toVncJavaObject(args.second(), TemporalAmount.class);
+                    return new VncJavaObject(temporal.minus(amount));
                 }
                 else {
-                    throw new VncException(String.format(
-                            "Function 'time/minus' does not allow %s as date parameter",
-                            Types.getType(args.first())));
+                       final Temporal temporal = Coerce.toVncJavaObject(args.first(), Temporal.class);
+                    final ChronoUnit unit = toChronoUnit(Coerce.toVncKeyword(args.second()).getValue());
+                    final long n = Coerce.toVncLong(args.nth(2)).getValue();
+
+                    if (unit == null) {
+                        throw new VncException(String.format(
+                                "Function 'time/minus' invalid time unit %ss",
+                                Coerce.toVncKeyword(args.second()).getValue()));
+                    }
+
+                    return new VncJavaObject(temporal.minus(n, unit));
                 }
             }
 
@@ -2037,9 +2027,9 @@ public class TimeFunctions {
                     .doc("Converts the passed date to milliseconds since epoch")
                     .examples(
                         "(time/to-millis (time/date))",
-                    	"(time/to-millis (time/local-date))",
-                    	"(time/to-millis (time/local-date-time))",
-                    	"(time/to-millis (time/zoned-date-time))")
+                        "(time/to-millis (time/local-date))",
+                        "(time/to-millis (time/local-date-time))",
+                        "(time/to-millis (time/zoned-date-time))")
                     .build()
         ) {
             @Override
@@ -2183,7 +2173,7 @@ public class TimeFunctions {
     private static ChronoUnit toChronoUnit(final String unit) {
         switch(unit) {
             case "years":   return ChronoUnit.YEARS;
-            case "month":   return ChronoUnit.MONTHS;
+            case "months":  return ChronoUnit.MONTHS;
             case "weeks":   return ChronoUnit.WEEKS;
             case "days":    return ChronoUnit.DAYS;
             case "hours":   return ChronoUnit.HOURS;
