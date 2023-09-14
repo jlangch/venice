@@ -32,13 +32,17 @@ import java.io.OutputStream;
 import java.nio.charset.Charset;
 import java.nio.file.Path;
 import java.util.Map;
+import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
+import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
 import com.github.jlangch.venice.ShellException;
+import com.github.jlangch.venice.TimeoutException;
 import com.github.jlangch.venice.VncException;
+import com.github.jlangch.venice.impl.thread.ThreadBridge;
 import com.github.jlangch.venice.impl.threadpool.ThreadPoolUtil;
 import com.github.jlangch.venice.impl.types.VncBoolean;
 import com.github.jlangch.venice.impl.types.VncByteBuffer;
@@ -110,6 +114,7 @@ public class ShellFunctions {
                         "              It's recommended to use¶" +
                         "              &emsp; `(with-sh-throw (sh \"ls\" \"-l\"))` ¶" +
                         "              instead. |\n" +
+                        "| :timeout  | A timeout in milliseconds |\n" +
                         "\n" +
                         "You can bind :env, :dir for multiple operations using `with-sh-env` or " +
                         "`with-sh-dir`. `with-sh-throw` is binds *:throw-ex* as *true*.\n" +
@@ -139,6 +144,19 @@ public class ShellFunctions {
                         ";; background process\n" +
                         "(println (sh \"/bin/sh\" \"-c\" \"sleep 30 >/dev/null 2>&1 &\"))",
                         "(println (sh \"/bin/sh\" \"-c\" \"nohup sleep 30 >/dev/null 2>&1 &\"))",
+
+                        ";; asynchronously slurping stdout and stderr\n" +
+                        "(sh \"/bin/sh\" \n" +
+                        "    \"-c\" \"for i in {1..5}; do sleep 1; echo \\\"Hello $i\\\"; done\" \n" +
+                        "    :out-fn println \n" +
+                        "    :err-fn println)",
+
+                        ";; asynchronously slurping stdout and stderr with a timeout\n" +
+                        "(sh \"/bin/sh\" \n" +
+                        "    \"-c\" \"for i in {1..5}; do sleep 1; echo \\\"Hello $i\\\"; done\" \n" +
+                        "    :out-fn println \n" +
+                        "    :err-fn println \n" +
+                        "    :timeout 2500)",
 
                         ";; reads 4 single-byte chars\n" +
                         "(println (sh \"echo\" \"x\\u25bax\" :out-enc \"ISO-8859-1\"))",
@@ -297,6 +315,10 @@ public class ShellFunctions {
             final VncVal slurpErrFn = opts.get(new VncKeyword(":err-fn"));
             final VncVal inEnc = opts.get(new VncKeyword(":in-enc"));
             final VncVal outEnc = opts.get(new VncKeyword(":out-enc"));
+            final VncVal timeout = opts.get(new VncKeyword(":timeout"));
+
+            final boolean throwExOnFailure = VncBoolean.isTrue(opts.get(new VncKeyword(":throw-ex")));
+            final Integer timeoutMillis = Types.isVncLong(timeout) ? ((VncLong)timeout).getIntValue() : null;
 
             //new ProcessBuilder().inheritIO().directory(dir_).command(cmdArr).environment()
 
@@ -333,6 +355,7 @@ public class ShellFunctions {
                 InputStream stderr = proc.getErrorStream()
             ) {
                 final String enc = getEncoding(outEnc);
+                final Charset charset = CharsetUtil.charset(enc);
 
                 // slurp the subprocess' stdout (as string or bytebuf)
                 Future<VncVal> future_stdout;
@@ -343,11 +366,16 @@ public class ShellFunctions {
                 	final VncFunction fn = (VncFunction)slurpOutFn;
                     fn.sandboxFunctionCallValidation();
 
-                    slurp(stdout, enc, fn);
-                    future_stdout = executor.submit(() -> VncString.empty());
+                    final ThreadBridge threadBridge = ThreadBridge.create("sh-process-stdout-slurper");
+                    final Callable<VncVal> task = threadBridge.bridgeCallable(() ->  {
+									                    	slurp(stdout, enc, fn);
+									                    	return VncString.empty();
+                    									});
+
+                    future_stdout = executor.submit(task);
                 }
                 else {
-                    future_stdout = executor.submit(() -> slurpToString(stdout, CharsetUtil.charset(enc)));
+                    future_stdout = executor.submit(() -> slurpToString(stdout, charset));
                 }
 
                 // slurp the subprocess' stderr as string with platform default encoding
@@ -356,21 +384,51 @@ public class ShellFunctions {
                 	final VncFunction fn = (VncFunction)slurpErrFn;
                     fn.sandboxFunctionCallValidation();
 
-                    slurp(stderr, enc, fn);
-                    future_stderr = executor.submit(() -> VncString.empty());
+                    final ThreadBridge threadBridge = ThreadBridge.create("sh-process-stderr-slurper");
+                    final Callable<VncVal> task = threadBridge.bridgeCallable(() ->  {
+									                    	slurp(stderr, enc, fn);
+									                    	return VncString.empty();
+                    									});
+
+                    future_stderr = executor.submit(task);
                 }
                 else {
-                    future_stderr = executor.submit(() -> slurpToString(stderr, CharsetUtil.charset(enc)));
+                    future_stderr = executor.submit(() -> slurpToString(stderr, charset));
                 }
 
                 // wait for the process to exit
-                final int exitCode = proc.waitFor();
+                final int exitCode;
+                final boolean waitTimeout;
+                if (timeoutMillis == null) {
+                	exitCode = proc.waitFor();
+                	waitTimeout = false;
+                }
+                else {
+                	final boolean ok = proc.waitFor(timeoutMillis, TimeUnit.MILLISECONDS);
+                	if (ok) {
+                		exitCode = proc.exitValue();
+                    	waitTimeout = false;
+               	}
+                	else {
+                		exitCode = -1;
+                    	waitTimeout = true;
+                	}
+                }
 
                 if (future_stdin != null) {
                     future_stdin.get();
                 }
 
-                if (exitCode != 0 && VncBoolean.isTrue(opts.get(new VncKeyword(":throw-ex")))) {
+                if (waitTimeout) {
+                	future_stdout.cancel(true);
+                	future_stderr.cancel(true);
+
+                    try (WithCallStack cs = new WithCallStack(new CallFrame("sh", cmd.getMeta()))) {
+                        throw new TimeoutException(
+                                String.format("Shell execution timeout after %ds", timeoutMillis));
+                    }
+                }
+                else if (exitCode != 0 && throwExOnFailure) {
                     try (WithCallStack cs = new WithCallStack(new CallFrame("sh", cmd.getMeta()))) {
                         throw new ShellException(
                                 String.format(
@@ -575,7 +633,8 @@ public class ShellFunctions {
                                                         new VncKeyword(":err-fn"),
                                                         new VncKeyword(":env"),
                                                         new VncKeyword(":dir"),
-                                                        new VncKeyword(":throw-ex"));
+                                                        new VncKeyword(":throw-ex"),
+                                                        new VncKeyword(":timeout"));
 
 
     ///////////////////////////////////////////////////////////////////////////
