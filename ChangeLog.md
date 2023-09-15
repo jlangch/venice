@@ -15,7 +15,7 @@ All notable changes to this project will be documented in this file.
 
 ### Enhanced 
 
-- the functions `time/plus` and `time/minus` to accept `:java.time.Period` and `:java.time.Duration` as the amount of time to add or subtract
+- the functions `time/plus` and `time/minus` to accept `:java.time.Period` and `:java.time.Duration` too as the amount of time to add or subtract
 
 
 
@@ -32,7 +32,7 @@ Venice supports the most used docker commands:
     - docker images, docker rmi, docker image prune/rm/pull
     - docker run/ps/start/stop/cp/exec/diff/logs/pause/unpause/wait/prune
     - docker volume list/create/rm/exists  
-- functions `var-sym-meta` and `var-val-meta` to access the meta data of the symbol add the value of a var.
+- functions `var-sym-meta` and `var-val-meta` to access the meta data of the symbol and the value of a var.
 
 
 ### Fixed 
