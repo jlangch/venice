@@ -32,7 +32,7 @@ Venice supports the most used docker commands:
     - docker images, docker rmi, docker image prune/rm/pull
     - docker run/ps/start/stop/cp/exec/diff/logs/pause/unpause/wait/prune
     - docker volume list/create/rm/exists  
-- functions `var-sym-meta` and `var-val-meta` to access the meta data of the symbol and the value of a var.
+- functions `var-sym-meta` and `var-val-meta` to access the meta data of the symbol and of the value of a var.
 
 
 ### Fixed 
