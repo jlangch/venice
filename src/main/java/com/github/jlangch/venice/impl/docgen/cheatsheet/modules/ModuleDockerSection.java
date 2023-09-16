@@ -78,13 +78,15 @@ public class ModuleDockerSection implements ISectionBuilder {
 
         final DocSection utils = new DocSection("Utils", id());
         all.addSection(utils);
+        utils.addItem(diBuilder.getDocItem("docker/images-query-by-repo", false));
         utils.addItem(diBuilder.getDocItem("docker/container-find-by-name", false));
         utils.addItem(diBuilder.getDocItem("docker/container-exists-with-name?", false));
         utils.addItem(diBuilder.getDocItem("docker/container-running-with-name?", false));
         utils.addItem(diBuilder.getDocItem("docker/container-start-by-name", false));
         utils.addItem(diBuilder.getDocItem("docker/container-stop-by-name", false));
-        utils.addItem(diBuilder.getDocItem("docker/container-exec-by-name", false));
         utils.addItem(diBuilder.getDocItem("docker/container-status-by-name", false));
+        utils.addItem(diBuilder.getDocItem("docker/container-exec-by-name", false));
+        utils.addItem(diBuilder.getDocItem("docker/container-has-log-msg", false));
 
         return section;
     }

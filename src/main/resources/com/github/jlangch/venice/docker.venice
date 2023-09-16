@@ -331,7 +331,8 @@
           Options:
 
           | :detach {true, false}   | Run container in background and return container ID |
-          | :publish port           | Publish a container's port(s) to the host |
+          | :attach {stdin, stdout, stderr} | Attach to STDIN, STDOUT or STDERR |
+          | :publish port           | Publish a container's port to the host. To expose port 8080 inside the container to port 3000 outside the container, pass "3000:8080" |
           | :envs vars              | Set environment variable (a sequence of env var defs) |
           | :memory limit           | Memory limit |
           | :name name              | Assign a name to the container |
@@ -355,18 +356,19 @@
           """,
           """
           ;; Run an ArangoDB container (use docker volume, faster than bind mount)
-          (docker/volume-create "arangodb-db")
-          (docker/volume-create "arangodb-apps")
-          (docker/run "arangodb/arangodb:3.10.10"
-                      :name "myapp"
-                      :publish "8529:8529"
-                      :detach true
-                      :envs ["ARANGO_ROOT_PASSWORD=xxxxxx"
-                             "ARANGODB_OVERRIDE_DETECTED_TOTAL_MEMORY=8G"
-                             "ARANGODB_OVERRIDE_DETECTED_NUMBER_OF_CORES=1"]
-                      :volumes ["arangodb-db:/var/lib/arangodb3"
-                                "arangodb-apps:/var/lib/arangodb3-apps"]
-                      :args ["--database.auto-upgrade"])
+          (do
+            (docker/volume-create "arangodb-db")
+            (docker/volume-create "arangodb-apps")
+            (docker/run "arangodb/arangodb:3.10.10"
+                        :name "myapp"
+                        :publish "8529:8529"
+                        :detach true
+                        :envs ["ARANGO_ROOT_PASSWORD=xxxxxx"
+                               "ARANGODB_OVERRIDE_DETECTED_TOTAL_MEMORY=8G"
+                               "ARANGODB_OVERRIDE_DETECTED_NUMBER_OF_CORES=1"]
+                        :volumes ["arangodb-db:/var/lib/arangodb3"
+                                  "arangodb-apps:/var/lib/arangodb3-apps"]
+                        :args ["--database.auto-upgrade"]))
           """ )
      :see-also '(
           "docker/images" "docker/ps"
@@ -383,6 +385,7 @@
           "docker/container-status-by-name"
           "docker/container-exec-by-name" )
      :spec { :options { :detach  [:optional #{true, false}]
+                        :attach  [:optional #{:stdin, :stdout, :stderr}]
                         :publish [:optional #(and (long? %) (pos? %))]
                         :envs    [:optional #(and (vector? %) (every? string? %))]
                         :memory  [:optional #(string? %)]
@@ -399,6 +402,7 @@
   (let [opts     (apply hash-map options)
         _        (validate-map "option" opts (-> docker/run meta :spec :options))
         detach   (:detach opts false)
+        attach   (:attach opts nil)
         publish  (:publish opts nil)
         envs     (:envs opts [])
         memory   (:memory opts 0)
@@ -409,6 +413,7 @@
         args     (:args opts [])
         cmdargs* ["run"]
         cmdargs* (if detach (conj cmdargs* "--detach") cmdargs*)
+        cmdargs* (if attach (conj cmdargs* "--attach" (name attach)) cmdargs*)
         cmdargs* (if quiet (conj cmdargs* "--quiet") cmdargs*)
         cmdargs* (if (some? publish) (conj cmdargs* "--publish" publish) cmdargs*)
         cmdargs* (if (pos? memory) (conj cmdargs* "--memory" memory) cmdargs*)
@@ -1009,6 +1014,8 @@
 
 ;; -----------------------------------------------------------------------------
 ;; Utility functions
+;;   - docker/images-query-by-repo
+;;   - docker/container-find-by-name
 ;;   - docker/container-find-by-name
 ;;   - docker/container-exists-with-name?
 ;;   - docker/container-running-with-name?
@@ -1016,7 +1023,34 @@
 ;;   - docker/container-stop-by-name
 ;;   - docker/container-status-by-name
 ;;   - docker/container-exec-by-name
+;;   - docker/container-has-log-msg
 ;; -----------------------------------------------------------------------------
+
+
+(defn
+  ^{ :arglists '("(docker/images-query-by-repo repo)")
+     :doc """
+          Returns all pulled images for a given repo.
+          """
+     :examples '(
+          """
+          (docker/images-query-by-repo "arangodb/arangodb")
+          """,
+          """
+          ;; return a list of ids for "arangodb/arangodb" images
+          (->> (query-images-by-repo "arangodb/arangodb")
+               (map #(get % "ID")))
+          """ )
+     :see-also '(
+          "docker/images" ) }
+
+  images-query-by-repo [repo]
+
+  { :pre [(string? name)] }
+
+  (->> (docker/images :format :json)
+       (filter #(== repor (get % "Repository")))))
+
 
 (defn
   ^{ :arglists '("(docker/container-find-by-name name)")
@@ -1042,6 +1076,7 @@
 
   (->> (docker/ps :all true :format :json)
        (filter #(== name (get % "Names")))))
+
 
 (defn
   ^{ :arglists '("(docker/container-exists-with-name? name)")
@@ -1227,6 +1262,42 @@
     (assert (= status "running")
             "There is no container running with the name \"~{name}\"!")
     (exec c command)))
+
+
+(defn
+  ^{ :arglists '(
+          "(docker/container-has-log-msg id msg)"
+          "(docker/container-has-log-msg id msg since)")
+     :doc """
+          Returns true if the container logs has message that matches the
+          regex 'msg' and is newer than the optional 'since' timestamp.
+          """
+     :examples '(
+          """
+          (docker/container-has-log-msg "0c08e164e6cf"
+                                        #".*is ready for business. Have fun.*"
+                                        (time/minus (time/local-date-time) :minutes 2))
+          """ )
+     :see-also '(
+          "docker/run"
+          "docker/container-exists-with-name?"
+          "docker/container-running-with-name?"
+          "docker/container-start-by-name"
+          "docker/container-stop-by-name"
+          "docker/container-status-by-name"
+          "docker/container-exec-by-name" ) }
+
+  container-has-log-msg
+
+  ([id msg]
+    (container-has-log-msg id msg nil))
+
+  ([id msg since]
+    (->> (if (nil? since) (docker/logs id) (docker/logs id :since since))
+         (str/split-lines)
+         (filter #(match? % msg))
+         (count)
+         (pos?))))
 
 
 

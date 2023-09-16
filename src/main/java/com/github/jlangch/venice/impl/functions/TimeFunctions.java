@@ -872,12 +872,21 @@ public class TimeFunctions {
                 "time/plus",
                 VncFunction
                     .meta()
-                    .arglists("(time/plus date unit n)")
-                    .doc("Adds the n units to the date. Units: {:years :months :weeks :days :hours :minutes :seconds :milliseconds}")
+                    .arglists(
+                    	"(time/plus date unit n)",
+                    	"(time/minus plus temporal)")
+                    .doc(
+                    	"Adds the n units to the date. Units: {:years :months :weeks " +
+                    	":days :hours :minutes :seconds :milliseconds}\n\n" +
+                    	"In the two argument version add a :java.time.Temporal (Period, Duration) " +
+                    	"to the date.")
                     .examples(
                         "(time/plus (time/local-date) :days 2)",
                         "(time/plus (time/local-date-time) :days 2)",
-                        "(time/plus (time/zoned-date-time) :days 2)")
+                        "(time/plus (time/zoned-date-time) :days 2)",
+                        "(time/plus (time/local-date) (. :java.time.Period :ofDays 2))",
+                        "(time/plus (time/local-date-time) (. :java.time.Period :ofDays 2))",
+                        "(time/plus (time/zoned-date-time) (. :java.time.Period :ofDays 2))")
                     .seeAlso(
                         "time/minus")
                     .build()
@@ -914,12 +923,21 @@ public class TimeFunctions {
                 "time/minus",
                 VncFunction
                     .meta()
-                    .arglists("(time/minus date unit n)")
-                    .doc("Subtracts the n units from the date. Units: {:years :months :weeks :days :hours :minutes :seconds :milliseconds}")
+                    .arglists(
+                    	"(time/minus date unit n)",
+                    	"(time/minus date temporal)")
+                    .doc(
+                    	"Subtracts the n units from the date. Units: {:years :months :weeks " +
+                    	":days :hours :minutes :seconds :milliseconds}\n\n" +
+                    	"In the two argument version subtracts a :java.time.Temporal (Period, Duration) " +
+                    	"from the date.")
                     .examples(
                         "(time/minus (time/local-date) :days 2)",
                         "(time/minus (time/local-date-time) :days 2)",
-                        "(time/minus (time/zoned-date-time) :days 2)")
+                        "(time/minus (time/zoned-date-time) :days 2)",
+                        "(time/minus (time/local-date) (. :java.time.Period :ofDays 2))",
+                        "(time/minus (time/local-date-time) (. :java.time.Period :ofDays 2))",
+                        "(time/minus (time/zoned-date-time) (. :java.time.Period :ofDays 2))")
                     .seeAlso(
                         "time/plus")
                     .build()
