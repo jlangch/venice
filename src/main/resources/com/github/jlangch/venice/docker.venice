@@ -1015,6 +1015,7 @@
 ;; -----------------------------------------------------------------------------
 ;; Utility functions
 ;;   - docker/images-query-by-repo
+;;   - docker/image-ready?
 ;;   - docker/container-find-by-name
 ;;   - docker/container-find-by-name
 ;;   - docker/container-exists-with-name?
@@ -1042,14 +1043,38 @@
                (map #(get % "ID")))
           """ )
      :see-also '(
-          "docker/images" ) }
+          "docker/images",
+          "docker/image-ready?" ) }
 
   images-query-by-repo [repo]
 
-  { :pre [(string? name)] }
+  { :pre [(string? repo)] }
 
   (->> (docker/images :format :json)
-       (filter #(== repor (get % "Repository")))))
+       (filter #(== repo (get % "Repository")))))
+
+
+(defn
+  ^{ :arglists '("(docker/image-ready? repo tag)")
+     :doc """
+          Returns true if the image is ready for use else false.
+          """
+     :examples '(
+          """
+          (docker/image-ready? "arangodb/arangodb" "3.10.10")
+          """ )
+     :see-also '(
+          "docker/images"
+          "docker/images-query-by-repo" ) }
+
+  image-ready? [repo tag]
+
+  { :pre [(string? repo) (string? tag)] }
+
+  (->> (docker/images-query-by-repo repo)
+       (filter #(== tag (get % "Tag")))
+       (count)
+       (pos?)))
 
 
 (defn
@@ -1253,7 +1278,7 @@
           "docker/container-stop-by-name"
           "docker/container-status-by-name" ) }
 
-  container-exec-by-name  [name]
+  container-exec-by-name [name]
 
   { :pre [(string? name)] }
 
