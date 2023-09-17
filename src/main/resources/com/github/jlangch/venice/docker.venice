@@ -141,7 +141,9 @@
           "docker/rmi"
           "docker/image-rm"
           "docker/image-prune"
-          "docker/run" )
+          "docker/run"
+          "docker/images-query-by-repo"
+          "docker/image-ready?")
      :spec { :options { :all      [:optional #{true, false}]
                         :digests  [:optional #{true, false}]
                         :quiet    [:optional #{true, false}]
@@ -384,8 +386,11 @@
           "docker/container-running-with-name?"
           "docker/container-start-by-name"
           "docker/container-stop-by-name"
+          "docker/container-remove-by-name"
           "docker/container-status-by-name"
-          "docker/container-exec-by-name" )
+          "docker/container-exec-by-name"
+          "docker/container-log"
+          "docker/container-has-log-msg" )
      :spec { :options { :detach  [:optional #{true, false}]
                         :attach  [:optional #{:stdin, :stdout, :stderr}]
                         :publish [:optional #(and (long? %) (pos? %))]
@@ -1024,6 +1029,7 @@
 ;;   - docker/container-remove-by-name
 ;;   - docker/container-status-by-name
 ;;   - docker/container-exec-by-name
+;;   - docker/container-log
 ;;   - docker/container-has-log-msg
 ;; -----------------------------------------------------------------------------
 
@@ -1088,12 +1094,7 @@
           """ )
      :see-also '(
           "docker/run"
-          "docker/container-exists-with-name?"
-          "docker/container-running-with-name?"
-          "docker/container-start-by-name"
-          "docker/container-stop-by-name"
-          "docker/container-status-by-name"
-          "docker/container-exec-by-name" ) }
+          "docker/container-exists-with-name?" ) }
 
   container-find-by-name [name]
 
@@ -1114,12 +1115,7 @@
           """ )
      :see-also '(
           "docker/run"
-          "docker/container-find-by-name"
-          "docker/container-running-with-name?"
-          "docker/container-start-by-name"
-          "docker/container-stop-by-name"
-          "docker/container-status-by-name"
-          "docker/container-exec-by-name" ) }
+          "docker/container-find-by-name" ) }
 
   container-exists-with-name? [name]
 
@@ -1142,12 +1138,8 @@
           """ )
      :see-also '(
           "docker/run"
-          "docker/container-find-by-name"
-          "docker/container-exists-with-name?"
           "docker/container-start-by-name"
-          "docker/container-stop-by-name"
-          "docker/container-status-by-name"
-          "docker/container-exec-by-name" ) }
+          "docker/container-stop-by-name" ) }
 
   container-running-with-name? [name]
 
@@ -1171,13 +1163,11 @@
           """ )
      :see-also '(
           "docker/run"
-          "docker/container-find-by-name"
-          "docker/container-exists-with-name?"
           "docker/container-running-with-name?"
-          "docker/container-start-by-name"
           "docker/container-stop-by-name"
+          "docker/container-remove-by-name"
           "docker/container-status-by-name"
-          "docker/container-exec-by-name" ) }
+          "docker/container-log" ) }
 
   container-start-by-name [name]
 
@@ -1207,12 +1197,11 @@
           """ )
      :see-also '(
           "docker/run"
-          "docker/container-find-by-name"
-          "docker/container-exists-with-name?"
           "docker/container-running-with-name?"
-          "docker/container-start-by-name"
+          "docker/container-stop-by-name"
+          "docker/container-remove-by-name"
           "docker/container-status-by-name"
-          "docker/container-exec-by-name" ) }
+          "docker/container-log" ) }
 
   container-stop-by-name
 
@@ -1246,10 +1235,7 @@
           "docker/run"
           "docker/container-find-by-name"
           "docker/container-exists-with-name?"
-          "docker/container-running-with-name?"
-          "docker/container-start-by-name"
-          "docker/container-status-by-name"
-          "docker/container-exec-by-name" ) }
+          "docker/container-status-by-name" ) }
 
   container-remove-by-name [name]
 
@@ -1271,10 +1257,7 @@
        "docker/run"
        "docker/container-find-by-name"
        "docker/container-exists-with-name?"
-       "docker/container-running-with-name?"
-       "docker/container-start-by-name"
-       "docker/container-stop-by-name"
-       "docker/container-exec-by-name" ) }
+       "docker/container-remove-by-name" ) }
 
   container-status-by-name [name]
 
@@ -1296,12 +1279,9 @@
           """ )
      :see-also '(
           "docker/run"
-          "docker/container-find-by-name"
-          "docker/container-exists-with-name?"
           "docker/container-running-with-name?"
-          "docker/container-start-by-name"
-          "docker/container-stop-by-name"
-          "docker/container-status-by-name" ) }
+          "docker/container-exec-by-name"
+          "docker/container-log" ) }
 
   container-exec-by-name [name]
 
@@ -1329,12 +1309,8 @@
           """ )
      :see-also '(
           "docker/run"
-          "docker/container-exists-with-name?"
           "docker/container-running-with-name?"
-          "docker/container-start-by-name"
-          "docker/container-stop-by-name"
-          "docker/container-status-by-name"
-          "docker/container-exec-by-name" ) }
+          "docker/container-has-log-msg" ) }
 
   container-log
 
@@ -1368,12 +1344,8 @@
           """ )
      :see-also '(
           "docker/run"
-          "docker/container-exists-with-name?"
           "docker/container-running-with-name?"
-          "docker/container-start-by-name"
-          "docker/container-stop-by-name"
-          "docker/container-status-by-name"
-          "docker/container-exec-by-name" ) }
+          "docker/container-log" ) }
 
   container-has-log-msg
 
