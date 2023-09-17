@@ -17,6 +17,10 @@ All notable changes to this project will be documented in this file.
 
 - the functions `time/plus` and `time/minus` to accept `:java.time.Period` and `:java.time.Duration` too as the amount of time to add or subtract
 
+### Fixed 
+
+- function `docker/rm`
+
 
 
 ## [1.10.41] - 2023-09-12

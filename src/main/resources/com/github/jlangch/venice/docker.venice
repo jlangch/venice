@@ -37,6 +37,8 @@
 
 (def-dynamic *debug* :off)
 
+(defonce binary (system-prop :docker.binary "docker"))
+
 
 (defn
   ^{ :arglists '("(docker/debug mode)")
@@ -619,7 +621,7 @@
         cmdargs* (if force (conj cmdargs* "--force") cmdargs*)
         cmdargs* (if volumes (conj cmdargs* "--volumes") cmdargs*)
         cmdargs* (if (some? link) (into cmdargs* ["--link" link]) cmdargs*)
-        cmdargs* (conj cmdargs* "container")]
+        cmdargs* (conj cmdargs* container)]
     (:out (apply docker/cmd cmdargs*))))
 
 
@@ -1001,7 +1003,7 @@
 
    cmd [& args]
 
-   (let [cmd* (apply str "docker " (interpose " " args))]
+   (let [cmd* (apply str docker/binary " " (interpose " " args))]
      (case docker/*debug*
        :off          ((docker/os-exec) cmd* :throw-ex true)
        :on           (do
@@ -1017,11 +1019,11 @@
 ;;   - docker/images-query-by-repo
 ;;   - docker/image-ready?
 ;;   - docker/container-find-by-name
-;;   - docker/container-find-by-name
 ;;   - docker/container-exists-with-name?
 ;;   - docker/container-running-with-name?
 ;;   - docker/container-start-by-name
 ;;   - docker/container-stop-by-name
+;;   - docker/container-remove-by-name
 ;;   - docker/container-status-by-name
 ;;   - docker/container-exec-by-name
 ;;   - docker/container-has-log-msg
@@ -1231,6 +1233,31 @@
       (assert (= status "running")
               "There is no container running with the name \"~{name}\"!")
       (stop id :time time))))
+
+
+(defn
+  ^{ :arglists '("(docker/container-remove-by-name name)")
+     :doc """
+          Removes a container with the specified name.
+          """
+     :examples '(
+          """
+          (docker/container-remove-by-name "myapp")
+          """ )
+     :see-also '(
+          "docker/run"
+          "docker/container-find-by-name"
+          "docker/container-exists-with-name?"
+          "docker/container-running-with-name?"
+          "docker/container-start-by-name"
+          "docker/container-status-by-name"
+          "docker/container-exec-by-name" ) }
+
+  container-remove-by-name [name]
+
+  (let [container (first (container-find-by-name name))
+        id        (get container "ID")]
+    (rm id)))
 
 
 (defn
