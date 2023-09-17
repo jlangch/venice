@@ -811,8 +811,8 @@
           Options:
 
           | :tail n | Number of lines to show from the end of the logs |
-          | :since ts | Show logs since timestamp |
-          | :until ts | Show logs until timestamp |
+          | :since ts | Show logs since timestamp or relative (e.g. "42m" for 42 minutes) |
+          | :until ts | Show logs until timestamp or relative (e.g. "42m" for 42 minutes) |
           | :follow {true, false} | Follow log output |
           | :details {true, false} | Show extra details provided to logs |
           """
@@ -824,9 +824,7 @@
           (docker/logs "74789744g489" :tail 100)
           """,
           """
-          (let [since (time/minus (time/local-date-time) :hours 2)
-                until (time/local-date-time)]
-            (docker/logs "74789744g489" :since since :until until))
+          (docker/logs "74789744g489" :since "60m" :until "30m")
           """)
      :see-also '(
           "docker/pause"
@@ -1315,20 +1313,58 @@
             "There is no container running with the name \"~{name}\"!")
     (exec c command)))
 
-
 (defn
   ^{ :arglists '(
-          "(docker/container-has-log-msg id msg)"
-          "(docker/container-has-log-msg id msg since)")
+          "(docker/container-log name)"
+          "(docker/container-log name since)")
      :doc """
-          Returns true if the container logs has message that matches the
-          regex 'msg' and is newer than the optional 'since' timestamp.
+          Returns the container logs.
           """
      :examples '(
           """
-          (docker/container-has-log-msg "0c08e164e6cf"
+          (docker/container-log "myapp"9
+          """,
+          """
+          (docker/container-log "myapp" "2m")
+          """ )
+     :see-also '(
+          "docker/run"
+          "docker/container-exists-with-name?"
+          "docker/container-running-with-name?"
+          "docker/container-start-by-name"
+          "docker/container-stop-by-name"
+          "docker/container-status-by-name"
+          "docker/container-exec-by-name" ) }
+
+  container-log
+
+  ([name]
+    (container-log name nil))
+
+  ([name since]
+    (let [container (first (container-find-by-name name))
+          id        (get container "ID")
+          status    (get container "State")]
+      (assert (= status "running")
+              "There is no container running with the name \"~{name}\"!")
+      (if (nil? since) (docker/logs id) (docker/logs id :since since)))))
+
+
+(defn
+  ^{ :arglists '(
+          "(docker/container-has-log-msg name msg)"
+          "(docker/container-has-log-msg name msg tail)")
+     :doc """
+          Returns true if the container logs has message that matches the
+          regex 'msg' and is newer than the optional 'since' timestamp.
+
+          'tail': the number of lines to show from the end of the logs
+          """
+     :examples '(
+          """
+          (docker/container-has-log-msg "myapp"
                                         #".*is ready for business. Have fun.*"
-                                        (time/minus (time/local-date-time) :minutes 2))
+                                        10)
           """ )
      :see-also '(
           "docker/run"
@@ -1341,15 +1377,20 @@
 
   container-has-log-msg
 
-  ([id msg]
-    (container-has-log-msg id msg nil))
+  ([name msg]
+    (container-has-log-msg name msg nil))
 
-  ([id msg since]
-    (->> (if (nil? since) (docker/logs id) (docker/logs id :since since))
-         (str/split-lines)
-         (filter #(match? % msg))
-         (count)
-         (pos?))))
+  ([name msg tail]
+    (let [container (first (container-find-by-name name))
+          id        (get container "ID")
+          status    (get container "State")]
+      (assert (= status "running")
+              "There is no container running with the name \"~{name}\"!")
+      (->> (if (nil? tail) (docker/logs id) (docker/logs id :tail tail))
+           (str/split-lines)
+           (filter #(match? % msg))
+           (count)
+           (pos?)))))
 
 
 
@@ -1404,8 +1445,10 @@
 
 
 (defn- format-ts [ts]
-  (assert (time/local-date-time? ts))
-  (time/format ts "yyyy-MM-dd'T'HH:mm:ss'Z'"))
+  (case (type ts)
+     :core/string               ts
+     :java.time.LocalDateTime   (time/format ts "yyyy-MM-dd'T'HH:mm:ss'Z'")
+     :java.time.ZonedDateTime   (time/format ts "yyyy-MM-dd'T'HH:mm:ss'Z'")))
 
 
 (defn- os-exec []
