@@ -390,7 +390,9 @@
           "docker/container-status-by-name"
           "docker/container-exec-by-name"
           "docker/container-log"
-          "docker/container-has-log-msg" )
+          "docker/container-has-log-msg"
+          "docker/container-purge-by-name"
+          "docker/container-image-info-by-name" )
      :spec { :options { :detach  [:optional #{true, false}]
                         :attach  [:optional #{:stdin, :stdout, :stderr}]
                         :publish [:optional #(and (long? %) (pos? %))]
@@ -1031,6 +1033,8 @@
 ;;   - docker/container-exec-by-name
 ;;   - docker/container-log
 ;;   - docker/container-has-log-msg
+;;   - docker/container-purge-by-name
+;;   - docker/container-image-info-by-name
 ;; -----------------------------------------------------------------------------
 
 
@@ -1242,6 +1246,62 @@
   (let [container (first (container-find-by-name name))
         id        (get container "ID")]
     (rm id)))
+
+
+(defn
+  ^{ :arglists '("(docker/container-purge-by-name name)")
+     :doc """
+          Removes a container and its image.
+          """
+     :examples '(
+          """
+          (docker/container-purge-by-name "myapp")
+          """ )
+     :see-also '(
+          "docker/run"
+          "docker/container-find-by-name"
+          "docker/container-exists-with-name?"
+          "docker/container-status-by-name" ) }
+
+  container-purge-by-name [name]
+
+  (let [container       (first (container-find-by-name name))
+        container-id    (get container "ID")
+        image           (get container "Image")]
+    (rm container-id)
+    (rmi image :force true)))
+
+
+(defn
+  ^{ :arglists '("(docker/container-image-info-by-name name)")
+     :doc """
+          Returns the image info for a container given by its name.
+
+          Returns a map (e.g.):
+          ```
+          { :image  "arangodb/arangodb:3.10.10"
+            :repo   "arangodb/arangodb"
+            :tag    "3.10.10" }
+          ```
+          """
+     :examples '(
+          """
+          (docker/container-image-info-by-name "myapp")
+          """ )
+     :see-also '(
+          "docker/run"
+          "docker/container-find-by-name"
+          "docker/container-exists-with-name?"
+          "docker/container-status-by-name" ) }
+
+  container-image-info-by-name [name]
+
+  (let [container       (first (container-find-by-name name))
+        container-id    (get container "ID")
+        image           (get container "Image") ]
+    { :image  image
+      :repo   (first (str/split image ":"))
+      :tag    (second (str/split image ":")) }))
 
 
 (defn

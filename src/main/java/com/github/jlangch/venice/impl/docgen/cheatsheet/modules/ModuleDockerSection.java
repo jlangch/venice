@@ -90,6 +90,8 @@ public class ModuleDockerSection implements ISectionBuilder {
         utils.addItem(diBuilder.getDocItem("docker/container-exec-by-name", false));
         utils.addItem(diBuilder.getDocItem("docker/container-log", false));
         utils.addItem(diBuilder.getDocItem("docker/container-has-log-msg", false));
+        utils.addItem(diBuilder.getDocItem("docker/container-purge-by-name", false));
+        utils.addItem(diBuilder.getDocItem("docker/container-image-info-by-name", false));
 
         return section;
     }
