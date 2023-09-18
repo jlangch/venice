@@ -49,6 +49,7 @@
 
           Mode:
 
+          | [![width: 20%]] | [![width: 80%]] |
           | :off        | No debug output |
           | :on         | Prints the raw docker command line to the current stdout channel ahead of running the command |
           | :on-no-exec | Prints the raw docker command line to the current stdout channel without running the command |
@@ -75,6 +76,7 @@
 
           Options:
 
+          | [![width: 30%]] | [![width: 70%]] |
           | :format {:string, :json} | Returns the output either as a string or as JSON data |
           | :version {:full, :server, :client} | Returns full (default), server, or client version |
           """
@@ -228,6 +230,8 @@
      :examples '(
           """
           (println (docker/image-pull "arangodb/arangodb:3.10.10"))
+          """,
+          """
           (println (docker/image-pull "arangodb/arangodb"))
           """ )
      :see-also '(
@@ -334,6 +338,7 @@
 
           Options:
 
+          | [![width: 30%]]         | [![width: 70%]] |
           | :detach {true, false}   | Run container in background and return container ID |
           | :attach {stdin, stdout, stderr} | Attach to STDIN, STDOUT or STDERR |
           | :publish port           | Publish a container's port to the host. To expose port 8080 inside the container to port 3000 outside the container, pass "3000:8080" |
@@ -658,8 +663,9 @@
 
           Options:
 
+          | [![width: 25%]]            | [![width: 75%]] |
           | :archive {true, false}     | Archive mode (copy all uid/gid information) |
-          | :follow-link {true, false} | Always follow symbol link in SRC_PATH|
+          | :follow-link {true, false} | Always follow symbol link in SRC_PATH |
           | :quiet {true, false}       | Suppress progress output during copy. Progress output is automatically suppressed if no terminal is attached |
           """
      :examples '(
