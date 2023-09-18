@@ -389,8 +389,7 @@
           "docker/container-remove-by-name"
           "docker/container-status-by-name"
           "docker/container-exec-by-name"
-          "docker/container-log"
-          "docker/container-has-log-msg"
+          "docker/container-logs"
           "docker/container-purge-by-name"
           "docker/container-image-info-by-name" )
      :spec { :options { :detach  [:optional #{true, false}]
@@ -1031,8 +1030,7 @@
 ;;   - docker/container-remove-by-name
 ;;   - docker/container-status-by-name
 ;;   - docker/container-exec-by-name
-;;   - docker/container-log
-;;   - docker/container-has-log-msg
+;;   - docker/container-logs
 ;;   - docker/container-purge-by-name
 ;;   - docker/container-image-info-by-name
 ;; -----------------------------------------------------------------------------
@@ -1171,7 +1169,7 @@
           "docker/container-stop-by-name"
           "docker/container-remove-by-name"
           "docker/container-status-by-name"
-          "docker/container-log" ) }
+          "docker/container-logs" ) }
 
   container-start-by-name [name]
 
@@ -1205,7 +1203,7 @@
           "docker/container-stop-by-name"
           "docker/container-remove-by-name"
           "docker/container-status-by-name"
-          "docker/container-log" ) }
+          "docker/container-logs" ) }
 
   container-stop-by-name
 
@@ -1341,7 +1339,7 @@
           "docker/run"
           "docker/container-running-with-name?"
           "docker/container-exec-by-name"
-          "docker/container-log" ) }
+          "docker/container-logs" ) }
 
   container-exec-by-name [name]
 
@@ -1355,74 +1353,35 @@
 
 (defn
   ^{ :arglists '(
-          "(docker/container-log name)"
-          "(docker/container-log name since)")
+          "(docker/container-logs name & options)")
      :doc """
           Returns the container logs.
+
+          Options:
+
+          | :tail n | Number of lines to show from the end of the logs |
+          | :since ts | Show logs since timestamp or relative (e.g. "42m" for 42 minutes) |
+          | :until ts | Show logs until timestamp or relative (e.g. "42m" for 42 minutes) |
+          | :follow {true, false} | Follow log output |
+          | :details {true, false} | Show extra details provided to logs |
           """
      :examples '(
           """
-          (docker/container-log "myapp"9
+          (docker/container-logs "myapp")
           """,
           """
-          (docker/container-log "myapp" "2m")
+          (docker/container-logs "myapp" :since "2m")
           """ )
      :see-also '(
           "docker/run"
-          "docker/container-running-with-name?"
-          "docker/container-has-log-msg" ) }
+          "docker/logs"
+          "docker/container-running-with-name?" ) }
 
-  container-log
+  container-logs [name & options]
 
-  ([name]
-    (container-log name nil))
-
-  ([name since]
-    (let [container (first (container-find-by-name name))
-          id        (get container "ID")
-          status    (get container "State")]
-      (assert (= status "running")
-              "There is no container running with the name \"~{name}\"!")
-      (if (nil? since) (docker/logs id) (docker/logs id :since since)))))
-
-
-(defn
-  ^{ :arglists '(
-          "(docker/container-has-log-msg name msg)"
-          "(docker/container-has-log-msg name msg tail)")
-     :doc """
-          Returns true if the container logs has message that matches the
-          regex 'msg' and is newer than the optional 'since' timestamp.
-
-          'tail': the number of lines to show from the end of the logs
-          """
-     :examples '(
-          """
-          (docker/container-has-log-msg "myapp"
-                                        #".*is ready for business. Have fun.*"
-                                        10)
-          """ )
-     :see-also '(
-          "docker/run"
-          "docker/container-running-with-name?"
-          "docker/container-log" ) }
-
-  container-has-log-msg
-
-  ([name msg]
-    (container-has-log-msg name msg nil))
-
-  ([name msg tail]
-    (let [container (first (container-find-by-name name))
-          id        (get container "ID")
-          status    (get container "State")]
-      (assert (= status "running")
-              "There is no container running with the name \"~{name}\"!")
-      (->> (if (nil? tail) (docker/logs id) (docker/logs id :tail tail))
-           (str/split-lines)
-           (filter #(match? % msg))
-           (count)
-           (pos?)))))
+  (let [container (first (container-find-by-name name))
+        id        (get container "ID")]
+    (apply docker/logs id options)))
 
 
 
