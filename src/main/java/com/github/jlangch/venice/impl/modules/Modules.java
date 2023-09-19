@@ -57,6 +57,7 @@ public class Modules {
                         "crypt",
                         "dag",
                         "docker",
+                        "docker-testcontainer",
                         "docx",
                         "excel",
                         "excel-install",
