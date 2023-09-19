@@ -41,6 +41,7 @@ import com.github.jlangch.venice.impl.VeniceInterpreter;
 import com.github.jlangch.venice.impl.docgen.cheatsheet.modules.ModuleAnsiSection;
 import com.github.jlangch.venice.impl.docgen.cheatsheet.modules.ModuleAppSection;
 import com.github.jlangch.venice.impl.docgen.cheatsheet.modules.ModuleBenchmarkSection;
+import com.github.jlangch.venice.impl.docgen.cheatsheet.modules.ModuleCargoArangoDBSection;
 import com.github.jlangch.venice.impl.docgen.cheatsheet.modules.ModuleCargoSection;
 import com.github.jlangch.venice.impl.docgen.cheatsheet.modules.ModuleComponentSection;
 import com.github.jlangch.venice.impl.docgen.cheatsheet.modules.ModuleConfigSection;
@@ -120,7 +121,8 @@ public class DocGenerator {
                         "java",   "semver",   "excel",     "hexdump",
                         "shell",  "geoip",    "benchmark", "component",
                         "config", "parsifal", "grep",      "test",
-                        "fonts",  "qrref",    "docker",    "cargo"));
+                        "fonts",  "qrref",
+                        "docker", "cargo", "cargo-arangodb"));
 
         final IVeniceInterpreter venice = new VeniceInterpreter(new AcceptAllInterceptor());
 
@@ -396,6 +398,7 @@ public class DocGenerator {
                 new ModuleMavenSection(diBuilder).section(),
                 new ModuleDockerSection(diBuilder).section(),
                 new ModuleCargoSection(diBuilder).section(),
+                new ModuleCargoArangoDBSection(diBuilder).section(),
                 new ModuleTracingSection(diBuilder).section(),
                 new ModuleShellSection(diBuilder).section(),
                 new ModuleAnsiSection(diBuilder).section(),
