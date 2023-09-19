@@ -19,17 +19,17 @@
 ;;;; See the License for the specific language governing permissions and
 ;;;; limitations under the License.
 
-;;;; Docker ArangoDB testcontainer
+;;;; Docker ArangoDB cargo testcontainer
 
 ;;;; This is just a configuration wrapper on top of the :cargo module to
-;;;; simplify calling testcontainers
+;;;; simplify using ArangoDB testcontainers
 
 (ns cargo-arangodb)
 
 (load-module :docker)
 (load-module :cargo)
 
-(defonce internal-port 8259)
+(defonce internal-port 8259) ;; The ArangoDB internal port within the container
 
 
 (defn
@@ -54,9 +54,9 @@
 
           | [![width: 15%]] | [![width: 85%]] |
           | cname       | A unique container name |
-          | version     | The image version |
-          | mapped-port | The published (mapped) port on the host |
-          | root-passwd | The root password |
+          | version     | The ArangoDB version to use |
+          | mapped-port | The published (mapped) ArangoDB port on the host |
+          | root-passwd | The ArangoDB root password |
           | memory      | The detected memory ArangoDB is to use |
           | cores       | The detected number of cores ArangoDB is to use |
           | log         | A log function  (maybe nil)|
