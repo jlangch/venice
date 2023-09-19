@@ -73,8 +73,9 @@
   { :pre [(string? cname)
           (or (nil? log) (fn? log))] }
 
-  (when (d/container-running-with-name? cname)
-    (stop-container cname log)))
+  (let [log (or log (fn [s] nil))]
+    (when (d/container-running-with-name? cname)
+      (stop-container cname log))))
 
 
 ;; ---------------------------------------------------------------------------

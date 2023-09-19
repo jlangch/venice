@@ -28,7 +28,7 @@
 
 
 ;; start ArangoDB
-(defn start [cname version mapped-port root-passwd memory cores]
+(defn start [cname version mapped-port root-passwd memory cores log]
   { :pre [(string? cname)
           (string? version)
           (or (int? mapped-port) (long? mapped-port))
@@ -40,23 +40,25 @@
   (let [envs ["ARANGO_ROOT_PASSWORD=~{root-passwd}"
               "ARANGODB_OVERRIDE_DETECTED_TOTAL_MEMORY=~{memory}"
               "ARANGODB_OVERRIDE_DETECTED_NUMBER_OF_CORES=~(long cores)"]
-        args ["--server.endpoint tcp://0.0.0.0:8259"]]
+        args ["--server.endpoint tcp://0.0.0.0:8259"]
+        log  (or log default-log)]
     (cargo/start cname version mapped-port envs args arangodb-ready? log)))
 
 
 ;; stop ArangoDB
-(defn stop [cname]
+(defn stop [cname log]
   { :pre [(string? cname)] }
 
-  (cargo/stop cname log))
+  (let [log (or log default-log)]
+      (cargo/stop cname log)))
 
 
 ;; ---------------------------------------------------------------------------
 ;; utils
 ;; ---------------------------------------------------------------------------
 
-(defn log [s]
-  (println "ArangoDB: " s))
+(defn default-log [s]
+  (println "ArangoDB:" s))
 
 (defn arangodb-ready? [cname]
   (-> (last-log-line cname)
