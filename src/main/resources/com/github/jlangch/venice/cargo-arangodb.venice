@@ -19,7 +19,10 @@
 ;;;; See the License for the specific language governing permissions and
 ;;;; limitations under the License.
 
-;;;; Docker arangodb testcontainer
+;;;; Docker ArangoDB testcontainer
+
+;;;; This is just a configuration wrapper on top of the :cargo module to
+;;;; simplify calling testcontainers
 
 (ns cargo-arangodb)
 
@@ -29,8 +32,51 @@
 (defonce internal-port 8259)
 
 
-;; start ArangoDB
-(defn start [cname version mapped-port root-passwd memory cores log]
+(defn
+  ^{ :arglists '(
+          "(cargo-arangodb/start cname version mapped-port root-passwd memory cores log)")
+     :doc """
+          Starts an ArangoDB container.
+
+          Start rules:
+
+            * If a container with another version exists for the container
+              name remove the container and the image
+            * Pull the image if not yet locally available
+            * If the container already runs - use it
+            * If the container is available but does not run - start it `(docker/start ...)`
+            * If the container is not available - run it `(docker/run ...)`
+            * Finally check for a successful startup. The container log must
+              contain the string ".*is ready for business. Have fun.*" on the
+              last line.
+
+          Args:
+
+          | [![width: 15%]] | [![width: 85%]] |
+          | cname       | A unique container name |
+          | version     | The image version |
+          | mapped-port | The published (mapped) port on the host |
+          | root-passwd | The root password |
+          | memory      | The detected memory ArangoDB is to use |
+          | cores       | The detected number of cores ArangoDB is to use |
+          | log         | A log function  (maybe nil)|
+          """
+     :examples '(
+          """
+          ;; Run an ArangoDB container
+          (cargo-arangodb/start "arangodb-test"
+                                "3.10.10"
+                                8500
+                                "test"
+                                "8GB"
+                                1
+                                (fn [s] (println "ArangoDB:" s)))
+          """)
+     :see-also '(
+          "cargo-arangodb/stop") }
+
+  start [cname version mapped-port root-passwd memory cores log]
+
   { :pre [(string? cname)
           (string? version)
           (or (int? mapped-port) (long? mapped-port))
@@ -45,11 +91,31 @@
         args    ["--server.endpoint tcp://0.0.0.0:~{internal-port}"]
         log     (or log default-log)
         publish "~(long mapped-port):~{internal-port}"]
-    (cargo/start cname "arangodb/arangodb" version publish envs args arangodb-ready? log)))
+    (cargo/start cname "arangodb/arangodb" version publish
+                 envs args
+                 arangodb-ready? log)))
 
 
-;; stop ArangoDB
-(defn stop [cname log]
+(defn
+  ^{ :arglists '("(cargo-arangodb/stop cname log)")
+     :doc """
+          Stops an ArangoDB container
+
+          Args:
+
+          | cname   | A unique container name    |
+          | log     | A log function (maybe nil) |
+          """
+     :examples '(
+          """
+          (cargo-arangodb/stop "arangodb-test"
+                               (fn [s] (println "ArangoDB:" s)))
+          """)
+     :see-also '(
+          "cargo-arangodb/start") }
+
+  stop [cname log]
+
   { :pre [(string? cname)] }
 
   (let [log (or log default-log)]

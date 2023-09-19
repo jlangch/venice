@@ -128,8 +128,8 @@
      :examples '(
           """
           ;; Stop an ArangoDB container
-          (cargo/start "arangodb-test"
-                       (fn [s] (println "ArangoDB:" s)))
+          (cargo/stop "arangodb-test"
+                      (fn [s] (println "ArangoDB:" s)))
           """)
      :see-also '(
           "cargo/start") }
