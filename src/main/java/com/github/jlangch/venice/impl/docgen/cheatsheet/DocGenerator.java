@@ -41,6 +41,7 @@ import com.github.jlangch.venice.impl.VeniceInterpreter;
 import com.github.jlangch.venice.impl.docgen.cheatsheet.modules.ModuleAnsiSection;
 import com.github.jlangch.venice.impl.docgen.cheatsheet.modules.ModuleAppSection;
 import com.github.jlangch.venice.impl.docgen.cheatsheet.modules.ModuleBenchmarkSection;
+import com.github.jlangch.venice.impl.docgen.cheatsheet.modules.ModuleCargoSection;
 import com.github.jlangch.venice.impl.docgen.cheatsheet.modules.ModuleComponentSection;
 import com.github.jlangch.venice.impl.docgen.cheatsheet.modules.ModuleConfigSection;
 import com.github.jlangch.venice.impl.docgen.cheatsheet.modules.ModuleCryptographySection;
@@ -119,7 +120,7 @@ public class DocGenerator {
                         "java",   "semver",   "excel",     "hexdump",
                         "shell",  "geoip",    "benchmark", "component",
                         "config", "parsifal", "grep",      "test",
-                        "fonts",  "qrref",    "docker"));
+                        "fonts",  "qrref",    "docker",    "cargo"));
 
         final IVeniceInterpreter venice = new VeniceInterpreter(new AcceptAllInterceptor());
 
@@ -312,6 +313,7 @@ public class DocGenerator {
         extmod.addSection(new DocSection("Gradle", "modules.gradle"));
         extmod.addSection(new DocSection("Maven", "modules.maven"));
         extmod.addSection(new DocSection("Docker", "modules.docker"));
+        extmod.addSection(new DocSection("Cargo", "modules.cargo"));
         extmod.addSection(new DocSection("Test", "modules.test"));
         extmod.addSection(new DocSection("Tracing", "modules.tracing"));
         extmod.addSection(new DocSection("Benchmark", "modules.benchmark"));
@@ -393,6 +395,7 @@ public class DocGenerator {
                 new ModuleGradleSection(diBuilder).section(),
                 new ModuleMavenSection(diBuilder).section(),
                 new ModuleDockerSection(diBuilder).section(),
+                new ModuleCargoSection(diBuilder).section(),
                 new ModuleTracingSection(diBuilder).section(),
                 new ModuleShellSection(diBuilder).section(),
                 new ModuleAnsiSection(diBuilder).section(),

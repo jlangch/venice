@@ -26,6 +26,8 @@
 (load-module :docker)
 (load-module :cargo)
 
+(defonce internal-port 8259)
+
 
 ;; start ArangoDB
 (defn start [cname version mapped-port root-passwd memory cores log]
@@ -37,12 +39,13 @@
           (string? memory)
           (or (int? cores) (long? cores))] }
 
-  (let [envs ["ARANGO_ROOT_PASSWORD=~{root-passwd}"
-              "ARANGODB_OVERRIDE_DETECTED_TOTAL_MEMORY=~{memory}"
-              "ARANGODB_OVERRIDE_DETECTED_NUMBER_OF_CORES=~(long cores)"]
-        args ["--server.endpoint tcp://0.0.0.0:8259"]
-        log  (or log default-log)]
-    (cargo/start cname version mapped-port envs args arangodb-ready? log)))
+  (let [envs    ["ARANGO_ROOT_PASSWORD=~{root-passwd}"
+                 "ARANGODB_OVERRIDE_DETECTED_TOTAL_MEMORY=~{memory}"
+                 "ARANGODB_OVERRIDE_DETECTED_NUMBER_OF_CORES=~(long cores)"]
+        args    ["--server.endpoint tcp://0.0.0.0:~{internal-port}"]
+        log     (or log default-log)
+        publish "~(long mapped-port):~{internal-port}"]
+    (cargo/start cname "arangodb/arangodb" version publish envs args arangodb-ready? log)))
 
 
 ;; stop ArangoDB
@@ -50,7 +53,7 @@
   { :pre [(string? cname)] }
 
   (let [log (or log default-log)]
-      (cargo/stop cname log)))
+    (cargo/stop cname log)))
 
 
 ;; ---------------------------------------------------------------------------

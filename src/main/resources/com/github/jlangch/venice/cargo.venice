@@ -26,11 +26,58 @@
 (load-module :docker ['docker :as 'd])
 
 
-(defn start [cname version mapped-port envs args ready? log]
+(defn
+  ^{ :arglists '("(cargo/start cname repo version publish envs args ready? log)")
+     :doc """
+          Starts a container.
+
+          Start rules:
+
+            * If a container with another version exists for the container
+              name remove the container and the image
+            * Pull the image if not yet locally available
+            * If the container already runs - use it
+            * If the container is available but does not run - start it `(docker/start ...)`
+            * If the container is not available - run it `(docker/run ...)`
+            * Finally check for a successful startup using the supplied `ready?`
+              function. E.g.: `ready?` may scan the container logs for a success
+              startup message.
+
+          Args:
+
+          | [![width: 15%]] | [![width: 85%]] |
+          | cname   | A unique container name |
+          | repo    | The image repository |
+          | version | The image version |
+          | publish | The port publish|
+          | envs    | Env variables |
+          | args    | Arguments for the process run in the container |
+          | ready?  | A function to decide if the container is ready (maybe nil) |
+          | log     | A log function  (maybe nil)|
+          """
+     :examples '(
+          """
+          ;; Run an ArangoDB container
+          (cargo/start "arangodb-test"
+                       "arangodb/arangodb"
+                       "3.10.10"
+                       "8500:8259"
+                       ["ARANGO_ROOT_PASSWORD=test"
+                        "ARANGODB_OVERRIDE_DETECTED_TOTAL_MEMORY=8GB"
+                        "ARANGODB_OVERRIDE_DETECTED_NUMBER_OF_CORES=1"]
+                       ["--server.endpoint tcp://0.0.0.0:8259"]
+                       (fn [cname] true)
+                       (fn [s] (println "ArangoDB:" s)))
+          """)
+     :see-also '(
+          "cargo/stop") }
+
+  start [cname repo version publish envs args ready? log]
+
   { :pre [(string? cname)
+          (string? repo)
           (string? version)
-          (or (int? mapped-port) (long? mapped-port))
-          (pos? mapped-port)
+          (string? publish)
           (vector? envs)
           (vector? args)
           (or (nil? ready?) (fn? ready?))
@@ -38,38 +85,57 @@
 
   (let [log    (or log (fn [s] nil))
         ready? (or ready? (fn [c] true))]
-    ;; if a container with another arangodb version exists for cname
+    ;; if a container with another version exists for cname
     ;; remove the container and the image
     (if (d/container-exists-with-name? cname)
-      (when-not (container-of cname "arangodb/arangodb" version)
-        (log "purge container and image (ArangoDB version differs)...")
+      (when-not (container-of cname repo version)
+        (log "purge container and image (version differs)...")
         (when (d/container-running-with-name? cname)
           (d/container-stop-by-name cname))
         (d/container-purge-by-name cname)
         (log "purge done.")))
 
     ;; pull image if not yet locally available
-    (if (d/image-ready? "arangodb/arangodb" version)
-      (log "local docker ArangoDB image with tag '~{version}' found.")
-      (pull-image version log))
+    (if (d/image-ready? repo version)
+      (log "local docker ~{repo} image with tag '~{version}' found.")
+      (pull-image repo version log))
 
     ;; start the container or first time run it
     (if (d/container-exists-with-name? cname)
       (if (d/container-running-with-name? cname)
         (log "docker container already running.")
         (start-container cname log))
-      (run-container cname version mapped-port envs args log))
+      (run-container cname repo version publish envs args log))
 
     ;; check for successful startup log message (max wait 30s)
     (if (container-ready? cname 30 ready?)
       (log "docker container successfully started.")
       (let [msg "docker container did not start up successfully."]
         (log msg)
-        (throw (ex :VncException "ArangoDB: ~{msg}"))))))
+        (throw (ex :VncException "~{repo}:~{version}: ~{msg}"))))))
 
 
-;; stop ArangoDB
-(defn stop [cname log]
+(defn
+  ^{ :arglists '("(cargo/stop cname log)")
+     :doc """
+          Stops a container
+
+          Args:
+
+          | cname   | A unique container name    |
+          | log     | A log function (maybe nil) |
+          """
+     :examples '(
+          """
+          ;; Stop an ArangoDB container
+          (cargo/start "arangodb-test"
+                       (fn [s] (println "ArangoDB:" s)))
+          """)
+     :see-also '(
+          "cargo/start") }
+
+  stop [cname log]
+
   { :pre [(string? cname)
           (or (nil? log) (fn? log))] }
 
@@ -82,11 +148,11 @@
 ;; private functions
 ;; ---------------------------------------------------------------------------
 
-(defn- run-container [cname version mapped-port envs args log]
+(defn- run-container [cname repo version publish envs args log]
   (log "run docker container ~{version} ...")
-  (d/run "arangodb/arangodb:~{version}"
+  (d/run "~{repo}:~{version}"
          :name cname
-         :publish "~(long mapped-port):8259"
+         :publish publish
          :detach true
          :envs envs
          :args args)
@@ -104,9 +170,9 @@
   (d/container-stop-by-name cname)
   (log "docker container stopped."))
 
-(defn- pull-image [version log]
-  (log "downloading docker image '~{version}'...")
-  (d/image-pull "arangodb/arangodb:~{version}")
+(defn- pull-image [repo version log]
+  (log "downloading docker image '~{repo}:~{version}'...")
+  (d/image-pull "~{repo}:~{version}")
   (log "download done."))
 
 (defn- container-of [cname repo tag]
