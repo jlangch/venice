@@ -33,7 +33,7 @@
 
 ;; stop ArangoDB
 (defn stop [cname]
-  (cargo/start cname))
+  (cargo/stop cname))
 
 
 ;; ---------------------------------------------------------------------------
