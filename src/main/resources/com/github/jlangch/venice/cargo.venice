@@ -1,0 +1,127 @@
+;;;;   __    __         _
+;;;;   \ \  / /__ _ __ (_) ___ ___
+;;;;    \ \/ / _ \ '_ \| |/ __/ _ \
+;;;;     \  /  __/ | | | | (_|  __/
+;;;;      \/ \___|_| |_|_|\___\___|
+;;;;
+;;;;
+;;;; Copyright 2017-2023 Venice
+;;;;
+;;;; Licensed under the Apache License, Version 2.0 (the "License");
+;;;; you may not use this file except in compliance with the License.
+;;;; You may obtain a copy of the License at
+;;;;
+;;;;     http://www.apache.org/licenses/LICENSE-2.0
+;;;;
+;;;; Unless required by applicable law or agreed to in writing, software
+;;;; distributed under the License is distributed on an "AS IS" BASIS,
+;;;; WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+;;;; See the License for the specific language governing permissions and
+;;;; limitations under the License.
+
+;;;; Docker generic testcontainer
+
+(ns cargo)
+
+(load-module :docker ['docker :as 'd])
+
+
+(defn start [version mapped-port root-passwd cname memory cores]
+    ;; if a container with another arangodb version exists for cname
+    ;; remove the container and the image
+    (if (d/container-exists-with-name? cname)
+      (when-not (container-of cname "arangodb/arangodb" version)
+        (log "purge container and image (ArangoDB version differs)...")
+        (when (d/container-running-with-name? cname)
+          (d/container-stop-by-name cname))
+        (d/container-purge-by-name cname)
+        (log "purge done.")))
+
+    ;; pull image if not yet locally available
+    (if (d/image-ready? "arangodb/arangodb" version)
+      (log "local docker ArangoDB image with tag '~{version}' found.")
+      (pull-image version))
+
+    ;; start the container or first time run it
+    (if (d/container-exists-with-name? cname)
+      (if (d/container-running-with-name? cname)
+        (log "docker container already running.")
+        (start-container cname))
+      (run-container version mapped-port root-passwd cname memory cores))
+
+    ;; check for successful startup log message (max wait 30s)
+    (if (ready? cname 30)
+      (log "docker container successfully started. URL: ~(admin-url mapped-port)")
+      (let [msg "docker container did not start up successfully."]
+        (log msg)
+        (throw (ex :VncException "ArangoDB: ~{msg}")))))
+
+
+;; stop ArangoDB
+(defn stop [cname]
+  (when (d/container-running-with-name? cname)
+    (stop-container cname)))
+
+
+;; ---------------------------------------------------------------------------
+;; private functions
+;; ---------------------------------------------------------------------------
+
+(defn- log [s]
+  (println "ArangoDB: " s))
+
+(defn- run-container [version mapped-port root-passwd cname memory cores]
+  (log "run docker container ~{version} ...")
+  (d/run "arangodb/arangodb:~{version}"
+         :name cname
+         :publish "~(long mapped-port):8259"
+         :detach true
+         :envs ["ARANGO_ROOT_PASSWORD=~{root-passwd}"
+                "ARANGODB_OVERRIDE_DETECTED_TOTAL_MEMORY=~{memory}"
+                "ARANGODB_OVERRIDE_DETECTED_NUMBER_OF_CORES=~(long cores)"]
+         :args ["--server.endpoint tcp://0.0.0.0:8259"])
+  (sleep 5 :sec)
+  (log "run docker container ~{version} ready."))
+
+(defn- start-container [cname]
+  (log "starting docker container...")
+  (d/container-start-by-name cname)
+  (sleep 5 :sec)
+  (log "docker container started."))
+
+(defn- stop-container [cname]
+  (log "stopping docker container...")
+  (d/container-stop-by-name cname)
+  (log "docker container stopped."))
+
+(defn- pull-image [version]
+  (log "downloading docker image '~{version}'...")
+  (d/image-pull "arangodb/arangodb:~{version}")
+  (log "download done."))
+
+(defn- container-of [cname repo tag]
+  (let [info (d/container-image-info-by-name cname)]
+     (and (== repo (:repo info)) (== tag (:tag info)))))
+
+(defn- ready? [cname wait-sec]
+  (let [wait-ts (time/plus (time/local-date-time) :seconds wait-sec)]
+    (loop []
+      (if (time/after? (time/local-date-time) wait-ts)
+        false
+        (if (arangodb-ready? cname)
+           true
+           (do
+             (sleep 1000)
+             (recur)))))))
+
+(defn- arangodb-ready? [cname]
+  (-> (last-log-line cname)
+      (match? #".*is ready for business. Have fun.*")))
+
+(defn- last-log-line [cname]
+  (->> (d/container-logs cname :tail 5)
+       (str/split-lines)
+       (last)))
+
+(defn- admin-url [port]
+  "http://127.0.0.1:~(long port)")
