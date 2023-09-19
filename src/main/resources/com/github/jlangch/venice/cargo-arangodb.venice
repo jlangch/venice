@@ -23,34 +23,49 @@
 
 (ns cargo-arangodb)
 
+(load-module :docker)
 (load-module :cargo)
 
 
 ;; start ArangoDB
-(defn start [version mapped-port root-passwd cname memory cores]
-  (cargo/start version mapped-port root-passwd cname memory cores))
+(defn start [cname version mapped-port root-passwd memory cores]
+  { :pre [(string? cname)
+          (string? version)
+          (or (int? mapped-port) (long? mapped-port))
+          (pos? mapped-port)
+          (string? root-passwd)
+          (string? memory)
+          (or (int? cores) (long? cores))] }
+
+  (let [envs ["ARANGO_ROOT_PASSWORD=~{root-passwd}"
+              "ARANGODB_OVERRIDE_DETECTED_TOTAL_MEMORY=~{memory}"
+              "ARANGODB_OVERRIDE_DETECTED_NUMBER_OF_CORES=~(long cores)"]
+        args ["--server.endpoint tcp://0.0.0.0:8259"]]
+    (cargo/start cname version mapped-port envs args arangodb-ready? log)))
 
 
 ;; stop ArangoDB
 (defn stop [cname]
-  (cargo/stop cname))
+  { :pre [(string? cname)] }
+
+  (cargo/stop cname log))
 
 
 ;; ---------------------------------------------------------------------------
-;; private functions
+;; utils
 ;; ---------------------------------------------------------------------------
 
-(defn- log [s]
+(defn log [s]
   (println "ArangoDB: " s))
 
-(defn- arangodb-ready? [cname]
+(defn arangodb-ready? [cname]
   (-> (last-log-line cname)
       (match? #".*is ready for business. Have fun.*")))
 
-(defn- last-log-line [cname]
-  (->> (d/container-logs cname :tail 5)
+(defn last-log-line [cname]
+  (->> (docker/container-logs cname :tail 5)
        (str/split-lines)
        (last)))
 
-(defn- admin-url [port]
+(defn admin-url [port]
   "http://127.0.0.1:~(long port)")
