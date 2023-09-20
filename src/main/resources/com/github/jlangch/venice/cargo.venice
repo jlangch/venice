@@ -33,15 +33,17 @@
 
           Start rules:
 
-            * If a container with another version exists for the container
-              name remove the container and the image
-            * Pull the image if not yet locally available
-            * If the container already runs - use it
-            * If the container is available but does not run - start it `(docker/start ...)`
-            * If the container is not available - run it `(docker/run ...)`
+            * If a container with the passed name exists or is running in another
+              version, stop that container and remove it together with the image
+            * Pull the image if it is not yet locally available
+            * If the container runs with the requested version already  - use it
+            * If the container is available but does not run - start it using
+              `(docker/start ...)`
+            * If the container is not available - run it using
+              `(docker/run ...)`
             * Finally check for a successful startup using the supplied `ready?`
-              function. E.g.: `ready?` may scan the container logs for a success
-              startup message.
+              function. E.g.: `ready?` may scan the container logs for a 
+              successful startup message.
 
           Args:
 
