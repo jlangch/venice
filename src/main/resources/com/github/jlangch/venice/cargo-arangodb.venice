@@ -54,12 +54,12 @@
 
           | [![width: 15%]] | [![width: 85%]] |
           | cname       | A unique container name |
-          | version     | The ArangoDB version to use |
+          | version     | The ArangoDB version to use. E.g.: 3.10.10 |
           | mapped-port | The published (mapped) ArangoDB port on the host |
           | root-passwd | The ArangoDB root password |
-          | memory      | The detected memory ArangoDB is to use |
+          | memory      | The detected memory ArangoDB is to use. E.g.: 8GB, 8000MB |
           | cores       | The detected number of cores ArangoDB is to use |
-          | log         | A log function  (maybe nil)|
+          | log         | A log function  (may be *nil*)|
           """
      :examples '(
           """
@@ -80,10 +80,12 @@
   { :pre [(string? cname)
           (string? version)
           (or (int? mapped-port) (long? mapped-port))
-          (pos? mapped-port)
+          (< 0 mapped-port 65536)
           (string? root-passwd)
           (string? memory)
-          (or (int? cores) (long? cores))] }
+          (match? (str/upper-case memory) "[1-9][0-9]*(B|K|M|G|T|KB|MB|GB|TB|KIB|MIB|GIB|TIB)")
+          (or (int? cores) (long? cores))
+          (< 0 cores 64)] }
 
   (let [envs    ["ARANGO_ROOT_PASSWORD=~{root-passwd}"
                  "ARANGODB_OVERRIDE_DETECTED_TOTAL_MEMORY=~{memory}"
@@ -103,8 +105,8 @@
 
           Args:
 
-          | cname   | A unique container name    |
-          | log     | A log function (maybe nil) |
+          | cname   | A unique container name     |
+          | log     | A log function (may be *nil*) |
           """
      :examples '(
           """

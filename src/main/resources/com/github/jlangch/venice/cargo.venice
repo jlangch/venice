@@ -52,8 +52,8 @@
           | publish | The port publish|
           | envs    | Env variables |
           | args    | Arguments for the process run in the container |
-          | ready?  | A function to decide if the container is ready (maybe nil) |
-          | log     | A log function  (maybe nil)|
+          | ready?  | A function to decide if the container is ready (may be *nil*) |
+          | log     | A log function  (may be *nil*)|
           """
      :examples '(
           """
@@ -123,7 +123,7 @@
           Args:
 
           | cname   | A unique container name    |
-          | log     | A log function (maybe nil) |
+          | log     | A log function (may be *nil*) |
           """
      :examples '(
           """
