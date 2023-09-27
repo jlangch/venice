@@ -37,6 +37,18 @@ public class ShellException extends VncException {
         this.exitCode = exitCode;
     }
 
+    public ShellException(
+    		final String message,
+    		final Integer exitCode,
+    		final String stdout,
+    		final String stderr
+    ) {
+        super(message);
+        this.exitCode = exitCode;
+        this.stdout = stdout;
+        this.stderr = stderr;
+    }
+
     public ShellException(final String message, final Throwable cause) {
         super(message, cause);
         this.exitCode = null;
@@ -46,7 +58,19 @@ public class ShellException extends VncException {
         return exitCode;
     }
 
+    public String getStdout() {
+        return stdout;
+    }
+
+    public String getStderr() {
+        return stderr;
+    }
+
+
     private static final long serialVersionUID = 5439694361809280080L;
 
     private Integer exitCode;
+
+    private String stdout;
+    private String stderr;
 }

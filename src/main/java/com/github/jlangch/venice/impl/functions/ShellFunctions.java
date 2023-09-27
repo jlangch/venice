@@ -44,6 +44,7 @@ import com.github.jlangch.venice.TimeoutException;
 import com.github.jlangch.venice.VncException;
 import com.github.jlangch.venice.impl.thread.ThreadBridge;
 import com.github.jlangch.venice.impl.threadpool.ThreadPoolUtil;
+import com.github.jlangch.venice.impl.types.Constants;
 import com.github.jlangch.venice.impl.types.VncBoolean;
 import com.github.jlangch.venice.impl.types.VncByteBuffer;
 import com.github.jlangch.venice.impl.types.VncFunction;
@@ -61,6 +62,7 @@ import com.github.jlangch.venice.impl.types.collections.VncVector;
 import com.github.jlangch.venice.impl.types.util.Coerce;
 import com.github.jlangch.venice.impl.types.util.Types;
 import com.github.jlangch.venice.impl.util.ArityExceptions;
+import com.github.jlangch.venice.impl.util.StringUtil;
 import com.github.jlangch.venice.impl.util.SymbolMapBuilder;
 import com.github.jlangch.venice.impl.util.callstack.CallFrame;
 import com.github.jlangch.venice.impl.util.callstack.WithCallStack;
@@ -430,14 +432,27 @@ public class ShellFunctions {
                 }
                 else if (exitCode != 0 && throwExOnFailure) {
                     //try (WithCallStack cs = new WithCallStack(new CallFrame("sh", cmd.getMeta()))) {
+	               		final VncVal out = future_stdout.get();
+	               		final VncVal err = future_stderr.get();
+
+	               		final String sOut = out == Constants.Nil ? null : StringUtil.trimToNull(out.toString());
+	               		final String sErr = err == Constants.Nil ? null : StringUtil.trimToNull(err.toString());
+
+	               		final String sErrOverview = sErr == null
+	               										? ""
+	               										: "\n\nstderr:\n" + StringUtil.truncate(sErr, 200, "...");
+
                         throw new ShellException(
                                 String.format(
-                                    "Shell execution failed: (sh %s). Exit code: %d",
+                                    "Shell execution failed: (sh %s). Exit code: %d%s",
                                     cmd.stream()
                                        .map(v -> v.toString())
                                        .collect(Collectors.joining(" ")),
-                                    exitCode),
-                                exitCode);
+                                    exitCode,
+                                    sErrOverview),
+                                exitCode,
+                                sOut,
+                                sErr);
                     //}
                 }
                 else {
