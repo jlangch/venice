@@ -118,8 +118,8 @@
       (if (d/container-exists-with-name? cname)
         (if (d/container-running-with-name? cname)
           (log "docker container already running.")
-          (start-container cname log))
-        (run-container cname repo version publish envs args log))
+          (start-container cname log wait-after-start-secs))
+        (run-container cname repo version publish envs args log wait-after-start-secs))
 
       ;; check for successful startup log message (max wait 30s)
       (if ready?
