@@ -349,6 +349,9 @@
           | :volumes vol            | Bind mount a volume (a sequence of volume defs)|
           | :workdir dir            | Working directory inside the container |
           | :args args              | Arguments passed to container process (a sequence of args or a string) |
+
+
+          See also `cargo/run` for a smarter way to start a container.
           """
      :examples '(
           """
@@ -380,6 +383,7 @@
                         :args ["--database.auto-upgrade"]))
           """ )
      :see-also '(
+          "cargo/start"
           "docker/images" "docker/ps"
           "docker/start"  "docker/stop"
           "docker/rm"     "docker/prune"

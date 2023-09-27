@@ -2096,7 +2096,8 @@
         The type classifies the message and is one of: `:info`, `:warn`, or
         `:error`.
         """
-       }
+      :examples '(
+        "(print-msg-box :info (str/lorem-ipsum :chars 180))" ) }
 
   print-msg-box [type text]
 
