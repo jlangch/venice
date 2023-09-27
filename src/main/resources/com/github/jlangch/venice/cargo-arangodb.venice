@@ -92,10 +92,15 @@
                  "ARANGODB_OVERRIDE_DETECTED_NUMBER_OF_CORES=~(long cores)"]
         args    ["--server.endpoint tcp://0.0.0.0:~{internal-port}"]
         log     (or log default-log)
-        publish "~(long mapped-port):~{internal-port}"]
+        publish "~(long mapped-port):~{internal-port}"
+        wait-after-start-secs 3
+        ready-check-max-secs  30]
     (cargo/start cname "arangodb/arangodb" version publish
                  envs args
-                 arangodb-ready? log)))
+                 arangodb-ready?
+                 log
+                 wait-after-start-secs
+                 ready-check-max-secs)))
 
 
 (defn

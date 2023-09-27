@@ -27,7 +27,9 @@
 
 
 (defn
-  ^{ :arglists '("(cargo/start cname repo version publish envs args ready? log)")
+  ^{ :arglists '(
+          "(cargo/start cname repo version publish envs args ready? log)"
+          "(cargo/start cname repo version publish envs args ready? log wait-after-start-secs ready-check-max-secs)")
      :doc """
           Starts a container.
 
@@ -42,20 +44,22 @@
             * If the container is not available - run it using
               `(docker/run ...)`
             * Finally check for a successful startup using the supplied `ready?`
-              function. E.g.: `ready?` may scan the container logs for a 
+              function. E.g.: `ready?` may scan the container logs for a
               successful startup message.
 
           Args:
 
-          | [![width: 15%]] | [![width: 85%]] |
-          | cname   | A unique container name |
-          | repo    | The image repository |
-          | version | The image version |
-          | publish | The port publish|
-          | envs    | Env variables |
-          | args    | Arguments for the process run in the container |
-          | ready?  | A function to decide if the container is ready (may be *nil*) |
-          | log     | A log function  (may be *nil*)|
+          | [![width: 15%]]       | [![width: 85%]] |
+          | cname                 | A unique container name |
+          | repo                  | The image repository |
+          | version               | The image version |
+          | publish               | The port publish|
+          | envs                  | Env variables |
+          | args                  | Arguments for the process run in the container |
+          | ready?                | A function to decide if the container is ready (may be *nil*) |
+          | log                   | A log function  (may be *nil*)|
+          | wait-after-start-secs | Wait n seconds after starting the container (may be *nil*)|
+          | ready-check-max-secs  | Try max n seconds for ready check (defaults to 30s if *nil*)|
           """
      :examples '(
           """
@@ -69,52 +73,62 @@
                         "ARANGODB_OVERRIDE_DETECTED_NUMBER_OF_CORES=1"]
                        ["--server.endpoint tcp://0.0.0.0:8259"]
                        (fn [cname] true)
-                       (fn [s] (println "ArangoDB:" s)))
+                       (fn [s] (println "ArangoDB:" s))
+                       3
+                       30)
           """)
      :see-also '(
           "cargo/stop") }
 
-  start [cname repo version publish envs args ready? log]
+  start
 
-  { :pre [(string? cname)
-          (string? repo)
-          (string? version)
-          (string? publish)
-          (vector? envs)
-          (vector? args)
-          (or (nil? ready?) (fn? ready?))
-          (or (nil? log) (fn? log))] }
+  ([cname repo version publish envs args ready? log]
+    (start cname repo version publish envs args ready? log nil nil))
 
-  (let [log    (or log (fn [s] nil))
-        ready? (or ready? (fn [c] true))]
-    ;; if a container with another version exists for cname
-    ;; remove the container and the image
-    (if (d/container-exists-with-name? cname)
-      (when-not (container-of cname repo version)
-        (log "purge container and image (version differs)...")
-        (when (d/container-running-with-name? cname)
-          (d/container-stop-by-name cname))
-        (d/container-purge-by-name cname)
-        (log "purge done.")))
+  ([cname repo version publish envs args ready? log wait-after-start-secs ready-check-max-secs]
+    { :pre [(string? cname)
+            (string? repo)
+            (string? version)
+            (string? publish)
+            (vector? envs)
+            (vector? args)
+            (or (nil? ready?) (fn? ready?))
+            (or (nil? log) (fn? log))
+            (or (nil? wait-after-start-sec) (int? wait-after-start-sec) (long? wait-after-start-sec))
+            (or (nil? ready-check-max-secs) (int? ready-check-max-secs) (long? ready-check-max-secs))] }
 
-    ;; pull image if not yet locally available
-    (if (d/image-ready? repo version)
-      (log "local docker ~{repo} image with tag '~{version}' found.")
-      (pull-image repo version log))
+    (let [log     (or log (fn [s] nil))
+          ready?  (or ready? (fn [c] true))]
+      ;; if a container with another version exists for cname
+      ;; remove the container and the image
+      (if (d/container-exists-with-name? cname)
+        (when-not (container-of cname repo version)
+          (log "purge container and image (version differs)...")
+          (when (d/container-running-with-name? cname)
+            (d/container-stop-by-name cname))
+          (d/container-purge-by-name cname)
+          (log "purge done.")))
 
-    ;; start the container or first time run it
-    (if (d/container-exists-with-name? cname)
-      (if (d/container-running-with-name? cname)
-        (log "docker container already running.")
-        (start-container cname log))
-      (run-container cname repo version publish envs args log))
+      ;; pull image if not yet locally available
+      (if (d/image-ready? repo version)
+        (log "local docker ~{repo} image with tag '~{version}' found.")
+        (pull-image repo version log))
 
-    ;; check for successful startup log message (max wait 30s)
-    (if (container-ready? cname 30 ready?)
-      (log "docker container successfully started.")
-      (let [msg "docker container did not start up successfully."]
-        (log msg)
-        (throw (ex :VncException "~{repo}:~{version}: ~{msg}"))))))
+      ;; start the container or first time run it
+      (if (d/container-exists-with-name? cname)
+        (if (d/container-running-with-name? cname)
+          (log "docker container already running.")
+          (start-container cname log))
+        (run-container cname repo version publish envs args log))
+
+      ;; check for successful startup log message (max wait 30s)
+      (if ready?
+        (if (container-ready? cname (or ready-check-max-secs 30) ready?)
+          (log "docker container successfully started.")
+          (let [msg "docker container did not start up successfully."]
+            (log msg)
+            (throw (ex :VncException "~{repo}:~{version}: ~{msg}"))))
+        (log "docker container started.")))))
 
 
 (defn
@@ -150,7 +164,7 @@
 ;; private functions
 ;; ---------------------------------------------------------------------------
 
-(defn- run-container [cname repo version publish envs args log]
+(defn- run-container [cname repo version publish envs args log wait-after-start-secs]
   (log "run docker container ~{version} ...")
   (d/run "~{repo}:~{version}"
          :name cname
@@ -158,13 +172,13 @@
          :detach true
          :envs envs
          :args args)
-  (sleep 5 :sec)
+  (sleep (or wait-after-start-secs 0) :sec)
   (log "run docker container ~{version} ready."))
 
-(defn- start-container [cname log]
+(defn- start-container [cname log wait-after-start-secs]
   (log "starting docker container...")
   (d/container-start-by-name cname)
-  (sleep 5 :sec)
+  (sleep (or wait-after-start-secs 0) :sec)
   (log "docker container started."))
 
 (defn- stop-container [cname log]
