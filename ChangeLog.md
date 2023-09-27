@@ -5,11 +5,11 @@ All notable changes to this project will be documented in this file.
 
 
 
-## [1.10.44] - 2023-09-xx
+## [1.10.44] - 2023-09-27
 
-### Added 
+### Improved 
 
-- ...
+- error messages for the :cargo and :docker module
 
 
 
