@@ -5,6 +5,14 @@ All notable changes to this project will be documented in this file.
 
 
 
+## [1.10.45] - 2023-09-xx
+
+### Added 
+
+- ...
+
+
+
 ## [1.10.44] - 2023-09-27
 
 ### Improved 
