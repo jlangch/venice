@@ -94,7 +94,7 @@
             (vector? args)
             (or (nil? ready?) (fn? ready?))
             (or (nil? log) (fn? log))
-            (or (nil? wait-after-start-sec) (int? wait-after-start-sec) (long? wait-after-start-sec))
+            (or (nil? wait-after-start-secs) (int? wait-after-start-secs) (long? wait-after-start-secs))
             (or (nil? ready-check-max-secs) (int? ready-check-max-secs) (long? ready-check-max-secs))] }
 
     (let [log     (or log (fn [s] nil))
