@@ -11,6 +11,10 @@ All notable changes to this project will be documented in this file.
 
 - ...
 
+### Updated 
+
+- :pdf module dependencies to flyingSaucer 9.3.1 and openpdf 1.3.30
+
 
 
 ## [1.10.44] - 2023-09-27
