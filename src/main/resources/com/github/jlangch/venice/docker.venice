@@ -350,8 +350,8 @@
           | :workdir dir            | Working directory inside the container |
           | :args args              | Arguments passed to container process (a sequence of args or a string) |
 
-
-          See also `cargo/run` for a smarter way to start a container.
+          See also `cargo/start` / `cargo/stop` for a smarter way to start/stop
+          a container.
           """
      :examples '(
           """
@@ -513,12 +513,17 @@
           Options:
 
           | :attach {true, false} | Attach STDOUT/STDERR and forward signals |
+
+          See also `cargo/start` / `cargo/stop` for a smarter way to start/stop
+          a container.
           """
      :examples '(
           """
           (docker/start "74789744g489")
           """ )
      :see-also '(
+          "cargo/start"
+          "docker/container-start-by-name"
           "docker/stop"
           "docker/ps"
           "docker/run" )
@@ -548,12 +553,17 @@
 
           | :signal name | Signal to send to the container |
           | :time n      | Seconds to wait before killing the container |
+
+          See also `cargo/start` / `cargo/stop` for a smarter way to start/stop
+          a container.
           """
      :examples '(
           """
           (docker/stop "74789744g489" :time 30)
           """ )
      :see-also '(
+          "cargo/stop"
+          "docker/container-stop-by-name"
           "docker/start"
           "docker/ps"
           "docker/run" )
