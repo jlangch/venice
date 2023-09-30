@@ -217,6 +217,6 @@ is subject to the terms and conditions of the following licenses.
 
 
 VAVR 0.10.3 (io.vavr:vavr:0.10.3)                      LICENSE-Vavr.txt
-JLine3 3.19.0 (org.jline:jline:3.19.0)               LICENSE-JLine3.txt
+JLine3 3.21.0 (org.jline:jline:3.21.0)               LICENSE-JLine3.txt
 nanojson 1.6 (com.grack:nanojson:1.6)              LICENSE-nanojson.txt
 Audiowide Regular Open Font                       LICENSE-Audiowide.txt
