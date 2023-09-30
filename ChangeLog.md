@@ -15,6 +15,10 @@ All notable changes to this project will be documented in this file.
 
 - :pdf module dependencies to flyingSaucer 9.3.1 and openpdf 1.3.30
 
+### Updated dependencies:
+
+- Bump gradle from 8.0.2 to 8.3
+
 
 
 ## [1.10.44] - 2023-09-27
