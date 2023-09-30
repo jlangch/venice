@@ -78,7 +78,7 @@
                        30)
           """)
      :see-also '(
-          "cargo/stop") }
+          "cargo/stop", "cargo/running?", "cargo/purge") }
 
   start
 
@@ -148,7 +148,7 @@
                       (fn [s] (println "ArangoDB:" s)))
           """)
      :see-also '(
-          "cargo/start") }
+          "cargo/start", "cargo/running?", "cargo/purge") }
 
   stop [cname log]
 
@@ -158,6 +158,59 @@
   (let [log (or log (fn [s] nil))]
     (when (d/container-running-with-name? cname)
       (stop-container cname log))))
+
+
+(defn
+  ^{ :arglists '("(cargo/running? cname)")
+     :doc """
+          Returns true if a container with the specified name is running.
+
+          Args:
+
+          | cname   | A unique container name    |
+          """
+     :examples '(
+          """
+          ;; Test if ArangoDB container is running
+          (cargo/running? "arangodb-test")
+          """)
+     :see-also '(
+          "cargo/start", "cargo/stop", "cargo/purge") }
+
+  running? [cname]
+
+  { :pre [(string? cname)] }
+
+  (d/container-running-with-name? cname))
+
+
+(defn
+  ^{ :arglists '("(cargo/purge cname)")
+     :doc """
+          Removes a container and its image. The container must not be running.
+
+          Args:
+
+          | cname   | A unique container name    |
+          """
+     :examples '(
+          """
+          ;; Purge an ArangoDB container
+          (cargo/purge "arangodb-test")
+          """)
+     :see-also '(
+          "cargo/start", "cargo/stop", "cargo/running?") }
+
+  purge [cname]
+
+  { :pre [(string? cname)] }
+
+  (if (d/container-exists-with-name? cname)
+    (if (d/container-running-with-name? cname)
+      (throw (ex :VncException
+                 "The container '~{cname}' is running and cannot be purged!"))
+      (d/container-purge-by-name cname))))
+
 
 
 ;; ---------------------------------------------------------------------------

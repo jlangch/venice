@@ -46,6 +46,8 @@ public class ModuleCargoSection implements ISectionBuilder {
         all.addSection(docker);
         docker.addItem(diBuilder.getDocItem("cargo/start", false));
         docker.addItem(diBuilder.getDocItem("cargo/stop", false));
+        docker.addItem(diBuilder.getDocItem("cargo/running?", false));
+        docker.addItem(diBuilder.getDocItem("cargo/purge", false));
 
         return section;
     }
