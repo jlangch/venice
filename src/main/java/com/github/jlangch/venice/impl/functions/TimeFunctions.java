@@ -2191,13 +2191,29 @@ public class TimeFunctions {
     private static ChronoUnit toChronoUnit(final String unit) {
         switch(unit) {
             case "years":   return ChronoUnit.YEARS;
+            case "year":    return ChronoUnit.YEARS;
+
             case "months":  return ChronoUnit.MONTHS;
+            case "month":   return ChronoUnit.MONTHS;
+
             case "weeks":   return ChronoUnit.WEEKS;
+            case "week":    return ChronoUnit.WEEKS;
+
             case "days":    return ChronoUnit.DAYS;
+            case "day":     return ChronoUnit.DAYS;
+
             case "hours":   return ChronoUnit.HOURS;
+            case "hour":    return ChronoUnit.HOURS;
+
             case "minutes": return ChronoUnit.MINUTES;
+            case "minute":  return ChronoUnit.MINUTES;
+
             case "seconds": return ChronoUnit.SECONDS;
+            case "second":  return ChronoUnit.SECONDS;
+
             case "millis":  return ChronoUnit.MILLIS;
+            case "milli":   return ChronoUnit.MILLIS;
+
             default:        return null;
         }
     }
