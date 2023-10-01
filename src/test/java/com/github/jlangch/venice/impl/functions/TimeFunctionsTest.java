@@ -164,6 +164,9 @@ public class TimeFunctionsTest {
     public void test_local_date_time_plus() {
         final Venice venice = new Venice();
 
+        assertEquals("2018-08-10T10:15:32", venice.eval("(str (time/plus (time/local-date-time 2018 8 10 10 15 30) :seconds 2))"));
+        assertEquals("2018-08-10T10:17:30", venice.eval("(str (time/plus (time/local-date-time 2018 8 10 10 15 30) :minutes 2))"));
+        assertEquals("2018-08-10T12:15:30", venice.eval("(str (time/plus (time/local-date-time 2018 8 10 10 15 30) :hours 2))"));
         assertEquals("2018-08-12T10:15:30", venice.eval("(str (time/plus (time/local-date-time 2018 8 10 10 15 30) :days 2))"));
         assertEquals("2018-10-10T10:15:30", venice.eval("(str (time/plus (time/local-date-time 2018 8 10 10 15 30) :months 2))"));
         assertEquals("2020-08-10T10:15:30", venice.eval("(str (time/plus (time/local-date-time 2018 8 10 10 15 30) :years 2))"));
@@ -171,6 +174,22 @@ public class TimeFunctionsTest {
         assertEquals("2018-08-12T10:15:30", venice.eval("(str (time/plus (time/local-date-time 2018 8 10 10 15 30) (. :java.time.Period :ofDays 2)))"));
         assertEquals("2018-10-10T10:15:30", venice.eval("(str (time/plus (time/local-date-time 2018 8 10 10 15 30) (. :java.time.Period :ofMonths 2)))"));
         assertEquals("2020-08-10T10:15:30", venice.eval("(str (time/plus (time/local-date-time 2018 8 10 10 15 30) (. :java.time.Period :ofYears 2)))"));
+    }
+
+    @Test
+    public void test_local_date_time_minus() {
+        final Venice venice = new Venice();
+
+        assertEquals("2018-08-10T10:15:28", venice.eval("(str (time/minus (time/local-date-time 2018 8 10 10 15 30) :seconds 2))"));
+        assertEquals("2018-08-10T10:13:30", venice.eval("(str (time/minus (time/local-date-time 2018 8 10 10 15 30) :minutes 2))"));
+        assertEquals("2018-08-10T08:15:30", venice.eval("(str (time/minus (time/local-date-time 2018 8 10 10 15 30) :hours 2))"));
+        assertEquals("2018-08-12T10:15:30", venice.eval("(str (time/minus (time/local-date-time 2018 8 14 10 15 30) :days 2))"));
+        assertEquals("2018-06-10T10:15:30", venice.eval("(str (time/minus (time/local-date-time 2018 8 10 10 15 30) :months 2))"));
+        assertEquals("2016-08-10T10:15:30", venice.eval("(str (time/minus (time/local-date-time 2018 8 10 10 15 30) :years 2))"));
+
+        assertEquals("2018-08-12T10:15:30", venice.eval("(str (time/minus (time/local-date-time 2018 8 14 10 15 30) (. :java.time.Period :ofDays 2)))"));
+        assertEquals("2018-06-10T10:15:30", venice.eval("(str (time/minus (time/local-date-time 2018 8 10 10 15 30) (. :java.time.Period :ofMonths 2)))"));
+        assertEquals("2016-08-10T10:15:30", venice.eval("(str (time/minus (time/local-date-time 2018 8 10 10 15 30) (. :java.time.Period :ofYears 2)))"));
     }
 
     @Test
