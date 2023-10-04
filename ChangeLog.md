@@ -14,6 +14,7 @@ All notable changes to this project will be documented in this file.
 ### Fixed 
 
 - Venice to follow the Java rules when propagating exceptions from try-with-resources
+  blocks:
     1. exception from body block
     2. exception from catch block
     3. exception from finally block
