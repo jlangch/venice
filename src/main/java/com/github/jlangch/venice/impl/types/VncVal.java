@@ -87,8 +87,8 @@ public abstract class VncVal implements Comparable<VncVal>, Serializable {
     public VncVal getMetaVal(final VncString key) {
         final VncVal meta_ = getMeta();
         return meta_ instanceof VncHashMap
-        		? ((VncHashMap)meta_).get(key)
-        		: Nil; // not a map
+                ? ((VncHashMap)meta_).get(key)
+                : Nil; // not a map
     }
 
     public VncVal getMetaVal(final VncString key, final VncVal defaultValue) {

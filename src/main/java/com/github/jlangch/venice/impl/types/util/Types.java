@@ -78,6 +78,7 @@ import com.github.jlangch.venice.impl.types.collections.VncSortedMap;
 import com.github.jlangch.venice.impl.types.collections.VncSortedSet;
 import com.github.jlangch.venice.impl.types.collections.VncStack;
 import com.github.jlangch.venice.impl.types.collections.VncVector;
+import com.github.jlangch.venice.impl.types.concurrent.VncLock;
 import com.github.jlangch.venice.impl.types.custom.VncCustomType;
 import com.github.jlangch.venice.impl.types.custom.VncProtocol;
 import com.github.jlangch.venice.impl.util.MetaUtil;
@@ -248,6 +249,10 @@ public class Types {
         return val != null && (val instanceof VncDAG);
     }
 
+    public static boolean isVncLock(final VncVal val) {
+        return val != null && (val instanceof VncLock);
+    }
+
     public static boolean isIVncFunction(final VncVal val) {
         return val != null && (val instanceof IVncFunction);
     }
@@ -370,6 +375,8 @@ public class Types {
             case ":core/custom-type":    return Types.isVncCustomType(val);
 
             case ":core/protocol":       return Types.isVncProtocol(val);
+
+            case ":core/lock":           return Types.isVncLock(val);
 
             case ":dag/dag":             return Types.isVncDAG(val);
 
@@ -523,6 +530,8 @@ public class Types {
             case "custom-type":    return true;
 
             case "protocol":       return true;
+
+            case "lock":           return true;
 
             default:               return false;
         }
