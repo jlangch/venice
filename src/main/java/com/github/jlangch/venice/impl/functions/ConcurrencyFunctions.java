@@ -155,7 +155,7 @@ public class ConcurrencyFunctions {
                         "  (try-with [l (acquire l)]  \n" +
                         "     ;; do something         \n" +
                         "     ))                       ")
-                    .seeAlso("acquire", "release")
+                    .seeAlso("acquire", "try-acquire", "release", "locked?", "lock?")
                     .build()
         ) {
             @Override
@@ -179,7 +179,7 @@ public class ConcurrencyFunctions {
                     .examples(
                         "(let [l (lock)]     \n" +
                         "  (lock? l))        ")
-                    .seeAlso("acquire", "release")
+                    .seeAlso("acquire", "try-acquire", "release", "locked?")
                     .build()
         ) {
             @Override
@@ -206,7 +206,7 @@ public class ConcurrencyFunctions {
                         "  (acquire l)           \n" +
                         "  ;; do something       \n" +
                         "  (release l))          ")
-                    .seeAlso("lock", "release")
+                    .seeAlso("lock", "try-acquire", "release", "locked?")
                     .build()
         ) {
             @Override
@@ -243,7 +243,7 @@ public class ConcurrencyFunctions {
                         "    ;; do something                    \n" +
                         "    (release l)))                      ")
 
-                    .seeAlso("lock", "release")
+                    .seeAlso("lock", "acquire", "release", "locked?")
                     .build()
         ) {
             @Override
@@ -282,7 +282,7 @@ public class ConcurrencyFunctions {
                         "  (acquire l)           \n" +
                         "  ;; do something       \n" +
                         "  (release l))          ")
-                    .seeAlso("lock", "acquire")
+                    .seeAlso("lock", "acquire", "try-acquire", "locked?")
                     .build()
         ) {
             @Override
@@ -304,11 +304,12 @@ public class ConcurrencyFunctions {
                     .meta()
                     .arglists("(locked? lock)")
                     .doc(
-                        "Returns `true` if the lock is free else `false`.")
+                        "Returns `true` if the lock is in use else `false`.")
                     .examples(
                         "(let [l (lock)]         \n" +
+                        "  (acquire l)           \n" +
                         "  (locked? l))          ")
-                    .seeAlso("lock", "acquire")
+                    .seeAlso("lock", "acquire", "try-acquire", "release")
                     .build()
         ) {
             @Override
