@@ -48,7 +48,7 @@ public class TimeUnitUtil {
             case "days":         return TimeUnit.DAYS;
 
             default:
-                throw new VncException("Invalid scheduler time-unit " + unit.getValue());
+                throw new VncException("Invalid time-unit " + unit.getValue());
         }
     }
 
