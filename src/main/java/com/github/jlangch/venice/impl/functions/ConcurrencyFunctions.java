@@ -70,6 +70,7 @@ import com.github.jlangch.venice.impl.types.util.Coerce;
 import com.github.jlangch.venice.impl.types.util.Types;
 import com.github.jlangch.venice.impl.util.ArityExceptions;
 import com.github.jlangch.venice.impl.util.SymbolMapBuilder;
+import com.github.jlangch.venice.impl.util.TimeUnitUtil;
 import com.github.jlangch.venice.impl.util.callstack.CallFrame;
 
 
@@ -1595,7 +1596,7 @@ public class ConcurrencyFunctions {
                 return  new VncJavaObject(
                                 timeoutAfter(
                                     time.getValue(),
-                                    ScheduleFunctions.toTimeUnit(unit)));
+                                    TimeUnitUtil.toTimeUnit(unit)));
             }
 
             private static final long serialVersionUID = -1848883965231344442L;
@@ -1644,7 +1645,7 @@ public class ConcurrencyFunctions {
 
                 final CompletableFuture<VncVal> cf2 = timeoutAfter(
                                                             time.getValue(),
-                                                            ScheduleFunctions.toTimeUnit(unit));
+                                                            TimeUnitUtil.toTimeUnit(unit));
 
                 final VncFunction fn = CoreFunctions.identity;
 
@@ -1707,7 +1708,7 @@ public class ConcurrencyFunctions {
                 final CompletableFuture<VncVal> cf2 = timeoutAfter(
                                                             timeoutVal,
                                                             time.getValue(),
-                                                            ScheduleFunctions.toTimeUnit(unit));
+                                                            TimeUnitUtil.toTimeUnit(unit));
 
                 final VncFunction fn = CoreFunctions.identity;
 

@@ -25,9 +25,7 @@ import java.util.Map;
 import java.util.concurrent.Callable;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ScheduledFuture;
-import java.util.concurrent.TimeUnit;
 
-import com.github.jlangch.venice.VncException;
 import com.github.jlangch.venice.impl.thread.ThreadBridge;
 import com.github.jlangch.venice.impl.threadpool.ManagedScheduledThreadPoolExecutor;
 import com.github.jlangch.venice.impl.types.VncFunction;
@@ -39,6 +37,7 @@ import com.github.jlangch.venice.impl.types.collections.VncList;
 import com.github.jlangch.venice.impl.types.util.Coerce;
 import com.github.jlangch.venice.impl.util.ArityExceptions;
 import com.github.jlangch.venice.impl.util.SymbolMapBuilder;
+import com.github.jlangch.venice.impl.util.TimeUnitUtil;
 import com.github.jlangch.venice.impl.util.callstack.CallFrame;
 
 
@@ -87,7 +86,7 @@ public class ScheduleFunctions {
                                                         .schedule(
                                                             taskWrapper,
                                                             delay.getValue(),
-                                                            toTimeUnit(unit));
+                                                            TimeUnitUtil.toTimeUnit(unit));
 
                 return new VncJavaObject(future);
             }
@@ -144,7 +143,7 @@ public class ScheduleFunctions {
                                                         taskWrapper,
                                                         delay.getValue(),
                                                         period.getValue(),
-                                                        toTimeUnit(unit));
+                                                        TimeUnitUtil.toTimeUnit(unit));
 
                 return new VncJavaObject(future);
             }
@@ -156,18 +155,6 @@ public class ScheduleFunctions {
     ///////////////////////////////////////////////////////////////////////////
     // Utils
     ///////////////////////////////////////////////////////////////////////////
-
-    public static TimeUnit toTimeUnit(final VncKeyword unit) {
-        switch(unit.getValue()) {
-            case "millis": return TimeUnit.MILLISECONDS;
-            case "milliseconds": return TimeUnit.MILLISECONDS;
-            case "seconds": return TimeUnit.SECONDS;
-            case "minutes":  return TimeUnit.MINUTES;
-            case "hours": return TimeUnit.HOURS;
-            case "days": return TimeUnit.DAYS;
-            default: throw new VncException("Invalid scheduler time-unit " + unit.getValue());
-        }
-    }
 
     public static void shutdown() {
         mngdExecutor.shutdown();
