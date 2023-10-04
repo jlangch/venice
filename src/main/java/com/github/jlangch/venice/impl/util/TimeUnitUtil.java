@@ -31,8 +31,8 @@ public class TimeUnitUtil {
 
     public static TimeUnit toTimeUnit(final VncKeyword unit) {
         switch(unit.getValue()) {
-	        case "milli":        return TimeUnit.MILLISECONDS;
-	        case "millis":       return TimeUnit.MILLISECONDS;
+            case "milli":        return TimeUnit.MILLISECONDS;
+            case "millis":       return TimeUnit.MILLISECONDS;
             case "milliseconds": return TimeUnit.MILLISECONDS;
 
             case "second":       return TimeUnit.SECONDS;
@@ -48,7 +48,7 @@ public class TimeUnitUtil {
             case "days":         return TimeUnit.DAYS;
 
             default:
-            	throw new VncException("Invalid scheduler time-unit " + unit.getValue());
+                throw new VncException("Invalid scheduler time-unit " + unit.getValue());
         }
     }
 
