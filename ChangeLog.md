@@ -9,7 +9,7 @@ All notable changes to this project will be documented in this file.
 
 ### Added 
 
-- ...
+- functions to handle locks based on a semphore
 
 ### Updated 
 
