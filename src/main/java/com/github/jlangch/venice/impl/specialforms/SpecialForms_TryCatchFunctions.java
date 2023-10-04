@@ -252,25 +252,37 @@ public class SpecialForms_TryCatchFunctions {
                                 boundResources);
                 }
                 finally {
-                    // close resources in reverse order
+                    final List<VncException> exceptions = new ArrayList<>();
+
+                    // close resources in reverse order, do best effort and close all resources
+                    // regardless of exceptions. throw the first exception after having closed
+                    // all resources
                     Collections.reverse(boundResources);
                     boundResources.stream().forEach(b -> {
                         final VncVal resource = b.getVal();
-                        if (Types.isVncJavaObject(resource)) {
-                            final Object r = ((VncJavaObject)resource).getDelegate();
-                            if (r instanceof AutoCloseable) {
-                                try {
-                                    ((AutoCloseable)r).close();
-                                }
-                                catch(Exception ex) {
-                                    throw new VncException(
+
+                        final Object r = Types.isVncJavaObject(resource)
+                                            ? ((VncJavaObject)resource).getDelegate()
+                                            : resource;
+
+                        if (r instanceof AutoCloseable) {
+                            try {
+                                ((AutoCloseable)r).close();
+                            }
+                            catch(Exception ex) {
+                                exceptions.add(
+                                        new VncException(
                                             String.format(
                                                     "'try-with' failed to close resource %s.",
-                                                    b.getName()));
-                                }
+                                                    b.getName())));
                             }
                         }
                     });
+
+                    // throw the first exception
+                    if (!exceptions.isEmpty()) {
+                        throw exceptions.get(0);
+                    }
                 }
             }
 
@@ -395,7 +407,7 @@ public class SpecialForms_TryCatchFunctions {
         // Selector: predicate => (catch predicate-fn e (..))
         else if (Types.isVncFunction(selector)) {
             final VncFunction predicate = (VncFunction)selector;
-           	predicate.sandboxFunctionCallValidation();
+               predicate.sandboxFunctionCallValidation();
 
             if (th instanceof ValueException) {
                 final VncVal exVal = getValueExceptionValue((ValueException)th);

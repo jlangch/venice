@@ -1853,4 +1853,13 @@ public class ConcurrencyFunctionsTest {
         assertFalse((boolean)venice.eval("(let [l (lock)] (acquire l) @(future #(try-acquire l 300 :millis)))"));
      }
 
+    @Test
+    public void test_lock_try_with_resources() {
+        final Venice venice = new Venice();
+
+        assertTrue((boolean)venice.eval("(let [l (lock)] (try-with [l (acquire l)] (locked? l)))"));
+        assertFalse((boolean)venice.eval("(let [l (lock)] (try-with [l (acquire l)] (release l) 100) (locked? l))"));
+        assertFalse((boolean)venice.eval("(let [l (lock)] (try-with [l (acquire l)] 100) (locked? l))"));
+     }
+
 }

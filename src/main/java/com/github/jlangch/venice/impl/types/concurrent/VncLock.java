@@ -60,7 +60,7 @@ public class VncLock extends VncVal implements AutoCloseable {
     }
 
     @Override
-     public void close() {
+    public void close() {
         unlock();
     }
 
