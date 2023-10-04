@@ -75,9 +75,9 @@ public class SpecialForms_TryCatchFunctions {
                 VncSpecialForm
                     .meta()
                     .arglists(
-                            "(try expr*)",
-                            "(try expr* (catch selector ex-sym expr*)*)",
-                            "(try expr* (catch selector ex-sym expr*)* (finally expr*))")
+                        "(try expr*)",
+                        "(try expr* (catch selector ex-sym expr*)*)",
+                        "(try expr* (catch selector ex-sym expr*)* (finally expr*))")
                     .doc(
                         "Exception handling: try - catch - finally \n\n" +
                         "`(try)` without any expression returns `nil`.\n\n" +
@@ -105,7 +105,11 @@ public class SpecialForms_TryCatchFunctions {
                         "in Venice they are immediately wrapped in a :RuntimeException before being " +
                         "thrown! If Venice catches a *checked* exception from a Java interop call " +
                         "it wraps it in a :RuntimeException before handling it by the catch block " +
-                        "selectors.")
+                        "selectors.\n\n" +
+                        "Venice follows the Java rules when propagating exceptions:\n\n" +
+                        "  1. exception from finally block\n" +
+                        "  2. exception from catch block\n" +
+                        "  3. exception from body block")
                     .examples(
                         "(try                                      \n" +
                         "   (throw \"test\")                       \n" +
@@ -197,14 +201,19 @@ public class SpecialForms_TryCatchFunctions {
                 VncSpecialForm
                     .meta()
                     .arglists(
-                            "(try-with [bindings*] expr*)",
-                            "(try-with [bindings*] expr* (catch selector ex-sym expr*)*)",
-                            "(try-with [bindings*] expr* (catch selector ex-sym expr*)* (finally expr))")
+                        "(try-with [bindings*] expr*)",
+                        "(try-with [bindings*] expr* (catch selector ex-sym expr*)*)",
+                        "(try-with [bindings*] expr* (catch selector ex-sym expr*)* (finally expr))")
                     .doc(
                         "*try-with-resources* allows the declaration of resources to be used in a try block " +
                         "with the assurance that the resources will be closed after execution " +
                         "of that block. The resources declared must implement the Closeable or " +
-                        "AutoCloseable interface.")
+                        "AutoCloseable interface.\n\n" +
+                        "Venice follows the Java rules when propagating exceptions:\n\n" +
+                        "  1. exception from finally block\n" +
+                        "  2. exception from catch block\n" +
+                        "  3. exception from body block\n" +
+                        "  4. exception from resource auto-close")
                     .examples(
                         "(do                                               \n" +
                         "  (let [file (io/temp-file \"test-\", \".txt\")]  \n" +
