@@ -1,0 +1,63 @@
+/*   __    __         _
+ *   \ \  / /__ _ __ (_) ___ ___
+ *    \ \/ / _ \ '_ \| |/ __/ _ \
+ *     \  /  __/ | | | | (_|  __/
+ *      \/ \___|_| |_|_|\___\___|
+ *
+ *
+ * Copyright 2017-2022 Venice
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+package com.github.jlangch.venice.support;
+
+import com.github.jlangch.venice.VncException;
+import com.github.jlangch.venice.impl.types.VncString;
+import com.github.jlangch.venice.impl.types.VncVal;
+import com.github.jlangch.venice.impl.types.custom.VncWrappingTypeDef;
+
+
+public class AutoCloseableString extends VncString implements AutoCloseable {
+
+    public AutoCloseableString(final String v) {
+        super(v);
+    }
+
+    public AutoCloseableString(final String v, final VncVal meta) {
+        super(v, meta);
+    }
+
+    public AutoCloseableString(
+            final String v,
+            final VncWrappingTypeDef wrappingTypeDef,
+            final VncVal meta
+    ) {
+        super(v, wrappingTypeDef, meta);
+    }
+
+    public void throwExOnClose() {
+        this.throwExOnClose = true;
+    }
+
+    @Override
+    public void close() {
+        if (throwExOnClose) {
+            throw new VncException("AutoCloseableString");
+        }
+    }
+
+
+    private static final long serialVersionUID = 1L;
+
+    private boolean throwExOnClose = false;
+}
