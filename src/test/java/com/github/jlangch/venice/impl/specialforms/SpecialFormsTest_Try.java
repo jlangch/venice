@@ -32,6 +32,7 @@ import org.junit.jupiter.api.Test;
 import com.github.jlangch.venice.Parameters;
 import com.github.jlangch.venice.ValueException;
 import com.github.jlangch.venice.Venice;
+import com.github.jlangch.venice.VncException;
 import com.github.jlangch.venice.util.CapturingPrintStream;
 
 
@@ -649,6 +650,135 @@ public class SpecialFormsTest_Try {
 
         assertEquals(-1L, venice.eval(lisp, Parameters.of("*out*", ps)));
         assertEquals("100101200201300301", ps.getOutput());
+    }
+
+
+
+    // ---------------------------------------------------------------
+    // try - throw - catch - finally exception precedence
+    // ---------------------------------------------------------------
+
+    @Test
+    public void test_try_catch_finally_precedence_1() {
+        final Venice venice = new Venice();
+
+        // if the 'try-with' body throws an exception it has precedence of an exception
+        // thrown on auto-close. the latter one will be suppressed.
+        final String script =
+                "(try                                            \n" +
+                "  (throw (ex :VncException \"EX-BODY\"))        \n" +
+                "  (finally                                      \n" +
+                "    (throw (ex :VncException \"EX-FINALLY\")))) ";
+
+        try {
+        	venice.eval(script);
+        	fail("Expected a VncException");
+        }
+        catch(VncException ex) {
+        	final String msg = ex.getMessage();
+        	assertEquals("EX-FINALLY", msg);
+        }
+        catch(Exception ex) {
+        	fail("Expected a VncException");
+        }
+    }
+
+    @Test
+    public void test_try_catch_finally_precedence_2() {
+        final Venice venice = new Venice();
+
+        final String script =
+                "(try                                            \n" +
+                "  (throw (ex :VncException \"EX-BODY\"))        \n" +
+                "  (catch :java.lang.Exception e                 \n" +
+                "    (throw (ex :VncException \"EX-CATCH\")))    \n" +
+                "  (finally                                      \n" +
+                "    (throw (ex :VncException \"EX-FINALLY\")))) ";
+
+        try {
+        	venice.eval(script);
+        	fail("Expected a VncException");
+        }
+        catch(VncException ex) {
+        	final String msg = ex.getMessage();
+        	assertEquals("EX-FINALLY", msg);
+        }
+        catch(Exception ex) {
+        	fail("Expected a VncException");
+        }
+    }
+
+    @Test
+    public void test_try_catch_finally_precedence_3() {
+        final Venice venice = new Venice();
+
+        final String script =
+                "(try                                            \n" +
+                "  (throw (ex :VncException \"EX-BODY\"))        \n" +
+                "  (catch :java.lang.Exception e                 \n" +
+                "    (throw (ex :VncException \"EX-CATCH\")))    \n" +
+                "  (finally                                      \n" +
+                "    1)) ";
+
+        try {
+        	venice.eval(script);
+        	fail("Expected a VncException");
+        }
+        catch(VncException ex) {
+        	final String msg = ex.getMessage();
+        	assertEquals("EX-CATCH", msg);
+        }
+        catch(Exception ex) {
+        	fail("Expected a VncException");
+        }
+    }
+
+    @Test
+    public void test_try_catch_finally_precedence_4() {
+        final Venice venice = new Venice();
+
+        final String script =
+                "(try                                            \n" +
+                "  (throw (ex :VncException \"EX-BODY\"))        \n" +
+                "  (catch :VncException e                        \n" +
+                "    (throw (ex :VncException \"EX-CATCH\"))))   ";
+
+        try {
+        	venice.eval(script);
+        	fail("Expected a VncException");
+        }
+        catch(VncException ex) {
+        	final String msg = ex.getMessage();
+        	assertEquals("EX-CATCH", msg);
+        }
+        catch(Exception ex) {
+        	fail("Expected a VncException");
+        }
+    }
+
+    @Test
+    public void test_try_catch_finally_precedence_5() {
+        final Venice venice = new Venice();
+
+        final String script =
+                "(try                                            \n" +
+                "  100                                           \n" +
+                "  (catch :java.lang.Exception ex                \n" +
+                "    (throw (e :VncException \"EX-CATCH\")))     \n" +
+                "  (finally                                      \n" +
+                "    (throw (ex :VncException \"EX-FINALLY\")))) ";
+
+        try {
+        	venice.eval(script);
+        	fail("Expected a VncException");
+        }
+        catch(VncException ex) {
+        	final String msg = ex.getMessage();
+        	assertEquals("EX-FINALLY", msg);
+        }
+        catch(Exception ex) {
+        	fail("Expected a VncException");
+        }
     }
 
 }

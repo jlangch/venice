@@ -109,7 +109,7 @@ public class SpecialFormsTest_TryWith {
     }
 
     @Test
-    public void test_try_with_ex_autocloseable_1() {
+    public void test_try_with_ex_precedence_autocloseable_1() {
         final Venice venice = new Venice();
 
         // if the 'try-with' body throws an exception it has precedence of an exception
@@ -135,7 +135,7 @@ public class SpecialFormsTest_TryWith {
     }
 
     @Test
-    public void test_try_with_ex_autocloseable_2() {
+    public void test_try_with_ex_precedence_autocloseable_2() {
         final Venice venice = new Venice();
 
         // if the 'try-with' body throws an exception it has precedence of an exception
@@ -161,7 +161,7 @@ public class SpecialFormsTest_TryWith {
     }
 
     @Test
-    public void test_try_with_ex_autocloseable_3() {
+    public void test_try_with_ex_precedence_autocloseable_3() {
         final Venice venice = new Venice();
 
         // if the 'try-with' body throws an exception it has precedence of an exception

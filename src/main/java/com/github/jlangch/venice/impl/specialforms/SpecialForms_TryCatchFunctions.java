@@ -245,9 +245,9 @@ public class SpecialForms_TryCatchFunctions {
 
 
                 // Follow the Java rules on propagating an exception up the callstack
-                //    1. exception from body block
+                //    1. exception from finally block
                 //    2. exception from catch block
-                //    3. exception from finally block
+                //    3. exception from body block
                 //    4. exception from resource auto-close
                 VncVal retVal = Constants.Nil;
                 RuntimeException primaryEx = null;
