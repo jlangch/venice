@@ -48,7 +48,9 @@ public class TimeUnitUtil {
             case "days":         return TimeUnit.DAYS;
 
             default:
-                throw new VncException("Invalid time-unit " + unit.getValue());
+                throw new VncException(
+                			"Invalid time-unit " + unit.getValue() +
+                			"! Use one of :millis, :seconds, :minutes, :hours, :days.");
         }
     }
 
