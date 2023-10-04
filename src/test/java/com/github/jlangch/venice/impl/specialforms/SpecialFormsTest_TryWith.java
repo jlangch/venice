@@ -22,11 +22,13 @@
 package com.github.jlangch.venice.impl.specialforms;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.fail;
 
 import org.junit.jupiter.api.Test;
 
 import com.github.jlangch.venice.Parameters;
 import com.github.jlangch.venice.Venice;
+import com.github.jlangch.venice.VncException;
 import com.github.jlangch.venice.util.CapturingPrintStream;
 
 
@@ -104,5 +106,83 @@ public class SpecialFormsTest_TryWith {
 
         assertEquals(-1L, venice.eval(lisp, Parameters.of("*out*", ps)));
         assertEquals("100101200201300301", ps.getOutput());
+    }
+
+    @Test
+    public void test_try_with_ex_autocloseable_1() {
+        final Venice venice = new Venice();
+
+        // if the 'try-with' body throws an exception it has precedence of an exception
+        // thrown on auto-close. the latter one will be suppressed.
+        final String script =
+                "(do                                                                   \n" +
+                "   (import :com.github.jlangch.venice.support.AutoCloseableString)    \n" +
+                "   (try-with [r1 (. :AutoCloseableString :new \"hello-1\" false)      \n" +
+                "              r2 (. :AutoCloseableString :new \"hello-2\" false)]     \n" +
+                "     (throw (ex :VncException \"EX-BODY\"))))                         ";
+
+        try {
+        	venice.eval(script);
+        	fail("Expected a VncException");
+        }
+        catch(VncException ex) {
+        	final String msg = ex.getMessage();
+        	assertEquals("EX-BODY", msg);
+        }
+        catch(Exception ex) {
+        	fail("Expected a VncException");
+        }
+    }
+
+    @Test
+    public void test_try_with_ex_autocloseable_2() {
+        final Venice venice = new Venice();
+
+        // if the 'try-with' body throws an exception it has precedence of an exception
+        // thrown on auto-close. the latter one will be suppressed.
+        final String script =
+                "(do                                                                   \n" +
+                "   (import :com.github.jlangch.venice.support.AutoCloseableString)    \n" +
+                "   (try-with [r1 (. :AutoCloseableString :new \"hello-1\" true)       \n" +
+                "              r2 (. :AutoCloseableString :new \"hello-2\" true)]      \n" +
+                "     (throw (ex :VncException \"EX-BODY\"))))                         ";
+
+        try {
+        	venice.eval(script);
+        	fail("Expected a VncException");
+        }
+        catch(VncException ex) {
+        	final String msg = ex.getMessage();
+        	assertEquals("EX-BODY", msg);
+        }
+        catch(Exception ex) {
+        	fail("Expected a VncException");
+        }
+    }
+
+    @Test
+    public void test_try_with_ex_autocloseable_3() {
+        final Venice venice = new Venice();
+
+        // if the 'try-with' body throws an exception it has precedence of an exception
+        // thrown on auto-close. the latter one will be suppressed.
+        final String script =
+                "(do                                                                   \n" +
+                "   (import :com.github.jlangch.venice.support.AutoCloseableString)    \n" +
+                "   (try-with [r1 (. :AutoCloseableString :new \"hello-1\" true)       \n" +
+                "              r2 (. :AutoCloseableString :new \"hello-2\" true)]      \n" +
+                "     nil))                                                            ";
+
+        try {
+        	venice.eval(script);
+        	fail("Expected a VncException");
+        }
+        catch(VncException ex) {
+        	final String msg = ex.getMessage();
+        	assertEquals("'try-with' failed to close resource r2.", msg);
+        }
+        catch(Exception ex) {
+        	fail("Expected a VncException");
+        }
     }
 }

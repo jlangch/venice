@@ -41,6 +41,7 @@ import com.github.jlangch.venice.impl.specialforms.util.CatchBlock;
 import com.github.jlangch.venice.impl.specialforms.util.FinallyBlock;
 import com.github.jlangch.venice.impl.specialforms.util.SpecialFormsContext;
 import com.github.jlangch.venice.impl.thread.ThreadContext;
+import com.github.jlangch.venice.impl.types.Constants;
 import com.github.jlangch.venice.impl.types.VncBoolean;
 import com.github.jlangch.venice.impl.types.VncFunction;
 import com.github.jlangch.venice.impl.types.VncJavaObject;
@@ -242,16 +243,30 @@ public class SpecialForms_TryCatchFunctions {
                     }
                 }
 
-                try {
-                    return handleTryCatchFinally(
+
+                // Follow the Java rules on propagating an exception up the callstack
+                //    1. exception from body block
+                //    2. exception from catch block
+                //    3. exception from finally block
+                //    4. exception from resource auto-close
+                VncVal retVal = Constants.Nil;
+                RuntimeException primaryEx = null;
+                RuntimeException autoCloseEx = null;
+
+             	try {
+             		retVal = handleTryCatchFinally(
                                 "try-with",
                                 args.rest(),
                                 ctx,
                                 localEnv,
                                 specialFormMeta,
                                 boundResources);
-                }
-                finally {
+            	}
+            	catch(RuntimeException ex) {
+            		primaryEx = ex;
+            	}
+
+                try {
                     final List<VncException> exceptions = new ArrayList<>();
 
                     // close resources in reverse order, do best effort and close all resources
@@ -279,10 +294,24 @@ public class SpecialForms_TryCatchFunctions {
                         }
                     });
 
-                    // throw the first exception
+                    // throw the first auto-close exception, we came across
                     if (!exceptions.isEmpty()) {
                         throw exceptions.get(0);
                     }
+            	}
+            	catch(RuntimeException ex) {
+            		autoCloseEx = ex;
+            	}
+
+
+                if (primaryEx != null) {
+                	throw primaryEx;
+                }
+                else if (autoCloseEx != null) {
+                	throw autoCloseEx;
+                }
+                else {
+                	return retVal;
                 }
             }
 

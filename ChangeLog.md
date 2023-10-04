@@ -11,6 +11,14 @@ All notable changes to this project will be documented in this file.
 
 - functions to handle locks based on a semphore
 
+### Fixed 
+
+- Venice to follow the Java rules when propagating exceptions from try-with-resources
+    1. exception from body block
+    2. exception from catch block
+    3. exception from finally block
+    4. exception from resource auto-close
+
 ### Updated 
 
 - :pdf module dependencies to flyingSaucer 9.3.1 and openpdf 1.3.30

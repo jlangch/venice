@@ -23,36 +23,19 @@ package com.github.jlangch.venice.support;
 
 import com.github.jlangch.venice.VncException;
 import com.github.jlangch.venice.impl.types.VncString;
-import com.github.jlangch.venice.impl.types.VncVal;
-import com.github.jlangch.venice.impl.types.custom.VncWrappingTypeDef;
 
 
 public class AutoCloseableString extends VncString implements AutoCloseable {
 
-    public AutoCloseableString(final String v) {
+    public AutoCloseableString(final String v, final boolean throwExOnClose) {
         super(v);
-    }
-
-    public AutoCloseableString(final String v, final VncVal meta) {
-        super(v, meta);
-    }
-
-    public AutoCloseableString(
-            final String v,
-            final VncWrappingTypeDef wrappingTypeDef,
-            final VncVal meta
-    ) {
-        super(v, wrappingTypeDef, meta);
-    }
-
-    public void throwExOnClose() {
-        this.throwExOnClose = true;
+        this.throwExOnClose = throwExOnClose;
     }
 
     @Override
     public void close() {
         if (throwExOnClose) {
-            throw new VncException("AutoCloseableString");
+            throw new VncException(super.getValue());
         }
     }
 
