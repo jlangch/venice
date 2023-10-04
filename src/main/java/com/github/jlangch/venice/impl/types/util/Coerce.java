@@ -61,6 +61,7 @@ import com.github.jlangch.venice.impl.types.collections.VncSet;
 import com.github.jlangch.venice.impl.types.collections.VncSortedSet;
 import com.github.jlangch.venice.impl.types.collections.VncStack;
 import com.github.jlangch.venice.impl.types.collections.VncVector;
+import com.github.jlangch.venice.impl.types.concurrent.VncLock;
 import com.github.jlangch.venice.impl.types.custom.VncProtocol;
 import com.github.jlangch.venice.impl.util.callstack.CallFrame;
 import com.github.jlangch.venice.impl.util.callstack.WithCallStack;
@@ -116,6 +117,22 @@ public class Coerce {
             try (WithCallStack cs = new WithCallStack(callframe(val))) {
                 throw new VncException(String.format(
                         "Cannot coerce value of type %s to volatile.",
+                        Types.getType(val)));
+            }
+        }
+    }
+
+    public static VncLock toVncLock(final VncVal val) {
+        if (val == null) {
+            throw new VncException("Cannot coerce a null value to a lock.");
+        }
+        else if (Types.isVncLock(val)) {
+            return (VncLock)val;
+        }
+        else {
+            try (WithCallStack cs = new WithCallStack(callframe(val))) {
+                throw new VncException(String.format(
+                        "Cannot coerce value of type %s to lock.",
                         Types.getType(val)));
             }
         }

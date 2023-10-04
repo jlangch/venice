@@ -52,6 +52,19 @@ public class ConcurrencySection implements ISectionBuilder {
         atoms.addItem(diBuilder.getDocItem("add-watch"));
         atoms.addItem(diBuilder.getDocItem("remove-watch"));
 
+        final DocSection locks = new DocSection("Locks", "concurrency.locks");
+        all.addSection(locks);
+        locks.addItem(diBuilder.getDocItem("lock"));
+        locks.addItem(diBuilder.getDocItem("lock?"));
+        locks.addItem(diBuilder.getDocItem("acquire"));
+        locks.addItem(diBuilder.getDocItem("try-acquire"));
+        locks.addItem(diBuilder.getDocItem("release"));
+        locks.addItem(diBuilder.getDocItem("locked?"));
+
+        final DocSection locking = new DocSection("Locking", "concurrency.locking");
+        all.addSection(locking);
+        locking.addItem(diBuilder.getDocItem("locking"));
+
         final DocSection futures = new DocSection("Futures", "concurrency.futures");
         all.addSection(futures);
         futures.addItem(diBuilder.getDocItem("future"));
@@ -122,10 +135,6 @@ public class ConcurrencySection implements ISectionBuilder {
         all.addSection(sched);
         sched.addItem(diBuilder.getDocItem("schedule-delay", false));
         sched.addItem(diBuilder.getDocItem("schedule-at-fixed-rate", false));
-
-        final DocSection locking = new DocSection("Locking", "concurrency.locking");
-        all.addSection(locking);
-        locking.addItem(diBuilder.getDocItem("locking"));
 
         final DocSection volatiles = new DocSection("Volatiles", "concurrency.volatiles");
         all.addSection(volatiles);

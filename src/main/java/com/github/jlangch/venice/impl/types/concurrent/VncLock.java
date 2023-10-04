@@ -22,6 +22,7 @@
 package com.github.jlangch.venice.impl.types.concurrent;
 
 import java.util.concurrent.Semaphore;
+import java.util.concurrent.TimeUnit;
 
 import com.github.jlangch.venice.impl.types.TypeRank;
 import com.github.jlangch.venice.impl.types.VncKeyword;
@@ -38,6 +39,20 @@ public class VncLock extends VncVal implements AutoCloseable {
     public VncLock lock() {
         semaphore.acquireUninterruptibly();
         return this;
+    }
+
+    public boolean tryAcquire() {
+        return semaphore.tryAcquire();
+    }
+
+    public boolean tryAcquire(final long timeout, final TimeUnit unit) {
+        try {
+            return semaphore.tryAcquire(timeout, unit);
+        }
+        catch(InterruptedException ex) {
+            throw new com.github.jlangch.venice.InterruptedException(
+                    "Interrupted while acquiring lock");
+        }
     }
 
     public boolean isLocked() {

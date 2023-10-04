@@ -66,6 +66,7 @@ import com.github.jlangch.venice.impl.types.collections.VncMap;
 import com.github.jlangch.venice.impl.types.collections.VncSequence;
 import com.github.jlangch.venice.impl.types.concurrent.Agent;
 import com.github.jlangch.venice.impl.types.concurrent.Delay;
+import com.github.jlangch.venice.impl.types.concurrent.VncLock;
 import com.github.jlangch.venice.impl.types.util.Coerce;
 import com.github.jlangch.venice.impl.types.util.Types;
 import com.github.jlangch.venice.impl.util.ArityExceptions;
@@ -87,9 +88,9 @@ public class ConcurrencyFunctions {
                         "(do                                \n" +
                         "   (def task (fn [] 100))          \n" +
                         "   (let [f (future task)]          \n" +
-                        "        (println (realized? f))    \n" +
-                        "        (println @f)               \n" +
-                        "        (println (realized? f))))    ",
+                        "      (println (realized? f))      \n" +
+                        "      (println @f)                 \n" +
+                        "      (println (realized? f))))      ",
 
                         "(do                                \n" +
                         "   (def p (promise))               \n" +
@@ -124,6 +125,198 @@ public class ConcurrencyFunctions {
                 }
 
                 return True;
+            }
+
+            private static final long serialVersionUID = -1848883965231344442L;
+        };
+
+
+
+    ///////////////////////////////////////////////////////////////////////////
+    // Locks
+    ///////////////////////////////////////////////////////////////////////////
+
+    public static VncFunction lock =
+        new VncFunction(
+                "lock",
+                VncFunction
+                    .meta()
+                    .arglists("(lock)")
+                    .doc(
+                        "Creates a new lock object.                                        \n\n" +
+                        "The lock object implements the Java `AutoClosable` interface thus " +
+                        "it can be used with try-with-resources.                           ")
+                    .examples(
+                        "(let [l (lock)]         \n" +
+                        "  (acquire l)           \n" +
+                        "  ;; do something       \n" +
+                        "  (release l))          ",
+                        "(let [l (lock)]              \n" +
+                        "  (try-with [l (acquire l)]  \n" +
+                        "     ;; do something         \n" +
+                        "     ))                       ")
+                    .seeAlso("acquire", "release")
+                    .build()
+        ) {
+            @Override
+            public VncVal apply(final VncList args) {
+                ArityExceptions.assertArity(this, args, 0);
+
+                return new VncLock();
+            }
+
+            private static final long serialVersionUID = -1848883965231344442L;
+        };
+
+    public static VncFunction lockQ =
+        new VncFunction(
+                "lock?",
+                VncFunction
+                    .meta()
+                    .arglists("(lock? o)")
+                    .doc(
+                        "Returns `true` if o is a lock object else `false`.")
+                    .examples(
+                        "(let [l (lock)]     \n" +
+                        "  (lock? l))        ")
+                    .seeAlso("acquire", "release")
+                    .build()
+        ) {
+            @Override
+            public VncVal apply(final VncList args) {
+                ArityExceptions.assertArity(this, args, 1);
+
+                return VncBoolean.of(Types.isVncLock(args.first()));
+            }
+
+            private static final long serialVersionUID = -1848883965231344442L;
+        };
+
+    public static VncFunction acquire =
+        new VncFunction(
+                "acquire",
+                VncFunction
+                    .meta()
+                    .arglists(
+                        "(acquire lock)")
+                    .doc(
+                        "Acquires a lock, blocking until the lock is available.")
+                    .examples(
+                        "(let [l (lock)]         \n" +
+                        "  (acquire l)           \n" +
+                        "  ;; do something       \n" +
+                        "  (release l))          ")
+                    .seeAlso("lock", "release")
+                    .build()
+        ) {
+            @Override
+            public VncVal apply(final VncList args) {
+                ArityExceptions.assertArity(this, args, 1);
+
+                final VncLock lock = Coerce.toVncLock(args.first());
+                return lock.lock();
+            }
+
+            private static final long serialVersionUID = -1848883965231344442L;
+        };
+
+    public static VncFunction try_acquire =
+        new VncFunction(
+                "try-acquire",
+                VncFunction
+                    .meta()
+                    .arglists(
+                        "(try-acquire lock)",
+                        "(try-acquired lock timeout time-unit)")
+                    .doc(
+                        "Acquires a lock within the given timeout time. Without a timeout " +
+                        "returns immediately if the lock is not available. \n\n" +
+                        "Returns `true` if the lock could be acquired within the given time " +
+                        "else `false`.")
+                    .examples(
+                        "(let [l (lock)]             \n" +
+                        "  (when (try-acquire l)     \n" +
+                        "    ;; do something         \n" +
+                        "    (release l)))           ",
+                        "(let [l (lock)]                        \n" +
+                        "  (when (try-acquire l 3 :seconds)     \n" +
+                        "    ;; do something                    \n" +
+                        "    (release l)))                      ")
+
+                    .seeAlso("lock", "release")
+                    .build()
+        ) {
+            @Override
+            public VncVal apply(final VncList args) {
+                ArityExceptions.assertArity(this, args, 1,3 );
+
+                if (args.size() == 1) {
+	                final VncLock lock = Coerce.toVncLock(args.first());
+	                return VncBoolean.of(lock.tryAcquire());
+                }
+                else {
+	                final VncLong time = Coerce.toVncLong(args.second());
+	                final VncKeyword unit = Coerce.toVncKeyword(args.third());
+
+	                final VncLock lock = Coerce.toVncLock(args.first());
+	                return VncBoolean.of(
+	                			lock.tryAcquire(
+		                			time.getValue(),
+		                			TimeUnitUtil.toTimeUnit(unit)));
+                }
+            }
+
+            private static final long serialVersionUID = -1848883965231344442L;
+        };
+
+    public static VncFunction release =
+        new VncFunction(
+                "release",
+                VncFunction
+                    .meta()
+                    .arglists("(release lock)")
+                    .doc(
+                        "Releases a lock.")
+                    .examples(
+                        "(let [l (lock)]         \n" +
+                        "  (acquire l)           \n" +
+                        "  ;; do something       \n" +
+                        "  (release l))          ")
+                    .seeAlso("lock", "acquire")
+                    .build()
+        ) {
+            @Override
+            public VncVal apply(final VncList args) {
+                ArityExceptions.assertArity(this, args, 1);
+
+                final VncLock lock = Coerce.toVncLock(args.first());
+                lock.unlock();
+                return Nil;
+            }
+
+            private static final long serialVersionUID = -1848883965231344442L;
+        };
+
+    public static VncFunction lockedQ =
+        new VncFunction(
+                "locked?",
+                VncFunction
+                    .meta()
+                    .arglists("(locked? lock)")
+                    .doc(
+                        "Returns `true` if the lock is free else `false`.")
+                    .examples(
+                        "(let [l (lock)]         \n" +
+                        "  (locked? l))          ")
+                    .seeAlso("lock", "acquire")
+                    .build()
+        ) {
+            @Override
+            public VncVal apply(final VncList args) {
+                ArityExceptions.assertArity(this, args, 1);
+
+                final VncLock lock = Coerce.toVncLock(args.first());
+                return VncBoolean.of(lock.isLocked());
             }
 
             private static final long serialVersionUID = -1848883965231344442L;
@@ -2691,8 +2884,8 @@ public class ConcurrencyFunctions {
                 VncFunction
                     .meta()
                     .arglists(
-                    	"(preduce n combine-fn combine-seed reduce-fn reduce-seed coll)",
-                    	"(preduce n reduce-fn reduce-seed coll)")
+                        "(preduce n combine-fn combine-seed reduce-fn reduce-seed coll)",
+                        "(preduce n reduce-fn reduce-seed coll)")
                     .doc(
                         "Reduces a collection using a parallel reduce-combine strategy. " +
                         "The collection is partitioned into groups of approximately " +
@@ -2763,10 +2956,10 @@ public class ConcurrencyFunctions {
         final VncList chunks = (VncList)CoreFunctions.partition_all.applyOf(n, seq);
         final List<VncVal> jobs = new ArrayList<>();
         chunks.forEach(c ->
-        	jobs.add(
-        		future.applyOf(
-        			VncFunction.of(
-        				() -> CoreFunctions.reduce.applyOf(reduceFn, reduceSeed, c)))));
+            jobs.add(
+                future.applyOf(
+                    VncFunction.of(
+                        () -> CoreFunctions.reduce.applyOf(reduceFn, reduceSeed, c)))));
 
         VncList reductions = VncList.empty();
         for(VncVal job : jobs) {
@@ -2881,6 +3074,13 @@ public class ConcurrencyFunctions {
     public static final Map<VncVal, VncVal> ns =
             new SymbolMapBuilder()
                     .add(realized_Q)
+
+                    .add(lock)
+                    .add(lockQ)
+                    .add(lockedQ)
+                    .add(acquire)
+                    .add(try_acquire)
+                    .add(release)
 
                     .add(add_watch)
                     .add(remove_watch)

@@ -249,12 +249,13 @@ public class DocGenerator {
 
         final DocSection concurrency = new DocSection("Concurrency", "concurrency");
         concurrency.addSection(new DocSection("Atoms", "concurrency.atoms"));
+        concurrency.addSection(new DocSection("Locks", "concurrency.locks"));
+        concurrency.addSection(new DocSection("Locking", "concurrency.locking"));
         concurrency.addSection(new DocSection("Futures", "concurrency.futures"));
         concurrency.addSection(new DocSection("Promises", "concurrency.promises"));
         concurrency.addSection(new DocSection("Delay", "concurrency.delay"));
         concurrency.addSection(new DocSection("Agents", "concurrency.agents"));
         concurrency.addSection(new DocSection("Scheduler", "concurrency.scheduler"));
-        concurrency.addSection(new DocSection("Locking", "concurrency.locking"));
         concurrency.addSection(new DocSection("Volatiles", "concurrency.volatiles"));
         concurrency.addSection(new DocSection("Parallel", "concurrency.parallel"));
         content.add(concurrency);
