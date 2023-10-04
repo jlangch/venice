@@ -30,6 +30,12 @@ import com.github.jlangch.venice.impl.types.VncKeyword;
 public class TimeUnitUtil {
 
     public static TimeUnit toTimeUnit(final VncKeyword unit) {
+    	if (unit == null) {
+            throw new VncException(
+        			"No time-unit! " +
+        			"Use one of :millis, :seconds, :minutes, :hours, :days.");
+    	}
+
         switch(unit.getValue()) {
             case "milli":        return TimeUnit.MILLISECONDS;
             case "millis":       return TimeUnit.MILLISECONDS;
@@ -49,8 +55,8 @@ public class TimeUnitUtil {
 
             default:
                 throw new VncException(
-                			"Invalid time-unit " + unit.getValue() +
-                			"! Use one of :millis, :seconds, :minutes, :hours, :days.");
+                			"Invalid time-unit " + unit.getValue() + "! " +
+                			"Use one of :millis, :seconds, :minutes, :hours, :days.");
         }
     }
 
