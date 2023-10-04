@@ -1814,4 +1814,43 @@ public class ConcurrencyFunctionsTest {
         venice.eval(script);
     }
 
+    @Test
+    public void test_lock_lockQ() {
+        final Venice venice = new Venice();
+
+        assertTrue((boolean)venice.eval("(lock? (lock))"));
+        assertFalse((boolean)venice.eval("(lock? (atom 1))"));
+    }
+
+    @Test
+    public void test_lock_lockedQ() {
+        final Venice venice = new Venice();
+
+        assertFalse((boolean)venice.eval("(let [l (lock)] (locked? l))"));
+        assertTrue((boolean)venice.eval("(let [l (lock)] (acquire l) (locked? l))"));
+        assertFalse((boolean)venice.eval("(let [l (lock)] (acquire l) (release l) (locked? l))"));
+    }
+
+    @Test
+    public void test_lock_tryAquire() {
+        final Venice venice = new Venice();
+
+        assertTrue((boolean)venice.eval("(let [l (lock)] (try-acquire l))"));
+        assertTrue((boolean)venice.eval("(let [l (lock)] (try-acquire l 300 :millis))"));
+
+        assertFalse((boolean)venice.eval("(let [l (lock)] (acquire l) (try-acquire l))"));
+        assertFalse((boolean)venice.eval("(let [l (lock)] (acquire l) (try-acquire l 300 :millis))"));
+     }
+
+    @Test
+    public void test_lock_tryAquire_other_thread() {
+        final Venice venice = new Venice();
+
+        assertTrue((boolean)venice.eval("(let [l (lock)] @(future #(try-acquire l)))"));
+        assertTrue((boolean)venice.eval("(let [l (lock)] @(future #(try-acquire l 300 :millis)))"));
+
+        assertFalse((boolean)venice.eval("(let [l (lock)] (acquire l) @(future #(try-acquire l)))"));
+        assertFalse((boolean)venice.eval("(let [l (lock)] (acquire l) @(future #(try-acquire l 300 :millis)))"));
+     }
+
 }
