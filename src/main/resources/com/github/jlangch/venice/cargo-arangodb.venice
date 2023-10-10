@@ -29,7 +29,7 @@
 (load-module :docker)
 (load-module :cargo)
 
-(defonce internal-port 8259) ;; The ArangoDB internal port within the container
+(defonce internal-port 8529) ;; The ArangoDB internal port within the container
 
 
 (defn
@@ -54,7 +54,7 @@
 
           | [![width: 15%]] | [![width: 85%]] |
           | cname       | A unique container name |
-          | version     | The ArangoDB version to use. E.g.: 3.10.10 |
+          | version     | The ArangoDB version to use. E.g.: 3.11.4 |
           | mapped-port | The published (mapped) ArangoDB port on the host |
           | root-passwd | The ArangoDB root password |
           | memory      | The detected memory ArangoDB is to use. E.g.: 8GB, 8000MB |
@@ -65,7 +65,7 @@
           """
           ;; Run an ArangoDB container
           (cargo-arangodb/start "arangodb-test"
-                                "3.10.10"
+                                "3.11.4"
                                 8500
                                 "test"
                                 "8GB"
@@ -87,14 +87,16 @@
           (or (int? cores) (long? cores))
           (< 0 cores 64)] }
 
-  (let [envs    ["ARANGO_ROOT_PASSWORD=~{root-passwd}"
-                 "ARANGODB_OVERRIDE_DETECTED_TOTAL_MEMORY=~{memory}"
-                 "ARANGODB_OVERRIDE_DETECTED_NUMBER_OF_CORES=~(long cores)"]
-        args    ["--server.endpoint tcp://0.0.0.0:~{internal-port}"]
-        log     (or log default-log)
-        publish "~(long mapped-port):~{internal-port}"
+  (let [host-port (long mapped-port)
+        envs      ["ARANGO_ROOT_PASSWORD=~{root-passwd}"
+                   "ARANGODB_OVERRIDE_DETECTED_TOTAL_MEMORY=~{memory}"
+                   "ARANGODB_OVERRIDE_DETECTED_NUMBER_OF_CORES=~(long cores)"]
+        args      ["--server.endpoint tcp://0.0.0.0:~{internal-port}"]
+        log       (or log default-log)
+        publish   "~{host-port}:~{internal-port}"
         wait-after-start-secs 3
         ready-check-max-secs  30]
+    (log "ArangoDB: Starting ~{version} as \"~{cname}\" @ port ~{publish} ...")
     (cargo/start cname "arangodb/arangodb" version publish
                  envs args
                  arangodb-ready?

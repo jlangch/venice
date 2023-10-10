@@ -66,12 +66,12 @@
           ;; Run an ArangoDB container
           (cargo/start "arangodb-test"
                        "arangodb/arangodb"
-                       "3.10.10"
-                       "8500:8259"
+                       "3.11.4"
+                       "8500:8529"
                        ["ARANGO_ROOT_PASSWORD=test"
                         "ARANGODB_OVERRIDE_DETECTED_TOTAL_MEMORY=8GB"
                         "ARANGODB_OVERRIDE_DETECTED_NUMBER_OF_CORES=1"]
-                       ["--server.endpoint tcp://0.0.0.0:8259"]
+                       ["--server.endpoint tcp://0.0.0.0:8529"]
                        (fn [cname] true)
                        (fn [s] (println "ArangoDB:" s))
                        3
