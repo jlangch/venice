@@ -1361,15 +1361,16 @@
           "docker/container-exec-by-name"
           "docker/container-logs" ) }
 
-  container-exec-by-name [name]
+  container-exec-by-name [name command]
 
-  { :pre [(string? name)] }
+  { :pre [(string? name) (string? command)] }
 
   (let [container (first (container-find-by-name name))
+        id        (get container "ID")
         status    (get container "State")]
     (assert (= status "running")
             "There is no container running with the name \"~{name}\"!")
-    (exec c command)))
+    (docker/exec id command)))
 
 
 (defn

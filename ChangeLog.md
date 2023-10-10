@@ -12,6 +12,12 @@ All notable changes to this project will be documented in this file.
 - ...
 
 
+### Fixed 
+
+- function docker/container-exec-by-name 
+
+
+
 ## [1.10.45] - 2023-10-04
 
 ### Added 
