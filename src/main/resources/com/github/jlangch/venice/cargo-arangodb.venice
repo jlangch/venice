@@ -91,7 +91,10 @@
         envs      ["ARANGO_ROOT_PASSWORD=~{root-passwd}"
                    "ARANGODB_OVERRIDE_DETECTED_TOTAL_MEMORY=~{memory}"
                    "ARANGODB_OVERRIDE_DETECTED_NUMBER_OF_CORES=~(long cores)"]
-        args      ["--server.endpoint tcp://0.0.0.0:~{internal-port}"]
+        args-old  ["--server.endpoint tcp://0.0.0.0:~{internal-port}" ]
+        args-new  ["--server.endpoint tcp://0.0.0.0:~{internal-port}"
+                   "--server.telemetrics-api false"]
+        args      (if (match? version "3[.](9|10)[.].*") args-old args-new)
         log       (or log default-log)
         publish   "~{host-port}:~{internal-port}"
         wait-after-start-secs 3

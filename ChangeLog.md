@@ -24,6 +24,10 @@ All notable changes to this project will be documented in this file.
 
 - functions to handle locks based on a semaphore
 
+### Updated 
+
+- :cargo-arangodb module to disable the ArangodDB telemetrics sent home
+
 ### Fixed 
 
 - Venice to follow the Java rules when propagating exceptions from try-with-resources
