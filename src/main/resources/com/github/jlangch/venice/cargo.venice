@@ -123,11 +123,13 @@
 
       ;; check for successful startup log message (max wait 30s)
       (if ready?
-        (if (container-ready? cname (or ready-check-max-secs 30) ready?)
-          (log "docker container successfully started.")
-          (let [msg "docker container did not start up successfully."]
-            (log msg)
-            (throw (ex :VncException "~{repo}:~{version}: ~{msg}"))))
+        (do
+          (log "docker container checking ready for use...")
+          (if (container-ready? cname (or ready-check-max-secs 30) ready?)
+            (log "docker container successfully started and ready for use.")
+            (let [msg "docker container did not start up successfully."]
+              (log msg)
+              (throw (ex :VncException "~{repo}:~{version}: ~{msg}")))))
         (log "docker container started.")))))
 
 
@@ -226,7 +228,7 @@
          :envs envs
          :args args)
   (sleep (or wait-after-start-secs 0) :sec)
-  (log "run docker container ~{version} ready."))
+  (log "run docker container ~{version} done."))
 
 (defn- start-container [cname log wait-after-start-secs]
   (log "starting docker container...")
