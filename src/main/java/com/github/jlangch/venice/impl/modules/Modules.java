@@ -72,6 +72,7 @@ public class Modules {
                         "http",
                         "jackson",
                         "java",
+                        "jsonl",
                         "kira",
                         "math",
                         "maven",
