@@ -292,7 +292,7 @@ public class DocGenerator {
 
         final DocSection documents = new DocSection("Documents", "miscellaneous");
         documents.addSection(new DocSection("JSON", "json"));
-        documents.addSection(new DocSection("JSON Lines", "jsonl"));
+        documents.addSection(new DocSection("JSON Lines", "modules.jsonl"));
         documents.addSection(new DocSection("PDF", "pdf"));
         documents.addSection(new DocSection("PDF Tools", "pdf.pdftools"));
         documents.addSection(new DocSection("CSV", "csv"));
