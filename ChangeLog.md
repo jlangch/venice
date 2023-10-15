@@ -9,7 +9,7 @@ All notable changes to this project will be documented in this file.
 
 ### Added 
 
-- ...
+- support for JSON lines (see module :jsonl)
 
 
 ### Fixed 
