@@ -38,10 +38,8 @@
                                    string. Defaults to false |
           """
      :examples '(
-          """
-          (jsonl/write-str {:a 100 :b 200})
-          (jsonl/write-str [{:a 100 :b 200} {:a 101 :b 201} {:a 102 :b 202}])
-          """)
+          "(jsonl/write-str {:a 100 :b 200})"
+          "(jsonl/write-str [{:a 100 :b 200} {:a 101 :b 201} {:a 102 :b 202}])" )
      :see-also '(
           "jsonl/read-str") }
 
@@ -59,7 +57,7 @@
 (defn
   ^{ :arglists '("(jsonl/read-str s & options)")
      :doc """
-          Reads a JSON string and returns it as a Venice datatype.
+          Reads a JSON line string and returns it as a Venice datatype.
 
           Options:
 
@@ -78,9 +76,17 @@
           """
      :examples '(
           """
-          (jsonl/read-str "{\"a\": 100, \"b\": 200}" :key-fn keyword)
-          (jsonl/read-str "{\"a\": 100, \"b\": 200}\n{\"a\": 101, \"b\": 201}\n{\"a\": 102, \"b\": 202}"
-                          :key-fn keyword)
+          (let [json (json/write-str {:a 100 :b 200})]
+            (jsonl/read-str json :key-fn keyword))
+          """,
+          """
+          (try-with [sw (io/string-writer)]
+            (println sw (json/write-str {:a 100 :b 200}))
+            (println sw (json/write-str {:a 101 :b 201}))
+            (println sw (json/write-str {:a 102 :b 202}))
+            (flush sw)
+            (let [json @sw]
+              (jsonl/read-str json :key-fn keyword)))
           """)
      :see-also '(
           "jsonl/write-str") }
@@ -88,4 +94,6 @@
   read-str [s & options]
 
   (->> (str/split-lines s)
+       (map str/trim-to-nil)
+       (filter some?)
        (map #(apply json/read-str % options))))

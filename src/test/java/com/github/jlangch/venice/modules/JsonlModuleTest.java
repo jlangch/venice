@@ -104,5 +104,68 @@ public class JsonlModuleTest {
                             "  (load-module :jsonl)                                      \n" +
                             "  (jsonl/write-str [{:a 1 :d 1} {:b 2 :d 2} {:c 3 :d 3}]))  "));
     }
+
+    @Test
+    public void test_read_str_basic() {
+        final Venice venice = new Venice();
+
+        assertEquals(
+                "()",
+                venice.eval("(do                                \n" +
+                            "  (load-module :jsonl)             \n" +
+                            "  (pr-str (jsonl/read-str nil)))   "));
+
+        assertEquals(
+                "(true)",
+                venice.eval("(do                                    \n" +
+                            "  (load-module :jsonl)                 \n" +
+                            "  (pr-str (jsonl/read-str \"true\")))  "));
+
+        assertEquals(
+                "(10)",
+                venice.eval("(do                                  \n" +
+                            "  (load-module :jsonl)               \n" +
+                            "  (pr-str (jsonl/read-str \"10\")))  "));
+
+        assertEquals(
+                "(10.2)",
+                venice.eval("(do                                   \n" +
+                            "  (load-module :jsonl)                \n" +
+                            "  (pr-str (jsonl/read-str \"10.2\"))) "));
+    }
+
+    @Test
+    public void test_read_str_collection_single_value() {
+        final Venice venice = new Venice();
+
+        assertEquals(
+                "(1 2 3)",
+                venice.eval("(do                                        \n" +
+                            "  (load-module :jsonl)                     \n" +
+                            "  (pr-str (jsonl/read-str \"1\n2\n3\")))   "));
+
+        assertEquals(
+                "(1 2 3)",
+                venice.eval("(do                                              \n" +
+                            "  (load-module :jsonl)                           \n" +
+                            "  (pr-str (jsonl/read-str \"1\n\n2\n3\n\n\")))   "));
+    }
+
+    @Test
+    public void test_read_str_collection_multi_value() {
+        final Venice venice = new Venice();
+
+        assertEquals(
+                "({:a 100 :b 200} {:a 101 :b 201} {:a 102 :b 202})",
+                venice.eval("(do                                                      \n" +
+                            "  (load-module :jsonl)                                   \n" +
+                            "  (try-with [sw (io/string-writer)]                      \n" +
+                            "     (println sw (json/write-str {:a 100 :b 200}))       \n" +
+                            "     (println sw (json/write-str {:a 101 :b 201}))       \n" +
+                            "     (println sw (json/write-str {:a 102 :b 202}))       \n" +
+                            "     (flush sw)                                          \n" +
+                            "     (let [json @sw]                                     \n" +
+                            "        (pr-str (jsonl/read-str json :key-fn keyword)))))"));
+    }
 }
 
