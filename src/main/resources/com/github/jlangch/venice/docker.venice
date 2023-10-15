@@ -1420,7 +1420,7 @@
 (defn- parse-output-list [format output]
   (if (= format :json)
     (as-> output $
-          (str/split-lines $)      ;; docker you're kidding
+          (str/split-lines $)      ;; JSON lines
           (str/join "," $)
           (str "[" $ "]")
           (json/read-str $))
