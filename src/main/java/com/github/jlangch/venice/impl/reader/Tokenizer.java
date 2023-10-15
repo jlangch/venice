@@ -337,9 +337,13 @@ public class Tokenizer {
 
                 final int chNext = reader.peek();
                 if (chNext == LF || chNext == CR) {
-                    reader.consume();
-                    sb.append((char)ch);
-                    sb.append((char)chNext);
+                    // line join
+                    while(isCRorLF((char)reader.peek())) {
+                        reader.consume();
+                    }
+                    while(' ' == (char)reader.peek()) {
+                        reader.consume();
+                    }
                 }
                 else {
                     sb.append((char)ch);
@@ -435,6 +439,10 @@ public class Tokenizer {
 
     private boolean isAsciiLetterOrDash(final char ch) {
         return (ch >= 'A' && ch <= 'Z') || (ch >= 'a' && ch <= 'z') || (ch == '-');
+    }
+
+    private boolean isCRorLF(final char ch) {
+        return ch == CR || ch == LF;
     }
 
     private String formatParseError(

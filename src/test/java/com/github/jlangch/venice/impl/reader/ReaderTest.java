@@ -182,6 +182,14 @@ public class ReaderTest {
         final String s3 =
                 "(do\n" +
                 "   \"\"\"\n" +
+                "   123\\\n" +
+                "     456\n" +
+                "   \"\"\"\n" +
+                ")";
+
+        final String s4 =
+                "(do\n" +
+                "   \"\"\"\n" +
                 "   123  \\\n" +
                 "   456  \\\n" +
                 "   \"\"\"\n" +
@@ -189,7 +197,8 @@ public class ReaderTest {
 
         assertEquals("123\n456", new Venice().eval(s1));
         assertEquals("123  456", new Venice().eval(s2));
-        assertEquals("123  456  ", new Venice().eval(s3));
+        assertEquals("123456", new Venice().eval(s3));
+        assertEquals("123  456  ", new Venice().eval(s4));
     }
 
     @Test
