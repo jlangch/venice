@@ -38,8 +38,8 @@
                                    string. Defaults to false |
           """
      :examples '(
-          "(jsonl/write-str {:a 100 :b 200})"
-          "(jsonl/write-str [{:a 100 :b 200} {:a 101 :b 201} {:a 102 :b 202}])" )
+          "(println (jsonl/write-str {:a 100 :b 200}))"
+          "(println (jsonl/write-str [{:a 100 :b 200} {:a 101 :b 201} {:a 102 :b 202}]))" )
      :see-also '(
           "jsonl/read-str") }
 
