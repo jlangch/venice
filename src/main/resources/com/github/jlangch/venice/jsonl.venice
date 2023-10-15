@@ -25,3 +25,67 @@
 
 
 (ns jsonl)
+
+
+(defn
+  ^{ :arglists '("(jsonl/write-str val & options)")
+     :doc """
+          Writes the val to a JSON lines string.
+
+          Options:
+
+          | :decimal-as-double b | If true emit a decimal as double else as \
+                                   string. Defaults to false |
+          """
+     :examples '(
+          """
+          (jsonl/write-str {:a 100 :b 200})
+          (jsonl/write-str [{:a 100 :b 200} {:a 101 :b 201} {:a 102 :b 202}])
+          """)
+     :see-also '(
+          "jsonl/read-str") }
+
+  write-str [val & options]
+
+  (if (sequential? val)
+    (try-with [sw (io/string-writer)]
+      (docoll #(println sw (apply json/write-str % options)) (butlast val))
+      (print sw (apply json/write-str (last val) options))
+      (flush sw)
+      @sw)
+    (apply json/write-str val options)))
+
+
+(defn
+  ^{ :arglists '("(jsonl/read-str s & options)")
+     :doc """
+          Reads a JSON string and returns it as a Venice datatype.
+
+          Options:
+
+          | :key-fn fn   | Single argument function called on JSON property names; \
+                           return value will replace the property names in the \
+                           output. Default is 'identity', use 'keyword' to get \
+                           keyword properties. |
+          | :value-fn fn | Function to transform values in JSON objects in \
+                           the output. For each JSON property, value-fn is called \
+                           with two arguments: the property name (transformed by \
+                           key-fn) and the value. The return value of value-fn will \
+                           replace the value in the output. The default value-fn \
+                           returns the value unchanged. |
+          | :decimal b   | If true use BigDecimal for decimal numbers instead of \
+                           Double. Default is false. |)
+          """
+     :examples '(
+          """
+          (jsonl/read-str "{\"a\": 100, \"b\": 200}" :key-fn keyword)
+          (jsonl/read-str "{\"a\": 100, \"b\": 200}\n{\"a\": 101, \"b\": 201}\n{\"a\": 102, \"b\": 202}"
+                          :key-fn keyword)
+          """)
+     :see-also '(
+          "jsonl/write-str") }
+
+  read-str [s & options]
+
+  (->> (str/split-lines s)
+       (map #(apply json/read-str % options))))

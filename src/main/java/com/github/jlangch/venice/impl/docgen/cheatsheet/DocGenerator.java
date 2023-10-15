@@ -54,6 +54,7 @@ import com.github.jlangch.venice.impl.docgen.cheatsheet.modules.ModuleGradleSect
 import com.github.jlangch.venice.impl.docgen.cheatsheet.modules.ModuleGrepSection;
 import com.github.jlangch.venice.impl.docgen.cheatsheet.modules.ModuleHexdumpSection;
 import com.github.jlangch.venice.impl.docgen.cheatsheet.modules.ModuleJavaSection;
+import com.github.jlangch.venice.impl.docgen.cheatsheet.modules.ModuleJsonlSection;
 import com.github.jlangch.venice.impl.docgen.cheatsheet.modules.ModuleKiraSection;
 import com.github.jlangch.venice.impl.docgen.cheatsheet.modules.ModuleMavenSection;
 import com.github.jlangch.venice.impl.docgen.cheatsheet.modules.ModuleParsifalSection;
@@ -291,6 +292,7 @@ public class DocGenerator {
 
         final DocSection documents = new DocSection("Documents", "miscellaneous");
         documents.addSection(new DocSection("JSON", "json"));
+        documents.addSection(new DocSection("JSON Lines", "jsonl"));
         documents.addSection(new DocSection("PDF", "pdf"));
         documents.addSection(new DocSection("PDF Tools", "pdf.pdftools"));
         documents.addSection(new DocSection("CSV", "csv"));
@@ -392,6 +394,7 @@ public class DocGenerator {
         return Arrays.asList(
                 new ModuleKiraSection(diBuilder).section(),
                 new ModuleCryptographySection(diBuilder).section(),
+                new ModuleJsonlSection(diBuilder).section(),
                 new ModuleXmlSection(diBuilder).section(),
                 new ModuleJavaSection(diBuilder).section(),
                 new ModuleParsifalSection(diBuilder).section(),
