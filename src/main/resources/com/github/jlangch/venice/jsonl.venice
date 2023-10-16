@@ -40,8 +40,7 @@
      :examples '(
           "(println (jsonl/write-str {:a 100 :b 200}))"
           "(println (jsonl/write-str [{:a 100 :b 200} {:a 101 :b 201} {:a 102 :b 202}]))" )
-     :see-also '(
-          "jsonl/read-str") }
+     :see-also '("jsonl/spit" "jsonl/read-str") }
 
   write-str [val & options]
 
@@ -52,6 +51,47 @@
       (flush sw)
       @sw)
     (apply json/write-str val options)))
+
+
+(defn
+  ^{ :arglists '("(jsonl/spit out val & options)")
+     :doc """
+          Spits the JSON Lines converted val to the output out.
+
+          The out may be a:
+
+           * `java.io.File`, e.g: `(io/file \"/temp/foo.json\")`
+           * `java.nio.Path`
+           * `java.io.OutputStream`
+           * `java.io.Writer`
+
+          Options:
+
+          | :decimal-as-double b | If true emit a decimal as double else as \
+                                   string. Defaults to false. |
+          | :append true/false   | e.g.: `:append true`, defaults to false |
+          | :encoding e          | e.g :encoding :utf-8, defaults to :utf-8 |
+
+          `jsonl/spit` supports load paths. See the `loadpath/paths` doc for a
+          description of the *load path* feature.
+          """
+     :examples '(
+          """
+          (try-with [wr (io/buffered-writer (io/file "data.jsonl"))]
+            (jsonl/spit wr [{:a 100 :b 200} {:a 101 :b 201} {:a 102 :b 202}])
+            (flush wr))
+          """ )
+     :see-also '(
+          "jsonl/write-str" "jsonl/slurp") }
+
+  spit [out val & options]
+
+  (try-with [wr (apply io/writer out options)]
+    (if (sequential? val)
+      (do
+        (docoll #(println wr (apply json/write-str % options)) (butlast val))
+        (print wr (apply json/write-str (last val) options)))
+      (print wr (apply json/write-str val) options))))
 
 
 (defn
@@ -97,3 +137,51 @@
        (map str/trim-to-nil)
        (filter some?)
        (map #(apply json/read-str % options))))
+
+
+(defn
+  ^{ :arglists '("(jsonl/slurp in & options)")
+     :doc """
+          Slurps a list of JSON line strings and returns it as a list of Venice
+          datatypes.
+
+          Options:
+
+          | :key-fn fn   | Single argument function called on JSON property names; \
+                           return value will replace the property names in the \
+                           output. Default is 'identity', use 'keyword' to get \
+                           keyword properties. |
+          | :value-fn fn | Function to transform values in JSON objects in \
+                           the output. For each JSON property, value-fn is called \
+                           with two arguments: the property name (transformed by \
+                           key-fn) and the value. The return value of value-fn will \
+                           replace the value in the output. The default value-fn \
+                           returns the value unchanged. |
+          | :decimal b   | If true use BigDecimal for decimal numbers instead of \
+                           Double. Default is false. |)
+          | :encoding e  | e.g :encoding :utf-8, defaults to :utf-8 |
+
+          `jsonl/slurp` supports load paths. See the `loadpath/paths` doc for a
+          description of the *load path* feature.
+          """
+     :examples '(
+          """
+          (let [file (io/file "data.jsonl")]
+            (try-with [wr (io/buffered-writer file)]
+              (jsonl/spit wr [{:a 100 :b 200} {:a 101 :b 201} {:a 102 :b 202}])
+              (flush wr))
+            (try-with [rd (io/buffered-reader file)]
+              (jsonl/slurp rd :key-fn keyword)))
+          """)
+     :see-also '(
+          "jsonl/read-str") }
+
+  slurp [in & options]
+
+  (try-with [rd (apply io/buffered-reader in options))]
+    (loop [line (. rd :readLine) data '()]
+      (if (some? line)
+        (let [l (str/trim-to-nil line)
+              v (if (nil? l) nil (apply json/read-str l options))]
+          (recur (. rd :readLine) (if (nil? v) data (conj data v))))
+        data)))
