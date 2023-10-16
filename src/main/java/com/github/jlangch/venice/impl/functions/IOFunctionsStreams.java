@@ -728,7 +728,7 @@ public class IOFunctionsStreams {
                         "  (println (read-line rd))                                                 \n" +
                         "  (println (read-line rd)))                                                ")
                     .seeAlso(
-                        "io/buffered-writer")
+                        "io/reader", "io/string-reader", "io/buffered-writer")
                     .build()
         ) {
             @Override
@@ -786,7 +786,7 @@ public class IOFunctionsStreams {
                         "Note: The caller is responsible for closing the writer!")
                     .examples()
                     .seeAlso(
-                        "io/buffered-reader")
+                        "io/writer", "io/string-writer", "io/buffered-reader")
                     .build()
         ) {
             @Override
@@ -842,7 +842,7 @@ public class IOFunctionsStreams {
                         "`io/writer` supports load paths. See the `loadpath/paths` " +
                         "doc for a description of the *load path* feature.")
                     .seeAlso(
-                        "str", "io/string-reader")
+                        "str", "io/string-writer", "io/buffered-writer", "io/reader")
                     .build()
         ) {
             @Override
@@ -942,7 +942,7 @@ public class IOFunctionsStreams {
                             "  (flush sw)                          \n" +
                             "  (println @sw))                      ")
                         .seeAlso(
-                            "str", "io/string-reader")
+                            "str", "io/writer", "io/buffered-writer", "io/string-reader")
                         .build()
             ) {
                 @Override
@@ -979,7 +979,7 @@ public class IOFunctionsStreams {
                         "doc for a description of the *load path* feature.                 \n\n" +
                         "Note: The caller is responsible for closing the reader!")
                     .seeAlso(
-                        "io/string-reader")
+                        "io/string-reader", "io/buffered-reader", "io/writer")
                     .build()
         ) {
             @Override
@@ -1099,7 +1099,7 @@ public class IOFunctionsStreams {
                         "    (println (read-line br))                     \n" +
                         "    (println (read-line br))))                   ")
                     .seeAlso(
-                        "io/reader", "io/string-writer", "io/buffered-reader")
+                        "io/reader", "io/buffered-reader", "io/string-writer")
                     .build()
         ) {
             @Override
