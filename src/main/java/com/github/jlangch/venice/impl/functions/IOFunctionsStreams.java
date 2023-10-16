@@ -53,6 +53,7 @@ import com.github.jlangch.venice.VncException;
 import com.github.jlangch.venice.impl.Printer;
 import com.github.jlangch.venice.impl.thread.ThreadContext;
 import com.github.jlangch.venice.impl.types.VncBoolean;
+import com.github.jlangch.venice.impl.types.VncByteBuffer;
 import com.github.jlangch.venice.impl.types.VncChar;
 import com.github.jlangch.venice.impl.types.VncFunction;
 import com.github.jlangch.venice.impl.types.VncJavaObject;
@@ -824,6 +825,103 @@ public class IOFunctionsStreams {
             private static final long serialVersionUID = -1848883965231344442L;
         };
 
+
+    public static VncFunction io_writer =
+        new VncFunction(
+                "io/writer",
+                VncFunction
+                    .meta()
+                    .arglists(
+                        "(io/writer f & options)" )
+                    .doc(
+                        "Creates a `java.io.Writer` for f.\n\n" +
+                        "f may be a file or a string (file path). " +
+                        "Options: \n\n" +
+                        "| :append true/false | e.g.: `:append true`, defaults to false |\n" +
+                        "| :encoding enc      | e.g.: `:encoding :utf-8`, defaults to :utf-8 |\n\n" +
+                        "`io/writer` supports load paths. See the `loadpath/paths` " +
+                        "doc for a description of the *load path* feature.")
+                    .seeAlso(
+                        "str", "io/string-reader")
+                    .build()
+        ) {
+            @Override
+            public VncVal apply(final VncList args) {
+                ArityExceptions.assertMinArity(this, args, 2);
+
+                sandboxFunctionCallValidation();
+
+                final ILoadPaths loadpaths = ThreadContext.getInterceptor().getLoadPaths();
+
+                final VncHashMap options = VncHashMap.ofAll(args.slice(1));
+                final VncVal append = options.get(new VncKeyword("append"));
+                final VncVal encVal = options.get(new VncKeyword("encoding"));
+                final Charset charset = CharsetUtil.charset(encVal);
+
+                final File file = convertToFile(args.first());
+                if (file != null) {
+                    try {
+                        final OutputStream os = loadpaths.getOutputStream(
+                                                            file,
+                                                            StandardOpenOption.CREATE,
+                                                            StandardOpenOption.WRITE,
+                                                            VncBoolean.isTrue(append)
+                                                                ? StandardOpenOption.APPEND
+                                                                : StandardOpenOption.TRUNCATE_EXISTING);
+                        if (os != null) {
+                            return new VncJavaObject(
+                                    new BufferedWriter(
+                                            new OutputStreamWriter(os, charset)));
+                        }
+                        else {
+                            throw new SecurityException(
+                                    String.format(
+                                            "Failed to create writer to the file %s. " +
+                                            "The load paths configuration prevented this action!\n" +
+                                            "Load-Paths:  unlimited-access=%b, paths=%s",
+                                            file.getPath(),
+                                            loadpaths.isUnlimitedAccess(),
+                                            loadpaths.getPaths().toString()));
+                        }
+                    }
+                    catch (VncException ex) {
+                        throw ex;
+                    }
+                    catch (Exception ex) {
+                        throw new VncException(
+                                "Failed to create writer to the file " + file.getPath(),
+                                ex);
+                    }
+                }
+                else if (Types.isVncJavaObject(args.first(), OutputStream.class)) {
+                    try {
+                        final OutputStream os = Coerce.toVncJavaObject(args.first(), OutputStream.class);
+                        return new VncJavaObject(
+                                new BufferedWriter(
+                                        new OutputStreamWriter(os, charset)));
+                    }
+                    catch (VncException ex) {
+                        throw ex;
+                    }
+                    catch (Exception ex) {
+                        throw new VncException(
+                                "Failed to create writer to the OutputStream!",
+                                ex);
+                    }
+                }
+                else if (Types.isVncJavaObject(args.first(), Writer.class)) {
+                    return new VncJavaObject(args.first());
+                }
+                else {
+                    throw new VncException(String.format(
+                            "Function 'io/writer' does not allow %s as f",
+                            Types.getType(args.first())));
+                }
+            }
+
+            private static final long serialVersionUID = -1848883965231344442L;
+        };
+
     public static VncFunction io_string_writer =
             new VncFunction(
                     "io/string-writer",
@@ -857,6 +955,129 @@ public class IOFunctionsStreams {
                 private static final long serialVersionUID = -1848883965231344442L;
             };
 
+    public static VncFunction io_reader =
+        new VncFunction(
+                "io/reader",
+                VncFunction
+                    .meta()
+                    .arglists(
+                        "(io/reader f & options)" )
+                    .doc(
+                        "Create a `java.io.Reader` from f.                                 \n\n" +
+                        "f may be a:                                                       \n\n" +
+                        " * string file path, e.g: \"/temp/foo.json\"                      \n" +
+                        " * bytebuffer                                                     \n" +
+                        " * `java.io.File`, e.g: `(io/file \"/temp/foo.json\")`            \n" +
+                        " * `java.io.InputStream`                                          \n" +
+                        " * `java.io.Reader`                                               \n" +
+                        " * `java.nio.file.Path`                                           \n" +
+                        " * `java.net.URL`                                                 \n" +
+                        " * `java.net.URI`                                                 \n\n" +
+                        "Options:                                                          \n\n" +
+                        "| :encoding enc | e.g.: `:encoding :utf-8`, defaults to :utf-8 |  \n\n" +
+                        "`io/reader` supports load paths. See the `loadpath/paths`         " +
+                        "doc for a description of the *load path* feature.                 \n\n" +
+                        "Note: The caller is responsible for closing the reader!")
+                    .seeAlso(
+                        "io/string-reader")
+                    .build()
+        ) {
+            @Override
+            public VncVal apply(final VncList args) {
+                ArityExceptions.assertMinArity(this, args, 1);
+
+                sandboxFunctionCallValidation();
+
+                final VncVal arg = args.first();
+
+                final VncHashMap options = VncHashMap.ofAll(args.rest());
+
+                final VncVal encVal = options.get(new VncKeyword("encoding"));
+                final Charset charset = CharsetUtil.charset(encVal);
+
+                final ILoadPaths loadpaths = ThreadContext.getInterceptor().getLoadPaths();
+
+                final File file = convertToFile(arg);
+                if (file != null) {
+                    try {
+                        final Reader rd = loadpaths.getBufferedReader(file, charset);
+                        if (rd == null) {
+                            if (file.exists()) {
+                                throw new VncException(
+                                        "Failed to create reader from the file " + file.getPath() +
+                                        ". The file does not exists!");
+                            }
+                            else {
+                                throw new SecurityException(
+                                        "Failed to create reader from the file " + file.getPath() +
+                                        ". The load paths configuration prevented this action!");
+                            }
+                        }
+                        return new VncJavaObject(rd);
+                    }
+                    catch (VncException ex) {
+                        throw ex;
+                    }
+                    catch (Exception ex) {
+                        throw new VncException("Failed to create reader from the file " + file.getPath(), ex);
+                    }
+                }
+                else if (Types.isVncString(arg)) {
+                    return new VncJavaObject(
+                            new StringReader(
+                                    Coerce.toVncString(arg).getValue()));
+                }
+                else if (Types.isVncByteBuffer(arg)) {
+                    try {
+                        final VncByteBuffer buf = (VncByteBuffer)arg;
+                        final InputStream is = new ByteArrayInputStream(buf.getBytes());
+                        return new VncJavaObject(
+                                new BufferedReader(
+                                        new InputStreamReader(is, charset)));
+                    }
+                    catch (VncException ex) {
+                        throw ex;
+                    }
+                    catch (Exception ex) {
+                        throw new VncException("Failed to create reader from a bytebuffer", ex);
+                    }
+                }
+                else if (Types.isVncJavaObject(arg, InputStream.class)) {
+                    try {
+                        final InputStream is = Coerce.toVncJavaObject(args.first(), InputStream.class);
+                        return new VncJavaObject(
+                                new BufferedReader(
+                                        new InputStreamReader(is, charset)));
+                    }
+                    catch (VncException ex) {
+                        throw ex;
+                    }
+                    catch (Exception ex) {
+                        throw new VncException("Failed to create reader from a :java.io.InputStream", ex);
+                    }
+                }
+                else if (Types.isVncJavaObject(arg, Reader.class)) {
+                    try {
+                        final Reader rd = Coerce.toVncJavaObject(args.first(), Reader.class);
+                        return new VncJavaObject(rd);
+                    }
+                    catch (VncException ex) {
+                        throw ex;
+                    }
+                    catch (Exception ex) {
+                        throw new VncException("Failed to create reader from a :java.io.Reader", ex);
+                    }
+                }
+                else {
+                    throw new VncException(String.format(
+                            "Function 'io/reader' does not allow %s as f",
+                            Types.getType(args.first())));
+                }
+            }
+
+            private static final long serialVersionUID = -1848883965231344442L;
+        };
+
     public static VncFunction io_string_reader =
         new VncFunction(
                 "io/string-reader",
@@ -878,7 +1099,7 @@ public class IOFunctionsStreams {
                         "    (println (read-line br))                     \n" +
                         "    (println (read-line br))))                   ")
                     .seeAlso(
-                        "io/string-writer", "io/buffered-reader")
+                        "io/reader", "io/string-writer", "io/buffered-reader")
                     .build()
         ) {
             @Override
@@ -1111,9 +1332,11 @@ public class IOFunctionsStreams {
                     .add(io_wrap_os_with_buffered_writer)
                     .add(io_wrap_os_with_print_writer)
                     .add(io_wrap_is_with_buffered_reader)
-                    .add(io_buffered_reader)
                     .add(io_buffered_writer)
+                    .add(io_writer)
                     .add(io_string_writer)
+                    .add(io_buffered_reader)
+                    .add(io_reader)
                     .add(io_string_reader)
                     .add(io_capturing_print_stream)
                     .add(io_print)
