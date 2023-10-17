@@ -178,10 +178,10 @@
 
   slurp [in & options]
 
-  (try-with [rd (apply io/buffered-reader in options))]
-    (loop [line (. rd :readLine) data '()]
+  (try-with [rd (apply io/buffered-reader in options)]
+    (loop [line (read-line rd) data '()]
       (if (some? line)
         (let [l (str/trim-to-nil line)
               v (if (nil? l) nil (apply json/read-str l options))]
-          (recur (. rd :readLine) (if (nil? v) data (conj data v))))
-        data)))
+          (recur (read-line rd) (if (nil? v) data (conj data v))))
+        data))))

@@ -706,71 +706,6 @@ public class IOFunctionsStreams {
                 private static final long serialVersionUID = -1848883965231344442L;
             };
 
-    public static VncFunction io_buffered_reader =
-        new VncFunction(
-                "io/buffered-reader",
-                VncFunction
-                    .meta()
-                    .arglists(
-                        "(io/buffered-reader is encoding?)",
-                        "(io/buffered-reader rdr)")
-                    .doc(
-                        "Creates a `java.io.BufferedReader` from a `java.io.InputStream` is with optional " +
-                        "encoding (defaults to :utf-8), from a `java.io.Reader` or from a string.\n\n" +
-                        "Note: The caller is responsible for closing the reader!")
-                    .examples(
-                        "(let [data (bytebuf [108 105 110 101 32 49 10 108 105 110 101 32 50])      \n" +
-                        "      is   (io/bytebuf-in-stream data)]                                    \n" +
-                        "  (try-with [rd (io/buffered-reader is :utf-8)]                            \n" +
-                        "    (println (read-line rd))                                               \n" +
-                        "    (println (read-line rd))))                                             ",
-                        "(try-with [rd (io/buffered-reader \"1\\n2\\n3\\n4\")]                      \n" +
-                        "  (println (read-line rd))                                                 \n" +
-                        "  (println (read-line rd)))                                                ")
-                    .seeAlso(
-                        "io/reader", "io/string-reader", "io/buffered-writer")
-                    .build()
-        ) {
-            @Override
-            public VncVal apply(final VncList args) {
-                ArityExceptions.assertArity(this, args, 1, 2);
-
-                if (Types.isVncString(args.first())) {
-                    return new VncJavaObject(
-                            new BufferedReader(
-                                    new StringReader(((VncString)args.first()).getValue())));
-                }
-                else if (Types.isVncJavaObject(args.first())) {
-                    final Object delegate = ((VncJavaObject)args.first()).getDelegate();
-                    if (delegate instanceof InputStream) {
-                        try {
-                            final InputStream is = (InputStream)delegate;
-                            final Charset charset = CharsetUtil.charset(args.second());
-
-                            return new VncJavaObject(
-                                        new BufferedReader(
-                                                new InputStreamReader(is, charset)));
-                        }
-                        catch (Exception ex) {
-                            throw new VncException(ex.getMessage(), ex);
-                        }
-                    }
-                    else if (delegate instanceof BufferedReader) {
-                        return args.first();
-                    }
-                    else if (delegate instanceof Reader) {
-                        return new VncJavaObject(new BufferedReader((Reader)delegate));
-                    }
-                }
-
-                throw new VncException(String.format(
-                        "Function 'io/buffered-reader' requires a :java.io.InputStream, " +
-                        "a :java.io.Reader, or a string. %s as is not allowed!",
-                        Types.getType(args.first())));
-            }
-
-            private static final long serialVersionUID = -1848883965231344442L;
-        };
 
     public static VncFunction io_buffered_writer =
         new VncFunction(
@@ -778,76 +713,22 @@ public class IOFunctionsStreams {
                 VncFunction
                     .meta()
                     .arglists(
-                        "(io/buffered-writer os encoding?)",
-                        "(io/buffered-writer wr)")
-                    .doc(
-                        "Creates a `java.io.BufferedWriter` from a `java.io.OutputStream` os with optional " +
-                        "encoding (defaults to :utf-8) or from a `java.io.Writer`.\n\n" +
-                        "Note: The caller is responsible for closing the writer!")
-                    .examples()
-                    .seeAlso(
-                        "io/writer", "io/string-writer", "io/buffered-reader")
-                    .build()
-        ) {
-            @Override
-            public VncVal apply(final VncList args) {
-                ArityExceptions.assertArity(this, args, 1, 2);
-
-                if (Types.isVncJavaObject(args.first())) {
-                    final Object delegate = ((VncJavaObject)args.first()).getDelegate();
-                    if (delegate instanceof OutputStream) {
-                        try {
-                            final OutputStream os = (OutputStream)delegate;
-                            final Charset charset = CharsetUtil.charset(args.second());
-
-                            return new VncJavaObject(
-                                        new BufferedWriter(
-                                                new OutputStreamWriter(os, charset)));
-                        }
-                        catch (Exception ex) {
-                            throw new VncException(ex.getMessage(), ex);
-                        }
-                    }
-                    else if (delegate instanceof BufferedWriter) {
-                        return args.first();
-                    }
-                    else if (delegate instanceof Writer) {
-                        return new VncJavaObject(new BufferedWriter((Writer)delegate));
-                    }
-                }
-
-                throw new VncException(String.format(
-                        "Function 'io/buffered-writer' requires a :java.io.OutputStream " +
-                        "or a :java.io.Writer. %s as is not allowed!",
-                        Types.getType(args.first())));
-            }
-
-            private static final long serialVersionUID = -1848883965231344442L;
-        };
-
-
-    public static VncFunction io_writer =
-        new VncFunction(
-                "io/writer",
-                VncFunction
-                    .meta()
-                    .arglists(
-                        "(io/writer f & options)" )
+                        "(io/buffered-writer f & options)" )
                     .doc(
                         "Creates a `java.io.Writer` for f.\n\n" +
                         "f may be a file or a string (file path). " +
                         "Options: \n\n" +
                         "| :append true/false | e.g.: `:append true`, defaults to false |\n" +
                         "| :encoding enc      | e.g.: `:encoding :utf-8`, defaults to :utf-8 |\n\n" +
-                        "`io/writer` supports load paths. See the `loadpath/paths` " +
+                        "`io/buffered-writer` supports load paths. See the `loadpath/paths` " +
                         "doc for a description of the *load path* feature.")
                     .seeAlso(
-                        "str", "io/string-writer", "io/buffered-writer", "io/reader")
+                        "println", "io/string-writer", "io/buffered-reader")
                     .build()
         ) {
             @Override
             public VncVal apply(final VncList args) {
-                ArityExceptions.assertMinArity(this, args, 2);
+                ArityExceptions.assertMinArity(this, args, 1);
 
                 sandboxFunctionCallValidation();
 
@@ -909,12 +790,15 @@ public class IOFunctionsStreams {
                                 ex);
                     }
                 }
+                else if (Types.isVncJavaObject(args.first(), BufferedWriter.class)) {
+                    return args.first();
+                }
                 else if (Types.isVncJavaObject(args.first(), Writer.class)) {
                     return new VncJavaObject(args.first());
                 }
                 else {
                     throw new VncException(String.format(
-                            "Function 'io/writer' does not allow %s as f",
+                            "Function 'io/buffered-writer' does not allow %s as f",
                             Types.getType(args.first())));
                 }
             }
@@ -942,7 +826,7 @@ public class IOFunctionsStreams {
                             "  (flush sw)                          \n" +
                             "  (println @sw))                      ")
                         .seeAlso(
-                            "str", "io/writer", "io/buffered-writer", "io/string-reader")
+                            "println", "io/buffered-writer", "io/buffered-reader")
                         .build()
             ) {
                 @Override
@@ -955,13 +839,13 @@ public class IOFunctionsStreams {
                 private static final long serialVersionUID = -1848883965231344442L;
             };
 
-    public static VncFunction io_reader =
+    public static VncFunction io_buffered_reader =
         new VncFunction(
-                "io/reader",
+                "io/buffered-reader",
                 VncFunction
                     .meta()
                     .arglists(
-                        "(io/reader f & options)" )
+                        "(io/buffered-reader f & options)" )
                     .doc(
                         "Create a `java.io.Reader` from f.                                 \n\n" +
                         "f may be a:                                                       \n\n" +
@@ -975,11 +859,19 @@ public class IOFunctionsStreams {
                         " * `java.net.URI`                                                 \n\n" +
                         "Options:                                                          \n\n" +
                         "| :encoding enc | e.g.: `:encoding :utf-8`, defaults to :utf-8 |  \n\n" +
-                        "`io/reader` supports load paths. See the `loadpath/paths`         " +
+                        "`io/buffered-reader` supports load paths. See the `loadpath/paths`" +
                         "doc for a description of the *load path* feature.                 \n\n" +
                         "Note: The caller is responsible for closing the reader!")
-                    .seeAlso(
-                        "io/string-reader", "io/buffered-reader", "io/writer")
+                .examples(
+                        "(let [data (bytebuf [108 105 110 101 32 49 10 108 105 110 101 32 50])]     \n" +
+                        "  (try-with [rd (io/buffered-reader data :encoding :utf-8)]                \n" +
+                        "    (println (read-line rd))                                               \n" +
+                        "    (println (read-line rd))))                                             ",
+                        "(try-with [rd (io/buffered-reader \"1\\n2\\n3\\n4\")]                      \n" +
+                        "  (println (read-line rd))                                                 \n" +
+                        "  (println (read-line rd)))                                                ")
+                .seeAlso(
+                        "read-line", "io/string-reader", "io/buffered-writer")
                     .build()
         ) {
             @Override
@@ -1070,7 +962,7 @@ public class IOFunctionsStreams {
                 }
                 else {
                     throw new VncException(String.format(
-                            "Function 'io/reader' does not allow %s as f",
+                            "Function 'io/buffered-reader' does not allow %s as f",
                             Types.getType(args.first())));
                 }
             }
@@ -1099,7 +991,7 @@ public class IOFunctionsStreams {
                         "    (println (read-line br))                     \n" +
                         "    (println (read-line br))))                   ")
                     .seeAlso(
-                        "io/reader", "io/buffered-reader", "io/string-writer")
+                        "read-line", "io/buffered-reader", "io/string-writer")
                     .build()
         ) {
             @Override
@@ -1333,10 +1225,8 @@ public class IOFunctionsStreams {
                     .add(io_wrap_os_with_print_writer)
                     .add(io_wrap_is_with_buffered_reader)
                     .add(io_buffered_writer)
-                    .add(io_writer)
                     .add(io_string_writer)
                     .add(io_buffered_reader)
-                    .add(io_reader)
                     .add(io_string_reader)
                     .add(io_capturing_print_stream)
                     .add(io_print)
