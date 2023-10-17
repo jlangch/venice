@@ -46,6 +46,8 @@ public class ModuleJsonlSection implements ISectionBuilder {
         all.addSection(docker);
         docker.addItem(diBuilder.getDocItem("jsonl/write-str", true));
         docker.addItem(diBuilder.getDocItem("jsonl/read-str", true));
+        docker.addItem(diBuilder.getDocItem("jsonl/spit", true));
+        docker.addItem(diBuilder.getDocItem("jsonl/slurp", true));
 
         return section;
     }
