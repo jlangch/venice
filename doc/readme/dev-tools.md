@@ -57,3 +57,14 @@ _config.json_ (via the Atom -> Config... menu). Specify a pattern to match for t
 
 <img src="https://github.com/jlangch/venice/blob/master/doc/assets/atom-editor.png" width="700">
 
+
+### VSCodium
+
+[VSCodium](https://vscodium.com/)
+
+    1. VSCodium is fully open-source
+    2. VSCodium looks and works exactly like VS Code
+    3. VSCodium doesn’t have proprietary extensions
+    4. VSCodium doesn’t track your activity
+    5. VSCodium supports VS Code extensions
+    
