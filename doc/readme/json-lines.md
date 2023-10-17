@@ -11,6 +11,8 @@ To convert to/from a single JSON Line string, use *jsonl/write-str* and *jsonl/r
 ```clojure
 (do
   (load-module :jsonl)
+  
+  ;; write two JSON lines (passing as list with two values)
   (println (jsonl/write-str [{"a" 10 :b 20} {"a" 11 "b" 21}])))
   
 ;; outputs
@@ -21,6 +23,8 @@ To convert to/from a single JSON Line string, use *jsonl/write-str* and *jsonl/r
 ```clojure
 (do
   (load-module :jsonl)
+
+  ;; read three JSON lines (returned as list with three values)
   (println (jsonl/read-str """
                            {"a":10,"b":20}
                            {"a":11,"b":21}
