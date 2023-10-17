@@ -35,12 +35,12 @@ public class IOFunctionsStreamTest {
         final Venice venice = new Venice();
 
         final String script =
-                "(do                                                                " +
-                "   (import :java.io.FileInputStream)                               " +
-                "   (let [file (io/temp-file \"test-\", \".txt\")]                  " +
-                "      (io/delete-file-on-exit file)                                " +
-                "      (io/spit file \"100\n200\" :append false)                    " +
-                "      (try-with [rd (io/buffered-reader file :encoding :utf-8)]    " +
+                "(do                                                                \n" +
+                "   (import :java.io.FileInputStream)                               \n" +
+                "   (let [file (io/temp-file \"test-\", \".txt\")]                  \n" +
+                "      (io/delete-file-on-exit file)                                \n" +
+                "      (io/spit file \"100\n200\" :append false)                    \n" +
+                "      (try-with [rd (io/buffered-reader file :encoding :utf-8)]    \n" +
                 "         (pr-str [(read-line rd) (read-line rd)]))))               ";
 
         assertEquals("[\"100\" \"200\"]",venice.eval(script));
@@ -51,14 +51,14 @@ public class IOFunctionsStreamTest {
         final Venice venice = new Venice();
 
         final String script =
-                "(do                                                                " +
-                "   (import :java.io.FileInputStream)                               " +
-                "   (let [file (io/temp-file \"test-\", \".txt\")]                  " +
-                "     (io/delete-file-on-exit file)                                 " +
-               "      (try-with [wr (io/buffered-writer file)]                      " +
-                "        (println wr \"100\")                                       " +
-                "        (println wr \"200\"))                                      " +
-                "      (try-with [rd (io/buffered-reader file :encoding :utf-8)]    " +
+                "(do                                                                \n" +
+                "   (import :java.io.FileInputStream)                               \n" +
+                "   (let [file (io/temp-file \"test-\", \".txt\")]                  \n" +
+                "     (io/delete-file-on-exit file)                                 \n" +
+               "      (try-with [wr (io/buffered-writer file)]                      \n" +
+                "        (println wr \"100\")                                       \n" +
+                "        (println wr \"200\"))                                      \n" +
+                "      (try-with [rd (io/buffered-reader file :encoding :utf-8)]    \n" +
                 "         (pr-str [(read-line rd) (read-line rd)]))))               ";
 
         assertEquals("[\"100\" \"200\"]",venice.eval(script));
