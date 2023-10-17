@@ -66,6 +66,8 @@
            * `java.io.OutputStream`
            * `java.io.Writer`
 
+          **Note**: The caller is responsible for closing the in stream/writer!
+
           Options:
 
           | :decimal-as-double b | If true emit a decimal as double else as \
@@ -87,12 +89,13 @@
 
   spit [out val & options]
 
-  (try-with [wr (apply io/buffered-writer out options)]
+  (let [wr (apply io/buffered-writer out options)]
     (if (sequential? val)
       (do
         (docoll #(println wr (apply json/write-str % options)) (butlast val))
         (print wr (apply json/write-str (last val) options)))
-      (print wr (apply json/write-str val) options))))
+      (print wr (apply json/write-str val) options))
+    (flush wr)))
 
 
 (defn
@@ -154,6 +157,8 @@
            * `java.io.Reader`
            * `java.nio.file.Path`
 
+          **Note**: The caller is responsible for closing the in stream/reader!
+
           Options:
 
           | :key-fn fn   | Single argument function called on JSON property names; \
@@ -187,10 +192,11 @@
 
   slurp [in & options]
 
-  (try-with [rd (apply io/buffered-reader in options)]
+  (let [rd (apply io/buffered-reader in options)]
     (loop [line (read-line rd) data '()]
-      (if (some? line)
+      (if (nil? line)
+        data
         (let [l (str/trim-to-nil line)
-              v (if (nil? l) nil (apply json/read-str l options))]
-          (recur (read-line rd) (if (nil? v) data (conj data v))))
-        data))))
+              v (if (nil? l) nil (apply json/read-str l options))
+              d (if (nil? v) data (conj data v))]
+          (recur (read-line rd) d))))))

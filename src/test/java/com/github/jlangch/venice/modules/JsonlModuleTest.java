@@ -219,5 +219,27 @@ public class JsonlModuleTest {
     // ------------------------------------------------------------------------
     // Slurp
     // ------------------------------------------------------------------------
+
+    @Test
+    public void test_slurp() {
+        final Venice venice = new Venice();
+
+        final String script1 =  "(do                                                      \n" +
+                                "  (load-module :jsonl)                                   \n" +
+                                "  (defn test-data []                                     \n" +
+                                "    (try-with [sw (io/string-writer)]                    \n" +
+                                "      (println sw (json/write-str {:a 100 :b 200}))      \n" +
+                                "      (println sw (json/write-str {:a 101 :b 201}))      \n" +
+                                "      (println sw (json/write-str {:a 102 :b 202}))      \n" +
+                                "      (flush sw)                                         \n" +
+                                "      @sw))                                              \n" +
+                                "  (let [json (test-data)]                                \n" +
+                                "    (try-with [rd (io/buffered-reader json)]             \n" +
+                                "      (pr-str (jsonl/slurp rd :key-fn keyword)))))                ";
+
+        assertEquals(
+                "({:a 100 :b 200} {:a 101 :b 201} {:a 102 :b 202})",
+                venice.eval(script1));
+    }
 }
 
