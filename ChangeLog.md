@@ -9,7 +9,7 @@ All notable changes to this project will be documented in this file.
 
 ### Added 
 
-- support for JSON lines (see module :jsonl)
+- support for [JSON Lines](https://jsonlines.org/) (see module :jsonl)
 
 
 ### Fixed 
@@ -30,8 +30,8 @@ All notable changes to this project will be documented in this file.
 
 ### Fixed 
 
-- Venice to follow the Java rules when propagating exceptions from try-with-resources
-  blocks:
+- Venice to follow the Java rules when propagating exceptions from 
+  try-with-resources blocks:
     1. exception from finally block
     2. exception from catch block
     3. exception from body block
