@@ -1,6 +1,6 @@
 # JSON Lines
 
-Venice has built-in support JSON Lines text format as described in [JSON Lines](https://jsonlines.org/). It reads/writes JSON Lines from/to Venice data 
+Venice has built-in support for the JSON Lines text format as described in [JSON Lines](https://jsonlines.org/). It reads/writes JSON Lines from/to Venice data 
 structures. No 3rd-party libraries are required.
 
 
