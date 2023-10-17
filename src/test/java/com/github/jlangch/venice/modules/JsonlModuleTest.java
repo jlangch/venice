@@ -61,6 +61,12 @@ public class JsonlModuleTest {
                 venice.eval("(do                       \n" +
                             "  (load-module :jsonl)    \n" +
                             "  (jsonl/write-str 10.2)) "));
+
+        assertEquals(
+                "{\"a\":1}",
+                venice.eval("(do                         \n" +
+                            "  (load-module :jsonl)      \n" +
+                            "  (jsonl/write-str {:a 1})) "));
     }
 
     @Test
@@ -189,6 +195,13 @@ public class JsonlModuleTest {
         final String script1 =  "(do                                                      \n" +
                                 "  (load-module :jsonl)                                   \n" +
                                 "  (try-with [sw (io/string-writer)]                      \n" +
+                                "     (jsonl/spit sw {:a 100 :b 200})                     \n" +
+                                "     (flush sw)                                          \n" +
+                                "     @sw))                                               ";
+
+        final String script2 =  "(do                                                      \n" +
+                                "  (load-module :jsonl)                                   \n" +
+                                "  (try-with [sw (io/string-writer)]                      \n" +
                                 "     (jsonl/spit sw [{:a 100 :b 200}                     \n" +
                                 "                     {:a 101 :b 201}                     \n" +
                                 "                     {:a 102 :b 202}])                   \n" +
@@ -196,7 +209,7 @@ public class JsonlModuleTest {
                                 "     @sw))                                               ";
 
 
-        final String script2 =  "(do                                                      \n" +
+        final String script3 =  "(do                                                      \n" +
                                 "  (load-module :jsonl)                                   \n" +
                                 "  (try-with [sw (io/string-writer)]                      \n" +
                                 "     (jsonl/spit sw [{:a 100 :b 200}                     \n" +
@@ -206,13 +219,38 @@ public class JsonlModuleTest {
                                 "     (let [json @sw]                                     \n" +
                                 "        (pr-str (jsonl/read-str json :key-fn keyword)))))";
 
+
         assertEquals(
-                "{\"a\":100,\"b\":200}\n{\"a\":101,\"b\":201}\n{\"a\":102,\"b\":202}",
+                "{\"a\":100,\"b\":200}",
                 venice.eval(script1));
 
         assertEquals(
-                "({:a 100 :b 200} {:a 101 :b 201} {:a 102 :b 202})",
+                "{\"a\":100,\"b\":200}\n{\"a\":101,\"b\":201}\n{\"a\":102,\"b\":202}",
                 venice.eval(script2));
+
+        assertEquals(
+                "({:a 100 :b 200} {:a 101 :b 201} {:a 102 :b 202})",
+                venice.eval(script3));
+    }
+    @Test
+    public void test_spit_line_by_line() {
+        final Venice venice = new Venice();
+
+        final String script1 =  "(do                                                      \n" +
+                                "  (load-module :jsonl)                                   \n" +
+                                "  (try-with [sw (io/string-writer)]                      \n" +
+                                "     (jsonl/spit sw {:a 100 :b 200})                     \n" +
+                                "     (println sw)                                        \n" +
+                                "     (jsonl/spit sw {:a 101 :b 201})                     \n" +
+                                "     (println sw)                                        \n" +
+                                "     (jsonl/spit sw {:a 102 :b 202})                     \n" +
+                                "     (flush sw)                                          \n" +
+                                "     (let [json @sw]                                     \n" +
+                                "        (pr-str (jsonl/read-str json :key-fn keyword)))))";
+
+        assertEquals(
+                "({:a 100 :b 200} {:a 101 :b 201} {:a 102 :b 202})",
+                venice.eval(script1));
     }
 
 

@@ -42,7 +42,7 @@ JSON Lines can be spit to Java OutputStreams, Writers, or files
 (do
   (load-module :jsonl)
   
-  ;; spit a list of json lines
+  ;; spit a list of json lines (linefeeds are added implicitely )
   (try-with [wr (io/buffered-writer (io/file "data.jsonl"))]
             (jsonl/spit wr [{"a" 100, "b" 200} 
                             {"a" 101, "b" 201} 
@@ -54,10 +54,12 @@ JSON Lines can be spit to Java OutputStreams, Writers, or files
 (do
   (load-module :jsonl)
   
-  ;; spit a list of json lines, line by line
+  ;; spit a list of json lines, line by line (linefeeds must be added exlicitely)
   (try-with [wr (io/buffered-writer (io/file "data.jsonl"))]
             (jsonl/spit wr {"a" 100, "b" 200})
+            (println wr)
             (jsonl/spit wr {"a" 101, "b" 201})
+            (println wr)
             (jsonl/spit wr {"a" 102, "b" 202})
             (flush wr)))
 ```

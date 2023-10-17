@@ -83,7 +83,25 @@
           (try-with [wr (io/buffered-writer (io/file "data.jsonl"))]
             (jsonl/spit wr [{:a 100 :b 200} {:a 101 :b 201} {:a 102 :b 202}])
             (flush wr))
-          """ )
+          """,
+          """
+          ;; spit a list of json lines (linefeeds are added implicitely )
+          (try-with [wr (io/buffered-writer (io/file "data.jsonl"))]
+                    (jsonl/spit wr [{"a" 100, "b" 200}
+                                    {"a" 101, "b" 201}
+                                    {"a" 102, "b" 202}])
+                    (flush wr)))
+          """,
+          """
+          ;; spit a list of json lines, line by line (linefeeds must be added exlicitely)
+          (try-with [wr (io/buffered-writer (io/file "data.jsonl"))]
+                    (jsonl/spit wr {"a" 100, "b" 200})
+                    (println wr)
+                    (jsonl/spit wr {"a" 101, "b" 201})
+                    (println wr)
+                    (jsonl/spit wr {"a" 102, "b" 202})
+                    (flush wr)))
+          """)
      :see-also '(
           "jsonl/write-str" "jsonl/slurp") }
 
@@ -94,7 +112,7 @@
       (do
         (docoll #(println wr (apply json/write-str % options)) (butlast val))
         (print wr (apply json/write-str (last val) options)))
-      (print wr (apply json/write-str val) options))
+      (print wr (apply json/write-str val options)))
     (flush wr)))
 
 
