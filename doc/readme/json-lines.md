@@ -15,7 +15,7 @@ To convert to/from a single JSON Line string, use *jsonl/write-str* and *jsonl/r
   ;; write two JSON lines (passing as list with two values)
   (println (jsonl/write-str [{"a" 10 :b 20} {"a" 11 "b" 21}])))
   
-;; outputs
+;; output (a two-line string)
 ;; {"a":10,"b":20}
 ;; {"a":11,"b":21}
 ```
@@ -30,7 +30,8 @@ To convert to/from a single JSON Line string, use *jsonl/write-str* and *jsonl/r
                            {"a":11,"b":21}
                            {"a":12,"b":23}
                            """)))
-;; outputs
+                           
+;; output (a Venice list with 3 maps)
 ;; ({"a" 10 "b" 20} {"a" 11 "b" 21} {"a" 12 "b" 23})
 ```
 
