@@ -138,14 +138,18 @@
           """
      :examples '(
           """
-          (let [json (json/write-str {:a 100 :b 200})]
+          (let [json (jsonl/write-str {:a 100 :b 200})]
+            (jsonl/read-str json :key-fn keyword))
+          """,
+          """
+          (let [json (jsonl/write-str [{:a 100 :b 200} {:a 100 :b 200}])]
             (jsonl/read-str json :key-fn keyword))
           """,
           """
           (try-with [sw (io/string-writer)]
-            (println sw (json/write-str {:a 100 :b 200}))
-            (println sw (json/write-str {:a 101 :b 201}))
-            (println sw (json/write-str {:a 102 :b 202}))
+            (println sw (jsonl/write-str {:a 100 :b 200}))
+            (println sw (jsonl/write-str {:a 101 :b 201}))
+            (println sw (jsonl/write-str {:a 102 :b 202}))
             (flush sw)
             (let [json @sw]
               (jsonl/read-str json :key-fn keyword)))
