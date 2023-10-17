@@ -87,7 +87,7 @@
 
   spit [out val & options]
 
-  (try-with [wr (apply io/writer out options)]
+  (try-with [wr (apply io/buffered-writer out options)]
     (if (sequential? val)
       (do
         (docoll #(println wr (apply json/write-str % options)) (butlast val))
