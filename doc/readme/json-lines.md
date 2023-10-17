@@ -24,7 +24,7 @@ To convert to/from JSON strings, use json/write-str and json/read-str:
                            {"a":10,"b":20}
                            {"a":11,"b":21}
                            {"a":12,"b":23}
-                           """))
+                           """)))
 ;; outputs
 ;; ({"a" 10 "b" 20} {"a" 11 "b" 21} {"a" 12 "b" 23})
 ```
@@ -44,7 +44,9 @@ JSON Lines can be spit to Java OutputStreams, Writers, or files
   
   ;; spit a list of json lines
   (try-with [wr (io/buffered-writer (io/file "data.jsonl"))]
-            (jsonl/spit wr [{"a" 100, "b" 200} {"a" 101, "b" 201} {"a" 102, "b" 202}])
+            (jsonl/spit wr [{"a" 100, "b" 200} 
+                            {"a" 101, "b" 201} 
+                            {"a" 102, "b" 202}])
             (flush wr)))
 ```
 
@@ -73,25 +75,37 @@ JSON can be slurped from Java InputStreams, Readers, or files
 
 ### Converting JSON object key/value types
 
-Map JSON object keys to keywords
+Venice supports for JSON Lines the same data type customizations as for its standard 
+JSON handling.
+
+**Map JSON object keys to keywords**
 
 ```clojure
-(json/read-str """{"a":100,"b":100}""" :key-fn keyword)
+(do
+  (load-module :jsonl)
+  
+  (jsonl/read-str """{"a":100,"b":100}""" :key-fn keyword))
 ;;=> {:a 100 :b 100}
 ```
 
-Map JSON object values to local-date-time
+**Map JSON object values to local-date-time**
 
 ```clojure
-(json/read-str """{"a": "2018-08-01T10:15:30", "b": 100}""" 
-               :value-fn (fn [k v] (if (== "a" k) (time/local-date-time v) v)))
+(do
+  (load-module :jsonl)
+  
+  (jsonl/read-str """{"a": "2018-08-01T10:15:30", "b": 100}""" 
+                 :value-fn (fn [k v] (if (== "a" k) (time/local-date-time v) v))))
 ;;=> {"a" 2018-08-01T10:15:30 "b" 100}
 ```
 
 ```clojure
-(json/read-str """{"a": "2018-08-01T10:15:30", "b": 100}""" 
-               :key-fn keyword 
-               :value-fn (fn [k v] (if (== :a k) (time/local-date-time v) v)))
+(do
+  (load-module :jsonl)
+  
+  (jsonl/read-str """{"a": "2018-08-01T10:15:30", "b": 100}""" 
+                 :key-fn keyword 
+                 :value-fn (fn [k v] (if (== :a k) (time/local-date-time v) v))))
 ;;=> {:a 2018-08-01T10:15:30 :b 100}
 ```
 
@@ -101,14 +115,20 @@ Map JSON object values to local-date-time
 Decimals are converted to strings
 
 ```clojure
-(json/write-str {:a 100.23M})
+(do
+  (load-module :jsonl)
+  
+  (jsonl/write-str {:a 100.23M}))
 ;;=> "{\"a\":\"100.23\"}"
 ```
 
 Decimals can be forced to be converted to doubles:
 
 ```clojure
-(json/write-str {:a 100.23M} :decimal-as-double true)
+(do
+  (load-module :jsonl)
+  
+  (jsonl/write-str {:a 100.23M} :decimal-as-double true))
 ;;=> "{\"a\":100.23}"
 ```
 
@@ -117,7 +137,10 @@ The decimals are converted from the read string without
 intermediate double conversion:
 
 ```clojure
-(json/read-str """{"a":10.33}""" :decimal true)
+(do
+  (load-module :jsonl)
+  
+  (json/read-str """{"a":10.33}""" :decimal true))
 ;;=> {"a" 10.33M}
 ```
 
@@ -125,21 +148,27 @@ intermediate double conversion:
 Binary data is converted to a _Base64_ encoded string
 
 ```clojure
-(json/write-str {:a (bytebuf-from-string "abcdefgh" :utf-8)})
+(do
+  (load-module :jsonl)
+  
+  (jsonl/write-str {:a (bytebuf-from-string "abcdefgh" :utf-8)}))
 ;;=> "{\"a\":\"YWJjZGVmZ2g=\"}"
 ```
 
 Date/Time data types are formatted as ISO date/time strings 
 
 ```clojure
-(json/write-str {:a (time/local-date 2018 8 1)})
-;;=> "{\"a\":\"2018-08-01\"}"
+(do
+  (load-module :jsonl)
+  
+  (jsonl/write-str {:a (time/local-date 2018 8 1)})
+  ;;=> "{\"a\":\"2018-08-01\"}"
 
-(json/write-str {:a (time/local-date-time "2018-08-01T14:20:10.200")})
-;;=> "{\"a\":\"2018-08-01T14:20:10.2\"}"
+  (jsonl/write-str {:a (time/local-date-time "2018-08-01T14:20:10.200")})
+  ;;=> "{\"a\":\"2018-08-01T14:20:10.2\"}"
 
-(json/write-str {:a (time/zoned-date-time "2018-08-01T14:20:10.200+01:00")})
-;;=> "{\"a\":\"2018-08-01T14:20:10.2+01:00\"}"
+  (jsonl/write-str {:a (time/zoned-date-time "2018-08-01T14:20:10.200+01:00")}))
+  ;;=> "{\"a\":\"2018-08-01T14:20:10.2+01:00\"}"
 ```
 
 Ints are converted to longs with write/read
