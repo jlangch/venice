@@ -6,7 +6,7 @@ structures. No 3rd-party libraries are required.
 
 ## Usage
 
-To convert to/from JSON strings, use *jsonl/write-str* and *jsonl/read-str*:
+To convert to/from a single JSON Line string, use *jsonl/write-str* and *jsonl/read-str*:
 
 ```clojure
 (do
@@ -45,10 +45,10 @@ JSON Lines can be spit to Java OutputStreams, Writers, or files
   
   ;; spit a list of json lines (linefeeds are added implicitely )
   (try-with [wr (io/buffered-writer (io/file "data.jsonl"))]
-            (jsonl/spit wr [{"a" 100, "b" 200} 
-                            {"a" 101, "b" 201} 
-                            {"a" 102, "b" 202}])
-            (flush wr)))
+     (jsonl/spit wr [{"a" 100, "b" 200} 
+                     {"a" 101, "b" 201} 
+                     {"a" 102, "b" 202}])
+     (flush wr)))
 ```
 
 ```clojure
@@ -57,12 +57,12 @@ JSON Lines can be spit to Java OutputStreams, Writers, or files
   
   ;; spit a list of json lines, line by line (linefeeds must be added exlicitely)
   (try-with [wr (io/buffered-writer (io/file "data.jsonl"))]
-            (jsonl/spit wr {"a" 100, "b" 200})
-            (println wr)
-            (jsonl/spit wr {"a" 101, "b" 201})
-            (println wr)
-            (jsonl/spit wr {"a" 102, "b" 202})
-            (flush wr)))
+    (jsonl/spit wr {"a" 100, "b" 200})
+    (println wr)
+    (jsonl/spit wr {"a" 101, "b" 201})
+    (println wr)
+    (jsonl/spit wr {"a" 102, "b" 202})
+    (flush wr)))
 ```
 
 JSON can be slurped from Java InputStreams, Readers, or files
@@ -98,7 +98,8 @@ JSON handling.
   (load-module :jsonl)
   
   (jsonl/read-str """{"a": "2018-08-01T10:15:30", "b": 100}""" 
-                 :value-fn (fn [k v] (if (== "a" k) (time/local-date-time v) v))))
+                  :value-fn (fn [k v] (if (== "a" k) (time/local-date-time v) v))))
+
 ;;=> {"a" 2018-08-01T10:15:30 "b" 100}
 ```
 
@@ -109,6 +110,7 @@ JSON handling.
   (jsonl/read-str """{"a": "2018-08-01T10:15:30", "b": 100}""" 
                  :key-fn keyword 
                  :value-fn (fn [k v] (if (== :a k) (time/local-date-time v) v))))
+                 
 ;;=> {:a 2018-08-01T10:15:30 :b 100}
 ```
 
@@ -122,6 +124,7 @@ Decimals are converted to strings
   (load-module :jsonl)
   
   (jsonl/write-str {:a 100.23M}))
+  
 ;;=> "{\"a\":\"100.23\"}"
 ```
 
@@ -132,6 +135,7 @@ Decimals can be forced to be converted to doubles:
   (load-module :jsonl)
   
   (jsonl/write-str {:a 100.23M} :decimal-as-double true))
+  
 ;;=> "{\"a\":100.23}"
 ```
 
@@ -144,6 +148,7 @@ intermediate double conversion:
   (load-module :jsonl)
   
   (json/read-str """{"a":10.33}""" :decimal true))
+  
 ;;=> {"a" 10.33M}
 ```
 
@@ -155,6 +160,7 @@ Binary data is converted to a _Base64_ encoded string
   (load-module :jsonl)
   
   (jsonl/write-str {:a (bytebuf-from-string "abcdefgh" :utf-8)}))
+  
 ;;=> "{\"a\":\"YWJjZGVmZ2g=\"}"
 ```
 
@@ -177,7 +183,11 @@ Date/Time data types are formatted as ISO date/time strings
 Ints are converted to longs with write/read
 
 ```clojure
-(json/read-str (json/write-str {:a 100I}))
+(do
+  (load-module :jsonl)
+  
+  (jsonl/read-str (jsonl/write-str {:a 100I})))
+  
 ;;=> {"a" 100}
 ```
 
