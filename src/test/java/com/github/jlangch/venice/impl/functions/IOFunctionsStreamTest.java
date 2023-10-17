@@ -64,8 +64,8 @@ public class IOFunctionsStreamTest {
                "      (try-with [wr (io/buffered-writer file)]                      \n" +
                 "        (println wr \"100\")                                       \n" +
                 "        (println wr \"200\"))                                      \n" +
-                "      (try-with [rd (io/buffered-reader file :encoding :utf-8)]    \n" +
-                "         (pr-str [(read-line rd) (read-line rd)]))))               ";
+                "     (try-with [rd (io/buffered-reader file :encoding :utf-8)]     \n" +
+                "        (pr-str [(read-line rd) (read-line rd)]))))               ";
 
         assertEquals("[\"100\" \"200\"]",venice.eval(script));
     }
@@ -176,6 +176,19 @@ public class IOFunctionsStreamTest {
     }
 
     @Test
+    public void test_io_read_char_to_eof() {
+        final Venice venice = new Venice();
+
+        final String script =
+                "(try-with [rd (io/string-reader \"12\")]       \n" +
+                "  (pr-str [ (io/read-char rd)                    \n" +
+                "            (io/read-char rd)                    \n" +
+                "            (io/read-char rd) ]))                   ";
+
+        assertEquals("[#\\1 #\\2 nil]",venice.eval(script));
+    }
+
+    @Test
     public void test_io_read_line() {
         final Venice venice = new Venice();
 
@@ -187,6 +200,20 @@ public class IOFunctionsStreamTest {
                 "              (io/read-line br) ])))             ";
 
         assertEquals("[\"1\" \"2\" \"3\"]",venice.eval(script));
+    }
+
+    @Test
+    public void test_io_read_line_to_eof() {
+        final Venice venice = new Venice();
+
+        final String script =
+                "(let [rd (io/string-reader \"1\\n2\")]   \n" +
+                "  (try-with [br (io/buffered-reader rd)]         \n" +
+                "    (pr-str [ (io/read-line br)                  \n" +
+                "              (io/read-line br)                  \n" +
+                "              (io/read-line br) ])))             ";
+
+        assertEquals("[\"1\" \"2\" nil]",venice.eval(script));
     }
 
 }

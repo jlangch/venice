@@ -887,19 +887,20 @@ public class IOFunctionsStreams {
 
                 final VncVal arg = args.first();
 
-                final VncHashMap options = VncHashMap.ofAll(args.rest());
-
-                final VncVal encVal = options.get(new VncKeyword("encoding"));
-                final Charset charset = CharsetUtil.charset(encVal);
-
-                final ILoadPaths loadpaths = ThreadContext.getInterceptor().getLoadPaths();
-
                 if (Types.isVncString(arg)) {
                     return new VncJavaObject(
                             new BufferedReader(
                                 new StringReader(
                                         Coerce.toVncString(arg).getValue())));
                 }
+
+
+                final VncHashMap options = VncHashMap.ofAll(args.rest());
+                final VncVal encVal = options.get(new VncKeyword("encoding"));
+                final Charset charset = CharsetUtil.charset(encVal);
+
+                final ILoadPaths loadpaths = ThreadContext.getInterceptor().getLoadPaths();
+
 
                 final File file = convertToFile(arg);
                 if (file != null) {
@@ -1117,7 +1118,8 @@ public class IOFunctionsStreams {
                 if (Types.isVncJavaObject(v, BufferedReader.class)) {
                     final BufferedReader br = Coerce.toVncJavaObject(v, BufferedReader.class);
                     try {
-                        return new VncString(br.readLine());
+                        final String line = br.readLine();
+                        return line == null ? Nil : new VncString(line);
                     }
                     catch(IOException ex) {
                         throw new VncException(

@@ -15,6 +15,7 @@ All notable changes to this project will be documented in this file.
 ### Fixed 
 
 - function docker/container-exec-by-name 
+- function read-line to detect end-of-stream properly
 
 
 
