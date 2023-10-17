@@ -79,6 +79,7 @@ Cheat Sheet: [HTML](https://htmlpreview.github.io/?https://cdn.rawgit.com/jlangc
 * [Macros](doc/readme/macros.md)
 * [Sandbox](doc/readme/sandbox.md)
 * [JSON](doc/readme/json.md)
+* [JSON Lines](doc/readme/json-lines.md)
 * [CSV](doc/readme/csv.md)
 * [PDF](doc/readme/pdf.md)
 * [EXCEL](doc/readme/excel.md)
