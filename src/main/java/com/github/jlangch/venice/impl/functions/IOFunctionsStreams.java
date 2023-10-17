@@ -716,8 +716,12 @@ public class IOFunctionsStreams {
                         "(io/buffered-writer f & options)" )
                     .doc(
                         "Creates a `java.io.Writer` for f.\n\n" +
-                        "f may be a file or a string (file path). " +
-                        "Options: \n\n" +
+                        "f may be a:                                                       \n\n" +
+                        " * `java.io.File`, e.g: `(io/file \"/temp/foo.json\")`            \n" +
+                        " * `java.nio.file.Path`                                           \n" +
+                        " * `java.io.OutputStream`                                          \n" +
+                        " * `java.io.Writer`                                               \n" +
+                    "Options: \n\n" +
                         "| :append true/false | e.g.: `:append true`, defaults to false |\n" +
                         "| :encoding enc      | e.g.: `:encoding :utf-8`, defaults to :utf-8 |\n\n" +
                         "`io/buffered-writer` supports load paths. See the `loadpath/paths` " +
@@ -850,12 +854,12 @@ public class IOFunctionsStreams {
                     .doc(
                         "Create a `java.io.Reader` from f.                                 \n\n" +
                         "f may be a:                                                       \n\n" +
-                        " * string file path, e.g: \"/temp/foo.json\"                      \n" +
+                        " * string                                                         \n" +
                         " * bytebuffer                                                     \n" +
                         " * `java.io.File`, e.g: `(io/file \"/temp/foo.json\")`            \n" +
+                        " * `java.nio.file.Path`                                           \n" +
                         " * `java.io.InputStream`                                          \n" +
                         " * `java.io.Reader`                                               \n" +
-                        " * `java.nio.file.Path`                                           \n" +
                         " * `java.net.URL`                                                 \n" +
                         " * `java.net.URI`                                                 \n\n" +
                         "Options:                                                          \n\n" +
@@ -890,6 +894,13 @@ public class IOFunctionsStreams {
 
                 final ILoadPaths loadpaths = ThreadContext.getInterceptor().getLoadPaths();
 
+                if (Types.isVncString(arg)) {
+                    return new VncJavaObject(
+                            new BufferedReader(
+                                new StringReader(
+                                        Coerce.toVncString(arg).getValue())));
+                }
+
                 final File file = convertToFile(arg);
                 if (file != null) {
                     try {
@@ -914,11 +925,6 @@ public class IOFunctionsStreams {
                     catch (Exception ex) {
                         throw new VncException("Failed to create reader from the file " + file.getPath(), ex);
                     }
-                }
-                else if (Types.isVncString(arg)) {
-                    return new VncJavaObject(
-                            new StringReader(
-                                    Coerce.toVncString(arg).getValue()));
                 }
                 else if (Types.isVncByteBuffer(arg)) {
                     try {

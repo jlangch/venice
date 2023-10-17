@@ -34,7 +34,7 @@ public class IOFunctionsStreamTest {
     public void test_io_buffered_reader() {
         final Venice venice = new Venice();
 
-        final String script =
+        final String script1 =
                 "(do                                                                \n" +
                 "   (import :java.io.FileInputStream)                               \n" +
                 "   (let [file (io/temp-file \"test-\", \".txt\")]                  \n" +
@@ -43,7 +43,13 @@ public class IOFunctionsStreamTest {
                 "      (try-with [rd (io/buffered-reader file :encoding :utf-8)]    \n" +
                 "         (pr-str [(read-line rd) (read-line rd)]))))               ";
 
-        assertEquals("[\"100\" \"200\"]",venice.eval(script));
+        final String script2 =
+                "(try-with [rd (io/buffered-reader \"100\n200\")]   \n" +
+                "   (pr-str [(read-line rd) (read-line rd)]))        ";
+
+        assertEquals("[\"100\" \"200\"]",venice.eval(script1));
+
+        assertEquals("[\"100\" \"200\"]",venice.eval(script2));
     }
 
     @Test
