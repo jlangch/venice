@@ -578,12 +578,12 @@ public class IOFunctionsStreams {
                         "encoding (defaults to :utf-8).\n\n" +
                         "Note: The caller is responsible for closing the writer!")
                     .examples(
-                        "(let [os (io/bytebuf-out-stream)]                             \n" +
-                        "  (try-with [wr (io/wrap-os-with-buffered-writer os :utf-8)]  \n" +
-                        "    (println wr \"line 1\")                                   \n" +
-                        "    (println wr \"line 2\")                                   \n" +
-                        "    (flush wr)                                                \n" +
-                        "    @os))                                                     ")
+                        "(try-with [os (io/bytebuf-out-stream)                        \n" +
+                        "           wr (io/wrap-os-with-buffered-writer os :utf-8)]   \n" +
+                        "  (println wr \"100\")                                       \n" +
+                        "  (println wr \"200\")                                       \n" +
+                        "  (flush wr)                                                 \n" +
+                        "  (bytebuf-to-string @os :utf-8))                            ")
                     .seeAlso(
                         "io/wrap-os-with-print-writer")
                     .build()
@@ -665,9 +665,9 @@ public class IOFunctionsStreams {
                             "encoding (defaults to :utf-8).\n\n" +
                             "Note: The caller is responsible for closing the reader!")
                         .examples(
-                            "(let [data (bytebuf [108 105 110 101 32 49 10 108 105 110 101 32 50])     \n" +
-                            "       is   (io/bytebuf-in-stream data)]                                  \n" +
-                            "  (try-with [rd (io/wrap-is-with-buffered-reader is :utf-8)]              \n" +
+                            "(let [data (bytebuf [108 105 110 101 32 49 10 108 105 110 101 32 50])]    \n" +
+                            "  (try-with [is   (io/bytebuf-in-stream data)                             \n" +
+                            "             rd (io/wrap-is-with-buffered-reader is :utf-8)]              \n" +
                             "    (println (read-line rd))                                              \n" +
                             "    (println (read-line rd))))                                            ")
                         .seeAlso(

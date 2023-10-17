@@ -101,6 +101,62 @@ public class IOFunctionsStreamTest {
     }
 
     @Test
+    public void test_io_bytebuf_out_stream() {
+        final Venice venice = new Venice();
+
+        final String script =
+                "(try-with [os (io/bytebuf-out-stream)                        \n" +
+                "           wr (io/wrap-os-with-buffered-writer os :utf-8)]   \n" +
+                "  (println wr \"100\")                                       \n" +
+                "  (println wr \"200\")                                       \n" +
+                "  (flush wr)                                                 \n" +
+                "  (bytebuf-to-string @os :utf-8))                            ";
+
+        assertEquals("100\n200\n",venice.eval(script));
+    }
+
+    @Test
+    public void test_io_bytebuf_in_stream() {
+        final Venice venice = new Venice();
+
+        final String script =
+                "(let [data (bytebuf [108 105 110 101 32 49 10 108 105 110 101 32 50])]    \n" +
+                "  (try-with [is (io/bytebuf-in-stream data)                               \n" +
+                "             rd (io/wrap-is-with-buffered-reader is :utf-8)]              \n" +
+                "    (pr-str [(read-line rd) (read-line rd)])))                            ";
+
+        assertEquals("[\"line 1\" \"line 2\"]",venice.eval(script));
+    }
+
+    @Test
+    public void test_io_wrap_os_with_buffered_writer() {
+        final Venice venice = new Venice();
+
+        final String script =
+                "(try-with [os (io/bytebuf-out-stream)                        \n" +
+                "           wr (io/wrap-os-with-buffered-writer os :utf-8)]   \n" +
+                "  (println wr \"100\")                                       \n" +
+                "  (println wr \"200\")                                       \n" +
+                "  (flush wr)                                                 \n" +
+                "  (bytebuf-to-string @os :utf-8))                            ";
+
+        assertEquals("100\n200\n",venice.eval(script));
+    }
+
+    @Test
+    public void test_io_wrap_is_with_buffered_reader() {
+        final Venice venice = new Venice();
+
+        final String script =
+                "(let [data (bytebuf [108 105 110 101 32 49 10 108 105 110 101 32 50])]    \n" +
+                "  (try-with [is (io/bytebuf-in-stream data)                               \n" +
+                "             rd (io/wrap-is-with-buffered-reader is :utf-8)]              \n" +
+                "    (pr-str [(read-line rd) (read-line rd)])))                            ";
+
+        assertEquals("[\"line 1\" \"line 2\"]",venice.eval(script));
+    }
+
+    @Test
     public void test_io_read_char() {
         final Venice venice = new Venice();
 
