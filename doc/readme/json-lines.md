@@ -16,8 +16,9 @@ To convert to/from JSON strings, use *jsonl/write-str* and *jsonl/read-str*:
 ;; outputs
 ;; {"a":10,"b":20}
 ;; {"a":11,"b":21}
+```
 
-
+```clojure
 (do
   (load-module :jsonl)
   (println (jsonl/read-str """
