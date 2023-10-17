@@ -60,6 +60,7 @@
 
           The out may be a:
 
+           * string file path, e.g: \"/temp/foo.json\"
            * `java.io.File`, e.g: `(io/file \"/temp/foo.json\")`
            * `java.nio.Path`
            * `java.io.OutputStream`
@@ -142,8 +143,16 @@
 (defn
   ^{ :arglists '("(jsonl/slurp in & options)")
      :doc """
-          Slurps a list of JSON line strings and returns it as a list of Venice
-          datatypes.
+          Slurps a list of JSON line stringsfrom the input and returns it as a
+          list of Venice datatypes.
+
+          in may be a:
+           * string file path, e.g: \"/temp/foo.json\"
+           * bytebuffer
+           * `java.io.File`, e.g: `(io/file \"/temp/foo.json\")`
+           * `java.io.InputStream`
+           * `java.io.Reader`
+           * `java.nio.file.Path`
 
           Options:
 

@@ -85,6 +85,7 @@ public class IOFunctionsSpitSlurp {
                         " * `java.nio.file.Path`                                           \n" +
                         " * `java.net.URL`                                                 \n" +
                         " * `java.net.URI`                                                 \n\n" +
+                        "Returns the a list of strings.                                    \n\n" +
                         "Options:                                                          \n\n" +
                         "| :encoding enc | e.g.: `:encoding :utf-8`, defaults to :utf-8 |  \n\n" +
                         "`io/slurp-lines` supports load paths. See the `loadpath/paths` " +
@@ -232,22 +233,24 @@ public class IOFunctionsSpitSlurp {
                     .meta()
                     .arglists("(io/slurp f & options)")
                     .doc(
-                        "Reads the content of file f as text (string) or binary (bytebuf). \n\n" +
-                        "f may be a:                                                       \n\n" +
-                        " * string file path, e.g: \"/temp/foo.json\"                      \n" +
-                        " * bytebuffer                                                     \n" +
-                        " * `java.io.File`, e.g: `(io/file \"/temp/foo.json\")`            \n" +
-                        " * `java.io.InputStream`                                          \n" +
-                        " * `java.io.Reader`                                               \n" +
-                        " * `java.nio.file.Path`                                           \n" +
-                        " * `java.net.URL`                                                 \n" +
-                        " * `java.net.URI`                                                 \n\n" +
-                        "Options:                                                          \n\n" +
-                        "| :binary true/false | e.g.: `:binary true`, defaults to false |     \n" +
-                        "| :encoding enc      | e.g.: `:encoding :utf-8`, defaults to :utf-8 |\n\n" +
-                        "`io/slurp` supports load paths. See the `loadpath/paths` " +
-                        "doc for a description of the *load path* feature.\n\n" +
-                        "Note: For HTTP and HTTPS downloads prefer to use `io/download`. ")
+                        "Reads the content of file f as text (string) or binary (bytebuf).     \n\n" +
+                        "f may be a:                                                           \n\n" +
+                        " * string file path, e.g: \"/temp/foo.json\"                          \n" +
+                        " * bytebuffer                                                         \n" +
+                        " * `java.io.File`, e.g: `(io/file \"/temp/foo.json\")`                \n" +
+                        " * `java.io.InputStream`                                              \n" +
+                        " * `java.io.Reader`                                                   \n" +
+                        " * `java.nio.file.Path`                                               \n" +
+                        " * `java.net.URL`                                                     \n" +
+                        " * `java.net.URI`                                                     \n\n" +
+                        "Returns a `bytebuf` or string depending on the passed :binary         " +
+                        "option.                                                               \n\n" +
+                        "Options:                                                              \n\n" +
+                        "| :binary true/false | e.g.: `:binary true`, defaults to false |      \n" +
+                        "| :encoding enc      | e.g.: `:encoding :utf-8`, defaults to :utf-8 | \n\n" +
+                        "`io/slurp` supports load paths. See the `loadpath/paths` doc for a    " +
+                        "description of the *load path* feature.                               \n\n" +
+                        "Note: For HTTP and HTTPS downloads prefer to use `io/download`.       ")
                     .seeAlso(
                     	"io/slurp-lines", "io/slurp-stream", "io/slurp-reader",
                     	"io/spit", "io/download", "loadpath/paths")
@@ -514,12 +517,14 @@ public class IOFunctionsSpitSlurp {
                     .meta()
                     .arglists("(io/slurp-stream is & options)")
                     .doc(
-                        "Slurps binary or string data from a `java.io.InputStream` is. " +
-                        "Supports the option :binary to either slurp binary or string data. " +
-                        "For string data an optional encoding can be specified.\n\n" +
-                        "Options: \n\n" +
-                        "| :binary true/false | e.g.: `:binary true`, defaults to false |\n" +
-                        "| :encoding enc      | e.g.: `:encoding :utf-8`, defaults to :utf-8 |\n\n" +
+                        "Slurps binary or string data from a `java.io.InputStream` is.         " +
+                        "Supports the option :binary to either slurp binary or string data.    " +
+                        "For string data an optional encoding can be specified.                \n\n" +
+                        "Returns the result as a `bytebuf` or string depending on the          \n" +
+                        "passed :binary option.                                                \n\n" +
+                        "Options:                                                              \n\n" +
+                        "| :binary true/false | e.g.: `:binary true`, defaults to false |      \n" +
+                        "| :encoding enc      | e.g.: `:encoding :utf-8`, defaults to :utf-8 | \n\n" +
                         "Note: \n\n" +
                         "`io/slurp-stream` offers the same functionality as `io/slurp` but it " +
                         "opens more flexibility with sandbox configuration. `io/slurp` can be " +
