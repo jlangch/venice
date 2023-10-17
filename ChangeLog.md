@@ -5,12 +5,21 @@ All notable changes to this project will be documented in this file.
 
 
 
+
+## [1.10.47] - 2023-10-xx
+
+### Added 
+
+- ...
+
+
+
+
 ## [1.10.46] - 2023-10-17
 
 ### Added 
 
 - support for [JSON Lines](https://jsonlines.org/) (see module :jsonl)
-
 
 ### Fixed 
 
