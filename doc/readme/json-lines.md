@@ -6,7 +6,7 @@ structures. No 3rd-party libraries are required.
 
 ## Usage
 
-To convert to/from JSON strings, use json/write-str and json/read-str:
+To convert to/from JSON strings, use *jsonl/write-str* and *jsonl/read-str*:
 
 ```clojure
 (do
