@@ -41,8 +41,7 @@ public class IOFunctionsStreamTest {
                 "      (io/delete-file-on-exit file)                                " +
                 "      (io/spit file \"100\n200\" :append false)                    " +
                 "      (try-with [rd (io/buffered-reader file :encoding :utf-8)]    " +
-                "         (pr-str [(read-line rd) (read-line rd)]))))               " +
-                ")";
+                "         (pr-str [(read-line rd) (read-line rd)]))))               ";
 
         assertEquals("[\"100\" \"200\"]",venice.eval(script));
     }
@@ -60,10 +59,72 @@ public class IOFunctionsStreamTest {
                 "        (println wr \"100\")                                       " +
                 "        (println wr \"200\"))                                      " +
                 "      (try-with [rd (io/buffered-reader file :encoding :utf-8)]    " +
-                "         (pr-str [(read-line rd) (read-line rd)]))))               " +
-                ")";
+                "         (pr-str [(read-line rd) (read-line rd)]))))               ";
 
         assertEquals("[\"100\" \"200\"]",venice.eval(script));
+    }
+
+    @Test
+    public void test_io_string_reader() {
+        final Venice venice = new Venice();
+
+        final String script1 =
+                "(try-with [rd (io/string-reader \"1234\")]       \n" +
+                "  (pr-str [ (read-char rd)                       \n" +
+                "            (read-char rd)                       \n" +
+                "            (read-char rd) ]))                   ";
+
+        final String script2 =
+                "(let [rd (io/string-reader \"1\\n2\\n3\\n4\")]   \n" +
+                "  (try-with [br (io/buffered-reader rd)]         \n" +
+                "    (pr-str [ (read-line br)                     \n" +
+                "              (read-line br)                     \n" +
+                "              (read-line br) ])))                ";
+
+        assertEquals("[#\\1 #\\2 #\\3]",venice.eval(script1));
+        assertEquals("[\"1\" \"2\" \"3\"]",venice.eval(script2));
+    }
+
+    @Test
+    public void test_io_string_writer() {
+        final Venice venice = new Venice();
+
+        final String script =
+                "(try-with [sw (io/string-writer)]     \n" +
+                "  (print sw 100)                      \n" +
+                "  (print sw \"-\")                    \n" +
+                "  (print sw 200)                      \n" +
+                "  (flush sw)                          \n" +
+                "  @sw)                                ";
+
+        assertEquals("100-200",venice.eval(script));
+    }
+
+    @Test
+    public void test_io_read_char() {
+        final Venice venice = new Venice();
+
+        final String script =
+                "(try-with [rd (io/string-reader \"1234\")]       \n" +
+                "  (pr-str [ (io/read-char rd)                    \n" +
+                "            (io/read-char rd)                    \n" +
+                "            (io/read-char rd) ]))                   ";
+
+        assertEquals("[#\\1 #\\2 #\\3]",venice.eval(script));
+    }
+
+    @Test
+    public void test_io_read_line() {
+        final Venice venice = new Venice();
+
+        final String script =
+                "(let [rd (io/string-reader \"1\\n2\\n3\\n4\")]   \n" +
+                "  (try-with [br (io/buffered-reader rd)]         \n" +
+                "    (pr-str [ (io/read-line br)                  \n" +
+                "              (io/read-line br)                  \n" +
+                "              (io/read-line br) ])))             ";
+
+        assertEquals("[\"1\" \"2\" \"3\"]",venice.eval(script));
     }
 
 }

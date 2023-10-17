@@ -794,7 +794,8 @@ public class IOFunctionsStreams {
                     return args.first();
                 }
                 else if (Types.isVncJavaObject(args.first(), Writer.class)) {
-                    return new VncJavaObject(args.first());
+                    final Writer wr = Coerce.toVncJavaObject(args.first(), Writer.class);
+                    return new VncJavaObject(new BufferedWriter(wr));
                 }
                 else {
                     throw new VncException(String.format(
@@ -948,10 +949,13 @@ public class IOFunctionsStreams {
                         throw new VncException("Failed to create reader from a :java.io.InputStream", ex);
                     }
                 }
+                else if (Types.isVncJavaObject(arg, BufferedReader.class)) {
+                    return arg;
+                }
                 else if (Types.isVncJavaObject(arg, Reader.class)) {
                     try {
                         final Reader rd = Coerce.toVncJavaObject(args.first(), Reader.class);
-                        return new VncJavaObject(rd);
+                        return new VncJavaObject(new BufferedReader(rd));
                     }
                     catch (VncException ex) {
                         throw ex;
