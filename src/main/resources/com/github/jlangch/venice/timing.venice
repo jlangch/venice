@@ -30,13 +30,25 @@
      :doc      "Runs a function f with printing elapsed time."
      :examples '("(timing/run #(sleep 1000) \"Sleeping...\")" ) }
 
-  run [f start-msg]
+  run
 
-  { :pre [(fn? f) (string? start-msg)] }
+  ([f start-msg]
+    { :pre [(fn? f) (string? start-msg)] }
 
-  (println start-msg)
-  (let [start   (current-time-millis)
-        retval  (f)
-        elapsed (- (current-time-millis) start)]
-    (println "Done. Elapsed:" (format-milli-time elapsed :precision 2))
-    retval))
+    (println start-msg)
+    (let [start   (current-time-millis)
+          retval  (f)
+          elapsed (- (current-time-millis) start)]
+      (println "Done. Elapsed:" (format-milli-time elapsed :precision 2))
+      retval))
+
+  ([f start-msg end-msg]
+    { :pre [(fn? f) (string? start-msg)] }
+
+    (println start-msg)
+    (let [start   (current-time-millis)
+          retval  (f)
+          elapsed (- (current-time-millis) start)]
+      (if (fn? end-msg) (end-msg retval) (println end-msg))
+      (println "Elapsed:" (format-milli-time elapsed :precision 2))
+      retval)))

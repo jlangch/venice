@@ -44,7 +44,7 @@
       (t/run #(write file data) (str "\nWriting " lines " records..."))))
 
   (defn read-with-timing [file]
-    (t/run #(read file) "\nReading records..."))
+    (t/run #(read file) "\nReading..."  #(printf "Read %d records.%n" (count %))))
 
   (let [file  (io/file "jsonl-bulk-demo.jsonl")
         lines 10_000]

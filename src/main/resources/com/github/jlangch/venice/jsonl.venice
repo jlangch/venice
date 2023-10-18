@@ -110,9 +110,9 @@
   (let [wr (apply io/buffered-writer out options)]
     (if (sequential? val)
       (do
-        (docoll #(println wr (apply json/write-str % options)) (butlast val))
-        (print wr (apply json/write-str (last val) options)))
-      (print wr (apply json/write-str val options)))
+        (docoll #(io/print-line wr (apply json/write-str % options)) (butlast val))
+        (io/print wr (apply json/write-str (last val) options)))
+      (io/print wr (apply json/write-str val options)))
     (flush wr)))
 
 
@@ -214,11 +214,18 @@
 
   slurp [in & options]
 
-  (let [rd (apply io/buffered-reader in options)]
-    (loop [line (read-line rd) data '()]
-      (if (nil? line)
-        data
-        (let [l (str/trim-to-nil line)
-              v (if (nil? l) nil (apply json/read-str l options))
-              d (if (nil? v) data (conj data v))]
-          (recur (read-line rd) d))))))
+  (if (empty? options)
+    (let [rd (io/buffered-reader in)]
+      (loop [line (read-line rd) data '()]
+        (if (nil? line)
+          data
+          (let [v (json/read-str (str/trim-to-nil line))
+                d (if (nil? v) data (conj data v))]
+            (recur (read-line rd) d)))))
+    (let [rd (apply io/buffered-reader in options)]
+      (loop [line (read-line rd) data '()]
+        (if (nil? line)
+          data
+          (let [v (apply json/read-str (str/trim-to-nil line) options)
+                d (if (nil? v) data (conj data v))]
+            (recur (read-line rd) d)))))))
