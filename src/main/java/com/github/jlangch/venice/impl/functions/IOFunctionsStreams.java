@@ -1096,6 +1096,60 @@ public class IOFunctionsStreams {
             private static final long serialVersionUID = -1848883965231344442L;
         };
 
+    public static VncFunction io_print_line =
+        new VncFunction(
+                "io/print-line",
+                VncFunction
+                    .meta()
+                    .arglists(
+                        "(io/print-line os s)" )
+                    .doc(
+                        "Prints a string s to an output stream. The output stream " +
+                        "may be a `:java.io.Writer` or a `:java.io.PrintStream`!")
+                    .build()
+        ) {
+            @Override
+            public VncVal apply(final VncList args) {
+                ArityExceptions.assertArity(this, args, 2);
+
+                final VncVal v = args.first();
+                if (Types.isVncJavaObject(v, PrintStream.class)) {
+                    final PrintStream ps = Coerce.toVncJavaObject(v, PrintStream.class);
+                    ps.println(Printer.pr_str(args.second(), false));
+                }
+                else if (Types.isVncJavaObject(v, BufferedWriter.class)) {
+                    final BufferedWriter wr = Coerce.toVncJavaObject(v, BufferedWriter.class);
+                    try {
+                        wr.write(Printer.pr_str(args.second(), false));
+                        wr.newLine();
+                    }
+                    catch(IOException ex) {
+                        throw new VncException("Failed print string to a :java.io.BufferedWriter", ex);
+                    }
+                }
+                else if (Types.isVncJavaObject(v, Writer.class)) {
+                    final Writer wr = Coerce.toVncJavaObject(v, Writer.class);
+                    try {
+                        wr.write(Printer.pr_str(args.second(), false));
+                        wr.write('\n');
+                    }
+                    catch(IOException ex) {
+                        throw new VncException("Failed print string to a :java.io.Writer", ex);
+                    }
+                }
+                else {
+                    throw new VncException(String.format(
+                            "io/print-line does not allow type %s as output stream arg. " +
+                            "Expected a :java.io.PrintStream or a :java.io.Writer.",
+                            Types.getType(args.first())));
+                }
+
+                return Nil;
+            }
+
+            private static final long serialVersionUID = -1848883965231344442L;
+        };
+
     public static VncFunction io_read_line =
         new VncFunction(
                 "io/read-line",
@@ -1242,6 +1296,7 @@ public class IOFunctionsStreams {
                     .add(io_string_reader)
                     .add(io_capturing_print_stream)
                     .add(io_print)
+                    .add(io_print_line)
                     .add(io_read_line)
                     .add(io_read_char)
                     .add(io_flush)

@@ -79,6 +79,7 @@ public class IoSection implements ISectionBuilder {
         spit.addItem(diBuilder.getDocItem("io/spit-stream"));
         spit.addItem(diBuilder.getDocItem("io/spit-writer"));
         spit.addItem(diBuilder.getDocItem("io/print"));
+        spit.addItem(diBuilder.getDocItem("io/print-line"));
 
         final DocSection stream = new DocSection("stream", "io.stream");
         all.addSection(stream);
