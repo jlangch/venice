@@ -274,7 +274,7 @@ public class JsonlModuleTest {
                                 "      @sw))                                              \n" +
                                 "  (let [json (test-data)]                                \n" +
                                 "    (try-with [rd (io/buffered-reader json)]             \n" +
-                                "      (pr-str (jsonl/slurp rd :key-fn keyword)))))                ";
+                                "      (pr-str (jsonl/slurp rd :key-fn keyword)))))       ";
 
         assertEquals(
                 "({:a 100 :b 200} {:a 101 :b 201} {:a 102 :b 202})",
