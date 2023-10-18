@@ -10,7 +10,11 @@ All notable changes to this project will be documented in this file.
 
 ### Added 
 
-- ...
+- function `io/print-line`
+
+### Improved 
+
+- performance of JSON Lines `jsonl/spit` function
 
 
 
