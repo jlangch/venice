@@ -320,6 +320,7 @@ public class DocGenerator {
         extmod.addSection(new DocSection("Maven", "modules.maven"));
         extmod.addSection(new DocSection("Docker", "modules.docker"));
         extmod.addSection(new DocSection("Cargo", "modules.cargo"));
+        extmod.addSection(new DocSection("Cargo ArangoDB", "modules.cargo-arangodb"));
         extmod.addSection(new DocSection("Test", "modules.test"));
         extmod.addSection(new DocSection("Tracing", "modules.tracing"));
         extmod.addSection(new DocSection("Benchmark", "modules.benchmark"));
