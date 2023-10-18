@@ -6,7 +6,7 @@ All notable changes to this project will be documented in this file.
 
 
 
-## [1.10.47] - 2023-10-xx
+## [1.10.47] - 2023-10-18
 
 ### Added 
 
@@ -15,6 +15,7 @@ All notable changes to this project will be documented in this file.
 ### Improved 
 
 - performance of JSON Lines `jsonl/spit` function
+- JSON Lines documentation
 
 
 
