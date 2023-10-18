@@ -38,48 +38,48 @@ import java.util.function.UnaryOperator;
  */
 public class FunctionalInterfaces {
 
-	public static void testRunnable(final Runnable r) {
-		r.run();
-	}
+    public static void testRunnable(final Runnable r) {
+        r.run();
+    }
 
-	public static Long testCallable(final Callable<Long> c) throws Exception {
-		return c.call();
-	}
+    public static Long testCallable(final Callable<Long> c) throws Exception {
+        return c.call();
+    }
 
-	public static boolean testPredicate(final Predicate<Long> p, final Long t) {
-		return p.test(t);
-	}
+    public static boolean testPredicate(final Predicate<Long> p, final Long t) {
+        return p.test(t);
+    }
 
-	public static Long testFunction(final Function<Long,Long> f, final Long t) {
-		return f.apply(t);
-	}
+    public static Long testFunction(final Function<Long,Long> f, final Long t) {
+        return f.apply(t);
+    }
 
-	public static void testConsumer(final Consumer<Long> f, final Long t) {
-		f.accept(t);
-	}
+    public static void testConsumer(final Consumer<Long> f, final Long t) {
+        f.accept(t);
+    }
 
-	public static Long testSupplier(final Supplier<Long> f) {
-		return f.get();
-	}
+    public static Long testSupplier(final Supplier<Long> f) {
+        return f.get();
+    }
 
-	public static boolean testBiPredicate(final BiPredicate<Long,Long> f, final Long t, final Long u) {
-		return f.test(t,u);
-	}
+    public static boolean testBiPredicate(final BiPredicate<Long,Long> f, final Long t, final Long u) {
+        return f.test(t,u);
+    }
 
-	public static Long testBiFunction(final BiFunction<Long,Long,Long> f, final Long t, final Long u) {
-		return f.apply(t,u);
-	}
+    public static Long testBiFunction(final BiFunction<Long,Long,Long> f, final Long t, final Long u) {
+        return f.apply(t,u);
+    }
 
-	public static void testBiConsumer(final BiConsumer<Long,Long> f, final Long t, final Long u) {
-		f.accept(t,u);
-	}
+    public static void testBiConsumer(final BiConsumer<Long,Long> f, final Long t, final Long u) {
+        f.accept(t,u);
+    }
 
-	public static Long testUnaryOperator(final UnaryOperator<Long> f, final Long t) {
-		return f.apply(t);
-	}
+    public static Long testUnaryOperator(final UnaryOperator<Long> f, final Long t) {
+        return f.apply(t);
+    }
 
-	public static Long testBinaryOperator(final BinaryOperator<Long> f, final Long t, final Long u) {
-		return f.apply(t,u);
-	}
+    public static Long testBinaryOperator(final BinaryOperator<Long> f, final Long t, final Long u) {
+        return f.apply(t,u);
+    }
 
 }

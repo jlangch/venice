@@ -251,18 +251,18 @@ public class ConcurrencyFunctions {
                 ArityExceptions.assertArity(this, args, 1,3 );
 
                 if (args.size() == 1) {
-	                final VncLock lock = Coerce.toVncLock(args.first());
-	                return VncBoolean.of(lock.tryAcquire());
+                    final VncLock lock = Coerce.toVncLock(args.first());
+                    return VncBoolean.of(lock.tryAcquire());
                 }
                 else {
-	                final VncLong time = Coerce.toVncLong(args.second());
-	                final VncKeyword unit = Coerce.toVncKeyword(args.third());
+                    final VncLong time = Coerce.toVncLong(args.second());
+                    final VncKeyword unit = Coerce.toVncKeyword(args.third());
 
-	                final VncLock lock = Coerce.toVncLock(args.first());
-	                return VncBoolean.of(
-	                			lock.tryAcquire(
-		                			time.getValue(),
-		                			TimeUnitUtil.toTimeUnit(unit)));
+                    final VncLock lock = Coerce.toVncLock(args.first());
+                    return VncBoolean.of(
+                                lock.tryAcquire(
+                                    time.getValue(),
+                                    TimeUnitUtil.toTimeUnit(unit)));
                 }
             }
 

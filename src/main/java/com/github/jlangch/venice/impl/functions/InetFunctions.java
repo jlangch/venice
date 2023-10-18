@@ -386,9 +386,9 @@ public class InetFunctions {
                 final VncLong timeoutMillis = Coerce.toVncLong(args.second());
 
                 try {
-    				final InetAddress inet = InetAddress.getByName(addr.getValue());
+                    final InetAddress inet = InetAddress.getByName(addr.getValue());
 
-    				return VncBoolean.of(inet.isReachable(timeoutMillis.toJavaInteger()));
+                    return VncBoolean.of(inet.isReachable(timeoutMillis.toJavaInteger()));
                 }
                 catch(Exception ex) {
                     throw new VncException("Failed to check address: '" + args.first() + "'");

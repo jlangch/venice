@@ -115,7 +115,7 @@ public class SandboxFunctions {
                 VncFunction
                     .meta()
                     .arglists(
-                    	"(sandbox/functions group)")
+                        "(sandbox/functions group)")
                     .doc(
                         "Lists the sandboxed functions defined by a sandbox function group.\n\n" +
                         "Groups:\n\n" +
@@ -129,7 +129,7 @@ public class SandboxFunctions {
                     .examples(
                         "(sandbox/functions :print)")
                     .seeAlso(
-                    	"sandboxed?")
+                        "sandboxed?")
                     .build()
         ) {
             @Override
@@ -147,27 +147,27 @@ public class SandboxFunctions {
 
     private static VncList getGroup(final String group) {
         switch(group) {
-	    	case "io":             return toVncList(RestrictedBlacklistedFunctions.getIoFunctions());
-	    	case "print":          return toVncList(RestrictedBlacklistedFunctions.getPrintFunctions());
-	    	case "concurrency":    return toVncList(RestrictedBlacklistedFunctions.getConcurrencyFunctions());
-        	case "java-interop":   return toVncList(RestrictedBlacklistedFunctions.getJavaInteropFunctions());
-        	case "system":         return toVncList(RestrictedBlacklistedFunctions.getSystemFunctions());
-        	case "special-forms":  return toVncList(RestrictedBlacklistedFunctions.getSpecialForms());
-        	case "unsafe":         return toVncList(RestrictedBlacklistedFunctions.getAllFunctions());
-        	default:
-        		throw new VncException(
-        				"Unsupported group! Choose one of " +
-        				"{:io, :java-interop, :system, :special-forms, :unsafe}");
+            case "io":             return toVncList(RestrictedBlacklistedFunctions.getIoFunctions());
+            case "print":          return toVncList(RestrictedBlacklistedFunctions.getPrintFunctions());
+            case "concurrency":    return toVncList(RestrictedBlacklistedFunctions.getConcurrencyFunctions());
+            case "java-interop":   return toVncList(RestrictedBlacklistedFunctions.getJavaInteropFunctions());
+            case "system":         return toVncList(RestrictedBlacklistedFunctions.getSystemFunctions());
+            case "special-forms":  return toVncList(RestrictedBlacklistedFunctions.getSpecialForms());
+            case "unsafe":         return toVncList(RestrictedBlacklistedFunctions.getAllFunctions());
+            default:
+                throw new VncException(
+                        "Unsupported group! Choose one of " +
+                        "{:io, :java-interop, :system, :special-forms, :unsafe}");
 
         }
     }
 
     private static VncList toVncList(Set<String> set) {
-    	return VncList.ofColl(
-			    	set.stream()
-			    	   .sorted()
-			    	   .map(s -> new VncString(s))
-			    	   .collect(Collectors.toList()));
+        return VncList.ofColl(
+                    set.stream()
+                       .sorted()
+                       .map(s -> new VncString(s))
+                       .collect(Collectors.toList()));
     }
 
 

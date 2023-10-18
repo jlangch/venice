@@ -252,8 +252,8 @@ public class IOFunctionsSpitSlurp {
                         "description of the *load path* feature.                               \n\n" +
                         "Note: For HTTP and HTTPS downloads prefer to use `io/download`.       ")
                     .seeAlso(
-                    	"io/slurp-lines", "io/slurp-stream", "io/slurp-reader",
-                    	"io/spit", "io/download", "loadpath/paths")
+                        "io/slurp-lines", "io/slurp-stream", "io/slurp-reader",
+                        "io/spit", "io/download", "loadpath/paths")
                     .build()
         ) {
             @Override
@@ -398,9 +398,9 @@ public class IOFunctionsSpitSlurp {
                         "`io/spit` supports load paths. See the `loadpath/paths` " +
                         "doc for a description of the *load path* feature.")
                     .seeAlso(
-                    	"io/spit-stream", "io/spit-writer",
-                    	"io/slurp", "io/slurp-lines",
-                    	"loadpath/paths")
+                        "io/spit-stream", "io/spit-writer",
+                        "io/slurp", "io/slurp-lines",
+                        "loadpath/paths")
                     .build()
         ) {
             @Override
@@ -539,7 +539,7 @@ public class IOFunctionsSpitSlurp {
                         "         (io/slurp-stream is :binary false))) \n" +
                         ")")
                     .seeAlso(
-                    	"io/slurp-reader", "io/slurp", "io/slurp-lines", "io/spit",
+                        "io/slurp-reader", "io/slurp", "io/slurp-lines", "io/spit",
                         "io/uri-stream",
                         "io/file-in-stream", "io/string-in-stream", "io/bytebuf-in-stream")
                     .build()
@@ -603,8 +603,8 @@ public class IOFunctionsSpitSlurp {
                         "         (io/slurp-reader rd))) \n" +
                         ")")
                     .seeAlso(
-                    	"io/slurp-stream", "io/slurp", "io/slurp-lines",
-                    	"io/spit", "io/uri-stream",
+                        "io/slurp-stream", "io/slurp", "io/slurp-lines",
+                        "io/spit", "io/uri-stream",
                         "io/file-in-stream", "io/string-in-stream", "io/bytebuf-in-stream")
                     .build()
         ) {

@@ -107,7 +107,7 @@ public class CoreConcurrencyFunctions {
                                                     ? null
                                                     : Coerce.toVncFunction(validator);
                 if (validatorFn != null) {
-                	validatorFn.sandboxFunctionCallValidation();
+                    validatorFn.sandboxFunctionCallValidation();
                 }
 
                 return new VncAtom(

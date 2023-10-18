@@ -213,13 +213,13 @@ public class ShellFunctions {
                     .meta()
                     .arglists("(sh/open f)")
                     .doc(
-                    	"Opens a *file* or an *URL* with the associated platform specific " +
-                    	"application. \n\n" +
-                    	"Uses the OS commands:\n\n" +
-                    	"* *MacOS*: `/usr/bin/open f`\n" +
-                    	"* *Windows*: `cmd /C start f`\n" +
-                    	"* *Linux*: `/usr/bin/xdg-open f`\n\n" +
-                    	"Note: `sh/open` can only be run from a REPL!")
+                        "Opens a *file* or an *URL* with the associated platform specific " +
+                        "application. \n\n" +
+                        "Uses the OS commands:\n\n" +
+                        "* *MacOS*: `/usr/bin/open f`\n" +
+                        "* *Windows*: `cmd /C start f`\n" +
+                        "* *Linux*: `/usr/bin/xdg-open f`\n\n" +
+                        "Note: `sh/open` can only be run from a REPL!")
                     .examples(
                         "(sh/open \"sample.pdf\")",
                         "(sh/open \"https://github.com/jlangch/venice\")")
@@ -365,14 +365,14 @@ public class ShellFunctions {
                     future_stdout = executor.submit(() -> slurpToBytes(stdout));
                 }
                 else if (Types.isVncFunction(slurpOutFn)) {
-                	final VncFunction fn = (VncFunction)slurpOutFn;
+                    final VncFunction fn = (VncFunction)slurpOutFn;
                     fn.sandboxFunctionCallValidation();
 
                     final ThreadBridge threadBridge = ThreadBridge.create("sh-process-stdout-slurper");
                     final Callable<VncVal> task = threadBridge.bridgeCallable(() ->  {
-									                    	slurp(stdout, enc, fn);
-									                    	return VncString.empty();
-                    									});
+                                                            slurp(stdout, enc, fn);
+                                                            return VncString.empty();
+                                                        });
 
                     future_stdout = executor.submit(task);
                 }
@@ -383,14 +383,14 @@ public class ShellFunctions {
                 // slurp the subprocess' stderr as string with platform default encoding
                 Future<VncVal> future_stderr;
                 if (Types.isVncFunction(slurpErrFn)) {
-                	final VncFunction fn = (VncFunction)slurpErrFn;
+                    final VncFunction fn = (VncFunction)slurpErrFn;
                     fn.sandboxFunctionCallValidation();
 
                     final ThreadBridge threadBridge = ThreadBridge.create("sh-process-stderr-slurper");
                     final Callable<VncVal> task = threadBridge.bridgeCallable(() ->  {
-									                    	slurp(stderr, enc, fn);
-									                    	return VncString.empty();
-                    									});
+                                                            slurp(stderr, enc, fn);
+                                                            return VncString.empty();
+                                                        });
 
                     future_stderr = executor.submit(task);
                 }
@@ -402,19 +402,19 @@ public class ShellFunctions {
                 final int exitCode;
                 final boolean waitTimeout;
                 if (timeoutMillis == null) {
-                	exitCode = proc.waitFor();
-                	waitTimeout = false;
+                    exitCode = proc.waitFor();
+                    waitTimeout = false;
                 }
                 else {
-                	final boolean ok = proc.waitFor(timeoutMillis, TimeUnit.MILLISECONDS);
-                	if (ok) {
-                		exitCode = proc.exitValue();
-                    	waitTimeout = false;
-               	}
-                	else {
-                		exitCode = -1;
-                    	waitTimeout = true;
-                	}
+                    final boolean ok = proc.waitFor(timeoutMillis, TimeUnit.MILLISECONDS);
+                    if (ok) {
+                        exitCode = proc.exitValue();
+                        waitTimeout = false;
+                   }
+                    else {
+                        exitCode = -1;
+                        waitTimeout = true;
+                    }
                 }
 
                 if (future_stdin != null) {
@@ -422,8 +422,8 @@ public class ShellFunctions {
                 }
 
                 if (waitTimeout) {
-                	future_stdout.cancel(true);
-                	future_stderr.cancel(true);
+                    future_stdout.cancel(true);
+                    future_stderr.cancel(true);
 
                     //try (WithCallStack cs = new WithCallStack(new CallFrame("sh", cmd.getMeta()))) {
                         throw new TimeoutException(
@@ -432,15 +432,15 @@ public class ShellFunctions {
                 }
                 else if (exitCode != 0 && throwExOnFailure) {
                     //try (WithCallStack cs = new WithCallStack(new CallFrame("sh", cmd.getMeta()))) {
-	               		final VncVal out = future_stdout.get();
-	               		final VncVal err = future_stderr.get();
+                           final VncVal out = future_stdout.get();
+                           final VncVal err = future_stderr.get();
 
-	               		final String sOut = out == Constants.Nil ? null : StringUtil.trimToNull(out.toString());
-	               		final String sErr = err == Constants.Nil ? null : StringUtil.trimToNull(err.toString());
+                           final String sOut = out == Constants.Nil ? null : StringUtil.trimToNull(out.toString());
+                           final String sErr = err == Constants.Nil ? null : StringUtil.trimToNull(err.toString());
 
-	               		final String sErrOverview = sErr == null
-	               										? ""
-	               										: "\n\nstderr:\n" + StringUtil.truncate(sErr, 200, "...");
+                           final String sErrOverview = sErr == null
+                                                           ? ""
+                                                           : "\n\nstderr:\n" + StringUtil.truncate(sErr, 200, "...");
 
                         throw new ShellException(
                                 String.format(

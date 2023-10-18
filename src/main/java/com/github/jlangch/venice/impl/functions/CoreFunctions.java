@@ -4168,7 +4168,7 @@ public class CoreFunctions {
                 ArityExceptions.assertArity(this, args, 2, 3);
 
                 if (args.first() == Constants.Nil) {
-                	return Constants.Nil;
+                    return Constants.Nil;
                 }
 
                 VncCollection coll = Coerce.toVncCollection(args.first());

@@ -29,50 +29,50 @@ import java.time.LocalDate;
  */
 public class Person {
 
-	public Person(
-			final String firstName,
-			final String lastName,
-			final LocalDate birthdate,
-			final Gender gender
+    public Person(
+            final String firstName,
+            final String lastName,
+            final LocalDate birthdate,
+            final Gender gender
     ) {
-		this.firstName = firstName;
-		this.lastName = lastName;
-		this.birthdate = birthdate;
-		this.gender = gender;
-	}
+        this.firstName = firstName;
+        this.lastName = lastName;
+        this.birthdate = birthdate;
+        this.gender = gender;
+    }
 
 
-	public String getFirstName() {
-		return firstName;
-	}
+    public String getFirstName() {
+        return firstName;
+    }
 
-	public String getLastName() {
-		return lastName;
-	}
+    public String getLastName() {
+        return lastName;
+    }
 
-	public LocalDate getBirthdate() {
-		return birthdate;
-	}
+    public LocalDate getBirthdate() {
+        return birthdate;
+    }
 
-	public Gender getGender() {
-		return gender;
-	}
+    public Gender getGender() {
+        return gender;
+    }
 
-	public int getAge() {
-		return LocalDate.now().getYear() - birthdate.getYear();
-	}
-
-
-	@Override
-	public String toString() {
-		return String.format("%s %s, %d", firstName, lastName, getAge());
-	}
+    public int getAge() {
+        return LocalDate.now().getYear() - birthdate.getYear();
+    }
 
 
-	public static enum Gender {Male, Female};
+    @Override
+    public String toString() {
+        return String.format("%s %s, %d", firstName, lastName, getAge());
+    }
 
-	private final String firstName;
-	private final String lastName;
-	private final LocalDate birthdate;
-	private final Gender gender;
+
+    public static enum Gender {Male, Female};
+
+    private final String firstName;
+    private final String lastName;
+    private final LocalDate birthdate;
+    private final Gender gender;
 }

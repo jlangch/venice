@@ -410,7 +410,7 @@ public class DocGenerator {
                 new ModuleShellSection(diBuilder).section(),
                 new ModuleAnsiSection(diBuilder).section(),
                 new ModuleGrepSection(diBuilder).section(),
-        		new ModuleQrRefSection(diBuilder).section());
+                new ModuleQrRefSection(diBuilder).section());
     }
 
     private List<DocSection> getModulesRightSections() {

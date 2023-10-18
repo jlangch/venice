@@ -289,7 +289,7 @@ public class SystemFunctions {
                         "  * run `(shutdown-hook (fn [] (try (+ 1 2) (catch :SecurityException ex (println ex) (sleep 3000)))))`\n" +
                         "  * exit the REPL with `!exit`")
                     .examples(
-                    	"(shutdown-hook (fn [] (println \"shutdown\")))")
+                        "(shutdown-hook (fn [] (println \"shutdown\")))")
                     .build()
         ) {
             @Override

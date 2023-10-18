@@ -102,10 +102,10 @@ public class CsvFunctions {
                         return map(parser.parse(((VncString)source).getValue()));
                     }
                     else if (Types.isVncJavaObject(source, File.class) || Types.isVncJavaObject(source, Path.class)) {
-                    	// Delegate to 'io/file-in-stream' for sandbox validation
+                        // Delegate to 'io/file-in-stream' for sandbox validation
                         final InputStream fileIS = Coerce.toVncJavaObject(
-                        							IOFunctionsStreams.io_file_in_stream.applyOf(source),
-                        							InputStream.class);
+                                                    IOFunctionsStreams.io_file_in_stream.applyOf(source),
+                                                    InputStream.class);
 
                         final VncVal encVal = options.get(new VncKeyword("encoding"));
 
@@ -186,10 +186,10 @@ public class CsvFunctions {
                     final CSVWriter csvWriter = new CSVWriter(separator, quote, newline);
 
                     if (out instanceof File || out instanceof Path) {
-                    	// Delegate to 'io/file-out-stream' for sandbox validation
+                        // Delegate to 'io/file-out-stream' for sandbox validation
                         final OutputStream os = Coerce.toVncJavaObject(
-                    							    IOFunctionsStreams.io_file_out_stream.applyOf(args.first()),
-                    							    OutputStream.class);
+                                                    IOFunctionsStreams.io_file_out_stream.applyOf(args.first()),
+                                                    OutputStream.class);
 
                         try (Writer wr = new OutputStreamWriter(os, encoding)) {
                             csvWriter.write(wr, Coerce.toVncSequence(args.second()));

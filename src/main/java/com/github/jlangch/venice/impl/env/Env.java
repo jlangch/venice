@@ -117,7 +117,7 @@ public class Env implements Serializable {
      * @throws SymbolNotFoundException if the symbol does not exist.
      */
     public VncVal get(final VncSymbol sym) {
-    	final Var v = getVar(sym);
+        final Var v = getVar(sym);
 
         if (v != null) {
             return v.getVal();
@@ -194,8 +194,8 @@ public class Env implements Serializable {
      * @return returns true if a symbol is bound to a value else false
      */
     public boolean isBound(final VncSymbol sym) {
-    	final Var v = getVar(sym);
-    	return v != null;
+        final Var v = getVar(sym);
+        return v != null;
     }
 
     /**
@@ -217,8 +217,8 @@ public class Env implements Serializable {
      * @return the value or <code>Nil</code> if not found
      */
     public VncVal getOrNil(final VncSymbol sym) {
-    	final Var v = getVar(sym);
-    	return v == null ? Nil : v.getVal();
+        final Var v = getVar(sym);
+        return v == null ? Nil : v.getVal();
     }
 
     /**
@@ -287,14 +287,14 @@ public class Env implements Serializable {
     }
 
     public Env setLocal(final Var localVar) {
-    	if (localVar.getScope() != Var.Scope.Local) {
+        if (localVar.getScope() != Var.Scope.Local) {
             throw new VncException(String.format(
                     "The var must be of local scope! Got %s.",
                     localVar.getScope()));
-    	}
+        }
 
 
-    	final VncSymbol sym = localVar.getName();
+        final VncSymbol sym = localVar.getName();
 
         if (sym.isReservedName()) {
             try (WithCallStack cs = new WithCallStack(CallFrame.from(sym))) {
@@ -333,11 +333,11 @@ public class Env implements Serializable {
     }
 
     public Env setGlobal(final Var val) {
-    	if (val.getScope() != Var.Scope.Global) {
+        if (val.getScope() != Var.Scope.Global) {
             throw new VncException(String.format(
                     "The var must be of global scope! Got %s.",
                     val.getScope()));
-    	}
+        }
 
         final VncSymbol sym = val.getName();
 
@@ -731,7 +731,7 @@ public class Env implements Serializable {
     }
 
     private boolean isFunctionOrSpecialForm(final VncVal val) {
-    	return val instanceof VncFunction || val instanceof VncSpecialForm;
+        return val instanceof VncFunction || val instanceof VncSpecialForm;
     }
 
     private void rejectPrivateSymbolAccess(final VncSymbol sym, final Var globalVar) {

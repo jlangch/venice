@@ -537,69 +537,69 @@ public class PdfFunctions {
             private static final long serialVersionUID = -1848883965231344442L;
         };
 
-	public static VncFunction pdf_to_text =
-	    new VncFunction(
-	            "pdf/to-text",
-	            VncFunction
-	                .meta()
-	                .arglists("(pdf/to-text pdf)")
-	                .doc(
-	                	"Extracts the text from a PDF.                           \n\n" +
+    public static VncFunction pdf_to_text =
+        new VncFunction(
+                "pdf/to-text",
+                VncFunction
+                    .meta()
+                    .arglists("(pdf/to-text pdf)")
+                    .doc(
+                        "Extracts the text from a PDF.                           \n\n" +
                         "pdf may be a:                                           \n\n" +
                         " * string file path, e.g: \"/temp/foo.pdf\"             \n" +
                         " * bytebuffer                                           \n" +
                         " * `java.io.File`, e.g: `(io/file \"/temp/foo.pdf\")`   \n" +
                         " * `java.io.InputStream`                                ")
-	                .examples(
-	                    "(-> (pdf/text-to-pdf \"Lorem Ipsum...\")   \n" +
-		                "    (pdf/to-text)                          \n" +
-                		"    (println))                             ")
-	                .seeAlso("pdf/text-to-pdf", "pdf/render")
-	                .build()
-	    ) {
-	        @Override
-	        public VncVal apply(final VncList args) {
-	            ArityExceptions.assertArity(this, args, 1);
+                    .examples(
+                        "(-> (pdf/text-to-pdf \"Lorem Ipsum...\")   \n" +
+                        "    (pdf/to-text)                          \n" +
+                        "    (println))                             ")
+                    .seeAlso("pdf/text-to-pdf", "pdf/render")
+                    .build()
+        ) {
+            @Override
+            public VncVal apply(final VncList args) {
+                ArityExceptions.assertArity(this, args, 1);
 
-	            sandboxFunctionCallValidation();
+                sandboxFunctionCallValidation();
 
                 final ILoadPaths loadpaths = ThreadContext.getInterceptor().getLoadPaths();
 
                 final VncVal arg = args.first();
 
-	            try {
-	                final File file = convertToFile(arg);
-	                if (file != null) {
-	                    final ByteBuffer data = loadpaths.loadBinaryResource(file);
-	                    final String text = PdfTextStripper.text(data.array());
-		                return new VncString(text);
-	                }
-	                else if (Types.isVncByteBuffer(arg)) {
-	                     final VncByteBuffer data = (VncByteBuffer)arg;
-		                    final String text = PdfTextStripper.text(data.getBytes());
-			                return new VncString(text);
-	                }
-	                else if (Types.isVncJavaObject(arg, InputStream.class)) {
-	                    final InputStream is = Coerce.toVncJavaObject(args.first(), InputStream.class);
-	                    final String text = PdfTextStripper.text(is);
-		                return new VncString(text);
-	                }
-	                else {
-	                    throw new VncException(String.format(
-	                            "Function 'pdf/to-tex' does not allow %s as pdf input",
-	                            Types.getType(args.first())));
-	                }
-	            }
-	            catch(VncException ex) {
-	                throw ex;
-	            }
-	            catch(Exception ex) {
-	                throw new VncException("Failed to extract text from PDF", ex);
-	            }
-	        }
+                try {
+                    final File file = convertToFile(arg);
+                    if (file != null) {
+                        final ByteBuffer data = loadpaths.loadBinaryResource(file);
+                        final String text = PdfTextStripper.text(data.array());
+                        return new VncString(text);
+                    }
+                    else if (Types.isVncByteBuffer(arg)) {
+                         final VncByteBuffer data = (VncByteBuffer)arg;
+                            final String text = PdfTextStripper.text(data.getBytes());
+                            return new VncString(text);
+                    }
+                    else if (Types.isVncJavaObject(arg, InputStream.class)) {
+                        final InputStream is = Coerce.toVncJavaObject(args.first(), InputStream.class);
+                        final String text = PdfTextStripper.text(is);
+                        return new VncString(text);
+                    }
+                    else {
+                        throw new VncException(String.format(
+                                "Function 'pdf/to-tex' does not allow %s as pdf input",
+                                Types.getType(args.first())));
+                    }
+                }
+                catch(VncException ex) {
+                    throw ex;
+                }
+                catch(Exception ex) {
+                    throw new VncException("Failed to extract text from PDF", ex);
+                }
+            }
 
-	        private static final long serialVersionUID = -1848883965231344442L;
-	    };
+            private static final long serialVersionUID = -1848883965231344442L;
+        };
 
 
     private static Map<String,ByteBuffer> mapResources(final VncMap resourceMap) {

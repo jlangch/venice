@@ -43,7 +43,7 @@ public class SymbolTable implements Serializable {
     }
 
     public void put(final Var value) {
-    	symbols.put(value.getName(), value);
+        symbols.put(value.getName(), value);
     }
 
 

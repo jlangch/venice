@@ -2148,7 +2148,7 @@ public class StringFunctions {
                         "Wraps ascii text to lines with a length of maxlen characters . \n\n" +
                         "Options: \n\n" +
                         "| :maxlen n                           | the max len of line (default 80) |\n" +
-        				"| :line-wrap {:anywhere, :break-word} | controls the line wrap |\n")
+                        "| :line-wrap {:anywhere, :break-word} | controls the line wrap |\n")
                      .examples
                         ("(-> (str/lorem-ipsum :paragraphs 1)               \n" +
                          "    (str/wrap :maxlen 80 :line-wrap :break-word)) ")
@@ -2166,19 +2166,19 @@ public class StringFunctions {
 
                 final VncVal maxlen_ = options.get(new VncKeyword(":maxlen"));
                 if (Types.isVncLong(maxlen_)) {
-                	maxlen = ((VncLong)maxlen_).toJavaLong();
-                	maxlen = Math.max(2, maxlen);
+                    maxlen = ((VncLong)maxlen_).toJavaLong();
+                    maxlen = Math.max(2, maxlen);
                 }
 
                 final VncVal linewrap_ = options.get(new VncKeyword(":line-wrap"));
                 if (Types.isVncKeyword(linewrap_)) {
-                	breakword = "break-word".equals(((VncKeyword)linewrap_).getValue());
+                    breakword = "break-word".equals(((VncKeyword)linewrap_).getValue());
                 }
 
                 final String s = text.getValue();
                 final List<String> lines = breakword
-						                		? LineWrap.softWrap(s, (int)maxlen)
-						                		: LineWrap.hardWrap(s, (int) maxlen);
+                                                ? LineWrap.softWrap(s, (int)maxlen)
+                                                : LineWrap.hardWrap(s, (int) maxlen);
 
                 return new VncString(String.join("\n", lines));
             }

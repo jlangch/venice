@@ -91,7 +91,7 @@ public class LoadPathFunctions {
                         " * `io/file-out-stream`\n" +
                         " * `io/delete-file`" +
                         "\n\n" +
-                    	"To enforce a Venice script to read/write files on the load paths only:" +
+                        "To enforce a Venice script to read/write files on the load paths only:" +
                         "\n\n" +
                         " * Define a custom sandbox\n" +
                         " * Disable all I/O functions\n" +
@@ -134,7 +134,7 @@ public class LoadPathFunctions {
                     .arglists("(loadpath/normalize f)")
                     .doc(
                         "Normalize a relative file regarding the load paths.\n\n" +
-                    	"With the load paths: `[\"/Users/foo/img.png\", \"/Users/foo/resources\"]`\n\n" +
+                        "With the load paths: `[\"/Users/foo/img.png\", \"/Users/foo/resources\"]`\n\n" +
                         "  * `(loadpath/normalize \"img.png\")` -> \"/Users/foo/img.png\"\n" +
                         "  * `(loadpath/normalize \"test.json\")` -> \"/Users/foo/resources/test.json\"\n" +
                         "  * `(loadpath/normalize \"/tmp/data.json\")` -> \"/tmp/data.json\"")
@@ -156,14 +156,14 @@ public class LoadPathFunctions {
 
                 if (Types.isVncJavaObject(f, File.class)) {
                     return new VncJavaObject(
-                    			paths.normalize(
-                    				Coerce.toVncJavaObject(f, File.class)));
+                                paths.normalize(
+                                    Coerce.toVncJavaObject(f, File.class)));
                 }
                 else if (Types.isVncJavaObject(f, Path.class)) {
                     return new VncJavaObject(
-                				paths.normalize(
-                						Coerce.toVncJavaObject(f, Path.class).toFile())
-                							  .toPath());
+                                paths.normalize(
+                                        Coerce.toVncJavaObject(f, Path.class).toFile())
+                                              .toPath());
                 }
                 else {
                     throw new VncException(String.format(
@@ -220,8 +220,8 @@ public class LoadPathFunctions {
 
     public static final Map<VncVal, VncVal> ns =
             new SymbolMapBuilder()
-		            .add(paths)
+                    .add(paths)
                     .add(unrestricted_Q)
-		            .add(normalize)
+                    .add(normalize)
                     .toMap();
 }
