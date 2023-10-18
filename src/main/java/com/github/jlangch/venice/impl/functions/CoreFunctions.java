@@ -7808,10 +7808,14 @@ public class CoreFunctions {
                 fn.sandboxFunctionCallValidation();
 
                 final VncVal coll = args.last();
-                return coll == Nil
-                        ? fn.apply(fn_args)
-                        : fn.apply(fn_args.addAllAtEnd(Coerce.toVncSequence(coll)));
-            }
+                if (coll == Nil) {
+                    return fn.apply(fn_args);
+                }
+
+                final VncSequence seq = Coerce.toVncSequence(coll);
+                return seq.isEmpty() ? fn.apply(fn_args)
+                                     : fn.apply(fn_args.addAllAtEnd(seq));
+             }
 
             private static final long serialVersionUID = -1848883965231344442L;
         };

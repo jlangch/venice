@@ -214,18 +214,9 @@
 
   slurp [in & options]
 
-  (if (empty? options)
-    (let [rd (io/buffered-reader in)]
-      (loop [line (read-line rd) data '()]
-        (if (nil? line)
-          data
-          (let [v (json/read-str (str/trim-to-nil line))
-                d (if (nil? v) data (conj data v))]
-            (recur (read-line rd) d)))))
-    (let [rd (apply io/buffered-reader in options)]
-      (loop [line (read-line rd) data '()]
-        (if (nil? line)
-          data
-          (let [v (apply json/read-str (str/trim-to-nil line) options)
-                d (if (nil? v) data (conj data v))]
-            (recur (read-line rd) d)))))))
+  (let [rd (apply io/buffered-reader in options)]
+    (loop [line (read-line rd) data '()]
+      (if (nil? line)
+        data
+        (let [v (apply json/read-str (str/trim-to-nil line) options)]
+          (recur (read-line rd) (if (nil? v) data (conj data v))))))))
