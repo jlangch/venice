@@ -122,7 +122,7 @@ public class DocGenerator {
                         "java",   "semver",   "excel",     "hexdump",
                         "shell",  "geoip",    "benchmark", "component",
                         "config", "parsifal", "grep",      "test",
-                        "fonts",  "qrref",    "jsonl",
+                        "fonts",  "qrref",    "jsonl",     "timing",
                         "docker", "cargo",    "cargo-arangodb"));
 
         final IVeniceInterpreter venice = new VeniceInterpreter(new AcceptAllInterceptor());

@@ -89,6 +89,7 @@ public class Modules {
                         "shell",
                         "test",
                         "test-support",
+                        "timing",
                         "tomcat",
                         "tomcat-install",
                         "tomcat-util",
