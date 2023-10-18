@@ -35,9 +35,9 @@ public class ModuleTimingSection implements ISectionBuilder {
     @Override
     public DocSection section() {
         final DocSection section = new DocSection(
-        								"Timing",
-        								"Timing",
-        								"modules.timing");
+                                        "Timing",
+                                        "Timing",
+                                        "modules.timing");
 
         final DocSection all = new DocSection("(load-module :timing)", id());
         section.addSection(all);

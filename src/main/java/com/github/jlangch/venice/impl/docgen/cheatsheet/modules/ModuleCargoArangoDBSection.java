@@ -35,9 +35,9 @@ public class ModuleCargoArangoDBSection implements ISectionBuilder {
     @Override
     public DocSection section() {
         final DocSection section = new DocSection(
-        								"Cargo ArangoDB",
-        								"ArangoDB Testcontainers",
-        								"modules.cargo-arangodb");
+                                        "Cargo ArangoDB",
+                                        "ArangoDB Testcontainers",
+                                        "modules.cargo-arangodb");
 
         final DocSection all = new DocSection("(load-module :cargo-arangodb)", id());
         section.addSection(all);

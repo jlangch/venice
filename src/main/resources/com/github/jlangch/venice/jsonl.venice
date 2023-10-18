@@ -134,7 +134,7 @@
                            replace the value in the output. The default value-fn \
                            returns the value unchanged. |
           | :decimal b   | If true use BigDecimal for decimal numbers instead of \
-                           Double. Default is false. |)
+                           Double. Default is false. |
           """
      :examples '(
           """
@@ -194,7 +194,7 @@
                            replace the value in the output. The default value-fn \
                            returns the value unchanged. |
           | :decimal b   | If true use BigDecimal for decimal numbers instead of \
-                           Double. Default is false. |)
+                           Double. Default is false. |
           | :encoding e  | e.g :encoding :utf-8, defaults to :utf-8 |
 
           `jsonl/slurp` supports load paths. See the `loadpath/paths` doc for a

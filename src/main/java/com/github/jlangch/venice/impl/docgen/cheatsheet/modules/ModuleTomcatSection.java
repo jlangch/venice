@@ -35,11 +35,11 @@ public class ModuleTomcatSection implements ISectionBuilder {
     @Override
     public DocSection section() {
         final String footer = "Install Java 3rd party libraries:\n\n" +
-        		              "```                                            \n" +
-           		              "(do                                            \n" +
-           		              "  (load-module :tomcat-install)                \n" +
-           		              "  (tomcat-install/install :dir (repl/libs-dir) \n" +
-           		              "                          :silent false))      \n" +
+                              "```                                            \n" +
+                              "(do                                            \n" +
+                              "  (load-module :tomcat-install)                \n" +
+                              "  (tomcat-install/install :dir (repl/libs-dir) \n" +
+                              "                          :silent false))      \n" +
                               "```\n";
 
         final DocSection section = new DocSection("Tomcat", "Tomcat WebApp Server", "modules.tomcat", null, footer);

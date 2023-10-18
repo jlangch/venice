@@ -35,9 +35,9 @@ public class ModuleJsonlSection implements ISectionBuilder {
     @Override
     public DocSection section() {
         final DocSection section = new DocSection(
-        								"Jsonl",
-        								"JSON Lines",
-        								"modules.jsonl");
+                                        "Jsonl",
+                                        "JSON Lines",
+                                        "modules.jsonl");
 
         final DocSection all = new DocSection("(load-module :jsonl)", id());
         section.addSection(all);

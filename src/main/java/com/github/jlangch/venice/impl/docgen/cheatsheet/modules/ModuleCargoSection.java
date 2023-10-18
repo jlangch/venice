@@ -35,9 +35,9 @@ public class ModuleCargoSection implements ISectionBuilder {
     @Override
     public DocSection section() {
         final DocSection section = new DocSection(
-        								"Cargo",
-        								"Docker Testcontainers",
-        								"modules.cargo");
+                                        "Cargo",
+                                        "Docker Testcontainers",
+                                        "modules.cargo");
 
         final DocSection all = new DocSection("(load-module :cargo)", id());
         section.addSection(all);
