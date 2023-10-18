@@ -164,6 +164,7 @@ public class RestrictedBlacklistedFunctions {
                 "io/mkdirs",
                 "io/move-file",
                 "io/print",
+                "io/print-line",
                 "io/read-char",
                 "io/read-line",
                 "io/slurp",
