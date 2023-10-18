@@ -80,27 +80,39 @@
           """
      :examples '(
           """
-          (try-with [wr (io/buffered-writer (io/file "data.jsonl"))]
-            (jsonl/spit wr [{:a 100 :b 200} {:a 101 :b 201} {:a 102 :b 202}])
-            (flush wr))
+          (let [file (io/temp-file "data-" ".jsonl")]
+            (io/delete-file-on-exit file)
+            (try-with [wr (io/buffered-writer file)]
+              (jsonl/spit wr [{:a 100 :b 200} {:a 101 :b 201} {:a 102 :b 202}])
+              (flush wr))
+            ;; print the json lines data
+            (println (io/slurp file :encoding :utf-8)))
           """,
           """
           ;; spit a list of json lines (linefeeds are added implicitely )
-          (try-with [wr (io/buffered-writer (io/file "data.jsonl"))]
-                    (jsonl/spit wr [{"a" 100, "b" 200}
-                                    {"a" 101, "b" 201}
-                                    {"a" 102, "b" 202}])
-                    (flush wr)))
+          (let [file (io/temp-file "data-" ".jsonl")]
+            (io/delete-file-on-exit file)
+            (try-with [wr (io/buffered-writer file)]
+              (jsonl/spit wr [{"a" 100, "b" 200}
+                              {"a" 101, "b" 201}
+                              {"a" 102, "b" 202}])
+              (flush wr))
+              ;; print the json lines data
+              (println (io/slurp file :encoding :utf-8)))
           """,
           """
           ;; spit a list of json lines, line by line (linefeeds must be added exlicitely)
-          (try-with [wr (io/buffered-writer (io/file "data.jsonl"))]
-                    (jsonl/spit wr {"a" 100, "b" 200})
-                    (println wr)
-                    (jsonl/spit wr {"a" 101, "b" 201})
-                    (println wr)
-                    (jsonl/spit wr {"a" 102, "b" 202})
-                    (flush wr)))
+          (let [file (io/temp-file "data-" ".jsonl")]
+            (io/delete-file-on-exit file)
+            (try-with [wr (io/buffered-writer file)]
+              (jsonl/spit wr {"a" 100, "b" 200})
+              (println wr)
+              (jsonl/spit wr {"a" 101, "b" 201})
+              (println wr)
+              (jsonl/spit wr {"a" 102, "b" 202})
+              (flush wr))
+              ;; print the json lines data
+              (println (io/slurp file :encoding :utf-8)))
           """)
      :see-also '(
           "jsonl/write-str" "jsonl/slurp") }
@@ -183,40 +195,56 @@
 
           Options:
 
-          | :key-fn fn   | Single argument function called on JSON property names; \
-                           return value will replace the property names in the \
-                           output. Default is 'identity', use 'keyword' to get \
-                           keyword properties. |
-          | :value-fn fn | Function to transform values in JSON objects in \
-                           the output. For each JSON property, value-fn is called \
-                           with two arguments: the property name (transformed by \
-                           key-fn) and the value. The return value of value-fn will \
-                           replace the value in the output. The default value-fn \
-                           returns the value unchanged. |
-          | :decimal b   | If true use BigDecimal for decimal numbers instead of \
-                           Double. Default is false. |
-          | :encoding e  | e.g :encoding :utf-8, defaults to :utf-8 |
+          | :key-fn fn    | Single argument function called on JSON property names; \
+                            return value will replace the property names in the \
+                            output. Default is 'identity', use 'keyword' to get \
+                            keyword properties. |
+          | :value-fn fn  | Function to transform values in JSON objects in \
+                            the output. For each JSON property, value-fn is called \
+                            with two arguments: the property name (transformed by \
+                            key-fn) and the value. The return value of value-fn will \
+                            replace the value in the output. The default value-fn \
+                            returns the value unchanged. |
+          | :decimal b    | If true use BigDecimal for decimal numbers instead of \
+                            Double. Default is false. |
+          | :filter-fn fn | Single argument function called on every read value \
+                            from a JSON line. If it returns true the value will \
+                            be kept otherwise it will be skipped |
+          | :encoding e   | e.g :encoding :utf-8, defaults to :utf-8 |
 
           `jsonl/slurp` supports load paths. See the `loadpath/paths` doc for a
           description of the *load path* feature.
           """
      :examples '(
           """
-          (let [file (io/file "data.jsonl")]
+          (let [file (io/temp-file "data-" ".jsonl")]
+            (io/delete-file-on-exit file)
             (try-with [wr (io/buffered-writer file)]
               (jsonl/spit wr [{:a 100 :b 200} {:a 101 :b 201} {:a 102 :b 202}])
               (flush wr))
             (try-with [rd (io/buffered-reader file)]
               (jsonl/slurp rd :key-fn keyword)))
+          """,
+          """
+          (let [file (io/temp-file "data-" ".jsonl")]
+            (io/delete-file-on-exit file)
+            (try-with [wr (io/buffered-writer file)]
+              (jsonl/spit wr [{:a 100 :b 200} {:a 101 :b 201} {:a 100 :b 202}])
+              (flush wr))
+            (try-with [rd (io/buffered-reader file)]
+              (jsonl/slurp rd :key-fn keyword :filter-fn #(= 100 (:a %)))))
           """)
      :see-also '(
           "jsonl/read-str") }
 
   slurp [in & options]
 
-  (let [rd (apply io/buffered-reader in options)]
+  (let [opts       (apply hash-map options)
+        filter-fn  (:filter-fn opts (constantly true))
+        rd         (apply io/buffered-reader in options)]
     (loop [line (read-line rd) data '()]
       (if (nil? line)
         data
-        (let [v (apply json/read-str (str/trim-to-nil line) options)]
+        (let [v (apply json/read-str (str/trim-to-nil line) options)
+              v (if (filter-fn v) v nil)]
           (recur (read-line rd) (if (nil? v) data (conj data v))))))))
