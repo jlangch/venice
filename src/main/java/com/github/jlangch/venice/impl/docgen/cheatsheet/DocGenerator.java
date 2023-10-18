@@ -62,6 +62,7 @@ import com.github.jlangch.venice.impl.docgen.cheatsheet.modules.ModuleQrRefSecti
 import com.github.jlangch.venice.impl.docgen.cheatsheet.modules.ModuleSemverSection;
 import com.github.jlangch.venice.impl.docgen.cheatsheet.modules.ModuleShellSection;
 import com.github.jlangch.venice.impl.docgen.cheatsheet.modules.ModuleTestSection;
+import com.github.jlangch.venice.impl.docgen.cheatsheet.modules.ModuleTimingSection;
 import com.github.jlangch.venice.impl.docgen.cheatsheet.modules.ModuleTracingSection;
 import com.github.jlangch.venice.impl.docgen.cheatsheet.modules.ModuleXmlSection;
 import com.github.jlangch.venice.impl.docgen.cheatsheet.section.ArraySection;
@@ -322,6 +323,7 @@ public class DocGenerator {
         extmod.addSection(new DocSection("Test", "modules.test"));
         extmod.addSection(new DocSection("Tracing", "modules.tracing"));
         extmod.addSection(new DocSection("Benchmark", "modules.benchmark"));
+        extmod.addSection(new DocSection("Timing", "modules.timing"));
         extmod.addSection(new DocSection("App", "modules.app"));
         extmod.addSection(new DocSection("QR\u00A0Ref", "modules.qrref"));
         content.add(extmod);
@@ -421,7 +423,8 @@ public class DocGenerator {
                 new ModuleConfigSection(diBuilder).section(),
                 new ModuleComponentSection(diBuilder).section(),
                 new ModuleAppSection(diBuilder).section(),
-                new ModuleBenchmarkSection(diBuilder).section());
+                new ModuleBenchmarkSection(diBuilder).section(),
+                new ModuleTimingSection(diBuilder).section());
     }
 
     private List<DocItem> getDocItems(final List<DocSection> sections) {
