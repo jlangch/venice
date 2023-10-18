@@ -232,6 +232,7 @@ public class JsonlModuleTest {
                 "({:a 100 :b 200} {:a 101 :b 201} {:a 102 :b 202})",
                 venice.eval(script3));
     }
+
     @Test
     public void test_spit_line_by_line() {
         final Venice venice = new Venice();
