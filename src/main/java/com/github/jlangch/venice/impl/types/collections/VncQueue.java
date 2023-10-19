@@ -22,6 +22,7 @@
 package com.github.jlangch.venice.impl.types.collections;
 
 import java.util.Arrays;
+import java.util.Iterator;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
@@ -35,7 +36,7 @@ import com.github.jlangch.venice.impl.types.VncVal;
 import com.github.jlangch.venice.impl.util.MetaUtil;
 
 
-public class VncQueue extends VncCollection implements VncMutable {
+public class VncQueue extends VncCollection implements VncMutable, Iterable<VncVal> {
 
     public VncQueue() {
         this(Integer.MAX_VALUE);
@@ -219,6 +220,11 @@ public class VncQueue extends VncCollection implements VncMutable {
                 .stream(queue.toArray(new VncVal[0]))
                 .map(v -> v.convertToJavaObject())
                 .collect(Collectors.toList());
+    }
+
+    @Override
+    public Iterator<VncVal> iterator() {
+        return queue.iterator();
     }
 
     @Override

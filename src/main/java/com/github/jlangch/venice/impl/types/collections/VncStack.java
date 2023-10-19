@@ -22,6 +22,7 @@
 package com.github.jlangch.venice.impl.types.collections;
 
 import java.util.Arrays;
+import java.util.Iterator;
 import java.util.concurrent.ConcurrentLinkedDeque;
 import java.util.stream.Collectors;
 
@@ -33,7 +34,7 @@ import com.github.jlangch.venice.impl.types.VncVal;
 import com.github.jlangch.venice.impl.util.MetaUtil;
 
 
-public class VncStack extends VncCollection implements VncMutable {
+public class VncStack extends VncCollection implements VncMutable, Iterable<VncVal> {
 
     public VncStack() {
         super(Constants.Nil);
@@ -114,6 +115,11 @@ public class VncStack extends VncCollection implements VncMutable {
                 .stream(stack.toArray(new VncVal[0]))
                 .map(v -> v.convertToJavaObject())
                 .collect(Collectors.toList());
+    }
+
+    @Override
+    public Iterator<VncVal> iterator() {
+        return stack.iterator();
     }
 
     @Override
