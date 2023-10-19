@@ -9,7 +9,7 @@ Venice data structures. No 3rd-party libraries are required.
 
 ## Usage
 
-To convert to/from a single JSON Line string, use *jsonl/write-str* and *jsonl/read-str*:
+To convert to/from a JSON Line string, use *jsonl/write-str* and *jsonl/read-str*:
 
 ```clojure
 (do
