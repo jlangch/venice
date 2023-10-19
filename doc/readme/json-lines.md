@@ -83,6 +83,34 @@ JSON can be slurped from Java InputStreams, Readers, or files
     (jsonl/slurp rd)))
 ```
 
+For memory efficient reading of large JSON Lines datasets use a transducer with 
+filter-map-reduce functionality:
+
+
+```clojure
+(do
+  (load-module :jsonl)
+
+  (defn test-data [lines]
+    (let [template {"a" 100, "b" 200}
+          data     (reduce #(conj %1 (assoc template :id %2)) 
+                           [] 
+                           (range 0 lines))]
+      (jsonl/write-str data)))
+
+  ;; transducer filter-map
+  (def xform (comp (map #(dissoc % :c))
+                   (map #(update % :b (fn [x] (+ x 5))))
+                   (filter #(= 100 (:a %)))))
+
+  (let [json (test-data 1_000)]
+    (try-with [rd (io/buffered-reader json)]
+      (let [slurper (jsonl/lazy-seq-slurper rd :key-fn keyword)]
+        ;; transduce the lazy sequence
+        (pr-str (transduce xform conj slurper))))))
+```
+
+
 
 ### Converting JSON object key/value types
 
