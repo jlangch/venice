@@ -326,7 +326,7 @@
                   (jsonl/spit wr [{:a 100 :b 200} {:a 101 :b 201} {:a 102 :b 202}])
                   (flush wr))
                 (try-with [rd (io/buffered-reader file)]
-                  (let [slurper (jsonl/lazy-seq-slurperrd :key-fn keyword)]
+                  (let [slurper (jsonl/lazy-seq-slurper rd :key-fn keyword)]
                     ;; realize the lazy sequence
                     (doall slurper)))))
               """,
