@@ -35,20 +35,22 @@ public class ModuleJsonlSection implements ISectionBuilder {
     @Override
     public DocSection section() {
         final DocSection section = new DocSection(
-                                        "Jsonl",
                                         "JSON Lines",
                                         "modules.jsonl");
 
         final DocSection all = new DocSection("(load-module :jsonl)", id());
         section.addSection(all);
 
-        final DocSection docker = new DocSection("JSON Lines", id());
-        all.addSection(docker);
-        docker.addItem(diBuilder.getDocItem("jsonl/write-str", true));
-        docker.addItem(diBuilder.getDocItem("jsonl/read-str", true));
-        docker.addItem(diBuilder.getDocItem("jsonl/spit", true));
-        docker.addItem(diBuilder.getDocItem("jsonl/slurp", true));
-        docker.addItem(diBuilder.getDocItem("jsonl/lazy-seq-slurper", true));
+        final DocSection read = new DocSection("read", id());
+        all.addSection(read);
+        read.addItem(diBuilder.getDocItem("jsonl/read-str", true));
+        read.addItem(diBuilder.getDocItem("jsonl/slurp", true));
+
+        final DocSection write = new DocSection("write", id());
+        all.addSection(write);
+        write.addItem(diBuilder.getDocItem("jsonl/write-str", true));
+        write.addItem(diBuilder.getDocItem("jsonl/spit", true));
+        write.addItem(diBuilder.getDocItem("jsonl/lazy-seq-slurper", true));
 
         return section;
     }
