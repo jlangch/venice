@@ -11,6 +11,7 @@ All notable changes to this project will be documented in this file.
 ### Added 
 
 - function `io/print-line`
+- an optional filter function to `jsonl/slurp`
 
 ### Improved 
 
