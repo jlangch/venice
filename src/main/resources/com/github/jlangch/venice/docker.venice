@@ -1434,7 +1434,8 @@
         map-keys     (keys map_)
         invalid-keys (difference (into #{} map-keys) (into #{} spec-keys))]
     (when (not-empty? invalid-keys)
-       (throw (ex :VncException "Invalid option ~(pr-str (first (into [] invalid-keys)))")))
+       (throw (ex :VncException
+                  "Invalid option ~(pr-str (first (into [] invalid-keys)))")))
     (loop [ks spec-keys]
       (if (empty? ks)
         true
@@ -1452,7 +1453,7 @@
                                       k_ (pr-str k)]
                                   (throw (ex :VncException
                                              (str "Invalid value \"~{v_}\" "
-                                             "for ~{name} \"~{k_}\"")))))
+                                                  "for ~{name} \"~{k_}\"")))))
               (fn? key-spec) (key-spec v)))
           (recur (rest ks)))))))
 
