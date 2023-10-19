@@ -24,6 +24,8 @@ package com.github.jlangch.venice.impl.util.transducer;
 import static com.github.jlangch.venice.impl.types.Constants.Nil;
 import static com.github.jlangch.venice.impl.types.VncFunction.applyWithMeter;
 
+import java.util.Iterator;
+
 import com.github.jlangch.venice.impl.types.IVncFunction;
 import com.github.jlangch.venice.impl.types.VncVal;
 import com.github.jlangch.venice.impl.types.collections.VncList;
@@ -57,6 +59,28 @@ public class Reducer {
     public static VncVal reduce(
             final IVncFunction reduceFn,
             final VncVal init,
+            final Iterator<VncVal> iter,
+            final MeterRegistry meterRegistry
+    ) {
+        VncVal value = init;
+
+        while(true) {
+            final VncVal v = iter.hasNext() ? iter.next() : Nil;
+            if (v == Nil) break;  // queue has been closed
+
+            value = applyWithMeter(reduceFn, VncList.of(value, v), meterRegistry);
+
+            if (Reduced.isReduced(value)) {
+                return Reduced.unreduced(value);
+            }
+        }
+
+        return value;
+    }
+
+    public static VncVal reduce(
+            final IVncFunction reduceFn,
+            final VncVal init,
             final VncQueue queue,
             final MeterRegistry meterRegistry
     ) {
@@ -76,4 +100,25 @@ public class Reducer {
         return value;
     }
 
+    public static VncVal reduce(
+            final IVncFunction reduceFn,
+            final VncVal init,
+            final IVncFunction supplyFn,
+            final MeterRegistry meterRegistry
+    ) {
+        VncVal value = init;
+
+        while(true) {
+            final VncVal v = supplyFn.apply(VncList.empty());
+            if (v == Nil) break;  // not more data available
+
+            value = applyWithMeter(reduceFn, VncList.of(value, v), meterRegistry);
+
+            if (Reduced.isReduced(value)) {
+                return Reduced.unreduced(value);
+            }
+        }
+
+        return value;
+    }
 }

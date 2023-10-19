@@ -139,7 +139,7 @@ public class TransducerFunctions {
 
                 final VncFunction xform = Coerce.toVncFunction(args.first());
                 final VncFunction reduction_fn = Coerce.toVncFunction(args.second());
-                final VncCollection coll = Coerce.toVncCollection(args.last());
+                final VncVal coll = args.last();
 
                 xform.sandboxFunctionCallValidation();
                 reduction_fn.sandboxFunctionCallValidation();
