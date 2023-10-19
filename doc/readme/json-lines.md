@@ -145,8 +145,8 @@ JSON handling.
   (load-module :jsonl)
   
   (jsonl/read-str """{"a": "2018-08-01T10:15:30", "b": 100}""" 
-                 :key-fn keyword 
-                 :value-fn (fn [k v] (if (== :a k) (time/local-date-time v) v))))
+                  :key-fn keyword 
+                  :value-fn (fn [k v] (if (== :a k) (time/local-date-time v) v))))
                  
 ;;=> {:a 2018-08-01T10:15:30 :b 100}
 ```
