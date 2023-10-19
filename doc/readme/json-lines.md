@@ -1,5 +1,7 @@
 # JSON Lines
 
+JSON Lines essentially consists of several lines where each individual line is a valid JSON object, separated by a newline character `\n`.
+
 Venice has built-in support for the JSON Lines text format as described in 
 [JSON Lines](https://jsonlines.org/). It reads/writes JSON Lines from/to 
 Venice data structures. No 3rd-party libraries are required.
