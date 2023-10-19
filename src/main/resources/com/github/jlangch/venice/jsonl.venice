@@ -30,7 +30,13 @@
 (defn
   ^{ :arglists '("(jsonl/write-str val & options)")
      :doc """
-          Writes the val to a JSON lines string.
+          Writes the value 'val' to a JSON lines string.
+
+          Any reasonable Venice value like string, integer, long, double, decimal,
+          boolean, list, vector, set, or map can be passed. Sequences like
+          list or vector are converted to multiple JSON lines, one line for
+          each value in the sequence. All other types are converted to a single
+          JSON line.
 
           Options:
 
@@ -50,7 +56,8 @@
                                        {:a 101 :b 201}
                                        {:a 102 :b 202}])))
           """ )
-     :see-also '("jsonl/spit" "jsonl/read-str") }
+     :see-also '("jsonl/spit" "jsonl/read-str")
+     :spec { :options { :decimal-as-double [:optional #(boolean? %)] } } }
 
   write-str [val & options]
 
@@ -66,17 +73,22 @@
 (defn
   ^{ :arglists '("(jsonl/spit out val & options)")
      :doc """
-          Spits the JSON Lines converted val to the output out.
+          Spits the JSON Lines converted value 'val' to the output 'out'.
 
-          The out may be a:
+          The 'out' may be a:
 
-           * string file path, e.g: \"/temp/foo.json\"
            * `java.io.File`, e.g: `(io/file \"/temp/foo.json\")`
            * `java.nio.Path`
            * `java.io.OutputStream`
            * `java.io.Writer`
 
           **Note**: The caller is responsible for closing the out stream/writer!
+
+          Any reasonable Venice value like string, integer, long, double, decimal,
+          boolean, list, vector, set, or map can be passed. Sequences like
+          list or vector are converted to multiple JSON lines, one line for
+          each value in the sequence. All other types are converted to a single
+          JSON line.
 
           Options:
 
@@ -131,9 +143,17 @@
                 (println (io/slurp file :encoding :utf-8))))
           """)
      :see-also '(
-          "jsonl/write-str" "jsonl/slurp") }
+          "jsonl/write-str" "jsonl/slurp")
+     :spec { :options { :decimal-as-double [:optional #(boolean? %)]
+                        :append            [:optional #(boolean? %)]
+                        :encoding          [:optional #(keyword? %)] } } }
 
   spit [out val & options]
+
+  { :pre [(or (io/file? out)
+              (instance-of? :java.nio.file.Path out)
+              (instance-of? :java.io.OutputStream out)
+              (instance-of? :java.io.Writer out))] }
 
   (let [wr (apply io/buffered-writer out options)]
     (if (sequential? val)
@@ -147,7 +167,7 @@
 (defn
   ^{ :arglists '("(jsonl/read-str s & options)")
      :doc """
-          Reads a JSON line string and returns it as a Venice datatype.
+          Reads a JSON line string 's' and returns it as a Venice data type.
 
           Options:
 
@@ -189,9 +209,14 @@
                 (jsonl/read-str json :key-fn keyword))))
           """)
      :see-also '(
-          "jsonl/write-str") }
+          "jsonl/write-str")
+     :spec { :options { :key-fn   [:optional #(fn? %)]
+                        :value-fn [:optional #(fn? %)]
+                        :decimal  [:optional #(boolean? %)] } } }
 
   read-str [s & options]
+
+  { :pre [(or (nil? s) (string? s))] }
 
   (->> (str/split-lines s)
        (map str/trim-to-nil)
@@ -202,16 +227,15 @@
 (defn
   ^{ :arglists '("(jsonl/slurp in & options)")
      :doc """
-          Slurps a list of JSON line strings from the input and returns it as a
-          list of Venice datatypes.
+          Slurps a list of JSON line strings from the input 'in' and returns it
+          as a list of Venice data types.
 
           in may be a:
-           * string file path, e.g: \"/temp/foo.json\"
            * bytebuffer
            * `java.io.File`, e.g: `(io/file \"/temp/foo.json\")`
+           * `java.nio.file.Path`
            * `java.io.InputStream`
            * `java.io.Reader`
-           * `java.nio.file.Path`
 
           **Note**: The caller is responsible for closing the in stream/reader!
 
@@ -262,9 +286,20 @@
                 (jsonl/slurp rd :key-fn keyword :filter-fn #(= 100 (:a %))))))
           """)
      :see-also '(
-          "jsonl/read-str", "jsonl/lazy-seq-slurper") }
+          "jsonl/read-str", "jsonl/lazy-seq-slurper")
+     :spec { :options { :key-fn     [:optional #(fn? %)]
+                        :value-fn   [:optional #(fn? %)]
+                        :decimal    [:optional #(boolean? %)]
+                        :filter-fn  [:optional #(fn? %)]
+                        :encoding   [:optional #(keyword? %)] } } }
 
   slurp [in & options]
+
+  { :pre [(or (bytebuf? in)
+              (io/file? in)
+              (instance-of? :java.nio.file.Path in)
+              (instance-of? :java.io.InputStream in)
+              (instance-of? :java.io.Reader in))] }
 
   (let [opts       (apply hash-map options)
         filter-fn  (:filter-fn opts (constantly true))
@@ -281,15 +316,11 @@
     ^{ :arglists '("(jsonl/lazy-seq-slurper in & options)")
        :doc """
             Returns a lazy sequence of the parsed JSON line strings from the
-            input.
+            input 'in'.
 
-            in may be a:
-             * string file path, e.g: \"/temp/foo.json\"
-             * bytebuffer
-             * `java.io.File`, e.g: `(io/file \"/temp/foo.json\")`
+            'in' may be a:
              * `java.io.InputStream`
              * `java.io.Reader`
-             * `java.nio.file.Path`
 
             **Note**: The caller is responsible for closing the in stream/reader!
 
@@ -354,18 +385,26 @@
                     (pr-str (transduce xform conj slurper))))))
             """)
        :see-also '(
-            "jsonl/slurp", "jsonl/read-str") }
+            "jsonl/slurp", "jsonl/read-str")
+       :spec { :options { :key-fn     [:optional #(fn? %)]
+                          :value-fn   [:optional #(fn? %)]
+                          :decimal    [:optional #(boolean? %)]
+                          :filter-fn  [:optional #(fn? %)]
+                          :encoding   [:optional #(keyword? %)] } } }
 
-    lazy-seq-slurper [in & options]
+  lazy-seq-slurper [in & options]
 
-    (let [opts       (apply hash-map options)
-          filter-fn  (:filter-fn opts (constantly true))
-          rd         (apply io/buffered-reader in options)
-          slurp-fn   (fn []
-                       (loop [line (read-line rd)]
-                         (if (nil? line)
-                            nil
-                            (let [v (apply json/read-str (str/trim-to-nil line) options)
-                                  v (if (filter-fn v) v nil)]
-                              (if (nil? line) (recur (read-line rd)) v)))))]
-      (lazy-seq slurp-fn)))
+  { :pre [(or (instance-of? :java.io.InputStream in)
+              (instance-of? :java.io.Reader in))] }
+
+  (let [opts       (apply hash-map options)
+        filter-fn  (:filter-fn opts (constantly true))
+        rd         (apply io/buffered-reader in options)
+        slurp-fn   (fn []
+                     (loop [line (read-line rd)]
+                       (if (nil? line)
+                          nil
+                          (let [v (apply json/read-str (str/trim-to-nil line) options)
+                                v (if (filter-fn v) v nil)]
+                            (if (nil? line) (recur (read-line rd)) v)))))]
+    (lazy-seq slurp-fn)))
