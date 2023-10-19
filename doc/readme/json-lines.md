@@ -86,6 +86,7 @@ JSON can be slurped from Java InputStreams, Readers, or files
 For memory efficient reading of large JSON Lines datasets use a transducer with 
 filter-map-reduce functionality:
 
+_Note: make sure that Venice up-front macro expansion is activated when processing large datasets to get best performance! _
 
 ```clojure
 (do
