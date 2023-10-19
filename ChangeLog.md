@@ -12,6 +12,7 @@ All notable changes to this project will be documented in this file.
 
 - function `io/print-line`
 - an optional filter function to `jsonl/slurp`
+- support for lazy sequences and transducer to JSON Lines data slurper
 
 ### Improved 
 

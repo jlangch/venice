@@ -39,12 +39,16 @@
           """
      :examples '(
           """
-          (println (jsonl/write-str {:a 100 :b 200}))
+          (do
+            (load-module :jsonl)
+            (println (jsonl/write-str {:a 100 :b 200})))
           """,
           """
-          (println (jsonl/write-str [{:a 100 :b 200}
-                                     {:a 101 :b 201}
-                                     {:a 102 :b 202}]))
+          (do
+            (load-module :jsonl)
+            (println (jsonl/write-str [{:a 100 :b 200}
+                                       {:a 101 :b 201}
+                                       {:a 102 :b 202}])))
           """ )
      :see-also '("jsonl/spit" "jsonl/read-str") }
 
@@ -86,39 +90,45 @@
           """
      :examples '(
           """
-          (let [file (io/temp-file "data-" ".jsonl")]
-            (io/delete-file-on-exit file)
-            (try-with [wr (io/buffered-writer file)]
-              (jsonl/spit wr [{:a 100 :b 200} {:a 101 :b 201} {:a 102 :b 202}])
-              (flush wr))
-            ;; print the json lines data
-            (println (io/slurp file :encoding :utf-8)))
+          (do
+            (load-module :jsonl)
+            (let [file (io/temp-file "data-" ".jsonl")]
+              (io/delete-file-on-exit file)
+              (try-with [wr (io/buffered-writer file)]
+                (jsonl/spit wr [{:a 100 :b 200} {:a 101 :b 201} {:a 102 :b 202}])
+                (flush wr))
+              ;; print the json lines data
+              (println (io/slurp file :encoding :utf-8))))
           """,
           """
           ;; spit a list of json lines (linefeeds are added implicitely )
-          (let [file (io/temp-file "data-" ".jsonl")]
-            (io/delete-file-on-exit file)
-            (try-with [wr (io/buffered-writer file)]
-              (jsonl/spit wr [{"a" 100, "b" 200}
-                              {"a" 101, "b" 201}
-                              {"a" 102, "b" 202}])
-              (flush wr))
-              ;; print the json lines data
-              (println (io/slurp file :encoding :utf-8)))
+          (do
+            (load-module :jsonl)
+            (let [file (io/temp-file "data-" ".jsonl")]
+              (io/delete-file-on-exit file)
+              (try-with [wr (io/buffered-writer file)]
+                (jsonl/spit wr [{"a" 100, "b" 200}
+                                {"a" 101, "b" 201}
+                                {"a" 102, "b" 202}])
+                (flush wr))
+                ;; print the json lines data
+                (println (io/slurp file :encoding :utf-8))))
           """,
           """
-          ;; spit a list of json lines, line by line (linefeeds must be added exlicitely)
-          (let [file (io/temp-file "data-" ".jsonl")]
-            (io/delete-file-on-exit file)
-            (try-with [wr (io/buffered-writer file)]
-              (jsonl/spit wr {"a" 100, "b" 200})
-              (println wr)
-              (jsonl/spit wr {"a" 101, "b" 201})
-              (println wr)
-              (jsonl/spit wr {"a" 102, "b" 202})
-              (flush wr))
-              ;; print the json lines data
-              (println (io/slurp file :encoding :utf-8)))
+          ;; spit a list of json lines line by line (linefeeds must be added exlicitely)
+          (do
+            (load-module :jsonl)
+            (let [file (io/temp-file "data-" ".jsonl")]
+              (io/delete-file-on-exit file)
+              (try-with [wr (io/buffered-writer file)]
+                (jsonl/spit wr {"a" 100, "b" 200})
+                (println wr)
+                (jsonl/spit wr {"a" 101, "b" 201})
+                (println wr)
+                (jsonl/spit wr {"a" 102, "b" 202})
+                (flush wr))
+                ;; print the json lines data
+                (println (io/slurp file :encoding :utf-8))))
           """)
      :see-also '(
           "jsonl/write-str" "jsonl/slurp") }
@@ -156,21 +166,27 @@
           """
      :examples '(
           """
-          (let [json (jsonl/write-str {:a 100 :b 200})]
-            (jsonl/read-str json :key-fn keyword))
-          """,
-          """
-          (let [json (jsonl/write-str [{:a 100 :b 200} {:a 100 :b 200}])]
-            (jsonl/read-str json :key-fn keyword))
-          """,
-          """
-          (try-with [sw (io/string-writer)]
-            (println sw (jsonl/write-str {:a 100 :b 200}))
-            (println sw (jsonl/write-str {:a 101 :b 201}))
-            (println sw (jsonl/write-str {:a 102 :b 202}))
-            (flush sw)
-            (let [json @sw]
+          (do
+            (load-module :jsonl)
+            (let [json (jsonl/write-str {:a 100 :b 200})]
               (jsonl/read-str json :key-fn keyword)))
+          """,
+          """
+          (do
+            (load-module :jsonl)
+            (let [json (jsonl/write-str [{:a 100 :b 200} {:a 100 :b 200}])]
+              (jsonl/read-str json :key-fn keyword)))
+          """,
+          """
+          (do
+            (load-module :jsonl)
+            (try-with [sw (io/string-writer)]
+              (println sw (jsonl/write-str {:a 100 :b 200}))
+              (println sw (jsonl/write-str {:a 101 :b 201}))
+              (println sw (jsonl/write-str {:a 102 :b 202}))
+              (flush sw)
+              (let [json @sw]
+                (jsonl/read-str json :key-fn keyword))))
           """)
      :see-also '(
           "jsonl/write-str") }
@@ -186,7 +202,7 @@
 (defn
   ^{ :arglists '("(jsonl/slurp in & options)")
      :doc """
-          Slurps a list of JSON line stringsfrom the input and returns it as a
+          Slurps a list of JSON line strings from the input and returns it as a
           list of Venice datatypes.
 
           in may be a:
@@ -223,26 +239,30 @@
           """
      :examples '(
           """
-          (let [file (io/temp-file "data-" ".jsonl")]
-            (io/delete-file-on-exit file)
-            (try-with [wr (io/buffered-writer file)]
-              (jsonl/spit wr [{:a 100 :b 200} {:a 101 :b 201} {:a 102 :b 202}])
-              (flush wr))
-            (try-with [rd (io/buffered-reader file)]
-              (jsonl/slurp rd :key-fn keyword)))
+          (do
+            (load-module :jsonl)
+            (let [file (io/temp-file "data-" ".jsonl")]
+              (io/delete-file-on-exit file)
+              (try-with [wr (io/buffered-writer file)]
+                (jsonl/spit wr [{:a 100 :b 200} {:a 101 :b 201} {:a 102 :b 202}])
+                (flush wr))
+              (try-with [rd (io/buffered-reader file)]
+                (jsonl/slurp rd :key-fn keyword))))
           """,
           """
           ;; slurp JSON Lines applying a filter on the read lines
-          (let [file (io/temp-file "data-" ".jsonl")]
-            (io/delete-file-on-exit file)
-            (try-with [wr (io/buffered-writer file)]
-              (jsonl/spit wr [{:a 100 :b 200} {:a 101 :b 201} {:a 100 :b 202}])
-              (flush wr))
-            (try-with [rd (io/buffered-reader file)]
-              (jsonl/slurp rd :key-fn keyword :filter-fn #(= 100 (:a %)))))
+          (do
+            (load-module :jsonl)
+            (let [file (io/temp-file "data-" ".jsonl")]
+              (io/delete-file-on-exit file)
+              (try-with [wr (io/buffered-writer file)]
+                (jsonl/spit wr [{:a 100 :b 200} {:a 101 :b 201} {:a 100 :b 202}])
+                (flush wr))
+              (try-with [rd (io/buffered-reader file)]
+                (jsonl/slurp rd :key-fn keyword :filter-fn #(= 100 (:a %))))))
           """)
      :see-also '(
-          "jsonl/read-str") }
+          "jsonl/read-str", "jsonl/lazy-seq-slurper") }
 
   slurp [in & options]
 
@@ -255,3 +275,97 @@
         (let [v (apply json/read-str (str/trim-to-nil line) options)
               v (if (filter-fn v) v nil)]
           (recur (read-line rd) (if (nil? v) data (conj data v))))))))
+
+
+  (defn
+    ^{ :arglists '("(jsonl/lazy-seq-slurper in & options)")
+       :doc """
+            Returns a lazy sequence of the parsed JSON line strings from the
+            input.
+
+            in may be a:
+             * string file path, e.g: \"/temp/foo.json\"
+             * bytebuffer
+             * `java.io.File`, e.g: `(io/file \"/temp/foo.json\")`
+             * `java.io.InputStream`
+             * `java.io.Reader`
+             * `java.nio.file.Path`
+
+            **Note**: The caller is responsible for closing the in stream/reader!
+
+            Options:
+
+            | :key-fn fn    | Single argument function called on JSON property names; \
+                              return value will replace the property names in the \
+                              output. Default is 'identity', use 'keyword' to get \
+                              keyword properties. |
+            | :value-fn fn  | Function to transform values in JSON objects in \
+                              the output. For each JSON property, value-fn is called \
+                              with two arguments: the property name (transformed by \
+                              key-fn) and the value. The return value of value-fn will \
+                              replace the value in the output. The default value-fn \
+                              returns the value unchanged. |
+            | :decimal b    | If true use BigDecimal for decimal numbers instead of \
+                              Double. Default is false. |
+            | :filter-fn fn | Single argument function called on every read value \
+                              from a JSON line. If it returns true the value will \
+                              be kept otherwise it will be skipped |
+            | :encoding e   | e.g :encoding :utf-8, defaults to :utf-8 |
+
+            `jsonl/lazy-seq-slurper` supports load paths. See the `loadpath/paths`
+            doc for a description of the *load path* feature.
+            """
+       :examples '(
+            """
+            ;; use a lazy sequence to read the JSON lines data
+            (do
+              (load-module :jsonl)
+              (let [file (io/temp-file "data-" ".jsonl")]
+                (io/delete-file-on-exit file)
+                (try-with [wr (io/buffered-writer file)]
+                  (jsonl/spit wr [{:a 100 :b 200} {:a 101 :b 201} {:a 102 :b 202}])
+                  (flush wr))
+                (try-with [rd (io/buffered-reader file)]
+                  (let [slurper (jsonl/lazy-seq-slurperrd :key-fn keyword)]
+                    ;; realize the lazy sequence
+                    (doall slurper)))))
+              """,
+            """
+            ;; use a transducer to efficiently map and filter the JSON lines data
+            (do
+              (load-module :jsonl)
+
+              (defn test-data []
+                (try-with [sw (io/string-writer)]
+                  (println sw (json/write-str {:a 100 :b 200 :c 300}))
+                  (println sw (json/write-str {:a 101 :b 201 :c 301}))
+                  (println sw (json/write-str {:a 100 :b 202 :c 302}))
+                  (flush sw)
+                  @sw))
+
+              (def xform (comp (map #(dissoc % :c))
+                               (map #(update % :b (fn [x] (+ x 5))))
+                               (filter #(= 100 (:a %)))))
+
+              (let [json (test-data)]
+                (try-with [rd (io/buffered-reader json)]
+                  (let [slurper (jsonl/lazy-seq-slurper rd :key-fn keyword)]
+                    ;; transduce the lazy sequence
+                    (pr-str (transduce xform conj slurper))))))
+            """)
+       :see-also '(
+            "jsonl/slurp", "jsonl/read-str") }
+
+    lazy-seq-slurper [in & options]
+
+    (let [opts       (apply hash-map options)
+          filter-fn  (:filter-fn opts (constantly true))
+          rd         (apply io/buffered-reader in options)
+          slurp-fn   (fn []
+                       (loop [line (read-line rd)]
+                         (if (nil? line)
+                            nil
+                            (let [v (apply json/read-str (str/trim-to-nil line) options)
+                                  v (if (filter-fn v) v nil)]
+                              (if (nil? line) (recur (read-line rd)) v)))))]
+      (lazy-seq slurp-fn)))

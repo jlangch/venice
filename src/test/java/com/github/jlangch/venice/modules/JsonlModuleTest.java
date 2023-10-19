@@ -282,26 +282,80 @@ public class JsonlModuleTest {
     }
 
     @Test
-    public void test_slurp_with_filter() {
+    public void test_slurp_filter() {
         final Venice venice = new Venice();
 
-        final String script1 =  "(do                                                          \n" +
-                                "  (load-module :jsonl)                                       \n" +
-                                "  (defn test-data []                                         \n" +
-                                "    (try-with [sw (io/string-writer)]                        \n" +
-                                "      (println sw (json/write-str {:a 100 :b 200}))          \n" +
-                                "      (println sw (json/write-str {:a 101 :b 201}))          \n" +
-                                "      (println sw (json/write-str {:a 100 :b 202}))          \n" +
-                                "      (flush sw)                                             \n" +
-                                "      @sw))                                                  \n" +
-                                "  (let [json (test-data)]                                    \n" +
-                                "    (try-with [rd (io/buffered-reader json)]                 \n" +
-                                "      (pr-str (jsonl/slurp rd                                \n" +
-                                "                           :key-fn keyword                   \n" +
-                                "                           :filter-fn #(= 100 (:a %)))))))   ";
+        final String script1 =  "(do                                                        \n" +
+                                "  (load-module :jsonl)                                     \n" +
+                                "  (defn test-data []                                       \n" +
+                                "    (try-with [sw (io/string-writer)]                      \n" +
+                                "      (println sw (json/write-str {:a 100 :b 200}))        \n" +
+                                "      (println sw (json/write-str {:a 101 :b 201}))        \n" +
+                                "      (println sw (json/write-str {:a 100 :b 202}))        \n" +
+                                "      (flush sw)                                           \n" +
+                                "      @sw))                                                \n" +
+                                "  (let [json (test-data)]                                  \n" +
+                                "    (try-with [rd (io/buffered-reader json)]               \n" +
+                                "      (pr-str (jsonl/slurp rd                              \n" +
+                                "                           :key-fn keyword                 \n" +
+                                "                           :filter-fn #(= 100 (:a %))))))) ";
 
         assertEquals(
                 "({:a 100 :b 200} {:a 100 :b 202})",
+                venice.eval(script1));
+    }
+
+    @Test
+    public void test_slurp_laze_sequence() {
+        final Venice venice = new Venice();
+
+        final String script1 =  "(do                                                              \n" +
+                                "  (load-module :jsonl)                                           \n" +
+                                "  (defn test-data []                                             \n" +
+                                "    (try-with [sw (io/string-writer)]                            \n" +
+                                "      (println sw (json/write-str {:a 100 :b 200}))              \n" +
+                                "      (println sw (json/write-str {:a 101 :b 201}))              \n" +
+                                "      (println sw (json/write-str {:a 102 :b 202}))              \n" +
+                                "      (flush sw)                                                 \n" +
+                                "      @sw))                                                      \n" +
+                                "  (let [json (test-data)]                                        \n" +
+                                "    (try-with [rd (io/buffered-reader json)]                     \n" +
+                                "      (let [slurper (jsonl/lazy-seq-slurper rd :key-fn keyword)] \n" +
+                                "        ;; realize the lazy sequence                             \n" +
+                                "        (pr-str (doall slurper))))))                             ";
+
+        assertEquals(
+                "({:a 100 :b 200} {:a 101 :b 201} {:a 102 :b 202})",
+                venice.eval(script1));
+    }
+
+    @Test
+    public void test_slurp_with_transducer() {
+        final Venice venice = new Venice();
+
+        final String script1 =  "(do                                                                \n" +
+                                "  (load-module :jsonl)                                             \n" +
+                                "                                                                   \n" +
+                                "  (defn test-data []                                               \n" +
+                                "    (try-with [sw (io/string-writer)]                              \n" +
+                                "      (println sw (json/write-str {:a 100 :b 200 :c 300}))         \n" +
+                                "      (println sw (json/write-str {:a 101 :b 201 :c 301}))         \n" +
+                                "      (println sw (json/write-str {:a 100 :b 202 :c 302}))         \n" +
+                                "      (flush sw)                                                   \n" +
+                                "      @sw))                                                        \n" +
+                                "                                                                   \n" +
+                                "  (def xform (comp (map #(dissoc % :c))                            \n" +
+                                "                   (map #(update % :b (fn [x] (+ x 5))))           \n" +
+                                "                   (filter #(= 100 (:a %)))))                      \n" +
+                                "                                                                   \n" +
+                                "  (let [json (test-data)]                                          \n" +
+                                "    (try-with [rd (io/buffered-reader json)]                       \n" +
+                                "      (let [slurper (jsonl/lazy-seq-slurper rd :key-fn keyword)]   \n" +
+                                "        ;; transduce the lazy sequence                             \n" +
+                                "        (pr-str (transduce xform conj slurper))))))                ";
+
+        assertEquals(
+                "[{:a 100 :b 205} {:a 100 :b 207}]",
                 venice.eval(script1));
     }
 }
