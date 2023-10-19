@@ -34,6 +34,7 @@ import java.util.Arrays;
 import java.util.Comparator;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -8497,6 +8498,7 @@ public class CoreFunctions {
                     .build()
         ) {
             @Override
+            @SuppressWarnings("unchecked")
             public VncVal apply(final VncList args) {
                 ArityExceptions.assertArity(this, args, 2, 3);
 
@@ -8516,6 +8518,12 @@ public class CoreFunctions {
                 }
                 else if (Types.isVncQueue(coll)) {
                     return reduce_queue((VncQueue)coll, reduceFn, init);
+                }
+                else if (Types.isIVncFunction(coll)) {
+                    return reduce_supplyFn((IVncFunction)coll, reduceFn, init);
+                }
+                else if (coll instanceof Iterable<?>) {
+                   return reduce_iterable((Iterable<VncVal>)coll, reduceFn, init);
                 }
                 else if (coll == Nil) {
                     return reduce_sequence(VncList.empty(), reduceFn, init);
@@ -8562,6 +8570,44 @@ public class CoreFunctions {
         }
         else {
             return Reducer.reduce(reduceFn, init, queue, meterRegistry);
+        }
+    }
+
+    private static VncVal reduce_supplyFn(
+            final IVncFunction supplyFn,
+            final IVncFunction reduceFn,
+            final VncVal init
+    ) {
+        final MeterRegistry meterRegistry = ThreadContext.getMeterRegistry();
+
+        if (init == null) {
+            final VncVal init_ = supplyFn.apply(VncList.empty());
+            return init_ == Nil  // queue has been closed -> empty
+                    ? reduceFn.apply(VncList.empty())
+                    : Reducer.reduce(reduceFn, init_, supplyFn, meterRegistry);
+        }
+        else {
+            return Reducer.reduce(reduceFn, init, supplyFn, meterRegistry);
+        }
+    }
+
+    private static VncVal reduce_iterable(
+            final Iterable<VncVal> iterable,
+            final IVncFunction reduceFn,
+            final VncVal init
+    ) {
+        final MeterRegistry meterRegistry = ThreadContext.getMeterRegistry();
+
+        final Iterator<VncVal> iter = iterable.iterator();
+
+        if (init == null) {
+            final VncVal init_ = iter.hasNext() ? iter.next() : Nil;
+            return init_ == Nil
+                    ? reduceFn.apply(VncList.empty())
+                    : Reducer.reduce(reduceFn, init_, iter, meterRegistry);
+        }
+        else {
+            return Reducer.reduce(reduceFn, init, iter, meterRegistry);
         }
     }
 
