@@ -232,6 +232,7 @@
               (jsonl/slurp rd :key-fn keyword)))
           """,
           """
+          ;; slurp JSON Lines applying a filter on the read lines
           (let [file (io/temp-file "data-" ".jsonl")]
             (io/delete-file-on-exit file)
             (try-with [wr (io/buffered-writer file)]
