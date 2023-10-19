@@ -154,7 +154,7 @@ JSON handling.
 
 ### Special data types
 
-Decimals are converted to strings
+Venice decimals are converted to strings
 
 ```clojure
 (do
@@ -165,7 +165,7 @@ Decimals are converted to strings
 ;;=> "{\"a\":\"100.23\"}"
 ```
 
-Decimals can be forced to be converted to doubles:
+But Venice decimals can also be forced to be converted to doubles:
 
 ```clojure
 (do
@@ -217,7 +217,7 @@ Date/Time data types are formatted as ISO date/time strings
   ;;=> "{\"a\":\"2018-08-01T14:20:10.2+01:00\"}"
 ```
 
-Ints are converted to longs with write/read
+Venice integers are converted to longs with write/read
 
 ```clojure
 (do
