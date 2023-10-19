@@ -311,7 +311,6 @@ public class DocGenerator {
         extmod.addSection(new DocSection("Fonts", "modules.fonts"));
         extmod.addSection(new DocSection("Cryptography", "modules.cryptography"));
         extmod.addSection(new DocSection("Java", "modules.java"));
-        extmod.addSection(new DocSection("Semver", "modules.semver"));
         extmod.addSection(new DocSection("Hexdump", "modules.hexdump"));
         extmod.addSection(new DocSection("Shell", "modules.shell"));
         extmod.addSection(new DocSection("Geo IP", "modules.geoip"));
@@ -320,13 +319,14 @@ public class DocGenerator {
         extmod.addSection(new DocSection("Maven", "modules.maven"));
         extmod.addSection(new DocSection("Docker", "modules.docker"));
         extmod.addSection(new DocSection("Cargo", "modules.cargo"));
-        extmod.addSection(new DocSection("Cargo ArangoDB", "modules.cargo-arangodb"));
+        extmod.addSection(new DocSection("Cargo/ArangoDB", "modules.cargo-arangodb"));
         extmod.addSection(new DocSection("Test", "modules.test"));
         extmod.addSection(new DocSection("Tracing", "modules.tracing"));
         extmod.addSection(new DocSection("Benchmark", "modules.benchmark"));
         extmod.addSection(new DocSection("Timing", "modules.timing"));
         extmod.addSection(new DocSection("App", "modules.app"));
         extmod.addSection(new DocSection("QR\u00A0Ref", "modules.qrref"));
+        extmod.addSection(new DocSection("Semver", "modules.semver"));
         content.add(extmod);
 
         final DocSection others = new DocSection("Others", "others");

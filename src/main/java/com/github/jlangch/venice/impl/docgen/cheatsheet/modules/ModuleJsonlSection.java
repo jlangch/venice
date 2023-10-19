@@ -48,6 +48,7 @@ public class ModuleJsonlSection implements ISectionBuilder {
         docker.addItem(diBuilder.getDocItem("jsonl/read-str", true));
         docker.addItem(diBuilder.getDocItem("jsonl/spit", true));
         docker.addItem(diBuilder.getDocItem("jsonl/slurp", true));
+        docker.addItem(diBuilder.getDocItem("jsonl/lazy-seq-slurper", true));
 
         return section;
     }
