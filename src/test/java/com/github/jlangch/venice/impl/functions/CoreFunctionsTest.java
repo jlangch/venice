@@ -4184,7 +4184,21 @@ public class CoreFunctionsTest {
                 "  (reduce + 100 q))                   ";
 
         assertEquals(145L,  venice.eval(script2));
-   }
+    }
+
+    @Test
+    public void test_reduce_lazy_seq_supplier_finite() {
+        final Venice venice = new Venice();
+
+        final String script = "(do                                            \n" +
+                              "   (def counter (atom 5))                      \n" +
+                              "   (defn generate []                           \n" +
+                              "           (swap! counter dec)                 \n" +
+                              "           (if (pos? @counter) @counter nil))  \n" +
+                              "   (reduce + 100 (lazy-seq generate)))         ";
+
+        assertEquals(110L,venice.eval(script));
+    }
 
     @Test
     public void test_reduce_kv() {

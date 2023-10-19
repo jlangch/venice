@@ -249,6 +249,20 @@ public class TransducerFunctionsTest {
     }
 
     @Test
+    public void test_transduce_lazy_seq_supplier_finite() {
+        final Venice venice = new Venice();
+
+        final String script = "(do                                                         \n" +
+                              "   (def counter (atom 5))                                   \n" +
+                              "   (defn generate []                                        \n" +
+                              "           (swap! counter dec)                              \n" +
+                              "           (if (pos? @counter) @counter nil))               \n" +
+                              "   (pr-str (transduce (map inc) conj (lazy-seq generate)))) ";
+
+        assertEquals("[5 4 3 2]",venice.eval(script));
+    }
+
+    @Test
     public void test_transduce_filter() {
         final Venice venice = new Venice();
 

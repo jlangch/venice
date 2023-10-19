@@ -8488,12 +8488,19 @@ public class CoreFunctions {
                         ";; sliding window (width 3) average\n" +
                         "(->> (partition 3 1 (repeatedly 10 #(rand-long 30)))\n" +
                         "     (map (fn [window] (/ (reduce + window) (count window)))))",
-                        ";; reduce all elements of a queue. calls (take! queue) to get the     \n" +
-                        ";; elements of the queue.                                             \n" +
-                        ";; note: use nil to mark the end of the queue otherwise reduce will   \n" +
-                        ";;       block forever!                                               \n" +
-                        "(let [q (conj! (queue) 1 2 3 4 5 6 7 nil)]                            \n" +
-                        "  (reduce + q))                                                       ")
+                        ";; reduce all elements of a queue.                         \n" +
+                        ";; calls (take! queue) to get the elements of the queue.   \n" +
+                        ";; note: use nil to mark the end of the queue otherwise    \n" +
+                        ";;       reduce will block forever!                        \n" +
+                        "(let [q (conj! (queue) 1 2 3 4 5 6 7 nil)]                 \n" +
+                        "  (reduce + q))                                            ",
+                        ";; reduce data supplied by a finit lazy seq \n" +
+                        "(do                                         \n" +
+                        "  (def counter (atom 5))                    \n" +
+                        "  (defn generate []                         \n" +
+                        "    (swap! counter dec)                     \n" +
+                        "    (if (pos? @counter) @counter nil))      \n" +
+                        "  (reduce + 100 (lazy-seq generate)))       ")
                     .seeAlso("reduce-kv", "map", "filter")
                     .build()
         ) {

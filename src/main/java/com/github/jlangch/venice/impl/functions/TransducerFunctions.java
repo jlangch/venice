@@ -107,12 +107,20 @@ public class TransducerFunctions {
 
                         "(transduce (map inc) conj [1 2 3])",
 
-                        ";; transduce all elements of a queue. calls (take! queue) to get the   \n" +
-                        ";; elements of the queue.                                              \n" +
-                        ";; note: use nil to mark the end of the queue otherwise transduce will \n" +
-                        ";;       block forever!                                                \n" +
-                        "(let [q (conj! (queue) 1 2 3 nil)]                                     \n" +
-                        "  (transduce (map inc) conj q))                                        ",
+                        ";; transduce all elements of a queue.                    \n" +
+                        ";; calls (take! queue) to get the elements of the queue. \n" +
+                        ";; note: use nil to mark the end of the queue otherwise  \n" +
+                        ";;       transduce will block forever!                   \n" +
+                        "(let [q (conj! (queue) 1 2 3 nil)]                       \n" +
+                        "  (transduce (map inc) conj q))                          ",
+
+                        ";; reduce data supplied by a finit lazy seq          \n" +
+                        "(do                                                  \n" +
+                        "  (def counter (atom 5))                             \n" +
+                        "  (defn generate []                                  \n" +
+                        "    (swap! counter dec)                              \n" +
+                        "    (if (pos? @counter) @counter nil))               \n" +
+                        "  (transduce (map inc) conj (lazy-seq generate)))    ",
 
                         "(do                                       \n" +
                         "  (def xform (comp (drop 2) (take 3)))    \n" +
