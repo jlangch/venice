@@ -23,7 +23,11 @@ converted. E.g. there is no real decimal type and Venice `int` is converted to `
 
 ### Streams
 
-JSON can be spit to Java OutputStreams, Writers, or files
+JSON can be spit to Java OutputStreams, Writers, or files:
+ * `io/bytebuf-out-stream`
+ * `io/file-out-stream`
+ * `io/buffered-writer`
+ * `io/file`
 
 ```clojure
 (let [out (io/bytebuf-out-stream)]
@@ -33,7 +37,17 @@ JSON can be spit to Java OutputStreams, Writers, or files
 ;;=> "{\"a\":100,\"b\":100,\"c\":[10,20,30]}"
 ```
 
-JSON can be slurped from Java InputStreams, Readers, or files
+
+JSON can be slurped from byte buffers, Java InputStreams, Readers, or files:
+ * `bytebuf`
+ * `io/file-in-stream`
+ * `io/bytebuf-in-stream`
+ * `io/buffered-reader`
+ * `io/file`
+
+```clojure
+(json/slurp (io/file "data.jsonl"))
+```
 
 ```clojure
 (let [json (json/write-str {:a 100 :b 100})]

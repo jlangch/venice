@@ -45,7 +45,11 @@ converted. E.g. there is no real decimal type and Venice `int` is converted to `
 
 ### Streams
 
-JSON Lines can be spit to Java OutputStreams, Writers, or files
+JSON can be spit to Java OutputStreams, Writers, or files:
+ * `io/bytebuf-out-stream`
+ * `io/file-out-stream`
+ * `io/buffered-writer`
+ * `io/file`
 
 ```clojure
 (do
@@ -73,7 +77,20 @@ JSON Lines can be spit to Java OutputStreams, Writers, or files
     (flush wr)))
 ```
 
-JSON can be slurped from Java InputStreams, Readers, or files
+
+JSON can be slurped from byte buffers, Java InputStreams, Readers, or files:
+ * `bytebuf`
+ * `io/file-in-stream`
+ * `io/bytebuf-in-stream`
+ * `io/buffered-reader`
+ * `io/file`
+
+```clojure
+(do
+  (load-module :jsonl)
+  
+  (jsonl/slurp (io/file "data.jsonl")))
+```
 
 ```clojure
 (do
