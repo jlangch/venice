@@ -242,7 +242,8 @@ Venice integers are converted to longs on JSON write/read:
 (do
   (load-module :jsonl)
   
-  (jsonl/read-str (jsonl/write-str {:a 100I})))
+  (->> (jsonl/write-str {:a 100I})
+       (jsonl/read-str))
   
 ;;=> {"a" 100}
 ```

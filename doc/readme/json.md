@@ -137,7 +137,9 @@ Venice date/time data types are formatted as ISO date/time strings:
 Venice integers are converted to longs on JSON write/read:
 
 ```clojure
-(json/read-str (json/write-str {:a 100I}))
+(->> (json/write-str {:a 100I})
+     (json/read-str))
+     
 ;;=> {"a" 100}
 ```
 
