@@ -70,38 +70,55 @@ Map JSON object values to local-date-time
 
 ### Special data types
 
-Decimals are converted to strings
+#### Decimals
+
+Venice decimals are converted to strings by default:
 
 ```clojure
 (json/write-str {:a 100.23M})
 ;;=> "{\"a\":\"100.23\"}"
 ```
 
-Decimals can be forced to be converted to doubles:
+But Venice decimals can also be forced to be converted to doubles 
+when the loss of precision is acceptable:
 
 ```clojure
-(json/write-str {:a 100.23M} :decimal-as-double true)
+(json/write-str {:a 100.23M} :decimal-as-double true))
+  
 ;;=> "{\"a\":100.23}"
 ```
 
-Read doubles as decimals without precision loss. 
-The decimals are converted from the read string without
-intermediate double conversion:
+If for example the loss of precision is not acceptable with financial
+money amounts Venice support implicite support for decimal values when 
+reading floating point numbers from JSON.
+
+While writing Venice emits decimals as 'double' floating-point values
+in exact representation. On reading back this floating-point string
+is directly converted into a decimal, without intermediate double 
+conversion, thus keeping the precision.
 
 ```clojure
+(json/write-str {:a 100.33M} :decimal-as-double true))
+;;=> "{\"a\":100.33}"
+  
 (json/read-str """{"a":10.33}""" :decimal true)
-;;=> {"a" 10.33M}
+;;=> {"a" 10.33M}  
 ```
 
 
-Binary data is converted to a _Base64_ encoded string
+#### Binary data
+
+Venice binary data is converted to a _Base64_ encoded string:
 
 ```clojure
 (json/write-str {:a (bytebuf-from-string "abcdefgh" :utf-8)})
 ;;=> "{\"a\":\"YWJjZGVmZ2g=\"}"
 ```
 
-Date/Time data types are formatted as ISO date/time strings 
+
+#### Date & Time
+
+Venice date/time data types are formatted as ISO date/time strings: 
 
 ```clojure
 (json/write-str {:a (time/local-date 2018 8 1)})
@@ -114,7 +131,10 @@ Date/Time data types are formatted as ISO date/time strings
 ;;=> "{\"a\":\"2018-08-01T14:20:10.2+01:00\"}"
 ```
 
-Ints are converted to longs with write/read
+
+#### Integers
+
+Venice integers are converted to longs on JSON write/read:
 
 ```clojure
 (json/read-str (json/write-str {:a 100I}))
