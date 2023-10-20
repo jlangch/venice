@@ -25,7 +25,6 @@ import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.ZonedDateTime;
-import java.time.format.DateTimeFormatter;
 import java.util.Base64;
 import java.util.Iterator;
 import java.util.List;
@@ -352,7 +351,7 @@ public class VncJsonWriter {
     private void write_VncJavaObject(final String key, final VncJavaObject val) {
         final Object delegate = val.getDelegate();
         if (delegate instanceof LocalDate) {
-            final String formatted = ((LocalDate)delegate).format(FMT_LOCAL_DATE);
+            final String formatted = JsonDateTime.formatISO((LocalDate)delegate);
             if (key == null) {
                 writer.value(formatted);
             }
@@ -361,7 +360,7 @@ public class VncJsonWriter {
             }
         }
         else if (delegate instanceof LocalDateTime) {
-            final String formatted = ((LocalDateTime)delegate).format(FMT_LOCAL_DATE_TIME);
+            final String formatted = JsonDateTime.formatISO((LocalDateTime)delegate);
             if (key == null) {
                 writer.value(formatted);
             }
@@ -370,7 +369,7 @@ public class VncJsonWriter {
             }
         }
         else if (delegate instanceof ZonedDateTime) {
-            final String formatted = ((ZonedDateTime)delegate).format(FMT_DATE_TIME);
+            final String formatted = JsonDateTime.formatISO((ZonedDateTime)delegate);
             if (key == null) {
                 writer.value(formatted);
             }
@@ -418,10 +417,6 @@ public class VncJsonWriter {
         writer.end();
     }
 
-
-    private static final DateTimeFormatter FMT_LOCAL_DATE = DateTimeFormatter.ISO_LOCAL_DATE;
-    private static final DateTimeFormatter FMT_LOCAL_DATE_TIME = DateTimeFormatter.ISO_LOCAL_DATE_TIME;
-    private static final DateTimeFormatter FMT_DATE_TIME = DateTimeFormatter.ISO_OFFSET_DATE_TIME;
 
     private final JsonAppendableWriter writer;
     private final boolean decimalAsDouble;
