@@ -15,7 +15,8 @@ All notable changes to this project will be documented in this file.
 
 - support for full decimal number range with *JSON* read/write. Reading and writing
   of decimals like `99999999999999999999999999999999999999999999999999.3333333333333333M` 
-  in its full precision is now possible. 
+  in its full precision is now possible. This feature must be activated explicitly
+  because its not part of the JSON standard.
   (Note: the JSON standard itself is limited to the double floating-point number 
   range and precision)
 
