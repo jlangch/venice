@@ -222,9 +222,9 @@ But Venice decimals can also be forced to be converted to doubles:
 )
 ```
 
-Venice can emits decimals as 'double' floating-point values
-in exact representation. On reading back this floating-point string
-is directly converted into a decimal, without intermediate double 
+Venice can emit decimals as 'double' floating-point values in 
+exact representation. On reading back this floating-point string
+is directly converted into a decimal without intermediate double 
 conversion, thus keeping the precision and allow for full decimal 
 value range.
 
