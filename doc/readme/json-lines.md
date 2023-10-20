@@ -173,6 +173,27 @@ JSON handling.
 
 #### Decimals
 
+**JSON floating-point number problem**
+
+When dealing with floating-point numbers, we often encounter a rounding 
+errors known as the double precision issue.
+
+```clojure
+(do
+  (load-module :jsonl)
+  
+  (jsonl/write-str {:a (+ 0.1 0.2)}))
+  ;;=> "{\"a\":0.30000000000000004}"
+```
+
+Using decimals avoid this problem and are the means of choice when dealing
+with financial amounts but unfortunately JSON does not support decimals as 
+data type.
+
+
+
+**Venice's approach for decimals**
+
 Venice decimals are converted to strings by default:
 
 ```clojure
@@ -180,40 +201,46 @@ Venice decimals are converted to strings by default:
   (load-module :jsonl)
   
   (jsonl/write-str {:a 100.23M}))
-  
-;;=> "{\"a\":\"100.23\"}"
+  ;;=> "{\"a\":\"100.23\"}"
 ```
 
-But Venice decimals can also be forced to be converted to doubles 
-when the loss of precision is acceptable:
+But Venice decimals can also be forced to be converted to doubles:
 
 ```clojure
 (do
   (load-module :jsonl)
   
-  (jsonl/write-str {:a 100.23M} :decimal-as-double true))
+  (json/write-str {:a (+ 0.1M 0.2M)} :decimal-as-double true)
+  ;;=> "{\"a\":0.3}"
   
-;;=> "{\"a\":100.23}"
+  (jsonl/write-str {:a 100.23M} :decimal-as-double true))
+  ;;=> "{\"a\":100.23}"
 ```
-
-If for example the loss of precision is not acceptable with financial
-money amounts Venice support implicite support for decimal values when 
-reading floating point numbers from JSON.
 
 While writing Venice emits decimals as 'double' floating-point values
 in exact representation. On reading back this floating-point string
 is directly converted into a decimal, without intermediate double 
-conversion, thus keeping the precision.
+conversion, thus keeping the precision and allow for full decimal 
+value range.
 
 ```clojure
 (do
   (load-module :jsonl)
  
-  (jsonl/write-str {:a 100.33M} :decimal-as-double true))
+  (jsonl/write-str {:a 100.33M} :decimal-as-double true)
   ;;=> "{\"a\":100.33}"
+
+  (jsonl/write-str {:a 99999999999999999999999999999999999999999999999999.33M} 
+                   :decimal-as-double true)
+  ;;=> "{\"a\":99999999999999999999999999999999999999999999999999.33}"
+  
   
   (jsonl/read-str """{"a":10.33}""" :decimal true)
   ;;=> {"a" 10.33M}  
+  
+  (jsonl/read-str """{"a":99999999999999999999999999999999999999999999999999.33}""" 
+                  :decimal true)
+  ;;=> {"a" 99999999999999999999999999999999999999999999999999.33M}  
 )
 ```
 
