@@ -19,7 +19,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.github.jlangch.venice.impl.util.json;
+package com.github.jlangch.venice.impl.util.time;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
@@ -31,8 +31,10 @@ import java.time.ZonedDateTime;
 
 import org.junit.jupiter.api.Test;
 
+import com.github.jlangch.venice.impl.util.time.ISODateTime;
 
-public class JsonDateTimeTest {
+
+public class ISODateTimeTest {
 
     @Test
     public void test_format_ISO() {
@@ -41,23 +43,23 @@ public class JsonDateTimeTest {
         final LocalTime lt0 = LocalTime.of(10, 45, 30, 0);
         final ZoneId zoneId = ZoneId.of("Europe/Paris");
 
-        assertEquals("2023-10-25", JsonDateTime.formatISO(ld));
+        assertEquals("2023-10-25", ISODateTime.formatISO(ld));
 
-        assertEquals("2023-10-25T10:45:30.851", JsonDateTime.formatISO(LocalDateTime.of(ld, lt)));
-        assertEquals("2023-10-25T10:45:30", JsonDateTime.formatISO(LocalDateTime.of(ld, lt0)));
+        assertEquals("2023-10-25T10:45:30.851", ISODateTime.formatISO(LocalDateTime.of(ld, lt)));
+        assertEquals("2023-10-25T10:45:30", ISODateTime.formatISO(LocalDateTime.of(ld, lt0)));
 
-        assertEquals("2023-10-25T10:45:30.851+02:00", JsonDateTime.formatISO(ZonedDateTime.of(ld, lt, zoneId)));
+        assertEquals("2023-10-25T10:45:30.851+02:00", ISODateTime.formatISO(ZonedDateTime.of(ld, lt, zoneId)));
     }
 
     @Test
     public void test_parse_ISO() {
-        assertEquals("2023-10-25", JsonDateTime.parseISO_LocalDate("2023-10-25").toString());
+        assertEquals("2023-10-25", ISODateTime.parseISO_LocalDate("2023-10-25").toString());
 
-        assertEquals("2023-10-25T10:45:30.851", JsonDateTime.parseISO_LocalDateTime("2023-10-25T10:45:30.851").toString());
-        assertEquals("2023-10-25T10:45:30.850", JsonDateTime.parseISO_LocalDateTime("2023-10-25T10:45:30.85").toString());
-        assertEquals("2023-10-25T10:45:30.800", JsonDateTime.parseISO_LocalDateTime("2023-10-25T10:45:30.8").toString());
-        assertEquals("2023-10-25T10:45:30", JsonDateTime.parseISO_LocalDateTime("2023-10-25T10:45:30").toString());
+        assertEquals("2023-10-25T10:45:30.851", ISODateTime.parseISO_LocalDateTime("2023-10-25T10:45:30.851").toString());
+        assertEquals("2023-10-25T10:45:30.850", ISODateTime.parseISO_LocalDateTime("2023-10-25T10:45:30.85").toString());
+        assertEquals("2023-10-25T10:45:30.800", ISODateTime.parseISO_LocalDateTime("2023-10-25T10:45:30.8").toString());
+        assertEquals("2023-10-25T10:45:30", ISODateTime.parseISO_LocalDateTime("2023-10-25T10:45:30").toString());
 
-        assertEquals("2023-10-25T10:45:30.851+02:00", JsonDateTime.parseISO_ZonedDateTime("2023-10-25T10:45:30.851+02:00").toString());
+        assertEquals("2023-10-25T10:45:30.851+02:00", ISODateTime.parseISO_ZonedDateTime("2023-10-25T10:45:30.851+02:00").toString());
     }
 }

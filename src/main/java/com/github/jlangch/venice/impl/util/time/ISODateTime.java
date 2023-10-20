@@ -19,7 +19,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.github.jlangch.venice.impl.util.json;
+package com.github.jlangch.venice.impl.util.time;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -27,7 +27,7 @@ import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
 
 
-public class JsonDateTime {
+public class ISODateTime {
 
     public static String formatISO(final LocalDate date) {
         return date == null ? null : date.format(FMT_LOCAL_DATE);

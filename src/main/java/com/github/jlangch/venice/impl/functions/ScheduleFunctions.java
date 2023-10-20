@@ -37,8 +37,8 @@ import com.github.jlangch.venice.impl.types.collections.VncList;
 import com.github.jlangch.venice.impl.types.util.Coerce;
 import com.github.jlangch.venice.impl.util.ArityExceptions;
 import com.github.jlangch.venice.impl.util.SymbolMapBuilder;
-import com.github.jlangch.venice.impl.util.TimeUnitUtil;
 import com.github.jlangch.venice.impl.util.callstack.CallFrame;
+import com.github.jlangch.venice.impl.util.time.TimeUnitUtil;
 
 
 public class ScheduleFunctions {

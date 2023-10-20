@@ -56,6 +56,7 @@ import com.github.jlangch.venice.impl.types.collections.VncMap;
 import com.github.jlangch.venice.impl.types.collections.VncSequence;
 import com.github.jlangch.venice.impl.types.collections.VncSet;
 import com.github.jlangch.venice.impl.types.util.Types;
+import com.github.jlangch.venice.impl.util.time.ISODateTime;
 import com.github.jlangch.venice.nanojson.JsonAppendableWriter;
 
 public class VncJsonWriter {
@@ -351,7 +352,7 @@ public class VncJsonWriter {
     private void write_VncJavaObject(final String key, final VncJavaObject val) {
         final Object delegate = val.getDelegate();
         if (delegate instanceof LocalDate) {
-            final String formatted = JsonDateTime.formatISO((LocalDate)delegate);
+            final String formatted = ISODateTime.formatISO((LocalDate)delegate);
             if (key == null) {
                 writer.value(formatted);
             }
@@ -360,7 +361,7 @@ public class VncJsonWriter {
             }
         }
         else if (delegate instanceof LocalDateTime) {
-            final String formatted = JsonDateTime.formatISO((LocalDateTime)delegate);
+            final String formatted = ISODateTime.formatISO((LocalDateTime)delegate);
             if (key == null) {
                 writer.value(formatted);
             }
@@ -369,7 +370,7 @@ public class VncJsonWriter {
             }
         }
         else if (delegate instanceof ZonedDateTime) {
-            final String formatted = JsonDateTime.formatISO((ZonedDateTime)delegate);
+            final String formatted = ISODateTime.formatISO((ZonedDateTime)delegate);
             if (key == null) {
                 writer.value(formatted);
             }
