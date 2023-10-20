@@ -282,7 +282,7 @@ Venice date/time data types are formatted as ISO date/time strings:
 
 #### Integers
 
-JSON does distinguish between integer and long values hence Venice integers 
+JSON does not distinguish between integer and long values hence Venice integers 
 are converted always to longs on JSON write/read:
 
 ```clojure
