@@ -230,8 +230,9 @@
           Slurps a list of JSON line strings from the input 'in' and returns it
           as a list of Venice data types.
 
-          in may be a:
-           * bytebuffer
+          'in' may be a:
+           * string
+           * bytebuf
            * `java.io.File`, e.g: `(io/file \"/temp/foo.json\")`
            * `java.nio.file.Path`
            * `java.io.InputStream`
@@ -295,7 +296,8 @@
 
   slurp [in & options]
 
-  { :pre [(or (bytebuf? in)
+  { :pre [(or (string? in)
+              (bytebuf? in)
               (io/file? in)
               (instance-of? :java.nio.file.Path in)
               (instance-of? :java.io.InputStream in)
