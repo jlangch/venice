@@ -21,6 +21,7 @@
  */
 package com.github.jlangch.venice.impl.util.json;
 
+import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.ZonedDateTime;
@@ -242,7 +243,7 @@ public class VncJsonWriter {
 
     private void write_VncBigDecimal(final String key, final VncBigDecimal val) {
         if (decimalAsDouble) {
-            final double v = val.getValue().doubleValue();
+            final BigDecimal v = val.getValue();
             if (key == null) {
                 writer.value(v);
             }

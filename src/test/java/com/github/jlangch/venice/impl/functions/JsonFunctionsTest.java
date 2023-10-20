@@ -52,6 +52,23 @@ public class JsonFunctionsTest {
     }
 
     @Test
+    public void test_write_str_decimal() {
+        final Venice venice = new Venice();
+
+        assertEquals("1.33",
+                     venice.eval("(json/write-str 1.33)"));
+
+        assertEquals("\"1.33\"",
+                     venice.eval("(json/write-str 1.33M)"));
+
+        assertEquals("1.33",
+                     venice.eval("(json/write-str 1.33M :decimal-as-double true)"));
+
+        assertEquals("99999999999999999999999999999999999999999999999999.33",
+                     venice.eval("(json/write-str 99999999999999999999999999999999999999999999999999.33M :decimal-as-double true)"));
+    }
+
+    @Test
     public void test_write_str_collections() {
         final Venice venice = new Venice();
 
@@ -201,10 +218,14 @@ public class JsonFunctionsTest {
     public void test_json_read_str_decimal() {
         final Venice venice = new Venice();
 
-        // map object keys to keywords
         assertEquals(
                 "{:a 100 :b 100.33M}",
                 venice.eval("(str (json/read-str \"\"\"{\"a\": 100, \"b\": 100.33}\"\"\" :key-fn keyword :decimal true))"));
+
+        // large decimal
+        assertEquals(
+                "{:a 100 :b 99999999999999999999999999999999999999999999999999.33M}",
+                venice.eval("(str (json/read-str \"\"\"{\"a\": 100, \"b\": 99999999999999999999999999999999999999999999999999.33}\"\"\" :key-fn keyword :decimal true))"));
     }
 
     @Test
