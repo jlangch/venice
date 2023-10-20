@@ -141,8 +141,9 @@ JSON handling.
 (do
   (load-module :jsonl)
   
-  (jsonl/read-str """{"a":100,"b":100}""" :key-fn keyword))
-;;=> {:a 100 :b 100}
+  (jsonl/read-str """{"a":100,"b":100}""" :key-fn keyword)
+  ;;=> {:a 100 :b 100}
+)
 ```
 
 **Map JSON object values to local-date-time**
@@ -152,9 +153,10 @@ JSON handling.
   (load-module :jsonl)
   
   (jsonl/read-str """{"a": "2018-08-01T10:15:30", "b": 100}""" 
-                  :value-fn (fn [k v] (if (== "a" k) (time/local-date-time v) v))))
+                  :value-fn (fn [k v] (if (== "a" k) (time/local-date-time v) v)))
 
-;;=> {"a" 2018-08-01T10:15:30 "b" 100}
+  ;;=> {"a" 2018-08-01T10:15:30 "b" 100}
+)
 ```
 
 ```clojure
@@ -163,9 +165,10 @@ JSON handling.
   
   (jsonl/read-str """{"a": "2018-08-01T10:15:30", "b": 100}""" 
                   :key-fn keyword 
-                  :value-fn (fn [k v] (if (== :a k) (time/local-date-time v) v))))
+                  :value-fn (fn [k v] (if (== :a k) (time/local-date-time v) v)))
                  
-;;=> {:a 2018-08-01T10:15:30 :b 100}
+  ;;=> {:a 2018-08-01T10:15:30 :b 100}
+)
 ```
 
 
@@ -175,20 +178,20 @@ JSON handling.
 
 **JSON floating-point number problem**
 
-When dealing with floating-point numbers, we often encounter a rounding 
+When dealing with floating-point numbers, we often encounter rounding 
 errors known as the double precision issue.
 
 ```clojure
 (do
   (load-module :jsonl)
   
-  (jsonl/write-str {:a (+ 0.1 0.2)}))
+  (jsonl/write-str {:a (+ 0.1 0.2)})
   ;;=> "{\"a\":0.30000000000000004}"
+)
 ```
 
-Using decimals avoid this problem and are the means of choice when dealing
-with financial amounts but unfortunately JSON does not support decimals as 
-data type.
+Decimals avoid this problem and are the means of choice when dealing
+with financial amounts but JSON does not support decimals as data type.
 
 
 
@@ -200,8 +203,9 @@ Venice decimals are converted to strings by default:
 (do
   (load-module :jsonl)
   
-  (jsonl/write-str {:a 100.23M}))
+  (jsonl/write-str {:a 100.23M})
   ;;=> "{\"a\":\"100.23\"}"
+)
 ```
 
 But Venice decimals can also be forced to be converted to doubles:
@@ -213,11 +217,12 @@ But Venice decimals can also be forced to be converted to doubles:
   (json/write-str {:a (+ 0.1M 0.2M)} :decimal-as-double true)
   ;;=> "{\"a\":0.3}"
   
-  (jsonl/write-str {:a 100.23M} :decimal-as-double true))
+  (jsonl/write-str {:a 100.23M} :decimal-as-double true)
   ;;=> "{\"a\":100.23}"
+)
 ```
 
-While writing Venice emits decimals as 'double' floating-point values
+Venice can emits decimals as 'double' floating-point values
 in exact representation. On reading back this floating-point string
 is directly converted into a decimal, without intermediate double 
 conversion, thus keeping the precision and allow for full decimal 
@@ -253,9 +258,10 @@ Venice binary data is converted to a _Base64_ encoded string:
 (do
   (load-module :jsonl)
   
-  (jsonl/write-str {:a (bytebuf-from-string "abcdefgh" :utf-8)}))
+  (jsonl/write-str {:a (bytebuf-from-string "abcdefgh" :utf-8)})
   
-;;=> "{\"a\":\"YWJjZGVmZ2g=\"}"
+  ;;=> "{\"a\":\"YWJjZGVmZ2g=\"}"
+)
 ```
 
 
@@ -273,8 +279,9 @@ Venice date/time data types are formatted as ISO date/time strings:
   (jsonl/write-str {:a (time/local-date-time "2018-08-01T14:20:10.200")})
   ;;=> "{\"a\":\"2018-08-01T14:20:10.2\"}"
 
-  (jsonl/write-str {:a (time/zoned-date-time "2018-08-01T14:20:10.200+01:00")}))
+  (jsonl/write-str {:a (time/zoned-date-time "2018-08-01T14:20:10.200+01:00")})
   ;;=> "{\"a\":\"2018-08-01T14:20:10.2+01:00\"}"
+)
 ```
 
 
@@ -289,6 +296,7 @@ Venice integers are converted to longs on JSON write/read:
   (->> (jsonl/write-str {:a 100I})
        (jsonl/read-str))
   
-;;=> {"a" 100}
+  ;;=> {"a" 100}
+)
 ```
 

@@ -88,7 +88,7 @@ Map JSON object values to local-date-time
 
 **JSON floating-point number problem**
 
-When dealing with floating-point numbers, we often encounter a rounding 
+When dealing with floating-point numbers, we often encounter rounding 
 errors known as the double precision issue.
 
 ```clojure
@@ -96,9 +96,8 @@ errors known as the double precision issue.
 ;;=> "{\"a\":0.30000000000000004}"
 ```
 
-Using decimals avoid this problem and are the means of choice when dealing
-with financial amounts but unfortunately JSON does not support decimals as 
-data type.
+Decimals avoid this problem and are the means of choice when dealing
+with financial amounts but JSON does not support decimals as data type.
 
 
 
@@ -121,7 +120,7 @@ But Venice decimals can also be forced to be converted to doubles:
 ;;=> "{\"a\":100.23}"
 ```
 
-While writing Venice emits decimals as 'double' floating-point values
+Venice can emits decimals as 'double' floating-point values
 in exact representation. On reading back this floating-point string
 is directly converted into a decimal, without intermediate double 
 conversion, thus keeping the precision and allow for full decimal 
