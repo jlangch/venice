@@ -176,8 +176,6 @@ JSON handling.
 
 #### Decimals
 
-**JSON floating-point number problem**
-
 When dealing with floating-point numbers, we often encounter rounding 
 errors known as the double precision issue.
 
@@ -193,9 +191,6 @@ errors known as the double precision issue.
 Decimals avoid this problem and are the means of choice when dealing
 with financial amounts but JSON does not support decimals as data type.
 
-
-
-**Venice's approach for decimals**
 
 Venice decimals are converted to strings by default:
 
