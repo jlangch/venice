@@ -257,12 +257,20 @@ public class TimeFunctions {
                 VncFunction
                     .meta()
                     .arglists(
-                        "(time/local-date-parse str format locale?")
+                        "(time/local-date-parse str format",
+                        "(time/local-date-parse str format locale")
                     .doc(
-                        "Parses a local-date.")
+                        "Parses a local-date.                                            \n\n" +
+                        "To parse a large number of dates a pre instantiated formatter   " +
+                        "delivers best performance:                                      \n\n" +
+                        "```                                                             \n" +
+                        "(let [fmt (time/formatter \"yyyy-MM-dd\")]                      \n" +
+                        "  (dotimes [n 100] (time/local-date-parse \"2018-12-01\" fmt))) \n" +
+                        "```")
                     .examples(
                         "(time/local-date-parse \"2018-12-01\" \"yyyy-MM-dd\")",
-                        "(time/local-date-parse \"2018-Dec-01\" \"yyyy-MMM-dd\" :ENGLISH)")
+                        "(time/local-date-parse \"2018-Dec-01\" \"yyyy-MMM-dd\" :ENGLISH)",
+                        "(time/local-date-parse \"2018-12-01\" :iso)")
                     .build()
         ) {
             @Override
@@ -270,8 +278,12 @@ public class TimeFunctions {
                 ArityExceptions.assertArity(this, args, 2, 3);
 
                 final VncString date = Coerce.toVncString(args.first());
-                final DateTimeFormatter formatter = getDateTimeFormatter(args.second());
+                final VncVal format = args.second();
                 final Locale locale = args.size() == 3 ? getLocale(args.nth(2)) : null;
+
+                final DateTimeFormatter formatter = isIsoFormat(format)
+                                                      ? DateTimeFormatter.ISO_LOCAL_DATE
+                                                      : getDateTimeFormatter(format);
 
                 return new VncJavaObject(LocalDate.parse(date.getValue(), localize(formatter, locale)));
             }
@@ -425,11 +437,21 @@ public class TimeFunctions {
                 "time/local-date-time-parse",
                 VncFunction
                     .meta()
-                    .arglists("(time/local-date-time-parse str format locale?")
-                    .doc("Parses a local-date-time.")
+                    .arglists(
+                            "(time/local-date-time-parse str format",
+                            "(time/local-date-time-parse str format locale")
+                    .doc(
+                        "Parses a local-date-time.                                                     \n\n" +
+                        "To parse a large number of dates a pre instantiated formatter                 " +
+                        "delivers best performance:                                                    \n\n" +
+                        "```                                                                           \n" +
+                        "(let [fmt (time/formatter \"yyyy-MM-dd HH:mm:ss\")]                           \n" +
+                        "  (dotimes [n 100] (time/local-date-time-parse \"2018-12-01 14:20:01\" fmt))) \n" +
+                        "```")
                     .examples(
                         "(time/local-date-time-parse \"2018-08-01 14:20\" \"yyyy-MM-dd HH:mm\")",
-                        "(time/local-date-time-parse \"2018-08-01 14:20:01.000\" \"yyyy-MM-dd HH:mm:ss.SSS\")")
+                        "(time/local-date-time-parse \"2018-08-01 14:20:01.231\" \"yyyy-MM-dd HH:mm:ss.SSS\")",
+                        "(time/local-date-time-parse \"2018-08-01T14:20:01.231\" :iso)")
                     .build()
         ) {
             @Override
@@ -437,8 +459,12 @@ public class TimeFunctions {
                 ArityExceptions.assertArity(this, args, 2, 3);
 
                 final VncString date = Coerce.toVncString(args.first());
-                final DateTimeFormatter formatter = getDateTimeFormatter(args.second());
+                final VncVal format = args.second();
                 final Locale locale = args.size() == 3 ? getLocale(args.nth(2)) : null;
+
+                final DateTimeFormatter formatter = isIsoFormat(format)
+                                                        ? DateTimeFormatter.ISO_LOCAL_DATE_TIME
+                                                        : getDateTimeFormatter(format);
 
                 return new VncJavaObject(LocalDateTime.parse(date.getValue(), localize(formatter, locale)));
             }
@@ -624,12 +650,21 @@ public class TimeFunctions {
                 "time/zoned-date-time-parse",
                 VncFunction
                     .meta()
-                    .arglists("(time/zoned-date-time-parse str format locale?")
-                    .doc("Parses a zoned-date-time.")
+                    .arglists(
+                        "(time/zoned-date-time-parse str format",
+                        "(time/zoned-date-time-parse str format locale")
+                    .doc(
+                        "Parses a zoned-date-time.                                                           \n\n" +
+                        "To parse a large number of dates a pre instantiated formatter                       " +
+                        "delivers best performance:                                                          \n\n" +
+                        "```                                                                                 \n" +
+                        "(let [fmt (time/formatter \"yyyy-MM-dd'T'HH:mm:ssz\")]                              \n" +
+                        "  (dotimes [n 100] (time/zoned-date-time-parse \"2018-12-01T14:20:01+01:00\" fmt))) \n" +
+                        "```")
                     .examples(
                         "(time/zoned-date-time-parse \"2018-08-01T14:20:01+01:00\" \"yyyy-MM-dd'T'HH:mm:ssz\")",
                         "(time/zoned-date-time-parse \"2018-08-01T14:20:01.000+01:00\" \"yyyy-MM-dd'T'HH:mm:ss.SSSz\")",
-                        "(time/zoned-date-time-parse \"2018-08-01T14:20:01.000+01:00\" :ISO_OFFSET_DATE_TIME)",
+                        "(time/zoned-date-time-parse \"2018-08-01T14:20:01.000+01:00\" :iso)",
                         "(time/zoned-date-time-parse \"2018-08-01 14:20:01.000 +01:00\" \"yyyy-MM-dd' 'HH:mm:ss.SSS' 'z\")")
                     .build()
         ) {
@@ -638,8 +673,12 @@ public class TimeFunctions {
                 ArityExceptions.assertArity(this, args, 2, 3);
 
                 final VncString date = Coerce.toVncString(args.first());
-                final DateTimeFormatter formatter = getDateTimeFormatter(args.second());
+                final VncVal format = args.second();
                 final Locale locale = args.size() == 3 ? getLocale(args.nth(2)) : null;
+
+                final DateTimeFormatter formatter = isIsoFormat(format)
+                                                        ? DateTimeFormatter.ISO_OFFSET_DATE_TIME
+                                                        : getDateTimeFormatter(format);
 
                 return new VncJavaObject(ZonedDateTime.parse(date.getValue(), localize(formatter, locale)));
             }
@@ -1908,7 +1947,9 @@ public class TimeFunctions {
                 "time/formatter",
                 VncFunction
                     .meta()
-                    .arglists("(time/formatter format locale?)")
+                    .arglists(
+                        "(time/formatter format)",
+                         "(time/formatter format locale)")
                     .doc("Creates a formatter")
                     .examples(
                         "(time/formatter \"dd-MM-yyyy\")",
@@ -1939,15 +1980,28 @@ public class TimeFunctions {
                 VncFunction
                     .meta()
                     .arglists(
-                        "(time/format date format locale?)",
-                        "(time/format date formatter locale?)")
-                    .doc("Formats a date with a format")
+                        "(time/format date format)",
+                        "(time/format date format locale)",
+                        "(time/format date formatter)",
+                        "(time/format date formatter locale)")
+                    .doc(
+                        "Formats a date with a format.                                  \n\n" +
+                        "To format a large number of dates a pre instantiated formatter " +
+                        "delivers best performance:                                     \n\n" +
+                        "```                                                            \n" +
+                        "(let [fmt (time/formatter \"yyyy-MM-dd'T'HH:mm:ss\")]          \n" +
+                        "  (dotimes [n 100] (time/format (time/local-date-time) fmt)))  \n" +
+                        "```")
                     .examples(
                         "(time/format (time/local-date) \"dd-MM-yyyy\")",
+                        "(time/format (time/local-date) (time/formatter \"dd-MM-yyyy\"))",
+                        "(time/format (time/local-date) :iso)",
+                        "(time/format (time/local-date-time) \"yyyy-MM-dd'T'HH:mm:ss\")",
+                        "(time/format (time/local-date-time) (time/formatter \"yyyy-MM-dd'T'HH:mm:ss\"))",
+                        "(time/format (time/local-date-time) :iso)",
                         "(time/format (time/zoned-date-time) \"yyyy-MM-dd'T'HH:mm:ss.SSSz\")",
-                        "(time/format (time/zoned-date-time) :ISO_OFFSET_DATE_TIME)",
-                        "(time/format (time/zoned-date-time) (time/formatter \"yyyy-MM-dd'T'HH:mm:ss.SSSz\"))",
-                        "(time/format (time/zoned-date-time) (time/formatter :ISO_OFFSET_DATE_TIME))")
+                        "(time/format (time/zoned-date-time) :iso)",
+                        "(time/format (time/zoned-date-time) (time/formatter \"yyyy-MM-dd'T'HH:mm:ss.SSSz\"))")
                     .seeAlso("time/formatter")
                     .build()
         ) {
@@ -1965,22 +2019,43 @@ public class TimeFunctions {
                 final Locale locale = args.size() == 3 ? getLocale(args.nth(2)) : null;
 
                 // formatter
-                final DateTimeFormatter formatter = localize(getDateTimeFormatter(args.second()), locale);
+                final VncVal format = args.second();
 
                 // format
                 final Object date = ((VncJavaObject)args.first()).getDelegate();
                 if (date instanceof Date) {
                     final ZonedDateTime dt = Instant.ofEpochMilli(((Date)date).getTime())
                                                     .atZone(ZoneId.systemDefault());
+
+                    final DateTimeFormatter formatter =
+                            isIsoFormat(format)
+                                ? DateTimeFormatter.ISO_OFFSET_DATE_TIME
+                                : localize(getDateTimeFormatter(format), locale);
+
                     return new VncString(dt.format(formatter));
                 }
                 else if (date instanceof ZonedDateTime) {
+                    final DateTimeFormatter formatter =
+                            isIsoFormat(format)
+                                ? DateTimeFormatter.ISO_OFFSET_DATE_TIME
+                                : localize(getDateTimeFormatter(format), locale);
+
                     return new VncString(((ZonedDateTime)date).format(formatter));
                 }
                 else if (date instanceof LocalDateTime) {
+                    final DateTimeFormatter formatter =
+                            isIsoFormat(format)
+                                ? DateTimeFormatter.ISO_LOCAL_DATE_TIME
+                                : localize(getDateTimeFormatter(format), locale);
+
                     return new VncString(((LocalDateTime)date).format(formatter));
                 }
                 else if (date instanceof LocalDate) {
+                    final DateTimeFormatter formatter =
+                            isIsoFormat(format)
+                                ? DateTimeFormatter.ISO_LOCAL_DATE
+                                : localize(getDateTimeFormatter(format), locale);
+
                     return new VncString(((LocalDate)date).format(formatter));
                 }
                 else {
@@ -2182,6 +2257,12 @@ public class TimeFunctions {
             final ZoneId zoneId
     ) {
         return zoneId == null ? formatter : formatter.withZone(zoneId);
+    }
+
+    private static boolean isIsoFormat(final VncVal format) {
+        return Types.isVncKeyword(format)
+                ? "iso".equalsIgnoreCase(((VncKeyword)format).getValue())
+                : false;
     }
 
     private static ZoneId orDefaultZone(final ZoneId zoneId) {
