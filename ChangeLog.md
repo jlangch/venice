@@ -13,7 +13,7 @@ All notable changes to this project will be documented in this file.
 
 ### Added 
 
-- improvements to simplify time functions support for ISO formats
+- improvements to simplify the time function's support for ISO formats
 - support for full decimal number range with *JSON* read/write. Reading and writing
   of decimals like `99999999999999999999999999999999999999999999999999.3333333333333333M` 
   in its full precision is now possible. This feature must be activated explicitly
