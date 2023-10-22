@@ -45,12 +45,12 @@ public class ModuleJsonlSection implements ISectionBuilder {
         all.addSection(read);
         read.addItem(diBuilder.getDocItem("jsonl/read-str", true));
         read.addItem(diBuilder.getDocItem("jsonl/slurp", true));
+        read.addItem(diBuilder.getDocItem("jsonl/lazy-seq-slurper", true));
 
         final DocSection write = new DocSection("write", id());
         all.addSection(write);
         write.addItem(diBuilder.getDocItem("jsonl/write-str", true));
         write.addItem(diBuilder.getDocItem("jsonl/spit", true));
-        write.addItem(diBuilder.getDocItem("jsonl/lazy-seq-slurper", true));
 
         return section;
     }
