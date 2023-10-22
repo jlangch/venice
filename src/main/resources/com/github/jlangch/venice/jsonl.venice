@@ -256,7 +256,9 @@
                             Double. Default is false. |
           | :filter-fn fn | Single argument function called on every read value \
                             from a JSON line. If it returns true the value will \
-                            be kept otherwise it will be skipped |
+                            be kept otherwise it will be skipped. The filter is \
+                            applied after the 'key-fn' and the 'value-fn' have \
+                            been applied to the line data value. |
           | :encoding e   | e.g :encoding :utf-8, defaults to :utf-8 |
 
           `jsonl/slurp` supports load paths. See the `loadpath/paths` doc for a
@@ -275,16 +277,24 @@
                 (jsonl/slurp rd :key-fn keyword))))
           """,
           """
-          ;; slurp JSON Lines applying a filter on the read lines
+          ;; slurp JSON Lines applying mapping functions and a filter on the lines
           (do
             (load-module :jsonl)
-            (let [file (io/temp-file "data-" ".jsonl")]
+            (let [file (io/temp-file "data-" ".jsonl")
+                  now  (time/local-date-time)]
               (io/delete-file-on-exit file)
               (try-with [wr (io/buffered-writer file)]
-                (jsonl/spit wr [{:a 100 :b 200} {:a 101 :b 201} {:a 100 :b 202}])
+                (jsonl/spit wr [{:a 100 :b (time/plus now :days 1)}
+                                {:a 101 :b (time/plus now :days 2)}
+                                {:a 100 :b (time/plus now :days 3)}])
                 (flush wr))
               (try-with [rd (io/buffered-reader file)]
-                (jsonl/slurp rd :key-fn keyword :filter-fn #(= 100 (:a %))))))
+                (jsonl/slurp rd :key-fn keyword
+                                :value-fn (fn [k v]
+                                            (if (= :b k)
+                                                (time/local-date-time-parse v :iso)
+                                                v))
+                                :filter-fn #(= 100 (:a %))))))
           """)
      :see-also '(
           "jsonl/read-str", "jsonl/lazy-seq-slurper")
