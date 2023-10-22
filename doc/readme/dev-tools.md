@@ -67,4 +67,20 @@ _config.json_ (via the Atom -> Config... menu). Specify a pattern to match for t
     3. VSCodium doesn’t have proprietary extensions
     4. VSCodium doesn’t track your activity
     5. VSCodium supports VS Code extensions
+ 
+   
+#### VSCodium settings.json
+
+You can open the *settings.json* file with the `Preferences: Open User Settings (JSON)` command in the Command Palette (Ctrl+Shift+P). Once the file is open in an editor add these line:
+
+```json
+{
+    "files.associations": {
+        "*.venice": "clojure"
+    },
     
+    "workbench.colorTheme": "Tomorrow Night Blue"    
+}
+```
+
+and save the file.
