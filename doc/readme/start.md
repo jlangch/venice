@@ -25,7 +25,7 @@ The Venice JAR published to Maven is compiled with Java 8. Nevertheless Venice i
 
 ### 2. Get the Venice JAR file
 
-Download Venice from Maven: [Venice](https://search.maven.org/artifact/com.github.jlangch/venice/1.10.47/jar)
+Download Venice from Maven: [Venice](https://search.maven.org/artifact/com.github.jlangch/venice/1.10.48/jar)
 
 
 ### 3. Start a Venice REPL (Read-Eval-Print Loop)
@@ -36,13 +36,13 @@ Open a terminal, move to the directory the Venice JAR is located, and start
 a REPL:
 
 ```text
-foo> java -jar venice-1.10.47.jar -colors
+foo> java -jar venice-1.10.48.jar -colors
 ```
 
 The REPL prompts for input:
 
 ```text
-Venice REPL: V1.10.47
+Venice REPL: V1.10.48
 Loading REPL config from repl.json...
 Type '!' for help.
 venice>
@@ -66,13 +66,13 @@ Open a terminal, move to the directory the Venice and the 'jansi' JAR is located
 and start a REPL:
 
 ```text
-foo> java -cp venice-1.10.47.jar;jansi-2.4.0.jar com.github.jlangch.venice.Launcher -colors-darkmode
+foo> java -cp venice-1.10.48.jar;jansi-2.4.0.jar com.github.jlangch.venice.Launcher -colors-darkmode
 ```
 
 The REPL prompts for input:
 
 ```text
-Venice REPL: V1.10.47
+Venice REPL: V1.10.48
 Loading REPL config from repl.json...
 Type '!' for help.
 venice>
@@ -101,7 +101,7 @@ Open a terminal, move to the directory the Venice JAR is located, and start
 the REPL in setup mode:
 
 ```text
-foo> java -jar venice-1.10.47.jar -setup -colors
+foo> java -jar venice-1.10.48.jar -setup -colors
 ```
 
 For a REPL run in a darkmode terminal use the option `-colors-darkmode` instead 
