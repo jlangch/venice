@@ -1,6 +1,15 @@
 # Development Tools
 
 
+
+## REPL
+
+The [REPL](doc/readme/repl.md) is all you need to do your first steps with Venice.
+
+For more ambitious work choose [Gitpod](#gitpod) or [VSCodium](#vscodium).
+
+
+
 ## Gitpod
 
 ### Start a Venice Gitpod workspace in your browser
@@ -29,12 +38,6 @@ Fire up a Venice [Gitpod](https://gitpod.io/) workspace in your browser by click
     "redhat.telemetry.enabled": false    
 }
 ```
-
-
-## REPL with an Editor
-
-The [REPL](doc/readme/repl.md) and an editor with syntax highlighting is all
-you need to start with Venice.
 
 
 
@@ -79,23 +82,5 @@ and save the file.
 You can format a JSON document using **⇧⌥F** or *"Format Document"* from the context menu.
 
 
-## Atom Editor
 
-[Atom](https://atom.io/) is a friendly cross-platform Open Source text editor. With 
-Clojure being a pretty good fit for Venice, the Clojure syntax highlighting can be 
-used for editing Venice files.
-
-To map the Venice filetype (.venice) to the Clojure language, use the file-types option in your 
-_config.json_ (via the Atom -> Config... menu). Specify a pattern to match for the key 
-(in bash-like glob format) and the new scope name for the value.
-
-```yaml
-"*":
-  "file-types":
-    "*.venice": "source.clojure"
-```
-
-**Editing a Venice file and verifying parenthesis**
-
-<img src="https://github.com/jlangch/venice/blob/master/doc/assets/atom-editor.png" width="700">
 
