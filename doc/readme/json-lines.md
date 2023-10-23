@@ -163,6 +163,8 @@ JSON handling.
 )
 ```
 
+Note: the value function `value-fn` is applied after the key function `key-fn` and thus receives the mapped keys
+
 
 ### Special data types
 
@@ -292,16 +294,16 @@ Venice date/time data types are formatted as ISO date/time strings:
 #### Integers
 
 JSON does not distinguish between integer and long values hence Venice integers 
-are converted always to longs on JSON write/read:
+are converted to longs always on JSON write/read:
 
 ```clojure
 (do
   (load-module :jsonl)
   
-  (->> (jsonl/write-str {:a 100I})
-       (jsonl/read-str))
+  (-> (jsonl/write-str {:a 100I})
+      (jsonl/read-str :key-fn keyword))
   
-  ;;=> {"a" 100}
+  ;;=> {:a 100}
 )
 ```
 

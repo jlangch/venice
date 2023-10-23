@@ -80,6 +80,8 @@ JSON can be slurped from byte buffers, Java InputStreams, Readers, or files:
 ;;=> {:a 2018-08-01T10:15:30 :b 100.23M :c 100}
 ```
 
+Note: the value function `value-fn` is applied after the key function `key-fn` and thus receives the mapped keys
+
 
 ### Special data types
 
@@ -186,28 +188,24 @@ Venice date/time data types are formatted as ISO date/time strings:
 #### Integers
 
 JSON does not distinguish between integer and long values hence Venice integers 
-are converted always to longs on JSON write/read:
+are converted to longs always on JSON write/read:
 
 ```clojure
-(->> (json/write-str {:a 100I})
-     (json/read-str))
+(-> (json/write-str {:a 100I})
+    (json/read-str :key-fn keyword))
      
-;;=> {"a" 100}
+;;=> {:a 100}
 ```
 
 However, if integers are required they can be parsed explicitly:
 
 ```clojure
-(do
-  (load-module :jsonl)
-  
-  (-> (json/write-str {:a 100I})
-      (json/read-str :key-fn keyword 
-                     :value-fn (fn [k v] (case k 
-                                           :a (int v) 
-                                           v))))
+(-> (json/write-str {:a 100I})
+    (json/read-str :key-fn keyword 
+                   :value-fn (fn [k v] (case k 
+                                         :a (int v) 
+                                         v))))
                  
-  ;;=> {:a 100I}
-)
+;;=> {:a 100I}
 ```
 
