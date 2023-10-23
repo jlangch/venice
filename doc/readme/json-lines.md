@@ -146,28 +146,20 @@ JSON handling.
 )
 ```
 
-**Map JSON object values to local-date-time**
+**Mapping JSON object values explicitly**
 
 ```clojure
 (do
   (load-module :jsonl)
   
-  (jsonl/read-str """{"a": "2018-08-01T10:15:30", "b": 100}""" 
-                  :value-fn (fn [k v] (if (== "a" k) (time/local-date-time v) v)))
-
-  ;;=> {"a" 2018-08-01T10:15:30 "b" 100}
-)
-```
-
-```clojure
-(do
-  (load-module :jsonl)
-  
-  (jsonl/read-str """{"a": "2018-08-01T10:15:30", "b": 100}""" 
+  (jsonl/read-str """{"a": "2018-08-01T10:15:30", "b": "100.23", "c": 100}""" 
                   :key-fn keyword 
-                  :value-fn (fn [k v] (if (== :a k) (time/local-date-time v) v)))
+                  :value-fn (fn [k v] (case k 
+                                        :a (time/local-date-time v)
+                                        :b (decimal v) 
+                                        v)))
                  
-  ;;=> {:a 2018-08-01T10:15:30 :b 100}
+  ;;=> {:a 2018-08-01T10:15:30 :b 100.23M :c 100}
 )
 ```
 
@@ -241,6 +233,23 @@ value range.
   (jsonl/read-str """{"a":99999999999999999999999999999999999999999999999999.33}""" 
                   :decimal true)
   ;;=> {"a" 99999999999999999999999999999999999999999999999999.33M}  
+)
+```
+
+Parsing decimals explicitly:
+
+```clojure
+(do
+  (load-module :jsonl)
+  
+  (jsonl/read-str """{"a": "2018-08-01T10:15:30", "b": "100.23"}""" 
+                  :key-fn keyword 
+                  :value-fn (fn [k v] (case k 
+                                        :a (time/local-date-time v)
+                                        :b (decimal v) 
+                                        v)))
+                 
+  ;;=> {:a 2018-08-01T10:15:30 :b 100.23M}
 )
 ```
 

@@ -59,26 +59,25 @@ JSON can be slurped from byte buffers, Java InputStreams, Readers, or files:
 
 ### Converting JSON object key/value types
 
-Map JSON object keys to keywords
+
+**Map JSON object keys to keywords**
 
 ```clojure
 (json/read-str """{"a":100,"b":100}""" :key-fn keyword)
 ;;=> {:a 100 :b 100}
 ```
 
-Map JSON object values to local-date-time
+**Mapping JSON object values explicitly**
 
 ```clojure
-(json/read-str """{"a": "2018-08-01T10:15:30", "b": 100}""" 
-               :value-fn (fn [k v] (if (== "a" k) (time/local-date-time v) v)))
-;;=> {"a" 2018-08-01T10:15:30 "b" 100}
-```
-
-```clojure
-(json/read-str """{"a": "2018-08-01T10:15:30", "b": 100}""" 
+(json/read-str """{"a": "2018-08-01T10:15:30", "b": "100.23", "c": 100}""" 
                :key-fn keyword 
-               :value-fn (fn [k v] (if (== :a k) (time/local-date-time v) v)))
-;;=> {:a 2018-08-01T10:15:30 :b 100}
+               :value-fn (fn [k v] (case k 
+                                     :a (time/local-date-time v)
+                                     :b (decimal v) 
+                                     v)))
+                 
+;;=> {:a 2018-08-01T10:15:30 :b 100.23M :c 100}
 ```
 
 
@@ -137,6 +136,23 @@ value range.
   (json/read-str """{"a":99999999999999999999999999999999999999999999999999.33}""" 
                  :decimal true)
   ;;=> {"a" 99999999999999999999999999999999999999999999999999.33M}  
+)
+```
+
+Parsing decimals explicitly:
+
+```clojure
+(do
+  (load-module :jsonl)
+  
+  (json/read-str """{"a": "2018-08-01T10:15:30", "b": "100.23"}""" 
+                 :key-fn keyword 
+                 :value-fn (fn [k v] (case k 
+                                       :a (time/local-date-time v)
+                                       :b (decimal v) 
+                                       v)))
+                 
+  ;;=> {:a 2018-08-01T10:15:30 :b 100.23M}
 )
 ```
 
