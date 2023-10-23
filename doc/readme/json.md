@@ -195,3 +195,19 @@ are converted always to longs on JSON write/read:
 ;;=> {"a" 100}
 ```
 
+However, if integers are required they can be parsed explicitly:
+
+```clojure
+(do
+  (load-module :jsonl)
+  
+  (-> (json/write-str {:a 100I})
+      (json/read-str :key-fn keyword 
+                     :value-fn (fn [k v] (case k 
+                                           :a (int v) 
+                                           v))))
+                 
+  ;;=> {:a 100I}
+)
+```
+
