@@ -56,7 +56,7 @@ VSCodium pros:
    
 **Adjust VSCodium "settings.json" to support Venice files**
 
-You can open the *settings.json* file with the `Preferences: Open User Settings (JSON)` command in the Command Palette (Ctrl+Shift+P). Once the file is open in an editor add these line:
+You can open the *settings.json* file with the `Preferences: Open User Settings (JSON)` command in the Command Palette (Ctrl+Shift+P). Once the file is open in an editor add these lines:
 
 ```json
 {
