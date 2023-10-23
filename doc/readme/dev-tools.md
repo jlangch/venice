@@ -54,7 +54,7 @@ VSCodium pros:
     5. VSCodium supports VS Code extensions
  
    
-**VSCodium settings.json to support Venice files**
+**Adjust VSCodium "settings.json" to support Venice files**
 
 You can open the *settings.json* file with the `Preferences: Open User Settings (JSON)` command in the Command Palette (Ctrl+Shift+P). Once the file is open in an editor add these line:
 
@@ -71,10 +71,10 @@ You can open the *settings.json* file with the `Preferences: Open User Settings 
 and save the file.
 
 
-**MacOS: Set VSCodium as the default app for a .venice and .json files**
+**MacOS: Set VSCodium as the default app for ".venice" and ".json" files**
 
-1. Select a Venice or Json file in the Finder and choose *File > Get Info*
-2. In the Open With section, if select VSCodium it and click *Change All* and confirm.
+1. Select a Venice or Json file in the *Finder* and choose *File > Get Info*
+2. In the *Open With* section select *VSCodium* and click *Change All* and confirm.
 
 
 **Formatting**
