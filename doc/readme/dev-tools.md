@@ -5,7 +5,7 @@
 
 ### Start a Venice Gitpod workspace in your browser
 
-Fire up a Venice a [Gitpod](https://gitpod.io/) workspace in your browser by clicking this button: [![Gitpod Ready-to-Code](https://img.shields.io/badge/Gitpod-Ready--to--Code-blue?logo=gitpod)](https://gitpod.io/#https://github.com/jlangch/venice). It opens the URL _https://gitpod.io/#https://github.com/jlangch/venice_. Gitpod will ask you to login to GitHub and will launch a Venice workspace container for you in the cloud, containing a full Linux environment. It will also clone the Venice repository and build it. If you don't have a GitHub login yet, please sign up for [GitHub](https://github.com/).
+Fire up a Venice [Gitpod](https://gitpod.io/) workspace in your browser by clicking this button: [![Gitpod Ready-to-Code](https://img.shields.io/badge/Gitpod-Ready--to--Code-blue?logo=gitpod)](https://gitpod.io/#https://github.com/jlangch/venice). It opens the URL _https://gitpod.io/#https://github.com/jlangch/venice_. Gitpod will ask you to login to GitHub and will launch a Venice workspace container for you in the cloud, containing a full Linux environment. It will also clone the Venice repository and build it. If you don't have a GitHub login yet, please sign up for [GitHub](https://github.com/).
 
 [Gitpod](https://gitpod.io/) gives you a full development environment and a [REPL](doc/readme/repl.md) within your browser without needing to install anything on your local machine.
 
@@ -37,7 +37,49 @@ The [REPL](doc/readme/repl.md) and an editor with syntax highlighting is all
 you need to start with Venice.
 
 
-### Atom Editor
+
+## VSCodium
+
+Documentation and download at: [VSCodium](https://vscodium.com/)
+
+VSCodium pros:
+
+    1. VSCodium is fully open-source
+    2. VSCodium looks and works exactly like VS Code
+    3. VSCodium doesn’t have proprietary extensions
+    4. VSCodium doesn’t track your activity
+    5. VSCodium supports VS Code extensions
+ 
+   
+**VSCodium settings.json to support Venice files**
+
+You can open the *settings.json* file with the `Preferences: Open User Settings (JSON)` command in the Command Palette (Ctrl+Shift+P). Once the file is open in an editor add these line:
+
+```json
+{
+    "files.associations": {
+        "*.venice": "clojure"
+    },
+    
+    "workbench.colorTheme": "Tomorrow Night Blue"    
+}
+```
+
+and save the file.
+
+
+**MacOS: Set VSCodium as the default app for a .venice and .json files**
+
+1. Select a Venice or Json file in the Finder and choose *File > Get Info*
+2. In the Open With section, if select VSCodium it and click *Change All* and confirm.
+
+
+**Formatting**
+
+You can format a JSON document using **⇧⌥F** or *"Format Document"* from the context menu.
+
+
+## Atom Editor
 
 [Atom](https://atom.io/) is a friendly cross-platform Open Source text editor. With 
 Clojure being a pretty good fit for Venice, the Clojure syntax highlighting can be 
@@ -57,30 +99,3 @@ _config.json_ (via the Atom -> Config... menu). Specify a pattern to match for t
 
 <img src="https://github.com/jlangch/venice/blob/master/doc/assets/atom-editor.png" width="700">
 
-
-### VSCodium
-
-[VSCodium](https://vscodium.com/)
-
-    1. VSCodium is fully open-source
-    2. VSCodium looks and works exactly like VS Code
-    3. VSCodium doesn’t have proprietary extensions
-    4. VSCodium doesn’t track your activity
-    5. VSCodium supports VS Code extensions
- 
-   
-#### VSCodium settings.json
-
-You can open the *settings.json* file with the `Preferences: Open User Settings (JSON)` command in the Command Palette (Ctrl+Shift+P). Once the file is open in an editor add these line:
-
-```json
-{
-    "files.associations": {
-        "*.venice": "clojure"
-    },
-    
-    "workbench.colorTheme": "Tomorrow Night Blue"    
-}
-```
-
-and save the file.
