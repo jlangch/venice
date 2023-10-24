@@ -284,16 +284,17 @@
                   now  (time/local-date-time)]
               (io/delete-file-on-exit file)
               (try-with [wr (io/buffered-writer file)]
-                (jsonl/spit wr [{:a 100 :b (time/plus now :days 1)}
-                                {:a 101 :b (time/plus now :days 2)}
-                                {:a 100 :b (time/plus now :days 3)}])
+                (jsonl/spit wr [{:a 100 :b (time/plus now :days 1) :c 10.12M}
+                                {:a 101 :b (time/plus now :days 2) :c 20.12M}
+                                {:a 100 :b (time/plus now :days 3) :c 30.12M}])
                 (flush wr))
               (try-with [rd (io/buffered-reader file)]
                 (jsonl/slurp rd :key-fn keyword
-                                :value-fn (fn [k v]
-                                            (if (= :b k)
-                                                (time/local-date-time-parse v :iso)
-                                                v))
+                                :value-fn (fn [k v] 
+                                            (case k 
+                                              :b (time/local-date-time-parse v :iso)
+                                              :c (decimal v) 
+                                              v))
                                 :filter-fn #(= 100 (:a %))))))
           """)
      :see-also '(

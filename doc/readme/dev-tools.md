@@ -64,7 +64,8 @@ You can open the *settings.json* file with the `Preferences: Open User Settings 
         "*.venice": "clojure"
     },
     
-    "workbench.colorTheme": "Tomorrow Night Blue"    
+    "editor.rulers": [80, {"column": 100, "color": "#ffcc00"}],
+    "workbench.colorTheme": "Tomorrow Night Blue"
 }
 ```
 
