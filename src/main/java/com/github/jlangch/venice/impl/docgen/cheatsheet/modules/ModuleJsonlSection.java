@@ -51,6 +51,7 @@ public class ModuleJsonlSection implements ISectionBuilder {
         all.addSection(write);
         write.addItem(diBuilder.getDocItem("jsonl/write-str", true));
         write.addItem(diBuilder.getDocItem("jsonl/spit", true));
+        write.addItem(diBuilder.getDocItem("jsonl/spitln", true));
 
         return section;
     }

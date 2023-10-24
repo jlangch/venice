@@ -139,12 +139,13 @@
                 (println wr)
                 (jsonl/spit wr {"a" 102, "b" 202})
                 (flush wr))
-                ;; print the json lines data
-                (println (io/slurp file :encoding :utf-8))))
+              ;; print the json lines data
+              (println (io/slurp file :encoding :utf-8))))
           """)
      :see-also '(
           "jsonl/write-str" "jsonl/slurp")
      :spec { :options { :decimal-as-double [:optional #(boolean? %)]
+                        :new-line          [:optional #(boolean? %)]
                         :append            [:optional #(boolean? %)]
                         :encoding          [:optional #(keyword? %)] } } }
 
@@ -155,14 +156,88 @@
               (instance-of? :java.io.OutputStream out)
               (instance-of? :java.io.Writer out))] }
 
-  (let [wr (apply io/buffered-writer out options)]
-    (if (sequential? val)
-      (do
-        (docoll #(io/print-line wr (apply json/write-str % options)) (butlast val))
-        (io/print wr (apply json/write-str (last val) options)))
-      (io/print wr (apply json/write-str val options)))
+  (let [wr (apply io/buffered-writer out options)
+        last-val     (if (sequential? val) (last val) val)
+        butlast-vals (if (sequential? val) (butlast val) nil)]
+    (when-not (nil? butlast-vals)
+      (docoll #(io/print-line wr (apply json/write-str % options)) butlast-vals))
+    (when-not (nil? last-val)
+      (io/print wr (apply json/write-str last-val options)))
     (flush wr)))
 
+
+(defn
+  ^{ :arglists '("(jsonl/spitln out val & options)")
+     :doc """
+          Spits the JSON Lines converted value 'val' to the output 'out' and
+          adds a new line after the last emitted line. 
+
+          This function is useful when lines are spitted to a stream/writer line 
+          by line. 
+
+          The 'out' may be a:
+
+           * `java.io.File`, e.g: `(io/file \"/temp/foo.json\")`
+           * `java.nio.Path`
+           * `java.io.OutputStream`
+           * `java.io.Writer`
+
+          **Note**: The caller is responsible for closing the out stream/writer!
+
+          Any reasonable Venice value like string, integer, long, double, decimal,
+          boolean, list, vector, set, or map can be passed. Sequences like
+          list or vector are converted to multiple JSON lines, one line for
+          each value in the sequence. All other types are converted to a single
+          JSON line.
+
+          Options:
+
+          | :decimal-as-double b | If true emit a decimal as double else as \
+                                   string. Defaults to false. |
+          | :append true/false   | e.g.: `:append true`, defaults to false |
+          | :encoding e          | e.g :encoding :utf-8, defaults to :utf-8 |
+
+          `jsonl/spitln` supports load paths. See the `loadpath/paths` doc for a
+          description of the *load path* feature.
+          """
+     :examples '(
+          """
+          ;; spit a list of json lines line by line
+          (do
+            (load-module :jsonl)
+            (let [file (io/temp-file "data-" ".jsonl")]
+              (io/delete-file-on-exit file)
+              (try-with [wr (io/buffered-writer file)]
+                (jsonl/spitln wr {"a" 100, "b" 200})
+                (jsonl/spitln wr {"a" 101, "b" 201})
+                (jsonl/spit wr {"a" 102, "b" 202})     ;; last line no LF
+                (flush wr))
+              ;; print the json lines from the written file
+              (println (io/slurp file :encoding :utf-8))))
+          """)
+     :see-also '(
+          "jsonl/write-str" "jsonl/slurp")
+     :spec { :options { :decimal-as-double [:optional #(boolean? %)]
+                        :append            [:optional #(boolean? %)]
+                        :encoding          [:optional #(keyword? %)] } } }
+
+  spitln [out val & options]
+
+  { :pre [(or (io/file? out)
+              (instance-of? :java.nio.file.Path out)
+              (instance-of? :java.io.OutputStream out)
+              (instance-of? :java.io.Writer out))] }
+
+  (let [wr           (apply io/buffered-writer out options)
+        last-val     (if (sequential? val) (last val) val)
+        butlast-vals (if (sequential? val) (butlast val) nil)]
+    (when-not (nil? butlast-vals)
+      (docoll #(io/print-line wr (apply json/write-str % options)) butlast-vals))
+    (when-not (nil? last-val)
+      (io/print wr (apply json/write-str last-val options)))
+    (println wr)
+    (flush wr)))
+  
 
 (defn
   ^{ :arglists '("(jsonl/read-str s & options)")
