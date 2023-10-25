@@ -43,16 +43,20 @@ Fire up a Venice [Gitpod](https://gitpod.io/) workspace in your browser by click
 
 ## VSCodium
 
-Documentation and download at: [VSCodium](https://vscodium.com/)
+[VSCodium](https://vscodium.com/) is a community-driven, fully open-source project derived from the VS Code source code.
 
-VSCodium pros:
+5 reason to choose VSCodium:
 
     1. VSCodium is fully open-source
     2. VSCodium looks and works exactly like VS Code
     3. VSCodium doesn’t have proprietary extensions
-    4. VSCodium doesn’t track your activity
+    4. VSCodium doesn’t track your activity (disabled telemetry by default)
     5. VSCodium supports VS Code extensions
  
+VSCodium uses [Open VSX Registry](https://open-vsx.org/) as its marketplace.
+
+
+### Tips to start with
    
 **Adjust VSCodium "settings.json" to support Venice files**
 
