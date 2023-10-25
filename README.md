@@ -28,9 +28,9 @@ like reading/writing files, invoking  _System.exit(0)_  or any other malicious
 action. Venice has been designed from the ground-up with a sandbox making it 
 a first class citizen.
 
-Venice comes with library of 800+ core functions. It's immutable persistent data 
-structures together with Clojure style atoms, futures, promises, and agents greatly 
-simplify writing concurrent code. 
+Venice comes with a comprehensive library of 900+ core functions. It's immutable 
+persistent data structures together with Clojure style atoms, futures, promises, 
+and agents greatly simplify writing concurrent code. 
 
 Because Venice does not depend on any runtime libraries (other than the JVM) you 
 can easily add it as standalone .jar to your classpath.
