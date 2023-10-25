@@ -39,6 +39,8 @@ import java.util.Set;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Collectors;
 
+import org.fusesource.jansi.AnsiMain;
+
 import com.github.jlangch.venice.VncException;
 import com.github.jlangch.venice.impl.javainterop.DynamicClassLoader2;
 import com.github.jlangch.venice.impl.thread.ThreadBridge;
@@ -825,6 +827,27 @@ public class SystemFunctions {
             private static final long serialVersionUID = -1848883965231344442L;
         };
 
+    public static VncFunction jansi_version =
+        new VncFunction(
+                "jansi-version",
+                VncFunction
+                    .meta()
+                    .arglists("(jansi-version)")
+                    .doc( "Returns the Jansi version or nil if not available.")
+                    .build()
+        ) {
+            @Override
+            public VncVal apply(final VncList args) {
+                ArityExceptions.assertArity(this, args, 0);
+
+                final String version = getJansiVersion();
+                return version == null ? Nil : new VncString(version);
+            }
+
+            private static final long serialVersionUID = -1848883965231344442L;
+        };
+
+
 
     public static long javaMajorVersion() {
         String version = System.getProperty("java.version");
@@ -852,6 +875,16 @@ public class SystemFunctions {
         }
         else {
             return "unknown";
+        }
+    }
+
+    public static String getJansiVersion() {
+        try {
+            final Package p = AnsiMain.class.getPackage();
+            return p == null ? null : p.getImplementationVersion();
+        }
+        catch(Exception ex) {
+            return null;
         }
     }
 
@@ -886,7 +919,7 @@ public class SystemFunctions {
                     .add(total_memory)
                     .add(used_memory)
                     .add(load_jar)
-
+                    .add(jansi_version)
                     .toMap();
 
 

@@ -73,6 +73,10 @@ public class SystemSection implements ISectionBuilder {
         os.addItem(diBuilder.getDocItem("os-name"));
         os.addItem(diBuilder.getDocItem("os-version"));
 
+        final DocSection jansi = new DocSection("Jansi", "system.jansi");
+        all.addSection(jansi);
+        jansi.addItem(diBuilder.getDocItem("jansi-version"));
+
         final DocSection time = new DocSection("Time", "system.time");
         all.addSection(time);
         time.addItem(diBuilder.getDocItem("current-time-millis"));

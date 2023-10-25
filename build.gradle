@@ -178,6 +178,7 @@ ext {
     javassist_Version = '3.28.0-GA'
     jaxb_Version = '2.3.1'
     jmh_Version = '1.32'
+    jansi_Version = '2.4.1'
     jline_Version = '3.21.0'
     jupiter_Version = '5.8.2'
     openpdf_Version = '1.3.30'
@@ -719,7 +720,7 @@ dependencies {
 
     compileOnly "org.openjdk.jmh:jmh-core:${jmh_Version}"
     compileOnly "org.openjdk.jmh:jmh-generator-annprocess:${jmh_Version}"
-
+    compileOnly "org.fusesource.jansi:jansi:${jansi_Version}"
 
     // Unit tests
     testImplementation "org.junit.jupiter:junit-jupiter-api:${jupiter_Version}"

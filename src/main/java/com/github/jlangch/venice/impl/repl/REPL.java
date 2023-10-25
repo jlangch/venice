@@ -69,6 +69,7 @@ import com.github.jlangch.venice.impl.docgen.runtime.DocForm;
 import com.github.jlangch.venice.impl.env.Env;
 import com.github.jlangch.venice.impl.env.Var;
 import com.github.jlangch.venice.impl.functions.JsonFunctions;
+import com.github.jlangch.venice.impl.functions.SystemFunctions;
 import com.github.jlangch.venice.impl.javainterop.DynamicClassLoader2;
 import com.github.jlangch.venice.impl.namespaces.Namespaces;
 import com.github.jlangch.venice.impl.repl.ReplConfig.ColorMode;
@@ -1079,11 +1080,14 @@ public class REPL {
     private void handleInfoCommand(final Terminal terminal) {
         final Integer maxColors = terminal.getNumericCapability(Capability.max_colors);
         final Size size = terminal.getSize();
+        final String jansiVersion = SystemFunctions.getJansiVersion();
+
         printer.println("stdout", "Terminal Name:   " + terminal.getName());
         printer.println("stdout", "Terminal Type:   " + terminal.getType());
         printer.println("stdout", "Terminal Size:   " + size.getRows() + "x" + size.getColumns());
         printer.println("stdout", "Terminal Colors: " + maxColors);
         printer.println("stdout", "Terminal Class:  " + terminal.getClass().getSimpleName());
+        printer.println("stdout", "Jansi Library:   " + (jansiVersion == null ? "n/a" : jansiVersion));
         printer.println("stdout", "");
         printer.println("stdout", "Color Mode:      " + config.getColorMode().toString().toLowerCase());
         printer.println("stdout", "Highlighting:    " + (config.isSyntaxHighlighting() ? "on" : "off"));
