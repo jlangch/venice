@@ -1,15 +1,15 @@
 # JSON Lines
 
-JSON Lines essentially consists of several lines where each individual line is a valid JSON object, separated by a newline character `\n`.
+*JSON Lines* essentially consists of several lines where each individual line is a valid JSON object, separated by a newline character `\n`.
 
-Venice has built-in support for the JSON Lines text format as described in 
-[JSON Lines](https://jsonlines.org/). It reads/writes JSON Lines from/to 
+Venice has built-in support for the *JSON Lines* text format as described in 
+[JSON Lines](https://jsonlines.org/). It reads/writes *JSON Lines* from/to 
 Venice data structures. No 3rd-party libraries are required.
 
 
 ## Usage
 
-To convert to/from a JSON Line string, use *jsonl/write-str* and *jsonl/read-str*:
+To convert to/from a *JSON Line* string, use *jsonl/write-str* and *jsonl/read-str*:
 
 ```clojure
 (do
@@ -45,7 +45,7 @@ converted. E.g. there is no real decimal type and Venice `int` is converted to `
 
 ### Streams
 
-JSON can be spit to Java OutputStreams, Writers, or files:
+*JSON Lines* can be spit to Java OutputStreams, Writers, or files:
  * `io/bytebuf-out-stream`
  * `io/file-out-stream`
  * `io/buffered-writer`
@@ -78,7 +78,7 @@ JSON can be spit to Java OutputStreams, Writers, or files:
 ```
 
 
-JSON can be slurped from byte buffers, Java InputStreams, Readers, or files:
+*JSON Lines* can be slurped from byte buffers, Java InputStreams, Readers, or files:
  * `bytebuf`
  * `io/file-in-stream`
  * `io/bytebuf-in-stream`
@@ -100,7 +100,7 @@ JSON can be slurped from byte buffers, Java InputStreams, Readers, or files:
     (jsonl/slurp rd)))
 ```
 
-For memory efficient reading of large JSON Lines datasets use a transducer with 
+For memory efficient reading of large *JSON Lines* datasets use a transducer with 
 filter-map-reduce functionality:
 
 _Note: make sure that Venice' up-front macro expansion is activated when processing large datasets to get best performance!_
@@ -130,9 +130,9 @@ _Note: make sure that Venice' up-front macro expansion is activated when process
 
 
 
-### Converting JSON object key/value types
+### Converting JSON Lines object key/value types
 
-Venice supports for JSON Lines the same data type customizations as for its standard 
+Venice supports for *JSON Lines* the same data type customizations as for its standard 
 JSON handling.
 
 **Map JSON object keys to keywords**
@@ -146,7 +146,7 @@ JSON handling.
 )
 ```
 
-**Mapping JSON object values explicitly**
+**Mapping JSON Lines object values explicitly**
 
 ```clojure
 (do
