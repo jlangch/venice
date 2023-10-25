@@ -55,7 +55,7 @@ converted. E.g. there is no real decimal type and Venice `int` is converted to `
 (do
   (load-module :jsonl)
   
-  ;; spit a list of json lines (linefeeds are added implicitely )
+  ;; spit a list of json lines (linefeeds are added implicitly )
   (try-with [wr (io/buffered-writer (io/file "data.jsonl"))]
      (jsonl/spit wr [{"a" 100, "b" 200} 
                      {"a" 101, "b" 201} 
@@ -67,7 +67,7 @@ converted. E.g. there is no real decimal type and Venice `int` is converted to `
 (do
   (load-module :jsonl)
   
-  ;; spit a list of json lines, line by line (linefeeds must be added exlicitely)
+  ;; spit a list of json lines, line by line (linefeeds must be added exlicitly)
   (try-with [wr (io/buffered-writer (io/file "data.jsonl"))]
     (jsonl/spit wr {"a" 100, "b" 200})
     (println wr)
