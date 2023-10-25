@@ -39,8 +39,6 @@ import java.util.Set;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Collectors;
 
-import org.fusesource.jansi.AnsiMain;
-
 import com.github.jlangch.venice.VncException;
 import com.github.jlangch.venice.impl.javainterop.DynamicClassLoader2;
 import com.github.jlangch.venice.impl.thread.ThreadBridge;
@@ -880,7 +878,8 @@ public class SystemFunctions {
 
     public static String getJansiVersion() {
         try {
-            final Package p = AnsiMain.class.getPackage();
+            final Class<?> clazz = Class.forName("org.fusesource.jansi.AnsiMain");
+            final Package p = clazz.getPackage();
             return p == null ? null : p.getImplementationVersion();
         }
         catch(Exception ex) {
