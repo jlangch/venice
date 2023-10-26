@@ -36,6 +36,11 @@ Fire up a Venice [Gitpod](https://gitpod.io/) workspace in your browser by click
     
     "workbench.colorTheme": "Tomorrow Night Blue",
     "redhat.telemetry.enabled": false    
+    
+    "editor.insertSpaces": true,
+    "editor.tabSize": 4,
+    "editor.detectIndentation": false,
+    "editor.rulers": [80, {"column": 100, "color": "#ffcc00"}]   
 }
 ```
 
