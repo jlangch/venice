@@ -68,8 +68,12 @@ You can open the *settings.json* file with the `Preferences: Open User Settings 
         "*.venice": "clojure"
     },
     
-    "editor.rulers": [80, {"column": 100, "color": "#ffcc00"}],
-    "workbench.colorTheme": "Tomorrow Night Blue"
+    "workbench.colorTheme": "Tomorrow Night Blue",
+    
+    "editor.insertSpaces": true,
+    "editor.tabSize": 4,
+    "editor.detectIndentation": false,
+    "editor.rulers": [80, {"column": 100, "color": "#ffcc00"}]   
 }
 ```
 
