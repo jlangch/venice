@@ -163,7 +163,7 @@ JSON handling.
 )
 ```
 
-Note: the value function `value-fn` is applied after the key function `key-fn` and thus receives the mapped keys `:a`, `:b`, ...
+Note: the value function `value-fn` is applied after the key function `key-fn` and thus receives the mapped keys `:a`, `:b`, ... in the example above.
 
 
 ### Special data types
