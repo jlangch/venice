@@ -240,7 +240,8 @@ decimal value range.
 )
 ```
 
-Parsing decimals explicitly:
+Alternatively decimals can be parsed explicitly with a value mapping 
+function:
 
 ```clojure
 (do
