@@ -197,7 +197,8 @@ Venice decimals are converted to strings by default:
 )
 ```
 
-But Venice decimals can also be forced to be converted to doubles:
+But Venice decimals can also be forced to be converted to floating-point 
+numbers:
 
 ```clojure
 (do
@@ -212,10 +213,11 @@ But Venice decimals can also be forced to be converted to doubles:
 ```
 
 Venice can emit decimals as 'double' floating-point values in 
-exact representation. On reading back this floating-point string
-is directly converted into a decimal without intermediate double 
-conversion, thus keeping the precision and allow for full decimal 
-value range.
+exact representation using the `:decimal-as-double` option. On 
+reading back this floating-point string with the `:decimal` option 
+the number is directly converted into a decimal without intermediate 
+double conversion, thus keeping the precision and allow for full 
+decimal value range.
 
 ```clojure
 (do
