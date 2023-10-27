@@ -163,7 +163,7 @@ JSON handling.
 )
 ```
 
-Note: the value function `value-fn` is applied after the key function `key-fn` and thus receives the mapped keys
+Note: the value function `value-fn` is applied after the key function `key-fn` and thus receives the mapped keys `:a`, `:b`, ...
 
 
 ### Special data types
@@ -183,7 +183,7 @@ errors known as the double precision issue.
 ```
 
 Decimals avoid this problem and are the means of choice when dealing
-with financial amounts but JSON does not support decimals as data type.
+with financial amounts. But JSON does not support decimals as data type.
 
 
 Venice decimals are converted to strings by default:
