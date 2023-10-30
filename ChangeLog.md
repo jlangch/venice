@@ -16,6 +16,12 @@ All notable changes to this project will be documented in this file.
 ### Added 
 
 - jsonl/splitln function
+- io/print-line support for a single stream argument
+
+### Improved 
+
+- docker module to use :jsonl module to parse JSON command output
+
 
 
 

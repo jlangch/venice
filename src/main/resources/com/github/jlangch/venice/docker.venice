@@ -34,6 +34,8 @@
 
 (ns docker)
 
+(load-module :jsonl)
+
 
 (def-dynamic *debug* :off)
 
@@ -102,7 +104,7 @@
       :full   (as-> (if (= format :json) "version -f json" "version") $
                     (docker/cmd $)
                     (:out $)
-                    (parse-output-object format $))
+                    (parse-output format $))
       :server (as-> (docker/version :version :full :format :json) $
                     (get-in $ ["Server" "Version"]))
       :client (as-> (docker/version :version :full :format :json) $
@@ -168,7 +170,7 @@
         cmdargs* (into cmdargs* ["--format" (name format)])]
     (->> (apply docker/cmd cmdargs*)
          (:out)
-         (parse-output-list format))))
+         (parse-output format))))
 
 (defn images* [] (println (docker/images :format :table)))
 
@@ -500,7 +502,7 @@
         cmdargs* (into cmdargs* ["--format" (name format)])]
     (->> (apply docker/cmd cmdargs*)
          (:out)
-         (parse-output-list format))))
+         (parse-output format))))
 
 (defn ps* [image] (println (docker/ps :all true :format :table)))
 
@@ -925,7 +927,7 @@
         cmdargs* (into cmdargs* ["--format" (name format)])]
     (->> (apply docker/cmd cmdargs*)
          (:out)
-         (parse-output-list format))))
+         (parse-output format))))
 
 
 (defn
@@ -1411,19 +1413,10 @@
 ;; Private helpers
 ;; -----------------------------------------------------------------------------
 
-(defn- parse-output-object [format output]
-  (if (= format :json)
-    (json/read-str output)
-    output))
 
-
-(defn- parse-output-list [format output]
+(defn- parse-output [format output]
   (if (= format :json)
-    (as-> output $
-          (str/split-lines $)      ;; JSON lines
-          (str/join "," $)
-          (str "[" $ "]")
-          (json/read-str $))
+    (jsonl/read-str output)
     output))
 
 
@@ -1460,9 +1453,9 @@
 
 (defn- format-ts [ts]
   (case (type ts)
-     :core/string               ts
-     :java.time.LocalDateTime   (time/format ts "yyyy-MM-dd'T'HH:mm:ss'Z'")
-     :java.time.ZonedDateTime   (time/format ts "yyyy-MM-dd'T'HH:mm:ss'Z'")))
+    :core/string               ts
+    :java.time.LocalDateTime   (time/format ts "yyyy-MM-dd'T'HH:mm:ss'Z'")
+    :java.time.ZonedDateTime   (time/format ts "yyyy-MM-dd'T'HH:mm:ss'Z'")))
 
 
 (defn- os-exec []

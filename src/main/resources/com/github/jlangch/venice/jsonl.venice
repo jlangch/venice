@@ -235,7 +235,7 @@
       (docoll #(io/print-line wr (apply json/write-str % options)) butlast-vals))
     (when-not (nil? last-val)
       (io/print wr (apply json/write-str last-val options)))
-    (println wr)
+    (io/print-line wr)
     (flush wr)))
   
 
