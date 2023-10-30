@@ -216,4 +216,19 @@ public class IOFunctionsStreamTest {
         assertEquals("[\"1\" \"2\" nil]",venice.eval(script));
     }
 
+    @Test
+    public void test_io_printl_line() {
+        final Venice venice = new Venice();
+
+        final String script =
+                "(try-with [sw (io/string-writer)]     \n" +
+                "  (io/print-line sw 100)              \n" +
+                "  (io/print-line sw)                  \n" +
+                "  (io/print-line sw 200)              \n" +
+                "  (flush sw)                          \n" +
+                "  @sw)                                ";
+
+        assertEquals("100\n\n200\n",venice.eval(script));
+    }
+
 }

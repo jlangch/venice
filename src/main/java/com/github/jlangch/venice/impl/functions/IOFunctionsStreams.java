@@ -1102,7 +1102,8 @@ public class IOFunctionsStreams {
                 VncFunction
                     .meta()
                     .arglists(
-                        "(io/print-line os s)" )
+                        "(io/print-line os)",
+                    	"(io/print-line os s)")
                     .doc(
                         "Prints a string s to an output stream. The output stream " +
                         "may be a `:java.io.Writer` or a `:java.io.PrintStream`!")
@@ -1110,17 +1111,24 @@ public class IOFunctionsStreams {
         ) {
             @Override
             public VncVal apply(final VncList args) {
-                ArityExceptions.assertArity(this, args, 2);
+                ArityExceptions.assertArity(this, args, 1, 2);
 
                 final VncVal v = args.first();
                 if (Types.isVncJavaObject(v, PrintStream.class)) {
                     final PrintStream ps = Coerce.toVncJavaObject(v, PrintStream.class);
-                    ps.println(Printer.pr_str(args.second(), false));
+                    if (args.size() > 1) {
+                    	ps.println(Printer.pr_str(args.second(), false));
+                    }
+                    else {
+                    	ps.println();
+                    }
                 }
                 else if (Types.isVncJavaObject(v, BufferedWriter.class)) {
                     final BufferedWriter wr = Coerce.toVncJavaObject(v, BufferedWriter.class);
                     try {
-                        wr.write(Printer.pr_str(args.second(), false));
+                        if (args.size() > 1) {
+                        	wr.write(Printer.pr_str(args.second(), false));
+                        }
                         wr.newLine();
                     }
                     catch(IOException ex) {
@@ -1130,7 +1138,9 @@ public class IOFunctionsStreams {
                 else if (Types.isVncJavaObject(v, Writer.class)) {
                     final Writer wr = Coerce.toVncJavaObject(v, Writer.class);
                     try {
-                        wr.write(Printer.pr_str(args.second(), false));
+                        if (args.size() > 1) {
+                        	wr.write(Printer.pr_str(args.second(), false));
+                        }
                         wr.write('\n');
                     }
                     catch(IOException ex) {
