@@ -209,7 +209,7 @@
 VENICE SUBCOMPONENTS
 -----------------------------------------------------------------------
 
-The Venice Release 1.10.48 includes a number of subcomponents with 
+The Venice Release 1.10.49 includes a number of subcomponents with 
 separate copyright notices and license terms. The product that includes 
 this file does not necessarily use all the open source subcomponents 
 referred to below. Your use of the source code for these subcomponents 
