@@ -84,6 +84,7 @@ You can open the *settings.json* file with the `Preferences: Open User Settings 
 
 and save the file.
 
+<img src="https://github.com/jlangch/venice/blob/master/doc/assets/vscodium/vscodium.png">
 
 **MacOS: Set VSCodium as the default app for ".venice" and ".json" files**
 
