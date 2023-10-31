@@ -132,7 +132,7 @@ public class CSVWriter {
                     curr = pos + 1;
                 }
                 else {
-                    sb.append(s.substring(pos));
+                    sb.append(s.substring(curr));
                     break;
                 }
                 pos = s.indexOf(quote, curr);
@@ -146,7 +146,10 @@ public class CSVWriter {
     }
 
     private boolean needsQuote(final String s) {
-        return s != null && (s.contains(" ") || s.contains(quote) || s.contains(separator));
+        return s != null && (s.contains(" ")
+        						|| s.contains(quote)
+        						|| s.contains(separator)
+        						|| s.contains(newline));
     }
 
 
