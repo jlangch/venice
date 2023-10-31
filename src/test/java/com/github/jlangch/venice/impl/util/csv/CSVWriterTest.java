@@ -121,4 +121,70 @@ public class CSVWriterTest {
         assertEquals("1,Zurich,'Wipkingen,\n X-''1''',ZH", wr.toString());
     }
 
+    @Test
+    public void test_quote_due_to_delimiter() {
+        final StringWriter wr = new StringWriter();
+
+        final List<List<String>> records = Arrays.asList(Arrays.asList("1", "2,3"));
+
+        new CSVWriter(',', '\'', "\n").write(wr, records);
+
+        assertEquals("1,'2,3'", wr.toString());
+    }
+
+    @Test
+    public void test_quote_due_to_lineseparator() {
+        final StringWriter wr = new StringWriter();
+
+        final List<List<String>> records = Arrays.asList(Arrays.asList("1", "2\n3"));
+
+        new CSVWriter(',', '\'', "\n").write(wr, records);
+
+        assertEquals("1,'2\n3'", wr.toString());
+    }
+
+    @Test
+    public void test_quote_due_to_space() {
+        final StringWriter wr = new StringWriter();
+
+        final List<List<String>> records = Arrays.asList(Arrays.asList("1", "2 3"));
+
+        new CSVWriter(',', '\'', "\n").write(wr, records);
+
+        assertEquals("1,'2 3'", wr.toString());
+    }
+
+    @Test
+    public void test_quote_due_to_quote_1() {
+        final StringWriter wr = new StringWriter();
+
+        final List<List<String>> records = Arrays.asList(Arrays.asList("1", "'23"));
+
+        new CSVWriter(',', '\'', "\n").write(wr, records);
+
+        assertEquals("1,'''23'", wr.toString());
+    }
+
+    @Test
+    public void test_quote_due_to_quote_2() {
+        final StringWriter wr = new StringWriter();
+
+        final List<List<String>> records = Arrays.asList(Arrays.asList("1", "2'3"));
+
+        new CSVWriter(',', '\'', "\n").write(wr, records);
+
+        assertEquals("1,'2''3'", wr.toString());
+    }
+
+    @Test
+    public void test_quote_due_to_quote_3() {
+        final StringWriter wr = new StringWriter();
+
+        final List<List<String>> records = Arrays.asList(Arrays.asList("1", "23'"));
+
+        new CSVWriter(',', '\'', "\n").write(wr, records);
+
+        assertEquals("1,'23'''", wr.toString());
+    }
+
 }
