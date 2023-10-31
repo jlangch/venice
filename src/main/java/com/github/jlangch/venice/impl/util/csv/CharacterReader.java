@@ -43,9 +43,7 @@ public class CharacterReader {
 
     public CharacterReader(final Reader r) {
         rd = r;
-
-        final int ch = next();
-        chNext = (ch == EOF) ? EOF : ch;
+        chNext = next();
     }
 
     public int peek() {
