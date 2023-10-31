@@ -17,6 +17,10 @@ All notable changes to this project will be documented in this file.
 
 - ...
 
+### Fixed 
+
+- an edge case with CSV reader on a sequence of empty fields 
+
 
 
 ## [1.10.49] - 2023-10-30
