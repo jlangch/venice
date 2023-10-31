@@ -346,10 +346,6 @@ public class CSVReaderTest {
         assertEquals("1", records.get(0).get(2));
     }
 
-
-
-
-
     @Test
     public void test_10a() {
         final List<List<String>> records = new CSVReader(',', '\'').parse("1,'''zh'");
@@ -400,13 +396,13 @@ public class CSVReaderTest {
 
     @Test
     public void test_11() {
-    	try {
-    		new CSVReader(',', '\'').parse("1,'''zh' ");
-    		fail("Expected RuntimeException");
-    	}
-    	catch (RuntimeException ex) {
+        try {
+            new CSVReader(',', '\'').parse("1,'''zh' ");
+            fail("Expected RuntimeException");
+        }
+        catch (RuntimeException ex) {
             assertEquals("Unexpected char ' ' after quoted field at line 1, col 9.", ex.getMessage());
-    	}
+        }
     }
 
     @Test
