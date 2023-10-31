@@ -81,11 +81,13 @@ public class CSVReaderTest {
                 new CSVReader(',', '\'').parse("1,'Zurich','Wipkingen, X-''1''',ZH");
 
         assertEquals(1, records.size());
-        assertEquals(4, records.get(0).size());
-        assertEquals("1", records.get(0).get(0));
-        assertEquals("Zurich", records.get(0).get(1));
-        assertEquals("Wipkingen, X-'1'", records.get(0).get(2));
-        assertEquals("ZH", records.get(0).get(3));
+
+        final List<String> record = records.get(0);
+        assertEquals(4, record.size());
+        assertEquals("1",record.get(0));
+        assertEquals("Zurich", record.get(1));
+        assertEquals("Wipkingen, X-'1'", record.get(2));
+        assertEquals("ZH", record.get(3));
     }
 
 }
