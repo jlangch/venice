@@ -44,7 +44,7 @@ public class CSVWriterTest {
     }
 
     @Test
-    public void test_2() {
+    public void test_2a() {
         final StringWriter wr = new StringWriter();
 
         final List<List<String>> records = Arrays.asList(Arrays.asList("1", "2", "3"));
@@ -52,6 +52,18 @@ public class CSVWriterTest {
         new CSVWriter(',', '"', "\n").write(wr, records);
 
         assertEquals("1,2,3", wr.toString());
+    }
+
+    @Test
+    public void test_2b() {
+        final StringWriter wr = new StringWriter();
+
+        final List<List<String>> records = Arrays.asList(Arrays.asList("1", "2", "3"),
+        		                                         Arrays.asList("4", "5", "6"));
+
+        new CSVWriter(',', '"', "\n").write(wr, records);
+
+        assertEquals("1,2,3\n4,5,6", wr.toString());
     }
 
     @Test
@@ -96,6 +108,17 @@ public class CSVWriterTest {
         new CSVWriter(',', '\'', "\n").write(wr, records);
 
         assertEquals("1,Zurich,'Wipkingen, X-''1''',ZH", wr.toString());
+    }
+
+    @Test
+    public void test_7() {
+        final StringWriter wr = new StringWriter();
+
+        final List<List<String>> records = Arrays.asList(Arrays.asList("1", "Zurich", "Wipkingen,\n X-'1'", "ZH"));
+
+        new CSVWriter(',', '\'', "\n").write(wr, records);
+
+        assertEquals("1,Zurich,'Wipkingen,\n X-''1''',ZH", wr.toString());
     }
 
 }
