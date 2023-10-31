@@ -39,6 +39,11 @@ public class CSVReader {
     public CSVReader(final char separator, final char quote) {
         this.separator = separator;
         this.quote = quote;
+
+        if (quote == separator) {
+        	throw new RuntimeException(
+        			"The quote and the separator character must not be identical!");
+        }
     }
 
     public List<List<String>> parse(final String csv) {

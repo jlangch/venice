@@ -42,6 +42,11 @@ public class CSVWriter {
         this.separator = String.valueOf(separator);
         this.quote = String.valueOf(quote);
         this.newline = newline == null ? "\n" : newline;
+
+        if (quote == separator) {
+        	throw new RuntimeException(
+        			"The quote and the separator character must not be identical!");
+        }
     }
 
 
