@@ -155,7 +155,7 @@ public class CSVWriterTest {
     }
 
     @Test
-    public void test_quote_due_to_quote_1() {
+    public void test_quote_due_to_quote_1a() {
         final StringWriter wr = new StringWriter();
 
         final List<List<String>> records = Arrays.asList(Arrays.asList("1", "'23"));
@@ -166,7 +166,18 @@ public class CSVWriterTest {
     }
 
     @Test
-    public void test_quote_due_to_quote_2() {
+    public void test_quote_due_to_quote_1b() {
+        final StringWriter wr = new StringWriter();
+
+        final List<List<String>> records = Arrays.asList(Arrays.asList("1", "'''23"));
+
+        new CSVWriter(',', '\'', "\n").write(wr, records);
+
+        assertEquals("1,'''''''23'", wr.toString());
+    }
+
+    @Test
+    public void test_quote_due_to_quote_2a() {
         final StringWriter wr = new StringWriter();
 
         final List<List<String>> records = Arrays.asList(Arrays.asList("1", "2'3"));
@@ -177,7 +188,18 @@ public class CSVWriterTest {
     }
 
     @Test
-    public void test_quote_due_to_quote_3() {
+    public void test_quote_due_to_quote_2b() {
+        final StringWriter wr = new StringWriter();
+
+        final List<List<String>> records = Arrays.asList(Arrays.asList("1", "2'''3"));
+
+        new CSVWriter(',', '\'', "\n").write(wr, records);
+
+        assertEquals("1,'2''''''3'", wr.toString());
+    }
+
+    @Test
+    public void test_quote_due_to_quote_3a() {
         final StringWriter wr = new StringWriter();
 
         final List<List<String>> records = Arrays.asList(Arrays.asList("1", "23'"));
@@ -185,6 +207,17 @@ public class CSVWriterTest {
         new CSVWriter(',', '\'', "\n").write(wr, records);
 
         assertEquals("1,'23'''", wr.toString());
+    }
+
+    @Test
+    public void test_quote_due_to_quote_3b() {
+        final StringWriter wr = new StringWriter();
+
+        final List<List<String>> records = Arrays.asList(Arrays.asList("1", "23'''"));
+
+        new CSVWriter(',', '\'', "\n").write(wr, records);
+
+        assertEquals("1,'23'''''''", wr.toString());
     }
 
 }

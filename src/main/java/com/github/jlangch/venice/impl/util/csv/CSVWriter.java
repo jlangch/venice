@@ -44,8 +44,8 @@ public class CSVWriter {
         this.newline = newline == null ? "\n" : newline;
 
         if (quote == separator) {
-        	throw new RuntimeException(
-        			"The quote and the separator character must not be identical!");
+            throw new RuntimeException(
+                    "The quote and the separator character must not be identical!");
         }
     }
 
@@ -152,9 +152,9 @@ public class CSVWriter {
 
     private boolean needsQuote(final String s) {
         return s != null && (s.contains(" ")
-        						|| s.contains(quote)
-        						|| s.contains(separator)
-        						|| s.contains(newline));
+                                || s.contains(quote)
+                                || s.contains(separator)
+                                || s.contains(newline));
     }
 
 
