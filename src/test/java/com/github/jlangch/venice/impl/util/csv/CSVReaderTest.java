@@ -22,6 +22,7 @@
 package com.github.jlangch.venice.impl.util.csv;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.fail;
 
 import java.util.List;
 
@@ -398,7 +399,44 @@ public class CSVReaderTest {
     }
 
     @Test
-    public void test_11a() {
+    public void test_11() {
+    	try {
+    		new CSVReader(',', '\'').parse("1,'''zh' ");
+    		fail("Expected RuntimeException");
+    	}
+    	catch (RuntimeException ex) {
+            assertEquals("Unexpected char ' ' after quoted field at line 1, col 9.", ex.getMessage());
+    	}
+    }
+
+    @Test
+    public void test_12a() {
+        final List<List<String>> records = new CSVReader(',', '\'').parse("1,'z''h',");
+
+        assertEquals(1, records.size());
+
+        final List<String> record = records.get(0);
+        assertEquals(3, record.size());
+        assertEquals("1",record.get(0));
+        assertEquals("z'h", record.get(1));
+        assertEquals(null, record.get(2));
+    }
+
+    @Test
+    public void test_12b() {
+        final List<List<String>> records = new CSVReader(',', '\'').parse("1,,'z''h'");
+
+        assertEquals(1, records.size());
+
+        final List<String> record = records.get(0);
+        assertEquals(3, record.size());
+        assertEquals("1",record.get(0));
+        assertEquals(null, record.get(1));
+        assertEquals("z'h", record.get(2));
+    }
+
+    @Test
+    public void test_13a() {
         final List<List<String>> records =
                 new CSVReader(',', '\'').parse("1,'Zurich','Wipkingen, X-''1''',ZH");
 
@@ -413,7 +451,7 @@ public class CSVReaderTest {
     }
 
     @Test
-    public void test_11b() {
+    public void test_13b() {
         final List<List<String>> records =
                 new CSVReader(',', '\'').parse("1,'Zurich','Wipkingen, X-''1''',ZH\n1,'Zurich','Hoengg, X-''2''',ZH");
 
