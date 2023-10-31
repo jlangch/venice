@@ -349,9 +349,56 @@ public class CSVReaderTest {
 
 
 
+    @Test
+    public void test_10a() {
+        final List<List<String>> records = new CSVReader(',', '\'').parse("1,'''zh'");
+
+        assertEquals(1, records.size());
+
+        final List<String> record = records.get(0);
+        assertEquals(2, record.size());
+        assertEquals("1",record.get(0));
+        assertEquals("'zh", record.get(1));
+    }
 
     @Test
-    public void test_6() {
+    public void test_10b() {
+        final List<List<String>> records = new CSVReader(',', '\'').parse("1,'zh'''");
+
+        assertEquals(1, records.size());
+
+        final List<String> record = records.get(0);
+        assertEquals(2, record.size());
+        assertEquals("1",record.get(0));
+        assertEquals("zh'", record.get(1));
+    }
+
+    @Test
+    public void test_10c() {
+        final List<List<String>> records = new CSVReader(',', '\'').parse("1,'''zh'''");
+
+        assertEquals(1, records.size());
+
+        final List<String> record = records.get(0);
+        assertEquals(2, record.size());
+        assertEquals("1",record.get(0));
+        assertEquals("'zh'", record.get(1));
+    }
+
+    @Test
+    public void test_10d() {
+        final List<List<String>> records = new CSVReader(',', '\'').parse("1,'''''''zh'''''''");
+
+        assertEquals(1, records.size());
+
+        final List<String> record = records.get(0);
+        assertEquals(2, record.size());
+        assertEquals("1",record.get(0));
+        assertEquals("'''zh'''", record.get(1));
+    }
+
+    @Test
+    public void test_11a() {
         final List<List<String>> records =
                 new CSVReader(',', '\'').parse("1,'Zurich','Wipkingen, X-''1''',ZH");
 
@@ -362,6 +409,28 @@ public class CSVReaderTest {
         assertEquals("1",record.get(0));
         assertEquals("Zurich", record.get(1));
         assertEquals("Wipkingen, X-'1'", record.get(2));
+        assertEquals("ZH", record.get(3));
+    }
+
+    @Test
+    public void test_11b() {
+        final List<List<String>> records =
+                new CSVReader(',', '\'').parse("1,'Zurich','Wipkingen, X-''1''',ZH\n1,'Zurich','Hoengg, X-''2''',ZH");
+
+        assertEquals(2, records.size());
+
+        List<String> record = records.get(0);
+        assertEquals(4, record.size());
+        assertEquals("1",record.get(0));
+        assertEquals("Zurich", record.get(1));
+        assertEquals("Wipkingen, X-'1'", record.get(2));
+        assertEquals("ZH", record.get(3));
+
+        record = records.get(1);
+        assertEquals(4, record.size());
+        assertEquals("1",record.get(0));
+        assertEquals("Zurich", record.get(1));
+        assertEquals("Hoengg, X-'2'", record.get(2));
         assertEquals("ZH", record.get(3));
     }
 

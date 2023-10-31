@@ -143,7 +143,7 @@ public class CSVReader {
         while(!rd.eof()) {
             int ch = rd.peek();
             if (ch == quote) {
-            	// trailing quote or escaped quote
+            	// trailing quote or escaped quote?
                 rd.consume();
 
                 int chNext = rd.peek();
