@@ -161,8 +161,8 @@ public class CSVReader {
                 }
             }
             else {
-            	rd.consume();
                 sb.append((char)ch);
+            	rd.consume();
             }
         }
 

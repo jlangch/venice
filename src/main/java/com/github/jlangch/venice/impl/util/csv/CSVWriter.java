@@ -147,10 +147,10 @@ public class CSVWriter {
     }
 
     private String quote(final String s) {
-        return needsQuote(s) ? quote + escape(s) + quote : s;
+        return needsQuoting(s) ? quote + escape(s) + quote : s;
     }
 
-    private boolean needsQuote(final String s) {
+    private boolean needsQuoting(final String s) {
         return s != null && (s.contains(" ")
                                 || s.contains(quote)
                                 || s.contains(separator)
