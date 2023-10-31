@@ -63,9 +63,9 @@ public class CharacterReader {
 	        else {
 	            columnNr++;
 	        }
-
-	        chNext = ch == EOF ? EOF : ch;
         }
+
+        chNext = ch == EOF ? EOF : ch;
     }
 
     public boolean eof() {

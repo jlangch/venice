@@ -21,18 +21,12 @@
  */
 package com.github.jlangch.venice.impl.util.csv;
 
-import java.io.BufferedReader;
 import java.io.InputStream;
-import java.io.InputStreamReader;
 import java.io.Reader;
-import java.io.StringReader;
 import java.nio.charset.Charset;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
-import com.github.jlangch.venice.VncException;
 import com.github.jlangch.venice.impl.util.io.CharsetUtil;
 
 
@@ -43,90 +37,162 @@ public class CSVReader {
     }
 
     public CSVReader(final char separator, final char quote) {
-        this.separator = String.valueOf(separator);
-        this.quote = String.valueOf(quote);
-
-        this.doubleQuotes = this.quote + this.quote;
-        this.matcher = Pattern.compile(makeRegex()).matcher("");
+        this.separator = separator;
+        this.quote = quote;
     }
 
     public List<List<String>> parse(final String csv) {
-        return parse(new StringReader(csv));
+        return parse(new CharacterReader(csv));
+    }
+
+    public List<List<String>> parse(final Reader rd) {
+        return parse(new CharacterReader(rd));
     }
 
     public List<List<String>> parse(final InputStream is, final Charset charset) {
-        return parse(new InputStreamReader(is, CharsetUtil.charset(charset)));
+        return parse(new CharacterReader(is, CharsetUtil.charset(charset)));
     }
 
-    public List<List<String>> parse(final Reader reader) {
+
+    private List<List<String>> parse(final CharacterReader rd) {
         final List<List<String>> records = new ArrayList<>();
 
-        try(BufferedReader br = new BufferedReader(reader)) {
-            String l = br.readLine();
-            while(l != null) {
-                final List<String> items = split(l);
-                final List<String> parsedItems = new ArrayList<>();
-                int ii = 0;
-                while(ii<items.size()) {
-                    final String v = items.get(ii);
-                    if (v.equals(separator)) {
-                        parsedItems.add(null);
-                        ii += 1;
-                    }
-                    else {
-                        parsedItems.add(unquote(v));
-                        ii += 2;
-                    }
-                }
-
-                records.add(parsedItems);
-                l = br.readLine();
+        while(!rd.eof()) {
+            final int ch = rd.peek();
+            if (ch == '\r' || ch == '\n') {
+                rd.consume(); // skip CR / LF
             }
-            return records;
+            else {
+                final List<String> record = parseRecord(rd);
+                if (!record.isEmpty()) {
+                    records.add(record);
+                }
+            }
         }
-        catch(Exception ex) {
-            throw new VncException("Failed to parse CSV", ex);
+
+        return records;
+    }
+
+    private List<String> parseRecord(final CharacterReader rd) {
+        // empty line?
+    	skipChars(rd, '\r');  // skip CR
+        if (rd.peek() == '\n') {
+            rd.consume();
+            return new ArrayList<>();
+        }
+        if (rd.eof()) {
+            return new ArrayList<>();
+        }
+
+
+        final List<String> record = new ArrayList<>();
+
+
+        while(!rd.eof()) {
+            final int ch = rd.peek();
+
+            if (ch == '\r') {
+            	 skipChars(rd, '\r');  // skip CR
+            }
+            else if (ch == '\n') {
+                rd.consume();
+                break;
+            }
+            else if (ch == quote) {
+            	rd.consume();
+                record.add(parseQuotedField(rd));
+            }
+            else {
+                record.add(parseField(rd));
+            }
+
+            if (rd.peek() == separator) {
+                rd.consume();
+                skipChars(rd, '\r');
+                if (rd.peek() == '\n' || rd.eof()) {
+                	record.add(null);
+                }
+            }
+        }
+
+        return record;
+    }
+
+    private String parseField(final CharacterReader rd) {
+        final StringBuilder sb = new StringBuilder();
+
+        while(!rd.eof()) {
+            final int ch = rd.peek();
+
+            if (ch == separator || ch == '\r' || ch == '\n') {
+                break;
+            }
+            else {
+            	rd.consume();
+                sb.append((char)ch);
+            }
+        }
+
+        return sb.length() == 0 ? null : sb.toString();
+    }
+
+    private String parseQuotedField(final CharacterReader rd) {
+        final StringBuilder sb = new StringBuilder();
+
+        // read field
+        while(!rd.eof()) {
+            int ch = rd.peek();
+            if (ch == quote) {
+            	// trailing quote or escaped quote
+                rd.consume();
+
+                int chNext = rd.peek();
+                if (chNext == quote) {
+                	sb.append(quote); // escaped quote
+                    rd.consume();
+                }
+                else {
+                	break;  // trailing quote
+                }
+            }
+            else {
+            	rd.consume();
+                sb.append((char)ch);
+            }
+        }
+
+        readTrailingFieldCharsUpToSeparator(rd);
+
+        return sb.toString().trim();
+    }
+
+    private void skipChars(final CharacterReader rd, final char skipCh) {
+        while(rd.peek() == skipCh) rd.consume();
+    }
+
+    private void readTrailingFieldCharsUpToSeparator(final CharacterReader rd) {
+        skipChars(rd, '\r');  // skip CR
+
+        if (!rd.eof()) {
+            int ch = rd.peek();
+            if (ch == separator) {
+                rd.consume();
+            }
+            else if (ch == '\n') {
+                return;
+            }
+            else {
+                throw new RuntimeException(
+                        String.format(
+                                "Unexpected char '%c' after quoted field at line %d, col %d.",
+                                ch,
+                                rd.getLineNr(),
+                                rd.getColNr()));
+             }
         }
     }
 
-    public List<String> split(final String line) {
-        matcher.reset(line);
 
-        final List<String> items = new ArrayList<>();
-
-        while (matcher.find()) {
-            items.add(unquote(matcher.group()));
-        }
-
-        return items;
-    }
-
-    private String unquote(final String item) {
-        if (item.startsWith(quote) && item.endsWith(quote)) {
-            return item.substring(1, item.length()-1)
-                       .replace(doubleQuotes, quote);
-        }
-        else {
-            return item;
-        }
-    }
-
-    private String makeRegex() {
-        return String.format(
-                "[%s]|[^%s%s]+|[%s](?:[^%s]|[%s][%s])*[%s]",
-                separator,
-                separator,
-                quote,
-                quote,
-                quote,
-                quote,
-                quote,
-                quote);
-    }
-
-
-    private final String separator;
-    private final String quote;
-    private final String doubleQuotes;
-    private final Matcher matcher;
+    private final char separator;
+    private final char quote;
 }
