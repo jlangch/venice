@@ -80,8 +80,8 @@ public class CsvFunctions {
                         "| :separator val | e.g. \",\", defaults to a comma |\n" +
                         "| :quote val     | e.g. \"'\", defaults to a double quote |")
                     .examples(
-                        "(csv/read \"1,\\\"ab\\\",false\")",
-                        "(csv/read \"1:::'ab':false\" :separator \":\" :quote \"'\")")
+                        "(csv/read \"\"\"1,\"ab\",false\"\"\")",
+                        "(csv/read \"1|||'ab'|false\" :separator \"|\" :quote \"'\")")
                     .build()
         ) {
             @Override
