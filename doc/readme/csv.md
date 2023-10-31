@@ -14,26 +14,25 @@ a comma and a double quote.
 (csv/read """
           8000,"Zurich",ZH
           5000,"Aarau",AG
-          """))
+          """)
             
-;; => (["8000" "Zurich" "ZH"] 
-;;     ["5000" "Aarau" "AG"])
+;; => (("8000" "Zurich" "ZH") ("5000" "Aarau" "AG"))
 ```
 
 With alternate quote and separator:
 
 ```clojure
 (csv/read """
-          8000,'Zurich','Wipkingen, X-''1''',ZH
+          8000,'Zurich','Wipkingen, Meier''s Ring',ZH
           3000,'Bern','',BE
-          5000,'Aarau',,,
+          5000,'Aarau',,
           """
           :separator "," 
           :quote "'")
             
-;; => (["8000" "Zurich" "Wipkingen, X-'1'" "ZH"] 
-;;     ["3000" "Bern" "" "BE"] 
-;;     ["5000" "Aarau" nil nil])
+;; => (("8000" "Zurich" "Wipkingen, Meier's Ring" "ZH") 
+;;     ("3000" "Bern" "" "BE") 
+;;     ("5000" "Aarau" nil nil))
 ```
 
 
@@ -44,7 +43,7 @@ Writes data in CSV format to a string or a Java Writer
 ```clojure
 (csv/write-str [[1 "AC" false] [2 "WS" true]])
   
-  ;; => "1,AC,false\n2,WS,true"
+;; => "1,AC,false\n2,WS,true"
 ```
 
 With alternate quote, separator, and newline:
@@ -55,7 +54,7 @@ With alternate quote, separator, and newline:
                :separator ";"
                :newline :cr+lf)
                  
-;; => "1;AC;false\r\n2;'WS;''-1';true"
+;; => "1;AC;false\r\n2;'WS;''-1''';true"
 ```
 
 
@@ -63,4 +62,4 @@ Writes data in CSV format to a file:
 
 ```clojure
 (csv/write (io/file "test.csv") [[1 "AC" false] [2 "WS" true]])
-``
+```
