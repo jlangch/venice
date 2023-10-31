@@ -232,8 +232,9 @@ public class CsvFunctions {
                         .meta()
                         .arglists("(csv/write-str records & options)")
                         .doc(
-                            "Writes data to a string in CSV format.\n" +
-                            "\n" +
+                            "Writes data to a string in CSV format.\n\n" +
+                            "All fields containing a quote char, a separator char or a newline " +
+                            "are quoted.\n\n" +
                             "Options:\n\n" +
                             "| :separator val | e.g. \",\", defaults to a comma |\n" +
                             "| :quote val     | e.g. \"'\", defaults to a double quote |\n" +
