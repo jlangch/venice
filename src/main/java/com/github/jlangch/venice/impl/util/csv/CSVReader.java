@@ -175,10 +175,7 @@ public class CSVReader {
 
         if (!rd.eof()) {
             int ch = rd.peek();
-            if (ch == separator) {
-                rd.consume();
-            }
-            else if (ch == '\n') {
+            if (ch == separator || ch == '\n') {
                 return;
             }
             else {
