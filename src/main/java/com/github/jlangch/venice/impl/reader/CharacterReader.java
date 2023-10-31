@@ -43,6 +43,9 @@ public class CharacterReader {
                 lineNr++;
                 columnNr = 1;
             }
+            else if (chNext == CR) {
+                // pass over regarding line/column nr
+            }
             else {
                 columnNr++;
             }
@@ -61,6 +64,7 @@ public class CharacterReader {
 
 
     private static final int LF  = '\n';
+    private static final int CR  = '\r';
     private static final int EOF = -1;
 
     private final String str;

@@ -45,7 +45,7 @@ public class CharacterReader {
         rd = r;
 
         final int ch = next();
-        chNext = ch == EOF ? EOF : ch;
+        chNext = (ch == EOF) ? EOF : ch;
     }
 
     public int peek() {
@@ -53,23 +53,36 @@ public class CharacterReader {
     }
 
     public void consume() {
-        final int ch = next();
+        if (chNext != EOF) {
+            if (chNext == LF) {
+                lineNr++;
+                columnNr = 1;
+            }
+            else if (chNext == CR) {
+                // pass over regarding line/column nr
+            }
+            else {
+                columnNr++;
+            }
 
-        if (ch != EOF) {
-	        if (chNext == LF) {
-	            lineNr++;
-	            columnNr = 1;
-	        }
-	        else {
-	            columnNr++;
-	        }
+            chNext = next();
         }
-
-        chNext = ch == EOF ? EOF : ch;
     }
 
-    public boolean eof() {
+    public void skipAllOfChar(final char ch) {
+        while(peek() == ch) consume();
+    }
+
+    public boolean isEof() {
         return chNext == EOF;
+    }
+
+    public boolean isLf() {
+        return chNext == LF;
+    }
+
+    public boolean isCr() {
+        return chNext == CR;
     }
 
     public int getLineNr() {
@@ -87,17 +100,18 @@ public class CharacterReader {
         }
         catch(IOException ex) {
             throw new RuntimeException(
-            		String.format(
-            			"Failed to read next char from CSV reader at line %d, col %d.",
-            			lineNr,
-            			columnNr),
-            		ex);
+                    String.format(
+                        "Failed to read next char from CSV reader at line %d, col %d.",
+                        lineNr,
+                        columnNr),
+                    ex);
         }
     }
 
 
     private static final int EOF = -1;
     private static final int LF  = '\n';
+    private static final int CR  = '\r';
 
     private final Reader rd;
     private int chNext;

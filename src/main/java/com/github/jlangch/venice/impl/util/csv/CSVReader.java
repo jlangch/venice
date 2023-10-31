@@ -62,7 +62,7 @@ public class CSVReader {
     private List<List<String>> parse(final CharacterReader rd) {
         final List<List<String>> records = new ArrayList<>();
 
-        while(!rd.eof()) {
+        while(!rd.isEof()) {
             final int ch = rd.peek();
             if (ch == '\r' || ch == '\n') {
                 rd.consume(); // skip CR / LF
@@ -80,12 +80,12 @@ public class CSVReader {
 
     private List<String> parseRecord(final CharacterReader rd) {
         // empty line?
-    	skipChars(rd, '\r');  // skip CR
+    	rd.skipAllOfChar('\r');  // skip CR
         if (rd.peek() == '\n') {
             rd.consume();
             return new ArrayList<>();
         }
-        if (rd.eof()) {
+        if (rd.isEof()) {
             return new ArrayList<>();
         }
 
@@ -93,11 +93,11 @@ public class CSVReader {
         final List<String> record = new ArrayList<>();
 
 
-        while(!rd.eof()) {
+        while(!rd.isEof()) {
             final int ch = rd.peek();
 
             if (ch == '\r') {
-            	 skipChars(rd, '\r');  // skip CR
+            	rd.skipAllOfChar('\r');  // skip CR
             }
             else if (ch == '\n') {
                 rd.consume();
@@ -113,8 +113,8 @@ public class CSVReader {
 
             if (rd.peek() == separator) {
                 rd.consume();
-                skipChars(rd, '\r');
-                if (rd.peek() == '\n' || rd.eof()) {
+                rd.skipAllOfChar('\r');
+                if (rd.peek() == '\n' || rd.isEof()) {
                 	record.add(null);
                 }
             }
@@ -126,7 +126,7 @@ public class CSVReader {
     private String parseField(final CharacterReader rd) {
         final StringBuilder sb = new StringBuilder();
 
-        while(!rd.eof()) {
+        while(!rd.isEof()) {
             final int ch = rd.peek();
 
             if (ch == separator || ch == '\r' || ch == '\n') {
@@ -145,7 +145,7 @@ public class CSVReader {
         final StringBuilder sb = new StringBuilder();
 
         // read field
-        while(!rd.eof()) {
+        while(!rd.isEof()) {
             int ch = rd.peek();
             if (ch == quote) {
             	// trailing quote or escaped quote?
@@ -171,14 +171,10 @@ public class CSVReader {
         return sb.toString().trim();
     }
 
-    private void skipChars(final CharacterReader rd, final char skipCh) {
-        while(rd.peek() == skipCh) rd.consume();
-    }
-
     private void readTrailingFieldCharsUpToSeparator(final CharacterReader rd) {
-        skipChars(rd, '\r');  // skip CR
+        rd.skipAllOfChar('\r');  // skip CR
 
-        if (!rd.eof()) {
+        if (!rd.isEof()) {
             int ch = rd.peek();
             if (ch == separator || ch == '\n') {
                 return;
