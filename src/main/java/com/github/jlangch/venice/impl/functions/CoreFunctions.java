@@ -5773,7 +5773,10 @@ public class CoreFunctions {
                     .arglists("(cons x coll)")
                     .doc(
                         "Returns a new collection where x is the first element and coll is " +
-                        "the rest")
+                        "the rest. \n\n" +
+                        "For ordered collections like list, vectors and ordered sets/maps the value " +
+                        "is added at the beginning. For all other collections the position is " +
+                        "undefined.")
                     .examples(
                         "(cons 1 '(2 3 4 5 6))",
                         "(cons 1 nil)",
@@ -5880,8 +5883,9 @@ public class CoreFunctions {
                         "(conj coll x & xs)")
                     .doc(
                         "Returns a new collection with the x, xs 'added'. `(conj nil item)` " +
-                        "returns (item). For list, vectors and ordered maps the values are " +
-                        "added at the end. For all other sets and maps the position is undefined.")
+                        "returns `(item)` and `(conj item)` returns `item`.\n\n" +
+                        "For ordered collections like list, vectors and ordered sets/maps the value " +
+                        "is added at the end. For all other collections the position is undefined.")
                     .examples(
                         "(conj [1 2 3] 4)",
                         "(conj [1 2 3] 4 5)",
@@ -5970,12 +5974,17 @@ public class CoreFunctions {
                     .meta()
                     .arglists("(cons! x coll)")
                     .doc(
-                        "Adds x to the mutable coll")
+                        "Adds x to the mutable collection coll. \n\n" +
+                        "For mutable ordered collections like lists the value " +
+                        "is added at the beginning. For all other mutable collections the " +
+                        "position is undefined.")
                     .examples(
                         "(cons! 1 (mutable-list 2 3))",
                         "(cons! 3 (mutable-set 1 2))",
                         "(cons! {:c 3} (mutable-map :a 1 :b 2))",
-                        "(cons! (map-entry :c 3) (mutable-map :a 1 :b 2))")
+                        "(cons! (map-entry :c 3) (mutable-map :a 1 :b 2))",
+                        "(cons! 1 (stack))",
+                        "(cons! 1 (queue))")
                     .build()
         ) {
             @Override
@@ -6010,6 +6019,16 @@ public class CoreFunctions {
                                 Types.getType(args.first())));
                     }
                 }
+                else if (Types.isVncQueue(coll)) {
+                    final VncQueue queue = (VncQueue)coll;
+                    queue.put(args.first());
+                    return queue;
+                }
+                else if (Types.isVncStack(coll)) {
+                    final VncStack stack = (VncStack)coll;
+                    stack.push(args.first());
+                    return stack;
+                }
                 else {
                     throw new VncException(String.format(
                             "Invalid argument type %s while calling function 'cons!'",
@@ -6032,9 +6051,10 @@ public class CoreFunctions {
                         "(conj! coll x)",
                         "(conj! coll x & xs)")
                     .doc(
-                        "Returns a new mutable collection with the x, xs 'added'. `(conj! nil item)` " +
-                        "returns `(item)`. For mutable list the values are added at the end. For all " +
-                        "mutable sets and maps the position is undefined.")
+                        "Returns a new mutable collection with the x, xs 'added'. " +
+                        "`(conj! nil item)` returns `(item)` and `(conj! item)` returns `item`.\n\n" +
+                        "For mutable ordered collections like lists the value is added at the end. " +
+                        "For all other mutable collections the position is undefined.")
                     .examples(
                         "(conj! (mutable-list 1 2 3) 4)",
                         "(conj! (mutable-list 1 2 3) 4 5)",
@@ -6043,8 +6063,8 @@ public class CoreFunctions {
                         "(conj! (mutable-map :a 1 :b 2) [:c 3])",
                         "(conj! (mutable-map :a 1 :b 2) {:c 3})",
                         "(conj! (mutable-map :a 1 :b 2) (map-entry :c 3))",
-                        "(conj! (stack) 1 2 3))",
-                        "(conj! (queue) 1 2 3))",
+                        "(conj! (stack) 1 2 3)",
+                        "(conj! (queue) 1 2 3)",
                         "(conj!)",
                         "(conj! 4)")
                     .build()
@@ -6055,7 +6075,7 @@ public class CoreFunctions {
                     return new VncMutableList();
                 }
                 else if (args.size() == 1) {
-                    return args.first();
+                	return args.first();
                 }
                 else {
                     VncVal coll = args.first();

@@ -40,6 +40,7 @@ import com.github.jlangch.venice.impl.specialforms.util.SpecialFormsContext;
 import com.github.jlangch.venice.impl.types.INamespaceAware;
 import com.github.jlangch.venice.impl.types.VncBoolean;
 import com.github.jlangch.venice.impl.types.VncFunction;
+import com.github.jlangch.venice.impl.types.VncKeyword;
 import com.github.jlangch.venice.impl.types.VncSpecialForm;
 import com.github.jlangch.venice.impl.types.VncString;
 import com.github.jlangch.venice.impl.types.VncSymbol;
@@ -254,8 +255,10 @@ public class SpecialForms_NamespaceFunctions {
                                 .collect(Collectors.toList()));
                 }
                 else {
-                    final VncSymbol ns = Coerce.toVncSymbol(
-                                            ctx.getEvaluator().evaluate(args.first(), env, false));
+                	final VncSymbol ns = Types.isVncKeyword(args.first())
+                							? ((VncKeyword)args.first()).toSymbol()
+                							: Coerce.toVncSymbol(
+                									ctx.getEvaluator().evaluate(args.first(), env, false));
 
                     final String nsCore = Namespaces.NS_CORE.getName();
                     final String nsName = nsCore.equals(ns.getName()) ? null : ns.getName();
