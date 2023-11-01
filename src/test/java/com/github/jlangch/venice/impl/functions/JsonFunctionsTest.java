@@ -24,6 +24,7 @@ package com.github.jlangch.venice.impl.functions;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import java.io.File;
+import java.nio.file.Files;
 
 import org.junit.jupiter.api.Test;
 
@@ -312,7 +313,7 @@ public class JsonFunctionsTest {
         final Venice venice = new Venice();
 
         try {
-            final File file = File.createTempFile("from__", ".json");
+            final File file = Files.createTempFile("from__", ".json").normalize().toFile();
             file.deleteOnExit();
             final String fileName = file.getAbsolutePath();
 

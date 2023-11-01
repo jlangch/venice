@@ -28,6 +28,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.io.File;
 import java.nio.charset.Charset;
+import java.nio.file.Files;
 
 import org.junit.jupiter.api.Test;
 
@@ -44,13 +45,13 @@ public class IOFunctionsTest {
         final Venice venice = new Venice();
 
         try {
-            final File from = File.createTempFile("from__", ".txt");
+            final File from = Files.createTempFile("from__", ".txt").normalize().toFile();
             from.deleteOnExit();
             venice.eval(
                     "(io/spit file \"123456789\" :append true)",
                     Parameters.of("file", from));
 
-            final File to = File.createTempFile("to__", ".txt");
+            final File to = Files.createTempFile("to__", ".txt").normalize().toFile();
             to.delete();
             to.deleteOnExit();
 
@@ -78,9 +79,9 @@ public class IOFunctionsTest {
         final Venice venice = new Venice();
 
         try {
-            final File file1 = File.createTempFile("spit", ".txt");
-            final File file2 = File.createTempFile("spit", ".txt");
-            final File file3 = File.createTempFile("spit", ".txt");
+            final File file1 = Files.createTempFile("spit", ".txt").normalize().toFile();
+            final File file2 = Files.createTempFile("spit", ".txt").normalize().toFile();
+            final File file3 = Files.createTempFile("spit", ".txt").normalize().toFile();
 
             file1.deleteOnExit();
             file2.deleteOnExit();
@@ -272,8 +273,8 @@ public class IOFunctionsTest {
     public void test_io_list_files_1() throws Exception{
         final Venice venice = new Venice();
 
-        final File file1 = File.createTempFile("spit-list", "-1.txt");
-        final File file2 = File.createTempFile("spit-list", "-2.txt");
+        final File file1 = Files.createTempFile("spit-list", "-1.txt").normalize().toFile();
+        final File file2 = Files.createTempFile("spit-list", "-2.txt").normalize().toFile();
 
         file1.deleteOnExit();
         file2.deleteOnExit();

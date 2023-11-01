@@ -47,7 +47,7 @@ public class LoadPaths2Test {
 
     @Test
     public void test_getPaths() throws IOException {
-        final File zip = File.createTempFile("loadpath_", ".zip").getCanonicalFile();
+        final File zip = Files.createTempFile("loadpath_", ".zip").normalize().toFile().getCanonicalFile();
         final File dir1 = Files.createTempDirectory("loadpath_").toFile().getCanonicalFile();
         final File dir2 = Files.createTempDirectory("loadpath_").toFile().getCanonicalFile();
         zip.deleteOnExit();
@@ -116,7 +116,7 @@ public class LoadPaths2Test {
         FileUtil.save("1234".getBytes(CharsetUtil.DEFAULT_CHARSET), bin1, true);
         final File bin2 = new File(dir2, "data2.bin");
         FileUtil.save("5678".getBytes(CharsetUtil.DEFAULT_CHARSET), bin2, true);
-        final File zip = File.createTempFile("loadpath_", ".zip").getCanonicalFile();
+        final File zip = Files.createTempFile("loadpath_", ".zip").normalize().toFile().getCanonicalFile();
         FileUtil.save(zip("a", "1234", "b", "5678"), zip, true);
         dir1.deleteOnExit();
         dir2.deleteOnExit();
@@ -163,7 +163,7 @@ public class LoadPaths2Test {
         FileUtil.save("1234".getBytes(CharsetUtil.DEFAULT_CHARSET), bin1, true);
         final File bin2 = new File(dir2, "data2.bin");
         FileUtil.save("5678".getBytes(CharsetUtil.DEFAULT_CHARSET), bin2, true);
-        final File zip = File.createTempFile("loadpath_", ".zip").getCanonicalFile();
+        final File zip = Files.createTempFile("loadpath_", ".zip").normalize().toFile().getCanonicalFile();
         FileUtil.save(zip("a", "1234", "b", "5678"), zip, true);
         dir1.deleteOnExit();
         dir2.deleteOnExit();
@@ -210,7 +210,7 @@ public class LoadPaths2Test {
         FileUtil.save("1234".getBytes(CharsetUtil.DEFAULT_CHARSET), bin1, true);
         final File bin2 = new File(dir2, "data2.bin");
         FileUtil.save("5678".getBytes(CharsetUtil.DEFAULT_CHARSET), bin2, true);
-        final File zip = File.createTempFile("loadpath_", ".zip").getCanonicalFile();
+        final File zip = Files.createTempFile("loadpath_", ".zip").normalize().toFile().getCanonicalFile();
         FileUtil.save(zip("a", "1234", "b", "5678"), zip, true);
         dir1.deleteOnExit();
         dir2.deleteOnExit();
@@ -257,7 +257,7 @@ public class LoadPaths2Test {
         FileUtil.save("1234".getBytes(CharsetUtil.DEFAULT_CHARSET), bin1, true);
         final File bin2 = new File(dir2, "data2.bin");
         FileUtil.save("5678".getBytes(CharsetUtil.DEFAULT_CHARSET), bin2, true);
-        final File zip = File.createTempFile("loadpath_", ".zip").getCanonicalFile();
+        final File zip = Files.createTempFile("loadpath_", ".zip").normalize().toFile().getCanonicalFile();
         FileUtil.save(zip("a", "1234", "b", "5678"), zip, true);
         dir1.deleteOnExit();
         dir2.deleteOnExit();
@@ -304,7 +304,7 @@ public class LoadPaths2Test {
         FileUtil.save("(def x 1)".getBytes(CharsetUtil.DEFAULT_CHARSET), bin1, true);
         final File bin2 = new File(dir2, "data2.venice");
         FileUtil.save("(def x 2)".getBytes(CharsetUtil.DEFAULT_CHARSET), bin2, true);
-        final File zip = File.createTempFile("loadpath_", ".zip").getCanonicalFile();
+        final File zip = Files.createTempFile("loadpath_", ".zip").normalize().toFile().getCanonicalFile();
         FileUtil.save(zip("a.venice", "(def x :a)", "b.venice", "(def x :b)"), zip, true);
         dir1.deleteOnExit();
         dir2.deleteOnExit();
@@ -361,7 +361,7 @@ public class LoadPaths2Test {
         FileUtil.save("(def x 1)".getBytes(CharsetUtil.DEFAULT_CHARSET), bin1, true);
         final File bin2 = new File(dir2, "data2.venice");
         FileUtil.save("(def x 2)".getBytes(CharsetUtil.DEFAULT_CHARSET), bin2, true);
-        final File zip = File.createTempFile("loadpath_", ".zip").getCanonicalFile();
+        final File zip = Files.createTempFile("loadpath_", ".zip").normalize().toFile().getCanonicalFile();
         FileUtil.save(zip("a.venice", "(def x :a)", "b.venice", "(def x :b)"), zip, true);
         dir1.deleteOnExit();
         dir2.deleteOnExit();

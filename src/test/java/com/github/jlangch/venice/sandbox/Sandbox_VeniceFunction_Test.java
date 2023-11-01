@@ -26,6 +26,7 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 
 import java.io.File;
 import java.io.IOException;
+import java.nio.file.Files;
 
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
@@ -211,7 +212,7 @@ public class Sandbox_VeniceFunction_Test {
     @BeforeEach
     public void createTempFile() {
         try {
-            tempFile = File.createTempFile("test__", ".txt");
+            tempFile = Files.createTempFile("test__", ".txt").normalize().toFile();
             FileUtil.save("1234567890", tempFile, true);
         }
         catch(IOException ex) {

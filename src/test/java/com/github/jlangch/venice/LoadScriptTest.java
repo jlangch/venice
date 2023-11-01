@@ -60,7 +60,7 @@ public class LoadScriptTest {
                 "(defn sum [x y] (+ x y 11))       ";
 
         try {
-            final File file = File.createTempFile("test", ".venice");
+            final File file = Files.createTempFile("test", ".venice").normalize().toFile();
             Files.write(file.toPath(), script_1.getBytes("UTF-8"), StandardOpenOption.TRUNCATE_EXISTING);
 
             final String script_2 =
@@ -90,7 +90,7 @@ public class LoadScriptTest {
                 "(defn sum [x y] (+ x y 11))     ";
 
         try {
-            final File file = File.createTempFile("test", ".venice");
+            final File file = Files.createTempFile("test", ".venice").normalize().toFile();
             Files.write(file.toPath(), script_1.getBytes("UTF-8"), StandardOpenOption.TRUNCATE_EXISTING);
 
             final String script_2 =
@@ -120,7 +120,7 @@ public class LoadScriptTest {
                 "(defn sum [x y] (+ x y 11))       ";
 
         try {
-            File file = File.createTempFile("test", ".venice");
+            File file = Files.createTempFile("test", ".venice").normalize().toFile();
             Files.write(file.toPath(), script_1.getBytes("UTF-8"), StandardOpenOption.TRUNCATE_EXISTING);
 
             final String script_2 =
@@ -136,7 +136,7 @@ public class LoadScriptTest {
             }
 
 
-            file = File.createTempFile("test", ".venice");
+            file = Files.createTempFile("test", ".venice").normalize().toFile();
             Files.write(file.toPath(), script_1.getBytes("UTF-8"), StandardOpenOption.TRUNCATE_EXISTING);
 
             final String script_3 =
@@ -164,7 +164,7 @@ public class LoadScriptTest {
                 "(defn sum [x y] (+ x y 11))       ";
 
         try {
-            final File file = File.createTempFile("test", ".venice");
+            final File file = Files.createTempFile("test", ".venice").normalize().toFile();
             Files.write(file.toPath(), script_1.getBytes("UTF-8"), StandardOpenOption.TRUNCATE_EXISTING);
 
             final String script_2 =
@@ -194,7 +194,7 @@ public class LoadScriptTest {
                 "(defn sum [x y] (+ x y 11))       ";
 
         try {
-            final File file = File.createTempFile("test", ".venice");
+            final File file = Files.createTempFile("test", ".venice").normalize().toFile();
             Files.write(file.toPath(), script_1.getBytes("UTF-8"), StandardOpenOption.TRUNCATE_EXISTING);
 
             final String script_2 =

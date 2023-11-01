@@ -41,7 +41,7 @@ public class IOFunctionsSpitSlurpTest {
 
         // with default encoding
         try {
-            final File file = File.createTempFile("spit", ".txt");
+            final File file = Files.createTempFile("spit", ".txt").normalize().toFile();
             file.deleteOnExit();
 
             venice.eval(
@@ -60,7 +60,7 @@ public class IOFunctionsSpitSlurpTest {
 
         // with UTF-8 encoding
         try {
-            final File file = File.createTempFile("spit", ".txt");
+            final File file = Files.createTempFile("spit", ".txt").normalize().toFile();
             file.deleteOnExit();
 
             venice.eval(
@@ -84,7 +84,7 @@ public class IOFunctionsSpitSlurpTest {
 
         // with default encoding
         try {
-            final File file = File.createTempFile("slurp", ".txt");
+            final File file = Files.createTempFile("slurp", ".txt").normalize().toFile();
             file.deleteOnExit();
 
             Files.write(file.toPath(), "123456789".getBytes("UTF-8"), StandardOpenOption.APPEND);
@@ -101,7 +101,7 @@ public class IOFunctionsSpitSlurpTest {
 
         // with UTF-8 encoding
         try {
-            final File file = File.createTempFile("slurp", ".txt");
+            final File file = Files.createTempFile("slurp", ".txt").normalize().toFile();
             file.deleteOnExit();
 
             Files.write(file.toPath(), "123456789".getBytes("UTF-8"), StandardOpenOption.APPEND);
