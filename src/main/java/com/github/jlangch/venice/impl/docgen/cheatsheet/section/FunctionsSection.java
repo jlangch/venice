@@ -118,6 +118,7 @@ public class FunctionsSection implements ISectionBuilder {
         final DocSection doc = new DocSection("Documentation", "functions.doc");
         all.addSection(doc);
         doc.addItem(diBuilder.getDocItem("doc", false));
+        doc.addItem(diBuilder.getDocItem("finder"));
         doc.addItem(diBuilder.getDocItem("modules"));
 
         final DocSection def = new DocSection("Definiton", "functions.def");

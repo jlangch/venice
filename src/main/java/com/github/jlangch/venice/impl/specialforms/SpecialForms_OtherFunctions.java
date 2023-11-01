@@ -27,10 +27,13 @@ import static com.github.jlangch.venice.impl.specialforms.util.SpecialFormsUtil.
 import static com.github.jlangch.venice.impl.types.Constants.Nil;
 import static com.github.jlangch.venice.impl.util.ArityExceptions.assertArity;
 import static com.github.jlangch.venice.impl.util.ArityExceptions.assertMinArity;
+import static com.github.jlangch.venice.impl.util.StringUtil.trimToNull;
 
+import java.io.PrintStream;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
 import com.github.jlangch.venice.VncException;
@@ -43,6 +46,7 @@ import com.github.jlangch.venice.impl.debug.breakpoint.BreakpointFnRef;
 import com.github.jlangch.venice.impl.docgen.runtime.DocForm;
 import com.github.jlangch.venice.impl.env.DynamicVar;
 import com.github.jlangch.venice.impl.env.Env;
+import com.github.jlangch.venice.impl.env.EnvUtils;
 import com.github.jlangch.venice.impl.env.Var;
 import com.github.jlangch.venice.impl.modules.Modules;
 import com.github.jlangch.venice.impl.namespaces.Namespace;
@@ -61,11 +65,13 @@ import com.github.jlangch.venice.impl.types.VncSymbol;
 import com.github.jlangch.venice.impl.types.VncVal;
 import com.github.jlangch.venice.impl.types.collections.VncList;
 import com.github.jlangch.venice.impl.types.collections.VncSequence;
+import com.github.jlangch.venice.impl.types.collections.VncVector;
 import com.github.jlangch.venice.impl.types.util.Coerce;
 import com.github.jlangch.venice.impl.types.util.Types;
 import com.github.jlangch.venice.impl.util.ArityExceptions.FnType;
 import com.github.jlangch.venice.impl.util.Inspector;
 import com.github.jlangch.venice.impl.util.MeterRegistry;
+import com.github.jlangch.venice.impl.util.StringUtil;
 import com.github.jlangch.venice.impl.util.SymbolMapBuilder;
 import com.github.jlangch.venice.impl.util.callstack.CallFrame;
 import com.github.jlangch.venice.impl.util.callstack.CallStack;
@@ -111,7 +117,7 @@ public class SpecialForms_OtherFunctions {
                         "(do \n" +
                         "   (deftype :complex [real :long, imaginary :long]) \n" +
                         "   (doc :complex))")
-                    .seeAlso("ns-list", "modules")
+                    .seeAlso("ns-list", "modules", "finder")
                     .build()
         ) {
             @Override
@@ -132,6 +138,99 @@ public class SpecialForms_OtherFunctions {
 
             private static final long serialVersionUID = -1848883965231344442L;
         };
+
+    public static VncSpecialForm finder =
+        new VncSpecialForm(
+                "finder",
+                VncSpecialForm
+                    .meta()
+                    .arglists(
+                        "(finder glob-or-regex)",
+                        "(finder glob-or-regex :human)")
+                    .doc(
+                        "Finds symbols that matches the glob pattern or the regular expression.")
+                    .examples(
+                    	"(finder \"io/zip*\" :human)",
+                        "(finder \"io/zip*\")",
+                        "(finder \"*delete-file*\")",
+                        "(finder #\"io/zip.*\" :human)",
+                        "(finder #\"io/zip.*\")",
+                        "(finder #\".*delete-file*.\")")
+                    .seeAlso("doc", "ns-list", "modules")
+                    .build()
+        ) {
+            @Override
+            public VncVal apply(
+                    final VncVal specialFormMeta,
+                    final VncList args,
+                    final Env env,
+                    final SpecialFormsContext ctx
+            ) {
+                assertArity("finder", FnType.SpecialForm, args, 1, 2);
+
+                final boolean human = args.size() == 2
+                                        && Types.isVncKeyword(args.second())
+                                        && ((VncKeyword)args.second()).getSimpleName().equals("human");
+
+                final VncList items;
+
+                if (Types.isVncString(args.first())) {
+                    // glob pattern
+                    String filter = trimToNull(((VncString)args.first()).getValue());
+                    filter = filter == null ? null : filter.replaceAll("[*]", ".*");
+
+                    items = VncList.ofColl(
+                                EnvUtils
+                                    .globalVars(env, filter)
+                                    .stream()
+                                    .map(it -> VncVector.of(it._1, it._2))
+                                    .collect(Collectors.toList()));
+                }
+                else if (Types.isVncJavaObject(args.first(),  Pattern.class)) {
+                    final Pattern p = Coerce.toVncJavaObject(args.first(), Pattern.class);
+
+                    items = VncList.ofColl(
+                                EnvUtils
+                                    .globalVars(env, p)
+                                    .stream()
+                                    .map(it -> VncVector.of(it._1, it._2))
+                                    .collect(Collectors.toList()));
+                }
+                else {
+                    try (WithCallStack cs = new WithCallStack(new CallFrame("finder", args, specialFormMeta))) {
+                        throw new VncException(
+                                "finder expects either a glob pattern (string) or a regex pattern as argument!");
+                    }
+                }
+
+                if (human) {
+                    VncVal out = env.get(new VncSymbol("*out*"));
+                    PrintStream ps = Types.isVncJavaObject(out, PrintStream.class)
+                                        ? Coerce.toVncJavaObject(out, PrintStream.class)
+                                        : System.out;
+
+                    int maxLen = items
+                                    .getJavaList()
+                                    .stream()
+                                    .map(v -> ((VncSequence)v).first())
+                                    .mapToInt(v -> ((VncSymbol)v).getValue().length())
+                                    .max()
+                                    .orElse(10);
+
+                    items.forEach(it -> ps.format(
+                                            "%s  %s%n",
+                                            StringUtil.padRight(((VncSequence)it).first().toString(), maxLen),
+                                            ((VncSequence)it).second().toString()));
+                    return Nil;
+                }
+                else {
+                    return items;
+                }
+            }
+
+            private static final long serialVersionUID = -1848883965231344442L;
+        };
+
 
 
     ///////////////////////////////////////////////////////////////////////////
@@ -411,9 +510,9 @@ public class SpecialForms_OtherFunctions {
                     .arglists("(inspect val)")
                     .doc("Inspect a value")
                     .examples(
-                    		"(inspect '+)",
-                    		"(inspect (symbol \"+\"))"
-                    		)
+                            "(inspect '+)",
+                            "(inspect (symbol \"+\"))"
+                            )
                     .build()
         ) {
             @Override
@@ -997,6 +1096,7 @@ public class SpecialForms_OtherFunctions {
                     .add(boundQ)
                     .add(dobench)
                     .add(doc)
+                    .add(finder)
                     .add(dorun)
                     .add(macroexpand_on_loadQ)
                     .add(eval)

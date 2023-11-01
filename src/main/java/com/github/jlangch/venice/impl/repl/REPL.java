@@ -36,7 +36,6 @@ import java.nio.file.Files;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-import java.util.Map;
 import java.util.logging.Handler;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -67,6 +66,7 @@ import com.github.jlangch.venice.impl.VeniceInterpreter;
 import com.github.jlangch.venice.impl.debug.agent.DebugAgent;
 import com.github.jlangch.venice.impl.docgen.runtime.DocForm;
 import com.github.jlangch.venice.impl.env.Env;
+import com.github.jlangch.venice.impl.env.EnvUtils;
 import com.github.jlangch.venice.impl.env.Var;
 import com.github.jlangch.venice.impl.functions.JsonFunctions;
 import com.github.jlangch.venice.impl.functions.SystemFunctions;
@@ -83,7 +83,6 @@ import com.github.jlangch.venice.impl.types.VncVal;
 import com.github.jlangch.venice.impl.types.collections.VncList;
 import com.github.jlangch.venice.impl.types.collections.VncMap;
 import com.github.jlangch.venice.impl.types.util.Coerce;
-import com.github.jlangch.venice.impl.types.util.Types;
 import com.github.jlangch.venice.impl.util.CommandLineArgs;
 import com.github.jlangch.venice.impl.util.StringUtil;
 import com.github.jlangch.venice.impl.util.io.CharsetUtil;
@@ -799,13 +798,13 @@ public class REPL {
         }
         else if (first(params).equals("global")) {
             if (params.size() == 1) {
-                printer.println("stdout", envGlobalsToString(env));
+                printer.println("stdout", EnvUtils.envGlobalsToString(env, null));
                 return;
             }
             else if (params.size() == 2) {
                 String filter = trimToNull(second(params));
                 filter = filter == null ? null : filter.replaceAll("[*]", ".*");
-                printer.println("stdout", envGlobalsToString(env, filter));
+                printer.println("stdout", EnvUtils.envGlobalsToString(env, filter));
                 return;
             }
         }
@@ -1205,55 +1204,6 @@ public class REPL {
         this.venice.setMacroExpandOnLoad(macroExpandOnLoad);
 
         DebugAgent.register(agent);
-    }
-
-    private String envGlobalsToString(final Env env) {
-        return new StringBuilder()
-                    .append(formatGlobalVars(
-                                env.getAllGlobalSymbols(),
-                                null))
-                    .toString();
-    }
-
-    private String envGlobalsToString(final Env env, final String regexFilter) {
-        return new StringBuilder()
-                    .append(formatGlobalVars(
-                                env.getAllGlobalSymbols(),
-                                regexFilter))
-                    .toString();
-    }
-
-    private String formatGlobalVars(
-            final Map<VncSymbol,Var> vars,
-            final String regexFilter
-    ) {
-        return vars.values()
-                   .stream()
-                   .sorted((a,b) -> a.getName().getName().compareTo(b.getName().getName()))
-                   .filter(v -> regexFilter == null
-                                       ? true
-                                       : v.getName().getName().matches(regexFilter))
-                   .map(v -> String.format(
-                                "%s (:%s)",
-                                v.getName().getName(),
-                                formatGlobalVarType(v).getValue()))
-                   .collect(Collectors.joining("\n"));
-    }
-
-    public VncKeyword formatGlobalVarType(final Var var_) {
-        final VncVal val = var_.getVal();
-        if (Types.isVncJavaObject(val)) {
-            final VncJavaObject vJava = (VncJavaObject)val;
-            if (vJava.getDelegateFormalType() != null) {
-                return new VncKeyword(vJava.getDelegateFormalType().getName());
-            }
-            else {
-                return new VncKeyword(vJava.getDelegate().getClass().getName());
-            }
-        }
-        else {
-            return Types.getType(val);
-        }
     }
 
     private PrintStream createPrintStream(
