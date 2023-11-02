@@ -7,7 +7,7 @@
     "workbench.colorTheme": "Tomorrow Night Blue",
     "redhat.telemetry.enabled": false,
     "editor.insertSpaces": true,
-    "editor.tabSize": 4,
+    "editor.tabSize": 2,
     "editor.detectIndentation": false,
     "editor.rulers": [80, {"column": 100, "color": "#ffcc00"}]
 }
