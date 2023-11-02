@@ -33,6 +33,7 @@ import java.io.PrintStream;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.function.Predicate;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
@@ -150,11 +151,11 @@ public class SpecialForms_OtherFunctions {
                         "(finder glob-or-regex)",
                         "(finder glob-or-regex :machine)")
                     .doc(
-                        "Finds symbols that matches the glob pattern or the regular expression.")
+                        "Finds symbols that match one more glob patterns or regular expressions.")
                     .examples(
                         "(finder \"io/zip*\")",
                         "(finder \"*delete-file*\")",
-                    	"(finder \"io/zip*\" :machine)",
+                        "(finder \"io/zip*\" :machine)",
                         "(finder #\"io/zip.*\")",
                         "(finder #\".*delete-file*.\")",
                         "(finder #\"io/zip.*\" :machine)")
@@ -170,44 +171,68 @@ public class SpecialForms_OtherFunctions {
             ) {
                 assertMinArity("finder", FnType.SpecialForm, args, 1);
 
-                final VncVal last = args.last();
-                final boolean machine = Types.isVncKeyword(last)
-                                         && ((VncKeyword)last).getSimpleName().equals("machine");
 
-                final VncList filters = machine ? args.butlast() : args;
+                final Set<VncKeyword> flags = args.getJavaList()
+                                                  .stream()
+                                                  .filter(a -> Types.isVncKeyword(a))
+                                                  .map(a -> (VncKeyword)a)
+                                                  .collect(Collectors.toSet());
+
+                final List<VncVal> filters = args.getJavaList()
+                                                 .stream()
+                                                 .filter(a -> !Types.isVncKeyword(a))
+                                                 .collect(Collectors.toList());
+
+                final boolean machine = flags.contains(new VncKeyword(":machine"));
+                final boolean functionType = flags.contains(new VncKeyword(":function"));  // :core/function || :core/protocol-function
+                final boolean macroType = flags.contains(new VncKeyword(":macro"));  // :core/macro
+                final boolean specialFormType = flags.contains(new VncKeyword(":special-form"));  // :core/special-form
+                final boolean protocolType = flags.contains(new VncKeyword(":protocol"));  // :core/protocol
+                final boolean valueType = flags.contains(new VncKeyword(":value"));
+                final boolean allTypes = !(functionType || macroType || specialFormType || protocolType || valueType);
 
                 List<Tuple2<VncSymbol,VncKeyword>> items = EnvUtils.globalVars(env, (String)null);
 
-                // apply all filters (and operation)
+                // apply all regex and glob filters
                 for(VncVal filter : filters) {
-                	final Pattern p;
-                	if (Types.isVncString(filter)) {
+                    final Pattern p;
+                    if (Types.isVncString(filter)) {
                         String f = trimToNull(((VncString)filter).getValue());
                         if (f != null) {
-                        	f = f.contains("*") ? f.replaceAll("[*]", ".*") : ".*" + f + ".*";
+                            f = f.contains("*") ? f.replaceAll("[*]", ".*") : ".*" + f + ".*";
                         }
                         p = Pattern.compile(f);
-                	}
-                	else if (Types.isVncJavaObject(args.first(), Pattern.class)) {
-                		p = Coerce.toVncJavaObject(args.first(), Pattern.class);
-                	}
-                	else {
+                    }
+                    else if (Types.isVncJavaObject(args.first(), Pattern.class)) {
+                        p = Coerce.toVncJavaObject(args.first(), Pattern.class);
+                    }
+                    else {
                         try (WithCallStack cs = new WithCallStack(new CallFrame("finder", args, specialFormMeta))) {
                             throw new VncException(
                                     "finder expects either a glob pattern (string) or a regex pattern as argument!");
                         }
-                	}
+                    }
 
-                	// filter
+                    // filter
                     final Predicate<String> pred = p.asPredicate();
                     items = items.stream()
                                  .filter(v -> pred == null ? true : pred.test(v._1.getName()))
                                  .collect(Collectors.toList());
                 }
 
+                // apply explicit type filters
+                items = items.stream()
+                             .filter(v -> allTypes
+                                          || (functionType && isFunctionType(v._2))
+                                          || (macroType && isMacroType(v._2))
+                                          || (specialFormType && isSpecialFormType(v._2))
+                                          || (protocolType && isProtocolType(v._2))
+                                          || (valueType && isValueType(v._2)))
+                             .collect(Collectors.toList());
+
                 // map to machine or human readable form
                 if (machine) {
-                	return VncList.ofAll(items.stream().map(v -> VncVector.of(v._1, v._2)), Nil);
+                    return VncList.ofAll(items.stream().map(v -> VncVector.of(v._1, v._2)), Nil);
                 }
                 else {
                     VncVal out = env.get(new VncSymbol("*out*"));
@@ -1077,6 +1102,30 @@ public class SpecialForms_OtherFunctions {
 
     private static boolean isNonEmptySequence(final VncVal x) {
         return Types.isVncSequence(x) && !((VncSequence)x).isEmpty();
+    }
+
+    private static boolean isFunctionType(final VncKeyword type) {
+    	return "core/function".equals(type.getQualifiedName())
+    			|| "core/protocol-function".equals(type.getQualifiedName());
+    }
+
+    private static boolean isMacroType(final VncKeyword type) {
+    	return "core/macro".equals(type.getQualifiedName());
+    }
+
+    private static boolean isSpecialFormType(final VncKeyword type) {
+    	return "core/special-form".equals(type.getQualifiedName());
+   }
+
+    private static boolean isProtocolType(final VncKeyword type) {
+    	return "core/protocol".equals(type.getQualifiedName());
+   }
+
+    private static boolean isValueType(final VncKeyword type) {
+    	return !isFunctionType(type)
+    				&& !isMacroType(type)
+    				&& !isSpecialFormType(type)
+    				&& !isProtocolType(type);
     }
 
     private static VncFunction nilStatusFn =
