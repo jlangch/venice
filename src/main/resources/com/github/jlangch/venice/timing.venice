@@ -26,29 +26,33 @@
 
 
 (defn
-  ^{ :arglists '("(timing/run f start-msg)")
-     :doc      "Runs a function f with printing elapsed time."
-     :examples '("(timing/run #(sleep 1000) \"Sleeping...\")" ) }
+  ^{ :arglists '("(timing/run f)", 
+                 "(timing/run f start-msg)")
+     :doc      """
+               Runs a function f with printing the elapsed time.
+               Returns the value that f has produced.
+               """
+     :examples '("(timing/run #(sleep 500))"
+                 """(timing/run #(sleep 500) "Sleeping...")""") }
 
   run
 
-  ([f start-msg]
-    { :pre [(fn? f) (string? start-msg)] }
+  ([f]
+    (timing/run f nil nil))
 
-    (println start-msg)
-    (let [start   (current-time-millis)
-          retval  (f)
-          elapsed (- (current-time-millis) start)]
-      (println "Done. Elapsed:" (format-milli-time elapsed :precision 2))
-      retval))
+  ([f start-msg]
+    (timing/run f start-msg nil))
 
   ([f start-msg end-msg]
-    { :pre [(fn? f) (string? start-msg)] }
-
-    (println start-msg)
+    { :pre [(fn? f) 
+            (or (nil? start-msg) (string? start-msg))
+            (or (nil? end-msg) (fn? end-msg) (string? end-msg))] }
+    (when start-msg 
+      (println start-msg))
     (let [start   (current-time-millis)
           retval  (f)
           elapsed (- (current-time-millis) start)]
-      (if (fn? end-msg) (end-msg retval) (println end-msg))
+      (when end-msg 
+        (if (fn? end-msg) (end-msg retval) (println end-msg)))
       (println "Elapsed:" (format-milli-time elapsed :precision 2))
       retval)))
