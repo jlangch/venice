@@ -15,7 +15,7 @@ All notable changes to this project will be documented in this file.
 
 ### Added 
 
-- an addition check to the CSV reader to reject quote chars in non quoted 
+- an additional check to the CSV reader to reject quote chars in non quoted 
   fields. This is not allowed by the CSV standard
 - function `finder` to find symbols
 
