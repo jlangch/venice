@@ -148,10 +148,18 @@ public class SpecialForms_OtherFunctions {
                 VncSpecialForm
                     .meta()
                     .arglists(
-                        "(finder glob-or-regex)",
-                        "(finder glob-or-regex :machine)")
+                        "(finder & args)")
                     .doc(
-                        "Finds symbols that match one more glob patterns or regular expressions.")
+                        "Finds symbols that match one more glob patterns or regular expressions.\n\n" +
+                        "Filters the symbol names by 0 to n glob patterns or regular expressions.\n\n" +
+                        "Glob patterns and regular expressions are 'anded', flags are 'ored'.\n\n" +
+                        "Flags:\n\n" +
+                        "|:function    |filter functions|\n" +
+                        "|:macro       |filter macros|\n" +
+                        "|:special-form|filter special forms|\n" +
+                        "|:protocol    |filter protocols|\n" +
+                        "|:value       |filter values|\n" +
+                        "|:machine     |return the result as Venice data otherwise print it in table format |")
                     .examples(
                         "(finder \"io/zip*\")",
                         "(finder \"*delete-file*\")",
@@ -169,7 +177,7 @@ public class SpecialForms_OtherFunctions {
                     final Env env,
                     final SpecialFormsContext ctx
             ) {
-                assertMinArity("finder", FnType.SpecialForm, args, 1);
+                assertMinArity("finder", FnType.SpecialForm, args, 0);
 
 
                 final Set<VncKeyword> flags = args.getJavaList()
