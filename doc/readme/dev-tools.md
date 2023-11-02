@@ -38,7 +38,7 @@ Fire up a Venice [Gitpod](https://gitpod.io/) workspace in your browser by openi
     "redhat.telemetry.enabled": false    
     
     "editor.insertSpaces": true,
-    "editor.tabSize": 4,
+    "editor.tabSize": 2,
     "editor.detectIndentation": false,
     "editor.rulers": [80, {"column": 100, "color": "#ffcc00"}]   
 }
@@ -76,7 +76,7 @@ You can open the *settings.json* file with the `Preferences: Open User Settings 
     "workbench.colorTheme": "Tomorrow Night Blue",
     
     "editor.insertSpaces": true,
-    "editor.tabSize": 4,
+    "editor.tabSize": 2,
     "editor.detectIndentation": false,
     "editor.rulers": [80, {"column": 100, "color": "#ffcc00"}]   
 }
