@@ -55,7 +55,7 @@ public class TimingModuleTest {
 
         final String ret = (String)venice.eval(script1);
 
-        assertTrue(ret.matches("Elapsed: [0-9]{3}ms\n"));
+        assertTrue(ret.matches("Elapsed: 1[0-9]{2}ms\n"));
     }
 
     @Test
@@ -84,7 +84,7 @@ public class TimingModuleTest {
 
         final String ret = (String)venice.eval(script1);
 
-        assertTrue(ret.matches("Started\nElapsed: [0-9]{3}ms\n"));
+        assertTrue(ret.matches("Started\nElapsed: 1[0-9]{2}ms\n"));
     }
 
     @Test
@@ -115,7 +115,7 @@ public class TimingModuleTest {
 
         final String ret = (String)venice.eval(script1);
 
-        assertTrue(ret.matches("Started\nDone\nElapsed: [0-9]{3}ms\n"));
+        assertTrue(ret.matches("Started\nDone\nElapsed: 1[0-9]{2}ms\n"));
     }
 
     @Test
@@ -123,11 +123,11 @@ public class TimingModuleTest {
         final Venice venice = new Venice();
 
         final String script1 =
-                "(do                                          \n" +
-                "   (load-module :timing)                     \n" +
-                "   (timing/run (fn [] (sleep 100) 10)        \n" +
-                "               \"Started\"                   \n" +
-                "               (fn [x] (println (+ x 10))))) ";
+                "(do                                           \n" +
+                "   (load-module :timing)                      \n" +
+                "   (timing/run (fn [] (sleep 100) 10)         \n" +
+                "               \"Started\"                    \n" +
+                "               (fn [x] (println (+ x 10)))))  ";
 
         assertEquals(10L, venice.eval(script1));
     }
@@ -137,16 +137,16 @@ public class TimingModuleTest {
         final Venice venice = new Venice();
 
         final String script1 =
-                "(do                                            \n" +
-                "   (load-module :timing)                       \n" +
-                "   (with-out-str                               \n" +
-                "     (timing/run (fn [] (sleep 100) 10)         \n" +
-                "                 \"Started\"                    \n" +
-                "                 (fn [x] (println (+ x 10)))))) ";
+                "(do                                              \n" +
+                "   (load-module :timing)                         \n" +
+                "   (with-out-str                                 \n" +
+                "     (timing/run (fn [] (sleep 100) 10)          \n" +
+                "                 \"Started\"                     \n" +
+                "                 (fn [x] (println (+ x 10))))))  ";
 
 
         final String ret = (String)venice.eval(script1);
 
-        assertTrue(ret.matches("Started\n20\nElapsed: [0-9]{3}ms\n"));
+        assertTrue(ret.matches("Started\n20\nElapsed: 1[0-9]{2}ms\n"));
     }
 }
