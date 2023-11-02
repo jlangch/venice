@@ -395,13 +395,24 @@ public class CSVReaderTest {
     }
 
     @Test
-    public void test_11() {
+    public void test_11a_error() {
         try {
             new CSVReader(',', '\'').parse("1,'''zh' ");
             fail("Expected RuntimeException");
         }
         catch (RuntimeException ex) {
             assertEquals("Unexpected char ' ' after quoted field at line 1, col 9.", ex.getMessage());
+        }
+    }
+
+    @Test
+    public void test_11b_error() {
+        try {
+            new CSVReader(',', '\"').parse("1,2\"3");
+            fail("Expected RuntimeException");
+        }
+        catch (RuntimeException ex) {
+            assertEquals("The quote char '\"' must not appear in a non quoted field at line 1, col 4.", ex.getMessage());
         }
     }
 

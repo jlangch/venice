@@ -132,6 +132,14 @@ public class CSVReader {
             if (ch == separator || ch == '\r' || ch == '\n') {
                 break;
             }
+            else if (ch == quote) {
+                throw new RuntimeException(
+                        String.format(
+                                "The quote char '%c' must not appear in a non quoted field at line %d, col %d.",
+                                ch,
+                                rd.getLineNr(),
+                                rd.getColNr()));
+            }
             else {
             	rd.consume();
                 sb.append((char)ch);
