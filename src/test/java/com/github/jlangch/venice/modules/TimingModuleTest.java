@@ -50,6 +50,30 @@ public class TimingModuleTest {
         final String script1 =
                 "(do                                          \n" +
                 "   (load-module :timing)                     \n" +
+                "   (timing/run (fn [] (sleep 100) 10) nil))  ";
+
+        assertEquals(10L, venice.eval(script1));
+    }
+
+    @Test
+    public void test_1c() {
+        final Venice venice = new Venice();
+
+        final String script1 =
+                "(do                                              \n" +
+                "   (load-module :timing)                         \n" +
+                "   (timing/run (fn [] (sleep 100) 10) nil nil))  ";
+
+        assertEquals(10L, venice.eval(script1));
+    }
+
+    @Test
+    public void test_1d() {
+        final Venice venice = new Venice();
+
+        final String script1 =
+                "(do                                          \n" +
+                "   (load-module :timing)                     \n" +
                 "   (with-out-str                             \n" +
                 "     (timing/run (fn [] (sleep 100) 10))))   ";
 
