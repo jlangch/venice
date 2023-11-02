@@ -66,7 +66,7 @@ public class EnvUtils {
             final Map<VncSymbol,Var> vars,
             final Pattern regexPattern
     ) {
-        final Predicate<String> p = regexPattern.asPredicate();
+        final Predicate<String> p = regexPattern == null ? null : regexPattern.asPredicate();
 
         return vars.values()
                    .stream()

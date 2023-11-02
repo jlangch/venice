@@ -33,6 +33,7 @@ import java.io.PrintStream;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.function.Predicate;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
@@ -73,6 +74,7 @@ import com.github.jlangch.venice.impl.util.Inspector;
 import com.github.jlangch.venice.impl.util.MeterRegistry;
 import com.github.jlangch.venice.impl.util.StringUtil;
 import com.github.jlangch.venice.impl.util.SymbolMapBuilder;
+import com.github.jlangch.venice.impl.util.Tuple2;
 import com.github.jlangch.venice.impl.util.callstack.CallFrame;
 import com.github.jlangch.venice.impl.util.callstack.CallStack;
 import com.github.jlangch.venice.impl.util.callstack.WithCallStack;
@@ -146,16 +148,16 @@ public class SpecialForms_OtherFunctions {
                     .meta()
                     .arglists(
                         "(finder glob-or-regex)",
-                        "(finder glob-or-regex :human)")
+                        "(finder glob-or-regex :machine)")
                     .doc(
                         "Finds symbols that matches the glob pattern or the regular expression.")
                     .examples(
-                    	"(finder \"io/zip*\" :human)",
                         "(finder \"io/zip*\")",
                         "(finder \"*delete-file*\")",
-                        "(finder #\"io/zip.*\" :human)",
+                    	"(finder \"io/zip*\" :machine)",
                         "(finder #\"io/zip.*\")",
-                        "(finder #\".*delete-file*.\")")
+                        "(finder #\".*delete-file*.\")",
+                        "(finder #\"io/zip.*\" :machine)")
                     .seeAlso("doc", "ns-list", "modules")
                     .build()
         ) {
@@ -166,65 +168,65 @@ public class SpecialForms_OtherFunctions {
                     final Env env,
                     final SpecialFormsContext ctx
             ) {
-                assertArity("finder", FnType.SpecialForm, args, 1, 2);
+                assertMinArity("finder", FnType.SpecialForm, args, 1);
 
-                final boolean human = args.size() == 2
-                                        && Types.isVncKeyword(args.second())
-                                        && ((VncKeyword)args.second()).getSimpleName().equals("human");
+                final VncVal last = args.last();
+                final boolean machine = Types.isVncKeyword(last)
+                                         && ((VncKeyword)last).getSimpleName().equals("machine");
 
-                final VncList items;
+                final VncList filters = machine ? args.butlast() : args;
 
-                if (Types.isVncString(args.first())) {
-                    // glob pattern
-                    String filter = trimToNull(((VncString)args.first()).getValue());
-                    filter = filter == null ? null : filter.replaceAll("[*]", ".*");
+                List<Tuple2<VncSymbol,VncKeyword>> items = EnvUtils.globalVars(env, (String)null);
 
-                    items = VncList.ofColl(
-                                EnvUtils
-                                    .globalVars(env, filter)
-                                    .stream()
-                                    .map(it -> VncVector.of(it._1, it._2))
-                                    .collect(Collectors.toList()));
+                // apply all filters (and operation)
+                for(VncVal filter : filters) {
+                	final Pattern p;
+                	if (Types.isVncString(filter)) {
+                        String f = trimToNull(((VncString)filter).getValue());
+                        if (f != null) {
+                        	f = f.contains("*") ? f.replaceAll("[*]", ".*") : ".*" + f + ".*";
+                        }
+                        p = Pattern.compile(f);
+                	}
+                	else if (Types.isVncJavaObject(args.first(), Pattern.class)) {
+                		p = Coerce.toVncJavaObject(args.first(), Pattern.class);
+                	}
+                	else {
+                        try (WithCallStack cs = new WithCallStack(new CallFrame("finder", args, specialFormMeta))) {
+                            throw new VncException(
+                                    "finder expects either a glob pattern (string) or a regex pattern as argument!");
+                        }
+                	}
+
+                	// filter
+                    final Predicate<String> pred = p.asPredicate();
+                    items = items.stream()
+                                 .filter(v -> pred == null ? true : pred.test(v._1.getName()))
+                                 .collect(Collectors.toList());
                 }
-                else if (Types.isVncJavaObject(args.first(),  Pattern.class)) {
-                    final Pattern p = Coerce.toVncJavaObject(args.first(), Pattern.class);
 
-                    items = VncList.ofColl(
-                                EnvUtils
-                                    .globalVars(env, p)
-                                    .stream()
-                                    .map(it -> VncVector.of(it._1, it._2))
-                                    .collect(Collectors.toList()));
+                // map to machine or human readable form
+                if (machine) {
+                	return VncList.ofAll(items.stream().map(v -> VncVector.of(v._1, v._2)), Nil);
                 }
                 else {
-                    try (WithCallStack cs = new WithCallStack(new CallFrame("finder", args, specialFormMeta))) {
-                        throw new VncException(
-                                "finder expects either a glob pattern (string) or a regex pattern as argument!");
-                    }
-                }
-
-                if (human) {
                     VncVal out = env.get(new VncSymbol("*out*"));
                     PrintStream ps = Types.isVncJavaObject(out, PrintStream.class)
                                         ? Coerce.toVncJavaObject(out, PrintStream.class)
                                         : System.out;
 
                     int maxLen = items
-                                    .getJavaList()
                                     .stream()
-                                    .map(v -> ((VncSequence)v).first())
-                                    .mapToInt(v -> ((VncSymbol)v).getValue().length())
+                                    .map(v -> v._1)
+                                    .mapToInt(v -> v.getValue().length())
                                     .max()
                                     .orElse(10);
 
-                    items.forEach(it -> ps.format(
+                    items.forEach(v -> ps.format(
                                             "%s  %s%n",
-                                            StringUtil.padRight(((VncSequence)it).first().toString(), maxLen),
-                                            ((VncSequence)it).second().toString()));
+                                            StringUtil.padRight(v._1.toString(), maxLen),
+                                            v._2.toString()));
                     return Nil;
-                }
-                else {
-                    return items;
                 }
             }
 
