@@ -120,7 +120,8 @@ public class SpecialForms_OtherFunctions {
                         "(do \n" +
                         "   (deftype :complex [real :long, imaginary :long]) \n" +
                         "   (doc :complex))")
-                    .seeAlso("ns-list", "modules", "finder")
+                    .seeAlso(
+                    	"ns-list", "modules", "finder")
                     .build()
         ) {
             @Override
@@ -167,7 +168,8 @@ public class SpecialForms_OtherFunctions {
                         "(finder #\"io/zip.*\")",
                         "(finder #\".*delete-file*.\")",
                         "(finder #\"io/zip.*\" :machine)")
-                    .seeAlso("doc", "ns-list", "modules")
+                    .seeAlso(
+                    	"doc", "ns-list", "modules")
                     .build()
         ) {
             @Override
