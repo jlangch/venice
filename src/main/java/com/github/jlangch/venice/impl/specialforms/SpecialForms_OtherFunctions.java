@@ -152,7 +152,7 @@ public class SpecialForms_OtherFunctions {
                     .doc(
                         "Finds symbols that match one more glob patterns or regular expressions.\n\n" +
                         "Filters the symbol names by 0 to n glob patterns or regular expressions.\n\n" +
-                        "Glob patterns and regular expressions are 'anded', flags are 'ored'.\n\n" +
+                        "Glob patterns and regular expressions are ANDed, flags are ORed.\n\n" +
                         "Flags:\n\n" +
                         "|:function    |filter functions|\n" +
                         "|:macro       |filter macros|\n" +
