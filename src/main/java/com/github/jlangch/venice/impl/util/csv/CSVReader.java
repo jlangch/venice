@@ -30,6 +30,11 @@ import java.util.List;
 import com.github.jlangch.venice.impl.util.io.CharsetUtil;
 
 
+/**
+ * CSV Reader
+ *
+ * https://docs.fileformat.com/spreadsheet/csv/
+ */
 public class CSVReader {
 
     public CSVReader() {

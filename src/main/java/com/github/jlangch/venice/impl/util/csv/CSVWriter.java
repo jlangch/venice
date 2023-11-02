@@ -32,6 +32,11 @@ import com.github.jlangch.venice.impl.types.collections.VncSequence;
 import com.github.jlangch.venice.impl.types.util.Types;
 
 
+/**
+ * CSV Writer
+ *
+ * https://docs.fileformat.com/spreadsheet/csv/
+ */
 public class CSVWriter {
 
     public CSVWriter() {
