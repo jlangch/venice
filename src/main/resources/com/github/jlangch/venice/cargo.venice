@@ -28,8 +28,13 @@
 
 (defn
   ^{ :arglists '(
-          "(cargo/start cname repo version publish envs args ready? log)"
-          "(cargo/start cname repo version publish envs args ready? log wait-after-start-secs ready-check-max-secs)")
+          """
+          (cargo/start cname repo version publish envs args ready? log)
+          """
+          """
+          (cargo/start cname repo version publish envs args ready? \
+                       log wait-after-start-secs ready-check-max-secs)
+          """)
      :doc """
           Starts a container.
 
@@ -55,11 +60,15 @@
           | version               | The image version |
           | publish               | The port publish|
           | envs                  | Env variables |
-          | args                  | Arguments for the process run in the container |
-          | ready?                | A function to decide if the container is ready (may be *nil*) |
+          | args                  | Arguments for the process run in the \
+                                    container |
+          | ready?                | A function to decide if the container is \
+                                    ready (may be *nil*) |
           | log                   | A log function  (may be *nil*)|
-          | wait-after-start-secs | Wait n seconds after starting the container (may be *nil*)|
-          | ready-check-max-secs  | Try max n seconds for ready check (defaults to 30s if *nil*)|
+          | wait-after-start-secs | Wait n seconds after starting the container \
+                                    (may be *nil*)|
+          | ready-check-max-secs  | Try max n seconds for ready check (defaults \
+                                    to 30s if *nil*)|
           """
      :examples '(
           """
@@ -85,7 +94,8 @@
   ([cname repo version publish envs args ready? log]
     (start cname repo version publish envs args ready? log nil nil))
 
-  ([cname repo version publish envs args ready? log wait-after-start-secs ready-check-max-secs]
+  ([cname repo version publish envs args ready? log 
+    wait-after-start-secs ready-check-max-secs]
     { :pre [(string? cname)
             (string? repo)
             (string? version)
@@ -94,8 +104,12 @@
             (vector? args)
             (or (nil? ready?) (fn? ready?))
             (or (nil? log) (fn? log))
-            (or (nil? wait-after-start-secs) (int? wait-after-start-secs) (long? wait-after-start-secs))
-            (or (nil? ready-check-max-secs) (int? ready-check-max-secs) (long? ready-check-max-secs))] }
+            (or (nil? wait-after-start-secs) 
+                (int? wait-after-start-secs) 
+                (long? wait-after-start-secs))
+            (or (nil? ready-check-max-secs) 
+                (int? ready-check-max-secs) 
+                (long? ready-check-max-secs))] }
 
     (let [log     (or log (fn [s] nil))
           ready?  (or ready? (fn [c] true))]
@@ -119,7 +133,8 @@
         (if (d/container-running-with-name? cname)
           (log "docker container already running.")
           (start-container cname log wait-after-start-secs))
-        (run-container cname repo version publish envs args log wait-after-start-secs))
+        (run-container cname repo version publish envs args log 
+                       wait-after-start-secs))
 
       ;; check for successful startup log message (max wait 30s)
       (if ready?
