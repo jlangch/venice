@@ -68,11 +68,23 @@ venice> !sandbox reject-all
 ```clojure
 ; all Venice I/O functions are rejected
 (io/exists-dir? (io/file "/tmp"))
+
+; Exception in thread "main" SecurityException: Venice Sandbox (RejectAllInterceptor): 
+; Access denied to Venice function 'io/file'!
+;
+; [Callstack]
+;     at: io/file (user: line 1, col 18)
 ```
 
 ```clojure
 ; all Java calls are rejected
 (. :java.lang.Math :min 2 3)
+
+; Exception in thread "main" SecurityException: Venice Sandbox (RejectAllInterceptor): 
+; Access denied to Venice function '.'!
+;
+; [Callstack]
+;    at: . (user: line 1, col 2)
 ```
 
 ## Testing the _customized_ sandbox
@@ -88,16 +100,26 @@ venice> !sandbox customized
 ```clojure
 ; Venice I/O functions are accepted
 (io/exists-dir? (io/file "/tmp"))
+
+; => true
 ```
 
 ```clojure
 ; Java calls matching the default rules are accepted
 (. :java.util.Date :new)
+
+; => Fri Nov 03 19:05:34 CET 2023
 ```
 
 ```clojure
 ; Java calls not matching the default rules are rejected
 (. :java.lang.Math :min 2 3)
+
+; Exception in thread "main" SecurityException: Venice Sandbox: Access denied to 
+; accessor java.lang.Math::min. File <user> (1,1)
+; 
+; [Callstack]
+;    at: . (user: line 1, col 2)
 ```
 
 #### Blacklisting/Whitelisting groups of functions
