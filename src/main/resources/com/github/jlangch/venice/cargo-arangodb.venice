@@ -220,14 +220,16 @@
           Manually run a DB dump in an interactive docker shell:
 
           ```
+          mkdir /var/lib/arangodb3/dump-001
+
           arangodump \
             --output-directory /var/lib/arangodb3/dump-001 \
             --overwrite true \
             --include-system-collections true \
             --server.database "people" \
-            --server.endpoint tcp://0.0.0.0:8529 \
+            --server.endpoint tcp://127.0.0.1:8529 \
             --server.username "root" \
-            --server.password "xxxx"
+            --server.password "xxx"
           ```
 
           Open an interactive docker shell:
@@ -250,7 +252,7 @@
           (cargo-arangodb/db-dump "arangodb-test"
                                   "people"
                                   "root"
-                                  "xxxxx"
+                                  "xxx"
                                   "dump-001"
                                   (fn [s] (println "ArangoDB:" s)))
           """)
@@ -275,6 +277,8 @@
     (assert (not= status "running")
             "The ontainer is not running!")
     (log "Dumping '~{db-name}' to '~{dump-name}'...")
+    (docker/exec id mkdir "/var/lib/arangodb3/~{dump-name}")
+    (log "Created dump directory /var/lib/arangodb3/~{dump-name}")
     (let [args ["--output-directory /var/lib/arangodb3/~{dump-name}"
                 "--overwrite true"
                 "--include-system-collections true"
@@ -300,9 +304,9 @@
             --create-database true \
             --include-system-collections true \
             --server.database "people" \
-            --server.endpoint tcp://0.0.0.0:8529 \
+            --server.endpoint tcp://127.0.0.1:8529 \
             --server.username "root" \
-            --server.password "xxxxx"
+            --server.password "xxx"
           ```
 
           Open an interactive docker shell:
@@ -325,7 +329,7 @@
           (cargo-arangodb/db-restore "arangodb-test"
                                      "people"
                                      "root"
-                                     "xxxxx"
+                                     "xxx"
                                      "dump-001"
                                      (fn [s] (println "ArangoDB:" s)))
           """)
