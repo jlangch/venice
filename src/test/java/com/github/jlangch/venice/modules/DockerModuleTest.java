@@ -42,11 +42,11 @@ public class DockerModuleTest {
                                                 "docker-module-test.venice",
                                                 loadScript("docker-module-test.venice"));
 
-        assertEquals( 2, (long)result.get("test"));
+        assertEquals( 3, (long)result.get("test"));
         assertEquals( 0, (long)result.get("fail"));
         assertEquals( 0, (long)result.get("error"));
 
-        assertEquals( 2, (long)result.get("pass"));
+        assertEquals( 3, (long)result.get("pass"));
     }
 
 
