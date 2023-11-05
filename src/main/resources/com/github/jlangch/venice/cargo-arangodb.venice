@@ -99,9 +99,9 @@
         publish   "~{host-port}:~{internal-port}"
         wait-after-start-secs 3
         ready-check-max-secs  30]
-    (log "ArangoDB: Starting ~{version} as \"~{cname}\" @ port ~{publish} ...")
+    (log "Starting ~{version} as \"~{cname}\" @ port ~{publish} ...")
     (cargo/start cname "arangodb/arangodb" version publish
-                 envs args
+                 envs [] args
                  arangodb-ready?
                  log
                  wait-after-start-secs
@@ -134,6 +134,85 @@
     (cargo/stop cname log)))
 
 
+(defn
+  ^{ :arglists '("(cargo-arangodb/create-volumes cname log)")
+     :doc """
+          Creates the ArangoDB docker volumes if they do not exist yet
+
+          ArangoDB uses the volume /var/lib/arangodb3 as database directory to 
+          store the collection data and the volume /var/lib/arangodb3-apps as 
+          apps directory to store any extensions.
+
+          Args:
+
+          | cname   | The container name            |
+          | log     | A log function (may be *nil*) |
+          """
+     :examples '(
+          """
+          (cargo-arangodb/create-volumes "arangodb-test"
+                                         (fn [s] (println "ArangoDB:" s)))
+          """)
+     :see-also '(
+          "cargo-arangodb/remove-volumes") }
+
+  create-volumes [cname log]
+
+  { :pre [(string? cname)] }
+
+  (let [data-vol (make-data-vol-name cname)
+        apps-vol (make-apps-vol-name cname)
+        log      (or log default-log)]
+    (if (docker/volume-exists? data-vol)
+      (log "Data volume ~{data-vol} exists")
+      (do
+        (docker/volume-create data-vol)
+        (log "Data volume ~{data-vol} created")))
+    (if (docker/volume-exists? data-vol)
+      (log "Apps volume ~{apps-vol} exists")
+      (do
+        (docker/volume-create apps-vol)
+        (log "Apps volume ~{data-vol} created")))))
+
+
+(defn
+  ^{ :arglists '("(cargo-arangodb/remove-volumes cname log)")
+     :doc """
+          Removes the ArangoDB docker volumes if they do exist
+
+          Args:
+
+          | cname   | The container name            |
+          | log     | A log function (may be *nil*) |
+          """
+     :examples '(
+          """
+          (cargo-arangodb/remove-volumes "arangodb-test"
+                                         (fn [s] (println "ArangoDB:" s)))
+          """)
+     :see-also '(
+          "cargo-arangodb/create-volumes") }
+
+  remove-volumes [cname log]
+
+  { :pre [(string? cname)] }
+
+  (let [data-vol (make-data-vol-name cname)
+        apps-vol (make-apps-vol-name cname)
+        log      (or log default-log)]
+    (if-not (docker/volume-exists? data-vol)
+      (log "Data volume ~{data-vol} does not exists")
+      (do
+        (docker/volume-create data-vol)
+        (log "Data volume ~{data-vol} removed")))
+    (if-not (docker/volume-exists? data-vol)
+      (log "Apps volume ~{apps-vol} does not exists")
+      (do
+        (docker/volume-create apps-vol)
+        (log "Apps volume ~{data-vol} removed")))))
+
+
+
 ;; ---------------------------------------------------------------------------
 ;; utils
 ;; ---------------------------------------------------------------------------
@@ -142,13 +221,15 @@
   (println "ArangoDB:" s))
 
 (defn arangodb-ready? [cname]
-  (-> (last-log-line cname)
+  (-> (docker/container-logs cname :tail 1)
+      (str/trim)
       (match? #".*is ready for business. Have fun.*")))
 
-(defn last-log-line [cname]
-  (->> (docker/container-logs cname :tail 5)
-       (str/split-lines)
-       (last)))
+(defn make-data-vol-name [cname] 
+  (str cname "/data"))
+
+(defn make-apps-vol-name [cname]
+  (str cname "/apps"))
 
 (defn admin-url [port]
   "http://127.0.0.1:~(long port)")

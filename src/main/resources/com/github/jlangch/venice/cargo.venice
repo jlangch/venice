@@ -59,12 +59,17 @@
           | repo                  | The image repository |
           | version               | The image version |
           | publish               | The port publish|
-          | envs                  | Env variables |
-          | args                  | Arguments for the process run in the \
-                                    container |
+          | envs                  | A vector of env variables |
+          | vols                  | A vector of volume mounts |
+          | args                  | A vector of arguments for the process run \
+                                    in the container |
           | ready?                | A function to decide if the container is \
-                                    ready (may be *nil*) |
-          | log                   | A log function  (may be *nil*)|
+                                    ready (may be *nil*). The function takes \
+                                    the unique container name as its single \
+                                    argument. It returns true if the conatiner \
+                                    is ready else false |
+          | log                   | A log function (may be *nil*). The function \
+                                    takes a single string argument |
           | wait-after-start-secs | Wait n seconds after starting the container \
                                     (may be *nil*)|
           | ready-check-max-secs  | Try max n seconds for ready check (defaults \
@@ -80,8 +85,12 @@
                        ["ARANGO_ROOT_PASSWORD=test"
                         "ARANGODB_OVERRIDE_DETECTED_TOTAL_MEMORY=8GB"
                         "ARANGODB_OVERRIDE_DETECTED_NUMBER_OF_CORES=1"]
+                       []
                        ["--server.endpoint tcp://0.0.0.0:8529"]
-                       (fn [cname] true)
+                       (fn [cname]
+                          (-> (docker/container-logs cname :tail 1)
+                              (str/trim)
+                              (match? #".*is ready for business. Have fun.*")))
                        (fn [s] (println "ArangoDB:" s))
                        3
                        30)
@@ -91,16 +100,17 @@
 
   start
 
-  ([cname repo version publish envs args ready? log]
+  ([cname repo version publish envs vols args ready? log]
     (start cname repo version publish envs args ready? log nil nil))
 
-  ([cname repo version publish envs args ready? log 
+  ([cname repo version publish envs vols args ready? log 
     wait-after-start-secs ready-check-max-secs]
     { :pre [(string? cname)
             (string? repo)
             (string? version)
             (string? publish)
             (vector? envs)
+            (vector? vols)
             (vector? args)
             (or (nil? ready?) (fn? ready?))
             (or (nil? log) (fn? log))
@@ -133,8 +143,8 @@
         (if (d/container-running-with-name? cname)
           (log "docker container already running.")
           (start-container cname log wait-after-start-secs))
-        (run-container cname repo version publish envs args log 
-                       wait-after-start-secs))
+        (run-container cname repo version publish envs vols args 
+                       log wait-after-start-secs))
 
       ;; check for successful startup log message (max wait 30s)
       (if ready?
@@ -156,7 +166,8 @@
           Args:
 
           | cname   | A unique container name    |
-          | log     | A log function (may be *nil*) |
+          | log     | A log function (may be *nil*). The function takes a \
+                      single string argument |
           """
      :examples '(
           """
@@ -234,13 +245,14 @@
 ;; private functions
 ;; ---------------------------------------------------------------------------
 
-(defn- run-container [cname repo version publish envs args log wait-after-start-secs]
+(defn- run-container [cname repo version publish envs vols args log wait-after-start-secs]
   (log "run docker container ~{version} ...")
   (d/run "~{repo}:~{version}"
          :name cname
          :publish publish
          :detach true
          :envs envs
+         :volumes vols
          :args args)
   (sleep (or wait-after-start-secs 0) :sec)
   (log "run docker container ~{version} done."))
