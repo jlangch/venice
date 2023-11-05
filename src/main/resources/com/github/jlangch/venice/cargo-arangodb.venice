@@ -275,7 +275,7 @@
     (assert (not= status "running")
             "The ontainer is not running!")
     (log "Dumping '~{db-name}' to '~{dump-name}'...")
-    (let [args ["--output-directory /var/lib/arangodb3/~{out-dir}"
+    (let [args ["--output-directory /var/lib/arangodb3/~{dump-name}"
                 "--overwrite true"
                 "--include-system-collections true"
                 "--server.database \"~{db-name}\""
@@ -283,8 +283,83 @@
                 "--server.username \"~{db-user}\""
                 "--server.password \"~{db-passwd}\""]]
       (docker/exec id arangodump (str/join " " args))
-      (log "Dump '~{db-name}' to '~{dump-name}' created."))))
+      (log "Dump '~{db-name}' to '~{dump-name}' done."))))
 
+
+(defn
+  ^{ :arglists '("(cargo-arangodb/db-restore cname db-name db-user db-passwd dump-name log)")
+     :doc """
+          Dumps an ArangoDB database
+
+          Manually run a DB dump in an interactive docker shell:
+
+          ```
+          arangorestore \
+            --input-directory /var/lib/arangodb3/dump-001 \
+            --force-same-database \
+            --create-database true \
+            --include-system-collections true \
+            --server.database "step-prod" \
+            --server.endpoint tcp://0.0.0.0:8529 \
+            --server.username "root" \
+            --server.password "xxxxx"
+          ```
+
+          Open an interactive docker shell:
+
+          ```
+          docker exec -it {container-id} sh
+          ```
+
+          Args:
+
+          | cname     | The container name            |
+          | db-name   | The name of the DB to dump    |
+          | db-user   | The DB user                   |
+          | db-passwd | The DB password               |
+          | dump-name | The dump name                 |
+          | log       | A log function (may be *nil*) |
+          """
+     :examples '(
+          """
+          (cargo-arangodb/db-restore "arangodb-test"
+                                     "prod"
+                                     "root"
+                                     "xxxxx"
+                                     "dump-001"
+                                     (fn [s] (println "ArangoDB:" s)))
+          """)
+     :see-also '(
+          "cargo-arangodb/db-dump") }
+
+  db-restore [cname db-name db-user db-passwd dump-name log]
+
+  { :pre [(string? cname)
+          (string? db-name)
+          (string? db-user)
+          (string? db-passwd)
+          (string? dump-name)
+          (match? dump-name "[a-zA-Z0-9][a-zA-Z0-9_]*")] }
+
+  (let [container (first (container-find-by-name cname))
+        id        (get container "ID")
+        status    (get container "State")
+        log       (or log default-log)]
+    (assert (some? container)
+            "There is no container with the name \"~{cname}\" available!")
+    (assert (not= status "running")
+            "The ontainer is not running!")
+    (log "Restoring '~{db-name}' to '~{dump-name}'...")
+    (let [args ["--input-directory /var/lib/arangodb3/~{dump-name}"
+                "--force-same-database"
+                "--create-database true"
+                "--include-system-collections true"
+                "--server.database \"~{db-name}\""
+                "--server.endpoint tcp://0.0.0.0:~{internal-port}"
+                "--server.username \"~{db-user}\""
+                "--server.password \"~{db-passwd}\""]]
+      (docker/exec id arangorestore (str/join " " args))
+      (log "Restore '~{db-name}' to '~{dump-name}' done."))))
 
 
 ;; ---------------------------------------------------------------------------
