@@ -58,7 +58,7 @@
                (clean (with-out-str (docker/images :all true, :quiet true, :no-trunc true, :format :json))))
 
     (assert-eq "docker images --quiet --no-trunc --format table"
-                (clean (with-out-str (docker/images :all true, :quiet true, :no-trunc true, :format :table)))))
+               (clean (with-out-str (docker/images :all true, :quiet true, :no-trunc true, :format :table)))))
 
 
 
