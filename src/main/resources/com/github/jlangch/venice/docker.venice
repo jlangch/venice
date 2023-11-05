@@ -612,6 +612,8 @@
 
   exec [container command & args]
 
+  { :pre [(string? container) (string? command)] }
+
   (let [cmdargs* ["exec" "--detach" container command]
         cmdargs* (into cmdargs* args)]
    (:out (apply docker/cmd cmdargs*))))
