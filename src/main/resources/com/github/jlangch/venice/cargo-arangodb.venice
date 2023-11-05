@@ -224,7 +224,7 @@
             --output-directory /var/lib/arangodb3/dump-001 \
             --overwrite true \
             --include-system-collections true \
-            --server.database "step-prod" \
+            --server.database "people" \
             --server.endpoint tcp://0.0.0.0:8529 \
             --server.username "root" \
             --server.password "xxxx"
@@ -248,7 +248,7 @@
      :examples '(
           """
           (cargo-arangodb/db-dump "arangodb-test"
-                                  "prod"
+                                  "people"
                                   "root"
                                   "xxxxx"
                                   "dump-001"
@@ -291,7 +291,7 @@
      :doc """
           Dumps an ArangoDB database
 
-          Manually run a DB dump in an interactive docker shell:
+          Manually run a DB restore in an interactive docker shell:
 
           ```
           arangorestore \
@@ -299,7 +299,7 @@
             --force-same-database \
             --create-database true \
             --include-system-collections true \
-            --server.database "step-prod" \
+            --server.database "people" \
             --server.endpoint tcp://0.0.0.0:8529 \
             --server.username "root" \
             --server.password "xxxxx"
@@ -323,7 +323,7 @@
      :examples '(
           """
           (cargo-arangodb/db-restore "arangodb-test"
-                                     "prod"
+                                     "people"
                                      "root"
                                      "xxxxx"
                                      "dump-001"
