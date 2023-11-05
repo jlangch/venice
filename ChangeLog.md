@@ -14,7 +14,11 @@ All notable changes to this project will be documented in this file.
 
 - ...
 
+### Fixed 
 
+- Fixed 'docker/exec' function. The docker tool expects the exec command and
+  its args as individual arguments: `docker exec 0286eb877a91 ls /var/lib/arangodb3/dump-001`.  Passing "ls /var/lib/arangodb3/dump-001" is not accepted.
+  
 
 ## [1.10.51] - 2023-11-05
 

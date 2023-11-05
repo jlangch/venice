@@ -595,21 +595,25 @@
 
 
 (defn
-  ^{ :arglists '("(docker/exec container command)")
+  ^{ :arglists '("(docker/exec container command args)")
      :doc """
           Execute a command in a running container (always in detached mode).
           """
      :examples '(
           """
-          (docker/exec "74789744g489" "touch /tmp/execWorks")
+          (docker/exec "74789744g489" "touch" "/tmp/execWorks")
+          """
+          """
+          (docker/exec "74789744g489" "ls" "/var")
           """ )
      :see-also '(
           "docker/ps"
           "docker/run" ) }
 
-  exec [container command]
+  exec [container command & args]
 
-  (let [cmdargs* ["exec" "--detach" container command]]
+  (let [cmdargs* ["exec" "--detach" container command]
+        cmdargs* (into cmdargs* args)]
    (:out (apply docker/cmd cmdargs*))))
 
 

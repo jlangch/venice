@@ -115,7 +115,7 @@
 
           Args:
 
-          | cname   | A unique container name     |
+          | cname   | A unique container name       |
           | log     | A log function (may be *nil*) |
           """
      :examples '(
@@ -313,6 +313,12 @@
 
           ```
           docker exec -it {container-id} sh
+          ```
+
+          Check if dump directory exists:
+
+          ```
+          docker exec {container-id} ls /var/lib/arangodb3/dump-001
           ```
 
           Args:
