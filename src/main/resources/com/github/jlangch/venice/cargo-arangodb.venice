@@ -279,13 +279,13 @@
     (log "Dumping '~{db-name}' to '~{dump-name}'...")
     (docker/exec id mkdir "/var/lib/arangodb3/~{dump-name}")
     (log "Created dump directory /var/lib/arangodb3/~{dump-name}")
-    (let [args ["--output-directory /var/lib/arangodb3/~{dump-name}"
-                "--overwrite true"
-                "--include-system-collections true"
-                "--server.database \"~{db-name}\""
-                "--server.endpoint tcp://0.0.0.0:~{internal-port}"
-                "--server.username \"~{db-user}\""
-                "--server.password \"~{db-passwd}\""]]
+    (let [args ["--output-directory" "/var/lib/arangodb3/~{dump-name}"
+                "--overwrite" "true"
+                "--include-system-collections" "true"
+                "--server.database" db-name
+                "--server.endpoint" "tcp://0.0.0.0:~{internal-port}"
+                "--server.username" db-user
+                "--server.password" db-passwd]]
       (docker/exec id arangodump (str/join " " args))
       (log "Dump '~{db-name}' to '~{dump-name}' done."))))
 
@@ -360,14 +360,14 @@
     (assert (not= status "running")
             "The ontainer is not running!")
     (log "Restoring '~{db-name}' to '~{dump-name}'...")
-    (let [args ["--input-directory /var/lib/arangodb3/~{dump-name}"
+    (let [args ["--input-directory" "/var/lib/arangodb3/~{dump-name}"
                 "--force-same-database"
-                "--create-database true"
-                "--include-system-collections true"
-                "--server.database \"~{db-name}\""
-                "--server.endpoint tcp://0.0.0.0:~{internal-port}"
-                "--server.username \"~{db-user}\""
-                "--server.password \"~{db-passwd}\""]]
+                "--create-database" "true"
+                "--include-system-collections" "true"
+                "--server.database" db-name
+                "--server.endpoint" "tcp://0.0.0.0:~{internal-port}"
+                "--server.username" db-user
+                "--server.password" db-passwd]]
       (docker/exec id arangorestore (str/join " " args))
       (log "Restore '~{db-name}' to '~{dump-name}' done."))))
 
