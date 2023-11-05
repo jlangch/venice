@@ -438,14 +438,15 @@
         cmdargs* (if (pos? memory) (conj cmdargs* "--memory" memory) cmdargs*)
         cmdargs* (if (some? name) (conj cmdargs* "--name" name) cmdargs*)
         cmdargs* (if (some? workdir) (conj cmdargs* "--workdir" workdir) cmdargs*)
-        cmdargs* (if (and (some? volumes) (vector? volumes))
+        cmdargs* (if (and (vector? volumes) (not-empty? volumes))
                    (into cmdargs* (interleave (lazy-seq (constantly "--volume")) volumes))
                    cmdargs*)
-        cmdargs* (if (and (some? envs) (vector? envs))
+        cmdargs* (if (and (vector? envs) (not-empty? envs))
                    (into cmdargs* (interleave (lazy-seq (constantly "--env")) envs))
                    cmdargs*)
         cmdargs* (conj cmdargs* image)
-        cmdargs* (if (and (some? args) (vector? args)) (into cmdargs* args) cmdargs*)]
+        cmdargs* (if (and (vector? args) (not-empty? args)) 
+                   (into cmdargs* args) cmdargs*)]
     ;; check if there is a already container with the name
     (when (some? name)
       (assert (not (container-running-with-name? name))

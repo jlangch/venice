@@ -13,6 +13,9 @@ All notable changes to this project will be documented in this file.
 
 - ... 
 
+### Fixed 
+
+- an edge case with handling envs and args in `docker/run` function
 
 
 ## [1.10.50] - 2023-11-03
