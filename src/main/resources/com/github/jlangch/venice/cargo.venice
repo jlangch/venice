@@ -247,6 +247,8 @@
 
 (defn- run-container [cname repo version publish envs vols args log wait-after-start-secs]
   (log "run docker container ~{version} ...")
+  (when-not (empty? vols)
+    (log "using ~(count vols) configured volumes"))
   (d/run "~{repo}:~{version}"
          :name cname
          :publish publish

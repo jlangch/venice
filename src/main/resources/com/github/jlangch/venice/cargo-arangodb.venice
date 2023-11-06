@@ -77,37 +77,46 @@
      :see-also '(
           "cargo-arangodb/stop") }
 
-  start [cname version mapped-port root-passwd memory cores log]
+  start
 
-  { :pre [(string? cname)
-          (string? version)
-          (or (int? mapped-port) (long? mapped-port))
-          (< 0 mapped-port 65536)
-          (string? root-passwd)
-          (string? memory)
-          (match? (str/upper-case memory) "[1-9][0-9]*(B|K|M|G|T|KB|MB|GB|TB|KIB|MIB|GIB|TIB)")
-          (or (int? cores) (long? cores))
-          (< 0 cores 64)] }
+  ([cname version mapped-port root-passwd memory cores log]
+    (start cname version [] mapped-port root-passwd memory cores log))
 
-  (let [host-port (long mapped-port)
-        envs      ["ARANGO_ROOT_PASSWORD=~{root-passwd}"
-                   "ARANGODB_OVERRIDE_DETECTED_TOTAL_MEMORY=~{memory}"
-                   "ARANGODB_OVERRIDE_DETECTED_NUMBER_OF_CORES=~(long cores)"]
-        args-old  ["--server.endpoint tcp://0.0.0.0:~{internal-port}" ]
-        args-new  ["--server.endpoint tcp://0.0.0.0:~{internal-port}"
-                   "--server.telemetrics-api false"]  ;; supported 3.11+
-        args      (if (match? version "3[.](9|10)[.].*") args-old args-new)
-        log       (or log default-log)
-        publish   "~{host-port}:~{internal-port}"
-        wait-after-start-secs 3
-        ready-check-max-secs  30]
-    (log "Starting ~{version} as \"~{cname}\" @ port ~{publish} ...")
-    (cargo/start cname "arangodb/arangodb" version publish
-                 envs [] args
-                 arangodb-ready?
-                 log
-                 wait-after-start-secs
-                 ready-check-max-secs)))
+  ([cname version volumes mapped-port root-passwd memory cores log]
+    { :pre [(string? cname)
+            (string? version)
+            (or (nil? volumes) (vector? volumes))
+            (or (int? mapped-port) (long? mapped-port))
+            (< 0 mapped-port 65536)
+            (string? root-passwd)
+            (string? memory)
+            (match? (str/upper-case memory) "[1-9][0-9]*(B|K|M|G|T|KB|MB|GB|TB|KIB|MIB|GIB|TIB)")
+            (or (int? cores) (long? cores))
+            (< 0 cores 64)] }
+
+    (let [host-port (long mapped-port)
+          envs      ["ARANGO_ROOT_PASSWORD=~{root-passwd}"
+                     "ARANGODB_OVERRIDE_DETECTED_TOTAL_MEMORY=~{memory}"
+                     "ARANGODB_OVERRIDE_DETECTED_NUMBER_OF_CORES=~(long cores)"]
+          volumes   (coalesce volumes [])
+          args-old  ["--server.endpoint tcp://0.0.0.0:~{internal-port}"]
+          args-new  ["--server.endpoint tcp://0.0.0.0:~{internal-port}"
+                     "--server.telemetrics-api false"]  ;; supported 3.11+
+          args      (if (match? version "3[.](9|10)[.].*") args-old args-new)
+          log       (or log default-log)
+          publish   "~{host-port}:~{internal-port}"
+          wait-after-start-secs 3
+          ready-check-max-secs  30]
+      (log "Starting ~{version} as \"~{cname}\" @ port ~{publish} ...")
+      (docoll (fn [v] (log "Using volume: ~{v}")) volumes)
+      (cargo/start cname "arangodb/arangodb" version publish
+                   envs 
+                   volumes
+                   args
+                   arangodb-ready?
+                   log
+                   wait-after-start-secs
+                   ready-check-max-secs))))
 
 
 (defn
@@ -144,6 +153,9 @@
           ArangoDB uses the volume /var/lib/arangodb3 as database directory to 
           store the collection data and the volume /var/lib/arangodb3-apps as 
           apps directory to store any extensions.
+
+          The Docker extension "Volumes Backup & Share" provides volume
+          import and export functions.
 
           Args:
 
@@ -510,6 +522,11 @@
 
 (defn make-apps-vol-name [cname]
   (str cname "_apps"))
+
+(defn built-in-modules [cname]
+  ;; named volumes
+  ["~(make-data-vol-name cname):/var/lib/arangodb3"
+   "~(make-apps-vol-name cname):/var/lib/arangodb3-apps"])
 
 (defn admin-url [port]
   "http://127.0.0.1:~(long port)")
