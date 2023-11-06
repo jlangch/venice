@@ -219,7 +219,7 @@
      :doc """
           Dumps an ArangoDB database
 
-          Manually run a DB dump in an interactive docker shell:
+          Dumps an ArangoDB database using the commands:
 
           ```
           mkdir /var/lib/arangodb3/dump-001
@@ -246,7 +246,7 @@
           | db-name   | The name of the DB to dump    |
           | db-user   | The DB user                   |
           | db-passwd | The DB password               |
-          | dump-name | The dump name                 |
+          | dump-name | The dump name. e.g "dump-001" |
           | log       | A log function (may be *nil*) |
           """
      :examples '(
@@ -259,7 +259,9 @@
                                   (fn [s] (println "ArangoDB:" s)))
           """)
      :see-also '(
-          "cargo-arangodb/db-restore") }
+          "cargo-arangodb/db-restore"
+          "cargo-arangodb/exists-db-dump?" 
+          "cargo-arangodb/remove-db-dump") }
 
   db-dump [cname db-name db-user db-passwd dump-name log]
 
@@ -268,7 +270,7 @@
           (string? db-user)
           (string? db-passwd)
           (string? dump-name)
-          (match? dump-name "[a-zA-Z0-9][a-zA-Z0-9_]*")] }
+          (match? dump-name "[a-zA-Z0-9][a-zA-Z0-9_-]*")] }
 
   (let [container (first (docker/container-find-by-name cname))
         id        (get container "ID")
@@ -279,26 +281,26 @@
     (assert (= status "running")
             "The container is not running!")
     (log "Dumping '~{db-name}' to '~{dump-name}'...")
-    (docker/exec id mkdir "/var/lib/arangodb3/~{dump-name}")
+    (docker/exec id "mkdir" "/var/lib/arangodb3/~{dump-name}")
     (log "Created dump directory /var/lib/arangodb3/~{dump-name}")
     (let [args ["--output-directory" "/var/lib/arangodb3/~{dump-name}"
                 "--overwrite" "true"
                 "--include-system-collections" "true"
                 "--server.database" db-name
-                "--server.endpoint" "tcp://0.0.0.0:~{internal-port}"
+                "--server.endpoint" "tcp://127.0.0.1:~{internal-port}"
                 "--server.username" db-user
                 "--server.password" db-passwd]]
-      (docker/exec id arangodump (str/join " " args))
+      (apply docker/exec id "arangodump" args)
       (log "Dump '~{db-name}' to '~{dump-name}' done."))))
 
 
 (defn
   ^{ :arglists '("(cargo-arangodb/db-restore cname db-name db-user db-passwd dump-name log)")
      :doc """
-          Dumps an ArangoDB database
+          Restores an ArangoDB database from a dump
 
-          Manually run a DB restore in an interactive docker shell:
-
+          Restores an ArangoDB database using the command:
+ 
           ```
           arangorestore \
             --input-directory /var/lib/arangodb3/dump-001 \
@@ -319,9 +321,7 @@
 
           Check if dump directory exists:
 
-          ```
-          docker exec {container-id} ls /var/lib/arangodb3/dump-001
-          ```
+          `(cargo-arangodb/exists-db-dump? "arangodb-test" "dump-001")`
 
           Args:
 
@@ -329,7 +329,7 @@
           | db-name   | The name of the DB to dump    |
           | db-user   | The DB user                   |
           | db-passwd | The DB password               |
-          | dump-name | The dump name                 |
+          | dump-name | The dump name. e.g "dump-001" |
           | log       | A log function (may be *nil*) |
           """
      :examples '(
@@ -342,7 +342,9 @@
                                      (fn [s] (println "ArangoDB:" s)))
           """)
      :see-also '(
-          "cargo-arangodb/db-dump") }
+          "cargo-arangodb/db-dump"
+          "cargo-arangodb/exists-db-dump?" 
+          "cargo-arangodb/remove-db-dump") }
 
   db-restore [cname db-name db-user db-passwd dump-name log]
 
@@ -351,7 +353,7 @@
           (string? db-user)
           (string? db-passwd)
           (string? dump-name)
-          (match? dump-name "[a-zA-Z0-9][a-zA-Z0-9_]*")] }
+          (match? dump-name "[a-zA-Z0-9][a-zA-Z0-9_-]*")] }
 
   (let [container (first (docker/container-find-by-name cname))
         id        (get container "ID")
@@ -367,11 +369,11 @@
                 "--create-database" "true"
                 "--include-system-collections" "true"
                 "--server.database" db-name
-                "--server.endpoint" "tcp://0.0.0.0:~{internal-port}"
+                "--server.endpoint" "tcp://127.0.0.1:~{internal-port}"
                 "--server.username" db-user
                 "--server.password" db-passwd]]
-      (docker/exec id arangorestore (str/join " " args))
-      (log "Restore '~{db-name}' to '~{dump-name}' done."))))
+      (apply docker/exec id "arangorestore" args)
+      (log "Restore '~{db-name}' from '~{dump-name}' done."))))
 
 
 (defn
@@ -390,7 +392,8 @@
           """)
      :see-also '(
           "cargo-arangodb/db-dump" 
-          "cargo-arangodb/db-restore" ) }
+          "cargo-arangodb/db-restore"
+          "cargo-arangodb/remove-db-dump" ) }
 
   exists-db-dump? [cname dump-name]
 
@@ -405,6 +408,41 @@
             "The container is not running!")
     (try
       (docker/exec id "ls" "/var/lib/arangodb3/~{dump-name}")
+      true
+      (catch :ShellException e false))))
+
+(defn
+  ^{ :arglists '("(cargo-arangodb/remove-db-dump cname dump-name)")
+     :doc """
+          Removes an existing DB dump.
+
+          Args:
+
+          | cname     | The container name            |
+          | dump-name | The dump name                 |
+          """
+     :examples '(
+          """
+          (cargo-arangodb/remove-db-dump "arangodb-test" "dump-001")
+          """)
+     :see-also '(
+          "cargo-arangodb/db-dump" 
+          "cargo-arangodb/db-restore"
+          "cargo-arangodb/exists-db-dump?" ) }
+
+  remove-db-dump [cname dump-name]
+
+  { :pre [(string? cname) (string? dump-name)] }
+
+  (let [container (first (docker/container-find-by-name cname))
+        id        (get container "ID")
+        status    (get container "State")]
+    (assert (some? container)
+            "There is no container with the name \"~{cname}\" available!")
+    (assert (= status "running")
+            "The container is not running!")
+    (try
+      (docker/exec id "rm" "-rf" "/var/lib/arangodb3/~{dump-name}")
       true
       (catch :ShellException e false))))
 
