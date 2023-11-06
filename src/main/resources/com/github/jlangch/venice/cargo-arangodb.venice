@@ -506,10 +506,10 @@
       (match? #".*is ready for business. Have fun.*")))
 
 (defn make-data-vol-name [cname] 
-  (str cname "/data"))
+  (str cname "_data"))
 
 (defn make-apps-vol-name [cname]
-  (str cname "/apps"))
+  (str cname "_apps"))
 
 (defn admin-url [port]
   "http://127.0.0.1:~(long port)")

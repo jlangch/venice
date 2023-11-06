@@ -12,6 +12,7 @@ All notable changes to this project will be documented in this file.
 
 ### Added 
 
+- support for ArangoDB dump & restore in the :cargo-arangodb Docker module
 - support for 'docker/exec' non detached mode
 
 ### Fixed 

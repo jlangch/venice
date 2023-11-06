@@ -1038,7 +1038,7 @@
 
   { :pre [(string? name)] }
 
-  (->> (docker/volume-list ":format" ":json")
+  (->> (docker/volume-list :format :json)
        (filter #(== name (get % "Name")))
        (count)
        (pos?)))
