@@ -218,23 +218,30 @@
   ^{ :arglists '("(cargo-arangodb/db-dump cname db-name db-user db-passwd dump-name log)")
      :doc """
           Dumps an ArangoDB database
+        
+          Example:
+          
+          ```
+          (load-module :cargo-arangodb ['cargo-arangodb :as 'ca]
+            (ca/db-dump "arangodb-test" "people" "root" "xxx" "dump-001" nil))
+          ```
 
-          Dumps an ArangoDB database using the commands:
+          Dumps an ArangoDB database using this commands on the container:
 
           ```
           mkdir /var/lib/arangodb3/dump-001
 
-          arangodump \
-            --output-directory /var/lib/arangodb3/dump-001 \
-            --overwrite true \
-            --include-system-collections true \
-            --server.database "people" \
-            --server.endpoint tcp://127.0.0.1:8529 \
-            --server.username "root" \
+          arangodump
+            --output-directory /var/lib/arangodb3/dump-001
+            --overwrite true
+            --include-system-collections true
+            --server.database "people"
+            --server.endpoint tcp://127.0.0.1:8529
+            --server.username "root"
             --server.password "xxx"
           ```
 
-          Open an interactive docker shell:
+          Open an interactive docker shell to check the dump:
 
           ```
           docker exec -it {container-id} sh
@@ -298,22 +305,29 @@
   ^{ :arglists '("(cargo-arangodb/db-restore cname db-name db-user db-passwd dump-name log)")
      :doc """
           Restores an ArangoDB database from a dump
+        
+          Example:
+          
+          ```
+          (load-module :cargo-arangodb ['cargo-arangodb :as 'ca]
+            (ca/db-restore "arangodb-test" "people" "root" "xxx" "dump-001" nil))
+          ```
 
-          Restores an ArangoDB database using the command:
+          Restores an ArangoDB database using this command on the container:
  
           ```
-          arangorestore \
-            --input-directory /var/lib/arangodb3/dump-001 \
-            --force-same-database \
-            --create-database true \
-            --include-system-collections true \
-            --server.database "people" \
-            --server.endpoint tcp://127.0.0.1:8529 \
-            --server.username "root" \
+          arangorestore
+            --input-directory /var/lib/arangodb3/dump-001
+            --force-same-database
+            --create-database true
+            --include-system-collections true
+            --server.database "people"
+            --server.endpoint tcp://127.0.0.1:8529
+            --server.username "root"
             --server.password "xxx"
           ```
 
-          Open an interactive docker shell:
+          Open an interactive docker shell to check the dump:
 
           ```
           docker exec -it {container-id} sh
