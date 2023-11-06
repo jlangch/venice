@@ -379,7 +379,7 @@
 (defn
   ^{ :arglists '("(cargo-arangodb/exists-db-dump? cname dump-name)")
      :doc """
-          Returns true if the dump 'dump-name' exists otherwise false.
+          Returns true if the dump with the given name exists otherwise false.
 
           Args:
 

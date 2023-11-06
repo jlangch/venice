@@ -42,10 +42,23 @@ public class ModuleCargoArangoDBSection implements ISectionBuilder {
         final DocSection all = new DocSection("(load-module :cargo-arangodb)", id());
         section.addSection(all);
 
-        final DocSection docker = new DocSection("ArangoDB", id());
+        final DocSection docker = new DocSection("Lifecycle", id());
         all.addSection(docker);
         docker.addItem(diBuilder.getDocItem("cargo-arangodb/start", false));
         docker.addItem(diBuilder.getDocItem("cargo-arangodb/stop", false));
+
+        final DocSection backup = new DocSection("Backup", id());
+        all.addSection(backup);
+        backup.addItem(diBuilder.getDocItem("cargo-arangodb/db-dump", false));
+        backup.addItem(diBuilder.getDocItem("cargo-arangodb/db-restore", false));
+        backup.addItem(diBuilder.getDocItem("cargo-arangodb/exists-db-dump?", false));
+        backup.addItem(diBuilder.getDocItem("cargo-arangodb/remove-db-dump", false));
+        backup.addItem(diBuilder.getDocItem("cargo-arangodb/list-db-dumps", false));
+
+        final DocSection vols = new DocSection("Volumes", id());
+        all.addSection(vols);
+        vols.addItem(diBuilder.getDocItem("cargo-arangodb/create-volumes", false));
+        vols.addItem(diBuilder.getDocItem("cargo-arangodb/remove-volumes", false));
 
         return section;
     }
