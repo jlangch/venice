@@ -595,18 +595,25 @@
 
 
 (defn
-  ^{ :arglists '("(docker/exec container command args)")
+  ^{ :arglists '("(docker/exec& container command args)")
      :doc """
           Execute a command in a running container (always in detached mode).
+
+          Returns always an empty string because the command is run in detached
+          mode. To get the commands captured stdout text use `docker/exec` 
+          instead.
+
+          Throws `ShellException` if the command fails.
           """
      :examples '(
           """
-          (docker/exec "74789744g489" "touch" "/tmp/execWorks")
+          (docker/exec& "74789744g489" "touch" "/tmp/execWorks")
           """
           """
-          (docker/exec "74789744g489" "ls" "/var")
+          (docker/exec& "74789744g489" "ls" "/var")
           """ )
      :see-also '(
+          "docker/exec"
           "docker/ps"
           "docker/run" ) }
 
@@ -616,7 +623,38 @@
 
   (let [cmdargs* ["exec" "--detach" container command]
         cmdargs* (into cmdargs* args)]
-   (:out (apply docker/cmd cmdargs*))))
+    (:out (apply docker/cmd cmdargs*))))
+
+
+(defn
+  ^{ :arglists '("(docker/exec container command args)")
+     :doc """
+          Execute a command in a running container (always in non detached mode).
+ 
+          Returns the captured stdout text if the command succeeds.
+
+          Throws `ShellException` if the command fails. The exception carries
+          the exit code and the captured stderr text.
+         """
+     :examples '(
+          """
+          (docker/exec "74789744g489" "touch" "/tmp/execWorks")
+          """
+          """
+          (docker/exec "74789744g489" "ls" "/var")
+          """ )
+     :see-also '(
+          "docker/exec&"
+          "docker/ps"
+          "docker/run" ) }
+
+  exec [container command & args]
+
+  { :pre [(string? container) (string? command)] }
+
+  (let [cmdargs* ["exec" container command]
+        cmdargs* (into cmdargs* args)]
+    (:out (apply docker/cmd cmdargs*))))
 
 
 (defn

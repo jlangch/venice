@@ -268,14 +268,14 @@
           (string? dump-name)
           (match? dump-name "[a-zA-Z0-9][a-zA-Z0-9_]*")] }
 
-  (let [container (first (container-find-by-name cname))
+  (let [container (first (docker/container-find-by-name cname))
         id        (get container "ID")
         status    (get container "State")
         log       (or log default-log)]
     (assert (some? container)
             "There is no container with the name \"~{cname}\" available!")
-    (assert (not= status "running")
-            "The ontainer is not running!")
+    (assert (= status "running")
+            "The container is not running!")
     (log "Dumping '~{db-name}' to '~{dump-name}'...")
     (docker/exec id mkdir "/var/lib/arangodb3/~{dump-name}")
     (log "Created dump directory /var/lib/arangodb3/~{dump-name}")
@@ -351,14 +351,14 @@
           (string? dump-name)
           (match? dump-name "[a-zA-Z0-9][a-zA-Z0-9_]*")] }
 
-  (let [container (first (container-find-by-name cname))
+  (let [container (first (docker/container-find-by-name cname))
         id        (get container "ID")
         status    (get container "State")
         log       (or log default-log)]
     (assert (some? container)
             "There is no container with the name \"~{cname}\" available!")
-    (assert (not= status "running")
-            "The ontainer is not running!")
+    (assert (= status "running")
+            "The container is not running!")
     (log "Restoring '~{db-name}' to '~{dump-name}'...")
     (let [args ["--input-directory" "/var/lib/arangodb3/~{dump-name}"
                 "--force-same-database"
@@ -370,6 +370,39 @@
                 "--server.password" db-passwd]]
       (docker/exec id arangorestore (str/join " " args))
       (log "Restore '~{db-name}' to '~{dump-name}' done."))))
+
+
+(defn
+  ^{ :arglists '("(cargo-arangodb/exists-db-dump? cname dump-name)")
+     :doc """
+          Returns true if the dump 'dump-name' exists otherwise false.
+
+          Args:
+
+          | cname     | The container name            |
+          | dump-name | The dump name                 |
+          """
+     :examples '(
+          """
+          (cargo-arangodb/exists-db-dump? "arangodb-test" "dump-001")
+          """)
+     :see-also '(
+          "cargo-arangodb/db-dump" 
+          "cargo-arangodb/db-restore" ) }
+
+  exists-db-dump? [cname dump-name]
+
+  { :pre [(string? cname) (string? dump-name)] }
+
+  (let [container (first (docker/container-find-by-name cname))
+        id        (get container "ID")
+        status    (get container "State")]
+    (assert (some? container)
+            "There is no container with the name \"~{cname}\" available!")
+    (assert (= status "running")
+            "The container is not running!")
+    (docker/exec id "ls" "/var/lib/arangodb3/~{dump-name}")))
+
 
 
 ;; ---------------------------------------------------------------------------

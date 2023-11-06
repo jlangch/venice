@@ -12,7 +12,7 @@ All notable changes to this project will be documented in this file.
 
 ### Added 
 
-- ...
+- support for 'docker/exec' non detached mode
 
 ### Fixed 
 
