@@ -60,6 +60,7 @@ public class ModuleDockerSection implements ISectionBuilder {
         containers.addItem(diBuilder.getDocItem("docker/start", false));
         containers.addItem(diBuilder.getDocItem("docker/stop", false));
         containers.addItem(diBuilder.getDocItem("docker/exec", false));
+        containers.addItem(diBuilder.getDocItem("docker/exec&", false));
         containers.addItem(diBuilder.getDocItem("docker/rm", false));
         containers.addItem(diBuilder.getDocItem("docker/prune", false));
         containers.addItem(diBuilder.getDocItem("docker/cp", false));
@@ -88,6 +89,7 @@ public class ModuleDockerSection implements ISectionBuilder {
         utils.addItem(diBuilder.getDocItem("docker/container-remove-by-name", false));
         utils.addItem(diBuilder.getDocItem("docker/container-status-by-name", false));
         utils.addItem(diBuilder.getDocItem("docker/container-exec-by-name", false));
+        utils.addItem(diBuilder.getDocItem("docker/container-exec-by-name&", false));
         utils.addItem(diBuilder.getDocItem("docker/container-logs", false));
         utils.addItem(diBuilder.getDocItem("docker/container-purge-by-name", false));
         utils.addItem(diBuilder.getDocItem("docker/container-image-info-by-name", false));
