@@ -36,6 +36,8 @@
 
 (load-module :jsonl)
 
+(import :com.github.jlangch.venice.ShellException)
+
 
 (def-dynamic *debug* :off)
 

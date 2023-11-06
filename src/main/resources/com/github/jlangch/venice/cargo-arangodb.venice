@@ -29,6 +29,8 @@
 (load-module :docker)
 (load-module :cargo)
 
+(import :com.github.jlangch.venice.ShellException)
+
 (defonce internal-port 8529) ;; The ArangoDB internal port within the container
 
 
@@ -401,7 +403,10 @@
             "There is no container with the name \"~{cname}\" available!")
     (assert (= status "running")
             "The container is not running!")
-    (docker/exec id "ls" "/var/lib/arangodb3/~{dump-name}")))
+    (try
+      (docker/exec id "ls" "/var/lib/arangodb3/~{dump-name}")
+      true
+      (catch :ShellException e false))))
 
 
 
