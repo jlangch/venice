@@ -446,6 +446,37 @@
       true
       (catch :ShellException e false))))
 
+(defn
+  ^{ :arglists '("(cargo-arangodb/list-db-dumps cname)")
+     :doc """
+          List the created DB dumps.
+
+          Args:
+
+          | cname     | The container name            |
+          """
+     :examples '(
+          """
+          (cargo-arangodb/list-db-dumps "arangodb-test")
+          """)
+     :see-also '(
+          "cargo-arangodb/db-dump" 
+          "cargo-arangodb/db-restore"
+          "cargo-arangodb/exists-db-dump?" ) }
+
+  list-db-dumps [cname]
+
+  { :pre [(string? cname)] }
+
+  (let [container (first (docker/container-find-by-name cname))
+        id        (get container "ID")
+        status    (get container "State")]
+    (assert (some? container)
+            "There is no container with the name \"~{cname}\" available!")
+    (assert (= status "running")
+            "The container is not running!")
+    (println (docker/exec id "ls" "-la" "/var/lib/arangodb3/"))))
+
 
 
 ;; ---------------------------------------------------------------------------
