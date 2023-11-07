@@ -438,9 +438,16 @@ public class ShellFunctions {
                            final String sOut = out == Constants.Nil ? null : StringUtil.trimToNull(out.toString());
                            final String sErr = err == Constants.Nil ? null : StringUtil.trimToNull(err.toString());
 
-                           final String sErrOverview = sErr == null
-                                                           ? ""
-                                                           : "\n\nstderr:\n" + StringUtil.truncate(sErr, 200, "...");
+                           final String sErrOverview;
+                           if (sErr != null) {
+                        	   sErrOverview = "\n\nstderr:\n" + StringUtil.truncate(sErr, 250, "...");
+                           }
+                           else if (sOut != null) {
+                        	   sErrOverview = "\n\nstdout:\n" + StringUtil.truncate(sOut, 250, "...");
+                           }
+                           else {
+                        	   sErrOverview = "";
+                           }
 
                         throw new ShellException(
                                 String.format(

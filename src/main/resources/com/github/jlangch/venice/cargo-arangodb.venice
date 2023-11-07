@@ -441,9 +441,9 @@
 
 
 (defn
-  ^{ :arglists '("(cargo-arangodb/export-db-dump cname dump-name export-dir log)")
+  ^{ :arglists '("(cargo-arangodb/download-db-dump cname dump-name export-dir log)")
      :doc """
-          Exports an existing the DB dump 'dump-name' from the container to the 
+          Downloads an existing the DB dump 'dump-name' from the container to the 
           local filesystem. The export directory in the local filesystem must 
           be an existing directory. 
 
@@ -464,17 +464,17 @@
             ;; create a DB dump
             (ca/db-dump "db-test" "people" "root" "xxx" "dump-001" nil)
 
-            ;; export the DB dump to the local filesystem
+            ;; downloads the DB dump to the local filesystem
             (let [dir (io/user-home-dir)]
-              (ca/export-db-dump "db-test" "dump-001" dir nil)))
+              (ca/download-db-dump "db-test" "dump-001" dir nil)))
           """)
      :see-also '(
-          "cargo-arangodb/import-db-dump" 
+          "cargo-arangodb/upload-db-dump" 
           "cargo-arangodb/db-dump"
           "cargo-arangodb/db-restore"
           "cargo-arangodb/exists-db-dump?" ) }
 
-  export-db-dump [cname dump-name export-dir log]
+  download-db-dump [cname dump-name export-dir log]
 
   { :pre [(string? cname)
           (string? dump-name) 
@@ -489,17 +489,17 @@
     (assert (= status "running") "The container is not running!")
     (assert (not (io/exists-dir? (io/file export-dir dump-name))) "The export dir already exist!")
     (assert (exists-db-dump? cname dump-name) "The dump does not exist!")
-    (log "Exporting '~{dump-name}' ...")
+    (log "Downloading '~{dump-name}' ...")
     (docker/cp "~{id}:/var/lib/arangodb3/~{dump-name}" 
                (io/file-path export-dir))
-    (log "Export to '~{export-dir}' done.")))
+    (log "Download to '~{export-dir}' done.")))
 
 
 (defn
-  ^{ :arglists '("(cargo-arangodb/import-db-dump cname dump-name import-dir log)")
+  ^{ :arglists '("(cargo-arangodb/upload-db-dump cname dump-name import-dir log)")
      :doc """
-          Imports an existing DB dump with the name 'dump-name' from the local
-          filesystem into the container. The import directory on local 
+          Uploads an existing DB dump with the name 'dump-name' from the local
+          filesystem to the container. The import directory on local 
           filesystem must be an existing non empty directory. 
 
           Args:
@@ -516,20 +516,20 @@
           (do
             (load-module :cargo-arangodb ['cargo-arangodb :as 'ca])
 
-            ;; import the dump to the container's filesystem
+            ;; upload the dump to the container's filesystem
             (let [dir (io/file (io/user-home-dir) "dump-001")]
-              (ca/import-db-dump "db-test" "dump-001" dir nil))
+              (ca/upload-db-dump "db-test" "dump-001" dir nil))
 
             ;; restore the DB dump
             (ca/db-restore "db-test" "people" "root" "xxx" "dump-001" nil))
           """)
      :see-also '(
-          "cargo-arangodb/export-db-dump" 
+          "cargo-arangodb/download-db-dump" 
           "cargo-arangodb/db-dump"
           "cargo-arangodb/db-restore"
           "cargo-arangodb/exists-db-dump?" ) }
 
-  import-db-dump [cname dump-name import-dir log]
+  upload-db-dump [cname dump-name import-dir log]
 
   { :pre [(string? cname)
           (string? dump-name) 
@@ -545,12 +545,106 @@
     (assert (io/exists-dir? import-dir) "The import dir does not exist!")
     (assert (dir-not-empty? import-dir) "The import dir is empty!")
     (assert (not (exists-db-dump? cname dump-name)) "The DB dump does already exist!")
-    (log "Importing '~{dump-name}' ...")
+    (log "Uploading '~{dump-name}' ...")
     (docker/cp (io/file-path import-dir)
                "~{id}:/var/lib/arangodb3/~{dump-name}")
     (log "Changing user/group to root:root of the dump files ...")
     (docker/exec id "chown" "-R" "root:root" "/var/lib/arangodb3/~{dump-name}")
-    (log "Import from '~{import-dir}' done.")))
+    (log "Upload from '~{import-dir}' done.")))
+
+
+;; ---------------------------------------------------------------------------
+;; ArangoDB utils
+;; ---------------------------------------------------------------------------
+
+(defn
+  ^{ :arglists '("(cargo-arangodb/exec-js cname db-user db-password db-name js)")
+     :doc """
+          Runs JavaScript code in the database
+
+          Args:
+
+          | cname      | The container name            |
+          | db-name    | The DB name                   |
+          | db-user    | The DB user                   |
+          | db-passwd  | The DB password               |
+          | js         | The JavaScript code           |
+          """
+     :examples '(
+          """
+          (do
+            (load-module :cargo-arangodb ['cargo-arangodb :as 'ca])
+
+            ;; drop the 'people' database in the ArangoDB container labeled
+            ;; 'db-test'
+            (ca/exec-js "db-test"
+                        "root"
+                        "xxx"
+                        "_system"
+                        "db._dropDatabase('people')\;")
+          """) }
+
+  exec-js [cname db-user db-password db-name js]
+
+  { :pre [(string? cname) 
+          (string? db-user) 
+          (string? db-password)
+          (string? db-name)
+          (string? js) ] }
+
+  (let [container (first (docker/container-find-by-name cname))
+        id        (get container "ID")
+        status    (get container "State")]
+    (assert (some? container)
+            "There is no container with the name \"~{cname}\" available!")
+    (assert (= status "running") "The container is not running!")
+    (let [command [ "arangosh"
+                    "--server.endpoint" "tcp://127.0.0.1:~{internal-port}"
+                    "--server.username" "~{db-user}"
+                    "--server.password" "~{db-password}"
+                    "--server.database" "~{db-name}"
+                    "--javascript.execute-string" "\"~{js}\""]]
+      ;;(println "ArangoDB: arangosh>" "db: \"~{database}\"," "js: \"~{js}\"")
+      (apply docker/container-exec-by-name cname command))))
+
+
+(defn
+  ^{ :arglists '("(cargo-arangodb/drop-db cname db-user db-password db-name)")
+     :doc """
+          Drops a database. 
+
+          Args:
+
+          | cname      | The container name            |
+          | db-user    | The DB user                   |
+          | db-passwd  | The DB password               |
+          | db-name    | The DB name                   |
+          """
+     :examples '(
+          """
+          (do
+            (load-module :cargo-arangodb ['cargo-arangodb :as 'ca])
+
+            ;; drop the 'people' database in the ArangoDB container labeled
+            ;; 'db-test'
+            (ca/drop-db "db-test" "root" "xxx" "people"))
+          """) }
+
+  drop-db [cname db-user db-password db-name]
+
+  { :pre [(string? cname)
+          (string? db-user) 
+          (string? db-password)
+          (string? db-name)  ] }
+
+  (let [container (first (docker/container-find-by-name cname))
+        id        (get container "ID")
+        status    (get container "State")
+        js        "db._dropDatabase('~{db-name}');"]
+    (assert (some? container)
+            "There is no container with the name \"~{cname}\" available!")
+    (assert (= status "running") "The container is not running!")
+    (exec-js cname db-user db-password "_system" js)))
 
 
 ;; ---------------------------------------------------------------------------
