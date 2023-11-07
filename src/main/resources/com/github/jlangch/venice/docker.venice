@@ -985,7 +985,7 @@
 
 
 (defn
-  ^{ :arglists '("(docker/volume-create name)")
+  ^{ :arglists '("(docker/volume-create vname & options)")
      :doc """
           Create a volume.
           """
@@ -998,14 +998,32 @@
           "docker/volume-inspect"
           "docker/volume-rm"
           "docker/volume-prune"
-          "docker/volume-exists?" ) }
+          "docker/volume-exists?" )
+     :spec { :options { :driver [:optional #(string? %)]
+                        :label  [:optional #(string? %)]
+                        :opts   [:optional #(and (vector? %) (every? string? %))]
+                        :type   [:optional #{:mount :block}] } } }
 
-  volume-create [name]
+  volume-create [vname & options]
 
-  { :pre [(string? name)] }
+  { :pre [(string? vname)] }
 
-  (->> (apply docker/cmd ["volume" "create" name])
-       (:out)))
+  (let [options  (apply hash-map options)
+        _        (validate-map "option" options (-> docker/volume-inspect meta :spec :options))
+        driver   (:driver options nil)
+        label    (:label options nil)
+        opts     (:opts options [])
+        type     (:type options nil)
+        cmdargs* ["volume" "create"]
+        cmdargs* (if (some? driver) (conj cmdargs* "--driver" driver) cmdargs*)
+        cmdargs* (if (some? label) (conj cmdargs* "--label" label) cmdargs*)
+        cmdargs* (if (some? type) (conj cmdargs* "--type" (name type)) cmdargs*)
+        cmdargs* (if (and (vector? opts) (not-empty? opts))
+                  (into cmdargs* (interleave (lazy-seq (constantly "--opt")) opts))
+                  cmdargs*)
+        cmdargs* (into cmdargs* [vname])]
+    (->> (apply docker/cmd cmdargs*)
+         (:out))))
 
 
 (defn
@@ -1071,7 +1089,9 @@
 (defn
   ^{ :arglists '("(docker/volume-prune )")
      :doc """
-          Prunes unused docker volumes
+          Remove all unused local volumes. Unused local volumes are those which 
+          are not referenced by any containers. Removes both named and anonymous 
+          volumes!
           """
      :examples '(
           """
@@ -1086,7 +1106,7 @@
 
   volume-prune []
 
-  (->> (apply docker/cmd ["volume" "prune"])
+  (->> (apply docker/cmd ["volume" "prune" "--force" "--all"])
        (:out)))
 
 
