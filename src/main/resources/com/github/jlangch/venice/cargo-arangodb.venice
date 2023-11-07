@@ -443,8 +443,9 @@
 (defn
   ^{ :arglists '("(cargo-arangodb/export-db-dump cname dump-name export-dir log)")
      :doc """
-          Exports an existing the DB dump 'dump-name' to the local filesystem. 
-          The export directory must be an existing empty directory. 
+          Exports an existing the DB dump 'dump-name'from the container to the 
+          local filesystem. The export directory in the local filesystem must 
+          be an existing directory. 
 
           Args:
 
@@ -496,9 +497,9 @@
 (defn
   ^{ :arglists '("(cargo-arangodb/import-db-dump cname dump-name import-dir log)")
      :doc """
-          Imports an existing the DB dump 'dump-name' to the container's 
-          filesystem. The import directory must be an existing non empty 
-          directory. 
+          Imports an existing DB dump with the name 'dump-name' from the local
+          filesystem into the container's filesystem. The import directory on
+          local filesystem must be an existing non empty directory. 
 
           Args:
 
