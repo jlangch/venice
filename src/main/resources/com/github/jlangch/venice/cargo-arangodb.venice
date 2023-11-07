@@ -530,7 +530,7 @@
 
   { :pre [(string? cname)
           (string? dump-name) 
-          (io/file? export-dir)] }
+          (io/file? import-dir)] }
 
   (let [container (first (docker/container-find-by-name cname))
         id        (get container "ID")
@@ -541,10 +541,12 @@
     (assert (= status "running") "The container is not running!")
     (assert (io/exists-dir? import-dir) "The import dir does not exist!")
     (assert (dir-not-empty? import-dir) "The import dir is empty!")
-    (assert (not (exists-db-dump? dump-name)) "The DB dump does already exist!")
+    (assert (not (exists-db-dump? cname dump-name)) "The DB dump does already exist!")
     (log "Importing '~{dump-name}' ...")
     (docker/cp (io/file-path import-dir)
                "~{id}:/var/lib/arangodb3/~{dump-name}")
+    (log "Changing user/group to root:root of the dump files ...")
+    (docker/exec id "chown" "-R" "root:root" "/var/lib/arangodb3/~{dump-name}")
     (log "Import from '~{import-dir}' done.")))
 
 
