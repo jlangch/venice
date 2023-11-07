@@ -33,6 +33,10 @@
 
 (defonce internal-port 8529) ;; The ArangoDB internal port within the container
 
+;; The ArangoDB container defines two directories that can be used with volumes
+(defonce data-dir "/var/lib/arangodb3")
+(defonce apps-dir "/var/lib/arangodb3-apps")
+
 
 (defn
   ^{ :arglists '(
@@ -61,18 +65,16 @@
           | root-passwd | The ArangoDB root password |
           | memory      | The detected memory ArangoDB is to use. E.g.: 8GB, 8000MB |
           | cores       | The detected number of cores ArangoDB is to use |
-          | log         | A log function  (may be *nil*)|
+          | log         | A log function, may be *nil*. \
+                          E.g: `(fn [s] (println "ArangoDB:" s))`|
           """
      :examples '(
           """
-          ;; Run an ArangoDB container
-          (cargo-arangodb/start "arangodb-test"
-                                "3.11.4"
-                                8500
-                                "test"
-                                "8GB"
-                                1
-                                (fn [s] (println "ArangoDB:" s)))
+          (do
+            (load-module :cargo-arangodb ['cargo-arangodb :as 'ca])
+           
+            ;; Run an ArangoDB container labeled as "db-test"
+            (ca/start "db-test" "3.11.4" 8500 "test" "8GB" 1 nil))
           """)
      :see-also '(
           "cargo-arangodb/stop") }
@@ -127,12 +129,16 @@
           Args:
 
           | cname   | A unique container name       |
-          | log     | A log function (may be *nil*) |
+          | log     | A log function, may be *nil*. \
+                      E.g: `(fn [s] (println "ArangoDB:" s))`|
           """
      :examples '(
           """
-          (cargo-arangodb/stop "arangodb-test"
-                               (fn [s] (println "ArangoDB:" s)))
+          (do
+            (load-module :cargo-arangodb ['cargo-arangodb :as 'ca])
+           
+            ;; Stop the ArangoDB container labeled as "db-test"
+            (ca/stop "db-test" nil))
           """)
      :see-also '(
           "cargo-arangodb/start") }
@@ -146,96 +152,19 @@
 
 
 (defn
-  ^{ :arglists '("(cargo-arangodb/create-volumes cname log)")
-     :doc """
-          Creates the ArangoDB docker volumes if they do not exist yet
-
-          ArangoDB uses the volume /var/lib/arangodb3 as database directory to 
-          store the collection data and the volume /var/lib/arangodb3-apps as 
-          apps directory to store any extensions.
-
-          The Docker extension "Volumes Backup & Share" provides volume
-          import and export functions.
-
-          Args:
-
-          | cname   | The container name            |
-          | log     | A log function (may be *nil*) |
-          """
-     :examples '(
-          """
-          (cargo-arangodb/create-volumes "arangodb-test"
-                                         (fn [s] (println "ArangoDB:" s)))
-          """)
-     :see-also '(
-          "cargo-arangodb/remove-volumes") }
-
-  create-volumes [cname log]
-
-  { :pre [(string? cname)] }
-
-  (let [data-vol (make-data-vol-name cname)
-        apps-vol (make-apps-vol-name cname)
-        log      (or log default-log)]
-    (if (docker/volume-exists? data-vol)
-      (log "Data volume ~{data-vol} exists")
-      (do
-        (docker/volume-create data-vol)
-        (log "Data volume ~{data-vol} created")))
-    (if (docker/volume-exists? apps-vol)
-      (log "Apps volume ~{apps-vol} exists")
-      (do
-        (docker/volume-create apps-vol)
-        (log "Apps volume ~{apps-vol} created")))))
-
-
-(defn
-  ^{ :arglists '("(cargo-arangodb/remove-volumes cname log)")
-     :doc """
-          Removes the ArangoDB docker volumes if they do exist
-
-          Args:
-
-          | cname   | The container name            |
-          | log     | A log function (may be *nil*) |
-          """
-     :examples '(
-          """
-          (cargo-arangodb/remove-volumes "arangodb-test"
-                                         (fn [s] (println "ArangoDB:" s)))
-          """)
-     :see-also '(
-          "cargo-arangodb/create-volumes") }
-
-  remove-volumes [cname log]
-
-  { :pre [(string? cname)] }
-
-  (let [data-vol (make-data-vol-name cname)
-        apps-vol (make-apps-vol-name cname)
-        log      (or log default-log)]
-    (if-not (docker/volume-exists? data-vol)
-      (log "Data volume ~{data-vol} does not exists")
-      (do
-        (docker/volume-rm data-vol)
-        (log "Data volume ~{data-vol} removed")))
-    (if-not (docker/volume-exists? apps-vol)
-      (log "Apps volume ~{apps-vol} does not exists")
-      (do
-        (docker/volume-rm apps-vol)
-        (log "Apps volume ~{apps-vol} removed")))))
-
-
-(defn
   ^{ :arglists '("(cargo-arangodb/db-dump cname db-name db-user db-passwd dump-name log)")
      :doc """
-          Dumps an ArangoDB database
+          Dumps an ArangoDB database.
+
+          The DB dump is written to container's directory "/var/lib/arangodb3/{dump-name}".
+          If the directory does not exist it is created automatically.
         
           Example:
           
           ```
-          (load-module :cargo-arangodb ['cargo-arangodb :as 'ca]
-            (ca/db-dump "arangodb-test" "people" "root" "xxx" "dump-001" nil))
+          (do
+            (load-module :cargo-arangodb ['cargo-arangodb :as 'ca])
+            (ca/db-dump "db-test" "people" "root" "xxx" "dump-001" nil))
           ```
 
           Dumps an ArangoDB database using this commands on the container:
@@ -266,16 +195,15 @@
           | db-user   | The DB user                   |
           | db-passwd | The DB password               |
           | dump-name | The dump name. e.g "dump-001" |
-          | log       | A log function (may be *nil*) |
+          | log       | A log function, may be *nil*. \
+                        E.g: `(fn [s] (println "ArangoDB:" s))`|
           """
      :examples '(
           """
-          (cargo-arangodb/db-dump "arangodb-test"
-                                  "people"
-                                  "root"
-                                  "xxx"
-                                  "dump-001"
-                                  (fn [s] (println "ArangoDB:" s)))
+          (do
+            (load-module :cargo-arangodb ['cargo-arangodb :as 'ca])
+
+            (ca/db-dump "db-test" "people" "root" "xxx" "dump-001" nil))
           """)
      :see-also '(
           "cargo-arangodb/db-restore"
@@ -317,12 +245,15 @@
   ^{ :arglists '("(cargo-arangodb/db-restore cname db-name db-user db-passwd dump-name log)")
      :doc """
           Restores an ArangoDB database from a dump
+
+          The DB dump is read from container's directory "/var/lib/arangodb3/{dump-name}".
         
           Example:
           
           ```
-          (load-module :cargo-arangodb ['cargo-arangodb :as 'ca]
-            (ca/db-restore "arangodb-test" "people" "root" "xxx" "dump-001" nil))
+          (do
+            (load-module :cargo-arangodb ['cargo-arangodb :as 'ca])
+            (ca/db-restore "db-test" "people" "root" "xxx" "dump-001" nil))
           ```
 
           Restores an ArangoDB database using this command on the container:
@@ -347,7 +278,7 @@
 
           Check if dump directory exists:
 
-          `(cargo-arangodb/exists-db-dump? "arangodb-test" "dump-001")`
+          `(cargo-arangodb/exists-db-dump? "db-test" "dump-001")`
 
           Args:
 
@@ -356,16 +287,14 @@
           | db-user   | The DB user                   |
           | db-passwd | The DB password               |
           | dump-name | The dump name. e.g "dump-001" |
-          | log       | A log function (may be *nil*) |
+          | log       | A log function, may be *nil*. \
+                        E.g: `(fn [s] (println "ArangoDB:" s))`|
           """
      :examples '(
           """
-          (cargo-arangodb/db-restore "arangodb-test"
-                                     "people"
-                                     "root"
-                                     "xxx"
-                                     "dump-001"
-                                     (fn [s] (println "ArangoDB:" s)))
+          (do
+            (load-module :cargo-arangodb ['cargo-arangodb :as 'ca])
+            (ca/db-restore "db-test" "people" "root" "xxx" "dump-001" nil))
           """)
      :see-also '(
           "cargo-arangodb/db-dump"
@@ -414,7 +343,9 @@
           """
      :examples '(
           """
-          (cargo-arangodb/exists-db-dump? "arangodb-test" "dump-001")
+           (do
+            (load-module :cargo-arangodb ['cargo-arangodb :as 'ca])
+            (ca/exists-db-dump? "db-test" "dump-001"))
           """)
      :see-also '(
           "cargo-arangodb/db-dump" 
@@ -449,7 +380,9 @@
           """
      :examples '(
           """
-          (cargo-arangodb/remove-db-dump "arangodb-test" "dump-001")
+          (do
+            (load-module :cargo-arangodb ['cargo-arangodb :as 'ca])
+            (ca/remove-db-dump "db-test" "dump-001"))
           """)
      :see-also '(
           "cargo-arangodb/db-dump" 
@@ -472,6 +405,7 @@
       true
       (catch :ShellException e false))))
 
+
 (defn
   ^{ :arglists '("(cargo-arangodb/list-db-dumps cname)")
      :doc """
@@ -479,11 +413,13 @@
 
           Args:
 
-          | cname     | The container name            |
+          | cname  | The container name  |
           """
      :examples '(
           """
-          (cargo-arangodb/list-db-dumps "arangodb-test")
+          (do
+            (load-module :cargo-arangodb ['cargo-arangodb :as 'ca])
+            (ca/list-db-dumps "db-test"))
           """)
      :see-also '(
           "cargo-arangodb/db-dump" 
@@ -504,6 +440,115 @@
     (println (docker/exec id "ls" "-la" "/var/lib/arangodb3/"))))
 
 
+(defn
+  ^{ :arglists '("(cargo-arangodb/export-db-dump cname dump-name export-dir log)")
+     :doc """
+          Exports an existing the DB dump 'dump-name' to the local filesystem. 
+          The export directory must be an existing empty directory. 
+
+          Args:
+
+          | cname      | The container name                            |
+          | dump-name  | The dump name                                 |
+          | export-dir | The export dir.  \
+                         E.g.: `(io/file (io/user-home-dir) "dump"))`  |
+          | log        | A log function, may be *nil*. \
+                         E.g: `(fn [s] (println "ArangoDB:" s))`       |
+          """
+     :examples '(
+          """
+          (do
+            (load-module :cargo-arangodb ['cargo-arangodb :as 'ca])
+
+            ;; create a DB dump
+            (ca/db-dump "db-test" "people" "root" "xxx" "dump-001" nil)
+
+            ;; export the DB dump to the local filesystem
+            (let [dir (io/file (io/user-home-dir) "dump-001")]
+              (io/mkdir dir)
+              (ca/export-db-dump "db-test" "dump-001" dir)))
+          """)
+     :see-also '(
+          "cargo-arangodb/db-dump" 
+          "cargo-arangodb/db-restore"
+          "cargo-arangodb/exists-db-dump?" ) }
+
+  export-db-dump [cname dump-name export-dir log]
+
+  { :pre [(string? cname)
+          (string? dump-name) 
+          (io/file? export-dir)] }
+
+  (let [container (first (docker/container-find-by-name cname))
+        id        (get container "ID")
+        status    (get container "State")
+        log       (or log default-log)]
+    (assert (some? container)
+            "There is no container with the name \"~{cname}\" available!")
+    (assert (= status "running") "The container is not running!")
+    (assert (io/exists-dir? export-dir) "The export dir does not exist!")
+    (assert (dir-empty? export-dir) "The export dir is not empty!")
+    (assert (exists-db-dump? dump-name) "The dump does not exist!")
+    (log "Exporting '~{dump-name}' ...")
+    (docker/cp "~{id}:/var/lib/arangodb3/~{dump-name}" 
+               (io/file-absolute export-dir))
+    (log "Export to '~{export-dir}' done.")))
+
+
+(defn
+  ^{ :arglists '("(cargo-arangodb/import-db-dump cname dump-name import-dir log)")
+     :doc """
+          Imports an existing the DB dump 'dump-name' to the container's 
+          filesystem. The import directory must be an existing non empty 
+          directory. 
+
+          Args:
+
+          | cname      | The container name                            |
+          | dump-name  | The dump name                                 |
+          | import-dir | The import dir.  \
+                         E.g.: `(io/file (io/user-home-dir) "dump"))`  |
+          | log        | A log function, may be *nil*. \
+                         E.g: `(fn [s] (println "ArangoDB:" s))`       |
+          """
+     :examples '(
+          """
+          (do
+            (load-module :cargo-arangodb ['cargo-arangodb :as 'ca])
+
+            ;; import the dump to the container's filesystem
+            (let [dir (io/file (io/user-home-dir) "dump-001")]
+              (ca/import-db-dump "db-test" "dump-001" dir))
+
+            ;; restore the DB dump
+            (ca/db-restore "db-test" "people" "root" "xxx" "dump-001" nil))
+          """)
+     :see-also '(
+          "cargo-arangodb/db-dump" 
+          "cargo-arangodb/db-restore"
+          "cargo-arangodb/exists-db-dump?" ) }
+
+  import-db-dump [cname dump-name import-dir log]
+
+  { :pre [(string? cname)
+          (string? dump-name) 
+          (io/file? export-dir)] }
+
+  (let [container (first (docker/container-find-by-name cname))
+        id        (get container "ID")
+        status    (get container "State")
+        log       (or log default-log)]
+    (assert (some? container)
+            "There is no container with the name \"~{cname}\" available!")
+    (assert (= status "running") "The container is not running!")
+    (assert (io/exists-dir? import-dir) "The import dir does not exist!")
+    (assert (dir-not-empty? import-dir) "The import dir is empty!")
+    (assert (not (exists-db-dump? dump-name)) "The DB dump does already exist!")
+    (log "Importing '~{dump-name}' ...")
+    (docker/cp (io/file-absolute import-dir)
+               "~{id}:/var/lib/arangodb3/~{dump-name}")
+    (log "Import from '~{import-dir}' done.")))
+
 
 ;; ---------------------------------------------------------------------------
 ;; utils
@@ -517,16 +562,11 @@
       (str/trim)
       (match? #".*is ready for business. Have fun.*")))
 
-(defn make-data-vol-name [cname] 
-  (str cname "_data"))
+(defn dir-empty? [dir]
+  (zero? (count (io/list-files dir))))
 
-(defn make-apps-vol-name [cname]
-  (str cname "_apps"))
-
-(defn built-in-modules [cname]
-  ;; named volumes
-  ["~(make-data-vol-name cname):/var/lib/arangodb3"
-   "~(make-apps-vol-name cname):/var/lib/arangodb3-apps"])
+(defn dir-not-empty? [dir]
+  (pos? (count (io/list-files dir))))
 
 (defn admin-url [port]
   "http://127.0.0.1:~(long port)")
