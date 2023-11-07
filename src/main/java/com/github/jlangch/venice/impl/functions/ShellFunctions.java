@@ -432,22 +432,22 @@ public class ShellFunctions {
                 }
                 else if (exitCode != 0 && throwExOnFailure) {
                     //try (WithCallStack cs = new WithCallStack(new CallFrame("sh", cmd.getMeta()))) {
-                           final VncVal out = future_stdout.get();
-                           final VncVal err = future_stderr.get();
+                        final VncVal out = future_stdout.get();
+                        final VncVal err = future_stderr.get();
 
-                           final String sOut = out == Constants.Nil ? null : StringUtil.trimToNull(out.toString());
-                           final String sErr = err == Constants.Nil ? null : StringUtil.trimToNull(err.toString());
+                        final String sOut = out == Constants.Nil ? null : StringUtil.trimToNull(out.toString());
+                        final String sErr = err == Constants.Nil ? null : StringUtil.trimToNull(err.toString());
 
-                           final String sErrOverview;
-                           if (sErr != null) {
-                        	   sErrOverview = "\n\nstderr:\n" + StringUtil.truncate(sErr, 250, "...");
-                           }
-                           else if (sOut != null) {
-                        	   sErrOverview = "\n\nstdout:\n" + StringUtil.truncate(sOut, 250, "...");
-                           }
-                           else {
-                        	   sErrOverview = "";
-                           }
+                        final String sErrOverview;
+                        if (sErr != null) {
+                            sErrOverview = "\n\nstderr:\n" + StringUtil.truncate(sErr, 250, "...");
+                        }
+                        else if (sOut != null) {
+                            sErrOverview = "\n\nstdout:\n" + StringUtil.truncate(sOut, 250, "...");
+                        }
+                        else {
+                            sErrOverview = "";
+                        }
 
                         throw new ShellException(
                                 String.format(
