@@ -938,7 +938,9 @@
 ;; -----------------------------------------------------------------------------
 ;; Volume functions
 ;;   - docker/volume-list
+;;   - docker/volume-inspect
 ;;   - docker/volume-create
+;;   - docker/volume-prune
 ;;   - docker/volume-rm
 ;;   - docker/volume-exists?
 ;; -----------------------------------------------------------------------------
@@ -959,7 +961,9 @@
           """ )
      :see-also '(
           "docker/volume-create"
+          "docker/volume-inspect"
           "docker/volume-rm"
+          "docker/volume-prune"
           "docker/volume-exists?"
           "docker/images"
           "docker/run" )
@@ -991,7 +995,9 @@
           """ )
      :see-also '(
           "docker/volume-list"
+          "docker/volume-inspect"
           "docker/volume-rm"
+          "docker/volume-prune"
           "docker/volume-exists?" ) }
 
   volume-create [name]
@@ -1000,6 +1006,42 @@
 
   (->> (apply docker/cmd ["volume" "create" name])
        (:out)))
+
+
+(defn
+  ^{ :arglists '("(docker/volume-inspect vname & options)")
+     :doc """
+          Inspects a volume.
+
+          Options:
+
+          | :format {:string :json} | Returns the output either as a ascii or as JSON data |
+           """
+     :examples '(
+          """
+          (docker/volume-inspect "hello")
+          """ )
+     :see-also '(
+          "docker/volume-list"
+          "docker/volume-create"
+          "docker/volume-inspect"
+          "docker/volume-prune"
+          "docker/volume-exists?")
+     :spec { :options { :format [:optional #{:string :json}] } } }
+
+  volume-inspect [vname & options]
+
+  { :pre [(string? vname)] }
+
+  (let [opts     (apply hash-map options)
+        _        (validate-map "option" opts (-> docker/volume-inspect meta :spec :options))
+        format   (:format opts nil)
+        cmdargs* ["volume" "inspect"]
+        cmdargs* (if (= format :json) (into cmdargs* ["--format" (name format)]) cmdargs*)
+        cmdargs* (into cmdargs* [vname])]
+    (->> (apply docker/cmd cmdargs*)
+         (:out)
+         ((fn [j] (first (first (parse-output format j))))))))
 
 
 (defn
@@ -1014,6 +1056,8 @@
      :see-also '(
           "docker/volume-list"
           "docker/volume-create"
+          "docker/volume-inspect"
+          "docker/volume-prune"
           "docker/volume-exists?" ) }
 
   volume-rm [name]
@@ -1021,6 +1065,28 @@
   { :pre [(string? name)] }
 
   (->> (apply docker/cmd ["volume" "rm" name])
+       (:out)))
+
+
+(defn
+  ^{ :arglists '("(docker/volume-prune )")
+     :doc """
+          Prunes unused docker volumes
+          """
+     :examples '(
+          """
+          (docker/volume-prune)
+          """ )
+     :see-also '(
+          "docker/volume-list"
+          "docker/volume-create"
+          "docker/volume-inspect"
+          "docker/volume-rm"
+          "docker/volume-exists?" ) }
+
+  volume-prune []
+
+  (->> (apply docker/cmd ["volume" "prune"])
        (:out)))
 
 
