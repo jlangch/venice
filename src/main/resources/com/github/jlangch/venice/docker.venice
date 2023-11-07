@@ -1197,7 +1197,7 @@
 (defn
   ^{ :arglists '("(docker/images-query-by-repo repo)")
      :doc """
-          Returns all pulled images for a given repo.
+          Returns all pulled local images for a given repo.
           """
      :examples '(
           """
@@ -1205,7 +1205,7 @@
           """,
           """
           ;; return a list of ids for "arangodb/arangodb" images
-          (->> (query-images-by-repo "arangodb/arangodb")
+          (->> (docker/images-query-by-repoo "arangodb/arangodb")
                (map #(get % "ID")))
           """ )
      :see-also '(
@@ -1223,7 +1223,7 @@
 (defn
   ^{ :arglists '("(docker/image-ready? repo tag)")
      :doc """
-          Returns true if the image is ready for use else false.
+          Returns true if the image exists locally (is pulled) else false.
           """
      :examples '(
           """
