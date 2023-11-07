@@ -14,7 +14,7 @@ All notable changes to this project will be documented in this file.
 
 - support for Docker ArangoDB dump & restore in the :cargo-arangodb module
 - support for Docker ArangoDB dumps to copy to/from the local filesystem
-- support for 'docker/exec' non detached mode
+- support for 'docker/exec' detached/non detached (async/sync) mode
 
 ### Fixed 
 
