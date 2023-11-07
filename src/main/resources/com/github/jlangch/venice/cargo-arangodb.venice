@@ -464,9 +464,8 @@
             (ca/db-dump "db-test" "people" "root" "xxx" "dump-001" nil)
 
             ;; export the DB dump to the local filesystem
-            (let [dir (io/file (io/user-home-dir) "dump-001")]
-              (io/mkdir dir)
-              (ca/export-db-dump "db-test" "dump-001" dir)))
+            (let [dir (io/user-home-dir)]
+              (ca/export-db-dump "db-test" "dump-001" dir nil)))
           """)
      :see-also '(
           "cargo-arangodb/db-dump" 
@@ -486,12 +485,11 @@
     (assert (some? container)
             "There is no container with the name \"~{cname}\" available!")
     (assert (= status "running") "The container is not running!")
-    (assert (io/exists-dir? export-dir) "The export dir does not exist!")
-    (assert (dir-empty? export-dir) "The export dir is not empty!")
-    (assert (exists-db-dump? dump-name) "The dump does not exist!")
+    (assert (not (io/exists-dir? (io/file export-dir dump-name))) "The export dir already exist!")
+    (assert (exists-db-dump? cname dump-name) "The dump does not exist!")
     (log "Exporting '~{dump-name}' ...")
     (docker/cp "~{id}:/var/lib/arangodb3/~{dump-name}" 
-               (io/file-absolute export-dir))
+               (io/file-path export-dir))
     (log "Export to '~{export-dir}' done.")))
 
 
@@ -518,7 +516,7 @@
 
             ;; import the dump to the container's filesystem
             (let [dir (io/file (io/user-home-dir) "dump-001")]
-              (ca/import-db-dump "db-test" "dump-001" dir))
+              (ca/import-db-dump "db-test" "dump-001" dir nil))
 
             ;; restore the DB dump
             (ca/db-restore "db-test" "people" "root" "xxx" "dump-001" nil))
@@ -545,7 +543,7 @@
     (assert (dir-not-empty? import-dir) "The import dir is empty!")
     (assert (not (exists-db-dump? dump-name)) "The DB dump does already exist!")
     (log "Importing '~{dump-name}' ...")
-    (docker/cp (io/file-absolute import-dir)
+    (docker/cp (io/file-path import-dir)
                "~{id}:/var/lib/arangodb3/~{dump-name}")
     (log "Import from '~{import-dir}' done.")))
 
