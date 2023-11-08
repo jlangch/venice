@@ -99,7 +99,9 @@ public class Modules {
                         "webdav",
                         "xchart",
                         "xchart-install",
-                        "xml")));
+                        "xml",
+                        "zipvault",
+                        "zipvault-install")));
 
     public static final Set<VncKeyword> NATIVE_MODULES =
             Collections.unmodifiableSet(

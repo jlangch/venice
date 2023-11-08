@@ -118,13 +118,13 @@ public class DocGenerator {
 
         preloadedModules
             .addAll(Arrays.asList(
-                        "app",    "xml",      "crypt",     "gradle",
-                        "trace",  "ansi",     "maven",     "kira",
-                        "java",   "semver",   "excel",     "hexdump",
-                        "shell",  "geoip",    "benchmark", "component",
-                        "config", "parsifal", "grep",      "test",
-                        "fonts",  "qrref",    "jsonl",     "timing",
-                        "docker", "cargo",    "cargo-arangodb"));
+                        "app",      "xml",      "crypt",     "gradle",
+                        "trace",    "ansi",     "maven",     "kira",
+                        "java",     "semver",   "excel",     "hexdump",
+                        "shell",    "geoip",    "benchmark", "component",
+                        "config",   "parsifal", "grep",      "test",
+                        "fonts",    "qrref",    "jsonl",     "timing",
+                        "zipvault", "docker",   "cargo",     "cargo-arangodb"));
 
         final IVeniceInterpreter venice = new VeniceInterpreter(new AcceptAllInterceptor());
 

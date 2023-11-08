@@ -1,0 +1,118 @@
+;;;;   __    __         _
+;;;;   \ \  / /__ _ __ (_) ___ ___
+;;;;    \ \/ / _ \ '_ \| |/ __/ _ \
+;;;;     \  /  __/ | | | | (_|  __/
+;;;;      \/ \___|_| |_|_|\___\___|
+;;;;
+;;;;
+;;;; Copyright 2017-2023 Venice
+;;;;
+;;;; Licensed under the Apache License, Version 2.0 (the "License");
+;;;; you may not use this file except in compliance with the License.
+;;;; You may obtain a copy of the License at
+;;;;
+;;;;     http://www.apache.org/licenses/LICENSE-2.0
+;;;;
+;;;; Unless required by applicable law or agreed to in writing, software
+;;;; distributed under the License is distributed on an "AS IS" BASIS,
+;;;; WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+;;;; See the License for the specific language governing permissions and
+;;;; limitations under the License.
+
+;;;; ZIP Vault, AES-256 encrypted and password protected
+
+
+(ns zipvault)
+
+
+(import :net.lingala.zip4j.io.outputstream.ZipOutputStream)
+(import :net.lingala.zip4j.model.ZipParameters)
+(import :net.lingala.zip4j.model.enums.EncryptionMethod)
+
+
+(defn 
+  ^{ :arglists '("(zipvault/zip out password & entries)")
+     :doc """
+          Creates an encrypted and password protected zip form the entries and
+          writes it to out. out may be a file or an output stream.
+
+          An entry is given by a name and data. The entry data may be nil, a 
+          bytebuf, a file, a string, or an input stream. An entry name with a 
+          trailing '/' creates a directory.
+          """
+     :examples '(
+          """
+          (do 
+            (load-module :zipvault)
+
+            (zipvault/zip (io/file "vault.zip")
+                          "my-password"
+                          "a.txt" "abc"
+                          "b.txt" "def"
+                          "c.txt" "ghi"))
+          """ ) }
+
+  zip [out password & entries]
+  (let [params  (create-params)
+        entries (apply hash-map entries)]
+    (cond
+      (instance-of? :java.io.OutputStream out)
+        (zip-to-os params password out entries)
+
+      (io/file? out)
+        (zip-to-os params 
+                   password 
+                   (io/file-out-stream out :append false) 
+                   entries)
+        
+      :else
+        (throw (ex :VncException 
+                   """
+                   Invalid zip out type ~(type out)! \
+                   Expected either a file or an output stream.
+                   """)))))
+
+
+(defn- zip-to-os [params password os entries]
+  (try-with [os (. :ZipOutputStream :new os password)]  
+    (docoll (fn [[k v]] (add-entry params os k v)) {:a 1 :b 2})))
+
+(defn- add-entry [params os name value]
+  (cond
+     (str/ends-with? name "/")
+       (add-entry params os name nil)
+
+     (nil? value)
+       (add-entry params os name (bytebuf))
+
+     (instance-of? :java.io.InputStream value)
+       (add-entry params os name (io/slurp value :binary true))
+
+     (= (type value) :java.io.File)
+       (add-entry params os name (io/slurp value :binary true))
+
+     (= (type value) :core/string)
+       (add-entry params os name (bytebuf value))
+
+     (= (type value) :core/bytebuf)
+       (add-entry params os name value)
+
+     :else
+       (throw (ex :VncException 
+              """
+              Invalid zip entry value type ~(type value)! \
+              Expected a file, string, or bytebuf.
+              """))))
+
+(defn- add-entry [params os name data]
+  (. params :setFileNameInZip name)
+  (. os :putNextEntry params)
+  (when (some? data) (. os :write data))
+  (. os :closeEntry))
+
+(defn- create-params []
+  (doto (. :ZipParameters :new)
+        (. :setEncryptFiles true)
+        (. :setEncryptionMethod :AES)
+        (. :setAesKeyStrength :KEY_STRENGTH_256)
+        (. :setAesVersion :TWO)))

@@ -190,6 +190,7 @@ ext {
     springExpression_Version = '5.2.0.RELEASE'
     vavr_Version = '0.10.4'
     xchart_Version = '3.8.2'
+    zip4j_Version = '2.11.5'
 }
 
 
@@ -731,6 +732,7 @@ dependencies {
     testImplementation "org.knowm.xchart:xchart:${xchart_Version}"
     testImplementation "org.apache.poi:poi:${poi_Version}"
     testImplementation "org.apache.poi:poi-ooxml:${poi_Version}"
+    testImplementation "net.lingala.zip4j:zip4j:${zip4j_Version}"
 
 
     // Cheatsheet generation
