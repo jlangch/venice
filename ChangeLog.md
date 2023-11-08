@@ -13,7 +13,7 @@ All notable changes to this project will be documented in this file.
 ### Added 
 
 - support for Docker ArangoDB dump & restore in the :cargo-arangodb module
-- support for Docker ArangoDB dumps to copy to/from the local filesystem
+- support for copying Docker ArangoDB dumps to/from the local filesystem
 - support for 'docker/exec' detached/non detached (async/sync) mode
 
 ### Fixed 
@@ -21,6 +21,7 @@ All notable changes to this project will be documented in this file.
 - Fixed 'docker/exec' function. The docker tool expects the exec command and
   its args as individual arguments: `docker exec 0286eb877a91 ls /var/lib`.  
   Passing "ls /var/lib" is not accepted.
+- option processing in 'io/file-out-stream' function
   
 
 

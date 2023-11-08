@@ -329,7 +329,7 @@ public class IOFunctionsStreams {
             public VncVal apply(final VncList args) {
                 ArityExceptions.assertMinArity(this, args, 1);
 
-                final VncHashMap options = VncHashMap.ofAll(args.slice(2));
+                final VncHashMap options = VncHashMap.ofAll(args.slice(1));
                 final VncVal append = options.get(new VncKeyword("append"));
 
                 final File file = convertToFile(args.first());

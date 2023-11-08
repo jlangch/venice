@@ -31,6 +31,25 @@ import com.github.jlangch.venice.Venice;
 public class IOFunctionsStreamTest {
 
     @Test
+    public void test_io_file_out_stream() {
+        final Venice venice = new Venice();
+
+        final String script =
+                "(do                                                                \n" +
+                "   (import :java.io.FileInputStream)                               \n" +
+                "   (let [file (io/temp-file \"test-\", \".txt\")]                  \n" +
+                "     (io/delete-file-on-exit file)                                 \n" +
+                "      (try-with [fos (io/file-out-stream file :append false)       \n" +
+                "                 wr (io/wrap-os-with-buffered-writer fos :utf-8)]  \n" +
+                "        (println wr \"100\")                                       \n" +
+                "        (println wr \"200\"))                                      \n" +
+                "     (try-with [rd (io/buffered-reader file :encoding :utf-8)]     \n" +
+                "        (pr-str [(read-line rd) (read-line rd)]))))               ";
+
+        assertEquals("[\"100\" \"200\"]",venice.eval(script));
+    }
+
+    @Test
     public void test_io_buffered_reader() {
         final Venice venice = new Venice();
 
