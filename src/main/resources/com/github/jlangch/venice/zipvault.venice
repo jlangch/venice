@@ -24,7 +24,6 @@
 
 (ns zipvault)
 
-
 (import :net.lingala.zip4j.io.outputstream.ZipOutputStream)
 (import :net.lingala.zip4j.model.ZipParameters)
 (import :net.lingala.zip4j.model.enums.EncryptionMethod)
@@ -49,10 +48,11 @@
                           "my-password"
                           "a.txt" "abc"
                           "b.txt" "def"
-                          "c.txt" "ghi"))
+                          "xx/c.txt" "ghi"))
           """ ) }
 
   zip [out password & entries]
+
   (let [params  (create-params)
         entries (apply hash-map entries)]
     (cond
@@ -75,7 +75,7 @@
 
 (defn- zip-to-os [params password os entries]
   (try-with [os (. :ZipOutputStream :new os password)]  
-    (docoll (fn [[k v]] (add-entry params os k v)) {:a 1 :b 2})))
+    (docoll (fn [[k v]] (add-entry params os k v)) entries)))
 
 (defn- add-entry [params os name value]
   (cond
