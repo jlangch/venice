@@ -38,6 +38,10 @@
 (defonce apps-dir "/var/lib/arangodb3-apps")
 
 
+;; ---------------------------------------------------------------------------
+;; ArangoDB start & stop container
+;; ---------------------------------------------------------------------------
+
 (defn
   ^{ :arglists '(
           "(cargo-arangodb/start cname version mapped-port root-passwd memory cores log)")
@@ -150,6 +154,10 @@
   (let [log (or log default-log)]
     (cargo/stop cname log)))
 
+
+;; ---------------------------------------------------------------------------
+;; ArangoDB dump & restore databases
+;; ---------------------------------------------------------------------------
 
 (defn
   ^{ :arglists '("(cargo-arangodb/db-dump cname db-name db-user db-passwd dump-name log)")
@@ -575,13 +583,12 @@
           (do
             (load-module :cargo-arangodb ['cargo-arangodb :as 'ca])
 
-            ;; drop the 'people' database in the ArangoDB container labeled
-            ;; 'db-test'
+            ;; drop the 'people' database in the ArangoDB 'db-test' container
             (ca/exec-js "db-test"
                         "root"
                         "xxx"
                         "_system"
-                        "db._dropDatabase('people')\;")
+                        "db._dropDatabase('people')")
           """) }
 
   exec-js [cname db-user db-password db-name js]
@@ -604,7 +611,6 @@
                     "--server.password" "~{db-password}"
                     "--server.database" "~{db-name}"
                     "--javascript.execute-string" "\"~{js}\""]]
-      ;;(println "ArangoDB: arangosh>" "db: \"~{database}\"," "js: \"~{js}\"")
       (apply docker/container-exec-by-name cname command))))
 
 
@@ -625,8 +631,7 @@
           (do
             (load-module :cargo-arangodb ['cargo-arangodb :as 'ca])
 
-            ;; drop the 'people' database in the ArangoDB container labeled
-            ;; 'db-test'
+            ;; drop the 'people' database in the ArangoDB 'db-test' container
             (ca/drop-db "db-test" "root" "xxx" "people"))
           """) }
 
@@ -640,7 +645,7 @@
   (let [container (first (docker/container-find-by-name cname))
         id        (get container "ID")
         status    (get container "State")
-        js        "db._dropDatabase('~{db-name}');"]
+        js        "db._dropDatabase('~{db-name}')"]
     (assert (some? container)
             "There is no container with the name \"~{cname}\" available!")
     (assert (= status "running") "The container is not running!")
