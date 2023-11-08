@@ -273,6 +273,22 @@ public class JavaInterop_constructor_Test {
     }
 
     @Test
+    public void testCharArrConstructorBoxing() {
+        final String clazz = TestObject_Boxing.class.getName();
+
+        final Venice venice = new Venice();
+
+        TestObject_Boxing obj;
+
+        // char[] arg constructor
+        obj = (TestObject_Boxing)venice.eval("(. :" + clazz + " :new \"abc\")");
+        assertEquals(3, obj._chars.length);
+        assertEquals('a', obj._chars[0]);
+        assertEquals('b', obj._chars[1]);
+        assertEquals('c', obj._chars[2]);
+    }
+
+    @Test
     public void testOneArgListConstructor() {
         final String clazz = TestObject_List.class.getName();
 
@@ -500,23 +516,33 @@ public class JavaInterop_constructor_Test {
         public TestObject_Boxing() {
             this._long = null;
             this._double = null;
+            this._chars = null;
         }
 
         public TestObject_Boxing(final long val) {
             this._long = val;
             this._double = null;
+            this._chars = null;
         }
         public TestObject_Boxing(final double val) {
             this._long = null;
             this._double = val;
+            this._chars = null;
         }
         public TestObject_Boxing(final long val1, final double val2) {
             this._long = val1;
             this._double = val2;
+            this._chars = null;
         }
+        public TestObject_Boxing(final char[] chars) {
+            this._long = null;
+            this._double = null;
+            this._chars = chars;
+       }
 
         public final Long _long;
         public final Double _double;
+        public final char[] _chars;
     }
 
     public static class TestObject_List {
