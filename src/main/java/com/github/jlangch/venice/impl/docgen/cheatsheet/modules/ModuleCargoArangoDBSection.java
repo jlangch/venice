@@ -46,6 +46,7 @@ public class ModuleCargoArangoDBSection implements ISectionBuilder {
         all.addSection(docker);
         docker.addItem(diBuilder.getDocItem("cargo-arangodb/start", false));
         docker.addItem(diBuilder.getDocItem("cargo-arangodb/stop", false));
+        docker.addItem(diBuilder.getDocItem("cargo-arangodb/running?", false));
 
         final DocSection backup = new DocSection("Backup", id());
         all.addSection(backup);

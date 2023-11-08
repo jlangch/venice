@@ -81,7 +81,8 @@
             (ca/start "db-test" "3.11.4" 8500 "test" "8GB" 1 nil))
           """)
      :see-also '(
-          "cargo-arangodb/stop") }
+          "cargo-arangodb/stop"
+          "cargo-arangodb/running?") }
 
   start
 
@@ -105,16 +106,16 @@
                      "ARANGODB_OVERRIDE_DETECTED_TOTAL_MEMORY=~{memory}"
                      "ARANGODB_OVERRIDE_DETECTED_NUMBER_OF_CORES=~(long cores)"]
           volumes   (coalesce volumes [])
-          args-old  ["--server.endpoint tcp://0.0.0.0:~{internal-port}"]
-          args-new  ["--server.endpoint tcp://0.0.0.0:~{internal-port}"
-                     "--server.telemetrics-api false"]  ;; supported 3.11+
-          args      (if (match? version "3[.](9|10)[.].*") args-old args-new)
+          args      (if (arangodb-older-3-11? version)
+                      ["--server.endpoint" "tcp://0.0.0.0:~{internal-port}"]
+                      ["--server.endpoint" "tcp://0.0.0.0:~{internal-port}"
+                       "--server.telemetrics-api" "false"])
           log       (or log default-log)
           publish   "~{host-port}:~{internal-port}"
           wait-after-start-secs 3
           ready-check-max-secs  30]
-      (log "Starting ~{version} as \"~{cname}\" @ port ~{publish} ...")
-      (docoll (fn [v] (log "Using volume: ~{v}")) volumes)
+      (log "starting ~{version} as \"~{cname}\" @ port ~{publish} ...")
+      (docoll (fn [v] (log "using volume: ~{v}")) volumes)
       (cargo/start cname "arangodb/arangodb" version publish
                    envs 
                    volumes
@@ -145,7 +146,8 @@
             (ca/stop "db-test" nil))
           """)
      :see-also '(
-          "cargo-arangodb/start") }
+          "cargo-arangodb/start" 
+          "cargo-arangodb/running?") }
 
   stop [cname log]
 
@@ -153,6 +155,33 @@
 
   (let [log (or log default-log)]
     (cargo/stop cname log)))
+
+
+(defn
+  ^{ :arglists '("(cargo-arangodb/running? cname)")
+     :doc """
+          Returns true if a container with the specified name is running.
+
+          Args:
+
+          | cname   | A unique container name    |
+          """
+     :examples '(
+          """
+          ;; Test if ArangoDB container is running
+          (do
+            (load-module :cargo-arangodb)
+            (cargo-arangodb/running? "db-test"))
+          """)
+     :see-also '(
+          "cargo-arangodb/start", "cargo-arangodb/stop") }
+
+  running? [cname]
+
+  { :pre [(string? cname)] }
+
+  (docker/container-running-with-name? cname))
+
 
 
 ;; ---------------------------------------------------------------------------
@@ -235,9 +264,9 @@
             "There is no container with the name \"~{cname}\" available!")
     (assert (= status "running")
             "The container is not running!")
-    (log "Dumping '~{db-name}' to '~{dump-name}'...")
+    (log "dumping '~{db-name}' to '~{dump-name}'...")
     (docker/exec id "mkdir" "/var/lib/arangodb3/~{dump-name}")
-    (log "Created dump directory /var/lib/arangodb3/~{dump-name}")
+    (log "created dump directory /var/lib/arangodb3/~{dump-name}")
     (let [args ["--output-directory" "/var/lib/arangodb3/~{dump-name}"
                 "--overwrite" "true"
                 "--include-system-collections" "true"
@@ -246,7 +275,7 @@
                 "--server.username" db-user
                 "--server.password" db-passwd]]
       (apply docker/exec id "arangodump" args)
-      (log "Dump '~{db-name}' to '~{dump-name}' done."))))
+      (log "dump '~{db-name}' to '~{dump-name}' done."))))
 
 
 (defn
@@ -326,7 +355,7 @@
             "There is no container with the name \"~{cname}\" available!")
     (assert (= status "running")
             "The container is not running!")
-    (log "Restoring '~{db-name}' to '~{dump-name}'...")
+    (log "restoring '~{db-name}' to '~{dump-name}'...")
     (let [args ["--input-directory" "/var/lib/arangodb3/~{dump-name}"
                 "--force-same-database"
                 "--create-database" "true"
@@ -336,7 +365,7 @@
                 "--server.username" db-user
                 "--server.password" db-passwd]]
       (apply docker/exec id "arangorestore" args)
-      (log "Restore '~{db-name}' from '~{dump-name}' done."))))
+      (log "restore '~{db-name}' from '~{dump-name}' done."))))
 
 
 (defn
@@ -497,10 +526,10 @@
     (assert (= status "running") "The container is not running!")
     (assert (not (io/exists-dir? (io/file export-dir dump-name))) "The export dir already exist!")
     (assert (exists-db-dump? cname dump-name) "The dump does not exist!")
-    (log "Downloading '~{dump-name}' ...")
+    (log "downloading '~{dump-name}' from container ...")
     (docker/cp "~{id}:/var/lib/arangodb3/~{dump-name}" 
                (io/file-path export-dir))
-    (log "Download to '~{export-dir}' done.")))
+    (log "download to '~{export-dir}' done.")))
 
 
 (defn
@@ -553,12 +582,12 @@
     (assert (io/exists-dir? import-dir) "The import dir does not exist!")
     (assert (dir-not-empty? import-dir) "The import dir is empty!")
     (assert (not (exists-db-dump? cname dump-name)) "The DB dump does already exist!")
-    (log "Uploading '~{dump-name}' ...")
+    (log "uploading '~{dump-name}'to container ...")
     (docker/cp (io/file-path import-dir)
                "~{id}:/var/lib/arangodb3/~{dump-name}")
-    (log "Changing user/group to root:root of the dump files ...")
+    (log "changing user/group of the dump files to root:root ...")
     (docker/exec id "chown" "-R" "root:root" "/var/lib/arangodb3/~{dump-name}")
-    (log "Upload from '~{import-dir}' done.")))
+    (log "upload from '~{import-dir}' done.")))
 
 
 ;; ---------------------------------------------------------------------------
@@ -572,11 +601,11 @@
 
           Args:
 
-          | cname      | The container name            |
-          | db-name    | The DB name                   |
-          | db-user    | The DB user                   |
-          | db-passwd  | The DB password               |
-          | js         | The JavaScript code           |
+          | cname      | The container name      |
+          | db-user    | The DB user             |
+          | db-passwd  | The DB password         |
+          | db-name    | The DB name             |
+          | js         | The JavaScript code     |
           """
      :examples '(
           """
@@ -597,7 +626,7 @@
           (string? db-user) 
           (string? db-password)
           (string? db-name)
-          (string? js) ] }
+          (string? js)] }
 
   (let [container (first (docker/container-find-by-name cname))
         id        (get container "ID")
@@ -621,10 +650,10 @@
 
           Args:
 
-          | cname      | The container name            |
-          | db-user    | The DB user                   |
-          | db-passwd  | The DB password               |
-          | db-name    | The DB name                   |
+          | cname      | The container name    |
+          | db-user    | The DB user           |
+          | db-passwd  | The DB password       |
+          | db-name    | The DB name           |
           """
      :examples '(
           """
@@ -640,16 +669,17 @@
   { :pre [(string? cname)
           (string? db-user) 
           (string? db-password)
-          (string? db-name)  ] }
+          (string? db-name)] }
 
   (let [container (first (docker/container-find-by-name cname))
         id        (get container "ID")
         status    (get container "State")
+        db-name   "_system"
         js        "db._dropDatabase('~{db-name}')"]
     (assert (some? container)
             "There is no container with the name \"~{cname}\" available!")
     (assert (= status "running") "The container is not running!")
-    (exec-js cname db-user db-password "_system" js)))
+    (exec-js cname db-user db-password db-name js)))
 
 
 ;; ---------------------------------------------------------------------------
@@ -670,5 +700,8 @@
 (defn dir-not-empty? [dir]
   (pos? (count (io/list-files dir))))
 
+(defn arangodb-older-3-11? [version]
+  (not-match? version "3[.](6|7|8|9|10)[.].*"))
+ 
 (defn admin-url [port]
   "http://127.0.0.1:~(long port)")
