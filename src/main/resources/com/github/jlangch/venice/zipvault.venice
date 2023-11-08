@@ -55,26 +55,13 @@
 
   zip [out password & entries]
 
-  { :pre [(string? password)] } 
+  { :pre [(or (io/file? out) (instance-of? :java.io.OutputStream out))
+          (string? password)] } 
 
   (let [params  (create-params)
-        entries (apply hash-map entries)]
-    (cond
-      (instance-of? :java.io.OutputStream out)
-        (zip-to-os params password out entries)
-
-      (io/file? out)
-        (zip-to-os params 
-                   password 
-                   (io/file-out-stream out :append false) 
-                   entries)
-        
-      :else
-        (throw (ex :VncException 
-                   """
-                   Invalid zip out type ~(type out)! \
-                   Expected either a file or an output stream.
-                   """)))))
+        entries (apply hash-map entries)
+        os      (if (io/file? out) (io/file-out-stream out :append false) out)]
+    (zip-to-os params password os entries)))
 
 
 (defn 
@@ -234,7 +221,7 @@
           (string? password)
           (string? filename)] }
 
-  (let [is (if (instance-of? :java.io.InputStream in) in (io/file-in-stream in))]
+  (let [is (if (io/file? in) (io/file-in-stream in) in)]
     (try-with [zis (. :ZipInputStream :new is password)] 
       (loop [header (. zis :getNextEntry)]
         (if (nil? header)
