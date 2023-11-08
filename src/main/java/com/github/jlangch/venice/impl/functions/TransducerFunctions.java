@@ -228,6 +228,7 @@ public class TransducerFunctions {
                         "(map + [1 2 3 4] [10 20 30 40])",
                         "(map list '(1 2 3 4) '(10 20 30 40))",
                         "(map vector (lazy-seq 1 inc) [10 20 30 40])",
+                        "(map (fn [[k v]] [k v]) {:a 1 :b 2})",
                         "(map (fn [e] [(key e) (inc (val e))]) {:a 1 :b 2})",
                         "(map inc #{1 2 3})",
                         ";; Venice enforces Java types when using java collections instead \n" +

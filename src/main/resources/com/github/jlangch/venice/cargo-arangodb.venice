@@ -201,8 +201,24 @@
           ```
           (do
             (load-module :cargo-arangodb ['cargo-arangodb :as 'ca])
+             
+            ;; (cargo-arangodb/exists-db-dump? "db-test" "dump-001")
+            ;; (cargo-arangodb/remove-db-dump "db-test" "dump-001")
+
+            ;; Dump the 'people' database to 'dump-001'
             (ca/db-dump "db-test" "people" "root" "xxx" "dump-001" nil))
           ```
+
+          Args:
+
+          | cname     | The container name            |
+          | db-name   | The name of the DB to dump    |
+          | db-user   | The DB user                   |
+          | db-passwd | The DB password               |
+          | dump-name | The dump name. e.g "dump-001" |
+          | log       | A log function, may be *nil*. \
+                        E.g: `(fn [s] (println "ArangoDB:" s))`|
+
 
           Dumps an ArangoDB database using this commands on the container:
 
@@ -225,15 +241,14 @@
           docker exec -it {container-id} sh
           ```
 
-          Args:
+          ZIP a dump
 
-          | cname     | The container name            |
-          | db-name   | The name of the DB to dump    |
-          | db-user   | The DB user                   |
-          | db-passwd | The DB password               |
-          | dump-name | The dump name. e.g "dump-001" |
-          | log       | A log function, may be *nil*. \
-                        E.g: `(fn [s] (println "ArangoDB:" s))`|
+          ```
+          docker exec -it {container-id} 
+                      zip -r 
+                          /var/lib/arangodb3/dump-001.zip 
+                          /var/lib/arangodb3/dump-001
+          ```
           """
      :examples '(
           """
@@ -245,7 +260,9 @@
      :see-also '(
           "cargo-arangodb/db-restore"
           "cargo-arangodb/exists-db-dump?" 
-          "cargo-arangodb/remove-db-dump") }
+          "cargo-arangodb/remove-db-dump"
+          "cargo-arangodb/download-db-dump"
+          "cargo-arangodb/upload-db-dump") }
 
   db-dump [cname db-name db-user db-passwd dump-name log]
 
@@ -290,8 +307,23 @@
           ```
           (do
             (load-module :cargo-arangodb ['cargo-arangodb :as 'ca])
+            
+            ;; (cargo-arangodb/exists-db-dump? "db-test" "dump-001")
+            ;; (cargo-arangodb/remove-db-dump "db-test" "dump-001")
+
+            ;; Restore the 'people' database from 'dump-001'
             (ca/db-restore "db-test" "people" "root" "xxx" "dump-001" nil))
           ```
+
+          Args:
+
+          | cname     | The container name            |
+          | db-name   | The name of the DB to dump    |
+          | db-user   | The DB user                   |
+          | db-passwd | The DB password               |
+          | dump-name | The dump name. e.g "dump-001" |
+          | log       | A log function, may be *nil*. \
+                        E.g: `(fn [s] (println "ArangoDB:" s))`|
 
           Restores an ArangoDB database using this command on the container:
  
@@ -312,20 +344,6 @@
           ```
           docker exec -it {container-id} sh
           ```
-
-          Check if dump directory exists:
-
-          `(cargo-arangodb/exists-db-dump? "db-test" "dump-001")`
-
-          Args:
-
-          | cname     | The container name            |
-          | db-name   | The name of the DB to dump    |
-          | db-user   | The DB user                   |
-          | db-passwd | The DB password               |
-          | dump-name | The dump name. e.g "dump-001" |
-          | log       | A log function, may be *nil*. \
-                        E.g: `(fn [s] (println "ArangoDB:" s))`|
           """
      :examples '(
           """
@@ -336,7 +354,9 @@
      :see-also '(
           "cargo-arangodb/db-dump"
           "cargo-arangodb/exists-db-dump?" 
-          "cargo-arangodb/remove-db-dump") }
+          "cargo-arangodb/remove-db-dump"
+          "cargo-arangodb/download-db-dump"
+          "cargo-arangodb/upload-db-dump") }
 
   db-restore [cname db-name db-user db-passwd dump-name log]
 
