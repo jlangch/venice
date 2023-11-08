@@ -26,6 +26,7 @@
 
 (import :net.lingala.zip4j.ZipFile)
 (import :net.lingala.zip4j.io.outputstream.ZipOutputStream)
+(import :net.lingala.zip4j.io.inputstream.ZipInputStream)
 (import :net.lingala.zip4j.model.ZipParameters)
 (import :net.lingala.zip4j.model.enums.EncryptionMethod)
 
@@ -133,7 +134,7 @@
 
 
 (defn 
-  ^{ :arglists '("(zipvault/extract zip password filename destpath)")
+  ^{ :arglists '("(zipvault/extract-file zip password filename destpath)")
      :doc """
           Extracts a specific file from the zip file to the destination path.
           """
@@ -147,13 +148,13 @@
                           "a.txt" "abc"
                           "b.txt" "def")
 
-            (zipvault/extract (io/file "vault.zip")
-                              "my-password"
-                              "a.txt"
-                              ".")
+            (zipvault/extract-file (io/file "vault.zip")
+                                   "my-password"
+                                   "a.txt"
+                                   "."))
           """ ) }
 
-  extract [zip password filename destpath]
+  extract-file [zip password filename destpath]
 
   { :pre [(io/file? zip)
           (string? password)
@@ -166,32 +167,109 @@
   (assert (io/file-can-write? destpath))
 
   (let [zip (. :ZipFile :new zip password)]
-    (. zip :extract filename destpath)))
+    (. zip :extractFile filename destpath)))
+
+
+(defn 
+  ^{ :arglists '("(zipvault/extract-all zip password destpath)")
+     :doc """
+          Extracts all files from the zip file to the destination path.
+          """
+     :examples '(
+          """
+          (do 
+            (load-module :zipvault)
+
+            (zipvault/zip (io/file "vault.zip")
+                          "my-password"
+                          "a.txt" "abc"
+                          "b.txt" "def")
+
+            (zipvault/extract-all (io/file "vault.zip")
+                                  "my-password"
+                                  "."))
+          """ ) }
+
+  extract-all [zip password destpath]
+
+  { :pre [(io/file? zip)
+          (string? password)
+          (string? destpath)] }
+
+  (assert (io/exists-file? zip))
+  (assert (io/file-can-read? zip))
+  (assert (io/exists-dir? destpath))
+  (assert (io/file-can-write? destpath))
+
+  (let [zip (. :ZipFile :new zip password)]
+    (. zip :extractAll destpath)))
+
+
+(defn 
+  ^{ :arglists '("(zipvault/extract-file-data in password filename)")
+     :doc """
+          Extracts a specific file from the zip file and returns it as binary 
+          data. in may be a file or an input stream.
+
+          Returns `nil` if the file does not exist.
+          """
+     :examples '(
+          """
+          (do 
+            (load-module :zipvault)
+
+            (zipvault/zip (io/file "vault.zip")
+                          "my-password"
+                          "a.txt" "abc"
+                          "b.txt" "def")
+
+            (zipvault/extract-file-data (io/file "vault.zip")
+                                        "my-password"
+                                        "a.txt"))
+          """ ) }
+
+  extract-file-data [in password filename]
+
+  { :pre [(or (io/file? in) (instance-of? :java.io.InputStream in))
+          (string? password)
+          (string? filename)] }
+
+  (let [is (if (instance-of? :java.io.InputStream in) in (io/file-in-stream in))]
+    (try-with [zis (. :ZipInputStream :new is password)] 
+      (loop [header (. zis :getNextEntry)]
+        (if (nil? header)
+          nil  ;; file not found
+          (let [name (. header :getFileName)
+                data (io/slurp zis :binary true)]
+            (if (= filename name)
+              data
+              (recur (. zis :getNextEntry)))))))))
  
 
-(defn- zip-to-os [params password os entries]
-  (try-with [os (. :ZipOutputStream :new os password)]  
-    (docoll (fn [[k v]] (add-entry params os k v)) entries)))
 
-(defn- add-entry [params os name value]
+(defn- zip-to-os [params password os entries]
+  (try-with [zos (. :ZipOutputStream :new zos password)]  
+    (docoll (fn [[k v]] (add-entry params zos k v)) entries)))
+
+(defn- add-entry [params zos name value]
   (cond
      (str/ends-with? name "/")
-       (add-entry params os name nil)
+       (add-entry params zos name nil)
 
      (nil? value)
-       (add-entry params os name (bytebuf))
+       (add-entry params zos name (bytebuf))
 
      (instance-of? :java.io.InputStream value)
-       (add-entry params os name (io/slurp value :binary true))
+       (add-entry params zos name (io/slurp value :binary true))
 
      (= (type value) :java.io.File)
-       (add-entry params os name (io/slurp value :binary true))
+       (add-entry params zos name (io/slurp value :binary true))
 
      (= (type value) :core/string)
-       (add-entry params os name (bytebuf value))
+       (add-entry params zos name (bytebuf value))
 
      (= (type value) :core/bytebuf)
-       (add-entry params os name value)
+       (add-entry params zos name value)
 
      :else
        (throw (ex :VncException 
@@ -200,11 +278,11 @@
               Expected a file, string, or bytebuf.
               """))))
 
-(defn- add-entry [params os name data]
+(defn- add-entry [params zos name data]
   (. params :setFileNameInZip name)
-  (. os :putNextEntry params)
-  (when (some? data) (. os :write data))
-  (. os :closeEntry))
+  (. zos :putNextEntry params)
+  (when (some? data) (. zos :write data))
+  (. zos :closeEntry))
 
 (defn- create-params []
   (doto (. :ZipParameters :new)
