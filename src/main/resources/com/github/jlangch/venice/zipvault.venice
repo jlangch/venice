@@ -271,10 +271,10 @@
 
      :else
        (throw (ex :VncException 
-              """
-              Invalid zip entry value type ~(type value)! \
-              Expected a file, string, or bytebuf.
-              """))))
+                  """
+                  Invalid zip entry value type ~(type value)! \
+                  Expected a file, string, or bytebuf.
+                  """))))
 
 (defn- add-entry [params zos name data]
   (. params :setFileNameInZip name)
