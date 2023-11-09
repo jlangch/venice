@@ -13,7 +13,7 @@ All notable changes to this project will be documented in this file.
 ### Added 
 
 - support for Docker ArangoDB dump & restore in the :cargo-arangodb module
-- support for copying Docker ArangoDB dumps to/from the local filesystem
+- support for copying Docker ArangoDB dumps to/from the local file system
 - support for 'docker/exec' detached/non detached (async/sync) mode
 - module :zipvault to create AES-256 encrypted and password protected zip files
 
