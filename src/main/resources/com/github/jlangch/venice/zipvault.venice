@@ -38,8 +38,21 @@
           entries and writes it to out. out may be a file or an output stream.
 
           An entry is given by a name and data. The entry data may be nil, a 
-          bytebuf, a file, a string, or an input stream. An entry name with a 
-          trailing '/' creates a directory.
+          bytebuf, a string, a file, an input stream, or a producer function. 
+          An entry name with a trailing '/' creates a directory.
+
+          Entry value types:
+
+          | nil          | an empty file is written to the zip entry           |
+          | bytebuf      | the bytes are written to the zip entry              |
+          | string       | the string is written to the zip entry              |
+          | file         | the content of the file is written to the zip entry |
+          | input stream | the slurped input stream data is written to the \
+                           zip entry |
+          | function     | a producer function with a single output stream \
+                           argument. All data written to the stream is written \
+                           to the zip entry. The stream can be flushed but \
+                           must not be closed! |
 
           **Passphrases:**
 
@@ -68,22 +81,32 @@
           (do 
             (load-module :zipvault)
 
-            (let [tmp (io/file (io/tmp-dir) "c.txt")]
-              (io/spit tmp "1234")
-              (io/delete-file-on-exit tmp)
+            (let [c-tmp (io/file (io/tmp-dir) "c.txt")]
+              (io/spit c-tmp "1234")
+              (io/delete-file-on-exit c-tmp)
 
               ;; create "vault.zip"
               ;;          ├── a.txt
               ;;          ├── b.txt
               ;;          ├── c.txt
+              ;;          ├── d.txt
+              ;;          ├── e.txt
+              ;;          ├── empty.txt
               ;;          └── xx
-              ;;              └── d.txt
-              (zipvault/zip (io/file "vault.zip")
-                            "my-password"
-                            "a.txt"             "abc"
-                            "b.txt"             (bytebuf "def")
-                            (io/file-name tmp)  tmp
-                            "xx/d.txt"          "ghi")))
+              ;;              └── f.txt
+              (zipvault/zip 
+                  (io/file "vault.zip")
+                  "my-password"
+                  "a.txt"               "abc"
+                  "b.txt"               (bytebuf "def")
+                  (io/file-name c-tmp)  c-tmp
+                  "d.txt"               (io/string-in-stream "ghi")
+                  "e.txt"               (fn [os] 
+                                          (let [wr (io/wrap-os-with-buffered-writer os)]
+                                            (println wr "200")
+                                            (flush wr)))
+                  "empty.txt"           nil
+                  "xx/g.txt"            "jkl")))
           """ ) }
 
   zip [out passphrase & entries]
@@ -276,10 +299,13 @@
 (defn- add-entry [params zos name value]
   (cond
      (str/ends-with? name "/")
-       (add-entry-data params zos name nil)
+       (add-entry-folder params zos name)
 
      (nil? value)
        (add-entry-data params zos name (bytebuf))
+
+     (fn? value)
+       (add-entry-producer params zos name value)
 
      (instance-of? :java.io.InputStream value)
        (add-entry-data params zos name (io/slurp value :binary true))
@@ -300,10 +326,21 @@
                   Expected a file, string, or bytebuf.
                   """))))
 
+(defn- add-entry-folder [params zos name]
+  (. params :setFileNameInZip name)
+  (. zos :putNextEntry params)
+  (. zos :closeEntry))
+
 (defn- add-entry-data [params zos name data]
   (. params :setFileNameInZip name)
   (. zos :putNextEntry params)
-  (when (some? data) (. zos :write data))
+  (. zos :write data)
+  (. zos :closeEntry))
+
+(defn- add-entry-producer [params zos name producer]
+  (. params :setFileNameInZip name)
+  (. zos :putNextEntry params)
+  (producer zos)
   (. zos :closeEntry))
 
 (defn- create-params []
