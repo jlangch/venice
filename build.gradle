@@ -360,6 +360,7 @@ shadowJar {
 
     relocate 'io.vavr', 'org.repackage.io.vavr'
     relocate 'org.jline', 'org.repackage.org.jline'
+    relocate 'net.lingala.zip4j', 'org.repackage.net.lingala.zip4j'
 
     def buildTimestamp = new Date().format("yyyy-MM-dd'T'HH:mm:ss")
 
@@ -732,7 +733,6 @@ dependencies {
     testImplementation "org.knowm.xchart:xchart:${xchart_Version}"
     testImplementation "org.apache.poi:poi:${poi_Version}"
     testImplementation "org.apache.poi:poi-ooxml:${poi_Version}"
-    testImplementation "net.lingala.zip4j:zip4j:${zip4j_Version}"
 
 
     // Cheatsheet generation
@@ -771,4 +771,5 @@ dependencies {
     // runtime dependencies (repackaged)
     implementation "io.vavr:vavr:${vavr_Version}"
     implementation "org.jline:jline:${jline_Version}"
+    implementation "net.lingala.zip4j:zip4j:${zip4j_Version}"
 }

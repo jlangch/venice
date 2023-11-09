@@ -100,8 +100,7 @@ public class Modules {
                         "xchart",
                         "xchart-install",
                         "xml",
-                        "zipvault",
-                        "zipvault-install")));
+                        "zipvault")));
 
     public static final Set<VncKeyword> NATIVE_MODULES =
             Collections.unmodifiableSet(

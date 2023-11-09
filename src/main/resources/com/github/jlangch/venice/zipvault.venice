@@ -24,11 +24,11 @@
 
 (ns zipvault)
 
-(import :net.lingala.zip4j.ZipFile)
-(import :net.lingala.zip4j.io.outputstream.ZipOutputStream)
-(import :net.lingala.zip4j.io.inputstream.ZipInputStream)
-(import :net.lingala.zip4j.model.ZipParameters)
-(import :net.lingala.zip4j.model.enums.EncryptionMethod)
+(import :org.repackage.net.lingala.zip4j.ZipFile)
+(import :org.repackage.net.lingala.zip4j.io.outputstream.ZipOutputStream)
+(import :org.repackage.net.lingala.zip4j.io.inputstream.ZipInputStream)
+(import :org.repackage.net.lingala.zip4j.model.ZipParameters)
+(import :org.repackage.net.lingala.zip4j.model.enums.EncryptionMethod)
 
 
 (defn 
@@ -235,7 +235,7 @@
 
 
 (defn- zip-to-os [params password os entries]
-  (try-with [zos (. :ZipOutputStream :new zos password)]  
+  (try-with [zos (. :ZipOutputStream :new os password)]  
     (docoll (fn [[k v]] (add-entry params zos k v)) entries)))
 
 (defn- add-entry [params zos name value]
