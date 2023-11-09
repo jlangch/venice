@@ -65,6 +65,7 @@ import com.github.jlangch.venice.impl.docgen.cheatsheet.modules.ModuleTestSectio
 import com.github.jlangch.venice.impl.docgen.cheatsheet.modules.ModuleTimingSection;
 import com.github.jlangch.venice.impl.docgen.cheatsheet.modules.ModuleTracingSection;
 import com.github.jlangch.venice.impl.docgen.cheatsheet.modules.ModuleXmlSection;
+import com.github.jlangch.venice.impl.docgen.cheatsheet.modules.ModuleZipVaultSection;
 import com.github.jlangch.venice.impl.docgen.cheatsheet.section.ArraySection;
 import com.github.jlangch.venice.impl.docgen.cheatsheet.section.ByteBufSection;
 import com.github.jlangch.venice.impl.docgen.cheatsheet.section.CidrSection;
@@ -306,6 +307,7 @@ public class DocGenerator {
         extmod.addSection(new DocSection("Parsifal", "modules.parsifal"));
         extmod.addSection(new DocSection("Configuration", "modules.config"));
         extmod.addSection(new DocSection("Component", "modules.component"));
+        extmod.addSection(new DocSection("ZipVault", "modules.zipvault"));
         extmod.addSection(new DocSection("XML", "modules.xml"));
         extmod.addSection(new DocSection("Grep", "modules.grep"));
         extmod.addSection(new DocSection("Fonts", "modules.fonts"));
@@ -398,6 +400,7 @@ public class DocGenerator {
                 new ModuleKiraSection(diBuilder).section(),
                 new ModuleCryptographySection(diBuilder).section(),
                 new ModuleJsonlSection(diBuilder).section(),
+                new ModuleZipVaultSection(diBuilder).section(),
                 new ModuleXmlSection(diBuilder).section(),
                 new ModuleJavaSection(diBuilder).section(),
                 new ModuleParsifalSection(diBuilder).section(),
