@@ -130,16 +130,8 @@
           (do 
             (load-module :zipvault)
 
-            (zipvault/zip (io/file "vault.zip")
-                          "my-password"
-                          "a.txt" "abc"
-                          "b.txt" "def"
-                          "xx/c.txt" "ghi")
-
-            (zipvault/extract (io/file "vault.zip")
-                              "my-password"
-                              "a.txt"
-                              "."))
+            (zipvault/zip (io/file "vault.zip") "pwd" "a.txt" "abc")
+            (zipvault/encrypted? (io/file "vault.zip")))
           """ ) }
 
   encrypted? [zip]
@@ -161,12 +153,8 @@
           (do 
             (load-module :zipvault)
 
-            (zipvault/zip (io/file "vault.zip")
-                          "my-password"
-                          "a.txt" "abc"
-                          "b.txt" "def")
-
-            (zipvault/valid-zip-file? (io/file "vault.zip"))
+            (zipvault/zip (io/file "vault.zip") "pwd" "a.txt" "abc")
+            (zipvault/valid-zip-file? (io/file "vault.zip")))
           """ ) }
 
   valid-zip-file? [zip]
