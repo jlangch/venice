@@ -32,7 +32,7 @@
 
 
 (defn 
-  ^{ :arglists '("(zipvault/zip out password & entries)")
+  ^{ :arglists '("(zipvault/zip out passphrase & entries)")
      :doc """
           Creates an encrypted and password protected zip form the entries and
           writes it to out. out may be a file or an output stream.
@@ -40,6 +40,15 @@
           An entry is given by a name and data. The entry data may be nil, a 
           bytebuf, a file, a string, or an input stream. An entry name with a 
           trailing '/' creates a directory.
+
+          **Passphrases:**
+
+          The AES-256 algorithm requires a 256-bit key as input.
+          One should use a passphrase with at least 128 bits of entropy 
+          (that's roughly a 20-character passphrase of random 
+          upper/lower/digits/symbols). 
+          Less is dropping below general limits of safety, and more than 
+          256 bits won't accomplish anything.
           """
      :examples '(
           """
@@ -83,7 +92,7 @@
             (zipvault/extract (io/file "vault.zip")
                               "my-password"
                               "a.txt"
-                              ".")
+                              "."))
           """ ) }
 
   encrypted? [zip]
@@ -108,7 +117,7 @@
             (zipvault/zip (io/file "vault.zip")
                           "my-password"
                           "a.txt" "abc"
-                          "b.txt" "def"))
+                          "b.txt" "def")
 
             (zipvault/valid-zip-file? (io/file "vault.zip"))
           """ ) }
@@ -158,7 +167,7 @@
 
 
 (defn 
-  ^{ :arglists '("(zipvault/extract-all zip password destpath)")
+  ^{ :arglists '("(zipvault/extract-all zip passphrase destpath)")
      :doc """
           Extracts all files from the zip file to the destination path.
           """
@@ -177,10 +186,10 @@
                                   "."))
           """ ) }
 
-  extract-all [zip password destpath]
+  extract-all [zip passphrase destpath]
 
   { :pre [(io/file? zip)
-          (string? password)
+          (string? passphrase)
           (string? destpath)] }
 
   (assert (io/exists-file? zip))
@@ -188,12 +197,12 @@
   (assert (io/exists-dir? destpath))
   (assert (io/file-can-write? destpath))
 
-  (let [zip (. :ZipFile :new zip password)]
+  (let [zip (. :ZipFile :new zip passphrase)]
     (. zip :extractAll destpath)))
 
 
 (defn 
-  ^{ :arglists '("(zipvault/extract-file-data in password filename)")
+  ^{ :arglists '("(zipvault/extract-file-data in passphrase filename)")
      :doc """
           Extracts a specific file from the zip file and returns it as binary 
           data. in may be a file or an input stream.
@@ -215,14 +224,14 @@
                                         "a.txt"))
           """ ) }
 
-  extract-file-data [in password filename]
+  extract-file-data [in passphrase filename]
 
   { :pre [(or (io/file? in) (instance-of? :java.io.InputStream in))
-          (string? password)
+          (string? passphrase)
           (string? filename)] }
 
   (let [is (if (io/file? in) (io/file-in-stream in) in)]
-    (try-with [zis (. :ZipInputStream :new is password)] 
+    (try-with [zis (. :ZipInputStream :new is passphrase)] 
       (loop [header (. zis :getNextEntry)]
         (if (nil? header)
           nil  ;; file not found
@@ -234,8 +243,8 @@
  
 
 
-(defn- zip-to-os [params password os entries]
-  (try-with [zos (. :ZipOutputStream :new os password)]  
+(defn- zip-to-os [params passphrase os entries]
+  (try-with [zos (. :ZipOutputStream :new os passphrase)]  
     (docoll (fn [[k v]] (add-entry params zos k v)) entries)))
 
 (defn- add-entry [params zos name value]
