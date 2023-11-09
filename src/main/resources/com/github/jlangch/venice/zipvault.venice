@@ -62,15 +62,15 @@
                           "xx/c.txt" "ghi"))
           """ ) }
 
-  zip [out password & entries]
+  zip [out passphrase & entries]
 
   { :pre [(or (io/file? out) (instance-of? :java.io.OutputStream out))
-          (string? password)] } 
+          (string? passphrase)] } 
 
   (let [params  (create-params)
         entries (apply hash-map entries)
         os      (if (io/file? out) (io/file-out-stream out :append false) out)]
-    (zip-to-os params password os entries)))
+    (zip-to-os params passphrase os entries)))
 
 
 (defn 
@@ -150,10 +150,10 @@
                                    "."))
           """ ) }
 
-  extract-file [zip password filename destpath]
+  extract-file [zip passphrase filename destpath]
 
   { :pre [(io/file? zip)
-          (string? password)
+          (string? passphrase)
           (string? filename)
           (or (string? destpath) (io/file? destpath))] }
 
@@ -163,7 +163,7 @@
   (assert (io/file-can-write? destpath))
 
   (let [destpath (if (string? destpath) destpath (io/file-path destpath))
-        zip      (. :ZipFile :new zip password)]
+        zip      (. :ZipFile :new zip passphrase)]
     (. zip :extractFile filename destpath)))
 
 
