@@ -34,8 +34,8 @@
 (defn 
   ^{ :arglists '("(zipvault/zip out passphrase & entries)")
      :doc """
-          Creates an encrypted and password protected zip form the entries and
-          writes it to out. out may be a file or an output stream.
+          Creates an AES-256 encrypted and password protected zip form the 
+          entries and writes it to out. out may be a file or an output stream.
 
           An entry is given by a name and data. The entry data may be nil, a 
           bytebuf, a file, a string, or an input stream. An entry name with a 
