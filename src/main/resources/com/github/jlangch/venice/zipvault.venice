@@ -54,12 +54,36 @@
           """
           (do 
             (load-module :zipvault)
-
-            (zipvault/zip (io/file "vault.zip")
+            (zipvault/zip (io/file "vault.zip") "my-password" "a.txt" "abc"))
+          """,
+          """
+          (do 
+            (load-module :zipvault)
+            (zipvault/zip (io/file-out-stream "vault.zip")
                           "my-password"
-                          "a.txt" "abc"
-                          "b.txt" "def"
-                          "xx/c.txt" "ghi"))
+                          "a.txt"             "abc"
+                          "b.txt"             (bytebuf "def")))
+          """,
+          """
+          (do 
+            (load-module :zipvault)
+
+            (let [tmp (io/file (io/tmp-dir) "c.txt")]
+              (io/spit tmp "1234")
+              (io/delete-file-on-exit tmp)
+
+              ;; create "vault.zip"
+              ;;          ├── a.txt
+              ;;          ├── b.txt
+              ;;          ├── c.txt
+              ;;          └── xx
+              ;;              └── d.txt
+              (zipvault/zip (io/file "vault.zip")
+                            "my-password"
+                            "a.txt"             "abc"
+                            "b.txt"             (bytebuf "def")
+                            (io/file-name tmp)  tmp
+                            "xx/d.txt"          "ghi")))
           """ ) }
 
   zip [out passphrase & entries]
@@ -252,22 +276,22 @@
 (defn- add-entry [params zos name value]
   (cond
      (str/ends-with? name "/")
-       (add-entry params zos name nil)
+       (add-entry-data params zos name nil)
 
      (nil? value)
-       (add-entry params zos name (bytebuf))
+       (add-entry-data params zos name (bytebuf))
 
      (instance-of? :java.io.InputStream value)
-       (add-entry params zos name (io/slurp value :binary true))
+       (add-entry-data params zos name (io/slurp value :binary true))
 
      (= (type value) :java.io.File)
-       (add-entry params zos name (io/slurp value :binary true))
+       (add-entry-data params zos name (io/slurp value :binary true))
 
      (= (type value) :core/string)
-       (add-entry params zos name (bytebuf value))
+       (add-entry-data params zos name (bytebuf value))
 
      (= (type value) :core/bytebuf)
-       (add-entry params zos name value)
+       (add-entry-data params zos name value)
 
      :else
        (throw (ex :VncException 
@@ -276,7 +300,7 @@
                   Expected a file, string, or bytebuf.
                   """))))
 
-(defn- add-entry [params zos name data]
+(defn- add-entry-data [params zos name data]
   (. params :setFileNameInZip name)
   (. zos :putNextEntry params)
   (when (some? data) (. zos :write data))
