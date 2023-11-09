@@ -44,6 +44,7 @@ import com.github.jlangch.venice.impl.types.util.Coerce;
 import com.github.jlangch.venice.impl.types.util.Types;
 import com.github.jlangch.venice.impl.util.ArityExceptions.FnType;
 import com.github.jlangch.venice.impl.util.SymbolMapBuilder;
+import com.github.jlangch.venice.impl.util.reflect.ReflectionUtil;
 
 
 /**
@@ -178,11 +179,20 @@ public class SpecialForms_ImportFunctions {
                     final VncVal def = args_.first();
                     final VncVal as = args_.second();
 
+                    String clazz = Coerce.toVncString(def).getValue();
+
+                    // When running unit tests from the IDE JARs like zip4j are
+                    // not yet repackaged. Falling back to the original package
+                    // will make the import work
+                    if (clazz.startsWith("org.repackage.") && !ReflectionUtil.isClassAvailable(clazz)) {
+                    	// not yet repackaged fall back to original class name
+                    	clazz = clazz.substring("org.repackage.".length());
+                    }
+
                     if (Types.isVncKeyword(as) && "as".equals(((VncKeyword)as).getValue())) {
                         final VncVal alias = args_.third();
                         if (alias != Nil) {
-                            jImports.add(Coerce.toVncString(def).getValue(),
-                                          Coerce.toVncString(alias).getValue());
+                            jImports.add(clazz, Coerce.toVncString(alias).getValue());
 
                             args_ = args_.drop(3);
                         }
@@ -191,7 +201,7 @@ public class SpecialForms_ImportFunctions {
                         }
                     }
                     else {
-                        jImports.add(Coerce.toVncString(def).getValue());
+                        jImports.add(clazz);
                         args_ = args_.drop(1);
                     }
                 }
@@ -281,8 +291,6 @@ public class SpecialForms_ImportFunctions {
 
             private static final long serialVersionUID = -1848883965231344442L;
         };
-
-
 
 
     ///////////////////////////////////////////////////////////////////////////

@@ -90,9 +90,9 @@
 
   { :pre [(io/file? zip)] }
 
-  (asssert (io/exists-file? zip))
+  (assert (io/exists-file? zip))
  
-  (. ( :ZipFile :new zip) :isEncrypted))
+  (. (. :ZipFile :new zip) :isEncrypted))
 
 
 (defn 

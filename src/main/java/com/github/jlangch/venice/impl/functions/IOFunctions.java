@@ -2411,7 +2411,9 @@ public class IOFunctions {
                         "    (io/spit file \"123456789\" :append true) \n" +
                         "    (io/slurp file :binary false :remove true)) \n" +
                         ")")
-                    .seeAlso("io/temp-dir")
+                    .seeAlso(
+                    	"io/temp-dir",
+                    	"io/delete-file-on-exit")
                     .build()
         ) {
             @Override
