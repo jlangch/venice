@@ -114,6 +114,7 @@
                   "xx/g.txt"            "jkl")))
           """ )
      :see-also '(
+          "zipvault/entries"
           "zipvault/add-files"
           "zipvault/add-folder"
           "zipvault/add-stream"
@@ -131,6 +132,40 @@
         entries (apply hash-map entries)
         os      (if (io/file? out) (io/file-out-stream out :append false) out)]
     (zip-to-os params passphrase os entries)))
+
+
+(defn 
+  ^{ :arglists '(
+          "(zipvault/entries zip passphrase)")
+     :doc """
+          Retruns a list of the entry names in the zip.
+          """
+     :examples '(
+          """
+          (do 
+            (load-module :zipvault)
+
+            (zipvault/zip (io/file "vault.zip")
+                          "pwd"
+                          "a.txt"  "abc"
+                          "b.txt"  "def")
+            (zipvault/entries (io/file "vault.zip") "pwd"))
+          """ )
+     :see-also '(
+          "zipvault/zip" ) }
+
+  entries [zip passphrase]
+
+  { :pre [(io/file? zip)
+          (string? passphrase)] } 
+
+  (try-with [zf (. :ZipFile :new zip passphrase)]
+     (->> (. zf :getFileHeaders)
+          (map (fn [h] { :file-name         (. h :getFileName)
+                         :compressed-size   (. h :getCompressedSize)
+                         :uncompressed-size (. h :getUncompressedSize)
+                         :encrypted?        (. h :isEncrypted)
+                         :directory?        (. h :isDirectory) })))))
 
 
 (defn 
