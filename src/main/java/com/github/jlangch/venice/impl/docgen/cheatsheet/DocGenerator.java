@@ -411,9 +411,7 @@ public class DocGenerator {
                 new ModuleCargoArangoDBSection(diBuilder).section(),
                 new ModuleTracingSection(diBuilder).section(),
                 new ModuleShellSection(diBuilder).section(),
-                new ModuleAnsiSection(diBuilder).section(),
-                new ModuleGrepSection(diBuilder).section(),
-                new ModuleQrRefSection(diBuilder).section());
+                new ModuleAnsiSection(diBuilder).section());
     }
 
     private List<DocSection> getModulesRightSections() {
@@ -428,7 +426,9 @@ public class DocGenerator {
                 new ModuleComponentSection(diBuilder).section(),
                 new ModuleAppSection(diBuilder).section(),
                 new ModuleBenchmarkSection(diBuilder).section(),
-                new ModuleTimingSection(diBuilder).section());
+                new ModuleTimingSection(diBuilder).section(),
+		        new ModuleGrepSection(diBuilder).section(),
+		        new ModuleQrRefSection(diBuilder).section());
     }
 
     private List<DocItem> getDocItems(final List<DocSection> sections) {
