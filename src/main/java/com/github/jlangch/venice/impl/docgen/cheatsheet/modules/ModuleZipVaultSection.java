@@ -46,11 +46,21 @@ public class ModuleZipVaultSection implements ISectionBuilder {
         all.addSection(create);
         create.addItem(diBuilder.getDocItem("zipvault/zip", false));
 
+        final DocSection add = new DocSection("Add", id());
+        all.addSection(add);
+        add.addItem(diBuilder.getDocItem("zipvault/add-files", false));
+        add.addItem(diBuilder.getDocItem("zipvault/add-folder", false));
+        add.addItem(diBuilder.getDocItem("zipvault/add-stream", false));
+
+        final DocSection rem = new DocSection("Remove", id());
+        all.addSection(rem);
+        rem.addItem(diBuilder.getDocItem("zipvault/remove-files", false));
+
         final DocSection extract = new DocSection("Extract", id());
         all.addSection(extract);
-        create.addItem(diBuilder.getDocItem("zipvault/extract-file", false));
-        create.addItem(diBuilder.getDocItem("zipvault/extract-all", false));
-        create.addItem(diBuilder.getDocItem("zipvault/extract-file-data", false));
+        extract.addItem(diBuilder.getDocItem("zipvault/extract-file", false));
+        extract.addItem(diBuilder.getDocItem("zipvault/extract-all", false));
+        extract.addItem(diBuilder.getDocItem("zipvault/extract-file-data", false));
 
         final DocSection util = new DocSection("Util", id());
         all.addSection(util);

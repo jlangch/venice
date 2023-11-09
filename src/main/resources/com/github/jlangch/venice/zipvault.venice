@@ -67,6 +67,11 @@
           """
           (do 
             (load-module :zipvault)
+            (zipvault/zip (io/file "vault.zip") "my-password")) ; empty zip
+          """,
+          """
+          (do 
+            (load-module :zipvault)
             (zipvault/zip (io/file "vault.zip") "my-password" "a.txt" "abc"))
           """,
           """
@@ -107,7 +112,15 @@
                                             (flush wr)))
                   "empty.txt"           nil
                   "xx/g.txt"            "jkl")))
-          """ ) }
+          """ )
+     :see-also '(
+          "zipvault/add-files"
+          "zipvault/add-folder"
+          "zipvault/add-stream"
+          "zipvault/remove-files"
+          "zipvault/extract-file"
+          "zipvault/extract-all"
+          "zipvault/extract-file-data" ) }
 
   zip [out passphrase & entries]
 
@@ -121,7 +134,166 @@
 
 
 (defn 
-  ^{ :arglists '("(zipvault/encrypted?)")
+  ^{ :arglists '("(zipvault/add-files zip passphrase & files)")
+     :doc """
+          Adds a list of files to the zip.
+          """
+     :examples '(
+          """
+          (do 
+            (load-module :zipvault)
+
+            (let [zip   (io/file "vault.zip")
+                  tmp-1 (io/file (io/tmp-dir) "a1.txt")
+                  tmp-2 (io/file (io/tmp-dir) "a2.txt")]
+              (io/spit tmp-1 "1234")
+              (io/spit tmp-2 "2345")
+              (io/delete-file-on-exit tmp-1)
+              (io/delete-file-on-exit tmp-2)
+
+              (zipvault/zip zip "pwd" "a.txt" "A")
+              (zipvault/add-files zip "pwd" tmp-1 tmp-2)))
+          """ )
+     :see-also '(
+          "zipvault/zip"
+          "zipvault/add-folder"
+          "zipvault/add-stream"
+          "zipvault/remove-files" ) }
+
+  add-files [zip passphrase & files]
+
+  { :pre [(io/file? zip)
+          (string? passphrase)
+          (every? io/file? files)] } 
+
+  (let [params  (create-params)]
+    (try-with [zf (. :ZipFile :new zip passphrase)]
+      (. zf :addFiles files params))))
+
+
+(defn 
+  ^{ :arglists '(
+          "(zipvault/add-folder zip passphrase folder)"
+          "(zipvault/add-folder zip passphrase folder include-root-folder)")
+     :doc """
+          Adds a folder to the zip file.
+          """
+     :examples '(
+          """
+          (do 
+            (load-module :zipvault)
+
+            (let [zip        (io/file "vault.zip")
+                  tmp-folder (io/file (io/tmp-dir) "ziptest")
+                  tmp-1      (io/file tmp-folder "a1.txt")
+                  tmp-2      (io/file tmp-folder "a2.txt")]
+              (io/mkdir tmp-folder)
+              (io/spit tmp-1 "1234")
+              (io/spit tmp-2 "2345")
+              (io/delete-file-on-exit tmp-1)
+              (io/delete-file-on-exit tmp-2)
+              (io/delete-file-on-exit tmp-folder)
+
+              (zipvault/zip zip "pwd" "a.txt" "A")
+              (zipvault/add-folder zip "pwd" tmp-folder)))
+          """ )
+     :see-also '(
+          "zipvault/zip"
+          "zipvault/add-files"
+          "zipvault/add-stream"
+          "zipvault/remove-files" ) }
+
+  add-folder 
+
+  ([zip passphrase folder]
+    { :pre [(io/file? zip)
+            (string? passphrase)
+            (io/file? folder)] } 
+    (add-folder zip passphrase folder true))
+  
+  ([zip passphrase folder include-root-folder]
+    { :pre [(io/file? zip)
+            (string? passphrase)
+            (io/file? folder)
+            (boolean? include-root-folder)] } 
+
+    (let [params  (create-params)]
+      (. params :setIncludeRootFolder include-root-folder)
+      (try-with [zf (. :ZipFile :new zip passphrase)]
+        (. zf :addFolder folder params)))))
+
+
+(defn 
+  ^{ :arglists '("(zipvault/add-stream zip passphrase name is)")
+     :doc """
+          Creates a new entry in the zip file and adds the content of the 
+          input stream to the zip file.
+          """
+     :examples '(
+          """
+          (do 
+            (load-module :zipvault)
+
+            (let [zip (io/file "vault.zip")
+                  is  (io/string-in-stream "abc")]
+              (zipvault/zip zip "pwd" "a.txt" "A")
+              (zipvault/add-stream zip "pwd" "a.txt" is)))
+          """ )
+     :see-also '(
+          "zipvault/zip"
+          "zipvault/add-files"
+          "zipvault/add-folder"
+          "zipvault/remove-files" ) }
+
+  add-stream [zip passphrase name is]
+
+  { :pre [(io/file? zip)
+          (string? passphrase)
+          (string? name)
+          (instance-of? :java.io.InputStream is)] } 
+
+  (let [params  (create-params)]
+    (. params :setFileNameInZip name)
+    (try-with [zf (. :ZipFile :new zip passphrase)]
+      (. zf :addStream is params))))
+
+
+(defn 
+  ^{ :arglists '("(zipvault/remove-files zip passphrase & files)")
+     :doc """
+          Removes all files from the zip file that match the names in the input 
+          list.
+
+          If any of the file is a directory, all the files and directories under 
+          this directory will be removed as well.
+          """
+     :examples '(
+          """
+          (do 
+            (load-module :zipvault)
+
+            (let [zip (io/file "vault.zip")]
+              (zipvault/zip zip "pwd" "a.txt" "A" "b.txt" "B")
+              (zipvault/remove-files zip "pwd" "a.txt")))
+          """ )
+     :see-also '(
+          "zipvault/zip"
+          "zipvault/add-files"
+          "zipvault/add-folder"
+          "zipvault/add-stream" ) }
+
+  remove-files [zip passphrase & files]
+
+  { :pre [(io/file? zip)
+          (string? passphrase)
+          (every? string? files)] } 
+
+  (try-with [zf (. :ZipFile :new zip passphrase)]
+    (. zf :removeFiles files)))
+ 
+
+(defn 
+  ^{ :arglists '("(zipvault/encrypted? zip)")
      :doc """
           Extracts a specific file from the zip file to the destination path.
           """
@@ -185,7 +357,11 @@
                                    "my-password"
                                    "a.txt"
                                    "."))
-          """ ) }
+          """ )
+     :see-also '(
+          "zipvault/zip"
+          "zipvault/extract-all"
+          "zipvault/extract-file-data" ) }
 
   extract-file [zip passphrase filename destpath]
 
@@ -222,7 +398,11 @@
             (zipvault/extract-all (io/file "vault.zip")
                                   "my-password"
                                   "."))
-          """ ) }
+          """ )
+     :see-also '(
+          "zipvault/zip"
+          "zipvault/extract-file"
+          "zipvault/extract-file-data" ) }
 
   extract-all [zip passphrase destpath]
 
@@ -261,7 +441,11 @@
             (zipvault/extract-file-data (io/file "vault.zip")
                                         "my-password"
                                         "a.txt"))
-          """ ) }
+          """ )
+     :see-also '(
+          "zipvault/zip"
+          "zipvault/extract-file"
+          "zipvault/extract-all" ) }
 
   extract-file-data [in passphrase filename]
 
