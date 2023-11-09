@@ -140,7 +140,8 @@
 
   (assert (io/exists-file? zip))
  
-  (. (. :ZipFile :new zip) :isEncrypted))
+  (try-with [zf (. :ZipFile :new zip)]
+    (. zf :isEncrypted)))
 
 
 (defn 
@@ -161,7 +162,8 @@
 
   { :pre [(io/file? zip)] }
 
-  (. (. :ZipFile :new zip) :isValidZipFile))
+  (try-with [zf (. :ZipFile :new zip)]
+    (. zf :isValidZipFile)))
 
 
 (defn 
@@ -197,9 +199,9 @@
   (assert (io/exists-dir? destpath))
   (assert (io/file-can-write? destpath))
 
-  (let [destpath (if (string? destpath) destpath (io/file-path destpath))
-        zip      (. :ZipFile :new zip passphrase)]
-    (. zip :extractFile filename destpath)))
+  (let [destpath (if (string? destpath) destpath (io/file-path destpath))]
+    (try-with [zf (. :ZipFile :new zip passphrase)]
+      (. zf :extractFile filename destpath))))
 
 
 (defn 
@@ -233,9 +235,9 @@
   (assert (io/exists-dir? destpath))
   (assert (io/file-can-write? destpath))
 
-  (let [destpath (if (string? destpath) destpath (io/file-path destpath))
-        zip      (. :ZipFile :new zip passphrase)]
-    (. zip :extractAll destpath)))
+  (let [destpath (if (string? destpath) destpath (io/file-path destpath))]
+    (try-with [zf (. :ZipFile :new zip passphrase)]
+      (. zf :extractAll destpath))))
 
 
 (defn 
