@@ -155,14 +155,15 @@
   { :pre [(io/file? zip)
           (string? password)
           (string? filename)
-          (string? destpath)] }
+          (or (string? destpath) (io/file? destpath))] }
 
   (assert (io/exists-file? zip))
   (assert (io/file-can-read? zip))
   (assert (io/exists-dir? destpath))
   (assert (io/file-can-write? destpath))
 
-  (let [zip (. :ZipFile :new zip password)]
+  (let [destpath (if (string? destpath) destpath (io/file-path destpath))
+        zip      (. :ZipFile :new zip password)]
     (. zip :extractFile filename destpath)))
 
 
@@ -190,14 +191,15 @@
 
   { :pre [(io/file? zip)
           (string? passphrase)
-          (string? destpath)] }
+          (or (string? destpath) (io/file? destpath))] }
 
   (assert (io/exists-file? zip))
   (assert (io/file-can-read? zip))
   (assert (io/exists-dir? destpath))
   (assert (io/file-can-write? destpath))
 
-  (let [zip (. :ZipFile :new zip passphrase)]
+  (let [destpath (if (string? destpath) destpath (io/file-path destpath))
+        zip      (. :ZipFile :new zip passphrase)]
     (. zip :extractAll destpath)))
 
 
