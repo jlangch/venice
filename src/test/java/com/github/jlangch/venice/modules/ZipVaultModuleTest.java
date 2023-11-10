@@ -42,11 +42,11 @@ public class ZipVaultModuleTest {
                                                 "zipvault-module-test.venice",
                                                 loadScript("zipvault-module-test.venice"));
 
-        assertEquals( 5, (long)result.get("test"));
+        assertEquals(12, (long)result.get("test"));
         assertEquals( 0, (long)result.get("fail"));
         assertEquals( 0, (long)result.get("error"));
 
-        assertEquals( 5, (long)result.get("pass"));
+        assertEquals(12, (long)result.get("pass"));
     }
 
 

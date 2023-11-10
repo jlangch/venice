@@ -28,7 +28,120 @@
 
   (ns zipvault-test)
 
+  ;; ---------------------------------------------------------------------------
+  ;; zip
+  ;; ---------------------------------------------------------------------------
 
+  (test/deftest test-zip-data-empty []
+    (let [zip (io/temp-file "vault-", ".zip")]
+      (io/delete-file-on-exit zip)
+      (zipvault/zip zip "123" "a.txt" nil)
+
+      (let [data (-> (zipvault/extract-file-data zip "123" "a.txt")
+                     (bytebuf-to-string))]
+        (assert-eq "" data))))
+
+  (test/deftest test-zip-data-string []
+    (let [zip (io/temp-file "vault-", ".zip")]
+      (io/delete-file-on-exit zip)
+      (zipvault/zip zip "123" "a.txt" "abc")
+
+      (let [data (-> (zipvault/extract-file-data zip "123" "a.txt")
+                     (bytebuf-to-string))]
+        (assert-eq "abc" data))))
+
+  (test/deftest test-zip-data-bytebuf []
+    (let [zip (io/temp-file "vault-", ".zip")]
+      (io/delete-file-on-exit zip)
+      (zipvault/zip zip "123" "a.txt" (bytebuf "abc"))
+
+      (let [data (-> (zipvault/extract-file-data zip "123" "a.txt")
+                     (bytebuf-to-string))]
+        (assert-eq "abc" data))))
+
+  (test/deftest test-zip-data-file []
+    (let [zip  (io/temp-file "vault-", ".zip")
+          file (io/temp-file "data-", ".txt")]
+      (io/spit file "abc")
+      (io/delete-file-on-exit zip)
+      (io/delete-file-on-exit file)
+      (zipvault/zip zip "123" "a.txt" file)
+
+      (let [data (-> (zipvault/extract-file-data zip "123" "a.txt")
+                     (bytebuf-to-string))]
+        (assert-eq "abc" data))))
+
+  (test/deftest test-zip-data-in-stream []
+    (let [zip (io/temp-file "vault-", ".zip")]
+      (io/delete-file-on-exit zip)
+      (zipvault/zip zip "123" "a.txt" (io/string-in-stream "abc"))
+
+      (let [data (-> (zipvault/extract-file-data zip "123" "a.txt")
+                     (bytebuf-to-string))]
+        (assert-eq "abc" data))))
+
+  (test/deftest test-zip-data-out-stream []
+    (let [zip (io/temp-file "vault-", ".zip")]
+      (io/delete-file-on-exit zip)
+      (zipvault/zip zip "123" "a.txt" 
+                              (fn [os] 
+                                (let [wr (io/wrap-os-with-buffered-writer os)]
+                                  (print wr "abc")
+                                  (flush wr))))
+
+      (let [data (-> (zipvault/extract-file-data zip "123" "a.txt")
+                     (bytebuf-to-string))]
+        (assert-eq "abc" data))))
+
+
+  ;; ---------------------------------------------------------------------------
+  ;; entries
+  ;; ---------------------------------------------------------------------------
+  
+  (test/deftest test-entries []
+    (let [zip (io/temp-file "vault-", ".zip")]
+      (zipvault/zip zip
+                    "pwd"
+                    "a.txt"     "abc"
+                    "b.txt"     "def"
+                    "xx/"       nil
+                    "yy/c.txt"  "ghi")
+      (let [entries (zipvault/entries zip "pwd")
+            e1      (first entries)
+            e2      (second entries)
+            e3      (third entries)
+            e4      (fourth entries)]
+        (assert-eq 4 (count entries))
+
+        (assert-eq "a.txt" (:file-name e1))
+        (assert-eq 33 (:compressed-size e1))
+        (assert-eq 3 (:uncompressed-size e1))
+        (assert-eq true (:encrypted? e1))
+        (assert-eq false (:directory? e1))
+
+        (assert-eq "b.txt" (:file-name e2))
+        (assert-eq 33 (:compressed-size e2))
+        (assert-eq 3 (:uncompressed-size e2))
+        (assert-eq true (:encrypted? e2))
+        (assert-eq false (:directory? e2))
+
+        (assert-eq "xx/" (:file-name e3))
+        (assert-eq 0 (:compressed-size e3))
+        (assert-eq 0 (:uncompressed-size e3))
+        (assert-eq false (:encrypted? e3))
+        (assert-eq true (:directory? e3))
+
+        (assert-eq "yy/c.txt" (:file-name e4))
+        (assert-eq 33 (:compressed-size e4))
+        (assert-eq 3 (:uncompressed-size e4))
+        (assert-eq true (:encrypted? e4))
+        (assert-eq false (:directory? e4)))))
+
+
+  ;; ---------------------------------------------------------------------------
+  ;; extract-file-data
+  ;; ---------------------------------------------------------------------------
+  
   (test/deftest test-extract-file-data []
     (let [zip (io/temp-file "vault-", ".zip")]
       (io/delete-file-on-exit zip)
@@ -39,7 +152,11 @@
         (assert-eq "abc" data))))
 
 
-  (test/deftest test-extract-file []
+  ;; ---------------------------------------------------------------------------
+  ;; extract-file
+  ;; ---------------------------------------------------------------------------
+  
+   (test/deftest test-extract-file []
     (let [dir (io/tmp-dir)
           out (io/file dir "a.txt")
           zip (io/temp-file "vault-", ".zip")]
@@ -54,7 +171,11 @@
       (assert-eq "abc" (io/slurp out :binary false))))
 
 
-  (test/deftest test-extract-all []
+  ;; ---------------------------------------------------------------------------
+  ;; extract-all
+  ;; ---------------------------------------------------------------------------
+  
+   (test/deftest test-extract-all []
     (let [dir (io/file (io/tmp-dir) "zipvault")
           zip (io/temp-file "vault-", ".zip")]
       (io/delete-file-on-exit zip)
@@ -73,7 +194,11 @@
       (assert-eq "def" (io/slurp (io/file dir "b.txt") :binary false))))
 
 
-  (test/deftest test-encryptedQ []
+  ;; ---------------------------------------------------------------------------
+  ;; encrypted?
+  ;; ---------------------------------------------------------------------------
+  
+   (test/deftest test-encryptedQ []
     (let [zip (io/temp-file "vault-", ".zip")]
       (io/delete-file-on-exit zip)
       (zipvault/zip zip "123" "a.txt" "abc" "b.txt" "def")
@@ -81,7 +206,11 @@
       (assert-eq true (zipvault/encrypted? zip))))
 
 
-  (test/deftest test-valid-zip-fileQ []
+  ;; ---------------------------------------------------------------------------
+  ;; valid-zip-file?
+  ;; ---------------------------------------------------------------------------
+  
+   (test/deftest test-valid-zip-fileQ []
     (let [zip (io/temp-file "vault-", ".zip")]
       (io/delete-file-on-exit zip)
       (zipvault/zip zip "123" "a.txt" "abc" "b.txt" "def")

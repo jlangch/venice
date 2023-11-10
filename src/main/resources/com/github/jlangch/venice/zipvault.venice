@@ -199,7 +199,7 @@
 
   { :pre [(io/file? zip)
           (string? passphrase)
-          (every? io/file? files)] } 
+          (every? file-or-string? files)] } 
 
   (let [params  (create-params)]
     (try-with [zf (. :ZipFile :new zip passphrase)]
@@ -243,13 +243,13 @@
   ([zip passphrase folder]
     { :pre [(io/file? zip)
             (string? passphrase)
-            (io/file? folder)] } 
+            (file-or-string? folder)] } 
     (add-folder zip passphrase folder true))
   
   ([zip passphrase folder include-root-folder]
     { :pre [(io/file? zip)
             (string? passphrase)
-            (io/file? folder)
+            (file-or-string? folder)
             (boolean? include-root-folder)] } 
 
     (let [params  (create-params)]
@@ -557,4 +557,8 @@
         (. :setEncryptFiles true)
         (. :setEncryptionMethod :AES)
         (. :setAesKeyStrength :KEY_STRENGTH_256)
-        (. :setAesVersion :TWO)))
+        (. :setAesVersion :TWO)
+        (. :setCompressionLevel :NORMAL)))
+
+(defn- file-or-string? [x]
+  (or (io/file? x) (string? x)))
