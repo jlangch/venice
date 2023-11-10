@@ -62,6 +62,8 @@
           upper/lower/digits/symbols). 
           Less is dropping below general limits of safety, and more than 
           256 bits won't accomplish anything.
+
+          See function: `zipvault/entropy`
           """
      :examples '(
           """
@@ -143,13 +145,14 @@
 
           The password entropy using the formula: **E = log2(RL)**
 
-          * **E** stands for password entropy, measured in bits.
-          * **Log2** is a mathematical formula that converts the total number of possible character combinations to bits.
+          * **E** stands for password entropy, measured in bits
+          * **Log2** is a mathematical formula that converts the total number \
+            of possible character combinations to bits
           * **R** stands for the range of characters
-          * **L** stands for the number of characters in a password.
+          * **L** stands for the number of characters in a password
 
-          The entropy is calculated based on 26 lower and upper case characters,
-          10 digits and 24 possible special characters like °+*%&/()=?'`^:_,.-$£!#~;
+          The entropy is calculated based on 26 lower and upper case letters,
+          10 digits, and 24 symbols like °+*%&/()=?'`^:_,.-$£!#~;
 
           Note: The function just calculates the entropy. A strong passphrase 
                 does not rely on the entropy solely. Avoid passphrases containing 
@@ -169,8 +172,8 @@
 
   { :pre [(string? passphrase)] } 
 
-  (let [letters  26, digits  10, special 24]
-    (log2 (pow (+ letters letters digits special) (count passphrase)))))
+  (let [letters  26, digits  10, symbols 24]
+    (log2 (pow (+ letters letters digits symbols) (count passphrase)))))
 
 
 (defn 
