@@ -321,10 +321,11 @@
 
   { :pre [(io/file? zip)
           (string? passphrase)
-          (every? string? files)] } 
+          (or (empty? files) (every? string? files))] } 
 
-  (try-with [zf (. :ZipFile :new zip passphrase)]
-    (. zf :removeFiles files)))
+  (when-not (empty? files)
+    (try-with [zf (. :ZipFile :new zip passphrase)]
+      (. zf :removeFiles files))))
  
 
 (defn 

@@ -404,7 +404,7 @@
   ;; extract-file
   ;; ---------------------------------------------------------------------------
   
-   (test/deftest test-extract-file []
+  (test/deftest test-extract-file []
     (let [dir (io/tmp-dir)
           out (io/file dir "a.txt")
           zip (io/temp-file "vault-", ".zip")]
@@ -423,7 +423,7 @@
   ;; extract-all
   ;; ---------------------------------------------------------------------------
   
-   (test/deftest test-extract-all []
+  (test/deftest test-extract-all []
     (let [dir (io/file (io/tmp-dir) "zipvault")
           zip (io/temp-file "vault-", ".zip")]
       (io/delete-file-on-exit zip)
@@ -440,6 +440,59 @@
 
       (assert-eq "abc" (io/slurp (io/file dir "a.txt") :binary false))
       (assert-eq "def" (io/slurp (io/file dir "b.txt") :binary false))))
+
+
+  ;; ---------------------------------------------------------------------------
+  ;; remove-files
+  ;; ---------------------------------------------------------------------------
+   
+  (test/deftest remove-files-none []
+    (let [dir (io/file (io/tmp-dir) "zipvault")
+         zip (io/temp-file "vault-", ".zip")]
+      (io/delete-file-on-exit zip)
+      (zipvault/zip zip "pwd" "a.txt" "abc" "b.txt" "def" "c.txt" "ghi")
+
+      (zipvault/remove-files zip "pwd")
+
+      (let [entries (->> (zipvault/entries zip "pwd")
+                         (map :file-name)
+                         (into #{}))]
+        (assert-eq 3     (count entries))
+        (assert-eq true  (contains? entries "a.txt"))
+        (assert-eq true  (contains? entries "b.txt"))
+        (assert-eq true  (contains? entries "c.txt")))))
+ 
+  (test/deftest remove-files-one []
+    (let [dir (io/file (io/tmp-dir) "zipvault")
+         zip (io/temp-file "vault-", ".zip")]
+      (io/delete-file-on-exit zip)
+      (zipvault/zip zip "pwd" "a.txt" "abc" "b.txt" "def" "c.txt" "ghi")
+
+      (zipvault/remove-files zip "pwd" "c.txt")
+
+      (let [entries (->> (zipvault/entries zip "pwd")
+                         (map :file-name)
+                         (into #{}))]
+        (assert-eq 2     (count entries))
+        (assert-eq true  (contains? entries "a.txt"))
+        (assert-eq true  (contains? entries "b.txt"))
+        (assert-eq false (contains? entries "c.txt")))))
+ 
+  (test/deftest remove-files-many []
+    (let [dir (io/file (io/tmp-dir) "zipvault")
+         zip (io/temp-file "vault-", ".zip")]
+      (io/delete-file-on-exit zip)
+      (zipvault/zip zip "pwd" "a.txt" "abc" "b.txt" "def" "c.txt" "ghi")
+
+      (zipvault/remove-files zip "pwd" "b.txt" "c.txt")
+
+      (let [entries (->> (zipvault/entries zip "pwd")
+                         (map :file-name)
+                         (into #{}))]
+        (assert-eq 1     (count entries))
+        (assert-eq true  (contains? entries "a.txt"))
+        (assert-eq false (contains? entries "b.txt"))
+        (assert-eq false (contains? entries "c.txt")))))
 
 
   ;; ---------------------------------------------------------------------------
