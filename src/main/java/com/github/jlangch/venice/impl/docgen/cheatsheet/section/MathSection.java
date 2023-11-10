@@ -62,6 +62,7 @@ public class MathSection implements ISectionBuilder {
         arithmetic.addItem(diBuilder.getDocItem("pow"));
         arithmetic.addItem(diBuilder.getDocItem("exp"));
         arithmetic.addItem(diBuilder.getDocItem("log"));
+        arithmetic.addItem(diBuilder.getDocItem("log2"));
         arithmetic.addItem(diBuilder.getDocItem("log10"));
 
         final DocSection util = new DocSection("Util", "math.util");

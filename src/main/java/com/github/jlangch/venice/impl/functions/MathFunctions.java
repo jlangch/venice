@@ -1087,7 +1087,7 @@ public class MathFunctions {
                         "(log 10)",
                         "(log 10.23)",
                         "(log 10.23M)")
-                    .seeAlso("log10")
+                    .seeAlso("log10", "log2")
                     .build()
         ) {
             @Override
@@ -1095,6 +1095,34 @@ public class MathFunctions {
                 ArityExceptions.assertArity(this, args, 1);
 
                 return new VncDouble(Math.log(VncDouble.of(args.first()).getValue()));
+            }
+
+            private static final long serialVersionUID = -1848883965231344442L;
+        };
+
+    public static VncFunction log2 =
+        new VncFunction(
+                "log2",
+                VncFunction
+                    .meta()
+                    .arglists("(log2 x)")
+                    .doc("Returns the base 2 logarithm of a value")
+                    .examples(
+                        "(log2 8)",
+                        "(log2 10.23)",
+                        "(log2 10.23M)")
+                    .seeAlso("log", "log10")
+                    .build()
+        ) {
+            @Override
+            public VncVal apply(final VncList args) {
+                ArityExceptions.assertArity(this, args, 1);
+
+                final double n = VncDouble.of(args.first()).getValue();
+
+                final double log2 = Math.log(n) / Math.log(2);
+
+                return new VncDouble(log2);
             }
 
             private static final long serialVersionUID = -1848883965231344442L;
@@ -1113,7 +1141,7 @@ public class MathFunctions {
                         "(log10 10.23M)",
                         ";; the number of digits\n" +
                         "(long (+ (floor (log10 235)) 1))")
-                    .seeAlso("log")
+                    .seeAlso("log", "log2")
                     .build()
         ) {
             @Override
@@ -2148,6 +2176,7 @@ public class MathFunctions {
                     .add(atan)
                     .add(exp)
                     .add(log)
+                    .add(log2)
                     .add(log10)
 
                     .add(mean)
