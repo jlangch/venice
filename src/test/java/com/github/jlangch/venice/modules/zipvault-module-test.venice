@@ -139,6 +139,85 @@
 
 
   ;; ---------------------------------------------------------------------------
+  ;; add-files
+  ;; ---------------------------------------------------------------------------
+  
+  (test/deftest test-add-files-one-to-empty-zip
+    (let [zip   (io/temp-file "vault-", ".zip")
+          tmp   (io/file (io/tmp-dir) "a.txt")]
+      (io/spit tmp "abc")
+      (io/delete-file-on-exit tmp)
+
+      (zipvault/zip zip "pwd")
+      (zipvault/add-files zip "pwd" tmp)
+
+      (let [data (-> (zipvault/extract-file-data zip "pwd" "a.txt")
+                     (bytebuf-to-string))]
+        (assert-eq "abc" data))))
+   
+  (test/deftest test-add-files-one-to-zip
+    (let [zip   (io/temp-file "vault-", ".zip")
+          tmp   (io/file (io/tmp-dir) "a.txt")]
+      (io/spit tmp "abc")
+      (io/delete-file-on-exit tmp)
+
+      (zipvault/zip zip "pwd" "z.txt" "zzz")
+      (zipvault/add-files zip "pwd" tmp)
+
+      (let [data (-> (zipvault/extract-file-data zip "pwd" "z.txt")
+                     (bytebuf-to-string))]
+        (assert-eq "zzz" data))
+
+      (let [data (-> (zipvault/extract-file-data zip "pwd" "a.txt")
+                     (bytebuf-to-string))]
+        (assert-eq "abc" data))))
+ 
+  (test/deftest test-add-files-many-to-empty-zip
+    (let [zip   (io/temp-file "vault-", ".zip")
+          tmp-1 (io/file (io/tmp-dir) "a1.txt")
+          tmp-2 (io/file (io/tmp-dir) "a2.txt")]
+      (io/spit tmp-1 "abc")
+      (io/spit tmp-2 "bcd")
+      (io/delete-file-on-exit tmp-1)
+      (io/delete-file-on-exit tmp-2)
+
+      (zipvault/zip zip "pwd")
+      (zipvault/add-files zip "pwd" tmp-1 tmp-2)
+
+      (let [data (-> (zipvault/extract-file-data zip "pwd" "a1.txt")
+                     (bytebuf-to-string))]
+        (assert-eq "abc" data))
+        
+      (let [data (-> (zipvault/extract-file-data zip "pwd" "a2.txt")
+                     (bytebuf-to-string))]
+        (assert-eq "bcd" data))))
+   
+  (test/deftest test-add-files-many-to-zip
+    (let [zip   (io/temp-file "vault-", ".zip")
+          tmp-1 (io/file (io/tmp-dir) "a1.txt")
+          tmp-2 (io/file (io/tmp-dir) "a2.txt")]
+      (io/spit tmp-1 "abc")
+      (io/spit tmp-2 "bcd")
+      (io/delete-file-on-exit tmp-1)
+      (io/delete-file-on-exit tmp-2)
+
+      (zipvault/zip zip "pwd" "z.txt" "zzz")
+      (zipvault/add-files zip "pwd" tmp-1 tmp-2)
+
+      (let [data (-> (zipvault/extract-file-data zip "pwd" "z.txt")
+                     (bytebuf-to-string))]
+        (assert-eq "zzz" data))
+
+      (let [data (-> (zipvault/extract-file-data zip "pwd" "a1.txt")
+                     (bytebuf-to-string))]
+        (assert-eq "abc" data))
+        
+      (let [data (-> (zipvault/extract-file-data zip "pwd" "a2.txt")
+                     (bytebuf-to-string))]
+        (assert-eq "bcd" data))))
+
+
+  ;; ---------------------------------------------------------------------------
   ;; extract-file-data
   ;; ---------------------------------------------------------------------------
   

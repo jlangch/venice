@@ -493,10 +493,9 @@
       (loop [header (. zis :getNextEntry)]
         (if (nil? header)
           nil  ;; file not found
-          (let [name (. header :getFileName)
-                data (io/slurp zis :binary true)]
+          (let [name (. header :getFileName)]
             (if (= filename name)
-              data
+              (io/slurp zis :binary true)  ; return file data
               (recur (. zis :getNextEntry)))))))))
  
 
