@@ -211,7 +211,9 @@
           "(zipvault/add-folder zip passphrase folder)"
           "(zipvault/add-folder zip passphrase folder include-root-folder)")
      :doc """
-          Adds a folder to the zip file.
+          Adds a folder to the zip file. If 'include-root-folder' (default true) 
+          is true the root folder name will be added to the entry name as 
+          folder.
           """
      :examples '(
           """
