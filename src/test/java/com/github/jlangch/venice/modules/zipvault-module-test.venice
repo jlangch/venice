@@ -59,13 +59,25 @@
                      (bytebuf-to-string))]
         (assert-eq "abc" data))))
 
-  (test/deftest test-zip-data-file []
+  (test/deftest test-zip-data-file-1 []
     (let [zip  (io/temp-file "vault-", ".zip")
           file (io/temp-file "data-", ".txt")]
       (io/spit file "abc")
       (io/delete-file-on-exit zip)
       (io/delete-file-on-exit file)
       (zipvault/zip zip "123" "a.txt" file)
+
+      (let [data (-> (zipvault/extract-file-data zip "123" "a.txt")
+                     (bytebuf-to-string))]
+        (assert-eq "abc" data))))
+
+  (test/deftest test-zip-data-file-2 []
+    (let [zip        (io/temp-file "vault-", ".zip")
+          file       (io/file (io/tmp-dir) "a.txt")]
+      (io/spit file "abc")
+      (io/delete-file-on-exit zip)
+      (io/delete-file-on-exit file)
+      (zipvault/zip zip "123" file file)
 
       (let [data (-> (zipvault/extract-file-data zip "123" "a.txt")
                      (bytebuf-to-string))]

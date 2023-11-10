@@ -45,6 +45,7 @@ public class ModuleZipVaultSection implements ISectionBuilder {
         final DocSection create = new DocSection("Create", id());
         all.addSection(create);
         create.addItem(diBuilder.getDocItem("zipvault/zip", false));
+        create.addItem(diBuilder.getDocItem("zipvault/entropy", true));
 
         final DocSection add = new DocSection("Add", id());
         all.addSection(add);

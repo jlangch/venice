@@ -79,15 +79,15 @@
             (load-module :zipvault)
             (zipvault/zip (io/file-out-stream "vault.zip")
                           "my-password"
-                          "a.txt"             "abc"
-                          "b.txt"             (bytebuf "def")))
+                          "a.txt"       "abc"
+                          "b.txt"       (bytebuf [100 101 102])))
           """,
           """
           (do 
             (load-module :zipvault)
 
-            (let [c-tmp (io/file (io/tmp-dir) "c.txt")]
-              (io/spit c-tmp "1234")
+            (let [file (io/file (io/tmp-dir) "c.txt")]
+              (io/spit file "1234")
               (io/delete-file-on-exit c-tmp)
 
               ;; create "vault.zip"
@@ -102,18 +102,19 @@
               (zipvault/zip 
                   (io/file "vault.zip")
                   "my-password"
-                  "a.txt"               "abc"
-                  "b.txt"               (bytebuf "def")
-                  (io/file-name c-tmp)  c-tmp
-                  "d.txt"               (io/string-in-stream "ghi")
-                  "e.txt"               (fn [os] 
-                                          (let [wr (io/wrap-os-with-buffered-writer os)]
-                                            (println wr "200")
-                                            (flush wr)))
-                  "empty.txt"           nil
-                  "xx/g.txt"            "jkl")))
+                  "a.txt"       "abc"
+                  "b.txt"       (bytebuf "def")
+                  file          file  ; aquivalent:  (io/file-name file) file
+                  "d.txt"       (io/string-in-stream "ghi")
+                  "e.txt"       (fn [os] 
+                                  (let [wr (io/wrap-os-with-buffered-writer os)]
+                                    (println wr "200")
+                                    (flush wr)))
+                  "empty.txt"   nil
+                  "xx/g.txt"    "jkl")))
           """ )
      :see-also '(
+          "zipvault/entropy"
           "zipvault/entries"
           "zipvault/add-files"
           "zipvault/add-folder"
@@ -136,9 +137,47 @@
 
 (defn 
   ^{ :arglists '(
+          "(zipvault/entropy passphrase)")
+     :doc """
+          Returns the passphrase's entropy in bits.
+
+          The password entropy using the formula: **E = log2(RL)**
+
+          * **E** stands for password entropy, measured in bits.
+          * **Log2** is a mathematical formula that converts the total number of possible character combinations to bits.
+          * **R** stands for the range of characters
+          * **L** stands for the number of characters in a password.
+
+          The entropy is calculated based on 26 lower and upper case characters,
+          10 digits and 24 possible special characters like °+*%&/()=?'`^:_,.-$£!#~;
+
+          Note: The function just calculates the entropy. A strong passphrase 
+                does not rely on the entropy solely. Avoid passphrases containing 
+                words from the dictionary ("admin_passw0rd"), dates (birthdate, 
+                ...), repetitions ("aaaaa"), or sequences ("123456")!
+          """
+     :examples '(
+          """
+          (do 
+            (load-module :zipvault)
+            (zipvault/entropy "uibsd6b38hs7b_La'sdgk898wbver"))
+          """ )
+     :see-also '(
+          "zipvault/zip" ) }
+
+  entropy [passphrase]
+
+  { :pre [(string? passphrase)] } 
+
+  (let [letters  26, digits  10, special 24]
+    (log2 (pow (+ letters letters digits special) (count passphrase)))))
+
+
+(defn 
+  ^{ :arglists '(
           "(zipvault/entries zip passphrase)")
      :doc """
-          Retruns a list of the entry names in the zip.
+          Returns a list of the entry names in the zip.
           """
      :examples '(
           """
@@ -160,12 +199,12 @@
           (string? passphrase)] } 
 
   (try-with [zf (. :ZipFile :new zip passphrase)]
-     (->> (. zf :getFileHeaders)
-          (map (fn [h] { :file-name         (. h :getFileName)
-                         :compressed-size   (. h :getCompressedSize)
-                         :uncompressed-size (. h :getUncompressedSize)
-                         :encrypted?        (. h :isEncrypted)
-                         :directory?        (. h :isDirectory) })))))
+    (->> (. zf :getFileHeaders)
+         (map (fn [h] { :file-name         (. h :getFileName)
+                        :compressed-size   (. h :getCompressedSize)
+                        :uncompressed-size (. h :getUncompressedSize)
+                        :encrypted?        (. h :isEncrypted)
+                        :directory?        (. h :isDirectory) })))))
 
 
 (defn 
@@ -508,34 +547,35 @@
     (docoll (fn [[k v]] (add-entry params zos k v)) entries)))
 
 (defn- add-entry [params zos name value]
-  (cond
-     (str/ends-with? name "/")
-       (add-entry-folder params zos name)
+  (let [name (if (io/file? name) (io/file-name name) name)]
+    (cond
+      (str/ends-with? name "/")
+        (add-entry-folder params zos name)
 
-     (nil? value)
-       (add-entry-data params zos name (bytebuf))
+      (nil? value)
+        (add-entry-data params zos name (bytebuf))
 
-     (fn? value)
-       (add-entry-producer params zos name value)
+      (fn? value)
+        (add-entry-producer params zos name value)
 
-     (instance-of? :java.io.InputStream value)
-       (add-entry-data params zos name (io/slurp value :binary true))
+      (instance-of? :java.io.InputStream value)
+        (add-entry-data params zos name (io/slurp value :binary true))
 
-     (= (type value) :java.io.File)
-       (add-entry-data params zos name (io/slurp value :binary true))
+      (= (type value) :java.io.File)
+        (add-entry-data params zos name (io/slurp value :binary true))
 
-     (= (type value) :core/string)
-       (add-entry-data params zos name (bytebuf value))
+      (= (type value) :core/string)
+        (add-entry-data params zos name (bytebuf value))
 
-     (= (type value) :core/bytebuf)
-       (add-entry-data params zos name value)
+      (= (type value) :core/bytebuf)
+        (add-entry-data params zos name value)
 
-     :else
-       (throw (ex :VncException 
-                  """
-                  Invalid zip entry value type ~(type value)! \
-                  Expected a file, string, or bytebuf.
-                  """))))
+      :else
+        (throw (ex :VncException 
+                    """
+                    Invalid zip entry value type ~(type value)! \
+                    Expected a file, string, or bytebuf.
+                    """)))))
 
 (defn- add-entry-folder [params zos name]
   (. params :setFileNameInZip name)
