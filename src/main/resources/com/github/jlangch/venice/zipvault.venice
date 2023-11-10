@@ -69,18 +69,18 @@
           """
           (do 
             (load-module :zipvault)
-            (zipvault/zip (io/file "vault.zip") "my-password")) ; empty zip
+            (zipvault/zip (io/file "vault.zip") "pwd")) ; empty zip
           """,
           """
           (do 
             (load-module :zipvault)
-            (zipvault/zip (io/file "vault.zip") "my-password" "a.txt" "abc"))
+            (zipvault/zip (io/file "vault.zip") "pwd" "a.txt" "abc"))
           """,
           """
           (do 
             (load-module :zipvault)
             (zipvault/zip (io/file-out-stream "vault.zip")
-                          "my-password"
+                          "pwd"
                           "a.txt"       "abc"
                           "b.txt"       (bytebuf [100 101 102])))
           """,
@@ -103,7 +103,7 @@
               ;;              └── f.txt
               (zipvault/zip 
                   (io/file "vault.zip")
-                  "my-password"
+                  "pwd"
                   "a.txt"       "abc"
                   "b.txt"       (bytebuf "def")
                   file          file  ; aquivalent:  (io/file-name file) file
@@ -128,12 +128,14 @@
 
   zip [out passphrase & entries]
 
-  { :pre [(or (io/file? out) (instance-of? :java.io.OutputStream out))
+  { :pre [(or (string? out) (io/file? out) (instance-of? :java.io.OutputStream out))
           (string? passphrase)] } 
 
   (let [params  (create-params)
         entries (apply hash-map entries)
-        os      (if (io/file? out) (io/file-out-stream out :append false) out)]
+        os      (if (file-or-string? out) 
+                  (io/file-out-stream out :append false) 
+                  out)]
     (zip-to-os params passphrase os entries)))
 
 
@@ -198,10 +200,10 @@
 
   entries [zip passphrase]
 
-  { :pre [(io/file? zip)
+  { :pre [(file-or-string? zip)
           (string? passphrase)] } 
 
-  (try-with [zf (. :ZipFile :new zip passphrase)]
+  (try-with [zf (. :ZipFile :new (io/file zip) passphrase)]
     (->> (. zf :getFileHeaders)
          (map (fn [h] { :file-name         (. h :getFileName)
                         :compressed-size   (. h :getCompressedSize)
@@ -239,12 +241,12 @@
 
   add-files [zip passphrase & files]
 
-  { :pre [(io/file? zip)
+  { :pre [(file-or-string? zip)
           (string? passphrase)
           (every? file-or-string? files)] } 
 
   (let [params  (create-params)]
-    (try-with [zf (. :ZipFile :new zip passphrase)]
+    (try-with [zf (. :ZipFile :new (io/file zip) passphrase)]
       (. zf :addFiles files params))))
 
 
@@ -285,20 +287,20 @@
   add-folder 
 
   ([zip passphrase folder]
-    { :pre [(io/file? zip)
+    { :pre [(file-or-string? zip)
             (string? passphrase)
             (file-or-string? folder)] } 
-    (add-folder zip passphrase folder true))
+    (add-folder (io/file zip) passphrase folder true))
   
   ([zip passphrase folder include-root-folder]
-    { :pre [(io/file? zip)
+    { :pre [(file-or-string? zip)
             (string? passphrase)
             (file-or-string? folder)
             (boolean? include-root-folder)] } 
 
     (let [params  (create-params)]
       (. params :setIncludeRootFolder include-root-folder)
-      (try-with [zf (. :ZipFile :new zip passphrase)]
+      (try-with [zf (. :ZipFile :new (io/file zip) passphrase)]
         (. zf :addFolder folder params)))))
 
 
@@ -326,14 +328,14 @@
 
   add-stream [zip passphrase name is]
 
-  { :pre [(io/file? zip)
+  { :pre [(file-or-string? zip)
           (string? passphrase)
           (string? name)
           (instance-of? :java.io.InputStream is)] } 
 
   (let [params  (create-params)]
     (. params :setFileNameInZip name)
-    (try-with [zf (. :ZipFile :new zip passphrase)]
+    (try-with [zf (. :ZipFile :new (io/file zip) passphrase)]
       (. zf :addStream is params))))
 
 
@@ -363,12 +365,12 @@
 
   remove-files [zip passphrase & files]
 
-  { :pre [(io/file? zip)
+  { :pre [(file-or-string? zip)
           (string? passphrase)
           (or (empty? files) (every? string? files))] } 
 
   (when-not (empty? files)
-    (try-with [zf (. :ZipFile :new zip passphrase)]
+    (try-with [zf (. :ZipFile :new (io/file zip) passphrase)]
       (. zf :removeFiles files))))
  
 
@@ -388,11 +390,11 @@
 
   encrypted? [zip]
 
-  { :pre [(io/file? zip)] }
+  { :pre [(file-or-string? zip)] }
 
   (assert (io/exists-file? zip))
  
-  (try-with [zf (. :ZipFile :new zip)]
+  (try-with [zf (. :ZipFile :new (io/file zip))]
     (. zf :isEncrypted)))
 
 
@@ -412,9 +414,9 @@
 
   valid-zip-file? [zip]
 
-  { :pre [(io/file? zip)] }
+  { :pre [(file-or-string? zip)] }
 
-  (try-with [zf (. :ZipFile :new zip)]
+  (try-with [zf (. :ZipFile :new (io/file zip))]
     (. zf :isValidZipFile)))
 
 
@@ -429,12 +431,12 @@
             (load-module :zipvault)
 
             (zipvault/zip (io/file "vault.zip")
-                          "my-password"
+                          "pwd"
                           "a.txt" "abc"
                           "b.txt" "def")
 
             (zipvault/extract-file (io/file "vault.zip")
-                                   "my-password"
+                                   "pwd"
                                    "a.txt"
                                    "."))
           """ )
@@ -445,7 +447,7 @@
 
   extract-file [zip passphrase filename destpath]
 
-  { :pre [(io/file? zip)
+  { :pre [(file-or-string? zip)
           (string? passphrase)
           (string? filename)
           (or (string? destpath) (io/file? destpath))] }
@@ -456,7 +458,7 @@
   (assert (io/file-can-write? destpath))
 
   (let [destpath (if (string? destpath) destpath (io/file-path destpath))]
-    (try-with [zf (. :ZipFile :new zip passphrase)]
+    (try-with [zf (. :ZipFile :new (io/file zip) passphrase)]
       (. zf :extractFile filename destpath))))
 
 
@@ -471,12 +473,12 @@
             (load-module :zipvault)
 
             (zipvault/zip (io/file "vault.zip")
-                          "my-password"
+                          "pwd"
                           "a.txt" "abc"
                           "b.txt" "def")
 
             (zipvault/extract-all (io/file "vault.zip")
-                                  "my-password"
+                                  "pwd"
                                   "."))
           """ )
      :see-also '(
@@ -486,9 +488,9 @@
 
   extract-all [zip passphrase destpath]
 
-  { :pre [(io/file? zip)
+  { :pre [(file-or-string? zip)
           (string? passphrase)
-          (or (string? destpath) (io/file? destpath))] }
+          (file-or-string? destpath)] }
 
   (assert (io/exists-file? zip))
   (assert (io/file-can-read? zip))
@@ -496,7 +498,7 @@
   (assert (io/file-can-write? destpath))
 
   (let [destpath (if (string? destpath) destpath (io/file-path destpath))]
-    (try-with [zf (. :ZipFile :new zip passphrase)]
+    (try-with [zf (. :ZipFile :new (io/file zip) passphrase)]
       (. zf :extractAll destpath))))
 
 
@@ -514,12 +516,12 @@
             (load-module :zipvault)
 
             (zipvault/zip (io/file "vault.zip")
-                          "my-password"
+                          "pwd"
                           "a.txt" "abc"
                           "b.txt" "def")
 
             (zipvault/extract-file-data (io/file "vault.zip")
-                                        "my-password"
+                                        "pwd"
                                         "a.txt"))
           """ )
      :see-also '(
@@ -529,11 +531,11 @@
 
   extract-file-data [in passphrase filename]
 
-  { :pre [(or (io/file? in) (instance-of? :java.io.InputStream in))
+  { :pre [(or (file-or-string? in) (instance-of? :java.io.InputStream in))
           (string? passphrase)
           (string? filename)] }
 
-  (let [is (if (io/file? in) (io/file-in-stream in) in)]
+  (let [is (if (file-or-string? in) (io/file-in-stream in) in)]
     (try-with [zis (. :ZipInputStream :new is passphrase)] 
       (loop [header (. zis :getNextEntry)]
         (if (nil? header)
