@@ -100,12 +100,15 @@
   
   (test/deftest test-entries []
     (let [zip (io/temp-file "vault-", ".zip")]
+      (io/delete-file-on-exit zip)
+
       (zipvault/zip zip
                     "pwd"
                     "a.txt"     "abc"
                     "b.txt"     "def"
                     "xx/"       nil
                     "yy/c.txt"  "ghi")
+
       (let [entries (zipvault/entries zip "pwd")
             e1      (first entries)
             e2      (second entries)
@@ -146,6 +149,7 @@
     (let [zip   (io/temp-file "vault-", ".zip")
           tmp   (io/file (io/tmp-dir) "a.txt")]
       (io/spit tmp "abc")
+      (io/delete-file-on-exit zip)
       (io/delete-file-on-exit tmp)
 
       (zipvault/zip zip "pwd")
@@ -159,6 +163,7 @@
     (let [zip   (io/temp-file "vault-", ".zip")
           tmp   (io/file (io/tmp-dir) "a.txt")]
       (io/spit tmp "abc")
+      (io/delete-file-on-exit zip)
       (io/delete-file-on-exit tmp)
 
       (zipvault/zip zip "pwd" "z.txt" "zzz")
@@ -178,6 +183,7 @@
           tmp-2 (io/file (io/tmp-dir) "a2.txt")]
       (io/spit tmp-1 "abc")
       (io/spit tmp-2 "bcd")
+      (io/delete-file-on-exit zip)
       (io/delete-file-on-exit tmp-1)
       (io/delete-file-on-exit tmp-2)
 
@@ -198,6 +204,7 @@
           tmp-2 (io/file (io/tmp-dir) "a2.txt")]
       (io/spit tmp-1 "abc")
       (io/spit tmp-2 "bcd")
+      (io/delete-file-on-exit zip)
       (io/delete-file-on-exit tmp-1)
       (io/delete-file-on-exit tmp-2)
 
@@ -215,6 +222,168 @@
       (let [data (-> (zipvault/extract-file-data zip "pwd" "a2.txt")
                      (bytebuf-to-string))]
         (assert-eq "bcd" data))))
+
+
+  ;; ---------------------------------------------------------------------------
+  ;; add-folder (exclude-root-folder)
+  ;; ---------------------------------------------------------------------------
+  
+  (test/deftest test-add-folder-exclude-root-to-empty-zip
+    (let [zip        (io/temp-file "vault-", ".zip")
+          tmp-folder (io/file (io/tmp-dir) "ziptest")
+          tmp-1      (io/file tmp-folder "a1.txt")
+          tmp-2      (io/file tmp-folder "a2.txt")]
+      (when (io/exists-dir? tmp-folder)
+        (println "Pruning " tmp-folder)
+        (io/delete-file-tree tmp-folder))
+
+      (io/mkdir tmp-folder)
+      (io/spit tmp-1 "abc")
+      (io/spit tmp-2 "bcd")
+      (io/delete-file-on-exit zip)
+      (io/delete-file-on-exit tmp-1)
+      (io/delete-file-on-exit tmp-2)
+      (io/delete-file-on-exit tmp-folder)
+
+      (zipvault/zip zip "pwd")
+      (zipvault/add-folder zip "pwd" tmp-folder false)
+
+      (let [data (-> (zipvault/extract-file-data zip "pwd" "a1.txt")
+                     (bytebuf-to-string))]
+        (assert-eq "abc" data))
+        
+      (let [data (-> (zipvault/extract-file-data zip "pwd" "a2.txt")
+                     (bytebuf-to-string))]
+        (assert-eq "bcd" data))))
+
+  (test/deftest test-add-folder-exclude-root-to-zip
+    (let [zip        (io/temp-file "vault-", ".zip")
+          tmp-folder (io/file (io/tmp-dir) "ziptest")
+          tmp-1      (io/file tmp-folder "a1.txt")
+          tmp-2      (io/file tmp-folder "a2.txt")]
+      (when (io/exists-dir? tmp-folder)
+        (println "Pruning " tmp-folder)
+        (io/delete-file-tree tmp-folder))
+
+      (io/mkdir tmp-folder)
+      (io/spit tmp-1 "abc")
+      (io/spit tmp-2 "bcd")
+      (io/delete-file-on-exit zip)
+      (io/delete-file-on-exit tmp-1)
+      (io/delete-file-on-exit tmp-2)
+      (io/delete-file-on-exit tmp-folder)
+
+      (zipvault/zip zip "pwd" "z.txt" "zzz")
+      (zipvault/add-folder zip "pwd" tmp-folder false)
+
+      (let [data (-> (zipvault/extract-file-data zip "pwd" "z.txt")
+                     (bytebuf-to-string))]
+        (assert-eq "zzz" data))
+
+      (let [data (-> (zipvault/extract-file-data zip "pwd" "a1.txt")
+                     (bytebuf-to-string))]
+        (assert-eq "abc" data))
+        
+      (let [data (-> (zipvault/extract-file-data zip "pwd" "a2.txt")
+                     (bytebuf-to-string))]
+        (assert-eq "bcd" data))))
+
+
+  ;; ---------------------------------------------------------------------------
+  ;; add-folder (include-root-folder)
+  ;; ---------------------------------------------------------------------------
+  
+  (test/deftest test-add-folder-include-root-to-empty-zip
+    (let [zip        (io/temp-file "vault-", ".zip")
+          tmp-folder (io/file (io/tmp-dir) "ziptest")
+          tmp-1      (io/file tmp-folder "a1.txt")
+          tmp-2      (io/file tmp-folder "a2.txt")]
+      (when (io/exists-dir? tmp-folder)
+        (println "Pruning " tmp-folder)
+        (io/delete-file-tree tmp-folder))
+
+      (io/mkdir tmp-folder)
+      (io/spit tmp-1 "abc")
+      (io/spit tmp-2 "bcd")
+      (io/delete-file-on-exit zip)
+      (io/delete-file-on-exit tmp-1)
+      (io/delete-file-on-exit tmp-2)
+      (io/delete-file-on-exit tmp-folder)
+
+      (zipvault/zip zip "pwd")
+      (zipvault/add-folder zip "pwd" tmp-folder true)
+
+      (let [data (-> (zipvault/extract-file-data zip "pwd" "ziptest/a1.txt")
+                     (bytebuf-to-string))]
+        (assert-eq "abc" data))
+        
+      (let [data (-> (zipvault/extract-file-data zip "pwd" "ziptest/a2.txt")
+                     (bytebuf-to-string))]
+        (assert-eq "bcd" data))))
+
+  (test/deftest test-add-folder-include-root-to-zip
+    (let [zip        (io/temp-file "vault-", ".zip")
+          tmp-folder (io/file (io/tmp-dir) "ziptest")
+          tmp-1      (io/file tmp-folder "a1.txt")
+          tmp-2      (io/file tmp-folder "a2.txt")]
+      (when (io/exists-dir? tmp-folder)
+        (println "Pruning " tmp-folder)
+        (io/delete-file-tree tmp-folder))
+
+      (io/mkdir tmp-folder)
+      (io/spit tmp-1 "abc")
+      (io/spit tmp-2 "bcd")
+      (io/delete-file-on-exit zip)
+      (io/delete-file-on-exit tmp-1)
+      (io/delete-file-on-exit tmp-2)
+      (io/delete-file-on-exit tmp-folder)
+
+      (zipvault/zip zip "pwd" "z.txt" "zzz")
+      (zipvault/add-folder zip "pwd" tmp-folder true)
+
+      (let [data (-> (zipvault/extract-file-data zip "pwd" "z.txt")
+                     (bytebuf-to-string))]
+        (assert-eq "zzz" data))
+
+      (let [data (-> (zipvault/extract-file-data zip "pwd" "ziptest/a1.txt")
+                     (bytebuf-to-string))]
+        (assert-eq "abc" data))
+        
+      (let [data (-> (zipvault/extract-file-data zip "pwd" "ziptest/a2.txt")
+                     (bytebuf-to-string))]
+        (assert-eq "bcd" data))))
+
+
+  ;; ---------------------------------------------------------------------------
+  ;; add-stream
+  ;; ---------------------------------------------------------------------------
+  
+  (test/deftest test-add-stream-to-empty-zip
+    (let [zip   (io/temp-file "vault-", ".zip")]
+      (zipvault/zip zip "pwd")
+      (zipvault/add-stream zip "pwd" "a.txt" (io/string-in-stream "abc"))
+
+      (let [data (-> (zipvault/extract-file-data zip "pwd" "a.txt")
+                     (bytebuf-to-string))]
+        (assert-eq "abc" data))))
+   
+  (test/deftest test-add-stream-to-zip
+    (let [zip   (io/temp-file "vault-", ".zip")
+          tmp   (io/file (io/tmp-dir) "a.txt")]
+      (io/spit tmp "abc")
+      (io/delete-file-on-exit zip)
+      (io/delete-file-on-exit tmp)
+
+      (zipvault/zip zip "pwd" "z.txt" "zzz")
+      (zipvault/add-stream zip "pwd" "a.txt" (io/string-in-stream "abc"))
+
+      (let [data (-> (zipvault/extract-file-data zip "pwd" "z.txt")
+                     (bytebuf-to-string))]
+        (assert-eq "zzz" data))
+
+      (let [data (-> (zipvault/extract-file-data zip "pwd" "a.txt")
+                     (bytebuf-to-string))]
+        (assert-eq "abc" data))))
 
 
   ;; ---------------------------------------------------------------------------

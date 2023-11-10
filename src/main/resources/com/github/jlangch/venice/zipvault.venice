@@ -492,10 +492,10 @@
     (try-with [zis (. :ZipInputStream :new is passphrase)] 
       (loop [header (. zis :getNextEntry)]
         (if (nil? header)
-          nil  ;; file not found
+          nil  ; file not found -> return no data
           (let [name (. header :getFileName)]
             (if (= filename name)
-              (io/slurp zis :binary true)  ; return file data
+              (io/slurp zis :binary true)  ; return binary file data
               (recur (. zis :getNextEntry)))))))))
  
 
