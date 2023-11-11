@@ -455,7 +455,8 @@
 (defn 
   ^{ :arglists '("(zipvault/extract-file zip password filename destpath)")
      :doc """
-          Extracts a specific file from the zip file to the destination path.
+          Extracts a specific file or folder from the zip file to the 
+          destination path.
           """
      :examples '(
           """
@@ -483,7 +484,7 @@
                           "words/two.txt" "two"
                           "logs/001.log" "xxx")
 
-            ;; extract a directory
+            ;; extract a folder
             (zipvault/extract-file (io/file "vault.zip")
                                    "pwd"
                                    "words/"
