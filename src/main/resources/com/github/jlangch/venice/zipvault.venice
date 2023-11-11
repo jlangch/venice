@@ -257,9 +257,15 @@
           "(zipvault/add-folder zip passphrase folder include-root-folder)"
           "(zipvault/add-folder zip passphrase folder include-root-folder exclude-fn)")
      :doc """
-          Adds a folder to the zip file. If 'include-root-folder' (default true) 
-          is true the root folder name will be added to the entry name as 
-          folder.
+          Adds a folder to the zip file. 
+          
+          If 'include-root-folder' (default true) is true the root folder name 
+          will be added to the entry name as folder.
+
+          The 'exclude-fn' filters the files in the folder that are to be 
+          excluded from the zip. 'exclude-fn' is a single argument function 
+          that receives a file and returns true if the files is to be excluded 
+          otherwise it returns false.
           """
      :examples '(
           """
