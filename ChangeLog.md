@@ -12,7 +12,8 @@ All notable changes to this project will be documented in this file.
 
 ### Added 
 
-- ...
+- improvements to :zipvault module. New functions `zipvault/entries`
+  `zipvault/add-file`, `zipvault/add-folder`, `zipvault/add-stream`
 
 
 

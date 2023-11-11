@@ -117,7 +117,6 @@
                   "xx/g.txt"    "jkl")))
           """ )
      :see-also '(
-          "zipvault/entropy"
           "zipvault/entries"
           "zipvault/add-files"
           "zipvault/add-folder"
@@ -125,7 +124,8 @@
           "zipvault/remove-files"
           "zipvault/extract-file"
           "zipvault/extract-all"
-          "zipvault/extract-file-data" ) }
+          "zipvault/extract-file-data"
+          "zipvault/entropy" ) }
 
   zip [out passphrase & entries]
 
