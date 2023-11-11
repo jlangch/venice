@@ -36,7 +36,7 @@ public class ModuleZipVaultSection implements ISectionBuilder {
     public DocSection section() {
         final DocSection section = new DocSection(
                                         "Zip Vault",
-                                        "AES 256 encrypted und password protected zip file",
+                                        "AES 256 encrypted and password protected zip file",
                                         "modules.zipvault");
 
         final DocSection all = new DocSection("(load-module :zipvault)", id());
