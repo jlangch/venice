@@ -27,8 +27,8 @@
   (load-module :timing)
 
 
-  ;(defonce file "/Users/juerg/Desktop/test-202MB.binary")
-  (defonce file "/Users/juerg/Desktop/test-16MB.binary")
+  (defonce file-200 "/Users/juerg/Desktop/test-202MB.binary")
+  (defonce file-16 "/Users/juerg/Desktop/test-16MB.binary")
   (defonce passwd "j87vhfrtxvzrzver445dffg")
 
 
@@ -63,7 +63,7 @@
       (zipvault/extract-file zip passphrase name out-dir)))
 
 
-  (defn run []
+  (defn run-timing [file]
     (let [size (filesize file)]
       (timing/run (fn [] (encrypt-raw file passwd)) 
                   (str "Encrypt AES file " size))
@@ -75,4 +75,7 @@
                   (str "Encrypt ZIP file " size))
                   
       (timing/run (fn [] (decrypt-zip file passwd)) 
-                  (str "Decrypt ZIP file " size)))))
+                  (str "Decrypt ZIP file " size))))
+
+  (defn run [] 
+    (run-timing file-16)))
