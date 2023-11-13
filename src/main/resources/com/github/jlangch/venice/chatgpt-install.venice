@@ -35,9 +35,9 @@
 ;; ---------------------------------------------------------------------------
 
 (defn libraries []
-  [ "com.theokanning.openai-gpt3-java:api:0.16.0"
-    "com.theokanning.openai-gpt3-java:client:0.16.0"
-    "com.theokanning.openai-gpt3-java:service:0.16.0"
+  [ "com.theokanning.openai-gpt3-java:api:0.17.0"
+    "com.theokanning.openai-gpt3-java:client:0.17.0"
+    "com.theokanning.openai-gpt3-java:service:0.17.0"
 
     "com.squareup.retrofit2:adapter-rxjava2:2.9.0"
     "com.squareup.retrofit2:retrofit:2.9.0"

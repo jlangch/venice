@@ -71,6 +71,7 @@ public class Modules {
                         "hexdump",
                         "http",
                         "jackson",
+                        "jansi-install",
                         "java",
                         "jsonl",
                         "kira",
