@@ -28,8 +28,8 @@
 
 
   (defonce file-200 "/Users/juerg/Desktop/test-202MB.binary")
-  (defonce file-16 "/Users/juerg/Desktop/test-16MB.binary")
-  (defonce passwd "j87vhfrtxvzrzver445dffg")
+  (defonce file-16  "/Users/juerg/Desktop/test-16MB.binary")
+  (defonce passwd   "j87vhfrtxvzrzver445dffg")
 
 
   (defn filesize [file]
