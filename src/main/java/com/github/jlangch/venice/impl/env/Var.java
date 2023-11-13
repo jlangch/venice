@@ -66,8 +66,13 @@ public class Var implements Serializable {
     }
 
     @Transient
-    public boolean isLocall() {
+    public boolean isLocal() {
         return scope == Scope.Local;
+    }
+
+    @Transient
+    public boolean isPrivate() {
+        return name.isPrivate();
     }
 
     @Override
