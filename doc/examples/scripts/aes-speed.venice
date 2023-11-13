@@ -1,0 +1,78 @@
+;;;;   __    __         _
+;;;;   \ \  / /__ _ __ (_) ___ ___
+;;;;    \ \/ / _ \ '_ \| |/ __/ _ \
+;;;;     \  /  __/ | | | | (_|  __/
+;;;;      \/ \___|_| |_|_|\___\___|
+;;;;
+;;;;
+;;;; Copyright 2017-2023 Venice
+;;;;
+;;;; Licensed under the Apache License, Version 2.0 (the "License");
+;;;; you may not use this file except in compliance with the License.
+;;;; You may obtain a copy of the License at
+;;;;
+;;;;     http://www.apache.org/licenses/LICENSE-2.0
+;;;;
+;;;; Unless required by applicable law or agreed to in writing, software
+;;;; distributed under the License is distributed on an "AS IS" BASIS,
+;;;; WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+;;;; See the License for the specific language governing permissions and
+;;;; limitations under the License.
+
+;;;; Compares AES-256 encryption/decryption speed
+
+(do
+  (load-module :zipvault)
+  (load-module :crypt)
+  (load-module :timing)
+
+
+  ;(defonce file "/Users/juerg/Desktop/test-202MB.binary")
+  (defonce file "/Users/juerg/Desktop/test-16MB.binary")
+  (defonce passwd "j87vhfrtxvzrzver445dffg")
+
+
+  (defn filesize [file]
+     (str (long (/ (io/file-size file) 1024 1024)) " MB"))
+
+  (defn encrypt-raw [file passphrase]
+    (let [encryptor (crypt/encrypt "AES256" passphrase)
+          in-file   file
+          out-file  (str file ".raw.enc")]
+      (->> (io/slurp in-file :binary true)
+           (encryptor)
+           (io/spit out-file))))
+
+  (defn decrypt-raw [file passphrase]
+    (let [decryptor (crypt/decrypt "AES256" passphrase)
+          in-file   (str file ".raw.enc")
+          out-file  (str file ".raw")]
+      (->> (io/slurp in-file :binary true)
+           (decryptor)
+           (io/spit out-file))))
+
+  (defn encrypt-zip [file passphrase]
+    (let [name     (str (io/file-basename file) ".raw")
+          zip      (str file ".zip")]
+      (zipvault/zip zip passphrase name (io/file file))))
+
+  (defn decrypt-zip [file passphrase]
+    (let [name    (str (io/file-basename file) ".raw")
+          zip     (str file ".zip")
+          out-dir (io/file-parent file)]
+      (zipvault/extract-file zip passphrase name out-dir)))
+
+
+  (defn run []
+    (let [size (filesize file)]
+      (timing/run (fn [] (encrypt-raw file passwd)) 
+                  (str "Encrypt AES file " size))
+                  
+      (timing/run (fn [] (decrypt-raw file passwd)) 
+                  (str "Decrypt AES file " size))
+                  
+      (timing/run (fn [] (encrypt-zip file passwd)) 
+                  (str "Encrypt ZIP file " size))
+                  
+      (timing/run (fn [] (decrypt-zip file passwd)) 
+                  (str "Decrypt ZIP file " size)))))
