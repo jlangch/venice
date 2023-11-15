@@ -101,13 +101,13 @@
               ;;          ├── e.txt
               ;;          ├── empty.txt
               ;;          └── xx
-              ;;              └── f.txt
+              ;;              └── g.txt
               (zipvault/zip 
                   (io/file "vault.zip")
                   "pwd"
                   "a.txt"       "abc"
                   "b.txt"       (bytebuf "def")
-                  file          file  ; aquivalent:  (io/file-name file) file
+                  file          file  ; aquivalent:  (io/file-basename file) file
                   "d.txt"       (io/string-in-stream "ghi")
                   "e.txt"       (fn [os] 
                                   (let [wr (io/wrap-os-with-buffered-writer os)]
