@@ -1549,7 +1549,8 @@ public class IOFunctions {
                     .doc(
                         "Lists files in a directory. dir must be a file or a string (file path). " +
                         "`filter-fn` is an optional filter that filters the files found. The filter " +
-                        "gets a `java.io.File` as argument. Returns files as `java.io.File`")
+                        "gets a `java.io.File` as argument. \n\n" +
+                        "Returns files as `java.io.File`")
                     .examples(
                         "(io/list-files \"/tmp\")",
                         "(io/list-files \"/tmp\" #(io/file-ext? % \".log\"))")
@@ -1606,7 +1607,7 @@ public class IOFunctions {
                     .doc(
                         "Lists all files in a directory tree. dir must be a file or a " +
                         "string (file path). `filter-fn` is an optional filter that filters " +
-                        "the files found. The filter gets a `java.io.File` as argument. " +
+                        "the files found. The filter gets a `java.io.File` as argument. \n\n" +
                         "Returns files as `java.io.File`")
                     .examples(
                         "(io/list-file-tree \"/tmp\")",
@@ -1661,9 +1662,9 @@ public class IOFunctions {
                     .arglists("(io/list-files-glob dir glob)")
                     .doc(
                         "Lists all files in a directory that match the glob pattern. " +
-                        "dir must be a file or a string (file path). " +
-                        "Returns files as `java.io.File`\n" +
-                        "\n" +
+                        "dir must be a file or a string (file path). \n" +
+                        "Returns files as `java.io.File`" +
+                        "\n\n" +
                         "**Globbing patterns**\n" +
                         "\n" +
                         "| [![width: 20%]] | [![width: 80%]] |\n" +
