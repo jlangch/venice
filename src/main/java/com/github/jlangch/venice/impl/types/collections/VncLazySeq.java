@@ -86,6 +86,10 @@ public class VncLazySeq extends VncSequence {
         return new VncLazySeq(Stream.ofAll(list.stream()), meta);
     }
 
+    public static VncLazySeq ofAll(final Iterable<VncVal> items, final VncVal meta) {
+        return new VncLazySeq(Stream.ofAll(items), meta);
+    }
+
     public static VncLazySeq fill(final int n, final VncFunction fn, final VncVal meta) {
         return new VncLazySeq(Stream.fill(n, () -> fn.apply(VncList.empty())), meta);
     }

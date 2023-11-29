@@ -75,12 +75,14 @@ import com.github.jlangch.venice.impl.types.VncString;
 import com.github.jlangch.venice.impl.types.VncSymbol;
 import com.github.jlangch.venice.impl.types.VncVal;
 import com.github.jlangch.venice.impl.types.collections.VncHashMap;
+import com.github.jlangch.venice.impl.types.collections.VncLazySeq;
 import com.github.jlangch.venice.impl.types.collections.VncList;
 import com.github.jlangch.venice.impl.types.util.Coerce;
 import com.github.jlangch.venice.impl.types.util.Types;
 import com.github.jlangch.venice.impl.util.ArityExceptions;
 import com.github.jlangch.venice.impl.util.MimeTypes;
 import com.github.jlangch.venice.impl.util.SymbolMapBuilder;
+import com.github.jlangch.venice.impl.util.VncFileIterator;
 import com.github.jlangch.venice.impl.util.VncPathMatcher;
 import com.github.jlangch.venice.impl.util.callstack.CallFrame;
 import com.github.jlangch.venice.impl.util.io.CharsetUtil;
@@ -1554,7 +1556,7 @@ public class IOFunctions {
                     .examples(
                         "(io/list-files \"/tmp\")",
                         "(io/list-files \"/tmp\" #(io/file-ext? % \".log\"))")
-                    .seeAlso("io/list-file-tree", "io/list-files-glob")
+                    .seeAlso("io/list-files-glob", "io/list-file-tree", "io/list-file-tree-lazy")
                     .build()
         ) {
             @Override
@@ -1612,7 +1614,7 @@ public class IOFunctions {
                     .examples(
                         "(io/list-file-tree \"/tmp\")",
                         "(io/list-file-tree \"/tmp\" #(io/file-ext? % \".log\"))")
-                    .seeAlso("io/list-files", "io/list-files-glob")
+                    .seeAlso("io/list-file-tree-lazy", "io/list-files", "io/list-files-glob")
                     .build()
         ) {
             @Override
@@ -1643,6 +1645,60 @@ public class IOFunctions {
                          });
 
                     return VncList.ofList(files);
+                }
+                catch(Exception ex) {
+                    throw new VncException(
+                            String.format("Failed to list files from %s", dir.getPath()),
+                            ex);
+                }
+            }
+
+            private static final long serialVersionUID = -1848883965231344442L;
+        };
+
+    public static VncFunction io_list_file_tree_lazy =
+        new VncFunction(
+                "io/list-file-tree-lazy",
+                VncFunction
+                    .meta()
+                    .arglists(
+                        "(io/list-file-tree-lazy dir)",
+                        "(io/list-file-tree-lazy dir filter-fn)")
+                    .doc(
+                        "Returns a lazy sequence that lists all files in a directory tree. " +
+                        "dir must be a file or a string (file path). `filter-fn` is an optional " +
+                        "filter that filters the files found. The filter gets a `java.io.File` " +
+                        "as argument. \n\n" +
+                        "Returns files as `java.io.File`")
+                    .examples(
+                    	"(->> (io/list-file-tree-lazy \"/tmp\")  \n" +
+                    	"     (doall)                            \n" +
+                    	"     (docoll println))                  ",
+                    	"(->> (io/list-file-tree-lazy \"/tmp\" #(io/file-ext? % \".log\"))  \n" +
+                    	"     (doall)                                                       \n" +
+                    	"     (docoll println))                                             ")
+                    .seeAlso("io/list-file-tree", "io/list-files", "io/list-files-glob")
+                    .build()
+        ) {
+            @Override
+            public VncVal apply(final VncList args) {
+                ArityExceptions.assertArity(this, args, 1, 2);
+
+                sandboxFunctionCallValidation();
+
+                final File dir = convertToFile(
+                                    args.first(),
+                                    "Function 'io/list-file-tree-lazy' does not allow %s as dir");
+
+                validateReadableDirectory(dir);
+
+                try {
+                    final VncFunction filterFn = (args.size() == 2) ? Coerce.toVncFunction(args.second()) : null;
+                    if (filterFn != null) {
+                        filterFn.sandboxFunctionCallValidation();
+                    }
+
+                    return VncLazySeq.ofAll(new VncFileIterator(dir, filterFn).iterable(), Nil);
                 }
                 catch(Exception ex) {
                     throw new VncException(
@@ -1701,7 +1757,7 @@ public class IOFunctions {
                         "`'?'`, `'*'`, and `'['`, so that they can be used in patterns.")
                     .examples(
                         "(io/list-files-glob \".\" \"sample*.txt\")")
-                    .seeAlso("io/list-files", "io/list-file-tree")
+                    .seeAlso("io/list-files", "io/list-file-tree", "io/list-file-tree-lazy")
                     .build()
         ) {
             @Override
@@ -2849,6 +2905,7 @@ public class IOFunctions {
                     .add(io_close_watcher)
                     .add(io_list_files)
                     .add(io_list_file_tree)
+                    .add(io_list_file_tree_lazy)
                     .add(io_list_files_glob)
                     .add(io_delete_file)
                     .add(io_delete_file_on_exit)

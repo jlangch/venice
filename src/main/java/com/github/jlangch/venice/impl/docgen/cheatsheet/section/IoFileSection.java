@@ -79,6 +79,7 @@ public class IoFileSection implements ISectionBuilder {
         file_list.addItem(diBuilder.getDocItem("io/list-files", false));
         file_list.addItem(diBuilder.getDocItem("io/list-files-glob", false));
         file_list.addItem(diBuilder.getDocItem("io/list-file-tree", false));
+        file_list.addItem(diBuilder.getDocItem("io/list-file-tree-lazy", false));
 
         final DocSection file_test = new DocSection("file test", "io.filetest");
         all.addSection(file_test);
