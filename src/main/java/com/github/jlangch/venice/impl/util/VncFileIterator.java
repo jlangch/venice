@@ -36,19 +36,18 @@ import com.github.jlangch.venice.impl.types.VncJavaObject;
 import com.github.jlangch.venice.impl.types.VncVal;
 
 
-public class VncFileIterator implements Iterator<VncVal> {
+public class VncFileIterator implements Iterator<VncVal>, Iterable<VncVal> {
 
     public VncFileIterator(
             final File root,
             final IVncFunction filter
     ) {
         if (root == null) {
-            throw new FileException(
-                    "A root dir must not be null!");
+            throw new FileException("A file iterator root dir must not be null!");
         }
         if (!root.isDirectory()) {
             throw new FileException(
-                    "The root dir '" + root + "' does not exist!");
+                    "The file iterator root dir '" + root + "' does not exist!");
         }
 
         this.filter = filter;
@@ -88,19 +87,14 @@ public class VncFileIterator implements Iterator<VncVal> {
         return Nil;
     }
 
+    @Override
+    public Iterator<VncVal> iterator() {
+        return this;
+    }
+
     public void stop() {
         dirsLeft.clear();
         filesLeft.clear();
-    }
-
-    public Iterable<VncVal> iterable() {
-        final Iterator<VncVal> iter = this;
-
-        return new Iterable<VncVal>() {
-            @Override
-            public Iterator<VncVal> iterator() {
-                return iter;
-            }};
     }
 
 

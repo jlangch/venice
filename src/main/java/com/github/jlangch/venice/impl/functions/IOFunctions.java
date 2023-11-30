@@ -1665,17 +1665,15 @@ public class IOFunctions {
                         "(io/list-file-tree-lazy dir)",
                         "(io/list-file-tree-lazy dir filter-fn)")
                     .doc(
-                        "Returns a lazy sequence that lists all files in a directory tree. " +
+                        "Returns a lazy sequence of all the files in a directory tree. " +
                         "dir must be a file or a string (file path). `filter-fn` is an optional " +
                         "filter that filters the files found. The filter gets a `java.io.File` " +
                         "as argument. \n\n" +
-                        "Returns files as `java.io.File`")
+                        "The lazy sequence returns files as `java.io.File`")
                     .examples(
                     	"(->> (io/list-file-tree-lazy \"/tmp\")  \n" +
-                    	"     (doall)                            \n" +
                     	"     (docoll println))                  ",
                     	"(->> (io/list-file-tree-lazy \"/tmp\" #(io/file-ext? % \".log\"))  \n" +
-                    	"     (doall)                                                       \n" +
                     	"     (docoll println))                                             ")
                     .seeAlso("io/list-file-tree", "io/list-files", "io/list-files-glob")
                     .build()
@@ -1698,7 +1696,7 @@ public class IOFunctions {
                         filterFn.sandboxFunctionCallValidation();
                     }
 
-                    return VncLazySeq.ofAll(new VncFileIterator(dir, filterFn).iterable(), Nil);
+                    return VncLazySeq.ofAll(new VncFileIterator(dir, filterFn), Nil);
                 }
                 catch(Exception ex) {
                     throw new VncException(
