@@ -349,22 +349,23 @@ _In computer science, partial application (or partial function application) refe
 
 ### Using functions with fewer arguments than they can normally take
 
-If we did need to call `add` with fewer than the required arguments, for example 
-if we are mapping `add` over a vector, then we can use `partial` to help us call 
-the `add` function with the right number of arguments:
+If we did need to call `add` (adding two numbers) with fewer than the required 
+arguments, for example if we are mapping `add` over a vector, then we can use 
+`partial` to help us call the `add` function with the right number of arguments:
+
+```clojure
+(do
+  (defn add [x y] (+ x y))
+  (map (partial add 2) [1 2 3 4]))  ;; => (3 4 5 6)
+```
+
+In this case the _partial function_ prevents us from writing an explicit anonymous
+function like `#(+ 2 %)` in `(map #(+ 2 %) [1 2 3 4])`
 
 ```clojure
 (map (partial + 2) [1 2 3 4])  ;; => (3 4 5 6)
 ```
 
-```clojure
-(do
-  (def add2 (partial + 2))
-  (map add2 [1 2 3 4]))  ;; => (3 4 5 6)
-```
-
-In this case the _partial function_ prevents us from writing an explicit anonymous
-function like `#(+ 2 %)` in `(map #(+ 2 %) [1 2 3 4])`
 
 
 ### Using functions with more arguments than they can normally take
