@@ -354,11 +354,17 @@ if we are mapping `add` over a vector, then we can use `partial` to help us call
 the `add` function with the right number of arguments:
 
 ```clojure
-(map (partial add2) [1 2 3 4])  ;; => (3 4 5 6)
+(map (partial + 2) [1 2 3 4])  ;; => (3 4 5 6)
+```
+
+```clojure
+(do
+  (def add2 (partial + 2))
+  (map add2 [1 2 3 4]))  ;; => (3 4 5 6)
 ```
 
 In this case the _partial function_ prevents us from writing an explicit anonymous
-function like `#(add 2 %)` in `(map #(add 2 %) [1 2 3 4])`
+function like `#(+ 2 %)` in `(map #(+ 2 %) [1 2 3 4])`
 
 
 ### Using functions with more arguments than they can normally take
