@@ -54,7 +54,11 @@
           """
           (-> (crypt/md5-hash "hello world" "-salt-")
               (str/bytebuf-to-hex :upper))
-          """ ) }
+          """ )
+     :see-also '(
+          "crypt/sha1-hash"
+          "crypt/sha512-hash"
+          "crypt/pbkdf2-hash" ) }
 
   crypt/md5-hash
 
@@ -74,7 +78,11 @@
           """
           (-> (crypt/sha1-hash "hello world" "-salt-")
               (str/bytebuf-to-hex :upper))
-          """ ) }
+          """ )
+     :see-also '(
+          "crypt/md5-hash"
+          "crypt/sha512-hash"
+          "crypt/pbkdf2-hash" )  }
 
   crypt/sha1-hash
 
@@ -96,7 +104,11 @@
           (let [s (-> (crypt/sha512-hash "hello world" "-salt-")
                       (str/bytebuf-to-hex :upper))]
             (str (str/nfirst s 32) "..." (str/nlast s 32)))
-          """ ) }
+          """ )
+     :see-also '(
+          "crypt/md5-hash"
+          "crypt/sha1-hash"
+          "crypt/pbkdf2-hash" )  }
 
   crypt/sha512-hash
 
@@ -119,7 +131,11 @@
           """
           (-> (crypt/pbkdf2-hash "hello world" "-salt-" 1000 256)
               (str/bytebuf-to-hex :upper))
-          """ ) }
+          """ )
+     :see-also '(
+          "crypt/md5-hash"
+          "crypt/sha1-hash"
+          "crypt/sha512-hash" )  }
 
   crypt/pbkdf2-hash
 
@@ -180,7 +196,17 @@
             (encrypt "hello") ; => "ndmW1NLsDHA"
             (encrypt "world") ; => "KPYjndkZ8vM"
             (encrypt (bytebuf [1 2 3 4]))) ; => [128 216 205 163 62 43 52 82]
-          """ ) }
+          """,
+          """
+          (do
+            (load-module :crypt)
+            (def encrypt (crypt/encrypt "3DES" "secret" :url-safe true :salt "salty"))
+            (encrypt "hello") ; => "3MrQGcgbv00"
+            (encrypt "world") ; => "a6UyBZUnK4I"
+            (encrypt (bytebuf [1 2 3 4]))) ; => [86 66 56 135 239 120 10 150]
+          """ ) 
+     :see-also '(
+          "crypt/decrypt" ) }
 
   crypt/encrypt
 
@@ -219,11 +245,23 @@
           """
           (do
             (load-module :crypt)
-            (def decrypt (crypt/decrypt "3DES" "secret" :url-safe true))
-            (decrypt "ndmW1NLsDHA") ; => "hello"
-            (decrypt "KPYjndkZ8vM") ; => "world"
-            (decrypt (bytebuf [128 216 205 163 62 43 52 82]))) ; => [1 2 3 4]
-          """ ) }
+            (def encrypt (crypt/encrypt "AES256" "secret" :url-safe true))
+            (def decrypt (crypt/decrypt "AES256" "secret" :url-safe true))
+            (encrypt "hello")                  ; => "e4m1qe6Fyx3Rr7NTIZe97g"
+            (decrypt "e4m1qe6Fyx3Rr7NTIZe97g") ; => "hello"
+            (encrypt (bytebuf [128 216 205]))) ; => [43 195 99 118 231 225 142 76 132 194 129 237 158 12 12 203]
+          """,
+          """
+          (do
+            (load-module :crypt)
+            (def encrypt (crypt/encrypt "AES256" "secret" :salt "salty"))
+            (def decrypt (crypt/decrypt "AES256" "secret" :salt "salty"))
+            (-> "hello"
+                (encrypt)
+                (decrypt)))
+          """ ) 
+     :see-also '(
+          "crypt/encrypt" ) }
 
   crypt/decrypt
 
@@ -286,9 +324,6 @@
 
 (defn- to-8-byte-salt [salt]
   (if (string? salt) (bytebuf-from-string salt :UTF-8 8 0x00) salt))
-
-(defn- to-byte-salt [salt]
-  (if (string? salt) (bytebuf-from-string salt :UTF-8) salt))
 
 (defn- to-bytes [data]
   (if (string? data) (bytebuf-from-string data :UTF-8) data))
@@ -503,7 +538,7 @@
 
 
 (defmethod create-encrypt-fn "AES256" [algorithm passphrase salt url-safe]
-  (let [salt       (to-byte-salt salt)
+  (let [salt       (to-bytes salt)
         _          (assert (and (bytebuf? salt) (< 0 (count salt)))
                            "An AES256 salt must be a bytebuf with at least 1 byte!")
         secret-key (create-secret-key-AES256 passphrase salt)
@@ -513,7 +548,7 @@
 
 
 (defmethod create-decrypt-fn "AES256" [algorithm passphrase salt url-safe]
-  (let [salt       (to-byte-salt salt)
+  (let [salt       (to-bytes salt)
         _          (assert (and (bytebuf? salt) (< 0 (count salt)))
                            "An AES256 salt must be a bytebuf with at least 1 byte!")
         secret-key (create-secret-key-AES256 passphrase salt)
