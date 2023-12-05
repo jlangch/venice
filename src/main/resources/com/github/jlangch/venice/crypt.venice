@@ -160,13 +160,15 @@
 
           Options:
 
-          *:url-safe {true/false}*¶
-          The boolean option directs the base64 encoder to emit
-          standard or URL safe base64 encoded strings.
-          If `true` the base64 encoder will emit '-' and '_'
-          instead of the usual '+' and '/' characters.¶
-          Defaults to false.¶
-          Note: no padding is added when encoding using the URL-safe alphabet.
+          | [![width: 15%]] | [![width: 85%]] |
+          | :url-safe   | The boolean option directs the base64 encoder to \
+                          emit standard or URL safe base64 encoded strings. \
+                          If `true` the base64 encoder will emit '-' and '_' \
+                          instead of the usual '+' and '/' characters.¶ \
+                          Defaults to false.¶ \
+                          Note: no padding is added when encoding using the \
+                          URL-safe alphabet. |
+          | :salt       | An optional salt. A bytebuf with 8 bytes |
           """
      :examples (list
           """
@@ -182,8 +184,12 @@
 
   [algorithm passphrase & options]
 
-  (let [url-safe (:url-safe (apply hash-map options) false)]
-    (create-encrypt-fn algorithm passphrase url-safe)))
+  (let [opts     (apply hash-map options)
+        salt     (:salt opts (salt-default))
+        url-safe (:url-safe opts false)]
+    (assert (bytebuf? salt) "A salt must be a bytebuf with 8 bytes!")
+    (assert (= 8 (count salt)) "A salt must be a bytebuf with 8 bytes!")
+    (create-encrypt-fn algorithm passphrase salt url-safe)))
 
 
 (defn
@@ -198,12 +204,14 @@
 
        Options:
 
-       *:url-safe {true/false}*¶
-       The boolean option directs the base64 decoder to decode
-       standard or  URL safe base64 encoded strings.
-       If enabled (true) the base64 decoder will convert '-' and '_'
-       characters back to '+' and '/' before decoding.¶
-       Defaults to false.
+       | [![width: 15%]] | [![width: 85%]] |
+       | :url-safe   | The boolean option directs the base64 decoder to decode \
+                       standard or  URL safe base64 encoded strings. \
+                       If enabled (true) the base64 decoder will convert '-' \
+                       and '_' characters back to '+' and '/' before \
+                       decoding.¶ \
+                       Defaults to false. |
+       | :salt       | An optional salt. A bytebuf with 8 bytes |
        """
      :examples (list
           """
@@ -219,8 +227,12 @@
 
   [algorithm passphrase & options]
 
-  (let [url-safe (:url-safe (apply hash-map options) false)]
-    (create-decrypt-fn algorithm passphrase url-safe)))
+  (let [opts     (apply hash-map options)
+        salt     (:salt opts (salt-default))
+        url-safe (:url-safe opts false)]
+    (assert (bytebuf? salt) "A salt must be a bytebuf with 8 bytes!")
+    (assert (= 8 (count salt)) "A salt must be a bytebuf with 8 bytes!")
+    (create-decrypt-fn algorithm passphrase salt url-safe)))
 
 
 (defn
@@ -267,8 +279,8 @@
 ;; Utils
 ;; -----------------------------------------------------------------------------
 
-(defn- salt []
-  (bytebuf [0xA9 0x9B 0xC8 0x32 0x56 0x35 0xE3 0x03]))
+(defn- salt-default []
+  (bytebuf [0xA9 0x9B 0xC8 0x32  0x56 0x35 0xE3 0x03]))
 
 
 (defn- to-bytes [data]
@@ -334,16 +346,18 @@
 (def DECRYPT_MODE 2)
 
 
-(defmulti create-encrypt-fn (fn [algorithm passphrase url-safe] (name algorithm)))
+(defmulti create-encrypt-fn (fn [algorithm passphrase salt url-safe] 
+  (name algorithm)))
 
-(defmethod create-encrypt-fn :default [algorithm passphrase url-safe]
+(defmethod create-encrypt-fn :default [algorithm passphrase salt url-safe]
   (throw (ex :VncException
              (str "Invalid cipher alogorithm '" algorithm "'"))))
 
 
-(defmulti create-decrypt-fn (fn [algorithm passphrase url-safe] (name algorithm)))
+(defmulti create-decrypt-fn (fn [algorithm passphrase salt url-safe] 
+  (name algorithm)))
 
-(defmethod create-decrypt-fn :default [algorithm passphrase url-safe]
+(defmethod create-decrypt-fn :default [algorithm passphrase salt url-safe]
   (throw (ex :VncException
              (str "Invalid cipher alogorithm '" algorithm "'"))))
 
@@ -386,9 +400,9 @@
 (defn- iterations-DES [] 19)
 
 
-(defn- create-secret-key-DES [passphrase]
+(defn- create-secret-key-DES [passphrase salt]
   (let [factory    (. :SecretKeyFactory :getInstance "PBEWithMD5AndDES")
-        key-spec   (. :PBEKeySpec :new passphrase (salt) (iterations-DES))
+        key-spec   (. :PBEKeySpec :new passphrase salt (iterations-DES))
         secret     (. factory :generateSecret key-spec)]
     secret))
 
@@ -398,16 +412,16 @@
         (. :init mode secret-key param-spec)))
 
 
-(defmethod create-encrypt-fn "DES" [algorithm passphrase url-safe]
-  (let [secret-key (create-secret-key-DES passphrase)
-        param-spec (. :PBEParameterSpec :new (salt) (iterations-DES))
+(defmethod create-encrypt-fn "DES" [algorithm passphrase salt url-safe]
+  (let [secret-key (create-secret-key-DES passphrase salt)
+        param-spec (. :PBEParameterSpec :new salt (iterations-DES))
         cipher     (create-cipher-DES ENCRYPT_MODE secret-key param-spec)]
     (fn [data] (cipher-encrypt cipher data url-safe))))
 
 
-(defmethod create-decrypt-fn "DES" [algorithm passphrase url-safe]
-  (let [secret-key (create-secret-key-DES passphrase)
-        param-spec (. :PBEParameterSpec :new (salt) (iterations-DES))
+(defmethod create-decrypt-fn "DES" [algorithm passphrase salt url-safe]
+  (let [secret-key (create-secret-key-DES passphrase salt)
+        param-spec (. :PBEParameterSpec :new salt (iterations-DES))
         cipher     (create-cipher-DES DECRYPT_MODE secret-key param-spec)]
     (fn [data] (cipher-decrypt cipher data url-safe))))
 
@@ -420,9 +434,9 @@
 (defn- iterations-3DES [] 19)
 
 
-(defn- create-secret-key-3DES [passphrase]
+(defn- create-secret-key-3DES [passphrase salt ]
   (let [factory    (. :SecretKeyFactory :getInstance "PBEWithMD5AndTripleDES")
-        key-spec   (. :PBEKeySpec :new passphrase (salt) (iterations-3DES))
+        key-spec   (. :PBEKeySpec :new passphrase salt (iterations-3DES))
         secret     (. factory :generateSecret key-spec)]
     secret))
 
@@ -432,16 +446,16 @@
         (. :init mode secret-key param-spec)))
 
 
-(defmethod create-encrypt-fn "3DES" [algorithm passphrase url-safe]
-  (let [secret-key (create-secret-key-3DES passphrase)
-        param-spec (. :PBEParameterSpec :new (salt) (iterations-3DES))
+(defmethod create-encrypt-fn "3DES" [algorithm passphrase salt url-safe]
+  (let [secret-key (create-secret-key-3DES passphrase salt)
+        param-spec (. :PBEParameterSpec :new salt (iterations-3DES))
         cipher     (create-cipher-3DES ENCRYPT_MODE secret-key param-spec)]
     (fn [data] (cipher-encrypt cipher data url-safe))))
 
 
-(defmethod create-decrypt-fn "3DES" [algorithm passphrase url-safe]
-  (let [secret-key (create-secret-key-3DES passphrase)
-        param-spec (. :PBEParameterSpec :new (salt) (iterations-3DES))
+(defmethod create-decrypt-fn "3DES" [algorithm passphrase salt url-safe]
+  (let [secret-key (create-secret-key-3DES passphrase salt)
+        param-spec (. :PBEParameterSpec :new salt (iterations-3DES))
         cipher     (create-cipher-3DES DECRYPT_MODE secret-key param-spec)]
     (fn [data] (cipher-decrypt cipher data url-safe))))
 
@@ -452,13 +466,13 @@
 ;; -----------------------------------------------------------------------------
 
 (defn- create-iv-spec-AES256 []
-  (let [iv (bytebuf [0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0])]
+  (let [iv (bytebuf [0 0 0 0 0 0 0 0  0 0 0 0 0 0 0 0])]
     (. :IvParameterSpec :new iv)))
 
 
-(defn- create-secret-key-AES256 [passphrase]
+(defn- create-secret-key-AES256 [passphrase salt]
   (let [factory    (. :SecretKeyFactory :getInstance "PBKDF2WithHmacSHA256")
-        key-spec   (. :PBEKeySpec :new passphrase (salt) 65536 256)
+        key-spec   (. :PBEKeySpec :new passphrase salt 65536 256)
         secret     (. factory :generateSecret key-spec)
         secret-key (. :SecretKeySpec :new (. secret :getEncoded) "AES")]
     secret-key))
@@ -469,15 +483,15 @@
         (. :init mode secret-key iv-spec)))
 
 
-(defmethod create-encrypt-fn "AES256" [algorithm passphrase url-safe]
-  (let [secret-key (create-secret-key-AES256 passphrase)
+(defmethod create-encrypt-fn "AES256" [algorithm passphrase salt url-safe]
+  (let [secret-key (create-secret-key-AES256 passphrase salt)
         iv-spec    (create-iv-spec-AES256)
         cipher     (create-cipher-AES256 ENCRYPT_MODE secret-key iv-spec)]
     (fn [data] (cipher-encrypt cipher data url-safe))))
 
 
-(defmethod create-decrypt-fn "AES256" [algorithm passphrase url-safe]
-  (let [secret-key (create-secret-key-AES256 passphrase)
+(defmethod create-decrypt-fn "AES256" [algorithm passphrase salt url-safe]
+  (let [secret-key (create-secret-key-AES256 passphrase salt)
         iv-spec    (create-iv-spec-AES256)
         cipher     (create-cipher-AES256 DECRYPT_MODE secret-key iv-spec)]
     (fn [data] (cipher-decrypt cipher data url-safe))))
