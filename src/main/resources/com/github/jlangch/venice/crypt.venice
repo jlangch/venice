@@ -168,7 +168,9 @@
                           Defaults to false.¶ \
                           Note: no padding is added when encoding using the \
                           URL-safe alphabet. |
-          | :salt       | An optional salt. A bytebuf or a string |
+          | :salt       | An optional salt. A bytebuf or a string. ¶ \
+                          DES and 3DES require exactly 8 bytes, AES256 1 or \
+                          more bytes |
           """
      :examples (list
           """
@@ -186,10 +188,7 @@
 
   (let [opts     (apply hash-map options)
         salt     (:salt opts default-salt)
-        salt     (to-8-byte-salt salt)
         url-safe (:url-safe opts false)]
-    (assert (bytebuf? salt) "A salt must be a bytebuf with 8 bytes or a string!")
-    (assert (= 8 (count salt)) "A salt must be a bytebuf with 8 bytes!")
     (create-encrypt-fn algorithm passphrase salt url-safe)))
 
 
@@ -212,7 +211,9 @@
                        and '_' characters back to '+' and '/' before \
                        decoding.¶ \
                        Defaults to false. |
-       | :salt       | An optional salt. A bytebuf or a string |
+       | :salt       | An optional salt. A bytebuf or a string. ¶ \
+                       DES and 3DES require exactly 8 bytes, AES256 1 or more \
+                       bytes |
        """
      :examples (list
           """
@@ -230,10 +231,7 @@
 
   (let [opts     (apply hash-map options)
         salt     (:salt opts default-salt)
-        salt     (to-8-byte-salt salt)
         url-safe (:url-safe opts false)]
-    (assert (bytebuf? salt) "A salt must be a bytebuf with 8 bytes or a string!")
-    (assert (= 8 (count salt)) "A salt must be a bytebuf with 8 bytes!")
     (create-decrypt-fn algorithm passphrase salt url-safe)))
 
 
@@ -245,8 +243,11 @@
 
        Argument opt
 
-       | :default   | returns the names of the cipher suites which are enabled by default. |
-       | :available | returns the names of the cipher suites which could be enabled for use on an SSL connection created by this `SSLServerSocketFactory`. |
+       | :default   | returns the names of the cipher suites which are enabled \
+                      by default. |
+       | :available | returns the names of the cipher suites which could be \
+                      enabled for use on an SSL connection created by this \
+                      `SSLServerSocketFactory`. |
        """
   :examples (list
         """
@@ -285,6 +286,9 @@
 
 (defn- to-8-byte-salt [salt]
   (if (string? salt) (bytebuf-from-string salt :UTF-8 8 0x00) salt))
+
+(defn- to-byte-salt [salt]
+  (if (string? salt) (bytebuf-from-string salt :UTF-8) salt))
 
 (defn- to-bytes [data]
   (if (string? data) (bytebuf-from-string data :UTF-8) data))
@@ -416,14 +420,20 @@
 
 
 (defmethod create-encrypt-fn "DES" [algorithm passphrase salt url-safe]
-  (let [secret-key (create-secret-key-DES passphrase salt)
+  (let [salt       (to-8-byte-salt salt)
+        _          (assert (and (bytebuf? salt) (= 8 (count salt))) 
+                           "A DES salt must be a bytebuf with 8 bytes!")
+        secret-key (create-secret-key-DES passphrase salt)
         param-spec (. :PBEParameterSpec :new salt (iterations-DES))
         cipher     (create-cipher-DES ENCRYPT_MODE secret-key param-spec)]
     (fn [data] (cipher-encrypt cipher data url-safe))))
 
 
 (defmethod create-decrypt-fn "DES" [algorithm passphrase salt url-safe]
-  (let [secret-key (create-secret-key-DES passphrase salt)
+  (let [salt       (to-8-byte-salt salt)
+        _          (assert (and (bytebuf? salt) (= 8 (count salt))) 
+                           "A DES salt must be a bytebuf with 8 bytes!")
+        secret-key (create-secret-key-DES passphrase salt)
         param-spec (. :PBEParameterSpec :new salt (iterations-DES))
         cipher     (create-cipher-DES DECRYPT_MODE secret-key param-spec)]
     (fn [data] (cipher-decrypt cipher data url-safe))))
@@ -450,14 +460,20 @@
 
 
 (defmethod create-encrypt-fn "3DES" [algorithm passphrase salt url-safe]
-  (let [secret-key (create-secret-key-3DES passphrase salt)
+  (let [salt       (to-8-byte-salt salt)
+        _          (assert (and (bytebuf? salt) (= 8 (count salt))) 
+                           "A 3DES salt must be a bytebuf with 8 bytes!")
+        secret-key (create-secret-key-3DES passphrase salt)
         param-spec (. :PBEParameterSpec :new salt (iterations-3DES))
         cipher     (create-cipher-3DES ENCRYPT_MODE secret-key param-spec)]
     (fn [data] (cipher-encrypt cipher data url-safe))))
 
 
 (defmethod create-decrypt-fn "3DES" [algorithm passphrase salt url-safe]
-  (let [secret-key (create-secret-key-3DES passphrase salt)
+  (let [salt       (to-8-byte-salt salt)
+        _          (assert (and (bytebuf? salt) (= 8 (count salt))) 
+                           "A 3DES salt must be a bytebuf with 8 bytes!")
+        secret-key (create-secret-key-3DES passphrase salt)
         param-spec (. :PBEParameterSpec :new salt (iterations-3DES))
         cipher     (create-cipher-3DES DECRYPT_MODE secret-key param-spec)]
     (fn [data] (cipher-decrypt cipher data url-safe))))
@@ -487,14 +503,20 @@
 
 
 (defmethod create-encrypt-fn "AES256" [algorithm passphrase salt url-safe]
-  (let [secret-key (create-secret-key-AES256 passphrase salt)
+  (let [salt       (to-byte-salt salt)
+        _          (assert (and (bytebuf? salt) (< 0 (count salt)))
+                           "An AES256 salt must be a bytebuf with at least 1 byte!")
+        secret-key (create-secret-key-AES256 passphrase salt)
         iv-spec    (create-iv-spec-AES256)
         cipher     (create-cipher-AES256 ENCRYPT_MODE secret-key iv-spec)]
     (fn [data] (cipher-encrypt cipher data url-safe))))
 
 
 (defmethod create-decrypt-fn "AES256" [algorithm passphrase salt url-safe]
-  (let [secret-key (create-secret-key-AES256 passphrase salt)
+  (let [salt       (to-byte-salt salt)
+        _          (assert (and (bytebuf? salt) (< 0 (count salt)))
+                           "An AES256 salt must be a bytebuf with at least 1 byte!")
+        secret-key (create-secret-key-AES256 passphrase salt)
         iv-spec    (create-iv-spec-AES256)
         cipher     (create-cipher-AES256 DECRYPT_MODE secret-key iv-spec)]
     (fn [data] (cipher-decrypt cipher data url-safe))))
