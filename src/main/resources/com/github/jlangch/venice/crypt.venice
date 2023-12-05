@@ -168,7 +168,7 @@
                           Defaults to false.¶ \
                           Note: no padding is added when encoding using the \
                           URL-safe alphabet. |
-          | :salt       | An optional salt. A bytebuf with 8 bytes |
+          | :salt       | An optional salt. A bytebuf or a string |
           """
      :examples (list
           """
@@ -185,9 +185,10 @@
   [algorithm passphrase & options]
 
   (let [opts     (apply hash-map options)
-        salt     (:salt opts (salt-default))
+        salt     (:salt opts default-salt)
+        salt     (to-8-byte-salt salt)
         url-safe (:url-safe opts false)]
-    (assert (bytebuf? salt) "A salt must be a bytebuf with 8 bytes!")
+    (assert (bytebuf? salt) "A salt must be a bytebuf with 8 bytes or a string!")
     (assert (= 8 (count salt)) "A salt must be a bytebuf with 8 bytes!")
     (create-encrypt-fn algorithm passphrase salt url-safe)))
 
@@ -211,7 +212,7 @@
                        and '_' characters back to '+' and '/' before \
                        decoding.¶ \
                        Defaults to false. |
-       | :salt       | An optional salt. A bytebuf with 8 bytes |
+       | :salt       | An optional salt. A bytebuf or a string |
        """
      :examples (list
           """
@@ -228,9 +229,10 @@
   [algorithm passphrase & options]
 
   (let [opts     (apply hash-map options)
-        salt     (:salt opts (salt-default))
+        salt     (:salt opts default-salt)
+        salt     (to-8-byte-salt salt)
         url-safe (:url-safe opts false)]
-    (assert (bytebuf? salt) "A salt must be a bytebuf with 8 bytes!")
+    (assert (bytebuf? salt) "A salt must be a bytebuf with 8 bytes or a string!")
     (assert (= 8 (count salt)) "A salt must be a bytebuf with 8 bytes!")
     (create-decrypt-fn algorithm passphrase salt url-safe)))
 
@@ -279,9 +281,10 @@
 ;; Utils
 ;; -----------------------------------------------------------------------------
 
-(defn- salt-default []
-  (bytebuf [0xA9 0x9B 0xC8 0x32  0x56 0x35 0xE3 0x03]))
+(def- default-salt  (bytebuf [0xA9 0x9B 0xC8 0x32  0x56 0x35 0xE3 0x03]))
 
+(defn- to-8-byte-salt [salt]
+  (if (string? salt) (bytebuf-from-string salt :UTF-8 8 0x00) salt))
 
 (defn- to-bytes [data]
   (if (string? data) (bytebuf-from-string data :UTF-8) data))

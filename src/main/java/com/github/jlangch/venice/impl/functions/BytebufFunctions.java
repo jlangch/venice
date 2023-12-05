@@ -225,23 +225,61 @@ public class BytebufFunctions {
                 "bytebuf-from-string",
                 VncFunction
                     .meta()
-                    .arglists("(bytebuf-from-string s encoding)")
-                    .doc( "Converts a string to a bytebuf using an optional encoding. The encoding defaults to :UTF-8")
-                    .examples("(bytebuf-from-string \"abcdef\" :UTF-8)")
-                    .seeAlso("bytebuf-to-string")
+                    .arglists(
+                        "(bytebuf-from-string s)",
+                    	"(bytebuf-from-string s encoding)",
+                    	"(bytebuf-from-string s encoding buf-length fillbyte)")
+                    .doc(
+                    	"Converts a string to a bytebuf using an optional encoding. " +
+                    	"The encoding defaults to :UTF-8")
+                    .examples(
+                    	"(bytebuf-from-string \"abcdef\")",
+                    	"(bytebuf-from-string \"abcdef\" :UTF-8)",
+                    	"(bytebuf-from-string \"abcdef\" :UTF-8 16 0x00)")
+                    .seeAlso(
+                    	"bytebuf-to-string")
                     .build()
         ) {
             @Override
             public VncVal apply(final VncList args) {
-                ArityExceptions.assertArity(this, args, 1, 2);
-
-                final String s = Coerce.toVncString(args.first()).getValue();
-
-                final VncVal encVal = args.size() == 2 ? args.second() : Nil;
-                final Charset charset = CharsetUtil.charset(encVal);
+                ArityExceptions.assertArity(this, args, 1, 2, 4);
 
                 try {
-                    return new VncByteBuffer(ByteBuffer.wrap(s.getBytes(charset)));
+	                final String s = Coerce.toVncString(args.first()).getValue();
+
+	                if (args.size() == 1) {
+	                	final Charset charset = Charset.forName("UTF-8");
+	                	return new VncByteBuffer(ByteBuffer.wrap(s.getBytes(charset)));
+	                }
+	                else if (args.size() == 2) {
+	                	final VncVal encVal = args.second();
+	                	final Charset charset = CharsetUtil.charset(encVal);
+	                	return new VncByteBuffer(ByteBuffer.wrap(s.getBytes(charset)));
+	                }
+	                else if (args.size() == 4) {
+	                	final VncVal encVal = args.second();
+	                	final Charset charset = CharsetUtil.charset(encVal);
+
+	                	final long buflen = Coerce.toVncLong(args.third()).getValue();
+
+	                	final byte[] bytes = s.getBytes(charset);
+	                	if (bytes.length == buflen) {
+		                	return new VncByteBuffer(ByteBuffer.wrap(bytes));
+	                	}
+	                	else if (bytes.length < buflen) {
+		                	final byte filler = (byte)(Coerce.toVncLong(args.fourth()).getValue() & 0xFF);
+		                	final byte[] buf = Arrays.copyOf(bytes, (int)buflen);
+	                		Arrays.fill(buf, bytes.length, buf.length, filler);
+		                	return new VncByteBuffer(ByteBuffer.wrap(buf));
+	                	}
+	                	else {
+	                		return new VncByteBuffer(ByteBuffer.wrap(Arrays.copyOf(bytes, (int)buflen)));
+	                	}
+	                }
+	                else {
+	                    throw new VncException(String.format(
+	                            "bytebuf-from-string illegal number of arguments"));
+	                }
                 }
                 catch(Exception ex) {
                     throw new VncException(String.format(

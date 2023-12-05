@@ -66,7 +66,23 @@ public class BytebufFunctionsTest {
     public void test_bytebuf_from_string() {
         final Venice venice = new Venice();
 
-        assertArrayEquals(new byte[] {97,98,99,100,101,102}, ((ByteBuffer)venice.eval("(bytebuf-from-string \"abcdef\" :UTF-8)")).array());
+        assertArrayEquals(
+        		new byte[] {97,98,99,100,101,102},
+        		((ByteBuffer)venice.eval("(bytebuf-from-string \"abcdef\" :UTF-8)")).array());
+
+        // limit to 3 bytes
+        assertArrayEquals(
+        		new byte[] {97,98,99},
+        		((ByteBuffer)venice.eval("(bytebuf-from-string \"abcdef\" :UTF-8 3 0x00)")).array());
+
+        // fill up to 10 bytes
+        assertArrayEquals(
+        		new byte[] {97,98,99,100,101,102,0,0,0,0},
+        		((ByteBuffer)venice.eval("(bytebuf-from-string \"abcdef\" :UTF-8 10 0x00)")).array());
+
+        assertArrayEquals(
+        		new byte[] {97,98,99,100,101,102,5,5},
+        		((ByteBuffer)venice.eval("(bytebuf-from-string \"abcdef\" :UTF-8 8 0x05)")).array());
     }
 
     @Test

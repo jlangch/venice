@@ -218,6 +218,38 @@ public class CryptoModuleTest {
     }
 
     @Test
+    public void test_DES_encrypt_custom_salt_string() {
+        final Venice venice = new Venice();
+
+        final String script =
+                "(do                                                                                 \n" +
+                "  (load-module :crypt)                                                              \n" +
+                "  (def encrypt (crypt/encrypt \"DES\" \"secret\" :url-safe true :salt \"-salt-\"))  \n" +
+                "  (def decrypt (crypt/decrypt \"DES\" \"secret\" :url-safe true :salt \"-salt-\"))  \n" +
+                "  (assert (== \"hello\" (decrypt (encrypt \"hello\"))))                             \n" +
+                "  (assert (== (bytebuf [1 2 3 4 5]) (decrypt (encrypt (bytebuf [1 2 3 4 5])))))     \n" +
+                ")";
+
+        venice.eval(script);
+    }
+
+    @Test
+    public void test_DES_encrypt_custom_salt_bytes() {
+        final Venice venice = new Venice();
+
+        final String script =
+                "(do                                                                                   \n" +
+                "  (load-module :crypt)                                                                \n" +
+                "  (let [salt (bytebuf [0x20 0x21 0x22 0x23 0x24 0x25 0x26 0x27])]                     \n" +
+                "    (def encrypt (crypt/encrypt \"DES\" \"secret\" :url-safe true :salt salt))        \n" +
+                "    (def decrypt (crypt/decrypt \"DES\" \"secret\" :url-safe true :salt salt))        \n" +
+                "    (assert (== \"hello\" (decrypt (encrypt \"hello\"))))                             \n" +
+                "    (assert (== (bytebuf [1 2 3 4 5]) (decrypt (encrypt (bytebuf [1 2 3 4 5])))))))" ;
+
+        venice.eval(script);
+    }
+
+    @Test
     public void test_3DES_encrypt_1() {
         final Venice venice = new Venice();
 
@@ -248,6 +280,38 @@ public class CryptoModuleTest {
     }
 
     @Test
+    public void test_3DES_encrypt_custom_salt_string() {
+        final Venice venice = new Venice();
+
+        final String script =
+                "(do                                                                                 \n" +
+                "  (load-module :crypt)                                                              \n" +
+                "  (def encrypt (crypt/encrypt \"3DES\" \"secret\" :url-safe true :salt \"-salt-\")) \n" +
+                "  (def decrypt (crypt/decrypt \"3DES\" \"secret\" :url-safe true :salt \"-salt-\")) \n" +
+                "  (assert (== \"hello\" (decrypt (encrypt \"hello\"))))                             \n" +
+                "  (assert (== (bytebuf [1 2 3 4 5]) (decrypt (encrypt (bytebuf [1 2 3 4 5])))))     \n" +
+                ")";
+
+        venice.eval(script);
+    }
+
+    @Test
+    public void test_3DES_encrypt_custom_salt_bytes() {
+        final Venice venice = new Venice();
+
+        final String script =
+                "(do                                                                                   \n" +
+                "  (load-module :crypt)                                                                \n" +
+                "  (let [salt (bytebuf [0x20 0x21 0x22 0x23 0x24 0x25 0x26 0x27])]                     \n" +
+                "    (def encrypt (crypt/encrypt \"3DES\" \"secret\" :url-safe true :salt salt))       \n" +
+                "    (def decrypt (crypt/decrypt \"3DES\" \"secret\" :url-safe true :salt salt))       \n" +
+                "    (assert (== \"hello\" (decrypt (encrypt \"hello\"))))                             \n" +
+                "    (assert (== (bytebuf [1 2 3 4 5]) (decrypt (encrypt (bytebuf [1 2 3 4 5])))))))" ;
+
+        venice.eval(script);
+    }
+
+    @Test
     public void test_AES256_encrypt_1() {
         final Venice venice = new Venice();
 
@@ -273,6 +337,38 @@ public class CryptoModuleTest {
                 "  (assert (== \"hello\" (decrypt (encrypt \"hello\"))))                          \n" +
                 "  (assert (== (bytebuf [1 2 3 4 5]) (decrypt (encrypt (bytebuf [1 2 3 4 5]))))) \n" +
                 ")";
+
+        venice.eval(script);
+    }
+
+    @Test
+    public void test_AES256_encrypt_custom_salt_string() {
+        final Venice venice = new Venice();
+
+        final String script =
+                "(do                                                                                    \n" +
+                "  (load-module :crypt)                                                                 \n" +
+                "  (def encrypt (crypt/encrypt \"AES256\" \"secret\" :url-safe true :salt \"-salt-\"))  \n" +
+                "  (def decrypt (crypt/decrypt \"AES256\" \"secret\" :url-safe true :salt \"-salt-\"))  \n" +
+                "  (assert (== \"hello\" (decrypt (encrypt \"hello\"))))                                \n" +
+                "  (assert (== (bytebuf [1 2 3 4 5]) (decrypt (encrypt (bytebuf [1 2 3 4 5])))))        \n" +
+                ")";
+
+        venice.eval(script);
+    }
+
+    @Test
+    public void test_AES256_encrypt_custom_salt_bytes() {
+        final Venice venice = new Venice();
+
+        final String script =
+                "(do                                                                                   \n" +
+                "  (load-module :crypt)                                                                \n" +
+                "  (let [salt (bytebuf [0x20 0x21 0x22 0x23 0x24 0x25 0x26 0x27])]                     \n" +
+                "    (def encrypt (crypt/encrypt \"AES256\" \"secret\" :url-safe true :salt salt))     \n" +
+                "    (def decrypt (crypt/decrypt \"AES256\" \"secret\" :url-safe true :salt salt))     \n" +
+                "    (assert (== \"hello\" (decrypt (encrypt \"hello\"))))                             \n" +
+                "    (assert (== (bytebuf [1 2 3 4 5]) (decrypt (encrypt (bytebuf [1 2 3 4 5])))))))" ;
 
         venice.eval(script);
     }
