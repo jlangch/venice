@@ -312,7 +312,7 @@ public class CryptoModuleTest {
     }
 
     @Test
-    public void test_AES256_encrypt_1() {
+    public void test_AES256_CBC_encrypt_1() {
         final Venice venice = new Venice();
 
         final String script =
@@ -326,7 +326,7 @@ public class CryptoModuleTest {
     }
 
     @Test
-    public void test_AES256_encrypt_2() {
+    public void test_AES256_CBC_encrypt_2() {
         final Venice venice = new Venice();
 
         final String script =
@@ -342,7 +342,7 @@ public class CryptoModuleTest {
     }
 
     @Test
-    public void test_AES256_encrypt_custom_salt_string() {
+    public void test_AES256_CBC_encrypt_custom_salt_string() {
         final Venice venice = new Venice();
 
         final String script =
@@ -358,7 +358,7 @@ public class CryptoModuleTest {
     }
 
     @Test
-    public void test_AES256_encrypt_custom_salt_bytes() {
+    public void test_AES256_CBC_encrypt_custom_salt_bytes() {
         final Venice venice = new Venice();
 
         final String script =

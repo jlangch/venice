@@ -8,11 +8,11 @@ All notable changes to this project will be documented in this file.
 
 
 
-## [1.10.54] - 2023-11-xx
+## [1.10.54] - 2023-12-xx
 
 ### Added 
 
-- ...
+- Added AES 256 (GCM) file encryptor/decryptor
 
 
 

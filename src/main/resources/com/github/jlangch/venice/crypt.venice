@@ -31,9 +31,10 @@
 (import :javax.crypto.Cipher)
 (import :javax.crypto.SecretKey)
 (import :javax.crypto.SecretKeyFactory)
-(import :javax.crypto.spec.IvParameterSpec)
 (import :javax.crypto.spec.PBEKeySpec)
+(import :javax.crypto.spec.IvParameterSpec)
 (import :javax.crypto.spec.PBEParameterSpec)
+(import :javax.crypto.spec.GCMParameterSpec)
 (import :javax.crypto.spec.SecretKeySpec)
 (import :javax.net.ssl.SSLServerSocketFactory)
 
@@ -516,12 +517,15 @@
 
 
 ;; -----------------------------------------------------------------------------
-;; AES256
+;; AES256  (CBC)
 ;; -----------------------------------------------------------------------------
 
+(defn- create-iv-AES256 []
+  (bytebuf [0 0 0 0 0 0 0 0  0 0 0 0 0 0 0 0]))
+
+
 (defn- create-iv-spec-AES256 []
-  (let [iv (bytebuf [0 0 0 0 0 0 0 0  0 0 0 0 0 0 0 0])]
-    (. :IvParameterSpec :new iv)))
+  (. :IvParameterSpec :new (create-iv-AES256 )))
 
 
 (defn- create-secret-key-AES256 [passphrase salt]
@@ -533,7 +537,7 @@
 
 
 (defn- create-cipher-AES256 [mode secret-key iv-spec]
-  (doto (. :Cipher :getInstance "AES/CBC/PKCS5PADDING")
+  (doto (. :Cipher :getInstance "AES/CBC/PKCS5Padding")
         (. :init mode secret-key iv-spec)))
 
 
@@ -555,3 +559,4 @@
         iv-spec    (create-iv-spec-AES256)
         cipher     (create-cipher-AES256 DECRYPT_MODE secret-key iv-spec)]
     (fn [data] (cipher-decrypt cipher data url-safe))))
+
