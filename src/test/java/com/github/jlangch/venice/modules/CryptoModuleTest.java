@@ -537,6 +537,142 @@ public class CryptoModuleTest {
     }
 
     @Test
+    public void test_hash_file_SHA1_1() {
+        final Venice venice = new Venice();
+
+        // file
+        final String script =
+                "(do                                                     \n" +
+                "  (load-module :crypt)                                  \n" +
+                "  (let [file (io/temp-file \"test-\", \".data\")        \n" +
+                "        data \"1234567890\"]                            \n" +
+                "    (io/delete-file-on-exit file)                       \n" +
+                "    (io/spit file data)                                 \n" +
+                "    (crypt/hash-file file \"salt\" \"SHA-1\")))         ";
+
+        assertEquals("uhAVLkBSJ7kyuYmYQfREs6A7+/A=", venice.eval(script));
+    }
+
+    @Test
+    public void test_hash_file_SHA1_2() {
+        final Venice venice = new Venice();
+
+        // string
+        final String script =
+                "(do                                                             \n" +
+                "  (load-module :crypt)                                          \n" +
+                "  (let [file (io/temp-file \"test-\", \".data\")                \n" +
+                "        data \"1234567890\"]                                    \n" +
+                "    (io/delete-file-on-exit file)                               \n" +
+                "    (io/spit file data)                                         \n" +
+                "    (crypt/hash-file (io/file-path file) \"salt\" \"SHA-1\")))  ";
+
+        assertEquals("uhAVLkBSJ7kyuYmYQfREs6A7+/A=", venice.eval(script));
+    }
+
+    @Test
+    public void test_hash_file_SHA1_3() {
+        final Venice venice = new Venice();
+
+        // file-in-stream
+        final String script =
+                "(do                                                                  \n" +
+                "  (load-module :crypt)                                               \n" +
+                "  (let [file (io/temp-file \"test-\", \".data\")                     \n" +
+                "        data \"1234567890\"]                                         \n" +
+                "    (io/delete-file-on-exit file)                                    \n" +
+                "    (io/spit file data)                                              \n" +
+                "    (crypt/hash-file (io/file-in-stream file) \"salt\" \"SHA-1\")))  ";
+
+        assertEquals("uhAVLkBSJ7kyuYmYQfREs6A7+/A=", venice.eval(script));
+    }
+
+    @Test
+    public void test_hash_file_SHA1_4() {
+        final Venice venice = new Venice();
+
+        // bytebuf
+        final String script =
+                "(do                                                                    \n" +
+                "  (load-module :crypt)                                                 \n" +
+                "  (let [file (io/temp-file \"test-\", \".data\")                       \n" +
+                "        data \"1234567890\"]                                           \n" +
+                "    (io/delete-file-on-exit file)                                      \n" +
+                "    (io/spit file data)                                                \n" +
+                "    (crypt/hash-file (io/slurp file :binary true) \"salt\" \"SHA-1\")))";
+
+        assertEquals("uhAVLkBSJ7kyuYmYQfREs6A7+/A=", venice.eval(script));
+    }
+
+    @Test
+    public void test_hash_file_SHA512_1() {
+        final Venice venice = new Venice();
+
+        // file
+        final String script =
+                "(do                                                     \n" +
+                "  (load-module :crypt)                                  \n" +
+                "  (let [file (io/temp-file \"test-\", \".data\")        \n" +
+                "        data \"1234567890\"]                            \n" +
+                "    (io/delete-file-on-exit file)                       \n" +
+                "    (io/spit file data)                                 \n" +
+                "    (crypt/hash-file file \"salt\" \"SHA-512\")))       ";
+
+        assertEquals("qFUlDmCuGAA8Y8qKrjMd4mUdQYau4Cs6gTcYs39oRF0wuOG46oLfi/7nUbHd0IH2uiBe+xUzjcsAT4CImO/liw==", venice.eval(script));
+    }
+
+    @Test
+    public void test_hash_file_SHA512_2() {
+        final Venice venice = new Venice();
+
+        // string
+        final String script =
+                "(do                                                             \n" +
+                "  (load-module :crypt)                                          \n" +
+                "  (let [file (io/temp-file \"test-\", \".data\")                \n" +
+                "        data \"1234567890\"]                                    \n" +
+                "    (io/delete-file-on-exit file)                               \n" +
+                "    (io/spit file data)                                         \n" +
+                "    (crypt/hash-file (io/file-path file) \"salt\" \"SHA-512\")))";
+
+        assertEquals("qFUlDmCuGAA8Y8qKrjMd4mUdQYau4Cs6gTcYs39oRF0wuOG46oLfi/7nUbHd0IH2uiBe+xUzjcsAT4CImO/liw==", venice.eval(script));
+    }
+
+    @Test
+    public void test_hash_file_SHA512_3() {
+        final Venice venice = new Venice();
+
+        // file-in-stream
+        final String script =
+                "(do                                                                  \n" +
+                "  (load-module :crypt)                                               \n" +
+                "  (let [file (io/temp-file \"test-\", \".data\")                     \n" +
+                "        data \"1234567890\"]                                         \n" +
+                "    (io/delete-file-on-exit file)                                    \n" +
+                "    (io/spit file data)                                              \n" +
+                "    (crypt/hash-file (io/file-in-stream file) \"salt\" \"SHA-512\")))";
+
+        assertEquals("qFUlDmCuGAA8Y8qKrjMd4mUdQYau4Cs6gTcYs39oRF0wuOG46oLfi/7nUbHd0IH2uiBe+xUzjcsAT4CImO/liw==", venice.eval(script));
+    }
+
+    @Test
+    public void test_hash_file_SHA512_4() {
+        final Venice venice = new Venice();
+
+        // bytebuf
+        final String script =
+                "(do                                                                    \n" +
+                "  (load-module :crypt)                                                 \n" +
+                "  (let [file (io/temp-file \"test-\", \".data\")                       \n" +
+                "        data \"1234567890\"]                                           \n" +
+                "    (io/delete-file-on-exit file)                                      \n" +
+                "    (io/spit file data)                                                \n" +
+                "    (crypt/hash-file (io/slurp file :binary true) \"salt\" \"SHA-512\")))";
+
+        assertEquals("qFUlDmCuGAA8Y8qKrjMd4mUdQYau4Cs6gTcYs39oRF0wuOG46oLfi/7nUbHd0IH2uiBe+xUzjcsAT4CImO/liw==", venice.eval(script));
+    }
+
+    @Test
     public void test_verify_file_hash_default_1() {
         final Venice venice = new Venice();
 
@@ -684,6 +820,158 @@ public class CryptoModuleTest {
                 "    (io/spit file data)                                                         \n" +
                 "    (let [hash (crypt/hash-file file salt\"MD5\")]                              \n" +
                 "      (crypt/verify-file-hash (io/slurp file :binary true) salt hash\"MD5\"))))  ";
+
+        assertTrue((Boolean)venice.eval(script));
+    }
+
+    @Test
+    public void test_verify_file_hash_SHA1_1() {
+        final Venice venice = new Venice();
+
+        // file
+        final String script =
+                "(do                                                             \n" +
+                "  (load-module :crypt)                                          \n" +
+                "  (let [file (io/temp-file \"test-\", \".data\")                \n" +
+                "        data \"1234567890\"                                     \n" +
+                "        salt \"-salt-\"]                                        \n" +
+                "    (io/delete-file-on-exit file)                               \n" +
+                "    (io/spit file data)                                         \n" +
+                "    (let [hash (crypt/hash-file file salt \"SHA-1\")]             \n" +
+                "      (crypt/verify-file-hash file salt hash \"SHA-1\"))))        ";
+
+        assertTrue((Boolean)venice.eval(script));
+    }
+
+    @Test
+    public void test_verify_file_hash_SHA1_2() {
+        final Venice venice = new Venice();
+
+        // string
+        final String script =
+                "(do                                                                     \n" +
+                "  (load-module :crypt)                                                  \n" +
+                "  (let [file (io/temp-file \"test-\", \".data\")                        \n" +
+                "        data \"1234567890\"                                             \n" +
+                "        salt \"-salt-\"]                                                \n" +
+                "    (io/delete-file-on-exit file)                                       \n" +
+                "    (io/spit file data)                                                 \n" +
+                "    (let [hash (crypt/hash-file file salt \"SHA-1\")]                     \n" +
+                "      (crypt/verify-file-hash (io/file-path file) salt hash \"SHA-1\")))) ";
+
+        assertTrue((Boolean)venice.eval(script));
+    }
+
+    @Test
+    public void test_verify_file_hash_SHA1_3() {
+        final Venice venice = new Venice();
+
+        // file-in-stream
+        final String script =
+                "(do                                                                          \n" +
+                "  (load-module :crypt)                                                       \n" +
+                "  (let [file (io/temp-file \"test-\", \".data\")                             \n" +
+                "        data \"1234567890\"                                                  \n" +
+                "        salt \"-salt-\"]                                                     \n" +
+                "    (io/delete-file-on-exit file)                                            \n" +
+                "    (io/spit file data)                                                      \n" +
+                "    (let [hash (crypt/hash-file file salt \"SHA-1\")]                           \n" +
+                "      (crypt/verify-file-hash (io/file-in-stream file) salt hash \"SHA-1\"))))  ";
+
+        assertTrue((Boolean)venice.eval(script));
+    }
+
+    @Test
+    public void test_verify_file_hash_SHA1_4() {
+        final Venice venice = new Venice();
+
+        // bytebuf
+        final String script =
+                "(do                                                                             \n" +
+                "  (load-module :crypt)                                                          \n" +
+                "  (let [file (io/temp-file \"test-\", \".data\")                                \n" +
+                "        data \"1234567890\"                                                     \n" +
+                "        salt \"-salt-\"]                                                        \n" +
+                "    (io/delete-file-on-exit file)                                               \n" +
+                "    (io/spit file data)                                                         \n" +
+                "    (let [hash (crypt/hash-file file salt\"SHA-1\")]                              \n" +
+                "      (crypt/verify-file-hash (io/slurp file :binary true) salt hash\"SHA-1\"))))  ";
+
+        assertTrue((Boolean)venice.eval(script));
+    }
+
+    @Test
+    public void test_verify_file_hash_SHA512_1() {
+        final Venice venice = new Venice();
+
+        // file
+        final String script =
+                "(do                                                             \n" +
+                "  (load-module :crypt)                                          \n" +
+                "  (let [file (io/temp-file \"test-\", \".data\")                \n" +
+                "        data \"1234567890\"                                     \n" +
+                "        salt \"-salt-\"]                                        \n" +
+                "    (io/delete-file-on-exit file)                               \n" +
+                "    (io/spit file data)                                         \n" +
+                "    (let [hash (crypt/hash-file file salt \"SHA-512\")]             \n" +
+                "      (crypt/verify-file-hash file salt hash \"SHA-512\"))))        ";
+
+        assertTrue((Boolean)venice.eval(script));
+    }
+
+    @Test
+    public void test_verify_file_hash_SHA512_2() {
+        final Venice venice = new Venice();
+
+        // string
+        final String script =
+                "(do                                                                     \n" +
+                "  (load-module :crypt)                                                  \n" +
+                "  (let [file (io/temp-file \"test-\", \".data\")                        \n" +
+                "        data \"1234567890\"                                             \n" +
+                "        salt \"-salt-\"]                                                \n" +
+                "    (io/delete-file-on-exit file)                                       \n" +
+                "    (io/spit file data)                                                 \n" +
+                "    (let [hash (crypt/hash-file file salt \"SHA-512\")]                     \n" +
+                "      (crypt/verify-file-hash (io/file-path file) salt hash \"SHA-512\")))) ";
+
+        assertTrue((Boolean)venice.eval(script));
+    }
+
+    @Test
+    public void test_verify_file_hash_SHA512_3() {
+        final Venice venice = new Venice();
+
+        // file-in-stream
+        final String script =
+                "(do                                                                          \n" +
+                "  (load-module :crypt)                                                       \n" +
+                "  (let [file (io/temp-file \"test-\", \".data\")                             \n" +
+                "        data \"1234567890\"                                                  \n" +
+                "        salt \"-salt-\"]                                                     \n" +
+                "    (io/delete-file-on-exit file)                                            \n" +
+                "    (io/spit file data)                                                      \n" +
+                "    (let [hash (crypt/hash-file file salt \"SHA-512\")]                           \n" +
+                "      (crypt/verify-file-hash (io/file-in-stream file) salt hash \"SHA-512\"))))  ";
+
+        assertTrue((Boolean)venice.eval(script));
+    }
+
+    @Test
+    public void test_verify_file_hash_SHA512_4() {
+        final Venice venice = new Venice();
+
+        // bytebuf
+        final String script =
+                "(do                                                                             \n" +
+                "  (load-module :crypt)                                                          \n" +
+                "  (let [file (io/temp-file \"test-\", \".data\")                                \n" +
+                "        data \"1234567890\"                                                     \n" +
+                "        salt \"-salt-\"]                                                        \n" +
+                "    (io/delete-file-on-exit file)                                               \n" +
+                "    (io/spit file data)                                                         \n" +
+                "    (let [hash (crypt/hash-file file salt\"SHA-512\")]                              \n" +
+                "      (crypt/verify-file-hash (io/slurp file :binary true) salt hash\"SHA-512\"))))  ";
 
         assertTrue((Boolean)venice.eval(script));
     }
