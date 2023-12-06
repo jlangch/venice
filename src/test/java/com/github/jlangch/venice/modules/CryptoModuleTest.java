@@ -401,7 +401,7 @@ public class CryptoModuleTest {
     }
 
     @Test
-    public void test_hash_file_1() {
+    public void test_hash_file_default_1() {
         final Venice venice = new Venice();
 
         // file
@@ -418,7 +418,7 @@ public class CryptoModuleTest {
     }
 
     @Test
-    public void test_hash_file_2() {
+    public void test_hash_file_default_2() {
         final Venice venice = new Venice();
 
         // string
@@ -435,7 +435,7 @@ public class CryptoModuleTest {
     }
 
     @Test
-    public void test_hash_file_3() {
+    public void test_hash_file_default_3() {
         final Venice venice = new Venice();
 
         // file-in-stream
@@ -452,7 +452,7 @@ public class CryptoModuleTest {
     }
 
     @Test
-    public void test_hash_file_4() {
+    public void test_hash_file_default_4() {
         final Venice venice = new Venice();
 
         // bytebuf
@@ -469,7 +469,75 @@ public class CryptoModuleTest {
     }
 
     @Test
-    public void test_verify_file_hash_1() {
+    public void test_hash_file_MD5_1() {
+        final Venice venice = new Venice();
+
+        // file
+        final String script =
+                "(do                                                     \n" +
+                "  (load-module :crypt)                                  \n" +
+                "  (let [file (io/temp-file \"test-\", \".data\")        \n" +
+                "        data \"1234567890\"]                            \n" +
+                "    (io/delete-file-on-exit file)                       \n" +
+                "    (io/spit file data)                                 \n" +
+                "    (crypt/hash-file file \"salt\" \"MD5\")))           ";
+
+        assertEquals("kUucF7TqNzvEmBu/hn3xhg==", venice.eval(script));
+    }
+
+    @Test
+    public void test_hash_file_MD5_2() {
+        final Venice venice = new Venice();
+
+        // string
+        final String script =
+                "(do                                                             \n" +
+                "  (load-module :crypt)                                          \n" +
+                "  (let [file (io/temp-file \"test-\", \".data\")                \n" +
+                "        data \"1234567890\"]                                    \n" +
+                "    (io/delete-file-on-exit file)                               \n" +
+                "    (io/spit file data)                                         \n" +
+                "    (crypt/hash-file (io/file-path file) \"salt\" \"MD5\")))    ";
+
+        assertEquals("kUucF7TqNzvEmBu/hn3xhg==", venice.eval(script));
+    }
+
+    @Test
+    public void test_hash_file_MD5_3() {
+        final Venice venice = new Venice();
+
+        // file-in-stream
+        final String script =
+                "(do                                                                  \n" +
+                "  (load-module :crypt)                                               \n" +
+                "  (let [file (io/temp-file \"test-\", \".data\")                     \n" +
+                "        data \"1234567890\"]                                         \n" +
+                "    (io/delete-file-on-exit file)                                    \n" +
+                "    (io/spit file data)                                              \n" +
+                "    (crypt/hash-file (io/file-in-stream file) \"salt\" \"MD5\")))    ";
+
+        assertEquals("kUucF7TqNzvEmBu/hn3xhg==", venice.eval(script));
+    }
+
+    @Test
+    public void test_hash_file_MD5_4() {
+        final Venice venice = new Venice();
+
+        // bytebuf
+        final String script =
+                "(do                                                                    \n" +
+                "  (load-module :crypt)                                                 \n" +
+                "  (let [file (io/temp-file \"test-\", \".data\")                       \n" +
+                "        data \"1234567890\"]                                           \n" +
+                "    (io/delete-file-on-exit file)                                      \n" +
+                "    (io/spit file data)                                                \n" +
+                "    (crypt/hash-file (io/slurp file :binary true) \"salt\" \"MD5\")))  ";
+
+        assertEquals("kUucF7TqNzvEmBu/hn3xhg==", venice.eval(script));
+    }
+
+    @Test
+    public void test_verify_file_hash_default_1() {
         final Venice venice = new Venice();
 
         // file
@@ -488,7 +556,7 @@ public class CryptoModuleTest {
     }
 
     @Test
-    public void test_verify_file_hash_2() {
+    public void test_verify_file_hash_default_2() {
         final Venice venice = new Venice();
 
         // string
@@ -507,7 +575,7 @@ public class CryptoModuleTest {
     }
 
     @Test
-    public void test_verify_file_hash_3() {
+    public void test_verify_file_hash_default_3() {
         final Venice venice = new Venice();
 
         // file-in-stream
@@ -526,7 +594,7 @@ public class CryptoModuleTest {
     }
 
     @Test
-    public void test_verify_file_hash_4() {
+    public void test_verify_file_hash_default_4() {
         final Venice venice = new Venice();
 
         // bytebuf
@@ -540,6 +608,82 @@ public class CryptoModuleTest {
                 "    (io/spit file data)                                                  \n" +
                 "    (let [hash (crypt/hash-file file salt)]                              \n" +
                 "      (crypt/verify-file-hash (io/slurp file :binary true) salt hash))))  ";
+
+        assertTrue((Boolean)venice.eval(script));
+    }
+
+    @Test
+    public void test_verify_file_hash_MD5_1() {
+        final Venice venice = new Venice();
+
+        // file
+        final String script =
+                "(do                                                             \n" +
+                "  (load-module :crypt)                                          \n" +
+                "  (let [file (io/temp-file \"test-\", \".data\")                \n" +
+                "        data \"1234567890\"                                     \n" +
+                "        salt \"-salt-\"]                                        \n" +
+                "    (io/delete-file-on-exit file)                               \n" +
+                "    (io/spit file data)                                         \n" +
+                "    (let [hash (crypt/hash-file file salt \"MD5\")]             \n" +
+                "      (crypt/verify-file-hash file salt hash \"MD5\"))))        ";
+
+        assertTrue((Boolean)venice.eval(script));
+    }
+
+    @Test
+    public void test_verify_file_hash_MD5_2() {
+        final Venice venice = new Venice();
+
+        // string
+        final String script =
+                "(do                                                                     \n" +
+                "  (load-module :crypt)                                                  \n" +
+                "  (let [file (io/temp-file \"test-\", \".data\")                        \n" +
+                "        data \"1234567890\"                                             \n" +
+                "        salt \"-salt-\"]                                                \n" +
+                "    (io/delete-file-on-exit file)                                       \n" +
+                "    (io/spit file data)                                                 \n" +
+                "    (let [hash (crypt/hash-file file salt \"MD5\")]                     \n" +
+                "      (crypt/verify-file-hash (io/file-path file) salt hash \"MD5\")))) ";
+
+        assertTrue((Boolean)venice.eval(script));
+    }
+
+    @Test
+    public void test_verify_file_hash_MD5_3() {
+        final Venice venice = new Venice();
+
+        // file-in-stream
+        final String script =
+                "(do                                                                          \n" +
+                "  (load-module :crypt)                                                       \n" +
+                "  (let [file (io/temp-file \"test-\", \".data\")                             \n" +
+                "        data \"1234567890\"                                                  \n" +
+                "        salt \"-salt-\"]                                                     \n" +
+                "    (io/delete-file-on-exit file)                                            \n" +
+                "    (io/spit file data)                                                      \n" +
+                "    (let [hash (crypt/hash-file file salt \"MD5\")]                           \n" +
+                "      (crypt/verify-file-hash (io/file-in-stream file) salt hash \"MD5\"))))  ";
+
+        assertTrue((Boolean)venice.eval(script));
+    }
+
+    @Test
+    public void test_verify_file_hash_MD5_4() {
+        final Venice venice = new Venice();
+
+        // bytebuf
+        final String script =
+                "(do                                                                             \n" +
+                "  (load-module :crypt)                                                          \n" +
+                "  (let [file (io/temp-file \"test-\", \".data\")                                \n" +
+                "        data \"1234567890\"                                                     \n" +
+                "        salt \"-salt-\"]                                                        \n" +
+                "    (io/delete-file-on-exit file)                                               \n" +
+                "    (io/spit file data)                                                         \n" +
+                "    (let [hash (crypt/hash-file file salt\"MD5\")]                              \n" +
+                "      (crypt/verify-file-hash (io/slurp file :binary true) salt hash\"MD5\"))))  ";
 
         assertTrue((Boolean)venice.eval(script));
     }
