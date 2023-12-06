@@ -413,7 +413,8 @@
 
 (defn
   ^{ :arglists '(
-          "(crypt/hash-file file salt)")
+          "(crypt/hash-file file salt)"
+          "(crypt/hash-file file salt algorithm)")
      :doc """
           Computes a hash for a file. The hash is used together with the 
           function `crypt/verify-file-hash` to detect file modifications.
@@ -425,7 +426,15 @@
            * bytebuf
            * `java.io.File`, e.g: `(io/file "/temp/foo.json")`
            * `java.io.InputStream`
-          """
+ 
+          Supported hash algorithms:
+           * MD5 (default)
+           * SHA-1
+           * SHA-512
+
+          MD5 is the fastest hash algorithm and precise enough to detect file
+          changes.
+         """
      :examples (list
           """
           (do
@@ -439,15 +448,21 @@
      :see-also '(
           "crypt/verify-file-hash" ) }
 
-  hash-file [file salt]
-
-  (assert (string? salt) "The salt must be a string")
-  (. :FileHasher :hashFile (io/slurp file :binary true) salt))
+  hash-file 
+  
+  ([file salt]
+    (assert (string? salt) "The salt must be a string")
+    (. :FileHasher :hashFile (io/slurp file :binary true) salt))
+  
+  ([file salt algorithm]
+    (assert (string? salt) "The salt must be a string")
+    (. :FileHasher :hashFile (io/slurp file :binary true) salt algorithm)))
 
 
 (defn 
   ^{ :arglists '(
-          "(crypt/verify-file-hash file salt hash)")
+          "(crypt/verify-file-hash file salt hash)"
+          "(crypt/verify-file-hash file salt hash algorithm)")
      :doc """
           Verifies a file against a hash. Returns true if the file's actual
           hash is equal to the given hash otherwise false.
@@ -457,7 +472,15 @@
            * bytebuf
            * `java.io.File`, e.g: `(io/file "/temp/foo.json")`
            * `java.io.InputStream`
-         """
+
+          Supported hash algorithms:
+           * MD5 (default)
+           * SHA-1
+           * SHA-512
+
+          MD5 is the fastest hash algorithm and precise enough to detect file
+          changes.
+          """
      :examples (list
           """
           (do
@@ -473,11 +496,17 @@
      :see-also '(
           "crypt/hash-file" ) }
 
-  verify-file-hash [file salt hash]
-
-  (assert (string? salt) "The salt must be a string")
-  (assert (string? hash) "The hash must be a string")
-  (. :FileHasher :verifyFileHash (io/slurp file :binary true) salt hash))
+  verify-file-hash 
+  
+  ([file salt hash]
+    (assert (string? salt) "The salt must be a string")
+    (assert (string? hash) "The hash must be a string")
+    (. :FileHasher :verifyFileHash (io/slurp file :binary true) salt hash))
+  
+  ([file salt hash algorithm]
+    (assert (string? salt) "The salt must be a string")
+    (assert (string? hash) "The hash must be a string")
+    (. :FileHasher :verifyFileHash (io/slurp file :binary true) salt hash algorithm)))
 
 
 
