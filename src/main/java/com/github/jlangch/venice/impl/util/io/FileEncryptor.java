@@ -45,6 +45,7 @@ public class FileEncryptor {
         // Read file data
         byte[] fileData = Files.readAllBytes(inputFile.toPath());
 
+        // Encrypt
         byte[] encryptedData = encryptFileWithPassphrase(fileData, passphrase);
 
         // Write to output file
@@ -94,6 +95,7 @@ public class FileEncryptor {
         // Read file data
         byte[] fileData = Files.readAllBytes(inputFile.toPath());
 
+        // Encrypt
         byte[] encryptedData = encryptFileWithKey(fileData, key);
 
         // Write to output file
@@ -135,6 +137,7 @@ public class FileEncryptor {
         // Read file data
         byte[] fileData = Files.readAllBytes(inputFile.toPath());
 
+        // Decrypt
         byte[] decryptedData = decryptFileWithPassphrase(fileData, passphrase);
 
         // Write to output file
@@ -178,6 +181,7 @@ public class FileEncryptor {
         // Read file data
         byte[] fileData = Files.readAllBytes(inputFile.toPath());
 
+        // Decrypt
         byte[] decryptedData = decryptFileWithKey(fileData, key);
 
         // Write to output file
