@@ -12,7 +12,8 @@ All notable changes to this project will be documented in this file.
 
 ### Added 
 
-- Added AES 256 (GCM) file encryptor/decryptor
+- Added AES 256 (GCM, NoPadding) file encryptor/decryptor to :crypt
+  module
 
 
 
