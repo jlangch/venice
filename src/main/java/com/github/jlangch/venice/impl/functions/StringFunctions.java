@@ -986,6 +986,8 @@ public class StringFunctions {
                         "(str/split \"abc,def,ghi\" \"((?<=,)|(?=,))\")",
                         "(str/split \"q1w2e3r4t5y6u7i8o9p0\" #\"\\d+\")",
                         "(str/split \"q1w2e3r4t5y6u7i8o9p0\" #\"\\d+\" 5)",
+                        "(str/split \"1234567890\" #\"(?<=\\G.{4})\")",
+                        "(str/split \"1234567890\" #\"(?=(.{4})+$)\")",
                         "(str/split \" q1w2 \" #\"\")",
                         "(str/split nil \",\")")
                     .seeAlso("str/split-lines")

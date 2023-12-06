@@ -321,20 +321,23 @@
           ```
  
           The arg 'in' may be a: 
-           * string file path, e.g: "/temp/foo.json"
-           * bytebuf
-           * `java.io.File`, e.g: `(io/file "/temp/foo.json")`
-           * `java.io.InputStream`
+
+          * string file path, e.g: "/temp/foo.json"
+          * bytebuf
+          * `java.io.File`, e.g: `(io/file "/temp/foo.json")`
+          * `java.io.InputStream`
  
           The arg 'out' may be a: 
-           * string file path, e.g: "/temp/foo.json"
-           * `java.io.File`, e.g: `(io/file "/temp/foo.json")`
-           * `java.io.OutputStream`
+
+          * string file path, e.g: "/temp/foo.json"
+          * `java.io.File`, e.g: `(io/file "/temp/foo.json")`
+          * `java.io.OutputStream`
           """
      :examples (list
           """
           (do
             (load-module :crypt) 
+            (load-module :hexdump)
             (let [file-in    (io/temp-file "test-", ".data")
                   file-out   (io/temp-file "test-", ".data.enc")]
               (io/delete-file-on-exit file-in)
@@ -343,7 +346,7 @@
               (crypt/encrypt-file file-in file-out "42")
               (-> (io/slurp file-out :binary false)
                   (bytebuf)
-                  (str/bytebuf-to-hex))))
+                  (hexdump/dump))))
           """) 
      :see-also '(
           "crypt/decrypt-file" ) }
@@ -368,15 +371,17 @@
           `crypt/encrypt-file`.
  
           The arg 'in' may be a: 
-           * string file path, e.g: "/temp/foo.json"
-           * bytebuf
-           * `java.io.File`, e.g: `(io/file "/temp/foo.json")`
-           * `java.io.InputStream`
+
+          * string file path, e.g: "/temp/foo.json"
+          * bytebuf
+          * `java.io.File`, e.g: `(io/file "/temp/foo.json")`
+          * `java.io.InputStream`
  
           The arg 'out' may be a: 
-           * string file path, e.g: "/temp/foo.json"
-           * `java.io.File`, e.g: `(io/file "/temp/foo.json")`
-           * `java.io.OutputStream`
+
+          * string file path, e.g: "/temp/foo.json"
+          * `java.io.File`, e.g: `(io/file "/temp/foo.json")`
+          * `java.io.OutputStream`
           """
      :examples (list
           """
@@ -421,16 +426,18 @@
 
           The functions uses the fast MD5 hash algorithm.
 
-          The arg 'file' may be a: 
-           * string file path, e.g: "/temp/foo.json"
-           * bytebuf
-           * `java.io.File`, e.g: `(io/file "/temp/foo.json")`
-           * `java.io.InputStream`
+          The arg 'file' may be a:
+          
+          * string file path, e.g: "/temp/foo.json"
+          * bytebuf
+          * `java.io.File`, e.g: `(io/file "/temp/foo.json")`
+          * `java.io.InputStream`
  
           Supported hash algorithms:
-           * MD5 (default)
-           * SHA-1
-           * SHA-512
+
+          * MD5 (default)
+          * SHA-1
+          * SHA-512
 
           MD5 is the fastest hash algorithm and precise enough to detect file
           changes.
@@ -443,7 +450,7 @@
                   data (bytebuf (repeatedly 1000 #(rand-long 256)))] 
               (io/delete-file-on-exit file)
               (io/spit file data)
-              (crypt/hash-file file "salt"))) 
+              (crypt/hash-file file "salt" "MD5"))) 
           """) 
      :see-also '(
           "crypt/verify-file-hash" ) }
@@ -469,15 +476,17 @@
           hash is equal to the given hash otherwise false.
  
           The arg 'file' may be a: 
-           * string file path, e.g: "/temp/foo.json"
-           * bytebuf
-           * `java.io.File`, e.g: `(io/file "/temp/foo.json")`
-           * `java.io.InputStream`
+
+          * string file path, e.g: "/temp/foo.json"
+          * bytebuf
+          * `java.io.File`, e.g: `(io/file "/temp/foo.json")`
+          * `java.io.InputStream`
 
           Supported hash algorithms:
-           * MD5 (default)
-           * SHA-1
-           * SHA-512
+
+          * MD5 (default)
+          * SHA-1
+          * SHA-512
 
           MD5 is the fastest hash algorithm and precise enough to detect file
           changes.
@@ -491,8 +500,8 @@
                   salt "salt"] 
               (io/delete-file-on-exit file)
               (io/spit file data)
-              (let [hash (crypt/hash-file file salt)]
-                (crypt/verify-file-hash file salt hash))))
+              (let [hash (crypt/hash-file file salt "MD5")]
+                (crypt/verify-file-hash file salt hash "MD5"))))
           """) 
      :see-also '(
           "crypt/hash-file" ) }
