@@ -397,6 +397,12 @@
           function `crypt/verify-file-hash` to detect file modifications.
 
           The functions uses the fast MD5 hash algorithm.
+
+          The arg 'file' may be a: 
+           * string file path, e.g: "/temp/foo.json"
+           * bytebuf
+           * `java.io.File`, e.g: `(io/file "/temp/foo.json")`
+           * `java.io.InputStream`
           """
      :examples (list
           """
@@ -423,7 +429,13 @@
      :doc """
           Verifies a file against a hash. Returns true if the file's actual
           hash is equal to the given hash otherwise false.
-          """
+ 
+          The arg 'file' may be a: 
+           * string file path, e.g: "/temp/foo.json"
+           * bytebuf
+           * `java.io.File`, e.g: `(io/file "/temp/foo.json")`
+           * `java.io.InputStream`
+         """
      :examples (list
           """
           (do
