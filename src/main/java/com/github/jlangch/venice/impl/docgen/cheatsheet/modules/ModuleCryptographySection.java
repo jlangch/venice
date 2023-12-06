@@ -57,6 +57,16 @@ public class ModuleCryptographySection implements ISectionBuilder {
         crypt.addItem(diBuilder.getDocItem("crypt/encrypt"));
         crypt.addItem(diBuilder.getDocItem("crypt/decrypt"));
 
+        final DocSection filecrypt = new DocSection("File encrypt", id());
+        all.addSection(filecrypt);
+        filecrypt.addItem(diBuilder.getDocItem("crypt/encrypt-file"));
+        filecrypt.addItem(diBuilder.getDocItem("crypt/decrypt-file"));
+
+        final DocSection filehash = new DocSection("File hash", id());
+        all.addSection(filehash);
+        filehash.addItem(diBuilder.getDocItem("crypt/hash-file"));
+        filehash.addItem(diBuilder.getDocItem("crypt/verify-file-hash"));
+
         return section;
     }
 

@@ -38,6 +38,10 @@
 (import :javax.crypto.spec.SecretKeySpec)
 (import :javax.net.ssl.SSLServerSocketFactory)
 
+(import :com.github.jlangch.venice.util.crypt.FileEncryptor)
+(import :com.github.jlangch.venice.util.crypt.FileHasher)
+
+
 
 ;; -----------------------------------------------------------------------------
 ;; Hashing
@@ -281,6 +285,158 @@
         salt     (:salt opts default-salt)
         url-safe (:url-safe opts false)]
     (create-decrypt-fn algorithm passphrase salt url-safe)))
+
+
+
+;; -----------------------------------------------------------------------------
+;; File encryption / decryption
+;; -----------------------------------------------------------------------------
+
+(defn 
+  ^{ :arglists '(
+         "(crypt/encrypt-file in passphrase)"
+         "(crypt/encrypt-file in out passphrase)")
+     :doc """
+          Encrypts a file using the "AES/GCM/NoPadding" algorithm.
+
+          Uses a random salt and IV for each file and writes the salt and the IV
+          to start of the encrypted file.
+ 
+          ```
+          Encrypted binary file format
+ 
+          +-----------------------+
+          |         salt          |   16 bytes
+          +-----------------------+
+          |          IV           |   12 bytes
+          +-----------------------+
+          |  encrypted file data  |   n bytes
+          +-----------------------+
+          ```
+          """
+     :examples (list
+          """
+          (do
+            (load-module :crypt) 
+            (let [file-in    (io/temp-file "test-", ".data")
+                  file-out   (io/temp-file "test-", ".data.enc")]
+              (io/delete-file-on-exit file-in)
+              (io/delete-file-on-exit file-out)
+              (io/spit file-in "1234567890")
+              (crypt/encrypt-file file-in file-out "42")
+              (-> (io/slurp file-out :binary false)
+                  (bytebuf)
+                  (str/bytebuf-to-hex))))
+          """) 
+     :see-also '(
+          "crypt/decrypt-file" ) }
+
+  encrypt-file 
+
+  ([in passphrase]
+    (as-> (io/slurp in :binary true) data
+          (. :FileEncryptor :encryptFileWithPassphrase data passphrase)))
+  ([in out passphrase]
+    (as-> (io/slurp in :binary true) data
+          (. :FileEncryptor :encryptFileWithPassphrase data passphrase)
+          (io/spit out data))))
+
+
+(defn 
+  ^{ :arglists '(
+         "(crypt/decrypt-file in passphrase)"
+         "(crypt/decrypt-file in out passphrase)")
+     :doc """
+          Decrypts a file that has been encryptred using the "AES/GCM/NoPadding" 
+          algorithm.
+          """
+     :examples (list
+          """
+          (do
+            (load-module :crypt) 
+            (let [file-in    (io/temp-file "test-", ".data")
+                  file-out   (io/temp-file "test-", ".data.enc")]
+              (io/delete-file-on-exit file-in)
+              (io/delete-file-on-exit file-out)
+              (io/spit file-in "1234567890")
+              (crypt/encrypt-file file-in file-out "42")
+              (-> (crypt/decrypt-file file-out "42")
+                  (bytebuf-to-string :UTF-8))))
+          """) 
+     :see-also '(
+          "crypt/encrypt-file" ) }
+
+  decrypt-file 
+
+  ([in passphrase]
+    (as-> (io/slurp in :binary true) data
+          (. :FileEncryptor :decryptFileWithPassphrase data passphrase)))
+  ([in out passphrase]
+    (as-> (io/slurp in :binary true) data
+          (. :FileEncryptor :decryptFileWithPassphrase data passphrase)
+          (io/spit out data))))
+
+
+
+;; -----------------------------------------------------------------------------
+;; File hashing
+;; -----------------------------------------------------------------------------
+
+(defn
+  ^{ :arglists '(
+         "(crypt/hash-file file salt)")
+     :doc """
+          Computes a hash for a file. The hash is used together with the 
+          function `crypt/verify-file-hash` to detect file modifications.
+
+          The functions uses the fast MD5 hash algorithm.
+          """
+     :examples (list
+          """
+          (do
+            (load-module :crypt) 
+            (let [file (io/temp-file "test-", ".data")
+                  data (bytebuf (repeatedly 1000 #(rand-long 256)))] 
+              (io/delete-file-on-exit file)
+              (io/spit file data)
+              (crypt/hash-file file "salt"))) 
+          """) 
+     :see-also '(
+          "crypt/verify-file-hash" ) }
+
+  hash-file [file salt]
+
+  (assert (string? salt) "The salt must be a string")
+  (. :FileHasher :hashFile (io/slurp file :binary true) salt))
+
+
+(defn 
+  ^{ :arglists '(
+         "(crypt/verify-file-hash file salt hash)")
+     :doc """
+          Verifies a file against a hash. Returns true if the file's actual
+          hash is equal to the given hash otherwise false.
+          """
+     :examples (list
+          """
+          (do
+            (load-module :crypt) 
+            (let [file (io/temp-file "test-", ".data")
+                  data (bytebuf (repeatedly 1000 #(rand-long 256)))
+                  salt "salt"] 
+              (io/delete-file-on-exit file)
+              (io/spit file data)
+              (let [hash (crypt/hash-file file salt)]
+                (crypt/verify-file-hash file salt hash))))
+          """) 
+     :see-also '(
+          "crypt/hash-file" ) }
+
+  verify-file-hash [file salt hash]
+
+  (assert (string? salt) "The salt must be a string")
+  (assert (string? hash) "The hash must be a string")
+  (. :FileHasher :verifyFileHash (io/slurp file :binary true) salt hash))
 
 
 

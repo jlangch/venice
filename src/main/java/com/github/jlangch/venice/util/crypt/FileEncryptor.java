@@ -19,7 +19,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.github.jlangch.venice.impl.util.io;
+package com.github.jlangch.venice.util.crypt;
 
 import java.io.File;
 import java.nio.file.Files;
@@ -36,20 +36,20 @@ import javax.crypto.spec.SecretKeySpec;
 
 
 /**
- * Encrypt and decrypt files using "AES/GCM/NoPadding" algorithm.
+ * Encrypt and decrypt files using the "AES/GCM/NoPadding" algorithm.
  *
- * Uses a random salt and IV for each file. Writes the salt and the IV
+ * Uses a random salt and IV for each file and writes the salt and the IV
  * to start of the encrypted file.
  *
  * <pre>
- *    Encrypted binary file data
+ *    Encrypted binary file format
  *
  *    +-----------------------+
  *    |         salt          |   16 bytes
  *    +-----------------------+
  *    |          IV           |   12 bytes
  *    +-----------------------+
- *    |  encyrpted file data  |   n bytes
+ *    |  encrypted file data  |   n bytes
  *    +-----------------------+
  * <pre/>
  */
