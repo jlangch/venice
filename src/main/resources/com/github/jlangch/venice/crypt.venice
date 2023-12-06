@@ -456,6 +456,7 @@
   
   ([file salt algorithm]
     (assert (string? salt) "The salt must be a string")
+    (assert (string? algorithm) "The algorithm must be a string")
     (. :FileHasher :hashFile (io/slurp file :binary true) salt algorithm)))
 
 
@@ -506,6 +507,7 @@
   ([file salt hash algorithm]
     (assert (string? salt) "The salt must be a string")
     (assert (string? hash) "The hash must be a string")
+    (assert (string? algorithm) "The algorithm must be a string")
     (. :FileHasher :verifyFileHash (io/slurp file :binary true) salt hash algorithm)))
 
 

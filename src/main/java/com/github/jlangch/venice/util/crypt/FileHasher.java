@@ -33,7 +33,7 @@ import java.util.Base64;
  *
  *  Supported hash algorithms:
  *  <ul>
- *    <li>MD5</li>
+ *    <li>MD5 (default)</li>
  *    <li>SHA-1</li>
  *    <li>SHA-512</li>
  *  </ul>
