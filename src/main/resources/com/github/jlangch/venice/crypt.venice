@@ -319,6 +319,17 @@
           |  encrypted file data  |   n bytes
           +-----------------------+
           ```
+ 
+          The arg 'in' may be a: 
+           * string file path, e.g: "/temp/foo.json"
+           * bytebuf
+           * `java.io.File`, e.g: `(io/file "/temp/foo.json")`
+           * `java.io.InputStream`
+ 
+          The arg 'out' may be a: 
+           * string file path, e.g: "/temp/foo.json"
+           * `java.io.File`, e.g: `(io/file "/temp/foo.json")`
+           * `java.io.OutputStream`
           """
      :examples (list
           """
@@ -355,6 +366,17 @@
      :doc """
           Decrypts an "AES-256" encrypted file that has been created by 
           `crypt/encrypt-file`.
+ 
+          The arg 'in' may be a: 
+           * string file path, e.g: "/temp/foo.json"
+           * bytebuf
+           * `java.io.File`, e.g: `(io/file "/temp/foo.json")`
+           * `java.io.InputStream`
+ 
+          The arg 'out' may be a: 
+           * string file path, e.g: "/temp/foo.json"
+           * `java.io.File`, e.g: `(io/file "/temp/foo.json")`
+           * `java.io.OutputStream`
           """
      :examples (list
           """
