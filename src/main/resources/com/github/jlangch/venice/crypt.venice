@@ -39,6 +39,10 @@
 (import :javax.net.ssl.SSLServerSocketFactory)
 
 
+;; -----------------------------------------------------------------------------
+;; Hashing
+;; -----------------------------------------------------------------------------
+
 (defn
   ^{ :arglists '("(crypt/md5-hash data)"
                  "(crypt/md5-hash data salt)")
@@ -165,6 +169,11 @@
              (throw (ex :VncException "Failed to compute PBKDF2 hash." ex))))))
 
 
+
+;; -----------------------------------------------------------------------------
+;; Encryption / Decryption
+;; -----------------------------------------------------------------------------
+
 (defn
   ^{ :arglists '("(crypt/encrypt algorithm passphrase & options)")
      :doc """
@@ -194,16 +203,16 @@
           (do
             (load-module :crypt)
             (def encrypt (crypt/encrypt "3DES" "secret" :url-safe true))
-            (encrypt "hello") ; => "ndmW1NLsDHA"
-            (encrypt "world") ; => "KPYjndkZ8vM"
+            (encrypt "hello") ; => "ndmW1NLsDHA="
+            (encrypt "world") ; => "KPYjndkZ8vM="
             (encrypt (bytebuf [1 2 3 4]))) ; => [128 216 205 163 62 43 52 82]
           """,
           """
           (do
             (load-module :crypt)
             (def encrypt (crypt/encrypt "3DES" "secret" :url-safe true :salt "salty"))
-            (encrypt "hello") ; => "3MrQGcgbv00"
-            (encrypt "world") ; => "a6UyBZUnK4I"
+            (encrypt "hello") ; => "3MrQGcgbv00="
+            (encrypt "world") ; => "a6UyBZUnK4I="
             (encrypt (bytebuf [1 2 3 4]))) ; => [86 66 56 135 239 120 10 150]
           """ ) 
      :see-also '(
@@ -248,9 +257,9 @@
             (load-module :crypt)
             (def encrypt (crypt/encrypt "AES256" "secret" :url-safe true))
             (def decrypt (crypt/decrypt "AES256" "secret" :url-safe true))
-            (encrypt "hello")                  ; => "e4m1qe6Fyx3Rr7NTIZe97g"
-            (decrypt "e4m1qe6Fyx3Rr7NTIZe97g") ; => "hello"
-            (encrypt (bytebuf [128 216 205]))) ; => [43 195 99 118 231 225 142 76 132 194 129 237 158 12 12 203]
+            (encrypt "hello")                    ; => "e4m1qe6Fyx3Rr7NTIZe97g=="
+            (decrypt "e4m1qe6Fyx3Rr7NTIZe97g==") ; => "hello"
+            (encrypt (bytebuf [128 216 205])))   ; => [43 195 99 118 231 225 142 76 132 194 129 237 158 12 12 203]
           """,
           """
           (do
@@ -273,6 +282,11 @@
         url-safe (:url-safe opts false)]
     (create-decrypt-fn algorithm passphrase salt url-safe)))
 
+
+
+;; -----------------------------------------------------------------------------
+;; Ciphers
+;; -----------------------------------------------------------------------------
 
 (defn
   ^{ :arglists '("(crypt/ciphers)",
@@ -342,14 +356,13 @@
       (str/replace-all  "_" "/")))
 
 
-(defn- base64-encode [bytes url-safe]
-  (if url-safe
-    (-> (. :Base64 :getEncoder)
-        (. :withoutPadding)
-        (. :encodeToString bytes)
-        (url-encode))
-    (-> (. :Base64 :getEncoder)
-        (. :encodeToString bytes))))
+(defn- base64-encode [bytes url-safe padding]
+  (let [encoder (. :Base64 :getEncoder)] 
+    (when-not padding
+      (. encoder :withoutPadding))
+    (if url-safe
+      (url-encode (. encoder :encodeToString bytes))
+      (. encoder :encodeToString bytes))))
 
 
 (defn- base64-decode [s url-safe]
@@ -412,7 +425,7 @@
         (empty? data)   data
         (string? data)  (-<> (to-bytes data)
                              (. cipher :doFinal <>)
-                             (base64-encode <> url-safe))
+                             (base64-encode <> url-safe true))
         (bytebuf? data) (. cipher :doFinal data)
         :else           (throw (ex :VncException
                                    "Invalid datatype for data."))))

@@ -27,6 +27,12 @@ import java.security.MessageDigest;
 import java.util.Base64;
 
 
+/**
+ * Computes hashes from files and verifies file hashes to detect modified
+ * files.
+ *
+ * Uses fast MD5 hashes to detect file changes.
+ */
 public class FileHasher {
 
     public static String hashFile(

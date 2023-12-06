@@ -195,7 +195,7 @@ public class CryptoModuleTest {
                 "(do                                                                             \n" +
                 "  (load-module :crypt)                                                          \n" +
                 "  (def encrypt (crypt/encrypt \"DES\" \"secret\" :url-safe true))               \n" +
-                "  (assert (== \"QdxpapAEjgI\" (encrypt \"hello\")))                             \n" +
+                "  (assert (== \"QdxpapAEjgI=\" (encrypt \"hello\")))                             \n" +
                 ")";
 
         venice.eval(script);
@@ -257,7 +257,7 @@ public class CryptoModuleTest {
                 "(do                                                                             \n" +
                 "  (load-module :crypt)                                                          \n" +
                 "  (def encrypt (crypt/encrypt \"3DES\" \"secret\" :url-safe true))              \n" +
-                "  (assert (== \"ndmW1NLsDHA\" (encrypt \"hello\")))                             \n" +
+                "  (assert (== \"ndmW1NLsDHA=\" (encrypt \"hello\")))                             \n" +
                 ")";
 
         venice.eval(script);
@@ -319,7 +319,7 @@ public class CryptoModuleTest {
                 "(do                                                                             \n" +
                 "  (load-module :crypt)                                                          \n" +
                 "  (def encrypt (crypt/encrypt \"AES256\" \"secret\" :url-safe true))            \n" +
-                "  (assert (== \"e4m1qe6Fyx3Rr7NTIZe97g\" (encrypt \"hello\")))                  \n" +
+                "  (assert (== \"e4m1qe6Fyx3Rr7NTIZe97g==\" (encrypt \"hello\")))                  \n" +
                 ")";
 
         venice.eval(script);
