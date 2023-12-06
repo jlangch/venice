@@ -36,7 +36,7 @@ import javax.crypto.spec.SecretKeySpec;
 
 
 /**
- * Encrypt and decrypt files using the "AES/GCM/NoPadding" algorithm.
+ * Encrypt and decrypt files using "AES-256" with "GCM" and "NoPadding".
  *
  * Uses a random salt and IV for each file and writes the salt and the IV
  * to start of the encrypted file.

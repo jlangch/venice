@@ -48,8 +48,9 @@
 ;; -----------------------------------------------------------------------------
 
 (defn
-  ^{ :arglists '("(crypt/md5-hash data)"
-                 "(crypt/md5-hash data salt)")
+  ^{ :arglists '(
+          "(crypt/md5-hash data)"
+          "(crypt/md5-hash data salt)")
      :doc """
           Hashes a string or a bytebuf using MD5 with an optional salt.
 
@@ -76,8 +77,9 @@
 
 
 (defn
-  ^{ :arglists '("(crypt/sha1-hash data)"
-                 "(crypt/sha1-hash data salt)")
+  ^{ :arglists '(
+          "(crypt/sha1-hash data)"
+          "(crypt/sha1-hash data salt)")
      :doc "Hashes a string or a bytebuf using SHA1 with an optional salt."
      :examples (list
           """
@@ -100,8 +102,9 @@
 
 
 (defn
-  ^{ :arglists '("(crypt/sha512-hash data)"
-                 "(crypt/sha512-hash data salt)")
+  ^{ :arglists '(
+          "(crypt/sha512-hash data)"
+          "(crypt/sha512-hash data salt)")
      :doc "Hashes a string or a bytebuf using SHA512 with an optional salt."
      :examples (list
           """
@@ -126,8 +129,9 @@
 
 
 (defn
-  ^{ :arglists '("(crypt/pbkdf2-hash data salt)"
-                 "(crypt/pbkdf2-hash data salt iterations key-length)")
+  ^{ :arglists '(
+          "(crypt/pbkdf2-hash data salt)"
+          "(crypt/pbkdf2-hash data salt iterations key-length)")
      :doc """
           Hashes a string using PBKDF2. iterations defaults to 1000,
           key-length defaults to 256.
@@ -179,7 +183,8 @@
 ;; -----------------------------------------------------------------------------
 
 (defn
-  ^{ :arglists '("(crypt/encrypt algorithm passphrase & options)")
+  ^{ :arglists '(
+          "(crypt/encrypt algorithm passphrase & options)")
      :doc """
           Returns a new thread safe function to encrypt a string or a bytebuf
           given the algorithm and passphrase. If a string is passed it is
@@ -233,7 +238,8 @@
 
 
 (defn
-  ^{ :arglists '("(crypt/decrypt algorithm passphrase & options)")
+  ^{ :arglists '(
+       "(crypt/decrypt algorithm passphrase & options)")
   :doc """
        Returns a new thread safe function to decrypt a string or a bytebuf \
        given the algorithm and passphrase. If a string is passed it is base64 \
@@ -294,10 +300,10 @@
 
 (defn 
   ^{ :arglists '(
-         "(crypt/encrypt-file in passphrase)"
-         "(crypt/encrypt-file in out passphrase)")
+          "(crypt/encrypt-file in passphrase)"
+          "(crypt/encrypt-file in out passphrase)")
      :doc """
-          Encrypts a file using the "AES/GCM/NoPadding" algorithm.
+          Encrypts a file using "AES-256" with "GCM" and "NoPadding".
 
           Uses a random salt and IV for each file and writes the salt and the IV
           to start of the encrypted file.
@@ -344,23 +350,24 @@
 
 (defn 
   ^{ :arglists '(
-         "(crypt/decrypt-file in passphrase)"
-         "(crypt/decrypt-file in out passphrase)")
+          "(crypt/decrypt-file in passphrase)"
+          "(crypt/decrypt-file in out passphrase)")
      :doc """
-          Decrypts a file that has been encryptred using the "AES/GCM/NoPadding" 
-          algorithm.
+          Decrypts an "AES-256" encrypted file that has been created by 
+          `crypt/encrypt-file`.
           """
      :examples (list
           """
           (do
             (load-module :crypt) 
             (let [file-in    (io/temp-file "test-", ".data")
-                  file-out   (io/temp-file "test-", ".data.enc")]
+                  file-out   (io/temp-file "test-", ".data.enc")
+                  passphrase "42"]
               (io/delete-file-on-exit file-in)
               (io/delete-file-on-exit file-out)
               (io/spit file-in "1234567890")
-              (crypt/encrypt-file file-in file-out "42")
-              (-> (crypt/decrypt-file file-out "42")
+              (crypt/encrypt-file file-in file-out passphrase)
+              (-> (crypt/decrypt-file file-out passphrase)
                   (bytebuf-to-string :UTF-8))))
           """) 
      :see-also '(
@@ -384,7 +391,7 @@
 
 (defn
   ^{ :arglists '(
-         "(crypt/hash-file file salt)")
+          "(crypt/hash-file file salt)")
      :doc """
           Computes a hash for a file. The hash is used together with the 
           function `crypt/verify-file-hash` to detect file modifications.
@@ -412,7 +419,7 @@
 
 (defn 
   ^{ :arglists '(
-         "(crypt/verify-file-hash file salt hash)")
+          "(crypt/verify-file-hash file salt hash)")
      :doc """
           Verifies a file against a hash. Returns true if the file's actual
           hash is equal to the given hash otherwise false.
@@ -445,35 +452,36 @@
 ;; -----------------------------------------------------------------------------
 
 (defn
-  ^{ :arglists '("(crypt/ciphers)",
-                 "(crypt/ciphers opt)")
-  :doc """
-       Returns a list of the ciphers the Java VM supports
+  ^{ :arglists '(
+          "(crypt/ciphers)",
+          "(crypt/ciphers opt)")
+     :doc """
+          Returns a list of the ciphers the Java VM supports
 
-       Argument opt
+          Argument opt
 
-       | :default   | returns the names of the cipher suites which are enabled \
-                      by default. |
-       | :available | returns the names of the cipher suites which could be \
-                      enabled for use on an SSL connection created by this \
-                      `SSLServerSocketFactory`. |
-       """
-  :examples (list
-        """
-        (do
-          (load-module :crypt)
-          (crypt/ciphers :default))
-        """,
-        """
-        (do
-          (load-module :crypt)
-          (crypt/ciphers :available))
-        """,
-        """
-        (do
-          (load-module :crypt)
-          (docoll println (crypt/ciphers :available)))
-        """ ) }
+          | :default   | returns the names of the cipher suites which are \
+                          enabled by default. |
+          | :available | returns the names of the cipher suites which could be \
+                         enabled for use on an SSL connection created by this \
+                         `SSLServerSocketFactory`. |
+          """
+     :examples (list
+          """
+          (do
+            (load-module :crypt)
+            (crypt/ciphers :default))
+          """,
+          """
+          (do
+            (load-module :crypt)
+            (crypt/ciphers :available))
+          """,
+          """
+          (do
+            (load-module :crypt)
+            (docoll println (crypt/ciphers :available)))
+          """ ) }
 
   crypt/ciphers
 
