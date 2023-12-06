@@ -35,6 +35,24 @@ import javax.crypto.spec.PBEKeySpec;
 import javax.crypto.spec.SecretKeySpec;
 
 
+/**
+ * Encrypt and decrypt files using "AES/GCM/NoPadding" algorithm.
+ *
+ * Uses a random salt and IV for each file. Writes the salt and the IV
+ * to start of the encrypted file.
+ *
+ * <pre>
+ *    Encrypted binary file data
+ *
+ *    +-----------------------+
+ *    |         salt          |   16 bytes
+ *    +-----------------------+
+ *    |          IV           |   12 bytes
+ *    +-----------------------+
+ *    |  encyrpted file data  |   n bytes
+ *    +-----------------------+
+ * <pre/>
+ */
 public class FileEncryptor {
 
     public static void encryptFileWithPassphrase(
