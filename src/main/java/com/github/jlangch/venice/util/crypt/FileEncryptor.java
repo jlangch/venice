@@ -51,7 +51,7 @@ import javax.crypto.spec.SecretKeySpec;
  *    +-----------------------+
  *    |  encrypted file data  |   n bytes
  *    +-----------------------+
- * <pre/>
+ * </pre>
  */
 public class FileEncryptor {
 

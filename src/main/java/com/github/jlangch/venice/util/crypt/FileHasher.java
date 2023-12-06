@@ -31,7 +31,15 @@ import java.util.Base64;
  * Computes hashes from files and verifies file hashes to detect modified
  * files.
  *
- * Uses fast MD5 hashes to detect file changes.
+ *  Supported hash algorithms:
+ *  <ul>
+ *    <li>MD5</li>
+ *    <li>SHA-1</li>
+ *    <li>SHA-512</li>
+ *  </ul>
+ *
+ * MD5 is the fastest hash algorithm and precise enough to detect file
+ * changes.
  */
 public class FileHasher {
 
@@ -39,19 +47,35 @@ public class FileHasher {
             final File inputFile,
             final String salt
     ) throws Exception {
+        return hashFile(inputFile, salt, "MD5");
+    }
+
+    public static String hashFile(
+            final File inputFile,
+            final String salt,
+            final String algorithm
+    ) throws Exception {
         // Read file data
         byte[] fileData = Files.readAllBytes(inputFile.toPath());
 
         // Hash
-        return hashFile(fileData, salt);
+        return hashFile(fileData, salt, algorithm);
     }
 
     public static String hashFile(
             final byte[] fileData,
             final String salt
     ) throws Exception {
+        return hashFile(fileData, salt, "MD5");
+    }
+
+    public static String hashFile(
+            final byte[] fileData,
+            final String salt,
+            final String algorithm
+    ) throws Exception {
         // Init digest
-        MessageDigest md = MessageDigest.getInstance("MD5");
+        MessageDigest md = MessageDigest.getInstance(algorithm);
         md.reset();
 
         // Supply data
@@ -67,11 +91,20 @@ public class FileHasher {
             final String salt,
             final String hash
     ) throws Exception {
+       return verifyFileHash(inputFile, salt, hash, "MD5");
+    }
+
+    public static boolean verifyFileHash(
+            final File inputFile,
+            final String salt,
+            final String hash,
+            final String algorithm
+    ) throws Exception {
         // Read file data
         byte[] fileData = Files.readAllBytes(inputFile.toPath());
 
         // Verify hash
-        return verifyFileHash(fileData, salt, hash);
+        return verifyFileHash(fileData, salt, hash, algorithm);
     }
 
     public static boolean verifyFileHash(
@@ -79,8 +112,17 @@ public class FileHasher {
             final String salt,
             final String hash
     ) throws Exception {
+        return verifyFileHash(fileData, salt, hash, "MD5");
+    }
+
+    public static boolean verifyFileHash(
+            final byte[] fileData,
+            final String salt,
+            final String hash,
+            final String algorithm
+    ) throws Exception {
         // Hash file data
-        String fileDataHash = hashFile(fileData, salt);
+        String fileDataHash = hashFile(fileData, salt, algorithm);
 
         // Verify  digest
         return hash.equals(fileDataHash);
@@ -95,4 +137,5 @@ public class FileHasher {
     public static byte[] decodeBase64(final String data) {
         return Base64.getDecoder().decode(data);
     }
+
 }
