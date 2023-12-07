@@ -81,7 +81,7 @@
 
   (defn run [size-kb] 
     (let [size               (* size-kb 1024)
-          dir                (io/file "/Users/juerg/Desktop/aes-test")
+          dir                (io/file (io/user-home-dir) "Desktop/aes-test")
           data-file          (io/file dir "test.data")
           aes-file-cbc-enc   (io/file dir "test.data.aes-cbc.enc")
           aes-file-cbc-dec   (io/file dir "test.data.aes-cbc.dec")
@@ -89,6 +89,9 @@
           aes-file-gcm-dec   (io/file dir "test.data.aes-gcm.dec")
           aes-file-zip       (io/file dir "test.data.zip")
           aes-file-unzip     (io/file dir "test.data.unzip")]
+      (when-not (io/exists-dir? dir)
+        (throw (ex :VncException (str "The dir " dir " doesnot exist!)"))))
+
       (println "Testing file:" data-file (str size-kb "KB"))
       (println "        size:" size)
 
