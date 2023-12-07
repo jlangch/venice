@@ -52,7 +52,7 @@ import com.github.jlangch.venice.javainterop.LoadPathsFactory;
  * <p>The launcher is configured as the Venice JAR's main-class.
  *
  * <p>Running scripts:
- * <pre>java -jar venice-1.10.53.jar -script "(+ 1 1)"</pre>
+ * <pre>java -jar venice-1.10.54.jar -script "(+ 1 1)"</pre>
  *
  * <p>Running a REPL:
  * <pre>
@@ -189,7 +189,7 @@ public class Launcher {
              "The launcher is configured as the Venice JAR's main-class. \n" +
              "\n" +
              "Running scripts: \n" +
-             "    java -jar venice-1.10.53.jar -script \"(+ 1 1)\" \n" +
+             "    java -jar venice-1.10.54.jar -script \"(+ 1 1)\" \n" +
              "\n" +
              "Running a REPL:  \n" +
              "    java \\ \n" +
