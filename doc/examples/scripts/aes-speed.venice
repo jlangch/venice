@@ -81,40 +81,41 @@
       ;; create the test data file (a buffer with random bytes)
       (io/spit data-file (bytebuf-allocate-random size))
       (println "            : created")
-
       (println)
-      (printel "Encrypt AES CBC:"
-                (timing/elapsed (fn [] (encrypt-aes data-file 
-                                                    aes-file-cbc-enc 
-                                                    passwd))))
 
-      (printel "Decrypt AES CBC:"
-               (timing/elapsed (fn [] (decrypt-aes aes-file-cbc-enc 
-                                                   aes-file-cbc-dec 
-                                                   passwd))))
+      (let [t (timing/elapsed (fn [] (encrypt-aes data-file 
+                                                  aes-file-cbc-enc 
+                                                  passwd)))]
+        (printel "Encrypt AES CBC:" t))
+ 
 
-      (printel "Encrypt AES GCM:"
-               (timing/elapsed (fn [] (encrypt-aes data-file 
-                                                   aes-file-gcm-enc 
-                                                   passwd))))
+      (let [t (timing/elapsed (fn [] (decrypt-aes aes-file-cbc-enc 
+                                                  aes-file-cbc-dec 
+                                                  passwd)))]
+        (printel "Decrypt AES CBC:" t))
 
-      (printel "Decrypt AES GCM:"
-               (timing/elapsed (fn [] (decrypt-aes aes-file-gcm-enc 
-                                                   aes-file-gcm-dec
-                                                    passwd))))
-     
-      (printel "Encrypt ZIP:"
-               (timing/elapsed (fn [] (encrypt-zip aes-file-zip 
-                                                   passwd
-                                                   (io/file-name aes-file-unzip) 
-                                                    data-file))))
+      (let [t (timing/elapsed (fn [] (encrypt-aes data-file 
+                                                  aes-file-gcm-enc 
+                                                  passwd)))]
+        (printel "Encrypt AES GCM:" t))
 
-      (printel "Decrypt ZIP:"
-               (timing/elapsed (fn [] (decrypt-zip aes-file-zip 
-                                                   passwd
-                                                   (io/file-name aes-file-unzip)
-                                                   (io/file-parent aes-file-unzip)))))
-                                      
+      (let [t (timing/elapsed (fn [] (decrypt-aes aes-file-gcm-enc 
+                                                  aes-file-gcm-dec
+                                                  passwd)))]
+        (printel "Decrypt AES GCM:" t))
+       
+      (let [t (timing/elapsed (fn [] (encrypt-zip aes-file-zip 
+                                                  passwd
+                                                  (io/file-name aes-file-unzip) 
+                                                  data-file)))]
+        (printel "Encrypt ZIP:" t))
+
+      (let [t (timing/elapsed (fn [] (decrypt-zip aes-file-zip 
+                                                  passwd
+                                                  (io/file-name aes-file-unzip)
+                                                  (io/file-parent aes-file-unzip))))]
+       (printel "Decrypt ZIP:" t))
+                                     
       (println)            
       (println "Decrypt verify AES CBC: " 
                (if (identical data-file aes-file-cbc-dec) "OK" "FAIL"))
