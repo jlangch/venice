@@ -27,55 +27,99 @@
   (load-module :timing)
 
 
-  (defonce file-200 "/Users/juerg/Desktop/test-202MB.binary")
-  (defonce file-16  "/Users/juerg/Desktop/test-16MB.binary")
   (defonce passwd   "j87vhfrtxvzrzver445dffg")
 
 
+  (defn identical [file1 file2]
+    (= (io/slurp file1 :binary true) 
+       (io/slurp file2 :binary true)))
+
+ 
   (defn filesize [file]
      (str (long (/ (io/file-size file) 1024 1024)) " MB"))
 
-  (defn encrypt-raw [file passphrase]
-    (let [encryptor (crypt/encrypt "AES256" passphrase)
-          in-file   file
-          out-file  (str file ".raw.enc")]
-      (->> (io/slurp in-file :binary true)
+  (defn encrypt-aes [file-in file-out passphrase]
+    (let [encryptor (crypt/encrypt "AES256" passphrase)]
+      (->> (io/slurp file-in :binary true)
            (encryptor)
-           (io/spit out-file))))
+           (io/spit file-out))))
 
-  (defn decrypt-raw [file passphrase]
-    (let [decryptor (crypt/decrypt "AES256" passphrase)
-          in-file   (str file ".raw.enc")
-          out-file  (str file ".raw")]
-      (->> (io/slurp in-file :binary true)
+  (defn decrypt-aes [file-in file-out passphrase]
+    (let [decryptor (crypt/decrypt "AES256" passphrase)]
+      (->> (io/slurp file-in :binary true)
            (decryptor)
-           (io/spit out-file))))
+           (io/spit file-out))))
 
-  (defn encrypt-zip [file passphrase]
-    (let [name     (str (io/file-basename file) ".raw")
-          zip      (str file ".zip")]
-      (zipvault/zip zip passphrase name (io/file file))))
+  (defn encrypt-aes-gcm [file-in file-out passphrase]
+    (crypt/encrypt-file file-in file-out passphrase))
 
-  (defn decrypt-zip [file passphrase]
-    (let [name    (str (io/file-basename file) ".raw")
-          zip     (str file ".zip")
-          out-dir (io/file-parent file)]
-      (zipvault/extract-file zip passphrase name out-dir)))
+  (defn decrypt-aes-gcm [file-in file-out passphrase]
+    (crypt/decrypt-file file-in file-out passphrase))
+
+  (defn encrypt-zip [zip passphrase filename file ]
+    (zipvault/zip zip passphrase filename (io/slurp file :binary true)))
+
+  (defn decrypt-zip [zip passphrase filename destpath]
+    (zipvault/extract-file zip passphrase filename destpath))
 
 
-  (defn run-timing [file]
-    (let [size (filesize file)]
-      (timing/run (fn [] (encrypt-raw file passwd)) 
-                  (str "Encrypt AES file " size))
-                  
-      (timing/run (fn [] (decrypt-raw file passwd)) 
-                  (str "Decrypt AES file " size))
-                  
-      (timing/run (fn [] (encrypt-zip file passwd)) 
-                  (str "Encrypt ZIP file " size))
-                  
-      (timing/run (fn [] (decrypt-zip file passwd)) 
-                  (str "Decrypt ZIP file " size))))
+  (defn run [size-kb] 
+    (let [size               (* size-kb 1024)
+          dir                (io/file "/Users/juerg/Desktop/aes-test")
+          data-file          (io/file dir "test.data")
+          aes-file-cbc-enc   (io/file dir "test.data.aes-cbc.enc")
+          aes-file-cbc-dec   (io/file dir "test.data.aes-cbc.dec")
+          aes-file-gcm-enc   (io/file dir "test.data.aes-gcm.enc")
+          aes-file-gcm-dec   (io/file dir "test.data.aes-gcm.dec")
+          aes-file-zip       (io/file dir "test.data.zip")
+          aes-file-unzip     (io/file dir "test.data.unzip")]
+      (println "Testing file:" data-file (str size-kb "KB"))
+      (println "        size:" size)
 
-  (defn run [] 
-    (run-timing file-16)))
+      ;; create the test data file
+      (io/spit data-file (bytebuf (repeatedly size #(rand-long 256))))
+      (println "            : created")
+
+      (println)
+      (println "Encrypt AES CBC in: " data-file)
+      (println "                out:" aes-file-cbc-enc)
+      (timing/run (fn [] (encrypt-aes data-file aes-file-cbc-enc passwd)))
+
+      (println)     
+      (println "Decrypt AES CBC in: " aes-file-cbc-enc)
+      (println "                out:" aes-file-cbc-dec)
+      (timing/run (fn [] (decrypt-aes aes-file-cbc-enc aes-file-cbc-dec passwd)))
+
+      (println)
+      (println "Encrypt AES GCM in: " data-file)
+      (println "                out:" aes-file-gcm-enc)
+      (timing/run (fn [] (encrypt-aes data-file aes-file-gcm-enc passwd)))
+
+      (println)     
+      (println "Decrypt AES GCM in: " aes-file-gcm-enc)
+      (println "                out:" aes-file-gcm-dec)
+      (timing/run (fn [] (decrypt-aes aes-file-gcm-enc aes-file-gcm-dec passwd)))
+     
+      (println)            
+      (println "Encrypt ZIP in: " data-file)
+      (println "            out:" aes-file-zip)
+      (timing/run (fn [] (encrypt-zip aes-file-zip 
+                                      passwd
+                                      (io/file-name aes-file-unzip) 
+                                      data-file)))
+
+      (println)            
+      (println "Decrypt ZIP in: " aes-file-zip)
+      (println "            out:" aes-file-unzip)
+      (timing/run (fn [] (decrypt-zip aes-file-zip 
+                                      passwd
+                                      (io/file-name aes-file-unzip)
+                                      (io/file-parent aes-file-unzip))))
+                                      
+      (println)            
+      (println "Decrypt AES CBC: " 
+               (if (identical data-file aes-file-cbc-dec) "OK" "FAIL"))
+      (println "Decrypt AES GCM: " 
+               (if (identical data-file aes-file-gcm-dec) "OK" "FAIL"))
+      (println "Decrypt ZIP:     " 
+               (if (identical data-file aes-file-unzip) "OK" "FAIL")))))
