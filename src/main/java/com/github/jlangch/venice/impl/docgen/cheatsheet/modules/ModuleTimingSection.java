@@ -45,6 +45,7 @@ public class ModuleTimingSection implements ISectionBuilder {
         final DocSection docker = new DocSection("Timing", id());
         all.addSection(docker);
         docker.addItem(diBuilder.getDocItem("timing/run", true));
+        docker.addItem(diBuilder.getDocItem("timing/elapsed", true));
 
         return section;
     }

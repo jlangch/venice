@@ -26,14 +26,19 @@
 
 
 (defn
-  ^{ :arglists '("(timing/run f)", 
-                 "(timing/run f start-msg)")
-     :doc      """
-               Runs a function f with printing the elapsed time.
-               Returns the value that f has produced.
-               """
-     :examples '("(timing/run #(sleep 500))"
-                 """(timing/run #(sleep 500) "Sleeping...")""") }
+  ^{ :arglists '(
+        "(timing/run f)", 
+        "(timing/run f start-msg)")
+     :doc
+        """
+        Runs a function f with printing the elapsed time.
+        Returns the value that f has produced.
+        """
+     :examples '(
+        "(timing/run #(sleep 500))"
+        """(timing/run #(sleep 500) "Sleeping...")""" ) 
+     :see-also '(
+        "timing/elapsed" ) }
 
   run
 
@@ -56,3 +61,23 @@
         (if (fn? end-msg) (end-msg retval) (println end-msg)))
       (println "Elapsed:" (format-milli-time elapsed :precision 2))
       retval)))
+
+
+(defn
+  ^{ :arglists '(
+        "(timing/elapsed f)" )
+     :doc
+        """
+        Runs a function f and returns the elapsed time in milliseconds.
+        """
+     :examples '(
+        "(timing/elapsed #(sleep 500))" ) 
+     :see-also '(
+        "timing/run" ) }
+
+  elapsed [f]
+    { :pre [(fn? f)] }
+    (let [start   (current-time-millis)
+          retval  (f)
+          elapsed (- (current-time-millis) start)]
+      elapsed))

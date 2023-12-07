@@ -34,7 +34,9 @@
     (= (io/slurp file1 :binary true) 
        (io/slurp file2 :binary true)))
 
- 
+  (defn printel [title elapsed]
+    (printf "%-17s %4dms%n" title elapsed))
+
   (defn filesize [file]
      (str (long (/ (io/file-size file) 1024 1024)) " MB"))
 
@@ -81,34 +83,37 @@
       (println "            : created")
 
       (println)
-      (println "Encrypt AES CBC")
-      (timing/run (fn [] (encrypt-aes data-file aes-file-cbc-enc passwd)))
+      (printel "Encrypt AES CBC:"
+                (timing/elapsed (fn [] (encrypt-aes data-file 
+                                                    aes-file-cbc-enc 
+                                                    passwd))))
 
-      (println)     
-      (println "Decrypt AES CBC")
-      (timing/run (fn [] (decrypt-aes aes-file-cbc-enc aes-file-cbc-dec passwd)))
+      (printel "Decrypt AES CBC:"
+               (timing/elapsed (fn [] (decrypt-aes aes-file-cbc-enc 
+                                                   aes-file-cbc-dec 
+                                                   passwd))))
 
-      (println)
-      (println "Encrypt AES GCM")
-      (timing/run (fn [] (encrypt-aes data-file aes-file-gcm-enc passwd)))
+      (printel "Encrypt AES GCM:"
+               (timing/elapsed (fn [] (encrypt-aes data-file 
+                                                   aes-file-gcm-enc 
+                                                   passwd))))
 
-      (println)     
-      (println "Decrypt AES GCM")
-      (timing/run (fn [] (decrypt-aes aes-file-gcm-enc aes-file-gcm-dec passwd)))
+      (printel "Decrypt AES GCM:"
+               (timing/elapsed (fn [] (decrypt-aes aes-file-gcm-enc 
+                                                   aes-file-gcm-dec
+                                                    passwd))))
      
-      (println)            
-      (println "Encrypt ZIP")
-      (timing/run (fn [] (encrypt-zip aes-file-zip 
-                                      passwd
-                                      (io/file-name aes-file-unzip) 
-                                      data-file)))
+      (printel "Encrypt ZIP:"
+               (timing/elapsed (fn [] (encrypt-zip aes-file-zip 
+                                                   passwd
+                                                   (io/file-name aes-file-unzip) 
+                                                    data-file))))
 
-      (println)            
-      (println "Decrypt ZIP")
-      (timing/run (fn [] (decrypt-zip aes-file-zip 
-                                      passwd
-                                      (io/file-name aes-file-unzip)
-                                      (io/file-parent aes-file-unzip))))
+      (printel "Decrypt ZIP:"
+               (timing/elapsed (fn [] (decrypt-zip aes-file-zip 
+                                                   passwd
+                                                   (io/file-name aes-file-unzip)
+                                                   (io/file-parent aes-file-unzip)))))
                                       
       (println)            
       (println "Decrypt verify AES CBC: " 
@@ -116,4 +121,8 @@
       (println "Decrypt verify AES GCM: " 
                (if (identical data-file aes-file-gcm-dec) "OK" "FAIL"))
       (println "Decrypt verify ZIP:     " 
-               (if (identical data-file aes-file-unzip) "OK" "FAIL")))))
+               (if (identical data-file aes-file-unzip) "OK" "FAIL"))))
+
+  (defn run-sample []
+    (docoll #(do (run %) (println)(println)) 
+            [2 20 200 2000 20000 200000])))

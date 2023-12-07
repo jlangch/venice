@@ -319,6 +319,10 @@
           |  encrypted file data  |   n bytes
           +-----------------------+
           ```
+
+          Returns a byte buffer with the encrypted data if the 'out' argument 
+          is missing. Otherwise returns nil and writes the encrypted file data 
+          to the destination given by 'out'.
  
           The arg 'in' may be a: 
 
@@ -359,7 +363,8 @@
   ([in out passphrase]
     (as-> (io/slurp in :binary true) data
           (. :FileEncryptor :encryptFileWithPassphrase data passphrase)
-          (io/spit out data))))
+          (io/spit out data)
+          nil)))
 
 
 (defn 
@@ -369,6 +374,10 @@
      :doc """
           Decrypts an "AES-256" encrypted file that has been created by 
           `crypt/encrypt-file`.
+
+          Returns a byte buffer with the decrypted data if the 'out' argument 
+          is missing. Otherwise returns nil and writes the decrypted file data 
+          to the destination given by 'out'.
  
           The arg 'in' may be a: 
 
@@ -408,7 +417,8 @@
   ([in out passphrase]
     (as-> (io/slurp in :binary true) data
           (. :FileEncryptor :decryptFileWithPassphrase data passphrase)
-          (io/spit out data))))
+          (io/spit out data)
+          nil)))
 
 
 
