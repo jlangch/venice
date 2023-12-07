@@ -43,6 +43,7 @@ public class ByteBufSection implements ISectionBuilder {
         all.addSection(bb_create);
         bb_create.addItem(diBuilder.getDocItem("bytebuf"));
         bb_create.addItem(diBuilder.getDocItem("bytebuf-allocate"));
+        bb_create.addItem(diBuilder.getDocItem("bytebuf-allocate-random"));
         bb_create.addItem(diBuilder.getDocItem("bytebuf-from-string"));
 
         final DocSection bb_test = new DocSection("Test", "bytebuf.test");

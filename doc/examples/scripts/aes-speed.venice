@@ -76,50 +76,44 @@
       (println "Testing file:" data-file (str size-kb "KB"))
       (println "        size:" size)
 
-      ;; create the test data file
-      (io/spit data-file (bytebuf (repeatedly size #(rand-long 256))))
+      ;; create the test data file (a buffer with random bytes)
+      (io/spit data-file (bytebuf-allocate-random size))
       (println "            : created")
 
       (println)
-      (println "Encrypt AES CBC in: " data-file)
-      (println "                out:" aes-file-cbc-enc)
+      (println "Encrypt AES CBC")
       (timing/run (fn [] (encrypt-aes data-file aes-file-cbc-enc passwd)))
 
       (println)     
-      (println "Decrypt AES CBC in: " aes-file-cbc-enc)
-      (println "                out:" aes-file-cbc-dec)
+      (println "Decrypt AES CBC")
       (timing/run (fn [] (decrypt-aes aes-file-cbc-enc aes-file-cbc-dec passwd)))
 
       (println)
-      (println "Encrypt AES GCM in: " data-file)
-      (println "                out:" aes-file-gcm-enc)
+      (println "Encrypt AES GCM")
       (timing/run (fn [] (encrypt-aes data-file aes-file-gcm-enc passwd)))
 
       (println)     
-      (println "Decrypt AES GCM in: " aes-file-gcm-enc)
-      (println "                out:" aes-file-gcm-dec)
+      (println "Decrypt AES GCM")
       (timing/run (fn [] (decrypt-aes aes-file-gcm-enc aes-file-gcm-dec passwd)))
      
       (println)            
-      (println "Encrypt ZIP in: " data-file)
-      (println "            out:" aes-file-zip)
+      (println "Encrypt ZIP")
       (timing/run (fn [] (encrypt-zip aes-file-zip 
                                       passwd
                                       (io/file-name aes-file-unzip) 
                                       data-file)))
 
       (println)            
-      (println "Decrypt ZIP in: " aes-file-zip)
-      (println "            out:" aes-file-unzip)
+      (println "Decrypt ZIP")
       (timing/run (fn [] (decrypt-zip aes-file-zip 
                                       passwd
                                       (io/file-name aes-file-unzip)
                                       (io/file-parent aes-file-unzip))))
                                       
       (println)            
-      (println "Decrypt AES CBC: " 
+      (println "Decrypt verify AES CBC: " 
                (if (identical data-file aes-file-cbc-dec) "OK" "FAIL"))
-      (println "Decrypt AES GCM: " 
+      (println "Decrypt verify AES GCM: " 
                (if (identical data-file aes-file-gcm-dec) "OK" "FAIL"))
-      (println "Decrypt ZIP:     " 
+      (println "Decrypt verify ZIP:     " 
                (if (identical data-file aes-file-unzip) "OK" "FAIL")))))

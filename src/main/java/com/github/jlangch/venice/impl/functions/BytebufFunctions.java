@@ -25,6 +25,7 @@ import static com.github.jlangch.venice.impl.types.Constants.Nil;
 
 import java.nio.ByteBuffer;
 import java.nio.charset.Charset;
+import java.security.SecureRandom;
 import java.util.Arrays;
 import java.util.Map;
 import java.util.concurrent.atomic.AtomicLong;
@@ -159,9 +160,49 @@ public class BytebufFunctions {
                 "bytebuf-allocate",
                 VncFunction
                     .meta()
-                    .arglists("(bytebuf-allocate length)")
-                    .doc( "Allocates a new bytebuf. The values will be all zero.")
-                    .examples("(bytebuf-allocate 20)")
+                    .arglists(
+                    	"(bytebuf-allocate length)",
+                    	"(bytebuf-allocate length init-val)")
+                    .doc(
+                    	"Allocates a new bytebuf. The values will be all zero or preset with " +
+                    	"init-val id init-val is supplied.")
+                    .examples(
+                    	"(bytebuf-allocate 20)",
+                    	"(bytebuf-allocate 20 0x55)")
+                    .build()
+        ) {
+            @Override
+            public VncVal apply(final VncList args) {
+                ArityExceptions.assertArity(this, args, 1, 2);
+
+                final int length = Coerce.toVncLong(args.first()).getValue().intValue();
+
+                if (args.size() == 1) {
+                	return new VncByteBuffer(ByteBuffer.allocate(length));
+                }
+                else {
+                	final byte val = (byte)(Coerce.toVncLong(args.first()).getValue().longValue() & 0x0FF);
+                	final byte[] data = new byte[length];
+                	Arrays.fill(data, val);
+                	return new VncByteBuffer(ByteBuffer.wrap(data));
+                }
+            }
+
+            private static final long serialVersionUID = -1848883965231344442L;
+        };
+
+    public static VncFunction bytebuf_allocate_random =
+        new VncFunction(
+                "bytebuf-allocate-random",
+                VncFunction
+                    .meta()
+                    .arglists(
+                    	"(bytebuf-allocate-random length)")
+                    .doc(
+                    	"Allocates a new bytebuf. The values will be all preset with random" +
+                    	"bytes")
+                    .examples(
+                    	"(bytebuf-allocate-random 20)")
                     .build()
         ) {
             @Override
@@ -169,8 +210,9 @@ public class BytebufFunctions {
                 ArityExceptions.assertArity(this, args, 1);
 
                 final int length = Coerce.toVncLong(args.first()).getValue().intValue();
-
-                return new VncByteBuffer(ByteBuffer.allocate(length));
+            	final byte[] data = new byte[length];
+            	new SecureRandom().nextBytes(data);
+            	return new VncByteBuffer(ByteBuffer.wrap(data));
             }
 
             private static final long serialVersionUID = -1848883965231344442L;
@@ -856,6 +898,7 @@ public class BytebufFunctions {
                 .add(bytebuf_Q)
                 .add(bytebuf_cast)
                 .add(bytebuf_allocate)
+                .add(bytebuf_allocate_random)
                 .add(bytebuf_capacity)
                 .add(bytebuf_limit)
                 .add(bytebuf_to_string)
