@@ -45,7 +45,8 @@ Create exceptions using the function `ex` :
 **Note:**
 Prefer using the `ex` function over Java Interop to create exceptions! `ex` 
 works even with a full restricted sandbox where as the Java Interop variant 
-requires a specifically configured sandbox.
+requires a specifically configured sandbox to support the exception classes 
+if sandboxing is activated.
 
 Create exceptions using Java interop:
 
@@ -71,7 +72,7 @@ If *checked* exceptions are thrown in Venice they are immediately wrapped
 in a runtime exception before being thrown! 
 
 If Venice catches a *checked* exception from a Java Interop call
-it wraps it in a :RuntimeException before handling it by the catch block
+it wraps it in a `:RuntimeException` before handling it by the catch block
 selectors!
 
 
@@ -122,8 +123,8 @@ Throw, catch, and finally blocks may contain multiple expressions:
 ;; => "RuntimeException msg: a message"
 ```
 
-Any Venice data can be thrown resulting in a `:ValueException` with the data 
-as the exception's value:
+Any Venice data value can be thrown resulting in a `:ValueException` with 
+the data as the exception's value:
 
 ```clojure
 (do
@@ -140,6 +141,13 @@ as the exception's value:
 
 ## try-with resources
 
+The `try-with` statement is a `try` statement that declares one or more 
+named resources in a binding vector. A resource is an object that must 
+be closed after the program is finished with it. The `try-with` statement 
+ensures that each resource is closed at the end of the statement. Any 
+object that implements `:java.lang.AutoCloseable` or `:java.io.Closeable`, 
+can be used as a resource. 
+
 ```clojure
 (do
    (import :java.io.FileInputStream)
@@ -154,6 +162,9 @@ as the exception's value:
 
 ## Selectors
 
+Selectors define the rules for catching specific exceptions in a `catch` 
+block. 
+
 A selector can be:
 
   * a class: (e.g., :RuntimeException, :java.text.ParseException), matches 
@@ -164,7 +175,6 @@ A selector can be:
     `(and (= (get ex-value key) val) ...)`. To match a specific exception cause
     type use the selector `[:cause-type :java.io.IOException]` 
     
-
   * a predicate: (a function of one argument like `map?`, `set?`), matches any 
     instance of :ValueException where the predicate applied to the exception's 
     value returns `true`
@@ -198,7 +208,7 @@ key-value selector:
 ```
 
 
-key-value selector matching exception cause type (Venice 1.9.23+):
+key-value selector matching exception cause type:
 
 ```clojure
 (do
