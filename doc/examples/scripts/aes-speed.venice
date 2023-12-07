@@ -21,6 +21,20 @@
 
 ;;;; Compares AES-256 encryption/decryption speed
 
+;;                                               MacBookAir M2 2022
+;; ----------------------------------------------------------------
+;;                      2KB    20KB   200KB     2MB    20MB   200MB
+;; ----------------------------------------------------------------
+;; Encrypt AES CBC:    88ms    64ms    65ms    75ms   168ms  1134ms
+;; Decrypt AES CBC:    66ms    65ms    65ms    76ms   162ms  1041ms
+;; Encrypt AES GCM:    66ms    64ms    66ms    77ms   166ms  1192ms
+;; Decrypt AES GCM:    76ms    65ms    66ms    76ms   164ms  1052ms
+;; Encrypt ZIP:         9ms     5ms    10ms    61ms   571ms  5702ms
+;; Decrypt ZIP:         8ms    10ms     6ms    25ms   202ms  1998ms
+;; ----------------------------------------------------------------
+
+
+
 (do
   (load-module :zipvault)
   (load-module :crypt)
