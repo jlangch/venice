@@ -48,7 +48,7 @@ works even with a full restricted sandbox where as the Java Interop variant
 requires a specifically configured sandbox to support the exception classes 
 if sandboxing is activated.
 
-Create exceptions using Java interop:
+Create exceptions using Java Interop:
 
 ```clojure
 (do
