@@ -31,14 +31,7 @@ import java.util.Base64;
  * Computes hashes from files and verifies file hashes to detect modified
  * files.
  *
- *  Supported hash algorithms:
- *  <ul>
- *    <li>MD5 (default)</li>
- *    <li>SHA-1</li>
- *    <li>SHA-512</li>
- *  </ul>
- *
- * changes.
+ * Supports any algorithms supplied by the Java VM like MD5, SHA-1, SHA-512
  */
 public class FileHasher {
 
