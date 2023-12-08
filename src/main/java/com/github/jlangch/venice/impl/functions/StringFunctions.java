@@ -311,7 +311,7 @@ public class StringFunctions {
                     .arglists(
                         "(str/align width align overflow-mode text)")
                     .doc(
-                        "Aligns a text to width characters.\n\n" +
+                        "Aligns a text within a string of width characters.\n\n" +
                         "align: :left, :center, :right\n\n" +
                         "overflow-mode: :clip-left, :clip-right, :ellipsis-left, :ellipsis-right")
                     .examples(
@@ -333,6 +333,12 @@ public class StringFunctions {
                 final String align = Coerce.toVncKeyword(args.second()).getSimpleName();
                 final String overflow = Coerce.toVncKeyword(args.third()).getSimpleName();
                 final String text = Coerce.toVncString(args.fourth()).getValue().trim();
+
+                if (StringUtil.indexOneCharOf(text, "\n\r\f\t", 0) >= 0) {
+                    throw new VncException(
+                            "Function 'str/align': a text must not contain any of the "
+                            + "characters: '\\n', '\\r', '\\f', '\\t'.");
+                }
 
                 final int textlen = text.length();
 
