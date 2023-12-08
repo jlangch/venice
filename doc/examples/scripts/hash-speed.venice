@@ -1,0 +1,86 @@
+;;;;   __    __         _
+;;;;   \ \  / /__ _ __ (_) ___ ___
+;;;;    \ \/ / _ \ '_ \| |/ __/ _ \
+;;;;     \  /  __/ | | | | (_|  __/
+;;;;      \/ \___|_| |_|_|\___\___|
+;;;;
+;;;;
+;;;; Copyright 2017-2023 Venice
+;;;;
+;;;; Licensed under the Apache License, Version 2.0 (the "License");
+;;;; you may not use this file except in compliance with the License.
+;;;; You may obtain a copy of the License at
+;;;;
+;;;;     http://www.apache.org/licenses/LICENSE-2.0
+;;;;
+;;;; Unless required by applicable law or agreed to in writing, software
+;;;; distributed under the License is distributed on an "AS IS" BASIS,
+;;;; WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+;;;; See the License for the specific language governing permissions and
+;;;; limitations under the License.
+
+;;;; Compares hashing speed
+
+;;                                                   MacBookAir M2 2022
+;; --------------------------------------------------------------------
+;;                          2KB    20KB   200KB     2MB    20MB   200MB
+;; --------------------------------------------------------------------
+;; Hash MD5 (file):         1ms     1ms     1ms     6ms    56ms   547ms
+;; Hash SHA-1 (file):       0ms     1ms     2ms     7ms    65ms   685ms
+;; Hash SHA-256 (file):     0ms     0ms     2ms     8ms    77ms   764ms
+;;
+;; Hash MD5 (memory):       0ms     1ms     1ms     5ms    54ms   535ms
+;; Hash SHA-1 (memory):     0ms     1ms     1ms     7ms    64ms   642ms
+;; Hash SHA-256 (memory):   1ms     0ms     1ms     8ms    76ms   749ms
+;; --------------------------------------------------------------------
+
+
+
+(do
+  (load-module :crypt)
+  (load-module :timing)
+
+
+  (defonce passwd   "j87vhfrtxvzrzver445dffg")
+  (defonce salt     "12647458820938745388281")
+
+
+  (defn identical [file1 file2]
+    (= (io/slurp file1 :binary true) 
+       (io/slurp file2 :binary true)))
+
+  (defn printel [title elapsed]
+    (printf "%-20s %4dms%n" title elapsed))
+
+  (defn run [size-kb] 
+    (let [size    (* size-kb 1024)
+          data    (bytebuf-allocate-random size)
+          dir     (io/file (io/user-home-dir) "Desktop/aes-test")
+          file    (io/file dir "test.data")]
+      (when-not (io/exists-dir? dir)
+        (throw (ex :VncException (str "The dir " dir " doesnot exist!)"))))
+
+      (println "Testing file:" file (str size-kb "KB"))
+      (println "        size:" size)
+
+      ;; create the test data file (a buffer with random bytes)
+      (io/spit file data)
+      (io/slurp file :binary true) ;; warm up os file read
+      (println "            : created")
+      (println)
+
+      ;; file based
+      (docoll (fn [algo]
+                (->> (timing/elapsed #(crypt/hash-file file salt algo))
+                     (printel (str "Hash " algo " (file):"))))
+              ["MD5" "SHA-1" "SHA-256"])
+
+      ;; memory based
+      (docoll (fn [algo]
+                (->> (timing/elapsed #(crypt/hash-file data salt algo))
+                     (printel (str "Hash " algo " (mem):"))))
+              ["MD5" "SHA-1" "SHA-256"])))
+
+  (defn run-sample []
+    (docoll #(do (run %) (println) (println)) 
+            [2 20 200 2000 20000 200000])))

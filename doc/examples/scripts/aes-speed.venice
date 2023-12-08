@@ -51,9 +51,6 @@
   (defn printel [title elapsed]
     (printf "%-17s %4dms%n" title elapsed))
 
-  (defn filesize [file]
-     (str (long (/ (io/file-size file) 1024 1024)) " MB"))
-
   (defn encrypt-aes [file-in file-out passphrase]
     (let [encryptor (crypt/encrypt "AES256" passphrase)]
       (->> (io/slurp file-in :binary true)
@@ -81,6 +78,7 @@
 
   (defn run [size-kb] 
     (let [size               (* size-kb 1024)
+          data               (bytebuf-allocate-random size)
           dir                (io/file (io/user-home-dir) "Desktop/aes-test")
           data-file          (io/file dir "test.data")
           aes-file-cbc-enc   (io/file dir "test.data.aes-cbc.enc")
@@ -96,7 +94,8 @@
       (println "        size:" size)
 
       ;; create the test data file (a buffer with random bytes)
-      (io/spit data-file (bytebuf-allocate-random size))
+      (io/spit data-file data)
+      (io/slurp file :binary true) ;; warm up os file read
       (println "            : created")
       (println)
 
@@ -142,5 +141,5 @@
                (if (identical data-file aes-file-unzip) "OK" "FAIL"))))
 
   (defn run-sample []
-    (docoll #(do (run %) (println)(println)) 
+    (docoll #(do (run %) (println) (println)) 
             [2 20 200 2000 20000 200000])))
