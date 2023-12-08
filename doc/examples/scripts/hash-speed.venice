@@ -21,7 +21,7 @@
 
 ;;;; Compares hashing speed
 
-;;                                                   MacBookAir M2 2022
+;;                                         MacBookAir M2, Java 8 (Zulu)
 ;; --------------------------------------------------------------------
 ;;                          2KB    20KB   200KB     2MB    20MB   200MB
 ;; --------------------------------------------------------------------
@@ -43,6 +43,7 @@
 
   (defonce passwd   "j87vhfrtxvzrzver445dffg")
   (defonce salt     "12647458820938745388281")
+  (defonce test-dir (io/file (io/user-home-dir) "Desktop/aes-test"))
 
 
   (defn identical [file1 file2]
@@ -55,11 +56,11 @@
   (defn run [size-kb] 
     (let [size    (* size-kb 1024)
           data    (bytebuf-allocate-random size)
-          dir     (io/file (io/user-home-dir) "Desktop/aes-test")
+          dir     test-dir
           file    (io/file dir "test.data")
           algos   ["MD5" "SHA-1" "SHA-256"]]
       (when-not (io/exists-dir? dir)
-        (throw (ex :VncException (str "The dir " dir " doesnot exist!)"))))
+        (throw (ex :VncException (str "The dir " dir " does not exist!)"))))
 
       (println "Testing file:" file (str size-kb "KB"))
       (println "        size:" size)

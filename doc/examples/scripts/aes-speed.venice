@@ -21,7 +21,7 @@
 
 ;;;; Compares AES-256 encryption/decryption speed
 
-;;                                                   MacBookAir M2 2022
+;;                                         MacBookAir M2, Java 8 (Zulu)
 ;; --------------------------------------------------------------------
 ;;                          2KB    20KB   200KB     2MB    20MB   200MB
 ;; --------------------------------------------------------------------
@@ -42,6 +42,7 @@
 
 
   (defonce passwd   "j87vhfrtxvzrzver445dffg")
+  (defonce test-dir (io/file (io/user-home-dir) "Desktop/aes-test"))
 
 
   (defn identical [file1 file2]
@@ -79,7 +80,7 @@
   (defn run [size-kb]
     (let [size               (* size-kb 1024)
           data               (bytebuf-allocate-random size)
-          dir                (io/file (io/user-home-dir) "Desktop/aes-test")
+          dir                test-dir
           data-file          (io/file dir "test.data")
           aes-file-cbc-enc   (io/file dir "test.data.aes-cbc.enc")
           aes-file-cbc-dec   (io/file dir "test.data.aes-cbc.dec")
@@ -88,48 +89,48 @@
           aes-file-zip       (io/file dir "test.data.zip")
           aes-file-unzip     (io/file dir "test.data.unzip")]
       (when-not (io/exists-dir? dir)
-        (throw (ex :VncException (str "The dir " dir " doesnot exist!)"))))
+        (throw (ex :VncException (str "The dir " dir " does not exist!)"))))
 
       (println "Testing file:" data-file (str size-kb "KB"))
       (println "        size:" size)
 
       ;; create the test data file (a buffer with random bytes)
       (io/spit data-file data)
-      (io/slurp file :binary true) ;; warm up os file read
+      (io/slurp data-file :binary true) ;; warm up os file read
       (println "            : created")
       (println)
 
-      (let [t (timing/elapsed (fn [] (encrypt-aes data-file
-                                                  aes-file-cbc-enc
-                                                  passwd)))]
+      (let [t (timing/elapsed #(encrypt-aes data-file
+                                            aes-file-cbc-enc
+                                            passwd))]
         (printel "Encrypt AES CBC:" t))
  
 
-      (let [t (timing/elapsed (fn [] (decrypt-aes aes-file-cbc-enc
-                                                  aes-file-cbc-dec
-                                                  passwd)))]
+      (let [t (timing/elapsed #(decrypt-aes aes-file-cbc-enc
+                                            aes-file-cbc-dec
+                                            passwd))]
         (printel "Decrypt AES CBC:" t))
 
-      (let [t (timing/elapsed (fn [] (encrypt-aes data-file
-                                                  aes-file-gcm-enc
-                                                  passwd)))]
+      (let [t (timing/elapsed #(encrypt-aes data-file
+                                            aes-file-gcm-enc
+                                            passwd))]
         (printel "Encrypt AES GCM:" t))
 
-      (let [t (timing/elapsed (fn [] (decrypt-aes aes-file-gcm-enc
-                                                  aes-file-gcm-dec
-                                                  passwd)))]
+      (let [t (timing/elapsed #(decrypt-aes aes-file-gcm-enc
+                                            aes-file-gcm-dec
+                                            passwd))]
         (printel "Decrypt AES GCM:" t))
        
-      (let [t (timing/elapsed (fn [] (encrypt-zip aes-file-zip
-                                                  passwd
-                                                  (io/file-name aes-file-unzip)
-                                                  data-file)))]
+      (let [t (timing/elapsed #(encrypt-zip aes-file-zip
+                                            passwd
+                                            (io/file-name aes-file-unzip)
+                                            data-file))]
         (printel "Encrypt AES ZIP:" t))
 
-      (let [t (timing/elapsed (fn [] (decrypt-zip aes-file-zip
-                                                  passwd
-                                                  (io/file-name aes-file-unzip)
-                                                  (io/file-parent aes-file-unzip))))]
+      (let [t (timing/elapsed #(decrypt-zip aes-file-zip
+                                            passwd
+                                            (io/file-name aes-file-unzip)
+                                            (io/file-parent aes-file-unzip)))]
         (printel "Decrypt AES ZIP:" t))
                                      
       (println)            
