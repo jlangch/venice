@@ -14,7 +14,7 @@ All notable changes to this project will be documented in this file.
 
 - bytebuf allocation with random values
 - bytebuf allocation with a fill value
-- an example script comparing AES-256 CBC, AES-256 GCM, and encrypted ZIP
+- an example script comparing AES-256 CBC, AES-256 GCM, and AES-256 ZIP
   encryption and decryption performance
 - an example script comparing MD5, SHA-1, SHA-256 hashing performance
 
