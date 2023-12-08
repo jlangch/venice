@@ -43,7 +43,7 @@
 
   (defonce passwd   "j87vhfrtxvzrzver445dffg")
   (defonce salt     "12647458820938745388281")
-  (defonce test-dir (io/file (io/user-home-dir) "Desktop/aes-test"))
+  (defonce test-dir (io/file (io/user-home-dir) "Desktop/venice/tmp"))
 
 
   (defn identical [file1 file2]
