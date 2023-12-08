@@ -74,6 +74,8 @@ public abstract class UTF8 {
     public static char DIAMETER_SIGN         = '\u2300';  // diameter sign '⌀'
     public static char CHECK_MARK            = '\u2713';  // check mark '✓'
     public static char CROSS_MARK            = '\u2717';  // cross mark '✗'
+    public static char ELLIPSIS_HORZ         = '\u2026';  // horizontal ellipsis '…'
+    public static char ELLIPSIS_VERT         = '\u22EE';  // vertical ellipsis '⋮'
 
     // Greek letters
     public static char ALPHA                 = '\u03B1';  // alpha 'α'
