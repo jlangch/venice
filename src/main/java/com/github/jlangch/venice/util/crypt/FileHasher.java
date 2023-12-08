@@ -38,17 +38,9 @@ import java.util.Base64;
  *    <li>SHA-512</li>
  *  </ul>
  *
- * MD5 is the fastest hash algorithm and precise enough to detect file
  * changes.
  */
 public class FileHasher {
-
-    public static String hashFile(
-            final File inputFile,
-            final String salt
-    ) throws Exception {
-        return hashFile(inputFile, salt, "MD5");
-    }
 
     public static String hashFile(
             final File inputFile,
@@ -60,13 +52,6 @@ public class FileHasher {
 
         // Hash
         return hashFile(fileData, salt, algorithm);
-    }
-
-    public static String hashFile(
-            final byte[] fileData,
-            final String salt
-    ) throws Exception {
-        return hashFile(fileData, salt, "MD5");
     }
 
     public static String hashFile(
@@ -89,14 +74,6 @@ public class FileHasher {
     public static boolean verifyFileHash(
             final File inputFile,
             final String salt,
-            final String hash
-    ) throws Exception {
-       return verifyFileHash(inputFile, salt, hash, "MD5");
-    }
-
-    public static boolean verifyFileHash(
-            final File inputFile,
-            final String salt,
             final String hash,
             final String algorithm
     ) throws Exception {
@@ -105,14 +82,6 @@ public class FileHasher {
 
         // Verify hash
         return verifyFileHash(fileData, salt, hash, algorithm);
-    }
-
-    public static boolean verifyFileHash(
-            final byte[] fileData,
-            final String salt,
-            final String hash
-    ) throws Exception {
-        return verifyFileHash(fileData, salt, hash, "MD5");
     }
 
     public static boolean verifyFileHash(
@@ -137,5 +106,4 @@ public class FileHasher {
     public static byte[] decodeBase64(final String data) {
         return Base64.getDecoder().decode(data);
     }
-
 }
