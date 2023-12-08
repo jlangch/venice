@@ -303,6 +303,84 @@ public class StringFunctions {
             private static final long serialVersionUID = -1848883965231344442L;
         };
 
+    public static VncFunction str_align =
+        new VncFunction(
+                "str/align",
+                VncFunction
+                    .meta()
+                    .arglists(
+                        "(str/align width align overflow-mode text)")
+                    .doc(
+                        "Aligns a text to width characters.\n\n" +
+                        "align: :left, :center, :right\n\n" +
+                        "overflow-mode: :clip-left, :clip-right, :ellipsis-left, :ellipsis-right")
+                    .examples(
+                        "(str/align 6 :left :clip-right \"abc\")",
+                        "(str/align 6 :center :clip-right \"abc\")",
+                        "(str/align 6 :right :clip-right \"abc\")",
+                        "(str/align 6 :left :clip-left \"abcdefgh\")",
+                        "(str/align 6 :left :ellipsis-left \"abcdefgh\")",
+                        "(str/align 6 :left :ellipsis-right \"abcdefgh\")")
+                    .seeAlso(
+                        "str/trim-to-nil", "str/trim-left", "str/trim-right")
+                    .build()
+        ) {
+            @Override
+            public VncVal apply(final VncList args) {
+                ArityExceptions.assertArity(this, args, 4);
+
+                final int width = Coerce.toVncLong(args.first()).toJavaInteger();
+                final String align = Coerce.toVncKeyword(args.second()).getSimpleName();
+                final String overflow = Coerce.toVncKeyword(args.third()).getSimpleName();
+                final String text = Coerce.toVncString(args.fourth()).getValue().trim();
+
+                final int textlen = text.length();
+
+                String justified;
+
+                switch(overflow) {
+                    case "clip-left":
+                        justified = textlen >= width ? text.substring(textlen-width, textlen) : text;
+                        break;
+                    case "clip-right":
+                        justified = textlen >= width ? text.substring(0, width) : text;
+                        break;
+                    case "ellipsis-left":
+                        justified = textlen >= width-1 ? "…" + text.substring(textlen-width+1, textlen) : text;
+                        break;
+                    case "ellipsis-right":
+                        justified = textlen >= width-1 ?  text.substring(0, width-1) + "…" : text;
+                        break;
+                    default:
+                        throw new VncException(String.format(
+                                "Function 'str/align' got undefined overflow-mode :%s.",
+                                overflow));
+                }
+
+                if (justified.length() < width) {
+                    switch(align) {
+                        case "left":
+                            justified = StringUtil.padRight(justified, width);
+                            break;
+                        case "right":
+                            justified = StringUtil.padLeft(justified, width);
+                            break;
+                        case "center":
+                            justified = StringUtil.padCenter(justified, width);
+                            break;
+                        default:
+                            throw new VncException(String.format(
+                                    "Function 'str/align' got invalid align mode :%s.",
+                                    align));
+                    }
+                }
+
+                return new VncString(justified);
+            }
+
+            private static final long serialVersionUID = -1848883965231344442L;
+        };
+
     public static VncFunction str_trim =
         new VncFunction(
                 "str/trim",
@@ -2617,6 +2695,7 @@ public class StringFunctions {
                     .add(str_trim_left)
                     .add(str_trim_right)
                     .add(str_trim_to_nil)
+                    .add(str_align)
                     .add(str_index_of)
                     .add(str_last_index_of)
                     .add(str_replace_first)

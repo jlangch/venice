@@ -12,6 +12,7 @@ All notable changes to this project will be documented in this file.
 
 ### Added 
 
+- function `str/align`
 - bytebuf allocation with random values
 - bytebuf allocation with a fill value
 - an example script comparing AES-256 CBC, AES-256 GCM, and AES-256 ZIP

@@ -196,6 +196,10 @@ public class PrimitivesSection implements ISectionBuilder {
         trim.addItem(diBuilder.getDocItem("str/trim-left"));
         trim.addItem(diBuilder.getDocItem("str/trim-right"));
 
+        final DocSection align = new DocSection("Align", "primitives.strings.align");
+        strings.addSection(align);
+        align.addItem(diBuilder.getDocItem("str/align"));
+
         final DocSection hex = new DocSection("Hex", "primitives.strings.hex");
         strings.addSection(hex);
         hex.addItem(diBuilder.getDocItem("str/hex-to-bytebuf"));

@@ -791,6 +791,49 @@ public class StringFunctionsTest {
     }
 
     @Test
+    public void test_str_align() {
+        final Venice venice = new Venice();
+
+        assertEquals("      ", venice.eval("(str/align 6 :left   :clip-right \"\")"));
+        assertEquals("      ", venice.eval("(str/align 6 :center :clip-right \"\")"));
+        assertEquals("      ", venice.eval("(str/align 6 :right  :clip-right \"\")"));
+
+        assertEquals("a     ", venice.eval("(str/align 6 :left   :clip-right \"a\")"));
+        assertEquals("   a  ", venice.eval("(str/align 6 :center :clip-right \"a\")"));
+        assertEquals("     a", venice.eval("(str/align 6 :right  :clip-right \"a\")"));
+
+        assertEquals("ab    ", venice.eval("(str/align 6 :left   :clip-right \"ab\")"));
+        assertEquals("  ab  ", venice.eval("(str/align 6 :center :clip-right \"ab\")"));
+        assertEquals("    ab", venice.eval("(str/align 6 :right  :clip-right \"ab\")"));
+
+        assertEquals("abc   ", venice.eval("(str/align 6 :left   :clip-right \"abc\")"));
+        assertEquals("  abc ", venice.eval("(str/align 6 :center :clip-right \"abc\")"));
+        assertEquals("   abc", venice.eval("(str/align 6 :right  :clip-right \"abc\")"));
+
+        assertEquals("abcd  ", venice.eval("(str/align 6 :left   :clip-right \"abcd\")"));
+        assertEquals(" abcd ", venice.eval("(str/align 6 :center :clip-right \"abcd\")"));
+        assertEquals("  abcd", venice.eval("(str/align 6 :right  :clip-right \"abcd\")"));
+
+        assertEquals("abcde ", venice.eval("(str/align 6 :left   :clip-right \"abcde\")"));
+        assertEquals(" abcde", venice.eval("(str/align 6 :center :clip-right \"abcde\")"));
+        assertEquals(" abcde", venice.eval("(str/align 6 :right  :clip-right \"abcde\")"));
+
+        assertEquals("abcdef", venice.eval("(str/align 6 :left   :clip-right \"abcdef\")"));
+        assertEquals("abcdef", venice.eval("(str/align 6 :center :clip-right \"abcdef\")"));
+        assertEquals("abcdef", venice.eval("(str/align 6 :right  :clip-right \"abcdef\")"));
+
+        assertEquals("abcdef", venice.eval("(str/align 6 :left   :clip-right \"abcdefg\")"));
+        assertEquals("bcdefg", venice.eval("(str/align 6 :left   :clip-left \"abcdefg\")"));
+        assertEquals("abcde…", venice.eval("(str/align 6 :left   :ellipsis-right \"abcdefg\")"));
+        assertEquals("…cdefg", venice.eval("(str/align 6 :left   :ellipsis-left \"abcdefg\")"));
+
+        assertEquals("abcdef", venice.eval("(str/align 6 :left   :clip-right \"abcdefgh\")"));
+        assertEquals("cdefgh", venice.eval("(str/align 6 :left   :clip-left \"abcdefgh\")"));
+        assertEquals("abcde…", venice.eval("(str/align 6 :left   :ellipsis-right \"abcdefgh\")"));
+        assertEquals("…defgh", venice.eval("(str/align 6 :left   :ellipsis-left \"abcdefgh\")"));
+    }
+
+    @Test
     public void test_str_truncate() {
         final Venice venice = new Venice();
 
