@@ -70,12 +70,11 @@ public abstract class UTF8 {
     public static char COPYRIGHT             = '\u00A9';  // check mark '©'
     public static char BULLET                = '\u2022';  // bullet '•'
     public static char HORZ_ELLIPSIS         = '\u2026';  // horizontal ellipsis '…'
+    public static char VERT_ELLIPSIS         = '\u22EE';  // vertical ellipsis '⋮'
     public static char PER_MILLE_SIGN        = '\u2030';  // per mille sign '‰'
     public static char DIAMETER_SIGN         = '\u2300';  // diameter sign '⌀'
     public static char CHECK_MARK            = '\u2713';  // check mark '✓'
     public static char CROSS_MARK            = '\u2717';  // cross mark '✗'
-    public static char ELLIPSIS_HORZ         = '\u2026';  // horizontal ellipsis '…'
-    public static char ELLIPSIS_VERT         = '\u22EE';  // vertical ellipsis '⋮'
 
     // Greek letters
     public static char ALPHA                 = '\u03B1';  // alpha 'α'
