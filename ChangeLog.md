@@ -19,6 +19,7 @@ All notable changes to this project will be documented in this file.
 - an example script comparing MD5, SHA-1, SHA-256 hashing performance
 
 
+
 ## [1.10.54] - 2023-12-07
 
 ### Added 
