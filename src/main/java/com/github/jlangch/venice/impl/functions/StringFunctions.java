@@ -310,11 +310,11 @@ public class StringFunctions {
                 VncFunction
                     .meta()
                     .arglists(
-                        "(str/align width align overflow-mode text)")
+                        "(str/align width align overflow text)")
                     .doc(
                         "Aligns a text within a string of width characters.\n\n" +
                         "align: :left, :center, :right\n\n" +
-                        "overflow-mode: :newline :clip-left, :clip-right, :ellipsis-left, :ellipsis-right")
+                        "overflow: :newline :clip-left, :clip-right, :ellipsis-left, :ellipsis-right")
                     .examples(
                         "(str/align 6 :left :clip-right \"abc\")",
                         "(str/align 6 :center :clip-right \"abc\")",
@@ -347,7 +347,7 @@ public class StringFunctions {
                         case "ellipsis-left":  return Arrays.asList(len > width ? "…" + s.substring(len-width+1, len) : s);
                         case "ellipsis-right": return Arrays.asList(len > width ? s.substring(0, width-1) + "…" : s);
                         default:               throw new VncException(String.format(
-                                                            "Function 'str/align' got undefined overflow mode :%s.",
+                                                            "Function 'str/align' got undefined overflow :%s.",
                                                             overflow));
                     }};
 

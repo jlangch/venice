@@ -4921,10 +4921,11 @@ public class CoreFunctions {
                         "(into [] {:a 1, :b 2})",
                         "(into '() '(1 2 3))",
                         "(into [1 2 3] '(4 5 6))",
-                        "(into '() (bytebuf [0 1 2]))",
+                        "(into '(1 2 3) '(4 5 6))",
                         "(into [] (bytebuf [0 1 2]))",
-                        "(into '() \"abc\")",
-                        "(into [] \"abc\")")
+                        "(into '() (bytebuf [0 1 2]))",
+                        "(into [] \"abc\")",
+                        "(into '() \"abc\")")
                     .seeAlso("concat", "merge")
                     .build()
         ) {
