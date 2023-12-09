@@ -24,22 +24,22 @@
 
 (ns ascii-table)
 
-;;         standard         double          bold          alpha
+;;           standard         double          bold          alpha  
 ;;
-;;      +---+---+---+   ╔═══╤═══╤═══╗   ┏━━━┯━━━┯━━━┓  ABBBCBBBCBBBD
-;; head |   |   |   |   ║   │   │   ║   ┃   │   │   ┃  E   M   M   E
-;;      +---+---+---+   ╠═══╪═══╪═══╣   ┣━━━┿━━━┿━━━┫  KGGGJGGGJGGGL
-;; body |   |   |   |   ║   │   │   ║   ┃   │   │   ┃  E   M   M   E
-;;      +---+---+---+   ╟───┼───┼───╢   ┠───┼───┼───┫  KGGGJGGGJGGGL
-;; body |   |   |   |   ║   │   │   ║   ┃   │   │   ┃  E   M   M   E
-;;      +---+---+---+   ╠═══╪═══╪═══╣   ┣━━━┿━━━┿━━━┫  KGGGJGGGJGGGL
-;; foot |   |   |   |   ║   │   │   ║   ┃   │   │   ┃  E   M   M   E
-;;      +---+---+---+   ╚═══╧═══╧═══╝   ┗━━━┷━━━┷━━━┛  NBBBOBBBOBBBP
+;;        +---+---+---+   ╔═══╤═══╤═══╗   ┏━━━┯━━━┯━━━┓   ABBBCBBBCBBBD
+;; head   |   |   |   |   ║   │   │   ║   ┃   │   │   ┃   E   M   M   E
+;;        +---+---+---+   ╠═══╪═══╪═══╣   ┣━━━┿━━━┿━━━┫   KGGGJGGGJGGGL
+;; body   |   |   |   |   ║   │   │   ║   ┃   │   │   ┃   E   M   M   E
+;;        +---+---+---+   ╟───┼───┼───╢   ┠───┼───┼───┫   KGGGJGGGJGGGL
+;; body   |   |   |   |   ║   │   │   ║   ┃   │   │   ┃   E   M   M   E
+;;        +---+---+---+   ╠═══╪═══╪═══╣   ┣━━━┿━━━┿━━━┫   KGGGJGGGJGGGL
+;; foot   |   |   |   |   ║   │   │   ║   ┃   │   │   ┃   E   M   M   E
+;;        +---+---+---+   ╚═══╧═══╧═══╝   ┗━━━┷━━━┷━━━┛   NBBBOBBBOBBBP
 
 ;; https://www.charset.org/utf-8/10
 
 
-(def border-chars { :standard  "+-++|+-+++++|++++"
+(def border-chars { :standard  "+-++|+-+++++|++++✗"
                     :double    "╔═╤╗║╟─┬╢╪╠╣│╚╧╝┼"
                     :bold      "┏━┯┓┃┠─┬┨┿┣┫│┗┷┛┼"
                     :alpha     "ABCDEFGHIJKLMNOPQ" } )
@@ -58,3 +58,31 @@
   (let [opts  (apply hash-map options)]
     ))
 
+
+(defn print-debug-text [text]
+  (docoll #(println (str "⏵" % "⏴")) (str/split-lines text)))
+   
+(defn format-cell [text rows cols width align overflow padding]
+  (-> (str/align width align overflow text)
+      (expand-lines rows cols)
+      (pad-lines padding)))
+
+(defn pad-lines [text padding]
+  (let [lines    (str/split-lines text)
+        pad-str  (str/repeat " " padding)]
+   (apply str (map #(str pad-str % pad-str) lines))))
+
+(defn expand-lines [text total-lines width]
+  (let [lines       (into [] (str/split-lines text))
+        empty-line  (str/repeat " " width)
+        add-count   (max 0 (- total-lines (count lines)))]
+    (into lines (repeat add-count empty-line))))
+
+(defn max-line-length [text]
+  (max 0 (apply max (map count (str/split-lines text)))))
+
+(defn line-count [text]
+  (count (str/split-lines text)))
+
+(defn ends-with-lf [text]
+  (str/ends-with? text "\n"))
