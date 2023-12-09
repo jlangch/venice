@@ -34,6 +34,7 @@ import java.util.IllegalFormatException;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import java.util.function.Function;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
@@ -313,7 +314,7 @@ public class StringFunctions {
                     .doc(
                         "Aligns a text within a string of width characters.\n\n" +
                         "align: :left, :center, :right\n\n" +
-                        "overflow-mode: :clip-left, :clip-right, :ellipsis-left, :ellipsis-right")
+                        "overflow-mode: :newline :clip-left, :clip-right, :ellipsis-left, :ellipsis-right")
                     .examples(
                         "(str/align 6 :left :clip-right \"abc\")",
                         "(str/align 6 :center :clip-right \"abc\")",
@@ -332,57 +333,51 @@ public class StringFunctions {
                 final int width = Coerce.toVncLong(args.first()).toJavaInteger();
                 final String align = Coerce.toVncKeyword(args.second()).getSimpleName();
                 final String overflow = Coerce.toVncKeyword(args.third()).getSimpleName();
-                final String text = Coerce.toVncString(args.fourth()).getValue().trim();
+                final String text = Coerce.toVncString(args.fourth())
+                                          .getValue()
+                                          .trim()
+                                          .replace('\t', ' ');
 
-                if (StringUtil.indexOneCharOf(text, "\n\r\f\t", 0) >= 0) {
-                    throw new VncException(
-                            "Function 'str/align': a text must not contain any of the "
-                            + "characters: '\\n', '\\r', '\\f', '\\t'.");
-                }
+                final Function<String,List<String>> clip = s -> {
+                    final int len = s.length();
+                    switch(overflow) {
+                        case "newline":        return LineWrap.softWrap(s, width);
+                        case "clip-left":      return Arrays.asList(len > width ? s.substring(len-width, len) : s);
+                        case "clip-right":     return Arrays.asList(len > width ? s.substring(0, width) : s);
+                        case "ellipsis-left":  return Arrays.asList(len > width ? "…" + s.substring(len-width+1, len) : s);
+                        case "ellipsis-right": return Arrays.asList(len > width ? s.substring(0, width-1) + "…" : s);
+                        default:               throw new VncException(String.format(
+                                                            "Function 'str/align' got undefined overflow mode :%s.",
+                                                            overflow));
+                    }};
 
-                final int textlen = text.length();
+                final Function<String,String> justify = s -> {
+                    if (s.length() < width) {
+                         switch(align) {
+                             case "left":   return StringUtil.padRight(s, width);
+                             case "right":  return StringUtil.padLeft(s, width);
+                             case "center": return StringUtil.padCenter(s, width);
+                             default:       throw new VncException(String.format(
+                                                 "Function 'str/align' got undefined align :%s.",
+                                                 align));
+                         }
+                     }
+                     else {
+                         return s;
+                     }};
 
-                String justified;
-
-                switch(overflow) {
-                    case "clip-left":
-                        justified = textlen >= width ? text.substring(textlen-width, textlen) : text;
-                        break;
-                    case "clip-right":
-                        justified = textlen >= width ? text.substring(0, width) : text;
-                        break;
-                    case "ellipsis-left":
-                        justified = textlen >= width-1 ? "…" + text.substring(textlen-width+1, textlen) : text;
-                        break;
-                    case "ellipsis-right":
-                        justified = textlen >= width-1 ?  text.substring(0, width-1) + "…" : text;
-                        break;
-                    default:
-                        throw new VncException(String.format(
-                                "Function 'str/align' got undefined overflow-mode :%s.",
-                                overflow));
-                }
-
-                if (justified.length() < width) {
-                    switch(align) {
-                        case "left":
-                            justified = StringUtil.padRight(justified, width);
-                            break;
-                        case "right":
-                            justified = StringUtil.padLeft(justified, width);
-                            break;
-                        case "center":
-                            justified = StringUtil.padCenter(justified, width);
-                            break;
-                        default:
-                            throw new VncException(String.format(
-                                    "Function 'str/align' got invalid align mode :%s.",
-                                    align));
-                    }
-                }
-
-                return new VncString(justified);
-            }
+                 return new VncString(
+                        text.isEmpty()
+                            ? StringUtil.repeat(' ', width)
+                            : StringUtil
+                                .splitIntoLines(text)
+                                .stream()
+                                .map(s -> s.trim())
+                                .map(s -> clip.apply(s))
+                                .flatMap(list -> list.stream())
+                                .map(s -> justify.apply(s))
+                                .collect(Collectors.joining("\n")));
+             }
 
             private static final long serialVersionUID = -1848883965231344442L;
         };

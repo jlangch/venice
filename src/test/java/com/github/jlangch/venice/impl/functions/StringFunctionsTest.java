@@ -794,43 +794,214 @@ public class StringFunctionsTest {
     public void test_str_align() {
         final Venice venice = new Venice();
 
+        assertEquals("      ", venice.eval("(str/align 6 :left   :clip-left \"\")"));
+        assertEquals("      ", venice.eval("(str/align 6 :center :clip-left \"\")"));
+        assertEquals("      ", venice.eval("(str/align 6 :right  :clip-left \"\")"));
+
         assertEquals("      ", venice.eval("(str/align 6 :left   :clip-right \"\")"));
         assertEquals("      ", venice.eval("(str/align 6 :center :clip-right \"\")"));
         assertEquals("      ", venice.eval("(str/align 6 :right  :clip-right \"\")"));
+
+        assertEquals("      ", venice.eval("(str/align 6 :left   :ellipsis-left \"\")"));
+        assertEquals("      ", venice.eval("(str/align 6 :center :ellipsis-left \"\")"));
+        assertEquals("      ", venice.eval("(str/align 6 :right  :ellipsis-left \"\")"));
+
+        assertEquals("      ", venice.eval("(str/align 6 :left   :ellipsis-right \"\")"));
+        assertEquals("      ", venice.eval("(str/align 6 :center :ellipsis-right \"\")"));
+        assertEquals("      ", venice.eval("(str/align 6 :right  :ellipsis-right \"\")"));
+
+        assertEquals("      ", venice.eval("(str/align 6 :left   :newline \"\")"));
+        assertEquals("      ", venice.eval("(str/align 6 :center :newline \"\")"));
+        assertEquals("      ", venice.eval("(str/align 6 :right  :newline \"\")"));
+
+
+        assertEquals("a     ", venice.eval("(str/align 6 :left   :clip-left \"a\")"));
+        assertEquals("   a  ", venice.eval("(str/align 6 :center :clip-left \"a\")"));
+        assertEquals("     a", venice.eval("(str/align 6 :right  :clip-left \"a\")"));
 
         assertEquals("a     ", venice.eval("(str/align 6 :left   :clip-right \"a\")"));
         assertEquals("   a  ", venice.eval("(str/align 6 :center :clip-right \"a\")"));
         assertEquals("     a", venice.eval("(str/align 6 :right  :clip-right \"a\")"));
 
+        assertEquals("a     ", venice.eval("(str/align 6 :left   :ellipsis-left \"a\")"));
+        assertEquals("   a  ", venice.eval("(str/align 6 :center :ellipsis-left \"a\")"));
+        assertEquals("     a", venice.eval("(str/align 6 :right  :ellipsis-left \"a\")"));
+
+        assertEquals("a     ", venice.eval("(str/align 6 :left   :ellipsis-right \"a\")"));
+        assertEquals("   a  ", venice.eval("(str/align 6 :center :ellipsis-right \"a\")"));
+        assertEquals("     a", venice.eval("(str/align 6 :right  :ellipsis-right \"a\")"));
+
+        assertEquals("a     ", venice.eval("(str/align 6 :left   :newline \"a\")"));
+        assertEquals("   a  ", venice.eval("(str/align 6 :center :newline \"a\")"));
+        assertEquals("     a", venice.eval("(str/align 6 :right  :newline \"a\")"));
+
+
+        assertEquals("ab    ", venice.eval("(str/align 6 :left   :clip-left \"ab\")"));
+        assertEquals("  ab  ", venice.eval("(str/align 6 :center :clip-left \"ab\")"));
+        assertEquals("    ab", venice.eval("(str/align 6 :right  :clip-left \"ab\")"));
+
         assertEquals("ab    ", venice.eval("(str/align 6 :left   :clip-right \"ab\")"));
         assertEquals("  ab  ", venice.eval("(str/align 6 :center :clip-right \"ab\")"));
         assertEquals("    ab", venice.eval("(str/align 6 :right  :clip-right \"ab\")"));
+
+        assertEquals("ab    ", venice.eval("(str/align 6 :left   :ellipsis-left \"ab\")"));
+        assertEquals("  ab  ", venice.eval("(str/align 6 :center :ellipsis-left \"ab\")"));
+        assertEquals("    ab", venice.eval("(str/align 6 :right  :ellipsis-left \"ab\")"));
+
+        assertEquals("ab    ", venice.eval("(str/align 6 :left   :ellipsis-right \"ab\")"));
+        assertEquals("  ab  ", venice.eval("(str/align 6 :center :ellipsis-right \"ab\")"));
+        assertEquals("    ab", venice.eval("(str/align 6 :right  :ellipsis-right \"ab\")"));
+
+        assertEquals("ab    ", venice.eval("(str/align 6 :left   :newline \"ab\")"));
+        assertEquals("  ab  ", venice.eval("(str/align 6 :center :newline \"ab\")"));
+        assertEquals("    ab", venice.eval("(str/align 6 :right  :newline \"ab\")"));
+
+
+        assertEquals("abc   ", venice.eval("(str/align 6 :left   :clip-left \"abc\")"));
+        assertEquals("  abc ", venice.eval("(str/align 6 :center :clip-left \"abc\")"));
+        assertEquals("   abc", venice.eval("(str/align 6 :right  :clip-left \"abc\")"));
 
         assertEquals("abc   ", venice.eval("(str/align 6 :left   :clip-right \"abc\")"));
         assertEquals("  abc ", venice.eval("(str/align 6 :center :clip-right \"abc\")"));
         assertEquals("   abc", venice.eval("(str/align 6 :right  :clip-right \"abc\")"));
 
+        assertEquals("abc   ", venice.eval("(str/align 6 :left   :ellipsis-left \"abc\")"));
+        assertEquals("  abc ", venice.eval("(str/align 6 :center :ellipsis-left \"abc\")"));
+        assertEquals("   abc", venice.eval("(str/align 6 :right  :ellipsis-left \"abc\")"));
+
+        assertEquals("abc   ", venice.eval("(str/align 6 :left   :ellipsis-right \"abc\")"));
+        assertEquals("  abc ", venice.eval("(str/align 6 :center :ellipsis-right \"abc\")"));
+        assertEquals("   abc", venice.eval("(str/align 6 :right  :ellipsis-right \"abc\")"));
+
+        assertEquals("abc   ", venice.eval("(str/align 6 :left   :newline \"abc\")"));
+        assertEquals("  abc ", venice.eval("(str/align 6 :center :newline \"abc\")"));
+        assertEquals("   abc", venice.eval("(str/align 6 :right  :newline \"abc\")"));
+
+
+        assertEquals("abcd  ", venice.eval("(str/align 6 :left   :clip-left \"abcd\")"));
+        assertEquals(" abcd ", venice.eval("(str/align 6 :center :clip-left \"abcd\")"));
+        assertEquals("  abcd", venice.eval("(str/align 6 :right  :clip-left \"abcd\")"));
+
         assertEquals("abcd  ", venice.eval("(str/align 6 :left   :clip-right \"abcd\")"));
         assertEquals(" abcd ", venice.eval("(str/align 6 :center :clip-right \"abcd\")"));
         assertEquals("  abcd", venice.eval("(str/align 6 :right  :clip-right \"abcd\")"));
+
+        assertEquals("abcd  ", venice.eval("(str/align 6 :left   :ellipsis-left \"abcd\")"));
+        assertEquals(" abcd ", venice.eval("(str/align 6 :center :ellipsis-left \"abcd\")"));
+        assertEquals("  abcd", venice.eval("(str/align 6 :right  :ellipsis-left \"abcd\")"));
+
+        assertEquals("abcd  ", venice.eval("(str/align 6 :left   :ellipsis-right \"abcd\")"));
+        assertEquals(" abcd ", venice.eval("(str/align 6 :center :ellipsis-right \"abcd\")"));
+        assertEquals("  abcd", venice.eval("(str/align 6 :right  :ellipsis-right \"abcd\")"));
+
+        assertEquals("abcd  ", venice.eval("(str/align 6 :left   :newline \"abcd\")"));
+        assertEquals(" abcd ", venice.eval("(str/align 6 :center :newline \"abcd\")"));
+        assertEquals("  abcd", venice.eval("(str/align 6 :right  :newline \"abcd\")"));
+
+
+        assertEquals("abcde ", venice.eval("(str/align 6 :left   :clip-left \"abcde\")"));
+        assertEquals(" abcde", venice.eval("(str/align 6 :center :clip-left \"abcde\")"));
+        assertEquals(" abcde", venice.eval("(str/align 6 :right  :clip-left \"abcde\")"));
 
         assertEquals("abcde ", venice.eval("(str/align 6 :left   :clip-right \"abcde\")"));
         assertEquals(" abcde", venice.eval("(str/align 6 :center :clip-right \"abcde\")"));
         assertEquals(" abcde", venice.eval("(str/align 6 :right  :clip-right \"abcde\")"));
 
+        assertEquals("abcde ", venice.eval("(str/align 6 :left   :ellipsis-left \"abcde\")"));
+        assertEquals(" abcde", venice.eval("(str/align 6 :center :ellipsis-left \"abcde\")"));
+        assertEquals(" abcde", venice.eval("(str/align 6 :right  :ellipsis-left \"abcde\")"));
+
+        assertEquals("abcde ", venice.eval("(str/align 6 :left   :ellipsis-right \"abcde\")"));
+        assertEquals(" abcde", venice.eval("(str/align 6 :center :ellipsis-right \"abcde\")"));
+        assertEquals(" abcde", venice.eval("(str/align 6 :right  :ellipsis-right \"abcde\")"));
+
+        assertEquals("abcde ", venice.eval("(str/align 6 :left   :newline \"abcde\")"));
+        assertEquals(" abcde", venice.eval("(str/align 6 :center :newline \"abcde\")"));
+        assertEquals(" abcde", venice.eval("(str/align 6 :right  :newline \"abcde\")"));
+
+
+        assertEquals("abcdef", venice.eval("(str/align 6 :left   :clip-left \"abcdef\")"));
+        assertEquals("abcdef", venice.eval("(str/align 6 :center :clip-left \"abcdef\")"));
+        assertEquals("abcdef", venice.eval("(str/align 6 :right  :clip-left \"abcdef\")"));
+
         assertEquals("abcdef", venice.eval("(str/align 6 :left   :clip-right \"abcdef\")"));
         assertEquals("abcdef", venice.eval("(str/align 6 :center :clip-right \"abcdef\")"));
         assertEquals("abcdef", venice.eval("(str/align 6 :right  :clip-right \"abcdef\")"));
 
-        assertEquals("abcdef", venice.eval("(str/align 6 :left   :clip-right \"abcdefg\")"));
+        assertEquals("abcdef", venice.eval("(str/align 6 :left   :ellipsis-left \"abcdef\")"));
+        assertEquals("abcdef", venice.eval("(str/align 6 :center :ellipsis-left \"abcdef\")"));
+        assertEquals("abcdef", venice.eval("(str/align 6 :right  :ellipsis-left \"abcdef\")"));
+
+        assertEquals("abcdef", venice.eval("(str/align 6 :left   :ellipsis-right \"abcdef\")"));
+        assertEquals("abcdef", venice.eval("(str/align 6 :center :ellipsis-right \"abcdef\")"));
+        assertEquals("abcdef", venice.eval("(str/align 6 :right  :ellipsis-right \"abcdef\")"));
+
+        assertEquals("abcdef", venice.eval("(str/align 6 :left   :newline \"abcdef\")"));
+        assertEquals("abcdef", venice.eval("(str/align 6 :center :newline \"abcdef\")"));
+        assertEquals("abcdef", venice.eval("(str/align 6 :right  :newline \"abcdef\")"));
+
+
         assertEquals("bcdefg", venice.eval("(str/align 6 :left   :clip-left \"abcdefg\")"));
-        assertEquals("abcde…", venice.eval("(str/align 6 :left   :ellipsis-right \"abcdefg\")"));
+        assertEquals("bcdefg", venice.eval("(str/align 6 :center :clip-left \"abcdefg\")"));
+        assertEquals("bcdefg", venice.eval("(str/align 6 :right  :clip-left \"abcdefg\")"));
+
+        assertEquals("abcdef", venice.eval("(str/align 6 :left   :clip-right \"abcdefg\")"));
+        assertEquals("abcdef", venice.eval("(str/align 6 :center :clip-right \"abcdefg\")"));
+        assertEquals("abcdef", venice.eval("(str/align 6 :right  :clip-right \"abcdefg\")"));
+
         assertEquals("…cdefg", venice.eval("(str/align 6 :left   :ellipsis-left \"abcdefg\")"));
+        assertEquals("…cdefg", venice.eval("(str/align 6 :center :ellipsis-left \"abcdefg\")"));
+        assertEquals("…cdefg", venice.eval("(str/align 6 :right  :ellipsis-left \"abcdefg\")"));
+
+        assertEquals("abcde…", venice.eval("(str/align 6 :left   :ellipsis-right \"abcdefg\")"));
+        assertEquals("abcde…", venice.eval("(str/align 6 :center :ellipsis-right \"abcdefg\")"));
+        assertEquals("abcde…", venice.eval("(str/align 6 :right  :ellipsis-right \"abcdefg\")"));
+
+        assertEquals("abcdef\ng     ", venice.eval("(str/align 6 :left   :newline \"abcdefg\")"));
+        assertEquals("abcdef\n   g  ", venice.eval("(str/align 6 :center :newline \"abcdefg\")"));
+        assertEquals("abcdef\n     g", venice.eval("(str/align 6 :right  :newline \"abcdefg\")"));
+
+
+        assertEquals("cdefgh", venice.eval("(str/align 6 :left   :clip-left \"abcdefgh\")"));
+        assertEquals("cdefgh", venice.eval("(str/align 6 :center :clip-left \"abcdefgh\")"));
+        assertEquals("cdefgh", venice.eval("(str/align 6 :right  :clip-left \"abcdefgh\")"));
 
         assertEquals("abcdef", venice.eval("(str/align 6 :left   :clip-right \"abcdefgh\")"));
-        assertEquals("cdefgh", venice.eval("(str/align 6 :left   :clip-left \"abcdefgh\")"));
-        assertEquals("abcde…", venice.eval("(str/align 6 :left   :ellipsis-right \"abcdefgh\")"));
+        assertEquals("abcdef", venice.eval("(str/align 6 :center :clip-right \"abcdefgh\")"));
+        assertEquals("abcdef", venice.eval("(str/align 6 :right  :clip-right \"abcdefgh\")"));
+
         assertEquals("…defgh", venice.eval("(str/align 6 :left   :ellipsis-left \"abcdefgh\")"));
+        assertEquals("…defgh", venice.eval("(str/align 6 :center :ellipsis-left \"abcdefgh\")"));
+        assertEquals("…defgh", venice.eval("(str/align 6 :right  :ellipsis-left \"abcdefgh\")"));
+
+        assertEquals("abcde…", venice.eval("(str/align 6 :left   :ellipsis-right \"abcdefgh\")"));
+        assertEquals("abcde…", venice.eval("(str/align 6 :center :ellipsis-right \"abcdefgh\")"));
+        assertEquals("abcde…", venice.eval("(str/align 6 :right  :ellipsis-right \"abcdefgh\")"));
+
+        assertEquals("abcdef\ngh    ", venice.eval("(str/align 6 :left   :newline \"abcdefgh\")"));
+        assertEquals("abcdef\n  gh  ", venice.eval("(str/align 6 :center :newline \"abcdefgh\")"));
+        assertEquals("abcdef\n    gh", venice.eval("(str/align 6 :right  :newline \"abcdefgh\")"));
+
+
+        assertEquals("cdef h", venice.eval("(str/align 6 :left   :clip-left \"abcdef h\")"));
+        assertEquals("cdef h", venice.eval("(str/align 6 :center :clip-left \"abcdef h\")"));
+        assertEquals("cdef h", venice.eval("(str/align 6 :right  :clip-left \"abcdef h\")"));
+
+        assertEquals("abcdef", venice.eval("(str/align 6 :left   :clip-right \"abcdef h\")"));
+        assertEquals("abcdef", venice.eval("(str/align 6 :center :clip-right \"abcdef h\")"));
+        assertEquals("abcdef", venice.eval("(str/align 6 :right  :clip-right \"abcdef h\")"));
+
+        assertEquals("…def h", venice.eval("(str/align 6 :left   :ellipsis-left \"abcdef h\")"));
+        assertEquals("…def h", venice.eval("(str/align 6 :center :ellipsis-left \"abcdef h\")"));
+        assertEquals("…def h", venice.eval("(str/align 6 :right  :ellipsis-left \"abcdef h\")"));
+
+        assertEquals("abcde…", venice.eval("(str/align 6 :left   :ellipsis-right \"abcdef h\")"));
+        assertEquals("abcde…", venice.eval("(str/align 6 :center :ellipsis-right \"abcdef h\")"));
+        assertEquals("abcde…", venice.eval("(str/align 6 :right  :ellipsis-right \"abcdefgh\")"));
+
+        assertEquals("abcdef\nh     ", venice.eval("(str/align 6 :left   :newline \"abcdef h\")"));
+        assertEquals("abcdef\n   h  ", venice.eval("(str/align 6 :center :newline \"abcdef h\")"));
+        assertEquals("abcdef\n     h", venice.eval("(str/align 6 :right  :newline \"abcdef h\")"));
     }
 
     @Test
