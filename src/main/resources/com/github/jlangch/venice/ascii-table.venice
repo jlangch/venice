@@ -24,4 +24,37 @@
 
 (ns ascii-table)
 
+;;         standard         double          bold          alpha
+;;
+;;      +---+---+---+   ╔═══╤═══╤═══╗   ┏━━━┯━━━┯━━━┓  ABBBCBBBCBBBD
+;; head |   |   |   |   ║   │   │   ║   ┃   │   │   ┃  E   M   M   E
+;;      +---+---+---+   ╠═══╪═══╪═══╣   ┣━━━┿━━━┿━━━┫  KGGGJGGGJGGGL
+;; body |   |   |   |   ║   │   │   ║   ┃   │   │   ┃  E   M   M   E
+;;      +---+---+---+   ╟───┼───┼───╢   ┠───┼───┼───┫  KGGGJGGGJGGGL
+;; body |   |   |   |   ║   │   │   ║   ┃   │   │   ┃  E   M   M   E
+;;      +---+---+---+   ╠═══╪═══╪═══╣   ┣━━━┿━━━┿━━━┫  KGGGJGGGJGGGL
+;; foot |   |   |   |   ║   │   │   ║   ┃   │   │   ┃  E   M   M   E
+;;      +---+---+---+   ╚═══╧═══╧═══╝   ┗━━━┷━━━┷━━━┛  NBBBOBBBOBBBP
+
+;; https://www.charset.org/utf-8/10
+
+
+(def border-chars { :standard  "+-++|+-+++++|++++"
+                    :double    "╔═╤╗║╟─┬╢╪╠╣│╚╧╝┼"
+                    :bold      "┏━┯┓┃┠─┬┨┿┣┫│┗┷┛┼"
+                    :alpha     "ABCDEFGHIJKLMNOPQ" } )
+
+(def alignments #{:left :center :right})
+(def overflow #{:newline :clip-left :clip-right :ellipsis-left :ellipsis-right})
+(def modes #{:standard :double :bold :alpha})
+
+(def min-col-width 1)
+(def min-col-width 80)
+
+
+
+
+(defn render [cols header body & options]
+  (let [opts  (apply hash-map options)]
+    ))
 

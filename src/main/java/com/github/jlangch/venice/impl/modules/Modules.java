@@ -46,6 +46,7 @@ public class Modules {
                     Arrays.asList(
                         "ansi",
                         "app",
+                        "ascii-table",
                         "benchmark",
                         "cargo",
                         "cargo-arangodb",
