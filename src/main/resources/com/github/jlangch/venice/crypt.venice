@@ -309,7 +309,7 @@
           is missing. Otherwise returns nil and writes the encrypted file data 
           to the destination given by 'out'.
  
-          The arg 'algorithm' may be: "AES256-GCM", "AES256-CBC",  "CHACHA20"
+          The arg 'algorithm' is one of: "AES256-GCM", "AES256-CBC", "ChaCha20"
 
           The arg 'in' may be a: 
 
@@ -401,7 +401,7 @@
           is missing. Otherwise returns nil and writes the decrypted file data 
           to the destination given by 'out'.
  
-          The arg 'algorithm' may be: "AES256-GCM", "AES256-CBC",  "CHACHA20"
+          The arg 'algorithm' is one of: "AES256-GCM", "AES256-CBC", "ChaCha20"
 
           The arg 'in' may be a: 
 
