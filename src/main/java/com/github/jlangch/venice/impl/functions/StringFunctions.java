@@ -376,7 +376,7 @@ public class StringFunctions {
                                 .map(s -> clip.apply(s))
                                 .flatMap(list -> list.stream())
                                 .map(s -> justify.apply(s))
-                                .collect(Collectors.joining("\n")));
+                                .collect(Collectors.joining(System.lineSeparator())));
              }
 
             private static final long serialVersionUID = -1848883965231344442L;

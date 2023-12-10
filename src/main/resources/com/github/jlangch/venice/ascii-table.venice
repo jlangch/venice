@@ -51,17 +51,23 @@
 (def min-col-width 1)
 (def min-col-width 80)
 
+(def col  { :header        "Name"
+            :footer        "Total"
+            :header-align  :left
+            :data-align    :left
+            :footer-align  :left
+            :overflow      :newline
+            :min-width     1
+            :max-width     20 } )
+
+(defn render [header data footer]
+  )
+
+(defn render [columns data]
+  )
 
 
 
-(defn render [cols header body & options]
-  (let [opts  (apply hash-map options)]
-    ))
-
-
-(defn print-debug-text [text]
-  (docoll #(println (str "⏵" % "⏴")) (str/split-lines text)))
-   
 (defn format-cell [text rows cols width align overflow padding]
   (-> (str/align width align overflow text)
       (expand-lines rows cols)
@@ -85,4 +91,7 @@
   (count (str/split-lines text)))
 
 (defn ends-with-lf [text]
-  (str/ends-with? text "\n"))
+  (str/ends-with? text *newline*))
+
+(defn print-debug-text [text]
+  (docoll #(println (str "⏵" % "⏴")) (str/split-lines text)))
