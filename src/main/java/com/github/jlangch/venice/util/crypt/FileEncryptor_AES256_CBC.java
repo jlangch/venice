@@ -41,6 +41,9 @@ import javax.crypto.spec.SecretKeySpec;
  * Uses a random salt and IV for each file and writes the salt and the IV
  * to start of the encrypted file.
  *
+ * Note:  AES/CBC/PKCS5Padding is regarded as a broken or risky cryptographic
+ *        algorithm (CWE-327, CWE-328)
+ *
  * <pre>
  *    Encrypted binary file format when passphrase is used
  *

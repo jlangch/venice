@@ -309,8 +309,13 @@
           is missing. Otherwise returns nil and writes the encrypted file data 
           to the destination given by 'out'.
  
-          The arg 'algorithm' is one of: "AES256-GCM", "AES256-CBC", "ChaCha20"
+          The arg 'algorithm' is one of: AES256-GCM, AES256-CBC, ChaCha20
           (ChaCha20 is available on Java 11+ only!)
+
+          *Note:* AES/CBC/PKCS5Padding is regarded as a broken or risky 
+          cryptographic algorithm (CWE-327, CWE-328). Use AES256-GCM or ChaCha20
+          in productive applications!
+
 
           The arg 'in' may be a: 
 
