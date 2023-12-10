@@ -457,7 +457,7 @@
           (do
             (load-module :crypt) 
             (let [file (io/temp-file "test-", ".data")
-                  data (bytebuf (repeatedly 1000 #(rand-long 256)))] 
+                  data (bytebuf-allocate-random 1000)] 
               (io/delete-file-on-exit file)
               (io/spit file data)
               (crypt/hash-file file "salt" "MD5"))) 
@@ -506,7 +506,7 @@
           (do
             (load-module :crypt) 
             (let [file (io/temp-file "test-", ".data")
-                  data (bytebuf (repeatedly 1000 #(rand-long 256)))
+                  data (bytebuf-allocate-random 1000)
                   salt "salt"] 
               (io/delete-file-on-exit file)
               (io/spit file data)
