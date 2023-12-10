@@ -324,39 +324,27 @@
           * `java.io.File`, e.g: `(io/file "/temp/foo.json")`
           * `java.io.OutputStream`
 
+          The 256 bit encryption key is derived from the passphrase key. To 
+          generate the key a "PBKDF2WithHmacSHA256" secret key factory is used 
+          with a 16 bit random salt and 65536 iterations.
+          Carefully choose a long enough passphrase.
 
-          Algorith "AES256-GCM" ("AES/GCM/NoPadding")
-
-          Uses a random salt and IV for each file and writes the salt and the IV
-          to start of the encrypted file.
+          While encrypting a file the random salt, IV, nonce and/or counter are
+          written to the start of the encrypted file and read before decrypting
+          the file:
  
           ```
-          Encrypted binary file format
- 
-          +-----------------------+
-          |         salt          |   16 bytes
-          +-----------------------+
-          |          IV           |   12 bytes
-          +-----------------------+
-          |  encrypted file data  |   n bytes
-          +-----------------------+
-
-
-          Algorith "AES256-CBC" ("AES/CBC/PKCS5Padding")
-
-          Uses a random salt and IV for each file and writes the salt and the IV
-          to start of the encrypted file.
- 
-          ```
-          Encrypted binary file format
- 
-          +-----------------------+
-          |         salt          |   16 bytes
-          +-----------------------+
-          |          IV           |   16 bytes
-          +-----------------------+
-          |  encrypted file data  |   n bytes
-          +-----------------------+
+                AES256-GCM              AES256-CBC               ChaCha20
+             AES/GCM/NoPadding     AES/CBC/PKCS5Padding
+          +--------------------+  +--------------------+  +--------------------+
+          |      salt (16)     |  |      salt (16)     |  |      salt (16)     |
+          +--------------------+  +--------------------+  +--------------------+
+          |       IV  (12)     |  |       IV  (12)     |  |      nonce (12)    |
+          +--------------------+  +--------------------+  +--------------------+
+          |       data (n)     |  |      data (n)      |  |     counter (4)    | 
+          +--------------------+  +--------------------+  +--------------------+
+                                                          |      data (n)      | 
+                                                          +--------------------+
           ```
           """
      :examples (list
