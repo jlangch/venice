@@ -79,10 +79,10 @@
    (apply str (map #(str pad-str % pad-str) lines))))
 
 (defn expand-lines [text total-lines width]
-  (let [lines       (into [] (str/split-lines text))
+  (let [lines       (str/split-lines text)
         empty-line  (str/repeat " " width)
         add-count   (max 0 (- total-lines (count lines)))]
-    (into lines (repeat add-count empty-line))))
+    (concat lines (repeat add-count empty-line))))
 
 (defn max-line-length [text]
   (max 0 (apply max (map count (str/split-lines text)))))
@@ -94,4 +94,5 @@
   (str/ends-with? text *newline*))
 
 (defn print-debug-text [text]
-  (docoll #(println (str "⏵" % "⏴")) (str/split-lines text)))
+  (docoll #(println (str "⏵" % "⏴")) 
+          (if (coll? text) text (str/split-lines text))))
