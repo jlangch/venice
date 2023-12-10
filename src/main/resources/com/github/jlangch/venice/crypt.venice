@@ -54,7 +54,7 @@
      :doc """
           Hashes a string or a bytebuf using MD5 with an optional salt.
 
-          Note: MD5 is not safe any more use PBKDF2 instead!
+          Note: MD5 is not safe any more use PBKDF2 to hash passwords!
           """
      :examples (list
           """
