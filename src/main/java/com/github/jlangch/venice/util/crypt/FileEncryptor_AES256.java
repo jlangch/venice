@@ -42,7 +42,7 @@ import javax.crypto.spec.SecretKeySpec;
  * to start of the encrypted file.
  *
  * <pre>
- *    Encrypted binary file format
+ *    Encrypted binary file format when passphrase is used
  *
  *    +-----------------------+
  *    |         salt          |   16 bytes
@@ -52,8 +52,18 @@ import javax.crypto.spec.SecretKeySpec;
  *    |  encrypted file data  |   n bytes
  *    +-----------------------+
  * </pre>
+ *
+ * <pre>
+ *    Encrypted binary file format when key is used
+ *
+ *    +-----------------------+
+ *    |          IV           |   12 bytes
+ *    +-----------------------+
+ *    |  encrypted file data  |   n bytes
+ *    +-----------------------+
+ * </pre>
  */
-public class FileEncryptor {
+public class FileEncryptor_AES256 {
 
     public static void encryptFileWithPassphrase(
             final File inputFile,
@@ -75,11 +85,11 @@ public class FileEncryptor {
             final String passphrase
     ) throws Exception {
         // Generate a random salt
-        byte[] salt = new byte[16];
+        byte[] salt = new byte[SALT_LEN];
         new SecureRandom().nextBytes(salt);
 
         // Generate a random IV
-        byte[] iv = new byte[12]; // GCM recommended 12 bytes IV
+        byte[] iv = new byte[IV_LEN]; // GCM recommended 12 bytes IV
         new SecureRandom().nextBytes(iv);
 
         // Derive key from passphrase
@@ -97,12 +107,12 @@ public class FileEncryptor {
         byte[] encryptedData = cipher.doFinal(fileData);
 
         // Combine salt, IV, and encrypted data
-        byte[] saltIvAndEncryptedData = new byte[salt.length + iv.length + encryptedData.length];
-        System.arraycopy(salt, 0, saltIvAndEncryptedData, 0, salt.length);
-        System.arraycopy(iv, 0, saltIvAndEncryptedData, salt.length, iv.length);
-        System.arraycopy(encryptedData, 0, saltIvAndEncryptedData, salt.length + iv.length, encryptedData.length);
+        byte[] outData = new byte[SALT_LEN + IV_LEN + encryptedData.length];
+        System.arraycopy(salt, 0, outData, 0, SALT_LEN);
+        System.arraycopy(iv, 0, outData, SALT_LEN, IV_LEN);
+        System.arraycopy(encryptedData, 0, outData, SALT_LEN + IV_LEN, encryptedData.length);
 
-        return saltIvAndEncryptedData;
+        return outData;
     }
 
     public static void encryptFileWithKey(
@@ -125,7 +135,7 @@ public class FileEncryptor {
             final byte[] key
     ) throws Exception {
         // Generate a random IV
-        byte[] iv = new byte[12]; // GCM recommended 12 bytes IV
+        byte[] iv = new byte[IV_LEN]; // GCM recommended 12 bytes IV
         new SecureRandom().nextBytes(iv);
 
         // Initialize GCM Parameters, 128 bit auth tag length
@@ -140,11 +150,11 @@ public class FileEncryptor {
         byte[] encryptedData = cipher.doFinal(fileData);
 
         // Combine IV and encrypted data
-        byte[] ivAndEncryptedData = new byte[iv.length + encryptedData.length];
-        System.arraycopy(iv, 0, ivAndEncryptedData, 0, iv.length);
-        System.arraycopy(encryptedData, 0, ivAndEncryptedData, iv.length, encryptedData.length);
+        byte[] outData = new byte[IV_LEN + encryptedData.length];
+        System.arraycopy(iv, 0, outData, 0, IV_LEN);
+        System.arraycopy(encryptedData, 0, outData, IV_LEN, encryptedData.length);
 
-        return ivAndEncryptedData;
+        return outData;
     }
 
     public static void decryptFileWithPassphrase(
@@ -167,12 +177,14 @@ public class FileEncryptor {
             final String passphrase
     ) throws Exception {
         // Extract salt, IV, and encrypted data
-        byte[] salt = new byte[16];
-        System.arraycopy(fileData, 0, salt, 0, salt.length);
-        byte[] iv = new byte[12];
-        System.arraycopy(fileData, salt.length, iv, 0, iv.length);
-        byte[] encryptedData = new byte[fileData.length - salt.length - iv.length];
-        System.arraycopy(fileData, salt.length + iv.length, encryptedData, 0, encryptedData.length);
+        byte[] salt = new byte[SALT_LEN];
+        System.arraycopy(fileData, 0, salt, 0, SALT_LEN);
+
+        byte[] iv = new byte[IV_LEN];
+        System.arraycopy(fileData, SALT_LEN, iv, 0, IV_LEN);
+
+        byte[] encryptedData = new byte[fileData.length - SALT_LEN - IV_LEN];
+        System.arraycopy(fileData, SALT_LEN + IV_LEN, encryptedData, 0, encryptedData.length);
 
         // Derive key from passphrase
         byte[] key = deriveKeyFromPassphrase(passphrase, salt, 65536, 256);
@@ -211,10 +223,11 @@ public class FileEncryptor {
             final byte[] key
     ) throws Exception {
         // Extract IV and encrypted data
-        byte[] iv = new byte[12];
-        System.arraycopy(fileData, 0, iv, 0, iv.length);
-        byte[] encryptedData = new byte[fileData.length - iv.length];
-        System.arraycopy(fileData, iv.length, encryptedData, 0, encryptedData.length);
+        byte[] iv = new byte[IV_LEN];
+        System.arraycopy(fileData, 0, iv, 0, IV_LEN);
+
+        byte[] encryptedData = new byte[fileData.length - IV_LEN];
+        System.arraycopy(fileData, IV_LEN, encryptedData, 0, encryptedData.length);
 
         // Initialize GCM Parameters, 128 bit auth tag length
         GCMParameterSpec gcmParameterSpec = new GCMParameterSpec(128, iv);
@@ -241,4 +254,8 @@ public class FileEncryptor {
         SecretKeyFactory factory = SecretKeyFactory.getInstance("PBKDF2WithHmacSHA256");
         return factory.generateSecret(spec).getEncoded();
     }
+
+
+    private static int SALT_LEN = 16;
+    private static int IV_LEN = 12;
 }

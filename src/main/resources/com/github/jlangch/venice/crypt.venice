@@ -38,7 +38,7 @@
 (import :javax.crypto.spec.SecretKeySpec)
 (import :javax.net.ssl.SSLServerSocketFactory)
 
-(import :com.github.jlangch.venice.util.crypt.FileEncryptor)
+(import :com.github.jlangch.venice.util.crypt.FileEncryptor_AES256)
 (import :com.github.jlangch.venice.util.crypt.FileHasher)
 
 
@@ -359,10 +359,10 @@
 
   ([in passphrase]
     (as-> (io/slurp in :binary true) data
-          (. :FileEncryptor :encryptFileWithPassphrase data passphrase)))
+          (. :FileEncryptor_AES256 :encryptFileWithPassphrase data passphrase)))
   ([in out passphrase]
     (as-> (io/slurp in :binary true) data
-          (. :FileEncryptor :encryptFileWithPassphrase data passphrase)
+          (. :FileEncryptor_AES256 :encryptFileWithPassphrase data passphrase)
           (io/spit out data)
           nil)))
 
@@ -413,10 +413,10 @@
 
   ([in passphrase]
     (as-> (io/slurp in :binary true) data
-          (. :FileEncryptor :decryptFileWithPassphrase data passphrase)))
+          (. :FileEncryptor_AES256 :decryptFileWithPassphrase data passphrase)))
   ([in out passphrase]
     (as-> (io/slurp in :binary true) data
-          (. :FileEncryptor :decryptFileWithPassphrase data passphrase)
+          (. :FileEncryptor_AES256 :decryptFileWithPassphrase data passphrase)
           (io/spit out data)
           nil)))
 
