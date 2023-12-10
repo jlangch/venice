@@ -310,6 +310,7 @@
           to the destination given by 'out'.
  
           The arg 'algorithm' is one of: "AES256-GCM", "AES256-CBC", "ChaCha20"
+          (ChaCha20 is available on Java 11+ only!)
 
           The arg 'in' may be a: 
 
