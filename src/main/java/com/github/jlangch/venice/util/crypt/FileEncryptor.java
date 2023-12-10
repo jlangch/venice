@@ -38,10 +38,10 @@ public class FileEncryptor {
             final String passphrase
     ) throws Exception {
         switch(StringUtil.trimToEmpty(algorithm).toUpperCase()) {
-            case "AES256_CBC":
+            case "AES256-CBC":
                 FileEncryptor_AES256_CBC.encryptFileWithPassphrase(inputFile, outputFile, passphrase);
                 break;
-            case "AES256_GCM":
+            case "AES256-GCM":
                 FileEncryptor_AES256_GCM.encryptFileWithPassphrase(inputFile, outputFile, passphrase);
                 break;
             case "CHACHA20":
@@ -58,9 +58,9 @@ public class FileEncryptor {
             final String passphrase
     ) throws Exception {
         switch(StringUtil.trimToEmpty(algorithm).toUpperCase()) {
-            case "AES256_CBC":
+            case "AES256-CBC":
                 return FileEncryptor_AES256_CBC.encryptFileWithPassphrase(fileData, passphrase);
-            case "AES256_GCM":
+            case "AES256-GCM":
                 return FileEncryptor_AES256_GCM.encryptFileWithPassphrase(fileData, passphrase);
             case "CHACHA20":
                 return FileEncryptor_ChaCha20.encryptFileWithPassphrase(fileData, passphrase);
@@ -76,10 +76,10 @@ public class FileEncryptor {
             final byte[] key
     ) throws Exception {
         switch(StringUtil.trimToEmpty(algorithm).toUpperCase()) {
-            case "AES256_CBC":
+            case "AES256-CBC":
                 FileEncryptor_AES256_CBC.encryptFileWithKey(inputFile, outputFile, key);
                 break;
-            case "AES256_GCM":
+            case "AES256-GCM":
                 FileEncryptor_AES256_GCM.encryptFileWithKey(inputFile, outputFile, key);
                 break;
             case "CHACHA20":
@@ -96,9 +96,9 @@ public class FileEncryptor {
             final byte[] key
     ) throws Exception {
         switch(StringUtil.trimToEmpty(algorithm).toUpperCase()) {
-            case "AES256_CBC":
+            case "AES256-CBC":
                 return FileEncryptor_AES256_CBC.encryptFileWithKey(fileData, key);
-            case "AES256_GCM":
+            case "AES256-GCM":
                 return FileEncryptor_AES256_GCM.encryptFileWithKey(fileData, key);
             case "CHACHA20":
                 return FileEncryptor_ChaCha20.encryptFileWithKey(fileData, key);
@@ -114,10 +114,10 @@ public class FileEncryptor {
             final String passphrase
     ) throws Exception {
         switch(StringUtil.trimToEmpty(algorithm).toUpperCase()) {
-            case "AES256_CBC":
+            case "AES256-CBC":
                 FileEncryptor_AES256_CBC.decryptFileWithPassphrase(inputFile, outputFile, passphrase);
                 break;
-            case "AES256_GCM":
+            case "AES256-GCM":
                 FileEncryptor_AES256_GCM.decryptFileWithPassphrase(inputFile, outputFile, passphrase);
                 break;
             case "CHACHA20":
@@ -134,9 +134,9 @@ public class FileEncryptor {
             final String passphrase
     ) throws Exception {
         switch(StringUtil.trimToEmpty(algorithm).toUpperCase()) {
-            case "AES256_CBC":
+            case "AES256-CBC":
                 return FileEncryptor_AES256_CBC.decryptFileWithPassphrase(fileData, passphrase);
-            case "AES256_GCM":
+            case "AES256-GCM":
                 return FileEncryptor_AES256_GCM.decryptFileWithPassphrase(fileData, passphrase);
             case "CHACHA20":
                 return FileEncryptor_ChaCha20.decryptFileWithPassphrase(fileData, passphrase);
@@ -152,10 +152,10 @@ public class FileEncryptor {
             final byte[] key
     ) throws Exception {
         switch(StringUtil.trimToEmpty(algorithm).toUpperCase()) {
-            case "AES256_CBC":
+            case "AES256-CBC":
                 FileEncryptor_AES256_CBC.decryptFileWithKey(inputFile, outputFile, key);
                 break;
-            case "AES256_GCM":
+            case "AES256-GCM":
                 FileEncryptor_AES256_GCM.decryptFileWithKey(inputFile, outputFile, key);
                 break;
             case "CHACHA20":
@@ -172,9 +172,9 @@ public class FileEncryptor {
             final byte[] key
     ) throws Exception {
         switch(StringUtil.trimToEmpty(algorithm).toUpperCase()) {
-            case "AES256_CBC":
+            case "AES256-CBC":
                 return FileEncryptor_AES256_CBC.decryptFileWithKey(fileData, key);
-            case "AES256_GCM":
+            case "AES256-GCM":
                 return FileEncryptor_AES256_GCM.decryptFileWithKey(fileData, key);
             case "CHACHA20":
                 return FileEncryptor_ChaCha20.decryptFileWithKey(fileData, key);
