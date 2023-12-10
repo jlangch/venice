@@ -325,7 +325,7 @@
           * `java.io.File`, e.g: `(io/file "/temp/foo.json")`
           * `java.io.OutputStream`
 
-          The 256 bit encryption key is derived from the passphrase key. To 
+          The 256 bit encryption key is derived from the passphrase. To 
           generate the key a "PBKDF2WithHmacSHA256" secret key factory is used 
           with a 16 bit random salt and 65536 iterations.
           Carefully choose a long enough passphrase.
