@@ -29,10 +29,10 @@
 ;; Decrypt AES-256 CBC:    67ms    67ms    65ms    76ms   162ms  1053ms
 ;; Encrypt AES-256 GCM:    64ms    65ms    70ms    96ms   364ms  3170ms
 ;; Decrypt AES-256 GCM:    66ms    65ms    67ms    94ms   363ms  3215ms
-;; Encrypt ChaCha20:          -       -       -       -       -       -
-;; Decrypt ChaCha20:          -       -       -       -       -       -
 ;; Encrypt AES-256 ZIP:    11ms     5ms    10ms    60ms   565ms  5681ms
 ;; Decrypt AES-256 ZIP:     7ms     5ms     6ms    24ms   204ms  2045ms
+;; Encrypt ChaCha20:          -       -       -       -       -       -
+;; Decrypt ChaCha20:          -       -       -       -       -       -
 ;; --------------------------------------------------------------------
 
 
@@ -125,7 +125,7 @@
                                                  passwd))]
         (printel "Decrypt AES GCM:" t))
 
-      (when (crypt/encrypt-file-supported? "CHACHA20")
+      (when (crypt/encrypt-file-supported? "ChaCha20")
         (let [t (timing/elapsed #(encrypt-aes-cha data-file
                                                   aes-file-cha-enc
                                                   passwd))]
