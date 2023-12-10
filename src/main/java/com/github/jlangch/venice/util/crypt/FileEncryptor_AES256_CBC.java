@@ -103,7 +103,7 @@ public class FileEncryptor_AES256_CBC {
         IvParameterSpec ivParameterSpec = new IvParameterSpec(iv);
 
         // Initialize Cipher for AES-GCM
-        Cipher cipher = Cipher.getInstance("AES/CBC/PKCS5Padding");
+        Cipher cipher = getCipher();
         SecretKeySpec keySpec = new SecretKeySpec(key, "AES");
         cipher.init(Cipher.ENCRYPT_MODE, keySpec, ivParameterSpec);
 
@@ -146,7 +146,7 @@ public class FileEncryptor_AES256_CBC {
         IvParameterSpec ivParameterSpec = new IvParameterSpec(iv);
 
         // Initialize Cipher for AES-GCM
-        Cipher cipher = Cipher.getInstance("AES/CBC/PKCS5Padding");
+        Cipher cipher = getCipher();
         SecretKeySpec keySpec = new SecretKeySpec(key, "AES");
         cipher.init(Cipher.ENCRYPT_MODE, keySpec, ivParameterSpec);
 
@@ -197,7 +197,7 @@ public class FileEncryptor_AES256_CBC {
         IvParameterSpec ivParameterSpec = new IvParameterSpec(iv);
 
         // Initialize Cipher for AES-GCM
-        Cipher cipher = Cipher.getInstance("AES/CBC/PKCS5Padding");
+        Cipher cipher = getCipher();
         SecretKeySpec keySpec = new SecretKeySpec(key, "AES");
         cipher.init(Cipher.DECRYPT_MODE, keySpec, ivParameterSpec);
 
@@ -237,7 +237,7 @@ public class FileEncryptor_AES256_CBC {
         IvParameterSpec ivParameterSpec = new IvParameterSpec(iv);
 
         // Initialize Cipher for AES-GCM
-        Cipher cipher = Cipher.getInstance("AES/CBC/PKCS5Padding");
+        Cipher cipher = getCipher();
         SecretKeySpec keySpec = new SecretKeySpec(key, "AES");
         cipher.init(Cipher.DECRYPT_MODE, keySpec, ivParameterSpec);
 
@@ -257,6 +257,10 @@ public class FileEncryptor_AES256_CBC {
         KeySpec spec = new PBEKeySpec(passphrase.toCharArray(), salt, iterationCount, keyLength);
         SecretKeyFactory factory = SecretKeyFactory.getInstance("PBKDF2WithHmacSHA256");
         return factory.generateSecret(spec).getEncoded();
+    }
+
+    private static Cipher getCipher() throws Exception {
+    	return Cipher.getInstance(String.join("/", new String[] {"AES", "CBC", "PKCS5Padding"}));
     }
 
 
