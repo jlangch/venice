@@ -444,6 +444,9 @@
           (io/spit out data)
           nil)))
 
+(defn encrypt-file-supported? [algorithm]
+   (. :FileEncryptor :supports algorithm))
+
 
 
 ;; -----------------------------------------------------------------------------

@@ -65,6 +65,10 @@ import javax.crypto.spec.SecretKeySpec;
  */
 public class FileEncryptor_AES256_GCM {
 
+	public static boolean isSupported() {
+		return true;
+	}
+
     public static void encryptFileWithPassphrase(
             final File inputFile,
             final File outputFile,

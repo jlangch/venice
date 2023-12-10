@@ -74,6 +74,17 @@ import com.github.jlangch.venice.impl.util.reflect.ReflectionUtil;
  */
 public class FileEncryptor_ChaCha20 {
 
+	public static boolean isSupported() {
+        try {
+            final Class<?> clazz = ReflectionUtil.classForName("javax.crypto.spec.ChaCha20ParameterSpec");
+            return clazz != null;
+        }
+        catch(Exception ex) {
+            return false;
+        }
+	}
+
+
     public static void encryptFileWithPassphrase(
             final File inputFile,
             final File outputFile,

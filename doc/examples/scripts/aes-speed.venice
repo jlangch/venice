@@ -25,12 +25,14 @@
 ;; --------------------------------------------------------------------
 ;;                          2KB    20KB   200KB     2MB    20MB   200MB
 ;; --------------------------------------------------------------------
-;; Encrypt AES-256 CBC:    88ms    64ms    65ms    75ms   168ms  1134ms
-;; Decrypt AES-256 CBC:    66ms    65ms    65ms    76ms   162ms  1041ms
-;; Encrypt AES-256 GCM:    66ms    64ms    66ms    77ms   166ms  1192ms
-;; Decrypt AES-256 GCM:    76ms    65ms    66ms    76ms   164ms  1052ms
-;; Encrypt AES-256 ZIP:     9ms     5ms    10ms    61ms   571ms  5702ms
-;; Decrypt AES-256 ZIP:     8ms    10ms     6ms    25ms   202ms  1998ms
+;; Encrypt AES-256 CBC:    85ms    65ms    66ms    74ms   172ms  1165ms
+;; Decrypt AES-256 CBC:    67ms    67ms    65ms    76ms   162ms  1053ms
+;; Encrypt AES-256 GCM:    64ms    65ms    70ms    96ms   364ms  3170ms
+;; Decrypt AES-256 GCM:    66ms    65ms    67ms    94ms   363ms  3215ms
+;; Encrypt ChaCha20:          -       -       -       -       -       -
+;; Decrypt ChaCha20:          -       -       -       -       -       -
+;; Encrypt AES-256 ZIP:    11ms     5ms    10ms    60ms   565ms  5681ms
+;; Decrypt AES-256 ZIP:     7ms     5ms     6ms    24ms   204ms  2045ms
 ;; --------------------------------------------------------------------
 
 
@@ -64,6 +66,12 @@
   (defn decrypt-aes-gcm [file-in file-out passphrase]
     (crypt/decrypt-file "AES256-GCM" file-in file-out passphrase))
 
+  (defn encrypt-aes-cha [file-in file-out passphrase]
+    (crypt/encrypt-file "ChaCha20" file-in file-out passphrase))
+
+  (defn decrypt-aes-cha [file-in file-out passphrase]
+    (crypt/decrypt-file "ChaCha20" file-in file-out passphrase))
+
   (defn encrypt-zip [zip passphrase filename file ]
     (zipvault/zip zip passphrase filename (io/slurp file :binary true)))
 
@@ -80,6 +88,8 @@
           aes-file-cbc-dec   (io/file dir "test.data.aes-cbc.dec")
           aes-file-gcm-enc   (io/file dir "test.data.aes-gcm.enc")
           aes-file-gcm-dec   (io/file dir "test.data.aes-gcm.dec")
+          aes-file-cha-enc   (io/file dir "test.data.aes-cha.enc")
+          aes-file-cha-dec   (io/file dir "test.data.aes-cha.dec")
           aes-file-zip       (io/file dir "test.data.zip")
           aes-file-unzip     (io/file dir "test.data.unzip")]
       (when-not (io/exists-dir? dir)
@@ -114,6 +124,17 @@
                                                 aes-file-gcm-dec
                                                  passwd))]
         (printel "Decrypt AES GCM:" t))
+
+      (when (crypt/encrypt-file-supported? "CHACHA20")
+        (let [t (timing/elapsed #(encrypt-aes-cha data-file
+                                                  aes-file-cha-enc
+                                                  passwd))]
+          (printel "Encrypt ChaCha20:" t))
+
+        (let [t (timing/elapsed #(decrypt-aes-cha aes-file-cha-enc
+                                                  aes-file-cha-dec
+                                                  passwd))]
+          (printel "Decrypt ChaCha20:" t)))
        
       (let [t (timing/elapsed #(encrypt-zip aes-file-zip
                                             passwd

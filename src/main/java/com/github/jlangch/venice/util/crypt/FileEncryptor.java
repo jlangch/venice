@@ -182,4 +182,19 @@ public class FileEncryptor {
                 throw new RuntimeException("Unsupported algorith '" + algorithm + "'!");
         }
     }
+
+    public static boolean supports(
+    		final String algorithm
+    ) throws Exception {
+        switch(StringUtil.trimToEmpty(algorithm).toUpperCase()) {
+            case "AES256-CBC":
+                return FileEncryptor_AES256_CBC.isSupported();
+            case "AES256-GCM":
+                return FileEncryptor_AES256_GCM.isSupported();
+            case "CHACHA20":
+                return FileEncryptor_ChaCha20.isSupported();
+            default:
+                throw new RuntimeException("Unsupported algorith '" + algorithm + "'!");
+        }
+    }
 }
