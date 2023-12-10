@@ -63,7 +63,7 @@ import javax.crypto.spec.SecretKeySpec;
  *    +-----------------------+
  * </pre>
  */
-public class FileEncryptor_AES256 {
+public class FileEncryptor_AES256_GCM {
 
     public static void encryptFileWithPassphrase(
             final File inputFile,

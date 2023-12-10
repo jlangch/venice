@@ -846,8 +846,8 @@ public class CryptoModuleTest {
                 "    (io/delete-file-on-exit file-in)                          \n" +
                 "    (io/delete-file-on-exit file-out)                         \n" +
                 "    (io/spit file-in \"1234567890\")                          \n" +
-                "    (crypt/encrypt-file file-in file-out passphrase)          \n" +
-                "    (-> (crypt/decrypt-file file-out passphrase)              \n" +
+                "    (crypt/encrypt-file \"AES256_GCM\" file-in file-out passphrase)          \n" +
+                "    (-> (crypt/decrypt-file \"AES256_GCM\" file-out passphrase)              \n" +
                 "        (bytebuf-to-string :UTF-8))))                         ";
 
         assertEquals("1234567890", venice.eval(script));
@@ -867,8 +867,8 @@ public class CryptoModuleTest {
                 "    (io/delete-file-on-exit file-in)                                                \n" +
                 "    (io/delete-file-on-exit file-out)                                               \n" +
                 "    (io/spit file-in \"1234567890\")                                                \n" +
-                "    (crypt/encrypt-file (io/file-path file-in) (io/file-path file-out) passphrase)  \n" +
-                "    (-> (crypt/decrypt-file (io/file-path file-out) passphrase)                     \n" +
+                "    (crypt/encrypt-file \"AES256_GCM\" (io/file-path file-in) (io/file-path file-out) passphrase)  \n" +
+                "    (-> (crypt/decrypt-file \"AES256_GCM\" (io/file-path file-out) passphrase)                     \n" +
                 "        (bytebuf-to-string :UTF-8))))                                               ";
 
         assertEquals("1234567890", venice.eval(script));
@@ -888,8 +888,8 @@ public class CryptoModuleTest {
                 "    (io/delete-file-on-exit file-in)                                                           \n" +
                 "    (io/delete-file-on-exit file-out)                                                          \n" +
                 "    (io/spit file-in \"1234567890\")                                                           \n" +
-                "    (crypt/encrypt-file (io/file-in-stream file-in) (io/file-out-stream file-out) passphrase)  \n" +
-                "    (-> (crypt/decrypt-file (io/file-in-stream file-out) passphrase)                           \n" +
+                "    (crypt/encrypt-file \"AES256_GCM\" (io/file-in-stream file-in) (io/file-out-stream file-out) passphrase)  \n" +
+                "    (-> (crypt/decrypt-file \"AES256_GCM\" (io/file-in-stream file-out) passphrase)                           \n" +
                 "        (bytebuf-to-string :UTF-8))))                                                          ";
 
         assertEquals("1234567890", venice.eval(script));
@@ -909,8 +909,8 @@ public class CryptoModuleTest {
                 "    (io/delete-file-on-exit file-in)                                          \n" +
                 "    (io/delete-file-on-exit file-out)                                         \n" +
                 "    (io/spit file-in \"1234567890\")                                          \n" +
-                "    (crypt/encrypt-file (io/slurp file-in :binary true) file-out passphrase)  \n" +
-                "    (-> (crypt/decrypt-file (io/slurp file-out :binary true) passphrase)      \n" +
+                "    (crypt/encrypt-file \"AES256_GCM\" (io/slurp file-in :binary true) file-out passphrase)  \n" +
+                "    (-> (crypt/decrypt-file \"AES256_GCM\" (io/slurp file-out :binary true) passphrase)      \n" +
                 "        (bytebuf-to-string :UTF-8))))                                         ";
 
         assertEquals("1234567890", venice.eval(script));
@@ -930,9 +930,9 @@ public class CryptoModuleTest {
                 "    (io/delete-file-on-exit file-in)                                          \n" +
                 "    (io/delete-file-on-exit file-out)                                         \n" +
                 "    (io/spit file-in \"1234567890\")                                          \n" +
-                "    (->> (crypt/encrypt-file (io/slurp file-in :binary true) passphrase)      \n" +
+                "    (->> (crypt/encrypt-file \"AES256_GCM\" (io/slurp file-in :binary true) passphrase)      \n" +
                 "         (io/spit file-out))                                                  \n" +
-                "    (-> (crypt/decrypt-file (io/slurp file-out :binary true) passphrase)      \n" +
+                "    (-> (crypt/decrypt-file \"AES256_GCM\" (io/slurp file-out :binary true) passphrase)      \n" +
                 "        (bytebuf-to-string :UTF-8))))                                         ";
 
         assertEquals("1234567890", venice.eval(script));
@@ -952,9 +952,9 @@ public class CryptoModuleTest {
                 "    (io/delete-file-on-exit file-in)                                          \n" +
                 "    (io/delete-file-on-exit file-out)                                         \n" +
                 "    (io/spit file-in \"1234567890\")                                          \n" +
-                "    (-> (crypt/encrypt-file (io/slurp file-in :binary true) passphrase)       \n" +
-                "        (crypt/decrypt-file passphrase)                                       \n" +
-                "        (bytebuf-to-string :UTF-8))))                                         ";
+                "    (-<> (crypt/encrypt-file \"AES256_GCM\" (io/slurp file-in :binary true) passphrase)       \n" +
+                "         (crypt/decrypt-file \"AES256_GCM\" <> passphrase)                                       \n" +
+                "         (bytebuf-to-string <> :UTF-8))))                                      ";
 
         assertEquals("1234567890", venice.eval(script));
     }

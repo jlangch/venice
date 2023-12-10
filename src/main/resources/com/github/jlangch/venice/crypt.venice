@@ -38,7 +38,7 @@
 (import :javax.crypto.spec.SecretKeySpec)
 (import :javax.net.ssl.SSLServerSocketFactory)
 
-(import :com.github.jlangch.venice.util.crypt.FileEncryptor_AES256)
+(import :com.github.jlangch.venice.util.crypt.FileEncryptor)
 (import :com.github.jlangch.venice.util.crypt.FileHasher)
 
 
@@ -300,10 +300,32 @@
 
 (defn 
   ^{ :arglists '(
-          "(crypt/encrypt-file in passphrase)"
-          "(crypt/encrypt-file in out passphrase)")
+          "(crypt/encrypt-file algorithm in passphrase)"
+          "(crypt/encrypt-file algorithm in out passphrase)")
      :doc """
-          Encrypts a file using "AES-256" with "GCM" and "NoPadding".
+          Encrypts a file.
+
+          Returns a byte buffer with the encrypted data if the 'out' argument 
+          is missing. Otherwise returns nil and writes the encrypted file data 
+          to the destination given by 'out'.
+ 
+          The arg 'algorithm' may be: "AES256-GCM", "AES256-CBC",  "CHACHA20"
+
+          The arg 'in' may be a: 
+
+          * string file path, e.g: "/temp/foo.json"
+          * bytebuf
+          * `java.io.File`, e.g: `(io/file "/temp/foo.json")`
+          * `java.io.InputStream`
+ 
+          The arg 'out' may be a: 
+
+          * string file path, e.g: "/temp/foo.json"
+          * `java.io.File`, e.g: `(io/file "/temp/foo.json")`
+          * `java.io.OutputStream`
+
+
+          Algorith "AES256-GCM" ("AES/GCM/NoPadding")
 
           Uses a random salt and IV for each file and writes the salt and the IV
           to start of the encrypted file.
@@ -318,24 +340,24 @@
           +-----------------------+
           |  encrypted file data  |   n bytes
           +-----------------------+
+
+
+          Algorith "AES256-CBC" ("AES/CBC/PKCS5Padding")
+
+          Uses a random salt and IV for each file and writes the salt and the IV
+          to start of the encrypted file.
+ 
           ```
-
-          Returns a byte buffer with the encrypted data if the 'out' argument 
-          is missing. Otherwise returns nil and writes the encrypted file data 
-          to the destination given by 'out'.
+          Encrypted binary file format
  
-          The arg 'in' may be a: 
-
-          * string file path, e.g: "/temp/foo.json"
-          * bytebuf
-          * `java.io.File`, e.g: `(io/file "/temp/foo.json")`
-          * `java.io.InputStream`
- 
-          The arg 'out' may be a: 
-
-          * string file path, e.g: "/temp/foo.json"
-          * `java.io.File`, e.g: `(io/file "/temp/foo.json")`
-          * `java.io.OutputStream`
+          +-----------------------+
+          |         salt          |   16 bytes
+          +-----------------------+
+          |          IV           |   16 bytes
+          +-----------------------+
+          |  encrypted file data  |   n bytes
+          +-----------------------+
+          ```
           """
      :examples (list
           """
@@ -347,7 +369,7 @@
               (io/delete-file-on-exit file-in)
               (io/delete-file-on-exit file-out)
               (io/spit file-in "1234567890")
-              (crypt/encrypt-file file-in file-out "42")
+              (crypt/encrypt-file "AES256-GCM" file-in file-out "42")
               (-> (io/slurp file-out :binary false)
                   (bytebuf)
                   (hexdump/dump))))
@@ -357,28 +379,30 @@
 
   encrypt-file 
 
-  ([in passphrase]
+  ([algorithm in passphrase]
     (as-> (io/slurp in :binary true) data
-          (. :FileEncryptor_AES256 :encryptFileWithPassphrase data passphrase)))
-  ([in out passphrase]
+          (. :FileEncryptor :encryptFileWithPassphrase algorithm data passphrase)))
+  ([algorithm in out passphrase]
     (as-> (io/slurp in :binary true) data
-          (. :FileEncryptor_AES256 :encryptFileWithPassphrase data passphrase)
+          (. :FileEncryptor :encryptFileWithPassphrase algorithm data passphrase)
           (io/spit out data)
           nil)))
 
 
 (defn 
   ^{ :arglists '(
-          "(crypt/decrypt-file in passphrase)"
-          "(crypt/decrypt-file in out passphrase)")
+          "(crypt/decrypt-file algorithm in passphrase)"
+          "(crypt/decrypt-file algorithm in out passphrase)")
      :doc """
-          Decrypts an "AES-256" encrypted file that has been created by 
+          Decrypts an encrypted file that has been created by 
           `crypt/encrypt-file`.
 
           Returns a byte buffer with the decrypted data if the 'out' argument 
           is missing. Otherwise returns nil and writes the decrypted file data 
           to the destination given by 'out'.
  
+          The arg 'algorithm' may be: "AES256-GCM", "AES256-CBC",  "CHACHA20"
+
           The arg 'in' may be a: 
 
           * string file path, e.g: "/temp/foo.json"
@@ -402,8 +426,8 @@
               (io/delete-file-on-exit file-in)
               (io/delete-file-on-exit file-out)
               (io/spit file-in "1234567890")
-              (crypt/encrypt-file file-in file-out passphrase)
-              (-> (crypt/decrypt-file file-out passphrase)
+              (crypt/encrypt-file "AES256-GCM" file-in file-out passphrase)
+              (-> (crypt/decrypt-file "AES256-GCM" file-out passphrase)
                   (bytebuf-to-string :UTF-8))))
           """) 
      :see-also '(
@@ -411,12 +435,12 @@
 
   decrypt-file 
 
-  ([in passphrase]
+  ([algorithm in passphrase]
     (as-> (io/slurp in :binary true) data
-          (. :FileEncryptor_AES256 :decryptFileWithPassphrase data passphrase)))
-  ([in out passphrase]
+          (. :FileEncryptor :decryptFileWithPassphrase algorithm data passphrase)))
+  ([algorithm in out passphrase]
     (as-> (io/slurp in :binary true) data
-          (. :FileEncryptor_AES256 :decryptFileWithPassphrase data passphrase)
+          (. :FileEncryptor :decryptFileWithPassphrase algorithm data passphrase)
           (io/spit out data)
           nil)))
 

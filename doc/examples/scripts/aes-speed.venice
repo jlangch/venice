@@ -52,23 +52,17 @@
   (defn printel [title elapsed]
     (printf "%-17s %4dms%n" title elapsed))
 
-  (defn encrypt-aes [file-in file-out passphrase]
-    (let [encryptor (crypt/encrypt "AES256" passphrase)]
-      (->> (io/slurp file-in :binary true)
-           (encryptor)
-           (io/spit file-out))))
+  (defn encrypt-aes-cbc [file-in file-out passphrase]
+    (crypt/encrypt-file "AES256-CBC" file-in file-out passphrase))
 
-  (defn decrypt-aes [file-in file-out passphrase]
-    (let [decryptor (crypt/decrypt "AES256" passphrase)]
-      (->> (io/slurp file-in :binary true)
-           (decryptor)
-           (io/spit file-out))))
+  (defn decrypt-aes-cbc [file-in file-out passphrase]
+    (crypt/decrypt-file "AES256-CBC" file-in file-out passphrase))
 
   (defn encrypt-aes-gcm [file-in file-out passphrase]
-    (crypt/encrypt-file file-in file-out passphrase))
+    (crypt/encrypt-file "AES256-GCM" file-in file-out passphrase))
 
   (defn decrypt-aes-gcm [file-in file-out passphrase]
-    (crypt/decrypt-file file-in file-out passphrase))
+    (crypt/decrypt-file "AES256-GCM" file-in file-out passphrase))
 
   (defn encrypt-zip [zip passphrase filename file ]
     (zipvault/zip zip passphrase filename (io/slurp file :binary true)))
@@ -100,25 +94,25 @@
       (println "            : created")
       (println)
 
-      (let [t (timing/elapsed #(encrypt-aes data-file
-                                            aes-file-cbc-enc
-                                            passwd))]
+      (let [t (timing/elapsed #(encrypt-aes-cbc data-file
+                                                aes-file-cbc-enc
+                                                passwd))]
         (printel "Encrypt AES CBC:" t))
  
 
-      (let [t (timing/elapsed #(decrypt-aes aes-file-cbc-enc
-                                            aes-file-cbc-dec
-                                            passwd))]
+      (let [t (timing/elapsed #(decrypt-aes-cbc aes-file-cbc-enc
+                                                aes-file-cbc-dec
+                                                passwd))]
         (printel "Decrypt AES CBC:" t))
 
-      (let [t (timing/elapsed #(encrypt-aes data-file
-                                            aes-file-gcm-enc
-                                            passwd))]
+      (let [t (timing/elapsed #(encrypt-aes-gcm data-file
+                                                aes-file-gcm-enc
+                                                passwd))]
         (printel "Encrypt AES GCM:" t))
 
-      (let [t (timing/elapsed #(decrypt-aes aes-file-gcm-enc
-                                            aes-file-gcm-dec
-                                            passwd))]
+      (let [t (timing/elapsed #(decrypt-aes-gcm aes-file-gcm-enc
+                                                aes-file-gcm-dec
+                                                 passwd))]
         (printel "Decrypt AES GCM:" t))
        
       (let [t (timing/elapsed #(encrypt-zip aes-file-zip

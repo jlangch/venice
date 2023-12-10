@@ -276,20 +276,20 @@ public class FileEncryptor_ChaCha20 {
 
 
     private static AlgorithmParameterSpec createChaCha20ParameterSpec(
-    		final byte[] nonce,
-    		final int counter
+            final byte[] nonce,
+            final int counter
     ) {
-    	// return new ChaCha20ParameterSpec(nonce, counter);
+        // return new ChaCha20ParameterSpec(nonce, counter);
 
-    	// Note: ChaCha20 is only available with Java11+
-    	try {
-	    	Class<?> clazz = ReflectionUtil.classForName("javax.crypto.spec.ChaCha20ParameterSpec");
-	    	Constructor<?> c = clazz.getConstructor(new Class[]{byte[].class, int.class});
-	    	return (AlgorithmParameterSpec)c.newInstance(nonce, counter);
-    	}
-    	catch(Exception ex) {
-    		throw new RuntimeException("Java Crypto algorithm ChaCha20 is not available!");
-    	}
+        // Note: ChaCha20 is only available with Java11+
+        try {
+            Class<?> clazz = ReflectionUtil.classForName("javax.crypto.spec.ChaCha20ParameterSpec");
+            Constructor<?> c = clazz.getConstructor(new Class[]{byte[].class, int.class});
+            return (AlgorithmParameterSpec)c.newInstance(nonce, counter);
+        }
+        catch(Exception ex) {
+            throw new RuntimeException("Java Crypto algorithm ChaCha20 is not available!");
+        }
     }
 
     private static byte[] deriveKeyFromPassphrase(
