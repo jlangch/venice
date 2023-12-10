@@ -102,8 +102,8 @@ public class FileEncryptor_AES256_CBC {
         // Initialize IV Parameters
         IvParameterSpec ivParameterSpec = new IvParameterSpec(iv);
 
-        // Initialize Cipher for AES-GCM
-        Cipher cipher = getCipher();
+        // Initialize Cipher for AES-CBC
+        Cipher cipher = getCipherInstance();
         SecretKeySpec keySpec = new SecretKeySpec(key, "AES");
         cipher.init(Cipher.ENCRYPT_MODE, keySpec, ivParameterSpec);
 
@@ -145,8 +145,8 @@ public class FileEncryptor_AES256_CBC {
         // Initialize IV Parameters
         IvParameterSpec ivParameterSpec = new IvParameterSpec(iv);
 
-        // Initialize Cipher for AES-GCM
-        Cipher cipher = getCipher();
+        // Initialize Cipher for AES-CBC
+        Cipher cipher = getCipherInstance();
         SecretKeySpec keySpec = new SecretKeySpec(key, "AES");
         cipher.init(Cipher.ENCRYPT_MODE, keySpec, ivParameterSpec);
 
@@ -196,8 +196,8 @@ public class FileEncryptor_AES256_CBC {
         // Initialize IV Parameters
         IvParameterSpec ivParameterSpec = new IvParameterSpec(iv);
 
-        // Initialize Cipher for AES-GCM
-        Cipher cipher = getCipher();
+        // Initialize Cipher for AES-CBC
+        Cipher cipher = getCipherInstance();
         SecretKeySpec keySpec = new SecretKeySpec(key, "AES");
         cipher.init(Cipher.DECRYPT_MODE, keySpec, ivParameterSpec);
 
@@ -236,8 +236,8 @@ public class FileEncryptor_AES256_CBC {
         // Initialize IV Parameters
         IvParameterSpec ivParameterSpec = new IvParameterSpec(iv);
 
-        // Initialize Cipher for AES-GCM
-        Cipher cipher = getCipher();
+        // Initialize Cipher for AES-CBC
+        Cipher cipher = getCipherInstance();
         SecretKeySpec keySpec = new SecretKeySpec(key, "AES");
         cipher.init(Cipher.DECRYPT_MODE, keySpec, ivParameterSpec);
 
@@ -259,7 +259,7 @@ public class FileEncryptor_AES256_CBC {
         return factory.generateSecret(spec).getEncoded();
     }
 
-    private static Cipher getCipher() throws Exception {
+    private static Cipher getCipherInstance() throws Exception {
     	return Cipher.getInstance(String.join("/", new String[] {"AES", "CBC", "PKCS5Padding"}));
     }
 
