@@ -234,7 +234,7 @@ public class FileEncryptor_ChaCha20 {
         // Initialize Cipher for ChaCha20
         Cipher cipher = Cipher.getInstance("ChaCha20");
         SecretKeySpec keySpec = new SecretKeySpec(key, "ChaCha20");
-        cipher.init(Cipher.ENCRYPT_MODE, keySpec, param);
+        cipher.init(Cipher.DECRYPT_MODE, keySpec, param);
 
         // Perform Decryption
         return cipher.doFinal(encryptedData);
@@ -280,7 +280,7 @@ public class FileEncryptor_ChaCha20 {
 
         // Initialize Cipher for ChaCha20
         Cipher cipher = Cipher.getInstance("ChaCha20");
-        cipher.init(Cipher.ENCRYPT_MODE, keyGen.generateKey(), param);
+        cipher.init(Cipher.DECRYPT_MODE, keyGen.generateKey(), param);
 
         // decryption
         return cipher.doFinal(encryptedData);
@@ -319,7 +319,8 @@ public class FileEncryptor_ChaCha20 {
         // convert int to byte[]
     	return ByteBuffer.allocate(COUNTER_LEN)
     	                 .order(ENDIAN)
-    	                 .putInt(counter).array();
+    	                 .putInt(counter)
+    	                 .array();
     }
 
     private static int counterToInt(final byte[] counter) {
