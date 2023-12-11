@@ -15,7 +15,6 @@ public class FileEncryptor_AES256_GCM_Test {
 
 	@Test
     public void testPassphrase() throws Exception {
-
         final byte[] data = "1234567890".getBytes("UTF-8");
         final byte[] encrypted = encryptFileWithPassphrase(data, "passphrase");
         final byte[] decrypted = decryptFileWithPassphrase(encrypted, "passphrase");
@@ -55,7 +54,5 @@ public class FileEncryptor_AES256_GCM_Test {
         	}
         }
     }
-
-
 
 }
