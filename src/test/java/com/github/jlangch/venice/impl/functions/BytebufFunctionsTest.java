@@ -68,11 +68,11 @@ public class BytebufFunctionsTest {
 
         assertEquals("big-endian", venice.eval("(let [buf (bytebuf)]                    \n" +
                                                "  (bytebuf-byte-order! buf :big-endian) \n" +
-        		                               "  (bytebuf-byte-order buf))             "));
+                                               "  (bytebuf-byte-order buf))             "));
 
         assertEquals("little-endian", venice.eval("(let [buf (bytebuf)]                       \n" +
-								                  "  (bytebuf-byte-order! buf :little-endian) \n" +
-								                  "  (bytebuf-byte-order buf))                "));
+                                                  "  (bytebuf-byte-order! buf :little-endian) \n" +
+                                                  "  (bytebuf-byte-order buf))                "));
     }
 
     @Test
@@ -80,22 +80,22 @@ public class BytebufFunctionsTest {
         final Venice venice = new Venice();
 
         assertArrayEquals(
-        		new byte[] {97,98,99,100,101,102},
-        		((ByteBuffer)venice.eval("(bytebuf-from-string \"abcdef\" :UTF-8)")).array());
+                new byte[] {97,98,99,100,101,102},
+                ((ByteBuffer)venice.eval("(bytebuf-from-string \"abcdef\" :UTF-8)")).array());
 
         // limit to 3 bytes
         assertArrayEquals(
-        		new byte[] {97,98,99},
-        		((ByteBuffer)venice.eval("(bytebuf-from-string \"abcdef\" :UTF-8 3 0x00)")).array());
+                new byte[] {97,98,99},
+                ((ByteBuffer)venice.eval("(bytebuf-from-string \"abcdef\" :UTF-8 3 0x00)")).array());
 
         // fill up to 10 bytes
         assertArrayEquals(
-        		new byte[] {97,98,99,100,101,102,0,0,0,0},
-        		((ByteBuffer)venice.eval("(bytebuf-from-string \"abcdef\" :UTF-8 10 0x00)")).array());
+                new byte[] {97,98,99,100,101,102,0,0,0,0},
+                ((ByteBuffer)venice.eval("(bytebuf-from-string \"abcdef\" :UTF-8 10 0x00)")).array());
 
         assertArrayEquals(
-        		new byte[] {97,98,99,100,101,102,5,5},
-        		((ByteBuffer)venice.eval("(bytebuf-from-string \"abcdef\" :UTF-8 8 0x05)")).array());
+                new byte[] {97,98,99,100,101,102,5,5},
+                ((ByteBuffer)venice.eval("(bytebuf-from-string \"abcdef\" :UTF-8 8 0x05)")).array());
     }
 
     @Test
@@ -122,7 +122,7 @@ public class BytebufFunctionsTest {
     }
 
     @Test
-    public void test_bytebuf_get() {
+    public void test_bytebuf_get_byte() {
         final Venice venice = new Venice();
 
         assertEquals(
@@ -132,6 +132,55 @@ public class BytebufFunctionsTest {
                 "    (bytebuf-put-byte! 10)  \n" +
                 "    (bytebuf-put-byte! 20)  \n" +
                 "    (bytebuf-get-byte 0))"));
+    }
+
+    @Test
+    public void test_bytebuf_get_int() {
+        final Venice venice = new Venice();
+
+        assertEquals(
+            10203040,
+            venice.eval(
+                "(let [buf (bytebuf-allocate 4)]         \n" +
+                "  (bytebuf-put-int! buf 10203040I)      \n" +
+                "  (bytebuf-get-int buf 0))                "));
+
+        assertEquals(
+            10203040,
+            venice.eval(
+                "(let [buf (bytebuf-allocate 4)]         \n" +
+                "  (bytebuf-byte-order buf :big-endian)  \n" +
+                "  (bytebuf-put-int! buf 10203040I)      \n" +
+                "  (bytebuf-get-int buf 0))                "));
+
+        assertEquals(
+            10203040,
+            venice.eval(
+                "(let [buf (bytebuf-allocate 4)]            \n" +
+                "  (bytebuf-byte-order buf :little-endian)  \n" +
+                "  (bytebuf-put-int! buf 10203040I)         \n" +
+                "  (bytebuf-get-int buf 0))                 "));
+    }
+
+    @Test
+    public void test_bytebuf_get_int_endian() {
+        final Venice venice = new Venice();
+
+        assertEquals(
+            "(0I 155I 175I 160I)",
+            venice.eval(
+                "(let [buf (bytebuf-allocate 4)]            \n" +
+                "  (bytebuf-byte-order! buf :big-endian)    \n" +
+                "  (bytebuf-put-int! buf 10203040I)         \n" +
+                "  (str (doall (bytebuf-to-list buf 0))))   "));
+
+        assertEquals(
+            "(160I 175I 155I 0I)",
+            venice.eval(
+                "(let [buf (bytebuf-allocate 4)]            \n" +
+                "  (bytebuf-byte-order! buf :little-endian) \n" +
+                "  (bytebuf-put-int! buf 10203040I)         \n" +
+                "  (str (doall (bytebuf-to-list buf 0))))   "));
     }
 
     @Test

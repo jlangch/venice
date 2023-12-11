@@ -272,8 +272,12 @@ public class BytebufFunctions {
                     .arglists("(bytebuf-byte-order! buf endian)")
                     .doc( "Sets the bytebuf's byte order.")
                     .examples(
-                    	"(bytebuf-byte-order! (bytebuf-allocate 100) :big-endian)",
-                    	"(bytebuf-byte-order! (bytebuf-allocate 100) :little-endian)")
+                    	"(-> (bytebuf-allocate 10)              \n" +
+                        "    (bytebuf-byte-order! :big-endian)  \n" +
+                        "    (bytebuf-byte-order))              ",
+                    	"(-> (bytebuf-allocate 10)                 \n" +
+                        "    (bytebuf-byte-order! :little-endian)  \n" +
+                        "    (bytebuf-byte-order))                 ")
                     .seeAlso("bytebuf-byte-order")
                     .build()
         ) {
@@ -296,7 +300,7 @@ public class BytebufFunctions {
 	                            "Invalid bytebuf byte order '" + order + "'"));
                 }
 
-                return Nil;
+                return args.first();
             }
 
             private static final long serialVersionUID = -1848883965231344442L;
@@ -310,7 +314,7 @@ public class BytebufFunctions {
                     .arglists("(bytebuf-byte-order buf endian)")
                     .doc( "Returns the bytebuf's byte order.")
                     .examples(
-                    	"(bytebuf-byte-order (bytebuf-allocate 100)")
+                    	"(bytebuf-byte-order (bytebuf-allocate 10))")
                     .seeAlso("bytebuf-byte-order!")
                     .build()
         ) {
