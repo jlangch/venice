@@ -558,6 +558,24 @@
 
 (defn
   ^{ :arglists '(
+          "(crypt/max-key-size algorithm)")
+     :doc """
+          Returns the max allowed key size
+          """
+     :examples (list
+          """
+          (do
+            (load-module :crypt)
+            (crypt/max-key-size "AES"))
+          """ ) }
+
+  crypt/max-key-size [algorithm]
+
+  (. :Cipher :getMaxAllowedKeyLength algorithm))
+
+
+(defn
+  ^{ :arglists '(
           "(crypt/ciphers)",
           "(crypt/ciphers opt)")
      :doc """
