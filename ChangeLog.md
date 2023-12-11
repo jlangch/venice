@@ -13,7 +13,7 @@ All notable changes to this project will be documented in this file.
 - AES-256 (CBC, PKCS5Padding) file encryptor/decryptor to :crypt
   module (for testing purposes only, in production use AES-256 GCM)
 - ChaCha20 file encryptor/decryptor to :crypt module
-- functions for handling byte order (little/bin endian) on byte buffers
+- functions for handling byte order (little/big endian) on byte buffers
 
 ### Disabled 
 
