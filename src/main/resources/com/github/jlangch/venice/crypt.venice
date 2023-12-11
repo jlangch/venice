@@ -309,12 +309,20 @@
           is missing. Otherwise returns nil and writes the encrypted file data 
           to the destination given by 'out'.
  
-          The arg 'algorithm' is one of: AES256-GCM, AES256-CBC, ChaCha20
-          (ChaCha20 is available on Java 11+ only!)
+          Supported algorithms:
 
-          *Note:* AES/CBC/PKCS5Padding is regarded as a broken or risky 
-          cryptographic algorithm (CWE-327, CWE-328). Use AES256-GCM or ChaCha20
-          in productive applications!
+          * AES256-GCM ¹⁾
+          * AES256-CBC ²⁾
+          * ChaCha20 ³⁾
+          * ChaCha20-BC ⁴⁾
+          
+          | ¹⁾ | Recommended by NIST |
+          | ²⁾ | AES/CBC/PKCS5Padding is regarded as a broken or risky \
+                 cryptographic algorithm (CWE-327, CWE-328). Use AES256-GCM \
+                 in productive applications! |
+          | ³⁾ | 256 bit key, only available with Java 11+ |
+          | ⁴⁾ | 256 bit key, only available with BouncyCastle libraries but \
+                 works with Java 8+ |
 
 
           The arg 'in' may be a: 
