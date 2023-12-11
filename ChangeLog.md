@@ -10,9 +10,10 @@ All notable changes to this project will be documented in this file.
 
 ### Added 
 
-- Added AES-256 (CBC, PKCS5Padding) file encryptor/decryptor to :crypt
+- AES-256 (CBC, PKCS5Padding) file encryptor/decryptor to :crypt
   module (for testing purposes only, in production use AES-256 GCM)
-- Added ChaCha20 file encryptor/decryptor to :crypt module
+- ChaCha20 file encryptor/decryptor to :crypt module
+- functions for handling byte order (little/bin endian) on byte buffers
 
 ### Disabled 
 
@@ -37,7 +38,7 @@ All notable changes to this project will be documented in this file.
 
 ### Added 
 
-- Added AES-256 (GCM, NoPadding) file encryptor/decryptor to :crypt
+- AES-256 (GCM, NoPadding) file encryptor/decryptor to :crypt
   module
 
 
