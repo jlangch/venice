@@ -154,6 +154,11 @@ public class XMLUtil {
 
     private static SAXParser newParser(final boolean namespaceAware) throws Exception {
         final SAXParserFactory f = SAXParserFactory.newInstance();
+
+        // disable external entities (security)
+        f.setFeature("http://xml.org/sax/features/external-general-entities", false);
+        f.setFeature("http://xml.org/sax/features/external-parameter-entities", false);
+
         f.setNamespaceAware(namespaceAware);
         return f.newSAXParser();
     }
