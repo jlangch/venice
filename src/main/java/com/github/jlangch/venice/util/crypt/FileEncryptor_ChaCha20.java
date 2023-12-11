@@ -33,7 +33,6 @@ import java.security.spec.InvalidKeySpecException;
 import java.security.spec.KeySpec;
 
 import javax.crypto.Cipher;
-import javax.crypto.KeyGenerator;
 import javax.crypto.SecretKeyFactory;
 import javax.crypto.spec.PBEKeySpec;
 import javax.crypto.spec.SecretKeySpec;
@@ -168,16 +167,15 @@ public class FileEncryptor_ChaCha20 {
         int counter = new SecureRandom().nextInt();
         byte[] counterData = counterToBytes(counter);
 
-        // Initialize KeyGenerator
-        KeyGenerator keyGen = KeyGenerator.getInstance("ChaCha20");
-        keyGen.init(256, SecureRandom.getInstanceStrong());
+        // Secret key
+        SecretKeySpec keySpec = new SecretKeySpec(key, "ChaCha20");
 
         // Initialize ChaCha20 Parameters
         AlgorithmParameterSpec param = createChaCha20ParameterSpec(nonce, counter);
 
         // Initialize Cipher for ChaCha20
         Cipher cipher = Cipher.getInstance("ChaCha20");
-        cipher.init(Cipher.ENCRYPT_MODE, keyGen.generateKey(), param);
+        cipher.init(Cipher.ENCRYPT_MODE, keySpec, param);
 
         // encryption
         byte[] encryptedData = cipher.doFinal(fileData);
@@ -218,7 +216,7 @@ public class FileEncryptor_ChaCha20 {
         System.arraycopy(fileData, SALT_LEN, nonce, 0, NONCE_LEN);
 
         byte[] counterBytes = new byte[COUNTER_LEN];
-        System.arraycopy(fileData, SALT_LEN + NONCE_LEN, nonce, 0, COUNTER_LEN);
+        System.arraycopy(fileData, SALT_LEN + NONCE_LEN, counterBytes, 0, COUNTER_LEN);
 
         byte[] encryptedData = new byte[fileData.length - SALT_LEN - NONCE_LEN - COUNTER_LEN];
         System.arraycopy(fileData, SALT_LEN + NONCE_LEN + COUNTER_LEN, encryptedData, 0, encryptedData.length);
@@ -264,23 +262,22 @@ public class FileEncryptor_ChaCha20 {
         System.arraycopy(fileData, 0, nonce, 0, NONCE_LEN);
 
         byte[] counterBytes = new byte[COUNTER_LEN];
-        System.arraycopy(fileData, NONCE_LEN, nonce, 0, COUNTER_LEN);
+        System.arraycopy(fileData, NONCE_LEN, counterBytes, 0, COUNTER_LEN);
 
         byte[] encryptedData = new byte[fileData.length - NONCE_LEN - COUNTER_LEN];
         System.arraycopy(fileData, NONCE_LEN + COUNTER_LEN, encryptedData, 0, encryptedData.length);
 
         int counter = counterToInt(counterBytes);
 
-        // Initialize KeyGenerator
-        KeyGenerator keyGen = KeyGenerator.getInstance("ChaCha20");
-        keyGen.init(256, SecureRandom.getInstanceStrong());
+        // Secret key
+        SecretKeySpec keySpec = new SecretKeySpec(key, "ChaCha20");
 
         // Initialize ChaCha20 Parameters
         AlgorithmParameterSpec param = createChaCha20ParameterSpec(nonce, counter);
 
         // Initialize Cipher for ChaCha20
         Cipher cipher = Cipher.getInstance("ChaCha20");
-        cipher.init(Cipher.DECRYPT_MODE, keyGen.generateKey(), param);
+        cipher.init(Cipher.DECRYPT_MODE, keySpec, param);
 
         // decryption
         return cipher.doFinal(encryptedData);
