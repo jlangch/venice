@@ -24,6 +24,7 @@ package com.github.jlangch.venice.impl.functions;
 import static com.github.jlangch.venice.impl.types.Constants.Nil;
 
 import java.nio.ByteBuffer;
+import java.nio.ByteOrder;
 import java.nio.charset.Charset;
 import java.security.SecureRandom;
 import java.util.Arrays;
@@ -37,6 +38,7 @@ import com.github.jlangch.venice.impl.types.VncDouble;
 import com.github.jlangch.venice.impl.types.VncFunction;
 import com.github.jlangch.venice.impl.types.VncInteger;
 import com.github.jlangch.venice.impl.types.VncJavaObject;
+import com.github.jlangch.venice.impl.types.VncKeyword;
 import com.github.jlangch.venice.impl.types.VncLong;
 import com.github.jlangch.venice.impl.types.VncString;
 import com.github.jlangch.venice.impl.types.VncVal;
@@ -257,6 +259,73 @@ public class BytebufFunctions {
                 final ByteBuffer buf = Coerce.toVncByteBuffer(args.first()).getValue();
 
                 return new VncLong(buf.limit());
+            }
+
+            private static final long serialVersionUID = -1848883965231344442L;
+        };
+
+    public static VncFunction bytebuf_byte_order_BANG =
+        new VncFunction(
+                "bytebuf-byte-order!",
+                VncFunction
+                    .meta()
+                    .arglists("(bytebuf-byte-order! buf endian)")
+                    .doc( "Sets the bytebuf's byte order.")
+                    .examples(
+                    	"(bytebuf-byte-order! (bytebuf-allocate 100) :big-endian)",
+                    	"(bytebuf-byte-order! (bytebuf-allocate 100) :little-endian)")
+                    .seeAlso("bytebuf-byte-order")
+                    .build()
+        ) {
+            @Override
+            public VncVal apply(final VncList args) {
+                ArityExceptions.assertArity(this, args, 2);
+
+                final ByteBuffer buf = Coerce.toVncByteBuffer(args.first()).getValue();
+                final String order = Coerce.toVncKeyword(args.second()).getSimpleName();
+
+                switch(order) {
+	                case "big-endian":
+	                	buf.order(ByteOrder.BIG_ENDIAN);
+	                	break;
+	                case "little-endian":
+	                	buf.order(ByteOrder.LITTLE_ENDIAN);
+	                	break;
+	                default:
+	                    throw new VncException(String.format(
+	                            "Invalid bytebuf byte order '" + order + "'"));
+                }
+
+                return Nil;
+            }
+
+            private static final long serialVersionUID = -1848883965231344442L;
+        };
+
+    public static VncFunction bytebuf_byte_order =
+        new VncFunction(
+                "bytebuf-byte-order",
+                VncFunction
+                    .meta()
+                    .arglists("(bytebuf-byte-order buf endian)")
+                    .doc( "Returns the bytebuf's byte order.")
+                    .examples(
+                    	"(bytebuf-byte-order (bytebuf-allocate 100)")
+                    .seeAlso("bytebuf-byte-order!")
+                    .build()
+        ) {
+            @Override
+            public VncVal apply(final VncList args) {
+                ArityExceptions.assertArity(this, args, 1);
+
+                final ByteBuffer buf = Coerce.toVncByteBuffer(args.first()).getValue();
+
+                final String order = buf.order().toString();
+                switch(order) {
+	                case "BIG_ENDIAN": return new VncKeyword(":big-endian");
+	                case "LITTLE_ENDIAN": return new VncKeyword(":little-endian");
+	                default: return new VncKeyword(":little-endian");
+                }
             }
 
             private static final long serialVersionUID = -1848883965231344442L;
@@ -901,6 +970,8 @@ public class BytebufFunctions {
                 .add(bytebuf_allocate_random)
                 .add(bytebuf_capacity)
                 .add(bytebuf_limit)
+                .add(bytebuf_byte_order_BANG)
+                .add(bytebuf_byte_order)
                 .add(bytebuf_to_string)
                 .add(bytebuf_to_list)
                 .add(bytebuf_from_string)

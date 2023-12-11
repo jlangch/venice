@@ -63,6 +63,19 @@ public class BytebufFunctionsTest {
     }
 
     @Test
+    public void test_bytebuf_order() {
+        final Venice venice = new Venice();
+
+        assertEquals("big-endian", venice.eval("(let [buf (bytebuf)]                    \n" +
+                                               "  (bytebuf-byte-order! buf :big-endian) \n" +
+        		                               "  (bytebuf-byte-order buf))             "));
+
+        assertEquals("little-endian", venice.eval("(let [buf (bytebuf)]                       \n" +
+								                  "  (bytebuf-byte-order! buf :little-endian) \n" +
+								                  "  (bytebuf-byte-order buf))                "));
+    }
+
+    @Test
     public void test_bytebuf_from_string() {
         final Venice venice = new Venice();
 

@@ -91,6 +91,7 @@ public class SystemSection implements ISectionBuilder {
         host.addItem(diBuilder.getDocItem("host-address"));
         host.addItem(diBuilder.getDocItem("ip-private?"));
         host.addItem(diBuilder.getDocItem("cpus"));
+        host.addItem(diBuilder.getDocItem("byte-order"));
 
         final DocSection user = new DocSection("User", "system.user");
         all.addSection(user);

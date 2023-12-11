@@ -33,6 +33,7 @@ import java.net.InetAddress;
 import java.net.MalformedURLException;
 import java.net.URI;
 import java.net.URL;
+import java.nio.ByteBuffer;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
@@ -101,6 +102,31 @@ public class SystemFunctions {
                                                 new Object[]{});
 
                     return new VncLong((Long)ret.getValue());
+                }
+            }
+
+            private static final long serialVersionUID = -1848883965231344442L;
+        };
+
+    public static VncFunction byte_order =
+        new VncFunction(
+                "byte-order",
+                VncFunction
+                    .meta()
+                    .arglists("(byte-order)")
+                    .doc("Returns the CPU's byte order.")
+                    .examples("(byte-order)")
+                    .build()
+        ) {
+            @Override
+            public VncVal apply(final VncList args) {
+                ArityExceptions.assertArity(this, args, 0);
+
+                final String order = ByteBuffer.allocate(2).order().toString();
+                switch(order) {
+	                case "BIG_ENDIAN": return new VncKeyword(":big-endian");
+	                case "LITTLE_ENDIAN": return new VncKeyword(":little-endian");
+	                default: return new VncKeyword(":little-endian");
                 }
             }
 
@@ -895,6 +921,7 @@ public class SystemFunctions {
     public static final Map<VncVal, VncVal> ns =
             new SymbolMapBuilder()
                     .add(pid)
+                    .add(byte_order)
                     .add(host_name)
                     .add(host_address)
                     .add(user_name)
