@@ -48,6 +48,7 @@ public class Modules {
                         "app",
                         "ascii-table",
                         "benchmark",
+                        "bouncycastle-install",
                         "cargo",
                         "cargo-arangodb",
                         "chatgpt",
