@@ -14,6 +14,10 @@ All notable changes to this project will be documented in this file.
   module
 - Added ChaCha20 file encryptor/decryptor to :crypt module
 
+### Disabled 
+
+- external entities in XML parser utils
+
 
 
 ## [1.10.55] - 2023-12-10
