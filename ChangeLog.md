@@ -11,7 +11,7 @@ All notable changes to this project will be documented in this file.
 ### Added 
 
 - Added AES-256 (CBC, PKCS5Padding) file encryptor/decryptor to :crypt
-  module
+  module (for testing purposes only, in production use AES-256 GCM)
 - Added ChaCha20 file encryptor/decryptor to :crypt module
 
 ### Disabled 
