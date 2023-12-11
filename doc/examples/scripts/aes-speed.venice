@@ -19,9 +19,9 @@
 ;;;; See the License for the specific language governing permissions and
 ;;;; limitations under the License.
 
-;;;; Compares AES-256 encryption/decryption speed
+;;;; Compares AES-256 / ChaCha20 encryption/decryption speed
 
-;;                     MacBookAir M2, Java 8 (Zulu), BouncyCastele 1.77
+;;                      MacBookAir M2, Java 8 (Zulu), BouncyCastle 1.77
 ;; --------------------------------------------------------------------
 ;;                          2KB    20KB   200KB     2MB    20MB   200MB
 ;; --------------------------------------------------------------------
@@ -29,15 +29,15 @@
 ;; Decrypt AES-256 CBC:    67ms    67ms    65ms    76ms   162ms  1053ms
 ;; Encrypt AES-256 GCM:    64ms    65ms    70ms    96ms   364ms  3170ms
 ;; Decrypt AES-256 GCM:    66ms    65ms    67ms    94ms   363ms  3215ms
+;; Encrypt AES-256 ZIP:    11ms     5ms    10ms    60ms   565ms  5681ms
+;; Decrypt AES-256 ZIP:     7ms     5ms     6ms    24ms   204ms  2045ms
 ;; Encrypt ChaCha20:          -       -       -       -       -       -
 ;; Decrypt ChaCha20:          -       -       -       -       -       -
 ;; Encrypt ChaCha20-BC:    75ms    63ms    66ms    71ms   127ms   701ms
 ;; Decrypt ChaCha20-BC:    66ms    65ms    65ms    71ms   127ms   704ms
-;; Encrypt AES-256 ZIP:    11ms     5ms    10ms    60ms   565ms  5681ms
-;; Decrypt AES-256 ZIP:     7ms     5ms     6ms    24ms   204ms  2045ms
 ;; --------------------------------------------------------------------
 
-;;                    MacBookAir M2, Java 17 (Zulu), BouncyCastele 1.77
+;;                     MacBookAir M2, Java 17 (Zulu), BouncyCastle 1.77
 ;; --------------------------------------------------------------------
 ;;                          2KB    20KB   200KB     2MB    20MB   200MB
 ;; --------------------------------------------------------------------
@@ -45,12 +45,12 @@
 ;; Decrypt AES-256 CBC:    75ms    72ms    74ms    85ms   195ms  1562ms
 ;; Encrypt AES-256 GCM:    73ms    72ms    75ms   103ms   388ms  3593ms
 ;; Decrypt AES-256 GCM:    75ms    73ms    76ms   103ms   392ms  3283ms
+;; Encrypt AES-256 ZIP:     7ms     5ms     9ms    60ms   600ms  5900ms
+;; Decrypt AES-256 ZIP:     7ms     4ms     7ms    26ms   240ms  2311ms
 ;; Encrypt ChaCha20:       83ms    72ms    73ms    77ms   119ms   566ms
 ;; Decrypt ChaCha20:       73ms    72ms    73ms    76ms   118ms   527ms
 ;; Encrypt ChaCha20-BC:    74ms    73ms    73ms    87ms   160ms   949ms
 ;; Decrypt ChaCha20-BC:    74ms    73ms    74ms    85ms   160ms   931ms
-;; Encrypt AES-256 ZIP:     7ms     5ms     9ms    60ms   600ms  5900ms
-;; Decrypt AES-256 ZIP:     7ms     4ms     7ms    26ms   240ms  2311ms
 ;; --------------------------------------------------------------------
 
 
@@ -108,10 +108,10 @@
           data               (bytebuf-allocate-random size)
           dir                test-dir
           data-file          (io/file dir "test.data")
-          aes-file-cbc-enc   (io/file dir "test.data.aes-cbc.enc")
-          aes-file-cbc-dec   (io/file dir "test.data.aes-cbc.dec")
-          aes-file-gcm-enc   (io/file dir "test.data.aes-gcm.enc")
-          aes-file-gcm-dec   (io/file dir "test.data.aes-gcm.dec")
+          aes-cbc-file-enc   (io/file dir "test.data.aes-cbc.enc")
+          aes-cbc-file-dec   (io/file dir "test.data.aes-cbc.dec")
+          aes-gcm-file-enc   (io/file dir "test.data.aes-gcm.enc")
+          aes-gcm-file-dec   (io/file dir "test.data.aes-gcm.dec")
           cha-file-enc       (io/file dir "test.data.cha.enc")
           cha-file-dec       (io/file dir "test.data.cha.dec")
           cha-bc-file-enc    (io/file dir "test.data.cha-bc.enc")
@@ -131,23 +131,23 @@
       (println)
 
       (let [t (timing/elapsed #(encrypt-aes-cbc data-file
-                                                aes-file-cbc-enc
+                                                aes-cbc-file-enc
                                                 passwd))]
         (printel "Encrypt AES CBC:" t))
  
 
-      (let [t (timing/elapsed #(decrypt-aes-cbc aes-file-cbc-enc
-                                                aes-file-cbc-dec
+      (let [t (timing/elapsed #(decrypt-aes-cbc aes-cbc-file-enc
+                                                aes-cbc-file-dec
                                                 passwd))]
         (printel "Decrypt AES CBC:" t))
 
       (let [t (timing/elapsed #(encrypt-aes-gcm data-file
-                                                aes-file-gcm-enc
+                                                aes-gcm-file-enc
                                                 passwd))]
         (printel "Encrypt AES GCM:" t))
 
-      (let [t (timing/elapsed #(decrypt-aes-gcm aes-file-gcm-enc
-                                                aes-file-gcm-dec
+      (let [t (timing/elapsed #(decrypt-aes-gcm aes-gcm-file-enc
+                                                aes-gcm-file-dec
                                                  passwd))]
         (printel "Decrypt AES GCM:" t))
 
@@ -187,9 +187,9 @@
                                      
       (println)            
       (println "Decrypt verify AES CBC:     " 
-               (if (identical data-file aes-file-cbc-dec) "OK" "FAIL"))
+               (if (identical data-file aes-cbc-file-dec) "OK" "FAIL"))
       (println "Decrypt verify AES GCM:     " 
-               (if (identical data-file aes-file-gcm-dec) "OK" "FAIL"))
+               (if (identical data-file aes-gcm-file-dec) "OK" "FAIL"))
       (when (crypt/encrypt-file-supported? "ChaCha20")
         (println "Decrypt verify ChaCha20:    " 
                 (if (identical data-file cha-file-dec) "OK" "FAIL")))
