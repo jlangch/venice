@@ -21,7 +21,7 @@
 
 ;;;; Compares AES-256 encryption/decryption speed
 
-;;                                         MacBookAir M2, Java 8 (Zulu)
+;;                     MacBookAir M2, Java 8 (Zulu), BouncyCastele 1.77
 ;; --------------------------------------------------------------------
 ;;                          2KB    20KB   200KB     2MB    20MB   200MB
 ;; --------------------------------------------------------------------
@@ -31,11 +31,13 @@
 ;; Decrypt AES-256 GCM:    66ms    65ms    67ms    94ms   363ms  3215ms
 ;; Encrypt ChaCha20:          -       -       -       -       -       -
 ;; Decrypt ChaCha20:          -       -       -       -       -       -
+;; Encrypt ChaCha20-BC:    75ms    63ms    66ms    71ms   127ms   701ms
+;; Decrypt ChaCha20-BC:    66ms    65ms    65ms    71ms   127ms   704ms
 ;; Encrypt AES-256 ZIP:    11ms     5ms    10ms    60ms   565ms  5681ms
 ;; Decrypt AES-256 ZIP:     7ms     5ms     6ms    24ms   204ms  2045ms
 ;; --------------------------------------------------------------------
 
-;;                                        MacBookAir M2, Java 17 (Zulu)
+;;                    MacBookAir M2, Java 17 (Zulu), BouncyCastele 1.77
 ;; --------------------------------------------------------------------
 ;;                          2KB    20KB   200KB     2MB    20MB   200MB
 ;; --------------------------------------------------------------------
@@ -45,6 +47,8 @@
 ;; Decrypt AES-256 GCM:    75ms    73ms    76ms   103ms   392ms  3283ms
 ;; Encrypt ChaCha20:       83ms    72ms    73ms    77ms   119ms   566ms
 ;; Decrypt ChaCha20:       73ms    72ms    73ms    76ms   118ms   527ms
+;; Encrypt ChaCha20-BC:    74ms    73ms    73ms    87ms   160ms   949ms
+;; Decrypt ChaCha20-BC:    74ms    73ms    74ms    85ms   160ms   931ms
 ;; Encrypt AES-256 ZIP:     7ms     5ms     9ms    60ms   600ms  5900ms
 ;; Decrypt AES-256 ZIP:     7ms     4ms     7ms    26ms   240ms  2311ms
 ;; --------------------------------------------------------------------
@@ -66,7 +70,7 @@
        (io/slurp file2 :binary true)))
 
   (defn printel [title elapsed]
-    (printf "%-17s %4dms%n" title elapsed))
+    (printf "%-21s %4dms%n" title elapsed))
 
   (defn encrypt-aes-cbc [file-in file-out passphrase]
     (crypt/encrypt-file "AES256-CBC" file-in file-out passphrase))
@@ -80,11 +84,17 @@
   (defn decrypt-aes-gcm [file-in file-out passphrase]
     (crypt/decrypt-file "AES256-GCM" file-in file-out passphrase))
 
-  (defn encrypt-aes-cha [file-in file-out passphrase]
+  (defn encrypt-cha [file-in file-out passphrase]
     (crypt/encrypt-file "ChaCha20" file-in file-out passphrase))
 
-  (defn decrypt-aes-cha [file-in file-out passphrase]
+  (defn decrypt-cha [file-in file-out passphrase]
     (crypt/decrypt-file "ChaCha20" file-in file-out passphrase))
+
+  (defn encrypt-cha-bc [file-in file-out passphrase]
+    (crypt/encrypt-file "ChaCha20-BC" file-in file-out passphrase))
+
+  (defn decrypt-cha-bc [file-in file-out passphrase]
+    (crypt/decrypt-file "ChaCha20-BC" file-in file-out passphrase))
 
   (defn encrypt-zip [zip passphrase filename file ]
     (zipvault/zip zip passphrase filename (io/slurp file :binary true)))
@@ -102,8 +112,10 @@
           aes-file-cbc-dec   (io/file dir "test.data.aes-cbc.dec")
           aes-file-gcm-enc   (io/file dir "test.data.aes-gcm.enc")
           aes-file-gcm-dec   (io/file dir "test.data.aes-gcm.dec")
-          aes-file-cha-enc   (io/file dir "test.data.aes-cha.enc")
-          aes-file-cha-dec   (io/file dir "test.data.aes-cha.dec")
+          cha-file-enc       (io/file dir "test.data.cha.enc")
+          cha-file-dec       (io/file dir "test.data.cha.dec")
+          cha-bc-file-enc    (io/file dir "test.data.cha-bc.enc")
+          cha-bc-file-dec    (io/file dir "test.data.cha-bc.dec")
           aes-file-zip       (io/file dir "test.data.zip")
           aes-file-unzip     (io/file dir "test.data.unzip")]
       (when-not (io/exists-dir? dir)
@@ -140,15 +152,26 @@
         (printel "Decrypt AES GCM:" t))
 
       (when (crypt/encrypt-file-supported? "ChaCha20")
-        (let [t (timing/elapsed #(encrypt-aes-cha data-file
-                                                  aes-file-cha-enc
-                                                  passwd))]
+        (let [t (timing/elapsed #(encrypt-cha data-file
+                                              cha-file-enc
+                                              passwd))]
           (printel "Encrypt ChaCha20:" t))
 
-        (let [t (timing/elapsed #(decrypt-aes-cha aes-file-cha-enc
-                                                  aes-file-cha-dec
-                                                  passwd))]
+        (let [t (timing/elapsed #(decrypt-cha cha-file-enc
+                                              cha-file-dec
+                                              passwd))]
           (printel "Decrypt ChaCha20:" t)))
+
+      (when (crypt/encrypt-file-supported? "ChaCha20-BC")
+        (let [t (timing/elapsed #(encrypt-cha-bc data-file
+                                                 cha-bc-file-enc
+                                                 passwd))]
+          (printel "Encrypt ChaCha20-BC:" t))
+
+        (let [t (timing/elapsed #(decrypt-cha-bc cha-bc-file-enc
+                                                 cha-bc-file-dec
+                                                 passwd))]
+          (printel "Decrypt ChaCha20-BC:" t)))
        
       (let [t (timing/elapsed #(encrypt-zip aes-file-zip
                                             passwd
@@ -163,13 +186,17 @@
         (printel "Decrypt AES ZIP:" t))
                                      
       (println)            
-      (println "Decrypt verify AES CBC:  " 
+      (println "Decrypt verify AES CBC:     " 
                (if (identical data-file aes-file-cbc-dec) "OK" "FAIL"))
-      (println "Decrypt verify AES GCM:  " 
+      (println "Decrypt verify AES GCM:     " 
                (if (identical data-file aes-file-gcm-dec) "OK" "FAIL"))
-      (println "Decrypt verify ChaCha20: " 
-               (if (identical data-file aes-file-cha-dec) "OK" "FAIL"))
-      (println "Decrypt verify ZIP:      " 
+      (when (crypt/encrypt-file-supported? "ChaCha20")
+        (println "Decrypt verify ChaCha20:    " 
+                (if (identical data-file cha-file-dec) "OK" "FAIL")))
+      (when (crypt/encrypt-file-supported? "ChaCha20-BC")
+        (println "Decrypt verify ChaCha20-BC: " 
+                (if (identical data-file cha-bc-file-dec) "OK" "FAIL")))
+      (println "Decrypt verify ZIP:         " 
                (if (identical data-file aes-file-unzip) "OK" "FAIL"))))
 
   (defn run-sample []

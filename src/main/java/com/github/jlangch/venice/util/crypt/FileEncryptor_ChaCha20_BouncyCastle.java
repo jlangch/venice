@@ -22,20 +22,18 @@
 package com.github.jlangch.venice.util.crypt;
 
 import java.io.File;
-import java.lang.reflect.Constructor;
-import java.nio.ByteBuffer;
-import java.nio.ByteOrder;
 import java.nio.file.Files;
 import java.security.NoSuchAlgorithmException;
 import java.security.SecureRandom;
-import java.security.spec.AlgorithmParameterSpec;
 import java.security.spec.InvalidKeySpecException;
 import java.security.spec.KeySpec;
 
-import javax.crypto.Cipher;
 import javax.crypto.SecretKeyFactory;
 import javax.crypto.spec.PBEKeySpec;
-import javax.crypto.spec.SecretKeySpec;
+
+import org.bouncycastle.crypto.engines.ChaChaEngine;
+import org.bouncycastle.crypto.params.KeyParameter;
+import org.bouncycastle.crypto.params.ParametersWithIV;
 
 import com.github.jlangch.venice.impl.util.reflect.ReflectionUtil;
 
@@ -43,8 +41,8 @@ import com.github.jlangch.venice.impl.util.reflect.ReflectionUtil;
 /**
  * Encrypt and decrypt files using "ChaCha20" (BouncyCastle).
  *
- * Uses a counter and a nonce for each file and writes the counter
- * and the nonce to start of the encrypted file.
+ * Uses a nonce for each file and writes the nonce to start of
+ * the encrypted file.
  *
  * <pre>
  *    Encrypted binary file format when passphrase is used
@@ -53,8 +51,6 @@ import com.github.jlangch.venice.impl.util.reflect.ReflectionUtil;
  *    |         salt          |   16 bytes
  *    +-----------------------+
  *    |         nonce         |   12 bytes
- *    +-----------------------+
- *    |        counter        |   4 bytes
  *    +-----------------------+
  *    |  encrypted file data  |   n bytes
  *    +-----------------------+
@@ -66,15 +62,13 @@ import com.github.jlangch.venice.impl.util.reflect.ReflectionUtil;
  *    +-----------------------+
  *    |         nonce         |   12 bytes
  *    +-----------------------+
- *    |        counter        |   4 bytes
- *    +-----------------------+
  *    |  encrypted file data  |   n bytes
  *    +-----------------------+
  * </pre>
  */
 public class FileEncryptor_ChaCha20_BouncyCastle {
 
-	public static boolean isSupported() {
+    public static boolean isSupported() {
         try {
             final Class<?> clazz = ReflectionUtil.classForName("org.bouncycastle.crypto.engines.ChaChaEngine");
             return clazz != null;
@@ -82,7 +76,7 @@ public class FileEncryptor_ChaCha20_BouncyCastle {
         catch(Exception ex) {
             return false;
         }
-	}
+    }
 
 
     public static void encryptFileWithPassphrase(
@@ -112,30 +106,17 @@ public class FileEncryptor_ChaCha20_BouncyCastle {
         byte[] nonce = new byte[NONCE_LEN];
         new SecureRandom().nextBytes(nonce);
 
-        // Generate an counter
-        int counter = new SecureRandom().nextInt();
-        byte[] counterData = counterToBytes(counter);
-
         // Derive key from passphrase
         byte[] key = deriveKeyFromPassphrase(passphrase, salt, 65536, 256);
 
-        // Initialize ChaCha20 Parameters
-        AlgorithmParameterSpec param = createChaCha20ParameterSpec(nonce, counter);
-
-        // Initialize Cipher for ChaCha20
-        Cipher cipher = Cipher.getInstance("ChaCha20");
-        SecretKeySpec keySpec = new SecretKeySpec(key, "ChaCha20");
-        cipher.init(Cipher.ENCRYPT_MODE, keySpec, param);
-
         // Perform Encryption
-        byte[] encryptedData = cipher.doFinal(fileData);
+        byte[] encryptedData = encryptData(fileData, key, nonce);
 
-        // Combine salt, nonce, counter, and encrypted data
-        byte[] outData = new byte[SALT_LEN + NONCE_LEN + COUNTER_LEN + encryptedData.length];
+        // Combine salt, nonce, and encrypted data
+        byte[] outData = new byte[SALT_LEN + NONCE_LEN + encryptedData.length];
         System.arraycopy(salt, 0, outData, 0, salt.length);
         System.arraycopy(nonce, 0, outData, SALT_LEN, nonce.length);
-        System.arraycopy(counterData, 0, outData, SALT_LEN + NONCE_LEN, counterData.length);
-        System.arraycopy(encryptedData, 0, outData, SALT_LEN + NONCE_LEN + COUNTER_LEN, encryptedData.length);
+        System.arraycopy(encryptedData, 0, outData, SALT_LEN + NONCE_LEN, encryptedData.length);
 
         return outData;
     }
@@ -163,28 +144,13 @@ public class FileEncryptor_ChaCha20_BouncyCastle {
         byte[] nonce = new byte[NONCE_LEN];
         new SecureRandom().nextBytes(nonce);
 
-        // Generate an counter
-        int counter = new SecureRandom().nextInt();
-        byte[] counterData = counterToBytes(counter);
+        // Perform Encryption
+        byte[] encryptedData = encryptData(fileData, key, nonce);
 
-        // Secret key
-        SecretKeySpec keySpec = new SecretKeySpec(key, "ChaCha20");
-
-        // Initialize ChaCha20 Parameters
-        AlgorithmParameterSpec param = createChaCha20ParameterSpec(nonce, counter);
-
-        // Initialize Cipher for ChaCha20
-        Cipher cipher = Cipher.getInstance("ChaCha20");
-        cipher.init(Cipher.ENCRYPT_MODE, keySpec, param);
-
-        // encryption
-        byte[] encryptedData = cipher.doFinal(fileData);
-
-        // Combine salt, nonce, counter, and encrypted data
-        byte[] outData = new byte[NONCE_LEN + COUNTER_LEN + encryptedData.length];
+        // Combine nonce and encrypted data
+        byte[] outData = new byte[NONCE_LEN + encryptedData.length];
         System.arraycopy(nonce, 0, outData, 0, nonce.length);
-        System.arraycopy(counterData, 0, outData, NONCE_LEN, counterData.length);
-        System.arraycopy(encryptedData, 0, outData, NONCE_LEN + COUNTER_LEN, encryptedData.length);
+        System.arraycopy(encryptedData, 0, outData, NONCE_LEN, encryptedData.length);
 
         return outData;
     }
@@ -215,27 +181,14 @@ public class FileEncryptor_ChaCha20_BouncyCastle {
         byte[] nonce = new byte[NONCE_LEN];
         System.arraycopy(fileData, SALT_LEN, nonce, 0, NONCE_LEN);
 
-        byte[] counterBytes = new byte[COUNTER_LEN];
-        System.arraycopy(fileData, SALT_LEN + NONCE_LEN, counterBytes, 0, COUNTER_LEN);
-
-        byte[] encryptedData = new byte[fileData.length - SALT_LEN - NONCE_LEN - COUNTER_LEN];
-        System.arraycopy(fileData, SALT_LEN + NONCE_LEN + COUNTER_LEN, encryptedData, 0, encryptedData.length);
-
-        int counter = counterToInt(counterBytes);
+        byte[] encryptedData = new byte[fileData.length - SALT_LEN - NONCE_LEN];
+        System.arraycopy(fileData, SALT_LEN + NONCE_LEN, encryptedData, 0, encryptedData.length);
 
         // Derive key from passphrase
         byte[] key = deriveKeyFromPassphrase(passphrase, salt, 65536, 256);
 
-        // Initialize ChaCha20 Parameters
-        AlgorithmParameterSpec param = createChaCha20ParameterSpec(nonce, counter);
-
-        // Initialize Cipher for ChaCha20
-        Cipher cipher = Cipher.getInstance("ChaCha20");
-        SecretKeySpec keySpec = new SecretKeySpec(key, "ChaCha20");
-        cipher.init(Cipher.DECRYPT_MODE, keySpec, param);
-
         // Perform Decryption
-        return cipher.doFinal(encryptedData);
+        return decryptData(encryptedData, key, nonce);
     }
 
     public static void decryptFileWithKey(
@@ -261,44 +214,39 @@ public class FileEncryptor_ChaCha20_BouncyCastle {
         byte[] nonce = new byte[NONCE_LEN];
         System.arraycopy(fileData, 0, nonce, 0, NONCE_LEN);
 
-        byte[] counterBytes = new byte[COUNTER_LEN];
-        System.arraycopy(fileData, NONCE_LEN, counterBytes, 0, COUNTER_LEN);
+        byte[] encryptedData = new byte[fileData.length - NONCE_LEN];
+        System.arraycopy(fileData, NONCE_LEN, encryptedData, 0, encryptedData.length);
 
-        byte[] encryptedData = new byte[fileData.length - NONCE_LEN - COUNTER_LEN];
-        System.arraycopy(fileData, NONCE_LEN + COUNTER_LEN, encryptedData, 0, encryptedData.length);
-
-        int counter = counterToInt(counterBytes);
-
-        // Secret key
-        SecretKeySpec keySpec = new SecretKeySpec(key, "ChaCha20");
-
-        // Initialize ChaCha20 Parameters
-        AlgorithmParameterSpec param = createChaCha20ParameterSpec(nonce, counter);
-
-        // Initialize Cipher for ChaCha20
-        Cipher cipher = Cipher.getInstance("ChaCha20");
-        cipher.init(Cipher.DECRYPT_MODE, keySpec, param);
-
-        // decryption
-        return cipher.doFinal(encryptedData);
+        // Perform Decryption
+        return decryptData(encryptedData, key, nonce);
     }
 
+    private static byte[] encryptData(
+            final byte[] data,
+            final byte[] key,
+            final byte[] iv
+    ) throws Exception {
+        ChaChaEngine chacha = new ChaChaEngine(ROUNDS);
+        chacha.init(true, new ParametersWithIV(new KeyParameter(key), iv));
 
-    private static AlgorithmParameterSpec createChaCha20ParameterSpec(
-            final byte[] nonce,
-            final int counter
-    ) {
-        // return new ChaCha20ParameterSpec(nonce, counter);
+        byte[] encryptedData = new byte[data.length];
+        chacha.processBytes(data, 0, data.length, encryptedData, 0);
 
-        // Note: ChaCha20 is only available with Java11+
-        try {
-            Class<?> clazz = ReflectionUtil.classForName("javax.crypto.spec.ChaCha20ParameterSpec");
-            Constructor<?> c = clazz.getConstructor(new Class[]{byte[].class, int.class});
-            return (AlgorithmParameterSpec)c.newInstance(nonce, counter);
-        }
-        catch(Exception ex) {
-            throw new RuntimeException("Java Crypto algorithm ChaCha20 is not available!");
-        }
+        return encryptedData;
+    }
+
+    private static byte[] decryptData(
+            final byte[] data,
+            final byte[] key,
+            final byte[] iv
+    ) throws Exception {
+        ChaChaEngine chacha = new ChaChaEngine(ROUNDS);
+        chacha.init(false, new ParametersWithIV(new KeyParameter(key), iv));
+
+        byte[] decryptedData = new byte[data.length];
+        chacha.processBytes(data, 0, data.length, decryptedData, 0);
+
+        return decryptedData;
     }
 
     private static byte[] deriveKeyFromPassphrase(
@@ -312,25 +260,8 @@ public class FileEncryptor_ChaCha20_BouncyCastle {
         return factory.generateSecret(spec).getEncoded();
     }
 
-    private static byte[] counterToBytes(final int counter) {
-        // convert int to byte[]
-    	return ByteBuffer.allocate(COUNTER_LEN)
-    	                 .order(ENDIAN)
-    	                 .putInt(counter)
-    	                 .array();
-    }
 
-    private static int counterToInt(final byte[] counter) {
-        // convert byte[] to int
-    	return ByteBuffer.wrap(counter)
-    	                 .order(ENDIAN)
-                         .getInt(0);
-    }
-
-
-    private static ByteOrder ENDIAN = ByteOrder.BIG_ENDIAN; // ensure same byte order on all machines
-
+    private static int ROUNDS = 20;
     private static int SALT_LEN = 16;
-    private static int NONCE_LEN = 12;
-    private static int COUNTER_LEN = 4;
+    private static int NONCE_LEN = 8;
 }

@@ -12,7 +12,8 @@ All notable changes to this project will be documented in this file.
 
 - AES-256 (CBC, PKCS5Padding) file encryptor/decryptor to :crypt
   module (for testing purposes only, in production use AES-256 GCM)
-- ChaCha20 file encryptor/decryptor to :crypt module
+- ChaCha20 file encryptor/decryptor to :crypt module (Java 11+)
+- ChaCha20 BouncyCastle file encryptor/decryptor to :crypt modul (Java 8+)
 - functions for handling byte order (little/big endian) on byte buffers
 
 ### Disabled 

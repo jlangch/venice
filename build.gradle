@@ -170,6 +170,7 @@ plugins {
 
 
 ext {
+    bouncyCastle_Version = '1.77'
     commonsIo_Version = '2.11.0'
     docx4j_Version_Java8 = '8.3.4'
     docx4j_Version_Java11 = '11.4.5'
@@ -733,6 +734,12 @@ dependencies {
     testImplementation "org.knowm.xchart:xchart:${xchart_Version}"
     testImplementation "org.apache.poi:poi:${poi_Version}"
     testImplementation "org.apache.poi:poi-ooxml:${poi_Version}"
+    
+    testImplementation "org.bouncycastle:bcprov-jdk18on:${bouncyCastle_Version}"
+    testImplementation "org.bouncycastle:bcprov-ext-jdk15to18:${bouncyCastle_Version}"
+    testImplementation "org.bouncycastle:bcutil-jdk18on:${bouncyCastle_Version}"
+    testImplementation "org.bouncycastle:bcpkix-jdk18on:${bouncyCastle_Version}"
+    testImplementation "org.bouncycastle:bctls-jdk18on:${bouncyCastle_Version}" 
 
 
     // Cheatsheet generation
@@ -767,6 +774,13 @@ dependencies {
 
     // WebApp support
     compileOnly "jakarta.servlet:jakarta.servlet-api:${servletApi_Version}"
+
+    // Bouncy Castle
+    compileOnly "org.bouncycastle:bcprov-jdk18on:${bouncyCastle_Version}"
+    compileOnly "org.bouncycastle:bcprov-ext-jdk15to18:${bouncyCastle_Version}"
+    compileOnly "org.bouncycastle:bcutil-jdk18on:${bouncyCastle_Version}"
+    compileOnly "org.bouncycastle:bcpkix-jdk18on:${bouncyCastle_Version}"
+    compileOnly "org.bouncycastle:bctls-jdk18on:${bouncyCastle_Version}" 
 
     // runtime dependencies (repackaged)
     implementation "io.vavr:vavr:${vavr_Version}"
