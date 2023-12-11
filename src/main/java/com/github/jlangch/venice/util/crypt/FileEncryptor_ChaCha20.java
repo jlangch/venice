@@ -24,6 +24,7 @@ package com.github.jlangch.venice.util.crypt;
 import java.io.File;
 import java.lang.reflect.Constructor;
 import java.nio.ByteBuffer;
+import java.nio.ByteOrder;
 import java.nio.file.Files;
 import java.security.NoSuchAlgorithmException;
 import java.security.SecureRandom;
@@ -109,7 +110,7 @@ public class FileEncryptor_ChaCha20 {
         new SecureRandom().nextBytes(salt);
 
         // Generate a random nonce
-        byte[] nonce = new byte[NONCE_LEN]; // ChaCha20 requires 12 bytes
+        byte[] nonce = new byte[NONCE_LEN];
         new SecureRandom().nextBytes(nonce);
 
         // Generate an counter
@@ -132,7 +133,7 @@ public class FileEncryptor_ChaCha20 {
 
         // Combine salt, nonce, counter, and encrypted data
         byte[] outData = new byte[SALT_LEN + NONCE_LEN + COUNTER_LEN + encryptedData.length];
-        System.arraycopy(salt, 0, outData, 0, SALT_LEN);
+        System.arraycopy(salt, 0, outData, 0, salt.length);
         System.arraycopy(nonce, 0, outData, SALT_LEN, nonce.length);
         System.arraycopy(counterData, 0, outData, SALT_LEN + NONCE_LEN, counterData.length);
         System.arraycopy(encryptedData, 0, outData, SALT_LEN + NONCE_LEN + COUNTER_LEN, encryptedData.length);
@@ -160,7 +161,7 @@ public class FileEncryptor_ChaCha20 {
             final byte[] key
     ) throws Exception {
         // Generate a random nonce
-        byte[] nonce = new byte[12]; // ChaCha20 requires 12 bytes
+        byte[] nonce = new byte[NONCE_LEN];
         new SecureRandom().nextBytes(nonce);
 
         // Generate an counter
@@ -217,7 +218,7 @@ public class FileEncryptor_ChaCha20 {
         System.arraycopy(fileData, SALT_LEN, nonce, 0, NONCE_LEN);
 
         byte[] counterBytes = new byte[COUNTER_LEN];
-        System.arraycopy(fileData, SALT_LEN + NONCE_LEN, nonce, 0, NONCE_LEN);
+        System.arraycopy(fileData, SALT_LEN + NONCE_LEN, nonce, 0, COUNTER_LEN);
 
         byte[] encryptedData = new byte[fileData.length - SALT_LEN - NONCE_LEN - COUNTER_LEN];
         System.arraycopy(fileData, SALT_LEN + NONCE_LEN + COUNTER_LEN, encryptedData, 0, encryptedData.length);
@@ -263,7 +264,7 @@ public class FileEncryptor_ChaCha20 {
         System.arraycopy(fileData, 0, nonce, 0, NONCE_LEN);
 
         byte[] counterBytes = new byte[COUNTER_LEN];
-        System.arraycopy(fileData, NONCE_LEN, nonce, 0, NONCE_LEN);
+        System.arraycopy(fileData, NONCE_LEN, nonce, 0, COUNTER_LEN);
 
         byte[] encryptedData = new byte[fileData.length - NONCE_LEN - COUNTER_LEN];
         System.arraycopy(fileData, NONCE_LEN + COUNTER_LEN, encryptedData, 0, encryptedData.length);
@@ -316,14 +317,20 @@ public class FileEncryptor_ChaCha20 {
 
     private static byte[] counterToBytes(final int counter) {
         // convert int to byte[]
-        return ByteBuffer.allocate(COUNTER_LEN).putInt(counter).array();
+    	return ByteBuffer.allocate(COUNTER_LEN)
+    	                 .order(ENDIAN)
+    	                 .putInt(counter).array();
     }
 
     private static int counterToInt(final byte[] counter) {
         // convert byte[] to int
-        return ByteBuffer.wrap(counter).getInt();
+    	return ByteBuffer.wrap(counter)
+    	                 .order(ENDIAN)
+                         .getInt(0);
     }
 
+
+    private static ByteOrder ENDIAN = ByteOrder.BIG_ENDIAN; // ensure same byte order on all machines
 
     private static int SALT_LEN = 16;
     private static int NONCE_LEN = 12;
