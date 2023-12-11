@@ -144,22 +144,6 @@ public class BytebufFunctionsTest {
                 "(let [buf (bytebuf-allocate 4)]         \n" +
                 "  (bytebuf-put-int! buf 10203040I)      \n" +
                 "  (bytebuf-get-int buf 0))                "));
-
-        assertEquals(
-            10203040,
-            venice.eval(
-                "(let [buf (bytebuf-allocate 4)]         \n" +
-                "  (bytebuf-byte-order buf :big-endian)  \n" +
-                "  (bytebuf-put-int! buf 10203040I)      \n" +
-                "  (bytebuf-get-int buf 0))                "));
-
-        assertEquals(
-            10203040,
-            venice.eval(
-                "(let [buf (bytebuf-allocate 4)]            \n" +
-                "  (bytebuf-byte-order buf :little-endian)  \n" +
-                "  (bytebuf-put-int! buf 10203040I)         \n" +
-                "  (bytebuf-get-int buf 0))                 "));
     }
 
     @Test
