@@ -21,7 +21,6 @@ and loads a module only once and skips subsequent load attempts.
 * [CIDR (Classless Inter-Domain Routing)](ext-cidr.md)
 * [Semantic Versioning](ext-semver.md)
 * [XML](ext-xml.md)
-* [Cryptographic Functions](ext-crypt.md)
 * [Apache Tomcat WEB Server](ext-tomcat.md)
 * [Ring WEB App library](ext-ring.md)
 * [WebDAV](ext-webdav.md)

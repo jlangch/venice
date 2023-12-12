@@ -1,10 +1,12 @@
 # Cryptography
 
-* [File encryption](#file-encryption)
-* [File hashing](#file-hashing)
+* [File Encryption](#file-encryption)
+* [File Hashing](#file-hashing)
+* [String/Byte Encryption](#string-byte-encryption)
+* [String/Password Hashing](#string-password-hashing)
 
 
-## File encryption
+## File Encryption
 
 Venice supports encrypting and decrypting files, streams and buffers using 
 AES and ChaCha20, both with 256 bit keys:
@@ -123,7 +125,7 @@ Decrypt ChaCha20-BC:    74ms    73ms    74ms    85ms   160ms   931ms
 ```
 
 
-## File hashing
+## File Hashing
 
 Venice computes hashes for files, streams, and buffers with the 
 algorithms MD5, SHA-1, and SHA-256.
@@ -183,3 +185,178 @@ Hash SHA-1 (memory):     0ms     1ms     1ms     7ms    64ms   642ms
 Hash SHA-256 (memory):   1ms     0ms     1ms     8ms    76ms   749ms
 --------------------------------------------------------------------
 ```
+
+
+
+## String/Byte Encryption
+
+Venice supports DES, 3DES and AES256.
+
+
+### Encryption
+
+Encrypting strings:
+
+```clojure
+(do
+  (load-module :crypt) 
+
+  ;; define the encryption function
+  (def encrypt (crypt/encrypt "3DES" "secret" :url-safe true))
+  
+  (encrypt "hello") ; => "ndmW1NLsDHA"
+  (encrypt "world") ; => "KPYjndkZ8vM"
+) 
+```
+
+Encrypting bytebufs:
+
+```clojure
+(do
+  (load-module :crypt) 
+  (load-module :hexdump)
+
+  ;; define the encryption function
+  (def encrypt (crypt/encrypt "AES256" "secret" :url-safe true))
+  
+  (-> (encrypt (bytebuf [ 0  1  2  3  4  5  6  7  8  9 
+                         10 11 12 13 14 15 16 17 18 19]))
+      (hexdump/dump)))
+```
+
+Encrypts a string or a bytebuf. String data is returned as Base64 encoded string.
+
+The :url-safe option controls the base64 encoding regarding URL safety.
+If _true_ the base64 encoder will emit '-' and '_' instead of the usual 
+'+' and '/' characters. Defaults to _false_.
+
+Note: no padding is added when encoding using the URL-safe alphabet.
+
+Supported algorithms: DES, 3DES, AES256
+
+
+### Decryption
+
+The crypt/decrypt function expects a Base64 encoded string or a bytebuf.
+
+Decrypting strings:
+
+```clojure
+(do
+  (load-module :crypt) 
+
+  ;; define the encryption/decryption function
+  (def encrypt (crypt/encrypt "3DES" "secret" :url-safe true))
+  (def decrypt (crypt/decrypt "3DES" "secret" :url-safe true))
+  
+  (-> (encrypt "hello")
+      (decrypt)))
+```
+
+Decrypting bytebufs:
+
+```clojure
+(do
+  (load-module :crypt) 
+
+  ;; define the decryption function
+  (def decrypt (crypt/decrypt "3DES" "secret" :url-safe true))
+
+  
+  (-> (encrypt (bytebuf [ 0  1  2  3  4  5  6  7  8  9 
+                         10 11 12 13 14 15 16 17 18 19]))
+      (decrypt)))
+```
+
+
+## String/Password Hashing
+
+Venice supports PBKDF2, SHA-512, SHA-1, and MD5 for hashing strings.
+
+
+### PBKDF2
+
+PBKDF2 is the preferred hashing algorithm to hash password.
+
+Just using a salt:
+
+```clojure
+(do
+  (load-module :crypt)
+
+  (-> (crypt/pbkdf2-hash "hello world" "-salt-")
+      (str/bytebuf-to-hex :upper)))
+```
+
+Specifying a salt, the number of iterations, and key length:
+
+```clojure
+(do
+  (load-module :crypt)
+
+  (-> (crypt/pbkdf2-hash "hello world" "-salt-" 1000 256)
+      (str/bytebuf-to-hex :upper)))
+```
+
+
+### SHA-512
+
+```clojure
+(do
+  (load-module :crypt)
+
+  (-> (crypt/sha512-hash "hello world" "-salt-")
+      (str/bytebuf-to-hex :upper)))
+```
+
+```clojure
+(do
+  (load-module :crypt)
+
+  (-> (crypt/sha512-hash (bytebuf [54 78 99]) "-salt-")
+      (str/bytebuf-to-hex :upper)))
+```
+
+
+### SHA-1
+
+```clojure
+(do
+  (load-module :crypt)
+
+  (-> (crypt/sha1-hash "hello world" "-salt-")
+      (str/bytebuf-to-hex :upper)))
+```
+
+```clojure
+(do
+  (load-module :crypt)
+
+  (-> (crypt/sha1-hash (bytebuf [54 78 99]) "-salt-")
+      (str/bytebuf-to-hex :upper)))
+```
+
+
+### MD5
+
+Warning: The MD5 hash function’s security is considered to be 
+severely compromised. Collisions can be found within seconds, 
+and they can be used for malicious purposes. 
+
+```clojure
+(do
+  (load-module :crypt)
+
+  (-> (crypt/md5-hash "hello world")
+      (str/bytebuf-to-hex :upper)))
+```
+
+```clojure
+(do
+  (load-module :crypt)
+
+  (-> (crypt/md5-hash (bytebuf [54 78 99]))
+      (str/bytebuf-to-hex :upper)))
+```
+
+
