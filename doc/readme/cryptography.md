@@ -1,7 +1,7 @@
 # Cryptography
 
 * [File encryption](#file-encryption)
-* [File hashhing](#file-hashing)
+* [File hashing](#file-hashing)
 
 
 ## File encryption
@@ -29,7 +29,7 @@ AES and ChaCha20 all with 256 bit keys:
     
 Warning: files encrypted with ChaCha20 cannot be decrypted 
 by ChaCha20-BC (and vice versa) due to different initial 
-counter  handling and the IV size (96bit vs 64bit)
+counter  handling and IV size (96bit vs 64bit)
 
 The ChaCha family of ciphers are an oder of magnitude more efficient 
 on servers that do not provide hardware acceleration. Apple Silicon
