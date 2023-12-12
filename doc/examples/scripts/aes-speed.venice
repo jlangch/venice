@@ -58,7 +58,7 @@
 (do
   (load-module :zipvault)
   (load-module :crypt)
-  (load-module :timing)
+  (load-module :timing ['timing :as 't])
 
 
   (defonce passwd   "j87vhfrtxvzrzver445dffg")
@@ -72,29 +72,11 @@
   (defn printel [title elapsed]
     (printf "%-21s %4dms%n" title elapsed))
 
-  (defn encrypt-aes-cbc [file-in file-out passphrase]
-    (crypt/encrypt-file "AES256-CBC" file-in file-out passphrase))
+  (defn encrypt [algo passphrase file-in file-out]
+   (crypt/encrypt-file algo file-in file-out passphrase))
 
-  (defn decrypt-aes-cbc [file-in file-out passphrase]
-    (crypt/decrypt-file "AES256-CBC" file-in file-out passphrase))
-
-  (defn encrypt-aes-gcm [file-in file-out passphrase]
-    (crypt/encrypt-file "AES256-GCM" file-in file-out passphrase))
-
-  (defn decrypt-aes-gcm [file-in file-out passphrase]
-    (crypt/decrypt-file "AES256-GCM" file-in file-out passphrase))
-
-  (defn encrypt-cha [file-in file-out passphrase]
-    (crypt/encrypt-file "ChaCha20" file-in file-out passphrase))
-
-  (defn decrypt-cha [file-in file-out passphrase]
-    (crypt/decrypt-file "ChaCha20" file-in file-out passphrase))
-
-  (defn encrypt-cha-bc [file-in file-out passphrase]
-    (crypt/encrypt-file "ChaCha20-BC" file-in file-out passphrase))
-
-  (defn decrypt-cha-bc [file-in file-out passphrase]
-    (crypt/decrypt-file "ChaCha20-BC" file-in file-out passphrase))
+  (defn decrypt [algo passphrase file-in file-out]
+    (crypt/decrypt-file algo file-in file-out passphrase))
 
   (defn encrypt-zip [zip passphrase filename file ]
     (zipvault/zip zip passphrase filename (io/slurp file :binary true)))
@@ -130,59 +112,48 @@
       (println "            : created")
       (println)
 
-      (let [t (timing/elapsed #(encrypt-aes-cbc data-file
-                                                aes-cbc-file-enc
-                                                passwd))]
+      (let [t (t/elapsed #(encrypt "AES256-CBC" passwd 
+                                   data-file aes-cbc-file-enc))]
         (printel "Encrypt AES CBC:" t))
  
-
-      (let [t (timing/elapsed #(decrypt-aes-cbc aes-cbc-file-enc
-                                                aes-cbc-file-dec
-                                                passwd))]
+      (let [t (t/elapsed #(decrypt "AES256-CBC" passwd 
+                                   aes-cbc-file-enc aes-cbc-file-dec))]
         (printel "Decrypt AES CBC:" t))
 
-      (let [t (timing/elapsed #(encrypt-aes-gcm data-file
-                                                aes-gcm-file-enc
-                                                passwd))]
+      (let [t (t/elapsed #(encrypt "AES256-GCM" passwd
+                                   data-file aes-gcm-file-enc))]
         (printel "Encrypt AES GCM:" t))
 
-      (let [t (timing/elapsed #(decrypt-aes-gcm aes-gcm-file-enc
-                                                aes-gcm-file-dec
-                                                 passwd))]
+      (let [t (t/elapsed #(decrypt "AES256-GCM" passwd
+                                   aes-gcm-file-enc aes-gcm-file-dec))]
         (printel "Decrypt AES GCM:" t))
 
       (when (crypt/encrypt-file-supported? "ChaCha20")
-        (let [t (timing/elapsed #(encrypt-cha data-file
-                                              cha-file-enc
-                                              passwd))]
+        (let [t (t/elapsed #(encrypt "ChaCha20" passwd 
+                                     data-file cha-file-enc))]
           (printel "Encrypt ChaCha20:" t))
 
-        (let [t (timing/elapsed #(decrypt-cha cha-file-enc
-                                              cha-file-dec
-                                              passwd))]
+        (let [t (t/elapsed #(decrypt "ChaCha20" passwd
+                                     cha-file-enc cha-file-dec))]
           (printel "Decrypt ChaCha20:" t)))
 
       (when (crypt/encrypt-file-supported? "ChaCha20-BC")
-        (let [t (timing/elapsed #(encrypt-cha-bc data-file
-                                                 cha-bc-file-enc
-                                                 passwd))]
+        (let [t (t/elapsed #(encrypt "ChaCha20-BC" passwd
+                                      data-file cha-bc-file-enc))]
           (printel "Encrypt ChaCha20-BC:" t))
 
-        (let [t (timing/elapsed #(decrypt-cha-bc cha-bc-file-enc
-                                                 cha-bc-file-dec
-                                                 passwd))]
+        (let [t (t/elapsed #(decrypt "ChaCha20-BC" passwd
+                                     cha-bc-file-enc cha-bc-file-dec))]
           (printel "Decrypt ChaCha20-BC:" t)))
        
-      (let [t (timing/elapsed #(encrypt-zip aes-file-zip
-                                            passwd
-                                            (io/file-name aes-file-unzip)
-                                            data-file))]
+      (let [t (t/elapsed #(encrypt-zip aes-file-zip passwd
+                                       (io/file-name aes-file-unzip)
+                                       data-file))]
         (printel "Encrypt AES ZIP:" t))
 
-      (let [t (timing/elapsed #(decrypt-zip aes-file-zip
-                                            passwd
-                                            (io/file-name aes-file-unzip)
-                                            (io/file-parent aes-file-unzip)))]
+      (let [t (t/elapsed #(decrypt-zip aes-file-zip passwd
+                                       (io/file-name aes-file-unzip)
+                                       (io/file-parent aes-file-unzip)))]
         (printel "Decrypt AES ZIP:" t))
                                      
       (println)            
