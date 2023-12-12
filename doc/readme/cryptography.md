@@ -210,7 +210,9 @@ Hash SHA-256 (memory):   1ms     0ms     1ms     8ms    76ms   749ms
 
 ## String Encryption
 
-Venice supports DES, 3DES and AES256.
+Venice supports DES, 3DES and AES256 for encrypting strings and byte buffers.
+
+**Note:** For encrypting files use `crypt/encrypt-file` and `crypt/decrypt-file`
 
 
 ### Encryption
@@ -292,6 +294,8 @@ Decrypting bytebufs:
 ## String and Password Hashing
 
 Venice supports PBKDF2, SHA-512, SHA-1, and MD5 for hashing strings.
+
+**Note:** For hashing files use `crypt/file-hash` and `crypt/verify-file-hash`
 
 
 ### PBKDF2
