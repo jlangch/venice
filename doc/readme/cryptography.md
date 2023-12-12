@@ -6,8 +6,7 @@
 
 ## File encryption
 
-Venice supports encrypting and decrypting files and buffers. It supports
-AES and ChaCha20 all with 256 bit keys:
+Venice supports encrypting and decrypting files and buffers using AES and ChaCha20, both with 256 bit keys:
 
   * AES256-GCM ¹⁾
   * AES256-CBC ²⁾
