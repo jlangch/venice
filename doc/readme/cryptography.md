@@ -3,7 +3,7 @@
 * [File Encryption](#file-encryption)
 * [File Hashing](#file-hashing)
 * [String Encryption](#string-encryption)
-* [String or Password Hashing](#string-or-password-hashing)
+* [String and Password Hashing](#string-and-password-hashing)
 
 
 ## File Encryption
@@ -269,7 +269,7 @@ Decrypting bytebufs:
 ```
 
 
-## String or Password Hashing
+## String and Password Hashing
 
 Venice supports PBKDF2, SHA-512, SHA-1, and MD5 for hashing strings.
 
