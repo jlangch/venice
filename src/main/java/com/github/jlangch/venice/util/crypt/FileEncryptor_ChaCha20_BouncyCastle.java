@@ -41,7 +41,7 @@ import com.github.jlangch.venice.impl.util.reflect.ReflectionUtil;
 /**
  * Encrypt and decrypt files using "ChaCha20" (BouncyCastle).
  *
- * Uses a nonce for each file and writes the nonce to start of
+ * Uses a IV for each file and writes the IV to start of
  * the encrypted file.
  *
  * <pre>
@@ -50,7 +50,7 @@ import com.github.jlangch.venice.impl.util.reflect.ReflectionUtil;
  *    +-----------------------+
  *    |         salt          |   16 bytes
  *    +-----------------------+
- *    |         nonce         |   12 bytes
+ *    |          IV           |   8 bytes
  *    +-----------------------+
  *    |  encrypted file data  |   n bytes
  *    +-----------------------+
@@ -60,7 +60,7 @@ import com.github.jlangch.venice.impl.util.reflect.ReflectionUtil;
  *    Encrypted binary file format when key is used
  *
  *    +-----------------------+
- *    |         nonce         |   12 bytes
+ *    |          IV           |   8 bytes
  *    +-----------------------+
  *    |  encrypted file data  |   n bytes
  *    +-----------------------+
@@ -102,21 +102,21 @@ public class FileEncryptor_ChaCha20_BouncyCastle {
         byte[] salt = new byte[SALT_LEN];
         new SecureRandom().nextBytes(salt);
 
-        // Generate a random nonce
-        byte[] nonce = new byte[NONCE_LEN];
-        new SecureRandom().nextBytes(nonce);
+        // Generate a random iv
+        byte[] iv = new byte[IV_LEN];
+        new SecureRandom().nextBytes(iv);
 
         // Derive key from passphrase
         byte[] key = deriveKeyFromPassphrase(passphrase, salt, 65536, 256);
 
         // Perform Encryption
-        byte[] encryptedData = encryptData(fileData, key, nonce);
+        byte[] encryptedData = encryptData(fileData, key, iv);
 
-        // Combine salt, nonce, and encrypted data
-        byte[] outData = new byte[SALT_LEN + NONCE_LEN + encryptedData.length];
+        // Combine salt, iv, and encrypted data
+        byte[] outData = new byte[SALT_LEN + IV_LEN + encryptedData.length];
         System.arraycopy(salt, 0, outData, 0, salt.length);
-        System.arraycopy(nonce, 0, outData, SALT_LEN, nonce.length);
-        System.arraycopy(encryptedData, 0, outData, SALT_LEN + NONCE_LEN, encryptedData.length);
+        System.arraycopy(iv, 0, outData, SALT_LEN, iv.length);
+        System.arraycopy(encryptedData, 0, outData, SALT_LEN + IV_LEN, encryptedData.length);
 
         return outData;
     }
@@ -140,17 +140,17 @@ public class FileEncryptor_ChaCha20_BouncyCastle {
             final byte[] fileData,
             final byte[] key
     ) throws Exception {
-        // Generate a random nonce
-        byte[] nonce = new byte[NONCE_LEN];
-        new SecureRandom().nextBytes(nonce);
+        // Generate a random iv
+        byte[] iv = new byte[IV_LEN];
+        new SecureRandom().nextBytes(iv);
 
         // Perform Encryption
-        byte[] encryptedData = encryptData(fileData, key, nonce);
+        byte[] encryptedData = encryptData(fileData, key, iv);
 
-        // Combine nonce and encrypted data
-        byte[] outData = new byte[NONCE_LEN + encryptedData.length];
-        System.arraycopy(nonce, 0, outData, 0, nonce.length);
-        System.arraycopy(encryptedData, 0, outData, NONCE_LEN, encryptedData.length);
+        // Combine iv and encrypted data
+        byte[] outData = new byte[IV_LEN + encryptedData.length];
+        System.arraycopy(iv, 0, outData, 0, iv.length);
+        System.arraycopy(encryptedData, 0, outData, IV_LEN, encryptedData.length);
 
         return outData;
     }
@@ -174,21 +174,21 @@ public class FileEncryptor_ChaCha20_BouncyCastle {
             final byte[] fileData,
             final String passphrase
     ) throws Exception {
-        // Extract salt, nonce, counter, and encrypted data
+        // Extract salt, iv, and encrypted data
         byte[] salt = new byte[SALT_LEN];
         System.arraycopy(fileData, 0, salt, 0, SALT_LEN);
 
-        byte[] nonce = new byte[NONCE_LEN];
-        System.arraycopy(fileData, SALT_LEN, nonce, 0, NONCE_LEN);
+        byte[] iv = new byte[IV_LEN];
+        System.arraycopy(fileData, SALT_LEN, iv, 0, IV_LEN);
 
-        byte[] encryptedData = new byte[fileData.length - SALT_LEN - NONCE_LEN];
-        System.arraycopy(fileData, SALT_LEN + NONCE_LEN, encryptedData, 0, encryptedData.length);
+        byte[] encryptedData = new byte[fileData.length - SALT_LEN - IV_LEN];
+        System.arraycopy(fileData, SALT_LEN + IV_LEN, encryptedData, 0, encryptedData.length);
 
         // Derive key from passphrase
         byte[] key = deriveKeyFromPassphrase(passphrase, salt, 65536, 256);
 
         // Perform Decryption
-        return decryptData(encryptedData, key, nonce);
+        return decryptData(encryptedData, key, iv);
     }
 
     public static void decryptFileWithKey(
@@ -210,15 +210,15 @@ public class FileEncryptor_ChaCha20_BouncyCastle {
             final byte[] fileData,
             final byte[] key
     ) throws Exception {
-        // Extract nonce, counter, and encrypted data
-        byte[] nonce = new byte[NONCE_LEN];
-        System.arraycopy(fileData, 0, nonce, 0, NONCE_LEN);
+        // Extract iv and encrypted data
+        byte[] iv = new byte[IV_LEN];
+        System.arraycopy(fileData, 0, iv, 0, IV_LEN);
 
-        byte[] encryptedData = new byte[fileData.length - NONCE_LEN];
-        System.arraycopy(fileData, NONCE_LEN, encryptedData, 0, encryptedData.length);
+        byte[] encryptedData = new byte[fileData.length - IV_LEN];
+        System.arraycopy(fileData, IV_LEN, encryptedData, 0, encryptedData.length);
 
         // Perform Decryption
-        return decryptData(encryptedData, key, nonce);
+        return decryptData(encryptedData, key, iv);
     }
 
     private static byte[] encryptData(
@@ -263,5 +263,5 @@ public class FileEncryptor_ChaCha20_BouncyCastle {
 
     private static int ROUNDS = 20;
     private static int SALT_LEN = 16;
-    private static int NONCE_LEN = 8;
+    private static int IV_LEN = 8;
 }

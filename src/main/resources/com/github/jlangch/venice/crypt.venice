@@ -246,7 +246,7 @@
        decoded, decrypted, and returned as string. If a bytebuf is passed the \
        decrypted bytebuf is returned.
 
-       Supported algorithms: "DES", "3DES", "AES256"
+       Supported algorithms: DES, 3DES, AES256
 
        Options:
 
@@ -317,12 +317,15 @@
           * ChaCha20-BC ⁴⁾
           
           | ¹⁾ | Recommended by NIST |
-          | ²⁾ | AES/CBC/PKCS5Padding is regarded as a broken or risky \
+          | ²⁾ | AES256-CBC is regarded as a broken or risky \
                  cryptographic algorithm (CWE-327, CWE-328). Use AES256-GCM \
-                 in productive applications! |
+                 in production! |
           | ³⁾ | 256 bit key, only available with Java 11+ |
           | ⁴⁾ | 256 bit key, only available with BouncyCastle libraries but \
-                 works with Java 8+ |
+                 works with Java 8+ ¶\
+                 Warning: files encrypted with ChaCha20 cannot be decrypted \
+                 by ChaCha20-BC (and vice versa) due to different initial \
+                 counter  handling and the IV size (96bit vs 64bit) |
 
 
           The arg 'in' may be a: 
@@ -340,7 +343,7 @@
 
           The 256 bit encryption key is derived from the passphrase. To 
           generate the key a "PBKDF2WithHmacSHA256" secret key factory is used 
-          with a 16 bit random salt and 65536 iterations.
+          with a 16 byte random salt and 65536 iterations.
           Carefully choose a long enough passphrase.
 
           While encrypting a file the random salt, IV, nonce and/or counter are
@@ -368,8 +371,7 @@
             (load-module :hexdump)
             (let [file-in    (io/temp-file "test-", ".data")
                   file-out   (io/temp-file "test-", ".data.enc")]
-              (io/delete-file-on-exit file-in)
-              (io/delete-file-on-exit file-out)
+              (io/delete-file-on-exit file-in file-out)
               (io/spit file-in "1234567890")
               (crypt/encrypt-file "AES256-GCM" file-in file-out "42")
               (-> (io/slurp file-out :binary false)
@@ -425,8 +427,7 @@
             (let [file-in    (io/temp-file "test-", ".data")
                   file-out   (io/temp-file "test-", ".data.enc")
                   passphrase "42"]
-              (io/delete-file-on-exit file-in)
-              (io/delete-file-on-exit file-out)
+              (io/delete-file-on-exit file-in file-out)
               (io/spit file-in "1234567890")
               (crypt/encrypt-file "AES256-GCM" file-in file-out passphrase)
               (-> (crypt/decrypt-file "AES256-GCM" file-out passphrase)
@@ -592,7 +593,7 @@
           Argument opt
 
           | :default   | returns the names of the cipher suites which are \
-                          enabled by default. |
+                         enabled by default. |
           | :available | returns the names of the cipher suites which could be \
                          enabled for use on an SSL connection created by this \
                          `SSLServerSocketFactory`. |
