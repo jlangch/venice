@@ -41,7 +41,7 @@ RISC nature.
 
 **AES and ChaCha encrypted files:**
 
-```
+```clojure
 (do
   (load-module :crypt)
  
@@ -63,7 +63,7 @@ and memory buffers.
 
 **AES encrypted ZIP files:**
 
-```
+```clojure
 (do
   (load-module :zipvault)
   
@@ -137,7 +137,7 @@ and they can be used for malicious purposes.
 
 **SHA-1**
 
-```
+```clojure
 (do
   (load-module :crypt)
   
@@ -153,7 +153,7 @@ and they can be used for malicious purposes.
 
 **SHA-256**
 
-```
+```clojure
 (do
   (load-module :crypt)
   
