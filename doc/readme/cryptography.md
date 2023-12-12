@@ -278,7 +278,9 @@ The crypt/decrypt function expects a Base64 encoded string or a bytebuf.
 
 String data is passed as a Base64 encoded string.
 
-The :url-safe option controls the Base64 encoding regarding URL safety. If true the base64 encoder will emit '-' and '_' instead of the usual '+' and '/' characters and the decoder will reverse it. Defaults to false.
+The :url-safe option controls the Base64 encoding/decoding regarding URL safety. 
+If true the base64 encoder will emit '-' and '_' instead of the usual '+' and '/' 
+characters and the decoder will reverse it. Defaults to false.
 
 
 **Decrypting bytebufs:**
