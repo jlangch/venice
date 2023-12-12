@@ -327,6 +327,10 @@
                  by ChaCha20-BC (and vice versa) due to different initial \
                  counter  handling and the IV size (96bit vs 64bit) |
 
+          The ChaCha family of ciphers are an oder of magnitude more efficient 
+          on servers that do not provide hardware acceleration. Apple Silicon
+          does not seem to have AES hardware acceleration probably due to its 
+          RISC nature. 
 
           The arg 'in' may be a: 
 
