@@ -3,6 +3,7 @@
 help () {
   echo "-------------------------------------------------------------------------"
   echo "rebuild     rebuild, deploy, and start the Venice REPL"
+  echo "start       start the Venice REPL"
   echo "tests       run the unit tests"
   echo "cheatsheet  generate the cheatsheets"
   echo "publish     Publish Venice artefacts to Maven"
@@ -53,6 +54,14 @@ start () {
   open ${REPL_HOME}/repl.sh
 }
 
+start11 () {
+  open ${REPL_HOME}/replJava11.sh
+}
+
+start17 () {
+  open ${REPL_HOME}/replJava17.sh
+}
+
 rebuild () {
   ./gradlew --warning-mode all clean shadowJar
   rm ${REPL_HOME}/libs/venice-*.jar
@@ -62,7 +71,7 @@ rebuild () {
 }
 
 cheatsheet () {
-  ./gradlew clean compileJava cheatsheet
+  ./gradlew cheatsheet
 }
 
 tests () {
@@ -70,7 +79,7 @@ tests () {
 }
 
 
-export JAVA_HOME=${JAVA_8_OPENJDK_HOME}
+export JAVA_HOME=${JAVA_8_ZULU_HOME}
 export REPL_HOME=~/Desktop/venice
 export WORKSPACE_HOME=~/Documents/workspace-omni/venice
 
@@ -79,6 +88,8 @@ export SONATYPE_USER=jlangch
 export -f help
 export -f rebuild
 export -f start
+export -f start11
+export -f start17
 export -f publish
 export -f cheatsheet
 export -f tests
