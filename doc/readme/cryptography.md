@@ -48,7 +48,7 @@ RISC nature.
         data       (bytebuf-allocate-random 100)
         file-in    (io/temp-file "test-", ".data")
         file-enc   (io/temp-file "test-", ".data.enc")
-        file-dec   (io/temp-file "test-", ".data.enc")]
+        file-dec   (io/temp-file "test-", ".data.dec")]
     (io/delete-file-on-exit file-in file-enc file-dec)
     (io/spit file-in data :binary true)
     
