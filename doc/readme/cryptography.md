@@ -217,7 +217,7 @@ Venice supports DES, 3DES and AES256 for encrypting strings and byte buffers.
 
 ### Encryption
 
-Encrypting strings:
+**Encrypting strings**
 
 ```clojure
 (do
@@ -231,7 +231,18 @@ Encrypting strings:
 ) 
 ```
 
-Encrypting bytebufs:
+String data is returned as a Base64 encoded string.
+
+
+The :url-safe option controls the base64 encoding regarding URL safety.
+If _true_ the base64 encoder will emit '-' and '_' instead of the usual 
+'+' and '/' characters. Defaults to _false_.
+
+Note: no padding is added when encoding using the URL-safe alphabet.
+
+
+
+**Encrypting bytebufs**
 
 ```clojure
 (do
@@ -245,16 +256,6 @@ Encrypting bytebufs:
                          10 11 12 13 14 15 16 17 18 19]))
       (hexdump/dump)))
 ```
-
-Encrypts a string or a bytebuf. String data is returned as Base64 encoded string.
-
-The :url-safe option controls the base64 encoding regarding URL safety.
-If _true_ the base64 encoder will emit '-' and '_' instead of the usual 
-'+' and '/' characters. Defaults to _false_.
-
-Note: no padding is added when encoding using the URL-safe alphabet.
-
-Supported algorithms: DES, 3DES, AES256
 
 
 ### Decryption
