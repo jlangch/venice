@@ -308,7 +308,7 @@ Venice supports PBKDF2, SHA-512, SHA-1, and MD5 for hashing strings.
 
 ### PBKDF2
 
-PBKDF2 is the preferred hashing algorithm to hash password.
+PBKDF2 is the preferred hashing algorithm to hash passwords.
 
 Just using a salt:
 
