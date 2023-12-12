@@ -412,7 +412,7 @@ public class CryptoModuleTest {
                 "        data \"1234567890\"]                            \n" +
                 "    (io/delete-file-on-exit file)                       \n" +
                 "    (io/spit file data)                                 \n" +
-                "    (crypt/hash-file file \"salt\" \"MD5\")))           ";
+                "    (crypt/hash-file \"MD5\" \"salt\" file)))           ";
 
         assertEquals("kUucF7TqNzvEmBu/hn3xhg==", venice.eval(script));
     }
@@ -429,7 +429,7 @@ public class CryptoModuleTest {
                 "        data \"1234567890\"]                                    \n" +
                 "    (io/delete-file-on-exit file)                               \n" +
                 "    (io/spit file data)                                         \n" +
-                "    (crypt/hash-file (io/file-path file) \"salt\" \"MD5\")))    ";
+                "    (crypt/hash-file \"MD5\" \"salt\" (io/file-path file))))    ";
 
         assertEquals("kUucF7TqNzvEmBu/hn3xhg==", venice.eval(script));
     }
@@ -446,7 +446,7 @@ public class CryptoModuleTest {
                 "        data \"1234567890\"]                                         \n" +
                 "    (io/delete-file-on-exit file)                                    \n" +
                 "    (io/spit file data)                                              \n" +
-                "    (crypt/hash-file (io/file-in-stream file) \"salt\" \"MD5\")))    ";
+                "    (crypt/hash-file \"MD5\" \"salt\"(io/file-in-stream file))))    ";
 
         assertEquals("kUucF7TqNzvEmBu/hn3xhg==", venice.eval(script));
     }
@@ -463,7 +463,7 @@ public class CryptoModuleTest {
                 "        data \"1234567890\"]                                           \n" +
                 "    (io/delete-file-on-exit file)                                      \n" +
                 "    (io/spit file data)                                                \n" +
-                "    (crypt/hash-file (io/slurp file :binary true) \"salt\" \"MD5\")))  ";
+                "    (crypt/hash-file \"MD5\" \"salt\" (io/slurp file :binary true))))  ";
 
         assertEquals("kUucF7TqNzvEmBu/hn3xhg==", venice.eval(script));
     }
@@ -480,7 +480,7 @@ public class CryptoModuleTest {
                 "        data \"1234567890\"]                            \n" +
                 "    (io/delete-file-on-exit file)                       \n" +
                 "    (io/spit file data)                                 \n" +
-                "    (crypt/hash-file file \"salt\" \"SHA-1\")))         ";
+                "    (crypt/hash-file \"SHA-1\" \"salt\" file)))         ";
 
         assertEquals("uhAVLkBSJ7kyuYmYQfREs6A7+/A=", venice.eval(script));
     }
@@ -497,7 +497,7 @@ public class CryptoModuleTest {
                 "        data \"1234567890\"]                                    \n" +
                 "    (io/delete-file-on-exit file)                               \n" +
                 "    (io/spit file data)                                         \n" +
-                "    (crypt/hash-file (io/file-path file) \"salt\" \"SHA-1\")))  ";
+                "    (crypt/hash-file \"SHA-1\" \"salt\" (io/file-path file))))  ";
 
         assertEquals("uhAVLkBSJ7kyuYmYQfREs6A7+/A=", venice.eval(script));
     }
@@ -514,7 +514,7 @@ public class CryptoModuleTest {
                 "        data \"1234567890\"]                                         \n" +
                 "    (io/delete-file-on-exit file)                                    \n" +
                 "    (io/spit file data)                                              \n" +
-                "    (crypt/hash-file (io/file-in-stream file) \"salt\" \"SHA-1\")))  ";
+                "    (crypt/hash-file \"SHA-1\" \"salt\" (io/file-in-stream file))))  ";
 
         assertEquals("uhAVLkBSJ7kyuYmYQfREs6A7+/A=", venice.eval(script));
     }
@@ -531,7 +531,7 @@ public class CryptoModuleTest {
                 "        data \"1234567890\"]                                           \n" +
                 "    (io/delete-file-on-exit file)                                      \n" +
                 "    (io/spit file data)                                                \n" +
-                "    (crypt/hash-file (io/slurp file :binary true) \"salt\" \"SHA-1\")))";
+                "    (crypt/hash-file \"SHA-1\" \"salt\" (io/slurp file :binary true))))";
 
         assertEquals("uhAVLkBSJ7kyuYmYQfREs6A7+/A=", venice.eval(script));
     }
@@ -548,7 +548,7 @@ public class CryptoModuleTest {
                 "        data \"1234567890\"]                            \n" +
                 "    (io/delete-file-on-exit file)                       \n" +
                 "    (io/spit file data)                                 \n" +
-                "    (crypt/hash-file file \"salt\" \"SHA-512\")))       ";
+                "    (crypt/hash-file \"SHA-512\" \"salt\" file)))       ";
 
         assertEquals("qFUlDmCuGAA8Y8qKrjMd4mUdQYau4Cs6gTcYs39oRF0wuOG46oLfi/7nUbHd0IH2uiBe+xUzjcsAT4CImO/liw==", venice.eval(script));
     }
@@ -565,7 +565,7 @@ public class CryptoModuleTest {
                 "        data \"1234567890\"]                                    \n" +
                 "    (io/delete-file-on-exit file)                               \n" +
                 "    (io/spit file data)                                         \n" +
-                "    (crypt/hash-file (io/file-path file) \"salt\" \"SHA-512\")))";
+                "    (crypt/hash-file \"SHA-512\" \"salt\" (io/file-path file))))";
 
         assertEquals("qFUlDmCuGAA8Y8qKrjMd4mUdQYau4Cs6gTcYs39oRF0wuOG46oLfi/7nUbHd0IH2uiBe+xUzjcsAT4CImO/liw==", venice.eval(script));
     }
@@ -582,7 +582,7 @@ public class CryptoModuleTest {
                 "        data \"1234567890\"]                                         \n" +
                 "    (io/delete-file-on-exit file)                                    \n" +
                 "    (io/spit file data)                                              \n" +
-                "    (crypt/hash-file (io/file-in-stream file) \"salt\" \"SHA-512\")))";
+                "    (crypt/hash-file \"SHA-512\" \"salt\" (io/file-in-stream file))))";
 
         assertEquals("qFUlDmCuGAA8Y8qKrjMd4mUdQYau4Cs6gTcYs39oRF0wuOG46oLfi/7nUbHd0IH2uiBe+xUzjcsAT4CImO/liw==", venice.eval(script));
     }
@@ -599,7 +599,7 @@ public class CryptoModuleTest {
                 "        data \"1234567890\"]                                           \n" +
                 "    (io/delete-file-on-exit file)                                      \n" +
                 "    (io/spit file data)                                                \n" +
-                "    (crypt/hash-file (io/slurp file :binary true) \"salt\" \"SHA-512\")))";
+                "    (crypt/hash-file \"SHA-512\" \"salt\" (io/slurp file :binary true))))";
 
         assertEquals("qFUlDmCuGAA8Y8qKrjMd4mUdQYau4Cs6gTcYs39oRF0wuOG46oLfi/7nUbHd0IH2uiBe+xUzjcsAT4CImO/liw==", venice.eval(script));
     }
@@ -617,8 +617,8 @@ public class CryptoModuleTest {
                 "        salt \"-salt-\"]                                        \n" +
                 "    (io/delete-file-on-exit file)                               \n" +
                 "    (io/spit file data)                                         \n" +
-                "    (let [hash (crypt/hash-file file salt \"MD5\")]             \n" +
-                "      (crypt/verify-file-hash file salt hash \"MD5\"))))        ";
+                "    (let [hash (crypt/hash-file \"MD5\" salt file)]             \n" +
+                "      (crypt/verify-file-hash \"MD5\" salt file hash))))        ";
 
         assertTrue((Boolean)venice.eval(script));
     }
@@ -636,8 +636,8 @@ public class CryptoModuleTest {
                 "        salt \"-salt-\"]                                                \n" +
                 "    (io/delete-file-on-exit file)                                       \n" +
                 "    (io/spit file data)                                                 \n" +
-                "    (let [hash (crypt/hash-file file salt \"MD5\")]                     \n" +
-                "      (crypt/verify-file-hash (io/file-path file) salt hash \"MD5\")))) ";
+                "    (let [hash (crypt/hash-file \"MD5\" salt file)]                     \n" +
+                "      (crypt/verify-file-hash \"MD5\" salt (io/file-path file) hash)))) ";
 
         assertTrue((Boolean)venice.eval(script));
     }
@@ -655,8 +655,8 @@ public class CryptoModuleTest {
                 "        salt \"-salt-\"]                                                     \n" +
                 "    (io/delete-file-on-exit file)                                            \n" +
                 "    (io/spit file data)                                                      \n" +
-                "    (let [hash (crypt/hash-file file salt \"MD5\")]                           \n" +
-                "      (crypt/verify-file-hash (io/file-in-stream file) salt hash \"MD5\"))))  ";
+                "    (let [hash (crypt/hash-file \"MD5\" salt file)]                          \n" +
+                "      (crypt/verify-file-hash \"MD5\" salt (io/file-in-stream file) hash))))  ";
 
         assertTrue((Boolean)venice.eval(script));
     }
@@ -674,8 +674,8 @@ public class CryptoModuleTest {
                 "        salt \"-salt-\"]                                                        \n" +
                 "    (io/delete-file-on-exit file)                                               \n" +
                 "    (io/spit file data)                                                         \n" +
-                "    (let [hash (crypt/hash-file file salt\"MD5\")]                              \n" +
-                "      (crypt/verify-file-hash (io/slurp file :binary true) salt hash\"MD5\"))))  ";
+                "    (let [hash (crypt/hash-file \"MD5\" salt file)]                             \n" +
+                "      (crypt/verify-file-hash \"MD5\" salt (io/slurp file :binary true) hash))))";
 
         assertTrue((Boolean)venice.eval(script));
     }
@@ -693,8 +693,8 @@ public class CryptoModuleTest {
                 "        salt \"-salt-\"]                                        \n" +
                 "    (io/delete-file-on-exit file)                               \n" +
                 "    (io/spit file data)                                         \n" +
-                "    (let [hash (crypt/hash-file file salt \"SHA-1\")]             \n" +
-                "      (crypt/verify-file-hash file salt hash \"SHA-1\"))))        ";
+                "    (let [hash (crypt/hash-file \"SHA-1\" salt file)]           \n" +
+                "      (crypt/verify-file-hash \"SHA-1\" salt file hash))))      ";
 
         assertTrue((Boolean)venice.eval(script));
     }
@@ -705,15 +705,15 @@ public class CryptoModuleTest {
 
         // string
         final String script =
-                "(do                                                                     \n" +
-                "  (load-module :crypt)                                                  \n" +
-                "  (let [file (io/temp-file \"test-\", \".data\")                        \n" +
-                "        data \"1234567890\"                                             \n" +
-                "        salt \"-salt-\"]                                                \n" +
-                "    (io/delete-file-on-exit file)                                       \n" +
-                "    (io/spit file data)                                                 \n" +
-                "    (let [hash (crypt/hash-file file salt \"SHA-1\")]                     \n" +
-                "      (crypt/verify-file-hash (io/file-path file) salt hash \"SHA-1\")))) ";
+                "(do                                                                       \n" +
+                "  (load-module :crypt)                                                    \n" +
+                "  (let [file (io/temp-file \"test-\", \".data\")                          \n" +
+                "        data \"1234567890\"                                               \n" +
+                "        salt \"-salt-\"]                                                  \n" +
+                "    (io/delete-file-on-exit file)                                         \n" +
+                "    (io/spit file data)                                                   \n" +
+                "    (let [hash (crypt/hash-file \"SHA-1\" salt file)]                     \n" +
+                "      (crypt/verify-file-hash \"SHA-1\" salt (io/file-path file) hash)))) ";
 
         assertTrue((Boolean)venice.eval(script));
     }
@@ -724,15 +724,15 @@ public class CryptoModuleTest {
 
         // file-in-stream
         final String script =
-                "(do                                                                          \n" +
-                "  (load-module :crypt)                                                       \n" +
-                "  (let [file (io/temp-file \"test-\", \".data\")                             \n" +
-                "        data \"1234567890\"                                                  \n" +
-                "        salt \"-salt-\"]                                                     \n" +
-                "    (io/delete-file-on-exit file)                                            \n" +
-                "    (io/spit file data)                                                      \n" +
-                "    (let [hash (crypt/hash-file file salt \"SHA-1\")]                           \n" +
-                "      (crypt/verify-file-hash (io/file-in-stream file) salt hash \"SHA-1\"))))  ";
+                "(do                                                                            \n" +
+                "  (load-module :crypt)                                                         \n" +
+                "  (let [file (io/temp-file \"test-\", \".data\")                               \n" +
+                "        data \"1234567890\"                                                    \n" +
+                "        salt \"-salt-\"]                                                       \n" +
+                "    (io/delete-file-on-exit file)                                              \n" +
+                "    (io/spit file data)                                                        \n" +
+                "    (let [hash (crypt/hash-file \"SHA-1\" salt file)]                          \n" +
+                "      (crypt/verify-file-hash \"SHA-1\" salt (io/file-in-stream file) hash)))) ";
 
         assertTrue((Boolean)venice.eval(script));
     }
@@ -743,15 +743,15 @@ public class CryptoModuleTest {
 
         // bytebuf
         final String script =
-                "(do                                                                             \n" +
-                "  (load-module :crypt)                                                          \n" +
-                "  (let [file (io/temp-file \"test-\", \".data\")                                \n" +
-                "        data \"1234567890\"                                                     \n" +
-                "        salt \"-salt-\"]                                                        \n" +
-                "    (io/delete-file-on-exit file)                                               \n" +
-                "    (io/spit file data)                                                         \n" +
-                "    (let [hash (crypt/hash-file file salt\"SHA-1\")]                              \n" +
-                "      (crypt/verify-file-hash (io/slurp file :binary true) salt hash\"SHA-1\"))))  ";
+                "(do                                                                                \n" +
+                "  (load-module :crypt)                                                             \n" +
+                "  (let [file (io/temp-file \"test-\", \".data\")                                   \n" +
+                "        data \"1234567890\"                                                        \n" +
+                "        salt \"-salt-\"]                                                           \n" +
+                "    (io/delete-file-on-exit file)                                                  \n" +
+                "    (io/spit file data)                                                            \n" +
+                "    (let [hash (crypt/hash-file \"SHA-1\" salt file)]                              \n" +
+                "      (crypt/verify-file-hash \"SHA-1\" salt (io/slurp file :binary true) hash)))) ";
 
         assertTrue((Boolean)venice.eval(script));
     }
@@ -769,8 +769,8 @@ public class CryptoModuleTest {
                 "        salt \"-salt-\"]                                        \n" +
                 "    (io/delete-file-on-exit file)                               \n" +
                 "    (io/spit file data)                                         \n" +
-                "    (let [hash (crypt/hash-file file salt \"SHA-512\")]             \n" +
-                "      (crypt/verify-file-hash file salt hash \"SHA-512\"))))        ";
+                "    (let [hash (crypt/hash-file \"SHA-512\" salt file)]         \n" +
+                "      (crypt/verify-file-hash \"SHA-512\" salt file hash))))    ";
 
         assertTrue((Boolean)venice.eval(script));
     }
@@ -781,15 +781,15 @@ public class CryptoModuleTest {
 
         // string
         final String script =
-                "(do                                                                     \n" +
-                "  (load-module :crypt)                                                  \n" +
-                "  (let [file (io/temp-file \"test-\", \".data\")                        \n" +
-                "        data \"1234567890\"                                             \n" +
-                "        salt \"-salt-\"]                                                \n" +
-                "    (io/delete-file-on-exit file)                                       \n" +
-                "    (io/spit file data)                                                 \n" +
-                "    (let [hash (crypt/hash-file file salt \"SHA-512\")]                     \n" +
-                "      (crypt/verify-file-hash (io/file-path file) salt hash \"SHA-512\")))) ";
+                "(do                                                                        \n" +
+                "  (load-module :crypt)                                                     \n" +
+                "  (let [file (io/temp-file \"test-\", \".data\")                           \n" +
+                "        data \"1234567890\"                                                \n" +
+                "        salt \"-salt-\"]                                                   \n" +
+                "    (io/delete-file-on-exit file)                                          \n" +
+                "    (io/spit file data)                                                    \n" +
+                "    (let [hash (crypt/hash-file \"SHA-512\" salt file)]                    \n" +
+                "      (crypt/verify-file-hash \"SHA-512\" salt (io/file-path file) hash)))) ";
 
         assertTrue((Boolean)venice.eval(script));
     }
@@ -800,15 +800,15 @@ public class CryptoModuleTest {
 
         // file-in-stream
         final String script =
-                "(do                                                                          \n" +
-                "  (load-module :crypt)                                                       \n" +
-                "  (let [file (io/temp-file \"test-\", \".data\")                             \n" +
-                "        data \"1234567890\"                                                  \n" +
-                "        salt \"-salt-\"]                                                     \n" +
-                "    (io/delete-file-on-exit file)                                            \n" +
-                "    (io/spit file data)                                                      \n" +
-                "    (let [hash (crypt/hash-file file salt \"SHA-512\")]                           \n" +
-                "      (crypt/verify-file-hash (io/file-in-stream file) salt hash \"SHA-512\"))))  ";
+                "(do                                                                              \n" +
+                "  (load-module :crypt)                                                           \n" +
+                "  (let [file (io/temp-file \"test-\", \".data\")                                 \n" +
+                "        data \"1234567890\"                                                      \n" +
+                "        salt \"-salt-\"]                                                         \n" +
+                "    (io/delete-file-on-exit file)                                                \n" +
+                "    (io/spit file data)                                                          \n" +
+                "    (let [hash (crypt/hash-file \"SHA-512\" salt file)]                          \n" +
+                "      (crypt/verify-file-hash \"SHA-512\" salt (io/file-in-stream file) hash)))) ";
 
         assertTrue((Boolean)venice.eval(script));
     }
@@ -819,15 +819,15 @@ public class CryptoModuleTest {
 
         // bytebuf
         final String script =
-                "(do                                                                             \n" +
-                "  (load-module :crypt)                                                          \n" +
-                "  (let [file (io/temp-file \"test-\", \".data\")                                \n" +
-                "        data \"1234567890\"                                                     \n" +
-                "        salt \"-salt-\"]                                                        \n" +
-                "    (io/delete-file-on-exit file)                                               \n" +
-                "    (io/spit file data)                                                         \n" +
-                "    (let [hash (crypt/hash-file file salt\"SHA-512\")]                              \n" +
-                "      (crypt/verify-file-hash (io/slurp file :binary true) salt hash\"SHA-512\"))))  ";
+                "(do                                                                                  \n" +
+                "  (load-module :crypt)                                                               \n" +
+                "  (let [file (io/temp-file \"test-\", \".data\")                                     \n" +
+                "        data \"1234567890\"                                                          \n" +
+                "        salt \"-salt-\"]                                                             \n" +
+                "    (io/delete-file-on-exit file)                                                    \n" +
+                "    (io/spit file data)                                                              \n" +
+                "    (let [hash (crypt/hash-file \"SHA-512\" salt file)]                              \n" +
+                "      (crypt/verify-file-hash \"SHA-512\" salt (io/slurp file :binary true) hash)))) ";
 
         assertTrue((Boolean)venice.eval(script));
     }
@@ -838,17 +838,17 @@ public class CryptoModuleTest {
 
         // file
         final String script =
-                "(do                                                           \n" +
-                "  (load-module :crypt)                                        \n" +
-                "  (let [file-in    (io/temp-file \"test-\", \".data\")        \n" +
-                "        file-out   (io/temp-file \"test-\", \".data.enc\")    \n" +
-                "        passphrase \"42\"]                                    \n" +
-                "    (io/delete-file-on-exit file-in)                          \n" +
-                "    (io/delete-file-on-exit file-out)                         \n" +
-                "    (io/spit file-in \"1234567890\")                          \n" +
-                "    (crypt/encrypt-file \"AES256-GCM\" file-in file-out passphrase)          \n" +
-                "    (-> (crypt/decrypt-file \"AES256-GCM\" file-out passphrase)              \n" +
-                "        (bytebuf-to-string :UTF-8))))                         ";
+                "(do                                                                  \n" +
+                "  (load-module :crypt)                                               \n" +
+                "  (let [file-in    (io/temp-file \"test-\", \".data\")               \n" +
+                "        file-out   (io/temp-file \"test-\", \".data.enc\")           \n" +
+                "        passphrase \"42\"]                                           \n" +
+                "    (io/delete-file-on-exit file-in)                                 \n" +
+                "    (io/delete-file-on-exit file-out)                                \n" +
+                "    (io/spit file-in \"1234567890\")                                 \n" +
+                "    (crypt/encrypt-file \"AES256-GCM\" passphrase file-in file-out)  \n" +
+                "    (-> (crypt/decrypt-file \"AES256-GCM\" passphrase file-out)      \n" +
+                "        (bytebuf-to-string :UTF-8))))                                ";
 
         assertEquals("1234567890", venice.eval(script));
     }
@@ -859,17 +859,17 @@ public class CryptoModuleTest {
 
         // string
         final String script =
-                "(do                                                                                 \n" +
-                "  (load-module :crypt)                                                              \n" +
-                "  (let [file-in    (io/temp-file \"test-\", \".data\")                              \n" +
-                "        file-out   (io/temp-file \"test-\", \".data.enc\")                          \n" +
-                "        passphrase \"42\"]                                                          \n" +
-                "    (io/delete-file-on-exit file-in)                                                \n" +
-                "    (io/delete-file-on-exit file-out)                                               \n" +
-                "    (io/spit file-in \"1234567890\")                                                \n" +
-                "    (crypt/encrypt-file \"AES256-GCM\" (io/file-path file-in) (io/file-path file-out) passphrase)  \n" +
-                "    (-> (crypt/decrypt-file \"AES256-GCM\" (io/file-path file-out) passphrase)                     \n" +
-                "        (bytebuf-to-string :UTF-8))))                                               ";
+                "(do                                                                                                \n" +
+                "  (load-module :crypt)                                                                             \n" +
+                "  (let [file-in    (io/temp-file \"test-\", \".data\")                                             \n" +
+                "        file-out   (io/temp-file \"test-\", \".data.enc\")                                         \n" +
+                "        passphrase \"42\"]                                                                         \n" +
+                "    (io/delete-file-on-exit file-in)                                                               \n" +
+                "    (io/delete-file-on-exit file-out)                                                              \n" +
+                "    (io/spit file-in \"1234567890\")                                                               \n" +
+                "    (crypt/encrypt-file \"AES256-GCM\" passphrase (io/file-path file-in) (io/file-path file-out))  \n" +
+                "    (-> (crypt/decrypt-file \"AES256-GCM\" passphrase (io/file-path file-out))                     \n" +
+                "        (bytebuf-to-string :UTF-8))))                                                              ";
 
         assertEquals("1234567890", venice.eval(script));
     }
@@ -880,17 +880,17 @@ public class CryptoModuleTest {
 
         // file-in-stream, file-out-stream
         final String script =
-                "(do                                                                                            \n" +
-                "  (load-module :crypt)                                                                         \n" +
-                "  (let [file-in    (io/temp-file \"test-\", \".data\")                                         \n" +
-                "        file-out   (io/temp-file \"test-\", \".data.enc\")                                     \n" +
-                "        passphrase \"42\"]                                                                     \n" +
-                "    (io/delete-file-on-exit file-in)                                                           \n" +
-                "    (io/delete-file-on-exit file-out)                                                          \n" +
-                "    (io/spit file-in \"1234567890\")                                                           \n" +
-                "    (crypt/encrypt-file \"AES256-GCM\" (io/file-in-stream file-in) (io/file-out-stream file-out) passphrase)  \n" +
-                "    (-> (crypt/decrypt-file \"AES256-GCM\" (io/file-in-stream file-out) passphrase)                           \n" +
-                "        (bytebuf-to-string :UTF-8))))                                                          ";
+                "(do                                                                                                           \n" +
+                "  (load-module :crypt)                                                                                        \n" +
+                "  (let [file-in    (io/temp-file \"test-\", \".data\")                                                        \n" +
+                "        file-out   (io/temp-file \"test-\", \".data.enc\")                                                    \n" +
+                "        passphrase \"42\"]                                                                                    \n" +
+                "    (io/delete-file-on-exit file-in)                                                                          \n" +
+                "    (io/delete-file-on-exit file-out)                                                                         \n" +
+                "    (io/spit file-in \"1234567890\")                                                                          \n" +
+                "    (crypt/encrypt-file \"AES256-GCM\" passphrase (io/file-in-stream file-in) (io/file-out-stream file-out))  \n" +
+                "    (-> (crypt/decrypt-file \"AES256-GCM\" passphrase (io/file-in-stream file-out))                                          \n" +
+                "        (bytebuf-to-string :UTF-8))))                                                                         ";
 
         assertEquals("1234567890", venice.eval(script));
     }
@@ -901,17 +901,17 @@ public class CryptoModuleTest {
 
         // bytebuf
         final String script =
-                "(do                                                                           \n" +
-                "  (load-module :crypt)                                                        \n" +
-                "  (let [file-in    (io/temp-file \"test-\", \".data\")                        \n" +
-                "        file-out   (io/temp-file \"test-\", \".data.enc\")                    \n" +
-                "        passphrase \"42\"]                                                    \n" +
-                "    (io/delete-file-on-exit file-in)                                          \n" +
-                "    (io/delete-file-on-exit file-out)                                         \n" +
-                "    (io/spit file-in \"1234567890\")                                          \n" +
-                "    (crypt/encrypt-file \"AES256-GCM\" (io/slurp file-in :binary true) file-out passphrase)  \n" +
-                "    (-> (crypt/decrypt-file \"AES256-GCM\" (io/slurp file-out :binary true) passphrase)      \n" +
-                "        (bytebuf-to-string :UTF-8))))                                         ";
+                "(do                                                                                          \n" +
+                "  (load-module :crypt)                                                                       \n" +
+                "  (let [file-in    (io/temp-file \"test-\", \".data\")                                       \n" +
+                "        file-out   (io/temp-file \"test-\", \".data.enc\")                                   \n" +
+                "        passphrase \"42\"]                                                                   \n" +
+                "    (io/delete-file-on-exit file-in)                                                         \n" +
+                "    (io/delete-file-on-exit file-out)                                                        \n" +
+                "    (io/spit file-in \"1234567890\")                                                         \n" +
+                "    (crypt/encrypt-file \"AES256-GCM\" passphrase (io/slurp file-in :binary true) file-out)  \n" +
+                "    (-> (crypt/decrypt-file \"AES256-GCM\" passphrase (io/slurp file-out :binary true))      \n" +
+                "        (bytebuf-to-string :UTF-8))))                                                        ";
 
         assertEquals("1234567890", venice.eval(script));
     }
@@ -922,18 +922,18 @@ public class CryptoModuleTest {
 
         // bytebuf
         final String script =
-                "(do                                                                           \n" +
-                "  (load-module :crypt)                                                        \n" +
-                "  (let [file-in    (io/temp-file \"test-\", \".data\")                        \n" +
-                "        file-out   (io/temp-file \"test-\", \".data.enc\")                    \n" +
-                "        passphrase \"42\"]                                                    \n" +
-                "    (io/delete-file-on-exit file-in)                                          \n" +
-                "    (io/delete-file-on-exit file-out)                                         \n" +
-                "    (io/spit file-in \"1234567890\")                                          \n" +
-                "    (->> (crypt/encrypt-file \"AES256-GCM\" (io/slurp file-in :binary true) passphrase)      \n" +
-                "         (io/spit file-out))                                                  \n" +
-                "    (-> (crypt/decrypt-file \"AES256-GCM\" (io/slurp file-out :binary true) passphrase)      \n" +
-                "        (bytebuf-to-string :UTF-8))))                                         ";
+                "(do                                                                                          \n" +
+                "  (load-module :crypt)                                                                       \n" +
+                "  (let [file-in    (io/temp-file \"test-\", \".data\")                                       \n" +
+                "        file-out   (io/temp-file \"test-\", \".data.enc\")                                   \n" +
+                "        passphrase \"42\"]                                                                   \n" +
+                "    (io/delete-file-on-exit file-in)                                                         \n" +
+                "    (io/delete-file-on-exit file-out)                                                        \n" +
+                "    (io/spit file-in \"1234567890\")                                                         \n" +
+                "    (->> (crypt/encrypt-file \"AES256-GCM\" passphrase (io/slurp file-in :binary true))      \n" +
+                "         (io/spit file-out))                                                                 \n" +
+                "    (-> (crypt/decrypt-file \"AES256-GCM\" passphrase (io/slurp file-out :binary true))      \n" +
+                "        (bytebuf-to-string :UTF-8))))                                                        ";
 
         assertEquals("1234567890", venice.eval(script));
     }
@@ -944,17 +944,17 @@ public class CryptoModuleTest {
 
         // bytebuf
         final String script =
-                "(do                                                                           \n" +
-                "  (load-module :crypt)                                                        \n" +
-                "  (let [file-in    (io/temp-file \"test-\", \".data\")                        \n" +
-                "        file-out   (io/temp-file \"test-\", \".data.enc\")                    \n" +
-                "        passphrase \"42\"]                                                    \n" +
-                "    (io/delete-file-on-exit file-in)                                          \n" +
-                "    (io/delete-file-on-exit file-out)                                         \n" +
-                "    (io/spit file-in \"1234567890\")                                          \n" +
-                "    (-<> (crypt/encrypt-file \"AES256-GCM\" (io/slurp file-in :binary true) passphrase)       \n" +
-                "         (crypt/decrypt-file \"AES256-GCM\" <> passphrase)                                       \n" +
-                "         (bytebuf-to-string <> :UTF-8))))                                      ";
+                "(do                                                                                     \n" +
+                "  (load-module :crypt)                                                                  \n" +
+                "  (let [file-in    (io/temp-file \"test-\", \".data\")                                  \n" +
+                "        file-out   (io/temp-file \"test-\", \".data.enc\")                              \n" +
+                "        passphrase \"42\"]                                                              \n" +
+                "    (io/delete-file-on-exit file-in)                                                    \n" +
+                "    (io/delete-file-on-exit file-out)                                                   \n" +
+                "    (io/spit file-in \"1234567890\")                                                    \n" +
+                "    (-<> (crypt/encrypt-file \"AES256-GCM\" passphrase (io/slurp file-in :binary true)) \n" +
+                "         (crypt/decrypt-file \"AES256-GCM\" passphrase <>)                              \n" +
+                "         (bytebuf-to-string <> :UTF-8))))                                               ";
 
         assertEquals("1234567890", venice.eval(script));
     }
@@ -965,17 +965,17 @@ public class CryptoModuleTest {
 
         // file
         final String script =
-                "(do                                                           \n" +
-                "  (load-module :crypt)                                        \n" +
-                "  (let [file-in    (io/temp-file \"test-\", \".data\")        \n" +
-                "        file-out   (io/temp-file \"test-\", \".data.enc\")    \n" +
-                "        passphrase \"42\"]                                    \n" +
-                "    (io/delete-file-on-exit file-in)                          \n" +
-                "    (io/delete-file-on-exit file-out)                         \n" +
-                "    (io/spit file-in \"1234567890\")                          \n" +
-                "    (crypt/encrypt-file \"AES256-CBC\" file-in file-out passphrase)          \n" +
-                "    (-> (crypt/decrypt-file \"AES256-CBC\" file-out passphrase)              \n" +
-                "        (bytebuf-to-string :UTF-8))))                         ";
+                "(do                                                                 \n" +
+                "  (load-module :crypt)                                              \n" +
+                "  (let [file-in    (io/temp-file \"test-\", \".data\")              \n" +
+                "        file-out   (io/temp-file \"test-\", \".data.enc\")          \n" +
+                "        passphrase \"42\"]                                          \n" +
+                "    (io/delete-file-on-exit file-in)                                \n" +
+                "    (io/delete-file-on-exit file-out)                               \n" +
+                "    (io/spit file-in \"1234567890\")                                \n" +
+                "    (crypt/encrypt-file \"AES256-CBC\" passphrase file-in file-out) \n" +
+                "    (-> (crypt/decrypt-file \"AES256-CBC\" passphrase file-out)     \n" +
+                "        (bytebuf-to-string :UTF-8))))                               ";
 
         assertEquals("1234567890", venice.eval(script));
     }
@@ -986,17 +986,17 @@ public class CryptoModuleTest {
 
         // string
         final String script =
-                "(do                                                                                 \n" +
-                "  (load-module :crypt)                                                              \n" +
-                "  (let [file-in    (io/temp-file \"test-\", \".data\")                              \n" +
-                "        file-out   (io/temp-file \"test-\", \".data.enc\")                          \n" +
-                "        passphrase \"42\"]                                                          \n" +
-                "    (io/delete-file-on-exit file-in)                                                \n" +
-                "    (io/delete-file-on-exit file-out)                                               \n" +
-                "    (io/spit file-in \"1234567890\")                                                \n" +
-                "    (crypt/encrypt-file \"AES256-CBC\" (io/file-path file-in) (io/file-path file-out) passphrase)  \n" +
-                "    (-> (crypt/decrypt-file \"AES256-CBC\" (io/file-path file-out) passphrase)                     \n" +
-                "        (bytebuf-to-string :UTF-8))))                                               ";
+                "(do                                                                                                \n" +
+                "  (load-module :crypt)                                                                             \n" +
+                "  (let [file-in    (io/temp-file \"test-\", \".data\")                                             \n" +
+                "        file-out   (io/temp-file \"test-\", \".data.enc\")                                         \n" +
+                "        passphrase \"42\"]                                                                         \n" +
+                "    (io/delete-file-on-exit file-in)                                                               \n" +
+                "    (io/delete-file-on-exit file-out)                                                              \n" +
+                "    (io/spit file-in \"1234567890\")                                                               \n" +
+                "    (crypt/encrypt-file \"AES256-CBC\" passphrase (io/file-path file-in) (io/file-path file-out))  \n" +
+                "    (-> (crypt/decrypt-file \"AES256-CBC\" passphrase (io/file-path file-out))                     \n" +
+                "        (bytebuf-to-string :UTF-8))))                                                              ";
 
         assertEquals("1234567890", venice.eval(script));
     }
@@ -1007,17 +1007,17 @@ public class CryptoModuleTest {
 
         // file-in-stream, file-out-stream
         final String script =
-                "(do                                                                                            \n" +
-                "  (load-module :crypt)                                                                         \n" +
-                "  (let [file-in    (io/temp-file \"test-\", \".data\")                                         \n" +
-                "        file-out   (io/temp-file \"test-\", \".data.enc\")                                     \n" +
-                "        passphrase \"42\"]                                                                     \n" +
-                "    (io/delete-file-on-exit file-in)                                                           \n" +
-                "    (io/delete-file-on-exit file-out)                                                          \n" +
-                "    (io/spit file-in \"1234567890\")                                                           \n" +
-                "    (crypt/encrypt-file \"AES256-CBC\" (io/file-in-stream file-in) (io/file-out-stream file-out) passphrase)  \n" +
-                "    (-> (crypt/decrypt-file \"AES256-CBC\" (io/file-in-stream file-out) passphrase)                           \n" +
-                "        (bytebuf-to-string :UTF-8))))                                                          ";
+                "(do                                                                                                           \n" +
+                "  (load-module :crypt)                                                                                        \n" +
+                "  (let [file-in    (io/temp-file \"test-\", \".data\")                                                        \n" +
+                "        file-out   (io/temp-file \"test-\", \".data.enc\")                                                    \n" +
+                "        passphrase \"42\"]                                                                                    \n" +
+                "    (io/delete-file-on-exit file-in)                                                                          \n" +
+                "    (io/delete-file-on-exit file-out)                                                                         \n" +
+                "    (io/spit file-in \"1234567890\")                                                                          \n" +
+                "    (crypt/encrypt-file \"AES256-CBC\" passphrase (io/file-in-stream file-in) (io/file-out-stream file-out))  \n" +
+                "    (-> (crypt/decrypt-file \"AES256-CBC\" passphrase (io/file-in-stream file-out))                           \n" +
+                "        (bytebuf-to-string :UTF-8))))                                                                         ";
 
         assertEquals("1234567890", venice.eval(script));
     }
@@ -1028,17 +1028,17 @@ public class CryptoModuleTest {
 
         // bytebuf
         final String script =
-                "(do                                                                           \n" +
-                "  (load-module :crypt)                                                        \n" +
-                "  (let [file-in    (io/temp-file \"test-\", \".data\")                        \n" +
-                "        file-out   (io/temp-file \"test-\", \".data.enc\")                    \n" +
-                "        passphrase \"42\"]                                                    \n" +
-                "    (io/delete-file-on-exit file-in)                                          \n" +
-                "    (io/delete-file-on-exit file-out)                                         \n" +
-                "    (io/spit file-in \"1234567890\")                                          \n" +
-                "    (crypt/encrypt-file \"AES256-CBC\" (io/slurp file-in :binary true) file-out passphrase)  \n" +
-                "    (-> (crypt/decrypt-file \"AES256-CBC\" (io/slurp file-out :binary true) passphrase)      \n" +
-                "        (bytebuf-to-string :UTF-8))))                                         ";
+                "(do                                                                                          \n" +
+                "  (load-module :crypt)                                                                       \n" +
+                "  (let [file-in    (io/temp-file \"test-\", \".data\")                                       \n" +
+                "        file-out   (io/temp-file \"test-\", \".data.enc\")                                   \n" +
+                "        passphrase \"42\"]                                                                   \n" +
+                "    (io/delete-file-on-exit file-in)                                                         \n" +
+                "    (io/delete-file-on-exit file-out)                                                        \n" +
+                "    (io/spit file-in \"1234567890\")                                                         \n" +
+                "    (crypt/encrypt-file \"AES256-CBC\" passphrase (io/slurp file-in :binary true) file-out)  \n" +
+                "    (-> (crypt/decrypt-file \"AES256-CBC\" passphrase (io/slurp file-out :binary true))      \n" +
+                "        (bytebuf-to-string :UTF-8))))                                                        ";
 
         assertEquals("1234567890", venice.eval(script));
     }
@@ -1049,18 +1049,18 @@ public class CryptoModuleTest {
 
         // bytebuf
         final String script =
-                "(do                                                                           \n" +
-                "  (load-module :crypt)                                                        \n" +
-                "  (let [file-in    (io/temp-file \"test-\", \".data\")                        \n" +
-                "        file-out   (io/temp-file \"test-\", \".data.enc\")                    \n" +
-                "        passphrase \"42\"]                                                    \n" +
-                "    (io/delete-file-on-exit file-in)                                          \n" +
-                "    (io/delete-file-on-exit file-out)                                         \n" +
-                "    (io/spit file-in \"1234567890\")                                          \n" +
-                "    (->> (crypt/encrypt-file \"AES256-CBC\" (io/slurp file-in :binary true) passphrase)      \n" +
-                "         (io/spit file-out))                                                  \n" +
-                "    (-> (crypt/decrypt-file \"AES256-CBC\" (io/slurp file-out :binary true) passphrase)      \n" +
-                "        (bytebuf-to-string :UTF-8))))                                         ";
+                "(do                                                                                       \n" +
+                "  (load-module :crypt)                                                                    \n" +
+                "  (let [file-in    (io/temp-file \"test-\", \".data\")                                    \n" +
+                "        file-out   (io/temp-file \"test-\", \".data.enc\")                                \n" +
+                "        passphrase \"42\"]                                                                \n" +
+                "    (io/delete-file-on-exit file-in)                                                      \n" +
+                "    (io/delete-file-on-exit file-out)                                                     \n" +
+                "    (io/spit file-in \"1234567890\")                                                      \n" +
+                "    (->> (crypt/encrypt-file \"AES256-CBC\" passphrase (io/slurp file-in :binary true))   \n" +
+                "         (io/spit file-out))                                                              \n" +
+                "    (-> (crypt/decrypt-file \"AES256-CBC\" passphrase (io/slurp file-out :binary true))  \n" +
+                "        (bytebuf-to-string :UTF-8))))                                                     ";
 
         assertEquals("1234567890", venice.eval(script));
     }
@@ -1071,17 +1071,17 @@ public class CryptoModuleTest {
 
         // bytebuf
         final String script =
-                "(do                                                                           \n" +
-                "  (load-module :crypt)                                                        \n" +
-                "  (let [file-in    (io/temp-file \"test-\", \".data\")                        \n" +
-                "        file-out   (io/temp-file \"test-\", \".data.enc\")                    \n" +
-                "        passphrase \"42\"]                                                    \n" +
-                "    (io/delete-file-on-exit file-in)                                          \n" +
-                "    (io/delete-file-on-exit file-out)                                         \n" +
-                "    (io/spit file-in \"1234567890\")                                          \n" +
-                "    (-<> (crypt/encrypt-file \"AES256-CBC\" (io/slurp file-in :binary true) passphrase)       \n" +
-                "         (crypt/decrypt-file \"AES256-CBC\" <> passphrase)                                       \n" +
-                "         (bytebuf-to-string <> :UTF-8))))                                      ";
+                "(do                                                                                     \n" +
+                "  (load-module :crypt)                                                                  \n" +
+                "  (let [file-in    (io/temp-file \"test-\", \".data\")                                  \n" +
+                "        file-out   (io/temp-file \"test-\", \".data.enc\")                              \n" +
+                "        passphrase \"42\"]                                                              \n" +
+                "    (io/delete-file-on-exit file-in)                                                    \n" +
+                "    (io/delete-file-on-exit file-out)                                                   \n" +
+                "    (io/spit file-in \"1234567890\")                                                    \n" +
+                "    (-<> (crypt/encrypt-file \"AES256-CBC\" passphrase (io/slurp file-in :binary true)) \n" +
+                "         (crypt/decrypt-file \"AES256-CBC\" passphrase <>)                              \n" +
+                "         (bytebuf-to-string <> :UTF-8))))                                               ";
 
         assertEquals("1234567890", venice.eval(script));
     }

@@ -33,22 +33,22 @@ public class FileEncryptor {
 
     public static void encryptFileWithPassphrase(
             final String algorithm,
+            final String passphrase,
             final File inputFile,
-            final File outputFile,
-            final String passphrase
+            final File outputFile
     ) throws Exception {
         switch(StringUtil.trimToEmpty(algorithm).toUpperCase()) {
             case "AES256-CBC":
-                FileEncryptor_AES256_CBC.encryptFileWithPassphrase(inputFile, outputFile, passphrase);
+                FileEncryptor_AES256_CBC.encryptFileWithPassphrase(passphrase, inputFile, outputFile);
                 break;
             case "AES256-GCM":
-                FileEncryptor_AES256_GCM.encryptFileWithPassphrase(inputFile, outputFile, passphrase);
+                FileEncryptor_AES256_GCM.encryptFileWithPassphrase(passphrase, inputFile, outputFile);
                 break;
             case "CHACHA20":
-                FileEncryptor_ChaCha20.encryptFileWithPassphrase(inputFile, outputFile, passphrase);
+                FileEncryptor_ChaCha20.encryptFileWithPassphrase(passphrase, inputFile, outputFile);
                 break;
             case "CHACHA20-BC":
-                FileEncryptor_ChaCha20_BouncyCastle.encryptFileWithPassphrase(inputFile, outputFile, passphrase);
+                FileEncryptor_ChaCha20_BouncyCastle.encryptFileWithPassphrase(passphrase, inputFile, outputFile);
                 break;
             default:
                 throw new RuntimeException("Unsupported algorith '" + algorithm + "'!");
@@ -57,18 +57,18 @@ public class FileEncryptor {
 
     public static byte[] encryptFileWithPassphrase(
             final String algorithm,
-            final byte[] fileData,
-            final String passphrase
+            final String passphrase,
+            final byte[] fileData
     ) throws Exception {
         switch(StringUtil.trimToEmpty(algorithm).toUpperCase()) {
             case "AES256-CBC":
-                return FileEncryptor_AES256_CBC.encryptFileWithPassphrase(fileData, passphrase);
+                return FileEncryptor_AES256_CBC.encryptFileWithPassphrase(passphrase, fileData);
             case "AES256-GCM":
-                return FileEncryptor_AES256_GCM.encryptFileWithPassphrase(fileData, passphrase);
+                return FileEncryptor_AES256_GCM.encryptFileWithPassphrase(passphrase, fileData);
             case "CHACHA20":
-                return FileEncryptor_ChaCha20.encryptFileWithPassphrase(fileData, passphrase);
+                return FileEncryptor_ChaCha20.encryptFileWithPassphrase(passphrase, fileData);
             case "CHACHA20-BC":
-                return FileEncryptor_ChaCha20_BouncyCastle.encryptFileWithPassphrase(fileData, passphrase);
+                return FileEncryptor_ChaCha20_BouncyCastle.encryptFileWithPassphrase(passphrase, fileData);
             default:
                 throw new RuntimeException("Unsupported algorith '" + algorithm + "'!");
         }
@@ -76,22 +76,22 @@ public class FileEncryptor {
 
     public static void encryptFileWithKey(
             final String algorithm,
+            final byte[] key,
             final File inputFile,
-            final File outputFile,
-            final byte[] key
+            final File outputFile
     ) throws Exception {
         switch(StringUtil.trimToEmpty(algorithm).toUpperCase()) {
             case "AES256-CBC":
-                FileEncryptor_AES256_CBC.encryptFileWithKey(inputFile, outputFile, key);
+                FileEncryptor_AES256_CBC.encryptFileWithKey(key, inputFile, outputFile);
                 break;
             case "AES256-GCM":
-                FileEncryptor_AES256_GCM.encryptFileWithKey(inputFile, outputFile, key);
+                FileEncryptor_AES256_GCM.encryptFileWithKey(key, inputFile, outputFile);
                 break;
             case "CHACHA20":
-                FileEncryptor_ChaCha20.encryptFileWithKey(inputFile, outputFile, key);
+                FileEncryptor_ChaCha20.encryptFileWithKey(key, inputFile, outputFile);
                 break;
             case "CHACHA20-BC":
-                FileEncryptor_ChaCha20_BouncyCastle.encryptFileWithKey(inputFile, outputFile, key);
+                FileEncryptor_ChaCha20_BouncyCastle.encryptFileWithKey(key, inputFile, outputFile);
                 break;
             default:
                 throw new RuntimeException("Unsupported algorith '" + algorithm + "'!");
@@ -100,18 +100,18 @@ public class FileEncryptor {
 
     public static byte[] encryptFileWithKey(
             final String algorithm,
-            final byte[] fileData,
-            final byte[] key
+            final byte[] key,
+            final byte[] fileData
     ) throws Exception {
         switch(StringUtil.trimToEmpty(algorithm).toUpperCase()) {
             case "AES256-CBC":
-                return FileEncryptor_AES256_CBC.encryptFileWithKey(fileData, key);
+                return FileEncryptor_AES256_CBC.encryptFileWithKey(key, fileData);
             case "AES256-GCM":
-                return FileEncryptor_AES256_GCM.encryptFileWithKey(fileData, key);
+                return FileEncryptor_AES256_GCM.encryptFileWithKey(key, fileData);
             case "CHACHA20":
-                return FileEncryptor_ChaCha20.encryptFileWithKey(fileData, key);
+                return FileEncryptor_ChaCha20.encryptFileWithKey(key, fileData);
             case "CHACHA20-BC":
-                return FileEncryptor_ChaCha20_BouncyCastle.encryptFileWithKey(fileData, key);
+                return FileEncryptor_ChaCha20_BouncyCastle.encryptFileWithKey(key, fileData);
             default:
                 throw new RuntimeException("Unsupported algorith '" + algorithm + "'!");
         }
@@ -119,22 +119,22 @@ public class FileEncryptor {
 
     public static void decryptFileWithPassphrase(
             final String algorithm,
+            final String passphrase,
             final File inputFile,
-            final File outputFile,
-            final String passphrase
+            final File outputFile
     ) throws Exception {
         switch(StringUtil.trimToEmpty(algorithm).toUpperCase()) {
             case "AES256-CBC":
-                FileEncryptor_AES256_CBC.decryptFileWithPassphrase(inputFile, outputFile, passphrase);
+                FileEncryptor_AES256_CBC.decryptFileWithPassphrase(passphrase, inputFile, outputFile);
                 break;
             case "AES256-GCM":
-                FileEncryptor_AES256_GCM.decryptFileWithPassphrase(inputFile, outputFile, passphrase);
+                FileEncryptor_AES256_GCM.decryptFileWithPassphrase(passphrase, inputFile, outputFile);
                 break;
             case "CHACHA20":
-                FileEncryptor_ChaCha20.decryptFileWithPassphrase(inputFile, outputFile, passphrase);
+                FileEncryptor_ChaCha20.decryptFileWithPassphrase(passphrase, inputFile, outputFile);
                 break;
             case "CHACHA20-BC":
-                FileEncryptor_ChaCha20_BouncyCastle.decryptFileWithPassphrase(inputFile, outputFile, passphrase);
+                FileEncryptor_ChaCha20_BouncyCastle.decryptFileWithPassphrase(passphrase, inputFile, outputFile);
                 break;
             default:
                 throw new RuntimeException("Unsupported algorith '" + algorithm + "'!");
@@ -143,18 +143,18 @@ public class FileEncryptor {
 
     public static byte[] decryptFileWithPassphrase(
             final String algorithm,
-            final byte[] fileData,
-            final String passphrase
+            final String passphrase,
+            final byte[] fileData
     ) throws Exception {
         switch(StringUtil.trimToEmpty(algorithm).toUpperCase()) {
             case "AES256-CBC":
-                return FileEncryptor_AES256_CBC.decryptFileWithPassphrase(fileData, passphrase);
+                return FileEncryptor_AES256_CBC.decryptFileWithPassphrase(passphrase, fileData);
             case "AES256-GCM":
-                return FileEncryptor_AES256_GCM.decryptFileWithPassphrase(fileData, passphrase);
+                return FileEncryptor_AES256_GCM.decryptFileWithPassphrase(passphrase, fileData);
             case "CHACHA20":
-                return FileEncryptor_ChaCha20.decryptFileWithPassphrase(fileData, passphrase);
+                return FileEncryptor_ChaCha20.decryptFileWithPassphrase(passphrase, fileData);
             case "CHACHA20-BC":
-                return FileEncryptor_ChaCha20_BouncyCastle.decryptFileWithPassphrase(fileData, passphrase);
+                return FileEncryptor_ChaCha20_BouncyCastle.decryptFileWithPassphrase(passphrase, fileData);
            default:
                 throw new RuntimeException("Unsupported algorith '" + algorithm + "'!");
         }
@@ -162,22 +162,22 @@ public class FileEncryptor {
 
     public static void decryptFileWithKey(
             final String algorithm,
+            final byte[] key,
             final File inputFile,
-            final File outputFile,
-            final byte[] key
+            final File outputFile
     ) throws Exception {
         switch(StringUtil.trimToEmpty(algorithm).toUpperCase()) {
             case "AES256-CBC":
-                FileEncryptor_AES256_CBC.decryptFileWithKey(inputFile, outputFile, key);
+                FileEncryptor_AES256_CBC.decryptFileWithKey(key, inputFile, outputFile);
                 break;
             case "AES256-GCM":
-                FileEncryptor_AES256_GCM.decryptFileWithKey(inputFile, outputFile, key);
+                FileEncryptor_AES256_GCM.decryptFileWithKey(key, inputFile, outputFile);
                 break;
             case "CHACHA20":
-                FileEncryptor_ChaCha20.decryptFileWithKey(inputFile, outputFile, key);
+                FileEncryptor_ChaCha20.decryptFileWithKey(key, inputFile, outputFile);
                 break;
             case "CHACHA20-BC":
-                FileEncryptor_ChaCha20_BouncyCastle.decryptFileWithKey(inputFile, outputFile, key);
+                FileEncryptor_ChaCha20_BouncyCastle.decryptFileWithKey(key, inputFile, outputFile);
                 break;
             default:
                 throw new RuntimeException("Unsupported algorith '" + algorithm + "'!");
@@ -186,18 +186,18 @@ public class FileEncryptor {
 
     public static byte[] decryptFileWithKey(
             final String algorithm,
-            final byte[] fileData,
-            final byte[] key
+            final byte[] key,
+            final byte[] fileData
     ) throws Exception {
         switch(StringUtil.trimToEmpty(algorithm).toUpperCase()) {
             case "AES256-CBC":
-                return FileEncryptor_AES256_CBC.decryptFileWithKey(fileData, key);
+                return FileEncryptor_AES256_CBC.decryptFileWithKey(key, fileData);
             case "AES256-GCM":
-                return FileEncryptor_AES256_GCM.decryptFileWithKey(fileData, key);
+                return FileEncryptor_AES256_GCM.decryptFileWithKey(key, fileData);
             case "CHACHA20":
-                return FileEncryptor_ChaCha20.decryptFileWithKey(fileData, key);
+                return FileEncryptor_ChaCha20.decryptFileWithKey(key, fileData);
             case "CHACHA20-BC":
-                return FileEncryptor_ChaCha20_BouncyCastle.decryptFileWithKey(fileData, key);
+                return FileEncryptor_ChaCha20_BouncyCastle.decryptFileWithKey(key, fileData);
             default:
                 throw new RuntimeException("Unsupported algorith '" + algorithm + "'!");
         }

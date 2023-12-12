@@ -73,10 +73,10 @@
     (printf "%-21s %4dms%n" title elapsed))
 
   (defn encrypt [algo passphrase file-in file-out]
-   (crypt/encrypt-file algo file-in file-out passphrase))
+   (crypt/encrypt-file algo passphrase file-in file-out))
 
   (defn decrypt [algo passphrase file-in file-out]
-    (crypt/decrypt-file algo file-in file-out passphrase))
+    (crypt/decrypt-file algo passphrase file-in file-out))
 
   (defn encrypt-zip [zip passphrase filename file ]
     (zipvault/zip zip passphrase filename (io/slurp file :binary true)))

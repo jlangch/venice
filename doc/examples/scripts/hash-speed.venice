@@ -46,10 +46,6 @@
   (defonce test-dir (io/file (io/user-home-dir) "Desktop/venice/tmp"))
 
 
-  (defn identical [file1 file2]
-    (= (io/slurp file1 :binary true) 
-       (io/slurp file2 :binary true)))
-
   (defn printel [title elapsed]
     (printf "%-20s %4dms%n" title elapsed))
 
@@ -73,13 +69,13 @@
 
       ;; file based: MD5, SHA-1, SHA-256
       (docoll (fn [algo]
-                (->> (timing/elapsed #(crypt/hash-file file salt algo))
+                (->> (timing/elapsed #(crypt/hash-file algo salt file))
                      (printel (str "Hash " algo " (file):"))))
               algos)
 
       ;; memory based: MD5, SHA-1, SHA-256
       (docoll (fn [algo]
-                (->> (timing/elapsed #(crypt/hash-file data salt algo))
+                (->> (timing/elapsed #(crypt/hash-file algo salt data))
                      (printel (str "Hash " algo " (mem):"))))
               algos)))
 

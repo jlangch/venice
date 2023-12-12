@@ -300,8 +300,8 @@
 
 (defn 
   ^{ :arglists '(
-          "(crypt/encrypt-file algorithm in passphrase)"
-          "(crypt/encrypt-file algorithm in out passphrase)")
+          "(crypt/encrypt-file algorithm passphrase in)"
+          "(crypt/encrypt-file algorithm passphrase in out)")
      :doc """
           Encrypts a file.
 
@@ -377,7 +377,7 @@
                   file-out   (io/temp-file "test-", ".data.enc")]
               (io/delete-file-on-exit file-in file-out)
               (io/spit file-in "1234567890")
-              (crypt/encrypt-file "AES256-GCM" file-in file-out "42")
+              (crypt/encrypt-file "AES256-GCM" "42" file-in file-out)
               (-> (io/slurp file-out :binary false)
                   (bytebuf)
                   (hexdump/dump))))
@@ -387,20 +387,20 @@
 
   encrypt-file 
 
-  ([algorithm in passphrase]
+  ([algorithm passphrase in]
     (as-> (io/slurp in :binary true) data
-          (. :FileEncryptor :encryptFileWithPassphrase algorithm data passphrase)))
-  ([algorithm in out passphrase]
+          (. :FileEncryptor :encryptFileWithPassphrase algorithm passphrase data)))
+  ([algorithm passphrase in out]
     (as-> (io/slurp in :binary true) data
-          (. :FileEncryptor :encryptFileWithPassphrase algorithm data passphrase)
+          (. :FileEncryptor :encryptFileWithPassphrase algorithm passphrase data)
           (io/spit out data)
           nil)))
 
 
 (defn 
   ^{ :arglists '(
-          "(crypt/decrypt-file algorithm in passphrase)"
-          "(crypt/decrypt-file algorithm in out passphrase)")
+          "(crypt/decrypt-file algorithm passphrase in)"
+          "(crypt/decrypt-file algorithm passphrase in out)")
      :doc """
           Decrypts an encrypted file that has been created by 
           `crypt/encrypt-file`.
@@ -433,8 +433,8 @@
                   passphrase "42"]
               (io/delete-file-on-exit file-in file-out)
               (io/spit file-in "1234567890")
-              (crypt/encrypt-file "AES256-GCM" file-in file-out passphrase)
-              (-> (crypt/decrypt-file "AES256-GCM" file-out passphrase)
+              (crypt/encrypt-file "AES256-GCM" passphrase file-in file-out)
+              (-> (crypt/decrypt-file "AES256-GCM" passphrase file-out)
                   (bytebuf-to-string :UTF-8))))
           """) 
      :see-also '(
@@ -442,12 +442,12 @@
 
   decrypt-file 
 
-  ([algorithm in passphrase]
+  ([algorithm passphrase in]
     (as-> (io/slurp in :binary true) data
-          (. :FileEncryptor :decryptFileWithPassphrase algorithm data passphrase)))
-  ([algorithm in out passphrase]
+          (. :FileEncryptor :decryptFileWithPassphrase algorithm passphrase data)))
+  ([algorithm passphrase in out]
     (as-> (io/slurp in :binary true) data
-          (. :FileEncryptor :decryptFileWithPassphrase algorithm data passphrase)
+          (. :FileEncryptor :decryptFileWithPassphrase algorithm passphrase data)
           (io/spit out data)
           nil)))
 
@@ -462,11 +462,12 @@
 
 (defn
   ^{ :arglists '(
-          "(crypt/hash-file file salt)"
-          "(crypt/hash-file file salt algorithm)")
+          "(crypt/hash-file algorithm salt file)")
      :doc """
           Computes a hash for a file. The hash is used together with the 
           function `crypt/verify-file-hash` to detect file modifications.
+
+          Returns the hash Base64 encoded.
 
           The functions uses the fast MD5 hash algorithm.
 
@@ -494,30 +495,24 @@
                   data (bytebuf-allocate-random 1000)] 
               (io/delete-file-on-exit file)
               (io/spit file data)
-              (crypt/hash-file file "salt" "MD5"))) 
+              (crypt/hash-file "SHA-256" "-salt-" file))) 
           """) 
      :see-also '(
           "crypt/verify-file-hash" ) }
 
-  hash-file 
-  
-  ([file salt]
-    (assert (string? salt) "The salt must be a string")
-    (. :FileHasher :hashFile (io/slurp file :binary true) salt))
-  
-  ([file salt algorithm]
-    (assert (string? salt) "The salt must be a string")
-    (assert (string? algorithm) "The algorithm must be a string")
-    (. :FileHasher :hashFile (io/slurp file :binary true) salt algorithm)))
+  hash-file [algorithm salt file]
+
+  (assert (string? algorithm) "The algorithm must be a string")
+  (assert (string? salt) "The salt must be a string")
+  (. :FileHasher :hashFile algorithm salt (io/slurp file :binary true)))
 
 
 (defn 
   ^{ :arglists '(
-          "(crypt/verify-file-hash file salt hash)"
-          "(crypt/verify-file-hash file salt hash algorithm)")
+          "(crypt/verify-file-hash algorithm salt file hash)")
      :doc """
-          Verifies a file against a hash. Returns true if the file's actual
-          hash is equal to the given hash otherwise false.
+          Verifies a file against a hash (Base64 encoded). Returns true if the
+          file's actual hash is equal to the given hash otherwise false.
  
           The arg 'file' may be a: 
 
@@ -528,12 +523,13 @@
 
           Supported hash algorithms:
 
-          * MD5 (default)
+          * MD5
           * SHA-1
           * SHA-512
 
-          MD5 is the fastest hash algorithm and precise enough to detect file
-          changes.
+          Warning: The MD5 hash function’s security is considered to be 
+          severely compromised. Collisions can be found within seconds, 
+          and they can be used for malicious purposes. 
           """
      :examples (list
           """
@@ -544,24 +540,18 @@
                   salt "salt"] 
               (io/delete-file-on-exit file)
               (io/spit file data)
-              (let [hash (crypt/hash-file file salt "MD5")]
-                (crypt/verify-file-hash file salt hash "MD5"))))
+              (let [hash (crypt/hash-file "SHA-256" "-salt-" file)]
+                (crypt/verify-file-hash "SHA-256" "-salt-" file hash))))
           """) 
      :see-also '(
           "crypt/hash-file" ) }
 
-  verify-file-hash 
-  
-  ([file salt hash]
-    (assert (string? salt) "The salt must be a string")
-    (assert (string? hash) "The hash must be a string")
-    (. :FileHasher :verifyFileHash (io/slurp file :binary true) salt hash))
-  
-  ([file salt hash algorithm]
-    (assert (string? salt) "The salt must be a string")
-    (assert (string? hash) "The hash must be a string")
-    (assert (string? algorithm) "The algorithm must be a string")
-    (. :FileHasher :verifyFileHash (io/slurp file :binary true) salt hash algorithm)))
+  verify-file-hash [algorithm salt file hash]
+
+  (assert (string? algorithm) "The algorithm must be a string")
+  (assert (string? salt) "The salt must be a string")
+  (assert (string? hash) "The hash must be a string")
+  (. :FileHasher :verifyFileHash algorithm salt (io/slurp file :binary true) hash))
 
 
 

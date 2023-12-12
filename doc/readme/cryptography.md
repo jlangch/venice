@@ -6,7 +6,8 @@
 
 ## File encryption
 
-Venice supports encrypting and decrypting files and buffers using AES and ChaCha20, both with 256 bit keys:
+Venice supports encrypting and decrypting files, streams and buffers using 
+AES and ChaCha20, both with 256 bit keys:
 
   * AES256-GCM ¹⁾
   * AES256-CBC ²⁾
@@ -43,6 +44,7 @@ RISC nature.
 ```
 (do
   (load-module :crypt)
+ 
   (let [algo       "AES256-GCM"  ;; "AES256-CBC", "AES256-GCM, "ChaCha20", "ChaCha20-BC"
         data       (bytebuf-allocate-random 100)
         file-in    (io/temp-file "test-", ".data")
@@ -51,8 +53,8 @@ RISC nature.
     (io/delete-file-on-exit file-in file-enc file-dec)
     (io/spit file-in data :binary true)
     
-    (crypt/encrypt-file algo file-in file-enc "-passphrase-")
-    (crypt/decrypt-file algo file-enc file-dec "-passphrase-")))
+    (crypt/encrypt-file algo "-passphrase-" file-in file-enc)
+    (crypt/decrypt-file algo "-passphrase-" file-enc file-dec)))
 ```
 
 `crypt/encrypt-file` and `crypt/decrypt-file` work both on files, streams 
@@ -64,12 +66,13 @@ and memory buffers.
 ```
 (do
   (load-module :zipvault)
+  
   (let [data       (bytebuf-allocate-random 100)
         file-in    (io/temp-file "test-", ".data")
         file-zip   (io/temp-file "test-", ".data.zip")
         file-unzip (io/temp-file "test-", ".data.unzip")
         entry-name (io/file-name file-unzip)
-        dest-dir   (io/file-parent aes-file-unzip)]
+        dest-dir   (io/file-parent file-unzip)]
     (io/delete-file-on-exit file-in file-zip file-unzip)
     (io/spit file-in data :binary true)
     
@@ -122,3 +125,61 @@ Decrypt ChaCha20-BC:    74ms    73ms    74ms    85ms   160ms   931ms
 
 ## File hashing
 
+Venice computes hashes for files, streams, and buffers with the 
+algorithms MD5, SHA-1, and SHA-256.
+
+Warning: The MD5 hash function’s security is considered to be 
+severely compromised. Collisions can be found within seconds, 
+and they can be used for malicious purposes. 
+
+
+### Examples
+
+**SHA-1**
+
+```
+(do
+  (load-module :crypt)
+  
+  (let [data   (bytebuf-allocate-random 100)
+        file   (io/temp-file "test-", ".data")]
+    (io/delete-file-on-exit file)
+    (io/spit file data :binary true)
+    
+    (let [hash (crypt/hash-file "SHA-1" "-salt-" file)]
+      (crypt/verify-file-hash "SHA-1" "-salt-" file hash))))
+```
+
+
+**SHA-256**
+
+```
+(do
+  (load-module :crypt)
+  
+  (let [data   (bytebuf-allocate-random 100)
+        file   (io/temp-file "test-", ".data")]
+    (io/delete-file-on-exit file)
+    (io/spit file data :binary true)
+    
+    (let [hash (crypt/hash-file "SHA-256" "-salt-" file)]
+      (crypt/verify-file-hash "SHA-256" "-salt-" file hash))))
+```
+
+
+### Perfomance
+
+
+```
+                                        MacBookAir M2, Java 8 (Zulu)
+--------------------------------------------------------------------
+                         2KB    20KB   200KB     2MB    20MB   200MB
+--------------------------------------------------------------------
+Hash MD5 (file):         1ms     1ms     1ms     6ms    56ms   547ms
+Hash SHA-1 (file):       0ms     1ms     2ms     7ms    65ms   685ms
+Hash SHA-256 (file):     0ms     0ms     2ms     8ms    77ms   764ms
+Hash MD5 (memory):       0ms     1ms     1ms     5ms    54ms   535ms
+Hash SHA-1 (memory):     0ms     1ms     1ms     7ms    64ms   642ms
+Hash SHA-256 (memory):   1ms     0ms     1ms     8ms    76ms   749ms
+--------------------------------------------------------------------
+```

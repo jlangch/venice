@@ -41,21 +41,21 @@ import java.util.Base64;
 public class FileHasher {
 
     public static String hashFile(
-            final File inputFile,
+            final String algorithm,
             final String salt,
-            final String algorithm
+            final File inputFile
     ) throws Exception {
         // Read file data
         byte[] fileData = Files.readAllBytes(inputFile.toPath());
 
         // Hash
-        return hashFile(fileData, salt, algorithm);
+        return hashFile(algorithm, salt, fileData);
     }
 
     public static String hashFile(
-            final byte[] fileData,
+            final String algorithm,
             final String salt,
-            final String algorithm
+            final byte[] fileData
     ) throws Exception {
         // Init digest
         MessageDigest md = MessageDigest.getInstance(algorithm);
@@ -70,26 +70,26 @@ public class FileHasher {
     }
 
     public static boolean verifyFileHash(
-            final File inputFile,
+            final String algorithm,
             final String salt,
-            final String hash,
-            final String algorithm
+            final File inputFile,
+            final String hash
     ) throws Exception {
         // Read file data
         byte[] fileData = Files.readAllBytes(inputFile.toPath());
 
         // Verify hash
-        return verifyFileHash(fileData, salt, hash, algorithm);
+        return verifyFileHash(algorithm, salt, fileData, hash);
     }
 
     public static boolean verifyFileHash(
-            final byte[] fileData,
+            final String algorithm,
             final String salt,
-            final String hash,
-            final String algorithm
+            final byte[] fileData,
+            final String hash
     ) throws Exception {
         // Hash file data
-        String fileDataHash = hashFile(fileData, salt, algorithm);
+        String fileDataHash = hashFile(algorithm, salt, fileData);
 
         // Verify  digest
         return hash.equals(fileDataHash);

@@ -70,23 +70,23 @@ public class FileEncryptor_AES256_GCM {
 	}
 
     public static void encryptFileWithPassphrase(
+            final String passphrase,
             final File inputFile,
-            final File outputFile,
-            final String passphrase
+            final File outputFile
     ) throws Exception {
         // Read file data
         byte[] fileData = Files.readAllBytes(inputFile.toPath());
 
         // Encrypt
-        byte[] encryptedData = encryptFileWithPassphrase(fileData, passphrase);
+        byte[] encryptedData = encryptFileWithPassphrase(passphrase, fileData);
 
         // Write to output file
         Files.write(outputFile.toPath(), encryptedData);
     }
 
     public static byte[] encryptFileWithPassphrase(
-            final byte[] fileData,
-            final String passphrase
+            final String passphrase,
+            final byte[] fileData
     ) throws Exception {
         // Generate a random salt
         byte[] salt = new byte[SALT_LEN];
@@ -120,23 +120,23 @@ public class FileEncryptor_AES256_GCM {
     }
 
     public static void encryptFileWithKey(
+            final byte[] key,
             final File inputFile,
-            final File outputFile,
-            final byte[] key
+            final File outputFile
     ) throws Exception {
         // Read file data
         byte[] fileData = Files.readAllBytes(inputFile.toPath());
 
         // Encrypt
-        byte[] encryptedData = encryptFileWithKey(fileData, key);
+        byte[] encryptedData = encryptFileWithKey(key, fileData);
 
         // Write to output file
         Files.write(outputFile.toPath(), encryptedData);
     }
 
     public static byte[] encryptFileWithKey(
-            final byte[] fileData,
-            final byte[] key
+            final byte[] key,
+            final byte[] fileData
     ) throws Exception {
         // Generate a random IV
         byte[] iv = new byte[IV_LEN]; // GCM recommended 12 bytes IV
@@ -162,23 +162,23 @@ public class FileEncryptor_AES256_GCM {
     }
 
     public static void decryptFileWithPassphrase(
+            final String passphrase,
             final File inputFile,
-            final File outputFile,
-            final String passphrase
+            final File outputFile
     ) throws Exception {
         // Read file data
         byte[] fileData = Files.readAllBytes(inputFile.toPath());
 
         // Decrypt
-        byte[] decryptedData = decryptFileWithPassphrase(fileData, passphrase);
+        byte[] decryptedData = decryptFileWithPassphrase(passphrase, fileData);
 
         // Write to output file
         Files.write(outputFile.toPath(), decryptedData);
     }
 
     public static byte[] decryptFileWithPassphrase(
-            final byte[] fileData,
-            final String passphrase
+            final String passphrase,
+            final byte[] fileData
     ) throws Exception {
         // Extract salt, IV, and encrypted data
         byte[] salt = new byte[SALT_LEN];
@@ -208,23 +208,23 @@ public class FileEncryptor_AES256_GCM {
     }
 
     public static void decryptFileWithKey(
+            final byte[] key,
             final File inputFile,
-            final File outputFile,
-            final byte[] key
+            final File outputFile
     ) throws Exception {
         // Read file data
         byte[] fileData = Files.readAllBytes(inputFile.toPath());
 
         // Decrypt
-        byte[] decryptedData = decryptFileWithKey(fileData, key);
+        byte[] decryptedData = decryptFileWithKey(key, fileData);
 
         // Write to output file
         Files.write(outputFile.toPath(), decryptedData);
     }
 
     public static byte[] decryptFileWithKey(
-            final byte[] fileData,
-            final byte[] key
+            final byte[] key,
+            final byte[] fileData
     ) throws Exception {
         // Extract IV and encrypted data
         byte[] iv = new byte[IV_LEN];

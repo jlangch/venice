@@ -18,8 +18,8 @@ public class FileEncryptor_ChaCha20_BouncyCastle_Test {
     public void testPassphrase() throws Exception {
 		if (isSupported()) {
 	        final byte[] data = "1234567890".getBytes("UTF-8");
-	        final byte[] encrypted = encryptFileWithPassphrase(data, "passphrase");
-	        final byte[] decrypted = decryptFileWithPassphrase(encrypted, "passphrase");
+	        final byte[] encrypted = encryptFileWithPassphrase("passphrase", data);
+	        final byte[] decrypted = decryptFileWithPassphrase("passphrase", encrypted);
 
 	        if (data.length != decrypted.length) {
 	        	fail("FAIL (length)");
@@ -43,8 +43,8 @@ public class FileEncryptor_ChaCha20_BouncyCastle_Test {
 		    new SecureRandom().nextBytes(key);
 
 	        final byte[] data = "1234567890".getBytes("UTF-8");
-	        final byte[] encrypted = encryptFileWithKey(data, key);
-	        final byte[] decrypted = decryptFileWithKey(encrypted, key);
+	        final byte[] encrypted = encryptFileWithKey(key, data);
+	        final byte[] decrypted = decryptFileWithKey(key, encrypted);
 
 	        if (data.length != decrypted.length) {
 	        	fail("FAIL (length)");
