@@ -78,6 +78,7 @@ Cheat Sheet: [HTML](https://htmlpreview.github.io/?https://cdn.rawgit.com/jlangc
 * [Multimethods and Protocols](doc/readme/multimethods-and-protocols.md)
 * [Macros](doc/readme/macros.md)
 * [Sandbox](doc/readme/sandbox.md)
+* [Cryptography](doc/readme/cryptography.md)
 * [JSON](doc/readme/json.md)
 * [JSON Lines](doc/readme/json-lines.md)
 * [CSV](doc/readme/csv.md)

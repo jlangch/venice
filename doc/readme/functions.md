@@ -17,9 +17,6 @@
 
 
 
-## Function composition
-
-
 ## Creating Functions
 
 ```clojure

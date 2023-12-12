@@ -1,0 +1,125 @@
+# Cryptography
+
+* [File encryption](#file-encryption)
+* [File hashhing](#file-hashing)
+
+
+## File encryption
+
+Venice supports encrypting and decrypting files and buffers. It supports
+AES and ChaCha20 all with 256 bit keys:
+
+  * AES256-GCM ¹⁾
+  * AES256-CBC ²⁾
+  * ChaCha20 ³⁾
+  * ChaCha20-BC ⁴⁾
+  * AES-ZIP ⁵⁾
+  
+¹⁾ Recommended by NIST
+
+²⁾ AES256-CBC is regarded as a broken or risky  cryptographic algorithm
+   (CWE-327, CWE-328). Use AES256-GCM in production!
+   
+³⁾ only available with Java 11+
+
+⁴⁾ only available with BouncyCastle libraries but works with Java 8+
+    
+⁵⁾ AES-256 encrypted and password protected ZIP files
+
+    
+Warning: files encrypted with ChaCha20 cannot be decrypted 
+by ChaCha20-BC (and vice versa) due to different initial 
+counter  handling and the IV size (96bit vs 64bit)
+
+The ChaCha family of ciphers are an oder of magnitude more efficient 
+on servers that do not provide hardware acceleration. Apple Silicon
+does not seem to have AES hardware acceleration probably due to its 
+RISC nature. 
+
+
+### Examples
+
+**AES and ChaCha encrypted files:**
+
+```
+(do
+  (load-module :crypt)
+  (let [algo       "AES256-GCM"  ;; "AES256-CBC", "AES256-GCM, "ChaCha20", "ChaCha20-BC"
+        data       (bytebuf-allocate-random 100)
+        file-in    (io/temp-file "test-", ".data")
+        file-enc   (io/temp-file "test-", ".data.enc")
+        file-dec   (io/temp-file "test-", ".data.enc")]
+    (io/delete-file-on-exit file-in file-enc file-dec)
+    (io/spit file-in data :binary true)
+    
+    (crypt/encrypt-file algo file-in file-enc "-passphrase-")
+    (crypt/decrypt-file algo file-enc file-dec "-passphrase-")))
+```
+
+`crypt/encrypt-file` and `crypt/decrypt-file` work both on files, streams 
+and memory buffers.
+
+
+**AES encrypted ZIP files:**
+
+```
+(do
+  (load-module :zipvault)
+  (let [data       (bytebuf-allocate-random 100)
+        file-in    (io/temp-file "test-", ".data")
+        file-zip   (io/temp-file "test-", ".data.zip")
+        file-unzip (io/temp-file "test-", ".data.unzip")
+        entry-name (io/file-name file-unzip)
+        dest-dir   (io/file-parent aes-file-unzip)]
+    (io/delete-file-on-exit file-in file-zip file-unzip)
+    (io/spit file-in data :binary true)
+    
+    (zipvault/zip file-zip "-passphrase-" entry-name file-in)
+    (zipvault/extract-file file-zip "-passphrase-" entry-name dest-dir)))
+```
+
+`zipvault/zip` and `zipvault/extract-file` work both on files, streams 
+and memory buffers.
+
+
+### Perfomance
+
+```
+                     MacBookAir M2, Java 8 (Zulu), BouncyCastle 1.77
+--------------------------------------------------------------------
+                         2KB    20KB   200KB     2MB    20MB   200MB
+--------------------------------------------------------------------
+Encrypt AES-256 CBC:    85ms    65ms    66ms    74ms   172ms  1165ms
+Decrypt AES-256 CBC:    67ms    67ms    65ms    76ms   162ms  1053ms
+Encrypt AES-256 GCM:    64ms    65ms    70ms    96ms   364ms  3170ms
+Decrypt AES-256 GCM:    66ms    65ms    67ms    94ms   363ms  3215ms
+Encrypt AES-256 ZIP:    11ms     5ms    10ms    60ms   565ms  5681ms
+Decrypt AES-256 ZIP:     7ms     5ms     6ms    24ms   204ms  2045ms
+Encrypt ChaCha20:          -       -       -       -       -       -
+Decrypt ChaCha20:          -       -       -       -       -       -
+Encrypt ChaCha20-BC:    75ms    63ms    66ms    71ms   127ms   701ms
+Decrypt ChaCha20-BC:    66ms    65ms    65ms    71ms   127ms   704ms
+--------------------------------------------------------------------
+```
+
+```
+                    MacBookAir M2, Java 17 (Zulu), BouncyCastle 1.77
+--------------------------------------------------------------------
+                         2KB    20KB   200KB     2MB    20MB   200MB
+--------------------------------------------------------------------
+Encrypt AES-256 CBC:    96ms    73ms    73ms    84ms   193ms  1337ms
+Decrypt AES-256 CBC:    75ms    72ms    74ms    85ms   195ms  1562ms
+Encrypt AES-256 GCM:    73ms    72ms    75ms   103ms   388ms  3593ms
+Decrypt AES-256 GCM:    75ms    73ms    76ms   103ms   392ms  3283ms
+Encrypt AES-256 ZIP:     7ms     5ms     9ms    60ms   600ms  5900ms
+Decrypt AES-256 ZIP:     7ms     4ms     7ms    26ms   240ms  2311ms
+Encrypt ChaCha20:       83ms    72ms    73ms    77ms   119ms   566ms
+Decrypt ChaCha20:       73ms    72ms    73ms    76ms   118ms   527ms
+Encrypt ChaCha20-BC:    74ms    73ms    73ms    87ms   160ms   949ms
+Decrypt ChaCha20-BC:    74ms    73ms    74ms    85ms   160ms   931ms
+--------------------------------------------------------------------
+```
+
+
+## File hashing
+
