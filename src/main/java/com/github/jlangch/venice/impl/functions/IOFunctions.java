@@ -1496,15 +1496,21 @@ public class IOFunctions {
                 "io/delete-file-on-exit",
                 VncFunction
                     .meta()
-                    .arglists("(io/delete-file-on-exit f)")
+                    .arglists("(io/delete-file-on-exit f & fs)")
                     .doc(
-                       "Requests that the file or directory be deleted when the virtual machine " +
+                       "Requests that the files or directories be deleted when the virtual machine " +
                        "terminates. Files (or directories) are deleted in the reverse order that " +
                        "they are registered. Invoking this method to delete a file or directory " +
                        "that is already registered for deletion has no effect. Deletion will be " +
                        "attempted only for normal termination of the virtual machine, as defined " +
                        "by the Java Language Specification.\n\n" +
                        "f must be a file or a string (file path).")
+                    .examples(
+                    	"(let [file1 (io/temp-file \"test-\", \".data\")    \n" +
+                    	"      file2 (io/temp-file \"test-\", \".data\")]   \n" +
+                    	"  (io/delete-file-on-exit file1 file2)             \n" +
+                    	"  (io/spit file1 \"123\")                          \n" +
+                    	"  (io/spit file2 \"ABC\"))                         ")
                     .seeAlso(
                         "io/delete-file",
                         "io/delete-file-tree",
@@ -1513,26 +1519,28 @@ public class IOFunctions {
         ) {
             @Override
             public VncVal apply(final VncList args) {
-                ArityExceptions.assertArity(this, args, 1);
+                ArityExceptions.assertMinArity(this, args, 1);
 
                 sandboxFunctionCallValidation();
 
-                final File file = convertToFile(
-                                    args.first(),
-                                    "Function 'io/delete-file-on-exit' does not allow %s as f");
+                args.forEach(arg -> {
+	                final File file = convertToFile(
+	                                    arg,
+	                                    "Function 'io/delete-file-on-exit' does not allow %s as f");
 
-                validateReadableFileOrDirectory(file);
+	                validateReadableFileOrDirectory(file);
 
-                try {
-                    file.deleteOnExit();
-                }
-                catch(Exception ex) {
-                    throw new VncException(
-                            String.format(
-                                    "Failed to mark file %s to be deleted on exit",
-                                    file.getPath()),
-                            ex);
-                }
+	                try {
+	                    file.deleteOnExit();
+	                }
+	                catch(Exception ex) {
+	                    throw new VncException(
+	                            String.format(
+	                                    "Failed to mark file %s to be deleted on exit",
+	                                    file.getPath()),
+	                            ex);
+	                }
+                });
 
                 return Nil;
             }
