@@ -106,7 +106,7 @@ and memory buffers.
 and memory buffers.
 
 
-### Perfomance
+### Performance
 
 ```
                      MacBookAir M2, Java 8 (Zulu), BouncyCastle 1.77
@@ -189,7 +189,7 @@ and they can be used for malicious purposes.
 ```
 
 
-### Perfomance
+### Performance
 
 
 ```
