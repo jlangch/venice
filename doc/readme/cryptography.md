@@ -2,8 +2,8 @@
 
 * [File Encryption](#file-encryption)
 * [File Hashing](#file-hashing)
-* [String/Byte Encryption](#string-byte-encryption)
-* [String/Password Hashing](#string-password-hashing)
+* [String & Byte Encryption](#string-byte-encryption)
+* [String & Password Hashing](#string-password-hashing)
 
 
 ## File Encryption
@@ -188,7 +188,7 @@ Hash SHA-256 (memory):   1ms     0ms     1ms     8ms    76ms   749ms
 
 
 
-## String/Byte Encryption
+## String & Byte Encryption
 
 Venice supports DES, 3DES and AES256.
 
@@ -269,7 +269,7 @@ Decrypting bytebufs:
 ```
 
 
-## String/Password Hashing
+## String & Password Hashing
 
 Venice supports PBKDF2, SHA-512, SHA-1, and MD5 for hashing strings.
 
