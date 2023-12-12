@@ -6,7 +6,7 @@ REM # --home
 REM #    |
 REM #    +-- libs
 REM #    |    +-- repl.json
-REM #    |    +-- venice-1.10.55.jar
+REM #    |    +-- venice-1.10.56.jar
 REM #    |
 REM #    +-- scripts
 REM #    |    +-- script-1.venice
