@@ -38,6 +38,26 @@ on servers that do not provide hardware acceleration. Apple Silicon
 does not seem to have AES hardware acceleration probably due to its 
 RISC nature. 
 
+**Salt, IV, Nonce, Counter**
+
+While encrypting a file the random salt, IV, nonce and/or counter are
+written to the start of the encrypted file and read before decrypting
+the file:
+
+```
+      AES256-GCM              AES256-CBC               ChaCha20              ChaCha20-BC
+   AES/GCM/NoPadding     AES/CBC/PKCS5Padding                               (BouncyCastle)
++--------------------+  +--------------------+  +--------------------+  +--------------------+
+|      salt (16)     |  |      salt (16)     |  |      salt (16)     |  |       iv (8)       |
++--------------------+  +--------------------+  +--------------------+  +--------------------+
+|       IV  (12)     |  |       IV  (12)     |  |      nonce (12)    |  |      data (n)      |
++--------------------+  +--------------------+  +--------------------+  +--------------------+
+|       data (n)     |  |      data (n)      |  |     counter (4)    | 
++--------------------+  +--------------------+  +--------------------+
+                                                |      data (n)      | 
+                                                +--------------------+
+```
+
 
 ### Examples
 
