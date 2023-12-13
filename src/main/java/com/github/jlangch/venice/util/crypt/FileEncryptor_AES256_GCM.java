@@ -92,7 +92,7 @@ public class FileEncryptor_AES256_GCM {
         new SecureRandom().nextBytes(iv);
 
         // Derive key from passphrase
-        byte[] key = KeyUtil.deriveKeyFromPassphrase(passphrase, salt, 65536, 256);
+        byte[] key = Util.deriveKeyFromPassphrase(passphrase, salt, 65536, 256);
 
         // Perform Encryption
         byte[] encryptedData = processData(Cipher.ENCRYPT_MODE, fileData, key, iv);
@@ -170,7 +170,7 @@ public class FileEncryptor_AES256_GCM {
         System.arraycopy(fileData, SALT_LEN + IV_LEN, encryptedData, 0, encryptedData.length);
 
         // Derive key from passphrase
-        byte[] key = KeyUtil.deriveKeyFromPassphrase(passphrase, salt, 65536, 256);
+        byte[] key = Util.deriveKeyFromPassphrase(passphrase, salt, 65536, 256);
 
         // Perform Decryption
         byte[] decryptedData = processData(Cipher.DECRYPT_MODE, encryptedData, key, iv);

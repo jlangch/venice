@@ -29,7 +29,7 @@ import javax.crypto.SecretKeyFactory;
 import javax.crypto.spec.PBEKeySpec;
 
 
-public class KeyUtil {
+public class Util {
 
     public static byte[] deriveKeyFromPassphrase(
             final String passphrase,
@@ -40,6 +40,27 @@ public class KeyUtil {
         KeySpec spec = new PBEKeySpec(passphrase.toCharArray(), salt, iterationCount, keyLength);
         SecretKeyFactory factory = SecretKeyFactory.getInstance("PBKDF2WithHmacSHA256");
         return factory.generateSecret(spec).getEncoded();
+    }
+
+
+    public static Class<?> classForName(final String name) {
+        final ClassLoader contextClassLoader = Thread.currentThread().getContextClassLoader();
+        if (contextClassLoader != null) {
+            try {
+                return Class.forName(name, true, contextClassLoader);
+            }
+            catch(Throwable ex) {
+                // try next with current class loader
+            }
+        }
+
+        // current class loader
+        try {
+            return Class.forName(name);
+        }
+        catch(Throwable ex) {
+            throw new RuntimeException(String.format("Failed to load class '%s'", name));
+        }
     }
 
 }

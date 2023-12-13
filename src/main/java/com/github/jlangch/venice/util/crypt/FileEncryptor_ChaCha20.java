@@ -32,8 +32,6 @@ import java.security.spec.AlgorithmParameterSpec;
 import javax.crypto.Cipher;
 import javax.crypto.spec.SecretKeySpec;
 
-import com.github.jlangch.venice.impl.util.reflect.ReflectionUtil;
-
 
 /**
  * Encrypt and decrypt files using "ChaCha20". Available on Java 11+
@@ -106,7 +104,7 @@ public class FileEncryptor_ChaCha20 {
         byte[] counterData = counterToBytes(counter);
 
         // Derive key from passphrase
-        byte[] key = KeyUtil.deriveKeyFromPassphrase(passphrase, salt, 65536, 256);
+        byte[] key = Util.deriveKeyFromPassphrase(passphrase, salt, 65536, 256);
 
         // Perform Encryption
         byte[] encryptedData = processData(Cipher.ENCRYPT_MODE, fileData, key, nonce, counter);
@@ -194,7 +192,7 @@ public class FileEncryptor_ChaCha20 {
         int counter = counterToInt(counterBytes);
 
         // Derive key from passphrase
-        byte[] key = KeyUtil.deriveKeyFromPassphrase(passphrase, salt, 65536, 256);
+        byte[] key = Util.deriveKeyFromPassphrase(passphrase, salt, 65536, 256);
 
         // Perform Decryption
         return processData(Cipher.DECRYPT_MODE, encryptedData, key, nonce, counter);
@@ -243,7 +241,7 @@ public class FileEncryptor_ChaCha20 {
 
         // Note: ChaCha20 is only available with Java11+
         try {
-            Class<?> clazz = ReflectionUtil.classForName("javax.crypto.spec.ChaCha20ParameterSpec");
+            Class<?> clazz = Util.classForName("javax.crypto.spec.ChaCha20ParameterSpec");
             Constructor<?> c = clazz.getConstructor(new Class[]{byte[].class, int.class});
             return (AlgorithmParameterSpec)c.newInstance(nonce, counter);
         }
@@ -290,8 +288,7 @@ public class FileEncryptor_ChaCha20 {
 
     private static boolean checkSupported() {
         try {
-            final Class<?> clazz = ReflectionUtil.classForName(
-                                        "javax.crypto.spec.ChaCha20ParameterSpec");
+            final Class<?> clazz = Util.classForName("javax.crypto.spec.ChaCha20ParameterSpec");
             return clazz != null;
         }
         catch(Exception ex) {

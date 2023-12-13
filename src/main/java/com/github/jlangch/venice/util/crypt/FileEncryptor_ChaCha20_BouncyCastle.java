@@ -95,7 +95,7 @@ public class FileEncryptor_ChaCha20_BouncyCastle {
         new SecureRandom().nextBytes(iv);
 
         // Derive key from passphrase
-        byte[] key = KeyUtil.deriveKeyFromPassphrase(passphrase, salt, 65536, 256);
+        byte[] key = Util.deriveKeyFromPassphrase(passphrase, salt, 65536, 256);
 
         // Perform Encryption
         byte[] encryptedData = processData(Cipher.ENCRYPT_MODE, fileData, key, iv);
@@ -173,7 +173,7 @@ public class FileEncryptor_ChaCha20_BouncyCastle {
         System.arraycopy(fileData, SALT_LEN + IV_LEN, encryptedData, 0, encryptedData.length);
 
         // Derive key from passphrase
-        byte[] key = KeyUtil.deriveKeyFromPassphrase(passphrase, salt, 65536, 256);
+        byte[] key = Util.deriveKeyFromPassphrase(passphrase, salt, 65536, 256);
 
         // Perform Decryption
         return processData(Cipher.DECRYPT_MODE, encryptedData, key, iv);
@@ -226,31 +226,11 @@ public class FileEncryptor_ChaCha20_BouncyCastle {
 
     private static boolean checkSupported() {
         try {
-            final Class<?> clazz = classForName("org.bouncycastle.crypto.engines.ChaChaEngine");
+            final Class<?> clazz = Util.classForName("org.bouncycastle.crypto.engines.ChaChaEngine");
             return clazz != null;
         }
         catch(Exception ex) {
             return false;
-        }
-    }
-
-    private static Class<?> classForName(final String name) {
-        final ClassLoader contextClassLoader = Thread.currentThread().getContextClassLoader();
-        if (contextClassLoader != null) {
-            try {
-                return Class.forName(name, true, contextClassLoader);
-            }
-            catch(Throwable ex) {
-                // try next with current class loader
-            }
-        }
-
-        // current class loader
-        try {
-            return Class.forName(name);
-        }
-        catch(Throwable ex) {
-            throw new RuntimeException(String.format("Failed to load class '%s'", name));
         }
     }
 
