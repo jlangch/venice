@@ -221,6 +221,10 @@ public class FileEncryptor {
         }
     }
 
+    public static boolean addBouncyCastleProvider() {
+        Security.addProvider(new BouncyCastleProvider());
+    }
+    
     public static boolean identical(
     		final File file1,
     		final File file2
