@@ -226,7 +226,7 @@ public class FileEncryptor {
             return false;
         }
         else {
-            Security.addProvider(new BouncyCastleProvider());
+            Security.addProvider(new org.bouncycastle.jce.provider.BouncyCastleProvider());
             return true;
         }
     
