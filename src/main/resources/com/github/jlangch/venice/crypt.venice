@@ -392,6 +392,7 @@
   ([algorithm passphrase in]
     (as-> (io/slurp in :binary true) data
           (. :FileEncryptor :encryptFileWithPassphrase algorithm passphrase data)))
+  
   ([algorithm passphrase in out]
     (as-> (io/slurp in :binary true) data
           (. :FileEncryptor :encryptFileWithPassphrase algorithm passphrase data)
@@ -447,11 +448,13 @@
   ([algorithm passphrase in]
     (as-> (io/slurp in :binary true) data
           (. :FileEncryptor :decryptFileWithPassphrase algorithm passphrase data)))
+  
   ([algorithm passphrase in out]
     (as-> (io/slurp in :binary true) data
           (. :FileEncryptor :decryptFileWithPassphrase algorithm passphrase data)
           (io/spit out data)
           nil)))
+
 
 (defn encrypt-file-supported? [algorithm]
    (. :FileEncryptor :supports algorithm))
@@ -671,8 +674,10 @@
 
 (def- default-salt  (bytebuf [0xA9 0x9B 0xC8 0x32  0x56 0x35 0xE3 0x03]))
 
+
 (defn- to-8-byte-salt [salt]
   (if (string? salt) (bytebuf-from-string salt :UTF-8 8 0x00) salt))
+
 
 (defn- to-bytes [data]
   (if (string? data) (bytebuf-from-string data :UTF-8) data))
@@ -704,8 +709,7 @@
       (. :decode (to-bytes (if url-safe (url-decode s) s)))))
 
 
-(defn-
-  crypt/hash
+(defn- crypt/hash
 
   ([algorithm data]
     (hash algorithm data nil))
