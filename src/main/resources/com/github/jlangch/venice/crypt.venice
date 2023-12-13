@@ -345,14 +345,16 @@
           * `java.io.File`, e.g: `(io/file "/temp/foo.json")`
           * `java.io.OutputStream`
 
-          The 256 bit encryption key is derived from the passphrase. To 
-          generate the key a "PBKDF2WithHmacSHA256" secret key factory is used 
-          with a 16 byte random salt and 65536 iterations.
-          Carefully choose a long enough passphrase.
+          The 256 bit encryption key is derived from the passphrase using a
+          *PBKDF2WithHmacSHA256* secret key factory with a 16 byte random salt 
+          and 65536 iterations. Carefully choose a long enough passphrase.
 
-          While encrypting a file the random salt, IV, nonce and/or counter are
-          written to the start of the encrypted file and read before decrypting
-          the file:
+          *Salt*, *IV*, *Nonce* and/or *Counter* are random and unique for every 
+          call of `crypt/encrypt-file`.
+          
+          While encrypting a file the random *Salt* (when a passphrase is used), 
+          *IV*, *Nonce* and/or *Counter* are written to the start of the 
+          encrypted file and read before decrypting the file:
  
           ```
                 AES256-GCM              AES256-CBC               ChaCha20

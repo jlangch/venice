@@ -39,10 +39,20 @@ on servers that do not provide hardware acceleration. Apple Silicon
 does not seem to have AES hardware acceleration probably due to its 
 RISC nature. 
 
+**Deriving a 256 bit key from a passhrase**
+
+The 256 bit encryption key is derived from the passphrase using a
+*PBKDF2WithHmacSHA256* secret key factory with a 16 byte random salt 
+and 65536 iterations. Carefully choose a long enough passphrase.
+
+
 **Salt, IV, Nonce, Counter**
 
-While encrypting a file the random salt (when a passphrase is used), IV, 
-nonce and/or counter are written to the start of the encrypted file and 
+*Salt*, *IV*, *Nonce* and/or *Counter* are random and unique for every call
+of `crypt/encrypt-file`.
+          
+While encrypting a file the random *Salt* (when a passphrase is used), *IV*, 
+*Nonce* and/or *Counter* are written to the start of the encrypted file and 
 read before decrypting the file:
 
 ```
