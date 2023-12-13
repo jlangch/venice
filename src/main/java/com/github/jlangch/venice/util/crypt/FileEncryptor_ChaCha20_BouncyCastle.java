@@ -31,8 +31,6 @@ import org.bouncycastle.crypto.engines.ChaChaEngine;
 import org.bouncycastle.crypto.params.KeyParameter;
 import org.bouncycastle.crypto.params.ParametersWithIV;
 
-import com.github.jlangch.venice.impl.util.reflect.ReflectionUtil;
-
 
 /**
  * Encrypt and decrypt files using "ChaCha20" (BouncyCastle).
@@ -228,14 +226,34 @@ public class FileEncryptor_ChaCha20_BouncyCastle {
 
     private static boolean checkSupported() {
         try {
-            final Class<?> clazz = ReflectionUtil.classForName(
-                                        "org.bouncycastle.crypto.engines.ChaChaEngine");
+            final Class<?> clazz = classForName("org.bouncycastle.crypto.engines.ChaChaEngine");
             return clazz != null;
         }
         catch(Exception ex) {
             return false;
         }
     }
+
+    private static Class<?> classForName(final String name) {
+        final ClassLoader contextClassLoader = Thread.currentThread().getContextClassLoader();
+        if (contextClassLoader != null) {
+            try {
+                return Class.forName(name, true, contextClassLoader);
+            }
+            catch(Throwable ex) {
+                // try next with current class loader
+            }
+        }
+
+        // current class loader
+        try {
+            return Class.forName(name);
+        }
+        catch(Throwable ex) {
+            throw new RuntimeException(String.format("Failed to load class '%s'", name));
+        }
+    }
+
 
 
     private static final boolean supported = checkSupported();
