@@ -621,6 +621,44 @@
             (sort (. ssf method)))))
 
 
+(defn
+  ^{ :arglists '(
+          "(crypt/provider? name)")
+     :doc """
+          Returns true if the Java security provider with name exists, else 
+          false.
+          """
+     :examples (list
+          """
+          (do
+            (load-module :crypt)
+            (crypt/provider? "BC"))
+          """ ) }
+
+  crypt/provider? [name]
+
+  (. :FileEncryptor :hasProvider name))
+
+
+(defn
+  ^{ :arglists '(
+          "(crypt/add-bouncy-castle-provider")
+     :doc """
+          Adds the BouncyCastle provider to the Java security.
+          """
+     :examples (list
+          """
+          (do
+            (load-module :crypt)
+            (crypt/egister-bouncy-castle-provider))
+          """ ) }
+
+  crypt/add-bouncy-castle-provider []
+
+  (. :FileEncryptor :addBouncyCastleProvider))
+
+
+
 ;; -----------------------------------------------------------------------------
 ;; Utils
 ;; -----------------------------------------------------------------------------

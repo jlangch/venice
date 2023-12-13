@@ -25,8 +25,6 @@ import java.io.File;
 import java.nio.file.Files;
 import java.security.Security;
 
-import com.github.jlangch.venice.impl.util.StringUtil;
-
 
 /**
  * Encrypt and decrypt files.
@@ -39,7 +37,7 @@ public class FileEncryptor {
             final File inputFile,
             final File outputFile
     ) throws Exception {
-        switch(StringUtil.trimToEmpty(algorithm).toUpperCase()) {
+        switch(trimToEmpty(algorithm).toUpperCase()) {
             case "AES256-CBC":
                 FileEncryptor_AES256_CBC.encryptFileWithPassphrase(passphrase, inputFile, outputFile);
                 break;
@@ -62,7 +60,7 @@ public class FileEncryptor {
             final String passphrase,
             final byte[] fileData
     ) throws Exception {
-        switch(StringUtil.trimToEmpty(algorithm).toUpperCase()) {
+        switch(trimToEmpty(algorithm).toUpperCase()) {
             case "AES256-CBC":
                 return FileEncryptor_AES256_CBC.encryptFileWithPassphrase(passphrase, fileData);
             case "AES256-GCM":
@@ -82,7 +80,7 @@ public class FileEncryptor {
             final File inputFile,
             final File outputFile
     ) throws Exception {
-        switch(StringUtil.trimToEmpty(algorithm).toUpperCase()) {
+        switch(trimToEmpty(algorithm).toUpperCase()) {
             case "AES256-CBC":
                 FileEncryptor_AES256_CBC.encryptFileWithKey(key, inputFile, outputFile);
                 break;
@@ -105,7 +103,7 @@ public class FileEncryptor {
             final byte[] key,
             final byte[] fileData
     ) throws Exception {
-        switch(StringUtil.trimToEmpty(algorithm).toUpperCase()) {
+        switch(trimToEmpty(algorithm).toUpperCase()) {
             case "AES256-CBC":
                 return FileEncryptor_AES256_CBC.encryptFileWithKey(key, fileData);
             case "AES256-GCM":
@@ -125,7 +123,7 @@ public class FileEncryptor {
             final File inputFile,
             final File outputFile
     ) throws Exception {
-        switch(StringUtil.trimToEmpty(algorithm).toUpperCase()) {
+        switch(trimToEmpty(algorithm).toUpperCase()) {
             case "AES256-CBC":
                 FileEncryptor_AES256_CBC.decryptFileWithPassphrase(passphrase, inputFile, outputFile);
                 break;
@@ -148,7 +146,7 @@ public class FileEncryptor {
             final String passphrase,
             final byte[] fileData
     ) throws Exception {
-        switch(StringUtil.trimToEmpty(algorithm).toUpperCase()) {
+        switch(trimToEmpty(algorithm).toUpperCase()) {
             case "AES256-CBC":
                 return FileEncryptor_AES256_CBC.decryptFileWithPassphrase(passphrase, fileData);
             case "AES256-GCM":
@@ -168,7 +166,7 @@ public class FileEncryptor {
             final File inputFile,
             final File outputFile
     ) throws Exception {
-        switch(StringUtil.trimToEmpty(algorithm).toUpperCase()) {
+        switch(trimToEmpty(algorithm).toUpperCase()) {
             case "AES256-CBC":
                 FileEncryptor_AES256_CBC.decryptFileWithKey(key, inputFile, outputFile);
                 break;
@@ -191,7 +189,7 @@ public class FileEncryptor {
             final byte[] key,
             final byte[] fileData
     ) throws Exception {
-        switch(StringUtil.trimToEmpty(algorithm).toUpperCase()) {
+        switch(trimToEmpty(algorithm).toUpperCase()) {
             case "AES256-CBC":
                 return FileEncryptor_AES256_CBC.decryptFileWithKey(key, fileData);
             case "AES256-GCM":
@@ -208,7 +206,7 @@ public class FileEncryptor {
     public static boolean supports(
     		final String algorithm
     ) throws Exception {
-        switch(StringUtil.trimToEmpty(algorithm).toUpperCase()) {
+        switch(trimToEmpty(algorithm).toUpperCase()) {
             case "AES256-CBC":
                 return FileEncryptor_AES256_CBC.isSupported();
             case "AES256-GCM":
@@ -223,19 +221,21 @@ public class FileEncryptor {
     }
 
     public static boolean hasProvider(final String name) {
-        return Security.getProvider(name) != null;
+        return Security.getProvider(trimToEmpty(name)) != null;
     }
-    
+
     public static boolean addBouncyCastleProvider() {
-        if (Security.getProvider("BC") != null) {
-            return false;
-        }
-        else {
-            Security.addProvider(new org.bouncycastle.jce.provider.BouncyCastleProvider());
-            return true;
-        }
+    	synchronized(FileEncryptor.class) {
+	        if (Security.getProvider("BC") != null) {
+	            return false;
+	        }
+	        else {
+	            Security.addProvider(new org.bouncycastle.jce.provider.BouncyCastleProvider());
+	            return true;
+	        }
+    	}
     }
-    
+
     public static boolean identical(
     		final File file1,
     		final File file2
@@ -260,5 +260,10 @@ public class FileEncryptor {
         else {
         	return false;
         }
+    }
+
+
+    private static String trimToEmpty(final String s) {
+    	return s == null ? "" : s.trim();
     }
 }

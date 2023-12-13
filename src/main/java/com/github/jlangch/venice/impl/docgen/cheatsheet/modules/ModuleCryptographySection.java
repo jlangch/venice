@@ -45,6 +45,8 @@ public class ModuleCryptographySection implements ISectionBuilder {
         all.addSection(ciphers);
         ciphers.addItem(diBuilder.getDocItem("crypt/ciphers", false, false));
         ciphers.addItem(diBuilder.getDocItem("crypt/max-key-size"));
+        ciphers.addItem(diBuilder.getDocItem("crypt/provider?"));
+        ciphers.addItem(diBuilder.getDocItem("crypt/add-bouncy-castle-provider", false, false));
 
         final DocSection hashes = new DocSection("Hashes", id());
         all.addSection(hashes);
