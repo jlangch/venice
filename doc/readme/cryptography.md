@@ -24,14 +24,15 @@ AES and ChaCha20, both with 256 bit keys:
    
 ³⁾ only available with Java 11+
 
-⁴⁾ only available with BouncyCastle libraries but works with Java 8+
+⁴⁾ only available with BouncyCastle libraries but works with Java 8+,
+   there is no need to register the BouncyCastle provider with the Java VM.
     
 ⁵⁾ AES-256 encrypted and password protected ZIP files
 
     
-Warning: files encrypted with ChaCha20 cannot be decrypted 
-by ChaCha20-BC (and vice versa) due to different initial 
-counter  handling and IV size (96bit vs 64bit)
+Warning: files encrypted with ChaCha20 cannot be decrypted by
+ChaCha20-BC (and vice versa) due to different initial counter handling 
+and the IV size (12 bytes vs 8 bytes)
 
 The ChaCha family of ciphers are an oder of magnitude more efficient 
 on servers that do not provide hardware acceleration. Apple Silicon
@@ -40,20 +41,20 @@ RISC nature.
 
 **Salt, IV, Nonce, Counter**
 
-While encrypting a file the random salt, IV, nonce and/or counter are
-written to the start of the encrypted file and read before decrypting
-the file:
+While encrypting a file the random salt (when a passphrase is used), IV, 
+nonce and/or counter are written to the start of the encrypted file and 
+read before decrypting the file:
 
 ```
       AES256-GCM              AES256-CBC               ChaCha20              ChaCha20-BC
    AES/GCM/NoPadding     AES/CBC/PKCS5Padding                               (BouncyCastle)
 +--------------------+  +--------------------+  +--------------------+  +--------------------+
-|      salt (16)     |  |      salt (16)     |  |      salt (16)     |  |       iv (8)       |
+|      salt (16)     |  |      salt (16)     |  |      salt (16)     |  |      salt (16)     |
 +--------------------+  +--------------------+  +--------------------+  +--------------------+
-|       iv  (12)     |  |       iv  (12)     |  |      nonce (12)    |  |      data (n)      |
+|       iv  (12)     |  |       iv  (12)     |  |      nonce (12)    |  |       iv (8)       |
 +--------------------+  +--------------------+  +--------------------+  +--------------------+
-|       data (n)     |  |      data (n)      |  |     counter (4)    | 
-+--------------------+  +--------------------+  +--------------------+
+|       data (n)     |  |      data (n)      |  |     counter (4)    |  |      data (n)      | 
++--------------------+  +--------------------+  +--------------------+  +--------------------+
                                                 |      data (n)      | 
                                                 +--------------------+
 ```
