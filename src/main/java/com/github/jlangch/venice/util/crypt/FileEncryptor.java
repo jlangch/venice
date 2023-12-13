@@ -229,6 +229,7 @@ public class FileEncryptor {
             Security.addProvider(new org.bouncycastle.jce.provider.BouncyCastleProvider());
             return true;
         }
+    }
     
     public static boolean identical(
     		final File file1,
