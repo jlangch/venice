@@ -187,10 +187,10 @@ Realizes all the elements of the finite lazy sequences upfront
 ```
 
 ```
-Realizing  1
-Realizing  2
-Realizing  3
-Realizing  nil
+Producing  1
+Producing  2
+Producing  3
+Producing  nil
 Collecting 1
 Collecting 2
 Collecting 3
@@ -210,13 +210,13 @@ Realizes all the elements of the finite lazy sequences element by element
 ```
 
 ```
-Realizing  1
+Producing  1
 Collecting 1
-Realizing  2
+Producing  2
 Collecting 2
-Realizing  3
+Producing  3
 Collecting 3
-Realizing  nil
+Producing  nil
 ```
 
 
