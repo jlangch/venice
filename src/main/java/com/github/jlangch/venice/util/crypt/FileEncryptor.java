@@ -221,7 +221,7 @@ public class FileEncryptor {
         }
     }
 
-    public static boolean addBouncyCastleProvider() {
+    public static void addBouncyCastleProvider() {
         Security.addProvider(new BouncyCastleProvider());
     }
     
