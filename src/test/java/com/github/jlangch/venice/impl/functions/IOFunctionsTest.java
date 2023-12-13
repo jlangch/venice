@@ -173,7 +173,20 @@ public class IOFunctionsTest {
 
         assertTrue((Boolean)venice.eval("(io/file-ext? (io/file \"/tmp/some.png\") \"png\")"));
         assertTrue((Boolean)venice.eval("(io/file-ext? (io/file \"/tmp/some.png\") \".png\")"));
-    }
+
+
+        assertTrue((Boolean)venice.eval("(io/file-ext? \"some.png\" \"png\" \"jpg\" \"gif\")"));
+        assertTrue((Boolean)venice.eval("(io/file-ext? \"some.png\" \".png\" \".jpg\" \".gif\")"));
+
+        assertTrue((Boolean)venice.eval("(io/file-ext? \"/tmp/some.png\" \"png\" \"jpg\" \"gif\")"));
+        assertTrue((Boolean)venice.eval("(io/file-ext? \"/tmp/some.png\" \".png\" \".jpg\" \".gif\")"));
+
+        assertTrue((Boolean)venice.eval("(io/file-ext? (io/file \"some.png\") \"png\" \"jpg\" \"gif\")"));
+        assertTrue((Boolean)venice.eval("(io/file-ext? (io/file \"some.png\") \".png\" \".jpg\" \".gif\")"));
+
+        assertTrue((Boolean)venice.eval("(io/file-ext? (io/file \"/tmp/some.png\") \"png\" \"jpg\" \"gif\")"));
+        assertTrue((Boolean)venice.eval("(io/file-ext? (io/file \"/tmp/some.png\") \".png\" \".jpg\" \".gif\")"));
+   }
 
     @Test
     public void test_io_file_ext() {

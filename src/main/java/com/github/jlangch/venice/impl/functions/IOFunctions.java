@@ -60,6 +60,7 @@ import java.util.concurrent.TimeUnit;
 import java.util.function.BiConsumer;
 import java.util.function.Consumer;
 import java.util.function.Function;
+import java.util.stream.Collectors;
 
 import com.github.jlangch.venice.SecurityException;
 import com.github.jlangch.venice.VncException;
@@ -92,6 +93,8 @@ import com.github.jlangch.venice.impl.util.io.IOStreamUtil;
 import com.github.jlangch.venice.impl.util.io.InternetUtil;
 import com.github.jlangch.venice.javainterop.IInterceptor;
 import com.github.jlangch.venice.javainterop.ILoadPaths;
+
+import net.lingala.zip4j.util.FileUtils;
 
 
 public class IOFunctions {
@@ -424,26 +427,40 @@ public class IOFunctions {
                 VncFunction
                     .meta()
                     .arglists(
-                        "(io/file-ext? f ext)")
+                        "(io/file-ext? f ext & exts)")
                     .doc(
                         "Returns true if the file f hast the extension ext. " +
                         "f must be a file or a string (file path).")
                     .examples(
                         "(io/file-ext? \"/tmp/test/x.txt\" \"txt\")",
-                        "(io/file-ext? (io/file \"/tmp/test/x.txt\") \".txt\")")
+                        "(io/file-ext? (io/file \"/tmp/test/x.txt\") \".txt\")",
+                        "(io/file-ext? \"/tmp/test/x.docx\" \"doc\" \"docx\")")
                     .seeAlso("io/file-ext")
                     .build()
         ) {
             @Override
             public VncVal apply(final VncList args) {
-                ArityExceptions.assertArity(this, args, 2);
+                ArityExceptions.assertMinArity(this, args, 2);
 
                 final File f = convertToFile(
                                     args.first(),
                                     "Function 'io/file-ext?' does not allow %s as f");
 
-                final String ext = Coerce.toVncString(args.second()).getValue();
-                return VncBoolean.of(f.getName().endsWith(ext.startsWith(".") ? ext : "." + ext));
+                if (args.size() == 2) {
+                    final String ext = Coerce.toVncString(args.second()).getValue();
+                    return VncBoolean.of(f.getName().endsWith(ext.startsWith(".") ? ext : "." + ext));
+                }
+                else {
+                	final Set<String> exts = args.slice(1)
+							                	  .stream()
+							                	  .map(v -> Coerce.toVncString(args.second()).getValue())
+							                	  .map(s -> s.startsWith(".") ? s.substring(1) : s)
+							                	  .collect(Collectors.toSet());
+
+                	final String fileExt = FileUtils.getFileExtension(f);
+
+                	return VncBoolean.of(exts.contains(fileExt));
+                }
             }
 
             private static final long serialVersionUID = -1848883965231344442L;
