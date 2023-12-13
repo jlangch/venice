@@ -223,7 +223,7 @@ public class FileEncryptor {
     }
 
     public static boolean addBouncyCastleProvider() {
-        if (Security.getProvider("BC")) {
+        if (Security.getProvider("BC") != null) {
             return false;
         }
         else {
