@@ -222,6 +222,10 @@ public class FileEncryptor {
         }
     }
 
+    public static boolean hasProvider(final String name) {
+        return Security.getProvider(name) != null;
+    }
+    
     public static boolean addBouncyCastleProvider() {
         if (Security.getProvider("BC") != null) {
             return false;
