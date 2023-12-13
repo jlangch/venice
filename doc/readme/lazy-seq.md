@@ -175,7 +175,7 @@ Note: The producing function receives the last element as input to produce the n
 
 **Realizing with doall**
 
-Realizes all the elements of the lazy sequences upfront
+Realizes all the elements of the finite lazy sequences upfront
 
 ```clojure
 (let [q (conj! (queue) 1 2 3 nil)]  
@@ -198,7 +198,7 @@ Collecting 3
 
 **Realizing with docoll**
 
-Realizes all the elements of the lazy sequences element by element
+Realizes all the elements of the finite lazy sequences element by element
 
 ```clojure
 (let [q (conj! (queue) 1 2 3 nil)]  
