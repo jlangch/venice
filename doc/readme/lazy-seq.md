@@ -171,7 +171,7 @@ An item producing function returning `nil` to make the lazy sequence finite
 Note: The producing function receives the last element as input to produce the next element. The function `#(if (< % 5) (inc %) nil)` produces the elements `1,2,3,4,5` (up to 5). The last input element that matches the expression `(< % 5)` is 4, hence 5 is the last produced element, the function produces elements and is not a filter.
 
 
-## Realizing values with doall vs docoll
+## Realizing Finite Lazy Sequences doall vs docoll
 
 **Realizing with doall**
 
