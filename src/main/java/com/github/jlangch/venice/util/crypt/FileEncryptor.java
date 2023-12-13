@@ -204,7 +204,7 @@ public class FileEncryptor {
     }
 
     public static boolean supports(
-    		final String algorithm
+            final String algorithm
     ) throws Exception {
         switch(trimToEmpty(algorithm).toUpperCase()) {
             case "AES256-CBC":
@@ -225,45 +225,45 @@ public class FileEncryptor {
     }
 
     public static boolean addBouncyCastleProvider() {
-    	synchronized(FileEncryptor.class) {
-	        if (Security.getProvider("BC") != null) {
-	            return false;
-	        }
-	        else {
-	            Security.addProvider(new org.bouncycastle.jce.provider.BouncyCastleProvider());
-	            return true;
-	        }
-    	}
+        synchronized(FileEncryptor.class) {
+            if (Security.getProvider("BC") != null) {
+                return false;
+            }
+            else {
+                Security.addProvider(new org.bouncycastle.jce.provider.BouncyCastleProvider());
+                return true;
+            }
+        }
     }
 
     public static boolean identical(
-    		final File file1,
-    		final File file2
+            final File file1,
+            final File file2
     ) throws Exception {
         return identical(
-        		Files.readAllBytes(file1.toPath()),
-        		Files.readAllBytes(file1.toPath()));
+                Files.readAllBytes(file1.toPath()),
+                Files.readAllBytes(file1.toPath()));
     }
 
     public static boolean identical(
-    		final byte[] buf1,
-    		final byte[] buf2
+            final byte[] buf1,
+            final byte[] buf2
     ) throws Exception {
         if (buf1.length == buf2.length) {
-        	for(int ii=0; ii<buf1.length; ii++) {
-        		if (buf1[ii] != buf2[ii]) {
-        			return false;
-        		}
-        	}
-        	return true;
+            for(int ii=0; ii<buf1.length; ii++) {
+                if (buf1[ii] != buf2[ii]) {
+                    return false;
+                }
+            }
+            return true;
         }
         else {
-        	return false;
+            return false;
         }
     }
 
 
     private static String trimToEmpty(final String s) {
-    	return s == null ? "" : s.trim();
+        return s == null ? "" : s.trim();
     }
 }

@@ -633,7 +633,9 @@
           (do
             (load-module :crypt)
             (crypt/provider? "BC"))
-          """ ) }
+          """ )
+     :see-also '( 
+          "crypt/add-bouncy-castle-provider" ) }
 
   crypt/provider? [name]
 
@@ -650,8 +652,10 @@
           """
           (do
             (load-module :crypt)
-            (crypt/egister-bouncy-castle-provider))
-          """ ) }
+            (crypt/add-bouncy-castle-provider))
+          """ ) 
+     :see-also '( 
+          "crypt/provider?" ) }
 
   crypt/add-bouncy-castle-provider []
 
