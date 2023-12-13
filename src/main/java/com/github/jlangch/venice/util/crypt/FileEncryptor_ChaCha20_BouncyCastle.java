@@ -23,13 +23,9 @@ package com.github.jlangch.venice.util.crypt;
 
 import java.io.File;
 import java.nio.file.Files;
-import java.security.NoSuchAlgorithmException;
 import java.security.SecureRandom;
-import java.security.spec.InvalidKeySpecException;
-import java.security.spec.KeySpec;
 
-import javax.crypto.SecretKeyFactory;
-import javax.crypto.spec.PBEKeySpec;
+import javax.crypto.Cipher;
 
 import org.bouncycastle.crypto.engines.ChaChaEngine;
 import org.bouncycastle.crypto.params.KeyParameter;
@@ -69,13 +65,7 @@ import com.github.jlangch.venice.impl.util.reflect.ReflectionUtil;
 public class FileEncryptor_ChaCha20_BouncyCastle {
 
     public static boolean isSupported() {
-        try {
-            final Class<?> clazz = ReflectionUtil.classForName("org.bouncycastle.crypto.engines.ChaChaEngine");
-            return clazz != null;
-        }
-        catch(Exception ex) {
-            return false;
-        }
+        return supported;
     }
 
 
@@ -107,10 +97,10 @@ public class FileEncryptor_ChaCha20_BouncyCastle {
         new SecureRandom().nextBytes(iv);
 
         // Derive key from passphrase
-        byte[] key = deriveKeyFromPassphrase(passphrase, salt, 65536, 256);
+        byte[] key = KeyUtil.deriveKeyFromPassphrase(passphrase, salt, 65536, 256);
 
         // Perform Encryption
-        byte[] encryptedData = encryptData(fileData, key, iv);
+        byte[] encryptedData = processData(Cipher.ENCRYPT_MODE, fileData, key, iv);
 
         // Combine salt, iv, and encrypted data
         byte[] outData = new byte[SALT_LEN + IV_LEN + encryptedData.length];
@@ -145,7 +135,7 @@ public class FileEncryptor_ChaCha20_BouncyCastle {
         new SecureRandom().nextBytes(iv);
 
         // Perform Encryption
-        byte[] encryptedData = encryptData(fileData, key, iv);
+        byte[] encryptedData = processData(Cipher.ENCRYPT_MODE, fileData, key, iv);
 
         // Combine iv and encrypted data
         byte[] outData = new byte[IV_LEN + encryptedData.length];
@@ -185,10 +175,10 @@ public class FileEncryptor_ChaCha20_BouncyCastle {
         System.arraycopy(fileData, SALT_LEN + IV_LEN, encryptedData, 0, encryptedData.length);
 
         // Derive key from passphrase
-        byte[] key = deriveKeyFromPassphrase(passphrase, salt, 65536, 256);
+        byte[] key = KeyUtil.deriveKeyFromPassphrase(passphrase, salt, 65536, 256);
 
         // Perform Decryption
-        return decryptData(encryptedData, key, iv);
+        return processData(Cipher.DECRYPT_MODE, encryptedData, key, iv);
     }
 
     public static void decryptFileWithKey(
@@ -218,10 +208,11 @@ public class FileEncryptor_ChaCha20_BouncyCastle {
         System.arraycopy(fileData, IV_LEN, encryptedData, 0, encryptedData.length);
 
         // Perform Decryption
-        return decryptData(encryptedData, key, iv);
+        return processData(Cipher.DECRYPT_MODE, encryptedData, key, iv);
     }
 
-    private static byte[] encryptData(
+    private static byte[] processData(
+    		final int mode,
             final byte[] data,
             final byte[] key,
             final byte[] iv
@@ -229,37 +220,25 @@ public class FileEncryptor_ChaCha20_BouncyCastle {
         ChaChaEngine chacha = new ChaChaEngine(ROUNDS);
         chacha.init(true, new ParametersWithIV(new KeyParameter(key), iv));
 
-        byte[] encryptedData = new byte[data.length];
-        chacha.processBytes(data, 0, data.length, encryptedData, 0);
+        byte[] cryptData = new byte[data.length];
+        chacha.processBytes(data, 0, data.length, cryptData, 0);
 
-        return encryptedData;
+        return cryptData;
     }
 
-    private static byte[] decryptData(
-            final byte[] data,
-            final byte[] key,
-            final byte[] iv
-    ) throws Exception {
-        ChaChaEngine chacha = new ChaChaEngine(ROUNDS);
-        chacha.init(false, new ParametersWithIV(new KeyParameter(key), iv));
-
-        byte[] decryptedData = new byte[data.length];
-        chacha.processBytes(data, 0, data.length, decryptedData, 0);
-
-        return decryptedData;
+    private static boolean checkSupported() {
+        try {
+            final Class<?> clazz = ReflectionUtil.classForName(
+                                        "org.bouncycastle.crypto.engines.ChaChaEngine");
+            return clazz != null;
+        }
+        catch(Exception ex) {
+            return false;
+        }
     }
 
-    private static byte[] deriveKeyFromPassphrase(
-            final String passphrase,
-            final byte[] salt,
-            final int iterationCount,
-            final int keyLength
-    ) throws NoSuchAlgorithmException, InvalidKeySpecException {
-        KeySpec spec = new PBEKeySpec(passphrase.toCharArray(), salt, iterationCount, keyLength);
-        SecretKeyFactory factory = SecretKeyFactory.getInstance("PBKDF2WithHmacSHA256");
-        return factory.generateSecret(spec).getEncoded();
-    }
 
+    private static final boolean supported = checkSupported();
 
     private static int ROUNDS = 20;
     private static int SALT_LEN = 16;

@@ -23,15 +23,10 @@ package com.github.jlangch.venice.util.crypt;
 
 import java.io.File;
 import java.nio.file.Files;
-import java.security.NoSuchAlgorithmException;
 import java.security.SecureRandom;
-import java.security.spec.InvalidKeySpecException;
-import java.security.spec.KeySpec;
 
 import javax.crypto.Cipher;
-import javax.crypto.SecretKeyFactory;
 import javax.crypto.spec.GCMParameterSpec;
-import javax.crypto.spec.PBEKeySpec;
 import javax.crypto.spec.SecretKeySpec;
 
 
@@ -97,18 +92,10 @@ public class FileEncryptor_AES256_GCM {
         new SecureRandom().nextBytes(iv);
 
         // Derive key from passphrase
-        byte[] key = deriveKeyFromPassphrase(passphrase, salt, 65536, 256);
-
-        // Initialize GCM Parameters, 128 bit auth tag length
-        GCMParameterSpec gcmParameterSpec = new GCMParameterSpec(128, iv);
-
-        // Initialize Cipher for AES-GCM
-        Cipher cipher = Cipher.getInstance("AES/GCM/NoPadding");
-        SecretKeySpec keySpec = new SecretKeySpec(key, "AES");
-        cipher.init(Cipher.ENCRYPT_MODE, keySpec, gcmParameterSpec);
+        byte[] key = KeyUtil.deriveKeyFromPassphrase(passphrase, salt, 65536, 256);
 
         // Perform Encryption
-        byte[] encryptedData = cipher.doFinal(fileData);
+        byte[] encryptedData = processData(Cipher.ENCRYPT_MODE, fileData, key, iv);
 
         // Combine salt, IV, and encrypted data
         byte[] outData = new byte[SALT_LEN + IV_LEN + encryptedData.length];
@@ -142,16 +129,8 @@ public class FileEncryptor_AES256_GCM {
         byte[] iv = new byte[IV_LEN]; // GCM recommended 12 bytes IV
         new SecureRandom().nextBytes(iv);
 
-        // Initialize GCM Parameters, 128 bit auth tag length
-        GCMParameterSpec gcmParameterSpec = new GCMParameterSpec(128, iv);
-
-        // Initialize Cipher for AES-GCM
-        Cipher cipher = Cipher.getInstance("AES/GCM/NoPadding");
-        SecretKeySpec keySpec = new SecretKeySpec(key, "AES");
-        cipher.init(Cipher.ENCRYPT_MODE, keySpec, gcmParameterSpec);
-
         // Perform Encryption
-        byte[] encryptedData = cipher.doFinal(fileData);
+        byte[] encryptedData = processData(Cipher.ENCRYPT_MODE, fileData, key, iv);
 
         // Combine IV and encrypted data
         byte[] outData = new byte[IV_LEN + encryptedData.length];
@@ -191,18 +170,10 @@ public class FileEncryptor_AES256_GCM {
         System.arraycopy(fileData, SALT_LEN + IV_LEN, encryptedData, 0, encryptedData.length);
 
         // Derive key from passphrase
-        byte[] key = deriveKeyFromPassphrase(passphrase, salt, 65536, 256);
-
-        // Initialize GCM Parameters, 128 bit auth tag length
-        GCMParameterSpec gcmParameterSpec = new GCMParameterSpec(128, iv);
-
-        // Initialize Cipher for AES-GCM
-        Cipher cipher = Cipher.getInstance("AES/GCM/NoPadding");
-        SecretKeySpec keySpec = new SecretKeySpec(key, "AES");
-        cipher.init(Cipher.DECRYPT_MODE, keySpec, gcmParameterSpec);
+        byte[] key = KeyUtil.deriveKeyFromPassphrase(passphrase, salt, 65536, 256);
 
         // Perform Decryption
-        byte[] decryptedData = cipher.doFinal(encryptedData);
+        byte[] decryptedData = processData(Cipher.DECRYPT_MODE, encryptedData, key, iv);
 
         return decryptedData;
     }
@@ -233,30 +204,29 @@ public class FileEncryptor_AES256_GCM {
         byte[] encryptedData = new byte[fileData.length - IV_LEN];
         System.arraycopy(fileData, IV_LEN, encryptedData, 0, encryptedData.length);
 
+        // Perform Decryption
+        byte[] decryptedData = processData(Cipher.DECRYPT_MODE, encryptedData, key, iv);
+
+        return decryptedData;
+    }
+
+
+    private static byte[] processData(
+    		final int mode,
+            final byte[] data,
+            final byte[] key,
+            final byte[] iv
+    ) throws Exception {
         // Initialize GCM Parameters, 128 bit auth tag length
         GCMParameterSpec gcmParameterSpec = new GCMParameterSpec(128, iv);
 
         // Initialize Cipher for AES-GCM
         Cipher cipher = Cipher.getInstance("AES/GCM/NoPadding");
         SecretKeySpec keySpec = new SecretKeySpec(key, "AES");
-        cipher.init(Cipher.DECRYPT_MODE, keySpec, gcmParameterSpec);
+        cipher.init(mode, keySpec, gcmParameterSpec);
 
-        // Perform Decryption
-        byte[] decryptedData = cipher.doFinal(encryptedData);
-
-        return decryptedData;
-    }
-
-
-    private static byte[] deriveKeyFromPassphrase(
-            final String passphrase,
-            final byte[] salt,
-            final int iterationCount,
-            final int keyLength
-    ) throws NoSuchAlgorithmException, InvalidKeySpecException {
-        KeySpec spec = new PBEKeySpec(passphrase.toCharArray(), salt, iterationCount, keyLength);
-        SecretKeyFactory factory = SecretKeyFactory.getInstance("PBKDF2WithHmacSHA256");
-        return factory.generateSecret(spec).getEncoded();
+        // Compute
+        return cipher.doFinal(data);
     }
 
 

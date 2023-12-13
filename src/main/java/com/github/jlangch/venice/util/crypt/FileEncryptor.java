@@ -22,6 +22,7 @@
 package com.github.jlangch.venice.util.crypt;
 
 import java.io.File;
+import java.nio.file.Files;
 
 import com.github.jlangch.venice.impl.util.StringUtil;
 
@@ -217,6 +218,32 @@ public class FileEncryptor {
                 return FileEncryptor_ChaCha20_BouncyCastle.isSupported();
             default:
                 throw new RuntimeException("Unsupported algorith '" + algorithm + "'!");
+        }
+    }
+
+    public static boolean identical(
+    		final File file1,
+    		final File file2
+    ) throws Exception {
+        return identical(
+        		Files.readAllBytes(file1.toPath()),
+        		Files.readAllBytes(file1.toPath()));
+    }
+
+    public static boolean identical(
+    		final byte[] buf1,
+    		final byte[] buf2
+    ) throws Exception {
+        if (buf1.length == buf2.length) {
+        	for(int ii=0; ii<buf1.length; ii++) {
+        		if (buf1[ii] != buf2[ii]) {
+        			return false;
+        		}
+        	}
+        	return true;
+        }
+        else {
+        	return false;
         }
     }
 }

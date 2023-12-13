@@ -26,15 +26,10 @@ import java.lang.reflect.Constructor;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 import java.nio.file.Files;
-import java.security.NoSuchAlgorithmException;
 import java.security.SecureRandom;
 import java.security.spec.AlgorithmParameterSpec;
-import java.security.spec.InvalidKeySpecException;
-import java.security.spec.KeySpec;
 
 import javax.crypto.Cipher;
-import javax.crypto.SecretKeyFactory;
-import javax.crypto.spec.PBEKeySpec;
 import javax.crypto.spec.SecretKeySpec;
 
 import com.github.jlangch.venice.impl.util.reflect.ReflectionUtil;
@@ -74,15 +69,9 @@ import com.github.jlangch.venice.impl.util.reflect.ReflectionUtil;
  */
 public class FileEncryptor_ChaCha20 {
 
-	public static boolean isSupported() {
-        try {
-            final Class<?> clazz = ReflectionUtil.classForName("javax.crypto.spec.ChaCha20ParameterSpec");
-            return clazz != null;
-        }
-        catch(Exception ex) {
-            return false;
-        }
-	}
+    public static boolean isSupported() {
+        return supported;
+    }
 
 
     public static void encryptFileWithPassphrase(
@@ -117,18 +106,10 @@ public class FileEncryptor_ChaCha20 {
         byte[] counterData = counterToBytes(counter);
 
         // Derive key from passphrase
-        byte[] key = deriveKeyFromPassphrase(passphrase, salt, 65536, 256);
-
-        // Initialize ChaCha20 Parameters
-        AlgorithmParameterSpec param = createChaCha20ParameterSpec(nonce, counter);
-
-        // Initialize Cipher for ChaCha20
-        Cipher cipher = Cipher.getInstance("ChaCha20");
-        SecretKeySpec keySpec = new SecretKeySpec(key, "ChaCha20");
-        cipher.init(Cipher.ENCRYPT_MODE, keySpec, param);
+        byte[] key = KeyUtil.deriveKeyFromPassphrase(passphrase, salt, 65536, 256);
 
         // Perform Encryption
-        byte[] encryptedData = cipher.doFinal(fileData);
+        byte[] encryptedData = processData(Cipher.ENCRYPT_MODE, fileData, key, nonce, counter);
 
         // Combine salt, nonce, counter, and encrypted data
         byte[] outData = new byte[SALT_LEN + NONCE_LEN + COUNTER_LEN + encryptedData.length];
@@ -167,18 +148,7 @@ public class FileEncryptor_ChaCha20 {
         int counter = new SecureRandom().nextInt();
         byte[] counterData = counterToBytes(counter);
 
-        // Secret key
-        SecretKeySpec keySpec = new SecretKeySpec(key, "ChaCha20");
-
-        // Initialize ChaCha20 Parameters
-        AlgorithmParameterSpec param = createChaCha20ParameterSpec(nonce, counter);
-
-        // Initialize Cipher for ChaCha20
-        Cipher cipher = Cipher.getInstance("ChaCha20");
-        cipher.init(Cipher.ENCRYPT_MODE, keySpec, param);
-
-        // encryption
-        byte[] encryptedData = cipher.doFinal(fileData);
+        byte[] encryptedData = processData(Cipher.ENCRYPT_MODE, fileData, key, nonce, counter);
 
         // Combine salt, nonce, counter, and encrypted data
         byte[] outData = new byte[NONCE_LEN + COUNTER_LEN + encryptedData.length];
@@ -224,18 +194,10 @@ public class FileEncryptor_ChaCha20 {
         int counter = counterToInt(counterBytes);
 
         // Derive key from passphrase
-        byte[] key = deriveKeyFromPassphrase(passphrase, salt, 65536, 256);
-
-        // Initialize ChaCha20 Parameters
-        AlgorithmParameterSpec param = createChaCha20ParameterSpec(nonce, counter);
-
-        // Initialize Cipher for ChaCha20
-        Cipher cipher = Cipher.getInstance("ChaCha20");
-        SecretKeySpec keySpec = new SecretKeySpec(key, "ChaCha20");
-        cipher.init(Cipher.DECRYPT_MODE, keySpec, param);
+        byte[] key = KeyUtil.deriveKeyFromPassphrase(passphrase, salt, 65536, 256);
 
         // Perform Decryption
-        return cipher.doFinal(encryptedData);
+        return processData(Cipher.DECRYPT_MODE, encryptedData, key, nonce, counter);
     }
 
     public static void decryptFileWithKey(
@@ -269,18 +231,7 @@ public class FileEncryptor_ChaCha20 {
 
         int counter = counterToInt(counterBytes);
 
-        // Secret key
-        SecretKeySpec keySpec = new SecretKeySpec(key, "ChaCha20");
-
-        // Initialize ChaCha20 Parameters
-        AlgorithmParameterSpec param = createChaCha20ParameterSpec(nonce, counter);
-
-        // Initialize Cipher for ChaCha20
-        Cipher cipher = Cipher.getInstance("ChaCha20");
-        cipher.init(Cipher.DECRYPT_MODE, keySpec, param);
-
-        // decryption
-        return cipher.doFinal(encryptedData);
+        return processData(Cipher.DECRYPT_MODE, encryptedData, key, nonce, counter);
     }
 
 
@@ -301,32 +252,55 @@ public class FileEncryptor_ChaCha20 {
         }
     }
 
-    private static byte[] deriveKeyFromPassphrase(
-            final String passphrase,
-            final byte[] salt,
-            final int iterationCount,
-            final int keyLength
-    ) throws NoSuchAlgorithmException, InvalidKeySpecException {
-        KeySpec spec = new PBEKeySpec(passphrase.toCharArray(), salt, iterationCount, keyLength);
-        SecretKeyFactory factory = SecretKeyFactory.getInstance("PBKDF2WithHmacSHA256");
-        return factory.generateSecret(spec).getEncoded();
+    private static byte[] processData(
+    		final int mode,
+            final byte[] data,
+            final byte[] key,
+            final byte[] nonce,
+            final int counter
+    ) throws Exception {
+        // Secret key
+        SecretKeySpec keySpec = new SecretKeySpec(key, "ChaCha20");
+
+        // Initialize ChaCha20 Parameters
+        AlgorithmParameterSpec param = createChaCha20ParameterSpec(nonce, counter);
+
+        // Initialize Cipher for ChaCha20
+        Cipher cipher = Cipher.getInstance("ChaCha20");
+        cipher.init(mode, keySpec, param);
+
+        // encryption
+        return cipher.doFinal(data);
     }
 
     private static byte[] counterToBytes(final int counter) {
         // convert int to byte[]
-    	return ByteBuffer.allocate(COUNTER_LEN)
-    	                 .order(ENDIAN)
-    	                 .putInt(counter)
-    	                 .array();
+        return ByteBuffer.allocate(COUNTER_LEN)
+                         .order(ENDIAN)
+                         .putInt(counter)
+                         .array();
     }
 
     private static int counterToInt(final byte[] counter) {
         // convert byte[] to int
-    	return ByteBuffer.wrap(counter)
-    	                 .order(ENDIAN)
+        return ByteBuffer.wrap(counter)
+                         .order(ENDIAN)
                          .getInt(0);
     }
 
+    private static boolean checkSupported() {
+        try {
+            final Class<?> clazz = ReflectionUtil.classForName(
+                                        "javax.crypto.spec.ChaCha20ParameterSpec");
+            return clazz != null;
+        }
+        catch(Exception ex) {
+            return false;
+        }
+    }
+
+
+    private static final boolean supported = checkSupported();
 
     private static ByteOrder ENDIAN = ByteOrder.BIG_ENDIAN; // ensure same byte order on all machines
 
