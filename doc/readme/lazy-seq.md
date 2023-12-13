@@ -171,6 +171,55 @@ An item producing function returning `nil` to make the lazy sequence finite
 Note: The producing function receives the last element as input to produce the next element. The function `#(if (< % 5) (inc %) nil)` produces the elements `1,2,3,4,5` (up to 5). The last input element that matches the expression `(< % 5)` is 4, hence 5 is the last produced element, the function produces elements and is not a filter.
 
 
+## Realizing values with doall vs docoll
+
+**Realizing with doall**
+
+Realizes all the elements of the lazy sequences upfront
+
+```clojure
+(let [q (conj! (queue) 1 2 3 nil)]  
+  (defn f [] 
+    (let [v (poll! q)]
+      (println "Producing " v)
+      v))
+  (docoll #(println "Collecting" %) (doall (lazy-seq f))))
+```
+
+```
+Realizing  1
+Realizing  2
+Realizing  3
+Realizing  nil
+Collecting 1
+Collecting 2
+Collecting 3
+```
+
+**Realizing with docoll**
+
+Realizes all the elements of the lazy sequences element by element
+
+```clojure
+(let [q (conj! (queue) 1 2 3 nil)]  
+  (defn f [] 
+     (let [v (poll! q)]
+       (println "Producing " v)
+       v))
+  (docoll #(println "Collecting" %) (lazy-seq f)))
+```
+
+```
+Realizing  1
+Collecting 1
+Realizing  2
+Collecting 2
+Realizing  3
+Collecting 3
+Realizing  nil
+```
+
+
 ## Implicit Memoization
 
 Remember that elements are just realized once and then memorized for further access

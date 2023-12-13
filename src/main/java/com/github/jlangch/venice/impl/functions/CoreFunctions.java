@@ -2686,7 +2686,7 @@ public class CoreFunctions {
                 else if (args.size() == 1) {
                     if (Types.isVncFunction(args.first())) {
                         // finite/infinite lazy sequence with a supplier function
-                           final VncFunction fn = (VncFunction)args.first();
+                        final VncFunction fn = (VncFunction)args.first();
                         fn.sandboxFunctionCallValidation();
 
                         return VncLazySeq.iterate(fn, Nil);
@@ -8191,18 +8191,28 @@ public class CoreFunctions {
                     .arglists("(docoll f coll)")
                     .doc(
                         "Applies f to the items of the collection presumably for side effects. " +
-                        "Returns nil.")
+                        "Returns nil.\n\n" +
+                        "If coll is a lazy sequence, `docoll` iterates over the lazy sequence " +
+                        "and realizes value by value while calling function f on the realized " +
+                        "values.")
                     .examples(
                         "(docoll #(println %) [1 2 3 4])",
-                        "(docoll \n" +
-                        "    (fn [[k v]] (println (pr-str k v)))  \n" +
-                        "    {:a 1 :b 2 :c 3 :d 4})",
+                        "(docoll (fn [[k v]] (println (pr-str k v)))  \n" +
+                        "        {:a 1 :b 2 :c 3 :d 4})               ",
                         ";; docoll all elements of a queue. calls (take! queue) to get the     \n" +
                         ";; elements of the queue.                                             \n" +
                         ";; note: use nil to mark the end of the queue otherwise docoll will   \n" +
                         ";;       block forever!                                               \n" +
-                        "(let [q (conj! (queue) 1 2 3 nil)]                                    \n" +
-                        "  (docoll println q))                                                 ")
+                        "(let [q (conj! (queue) 1 2 3 nil)]       \n" +
+                        "  (docoll println q))                    ",
+                        ";; lazy sequence                         \n" +
+                        "(let [q (conj! (queue) 1 2 3 nil)]       \n" +
+                        "  (defn f []                             \n" +
+                        "    (let [v (poll! q)]                   \n" +
+                        "      (println \"Producing \" v)         \n" +
+                        "      v))                                \n" +
+                        "  (docoll #(println \"Collecting\" %)    \n" +
+                        "          (lazy-seq f)))                 ")
                     .seeAlso("mapv")
                     .build()
         ) {
