@@ -231,7 +231,6 @@ and they can be used for malicious purposes.
 
 Actions: read file, hash, write file
 
-
 ```
                                         MacBookAir M2, Java 8 (Zulu)
 --------------------------------------------------------------------
