@@ -123,7 +123,7 @@ and memory buffers.
 
 Encrypt all "*.doc" and "*.docx" in a file tree:
 
-```
+```clojure
 (do 
   (load-module :crypt)
   
