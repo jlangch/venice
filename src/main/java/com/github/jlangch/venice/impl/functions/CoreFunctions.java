@@ -6561,18 +6561,27 @@ public class CoreFunctions {
                 "nth",
                 VncFunction
                     .meta()
-                    .arglists("(nth coll idx)")
-                    .doc("Returns the nth element of coll.")
+                    .arglists(
+                    	"(nth coll idx)",
+                    	"(nth coll idx defaultVal)")
+                    .doc(
+                    	"Returns the nth element of coll. \n\n" +
+                    	"Throws an exception if the index does not exist and there " +
+                    	"is no default value passed else returns the default value.")
                     .examples(
                         "(nth nil 1)",
                         "(nth [1 2 3] 1)",
                         "(nth '(1 2 3) 1)",
-                        "(nth \"abc\" 2)")
+                        "(nth \"abc\" 2)",
+                        "(nth nil 1 9)",
+                        "(nth [1 2 3] 6 9)",
+                        "(nth '(1 2 3) 6 9)",
+                        "(nth \"abc\" 6 9)")
                     .build()
         ) {
             @Override
             public VncVal apply(final VncList args) {
-                ArityExceptions.assertArity(this, args, 2);
+                ArityExceptions.assertArity(this, args, 2, 3);
 
                 final int idx = Coerce.toVncLong(args.second()).getValue().intValue();
 
@@ -6581,16 +6590,31 @@ public class CoreFunctions {
                     return Nil;
                 }
 
-                if (Types.isVncSequence(coll)) {
-                    return ((VncSequence)coll).nth(idx);
-                }
-                else if (Types.isVncString(coll)) {
-                    return ((VncString)coll).nth(idx);
+                if (args.size() == 2) {
+	                if (Types.isVncSequence(coll)) {
+	                    return ((VncSequence)coll).nth(idx);
+	                }
+	                else if (Types.isVncString(coll)) {
+	                    return ((VncString)coll).nth(idx);
+	                }
+	                else {
+	                    throw new VncException(String.format(
+	                            "Invalid argument type %s while calling function 'nth'",
+	                            Types.getType(coll)));
+	                }
                 }
                 else {
-                    throw new VncException(String.format(
-                            "Invalid argument type %s while calling function 'nth'",
-                            Types.getType(coll)));
+	                if (Types.isVncSequence(coll)) {
+	                    return ((VncSequence)coll).nthOrDefault(idx, args.third());
+	                }
+	                else if (Types.isVncString(coll)) {
+	                    return ((VncString)coll).nthOrDefault(idx, args.third());
+	                }
+	                else {
+	                    throw new VncException(String.format(
+	                            "Invalid argument type %s while calling function 'nth'",
+	                            Types.getType(coll)));
+	                }
                 }
             }
 

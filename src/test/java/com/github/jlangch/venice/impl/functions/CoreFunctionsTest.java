@@ -3596,6 +3596,10 @@ public class CoreFunctionsTest {
     public void test_nth() {
         final Venice venice = new Venice();
 
+        // without default value
+
+        assertEquals(null, venice.eval("(nth nil 0)"));
+
         assertEquals("#\\1", venice.eval("(pr-str (nth \"1\" 0))"));
         assertEquals("#\\2", venice.eval("(pr-str (nth \"12\" 1))"));
         assertEquals("#\\3", venice.eval("(pr-str (nth \"123\" 2))"));
@@ -3607,6 +3611,23 @@ public class CoreFunctionsTest {
         assertEquals(Long.valueOf(1), venice.eval("(nth [1] 0)"));
         assertEquals(Long.valueOf(2), venice.eval("(nth [1 2] 1)"));
         assertEquals(Long.valueOf(3), venice.eval("(nth [1 2 3] 2)"));
+
+
+        // with default value
+
+        assertEquals(null, venice.eval("(nth nil 0 9)"));
+
+        assertEquals("#\\9", venice.eval("(pr-str (nth \"1\" 6 #\\9))"));
+        assertEquals("#\\9", venice.eval("(pr-str (nth \"12\" 6 #\\9))"));
+        assertEquals("#\\9", venice.eval("(pr-str (nth \"123\" 6 #\\9))"));
+
+        assertEquals(Long.valueOf(9), venice.eval("(nth '(1) 6 9)"));
+        assertEquals(Long.valueOf(9), venice.eval("(nth '(1 2) 6 9)"));
+        assertEquals(Long.valueOf(9), venice.eval("(nth '(1 2 3) 6 9)"));
+
+        assertEquals(Long.valueOf(9), venice.eval("(nth [1] 6 9)"));
+        assertEquals(Long.valueOf(9), venice.eval("(nth [1 2] 6 9)"));
+        assertEquals(Long.valueOf(9), venice.eval("(nth [1 2 3] 6 9)"));
     }
 
     @Test
