@@ -19,8 +19,7 @@ AES and ChaCha20, both with 256 bit keys:
   
 ¹⁾ Recommended by NIST
 
-²⁾ AES256-CBC is regarded as a broken or risky  cryptographic algorithm
-   (CWE-327, CWE-328). Use AES256-GCM in production!
+²⁾ AES256-CBC is regarded as a broken or risky cryptographic algorithm. Use AES256-GCM in production!
    
 ³⁾ only available with Java 11+
 
