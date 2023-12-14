@@ -119,6 +119,28 @@ and memory buffers.
 and memory buffers.
 
 
+### Encrypt a file tree
+
+Encrypt all "*.doc" and "*.docx" in a file tree:
+
+```
+(do 
+  (load-module :crypt)
+  
+  (def dir "/data/docs")
+  
+  (defn encrypted-file-name [f]
+    (io/file (str (io/file-path f) ".enc")))
+  
+  
+  (->> (io/list-file-tree-lazy dir #(io/file-ext? % ".doc" ".docx"))
+       (docoll (crypt/encrypt-file "AES256-GCM" 
+                                   "-passphrase-" 
+                                   %
+                                   (encrypted-file-name %)))))
+```
+
+
 ### Performance
 
 ```
