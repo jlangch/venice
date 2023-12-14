@@ -128,6 +128,7 @@ Encrypt all "*.doc" and "*.docx" in a file tree:
   (load-module :crypt)
   
   (def dir "/data/docs")
+  (def passphrase "-passphrase-")
   
   (defn encrypted-file-name [f]
     (io/file (str (io/file-path f) ".enc")))
@@ -135,13 +136,15 @@ Encrypt all "*.doc" and "*.docx" in a file tree:
   
   (->> (io/list-file-tree-lazy dir #(io/file-ext? % ".doc" ".docx"))
        (docoll (crypt/encrypt-file "AES256-GCM" 
-                                   "-passphrase-" 
+                                   passphrase 
                                    %
                                    (encrypted-file-name %)))))
 ```
 
 
 ### Performance
+
+Actions: read file, encrypt/decrypt, write file
 
 ```
                      MacBookAir M2, Java 8 (Zulu), BouncyCastle 1.77
@@ -225,6 +228,8 @@ and they can be used for malicious purposes.
 
 
 ### Performance
+
+Actions: read file, hash, write file
 
 
 ```
