@@ -143,7 +143,7 @@ Encrypt all "*.doc" and "*.docx" in a file tree:
 
 ### Performance
 
-Actions: read file, encrypt/decrypt, write file
+Test: read file -> encrypt/decrypt -> write file
 
 ```
                      MacBookAir M2, Java 8 (Zulu), BouncyCastle 1.77
@@ -228,7 +228,7 @@ and they can be used for malicious purposes.
 
 ### Performance
 
-Actions: read file, hash, write file
+Test: read file -> hash -> write file
 
 ```
                                         MacBookAir M2, Java 8 (Zulu)
