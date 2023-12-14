@@ -242,7 +242,7 @@ public class FileEncryptor {
     ) throws Exception {
         return identical(
                 Files.readAllBytes(file1.toPath()),
-                Files.readAllBytes(file1.toPath()));
+                Files.readAllBytes(file2.toPath()));
     }
 
     public static boolean identical(
