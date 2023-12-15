@@ -27,46 +27,147 @@
 ;;           standard         double          bold          alpha  
 ;;
 ;;        +---+---+---+   ╔═══╤═══╤═══╗   ┏━━━┯━━━┯━━━┓   ABBBCBBBCBBBD
-;; head   |   |   |   |   ║   │   │   ║   ┃   │   │   ┃   E   M   M   E
-;;        +---+---+---+   ╠═══╪═══╪═══╣   ┣━━━┿━━━┿━━━┫   KGGGJGGGJGGGL
-;; body   |   |   |   |   ║   │   │   ║   ┃   │   │   ┃   E   M   M   E
-;;        +---+---+---+   ╟───┼───┼───╢   ┠───┼───┼───┫   KGGGJGGGJGGGL
-;; body   |   |   |   |   ║   │   │   ║   ┃   │   │   ┃   E   M   M   E
-;;        +---+---+---+   ╠═══╪═══╪═══╣   ┣━━━┿━━━┿━━━┫   KGGGJGGGJGGGL
-;; foot   |   |   |   |   ║   │   │   ║   ┃   │   │   ┃   E   M   M   E
-;;        +---+---+---+   ╚═══╧═══╧═══╝   ┗━━━┷━━━┷━━━┛   NBBBOBBBOBBBP
+;; head   |   |   |   |   ║   │   │   ║   ┃   │   │   ┃   E   F   F   G
+;;        +---+---+---+   ╠═══╪═══╪═══╣   ┣━━━┿━━━┿━━━┫   HIIIJIIIJIIIK
+;; body   |   |   |   |   ║   │   │   ║   ┃   │   │   ┃   L   M   M   N
+;;        +---+---+---+   ╟───┼───┼───╢   ┠───┼───┼───┫   OPPPQPPPQPPPR
+;; body   |   |   |   |   ║   │   │   ║   ┃   │   │   ┃   L   M   M   N
+;;        +---+---+---+   ╠═══╪═══╪═══╣   ┣━━━┿━━━┿━━━┫   STTTUTTTUTTTV
+;; foot   |   |   |   |   ║   │   │   ║   ┃   │   │   ┃   W   X   X   Y
+;;        +---+---+---+   ╚═══╧═══╧═══╝   ┗━━━┷━━━┷━━━┛   Z111211121113
+
 
 ;; https://www.charset.org/utf-8/10
 
+                                 ;[-header--][-body][-footer--]
+                                 ;0   4  7   11 14  18  22 25                      
+(def border-chars                ;|---|--|---|--|---|---|--|---
+  { :none                        "✗✗✗✗✗✗✗✗✗✗✗✗✗✗✗✗✗✗✗✗✗✗✗✗✗✗✗✗✗"
+    :standard                    "+-++|||+-++|||+-+++-++|||+-++"
+    :standard-no-data            "+-++|||+-++|||✗✗✗✗+-++|||+-++"
+    :standard-no-data-no-outside "✗✗✗✗✗|✗✗-+✗✗|✗✗✗✗✗✗-+✗✗|✗✗✗✗✗"
+    :standard-no-outside         "✗✗✗✗✗|✗✗-+✗✗|✗✗-+✗✗-+✗✗|✗✗✗✗✗"
+    :double                      "╔═╤╗║│║╠═╪╣║│║╟─┼╢╠═╪╣║│║╚═╧╝"
+    :bold                        "┏━┯┓┃│┃┣━┿┫┃│┃┠─┼┨┣━┿┫┃│┃┗━┷┛"
+    :alpha                       "ABCDEFGHIJKLMNOPQRSTUVWXYZ123" } )
 
-(def border-chars { :standard  "+-++|+-+++++|++++✗"
-                    :double    "╔═╤╗║╟─┬╢╪╠╣│╚╧╝┼"
-                    :bold      "┏━┯┓┃┠─┬┨┿┣┫│┗┷┛┼"
-                    :alpha     "ABCDEFGHIJKLMNOPQ" } )
 
 (def alignments #{:left :center :right})
 (def overflow #{:newline :clip-left :clip-right :ellipsis-left :ellipsis-right})
 (def modes #{:standard :double :bold :alpha})
 
 (def min-col-width 1)
-(def min-col-width 80)
-
-(def col  { :header        "Name"
-            :footer        "Total"
-            :header-align  :left
-            :data-align    :left
-            :footer-align  :left
-            :overflow      :newline
-            :min-width     1
-            :max-width     20 } )
-
-(defn render [header data footer]
-  )
-
-(defn render [columns data]
-  )
+(def max-col-width 80)
 
 
+(defn 
+  ^{ :arglists '(
+          "(ascii-table/render header data footer padding border-type)"
+          "(ascii-table/render columns data padding)")
+     :doc "Renders an ascii table."
+     :examples (list
+          """
+          (ascii-table/render ["head 1" "head 2"] 
+                              [["1 1" "1 2"]
+                                ["2 1" "2 2"]] 
+                              nil 
+                              :double)
+          """,
+          """
+          (ascii-table/render [{:header "head 1" }
+                               {:header "head 2" }] 
+                              [["1 1" "1 2"]
+                               ["2 1" "2 2"]] 
+                              nil 
+                              :double)
+          """ ) }
+  render 
+
+  ([header data footer padding border-type]
+    (assert (keyword? border-type) "Invalid border type")
+    (assert (some? (border-type border-chars)) "Invalid border type")
+    (render-table (build-columns header data footer) data border-type padding ))
+
+  ([columns data padding]
+    (assert (keyword? border-type) "Invalid border type")
+    (assert (some? (border-type border-chars)) "Invalid border type")
+    render-table columns data border-type padding ))
+
+(defn render-table [columns data border-type padding]
+  (let [columns     (validate-columns columns)
+        col-widths  (map :width columns)
+        padding     (max 0 padding)
+        bc          (let [chars (border-type border-chars)] 
+                      (fn [i] (nth chars i)))]
+    (try-with [sw (io/string-writer)]
+      (when (header? columns)
+        (println sw (render-border colwidths (bc 1) (bc 0) (bc 2) (bc 3)))
+        (println sw (render-row col-widths (map :header columns) (bc 4) (bc 5) (bc 6)))
+        (println sw (render-border col-widths (bc 8) (bc 7) (bc 9) (bc 10))))
+
+      (flush sw)
+      @sw)))
+
+;;    (when-not (header? columns)
+;;      (render-border columns))
+;;
+;;    ;; body
+;;
+;;    (when-not (footer? columns)
+;;      (render-border columns))
+;;
+;;    (when (footer? columns)
+;;      (render-border columns)
+;;      (render-row columns)
+;;      (render-border columns))))
+
+
+
+(defn render-border [col-widths fill left middle right]
+  (render-row col-widths (map #(str/repeat fill %) column-widths) left middle right))
+
+(defn render-row [col-widths data left middle right]
+  (str left (str/join middle data) right))
+
+(defn header? [columns]
+  (pos? (count (filter some? (map :header columns)))))
+
+(defn footer? [columns]
+  (pos? (count (filter (comp nil? not) (map :footer columns)))))
+
+(defn validate-columns [columns]
+  (map validate-column columns))
+
+(defn validate-column [column]
+  (let [min-width (max (:min-width column) min-col-width)
+        max-width (min (:max-width column) max-col-width)
+        width     (:width column)]
+    { :header        (:header column)
+      :footer        (:footer column)
+      :header-align  ((or nil (:header-align column) :left) alignments :left)
+      :data-align    ((or nil (:data-align column) :left) alignments :left)
+      :footer-align  ((or nil (:footer-align column) :left) alignments :left)
+      :overflow      ((or nil (:overflow column) :left) overflow :newline)
+      :min-width     min-width
+      :max-width     max-width
+      :width         (min width (max width min-width) max-width)}))
+
+(defn build-columns [header data footer]
+  (let [cols (max (count header) 
+                  (apply max (map count data))
+                  (count footer))]
+    (map (fn [c] (build-column (nth header c nil)
+                               (nth footer c nil)
+                               (nth data c nil)))
+         (range cols))))
+
+(defn build-column [header footer data]
+  (let [width (max (max-line-length header) 
+                   (max-line-length footer)
+                   (max-line-length data))]
+    { :header        header
+      :footer        footer
+      :width         width }))
 
 (defn format-cell [text rows cols width align overflow padding]
   (-> (str/align width align overflow text)
@@ -85,7 +186,10 @@
     (concat lines (repeat add-count empty-line))))
 
 (defn max-line-length [text]
-  (max 0 (apply max (map count (str/split-lines text)))))
+  (if (sequential? text)
+    (->> (map max-line-length text)
+         (apply max))
+    (max 0 (apply max (map count (str/split-lines text))))))
 
 (defn line-count [text]
   (count (str/split-lines text)))
