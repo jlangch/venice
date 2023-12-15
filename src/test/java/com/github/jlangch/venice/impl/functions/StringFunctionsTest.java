@@ -175,18 +175,22 @@ public class StringFunctionsTest {
         assertEquals("", venice.eval("(str/join nil)"));
         assertEquals("", venice.eval("(str/join \"\" nil)"));
         assertEquals("", venice.eval("(str/join \"-\" nil)"));
+        assertEquals("", venice.eval("(str/join #\\- nil)"));
 
         assertEquals("", venice.eval("(str/join '())"));
         assertEquals("", venice.eval("(str/join \"\" '())"));
         assertEquals("", venice.eval("(str/join \"-\" '())"));
+        assertEquals("", venice.eval("(str/join #\\- '())"));
 
         assertEquals("ab", venice.eval("(str/join '(\"ab\"))"));
         assertEquals("ab", venice.eval("(str/join \"\" '(\"ab\"))"));
         assertEquals("ab", venice.eval("(str/join \"-\" '(\"ab\"))"));
+        assertEquals("ab", venice.eval("(str/join #\\- '(\"ab\"))"));
 
         assertEquals("abcdef", venice.eval("(str/join '(\"ab\" \"cd\" \"ef\"))"));
         assertEquals("abcdef", venice.eval("(str/join \"\" '(\"ab\" \"cd\" \"ef\"))"));
         assertEquals("ab-cd-ef", venice.eval("(str/join \"-\" '(\"ab\" \"cd\" \"ef\"))"));
+        assertEquals("ab-cd-ef", venice.eval("(str/join #\\- '(\"ab\" \"cd\" \"ef\"))"));
 
         assertEquals("abcdef", venice.eval("(str/join (str/chars \"abcdef\"))"));
     }
@@ -332,6 +336,10 @@ public class StringFunctionsTest {
         assertEquals("", venice.eval("(str/repeat \"abc\" 0)"));
         assertEquals("abcabcabc", venice.eval("(str/repeat \"abc\" 3)"));
         assertEquals("abc-abc-abc", venice.eval("(str/repeat \"abc\" 3  \"-\")"));
+
+        assertEquals("", venice.eval("(str/repeat #\\* 0)"));
+        assertEquals("***", venice.eval("(str/repeat #\\* 3)"));
+        assertEquals("*-*-*", venice.eval("(str/repeat #\\* 3 #\\-)"));
     }
 
     @Test

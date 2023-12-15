@@ -908,7 +908,8 @@ public class StringFunctions {
                     .examples(
                         "(str/join [1 2 3])",
                         "(str/join \"-\" [1 2 3])",
-                        "(str/join \"-\" [(char \"a\") 1 \"xyz\" 2.56M])")
+                        "(str/join \"-\" [(char \"a\") 1 \"xyz\" 2.56M])",
+                        "(str/join #\\- [1 2 3])")
                     .build()
         ) {
             @Override
@@ -926,7 +927,11 @@ public class StringFunctions {
                 }
 
 
-                final String delim = args.size() == 1 ? "" : Coerce.toVncString(args.first()).getValue();
+                final String delim = args.size() == 1
+                						? ""
+                						: Types.isVncChar(args.first())
+					    					? Coerce.toVncChar(args.first()).toString()
+					    					: Coerce.toVncString(args.first()).getValue();
 
                 return new VncString(
                             coll.stream()
@@ -1889,7 +1894,10 @@ public class StringFunctions {
                     .examples(
                         "(str/repeat \"abc\" 0)",
                         "(str/repeat \"abc\" 3)",
-                        "(str/repeat \"abc\" 3 \"-\")")
+                        "(str/repeat \"abc\" 3 \"-\")",
+                        "(str/repeat #\\* 0)",
+                        "(str/repeat #\\* 3)",
+                        "(str/repeat #\\* 3 #\\-)")
                     .build()
         ) {
             @Override
@@ -1900,9 +1908,15 @@ public class StringFunctions {
                     return Nil;
                 }
 
-                final String s = Coerce.toVncString(args.first()).getValue();
+                final String s = Types.isVncChar(args.first())
+                					? Coerce.toVncChar(args.first()).toString()
+                					: Coerce.toVncString(args.first()).getValue();
                 final int times = Coerce.toVncLong(args.second()).getValue().intValue();
-                final String sep = args.size() == 3 ? Coerce.toVncString(args.nth(2)).getValue() : "";
+                final String sep = args.size() == 3
+                					? Types.isVncChar(args.third())
+                        				? Coerce.toVncChar(args.third()).toString()
+                        				: Coerce.toVncString(args.third()).getValue()
+                					: "";
 
                 final StringBuilder sb = new StringBuilder();
                 for(int ii=0; ii<times; ii++) {
