@@ -48,7 +48,7 @@
     :standard-no-outside         "•••••|••-+••|••-+••-+••|•••••"
     :double                      "╔═╤╗║│║╠═╪╣║│║╟─┼╢╠═╪╣║│║╚═╧╝"
     :bold                        "┏━┯┓┃│┃┣━┿┫┃│┃┠─┼┨┣━┿┫┃│┃┗━┷┛"
-    :alpha                       "ABCDEFGHIJKLMNOPQRSTUVWXYZ123" } )
+    :alpha                       "ABCDEFGHIJKLMNOPQRSTUVWXYZ123" })
 
 
 (def alignments #{:left :center :right})
