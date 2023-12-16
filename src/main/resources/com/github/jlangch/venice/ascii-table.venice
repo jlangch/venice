@@ -108,6 +108,11 @@
         (docoll #(println sw %) (render-data-rows columns :header padding (header-cells columns) (bc 4) (bc 5) (bc 6)))
         (println sw (render-border-row columns padding (bc 8) (bc 7) (bc 9) (bc 10))))
 
+      (when (footer? columns)
+        (println sw (render-border-row columns padding (bc 19) (bc 18) (bc 20) (bc 21)))
+        (docoll #(println sw %) (render-data-rows columns :footer padding (footer-cells columns) (bc 22) (bc 23) (bc 24)))
+        (println sw (render-border-row columns padding (bc 26) (bc 25) (bc 27) (bc 28))))
+
       (flush sw)
       @sw)))
 
@@ -177,7 +182,7 @@
   (pos? (count (filter some? (map :header columns)))))
 
 (defn footer? [columns]
-  (pos? (count (filter (comp nil? not) (map :footer columns)))))
+  (pos? (count (filter some? (map :footer columns)))))
 
 (defn build-columns [header data footer]
   (let [cols (max (count header) 
