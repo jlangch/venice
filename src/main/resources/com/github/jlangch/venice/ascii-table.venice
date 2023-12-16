@@ -88,14 +88,14 @@
   render 
 
   ([header data footer border padding]
-    (assert (keyword? border) "Invalid border")
-    (assert (some? (border border-chars)) "Invalid border")
-    (render-table (build-columns header data footer) data border padding ))
+    (assert (keyword? border) (str "Invalid border. Use one of " borders))
+    (assert (some? (border border-chars)) (str "Invalid border. Use one of " borders))
+    (render-table (build-columns header data footer) data border padding))
 
   ([columns data border padding]
-    (assert (keyword? border) "Invalid border")
-    (assert (some? (border border-chars)) "Invalid border")
-    render-table columns data border padding ))
+    (assert (keyword? border) (str "Invalid border. Use one of " borders))
+    (assert (some? (border border-chars)) (str "Invalid border. Use one of " borders))
+    (render-table columns data border padding)))
 
 (defn render-table [columns data border padding]
   (let [columns     (map validate-column columns)
@@ -103,11 +103,20 @@
         bc          (let [chars ((validate-border border) border-chars)] 
                       (fn [i] (nth chars i)))]
     (try-with [sw (io/string-writer)]
+      ;; header
       (when (header? columns)
         (println sw (render-border-row columns padding (bc 1) (bc 0) (bc 2) (bc 3)))
         (docoll #(println sw %) (render-data-rows columns :header padding (header-cells columns) (bc 4) (bc 5) (bc 6)))
         (println sw (render-border-row columns padding (bc 8) (bc 7) (bc 9) (bc 10))))
 
+      ;; body
+      (let [body-border (render-border-row columns padding (bc 15) (bc 14) (bc 16) (bc 17))]
+        (->> (map #(render-data-rows columns :body padding % (bc 11) (bc 12) (bc 13)) data)
+             (interpose body-border)
+             (flatten)
+             (docoll #(println sw %))))
+     
+      ;; footer
       (when (footer? columns)
         (println sw (render-border-row columns padding (bc 19) (bc 18) (bc 20) (bc 21)))
         (docoll #(println sw %) (render-data-rows columns :footer padding (footer-cells columns) (bc 22) (bc 23) (bc 24)))
@@ -115,21 +124,6 @@
 
       (flush sw)
       @sw)))
-
-;;    (when-not (header? columns)
-;;      (render-border columns))
-;;
-;;    ;; body
-;;
-;;    (when-not (footer? columns)
-;;      (render-border columns))
-;;
-;;    (when (footer? columns)
-;;      (render-border columns)
-;;      (render-row columns)
-;;      (render-border columns))))
-
-
 
 (defn render-border-row [columns padding fill left middle right]
   (let [col-widths (map :width columns)
