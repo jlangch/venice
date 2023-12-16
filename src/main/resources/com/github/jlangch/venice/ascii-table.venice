@@ -53,11 +53,13 @@
 
 
 (def alignments #{:left :center :right})
-(def overflow #{:newline :clip-left :clip-right :ellipsis-left :ellipsis-right})
-(def modes #{:standard :double :bold :alpha})
+(def overflows #{:newline :clip-left :clip-right :ellipsis-left :ellipsis-right})
+(def borders (into #{} (keys border-chars)))
 
 (def min-col-width 1)
 (def max-col-width 80)
+(def min-padding  0)
+(def max-padding 10)
 
 
 (defn 
@@ -71,39 +73,40 @@
                               [["1 1" "1 2"]
                                 ["2 1" "2 2"]] 
                               nil 
-                              :double)
+                              :double
+                              1)
           """,
           """
-          (ascii-table/render [{:header "head 1" }
-                               {:header "head 2" }] 
+          (ascii-table/render [{:header {:text "head 1"}}
+                               {:header {:text "head 2"}}] 
                               [["1 1" "1 2"]
                                ["2 1" "2 2"]] 
                               nil 
-                              :double)
+                              :double
+                              1)
           """ ) }
   render 
 
-  ([header data footer padding border-type]
-    (assert (keyword? border-type) "Invalid border type")
-    (assert (some? (border-type border-chars)) "Invalid border type")
-    (render-table (build-columns header data footer) data border-type padding ))
+  ([header data footer border padding]
+    (assert (keyword? border) "Invalid border")
+    (assert (some? (border border-chars)) "Invalid border")
+    (render-table (build-columns header data footer) data border padding ))
 
-  ([columns data padding]
-    (assert (keyword? border-type) "Invalid border type")
-    (assert (some? (border-type border-chars)) "Invalid border type")
-    render-table columns data border-type padding ))
+  ([columns data border padding]
+    (assert (keyword? border) "Invalid border")
+    (assert (some? (border border-chars)) "Invalid border")
+    render-table columns data border padding ))
 
-(defn render-table [columns data border-type padding]
-  (let [columns     (validate-columns columns)
-        col-widths  (map :width columns)
-        padding     (max 0 padding)
-        bc          (let [chars (border-type border-chars)] 
+(defn render-table [columns data border padding]
+  (let [columns     (map validate-column columns)
+        padding     (min-max min-padding max-padding padding)
+        bc          (let [chars ((validate-border border) border-chars)] 
                       (fn [i] (nth chars i)))]
     (try-with [sw (io/string-writer)]
       (when (header? columns)
-        (println sw (render-border colwidths (bc 1) (bc 0) (bc 2) (bc 3)))
-        (println sw (render-row col-widths (map :header columns) (bc 4) (bc 5) (bc 6)))
-        (println sw (render-border col-widths (bc 8) (bc 7) (bc 9) (bc 10))))
+        (println sw (render-border-row columns padding (bc 1) (bc 0) (bc 2) (bc 3)))
+        (docoll #(println sw %) (render-data-rows columns padding (header-cells columns) (bc 4) (bc 5) (bc 6)))
+        (println sw (render-border-row columns padding (bc 8) (bc 7) (bc 9) (bc 10))))
 
       (flush sw)
       @sw)))
@@ -123,34 +126,47 @@
 
 
 
-(defn render-border [col-widths fill left middle right]
-  (render-row col-widths (map #(str/repeat fill %) column-widths) left middle right))
+(defn render-border-row [columns padding fill left middle right]
+  (let [col-widths (map :width columns)
+        pad        (str/repeat fill padding)]
+    (render-row (map #(str/repeat fill %) col-widths) 
+                (str left pad) (str pad middle pad) (str pad right))))
 
-(defn render-row [col-widths data left middle right]
-  (str left (str/join middle data) right))
+(defn render-data-rows [columns padding cells left middle right]
+  (let [col-widths     (map :width columns)
+        pad            (str/repeat " " padding)
+                       ;; align horizontal cell count
+        cells          (sublist cells 0 (count columns))  
+        add-cell-count (max 0 (- (count columns) (count cells)))
+        cells          (concat cells (repeat add-cell-count [ "" ]))
+                       ;; format cell
+        cells          (map-indexed (fn [i v] 
+                                      (let [col (nth columns i)]
+                                        (str/align (:width col) 
+                                                   (-> col :header :align) 
+                                                   (-> col :header :overflow)  
+                                                   v))) 
+                                    cells)
+                       ;; align cell lines
+        cells          (map str/split-lines cells)
+        max-lines      (apply max (map count cells))
+        cells          (map-indexed (fn [i v] 
+                                      (let [width (:width (nth columns i))]
+                                        (concat v (repeat (max 0 (- max-lines (count v))) 
+                                                          (str/repeat " " width)))))
+                                    cells)]
+    (map (fn [linenr]
+           (render-row (map #(nth % linenr) cells) (str left pad) (str pad middle pad) (str pad right)))
+         (range max-lines))))
+
+(defn render-row [cells left middle right]
+  (str left (str/join middle cells) right))
 
 (defn header? [columns]
   (pos? (count (filter some? (map :header columns)))))
 
 (defn footer? [columns]
   (pos? (count (filter (comp nil? not) (map :footer columns)))))
-
-(defn validate-columns [columns]
-  (map validate-column columns))
-
-(defn validate-column [column]
-  (let [min-width (max (:min-width column) min-col-width)
-        max-width (min (:max-width column) max-col-width)
-        width     (:width column)]
-    { :header        (:header column)
-      :footer        (:footer column)
-      :header-align  ((or nil (:header-align column) :left) alignments :left)
-      :data-align    ((or nil (:data-align column) :left) alignments :left)
-      :footer-align  ((or nil (:footer-align column) :left) alignments :left)
-      :overflow      ((or nil (:overflow column) :left) overflow :newline)
-      :min-width     min-width
-      :max-width     max-width
-      :width         (min width (max width min-width) max-width)}))
 
 (defn build-columns [header data footer]
   (let [cols (max (count header) 
@@ -165,19 +181,13 @@
   (let [width (max (max-line-length header) 
                    (max-line-length footer)
                    (max-line-length data))]
-    { :header        header
-      :footer        footer
+    { :header        { :text header }
+      :footer        { :text footer }
       :width         width }))
 
 (defn format-cell [text rows cols width align overflow padding]
   (-> (str/align width align overflow text)
-      (expand-lines rows cols)
-      (pad-lines padding)))
-
-(defn pad-lines [text padding]
-  (let [lines    (str/split-lines text)
-        pad-str  (str/repeat " " padding)]
-   (apply str (map #(str pad-str % pad-str) lines))))
+      (expand-lines rows cols)))
 
 (defn expand-lines [text total-lines width]
   (let [lines       (str/split-lines text)
@@ -196,6 +206,41 @@
 
 (defn ends-with-lf [text]
   (str/ends-with? text *newline*))
+
+(defn min-max [min-val max-val val]
+  (min val (max val min-val) max-val))
+
+(defn header-cells [columns]
+  (map #(-> % :header :text) columns))
+
+(defn footer-cells [columns]
+  (map #(-> % :footer :text) columns))
+
+(defn validate-column [column]
+  (let [column    (or column {})
+        min-width (max (:min-width column) min-col-width)
+        max-width (min (:max-width column) max-col-width)
+        width     (:width column)]
+    { :header    {:text     (or (-> column :header :text) "")
+                  :align    (validate-align (-> column :header :align))
+                  :overflow (validate-overflow (-> column :header :overflow))}
+      :body      {:align    (validate-align (-> column :body :align))
+                  :overflow (validate-overflow (-> column :body :overflow))}
+      :footer    {:text     (or (-> column :footer :text) "")
+                  :align    (validate-align (-> column :footer :align))
+                  :overflow (validate-overflow (-> column :footer :overflow))}                   
+      :min-width min-width
+      :max-width max-width
+      :width     (min-max min-width max-width width) }))
+
+(defn validate-align [align]
+  (if (keyword? align) (align alignments :left) :left))
+
+(defn validate-overflow [overflow]
+  (if (keyword? overflow) (overflow overflows :newline) :newline))
+
+(defn validate-border [border]
+  (if (keyword? border) (border borders :double) :double))
 
 (defn print-debug-text [text]
   (docoll #(println (str "⏵" % "⏴")) 
