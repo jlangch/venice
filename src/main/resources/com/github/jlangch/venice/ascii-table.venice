@@ -71,7 +71,7 @@
           """
           (ascii-table/render ["head 1" "head 2"] 
                               [["1 1" "1 2"]
-                                ["2 1" "2 2"]] 
+                               ["2 1" "2 2"]] 
                               nil 
                               :double
                               1)
@@ -81,7 +81,6 @@
                                {:header {:text "head 2"}}] 
                               [["1 1" "1 2"]
                                ["2 1" "2 2"]] 
-                              nil 
                               :double
                               1)
           """ ) }
