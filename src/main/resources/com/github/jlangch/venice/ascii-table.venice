@@ -39,14 +39,13 @@
 
 ;; https://www.charset.org/utf-8/10
 
-                                 ;[-header--][-body][-footer--]
                                  ;0   4  7   11 14  18  22 25                      
 (def border-chars                ;|---|--|---|--|---|---|--|---
-  { :none                        "✗✗✗✗✗✗✗✗✗✗✗✗✗✗✗✗✗✗✗✗✗✗✗✗✗✗✗✗✗"
+  { :none                        "•••••••••••••••••••••••••••••"
     :standard                    "+-++|||+-++|||+-+++-++|||+-++"
-    :standard-no-data            "+-++|||+-++|||✗✗✗✗+-++|||+-++"
-    :standard-no-data-no-outside "✗✗✗✗✗|✗✗-+✗✗|✗✗✗✗✗✗-+✗✗|✗✗✗✗✗"
-    :standard-no-outside         "✗✗✗✗✗|✗✗-+✗✗|✗✗-+✗✗-+✗✗|✗✗✗✗✗"
+    :standard-no-data            "+-++|||+-++|||••••+-++|||+-++"
+    :standard-no-data-no-outside "•••••|••-+••|••••••-+••|•••••"
+    :standard-no-outside         "•••••|••-+••|••-+••-+••|•••••"
     :double                      "╔═╤╗║│║╠═╪╣║│║╟─┼╢╠═╪╣║│║╚═╧╝"
     :bold                        "┏━┯┓┃│┃┣━┿┫┃│┃┠─┼┨┣━┿┫┃│┃┗━┷┛"
     :alpha                       "ABCDEFGHIJKLMNOPQRSTUVWXYZ123" } )
@@ -97,32 +96,46 @@
     (render-table columns data border padding)))
 
 (defn render-table [columns data border padding]
-  (let [columns     (map validate-column columns)
-        padding     (min-max min-padding max-padding padding)
-        bc          (let [chars ((validate-border border) border-chars)] 
-                      (fn [i] (nth chars i)))]
-    (try-with [sw (io/string-writer)]
+  (->> (render-table-rows columns data border padding)
+       (flatten)
+       (map #(if (or (empty? %) (match? % #"[ ]+$")) nil %))
+       (filter some?)
+       (str/join "\n")))
+
+(defn render-table-rows [columns data border padding]
+  (let [columns      (map validate-column columns)
+        padding      (min-max min-padding max-padding padding)
+        border       (validate-border border)
+        bc           (let [chars (border border-chars)] 
+                       (fn [i] (let [c (str (nth chars i))] 
+                                 (if (= "•" c) "" c))))]
+    [
       ;; header
+      (render-border-row columns padding (bc 1) (bc 0) (bc 2) (bc 3))     
       (when (header? columns)
-        (println sw (render-border-row columns padding (bc 1) (bc 0) (bc 2) (bc 3)))
-        (docoll #(println sw %) (render-data-rows columns :header padding (header-cells columns) (bc 4) (bc 5) (bc 6)))
-        (println sw (render-border-row columns padding (bc 8) (bc 7) (bc 9) (bc 10))))
+        (conj
+          (render-data-rows columns :header padding (header-cells columns) 
+                                                    (bc 4) (bc 5) (bc 6))
+          (render-border-row columns padding (bc 8) (bc 7) (bc 9) (bc 10))))
 
       ;; body
-      (let [body-border (render-border-row columns padding (bc 15) (bc 14) (bc 16) (bc 17))]
-        (->> (map #(render-data-rows columns :body padding % (bc 11) (bc 12) (bc 13)) data)
-             (interpose body-border)
-             (flatten)
-             (docoll #(println sw %))))
+      (when (not-empty? data)
+        (let [body-border (render-border-row columns padding 
+                                             (bc 15) (bc 14) (bc 16) (bc 17))]
+          (->> (map #(render-data-rows columns :body padding % 
+                                       (bc 11) (bc 12) (bc 13)) 
+                    data)
+              (interpose body-border)
+              (flatten))))
      
       ;; footer
       (when (footer? columns)
-        (println sw (render-border-row columns padding (bc 19) (bc 18) (bc 20) (bc 21)))
-        (docoll #(println sw %) (render-data-rows columns :footer padding (footer-cells columns) (bc 22) (bc 23) (bc 24)))
-        (println sw (render-border-row columns padding (bc 26) (bc 25) (bc 27) (bc 28))))
-
-      (flush sw)
-      @sw)))
+        (cons
+          (render-border-row columns padding (bc 19) (bc 18) (bc 20) (bc 21))
+          (render-data-rows columns :footer padding (footer-cells columns) 
+                                                    (bc 22) (bc 23) (bc 24))))
+      (render-border-row columns padding (bc 26) (bc 25) (bc 27) (bc 28))
+    ]))
 
 (defn render-border-row [columns padding fill left middle right]
   (let [col-widths (map :width columns)
@@ -160,7 +173,7 @@
                               (-> col section :align) 
                               (-> col section :overflow)  
                               v))) 
-                 cells))        
+               cells))        
 
 (defn adjust-row-cells-height [columns cells]
   (let [cells      (map str/split-lines cells)
@@ -169,7 +182,7 @@
                    (let [width (:width (nth columns i))]
                       (concat v (repeat (max 0 (- max-lines (count v))) 
                                         (str/repeat " " width)))))
-                  cells)))
+                 cells)))
 
 (defn header? [columns]
   (pos? (count (filter some? (map :header columns)))))
