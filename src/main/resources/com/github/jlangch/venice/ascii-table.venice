@@ -189,7 +189,7 @@
         left       (str left pad)
         middle     (str pad middle pad)
         right      (str pad right)]
-    (->> (apply map vector cells)  ;; reorder cell lines
+    (->> (transpose cells)  ;; cell matrix transpose
          (map #(render-row % left middle right)))))
 
 (defn render-row [cells left middle right]
@@ -308,6 +308,9 @@
                or a string with 29 custom border characters!
                """))))
  
+(defn transpose [matrix]
+  (apply map vector matrix))
+
 (defn print-debug-text [text]
   (docoll #(println (str "⏵" % "⏴")) 
           (if (coll? text) text (str/split-lines text))))
