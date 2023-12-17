@@ -10,7 +10,7 @@ All notable changes to this project will be documented in this file.
 
 ### Added 
 
-- ...
+- module :ascii-table for creating and customizing simple ASCII tables
 
 
 
