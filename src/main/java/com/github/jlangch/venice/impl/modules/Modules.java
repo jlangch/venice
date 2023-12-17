@@ -78,6 +78,7 @@ public class Modules {
                         "jsonl",
                         "kira",
                         "math",
+                        "matrix",
                         "maven",
                         "mercator",
                         "mimetypes",
