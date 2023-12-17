@@ -40,6 +40,7 @@ import com.github.jlangch.venice.impl.RunMode;
 import com.github.jlangch.venice.impl.VeniceInterpreter;
 import com.github.jlangch.venice.impl.docgen.cheatsheet.modules.ModuleAnsiSection;
 import com.github.jlangch.venice.impl.docgen.cheatsheet.modules.ModuleAppSection;
+import com.github.jlangch.venice.impl.docgen.cheatsheet.modules.ModuleAsciiTableSection;
 import com.github.jlangch.venice.impl.docgen.cheatsheet.modules.ModuleBenchmarkSection;
 import com.github.jlangch.venice.impl.docgen.cheatsheet.modules.ModuleCargoArangoDBSection;
 import com.github.jlangch.venice.impl.docgen.cheatsheet.modules.ModuleCargoSection;
@@ -119,13 +120,14 @@ public class DocGenerator {
 
         preloadedModules
             .addAll(Arrays.asList(
-                        "app",      "xml",      "crypt",     "gradle",
-                        "trace",    "ansi",     "maven",     "kira",
-                        "java",     "semver",   "excel",     "hexdump",
-                        "shell",    "geoip",    "benchmark", "component",
-                        "config",   "parsifal", "grep",      "test",
-                        "fonts",    "qrref",    "jsonl",     "timing",
-                        "zipvault", "docker",   "cargo",     "cargo-arangodb"));
+                        "app",        "xml",       "crypt",      "gradle",
+                        "trace",      "ansi",      "maven",      "kira",
+                        "java",       "semver",    "excel",      "hexdump",
+                        "shell",      "geoip",     "benchmark",  "component",
+                        "config",     "parsifal",  "grep",       "test",
+                        "fonts",      "qrref",     "jsonl",      "timing",
+                        "zipvault",   "docker",    "cargo",      "cargo-arangodb",
+                        "ascii-table"));
 
         final IVeniceInterpreter venice = new VeniceInterpreter(new AcceptAllInterceptor());
 
@@ -312,6 +314,7 @@ public class DocGenerator {
         extmod.addSection(new DocSection("Grep", "modules.grep"));
         extmod.addSection(new DocSection("Fonts", "modules.fonts"));
         extmod.addSection(new DocSection("Cryptography", "modules.cryptography"));
+        extmod.addSection(new DocSection("AsciiTable", "modules.asciitable"));
         extmod.addSection(new DocSection("Java", "modules.java"));
         extmod.addSection(new DocSection("Hexdump", "modules.hexdump"));
         extmod.addSection(new DocSection("Shell", "modules.shell"));
@@ -428,7 +431,8 @@ public class DocGenerator {
                 new ModuleBenchmarkSection(diBuilder).section(),
                 new ModuleTimingSection(diBuilder).section(),
 		        new ModuleGrepSection(diBuilder).section(),
-		        new ModuleQrRefSection(diBuilder).section());
+		        new ModuleQrRefSection(diBuilder).section(),
+		        new ModuleAsciiTableSection(diBuilder).section());
     }
 
     private List<DocItem> getDocItems(final List<DocSection> sections) {

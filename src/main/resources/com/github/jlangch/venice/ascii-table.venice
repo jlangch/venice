@@ -46,10 +46,10 @@
     :standard-no-data            "+-++|||+-++|||••••+-++|||+-++"
     :standard-no-data-no-outside "•••••|••-+••|••••••-+••|•••••"
     :standard-no-outside         "•••••|••-+••|••-+••-+••|•••••"
-    :standard-simple             "----•••----•••••••----•••----"
+    :standard-minimal            "----•••----•••••••----•••----"
     :double                      "╔═╤╗║│║╠═╪╣║│║╟─┼╢╠═╪╣║│║╚═╧╝"
     :bold                        "┏━┯┓┃│┃┣━┿┫┃│┃┠─┼┨┣━┿┫┃│┃┗━┷┛"
-    :fashion                     "────•••────•••••••────•••────"
+    :minimal                     "────•••────•••••••────•••────"
     :alpha                       "ABCDEFGHIJKLMNOPQRSTUVWXYZ123" })
 
 
@@ -72,9 +72,8 @@
           """
           (do
             (load-module :ascii-table)
-            (println (ascii-table/render ["head 1" "head 2"] 
-                                         [["1 1" "1 2"]
-                                          ["2 1" "2 2"]] 
+            (println (ascii-table/render nil 
+                                         [["1 1" "1 2"] ["2 1" "2 2"]] 
                                          nil 
                                          :standard
                                          1)))
@@ -82,12 +81,42 @@
           """
           (do
             (load-module :ascii-table)
-            (println (ascii-table/render [{:header {:text "head 1"}
-                                           :width  6}
-                                          {:header {:text "head 2"}
-                                           :width  6}] 
-                                         [["1 1" "1 2"]
-                                          ["2 1" "2 2"]] 
+            (println (ascii-table/render ["head 1" "head 2"] 
+                                         [["1 1" "1 2"] ["2 1" "2 2"]] 
+                                         ["foot 1" "foot 2"] 
+                                         :standard
+                                         1)))
+          """,
+          """
+          (do
+            (load-module :ascii-table)
+            (println (ascii-table/render [{:width  6} {:width  6}] 
+                                         [["1 1" "1 2"] ["2 1" "2 2"]] 
+                                         :double
+                                         1)))
+          """,
+          """
+          (do
+            (load-module :ascii-table)
+            (println (ascii-table/render [{:header {:text "head 1"
+                                                    :align :left
+                                                    :overflow :newline }
+                                           :footer {:text "4"
+                                                    :align :left
+                                                    :overflow :newline}
+                                           :body   {:align :left
+                                                    :overflow :newline}
+                                           :width  8}
+                                          {:header {:text "head 2"
+                                                    :align :right
+                                                    :overflow :newline}
+                                           :footer {:text "6"
+                                                    :align :right
+                                                    :overflow :newline}
+                                           :body   {:align :right
+                                                    :overflow :newline}
+                                           :width  8}] 
+                                         [["1" "2"] ["3" "4"]] 
                                          :double
                                          1)))
           """ ) }
