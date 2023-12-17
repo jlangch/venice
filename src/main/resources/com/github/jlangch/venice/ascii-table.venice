@@ -46,8 +46,10 @@
     :standard-no-data            "+-++|||+-++|||••••+-++|||+-++"
     :standard-no-data-no-outside "•••••|••-+••|••••••-+••|•••••"
     :standard-no-outside         "•••••|••-+••|••-+••-+••|•••••"
+    :standard-simple             "----•••----•••••••----•••----"
     :double                      "╔═╤╗║│║╠═╪╣║│║╟─┼╢╠═╪╣║│║╚═╧╝"
     :bold                        "┏━┯┓┃│┃┣━┿┫┃│┃┠─┼┨┣━┿┫┃│┃┗━┷┛"
+    :fashion                     "────•••────•••••••────•••────"
     :alpha                       "ABCDEFGHIJKLMNOPQRSTUVWXYZ123" })
 
 
@@ -63,36 +65,45 @@
 
 (defn 
   ^{ :arglists '(
-          "(ascii-table/render header data footer padding border-type)"
-          "(ascii-table/render columns data padding)")
+          "(ascii-table/render header data footer border padding)"
+          "(ascii-table/render columns data border padding)")
      :doc "Renders an ascii table."
      :examples (list
           """
-          (ascii-table/render ["head 1" "head 2"] 
-                              [["1 1" "1 2"]
-                               ["2 1" "2 2"]] 
-                              nil 
-                              :double
-                              1)
+          (do
+            (load-module :ascii-table)
+            (println (ascii-table/render ["head 1" "head 2"] 
+                                         [["1 1" "1 2"]
+                                          ["2 1" "2 2"]] 
+                                         nil 
+                                         :standard
+                                         1)))
           """,
           """
-          (ascii-table/render [{:header {:text "head 1"}}
-                               {:header {:text "head 2"}}] 
-                              [["1 1" "1 2"]
-                               ["2 1" "2 2"]] 
-                              :double
-                              1)
+          (do
+            (load-module :ascii-table)
+            (println (ascii-table/render [{:header {:text "head 1"}
+                                           :width  6}
+                                          {:header {:text "head 2"}
+                                           :width  6}] 
+                                         [["1 1" "1 2"]
+                                          ["2 1" "2 2"]] 
+                                         :double
+                                         1)))
           """ ) }
   render 
 
   ([header data footer border padding]
-    (assert (keyword? border) (str "Invalid border. Use one of " borders))
-    (assert (some? (border border-chars)) (str "Invalid border. Use one of " borders))
+    (assert (or (nil? header) (sequential? header)) "header must be a list or a vector of strings")
+    (assert (sequential? data) "data must be a 2 dimensional sequence of strings")
+    (assert (or (nil? footer) (sequential? footer)) "footer must be a list or a vector of strings")
+    (assert (long? padding) "padding must be a long")
     (render-table (build-columns header data footer) data border padding))
 
   ([columns data border padding]
-    (assert (keyword? border) (str "Invalid border. Use one of " borders))
-    (assert (some? (border border-chars)) (str "Invalid border. Use one of " borders))
+    (assert (sequential? columns) "columns must be a sequence of maps")
+    (assert (sequential? data) "data must be a 2 dimensional sequence of strings")
+    (assert (long? padding) "padding must be a long")
     (render-table columns data border padding)))
 
 (defn render-table [columns data border padding]
@@ -103,12 +114,11 @@
        (str/join "\n")))
 
 (defn render-table-rows [columns data border padding]
-  (let [columns      (map validate-column columns)
-        padding      (min-max min-padding max-padding padding)
-        border       (validate-border border)
-        bc           (let [chars (border border-chars)] 
-                       (fn [i] (let [c (str (nth chars i))] 
-                                 (if (= "•" c) "" c))))]
+  (let [columns (map validate-column columns)
+        padding (min-max min-padding max-padding padding)
+        border  (validate-border border)
+        bc      (fn [i] (let [c (str (nth border i))] 
+                  (if (= "•" c) "" c)))]
     [
       ;; header
       (render-border-row columns padding (bc 1) (bc 0) (bc 2) (bc 3))     
@@ -144,12 +154,12 @@
                 (str left pad) (str pad middle pad) (str pad right))))
 
 (defn render-data-rows [columns section padding cells left middle right]
-  (let [col-widths     (map :width columns)
-        pad            (str/repeat " " padding)
-        cells          (format-row columns section cells)
-        left           (str left pad)
-        middle         (str pad middle pad)
-        right          (str pad right)]
+  (let [col-widths (map :width columns)
+        pad        (str/repeat " " padding)
+        cells      (format-row columns section cells)
+        left       (str left pad)
+        middle     (str pad middle pad)
+        right      (str pad right)]
     (->> (apply map vector cells)  ;; reorder cell lines
          (map #(render-row % left middle right)))))
 
@@ -185,10 +195,10 @@
                  cells)))
 
 (defn header? [columns]
-  (pos? (count (filter some? (map :header columns)))))
+  (->> (header-cells columns) (filter not-empty?) not-empty?))
 
 (defn footer? [columns]
-  (pos? (count (filter some? (map :footer columns)))))
+  (->> (footer-cells columns) (filter not-empty?) not-empty?))
 
 (defn build-columns [header data footer]
   (let [cols (max (count header) 
@@ -203,8 +213,8 @@
   (let [width (max (max-line-length header) 
                    (max-line-length footer)
                    (max-line-length data))]
-    { :header        { :text header }
-      :footer        { :text footer }
+    { :header        { :text (or header "") }
+      :footer        { :text (or footer "") }
       :width         width }))
 
 (defn max-line-length [text]
@@ -252,8 +262,23 @@
   (if (keyword? overflow) (overflow overflows :newline) :newline))
 
 (defn validate-border [border]
-  (if (keyword? border) (border borders :double) :double))
-
+  (case (type border)
+    :core/keyword (let [chars  (border border-chars)]
+                    (when (nil? chars)
+                      (throw (ex :VncException 
+                                  (str "Invalid border type. Use one of " borders))))
+                    chars)           
+    :core/string  (let [chars  border]
+                    (when-not (= 29 (count chars))
+                      (throw (ex :VncException 
+                                  (str "Invalid custom border. Must have 29 chars"))))
+                    chars)
+    (throw (ex :VncException 
+               """
+               Invalid border. Pass a keyword like :standard, :double, :bold 
+               or a string with 29 custom border characters!
+               """))))
+ 
 (defn print-debug-text [text]
   (docoll #(println (str "⏵" % "⏴")) 
           (if (coll? text) text (str/split-lines text))))
