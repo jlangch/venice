@@ -1485,7 +1485,10 @@ public class MathFunctions {
                     .examples(
                         "(rand-long)",
                         "(rand-long 100)")
-                    .seeAlso("rand-double", "rand-gaussian")
+                    .seeAlso(
+                    	"rand-double",
+                    	"rand-gaussian",
+                    	"bytebuf-allocate-random")
                     .build()
         ) {
             @Override
@@ -1524,7 +1527,10 @@ public class MathFunctions {
                     .examples(
                         "(rand-double)",
                         "(rand-double 100.0)")
-                    .seeAlso("rand-long", "rand-gaussian")
+                    .seeAlso(
+                    	"rand-long",
+                    	"rand-gaussian",
+                    	"bytebuf-allocate-random")
                     .build()
         ) {
             @Override
@@ -1566,7 +1572,10 @@ public class MathFunctions {
                     .examples(
                         "(rand-gaussian)",
                         "(rand-gaussian 0.0 5.0)")
-                    .seeAlso("rand-long", "rand-double")
+                    .seeAlso(
+                    	"rand-long",
+                    	"rand-double",
+                    	"bytebuf-allocate-random")
                     .build()
         ) {
             @Override
