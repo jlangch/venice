@@ -57,6 +57,7 @@ import com.github.jlangch.venice.impl.docgen.cheatsheet.modules.ModuleHexdumpSec
 import com.github.jlangch.venice.impl.docgen.cheatsheet.modules.ModuleJavaSection;
 import com.github.jlangch.venice.impl.docgen.cheatsheet.modules.ModuleJsonlSection;
 import com.github.jlangch.venice.impl.docgen.cheatsheet.modules.ModuleKiraSection;
+import com.github.jlangch.venice.impl.docgen.cheatsheet.modules.ModuleMatrixSection;
 import com.github.jlangch.venice.impl.docgen.cheatsheet.modules.ModuleMavenSection;
 import com.github.jlangch.venice.impl.docgen.cheatsheet.modules.ModuleParsifalSection;
 import com.github.jlangch.venice.impl.docgen.cheatsheet.modules.ModuleQrRefSection;
@@ -127,7 +128,7 @@ public class DocGenerator {
                         "config",     "parsifal",  "grep",       "test",
                         "fonts",      "qrref",     "jsonl",      "timing",
                         "zipvault",   "docker",    "cargo",      "cargo-arangodb",
-                        "ascii-table"));
+                        "matrix",     "ascii-table" ));
 
         final IVeniceInterpreter venice = new VeniceInterpreter(new AcceptAllInterceptor());
 
@@ -315,6 +316,7 @@ public class DocGenerator {
         extmod.addSection(new DocSection("Fonts", "modules.fonts"));
         extmod.addSection(new DocSection("Cryptography", "modules.cryptography"));
         extmod.addSection(new DocSection("AsciiTable", "modules.asciitable"));
+        extmod.addSection(new DocSection("Matrix", "modules.matrix"));
         extmod.addSection(new DocSection("Java", "modules.java"));
         extmod.addSection(new DocSection("Hexdump", "modules.hexdump"));
         extmod.addSection(new DocSection("Shell", "modules.shell"));
@@ -432,7 +434,8 @@ public class DocGenerator {
                 new ModuleTimingSection(diBuilder).section(),
 		        new ModuleGrepSection(diBuilder).section(),
 		        new ModuleQrRefSection(diBuilder).section(),
-		        new ModuleAsciiTableSection(diBuilder).section());
+		        new ModuleAsciiTableSection(diBuilder).section(),
+        		new ModuleMatrixSection(diBuilder).section());
     }
 
     private List<DocItem> getDocItems(final List<DocSection> sections) {

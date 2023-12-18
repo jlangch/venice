@@ -30,8 +30,11 @@
      :doc """
           Validates a matrix. A matrix is a vector of vectors [[1 2] [3 4]]
 
+          Returns the matrix if valid else throws an exception.
+
+          * A matrix must be an empty vector or a vector of vectors!
           * All rows must have the same number of columns
-          """
+         """
      :examples (list
           """
           (do
@@ -48,8 +51,112 @@
     (when-not (apply = (map #(vector? %) m))
       (throw (ex :VncException "A matrix must be a vector of vectors!")))
     (when-not (apply = (map #(count %) m))
-      (throw (ex :VncException "All matrix' rows must have the same number of columns!"))))
+      (throw (ex :VncException "All matrix rows must have the same number of columns!"))))
   m)
+
+
+(defn 
+  ^{ :arglists '(
+          "(matrix/rows m)")
+     :doc """
+          Returns the number of rows in the matrix
+          """
+     :examples (list
+          """
+          (do
+            (load-module :matrix)
+            (matrix/rows [[1 2 3] 
+                          [4 5 6]]))
+          """ ) }
+
+  rows [m]
+
+  (validate m)
+  (count m))
+
+
+(defn 
+  ^{ :arglists '(
+          "(matrix/columns m)")
+     :doc """
+          Returns the number of columns in the matrix
+          """
+     :examples (list
+          """
+          (do
+            (load-module :matrix)
+            (matrix/columns [[1 2 3] 
+                             [4 5 6]]))
+          """ ) }
+
+  columns [m]
+
+  (validate m)
+  (if (empty? m) 0 (count (first m))))
+
+
+(defn 
+  ^{ :arglists '(
+          "(matrix/element m row col)")
+     :doc """
+          Returns the matrix element at the row and column
+          """
+     :examples (list
+          """
+          (do
+            (load-module :matrix)
+            (matrix/element [[1 2 3] [4 5 6]] 1 2))
+          """ ) }
+
+  element [m row col]
+
+  (validate m)
+  (try 
+    (nth (nth m row) col)
+    (catch :RuntimeException e
+      (throw (ex :VncException 
+                 "No such matrix element at row=~{row}, col=~{col}!")))))
+
+
+(defn 
+  ^{ :arglists '(
+          "(matrix/row m n)")
+     :doc """
+          Returns the matrix row n
+          """
+     :examples (list
+          """
+          (do
+            (load-module :matrix)
+            (matrix/row [[1 2 3] [4 5 6]] 1))
+          """ ) }
+
+  row [m n]
+
+  (validate m)
+  (assert (< -1 n (rows m)) "Invalid row index ~{n}")
+  (nth m n))
+
+
+(defn 
+  ^{ :arglists '(
+          "(matrix/column m n)")
+     :doc """
+          Returns the matrix column n
+          """
+     :examples (list
+          """
+          (do
+            (load-module :matrix)
+            (matrix/column [[1 2 3] [4 5 6]] 1))
+          """ ) }
+
+  column [m n]
+
+  (validate m)
+  (assert (< -1 n (columns m)) "Invalid column index ~{n}")
+  (into [] (map #(nth % n) m)))
+
 
 (defn 
   ^{ :arglists '(
@@ -77,9 +184,10 @@
 
 (defn 
   ^{ :arglists '(
-          "(matrix/add-column-start m c)")
+          "(matrix/add-column-at-start m c)")
      :doc """
-          Add a column to a matrix. A matrix is a vector of vectors [[1 2] [3 4]]
+          Add a column to a matrix before the first column. A matrix is a vector 
+          of vectors [[1 2] [3 4]]
           """
      :examples (list
           """
@@ -89,10 +197,10 @@
             ;; | 2 3 4 |  +  | 1 5 |  =>  | 1 2 3 4 |
             ;; | 6 7 8 |                  | 5 6 7 8 |
                                         
-            (matrix/add-column-start [[2 3 4] [6 7 8]] [1 5])
+            (matrix/add-column-at-start [[2 3 4] [6 7 8]] [1 5]))
           """ ) }
 
-  add-column-start [m c]
+  add-column-at-start [m c]
 
   (validate m)
   (as-> (map vector c m) mat
@@ -101,9 +209,10 @@
 
 (defn 
   ^{ :arglists '(
-          "(matrix/add-column-end m c)")
+          "(matrix/add-column-at-end m c)")
      :doc """
-          Add a column to a matrix. A matrix is a vector of vectors [[1 2] [3 4]]
+          Add a column to a matrix after the last column. A matrix is a vector 
+          of vectors [[1 2] [3 4]]
           """
      :examples (list
           """
@@ -113,10 +222,10 @@
             ;; | 1 2 3 |  +  | 4 8 |  =>   | 1 2 3 4 |
             ;; | 5 6 7 |                   | 5 6 7 8 |
                                         
-            (matrix/add-column-end [[1 2 3] [5 6 7]] [4 8])
+            (matrix/add-column-at-end [[1 2 3] [5 6 7]] [4 8]))
           """ ) }
 
-  add-column-end [m c]
+  add-column-at-end [m c]
 
   (validate m)
   (as-> (map vector c m) mat
@@ -125,9 +234,10 @@
 
 (defn 
   ^{ :arglists '(
-          "(matrix/add-row-start m r)")
+          "(matrix/add-row-at-start m r)")
      :doc """
-          Add a row to a matrix. A matrix is a vector of vectors [[1 2] [3 4]]
+          Add a row to a matrix before the first row. A matrix is a vector of 
+          vectors [[1 2] [3 4]]
           """
      :examples (list
           """
@@ -138,10 +248,10 @@
             ;; | 7 8 9 |                     | 4 5 6 |
             ;;                               | 7 8 9 |
 
-            (matrix/add-row-start [[ 4 5 6 ] [7 8 9]] [1 2 3])
+            (matrix/add-row-at-start [[ 4 5 6 ] [7 8 9]] [1 2 3]))
           """ ) }
 
-  add-row-start [m r]
+  add-row-at-start [m r]
 
   (validate m)
   (cons r m))
@@ -149,9 +259,10 @@
 
 (defn 
   ^{ :arglists '(
-          "(matrix/add-row-end m r)")
+          "(matrix/add-row-at-end m r)")
      :doc """
-          Add a row to a matrix. A matrix is a vector of vectors [[1 2] [3 4]]
+          Add a row to a matrix after the last row. A matrix is a vector of 
+          vectors [[1 2] [3 4]]
           """
      :examples (list
           """
@@ -162,10 +273,52 @@
             ;; | 4 5 6 |                     | 4 5 6 |
             ;;                               | 7 8 9 |
 
-            (matrix/add-row-end [[1 2 3] [ 4 5 6]] [7 8 9])
+            (matrix/add-row-at-end [[1 2 3] [ 4 5 6]] [7 8 9]))
           """ ) }
 
-  add-row-end [m r]
+  add-row-at-end [m r]
 
   (validate m)
   (conj m r))
+
+
+(defn 
+  ^{ :arglists '(
+          "(matrix/remove-column m n)")
+     :doc """
+          Add a column to a matrix before the first column. A matrix is a vector 
+          of vectors [[1 2] [3 4]]
+          """
+     :examples (list
+          """
+          (do
+            (load-module :matrix)
+            (matrix/remove-column [[2 3 4] [6 7 8]] 1))
+          """ ) }
+
+  remove-column [m n]
+
+  (validate m)
+  (assert (< -1 n (columns m)) "Invalid column index ~{n}")
+  (into [] (map #(dissoc % n) m)))
+
+
+(defn 
+  ^{ :arglists '(
+          "(matrix/remove-row m n)")
+     :doc """
+          Add a column to a matrix before the first column. A matrix is a vector 
+          of vectors [[1 2] [3 4]]
+          """
+     :examples (list
+          """
+          (do
+            (load-module :matrix)
+            (matrix/remove-row [[1 2] [3 4] [5 6]] 1))
+          """ ) }
+
+  remove-row [m n]
+
+  (validate m)
+  (assert (< -1 n (rows m)) "Invalid row index ~{n}")
+  (dissoc m n))
