@@ -222,8 +222,12 @@
   add-column-at-start [m c]
 
   (validate m)
-  (as-> (map vector c m) mat
-        (map #(cons (first %) (second %)) mat)))
+  (if (empty? m)
+    (map #(vector %) c)
+    (do
+      (assert (= (count c) (rows m)) "The new column must have ~(rows m) rows")
+      (as-> (map vector c m) mat
+            (map #(cons (first %) (second %)) mat)))))
 
 
 (defn 
@@ -247,8 +251,12 @@
   add-column-at-end [m c]
 
   (validate m)
-  (as-> (map vector c m) mat
-        (map #(conj (second %) (first %)) mat)))
+  (if (empty? m)
+    (map #(vector %) c)
+    (do
+      (assert (= (count c) (rows m)) "The new column must have ~(rows m) rows")
+      (as-> (map vector c m) mat
+            (map #(conj (second %) (first %)) mat)))))
 
 
 (defn 
@@ -273,6 +281,8 @@
   add-row-at-start [m r]
 
   (validate m)
+  (when-not (empty? m)
+    (assert (= (count r) (columns m)) "The new row must have ~(columns m) columns"))
   (cons r m))
 
 
@@ -298,6 +308,8 @@
   add-row-at-end [m r]
 
   (validate m)
+  (when-not (empty? m)
+    (assert (= (count r) (columns m)) "The new row must have ~(columns m) columns"))
   (conj m r))
 
 
