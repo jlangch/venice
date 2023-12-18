@@ -23,6 +23,34 @@
 
 (ns matrix)
 
+
+(defn 
+  ^{ :arglists '(
+          "(matrix/validate m)")
+     :doc """
+          Validates a matrix. A matrix is a vector of vectors [[1 2] [3 4]]
+
+          * All rows must have the same number of columns
+          """
+     :examples (list
+          """
+          (do
+            (load-module :matrix)
+            (matrix/validate [[1 2 3] 
+                              [4 5 6]]))
+          """ ) }
+
+  validate [m]
+
+  (when-not (vector? m)
+    (throw (ex :VncException "A matrix must be a vector of vectors!")))
+  (when-not (empty? m)
+    (when-not (apply = (map #(vector? %) m))
+      (throw (ex :VncException "A matrix must be a vector of vectors!")))
+    (when-not (apply = (map #(count %) m))
+      (throw (ex :VncException "All matrix' rows must have the same number of columns!"))))
+  m)
+
 (defn 
   ^{ :arglists '(
           "(matrix/transpose m)")
@@ -42,7 +70,8 @@
           """ ) }
 
   transpose [m]
-
+  
+  (validate m)
   (apply map vector m))
 
 
@@ -65,6 +94,7 @@
 
   add-column-start [m c]
 
+  (validate m)
   (as-> (map vector c m) mat
         (map #(cons (first %) (second %)) mat)))
 
@@ -88,6 +118,7 @@
 
   add-column-end [m c]
 
+  (validate m)
   (as-> (map vector c m) mat
         (map #(conj (second %) (first %)) mat)))
 
@@ -112,6 +143,7 @@
 
   add-row-start [m r]
 
+  (validate m)
   (cons r m))
 
 
@@ -135,4 +167,5 @@
 
   add-row-end [m r]
 
+  (validate m)
   (conj m r))
