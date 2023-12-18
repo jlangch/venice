@@ -53,6 +53,7 @@
           file    (io/file test-dir "test.data")
           algos   ["MD5" "SHA-1" "SHA-256"]]
       (println "Testing file:" file (str size-kb "KB"))
+      
       ;; create the test data file (a buffer with random bytes)
       (io/spit file data)
       (io/slurp file :binary true) ;; warm up os file read
@@ -77,13 +78,10 @@
                                                    :align :right}
                                           :body   {:align :right}
                                           :width 6)
-                                samples))]
+                               samples))]
          (as-> (map #(run % algorithms) samples) data
                (m/transpose data)
                (map vector sections data)
                (map #(cons (first %) (second %)) data)
-               (ascii-table/render columns
-                                   data
-                                   :bold-no-data 
-                                   1)
+               (ascii-table/render columns data :bold-no-data 1)
                (println data)))))
