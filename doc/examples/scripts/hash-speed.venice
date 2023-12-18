@@ -81,7 +81,7 @@
                                samples))]
          (as-> (map #(run % algorithms) samples) data
                (m/transpose data)
-               (map vector sections data)
+               (map vector sections data)  ;; insert section column at col 0
                (map #(cons (first %) (second %)) data)
                (ascii-table/render columns data :bold-no-data 1)
                (println data)))))
