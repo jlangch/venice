@@ -34,51 +34,56 @@
 ;; Hash SHA-256 (memory):   1ms     0ms     1ms     8ms    76ms   749ms
 ;; --------------------------------------------------------------------
 
-
-
 (do
   (load-module :crypt)
-  (load-module :timing)
-
+  (load-module :timing ['timing :as 't])
+  (load-module :matrix ['matrix :as 'm])
+  (load-module :ascii-table ['ascii-table :as 'at])
 
   (defonce passwd   "j87vhfrtxvzrzver445dffg")
   (defonce salt     "12647458820938745388281")
   (defonce test-dir (io/file (io/user-home-dir) "Desktop/venice/tmp"))
 
+  (defn format-size [size-kb] 
+    (if (< size-kb 1000) (str size-kb "KB") (str (/ size-kb 1000) "MB")))
 
-  (defn printel [title elapsed]
-    (printf "%-20s %4dms%n" title elapsed))
-
-  (defn run [size-kb] 
+  (defn run [size-kb algorithms] 
     (let [size    (* size-kb 1024)
           data    (bytebuf-allocate-random size)
-          dir     test-dir
-          file    (io/file dir "test.data")
+          file    (io/file test-dir "test.data")
           algos   ["MD5" "SHA-1" "SHA-256"]]
-      (when-not (io/exists-dir? dir)
-        (throw (ex :VncException (str "The dir " dir " does not exist!)"))))
-
       (println "Testing file:" file (str size-kb "KB"))
-      (println "        size:" size)
-
       ;; create the test data file (a buffer with random bytes)
       (io/spit file data)
       (io/slurp file :binary true) ;; warm up os file read
-      (println "            : created")
-      (println)
 
-      ;; file based: MD5, SHA-1, SHA-256
-      (docoll (fn [algo]
-                (->> (timing/elapsed #(crypt/hash-file algo salt file))
-                     (printel (str "Hash " algo " (file):"))))
-              algos)
+      (concat
+        ;; file based: MD5, SHA-1, SHA-256
+        (map (fn [a] (t/elapsed #(crypt/hash-file a salt file))) algorithms)
 
-      ;; memory based: MD5, SHA-1, SHA-256
-      (docoll (fn [algo]
-                (->> (timing/elapsed #(crypt/hash-file algo salt data))
-                     (printel (str "Hash " algo " (mem):"))))
-              algos)))
+        ;; memory based: MD5, SHA-1, SHA-256
+        (map (fn [a] (t/elapsed #(crypt/hash-file a salt data))) algorithms))))
 
   (defn run-sample []
-    (docoll #(do (run %) (println) (println))
-            [2 20 200 2000 20000 200000])))
+    (when-not (io/exists-dir? test-dir)
+      (throw (ex :VncException (str "The dir " test-dir " does not exist!)"))))
+
+    (let [samples    [2 20 200 2000 20000 200000]
+          algorithms ["MD5" "SHA-1" "SHA-256"]
+          sections   ["MD5 (file)"   "SHA-1 (file)"   "SHA-256 (file)"
+                      "MD5 (memory)" "SHA-1 (memory)" "SHA-256 (memory)"]
+          columns   (cons {:header {:text "" } :width 16}
+                          (map #(hash-map :header {:text (format-size %)
+                                                   :align :right}
+                                          :body   {:align :right}
+                                          :width 6)
+                                samples))]
+         (as-> (map #(run % algorithms) samples) data
+               (m/transpose data)
+               (map vector sections data)
+               (map #(cons (first %) (second %)) data)
+               (ascii-table/render columns
+                                   data
+                                   :bold-no-data 
+                                   1)
+               (println data)))))
