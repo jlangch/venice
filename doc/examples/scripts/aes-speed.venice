@@ -68,11 +68,7 @@
     (if (< size-kb 1000) (str size-kb "KB") (str (/ size-kb 1000) "MB")))
 
   (defn identical [file1 file2]
-    (= (io/slurp file1 :binary true) 
-       (io/slurp file2 :binary true)))
-
-  (defn printel [title elapsed]
-    (printf "%-21s %4dms%n" title elapsed))
+    (= (io/slurp file1 :binary true) (io/slurp file2 :binary true)))
 
   (defn encrypt [algo passphrase file-in file-out]
    (crypt/encrypt-file algo passphrase file-in file-out))
@@ -186,10 +182,9 @@
                                          :body   {:align :right}
                                          :width  6)
                               samples))]
-
-         (as-> (map #(run %) samples) data
-               (m/transpose data)
-               (map vector sections data)  ;; insert section column at col 0
-               (map #(cons (first %) (second %)) data)
-               (ascii-table/render columns data :bold-no-data 1)
-               (println data)))))
+      (as-> (map #(run %) samples) data
+            (m/transpose data)
+            (map vector sections data)  ;; insert section column at col 0
+            (map #(cons (first %) (second %)) data)
+            (ascii-table/render columns data :bold-no-data 1)
+            (println data)))))
