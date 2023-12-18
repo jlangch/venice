@@ -44,3 +44,95 @@
   transpose [m]
 
   (apply map vector m))
+
+
+(defn 
+  ^{ :arglists '(
+          "(matrix/add-column-start m c)")
+     :doc """
+          Add a column to a matrix. A matrix is a vector of vectors [[1 2] [3 4]]
+          """
+     :examples (list
+          """
+          (do
+            (load-module :matrix)
+
+            ;; | 2 3 4 |  +  | 1 5 |  =>  | 1 2 3 4 |
+            ;; | 6 7 8 |                  | 5 6 7 8 |
+                                        
+            (matrix/add-column-start [[2 3 4] [6 7 8]] [1 5])
+          """ ) }
+
+  add-column-start [m c]
+
+  (as-> (map vector c m) mat
+        (map #(cons (first %) (second %)) mat)))
+
+
+(defn 
+  ^{ :arglists '(
+          "(matrix/add-column-end m c)")
+     :doc """
+          Add a column to a matrix. A matrix is a vector of vectors [[1 2] [3 4]]
+          """
+     :examples (list
+          """
+          (do
+            (load-module :matrix)
+
+            ;; | 1 2 3 |  +  | 4 8 |  =>   | 1 2 3 4 |
+            ;; | 5 6 7 |                   | 5 6 7 8 |
+                                        
+            (matrix/add-column-end [[1 2 3] [5 6 7]] [4 8])
+          """ ) }
+
+  add-column-end [m c]
+
+  (as-> (map vector c m) mat
+        (map #(conj (second %) (first %)) mat)))
+
+
+(defn 
+  ^{ :arglists '(
+          "(matrix/add-row-start m r)")
+     :doc """
+          Add a row to a matrix. A matrix is a vector of vectors [[1 2] [3 4]]
+          """
+     :examples (list
+          """
+          (do
+            (load-module :matrix)
+
+            ;; | 4 5 6 |  +  | 1 2 3 |  =>   | 1 2 3 |
+            ;; | 7 8 9 |                     | 4 5 6 |
+            ;;                               | 7 8 9 |
+
+            (matrix/add-row-start [[ 4 5 6 ] [7 8 9]] [1 2 3])
+          """ ) }
+
+  add-row-start [m r]
+
+  (cons r m))
+
+
+(defn 
+  ^{ :arglists '(
+          "(matrix/add-row-end m r)")
+     :doc """
+          Add a row to a matrix. A matrix is a vector of vectors [[1 2] [3 4]]
+          """
+     :examples (list
+          """
+          (do
+            (load-module :matrix)
+
+            ;; | 1 2 3 |  +  | 7 8 9 |  =>   | 1 2 3 |
+            ;; | 4 5 6 |                     | 4 5 6 |
+            ;;                               | 7 8 9 |
+
+            (matrix/add-row-end [[1 2 3] [ 4 5 6]] [7 8 9])
+          """ ) }
+
+  add-row-end [m r]
+
+  (conj m r))
