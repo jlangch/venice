@@ -48,7 +48,9 @@
     :standard-no-outside         "•••••|••-+••|••-+••-+••|•••••"
     :standard-minimal            "----•••----•••••••----•••----"
     :double                      "╔═╤╗║│║╠═╪╣║│║╟─┼╢╠═╪╣║│║╚═╧╝"
+    :double-no-data              "╔═╤╗║│║╠═╪╣║│║••••╠═╪╣║│║╚═╧╝"
     :bold                        "┏━┯┓┃│┃┣━┿┫┃│┃┠─┼┨┣━┿┫┃│┃┗━┷┛"
+    :bold-no-data                "┏━┯┓┃│┃┣━┿┫┃│┃••••┣━┿┫┃│┃┗━┷┛"
     :minimal                     "────•••────•••••••────•••────"
     :alpha                       "ABCDEFGHIJKLMNOPQRSTUVWXYZ123" })
 
@@ -127,20 +129,22 @@
     (assert (sequential? data) "data must be a 2 dimensional sequence of strings")
     (assert (or (nil? footer) (sequential? footer)) "footer must be a list or a vector of strings")
     (assert (long? padding) "padding must be a long")
-    (render-table (build-columns header data footer) data border padding))
+    (let [data (as-strings data)]
+      (render-table (build-columns header data footer) data border padding)))
 
   ([columns data border padding]
     (assert (sequential? columns) "columns must be a sequence of maps")
     (assert (sequential? data) "data must be a 2 dimensional sequence of strings")
     (assert (long? padding) "padding must be a long")
-    (render-table columns data border padding)))
+    (let [data (as-strings data)]
+      (render-table columns data border padding))))
 
 (defn render-table [columns data border padding]
   (->> (render-table-rows columns data border padding)
-       (flatten)
-       (map #(if (or (empty? %) (match? % #"[ ]+$")) nil %))
-       (filter some?)
-       (str/join "\n")))
+      (flatten)
+      (map #(if (or (empty? %) (match? % #"[ ]+$")) nil %))
+      (filter some?)
+      (str/join "\n")))
 
 (defn render-table-rows [columns data border padding]
   (let [columns (map validate-column columns)
@@ -308,6 +312,9 @@
                or a string with 29 custom border characters!
                """))))
  
+(defn as-strings [data]
+   (map #(map str %) data))
+
 (defn transpose [matrix]
   (apply map vector matrix))
 
