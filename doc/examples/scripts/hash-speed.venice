@@ -77,7 +77,7 @@
                           (map #(hash-map :header {:text (format-size %)
                                                    :align :right}
                                           :body   {:align :right}
-                                          :width 6)
+                                          :width  6)
                                samples))]
          (as-> (map #(run % algorithms) samples) data
                (m/transpose data)

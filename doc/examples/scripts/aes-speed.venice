@@ -59,11 +59,15 @@
   (load-module :zipvault)
   (load-module :crypt)
   (load-module :timing ['timing :as 't])
+  (load-module :matrix ['matrix :as 'm])
+  (load-module :ascii-table ['ascii-table :as 'at])
 
 
   (defonce passwd   "j87vhfrtxvzrzver445dffg")
   (defonce test-dir (io/file (io/user-home-dir) "Desktop/venice/tmp"))
 
+  (defn format-size [size-kb] 
+    (if (< size-kb 1000) (str size-kb "KB") (str (/ size-kb 1000) "MB")))
 
   (defn identical [file1 file2]
     (= (io/slurp file1 :binary true) 
@@ -88,88 +92,97 @@
   (defn run [size-kb]
     (let [size               (* size-kb 1024)
           data               (bytebuf-allocate-random size)
-          dir                test-dir
-          data-file          (io/file dir "test.data")
-          aes-cbc-file-enc   (io/file dir "test.data.aes-cbc.enc")
-          aes-cbc-file-dec   (io/file dir "test.data.aes-cbc.dec")
-          aes-gcm-file-enc   (io/file dir "test.data.aes-gcm.enc")
-          aes-gcm-file-dec   (io/file dir "test.data.aes-gcm.dec")
-          cha-file-enc       (io/file dir "test.data.cha.enc")
-          cha-file-dec       (io/file dir "test.data.cha.dec")
-          cha-bc-file-enc    (io/file dir "test.data.cha-bc.enc")
-          cha-bc-file-dec    (io/file dir "test.data.cha-bc.dec")
-          aes-file-zip       (io/file dir "test.data.zip")
-          aes-file-unzip     (io/file dir "test.data.unzip")]
-      (when-not (io/exists-dir? dir)
-        (throw (ex :VncException (str "The dir " dir " does not exist!)"))))
+          data-file          (io/file test-dir "test.data")
+          aes-cbc-file-enc   (io/file test-dir "test.data.aes-cbc.enc")
+          aes-cbc-file-dec   (io/file test-dir "test.data.aes-cbc.dec")
+          aes-gcm-file-enc   (io/file test-dir "test.data.aes-gcm.enc")
+          aes-gcm-file-dec   (io/file test-dir "test.data.aes-gcm.dec")
+          cha-file-enc       (io/file test-dir "test.data.cha.enc")
+          cha-file-dec       (io/file test-dir "test.data.cha.dec")
+          cha-bc-file-enc    (io/file test-dir "test.data.cha-bc.enc")
+          cha-bc-file-dec    (io/file test-dir "test.data.cha-bc.dec")
+          aes-file-zip       (io/file test-dir "test.data.zip")
+          aes-file-unzip     (io/file test-dir "test.data.unzip")]
 
       (println "Testing file:" data-file (str size-kb "KB"))
-      (println "        size:" size)
 
       ;; create the test data file (a buffer with random bytes)
       (io/spit data-file data)
       (io/slurp data-file :binary true) ;; warm up os file read
-      (println "            : created")
-      (println)
 
-      (let [t (t/elapsed #(encrypt "AES256-CBC" passwd 
-                                   data-file aes-cbc-file-enc))]
-        (printel "Encrypt AES CBC:" t))
- 
-      (let [t (t/elapsed #(decrypt "AES256-CBC" passwd 
-                                   aes-cbc-file-enc aes-cbc-file-dec))]
-        (printel "Decrypt AES CBC:" t))
+      (let [timings (flatten  
+                      [ (t/elapsed #(encrypt "AES256-CBC" passwd 
+                                                          data-file 
+                                                          aes-cbc-file-enc))
+                        (t/elapsed #(decrypt "AES256-CBC" passwd 
+                                                          aes-cbc-file-enc 
+                                                          aes-cbc-file-dec))
+                        (t/elapsed #(encrypt "AES256-GCM" passwd 
+                                                          data-file 
+                                                          aes-gcm-file-enc))
+                        (t/elapsed #(decrypt "AES256-GCM" passwd 
+                                                          aes-gcm-file-enc 
+                                                          aes-gcm-file-dec))
 
-      (let [t (t/elapsed #(encrypt "AES256-GCM" passwd
-                                   data-file aes-gcm-file-enc))]
-        (printel "Encrypt AES GCM:" t))
+                        (if (crypt/encrypt-file-supported? "ChaCha20")
+                          [ (t/elapsed #(encrypt "ChaCha20" passwd data-file cha-file-enc))
+                            (t/elapsed #(decrypt "ChaCha20" passwd cha-file-enc cha-file-dec))]
+                          [])
 
-      (let [t (t/elapsed #(decrypt "AES256-GCM" passwd
-                                   aes-gcm-file-enc aes-gcm-file-dec))]
-        (printel "Decrypt AES GCM:" t))
+                        (if (crypt/encrypt-file-supported? "ChaCha20-BC")
+                          [ (t/elapsed #(encrypt "ChaCha20-BC" passwd data-file cha-bc-file-enc))
+                            (t/elapsed #(decrypt "ChaCha20-BC" passwd cha-bc-file-enc cha-bc-file-dec))]
+                          [])
+                        
+                        (t/elapsed #(encrypt-zip aes-file-zip passwd (io/file-name aes-file-unzip) 
+                                                                    data-file))
+                        (t/elapsed #(decrypt-zip aes-file-zip passwd (io/file-name aes-file-unzip) 
+                                                                    (io/file-parent aes-file-unzip)))
+                      ])]
 
-      (when (crypt/encrypt-file-supported? "ChaCha20")
-        (let [t (t/elapsed #(encrypt "ChaCha20" passwd 
-                                     data-file cha-file-enc))]
-          (printel "Encrypt ChaCha20:" t))
+        (println "Decrypt verify AES CBC:     " 
+                 (if (identical data-file aes-cbc-file-dec) "OK" "FAIL"))
+        (println "Decrypt verify AES GCM:     " 
+                 (if (identical data-file aes-gcm-file-dec) "OK" "FAIL"))
+        (when (crypt/encrypt-file-supported? "ChaCha20")
+          (println "Decrypt verify ChaCha20:    " 
+                   (if (identical data-file cha-file-dec) "OK" "FAIL")))
+        (when (crypt/encrypt-file-supported? "ChaCha20-BC")
+          (println "Decrypt verify ChaCha20-BC: " 
+                   (if (identical data-file cha-bc-file-dec) "OK" "FAIL")))
+        (println "Decrypt verify ZIP:         " 
+                 (if (identical data-file aes-file-unzip) "OK" "FAIL"))
 
-        (let [t (t/elapsed #(decrypt "ChaCha20" passwd
-                                     cha-file-enc cha-file-dec))]
-          (printel "Decrypt ChaCha20:" t)))
+        timings)))
 
-      (when (crypt/encrypt-file-supported? "ChaCha20-BC")
-        (let [t (t/elapsed #(encrypt "ChaCha20-BC" passwd
-                                      data-file cha-bc-file-enc))]
-          (printel "Encrypt ChaCha20-BC:" t))
-
-        (let [t (t/elapsed #(decrypt "ChaCha20-BC" passwd
-                                     cha-bc-file-enc cha-bc-file-dec))]
-          (printel "Decrypt ChaCha20-BC:" t)))
-       
-      (let [t (t/elapsed #(encrypt-zip aes-file-zip passwd
-                                       (io/file-name aes-file-unzip)
-                                       data-file))]
-        (printel "Encrypt AES ZIP:" t))
-
-      (let [t (t/elapsed #(decrypt-zip aes-file-zip passwd
-                                       (io/file-name aes-file-unzip)
-                                       (io/file-parent aes-file-unzip)))]
-        (printel "Decrypt AES ZIP:" t))
-                                     
-      (println)            
-      (println "Decrypt verify AES CBC:     " 
-               (if (identical data-file aes-cbc-file-dec) "OK" "FAIL"))
-      (println "Decrypt verify AES GCM:     " 
-               (if (identical data-file aes-gcm-file-dec) "OK" "FAIL"))
-      (when (crypt/encrypt-file-supported? "ChaCha20")
-        (println "Decrypt verify ChaCha20:    " 
-                (if (identical data-file cha-file-dec) "OK" "FAIL")))
-      (when (crypt/encrypt-file-supported? "ChaCha20-BC")
-        (println "Decrypt verify ChaCha20-BC: " 
-                (if (identical data-file cha-bc-file-dec) "OK" "FAIL")))
-      (println "Decrypt verify ZIP:         " 
-               (if (identical data-file aes-file-unzip) "OK" "FAIL"))))
+  (defn sections []
+    (flatten  [ "Encrypt AES CBC"
+                "Decrypt AES CBC"
+                "Encrypt AES GCM"
+                "Decrypt AES GCM"
+                (if (crypt/encrypt-file-supported? "ChaCha20")
+                  [ "Encrypt ChaCha20:" "Decrypt ChaCha20" ] [])
+                (if (crypt/encrypt-file-supported? "ChaCha20-BC")
+                  [ "Encrypt ChaCha20-BC" "Decrypt ChaCha20-BC" ] [])
+                "Encrypt AES ZIP"
+                "Decrypt AES ZIP"] ))
 
   (defn run-sample []
-    (docoll #(do (run %) (println) (println)) 
-            [2 20 200 2000 20000 200000])))
+    (when-not (io/exists-dir? test-dir)
+      (throw (ex :VncException (str "The dir " test-dir " does not exist!)"))))
+
+    (let [samples  [2 20 200 2000 20000 200000]
+          sections (sections)
+          columns  (cons {:header {:text "" } :width 19}
+                         (map #(hash-map :header {:text (format-size %)
+                                                  :align :right}
+                                         :body   {:align :right}
+                                         :width  6)
+                              samples))]
+
+         (as-> (map #(run %) samples) data
+               (m/transpose data)
+               (map vector sections data)  ;; insert section column at col 0
+               (map #(cons (first %) (second %)) data)
+               (ascii-table/render columns data :bold-no-data 1)
+               (println data)))))
