@@ -53,8 +53,6 @@
 ;; Decrypt ChaCha20-BC:    74ms    73ms    74ms    85ms   160ms   931ms
 ;; --------------------------------------------------------------------
 
-
-
 (do
   (load-module :zipvault)
   (load-module :crypt)
@@ -123,21 +121,30 @@
                         (t/elapsed #(decrypt "AES256-GCM" passwd 
                                                           aes-gcm-file-enc 
                                                           aes-gcm-file-dec))
-
                         (if (crypt/encrypt-file-supported? "ChaCha20")
-                          [ (t/elapsed #(encrypt "ChaCha20" passwd data-file cha-file-enc))
-                            (t/elapsed #(decrypt "ChaCha20" passwd cha-file-enc cha-file-dec))]
-                          [])
-
+                          [ (t/elapsed #(encrypt "ChaCha20" passwd 
+                                                            data-file 
+                                                            cha-file-enc))
+                            (t/elapsed #(decrypt "ChaCha20" passwd 
+                                                            cha-file-enc 
+                                                            cha-file-dec))]
+                          ["-" "-"])
                         (if (crypt/encrypt-file-supported? "ChaCha20-BC")
-                          [ (t/elapsed #(encrypt "ChaCha20-BC" passwd data-file cha-bc-file-enc))
-                            (t/elapsed #(decrypt "ChaCha20-BC" passwd cha-bc-file-enc cha-bc-file-dec))]
-                          [])
-                        
-                        (t/elapsed #(encrypt-zip aes-file-zip passwd (io/file-name aes-file-unzip) 
-                                                                    data-file))
-                        (t/elapsed #(decrypt-zip aes-file-zip passwd (io/file-name aes-file-unzip) 
-                                                                    (io/file-parent aes-file-unzip)))
+                          [ (t/elapsed #(encrypt "ChaCha20-BC" passwd 
+                                                               data-file 
+                                                               cha-bc-file-enc))
+                            (t/elapsed #(decrypt "ChaCha20-BC" passwd 
+                                                               cha-bc-file-enc 
+                                                               cha-bc-file-dec))]
+                          ["-" "-"])                       
+                        (t/elapsed #(encrypt-zip aes-file-zip 
+                                                 passwd 
+                                                 (io/file-name aes-file-unzip) 
+                                                 data-file))
+                        (t/elapsed #(decrypt-zip aes-file-zip 
+                                                 passwd 
+                                                 (io/file-name aes-file-unzip) 
+                                                 (io/file-parent aes-file-unzip)))
                       ])]
 
         (println "Decrypt verify AES CBC:     " 
@@ -160,10 +167,10 @@
                 "Decrypt AES CBC"
                 "Encrypt AES GCM"
                 "Decrypt AES GCM"
-                (if (crypt/encrypt-file-supported? "ChaCha20")
-                  [ "Encrypt ChaCha20:" "Decrypt ChaCha20" ] [])
-                (if (crypt/encrypt-file-supported? "ChaCha20-BC")
-                  [ "Encrypt ChaCha20-BC" "Decrypt ChaCha20-BC" ] [])
+                "Encrypt ChaCha20:" 
+                "Decrypt ChaCha20" 
+                "Encrypt ChaCha20-BC" 
+                "Decrypt ChaCha20-BC"
                 "Encrypt AES ZIP"
                 "Decrypt AES ZIP"] ))
 
