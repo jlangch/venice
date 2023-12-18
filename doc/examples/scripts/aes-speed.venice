@@ -163,16 +163,16 @@
         timings)))
 
   (defn sections []
-    (flatten  [ "Encrypt AES CBC"
-                "Decrypt AES CBC"
-                "Encrypt AES GCM"
-                "Decrypt AES GCM"
-                "Encrypt ChaCha20:" 
+    (flatten  [ "Encrypt AES-256 CBC"
+                "Decrypt AES-256 CBC"
+                "Encrypt AES-256 GCM"
+                "Decrypt AES-256 GCM"
+                "Encrypt ChaCha20" 
                 "Decrypt ChaCha20" 
                 "Encrypt ChaCha20-BC" 
                 "Decrypt ChaCha20-BC"
-                "Encrypt AES ZIP"
-                "Decrypt AES ZIP"] ))
+                "Encrypt AES-256 ZIP"
+                "Decrypt AES-256 ZIP"] ))
 
   (defn run-sample []
     (when-not (io/exists-dir? test-dir)
