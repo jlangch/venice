@@ -3999,7 +3999,8 @@ public class CoreFunctions {
                         "(do                                               \n" +
                         "  (def users [ {:name \"James\" :age 26}          \n" +
                         "               {:name \"John\" :age 43}])         \n" +
-                        "  (assoc-in users [2] {:name \"Jack\" :age 19}))  ")
+                        "  (assoc-in users [2] {:name \"Jack\" :age 19}))  ",
+                        "(assoc-in [[1 2] [3 4]] [0 0] 9)")
                     .build()
         ) {
             @Override

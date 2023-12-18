@@ -111,11 +111,30 @@
   element [m row col]
 
   (validate m)
-  (try 
-    (nth (nth m row) col)
-    (catch :RuntimeException e
-      (throw (ex :VncException 
-                 "No such matrix element at row=~{row}, col=~{col}!")))))
+  (assert (< -1 row (rows m)) "Invalid row index ~{row}")
+  (assert (< -1 col (columns m)) "Invalid column index ~{col}")
+  (get-in m [row col]))
+
+
+(defn 
+  ^{ :arglists '(
+          "(matrix/assoc-element m row col val)")
+     :doc """
+          Replaces an element in the matrix
+          """
+     :examples (list
+          """
+          (do
+            (load-module :matrix)
+            (matrix/assoc-element [[1 2 3] [4 5 6]] 1 2 9))
+          """ ) }
+
+  assoc-element [m row col val]
+
+  (validate m)
+  (assert (< -1 row (rows m)) "Invalid row index ~{row}")
+  (assert (< -1 col (columns m)) "Invalid column index ~{col}")
+  (assoc-in m [row col] val))
 
 
 (defn 
