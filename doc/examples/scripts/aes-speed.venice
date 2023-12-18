@@ -57,8 +57,8 @@
   (load-module :zipvault)
   (load-module :crypt)
   (load-module :timing ['timing :as 't])
-  (load-module :matrix ['matrix :as 'm])
-  (load-module :ascii-table ['ascii-table :as 'at])
+  (load-module :matrix)
+  (load-module :ascii-table)
 
 
   (defonce passwd   "j87vhfrtxvzrzver445dffg")
@@ -183,7 +183,7 @@
                                          :width  6)
                               samples))]
       (as-> (map #(run %) samples) data
-            (m/transpose data)
+            (matrix/transpose data)
             (map vector sections data)  ;; insert section column at col 0
             (map #(cons (first %) (second %)) data)
             (ascii-table/render columns data :bold-no-data 1)

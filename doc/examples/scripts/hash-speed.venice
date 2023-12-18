@@ -37,8 +37,8 @@
 (do
   (load-module :crypt)
   (load-module :timing ['timing :as 't])
-  (load-module :matrix ['matrix :as 'm])
-  (load-module :ascii-table ['ascii-table :as 'at])
+  (load-module :matrix)
+  (load-module :ascii-table)
 
   (defonce passwd   "j87vhfrtxvzrzver445dffg")
   (defonce salt     "12647458820938745388281")
@@ -80,7 +80,7 @@
                                           :width  6)
                                samples))]
       (as-> (map #(run % algorithms) samples) data
-            (m/transpose data)
+            (matrix/transpose data)
             (map vector sections data)  ;; insert section column at col 0
             (map #(cons (first %) (second %)) data)
             (ascii-table/render columns data :bold-no-data 1)
