@@ -372,3 +372,38 @@
   (validate m)
   (assert (< -1 n (rows m)) "Invalid row index ~{n}")
   (dissoc m n))
+
+
+(defn 
+  ^{ :arglists '(
+          "(matrix/format m)")
+     :doc """
+          Formats a matrix
+
+          ```
+          (println (matrix/format [[1 2] [3 4] [5 6]]))
+
+          | 1  2 |
+          | 3  4 |
+          | 5  6 |
+          ```
+          """
+     :examples (list
+          """
+          (do
+            (load-module :matrix)
+            (println (matrix/format [[1 2] [3 4] [5 6]]))
+            (println)
+            (println (matrix/format [[1.8 2.0] [3.0 4.8] [5.1 6.8]])))
+          """ ) }
+
+  format [m]
+
+  (validate m)
+  (let [s (map str (flatten m))
+        w (apply max (map count s))]
+    (->> (map #(str/align w :right :ellipsis-right %) s)
+         (partition (columns m))
+         (map #(str "| " (str/join "  " %) " |"))
+         (str/join "\n"))))
+
