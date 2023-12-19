@@ -892,4 +892,170 @@ public class MatrixModuleTest {
     }
 
 
+
+    // ------------------------------------------------------------------------
+    // remove-column
+    // ------------------------------------------------------------------------
+
+    @Test
+    public void test_remove_column_1() {
+        final Venice venice = new Venice();
+
+        final String script =
+                "(do                                            \n" +
+                "   (load-module :matrix)                       \n" +
+                "   (pr-str (matrix/remove-column [[1]] 0)))     ";
+
+        assertEquals("[]", venice.eval(script));
+    }
+    @Test
+    public void test_remove_column_2() {
+        final Venice venice = new Venice();
+
+        final String script =
+                "(do                                            \n" +
+                "   (load-module :matrix)                       \n" +
+                "   (pr-str (matrix/remove-column [[1] [2]] 0)))     ";
+
+        assertEquals("[]", venice.eval(script));
+    }
+
+    @Test
+    public void test_remove_column_3() {
+        final Venice venice = new Venice();
+
+        final String script =
+                "(do                                            \n" +
+                "   (load-module :matrix)                       \n" +
+                "   (pr-str (matrix/remove-column [[1 2] [3 4]] 0)))     ";
+
+        assertEquals("[[2] [4]]", venice.eval(script));
+    }
+
+    @Test
+    public void test_remove_column_4() {
+        final Venice venice = new Venice();
+
+        final String script =
+                "(do                                            \n" +
+                "   (load-module :matrix)                       \n" +
+                "   (pr-str (matrix/remove-column [[1 2 3]      \n" +
+                "                                  [4 5 6]      \n" +
+                "                                  [7 8 9]] 0)))";
+
+        assertEquals("[[2 3] [5 6] [8 9]]", venice.eval(script));
+    }
+
+    @Test
+    public void test_remove_column_5() {
+        final Venice venice = new Venice();
+
+        final String script =
+                "(do                                            \n" +
+                "   (load-module :matrix)                       \n" +
+                "   (pr-str (matrix/remove-column [[1 2 3]      \n" +
+                "                                  [4 5 6]      \n" +
+                "                                  [7 8 9]] 1)))";
+
+        assertEquals("[[1 3] [4 6] [7 9]]", venice.eval(script));
+    }
+
+    @Test
+    public void test_remove_column_6() {
+        final Venice venice = new Venice();
+
+        final String script =
+                "(do                                            \n" +
+                "   (load-module :matrix)                       \n" +
+                "   (pr-str (matrix/remove-column [[1 2 3]      \n" +
+                "                                  [4 5 6]      \n" +
+                "                                  [7 8 9]] 2)))";
+
+        assertEquals("[[1 2] [4 5] [7 8]]", venice.eval(script));
+    }
+
+
+
+    // ------------------------------------------------------------------------
+    // remove-row
+    // ------------------------------------------------------------------------
+
+    @Test
+    public void test_remove_row_1() {
+        final Venice venice = new Venice();
+
+        final String script =
+                "(do                                            \n" +
+                "   (load-module :matrix)                       \n" +
+                "   (pr-str (matrix/remove-row [[1]] 0)))     ";
+
+        assertEquals("[]", venice.eval(script));
+    }
+    @Test
+    public void test_remove_row_2() {
+        final Venice venice = new Venice();
+
+        final String script =
+                "(do                                            \n" +
+                "   (load-module :matrix)                       \n" +
+                "   (pr-str (matrix/remove-row [[1 2]] 0)))     ";
+
+        assertEquals("[]", venice.eval(script));
+    }
+
+    @Test
+    public void test_remove_row_3() {
+        final Venice venice = new Venice();
+
+        final String script =
+                "(do                                            \n" +
+                "   (load-module :matrix)                       \n" +
+                "   (pr-str (matrix/remove-row [[1] [2]] 0)))     ";
+
+        assertEquals("[[2]]", venice.eval(script));
+    }
+
+
+    @Test
+    public void test_remove_row_4() {
+        final Venice venice = new Venice();
+
+        final String script =
+                "(do                                         \n" +
+                "   (load-module :matrix)                    \n" +
+                "   (pr-str (matrix/remove-row [[1 2 3]      \n" +
+                "                               [4 5 6]      \n" +
+                "                               [7 8 9]] 0)))";
+
+        assertEquals("[[4 5 6] [7 8 9]]", venice.eval(script));
+    }
+
+    @Test
+    public void test_remove_row_5() {
+        final Venice venice = new Venice();
+
+        final String script =
+                "(do                                         \n" +
+                "   (load-module :matrix)                    \n" +
+                "   (pr-str (matrix/remove-row [[1 2 3]      \n" +
+                "                               [4 5 6]      \n" +
+                "                               [7 8 9]] 1)))";
+
+        assertEquals("[[1 2 3] [7 8 9]]", venice.eval(script));
+    }
+
+    @Test
+    public void test_remove_row_6() {
+        final Venice venice = new Venice();
+
+        final String script =
+                "(do                                         \n" +
+                "   (load-module :matrix)                    \n" +
+                "   (pr-str (matrix/remove-row [[1 2 3]      \n" +
+                "                               [4 5 6]      \n" +
+                "                               [7 8 9]] 2)))";
+
+        assertEquals("[[1 2 3] [4 5 6]]", venice.eval(script));
+    }
+
 }

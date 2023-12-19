@@ -348,8 +348,9 @@
   remove-column [m n]
 
   (validate m)
-  (assert (< -1 n (columns m)) "Invalid column index ~{n}")
-  (into [] (map #(dissoc % n) m)))
+  (let [c (columns m)]
+    (assert (< -1 n c) "Invalid column index ~{n}")
+    (if (= 1 c) [] (into [] (map #(dissoc % n) m)))))
 
 
 (defn 
