@@ -47,13 +47,30 @@
 
   (when-not (vector? m)
     (throw (ex :VncException "A matrix must be a vector of vectors!")))
-  (when-not (empty? m)
-    (when-not (apply = (map #(vector? %) m))
+  (when-not (core/empty? m)
+    (when-not (apply = true (map #(vector? %) m))
       (throw (ex :VncException "A matrix must be a vector of vectors!")))
     (when-not (apply = (map #(count %) m))
       (throw (ex :VncException "All matrix rows must have the same number of columns!"))))
   m)
 
+(defn 
+  ^{ :arglists '(
+          "(matrix/empty? m)")
+     :doc """
+          Returns true if the matrix is empty else false
+          """
+     :examples (list
+          """
+          (do
+            (load-module :matrix)
+            (matrix/empty? []))
+          """ ) }
+
+  empty? [m]
+
+  (validate m)
+  (core/empty? m))
 
 (defn 
   ^{ :arglists '(
@@ -92,7 +109,7 @@
   columns [m]
 
   (validate m)
-  (if (empty? m) 0 (count (first m))))
+  (if (core/empty? m) 0 (count (first m))))
 
 
 (defn 
@@ -222,7 +239,7 @@
   add-column-at-start [m c]
 
   (validate m)
-  (if (empty? m)
+  (if (core/empty? m)
     (map #(vector %) c)
     (do
       (assert (= (count c) (rows m)) "The new column must have ~(rows m) rows")
@@ -251,7 +268,7 @@
   add-column-at-end [m c]
 
   (validate m)
-  (if (empty? m)
+  (if (core/empty? m)
     (map #(vector %) c)
     (do
       (assert (= (count c) (rows m)) "The new column must have ~(rows m) rows")
@@ -281,7 +298,7 @@
   add-row-at-start [m r]
 
   (validate m)
-  (when-not (empty? m)
+  (when-not (core/empty? m)
     (assert (= (count r) (columns m)) "The new row must have ~(columns m) columns"))
   (cons r m))
 
@@ -308,7 +325,7 @@
   add-row-at-end [m r]
 
   (validate m)
-  (when-not (empty? m)
+  (when-not (core/empty? m)
     (assert (= (count r) (columns m)) "The new row must have ~(columns m) columns"))
   (conj m r))
 
