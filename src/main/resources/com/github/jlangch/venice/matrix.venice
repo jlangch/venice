@@ -214,8 +214,7 @@
 
   transpose [m]
   
-  (validate m)
-  (apply map vector m))
+  (if (empty? m) [] (into [] (apply map vector (validate m)))))
 
 
 (defn 

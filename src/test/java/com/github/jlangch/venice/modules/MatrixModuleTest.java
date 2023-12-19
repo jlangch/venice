@@ -597,4 +597,82 @@ public class MatrixModuleTest {
         assertThrows(AssertionException.class, () -> venice.eval(script));
     }
 
+
+
+	// ------------------------------------------------------------------------
+	// transpose
+	// ------------------------------------------------------------------------
+
+    @Test
+    public void test_transpose_1() {
+        final Venice venice = new Venice();
+
+        final String script =
+                "(do                                  \n" +
+                "   (load-module :matrix)             \n" +
+                "   (pr-str (matrix/transpose [])))   ";
+
+        assertEquals("[]", venice.eval(script));
+    }
+
+    @Test
+    public void test_transpose_2() {
+        final Venice venice = new Venice();
+
+        final String script =
+                "(do                                     \n" +
+                "   (load-module :matrix)                \n" +
+                "   (pr-str (matrix/transpose [[5]])))   ";
+
+        assertEquals("[[5]]", venice.eval(script));
+    }
+
+    @Test
+    public void test_transpose_3() {
+        final Venice venice = new Venice();
+
+        final String script =
+                "(do                                          \n" +
+                "   (load-module :matrix)                     \n" +
+                "   (pr-str (matrix/transpose [[1][2][3]])))   ";
+
+        assertEquals("[[1 2 3]]", venice.eval(script));
+    }
+
+    @Test
+    public void test_transpose_4() {
+        final Venice venice = new Venice();
+
+        final String script =
+                "(do                                         \n" +
+                "   (load-module :matrix)                    \n" +
+                "   (pr-str (matrix/transpose [[1 2 3]])))   ";
+
+        assertEquals("[[1] [2] [3]]", venice.eval(script));
+    }
+
+    @Test
+    public void test_transpose_5() {
+        final Venice venice = new Venice();
+
+        final String script =
+                "(do                                                 \n" +
+                "   (load-module :matrix)                            \n" +
+                "   (pr-str (matrix/transpose [[1 2][3 4][5 6]])))   ";
+
+        assertEquals("[[1 3 5] [2 4 6]]", venice.eval(script));
+    }
+
+    @Test
+    public void test_transpose_6() {
+        final Venice venice = new Venice();
+
+        final String script =
+                "(do                                                 \n" +
+                "   (load-module :matrix)                            \n" +
+                "   (pr-str (matrix/transpose [[1 3 5] [2 4 6]])))   ";
+
+        assertEquals("[[1 2] [3 4] [5 6]]", venice.eval(script));
+    }
+
 }
