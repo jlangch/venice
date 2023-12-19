@@ -692,7 +692,7 @@
   coalesce
     ([] nil)
     ([x] x)
-    ([x & rest] `(let [c# ~x] (if (not (nil? c#)) c# (coalesce ~@rest)))))
+    ([x & rest] `(let [c# ~x] (if (core/not (core/ c#)) c# (core/coalesce ~@rest)))))
 
 
 (defmacro
@@ -947,10 +947,10 @@
   as-> [expr name & forms]
 
   `(let [~name ~expr
-         ~@(interleave (repeat (count forms) name) (butlast forms))]
-      ~(if (empty? forms)
+         ~@(core/interleave (core/repeat (core/count forms) name) (core/butlast forms))]
+      ~(if (core/empty? forms)
            name
-           (last forms))))
+           (core/last forms))))
 
 
 (defmacro
@@ -981,15 +981,15 @@
 
   cond-> [expr & clauses]
 
-  (assert (even? (count clauses)))
-  (let [g (gensym)
-        steps (map (fn [[test step]] `(if ~test (-> ~g ~step) ~g))
-                   (partition 2 clauses))]
+  (assert (even? (core/count clauses)))
+  (let [g     (core/gensym)
+        steps (core/map (fn [[test step]] `(if ~test (-> ~g ~step) ~g))
+                        (core/partition 2 clauses))]
     `(let [~g ~expr
-           ~@(interleave (repeat (count steps) g) (butlast steps))]
-       ~(if (empty? steps)
+           ~@(core/interleave (core/repeat (core/count steps) g) (core/butlast steps))]
+       ~(if (core/empty? steps)
           g
-          (last steps)))))
+          (core/last steps)))))
 
 (defmacro
   ^{ :arglists '("(cond->> expr & clauses)")
@@ -1012,14 +1012,14 @@
   cond->> [expr & clauses]
 
   (assert (even? (count clauses)))
-  (let [g (gensym)
-        steps (map (fn [[test step]] `(if ~test (->> ~g ~step) ~g))
-                   (partition 2 clauses))]
+  (let [g (core/gensym)
+        steps (core/map (fn [[test step]] `(if ~test (->> ~g ~step) ~g))
+                        (core/partition 2 clauses))]
     `(let [~g ~expr
-           ~@(interleave (repeat (count steps) g) (butlast steps))]
-       ~(if (empty? steps)
+           ~@(core/interleave (core/repeat (core/count steps) g) (core/butlast steps))]
+       ~(if (core/empty? steps)
           g
-          (last steps)))))
+          (core/last steps)))))
 
 (defmacro
   ^{ :arglists '("(some-> expr & forms)")
@@ -1042,14 +1042,14 @@
 
   some-> [expr & forms]
 
-  (let [g (gensym)
-        steps (map (fn [step] `(if (nil? ~g) nil (-> ~g ~step)))
-                   forms)]
+  (let [g     (core/gensym)
+        steps (core/map (fn [step] `(if (core/nil? ~g) nil (-> ~g ~step)))
+                        forms)]
     `(let [~g ~expr
-           ~@(interleave (repeat g) (butlast steps))]
-       ~(if (empty? steps)
+           ~@(core/interleave (core/repeat g) (core/butlast steps))]
+       ~(if (core/empty? steps)
           g
-          (last steps)))))
+          (core/last steps)))))
 
 
 (defmacro
@@ -1073,14 +1073,14 @@
 
   some->> [expr & forms]
 
-  (let [g (gensym)
-        steps (map (fn [step] `(if (nil? ~g) nil (->> ~g ~step)))
-                   forms)]
+  (let [g     (core/gensym)
+        steps (core/map (fn [step] `(if (core/nil? ~g) nil (->> ~g ~step)))
+                        forms)]
     `(let [~g ~expr
-           ~@(interleave (repeat g) (butlast steps))]
-       ~(if (empty? steps)
+           ~@(core/interleave (core/repeat g) (core/butlast steps))]
+       ~(if (core/empty? steps)
           g
-          (last steps)))))
+          (core/last steps)))))
 
 
 (defmacro
@@ -1191,9 +1191,9 @@
 
   time [expr]
 
-  `(let [start# (nano-time)
-         ret# ~expr
-         end# (nano-time)
+  `(let [start#   (nano-time)
+         ret#     ~expr
+         end#     (nano-time)
          elapsed# (- end# start#)]
      (printf "Elapsed time: %s%n" (format-nano-time elapsed# :precision 2))
      ret#))
@@ -1227,8 +1227,8 @@
      (prof :on)
      (prof :clear)
      (let [fn-perf-warmup# (fn _warmup [] (dorun ~warmup-iterations ~expr))
-           fn-perf-gc# (fn _warmup-gc [] (do (dorun 2 (gc)) (sleep 1000)))
-           fn-perf-test# (fn _test [] (dorun ~test-iterations ~expr))]
+           fn-perf-gc#     (fn _warmup-gc [] (do (dorun 2 (gc)) (sleep 1000)))
+           fn-perf-test#   (fn _test [] (dorun ~test-iterations ~expr))]
        (fn-perf-warmup#)
        (fn-perf-gc#)
        (prof :clear)
