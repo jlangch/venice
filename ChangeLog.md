@@ -6,12 +6,16 @@ All notable changes to this project will be documented in this file.
 
 
 
-## [1.10.57] - 2023-12-xx
+## [1.11.0] - 2023-12-xx
 
 ### Added 
 
 - module :ascii-table for creating and customizing simple ASCII tables
 
+### Refactored
+
+- :core module to use qualified core functions within macros to follow
+  the "principal of least surprise". 
 
 
 ## [1.10.56] - 2023-12-12
