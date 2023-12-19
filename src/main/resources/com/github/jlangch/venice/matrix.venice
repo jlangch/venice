@@ -411,6 +411,6 @@
     (let [s (map #(str (fmt %)) (flatten m))
           w (apply max (map count s))]
       (->> (map #(str/align w :right :ellipsis-right %) s)
-          (partition (columns m))
-          (map #(str "| " (str/join "  " %) " |"))
-          (str/join "\n")))))
+           (partition (columns m))
+           (map #(str "| " (str/join "  " %) " |"))
+           (str/join "\n")))))
