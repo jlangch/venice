@@ -376,7 +376,8 @@
 
 (defn 
   ^{ :arglists '(
-          "(matrix/format m)")
+          "(matrix/format m)"
+          "(matrix/format m fmt)")
      :doc """
           Formats a matrix
 
@@ -392,18 +393,24 @@
           """
           (do
             (load-module :matrix)
-            (println (matrix/format [[1 2] [3 4] [5 6]]))
+            (println (matrix/format [[1 2] [3 14] [10 6]]))
             (println)
-            (println (matrix/format [[1.8 2.0] [3.0 4.8] [5.1 6.8]])))
+            (println (matrix/format [[1.8 2.0] [3.0 4.8] [5.1 6.8]]))
+            (println)
+            (println (matrix/format [[1.845 2.009] [3.054 4.889] [5.132 6.878]]
+                                    (fn [x] (str/format "%.2f" x)))))
           """ ) }
 
-  format [m]
+  format 
+  
+  ([m]
+    (format m str))
 
-  (validate m)
-  (let [s (map str (flatten m))
-        w (apply max (map count s))]
-    (->> (map #(str/align w :right :ellipsis-right %) s)
-         (partition (columns m))
-         (map #(str "| " (str/join "  " %) " |"))
-         (str/join "\n"))))
-
+  ([m fmt]
+    (validate m)
+    (let [s (map #(str (fmt %)) (flatten m))
+          w (apply max (map count s))]
+      (->> (map #(str/align w :right :ellipsis-right %) s)
+          (partition (columns m))
+          (map #(str "| " (str/join "  " %) " |"))
+          (str/join "\n")))))
