@@ -36,7 +36,7 @@ public class ModuleMatrixSection implements ISectionBuilder {
     public DocSection section() {
         final DocSection section = new DocSection(
                                             "Matrix",
-                                            "Simple matrix functions. If need to process large "
+                                            "Simple matrix functions. To process large "
                                               + "matrices use the \"Efficient Java Matrix Library\" "
                                               + "(EJML) http://ejml.org/wiki/) instead.",
                                             "modules.matrix");
