@@ -46,13 +46,14 @@
     :standard-no-data            "+-++|||+-++|||••••+-++|||+-++"
     :standard-no-data-no-outside "•••••|••-+••|••••••-+••|•••••"
     :standard-no-outside         "•••••|••-+••|••-+••-+••|•••••"
-    :standard-minimal            "----•••----•••••••----•••----"
+    :standard-minimal            "•-••••••-••••••••••-••••••-••"
     :double                      "╔═╤╗║│║╠═╪╣║│║╟─┼╢╠═╪╣║│║╚═╧╝"
     :double-no-data              "╔═╤╗║│║╠═╪╣║│║••••╠═╪╣║│║╚═╧╝"
     :bold                        "┏━┯┓┃│┃┣━┿┫┃│┃┠─┼┨┣━┿┫┃│┃┗━┷┛"
     :bold-no-data                "┏━┯┓┃│┃┣━┿┫┃│┃••••┣━┿┫┃│┃┗━┷┛"
-    :minimal                     "────•••────•••••••────•••────"
-    :alpha                       "ABCDEFGHIJKLMNOPQRSTUVWXYZ123" })
+    :minimal                     "•─••••••─••••••••••─••••••─••"
+    :alpha                       "ABCDEFGHIJKLMNOPQRSTUVWXYZ123"
+    :alpha-minimal               "•B••••••I••••••••••T••••••1••" })
 
 
 (def alignments #{:left :center :right})
