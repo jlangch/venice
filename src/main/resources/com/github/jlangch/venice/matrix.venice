@@ -239,11 +239,12 @@
 
   (validate m)
   (if (core/empty? m)
-    (map #(vector %) c)
+    (into [] (map #(vector %) c))
     (do
       (assert (= (count c) (rows m)) "The new column must have ~(rows m) rows")
       (as-> (map vector c m) mat
-            (map #(cons (first %) (second %)) mat)))))
+            (map #(cons (first %) (second %)) mat)
+            (into [] mat)))))
 
 
 (defn 
@@ -268,11 +269,12 @@
 
   (validate m)
   (if (core/empty? m)
-    (map #(vector %) c)
+    (into [] (map #(vector %) c))
     (do
       (assert (= (count c) (rows m)) "The new column must have ~(rows m) rows")
       (as-> (map vector c m) mat
-            (map #(conj (second %) (first %)) mat)))))
+            (map #(conj (second %) (first %)) mat)
+            (into [] mat)))))
 
 
 (defn 

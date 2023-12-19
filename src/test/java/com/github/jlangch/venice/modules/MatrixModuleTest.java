@@ -35,9 +35,9 @@ import com.github.jlangch.venice.VncException;
 
 public class MatrixModuleTest {
 
-	// ------------------------------------------------------------------------
-	// validate
-	// ------------------------------------------------------------------------
+    // ------------------------------------------------------------------------
+    // validate
+    // ------------------------------------------------------------------------
 
     @Test
     public void test_validate_ok_1() {
@@ -197,9 +197,9 @@ public class MatrixModuleTest {
 
 
 
-	// ------------------------------------------------------------------------
-	// empty?
-	// ------------------------------------------------------------------------
+    // ------------------------------------------------------------------------
+    // empty?
+    // ------------------------------------------------------------------------
 
     @Test
     public void test_empty_1() {
@@ -263,9 +263,9 @@ public class MatrixModuleTest {
 
 
 
-	// ------------------------------------------------------------------------
-	// rows
-	// ------------------------------------------------------------------------
+    // ------------------------------------------------------------------------
+    // rows
+    // ------------------------------------------------------------------------
 
     @Test
     public void test_rows_1() {
@@ -329,9 +329,9 @@ public class MatrixModuleTest {
 
 
 
-	// ------------------------------------------------------------------------
-	// columns
-	// ------------------------------------------------------------------------
+    // ------------------------------------------------------------------------
+    // columns
+    // ------------------------------------------------------------------------
 
     @Test
     public void test_columns_1() {
@@ -395,9 +395,9 @@ public class MatrixModuleTest {
 
 
 
-	// ------------------------------------------------------------------------
-	// element
-	// ------------------------------------------------------------------------
+    // ------------------------------------------------------------------------
+    // element
+    // ------------------------------------------------------------------------
 
     @Test
     public void test_element_1() {
@@ -461,9 +461,9 @@ public class MatrixModuleTest {
 
 
 
-	// ------------------------------------------------------------------------
-	// assoc-element
-	// ------------------------------------------------------------------------
+    // ------------------------------------------------------------------------
+    // assoc-element
+    // ------------------------------------------------------------------------
 
     @Test
     public void test_assoc_element_1() {
@@ -515,9 +515,9 @@ public class MatrixModuleTest {
 
 
 
-	// ------------------------------------------------------------------------
-	// row
-	// ------------------------------------------------------------------------
+    // ------------------------------------------------------------------------
+    // row
+    // ------------------------------------------------------------------------
 
     @Test
     public void test_row_1() {
@@ -557,9 +557,9 @@ public class MatrixModuleTest {
 
 
 
-	// ------------------------------------------------------------------------
-	// column
-	// ------------------------------------------------------------------------
+    // ------------------------------------------------------------------------
+    // column
+    // ------------------------------------------------------------------------
 
     @Test
     public void test_column_1() {
@@ -599,9 +599,9 @@ public class MatrixModuleTest {
 
 
 
-	// ------------------------------------------------------------------------
-	// transpose
-	// ------------------------------------------------------------------------
+    // ------------------------------------------------------------------------
+    // transpose
+    // ------------------------------------------------------------------------
 
     @Test
     public void test_transpose_1() {
@@ -674,5 +674,114 @@ public class MatrixModuleTest {
 
         assertEquals("[[1 2] [3 4] [5 6]]", venice.eval(script));
     }
+
+
+
+    // ------------------------------------------------------------------------
+    // add-column-at-start
+    // ------------------------------------------------------------------------
+
+    @Test
+    public void test_add_column_at_start_1() {
+        final Venice venice = new Venice();
+
+        final String script =
+                "(do                                                 \n" +
+                "   (load-module :matrix)                            \n" +
+                "   (pr-str (matrix/add-column-at-start [] [1])))    ";
+
+        assertEquals("[[1]]", venice.eval(script));
+    }
+
+    @Test
+    public void test_add_column_at_start_2() {
+        final Venice venice = new Venice();
+
+        final String script =
+                "(do                                                    \n" +
+                "   (load-module :matrix)                               \n" +
+                "   (pr-str (matrix/add-column-at-start [[1]] [2])))    ";
+
+        assertEquals("[[2 1]]", venice.eval(script));
+    }
+
+    @Test
+    public void test_add_column_at_start_3() {
+        final Venice venice = new Venice();
+
+        final String script =
+                "(do                                                    \n" +
+                "   (load-module :matrix)                               \n" +
+                "   (pr-str (matrix/add-column-at-start [[1 2]] [3])))    ";
+
+        assertEquals("[[3 1 2]]", venice.eval(script));
+    }
+
+    @Test
+    public void test_add_column_at_start_4() {
+        final Venice venice = new Venice();
+
+        final String script =
+                "(do                                                                     \n" +
+                "   (load-module :matrix)                                                \n" +
+                "   (pr-str (matrix/add-column-at-start [[1 2] [3 4] [5 6]] [7 8 9])))    ";
+
+        assertEquals("[[7 1 2] [8 3 4] [9 5 6]]", venice.eval(script));
+    }
+
+
+
+    // ------------------------------------------------------------------------
+    // add-column-at-end
+    // ------------------------------------------------------------------------
+
+    @Test
+    public void test_add_column_at_end_1() {
+        final Venice venice = new Venice();
+
+        final String script =
+                "(do                                               \n" +
+                "   (load-module :matrix)                          \n" +
+                "   (pr-str (matrix/add-column-at-end [] [1])))    ";
+
+        assertEquals("[[1]]", venice.eval(script));
+    }
+
+    @Test
+    public void test_add_column_at_end_2() {
+        final Venice venice = new Venice();
+
+        final String script =
+                "(do                                                  \n" +
+                "   (load-module :matrix)                             \n" +
+                "   (pr-str (matrix/add-column-at-end [[1]] [2])))    ";
+
+        assertEquals("[[1 2]]", venice.eval(script));
+    }
+
+    @Test
+    public void test_add_column_at_end_3() {
+        final Venice venice = new Venice();
+
+        final String script =
+                "(do                                                    \n" +
+                "   (load-module :matrix)                               \n" +
+                "   (pr-str (matrix/add-column-at-end [[1 2]] [3])))    ";
+
+        assertEquals("[[1 2 3]]", venice.eval(script));
+    }
+
+    @Test
+    public void test_add_column_at_end_4() {
+        final Venice venice = new Venice();
+
+        final String script =
+                "(do                                                                    \n" +
+                "   (load-module :matrix)                                               \n" +
+                "   (pr-str (matrix/add-column-at-end [[1 2] [3 4] [5 6]] [7 8 9])))    ";
+
+        assertEquals("[[1 2 7] [3 4 8] [5 6 9]]", venice.eval(script));
+    }
+
 
 }
