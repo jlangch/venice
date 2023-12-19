@@ -45,6 +45,7 @@ public class ModuleMatrixSection implements ISectionBuilder {
         final DocSection main = new DocSection("Matrix", id());
         all.addSection(main);
         main.addItem(diBuilder.getDocItem("matrix/validate"));
+        main.addItem(diBuilder.getDocItem("matrix/empty?"));
         main.addItem(diBuilder.getDocItem("matrix/rows"));
         main.addItem(diBuilder.getDocItem("matrix/columns"));
         main.addItem(diBuilder.getDocItem("matrix/row"));

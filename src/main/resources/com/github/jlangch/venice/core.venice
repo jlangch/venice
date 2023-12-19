@@ -692,7 +692,7 @@
   coalesce
     ([] nil)
     ([x] x)
-    ([x & rest] `(let [c# ~x] (if (core/not (core/ c#)) c# (core/coalesce ~@rest)))))
+    ([x & rest] `(let [c# ~x] (if (core/not (core/nil? c#)) c# (core/coalesce ~@rest)))))
 
 
 (defmacro

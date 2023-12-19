@@ -814,5 +814,7 @@ public class MacroTest {
         assertEquals(null, venice.eval("(coalesce nil nil nil)"));
         assertEquals(Long.valueOf(1L), venice.eval("(coalesce 1)"));
         assertEquals(Long.valueOf(1L), venice.eval("(coalesce nil 1 2)"));
+        assertEquals(Long.valueOf(2L), venice.eval("(coalesce nil nil 2)"));
+        assertEquals(null, venice.eval("(coalesce nil nil nil)"));
     }
 }
