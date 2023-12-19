@@ -466,7 +466,7 @@ public class MatrixModuleTest {
 	// ------------------------------------------------------------------------
 
     @Test
-    public void test_asssoc_element_1() {
+    public void test_assoc_element_1() {
         final Venice venice = new Venice();
 
         final String script =
@@ -478,7 +478,7 @@ public class MatrixModuleTest {
     }
 
     @Test
-    public void test_asssoc_element_2() {
+    public void test_assoc_element_2() {
         final Venice venice = new Venice();
 
         final String script =
@@ -490,7 +490,7 @@ public class MatrixModuleTest {
     }
 
     @Test
-    public void test_asssoc_element_3() {
+    public void test_assoc_element_3() {
         final Venice venice = new Venice();
 
         final String script =
@@ -502,7 +502,7 @@ public class MatrixModuleTest {
     }
 
     @Test
-    public void test_asssoc_element_4() {
+    public void test_assoc_element_4() {
         final Venice venice = new Venice();
 
         final String script =
@@ -513,4 +513,88 @@ public class MatrixModuleTest {
         assertThrows(AssertionException.class, () -> venice.eval(script));
     }
 
-  }
+
+
+	// ------------------------------------------------------------------------
+	// row
+	// ------------------------------------------------------------------------
+
+    @Test
+    public void test_row_1() {
+        final Venice venice = new Venice();
+
+        final String script =
+                "(do                                        \n" +
+                "   (load-module :matrix)                   \n" +
+                "   (pr-str (matrix/row [[1 2][3 4]] 0)))   ";
+
+        assertEquals("[1 2]", venice.eval(script));
+    }
+
+    @Test
+    public void test_row_2() {
+        final Venice venice = new Venice();
+
+        final String script =
+                "(do                                        \n" +
+                "   (load-module :matrix)                   \n" +
+                "   (pr-str (matrix/row [[1 2][3 4]] 1)))   ";
+
+        assertEquals("[3 4]", venice.eval(script));
+    }
+
+    @Test
+    public void test_row_3() {
+        final Venice venice = new Venice();
+
+        final String script =
+                "(do                                        \n" +
+                "   (load-module :matrix)                   \n" +
+                "   (pr-str (matrix/row [[1 2][3 4]] 2)))   ";
+
+        assertThrows(AssertionException.class, () -> venice.eval(script));
+    }
+
+
+
+	// ------------------------------------------------------------------------
+	// column
+	// ------------------------------------------------------------------------
+
+    @Test
+    public void test_column_1() {
+        final Venice venice = new Venice();
+
+        final String script =
+                "(do                                                \n" +
+                "   (load-module :matrix)                           \n" +
+                "   (pr-str (matrix/column [[1 2][3 4][5 6]] 0)))   ";
+
+        assertEquals("[1 3 5]", venice.eval(script));
+    }
+
+    @Test
+    public void test_column_2() {
+        final Venice venice = new Venice();
+
+        final String script =
+                "(do                                                \n" +
+                "   (load-module :matrix)                           \n" +
+                "   (pr-str (matrix/column [[1 2][3 4][5 6]] 1)))   ";
+
+        assertEquals("[2 4 6]", venice.eval(script));
+    }
+
+    @Test
+    public void test_column_3() {
+        final Venice venice = new Venice();
+
+        final String script =
+                "(do                                        \n" +
+                "   (load-module :matrix)                   \n" +
+                "   (pr-str (matrix/row [[1 2][3 4]] 2)))   ";
+
+        assertThrows(AssertionException.class, () -> venice.eval(script));
+    }
+
+}
