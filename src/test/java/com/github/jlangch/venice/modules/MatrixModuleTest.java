@@ -28,6 +28,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import org.junit.jupiter.api.Test;
 
+import com.github.jlangch.venice.AssertionException;
 import com.github.jlangch.venice.Venice;
 import com.github.jlangch.venice.VncException;
 
@@ -193,6 +194,7 @@ public class MatrixModuleTest {
 
         assertThrows(VncException.class, () -> venice.eval(script));
     }
+
 
 
 	// ------------------------------------------------------------------------
@@ -389,6 +391,126 @@ public class MatrixModuleTest {
                 "   (matrix/columns [[1 2] [1 2]]))  ";
 
         assertEquals(2L, venice.eval(script));
+    }
+
+
+
+	// ------------------------------------------------------------------------
+	// element
+	// ------------------------------------------------------------------------
+
+    @Test
+    public void test_element_1() {
+        final Venice venice = new Venice();
+
+        final String script =
+                "(do                           \n" +
+                "   (load-module :matrix)      \n" +
+                "   (matrix/element [] 0 0))   ";
+
+        assertThrows(VncException.class, () -> venice.eval(script));
+    }
+
+    @Test
+    public void test_element_2() {
+        final Venice venice = new Venice();
+
+        final String script =
+                "(do                                     \n" +
+                "   (load-module :matrix)                \n" +
+                "   (matrix/element [[1 2][3 4]] 4 4))   ";
+
+        assertThrows(VncException.class, () -> venice.eval(script));
+    }
+
+    @Test
+    public void test_element_3() {
+        final Venice venice = new Venice();
+
+        final String script =
+                "(do                                     \n" +
+                "   (load-module :matrix)                \n" +
+                "   (matrix/element [[1 2 3 4]] 0 0))   ";
+
+        assertEquals(1L, venice.eval(script));
+    }
+
+    @Test
+    public void test_element_4() {
+        final Venice venice = new Venice();
+
+        final String script =
+                "(do                                     \n" +
+                "   (load-module :matrix)                \n" +
+                "   (matrix/element [[1][2][3][4]] 3 0))   ";
+
+        assertEquals(4L, venice.eval(script));
+    }
+
+    @Test
+    public void test_element_5() {
+        final Venice venice = new Venice();
+
+        final String script =
+                "(do                                     \n" +
+                "   (load-module :matrix)                \n" +
+                "   (matrix/element [[1 2][3 4]] 1 0))   ";
+
+        assertEquals(3L, venice.eval(script));
+    }
+
+
+
+	// ------------------------------------------------------------------------
+	// assoc-element
+	// ------------------------------------------------------------------------
+
+    @Test
+    public void test_asssoc_element_1() {
+        final Venice venice = new Venice();
+
+        final String script =
+                "(do                                                      \n" +
+                "   (load-module :matrix)                                 \n" +
+                "   (pr-str (matrix/assoc-element [[1 2][3 4]] 0 0 9)))   ";
+
+        assertEquals("[[9 2] [3 4]]", venice.eval(script));
+    }
+
+    @Test
+    public void test_asssoc_element_2() {
+        final Venice venice = new Venice();
+
+        final String script =
+                "(do                                                      \n" +
+                "   (load-module :matrix)                                 \n" +
+                "   (pr-str (matrix/assoc-element [[1 2][3 4]] 1 3 9)))   ";
+
+        assertThrows(AssertionException.class, () -> venice.eval(script));
+    }
+
+    @Test
+    public void test_asssoc_element_3() {
+        final Venice venice = new Venice();
+
+        final String script =
+                "(do                                                      \n" +
+                "   (load-module :matrix)                                 \n" +
+                "   (pr-str (matrix/assoc-element [[1 2][3 4]] 6 3 9)))   ";
+
+        assertThrows(AssertionException.class, () -> venice.eval(script));
+    }
+
+    @Test
+    public void test_asssoc_element_4() {
+        final Venice venice = new Venice();
+
+        final String script =
+                "(do                                                      \n" +
+                "   (load-module :matrix)                                 \n" +
+                "   (pr-str (matrix/assoc-element [[1 2][3 4]] 1 6 9)))   ";
+
+        assertThrows(AssertionException.class, () -> venice.eval(script));
     }
 
   }
