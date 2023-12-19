@@ -784,4 +784,112 @@ public class MatrixModuleTest {
     }
 
 
+
+    // ------------------------------------------------------------------------
+    // add-row-at-start
+    // ------------------------------------------------------------------------
+
+    @Test
+    public void test_add_row_at_start_1() {
+        final Venice venice = new Venice();
+
+        final String script =
+                "(do                                              \n" +
+                "   (load-module :matrix)                         \n" +
+                "   (pr-str (matrix/add-row-at-start [] [1])))    ";
+
+        assertEquals("[[1]]", venice.eval(script));
+    }
+
+    @Test
+    public void test_add_row_at_start_2() {
+        final Venice venice = new Venice();
+
+        final String script =
+                "(do                                                 \n" +
+                "   (load-module :matrix)                            \n" +
+                "   (pr-str (matrix/add-row-at-start [[1]] [2])))    ";
+
+        assertEquals("[[2] [1]]", venice.eval(script));
+    }
+
+    @Test
+    public void test_add_row_at_start_3() {
+        final Venice venice = new Venice();
+
+        final String script =
+                "(do                                                   \n" +
+                "   (load-module :matrix)                              \n" +
+                "   (pr-str (matrix/add-row-at-start [[1 2]] [3 4])))  ";
+
+        assertEquals("[[3 4] [1 2]]", venice.eval(script));
+    }
+
+    @Test
+    public void test_add_row_at_start_4() {
+        final Venice venice = new Venice();
+
+        final String script =
+                "(do                                                                 \n" +
+                "   (load-module :matrix)                                            \n" +
+                "   (pr-str (matrix/add-row-at-start [[1 2] [3 4] [5 6]] [8 9])))    ";
+
+        assertEquals("[[8 9] [1 2] [3 4] [5 6]]", venice.eval(script));
+    }
+
+
+
+    // ------------------------------------------------------------------------
+    // add-row-at-end
+    // ------------------------------------------------------------------------
+
+    @Test
+    public void test_add_row_at_end_1() {
+        final Venice venice = new Venice();
+
+        final String script =
+                "(do                                            \n" +
+                "   (load-module :matrix)                       \n" +
+                "   (pr-str (matrix/add-row-at-end [] [1])))    ";
+
+        assertEquals("[[1]]", venice.eval(script));
+    }
+
+    @Test
+    public void test_add_row_at_end_2() {
+        final Venice venice = new Venice();
+
+        final String script =
+                "(do                                               \n" +
+                "   (load-module :matrix)                          \n" +
+                "   (pr-str (matrix/add-row-at-end [[1]] [2])))    ";
+
+        assertEquals("[[1] [2]]", venice.eval(script));
+    }
+
+    @Test
+    public void test_add_row_at_end_3() {
+        final Venice venice = new Venice();
+
+        final String script =
+                "(do                                                 \n" +
+                "   (load-module :matrix)                            \n" +
+                "   (pr-str (matrix/add-row-at-end [[1 2]] [3 4])))  ";
+
+        assertEquals("[[1 2] [3 4]]", venice.eval(script));
+    }
+
+    @Test
+    public void test_add_row_at_end_4() {
+        final Venice venice = new Venice();
+
+        final String script =
+                "(do                                                                 \n" +
+                "   (load-module :matrix)                                            \n" +
+                "   (pr-str (matrix/add-row-at-end [[1 2] [3 4] [5 6]] [7 8])))    ";
+
+        assertEquals("[[1 2] [3 4] [5 6] [7 8]]", venice.eval(script));
+    }
+
+
 }
