@@ -51,6 +51,9 @@
     :double-no-data              "╔═╤╗║│║╠═╪╣║│║••••╠═╪╣║│║╚═╧╝"
     :bold                        "┏━┯┓┃│┃┣━┿┫┃│┃┠─┼┨┣━┿┫┃│┃┗━┷┛"
     :bold-no-data                "┏━┯┓┃│┃┣━┿┫┃│┃••••┣━┿┫┃│┃┗━┷┛"
+    :thin                        "┌─┬┐│││├─┼┤│││├─┼┤├─┼┤│││└─┴┘"
+    :thin-no-data                "┌─┬┐│││├─┼┤│││••••├─┼┤│││└─┴┘"
+    :matrix                      "•••••••••••│ │    •••••••••••"
     :minimal                     "•─••••••─••••••••••─••••••─••"
     :alpha                       "ABCDEFGHIJKLMNOPQRSTUVWXYZ123"
     :alpha-minimal               "•B••••••I••••••••••T••••••1••" })
@@ -141,11 +144,12 @@
       (render-table columns data border padding))))
 
 (defn render-table [columns data border padding]
-  (->> (render-table-rows columns data border padding)
-      (flatten)
-      (map #(if (or (empty? %) (match? % #"[ ]+$")) nil %))
-      (filter some?)
-      (str/join "\n")))
+  (let [columns (if (= :matrix border) (style-for-matrix columns) columns)]
+     (->> (render-table-rows columns data border padding)
+          (flatten)
+          (map #(if (or (empty? %) (match? % #"[ ]+$")) nil %))
+          (filter some?)
+          (str/join "\n"))))
 
 (defn render-table-rows [columns data border padding]
   (let [columns (map validate-column columns)
@@ -315,6 +319,13 @@
  
 (defn as-strings [data]
    (map #(map str %) data))
+
+(defn style-for-matrix [columns]
+  (->> columns
+       (map #(assoc-in % [:header :text] nil))
+       (map #(assoc-in % [:footer :text] nil))
+       (map #(assoc-in % [:body :align] :right))
+       (map #(assoc-in % [:body :overflow] :ellipsis-right))))
 
 (defn transpose [matrix]
   (apply map vector matrix))
