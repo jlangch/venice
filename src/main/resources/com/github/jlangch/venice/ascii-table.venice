@@ -74,7 +74,13 @@
   ^{ :arglists '(
           "(ascii-table/render header data footer border padding)"
           "(ascii-table/render columns data border padding)")
-     :doc "Renders an ascii table."
+     :doc """
+          Renders an ascii table.
+
+          Demos:
+          * `ascii-table/demo-styles`
+          * `ascii-table/demo-two-column-text`
+          """
      :examples (list
           """
           (do
