@@ -42,9 +42,14 @@ public class ModuleAsciiTableSection implements ISectionBuilder {
         final DocSection all = new DocSection("(load-module :ascii-table)", id());
         section.addSection(all);
 
-        final DocSection main = new DocSection("Ascii Table", id());
+        final DocSection main = new DocSection("Render", id());
         all.addSection(main);
         main.addItem(diBuilder.getDocItem("ascii-table/render", true));
+
+        final DocSection demo = new DocSection("Demo", id());
+        all.addSection(demo);
+        demo.addItem(diBuilder.getDocItem("ascii-table/demo-styles", true));
+        demo.addItem(diBuilder.getDocItem("ascii-table/demo-two-column-text", true));
 
         return section;
     }

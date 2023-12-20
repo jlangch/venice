@@ -78,6 +78,7 @@
           Renders an ascii table.
 
           Demos:
+          
           * `ascii-table/demo-styles`
           * `ascii-table/demo-two-column-text`
           """
