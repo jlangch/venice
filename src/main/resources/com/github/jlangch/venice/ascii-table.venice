@@ -58,6 +58,7 @@
     :alpha                       "ABCDEFGHIJKLMNOPQRSTUVWXYZ123"
     :alpha-minimal               "•B••••••I••••••••••T••••••1••" })
 
+(def nil-char #\•)
 
 (def alignments #{:left :center :right})
 (def overflows #{:newline :clip-left :clip-right :ellipsis-left :ellipsis-right})
@@ -143,6 +144,41 @@
     (let [data (as-strings data)]
       (render-table columns data border padding))))
 
+
+(defn demo-styles []
+  (println (render [{:header {:text "header 1\n[kg]", :align :left, :overflow :newline}
+                     :body   {:align :left, :overflow :newline}
+                     :footer {:text "footer 1" :align :left, :overflow :newline}
+                     :width 14}
+                    {:header {:text "header 2\n[kg]", :align :center, :overflow :newline}
+                     :body   {:align :center, :overflow :newline}
+                     :footer {:text "footer 2" :align :center, :overflow :newline}
+                     :width 14}
+                    {:header {:text "header 3\n[kg]", :align :right, :overflow :newline}
+                     :body   {:align :right, :overflow :newline}
+                     :footer {:text "footer 3" :align :right, :overflow :newline}
+                     :width 14}]
+                   [[1 2 3] 
+                    [100 200 300] 
+                    [(str/lorem-ipsum :chars 35)
+                     (str/lorem-ipsum :chars 35)
+                     (str/lorem-ipsum :chars 35)]] 
+                   :double
+                   1)))
+
+
+(defn demo-two-column-text []
+  (println (render [{:body  {:align :left, :overflow :newline}
+                     :width 30}
+                    {:body  {:align :left, :overflow :newline}
+                     :width 30}] 
+                   [[(str/lorem-ipsum :chars 190) 
+                     (str/lorem-ipsum :chars 140)]] 
+                   :thin
+                   1)))
+
+
+
 (defn render-table [columns data border padding]
   (let [columns (if (= :matrix border) (style-for-matrix columns) columns)]
      (->> (render-table-rows columns data border padding)
@@ -155,8 +191,8 @@
   (let [columns (map validate-column columns)
         padding (min-max min-padding max-padding padding)
         border  (validate-border border)
-        bc      (fn [i] (let [c (str (nth border i))] 
-                  (if (= "•" c) "" c)))]
+        bc      (fn [i] (let [c (nth border i)] 
+                          (if (= nil-char c) "" (str c))))]
     [
       ;; header
       (render-border-row columns padding (bc 1) (bc 0) (bc 2) (bc 3))     
@@ -207,7 +243,7 @@
 (defn format-row [columns section cells]
   (->> (adjust-row-cells columns cells)
        (format-row-cells columns section)
-       (adjust-row-cells-height columns)))
+       (adjust-row-cells-height columns section)))
 
 (defn adjust-row-cells [columns cells]
   (let [cells          (sublist cells 0 (count columns))  
@@ -215,21 +251,23 @@
     (concat cells (repeat add-cell-count [ "" ]))))
 
 (defn format-row-cells [columns section cells]
-  (map-indexed (fn [i v] 
-                 (let [col (nth columns i)]
-                   (str/align (:width col) 
-                              (-> col section :align) 
-                              (-> col section :overflow)  
-                              v))) 
+  (map-indexed (fn [i v] (let [col (nth columns i)]
+                           (str/align (:width col) 
+                                      (-> col section :align) 
+                                      (-> col section :overflow)  
+                                      v)))
                cells))        
 
-(defn adjust-row-cells-height [columns cells]
+(defn adjust-row-cells-height [columns section cells]
   (let [cells      (map str/split-lines cells)
-        max-lines  (apply max (map count cells))]
-    (map-indexed (fn [i v] 
-                   (let [width (:width (nth columns i))]
-                      (concat v (repeat (max 0 (- max-lines (count v))) 
-                                        (str/repeat " " width)))))
+        cell-lines (map-indexed (fn [i v] (+ v (-> (nth columns i) 
+                                                   section 
+                                                   :pad-rows)))
+                                (map count cells))
+        max-lines  (apply max cell-lines)]
+    (map-indexed (fn [i v] (let [width (:width (nth columns i))]
+                             (concat v (repeat (max 0 (- max-lines (count v))) 
+                                               (str/repeat " " width)))))
                  cells)))
 
 (defn header? [columns]
@@ -248,12 +286,12 @@
          (range cols))))
 
 (defn build-column [header footer data]
-  (let [width (max (max-line-length header) 
-                   (max-line-length footer)
+  (let [width (max (max-line-length (str header)) 
+                   (max-line-length (str footer))
                    (max-line-length data))]
-    { :header        { :text (or header "") }
-      :footer        { :text (or footer "") }
-      :width         width }))
+    { :header  { :text (or header "") }
+      :footer  { :text (or footer "") }
+      :width   width }))
 
 (defn max-line-length [text]
   (if (sequential? text)
@@ -281,14 +319,17 @@
         min-width (max (:min-width column) min-col-width)
         max-width (min (:max-width column) max-col-width)
         width     (:width column)]
-    { :header    {:text     (or (-> column :header :text) "")
+    { :header    {:text     (or (str (-> column :header :text)) "")
                   :align    (validate-align (-> column :header :align))
-                  :overflow (validate-overflow (-> column :header :overflow))}
+                  :overflow (validate-overflow (-> column :header :overflow))                  
+                  :pad-rows (validate-pad-rows (-> column :header :pad-rows))}
       :body      {:align    (validate-align (-> column :body :align))
-                  :overflow (validate-overflow (-> column :body :overflow))}
-      :footer    {:text     (or (-> column :footer :text) "")
+                  :overflow (validate-overflow (-> column :body :overflow))                  
+                  :pad-rows (validate-pad-rows (-> column :body :pad-rows))}
+      :footer    {:text     (or (str (-> column :footer :text)) "")
                   :align    (validate-align (-> column :footer :align))
-                  :overflow (validate-overflow (-> column :footer :overflow))}                   
+                  :overflow (validate-overflow (-> column :footer :overflow))                  
+                  :pad-rows (validate-pad-rows (-> column :footer :pad-rows))}                   
       :min-width min-width
       :max-width max-width
       :width     (min-max min-width max-width width) }))
@@ -298,6 +339,9 @@
 
 (defn validate-overflow [overflow]
   (if (keyword? overflow) (overflow overflows :newline) :newline))
+
+(defn validate-pad-rows [pad-rows]
+  (if (long? pad-rows) (max 0 pad-rows) 0))
 
 (defn validate-border [border]
   (case (type border)
@@ -322,9 +366,9 @@
 
 (defn style-for-matrix [columns]
   (->> columns
-       (map #(assoc-in % [:header :text] nil))
-       (map #(assoc-in % [:footer :text] nil))
-       (map #(assoc-in % [:body :align] :right))
+       (map #(assoc-in % [:header :text] nil))     ; no header
+       (map #(assoc-in % [:footer :text] nil))     ; no footer
+       (map #(assoc-in % [:body :align] :right))   ; all cells right aligned
        (map #(assoc-in % [:body :overflow] :ellipsis-right))))
 
 (defn transpose [matrix]
