@@ -248,7 +248,7 @@
 (defn adjust-row-cells [columns cells]
   (let [cells          (sublist cells 0 (count columns))  
         add-cell-count (max 0 (- (count columns) (count cells)))]
-    (concat cells (repeat add-cell-count [ "" ]))))
+    (concat cells (repeat add-cell-count ""))))
 
 (defn format-row-cells [columns section cells]
   (map-indexed (fn [i v] (let [col (nth columns i)]
