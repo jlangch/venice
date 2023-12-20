@@ -77,8 +77,8 @@
      :doc """
           Renders an ascii table.
 
-          Demos:
-          
+          Demo functions:
+
           * `ascii-table/demo-styles`
           * `ascii-table/demo-two-column-text`
           """
