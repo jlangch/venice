@@ -341,6 +341,53 @@ The ASCII tables module provides a simple way to render tabular data in pure asc
 </td>
 </tr>
 
+<tr>
+<td>:standard-no-data-no-outside</td>
+<td>
+
+```
+ 1     |   1   |     2 
+ 2     |   10  |    20 
+ 3     |  100  |   200 
+```
+
+</td>
+</tr>
+
+
+</td>
+</tr>
+
+<tr>
+<td>:standard-no-outside</td>
+<td>
+
+```
+ 1     |   1   |     2 
+-------+-------+-------
+ 2     |   10  |    20 
+-------+-------+-------
+ 3     |  100  |   200 
+```
+
+</td>
+</tr>
+
+<tr>
+<td>:standard-minimal</td>
+<td>
+
+```
+---------------------
+ 1        1        2 
+ 2        10      20 
+ 3       100     200 
+---------------------
+```
+
+</td>
+</tr>
+
 </table>
 
 
