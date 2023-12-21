@@ -124,7 +124,7 @@ The ASCII tables module provides a simple way to render tabular data in pure asc
 
 
 
-## Multi-column ascii text
+## Multi-column ascii text layout
 
 
 <table>
@@ -195,34 +195,10 @@ The ASCII tables module provides a simple way to render tabular data in pure asc
  dictum id sem et           dictum id sem et          
  consectetur. Nullam        consectetur.              
  lobortis, libero non co                              
- 
-
 ```
 
 </td>
 </tr>
 </table>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-The sample data used in the examples is provided by [NASA Planet Compare](https://solarsystem.nasa.gov/planet-compare/).
 
 
