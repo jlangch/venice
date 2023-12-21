@@ -7,7 +7,7 @@ The ASCII tables module provides a simple way to render tabular data in pure asc
 * [Header, footer, cell alignment](#header-footer-cell-alignment)
 * [Borders](#borders)
 * [Cell overflow](#cell-overflow)
-* [Multi-column ascii text](#multi-column-ascii-text)
+* [Multi-column text](#multi-column-text)
 
 
 ## Basic without styling
@@ -565,7 +565,7 @@ The ASCII tables module provides a simple way to render tabular data in pure asc
 ```
 
 
-## Multi-column ascii text
+## Multi-column text
 
 
 <table>
