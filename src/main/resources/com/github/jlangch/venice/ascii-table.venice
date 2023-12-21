@@ -319,10 +319,9 @@
   (->> (footer-cells columns) (filter not-empty?) not-empty?))
 
 (defn build-columns [header data footer]
-  (let [cols (max (count header) 
-                  (apply max (map count data))
-                  (count footer))
-                  
+  (let [cols  (max (count header) 
+                   (apply max (map count data))
+                   (count footer))
         tdata (transpose data)]
     (map (fn [col-idx] (build-column (nth header col-idx nil)
                                      (nth footer col-idx nil)
@@ -417,7 +416,6 @@
     (throw (ex :VncException "The data must be 2-D vector/list of values!")))
   (when-not (apply = true (map #(sequential? %) data))
     (throw (ex :VncException "The data must be 2-D vector/list of values")))
-
   (if (empty? data)
     data
     (let [len (apply max (map count data))]
