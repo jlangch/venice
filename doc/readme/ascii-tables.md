@@ -8,6 +8,11 @@ The ASCII tables module provides a simple way to render tabular data in pure asc
 
 <table>
 <tr>
+<td>Without feader & footer</td>
+<td>Header</td>
+<td>Header & footer</td>
+</tr>
+<tr>
 <td>
 
 ```clojure
