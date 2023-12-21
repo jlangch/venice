@@ -122,6 +122,139 @@ The ASCII tables module provides a simple way to render tabular data in pure asc
 ## Column and border styles
 
 
+<table>
+<tr>
+<td>Without Header & Footer</td>
+<td>Header</td>
+<td>Header & Footer</td>
+</tr>
+<tr>
+<td>
+
+```clojure
+(do
+  (load-module :ascii-table)
+  (ascii-table/print 
+     [{:body  {:align :left, :overflow :newline}
+       :width 5}
+      {:body  {:align :center, :overflow :newline}
+       :width 5}
+      {:body  {:align :right, :overflow :newline}
+       :width 5}] 
+     [[1 "1"   "2"  ] 
+      [2 "10"  "20" ] 
+      [3 "100" "200"]] 
+     :double
+     1))
+``` 
+
+</td>
+<td>
+
+```clojure
+(do
+  (load-module :ascii-table)
+  (ascii-table/print 
+     [{:header {:text "hd 1", :align :left }
+       :body   {:align :left, :overflow :newline}
+       :width 8}
+      {:header {:text "hd 2", :align :center }
+       :body  {:align :center, :overflow :newline}
+       :width 8}
+      {:header {:text "hd 3", :align :right }
+       :body  {:align :right, :overflow :newline}
+       :width 8}] 
+     [[1 "1"   "2"  ] 
+      [2 "10"  "20" ] 
+      [3 "100" "200"]] 
+     :double
+     1))
+``` 
+
+</td>
+<td>
+
+```clojure
+(do
+  (load-module :ascii-table)
+  (ascii-table/print 
+     [{:header {:text "hd 1", :align :left }
+       :body   {:align :left, :overflow :newline}
+       :footer {:text "ft 1", :align :left }
+       :width 8}
+      {:header {:text "hd 2", :align :center }
+       :body  {:align :center, :overflow :newline}
+       :footer {:text "ft 2", :align :center }
+       :width 8}
+      {:header {:text "hd 3", :align :right }
+       :body  {:align :right, :overflow :newline}
+       :footer {:text "ft 3", :align :right }
+       :width 8}] 
+     [[1 "1"   "2"  ] 
+      [2 "10"  "20" ] 
+      [3 "100" "200"]] 
+     :double
+     1))
+``` 
+
+</td>
+</tr>
+<tr>
+<td>
+
+```
+╔═══════╤═══════╤═══════╗
+║ 1     │   1   │     2 ║
+╟───────┼───────┼───────╢
+║ 2     │   10  │    20 ║
+╟───────┼───────┼───────╢
+║ 3     │  100  │   200 ║
+╚═══════╧═══════╧═══════╝
+
+
+
+
+```
+
+</td>
+<td>
+
+```
+╔══════════╤══════════╤══════════╗
+║ hd 1     │   hd 2   │     hd 3 ║
+╠══════════╪══════════╪══════════╣
+║ 1        │     1    │        2 ║
+╟──────────┼──────────┼──────────╢
+║ 2        │    10    │       20 ║
+╟──────────┼──────────┼──────────╢
+║ 3        │    100   │      200 ║
+╚══════════╧══════════╧══════════╝
+
+
+
+```
+
+</td>
+<td>
+
+```
++---+----------+----------+
+|   | header 1 | header 2 |
++---+----------+----------+
+| 1 | 1        | 2        |
++---+----------+----------+
+| 2 | 10       | 20       |
++---+----------+----------+
+| 3 | 100      | 200      |
++---+----------+----------+
+|   | footer 1 | footer 3 |
++---+----------+----------+
+```
+
+</td>
+</tr>
+</table>
+
 
 
 ## Multi-column ascii text layout
