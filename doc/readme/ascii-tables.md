@@ -258,6 +258,91 @@ The ASCII tables module provides a simple way to render tabular data in pure asc
 
 ## Borders
 
+```
+(do
+  (load-module :ascii-table)
+  
+  (defn print-with-border [border]
+    (ascii-table/print 
+       [{:body  {:align :left, :overflow :newline}
+         :width 5}
+        {:body  {:align :center, :overflow :newline}
+         :width 5}
+        {:body  {:align :right, :overflow :newline}
+         :width 5}] 
+       [[1 "1"   "2"  ] 
+        [2 "10"  "20" ] 
+        [3 "100" "200"]] 
+       border
+       1)
+     (println)
+     (println))
+       
+   (docoll print-with-border [:none                       
+                              :standard                   
+                              :standard-no-data           
+                              :standard-no-data-no-outside
+                              :standard-no-outside        
+                              :standard-minimal           
+                              :double                     
+                              :double-no-data             
+                              :bold                       
+                              :bold-no-data               
+                              :thin                       
+                              :thin-no-data               
+                              :matrix                     
+                              :minimal]))
+```
+
+<table>
+
+<tr>
+<td>:none</td>
+<td>
+
+```
+ 1        1        2 
+ 2        10      20 
+ 3       100     200 
+```
+
+</td>
+</tr>
+
+<tr>
+<td>:standard</td>
+<td>
+
+```
++-------+-------+-------+
+| 1     |   1   |     2 |
++-------+-------+-------+
+| 2     |   10  |    20 |
++-------+-------+-------+
+| 3     |  100  |   200 |
++-------+-------+-------+
+```
+
+</td>
+</tr>
+
+<tr>
+<td>:standard-no-data</td>
+<td>
+
+```
++-------+-------+-------+
+| 1     |   1   |     2 |
+| 2     |   10  |    20 |
+| 3     |  100  |   200 |
++-------+-------+-------+
+```
+
+</td>
+</tr>
+
+</table>
+
 
 ## Cell overflow
 
