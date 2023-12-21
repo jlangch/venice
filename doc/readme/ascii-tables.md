@@ -259,83 +259,46 @@ The ASCII tables module provides a simple way to render tabular data in pure asc
 ## Borders
 
 
+## Cell overflow
 
-
-## Multi-column ascii text layout
-
-
-<table>
-<tr>
-<td>Border</td>
-<td>Without Border</td>
-</tr>
-<tr>
-<td>
 
 ```clojure
 (do
   (load-module :ascii-table)
   (ascii-table/print 
-    [{:body  {:align :left, :overflow :newline}
-      :width 25}
-     {:body  {:align :left, :overflow :newline}
-      :width 25}] 
-     [[(str/lorem-ipsum :chars 150) 
-       (str/lorem-ipsum :chars 120)]] 
-     :thin
+     [{:header {:text ":newline"}
+       :body  {:align :left, :overflow :newline}
+       :width 20}
+      {:header {:text ":clip-right"}
+       :body  {:align :center, :overflow :clip-right}
+       :width 20}
+      {:header {:text ":clip-left"}
+       :body  {:align :center, :overflow :clip-left}
+       :width 20}
+      {:header {:text ":ellipsis-right"}
+       :body  {:align :center, :overflow :ellipsis-right}
+       :width 20}
+      {:header {:text ":ellipsis-left"}
+       :body  {:align :center, :overflow :ellipsis-left}
+       :width 20}] 
+     [[(str/lorem-ipsum :chars 60)
+       (str/lorem-ipsum :chars 60)
+       (str/lorem-ipsum :chars 60) 
+       (str/lorem-ipsum :chars 60)
+       (str/lorem-ipsum :chars 60)]] 
+     :double
      1))
 ``` 
 
-</td>
-<td>
-
-```clojure
-(do
-  (load-module :ascii-table)
-  (ascii-table/print 
-    [{:body  {:align :left, :overflow :newline}
-      :width 25}
-     {:body  {:align :left, :overflow :newline}
-      :width 25}] 
-     [[(str/lorem-ipsum :chars 150) 
-       (str/lorem-ipsum :chars 120)]] 
-     :none
-     1))
-``` 
-
-</td>
-</tr>
-
-<tr>
-<td>
-
 ```
-┌───────────────────────────┬───────────────────────────┐
-│ Lorem ipsum dolor sit     │ Lorem ipsum dolor sit     │
-│ amet, consectetur         │ amet, consectetur         │
-│ adipiscing elit. Praesent │ adipiscing elit. Praesent │
-│ ac iaculis turpis. Duis   │ ac iaculis turpis. Duis   │
-│ dictum id sem et          │ dictum id sem et          │
-│ consectetur. Nullam       │ consectetur.              │
-│ lobortis, libero non co   │                           │
-└───────────────────────────┴───────────────────────────┘
+╔══════════════════════╤══════════════════════╤══════════════════════╤══════════════════════╤══════════════════════╗
+║ :newline             │ :clip-right          │ :clip-left           │ :ellipsis-right      │ :ellipsis-left       ║
+╠══════════════════════╪══════════════════════╪══════════════════════╪══════════════════════╪══════════════════════╣
+║ Lorem ipsum dolor    │ Lorem ipsum dolor si │ adipiscing elit. Pra │ Lorem ipsum dolor s… │ …dipiscing elit. Pra ║
+║ sit amet, consectetu │                      │                      │                      │                      ║
+║ r adipiscing elit.   │                      │                      │                      │                      ║
+║ Pra                  │                      │                      │                      │                      ║
+╚══════════════════════╧══════════════════════╧══════════════════════╧══════════════════════╧══════════════════════╝
 ```
-
-</td>
-<td>
-
-```
- Lorem ipsum dolor sit      Lorem ipsum dolor sit     
- amet, consectetur          amet, consectetur         
- adipiscing elit. Praesent  adipiscing elit. Praesent 
- ac iaculis turpis. Duis    ac iaculis turpis. Duis   
- dictum id sem et           dictum id sem et          
- consectetur. Nullam        consectetur.              
- lobortis, libero non co                              
-```
-
-</td>
-</tr>
-</table>
 
 
