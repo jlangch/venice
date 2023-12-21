@@ -157,13 +157,13 @@ The ASCII tables module provides a simple way to render tabular data in pure asc
   (ascii-table/print 
      [{:header {:text "hd 1", :align :left }
        :body   {:align :left, :overflow :newline}
-       :width 8}
+       :width  8}
       {:header {:text "hd 2", :align :center }
-       :body  {:align :center, :overflow :newline}
-       :width 8}
+       :body   {:align :center, :overflow :newline}
+       :width  8}
       {:header {:text "hd 3", :align :right }
-       :body  {:align :right, :overflow :newline}
-       :width 8}] 
+       :body   {:align :right, :overflow :newline}
+       :width  8}] 
      [[1 "1"   "2"  ] 
       [2 "10"  "20" ] 
       [3 "100" "200"]] 
@@ -181,15 +181,15 @@ The ASCII tables module provides a simple way to render tabular data in pure asc
      [{:header {:text "hd 1", :align :left }
        :body   {:align :left, :overflow :newline}
        :footer {:text "ft 1", :align :left }
-       :width 8}
+       :width  8}
       {:header {:text "hd 2", :align :center }
-       :body  {:align :center, :overflow :newline}
+       :body   {:align :center, :overflow :newline}
        :footer {:text "ft 2", :align :center }
-       :width 8}
+       :width  8}
       {:header {:text "hd 3", :align :right }
-       :body  {:align :right, :overflow :newline}
+       :body   {:align :right, :overflow :newline}
        :footer {:text "ft 3", :align :right }
-       :width 8}] 
+       :width  8}] 
      [[1 "1"   "2"  ] 
       [2 "10"  "20" ] 
       [3 "100" "200"]] 
@@ -254,6 +254,10 @@ The ASCII tables module provides a simple way to render tabular data in pure asc
 </td>
 </tr>
 </table>
+
+
+## Borders
+
 
 
 
