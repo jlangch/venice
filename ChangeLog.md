@@ -6,7 +6,7 @@ All notable changes to this project will be documented in this file.
 
 
 
-## [1.11.0] - 2023-12-xx
+## [1.11.0] - 2023-12-21
 
 ### Added 
 
@@ -16,6 +16,7 @@ All notable changes to this project will be documented in this file.
 
 - :core module to use qualified core functions within macros to follow
   the "principal of least surprise". 
+
 
 
 ## [1.10.56] - 2023-12-12

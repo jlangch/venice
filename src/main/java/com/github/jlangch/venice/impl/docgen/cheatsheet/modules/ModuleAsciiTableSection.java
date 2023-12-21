@@ -44,7 +44,8 @@ public class ModuleAsciiTableSection implements ISectionBuilder {
 
         final DocSection main = new DocSection("Render", id());
         all.addSection(main);
-        main.addItem(diBuilder.getDocItem("ascii-table/render", true));
+        main.addItem(diBuilder.getDocItem("ascii-table/render"));
+        main.addItem(diBuilder.getDocItem("ascii-table/print"));
 
         return section;
     }

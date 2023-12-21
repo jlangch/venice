@@ -133,7 +133,10 @@
                                          [["1" "2"] ["3" "4"]] 
                                          :double
                                          1)))
-          """ ) }
+          """ )
+     :see-also '(
+          "ascii-table/print") }
+
   render 
 
   ([header data footer border padding]
@@ -157,6 +160,10 @@
           "(ascii-table/print columns data border padding)")
      :doc """
           Renders and prints an ascii table.
+
+          Actually does:
+
+          `(println (ascii-table/render ...))`
           """
      :examples (list
           """
@@ -167,7 +174,10 @@
                                ["foot 1" "foot 2"] 
                                :standard
                                1))
-          """ ) }
+          """ ) 
+     :see-also '(
+          "ascii-table/render")}
+
   print 
 
   ([header data footer border padding]
