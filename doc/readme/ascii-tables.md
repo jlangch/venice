@@ -62,8 +62,8 @@ The ASCII tables module provides a simple way to render tabular data in pure asc
 
 </td>
 </tr>
-<tr style="vertical-align: top;">
-<td>
+<tr>
+<td style="vertical-align: top;">
 
 ```
 +---+----------+----------+
