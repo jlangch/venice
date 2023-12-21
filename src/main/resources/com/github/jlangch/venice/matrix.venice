@@ -210,7 +210,7 @@
 
   (validate m)
   (assert (< -1 n (columns m)) "Invalid column index ~{n}")
-  (into [] (map #(nth % n) m)))
+  (mapv #(nth % n) m))
 
 
 (defn 
@@ -233,7 +233,7 @@
 
   transpose [m]
   
-  (if (empty? m) [] (into [] (apply map vector (validate m)))))
+  (if (empty? m) [] (apply mapv vector (validate m))))
 
 
 (defn 
@@ -258,12 +258,11 @@
 
   (validate m)
   (if (core/empty? m)
-    (into [] (map #(vector %) c))
+    (mapv #(vector %) c)
     (do
       (assert (= (count c) (rows m)) "The new column must have ~(rows m) rows")
-      (as-> (map vector c m) mat
-            (map #(cons (first %) (second %)) mat)
-            (into [] mat)))))
+      (as-> (mapv vector c m) mat
+            (mapv #(cons (first %) (second %)) mat)))))
 
 
 (defn 
@@ -288,12 +287,11 @@
 
   (validate m)
   (if (core/empty? m)
-    (into [] (map #(vector %) c))
+    (mapv #(vector %) c)
     (do
       (assert (= (count c) (rows m)) "The new column must have ~(rows m) rows")
-      (as-> (map vector c m) mat
-            (map #(conj (second %) (first %)) mat)
-            (into [] mat)))))
+      (as-> (mapv vector c m) mat
+            (mapv #(conj (second %) (first %)) mat)))))
 
 
 (defn 
@@ -369,7 +367,7 @@
   (validate m)
   (let [c (columns m)]
     (assert (< -1 n c) "Invalid column index ~{n}")
-    (if (= 1 c) [] (into [] (map #(dissoc % n) m)))))
+    (if (= 1 c) [] (mapv #(dissoc % n) m))))
 
 
 (defn 
