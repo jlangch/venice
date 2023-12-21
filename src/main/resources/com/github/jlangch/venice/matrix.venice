@@ -77,7 +77,7 @@
   ^{ :arglists '(
           "(matrix/vector2d m)")
      :doc """
-          Converts a 2D sequential collection in a 2D vector
+          Converts a 2D sequential collection into a 2D vector
           """
      :examples (list
           """
