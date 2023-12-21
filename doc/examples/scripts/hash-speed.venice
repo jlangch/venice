@@ -58,12 +58,15 @@
       (io/spit file data)
       (io/slurp file :binary true) ;; warm up os file read
 
-      (concat
-        ;; file based: MD5, SHA-1, SHA-256
-        (map (fn [a] (t/elapsed #(crypt/hash-file a salt file))) algorithms)
+      (->> (concat
+             ;; file based: MD5, SHA-1, SHA-256
+             (map (fn [a] (t/elapsed #(crypt/hash-file a salt file))) 
+                  algorithms)
 
-        ;; memory based: MD5, SHA-1, SHA-256
-        (map (fn [a] (t/elapsed #(crypt/hash-file a salt data))) algorithms))))
+            ;; memory based: MD5, SHA-1, SHA-256
+             (map (fn [a] (t/elapsed #(crypt/hash-file a salt data))) 
+                  algorithms))
+           (into []))))
 
   (defn run-sample []
     (when-not (io/exists-dir? test-dir)
@@ -80,7 +83,7 @@
                                           :width  6)
                                samples))]
       (as-> (map #(run % algorithms) samples) data
+            (into [] data)
             (matrix/transpose data)
-            (matrix/add-column-start data sections)
-            (ascii-table/render columns data :bold-no-data 1)
-            (println data)))))
+            (matrix/add-column-at-start data sections)
+            (ascii-table/print columns data :bold-no-data 1)))))

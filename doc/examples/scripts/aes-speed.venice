@@ -159,16 +159,16 @@
         timings)))
 
   (defn sections []
-    (flatten  [ "Encrypt AES-256 CBC"
-                "Decrypt AES-256 CBC"
-                "Encrypt AES-256 GCM"
-                "Decrypt AES-256 GCM"
-                "Encrypt ChaCha20" 
-                "Decrypt ChaCha20" 
-                "Encrypt ChaCha20-BC" 
-                "Decrypt ChaCha20-BC"
-                "Encrypt AES-256 ZIP"
-                "Decrypt AES-256 ZIP"] ))
+    [ "Encrypt AES-256 CBC"
+      "Decrypt AES-256 CBC"
+      "Encrypt AES-256 GCM"
+      "Decrypt AES-256 GCM"
+      "Encrypt ChaCha20" 
+      "Decrypt ChaCha20" 
+      "Encrypt ChaCha20-BC" 
+      "Decrypt ChaCha20-BC"
+      "Encrypt AES-256 ZIP"
+      "Decrypt AES-256 ZIP"] )
 
   (defn run-sample []
     (when-not (io/exists-dir? test-dir)
@@ -183,7 +183,7 @@
                                          :width  6)
                               samples))]
       (as-> (map #(run %) samples) data
+            (into [] data)
             (matrix/transpose data)
-            (matrix/add-column-start data sections)
-            (ascii-table/render columns data :bold-no-data 1)
-            (println data)))))
+            (matrix/add-column-at-start data sections)
+            (ascii-table/print columns data :bold-no-data 1)))))
