@@ -73,12 +73,12 @@
           algorithms ["MD5" "SHA-1" "SHA-256"]
           sections   ["MD5 (file)"   "SHA-1 (file)"   "SHA-256 (file)"
                       "MD5 (memory)" "SHA-1 (memory)" "SHA-256 (memory)"]
-          columns   (cons {:header {:text "" } :width 16}
-                          (map #(hash-map :header {:text (format-size %)
-                                                   :align :right}
-                                          :body   {:align :right}
-                                          :width  6)
-                               samples))]
+          columns    (cons {:header {:text "" } :width 16}
+                           (map #(hash-map :header {:text (format-size %)
+                                                    :align :right}
+                                           :body   {:align :right}
+                                           :width  6)
+                                samples))]
       (as-> (map #(run % algorithms) samples) data
             (into [] data) ;;convert to vector
             (matrix/transpose data)
