@@ -116,11 +116,92 @@ The ASCII tables module provides a simple way to render tabular data in pure asc
 </td>
 </tr>
 </table>
-    
+
+
+
 ## Column and border styles
 
 
 
+
+## Multi-column ascii text
+
+
+<table>
+<tr>
+<td>Border</td>
+<td>Without Border</td>
+</tr>
+<tr>
+<td>
+
+```clojure
+(do
+  (load-module :ascii-table)
+  (ascii-table/print 
+    [{:body  {:align :left, :overflow :newline}
+      :width 25}
+     {:body  {:align :left, :overflow :newline}
+      :width 25}] 
+     [[(str/lorem-ipsum :chars 150) 
+       (str/lorem-ipsum :chars 120)]] 
+     :thin
+     1))
+``` 
+
+</td>
+<td>
+
+```clojure
+(do
+  (load-module :ascii-table)
+  (ascii-table/print 
+    [{:body  {:align :left, :overflow :newline}
+      :width 25}
+     {:body  {:align :left, :overflow :newline}
+      :width 25}] 
+     [[(str/lorem-ipsum :chars 150) 
+       (str/lorem-ipsum :chars 120)]] 
+     :none
+     1))
+``` 
+
+</td>
+</tr>
+
+<tr>
+<td>
+
+```
+┌───────────────────────────┬───────────────────────────┐
+│ Lorem ipsum dolor sit     │ Lorem ipsum dolor sit     │
+│ amet, consectetur         │ amet, consectetur         │
+│ adipiscing elit. Praesent │ adipiscing elit. Praesent │
+│ ac iaculis turpis. Duis   │ ac iaculis turpis. Duis   │
+│ dictum id sem et          │ dictum id sem et          │
+│ consectetur. Nullam       │ consectetur.              │
+│ lobortis, libero non co   │                           │
+└───────────────────────────┴───────────────────────────┘
+```
+
+</td>
+<td>
+
+```
+ Lorem ipsum dolor sit      Lorem ipsum dolor sit     
+ amet, consectetur          amet, consectetur         
+ adipiscing elit. Praesent  adipiscing elit. Praesent 
+ ac iaculis turpis. Duis    ac iaculis turpis. Duis   
+ dictum id sem et           dictum id sem et          
+ consectetur. Nullam        consectetur.              
+ lobortis, libero non co                              
+ 
+
+```
+
+</td>
+</tr>
+</table>
 
 
 
