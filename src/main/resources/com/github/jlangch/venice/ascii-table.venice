@@ -251,8 +251,8 @@
           (->> (map #(render-data-rows columns :body padding % 
                                        (bc 11) (bc 12) (bc 13)) 
                     data)
-              (interpose body-border)
-              (flatten))))
+               (interpose body-border)
+               (flatten))))
      
       ;; footer
       (when (footer? columns)
