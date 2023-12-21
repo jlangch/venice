@@ -72,6 +72,25 @@
   (validate m)
   (core/empty? m))
 
+
+(defn 
+  ^{ :arglists '(
+          "(matrix/vector2d m)")
+     :doc """
+          Converts a 2D sequential collection in a 2D vector
+          """
+     :examples (list
+          """
+          (do
+            (load-module :matrix)
+            (matrix/vector2d (list (list 1 2 3) (list 4 5 6))))
+          """ ) }
+
+  vector2d [m]
+
+  (mapv (partial into []) m))
+
+
 (defn 
   ^{ :arglists '(
           "(matrix/rows m)")
