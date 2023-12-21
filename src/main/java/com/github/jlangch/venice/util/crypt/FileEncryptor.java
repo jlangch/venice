@@ -96,7 +96,7 @@ public class FileEncryptor {
             default:
                 throw new RuntimeException("Unsupported algorithm '" + algorithm + "'!");
         }
-   }
+    }
 
     public static byte[] encryptFileWithKey(
             final String algorithm,
