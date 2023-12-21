@@ -151,6 +151,31 @@
     (let [data (as-strings data)]
       (render-table columns data border padding))))
 
+(defn 
+  ^{ :arglists '(
+          "(ascii-table/print header data footer border padding)"
+          "(ascii-table/print columns data border padding)")
+     :doc """
+          Renders and prints an ascii table.
+          """
+     :examples (list
+          """
+          (do
+            (load-module :ascii-table)
+            (ascii-table/print ["head 1" "head 2"] 
+                               [["1 1" "1 2"] ["2 1" "2 2"]] 
+                               ["foot 1" "foot 2"] 
+                               :standard
+                               1))
+          """ ) }
+  print 
+
+  ([header data footer border padding]
+    (println (render header data footer border padding)))
+
+  ([columns data border padding]
+    (println (render columns data border padding))))
+
 
 (defn demo-styles []
   (println (render [{:header {:text "header 1\n[kg]", :align :left, :overflow :newline}

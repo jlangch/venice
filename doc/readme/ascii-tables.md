@@ -11,42 +11,48 @@ The ASCII tables module provides a simple way to render tabular data in pure asc
 <td>
 
 ```clojure
-(ascii-table/render 
-   nil 
-   [[1 "1"   "2"  ] 
-    [2 "10"  "20" ] 
-    [3 "100" "200"]] 
-   nil 
-   :standard
-   1)))
+(do
+  (load-module :ascii-table)
+  (ascii-table/print 
+     nil 
+     [[1 "1"   "2"  ] 
+      [2 "10"  "20" ] 
+      [3 "100" "200"]] 
+     nil 
+     :standard
+     1)))))
 ``` 
 
 </td>
 <td>
 
 ```clojure
-(ascii-table/render 
-   ["" "header 1" "header 2"] 
-   [[1 "1"   "2"  ] 
-    [2 "10"  "20" ] 
-    [3 "100" "200"]] 
-   nil
-   :standard
-   1)))
+(do
+  (load-module :ascii-table)
+  (ascii-table/print 
+    ["" "header 1" "header 2"] 
+    [[1 "1"   "2"  ] 
+     [2 "10"  "20" ] 
+     [3 "100" "200"]] 
+    nil
+    :standard
+    1)))
 ``` 
 
 </td>
 <td>
 
 ```clojure
-(ascii-table/render 
-   ["" "header 1" "header 2"] 
-   [[1 "1"   "2"  ] 
-    [2 "10"  "20" ] 
-    [3 "100" "200"]] 
-   ["" "footer 1" "footer 3"] 
-   :standard
-   1)))
+(do
+  (load-module :ascii-table)
+  (ascii-table/print 
+    ["" "header 1" "header 2"] 
+    [[1 "1"   "2"  ] 
+     [2 "10"  "20" ] 
+     [3 "100" "200"]] 
+    ["" "footer 1" "footer 3"] 
+    :standard
+    1)))
 ``` 
 
 </td>
