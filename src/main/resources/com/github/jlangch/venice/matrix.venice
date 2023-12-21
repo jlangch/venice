@@ -260,7 +260,7 @@
   (if (core/empty? m)
     (mapv #(vector %) c)
     (do
-      (assert (= (count c) (rows m)) "The new column must have ~(rows m) rows")
+      (assert (= (count c) (rows m)) "The new column must have ~(rows m) items")
       (->> (mapv vector c m)
            (mapv #(cons (first %) (second %)))))))
 
@@ -289,7 +289,7 @@
   (if (core/empty? m)
     (mapv #(vector %) c)
     (do
-      (assert (= (count c) (rows m)) "The new column must have ~(rows m) rows")
+      (assert (= (count c) (rows m)) "The new column must have ~(rows m) items")
       (->> (mapv vector c m)
            (mapv #(conj (second %) (first %)))))))
 
@@ -317,7 +317,7 @@
 
   (validate m)
   (when-not (core/empty? m)
-    (assert (= (count r) (columns m)) "The new row must have ~(columns m) columns"))
+    (assert (= (count r) (columns m)) "The new row must have ~(columns m) items"))
   (cons r m))
 
 
@@ -344,7 +344,7 @@
 
   (validate m)
   (when-not (core/empty? m)
-    (assert (= (count r) (columns m)) "The new row must have ~(columns m) columns"))
+    (assert (= (count r) (columns m)) "The new row must have ~(columns m) items"))
   (conj m r))
 
 
