@@ -12,7 +12,7 @@ The ASCII tables module provides a simple way to render tabular data in pure asc
 <td>Header</td>
 <td>Header & footer</td>
 </tr>
-<tr style="vertical-align: top;">
+<tr>
 <td>
 
 ```clojure
@@ -63,7 +63,7 @@ The ASCII tables module provides a simple way to render tabular data in pure asc
 </td>
 </tr>
 <tr>
-<td style="vertical-align: top;">
+<td">
 
 ```
 +---+----------+----------+
@@ -73,6 +73,10 @@ The ASCII tables module provides a simple way to render tabular data in pure asc
 +---+----------+----------+
 | 3 | 100      | 200      |
 +---+----------+----------+
+
+
+
+
 ```
 
 </td>
@@ -88,6 +92,8 @@ The ASCII tables module provides a simple way to render tabular data in pure asc
 +---+----------+----------+
 | 3 | 100      | 200      |
 +---+----------+----------+
+
+
 ```
 
 </td>
