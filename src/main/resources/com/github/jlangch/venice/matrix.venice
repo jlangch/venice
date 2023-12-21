@@ -261,8 +261,8 @@
     (mapv #(vector %) c)
     (do
       (assert (= (count c) (rows m)) "The new column must have ~(rows m) rows")
-      (as-> (mapv vector c m) mat
-            (mapv #(cons (first %) (second %)) mat)))))
+      (->> (mapv vector c m)
+           (mapv #(cons (first %) (second %)))))))
 
 
 (defn 
@@ -290,8 +290,8 @@
     (mapv #(vector %) c)
     (do
       (assert (= (count c) (rows m)) "The new column must have ~(rows m) rows")
-      (as-> (mapv vector c m) mat
-            (mapv #(conj (second %) (first %)) mat)))))
+      (->> (mapv vector c m)
+           (mapv #(conj (second %) (first %)))))))
 
 
 (defn 
