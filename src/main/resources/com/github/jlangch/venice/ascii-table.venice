@@ -141,14 +141,14 @@
     (assert (sequential? data) "data must be a 2 dimensional sequence of strings")
     (assert (or (nil? footer) (sequential? footer)) "footer must be a list or a vector of strings")
     (assert (long? padding) "padding must be a long")
-    (let [data (as-strings data)]
+    (let [data (normalize data)]
       (render-table (build-columns header data footer) data border padding)))
 
   ([columns data border padding]
     (assert (sequential? columns) "columns must be a sequence of maps")
     (assert (sequential? data) "data must be a 2 dimensional sequence of strings")
     (assert (long? padding) "padding must be a long")
-    (let [data (as-strings data)]
+    (let [data (normalize data)]
       (render-table columns data border padding))))
 
 (defn 
@@ -311,10 +311,12 @@
 (defn build-columns [header data footer]
   (let [cols (max (count header) 
                   (apply max (map count data))
-                  (count footer))]
-    (map (fn [c] (build-column (nth header c nil)
-                               (nth footer c nil)
-                               (nth data c nil)))
+                  (count footer))
+                  
+        tdata (transpose data)]
+    (map (fn [col-idx] (build-column (nth header col-idx nil)
+                                     (nth footer col-idx nil)
+                                     (nth tdata col-idx nil)))
          (range cols))))
 
 (defn build-column [header footer data]
@@ -392,9 +394,6 @@
                Invalid border. Pass a keyword like :standard, :double, :bold 
                or a string with 29 custom border characters!
                """))))
- 
-(defn as-strings [data]
-   (map #(map str %) data))
 
 (defn style-for-matrix [columns]
   (->> columns
@@ -403,8 +402,27 @@
        (map #(assoc-in % [:body :align] :right))   ; all cells right aligned
        (map #(assoc-in % [:body :overflow] :ellipsis-right))))
 
+(defn normalize [data]
+  (when-not (sequential? data)
+    (throw (ex :VncException "The data must be 2-D vector/list of values!")))
+  (when-not (apply = true (map #(sequential? %) data))
+    (throw (ex :VncException "The data must be 2-D vector/list of values")))
+
+  (if (empty? data)
+    data
+    (let [len (apply max (map count data))]
+      (-> (map #(normalize-row % len) data)
+          (as-strings)))))
+
+(defn normalize-row [row len]
+  (let [cnt (- len (count row))]
+    (concat row (repeat cnt ""))))
+
 (defn transpose [matrix]
   (apply map vector matrix))
+ 
+(defn as-strings [data]
+   (map #(map str %) data))
 
 (defn print-debug-text [text]
   (docoll #(println (str "⏵" % "⏴")) 
