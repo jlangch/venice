@@ -25,7 +25,7 @@ The ASCII tables module provides a simple way to render tabular data in pure asc
       [3 "100" "200"]] 
      nil 
      :standard
-     1)))))
+     1))
 ``` 
 
 </td>
@@ -41,7 +41,7 @@ The ASCII tables module provides a simple way to render tabular data in pure asc
      [3 "100" "200"]] 
     nil
     :standard
-    1)))
+    1))
 ``` 
 
 </td>
@@ -57,7 +57,7 @@ The ASCII tables module provides a simple way to render tabular data in pure asc
      [3 "100" "200"]] 
     ["" "footer 1" "footer 3"] 
     :standard
-    1)))
+    1))
 ``` 
 
 </td>
