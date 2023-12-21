@@ -178,36 +178,36 @@
 
 
 (defn demo-styles []
-  (println (render [{:header {:text "header 1\n[kg]", :align :left, :overflow :newline}
-                     :body   {:align :left, :overflow :newline}
-                     :footer {:text "footer 1" :align :left, :overflow :newline}
-                     :width 14}
-                    {:header {:text "header 2\n[kg]", :align :center, :overflow :newline}
-                     :body   {:align :center, :overflow :newline}
-                     :footer {:text "footer 2" :align :center, :overflow :newline}
-                     :width 14}
-                    {:header {:text "header 3\n[kg]", :align :right, :overflow :newline}
-                     :body   {:align :right, :overflow :newline}
-                     :footer {:text "footer 3" :align :right, :overflow :newline}
-                     :width 14}]
-                   [[1 2 3] 
-                    [100 200 300] 
-                    [(str/lorem-ipsum :chars 35)
-                     (str/lorem-ipsum :chars 35)
-                     (str/lorem-ipsum :chars 35)]] 
-                   :double
-                   1)))
+  (print [{:header {:text "header 1\n[kg]", :align :left, :overflow :newline}
+           :body   {:align :left, :overflow :newline}
+           :footer {:text "footer 1" :align :left, :overflow :newline}
+           :width 14}
+          {:header {:text "header 2\n[kg]", :align :center, :overflow :newline}
+           :body   {:align :center, :overflow :newline}
+           :footer {:text "footer 2" :align :center, :overflow :newline}
+           :width 14}
+          {:header {:text "header 3\n[kg]", :align :right, :overflow :newline}
+           :body   {:align :right, :overflow :newline}
+           :footer {:text "footer 3" :align :right, :overflow :newline}
+           :width 14}]
+         [[1 2 3] 
+         [100 200 300] 
+         [(str/lorem-ipsum :chars 35)
+          (str/lorem-ipsum :chars 35)
+          (str/lorem-ipsum :chars 35)]] 
+         :double
+         1))
 
 
 (defn demo-two-column-text []
-  (println (render [{:body  {:align :left, :overflow :newline}
-                     :width 30}
-                    {:body  {:align :left, :overflow :newline}
-                     :width 30}] 
-                   [[(str/lorem-ipsum :chars 190) 
-                     (str/lorem-ipsum :chars 140)]] 
-                   :thin
-                   1)))
+  (print [{:body  {:align :left, :overflow :newline}
+           :width 30}
+          {:body  {:align :left, :overflow :newline}
+           :width 30}] 
+          [[(str/lorem-ipsum :chars 190) 
+            (str/lorem-ipsum :chars 140)]] 
+          :thin
+          1))
 
 
 
