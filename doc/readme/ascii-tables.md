@@ -5,6 +5,7 @@ The ASCII tables module provides a simple way to render tabular data in pure asc
 
 * [Basic without styling](#basic-without-styling)
 * [Header, footer, cell alignment](#header-footer-cell-alignment)
+* [Column width and padding](#column-width-and-padding)
 * [Borders](#borders)
 * [Cell overflow](#cell-overflow)
 * [Multi-column text](#multi-column-text)
@@ -25,13 +26,13 @@ The ASCII tables module provides a simple way to render tabular data in pure asc
 (do
   (load-module :ascii-table)
   (ascii-table/print 
-     nil 
-     [[1 "1"   "2"  ] 
-      [2 "10"  "20" ] 
-      [3 "100" "200"]] 
-     nil 
-     :standard
-     1))
+    nil 
+    [[1 "1"   "2"  ] 
+     [2 "10"  "20" ] 
+     [3 "100" "200"]] 
+    nil 
+    :standard
+    1))
 ``` 
 
 </td>
@@ -141,15 +142,38 @@ The ASCII tables module provides a simple way to render tabular data in pure asc
 (do
   (load-module :ascii-table)
   (ascii-table/print 
-     [{:body  {:align :left, :overflow :newline}
-       :width 5}
-      {:body  {:align :center, :overflow :newline}
-       :width 5}
-      {:body  {:align :right, :overflow :newline}
-       :width 5}] 
-     [[1 "1"   "2"  ] 
-      [2 "10"  "20" ] 
-      [3 "100" "200"]] 
+    [{:body  {:align :left, :overflow :newline}
+      :width 7}
+     {:body  {:align :center, :overflow :newline}
+      :width 7}
+     {:body  {:align :right, :overflow :newline}
+      :width 7}] 
+    [[1 "1"     "2"    ] 
+     [2 "100"   "200"  ] 
+     [3 "10000" "20000"]] 
+    :double
+    1))
+``` 
+
+</td>
+<td>
+
+```clojure
+(do
+  (load-module :ascii-table)
+  (ascii-table/print 
+    [{:header {:text "hd 1", :align :left }
+      :body   {:align :left, :overflow :newline}
+      :width  9}
+     {:header {:text "hd 2", :align :center }
+      :body   {:align :center, :overflow :newline}
+      :width  9}
+     {:header {:text "hd 3", :align :right }
+      :body   {:align :right, :overflow :newline}
+      :width  9}] 
+     [[1 "1"     "2"    ] 
+      [2 "100"   "200"  ] 
+      [3 "10000" "20000"]] 
      :double
      1))
 ``` 
@@ -161,46 +185,23 @@ The ASCII tables module provides a simple way to render tabular data in pure asc
 (do
   (load-module :ascii-table)
   (ascii-table/print 
-     [{:header {:text "hd 1", :align :left }
-       :body   {:align :left, :overflow :newline}
-       :width  8}
-      {:header {:text "hd 2", :align :center }
-       :body   {:align :center, :overflow :newline}
-       :width  8}
-      {:header {:text "hd 3", :align :right }
-       :body   {:align :right, :overflow :newline}
-       :width  8}] 
-     [[1 "1"   "2"  ] 
-      [2 "10"  "20" ] 
-      [3 "100" "200"]] 
-     :double
-     1))
-``` 
-
-</td>
-<td>
-
-```clojure
-(do
-  (load-module :ascii-table)
-  (ascii-table/print 
-     [{:header {:text "hd 1", :align :left }
-       :body   {:align :left, :overflow :newline}
-       :footer {:text "ft 1", :align :left }
-       :width  8}
-      {:header {:text "hd 2", :align :center }
-       :body   {:align :center, :overflow :newline}
-       :footer {:text "ft 2", :align :center }
-       :width  8}
-      {:header {:text "hd 3", :align :right }
-       :body   {:align :right, :overflow :newline}
-       :footer {:text "ft 3", :align :right }
-       :width  8}] 
-     [[1 "1"   "2"  ] 
-      [2 "10"  "20" ] 
-      [3 "100" "200"]] 
-     :double
-     1))
+    [{:header {:text "hd 1", :align :left }
+      :body   {:align :left, :overflow :newline}
+      :footer {:text "ft 1", :align :left }
+      :width  9}
+     {:header {:text "hd 2", :align :center }
+      :body   {:align :center, :overflow :newline}
+      :footer {:text "ft 2", :align :center }
+      :width  9}
+     {:header {:text "hd 3", :align :right }
+      :body   {:align :right, :overflow :newline}
+      :footer {:text "ft 3", :align :right }
+      :width  9}] 
+     [[1 "1"     "2"    ] 
+      [2 "100"   "200"  ] 
+      [3 "10000" "20000"]] 
+    :double
+    1))
 ``` 
 
 </td>
@@ -209,13 +210,13 @@ The ASCII tables module provides a simple way to render tabular data in pure asc
 <td>
 
 ```
-╔═══════╤═══════╤═══════╗
-║ 1     │   1   │     2 ║
-╟───────┼───────┼───────╢
-║ 2     │   10  │    20 ║
-╟───────┼───────┼───────╢
-║ 3     │  100  │   200 ║
-╚═══════╧═══════╧═══════╝
+╔═════════╤═════════╤═════════╗
+║ 1       │    1    │       2 ║
+╟─────────┼─────────┼─────────╢
+║ 2       │   100   │     200 ║
+╟─────────┼─────────┼─────────╢
+║ 3       │  10000  │   20000 ║
+╚═════════╧═════════╧═════════╝
 
 
 
@@ -226,15 +227,15 @@ The ASCII tables module provides a simple way to render tabular data in pure asc
 <td>
 
 ```
-╔══════════╤══════════╤══════════╗
-║ hd 1     │   hd 2   │     hd 3 ║
-╠══════════╪══════════╪══════════╣
-║ 1        │     1    │        2 ║
-╟──────────┼──────────┼──────────╢
-║ 2        │    10    │       20 ║
-╟──────────┼──────────┼──────────╢
-║ 3        │    100   │      200 ║
-╚══════════╧══════════╧══════════╝
+╔═══════════╤═══════════╤═══════════╗
+║ hd 1      │    hd 2   │      hd 3 ║
+╠═══════════╪═══════════╪═══════════╣
+║ 1         │     1     │         2 ║
+╟───────────┼───────────┼───────────╢
+║ 2         │    100    │       200 ║
+╟───────────┼───────────┼───────────╢
+║ 3         │   10000   │     20000 ║
+╚═══════════╧═══════════╧═══════════╝
 
 
 
@@ -244,22 +245,25 @@ The ASCII tables module provides a simple way to render tabular data in pure asc
 <td>
 
 ```
-╔══════════╤══════════╤══════════╗
-║ hd 1     │   hd 2   │     hd 3 ║
-╠══════════╪══════════╪══════════╣
-║ 1        │     1    │        2 ║
-╟──────────┼──────────┼──────────╢
-║ 2        │    10    │       20 ║
-╟──────────┼──────────┼──────────╢
-║ 3        │    100   │      200 ║
-╠══════════╪══════════╪══════════╣
-║ ft 1     │   ft 2   │     ft 3 ║
-╚══════════╧══════════╧══════════╝
+╔═══════════╤═══════════╤═══════════╗
+║ hd 1      │    hd 2   │      hd 3 ║
+╠═══════════╪═══════════╪═══════════╣
+║ 1         │     1     │         2 ║
+╟───────────┼───────────┼───────────╢
+║ 2         │    100    │       200 ║
+╟───────────┼───────────┼───────────╢
+║ 3         │   10000   │     20000 ║
+╠═══════════╪═══════════╪═══════════╣
+║ ft 1      │    ft 2   │      ft 3 ║
+╚═══════════╧═══════════╧═══════════╝
 ```
 
 </td>
 </tr>
 </table>
+
+
+## Column width and padding
 
 
 ## Borders
@@ -270,12 +274,15 @@ The ASCII tables module provides a simple way to render tabular data in pure asc
   
   (defn print-with-border [border]
     (ascii-table/print 
-       [{:body  {:align :left, :overflow :newline}
-         :width 5}
-        {:body  {:align :center, :overflow :newline}
-         :width 5}
-        {:body  {:align :right, :overflow :newline}
-         :width 5}] 
+       [{:header {:text "hd 1", :align :left }
+         :body   {:align :left, :overflow :newline}
+         :width  5}
+        {:header {:text "hd 2", :align :center }
+         :body   {:align :center, :overflow :newline}
+         :width  5}
+        {:header {:text "hd 3", :align :right }
+         :body   {:align :right, :overflow :newline}
+         :width  5}] 
        [[1 "1"   "2"  ] 
         [2 "10"  "20" ] 
         [3 "100" "200"]] 
@@ -530,20 +537,20 @@ The ASCII tables module provides a simple way to render tabular data in pure asc
   (load-module :ascii-table)
   (ascii-table/print 
      [{:header {:text ":newline"}
-       :body  {:align :left, :overflow :newline}
-       :width 20}
+       :body   {:align :left, :overflow :newline}
+       :width  20}
       {:header {:text ":clip-right"}
-       :body  {:align :center, :overflow :clip-right}
-       :width 20}
+       :body   {:align :center, :overflow :clip-right}
+       :width  20}
       {:header {:text ":clip-left"}
-       :body  {:align :center, :overflow :clip-left}
-       :width 20}
+       :body   {:align :center, :overflow :clip-left}
+       :width  20}
       {:header {:text ":ellipsis-right"}
-       :body  {:align :center, :overflow :ellipsis-right}
-       :width 20}
+       :body   {:align :center, :overflow :ellipsis-right}
+       :width  20}
       {:header {:text ":ellipsis-left"}
-       :body  {:align :center, :overflow :ellipsis-left}
-       :width 20}] 
+       :body   {:align :center, :overflow :ellipsis-left}
+       :width  20}] 
      [[(str/lorem-ipsum :chars 60)
        (str/lorem-ipsum :chars 60)
        (str/lorem-ipsum :chars 60) 
