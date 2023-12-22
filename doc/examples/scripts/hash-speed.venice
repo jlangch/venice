@@ -78,7 +78,7 @@
                                            :width  6)
                                 samples))]
       (as-> (map #(run % algorithms) samples) data
-            (matrix/vector2d data) ;;convert to vector
+            (matrix/vector2d data) ;; convert to vector
             (matrix/transpose data)
             (matrix/add-column-at-start data sections)
             (ascii-table/print columns data :bold-no-data 1)))))
