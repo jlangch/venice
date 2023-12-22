@@ -62,6 +62,10 @@ start17 () {
   open ${REPL_HOME}/replJava17.sh
 }
 
+start21 () {
+  open ${REPL_HOME}/replJava21.sh
+}
+
 rebuild () {
   ./gradlew --warning-mode all clean shadowJar
   rm ${REPL_HOME}/libs/venice-*.jar
@@ -84,6 +88,8 @@ export REPL_HOME=~/Desktop/venice
 export WORKSPACE_HOME=~/Documents/workspace-omni/venice
 
 export SONATYPE_USER=jlangch
+
+export PATH=$JAVA_HOME/bin:$PATH
 
 export -f help
 export -f rebuild
