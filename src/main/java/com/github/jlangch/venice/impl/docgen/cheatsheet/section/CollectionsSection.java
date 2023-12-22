@@ -197,7 +197,7 @@ public class CollectionsSection implements ISectionBuilder {
         vec_modify.addItem(diBuilder.getDocItem("pop"));
         vec_modify.addItem(diBuilder.getDocItem("into"));
         vec_modify.addItem(diBuilder.getDocItem("into!"));
-        vec_modify.addItem(diBuilder.getDocItem("concat"));
+        vec_modify.addItem(diBuilder.getDocItem("concatv"));
         vec_modify.addItem(diBuilder.getDocItem("distinct"));
         vec_modify.addItem(diBuilder.getDocItem("dedupe"));
         vec_modify.addItem(diBuilder.getDocItem("partition"));

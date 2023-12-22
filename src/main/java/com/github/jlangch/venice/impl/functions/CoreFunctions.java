@@ -6164,7 +6164,7 @@ public class CoreFunctions {
                         "(concat {:a 1} {:b 2 :c 3})",
                         "(concat \"abc\")",
                         "(concat \"abc\" \"def\")")
-                    .seeAlso("into", "merge")
+                    .seeAlso("concatv", "into", "merge")
                     .build()
         ) {
             @Override
@@ -6184,6 +6184,53 @@ public class CoreFunctions {
                     else {
                         throw new VncException(String.format(
                                 "Invalid argument type %s while calling function 'concat'",
+                                Types.getType(val)));
+                    }
+                }
+
+                return result;
+            }
+
+            private static final long serialVersionUID = -1848883965231344442L;
+        };
+
+    public static VncFunction concatv =
+        new VncFunction(
+                "concatv",
+                VncFunction
+                    .meta()
+                    .arglists("(concatv coll)", "(concatv coll & colls)")
+                    .doc( "Returns a vector of the concatenation of the elements " +
+                          "in the supplied collections.")
+                    .examples(
+                        "(concatv [1 2])",
+                        "(concatv [1 2] [4 5 6])",
+                        "(concatv '(1 2))",
+                        "(concatv '(1 2) [4 5 6])",
+                        "(concatv {:a 1})",
+                        "(concatv {:a 1} {:b 2 :c 3})",
+                        "(concatv \"abc\")",
+                        "(concatv \"abc\" \"def\")")
+                    .seeAlso("concat", "into", "merge")
+                    .build()
+        ) {
+            @Override
+            public VncVal apply(final VncList args) {
+                VncVector result = VncVector.empty();
+
+                for(VncVal val : args) {
+                    if (val == Nil) {
+                        // skip
+                    }
+                    else if (Types.isVncString(val)) {
+                        result = result.addAllAtEnd(((VncString)val).toVncList());
+                    }
+                    else if (Types.isVncCollection(val)) {
+                        result = result.addAllAtEnd(((VncCollection)val).toVncList());
+                    }
+                    else {
+                        throw new VncException(String.format(
+                                "Invalid argument type %s while calling function 'concatv'",
                                 Types.getType(val)));
                     }
                 }
@@ -9882,6 +9929,7 @@ public class CoreFunctions {
                 .add(conj)
                 .add(conj_BANG)
                 .add(concat)
+                .add(concatv)
                 .add(interpose)
                 .add(interleave)
                 .add(cartesian_product)
