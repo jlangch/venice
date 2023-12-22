@@ -104,44 +104,43 @@
       (io/spit data-file data)
       (io/slurp data-file :binary true) ;; warm up os file read
 
-      (let [timings (flatten  
-                      [ (t/elapsed #(encrypt "AES256-CBC" passwd 
+      (let [timings [ (t/elapsed #(encrypt "AES256-CBC" passwd 
+                                                        data-file 
+                                                        aes-cbc-file-enc))
+                      (t/elapsed #(decrypt "AES256-CBC" passwd 
+                                                        aes-cbc-file-enc 
+                                                        aes-cbc-file-dec))
+                      (t/elapsed #(encrypt "AES256-GCM" passwd 
+                                                        data-file 
+                                                        aes-gcm-file-enc))
+                      (t/elapsed #(decrypt "AES256-GCM" passwd 
+                                                        aes-gcm-file-enc 
+                                                        aes-gcm-file-dec))
+                      (if (crypt/encrypt-file-supported? "ChaCha20")
+                        [ (t/elapsed #(encrypt "ChaCha20" passwd 
                                                           data-file 
-                                                          aes-cbc-file-enc))
-                        (t/elapsed #(decrypt "AES256-CBC" passwd 
-                                                          aes-cbc-file-enc 
-                                                          aes-cbc-file-dec))
-                        (t/elapsed #(encrypt "AES256-GCM" passwd 
-                                                          data-file 
-                                                          aes-gcm-file-enc))
-                        (t/elapsed #(decrypt "AES256-GCM" passwd 
-                                                          aes-gcm-file-enc 
-                                                          aes-gcm-file-dec))
-                        (if (crypt/encrypt-file-supported? "ChaCha20")
-                          [ (t/elapsed #(encrypt "ChaCha20" passwd 
-                                                            data-file 
-                                                            cha-file-enc))
-                            (t/elapsed #(decrypt "ChaCha20" passwd 
-                                                            cha-file-enc 
-                                                            cha-file-dec))]
-                          ["-" "-"])
-                        (if (crypt/encrypt-file-supported? "ChaCha20-BC")
-                          [ (t/elapsed #(encrypt "ChaCha20-BC" passwd 
-                                                               data-file 
-                                                               cha-bc-file-enc))
-                            (t/elapsed #(decrypt "ChaCha20-BC" passwd 
-                                                               cha-bc-file-enc 
-                                                               cha-bc-file-dec))]
-                          ["-" "-"])                       
-                        (t/elapsed #(encrypt-zip aes-file-zip 
-                                                 passwd 
-                                                 (io/file-name aes-file-unzip) 
-                                                 data-file))
-                        (t/elapsed #(decrypt-zip aes-file-zip 
-                                                 passwd 
-                                                 (io/file-name aes-file-unzip) 
-                                                 (io/file-parent aes-file-unzip)))
-                      ])]
+                                                          cha-file-enc))
+                          (t/elapsed #(decrypt "ChaCha20" passwd 
+                                                          cha-file-enc 
+                                                          cha-file-dec))]
+                        ["-" "-"])
+                      (if (crypt/encrypt-file-supported? "ChaCha20-BC")
+                        [ (t/elapsed #(encrypt "ChaCha20-BC" passwd 
+                                                              data-file 
+                                                              cha-bc-file-enc))
+                          (t/elapsed #(decrypt "ChaCha20-BC" passwd 
+                                                              cha-bc-file-enc 
+                                                              cha-bc-file-dec))]
+                        ["-" "-"])                       
+                      (t/elapsed #(encrypt-zip aes-file-zip 
+                                                passwd 
+                                                (io/file-name aes-file-unzip) 
+                                                data-file))
+                      (t/elapsed #(decrypt-zip aes-file-zip 
+                                                passwd 
+                                                (io/file-name aes-file-unzip) 
+                                                (io/file-parent aes-file-unzip)))
+                    ]]
 
         (println "Decrypt verify AES CBC:     " 
                  (if (identical data-file aes-cbc-file-dec) "OK" "FAIL"))
@@ -156,7 +155,7 @@
         (println "Decrypt verify ZIP:         " 
                  (if (identical data-file aes-file-unzip) "OK" "FAIL"))
 
-        timings)))
+        (flatten timings))))
 
   (defn sections []
     [ "Encrypt AES-256 CBC"
