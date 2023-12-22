@@ -6,6 +6,14 @@ All notable changes to this project will be documented in this file.
 
 
 
+## [1.11.2] - 2023-12-xx
+
+### Added 
+
+- ...
+
+
+
 ## [1.11.1] - 2023-12-22
 
 ### Added 
