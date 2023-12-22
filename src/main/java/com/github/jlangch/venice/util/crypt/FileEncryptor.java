@@ -263,7 +263,7 @@ public class FileEncryptor {
     }
 
 
-    private static String trimToEmpty(final String s) {
+    public static String trimToEmpty(final String s) {
         return s == null ? "" : s.trim();
     }
 }
