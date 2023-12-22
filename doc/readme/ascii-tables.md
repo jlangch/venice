@@ -465,7 +465,7 @@ The ASCII tables module provides a simple way to render tabular data in pure asc
 
 ## Borders
 
-```
+```clojure
 (do
   (load-module :ascii-table)
   
