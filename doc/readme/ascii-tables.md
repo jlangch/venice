@@ -511,6 +511,7 @@ The ASCII tables module provides a simple way to render tabular data in pure asc
 <td>
 
 ```
+ hd 1    hd 2   hd 3 
  1        1        2 
  2        10      20 
  3       100     200 
@@ -524,6 +525,8 @@ The ASCII tables module provides a simple way to render tabular data in pure asc
 <td>
 
 ```
++-------+-------+-------+
+| hd 1  |  hd 2 |  hd 3 |
 +-------+-------+-------+
 | 1     |   1   |     2 |
 +-------+-------+-------+
@@ -542,6 +545,8 @@ The ASCII tables module provides a simple way to render tabular data in pure asc
 
 ```
 +-------+-------+-------+
+| hd 1  |  hd 2 |  hd 3 |
++-------+-------+-------+
 | 1     |   1   |     2 |
 | 2     |   10  |    20 |
 | 3     |  100  |   200 |
@@ -556,6 +561,8 @@ The ASCII tables module provides a simple way to render tabular data in pure asc
 <td>
 
 ```
+ hd 1  |  hd 2 |  hd 3 
+-------+-------+-------
  1     |   1   |     2 
 -------+-------+-------
  2     |   10  |    20 
@@ -570,6 +577,8 @@ The ASCII tables module provides a simple way to render tabular data in pure asc
 <td>
 
 ```
+ hd 1  |  hd 2 |  hd 3 
+-------+-------+-------
  1     |   1   |     2 
  2     |   10  |    20 
  3     |  100  |   200 
@@ -589,6 +598,8 @@ The ASCII tables module provides a simple way to render tabular data in pure asc
 
 ```
 ---------------------
+ hd 1    hd 2   hd 3 
+---------------------
  1        1        2 
  2        10      20 
  3       100     200 
@@ -604,6 +615,8 @@ The ASCII tables module provides a simple way to render tabular data in pure asc
 
 ```
 ╔═══════╤═══════╤═══════╗
+║ hd 1  │  hd 2 │  hd 3 ║
+╠═══════╪═══════╪═══════╣
 ║ 1     │   1   │     2 ║
 ╟───────┼───────┼───────╢
 ║ 2     │   10  │    20 ║
@@ -621,11 +634,12 @@ The ASCII tables module provides a simple way to render tabular data in pure asc
 
 ```
 ╔═══════╤═══════╤═══════╗
+║ hd 1  │  hd 2 │  hd 3 ║
+╠═══════╪═══════╪═══════╣
 ║ 1     │   1   │     2 ║
 ║ 2     │   10  │    20 ║
 ║ 3     │  100  │   200 ║
 ╚═══════╧═══════╧═══════╝
-
 ```
 
 </td>
@@ -637,6 +651,8 @@ The ASCII tables module provides a simple way to render tabular data in pure asc
 
 ```
 ┏━━━━━━━┯━━━━━━━┯━━━━━━━┓
+┃ hd 1  │  hd 2 │  hd 3 ┃
+┣━━━━━━━┿━━━━━━━┿━━━━━━━┫
 ┃ 1     │   1   │     2 ┃
 ┠───────┼───────┼───────┨
 ┃ 2     │   10  │    20 ┃
@@ -654,6 +670,8 @@ The ASCII tables module provides a simple way to render tabular data in pure asc
 
 ```
 ┏━━━━━━━┯━━━━━━━┯━━━━━━━┓
+┃ hd 1  │  hd 2 │  hd 3 ┃
+┣━━━━━━━┿━━━━━━━┿━━━━━━━┫
 ┃ 1     │   1   │     2 ┃
 ┃ 2     │   10  │    20 ┃
 ┃ 3     │  100  │   200 ┃
@@ -669,6 +687,8 @@ The ASCII tables module provides a simple way to render tabular data in pure asc
 
 ```
 ┌───────┬───────┬───────┐
+│ hd 1  │  hd 2 │  hd 3 │
+├───────┼───────┼───────┤
 │ 1     │   1   │     2 │
 ├───────┼───────┼───────┤
 │ 2     │   10  │    20 │
@@ -686,6 +706,8 @@ The ASCII tables module provides a simple way to render tabular data in pure asc
 
 ```
 ┌───────┬───────┬───────┐
+│ hd 1  │  hd 2 │  hd 3 │
+├───────┼───────┼───────┤
 │ 1     │   1   │     2 │
 │ 2     │   10  │    20 │
 │ 3     │  100  │   200 │
@@ -713,6 +735,8 @@ The ASCII tables module provides a simple way to render tabular data in pure asc
 <td>
 
 ```
+─────────────────────
+ hd 1    hd 2   hd 3 
 ─────────────────────
  1        1        2 
  2        10      20 
