@@ -265,8 +265,6 @@ The ASCII tables module provides a simple way to render tabular data in pure asc
 
 ## Column width and padding
 
-
-
 <table>
 <tr>
 <td>Column width</td>
@@ -322,15 +320,12 @@ The ASCII tables module provides a simple way to render tabular data in pure asc
 </table>
 
 
-## Column width and padding
-
-
 
 <table>
 <tr>
-<td>Column width</td>
-<td>Header</td>
-<td>Header & Footer</td>
+<td>Padding 1</td>
+<td>Padding 2</td>
+<td>Padding 4</td>
 </tr>
 <tr>
 <td>
@@ -346,39 +341,16 @@ The ASCII tables module provides a simple way to render tabular data in pure asc
      {:header {:text "hd 2", :align :center }
       :body   {:align :center, :overflow :newline}
       :footer {:text "ft 2", :align :center }
-      :width  9}
+      :width  5}
      {:header {:text "hd 3", :align :right }
       :body   {:align :right, :overflow :newline}
       :footer {:text "ft 3", :align :right }
-      :width  13}] 
+      :width  5}] 
      [[1 "1"     "2"    ] 
       [2 "100"   "200"  ] 
       [3 "10000" "20000"]] 
     :double
     1))
-``` 
-
-</td>
-<td>
-
-```clojure
-(do
-  (load-module :ascii-table)
-  (ascii-table/print 
-    [{:header {:text "hd 1", :align :left }
-      :body   {:align :left, :overflow :newline}
-      :width  7}
-     {:header {:text "hd 2", :align :center }
-      :body   {:align :center, :overflow :newline}
-      :width  7}
-     {:header {:text "hd 3", :align :right }
-      :body   {:align :right, :overflow :newline}
-      :width  7}] 
-     [[1 "1"     "2"    ] 
-      [2 "100"   "200"  ] 
-      [3 "10000" "20000"]] 
-     :double
-     1))
 ``` 
 
 </td>
@@ -391,20 +363,46 @@ The ASCII tables module provides a simple way to render tabular data in pure asc
     [{:header {:text "hd 1", :align :left }
       :body   {:align :left, :overflow :newline}
       :footer {:text "ft 1", :align :left }
-      :width  7}
+      :width  5}
      {:header {:text "hd 2", :align :center }
       :body   {:align :center, :overflow :newline}
       :footer {:text "ft 2", :align :center }
-      :width  7}
+      :width  5}
      {:header {:text "hd 3", :align :right }
       :body   {:align :right, :overflow :newline}
       :footer {:text "ft 3", :align :right }
-      :width  7}] 
+      :width  5}] 
      [[1 "1"     "2"    ] 
       [2 "100"   "200"  ] 
       [3 "10000" "20000"]] 
     :double
-    1))
+    2))
+``` 
+
+</td>
+<td>
+
+```clojure
+(do
+  (load-module :ascii-table)
+  (ascii-table/print 
+    [{:header {:text "hd 1", :align :left }
+      :body   {:align :left, :overflow :newline}
+      :footer {:text "ft 1", :align :left }
+      :width  5}
+     {:header {:text "hd 2", :align :center }
+      :body   {:align :center, :overflow :newline}
+      :footer {:text "ft 2", :align :center }
+      :width  5}
+     {:header {:text "hd 3", :align :right }
+      :body   {:align :right, :overflow :newline}
+      :footer {:text "ft 3", :align :right }
+      :width  5}] 
+     [[1 "1"     "2"    ] 
+      [2 "100"   "200"  ] 
+      [3 "10000" "20000"]] 
+    :double
+    4))
 ``` 
 
 </td>
@@ -413,17 +411,17 @@ The ASCII tables module provides a simple way to render tabular data in pure asc
 <td>
 
 ```
-╔═════════╤═════════╤═════════╗
-║ 1       │    1    │       2 ║
-╟─────────┼─────────┼─────────╢
-║ 2       │   100   │     200 ║
-╟─────────┼─────────┼─────────╢
-║ 3       │  10000  │   20000 ║
-╚═════════╧═════════╧═════════╝
-
-
-
-
+╔═══════╤═══════╤═══════╗
+║ hd 1  │  hd 2 │  hd 3 ║
+╠═══════╪═══════╪═══════╣
+║ 1     │   1   │     2 ║
+╟───────┼───────┼───────╢
+║ 2     │  100  │   200 ║
+╟───────┼───────┼───────╢
+║ 3     │ 10000 │ 20000 ║
+╠═══════╪═══════╪═══════╣
+║ ft 1  │  ft 2 │  ft 3 ║
+╚═══════╧═══════╧═══════╝
 ```
 
 </td>
@@ -431,34 +429,33 @@ The ASCII tables module provides a simple way to render tabular data in pure asc
 
 ```
 ╔═════════╤═════════╤═════════╗
-║ hd 1    │   hd 2  │    hd 3 ║
+║  hd 1   │   hd 2  │   hd 3  ║
 ╠═════════╪═════════╪═════════╣
-║ 1       │    1    │       2 ║
+║  1      │    1    │      2  ║
 ╟─────────┼─────────┼─────────╢
-║ 2       │   100   │     200 ║
+║  2      │   100   │    200  ║
 ╟─────────┼─────────┼─────────╢
-║ 3       │  10000  │   20000 ║
+║  3      │  10000  │  20000  ║
+╠═════════╪═════════╪═════════╣
+║  ft 1   │   ft 2  │   ft 3  ║
 ╚═════════╧═════════╧═════════╝
-
-
-
 ```
 
 </td>
 <td>
 
 ```
-╔═════════╤═════════╤═════════╗
-║ hd 1    │   hd 2  │    hd 3 ║
-╠═════════╪═════════╪═════════╣
-║ 1       │    1    │       2 ║
-╟─────────┼─────────┼─────────╢
-║ 2       │   100   │     200 ║
-╟─────────┼─────────┼─────────╢
-║ 3       │  10000  │   20000 ║
-╠═════════╪═════════╪═════════╣
-║ ft 1    │   ft 2  │    ft 3 ║
-╚═════════╧═════════╧═════════╝
+╔═════════════╤═════════════╤═════════════╗
+║    hd 1     │     hd 2    │     hd 3    ║
+╠═════════════╪═════════════╪═════════════╣
+║    1        │      1      │        2    ║
+╟─────────────┼─────────────┼─────────────╢
+║    2        │     100     │      200    ║
+╟─────────────┼─────────────┼─────────────╢
+║    3        │    10000    │    20000    ║
+╠═════════════╪═════════════╪═════════════╣
+║    ft 1     │     ft 2    │     ft 3    ║
+╚═════════════╧═════════════╧═════════════╝
 ```
 
 </td>
