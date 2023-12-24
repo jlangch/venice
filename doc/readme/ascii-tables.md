@@ -155,6 +155,10 @@ The ASCII tables module provides a simple way to render tabular data in pure asc
      [3 "10000" "20000"]] 
     :double
     1))
+     
+     
+     
+     
 ``` 
 
 </td>
@@ -180,10 +184,6 @@ The ASCII tables module provides a simple way to render tabular data in pure asc
       [3 "10000" "20000"]] 
      :double
      1))
-     
-     
-     
-     
 ``` 
 
 </td>
