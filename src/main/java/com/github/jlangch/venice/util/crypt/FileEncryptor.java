@@ -23,6 +23,7 @@ package com.github.jlangch.venice.util.crypt;
 
 import java.io.File;
 import java.nio.file.Files;
+import java.security.Provider;
 import java.security.Security;
 
 
@@ -212,7 +213,7 @@ public class FileEncryptor {
             case "CHACHA20":    return AVAILABLE_CHACHA20;
             case "CHACHA20-BC": return AVAILABLE_CHACHA20_BC;
             default:            throw new RuntimeException(
-            						        "Unsupported algorithm '" + algorithm + "'!");
+                                            "Unsupported algorithm '" + algorithm + "'!");
         }
     }
 
@@ -226,8 +227,19 @@ public class FileEncryptor {
                 return false;
             }
             else {
-                Security.addProvider(new org.bouncycastle.jce.provider.BouncyCastleProvider());
-                return true;
+                try {
+                    //Security.addProvider(new org.bouncycastle.jce.provider.BouncyCastleProvider());
+
+                    Security.addProvider(
+                        (Provider)Util.classForName("org.bouncycastle.jce.provider.BouncyCastleProvider")
+                                      .getConstructor()
+                                      .newInstance());
+
+                    return true;
+                }
+                catch(Exception ex) {
+                    return false;
+                }
             }
         }
     }
