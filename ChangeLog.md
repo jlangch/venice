@@ -11,8 +11,8 @@ All notable changes to this project will be documented in this file.
 ### Fixed 
 
 - the availability detection of ChaCh20 and ChaCha20-BC file encryption 
-  algorithms on all setup combination Java 8 / Java 11+ with or with the 
-  BouncyCastle libraries
+  algorithms on all setup combinations Java 8 / Java 11+ with or without
+  the BouncyCastle libraries
 
 
 
