@@ -24,6 +24,7 @@ package com.github.jlangch.venice.util.crypt;
 import java.io.File;
 import java.nio.file.Files;
 import java.security.SecureRandom;
+import java.util.concurrent.atomic.AtomicReference;
 
 import javax.crypto.Cipher;
 
@@ -62,12 +63,20 @@ import org.bouncycastle.crypto.params.ParametersWithIV;
  */
 public class FileEncryptor_ChaCha20_BouncyCastle {
 
-    public static boolean isSupported() {
-        return supported;
+    public boolean isSupported() {
+    	final Boolean ok = supported.get();
+    	if (ok != null) {
+    		return ok;
+    	}
+    	else {
+    		final boolean tmp = checkSupported();
+    		supported.set(tmp);
+    		return tmp;
+    	}
     }
 
 
-    public static void encryptFileWithPassphrase(
+    public void encryptFileWithPassphrase(
             final String passphrase,
             final File inputFile,
             final File outputFile
@@ -82,7 +91,7 @@ public class FileEncryptor_ChaCha20_BouncyCastle {
         Files.write(outputFile.toPath(), encryptedData);
     }
 
-    public static byte[] encryptFileWithPassphrase(
+    public byte[] encryptFileWithPassphrase(
             final String passphrase,
             final byte[] fileData
     ) throws Exception {
@@ -109,7 +118,7 @@ public class FileEncryptor_ChaCha20_BouncyCastle {
         return outData;
     }
 
-    public static void encryptFileWithKey(
+    public void encryptFileWithKey(
             final byte[] key,
             final File inputFile,
             final File outputFile
@@ -124,7 +133,7 @@ public class FileEncryptor_ChaCha20_BouncyCastle {
         Files.write(outputFile.toPath(), encryptedData);
     }
 
-    public static byte[] encryptFileWithKey(
+    public byte[] encryptFileWithKey(
             final byte[] key,
             final byte[] fileData
     ) throws Exception {
@@ -143,7 +152,7 @@ public class FileEncryptor_ChaCha20_BouncyCastle {
         return outData;
     }
 
-    public static void decryptFileWithPassphrase(
+    public void decryptFileWithPassphrase(
             final String passphrase,
             final File inputFile,
             final File outputFile
@@ -158,7 +167,7 @@ public class FileEncryptor_ChaCha20_BouncyCastle {
         Files.write(outputFile.toPath(), decryptedData);
     }
 
-    public static byte[] decryptFileWithPassphrase(
+    public byte[] decryptFileWithPassphrase(
             final String passphrase,
             final byte[] fileData
     ) throws Exception {
@@ -179,7 +188,7 @@ public class FileEncryptor_ChaCha20_BouncyCastle {
         return processData(Cipher.DECRYPT_MODE, encryptedData, key, iv);
     }
 
-    public static void decryptFileWithKey(
+    public void decryptFileWithKey(
             final byte[] key,
             final File inputFile,
             final File outputFile
@@ -194,7 +203,7 @@ public class FileEncryptor_ChaCha20_BouncyCastle {
         Files.write(outputFile.toPath(), decryptedData);
     }
 
-    public static byte[] decryptFileWithKey(
+    public byte[] decryptFileWithKey(
             final byte[] key,
             final byte[] fileData
     ) throws Exception {
@@ -209,7 +218,7 @@ public class FileEncryptor_ChaCha20_BouncyCastle {
         return processData(Cipher.DECRYPT_MODE, encryptedData, key, iv);
     }
 
-    private static byte[] processData(
+    private byte[] processData(
     		final int mode,
             final byte[] data,
             final byte[] key,
@@ -224,7 +233,7 @@ public class FileEncryptor_ChaCha20_BouncyCastle {
         return cryptData;
     }
 
-    private static boolean checkSupported() {
+    private boolean checkSupported() {
         try {
             final Class<?> clazz = Util.classForName("org.bouncycastle.crypto.engines.ChaChaEngine");
             return clazz != null;
@@ -236,7 +245,7 @@ public class FileEncryptor_ChaCha20_BouncyCastle {
 
 
 
-    private static final boolean supported = checkSupported();
+    private static final AtomicReference<Boolean> supported = new AtomicReference<>(null);
 
     private static int ROUNDS = 20;
     private static int SALT_LEN = 16;

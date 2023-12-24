@@ -48,7 +48,7 @@ public class FileEncryptor {
                 FileEncryptor_ChaCha20.encryptFileWithPassphrase(passphrase, inputFile, outputFile);
                 break;
             case "CHACHA20-BC":
-                FileEncryptor_ChaCha20_BouncyCastle.encryptFileWithPassphrase(passphrase, inputFile, outputFile);
+                new FileEncryptor_ChaCha20_BouncyCastle().encryptFileWithPassphrase(passphrase, inputFile, outputFile);
                 break;
             default:
                 throw new RuntimeException("Unsupported algorithm '" + algorithm + "'!");
@@ -68,7 +68,7 @@ public class FileEncryptor {
             case "CHACHA20":
                 return FileEncryptor_ChaCha20.encryptFileWithPassphrase(passphrase, fileData);
             case "CHACHA20-BC":
-                return FileEncryptor_ChaCha20_BouncyCastle.encryptFileWithPassphrase(passphrase, fileData);
+                return new FileEncryptor_ChaCha20_BouncyCastle().encryptFileWithPassphrase(passphrase, fileData);
             default:
                 throw new RuntimeException("Unsupported algorithm '" + algorithm + "'!");
         }
@@ -91,7 +91,7 @@ public class FileEncryptor {
                 FileEncryptor_ChaCha20.encryptFileWithKey(key, inputFile, outputFile);
                 break;
             case "CHACHA20-BC":
-                FileEncryptor_ChaCha20_BouncyCastle.encryptFileWithKey(key, inputFile, outputFile);
+            	new FileEncryptor_ChaCha20_BouncyCastle().encryptFileWithKey(key, inputFile, outputFile);
                 break;
             default:
                 throw new RuntimeException("Unsupported algorithm '" + algorithm + "'!");
@@ -111,7 +111,7 @@ public class FileEncryptor {
             case "CHACHA20":
                 return FileEncryptor_ChaCha20.encryptFileWithKey(key, fileData);
             case "CHACHA20-BC":
-                return FileEncryptor_ChaCha20_BouncyCastle.encryptFileWithKey(key, fileData);
+                return new FileEncryptor_ChaCha20_BouncyCastle().encryptFileWithKey(key, fileData);
             default:
                 throw new RuntimeException("Unsupported algorithm '" + algorithm + "'!");
         }
@@ -134,7 +134,7 @@ public class FileEncryptor {
                 FileEncryptor_ChaCha20.decryptFileWithPassphrase(passphrase, inputFile, outputFile);
                 break;
             case "CHACHA20-BC":
-                FileEncryptor_ChaCha20_BouncyCastle.decryptFileWithPassphrase(passphrase, inputFile, outputFile);
+            	new FileEncryptor_ChaCha20_BouncyCastle().decryptFileWithPassphrase(passphrase, inputFile, outputFile);
                 break;
             default:
                 throw new RuntimeException("Unsupported algorithm '" + algorithm + "'!");
@@ -154,7 +154,7 @@ public class FileEncryptor {
             case "CHACHA20":
                 return FileEncryptor_ChaCha20.decryptFileWithPassphrase(passphrase, fileData);
             case "CHACHA20-BC":
-                return FileEncryptor_ChaCha20_BouncyCastle.decryptFileWithPassphrase(passphrase, fileData);
+                return new FileEncryptor_ChaCha20_BouncyCastle().decryptFileWithPassphrase(passphrase, fileData);
            default:
                 throw new RuntimeException("Unsupported algorithm '" + algorithm + "'!");
         }
@@ -177,7 +177,7 @@ public class FileEncryptor {
                 FileEncryptor_ChaCha20.decryptFileWithKey(key, inputFile, outputFile);
                 break;
             case "CHACHA20-BC":
-                FileEncryptor_ChaCha20_BouncyCastle.decryptFileWithKey(key, inputFile, outputFile);
+            	new FileEncryptor_ChaCha20_BouncyCastle().decryptFileWithKey(key, inputFile, outputFile);
                 break;
             default:
                 throw new RuntimeException("Unsupported algorithm '" + algorithm + "'!");
@@ -197,7 +197,7 @@ public class FileEncryptor {
             case "CHACHA20":
                 return FileEncryptor_ChaCha20.decryptFileWithKey(key, fileData);
             case "CHACHA20-BC":
-                return FileEncryptor_ChaCha20_BouncyCastle.decryptFileWithKey(key, fileData);
+                return new FileEncryptor_ChaCha20_BouncyCastle().decryptFileWithKey(key, fileData);
             default:
                 throw new RuntimeException("Unsupported algorithm '" + algorithm + "'!");
         }
@@ -214,7 +214,7 @@ public class FileEncryptor {
             case "CHACHA20":
                 return FileEncryptor_ChaCha20.isSupported();
             case "CHACHA20-BC":
-                return FileEncryptor_ChaCha20_BouncyCastle.isSupported();
+                return new FileEncryptor_ChaCha20_BouncyCastle().isSupported();
             default:
                 throw new RuntimeException("Unsupported algorithm '" + algorithm + "'!");
         }
