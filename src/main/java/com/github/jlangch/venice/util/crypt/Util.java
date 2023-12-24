@@ -59,7 +59,9 @@ public class Util {
             return Class.forName(name);
         }
         catch(Throwable ex) {
-            throw new RuntimeException(String.format("Failed to load class '%s'", name));
+            throw new RuntimeException(
+            			String.format("Failed to load class '%s'", name),
+            			ex);
         }
     }
 
