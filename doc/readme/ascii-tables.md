@@ -141,13 +141,15 @@ The ASCII tables module provides a simple way to render tabular data in pure asc
 ```clojure
 (do
   (load-module :ascii-table)
-  (ascii-table/print 
+  (ascii-table/print
+    ;; columns 
     [{:body  {:align :left, :overflow :newline}
       :width 7}
      {:body  {:align :center, :overflow :newline}
       :width 7}
      {:body  {:align :right, :overflow :newline}
       :width 7}] 
+    ;; data
     [[1 "1"     "2"    ] 
      [2 "100"   "200"  ] 
      [3 "10000" "20000"]] 
@@ -162,6 +164,7 @@ The ASCII tables module provides a simple way to render tabular data in pure asc
 (do
   (load-module :ascii-table)
   (ascii-table/print 
+    ;; columns 
     [{:header {:text "hd 1", :align :left }
       :body   {:align :left, :overflow :newline}
       :width  7}
@@ -171,6 +174,7 @@ The ASCII tables module provides a simple way to render tabular data in pure asc
      {:header {:text "hd 3", :align :right }
       :body   {:align :right, :overflow :newline}
       :width  7}] 
+     ;; data
      [[1 "1"     "2"    ] 
       [2 "100"   "200"  ] 
       [3 "10000" "20000"]] 
