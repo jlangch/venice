@@ -207,6 +207,10 @@ public class FileEncryptor {
     public static boolean supports(
             final String algorithm
     ) throws Exception {
+    	// need to be fully dynamic to work under
+    	//  - Java 8 (without/with optional BouncyCastle libs)
+    	//  - Java 11+ (without/with optional BouncyCastle libs)
+
         switch(trimToEmpty(algorithm).toUpperCase()) {
             case "AES256-CBC":  return true;
             case "AES256-GCM":  return true;
@@ -228,7 +232,11 @@ public class FileEncryptor {
             }
             else {
                 try {
-                    //Security.addProvider(new org.bouncycastle.jce.provider.BouncyCastleProvider());
+                    // Security.addProvider(new org.bouncycastle.jce.provider.BouncyCastleProvider());
+
+                	// need to be fully dynamic to work under
+                	//  - Java 8 (without/with optional BouncyCastle libs)
+                	//  - Java 11+ (without/with optional BouncyCastle libs)
 
                     Security.addProvider(
                         (Provider)Util.classForName("org.bouncycastle.jce.provider.BouncyCastleProvider")
