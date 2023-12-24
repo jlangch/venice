@@ -158,7 +158,6 @@ The ASCII tables module provides a simple way to render tabular data in pure asc
      
      
      
-     
 ``` 
 
 </td>
