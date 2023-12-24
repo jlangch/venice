@@ -21,6 +21,11 @@
  */
 package com.github.jlangch.venice.util.crypt;
 
+import static com.github.jlangch.venice.util.crypt.FileEncryptor_ChaCha20_BouncyCastle.decryptFileWithKey;
+import static com.github.jlangch.venice.util.crypt.FileEncryptor_ChaCha20_BouncyCastle.decryptFileWithPassphrase;
+import static com.github.jlangch.venice.util.crypt.FileEncryptor_ChaCha20_BouncyCastle.encryptFileWithKey;
+import static com.github.jlangch.venice.util.crypt.FileEncryptor_ChaCha20_BouncyCastle.encryptFileWithPassphrase;
+import static com.github.jlangch.venice.util.crypt.FileEncryptor_ChaCha20_BouncyCastle.isSupported;
 import static org.junit.jupiter.api.Assertions.fail;
 
 import java.security.SecureRandom;
@@ -32,10 +37,10 @@ public class FileEncryptor_ChaCha20_BouncyCastle_Test {
 
 	@Test
     public void testPassphrase() throws Exception {
-		if (encryptor.isSupported()) {
+		if (isSupported()) {
 	        final byte[] data = "1234567890".getBytes("UTF-8");
-	        final byte[] encrypted = encryptor.encryptFileWithPassphrase("passphrase", data);
-	        final byte[] decrypted = encryptor.decryptFileWithPassphrase("passphrase", encrypted);
+	        final byte[] encrypted = encryptFileWithPassphrase("passphrase", data);
+	        final byte[] decrypted = decryptFileWithPassphrase("passphrase", encrypted);
 
 	        if (data.length != decrypted.length) {
 	        	fail("FAIL (length)");
@@ -54,13 +59,13 @@ public class FileEncryptor_ChaCha20_BouncyCastle_Test {
 
 	@Test
     public void testKey() throws Exception {
-		if (encryptor.isSupported()) {
+		if (isSupported()) {
 		    byte[] key = new byte[32];
 		    new SecureRandom().nextBytes(key);
 
 	        final byte[] data = "1234567890".getBytes("UTF-8");
-	        final byte[] encrypted = encryptor.encryptFileWithKey(key, data);
-	        final byte[] decrypted = encryptor.decryptFileWithKey(key, encrypted);
+	        final byte[] encrypted = encryptFileWithKey(key, data);
+	        final byte[] decrypted = decryptFileWithKey(key, encrypted);
 
 	        if (data.length != decrypted.length) {
 	        	fail("FAIL (length)");
@@ -76,6 +81,4 @@ public class FileEncryptor_ChaCha20_BouncyCastle_Test {
 		}
     }
 
-
-	private final FileEncryptor_ChaCha20_BouncyCastle encryptor = new FileEncryptor_ChaCha20_BouncyCastle();
 }

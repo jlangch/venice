@@ -60,8 +60,19 @@ public class Util {
         }
         catch(Throwable ex) {
             throw new RuntimeException(
-            			String.format("Failed to load class '%s'", name),
-            			ex);
+                        String.format("Failed to load class '%s'", name),
+                        ex);
+        }
+    }
+
+
+    public static boolean hasClass(final String classname) {
+        try {
+            final Class<?> clazz = Util.classForName(classname);
+            return clazz != null;
+        }
+        catch(Exception ex) {
+            return false;
         }
     }
 
