@@ -118,26 +118,36 @@ and memory buffers.
 and memory buffers.
 
 
-### Encrypt a file tree
+### Encrypt/decrypt a file tree
 
 Encrypt all "*.doc" and "*.docx" in a file tree:
 
 ```clojure
 (do 
   (load-module :crypt)
-  
-  (def dir "/data/docs")
-  (def passphrase "-passphrase-")
-  
+    
   (defn encrypted-file-name [f]
     (io/file (str (io/file-path f) ".enc")))
   
+  (defn decrypted-file-name [f]
+    (let [path (io/file-name f)]
+      (if (str/ends-with? path ".enc")
+        (io/file (str/strip-end path ".enc"))
+        (throw (ex :VncException "Not an encrypted file ~{path}")))))
   
-  (->> (io/list-file-tree-lazy dir #(io/file-ext? % ".doc" ".docx"))
-       (docoll (crypt/encrypt-file "AES256-GCM" 
-                                   passphrase 
-                                   %
-                                   (encrypted-file-name %)))))
+  (defn encrypt [dir passphrase]
+    (->> (io/list-file-tree-lazy dir #(io/file-ext? % ".doc" ".docx"))
+         (docoll (crypt/encrypt-file "AES256-GCM" passphrase %
+                                     (encrypted-file-name %)))))
+
+  (defn decrypt [dir passphrase]
+    (->> (io/list-file-tree-lazy dir #(io/file-ext? % ".enc"))
+         (docoll (crypt/decrypt-file "AES256-GCM" passphrase %
+                                     (decrypted-file-name %)))))
+
+  ;; (encrypt "/data/docs" "-passphrase-")                                
+  ;; (decrypt "/data/docs" "-passphrase-")                                
+  )
 ```
 
 
