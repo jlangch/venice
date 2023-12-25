@@ -200,11 +200,9 @@
            :body   {:align :right, :overflow :newline}
            :footer {:text "footer 3" :align :right, :overflow :newline}
            :width 14}]
-         [[1 2 3] 
-         [100 200 300] 
-         [(str/lorem-ipsum :chars 35)
-          (str/lorem-ipsum :chars 35)
-          (str/lorem-ipsum :chars 35)]] 
+         [[1                2                3               ] 
+          [100              200              300             ] 
+          [(lorem-ipsum 35) (lorem-ipsum 35) (lorem-ipsum 35)]] 
          :double
          1))
 
@@ -214,8 +212,7 @@
            :width 30}
           {:body  {:align :left, :overflow :newline}
            :width 30}] 
-          [[(str/lorem-ipsum :chars 190) 
-            (str/lorem-ipsum :chars 140)]] 
+          [[(lorem-ipsum 190) (lorem-ipsum 140)]] 
           :thin
           1))
 
@@ -432,6 +429,9 @@
 (defn as-strings [data]
    (map #(map str %) data))
 
+
 (defn print-debug-text [text]
   (docoll #(println (str "⏵" % "⏴")) 
           (if (coll? text) text (str/split-lines text))))
+
+(def lorem-ipsum (partial str/lorem-ipsum :chars))
