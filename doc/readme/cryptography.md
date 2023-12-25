@@ -133,7 +133,7 @@ Encrypt all "*.doc" and "*.docx" in a file tree:
     (let [path (io/file-name f)]
       (if (str/ends-with? path ".enc")
         (io/file (str/strip-end path ".enc"))
-        (throw (ex :VncException "Not an encrypted file ~{path}")))))
+        (throw (ex :VncException "Not an encrypted file '~{path}'")))))
   
   (defn encrypt [dir passphrase]
     (->> (io/list-file-tree-lazy dir #(io/file-ext? % ".doc" ".docx"))
