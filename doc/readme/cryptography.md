@@ -238,7 +238,7 @@ and they can be used for malicious purposes.
 
 ### Performance
 
-Test: read file -> hash -> write file
+Test: read file -> hash
 
 ```
                                         MacBookAir M2, Java 8 (Zulu)
