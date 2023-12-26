@@ -330,17 +330,33 @@ public class SpecialForms_TypeFunctions {
                         "(deftype name fields validator)")
                     .doc(
                         "Defines a new custom *record* type for the name with " +
-                        "the fields. \n\n" +
+                        "the fields." +
+                        "\n\n" +
+                        "The optional validator is a single arg function " +
+                        "receiving the value as the argument and throwing an " +
+                        "an exception if the value is not valid." +
+                        "\n\n" +
                         "Venice implicitly creates a builder and a type check " +
-                        "function suffixed with a dot and a question mark:\n\n" +
+                        "function suffixed with a dot and a question mark:" +
+                        "\n\n" +
                         "```venice                                        \n" +
                         "(deftype :point [x :long, y :long])              \n" +
                         "                                                 \n" +
                         "(point. 200 300)           ; builder             \n" +
                         "(point? (point. 200 300))  ; type check          \n" +
-                        "```                                              \n\n" +
-                        "The builder accepts values of any subtype of the \n" +
-                        "field's type.")
+                        "```                                              " +
+                        "\n\n" +
+                        "The builder accepts values of any subtype of the " +
+                        "field's type." +
+                        "\n\n" +
+                        "Validation example:" +
+                        "\n\n" +
+                        "```venice                                                   \n" +
+                        "(deftype :point                                             \n" +
+                        "         [x :long, y :long]                                 \n" +
+                        "         (fn [t]                                            \n" +
+                        "           (assert (pos? (:x t)) \"x must be positive!\"))) \n" +
+                        "```                                              ")
                     .examples(
                         "(do                                                      \n" +
                         "  (ns foo)                                               \n" +

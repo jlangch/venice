@@ -184,6 +184,21 @@ can be used to customize the  _toString_  conversion:
   (println (complex. 1 -2)))    ; => (1 - 2i)
 ```
 
+**Validation:**
+
+The optional validator is a single arg function receiving the value as the argument and throwing an an exception if the value is not valid.
+
+```clojure
+(do
+  (deftype :point
+           [x :long, y :long]
+           (fn [t]
+             (assert (pos? (:x t)) "x must be positive!")))
+       
+  (point. 1 2)    ; => OK
+  (point. 0 2))   ; => FAILED
+```
+
 
 ## Composing types with "OR"
 
