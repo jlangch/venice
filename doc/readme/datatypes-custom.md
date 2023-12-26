@@ -186,7 +186,7 @@ can be used to customize the  _toString_  conversion:
 
 **Validation:**
 
-The optional validator is a single arg function receiving the value as the argument and throwing an an exception if the value is not valid.
+The optional validator is a single arg function receiving the value as the argument and throwing an exception if the value is not valid.
 
 ```clojure
 (do
