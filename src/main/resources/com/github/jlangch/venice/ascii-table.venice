@@ -388,12 +388,12 @@
     :core/keyword (let [chars  (border border-chars)]
                     (when (nil? chars)
                       (throw (ex :VncException 
-                                  (str "Invalid border type. Use one of " borders))))
+                                 (str "Invalid border type. Use one of " borders))))
                     chars)           
     :core/string  (let [chars  border]
                     (when-not (= 29 (count chars))
                       (throw (ex :VncException 
-                                  (str "Invalid custom border. Must have 29 chars"))))
+                                 (str "Invalid custom border. Must have 29 chars"))))
                     chars)
     (throw (ex :VncException 
                """
