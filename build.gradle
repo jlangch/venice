@@ -182,7 +182,7 @@ ext {
     jansi_Version = '2.4.1'
     jline_Version = '3.21.0'
     jupiter_Version = '5.8.2'
-    openpdf_Version = '1.3.32'
+    openpdf_Version = '1.3.35'
     pdfbox_Version = '2.0.27'
     jbig2_imageio_Version = '3.0.4'
     pdfTextStripper_Version = '2.2.4'
