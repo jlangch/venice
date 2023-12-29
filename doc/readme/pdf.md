@@ -66,7 +66,7 @@ References:
 
   (defn format-ts [t] (time/format t "yyyy-MM-dd"))
 
-  ; define the template
+  ;; define the template
   (def template
      """
      <?xml version="1.0" encoding="UTF-8"?>
@@ -119,7 +119,7 @@ References:
   (def data { :title "Hello, world"
               :timestamp (time/local-date 2000 8 1) } )
 
-  ; evaluate the template, render, and save it
+  ;; evaluate the template, render, and save it
   (->> data
        (kira/eval template ["${" "}$"])
        (pdf/render)
@@ -149,7 +149,7 @@ References:
 
   (defn format-birth-date [s] (if (string? s) s (time/format s "yyyy-MM-dd")))
 
-  ; define the template
+  ;; define the template
   (def template
      """
      <?xml version="1.0" encoding="UTF-8"?>
@@ -308,7 +308,7 @@ References:
              [ "Halter"    "Carla"      "Zürich"  "f"       9    (time/local-date 2010  9 28) ] ]
       } )
 
-  ; evaluate the template, render, and save it
+  ;; evaluate the template, render, and save it
   (->> data
        (kira/eval template ["${" "}$"])
        (pdf/render)
@@ -390,7 +390,7 @@ These images are then referred to as:
       :png
       300))
 
-  ; define the template
+  ;; define the template
   (def template
      """
      <?xml version="1.0" encoding="UTF-8"?>
@@ -457,7 +457,7 @@ These images are then referred to as:
 
   (def data { :title "Hello, world" } )
 
-  ; evaluate the template, render, and save it
+  ;; evaluate the template, render, and save it
   (-<> data
        (kira/eval template ["${" "}$"] <>)
        (pdf/render <> :resources { "/chart_1.png" (chart) })
@@ -550,7 +550,7 @@ Google hosts Open Source fonts at [Google Fonts](https://fonts.google.com)
                              "Font classpath resource '~{r}' not found!"))))))
 
 
-  ; define the template
+  ;; define the template
   (def template
      """
      <?xml version="1.0" encoding="UTF-8"?>
@@ -650,10 +650,10 @@ Google hosts Open Source fonts at [Google Fonts](https://fonts.google.com)
      </html>
      """)
 
-  ; create a Lorem Ipsum text block
+  ;; create a Lorem Ipsum text block
   (def data { :text (str/lorem-ipsum :paragraphs 1) } )
 
-  ; Evaluate the template, render, and save it.
+  ;; Evaluate the template, render, and save it.
   (->> data
        (kira/eval template ["${" "}$"])
        (pdf/render)
@@ -681,7 +681,7 @@ Google hosts Open Source fonts at [Google Fonts](https://fonts.google.com)
 
 
 
-  ; define the template
+  ;; define the template
   (def template
      """
      <?xml version="1.0" encoding="UTF-8"?>
@@ -814,11 +814,11 @@ Google hosts Open Source fonts at [Google Fonts](https://fonts.google.com)
      </html>
      """)
 
-  ; create a Lorem Ipsum text block
+  ;; create a Lorem Ipsum text block
   (def data { :text (str/lorem-ipsum :paragraphs 1) } )
 
 
-  ; evaluate the template, render, and save it
+  ;; evaluate the template, render, and save it
   (->> data
        (kira/eval template ["${" "}$"])
        (pdf/render)
@@ -846,7 +846,7 @@ Google hosts Open Source fonts at [Google Fonts](https://fonts.google.com)
 
 
 
-  ; define the template
+  ;; define the template
   (def template
      """
      <?xml version="1.0" encoding="UTF-8"?>
@@ -943,13 +943,13 @@ Google hosts Open Source fonts at [Google Fonts](https://fonts.google.com)
      </html>
      """)
 
-  ; create a Lorem Ipsum text block
+  ;; create a Lorem Ipsum text block
   (def data { :footer-front-page "Aarestrasse 51, 3012 Bern, Tel. 099 100 20 30, Fax 099 100 20 31, info@foo.ch, www.foo.ch"
               :footer-left "Demo"
               :text (str/lorem-ipsum :paragraphs 1) } )
 
 
-  ; evaluate the template, render, and save it
+  ;; evaluate the template, render, and save it
   (->> data
        (kira/eval template ["${" "}$"])
        (pdf/render)
@@ -977,7 +977,7 @@ Google hosts Open Source fonts at [Google Fonts](https://fonts.google.com)
 
 
 
-  ; define the template
+  ;; define the template
   (def template
      """
      <?xml version="1.0" encoding="UTF-8"?>
@@ -1035,7 +1035,7 @@ Google hosts Open Source fonts at [Google Fonts](https://fonts.google.com)
      </html>
      """)
 
-  ; create a Lorem Ipsum text block
+  ;; create a Lorem Ipsum text block
   (def data { :text (str/lorem-ipsum :paragraphs 1) } )
 
   (def watermark { :text              "CONFIDENTIAL"
@@ -1051,7 +1051,7 @@ Google hosts Open Source fonts at [Google Fonts](https://fonts.google.com)
                    :skip-top-pages    1
                    :skip-bottom-pages 0 })
 
-  ; evaluate the template, render, and save it
+  ;; evaluate the template, render, and save it
   (-<> data
        (kira/eval template ["${" "}$"] <>)
        (pdf/render <>)
@@ -1077,7 +1077,7 @@ Venice supports simplified text to PDF
   (load-module :pdf)
   (load-module :kira)
   
-  ; define the template
+  ;; define the template
   (def text 
      """
      Lorem Ipsum is simply dummy text of the printing and typesetting
@@ -1108,7 +1108,7 @@ Venice supports simplified text to PDF
      software like Aldus PageMaker including versions of Lorem Ipsum.
      """)
 
-  ; render the PDF, and save it
+  ;; render the PDF, and save it
   (let [pdf (pdf/text-to-pdf text :font-size 10 
                                   :font-weight 300 
                                   :font-monospace false)]
