@@ -154,7 +154,7 @@ public class ClasspathUserAgent extends ITextUserAgent {
             log(debug, String.format("FlyingSaucer: Resource '%s' not found as file.", uri));
             return null;
         }
-       else {
+        else {
             log(debug, "FlyingSaucer: Unknown URI=" + uri);
             return super.resolveAndOpenStream(uri);
         }
