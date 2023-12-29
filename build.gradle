@@ -182,7 +182,7 @@ ext {
     jansi_Version = '2.4.1'
     jline_Version = '3.21.0'
     jupiter_Version = '5.8.2'
-    openpdf_Version = '1.3.32'
+    openpdf_Version = '1.3.35'
     pdfbox_Version = '2.0.27'
     jbig2_imageio_Version = '3.0.4'
     pdfTextStripper_Version = '2.2.4'
@@ -731,6 +731,8 @@ dependencies {
     testImplementation "org.xhtmlrenderer:flying-saucer-core:${flyingSaucer_Version}"
     testImplementation "org.xhtmlrenderer:flying-saucer-pdf-openpdf:${flyingSaucer_Version}"
     testImplementation "com.github.librepdf:openpdf:${openpdf_Version}"
+    testImplementation "com.github.librepdf:pdf-toolbox:${openpdf_Version}"
+    testImplementation "com.github.librepdf:openpdf-fonts-extra:${openpdf_Version}"
     testImplementation "org.knowm.xchart:xchart:${xchart_Version}"
     testImplementation "org.apache.poi:poi:${poi_Version}"
     testImplementation "org.apache.poi:poi-ooxml:${poi_Version}"
@@ -746,6 +748,8 @@ dependencies {
     compileOnly "org.xhtmlrenderer:flying-saucer-core:${flyingSaucer_Version}"
     compileOnly "org.xhtmlrenderer:flying-saucer-pdf-openpdf:${flyingSaucer_Version}"
     compileOnly "com.github.librepdf:openpdf:${openpdf_Version}"
+    compileOnly "com.github.librepdf:pdf-toolbox:${openpdf_Version}"
+    compileOnly "com.github.librepdf:openpdf-fonts-extra:${openpdf_Version}"
     compileOnly "org.knowm.xchart:xchart:${xchart_Version}"
     
     // PDF text extractor

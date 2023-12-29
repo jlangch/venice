@@ -12,6 +12,10 @@ All notable changes to this project will be documented in this file.
 
 - ... 
 
+### Updated dependencies:
+
+- Bump openpdf from 1.3.32 to 1.3.35
+
 
 
 ## [1.11.2] - 2023-12-23
