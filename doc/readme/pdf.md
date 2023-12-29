@@ -487,10 +487,10 @@ These fonts can be embedded into the PDF to be available on all client
 platforms regardless whether the font is locally installed or not.
 
 The PDF renderer loads custom True-Type fonts from URIs. The custom 
-schema `classpath:/` allows the renderer to load the font files from
+schema `classpath:` allows the renderer to load the font files from
 the class path. E.g.:
-- `classpath:/OpenSans-Regular.ttf`
-- `classpath:/fonts/OpenSans-Regular.ttf`
+- `classpath:OpenSans-Regular.ttf`
+- `classpath:fonts/OpenSans-Regular.ttf`
 
 A CSS font definition that embeds 'OpenSans-Regular' in the PDF looks 
 like:
@@ -498,7 +498,7 @@ like:
 ```css
    @font-face {
       font-family: 'Open Sans';
-      src: url('classpath:/fonts/OpenSans-Regular.ttf');
+      src: url('classpath:fonts/OpenSans-Regular.ttf');
       font-style: normal;
       font-weight: normal;
       -fs-pdf-font-embed: embed;
@@ -559,7 +559,7 @@ Google hosts Open Source fonts at [Google Fonts](https://fonts.google.com)
          <style type="text/css">
            @font-face {
               font-family: 'Open Sans';
-              src: url('classpath:/fonts/OpenSans-Regular.ttf');
+              src: url('classpath:fonts/OpenSans-Regular.ttf');
               font-style: normal;
               font-weight: normal;
               -fs-pdf-font-embed: embed;
@@ -567,7 +567,7 @@ Google hosts Open Source fonts at [Google Fonts](https://fonts.google.com)
            }
            @font-face {
               font-family: 'Open Sans Italic';
-              src: url('classpath:/fonts/OpenSans-Italic.ttf');
+              src: url('classpath:fonts/OpenSans-Italic.ttf');
               font-style: normal;
               font-weight: normal;
               -fs-pdf-font-embed: embed;
@@ -575,7 +575,7 @@ Google hosts Open Source fonts at [Google Fonts](https://fonts.google.com)
            }
            @font-face {
               font-family: 'Source Code Pro';
-              src: url('classpath:/fonts/SourceCodePro-Regular.ttf');
+              src: url('classpath:fonts/SourceCodePro-Regular.ttf');
               font-style: normal;
               font-weight: normal;
               -fs-pdf-font-embed: embed;
