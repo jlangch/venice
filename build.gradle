@@ -175,7 +175,7 @@ ext {
     docx4j_Version_Java8 = '8.3.4'
     docx4j_Version_Java11 = '11.4.5'
     docxStamper_Version = '1.4.0'
-    flyingSaucer_Version = '9.3.1'
+    flyingSaucer_Version = '9.3.2'
     javassist_Version = '3.28.0-GA'
     jaxb_Version = '2.3.1'
     jmh_Version = '1.32'

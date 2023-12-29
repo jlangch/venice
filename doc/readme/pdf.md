@@ -333,7 +333,7 @@ Package the static images in a resource JAR like `resource.jar` and place the JA
 on the Venice's classpath. Refer to the image via a classpath URI:
 
 ```html
-<img src="classpath:/images/logo.png"/>
+<img src="classpath:images/logo.png"/>
 ```
 
 #### Memory Resource Pool (dynamic images)
@@ -342,8 +342,8 @@ Dynamically created images can be passed to the renderer as in-memory resources.
 
 ```clojure
 ; compute the in-memory resources and give it a names as a reference
-(def images { "/images/chart_2018.png" (create-chart  2018)
-              "/images/chart_2019.png" (create-chart  2019) } )
+(def images { "images/chart_2018.png" (create-chart  2018)
+              "images/chart_2019.png" (create-chart  2019) } )
   ....
   
 ; pass the in-memory resources to the renderer
@@ -353,7 +353,7 @@ Dynamically created images can be passed to the renderer as in-memory resources.
 These images are then referred to as:
 
 ```html
-<img src="memory:/images/chart_2018.png"/>
+<img src="memory:images/chart_2018.png"/>
 ```
 
 #### Example
@@ -442,14 +442,14 @@ These images are then referred to as:
        <body>
          <div class="logo">
            <!-- Use the venice logo from the venice jar -->
-           <img src="classpath:/com/github/jlangch/venice/images/venice.png"/>
+           <img src="classpath:com/github/jlangch/venice/images/venice.png"/>
          </div>
 
          <div class="title">Venice PDF Images</div>
          <div class="subtitle">Example</div>
 
          <div class="chart">
-           <img src="memory:/chart_1.png"/>
+           <img src="memory:chart_1.png"/>
          </div>
        </body>
      </html>
@@ -460,7 +460,7 @@ These images are then referred to as:
   ;; evaluate the template, render, and save it
   (-<> data
        (kira/eval template ["${" "}$"] <>)
-       (pdf/render <> :resources { "/chart_1.png" (chart) })
+       (pdf/render <> :resources { "chart_1.png" (chart) })
        (io/spit "image-example.pdf" <>))
 )
 ```

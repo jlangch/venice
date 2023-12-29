@@ -246,10 +246,11 @@ public class PdfFunctions {
                         "\n" +
                         "(do \n" +
                         "  (load-module :maven) \n" +
-                        "  (maven/download \"org.xhtmlrenderer:flying-saucer-core:9.1.22\") \n" +
-                        "  (maven/download \"org.xhtmlrenderer:lying-saucer-pdf-openpdf:9.1.22\") \n" +
-                        "  (maven/download \"com.github.librepdf:openpdf:1.3.26\") \n" +
-                        "  (maven/download \"com.github.librepdf:pdf-toolbox:1.3.26\")) \n");
+                        "  (maven/download \"org.xhtmlrenderer:flying-saucer-core:9.3.2\") \n" +
+                        "  (maven/download \"org.xhtmlrenderer:lying-saucer-pdf-openpdf:9.3.2\") \n" +
+                        "  (maven/download \"com.github.librepdf:openpdf:1.3.35\") \n" +
+                        "  (maven/download \"com.github.librepdf:pdf-toolbox:1.3.35\") \n" +
+                        "  (maven/download \"com.github.librepdf:openpdf-fonts-extra:1.3.35\")) \n");
             }
 
             private static final long serialVersionUID = -1848883965231344442L;

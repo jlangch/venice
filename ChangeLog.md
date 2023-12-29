@@ -14,6 +14,7 @@ All notable changes to this project will be documented in this file.
 
 ### Updated dependencies:
 
+- Bump flying-saucer from 9.3.1 to 9.3.2
 - Bump openpdf from 1.3.32 to 1.3.35
 
 

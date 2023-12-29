@@ -35,8 +35,8 @@
 ;; ---------------------------------------------------------------------------
 
 (defn libraries []
-  [ "org.xhtmlrenderer:flying-saucer-core:9.3.1"
-    "org.xhtmlrenderer:flying-saucer-pdf-openpdf:9.3.1"
+  [ "org.xhtmlrenderer:flying-saucer-core:9.3.2"
+    "org.xhtmlrenderer:flying-saucer-pdf-openpdf:9.3.2"
     "com.github.librepdf:openpdf:1.3.35"
     "com.github.librepdf:pdf-toolbox:1.3.35"
     "com.github.librepdf:openpdf-fonts-extra:1.3.35"
