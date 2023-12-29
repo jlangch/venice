@@ -117,17 +117,46 @@
 ;; ---------------------------------------------------------------------------
 
 (defn
+   ^{ :arglists '("(xchart/check-required-libs)")
+      :doc """
+           Checks if the 3rd party libraries required for generating charts
+           are available. Throws an exception if not.
+           """
+      :examples '("(xchart/check-required-lib)") }
+
+  xchart/check-required-libs []
+
+  (when-not (exists-class? :org.knowm.xchart.PieChart)
+    (throw (ex :VncException
+               """
+               The XChart library is not on the classpath!
+             
+               (do
+                 (load-module :maven)
+                 (maven/download "org.knowm.xchart:xchart:3.8.2"))
+               """)))
+
+  (let [version (jar-maven-manifest-version :org.knowm.xchart :xchart)]
+    (when (semver/older? version "3.8.2")
+      (throw (ex :VncException
+                 """
+                 The XChart library on the classpath is too old. Use 
+                 version 3.8.2 or newer!
+                 """)))))
+
+
+(defn
    ^{ :arglists '("(xchart/available?)")
       :doc "Returns true if XChart 3.8.1 or newer is available (libs on classpath) otherwise false"
       :examples '("(xchart/available?)") }
 
    xchart/available? []
 
-   (when-not (exists-class? :org.knowm.xchart.PieChart)
-     false)
-
-   (let [version (jar-maven-manifest-version :org.knowm.xchart :xchart)]
-     (if (semver/older? version "3.8.1") false true)))
+   (try
+     (xchart/check-required-libs)
+     true
+     (catch :RuntimeException e 
+       false)))
 
 
 ;; Example: (xchart/doto-cond     =>    (let [e expr]
