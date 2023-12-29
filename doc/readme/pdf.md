@@ -441,7 +441,8 @@ These images are then referred to as:
 
        <body>
          <div class="logo">
-           <img src="classpath:/images/venice.png"/>
+           <!-- Use the venice logo from the venice jar -->
+           <img src="classpath:/com/github/jlangch/venice/images/venice.png"/>
          </div>
 
          <div class="title">Venice PDF Images</div>
