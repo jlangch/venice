@@ -253,6 +253,8 @@
           * org.apiguardian
           * junit
 
+          Example:
+          
           ```
           (maven/dependency-tree :compile "org.apache.pdfbox:pdfbox:3.0.1")
           ````
