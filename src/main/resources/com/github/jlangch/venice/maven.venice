@@ -29,65 +29,67 @@
 
 (def maven/repo "https://repo1.maven.org/maven2")
 
-
 (defn
   ^{ :arglists '(
-        "(maven/parse-artefact artefact)"
-        "(maven/parse-artefact artefact file-suffix)"
-        "(maven/parse-artefact artefact file-suffix repo)")
+        "(maven/parse-artifact artifact)"
+        "(maven/parse-artifact artifact file-suffix)"
+        "(maven/parse-artifact artifact file-suffix repo)")
      :doc
         """
-        Parses a Maven artefact like 'com/vaadin:vaadin-client:8.7.2'
+        Parses a Maven artifact like 'com/vaadin:vaadin-client:8.7.2'
 
-        1. (maven/parse-artefact artefact)¶
-           returns a vector with group-id, artefact-id, and version
-        2. (maven/parse-artefact artefact file-suffix)¶
-           returns a vector with group-id, artefact-id, version and file name
-        3. (maven/parse-artefact artefact file-suffix repo)¶
+        1. (maven/parse-artifact artifact)¶
+           returns a vector with group-id, artifact-id, and version
+        2. (maven/parse-artifact artifact file-suffix)¶
+           returns a vector with group-id, artifact-id, version and file name
+        3. (maven/parse-artifact artifact file-suffix repo)¶
            returns a vector with the Maven download URI and the file name
         """
      :examples '(
         """
-        (maven/parse-artefact "org.knowm.xchart:xchart:3.8.1")
+        (maven/parse-artifact "org.knowm.xchart:xchart:3.8.1")
         """,
         """
-        (maven/parse-artefact "org.knowm.xchart:xchart:3.8.1"
+        (maven/parse-artifact "org.knowm.xchart:xchart:3.8.1"
                               ".jar")
         """
         """
-        (maven/parse-artefact "org.knowm.xchart:xchart:3.8.1"
+        (maven/parse-artifact "org.knowm.xchart:xchart:3.8.1"
                               ".jar"
                               "https://repo1.maven.org/maven2")
         """ )
      :see-also '("maven/download", "maven/get", "maven/uri") }
 
-  maven/parse-artefact
+  maven/parse-artifact
 
-  ([artefact]
-    (let [elements    (str/split artefact ":")
+  ([artifact]
+    (let [elements    (str/split artifact ":")
           group-id    (first elements)
-          artefact-id (second elements)
+          artifact-id (second elements)
           version     (third elements) ]
-      [group-id artefact-id version]))
+      [group-id artifact-id version]))
 
-  ([artefact file-suffix]
-    (let [[group-id artefact-id version] (maven/parse-artefact artefact)
-          file-name (str artefact-id "-" version file-suffix)]
-      [group-id artefact-id version file-name]))
+  ([artifact file-suffix]
+    (let [[group-id artifact-id version] (maven/parse-artifact artifact)
+          file-name (str artifact-id "-" version file-suffix)]
+      [group-id artifact-id version file-name]))
 
-  ([artefact repo file-suffix]
-    (let [[group-id artefact-id version file-name] (maven/parse-artefact artefact file-suffix)
+  ([artifact repo file-suffix]
+    (let [[group-id artifact-id version file-name] (maven/parse-artifact artifact file-suffix)
           group-path (str/replace-all group-id "." "/")
-          uri (str/join "/" [repo group-path artefact-id version file-name])]
+          uri (str/join "/" [repo group-path artifact-id version file-name])]
       [uri file-name])))
+
+;; for compatibilty
+(def maven/parse-artefact maven/parse-artifact)
 
 
 (defn
-  ^{ :arglists '("(maven/download artefact options*)")
+  ^{ :arglists '("(maven/download artifact options*)")
      :doc """
-          Downloads an artefact in the format 'group-id:artefact-id:version'
+          Downloads an artifact in the format 'group-id:artifact-id:version'
           from a Maven repository. Can download any combination of the jar,
-          sources, or pom artefacts to a directory.
+          sources, or pom artifacts to a directory.
 
           Options:
 
@@ -105,9 +107,9 @@
           """(maven/download "org.knowm.xchart:xchart:3.8.1" :dir "." :sources true)"""
           """(maven/download "org.knowm.xchart:xchart:3.8.1" :dir "." :sources true :repo "https://repo1.maven.org/maven2")"""
           """(maven/download "org.knowm.xchart:xchart:3.8.1" :dir "." :silent false)""" )
-     :see-also '("maven/get", "maven/uri", "maven/parse-artefact") }
+     :see-also '("maven/get", "maven/uri", "maven/parse-artifact") }
 
-  maven/download [artefact & options]
+  maven/download [artifact & options]
 
   (let [opts        (apply hash-map options)
         silent      (or (:silent opts true) (not (repl?)))
@@ -118,28 +120,28 @@
         repo        (:repo opts maven/repo)
         progress-fn (maven/progress-bar silent)]
     (when jar
-      (let [suffix         (maven/artefact-suffix :jar)
-            [uri filename] (maven/parse-artefact artefact repo suffix)]
-        (maven/download-artefact-file uri dir filename progress-fn)))
+      (let [suffix         (maven/artifact-suffix :jar)
+            [uri filename] (maven/parse-artifact artifact repo suffix)]
+        (maven/download-artifact-file uri dir filename progress-fn)))
     (when sources
-      (let [suffix         (maven/artefact-suffix :sources)
-            [uri filename] (maven/parse-artefact artefact repo suffix)]
-        (maven/download-artefact-file uri dir filename progress-fn)))
+      (let [suffix         (maven/artifact-suffix :sources)
+            [uri filename] (maven/parse-artifact artifact repo suffix)]
+        (maven/download-artifact-file uri dir filename progress-fn)))
     (when pom
-      (let [suffix         (maven/artefact-suffix :pom)
-            [uri filename] (maven/parse-artefact artefact repo suffix)]
-        (maven/download-artefact-file uri dir filename progress-fn)))
+      (let [suffix         (maven/artifact-suffix :pom)
+            [uri filename] (maven/parse-artifact artifact repo suffix)]
+        (maven/download-artifact-file uri dir filename progress-fn)))
     nil))
 
 
 (defn
-  ^{ :arglists '("(maven/get artefact type options*)")
+  ^{ :arglists '("(maven/get artifact type options*)")
      :doc """
-          Downloads artefact in the format 'group-id:artefact-id:version'
-          from a Maven repository. The artefact type 'type' is one of
+          Downloads artifact in the format 'group-id:artifact-id:version'
+          from a Maven repository. The artifact type 'type' is one of
           {:jar, :sources, :pom}.
 
-          Returns the artefact as byte buffer.
+          Returns the artifact as byte buffer.
 
           Options:
 
@@ -151,26 +153,26 @@
           """(maven/get "org.knowm.xchart:xchart:3.8.1" :jar :silent false)"""
           """(maven/get "org.knowm.xchart:xchart:3.8.1" :sources)"""
           """(maven/get "org.knowm.xchart:xchart:3.8.1" :jar :repo "https://repo1.maven.org/maven2")""" )
-     :see-also '("maven/download", "maven/uri", "maven/parse-artefact") }
+     :see-also '("maven/download", "maven/uri", "maven/parse-artifact") }
 
-  maven/get [artefact type & options]
+  maven/get [artifact type & options]
 
   (let [opts         (apply hash-map options)
         silent       (or (:silent opts true) (not (repl?)))
         repo         (:repo opts maven/repo)
-        suffix       (maven/artefact-suffix type)
+        suffix       (maven/artifact-suffix type)
         progress-fn  (maven/progress-bar silent)
-        [uri _]      (maven/parse-artefact artefact repo suffix)]
-    (maven/get-artefact-file uri progress-fn)))
+        [uri _]      (maven/parse-artifact artifact repo suffix)]
+    (maven/get-artifact-file uri progress-fn)))
 
 
 (defn
-  ^{ :arglists '("(maven/uri artefact type options*)")
+  ^{ :arglists '("(maven/uri artifact type options*)")
      :doc """
-          Returns an URI for an artefact in the format 'group-id:artefact-id:version'
+          Returns an URI for an artifact in the format 'group-id:artifact-id:version'
           from a Maven repository.
 
-          The artefact type 'type' is one of {:jar, :sources, :pom}
+          The artifact type 'type' is one of {:jar, :sources, :pom}
 
           Options:
 
@@ -179,23 +181,141 @@
      :examples '(
           """(maven/uri "org.knowm.xchart:xchart:3.8.1" :jar)"""
           """(maven/uri "org.knowm.xchart:xchart:3.8.1" :jar :repo "https://repo1.maven.org/maven2")""" )
-     :see-also '("maven/download", "maven/get", "maven/parse-artefact") }
+     :see-also '("maven/download", "maven/get", "maven/parse-artifact") }
 
-  maven/uri [artefact type & options]
+  maven/uri [artifact type & options]
 
   (let [opts      (apply hash-map options)
         repo      (:repo opts maven/repo)
-        suffix    (maven/artefact-suffix type)
-        [uri _]   (maven/parse-artefact artefact repo suffix)]
+        suffix    (maven/artifact-suffix type)
+        [uri _]   (maven/parse-artifact artifact repo suffix)]
     uri))
 
 
-(defn- maven/artefact-suffix [type]
+(defn
+  ^{ :arglists '("(maven/mvn proj-dir & options)")
+     :doc """
+          Runs a maven command
+
+          Relies on the environment variable `MAVEN_HOME` to access maven.
+          """
+     :examples '(
+          """(println (maven/mvn "/Users/foo/projects/my-project" compile))""") }
+
+  maven/mvn [proj-dir & options]
+
+  (when-not (io/exists-dir? proj-dir)
+    (throw (ex :VncExeption "The proj dir '~{proj-dir}' does not exist!")))
+
+  (with-sh-dir proj-dir 
+    (let [binary  (maven/mvn-binary)]
+      (->> ((maven/exec) (str/join " " (cons binary options)) :throw-ex true)
+           (:out)))))
+ 
+
+(defn
+  ^{ :arglists '("(maven/version)")
+     :doc """
+          Runs the maven version command and prints the commands output.
+
+          Relies on the environment variable `MAVEN_HOME` to access maven.
+          """
+     :examples '(
+          """(maven/version)""") }
+
+  maven/version []
+
+  (maven/validate-mvn-home)
+
+  (let [binary  (maven/mvn-binary)]     
+    (->> ((maven/exec) (str binary " --version") :throw-ex true)
+         (:out)
+         (println))))
+
+(defn
+  ^{ :arglists '("(maven/dependency-tree artifact)")
+     :doc """
+          Returns the dependency tree of an artifact
+
+          Relies on the environment variable `MAVEN_HOME` to access maven.
+
+          Excludes dependencies with the group ids:
+          * org.junit.*
+          * org.opentest4j
+          * org.apiguardian
+          * junit
+
+          ```
+          (maven/dependency-tree "org.apache.pdfbox:pdfbox:3.0.1")
+          ````
+
+          ```
+          org.apache.pdfbox:pdfbox:jar:3.0.1:compile
+          +- org.apache.pdfbox:pdfbox-io:jar:3.0.1:compile
+          +- org.apache.pdfbox:fontbox:jar:3.0.1:compile
+          \- commons-logging:commons-logging:jar:1.2:compile
+          ```
+          """
+     :examples '(
+          """(maven/dependency-tree "org.apache.pdfbox:pdfbox:3.0.1")""") }
+
+  maven/dependency-tree [artifact]
+
+  (assert (string? artifact))
+
+  (let [temp-dir                       (io/temp-dir "maven-")
+        proj-dir                       (io/file temp-dir "demolibrary")
+        pom-file                       (io/file proj-dir "pom.xml")
+        [group-id artifact-id version] (maven/parse-artifact artifact)]
+    (io/delete-file-on-exit temp-dir)
+
+    (try
+      (maven/mvn temp-dir "archetype:generate"
+                          "-DgroupId=com.demolibrary" 
+                          "-DartifactId=demolibrary"
+                          "-DarchetypeArtifactId=maven-archetype-quickstart" 
+                          "-DarchetypeVersion=1.0"
+                          "-DinteractiveMode=false")
+ 
+      (let [pom     (io/slurp pom-file)
+            idx     (str/index-of pom "<dependencies>")
+            [p1 p2] (str/split-at pom (+ idx (count "<dependencies>")))
+            pom$    (str p1
+                         """
+                         
+                             <dependency>
+                               <groupId>~{group-id}</groupId>
+                               <artifactId>~{artifact-id}</artifactId>
+                               <version>~{version}</version>
+                               <scope>compile</scope>
+                             </dependency>
+                         """
+                         p2)]
+        (io/spit pom-file pom$)
+
+        (->> (maven/mvn proj-dir "dependency:tree"
+                                 "-Dexcludes=org.junit.*,org.opentest4j,org.apiguardian,junit")
+             (str/split-lines)
+             (drop-while #(not (str/starts-with? % "[INFO] com.demolibrary:demolibrary:jar:1.0")))
+             (take-while #(not (str/starts-with? % "[INFO] -----------------")))
+             (rest)
+             (map #(str/subs % 10))
+             (str/join "\n")
+             (println))
+        nil)
+         
+      (finally 
+        (when (io/exists-dir? temp-dir)
+          (io/delete-file-tree temp-dir))))))
+
+
+
+(defn- maven/artifact-suffix [type]
   (case type
     :jar     ".jar"
     :sources "-sources.jar"
     :pom     ".pom"
-    (throw (ex :VncException "Invalid artefact type ~{type}"))))
+    (throw (ex :VncException "Invalid artifact type ~{type}"))))
 
 (defn- maven/progress-bar [silent]
   (if silent
@@ -206,7 +326,7 @@
                        :failed-msg  "            FAILED")))
 
 
-(defn- maven/download-artefact-file [uri target-dir target-file progress-fn]
+(defn- maven/download-artifact-file [uri target-dir target-file progress-fn]
   (let [target (str target-dir "/" target-file)]
     (when progress-fn
       (println (str "Downloading " uri))
@@ -216,8 +336,36 @@
            (io/spit target)))))
 
 
-(defn- maven/get-artefact-file [uri progress-fn]
+(defn- maven/get-artifact-file [uri progress-fn]
   (when progress-fn
     (println (str "Downloading " uri "...")))
   (ansi/without-cursor
     (io/download uri :binary true :progress-fn progress-fn)))
+
+
+(defn- maven/validate-mvn-home []
+  (let [home    (maven/mvn-home)
+        binary  (maven/mvn-binary)]
+    (assert (some? home) 
+            "The env variable 'MAVEN_HOME' does not exist!")
+    (assert (io/exists-dir? home) 
+            "The Maven home dir '~{home}' does not exist!")
+    (assert (io/exists-file? binary) 
+            "The Maven tool '~{binary}' does not exist!")
+    (assert (io/file-can-execute? binary) 
+            "The Maven tool '~{binary}' has no executable permissions!")))
+
+
+(defn- maven/mvn-home []
+  (system-env :MAVEN_HOME))
+
+
+(defn- maven/mvn-binary []
+  (str (maven/mvn-home) "/bin/mvn"))
+
+
+(defn- maven/exec []
+  (case (os-type)
+    :mac-osx (partial sh "/bin/sh" "-c")
+    :linux   (partial sh "/bin/sh" "-c")
+    :windows (partial sh "cmd" "/C")))

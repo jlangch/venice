@@ -41,12 +41,18 @@ public class ModuleMavenSection implements ISectionBuilder {
         final DocSection all = new DocSection("(load-module :maven)", id());
         section.addSection(all);
 
-        final DocSection maven = new DocSection("Maven", id());
+        final DocSection maven = new DocSection("Artifacts", id());
         all.addSection(maven);
         maven.addItem(diBuilder.getDocItem("maven/download", false));
         maven.addItem(diBuilder.getDocItem("maven/get", false));
         maven.addItem(diBuilder.getDocItem("maven/uri", false));
-        maven.addItem(diBuilder.getDocItem("maven/parse-artefact", false));
+        maven.addItem(diBuilder.getDocItem("maven/parse-artifact", false));
+
+        final DocSection cmds = new DocSection("Commands", id());
+        all.addSection(cmds);
+        cmds.addItem(diBuilder.getDocItem("maven/mvn", false));
+        cmds.addItem(diBuilder.getDocItem("maven/version", false));
+        cmds.addItem(diBuilder.getDocItem("maven/dependency-tree", false));
 
         return section;
     }
