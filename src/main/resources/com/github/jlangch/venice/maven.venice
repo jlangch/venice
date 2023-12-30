@@ -240,6 +240,7 @@
           Relies on the environment variable `MAVEN_HOME` to access maven.
 
           Excludes dependencies with the group ids:
+
           * org.junit.*
           * org.opentest4j
           * org.apiguardian
@@ -253,23 +254,25 @@
           org.apache.pdfbox:pdfbox:jar:3.0.1:compile
           +- org.apache.pdfbox:pdfbox-io:jar:3.0.1:compile
           +- org.apache.pdfbox:fontbox:jar:3.0.1:compile
-          \- commons-logging:commons-logging:jar:1.2:compile
+          \\- commons-logging:commons-logging:jar:1.2:compile
           ```
           """
      :examples '(
           """(maven/dependency-tree "org.apache.pdfbox:pdfbox:3.0.1")""") }
 
-  maven/dependency-tree [artifact]
+  maven/dependency-tree [& artifacts]
 
-  (assert (string? artifact))
+  (assert (sequential? artifacts))
+  (assert (not-empty? artifacts))
+  (assert (every? string? artifacts))
 
-  (let [temp-dir                       (io/temp-dir "maven-")
-        proj-dir                       (io/file temp-dir "demolibrary")
-        pom-file                       (io/file proj-dir "pom.xml")
-        [group-id artifact-id version] (maven/parse-artifact artifact)]
+  (let [temp-dir  (io/temp-dir "maven-")
+        proj-dir  (io/file temp-dir "demolibrary")
+        pom-file  (io/file proj-dir "pom.xml")]
     (io/delete-file-on-exit temp-dir)
 
     (try
+      ;; create the maven project in temp-dir
       (maven/mvn temp-dir "archetype:generate"
                           "-DgroupId=com.demolibrary" 
                           "-DartifactId=demolibrary"
@@ -277,32 +280,23 @@
                           "-DarchetypeVersion=1.0"
                           "-DinteractiveMode=false")
  
-      (let [pom     (io/slurp pom-file)
-            idx     (str/index-of pom "<dependencies>")
-            [p1 p2] (str/split-at pom (+ idx (count "<dependencies>")))
-            pom$    (str p1
-                         """
-                         
-                             <dependency>
-                               <groupId>~{group-id}</groupId>
-                               <artifactId>~{artifact-id}</artifactId>
-                               <version>~{version}</version>
-                               <scope>compile</scope>
-                             </dependency>
-                         """
-                         p2)]
-        (io/spit pom-file pom$)
+      ;; add the artefacts to the project's pom
+      (as-> (io/slurp pom-file) pom
+            (pom-add-dependencies pom artifacts)
+            (io/spit pom-file pom))
 
-        (->> (maven/mvn proj-dir "dependency:tree"
-                                 "-Dexcludes=org.junit.*,org.opentest4j,org.apiguardian,junit")
-             (str/split-lines)
-             (drop-while #(not (str/starts-with? % "[INFO] com.demolibrary:demolibrary:jar:1.0")))
-             (take-while #(not (str/starts-with? % "[INFO] -----------------")))
-             (rest)
-             (map #(str/subs % 10))
-             (str/join "\n")
-             (println))
-        nil)
+       ;; compute the dependency tree
+      (->> (maven/mvn proj-dir "dependency:tree"
+                                "-Dexcludes=org.junit.*,org.opentest4j,org.apiguardian,junit")
+           (str/split-lines)
+           (drop-while #(not (str/starts-with? % "[INFO] com.demolibrary:demolibrary:jar:1.0")))
+           (take-while #(not (str/starts-with? % "[INFO] -----------------")))
+           (rest)
+           (map #(str/subs % 10))
+           (str/join "\n")
+           (println))
+
+      nil
          
       (finally 
         (when (io/exists-dir? temp-dir)
@@ -369,3 +363,30 @@
     :mac-osx (partial sh "/bin/sh" "-c")
     :linux   (partial sh "/bin/sh" "-c")
     :windows (partial sh "cmd" "/C")))
+
+
+(defn- pom-add-dependencies [pom artifacts]
+  (loop [pom pom, artifacts (reverse artifacts)]
+    (if (empty? artifacts)
+      pom
+      (recur (pom-add-dependency pom (first artifacts)) 
+             (rest artifacts)))))
+
+(defn- pom-add-dependency [pom artifact]
+  (let [idx      (str/index-of pom "<dependencies>")
+        [p1 p2]  (str/split-at pom (+ idx (count "<dependencies>")))]
+    (str p1 (pom-dependency artifact) p2)))
+
+
+(defn- pom-dependency [artifact]
+  (let [[group-id artifact-id version]  (maven/parse-artifact artifact)]
+    """
+
+        <dependency>
+          <groupId>~{group-id}</groupId>
+          <artifactId>~{artifact-id}</artifactId>
+          <version>~{version}</version>
+          <scope>compile</scope>
+        </dependency>
+    """))
+

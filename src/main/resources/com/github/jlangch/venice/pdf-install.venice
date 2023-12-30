@@ -43,7 +43,8 @@
     "org.knowm.xchart:xchart:3.8.2"
     "org.apache.pdfbox:pdfbox:2.0.27"
     "org.apache.pdfbox:fontbox:2.0.27"
-    "io.github.jonathanlink:PDFLayoutTextStripper:2.2.4" ])
+    "io.github.jonathanlink:PDFLayoutTextStripper:2.2.4" 
+    "org.slf4j:slf4j-api:2.0.10"])
 
 (defn
   ^{ :arglists '("(install options*)")
