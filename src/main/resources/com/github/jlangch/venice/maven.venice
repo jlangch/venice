@@ -233,13 +233,20 @@
          (println))))
 
 (defn
-  ^{ :arglists '("(maven/dependency-tree artifact)")
+  ^{ :arglists '("(maven/dependency-tree scope artifacts)")
      :doc """
           Returns the dependency tree of an artifact
 
           Relies on the environment variable `MAVEN_HOME` to access maven.
 
-          Excludes dependencies with the group ids:
+          The scope is one of:
+         
+          * `:compile` - build, test and run
+          * `:provided` - build and test
+          * `:runtime` - test and run
+          * `:test` - compile and test
+
+          Excludes dependencies with the group ids (except for :test scope):
 
           * org.junit.*
           * org.opentest4j
@@ -247,7 +254,7 @@
           * junit
 
           ```
-          (maven/dependency-tree "org.apache.pdfbox:pdfbox:3.0.1")
+          (maven/dependency-tree :compile "org.apache.pdfbox:pdfbox:3.0.1")
           ````
 
           ```
@@ -260,15 +267,19 @@
      :examples '(
           """(maven/dependency-tree "org.apache.pdfbox:pdfbox:3.0.1")""") }
 
-  maven/dependency-tree [& artifacts]
+  maven/dependency-tree [scope & artifacts]
 
+  (assert (#{:compile :runtime :test :provided} scope))
   (assert (sequential? artifacts))
   (assert (not-empty? artifacts))
   (assert (every? string? artifacts))
 
   (let [temp-dir  (io/temp-dir "maven-")
         proj-dir  (io/file temp-dir "demolibrary")
-        pom-file  (io/file proj-dir "pom.xml")]
+        pom-file  (io/file proj-dir "pom.xml")
+        excludes  (if (= :test scope)
+                    "-Dexcludes=xxxxx"
+                    "-Dexcludes=org.junit.*,org.opentest4j,org.apiguardian,junit")]
     (io/delete-file-on-exit temp-dir)
 
     (try
@@ -282,12 +293,11 @@
  
       ;; add the artefacts to the project's pom
       (as-> (io/slurp pom-file) pom
-            (pom-add-dependencies pom artifacts)
+            (pom-add-dependencies pom artifacts scope)
             (io/spit pom-file pom))
 
        ;; compute the dependency tree
-      (->> (maven/mvn proj-dir "dependency:tree"
-                                "-Dexcludes=org.junit.*,org.opentest4j,org.apiguardian,junit")
+      (->> (maven/mvn proj-dir "dependency:tree" excludes)
            (str/split-lines)
            (drop-while #(not (str/starts-with? % "[INFO] com.demolibrary:demolibrary:jar:1.0")))
            (take-while #(not (str/starts-with? % "[INFO] -----------------")))
@@ -365,20 +375,21 @@
     :windows (partial sh "cmd" "/C")))
 
 
-(defn- pom-add-dependencies [pom artifacts]
+(defn- pom-add-dependencies [pom artifacts scope]
   (loop [pom pom, artifacts (reverse artifacts)]
     (if (empty? artifacts)
       pom
-      (recur (pom-add-dependency pom (first artifacts)) 
+      (recur (pom-add-dependency pom (first artifacts) scope) 
              (rest artifacts)))))
 
-(defn- pom-add-dependency [pom artifact]
+
+(defn- pom-add-dependency [pom artifact scope]
   (let [idx      (str/index-of pom "<dependencies>")
         [p1 p2]  (str/split-at pom (+ idx (count "<dependencies>")))]
-    (str p1 (pom-dependency artifact) p2)))
+    (str p1 (pom-dependency artifact scope) p2)))
 
 
-(defn- pom-dependency [artifact]
+(defn- pom-dependency [artifact scope]
   (let [[group-id artifact-id version]  (maven/parse-artifact artifact)]
     """
 
@@ -386,7 +397,7 @@
           <groupId>~{group-id}</groupId>
           <artifactId>~{artifact-id}</artifactId>
           <version>~{version}</version>
-          <scope>compile</scope>
+          <scope>~(name scope)</scope>
         </dependency>
     """))
 
