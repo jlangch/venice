@@ -390,6 +390,9 @@ public class REPL {
             catch (Exception ex) {
                 handleException(ex);
             }
+            catch (NoClassDefFoundError ex) {
+            	printer.printex("error", ex);
+            }
         }
     }
 
