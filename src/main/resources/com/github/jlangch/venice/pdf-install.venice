@@ -66,6 +66,7 @@
 
   install [ & options]
 
+  ;; install xchart
   (load-module :xchart-install)
   (apply xchart-install/install options)
 

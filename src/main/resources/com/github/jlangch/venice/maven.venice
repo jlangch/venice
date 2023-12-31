@@ -193,23 +193,30 @@
 
 
 (defn
-  ^{ :arglists '("(maven/mvn proj-dir & options)")
+  ^{ :arglists '("(maven/mvn proj-dir & args)")
      :doc """
           Runs a Maven command
 
           Relies on the environment variable `MAVEN_HOME` to access Maven.
           """
      :examples '(
-          """(println (maven/mvn "/Users/foo/projects/my-project" compile))""") }
+          """
+          (->> (maven/mvn "/Users/foo/projects/my-project" "compile")
+               (println))
+          """
+          """
+          (->> (maven/mvn "/Users/foo/projects/my-project" "-X" "package")
+               (println))
+          """) }
 
-  maven/mvn [proj-dir & options]
+  maven/mvn [proj-dir & args]
 
   (when-not (io/exists-dir? proj-dir)
     (throw (ex :VncExeption "The proj dir '~{proj-dir}' does not exist!")))
 
   (with-sh-dir proj-dir 
     (let [binary  (maven/mvn-binary)]
-      (->> ((maven/exec) (str/join " " (cons binary options)) :throw-ex true)
+      (->> ((maven/exec) (str/join " " (cons binary args)) :throw-ex true)
            (:out)))))
  
 
