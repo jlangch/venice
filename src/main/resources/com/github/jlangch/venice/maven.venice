@@ -195,9 +195,9 @@
 (defn
   ^{ :arglists '("(maven/mvn proj-dir & options)")
      :doc """
-          Runs a maven command
+          Runs a Maven command
 
-          Relies on the environment variable `MAVEN_HOME` to access maven.
+          Relies on the environment variable `MAVEN_HOME` to access Maven.
           """
      :examples '(
           """(println (maven/mvn "/Users/foo/projects/my-project" compile))""") }
@@ -216,9 +216,9 @@
 (defn
   ^{ :arglists '("(maven/version)")
      :doc """
-          Runs the maven version command and prints the commands output.
+          Runs the Maven version command and prints the commands output.
 
-          Relies on the environment variable `MAVEN_HOME` to access maven.
+          Relies on the environment variable `MAVEN_HOME` to access Maven.
           """
      :examples '(
           """(maven/version)""") }
@@ -237,7 +237,7 @@
      :doc """
           Returns the dependency tree of an artifact
 
-          Relies on the environment variable `MAVEN_HOME` to access maven.
+          Relies on the environment variable `MAVEN_HOME` to access Maven.
 
           The scope is one of:
          
