@@ -13,7 +13,7 @@
        (println)))
 ```
 
-*Note:  Relies on the environment variable `MAVEN_HOME` to access maven.*
+*Note:  Relies on the environment variable `MAVEN_HOME` to access Maven.*
 
 
 
@@ -46,7 +46,7 @@ Prints
 org.apache.pdfbox:pdfbox:jar:3.0.1:compile
 +- org.apache.pdfbox:pdfbox-io:jar:3.0.1:compile
 +- org.apache.pdfbox:fontbox:jar:3.0.1:compile
-\\- commons-logging:commons-logging:jar:1.2:compile
+\- commons-logging:commons-logging:jar:1.2:compile
 ```
 
 *Note:*
