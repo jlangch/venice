@@ -10,6 +10,7 @@ and loads a module only once and skips subsequent load attempts.
 
 * [Kira Template Engine](ext-kira.md)
 * [Parsifal Parser Combinator](ext-parsifal.md)
+* [Maven](ext-maven.md)
 * [Shell](ext-shell.md)
 * [Grep](ext-grep.md)
 * [Charts](ext-charts.md)
@@ -24,7 +25,6 @@ and loads a module only once and skips subsequent load attempts.
 * [Apache Tomcat WEB Server](ext-tomcat.md)
 * [Ring WEB App library](ext-ring.md)
 * [WebDAV](ext-webdav.md)
-* [Maven](ext-maven.md)
 * [Jackson JSON](ext-jackson.md)
 
 
