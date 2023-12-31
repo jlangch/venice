@@ -274,7 +274,9 @@
           ```
           """
      :examples '(
-          """(maven/dependency-tree "org.apache.pdfbox:pdfbox:3.0.1")""") }
+          """
+          (maven/dependency-tree :compile "org.apache.pdfbox:pdfbox:3.0.1")
+          """) }
 
   maven/dependency-tree [scope & artifacts]
 
