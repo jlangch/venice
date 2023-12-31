@@ -1,7 +1,7 @@
 # Maven Utilities
 
 
-Download artefacts from a [Maven repository](https://repo1.maven.org/maven2):
+Download artifacts from a [Maven repository](https://repo1.maven.org/maven2):
 
 ```clojure
 (load-module :maven)
