@@ -8,7 +8,7 @@
 (do
   (load-module :maven)
   
-  (->> (maven/mvn "/Users/foo/projects/my-project" compile)
+  (->> (maven/mvn "/Users/foo/projects/my-project" "compile")
        (println)))
 ```
 
