@@ -28,7 +28,6 @@ import org.apache.pdfbox.io.RandomAccessBuffer;
 import org.apache.pdfbox.io.RandomAccessFile;
 import org.apache.pdfbox.pdfparser.PDFParser;
 import org.apache.pdfbox.pdmodel.PDDocument;
-import org.apache.pdfbox.text.PDFTextStripper;
 
 import com.github.jlangch.venice.impl.util.io.IOStreamUtil;
 
@@ -39,11 +38,13 @@ public class PdfTextStripper {
 
 	public static String text(final File pdf) {
 		try {
-			final PDFParser pdfParser = new PDFParser(new RandomAccessFile(pdf, "r"));
-			pdfParser.parse();
-			final PDDocument pdDocument = new PDDocument(pdfParser.getDocument());
-			final PDFTextStripper pdfTextStripper = new PDFLayoutTextStripper();
-			return pdfTextStripper.getText(pdDocument);
+			final RandomAccessFile raf = new RandomAccessFile(pdf, "r");
+			try {
+				return text(new PDFParser(raf));
+			}
+			finally {
+				raf.close();
+			}
 		}
 		catch (Exception ex) {
 			throw new RuntimeException("Failed to strip text from PDF file", ex);
@@ -61,14 +62,17 @@ public class PdfTextStripper {
 
 	public static String text(final byte[] pdf) {
 		try {
-			final PDFParser pdfParser = new PDFParser(new RandomAccessBuffer(pdf));
-			pdfParser.parse();
-			final PDDocument pdDocument = new PDDocument(pdfParser.getDocument());
-			final PDFTextStripper pdfTextStripper = new PDFLayoutTextStripper();
-			return pdfTextStripper.getText(pdDocument);
+			return text(new PDFParser(new RandomAccessBuffer(pdf)));
 		}
 		catch (Exception ex) {
 			throw new RuntimeException("Failed to strip text from PDF byte buffer", ex);
+		}
+	}
+
+	private static String text(final PDFParser pdfParser) throws Exception {
+		pdfParser.parse();
+		try(final PDDocument pdDocument = new PDDocument(pdfParser.getDocument())) {
+			return new PDFLayoutTextStripper().getText(pdDocument);
 		}
 	}
 }
