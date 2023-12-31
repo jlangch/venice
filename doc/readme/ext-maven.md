@@ -19,7 +19,7 @@
 
 ## Dependency tree for artifacts
 
-The function `maven/dependency-tree` expects a scope and one or more artifacts
+The function `maven/dependency-tree` expects a scope and one or more artifacts in the format "{group-id}:{artifact-id}:{version}".
 
 The scope is one of:       
   * `:compile` - build, test and run
