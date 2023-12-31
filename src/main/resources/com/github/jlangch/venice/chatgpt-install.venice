@@ -59,7 +59,7 @@
 
     "org.reactivestreams:reactive-streams:1.0.3"
     "org.scala-lang:scala-library:2.12.18" ;; we might not need this lib
-    "org.slf4j:slf4j-api:2.0.7"
+    "org.slf4j:slf4j-api:2.0.10"
   ])
 
 
