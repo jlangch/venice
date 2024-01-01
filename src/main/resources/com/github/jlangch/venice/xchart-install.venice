@@ -31,7 +31,7 @@
 
 
 (defn libraries []
-  [ "org.knowm.xchart:xchart:3.8.2" ])
+  [ "org.knowm.xchart:xchart:3.8.6" ])
 
 (defn
   ^{ :arglists '("(install options*)")

@@ -32,15 +32,11 @@
 ;;;;   (xchart-install/install :dir (repl/libs-dir) :silent false)
 
 ;; !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-;; Requires XChart 3.8.1 or newer
+;; Requires XChart 3.8.6 or newer
 ;;
-;; XChart 3.8.1 introduced incompatible changes
+;; XChart 3.8.6 is based on pdfbox 3.0.0
 ;;
-;; Previous versions don't work because of an incompatible XChart API change
-;; introduced with version 3.8.1
-;;
-;;  - Enum org.knowm.xchart.style.PieStyler$LabelType
-;;    (previous org.knowm.xchart.style.PieStyler$AnnotationType)
+;; Previous versions are based on pdfbox 2.x
 ;; !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 
 
@@ -133,15 +129,15 @@
              
                (do
                  (load-module :maven)
-                 (maven/download "org.knowm.xchart:xchart:3.8.2"))
+                 (maven/download "org.knowm.xchart:xchart:3.8.6"))
                """)))
 
   (let [version (jar-maven-manifest-version :org.knowm.xchart :xchart)]
-    (when (semver/older? version "3.8.2")
+    (when (semver/older? version "3.8.6")
       (throw (ex :VncException
                  """
                  The XChart library on the classpath is too old. Use 
-                 version 3.8.2 or newer!
+                 version 3.8.6 or newer!
                  """)))))
 
 
