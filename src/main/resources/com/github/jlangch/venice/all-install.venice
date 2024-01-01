@@ -44,26 +44,30 @@
        """) }
 
   install [ & options]
+  
+  (let [modules* [:jansi-install
+                  :bouncycastle-install
+                  :chatgpt-install
+                  :excel-install
+                  :pdf-install
+                  :qrbill-install
+                  :tomcat-install
+                  :xchart-install]
+        options  (default-options options)]
 
-  (load-module :jansi-install)
-  (load-module :bouncycastle-install)
-  (load-module :chatgpt-install)
-  (load-module :excel-install)
-  (load-module :pdf-install)
-  (load-module :qrbill-install)
-  (load-module :tomcat-install)
-  (load-module :xchart-install)
+    ;; install the modules
+    (doseq [m modules*] (install-module m options))))
 
-  (let [options (default-options options)]
-    (apply jansi-install/install options)
-    (apply bouncycastle-install/install options)
-    (apply chatgpt-install/install options)
-    (apply excel-install/install options)
-    (apply pdf-install/install options)
-    (apply qrbill-install/install options)
-    (apply tomcat-install/install options)
-    (apply xchart-install/install options)))
-    
+
+(defn- install-module [m options]
+  (println)
+  (println (str/repeat "-" 80))
+  (println "Module ~{m}")
+  (println (str/repeat "-" 80))
+  (load-module m)
+  ;; install (apply :pdf-install/install options)
+  (apply (resolve (symbol m "install")) options)) 
+
 
 (defn- default-options [opts]
   (if (and (repl?) (empty? opts))
