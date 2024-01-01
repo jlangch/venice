@@ -13,6 +13,10 @@ All notable changes to this project will be documented in this file.
 
 - ...
 
+### Updated dependencies:
+
+- Bump pdfbox from 2.0.27 to 3.0.1
+
 
 
 ## [1.11.3] - 2023-12-31

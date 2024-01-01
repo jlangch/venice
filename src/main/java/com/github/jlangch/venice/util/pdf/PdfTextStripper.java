@@ -24,8 +24,8 @@ package com.github.jlangch.venice.util.pdf;
 import java.io.File;
 import java.io.InputStream;
 
-import org.apache.pdfbox.io.RandomAccessBuffer;
-import org.apache.pdfbox.io.RandomAccessFile;
+import org.apache.pdfbox.io.RandomAccessReadBuffer;
+import org.apache.pdfbox.io.RandomAccessReadBufferedFile;
 import org.apache.pdfbox.pdfparser.PDFParser;
 import org.apache.pdfbox.pdmodel.PDDocument;
 
@@ -38,7 +38,7 @@ public class PdfTextStripper {
 
 	public static String text(final File pdf) {
 		try {
-			final RandomAccessFile raf = new RandomAccessFile(pdf, "r");
+			final RandomAccessReadBufferedFile raf = new RandomAccessReadBufferedFile(pdf);
 			try {
 				return text(new PDFParser(raf));
 			}
@@ -62,7 +62,7 @@ public class PdfTextStripper {
 
 	public static String text(final byte[] pdf) {
 		try {
-			return text(new PDFParser(new RandomAccessBuffer(pdf)));
+			return text(new PDFParser(new RandomAccessReadBuffer(pdf)));
 		}
 		catch (Exception ex) {
 			throw new RuntimeException("Failed to strip text from PDF byte buffer", ex);
@@ -70,8 +70,7 @@ public class PdfTextStripper {
 	}
 
 	private static String text(final PDFParser pdfParser) throws Exception {
-		pdfParser.parse();
-		try(final PDDocument pdDocument = new PDDocument(pdfParser.getDocument())) {
+		try(final PDDocument pdDocument = pdfParser.parse()) {
 			return new PDFLayoutTextStripper().getText(pdDocument);
 		}
 	}

@@ -40,8 +40,9 @@
     "com.github.librepdf:openpdf:1.3.35"
     "com.github.librepdf:pdf-toolbox:1.3.35"
     "com.github.librepdf:openpdf-fonts-extra:1.3.35"
-    "org.apache.pdfbox:pdfbox:2.0.27"
-    "org.apache.pdfbox:fontbox:2.0.27"
+    "org.apache.pdfbox:pdfbox:3.0.1"
+    "org.apache.pdfbox:pdfbox-io:3.0.1"
+    "org.apache.pdfbox:fontbox:3.0.1"
     "io.github.jonathanlink:PDFLayoutTextStripper:2.2.4" 
     "org.slf4j:slf4j-api:2.0.10"])
 
