@@ -73,12 +73,12 @@ the Venice :xchart module does not work with XChart versions lower than 3.8.1!
          { "Peter" { :x (range 10)
                      :y (mapv #(+ % (* 3 (rand-double))) (range 10)) 
                      :style { :marker-type  :circle 
-                              :marker-color (. :Color :new 0 0 255 128)
+                              :marker-color (. :Color :new 0I 0I 255I 128I)
                               :line-color   :blue } } 
            "Max"   { :x (range 10)
                      :y (mapv #(+ 2  % (* 4 (rand-double))) (range 0 5 0.5)) 
                      :style { :marker-type  :square 
-                              :marker-color (. :Color :new 255 0 0 128)
+                              :marker-color (. :Color :new 255I 0I 0I 128I)
                               :line-color   :red } }}
          { :title "Longest running distance"
            :render-style :line
