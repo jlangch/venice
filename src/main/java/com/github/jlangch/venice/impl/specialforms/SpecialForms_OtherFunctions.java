@@ -580,6 +580,7 @@ public class SpecialForms_OtherFunctions {
                         "(resolve '+)",
                         "(resolve 'y)",
                         "(resolve (symbol \"+\"))",
+                        "((resolve (symbol \"core\" \"+\")) 1 2)",
                         "((-> \"first\" symbol resolve) [1 2 3])")
                     .build()
         ) {

@@ -596,7 +596,8 @@ public class CoreFunctions {
                         "(symbol \"a\")",
                         "(symbol \"foo\" \"a\")",
                         "(symbol *ns* \"a\")",
-                        "(symbol 'a)")
+                        "(symbol 'a)",
+                    	"((resolve (symbol \"core\" \"+\")) 1 2)")
                     .build()
         ) {
             @Override
