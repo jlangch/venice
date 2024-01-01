@@ -31,8 +31,6 @@ import org.apache.pdfbox.pdmodel.PDDocument;
 
 import com.github.jlangch.venice.impl.util.io.IOStreamUtil;
 
-import io.github.jonathanlink.PDFLayoutTextStripper;
-
 
 public class PdfTextStripper {
 
@@ -71,7 +69,7 @@ public class PdfTextStripper {
 
 	private static String text(final PDFParser pdfParser) throws Exception {
 		try(final PDDocument pdDocument = pdfParser.parse()) {
-			return new PDFLayoutTextStripper().getText(pdDocument);
+			return new PdfLayoutTextStripper().getText(pdDocument);
 		}
 	}
 }

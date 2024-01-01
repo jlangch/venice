@@ -15,6 +15,8 @@ All notable changes to this project will be documented in this file.
 
 ### Updated dependencies:
 
+- Bump flying-saucer from 9.3.2 to 9.4.0
+- Bump xchart from 3.8.2 to 3.8.6
 - Bump pdfbox from 2.0.27 to 3.0.1
 
 
@@ -24,8 +26,8 @@ All notable changes to this project will be documented in this file.
 ### Added 
 
 - the function `maven/mvn` to run a maven command
-- the function `maven/dependency-tree` to get the dependency tree of an
-  artifact (e.g.: "org.apache.pdfbox:pdfbox:3.0.1"). Venice creates a 
+- the function `maven/dependencies` to get the dependency tree of an
+  artifact (e.g.: "org.knowm.xchart:xchart:3.8."). Venice creates a 
   temporary maven project to compute the dependency tree and removes 
   the project afterwards
 

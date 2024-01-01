@@ -52,7 +52,7 @@ public class ModuleMavenSection implements ISectionBuilder {
         all.addSection(cmds);
         cmds.addItem(diBuilder.getDocItem("maven/mvn", false));
         cmds.addItem(diBuilder.getDocItem("maven/version", false));
-        cmds.addItem(diBuilder.getDocItem("maven/dependency-tree", false));
+        cmds.addItem(diBuilder.getDocItem("maven/dependencies", false));
 
         return section;
     }

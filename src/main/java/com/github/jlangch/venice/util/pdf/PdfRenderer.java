@@ -83,14 +83,15 @@ public class PdfRenderer {
         try (ByteArrayOutputStream os = new ByteArrayOutputStream()) {
             final ITextRenderer renderer = new ITextRenderer(dotsPerPoint, dotsPerPixel);
 
-            final ClasspathUserAgent userAgent = new ClasspathUserAgent(renderer.getOutputDevice());
+            final ClasspathUserAgent userAgent = new ClasspathUserAgent(
+            											renderer.getOutputDevice(),
+            											dotsPerPixel);
             if (resources != null) {
                 for(Map.Entry<String,ByteBuffer> entry : resources.entrySet()) {
                     userAgent.addResource(entry.getKey(), entry.getValue());
                 }
             }
 
-            userAgent.setSharedContext(renderer.getSharedContext());
             renderer.getSharedContext().setUserAgentCallback(userAgent);
 
             // PDF meta data creation listener

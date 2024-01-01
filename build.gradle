@@ -56,6 +56,11 @@
 //                  -Pinclude=".*PrecompileBenchmark"
 //                  -PjvmArgs="-XX:+PrintCompilation -XX:CompileThreshold=1000"
 //
+//
+// Dependency list
+//
+//     $> ./gradlew dependencies
+//
 // -----------------------------------------------------------------------------
 // Release Venice:
 //
@@ -175,7 +180,7 @@ ext {
     docx4j_Version_Java8 = '8.3.4'
     docx4j_Version_Java11 = '11.4.5'
     docxStamper_Version = '1.4.0'
-    flyingSaucer_Version = '9.3.2'
+    flyingSaucer_Version = '9.4.0'
     javassist_Version = '3.28.0-GA'
     jaxb_Version = '2.3.1'
     jmh_Version = '1.32'
@@ -185,12 +190,11 @@ ext {
     openpdf_Version = '1.3.35'
     pdfbox_Version = '3.0.1'
     jbig2_imageio_Version = '3.0.4'
-    pdfTextStripper_Version = '2.2.4'
     poi_Version = '5.2.3' // '4.1.2'
     servletApi_Version = '5.0.0'
     springExpression_Version = '5.2.0.RELEASE'
     vavr_Version = '0.10.4'
-    xchart_Version = '3.8.2'
+    xchart_Version = '3.8.6'
     zip4j_Version = '2.11.5'
 }
 
@@ -729,7 +733,7 @@ dependencies {
     testImplementation "org.junit.jupiter:junit-jupiter-api:${jupiter_Version}"
     testImplementation "org.junit.jupiter:junit-jupiter-engine:${jupiter_Version}"
     testImplementation "org.xhtmlrenderer:flying-saucer-core:${flyingSaucer_Version}"
-    testImplementation "org.xhtmlrenderer:flying-saucer-pdf-openpdf:${flyingSaucer_Version}"
+    testImplementation "org.xhtmlrenderer:flying-saucer-pdf:${flyingSaucer_Version}"
     testImplementation "com.github.librepdf:openpdf:${openpdf_Version}"
     testImplementation "com.github.librepdf:pdf-toolbox:${openpdf_Version}"
     testImplementation "com.github.librepdf:openpdf-fonts-extra:${openpdf_Version}"
@@ -746,7 +750,7 @@ dependencies {
 
     // Cheatsheet generation
     compileOnly "org.xhtmlrenderer:flying-saucer-core:${flyingSaucer_Version}"
-    compileOnly "org.xhtmlrenderer:flying-saucer-pdf-openpdf:${flyingSaucer_Version}"
+    compileOnly "org.xhtmlrenderer:flying-saucer-pdf:${flyingSaucer_Version}"
     compileOnly "com.github.librepdf:openpdf:${openpdf_Version}"
     compileOnly "com.github.librepdf:pdf-toolbox:${openpdf_Version}"
     compileOnly "com.github.librepdf:openpdf-fonts-extra:${openpdf_Version}"
@@ -757,7 +761,6 @@ dependencies {
     compileOnly "org.apache.pdfbox:pdfbox-io:${pdfbox_Version}"
     compileOnly "org.apache.pdfbox:fontbox:${pdfbox_Version}"
     compileOnly "org.apache.pdfbox:jbig2-imageio:${jbig2_imageio_Version}"
-    compileOnly "io.github.jonathanlink:PDFLayoutTextStripper:${pdfTextStripper_Version}"
    
     // MS Excel support
     compileOnly "org.apache.poi:poi:${poi_Version}"

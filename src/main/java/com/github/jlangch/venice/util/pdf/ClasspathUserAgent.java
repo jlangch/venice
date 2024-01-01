@@ -41,19 +41,21 @@ import com.github.jlangch.venice.impl.util.io.ClassPathResource;
  * An XhtmlRenderer User Agent that loads resources from the classpath
  *
  * <pre>
- *   ITextRenderer renderer = new ITextRenderer(..);
- *   ITextUserAgent userAgent = new ClasspathUserAgent(renderer.getOutputDevice());
- *   userAgent.setSharedContext(renderer.getSharedContext());
+ *   int dotsPerPixel = ...;
+ *   float dotsPerPoint = ...;
+ *   ITextRenderer renderer = new ITextRenderer(dotsPerPoint, dotsPerPixel);
+ *   ITextUserAgent userAgent = new ClasspathUserAgent(renderer.getOutputDevice(), dotsPerPixel);
  *   renderer.getSharedContext().setUserAgentCallback(userAgent);
- *   renderer.setDocument(doc, "classpath:/");
+ *   renderer.setDocument(doc, "classpath:");
  * </pre>
  */
 public class ClasspathUserAgent extends ITextUserAgent {
 
     public ClasspathUserAgent(
-        final ITextOutputDevice outputDevice
+        final ITextOutputDevice outputDevice,
+        final int dotsPerPixel
     ) {
-        super(outputDevice);
+        super(outputDevice, dotsPerPixel);
     }
 
     public ClasspathUserAgent addResource(final String path, final ByteBuffer data) {
