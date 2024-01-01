@@ -5697,6 +5697,7 @@ public class CoreFunctions {
                         "(empty? {})",
                         "(empty? [])",
                         "(empty? '())",
+                        "(empty? nil)",
                         "(empty? \"\")")
                     .seeAlso(
                         "not-empty?")
@@ -5738,7 +5739,9 @@ public class CoreFunctions {
                         "(not-empty? {:a 1})",
                         "(not-empty? [1 2])",
                         "(not-empty? '(1 2))",
-                        "(not-empty? \"abc\")")
+                        "(not-empty? \"abc\")",
+                        "(not-empty? nil)",
+                        "(not-empty? \"\")")
                     .seeAlso(
                         "empty?")
                     .build()
