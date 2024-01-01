@@ -284,7 +284,7 @@
 
   maven/dependencies [scope & artifacts]
 
-  (assert (#{:compile :runtime :test :provided} scope))
+  (assert (or (nil? scope) (#{:compile :runtime :test :provided} scope)))
   (assert (sequential? artifacts))
   (assert (not-empty? artifacts))
   (assert (every? string? artifacts))
@@ -406,13 +406,21 @@
 
 (defn- pom-dependency [artifact scope]
   (let [[group-id artifact-id version]  (maven/parse-artifact artifact)]
-    """
+   (if (nil? scope)
+      """
 
-        <dependency>
-          <groupId>~{group-id}</groupId>
-          <artifactId>~{artifact-id}</artifactId>
-          <version>~{version}</version>
-          <scope>~(name scope)</scope>
-        </dependency>
-    """))
+          <dependency>
+            <groupId>~{group-id}</groupId>
+            <artifactId>~{artifact-id}</artifactId>
+            <version>~{version}</version>
+          </dependency>
+      """
+      """
 
+          <dependency>
+            <groupId>~{group-id}</groupId>
+            <artifactId>~{artifact-id}</artifactId>
+            <version>~{version}</version>
+            <scope>~(name scope)</scope>
+          </dependency>
+      """)))
