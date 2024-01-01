@@ -84,7 +84,7 @@ public class CheatsheetRenderer {
     public static ByteBuffer renderPDF(final String xhtml) {
         return PdfRenderer.render(
                 xhtml,
-                "classpath:/com/github/jlangch/venice/fonts/");
+                "classpath:com/github/jlangch/venice/fonts/");
     }
 
     private static String loadCheatSheetTemplate() {
