@@ -1130,7 +1130,7 @@ public class REPL {
     }
 
     private void handleFailedCommand(final Exception ex) {
-        printer.println("error", "Failed to handle command");
+        printer.println("error", "Failed to handle REPL command");
         printer.println("error", ex.getMessage());
     }
 

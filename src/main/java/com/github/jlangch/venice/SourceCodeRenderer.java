@@ -102,7 +102,9 @@ public class SourceCodeRenderer {
                     syntaxHighlighted);
         }
         catch(Exception ex) {
-            throw new RuntimeException("Failed to Venice source file as HTML/PDF", ex);
+            throw new RuntimeException(
+            			"Failed to render Venice source file as HTML/PDF (" + ex.getMessage() + ")",
+            			ex);
         }
     }
 
