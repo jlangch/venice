@@ -1,0 +1,71 @@
+;;;;   __    __         _
+;;;;   \ \  / /__ _ __ (_) ___ ___
+;;;;    \ \/ / _ \ '_ \| |/ __/ _ \
+;;;;     \  /  __/ | | | | (_|  __/
+;;;;      \/ \___|_| |_|_|\___\___|
+;;;;
+;;;;
+;;;; Copyright 2017-2024 Venice
+;;;;
+;;;; Licensed under the Apache License, Version 2.0 (the "License");
+;;;; you may not use this file except in compliance with the License.
+;;;; You may obtain a copy of the License at
+;;;;
+;;;;     http://www.apache.org/licenses/LICENSE-2.0
+;;;;
+;;;; Unless required by applicable law or agreed to in writing, software
+;;;; distributed under the License is distributed on an "AS IS" BASIS,
+;;;; WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+;;;; See the License for the specific language governing permissions and
+;;;; limitations under the License.
+
+;;;; Install all Venice 3rdparty extension module libraries
+
+(ns all-install)
+
+
+(defn
+  ^{ :arglists '("(install options*)")
+     :doc
+       """
+       Install all Venice 3rdparty extension module libraries.
+
+       Options:
+
+       | :dir path             | download dir, defaults to "." |
+       | :silent {true,false}  | if silent is true does not show a progress \
+                                 bar, defaults to true |
+       """
+     :examples '(
+       """
+       (do
+         (load-module :all-install)
+         (all-install/install :dir (repl/libs-dir) :silent false))
+       """) }
+
+  install [ & options]
+
+  (load-module :jansi-install)
+  (load-module :bouncycastle-install)
+  (load-module :chatgpt-install)
+  (load-module :excel-install)
+  (load-module :pdf-install)
+  (load-module :qrbill-install)
+  (load-module :tomcat-install)
+  (load-module :xchart-install)
+
+  (let [options (default-options options)]
+    (apply jansi-install/install options)
+    (apply bouncycastle-install/install options)
+    (apply chatgpt-install/install options)
+    (apply excel-install/install options)
+    (apply pdf-install/install options)
+    (apply qrbill-install/install options)
+    (apply tomcat-install/install options)
+    (apply xchart-install/install options)))
+    
+
+(defn- default-options [opts]
+  (if (and (repl?) (empty? opts))
+    [:dir (repl/libs-dir) :silent false] 
+    opts))

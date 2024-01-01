@@ -44,6 +44,7 @@ public class Modules {
             Collections.unmodifiableSet(
                 new HashSet<>(
                     Arrays.asList(
+                        "all-install",
                         "ansi",
                         "app",
                         "ascii-table",
