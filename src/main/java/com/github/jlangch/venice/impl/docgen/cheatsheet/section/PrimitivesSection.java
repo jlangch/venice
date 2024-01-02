@@ -277,40 +277,52 @@ public class PrimitivesSection implements ISectionBuilder {
         chartest.addItem(diBuilder.getDocItem("str/upper-case?"));
 
 
-        final DocSection other = new DocSection("Other", "primitives.other");
-        section.addSection(other);
+        final DocSection bool_ = new DocSection("Booleans", "primitives.booleans");
+        section.addSection(bool_);
+        final DocSection bool = new DocSection("Boolean", id());
+        bool_.addSection(bool);
+        bool.addItem(new DocItem("true false", null));
+        bool.addItem(diBuilder.getDocItem("boolean"));
+        bool.addItem(diBuilder.getDocItem("not"));
+        bool.addItem(diBuilder.getDocItem("boolean?"));
+        bool.addItem(diBuilder.getDocItem("true?"));
+        bool.addItem(diBuilder.getDocItem("false?"));
 
-        final DocSection nil = new DocSection("Nil", id());
-        other.addSection(nil);
-        nil.addItem(diBuilder.getDocItem("nil?"));
-        nil.addItem(diBuilder.getDocItem("some?"));
 
-
-        final DocSection keywords = new DocSection("Keywords", "primitives.other.keywords");
-        other.addSection(keywords);
+        final DocSection keywords_ = new DocSection("Keywords", "primitives.keywords");
+        section.addSection(keywords_);
+        final DocSection keywords = new DocSection("Keyword", id());
+        keywords_.addSection(keywords);
         keywords.addItem(new DocItem(":a :blue", null));
         keywords.addItem(diBuilder.getDocItem("keyword?"));
         keywords.addItem(diBuilder.getDocItem("keyword"));
 
-        final DocSection symbols = new DocSection("Symbols", "primitives.other.symbols");
-        other.addSection(symbols);
+
+        final DocSection symbols_ = new DocSection("Symbols", "primitives.symbols");
+        section.addSection(symbols_);
+        final DocSection symbols = new DocSection("Symbol", id());
+        symbols_.addSection(symbols);
         symbols.addItem(new DocItem("'a 'blue", null));
         symbols.addItem(diBuilder.getDocItem("symbol?"));
         symbols.addItem(diBuilder.getDocItem("qualified-symbol?"));
         symbols.addItem(diBuilder.getDocItem("symbol"));
 
-        final DocSection just = new DocSection("Just", "primitives.other.just");
-        other.addSection(just);
+
+        final DocSection nil_ = new DocSection("Nil", "primitives.nil");
+        section.addSection(nil_);
+        final DocSection nil = new DocSection("Nil", id());
+        nil_.addSection(nil);
+        nil.addItem(new DocItem("nil", null));
+        nil.addItem(diBuilder.getDocItem("nil?"));
+        nil.addItem(diBuilder.getDocItem("some?"));
+
+
+        final DocSection just_ = new DocSection("Just", "primitives.just");
+        section.addSection(just_);
+        final DocSection just = new DocSection("Just", id());
+        just_.addSection(just);
         just.addItem(diBuilder.getDocItem("just"));
         just.addItem(diBuilder.getDocItem("just?"));
-
-        final DocSection boolean_ = new DocSection("Boolean", "primitives.other.boolean");
-        other.addSection(boolean_);
-        boolean_.addItem(diBuilder.getDocItem("boolean"));
-        boolean_.addItem(diBuilder.getDocItem("not"));
-        boolean_.addItem(diBuilder.getDocItem("boolean?"));
-        boolean_.addItem(diBuilder.getDocItem("true?"));
-        boolean_.addItem(diBuilder.getDocItem("false?"));
 
         return section;
     }

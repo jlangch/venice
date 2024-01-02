@@ -219,10 +219,14 @@ public class DocGenerator {
 
         final DocSection primitives = new DocSection("Primitives", "primitives");
         primitives.addSection(new DocSection("Literals", "primitives.literals"));
-        primitives.addSection(new DocSection("Numbers", "primitives.numbers"));
-        primitives.addSection(new DocSection("Strings", "primitives.strings"));
-        primitives.addSection(new DocSection("Chars", "primitives.chars"));
-        primitives.addSection(new DocSection("Other", "primitives.other"));
+        primitives.addSection(new DocSection("Number", "primitives.numbers"));
+        primitives.addSection(new DocSection("String", "primitives.strings"));
+        primitives.addSection(new DocSection("Char", "primitives.chars"));
+        primitives.addSection(new DocSection("Boolean", "primitives.booleans"));
+        primitives.addSection(new DocSection("Keyword", "primitives.keywords"));
+        primitives.addSection(new DocSection("Symbol", "primitives.symbols"));
+        primitives.addSection(new DocSection("Nil", "primitives.mil"));
+        primitives.addSection(new DocSection("Just", "primitives.just"));
         content.add(primitives);
 
         final DocSection collections = new DocSection("Collections", "collections");
