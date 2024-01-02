@@ -43,6 +43,7 @@ public class ModuleFontsSection implements ISectionBuilder {
         final DocSection wr = new DocSection("Download", id());
         all.addSection(wr);
         wr.addItem(diBuilder.getDocItem("fonts/download-font-family", false));
+        wr.addItem(diBuilder.getDocItem("fonts/download-demo-fonts", false));
 
         return section;
     }
