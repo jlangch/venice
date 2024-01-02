@@ -905,10 +905,12 @@ Google hosts Open Source fonts at [Google Fonts](https://fonts.google.com)
            }
            #footer_left {
              position: running(footer_left);
+             font-size: 8pt;
              text-align: left;
            }
            #footer_right {
              position: running(footer_right);
+             font-size: 8pt;
              text-align: right;
              padding-right: 2mm;
            }
