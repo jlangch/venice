@@ -53,7 +53,6 @@ public class ReplSection implements ISectionBuilder {
         all.addSection(dirs);
         dirs.addItem(diBuilder.getDocItem("repl/home-dir", false));
         dirs.addItem(diBuilder.getDocItem("repl/libs-dir", false));
-        dirs.addItem(diBuilder.getDocItem("repl/fonts-dir", false));
 
         return section;
     }
