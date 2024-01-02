@@ -597,7 +597,10 @@ public class CoreFunctions {
                         "(symbol \"foo\" \"a\")",
                         "(symbol *ns* \"a\")",
                         "(symbol 'a)",
-                    	"((resolve (symbol \"core\" \"+\")) 1 2)")
+                    	"((resolve (symbol \"core\" \"+\")) 1 2)",
+                        "(name str/reverse)",
+                        "(namespace str/reverse)")
+                    .seeAlso("resolve", "name", "namespace")
                     .build()
         ) {
             @Override
@@ -700,7 +703,10 @@ public class CoreFunctions {
                     .doc("Returns a keyword from the given name")
                     .examples(
                         "(keyword \"a\")",
-                        "(keyword :a)")
+                        "(keyword :a)",
+                        "(name :foo/a)",
+                        "(namespace :foo/a)")
+                    .seeAlso("name", "namespace")
                     .build()
         ) {
             @Override

@@ -582,6 +582,7 @@ public class SpecialForms_OtherFunctions {
                         "(resolve (symbol \"+\"))",
                         "((resolve (symbol \"core\" \"+\")) 1 2)",
                         "((-> \"first\" symbol resolve) [1 2 3])")
+                    .seeAlso("symbol")
                     .build()
         ) {
             @Override
