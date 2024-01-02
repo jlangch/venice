@@ -78,7 +78,6 @@ public class ReplFunctions {
         fns.add(createTermColsFn(terminal));
         fns.add(createReplHomeDirFn(replDirs));
         fns.add(createReplLibsDirFn(replDirs));
-        fns.add(createReplFontsDirFn(replDirs));
 
         return fns;
     }
@@ -227,7 +226,7 @@ public class ReplFunctions {
                         .doc(
                             "Returns the REPL home directory!")
                         .seeAlso(
-                            "repl?", "repl/libs-dir", "repl/fonts-dir")
+                            "repl?", "repl/libs-dir")
                         .build()
             ) {
                 @Override
@@ -253,7 +252,7 @@ public class ReplFunctions {
                         .doc(
                             "Returns the REPL libs directory!")
                         .seeAlso(
-                            "repl?", "repl/home-dir", "repl/fonts-dir")
+                            "repl?", "repl/home-dir")
                         .build()
             ) {
                 @Override
@@ -263,32 +262,6 @@ public class ReplFunctions {
                     return replDirs.getLibsDir() == null
                             ? Constants.Nil
                             : new VncJavaObject(replDirs.getLibsDir());
-                }
-
-                private static final long serialVersionUID = -1L;
-            };
-    }
-
-    private static VncFunction createReplFontsDirFn(final ReplDirs replDirs) {
-        return
-            new VncFunction(
-                    "repl/fonts-dir",
-                    VncFunction
-                        .meta()
-                        .arglists("(repl/fonts-dir)")
-                        .doc(
-                            "Returns the REPL fonts directory!")
-                        .seeAlso(
-                            "repl?", "repl/home-dir", "repl/libs-dir")
-                        .build()
-            ) {
-                @Override
-                public VncVal apply(final VncList args) {
-                    ArityExceptions.assertArity(this, args, 0);
-
-                    return replDirs.getFontsDir() == null
-                            ? Constants.Nil
-                            : new VncJavaObject(replDirs.getFontsDir());
                 }
 
                 private static final long serialVersionUID = -1L;

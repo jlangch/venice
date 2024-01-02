@@ -6,7 +6,6 @@ if [ ! -d ${REPL_HOME} ]; then
 fi
 
 [ ! -d ${REPL_HOME}/tmp ] && mkdir ${REPL_HOME}/tmp
-[ ! -d ${REPL_HOME}/fonts ] && mkdir ${REPL_HOME}/fonts
 [ ! -d ${REPL_HOME}/scripts ] && mkdir ${REPL_HOME}/scripts
 
 cd $REPL_HOME
@@ -21,7 +20,7 @@ while true; do
     -XX:+AlwaysPreTouch \
     -Djava.io.tmpdir=${REPL_HOME}/tmp \
     -Dvenice.repl.home=${REPL_HOME} \
-    -cp "libs:libsJava21/*:fonts" \
+    -cp "libs:libsJava21/*" \
     com.github.jlangch.venice.Launcher \
     -loadpath "" \
     -restartable \

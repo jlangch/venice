@@ -56,7 +56,10 @@
         options  (default-options options)]
 
     ;; install the modules
-    (doseq [m modules*] (install-module m options))))
+    (doseq [m modules*] (install-module m options)))
+    
+    ;; install the demo fonts
+    (install-fonts))
 
 
 (defn- install-module [m options]
@@ -73,3 +76,14 @@
   (if (and (repl?) (empty? opts))
     [:dir (repl/libs-dir) :silent false] 
     opts))
+
+
+(defn- install-fonts []
+  (println)
+  (println (str/repeat "-" 80))
+  (println "Fonts")
+  (println (str/repeat "-" 80))
+  (load-module :fonts)
+  (fonts/download-demo-fonts (repl/libs-dir))) 
+
+

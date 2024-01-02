@@ -490,7 +490,6 @@ The PDF renderer loads custom True-Type fonts from URIs. The custom
 schema `classpath:` allows the renderer to load the font files from
 the class path. E.g.:
 - `classpath:OpenSans-Regular.ttf`
-- `classpath:fonts/OpenSans-Regular.ttf`
 
 A CSS font definition that embeds 'OpenSans-Regular' in the PDF looks 
 like:
@@ -498,7 +497,7 @@ like:
 ```css
    @font-face {
       font-family: 'Open Sans';
-      src: url('classpath:fonts/OpenSans-Regular.ttf');
+      src: url('classpath:OpenSans-Regular.ttf');
       font-style: normal;
       font-weight: normal;
       -fs-pdf-font-embed: embed;
@@ -506,28 +505,24 @@ like:
    }
 ```
 
-The font files can be packaged in a resource JAR like `fonts.jar` and be placed
-on the Venice's classpath.
+The :font module provides the function `fonts/download-demo-fonts` to download the 
+demo Open Source fonts from [Google Fonts](https://fonts.google.com)
+   
+  * "Open Sans"
+  * "Source Code Pro"
+  * "Audiowide" 
+  * "Roboto"
+  
+to the REPL's classpath. Just run
 
-A `fonts.jar` file containing the OFL fonts 'Open Sans' and 'Source Code Pro'
-may look like:
-
-```text
-Length     Date/Time        Name
--------  ---------------- -----------------------------
-      0  2019-07-01 13:20 fonts/
- 211716  2019-06-20 09:04 fonts/SourceCodePro-Bold.ttf
- 213252  2019-06-20 09:04 fonts/SourceCodePro-Light.ttf
- 212880  2019-06-20 09:04 fonts/SourceCodePro-Regular.ttf
- 224592  2019-06-20 09:04 fonts/OpenSans-Bold.ttf
- 212896  2019-06-20 09:04 fonts/OpenSans-Italic.ttf
- 217360  2019-06-20 09:04 fonts/OpenSans-Regular.ttf
+```clojure
+(do
+  (load-module :fonts)
+  (fonts/download-demo-fonts (repl/libs-dir)))
 ```
 
-A pre-built `fonts.jar` with these fonts can be downloaded from Venice GitHub 
-[Demo Fonts](https://github.com/jlangch/venice/blob/master/doc/pdfs/fonts.jar)
+and restart the REPL.
 
-Google hosts Open Source fonts at [Google Fonts](https://fonts.google.com)
 
 
 ```clojure
@@ -541,9 +536,9 @@ Google hosts Open Source fonts at [Google Fonts](https://fonts.google.com)
   (pdf/check-required-libs)
 
   ;; ensure the fonts are available when loading this file
-  (->> ["fonts/OpenSans-Regular.ttf"
-        "fonts/OpenSans-Italic.ttf"
-        "fonts/SourceCodePro-Regular.ttf"]
+  (->> ["OpenSans-Regular.ttf"
+        "OpenSans-Italic.ttf"
+        "SourceCodePro-Regular.ttf"]
        (docoll (fn [r]
                  (when-not (io/classpath-resource? r)
                    (throw (. :VncException :new
@@ -559,7 +554,7 @@ Google hosts Open Source fonts at [Google Fonts](https://fonts.google.com)
          <style type="text/css">
            @font-face {
               font-family: 'Open Sans';
-              src: url('classpath:fonts/OpenSans-Regular.ttf');
+              src: url('classpath:OpenSans-Regular.ttf');
               font-style: normal;
               font-weight: normal;
               -fs-pdf-font-embed: embed;
@@ -567,7 +562,7 @@ Google hosts Open Source fonts at [Google Fonts](https://fonts.google.com)
            }
            @font-face {
               font-family: 'Open Sans Italic';
-              src: url('classpath:fonts/OpenSans-Italic.ttf');
+              src: url('classpath:OpenSans-Italic.ttf');
               font-style: normal;
               font-weight: normal;
               -fs-pdf-font-embed: embed;
@@ -575,7 +570,7 @@ Google hosts Open Source fonts at [Google Fonts](https://fonts.google.com)
            }
            @font-face {
               font-family: 'Source Code Pro';
-              src: url('classpath:fonts/SourceCodePro-Regular.ttf');
+              src: url('classpath:SourceCodePro-Regular.ttf');
               font-style: normal;
               font-weight: normal;
               -fs-pdf-font-embed: embed;

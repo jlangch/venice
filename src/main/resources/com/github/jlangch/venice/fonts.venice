@@ -29,7 +29,7 @@
 
 
 (defn
-  ^{ :arglists '("(download-font-family family-name options*)")
+  ^{ :arglists '("(fonts/download-font-family family-name options*)")
      :doc
        """
        Download a font family from the
@@ -58,19 +58,19 @@
          (load-module :fonts)
 
          (fonts/download-font-family "Open Sans"
-                                     :dir (repl/fonts-dir)
+                                     :dir (repl/libs-dir)
                                      :extract true
                                      :glob-pattern "static/OpenSans/*.ttf"
                                      :silent false)
 
          (fonts/download-font-family "Source Code Pro"
-                                     :dir (repl/fonts-dir)
+                                     :dir (repl/libs-dir)
                                      :extract true
                                      :glob-pattern "static/*.ttf"
                                      :silent false)
 
          (fonts/download-font-family "Roboto"
-                                     :dir (repl/fonts-dir)
+                                     :dir (repl/libs-dir)
                                      :extract true
                                      :glob-pattern "*.ttf"
                                      :silent false))
@@ -111,3 +111,50 @@
           (throw (ex :VncException
                      "Failed to download the font family ~{family-name} zip!"
                      e)))))))
+
+
+(defn 
+  ^{ :arglists '("(fonts/download-demo-fonts dir)")
+     :doc
+       """
+       Downloads the Venice demo fonts
+       
+       * "Open Sans"
+       * "Source Code Pro"
+       * "Audiowide" 
+       * "Roboto"
+
+       to the specified dir
+       """
+     :examples '(
+       """
+       (do
+         (load-module :fonts)
+         (fonts/download-demo-fonts (repl/libs-dir)))
+       """) }
+
+  download-demo-fonts [dir]
+
+  (fonts/download-font-family "Open Sans"
+                              :dir dir
+                              :extract true
+                              :glob-pattern "static/OpenSans/*.ttf"
+                              :silent false)
+
+  (fonts/download-font-family "Source Code Pro"
+                              :dir dir
+                              :extract true
+                              :glob-pattern "static/*.ttf"
+                              :silent false)
+
+  (fonts/download-font-family "Roboto"
+                              :dir dir
+                              :extract true
+                              :glob-pattern "*.ttf"
+                              :silent false)
+
+  (fonts/download-font-family "Audiowide"
+                              :dir dir
+                              :extract true
+                              :glob-pattern "*.ttf"
+                              :silent false))

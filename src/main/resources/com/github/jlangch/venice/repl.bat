@@ -26,7 +26,6 @@ if not exist %REPL_HOME% (
 )
 
 if not exist %REPL_HOME%\tmp mkdir %REPL_HOME%\tmp
-if not exist %REPL_HOME%\fonts mkdir %REPL_HOME%\fonts
 if not exist %REPL_HOME%\scripts mkdir %REPL_HOME%\scripts
 
 cd %REPL_HOME%
@@ -40,7 +39,7 @@ java.exe ^
   -XX:-OmitStackTraceInFastThrow ^
   -Djava.io.tmpdir=%REPL_HOME%\tmp ^
   -Dvenice.repl.home=%REPL_HOME% ^
-  -cp "libs;libs/*;fonts" com.github.jlangch.venice.Launcher ^
+  -cp "libs;libs/*" com.github.jlangch.venice.Launcher ^
   -restartable ^
   -colors-darkmode
   

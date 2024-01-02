@@ -198,18 +198,6 @@
     (setup-repl-launcher-unix color-mode)))
 
 
-(defn package-resources [lib-dir font-dir]
-  (let [target (io/file lib-dir "resources.jar")
-        res-venice-png "com/github/jlangch/venice/images/venice.png"]
-      (println (str "Packaging resources (fonts, images) to '" target "'..."))
-      (let [zip-entries  (conj (->> (io/list-files font-dir)
-                                    (map #(vector (str "fonts/" (io/file-name %)) %))
-                                    (flatten))
-                                "images/venice.png"
-                                (io/load-classpath-resource res-venice-png))]
-        (io/spit target (apply io/zip zip-entries)))))
-
-
 (defn copy-venice-jar [dir]
   (let [loc    (java-source-location :com.github.jlangch.venice.Venice)
         name   (when (some? loc) (io/file-name loc))
@@ -276,10 +264,6 @@
     (when-not (io/exists-dir? "./scripts/webapp")
       (io/mkdirs "./scripts/webapp"))
 
-    (when-not (empty? font-families)
-      (when-not (io/exists-dir? "./fonts")
-        (io/mkdirs "./fonts")))
-
     (when-not (io/exists-dir? "./tmp")
       (io/mkdirs "./tmp"))
 
@@ -294,13 +278,10 @@
     (repl-setup/copy-venice-jar "libs")
     (repl-setup/download-libs "libs" libs show-progress)
     (repl-setup/download-modules-libs "libs" modules_ show-progress)
-    (repl-setup/download-font-families "fonts" font-families)
+    (repl-setup/download-font-families "libs" font-families)
     (repl-setup/setup-repl-config "libs" )
     (repl-setup/setup-repl-launcher color-mode)
     (repl-setup/setup-scripts "scripts")
-
-    (when (= setup-mode :extended)
-      (repl-setup/package-resources "libs" "fonts"))
 
     (print-success-message)
 

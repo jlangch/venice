@@ -27,7 +27,6 @@ if [ ! -d ${REPL_HOME} ]; then
 fi
 
 [ ! -d ${REPL_HOME}/tmp ] && mkdir ${REPL_HOME}/tmp
-[ ! -d ${REPL_HOME}/fonts ] && mkdir ${REPL_HOME}/fonts
 [ ! -d ${REPL_HOME}/scripts ] && mkdir ${REPL_HOME}/scripts
 
 
@@ -40,7 +39,7 @@ while true; do
     -XX:-OmitStackTraceInFastThrow \
     -Djava.io.tmpdir=${REPL_HOME}/tmp \
     -Dvenice.repl.home=${REPL_HOME} \
-    -cp "libs:libs/*:fonts" \
+    -cp "libs:libs/*" \
     com.github.jlangch.venice.Launcher \
     -loadpath "" \
     -restartable \
