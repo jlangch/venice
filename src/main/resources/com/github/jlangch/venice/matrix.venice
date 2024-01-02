@@ -240,8 +240,7 @@
   ^{ :arglists '(
           "(matrix/add-column-at-start m c)")
      :doc """
-          Add a column to a matrix before the first column. A matrix is a vector 
-          of vectors [[1 2] [3 4]]
+          Add a column to a matrix before the first column.
           """
      :examples (list
           """
@@ -269,8 +268,7 @@
   ^{ :arglists '(
           "(matrix/add-column-at-end m c)")
      :doc """
-          Add a column to a matrix after the last column. A matrix is a vector 
-          of vectors [[1 2] [3 4]]
+          Add a column to a matrix after the last column.
           """
      :examples (list
           """
@@ -298,8 +296,7 @@
   ^{ :arglists '(
           "(matrix/add-row-at-start m r)")
      :doc """
-          Add a row to a matrix before the first row. A matrix is a vector of 
-          vectors [[1 2] [3 4]]
+          Add a row to a matrix before the first row.
           """
      :examples (list
           """
@@ -325,8 +322,7 @@
   ^{ :arglists '(
           "(matrix/add-row-at-end m r)")
      :doc """
-          Add a row to a matrix after the last row. A matrix is a vector of 
-          vectors [[1 2] [3 4]]
+          Add a row to a matrix after the last row.
           """
      :examples (list
           """
@@ -352,8 +348,7 @@
   ^{ :arglists '(
           "(matrix/remove-column m n)")
      :doc """
-          Add a column to a matrix before the first column. A matrix is a vector 
-          of vectors [[1 2] [3 4]]
+          Remove a column from a matrix.
           """
      :examples (list
           """
@@ -374,8 +369,7 @@
   ^{ :arglists '(
           "(matrix/remove-row m n)")
      :doc """
-          Add a column to a matrix before the first column. A matrix is a vector 
-          of vectors [[1 2] [3 4]]
+           Remove a row from a matrix.
           """
      :examples (list
           """
@@ -396,7 +390,7 @@
           "(matrix/format m)"
           "(matrix/format m fmt)")
      :doc """
-          Formats a matrix
+          Formats a matrix.
 
           ```
           (println (matrix/format [[1 2] [3 4] [5 6]]))

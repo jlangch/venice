@@ -13,6 +13,10 @@ All notable changes to this project will be documented in this file.
 
 - ...
 
+### Fixed 
+
+- documentation for :matrix module
+
 ### Updated dependencies:
 
 - Bump flying-saucer from 9.3.2 to 9.4.0
