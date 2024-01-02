@@ -542,7 +542,7 @@ and restart the REPL.
        (docoll (fn [r]
                  (when-not (io/classpath-resource? r)
                    (throw (. :VncException :new
-                             "Font classpath resource '~{r}' not found!"))))))
+                             "Font classpath resource '~{r}' not found! Please install the demo fonts first!"))))))
 
 
   ;; define the template
