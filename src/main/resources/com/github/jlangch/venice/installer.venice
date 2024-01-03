@@ -118,9 +118,7 @@
         opts    (apply hash-map options)
         silent  (:silent opts true)]
     (when-not silent
-      (println)
-      (println (str/repeat "-" 80))
-      (println "Module ~{name}")
+      (println "\nModule ~{name}")
       (println (str/repeat "-" 80)))
     (load-module name)
     ;; install (apply :pdf-install/install options)
@@ -157,9 +155,7 @@
         silent   (:silent opts true)
         dir      (:dir opts ".")]
     (when-not silent
-      (println)
-      (println (str/repeat "-" 80))
-      (println "Fonts")
+      (println "\nFonts")
       (println (str/repeat "-" 80)))
     (load-module :fonts)
     (fonts/download-demo-fonts dir silent)))
