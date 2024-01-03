@@ -2,7 +2,7 @@
 
 Venice supports rendering charts if the [XChart](https://knowm.org/open-source/xchart/) library is on the runtime classpath:
 
-- org.knowm.xchart:xchart:3.8.2
+- org.knowm.xchart:xchart:3.8.6
 
 Run this script from the REPL to download the XChart libraries:
 
