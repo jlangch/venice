@@ -136,6 +136,14 @@
        | :dir path             | download dir, defaults to "." |
        | :silent {true,false}  | if silent is true does not show a progress \
                                  bar, defaults to true |
+
+       In the REPL run: 
+       
+       ````
+       venice> (load-module :installer)
+       venice> (installer/install-demo-fonts)
+       venice> !restart
+       ```
        """
      :examples '(
        """
@@ -173,5 +181,3 @@
   (if (str/ends-with? (core/name name) "-install")
     name
     (keyword (str (core/name name) "-install"))))
-
-
