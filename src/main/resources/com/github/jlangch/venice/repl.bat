@@ -14,7 +14,7 @@ REM #    |    +-- script-2.venice
 REM #    |
 REM #    +-- tmp
 REM #    |
-REM #    +-- repl.sh
+REM #    +-- repl.bat
 REM # ------------------------------------------------------------------------------
 
 set REPL_HOME={{INSTALL_PATH}}

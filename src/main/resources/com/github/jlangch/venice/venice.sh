@@ -2,11 +2,12 @@
 
 help () {
   echo "-------------------------------------------------------------------------"
-  echo "rebuild     rebuild, deploy, and start the Venice REPL"
-  echo "start       start the Venice REPL"
-  echo "tests       run the unit tests"
-  echo "cheatsheet  generate the cheatsheets"
-  echo "publish     Publish Venice artefacts to Maven"
+  echo "rebuild       rebuild, deploy, and start the Venice REPL"
+  echo "start         start the Venice REPL"
+  echo "tests         run the unit tests"
+  echo "dependencies  list the dependencies"
+  echo "cheatsheet    generate the cheatsheets"
+  echo "publish       Publish Venice artefacts to Maven"
   echo ""
   echo "Gradle commands:"
   echo "./gradlew test"
@@ -82,6 +83,10 @@ tests () {
   ./gradlew clean test
 }
 
+dependencies () {
+  ./gradlew dependencies
+}
+
 
 export JAVA_HOME=${JAVA_8_ZULU_HOME}
 export REPL_HOME=~/Desktop/venice
@@ -98,6 +103,7 @@ export -f start11
 export -f start17
 export -f publish
 export -f cheatsheet
+export -f dependencies
 export -f tests
 
 cd ${WORKSPACE_HOME}
