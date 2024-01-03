@@ -28,9 +28,6 @@ Examples:
 - [Pie Chart](#pie-chart)
 - [Download Libraries](#download-required-3rd-party-libs)
 
-**Note:** Due to incompatible API changes in the XChart 3.8.0 Java library, 
-the Venice :xchart module does not work with XChart versions lower than 3.8.1!
-
 
 ## Line Chart
 
