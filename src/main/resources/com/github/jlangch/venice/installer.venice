@@ -24,7 +24,8 @@
 (ns installer)
 
 
-;; Venice modules with an installer. e.g. :jansi -> :jansi-install
+;; Venice modules with an installer for 3rsparty libraries. 
+;; E.g. :jansi -> :jansi-install
 (def- installable-modules [ :jansi
                             :bouncycastle
                             :chatgpt
@@ -39,13 +40,31 @@
   ^{ :arglists '("(install options*)")
      :doc
        """
-       Install all Venice 3rdparty extension module libraries.
+       Install 3rdparty libraries for all Venice extension modules that 
+       require Java libraries:
+
+         * :jansi
+         * :bouncycastle
+         * :chatgpt
+         * :excel
+         * :pdf
+         * :qrbill
+         * :tomcat
+         * :xchart
 
        Options:
 
        | :dir path             | download dir, defaults to "." |
        | :silent {true,false}  | if silent is true does not show a progress \
                                  bar, defaults to true |
+
+       In the REPL run: 
+       
+       ````
+       venice> (load-module :installer)
+       venice> (installer/install)
+       venice> !restart
+       ```
        """
      :examples '(
        """
