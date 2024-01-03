@@ -2368,9 +2368,17 @@ public class CoreFunctionsTest {
         final Venice venice = new Venice();
 
         assertEquals(":a", venice.eval("(str (keyword :a))"));
-        assertEquals(":a", venice.eval("(str (keyword \"a\"))"));
+        assertEquals(":foo/a", venice.eval("(str (keyword :foo/a))"));
+        assertEquals(":foo/a", venice.eval("(str (keyword \"foo/a\"))"));
+        assertEquals(":foo/a", venice.eval("(str (keyword \"foo\" \"a\"))"));
+        assertEquals(":foo/a", venice.eval("(str (keyword 'foo \"a\"))"));
+        assertEquals(":user/a", venice.eval("(str (keyword *ns* \"a\"))"));
+
         assertTrue((Boolean)venice.eval("(keyword? (keyword :a))"));
-        assertTrue((Boolean)venice.eval("(keyword? (keyword \"a\"))"));
+        assertTrue((Boolean)venice.eval("(keyword? (keyword :foo/a))"));
+        assertTrue((Boolean)venice.eval("(keyword? (keyword \"foo/a\"))"));
+        assertTrue((Boolean)venice.eval("(keyword? (keyword \"foo\" \"a\"))"));
+        assertTrue((Boolean)venice.eval("(keyword? (keyword 'foo \"a\"))"));
 
         // keywords act like functions on maps
         assertEquals(Long.valueOf(100), venice.eval("(:a {:a 100 :b 200})"));
@@ -4910,12 +4918,15 @@ public class CoreFunctionsTest {
 
         assertEquals("a", venice.eval("(str (symbol \"a\"))"));
         assertEquals("a", venice.eval("(str (symbol :a))"));
-        assertEquals("a", venice.eval("(str (symbol (symbol \"a\")))"));
+        assertEquals("foo/a", venice.eval("(str (symbol \"foo/a\"))"));
         assertEquals("foo/a", venice.eval("(str (symbol \"foo\" \"a\"))"));
         assertEquals("user/a", venice.eval("(str (symbol *ns* \"a\"))"));
+
+        assertEquals("a", venice.eval("(str (symbol (symbol \"a\")))"));
+
         assertTrue((Boolean)venice.eval("(symbol? (symbol \"a\"))"));
         assertTrue((Boolean)venice.eval("(symbol? (symbol :a))"));
-    }
+     }
 
     @Test
     public void test_symbol_Q() {

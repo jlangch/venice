@@ -24,14 +24,15 @@
 (ns installer)
 
 
-(def- installable-modules [ :jansi-install
-                            :bouncycastle-install
-                            :chatgpt-install
-                            :excel-install
-                            :pdf-install
-                            :qrbill-install
-                            :tomcat-install
-                            :xchart-install ])
+;; Venice modules with an installer. e.g. :jansi -> :jansi-install
+(def- installable-modules [ :jansi
+                            :bouncycastle
+                            :chatgpt
+                            :excel
+                            :pdf
+                            :qrbill
+                            :tomcat
+                            :xchart ])
 
 
 (defn
@@ -94,7 +95,8 @@
     (throw (ex :VncException 
                "Internet is not available, cannot install modules!")))
 
-  (let [opts    (apply hash-map options)
+  (let [name    (installer-module-name name)
+        opts    (apply hash-map options)
         silent  (:silent opts true)]
     (when-not silent
       (println)
@@ -131,7 +133,8 @@
     (throw (ex :VncException 
                "Internet is not available, cannot install demo fonts!")))
 
-  (let [opts     (apply hash-map options)
+  (let [options  (default-options options)
+        opts     (apply hash-map options)
         silent   (:silent opts true)
         dir      (:dir opts ".")]
     (when-not silent
@@ -147,5 +150,13 @@
   (if (and (repl?) (empty? opts))
     [:dir (repl/libs-dir) :silent false] 
     opts))
+
+
+(defn- installer-module-name [name]
+  (assert (keyword? name) "A module name ~{name} must be a keyword!")
+  (assert (nil? (namespace name)) "A module name ~{name} must not have a namespace!")
+  (if (str/ends-with? (core/name name) "-install")
+    name
+    (keyword (str (core/name name) "-install"))))
 
 

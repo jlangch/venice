@@ -699,11 +699,15 @@ public class CoreFunctions {
                 "keyword",
                 VncFunction
                     .meta()
-                    .arglists("(keyword name)")
+                    .arglists(
+                    	"(keyword name)",
+                    	"(keyword ns name)")
                     .doc("Returns a keyword from the given name")
                     .examples(
                         "(keyword \"a\")",
                         "(keyword :a)",
+                        "(keyword :foo/a)",
+                        "(keyword \"foo\" \"a\")",
                         "(name :foo/a)",
                         "(namespace :foo/a)")
                     .seeAlso("name", "namespace")
@@ -711,18 +715,34 @@ public class CoreFunctions {
         ) {
             @Override
             public VncVal apply(final VncList args) {
-                ArityExceptions.assertArity(this, args, 1);
+                ArityExceptions.assertArity(this, args, 1, 2);
 
-                if (Types.isVncKeyword(args.first())) {
-                    return args.first();
-                }
-                else if (Types.isVncString(args.first())) {
-                    return new VncKeyword(((VncString)args.first()).getValue());
+                if (args.size() == 1) {
+	                if (Types.isVncKeyword(args.first())) {
+	                    return args.first();
+	                }
+	                else if (Types.isVncString(args.first())) {
+	                    return new VncKeyword(((VncString)args.first()).getValue());
+	                }
+	                else {
+	                    throw new VncException(String.format(
+	                            "Function 'keyword' does not allow %s name",
+	                            Types.getType(args.first())));
+	                }
                 }
                 else {
-                    throw new VncException(String.format(
-                            "Function 'keyword' does not allow %s name",
-                            Types.getType(args.first())));
+                    if (Types.isVncSymbol(args.first())) {
+                        return new VncKeyword(
+                                Coerce.toVncSymbol(args.first()).getValue(),
+                                Coerce.toVncString(args.second()).getValue(),
+                                Nil);
+                    }
+                    else {
+                        return new VncKeyword(
+                                Coerce.toVncString(args.first()).getValue(),
+                                Coerce.toVncString(args.second()).getValue(),
+                                Nil);
+                    }
                 }
             }
 
