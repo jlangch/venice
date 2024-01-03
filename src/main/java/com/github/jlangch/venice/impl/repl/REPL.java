@@ -1273,7 +1273,10 @@ public class REPL {
             final Env env,
             final TerminalPrinter printer
     ) {
-        if (cli.switchPresent("-setup-ext") || cli.switchPresent("-setup-extended")) {
+        if (cli.switchPresent("-setup-ex")
+        	|| cli.switchPresent("-setup-ext")
+        	|| cli.switchPresent("-setup-extended")
+        ) {
             handleSetupCommand(venice, env, Extended, printer);
             return; // we stop here
         }
@@ -1301,6 +1304,7 @@ public class REPL {
 
     private boolean isSetupMode(final CommandLineArgs cli) {
         return cli.switchPresent("-setup")
+                || cli.switchPresent("-setup-ex")
                 || cli.switchPresent("-setup-ext")
                 || cli.switchPresent("-setup-extended");
     }

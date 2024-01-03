@@ -24,32 +24,19 @@
 
 (ns repl-setup)
 
+(load-module :installer)
 (load-module :maven)
 (load-module :fonts)
 (load-module :ansi)
 
 
-(def lib-jansi "org.fusesource.jansi:jansi:2.4.1")
+(def modules-min [ :jansi-install ])
 
-(def libs-min [ lib-jansi ])
-
-(def libs-ext [ lib-jansi ])
-
-
-(def modules-min [ ])
-
-(def modules-ext [ :xchart-install
+(def modules-ext [ :jansi-install
+                   :xchart-install
                    :tomcat-install
                    :excel-install
                    :pdf-install ])
-
-
-(def font-families-min [])
-
-(def font-families-ext [
-               { :name "Open Sans"       :glob-pattern "static/OpenSans/*.ttf" }
-               { :name "Source Code Pro" :glob-pattern "static/*.ttf" }
-               { :name "Audiowide"       :glob-pattern "*.ttf" } ] )
 
 (def scripts [ "chart.venice"
                "chart-swing.venice"
@@ -79,53 +66,19 @@
   (str/cr-lf text (if (os-type? :windows) :cr-lf :lf)))
 
 
-(defn- missing-libs [dir libs]
-  (->> libs
-       (map (fn [a] (cons a (maven/parse-artefact a maven/repo ".jar"))))
-       (filter #(not (io/exists-file? (io/file dir (third %)))))
-       (map first)))
-
-
-(defn download-libs [dir libs show-progress]
-  (let [artefacts (repl-setup/missing-libs dir libs)]
-    (when-not (empty? artefacts)
-      (println "Downloading Java libraries...")
-      (if (io/internet-avail?)
-         (docoll #(maven/download % :dir dir
-                                    :silent (not show-progress))
-                 artefacts)
-         (println *err* "Internet is not available!")))))
-
-(defn download-module-libs [module_ dir silent]
-  (println "Downloading module ~{module_} Java libraries...")
-  (load-module module_)
-  (let [install-fn (var-get (symbol (name module_) "install"))]
-    (install-fn :dir dir :silent silent)))
-
-(defn download-modules-libs [dir modules_ show-progress]
+(defn download-modules-libs [dir modules_ silent]
   (when-not (empty? modules_)
-    (println "Downloading module Java libraries...")
+    (println "Downloading module Java 3rdpart libraries...")
     (if (io/internet-avail?)
-       (docoll #(download-module-libs % dir (not show-progress)) modules_)
+       (docoll #(installer/install-module % :dir dir :silent silent) modules_)
        (println *err* "Internet is not available!"))))
 
-(defn download-fonts [dir font-family-name glob-pattern]
-  (try
-    (fonts/download-font-family font-family-name
-                                :dir dir
-                                :extract true
-                                :glob-pattern glob-pattern
-                                :silent false)
-    (catch :VncException ex
-           (println *err* (ex-venice-stacktrace ex)))))
 
-
-(defn download-font-families [dir families]
-  (when-not (empty? families)
-    (println (str "Downloading font families..."))
-    (if (io/internet-avail?)
-        (docoll #(download-fonts dir (:name %) (:glob-pattern %)) families)
-        (println *err* "Internet is not available!"))))
+(defn download-fonts [dir silent]
+  (println (str "Downloading fonts..."))
+  (if (io/internet-avail?)
+    (installer/install-demo-fonts :dir dir :silent silent)
+    (println *err* "Internet is not available!")))
 
 
 (defn setup-scripts [dir]
@@ -247,10 +200,8 @@
   (let [options       (apply hash-map options)
         setup-mode    (:setup-mode options :minimal)   ;; {:minimal :extended}
         color-mode    (:color-mode options :none)      ;; {:none :light :dark}
-        show-progress (:ansi-terminal options false)   ;; {true false}
-        libs          (if (= setup-mode :extended) libs-ext libs-min)
+        silent        (not (:ansi-terminal options false))   ;; {true false}
         modules_      (if (= setup-mode :extended) modules-ext modules-min)
-        font-families (if (= setup-mode :extended) font-families-ext font-families-min)
         charset       (name (charset-default-encoding))]
     (when-not (io/exists-dir? "./libs")
       (io/mkdirs "./libs"))
@@ -276,9 +227,8 @@
       (println))
 
     (repl-setup/copy-venice-jar "libs")
-    (repl-setup/download-libs "libs" libs show-progress)
-    (repl-setup/download-modules-libs "libs" modules_ show-progress)
-    (repl-setup/download-font-families "libs" font-families)
+    (repl-setup/download-modules-libs "libs" modules_ silent)
+    (when (= setup-mode :extended) (repl-setup/download-fonts "libs" silent))
     (repl-setup/setup-repl-config "libs" )
     (repl-setup/setup-repl-launcher color-mode)
     (repl-setup/setup-scripts "scripts")
