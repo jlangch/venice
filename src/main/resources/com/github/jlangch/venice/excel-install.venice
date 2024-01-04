@@ -19,15 +19,19 @@
 ;;;; See the License for the specific language governing permissions and
 ;;;; limitations under the License.
 
-;;;; Venice Excel functions
 
 ;;;; Install Apache POI 3rd party libraries:
 ;;;;
 ;;;;   (load-module :excel-install)
 ;;;;   (excel-install/install :dir (repl/libs-dir) :silent false)
+;;;;
+;;;; Note: This not a package manger. The module provides functions to
+;;;;       download Java libraries to a directory. 
 
 
 (ns excel-install)
+
+(load-module :installer)
 
 
 (defn libraries []
@@ -64,7 +68,8 @@
        Options:
 
        | :dir path             | download dir, defaults to "." |
-       | :silent {true,false}  | if silent is true does not show a progress bar, defaults to true |
+       | :silent {true,false}  | if silent is true does not show a progress \
+                                 bar, defaults to true |
        """
      :examples '(
        """
@@ -75,11 +80,7 @@
 
   install [ & options]
 
-  (let [opts     (apply hash-map options)
-        silent   (:silent opts true)
-        dir      (:dir opts ".")]
-    (load-module :maven)
-    (run! #(maven/download % :dir dir :silent silent) (libraries))))
+  (apply installer/install-libs (libraries) options))
 
 
 (defn
@@ -93,7 +94,8 @@
        Options:
 
        | :dir path             | download dir, defaults to "." |
-       | :silent {true,false}  | if silent is true does not show a progress bar, defaults to true |
+       | :silent {true,false}  | if silent is true does not show a progress \
+                                 bar, defaults to true |
        """
      :examples '(
        """
@@ -104,8 +106,4 @@
 
   install-4.x [ & options]
 
-  (let [opts     (apply hash-map options)
-        silent   (:silent opts true)
-        dir      (:dir opts ".")]
-    (load-module :maven)
-    (run! #(maven/download % :dir dir :silent silent) (libraries-4.x))))
+  (apply installer/install-libs (libraries-4.x) options))

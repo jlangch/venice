@@ -19,15 +19,20 @@
 ;;;; See the License for the specific language governing permissions and
 ;;;; limitations under the License.
 
-;;;; Venice BouncyCastle
 
 ;;;; Install BouncyCastle 3rd party libraries:
 ;;;;
 ;;;;   (load-module :bouncycastle-install)
 ;;;;   (bouncycastle-install/install :dir (repl/libs-dir) :silent false)
+;;;;
+;;;; Note: This not a package manger. The module provides functions to
+;;;;       download Java libraries to a directory. 
 
 
 (ns bouncycastle-install)
+
+(load-module :installer)
+
 
 ;; https://www.bouncycastle.org/latest_releases.html#LATEST
 (defn libraries []
@@ -47,7 +52,8 @@
        Options:
 
        | :dir path             | download dir, defaults to "." |
-       | :silent {true,false}  | if silent is true does not show a progress bar, defaults to true |
+       | :silent {true,false}  | if silent is true does not show a progress \
+                                 bar, defaults to true |
        """
      :examples '(
        """
@@ -58,9 +64,5 @@
 
   install [ & options]
 
-  (let [opts     (apply hash-map options)
-        silent   (:silent opts true)
-        dir      (:dir opts ".")]
-    (load-module :maven)
-    (run! #(maven/download % :dir dir :silent silent) (libraries))))
+  (apply installer/install-libs (libraries) options))
 

@@ -19,29 +19,28 @@
 ;;;; See the License for the specific language governing permissions and
 ;;;; limitations under the License.
 
-;;;; Tomcat
-
-;;;; start an embedded Tomcat server:
-;;;;   (load-module :tomcat ['tomcat :as 'tc])
-;;;;   (tc/start (tc/hello-world-servlet) {:await? false})
-;;;;
 
 ;;;; Install Tomcat 3rd party libraries:
 ;;;;
 ;;;;   (load-module :tomcat-install)
 ;;;;   (tomcat-install/install :dir (repl/libs-dir) :silent false)
+;;;;
+;;;; Note: This not a package manger. The module provides functions to
+;;;;       download Java libraries to a directory. 
 
 
 (ns tomcat-install)
 
+(load-module :installer)
+
 
 (defn libraries []
-  (case (java-major-version)
-    8  [ "org.apache.tomcat.embed:tomcat-embed-core:10.0.27"
-         "jakarta.annotation:jakarta.annotation-api:2.1.1" ]
+  (if (= 8 (java-major-version))
+    [ "org.apache.tomcat.embed:tomcat-embed-core:10.0.27"
+      "jakarta.annotation:jakarta.annotation-api:2.1.1" ]
+    [ "org.apache.tomcat.embed:tomcat-embed-core:10.1.17"
+      "jakarta.annotation:jakarta.annotation-api:2.1.1" ]))
 
-       [ "org.apache.tomcat.embed:tomcat-embed-core:10.1.1"
-         "jakarta.annotation:jakarta.annotation-api:2.1.1" ]))
 
 (defn
   ^{ :arglists '("(install options*)")
@@ -54,7 +53,8 @@
        Options:
 
        | :dir path             | download dir, defaults to "." |
-       | :silent {true,false}  | if silent is true does not show a progress bar, defaults to true |
+       | :silent {true,false}  | if silent is true does not show a progress \
+                                 bar, defaults to true |
        """
      :examples '(
        """
@@ -65,14 +65,4 @@
 
   install [ & options]
 
-  (let [opts       (apply hash-map options)
-        silent     (:silent opts true)
-        java-major (java-major-version)
-        tc-version (if (= java-major 8) "10.0.x" "10.1.x")]
-    (when-not silent
-      (println "Installing Tomcat ~{tc-version} for Java ~{java-major}"))
-    (let [opts     (apply hash-map options)
-          silent   (:silent opts true)
-          dir      (:dir opts ".")]
-      (load-module :maven)
-      (run! #(maven/download % :dir dir :silent silent) (libraries)))))
+  (apply installer/install-libs (libraries) options))

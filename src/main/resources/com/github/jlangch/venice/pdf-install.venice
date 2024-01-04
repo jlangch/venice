@@ -19,20 +19,20 @@
 ;;;; See the License for the specific language governing permissions and
 ;;;; limitations under the License.
 
-;;;; PDF Tools
 
 ;;;; Install PDF 3rd party libraries:
 ;;;;
 ;;;;   (load-module :pdf-install)
 ;;;;   (pdf-install/install :dir (repl/libs-dir) :silent false)
+;;;;
+;;;; Note: This not a package manger. The module provides functions to
+;;;;       download Java libraries to a directory. 
 
 
 (ns pdf-install)
 
+(load-module :installer)
 
-;; ---------------------------------------------------------------------------
-;; installation
-;; ---------------------------------------------------------------------------
 
 (defn libraries []
   [ "org.xhtmlrenderer:flying-saucer-core:9.4.0"
@@ -70,8 +70,4 @@
   (load-module :xchart-install)
   (apply xchart-install/install options)
 
-  (let [opts     (apply hash-map options)
-        silent   (:silent opts true)
-        dir      (:dir opts ".")]
-    (load-module :maven)
-    (run! #(maven/download % :dir dir :silent silent) (libraries))))
+  (apply installer/install-libs (libraries) options))
