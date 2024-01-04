@@ -78,9 +78,7 @@
   (let [name    (installer-module-name name)
         opts    (apply hash-map options)
         silent  (:silent opts true)]
-    (when-not silent
-      (println "\nModule ~{name}")
-      (println (str/repeat "-" 80)))
+    (when-not silent (println "\n[Module ~{name}]"))
     (load-module name)
     ;; install (apply :pdf-install/install options)
     (apply (resolve (symbol name "install")) options)))
@@ -223,9 +221,7 @@
         opts     (apply hash-map options)
         silent   (:silent opts true)
         dir      (:dir opts ".")]
-    (when-not silent
-      (println "\nFonts")
-      (println (str/repeat "-" 80)))
+    (when-not silent (println "\n[Fonts]"))
     (load-module :fonts)
     (fonts/download-demo-fonts dir silent)))
 
