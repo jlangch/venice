@@ -24,7 +24,7 @@
 ;;;; Note: This not a package manager. The module provides functions to
 ;;;;       download Java libraries and fonts to a directory. 
 ;;;;
-;;;; A future version my implement a repository manager based
+;;;; A future version my implement a repository & dependency manager based on
 ;;;; Apache Ivy ("org.apache.ivy:ivy:2.5.2")
 ;;;; see: https://cwiki.apache.org/confluence/display/IVY/Programmatic+use+of+Ivy
 
