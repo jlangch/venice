@@ -23,6 +23,10 @@
 ;;;;
 ;;;; Note: This not a package manger. The module provides functions to
 ;;;;       download Java libraries and fonts to a directory. 
+;;;;
+;;;; A future version my implement a repository manager based
+;;;; Apache Ivy ("org.apache.ivy:ivy:2.5.2")
+;;;; see: https://cwiki.apache.org/confluence/display/IVY/Programmatic+use+of+Ivy
 
 (ns installer)
 
@@ -45,8 +49,8 @@
   ^{ :arglists '("(install options*)")
      :doc
        """
-       Install 3rdparty libraries for all Venice extension modules that 
-       require Java libraries:
+       Install all demo fonts and  install 3rdparty libraries for all Venice 
+       extension modules that require Java libraries:
 
          * :jansi
          * :bouncycastle
