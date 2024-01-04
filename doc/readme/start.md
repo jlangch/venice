@@ -91,7 +91,7 @@ venice>
 This is by far the easiest way to setup a local Venice REPL environment 
 regardless of the operating system (Windows, MacOSX, or Linux).
 
-You just need the Venice JAR as prerequisite.
+You just need a Java JRE/JDK and the Venice JAR as prerequisite.
 
 The automated setup will create a REPL launcher script with the Java classpath 
 correctly setup, will download the Jansi library from Maven, and add some example 
@@ -108,8 +108,8 @@ For a REPL run in a darkmode terminal use the option `-colors-darkmode` instead
 of `-colors`. This can also be changed later on by modifying the generated launcher 
 shell script.
 
-
-The `-setup` option will cause Venice to:
+The `-setup` option will cause the Venice setup to:
+  - create a `libs`, `tmp`, and `scripts` directory
   - download the Jansi library from the Maven repository
   - extract some example Venice scripts
   - create a launcher shell script `repl.bat` for Windows and `repl.sh` for all other OS
