@@ -25,6 +25,7 @@
 (ns repl-setup)
 
 (load-module :installer)
+(load-module :jansi-install)
 (load-module :maven)
 (load-module :fonts)
 (load-module :ansi)
@@ -68,17 +69,19 @@
 
 (defn download-modules-libs [dir modules_ silent]
   (when-not (empty? modules_)
-    (println "Downloading module Java 3rdpart libraries...")
+    (println "Downloading modules Java 3rdparty libraries...")
     (if (io/internet-avail?)
        (docoll #(installer/install-module % :dir dir :silent silent) modules_)
-       (println *err* "Internet is not available!"))))
+       (println *err* "Internet is not available!")))
+  (println))
 
 
 (defn download-fonts [dir silent]
   (println (str "Downloading fonts..."))
   (if (io/internet-avail?)
     (installer/install-demo-fonts :dir dir :silent silent)
-    (println *err* "Internet is not available!")))
+    (println *err* "Internet is not available!"))
+  (println))
 
 
 (defn setup-scripts [dir]
@@ -155,9 +158,9 @@
   (let [loc    (java-source-location :com.github.jlangch.venice.Venice)
         name   (when (some? loc) (io/file-name loc))
         target (io/file dir name)]
-    (when (and (str/starts-with? name "venice-") (str/ends-with? name ".jar"))
+    (when (str/ends-with? name ".jar")
        (try
-         (println (str "Copying '" name "' to libs"))
+         (println (str "Copying Venice JAR '" name "' to libs"))
          (io/copy-file loc target :replace true)
          (catch :Exception e
            (if (io/exists-file? target)
@@ -170,16 +173,19 @@
 
 (defn check-jansi-installed [dir]
   (when (os-type? :windows)
-    (let [[_ _ _ jansi-name] (maven/parse-artefact lib-jansi ".jar")
-          jansi-jar (io/file dir jansi-name)]
-      (when-not (io/exists-file? jansi-jar)
-        (println )
-        (print-msg-box :warn
-                       """
-                       The Jansi JAR could not be downloaded. Without this \
-                       JAR the REPL has limited features!
-                       """)
-        (println)))))
+    (let [lib-jansi          (first (jansi-install/libraries))
+          [_ _ _ jansi-name] (maven/parse-artefact lib-jansi ".jar")
+          jansi-jar          (io/file dir jansi-name)]
+      (if (io/exists-file? jansi-jar)
+        (println "Checking ~{jansi-jar} ... OK")
+        (do
+          (println )
+          (print-msg-box :warn
+                        """
+                        The Jansi JAR could not be downloaded. Without this \
+                        JAR the REPL has limited features!
+                        """)
+          (println))))))
 
 
 (defn print-success-message []
