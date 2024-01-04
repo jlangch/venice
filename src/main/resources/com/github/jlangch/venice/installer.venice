@@ -24,7 +24,7 @@
 (ns installer)
 
 
-;; Venice modules with an installer for 3rsparty libraries. 
+;; Venice modules with an installer for 3rdparty libraries. 
 ;; E.g. :jansi -> :jansi-install
 (def- installable-modules [ :jansi
                             :bouncycastle
