@@ -49,7 +49,7 @@ public class ModuleInstallerSection implements ISectionBuilder {
 
         final DocSection demo = new DocSection("Demo", id());
         all.addSection(demo);
-        demo.addItem(diBuilder.getDocItem("installer/install-demo-libs", false));
+        demo.addItem(diBuilder.getDocItem("installer/install-demo", false));
         demo.addItem(diBuilder.getDocItem("installer/install-demo-fonts", false));
 
         return section;

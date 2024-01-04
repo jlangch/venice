@@ -62,14 +62,14 @@
        """
        (do
          (load-module :installer)
-         (installer/install-module :dir (repl/libs-dir) :silent false))
+         (installer/install-module :pdf :dir (repl/libs-dir) :silent false))
        """)
      :see-also '( 
        "installer/install-libs" ) }
 
   install-module [name & options]
 
-  (assert (keyword? name) "A module name '~{name}' must be a keyword. E.g :jansi-install")
+  (assert (keyword? name) "A module name '~{name}' must be a keyword. E.g :jansi")
   
   (when-not (io/internet-avail?)
     (throw (ex :VncException 
