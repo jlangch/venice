@@ -25,7 +25,7 @@
 ;;;;   (load-module :excel-install)
 ;;;;   (excel-install/install :dir (repl/libs-dir) :silent false)
 ;;;;
-;;;; Note: This not a package manger. The module provides functions to
+;;;; Note: This not a package manager. The module provides functions to
 ;;;;       download Java libraries to a directory. 
 
 
