@@ -54,6 +54,7 @@ import com.github.jlangch.venice.impl.docgen.cheatsheet.modules.ModuleGeoipSecti
 import com.github.jlangch.venice.impl.docgen.cheatsheet.modules.ModuleGradleSection;
 import com.github.jlangch.venice.impl.docgen.cheatsheet.modules.ModuleGrepSection;
 import com.github.jlangch.venice.impl.docgen.cheatsheet.modules.ModuleHexdumpSection;
+import com.github.jlangch.venice.impl.docgen.cheatsheet.modules.ModuleInstallerSection;
 import com.github.jlangch.venice.impl.docgen.cheatsheet.modules.ModuleJavaSection;
 import com.github.jlangch.venice.impl.docgen.cheatsheet.modules.ModuleJsonlSection;
 import com.github.jlangch.venice.impl.docgen.cheatsheet.modules.ModuleKiraSection;
@@ -121,14 +122,14 @@ public class DocGenerator {
 
         preloadedModules
             .addAll(Arrays.asList(
-                        "app",        "xml",       "crypt",      "gradle",
-                        "trace",      "ansi",      "maven",      "kira",
-                        "java",       "semver",    "excel",      "hexdump",
-                        "shell",      "geoip",     "benchmark",  "component",
-                        "config",     "parsifal",  "grep",       "test",
-                        "fonts",      "qrref",     "jsonl",      "timing",
-                        "zipvault",   "docker",    "cargo",      "cargo-arangodb",
-                        "matrix",     "ascii-table" ));
+                        "app",        "xml",         "crypt",      "gradle",
+                        "trace",      "ansi",        "maven",      "kira",
+                        "java",       "semver",      "excel",      "hexdump",
+                        "shell",      "geoip",       "benchmark",  "component",
+                        "config",     "parsifal",    "grep",       "test",
+                        "fonts",      "qrref",       "jsonl",      "timing",
+                        "zipvault",   "docker",      "cargo",      "cargo-arangodb",
+                        "matrix",     "ascii-table", "installer"));
 
         final IVeniceInterpreter venice = new VeniceInterpreter(new AcceptAllInterceptor());
 
@@ -337,6 +338,7 @@ public class DocGenerator {
         extmod.addSection(new DocSection("Timing", "modules.timing"));
         extmod.addSection(new DocSection("App", "modules.app"));
         extmod.addSection(new DocSection("QR\u00A0Ref", "modules.qrref"));
+        extmod.addSection(new DocSection("Installer", "modules.installer"));
         extmod.addSection(new DocSection("Semver", "modules.semver"));
         content.add(extmod);
 
@@ -420,7 +422,8 @@ public class DocGenerator {
                 new ModuleCargoArangoDBSection(diBuilder).section(),
                 new ModuleTracingSection(diBuilder).section(),
                 new ModuleShellSection(diBuilder).section(),
-                new ModuleAnsiSection(diBuilder).section());
+                new ModuleAnsiSection(diBuilder).section(),
+                new ModuleInstallerSection(diBuilder).section());
     }
 
     private List<DocSection> getModulesRightSections() {

@@ -46,57 +46,6 @@
                             :xchart ])
 
 
-(defn
-  ^{ :arglists '("(install options*)")
-     :doc
-       """
-       Install all demo fonts and  install 3rdparty libraries for all Venice 
-       extension modules that require Java libraries:
-
-         * :jansi
-         * :bouncycastle
-         * :chatgpt
-         * :excel
-         * :pdf
-         * :qrbill
-         * :tomcat
-         * :xchart
-
-       Options:
-
-       | :dir path             | download dir, defaults to "." |
-       | :silent {true,false}  | if silent is true does not show a progress \
-                                 bar, defaults to true |
-
-       In the REPL run: 
-       
-       ````
-       venice> (load-module :installer)
-       venice> (installer/install)
-       venice> !restart
-       ```
-       """
-     :examples '(
-       """
-       (do
-         (load-module :installer)
-         (installer/install :dir (repl/libs-dir) :silent false))
-       """) }
-
-  install [& options]
-  
-  (when-not (io/internet-avail?)
-    (throw (ex :VncException 
-               "Internet is not available, cannot install!")))
-  
-  (let [options  (default-options options)]
-    ;; install the modules
-    (doseq [name installable-modules] (apply install-module name options)))
-    
-    ;; install the demo fonts
-    (apply install-demo-fonts options))
-
-
 (defn 
   ^{ :arglists '("(install-module name options*)")
      :doc
@@ -114,7 +63,9 @@
        (do
          (load-module :installer)
          (installer/install-module :dir (repl/libs-dir) :silent false))
-       """) }
+       """)
+     :see-also '( 
+       "installer/install-libs" ) }
 
   install-module [name & options]
 
@@ -154,7 +105,9 @@
          (installer/install-libs ["org.fusesource.jansi:jansi:2.4.1"] 
                                  :dir (repl/libs-dir) 
                                  :silent false))
-       """) }
+       """)
+     :see-also '( 
+       "installer/install-module" ) }
 
   install-libs [libs & options]
 
@@ -171,11 +124,71 @@
     (doseq [lib libs] (maven/download lib :dir dir :silent silent))))
 
 
+(defn
+  ^{ :arglists '("(install-demo options*)")
+     :doc
+       """
+       Install all demo fonts and the 3rdparty libraries for all Venice 
+       extension modules that require Java libraries:
+
+         * :jansi
+         * :bouncycastle
+         * :chatgpt
+         * :excel
+         * :pdf
+         * :qrbill
+         * :tomcat
+         * :xchart
+
+       Options:
+
+       | :dir path             | download dir, defaults to "." |
+       | :silent {true,false}  | if silent is true does not show a progress \
+                                 bar, defaults to true |
+
+       In the REPL run: 
+       
+       ````
+       venice> (load-module :installer)
+       venice> (installer/install-demo)
+       venice> !restart
+       ```
+       """
+     :examples '(
+       """
+       (do
+         (load-module :installer)
+         (installer/install-demo :dir (repl/libs-dir) :silent false))
+       """)
+     :see-also '( 
+       "installer/install-demo-fonts" ) }
+
+  install-demo [& options]
+  
+  (when-not (io/internet-avail?)
+    (throw (ex :VncException 
+               "Internet is not available, cannot install!")))
+  
+  (let [options  (default-options options)]
+    ;; install the modules
+    (doseq [name installable-modules] (apply install-module name options)))
+    
+    ;; install the demo fonts
+    (apply install-demo-fonts options))
+
+
 (defn 
   ^{ :arglists '("(install-demo-fonts options*)")
      :doc
        """
        Install the Venice demo fonts.
+
+       Installs the open source font families:
+
+         * Open Sans
+         * Source Code Pro
+         * Audiowide
+         * Roboto
 
        Options:
 
@@ -196,7 +209,9 @@
        (do
          (load-module :installer)
          (installer/install-demo-fonts :dir (repl/libs-dir) :silent false))
-       """) }
+       """)
+     :see-also '( 
+       "installer/install-demo" ) }
 
   install-demo-fonts [& options]
   
