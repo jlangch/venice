@@ -60,13 +60,13 @@ venice>
 #### 3.2 Windows
 
 On Windows the 'jansi' library is required to run the REPL. Download the library from
-Maven: [jansi](https://search.maven.org/artifact/org.fusesource.jansi/jansi/2.4.0/jar)
+Maven: [jansi](https://search.maven.org/artifact/org.fusesource.jansi/jansi/2.4.1/jar)
 
 Open a terminal, move to the directory the Venice and the 'jansi' JAR is located, 
 and start a REPL:
 
 ```text
-foo> java -cp venice-1.11.3.jar;jansi-2.4.0.jar com.github.jlangch.venice.Launcher -colors-darkmode
+foo> java -cp venice-1.11.3.jar;jansi-2.4.1.jar com.github.jlangch.venice.Launcher -colors-darkmode
 ```
 
 The REPL prompts for input:
