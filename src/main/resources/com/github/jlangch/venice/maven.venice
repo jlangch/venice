@@ -97,8 +97,13 @@
           | :sources {true,false} | download the sources, defaults to false |
           | :pom {true,false}     | download the pom, defaults to false |
           | :dir path             | download dir, defaults to "." |
-          | :repo maven-repo      | a maven repo, defaults to "https://repo1.maven.org/maven2" |
-          | :silent {true,false}  | if silent is true does not show a progress bar, defaults to true |
+          | :repo maven-repo      | a maven repo, defaults to \
+                                    "https://repo1.maven.org/maven2" |
+          | :silent {true,false}  | if silent is true does not show a progress \
+                                    bar, defaults to true |
+          | :force {true,false}   | if force is true download the artifact \
+                                    even if it exist already on the download \
+                                    dir, else skip the download if it exists |
           """
      :examples '(
           """(maven/download "org.knowm.xchart:xchart:3.8.1")"""
@@ -118,19 +123,20 @@
         pom         (:pom opts false)
         dir         (:dir opts ".")
         repo        (:repo opts maven/repo)
+        force       (:force opts true)
         progress-fn (maven/progress-bar silent)]
     (when jar
       (let [suffix         (maven/artifact-suffix :jar)
             [uri filename] (maven/parse-artifact artifact repo suffix)]
-        (maven/download-artifact-file uri dir filename progress-fn)))
+        (maven/download-artifact-file uri dir filename force progress-fn)))
     (when sources
       (let [suffix         (maven/artifact-suffix :sources)
             [uri filename] (maven/parse-artifact artifact repo suffix)]
-        (maven/download-artifact-file uri dir filename progress-fn)))
+        (maven/download-artifact-file uri dir filename force progress-fn)))
     (when pom
       (let [suffix         (maven/artifact-suffix :pom)
             [uri filename] (maven/parse-artifact artifact repo suffix)]
-        (maven/download-artifact-file uri dir filename progress-fn)))
+        (maven/download-artifact-file uri dir filename force progress-fn)))
     nil))
 
 
@@ -239,6 +245,7 @@
          (:out)
          (println))))
 
+
 (defn
   ^{ :arglists '("(maven/dependencies scope artifacts)")
      :doc """
@@ -336,6 +343,7 @@
     :pom     ".pom"
     (throw (ex :VncException "Invalid artifact type ~{type}"))))
 
+
 (defn- maven/progress-bar [silent]
   (if silent
     nil
@@ -345,14 +353,21 @@
                        :failed-msg  "            FAILED")))
 
 
-(defn- maven/download-artifact-file [uri target-dir target-file progress-fn]
-  (let [target (str target-dir "/" target-file)]
-    (when progress-fn
-      (println (str "Downloading " uri))
-      (println (str "         to " target "...")))
-    (ansi/without-cursor
-      (->> (io/download uri :binary true :progress-fn progress-fn)
-           (io/spit target)))))
+(defn- maven/download-artifact-file [uri target-dir target-file force progress-fn]
+  (let [target   (str target-dir "/" target-file)
+        download (or force (not (file-exists? target)))]
+    (if download
+      (do
+        (when progress-fn
+          (println (str "Downloading " uri))
+          (println (str "         to " target "...")))
+        (ansi/without-cursor
+          (->> (io/download uri :binary true :progress-fn progress-fn)
+               (io/spit target))))
+      (when progress-fn
+        (println (str "Downloading " uri))
+        (println (str "         to " target))
+        (println (str "            " "ALREADY EXISTS"))))))
 
 
 (defn- maven/get-artifact-file [uri progress-fn]
