@@ -53,7 +53,9 @@
 
        Options:
 
-       | :dir path             | download dir, defaults to "." |
+       | :dir path             | download dir, defaults to "." except when run \
+                                 in a REPL where it defaults to the value of \
+                                 `(repl/libs-dir)` |
        | :silent {true,false}  | if silent is true does not show a progress \
                                  bar, defaults to true |
        | :force {true,false}   | if force is true download the artifact \
@@ -95,7 +97,9 @@
 
        Options:
 
-       | :dir path             | download dir, defaults to "." |
+       | :dir path             | download dir, defaults to "." except when run \
+                                 in a REPL where it defaults to the value of \
+                                 `(repl/libs-dir)` |
        | :silent {true,false}  | if silent is true does not show a progress \
                                  bar, defaults to true |
        | :force {true,false}   | if force is true download the artifact \
@@ -144,7 +148,9 @@
 
        Options:
 
-       | :dir path             | download dir, defaults to "." |
+       | :dir path             | download dir, defaults to "." except when run \
+                                 in a REPL where it defaults to the value of \
+                                 `(repl/libs-dir)` |
        | :silent {true,false}  | if silent is true does not show a progress \
                                  bar, defaults to true |
        | :force {true,false}   | if force is true download the artifact \
@@ -198,7 +204,9 @@
 
        Options:
 
-       | :dir path             | download dir, defaults to "." |
+       | :dir path             | download dir, defaults to "." except when run \
+                                 in a REPL where it defaults to the value of \
+                                 `(repl/libs-dir)` |
        | :silent {true,false}  | if silent is true does not show a progress \
                                  bar, defaults to true |
 
