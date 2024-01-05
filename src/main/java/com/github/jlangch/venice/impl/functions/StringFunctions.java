@@ -498,21 +498,34 @@ public class StringFunctions {
                 "str/index-of",
                 VncFunction
                     .meta()
-                    .arglists("(str/index-of s value)", "(str/index-of s value from-index)")
+                    .arglists(
+                        "(str/index-of s value)",
+                        "(str/index-of s value from-index)")
                     .doc(
                         "Return index of value (string or char) in s, optionally searching " +
                         "forward from from-index. Return nil if value not found.")
                     .examples(
                         "(str/index-of \"abcdefabc\" \"ab\")")
-                    .seeAlso("str/last-index-of")
+                    .seeAlso(
+                        "str/index-one-char-of",
+                        "str/index-one-char-not-of",
+                        "str/last-index-of")
                     .build()
         ) {
             @Override
             public VncVal apply(final VncList args) {
                 ArityExceptions.assertArity(this, args, 2, 3);
 
+                if (Nil == args.first() || Nil == args.second()) {
+                    return Nil;
+                }
+
                 final String text = Coerce.toVncString(args.first()).getValue();
                 final String searchString = Coerce.toVncString(args.second()).getValue();
+
+                if (text.isEmpty() || searchString.isEmpty()) {
+                    return Nil;
+                }
 
                 if (args.size() == 3) {
                     final int startPos = Coerce.toVncLong(args.nth(2)).getValue().intValue();
@@ -528,30 +541,183 @@ public class StringFunctions {
             private static final long serialVersionUID = -1848883965231344442L;
         };
 
+
+    public static VncFunction str_index_one_char_of =
+        new VncFunction(
+                "str/index-one-char-of",
+                VncFunction
+                    .meta()
+                    .arglists(
+                        "(str/index-one-char-of s chars)",
+                        "(str/index-one-char-of s chars from-index)")
+                    .doc(
+                        "Return index of the first char of chars(string or sequence of chars) " +
+                        "in s, optionally searching forward from from-index. " +
+                        "Return nil if value not found.")
+                    .examples(
+                        "(str/index-one-char-of \"-+-123-+-123\" \"012\")",
+                        "(str/index-one-char-of \"-+-123-+-123\" [#\\0 #\\1 #\\2])",
+                        "(str/index-one-char-of \"-+-123-+-123\" \"012\" 7)")
+                    .seeAlso(
+                        "str/index-one-char-not-of",
+                        "str/index-of",
+                        "str/last-index-of")
+                    .build()
+        ) {
+            @Override
+            public VncVal apply(final VncList args) {
+                ArityExceptions.assertArity(this, args, 2, 3);
+
+                if (Nil == args.first() || Nil == args.second()) {
+                    return Nil;
+                }
+
+                final String text = Coerce.toVncString(args.first()).getValue();
+                String chars;
+
+                if (Types.isVncString(args.second())) {
+                    chars = Coerce.toVncString(args.second()).getValue();
+                }
+                else if (Types.isVncSequence(args.second())) {
+                	final String errMsg = "The 'chars' sequence elements must be chars";
+                    chars = Coerce.toVncSequence(args.second())
+                                  .getJavaList()
+                                  .stream()
+                                  .map(v -> { if (Types.isVncChar(v)) return v; else throw new VncException(errMsg); })
+                                  .map(v -> v.toString())
+                                  .collect(Collectors.joining());
+                }
+                else {
+                    throw new VncException(String.format(
+                            "Function 'str/index-one-char-of' does not allow %s as chars argument.",
+                            Types.getType(args.second())));
+                }
+
+                if (text.isEmpty() || chars.isEmpty()) {
+                    return Nil;
+                }
+
+                final int startPos = args.size() == 3
+                                        ? Coerce.toVncLong(args.nth(2)).getValue().intValue()
+                                        : 0;
+                if (startPos < 0) {
+                    return Nil;
+                }
+                else {
+                    final int pos = StringUtil.indexOneCharOf(text, chars, startPos);
+                    return pos < 0 ? Nil : new VncLong(pos);
+                }
+            }
+
+            private static final long serialVersionUID = -1848883965231344442L;
+        };
+
+
+    public static VncFunction str_index_one_char_not_of =
+        new VncFunction(
+                "str/index-one-char-not-of",
+                VncFunction
+                    .meta()
+                    .arglists(
+                        "(str/index-one-char-not-of s chars)",
+                        "(str/index-one-char-not-of s chars from-index)")
+                    .doc(
+                        "Return index of the first char not of chars (string or sequence of chars) " +
+                        "in s, optionally searching forward from from-index. " +
+                        "Return nil if value not found.")
+                    .examples(
+                        "(str/index-one-char-not-of \"-+-123-+-123\" \"-+\")",
+                        "(str/index-one-char-not-of \"-+-123-+-123\" [#\\- #\\+])",
+                        "(str/index-one-char-not-of \"-+-123-+-123\" \"-+\" 7)")
+                    .seeAlso(
+                        "str/index-one-char-of",
+                        "str/index-of",
+                        "str/last-index-of")
+                    .build()
+        ) {
+            @Override
+            public VncVal apply(final VncList args) {
+                ArityExceptions.assertArity(this, args, 2, 3);
+
+                if (Nil == args.first() || Nil == args.second()) {
+                    return Nil;
+                }
+
+                final String text = Coerce.toVncString(args.first()).getValue();
+                String chars;
+
+                if (Types.isVncString(args.second())) {
+                    chars = Coerce.toVncString(args.second()).getValue();
+                }
+                else if (Types.isVncSequence(args.second())) {
+                	final String errMsg = "The 'chars' sequence elements must be chars";
+                    chars = Coerce.toVncSequence(args.second())
+                                  .getJavaList()
+                                  .stream()
+                                  .map(v -> { if (Types.isVncChar(v)) return v; else throw new VncException(errMsg); })
+                                  .map(v -> v.toString())
+                                  .collect(Collectors.joining());
+                }
+                else {
+                    throw new VncException(String.format(
+                            "Function 'str/index-one-char-not-of' does not allow %s as chars argument.",
+                            Types.getType(args.second())));
+                }
+
+                if (text.isEmpty() || chars.isEmpty()) {
+                    return Nil;
+                }
+
+                final int startPos = args.size() == 3
+                                        ? Coerce.toVncLong(args.nth(2)).getValue().intValue()
+                                        : 0;
+                if (startPos < 0) {
+                    return Nil;
+                }
+                else {
+                    final int pos = StringUtil.indexNotOf(text, chars, startPos);
+                    return pos < 0 ? Nil : new VncLong(pos);
+                }
+            }
+
+            private static final long serialVersionUID = -1848883965231344442L;
+        };
+
+
     public static VncFunction str_last_index_of =
         new VncFunction(
                 "str/last-index-of",
                 VncFunction
                     .meta()
-                    .arglists("(str/last-index-of s value)", "(str/last-index-of s value from-index)")
+                    .arglists(
+                        "(str/last-index-of s value)",
+                        "(str/last-index-of s value from-index)")
                     .doc(
                         "Return last index of value (string or char) in s, optionally " +
                         "searching backward from from-index. Return nil if value not found.")
                     .examples(
-                        "(str/last-index-of \"abcdefabc\" \"ab\")")
-                    .seeAlso("str/index-of")
+                        "(str/last-index-of \"abcdefabc\" \"ab\")",
+                        "(str/last-index-of \"abcdefabc\" \"de\" 6)")
+                    .seeAlso(
+                    	"str/index-of",
+                        "str/index-one-char-of",
+                        "str/index-one-char-not-of")
                    .build()
         ) {
             @Override
             public VncVal apply(final VncList args) {
                 ArityExceptions.assertArity(this, args, 2, 3);
 
-                if (args.first() == Nil) {
+                if (Nil == args.first() || Nil == args.second()) {
                     return Nil;
                 }
 
                 final String text = Coerce.toVncString(args.first()).getValue();
                 final String searchString = Coerce.toVncString(args.second()).getValue();
+
+                if (text.isEmpty() || searchString.isEmpty()) {
+                    return Nil;
+                }
 
                 if (args.size() > 2) {
                     final int startPos = Coerce.toVncLong(args.nth(2)).getValue().intValue();
@@ -928,10 +1094,10 @@ public class StringFunctions {
 
 
                 final String delim = args.size() == 1
-                						? ""
-                						: Types.isVncChar(args.first())
-					    					? Coerce.toVncChar(args.first()).toString()
-					    					: Coerce.toVncString(args.first()).getValue();
+                                        ? ""
+                                        : Types.isVncChar(args.first())
+                                            ? Coerce.toVncChar(args.first()).toString()
+                                            : Coerce.toVncString(args.first()).getValue();
 
                 return new VncString(
                             coll.stream()
@@ -1909,14 +2075,14 @@ public class StringFunctions {
                 }
 
                 final String s = Types.isVncChar(args.first())
-                					? Coerce.toVncChar(args.first()).toString()
-                					: Coerce.toVncString(args.first()).getValue();
+                                    ? Coerce.toVncChar(args.first()).toString()
+                                    : Coerce.toVncString(args.first()).getValue();
                 final int times = Coerce.toVncLong(args.second()).getValue().intValue();
                 final String sep = args.size() == 3
-                					? Types.isVncChar(args.third())
-                        				? Coerce.toVncChar(args.third()).toString()
-                        				: Coerce.toVncString(args.third()).getValue()
-                					: "";
+                                    ? Types.isVncChar(args.third())
+                                        ? Coerce.toVncChar(args.third()).toString()
+                                        : Coerce.toVncString(args.third()).getValue()
+                                    : "";
 
                 final StringBuilder sb = new StringBuilder();
                 for(int ii=0; ii<times; ii++) {
@@ -2712,6 +2878,8 @@ public class StringFunctions {
                     .add(str_trim_to_nil)
                     .add(str_align)
                     .add(str_index_of)
+                    .add(str_index_one_char_of)
+                    .add(str_index_one_char_not_of)
                     .add(str_last_index_of)
                     .add(str_replace_first)
                     .add(str_replace_last)
