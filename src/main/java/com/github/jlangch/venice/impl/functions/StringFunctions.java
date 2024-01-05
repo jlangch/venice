@@ -551,7 +551,7 @@ public class StringFunctions {
                         "(str/index-of-char s chars)",
                         "(str/index-of-char s chars from-index)")
                     .doc(
-                        "Return index of the first char of chars(string or sequence of chars) " +
+                        "Return index of the first char of chars (string or sequence of chars) " +
                         "in s, optionally searching forward from from-index. " +
                         "Return nil if value not found.")
                     .examples(
