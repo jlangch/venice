@@ -119,10 +119,6 @@ public class PrimitivesSection implements ISectionBuilder {
         final DocSection create = new DocSection("Create", "primitives.strings.create");
         strings.addSection(create);
         create.addItem(diBuilder.getDocItem("str"));
-        create.addItem(diBuilder.getDocItem("str/format"));
-        create.addItem(diBuilder.getDocItem("str/quote"));
-        create.addItem(diBuilder.getDocItem("str/double-quote"));
-        create.addItem(diBuilder.getDocItem("str/double-unquote"));
 
         final DocSection use = new DocSection("Use", "primitives.strings.use");
         strings.addSection(use);
@@ -139,10 +135,6 @@ public class PrimitivesSection implements ISectionBuilder {
         use.addItem(diBuilder.getDocItem("butlast"));
         use.addItem(diBuilder.getDocItem("reverse"));
         use.addItem(diBuilder.getDocItem("shuffle"));
-        use.addItem(diBuilder.getDocItem("str/index-of"));
-        use.addItem(diBuilder.getDocItem("str/index-one-char-of"));
-        use.addItem(diBuilder.getDocItem("str/index-one-char-not-of"));
-        use.addItem(diBuilder.getDocItem("str/last-index-of"));
         use.addItem(diBuilder.getDocItem("str/subs"));
         use.addItem(diBuilder.getDocItem("str/nfirst"));
         use.addItem(diBuilder.getDocItem("str/nlast"));
@@ -154,10 +146,14 @@ public class PrimitivesSection implements ISectionBuilder {
         use.addItem(diBuilder.getDocItem("str/pos"));
         use.addItem(diBuilder.getDocItem("str/repeat"));
         use.addItem(diBuilder.getDocItem("str/reverse"));
-        use.addItem(diBuilder.getDocItem("str/truncate"));
-        use.addItem(diBuilder.getDocItem("str/expand"));
         use.addItem(diBuilder.getDocItem("str/lorem-ipsum"));
-        use.addItem(diBuilder.getDocItem("str/wrap"));
+
+        final DocSection index = new DocSection("Index", "primitives.strings.index");
+        strings.addSection(index);
+        index.addItem(diBuilder.getDocItem("str/index-of"));
+        index.addItem(diBuilder.getDocItem("str/index-one-char-of"));
+        index.addItem(diBuilder.getDocItem("str/index-one-char-not-of"));
+        index.addItem(diBuilder.getDocItem("str/last-index-of"));
 
         final DocSection split = new DocSection("Split/Join", "primitives.strings.splitjoin");
         strings.addSection(split);
@@ -198,9 +194,16 @@ public class PrimitivesSection implements ISectionBuilder {
         trim.addItem(diBuilder.getDocItem("str/trim-left"));
         trim.addItem(diBuilder.getDocItem("str/trim-right"));
 
-        final DocSection align = new DocSection("Align", "primitives.strings.align");
-        strings.addSection(align);
-        align.addItem(diBuilder.getDocItem("str/align"));
+        final DocSection format = new DocSection("Format", "primitives.strings.format");
+        strings.addSection(format);
+        format.addItem(diBuilder.getDocItem("str/format"));
+        format.addItem(diBuilder.getDocItem("str/quote"));
+        format.addItem(diBuilder.getDocItem("str/double-quote"));
+        format.addItem(diBuilder.getDocItem("str/double-unquote"));
+        format.addItem(diBuilder.getDocItem("str/align"));
+        format.addItem(diBuilder.getDocItem("str/wrap"));
+        format.addItem(diBuilder.getDocItem("str/expand"));
+        format.addItem(diBuilder.getDocItem("str/truncate"));
 
         final DocSection hex = new DocSection("Hex", "primitives.strings.hex");
         strings.addSection(hex);
@@ -216,11 +219,6 @@ public class PrimitivesSection implements ISectionBuilder {
         encode.addItem(diBuilder.getDocItem("str/decode-url"));
         encode.addItem(diBuilder.getDocItem("str/escape-html"));
         encode.addItem(diBuilder.getDocItem("str/escape-xml"));
-
-
-        final DocSection validation = new DocSection("Validation", "primitives.strings.validation");
-        strings.addSection(validation);
-        validation.addItem(diBuilder.getDocItem("str/valid-email-addr?"));
 
         final DocSection str_test = new DocSection("Test", "primitives.strings.test");
         strings.addSection(str_test);
@@ -246,6 +244,10 @@ public class PrimitivesSection implements ISectionBuilder {
         str_test_char.addItem(diBuilder.getDocItem("str/linefeed?"));
         str_test_char.addItem(diBuilder.getDocItem("str/lower-case?"));
         str_test_char.addItem(diBuilder.getDocItem("str/upper-case?"));
+
+        final DocSection validation = new DocSection("Validation", "primitives.strings.validation");
+        strings.addSection(validation);
+        validation.addItem(diBuilder.getDocItem("str/valid-email-addr?"));
 
         final DocSection str_leven_char = new DocSection("Other", "primitives.strings.other");
         strings.addSection(str_leven_char);
