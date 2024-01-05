@@ -27,4 +27,19 @@
 
 (ns ivy)
 
+
+(def xml-template 
+  """
+  <ivy-module version="2.0">
+    <info organisation="<%= (kira/escape-xml organisation) %>" module="<%= module %>"/>
+    <dependencies>
+      <% (doseq [dep dependencies] %>
+      <dependency org="<%= (kira/escape-xml (:group-id dep)) %>" 
+                  name="<%= (kira/escape-xml (:artifact-id dep)) %>" 
+                  rev="<%= (kira/escape-xml (:version dep)) %>"/>
+      <% ) %>
+    </dependencies>
+  </ivy-module>
+  """)
+
 ;; implementation planned
