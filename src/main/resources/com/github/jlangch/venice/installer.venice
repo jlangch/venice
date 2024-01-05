@@ -56,6 +56,10 @@
        | :dir path             | download dir, defaults to "." |
        | :silent {true,false}  | if silent is true does not show a progress \
                                  bar, defaults to true |
+       | :force {true,false}   | if force is true download the artifact \
+                                 even if it exist already on the download \
+                                 dir, else skip the download if it exists. \
+                                 Defaults to true. |
        """
      :examples '(
        """
@@ -143,6 +147,10 @@
        | :dir path             | download dir, defaults to "." |
        | :silent {true,false}  | if silent is true does not show a progress \
                                  bar, defaults to true |
+       | :force {true,false}   | if force is true download the artifact \
+                                 even if it exist already on the download \
+                                 dir, else skip the download if it exists. \
+                                 Defaults to true. |
 
        In the REPL run: 
        
