@@ -216,10 +216,6 @@ public class RestrictedBlacklistedFunctions {
                 "io/zip-size",
                 "io/zip?",
 
-                // Scheduler
-                "schedule-delay",
-                "schedule-at-fixed-rate",
-
                 // Shell
                 "sh",
                 "sh/open",
