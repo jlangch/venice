@@ -150,7 +150,11 @@ public class SpecialForms_LoadCodeMacros {
                         ";; namespace aliases                       \n" +
                         "(do                                        \n" +
                         "  (load-module :hexdump ['hexdump :as 'h]) \n" +
-                        "  (h/dump (range 32 64)))                  ")
+                        "  (h/dump (range 32 64)))                  ",
+
+                    	";; dynamically load a module        \n" +
+                    	"(let [mname (keyword \"hexdump\")]  \n" +
+                    	"  (load-module mname))              ")
                     .seeAlso(
                         "load-file", "load-classpath-file", "load-string", "loaded-modules",
                         "loadpath/paths")

@@ -219,71 +219,12 @@ public class RestrictedBlacklistedFunctions {
                 // Shell
                 "sh",
                 "sh/open",
-                "sh/pwd",
+                "sh/pwd"
 
-                // Fonts
-                "fonts/download-font-family",
-
-                // Installer
-                "installer/install-module",
-                "installer/install-libs",
-                "installer/install-demo",
-                "installer/install-demo-fonts",
-
-                // Maven
-                "maven/dependencies",
-                "maven/download",
-                "maven/get",
-                "maven/mvn",
-                "maven/version",
-
-                // Gradle
-                "gradle/task",
-                "gradle/version",
-
-                // Docker
-                "docker/version",
-                "docker/cmd",
-                "docker/debug",
-                "docker/images",
-                "docker/image-pull",
-                "docker/rmi",
-                "docker/image-rm",
-                "docker/image-prune",
-                "docker/ps",
-                "docker/stop",
-                "docker/run",
-                "docker/start",
-                "docker/exec",
-                "docker/rm",
-                "docker/diff",
-                "docker/unpause",
-                "docker/wait",
-                "docker/logs",
-                "docker/exec&",
-                "docker/prune",
-                "docker/cp",
-                "docker/pause",
-                "docker/volume-list",
-                "docker/volume-create",
-                "docker/volume-inspect",
-                "docker/volume-rm",
-                "docker/volume-prune",
-                "docker/volume-exists?",
-                "docker/images-query-by-repo",
-                "docker/image-ready?",
-                "docker/container-find-by-name",
-                "docker/container-exists-with-name?",
-                "docker/container-running-with-name?",
-                "docker/container-start-by-name",
-                "docker/container-stop-by-name",
-                "docker/container-remove-by-name",
-                "docker/container-status-by-name",
-                "docker/container-exec-by-name",
-                "docker/container-exec-by-name&",
-                "docker/container-logs",
-                "docker/container-purge-by-name",
-                "docker/container-image-info-by-name"
+                // Note: Extension Modules are white listed if a sandbox is active.
+                //       So the potentially dangerous modules :fonts, :maven, :docker, and :geoip
+                //       are by default disabled!
+                //       No need to explicitly black list their functions!
             ));
     }
 

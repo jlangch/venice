@@ -227,7 +227,14 @@ public class SpecialForms_NamespaceFunctions {
                         "the symbols in the specified namespace ns.")
                     .examples(
                         "(ns-list 'regex)",
-                        "(ns-list)")
+                        "(ns-list)",
+                    	";; dynamically list all public symbols of a module  \n" +
+                        "(let [module-name$ (keyword \"hexdump\")            \n" +
+   			            "      ns-name$     (symbol \"hexdump\")]            \n" +
+  			            "  (load-module module-name$)                        \n" +
+                        "  (->> (ns-list ns-name$)                           \n" +
+  			            "       (filter #(not (:private (meta %) false)))    \n" +
+                        "       (sort)))                                     ")
                     .seeAlso(
                         "ns", "*ns*", "ns-unmap", "ns-remove", "namespace", "var-ns")
                     .build()
