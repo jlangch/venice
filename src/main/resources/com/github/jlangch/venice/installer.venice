@@ -95,6 +95,10 @@
        | :dir path             | download dir, defaults to "." |
        | :silent {true,false}  | if silent is true does not show a progress \
                                  bar, defaults to true |
+       | :force {true,false}   | if force is true download the artifact \
+                                 even if it exist already on the download \
+                                 dir, else skip the download if it exists. \
+                                 Defaults to true. |
        """
      :examples '(
        """
@@ -115,11 +119,8 @@
     (throw (ex :VncException 
                "Internet is not available, cannot install libraries!")))
 
-  (let [options  (default-options options)
-        opts     (apply hash-map options)
-        silent   (:silent opts true)
-        dir      (:dir opts ".")]
-    (doseq [lib libs] (maven/download lib :dir dir :silent silent))))
+  (let [options  (default-options options)]
+    (doseq [lib libs] (apply maven/download lib options))))
 
 
 (defn
@@ -228,7 +229,7 @@
 
 (defn- default-options [opts]
   (if (and (repl?) (empty? opts))
-    [:dir (repl/libs-dir) :silent false] 
+    [:dir (repl/libs-dir) :silent false :force false] 
     opts))
 
 

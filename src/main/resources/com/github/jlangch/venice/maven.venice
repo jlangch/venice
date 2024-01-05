@@ -103,7 +103,8 @@
                                     bar, defaults to true |
           | :force {true,false}   | if force is true download the artifact \
                                     even if it exist already on the download \
-                                    dir, else skip the download if it exists |
+                                    dir, else skip the download if it exists. \
+                                    Defaults to true. |
           """
      :examples '(
           """(maven/download "org.knowm.xchart:xchart:3.8.1")"""
@@ -355,7 +356,7 @@
 
 (defn- maven/download-artifact-file [uri target-dir target-file force progress-fn]
   (let [target   (str target-dir "/" target-file)
-        download (or force (not (file-exists? target)))]
+        download (or force (not (io/exists-file? target)))]
     (if download
       (do
         (when progress-fn
@@ -367,7 +368,7 @@
       (when progress-fn
         (println (str "Downloading " uri))
         (println (str "         to " target))
-        (println (str "            " "ALREADY EXISTS"))))))
+        (println (str "            " "ALREADY EXISTS (skipped)"))))))
 
 
 (defn- maven/get-artifact-file [uri progress-fn]
