@@ -29,6 +29,9 @@
 
 (def maven/repo "https://repo1.maven.org/maven2")
 
+(def maven/exludes-junit ["org.junit.*" "org.opentest4j" "org.apiguardian,junit"])
+
+
 (defn
   ^{ :arglists '(
         "(maven/parse-artifact artifact)"
@@ -287,7 +290,9 @@
           """
      :examples '(
           """
-          (maven/dependency-tree :compile "org.knowm.xchart:xchart:3.8.6")
+          (do
+            (load-module :maven)
+            (maven/dependencies :compile "org.knowm.xchart:xchart:3.8.6"))
           """) }
 
   maven/dependencies [scope & artifacts]
@@ -297,43 +302,9 @@
   (assert (not-empty? artifacts))
   (assert (every? string? artifacts))
 
-  (let [temp-dir  (io/temp-dir "maven-")
-        proj-dir  (io/file temp-dir "demolibrary")
-        pom-file  (io/file proj-dir "pom.xml")
-        excludes  (if (= :test scope)
-                    "-Dexcludes=xxxxx"
-                    "-Dexcludes=org.junit.*,org.opentest4j,org.apiguardian,junit")]
-    (io/delete-file-on-exit temp-dir)
-
-    (try
-      ;; create the maven project in temp-dir
-      (maven/mvn temp-dir "archetype:generate"
-                          "-DgroupId=com.demolibrary" 
-                          "-DartifactId=demolibrary"
-                          "-DarchetypeArtifactId=maven-archetype-quickstart" 
-                          "-DarchetypeVersion=1.0"
-                          "-DinteractiveMode=false")
- 
-      ;; add the artefacts to the project's pom
-      (as-> (io/slurp pom-file) pom
-            (pom-add-dependencies pom artifacts scope)
-            (io/spit pom-file pom))
-
-       ;; compute the dependency tree
-      (->> (maven/mvn proj-dir "dependency:tree" excludes)
-           (str/split-lines)
-           (drop-while #(not (str/starts-with? % "[INFO] com.demolibrary:demolibrary:jar:1.0")))
-           (take-while #(not (str/starts-with? % "[INFO] -----------------")))
-           (rest)
-           (map #(str/subs % 10))
-           (str/join "\n")
-           (println))
-
-      nil
-         
-      (finally 
-        (when (io/exists-dir? temp-dir)
-          (io/delete-file-tree temp-dir))))))
+  (let [excludes  (if (= :test scope) [] maven/exludes-junit)]
+    (->> (maven/dependencies* scope excludes artifacts true)
+         (println))))
 
 
 
@@ -389,6 +360,47 @@
             "The Maven tool '~{binary}' does not exist!")
     (assert (io/file-can-execute? binary) 
             "The Maven tool '~{binary}' has no executable permissions!")))
+
+
+(defn- maven/dependencies* [scope excludes artifacts extract-deps]
+  (let [temp-dir  (io/temp-dir "maven-")
+        proj-dir  (io/file temp-dir "demolibrary")
+        pom-file  (io/file proj-dir "pom.xml")]
+    (io/delete-file-on-exit temp-dir)
+
+    (try
+      ;; create the maven project in temp-dir
+      (maven/mvn temp-dir "archetype:generate"
+                          "-DgroupId=com.demolibrary" 
+                          "-DartifactId=demolibrary"
+                          "-DarchetypeArtifactId=maven-archetype-quickstart" 
+                          "-DarchetypeVersion=1.0"
+                          "-DinteractiveMode=false")
+
+      ;; add the artefacts to the project's pom
+      (as-> (io/slurp pom-file) pom
+            (pom-add-dependencies pom artifacts scope)
+            (io/spit pom-file pom))
+
+      ;; compute the dependency tree
+      (let [options (str "-Dexcludes=" (str/join "," excludes))
+            options (if (empty? excludes) [] [options])
+            output  (apply maven/mvn proj-dir "dependency:tree" options)]
+        (if extract-deps
+          (maven/extract-dependency-tree output)
+          output))
+    (finally 
+      (when (io/exists-dir? temp-dir)
+        (io/delete-file-tree temp-dir))))))
+
+
+(defn- maven/extract-dependency-tree [output]
+  (->> (str/split-lines output)
+       (drop-while #(not (str/starts-with? % "[INFO] com.demolibrary:demolibrary:jar:1.0")))
+       (take-while #(not (str/starts-with? % "[INFO] -----------------")))
+       (rest)
+       (map #(str/subs % 10))
+       (str/join "\n")))
 
 
 (defn- maven/mvn-home []
