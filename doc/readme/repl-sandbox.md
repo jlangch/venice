@@ -134,8 +134,13 @@ To simplify sandbox configuration Venice supports predefined function groups:
 
 Use the REPL sandbox command 'fn-group' to list the functions in a specific group
 
+List the available function groups:
 ```
 venice> !sandbox fn-group
+```
+
+List the functions in the group `*print*`:
+```
 venice> !sandbox fn-group *print*
 ```
 
