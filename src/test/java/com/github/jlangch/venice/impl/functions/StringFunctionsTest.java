@@ -180,91 +180,91 @@ public class StringFunctionsTest {
     }
 
     @Test
-    public void test_str_index_one_char_of() {
+    public void test_str_index_of_char() {
         final Venice venice = new Venice();
 
-        assertEquals(null, venice.eval("(str/index-one-char-of nil nil)"));
-        assertEquals(null, venice.eval("(str/index-one-char-of nil \"\")"));
-        assertEquals(null, venice.eval("(str/index-one-char-of \"\" nil)"));
-        assertEquals(null, venice.eval("(str/index-one-char-of \"\" \"\")"));
+        assertEquals(null, venice.eval("(str/index-of-char nil nil)"));
+        assertEquals(null, venice.eval("(str/index-of-char nil \"\")"));
+        assertEquals(null, venice.eval("(str/index-of-char \"\" nil)"));
+        assertEquals(null, venice.eval("(str/index-of-char \"\" \"\")"));
 
-        assertEquals(null, venice.eval("(str/index-one-char-of nil \"ab\")"));
-        assertEquals(null, venice.eval("(str/index-one-char-of \"abc\" nil)"));
-        assertEquals(null, venice.eval("(str/index-one-char-of \"\" \"ab\")"));
-        assertEquals(null, venice.eval("(str/index-one-char-of \"abc\" \"\")"));
+        assertEquals(null, venice.eval("(str/index-of-char nil \"ab\")"));
+        assertEquals(null, venice.eval("(str/index-of-char \"abc\" nil)"));
+        assertEquals(null, venice.eval("(str/index-of-char \"\" \"ab\")"));
+        assertEquals(null, venice.eval("(str/index-of-char \"abc\" \"\")"));
 
-        assertEquals(0L,   venice.eval("(str/index-one-char-of \"123\" \"01\")"));
-        assertEquals(0L,   venice.eval("(str/index-one-char-of \"123\" \"01abcdef\")"));
-        assertEquals(6L,   venice.eval("(str/index-one-char-of \"------123\" \"01\")"));
-        assertEquals(6L,   venice.eval("(str/index-one-char-of \"------123\" \"12\")"));
-        assertEquals(7L,   venice.eval("(str/index-one-char-of \"------123\" \"23\")"));
-        assertEquals(8L,   venice.eval("(str/index-one-char-of \"------123\" \"34\")"));
-        assertEquals(null, venice.eval("(str/index-one-char-of \"------123\" \"45\")"));
+        assertEquals(0L,   venice.eval("(str/index-of-char \"123\" \"01\")"));
+        assertEquals(0L,   venice.eval("(str/index-of-char \"123\" \"01abcdef\")"));
+        assertEquals(6L,   venice.eval("(str/index-of-char \"------123\" \"01\")"));
+        assertEquals(6L,   venice.eval("(str/index-of-char \"------123\" \"12\")"));
+        assertEquals(7L,   venice.eval("(str/index-of-char \"------123\" \"23\")"));
+        assertEquals(8L,   venice.eval("(str/index-of-char \"------123\" \"34\")"));
+        assertEquals(null, venice.eval("(str/index-of-char \"------123\" \"45\")"));
 
-        assertEquals(0L,   venice.eval("(str/index-one-char-of \"123\" (seq \"01\"))"));
-        assertEquals(0L,   venice.eval("(str/index-one-char-of \"123\" (seq \"01abcdef\"))"));
-        assertEquals(6L,   venice.eval("(str/index-one-char-of \"------123\" (seq \"01\"))"));
-        assertEquals(6L,   venice.eval("(str/index-one-char-of \"------123\" (seq \"12\"))"));
-        assertEquals(7L,   venice.eval("(str/index-one-char-of \"------123\" (seq \"23\"))"));
-        assertEquals(8L,   venice.eval("(str/index-one-char-of \"------123\" (seq \"34\"))"));
-        assertEquals(null, venice.eval("(str/index-one-char-of \"------123\" (seq \"45\"))"));
+        assertEquals(0L,   venice.eval("(str/index-of-char \"123\" (seq \"01\"))"));
+        assertEquals(0L,   venice.eval("(str/index-of-char \"123\" (seq \"01abcdef\"))"));
+        assertEquals(6L,   venice.eval("(str/index-of-char \"------123\" (seq \"01\"))"));
+        assertEquals(6L,   venice.eval("(str/index-of-char \"------123\" (seq \"12\"))"));
+        assertEquals(7L,   venice.eval("(str/index-of-char \"------123\" (seq \"23\"))"));
+        assertEquals(8L,   venice.eval("(str/index-of-char \"------123\" (seq \"34\"))"));
+        assertEquals(null, venice.eval("(str/index-of-char \"------123\" (seq \"45\"))"));
 
-        assertEquals(6L,   venice.eval("(str/index-one-char-of \"------123\" \"012\" 0)"));
-        assertEquals(7L,   venice.eval("(str/index-one-char-of \"------123\" \"012\" 7)"));
-        assertEquals(null, venice.eval("(str/index-one-char-of \"------123\" \"456\" 4)"));
-        assertEquals(null, venice.eval("(str/index-one-char-of \"------123\" \"012\" 99)"));
-        assertEquals(null, venice.eval("(str/index-one-char-of \"------123\" \"012\" -1)"));
+        assertEquals(6L,   venice.eval("(str/index-of-char \"------123\" \"012\" 0)"));
+        assertEquals(7L,   venice.eval("(str/index-of-char \"------123\" \"012\" 7)"));
+        assertEquals(null, venice.eval("(str/index-of-char \"------123\" \"456\" 4)"));
+        assertEquals(null, venice.eval("(str/index-of-char \"------123\" \"012\" 99)"));
+        assertEquals(null, venice.eval("(str/index-of-char \"------123\" \"012\" -1)"));
 
-        assertEquals(6L,   venice.eval("(str/index-one-char-of \"------123\" (seq \"012\") 0)"));
-        assertEquals(7L,   venice.eval("(str/index-one-char-of \"------123\" (seq \"012\") 7)"));
-        assertEquals(null, venice.eval("(str/index-one-char-of \"------123\" (seq \"456\") 4)"));
-        assertEquals(null, venice.eval("(str/index-one-char-of \"------123\" (seq \"012\") 99)"));
-        assertEquals(null, venice.eval("(str/index-one-char-of \"------123\" (seq \"012\") -1)"));
+        assertEquals(6L,   venice.eval("(str/index-of-char \"------123\" (seq \"012\") 0)"));
+        assertEquals(7L,   venice.eval("(str/index-of-char \"------123\" (seq \"012\") 7)"));
+        assertEquals(null, venice.eval("(str/index-of-char \"------123\" (seq \"456\") 4)"));
+        assertEquals(null, venice.eval("(str/index-of-char \"------123\" (seq \"012\") 99)"));
+        assertEquals(null, venice.eval("(str/index-of-char \"------123\" (seq \"012\") -1)"));
     }
 
     @Test
-    public void test_str_index_one_char_not_of() {
+    public void test_str_index_of_not_char() {
         final Venice venice = new Venice();
 
-        assertEquals(null, venice.eval("(str/index-one-char-not-of nil nil)"));
-        assertEquals(null, venice.eval("(str/index-one-char-not-of nil \"\")"));
-        assertEquals(null, venice.eval("(str/index-one-char-not-of \"\" nil)"));
-        assertEquals(null, venice.eval("(str/index-one-char-not-of \"\" \"\")"));
+        assertEquals(null, venice.eval("(str/index-of-not-char nil nil)"));
+        assertEquals(null, venice.eval("(str/index-of-not-char nil \"\")"));
+        assertEquals(null, venice.eval("(str/index-of-not-char \"\" nil)"));
+        assertEquals(null, venice.eval("(str/index-of-not-char \"\" \"\")"));
 
-        assertEquals(null, venice.eval("(str/index-one-char-not-of nil \"ab\")"));
-        assertEquals(null, venice.eval("(str/index-one-char-not-of \"abc\" nil)"));
-        assertEquals(null, venice.eval("(str/index-one-char-not-of \"\" \"ab\")"));
-        assertEquals(null, venice.eval("(str/index-one-char-not-of \"abc\" \"\")"));
+        assertEquals(null, venice.eval("(str/index-of-not-char nil \"ab\")"));
+        assertEquals(null, venice.eval("(str/index-of-not-char \"abc\" nil)"));
+        assertEquals(null, venice.eval("(str/index-of-not-char \"\" \"ab\")"));
+        assertEquals(null, venice.eval("(str/index-of-not-char \"abc\" \"\")"));
 
-        assertEquals(0L,   venice.eval("(str/index-one-char-not-of \"123456\" \"abc\")"));
-        assertEquals(1L,   venice.eval("(str/index-one-char-not-of \"123456\" \"1abc\")"));
-        assertEquals(2L,   venice.eval("(str/index-one-char-not-of \"123456\" \"12abc\")"));
-        assertEquals(3L,   venice.eval("(str/index-one-char-not-of \"123456\" \"123abc\")"));
-        assertEquals(4L,   venice.eval("(str/index-one-char-not-of \"123456\" \"1234abc\")"));
-        assertEquals(5L,   venice.eval("(str/index-one-char-not-of \"123456\" \"12345abc\")"));
-        assertEquals(null, venice.eval("(str/index-one-char-not-of \"123456\" \"123456abc\")"));
-        assertEquals(null, venice.eval("(str/index-one-char-not-of \"123456\" \"1234567abc\")"));
+        assertEquals(0L,   venice.eval("(str/index-of-not-char \"123456\" \"abc\")"));
+        assertEquals(1L,   venice.eval("(str/index-of-not-char \"123456\" \"1abc\")"));
+        assertEquals(2L,   venice.eval("(str/index-of-not-char \"123456\" \"12abc\")"));
+        assertEquals(3L,   venice.eval("(str/index-of-not-char \"123456\" \"123abc\")"));
+        assertEquals(4L,   venice.eval("(str/index-of-not-char \"123456\" \"1234abc\")"));
+        assertEquals(5L,   venice.eval("(str/index-of-not-char \"123456\" \"12345abc\")"));
+        assertEquals(null, venice.eval("(str/index-of-not-char \"123456\" \"123456abc\")"));
+        assertEquals(null, venice.eval("(str/index-of-not-char \"123456\" \"1234567abc\")"));
 
-        assertEquals(0L,   venice.eval("(str/index-one-char-not-of \"123456\" (seq \"abc\"))"));
-        assertEquals(1L,   venice.eval("(str/index-one-char-not-of \"123456\" (seq \"1abc\"))"));
-        assertEquals(2L,   venice.eval("(str/index-one-char-not-of \"123456\" (seq \"12abc\"))"));
-        assertEquals(3L,   venice.eval("(str/index-one-char-not-of \"123456\" (seq \"123abc\"))"));
-        assertEquals(4L,   venice.eval("(str/index-one-char-not-of \"123456\" (seq \"1234abc\"))"));
-        assertEquals(5L,   venice.eval("(str/index-one-char-not-of \"123456\" (seq \"12345abc\"))"));
-        assertEquals(null, venice.eval("(str/index-one-char-not-of \"123456\" (seq \"123456abc\"))"));
-        assertEquals(null, venice.eval("(str/index-one-char-not-of \"123456\" (seq \"1234567abc\"))"));
+        assertEquals(0L,   venice.eval("(str/index-of-not-char \"123456\" (seq \"abc\"))"));
+        assertEquals(1L,   venice.eval("(str/index-of-not-char \"123456\" (seq \"1abc\"))"));
+        assertEquals(2L,   venice.eval("(str/index-of-not-char \"123456\" (seq \"12abc\"))"));
+        assertEquals(3L,   venice.eval("(str/index-of-not-char \"123456\" (seq \"123abc\"))"));
+        assertEquals(4L,   venice.eval("(str/index-of-not-char \"123456\" (seq \"1234abc\"))"));
+        assertEquals(5L,   venice.eval("(str/index-of-not-char \"123456\" (seq \"12345abc\"))"));
+        assertEquals(null, venice.eval("(str/index-of-not-char \"123456\" (seq \"123456abc\"))"));
+        assertEquals(null, venice.eval("(str/index-of-not-char \"123456\" (seq \"1234567abc\"))"));
 
-        assertEquals(0L,   venice.eval("(str/index-one-char-not-of \"123456\" \"abc\" 0)"));
-        assertEquals(4L,   venice.eval("(str/index-one-char-not-of \"123456\" \"34abc\" 2)"));
-        assertEquals(null, venice.eval("(str/index-one-char-not-of \"123456\" \"123456\" 4)"));
-        assertEquals(null, venice.eval("(str/index-one-char-not-of \"123456\" \"12\" 99)"));
-        assertEquals(null, venice.eval("(str/index-one-char-not-of \"123456\" \"12\" -1)"));
+        assertEquals(0L,   venice.eval("(str/index-of-not-char \"123456\" \"abc\" 0)"));
+        assertEquals(4L,   venice.eval("(str/index-of-not-char \"123456\" \"34abc\" 2)"));
+        assertEquals(null, venice.eval("(str/index-of-not-char \"123456\" \"123456\" 4)"));
+        assertEquals(null, venice.eval("(str/index-of-not-char \"123456\" \"12\" 99)"));
+        assertEquals(null, venice.eval("(str/index-of-not-char \"123456\" \"12\" -1)"));
 
-        assertEquals(0L,   venice.eval("(str/index-one-char-not-of \"123456\" (seq \"abc\") 0)"));
-        assertEquals(4L,   venice.eval("(str/index-one-char-not-of \"123456\" (seq \"34abc\") 2)"));
-        assertEquals(null, venice.eval("(str/index-one-char-not-of \"123456\" (seq \"123456\") 4)"));
-        assertEquals(null, venice.eval("(str/index-one-char-not-of \"123456\" (seq \"12\") 99)"));
-        assertEquals(null, venice.eval("(str/index-one-char-not-of \"123456\" (seq \"12\") -1)"));
+        assertEquals(0L,   venice.eval("(str/index-of-not-char \"123456\" (seq \"abc\") 0)"));
+        assertEquals(4L,   venice.eval("(str/index-of-not-char \"123456\" (seq \"34abc\") 2)"));
+        assertEquals(null, venice.eval("(str/index-of-not-char \"123456\" (seq \"123456\") 4)"));
+        assertEquals(null, venice.eval("(str/index-of-not-char \"123456\" (seq \"12\") 99)"));
+        assertEquals(null, venice.eval("(str/index-of-not-char \"123456\" (seq \"12\") -1)"));
     }
 
     @Test

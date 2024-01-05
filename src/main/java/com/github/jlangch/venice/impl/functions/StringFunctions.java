@@ -507,8 +507,8 @@ public class StringFunctions {
                     .examples(
                         "(str/index-of \"abcdefabc\" \"ab\")")
                     .seeAlso(
-                        "str/index-one-char-of",
-                        "str/index-one-char-not-of",
+                        "str/index-of-char",
+                        "str/index-of-not-char",
                         "str/last-index-of")
                     .build()
         ) {
@@ -542,24 +542,24 @@ public class StringFunctions {
         };
 
 
-    public static VncFunction str_index_one_char_of =
+    public static VncFunction str_index_of_char =
         new VncFunction(
-                "str/index-one-char-of",
+                "str/index-of-char",
                 VncFunction
                     .meta()
                     .arglists(
-                        "(str/index-one-char-of s chars)",
-                        "(str/index-one-char-of s chars from-index)")
+                        "(str/index-of-char s chars)",
+                        "(str/index-of-char s chars from-index)")
                     .doc(
                         "Return index of the first char of chars(string or sequence of chars) " +
                         "in s, optionally searching forward from from-index. " +
                         "Return nil if value not found.")
                     .examples(
-                        "(str/index-one-char-of \"-+-123-+-123\" \"012\")",
-                        "(str/index-one-char-of \"-+-123-+-123\" [#\\0 #\\1 #\\2])",
-                        "(str/index-one-char-of \"-+-123-+-123\" \"012\" 7)")
+                        "(str/index-of-char \"-+-123-+-123\" \"012\")",
+                        "(str/index-of-char \"-+-123-+-123\" [#\\0 #\\1 #\\2])",
+                        "(str/index-of-char \"-+-123-+-123\" \"012\" 7)")
                     .seeAlso(
-                        "str/index-one-char-not-of",
+                        "str/index-of-not-char",
                         "str/index-of",
                         "str/last-index-of")
                     .build()
@@ -613,24 +613,24 @@ public class StringFunctions {
         };
 
 
-    public static VncFunction str_index_one_char_not_of =
+    public static VncFunction str_index_of_not_char =
         new VncFunction(
-                "str/index-one-char-not-of",
+                "str/index-of-not-char",
                 VncFunction
                     .meta()
                     .arglists(
-                        "(str/index-one-char-not-of s chars)",
-                        "(str/index-one-char-not-of s chars from-index)")
+                        "(str/index-of-not-char s chars)",
+                        "(str/index-of-not-char s chars from-index)")
                     .doc(
                         "Return index of the first char not of chars (string or sequence of chars) " +
                         "in s, optionally searching forward from from-index. " +
                         "Return nil if value not found.")
                     .examples(
-                        "(str/index-one-char-not-of \"-+-123-+-123\" \"-+\")",
-                        "(str/index-one-char-not-of \"-+-123-+-123\" [#\\- #\\+])",
-                        "(str/index-one-char-not-of \"-+-123-+-123\" \"-+\" 7)")
+                        "(str/index-of-not-char \"-+-123-+-123\" \"-+\")",
+                        "(str/index-of-not-char \"-+-123-+-123\" [#\\- #\\+])",
+                        "(str/index-of-not-char \"-+-123-+-123\" \"-+\" 7)")
                     .seeAlso(
-                        "str/index-one-char-of",
+                        "str/index-of-char",
                         "str/index-of",
                         "str/last-index-of")
                     .build()
@@ -700,8 +700,8 @@ public class StringFunctions {
                         "(str/last-index-of \"abcdefabc\" \"de\" 6)")
                     .seeAlso(
                     	"str/index-of",
-                        "str/index-one-char-of",
-                        "str/index-one-char-not-of")
+                        "str/index-of-char",
+                        "str/index-of-not-char")
                    .build()
         ) {
             @Override
@@ -2878,8 +2878,8 @@ public class StringFunctions {
                     .add(str_trim_to_nil)
                     .add(str_align)
                     .add(str_index_of)
-                    .add(str_index_one_char_of)
-                    .add(str_index_one_char_not_of)
+                    .add(str_index_of_char)
+                    .add(str_index_of_not_char)
                     .add(str_last_index_of)
                     .add(str_replace_first)
                     .add(str_replace_last)

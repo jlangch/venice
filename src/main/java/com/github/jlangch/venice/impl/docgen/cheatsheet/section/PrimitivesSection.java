@@ -151,8 +151,8 @@ public class PrimitivesSection implements ISectionBuilder {
         final DocSection index = new DocSection("Index", "primitives.strings.index");
         strings.addSection(index);
         index.addItem(diBuilder.getDocItem("str/index-of"));
-        index.addItem(diBuilder.getDocItem("str/index-one-char-of"));
-        index.addItem(diBuilder.getDocItem("str/index-one-char-not-of"));
+        index.addItem(diBuilder.getDocItem("str/index-of-char"));
+        index.addItem(diBuilder.getDocItem("str/index-of-not-char"));
         index.addItem(diBuilder.getDocItem("str/last-index-of"));
 
         final DocSection split = new DocSection("Split/Join", "primitives.strings.splitjoin");
