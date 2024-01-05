@@ -136,11 +136,13 @@ public class RestrictedBlacklistedFunctions {
                 "io/exists-dir?",
                 "io/exists-file?",
                 "io/file",
-                "io/file-absolute-path",
+                "io/file-absolute",
+                "io/file-absolute?",
+                "io/file-basename",
                 "io/file-can-execute?",
                 "io/file-can-read?",
                 "io/file-can-write?",
-                "io/file-canonical-path",
+                "io/file-canonical",
                 "io/file-ext",
                 "io/file-ext?",
                 "io/file-hidden?",
@@ -153,7 +155,10 @@ public class RestrictedBlacklistedFunctions {
                 "io/file-path",
                 "io/file-size",
                 "io/file-symbolic-link?",
+                "io/file-within-dir?",
                 "io/file?",
+                "io/filesystem-total-space",
+                "io/filesystem-usable-space",
                 "io/flush",
                 "io/glob-path-matcher",
                 "io/gzip",
@@ -161,6 +166,7 @@ public class RestrictedBlacklistedFunctions {
                 "io/gzip?",
                 "io/internet-avail?",
                 "io/list-file-tree",
+                "io/list-file-tree-lazy",
                 "io/list-files",
                 "io/list-files-glob",
                 "io/load-classpath-resource",
@@ -356,6 +362,9 @@ public class RestrictedBlacklistedFunctions {
                 "futures-fork",
                 "futures-thread-pool-info",
                 "futures-wait",
+                // "lock",
+                // "lock?",
+                // "locked?",
                 "or-timeout",
                 "pcalls",
                 "pmap",
@@ -402,8 +411,6 @@ public class RestrictedBlacklistedFunctions {
             // ************************************************************
 
             Arrays.asList(
-
-                // Java Interop
                 ".",
                 "bases",
                 "cast",
@@ -426,6 +433,7 @@ public class RestrictedBlacklistedFunctions {
                 "java-wrap",
                 "module-name",
                 "proxify",
+                "remove-formal-type",
                 "stacktrace",
                 "supers"
         ));
@@ -453,7 +461,10 @@ public class RestrictedBlacklistedFunctions {
                     "var-local?",
                     "var-name",
                     "var-ns",
-                    "var-thread-local?"));
+                    "var-sym",
+                    "var-sym-meta",
+                    "var-thread-local?",
+                    "var-val-meta"));
     }
 
 
