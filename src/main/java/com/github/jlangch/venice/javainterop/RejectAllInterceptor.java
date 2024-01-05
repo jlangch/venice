@@ -26,8 +26,8 @@ import java.util.Collections;
 import java.util.List;
 
 import com.github.jlangch.venice.SecurityException;
-import com.github.jlangch.venice.impl.sandbox.RestrictedBlacklistedFunctions;
 import com.github.jlangch.venice.impl.sandbox.SandboxDefaultRules;
+import com.github.jlangch.venice.impl.sandbox.SandboxFunctionGroups;
 
 
 /**
@@ -192,7 +192,7 @@ public class RejectAllInterceptor extends Interceptor {
     public IInterceptor validateVeniceFunction(
             final String funcName
     ) throws SecurityException {
-        if (RestrictedBlacklistedFunctions.getAllFunctions().contains(funcName)) {
+        if (SandboxFunctionGroups.groupFunctions("*unsafe*").contains(funcName)) {
             throw new SecurityException(String.format(
                     "%s: Access denied to Venice function '%s'!",
                     PREFIX,
@@ -235,7 +235,8 @@ public class RejectAllInterceptor extends Interceptor {
 
 
     public List<String> getBlacklistedVeniceFunctions() {
-        final List<String> list = new ArrayList<>(RestrictedBlacklistedFunctions.getAllFunctions());
+    	// all unsafe (blacklisted) functions
+        final List<String> list = new ArrayList<>(SandboxFunctionGroups.groupFunctions("*unsafe*"));
         Collections.sort(list);
         return list;
     }

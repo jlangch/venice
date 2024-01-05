@@ -26,7 +26,7 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 import com.github.jlangch.venice.VncException;
-import com.github.jlangch.venice.impl.sandbox.RestrictedBlacklistedFunctions;
+import com.github.jlangch.venice.impl.sandbox.SandboxFunctionGroups;
 import com.github.jlangch.venice.impl.thread.ThreadContext;
 import com.github.jlangch.venice.impl.types.Constants;
 import com.github.jlangch.venice.impl.types.VncBoolean;
@@ -147,17 +147,19 @@ public class SandboxFunctions {
 
     private static VncList getGroup(final String group) {
         switch(group) {
-            case "io":             return toVncList(RestrictedBlacklistedFunctions.getIoFunctions());
-            case "print":          return toVncList(RestrictedBlacklistedFunctions.getPrintFunctions());
-            case "concurrency":    return toVncList(RestrictedBlacklistedFunctions.getConcurrencyFunctions());
-            case "java-interop":   return toVncList(RestrictedBlacklistedFunctions.getJavaInteropFunctions());
-            case "system":         return toVncList(RestrictedBlacklistedFunctions.getSystemFunctions());
-            case "special-forms":  return toVncList(RestrictedBlacklistedFunctions.getSpecialForms());
-            case "unsafe":         return toVncList(RestrictedBlacklistedFunctions.getAllFunctions());
+            case "io":
+            case "print":
+            case "special-forms":
+            case "concurrency":
+            case "system":
+            case "java-interop":
+            case "unsafe":
+        		return toVncList(SandboxFunctionGroups.groupFunctions("*" + group + "*"));
+
             default:
                 throw new VncException(
-                        "Unsupported group! Choose one of " +
-                        "{:io, :java-interop, :system, :special-forms, :unsafe}");
+                        "Unsupported sandbox function group! Choose one of " +
+                        "{:io, :print, :special-forms, :concurrency, :system, :java-interop, :unsafe}");
 
         }
     }

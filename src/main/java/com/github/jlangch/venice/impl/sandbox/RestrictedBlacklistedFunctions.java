@@ -25,42 +25,48 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.Set;
+import java.util.concurrent.ConcurrentHashMap;
 
 
 public class RestrictedBlacklistedFunctions {
 
     public static Set<String> getIoFunctions() {
-        return IO;
+        return cache.computeIfAbsent("io", k -> io());
     }
 
     public static Set<String> getPrintFunctions() {
-        return PRINT;
+        return cache.computeIfAbsent("print", k -> print());
     }
 
     public static Set<String> getConcurrencyFunctions() {
-        return CONCURRENCY;
+        return cache.computeIfAbsent("concurrency", k -> concurrency());
     }
 
     public static Set<String> getJavaInteropFunctions() {
-        return JAVA_INTEROP;
+        return cache.computeIfAbsent("java-interop", k -> java_interop());
     }
 
     public static Set<String> getSystemFunctions() {
-        return SYSTEM;
+        return cache.computeIfAbsent("system", k -> system());
     }
 
     public static Set<String> getSpecialForms() {
-        return SPECIAL_FORMS;
+        return cache.computeIfAbsent("special-forms", k -> special_forms());
     }
 
     public static Set<String> getAllFunctions() {
-        return ALL;
+        return cache.computeIfAbsent("all", k -> mergeToSet(
+        											getIoFunctions(),
+        											getPrintFunctions(),
+        											getConcurrencyFunctions(),
+        											getJavaInteropFunctions(),
+        											getSystemFunctions(),
+        											getSpecialForms()));
     }
 
 
-
-    private static Set<String> PRINT =
-        new HashSet<>(
+    private static Set<String> print() {
+        return new HashSet<>(
             Arrays.asList(
                 // print
                 "print",
@@ -72,11 +78,11 @@ public class RestrictedBlacklistedFunctions {
                 "flush",
                 "io/print",
                 "io/flush"));
+    }
 
 
-    private static Set<String> IO =
-    	new HashSet<>(
-
+    private static Set<String> io() {
+        return new HashSet<>(
             // ************************************************************
             // * Functions::main() helps with build this list
             // ************************************************************
@@ -207,12 +213,77 @@ public class RestrictedBlacklistedFunctions {
                 // Shell
                 "sh",
                 "sh/open",
-                "sh/pwd"
-    ));
+                "sh/pwd",
+
+                // Fonts
+                "fonts/download-font-family",
+
+                // Installer
+                "installer/install-module",
+                "installer/install-libs",
+                "installer/install-demo",
+                "installer/install-demo-fonts",
+
+                // Maven
+                "maven/dependencies",
+                "maven/download",
+                "maven/get",
+                "maven/mvn",
+                "maven/version",
+
+                // Gradle
+                "gradle/task",
+                "gradle/version",
+
+                // Docker
+                "docker/version",
+                "docker/cmd",
+                "docker/debug",
+                "docker/images",
+                "docker/image-pull",
+                "docker/rmi",
+                "docker/image-rm",
+                "docker/image-prune",
+                "docker/ps",
+                "docker/stop",
+                "docker/run",
+                "docker/start",
+                "docker/exec",
+                "docker/rm",
+                "docker/diff",
+                "docker/unpause",
+                "docker/wait",
+                "docker/logs",
+                "docker/exec&",
+                "docker/prune",
+                "docker/cp",
+                "docker/pause",
+                "docker/volume-list",
+                "docker/volume-create",
+                "docker/volume-inspect",
+                "docker/volume-rm",
+                "docker/volume-prune",
+                "docker/volume-exists?",
+                "docker/images-query-by-repo",
+                "docker/image-ready?",
+                "docker/container-find-by-name",
+                "docker/container-exists-with-name?",
+                "docker/container-running-with-name?",
+                "docker/container-start-by-name",
+                "docker/container-stop-by-name",
+                "docker/container-remove-by-name",
+                "docker/container-status-by-name",
+                "docker/container-exec-by-name",
+                "docker/container-exec-by-name&",
+                "docker/container-logs",
+                "docker/container-purge-by-name",
+                "docker/container-image-info-by-name"
+            ));
+    }
 
 
-    private static Set<String> SYSTEM =
-        new HashSet<>(
+    private static Set<String> system() {
+        return new HashSet<>(
 
             // ************************************************************
             // * Functions::main() helps with build this list
@@ -245,10 +316,11 @@ public class RestrictedBlacklistedFunctions {
                 "total-memory",
                 "used-memory",
                 "user-name"
-    ));
+           ));
+    }
 
-    private static Set<String> CONCURRENCY =
-        new HashSet<>(
+    private static Set<String> concurrency() {
+        return new HashSet<>(
 
             // ************************************************************
             // * Functions::main() helps with build this list
@@ -318,11 +390,12 @@ public class RestrictedBlacklistedFunctions {
                 // Scheduler
                 "schedule-at-fixed-rate",
                 "schedule-delay"
-    ));
+        ));
+    }
 
 
-    private static Set<String> JAVA_INTEROP =
-        new HashSet<>(
+    private static Set<String> java_interop() {
+        return new HashSet<>(
 
             // ************************************************************
             // * Functions::main() helps with build this list
@@ -355,10 +428,11 @@ public class RestrictedBlacklistedFunctions {
                 "proxify",
                 "stacktrace",
                 "supers"
-    ));
+        ));
+    }
 
-    private static Set<String> SPECIAL_FORMS =
-            new HashSet<>(
+    private static Set<String> special_forms() {
+        return new HashSet<>(
                 Arrays.asList(
                     "dobench",
                     "dorun",
@@ -380,23 +454,26 @@ public class RestrictedBlacklistedFunctions {
                     "var-name",
                     "var-ns",
                     "var-thread-local?"));
+    }
 
-
-
-    private static Set<String> ALL = mergeToSet(IO, CONCURRENCY, JAVA_INTEROP, SYSTEM, SPECIAL_FORMS);
 
     private static Set<String> mergeToSet(
             final Collection<String> s1,
             final Collection<String> s2,
             final Collection<String> s3,
             final Collection<String> s4,
-            final Collection<String> s5
+            final Collection<String> s5,
+            final Collection<String> s6
     ) {
         final HashSet<String> set = new HashSet<>(s1);
         set.addAll(s2);
         set.addAll(s3);
         set.addAll(s4);
         set.addAll(s5);
-         return set;
+        set.addAll(s6);
+        return set;
     }
+
+
+    private static ConcurrentHashMap<String, Set<String>> cache = new ConcurrentHashMap<>();
 }
