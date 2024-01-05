@@ -14,6 +14,8 @@ All notable changes to this project will be documented in this file.
 - an :installer module to simplify the installation of 3rdparty libraries
   from within the REPL and to simplify the REPL setup process
 - improvements to REPL demo fonts. See the font demo in the [PDF readme](doc/readme/pdf.md#fonts) chapter.
+- an optional force flag to maven/download
+
 
 ### Fixed 
 
