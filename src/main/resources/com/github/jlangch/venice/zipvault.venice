@@ -519,7 +519,9 @@
 
 
 (defn 
-  ^{ :arglists '("(zipvault/extract-all zip passphrase destpath)")
+  ^{ :arglists '(
+          "(zipvault/extract-all zip destpath)"
+          "(zipvault/extract-all zip passphrase destpath)")
      :doc """
           Extracts all files from the zip file to the destination path.
           """
@@ -542,20 +544,35 @@
           "zipvault/extract-file"
           "zipvault/extract-file-data" ) }
 
-  extract-all [zip passphrase destpath]
+  extract-all 
+   
+  ([zip destpath]
+    { :pre [(file-or-string? zip) (file-or-string? destpath)] }
 
-  { :pre [(file-or-string? zip)
-          (string? passphrase)
-          (file-or-string? destpath)] }
+    (assert (io/exists-file? zip))
+    (assert (io/file-can-read? zip))
+    (assert (io/exists-dir? destpath))
+    (assert (io/file-can-write? destpath))
 
-  (assert (io/exists-file? zip))
-  (assert (io/file-can-read? zip))
-  (assert (io/exists-dir? destpath))
-  (assert (io/file-can-write? destpath))
+    (let [destpath (if (string? destpath) destpath (io/file-path destpath))]
+      (try-with [zf (. :ZipFile :new (io/file zip))]
+        (. zf :extractAll destpath))))
+ 
+  ([zip passphrase destpath]
+    { :pre [(file-or-string? zip)
+            (string? passphrase)
+            (file-or-string? destpath)] }
 
-  (let [destpath (if (string? destpath) destpath (io/file-path destpath))]
-    (try-with [zf (. :ZipFile :new (io/file zip) passphrase)]
-      (. zf :extractAll destpath))))
+    (assert (io/exists-file? zip))
+    (assert (io/file-can-read? zip))
+    (assert (io/exists-dir? destpath))
+    (assert (io/file-can-write? destpath))
+
+    (let [destpath (if (string? destpath) destpath (io/file-path destpath))]
+      (try-with [zf (. :ZipFile :new (io/file zip) passphrase)]
+        (. zf :extractAll destpath)))))
+
+
 
 
 (defn 

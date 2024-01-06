@@ -207,20 +207,25 @@ public class SpecialForms_OtherFunctions {
                 for(VncVal filter : filters) {
                     final Pattern p;
                     if (Types.isVncString(filter)) {
+                    	// globbing pattern
                         String f = trimToNull(((VncString)filter).getValue());
                         if (f != null) {
                             f = f.contains("*") ? f.replaceAll("[*]", ".*") : ".*" + f + ".*";
                         }
                         p = Pattern.compile(f);
                     }
+                    else if (Types.isVncSymbol(filter)) {
+                    	// symbol
+                        String f = trimToNull(((VncSymbol)filter).getName());
+                        p = Pattern.compile(f);
+                    }
                     else if (Types.isVncJavaObject(args.first(), Pattern.class)) {
+                    	// regex pattern
                         p = Coerce.toVncJavaObject(args.first(), Pattern.class);
                     }
                     else {
-                        try (WithCallStack cs = new WithCallStack(new CallFrame("finder", args, specialFormMeta))) {
-                            throw new VncException(
-                                    "finder expects either a glob pattern (string) or a regex pattern as argument!");
-                        }
+                        throw new VncException(
+                                "finder expects either a glob pattern (string) or a regex pattern as argument!");
                     }
 
                     // filter

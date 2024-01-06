@@ -25,11 +25,16 @@
 (ns maven)
 
 (load-module :ansi)
+(load-module :zipvault)
 
 
-(def maven/repo "https://repo1.maven.org/maven2")
+(def repo "https://repo1.maven.org/maven2")
 
-(def maven/exludes-junit ["org.junit.*" "org.opentest4j" "org.apiguardian,junit"])
+(def exludes-junit ["org.junit.*" "org.opentest4j" "org.apiguardian,junit"])
+
+(def maven-version "3.9.6")
+
+(def maven-uri "https://dlcdn.apache.org/maven/maven-3/{{version}}/binaries/apache-maven-{{version}}-bin.zip")
 
 
 (defn
@@ -238,11 +243,11 @@
           Relies on the environment variable `MAVEN_HOME` to access Maven.
           """
      :examples '(
-          """(maven/version)""") }
+          """(maven/version)""")
+     :see-also '(
+          "maven/home-dir" )  }
 
   maven/version []
-
-  (maven/validate-mvn-home)
 
   (let [binary  (maven/mvn-binary)]     
     (->> ((maven/exec) (str binary " --version") :throw-ex true)
@@ -307,6 +312,120 @@
          (println))))
 
 
+(defn 
+  ^{ :arglists '(
+          "(maven/install)"
+          "(maven/install version)")
+     :doc """
+          Installs Apache Maven to {repl-home-dir}/tools/apache-maven-x.y.z
+
+          Installation is possible from within a REPL only!
+          """
+     :examples '(
+          """
+          (do
+            (load-module :maven)
+            (maven/install))  ;; installs default version 3.9.6
+          """
+          """
+          (do
+            (load-module :maven)
+            (maven/install "3.9.5"))
+          """)
+     :see-also '(
+          "maven/home-dir"
+          "maven/uninstall" )  }
+
+  install 
+
+  ([]
+    (maven/install maven-version))
+
+  ([version]
+    (when-not (repl?)
+      (throw (ex :VncException "Apache Maven can be installed from a REPL only!")))
+      
+    (let [uri             (maven-download-uri version)
+          repl-tools-dir  (io/file (repl/home-dir) "tools")
+          progress-fn     (maven/progress-bar false)
+          zip-name        (last (str/split uri "/"))
+          zip             (io/file repl-tools-dir zip-name)
+          maven-dir       (io/file repl-tools-dir (str/strip-end zip-name "-bin.zip"))]
+      (when-not (io/exists-dir? repl-tools-dir)
+        (io/mkdir repl-tools-dir))
+
+      (if (io/exists-dir? maven-dir)
+        (println "Maven is already installed at ~{maven-dir}")
+        (do
+          ;; download Maven binary zip
+          (maven/download-artifact-file uri repl-tools-dir zip-name false progress-fn)
+          
+          ;; unpack Maven binary zip
+          (println "Unzipping ~{zip-name}...")
+          (zipvault/extract-all zip repl-tools-dir)
+          
+          ;; remove downloaded Maven binary zip
+          (io/delete-file zip)
+
+          (println "Maven installed to ~{maven-dir}"))))))
+
+
+(defn 
+  ^{ :arglists '("(maven/uninstall)")
+     :doc """
+          Uninstalls Apache Maven from {repl-home-dir}/tools
+
+          Uninstallation is possible from within a REPL only!
+          """
+     :examples '(
+          """
+          (do
+            (load-module :maven)
+            (maven/uninstall))
+          """)
+     :see-also '(
+          "maven/home-dir"
+          "maven/install" ) }
+
+  uninstall []
+
+  (when-not (repl?)
+    (throw (ex :VncException "Apache Maven can be uninstalled from a REPL only!")))
+ 
+  (doseq [dir (mvn-install-dirs-repl)] 
+    (println "Removing ~{dir}")
+    (io/delete-file-tree dir)))
+
+
+
+(defn 
+  ^{ :arglists '("(maven/home-dir)")
+     :doc """
+          Returns the Apache Maven home directory or nil if Maven is not
+          installed.
+
+          If a REPL is active checks first for local Apache Maven installation
+          in the REPL, if none is available checks the environment variable
+          'MAVEN_HOME'.
+
+          If a REPL is not active checks the environment variable 'MAVEN_HOME'. 
+          """
+     :examples '(
+          """
+          (do
+            (load-module :maven)
+            (maven/home-dir))
+          """)
+     :see-also '(
+          "maven/uninstall"
+          "maven/install" )  }
+
+  home-dir []
+
+  (try
+    (mvn-home)
+    (catch :RuntimeException e nil)))
+
 
 (defn- maven/artifact-suffix [type]
   (case type
@@ -316,7 +435,7 @@
     (throw (ex :VncException "Invalid artifact type ~{type}"))))
 
 
-(defn- maven/progress-bar [silent]
+(defn- progress-bar [silent]
   (if silent
     nil
     (ansi/progress-bar :caption     "            "
@@ -325,7 +444,7 @@
                        :failed-msg  "            FAILED")))
 
 
-(defn- maven/download-artifact-file [uri target-dir target-file force progress-fn]
+(defn- download-artifact-file [uri target-dir target-file force progress-fn]
   (let [target   (str target-dir "/" target-file)
         download (or force (not (io/exists-file? target)))]
     (if download
@@ -342,27 +461,14 @@
         (println (str "            " "ALREADY EXISTS (skipped)"))))))
 
 
-(defn- maven/get-artifact-file [uri progress-fn]
+(defn- get-artifact-file [uri progress-fn]
   (when progress-fn
     (println (str "Downloading " uri "...")))
   (ansi/without-cursor
     (io/download uri :binary true :progress-fn progress-fn)))
 
 
-(defn- maven/validate-mvn-home []
-  (let [home    (maven/mvn-home)
-        binary  (maven/mvn-binary)]
-    (assert (some? home) 
-            "The env variable 'MAVEN_HOME' does not exist!")
-    (assert (io/exists-dir? home) 
-            "The Maven home dir '~{home}' does not exist!")
-    (assert (io/exists-file? binary) 
-            "The Maven tool '~{binary}' does not exist!")
-    (assert (io/file-can-execute? binary) 
-            "The Maven tool '~{binary}' has no executable permissions!")))
-
-
-(defn- maven/dependencies* [scope excludes artifacts extract-deps]
+(defn- dependencies* [scope excludes artifacts extract-deps]
   (let [temp-dir  (io/temp-dir "maven-")
         proj-dir  (io/file temp-dir "demolibrary")
         pom-file  (io/file proj-dir "pom.xml")]
@@ -394,7 +500,7 @@
         (io/delete-file-tree temp-dir))))))
 
 
-(defn- maven/extract-dependency-tree [output]
+(defn- extract-dependency-tree [output]
   (->> (str/split-lines output)
        (drop-while #(not (str/starts-with? % "[INFO] com.demolibrary:demolibrary:jar:1.0")))
        (take-while #(not (str/starts-with? % "[INFO] -----------------")))
@@ -403,15 +509,52 @@
        (str/join "\n")))
 
 
-(defn- maven/mvn-home []
-  (system-env :MAVEN_HOME))
+(defn- mvn-install-dirs-repl []
+  (if (repl?)
+    (let [repl-tools-dir  (io/file (repl/home-dir) "tools")]
+      (if (io/exists-dir? repl-tools-dir)
+        (->> (io/list-files-glob repl-tools-dir "apache-maven-*")
+             (filter io/exists-dir?)
+             (sort))
+        []))
+    []))
 
 
-(defn- maven/mvn-binary []
-  (str (maven/mvn-home) "/bin/mvn"))
+(defn- mvn-home []
+  (if (repl?) 
+    (if-let [home (mvn-home-from-local)] home (mvn-home-from-env))
+    (mvn-home-from-env)))
 
 
-(defn- maven/exec []
+(defn- mvn-home-from-env []
+  (let [home (system-env :MAVEN_HOME)]
+    (assert (some? home) 
+            "The env variable 'MAVEN_HOME' does not exist!")
+    (assert (io/exists-dir? home) 
+            "The Maven home dir '~{home}' does not exist!")
+    home))
+
+
+(defn- mvn-home-from-local []
+  (let [dir (last (mvn-install-dirs-repl))]
+    (if (and (some? dir) (io/exists-dir? dir)) dir nil)))
+
+
+(defn- mvn-binary []
+  (case (os-type)
+    :mac-osx (str (maven/mvn-home) "/bin/mvn")
+    :linux   (str (maven/mvn-home) "/bin/mvn")
+    :windows (str (maven/mvn-home) "/bin/mvn.cmd")))
+
+
+(defn- validate-mvn-binary [binary]
+    (assert (io/exists-file? binary) 
+            "The Maven tool '~{binary}' does not exist!")
+    (assert (io/file-can-execute? binary) 
+            "The Maven tool '~{binary}' has no executable permissions!"))
+
+
+(defn- exec []
   (case (os-type)
     :mac-osx (partial sh "/bin/sh" "-c")
     :linux   (partial sh "/bin/sh" "-c")
@@ -452,3 +595,6 @@
             <scope>~(name scope)</scope>
           </dependency>
       """)))
+
+(defn- maven-download-uri [version]
+   (str/replace-all maven-uri "{{version}}" version))

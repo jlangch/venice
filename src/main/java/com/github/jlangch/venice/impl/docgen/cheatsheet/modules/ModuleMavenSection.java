@@ -50,9 +50,15 @@ public class ModuleMavenSection implements ISectionBuilder {
 
         final DocSection cmds = new DocSection("Commands", id());
         all.addSection(cmds);
+        cmds.addItem(diBuilder.getDocItem("maven/home-dir", false));
         cmds.addItem(diBuilder.getDocItem("maven/mvn", false));
         cmds.addItem(diBuilder.getDocItem("maven/version", false));
         cmds.addItem(diBuilder.getDocItem("maven/dependencies", false));
+
+        final DocSection install = new DocSection("Install", id());
+        all.addSection(install);
+        install.addItem(diBuilder.getDocItem("maven/install", false));
+        install.addItem(diBuilder.getDocItem("maven/uninstall", false));
 
         return section;
     }
