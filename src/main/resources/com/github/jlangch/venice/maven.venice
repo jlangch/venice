@@ -256,11 +256,22 @@
 
 
 (defn
-  ^{ :arglists '("(maven/dependencies scope artifacts)")
+  ^{ :arglists '("(maven/dependencies artifacts & options)")
      :doc """
           Returns the dependency tree of an artifact
 
           Relies on the environment variable `MAVEN_HOME` to access Maven.
+
+          Options:
+
+          | :scope s    | A scope. :compile, :provided, :runtime, :test. \
+                          Defaults to :compile |
+          | :verbose v  | if true invokes for verbose output else standard  \
+                          output. Defaults to false |
+          | :excludes e | A list of excluded dependencies |
+          | :format f   | An output format. :raw :dependency-tree \
+                          :dependency-list. Defaults to :dependency-tree |
+          | :print p    | If true prints the data else returns the data  |
 
           The scope is one of:
          
@@ -279,7 +290,7 @@
           Example:
           
           ```
-          (maven/dependencies :compile "org.knowm.xchart:xchart:3.8.6")
+          (maven/dependencies [ "org.knowm.xchart:xchart:3.8.6" ])
           ````
 
           ```
@@ -297,19 +308,39 @@
           """
           (do
             (load-module :maven)
-            (maven/dependencies :compile "org.knowm.xchart:xchart:3.8.6"))
+            (maven/dependencies [ "org.knowm.xchart:xchart:3.8.6" ]))
+          """
+          """
+          (do
+            (load-module :maven)
+            (maven/dependencies [ "org.knowm.xchart:xchart:3.8.6" ] 
+                                :scope :compile
+                                :verbose true))
           """) }
 
-  maven/dependencies [scope & artifacts]
+  maven/dependencies [artifacts & options]
+    (let [opts       (apply hash-map options)
+          scope      (:scope opts :compile)
+          verbose    (:verbose opts false)
+          format     (:format opts :dependency-tree)
+          print-data (:print opts true)
+          excludes   (:excludes opts [])
+          excludes   (if (and (empty? excludes) (not (= :test scope)))
+                       maven/exludes-junit  ;; implicite excludes
+                       [])]
+      
+      (assert (#{:compile :runtime :test :provided} scope))
+      (assert (boolean? verbose))
+      (assert (#{:raw :dependency-tree :dependency-list} format))
+      (assert (boolean? print-data))
+      (assert (sequential? excludes))
+      (assert (sequential? artifacts))
+      (assert (not-empty? artifacts))
+      (assert (every? string? artifacts))
 
-  (assert (or (nil? scope) (#{:compile :runtime :test :provided} scope)))
-  (assert (sequential? artifacts))
-  (assert (not-empty? artifacts))
-  (assert (every? string? artifacts))
-
-  (let [excludes  (if (= :test scope) [] maven/exludes-junit)]
-    (->> (maven/dependencies* scope excludes artifacts true)
-         (println))))
+      (let [data (maven/dependencies* scope verbose print-data 
+                                      excludes artifacts format)]
+        (if print-data (println data) data))))
 
 
 (defn 
@@ -468,7 +499,7 @@
     (io/download uri :binary true :progress-fn progress-fn)))
 
 
-(defn- dependencies* [scope excludes artifacts extract-deps]
+(defn- dependencies* [scope verbose print-data excludes artifacts format]
   (let [temp-dir  (io/temp-dir "maven-")
         proj-dir  (io/file temp-dir "demolibrary")
         pom-file  (io/file proj-dir "pom.xml")]
@@ -489,11 +520,15 @@
             (io/spit pom-file pom))
 
       ;; compute the dependency tree
-      (let [options (str "-Dexcludes=" (str/join "," excludes))
-            options (if (empty? excludes) [] [options])
-            output  (apply maven/mvn proj-dir "dependency:tree" options)]
-        (if extract-deps
-          (maven/extract-dependency-tree output)
+      (let [opts    []
+            opts    (if verbose (cons "-Dverbose" opts) opts)
+            excl    (str "-Dexcludes=" (str/join "," excludes))
+            opts    (if (empty? excludes) opts (cons excl opts))
+            output  (apply maven/mvn proj-dir "dependency:tree" opts)]
+        (case format
+          :dependency-tree (maven/extract-dependency-tree output)   
+          :dependency-list (let [l (maven/extract-dependency-list output)]
+                             (if print-data (str/join "\n" l) l))
           output))
     (finally 
       (when (io/exists-dir? temp-dir)
@@ -507,6 +542,22 @@
        (rest)
        (map #(str/subs % 10))
        (str/join "\n")))
+
+
+(defn- extract-dependency-list [output]
+  (->> (str/split-lines output)
+       (drop-while #(not (str/starts-with? % "[INFO] com.demolibrary:demolibrary:jar:1.0")))
+       (take-while #(not (str/starts-with? % "[INFO] -----------------")))
+       (rest)
+       (map #(str/subs % 10))
+       (map #(str/subs % (or (str/index-of-not-char % "|-+\\ ") 0)))
+       (map str/trim-left)
+       (filter #(not (str/starts-with? % "(")))
+       (map (fn [s] (as-> (str/split s ":") e
+                          (into [] e)
+                          (dissoc e 4)
+                          (dissoc e 2)
+                          (str/join ":" e))))))
 
 
 (defn- mvn-install-dirs-repl []
