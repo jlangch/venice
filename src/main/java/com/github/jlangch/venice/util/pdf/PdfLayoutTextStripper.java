@@ -23,10 +23,10 @@ limitations under the License.
 
 /*
  * Modified by Venice 01.01.2024 to work with pdfbox 3.x
+ * Fixed javadoc
  */
 
 package com.github.jlangch.venice.util.pdf;
-
 
 
 import java.io.IOException;
@@ -41,11 +41,11 @@ import org.apache.pdfbox.text.PDFTextStripper;
 import org.apache.pdfbox.text.TextPosition;
 import org.apache.pdfbox.text.TextPositionComparator;
 
+
 /**
 * Java doc to be completed
 *
 * @author Jonathan Link
-*
 */
 public class PdfLayoutTextStripper extends PDFTextStripper {
 
@@ -56,19 +56,14 @@ public class PdfLayoutTextStripper extends PDFTextStripper {
     private TextPosition previousTextPosition;
     private List<TextLine> textLineList;
 
-    /**
-    * Constructor
-    */
+
     public PdfLayoutTextStripper() throws IOException {
         super();
         this.previousTextPosition = null;
         this.textLineList = new ArrayList<TextLine>();
     }
 
-    /**
-    *
-    * @param page page to parse
-    */
+
     @Override
     public void processPage(PDPage page) throws IOException {
         PDRectangle pageRectangle = page.getMediaBox();
@@ -356,7 +351,7 @@ class Character {
     }
 
     @Override
-	public String toString() {
+    public String toString() {
         String toString = "";
         toString += index;
         toString += " ";
