@@ -34,42 +34,42 @@ import com.github.jlangch.venice.impl.util.io.IOStreamUtil;
 
 public class PdfTextStripper {
 
-	public static String text(final File pdf) {
-		try {
-			final RandomAccessReadBufferedFile raf = new RandomAccessReadBufferedFile(pdf);
-			try {
-				return text(new PDFParser(raf));
-			}
-			finally {
-				raf.close();
-			}
-		}
-		catch (Exception ex) {
-			throw new RuntimeException("Failed to strip text from PDF file", ex);
-		}
-	}
+    public static String text(final File pdf) {
+        try {
+            final RandomAccessReadBufferedFile raf = new RandomAccessReadBufferedFile(pdf);
+            try {
+                return text(new PDFParser(raf));
+            }
+            finally {
+                raf.close();
+            }
+        }
+        catch (Exception ex) {
+            throw new RuntimeException("Failed to strip text from PDF file", ex);
+        }
+    }
 
-	public static String text(final InputStream is) {
-		try {
-			return text(IOStreamUtil.copyIStoByteArray(is));
-		}
-		catch (Exception ex) {
-			throw new RuntimeException("Failed to strip text from PDF input stream", ex);
-		}
-	}
+    public static String text(final InputStream is) {
+        try {
+            return text(IOStreamUtil.copyIStoByteArray(is));
+        }
+        catch (Exception ex) {
+            throw new RuntimeException("Failed to strip text from PDF input stream", ex);
+        }
+    }
 
-	public static String text(final byte[] pdf) {
-		try {
-			return text(new PDFParser(new RandomAccessReadBuffer(pdf)));
-		}
-		catch (Exception ex) {
-			throw new RuntimeException("Failed to strip text from PDF byte buffer", ex);
-		}
-	}
+    public static String text(final byte[] pdf) {
+        try {
+            return text(new PDFParser(new RandomAccessReadBuffer(pdf)));
+        }
+        catch (Exception ex) {
+            throw new RuntimeException("Failed to strip text from PDF byte buffer", ex);
+        }
+    }
 
-	private static String text(final PDFParser pdfParser) throws Exception {
-		try(final PDDocument pdDocument = pdfParser.parse()) {
-			return new PdfLayoutTextStripper().getText(pdDocument);
-		}
-	}
+    private static String text(final PDFParser pdfParser) throws Exception {
+        try(final PDDocument pdDocument = pdfParser.parse()) {
+            return new PdfLayoutTextStripper().getText(pdDocument);
+        }
+    }
 }
