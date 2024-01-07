@@ -355,7 +355,7 @@
         (io/mkdir repl-tools-dir))
 
       (if (io/exists-dir? maven-dir)
-        (println "Maven is already installed at ~{maven-dir}")
+        (println "Maven ~{version} is already installed at ~{maven-dir}")
         (do
           ;; download Maven binary zip
           (maven/download-artifact-file uri repl-tools-dir zip-name false progress-fn)

@@ -181,17 +181,18 @@
     (throw (ex :VncException 
                "Internet is not available, cannot install!")))
   
-  (let [options  (default-options options)]
+  (let [options  (default-options options)
+        opts     (apply hash-map options)]
     ;; install the modules
-    (doseq [name installable-modules] (apply install-module name options)))
+    (doseq [name installable-modules] (apply install-module name options))
     
     ;; install Maven
     (when (repl?)
-      (when-not (:silent options true) (println "\n[Maven]"))
+      (when-not (:silent opts true) (println "\n[Maven]"))
       (maven/install))
 
     ;; install the demo fonts
-    (apply install-demo-fonts options))
+    (apply install-demo-fonts options)))
 
 
 (defn 
