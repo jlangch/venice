@@ -728,7 +728,8 @@
 (defmacro
   ^{ :arglists '("(when-let bindings & body)")
      :doc """
-          bindings is a vector with 2 elements: binding-form test.¶
+          bindings is a vector with 2 elements: binding-form test.
+          
           If test is true, evaluates the body expressions with binding-form
           bound to the value of test, if not, yields nil
           """
