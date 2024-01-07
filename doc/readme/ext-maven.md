@@ -3,8 +3,7 @@
 
 ## Running Maven commands
 
-```clojure
- 
+```clojure 
 (do
   (load-module :maven)
   
@@ -13,13 +12,22 @@
        (println)))
 ```
 
-*Note:  Relies on the environment variable `MAVEN_HOME` to access Maven.*
+*Note:  Relies on the environment variable `MAVEN_HOME` to access Maven. As an alternative Maven can be installed locally for the REPL.*
 
+
+## Installing Maven locally for the REPL
+
+
+```clojure
+(do
+  (load-module :maven)  
+  (maven/install))
+```
 
 
 ## Dependency tree for artifacts
 
-The function `maven/dependency-tree` expects a scope and one or more artifacts in the format "{group-id}:{artifact-id}:{version}".
+The function `maven/dependency-tree` expects more artifacts in the format "{group-id}:{artifact-id}:{version}" with an optional scope and builds the dependency tree with the help of Maven.
 
 The scope is one of:       
   * `:compile` - build, test and run
@@ -27,27 +35,63 @@ The scope is one of:
   * `:runtime` - test and run
   * `:test` - compile and test
 
-Excludes dependencies with the group ids (except for :test scope):
+Implicitly excludes dependencies with the group ids (except for :test scope):
   * org.junit.*
   * org.opentest4j
   * org.apiguardian
   * junit
-  
+ 
+ 
+**Example 1**
+ 
 ```clojure
 (do
   (load-module :maven)
   
-  (maven/dependency-tree :compile "org.apache.pdfbox:pdfbox:3.0.1"))
+  (maven/dependencies [ "org.knowm.xchart:xchart:3.8.6" ] 
+                      :scope :compile
+                      :verbose false))
 ```
 
-Prints
+prints
 
 ```
-org.apache.pdfbox:pdfbox:jar:3.0.1:compile
-+- org.apache.pdfbox:pdfbox-io:jar:3.0.1:compile
-+- org.apache.pdfbox:fontbox:jar:3.0.1:compile
-\- commons-logging:commons-logging:jar:1.2:compile
+org.knowm.xchart:xchart:jar:3.8.6:compile
++- de.erichseifert.vectorgraphics2d:VectorGraphics2D:jar:0.13:compile
++- de.rototor.pdfbox:graphics2d:jar:3.0.0:compile
+|  \- org.apache.pdfbox:pdfbox:jar:3.0.0:compile
+|     +- org.apache.pdfbox:pdfbox-io:jar:3.0.0:compile
+|     +- org.apache.pdfbox:fontbox:jar:3.0.0:compile
+|     \- commons-logging:commons-logging:jar:1.2:compile
+\- com.madgag:animated-gif-lib:jar:1.4:compile
 ```
+
+**Example 2**
+
+```clojure
+(do
+  (load-module :maven)
+  
+  (maven/dependencies [ "org.knowm.xchart:xchart:3.8.6" ] 
+                      :scope :compile
+                      :verbose true))
+```
+
+prints
+
+```
++- de.erichseifert.vectorgraphics2d:VectorGraphics2D:jar:0.13:compile
++- de.rototor.pdfbox:graphics2d:jar:3.0.0:compile
+|  \- org.apache.pdfbox:pdfbox:jar:3.0.0:compile
+|     +- org.apache.pdfbox:pdfbox-io:jar:3.0.0:compile
+|     |  \- (commons-logging:commons-logging:jar:1.2:compile - omitted for duplicate)
+|     +- org.apache.pdfbox:fontbox:jar:3.0.0:compile
+|     |  +- (org.apache.pdfbox:pdfbox-io:jar:3.0.0:compile - omitted for duplicate)
+|     |  \- (commons-logging:commons-logging:jar:1.2:compile - omitted for duplicate)
+|     \- commons-logging:commons-logging:jar:1.2:compile
+\- com.madgag:animated-gif-lib:jar:1.4:compile
+```
+
 
 *Note:*
 
