@@ -187,7 +187,7 @@
     
     ;; install Maven
     (when (repl?)
-      (when-not (:silent opts true) (println "\n[Maven]"))
+      (when-not (:silent options true) (println "\n[Maven]"))
       (maven/install))
 
     ;; install the demo fonts
