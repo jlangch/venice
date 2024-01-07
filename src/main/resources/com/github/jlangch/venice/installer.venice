@@ -185,6 +185,11 @@
     ;; install the modules
     (doseq [name installable-modules] (apply install-module name options)))
     
+    ;; install Maven
+    (when (repl?)
+      (when-not (:silent opts true) (println "\n[Maven]"))
+      (maven/install))
+
     ;; install the demo fonts
     (apply install-demo-fonts options))
 
