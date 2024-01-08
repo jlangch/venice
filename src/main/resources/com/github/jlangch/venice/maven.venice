@@ -331,10 +331,10 @@
           org.knowm.xchart:xchart:jar:3.8.6::compile
           +- de.erichseifert.vectorgraphics2d:VectorGraphics2D:jar:0.13:runtime
           +- de.rototor.pdfbox:graphics2d:jar:3.0.0:runtime
-          |  \- org.apache.pdfbox:pdfbox:jar:2.0.27:runtime
+          |  \\- org.apache.pdfbox:pdfbox:jar:2.0.27:runtime
           |     +- org.apache.pdfbox:fontbox:jar:2.0.27:runtime
-          |     \- commons-logging:commons-logging:jar:1.2:runtime
-          \- com.madgag:animated-gif-lib:jar:1.4:runtime
+          |     \\- commons-logging:commons-logging:jar:1.2:runtime
+          \\- com.madgag:animated-gif-lib:jar:1.4:runtime
           ```
          """
      :examples '(
