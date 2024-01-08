@@ -25,6 +25,7 @@
 (ns maven)
 
 (load-module :ansi)
+(load-module :kira)
 (load-module :zipvault)
 
 
@@ -55,14 +56,14 @@
         """
      :examples '(
         """
-        (maven/parse-artifact "org.knowm.xchart:xchart:3.8.1")
+        (maven/parse-artifact "org.knowm.xchart:xchart:3.8.6")
         """,
         """
-        (maven/parse-artifact "org.knowm.xchart:xchart:3.8.1"
+        (maven/parse-artifact "org.knowm.xchart:xchart:3.8.6"
                               ".jar")
         """
         """
-        (maven/parse-artifact "org.knowm.xchart:xchart:3.8.1"
+        (maven/parse-artifact "org.knowm.xchart:xchart:3.8.6"
                               ".jar"
                               "https://repo1.maven.org/maven2")
         """ )
@@ -90,6 +91,13 @@
 
 ;; for compatibilty
 (def maven/parse-artefact maven/parse-artifact)
+
+
+(defn maven/parse-artifact-to-map [artifact]
+  (let [elements (str/split artifact ":")]
+    { :group-id    (first elements)
+      :artifact-id (second elements)
+      :version     (third elements) }))
 
 
 (defn
@@ -264,14 +272,16 @@
 
           Options:
 
-          | :scope s    | A scope. :compile, :provided, :runtime, :test. \
-                          Defaults to :compile |
-          | :verbose v  | if true invokes for verbose output else standard  \
-                          output. Defaults to false |
-          | :excludes e | A list of excluded dependencies |
-          | :format f   | An output format. :raw :dependency-tree \
-                          :dependency-list. Defaults to :dependency-tree |
-          | :print p    | If true prints the data else returns the data  |
+          | :scope s                | A scope. :compile, :provided, :runtime, 
+                                      :test. Defaults to :compile |
+          | :verbose v              | if true invokes for verbose output else \
+                                      standard output. Defaults to false |
+          | :excludes e             | A list of excluded dependencies |
+          | :format f               | An output format. :raw :dependency-tree \
+                                      :dependency-list. Defaults to :dependency-tree |
+          | :print p                | If true prints the data else returns the \
+                                      data  |
+          | :managed-dependencies d | A list managed dependencies (artifacts)  |
 
           The scope is one of:
          
@@ -287,7 +297,7 @@
           * org.apiguardian
           * junit
 
-          Example:
+          Example 1:
           
           ```
           (maven/dependencies [ "org.knowm.xchart:xchart:3.8.6" ])
@@ -303,7 +313,28 @@
           |     \\- commons-logging:commons-logging:jar:1.2:compile
           \\- com.madgag:animated-gif-lib:jar:1.4:compile
           ```
-          """
+ 
+          Example 2:
+
+          lock down a transitive dependency to a specific version using Maven
+          managed dependencies
+          
+          ```
+          (maven/dependencies ["org.knowm.xchart:xchart:3.8.6"]
+                              :managed-dependencies ["org.apache.pdfbox:pdfbox:3.0.1"])
+          ````
+
+          ```
+          org.knowm.xchart:xchart:jar:3.8.6::compile
+          +- de.erichseifert.vectorgraphics2d:VectorGraphics2D:jar:0.13:runtime
+          +- de.rototor.pdfbox:graphics2d:jar:3.0.0:runtime
+          |  \\- org.apache.pdfbox:pdfbox:jar:3.0.1:runtime
+          |     +- org.apache.pdfbox:pdfbox-io:jar:3.0.1:runtime
+          |     +- org.apache.pdfbox:fontbox:jar:3.0.1:runtime
+          |     \\- commons-logging:commons-logging:jar:1.2:runtime
+          \\- com.madgag:animated-gif-lib:jar:1.4:runtime
+          ```
+         """
      :examples '(
           """
           (do
@@ -318,28 +349,34 @@
                                 :verbose true))
           """) }
 
-  maven/dependencies [artifacts & options]
-    (let [opts       (apply hash-map options)
-          scope      (:scope opts :compile)
-          verbose    (:verbose opts false)
-          format     (:format opts :dependency-tree)
-          print-data (:print opts true)
-          excludes   (:excludes opts [])
-          excludes   (if (and (empty? excludes) (not (= :test scope)))
-                       maven/exludes-junit  ;; implicite excludes
-                       [])]
-      
+  maven/dependencies   [artifacts & options]
+    (let [opts         (apply hash-map options)
+          scope        (:scope opts :compile)
+          verbose      (:verbose opts false)
+          format       (:format opts :dependency-tree)
+          print-data   (:print opts true)
+          print-pom    (:print-pom opts false)
+          managed-deps (:managed-dependencies opts [])
+          excludes     (:excludes opts [])
+          excludes     (if (and (empty? excludes) (not (= :test scope)))
+                         maven/exludes-junit  ;; implicite excludes
+                         [])]
+
       (assert (#{:compile :runtime :test :provided} scope))
       (assert (boolean? verbose))
       (assert (#{:raw :dependency-tree :dependency-list} format))
       (assert (boolean? print-data))
+      (assert (boolean? print-pom))
       (assert (sequential? excludes))
+      (assert (sequential? managed-deps))
       (assert (sequential? artifacts))
       (assert (not-empty? artifacts))
       (assert (every? string? artifacts))
 
-      (let [data (maven/dependencies* scope verbose print-data 
-                                      excludes artifacts format)]
+      (let [data (maven/dependencies* scope verbose print-data print-pom format
+                                      excludes 
+                                      artifacts 
+                                      managed-deps)]
         (if print-data (println data) data))))
 
 
@@ -499,7 +536,8 @@
     (io/download uri :binary true :progress-fn progress-fn)))
 
 
-(defn- dependencies* [scope verbose print-data excludes artifacts format]
+(defn- dependencies* [scope verbose print-data print-pom format 
+                      excludes artifacts managed-deps]
   (let [temp-dir  (io/temp-dir "maven-")
         proj-dir  (io/file temp-dir "demolibrary")
         pom-file  (io/file proj-dir "pom.xml")]
@@ -515,9 +553,11 @@
                           "-DinteractiveMode=false")
 
       ;; add the artefacts to the project's pom
-      (as-> (io/slurp pom-file) pom
-            (pom-add-dependencies pom artifacts scope)
-            (io/spit pom-file pom))
+      (let [pom (-> (io/slurp pom-file)
+                    (pom-add-dependencies artifacts scope)
+                    (pom-add-managed-dependencies managed-deps scope))]
+        (when print-pom (println pom))
+        (io/spit pom-file pom))
 
       ;; compute the dependency tree
       (let [opts    []
@@ -612,40 +652,58 @@
     :windows (partial sh "cmd" "/C")))
 
 
-(defn- pom-add-dependencies [pom artifacts scope]
-  (loop [pom pom, artifacts (reverse artifacts)]
-    (if (empty? artifacts)
-      pom
-      (recur (pom-add-dependency pom (first artifacts) scope) 
-             (rest artifacts)))))
-
-
-(defn- pom-add-dependency [pom artifact scope]
-  (let [idx      (str/index-of pom "<dependencies>")
-        [p1 p2]  (str/split-at pom (+ idx (count "<dependencies>")))]
-    (str p1 (pom-dependency artifact scope) p2)))
-
-
-(defn- pom-dependency [artifact scope]
-  (let [[group-id artifact-id version]  (maven/parse-artifact artifact)]
-   (if (nil? scope)
-      """
-
-          <dependency>
-            <groupId>~{group-id}</groupId>
-            <artifactId>~{artifact-id}</artifactId>
-            <version>~{version}</version>
-          </dependency>
-      """
-      """
-
-          <dependency>
-            <groupId>~{group-id}</groupId>
-            <artifactId>~{artifact-id}</artifactId>
-            <version>~{version}</version>
-            <scope>~(name scope)</scope>
-          </dependency>
-      """)))
-
 (defn- maven-download-uri [version]
    (str/replace-all maven-uri "{{version}}" version))
+
+
+(defn- pom-add-dependencies [pom artifacts scope]
+  (if (empty? artifacts)
+    pom
+    (let [idx      (str/index-of pom "<dependencies>")
+          [p1 p2]  (str/split-at pom (+ idx (count "<dependencies>")))]
+      (str p1 (pom-dependencies artifacts scope) p2))))
+
+
+(defn- pom-add-managed-dependencies [pom artifacts scope]
+  (if (empty? artifacts)
+    pom
+    (let [idx      (str/index-of pom "<dependencies>")
+          [p1 p2]  (str/split-at pom idx)]
+      (str p1 (pom-managed-dependencies artifacts nil) p2))))
+
+
+(defn- pom-dependencies [artifacts scope]
+  (let [artifacts (->> (map parse-artifact-to-map artifacts)
+                       (map #(assoc % :scope scope)))]
+    (kira/eval """
+               <% (doseq [it items] %>
+                   <dependency>
+                     <groupId><%=(:group-id it)%></groupId>
+                     <artifactId><%=(:artifact-id it)%></artifactId>
+                     <% (when (some? (:version it)) %><version><%=(:version it)%> </version><% ) %>
+                     <% (when (some? (:scope it)) %><scope><%=(:scope it)%></scope><% ) %>
+                   </dependency>
+               <% ) %>
+               """
+               { :items artifacts })))
+
+
+(defn- pom-managed-dependencies [artifacts scope]
+  (let [artifacts (->> (map parse-artifact-to-map artifacts)
+                       (map #(assoc % :scope scope)))]
+    (kira/eval """
+               <dependencyManagement>
+                 <dependencies>
+                   <% (doseq [it items] %>
+                   <dependency>
+                     <groupId><%=(:group-id it)%></groupId>
+                     <artifactId><%=(:artifact-id it)%></artifactId>
+                     <version><%=(:version it)%></version>
+                     <% (when (some? (:scope it))%><scope><%=(:scope it)%></scope><% ) %>
+                   </dependency>
+                   <% ) %>
+                 </dependencies>
+               </dependencyManagement>
+
+               """
+               { :items artifacts })))
