@@ -272,7 +272,7 @@
 
           Options:
 
-          | :scope s                | A scope. :compile, :provided, :runtime, 
+          | :scope s                | A scope. :compile, :provided, :runtime, \
                                       :test. Defaults to :compile |
           | :verbose v              | if true invokes for verbose output else \
                                       standard output. Defaults to false |
@@ -281,7 +281,8 @@
                                       :dependency-list. Defaults to :dependency-tree |
           | :print p                | If true prints the data else returns the \
                                       data  |
-          | :managed-dependencies d | A list managed dependencies (artifacts)  |
+          | :managed-dependencies d | A list of managed dependencies (artifacts). \
+                                      See example 2. |
 
           The scope is one of:
          
@@ -321,18 +322,17 @@
           
           ```
           (maven/dependencies ["org.knowm.xchart:xchart:3.8.6"]
-                              :managed-dependencies ["org.apache.pdfbox:pdfbox:3.0.1"])
+                              :managed-dependencies ["org.apache.pdfbox:pdfbox:2.0.27"])
           ````
 
           ```
           org.knowm.xchart:xchart:jar:3.8.6::compile
           +- de.erichseifert.vectorgraphics2d:VectorGraphics2D:jar:0.13:runtime
           +- de.rototor.pdfbox:graphics2d:jar:3.0.0:runtime
-          |  \\- org.apache.pdfbox:pdfbox:jar:3.0.1:runtime
-          |     +- org.apache.pdfbox:pdfbox-io:jar:3.0.1:runtime
-          |     +- org.apache.pdfbox:fontbox:jar:3.0.1:runtime
-          |     \\- commons-logging:commons-logging:jar:1.2:runtime
-          \\- com.madgag:animated-gif-lib:jar:1.4:runtime
+          |  \- org.apache.pdfbox:pdfbox:jar:2.0.27:runtime
+          |     +- org.apache.pdfbox:fontbox:jar:2.0.27:runtime
+          |     \- commons-logging:commons-logging:jar:1.2:runtime
+          \- com.madgag:animated-gif-lib:jar:1.4:runtime
           ```
          """
      :examples '(
