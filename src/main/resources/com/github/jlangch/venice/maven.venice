@@ -281,6 +281,8 @@
                                       :dependency-list. Defaults to :dependency-tree |
           | :print p                | If true prints the data else returns the \
                                       data  |
+          | :print-pom p            | If true print the generated pom for \
+                                      debugging purposes. Defaults to false.  |
           | :managed-dependencies d | A list of managed dependencies (artifacts). \
                                       See example 2. |
 
