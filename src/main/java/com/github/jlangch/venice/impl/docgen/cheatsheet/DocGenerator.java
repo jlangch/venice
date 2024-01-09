@@ -360,13 +360,23 @@ public class DocGenerator {
         final List<MarkdownDoc> topics = new ArrayList<>();
 
         topics.add(new MarkdownDoc(
+                        "Recursion",
+                        new HtmlRenderer().render(loadVeniceDocMarkdown("recursion-doc.md")),
+                        "concepts.recursion"));
+
+        topics.add(new MarkdownDoc(
+                        "Destructuring",
+                        new HtmlRenderer().render(loadVeniceDocMarkdown("destructuring-doc.md")),
+                        "concepts.destructuring"));
+
+        topics.add(new MarkdownDoc(
                         "VeniceDoc",
-                        new HtmlRenderer().render(loadVeniceDocMarkdown()),
+                        new HtmlRenderer().render(loadVeniceDocMarkdown("venice-doc.md")),
                         "venicedoc"));
 
         topics.add(new MarkdownDoc(
                         "Markdown",
-                        new HtmlRenderer().render(loadMarkdownDoc()),
+                        new HtmlRenderer().render(loadVeniceDocMarkdown("markdown-doc.md")),
                         "markdown"));
 
         return topics;
@@ -494,25 +504,14 @@ public class DocGenerator {
         return new File(System.getProperty("user.dir"));
     }
 
-    private Markdown loadVeniceDocMarkdown() {
+    private Markdown loadVeniceDocMarkdown(final String ressource) {
         try {
             return Markdown.parse(
-                        new ClassPathResource(Venice.class.getPackage(), "docgen/venice-doc.md")
+                        new ClassPathResource(Venice.class.getPackage(), "docgen/" + ressource)
                             .getResourceAsString("UTF-8"));
         }
         catch(RuntimeException ex) {
-            throw new RuntimeException("Failed to read 'venice-doc.md'!", ex);
-        }
-    }
-
-    private Markdown loadMarkdownDoc() {
-        try {
-            return Markdown.parse(
-                        new ClassPathResource(Venice.class.getPackage(), "docgen/markdown-doc.md")
-                            .getResourceAsString("UTF-8"));
-        }
-        catch(RuntimeException ex) {
-            throw new RuntimeException("Failed to read 'markdown-doc.md'!", ex);
+            throw new RuntimeException("Failed to read '" + ressource+ "'!", ex);
         }
     }
 
