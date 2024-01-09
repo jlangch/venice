@@ -99,11 +99,11 @@ public class HtmlRenderer {
 
     private void render(final TitleBlock block, final PrintWriter wr) {
         switch(block.getLevel()) {
-            case 1:  wr.println("<div class=\"md-h1\">" + block.getText() + "</div>"); break;
-            case 2:  wr.println("<div class=\"md-h2\">" + block.getText() + "</div>"); break;
-            case 3:  wr.println("<div class=\"md-h3\">" + block.getText() + "</div>"); break;
-            case 4:  wr.println("<div class=\"md-h4\">" + block.getText() + "</div>"); break;
-            default: wr.println("<div class=\"md-h4\">" + block.getText() + "</div>"); break;
+            case 1:  wr.println("<div class=\"md-h1\">" + escapeHtml(block.getText()) + "</div>"); break;
+            case 2:  wr.println("<div class=\"md-h2\">" + escapeHtml(block.getText()) + "</div>"); break;
+            case 3:  wr.println("<div class=\"md-h3\">" + escapeHtml(block.getText()) + "</div>"); break;
+            case 4:  wr.println("<div class=\"md-h4\">" + escapeHtml(block.getText()) + "</div>"); break;
+            default: wr.println("<div class=\"md-h4\">" + escapeHtml(block.getText()) + "</div>"); break;
         }
     }
 
