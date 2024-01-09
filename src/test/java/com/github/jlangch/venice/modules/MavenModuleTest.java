@@ -43,10 +43,11 @@ public class MavenModuleTest {
         final Venice venice = new Venice();
 
         final String script =
-                "(do                                                    " +
-                "   (load-module :maven)                                " +
-                "                                                       " +
-                "   (maven/uri \"org.knowm.xchart:xchart:3.6.1\" :jar)  " +
+                "(do                                                         " +
+                "   (load-module :maven)                                     " +
+                "                                                            " +
+                "   (maven/artifact-uri \"org.knowm.xchart:xchart:3.6.1\"    " +
+                "                       \".jar\")                            " +
                 ") ";
 
         assertEquals(
@@ -62,7 +63,8 @@ public class MavenModuleTest {
                 "(do                                                        " +
                 "   (load-module :maven)                                    " +
                 "                                                           " +
-                "   (maven/uri \"org.knowm.xchart:xchart:3.6.1\" :sources)  " +
+                "   (maven/artifact-uri \"org.knowm.xchart:xchart:3.6.1\"   " +
+                "                       \"-sources.jar\")                   " +
                 ") ";
 
         assertEquals(
@@ -75,10 +77,11 @@ public class MavenModuleTest {
         final Venice venice = new Venice();
 
         final String script =
-                "(do                                                    " +
-                "   (load-module :maven)                                " +
-                "                                                       " +
-                "   (maven/uri \"org.knowm.xchart:xchart:3.6.1\" :pom)  " +
+                "(do                                                       " +
+                "   (load-module :maven)                                   " +
+                "                                                          " +
+                "   (maven/artifact-uri \"org.knowm.xchart:xchart:3.6.1\"  " +
+                "                       \".pom\")                          " +
                 ") ";
 
         assertEquals(
