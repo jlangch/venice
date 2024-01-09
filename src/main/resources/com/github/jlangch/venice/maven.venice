@@ -35,69 +35,164 @@
 
 (def maven-version "3.9.6")
 
-(def maven-uri "https://dlcdn.apache.org/maven/maven-3/{{version}}/binaries/apache-maven-{{version}}-bin.zip")
+(def maven-binary-uri "https://dlcdn.apache.org/maven/maven-3/{{version}}/binaries/apache-maven-{{version}}-bin.zip")
 
 
-(defn
-  ^{ :arglists '(
-        "(maven/parse-artifact artifact)"
-        "(maven/parse-artifact artifact file-suffix)"
-        "(maven/parse-artifact artifact file-suffix repo)")
+(defn 
+ ^{ :arglists '(
+        "(maven/parse-artifact artifact)")
      :doc
         """
-        Parses a Maven artifact like 'com/vaadin:vaadin-client:8.7.2'
+        Parses a Maven artifact 
+        
+        Form 1: "org.knowm.xchart:xchart:3.8.6"
 
-        1. (maven/parse-artifact artifact)¶
-           returns a vector with group-id, artifact-id, and version
-        2. (maven/parse-artifact artifact file-suffix)¶
-           returns a vector with group-id, artifact-id, version and file name
-        3. (maven/parse-artifact artifact file-suffix repo)¶
-           returns a vector with the Maven download URI and the file name
-        """
+        ```
+        { :group-id     "org.knowm.xchart"
+          :artifact-id  "xchart"
+          :version      "3.8.6" }
+        ```
+
+        Form 2: "org.knowm.xchart:jar:xchart:3.8.6"
+
+        ```
+        { :group-id     "org.knowm.xchart"
+          :artifact-id  "xchart"
+          :version      "3.8.6"
+          :type         :jar }
+        ```
+
+        Form 3:  "org.knowm.xchart:jar:xchart:3.8.6:compile"
+ 
+        ```
+        { :group-id     "org.knowm.xchart"
+          :artifact-id  "xchart"
+          :version      "3.8.6"
+          :type         :jar
+          :scope        :compile }
+        ```
+       """
      :examples '(
         """
-        (maven/parse-artifact "org.knowm.xchart:xchart:3.8.6")
-        """,
-        """
-        (maven/parse-artifact "org.knowm.xchart:xchart:3.8.6"
-                              ".jar")
-        """
-        """
-        (maven/parse-artifact "org.knowm.xchart:xchart:3.8.6"
-                              ".jar"
-                              "https://repo1.maven.org/maven2")
+        (do
+          (load-module :maven)
+          (maven/parse-artifact "org.knowm.xchart:xchart:3.8.6"))
         """ )
-     :see-also '("maven/download", "maven/get", "maven/uri") }
+     :see-also '(
+        "maven/artifact-filename"
+        "maven/artifact-uri"
+        "maven/download", 
+        "maven/get" ) }
 
-  maven/parse-artifact
+  maven/parse-artifact [artifact]
 
-  ([artifact]
-    (let [elements    (str/split artifact ":")
-          group-id    (first elements)
-          artifact-id (second elements)
-          version     (third elements) ]
-      [group-id artifact-id version]))
-
-  ([artifact file-suffix]
-    (let [[group-id artifact-id version] (maven/parse-artifact artifact)
-          file-name (str artifact-id "-" version file-suffix)]
-      [group-id artifact-id version file-name]))
-
-  ([artifact repo file-suffix]
-    (let [[group-id artifact-id version file-name] (maven/parse-artifact artifact file-suffix)
-          group-path (str/replace-all group-id "." "/")
-          uri (str/join "/" [repo group-path artifact-id version file-name])]
-      [uri file-name])))
-
-;; for compatibilty
-(def maven/parse-artefact maven/parse-artifact)
-
-
-(defn maven/parse-artifact-to-map [artifact]
   (let [elements (str/split artifact ":")]
-    { :group-id    (first elements)
-      :artifact-id (second elements)
-      :version     (third elements) }))
+    (case (count elements)
+         ;; "org.knowm.xchart:xchart:3.8.6"
+      3  { :group-id    (first elements)
+           :artifact-id (second elements)
+           :version     (third elements) }
+         ;; "org.knowm.xchart:xchart:jar:3.8.6"
+      4  { :group-id    (first elements)
+           :artifact-id (second elements)
+           :type        (keyword (third elements))
+           :version     (fourth elements) }
+         ;; "org.knowm.xchart:xchart:jar:3.8.6:compile"
+      5  { :group-id    (first elements)
+           :artifact-id (second elements)
+           :type        (keyword (third elements))
+           :version     (fourth elements)
+           :scope       (keyword (nth elements 4)) }
+      (throw (ex :VncException "Invalid artifact reference '~{artifact}'!")))))
+
+(defn 
+ ^{ :arglists '(
+        "(maven/artifact-filename artifact file-suffix)")
+     :doc
+        """
+        Returns the artifact file name
+        
+        "org.knowm.xchart:xchart:3.8.6" -> "xchart-3.8.6.jar"
+       """
+     :examples '(
+        """
+        (do
+          (load-module :maven)
+          (maven/artifact-filename "org.knowm.xchart:xchart:3.8.6" ".jar"))
+        """ 
+        """
+        (do
+          (load-module :maven)
+          (maven/artifact-filename "org.knowm.xchart:xchart:3.8.6" "-sources.jar"))
+        """)
+     :see-also '(
+        "maven/parse-artifact"
+        "maven/artifact-uri"
+        "maven/download", 
+        "maven/get") }
+
+  maven/artifact-filename [artifact file-suffix]
+
+  (let [a (maven/parse-artifact artifact)]
+    (str (:artifact-id a) "-" (:version a) file-suffix)))
+
+
+(defn 
+ ^{ :arglists '(
+        "(maven/artifact-uri artifact file-suffix)"
+        "(maven/artifact-uri artifact file-suffix repo)")
+     :doc
+        """
+        Returns the artifact URI
+        
+        "org.knowm.xchart:xchart:3.8.6" 
+        -> 
+        "https://repo1.maven.org/maven2/org/knowm/xchart/xchart-3.8.6.jar"
+       """
+     :examples '(
+        """
+        (do
+          (load-module :maven)
+          (maven/artifact-uri "org.knowm.xchart:xchart:3.8.6" ".jar"))
+        """
+        """
+        (do
+          (load-module :maven)
+          (maven/artifact-uri "org.knowm.xchart:xchart:3.8.6" "-sources.jar"))
+        """
+        """
+        (do
+          (load-module :maven)
+          (maven/artifact-uri "org.knowm.xchart:xchart:3.8.6" ".pom"))
+        """
+        """
+        (do
+          (load-module :maven)
+          (maven/artifact-uri "org.knowm.xchart:xchart:3.8.6"
+                              ".jar" 
+                              "https://repo1.maven.org/maven2"))
+        """ )
+     :see-also '(
+        "maven/parse-artifact"
+        "maven/artifact-filename"
+        "maven/download", 
+        "maven/get" ) }
+
+  maven/artifact-uri 
+  
+  ([artifact file-suffix]
+    (maven/artifact-uri artifact file-suffix maven/repo))
+
+  ([artifact file-suffix repo]
+    (let [elements     (maven/parse-artifact artifact)
+          group-id     (:group-id elements)
+          artifact-id  (:artifact-id elements)
+          version      (:version elements)
+          filename     (str artifact-id "-" version file-suffix)
+          group-path   (str/replace-all group-id "." "/")
+          repo         (str/strip-end repo "/")]
+      (str/join "/" [repo group-path artifact-id version filename]))))
+
 
 
 (defn
@@ -123,13 +218,51 @@
                                     Defaults to true. |
           """
      :examples '(
-          """(maven/download "org.knowm.xchart:xchart:3.8.1")"""
-          """(maven/download "org.knowm.xchart:xchart:3.8.1" :sources true :pom true)"""
-          """(maven/download "org.knowm.xchart:xchart:3.8.1" :dir "." :jar false :sources true)"""
-          """(maven/download "org.knowm.xchart:xchart:3.8.1" :dir "." :sources true)"""
-          """(maven/download "org.knowm.xchart:xchart:3.8.1" :dir "." :sources true :repo "https://repo1.maven.org/maven2")"""
-          """(maven/download "org.knowm.xchart:xchart:3.8.1" :dir "." :silent false)""" )
-     :see-also '("maven/get", "maven/uri", "maven/parse-artifact") }
+          """
+          (do
+            (load-module :maven)
+            (maven/download "org.knowm.xchart:xchart:3.8.6"))
+          """
+          """
+          (do
+            (load-module :maven)
+            (maven/download "org.knowm.xchart:xchart:3.8.6" 
+                            :sources true 
+                            :pom true))
+          """
+          """
+          (do
+            (load-module :maven)
+            (maven/download "org.knowm.xchart:xchart:3.8.6" 
+                            :dir "."
+                            :jar false 
+                            :sources true))
+          """
+          """
+          (do
+            (load-module :maven)
+            (maven/download "org.knowm.xchart:xchart:3.8.6" 
+                            :dir "." 
+                            :sources true))
+          """
+          """
+          (do
+            (load-module :maven)
+            (maven/download "org.knowm.xchart:xchart:3.8.6" 
+                            :dir "." 
+                            :sources true 
+                            :repo "https://repo1.maven.org/maven2"))
+          """
+          """
+          (do
+            (load-module :maven)
+            (maven/download "org.knowm.xchart:xchart:3.8.6" 
+                            :dir "." 
+                            :silent false))
+          """ )
+     :see-also '(
+         "maven/get" 
+         "maven/parse-artifact") }
 
   maven/download [artifact & options]
 
@@ -144,15 +277,18 @@
         progress-fn (maven/progress-bar silent)]
     (when jar
       (let [suffix         (maven/artifact-suffix :jar)
-            [uri filename] (maven/parse-artifact artifact repo suffix)]
+            uri            (maven/artifact-uri artifact suffix repo)
+            filename       (maven/artifact-filename artifact suffix)]
         (maven/download-artifact-file uri dir filename force progress-fn)))
     (when sources
       (let [suffix         (maven/artifact-suffix :sources)
-            [uri filename] (maven/parse-artifact artifact repo suffix)]
+            uri            (maven/artifact-uri artifact suffix repo)
+            filename       (maven/artifact-filename artifact suffix)]
         (maven/download-artifact-file uri dir filename force progress-fn)))
     (when pom
       (let [suffix         (maven/artifact-suffix :pom)
-            [uri filename] (maven/parse-artifact artifact repo suffix)]
+            uri            (maven/artifact-uri artifact suffix repo)
+            filename       (maven/artifact-filename artifact suffix)]
         (maven/download-artifact-file uri dir filename force progress-fn)))
     nil))
 
@@ -168,15 +304,37 @@
 
           Options:
 
-          | :repo maven-repo     | a maven repo, defaults to "https://repo1.maven.org/maven2" |
-          | :silent {true,false} | if silent is true does not show a progress bar, defaults to true |
+          | :repo maven-repo     | a maven repo, defaults to \
+                                   "https://repo1.maven.org/maven2" |
+          | :silent {true,false} | if silent is true does not show a progress \
+                                   bar, defaults to true |
           """
      :examples '(
-          """(maven/get "org.knowm.xchart:xchart:3.8.1" :jar)"""
-          """(maven/get "org.knowm.xchart:xchart:3.8.1" :jar :silent false)"""
-          """(maven/get "org.knowm.xchart:xchart:3.8.1" :sources)"""
-          """(maven/get "org.knowm.xchart:xchart:3.8.1" :jar :repo "https://repo1.maven.org/maven2")""" )
-     :see-also '("maven/download", "maven/uri", "maven/parse-artifact") }
+          """
+          (do
+            (load-module :maven)
+            (maven/get "org.knowm.xchart:xchart:3.8.6" :jar))
+          """
+          """
+          (do
+            (load-module :maven)
+            (maven/get "org.knowm.xchart:xchart:3.8.6" :jar :silent false))
+          """
+          """
+          (do
+            (load-module :maven)
+            (maven/get "org.knowm.xchart:xchart:3.8.6" :sources))
+          """
+          """
+          (do
+            (load-module :maven)
+            (maven/get "org.knowm.xchart:xchart:3.8.6" 
+                       :jar 
+                       :repo "https://repo1.maven.org/maven2"))
+          """ )
+     :see-also '(
+          "maven/download"
+          "maven/parse-artifact") }
 
   maven/get [artifact type & options]
 
@@ -185,34 +343,8 @@
         repo         (:repo opts maven/repo)
         suffix       (maven/artifact-suffix type)
         progress-fn  (maven/progress-bar silent)
-        [uri _]      (maven/parse-artifact artifact repo suffix)]
+        uri          (maven/artifact-uri artifact suffix repo)]
     (maven/get-artifact-file uri progress-fn)))
-
-
-(defn
-  ^{ :arglists '("(maven/uri artifact type options*)")
-     :doc """
-          Returns an URI for an artifact in the format 'group-id:artifact-id:version'
-          from a Maven repository.
-
-          The artifact type 'type' is one of {:jar, :sources, :pom}
-
-          Options:
-
-          | :repo maven-repo | a maven repo, defaults to "https://repo1.maven.org/maven2" |
-          """
-     :examples '(
-          """(maven/uri "org.knowm.xchart:xchart:3.8.1" :jar)"""
-          """(maven/uri "org.knowm.xchart:xchart:3.8.1" :jar :repo "https://repo1.maven.org/maven2")""" )
-     :see-also '("maven/download", "maven/get", "maven/parse-artifact") }
-
-  maven/uri [artifact type & options]
-
-  (let [opts      (apply hash-map options)
-        repo      (:repo opts maven/repo)
-        suffix    (maven/artifact-suffix type)
-        [uri _]   (maven/parse-artifact artifact repo suffix)]
-    uri))
 
 
 (defn
@@ -224,13 +356,20 @@
           """
      :examples '(
           """
-          (->> (maven/mvn "/Users/foo/projects/my-project" "compile")
-               (println))
+          (do
+            (load-module :maven)
+            (->> (maven/mvn "/Users/foo/projects/my-project" "compile")
+                 (println)))
           """
           """
-          (->> (maven/mvn "/Users/foo/projects/my-project" "-X" "package")
-               (println))
-          """) }
+          (do
+            (load-module :maven)
+            (->> (maven/mvn "/Users/foo/projects/my-project" "-X" "package")
+                 (println)))
+          """) 
+     :see-also '(
+          "maven/version"
+          "maven/home-dir" )}
 
   maven/mvn [proj-dir & args]
 
@@ -251,8 +390,13 @@
           Relies on the environment variable `MAVEN_HOME` to access Maven.
           """
      :examples '(
-          """(maven/version)""")
+          """
+          (do
+            (load-module :maven)
+            (maven/version))
+          """)
      :see-also '(
+          "maven/mvn"
           "maven/home-dir" )  }
 
   maven/version []
@@ -487,8 +631,8 @@
             (maven/home-dir))
           """)
      :see-also '(
-          "maven/uninstall"
-          "maven/install" )  }
+          "maven/mvn"
+          "maven/version" )  }
 
   home-dir []
 
@@ -655,7 +799,7 @@
 
 
 (defn- maven-download-uri [version]
-   (str/replace-all maven-uri "{{version}}" version))
+   (str/replace-all maven-binary-uri "{{version}}" version))
 
 
 (defn- pom-add-dependencies [pom artifacts scope]

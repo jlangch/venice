@@ -174,7 +174,7 @@
 (defn check-jansi-installed [dir]
   (when (os-type? :windows)
     (let [lib-jansi          (first (jansi-install/libraries))
-          [_ _ _ jansi-name] (maven/parse-artefact lib-jansi ".jar")
+          jansi-name         (maven/artifact-filename lib-jansi ".jar")
           jansi-jar          (io/file dir jansi-name)]
       (if (io/exists-file? jansi-jar)
         (println "Checking ~{jansi-jar} ... OK")
