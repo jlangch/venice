@@ -73,6 +73,7 @@ import com.github.jlangch.venice.impl.docgen.cheatsheet.section.ArraySection;
 import com.github.jlangch.venice.impl.docgen.cheatsheet.section.ByteBufSection;
 import com.github.jlangch.venice.impl.docgen.cheatsheet.section.CidrSection;
 import com.github.jlangch.venice.impl.docgen.cheatsheet.section.CollectionsSection;
+import com.github.jlangch.venice.impl.docgen.cheatsheet.section.ConceptsSection;
 import com.github.jlangch.venice.impl.docgen.cheatsheet.section.ConcurrencySection;
 import com.github.jlangch.venice.impl.docgen.cheatsheet.section.CsvSection;
 import com.github.jlangch.venice.impl.docgen.cheatsheet.section.ExceptionsSection;
@@ -249,6 +250,11 @@ public class DocGenerator {
         datatypes.addSection(new DocSection("Protocols", "protocols"));
         content.add(datatypes);
 
+        final DocSection concepts = new DocSection("Concepts", "concepts");
+        concepts.addSection(new DocSection("Recursion", "concepts.recursion"));
+        concepts.addSection(new DocSection("Destructuring", "concepts.destructuring"));
+        content.add(concepts);
+
         final DocSection functions = new DocSection("Core\u00A0Functions", "functions");
         functions.addSection(new DocSection("Functions", "functions"));
         functions.addSection(new DocSection("Macros", "macros"));
@@ -370,6 +376,7 @@ public class DocGenerator {
     private List<DocSection> getLeftSections() {
         return Arrays.asList(
                 new PrimitivesSection(diBuilder).section(),
+                new ConceptsSection(diBuilder).section(),
                 new ByteBufSection(diBuilder).section(),
                 new RegexSection(diBuilder).section(),
                 new MathSection(diBuilder).section(),
