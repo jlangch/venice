@@ -142,7 +142,10 @@
 //                       Win:  gradlew eclipse
 //    6.  Refresh your Project in Eclipse
 //
-//    Repeat step 5) and 6) whenever the Gradle build changes
+//    Repeat step 5) and 6) whenever the Gradle build 
+//
+//    Add  <classpathentry kind="con" path="org.eclipse.jdt.junit.JUNIT_CONTAINER/5"/>
+//    to the .classpath file 
 //
 // -----------------------------------------------------------------------------
 // GPG Tools for publishing
