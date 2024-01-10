@@ -167,7 +167,8 @@ public class SpecialForms_OtherFunctions {
                         "(finder \"io/zip*\" :machine)",
                         "(finder #\"io/zip.*\")",
                         "(finder #\".*delete-file*.\")",
-                        "(finder #\"io/zip.*\" :machine)")
+                        "(finder #\"io/zip.*\" :machine)",
+                        "(finder zip)")
                     .seeAlso(
                     	"doc", "ns-list", "modules")
                     .build()
@@ -181,11 +182,10 @@ public class SpecialForms_OtherFunctions {
             ) {
                 assertMinArity("finder", FnType.SpecialForm, args, 0);
 
-
-                final Set<VncKeyword> flags = args.getJavaList()
+                final Set<String> flags = args.getJavaList()
                                                   .stream()
                                                   .filter(a -> Types.isVncKeyword(a))
-                                                  .map(a -> (VncKeyword)a)
+                                                  .map(a -> ":" + ((VncKeyword)a).getSimpleName())
                                                   .collect(Collectors.toSet());
 
                 final List<VncVal> filters = args.getJavaList()
@@ -193,12 +193,12 @@ public class SpecialForms_OtherFunctions {
                                                  .filter(a -> !Types.isVncKeyword(a))
                                                  .collect(Collectors.toList());
 
-                final boolean machine = flags.contains(new VncKeyword(":machine"));
-                final boolean functionType = flags.contains(new VncKeyword(":function"));  // :core/function || :core/protocol-function
-                final boolean macroType = flags.contains(new VncKeyword(":macro"));  // :core/macro
-                final boolean specialFormType = flags.contains(new VncKeyword(":special-form"));  // :core/special-form
-                final boolean protocolType = flags.contains(new VncKeyword(":protocol"));  // :core/protocol
-                final boolean valueType = flags.contains(new VncKeyword(":value"));
+                final boolean machine = flags.contains(":machine");
+                final boolean functionType = flags.contains(":function");  // :core/function || :core/protocol-function
+                final boolean macroType = flags.contains(":macro");  // :core/macro
+                final boolean specialFormType = flags.contains(":special-form");  // :core/special-form
+                final boolean protocolType = flags.contains(":protocol");  // :core/protocol
+                final boolean valueType = flags.contains(":value");
                 final boolean allTypes = !(functionType || macroType || specialFormType || protocolType || valueType);
 
                 List<Tuple2<VncSymbol,VncKeyword>> items = EnvUtils.globalVars(env, (String)null);
@@ -217,6 +217,9 @@ public class SpecialForms_OtherFunctions {
                     else if (Types.isVncSymbol(filter)) {
                     	// symbol
                         String f = trimToNull(((VncSymbol)filter).getName());
+                        if (f != null) {
+                            f = f.contains("*") ? f.replaceAll("[*]", "[*]") : f;
+                        }
                         p = Pattern.compile(f);
                     }
                     else if (Types.isVncJavaObject(args.first(), Pattern.class)) {
@@ -225,7 +228,9 @@ public class SpecialForms_OtherFunctions {
                     }
                     else {
                         throw new VncException(
-                                "finder expects either a glob pattern (string) or a regex pattern as argument!");
+                                "finder expects either a glob pattern (string) or a "
+                                + "regex pattern as argument! Got a filter value of type '"
+                                + Types.getType(filter) + "'");
                     }
 
                     // filter

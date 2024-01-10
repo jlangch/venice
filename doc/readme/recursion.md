@@ -296,8 +296,28 @@ For some recursive algorithms *memoization* can speed up computation dramaticall
   (time (fibonacci 25)))
 ```
 
-While *memoization* is doing a good job computing fibonacci numbers using 
-simple recursion it has to raise its arms with the *Ackermann* function.
+
+Please not that this naive approach is not working:
+
+```clojure
+(do
+  (defn fib-simple [n]
+    (if (< n 2)
+      (max n 0)
+      (+ (fib-simple (- n 1)) (fib-simple (- n 2)))))
+
+  (def fib-memoize (memoize fib-simple))
+  
+  (fib-memoize 30))
+```
+
+*memoization* is doing a good job in computing fibonacci numbers using 
+simple recursion. It eliminates the recurring computation of the predecessors
+values.
+
+Nevertheless there are recursive algorithms like the *Ackermann* function
+where memoization has to raise its arms.
+
 
 
 ## Compare recursion efficiency
