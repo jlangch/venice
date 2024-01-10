@@ -38,9 +38,9 @@ The drawback of this simple recursion is the large amount of memory overhead
 because of added stack frames for each recursion iteration.
 
 Functional languages with immutable data structures support **tail call optimization**
-(TCO) to provide memory efficient recursion. While Venice supports 
+(TCO) to provide memory efficient recursion. Venice supports 
 tail call optimization and self recursion through the
-*loop..recur* syntax. The latter is a way to mimic TCO. 
+*loop..recur* syntax. Self recursion is a way to mimic TCO.  
 
 In addition Venice provides the *trampoline* function for mutual recursion for more 
 involved forms of recursion.
@@ -242,7 +242,7 @@ Examples:
 
 ## Tail Call Optimization (TCO) 
 
-Venice has support for tail call optimization. The recursive call must be in tail 
+Venice has support for automatic *tail call optimization*. The recursive call must be in tail 
 position.
 
 
@@ -336,22 +336,21 @@ _Note: all examples run with upfront macro expansion enabled._
         (case n
           0  0
           1  1
-          (+ (fib-memoize (- n 1)) (fib-memoize (- n 2)))))))
+          (+ (fib-memoize (- n 1)) (fib-memoize (- n 2))))))))
          
    ; (load-module :benchmark ['benchmark :as 'b])
    ; (b/benchmark (fib-simple 30) 5 5)
    ; (b/benchmark (fib-tco 30) 5000 1000)
    ; (b/benchmark (fib-loop-recur 30) 5000 1000)
    ; (time (fib-memoize 30))  ;; note: memoizing functions cannot be benchmarked!
-)
+   
+   
+  ;; run on MacBook Air M2, with 'macroexpand' enabled
+  ;; +----------------------+------------+
+  ;; | (fib-simple 30)      |    1.171s  |  
+  ;; | (fib-tco 30)         |   31.286µs |   
+  ;; | (fib-loop-recur 30)  |   27.946µs |  
+  ;; | (fib-memoize 30)     |    2.54ms  |     
+  ;; +----------------------+------------+   
 ```
-
-
-| Recursion            | Elapsed  |
-| :---                 | ---:     |
-| `(fib-simple 30)`     | 2.447s    |  
-| `(fib-tco 30)`        | 56.484µs |   
-| `(fib-loop-recur 30)` | 41.270µs  |  
-| `(fib-memoize 30)`    | 23.89µs  |     
-
 
