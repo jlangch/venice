@@ -11,7 +11,14 @@ All notable changes to this project will be documented in this file.
 
 ### Added 
 
-- ...
+- function `io/file-set-readable`
+- function `io/file-set-writable`
+- function `io/file-set-executable`
+- function `io/copy-files-glob`
+- function `io/copy-file-tree`
+- function `io/move-files-glob`
+- function `io/file-create-symbolic-link`
+- function `io/file-create-hard-link`
 
 
 
