@@ -55,24 +55,14 @@ public class IoFileSection implements ISectionBuilder {
 
         final DocSection file_dir = new DocSection("file dir", "io.filedir");
         all.addSection(file_dir);
-        file_dir.addItem(diBuilder.getDocItem("io/mkdir"));
-        file_dir.addItem(diBuilder.getDocItem("io/mkdirs"));
+        file_dir.addItem(diBuilder.getDocItem("io/mkdir", false));
+        file_dir.addItem(diBuilder.getDocItem("io/mkdirs", false));
 
         final DocSection file_io = new DocSection("file i/o", "io.fileio");
         all.addSection(file_io);
         file_io.addItem(diBuilder.getDocItem("io/slurp"));
         file_io.addItem(diBuilder.getDocItem("io/slurp-lines"));
         file_io.addItem(diBuilder.getDocItem("io/spit"));
-        file_io.addItem(diBuilder.getDocItem("io/copy-file"));
-        file_io.addItem(diBuilder.getDocItem("io/move-file"));
-        file_io.addItem(diBuilder.getDocItem("io/touch-file"));
-
-        final DocSection file_del = new DocSection("file delete", "io.filedelete");
-        all.addSection(file_del);
-        file_del.addItem(diBuilder.getDocItem("io/delete-file"));
-        file_del.addItem(diBuilder.getDocItem("io/delete-files-glob"));
-        file_del.addItem(diBuilder.getDocItem("io/delete-file-tree"));
-        file_del.addItem(diBuilder.getDocItem("io/delete-file-on-exit"));
 
         final DocSection file_list = new DocSection("file list", "io.filelist");
         all.addSection(file_list);
@@ -80,6 +70,27 @@ public class IoFileSection implements ISectionBuilder {
         file_list.addItem(diBuilder.getDocItem("io/list-files-glob", false));
         file_list.addItem(diBuilder.getDocItem("io/list-file-tree", false));
         file_list.addItem(diBuilder.getDocItem("io/list-file-tree-lazy", false));
+
+        final DocSection file_del = new DocSection("file delete", "io.filedelete");
+        all.addSection(file_del);
+        file_del.addItem(diBuilder.getDocItem("io/delete-file", false));
+        file_del.addItem(diBuilder.getDocItem("io/delete-files-glob", false));
+        file_del.addItem(diBuilder.getDocItem("io/delete-file-tree", false));
+        file_del.addItem(diBuilder.getDocItem("io/delete-file-on-exit", false));
+
+        final DocSection file_cpy = new DocSection("file copy", "io.filecopy");
+        all.addSection(file_cpy);
+        file_cpy.addItem(diBuilder.getDocItem("io/copy-file", false));
+        file_cpy.addItem(diBuilder.getDocItem("io/copy-files-glob", false));
+
+        final DocSection file_mov = new DocSection("file move", "io.filemove");
+        all.addSection(file_mov);
+        file_mov.addItem(diBuilder.getDocItem("io/move-file", false));
+        file_mov.addItem(diBuilder.getDocItem("io/move-files-glob", false));
+
+        final DocSection file_touch = new DocSection("file touch", "io.filetouch");
+        all.addSection(file_touch);
+        file_touch.addItem(diBuilder.getDocItem("io/touch-file"));
 
         final DocSection file_test = new DocSection("file test", "io.filetest");
         all.addSection(file_test);

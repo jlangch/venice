@@ -451,15 +451,15 @@ public class IOFunctions {
                     return VncBoolean.of(f.getName().endsWith(ext.startsWith(".") ? ext : "." + ext));
                 }
                 else {
-                	final Set<String> exts = args.slice(1)
-							                	  .stream()
-							                	  .map(v -> Coerce.toVncString(args.second()).getValue())
-							                	  .map(s -> s.startsWith(".") ? s.substring(1) : s)
-							                	  .collect(Collectors.toSet());
+                    final Set<String> exts = args.slice(1)
+                                                  .stream()
+                                                  .map(v -> Coerce.toVncString(args.second()).getValue())
+                                                  .map(s -> s.startsWith(".") ? s.substring(1) : s)
+                                                  .collect(Collectors.toSet());
 
-                	final String fileExt = FileUtils.getFileExtension(f);
+                    final String fileExt = FileUtils.getFileExtension(f);
 
-                	return VncBoolean.of(exts.contains(fileExt));
+                    return VncBoolean.of(exts.contains(fileExt));
                 }
             }
 
@@ -824,42 +824,9 @@ public class IOFunctions {
                     .meta()
                     .arglists("(io/glob-path-matcher pattern)")
                     .doc(
-                        "Returns a file matcher for glob file patterns.\n" +
-                        "\n" +
-                        "**Globbing patterns**\n" +
-                        "\n" +
-                        "| [![width: 20%]] | [![width: 80%]] |\n" +
-                        "| `*.txt`       | Matches a path that represents a file name ending in .txt |\n" +
-                        "| `*.*`         | Matches file names containing a dot |\n" +
-                        "| `*.{txt,xml}` | Matches file names ending with .txt or .xml |\n" +
-                        "| `foo.?[xy]`   | Matches file names starting with foo. and a single character extension followed by a 'x' or 'y' character |\n" +
-                        "| `/home/*/*`   | Matches `/home/gus/data` on UNIX platforms |\n" +
-                        "| `/home/**`    | Matches `/home/gus` and `/home/gus/data` on UNIX platforms |\n" +
-                        "| `C:\\\\*`     | Matches `C:\\\\foo` and `C:\\\\bar` on the Windows platform |\n" +
-                        "\n" +
-                        "*Ranges*\n" +
-                        "\n" +
-                        "The pattern `[A-E]` would match any character that included ABCDE. " +
-                        "Ranges can be used in conjunction with each other to make powerful patterns. " +
-                        "Alphanumerical strings are matched by `[A-Za-z0-9]`. This would match the " +
-                        "following:\n" +
-                        "\n" +
-                        " * `[A-Z]` All uppercase letters from A to Z\n" +
-                        " * `[a-z]` All lowercase letters from a to z\n" +
-                        " * `[0-9]` All numbers from 0 to 9\n" +
-                        "\n" +
-                        "*Complementation*\n" +
-                        "\n" +
-                        "Globs can be used in complement with special characters that can change how the " +
-                        "pattern works. The two complement characters are exclamation marks `(!)` and " +
-                        "backslashes `(\\)`.\n" +
-                        "\n" +
-                        "The exclamation mark can negate a pattern that it is put in front of. " +
-                        "As `[CBR]at` matches Cat, Bat, or Rat the negated pattern `[!CBR]at` matches\n" +
-                        "anything like Kat, Pat, or Vat.\n" +
-                        "\n" +
-                        "Backslashes are used to remove the special meaning of single characters " +
-                        "`'?'`, `'*'`, and `'['`, so that they can be used in patterns.")
+                        "Returns a file matcher for glob file patterns." +
+                        "\n\n" +
+                        globPatternHelp())
                     .examples(
                         "(io/glob-path-matcher \"*.log\")",
                         "(io/glob-path-matcher \"**/*.log\")")
@@ -889,42 +856,9 @@ public class IOFunctions {
                     .meta()
                     .arglists("(io/file-matches-glob? glob f)")
                     .doc(
-                        "Returns true if the file f matches the glob pattern. f must be a file or a string (file path).\n" +
-                        "\n" +
-                        "**Globbing patterns**\n" +
-                        "\n" +
-                        "| [![width: 20%]] | [![width: 80%]] |\n" +
-                        "| `*.txt`       | Matches a path that represents a file name ending in .txt |\n" +
-                        "| `*.*`         | Matches file names containing a dot |\n" +
-                        "| `*.{txt,xml}` | Matches file names ending with .txt or .xml |\n" +
-                        "| `foo.?[xy]`   | Matches file names starting with foo. and a single character extension followed by a 'x' or 'y' character |\n" +
-                        "| `/home/*/*`   | Matches `/home/gus/data` on UNIX platforms |\n" +
-                        "| `/home/**`    | Matches `/home/gus` and `/home/gus/data` on UNIX platforms |\n" +
-                        "| `C:\\\\*`     | Matches `C:\\\\foo` and `C:\\\\bar` on the Windows platform |\n" +
-                        "\n" +
-                        "*Ranges*\n" +
-                        "\n" +
-                        "The pattern `[A-E]` would match any character that included ABCDE. " +
-                        "Ranges can be used in conjunction with each other to make powerful patterns. " +
-                        "Alphanumerical strings are matched by `[A-Za-z0-9]`. This would match the " +
-                        "following:\n" +
-                        "\n" +
-                        " * `[A-Z]` All uppercase letters from A to Z\n" +
-                        " * `[a-z]` All lowercase letters from a to z\n" +
-                        " * `[0-9]` All numbers from 0 to 9\n" +
-                        "\n" +
-                        "*Complementation*\n" +
-                        "\n" +
-                        "Globs can be used in complement with special characters that can change how the " +
-                        "pattern works. The two complement characters are exclamation marks `(!)` and " +
-                        "backslashes `(\\)`.\n" +
-                        "\n" +
-                        "The exclamation mark can negate a pattern that it is put in front of. " +
-                        "As `[CBR]at` matches Cat, Bat, or Rat the negated pattern `[!CBR]at` matches\n" +
-                        "anything like Kat, Pat, or Vat.\n" +
-                        "\n" +
-                        "Backslashes are used to remove the special meaning of single characters " +
-                        "`'?'`, `'*'`, and `'['`, so that they can be used in patterns.")
+                        "Returns true if the file f matches the glob pattern. f must be a file or a string (file path)." +
+                        "\n\n" +
+                        globPatternHelp())
                     .examples(
                         "(io/file-matches-glob? \"*.log\" \"file.log\")",
                         "(io/file-matches-glob? \"**/*.log\" \"x/y/file.log\")",
@@ -1523,11 +1457,11 @@ public class IOFunctions {
                        "by the Java Language Specification.\n\n" +
                        "f must be a file or a string (file path).")
                     .examples(
-                    	"(let [file1 (io/temp-file \"test-\", \".data\")    \n" +
-                    	"      file2 (io/temp-file \"test-\", \".data\")]   \n" +
-                    	"  (io/delete-file-on-exit file1 file2)             \n" +
-                    	"  (io/spit file1 \"123\")                          \n" +
-                    	"  (io/spit file2 \"ABC\"))                         ")
+                        "(let [file1 (io/temp-file \"test-\", \".data\")    \n" +
+                        "      file2 (io/temp-file \"test-\", \".data\")]   \n" +
+                        "  (io/delete-file-on-exit file1 file2)             \n" +
+                        "  (io/spit file1 \"123\")                          \n" +
+                        "  (io/spit file2 \"ABC\"))                         ")
                     .seeAlso(
                         "io/delete-file",
                         "io/delete-file-tree",
@@ -1541,22 +1475,22 @@ public class IOFunctions {
                 sandboxFunctionCallValidation();
 
                 args.forEach(arg -> {
-	                final File file = convertToFile(
-	                                    arg,
-	                                    "Function 'io/delete-file-on-exit' does not allow %s as f");
+                    final File file = convertToFile(
+                                        arg,
+                                        "Function 'io/delete-file-on-exit' does not allow %s as f");
 
-	                validateReadableFileOrDirectory(file);
+                    validateReadableFileOrDirectory(file);
 
-	                try {
-	                    file.deleteOnExit();
-	                }
-	                catch(Exception ex) {
-	                    throw new VncException(
-	                            String.format(
-	                                    "Failed to mark file %s to be deleted on exit",
-	                                    file.getPath()),
-	                            ex);
-	                }
+                    try {
+                        file.deleteOnExit();
+                    }
+                    catch(Exception ex) {
+                        throw new VncException(
+                                String.format(
+                                        "Failed to mark file %s to be deleted on exit",
+                                        file.getPath()),
+                                ex);
+                    }
                 });
 
                 return Nil;
@@ -1696,10 +1630,10 @@ public class IOFunctions {
                         "as argument. \n\n" +
                         "The lazy sequence returns files as `java.io.File`")
                     .examples(
-                    	"(->> (io/list-file-tree-lazy \"/tmp\")  \n" +
-                    	"     (docoll println))                  ",
-                    	"(->> (io/list-file-tree-lazy \"/tmp\" #(io/file-ext? % \".log\"))  \n" +
-                    	"     (docoll println))                                             ")
+                        "(->> (io/list-file-tree-lazy \"/tmp\")  \n" +
+                        "     (docoll println))                  ",
+                        "(->> (io/list-file-tree-lazy \"/tmp\" #(io/file-ext? % \".log\"))  \n" +
+                        "     (docoll println))                                             ")
                     .seeAlso("io/list-file-tree", "io/list-files", "io/list-files-glob")
                     .build()
         ) {
@@ -1744,40 +1678,7 @@ public class IOFunctions {
                         "dir must be a file or a string (file path). \n" +
                         "Returns files as `java.io.File`" +
                         "\n\n" +
-                        "**Globbing patterns**\n" +
-                        "\n" +
-                        "| [![width: 20%]] | [![width: 80%]] |\n" +
-                        "| `*.txt`       | Matches a path that represents a file name ending in .txt |\n" +
-                        "| `*.*`         | Matches file names containing a dot |\n" +
-                        "| `*.{txt,xml}` | Matches file names ending with .txt or .xml |\n" +
-                        "| `foo.?[xy]`   | Matches file names starting with foo. and a single character extension followed by a 'x' or 'y' character |\n" +
-                        "| `/home/*/*`   | Matches `/home/gus/data` on UNIX platforms |\n" +
-                        "| `/home/**`    | Matches `/home/gus` and `/home/gus/data` on UNIX platforms |\n" +
-                        "| `C:\\\\*`     | Matches `C:\\\\foo` and `C:\\\\bar` on the Windows platform |\n" +
-                        "\n" +
-                        "*Ranges*\n" +
-                        "\n" +
-                        "The pattern `[A-E]` would match any character that included ABCDE. " +
-                        "Ranges can be used in conjunction with each other to make powerful patterns. " +
-                        "Alphanumerical strings are matched by `[A-Za-z0-9]`. This would match the " +
-                        "following:\n" +
-                        "\n" +
-                        " * `[A-Z]` All uppercase letters from A to Z\n" +
-                        " * `[a-z]` All lowercase letters from a to z\n" +
-                        " * `[0-9]` All numbers from 0 to 9\n" +
-                        "\n" +
-                        "*Complementation*\n" +
-                        "\n" +
-                        "Globs can be used in complement with special characters that can change how the " +
-                        "pattern works. The two complement characters are exclamation marks `(!)` and " +
-                        "backslashes `(\\)`.\n" +
-                        "\n" +
-                        "The exclamation mark can negate a pattern that it is put in front of. " +
-                        "As `[CBR]at` matches Cat, Bat, or Rat the negated pattern `[!CBR]at` matches\n" +
-                        "anything like Kat, Pat, or Vat.\n" +
-                        "\n" +
-                        "Backslashes are used to remove the special meaning of single characters " +
-                        "`'?'`, `'*'`, and `'['`, so that they can be used in patterns.")
+                        globPatternHelp())
                     .examples(
                         "(io/list-files-glob \".\" \"sample*.txt\")")
                     .seeAlso("io/list-files", "io/list-file-tree", "io/list-file-tree-lazy")
@@ -1822,43 +1723,10 @@ public class IOFunctions {
                     .arglists("(io/delete-files-glob dir glob)")
                     .doc(
                         "Removes all files in a directory that match the glob pattern. " +
-                        "dir must be a file or a string (file path).\n" +
-                        "\n" +
-                        "**Globbing patterns**\n" +
-                        "\n" +
-                        "| [![width: 20%]] | [![width: 80%]] |\n" +
-                        "| `*.txt`       | Matches a path that represents a file name ending in .txt |\n" +
-                        "| `*.*`         | Matches file names containing a dot |\n" +
-                        "| `*.{txt,xml}` | Matches file names ending with .txt or .xml |\n" +
-                        "| `foo.?[xy]`   | Matches file names starting with foo. and a single character extension followed by a 'x' or 'y' character |\n" +
-                        "| `/home/*/*`   | Matches `/home/gus/data` on UNIX platforms |\n" +
-                        "| `/home/**`    | Matches `/home/gus` and `/home/gus/data` on UNIX platforms |\n" +
-                        "| `C:\\\\*`     | Matches `C:\\\\foo` and `C:\\\\bar` on the Windows platform |\n" +
-                        "\n" +
-                        "*Ranges*\n" +
-                        "\n" +
-                        "The pattern `[A-E]` would match any character that included ABCDE. " +
-                        "Ranges can be used in conjunction with each other to make powerful patterns. " +
-                        "Alphanumerical strings are matched by `[A-Za-z0-9]`. This would match the " +
-                        "following:\n" +
-                        "\n" +
-                        " * `[A-Z]` All uppercase letters from A to Z\n" +
-                        " * `[a-z]` All lowercase letters from a to z\n" +
-                        " * `[0-9]` All numbers from 0 to 9\n" +
-                        "\n" +
-                        "*Complementation*\n" +
-                        "\n" +
-                        "Globs can be used in complement with special characters that can change how the " +
-                        "pattern works. The two complement characters are exclamation marks `(!)` and " +
-                        "backslashes `(\\)`.\n" +
-                        "\n" +
-                        "The exclamation mark can negate a pattern that it is put in front of. " +
-                        "As `[CBR]at` matches Cat, Bat, or Rat the negated pattern `[!CBR]at` matches\n" +
-                        "anything like Kat, Pat, or Vat.\n" +
-                        "\n" +
-                        "Backslashes are used to remove the special meaning of single characters " +
-                        "`'?'`, `'*'`, and `'['`, so that they can be used in patterns.")
-                    .examples(
+                        "dir must be a file or a string (file path)." +
+                        "\n\n" +
+                        globPatternHelp())
+                   .examples(
                         "(io/delete-files-glob \".\" \"*.log\")")
                     .seeAlso(
                         "io/delete-file",
@@ -1874,7 +1742,7 @@ public class IOFunctions {
 
                 final File dir = convertToFile(
                                     args.first(),
-                                    "Function 'io/remove-files-glob' does not allow %s as dir");
+                                    "Function 'io/delete-files-glob' does not allow %s as dir");
 
                 final String glob = Coerce.toVncString(args.second()).getValue();
 
@@ -1890,7 +1758,7 @@ public class IOFunctions {
                         }
                         catch(IOException ex) {
                             throw new VncException(
-                                    String.format("Failed to remove file %s", path),
+                                    String.format("Failed to delete file %s", path),
                                     ex);
                                 }
                     });
@@ -1900,7 +1768,7 @@ public class IOFunctions {
                 }
                 catch(Exception ex) {
                     throw new VncException(
-                            String.format("Failed to remove files from %s, glob: %s ", dir.getPath(), glob),
+                            String.format("Failed to delete files from %s, glob: %s ", dir.getPath(), glob),
                             ex);
                 }
 
@@ -1995,6 +1863,93 @@ public class IOFunctions {
             private static final long serialVersionUID = -1848883965231344442L;
         };
 
+    public static VncFunction io_copy_files_glob =
+        new VncFunction(
+                "io/copy-files-glob",
+                VncFunction
+                    .meta()
+                    .arglists("(io/copy-files-glob src-dir dst-dir glob & options)")
+                    .doc(
+                        "Copies all files that match the glob pattern from a source to a " +
+                        "destination directory. \n" +
+                        "src-dir and  dst-dir must be a file or a string (file path).\n" +
+                        "\n\n" +
+                        "Options: \n\n" +
+                        "| :replace true/false | e.g.: if true replace an existing file, defaults to false |" +
+                        "\n\n" +
+                        globPatternHelp())
+                  .examples(
+                        "(io/copy-files-glob \"from\" \"to\" \"*.log\")")
+                    .seeAlso(
+                        "io/copy-file",
+                        "io/list-files-glob")
+                    .build()
+        ) {
+            @Override
+            public VncVal apply(final VncList args) {
+                ArityExceptions.assertMinArity(this, args, 3);
+
+                sandboxFunctionCallValidation();
+
+                final File srcdir = convertToFile(
+                                        args.first(),
+                                        "Function 'io/copy-files-glob' does not allow %s as src-dir");
+
+
+                final File dstdir = convertToFile(
+                                        args.second(),
+                                        "Function 'io/copy-files-glob' does not allow %s as dst-dir");
+
+                final String glob = Coerce.toVncString(args.third()).getValue();
+
+                final VncHashMap options = VncHashMap.ofAll(args.rest().rest().rest());
+                final VncVal replaceOpt = options.get(new VncKeyword("replace"));
+
+                final List<CopyOption> copyOptions = new ArrayList<>();
+                if (VncBoolean.isTrue(replaceOpt)) {
+                    copyOptions.add(StandardCopyOption.REPLACE_EXISTING);
+                }
+
+                validateReadableDirectory(srcdir);
+                validateWritableDirectory(dstdir);
+
+                final List<VncVal> files = new ArrayList<>();
+
+                try (DirectoryStream<Path> dirStream = Files.newDirectoryStream(srcdir.toPath(), glob)) {
+                    dirStream.forEach(path -> {
+                        files.add(new VncJavaObject(path.toFile()));
+                        try {
+                            Files.copy(
+                                path,
+                                dstdir.toPath(),
+                                copyOptions.toArray(new CopyOption[0]));
+                        }
+                        catch(IOException ex) {
+                            throw new VncException(
+                                    String.format("Failed to copy file %s", path),
+                                    ex);
+                        }
+                    });
+                }
+                catch(VncException ex) {
+                    throw ex;
+                }
+                catch(Exception ex) {
+                    throw new VncException(
+                            String.format(
+                                    "Failed to copy files from %s to %s, glob: %s ",
+                                    srcdir.getPath(),
+                                    dstdir.getPath(),
+                                    glob),
+                            ex);
+                }
+
+                return VncList.ofList(files);
+            }
+
+            private static final long serialVersionUID = -1848883965231344442L;
+        };
+
     public static VncFunction io_move_file =
         new VncFunction(
                 "io/move-file",
@@ -2034,6 +1989,81 @@ public class IOFunctions {
                 }
 
                 return Nil;
+            }
+
+            private static final long serialVersionUID = -1848883965231344442L;
+        };
+
+    public static VncFunction io_move_files_glob =
+        new VncFunction(
+                "io/move-files-glob",
+                VncFunction
+                    .meta()
+                    .arglists("(io/move-files-glob src-dir dst-dir glob)")
+                    .doc(
+                        "Move all files that match the glob pattern from a source to a " +
+                        "destination directory. \n" +
+                        "src-dir and  dst-dir must be a file or a string (file path).\n" +
+                        "\n\n" +
+                        globPatternHelp())
+                  .examples(
+                        "(io/move-files-glob \"from\" \"to\" \"*.log\")")
+                    .seeAlso(
+                        "io/move-file",
+                        "io/list-files-glob")
+                    .build()
+        ) {
+            @Override
+            public VncVal apply(final VncList args) {
+                ArityExceptions.assertArity(this, args, 3);
+
+                sandboxFunctionCallValidation();
+
+                final File srcdir = convertToFile(
+                                        args.first(),
+                                        "Function 'io/move-files-glob' does not allow %s as src-dir");
+
+
+                final File dstdir = convertToFile(
+                                        args.second(),
+                                        "Function 'io/move-files-glob' does not allow %s as dst-dir");
+
+                final String glob = Coerce.toVncString(args.third()).getValue();
+
+                validateReadableDirectory(srcdir);
+                validateWritableDirectory(dstdir);
+
+                final List<VncVal> files = new ArrayList<>();
+
+                try (DirectoryStream<Path> dirStream = Files.newDirectoryStream(srcdir.toPath(), glob)) {
+                    dirStream.forEach(path -> {
+                        files.add(new VncJavaObject(path.toFile()));
+                        try {
+                            Files.move(
+                                path,
+                                dstdir.toPath());
+                        }
+                        catch(IOException ex) {
+                            throw new VncException(
+                                    String.format("Failed to move file %s", path),
+                                    ex);
+                        }
+                    });
+                }
+                catch(VncException ex) {
+                    throw ex;
+                }
+                catch(Exception ex) {
+                    throw new VncException(
+                            String.format(
+                                    "Failed to move files from %s to %s, glob: %s ",
+                                    srcdir.getPath(),
+                                    dstdir.getPath(),
+                                    glob),
+                            ex);
+                }
+
+                return VncList.ofList(files);
             }
 
             private static final long serialVersionUID = -1848883965231344442L;
@@ -2492,8 +2522,8 @@ public class IOFunctions {
                         "    (io/slurp file :binary false :remove true)) \n" +
                         ")")
                     .seeAlso(
-                    	"io/temp-dir",
-                    	"io/delete-file-on-exit")
+                        "io/temp-dir",
+                        "io/delete-file-on-exit")
                     .build()
         ) {
             @Override
@@ -2864,6 +2894,15 @@ public class IOFunctions {
         }
     }
 
+    public static void validateWritableDirectory(final File file) {
+        if (!file.isDirectory()) {
+            throw new VncException(String.format("'%s' is not a directory", file.getPath()));
+        }
+        if (!file.canWrite()) {
+            throw new VncException(String.format("The directory '%s' has no write permission", file.getPath()));
+        }
+    }
+
     private static void updateDownloadProgress(
             final VncFunction fn,
             final long percentage,
@@ -2888,6 +2927,44 @@ public class IOFunctions {
                             "Invalid time-unit " + unit.getValue() + ". "
                                 + "Use one of {:milliseconds, :seconds, :minutes, :hours, :days}");
         }
+    }
+
+    private static final String globPatternHelp() {
+    	return
+    		"**Globbing patterns**\n" +
+            "\n" +
+            "| [![width: 20%]] | [![width: 80%]] |\n" +
+            "| `*.txt`       | Matches a path that represents a file name ending in .txt |\n" +
+            "| `*.*`         | Matches file names containing a dot |\n" +
+            "| `*.{txt,xml}` | Matches file names ending with .txt or .xml |\n" +
+            "| `foo.?[xy]`   | Matches file names starting with foo. and a single character extension followed by a 'x' or 'y' character |\n" +
+            "| `/home/*/*`   | Matches `/home/gus/data` on UNIX platforms |\n" +
+            "| `/home/**`    | Matches `/home/gus` and `/home/gus/data` on UNIX platforms |\n" +
+            "| `C:\\\\*`     | Matches `C:\\\\foo` and `C:\\\\bar` on the Windows platform |\n" +
+            "\n" +
+            "*Ranges*\n" +
+            "\n" +
+            "The pattern `[A-E]` would match any character that included ABCDE. " +
+            "Ranges can be used in conjunction with each other to make powerful patterns. " +
+            "Alphanumerical strings are matched by `[A-Za-z0-9]`. This would match the " +
+            "following:\n" +
+            "\n" +
+            " * `[A-Z]` All uppercase letters from A to Z\n" +
+            " * `[a-z]` All lowercase letters from a to z\n" +
+            " * `[0-9]` All numbers from 0 to 9\n" +
+            "\n" +
+            "*Complementation*\n" +
+            "\n" +
+            "Globs can be used in complement with special characters that can change how the " +
+            "pattern works. The two complement characters are exclamation marks `(!)` and " +
+            "backslashes `(\\)`.\n" +
+            "\n" +
+            "The exclamation mark can negate a pattern that it is put in front of. " +
+            "As `[CBR]at` matches Cat, Bat, or Rat the negated pattern `[!CBR]at` matches\n" +
+            "anything like Kat, Pat, or Vat.\n" +
+            "\n" +
+            "Backslashes are used to remove the special meaning of single characters " +
+            "`'?'`, `'*'`, and `'['`, so that they can be used in patterns.";
     }
 
 
@@ -2935,7 +3012,9 @@ public class IOFunctions {
                     .add(io_delete_file_tree)
                     .add(io_delete_files_glob)
                     .add(io_copy_file)
+                    .add(io_copy_files_glob)
                     .add(io_move_file)
+                    .add(io_move_files_glob)
                     .add(io_touch_file)
                     .add(io_mkdir)
                     .add(io_mkdirs)
