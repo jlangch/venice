@@ -82,6 +82,7 @@ public class IoFileSection implements ISectionBuilder {
         all.addSection(file_cpy);
         file_cpy.addItem(diBuilder.getDocItem("io/copy-file", false));
         file_cpy.addItem(diBuilder.getDocItem("io/copy-files-glob", false));
+        file_cpy.addItem(diBuilder.getDocItem("io/copy-file-tree", false));
 
         final DocSection file_mov = new DocSection("file move", "io.filemove");
         all.addSection(file_mov);
@@ -110,6 +111,8 @@ public class IoFileSection implements ISectionBuilder {
         file_glob.addItem(diBuilder.getDocItem("io/glob-path-matcher", false));
         file_glob.addItem(diBuilder.getDocItem("io/file-matches-glob?"));
         file_glob.addItem(diBuilder.getDocItem("io/list-files-glob", false));
+        file_glob.addItem(diBuilder.getDocItem("io/copy-files-glob", false));
+        file_glob.addItem(diBuilder.getDocItem("io/move-files-glob", false));
         file_glob.addItem(diBuilder.getDocItem("io/delete-files-glob", false));
 
         final DocSection diskspace = new DocSection("disk space", "io.diskspace");

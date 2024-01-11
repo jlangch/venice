@@ -1799,6 +1799,7 @@ public class IOFunctions {
                         "| :no-follow-links true/false | e.g.: if true do not follow symbolic links, defaults to false |\n")
                    .seeAlso(
                         "io/copy-files-glob",
+                        "io/copy-file-tree",
                         "io/move-file",
                         "io/delete-file",
                         "io/touch-file",
@@ -1905,6 +1906,7 @@ public class IOFunctions {
                         "(io/copy-files-glob \"from\" \"to\" \"*.log\")")
                     .seeAlso(
                         "io/copy-file",
+                        "io/copy-file-tree",
                         "io/move-files-glob",
                         "io/delete-files-glob",
                         "io/list-files-glob")
@@ -1978,6 +1980,114 @@ public class IOFunctions {
                 }
 
                 return VncList.ofList(files);
+            }
+
+            private static final long serialVersionUID = -1848883965231344442L;
+        };
+
+    public static VncFunction io_copy_file_tree =
+        new VncFunction(
+                "io/copy-file-tree",
+                VncFunction
+                    .meta()
+                    .arglists("(io/copy-file-tree source dest & options)")
+                    .doc(
+                        "Copies a file tree from source to dest. Returns nil or throws a VncException. " +
+                        "Source must be a file or a string (file path), dest must be a file, " +
+                        "a string (file path), or an `java.io.OutputStream`." +
+                        "\n\n" +
+                        "Options: \n\n" +
+                        "| [![width: 25%]] | [![width: 75%]] |\n" +
+                        "| :replace true/false | e.g.: if true replace an existing file, defaults to false |\n" +
+                        "| :copy-attributes true/false | e.g.: if true copy attributes to the new file, defaults to false |\n" +
+                        "| :no-follow-links true/false | e.g.: if true do not follow symbolic links, defaults to false |\n")
+                   .seeAlso(
+                        "io/copy-file",
+                        "io/copy-files-glob",
+                        "io/move-file",
+                        "io/delete-file",
+                        "io/touch-file",
+                        "io/copy-stream")
+                    .build()
+        ) {
+            @Override
+            public VncVal apply(final VncList args) {
+                ArityExceptions.assertMinArity(this, args, 2);
+
+                sandboxFunctionCallValidation();
+
+                final VncHashMap options = VncHashMap.ofAll(args.rest().rest());
+                final VncVal replaceOpt = options.get(new VncKeyword("replace"));
+                final VncVal copyAttrOpt = options.get(new VncKeyword("copy-attributes"));
+                final VncVal noFollowLinks = options.get(new VncKeyword("no-follow-links"));
+
+                File sourceFile = convertToFile(
+                                            args.first(),
+                                            "Function 'io/copy-file' does not allow %s as source");
+
+                final VncVal destVal = args.second();
+                File destFile = convertToFile(destVal);
+
+                if (destFile != null) {
+                    final List<CopyOption> copyOptions = new ArrayList<>();
+                    if (VncBoolean.isTrue(replaceOpt)) {
+                        copyOptions.add(StandardCopyOption.REPLACE_EXISTING);
+                    }
+                    if (VncBoolean.isTrue(copyAttrOpt)) {
+                        copyOptions.add(StandardCopyOption.COPY_ATTRIBUTES);
+                    }
+                    if (VncBoolean.isTrue(noFollowLinks)) {
+                        copyOptions.add(LinkOption.NOFOLLOW_LINKS);
+                    }
+
+                    try {
+                        Files.walk(sourceFile.toPath()).forEach( s -> {
+                            try {
+                                Path d = destFile.toPath().resolve(sourceFile.toPath().relativize(s));
+                                if (Files.isDirectory(s)) {
+                                    if (!Files.exists(d)) {
+                                        Files.createDirectory(d);
+                                    }
+                                    return;
+                                }
+                                Files.copy(s, d, copyOptions.toArray(new CopyOption[0]));
+                            }
+                            catch(Exception ex) {
+                                throw new VncException(
+                                        String.format("Failed to copy file tree at %s", s.toString()),
+                                        ex);
+                            }
+                        });
+                    }
+                    catch(Exception ex) {
+                        throw new VncException(
+                                String.format(
+                                        "Failed to copy file %s to %s",
+                                        sourceFile.getPath(), destFile.getPath()),
+                                ex);
+                    }
+                }
+                else if (Types.isVncJavaObject(destVal, OutputStream.class)) {
+                    final OutputStream os = (OutputStream)((VncJavaObject)destVal).getDelegate();
+
+                    try {
+                        IOStreamUtil.copyFileToOS(sourceFile, os);
+                    }
+                    catch(Exception ex) {
+                        throw new VncException(
+                                String.format(
+                                        "Failed to copy file %s to stream",
+                                        sourceFile.getPath()),
+                                ex);
+                    }
+                }
+                else {
+                    throw new VncException(String.format(
+                            "Function 'io/copy-file' does not allow %s as dest",
+                            Types.getType(destVal)));
+                }
+
+                return Nil;
             }
 
             private static final long serialVersionUID = -1848883965231344442L;
@@ -3085,6 +3195,7 @@ public class IOFunctions {
                     .add(io_delete_files_glob)
                     .add(io_copy_file)
                     .add(io_copy_files_glob)
+                    .add(io_copy_file_tree)
                     .add(io_move_file)
                     .add(io_move_files_glob)
                     .add(io_touch_file)
