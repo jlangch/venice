@@ -229,8 +229,8 @@ For some recursive algorithms *memoization* can speed up computation dramaticall
   (fibonacci 30))
 ```
 
-Please not that this naive memoization approach with is not working with
-recursive functions:
+Please not that this naive memoization approach with recursive functions 
+does **not** work as expected:
 
 ```venice
 (do
