@@ -104,9 +104,9 @@ public class IoFileSection implements ISectionBuilder {
 
         final DocSection file_link = new DocSection("links", "io.filelinks");
         all.addSection(file_link);
-        file_link.addItem(diBuilder.getDocItem("io/file-symbolic-link?", false));
-        file_link.addItem(diBuilder.getDocItem("io/file-create-symbolic-link", false));
-        file_link.addItem(diBuilder.getDocItem("io/file-create-hard-link", false));
+        file_link.addItem(diBuilder.getDocItem("io/symbolic-link?", false));
+        file_link.addItem(diBuilder.getDocItem("io/create-symbolic-link", false));
+        file_link.addItem(diBuilder.getDocItem("io/create-hard-link", false));
 
         final DocSection file_test = new DocSection("test", "io.filetest");
         all.addSection(file_test);
@@ -118,7 +118,7 @@ public class IoFileSection implements ISectionBuilder {
         file_perm.addItem(diBuilder.getDocItem("io/file-can-write?", false));
         file_perm.addItem(diBuilder.getDocItem("io/file-can-execute?", false));
         file_test.addItem(diBuilder.getDocItem("io/file-hidden?", false));
-        file_test.addItem(diBuilder.getDocItem("io/file-symbolic-link?", false));
+        file_test.addItem(diBuilder.getDocItem("io/symbolic-link?", false));
         file_test.addItem(diBuilder.getDocItem("io/file-within-dir?"));
 
         final DocSection file_glob = new DocSection("glob", "io.fileglob");

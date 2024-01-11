@@ -527,7 +527,7 @@ public class IOFunctions {
                     .arglists("(io/exists-file? f)")
                     .doc("Returns true if the file f exists and is a file. f must be a file or a string (file path).")
                     .examples("(io/exists-file? \"/tmp/test.txt\")")
-                    .seeAlso("io/exists-dir?", "io/file-symbolic-link?")
+                    .seeAlso("io/exists-dir?", "io/symbolic-link?")
                     .build()
         ) {
             @Override
@@ -558,7 +558,7 @@ public class IOFunctions {
                     .examples(
                         "(io/exists-dir? (io/file \"/temp\"))")
                     .seeAlso(
-                        "io/exists-file?", "io/file-symbolic-link?")
+                        "io/exists-file?", "io/symbolic-link?")
                     .build()
         ) {
             @Override
@@ -593,7 +593,7 @@ public class IOFunctions {
                         "io/file-can-write?",
                         "io/file-can-execute?",
                         "io/file-hidden?",
-                        "io/file-symbolic-link?")
+                        "io/symbolic-link?")
                     .build()
         ) {
             @Override
@@ -626,7 +626,7 @@ public class IOFunctions {
                         "io/file-can-read?",
                         "io/file-can-execute?",
                         "io/file-hidden?",
-                        "io/file-symbolic-link?")
+                        "io/symbolic-link?")
                     .build()
         ) {
             @Override
@@ -659,7 +659,7 @@ public class IOFunctions {
                         "io/file-can-read?",
                         "io/file-can-write?",
                         "io/file-hidden?",
-                        "io/file-symbolic-link?")
+                        "io/symbolic-link?")
                     .build()
         ) {
             @Override
@@ -839,7 +839,7 @@ public class IOFunctions {
                         "io/file-can-read?",
                         "io/file-can-write?",
                         "io/file-can-execute?",
-                        "io/file-symbolic-link?")
+                        "io/symbolic-link?")
                     .build()
         ) {
             @Override
@@ -856,17 +856,17 @@ public class IOFunctions {
             private static final long serialVersionUID = -1848883965231344442L;
         };
 
-    public static VncFunction io_file_symbolicl_link_Q =
+    public static VncFunction io_symbolic_link_Q =
         new VncFunction(
-                "io/file-symbolic-link?",
+                "io/symbolic-link?",
                 VncFunction
                     .meta()
-                    .arglists("(io/file-symbolic-link? f)")
+                    .arglists("(io/symbolic-link? f)")
                     .doc(
                         "Returns true if the file f exists and is a symbolic link. " +
                         "f must be a file or a string (file path).")
                     .examples(
-                        "(io/file-symbolic-link? \"/tmp/test.txt\")")
+                        "(io/symbolic-link? \"/tmp/test.txt\")")
                     .seeAlso(
                         "io/file-hidden?",
                         "io/file-can-read?",
@@ -880,7 +880,7 @@ public class IOFunctions {
 
                 final File f = convertToFile(
                                     args.first(),
-                                    "Function 'io/file-symbolic-link?' does not allow %s as f");
+                                    "Function 'io/symbolic-link?' does not allow %s as f");
 
                 final Path p = f.toPath();
 
@@ -890,20 +890,20 @@ public class IOFunctions {
             private static final long serialVersionUID = -1848883965231344442L;
         };
 
-    public static VncFunction io_file_create_symbolic_link =
+    public static VncFunction io_create_symbolic_link =
         new VncFunction(
-                "io/file-create-symbolic-link",
+                "io/create-symbolic-link",
                 VncFunction
                     .meta()
-                    .arglists("(io/file-create-symbolic-link link target)")
+                    .arglists("(io/create-symbolic-link link target)")
                     .doc(
                         "Creates a symbolic link to a target. \n" +
                         "link and target must be a file or a string (file path).")
                     .examples(
-                        "(io/file-create-symbolic-link \"/tmp/sym-link\" \"/tmp/test.txt\")")
+                        "(io/create-symbolic-link \"/tmp/sym-link\" \"/tmp/test.txt\")")
                     .seeAlso(
-                        "io/file-create-hard-link",
-                        "io/file-symbolic-link?")
+                        "io/create-hard-link",
+                        "io/symbolic-link?")
                     .build()
         ) {
             @Override
@@ -912,11 +912,11 @@ public class IOFunctions {
 
                 final File link = convertToFile(
                                     args.first(),
-                                    "Function 'io/file-create-symbolic-link' does not allow %s as link");
+                                    "Function 'io/create-symbolic-link' does not allow %s as link");
 
                 final File target = convertToFile(
                                         args.second(),
-                                        "Function 'io/file-create-symbolic-link' does not allow %s as target");
+                                        "Function 'io/create-symbolic-link' does not allow %s as target");
 
                 try {
                     Files.createSymbolicLink(link.toPath(), target.toPath());
@@ -933,20 +933,20 @@ public class IOFunctions {
             private static final long serialVersionUID = -1848883965231344442L;
         };
 
-    public static VncFunction io_file_create_hard_link =
+    public static VncFunction io_create_hard_link =
         new VncFunction(
-                "io/file-create-hard-link",
+                "io/create-hard-link",
                 VncFunction
                     .meta()
-                    .arglists("(io/file-create-hard-link link target)")
+                    .arglists("(io/create-hard-link link target)")
                     .doc(
                         "Creates a hard link to a target. \n" +
                         "link and target must be a file or a string (file path).")
                     .examples(
-                         "(io/file-create-hard-link \"/tmp/hard-link\" \"/tmp/test.txt\")")
+                         "(io/create-hard-link \"/tmp/hard-link\" \"/tmp/test.txt\")")
                     .seeAlso(
-                        "io/file-create-symbolic-link",
-                        "io/file-symbolic-link?")
+                        "io/create-symbolic-link",
+                        "io/symbolic-link?")
                     .build()
         ) {
             @Override
@@ -955,11 +955,11 @@ public class IOFunctions {
 
                 final File link = convertToFile(
                                     args.first(),
-                                    "Function 'io/file-create-hard-link' does not allow %s as link");
+                                    "Function 'io/create-hard-link' does not allow %s as link");
 
                 final File target = convertToFile(
                                         args.second(),
-                                        "Function 'io/file-create-hard-link' does not allow %s as target");
+                                        "Function 'io/create-hard-link' does not allow %s as target");
 
                 try {
                     Files.createLink(link.toPath(), target.toPath());
@@ -3430,9 +3430,9 @@ public class IOFunctions {
                     .add(io_file_set_writable)
                     .add(io_file_set_executable)
                     .add(io_file_hidden_Q)
-                    .add(io_file_create_symbolic_link)
-                    .add(io_file_create_hard_link)
-                    .add(io_file_symbolicl_link_Q)
+                    .add(io_create_symbolic_link)
+                    .add(io_create_hard_link)
+                    .add(io_symbolic_link_Q)
                     .add(io_file_absolute_Q)
                     .add(io_glob_path_matcher)
                     .add(io_file_matches_globQ)
