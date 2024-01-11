@@ -17,6 +17,7 @@ All notable changes to this project will be documented in this file.
 - function `io/copy-files-glob`
 - function `io/copy-file-tree`
 - function `io/move-files-glob`
+- function `io/symbolic-link?`
 - function `io/create-symbolic-link`
 - function `io/create-hard-link`
 
