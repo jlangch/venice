@@ -41,6 +41,7 @@ import java.nio.file.DirectoryStream;
 import java.nio.file.FileStore;
 import java.nio.file.FileSystems;
 import java.nio.file.Files;
+import java.nio.file.LinkOption;
 import java.nio.file.Path;
 import java.nio.file.PathMatcher;
 import java.nio.file.StandardCopyOption;
@@ -1731,6 +1732,8 @@ public class IOFunctions {
                     .seeAlso(
                         "io/delete-file",
                         "io/delete-file-tree",
+                        "io/move-files-glob",
+                        "io/copy-files-glob",
                         "io/list-files-glob")
                     .build()
         ) {
@@ -1787,10 +1790,19 @@ public class IOFunctions {
                     .doc(
                         "Copies source to dest. Returns nil or throws a VncException. " +
                         "Source must be a file or a string (file path), dest must be a file, " +
-                        "a string (file path), or an `java.io.OutputStream`.\n\n" +
+                        "a string (file path), or an `java.io.OutputStream`." +
+                        "\n\n" +
                         "Options: \n\n" +
-                        "| :replace true/false | e.g.: if true replace an existing file, defaults to false |\n")
-                    .seeAlso("io/move-file", "io/delete-file", "io/touch-file", "io/copy-stream")
+                        "| [![width: 25%]] | [![width: 75%]] |\n" +
+                        "| :replace true/false | e.g.: if true replace an existing file, defaults to false |\n" +
+                        "| :copy-attributes true/false | e.g.: if true copy attributes to the new file, defaults to false |\n" +
+                        "| :no-follow-links true/false | e.g.: if true do not follow symbolic links, defaults to false |\n")
+                   .seeAlso(
+                        "io/copy-files-glob",
+                        "io/move-file",
+                        "io/delete-file",
+                        "io/touch-file",
+                        "io/copy-stream")
                     .build()
         ) {
             @Override
@@ -1801,6 +1813,8 @@ public class IOFunctions {
 
                 final VncHashMap options = VncHashMap.ofAll(args.rest().rest());
                 final VncVal replaceOpt = options.get(new VncKeyword("replace"));
+                final VncVal copyAttrOpt = options.get(new VncKeyword("copy-attributes"));
+                final VncVal noFollowLinks = options.get(new VncKeyword("no-follow-links"));
 
                 File sourceFile = convertToFile(
                                             args.first(),
@@ -1813,6 +1827,12 @@ public class IOFunctions {
                     final List<CopyOption> copyOptions = new ArrayList<>();
                     if (VncBoolean.isTrue(replaceOpt)) {
                         copyOptions.add(StandardCopyOption.REPLACE_EXISTING);
+                    }
+                    if (VncBoolean.isTrue(copyAttrOpt)) {
+                        copyOptions.add(StandardCopyOption.COPY_ATTRIBUTES);
+                    }
+                    if (VncBoolean.isTrue(noFollowLinks)) {
+                        copyOptions.add(LinkOption.NOFOLLOW_LINKS);
                     }
 
                     try {
@@ -1875,13 +1895,18 @@ public class IOFunctions {
                         "src-dir and  dst-dir must be a file or a string (file path).\n" +
                         "\n\n" +
                         "Options: \n\n" +
-                        "| :replace true/false | e.g.: if true replace an existing file, defaults to false |" +
+                        "| [![width: 25%]] | [![width: 75%]] |\n" +
+                        "| :replace true/false | e.g.: if true replace an existing file, defaults to false |\n" +
+                        "| :copy-attributes true/false | e.g.: if true copy attributes to the new file, defaults to false |\n" +
+                        "| :no-follow-links true/false | e.g.: if true do not follow symbolic links, defaults to false |" +
                         "\n\n" +
                         globPatternHelp())
                   .examples(
                         "(io/copy-files-glob \"from\" \"to\" \"*.log\")")
                     .seeAlso(
                         "io/copy-file",
+                        "io/move-files-glob",
+                        "io/delete-files-glob",
                         "io/list-files-glob")
                     .build()
         ) {
@@ -1904,10 +1929,18 @@ public class IOFunctions {
 
                 final VncHashMap options = VncHashMap.ofAll(args.rest().rest().rest());
                 final VncVal replaceOpt = options.get(new VncKeyword("replace"));
+                final VncVal copyAttrOpt = options.get(new VncKeyword("copy-attributes"));
+                final VncVal noFollowLinks = options.get(new VncKeyword("no-follow-links"));
 
                 final List<CopyOption> copyOptions = new ArrayList<>();
                 if (VncBoolean.isTrue(replaceOpt)) {
                     copyOptions.add(StandardCopyOption.REPLACE_EXISTING);
+                }
+                if (VncBoolean.isTrue(copyAttrOpt)) {
+                    copyOptions.add(StandardCopyOption.COPY_ATTRIBUTES);
+                }
+                if (VncBoolean.isTrue(noFollowLinks)) {
+                    copyOptions.add(LinkOption.NOFOLLOW_LINKS);
                 }
 
                 validateReadableDirectory(srcdir);
@@ -1955,18 +1988,27 @@ public class IOFunctions {
                 "io/move-file",
                 VncFunction
                     .meta()
-                    .arglists("(io/move-file source target)")
+                    .arglists("(io/move-file source target & options)")
                     .doc(
                         "Moves source to target. Returns nil or throws a VncException. " +
-                        "Source and target must be a file or a string (file path).")
+                        "Source and target must be a file or a string (file path)." +
+                        "\n\n" +
+                        "Options: \n\n" +
+                        "| [![width: 20%]] | [![width: 80%]] |\n" +
+                        "| :replace true/false | e.g.: if true replace an existing file, defaults to false |\n" +
+                        "| :atomic-move true/false | e.g.: if true move the file as an atomic file system operation, defaults to false |\n")
                     .seeAlso("io/copy-file", "io/delete-file", "io/touch-file")
                     .build()
         ) {
             @Override
             public VncVal apply(final VncList args) {
-                ArityExceptions.assertArity(this, args, 2);
+                ArityExceptions.assertMinArity(this, args, 2);
 
                 sandboxFunctionCallValidation();
+
+                final VncHashMap options = VncHashMap.ofAll(args.rest().rest());
+                final VncVal replaceOpt = options.get(new VncKeyword("replace"));
+                final VncVal atomicMoveOpt = options.get(new VncKeyword("atomic-move"));
 
                 final File from = convertToFile(
                                     args.first(),
@@ -1977,9 +2019,18 @@ public class IOFunctions {
                                     "Function 'io/move-file' does not allow %s as target");
 
                 try {
+                    final List<CopyOption> moveOptions = new ArrayList<>();
+                    if (VncBoolean.isTrue(replaceOpt)) {
+                        moveOptions.add(StandardCopyOption.REPLACE_EXISTING);
+                    }
+                    if (VncBoolean.isTrue(atomicMoveOpt)) {
+                        moveOptions.add(StandardCopyOption.ATOMIC_MOVE);
+                    }
+
                     Files.move(
                         from.toPath(),
-                        to.toPath());
+                        to.toPath(),
+                        moveOptions.toArray(new CopyOption[0]));
                 }
                 catch(Exception ex) {
                     throw new VncException(
@@ -1999,23 +2050,31 @@ public class IOFunctions {
                 "io/move-files-glob",
                 VncFunction
                     .meta()
-                    .arglists("(io/move-files-glob src-dir dst-dir glob)")
+                    .arglists("(io/move-files-glob src-dir dst-dir glob & options)")
                     .doc(
                         "Move all files that match the glob pattern from a source to a " +
                         "destination directory. \n" +
-                        "src-dir and  dst-dir must be a file or a string (file path).\n" +
+                        "src-dir and  dst-dir must be a file or a string (file path)." +
+                        "\n\n" +
+                        "Options: \n\n" +
+                        "| [![width: 20%]] | [![width: 80%]] |\n" +
+                        "| :replace true/false | e.g.: if true replace an existing file, defaults to false |\n" +
+                        "| :atomic-move true/false | e.g.: if true move the file as an atomic file system operation, defaults to false |" +
                         "\n\n" +
                         globPatternHelp())
                   .examples(
                         "(io/move-files-glob \"from\" \"to\" \"*.log\")")
                     .seeAlso(
                         "io/move-file",
+                        "io/move-files-glob",
+                        "io/copy-files-glob",
+                        "io/delete-files-glob",
                         "io/list-files-glob")
                     .build()
         ) {
             @Override
             public VncVal apply(final VncList args) {
-                ArityExceptions.assertArity(this, args, 3);
+                ArityExceptions.assertMinArity(this, args, 3);
 
                 sandboxFunctionCallValidation();
 
@@ -2030,6 +2089,10 @@ public class IOFunctions {
 
                 final String glob = Coerce.toVncString(args.third()).getValue();
 
+                final VncHashMap options = VncHashMap.ofAll(args.rest().rest());
+                final VncVal replaceOpt = options.get(new VncKeyword("replace"));
+                final VncVal atomicMoveOpt = options.get(new VncKeyword("atomic-move"));
+
                 validateReadableDirectory(srcdir);
                 validateWritableDirectory(dstdir);
 
@@ -2039,9 +2102,18 @@ public class IOFunctions {
                     dirStream.forEach(path -> {
                         files.add(new VncJavaObject(path.toFile()));
                         try {
+                            final List<CopyOption> moveOptions = new ArrayList<>();
+                            if (VncBoolean.isTrue(replaceOpt)) {
+                                moveOptions.add(StandardCopyOption.REPLACE_EXISTING);
+                            }
+                            if (VncBoolean.isTrue(atomicMoveOpt)) {
+                                moveOptions.add(StandardCopyOption.ATOMIC_MOVE);
+                            }
+
                             Files.move(
                                 path,
-                                dstdir.toPath());
+                                dstdir.toPath(),
+                                moveOptions.toArray(new CopyOption[0]));
                         }
                         catch(IOException ex) {
                             throw new VncException(
@@ -2930,8 +3002,8 @@ public class IOFunctions {
     }
 
     private static final String globPatternHelp() {
-    	return
-    		"**Globbing patterns**\n" +
+        return
+            "**Globbing patterns**\n" +
             "\n" +
             "| [![width: 20%]] | [![width: 80%]] |\n" +
             "| `*.txt`       | Matches a path that represents a file name ending in .txt |\n" +
