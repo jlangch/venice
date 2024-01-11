@@ -589,7 +589,11 @@ public class IOFunctions {
                     .examples(
                         "(io/file-can-read? \"/tmp/test.txt\")")
                     .seeAlso(
-                        "io/file-can-write?", "io/file-can-execute?", "io/file-hidden?", "io/file-symbolic-link?")
+                        "io/file-set-readable",
+                        "io/file-can-write?",
+                        "io/file-can-execute?",
+                        "io/file-hidden?",
+                        "io/file-symbolic-link?")
                     .build()
         ) {
             @Override
@@ -618,7 +622,11 @@ public class IOFunctions {
                     .examples(
                         "(io/file-can-write? \"/tmp/test.txt\")")
                     .seeAlso(
-                        "io/file-can-read?", "io/file-can-execute?", "io/file-hidden?", "io/file-symbolic-link?")
+                        "io/file-set-writable",
+                        "io/file-can-read?",
+                        "io/file-can-execute?",
+                        "io/file-hidden?",
+                        "io/file-symbolic-link?")
                     .build()
         ) {
             @Override
@@ -647,7 +655,11 @@ public class IOFunctions {
                     .examples(
                         "(io/file-can-execute? \"/tmp/test.txt\")")
                     .seeAlso(
-                        "io/file-can-read?", "io/file-can-write?", "io/file-hidden?", "io/file-symbolic-link?")
+                        "io/file-set-executable",
+                        "io/file-can-read?",
+                        "io/file-can-write?",
+                        "io/file-hidden?",
+                        "io/file-symbolic-link?")
                     .build()
         ) {
             @Override
@@ -659,6 +671,154 @@ public class IOFunctions {
                                     "Function 'io/file-can-execute?' does not allow %s as f");
 
                 return VncBoolean.of((f.isFile() || f.isDirectory()) && f.canExecute());
+            }
+
+            private static final long serialVersionUID = -1848883965231344442L;
+        };
+
+    public static VncFunction io_file_set_readable =
+        new VncFunction(
+                "io/file-set-readable",
+                VncFunction
+                    .meta()
+                    .arglists("(io/file-set-readable f readable owner-only)")
+                    .doc(
+                        "Set the owner’s read permission to the file or directory f. " +
+                        "f must be a file or a string (file path)." +
+                        "\n\n" +
+                        "Returns true if and only if the operation succeeded. The " +
+                        "operation will fail if the user does not have permission to " +
+                        "change the access permissions of this abstract pathname.  If " +
+                        "'readable' is false and the underlying file system does not " +
+                        "implement a read permission, then the operation will fail." +
+                        "\n\n" +
+                        "If 'readable' is true sets the access permission to allow read " +
+                        "operations; if false to disallow read operations. " +
+                        "\n\n" +
+                        "If 'owner-only' is true the read permission applies only to the " +
+                        "owner's read permission; otherwise, it applies to everybody. If " +
+                        "the underlying file system can not distinguish the owner's read " +
+                        "permission from that of others, then the permission will apply to " +
+                        "everybody, regardless of this value.")
+                    .examples(
+                        "(io/file-set-readable \"/tmp/test.txt\" true true)")
+                    .seeAlso(
+                        "io/file-can-read?",
+                        "io/file-set-writable",
+                        "io/file-set-executable")
+                    .build()
+        ) {
+            @Override
+            public VncVal apply(final VncList args) {
+                ArityExceptions.assertArity(this, args, 3);
+
+                final File f = convertToFile(
+                                    args.first(),
+                                    "Function 'io/file-set-readable' does not allow %s as f");
+
+                final boolean on = Coerce.toVncBoolean(args.second()).getValue();
+                final boolean ownerOnly = Coerce.toVncBoolean(args.third()).getValue();
+
+                return VncBoolean.of(f.setReadable(on, ownerOnly));
+            }
+
+            private static final long serialVersionUID = -1848883965231344442L;
+        };
+
+    public static VncFunction io_file_set_writable =
+        new VncFunction(
+                "io/file-set-writable",
+                VncFunction
+                    .meta()
+                    .arglists("(io/file-set-writable f writable owner-only)")
+                    .doc(
+                        "Set the owner’s write permission to the file or directory f. " +
+                        "f must be a file or a string (file path)." +
+                        "\n\n" +
+                        "Returns true if and only if the operation succeeded. The " +
+                        "operation will fail if the user does not have permission to " +
+                        "change the access permissions of this abstract pathname.  If " +
+                        "'writable' is false and the underlying file system does not " +
+                        "implement a read permission, then the operation will fail." +
+                        "\n\n" +
+                        "If 'writable' is true sets the access permission to allow write " +
+                        "operations; if false to disallow write operations. " +
+                        "\n\n" +
+                        "If 'owner-only' is true the write permission applies only to the " +
+                        "owner's write permission; otherwise, it applies to everybody. If " +
+                        "the underlying file system can not distinguish the owner's write " +
+                        "permission from that of others, then the permission will apply to " +
+                        "everybody, regardless of this value.")
+                    .examples(
+                        "(io/file-set-writable \"/tmp/test.txt\" true true)")
+                    .seeAlso(
+                        "io/file-can-write?",
+                        "io/file-set-readable",
+                        "io/file-set-executable")
+                    .build()
+        ) {
+            @Override
+            public VncVal apply(final VncList args) {
+                ArityExceptions.assertArity(this, args, 3);
+
+                final File f = convertToFile(
+                                    args.first(),
+                                    "Function 'io/file-set-readable' does not allow %s as f");
+
+                final boolean on = Coerce.toVncBoolean(args.second()).getValue();
+                final boolean ownerOnly = Coerce.toVncBoolean(args.third()).getValue();
+
+                return VncBoolean.of(f.setWritable(on, ownerOnly));
+            }
+
+            private static final long serialVersionUID = -1848883965231344442L;
+        };
+
+
+    public static VncFunction io_file_set_executable =
+        new VncFunction(
+                "io/file-set-executable",
+                VncFunction
+                    .meta()
+                    .arglists("(io/file-set-executable f executable owner-only)")
+                    .doc(
+                        "Set the owner’s execute permission to the file or directory f. " +
+                        "f must be a file or a string (file path)." +
+                        "\n\n" +
+                        "Returns true if and only if the operation succeeded. The " +
+                        "operation will fail if the user does not have permission to " +
+                        "change the access permissions of this abstract pathname.  If " +
+                        "'readable' is false and the underlying file system does not " +
+                        "implement a read permission, then the operation will fail." +
+                        "\n\n" +
+                        "If 'executable' is true sets the access permission to allow execute " +
+                        "operations; if false to disallow execute operations. " +
+                        "\n\n" +
+                        "If 'owner-only' is true the execute permission applies only to the " +
+                        "owner's execute permission; otherwise, it applies to everybody. If " +
+                        "the underlying file system can not distinguish the owner's execute " +
+                        "permission from that of others, then the permission will apply to " +
+                        "everybody, regardless of this value.")
+                    .examples(
+                        "(io/file-set-executable \"/tmp/test.txt\" true true)")
+                    .seeAlso(
+                        "io/file-can-execute?",
+                        "io/file-set-readable",
+                        "io/file-set-writable")
+                    .build()
+        ) {
+            @Override
+            public VncVal apply(final VncList args) {
+                ArityExceptions.assertArity(this, args, 3);
+
+                final File f = convertToFile(
+                                    args.first(),
+                                    "Function 'io/file-set-executable' does not allow %s as f");
+
+                final boolean on = Coerce.toVncBoolean(args.second()).getValue();
+                final boolean ownerOnly = Coerce.toVncBoolean(args.third()).getValue();
+
+                return VncBoolean.of(f.setExecutable(on, ownerOnly));
             }
 
             private static final long serialVersionUID = -1848883965231344442L;
@@ -676,7 +836,10 @@ public class IOFunctions {
                     .examples(
                         "(io/file-hidden? \"/tmp/test.txt\")")
                     .seeAlso(
-                        "io/file-can-read?", "io/file-can-write?", "io/file-can-execute?", "io/file-symbolic-link?")
+                        "io/file-can-read?",
+                        "io/file-can-write?",
+                        "io/file-can-execute?",
+                        "io/file-symbolic-link?")
                     .build()
         ) {
             @Override
@@ -705,7 +868,10 @@ public class IOFunctions {
                     .examples(
                         "(io/file-symbolic-link? \"/tmp/test.txt\")")
                     .seeAlso(
-                        "io/file-hidden?", "io/file-can-read?", "io/file-can-write?", "io/file-can-execute?")
+                        "io/file-hidden?",
+                        "io/file-can-read?",
+                        "io/file-can-write?",
+                        "io/file-can-execute?")
                     .build()
         ) {
             @Override
@@ -714,11 +880,97 @@ public class IOFunctions {
 
                 final File f = convertToFile(
                                     args.first(),
-                                    "Function 'io/symbolic-link?' does not allow %s as f");
+                                    "Function 'io/file-symbolic-link?' does not allow %s as f");
 
                 final Path p = f.toPath();
 
                 return VncBoolean.of(Files.isSymbolicLink(p));
+            }
+
+            private static final long serialVersionUID = -1848883965231344442L;
+        };
+
+    public static VncFunction io_file_create_symbolic_link =
+        new VncFunction(
+                "io/file-create-symbolic-link",
+                VncFunction
+                    .meta()
+                    .arglists("(io/file-create-symbolic-link link target)")
+                    .doc(
+                        "Creates a symbolic link to a target. \n" +
+                        "link and target must be a file or a string (file path).")
+                    .examples(
+                        "(io/file-create-symbolic-link \"/tmp/sym-link\" \"/tmp/test.txt\")")
+                    .seeAlso(
+                        "io/file-create-hard-link",
+                        "io/file-symbolic-link?")
+                    .build()
+        ) {
+            @Override
+            public VncVal apply(final VncList args) {
+                ArityExceptions.assertArity(this, args, 2);
+
+                final File link = convertToFile(
+                                    args.first(),
+                                    "Function 'io/file-create-symbolic-link' does not allow %s as link");
+
+                final File target = convertToFile(
+                                        args.second(),
+                                        "Function 'io/file-create-symbolic-link' does not allow %s as target");
+
+                try {
+                    Files.createSymbolicLink(link.toPath(), target.toPath());
+                    return Nil;
+                }
+                catch(Exception ex) {
+                    throw new VncException(
+                            String.format("Failed to create symbolic link %s -> %s", link, target),
+                            ex);
+
+                }
+            }
+
+            private static final long serialVersionUID = -1848883965231344442L;
+        };
+
+    public static VncFunction io_file_create_hard_link =
+        new VncFunction(
+                "io/file-create-hard-link",
+                VncFunction
+                    .meta()
+                    .arglists("(io/file-create-hard-link link target)")
+                    .doc(
+                        "Creates a hard link to a target. \n" +
+                        "link and target must be a file or a string (file path).")
+                    .examples(
+                         "(io/file-create-hard-link \"/tmp/hard-link\" \"/tmp/test.txt\")")
+                    .seeAlso(
+                        "io/file-create-symbolic-link",
+                        "io/file-symbolic-link?")
+                    .build()
+        ) {
+            @Override
+            public VncVal apply(final VncList args) {
+                ArityExceptions.assertArity(this, args, 2);
+
+                final File link = convertToFile(
+                                    args.first(),
+                                    "Function 'io/file-create-hard-link' does not allow %s as link");
+
+                final File target = convertToFile(
+                                        args.second(),
+                                        "Function 'io/file-create-hard-link' does not allow %s as target");
+
+                try {
+                    Files.createLink(link.toPath(), target.toPath());
+                    return Nil;
+                }
+                catch(Exception ex) {
+                    throw new VncException(
+                            String.format("Failed to create hard link %s -> %s", link, target),
+                            ex);
+
+                }
             }
 
             private static final long serialVersionUID = -1848883965231344442L;
@@ -736,7 +988,9 @@ public class IOFunctions {
                     .examples(
                         "(io/file-last-modified \"/tmp/test.txt\")")
                     .seeAlso(
-                        "io/file-can-read?", "io/file-can-write?", "io/file-can-execute?")
+                        "io/file-can-read?",
+                        "io/file-can-write?",
+                        "io/file-can-execute?")
                     .build()
         ) {
             @Override
@@ -1951,9 +2205,9 @@ public class IOFunctions {
                 try (DirectoryStream<Path> dirStream = Files.newDirectoryStream(srcdir.toPath(), glob)) {
                     dirStream.forEach(path -> {
                         try {
-                        	final Path d = dstdir.toPath().resolve(srcdir.toPath().relativize(path));
+                            final Path d = dstdir.toPath().resolve(srcdir.toPath().relativize(path));
 
-                        	Files.copy(
+                            Files.copy(
                                 path,
                                 d,
                                 copyOptions.toArray(new CopyOption[0]));
@@ -2205,7 +2459,7 @@ public class IOFunctions {
                 validateReadableDirectory(srcdir);
                 validateWritableDirectory(dstdir);
 
-            	final List<CopyOption> moveOptions = new ArrayList<>();
+                final List<CopyOption> moveOptions = new ArrayList<>();
                 if (VncBoolean.isTrue(replaceOpt)) {
                     moveOptions.add(StandardCopyOption.REPLACE_EXISTING);
                 }
@@ -2216,7 +2470,7 @@ public class IOFunctions {
                 try (DirectoryStream<Path> dirStream = Files.newDirectoryStream(srcdir.toPath(), glob)) {
                     dirStream.forEach(path -> {
                         try {
-                        	final Path d = dstdir.toPath().resolve(srcdir.toPath().relativize(path));
+                            final Path d = dstdir.toPath().resolve(srcdir.toPath().relativize(path));
 
                             Files.move(
                                 path,
@@ -3172,7 +3426,12 @@ public class IOFunctions {
                     .add(io_file_can_read_Q)
                     .add(io_file_can_write_Q)
                     .add(io_file_can_execute_Q)
+                    .add(io_file_set_readable)
+                    .add(io_file_set_writable)
+                    .add(io_file_set_executable)
                     .add(io_file_hidden_Q)
+                    .add(io_file_create_symbolic_link)
+                    .add(io_file_create_hard_link)
                     .add(io_file_symbolicl_link_Q)
                     .add(io_file_absolute_Q)
                     .add(io_glob_path_matcher)
