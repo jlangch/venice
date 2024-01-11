@@ -1948,18 +1948,17 @@ public class IOFunctions {
                 validateReadableDirectory(srcdir);
                 validateWritableDirectory(dstdir);
 
-                final List<VncVal> files = new ArrayList<>();
-
                 try (DirectoryStream<Path> dirStream = Files.newDirectoryStream(srcdir.toPath(), glob)) {
                     dirStream.forEach(path -> {
-                        files.add(new VncJavaObject(path.toFile()));
                         try {
-                            Files.copy(
+                        	final Path d = dstdir.toPath().resolve(srcdir.toPath().relativize(path));
+
+                        	Files.copy(
                                 path,
-                                dstdir.toPath(),
+                                d,
                                 copyOptions.toArray(new CopyOption[0]));
                         }
-                        catch(IOException ex) {
+                        catch(Exception ex) {
                             throw new VncException(
                                     String.format("Failed to copy file %s", path),
                                     ex);
@@ -1979,7 +1978,7 @@ public class IOFunctions {
                             ex);
                 }
 
-                return VncList.ofList(files);
+                return Nil;
             }
 
             private static final long serialVersionUID = -1848883965231344442L;
@@ -2199,30 +2198,29 @@ public class IOFunctions {
 
                 final String glob = Coerce.toVncString(args.third()).getValue();
 
-                final VncHashMap options = VncHashMap.ofAll(args.rest().rest());
+                final VncHashMap options = VncHashMap.ofAll(args.rest().rest().rest());
                 final VncVal replaceOpt = options.get(new VncKeyword("replace"));
                 final VncVal atomicMoveOpt = options.get(new VncKeyword("atomic-move"));
 
                 validateReadableDirectory(srcdir);
                 validateWritableDirectory(dstdir);
 
-                final List<VncVal> files = new ArrayList<>();
+            	final List<CopyOption> moveOptions = new ArrayList<>();
+                if (VncBoolean.isTrue(replaceOpt)) {
+                    moveOptions.add(StandardCopyOption.REPLACE_EXISTING);
+                }
+                if (VncBoolean.isTrue(atomicMoveOpt)) {
+                    moveOptions.add(StandardCopyOption.ATOMIC_MOVE);
+                }
 
                 try (DirectoryStream<Path> dirStream = Files.newDirectoryStream(srcdir.toPath(), glob)) {
                     dirStream.forEach(path -> {
-                        files.add(new VncJavaObject(path.toFile()));
                         try {
-                            final List<CopyOption> moveOptions = new ArrayList<>();
-                            if (VncBoolean.isTrue(replaceOpt)) {
-                                moveOptions.add(StandardCopyOption.REPLACE_EXISTING);
-                            }
-                            if (VncBoolean.isTrue(atomicMoveOpt)) {
-                                moveOptions.add(StandardCopyOption.ATOMIC_MOVE);
-                            }
+                        	final Path d = dstdir.toPath().resolve(srcdir.toPath().relativize(path));
 
                             Files.move(
                                 path,
-                                dstdir.toPath(),
+                                d,
                                 moveOptions.toArray(new CopyOption[0]));
                         }
                         catch(IOException ex) {
@@ -2245,7 +2243,7 @@ public class IOFunctions {
                             ex);
                 }
 
-                return VncList.ofList(files);
+                return Nil;
             }
 
             private static final long serialVersionUID = -1848883965231344442L;
