@@ -56,4 +56,12 @@
 
   install [ & options]
 
-  (apply installer/install-libs (libraries) options))
+  (apply installer/install-libs (libraries) options)
+  
+  (when (repl?)     
+    (let [repl-tools-dir    (io/file (repl/home-dir) "tools")
+          ivy-dir           (io/file repl-tools-dir "ivy")
+          ivy-conf-dir      (io/file ivy-dir "conf")
+          ivy-settings-xml  (io/file ivy-conf-dir "ivy-settings.xml")]
+      (when-not (io/exists-dir? ivy-conf-dir)
+        (io/mkdirs ivy-conf-dir)))))

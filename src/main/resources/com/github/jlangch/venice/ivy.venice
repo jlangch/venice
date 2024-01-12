@@ -23,23 +23,92 @@
 ;;;; Apache Ivy
 ;;;;
 ;;;; see: https://cwiki.apache.org/confluence/display/IVY/Programmatic+use+of+Ivy
+;;;; see: https://ant.apache.org/ivy/history/latest-milestone/settings.html
+;;;; see: https://central.sonatype.org/consume/consume-apache-ivy/
+
 
 
 (ns ivy)
 
+(import :org.apache.ivy.Ivy)
+(import :org.apache.ivy.core.resolve.ResolveOptions)
+(import :org.apache.ivy.core.report.ResolveReport)
+(import :org.apache.ivy.core.settings.IvySettings)
 
-(def xml-template 
+(load-module :kira)
+
+
+
+(defn test []
+  (when-not (repl?)
+    (throw (ex :VncException "Ivy can be run from a REPL only!")))
+
+  (let [repl-tools-dir    (io/file (repl/home-dir) "tools")
+        ivy-dir           (io/file repl-tools-dir "ivy")
+        ivy-conf-dir      (io/file ivy-dir "conf")
+        ivy-settings-xml  (io/file ivy-conf-dir "ivy-settings.xml")]
+    (when-not (io/exists-dir? ivy-conf-dir)
+      (throw (ex :VncException 
+                 "Ivy not setup! Install Ivy first (see module :ivy-install)")))
+
+    ;; create the Ivy "ivy-settings.xml"
+    (io/spit ivy-settings-xml ivy-settings-data-xml)
+
+    (let [deps-xml (io/temp-file "test-", ".xml")
+          ivy      (->> (doto (. :IvySettings :new) 
+                              (. :setBaseDir (io/file ivy-dir)))
+                        (. :Ivy :newInstance)) ]
+      (. ivy :configure ivy-settings-xml)
+      (try 
+        (io/spit deps-xml (ivy-deps-xml ["org.knowm.xchart:xchart:3.8.6"]))
+ 
+        (let [resolve-opts   (-> (. :ResolveOptions :new)
+                                 (. :setTransitive true))
+              resolve-report (. ivy :resolve deps-xml resolve-opts)
+              md             (. resolve-report :getModuleDescriptor)] 
+          (doseq [dd (. md :getDependencies)]
+            (println (type dd))
+            (println "dependency:" (. dd :getDependencyRevisionId))
+            (println (count (. dd :getAllDependencyArtifacts)))))
+         (finally (io/delete-file deps-xml))))))
+
+
+
+
+(defn- ivy-deps-xml [artifacts]
+  (kira/eval ivy-deps-xml-template 
+             { :organisation "com.demolibrary"
+               :module       "demolibrary" 
+               :dependencies (map parse-artifact artifacts)}))
+
+
+(defn- parse-artifact [artifact]
+  (let [elements (str/split artifact ":")]
+    { :group-id    (first elements)
+      :artifact-id (second elements)
+      :version     (third elements) }))
+
+
+(def- ivy-settings-data-xml
+  """
+  <ivysettings>
+    <settings defaultResolver="chain" />
+    <resolvers>
+      <chain name="chain">
+        <ibiblio name="securedcentral" m2compatible="true" root="https://repo1.maven.org/maven2" />
+      </chain>
+    </resolvers>
+  </ivysettings>
+  """)
+
+(def- ivy-deps-xml-template 
   """
   <ivy-module version="2.0">
     <info organisation="<%= (kira/escape-xml organisation) %>" module="<%= module %>"/>
-    <dependencies>
-      <% (doseq [dep dependencies] %>
+    <dependencies><% (doseq [dep dependencies] %>
       <dependency org="<%= (kira/escape-xml (:group-id dep)) %>" 
                   name="<%= (kira/escape-xml (:artifact-id dep)) %>" 
-                  rev="<%= (kira/escape-xml (:version dep)) %>"/>
-      <% ) %>
+                  rev="<%= (kira/escape-xml (:version dep)) %>"/><% ) %>
     </dependencies>
   </ivy-module>
   """)
-
-;; implementation planned
