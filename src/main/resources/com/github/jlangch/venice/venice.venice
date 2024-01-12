@@ -15,7 +15,7 @@
 ;;   -app-repl venice.venice
 ;; -----------------------------------------------------------------------------
 
-(load-module :gradle)
+(load-module :gradlew)
 (load-module :tput)
 (load-module :ansi)
 
@@ -38,6 +38,7 @@
   :error    "[38;5;196m" })
 
 
+
 ;; -----------------------------------------------------------------------------
 ;; Configuration                                                               -
 ;; -----------------------------------------------------------------------------
@@ -55,6 +56,13 @@
 (defonce java-home java-8-home)
 
 (defonce cmd-line-prompt (str proj-name "> "))
+
+(defonce gradle-std-options ["--warning-mode=all" 
+                             "--console=plain" 
+                             "--stacktrace"
+                             ;; "--info"
+                             ;; "--debug"
+                             "-Dorg.gradle.java.home=\"~{java-home}\""])
 
 
 
@@ -76,48 +84,27 @@
 ;; Commands                                                                    -
 ;; -----------------------------------------------------------------------------
 
-(defn build []
-  (gradle-task "clean")
-  (gradle-task "shadowJar"))
-
-(defn rebuild [java-major]
-  (build)
- 
-  ;; deploy the venice jar to REPL
+(defn deploy []
+  ;; deploy the Venice jar to REPL
   (let [repl-libs-dir (io/file repl-home "libs")
         proj-libs-dir (io/file proj-home "build/libs")]
     (io/delete-files-glob  repl-libs-dir "venice-*.jar")
-    (io/copy-files-glob proj-libs-dir repl-libs-dir "venice-*.jar"))
+    (io/copy-files-glob proj-libs-dir repl-libs-dir "venice-*.jar")))
  
-  ;; start a new REPL
-  (start-repl java-major))
-
-(defn tests []
-  (gradle-task "clean")
-  (gradle-task "test" 
-               "-Dorg.gradle.java.home=~{java-home}"
-               "--warning-mode=all" ;; all,fail,none,summary
-               "--console=plain"))
-
-(defn cheatsheet []
-  (gradle-task "cheatsheet"))
-
 (defn publish [pgp-key sonatype-pwd]
   (assert (some? pgp-key) "Please provide the PGP key ID (e.g. 0000AAAA)!")
   (assert (some? sonatype-pwd) "Please provide the Sonatype password!")
   (assert (not-match? sonatype-user "[x?]*") "Please configure the Sonatype user!")
 
-  (build)
-  (gradle-task "publish" 
-               "-Dorg.gradle.java.home=~{java-home}"
-               "-Dorg.gradle.internal.publish.checksums.insecure=true"
-               "-Dorg.gradle.internal.http.socketTimeout=60000"
-               "-Dorg.gradle.internal.http.connectionTimeout=60000"
-               "--warning-mode=all"
-               "--console=plain"
-               "-Psigning.gnupg.keyName=~{pgp-key}"
-               "-PsonatypeUsername=~{sonatype-user}"
-               "-PsonatypePassword=\"~{sonatype-pwd}\""))
+  (gradle-tasks "clean" 
+                "shadowJar" 
+                "publish"
+                "-Dorg.gradle.internal.publish.checksums.insecure=true"
+                "-Dorg.gradle.internal.http.socketTimeout=60000"
+                "-Dorg.gradle.internal.http.connectionTimeout=60000"
+                "-Psigning.gnupg.keyName=\"~{pgp-key}\""
+                "-PsonatypeUsername=\"~{sonatype-user}\""
+                "-PsonatypePassword=\"~{sonatype-pwd}\""))
 
 
 
@@ -125,26 +112,9 @@
 ;; Gradle utils                                                                -
 ;; -----------------------------------------------------------------------------
 
-(defn gradle-version []
-  (binding [*gradle-script*    (gradle/gradlew-script-path proj-home)
-            *gradle-proj-home* proj-home]
-    (gradle/version)))
-
-(defn gradle-task
-  ([name]
-    (gradle-task name
-                 "--stacktrace"
-                 "--warning-mode=all"
-                 "-Dorg.gradle.java.home=~{java-home}" ))
- 
-  ([name & opts]
-    (println (str "[GRADLE] task " name))
-    ;; Gradle options
-    ;;   --debug --warning-mode=all
-    ;;   --stacktrace --info --debug
-    (binding [*gradle-script*    (gradle/gradlew-script-path proj-home)
-              *gradle-proj-home* proj-home]
-      (apply gradle/task name println warning true opts))))
+(defn gradle-tasks [& args]
+  (apply gradlew/run* proj-home println warning 
+                      (concat gradle-std-options args)))
 
 
 
@@ -171,7 +141,7 @@
 
 (defn- exec []
   (case (os-type)
-    :mac-osx (partial sh "/bin/zsh" "-c")
+    :mac-osx (partial sh "/bin/sh" "-c")
     :linux   (partial sh "/bin/sh" "-c")
     :windows (partial sh "cmd" "/C")))
 
@@ -219,6 +189,7 @@
     t|tests        run the unit tests
     T|task         run a Gradle task
     c|cheatsheet   generate the cheatsheets
+    d|dependencies list the dependencies
     p|publish      publish Venice artefacts to Maven
     i|info         display the configuration
     h|help         display the help
@@ -233,7 +204,7 @@
     Shell:  running on ~(host-name)
 
     Configuration:
-       Gradle:           ~(gradle-version)
+       Gradle:           ~(gradlew/version proj-home)
        Java version:     ~(java-version)
        User home:        ~(io/user-home-dir)
        Working dir:      ~(io/user-dir)
@@ -253,21 +224,26 @@
 
 (defn run-command [cmd & args]
   (cond
-    (nil? cmd)                 nil
-    (match? cmd "b|build")     (build)
-    (match? cmd "r|rebuild")   (rebuild (first args))
-    (match? cmd "s|start")     (start-repl (first args))
-    (match? cmd "c|cheasheet") (cheatsheet)
-    (match? cmd "tests")       (tests)
-    (match? cmd "p|publish")   (publish (first args) (second args))
-    (match? cmd "t|task")      (gradle-task (first args))
-    (match? cmd "i|info")      (display-info)
-    (match? cmd "h|help")      (help)
-    (match? cmd "x|exit")      (throw (ex :EofException "exit"))
-    (match? cmd "q|quit")      (throw (ex :EofException "exit"))
-    :else                      (invalid-cmd (str "Invalid command: " cmd
-                                                  " "
-                                                  (str/join " " args)))))
+    (nil? cmd)                    nil
+    (match? cmd "b|build")        (gradle-tasks "clean" "shadowJar")
+    (match? cmd "r|rebuild")      (do 
+                                    (gradle-tasks "clean" "shadowJar")
+                                    (deploy)
+                                    (start-repl (first args)))
+    (match? cmd "s|start")        (start-repl (first args))
+    (match? cmd "c|cheasheet")    (gradle-tasks "cheatsheet")
+    (match? cmd "d|dependencies") (gradle-tasks "dependencies")
+    (match? cmd "tests")          (gradle-tasks "clean" "test")
+    (match? cmd "p|publish")      (publish (first args) (second args))
+    (match? cmd "t|task")         (gradle-tasks (first args))
+    (match? cmd "i|info")         (display-info)
+    (match? cmd "h|help")         (help)
+    (match? cmd "x|exit")         (throw (ex :EofException "exit"))
+    (match? cmd "q|quit")         (throw (ex :EofException "exit"))
+    :else                         (invalid-cmd (str "Invalid command: " 
+                                                    cmd
+                                                    " "
+                                                    (str/join " " args)))))
 
 (defn split-command [cmd]
   (let [c (str/trim-to-nil cmd)]
