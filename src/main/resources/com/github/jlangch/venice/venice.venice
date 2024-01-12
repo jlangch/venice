@@ -80,7 +80,7 @@
   (gradle-task "clean")
   (gradle-task "shadowJar"))
 
-(defn rebuild []
+(defn rebuild [java-major]
   (build)
  
   ;; deploy the venice jar to REPL
@@ -90,7 +90,7 @@
     (io/copy-files-glob proj-libs-dir repl-libs-dir "venice-*.jar"))
  
   ;; start a new REPL
-  (start-repl 8))
+  (start-repl java-major))
 
 (defn tests []
   (gradle-task "clean")
@@ -125,7 +125,7 @@
 ;; -----------------------------------------------------------------------------
 
 (defn gradle-version []
-  (binding [*gradle-script*    (gradle/gradlew-script proj-home)
+  (binding [*gradle-script*    (gradle/gradlew-script-path proj-home)
             *gradle-proj-home* proj-home]
     (gradle/version)))
 
@@ -256,7 +256,7 @@
     (cond
       (nil? cmd)                 nil
       (match? cmd "b|build")     (build)
-      (match? cmd "r|rebuild")   (rebuild)
+      (match? cmd "r|rebuild")   (rebuild sub-cmd)
       (match? cmd "s|start")     (start-repl sub-cmd)
       (match? cmd "c|cheasheet") (cheatsheet)
       (match? cmd "t|tests")     (tests)
