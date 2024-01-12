@@ -27,7 +27,12 @@
 
 (defn version 
   ^{ :arglists '("(gradlew/version)")
-     :doc "Returns the Gradle version"
+     :doc 
+        """
+        Returns the Gradle version
+
+        **Note: Use this module only for projects based on the Gradle wrapper**
+        """
      :examples '(
         """
         (do
@@ -51,6 +56,8 @@
      :doc 
         """
         Runs one or more Gradle tasks.
+
+        **Note: Use this module only for projects based on the Gradle wrapper**
 
         Arguments:
 
@@ -99,6 +106,8 @@
         Runs one or more Gradle tasks and prints a list of the tasks and the
         options taken from the passed arguments. 
 
+        **Note: Use this module only for projects based on the Gradle wrapper**
+
         Apart from printing the information the function is identical to 
         `gradlew/run`.
 
@@ -106,9 +115,9 @@
 
         | proj-home d | The project directory |
         | :out-fn f   | a function with a single string argument that receives \
-                        line by line from the process' stdout. |
+                        line by line from the process' stdout. May be nil. |
         | :err-fn f   | a function with a single string argument that receives \
-                        line by line from the process' stderr. |
+                        line by line from the process' stderr. May be nil. |
         | args        | Any number of task names and Gradle options |
         """
      :examples '(
@@ -135,9 +144,9 @@
         options  (filter #(str/starts-with? % "-") args)
         script   (gradlew-script-path proj-home)]
     (assert (io/exists-file? script) "Gradle wrapper '~{script}' not existing!")
-    (println (str "Gradle script:  " gradle-script))
+    (println (str "Gradle script:  " script))
     (println (str "Gradle tasks:   " (str/join ", " tasks)))
-    (println (str "Gradle options: " all-options))
+    (println (str "Gradle options: " options))
     ((exec) (str/join " " (concat [script] options tasks))
             :dir proj-home
             :out-fn out-fn
