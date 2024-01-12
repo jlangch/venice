@@ -78,6 +78,7 @@ public class Modules {
                         "fonts",
                         "geoip",
                         "gradle",
+                        "gradlew",
                         "grep",
                         "hexdump",
                         "http",
