@@ -40,7 +40,7 @@
   with-home [gradle-dir proj-dir & forms]
 
   `(binding [*gradle-home*      ~gradle-dir
-             *gradle-script*    (gradle/script-path ~gradle-dir)
+             *gradle-script*    (gradle/gradle-script-path ~gradle-dir)
              *gradle-proj-home* ~proj-dir]
     (do ~@forms)))
 
@@ -103,13 +103,13 @@
                    :err-fn err-fn
                    :throw-ex throw-ex)))
 
-(defn gradlew-script [proj-home]
+(defn gradlew-script-path [proj-home]
   (case (os-type)
     :mac-osx (str proj-home "/gradlew")
     :linux   (str proj-home "/gradlew")
     :windows (str proj-home "/gradlew.bat")))
 
-(defn script-path [gradle-home]
+(defn gradle-script-path [gradle-home]
   (case (os-type)
     :mac-osx (str gradle- "/bin/gradle")
     :linux   (str gradle- "/bin/gradle")

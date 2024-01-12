@@ -15,9 +15,6 @@
 ;;   -app-repl venice.venice
 ;; -----------------------------------------------------------------------------
 
-(load-module :semver)
-(load-module :maven)
-(load-module :shell)
 (load-module :gradle)
 (load-module :tput)
 (load-module :ansi)
@@ -49,9 +46,9 @@
 
 (defonce proj-home (io/file home "Documents/workspace-omni/" proj-name))
 
-(defonce sonatype-user "xxxxx")
-
 (defonce repl-home (io/file home "Desktop/venice"))
+
+(defonce sonatype-user "xxxxx")
 
 (defonce java-8-home (io/file (system-env :JAVA_8_HOME)))
 (defonce java-11-home (io/file (system-env :JAVA_11_HOME)))
@@ -62,7 +59,7 @@
 
 
 ;; -----------------------------------------------------------------------------
-;; Validation                                                                  -
+;; Startup validation                                                          -
 ;; -----------------------------------------------------------------------------
 
 (when-not (io/exists-dir? proj-home)
@@ -93,7 +90,7 @@
     (io/copy-files-glob proj-libs-dir repl-libs-dir "venice-*.jar"))
  
   ;; start a new REPL
-  (start-repl))
+  (start-repl 8))
 
 (defn tests []
   (gradle-task "clean")
@@ -124,7 +121,7 @@
 
 
 ;; -----------------------------------------------------------------------------
-;; Gradle                                                                      -
+;; Gradle utils                                                                -
 ;; -----------------------------------------------------------------------------
 
 (defn gradle-version []
@@ -144,7 +141,7 @@
     ;; Gradle options
     ;;   --debug --warning-mode=all
     ;;   --stacktrace --info --debug
-    (binding [*gradle-script*    (gradle/gradlew-script proj-home)
+    (binding [*gradle-script*    (gradle/gradlew-script-path proj-home)
               *gradle-proj-home* proj-home]
       (apply gradle/task name println warning true opts))))
 
@@ -154,22 +151,31 @@
 ;; REPL launcher utils                                                         -
 ;; -----------------------------------------------------------------------------
 
-(defn- start-repl []
+(defn- start-repl [java-major]
   (println  "Starting new REPL: (~{repl-home})")
   (println)
-  (sh/open (repl-script)))
+  (sh/open (repl-script-path java-major)))
 
-(defn- repl-script []
-  (case (os-type)
-    :mac-osx (str repl-home "/repl.sh")
-    :linux   (str repl-home "/repl.sh")
-    :windows (str repl-home "/repl.bat")))
+(defn- repl-script-path [java-major]
+  (let [base-name (case (to-long java-major)
+                     8  "repl"
+                    11  "replJava11"
+                    17  "replJava17"
+                    21  "replJava21"
+                        "repl")]
+    (case (os-type)
+      :mac-osx (str repl-home "/" base-name ".sh")
+      :linux   (str repl-home "/" base-name ".sh")
+      :windows (str repl-home "/" base-name ".bat"))))
 
 (defn- exec []
   (case (os-type)
     :mac-osx (partial sh "/bin/zsh" "-c")
     :linux   (partial sh "/bin/sh" "-c")
     :windows (partial sh "cmd" "/C")))
+
+(defn- to-long [s]
+  (if (and (string? s) (match? s "[1-9][0-9]*")) (long s) nil)) 
 
 
 
@@ -251,7 +257,7 @@
       (nil? cmd)                 nil
       (match? cmd "b|build")     (build)
       (match? cmd "r|rebuild")   (rebuild)
-      (match? cmd "s|start")     (start-repl)
+      (match? cmd "s|start")     (start-repl sub-cmd)
       (match? cmd "c|cheasheet") (cheatsheet)
       (match? cmd "t|tests")     (tests)
       (match? cmd "p|publish")   (publish)
