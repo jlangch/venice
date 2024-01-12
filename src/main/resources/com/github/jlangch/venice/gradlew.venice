@@ -25,7 +25,7 @@
 (ns gradlew)
 
 
-(defn version 
+(defn 
   ^{ :arglists '("(gradlew/version)")
      :doc 
         """
@@ -40,7 +40,7 @@
           (gradlew/version "/Users/foo/projects/bar"))
         """) }
 
-  [proj-home]
+  version [proj-home]
 
   (let [gradle-script (gradlew-script-path proj-home)]
     (->> ((exec) (str gradle-script " --version") :dir proj-home :throw-ex true)
@@ -77,13 +77,13 @@
                          println
                          println
                          ;; tasks
-                         clean
-                         build
+                         "clean"
+                         "build"
                          ;; options
                          "--warning-mode=all" 
                          "--console=plain" 
                          "--stacktrace"
-                         "-Dorg.gradle.java.home=\"~{java-home}\"")))
+                         (str "-Dorg.gradle.java.home=\\"" java-home "\\"")))
         """) }
 
   run [proj-home out-fn err-fn & args]
@@ -124,18 +124,18 @@
         """
         (do
           (load-module :gradlew)
-          (let [java-home (system-env :JAVA_11_HOME)]
+          (let [java-home     (system-env :JAVA_11_HOME)]
             (gradlew/run* "/Users/foo/projects/bar"
                           println
                           println
                           ;; tasks
-                          clean
-                          build
+                          "clean"
+                          "build"
                           ;; options
                           "--warning-mode=all" 
                           "--console=plain" 
                           "--stacktrace"
-                          "-Dorg.gradle.java.home=\"~{java-home}\"")))
+                          (str "-Dorg.gradle.java.home=\\"" java-home "\\"")))
         """) }
 
   run* [proj-home out-fn err-fn & args]

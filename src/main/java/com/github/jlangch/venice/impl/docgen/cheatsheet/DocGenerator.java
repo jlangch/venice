@@ -52,6 +52,7 @@ import com.github.jlangch.venice.impl.docgen.cheatsheet.modules.ModuleExcelSecti
 import com.github.jlangch.venice.impl.docgen.cheatsheet.modules.ModuleFontsSection;
 import com.github.jlangch.venice.impl.docgen.cheatsheet.modules.ModuleGeoipSection;
 import com.github.jlangch.venice.impl.docgen.cheatsheet.modules.ModuleGradleSection;
+import com.github.jlangch.venice.impl.docgen.cheatsheet.modules.ModuleGradleWrapperSection;
 import com.github.jlangch.venice.impl.docgen.cheatsheet.modules.ModuleGrepSection;
 import com.github.jlangch.venice.impl.docgen.cheatsheet.modules.ModuleHexdumpSection;
 import com.github.jlangch.venice.impl.docgen.cheatsheet.modules.ModuleInstallerSection;
@@ -129,7 +130,7 @@ public class DocGenerator {
                         "config",     "parsifal",    "grep",       "test",
                         "fonts",      "qrref",       "jsonl",      "timing",
                         "zipvault",   "docker",      "cargo",      "cargo-arangodb",
-                        "matrix",     "ascii-table", "installer"));
+                        "gradlew",    "matrix",     "ascii-table", "installer"));
 
         final IVeniceInterpreter venice = new VeniceInterpreter(new AcceptAllInterceptor());
 
@@ -332,6 +333,7 @@ public class DocGenerator {
         extmod.addSection(new DocSection("Shell", "modules.shell"));
         extmod.addSection(new DocSection("Geo IP", "modules.geoip"));
         extmod.addSection(new DocSection("Ansi", "modules.ansi"));
+        extmod.addSection(new DocSection("Gradle\u00A0Wrapper", "modules.gradlew"));
         extmod.addSection(new DocSection("Gradle", "modules.gradle"));
         extmod.addSection(new DocSection("Maven", "modules.maven"));
         extmod.addSection(new DocSection("Docker", "modules.docker"));
@@ -430,6 +432,7 @@ public class DocGenerator {
                 new ModuleXmlSection(diBuilder).section(),
                 new ModuleJavaSection(diBuilder).section(),
                 new ModuleParsifalSection(diBuilder).section(),
+                new ModuleGradleWrapperSection(diBuilder).section(),
                 new ModuleGradleSection(diBuilder).section(),
                 new ModuleMavenSection(diBuilder).section(),
                 new ModuleDockerSection(diBuilder).section(),

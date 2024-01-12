@@ -186,7 +186,7 @@
     b|build        build
     r|rebuild      rebuild, deploy, and start the Venice REPL
     s|start        start the Venice REPL
-    tests          run the unit tests
+    T|tests        run the unit tests
     t|task         run a Gradle task
     c|cheatsheet   generate the cheatsheets
     d|dependencies list the dependencies
@@ -233,7 +233,7 @@
     (match? cmd "s|start")        (start-repl (first args))
     (match? cmd "c|cheasheet")    (gradle-tasks "cheatsheet")
     (match? cmd "d|dependencies") (gradle-tasks "dependencies")
-    (match? cmd "tests")          (gradle-tasks "clean" "test")
+    (match? cmd "T|tests")        (gradle-tasks "clean" "test")
     (match? cmd "p|publish")      (publish (first args) (second args))
     (match? cmd "t|task")         (gradle-tasks (first args))
     (match? cmd "i|info")         (display-info)
