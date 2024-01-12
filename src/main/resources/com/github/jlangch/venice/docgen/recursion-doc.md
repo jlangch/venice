@@ -173,8 +173,7 @@ Examples:
 
 ## Tail Call Optimization (TCO) 
 
-Venice has support for automatic *tail call optimization*. The recursive call must be in 
-tail position.
+Venice has support for automatic *tail call optimization*. The recursive call must be in tail position.
 
 
 ```venice
@@ -208,8 +207,7 @@ function. E.g.:
 ```
 
 But not all recursive functions can be transformed into a tail recursive function
-and translated into a loop. The [Ackermann's function](https://en.wikipedia.org/wiki/Ackermann_function)
-is such an example of a non [primitive recursive function](https://en.wikipedia.org/wiki/Primitive_recursive_function) that can not be de-recursed into loops.
+and translated into a loop. The [Ackermann's function](https://en.wikipedia.org/wiki/Ackermann_function) is such an example of a non [primitive recursive function](https://en.wikipedia.org/wiki/Primitive_recursive_function) that can not be de-recursed into loops.
 
 ¶
 ¶
