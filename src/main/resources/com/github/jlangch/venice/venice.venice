@@ -206,12 +206,13 @@
     ----------------------------------------------------------------------------
     Help
     ----------------------------------------------------------------------------
-    r|build        build
+    b|build        build
     r|rebuild      rebuild, deploy, and start the Venice REPL
     s|start        start the Venice REPL
     t|tests        run the unit tests
+    T|task         run a Gradle task
     c|cheatsheet   generate the cheatsheets
-    p|publish      Publish Venice artefacts to Maven
+    p|publish      publish Venice artefacts to Maven
     i|info         display the configuration
     h|help         display the help
     q|quit         quit the shell
@@ -248,18 +249,17 @@
         sub-cmd-args (rest args)]
     (cond
       (nil? cmd)                 nil
-      (match? cmd "g|gradle")    (gradle-task sub-cmd)
       (match? cmd "b|build")     (build)
       (match? cmd "r|rebuild")   (rebuild)
       (match? cmd "s|start")     (start-repl)
-      (match? cmd "t|tests")     (tests)
       (match? cmd "c|cheasheet") (cheatsheet)
+      (match? cmd "t|tests")     (tests)
       (match? cmd "p|publish")   (publish)
+      (match? cmd "T|task")      (gradle-task sub-cmd)
       (match? cmd "i|info")      (display-info)
       (match? cmd "h|help")      (help)
       (match? cmd "x|exit")      (throw (ex :EofException "exit"))
       (match? cmd "q|quit")      (throw (ex :EofException "exit"))
-      (match? cmd "t|task")      (gradle-task sub-cmd)
       :else                      (invalid-cmd (str "Invalid command: " cmd
                                                    " "
                                                    (str/join " " args))))))
