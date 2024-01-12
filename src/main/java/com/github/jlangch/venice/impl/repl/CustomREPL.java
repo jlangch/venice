@@ -102,6 +102,7 @@ public class CustomREPL {
             }
 
             System.out.println("Venice custom REPL: V" + Venice.getVersion() + (setupMode ? " (setup mode)": ""));
+            System.out.println("Java: " + System.getProperty("java.version"));
             System.out.println("Loading configuration from " + config.getConfigSource());
             if (loadpaths.active()) {
                 System.out.print("Load paths: ");

@@ -1,0 +1,293 @@
+;; -----------------------------------------------------------------------------
+;; Venice management script
+;; -----------------------------------------------------------------------------
+;; use a shell script to start the STEP management script:
+;;
+;; cd /Users/juerg/Desktop/scripts/
+;; 
+;; ${JAVA_11_HOME}/bin/java \
+;;   -server \
+;;   -cp "libs/*" com.github.jlangch.venice.Launcher \
+;;   -Xmx2G \
+;;   -XX:-OmitStackTraceInFastThrow \
+;;   -colors \
+;;   -macroexpand \
+;;   -app-repl venice.venice
+;; -----------------------------------------------------------------------------
+
+(load-module :semver)
+(load-module :maven)
+(load-module :shell)
+(load-module :gradle)
+(load-module :tput)
+(load-module :ansi)
+
+(import :java.util.function.Consumer)
+(import :com.github.jlangch.venice.EofException)
+
+
+(defonce version "1.0.0")
+(defonce home (io/user-home-dir))
+(defonce user (user-name))
+
+(defonce COLORS {
+  :logo     "[38;5;33m"
+  :info     "[38;5;64m"
+  :result   "[38;5;20m"
+  :stdout   "[38;5;243m"
+  :stderr   "[38;5;199m"
+  :debug    "[38;5;29m"
+  :warning  "[38;5;208m"
+  :error    "[38;5;196m" })
+
+
+;; -----------------------------------------------------------------------------
+;; Configuration                                                               -
+;; -----------------------------------------------------------------------------
+
+(defonce proj-name "venice")
+
+(defonce proj-home (io/file home "Documents/workspace-omni/" proj-name))
+
+(defonce sonatype-user "xxxxx")
+
+(defonce repl-home (io/file home "Desktop/venice"))
+
+(defonce java-8-home (io/file (system-env :JAVA_8_HOME)))
+(defonce java-11-home (io/file (system-env :JAVA_11_HOME)))
+(defonce java-home java-8-home)
+
+(defonce cmd-line-prompt (str proj-name "> "))
+
+
+
+;; -----------------------------------------------------------------------------
+;; Validation                                                                  -
+;; -----------------------------------------------------------------------------
+
+(when-not (io/exists-dir? proj-home)
+  (throw (ex :VncException
+             (str "The project dir '" proj-home "' does not exist!"))))
+
+(when-not (io/exists-dir? repl-home)
+  (throw (ex :VncException
+             (str "The REPL dir '" repl-home "' does not exist!"))))
+
+
+
+;; -----------------------------------------------------------------------------
+;; Commands                                                                    -
+;; -----------------------------------------------------------------------------
+
+(defn build []
+  (gradle-task "clean")
+  (gradle-task "shadowJar"))
+
+(defn rebuild []
+  (build)
+ 
+  ;; deploy the venice jar to REPL
+  (let [repl-libs-dir (io/file repl-home "libs")
+        proj-libs-dir (io/file proj-home "build/libs")]
+    (io/delete-files-glob  repl-libs-dir "venice-*.jar")
+    (io/copy-files-glob proj-libs-dir repl-libs-dir "venice-*.jar"))
+ 
+  ;; start a new REPL
+  (start-repl))
+
+(defn tests []
+  (gradle-task "clean")
+  (gradle-task "test" 
+               "-Dorg.gradle.java.home=~{java-home}"
+               "--warning-mode=all" ;; all,fail,none,summary
+               "--console=plain"))
+
+(defn cheatsheet []
+  (gradle-task "cheatsheet"))
+
+(defn publish [pgp-key sonatype-pwd]
+  (assert (some? pgp-key) "Please provide the PGP key ID (e.g. 0000AAAA)!")
+  (assert (some? sonatype-pw) "Please provide the Sonatype password  (e.g. 0000AAAA)!")
+  (assert (not (= "xxxxx" sonatype-pw) "Please configure the Sonatype password!"))
+
+  (build)
+  (gradle-task "publish" 
+               "-Dorg.gradle.java.home=~{java-home}"
+               "-Dorg.gradle.internal.publish.checksums.insecure=true"
+               "-Dorg.gradle.internal.http.socketTimeout=60000"
+               "-Dorg.gradle.internal.http.connectionTimeout=60000"
+               "--warning-mode=all"
+               "-Psigning.gnupg.keyName=~{pgp-key}"
+               "-PsonatypeUsername=~{sonatype-user}"
+               "-PsonatypePassword=~{sonatype-pwd}"))
+
+
+
+;; -----------------------------------------------------------------------------
+;; Gradle                                                                      -
+;; -----------------------------------------------------------------------------
+
+(defn gradle-version []
+  (binding [*gradle-script*    (gradle/gradlew-script proj-home)
+            *gradle-proj-home* proj-home]
+    (gradle/version)))
+
+(defn gradle-task
+  ([name]
+    (gradle-task name
+                 "--stacktrace"
+                 "--warning-mode=all"
+                 "-Dorg.gradle.java.home=~{java-home}" ))
+ 
+  ([name & opts]
+    (println (str "[GRADLE] task " name))
+    ;; Gradle options
+    ;;   --debug --warning-mode=all
+    ;;   --stacktrace --info --debug
+    (binding [*gradle-script*    (gradle/gradlew-script proj-home)
+              *gradle-proj-home* proj-home]
+      (apply gradle/task name println warning true opts))))
+
+
+
+;; -----------------------------------------------------------------------------
+;; REPL launcher utils                                                         -
+;; -----------------------------------------------------------------------------
+
+(defn- start-repl []
+  (println  "Starting new REPL: (~{repl-home})")
+  (println)
+  (sh/open (repl-script)))
+
+(defn- repl-script []
+  (case (os-type)
+    :mac-osx (str repl-home "/repl.sh")
+    :linux   (str repl-home "/repl.sh")
+    :windows (str repl-home "/repl.bat")))
+
+(defn- exec []
+  (case (os-type)
+    :mac-osx (partial sh "/bin/zsh" "-c")
+    :linux   (partial sh "/bin/sh" "-c")
+    :windows (partial sh "cmd" "/C")))
+
+
+
+;; -----------------------------------------------------------------------------
+;; Util                                                                        -
+;; -----------------------------------------------------------------------------
+
+(def logo 
+      """
+        __    __         _
+        \\ \\  / /__ _ __ (_) ___ ___
+         \\ \\/ / _ \\ '_ \\| |/ __/ _ \\ 
+          \\  /  __/ | | | | (_|  __/
+           \\/ \\___|_| |_|_|\\___\\___|
+      """ )
+
+
+(defn error [msg]
+  (println (ansi/style (str "Error: " msg) (:error COLORS))))
+
+(defn warning [msg]
+  (println (ansi/style (str "Warning: " msg) (:warning COLORS))))
+
+(defn invalid-cmd [msg]
+  (println (ansi/style msg (:warning COLORS))))
+
+(defn display-welcome-msg []
+  (docoll #(println (ansi/style % :bold (:logo COLORS))) 
+          (str/split-lines logo)))
+
+(defn help []
+  (println
+    """
+    ----------------------------------------------------------------------------
+    Help
+    ----------------------------------------------------------------------------
+    r|build        build
+    r|rebuild      rebuild, deploy, and start the Venice REPL
+    s|start        start the Venice REPL
+    t|tests        run the unit tests
+    c|cheatsheet   generate the cheatsheets
+    p|publish      Publish Venice artefacts to Maven
+    i|info         display the configuration
+    h|help         display the help
+    q|quit         quit the shell
+    x|exit         quit the shell
+
+    """))
+
+(defn display-info []
+  (println
+    """
+    Shell:  running on ~(host-name)
+
+    Configuration:
+       Gradle:           ~(gradle-version)
+       Java version:     ~(java-version)
+       User home:        ~(io/user-home-dir)
+       Working dir:      ~(io/user-dir)
+       Project home:     ~{proj-home}
+       Build Java 8:     ~{java-8-home}
+       Build Java 11:    ~{java-11-home}
+
+    """))
+
+(defn display-cmd-info []
+  (let [cols  (tput/cols)
+        start (str/format "%s" proj-name)
+        end   version
+        delim (str/repeat "-" (- cols 8 (count start) (count end)))]
+    (println (ansi/style (str/format "-- %s %s %s --" start delim end)
+                         (:info COLORS)))))
+
+(defn run-command [cmd & args]
+  (let [sub-cmd      (first args)
+        sub-cmd-args (rest args)]
+    (cond
+      (nil? cmd)                 nil
+      (match? cmd "g|gradle")    (gradle-task sub-cmd)
+      (match? cmd "b|build")     (build)
+      (match? cmd "r|rebuild")   (rebuild)
+      (match? cmd "s|start")     (start-repl)
+      (match? cmd "t|tests")     (tests)
+      (match? cmd "c|cheasheet") (cheatsheet)
+      (match? cmd "p|publish")   (publish)
+      (match? cmd "i|info")      (display-info)
+      (match? cmd "h|help")      (help)
+      (match? cmd "x|exit")      (throw (ex :EofException "exit"))
+      (match? cmd "q|quit")      (throw (ex :EofException "exit"))
+      (match? cmd "t|task")      (gradle-task sub-cmd)
+      :else                      (invalid-cmd (str "Invalid command: " cmd
+                                                   " "
+                                                   (str/join " " args))))))
+
+(defn split-command [cmd]
+  (let [c (str/trim-to-nil cmd)]
+    (if (some? c)
+      (->> (regex/matcher "([^\"]\\S*|\".+?\")\\s*" c)
+           (regex/find-all)
+           (map str/trim-to-nil)
+           (filter some?)
+           (map str/double-unquote))
+      [nil])))
+
+(defn handle-command [cmd]
+  (try
+    (apply run-command (split-command cmd))
+    (display-cmd-info)
+    (catch :EofException ex 
+      (error "Terminating shell...")
+      (sleep 1000)
+      (throw ex))
+    (catch :java.lang.Exception ex 
+      (error (:message ex)))))
+
+
+(. *REPL* :setPrompt "shell> ")
+(. *REPL* :setHandler (proxify :Consumer { :accept handle-command }))
+
+(display-welcome-msg)
+(display-cmd-info)

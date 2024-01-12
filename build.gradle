@@ -350,6 +350,17 @@ test {
 
     testLogging {
         showStandardStreams = false
+        
+        events "PASSED", "FAILED", "STANDARD_OUT", "STANDARD_ERROR"
+	    
+        afterSuite { desc, result ->
+            if (!desc.parent) { // will match the outermost suite
+                def output = "Results: ${result.resultType} (${result.testCount} tests, ${result.successfulTestCount} passed, ${result.failedTestCount} failed, ${result.skippedTestCount} skipped)"
+                def startItem = '|  ', endItem = '  |'
+                def repeatLength = startItem.length() + output.length() + endItem.length()
+                println('\n' + ('-' * repeatLength) + '\n' + startItem + output + endItem + '\n' + ('-' * repeatLength))
+            }
+        }
     }
 }
 
@@ -734,7 +745,10 @@ dependencies {
     compileOnly "org.openjdk.jmh:jmh-generator-annprocess:${jmh_Version}"
     compileOnly "org.fusesource.jansi:jansi:${jansi_Version}"
 
+ 
     // Unit tests
+    testRuntimeOnly("org.junit.platform:junit-platform-launcher")
+    
     testImplementation "org.junit.jupiter:junit-jupiter-api:${jupiter_Version}"
     testImplementation "org.junit.jupiter:junit-jupiter-engine:${jupiter_Version}"
     testImplementation "org.xhtmlrenderer:flying-saucer-core:${flyingSaucer_Version}"

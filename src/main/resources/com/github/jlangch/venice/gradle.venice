@@ -103,12 +103,17 @@
                    :err-fn err-fn
                    :throw-ex throw-ex)))
 
-
-(defn script-path [home]
+(defn gradlew-script [proj-home]
   (case (os-type)
-    :mac-osx (str home "/bin/gradle")
-    :linux   (str home "/bin/gradle")
-    :windows (str home "/bin/gradle.bat")))
+    :mac-osx (str proj-home "/gradlew")
+    :linux   (str proj-home "/gradlew")
+    :windows (str proj-home "/gradlew.bat")))
+
+(defn script-path [gradle-home]
+  (case (os-type)
+    :mac-osx (str gradle- "/bin/gradle")
+    :linux   (str gradle- "/bin/gradle")
+    :windows (str gradle- "/bin/gradle.bat")))
 
 
 (defn exec []
