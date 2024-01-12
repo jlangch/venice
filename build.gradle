@@ -144,7 +144,9 @@
 //
 //    Repeat step 5) and 6) whenever the Gradle build 
 //
-//    Add  <classpathentry kind="con" path="org.eclipse.jdt.junit.JUNIT_CONTAINER/5"/>
+//    Under the "Libraries" tab, click "Add Library", "JUnit", "Next", select 
+//    "JUnit 5", and click "Finish" this will add
+//       <classpathentry kind="con" path="org.eclipse.jdt.junit.JUNIT_CONTAINER/5"/>
 //    to the .classpath file 
 //
 // -----------------------------------------------------------------------------
