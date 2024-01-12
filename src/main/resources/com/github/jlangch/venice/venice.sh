@@ -1,14 +1,14 @@
 ###############################################################################
 # Venice management script                                                    #
 # ----------------------------------------------------------------------------#
-# Starts a Venice REPL, loads 'step.venice' and runs it.                      #
+# Starts a Venice REPL, loads 'venice.venice' and runs it.                    #
 #                                                                             #
 # Layout:                                                                     #
 #    scripts                                                                  #
 #      +--libs                                                                #
 #      |   +-- venice-x.y.z.jar                                               #
-#      +--venice.sh                                                             #
-#      +--venice.venice                                                         #
+#      +--venice.sh                                                           #
+#      +--venice.venice                                                       #
 ###############################################################################
 
 cd /Users/juerg/Desktop/scripts/
