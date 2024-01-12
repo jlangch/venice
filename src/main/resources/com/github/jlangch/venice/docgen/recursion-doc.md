@@ -2,9 +2,9 @@
 
 ¶
 
-Functional languages support **tail call optimization** (TCO) to provide memory 
-efficient recursion. Venice supports automatic tail call optimization and self 
-recursion through the *loop..recur* syntax. Self recursion is a way to mimic TCO. 
+Functional languages support **Tail Call Optimization** **(TCO)** to provide memory 
+efficient recursion. Venice supports *automatic Tail Call Optimization* and *self 
+recursion* through the *loop..recur* syntax. Self recursion is a way to mimic TCO. 
 
 In addition Venice provides the *trampoline* function for mutual recursion for more 
 involved forms of recursion.
