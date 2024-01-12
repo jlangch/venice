@@ -48,7 +48,7 @@
 
 (defonce repl-home (io/file home "Desktop/venice"))
 
-(defonce sonatype-user "xxxxx")
+(defonce sonatype-user "xxxxxx")
 
 (defonce java-8-home (io/file (system-env :JAVA_8_HOME)))
 (defonce java-11-home (io/file (system-env :JAVA_11_HOME)))
@@ -104,8 +104,8 @@
 
 (defn publish [pgp-key sonatype-pwd]
   (assert (some? pgp-key) "Please provide the PGP key ID (e.g. 0000AAAA)!")
-  (assert (some? sonatype-pw) "Please provide the Sonatype password  (e.g. 0000AAAA)!")
-  (assert (not (= "xxxxx" sonatype-pw) "Please configure the Sonatype password!"))
+  (assert (some? sonatype-pwd) "Please provide the Sonatype password!")
+  (assert (not-match? sonatype-user "[x?]*") "Please configure the Sonatype user!")
 
   (build)
   (gradle-task "publish" 
@@ -114,9 +114,10 @@
                "-Dorg.gradle.internal.http.socketTimeout=60000"
                "-Dorg.gradle.internal.http.connectionTimeout=60000"
                "--warning-mode=all"
+               "--console=plain"
                "-Psigning.gnupg.keyName=~{pgp-key}"
                "-PsonatypeUsername=~{sonatype-user}"
-               "-PsonatypePassword=~{sonatype-pwd}"))
+               "-PsonatypePassword=\"~{sonatype-pwd}\""))
 
 
 
@@ -251,24 +252,22 @@
                          (:info COLORS)))))
 
 (defn run-command [cmd & args]
-  (let [sub-cmd      (first args)
-        sub-cmd-args (rest args)]
-    (cond
-      (nil? cmd)                 nil
-      (match? cmd "b|build")     (build)
-      (match? cmd "r|rebuild")   (rebuild sub-cmd)
-      (match? cmd "s|start")     (start-repl sub-cmd)
-      (match? cmd "c|cheasheet") (cheatsheet)
-      (match? cmd "t|tests")     (tests)
-      (match? cmd "p|publish")   (publish)
-      (match? cmd "T|task")      (gradle-task sub-cmd)
-      (match? cmd "i|info")      (display-info)
-      (match? cmd "h|help")      (help)
-      (match? cmd "x|exit")      (throw (ex :EofException "exit"))
-      (match? cmd "q|quit")      (throw (ex :EofException "exit"))
-      :else                      (invalid-cmd (str "Invalid command: " cmd
-                                                   " "
-                                                   (str/join " " args))))))
+  (cond
+    (nil? cmd)                 nil
+    (match? cmd "b|build")     (build)
+    (match? cmd "r|rebuild")   (rebuild (first args))
+    (match? cmd "s|start")     (start-repl (first args))
+    (match? cmd "c|cheasheet") (cheatsheet)
+    (match? cmd "tests")       (tests)
+    (match? cmd "p|publish")   (publish (first args) (second args))
+    (match? cmd "t|task")      (gradle-task (first args))
+    (match? cmd "i|info")      (display-info)
+    (match? cmd "h|help")      (help)
+    (match? cmd "x|exit")      (throw (ex :EofException "exit"))
+    (match? cmd "q|quit")      (throw (ex :EofException "exit"))
+    :else                      (invalid-cmd (str "Invalid command: " cmd
+                                                  " "
+                                                  (str/join " " args)))))
 
 (defn split-command [cmd]
   (let [c (str/trim-to-nil cmd)]
