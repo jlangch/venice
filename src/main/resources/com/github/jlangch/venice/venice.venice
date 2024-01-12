@@ -139,12 +139,6 @@
       :linux   (str repl-home "/" base-name ".sh")
       :windows (str repl-home "/" base-name ".bat"))))
 
-(defn- exec []
-  (case (os-type)
-    :mac-osx (partial sh "/bin/sh" "-c")
-    :linux   (partial sh "/bin/sh" "-c")
-    :windows (partial sh "cmd" "/C")))
-
 (defn- to-long [s]
   (if (and (string? s) (match? s "[1-9][0-9]*")) (long s) nil)) 
 
