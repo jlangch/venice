@@ -237,10 +237,10 @@
 
 (defn display-cmd-info []
   (let [cols  (tput/cols)
-        start (str/format "%s" proj-name)
-        end   version
-        delim (str/repeat "-" (- cols 8 (count start) (count end)))]
-    (println (ansi/style (str/format "-- %s %s %s --" start delim end)
+        left  (str/format "%s" proj-name)
+        right version
+        delim (str/repeat "-" (- cols 8 (count left) (count right)))]
+    (println (ansi/style (str/format "-- %s %s %s --" left delim right)
                          (:info COLORS)))))
 
 (defn run-command [cmd & args]
