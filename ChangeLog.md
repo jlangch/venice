@@ -14,6 +14,10 @@ All notable changes to this project will be documented in this file.
 
 - ...
 
+### Fixed 
+
+- a path composition in :gradlew module when running in Windows
+
 
 
 ## [1.12.1] - 2024-01-12
