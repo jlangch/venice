@@ -37,6 +37,15 @@
   :warning  "[38;5;208m"
   :error    "[38;5;196m" })
 
+(defonce COLORS-DARKMODE {
+  :logo     "[38;5;33m"
+  :info     "[38;5;64m"
+  :result   "[38;5;20m"
+  :stdout   "[38;5;243m"
+  :stderr   "[38;5;199m"
+  :debug    "[38;5;29m"
+  :warning  "[38;5;208m"
+  :error    "[38;5;196m" })
 
 
 ;; -----------------------------------------------------------------------------
@@ -171,6 +180,9 @@
   (docoll #(println (ansi/style % :bold (:logo COLORS))) 
           (str/split-lines logo)))
 
+(defn color-theme []
+  *repl-color-theme*)
+
 (defn help []
   (println
     """
@@ -205,6 +217,7 @@
        Project home:     ~{proj-home}
        Build Java 8:     ~{java-8-home}
        Build Java 11:    ~{java-11-home}
+       Color theme:      ~(color-theme)
 
     """))
 
