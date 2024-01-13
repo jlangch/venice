@@ -28,24 +28,24 @@
 (defonce user (user-name))
 
 (defonce COLORS {
-  :logo     "[38;5;33m"
-  :info     "[38;5;64m"
-  :result   "[38;5;20m"
-  :stdout   "[38;5;243m"
-  :stderr   "[38;5;199m"
-  :debug    "[38;5;29m"
-  :warning  "[38;5;208m"
-  :error    "[38;5;196m" })
+  :light { :logo     "[38;5;33m"
+           :status   "[38;5;64m"
+           :result   "[38;5;20m"
+           :stdout   "[38;5;243m"
+           :stderr   "[38;5;208m"
+           :debug    "[38;5;29m"
+           :warning  "[38;5;208m"
+           :error    "[38;5;196m" }
 
-(defonce COLORS-DARKMODE {
-  :logo     "[38;5;33m"
-  :info     "[38;5;64m"
-  :result   "[38;5;20m"
-  :stdout   "[38;5;243m"
-  :stderr   "[38;5;199m"
-  :debug    "[38;5;29m"
-  :warning  "[38;5;208m"
-  :error    "[38;5;196m" })
+  :dark  { :logo     "[38;5;33m"
+           :status   "[38;5;64m"
+           :result   "[38;5;20m"
+           :stdout   "[38;5;243m"
+           :stderr   "[38;5;208m"
+           :debug    "[38;5;29m"
+           :warning  "[38;5;208m"
+           :error    "[38;5;196m" } } )
+
 
 
 ;; -----------------------------------------------------------------------------
@@ -166,19 +166,30 @@
            \\/ \\___|_| |_|_|\\___\\___|
       """ )
 
+(defn status [msg]
+  (println (ansi/style (str msg) (color :status))))
 
 (defn error [msg]
-  (println (ansi/style (str "Error: " msg) (:error COLORS))))
+  (println (ansi/style (str msg) (color :error))))
 
 (defn warning [msg]
-  (println (ansi/style (str "Warning: " msg) (:warning COLORS))))
+  (println (ansi/style (str msg) (color :warning))))
 
 (defn invalid-cmd [msg]
-  (println (ansi/style msg (:warning COLORS))))
+  (println (ansi/style (str msg) (color :warning))))
 
 (defn display-welcome-msg []
-  (docoll #(println (ansi/style % :bold (:logo COLORS))) 
+  (docoll #(println (ansi/style % :bold (color :logo))) 
           (str/split-lines logo)))
+
+(defn show-color-theme []
+  (doseq [code [:logo :status :result :stdout :stderr :warning :error]]
+         (println (ansi/style (name code) (color code)))))
+
+(defn color [code]
+  (-> (*repl-color-theme* COLORS (:light COLORS))
+      (code :stdout)))
+
 
 (defn color-theme []
   *repl-color-theme*)
@@ -197,6 +208,7 @@
     c|cheatsheet   generate the cheatsheets
     d|dependencies list the dependencies
     p|publish      publish Venice artefacts to Maven
+    C|colors       color theme
     i|info         display the configuration
     h|help         display the help
     q|quit         quit the shell
@@ -226,8 +238,7 @@
         left  (str/format "%s" proj-name)
         right version
         delim (str/repeat "-" (- cols 8 (count left) (count right)))]
-    (println (ansi/style (str/format "-- %s %s %s --" left delim right)
-                         (:info COLORS)))))
+    (status (str/format "-- %s %s %s --" left delim right))))
 
 (defn run-command [cmd & args]
   (cond
@@ -243,6 +254,7 @@
     (match? cmd "T|tests")        (gradle-tasks "clean" "test")
     (match? cmd "p|publish")      (publish (first args) (second args))
     (match? cmd "t|task")         (gradle-tasks (first args))
+    (match? cmd "C|colors")       (show-color-theme)
     (match? cmd "i|info")         (display-info)
     (match? cmd "h|help")         (help)
     (match? cmd "x|exit")         (throw (ex :EofException "exit"))
@@ -271,7 +283,7 @@
       (sleep 1000)
       (throw ex))
     (catch :java.lang.Exception ex 
-      (error (:message ex)))))
+      (error (str "Error: " (:message ex))))))
 
 
 (. *REPL* :setPrompt "shell> ")
