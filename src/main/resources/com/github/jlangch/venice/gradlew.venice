@@ -158,7 +158,7 @@
   (case (os-type)
     :mac-osx (str proj-home "/gradlew")
     :linux   (str proj-home "/gradlew")
-    :windows (str proj-home "/gradlew.bat")))
+    :windows (str proj-home "\\gradlew.bat")))
 
 
 (defn- exec []
