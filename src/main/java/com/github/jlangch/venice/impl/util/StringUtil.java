@@ -507,6 +507,14 @@ public class StringUtil {
         return str.substring(0, end);
     }
 
+    public static String crlf_to_lf(final String str) {
+        if (str == null || str.isEmpty()) {
+            return str;
+        }
+
+        return str.replaceAll("[\\r]", "");
+    }
+
     public static String decodeUnicode(final String s) {
         String working = s;
         int index;

@@ -71,6 +71,21 @@ public class StringUtilTest {
     }
 
     @Test
+    public void test_crlf_to_lf() {
+        assertEquals(null, StringUtil.crlf_to_lf(null));
+        assertEquals("",   StringUtil.crlf_to_lf(""));
+        assertEquals(" ",  StringUtil.crlf_to_lf(" "));
+
+        assertEquals("\n", StringUtil.crlf_to_lf("\n"));
+        assertEquals(" \n ", StringUtil.crlf_to_lf(" \n "));
+        assertEquals(" \n \n", StringUtil.crlf_to_lf(" \n \n"));
+
+        assertEquals("\n", StringUtil.crlf_to_lf("\n\r"));
+        assertEquals(" \n ", StringUtil.crlf_to_lf(" \n\r "));
+        assertEquals(" \n \n", StringUtil.crlf_to_lf(" \n\r \n\r"));
+     }
+
+    @Test
     public void testSplitIntoLines() {
         List<String> lines;
 
