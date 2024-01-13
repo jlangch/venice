@@ -33,7 +33,7 @@ if not exist %VENICE_CONSOLE_HOME%\libs (
 
 cd %VENICE_CONSOLE_HOME%
 
-"%JAVA_17_HOME%\java.exe" ^
+"%JAVA_17_HOME%\bin\java.exe" ^
   -server ^
   -Xmx2G ^
   -XX:-OmitStackTraceInFastThrow ^
