@@ -54,6 +54,7 @@ import com.github.jlangch.venice.impl.repl.REPL.SetupMode;
 import com.github.jlangch.venice.impl.repl.ReplConfig.ColorMode;
 import com.github.jlangch.venice.impl.thread.ThreadContext;
 import com.github.jlangch.venice.impl.types.VncJavaObject;
+import com.github.jlangch.venice.impl.types.VncKeyword;
 import com.github.jlangch.venice.impl.types.VncSymbol;
 import com.github.jlangch.venice.impl.util.CommandLineArgs;
 import com.github.jlangch.venice.javainterop.IInterceptor;
@@ -232,8 +233,21 @@ public class CustomREPL {
             final BufferedReader in
     ) {
         return venice.createEnv(macroexpand, ansiTerminal, RunMode.REPL)
-                     .setGlobal(new Var(new VncSymbol("*ARGV*"), cli.argsAsList(), false, Var.Scope.Global))
-                     .setGlobal(new Var(new VncSymbol("*REPL*"), new VncJavaObject(this), false, Var.Scope.Global))
+                     .setGlobal(new Var(
+		                    		 new VncSymbol("*ARGV*"),
+		                    		 cli.argsAsList(),
+		                    		 false,
+		                    		 Var.Scope.Global))
+                     .setGlobal(new Var(
+		                    		 new VncSymbol("*REPL*"),
+		                    		 new VncJavaObject(this),
+		                    		 false,
+		                    		 Var.Scope.Global))
+                     .setGlobal(new Var(
+		                             new VncSymbol("*repl-color-theme*"),
+		                             new VncKeyword(config.getColorMode().name().toLowerCase()),
+		                             true,
+		                             Var.Scope.Global))
                      .setStdoutPrintStream(out)
                      .setStderrPrintStream(err)
                      .setStdinReader(in);
