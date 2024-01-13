@@ -62,6 +62,7 @@ import com.github.jlangch.venice.impl.util.SymbolMapBuilder;
 import com.github.jlangch.venice.impl.util.callstack.CallFrame;
 import com.github.jlangch.venice.impl.util.callstack.CallStack;
 import com.github.jlangch.venice.javainterop.ReturnValue;
+import com.github.jlangch.venice.util.OS;
 
 
 public class SystemFunctions {
@@ -124,9 +125,9 @@ public class SystemFunctions {
 
                 final String order = ByteBuffer.allocate(2).order().toString();
                 switch(order) {
-	                case "BIG_ENDIAN": return new VncKeyword(":big-endian");
-	                case "LITTLE_ENDIAN": return new VncKeyword(":little-endian");
-	                default: return new VncKeyword(":little-endian");
+                    case "BIG_ENDIAN": return new VncKeyword(":big-endian");
+                    case "LITTLE_ENDIAN": return new VncKeyword(":little-endian");
+                    default: return new VncKeyword(":little-endian");
                 }
             }
 
@@ -884,21 +885,12 @@ public class SystemFunctions {
     }
 
     public static String osType() {
-        final String osName = System.getProperty("os.name").toLowerCase();
-        if (osName.startsWith("windows")) {
-            return "windows";
-        }
-        else if (osName.startsWith("mac os x")) {
-            return "mac-osx";
-        }
-        else if (osName.startsWith("linux")) {
-            return "linux";
-        }
-        else if (osName.contains("nix") || osName.contains("nux") || osName.contains("aix"))  {
-            return "unix";
-        }
-        else {
-            return "unknown";
+        switch(OS.type()) {
+            case MacOsx:  return "mac-osx";
+            case Linux:   return "linux";
+            case Unix:    return "unix";
+            case Windows: return "windows";
+            default:      return "unknown";
         }
     }
 
