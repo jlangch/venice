@@ -14,7 +14,7 @@ REM #      +--venice.venice                                                    #
 REM ############################################################################
 
 set VENICE_CONSOLE_HOME=C:\Users\juerg\Desktop\scripts
-set VENICE_PROJECT_HOME=C:\Users/juerg\Documents\workspace\venice
+set VENICE_PROJECT_HOME=C:\Users\juerg\Documents\workspace\venice
 set VENICE_REPL_HOME=C:\Users\juerg\Desktop\venice
 
 
@@ -31,11 +31,9 @@ if not exist %VENICE_CONSOLE_HOME%\libs (
 )
 
 
-
 cd %VENICE_CONSOLE_HOME%
 
-
-%JAVA_17_HOME%\java.exe ^
+"%JAVA_17_HOME%\java.exe" ^
   -server ^
   -Xmx2G ^
   -XX:-OmitStackTraceInFastThrow ^
