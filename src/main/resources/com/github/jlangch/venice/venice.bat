@@ -8,22 +8,34 @@ REM # Layout:                                                                  #
 REM #    scripts                                                               #
 REM #      +--libs                                                             #
 REM #      |   +-- venice-x.y.z.jar                                            #
-REM #      +--venice.bat                                                        #
+REM #      |   +-- jansi-2.4.1.jar                                             #
+REM #      +--venice.bat                                                       #
 REM #      +--venice.venice                                                    #
 REM ############################################################################
 
-set VENICE_HOME={{INSTALL_PATH}}
+set VENICE_CONSOLE_HOME=/Users/juerg/Desktop/scripts
+set VENICE_PROJECT_HOME=/Users/juerg/Documents/workspace/venice
+set VENICE_REPL_HOME=/Users/juerg/Desktop/venice
 
-if not exist %VENICE_HOME% (
-  echo Error: The Venice console home dir %VENICE_HOME% does not exist!
+
+if not exist %VENICE_CONSOLE_HOME% (
+  echo Error: The Venice console home dir %VENICE_CONSOLE_HOME% does not exist!
   timeout /t 10
   exit 2
 )
 
-cd %VENICE_HOME%
+if not exist %VENICE_CONSOLE_HOME%\libs (
+  echo Error: The Venice console libs dir %VENICE_CONSOLE_HOME%\libs does not exist!
+  timeout /t 10
+  exit 2
+)
 
 
-java.exe ^
+
+cd %VENICE_CONSOLE_HOME%
+
+
+%JAVA_17_HOME%\java.exe ^
   -server ^
   -Xmx2G ^
   -XX:-OmitStackTraceInFastThrow ^

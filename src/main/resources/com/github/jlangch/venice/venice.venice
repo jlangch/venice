@@ -16,7 +16,6 @@
 ;; -----------------------------------------------------------------------------
 
 (load-module :gradlew)
-(load-module :tput)
 (load-module :ansi)
 
 (import :java.util.function.Consumer)
@@ -54,15 +53,14 @@
 
 (defonce proj-name "venice")
 
-(defonce proj-home (io/file home "Documents/workspace-omni/" proj-name))
+(defonce proj-home (str/strip-end (system-env :VENICE_PROJECT_HOME) "/"))
+(defonce repl-home (str/strip-end (system-env :VENICE_REPL_HOME) "/"))
 
-(defonce repl-home (io/file home "Desktop/venice"))
+(defonce java-8-home (str/strip-end (system-env :JAVA_8_HOME) "/"))
+(defonce java-11-home (str/strip-end (system-env :JAVA_11_HOME) "/"))
+(defonce java-home java-8-home)
 
 (defonce sonatype-user "xxxxxx")
-
-(defonce java-8-home (io/file (system-env :JAVA_8_HOME)))
-(defonce java-11-home (io/file (system-env :JAVA_11_HOME)))
-(defonce java-home java-8-home)
 
 (defonce cmd-line-prompt (str proj-name "> "))
 
@@ -76,22 +74,11 @@
 
 
 ;; -----------------------------------------------------------------------------
-;; Startup validation                                                          -
-;; -----------------------------------------------------------------------------
-
-(when-not (io/exists-dir? proj-home)
-  (throw (ex :VncException
-             (str "The project dir '" proj-home "' does not exist!"))))
-
-(when-not (io/exists-dir? repl-home)
-  (throw (ex :VncException
-             (str "The REPL dir '" repl-home "' does not exist!"))))
-
-
-
-;; -----------------------------------------------------------------------------
 ;; Commands                                                                    -
 ;; -----------------------------------------------------------------------------
+
+(defn exit []
+  (throw (ex :EofException "exit")))
 
 (defn deploy []
   ;; deploy the Venice jar to REPL
@@ -166,6 +153,13 @@
            \\/ \\___|_| |_|_|\\___\\___|
       """ )
 
+(defn fatal-error-and-exit [msg]
+  (println)
+  (error msg)
+  (println)
+  (sleep 5000)  ;; give the user time to read the error message
+  (throw (ex :EofException msg)))
+
 (defn status [msg]
   (println (ansi/style (str msg) (color :status))))
 
@@ -189,7 +183,6 @@
 (defn color [code]
   (-> (*repl-color-theme* COLORS (:light COLORS))
       (code :stdout)))
-
 
 (defn color-theme []
   *repl-color-theme*)
@@ -233,13 +226,6 @@
 
     """))
 
-(defn display-cmd-info []
-  (let [cols  (tput/cols)
-        left  (str/format "%s" proj-name)
-        right version
-        delim (str/repeat "-" (- cols 8 (count left) (count right)))]
-    (status (str/format "-- %s %s %s --" left delim right))))
-
 (defn run-command [cmd & args]
   (cond
     (nil? cmd)                    nil
@@ -257,8 +243,8 @@
     (match? cmd "C|colors")       (show-color-theme)
     (match? cmd "i|info")         (display-info)
     (match? cmd "h|help")         (help)
-    (match? cmd "x|exit")         (throw (ex :EofException "exit"))
-    (match? cmd "q|quit")         (throw (ex :EofException "exit"))
+    (match? cmd "x|exit")         (exit)
+    (match? cmd "q|quit")         (exit)
     :else                         (invalid-cmd (str "Invalid command: " 
                                                     cmd
                                                     " "
@@ -277,7 +263,6 @@
 (defn handle-command [cmd]
   (try
     (apply run-command (split-command cmd))
-    (display-cmd-info)
     (catch :EofException ex 
       (error "Terminating shell...")
       (sleep 1000)
@@ -286,8 +271,23 @@
       (error (str "Error: " (:message ex))))))
 
 
+
+;; -----------------------------------------------------------------------------
+;; MAIN                                                                        -
+;; -----------------------------------------------------------------------------
+
+(when-not (io/exists-dir? proj-home)
+  (fatal-error-and-exit "The Venice project dir '~{proj-home}' does not exist!"))
+
+(when-not (io/exists-dir? repl-home)
+  (fatal-error-and-exit "The REPL dir '~{repl-home}' does not exist!"))
+
+(when-not (io/exists-dir? java-home)
+  (fatal-error-and-exit "The JAVA home '~{java-home}' does not exist!"))
+
+
 (. *REPL* :setPrompt "shell> ")
 (. *REPL* :setHandler (proxify :Consumer { :accept handle-command }))
 
 (display-welcome-msg)
-(display-cmd-info)
+
