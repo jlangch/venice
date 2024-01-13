@@ -27,6 +27,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import org.junit.jupiter.api.Test;
 
 import com.github.jlangch.venice.Venice;
+import com.github.jlangch.venice.util.OS;
 
 
 public class TimingModuleTest {
@@ -79,7 +80,13 @@ public class TimingModuleTest {
 
         final String ret = (String)venice.eval(script1);
 
-        assertTrue(ret.matches("Elapsed: 1[0-9]{2}ms\n"));
+        // Must run on *nix and Windows
+        if (OS.isWindows()) {
+            assertTrue(ret.matches("Elapsed: 1[0-9]{2}ms\r\n"));
+        }
+        else {
+            assertTrue(ret.matches("Elapsed: 1[0-9]{2}ms\n"));
+        }
     }
 
     @Test
@@ -108,7 +115,13 @@ public class TimingModuleTest {
 
         final String ret = (String)venice.eval(script1);
 
-        assertTrue(ret.matches("Started\nElapsed: 1[0-9]{2}ms\n"));
+        // Must run on *nix and Windows
+        if (OS.isWindows()) {
+            assertTrue(ret.matches("Started\r\nElapsed: 1[0-9]{2}ms\r\n"));
+        }
+        else {
+            assertTrue(ret.matches("Started\nElapsed: 1[0-9]{2}ms\n"));
+        }
     }
 
     @Test
@@ -139,7 +152,13 @@ public class TimingModuleTest {
 
         final String ret = (String)venice.eval(script1);
 
-        assertTrue(ret.matches("Started\nDone\nElapsed: 1[0-9]{2}ms\n"));
+        // Must run on *nix and Windows
+        if (OS.isWindows()) {
+            assertTrue(ret.matches("Started\r\nDone\r\nElapsed: 1[0-9]{2}ms\r\n"));
+        }
+        else {
+            assertTrue(ret.matches("Started\nDone\nElapsed: 1[0-9]{2}ms\n"));
+        }
     }
 
     @Test
@@ -171,6 +190,12 @@ public class TimingModuleTest {
 
         final String ret = (String)venice.eval(script1);
 
-        assertTrue(ret.matches("Started\n20\nElapsed: 1[0-9]{2}ms\n"));
+        // Must run on *nix and Windows
+        if (OS.isWindows()) {
+        	assertTrue(ret.matches("Started\r\n20\r\nElapsed: 1[0-9]{2}ms\r\n"));
+        }
+        else {
+        	assertTrue(ret.matches("Started\n20\nElapsed: 1[0-9]{2}ms\n"));
+        }
     }
 }

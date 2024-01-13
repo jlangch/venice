@@ -29,6 +29,8 @@ import java.util.List;
 
 import org.junit.jupiter.api.Test;
 
+import com.github.jlangch.venice.impl.util.StringUtil;
+
 
 public class CallbackPrintStreamTest {
 
@@ -50,11 +52,13 @@ public class CallbackPrintStreamTest {
             System.out.println(500.0);
 
             assertEquals(5, captured.size());
-            assertEquals("100\n", captured.get(0));
-            assertEquals("abc\n", captured.get(1));
-            assertEquals("d\ne\n", captured.get(2));
-            assertEquals("300-400", captured.get(3));
-            assertEquals("500.0\n", captured.get(4));
+
+            // Must run on *nix and Windows
+            assertEquals("100\n",   StringUtil.crlf_to_lf(captured.get(0)));
+            assertEquals("abc\n",   StringUtil.crlf_to_lf(captured.get(1)));
+            assertEquals("d\ne\n",  StringUtil.crlf_to_lf(captured.get(2)));
+            assertEquals("300-400", StringUtil.crlf_to_lf(captured.get(3)));
+            assertEquals("500.0\n", StringUtil.crlf_to_lf(captured.get(4)));
         }
         finally {
             System.setOut(orgStdOut);

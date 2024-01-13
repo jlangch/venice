@@ -32,6 +32,7 @@ import org.junit.jupiter.api.Test;
 
 import com.github.jlangch.venice.Parameters;
 import com.github.jlangch.venice.Venice;
+import com.github.jlangch.venice.impl.util.StringUtil;
 
 
 public class TraceModuleTest {
@@ -272,7 +273,8 @@ public class TraceModuleTest {
                 "        trace/tee                             \n" +
                 "        (- 1))))                                ";
 
-        assertEquals("trace: 4\n", venice.eval(script));
+        // Must run on *nix and Windows
+        assertEquals("trace: 4\n", StringUtil.crlf_to_lf((String)venice.eval(script)));
     }
 
 }
