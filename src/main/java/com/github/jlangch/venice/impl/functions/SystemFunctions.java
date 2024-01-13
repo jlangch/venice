@@ -886,7 +886,7 @@ public class SystemFunctions {
 
     public static String osType() {
         switch(OS.type()) {
-            case MacOsx:  return "mac-osx";
+            case MacOSX:  return "mac-osx";
             case Linux:   return "linux";
             case Unix:    return "unix";
             case Windows: return "windows";

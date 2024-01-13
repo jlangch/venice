@@ -30,7 +30,7 @@ public class OS {
             return OsType.Windows;
         }
         else if (osName.startsWith("mac os x")) {
-            return OsType.MacOsx;
+            return OsType.MacOSX;
         }
         else if (osName.startsWith("linux")) {
             return OsType.Linux;
@@ -43,8 +43,8 @@ public class OS {
         }
     }
 
-    public static boolean isMacOsx() {
-        return OsType.MacOsx == type();
+    public static boolean isMacOSX() {
+        return OsType.MacOSX == type();
     }
 
     public static boolean isLinux() {
@@ -56,5 +56,5 @@ public class OS {
     }
 
 
-    public static enum OsType { MacOsx, Unix, Linux, Windows, Unknown };
+    public static enum OsType { MacOSX, Unix, Linux, Windows, Unknown };
 }
