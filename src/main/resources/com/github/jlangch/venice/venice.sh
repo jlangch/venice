@@ -11,11 +11,21 @@
 #      +--venice.venice                                                       #
 ###############################################################################
 
-cd /Users/juerg/Desktop/scripts/
+export VENICE_HOME={{INSTALL_PATH}}
+
+
+if [ ! -d ${VENICE_HOME} ]; then
+  echo "Error: The Venice console home dir${VENICE_HOME} does not exist!"
+  sleep 5
+  exit 1
+fi
+
+cd ${VENICE_HOME}
 
 ${JAVA_11_HOME}/bin/java \
   -server \
-  -cp "libs/*" com.github.jlangch.venice.Launcher \
+  -cp "libs:libs/*" \
+  com.github.jlangch.venice.Launcher \
   -Xmx2G \
   -XX:-OmitStackTraceInFastThrow \
   -colors \

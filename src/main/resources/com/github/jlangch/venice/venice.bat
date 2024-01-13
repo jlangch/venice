@@ -1,32 +1,35 @@
 @ECHO OFF
+REM ############################################################################
+REM # Venice management script                                                 #
+REM # -------------------------------------------------------------------------#
+REM # Starts a Venice REPL, loads 'venice.venice' and runs it.                 #
+REM #                                                                          #
+REM # Layout:                                                                  #
+REM #    scripts                                                               #
+REM #      +--libs                                                             #
+REM #      |   +-- venice-x.y.z.jar                                            #
+REM #      +--venice.bat                                                        #
+REM #      +--venice.venice                                                    #
+REM ############################################################################
 
-REM https://ss64.com/nt/cmd.html
+set VENICE_HOME={{INSTALL_PATH}}
 
-rebuild () {
-  ./gradlew --warning-mode all clean shadowJar
-  rm ${REPL_HOME}/libs/venice-*.jar
-  cp build/libs/venice-*.jar ${REPL_HOME}/libs
-  echo "Starting new REPL..."
-  start
-}
+if not exist %VENICE_HOME% (
+  echo Error: The Venice console home dir %VENICE_HOME% does not exist!
+  timeout /t 10
+  exit 2
+)
 
-REM %programfiles(x86)%
-set JAVA_HOME=%programfiles%\zulu\zulu-8
-set REPL_HOME=%homedrive%%homepath%\Desktop\venice
-set WORKSPACE_HOME=%homedrive%%homepath%\workspace\venice
+cd %VENICE_HOME%
 
-set PATH=%JAVA_HOME%\bin:%PATH%
 
-cd %WORKSPACE_HOME%
-
-:start 
-%REPL_HOME%\repl.bat
-EXIT /B 0
-
-:rebuild
-gradlew --warning-mode all clean shadowJar
-del %REPL_HOME%\libs\venice-*.jar
-copy build\libs\venice-*.jar %REPL_HOME%\libs
-EXIT /B 0
-
-/bin/sh
+java.exe ^
+  -server ^
+  -Xmx2G ^
+  -XX:-OmitStackTraceInFastThrow ^
+  -cp "libs;libs/*" ^
+  com.github.jlangch.venice.Launcher ^
+  -colors-darkmode ^
+  -macroexpand ^
+  -app-repl venice.venice
+ 
