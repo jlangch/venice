@@ -157,9 +157,23 @@ public class IOFunctionsTest {
 
         if (OS.isWindows()) {
             assertEquals("C:\\tmp\\test\\x.txt", venice.eval("(io/file-path (io/file \"C:/tmp/test/x.txt\"))"));
+            assertEquals("C:\\tmp\\test\\x.txt", venice.eval("(io/file-path (io/file \"C:\" \"tmp\" \"test\" \"x.txt\"))"));
         }
         else {
             assertEquals("/tmp/test/x.txt", venice.eval("(io/file-path (io/file \"/tmp/test/x.txt\"))"));
+            assertEquals("/tmp/test/x.txt", venice.eval("(io/file-path (io/file \"/\" \"tmp\" \"test\" \"x.txt\"))"));
+        }
+    }
+
+    @Test
+    public void test_io_file_path_slashify() {
+        final Venice venice = new Venice();
+
+        if (OS.isWindows()) {
+            assertEquals("C:/tmp/test/x.txt", venice.eval("(io/file-path-slashify (io/file \"C:\" \"tmp\" \"test\" \"x.txt\"))"));
+        }
+        else {
+            assertEquals("/tmp/test/x.txt", venice.eval("(io/file-path-slashify (io/file \"/tmp/test/x.txt\"))"));
         }
     }
 

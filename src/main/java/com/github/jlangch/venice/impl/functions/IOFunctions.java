@@ -94,6 +94,7 @@ import com.github.jlangch.venice.impl.util.io.IOStreamUtil;
 import com.github.jlangch.venice.impl.util.io.InternetUtil;
 import com.github.jlangch.venice.javainterop.IInterceptor;
 import com.github.jlangch.venice.javainterop.ILoadPaths;
+import com.github.jlangch.venice.util.OS;
 
 import net.lingala.zip4j.util.FileUtils;
 
@@ -121,9 +122,13 @@ public class IOFunctions {
                     .examples(
                         "(io/file \"/tmp/test.txt\")",
                         "(io/file \"/temp\" \"test.txt\")",
-                        "(io/file \"/temp\" \"test\" \"test.txt\")",
-                        "(io/file (io/file \"/temp\") \"test\" \"test.txt\")",
-                        "(io/file (. :java.io.File :new \"/tmp/test.txt\"))")
+                        "(io/file \"/\" \"temp\" \"test\" \"test.txt\")",
+                        "(io/file (io/file \"/\" \"temp\") \"test\" \"test.txt\")",
+                        "(io/file (. :java.io.File :new \"/tmp/test.txt\"))",
+                        ";; Windows:\n" +
+                        ";;   (io/file \"C:\\\\tmp\\\\test.txt\") \n" +
+                        ";;   (io/file \"C:/tmp/test.txt\")",
+        				";;   (io/file \"C:\" \"tmp\" \"test.txt\")")
                     .seeAlso("io/file-name", "io/file-parent", "io/file-path", "io/file-absolute", "io/file-canonical")
                     .build()
         ) {
@@ -207,6 +212,41 @@ public class IOFunctions {
 
             private static final long serialVersionUID = -1848883965231344442L;
         };
+
+    public static VncFunction io_file_path_slashify =
+            new VncFunction(
+                    "io/file-path-slashify",
+                    VncFunction
+                        .meta()
+                        .arglists("(io/file-path-slashify f)")
+                        .doc("Returns the path of the file f as a string, turns backslashes into slashes. \n\n" +
+                        	 "f must be a file or a string (file path).\n\n" +
+                        	 "C:\\Users\\foo\\image.png -> C:/Users/foo/image.png\n\n" +
+                        	 "Note: Windows only. On other OSs works identical to 'io/file-path'.")
+                        .examples("(io/file-path-slashify (io/file \"C:\" \"Users\" \"foo\" \"image.png\"))")
+                        .seeAlso("io/file-path")
+                        .build()
+            ) {
+                @Override
+                public VncVal apply(final VncList args) {
+                    ArityExceptions.assertArity(this, args, 1);
+
+                    final File f = convertToFile(
+                            args.first(),
+                            "Function 'io/file-path' does not allow %s as f");
+
+
+                    if (OS.isWindows()) {
+                        final String p = f.getPath().replace('\\', '/').replaceAll("//", "/");
+                        return new VncString(p);
+                    }
+                    else {
+                        return new VncString(f.getPath());
+                    }
+                }
+
+                private static final long serialVersionUID = -1848883965231344442L;
+            };
 
     public static VncFunction io_file_canonical =
         new VncFunction(
@@ -3412,6 +3452,7 @@ public class IOFunctions {
                     .add(io_file)
                     .add(io_file_Q)
                     .add(io_file_path)
+                    .add(io_file_path_slashify)
                     .add(io_file_canonical)
                     .add(io_file_absolute)
                     .add(io_file_parent)
