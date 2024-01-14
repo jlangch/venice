@@ -21,6 +21,7 @@
  */
 package com.github.jlangch.venice.modules;
 
+import static com.github.jlangch.venice.impl.util.StringUtil.to_lf;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
@@ -51,9 +52,9 @@ public class AppModuleTest {
         FileUtil.mkdir(subdir);
 
         FileUtil.save(
-                "(do                                              \n" +
-                "  (load-file (io/file \"util\" \"def.venice\"))  \n" +
-                "  (println XXX))                                  ",
+                "(do                                   \n" +
+                "  (load-file \"util/def.venice\")     \n" +
+                "  (println XXX)))                     ",
                 new File(dir, "main.venice"),
                 true);
 
@@ -66,23 +67,23 @@ public class AppModuleTest {
             // ensure there are no Windows backslashes in the string
             // file paths!
             final String mainFile = new File(dir, "main.venice")
-                                          .getAbsolutePath()
-                                          .replace('\\', '/');
+                                         .getAbsolutePath()
+                                         .replace('\\', '/');
             final String defFile = new File(subdir, "def.venice")
                                          .getAbsolutePath()
                                          .replace('\\', '/');
-            final String baseDir = dir.getAbsolutePath()
+            final String destDir = dir.getAbsolutePath()
                                       .replace('\\', '/');
 
             final String script =
-                "(do                                                    \n"
-              + "  (load-module :app)                                   \n"
-              + "  (app/build                                           \n"
-              + "     \"test\"                                          \n"
-              + "     \"main.venice\"                                   \n"
-              + "     { \"main.venice\"      \"" + mainFile + "\"       \n"
-              + "       \"util/def.venice\"  \"" + defFile + "\" }      \n"
-              + "     \"" + baseDir + "\"))";
+                "(do                                                \n"
+              + "  (load-module :app)                               \n"
+              + "  (app/build                                       \n"
+              + "     \"test\"                                      \n"
+              + "     \"main.venice\"                               \n"
+              + "     { \"main.venice\"      \"" + mainFile + "\"   \n"
+              + "       \"util/def.venice\"  \"" + defFile  + "\" } \n"
+              + "     \"" + destDir + "\"))";
 
             final Map<?,?> result = (Map<?,?>)venice.eval(script);
 
@@ -107,8 +108,8 @@ public class AppModuleTest {
             stdout.flush();
             stderr.flush();
 
-            assertEquals("100\n", stdout.getOutput());
-            assertEquals("", stderr.getOutput());
+            assertEquals("100\n", to_lf(stdout.getOutput()));
+            assertEquals("", to_lf(stderr.getOutput()));
         }
         catch(Exception ex) {
             throw ex;
