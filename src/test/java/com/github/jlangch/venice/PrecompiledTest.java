@@ -21,6 +21,7 @@
  */
 package com.github.jlangch.venice;
 
+import static com.github.jlangch.venice.impl.util.StringUtil.to_lf;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNull;
@@ -423,7 +424,7 @@ public class PrecompiledTest {
 
         assertEquals(
                 "00000000: 0001 0203                                ....            \n\n",
-                result);
+                to_lf(result));
     }
 
     @Test
@@ -440,7 +441,7 @@ public class PrecompiledTest {
 
         assertEquals(
                 "00000000: 0001 0203                                ....            \n\n",
-                result);
+                to_lf(result));
     }
 
     @Test

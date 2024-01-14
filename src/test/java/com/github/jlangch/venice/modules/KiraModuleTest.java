@@ -21,6 +21,7 @@
  */
 package com.github.jlangch.venice.modules;
 
+import static com.github.jlangch.venice.impl.util.StringUtil.to_lf;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import org.junit.jupiter.api.Test;
@@ -355,7 +356,7 @@ public class KiraModuleTest {
                 + "fruits: apple peach \n"
                 + "when: is large\n"
                 + "if: 100\n",
-                venice.eval(script));
+                to_lf(venice.eval(script)));
     }
 
 
