@@ -139,7 +139,7 @@
 (defn- grep-in-dir [dir file-glob line-regex]
   ;; return a list of tuples [filename line-no matched-line]
   (->> (io/list-files-glob dir file-glob)
-       (map (fn [f] (named-file. (strip-leading-dir f dir) f)))
+       (map (fn [f] (named-file. (io/file-name f) f)))
        (grep-in-files line-regex)))
 
 (defn- grep-in-zipfile [zip file-glob line-regex]
