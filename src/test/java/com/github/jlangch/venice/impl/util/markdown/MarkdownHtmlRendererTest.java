@@ -21,6 +21,7 @@
  */
 package com.github.jlangch.venice.impl.util.markdown;
 
+import static com.github.jlangch.venice.impl.util.StringUtil.to_lf;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import org.junit.jupiter.api.Test;
@@ -40,7 +41,8 @@ public class MarkdownHtmlRendererTest {
 
         final String rendered = Markdown.parse(md).renderToHtml();
 
-        assertEquals(expected, rendered);
+        // Convert CR-LF to LF (running tests under Windows)
+        assertEquals(expected, to_lf(rendered));
     }
 
     @Test
@@ -61,7 +63,8 @@ public class MarkdownHtmlRendererTest {
 
         final String rendered = Markdown.parse(md).renderToHtml();
 
-        assertEquals(expected, rendered);
+        // Convert CR-LF to LF (running tests under Windows)
+        assertEquals(expected, to_lf(rendered));
     }
 
     @Test
@@ -92,7 +95,8 @@ public class MarkdownHtmlRendererTest {
 
         final String rendered = Markdown.parse(md).renderToHtml();
 
-        assertEquals(expected, rendered);
+        // Convert CR-LF to LF (running tests under Windows)
+        assertEquals(expected, to_lf(rendered));
     }
 
     @Test
@@ -112,7 +116,8 @@ public class MarkdownHtmlRendererTest {
 
         final String rendered = Markdown.parse(md).renderToHtml();
 
-        assertEquals(expected, rendered);
+        // Convert CR-LF to LF (running tests under Windows)
+        assertEquals(expected, to_lf(rendered));
     }
 
     @Test
@@ -159,7 +164,8 @@ public class MarkdownHtmlRendererTest {
 
         final String rendered = Markdown.parse(md).renderToHtml();
 
-        assertEquals(expected, rendered);
+        // Convert CR-LF to LF (running tests under Windows)
+        assertEquals(expected, to_lf(rendered));
     }
 
     @Test
@@ -206,7 +212,8 @@ public class MarkdownHtmlRendererTest {
 
         final String rendered = Markdown.parse(md).renderToHtml();
 
-        assertEquals(expected, rendered);
+        // Convert CR-LF to LF (running tests under Windows)
+        assertEquals(expected, to_lf(rendered));
     }
 
     @Test
@@ -253,7 +260,8 @@ public class MarkdownHtmlRendererTest {
 
         final String rendered = Markdown.parse(md).renderToHtml();
 
-        assertEquals(expected, rendered);
+        // Convert CR-LF to LF (running tests under Windows)
+        assertEquals(expected, to_lf(rendered));
     }
 
 }
