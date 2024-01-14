@@ -63,15 +63,12 @@ public class LoadScriptTest {
             final File file = Files.createTempFile("test", ".venice").normalize().toFile();
             Files.write(file.toPath(), script_1.getBytes("UTF-8"), StandardOpenOption.TRUNCATE_EXISTING);
 
-            final String script_2 =
-                    String.format(
-                        "(do                   \n" +
-                        "  (load-file \"%s\")  \n" +
-                        "  (xxx/sum 1 2))        ",
-                    file.getPath());
+            final String script_2 = "(do                 \n" +
+                                    "  (load-file file)  \n" +
+                                    "  (xxx/sum 1 2))    ";
 
             try {
-                assertEquals(14L, new Venice().eval(script_2));
+                assertEquals(14L, new Venice().eval(script_2, Parameters.of("file", file)));
             }
             finally {
                 file.delete();
@@ -93,15 +90,12 @@ public class LoadScriptTest {
             final File file = Files.createTempFile("test", ".venice").normalize().toFile();
             Files.write(file.toPath(), script_1.getBytes("UTF-8"), StandardOpenOption.TRUNCATE_EXISTING);
 
-            final String script_2 =
-                    String.format(
-                        "(do                                 \n" +
-                        "  (load-file \"%s\" ['xxx :as 'x])  \n" +
-                        "  (x/sum 1 2))                      ",
-                    file.getPath());
+            final String script_2 = "(do                               \n" +
+                                    "  (load-file file ['xxx :as 'x])  \n" +
+                                    "  (x/sum 1 2))                    ";
 
             try {
-                assertEquals(14L, new Venice().eval(script_2));
+                assertEquals(14L, new Venice().eval(script_2, Parameters.of("file", file)));
             }
             finally {
                 file.delete();
@@ -123,13 +117,12 @@ public class LoadScriptTest {
             File file = Files.createTempFile("test", ".venice").normalize().toFile();
             Files.write(file.toPath(), script_1.getBytes("UTF-8"), StandardOpenOption.TRUNCATE_EXISTING);
 
-            final String script_2 =
-                    "(do                   \n" +
-                    "  (load-file f)       \n" +
-                    "  (xxx/sum 1 2)))       ";
+            final String script_2 = "(do                   \n" +
+                                    "  (load-file file)    \n" +
+                                    "  (xxx/sum 1 2)))       ";
 
             try {
-                assertEquals(14L, new Venice().eval(script_2, Parameters.of("f", file.getAbsolutePath())));
+                assertEquals(14L, new Venice().eval(script_2, Parameters.of("file", file.getAbsolutePath())));
             }
             finally {
                 file.delete();
@@ -139,13 +132,12 @@ public class LoadScriptTest {
             file = Files.createTempFile("test", ".venice").normalize().toFile();
             Files.write(file.toPath(), script_1.getBytes("UTF-8"), StandardOpenOption.TRUNCATE_EXISTING);
 
-            final String script_3 =
-                    "(do                    \n" +
-                    "  (load-file f true)   \n" +
-                    "  (xxx/sum 1 2)))       ";
+            final String script_3 = "(do                       \n" +
+                                    "  (load-file file true)   \n" +
+                                    "  (xxx/sum 1 2)))         ";
 
             try {
-                assertEquals(14L, new Venice().eval(script_3, Parameters.of("f", file.getAbsolutePath())));
+                assertEquals(14L, new Venice().eval(script_3, Parameters.of("file", file.getAbsolutePath())));
             }
             finally {
                 file.delete();
@@ -167,15 +159,12 @@ public class LoadScriptTest {
             final File file = Files.createTempFile("test", ".venice").normalize().toFile();
             Files.write(file.toPath(), script_1.getBytes("UTF-8"), StandardOpenOption.TRUNCATE_EXISTING);
 
-            final String script_2 =
-                    String.format(
-                        "(do                         \n" +
-                        "  (load-file \"%s\" true)   \n" +
-                        "  (xxx/sum 1 2))              ",
-                    file.getPath());
+            final String script_2 = "(do                       \n" +
+                                    "  (load-file file true)   \n" +
+                                    "  (xxx/sum 1 2))          ";
 
             try {
-                assertEquals(14L, new Venice().eval(script_2));
+                assertEquals(14L, new Venice().eval(script_2, Parameters.of("file", file)));
             }
             finally {
                 file.delete();
@@ -197,15 +186,12 @@ public class LoadScriptTest {
             final File file = Files.createTempFile("test", ".venice").normalize().toFile();
             Files.write(file.toPath(), script_1.getBytes("UTF-8"), StandardOpenOption.TRUNCATE_EXISTING);
 
-            final String script_2 =
-                    String.format(
-                        "(do                                      \n" +
-                        "  (load-file \"%s\" true ['xxx :as 'x])  \n" +
-                        "  (x/sum 1 2))                             ",
-                    file.getPath());
+            final String script_2 = "(do                                    \n" +
+                                    "  (load-file file true ['xxx :as 'x])  \n" +
+                                    "  (x/sum 1 2))                         ";
 
             try {
-                assertEquals(14L, new Venice().eval(script_2));
+                assertEquals(14L, new Venice().eval(script_2, Parameters.of("file", file)));
             }
             finally {
                 file.delete();
