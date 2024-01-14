@@ -21,6 +21,7 @@
  */
 package com.github.jlangch.venice.impl.reader;
 
+import static com.github.jlangch.venice.impl.util.StringUtil.to_lf;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import java.util.List;
@@ -31,6 +32,7 @@ import org.junit.jupiter.api.Test;
 import com.github.jlangch.venice.impl.modules.ModuleLoader;
 import com.github.jlangch.venice.impl.util.StopWatch;
 import com.github.jlangch.venice.impl.util.StringUtil;
+import com.github.jlangch.venice.util.OS;
 
 
 public class HighlightParserTest {
@@ -160,8 +162,14 @@ public class HighlightParserTest {
                                   .map(i -> i.getForm())
                                   .collect(Collectors.joining());
 
-        assertEquals(core.length(), joined.length());
-        assertEquals(core, joined);
+        if (OS.isWindows()) {
+            assertEquals(to_lf(core).length(), to_lf(joined).length());
+            assertEquals(to_lf(core), to_lf(joined));
+        }
+        else {
+            assertEquals(core.length(), joined.length());
+            assertEquals(core, joined);
+        }
     }
 
 //    private void diff(final String s1, final String s2) {

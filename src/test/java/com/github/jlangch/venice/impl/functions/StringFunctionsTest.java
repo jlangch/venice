@@ -21,6 +21,7 @@
  */
 package com.github.jlangch.venice.impl.functions;
 
+import static com.github.jlangch.venice.impl.util.StringUtil.to_lf;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
@@ -1096,9 +1097,9 @@ public class StringFunctionsTest {
         assertEquals("abcde…", venice.eval("(str/align 6 :center :ellipsis-right \"abcdefgh\")"));
         assertEquals("abcde…", venice.eval("(str/align 6 :right  :ellipsis-right \"abcdefgh\")"));
 
-        assertEquals("abcdef\ngh    ", venice.eval("(str/align 6 :left   :newline \"abcdefgh\")"));
-        assertEquals("abcdef\n  gh  ", venice.eval("(str/align 6 :center :newline \"abcdefgh\")"));
-        assertEquals("abcdef\n    gh", venice.eval("(str/align 6 :right  :newline \"abcdefgh\")"));
+        assertEquals("abcdef\ngh    ", to_lf(venice.eval("(str/align 6 :left   :newline \"abcdefgh\")")));
+        assertEquals("abcdef\n  gh  ", to_lf(venice.eval("(str/align 6 :center :newline \"abcdefgh\")")));
+        assertEquals("abcdef\n    gh", to_lf(venice.eval("(str/align 6 :right  :newline \"abcdefgh\")")));
 
 
         assertEquals("cdef h", venice.eval("(str/align 6 :left   :clip-left \"abcdef h\")"));
@@ -1117,9 +1118,9 @@ public class StringFunctionsTest {
         assertEquals("abcde…", venice.eval("(str/align 6 :center :ellipsis-right \"abcdef h\")"));
         assertEquals("abcde…", venice.eval("(str/align 6 :right  :ellipsis-right \"abcdefgh\")"));
 
-        assertEquals("abcdef\nh     ", venice.eval("(str/align 6 :left   :newline \"abcdef h\")"));
-        assertEquals("abcdef\n   h  ", venice.eval("(str/align 6 :center :newline \"abcdef h\")"));
-        assertEquals("abcdef\n     h", venice.eval("(str/align 6 :right  :newline \"abcdef h\")"));
+        assertEquals("abcdef\nh     ", to_lf(venice.eval("(str/align 6 :left   :newline \"abcdef h\")")));
+        assertEquals("abcdef\n   h  ", to_lf(venice.eval("(str/align 6 :center :newline \"abcdef h\")")));
+        assertEquals("abcdef\n     h", to_lf(venice.eval("(str/align 6 :right  :newline \"abcdef h\")")));
     }
 
     @Test

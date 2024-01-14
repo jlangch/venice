@@ -472,14 +472,14 @@ public class ComponentModuleTest {
                   "      (c/stop system))))                                                          ";
 
         assertEquals(
-        	"database store1 started\n" +
-        	"database store2 started\n" +
-        	"server started. using the stores store1 , store2\n" +
-        	"Accessing the system...\n" +
-        	"server stopped\n" +
-        	"database store2 stopped\n" +
-        	"database store1 stopped\n",
-        	to_lf(venice.eval(script)));
+            "database store1 started\n" +
+            "database store2 started\n" +
+            "server started. using the stores store1 , store2\n" +
+            "Accessing the system...\n" +
+            "server stopped\n" +
+            "database store2 stopped\n" +
+            "database store1 stopped\n",
+            to_lf(venice.eval(script)));
     }
 
 }
