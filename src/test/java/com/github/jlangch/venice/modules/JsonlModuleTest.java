@@ -21,6 +21,7 @@
  */
 package com.github.jlangch.venice.modules;
 
+import static com.github.jlangch.venice.impl.util.StringUtil.to_lf;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import org.junit.jupiter.api.Test;
@@ -92,27 +93,31 @@ public class JsonlModuleTest {
 
         assertEquals(
                 "{\"a\":1}\n{\"b\":2}",
-                venice.eval("(do                                   \n" +
-                            "  (load-module :jsonl)                \n" +
-                            "  (jsonl/write-str [{:a 1} {:b 2}]))  "));
+                to_lf(
+                    venice.eval("(do                                   \n" +
+                                "  (load-module :jsonl)                \n" +
+                                "  (jsonl/write-str [{:a 1} {:b 2}]))  ")));
 
         assertEquals(
                 "{\"a\":1}\n{\"b\":2}\n{\"c\":3}",
-                venice.eval("(do                                          \n" +
-                            "  (load-module :jsonl)                       \n" +
-                            "  (jsonl/write-str [{:a 1} {:b 2} {:c 3}]))  "));
+                to_lf(
+                    venice.eval("(do                                          \n" +
+                                "  (load-module :jsonl)                       \n" +
+                                "  (jsonl/write-str [{:a 1} {:b 2} {:c 3}]))  ")));
 
         assertEquals(
                 "{\"a\":1,\"b\":2}\n{\"c\":3,\"d\":4}",
-                venice.eval("(do                                             \n" +
-                            "  (load-module :jsonl)                          \n" +
-                            "  (jsonl/write-str [{:a 1 :b 2} {:c 3 :d 4}]))  "));
+                to_lf(
+                    venice.eval("(do                                             \n" +
+                                "  (load-module :jsonl)                          \n" +
+                                "  (jsonl/write-str [{:a 1 :b 2} {:c 3 :d 4}]))  ")));
 
         assertEquals(
                 "{\"a\":1,\"d\":1}\n{\"b\":2,\"d\":2}\n{\"c\":3,\"d\":3}",
-                venice.eval("(do                                                         \n" +
-                            "  (load-module :jsonl)                                      \n" +
-                            "  (jsonl/write-str [{:a 1 :d 1} {:b 2 :d 2} {:c 3 :d 3}]))  "));
+                to_lf(
+                    venice.eval("(do                                                         \n" +
+                                "  (load-module :jsonl)                                      \n" +
+                                "  (jsonl/write-str [{:a 1 :d 1} {:b 2 :d 2} {:c 3 :d 3}]))  ")));
     }
 
 
@@ -233,11 +238,11 @@ public class JsonlModuleTest {
 
         assertEquals(
                 "{\"a\":100,\"b\":200}\n{\"a\":101,\"b\":201}",
-                venice.eval(script2));
+                to_lf(venice.eval(script2)));
 
         assertEquals(
                 "{\"a\":100,\"b\":200}\n{\"a\":101,\"b\":201}\n{\"a\":102,\"b\":202}",
-                venice.eval(script3));
+                to_lf(venice.eval(script3)));
 
         assertEquals(
                 "({:a 100 :b 200} {:a 101 :b 201} {:a 102 :b 202})",
@@ -315,19 +320,19 @@ public class JsonlModuleTest {
 
         assertEquals(
                 "{\"a\":100,\"b\":200}\n",
-                venice.eval(script1));
+                to_lf(venice.eval(script1)));
 
         assertEquals(
                 "{\"a\":100,\"b\":200}\n{\"a\":101,\"b\":201}\n",
-                venice.eval(script2));
+                to_lf(venice.eval(script2)));
 
         assertEquals(
                 "{\"a\":100,\"b\":200}\n{\"a\":101,\"b\":201}\n{\"a\":102,\"b\":202}\n",
-                venice.eval(script3));
+                to_lf(venice.eval(script3)));
 
         assertEquals(
                 "{\"a\":100,\"b\":200}\n{\"a\":101,\"b\":201}\n{\"a\":102,\"b\":202}",
-                venice.eval(script4));
+                to_lf(venice.eval(script4)));
 
         assertEquals(
                 "({:a 100 :b 200} {:a 101 :b 201} {:a 102 :b 202})",

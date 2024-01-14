@@ -515,6 +515,15 @@ public class StringUtil {
         return str.replaceAll("[\\r]", "");
     }
 
+    // Simplified helper for unit tests
+    public static String to_lf(final Object str) {
+        if (str == null) {
+            return null;
+        }
+
+        return crlf_to_lf((String)str);
+    }
+
     public static String decodeUnicode(final String s) {
         String working = s;
         int index;
