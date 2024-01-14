@@ -1076,9 +1076,9 @@ public class StringFunctionsTest {
         assertEquals("abcde…", venice.eval("(str/align 6 :center :ellipsis-right \"abcdefg\")"));
         assertEquals("abcde…", venice.eval("(str/align 6 :right  :ellipsis-right \"abcdefg\")"));
 
-        assertEquals("abcdef\ng     ", venice.eval("(str/align 6 :left   :newline \"abcdefg\")"));
-        assertEquals("abcdef\n   g  ", venice.eval("(str/align 6 :center :newline \"abcdefg\")"));
-        assertEquals("abcdef\n     g", venice.eval("(str/align 6 :right  :newline \"abcdefg\")"));
+        assertEquals("abcdef\ng     ", to_lf(venice.eval("(str/align 6 :left   :newline \"abcdefg\")")));
+        assertEquals("abcdef\n   g  ", to_lf(venice.eval("(str/align 6 :center :newline \"abcdefg\")")));
+        assertEquals("abcdef\n     g", to_lf(venice.eval("(str/align 6 :right  :newline \"abcdefg\")")));
 
 
         assertEquals("cdefgh", venice.eval("(str/align 6 :left   :clip-left \"abcdefgh\")"));

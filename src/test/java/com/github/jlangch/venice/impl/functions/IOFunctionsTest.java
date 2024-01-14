@@ -128,9 +128,9 @@ public class IOFunctionsTest {
         final Venice venice = new Venice();
 
         if (OS.isWindows()) {
-            assertTrue((Boolean)venice.eval("(io/file? (io/file \"C:\\tmp\"))"));
-            assertTrue((Boolean)venice.eval("(io/file? (io/file \"C:\\tmp\" \"a.txt\"))"));
-            assertTrue((Boolean)venice.eval("(io/file? (io/file (io/file \"C:\\tmp\") \"a.txt\"))"));
+            assertTrue((Boolean)venice.eval("(io/file? (io/file \"C:/tmp\"))"));
+            assertTrue((Boolean)venice.eval("(io/file? (io/file \"C:/tmp\" \"a.txt\"))"));
+            assertTrue((Boolean)venice.eval("(io/file? (io/file (io/file \"C:/tmp\") \"a.txt\"))"));
         }
         else {
             assertTrue((Boolean)venice.eval("(io/file? (io/file \"/tmp\"))"));
@@ -144,7 +144,7 @@ public class IOFunctionsTest {
         final Venice venice = new Venice();
 
         if (OS.isWindows()) {
-            assertEquals("C:\\tmp\test", venice.eval("(io/file-path (io/file-parent (io/file \"C:\\tmp\\test\\x.txt\")))"));
+            assertEquals("C:\\tmp\\test", venice.eval("(io/file-path (io/file-parent (io/file \"C:/tmp/test/x.txt\")))"));
         }
         else {
             assertEquals("/tmp/test", venice.eval("(io/file-path (io/file-parent (io/file \"/tmp/test/x.txt\")))"));
@@ -156,7 +156,7 @@ public class IOFunctionsTest {
         final Venice venice = new Venice();
 
         if (OS.isWindows()) {
-            assertEquals("C:\\tmp\\test\\x.txt", venice.eval("(io/file-path (io/file \"C:\\tmp\\test\\x.txt\"))"));
+            assertEquals("C:\\tmp\\test\\x.txt", venice.eval("(io/file-path (io/file \"C:/tmp/test/x.txt\"))"));
         }
         else {
             assertEquals("/tmp/test/x.txt", venice.eval("(io/file-path (io/file \"/tmp/test/x.txt\"))"));
@@ -168,7 +168,7 @@ public class IOFunctionsTest {
         final Venice venice = new Venice();
 
         if (OS.isWindows()) {
-            assertEquals("x.txt", venice.eval("(io/file-name (io/file \"C:\\tmp\\test\\x.txt\"))"));
+            assertEquals("x.txt", venice.eval("(io/file-name (io/file \"C:/tmp/test/x.txt\"))"));
         }
         else {
             assertEquals("x.txt", venice.eval("(io/file-name (io/file \"/tmp/test/x.txt\"))"));
@@ -180,7 +180,7 @@ public class IOFunctionsTest {
         final Venice venice = new Venice();
 
         if (OS.isWindows()) {
-            assertTrue((Boolean)venice.eval("(io/file? (io/file \"C:\\Users\"))"));
+            assertTrue((Boolean)venice.eval("(io/file? (io/file \"C:/Users\"))"));
         }
         else {
             assertTrue((Boolean)venice.eval("(io/file? (io/file \"/tmp\"))"));
@@ -195,27 +195,27 @@ public class IOFunctionsTest {
             assertTrue((Boolean)venice.eval("(io/file-ext? \"some.png\" \"png\")"));
             assertTrue((Boolean)venice.eval("(io/file-ext? \"some.png\" \".png\")"));
 
-            assertTrue((Boolean)venice.eval("(io/file-ext? \"C:\\tmp\\some.png\" \"png\")"));
-            assertTrue((Boolean)venice.eval("(io/file-ext? \"C:\\tmp\\some.png\" \".png\")"));
+            assertTrue((Boolean)venice.eval("(io/file-ext? \"C:/tmp/some.png\" \"png\")"));
+            assertTrue((Boolean)venice.eval("(io/file-ext? \"C:/tmp/some.png\" \".png\")"));
 
             assertTrue((Boolean)venice.eval("(io/file-ext? (io/file \"some.png\") \"png\")"));
             assertTrue((Boolean)venice.eval("(io/file-ext? (io/file \"some.png\") \".png\")"));
 
-            assertTrue((Boolean)venice.eval("(io/file-ext? (io/file \"C:\\tmp\\some.png\") \"png\")"));
-            assertTrue((Boolean)venice.eval("(io/file-ext? (io/file \"C:\\tmp\\some.png\") \".png\")"));
+            assertTrue((Boolean)venice.eval("(io/file-ext? (io/file \"C:/tmp/some.png\") \"png\")"));
+            assertTrue((Boolean)venice.eval("(io/file-ext? (io/file \"C:/tmp/some.png\") \".png\")"));
 
 
             assertTrue((Boolean)venice.eval("(io/file-ext? \"some.png\" \"png\" \"jpg\" \"gif\")"));
             assertTrue((Boolean)venice.eval("(io/file-ext? \"some.png\" \".png\" \".jpg\" \".gif\")"));
 
-            assertTrue((Boolean)venice.eval("(io/file-ext? \"C:\\tmp\\some.png\" \"png\" \"jpg\" \"gif\")"));
-            assertTrue((Boolean)venice.eval("(io/file-ext? \"C:\\tmp\\some.png\" \".png\" \".jpg\" \".gif\")"));
+            assertTrue((Boolean)venice.eval("(io/file-ext? \"C:/tmp/some.png\" \"png\" \"jpg\" \"gif\")"));
+            assertTrue((Boolean)venice.eval("(io/file-ext? \"C:/tmp/some.png\" \".png\" \".jpg\" \".gif\")"));
 
             assertTrue((Boolean)venice.eval("(io/file-ext? (io/file \"some.png\") \"png\" \"jpg\" \"gif\")"));
             assertTrue((Boolean)venice.eval("(io/file-ext? (io/file \"some.png\") \".png\" \".jpg\" \".gif\")"));
 
-            assertTrue((Boolean)venice.eval("(io/file-ext? (io/file \"C:\\tmp\\some.png\") \"png\" \"jpg\" \"gif\")"));
-            assertTrue((Boolean)venice.eval("(io/file-ext? (io/file \"C:\\tmp\\some.png\") \".png\" \".jpg\" \".gif\")"));
+            assertTrue((Boolean)venice.eval("(io/file-ext? (io/file \"C:/tmp/some.png\") \"png\" \"jpg\" \"gif\")"));
+            assertTrue((Boolean)venice.eval("(io/file-ext? (io/file \"C:/tmp/some.png\") \".png\" \".jpg\" \".gif\")"));
         }
         else {
             assertTrue((Boolean)venice.eval("(io/file-ext? \"some.png\" \"png\")"));
@@ -253,14 +253,14 @@ public class IOFunctionsTest {
             assertEquals("png", venice.eval("(io/file-ext \"some.png\"))"));
             assertEquals(null, venice.eval("(io/file-ext \"some\"))"));
 
-            assertEquals("png", venice.eval("(io/file-ext \"C:\\tmp/some.png\"))"));
-            assertEquals(null, venice.eval("(io/file-ext \"C:\\tmp/some\"))"));
+            assertEquals("png", venice.eval("(io/file-ext \"C:/tmp/some.png\"))"));
+            assertEquals(null, venice.eval("(io/file-ext \"C:/tmp/some\"))"));
 
             assertEquals("png", venice.eval("(io/file-ext (io/file \"some.png\"))"));
             assertEquals(null, venice.eval("(io/file-ext (io/file \"some\"))"));
 
-            assertEquals("png", venice.eval("(io/file-ext (io/file \"C:\\tmp\\some.png\"))"));
-            assertEquals(null, venice.eval("(io/file-ext (io/file \"C:\\tmp\\some\"))"));
+            assertEquals("png", venice.eval("(io/file-ext (io/file \"C:/tmp/some.png\"))"));
+            assertEquals(null, venice.eval("(io/file-ext (io/file \"C:/tmp/some\"))"));
         }
         else {
             assertEquals("png", venice.eval("(io/file-ext \"some.png\"))"));
@@ -282,39 +282,39 @@ public class IOFunctionsTest {
         final Venice venice = new Venice();
 
         if (OS.isWindows()) {
-            assertTrue((Boolean)venice.eval("(io/file-within-dir? (io/file \"C:\\temp\\foo\")          \n" +
-                                            "                     (io/file \"C:\\temp\\foo\\img.png\")) "));
+            assertTrue((Boolean)venice.eval("(io/file-within-dir? (io/file \"C:/temp/foo\")          \n" +
+                                            "                     (io/file \"C:/temp/foo/img.png\")) "));
 
-            assertTrue((Boolean)venice.eval("(io/file-within-dir? (io/file \"C:\\temp\\foo\")              \n" +
-                                            "                     (io/file \"C:\\temp\\foo\\bar\\img.png\")) "));
+            assertTrue((Boolean)venice.eval("(io/file-within-dir? (io/file \"C:/temp/foo\")              \n" +
+                                            "                     (io/file \"C:/temp/foo/bar/img.png\")) "));
 
-            assertTrue((Boolean)venice.eval("(io/file-within-dir? (io/file \"C:\\temp\\foo\")                 \n" +
-                                            "                     (io/file \"C:\\temp\\foo\\..\\foo\\img.png\")) "));
+            assertTrue((Boolean)venice.eval("(io/file-within-dir? (io/file \"C:/temp/foo\")                 \n" +
+                                            "                     (io/file \"C:/temp/foo/../foo/img.png\")) "));
 
-            assertTrue((Boolean)venice.eval("(io/file-within-dir? (io/file \"C:\\temp\\foo\")                     \n" +
-                                            "                     (io/file \"C:\\temp/\\foo\\..\\foo\\bar\\img.png\")) "));
+            assertTrue((Boolean)venice.eval("(io/file-within-dir? (io/file \"C:/temp/foo\")                     \n" +
+                                            "                     (io/file \"C:/temp/foo/../foo/bar/img.png\")) "));
 
 
 
-            assertFalse((Boolean)venice.eval("(io/file-within-dir? (io/file \"C:\\temp\\foo\")          \n" +
-                                             "                     (io/file \"C:\\temp\\zoo\\img.png\")) "));
+            assertFalse((Boolean)venice.eval("(io/file-within-dir? (io/file \"C:/temp/foo\")          \n" +
+                                             "                     (io/file \"C:/temp/zoo/img.png\")) "));
 
-            assertFalse((Boolean)venice.eval("(io/file-within-dir? (io/file \"C:\\temp\\foo\")              \n" +
-                                             "                     (io/file \"C:\\temp\\zoo\\bar\\img.png\")) "));
+            assertFalse((Boolean)venice.eval("(io/file-within-dir? (io/file \"C:/temp/foo\")              \n" +
+                                             "                     (io/file \"C:/temp/zoo/bar/img.png\")) "));
 
-            assertFalse((Boolean)venice.eval("(io/file-within-dir? (io/file \"C:\\temp\\foo\")                 \n" +
-                                             "                     (io/file \"C:\\temp\\foo\\..\\bar\\img.png\")) "));
+            assertFalse((Boolean)venice.eval("(io/file-within-dir? (io/file \"C:/temp/foo\")                 \n" +
+                                             "                     (io/file \"C:/temp/foo/../bar/img.png\")) "));
 
-            assertFalse((Boolean)venice.eval("(io/file-within-dir? (io/file \"C:\\temp\\foo\")                     \n" +
-                                             "                     (io/file \"C:\\temp\\foo\\..\\zoo\\bar\\img.png\")) "));
+            assertFalse((Boolean)venice.eval("(io/file-within-dir? (io/file \"C:/temp/foo\")                     \n" +
+                                             "                     (io/file \"C:/temp/foo/../zoo/bar/img.png\")) "));
 
 
 
             assertThrows(VncException.class, () -> venice.eval("(io/file-within-dir? (io/file \"foo\")                \n" +
-                                                               "                     (io/file \"C:\\temp\\foo\\img.png\")) "));
+                                                               "                     (io/file \"C:/temp/foo/img.png\")) "));
 
-            assertThrows(VncException.class, () -> venice.eval("(io/file-within-dir? (io/file \"C:\\temp\\foo\")       \n" +
-                                                               "                     (io/file \"foo\\img.png\"))       "));
+            assertThrows(VncException.class, () -> venice.eval("(io/file-within-dir? (io/file \"C:/temp/foo\")       \n" +
+                                                               "                     (io/file \"foo/img.png\"))       "));
         }
         else {
             assertTrue((Boolean)venice.eval("(io/file-within-dir? (io/file \"/temp/foo\")          \n" +
@@ -373,24 +373,24 @@ public class IOFunctionsTest {
 
         if (OS.isWindows()) {
             assertTrue((Boolean)venice.eval("(io/file-matches-glob? \"*.log\" \"file1.log\")"));
-            assertFalse((Boolean)venice.eval("(io/file-matches-glob? \"*.log\" \"dir\\file1.log\")"));
-            assertTrue((Boolean)venice.eval("(io/file-matches-glob? \"**\\*.log\" \"dir\\file1.log\")"));
-            assertTrue((Boolean)venice.eval("(io/file-matches-glob? \"**\\*.log\" \"dir1\\dir2\\file1.log\")"));
+            assertFalse((Boolean)venice.eval("(io/file-matches-glob? \"*.log\" \"dir/file1.log\")"));
+            assertTrue((Boolean)venice.eval("(io/file-matches-glob? \"**/*.log\" \"dir/file1.log\")"));
+            assertTrue((Boolean)venice.eval("(io/file-matches-glob? \"**/*.log\" \"dir1/dir2/file1.log\")"));
 
             assertTrue((Boolean)venice.eval("(io/file-matches-glob? \"*.log\" (io/file \"file1.log\"))"));
-            assertFalse((Boolean)venice.eval("(io/file-matches-glob? \"*.log\" (io/file \"dir\\file1.log\"))"));
-            assertTrue((Boolean)venice.eval("(io/file-matches-glob? \"**\\*.log\" (io/file \"dir\\file1.log\"))"));
-            assertTrue((Boolean)venice.eval("(io/file-matches-glob? \"**\\*.log\" (io/file \"dir1\\dir2\\file1.log\"))"));
+            assertFalse((Boolean)venice.eval("(io/file-matches-glob? \"*.log\" (io/file \"dir/file1.log\"))"));
+            assertTrue((Boolean)venice.eval("(io/file-matches-glob? \"**/*.log\" (io/file \"dir/file1.log\"))"));
+            assertTrue((Boolean)venice.eval("(io/file-matches-glob? \"**/*.log\" (io/file \"dir1/dir2/file1.log\"))"));
 
             assertTrue((Boolean)venice.eval("(io/file-matches-glob? (io/glob-path-matcher\"*.log\") \"file1.log\")"));
-            assertFalse((Boolean)venice.eval("(io/file-matches-glob? (io/glob-path-matcher\"*.log\") \"dir\\file1.log\")"));
-            assertTrue((Boolean)venice.eval("(io/file-matches-glob? (io/glob-path-matcher\"**\\*.log\") \"dir\\file1.log\")"));
-            assertTrue((Boolean)venice.eval("(io/file-matches-glob? (io/glob-path-matcher\"**\\*.log\") \"dir1\\dir2\\file1.log\")"));
+            assertFalse((Boolean)venice.eval("(io/file-matches-glob? (io/glob-path-matcher\"*.log\") \"dir/file1.log\")"));
+            assertTrue((Boolean)venice.eval("(io/file-matches-glob? (io/glob-path-matcher\"**/*.log\") \"dir/file1.log\")"));
+            assertTrue((Boolean)venice.eval("(io/file-matches-glob? (io/glob-path-matcher\"**/*.log\") \"dir1/dir2/file1.log\")"));
 
             assertTrue((Boolean)venice.eval("(io/file-matches-glob? (io/glob-path-matcher\"*.log\") (io/file \"file1.log\"))"));
-            assertFalse((Boolean)venice.eval("(io/file-matches-glob? (io/glob-path-matcher\"*.log\") (io/file \"dir\\file1.log\"))"));
-            assertTrue((Boolean)venice.eval("(io/file-matches-glob? (io/glob-path-matcher\"**\\*.log\") (io/file \"dir\\file1.log\"))"));
-            assertTrue((Boolean)venice.eval("(io/file-matches-glob? (io/glob-path-matcher\"**\\*.log\") (io/file \"dir1\\dir2\\file1.log\"))"));
+            assertFalse((Boolean)venice.eval("(io/file-matches-glob? (io/glob-path-matcher\"*.log\") (io/file \"dir/file1.log\"))"));
+            assertTrue((Boolean)venice.eval("(io/file-matches-glob? (io/glob-path-matcher\"**/*.log\") (io/file \"dir/file1.log\"))"));
+            assertTrue((Boolean)venice.eval("(io/file-matches-glob? (io/glob-path-matcher\"**/*.log\") (io/file \"dir1/dir2/file1.log\"))"));
         }
         else {
             assertTrue((Boolean)venice.eval("(io/file-matches-glob? \"*.log\" \"file1.log\")"));
@@ -608,13 +608,13 @@ public class IOFunctionsTest {
             assertEquals(".venice", venice.eval("(io/make-venice-filename \"\")"));
             assertEquals("foo.venice", venice.eval("(io/make-venice-filename \"foo.venice\")"));
             assertEquals("foo.venice", venice.eval("(io/make-venice-filename \"foo\")"));
-            assertEquals("bar\\foo.venice", venice.eval("(io/make-venice-filename \"bar\\foo.venice\")"));
-            assertEquals("bar\\foo.venice", venice.eval("(io/make-venice-filename \"bar\\foo\")"));
+            assertEquals("bar/foo.venice", venice.eval("(io/make-venice-filename \"bar/foo.venice\")"));
+            assertEquals("bar/foo.venice", venice.eval("(io/make-venice-filename \"bar/foo\")"));
 
             assertEquals(new File("foo.venice"), venice.eval("(io/make-venice-filename (io/file \"foo.venice\"))"));
             assertEquals(new File("foo.venice"), venice.eval("(io/make-venice-filename (io/file \"foo\"))"));
-            assertEquals(new File("bar\\foo.venice"), venice.eval("(io/make-venice-filename (io/file \"bar\\foo.venice\"))"));
-            assertEquals(new File("bar\\foo.venice"), venice.eval("(io/make-venice-filename (io/file \"bar\\foo\"))"));
+            assertEquals(new File("bar/foo.venice"), venice.eval("(io/make-venice-filename (io/file \"bar/foo.venice\"))"));
+            assertEquals(new File("bar/foo.venice"), venice.eval("(io/make-venice-filename (io/file \"bar/foo\"))"));
         }
         else {
             assertEquals(".venice", venice.eval("(io/make-venice-filename \"\")"));
