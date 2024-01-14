@@ -391,6 +391,7 @@
         (try (test-fn)
              (do-report {:type :pass, :fn-name test-name, :var v})
              (catch :AssertionException e
+               (. e :printVeniceStackTrace)
                (do-report {:type :fail
                            :fn-name test-name
                            :message "Test assert failure."
