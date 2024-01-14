@@ -21,6 +21,7 @@
  */
 package com.github.jlangch.venice.modules;
 
+import static com.github.jlangch.venice.impl.util.StringUtil.to_lf;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import org.junit.jupiter.api.Test;
@@ -57,7 +58,7 @@ public class ComponentModuleTest {
         assertEquals(
             ":server started\n" +
             ":server stopped\n",
-            venice.eval(script));
+            to_lf(venice.eval(script)));
     }
 
     @Test
@@ -96,7 +97,7 @@ public class ComponentModuleTest {
             ":server started\n" +
             ":server stopped\n" +
             ":database stopped\n",
-            venice.eval(script));
+            to_lf(venice.eval(script)));
     }
 
     @Test
@@ -144,7 +145,7 @@ public class ComponentModuleTest {
             ":logger stopped\n" +
             ":server stopped\n" +
             ":database stopped\n",
-            venice.eval(script));
+            to_lf(venice.eval(script)));
     }
 
     @Test
@@ -186,7 +187,7 @@ public class ComponentModuleTest {
             ":server started\n" +
             ":server stopped\n" +
             ":store stopped\n",
-            venice.eval(script));
+            to_lf(venice.eval(script)));
     }
 
     @Test
@@ -249,7 +250,7 @@ public class ComponentModuleTest {
             ":server stopped\n" +
             ":store stopped\n"  +
             ":config stopped\n",
-            venice.eval(script));
+            to_lf(venice.eval(script)));
     }
 
     @Test
@@ -303,7 +304,7 @@ public class ComponentModuleTest {
             ":server started at port 4600\n" +
             ":server stopped\n" +
             ":store stopped\n",
-            venice.eval(script));
+            to_lf(venice.eval(script)));
     }
 
     @Test
@@ -358,7 +359,7 @@ public class ComponentModuleTest {
             ":server already started\n" +
             ":server stopped\n" +
             ":database stopped\n",
-            venice.eval(script));
+            to_lf(venice.eval(script)));
     }
 
     @Test
@@ -478,7 +479,7 @@ public class ComponentModuleTest {
         	"server stopped\n" +
         	"database store2 stopped\n" +
         	"database store1 stopped\n",
-        	venice.eval(script));
+        	to_lf(venice.eval(script)));
     }
 
 }
