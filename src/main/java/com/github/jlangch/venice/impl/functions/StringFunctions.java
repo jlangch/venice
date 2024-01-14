@@ -1442,6 +1442,35 @@ public class StringFunctions {
             private static final long serialVersionUID = -1848883965231344442L;
         };
 
+    public static VncFunction str_crlf_to_lf =
+        new VncFunction(
+                "str/crlf-to-lf",
+                VncFunction
+                    .meta()
+                    .arglists("(str/crlf-to-lf s)")
+                    .doc(
+                        "Converts CR-LF to LF")
+                    .examples(
+                        "(str/crlf-to-lf nil)",
+                        "(str/crlf-to-lf \"100\r\n200\r\n\")")
+                    .seeAlso("str/cr-lf")
+                    .build()
+        ) {
+            @Override
+            public VncVal apply(final VncList args) {
+                ArityExceptions.assertArity(this, args, 1);
+
+                if (args.first() == Nil) {
+                    return Nil;
+                }
+
+                final String str = Coerce.toVncString(args.first()).getValue().trim();
+                return new VncString(StringUtil.crlf_to_lf(str));
+            }
+
+            private static final long serialVersionUID = -1848883965231344442L;
+        };
+
     public static VncFunction str_butlast =
         new VncFunction(
                 "str/butlast",
@@ -2876,6 +2905,7 @@ public class StringFunctions {
                     .add(str_trim_left)
                     .add(str_trim_right)
                     .add(str_trim_to_nil)
+                    .add(str_crlf_to_lf)
                     .add(str_align)
                     .add(str_index_of)
                     .add(str_index_of_char)

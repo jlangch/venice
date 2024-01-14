@@ -21,6 +21,7 @@
  */
 package com.github.jlangch.venice.modules;
 
+import static com.github.jlangch.venice.impl.util.StringUtil.to_lf;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import org.junit.jupiter.api.Test;
@@ -42,7 +43,7 @@ public class HexdumpModuleTest {
 
         assertEquals(
                 "\n",
-                venice.eval(script));
+                to_lf(venice.eval(script)));
     }
 
     @Test
@@ -57,7 +58,7 @@ public class HexdumpModuleTest {
 
         assertEquals(
                 "00000000: 0001 0203                                ....            \n\n",
-                venice.eval(script));
+                to_lf(venice.eval(script)));
     }
 
     @Test
@@ -104,7 +105,7 @@ public class HexdumpModuleTest {
                 "00000000: 0001 0203 0405 0607 0809 0a0b 0c0d 0e    ............... \n\n" +
                 "00000000: 0001 0203 0405 0607 0809 0a0b 0c0d 0e0f  ................\n\n" +
                 "00000000: 4041 4243 4445 4647 4849 4a4b 4c4d 4e4f  @ABCDEFGHIJKLMNO\n\n",
-                venice.eval(script));
+                to_lf(venice.eval(script)));
     }
 
     @Test
@@ -126,7 +127,7 @@ public class HexdumpModuleTest {
                 "00000050: 5051 5253 5455 5657 5859 5a5b 5c5d 5e5f  PQRSTUVWXYZ[\\]^_\n" +
                 "00000060: 6061 62                                  `ab             \n" +
                 "\n",
-                venice.eval(script));
+                to_lf(venice.eval(script)));
     }
 
     @Test
@@ -148,7 +149,7 @@ public class HexdumpModuleTest {
                 "00000050: 5051 5253 5455 5657 5859 5a5b 5c5d 5e5f  PQRSTUVWXYZ[\\]^_\n" +
                 "00000060: 6061 6263                                `abc            \n" +
                 "\n",
-                venice.eval(script));
+                to_lf(venice.eval(script)));
     }
 
 }

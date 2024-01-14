@@ -21,6 +21,7 @@
  */
 package com.github.jlangch.venice.impl.functions;
 
+import static com.github.jlangch.venice.impl.util.StringUtil.to_lf;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
@@ -40,6 +41,7 @@ import org.junit.jupiter.api.Test;
 import com.github.jlangch.venice.Parameters;
 import com.github.jlangch.venice.Venice;
 import com.github.jlangch.venice.VncException;
+import com.github.jlangch.venice.util.OS;
 
 
 public class CoreFunctionsTest {
@@ -1600,9 +1602,16 @@ public class CoreFunctionsTest {
     public void test_flush() {
         final Venice venice = new Venice();
 
-        assertEquals("1\n", venice.eval("(with-out-str (do (println 1) (flush )))"));
-        assertEquals("1\n", venice.eval("(with-out-str (do (println 1) (flush (. :java.lang.System :out))))"));
-        assertEquals("1\n", venice.eval("(with-out-str (do (println 1) (flush *out*)))"));
+        if (OS.isWindows()) {
+            assertEquals("1\r\n", venice.eval("(with-out-str (do (println 1) (flush )))"));
+            assertEquals("1\r\n", venice.eval("(with-out-str (do (println 1) (flush (. :java.lang.System :out))))"));
+            assertEquals("1\r\n", venice.eval("(with-out-str (do (println 1) (flush *out*)))"));
+        }
+        else {
+            assertEquals("1\n", venice.eval("(with-out-str (do (println 1) (flush )))"));
+            assertEquals("1\n", venice.eval("(with-out-str (do (println 1) (flush (. :java.lang.System :out))))"));
+            assertEquals("1\n", venice.eval("(with-out-str (do (println 1) (flush *out*)))"));
+        }
     }
 
     @Test
@@ -3479,8 +3488,14 @@ public class CoreFunctionsTest {
     public void test_newline() {
         final Venice venice = new Venice();
 
-        assertEquals("1\n", venice.eval("(with-out-str (do (print 1) (newline )))"));
-        assertEquals("1 2\n", venice.eval("(with-out-str (do (print 1 2) (newline )))"));
+        if (OS.isWindows()) {
+            assertEquals("1\r\n", venice.eval("(with-out-str (do (print 1) (newline )))"));
+            assertEquals("1 2\r\n", venice.eval("(with-out-str (do (print 1 2) (newline )))"));
+        }
+        else {
+            assertEquals("1\n", venice.eval("(with-out-str (do (print 1) (newline )))"));
+            assertEquals("1 2\n", venice.eval("(with-out-str (do (print 1 2) (newline )))"));
+        }
     }
 
     @Test
@@ -4113,10 +4128,10 @@ public class CoreFunctionsTest {
     public void test_println() {
         final Venice venice = new Venice();
 
-        assertEquals("\n", venice.eval("(with-out-str (println ))"));
-        assertEquals("1\n", venice.eval("(with-out-str (println 1))"));
-        assertEquals("1 2\n", venice.eval("(with-out-str (println 1 2))"));
-        assertEquals("1 2 3\n", venice.eval("(with-out-str (println 1 2 3))"));
+        assertEquals("\n", to_lf(venice.eval("(with-out-str (println ))")));
+        assertEquals("1\n", to_lf(venice.eval("(with-out-str (println 1))")));
+        assertEquals("1 2\n", to_lf(venice.eval("(with-out-str (println 1 2))")));
+        assertEquals("1 2 3\n", to_lf(venice.eval("(with-out-str (println 1 2 3))")));
     }
 
     @Test
@@ -4359,14 +4374,14 @@ public class CoreFunctionsTest {
         assertEquals("", venice.eval("(with-out-str (run! prn nil))"));
 
         assertEquals("", venice.eval("(with-out-str (run! prn '()))"));
-        assertEquals("1\n", venice.eval("(with-out-str (run! prn '(1)))"));
-        assertEquals("1\n2\n", venice.eval("(with-out-str (run! prn '(1 2)))"));
-        assertEquals("1\n2\n3\n", venice.eval("(with-out-str (run! prn '(1 2 3)))"));
+        assertEquals("1\n", to_lf(venice.eval("(with-out-str (run! prn '(1)))")));
+        assertEquals("1\n2\n", to_lf(venice.eval("(with-out-str (run! prn '(1 2)))")));
+        assertEquals("1\n2\n3\n", to_lf(venice.eval("(with-out-str (run! prn '(1 2 3)))")));
 
         assertEquals("", venice.eval("(with-out-str (run! prn '[]))"));
-        assertEquals("1\n", venice.eval("(with-out-str (run! prn '[1]))"));
-        assertEquals("1\n2\n", venice.eval("(with-out-str (run! prn '[1 2]))"));
-        assertEquals("1\n2\n3\n", venice.eval("(with-out-str (run! prn '[1 2 3]))"));
+        assertEquals("1\n", to_lf(venice.eval("(with-out-str (run! prn '[1]))")));
+        assertEquals("1\n2\n", to_lf(venice.eval("(with-out-str (run! prn '[1 2]))")));
+        assertEquals("1\n2\n3\n",to_lf( venice.eval("(with-out-str (run! prn '[1 2 3]))")));
     }
 
     @Test

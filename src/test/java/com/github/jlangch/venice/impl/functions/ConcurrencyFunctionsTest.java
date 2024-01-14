@@ -21,6 +21,7 @@
  */
 package com.github.jlangch.venice.impl.functions;
 
+import static com.github.jlangch.venice.impl.util.StringUtil.to_lf;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
@@ -653,7 +654,7 @@ public class ConcurrencyFunctionsTest {
         final Object result = venice.eval(script, Parameters.of("*out*", ps));
 
         assertEquals(Long.valueOf(100), result);
-        assertEquals("start\nworking...\nend\n", ps.getOutput());
+        assertEquals("start\nworking...\nend\n", to_lf(ps.getOutput()));
     }
 
     @Test
@@ -1710,7 +1711,7 @@ public class ConcurrencyFunctionsTest {
                 "         (sleep 1000)                       \n" +
                 "         (println \"done2\")))) ";
 
-        assertEquals("done1\ndone2\n", venice.eval(script));
+        assertEquals("done1\ndone2\n", to_lf(venice.eval(script)));
     }
 
     @Test
