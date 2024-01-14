@@ -413,7 +413,7 @@ public class IOFunctionsTest {
             assertTrue((Boolean)venice.eval("(io/file-matches-glob? (io/glob-path-matcher\"**/*.log\") (io/file \"dir/file1.log\"))"));
             assertTrue((Boolean)venice.eval("(io/file-matches-glob? (io/glob-path-matcher\"**/*.log\") (io/file \"dir1/dir2/file1.log\"))"));
        }
-   }
+    }
 
     @Test
     public void test_io_list_files_1() throws Exception{
