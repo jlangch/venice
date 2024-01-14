@@ -74,7 +74,7 @@
 (defn
   ^{ :arglists '("(esr/parse esr-ref)")
      :doc """
-          Parses an ESR reference into an identification number and an \
+          Parses an ESR reference into an identification number and an
           invoice number. Strips the leading zeroes from the invoice number.
           """
      :examples (list
