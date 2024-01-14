@@ -21,6 +21,7 @@
  */
 package com.github.jlangch.venice.impl.functions;
 
+import static com.github.jlangch.venice.impl.util.StringUtil.to_lf;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import org.junit.jupiter.api.Test;
@@ -137,7 +138,7 @@ public class IOFunctionsStreamTest {
                 "  (flush wr)                                                 \n" +
                 "  (bytebuf-to-string @os :utf-8))                            ";
 
-        assertEquals("100\n200\n",venice.eval(script));
+        assertEquals("100\n200\n", to_lf(venice.eval(script)));
     }
 
     @Test
@@ -165,7 +166,7 @@ public class IOFunctionsStreamTest {
                 "  (flush wr)                                                 \n" +
                 "  (bytebuf-to-string @os :utf-8))                            ";
 
-        assertEquals("100\n200\n",venice.eval(script));
+        assertEquals("100\n200\n", to_lf(venice.eval(script)));
     }
 
     @Test
@@ -247,7 +248,7 @@ public class IOFunctionsStreamTest {
                 "  (flush sw)                          \n" +
                 "  @sw)                                ";
 
-        assertEquals("100\n\n200\n",venice.eval(script));
+        assertEquals("100\n\n200\n", to_lf(venice.eval(script)));
     }
 
 }
