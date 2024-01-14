@@ -51,9 +51,9 @@ public class AppModuleTest {
         FileUtil.mkdir(subdir);
 
         FileUtil.save(
-                "(do                                  \n" +
-                "  (load-file \"util/def.venice\")    \n" +
-                "  (println XXX))                       ",
+                "(do                                              \n" +
+                "  (load-file (io/file \"util\" \"def.venice\"))  \n" +
+                "  (println XXX))                                  ",
                 new File(dir, "main.venice"),
                 true);
 
@@ -63,15 +63,26 @@ public class AppModuleTest {
                 true);
 
         try {
+            // ensure there are no Windows backslashes in the string
+            // file paths!
+            final String mainFile = new File(dir, "main.venice")
+                                          .getAbsolutePath()
+                                          .replace('\\', '/');
+            final String defFile = new File(subdir, "def.venice")
+                                         .getAbsolutePath()
+                                         .replace('\\', '/');
+            final String baseDir = dir.getAbsolutePath()
+                                      .replace('\\', '/');
+
             final String script =
-                "(do                                                                       \n"
-              + "  (load-module :app)                                                      \n"
-              + "  (app/build                                                              \n"
-              + "     \"test\"                                                             \n"
-              + "     \"main.venice\"                                                      \n"
-              + "     { \"main.venice\"      \"" + new File(dir, "main.venice") + "\"      \n"
-              + "       \"util/def.venice\"  \"" + new File(subdir, "def.venice") + "\" }  \n"
-              + "     \"" + dir + "\"))";
+                "(do                                                    \n"
+              + "  (load-module :app)                                   \n"
+              + "  (app/build                                           \n"
+              + "     \"test\"                                          \n"
+              + "     \"main.venice\"                                   \n"
+              + "     { \"main.venice\"      \"" + mainFile + "\"       \n"
+              + "       \"util/def.venice\"  \"" + defFile + "\" }      \n"
+              + "     \"" + baseDir + "\"))";
 
             final Map<?,?> result = (Map<?,?>)venice.eval(script);
 
