@@ -695,6 +695,8 @@ public class ConcurrencyFunctionsTest {
 
     @Test
     public void test_pmap() {
+    	try { Thread.sleep(1000); } catch(Exception ex) {}
+
         final Venice venice = new Venice();
 
         assertEquals("()", venice.eval("(pr-str (pmap inc nil))"));
