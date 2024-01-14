@@ -55,7 +55,7 @@ public abstract class LoadPath {
 
     public File canonical(final File file) {
         try {
-            return file.getAbsoluteFile().getCanonicalFile();
+            return file.getCanonicalFile();
         }
         catch(IOException ex) {
             throw new VncException(
