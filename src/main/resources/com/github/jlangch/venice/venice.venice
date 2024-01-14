@@ -22,10 +22,6 @@
 (import :com.github.jlangch.venice.EofException)
 
 
-(defonce version "1.0.0")
-(defonce home (io/user-home-dir))
-(defonce user (user-name))
-
 (defonce COLORS {
   :light { :logo     "[38;5;33m"
            :status   "[38;5;64m"
@@ -212,8 +208,6 @@
 (defn display-info []
   (println
     """
-    Shell:  running on ~(host-name)
-
     Configuration:
        Gradle:           ~(gradlew/version proj-home)
        Java version:     ~(java-version)
@@ -235,7 +229,7 @@
                                     (deploy)
                                     (start-repl (first args)))
     (match? cmd "s|start")        (start-repl (first args))
-    (match? cmd "c|cheasheet")    (gradle-tasks "cheatsheet")
+    (match? cmd "c|cheatsheet")   (gradle-tasks "cheatsheet")
     (match? cmd "d|dependencies") (gradle-tasks "dependencies")
     (match? cmd "T|tests")        (gradle-tasks "clean" "test")
     (match? cmd "p|publish")      (publish (first args) (second args))
@@ -290,4 +284,3 @@
 (. *REPL* :setHandler (proxify :Consumer { :accept handle-command }))
 
 (display-welcome-msg)
-
