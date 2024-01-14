@@ -33,6 +33,7 @@ import java.util.Arrays;
 
 import org.junit.jupiter.api.Test;
 
+import com.github.jlangch.venice.Parameters;
 import com.github.jlangch.venice.SecurityException;
 import com.github.jlangch.venice.Venice;
 import com.github.jlangch.venice.VncException;
@@ -348,14 +349,18 @@ public class LoadPaths1Test {
 
             // not existing files
             try {
-                venice1.eval("(load-file \"" + new File(root, "div.venice").getAbsolutePath() + "\")");
+                venice1.eval(
+                	"(load-file file)",
+                	Parameters.of("file", new File(root, "div.venice").getAbsolutePath()));
                 fail("Expected VncException");
             }
             catch (SecurityException ex) { // Access denied to 'load-file'
                 assertTrue(true);
             }
             try {
-                venice1.eval("(load-file \"" + new File(root, "unknown.venice").getAbsolutePath() + "\")");
+                venice1.eval(
+                    	"(load-file file)",
+                    	Parameters.of("file", new File(root, "unknown.venice").getAbsolutePath()));
                 fail("Expected VncException");
             }
             catch (SecurityException ex) { // Access denied to 'load-file'
