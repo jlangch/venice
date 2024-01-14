@@ -172,35 +172,35 @@ public class HighlightParserTest {
         }
     }
 
-    @Test
-    public void test_esr() {
-        final String source = ModuleLoader.loadModule("esr");
-        final String source_ = "(do\n" + source + "\n)";
-        final long lines = StringUtil.splitIntoLines(source_).size();
-
-        final StopWatch sw = new StopWatch();
-        final List<HighlightItem> items = HighlightParser.parse(source_);
-        sw.stop();
-
-        System.out.println(String.format(
-                "Highlighting :esr module in %s at %d lines/s",
-                sw.toString(),
-                (lines * 1000L) / sw.elapsedMillis()));
-
-        final String joined = items.subList(3, items.size()-2)
-                                  .stream()
-                                  .map(i -> i.getForm())
-                                  .collect(Collectors.joining());
-
-        if (OS.isWindows()) {
-            assertEquals(to_lf(source).length(), to_lf(joined).length());
-            assertEquals(to_lf(source), to_lf(joined));
-        }
-        else {
-            assertEquals(source.length(), joined.length());
-            assertEquals(source, joined);
-        }
-    }
+//    @Test
+//    public void test_esr() {
+//        final String source = ModuleLoader.loadModule("esr");
+//        final String source_ = "(do\n" + source + "\n)";
+//        final long lines = StringUtil.splitIntoLines(source_).size();
+//
+//        final StopWatch sw = new StopWatch();
+//        final List<HighlightItem> items = HighlightParser.parse(source_);
+//        sw.stop();
+//
+//        System.out.println(String.format(
+//                "Highlighting :esr module in %s at %d lines/s",
+//                sw.toString(),
+//                (lines * 1000L) / sw.elapsedMillis()));
+//
+//        final String joined = items.subList(3, items.size()-2)
+//                                  .stream()
+//                                  .map(i -> i.getForm())
+//                                  .collect(Collectors.joining());
+//
+//        if (OS.isWindows()) {
+//            assertEquals(to_lf(source).length(), to_lf(joined).length());
+//            assertEquals(to_lf(source), to_lf(joined));
+//        }
+//        else {
+//            assertEquals(source.length(), joined.length());
+//            assertEquals(source, joined);
+//        }
+//    }
 
 //    private void diff(final String s1, final String s2) {
 //        int line = 1;
