@@ -43,6 +43,7 @@ import com.github.jlangch.venice.javainterop.LoadPathsFactory;
 import com.github.jlangch.venice.javainterop.RejectAllInterceptor;
 import com.github.jlangch.venice.javainterop.SandboxInterceptor;
 import com.github.jlangch.venice.javainterop.SandboxRules;
+import com.github.jlangch.venice.util.OS;
 
 
 public class LoadPaths1Test {
@@ -150,12 +151,21 @@ public class LoadPaths1Test {
             // absolute files not on load path
             assertFalse(loadPaths.isOnLoadPath(new File(root, "dir1/../foo/any.txt"),      Access.Read));
             assertFalse(loadPaths.isOnLoadPath(new File(root, "dir1/../foo/some/any.txt"), Access.Read));
-            assertFalse(loadPaths.isOnLoadPath(new File("/tmp/any.txt"),                   Access.Read));
+            if (OS.isWindows()) {
+                assertFalse(loadPaths.isOnLoadPath(new File("C:/tmp/any.txt"),             Access.Read));
+            }
+            else {
+                assertFalse(loadPaths.isOnLoadPath(new File("/tmp/any.txt"),               Access.Read));
+            }
 
             assertFalse(loadPaths.isOnLoadPath(new File(root, "dir1/../foo/any.txt"),      Access.Write));
             assertFalse(loadPaths.isOnLoadPath(new File(root, "dir1/../foo/some/any.txt"), Access.Write));
-            assertFalse(loadPaths.isOnLoadPath(new File("/tmp/any.txt"),                   Access.Write));
-
+            if (OS.isWindows()) {
+                assertFalse(loadPaths.isOnLoadPath(new File("C:/tmp/any.txt"),             Access.Write));
+            }
+            else {
+                assertFalse(loadPaths.isOnLoadPath(new File("/tmp/any.txt"),               Access.Write));
+            }
             // relative files on load path
             assertTrue(loadPaths.isOnLoadPath(new File("any.txt"),      Access.Read));
             assertTrue(loadPaths.isOnLoadPath(new File("some/any.txt"), Access.Read));
@@ -196,8 +206,8 @@ public class LoadPaths1Test {
 
             final Venice venice1 = new Venice(new AcceptAllInterceptor(loadPaths));
             assertNotNull(venice1.eval(
-            						"(load-file file)",
-            						Parameters.of("file", new File(root, "div.venice").getAbsolutePath())));
+                                    "(load-file file)",
+                                    Parameters.of("file", new File(root, "div.venice").getAbsolutePath())));
 
             assertNotNull(venice1.eval("(load-file :sum)"));
 
@@ -206,8 +216,8 @@ public class LoadPaths1Test {
             // not existing files
             try {
                 venice1.eval(
-                		"(load-file file)",
-                		Parameters.of("file", new File(root, "unknown.venice").getAbsolutePath()));
+                        "(load-file file)",
+                        Parameters.of("file", new File(root, "unknown.venice").getAbsolutePath()));
                 fail("Expected VncException");
             }
             catch (VncException ex) {
@@ -223,8 +233,8 @@ public class LoadPaths1Test {
 
             final Venice venice2 = new Venice(new AcceptAllInterceptor(loadPaths));
             assertEquals(5L,  venice2.eval(
-            					"(do (load-file file)  (func))",
-            					Parameters.of("file", new File(root, "div.venice").getAbsolutePath())));
+                                "(do (load-file file)  (func))",
+                                Parameters.of("file", new File(root, "div.venice").getAbsolutePath())));
 
             assertEquals(11L, venice2.eval("(do (load-file :sum) (func))"));
 
@@ -248,8 +258,8 @@ public class LoadPaths1Test {
             // not existing files
             try {
                 venice1.eval(
-                		"(load-file file)",
-                		Parameters.of("file", new File(root, "div.venice").getAbsolutePath()));
+                        "(load-file file)",
+                        Parameters.of("file", new File(root, "div.venice").getAbsolutePath()));
                 fail("Expected VncException");
             }
             catch (VncException ex) {
@@ -257,8 +267,8 @@ public class LoadPaths1Test {
             }
             try {
                 venice1.eval(
-                		"(load-file file)",
-                		Parameters.of("file", new File(root, "unknown.venice").getAbsolutePath()));
+                        "(load-file file)",
+                        Parameters.of("file", new File(root, "unknown.venice").getAbsolutePath()));
                 fail("Expected VncException");
             }
             catch (VncException ex) {
@@ -285,14 +295,14 @@ public class LoadPaths1Test {
 
             final Venice venice1 = new Venice(new AcceptAllInterceptor(loadPaths));
             assertNotNull(venice1.eval(
-            						"(load-file file)",
-            						Parameters.of("file", new File(root, "div.venice").getAbsolutePath())));
+                                    "(load-file file)",
+                                    Parameters.of("file", new File(root, "div.venice").getAbsolutePath())));
 
             // not existing files
             try {
                 venice1.eval(
-                		"(load-file file)",
-                		Parameters.of("file", new File(root, "unknown.venice").getAbsolutePath()));
+                        "(load-file file)",
+                        Parameters.of("file", new File(root, "unknown.venice").getAbsolutePath()));
                 fail("Expected VncException");
             }
             catch (VncException ex) {
@@ -315,8 +325,8 @@ public class LoadPaths1Test {
 
             final Venice venice2 = new Venice(new AcceptAllInterceptor(loadPaths));
             assertEquals(5L,  venice2.eval(
-            					"(do (load-file file) (func))",
-            					Parameters.of("file", new File(root, "div.venice").getAbsolutePath())));
+                                "(do (load-file file) (func))",
+                                Parameters.of("file", new File(root, "div.venice").getAbsolutePath())));
         });
     }
 
@@ -330,8 +340,8 @@ public class LoadPaths1Test {
             // not existing files
             try {
                 venice1.eval(
-                		"(load-file file)",
-                		Parameters.of("file", new File(root, "div.venice").getAbsolutePath()));
+                        "(load-file file)",
+                        Parameters.of("file", new File(root, "div.venice").getAbsolutePath()));
                 fail("Expected VncException");
             }
             catch (VncException ex) {
@@ -339,8 +349,8 @@ public class LoadPaths1Test {
             }
             try {
                 venice1.eval(
-                		"(load-file file)",
-                		Parameters.of("file", new File(root, "unknown.venice").getAbsolutePath()));
+                        "(load-file file)",
+                        Parameters.of("file", new File(root, "unknown.venice").getAbsolutePath()));
                 fail("Expected VncException");
             }
             catch (VncException ex) {
@@ -419,15 +429,15 @@ public class LoadPaths1Test {
 
             final Venice venice1 = new Venice(new SandboxInterceptor(new SandboxRules(), loadPaths));
             assertNotNull(venice1.eval("(load-file file)",
-            		                   Parameters.of("file", new File(root, "div.venice").getAbsolutePath())));
+                                       Parameters.of("file", new File(root, "div.venice").getAbsolutePath())));
             assertNotNull(venice1.eval("(load-file :sum)"));
             assertNotNull(venice1.eval("(load-file :sub)"));
 
             // not existing files
             try {
                 venice1.eval(
-                		"(load-file file)",
-                		Parameters.of("file", new File(root, "unknown.venice").getAbsolutePath()));
+                        "(load-file file)",
+                        Parameters.of("file", new File(root, "unknown.venice").getAbsolutePath()));
                 fail("Expected VncException");
             }
             catch (VncException ex) {
