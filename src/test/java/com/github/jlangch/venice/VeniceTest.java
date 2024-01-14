@@ -21,6 +21,7 @@
  */
 package com.github.jlangch.venice;
 
+import static com.github.jlangch.venice.impl.util.StringUtil.to_lf;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
@@ -272,7 +273,7 @@ public class VeniceTest {
                                     Parameters.of("*out*", ps));
 
             assertEquals(100L, result);
-            assertEquals("[1 2]\n", ps.getOutput());
+            assertEquals("[1 2]\n", to_lf(ps.getOutput()));
         }
     }
 

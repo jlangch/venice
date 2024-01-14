@@ -21,6 +21,7 @@
  */
 package com.github.jlangch.venice;
 
+import static com.github.jlangch.venice.impl.util.StringUtil.to_lf;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import org.junit.jupiter.api.Test;
@@ -80,7 +81,7 @@ public class ClosureTest {
                 "[:counter 1 :foo c :bar x]\n" +
                 "[:counter 2 :foo c :bar y]\n" +
                 "[:counter 3 :foo c :bar z]\n",
-                venice.eval(script));
+                to_lf(venice.eval(script)));
     }
 
 }
