@@ -21,6 +21,7 @@
  */
 package com.github.jlangch.venice.impl;
 
+import static com.github.jlangch.venice.impl.util.StringUtil.to_lf;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
@@ -83,7 +84,7 @@ public class NamespaceTest {
                 "       (ns (symbol temp-ns))             \n" +
                 "       (println *ns*))))                   ";
 
-        assertEquals("alpha\nbeta\nalpha\n", venice.eval(script));
+        assertEquals("alpha\nbeta\nalpha\n", to_lf(venice.eval(script)));
     }
 
     @Test
@@ -162,7 +163,7 @@ public class NamespaceTest {
                 "     (alpha/x-alpha)                     \n" +
                 "     (beta/x-beta)))                       ";
 
-        assertEquals("alpha\nbeta\nbeta\nalpha\nbeta\n", venice.eval(script));
+        assertEquals("alpha\nbeta\nbeta\nalpha\nbeta\n", to_lf(venice.eval(script)));
     }
 
     @Test
@@ -189,7 +190,7 @@ public class NamespaceTest {
                 "       (ns delta)                          \n" +
                 "       (alpha/whenn true (println 100)))))   ";
 
-        assertEquals("gamma\n100\ndelta\n100\n", venice.eval(script));
+        assertEquals("gamma\n100\ndelta\n100\n", to_lf(venice.eval(script)));
     }
 
     @Test
@@ -235,7 +236,7 @@ public class NamespaceTest {
 
         final VncVal result2 = venice.RE(script, "test", env);
 
-        assertEquals("gamma\n100\ndelta\n100\n", result2.toString());
+        assertEquals("gamma\n100\ndelta\n100\n", to_lf(result2.toString()));
     }
 
     @Test
@@ -286,7 +287,7 @@ public class NamespaceTest {
         // Note: the output from script [3] "100\n100\n" is not captured
         //       because 'macroexpand-all' just expands the macros but
         //       does not execute the expanded code!
-        assertEquals("gamma\ndelta\n", result2.toString());
+        assertEquals("gamma\ndelta\n", to_lf(result2.toString()));
     }
 
     @Test
@@ -392,7 +393,7 @@ public class NamespaceTest {
         //                              has been applied, so stdout redirection is not yet in
         //                              place the the time the macro 'alpha/whenn' is run.
         // result:  "100\n100\n"     -> OK
-        assertEquals("100\n100\n", result2.toString());
+        assertEquals("100\n100\n", to_lf(result2.toString()));
     }
 
     @Test
