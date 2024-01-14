@@ -123,7 +123,7 @@ public class DirectoryLoadPath extends LoadPath {
     }
 
     private File realFile(final File file) {
-        return file.isAbsolute() ? file : new File(dir, file.getPath());
+        return canonical(file.isAbsolute() ? file : new File(dir, file.getPath()));
     }
 
     private boolean isFileWithinDirectory(final File file) {
