@@ -21,6 +21,7 @@
  */
 package com.github.jlangch.venice.impl.specialforms;
 
+import static com.github.jlangch.venice.impl.util.StringUtil.to_lf;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
@@ -47,7 +48,7 @@ public class SpecialFormsTest_binding {
 
         assertEquals(
                 "100\n200\n100\n",
-                venice.eval(script));
+                to_lf(venice.eval(script)));
     }
 
     @Test
