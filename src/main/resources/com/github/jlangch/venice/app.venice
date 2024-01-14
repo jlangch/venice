@@ -30,10 +30,19 @@
           Creates a Venice application archive that can be distributed
           and executed as a single file.
 
-          E.g.:
+          The archive ist stored as: {dest-dir}/{name}.zip
+
+          Returns a map with information on the created archive:
 
           ```text
-          staging
+          {  "file"   "{dest-dir}/{name}.zip", 
+             "name"   "{name}" }
+          ```
+
+          Build example:
+
+          ```text
+          /staging
           ├── billing.venice
           ├── utils
           │   ├── util.venice
@@ -49,11 +58,11 @@
           (app/build
             "billing"
             "billing.venice"
-            { "billing.venice"      "staging/billing.venice"
-              "utils/util.venice"   "staging/utils/util.venice"
-              "utils/render.venice" "staging/utils/render.venice"
-              "data/bill.template"  "staging/data/bill.template"
-              "data/logo.jpg"       "staging/data/logo.jpg" }
+            { "billing.venice"      "/staging/billing.venice"
+              "utils/util.venice"   "/staging/utils/util.venice"
+              "utils/render.venice" "/staging/utils/render.venice"
+              "data/bill.template"  "/staging/data/bill.template"
+              "data/logo.jpg"       "/staging/data/logo.jpg" }
             ".")
           ```
 
@@ -73,9 +82,16 @@
 
   app/build [name main-file file-map dest-dir]
 
+  ;; validate dest-dir
   (when-not (io/exists-dir? dest-dir)
     (throw (ex :VncException
                (str "The dest-dir '" dest-dir "' does not exist."))))
+
+  ;; validate archive files
+  (doseq [entry (seq file-map)]
+    (when-not (io/exists-file? (io/file (second entry)))
+      (throw (ex :VncException
+                 "The archive file '~(first entry)' -> '~(second entry)' does not exist."))))
 
   (let [app-file (io/file dest-dir (str name ".zip"))]
     (-<> (json/write-str { :manifest-version "1.0"
