@@ -21,6 +21,7 @@
  */
 package com.github.jlangch.venice.impl.specialforms;
 
+import static com.github.jlangch.venice.impl.util.StringUtil.to_lf;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import org.junit.jupiter.api.Test;
@@ -177,7 +178,7 @@ public class SpecialFormsTest_def_dynamic {
                 "    (h))                            \n" +
                 "  (with-out-str (f)))               ";
 
-        assertEquals("3\n", venice.eval(script));
+        assertEquals("3\n", to_lf(venice.eval(script)));
     }
 
     @Test

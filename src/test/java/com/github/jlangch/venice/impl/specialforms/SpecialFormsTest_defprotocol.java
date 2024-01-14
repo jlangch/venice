@@ -21,6 +21,7 @@
  */
 package com.github.jlangch.venice.impl.specialforms;
 
+import static com.github.jlangch.venice.impl.util.StringUtil.to_lf;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
@@ -218,7 +219,7 @@ public class SpecialFormsTest_defprotocol {
                 "     P (foo [x]))                 \n" +
                 "  (with-out-str (doc P)))           ";
 
-        assertEquals("test protocol\n", venice.eval(script));
+        assertEquals("test protocol\n", to_lf(venice.eval(script)));
     }
 
 
