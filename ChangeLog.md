@@ -12,9 +12,6 @@ All notable changes to this project will be documented in this file.
 
 This release focuses on Windows.
 
-While the Venice devel platform is MacOSX and Linux, Windows has been neglected
-so far due to the lack of a Windows machine.
-
 ### Fixed 
 
 - all unit tests to run on Windows too
