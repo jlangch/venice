@@ -37,7 +37,7 @@ cd ${VENICE_CONSOLE_HOME}
 
 ${JAVA_11_HOME}/bin/java \
   -server \
-  -cp "libs/*" com.github.jlangch.venice.Launcher \
+  -cp "lib:libs/*" com.github.jlangch.venice.Launcher \
   -Xmx2G \
   -XX:-OmitStackTraceInFastThrow \
   -Dvenice.repl.home=${VENICE_REPL_HOME} \
