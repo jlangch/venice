@@ -56,7 +56,7 @@
 (defonce java-11-home (str/strip-end (system-env :JAVA_11_HOME) "/"))
 (defonce java-home java-8-home)
 
-(defonce sonatype-user "xxxxxx")
+(defonce sonatype-user "jlangch")
 
 (defonce cmd-line-prompt (str proj-name "> "))
 
@@ -66,6 +66,8 @@
                              ;; "--info"
                              ;; "--debug"
                              "-Dorg.gradle.java.home=\"~{java-home}\""])
+
+(defonce display-status? false)
 
 
 
@@ -217,8 +219,19 @@
        Build Java 8:     ~{java-8-home}
        Build Java 11:    ~{java-11-home}
        Color theme:      ~(color-theme)
+       Terminal:         [~(repl/term-cols) x ~(repl/term-rows)]
 
     """))
+
+
+(defn display-status []
+  (when display-status?
+    (let [cols  (repl/term-cols)
+          left  (str/format "%s" (java-version))
+          right ""
+          delim (str/repeat "-" (- cols 8 (count left) (count right)))]
+      (status (str/format "-- %s %s %s --" left delim right)))))
+
 
 (defn run-command [cmd & args]
   (cond
@@ -257,6 +270,7 @@
 (defn handle-command [cmd]
   (try
     (apply run-command (split-command cmd))
+    (display-status)
     (catch :EofException ex 
       (error "Terminating shell...")
       (sleep 1000)
@@ -284,3 +298,4 @@
 (. *REPL* :setHandler (proxify :Consumer { :accept handle-command }))
 
 (display-welcome-msg)
+(display-status)
