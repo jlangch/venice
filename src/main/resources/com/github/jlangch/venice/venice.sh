@@ -31,11 +31,18 @@ if [ ! -d ${VENICE_CONSOLE_HOME}/libs ]; then
   exit 1
 fi
 
+if [ ! -d ${JAVA_8_HOME} ]; then
+  echo
+  echo "Error: The Java 8 home dir ${JAVA_8_HOME} does not exist!"
+  sleep 5
+  exit 1
+fi
+
 
 cd ${VENICE_CONSOLE_HOME}
 
 
-${JAVA_11_HOME}/bin/java \
+${JAVA_8_HOME}/bin/java \
   -server \
   -cp "lib:libs/*" com.github.jlangch.venice.Launcher \
   -Xmx2G \

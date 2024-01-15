@@ -30,10 +30,16 @@ if not exist %VENICE_CONSOLE_HOME%\libs (
   exit 2
 )
 
+if not exist %JAVA_8_HOME%\libs (
+  echo Error: The Java 8 home dir %JAVA_8_HOME% does not exist!
+  timeout /t 10
+  exit 2
+)
+
 
 cd %VENICE_CONSOLE_HOME%
 
-"%JAVA_17_HOME%\bin\java.exe" ^
+"%JAVA_8_HOME%\bin\java.exe" ^
   -server ^
   -Xmx2G ^
   -XX:-OmitStackTraceInFastThrow ^
