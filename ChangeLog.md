@@ -10,17 +10,17 @@ All notable changes to this project will be documented in this file.
 
 ## [1.12.2] - 2024-01-xx
 
+This release focuses on Windows.
+
 While the Venice devel platform is MacOSX and Linux, Windows has been neglected
 so far due to the lack of a Windows machine.
-
-This release focuses on Windows.
 
 ### Fixed 
 
 - all unit tests to run on Windows too
 - a path composition problem in the :gradlew module when running on Windows
 - :grep module to run on Windows
-- an edge in load-path management on Windows
+- an edge case in load-path management on Windows
 
 
 
