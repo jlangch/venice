@@ -57,6 +57,20 @@
 
 
 (defn
+  ^{ :arglists '("(require-windows)")
+     :doc """
+          Validates if the OS isWindows, throws an exception if not.
+          """
+     :examples '(
+          "(shell/require-windows)") }
+
+  require-windows []
+
+  (when-not (os-type? :windows)
+    (throw (ex :VncException "Can only run on Windows!"))))
+    
+
+(defn
   ^{ :arglists '("(require-java-9+)")
      :doc """
           Validates if the Java VM is of version 9 or newer.

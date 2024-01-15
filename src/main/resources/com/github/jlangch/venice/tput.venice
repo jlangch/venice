@@ -69,8 +69,9 @@
 
   cols []
 
-  (shell/require-mac-or-linux)
-  (long (str/trim (:out (core/sh "tput" "cols" :throw-ex true)))))
+  (if (or (os-type? :mac-osx) (os-type? :linux))
+    (long (str/trim (:out (core/sh "tput" "cols" :throw-ex true))))
+    (long (windows-console-mode-attribute "Columns"))))
 
 
 (defn
@@ -80,8 +81,9 @@
 
   lines []
 
-  (shell/require-mac-or-linux)
-  (long (str/trim (:out (core/sh "tput" "lines" :throw-ex true)))))
+  (if (or (os-type? :mac-osx) (os-type? :linux))
+    (long (str/trim (:out (core/sh "tput" "lines" :throw-ex true)))))
+    (long (windows-console-mode-attribute "Lines")))
 
 
 (defn
@@ -93,6 +95,19 @@
 
   (shell/require-mac-or-linux)
   (long (str/trim (:out (core/sh "tput" "colors" :throw-ex true)))))
+
+
+(defn- windows-console-mode-attribute [attr-name]
+  (shell/require-windows)
+  (->> (core/sh "cmd" "/C" "mode con" :throw-ex true)
+       (:out)
+       (str/split-lines)
+       (filter #(match? % " +~{attr-name}: +[0-9]+"))
+       (map str/trim)
+       (first)
+       (str/split " +")))
+
+
 
 ;; -----------------------------------------------------------------------------
 ;; Controlling The Cursor
