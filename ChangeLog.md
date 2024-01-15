@@ -12,6 +12,10 @@ All notable changes to this project will be documented in this file.
 
 This release focuses on Windows.
 
+### Improved 
+
+- and simplified the setup of custom REPLs
+
 ### Fixed 
 
 - all unit tests to run on Windows too
