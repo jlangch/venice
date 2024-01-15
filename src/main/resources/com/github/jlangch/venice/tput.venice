@@ -105,7 +105,8 @@
        (filter #(match? % " +~{attr-name}: +[0-9]+"))
        (map str/trim)
        (first)
-       (str/split " +")))
+       (str/split " +")
+       (second)))
 
 
 
