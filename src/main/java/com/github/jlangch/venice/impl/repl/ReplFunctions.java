@@ -23,13 +23,16 @@ package com.github.jlangch.venice.impl.repl;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.function.Consumer;
 
 import org.jline.terminal.Terminal;
 import org.jline.utils.InfoCmp.Capability;
 
+import com.github.jlangch.venice.IRepl;
 import com.github.jlangch.venice.VncException;
 import com.github.jlangch.venice.impl.env.Env;
 import com.github.jlangch.venice.impl.env.Var;
+import com.github.jlangch.venice.impl.javainterop.DynamicInvocationHandler;
 import com.github.jlangch.venice.impl.types.Constants;
 import com.github.jlangch.venice.impl.types.VncFunction;
 import com.github.jlangch.venice.impl.types.VncJavaObject;
@@ -38,22 +41,26 @@ import com.github.jlangch.venice.impl.types.VncLong;
 import com.github.jlangch.venice.impl.types.VncString;
 import com.github.jlangch.venice.impl.types.VncSymbol;
 import com.github.jlangch.venice.impl.types.VncVal;
+import com.github.jlangch.venice.impl.types.collections.VncHashMap;
 import com.github.jlangch.venice.impl.types.collections.VncList;
 import com.github.jlangch.venice.impl.types.collections.VncOrderedMap;
+import com.github.jlangch.venice.impl.types.util.Coerce;
 import com.github.jlangch.venice.impl.util.ArityExceptions;
+import com.github.jlangch.venice.impl.util.callstack.CallFrame;
 
 
 public class ReplFunctions {
 
     public static Env register(
             final Env env,
-            final Terminal terminal,
+               final IRepl repl,
+               final Terminal terminal,
             final ReplConfig config,
             final boolean macroExpandOnLoad,
             final ReplDirs replDirs
     ) {
         Env e = env;
-        for(VncFunction fn : createFunctions(terminal, config, macroExpandOnLoad, replDirs)) {
+        for(VncFunction fn : createFunctions(repl, terminal, config, macroExpandOnLoad, replDirs)) {
             e = registerFn(e,fn);
         }
         return e;
@@ -65,6 +72,7 @@ public class ReplFunctions {
     }
 
     private static List<VncFunction> createFunctions(
+            final IRepl repl,
             final Terminal terminal,
             final ReplConfig config,
             final boolean macroExpandOnLoad,
@@ -73,11 +81,13 @@ public class ReplFunctions {
         final List<VncFunction> fns = new ArrayList<>();
 
         fns.add(createReplInfoFn(terminal, config));
-        fns.add(createReplRestartFn(terminal, config, macroExpandOnLoad));
+        fns.add(createReplRestartFn(config, macroExpandOnLoad));
         fns.add(createTermRowsFn(terminal));
         fns.add(createTermColsFn(terminal));
         fns.add(createReplHomeDirFn(replDirs));
         fns.add(createReplLibsDirFn(replDirs));
+        fns.add(createPromptFn(repl));
+        fns.add(setHandlerFn(repl));
 
         return fns;
     }
@@ -113,18 +123,30 @@ public class ReplFunctions {
                 public VncVal apply(final VncList args) {
                     ArityExceptions.assertArity(this, args, 0);
 
-                    try {
-                        return VncOrderedMap.of(
-                                new VncKeyword("term-name"),   new VncString(terminal.getName()),
-                                new VncKeyword("term-type"),   new VncString(terminal.getType()),
-                                new VncKeyword("term-cols"),   new VncLong(terminal.getSize().getColumns()),
-                                new VncKeyword("term-rows"),   new VncLong(terminal.getSize().getRows()),
-                                new VncKeyword("term-colors"), new VncLong(terminal.getNumericCapability(Capability.max_colors)),
-                                new VncKeyword("term-class"),  new VncKeyword(terminal.getClass().getName()),
-                                new VncKeyword("color-mode"),  new VncKeyword(config.getColorMode().toString().toLowerCase()));
+                    if (terminal != null) {
+                        try {
+                            return VncOrderedMap.of(
+                                    new VncKeyword("term-name"),   new VncString(terminal.getName()),
+                                    new VncKeyword("term-type"),   new VncString(terminal.getType()),
+                                    new VncKeyword("term-cols"),   new VncLong(terminal.getSize().getColumns()),
+                                    new VncKeyword("term-rows"),   new VncLong(terminal.getSize().getRows()),
+                                    new VncKeyword("term-colors"), new VncLong(terminal.getNumericCapability(Capability.max_colors)),
+                                    new VncKeyword("term-class"),  new VncKeyword(terminal.getClass().getName()),
+                                    new VncKeyword("color-mode"),  new VncKeyword(config.getColorMode().toString().toLowerCase()));
+                        }
+                        catch(Exception ex) {
+                            throw new VncException("Failed to get the REPL terminal info", ex);
+                        }
                     }
-                    catch(Exception ex) {
-                        throw new VncException("Failed to get the REPL terminal info", ex);
+                    else {
+                        return VncOrderedMap.of(
+                                new VncKeyword("term-name"),   new VncString("unknown"),
+                                new VncKeyword("term-type"),   new VncString("unknown"),
+                                new VncKeyword("term-cols"),   new VncLong(0),
+                                new VncKeyword("term-rows"),   new VncLong(0),
+                                new VncKeyword("term-colors"), new VncLong(0),
+                                new VncKeyword("term-class"),  new VncKeyword("unknown"),
+                                new VncKeyword("color-mode"),  new VncKeyword("unknown"));
                     }
                 }
 
@@ -133,7 +155,6 @@ public class ReplFunctions {
     }
 
     private static VncFunction createReplRestartFn(
-            final Terminal terminal,
             final ReplConfig config,
             final boolean macroExpandOnLoad
     ) {
@@ -183,7 +204,7 @@ public class ReplFunctions {
                 public VncVal apply(final VncList args) {
                     ArityExceptions.assertArity(this, args, 0);
 
-                    return new VncLong(terminal.getSize().getRows());
+                    return new VncLong(terminal == null ? 0 : terminal.getSize().getRows());
                 }
 
                 private static final long serialVersionUID = -1L;
@@ -209,7 +230,7 @@ public class ReplFunctions {
                 public VncVal apply(final VncList args) {
                     ArityExceptions.assertArity(this, args, 0);
 
-                    return new VncLong(terminal.getSize().getColumns());
+                    return new VncLong(terminal == null ? 0 : terminal.getSize().getColumns());
                 }
 
                 private static final long serialVersionUID = -1L;
@@ -262,6 +283,82 @@ public class ReplFunctions {
                     return replDirs.getLibsDir() == null
                             ? Constants.Nil
                             : new VncJavaObject(replDirs.getLibsDir());
+                }
+
+                private static final long serialVersionUID = -1L;
+            };
+    }
+
+    private static VncFunction createPromptFn(final IRepl repl) {
+        return
+            new VncFunction(
+                    "repl/prompt",
+                    VncFunction
+                        .meta()
+                        .arglists("(repl/prompt s)")
+                        .doc(
+                            "Sets the REPL prompt string!")
+                        .examples(
+                        	"(repl/prompt \"venice> \")")
+                        .seeAlso(
+                            "repl?", "repl/handler", "repl/info")
+                        .build()
+            ) {
+                @Override
+                public VncVal apply(final VncList args) {
+                    ArityExceptions.assertArity(this, args, 1);
+
+                    final String prompt = Coerce.toVncString(args.first()).getValue();
+
+                    if (repl != null) {
+                        repl.setPrompt(prompt);
+                    }
+
+                    return Constants.Nil;
+                }
+
+                private static final long serialVersionUID = -1L;
+            };
+    }
+
+    private static VncFunction setHandlerFn(final IRepl repl) {
+        return
+            new VncFunction(
+                    "repl/handler",
+                    VncFunction
+                        .meta()
+                        .arglists("(repl/handler f)")
+                        .doc(
+                            "Sets the REPL command handler!")
+                        .examples(
+                            "(do                                \n" +
+                            "  (defn handle-command [cmd]       \n" +
+                            "     ;; run the command 'cmd'      \n" +
+                            "     (println \"Demo:\" cmd))      \n" +
+                            "                                   \n" +
+                            "  (repl/handler handle-command))   ")
+                        .seeAlso(
+                            "repl?", "repl/prompt", "repl/info")
+                        .build()
+            ) {
+                @Override
+                @SuppressWarnings("unchecked")
+                public VncVal apply(final VncList args) {
+                    ArityExceptions.assertArity(this, args, 1);
+
+                    final VncFunction handlerFn = Coerce.toVncFunction(args.first());
+
+                    if (repl != null) {
+                        final Object handler =
+                                DynamicInvocationHandler.proxify(
+                                    new CallFrame("proxify(:" + Consumer.class.getName() +")", args.getMeta()),
+                                    Consumer.class,
+                                    VncHashMap.of(new VncString("accept"), handlerFn));
+
+                        repl.setHandler((Consumer<String>)handler);
+                    }
+
+                    return Constants.Nil;
                 }
 
                 private static final long serialVersionUID = -1L;

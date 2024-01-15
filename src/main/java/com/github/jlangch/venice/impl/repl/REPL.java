@@ -1231,7 +1231,9 @@ public class REPL implements IRepl {
                     .setStdinReader(in);
 
         return ReplFunctions.register(
-        			env, terminal, config, venice.isMacroExpandOnLoad(), replDirs);
+        			env,
+        			this, terminal, config,
+        			venice.isMacroExpandOnLoad(), replDirs);
     }
 
     private void reconfigureVenice(

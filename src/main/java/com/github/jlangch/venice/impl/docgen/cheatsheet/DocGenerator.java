@@ -144,7 +144,7 @@ public class DocGenerator {
                                 null);
 
         // make REPL specific functions available (e.g: 'repl/info')
-        final Env env = ReplFunctions.register(docEnv, null, null, false, ReplDirs.notavail());
+        final Env env = ReplFunctions.register(docEnv, null, null, null, false, ReplDirs.notavail());
 
         this.diBuilder = new DocItemBuilder(
                                 env,

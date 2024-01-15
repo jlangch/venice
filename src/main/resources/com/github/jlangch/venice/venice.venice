@@ -17,6 +17,7 @@
 
 (load-module :gradlew)
 (load-module :ansi)
+(load-module :java)
 
 (import :java.util.function.Consumer)
 (import :com.github.jlangch.venice.EofException)
@@ -56,7 +57,7 @@
 (defonce java-11-home (str/strip-end (system-env :JAVA_11_HOME) "/"))
 (defonce java-home java-8-home)
 
-(defonce sonatype-user "jlangch")
+(defonce sonatype-user "xxxxxx")
 
 (defonce cmd-line-prompt (str proj-name "> "))
 
@@ -294,8 +295,9 @@
   (fatal-error-and-exit "The JAVA home '~{java-home}' does not exist!"))
 
 
-(. *REPL* :setPrompt "shell> ")
-(. *REPL* :setHandler (proxify :Consumer { :accept handle-command }))
+;; configure the REPL
+(repl/prompt "shell> ")
+(repl/handler handle-command)
 
 (display-welcome-msg)
 (display-status)

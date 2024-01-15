@@ -277,7 +277,9 @@ public class CustomREPL implements IRepl {
                      .setStdinReader(in);
 
         return ReplFunctions.register(
-        			env, terminal, config, macroexpand, ReplDirs.create());
+        			env,
+        			this, terminal, config,
+        			macroexpand, ReplDirs.create());
     }
 
     private PrintStream createPrintStream(final String context, final Terminal terminal) {

@@ -54,6 +54,11 @@ public class ReplSection implements ISectionBuilder {
         dirs.addItem(diBuilder.getDocItem("repl/home-dir", false));
         dirs.addItem(diBuilder.getDocItem("repl/libs-dir", false));
 
+        final DocSection config = new DocSection("Config", "repl.config");
+        all.addSection(config);
+        config.addItem(diBuilder.getDocItem("repl/prompt", false));
+        config.addItem(diBuilder.getDocItem("repl/handler", false));
+
         return section;
     }
 
