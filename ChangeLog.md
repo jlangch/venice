@@ -18,6 +18,7 @@ This release focuses on Windows.
 - a path composition problem in the :gradlew module when running on Windows
 - :grep module to run on Windows
 - an edge case in load-path management on Windows
+- REPL terminal width/height functions on Windows
 
 
 
