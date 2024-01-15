@@ -7,6 +7,7 @@
 #    scripts                                                                  #
 #      +--libs                                                                #
 #      |   +-- venice-x.y.z.jar                                               #
+#      |   +-- jansi-2.4.1.jar                                                #
 #      +--venice.sh                                                           #
 #      +--venice.venice                                                       #
 ###############################################################################
@@ -39,6 +40,7 @@ ${JAVA_11_HOME}/bin/java \
   -cp "libs/*" com.github.jlangch.venice.Launcher \
   -Xmx2G \
   -XX:-OmitStackTraceInFastThrow \
+  -Dvenice.repl.home=${VENICE_REPL_HOME} \
   -colors \
   -macroexpand \
   -app-repl venice.venice

@@ -44,7 +44,9 @@ import org.jline.terminal.TerminalBuilder;
 import org.jline.utils.OSUtils;
 
 import com.github.jlangch.venice.EofException;
+import com.github.jlangch.venice.IRepl;
 import com.github.jlangch.venice.Venice;
+import com.github.jlangch.venice.VncException;
 import com.github.jlangch.venice.impl.IVeniceInterpreter;
 import com.github.jlangch.venice.impl.RunMode;
 import com.github.jlangch.venice.impl.VeniceInterpreter;
@@ -60,7 +62,8 @@ import com.github.jlangch.venice.impl.util.CommandLineArgs;
 import com.github.jlangch.venice.javainterop.IInterceptor;
 import com.github.jlangch.venice.javainterop.ILoadPaths;
 
-public class CustomREPL {
+
+public class CustomREPL implements IRepl {
 
     public CustomREPL(
             final IInterceptor interceptor,
@@ -72,6 +75,11 @@ public class CustomREPL {
 
     public void run(final String[] args) {
         ThreadContext.setInterceptor(interceptor);
+
+    	if (terminal != null) {
+    		throw new VncException("The REPL is already running!");
+    	}
+
 
         final CommandLineArgs cli = new CommandLineArgs(args);
         final ILoadPaths loadpaths = interceptor.getLoadPaths();
@@ -125,18 +133,31 @@ public class CustomREPL {
         }
     }
 
+    @Override
     public void setHandler(final Consumer<String> handler) {
         this.cmdHandler = handler;
     }
 
+    @Override
     public void setPrompt(final String prompt) {
         this.prompt = prompt;
         this.secondaryPrompt = "";
     }
 
+    @Override
     public void setPrompt(final String prompt, final String secondaryPrompt) {
         this.prompt = prompt;
         this.secondaryPrompt = secondaryPrompt;
+    }
+
+    @Override
+    public int getTerminalWidth() {
+        return terminal.getWidth();
+    }
+
+    @Override
+    public int getTerminalHeight() {
+        return terminal.getHeight();
     }
 
     private void repl(final CommandLineArgs cli) throws Exception {
@@ -151,14 +172,16 @@ public class CustomREPL {
                                             .dumb(!ansiTerminal)
                                             .jna(false);
 
-        final Terminal terminal = OSUtils.IS_WINDOWS
-                                    ? builder
-                                        .jansi(ansiTerminal)
-                                        .build()
-                                    : builder
-                                        .encoding("UTF-8")
-                                        .build();
+        terminal = OSUtils.IS_WINDOWS
+                        ? builder
+                            .jansi(ansiTerminal)
+                            .build()
+                        : builder
+                            .encoding("UTF-8")
+                            .build();
+
         terminal.handle(Signal.INT, signal -> mainThread.interrupt());
+
 
         final TerminalPrinter printer = new TerminalPrinter(
                                                 config,
@@ -232,7 +255,8 @@ public class CustomREPL {
             final PrintStream err,
             final BufferedReader in
     ) {
-        return venice.createEnv(macroexpand, ansiTerminal, RunMode.REPL)
+    	final Env env =
+               venice.createEnv(macroexpand, ansiTerminal, RunMode.REPL)
                      .setGlobal(new Var(
 		                    		 new VncSymbol("*ARGV*"),
 		                    		 cli.argsAsList(),
@@ -251,6 +275,9 @@ public class CustomREPL {
                      .setStdoutPrintStream(out)
                      .setStderrPrintStream(err)
                      .setStdinReader(in);
+
+        return ReplFunctions.register(
+        			env, terminal, config, macroexpand, ReplDirs.create());
     }
 
     private PrintStream createPrintStream(final String context, final Terminal terminal) {
@@ -377,11 +404,12 @@ public class CustomREPL {
     }
 
 
-
     private static final String DEFAULT_PROMPT_PRIMARY   = "venice> ";
     private static final String DEFAULT_PROMPT_SECONDARY = "      | ";
 
     private final File app;
+
+    private Terminal terminal;
 
     private String prompt = DEFAULT_PROMPT_PRIMARY;
     private String secondaryPrompt  = DEFAULT_PROMPT_SECONDARY;

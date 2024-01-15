@@ -39,6 +39,7 @@ cd %VENICE_CONSOLE_HOME%
   -XX:-OmitStackTraceInFastThrow ^
   -cp "libs;libs/*" ^
   com.github.jlangch.venice.Launcher ^
+  -Dvenice.repl.home=${VENICE_CONSOLE_HOME} ^
   -colors-darkmode ^
   -macroexpand ^
   -app-repl venice.venice

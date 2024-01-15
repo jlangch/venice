@@ -111,9 +111,9 @@
 
 (defn gradle-script-path [gradle-home]
   (case (os-type)
-    :mac-osx (str gradle- "/bin/gradle")
-    :linux   (str gradle- "/bin/gradle")
-    :windows (str gradle- "/bin/gradle.bat")))
+    :mac-osx (str gradle-home "/bin/gradle")
+    :linux   (str gradle-home "/bin/gradle")
+    :windows (str gradle-home "/bin/gradle.bat")))
 
 
 (defn exec []

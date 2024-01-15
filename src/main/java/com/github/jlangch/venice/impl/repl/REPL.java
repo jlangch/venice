@@ -36,6 +36,7 @@ import java.nio.file.Files;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.function.Consumer;
 import java.util.logging.Handler;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -55,6 +56,7 @@ import org.jline.utils.InfoCmp.Capability;
 import org.jline.utils.OSUtils;
 
 import com.github.jlangch.venice.ContinueException;
+import com.github.jlangch.venice.IRepl;
 import com.github.jlangch.venice.ParseError;
 import com.github.jlangch.venice.SourceCodeRenderer;
 import com.github.jlangch.venice.SymbolNotFoundException;
@@ -96,7 +98,7 @@ import com.github.jlangch.venice.javainterop.SandboxInterceptor;
 import com.github.jlangch.venice.javainterop.SandboxRules;
 
 
-public class REPL {
+public class REPL implements IRepl {
 
     public REPL(final IInterceptor interceptor) {
         this.interceptor = interceptor;
@@ -104,6 +106,10 @@ public class REPL {
 
     public void run(final String[] args) {
         ThreadContext.setInterceptor(interceptor);
+
+    	if (terminal != null) {
+    		throw new VncException("The REPL is already running!");
+    	}
 
         final CommandLineArgs cli = new CommandLineArgs(args);
         final ILoadPaths loadpaths = interceptor.getLoadPaths();
@@ -179,6 +185,32 @@ public class REPL {
         }
     }
 
+    @Override
+    public void setHandler(final Consumer<String> handler) {
+    	// not supported
+    }
+
+    @Override
+    public void setPrompt(final String prompt) {
+    	// not supported
+    }
+
+    @Override
+    public void setPrompt(final String prompt, final String secondaryPrompt) {
+    	// not supported
+    }
+
+    @Override
+    public int getTerminalWidth() {
+        return terminal.getWidth();
+    }
+
+    @Override
+    public int getTerminalHeight() {
+        return terminal.getHeight();
+    }
+
+
     private void repl(
             final CommandLineArgs cli,
             final boolean macroexpand
@@ -211,7 +243,7 @@ public class REPL {
             builder.encoding("UTF-8");
         }
 
-        final Terminal terminal = builder.build();
+        terminal = builder.build();
 
         terminal.handle(Signal.INT, signal -> mainThread.interrupt());
 
@@ -1185,6 +1217,11 @@ public class REPL {
                                      false,
                                      Var.Scope.Global))
                     .setGlobal(new Var(
+			                   		 new VncSymbol("*REPL*"),
+			                   		 new VncJavaObject(this),
+			                   		 false,
+			                   		 Var.Scope.Global))
+                    .setGlobal(new Var(
                                     new VncSymbol("*repl-color-theme*"),
                                     new VncKeyword(config.getColorMode().name().toLowerCase()),
                                     true,
@@ -1456,6 +1493,7 @@ public class REPL {
 
     private final static String HISTORY_FILE = ".repl.history";
 
+    private Terminal terminal;
 
     private ReplConfig config;
     private IInterceptor interceptor;
