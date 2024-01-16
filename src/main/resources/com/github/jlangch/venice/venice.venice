@@ -263,6 +263,8 @@
       (printlnc :error "Terminating shell...")
       (sleep 1000)
       (throw ex))
+    (catch :VncException ex 
+      (printlnc :error (ex-venice-stacktrace ex)))
     (catch :java.lang.Exception ex 
       (printlnc :error (str "Error: " (:message ex))))))
 
