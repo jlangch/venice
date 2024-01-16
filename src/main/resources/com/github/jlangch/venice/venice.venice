@@ -73,7 +73,7 @@
 (defonce java-11-home (str/strip-end (system-env :JAVA_11_HOME) "/"))
 (defonce java-home java-8-home)
 
-(defonce sonatype-user "xxxxxx")
+(defonce sonatype-user "jlangch")
 
 (defonce cmd-line-prompt (str proj-name "> "))
 
@@ -219,10 +219,10 @@
 (defn display-status-bar []
   (when display-status-bar?
     (let [cols  (repl/term-cols)
-          left  (str/format "%s" (java-version))
+          left  (str/format "%s" (version))
           right ""
           delim (str/repeat "-" (- cols 8 (count left) (count right)))]
-      (printlnc :status (str/format "-- %s %s %s --" left delim right)))))
+      (printlnc :status "-- ~{left} ~{delim} ~{right} --"))))
 
 (defn run-command [cmd & args]
   (cond
