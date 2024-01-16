@@ -73,7 +73,7 @@
 (defonce java-11-home (str/strip-end (system-env :JAVA_11_HOME) "/"))
 (defonce java-home java-8-home)
 
-(defonce sonatype-user "jlangch")
+(defonce sonatype-user "xxxxxx")
 
 (defonce cmd-line-prompt (str proj-name "> "))
 
