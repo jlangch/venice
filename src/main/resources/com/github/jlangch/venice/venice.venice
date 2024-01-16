@@ -210,7 +210,7 @@
        Project home:     ~{proj-home}
        Build Java 8:     ~{java-8-home}
        Build Java 11:    ~{java-11-home}
-       Color theme:      ~(color-theme)
+       Color theme:      ~{*repl-color-theme*}
        Terminal:         [~(repl/term-cols) x ~(repl/term-rows)]
 
     """))
