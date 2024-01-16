@@ -86,7 +86,6 @@
 (defonce display-status-bar? false)
 
 
-
 ;; -----------------------------------------------------------------------------
 ;; Commands                                                                    -
 ;; -----------------------------------------------------------------------------
@@ -118,10 +117,9 @@
 
 (defn gradle-tasks [& args]
   (apply gradlew/run* proj-home 
-                      (partial (printlnc :stdout))  
-                      (partial (printlnc :stderr)) 
+                      (partial printlnc :stdout)  
+                      (partial printlnc :stderr)
                       (concat gradle-std-options args)))
-
 
 
 ;; -----------------------------------------------------------------------------
@@ -147,7 +145,6 @@
 
 (defn- to-long [s]
   (if (and (string? s) (match? s "[1-9][0-9]*")) (long s) nil)) 
-
 
 
 ;; -----------------------------------------------------------------------------
@@ -218,7 +215,6 @@
 
     """))
 
-
 (defn display-status-bar []
   (when display-status-bar?
     (let [cols  (repl/term-cols)
@@ -226,7 +222,6 @@
           right ""
           delim (str/repeat "-" (- cols 8 (count left) (count right)))]
       (printlnc :status (str/format "-- %s %s %s --" left delim right)))))
-
 
 (defn run-command [cmd & args]
   (cond
@@ -271,7 +266,6 @@
       (printlnc :error (str "Error: " (:message ex))))))
 
 
-
 ;; -----------------------------------------------------------------------------
 ;; MAIN                                                                        -
 ;; -----------------------------------------------------------------------------
@@ -284,7 +278,6 @@
 
 (when-not (io/exists-dir? java-home)
   (fatal-error-and-exit "The JAVA home '~{java-home}' does not exist!"))
-
 
 ;; configure the REPL
 (repl/prompt "shell> ")
