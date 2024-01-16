@@ -1,8 +1,8 @@
 @ECHO OFF
 REM ############################################################################
-REM # Venice management script                                                 #
+REM # Venice console                                                           #
 REM # -------------------------------------------------------------------------#
-REM # Starts a Venice REPL, loads 'venice.venice' and runs it.                 #
+REM # Starts a Venice console (REPL), loads 'venice.venice' and runs it.       #
 REM #                                                                          #
 REM # Layout:                                                                  #
 REM #    scripts                                                               #

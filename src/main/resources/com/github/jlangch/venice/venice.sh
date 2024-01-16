@@ -1,7 +1,7 @@
 ###############################################################################
-# Venice management script                                                    #
+# Venice console                                                              #
 # ----------------------------------------------------------------------------#
-# Starts a Venice REPL, loads 'venice.venice' and runs it.                    #
+# Starts a Venice console (REPL), loads 'venice.venice' and runs it.          #
 #                                                                             #
 # Layout:                                                                     #
 #    scripts                                                                  #

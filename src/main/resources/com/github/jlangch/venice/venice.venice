@@ -1,15 +1,20 @@
 ;; -----------------------------------------------------------------------------
-;; Venice management script
+;; Venice console script
 ;; -----------------------------------------------------------------------------
-;; use a shell script to start the STEP management script:
+;; This console script is started by a launcher script:
+;;   venice.sh     MacOSX & Linux
+;;   venice.bat    Windows
+;;
+;; On MacOSX / Linux the launcher script looks like:
 ;;
 ;; cd /Users/juerg/Desktop/scripts/
 ;; 
 ;; ${JAVA_8_HOME}/bin/java \
 ;;   -server \
-;;   -cp "libs/*" com.github.jlangch.venice.Launcher \
+;;   -cp "lib:libs/*" com.github.jlangch.venice.Launcher \
 ;;   -Xmx2G \
 ;;   -XX:-OmitStackTraceInFastThrow \
+;;   -Dvenice.repl.home=${VENICE_REPL_HOME} \
 ;;   -colors \
 ;;   -macroexpand \
 ;;   -app-repl venice.venice
