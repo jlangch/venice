@@ -28,7 +28,7 @@
 (import :com.github.jlangch.venice.EofException)
 
 
-
+;; see https://www.ascii-art-generator.org/ with font "standard"
 (defonce logo 
           """
           __    __         _
@@ -187,10 +187,10 @@
     r|rebuild      rebuild, deploy, and start the Venice REPL
     s|start        start the Venice REPL
     T|tests        run the unit tests
-    t|task         run a Gradle task
+    t|task n       run a Gradle task, requires one or more task names
     c|cheatsheet   generate the cheatsheets
     d|dependencies list the dependencies
-    p|publish      publish Venice artefacts to Maven
+    p|publish k p  publish Venice artefacts to Maven, requires pgp-key & password
     C|colors       color theme
     i|info         display the configuration
     h|help         display the help
@@ -236,7 +236,7 @@
     (match? cmd "d|dependencies") (gradle-tasks "dependencies")
     (match? cmd "T|tests")        (gradle-tasks "clean" "test")
     (match? cmd "p|publish")      (publish (first args) (second args))
-    (match? cmd "t|task")         (gradle-tasks (first args))
+    (match? cmd "t|task")         (apply gradle-tasks args)
     (match? cmd "C|colors")       (show-color-theme)
     (match? cmd "i|info")         (display-info)
     (match? cmd "h|help")         (help)
