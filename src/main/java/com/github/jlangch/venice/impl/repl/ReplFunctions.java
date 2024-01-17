@@ -334,7 +334,7 @@ public class ReplFunctions {
                         .meta()
                         .arglists("(repl/color-theme! theme)")
                         .doc(
-                            "Set the REPL's color theme (:light, :dark, :none) ")
+                            "Set the REPL's color theme (:light, :dark) ")
                         .examples(
                             "(repl/color-theme!)")
                         .seeAlso(
