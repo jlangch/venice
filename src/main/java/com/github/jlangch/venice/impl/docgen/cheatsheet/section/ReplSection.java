@@ -56,8 +56,10 @@ public class ReplSection implements ISectionBuilder {
 
         final DocSection config = new DocSection("Config", "repl.config");
         all.addSection(config);
-        config.addItem(diBuilder.getDocItem("repl/prompt", false));
-        config.addItem(diBuilder.getDocItem("repl/handler", false));
+        config.addItem(diBuilder.getDocItem("repl/prompt!", false));
+        config.addItem(diBuilder.getDocItem("repl/handler!", false));
+        config.addItem(diBuilder.getDocItem("repl/color-theme", false));
+        config.addItem(diBuilder.getDocItem("repl/color-theme!", false));
 
         return section;
     }

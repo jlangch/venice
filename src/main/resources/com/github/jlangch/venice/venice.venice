@@ -176,7 +176,7 @@
   (println (ansi/style (str text) :bold (ansi-color color-code))))
 
 (defn ansi-color [code]
-  (code (*repl-color-theme* COLORS (:light COLORS)) :stdout))
+  (code ((repl/color-theme) COLORS (:light COLORS)) :stdout))
 
 (defn help []
   (println
@@ -283,8 +283,8 @@
   (fatal-error-and-exit "The JAVA home '~{java-home}' does not exist!"))
 
 ;; configure the REPL
-(repl/prompt "shell> ")
-(repl/handler handle-command)
+(repl/prompt! "shell> ")
+(repl/handler! handle-command)
 
 (display-welcome-msg)
 (display-status-bar)

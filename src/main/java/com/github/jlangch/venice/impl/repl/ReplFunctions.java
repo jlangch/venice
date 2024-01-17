@@ -33,6 +33,7 @@ import com.github.jlangch.venice.VncException;
 import com.github.jlangch.venice.impl.env.Env;
 import com.github.jlangch.venice.impl.env.Var;
 import com.github.jlangch.venice.impl.javainterop.DynamicInvocationHandler;
+import com.github.jlangch.venice.impl.repl.ReplConfig.ColorMode;
 import com.github.jlangch.venice.impl.types.Constants;
 import com.github.jlangch.venice.impl.types.VncFunction;
 import com.github.jlangch.venice.impl.types.VncJavaObject;
@@ -53,14 +54,14 @@ public class ReplFunctions {
 
     public static Env register(
             final Env env,
-               final IRepl repl,
-               final Terminal terminal,
+            final IRepl repl,
+            final Terminal terminal,
             final ReplConfig config,
             final boolean macroExpandOnLoad,
             final ReplDirs replDirs
     ) {
         Env e = env;
-        for(VncFunction fn : createFunctions(repl, terminal, config, macroExpandOnLoad, replDirs)) {
+        for(VncFunction fn : createFunctions(env, repl, terminal, config, macroExpandOnLoad, replDirs)) {
             e = registerFn(e,fn);
         }
         return e;
@@ -72,6 +73,7 @@ public class ReplFunctions {
     }
 
     private static List<VncFunction> createFunctions(
+            final Env env,
             final IRepl repl,
             final Terminal terminal,
             final ReplConfig config,
@@ -88,6 +90,8 @@ public class ReplFunctions {
         fns.add(createReplLibsDirFn(replDirs));
         fns.add(createPromptFn(repl));
         fns.add(setHandlerFn(repl));
+        fns.add(getColorTheme(config));
+        fns.add(setColorTheme(env, config));
 
         return fns;
     }
@@ -293,19 +297,94 @@ public class ReplFunctions {
             };
     }
 
+    private static VncFunction getColorTheme(final ReplConfig config) {
+        return
+            new VncFunction(
+                    "repl/color-theme",
+                    VncFunction
+                        .meta()
+                        .arglists("(repl/color-theme)")
+                        .doc(
+                            "Returns REPL's color theme (:light, :dark, :none) ")
+                        .examples(
+                            "(repl/color-theme)")
+                        .seeAlso(
+                            "repl?", "repl/color-theme!", "repl/prompt!", "repl/handler!",
+                            "repl/info")
+                        .build()
+            ) {
+                @Override
+                public VncVal apply(final VncList args) {
+                    ArityExceptions.assertArity(this, args, 0);
+
+                    final ColorMode theme = config.getColorMode();
+
+                    return new VncKeyword(theme.name().toLowerCase());
+                }
+
+                private static final long serialVersionUID = -1L;
+            };
+    }
+
+    private static VncFunction setColorTheme(final Env env, final ReplConfig config) {
+        return
+            new VncFunction(
+                    "repl/color-theme!",
+                    VncFunction
+                        .meta()
+                        .arglists("(repl/color-theme! theme)")
+                        .doc(
+                            "Set the REPL's color theme (:light, :dark, :none) ")
+                        .examples(
+                            "(repl/color-theme!)")
+                        .seeAlso(
+                            "repl?", "repl/color-theme", "repl/prompt!", "repl/handler!",
+                            "repl/info")
+                        .build()
+            ) {
+                @Override
+                public VncVal apply(final VncList args) {
+                    ArityExceptions.assertArity(this, args, 1);
+
+                    final VncKeyword theme = Coerce.toVncKeyword(args.first());
+
+                    final ColorMode mode;
+
+                    switch(theme.getSimpleName()) {
+                        case "light": mode = ColorMode.Light; break;
+                        case "dark":  mode = ColorMode.Dark;  break;
+                        case "none":  mode = ColorMode.None;  break;
+                        default:      mode = ColorMode.Light; break;
+                    }
+
+                    final VncKeyword modeType = new VncKeyword(mode.name().toLowerCase());
+
+                    env.setGlobal(new Var(
+                            new VncSymbol("*repl-color-theme*"),
+                            modeType,
+                            true,
+                            Var.Scope.Global));
+
+                    return modeType;
+                }
+
+                private static final long serialVersionUID = -1L;
+            };
+    }
+
     private static VncFunction createPromptFn(final IRepl repl) {
         return
             new VncFunction(
-                    "repl/prompt",
+                    "repl/prompt!",
                     VncFunction
                         .meta()
-                        .arglists("(repl/prompt s)")
+                        .arglists("(repl/prompt! s)")
                         .doc(
-                            "Sets the REPL prompt string!")
+                            "Sets the REPL prompt string")
                         .examples(
-                        	"(repl/prompt \"venice> \")")
+                            "(repl/prompt! \"venice> \")")
                         .seeAlso(
-                            "repl?", "repl/handler", "repl/info")
+                            "repl?", "repl/handler!", "repl/color-theme", "repl/info")
                         .build()
             ) {
                 @Override
@@ -328,21 +407,21 @@ public class ReplFunctions {
     private static VncFunction setHandlerFn(final IRepl repl) {
         return
             new VncFunction(
-                    "repl/handler",
+                    "repl/handler!",
                     VncFunction
                         .meta()
-                        .arglists("(repl/handler f)")
+                        .arglists("(repl/handler! f)")
                         .doc(
-                            "Sets the REPL command handler!")
+                            "Sets the REPL command handler")
                         .examples(
                             "(do                                \n" +
                             "  (defn handle-command [cmd]       \n" +
                             "     ;; run the command 'cmd'      \n" +
                             "     (println \"Demo:\" cmd))      \n" +
                             "                                   \n" +
-                            "  (repl/handler handle-command))   ")
+                            "  (repl/handler! handle-command))   ")
                         .seeAlso(
-                            "repl?", "repl/prompt", "repl/info")
+                            "repl?", "repl/prompt!", "repl/color-theme", "repl/info")
                         .build()
             ) {
                 @Override
