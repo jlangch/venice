@@ -73,7 +73,7 @@
 (defonce java-11-home (str/strip-end (system-env :JAVA_11_HOME) "/"))
 (defonce java-home java-8-home)
 
-(defonce sonatype-user "xxxxxx")
+(defonce sonatype-user "xxxxx")
 
 (defonce cmd-line-prompt (str proj-name "> "))
 
@@ -262,7 +262,9 @@
     (apply run-command (split-command cmd))
     (display-status-bar)
     (catch :EofException ex 
-      (fatal-error-and-exit "Terminating shell..."))
+      (printlnc :error "Terminating shell...")
+      (sleep 600)
+      (throw ex))
     (catch :VncException ex 
       (printlnc :error (ex-venice-stacktrace ex)))
     (catch :java.lang.Exception ex 
