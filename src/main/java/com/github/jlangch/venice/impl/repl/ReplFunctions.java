@@ -21,12 +21,14 @@
  */
 package com.github.jlangch.venice.impl.repl;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Consumer;
 
 import org.jline.terminal.Terminal;
 import org.jline.utils.InfoCmp.Capability;
+import org.jline.utils.NonBlockingReader;
 
 import com.github.jlangch.venice.IRepl;
 import com.github.jlangch.venice.VncException;
@@ -35,6 +37,7 @@ import com.github.jlangch.venice.impl.env.Var;
 import com.github.jlangch.venice.impl.javainterop.DynamicInvocationHandler;
 import com.github.jlangch.venice.impl.repl.ReplConfig.ColorMode;
 import com.github.jlangch.venice.impl.types.Constants;
+import com.github.jlangch.venice.impl.types.VncChar;
 import com.github.jlangch.venice.impl.types.VncFunction;
 import com.github.jlangch.venice.impl.types.VncJavaObject;
 import com.github.jlangch.venice.impl.types.VncKeyword;
@@ -92,6 +95,7 @@ public class ReplFunctions {
         fns.add(setHandlerFn(repl));
         fns.add(getColorTheme(config));
         fns.add(setColorTheme(env, config));
+        fns.add(waitAnyKeyPressed(terminal));
 
         return fns;
     }
@@ -441,4 +445,42 @@ public class ReplFunctions {
                 private static final long serialVersionUID = -1L;
             };
     }
+
+    private static VncFunction waitAnyKeyPressed(final Terminal terminal) {
+        return
+            new VncFunction(
+                    "repl/wait-any-key-pressed",
+                    VncFunction
+                        .meta()
+                        .arglists("(repl/wait-any-key-pressed)")
+                        .doc(
+                            "Returns REPL's color theme (:light, :dark, :none) ")
+                        .examples(
+                            "(repl/color-theme)")
+                        .seeAlso(
+                            "repl?", "repl/color-theme!", "repl/prompt!", "repl/handler!",
+                            "repl/info")
+                        .build()
+            ) {
+                @Override
+                public VncVal apply(final VncList args) {
+                    ArityExceptions.assertArity(this, args, 0);
+
+                    terminal.enterRawMode();
+                    NonBlockingReader reader = terminal.reader();
+
+                    try {
+	                    final int c = reader.read();
+
+	                    return new VncChar((char)c);
+                    }
+                    catch(IOException ex) {
+                    	return Constants.Nil;
+                    }
+                }
+
+                private static final long serialVersionUID = -1L;
+            };
+    }
+
 }

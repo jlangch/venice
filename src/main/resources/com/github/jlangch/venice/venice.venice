@@ -156,8 +156,10 @@
   (println)
   (printlnc :error msg)
   (println)
-  (sleep 3000)  ;; give the user time to read the error message
-  (throw (ex :EofException msg)))
+  (printlnc :error "<Press any key to exit>")
+  (println)
+  (repl/wait-any-key-pressed)
+  (throw (ex :EofException "exit")))
 
 (defn invalid-cmd [msg]
   (printlnc :warning msg))
