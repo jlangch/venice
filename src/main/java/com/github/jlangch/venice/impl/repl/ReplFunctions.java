@@ -245,7 +245,9 @@ public class ReplFunctions {
                         .meta()
                         .arglists("(repl/home-dir)")
                         .doc(
-                            "Returns the REPL home directory!")
+                            "Returns the REPL home directory.\n\n" +
+                            "Note: This function is only available when called from " +
+                            "within a REPL!")
                         .seeAlso(
                             "repl?", "repl/libs-dir")
                         .build()
@@ -271,7 +273,9 @@ public class ReplFunctions {
                         .meta()
                         .arglists("(repl/libs-dir)")
                         .doc(
-                            "Returns the REPL libs directory!")
+                            "Returns the REPL libs directory\n\n" +
+                            "Note: This function is only available when called from " +
+                            "within a REPL!")
                         .seeAlso(
                             "repl?", "repl/home-dir")
                         .build()
