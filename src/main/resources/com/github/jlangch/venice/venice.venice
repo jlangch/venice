@@ -156,7 +156,7 @@
   (println)
   (printlnc :error msg)
   (println)
-  (sleep 5000)  ;; give the user time to read the error message
+  (sleep 3000)  ;; give the user time to read the error message
   (throw (ex :EofException msg)))
 
 (defn invalid-cmd [msg]
@@ -260,9 +260,7 @@
     (apply run-command (split-command cmd))
     (display-status-bar)
     (catch :EofException ex 
-      (printlnc :error "Terminating shell...")
-      (sleep 1000)
-      (throw ex))
+      (fatal-error-and-exit "Terminating shell..."))
     (catch :VncException ex 
       (printlnc :error (ex-venice-stacktrace ex)))
     (catch :java.lang.Exception ex 
