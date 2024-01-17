@@ -357,6 +357,8 @@ public class ReplFunctions {
                         default:      mode = ColorMode.Light; break;
                     }
 
+                    config.switchColorMode(mode);
+
                     final VncKeyword modeType = new VncKeyword(mode.name().toLowerCase());
 
                     env.setGlobal(new Var(
