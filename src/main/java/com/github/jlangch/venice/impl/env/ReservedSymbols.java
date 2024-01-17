@@ -49,6 +49,7 @@ public class ReservedSymbols {
                 "*app-name*",
                 "*app-archive*",
                 "*ARGV*",
+
                 "*REPL*",
                 "*repl-color-theme*"));
 }

@@ -655,13 +655,6 @@ public class REPL implements IRepl {
         if (highlighter != null) {
             highlighter.reloadColors();
         }
-
-        // This symbol is used by DocForm (though 'repl/color-theme' is available)
-        env.setGlobal(new Var(
-                new VncSymbol("*repl-color-theme*"),
-                new VncKeyword(mode.name().toLowerCase()),
-                true,
-                Var.Scope.Global));
     }
 
     private void handleMacroExpandCommand(final Env env) {
@@ -1216,11 +1209,6 @@ public class REPL implements IRepl {
                                      cli.argsAsList(),
                                      false,
                                      Var.Scope.Global))
-                    .setGlobal(new Var(
-                                    new VncSymbol("*repl-color-theme*"),
-                                    new VncKeyword(config.getColorMode().name().toLowerCase()),
-                                    true,
-                                    Var.Scope.Global))
                     .setStdoutPrintStream(out)
                     .setStderrPrintStream(err)
                     .setStdinReader(in);

@@ -55,7 +55,6 @@ import com.github.jlangch.venice.impl.env.Var;
 import com.github.jlangch.venice.impl.repl.REPL.SetupMode;
 import com.github.jlangch.venice.impl.repl.ReplConfig.ColorMode;
 import com.github.jlangch.venice.impl.thread.ThreadContext;
-import com.github.jlangch.venice.impl.types.VncKeyword;
 import com.github.jlangch.venice.impl.types.VncSymbol;
 import com.github.jlangch.venice.impl.util.CommandLineArgs;
 import com.github.jlangch.venice.javainterop.IInterceptor;
@@ -261,12 +260,6 @@ public class CustomREPL implements IRepl {
 		                    		 cli.argsAsList(),
 		                    		 false,
 		                    		 Var.Scope.Global))
-                      // This symbol is used by DocForm (though 'repl/color-theme' is available)
-                     .setGlobal(new Var(
-		                             new VncSymbol("*repl-color-theme*"),
-		                             new VncKeyword(config.getColorMode().name().toLowerCase()),
-		                             true,
-		                             Var.Scope.Global))
                      .setStdoutPrintStream(out)
                      .setStderrPrintStream(err)
                      .setStdinReader(in);

@@ -359,15 +359,7 @@ public class ReplFunctions {
 
                     config.switchColorMode(mode);
 
-                    final VncKeyword modeType = new VncKeyword(mode.name().toLowerCase());
-
-                    env.setGlobal(new Var(
-                            new VncSymbol("*repl-color-theme*"),
-                            modeType,
-                            true,
-                            Var.Scope.Global));
-
-                    return modeType;
+                    return new VncKeyword(mode.name().toLowerCase());
                 }
 
                 private static final long serialVersionUID = -1L;

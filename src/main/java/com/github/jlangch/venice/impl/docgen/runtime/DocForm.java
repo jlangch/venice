@@ -347,11 +347,15 @@ public class DocForm {
     private static String getColorTheme(final Env env) {
         // Note: there is a color theme only if we're running in a REPL!
         if (isREPL(env)) {
-            final VncVal theme = env.get(new VncSymbol("*repl-color-theme*"));
-            if (Types.isVncKeyword(theme)) {
-                final String sTheme = ((VncKeyword)theme).getValue();
-                return "none".equals(sTheme) ? null : sTheme;
+            final VncVal fn = env.get(new VncSymbol("repl/color-theme"));
+            if (Types.isVncFunction(fn)) {
+                final VncVal theme = ((VncFunction)fn).applyOf();
+                if (Types.isVncKeyword(theme)) {
+                	return ((VncKeyword)theme).getValue();
+                }
             }
+
+            return "light";
         }
 
         return null;

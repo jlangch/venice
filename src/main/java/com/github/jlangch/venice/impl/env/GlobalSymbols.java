@@ -37,7 +37,6 @@ public class GlobalSymbols {
     public static final VncSymbol ANSI_TERM = new VncSymbol("*ansi-term*");
 
     public static final VncSymbol ARGV = new VncSymbol("*ARGV*");
-    public static final VncSymbol REPL_COLOR_THEME = new VncSymbol("*repl-color-theme*");
 
     public static final VncSymbol APP_NAME = new VncSymbol("*app-name*");
     public static final VncSymbol APP_ARCHIVE = new VncSymbol("*app-archive*");
@@ -45,5 +44,4 @@ public class GlobalSymbols {
     public static final VncSymbol STDOUT = new VncSymbol("*out*");
     public static final VncSymbol STDERR = new VncSymbol("*err*");
     public static final VncSymbol STDIN = new VncSymbol("*in*");
-
 }
