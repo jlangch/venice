@@ -20,19 +20,19 @@ set VENICE_REPL_HOME=C:\Users\juerg\Desktop\venice
 
 if not exist %VENICE_CONSOLE_HOME% (
   echo Error: The Venice console home dir %VENICE_CONSOLE_HOME% does not exist!
-  timeout /t 10
+  pause
   exit 2
 )
 
 if not exist %VENICE_CONSOLE_HOME%\libs (
   echo Error: The Venice console libs dir %VENICE_CONSOLE_HOME%\libs does not exist!
-  timeout /t 10
+  pause
   exit 2
 )
 
 if not exist %JAVA_8_HOME%\libs (
   echo Error: The Java 8 home dir %JAVA_8_HOME% does not exist!
-  timeout /t 10
+  pause
   exit 2
 )
 

@@ -20,21 +20,24 @@ export VENICE_REPL_HOME=/Users/juerg/Desktop/venice
 if [ ! -d ${VENICE_CONSOLE_HOME} ]; then
   echo
   echo "Error: The Venice console home dir ${VENICE_CONSOLE_HOME} does not exist!"
-  sleep 5
+  echo
+  read -p "Press any key to exit..." -n 1 -s
   exit 1
 fi
 
 if [ ! -d ${VENICE_CONSOLE_HOME}/libs ]; then
   echo
   echo "Error: The Venice console libs dir ${VENICE_CONSOLE_HOME}/libs does not exist!"
-  sleep 5
+  echo
+  read -p "Press any key to exit..." -n 1 -s
   exit 1
 fi
 
 if [ ! -d ${JAVA_8_HOME} ]; then
   echo
   echo "Error: The Java 8 home dir ${JAVA_8_HOME} does not exist!"
-  sleep 5
+  echo
+  read -p "Press any key to exit..." -n 1 -s
   exit 1
 fi
 
