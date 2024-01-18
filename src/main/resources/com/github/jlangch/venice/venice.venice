@@ -186,15 +186,15 @@
     ----------------------------------------------------------------------------
     Help
     ----------------------------------------------------------------------------
-    b|build        build
-    r|rebuild      rebuild, deploy, and start the Venice REPL
-    s|start        start the Venice REPL
-    T|tests        run the unit tests
-    t|task n       run a Gradle task, requires one or more task names
-    c|cheatsheet   generate the cheatsheets
-    d|dependencies list the dependencies
+    b|build        build the Venice project
+    r|rebuild      build the Venice project, deploy, and start the Venice console
+    s|start        start the Venice console
+    T|tests        run the Venice unit tests
+    t|task n       run a Venice project Gradle task, requires one or more task names
+    c|cheatsheet   generate the Venice cheatsheets
+    d|dependencies list the Venice dependencies
     p|publish k p  publish Venice artefacts to Maven, requires pgp-key & password
-    C|colors       color theme
+    C|colors       print the color theme
     i|info         display the configuration
     h|help         display the help
     q|quit         quit the shell
