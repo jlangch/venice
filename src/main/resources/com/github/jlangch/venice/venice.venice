@@ -191,7 +191,7 @@
     s|start        start the Venice console
     T|tests        run the Venice unit tests
     t|task n       run a Venice project Gradle task, requires one or more task names
-    c|cheatsheet   generate the Venice cheatsheets
+    c|cheatsheet   generate the Venice cheatsheet
     d|dependencies list the Venice dependencies
     p|publish k p  publish Venice artefacts to Maven, requires pgp-key & password
     C|colors       print the color theme
