@@ -196,7 +196,7 @@
     p|publish k p  publish Venice artefacts to Maven, requires pgp-key & password
     C|colors       print the color theme
     i|info         display the configuration
-    h|help         display the help
+    h|!|help       display the help
     q|quit         quit the shell
     x|exit         quit the shell
 
@@ -242,7 +242,7 @@
     (match? cmd "t|task")         (apply gradle-tasks args)
     (match? cmd "C|colors")       (show-color-theme)
     (match? cmd "i|info")         (display-info)
-    (match? cmd "h|help")         (help)
+    (match? cmd "h|!|help")       (help)
     (match? cmd "x|exit")         (exit)
     (match? cmd "q|quit")         (exit)
     :else                         (printlnc :warning "Invalid command: ~{cmd}")))
