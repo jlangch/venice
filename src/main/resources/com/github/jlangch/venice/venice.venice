@@ -64,18 +64,19 @@
 ;; Configuration                                                               -
 ;; -----------------------------------------------------------------------------
 
-(defonce proj-name "venice")
+(defonce proj-name "venice")  ;; Venice Git/Eclipse project name
 
 (defonce proj-home (str/strip-end (system-env :VENICE_PROJECT_HOME) "/"))
 (defonce repl-home (str/strip-end (system-env :VENICE_REPL_HOME) "/"))
 
+;; Java 8 is mandatory for "./gradlew eclipse", the Eclipse Venice project must
+;; be based on Java 8!
 (defonce java-8-home (str/strip-end (system-env :JAVA_8_HOME) "/"))
-(defonce java-11-home (str/strip-end (system-env :JAVA_11_HOME) "/"))
 (defonce java-home java-8-home)
 
-(defonce sonatype-user "xxxxx")
+(defonce sonatype-user "xxxxxx")
 
-(defonce cmd-line-prompt (str proj-name "> "))
+(defonce cmd-line-prompt (str "vshell> "))
 
 (defonce gradle-std-options ["--warning-mode=all" 
                              "--console=plain" 
@@ -105,7 +106,6 @@
   (assert (some? pgp-key) "Please provide the PGP key ID (e.g. 0000AAAA)!")
   (assert (some? sonatype-pwd) "Please provide the Sonatype password!")
   (assert (not-match? sonatype-user "[x?]*") "Please configure the Sonatype user!")
-
   (gradle-tasks "clean" 
                 "shadowJar" 
                 "publish"
@@ -285,7 +285,7 @@
   (fatal-error-and-exit "The JAVA home '~{java-home}' does not exist!"))
 
 ;; configure the REPL
-(repl/prompt! "shell> ")
+(repl/prompt! cmd-line-prompt)
 (repl/handler! handle-command)
 
 (display-welcome-msg)
