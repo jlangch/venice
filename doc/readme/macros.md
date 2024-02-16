@@ -389,7 +389,7 @@ to see the transformed expressions, we get
 The *body* argument holds a list and thus a list is inserted in the template
 for the variable "body" resulting in `((println 100) (println 200))`. That is not 
 a function that can be executed. We do not want the surrounding parenthesis. 
-What we actually want is "body" to be splice into the `(do ...)` list as values.
+What we actually want is "body" to be spliced into the `(do ...)` list as values.
 
 Unquote-splicing is exactly doing that. 
 
