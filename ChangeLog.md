@@ -17,7 +17,7 @@ All notable changes to this project will be documented in this file.
 
 ### Refactored
 
-- the global vars "*REPL*" and "*repl-color-theme*". Dedicated REPL functions like 
+- the global vars "\*REPL\*" and "\*repl-color-theme\*". Dedicated REPL functions like 
   `(repl/color-theme)` provide now access to the REPL configuration. 
   This affects only the internal REPL scripts.
 
