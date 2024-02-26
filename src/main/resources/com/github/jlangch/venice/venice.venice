@@ -24,7 +24,6 @@
 (load-module :ansi)
 (load-module :java)
 
-(import :java.util.function.Consumer)
 (import :com.github.jlangch.venice.EofException)
 
 
@@ -39,7 +38,7 @@
                 
           """ )
 
-(defonce COLORS {
+(defonce COLOR_THEMES {
   :light { :logo     "[38;5;33m"
            :status   "[38;5;64m"
            :result   "[38;5;20m"
@@ -88,11 +87,14 @@
 (defonce display-status-bar? false)
 
 
+
 ;; -----------------------------------------------------------------------------
 ;; Commands                                                                    -
 ;; -----------------------------------------------------------------------------
 
 (defn exit []
+  (printlnc :error "Terminating shell...")
+  (sleep 600)
   (throw (ex :EofException "exit")))
 
 (defn deploy []
@@ -178,7 +180,7 @@
   (println (ansi/style (str text) :bold (ansi-color color-code))))
 
 (defn ansi-color [code]
-  (code ((repl/color-theme) COLORS (:light COLORS)) :stdout))
+  (code ((repl/color-theme) COLOR_THEMES (:light COLOR_THEMES)) :stdout))
 
 (defn help []
   (println
@@ -262,8 +264,6 @@
     (apply run-command (split-command cmd))
     (display-status-bar)
     (catch :EofException ex 
-      (printlnc :error "Terminating shell...")
-      (sleep 600)
       (throw ex))
     (catch :VncException ex 
       (printlnc :error (ex-venice-stacktrace ex)))

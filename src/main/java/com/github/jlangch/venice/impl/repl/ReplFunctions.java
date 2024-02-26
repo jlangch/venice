@@ -30,6 +30,7 @@ import org.jline.terminal.Terminal;
 import org.jline.utils.InfoCmp.Capability;
 import org.jline.utils.NonBlockingReader;
 
+import com.github.jlangch.venice.EofException;
 import com.github.jlangch.venice.IRepl;
 import com.github.jlangch.venice.VncException;
 import com.github.jlangch.venice.impl.env.Env;
@@ -96,6 +97,7 @@ public class ReplFunctions {
         fns.add(getColorTheme(config));
         fns.add(setColorTheme(env, config));
         fns.add(waitAnyKeyPressed(terminal));
+        fns.add(exit(repl));
 
         return fns;
     }
@@ -477,6 +479,32 @@ public class ReplFunctions {
                     catch(IOException ex) {
                     	return Constants.Nil;
                     }
+                }
+
+                private static final long serialVersionUID = -1L;
+            };
+    }
+
+    private static VncFunction exit(final IRepl repl) {
+        return
+            new VncFunction(
+                    "repl/exit!",
+                    VncFunction
+                        .meta()
+                        .arglists("(repl/exit!)")
+                        .doc(
+                            "Exit from the REPL")
+                        .examples(
+                            "(repl/exit!)")
+                        .seeAlso(
+                            "repl?", "repl/prompt!", "repl/color-theme", "repl/info")
+                        .build()
+            ) {
+                @Override
+                public VncVal apply(final VncList args) {
+                    ArityExceptions.assertArity(this, args, 0);
+
+                    throw new EofException("exit");
                 }
 
                 private static final long serialVersionUID = -1L;
