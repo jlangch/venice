@@ -29,6 +29,7 @@ import com.github.jlangch.venice.impl.util.StringUtil;
 public class ExcelColumnDef<T> {
 
     public ExcelColumnDef(
+            final String id,
             final String header,
             final Function<? super T, ?> colMapper,
             final Integer width,
@@ -38,6 +39,7 @@ public class ExcelColumnDef<T> {
             final Object footerValue,
             final FooterType footerType
     ) {
+        this.id = id;
         this.header = StringUtil.trimToEmpty(header);
         this.colMapper = colMapper;
         this.width = width;
@@ -54,6 +56,7 @@ public class ExcelColumnDef<T> {
     }
 
 
+    public final String id;
     public final String header;
     public final Function<? super T, ?> colMapper;
     public final Integer width;

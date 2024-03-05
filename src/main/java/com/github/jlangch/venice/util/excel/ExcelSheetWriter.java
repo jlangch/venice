@@ -373,6 +373,25 @@ public class ExcelSheetWriter<T> {
         return this;
     }
 
+	public ExcelSheetWriter<T> hideColumn(final String colID) {
+		if (colID != null) {
+			int colNr1 = 1;
+			for(ExcelColumnDef<T> colDef : columnDefs) {
+				if (colID.equals(colDef.id)) {
+					hideColumn(colNr1);
+					break;
+				}
+				colNr1++;
+			}
+		}
+		return this;
+	}
+
+	public ExcelSheetWriter<T> hideColumns(final String... colIDs) {
+		for(String id : colIDs) hideColumn(id);
+		return this;
+	}
+
     public ExcelSheetWriter<T> addMergedRegion(final int rowFrom1, final int rowTo1, final int colFrom1, final int colTo1) {
         sheet.addMergedRegion(rowFrom1-1, rowTo1-1, colFrom1-1, colTo1-1);
         return this;

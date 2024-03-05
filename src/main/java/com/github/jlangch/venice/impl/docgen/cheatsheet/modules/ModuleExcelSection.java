@@ -96,6 +96,7 @@ public class ModuleExcelSection implements ISectionBuilder {
         wr_style.addItem(diBuilder.getDocItem("excel/bg-color", false));
         wr_style.addItem(diBuilder.getDocItem("excel/auto-size-columns", false));
         wr_style.addItem(diBuilder.getDocItem("excel/auto-size-column", false));
+        wr_style.addItem(diBuilder.getDocItem("excel/hide-columns", false));
         wr_style.addItem(diBuilder.getDocItem("excel/freeze-pane", false));
 
         final DocSection wr_image = new DocSection("Writer Images", id());

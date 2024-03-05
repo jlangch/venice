@@ -40,6 +40,11 @@ public class ExcelColumnBuilder<T> {
     }
 
 
+    public ExcelColumnBuilder<T> id(final String id) {
+        this.id = id;
+        return this;
+    }
+
     public ExcelColumnBuilder<T> colMapper(final Function<? super T, ?> mapper) {
         this.mapper = mapper;
         return this;
@@ -55,8 +60,8 @@ public class ExcelColumnBuilder<T> {
         return this;
     }
 
-    public ExcelColumnBuilder<T> hidden(final boolean hide) {
-        this.hidden = hide;
+    public ExcelColumnBuilder<T> skip(final boolean skip) {
+        this.skipped = skip;
         return this;
     }
 
@@ -112,10 +117,10 @@ public class ExcelColumnBuilder<T> {
     }
 
     public ExcelSheetWriter<T> end() {
-        if (!hidden) {
+        if (!skipped) {
             columnDefs.add(
                 new ExcelColumnDef<T>(
-                        name, mapper, width,
+                        id, name, mapper, width,
                         headerStyle, bodyStyle, footerStyle,
                         footerValue, footerType));
         }
@@ -127,11 +132,12 @@ public class ExcelColumnBuilder<T> {
     private final List<ExcelColumnDef<T>> columnDefs;
     private Function<? super T, ?> mapper;
     private String name;
+    private String id;
     private Integer width;
     private String headerStyle;
     private String bodyStyle;
     private String footerStyle;
     private Object footerValue;
-    private boolean hidden = false;
+    private boolean skipped = false;
     private ExcelColumnDef.FooterType footerType = ExcelColumnDef.FooterType.NONE;
 }

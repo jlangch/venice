@@ -1192,37 +1192,89 @@
   (. sheet :autoSizeColumn col))
 
 
-  (defn
-    ^{ :arglists '("(row-height sheet row height)")
-       :doc "Set the height of a row (1..n) in the sheet."
-       :examples '(
-          """
-          (do
-            (load-module :excel)
-            (let [os    (io/file-out-stream "sample.xlsx")
-                  data  [ {:first "John" :last "Doe"   :age 28 }
-                          {:first "Sue"  :last "Ford"  :age 26 } ]
-                  wbook (excel/writer :xlsx)
-                  sheet (excel/add-sheet wbook "Sheet 1")]
-              (excel/add-column sheet "First Name" { :field :first })
-              (excel/add-column sheet "Last Name" { :field :last })
-              (excel/add-column sheet "Age" { :field :age })
-              (excel/write-items sheet data)
-              (excel/auto-size-columns sheet)
-              (excel/row-height sheet 2 50)
-              (excel/write->file wbook "sample.xlsx")))
-          """ )
-       :see-also '(
-          "excel/col-width",
-          "excel/auto-size-columns", "excel/write-items", "excel/write-item",
-          "excel/write-value", "excel/cell-formula", "excel/auto-size-column") }
+(defn
+  ^{ :arglists '("(hide-columns sheet & columns)")
+    :doc "Hide columns in the sheet."
+    :examples '(
+        """
+        ;; hide column by column index (1...n)
+        (do
+          (load-module :excel)
+          (let [data  [ {:first "John" :last "Doe"   :age 28 }
+                        {:first "Sue"  :last "Ford"  :age 26 } ]
+                wbook (excel/writer :xlsx)
+                sheet (excel/add-sheet wbook "Sheet 1")]
+            (excel/add-column sheet "Last Name" { :field :last })
+            (excel/add-column sheet "First Name" { :field :first })
+            (excel/add-column sheet "Age" { :field :age })
+            (excel/write-items sheet data)
+            (excel/auto-size-columns sheet)
+            (excel/hide-columns sheet 2)  ;; hide column #2
+            (excel/write->file wbook "sample.xlsx")))
+        """,
+        """
+        ;; hide column by column id
+        (do
+          (load-module :excel)
+          (let [data  [ {:first "John" :last "Doe"   :age 28 }
+                        {:first "Sue"  :last "Ford"  :age 26 } ]
+                wbook (excel/writer :xlsx)
+                sheet (excel/add-sheet wbook "Sheet 1")]
+            (excel/add-column sheet "Last Name" { :field :last, :id "lastname"})
+            (excel/add-column sheet "First Name" { :field :first, :id "firstname"})
+            (excel/add-column sheet "Age" { :field :age, :id "age" })
+            (excel/write-items sheet data)
+            (excel/auto-size-columns sheet)
+            (excel/hide-columns sheet "firstname")  ;; hide column "firstname"
+            (excel/write->file wbook "sample.xlsx")))
+        """ )
+    :see-also '(
+        "excel/auto-size-column", "excel/write-items", "excel/write-item",
+        "excel/write-value", "excel/cell-formula", "excel/row-height") }
 
-    row-height [sheet row height]
+  hide-columns [sheet & columns]
 
-    { :pre [(instance-of? :ExcelSheetWriter sheet)
-            (long? row) (pos? row)] }
+  { :pre [(instance-of? :ExcelSheetWriter sheet)] }
 
-    (. sheet :rowHeightInPoints row height))
+  (let [valid?       (fn [c] (or (int? c) (long? c) (string? c)))
+        invalid-cols (filter #(not (valid? %)) columns)]
+    (when (pos? (count invalid-cols))
+      (throw (ex :VncException
+                 (str "Invalid column ref type. Must be int, long, or string"))))
+    (doseq [c columns] (. sheet :hideColumn c))))
+
+
+(defn
+  ^{ :arglists '("(row-height sheet row height)")
+      :doc "Set the height of a row (1..n) in the sheet."
+      :examples '(
+        """
+        (do
+          (load-module :excel)
+          (let [os    (io/file-out-stream "sample.xlsx")
+                data  [ {:first "John" :last "Doe"   :age 28 }
+                        {:first "Sue"  :last "Ford"  :age 26 } ]
+                wbook (excel/writer :xlsx)
+                sheet (excel/add-sheet wbook "Sheet 1")]
+            (excel/add-column sheet "First Name" { :field :first })
+            (excel/add-column sheet "Last Name" { :field :last })
+            (excel/add-column sheet "Age" { :field :age })
+            (excel/write-items sheet data)
+            (excel/auto-size-columns sheet)
+            (excel/row-height sheet 2 50)
+            (excel/write->file wbook "sample.xlsx")))
+        """ )
+      :see-also '(
+        "excel/col-width",
+        "excel/auto-size-columns", "excel/write-items", "excel/write-item",
+        "excel/write-value", "excel/cell-formula", "excel/auto-size-column") }
+
+  row-height [sheet row height]
+
+  { :pre [(instance-of? :ExcelSheetWriter sheet)
+          (long? row) (pos? row)] }
+
+  (. sheet :rowHeightInPoints row height))
 
 
 (defn
@@ -1934,9 +1986,10 @@
 
         Options:
 
+        | :id id              | a column id |
         | :field f            | a field, e.g. :first-name |
         | :width n            | width in points, e.g. 100 |
-        | :hidden b           | hidden, e.g. true, false |
+        | :skip s             | skip column, e.g. true, false |
         | :header-style r     | style name for header row, e.g. :header |
         | :body-style r       | style name for body rows, e.g. :body |
         | :footer-style r     | style name for footer row, e.g. :footer |
@@ -1989,9 +2042,10 @@
                                    (str "A column field must be either a keyword "
                                         "or a string acting as a key to get the "
                                         "column's value from the row data map")))))
+      (when-let [x (:id options)]           (. col-builder :id x))
       (when-let [x (:data-field options)]   (. col-builder :colMapper x)) ;; compatibility
       (when-let [x (:width options)]        (. col-builder :widthInPoints x))
-      (when-let [x (:hidden options)]       (. col-builder :hidden x))
+      (when-let [x (:skip options)]         (. col-builder :skip x))
       (when-let [x (:header-style options)] (. col-builder :headerStyle (name x)))
       (when-let [x (:body-style options)]   (. col-builder :bodyStyle (name x)))
       (when-let [x (:footer-style options)] (. col-builder :footerStyle (name x)))
