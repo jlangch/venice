@@ -9,11 +9,11 @@ All notable changes to this project will be documented in this file.
 
 
 
-## [1.12.3] - 2024-01-xx
+## [1.12.3] - 2024-03-05
 
 ### Added
 
-- added functions to hide columns in a excel sheet
+- added functions to hide columns in an excel sheet
 
 ### Refactored
 
