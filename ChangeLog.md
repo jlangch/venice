@@ -6,6 +6,11 @@ All notable changes to this project will be documented in this file.
 
 
 
+## [1.12.4] - 2024-03-xx
+
+### Added
+
+- ...
 
 
 
@@ -13,7 +18,7 @@ All notable changes to this project will be documented in this file.
 
 ### Added
 
-- added functions to hide columns in an excel sheet
+- functions to hide columns in an excel sheet
 
 ### Refactored
 
