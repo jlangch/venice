@@ -1,8 +1,8 @@
 @ECHO OFF
 REM ############################################################################
-REM # Venice console                                                           #
+REM # Venice shell                                                             #
 REM # -------------------------------------------------------------------------#
-REM # Starts a Venice console (REPL), loads 'venice.venice' and runs it.       #
+REM # Starts a Venice shell (REPL), loads 'venice.venice' and runs it.         #
 REM #                                                                          #
 REM # Layout:                                                                  #
 REM #    scripts                                                               #
@@ -13,19 +13,19 @@ REM #      +--venice.bat                                                       #
 REM #      +--venice.venice                                                    #
 REM ############################################################################
 
-set VENICE_CONSOLE_HOME=C:\Users\juerg\Desktop\scripts
+set VENICE_SHELL_HOME=C:\Users\juerg\Desktop\scripts
 set VENICE_PROJECT_HOME=C:\Users\juerg\Documents\workspace\venice
 set VENICE_REPL_HOME=C:\Users\juerg\Desktop\venice
 
 
-if not exist %VENICE_CONSOLE_HOME% (
-  echo Error: The Venice console home dir %VENICE_CONSOLE_HOME% does not exist!
+if not exist %VENICE_SHELL_HOME% (
+  echo Error: The Venice shell home dir %VENICE_SHELL_HOME% does not exist!
   pause
   exit 2
 )
 
-if not exist %VENICE_CONSOLE_HOME%\libs (
-  echo Error: The Venice console libs dir %VENICE_CONSOLE_HOME%\libs does not exist!
+if not exist %VENICE_SHELL_HOME%\libs (
+  echo Error: The Venice shell libs dir %VENICE_SHELL_HOME%\libs does not exist!
   pause
   exit 2
 )
@@ -37,7 +37,7 @@ if not exist %JAVA_8_HOME%\libs (
 )
 
 
-cd %VENICE_CONSOLE_HOME%
+cd %VENICE_SHELL_HOME%
 
 "%JAVA_8_HOME%\bin\java.exe" ^
   -server ^
@@ -45,7 +45,7 @@ cd %VENICE_CONSOLE_HOME%
   -XX:-OmitStackTraceInFastThrow ^
   -cp "libs;libs/*" ^
   com.github.jlangch.venice.Launcher ^
-  -Dvenice.repl.home=%VENICE_CONSOLE_HOME% ^
+  -Dvenice.repl.home=%VENICE_SHELL_HOME% ^
   -colors-darkmode ^
   -macroexpand ^
   -app-repl venice.venice

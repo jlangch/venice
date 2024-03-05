@@ -1,7 +1,7 @@
 ;; -----------------------------------------------------------------------------
-;; Venice console script
+;; Venice shell
 ;; -----------------------------------------------------------------------------
-;; This console script is started by a launcher script:
+;; This Venice shell is started by a launcher script:
 ;;   venice.sh     MacOSX & Linux
 ;;   venice.bat    Windows
 ;;
