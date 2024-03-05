@@ -13,7 +13,7 @@ All notable changes to this project will be documented in this file.
 
 ### Added
 
-- ... 
+- added functions to hide columns in a excel sheet
 
 ### Refactored
 
