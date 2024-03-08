@@ -195,6 +195,7 @@
     t|task n       run a Venice project Gradle task, requires one or more task names
     c|cheatsheet   generate the Venice cheatsheet
     d|dependencies list the Venice dependencies
+    e|eclipse      update the Eclipse project classpath
     p|publish k p  publish Venice artefacts to Maven, requires pgp-key & password
     C|colors       print the color theme
     i|info         display the configuration
@@ -239,6 +240,7 @@
     (match? cmd "s|start")        (start-repl (first args))
     (match? cmd "c|cheatsheet")   (gradle-tasks "cheatsheet")
     (match? cmd "d|dependencies") (gradle-tasks "dependencies")
+    (match? cmd "e|eclipse")      (gradle-tasks "eclipse")
     (match? cmd "T|tests")        (gradle-tasks "clean" "test")
     (match? cmd "p|publish")      (publish (first args) (second args))
     (match? cmd "t|task")         (apply gradle-tasks args)
