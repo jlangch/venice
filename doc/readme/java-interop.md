@@ -122,8 +122,8 @@ Pass a Java _enum_ value as a function argument
 (do
    (import :java.time.LocalDate)
 
-   (let [month (. :java.time.Month :JANUARY)]
-     (. :LocalDate :of 1994 month 21)))
+   (let [jan (. :java.time.Month :JANUARY)]
+     (. :LocalDate :of 1994 jan 21)))
 ```
 
 Get all values of a Java _enum_
