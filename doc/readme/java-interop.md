@@ -119,11 +119,8 @@ Get a Java _enum_ value
 Pass a Java _enum_ value as a function argument
 
 ```clojure
-(do
-   (import :java.time.LocalDate)
-
-   (let [jan (. :java.time.Month :JANUARY)]
-     (. :LocalDate :of 1994 jan 21)))
+(let [jan (. :java.time.Month :JANUARY)]
+  (. :java.time.LocalDate :of 1994 jan 21))
 ```
 
 Get all values of a Java _enum_
