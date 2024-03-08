@@ -112,12 +112,6 @@ public class JavaObject {
     public void setBigDecimal(BigDecimal _BigDecimal) {
         this._BigDecimal = _BigDecimal;
     }
-    public JavaEnum getJavaEnum() {
-        return _JavaEnum;
-    }
-    public void setJavaEnum(JavaEnum _JavaEnum) {
-        this._JavaEnum = _JavaEnum;
-    }
     public List<?> getList() {
         return _List;
     }
@@ -233,7 +227,6 @@ public class JavaObject {
     private double _primitiveDouble;
     private Double _Double;
     private BigDecimal _BigDecimal;
-    private JavaEnum _JavaEnum;
     private List<?> _List;
     private Set<?> _Set;
     private Map<?,?> _Map;
