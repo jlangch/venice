@@ -20,6 +20,8 @@ static method: `(. :class :method arg1 arg2 ...)`
 
 static field: `(. :class :field)`
 
+enum value: `(. :class :name)`
+
 get property: `(:property object)`
 
 
@@ -78,17 +80,6 @@ get property: `(:property object)`
 ```
 
 
-Java enum values can be passed as simple or scoped keywords:
-
-```clojure
-(do
-   (import :java.time.LocalDate)
-
-   (. :LocalDate :of 1994 :JANUARY 21)   
-   (. :LocalDate :of 1994 :java.time.Month.JANUARY 21))
-```
-
-
 Java types support hash codes, equals, and compare. Thereby sequences with Java types
 can be sorted and Java types can be used with sets and maps.
 
@@ -104,6 +95,45 @@ can be sorted and Java types can be used with sets and maps.
       (sort [b1 b3 b2])
       (hash-map b1 1 b2 2 b3 3)))
 ```
+
+
+## Enum types
+
+
+a Java _enum_ values can be passed as simple or scoped keywords:
+
+```clojure
+(do
+   (import :java.time.LocalDate)
+
+   (. :LocalDate :of 1994 :JANUARY 21)   
+   (. :LocalDate :of 1994 :java.time.Month.JANUARY 21))
+```
+
+Get a Java _enum_ value
+
+```clojure
+(. :java.time.Month :JANUARY)
+```
+
+Pass a Java _enum_ value as a function argument
+
+```clojure
+(do
+   (import :java.time.LocalDate)
+
+   (let [month (. :java.time.Month :JANUARY)]
+     (. :LocalDate :of 1994 month 21)))
+```
+
+Get all values of a Java _enum_
+
+```clojure
+(. :java.time.Month :values)
+```
+
+
+
 
 ## Dealing with static nested classes
 
