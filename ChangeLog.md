@@ -12,6 +12,10 @@ All notable changes to this project will be documented in this file.
 
 - Java interop function `enum?`
 
+### Improved 
+
+- Java interop documentation on enums
+
 
 
 ## [1.12.3] - 2024-03-05
