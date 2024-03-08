@@ -1055,8 +1055,54 @@ public class JavaInteropFunctions {
         private static final long serialVersionUID = -1848883965231344442L;
     }
 
-    public static class JavaEnumToListFn extends AbstractJavaFn {
-        public JavaEnumToListFn() {
+    public static class JavaEnumQFn extends AbstractJavaFn {
+        public JavaEnumQFn() {
+            super(
+                "enum?",
+                VncFunction
+                    .meta()
+                    .arglists("(enum? class)")
+                    .doc(
+                    	"Returns true if class is a Java *enum*.\n" +
+                    	"\n" +
+                        "Get all values of a Java *enum*:              \n\n" +
+                		"```                                           \n" +
+                    	"(. :java.time.Month :values)                  \n" +
+                		"```                                           \n\n" +
+                    	"Get a Java *enum* value:                      \n\n" +
+                		"```                                           \n" +
+                		"(let [jan (. :java.time.Month :JANUARY)]      \n" +
+                		"  (. :java.time.LocalDate :of 1994 jan 21))   \n" +
+                		"```                                           \n\n" +
+                        "This can be simplified to:                    \n\n" +
+                		"```                                           \n" +
+                    	"(. :java.time.LocalDate :of 1994 :JANUARY 21) \n" +
+                		"```                                           \n")
+                    .examples("(enum? :java.time.Month)")
+                    .build());
+        }
+
+        @Override
+        public VncVal apply(final VncList args) {
+            ArityExceptions.assertArity(this, args, 1);
+            sandboxFunctionCallValidation();
+
+            try {
+                final Class<?> clazz = JavaInteropUtil.toClass(
+						                    args.first(),
+						                    Namespaces.getCurrentNamespace().getJavaImports());
+                return VncBoolean.of(clazz.isEnum());
+            }
+            catch(Exception ex) {
+                return VncBoolean.False;
+            }
+        }
+
+        private static final long serialVersionUID = -1848883965231344442L;
+    }
+
+    public static class JavaEnumerationToListFn extends AbstractJavaFn {
+        public JavaEnumerationToListFn() {
             super(
                 "java-enumeration-to-list",
                 VncFunction
@@ -1332,7 +1378,8 @@ public class JavaInteropFunctions {
                     .add(new DescribeJavaClassFn())
                     .add(new JavaExistsClassQFn())
                     .add(new JavaObjQFn())
-                    .add(new JavaEnumToListFn())
+                    .add(new JavaEnumQFn())
+                    .add(new JavaEnumerationToListFn())
                     .add(new JavaIterToListFn())
                     .add(new JavaObjWrapFn())
                     .add(new JavaObjUnwrapFn())

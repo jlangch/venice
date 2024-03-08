@@ -68,6 +68,7 @@ public class JavaInteropSection implements ISectionBuilder {
         all.addSection(test);
         test.addItem(diBuilder.getDocItem("java-obj?"));
         test.addItem(diBuilder.getDocItem("exists-class?"));
+        test.addItem(diBuilder.getDocItem("enum?"));
 
         final DocSection clazz = new DocSection("Classes", "javainterop.classes");
         all.addSection(clazz);
