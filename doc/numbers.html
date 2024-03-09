@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html>
+<meta charset="UTF-8"> 
+<head>
+    <title>Tall Number</title>
+    <style>
+        .tall-number {
+            font-size: 300px;
+            font-weight: bold;
+            text-align: center;
+            margin-top: 20px;
+            color: #530580;
+        }
+        .button-row {
+            text-align: center;
+            margin-top: 20px;
+        }
+        button {
+            width: 40px;
+            height: 30px;
+            font-size: 20px;
+        }
+    </style>
+</head>
+<body>
+    <div id="number" class="tall-number">42</div>
+
+    <div class="button-row">
+        <!-- Buttons for first digit -->
+        <button onclick="changeDigit(0, 1)">+</button>
+        <button onclick="changeDigit(0, -1)">-</button>
+            
+        <!-- Buttons for second digit -->
+        <button onclick="changeDigit(1, 1)">+</button>
+        <button onclick="changeDigit(1, -1)">-</button>
+    </div>
+
+    <script>
+        function changeDigit(digitIndex, change) {
+            const numberDiv = document.getElementById('number');
+            let number = numberDiv.innerHTML;
+            let digit = parseInt(number[digitIndex]);
+
+            digit = (digit + change + 10) % 10; // Ensure it stays within 0-9
+            let newNumber = number.split('');
+            newNumber[digitIndex] = digit.toString();
+
+            numberDiv.innerHTML = newNumber.join('');
+        }
+    </script>
+</body>
+</html>
+
