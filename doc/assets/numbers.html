@@ -41,9 +41,9 @@
         function changeDigit(digitIndex, change) {
             const numberDiv = document.getElementById('number');
             let number = numberDiv.innerHTML;
-            
+
             if (number.length === 1) {
-            	number = '0' + number;
+                number = '0' + number;
             }
             
             let digit = parseInt(number[digitIndex]);
@@ -51,7 +51,7 @@
             digit = (digit + change + 10) % 10; // Ensure it stays within 0-9
             let newNumber = number.split('');
             newNumber[digitIndex] = digit.toString();
-            
+
             numberDiv.innerHTML = newNumber[0] === '0' 
                                     ? newNumber[1] 
                                     : newNumber.join('');
