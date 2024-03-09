@@ -51,10 +51,25 @@ public class JavaInterop_enum_Test {
         assertEquals("red",   venice.eval("(. :com.github.jlangch.venice.support.Color :red)"));
         assertEquals("green", venice.eval("(. :com.github.jlangch.venice.support.Color :green)"));
         assertEquals("blue",  venice.eval("(. :com.github.jlangch.venice.support.Color :blue)"));
+    }
+
+
+    @Test
+    public void testEnumValueType() {
+        final Venice venice = new Venice();
 
         assertEquals(
                 "core/string",
                 venice.eval("(type (. :com.github.jlangch.venice.support.Color :blue))"));
+    }
+
+    @Test
+    public void testEnumValueToString() {
+        final Venice venice = new Venice();
+
+        assertEquals("red",   venice.eval("(str (. :com.github.jlangch.venice.support.Color :red))"));
+        assertEquals("green", venice.eval("(str (. :com.github.jlangch.venice.support.Color :green))"));
+        assertEquals("blue",  venice.eval("(str (. :com.github.jlangch.venice.support.Color :blue))"));
     }
 
     @Test
