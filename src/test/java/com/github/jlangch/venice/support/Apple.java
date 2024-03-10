@@ -37,6 +37,13 @@ public class Apple {
         }
     }
 
+    public void addShade(final Color color) {
+    	if (color != null) {
+    		shades.add(color);
+    	}
+    }
+
+
     private Color color;
     private List<Color> shades = new ArrayList<>();
 }

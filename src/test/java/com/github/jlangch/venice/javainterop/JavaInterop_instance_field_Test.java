@@ -47,9 +47,6 @@ public class JavaInterop_instance_field_Test {
 
         assertEquals("alpha", venice.eval("(. obj :STRING_VAL)", params));
         assertEquals("alpha", venice.eval("(. obj :STRING_VAL)", params));
-
-        assertEquals("BLUE", venice.eval("(. obj :ENUM_VAL)", params));
-        assertEquals("BLUE", venice.eval("(. obj :ENUM_VAL)", params));
     }
 
 

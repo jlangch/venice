@@ -63,6 +63,11 @@ public class VncJavaMap extends VncMap implements IVncJavaObject, VncMutable {
 
 
     @Override
+    public boolean isEnum() {
+        return false;
+    }
+
+    @Override
     public Object getDelegate() {
         return value;
     }

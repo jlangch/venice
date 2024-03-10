@@ -26,6 +26,8 @@ import java.lang.reflect.Type;
 
 public interface IVncJavaObject {
 
+	boolean isEnum();
+
     Object getDelegate();
 
     default Class<?> getDelegateFormalType() { return null; }

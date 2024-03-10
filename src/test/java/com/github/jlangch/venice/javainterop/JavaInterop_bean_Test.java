@@ -102,7 +102,7 @@ public class JavaInterop_bean_Test {
             final VncJavaObject javaObj = (VncJavaObject)val;
             assertEquals("su", ((VncString)javaObj.get(new VncKeyword("principal"))).getValue());
             assertEquals(2000L, ((VncLong)javaObj.get(new VncKeyword("elapsedTimeMillis"))).getValue().longValue());
-            assertEquals("ALERT", ((VncString)javaObj.get(new VncKeyword("eventType"))).getValue());
+            assertEquals(AuditEventType.ALERT, javaObj.get(new VncKeyword("eventType")).convertToJavaObject());
             assertEquals("superuser", ((VncString)javaObj.get(new VncKeyword("eventKey"))).getValue());
             assertEquals("webapp.started", ((VncString)javaObj.get(new VncKeyword("eventName"))).getValue());
             assertEquals("text", ((VncString)javaObj.get(new VncKeyword("eventMessage"))).getValue());

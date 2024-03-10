@@ -84,6 +84,11 @@ public class VncJavaSet extends VncSet implements IVncJavaObject, VncMutable {
 
 
     @Override
+    public boolean isEnum() {
+        return false;
+    }
+
+    @Override
     public Object getDelegate() {
         return value;
     }

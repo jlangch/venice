@@ -88,6 +88,12 @@ public class VncJavaObject extends VncMap implements IVncJavaObject {
         return new VncJavaObject(val.getValue(), val.getFormalType(), Constants.Nil);
     }
 
+
+    @Override
+    public boolean isEnum() {
+        return delegate.getClass().isEnum();
+    }
+
     @Override
     public Object getDelegate() {
         return delegate;

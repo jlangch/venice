@@ -14,6 +14,7 @@ All notable changes to this project will be documented in this file.
 
 ### Improved 
 
+- support for Java enums
 - Java interop documentation on enums
 
 

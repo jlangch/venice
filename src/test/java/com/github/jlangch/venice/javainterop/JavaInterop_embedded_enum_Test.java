@@ -52,9 +52,7 @@ public class JavaInterop_embedded_enum_Test {
                 "   (. obj :getAlignment)                                                           \n" +
                 ")";
 
-        final String align = (String)venice.eval(script);
-
-        assertEquals("Left", align);
+        assertEquals(TextAlignment.Left, venice.eval(script));
     }
 
     @Test
@@ -71,9 +69,7 @@ public class JavaInterop_embedded_enum_Test {
                 "   (. obj :getAlignment)                                                           \n" +
                 ")";
 
-        final String align = (String)venice.eval(script);
-
-        assertEquals("Right", align);
+        assertEquals(TextAlignment.Right, venice.eval(script));
     }
 
     @Test
@@ -94,9 +90,7 @@ public class JavaInterop_embedded_enum_Test {
                 "   (. obj :getAlignment)                                                           \n" +
                 ")";
 
-        final String align = (String)venice.eval(script);
-
-        assertEquals("Right", align);
+        assertEquals(TextAlignment.Right, venice.eval(script));
     }
 
     @Test
@@ -113,7 +107,7 @@ public class JavaInterop_embedded_enum_Test {
 
         final String align = (String)venice.eval(script);
 
-        assertEquals("core/string", align);
+        assertEquals("com.github.jlangch.venice.support.ClassWithEmbeddedEnum$TextAlignment", align);
     }
 
     @Test
@@ -128,9 +122,7 @@ public class JavaInterop_embedded_enum_Test {
                 "   (. :ClassWithEmbeddedEnum$TextAlignment :Centre)                                \n" +
                 ")";
 
-        final String align = (String)venice.eval(script);
-
-        assertEquals("Centre", align);
+        assertEquals(TextAlignment.Centre, venice.eval(script));
     }
 
 }

@@ -140,6 +140,9 @@ public class Boxing {
                 }
             }
         }
+        else if (enumType.isAssignableFrom(arg.getClass())) {
+        	return (Enum<?>)arg;
+        }
         else {
             throw new JavaMethodInvocationException(String.format(
                     "Cannot convert type %s to enum %s",

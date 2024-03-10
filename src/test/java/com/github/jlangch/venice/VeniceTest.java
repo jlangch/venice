@@ -177,7 +177,7 @@ public class VeniceTest {
 
         assertEquals("webapp.started", venice.eval("(get event :eventName)", symbols));
         assertEquals("superuser", venice.eval("(get event :eventKey)", symbols));
-        assertEquals("ALERT", venice.eval("(get event :eventType)", symbols));
+        assertEquals(AuditEventType.ALERT, venice.eval("(get event :eventType)", symbols));
         assertEquals(2000L, venice.eval("(get event :elapsedTimeMillis)", symbols));
     }
 

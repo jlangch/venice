@@ -708,6 +708,7 @@ public class CoreFunctions {
                         "(keyword :a)",
                         "(keyword :foo/a)",
                         "(keyword \"foo\" \"a\")",
+                        "(keyword (. :java.time.Month :JANUARY)) ;; java enum to keyword",
                         "(name :foo/a)",
                         "(namespace :foo/a)")
                     .seeAlso("name", "namespace")
@@ -723,6 +724,10 @@ public class CoreFunctions {
 	                }
 	                else if (Types.isVncString(args.first())) {
 	                    return new VncKeyword(((VncString)args.first()).getValue());
+	                }
+	                else if (Types.isVncJavaObject(args.first()) && ((VncJavaObject)args.first()).isEnum()) {
+	                	final Enum<?> e = (Enum<?>)((VncJavaObject)args.first()).getDelegate();
+	                    return new VncKeyword(e.name());
 	                }
 	                else {
 	                    throw new VncException(String.format(
@@ -9508,7 +9513,8 @@ public class CoreFunctions {
                         "(name :user/foo)  ;; keyword",
                         "(name +)  ;; function",
                         "(name str/digit?)  ;; function",
-                        "(name \"ab/text\")  ;; string")
+                        "(name \"ab/text\")  ;; string",
+                        "(name (. :java.time.Month :JANUARY))  ;; java enum")
                     .seeAlso("qualified-name", "namespace", "fn-name")
                     .build()
         ) {
@@ -9532,6 +9538,10 @@ public class CoreFunctions {
                 }
                 else if (Types.isVncFunction(arg) || Types.isVncMacro(arg)) {
                     return new VncString(((VncFunction)arg).getSimpleName());
+                }
+                else if (Types.isVncJavaObject(args.first()) && ((VncJavaObject)args.first()).isEnum()) {
+                	final Enum<?> e = (Enum<?>)((VncJavaObject)args.first()).getDelegate();
+                    return new VncString(e.name());
                 }
                 else {
                     throw new VncException(String.format(

@@ -226,7 +226,7 @@ public class JavaInteropUtil {
 
             // else
             throw new JavaMethodInvocationException(
-                    String.format("%s.", ex.getMessage()));
+                    String.format("%s.", ex.getMessage()), ex);
         }
         catch(SecurityException ex) {
             throw new SecurityException(String.format(
@@ -351,7 +351,8 @@ public class JavaInteropUtil {
             return VncBoolean.of(((Boolean)value).booleanValue());
         }
         else if (ReflectionTypes.isEnumType(value.getClass())) {
-            return new VncString(value.toString());
+            return new VncJavaObject(value);
+            //return new VncString(value.toString());
         }
         else if (value instanceof List) {
             if (recursive) {

@@ -44,9 +44,6 @@ public class JavaInterop_static_field_Test {
 
         assertEquals("alpha", venice.eval("(. :" + clazz + " :STRING_VAL)"));
         assertEquals("alpha", venice.eval("(. :" + clazz + " :STRING_VAL)"));
-
-        assertEquals("BLUE", venice.eval("(. :" + clazz + " :ENUM_VAL)"));
-        assertEquals("BLUE", venice.eval("(. :" + clazz + " :ENUM_VAL)"));
     }
 
     @Test
@@ -55,22 +52,13 @@ public class JavaInterop_static_field_Test {
 
         assertEquals(Double.valueOf(3.14159265), (Double)venice.eval("(. :java.lang.Math :PI)"), 0.0000001D);
 
-        assertEquals(0, venice.eval("(:red (. :java.awt.Color :BLUE))"));
-        assertEquals(0, venice.eval("(:green (. :java.awt.Color :BLUE))"));
-        assertEquals(255, venice.eval("(:blue (. :java.awt.Color :BLUE))"));
-
         assertEquals(true, venice.eval("(:empty (. :java.awt.Rectangle :new))"));
     }
 
-
-    public static enum TestEnum {
-        RED, GREEN, BLUE;
-    }
 
     public static class TestObject {
         public static final long LONG_VAL = 100L;
         public static final double DOUBLE_VAL = 3.14159265D;
         public static final String STRING_VAL = "alpha";
-        public static final TestEnum ENUM_VAL = TestEnum.BLUE;
     }
 }

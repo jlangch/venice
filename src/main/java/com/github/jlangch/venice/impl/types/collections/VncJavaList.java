@@ -85,6 +85,11 @@ public class VncJavaList extends VncSequence implements IVncJavaObject, VncMutab
 
 
     @Override
+    public boolean isEnum() {
+        return false;
+    }
+
+    @Override
     public Object getDelegate() {
         return value;
     }
