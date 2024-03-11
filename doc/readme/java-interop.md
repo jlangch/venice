@@ -102,20 +102,24 @@ can be sorted and Java types can be used with sets and maps.
 Java _enum_ values can be passed as simple or scoped keywords:
 
 ```clojure
-(do
-   (import :java.time.LocalDate)
-
-   (. :LocalDate :of 1994 :JANUARY 21)   
-   (. :LocalDate :of 1994 :java.time.Month.JANUARY 21))
+(. :java.time.LocalDate :of 1994 :JANUARY 21)  
+;; => 1994-01-21
+    
+(. :java.time.LocalDate :of 1994 :java.time.Month.JANUARY 21)
+;; => 1994-01-21
 ```
 
 Get a Java _enum_ value
 
 ```clojure
 (. :java.time.Month :JANUARY)
+;; => JANUARY
+
+(type (. :java.time.Month :JANUARY))
+;; => :java.time.Month
 ```
 
-Pass a Java _enum_ value as a function argument
+Pass a Java _enum_ value to a function
 
 ```clojure
 (let [jan (. :java.time.Month :JANUARY)]
@@ -126,6 +130,7 @@ Get all values of a Java _enum_
 
 ```clojure
 (. :java.time.Month :values)
+;; => [JANUARY FEBRUARY MARCH APRIL MAY JUNE JULY AUGUST SEPTEMBER OCTOBER NOVEMBER DECEMBER]
 ```
 
 
@@ -167,9 +172,9 @@ public class OuterClass {
 
 
 
-## Java VarArgs
+## Java Varargs
 
-Java varargs are passed as list or vector:
+Java _Varargs_ are passed as list or vector:
 
 ```clojure
 ; Java signature: String String::format(String format, Object... args)
@@ -181,6 +186,7 @@ Java varargs are passed as list or vector:
 (. :java.nio.file.Paths :get "/temp" "a.txt")  ;; => /temp/a.txt
 (. :java.nio.file.Paths :get "/temp" '("xxx" "a.txt"))  ;; => /temp/xxx/a.txt
 ```
+
 
 
 ## Dynamic Proxies
