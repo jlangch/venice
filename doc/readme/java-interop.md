@@ -99,8 +99,7 @@ can be sorted and Java types can be used with sets and maps.
 
 ## Enum types
 
-
-a Java _enum_ values can be passed as simple or scoped keywords:
+Java _enum_ values can be passed as simple or scoped keywords:
 
 ```clojure
 (do
