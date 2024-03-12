@@ -50,6 +50,7 @@ public class MathSection implements ISectionBuilder {
         arithmetic.addItem(diBuilder.getDocItem("dec"));
         arithmetic.addItem(diBuilder.getDocItem("min"));
         arithmetic.addItem(diBuilder.getDocItem("max"));
+        arithmetic.addItem(diBuilder.getDocItem("clamp"));
         arithmetic.addItem(diBuilder.getDocItem("mod"));
         arithmetic.addItem(diBuilder.getDocItem("mod-floor"));
         arithmetic.addItem(diBuilder.getDocItem("abs"));

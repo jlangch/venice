@@ -612,6 +612,51 @@ public class MathFunctionsTest {
     }
 
     @Test
+    public void test_clamp() {
+        final Venice venice = new Venice();
+
+        // Integer
+        assertEquals(Integer.valueOf(5), venice.eval("(clamp 4I 5I 8I)"));
+        assertEquals(Integer.valueOf(5), venice.eval("(clamp 5I 5I 8I)"));
+        assertEquals(Integer.valueOf(6), venice.eval("(clamp 6I 5I 8I)"));
+        assertEquals(Integer.valueOf(7), venice.eval("(clamp 7I 5I 8I)"));
+        assertEquals(Integer.valueOf(8), venice.eval("(clamp 8I 5I 8I)"));
+        assertEquals(Integer.valueOf(8), venice.eval("(clamp 9I 5I 8I)"));
+
+        // Long
+        assertEquals(Long.valueOf(5), venice.eval("(clamp 4 5 8)"));
+        assertEquals(Long.valueOf(5), venice.eval("(clamp 5 5 8)"));
+        assertEquals(Long.valueOf(6), venice.eval("(clamp 6 5 8)"));
+        assertEquals(Long.valueOf(7), venice.eval("(clamp 7 5 8)"));
+        assertEquals(Long.valueOf(8), venice.eval("(clamp 8 5 8)"));
+        assertEquals(Long.valueOf(8), venice.eval("(clamp 9 5 8)"));
+
+        // Double
+        assertEquals(Double.valueOf(5.0D), venice.eval("(clamp 4.0 5.0 8.0)"));
+        assertEquals(Double.valueOf(5.0D), venice.eval("(clamp 5.0 5.0 8.0)"));
+        assertEquals(Double.valueOf(6.0D), venice.eval("(clamp 6.0 5.0 8.0)"));
+        assertEquals(Double.valueOf(7.0D), venice.eval("(clamp 7.0 5.0 8.0)"));
+        assertEquals(Double.valueOf(8.0D), venice.eval("(clamp 8.0 5.0 8.0)"));
+        assertEquals(Double.valueOf(8.0D), venice.eval("(clamp 9.0 5.0 8.0)"));
+
+        // Decimal
+        assertEquals(new BigDecimal("5.0"), venice.eval("(clamp 4.0M 5.0M 8.0M)"));
+        assertEquals(new BigDecimal("5.0"), venice.eval("(clamp 5.0M 5.0M 8.0M)"));
+        assertEquals(new BigDecimal("6.0"), venice.eval("(clamp 6.0M 5.0M 8.0M)"));
+        assertEquals(new BigDecimal("7.0"), venice.eval("(clamp 7.0M 5.0M 8.0M)"));
+        assertEquals(new BigDecimal("8.0"), venice.eval("(clamp 8.0M 5.0M 8.0M)"));
+        assertEquals(new BigDecimal("8.0"), venice.eval("(clamp 9.0M 5.0M 8.0M)"));
+
+        // BigInteger
+        assertEquals(new BigInteger("5"), venice.eval("(clamp 4N 5N 8N)"));
+        assertEquals(new BigInteger("5"), venice.eval("(clamp 5N 5N 8N)"));
+        assertEquals(new BigInteger("6"), venice.eval("(clamp 6N 5N 8N)"));
+        assertEquals(new BigInteger("7"), venice.eval("(clamp 7N 5N 8N)"));
+        assertEquals(new BigInteger("8"), venice.eval("(clamp 8N 5N 8N)"));
+        assertEquals(new BigInteger("8"), venice.eval("(clamp 9N 5N 8N)"));
+    }
+
+    @Test
     public void test_mean() {
         final Venice venice = new Venice();
 

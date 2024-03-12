@@ -526,7 +526,7 @@ public class MathFunctions {
                         "(max 1.0)", "(max 1.0 2.0)", "(max 4.0 3.0 2.0 1.0)",
                         "(max 1.0M)", "(max 1.0M 2.0M)", "(max 4.0M 3.0M 2.0M 1.0M)",
                         "(max 1.0M 2)")
-                    .seeAlso("min")
+                    .seeAlso("min", "clamp")
                     .build()
         ) {
             @Override
@@ -568,7 +568,7 @@ public class MathFunctions {
                         "(min 1.0)", "(min 1.0 2.0)", "(min 4.0 3.0 2.0 1.0)",
                         "(min 1.0M)", "(min 1.0M 2.0M)", "(min 4.0M 3.0M 2.0M 1.0M)",
                         "(min 1.0M 2)")
-                    .seeAlso("max")
+                    .seeAlso("max", "clamp")
                     .build()
         ) {
             @Override
@@ -592,6 +592,58 @@ public class MathFunctions {
                 }
 
                 return min;
+            }
+
+            private static final long serialVersionUID = -1848883965231344442L;
+        };
+
+    public static VncFunction clamp =
+        new VncFunction(
+                "clamp",
+                VncFunction
+                    .meta()
+                    .arglists("(clamp x min max)")
+                    .doc(
+                    	"Restricts a given value between a lower and upper bound. " +
+                    	"In this way, it acts like a combination of the `min` and `max` functions.")
+                    .examples(
+                        "(clamp 1 10 20)",
+                        "(clamp 1I 10I 20I)",
+                        "(clamp 1.0 10.0 20.0)")
+                    .seeAlso("min", "max")
+                    .build()
+        ) {
+            @Override
+            public VncVal apply(final VncList args) {
+                ArityExceptions.assertArity(this, args, 3);
+
+                final VncVal v = args.first();
+                final VncVal min = args.second();
+                final VncVal max = args.third();
+
+                if (!Types.isVncNumber(v)) {
+                    throw new VncException(String.format(
+                            "Function 'clamp' does not allow %s as value",
+                            Types.getType(v)));
+                }
+                if (!Types.isVncNumber(min)) {
+                    throw new VncException(String.format(
+                            "Function 'clamp' does not allow %s as min value",
+                            Types.getType(min)));
+                }
+                if (!Types.isVncNumber(max)) {
+                    throw new VncException(String.format(
+                            "Function 'clamp' does not allow %s as max value",
+                            Types.getType(max)));
+                }
+
+                if (v.compareTo(min) < 0) {
+                	return min;
+                }
+                else if (v.compareTo(max) > 0) {
+                	return max;
+                }
+                return v;
             }
 
             private static final long serialVersionUID = -1848883965231344442L;
@@ -2166,6 +2218,7 @@ public class MathFunctions {
                     .add(sgn)
                     .add(min)
                     .add(max)
+                    .add(clamp)
                     .add(negate)
                     .add(floor)
                     .add(ceil)
