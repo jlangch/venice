@@ -2753,20 +2753,21 @@ public class IOFunctions {
                         "Downloads the content from the uri and reads it as text (string) " +
                         "or binary (bytebuf). Supports http and https protocols!\n\n" +
                         "Options: \n\n" +
-                        "| :binary true/false | e.g.: `:binary true`, defaults to false |\n" +
-                        "| :user-agent agent  | e.g.: `:user-agent \"Mozilla\"`, defaults to nil |\n" +
-                        "| :encoding enc      | e.g.: `:encoding :utf-8,` defaults to :utf-8 |\n" +
-                        "| :user u            | optional user for basic authentication|\n" +
-                        "| :password p        | optional password for basic authentication |\n" +
-                        "| :conn-timeout val  | e.g.: `:conn-timeout 10000`, " +
-                        "                       connection timeout in milliseconds. ¶" +
-                        "                       0 is interpreted as an infinite timeout. |\n" +
-                        "| :read-timeout val  | e.g.: `:read-timeout 10000`, " +
-                        "                       read timeout in milliseconds. ¶" +
-                        "                       0 is interpreted as an infinite timeout. |\n" +
-                        "| :progress-fn fn    | a progress function that takes 2 args ¶" +
-                        "                       [1] progress (0..100%) ¶" +
-                        "                       [2] status {:start :progress :end :failed}|\n\n" +
+                        "| :binary b           | e.g.: `:binary true`, defaults to false |\n" +
+                        "| :user-agent agent   | e.g.: `:user-agent \"Mozilla\"`, defaults to nil |\n" +
+                        "| :encoding enc       | e.g.: `:encoding :utf-8,` defaults to :utf-8 |\n" +
+                        "| :user u             | optional user for basic authentication|\n" +
+                        "| :password p         | optional password for basic authentication |\n" +
+                        "| :follow-redirects b | e.g.: `:follow-redirects true`, defaults to false |\n" +
+                        "| :conn-timeout val   | e.g.: `:conn-timeout 10000`, " +
+                        "                        connection timeout in milliseconds. ¶" +
+                        "                        0 is interpreted as an infinite timeout. |\n" +
+                        "| :read-timeout val   | e.g.: `:read-timeout 10000`, " +
+                        "                        read timeout in milliseconds. ¶" +
+                        "                        0 is interpreted as an infinite timeout. |\n" +
+                        "| :progress-fn fn     | a progress function that takes 2 args ¶" +
+                        "                        [1] progress (0..100%) ¶" +
+                        "                        [2] status {:start :progress :end :failed}|\n\n" +
                         "Note:¶" +
                         "If the server returns the HTTP response status code 403 (*Access Denied*) " +
                         "sending a user agent like \"Mozilla\" may fool the website and solve the " +
@@ -2799,6 +2800,7 @@ public class IOFunctions {
                     final VncVal user = options.get(new VncKeyword("user"));
                     final VncVal password = options.get(new VncKeyword("password"));
                     final VncVal binary = options.get(new VncKeyword("binary"));
+                    final VncVal followRedirects = options.get(new VncKeyword("follow-redirects"));
                     final VncVal useragent = options.get(new VncKeyword("user-agent"));
                     final VncVal encVal = options.get(new VncKeyword("encoding"));
                     final VncVal progressVal = options.get(new VncKeyword("progress-fn"));
@@ -2817,10 +2819,11 @@ public class IOFunctions {
 
                         final String auth = Coerce.toVncString(user).getValue()
                                                 + ":"
-                                                +  Coerce.toVncString(password).getValue();
+                                                + Coerce.toVncString(password).getValue();
                         final  byte[] encodedAuth = Base64.getEncoder().encode(auth.getBytes(StandardCharsets.UTF_8));
                         authHeader = "Basic " + new String(encodedAuth);
                     }
+
 
                     final URL url = new URL(uri);
                     final String protocol = url.getProtocol();
@@ -2858,11 +2861,26 @@ public class IOFunctions {
                         conn.setRequestProperty("Authorization", authHeader);
                     }
 
+                    // follow redirects
+                    if (VncBoolean.isTrue(followRedirects)) {
+                    	if (conn instanceof HttpURLConnection) {
+                    		// redirects should be handled by HttpURLConnection if the protocol
+                    		// does not change (security reasons)
+                    		((HttpURLConnection)conn).setInstanceFollowRedirects(true);
+                    	}
+                    }
+
+
                     conn.connect();
 
                     try {
                         if (conn instanceof HttpURLConnection) {
                             final int responseCode = ((HttpURLConnection)conn).getResponseCode();
+                            if (responseCode != HttpURLConnection.HTTP_MOVED_PERM) {
+                            	final String location = ((HttpURLConnection)conn).getHeaderField("Location");
+                                throw new VncException(
+                                        "Server replied HTTP code: HTTP_MOVED_PERM (301). New location: " + location);
+                            }
                             if (responseCode != HttpURLConnection.HTTP_OK) {
                                 throw new VncException(
                                         "No file to download. Server replied HTTP code: " + responseCode);

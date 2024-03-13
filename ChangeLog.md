@@ -12,6 +12,8 @@ All notable changes to this project will be documented in this file.
 
 - math function `clamp`
 - basic authentication support for `io/download`
+- follow redirects supports  for `io/download`, if the protocol does not change 
+  for the requested redirect
 
 
 
