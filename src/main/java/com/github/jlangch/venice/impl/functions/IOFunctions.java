@@ -2903,12 +2903,10 @@ public class IOFunctions {
                             }
                         }
 
-                        final long contentLength = conn.getContentLengthLong();
-
                         try (BufferedInputStream is = new BufferedInputStream(conn.getInputStream())) {
                             debugFn.applyOf(new VncString("Redirected url: " + conn.getURL()));
 
-                            final byte[] data = slurpData(is, progressFn, contentLength);
+                            final byte[] data = slurpData(is, progressFn, conn.getContentLengthLong());
 
                             return VncBoolean.isTrue(binary)
                                         ? new VncByteBuffer(ByteBuffer.wrap(data))
