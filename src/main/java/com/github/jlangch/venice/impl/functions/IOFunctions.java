@@ -2765,13 +2765,15 @@ public class IOFunctions {
                         "| :read-timeout val   | e.g.: `:read-timeout 10000`, " +
                         "                        read timeout in milliseconds. ¶" +
                         "                        0 is interpreted as an infinite timeout. |\n" +
-                        "| :progress-fn fn     | a progress function that takes 2 args ¶" +
+                        "| :progress-fn fn     | an optional progress function that takes 2 args ¶" +
                         "                        [1] progress (0..100%) ¶" +
-                        "                        [2] status {:start :progress :end :failed}|\n\n" +
+                        "                        [2] status {:start :progress :end :failed}|\n" +
+                        "| :debug-fn fn        | an optional debug function that takes a message as argument |\n\n" +
                         "Note:¶" +
                         "If the server returns the HTTP response status code 403 (*Access Denied*) " +
                         "sending a user agent like \"Mozilla\" may fool the website and solve the " +
-                        "problem.")
+                        "problem.\n\n" +
+                        "To debug pass a printing function like: `(io/download https://foo.org/bar :debug-fn println)`")
                     .examples(
                         "(-<> \"https://live.staticflickr.com/65535/51007202541_ea453871d8_o_d.jpg\"\n" +
                         "     (io/download <> :binary true :user-agent \"Mozilla\")\n" +
@@ -2794,6 +2796,7 @@ public class IOFunctions {
                 final String uri = Coerce.toVncString(args.first()).getValue();
 
                 VncFunction progressFn = null;
+                VncFunction debugFn = null;
 
                 try {
                     final VncHashMap options = VncHashMap.ofAll(args.rest());
@@ -2806,8 +2809,28 @@ public class IOFunctions {
                     final VncVal progressVal = options.get(new VncKeyword("progress-fn"));
                     final VncVal connTimeoutMillisVal = options.get(new VncKeyword("conn-timeout"));
                     final VncVal readTimeoutMillisVal = options.get(new VncKeyword("read-timeout"));
-                    final VncVal debug = options.get(new VncKeyword("debug"), VncBoolean.False);
+                    final VncVal debugVal = options.get(new VncKeyword("debug-fn"));
                     final Charset charset = CharsetUtil.charset(encVal);
+
+                    debugFn = debugVal == Nil
+                            ? new VncFunction("io/debugs-default") {
+                                private static final long serialVersionUID = 1L;
+                                @Override
+                                public VncVal apply(final VncList args) { return Nil; }
+                              }
+                            : Coerce.toVncFunction(debugVal);
+
+                    progressFn = progressVal == Nil
+                                    ? new VncFunction("io/progress-default") {
+                                        private static final long serialVersionUID = 1L;
+                                        @Override
+                                        public VncVal apply(final VncList args) { return Nil; }
+                                      }
+                                    : Coerce.toVncFunction(progressVal);
+
+
+                    debugFn.sandboxFunctionCallValidation();
+                    progressFn.sandboxFunctionCallValidation();
 
                     // basic authentication
                     String authHeader = null;
@@ -2825,9 +2848,7 @@ public class IOFunctions {
                     }
 
 
-                    if (VncBoolean.isTrue(debug)) {
-                        System.out.println("URI: " + uri);
-                    }
+                    debugFn.applyOf(new VncString("URI: " + uri));
 
                     final URL url = new URL(uri);
                     final String protocol = url.getProtocol();
@@ -2837,36 +2858,26 @@ public class IOFunctions {
                                 "Please use 'http' or 'https'.", protocol));
                     }
 
-                    progressFn = progressVal == Nil
-                                    ? new VncFunction("io/progress-default") {
-                                        private static final long serialVersionUID = 1L;
-                                        @Override
-                                        public VncVal apply(final VncList args) { return Nil; }
-                                      }
-                                    : Coerce.toVncFunction(progressVal);
-
-                    progressFn.sandboxFunctionCallValidation();
-
                     updateDownloadProgress(progressFn, 0L, new VncKeyword("start"));
 
                     final URLConnection conn = url.openConnection();
+                    debugFn.applyOf(new VncString("Orignal url: " + conn.getURL()));
                     if (Types.isVncString(useragent)) {
                         conn.addRequestProperty("User-Agent", ((VncString)useragent).getValue());
                     }
 
                     if (connTimeoutMillisVal != Nil) {
-                        conn.setConnectTimeout(Coerce.toVncLong(connTimeoutMillisVal).getIntValue());
+                    	conn.setConnectTimeout(
+                    			Math.max(0, Coerce.toVncLong(connTimeoutMillisVal).toJavaInteger()));
                     }
                     if (readTimeoutMillisVal != Nil) {
-                        conn.setReadTimeout(Coerce.toVncLong(readTimeoutMillisVal).getIntValue());
+                    	conn.setReadTimeout(
+                    			Math.max(0, Coerce.toVncLong(readTimeoutMillisVal).toJavaInteger()));
                     }
 
                     if (authHeader != null) {
                         conn.setRequestProperty("Authorization", authHeader);
-
-                        if (VncBoolean.isTrue(debug)) {
-                            System.out.println("Authorization Header: Basic (base64 " + user + ":xxxxxx)");
-                        }
+                        debugFn.applyOf(new VncString("Authorization Header: Basic (base64 " + user + ":xxxxxx)"));
                     }
 
                     // follow redirects
@@ -2876,43 +2887,42 @@ public class IOFunctions {
                             // does not change (security reasons)
                             ((HttpURLConnection)conn).setInstanceFollowRedirects(true);
 
-                            if (VncBoolean.isTrue(debug)) {
-                                System.out.println("Follow redirects: true");
-                            }
-                        }
+                            debugFn.applyOf(new VncString("Follow redirects: activated"));
+                         }
                     }
 
-
                     conn.connect();
+                    debugFn.applyOf(new VncString("Connected url: " + conn.getURL()));
 
                     try {
                         if (conn instanceof HttpURLConnection) {
                             final int responseCode = ((HttpURLConnection)conn).getResponseCode();
+
+                        	debugFn.applyOf(new VncString("Response code: " + responseCode));
+
+                            for (Map.Entry<String, List<String>> entry : conn.getHeaderFields().entrySet()) {
+                            	debugFn.applyOf(new VncString("Response header: key => " + entry.getKey() + ",  value => " + entry.getValue()));
+                            }
+
                             if (responseCode != HttpURLConnection.HTTP_OK) {
-                            	// handle failures
+                                // handle failures
 
-                                if (VncBoolean.isTrue(debug)) {
-                                    Map<String, List<String>> map = conn.getHeaderFields();
-                                    for (Map.Entry<String, List<String>> entry : map.entrySet()) {
-                                        System.out.println("Response Header Key : " + entry.getKey() + " ,Value : " + entry.getValue());
-                                    }
+                                if (responseCode == HttpURLConnection.HTTP_MOVED_PERM) {
+                                    final String location = ((HttpURLConnection)conn).getHeaderField("Location");
+                                    throw new VncException(
+                                            "Server replied HTTP code: HTTP_MOVED_PERM (301). New location: " + location);
                                 }
-
-	                            if (responseCode == HttpURLConnection.HTTP_MOVED_PERM) {
-	                                final String location = ((HttpURLConnection)conn).getHeaderField("Location");
-	                                throw new VncException(
-	                                        "Server replied HTTP code: HTTP_MOVED_PERM (301). New location: " + location);
-	                            }
-	                            else {
-	                                throw new VncException(
-	                                        "No file to download. Server replied HTTP code: " + responseCode);
-	                            }
+                                else {
+                                    throw new VncException(
+                                            "No file to download. Server replied HTTP code: " + responseCode);
+                                }
                             }
                         }
 
                         final long contentLength = conn.getContentLengthLong();
 
                         try (BufferedInputStream is = new BufferedInputStream(conn.getInputStream())) {
+                            debugFn.applyOf(new VncString("Redirected url: " + conn.getURL()));
                             final ByteArrayOutputStream output = new ByteArrayOutputStream();
                             try {
                                 updateDownloadProgress(progressFn, 0L, new VncKeyword("progress"));
