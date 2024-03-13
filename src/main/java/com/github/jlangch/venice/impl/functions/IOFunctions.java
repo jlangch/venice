@@ -2867,12 +2867,12 @@ public class IOFunctions {
                     }
 
                     if (connTimeoutMillisVal != Nil) {
-                    	conn.setConnectTimeout(
-                    			Math.max(0, Coerce.toVncLong(connTimeoutMillisVal).toJavaInteger()));
+                        conn.setConnectTimeout(
+                                Math.max(0, Coerce.toVncLong(connTimeoutMillisVal).toJavaInteger()));
                     }
                     if (readTimeoutMillisVal != Nil) {
-                    	conn.setReadTimeout(
-                    			Math.max(0, Coerce.toVncLong(readTimeoutMillisVal).toJavaInteger()));
+                        conn.setReadTimeout(
+                                Math.max(0, Coerce.toVncLong(readTimeoutMillisVal).toJavaInteger()));
                     }
 
                     if (authHeader != null) {
@@ -2898,10 +2898,10 @@ public class IOFunctions {
                         if (conn instanceof HttpURLConnection) {
                             final int responseCode = ((HttpURLConnection)conn).getResponseCode();
 
-                        	debugFn.applyOf(new VncString("Response code: " + responseCode));
+                            debugFn.applyOf(new VncString("Response code: " + responseCode));
 
                             for (Map.Entry<String, List<String>> entry : conn.getHeaderFields().entrySet()) {
-                            	debugFn.applyOf(new VncString("Response header: key => " + entry.getKey() + ",  value => " + entry.getValue()));
+                                debugFn.applyOf(new VncString("Response header: key => " + entry.getKey() + ",  value => " + entry.getValue()));
                             }
 
                             if (responseCode != HttpURLConnection.HTTP_OK) {
