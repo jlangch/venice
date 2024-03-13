@@ -66,10 +66,8 @@
 ;;
 ;; Placeholders:
 ;;   {db}  the DB type. One of GeoLite2-Country-CSV, GeoLite2-City-CSV
-;;   {key} your MaxMind license key. There is a license for a light
-;;         version of the databases that is free.
 (def geoip/maxmind-geoip-url
-       "https://download.maxmind.com/app/geoip_download?edition_id={db}&license_key={key}&suffix=zip")
+       "https://download.maxmind.com/geoip/databases/{db}/download?suffix=zip")
 
 
 ;; Google country GPS data
@@ -419,6 +417,7 @@
              (load-module :geoip)
              (geoip/download-maxmind-db-to-zipfile "./geoip-country.zip"
                                                    :country
+                                                   "YOUR-MAXMIND-ACCOUNT-ID"
                                                    "YOUR-MAXMIND-LIC-KEY")
              (geoip/parse-maxmind-country-ip-db
                  :IPv4
@@ -430,6 +429,7 @@
              (load-module :geoip)
              (geoip/download-maxmind-db-to-zipfile "./geoip-country.zip"
                                                    :country
+                                                   "YOUR-MAXMIND-ACCOUNT-ID"
                                                    "YOUR-MAXMIND-LIC-KEY")
              (geoip/parse-maxmind-country-ip-db
                  :IPv6
@@ -493,6 +493,7 @@
              (load-module :geoip)
              (geoip/download-maxmind-db-to-zipfile "./geoip-city.zip"
                                                    :city
+                                                   "YOUR-MAXMIND-ACCOUNT-ID"
                                                    "YOUR-MAXMIND-LIC-KEY")
              (geoip/parse-maxmind-city-ip-db
                  :IPv4
@@ -504,6 +505,7 @@
              (load-module :geoip)
              (geoip/download-maxmind-db-to-zipfile "./geoip-city.zip"
                                                    :city
+                                                   "YOUR-MAXMIND-ACCOUNT-ID"
                                                    "YOUR-MAXMIND-LIC-KEY")
              (geoip/parse-maxmind-city-ip-db
                  :IPv6
@@ -565,6 +567,7 @@
             (load-module :geoip)
             (geoip/download-maxmind-db-to-zipfile "./geoip-country.zip"
                                                   :country
+                                                  "YOUR-MAXMIND-ACCOUNT-ID"
                                                   "YOUR-MAXMIND-LIC-KEY")
             (geoip/parse-maxmind-country-db "./geoip-country.zip"))
           """)
@@ -608,6 +611,7 @@
             (load-module :geoip)
             (geoip/download-maxmind-db-to-zipfile "./geoip-city.zip"
                                                   :city
+                                                  "YOUR-MAXMIND-ACCOUNT-ID"
                                                   "YOUR-MAXMIND-LIC-KEY")
             (geoip/parse-maxmind-city-db "./geoip-city.zip"))
           """)
@@ -682,7 +686,7 @@
 
 
 (defn
-  ^{ :arglists '("(geoip/download-maxmind-db-to-zipfile zipfile type lic-key)")
+  ^{ :arglists '("(geoip/download-maxmind-db-to-zipfile zipfile type account-id lic-key)")
      :doc """
           Downloads the MaxMind country or city GEO IP database to the given
           ZIP file. The type is either :country or :city.
@@ -697,94 +701,108 @@
             (load-module :geoip)
             (geoip/download-maxmind-db-to-zipfile "./geoip-country.zip"
                                                   :country
+                                                  "YOUR-MAXMIND-ACCOUNT-ID"
                                                   "YOUR-MAXMIND-LIC-KEY"))
           """)
      :see-also '(
           "geoip/build-maxmind-country-db-url"
           "geoip/build-maxmind-city-db-url") }
 
-  geoip/download-maxmind-db-to-zipfile [zipfile db-type lic-key]
+  geoip/download-maxmind-db-to-zipfile [zipfile db-type account-id lic-key]
 
-  (io/spit zipfile (geoip/download-maxmind-db db-type lic-key)))
+  (io/spit zipfile (geoip/download-maxmind-db db-type account-id lic-key)))
 
 
 (defn
-  ^{ :arglists '("(geoip/download-maxmind-db type lic-key)")
+  ^{ :arglists '("(geoip/download-maxmind-db type account-id lic-key)")
      :doc """
           Downloads the MaxMind country or city GEO IP database. Returns the
           DB as bytebuffer. The type is either :country or :city.
+                    
+          The download requires an account ID and a license key that is sent as 
+          part of the basic authentication.
 
-          The download requires your personal MaxMind license key. The
-          license to download the free MaxMind GeoLite databases can be
+          The license key to download the free MaxMind GeoLite databases can be
           obtained from the [MaxMind](https://www.maxmind.com/en/home) home page.
           """
      :examples '(
           """
           (do
             (load-module :geoip)
-            (geoip/download-maxmind-db :country "YOUR-MAXMIND-LIC-KEY"))
+            (geoip/download-maxmind-db :country 
+                                       "YOUR-MAXMIND-ACCOUNT-ID" 
+                                       "YOUR-MAXMIND-LIC-KEY"))
           """)
      :see-also '(
           "geoip/build-maxmind-country-db-url"
           "geoip/build-maxmind-city-db-url") }
 
-  geoip/download-maxmind-db [type lic-key]
+  geoip/download-maxmind-db [type account-id lic-key]
 
   (case type
-    :country (io/download (geoip/build-maxmind-country-db-url lic-key) :binary true)
-    :city    (io/download (geoip/build-maxmind-city-db-url lic-key) :binary true)
+    :country (io/download (geoip/build-maxmind-country-db-url)
+                          :binary true 
+                          :user account-id 
+                          :password lic-key
+                          :follow-redirects true)
+    :city    (io/download (geoip/build-maxmind-city-db-url)
+                          :binary true 
+                          :user account-id 
+                          :password lic-key
+                          :follow-redirects true)
     (throw (ex :VncException (str "Invalid DB type " type "!")))))
 
 
 (defn
-  ^{ :arglists '("(geoip/build-maxmind-country-db-url lic-key)")
+  ^{ :arglists '("(geoip/build-maxmind-country-db-url)")
      :doc """
-          Build the URL for the MaxMind country GEO IP database. The download
-          requires a license key that is sent as part of the URL.
+          Build the URL for the MaxMind country GEO IP database. 
+                    
+          The download requires an account ID and a license key that is sent as 
+          part of the basic authentication.
 
-          The download requires your personal MaxMind license key. The
-          license to download the free MaxMind GeoLite databases can be
+          The license key to download the free MaxMind GeoLite databases can be
           obtained from the [MaxMind](https://www.maxmind.com/en/home) home page.
           """
      :examples '(
           """
           (do
             (load-module :geoip)
-            (geoip/build-maxmind-country-db-url "YOUR-MAXMIND-LIC-KEY"))
+            (geoip/build-maxmind-country-db-url))
           """)
      :see-also '(
           "geoip/download-maxmind-db"
           "geoip/download-maxmind-db-to-zipfile") }
 
-  geoip/build-maxmind-country-db-url [lic-key]
+  geoip/build-maxmind-country-db-url []
 
-  (-> (str/replace-all geoip/maxmind-geoip-url "{db}" "GeoLite2-Country-CSV")
-      (str/replace-all  "{key}" lic-key)))
+  (str/replace-all geoip/maxmind-geoip-url "{db}" "GeoLite2-Country-CSV"))
 
 
 (defn
-  ^{ :arglists '("(geoip/build-maxmind-city-db-url lic-key)")
+  ^{ :arglists '("(geoip/build-maxmind-city-db-url)")
      :doc """
-          Build the URL for downloading the MaxMind city GEO IP database.
+          Build the URL for downloading the MaxMind city GEO IP database. 
+          
+          The download requires an account ID and a license key that is sent as 
+          part of the basic authentication.
 
-          The download requires your personal MaxMind license key. The
-          license to download the free MaxMind GeoLite databases can be
+          The license key to download the free MaxMind GeoLite databases can be
           obtained from the [MaxMind](https://www.maxmind.com/en/home) home page.
           """
      :examples '(
           """
           (do
             (load-module :geoip)
-            (geoip/build-maxmind-city-db-url "YOUR-MAXMIND-LIC-KEY"))
+            (geoip/build-maxmind-city-db-url))
           """)
      :see-also '(
           "geoip/download-maxmind-db"
           "geoip/download-maxmind-db-to-zipfile") }
 
-  geoip/build-maxmind-city-db-url [lic-key]
+  geoip/build-maxmind-city-db-url []
 
-  (-> (str/replace-all geoip/maxmind-geoip-url "{db}" "GeoLite2-City-CSV")
-      (str/replace-all  "{key}" lic-key)))
+  (str/replace-all geoip/maxmind-geoip-url "{db}" "GeoLite2-City-CSV"))
 
 
 (defn

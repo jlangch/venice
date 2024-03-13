@@ -14,6 +14,12 @@ All notable changes to this project will be documented in this file.
 - basic authentication support for `io/download`
 - follow redirects supports  for `io/download`, if the protocol does not change 
   for the requested redirect
+  
+### Changed
+
+- the **geoip** module to use basic authentication to access the MaxMind databases.
+  This is mandatory starting from May 1st, 2024 with MaxMind's effort to 
+  improve security and reliability on its services.
 
 
 
