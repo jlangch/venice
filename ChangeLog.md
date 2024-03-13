@@ -11,6 +11,7 @@ All notable changes to this project will be documented in this file.
 ### Added
 
 - math function `clamp`
+- basic authentication support for `io/download`
 
 
 

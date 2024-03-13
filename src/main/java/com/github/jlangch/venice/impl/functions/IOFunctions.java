@@ -36,6 +36,7 @@ import java.net.URL;
 import java.net.URLConnection;
 import java.nio.ByteBuffer;
 import java.nio.charset.Charset;
+import java.nio.charset.StandardCharsets;
 import java.nio.file.CopyOption;
 import java.nio.file.DirectoryStream;
 import java.nio.file.FileStore;
@@ -52,6 +53,7 @@ import java.nio.file.attribute.FileTime;
 import java.time.Instant;
 import java.time.ZoneId;
 import java.util.ArrayList;
+import java.util.Base64;
 import java.util.Comparator;
 import java.util.HashSet;
 import java.util.List;
@@ -128,7 +130,7 @@ public class IOFunctions {
                         ";; Windows:\n" +
                         ";;   (io/file \"C:\\\\tmp\\\\test.txt\") \n" +
                         ";;   (io/file \"C:/tmp/test.txt\")",
-        				";;   (io/file \"C:\" \"tmp\" \"test.txt\")")
+                        ";;   (io/file \"C:\" \"tmp\" \"test.txt\")")
                     .seeAlso("io/file-name", "io/file-parent", "io/file-path", "io/file-absolute", "io/file-canonical")
                     .build()
         ) {
@@ -220,9 +222,9 @@ public class IOFunctions {
                         .meta()
                         .arglists("(io/file-path-slashify f)")
                         .doc("Returns the path of the file f as a string, turns backslashes into slashes. \n\n" +
-                        	 "f must be a file or a string (file path).\n\n" +
-                        	 "C:\\Users\\foo\\image.png -> C:/Users/foo/image.png\n\n" +
-                        	 "Note: Windows only. On other OSs works identical to 'io/file-path'.")
+                             "f must be a file or a string (file path).\n\n" +
+                             "C:\\Users\\foo\\image.png -> C:/Users/foo/image.png\n\n" +
+                             "Note: Windows only. On other OSs works identical to 'io/file-path'.")
                         .examples("(io/file-path-slashify (io/file \"C:\" \"Users\" \"foo\" \"image.png\"))")
                         .seeAlso("io/file-path")
                         .build()
@@ -2754,6 +2756,8 @@ public class IOFunctions {
                         "| :binary true/false | e.g.: `:binary true`, defaults to false |\n" +
                         "| :user-agent agent  | e.g.: `:user-agent \"Mozilla\"`, defaults to nil |\n" +
                         "| :encoding enc      | e.g.: `:encoding :utf-8,` defaults to :utf-8 |\n" +
+                        "| :user u            | optional user for basic authentication|\n" +
+                        "| :password p        | optional password for basic authentication |\n" +
                         "| :conn-timeout val  | e.g.: `:conn-timeout 10000`, " +
                         "                       connection timeout in milliseconds. ¶" +
                         "                       0 is interpreted as an infinite timeout. |\n" +
@@ -2792,6 +2796,8 @@ public class IOFunctions {
 
                 try {
                     final VncHashMap options = VncHashMap.ofAll(args.rest());
+                    final VncVal user = options.get(new VncKeyword("user"));
+                    final VncVal password = options.get(new VncKeyword("password"));
                     final VncVal binary = options.get(new VncKeyword("binary"));
                     final VncVal useragent = options.get(new VncKeyword("user-agent"));
                     final VncVal encVal = options.get(new VncKeyword("encoding"));
@@ -2800,6 +2806,21 @@ public class IOFunctions {
                     final VncVal readTimeoutMillisVal = options.get(new VncKeyword("read-timeout"));
                     final Charset charset = CharsetUtil.charset(encVal);
 
+                    // basic authentication
+                    String authHeader = null;
+                    if (user != null || password != null) {
+                        if (user == null || password == null) {
+                            throw new VncException(
+                                    "io/download needs both the 'user' and the 'password' "
+                                    + "option for basic authentication!");
+                        }
+
+                        final String auth = Coerce.toVncString(user).getValue()
+                                                + ":"
+                                                +  Coerce.toVncString(password).getValue();
+                        final  byte[] encodedAuth = Base64.getEncoder().encode(auth.getBytes(StandardCharsets.UTF_8));
+                        authHeader = "Basic " + new String(encodedAuth);
+                    }
 
                     final URL url = new URL(uri);
                     final String protocol = url.getProtocol();
@@ -2831,6 +2852,10 @@ public class IOFunctions {
                     }
                     if (readTimeoutMillisVal != Nil) {
                         conn.setReadTimeout(Coerce.toVncLong(readTimeoutMillisVal).getIntValue());
+                    }
+
+                    if (authHeader != null) {
+                        conn.setRequestProperty("Authorization", authHeader);
                     }
 
                     conn.connect();
