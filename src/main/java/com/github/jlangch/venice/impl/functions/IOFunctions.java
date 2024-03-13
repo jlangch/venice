@@ -2799,30 +2799,29 @@ public class IOFunctions {
                     final VncHashMap options = VncHashMap.ofAll(args.rest());
                     final VncVal user = options.get(new VncKeyword("user"));
                     final VncVal password = options.get(new VncKeyword("password"));
-                    final VncVal binary = options.get(new VncKeyword("binary"));
-                    final VncVal followRedirects = options.get(new VncKeyword("follow-redirects"));
+                    final VncVal binary = options.get(new VncKeyword("binary"), VncBoolean.False);
+                    final VncVal followRedirects = options.get(new VncKeyword("follow-redirects"), VncBoolean.False);
                     final VncVal useragent = options.get(new VncKeyword("user-agent"));
                     final VncVal encVal = options.get(new VncKeyword("encoding"));
                     final VncVal progressVal = options.get(new VncKeyword("progress-fn"));
                     final VncVal connTimeoutMillisVal = options.get(new VncKeyword("conn-timeout"));
                     final VncVal readTimeoutMillisVal = options.get(new VncKeyword("read-timeout"));
-                    final VncVal debug = options.get(new VncKeyword("debug"));
+                    final VncVal debug = options.get(new VncKeyword("debug"), VncBoolean.False);
                     final Charset charset = CharsetUtil.charset(encVal);
 
                     // basic authentication
                     String authHeader = null;
-                    if (user != null || password != null) {
-                        if (user == null || password == null) {
-                            throw new VncException(
-                                    "io/download needs both the 'user' and the 'password' "
-                                    + "option for basic authentication!");
-                        }
-
+                    if (user != Nil && password != Nil) {
                         final String auth = Coerce.toVncString(user).getValue()
                                                 + ":"
                                                 + Coerce.toVncString(password).getValue();
                         final  byte[] encodedAuth = Base64.getEncoder().encode(auth.getBytes(StandardCharsets.UTF_8));
                         authHeader = "Basic " + new String(encodedAuth);
+                    }
+                    else if (user != Nil || password != Nil) {
+                       throw new VncException(
+                                "io/download needs both the 'user' and the 'password' "
+                                + "option for basic authentication!");
                     }
 
 
