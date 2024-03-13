@@ -6,7 +6,7 @@ All notable changes to this project will be documented in this file.
 
 
 
-## [1.12.5] - 2024-03-xx
+## [1.12.5] - 2024-03-13
 
 ### Added
 
