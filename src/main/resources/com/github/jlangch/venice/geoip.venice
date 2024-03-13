@@ -724,6 +724,11 @@
 
           The license key to download the free MaxMind GeoLite databases can be
           obtained from the [MaxMind](https://www.maxmind.com/en/home) home page.
+
+          Please ensure that your servers can make HTTPS connections to the
+          following hostname:
+
+          mm-prod-geoip-databases.a2649acb697e2c09b632799562c076f2.r2.cloudflarestorage.com
           """
      :examples '(
           """
