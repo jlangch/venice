@@ -2806,6 +2806,7 @@ public class IOFunctions {
                     final VncVal progressVal = options.get(new VncKeyword("progress-fn"));
                     final VncVal connTimeoutMillisVal = options.get(new VncKeyword("conn-timeout"));
                     final VncVal readTimeoutMillisVal = options.get(new VncKeyword("read-timeout"));
+                    final VncVal debug = options.get(new VncKeyword("debug"));
                     final Charset charset = CharsetUtil.charset(encVal);
 
                     // basic authentication
@@ -2824,6 +2825,10 @@ public class IOFunctions {
                         authHeader = "Basic " + new String(encodedAuth);
                     }
 
+
+                    if (VncBoolean.isTrue(debug)) {
+                        System.out.println("URI: " + uri);
+                    }
 
                     final URL url = new URL(uri);
                     final String protocol = url.getProtocol();
@@ -2859,15 +2864,23 @@ public class IOFunctions {
 
                     if (authHeader != null) {
                         conn.setRequestProperty("Authorization", authHeader);
+
+                        if (VncBoolean.isTrue(debug)) {
+                            System.out.println("Authorization Header: Basic (base64 " + user + ":xxxxxx)");
+                        }
                     }
 
                     // follow redirects
                     if (VncBoolean.isTrue(followRedirects)) {
-                    	if (conn instanceof HttpURLConnection) {
-                    		// redirects should be handled by HttpURLConnection if the protocol
-                    		// does not change (security reasons)
-                    		((HttpURLConnection)conn).setInstanceFollowRedirects(true);
-                    	}
+                        if (conn instanceof HttpURLConnection) {
+                            // redirects should be handled by HttpURLConnection if the protocol
+                            // does not change (security reasons)
+                            ((HttpURLConnection)conn).setInstanceFollowRedirects(true);
+
+                            if (VncBoolean.isTrue(debug)) {
+                                System.out.println("Follow redirects: true");
+                            }
+                        }
                     }
 
 
@@ -2876,14 +2889,25 @@ public class IOFunctions {
                     try {
                         if (conn instanceof HttpURLConnection) {
                             final int responseCode = ((HttpURLConnection)conn).getResponseCode();
-                            if (responseCode != HttpURLConnection.HTTP_MOVED_PERM) {
-                            	final String location = ((HttpURLConnection)conn).getHeaderField("Location");
-                                throw new VncException(
-                                        "Server replied HTTP code: HTTP_MOVED_PERM (301). New location: " + location);
-                            }
                             if (responseCode != HttpURLConnection.HTTP_OK) {
-                                throw new VncException(
-                                        "No file to download. Server replied HTTP code: " + responseCode);
+                            	// handle failures
+
+                                if (VncBoolean.isTrue(debug)) {
+                                    Map<String, List<String>> map = conn.getHeaderFields();
+                                    for (Map.Entry<String, List<String>> entry : map.entrySet()) {
+                                        System.out.println("Response Header Key : " + entry.getKey() + " ,Value : " + entry.getValue());
+                                    }
+                                }
+
+	                            if (responseCode == HttpURLConnection.HTTP_MOVED_PERM) {
+	                                final String location = ((HttpURLConnection)conn).getHeaderField("Location");
+	                                throw new VncException(
+	                                        "Server replied HTTP code: HTTP_MOVED_PERM (301). New location: " + location);
+	                            }
+	                            else {
+	                                throw new VncException(
+	                                        "No file to download. Server replied HTTP code: " + responseCode);
+	                            }
                             }
                         }
 
