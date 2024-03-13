@@ -36,7 +36,6 @@ import java.net.URL;
 import java.net.URLConnection;
 import java.nio.ByteBuffer;
 import java.nio.charset.Charset;
-import java.nio.charset.StandardCharsets;
 import java.nio.file.CopyOption;
 import java.nio.file.DirectoryStream;
 import java.nio.file.FileStore;
@@ -53,7 +52,6 @@ import java.nio.file.attribute.FileTime;
 import java.time.Instant;
 import java.time.ZoneId;
 import java.util.ArrayList;
-import java.util.Base64;
 import java.util.Comparator;
 import java.util.HashSet;
 import java.util.List;
@@ -89,6 +87,7 @@ import com.github.jlangch.venice.impl.util.SymbolMapBuilder;
 import com.github.jlangch.venice.impl.util.VncFileIterator;
 import com.github.jlangch.venice.impl.util.VncPathMatcher;
 import com.github.jlangch.venice.impl.util.callstack.CallFrame;
+import com.github.jlangch.venice.impl.util.http.BasicAuthentication;
 import com.github.jlangch.venice.impl.util.io.CharsetUtil;
 import com.github.jlangch.venice.impl.util.io.ClassPathResource;
 import com.github.jlangch.venice.impl.util.io.FileUtil;
@@ -2812,21 +2811,8 @@ public class IOFunctions {
                     final VncVal debugVal = options.get(new VncKeyword("debug-fn"));
                     final Charset charset = CharsetUtil.charset(encVal);
 
-                    debugFn = debugVal == Nil
-                            ? new VncFunction("io/debugs-default") {
-                                private static final long serialVersionUID = 1L;
-                                @Override
-                                public VncVal apply(final VncList args) { return Nil; }
-                              }
-                            : Coerce.toVncFunction(debugVal);
-
-                    progressFn = progressVal == Nil
-                                    ? new VncFunction("io/progress-default") {
-                                        private static final long serialVersionUID = 1L;
-                                        @Override
-                                        public VncVal apply(final VncList args) { return Nil; }
-                                      }
-                                    : Coerce.toVncFunction(progressVal);
+                    debugFn = debugVal == Nil ? downloadDummyFn() : Coerce.toVncFunction(debugVal);
+                    progressFn = progressVal == Nil ? downloadDummyFn() : Coerce.toVncFunction(progressVal);
 
 
                     debugFn.sandboxFunctionCallValidation();
@@ -2835,12 +2821,10 @@ public class IOFunctions {
                     // basic authentication
                     String authHeader = null;
                     if (user != Nil && password != Nil) {
-                        final String auth = Coerce.toVncString(user).getValue()
-                                                + ":"
-                                                + Coerce.toVncString(password).getValue();
-                        final  byte[] encodedAuth = Base64.getEncoder().encode(auth.getBytes(StandardCharsets.UTF_8));
-                        authHeader = "Basic " + new String(encodedAuth);
-                    }
+                        authHeader = BasicAuthentication.headerValue(
+                                        Coerce.toVncString(user).getValue(),
+                                        Coerce.toVncString(password).getValue());
+                     }
                     else if (user != Nil || password != Nil) {
                        throw new VncException(
                                 "io/download needs both the 'user' and the 'password' "
@@ -2876,7 +2860,7 @@ public class IOFunctions {
                     }
 
                     if (authHeader != null) {
-                        conn.setRequestProperty("Authorization", authHeader);
+                        conn.setRequestProperty(BasicAuthentication.HEADER, authHeader);
                         debugFn.applyOf(new VncString("Authorization Header: Basic (base64 " + user + ":xxxxxx)"));
                     }
 
@@ -2923,44 +2907,13 @@ public class IOFunctions {
 
                         try (BufferedInputStream is = new BufferedInputStream(conn.getInputStream())) {
                             debugFn.applyOf(new VncString("Redirected url: " + conn.getURL()));
-                            final ByteArrayOutputStream output = new ByteArrayOutputStream();
-                            try {
-                                updateDownloadProgress(progressFn, 0L, new VncKeyword("progress"));
 
-                                final byte[] buffer = new byte[16 * 1024];
-                                int n;
-                                long total = 0L;
-                                long progressLast = 0L;
-                                while (-1 != (n = is.read(buffer))) {
-                                    output.write(buffer, 0, n);
-                                    total += n;
+                            final byte[] data = slurpData(is, progressFn, contentLength);
 
-                                    // progress: 0..100%
-                                    long progress = Math.max(0, Math.min(100, (total * 100) / contentLength));
-
-                                    if (progress != progressLast) {
-                                        updateDownloadProgress(progressFn, progress, new VncKeyword("progress"));
-                                    }
-
-                                    progressLast = progress;
-                                }
-
-                                if (progressVal != Nil) {
-                                    updateDownloadProgress(progressFn, 100L, new VncKeyword("progress"));
-                                    Thread.sleep(100); // leave the 100% progress for a blink of an eye
-                                }
-
-                                byte data[] = output.toByteArray();
-
-                                return VncBoolean.isTrue(binary)
-                                            ? new VncByteBuffer(ByteBuffer.wrap(data))
-                                            : new VncString(new String(data, charset));
-
-                            }
-                            finally {
-                                output.close();
-                            }
-                        }
+                            return VncBoolean.isTrue(binary)
+                                        ? new VncByteBuffer(ByteBuffer.wrap(data))
+                                        : new VncString(new String(data, charset));
+                         }
                     }
                     catch(Exception ex) {
                         throw ex;
@@ -3466,6 +3419,43 @@ public class IOFunctions {
         }
     }
 
+    private static byte[] slurpData(
+    		final BufferedInputStream is,
+    		final VncFunction progressFn,
+    		final long contentLength
+    ) throws Exception {
+        final ByteArrayOutputStream output = new ByteArrayOutputStream();
+        try {
+        	updateDownloadProgress(progressFn, 0L, new VncKeyword("progress"));
+
+            final byte[] buffer = new byte[16 * 1024];
+            int n;
+            long total = 0L;
+            long progressLast = 0L;
+            while (-1 != (n = is.read(buffer))) {
+                output.write(buffer, 0, n);
+                total += n;
+
+                // progress: 0..100%
+                long progress = Math.max(0, Math.min(100, (total * 100) / contentLength));
+
+                if (progress != progressLast && progress < 100L) {
+                    updateDownloadProgress(progressFn, progress, new VncKeyword("progress"));
+                }
+
+                progressLast = progress;
+            }
+
+            updateDownloadProgress(progressFn, 100L, new VncKeyword("progress"));
+	        Thread.sleep(100); // leave the 100% progress for a blink of an eye
+
+            return output.toByteArray();
+        }
+        finally {
+            output.close();
+        }
+    }
+
     private static TimeUnit toTimeUnit(final VncKeyword unit) {
         switch(unit.getValue()) {
             case "milliseconds": return TimeUnit.MILLISECONDS;
@@ -3517,6 +3507,12 @@ public class IOFunctions {
             "`'?'`, `'*'`, and `'['`, so that they can be used in patterns.";
     }
 
+    private static VncFunction downloadDummyFn() {
+        return new VncFunction(VncFunction.createAnonymousFuncName("download-dummy")) {
+                    private static final long serialVersionUID = 1L;
+                    @Override  public VncVal apply(final VncList args) { return Nil; }
+               };
+    }
 
 
     ///////////////////////////////////////////////////////////////////////////
