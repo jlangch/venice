@@ -33,7 +33,6 @@ import java.net.MalformedURLException;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URL;
-import java.nio.ByteBuffer;
 import java.nio.charset.Charset;
 import java.nio.file.CopyOption;
 import java.nio.file.DirectoryStream;
@@ -2868,7 +2867,6 @@ public class IOFunctions {
                         // redirects should be handled by HttpURLConnection if the protocol
                         // does not change (security reasons)
                         conn.setInstanceFollowRedirects(true);
-
                         debugFn.applyOf(new VncString("Follow redirects: activated"));
                     }
 
@@ -2890,7 +2888,7 @@ public class IOFunctions {
                                 final byte[] data = slurpData(is, progressFn, conn.getContentLengthLong());
 
                                 final VncVal retVal = VncBoolean.isTrue(binary)
-                                                        ? new VncByteBuffer(ByteBuffer.wrap(data))
+                                                        ? new VncByteBuffer(data)
                                                         : new VncString(new String(data, charset));
 
                                 updateDownloadProgress(progressFn, 100L, new VncKeyword("end"));
