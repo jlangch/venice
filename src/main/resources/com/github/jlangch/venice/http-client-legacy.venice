@@ -19,7 +19,7 @@
 ;;;; See the License for the specific language governing permissions and
 ;;;; limitations under the License.
 
-;;;; HTTP client
+;;;; HTTP client based on the JDK HttpUrlConnection
 
 
 ;; -----------------------------------------------------------------------------
@@ -28,4 +28,4 @@
 ;;
 ;; -----------------------------------------------------------------------------
 
-(ns http)
+(ns http-client-legacy)
