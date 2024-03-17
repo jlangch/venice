@@ -42,6 +42,7 @@
     :reset              "[0m"  ;; reset all styles and colors
     :bold               "[1m"
     :dim                "[2m"
+    :italic             "[3m"
     :blink-slow         "[5m"
     :underline          "[4m"
     :underline-off      "[24m"
@@ -526,6 +527,8 @@
 (defn show-decorations []
   (println "Font styles")
   (print (ansi/style " bold " :bold))
+  (print (ansi/style " italic " :italic))
+  (print (ansi/style " dim " :dim))
   (print (ansi/style " underline " :underline))
   (print (ansi/style " reversed " :reverse))
   (println))

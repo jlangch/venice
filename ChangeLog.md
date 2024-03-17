@@ -11,6 +11,7 @@ All notable changes to this project will be documented in this file.
 ### Added
 
 - function `zip-folder` to `zipvault`
+- support italic font style (module :ansi)
 
 
 
