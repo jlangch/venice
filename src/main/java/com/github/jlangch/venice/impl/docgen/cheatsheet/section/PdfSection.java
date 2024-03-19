@@ -38,7 +38,7 @@ public class PdfSection implements ISectionBuilder {
                               "```                                           \n" +
                               "(do                                           \n" +
                               "  (load-module :pdf-install)                  \n" +
-                              "  (pdf-install/install :dir (repl/libs-dir))  \n" +
+                              "  (pdf-install/install :dir (repl/libs-dir)   \n" +
                               "                       :silent false))        \n" +
                               "```\n";
 
