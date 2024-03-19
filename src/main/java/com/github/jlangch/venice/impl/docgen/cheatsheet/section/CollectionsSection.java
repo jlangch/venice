@@ -72,6 +72,7 @@ public class CollectionsSection implements ISectionBuilder {
         coll_test.addItem(diBuilder.getDocItem("not-empty?"));
         coll_test.addItem(diBuilder.getDocItem("distinct?"));
         coll_test.addItem(diBuilder.getDocItem("coll?"));
+        coll_test.addItem(diBuilder.getDocItem("sequential?"));
         coll_test.addItem(diBuilder.getDocItem("list?"));
         coll_test.addItem(diBuilder.getDocItem("vector?"));
         coll_test.addItem(diBuilder.getDocItem("set?"));
@@ -162,6 +163,8 @@ public class CollectionsSection implements ISectionBuilder {
         lists.addSection(list_test);
         list_test.addItem(diBuilder.getDocItem("list?"));
         list_test.addItem(diBuilder.getDocItem("mutable-list?"));
+        list_test.addItem(diBuilder.getDocItem("coll?"));
+        list_test.addItem(diBuilder.getDocItem("sequential?"));
         list_test.addItem(diBuilder.getDocItem("every?"));
         list_test.addItem(diBuilder.getDocItem("not-every?"));
         list_test.addItem(diBuilder.getDocItem("any?"));
@@ -239,6 +242,8 @@ public class CollectionsSection implements ISectionBuilder {
         vectors.addSection(vec_test);
         vec_test.addItem(diBuilder.getDocItem("vector?"));
         vec_test.addItem(diBuilder.getDocItem("mutable-vector?"));
+        vec_test.addItem(diBuilder.getDocItem("coll?"));
+        vec_test.addItem(diBuilder.getDocItem("sequential?"));
         vec_test.addItem(diBuilder.getDocItem("contains?"));
         vec_test.addItem(diBuilder.getDocItem("not-contains?"));
         vec_test.addItem(diBuilder.getDocItem("every?"));
@@ -280,6 +285,7 @@ public class CollectionsSection implements ISectionBuilder {
         set_test.addItem(diBuilder.getDocItem("set?"));
         set_test.addItem(diBuilder.getDocItem("sorted-set?"));
         set_test.addItem(diBuilder.getDocItem("mutable-set?"));
+        set_test.addItem(diBuilder.getDocItem("coll?"));
         set_test.addItem(diBuilder.getDocItem("contains?"));
         set_test.addItem(diBuilder.getDocItem("not-contains?"));
         set_test.addItem(diBuilder.getDocItem("every?"));
@@ -352,11 +358,11 @@ public class CollectionsSection implements ISectionBuilder {
         final DocSection map_test = new DocSection("Test", "collections.maps.test");
         maps.addSection(map_test);
         map_test.addItem(diBuilder.getDocItem("map?"));
-        map_test.addItem(diBuilder.getDocItem("sequential?"));
         map_test.addItem(diBuilder.getDocItem("hash-map?"));
         map_test.addItem(diBuilder.getDocItem("ordered-map?"));
         map_test.addItem(diBuilder.getDocItem("sorted-map?"));
         map_test.addItem(diBuilder.getDocItem("mutable-map?"));
+        map_test.addItem(diBuilder.getDocItem("coll?"));
         map_test.addItem(diBuilder.getDocItem("contains?"));
         map_test.addItem(diBuilder.getDocItem("not-contains?"));
 
