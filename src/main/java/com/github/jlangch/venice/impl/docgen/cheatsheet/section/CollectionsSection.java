@@ -58,6 +58,8 @@ public class CollectionsSection implements ISectionBuilder {
         generic.addItem(diBuilder.getDocItem("replace"));
         generic.addItem(diBuilder.getDocItem("range"));
         generic.addItem(diBuilder.getDocItem("group-by"));
+        generic.addItem(diBuilder.getDocItem("sort"));
+        generic.addItem(diBuilder.getDocItem("sort-by"));
         generic.addItem(diBuilder.getDocItem("frequencies"));
         generic.addItem(diBuilder.getDocItem("get-in"));
         generic.addItem(diBuilder.getDocItem("seq"));
@@ -89,7 +91,11 @@ public class CollectionsSection implements ISectionBuilder {
         coll_process.addItem(diBuilder.getDocItem("map-indexed"));
         coll_process.addItem(diBuilder.getDocItem("filter"));
         coll_process.addItem(diBuilder.getDocItem("reduce"));
+        coll_process.addItem(diBuilder.getDocItem("group-by"));
+        coll_process.addItem(diBuilder.getDocItem("sort"));
+        coll_process.addItem(diBuilder.getDocItem("sort-by"));
         coll_process.addItem(diBuilder.getDocItem("keep"));
+        coll_process.addItem(diBuilder.getDocItem("flatten"));
         coll_process.addItem(diBuilder.getDocItem("docoll"));
         coll_process.addItem(diBuilder.getDocItem("mapv"));
         coll_process.addItem(diBuilder.getDocItem("run!"));
