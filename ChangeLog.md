@@ -13,6 +13,15 @@ All notable changes to this project will be documented in this file.
 - function `zip-folder` to `zipvault`
 - support italic font style (module :ansi)
 
+### Changed
+
+- the function `maven/download` to accept a single artifact as well as a
+  list of multiple artifacts
+
+### Fixed 
+
+- :maven module (a bug has been added with V1.12.0 refactoring)
+
 
 
 ## [1.12.5] - 2024-03-13

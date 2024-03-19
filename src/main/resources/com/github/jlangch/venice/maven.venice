@@ -194,6 +194,12 @@
       (str/join "/" [repo group-path artifact-id version filename]))))
 
 
+(defn maven/parse-artifact-to-map [artifact]
+  (let [elements (str/split artifact ":")]
+    { :group-id    (first elements)
+      :artifact-id (second elements)
+      :version     (third elements) }))
+
 
 (defn
   ^{ :arglists '("(maven/download artifact options*)")
@@ -201,6 +207,8 @@
           Downloads an artifact in the format 'group-id:artifact-id:version'
           from a Maven repository. Can download any combination of the jar,
           sources, or pom artifacts to a directory.
+
+          Accepts a sequence of artifacts as well.
 
           Options:
 
@@ -259,6 +267,18 @@
             (maven/download "org.knowm.xchart:xchart:3.8.6" 
                             :dir "." 
                             :silent false))
+          """       
+          """
+          (do
+            (load-module :maven)
+            ;; download all langchain4j artifacts
+            (maven/download (maven/dependencies 
+                                [ "dev.langchain4j:langchain4j:0.28.0" ] 
+                                :format :list 
+                                :scope :runtime
+                                :print false)
+                            :dir "." 
+                            :silent false))
           """ )
      :see-also '(
          "maven/get" 
@@ -266,31 +286,34 @@
 
   maven/download [artifact & options]
 
-  (let [opts        (apply hash-map options)
-        silent      (or (:silent opts true) (not (repl?)))
-        jar         (:jar opts true)
-        sources     (:sources opts false)
-        pom         (:pom opts false)
-        dir         (:dir opts ".")
-        repo        (:repo opts maven/repo)
-        force       (:force opts true)
-        progress-fn (maven/progress-bar silent)]
-    (when jar
-      (let [suffix         (maven/artifact-suffix :jar)
-            uri            (maven/artifact-uri artifact suffix repo)
-            filename       (maven/artifact-filename artifact suffix)]
-        (maven/download-artifact-file uri dir filename force progress-fn)))
-    (when sources
-      (let [suffix         (maven/artifact-suffix :sources)
-            uri            (maven/artifact-uri artifact suffix repo)
-            filename       (maven/artifact-filename artifact suffix)]
-        (maven/download-artifact-file uri dir filename force progress-fn)))
-    (when pom
-      (let [suffix         (maven/artifact-suffix :pom)
-            uri            (maven/artifact-uri artifact suffix repo)
-            filename       (maven/artifact-filename artifact suffix)]
-        (maven/download-artifact-file uri dir filename force progress-fn)))
-    nil))
+  (if (sequential? artifact)
+    (docoll #(apply download % options) artifact)
+    (do
+      (let [opts        (apply hash-map options)
+            silent      (or (:silent opts true) (not (repl?)))
+            jar         (:jar opts true)
+            sources     (:sources opts false)
+            pom         (:pom opts false)
+            dir         (:dir opts ".")
+            repo        (:repo opts maven/repo)
+            force       (:force opts true)
+            progress-fn (maven/progress-bar silent)]
+        (when jar
+          (let [suffix         (maven/artifact-suffix :jar)
+                uri            (maven/artifact-uri artifact suffix repo)
+                filename       (maven/artifact-filename artifact suffix)]
+            (maven/download-artifact-file uri dir filename force progress-fn)))
+        (when sources
+          (let [suffix         (maven/artifact-suffix :sources)
+                uri            (maven/artifact-uri artifact suffix repo)
+                filename       (maven/artifact-filename artifact suffix)]
+            (maven/download-artifact-file uri dir filename force progress-fn)))
+        (when pom
+          (let [suffix         (maven/artifact-suffix :pom)
+                uri            (maven/artifact-uri artifact suffix repo)
+                filename       (maven/artifact-filename artifact suffix)]
+            (maven/download-artifact-file uri dir filename force progress-fn)))
+        nil))))
 
 
 (defn
@@ -421,8 +444,8 @@
           | :verbose v              | if true invokes for verbose output else \
                                       standard output. Defaults to false |
           | :excludes e             | A list of excluded dependencies |
-          | :format f               | An output format. :raw :dependency-tree \
-                                      :dependency-list. Defaults to :dependency-tree |
+          | :format f               | An output format. :raw, :tree, or :list. \
+                                      Defaults to :tree |
           | :print p                | If true prints the data else returns the \
                                       data  |
           | :print-pom p            | If true print the generated pom for \
@@ -499,7 +522,7 @@
     (let [opts         (apply hash-map options)
           scope        (:scope opts :compile)
           verbose      (:verbose opts false)
-          format       (:format opts :dependency-tree)
+          format       (:format opts :tree)
           print-data   (:print opts true)
           print-pom    (:print-pom opts false)
           managed-deps (:managed-dependencies opts [])
@@ -510,7 +533,7 @@
 
       (assert (#{:compile :runtime :test :provided} scope))
       (assert (boolean? verbose))
-      (assert (#{:raw :dependency-tree :dependency-list} format))
+      (assert (#{:raw :tree :list} format))
       (assert (boolean? print-data))
       (assert (boolean? print-pom))
       (assert (sequential? excludes))
@@ -684,6 +707,7 @@
 
 (defn- dependencies* [scope verbose print-data print-pom format 
                       excludes artifacts managed-deps]
+  (assert (#{:raw :tree :list} format))
   (let [temp-dir  (io/temp-dir "maven-")
         proj-dir  (io/file temp-dir "demolibrary")
         pom-file  (io/file proj-dir "pom.xml")]
@@ -712,10 +736,10 @@
             opts    (if (empty? excludes) opts (cons excl opts))
             output  (apply maven/mvn proj-dir "dependency:tree" opts)]
         (case format
-          :dependency-tree (maven/extract-dependency-tree output)   
-          :dependency-list (let [l (maven/extract-dependency-list output)]
-                             (if print-data (str/join "\n" l) l))
-          output))
+          :tree (maven/extract-dependency-tree output)   
+          :list (let [l (maven/extract-dependency-list output)]
+                  (if print-data (str/join "\n" l) l))
+          :raw  output))
     (finally 
       (when (io/exists-dir? temp-dir)
         (io/delete-file-tree temp-dir))))))
@@ -737,13 +761,12 @@
        (rest)
        (map #(str/subs % 10))
        (map #(str/subs % (or (str/index-of-not-char % "|-+\\ ") 0)))
-       (map str/trim-left)
+       (map str/trim-to-nil)
+       (filter some?)
        (filter #(not (str/starts-with? % "(")))
+       (filter #(str/contains? % ":jar:"))
        (map (fn [s] (as-> (str/split s ":") e
-                          (into [] e)
-                          (dissoc e 4)
-                          (dissoc e 2)
-                          (str/join ":" e))))))
+                          (str/join ":" [(nth e 0) (nth e 1) (nth e 3)]))))))
 
 
 (defn- mvn-install-dirs-repl []
