@@ -447,11 +447,11 @@
           | :format f               | An output format. :raw, :tree, or :list. \
                                       Defaults to :tree |
           | :print p                | If true prints the data else returns the \
-                                      data  |
+                                      data. Defaults to true.  |
           | :print-pom p            | If true print the generated pom for \
-                                      debugging purposes. Defaults to false.  |
-          | :managed-dependencies d | A list of managed dependencies (artifacts). \
-                                      See example 2. |
+                                      debugging purposes. Defaults to false. |
+          | :managed-dependencies d | An optional list of managed dependencies \
+                                      (artifacts). See example 2. |
 
           The scope is one of:
          
