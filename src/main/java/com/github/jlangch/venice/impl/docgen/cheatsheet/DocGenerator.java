@@ -206,11 +206,11 @@ public class DocGenerator {
             reader.close();
 
             System.out.println(String.format(
-                    "Generated CheatSheet at: %s",
+                    "Generated cheatsheet at: %s",
                     getUserDir()));
 
             System.out.println(String.format(
-                    "Generated CheatSheet: ASCII: %dKB, XHTML: %dKB, PDF: %dKB / %d pages",
+                    "Generated cheatsheet: ASCII: %dKB, XHTML: %dKB, PDF: %dKB / %d pages",
                     ascii.length() / 1024,
                     xhtml.length() / 1024,
                     pdfArr.length / 1024,
