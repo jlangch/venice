@@ -90,7 +90,7 @@ public class DocItem {
     public List<String> getExamples() {
         return examples
                 .stream()
-                .map(o -> o.renderTextStyled(false))
+                .map(o -> o.renderTextStyled(false, false))
                 .map(s -> StringUtil.trimToNull(s))
                 .filter(s -> s != null)
                 .collect(Collectors.toList());

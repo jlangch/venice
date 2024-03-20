@@ -114,19 +114,21 @@ public class ExampleOutput {
                 : null;
     }
 
-    public String renderTextStyled(final boolean addResult) {
+    public String renderTextStyled(final boolean addOutput, final boolean addResult) {
         final StringBuilder sb = new StringBuilder();
 
         sb.append(example);
 
-        if (stdout != null) {
-            sb.append("\n");
-            sb.append(stdout);
-        }
+        if (addOutput) {
+	        if (stdout != null) {
+	            sb.append("\n");
+	            sb.append(stdout);
+	        }
 
-        if (stderr != null) {
-            sb.append("\n");
-            sb.append(stderr);
+	        if (stderr != null) {
+	            sb.append("\n");
+	            sb.append(stderr);
+	        }
         }
 
         if (addResult) {
