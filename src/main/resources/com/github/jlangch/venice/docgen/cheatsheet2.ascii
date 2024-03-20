@@ -21,7 +21,7 @@ ${ ) }$
 
 
 
-2. Functiongroups 
+2. Function Groups 
 --------------------------------------------------------------------------------
 
 
@@ -29,7 +29,7 @@ ${ (doseq [s1 left] }$
   ${= (:formattedTitle s1) }$
   
   ${ (doseq [s2 (:sections s1)] }$
-    ${ (when (:title s2) }${= (:formattedTitle s2) }$</div>${ ) }$
+    ${ (when (:title s2) }$ ${= (:formattedTitle s2) }$ ${ ) }$
 
       ${ (doseq [s3 (:sections s2)] }$
         ${= (:title s3) }$
@@ -40,8 +40,8 @@ ${ (doseq [s1 left] }$
       ${ ) }$
   ${ ) }$
     
-  ${ (when-not (empty? (:footerXmlStyled s1)) }$
-    ${= (:footerXmlStyled s1) }$
+  ${ (when-not (empty? (:footerTextStyled s1)) }$
+    ${= (:footerTextStyled s1) }$
   ${ ) }$
 ${ ) }$
 
@@ -49,7 +49,7 @@ ${ (doseq [s1 right] }$
   ${= (:formattedTitle s1) }$
   
   ${ (doseq [s2 (:sections s1)] }$
-    ${ (when (:title s2) }${= (:formattedTitle s2) }$</div>${ ) }$
+    ${ (when (:title s2) }$ ${= (:formattedTitle s2) }$ ${ ) }$
 
       ${ (doseq [s3 (:sections s2)] }$
         ${= (:title s3) }$
@@ -60,8 +60,8 @@ ${ (doseq [s1 right] }$
       ${ ) }$
   ${ ) }$
     
-  ${ (when-not (empty? (:footerXmlStyled s1)) }$
-    ${= (:footerXmlStyled s1) }$
+  ${ (when-not (empty? (:footerTextStyled s1)) }$
+    ${= (:footerTextStyled s1) }$
   ${ ) }$
 ${ ) }$
 
@@ -75,14 +75,14 @@ ${ (doseq [s1 left-modules] }$
   ${= (:title s1) }$
   ${ (when (:subtitle s1) }$ ${= (:subtitle s1) }$ ${ ) }$
 
-  ${ (when-not (empty? (:headerXmlStyled s1)) }$
-    ${= (:headerXmlStyled s1) }$
+  ${ (when-not (empty? (:headerTextStyled s1)) }$
+${= (:headerTextStyled s1) }$
   ${ ) }$  
                 
   ${ (doseq [s2 (:sections s1)] }$
     ${ (when (:title s2) }$ ${= (:formattedTitle s2) }$ ${ ) }$
       ${ (doseq [s3 (:sections s2)] }$
-          ${= (kira/escape-xml (:title s3)) }$
+          ${= (:title s3) }$
           ${ (doseq [{:keys [id altName name]} (:items s3)] }$
             ${ (when id }$ ${= altName }$ ${ ) }$
             ${ (when-not id }$ ${= name }$ ${ ) }$
@@ -90,8 +90,8 @@ ${ (doseq [s1 left-modules] }$
     ${ ) }$
   ${ ) }$
     
-  ${ (when-not (empty? (:footerXmlStyled s1)) }$
-    ${= (:footerXmlStyled s1) }$
+  ${ (when-not (empty? (:footerTextStyled s1)) }$
+${= (:footerTextStyled s1) }$
   ${ ) }$
 ${ ) }$
 
@@ -99,14 +99,14 @@ ${ (doseq [s1 right-modules] }$
   ${= (:title s1) }$
   ${ (when (:subtitle s1) }$ ${= (:subtitle s1) }$ ${ ) }$
 
-  ${ (when-not (empty? (:headerXmlStyled s1)) }$
-    ${= (:headerXmlStyled s1) }$
+  ${ (when-not (empty? (:headerTextStyled s1)) }$
+${= (:headerTextStyled s1) }$
   ${ ) }$  
                 
   ${ (doseq [s2 (:sections s1)] }$
     ${ (when (:title s2) }$ ${= (:formattedTitle s2) }$ ${ ) }$
       ${ (doseq [s3 (:sections s2)] }$
-          ${= (kira/escape-xml (:title s3)) }$
+          ${= (:title s3) }$
           ${ (doseq [{:keys [id altName name]} (:items s3)] }$
             ${ (when id }$ ${= altName }$ ${ ) }$
             ${ (when-not id }$ ${= name }$ ${ ) }$
@@ -114,8 +114,8 @@ ${ (doseq [s1 right-modules] }$
     ${ ) }$
   ${ ) }$
     
-  ${ (when-not (empty? (:footerXmlStyled s1)) }$
-    ${= (:footerXmlStyled s1) }$
+  ${ (when-not (empty? (:footerTextStyled s1)) }$
+${= (:footerTextStyled s1) }$
   ${ ) }$
 ${ ) }$
 
@@ -126,9 +126,9 @@ ${ ) }$
 --------------------------------------------------------------------------------
 
 ${ (doseq [s snippets] }$ 
-  ${= (kira/escape-xml (:title s)) }$
+${= (:title s) }$
 
-  ${= (kira/escape-xml (:code s)) }$
+${= (:code s) }$
     
 
 ${ ) }$
@@ -136,56 +136,42 @@ ${ ) }$
 
 
 
-5. Language Topics
---------------------------------------------------------------------------------
-           
-${ (doseq [it topics] }$
-  ${= (:title it) }$
-
-  ${= (:docMarkdown it) }$
-
-
-${ ) }$
-
-
-
-
-6. Function Details
+5. Function Details
 --------------------------------------------------------------------------------
 
             
 ${ (doseq [it details] }$ 
   ${ (when (:id it) }$
 
-  Function name:  ${= (:name it) }$
+Function name:  ${= (:name it) }$
         
-    Argument list:
+Argument list:
       ${ (when (not-empty? (:signatures it)) }$
         ${ (doseq [sig (:signatures it)] }$
-          ${= sig }$
+${= sig }$
         ${ ) }$
       ${ ) }$
 
-    Description:
+Description:
       ${ (when (not-empty? (:description it)) }$
-        ${= (:description it) }$
+${= (:description it) }$
       ${ ) }$
       
-      ${ (when (not-empty? (:descriptionXmlStyled it)) }$
-        ${= (:descriptionXmlStyled it) }$
+      ${ (when (not-empty? (:descriptionTextStyled it)) }$
+${= (:descriptionTextStyled it) }$
       ${ ) }$
 
-    Examples:
-      ${ (when (not-empty? (:examplesXmlStyled it)) }$
-        ${ (doseq [code (:examplesXmlStyled it)] }$
-          ${= code }$
+Examples:
+      ${ (when (not-empty? (:examples it)) }$
+        ${ (doseq [code (:examples it)] }$
+${= code }$
         ${ ) }$
       ${ ) }$
 
     See also:
       ${ (when (not-empty? (:crossRefs it)) }$
         ${ (doseq [{:keys [id name description]} (:crossRefs it)] }$ 
-          ${= name }$
+${= name }$
         ${ ) }$
       ${ ) }$
   ${ ) }$

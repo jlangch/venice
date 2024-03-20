@@ -34,6 +34,7 @@ public class DocItem {
             final String name,
             final List<String> signatures,
             final String description,
+            final String descriptionTextStyled,
             final String descriptionXmlStyled,
             final List<ExampleOutput> examples,
             final List<CrossRef> crossRefs,
@@ -43,6 +44,7 @@ public class DocItem {
         this.altName = name;
         this.signatures = signatures;
         this.description = description;
+        this.descriptionTextStyled = descriptionTextStyled;
         this.descriptionXmlStyled = descriptionXmlStyled;
         this.examples = examples;
         this.id = id;
@@ -54,7 +56,7 @@ public class DocItem {
     }
 
     public DocItem(final String name, final String id) {
-        this(name, null, null, null, null, null, id);
+        this(name, null, null, null, null, null, null, id);
     }
 
     public String getName() {
@@ -75,6 +77,10 @@ public class DocItem {
 
     public String getDescription() {
         return description;
+    }
+
+    public String getDescriptionTextStyled() {
+        return descriptionTextStyled;
     }
 
     public String getDescriptionXmlStyled() {
@@ -135,6 +141,7 @@ public class DocItem {
 
     private final List<String> signatures;
     private final String description;
+    private final String descriptionTextStyled;
     private final String descriptionXmlStyled;
     private final List<ExampleOutput> examples;
     private final List<CrossRef> crossRefs;

@@ -103,14 +103,19 @@ public class DocItemBuilder {
 
             final String descr = MARKDOWN_FN_DESCR ? null : fnDescr;
 
+            final String descrTextStyled = MARKDOWN_FN_DESCR
+                                            ? Markdown.parse(fnDescr).renderToText(120)
+                                            : null;
+
             final String descrXmlStyled = MARKDOWN_FN_DESCR
-                                    ? Markdown.parse(fnDescr).renderToHtml()
-                                    : null;
+                                            ? Markdown.parse(fnDescr).renderToHtml()
+                                            : null;
 
             return new DocItem(
                         name,
                         new ArrayList<>(),
                         descr,
+                        descrTextStyled,
                         descrXmlStyled,
                         runExamples(
                                 name,
@@ -130,6 +135,10 @@ public class DocItemBuilder {
 
                 final String descr = MARKDOWN_FN_DESCR ? null : fnDescr;
 
+                final String descrTextStyled = MARKDOWN_FN_DESCR
+                                                ? Markdown.parse(fnDescr).renderToText(120)
+                                                : null;
+
                 final String descrXmlStyled = MARKDOWN_FN_DESCR
                                                 ? Markdown.parse(fnDescr).renderToHtml()
                                                 : null;
@@ -138,6 +147,7 @@ public class DocItemBuilder {
                             name,
                             toStringList(fn.getArgLists(), name, ":arglists"),
                             descr,
+                            descrTextStyled,
                             descrXmlStyled,
                             runExamples(
                                     name,
@@ -156,6 +166,11 @@ public class DocItemBuilder {
 
                     final String descr = MARKDOWN_FN_DESCR ? null : fnDescr;
 
+
+                    final String descrTextStyled = MARKDOWN_FN_DESCR
+                                                    ? Markdown.parse(fnDescr).renderToText(120)
+                                                    : null;
+
                     final String descrXmlStyled = MARKDOWN_FN_DESCR
                                                     ? Markdown.parse(fnDescr).renderToHtml()
                                                     : null;
@@ -164,6 +179,7 @@ public class DocItemBuilder {
                                 name,
                                 toStringList(sf.getArgLists(), name, ":arglists"),
                                 descr,
+                                descrTextStyled,
                                 descrXmlStyled,
                                 runExamples(
                                         name,

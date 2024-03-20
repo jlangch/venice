@@ -51,8 +51,10 @@ public class DocSection {
         this.title = title;
         this.subtitle = subtitle;
         this.id = id;
-        this.headerXmlStyled = style(header);
-        this.footerXmlStyled = style(footer);
+        this.headerTextStyled = styleText(header);
+        this.footerTextStyled = styleText(footer);
+        this.headerXmlStyled = styleXml(header);
+        this.footerXmlStyled = styleXml(footer);
     }
 
 
@@ -70,6 +72,14 @@ public class DocSection {
 
     public String getId() {
         return id;
+    }
+
+    public String getHeaderTextStyled() {
+        return headerTextStyled;
+    }
+
+    public String getFooterTextStyled() {
+        return footerTextStyled;
     }
 
     public String getHeaderXmlStyled() {
@@ -119,7 +129,13 @@ public class DocSection {
         return getFormattedTitle() + ", id=" + id;
     }
 
-    private static String style(final String markdown) {
+    private static String styleText(final String markdown) {
+        return markdown == null
+                ? null
+                : Markdown.parse(markdown).renderToText(120);
+    }
+
+    private static String styleXml(final String markdown) {
         return markdown == null
                 ? null
                 : Markdown.parse(markdown).renderToHtml();
@@ -129,6 +145,8 @@ public class DocSection {
     private final String title;
     private final String subtitle;
     private final String id;
+    private final String headerTextStyled;
+    private final String footerTextStyled;
     private final String headerXmlStyled;
     private final String footerXmlStyled;
 
