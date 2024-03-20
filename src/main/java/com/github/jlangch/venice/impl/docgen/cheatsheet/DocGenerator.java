@@ -206,7 +206,7 @@ public class DocGenerator {
             reader.close();
 
             System.out.println(String.format(
-                    "Generated cheatsheet at: %s",
+                    "Generated cheatsheet: %s",
                     getUserDir()));
 
             System.out.println(String.format(
