@@ -33,9 +33,9 @@ import com.github.jlangch.venice.util.pdf.PdfRenderer;
 
 public class CheatsheetRenderer {
 
-    public static String parseTemplate() {
+    public static String parseXhtmlTemplate() {
         try {
-            final String template = loadCheatSheetTemplate();
+            final String template = loadCheatSheetXhtmlTemplate();
 
             final String script = "(do                                              \n" +
                                   "   (load-module :kira)                           \n" +
@@ -59,7 +59,7 @@ public class CheatsheetRenderer {
 
     public static String renderXHTML(final Map<String,Object> data) {
         try {
-            final String template = loadCheatSheetTemplate();
+            final String template = loadCheatSheetXhtmlTemplate();
 
             final String script = "(do                                           \n" +
                                   "   (load-module :kira)                        \n" +
@@ -87,8 +87,38 @@ public class CheatsheetRenderer {
                 "classpath:com/github/jlangch/venice/fonts/");
     }
 
-    private static String loadCheatSheetTemplate() {
+
+    public static String renderASCII(final Map<String,Object> data) {
+        try {
+            final String template = loadCheatSheetAsciiTemplate();
+
+            final String script = "(do                                           \n" +
+                                  "   (load-module :kira)                        \n" +
+                                  "   (kira/eval template [\"${\" \"}$\"] data))   ";
+
+            // apply the template
+            return (String)new Venice().eval(
+                            script,
+                            Parameters.of("template", template, "data", data));
+        }
+        catch(VncException ex) {
+            throw new RuntimeException(
+                        "Failed to render cheatsheet ASCII. \n" +
+                        "Venice Callstack: \n" + ex.getCallStackAsString("   "),
+                        ex);
+        }
+        catch(Exception ex) {
+            throw new RuntimeException("Failed to render cheatsheet ASCII", ex);
+        }
+    }
+
+    private static String loadCheatSheetXhtmlTemplate() {
         return new ClassPathResource(Venice.class.getPackage(), "docgen/cheatsheet2.html")
+                        .getResourceAsString("UTF-8");
+    }
+
+    private static String loadCheatSheetAsciiTemplate() {
+        return new ClassPathResource(Venice.class.getPackage(), "docgen/cheatsheet2.ascii")
                         .getResourceAsString("UTF-8");
     }
 }

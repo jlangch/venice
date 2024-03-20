@@ -181,12 +181,19 @@ public class DocGenerator {
             data.put("snippets", new CodeSnippetReader().readSnippets());
             data.put("topics", topics);
 
-            // [1] create a HTML
+            // [1] create a ASCII
+            System.out.println("Creating cheatsheet (ascii)...");
+            final String ascii = CheatsheetRenderer.renderASCII(data);
+            save(new File(getUserDir(), "cheatsheet.ascii"), ascii);
+
+            // [2] create a HTML
+            System.out.println("Creating cheatsheet (html)...");
             data.put("pdfmode", false);
             final String html = CheatsheetRenderer.renderXHTML(data);
             save(new File(getUserDir(), "cheatsheet.html"), html);
 
-            // [2] create a PDF
+            // [3] create a PDF
+            System.out.println("Creating cheatsheet (pdf)...");
             data.put("pdfmode", true);
             final String xhtml = CheatsheetRenderer.renderXHTML(data);
             final ByteBuffer pdf = CheatsheetRenderer.renderPDF(xhtml);

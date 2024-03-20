@@ -1,0 +1,193 @@
+********************************************************************************
+
+
+                          VENICE CHEAT SHEET
+
+
+********************************************************************************
+
+
+
+
+
+
+1. Overview 
+--------------------------------------------------------------------------------
+
+${ (doseq [s1 toc] }$
+${= (:title s1) }$:  ${ (doseq [{:keys [id title]} (:sections s1)] }$ ${= title }$  ${ ) }$
+${ ) }$
+
+
+
+
+2. Functiongroups 
+--------------------------------------------------------------------------------
+
+
+${ (doseq [s1 left] }$
+  ${= (:formattedTitle s1) }$
+  
+  ${ (doseq [s2 (:sections s1)] }$
+    ${ (when (:title s2) }${= (:formattedTitle s2) }$</div>${ ) }$
+
+      ${ (doseq [s3 (:sections s2)] }$
+        ${= (:title s3) }$
+        ${ (doseq [{:keys [id altName name]} (:items s3)] }$
+          ${ (when id }$ ${= altName }$ ${ ) }$
+          ${ (when-not id }$ ${= name }$ ${ ) }$
+        ${ ) }$
+      ${ ) }$
+  ${ ) }$
+    
+  ${ (when-not (empty? (:footerXmlStyled s1)) }$
+    ${= (:footerXmlStyled s1) }$
+  ${ ) }$
+${ ) }$
+
+${ (doseq [s1 right] }$
+  ${= (:formattedTitle s1) }$
+  
+  ${ (doseq [s2 (:sections s1)] }$
+    ${ (when (:title s2) }${= (:formattedTitle s2) }$</div>${ ) }$
+
+      ${ (doseq [s3 (:sections s2)] }$
+        ${= (:title s3) }$
+        ${ (doseq [{:keys [id altName name]} (:items s3)] }$
+          ${ (when id }$ ${= altName }$ ${ ) }$
+          ${ (when-not id }$ ${= name }$ ${ ) }$
+        ${ ) }$
+      ${ ) }$
+  ${ ) }$
+    
+  ${ (when-not (empty? (:footerXmlStyled s1)) }$
+    ${= (:footerXmlStyled s1) }$
+  ${ ) }$
+${ ) }$
+
+
+
+
+3. Modules
+--------------------------------------------------------------------------------
+
+${ (doseq [s1 left-modules] }$
+  ${= (:title s1) }$
+  ${ (when (:subtitle s1) }$ ${= (:subtitle s1) }$ ${ ) }$
+
+  ${ (when-not (empty? (:headerXmlStyled s1)) }$
+    ${= (:headerXmlStyled s1) }$
+  ${ ) }$  
+                
+  ${ (doseq [s2 (:sections s1)] }$
+    ${ (when (:title s2) }$ ${= (:formattedTitle s2) }$ ${ ) }$
+      ${ (doseq [s3 (:sections s2)] }$
+          ${= (kira/escape-xml (:title s3)) }$
+          ${ (doseq [{:keys [id altName name]} (:items s3)] }$
+            ${ (when id }$ ${= altName }$ ${ ) }$
+            ${ (when-not id }$ ${= name }$ ${ ) }$
+          ${ ) }$
+    ${ ) }$
+  ${ ) }$
+    
+  ${ (when-not (empty? (:footerXmlStyled s1)) }$
+    ${= (:footerXmlStyled s1) }$
+  ${ ) }$
+${ ) }$
+
+${ (doseq [s1 right-modules] }$
+  ${= (:title s1) }$
+  ${ (when (:subtitle s1) }$ ${= (:subtitle s1) }$ ${ ) }$
+
+  ${ (when-not (empty? (:headerXmlStyled s1)) }$
+    ${= (:headerXmlStyled s1) }$
+  ${ ) }$  
+                
+  ${ (doseq [s2 (:sections s1)] }$
+    ${ (when (:title s2) }$ ${= (:formattedTitle s2) }$ ${ ) }$
+      ${ (doseq [s3 (:sections s2)] }$
+          ${= (kira/escape-xml (:title s3)) }$
+          ${ (doseq [{:keys [id altName name]} (:items s3)] }$
+            ${ (when id }$ ${= altName }$ ${ ) }$
+            ${ (when-not id }$ ${= name }$ ${ ) }$
+          ${ ) }$
+    ${ ) }$
+  ${ ) }$
+    
+  ${ (when-not (empty? (:footerXmlStyled s1)) }$
+    ${= (:footerXmlStyled s1) }$
+  ${ ) }$
+${ ) }$
+
+
+
+
+4. Embedding in Java
+--------------------------------------------------------------------------------
+
+${ (doseq [s snippets] }$ 
+  ${= (kira/escape-xml (:title s)) }$
+
+  ${= (kira/escape-xml (:code s)) }$
+    
+
+${ ) }$
+
+
+
+
+5. Language Topics
+--------------------------------------------------------------------------------
+           
+${ (doseq [it topics] }$
+  ${= (:title it) }$
+
+  ${= (:docMarkdown it) }$
+
+
+${ ) }$
+
+
+
+
+6. Function Details
+--------------------------------------------------------------------------------
+
+            
+${ (doseq [it details] }$ 
+  ${ (when (:id it) }$
+
+  Function name:  ${= (:name it) }$
+        
+    Argument list:
+      ${ (when (not-empty? (:signatures it)) }$
+        ${ (doseq [sig (:signatures it)] }$
+          ${= sig }$
+        ${ ) }$
+      ${ ) }$
+
+    Description:
+      ${ (when (not-empty? (:description it)) }$
+        ${= (:description it) }$
+      ${ ) }$
+      
+      ${ (when (not-empty? (:descriptionXmlStyled it)) }$
+        ${= (:descriptionXmlStyled it) }$
+      ${ ) }$
+
+    Examples:
+      ${ (when (not-empty? (:examplesXmlStyled it)) }$
+        ${ (doseq [code (:examplesXmlStyled it)] }$
+          ${= code }$
+        ${ ) }$
+      ${ ) }$
+
+    See also:
+      ${ (when (not-empty? (:crossRefs it)) }$
+        ${ (doseq [{:keys [id name description]} (:crossRefs it)] }$ 
+          ${= name }$
+        ${ ) }$
+      ${ ) }$
+  ${ ) }$
+${ ) }$
+
