@@ -9012,7 +9012,8 @@ public class CoreFunctions {
                         "(seq [1 2 3])",
                         "(seq '(1 2 3))",
                         "(seq {:a 1 :b 2})",
-                        "(seq \"abcd\")")
+                        "(seq \"abcd\")",
+                        "(flatten (seq {:a 1 :b 2}))")
                     .build()
         ) {
             @Override
