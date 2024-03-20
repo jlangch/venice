@@ -130,6 +130,32 @@
     (doseq [lib libs] (apply maven/download lib options))))
 
 
+(defn 
+  ^{ :arglists '("(clean dir)")
+     :doc
+       """
+       Remove Java libraries (except any Jansi library) and TTF font files from 
+       the specified directory. 
+       
+       The removal does NOT recursively traverse the directory tree.
+       """
+     :examples '(
+       """
+       (do
+         (load-module :installer)
+         (installer/clean (repl/libs-dir)))
+       """)
+     :see-also '( 
+       "installer/install-libs" ) }
+
+  clean [dir]
+
+  (when (io/exists-dir? dir)
+    (->> (io/list-files-glob dir "*.{jar,ttf}")
+         (filter #(not (jansi-lib? %)))
+         (docoll io/delete-file))))
+
+
 (defn
   ^{ :arglists '("(install-demo options*)")
      :doc
@@ -160,10 +186,16 @@
 
        In the REPL run: 
        
-       ````
+       ```
        venice> (load-module :installer)
        venice> (installer/install-demo)
        venice> !restart
+       ```
+
+       The installed libraries and fonts can be cleaned with:
+
+       ```
+       (installer/clean (repl/libs-dir))
        ```
        """
      :examples '(
@@ -173,7 +205,8 @@
          (installer/install-demo :dir (repl/libs-dir) :silent false))
        """)
      :see-also '( 
-       "installer/install-demo-fonts" ) }
+       "installer/install-demo-fonts"
+       "installer/clean" ) }
 
   install-demo [& options]
   
@@ -218,10 +251,16 @@
 
        In the REPL run: 
        
-       ````
+       ```
        venice> (load-module :installer)
        venice> (installer/install-demo-fonts)
        venice> !restart
+       ```
+
+       The installed libraries and fonts can be cleaned with:
+
+       ```
+       (installer/clean (repl/libs-dir))
        ```
        """
      :examples '(
@@ -231,7 +270,8 @@
          (installer/install-demo-fonts :dir (repl/libs-dir) :silent false))
        """)
      :see-also '( 
-       "installer/install-demo" ) }
+       "installer/install-demo"
+       "installer/clean" ) }
 
   install-demo-fonts [& options]
   
@@ -263,3 +303,11 @@
   (if (str/ends-with? (core/name name) "-install")
     name
     (keyword (str (core/name name) "-install"))))
+
+
+(defn- jansi-lib? [f]
+  (case (type f)
+    :core/string  (jansi-lib? (io/file f))
+    :java.io.File (match? (io/file-name f) #"jansi-[0-9]+[.][0-9]+[.][0-9]+[.]jar")
+    false))
+

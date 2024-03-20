@@ -52,6 +52,10 @@ public class ModuleInstallerSection implements ISectionBuilder {
         demo.addItem(diBuilder.getDocItem("installer/install-demo", false));
         demo.addItem(diBuilder.getDocItem("installer/install-demo-fonts", false));
 
+        final DocSection clean = new DocSection("Clean", id());
+        all.addSection(clean);
+        clean.addItem(diBuilder.getDocItem("installer/clean", false));
+
         return section;
     }
 
