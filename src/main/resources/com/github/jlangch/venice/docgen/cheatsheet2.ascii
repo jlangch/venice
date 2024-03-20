@@ -168,12 +168,11 @@ ${= code }$
         ${ ) }$
       ${ ) }$
 
-    See also:
-      ${ (when (not-empty? (:crossRefs it)) }$
-        ${ (doseq [{:keys [id name description]} (:crossRefs it)] }$ 
-${= name }$
-        ${ ) }$
-      ${ ) }$
+    ${ (when (not-empty? (:crossRefs it)) }$
+See also:
+      ${ (doseq [{:keys [name]} (:crossRefs it)] }$ 
+      ${= name }$${ ) }$
+    ${ ) }$
   ${ ) }$
 ${ ) }$
 
