@@ -249,8 +249,11 @@
 
 
 (defn- default-options [opts]
-  (if (and (repl?) (empty? opts))
-    [:dir (repl/libs-dir) :silent false :force false] 
+  (if (repl?)
+    (->> (merge { :dir (repl/libs-dir) :silent false :force false }
+                (apply hash-map opts))
+         seq
+         flatten)
     opts))
 
 
