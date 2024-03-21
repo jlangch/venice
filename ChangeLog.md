@@ -9,9 +9,17 @@ All notable changes to this project will be documented in this file.
 
 ### Added
 
-- a pure ascii version of the cheatsheet to feed it as embedding to LLMs
+- a pure ascii version of the Venice cheatsheet to feed it as embedding 
+  to LLMs
+- improvements to markdown to ascii text renderer to allow the Venice
+  Github flavoured markdown documentation to be converted to pure ascii
+  to feed it as embeddings to LLMs
 
-
+### Fixed 
+- a markdown parser edge case when a table block is immediately followed 
+  by a list block with no empty line in between
+  
+  
 
 ## [1.12.6] - 2024-03-19
 
