@@ -171,16 +171,20 @@ public class DocGenerator {
 
             validateUniqueSectionsId(left, right);
 
+            final List<DocSection> toc = getTOC();
+            final List<DocItem> details = getDocItems(concat(left, right, leftModules, rightModules));
+            final List<CodeSnippet> codeSnippets = new CodeSnippetReader().readSnippets();
+
             final Map<String,Object> data = new HashMap<>();
             data.put("meta-author", "Venice");
             data.put("version", version);
-            data.put("toc", getTOC());
+            data.put("toc", toc);
             data.put("left", left);
             data.put("right", right);
             data.put("left-modules", leftModules);
             data.put("right-modules", rightModules);
-            data.put("details", getDocItems(concat(left, right, leftModules, rightModules)));
-            data.put("snippets", new CodeSnippetReader().readSnippets());
+            data.put("details", details);
+            data.put("snippets", codeSnippets);
             data.put("topics", topics);
 
             // [1] create a ASCII
