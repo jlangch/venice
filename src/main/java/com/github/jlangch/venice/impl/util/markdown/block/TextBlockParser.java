@@ -45,15 +45,24 @@ public class TextBlockParser {
 
         List<String> lines = new ArrayList<>();
 
+        String prevLine = null;
+
         while(!reader.eof()) {
             String line = reader.peek();
-            reader.consume();
 
             if (StringUtil.isBlank(line)) {
+                reader.consume();
                 break;
             }
+            else if (prevLine != null
+            			&& !prevLine.endsWith("¶")
+            			&& ListBlockParser.isBlockStart(line)) {
+            	break;
+            }
             else {
+                reader.consume();
                 lines.add(line);
+                prevLine = line;
             }
         }
 

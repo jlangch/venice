@@ -22,6 +22,7 @@
 package com.github.jlangch.venice.impl.util.markdown.block;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import org.junit.jupiter.api.Test;
@@ -226,6 +227,66 @@ public class TextBlockParserTest {
 
         assertEquals(" ", ((TextChunk)text1.getChunks().get(2)).getText());
         assertEquals(TextChunk.Format.NORMAL, ((TextChunk)text1.getChunks().get(2)).getFormat());
+    }
+
+    @Test
+    public void test_text_followed_by_list_1() {
+    	// empty line between text block and list block
+        final String md = "Lorem ipsum\n\n* item 1";
+
+        Blocks blocks = new BlockParser(md).parse();
+
+        assertEquals(2, blocks.size());
+        assertTrue(blocks.get(0) instanceof TextBlock);
+        assertTrue(blocks.get(1) instanceof ListBlock);
+
+        TextBlock text1 = (TextBlock)blocks.get(0);
+
+        assertEquals(1, text1.getChunks().size());
+
+        assertTrue(text1.getChunks().get(0) instanceof TextChunk);
+
+        assertEquals("Lorem ipsum", ((TextChunk)text1.getChunks().get(0)).getText());
+        assertEquals(TextChunk.Format.NORMAL, ((TextChunk)text1.getChunks().get(0)).getFormat());
+
+        ListBlock list1 = (ListBlock)blocks.get(1);
+        assertFalse(list1.isOrdered());
+        assertEquals(1, list1.size());
+
+        TextBlock block = ((TextBlock)list1.get(0));
+        assertEquals(1, block.getChunks().size());
+        assertEquals("item 1", ((TextChunk)block.getChunks().get(0)).getText());
+        assertEquals(TextChunk.Format.NORMAL, ((TextChunk)block.getChunks().get(0)).getFormat());
+    }
+
+    @Test
+    public void test_text_followed_by_list_2() {
+    	// no empty line between text block and list block
+        final String md = "Lorem ipsum\n* item 1";
+
+        Blocks blocks = new BlockParser(md).parse();
+
+        assertEquals(2, blocks.size());
+        assertTrue(blocks.get(0) instanceof TextBlock);
+        assertTrue(blocks.get(1) instanceof ListBlock);
+
+        TextBlock text1 = (TextBlock)blocks.get(0);
+
+        assertEquals(1, text1.getChunks().size());
+
+        assertTrue(text1.getChunks().get(0) instanceof TextChunk);
+
+        assertEquals("Lorem ipsum", ((TextChunk)text1.getChunks().get(0)).getText());
+        assertEquals(TextChunk.Format.NORMAL, ((TextChunk)text1.getChunks().get(0)).getFormat());
+
+        ListBlock list1 = (ListBlock)blocks.get(1);
+        assertFalse(list1.isOrdered());
+        assertEquals(1, list1.size());
+
+        TextBlock block = ((TextBlock)list1.get(0));
+        assertEquals(1, block.getChunks().size());
+        assertEquals("item 1", ((TextChunk)block.getChunks().get(0)).getText());
+        assertEquals(TextChunk.Format.NORMAL, ((TextChunk)block.getChunks().get(0)).getFormat());
     }
 
 }
