@@ -34,8 +34,7 @@ ${ (doseq [s1 left] }$
       ${ (doseq [s3 (:sections s2)] }$
         ${= (:title s3) }$
         ${ (doseq [{:keys [id altName name]} (:items s3)] }$
-          ${ (when id }$ ${= altName }$ ${ ) }$
-          ${ (when-not id }$ ${= name }$ ${ ) }$
+          ${ (when id }$ ${= altName }$ ${ ) }$${ (when-not id }$ ${= name }$ ${ ) }$
         ${ ) }$
       ${ ) }$
   ${ ) }$
@@ -54,8 +53,7 @@ ${ (doseq [s1 right] }$
       ${ (doseq [s3 (:sections s2)] }$
         ${= (:title s3) }$
         ${ (doseq [{:keys [id altName name]} (:items s3)] }$
-          ${ (when id }$ ${= altName }$ ${ ) }$
-          ${ (when-not id }$ ${= name }$ ${ ) }$
+          ${ (when id }$ ${= altName }$ ${ ) }$${ (when-not id }$ ${= name }$ ${ ) }$
         ${ ) }$
       ${ ) }$
   ${ ) }$
