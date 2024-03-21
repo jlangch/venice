@@ -112,6 +112,7 @@ import com.github.jlangch.venice.impl.util.io.ClassPathResource;
 import com.github.jlangch.venice.impl.util.io.IOStreamUtil;
 import com.github.jlangch.venice.impl.util.markdown.Markdown;
 import com.github.jlangch.venice.impl.util.markdown.renderer.html.HtmlRenderer;
+import com.github.jlangch.venice.impl.util.markdown.renderer.text.TextRenderer;
 import com.github.jlangch.venice.javainterop.AcceptAllInterceptor;
 import com.lowagie.text.pdf.PdfReader;
 
@@ -375,21 +376,25 @@ public class DocGenerator {
 
         topics.add(new MarkdownDoc(
                         "Recursion",
+                        new TextRenderer().softWrap(120).render(loadVeniceDocMarkdown("recursion-doc.md")),
                         new HtmlRenderer().render(loadVeniceDocMarkdown("recursion-doc.md")),
                         "concepts.recursion"));
 
         topics.add(new MarkdownDoc(
                         "Destructuring",
+                        new TextRenderer().softWrap(120).render(loadVeniceDocMarkdown("destructuring-doc.md")),
                         new HtmlRenderer().render(loadVeniceDocMarkdown("destructuring-doc.md")),
                         "concepts.destructuring"));
 
         topics.add(new MarkdownDoc(
                         "VeniceDoc",
+                        new TextRenderer().softWrap(120).render(loadVeniceDocMarkdown("venice-doc.md")),
                         new HtmlRenderer().render(loadVeniceDocMarkdown("venice-doc.md")),
                         "venicedoc"));
 
         topics.add(new MarkdownDoc(
                         "Markdown",
+                        new TextRenderer().softWrap(120).render(loadVeniceDocMarkdown("markdown-doc.md")),
                         new HtmlRenderer().render(loadVeniceDocMarkdown("markdown-doc.md")),
                         "markdown"));
 

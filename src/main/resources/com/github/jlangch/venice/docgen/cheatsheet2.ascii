@@ -136,42 +136,51 @@ ${ ) }$
 
 
 
-5. Function Details
+5. Topics
 --------------------------------------------------------------------------------
 
-            
+${ (doseq [it topics] }$
+${= (:title it) }$
+
+${= (:docMarkdownTextStyled it) }$
+
+
+${ ) }$
+
+
+
+
+6. Function Details
+--------------------------------------------------------------------------------
+
 ${ (doseq [it details] }$ 
   ${ (when (:id it) }$
 
 Function name:  ${= (:name it) }$
         
-Argument list:
       ${ (when (not-empty? (:signatures it)) }$
+Argument list:
         ${ (doseq [sig (:signatures it)] }$
-${= sig }$
-        ${ ) }$
+      ${= sig }$ ${ ) }$
       ${ ) }$
 
-Description:
-      ${ (when (not-empty? (:description it)) }$
-${= (:description it) }$
-      ${ ) }$
-      
+
+Description: ${ (when (not-empty? (:description it)) }$
+${= (:description it) }$ ${ ) }$    
       ${ (when (not-empty? (:descriptionTextStyled it)) }$
-${= (:descriptionTextStyled it) }$
-      ${ ) }$
+${= (:descriptionTextStyled it) }$ ${ ) }$
 
-Examples:
+
       ${ (when (not-empty? (:examples it)) }$
+Examples:
         ${ (doseq [code (:examples it)] }$
 ${= code }$
-        ${ ) }$
-      ${ ) }$
+        ${ ) }$ ${ ) }$
 
     ${ (when (not-empty? (:crossRefs it)) }$
 See also:
       ${ (doseq [{:keys [name]} (:crossRefs it)] }$ 
-      ${= name }$${ ) }$
+      ${= name }$ ${ ) }$
     ${ ) }$
   ${ ) }$
 ${ ) }$

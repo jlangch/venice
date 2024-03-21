@@ -26,11 +26,13 @@ public class MarkdownDoc {
 
     public MarkdownDoc(
             final String title,
-            final String docMarkdown,
+            final String docMarkdownTextStyled,
+            final String docMarkdownXmlStyled,
             final String id
     ) {
         this.title = title;
-        this.docMarkdown = docMarkdown;
+        this.docMarkdownTextStyled = docMarkdownTextStyled;
+        this.docMarkdownXmlStyled = docMarkdownXmlStyled;
         this.id = id;
     }
 
@@ -39,8 +41,12 @@ public class MarkdownDoc {
         return title;
     }
 
-    public String getDocMarkdown() {
-        return docMarkdown;
+    public String getDocMarkdownTextStyled() {
+        return docMarkdownTextStyled;
+    }
+
+    public String getDocMarkdownXmlStyled() {
+        return docMarkdownXmlStyled;
     }
 
     public String getId() {
@@ -75,6 +81,7 @@ public class MarkdownDoc {
 
 
     private final String title;
-    private final String docMarkdown;
+    private final String docMarkdownTextStyled;
+    private final String docMarkdownXmlStyled;
     private final String id;
 }
