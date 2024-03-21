@@ -124,14 +124,14 @@ public class DocGenerator {
 
         preloadedModules
             .addAll(Arrays.asList(
-                        "app",        "xml",         "crypt",      "gradle",
-                        "trace",      "ansi",        "maven",      "kira",
-                        "java",       "semver",      "excel",      "hexdump",
-                        "shell",      "geoip",       "benchmark",  "component",
-                        "config",     "parsifal",    "grep",       "test",
-                        "fonts",      "qrref",       "jsonl",      "timing",
-                        "zipvault",   "docker",      "cargo",      "cargo-arangodb",
-                        "gradlew",    "matrix",     "ascii-table", "installer"));
+                        "app",        "xml",         "crypt",        "gradle",
+                        "trace",      "ansi",        "maven",        "kira",
+                        "java",       "semver",      "excel",        "hexdump",
+                        "shell",      "geoip",       "benchmark",    "component",
+                        "config",     "parsifal",    "grep",         "test",
+                        "fonts",      "qrref",       "jsonl",        "timing",
+                        "zipvault",   "docker",      "cargo",        "cargo-arangodb",
+                        "gradlew",    "matrix",      "ascii-table",  "installer"));
 
         final IVeniceInterpreter venice = new VeniceInterpreter(new AcceptAllInterceptor());
 
@@ -202,7 +202,8 @@ public class DocGenerator {
             final byte[] pdfArr =  pdf.array();
             save(new File(getUserDir(), "cheatsheet.pdf"), pdfArr);
 
-            final PdfReader reader = new PdfReader(pdf.array());
+            // some PDF statistics
+            final PdfReader reader = new PdfReader(pdfArr);
             final int pages = reader.getNumberOfPages();
             reader.close();
 
