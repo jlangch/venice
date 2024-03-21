@@ -9,7 +9,7 @@ All notable changes to this project will be documented in this file.
 
 ### Added
 
-- a pure ascii version of the Venice cheatsheet to feed it as embedding 
+- a pure ascii version of the Venice cheatsheet to feed it as embeddings 
   to LLMs
 - improvements to markdown to ascii text renderer to allow the Venice
   Github flavoured markdown documentation to be converted to pure ascii
