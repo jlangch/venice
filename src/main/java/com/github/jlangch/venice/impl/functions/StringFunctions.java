@@ -65,7 +65,9 @@ import com.github.jlangch.venice.impl.util.LoremIpsum;
 import com.github.jlangch.venice.impl.util.StringEscapeUtil;
 import com.github.jlangch.venice.impl.util.StringUtil;
 import com.github.jlangch.venice.impl.util.SymbolMapBuilder;
+import com.github.jlangch.venice.impl.util.markdown.Markdown;
 import com.github.jlangch.venice.impl.util.markdown.renderer.text.LineWrap;
+import com.github.jlangch.venice.impl.util.markdown.renderer.text.TextRenderer;
 
 
 public class StringFunctions {
@@ -579,7 +581,7 @@ public class StringFunctions {
                     chars = Coerce.toVncString(args.second()).getValue();
                 }
                 else if (Types.isVncSequence(args.second())) {
-                	final String errMsg = "The 'chars' sequence elements must be chars";
+                    final String errMsg = "The 'chars' sequence elements must be chars";
                     chars = Coerce.toVncSequence(args.second())
                                   .getJavaList()
                                   .stream()
@@ -650,7 +652,7 @@ public class StringFunctions {
                     chars = Coerce.toVncString(args.second()).getValue();
                 }
                 else if (Types.isVncSequence(args.second())) {
-                	final String errMsg = "The 'chars' sequence elements must be chars";
+                    final String errMsg = "The 'chars' sequence elements must be chars";
                     chars = Coerce.toVncSequence(args.second())
                                   .getJavaList()
                                   .stream()
@@ -699,7 +701,7 @@ public class StringFunctions {
                         "(str/last-index-of \"abcdefabc\" \"ab\")",
                         "(str/last-index-of \"abcdefabc\" \"de\" 6)")
                     .seeAlso(
-                    	"str/index-of",
+                        "str/index-of",
                         "str/index-of-char",
                         "str/index-of-not-char")
                    .build()
@@ -2843,6 +2845,45 @@ public class StringFunctions {
             private static final long serialVersionUID = -1848883965231344442L;
         };
 
+    public static VncFunction str_markdown_to_text =
+        new VncFunction(
+                "str/markdown-to-text",
+                VncFunction
+                    .meta()
+                    .arglists("(str/markdown-to-text text width)")
+                    .doc("Renders markdown formatted text to raw text")
+                    .examples(
+                        "(str/markdown-to-text \"#Title\\n\\nLorem ipsum...\")")
+                    .build()
+        ) {
+            @Override
+            public VncVal apply(final VncList args) {
+                ArityExceptions.assertArity(this, args, 2);
+
+                final String text = Coerce.toVncString(args.first()).getValue();
+                final int width = Coerce.toVncLong(args.second()).toJavaInteger();
+
+                final Markdown md = Markdown.parse(text);
+
+                String s = new TextRenderer()
+                                .softWrap(width)
+                                .render(md);
+
+                s = s.replace("<table>", "")
+                     .replace("</table>", "")
+                     .replace("<tr>", "\n")
+                     .replace("</tr>", "")
+                     .replace("<td>", "")
+                     .replace("</td>", "");
+
+                return new VncString(s);
+            }
+
+            private static final long serialVersionUID = -1848883965231344442L;
+        };
+
+
+
     private static Locale toLocale(final VncVal locale) {
         if (Types.isVncJavaObject(locale, Locale.class)) {
             return (Locale)((VncJavaObject)locale).getDelegate();
@@ -2958,5 +2999,6 @@ public class StringFunctions {
                     .add(str_escape_xml)
                     .add(str_valid_email_addr_Q)
                     .add(str_levenshtein)
+                    .add(str_markdown_to_text)
                     .toMap();
 }
