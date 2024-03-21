@@ -9,7 +9,7 @@ All notable changes to this project will be documented in this file.
 
 ### Added
 
-- ...
+- a pure ascii version of the cheatsheet to feed it as embedding to LLMs
 
 
 
