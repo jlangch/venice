@@ -10,6 +10,7 @@ The examples will use:
 * ChatGPT as the LLM
 * Qdrant as the vector database for embeddings
 * HTMX as the Web GUI library
+* Running everything from the REPL
 
 
 ToDo:
