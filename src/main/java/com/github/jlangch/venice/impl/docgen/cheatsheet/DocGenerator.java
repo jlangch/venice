@@ -43,6 +43,7 @@ import com.github.jlangch.venice.impl.docgen.cheatsheet.modules.ModuleAppSection
 import com.github.jlangch.venice.impl.docgen.cheatsheet.modules.ModuleAsciiTableSection;
 import com.github.jlangch.venice.impl.docgen.cheatsheet.modules.ModuleBenchmarkSection;
 import com.github.jlangch.venice.impl.docgen.cheatsheet.modules.ModuleCargoArangoDBSection;
+import com.github.jlangch.venice.impl.docgen.cheatsheet.modules.ModuleCargoQdrantDBSection;
 import com.github.jlangch.venice.impl.docgen.cheatsheet.modules.ModuleCargoSection;
 import com.github.jlangch.venice.impl.docgen.cheatsheet.modules.ModuleComponentSection;
 import com.github.jlangch.venice.impl.docgen.cheatsheet.modules.ModuleConfigSection;
@@ -124,14 +125,15 @@ public class DocGenerator {
 
         preloadedModules
             .addAll(Arrays.asList(
-                        "app",        "xml",         "crypt",        "gradle",
-                        "trace",      "ansi",        "maven",        "kira",
-                        "java",       "semver",      "excel",        "hexdump",
-                        "shell",      "geoip",       "benchmark",    "component",
-                        "config",     "parsifal",    "grep",         "test",
-                        "fonts",      "qrref",       "jsonl",        "timing",
-                        "zipvault",   "docker",      "cargo",        "cargo-arangodb",
-                        "gradlew",    "matrix",      "ascii-table",  "installer"));
+                        "app",        "xml",        "crypt",           "gradle",
+                        "trace",      "ansi",       "maven",           "kira",
+                        "java",       "semver",     "excel",           "hexdump",
+                        "shell",      "geoip",      "benchmark",       "component",
+                        "config",     "parsifal",   "grep",            "test",
+                        "fonts",      "qrref",      "jsonl",           "timing",
+                        "zipvault",   "gradlew",    "matrix",          "ascii-table",
+                        "docker",     "cargo",      "cargo-arangodb",  "cargo-qdrant",
+                        "installer"));
 
         final IVeniceInterpreter venice = new VeniceInterpreter(new AcceptAllInterceptor());
 
@@ -357,6 +359,7 @@ public class DocGenerator {
         extmod.addSection(new DocSection("Docker", "modules.docker"));
         extmod.addSection(new DocSection("Cargo", "modules.cargo"));
         extmod.addSection(new DocSection("Cargo/ArangoDB", "modules.cargo-arangodb"));
+        extmod.addSection(new DocSection("Cargo/Qdrant", "modules.cargo-qdrant"));
         extmod.addSection(new DocSection("Test", "modules.test"));
         extmod.addSection(new DocSection("Tracing", "modules.tracing"));
         extmod.addSection(new DocSection("Benchmark", "modules.benchmark"));
@@ -460,6 +463,7 @@ public class DocGenerator {
                 new ModuleDockerSection(diBuilder).section(),
                 new ModuleCargoSection(diBuilder).section(),
                 new ModuleCargoArangoDBSection(diBuilder).section(),
+                new ModuleCargoQdrantDBSection(diBuilder).section(),
                 new ModuleTracingSection(diBuilder).section(),
                 new ModuleShellSection(diBuilder).section(),
                 new ModuleAnsiSection(diBuilder).section(),

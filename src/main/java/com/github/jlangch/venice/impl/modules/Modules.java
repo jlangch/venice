@@ -62,6 +62,7 @@ public class Modules {
                         "benchmark",
                         "cargo",
                         "cargo-arangodb",
+                        "cargo-qdrant",
                         "chatgpt",
                         "cli",
                         "clipboard",
