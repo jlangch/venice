@@ -45,7 +45,7 @@ public class ModuleZipVaultSection implements ISectionBuilder {
         final DocSection create = new DocSection("Create", id());
         all.addSection(create);
         create.addItem(diBuilder.getDocItem("zipvault/zip", false));
-        create.addItem(diBuilder.getDocItem("zipvault/entropy", true));
+        create.addItem(diBuilder.getDocItem("zipvault/zip-folder", false));
 
         final DocSection add = new DocSection("Add", id());
         all.addSection(add);
@@ -67,6 +67,7 @@ public class ModuleZipVaultSection implements ISectionBuilder {
         all.addSection(util);
         util.addItem(diBuilder.getDocItem("zipvault/encrypted?", false));
         util.addItem(diBuilder.getDocItem("zipvault/valid-zip-file?", false));
+        util.addItem(diBuilder.getDocItem("zipvault/entropy", true));
 
         return section;
     }
