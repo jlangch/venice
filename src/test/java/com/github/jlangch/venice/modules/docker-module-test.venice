@@ -67,13 +67,13 @@
     (assert-eq "docker run --detach --publish 8529:8529 --name myapp arangodb/arangodb:3.10.10"
                 (clean (with-out-str (docker/run "arangodb/arangodb:3.10.10"
                                                   :name "myapp"
-                                                  :publish "8529:8529"
+                                                  :publish ["8529:8529"]
                                                   :detach true))))
 
     (assert-eq "docker run --detach --publish 8529:8529 --name myapp arangodb/arangodb:3.10.10"
                 (clean (with-out-str (docker/run "arangodb/arangodb:3.10.10"
                                                   :name "myapp"
-                                                  :publish "8529:8529"
+                                                  :publish ["8529:8529"]
                                                   :detach true
                                                   :envs []
                                                   :volumes []
@@ -82,7 +82,7 @@
     (assert-eq "docker run --detach --publish 8529:8529 --name myapp arangodb/arangodb:3.10.10 --database.auto-upgrade"
                 (clean (with-out-str (docker/run "arangodb/arangodb:3.10.10"
                                                   :name "myapp"
-                                                  :publish "8529:8529"
+                                                  :publish ["8529:8529"]
                                                   :detach true
                                                   :envs []
                                                   :volumes []
@@ -91,7 +91,7 @@
     (assert-eq "docker run --detach --publish 8529:8529 --name myapp --env E1=xx arangodb/arangodb:3.10.10 --database.auto-upgrade"
                 (clean (with-out-str (docker/run "arangodb/arangodb:3.10.10"
                                                   :name "myapp"
-                                                  :publish "8529:8529"
+                                                  :publish ["8529:8529"]
                                                   :detach true
                                                   :envs ["E1=xx"]
                                                   :volumes []
@@ -100,7 +100,7 @@
     (assert-eq "docker run --detach --publish 8529:8529 --name myapp --env E1=xx --env E2=yy arangodb/arangodb:3.10.10 --database.auto-upgrade"
                 (clean (with-out-str (docker/run "arangodb/arangodb:3.10.10"
                                                   :name "myapp"
-                                                  :publish "8529:8529"
+                                                  :publish ["8529:8529"]
                                                   :detach true
                                                   :envs ["E1=xx" "E2=yy"]
                                                   :volumes []
@@ -109,7 +109,7 @@
     (assert-eq "docker run --detach --publish 8529:8529 --name myapp --volume vol-1:/var/1 --env E1=xx --env E2=yy arangodb/arangodb:3.10.10 --database.auto-upgrade"
                 (clean (with-out-str (docker/run "arangodb/arangodb:3.10.10"
                                                   :name "myapp"
-                                                  :publish "8529:8529"
+                                                  :publish ["8529:8529"]
                                                   :detach true
                                                   :envs ["E1=xx" "E2=yy"]
                                                   :volumes ["vol-1:/var/1"]
@@ -118,7 +118,7 @@
     (assert-eq "docker run --detach --publish 8529:8529 --name myapp --volume vol-1:/var/1 --volume vol-2:/var/2 --env E1=xx --env E2=yy arangodb/arangodb:3.10.10 --database.auto-upgrade"
                 (clean (with-out-str (docker/run "arangodb/arangodb:3.10.10"
                                                   :name "myapp"
-                                                  :publish "8529:8529"
+                                                  :publish ["8529:8529"]
                                                   :detach true
                                                   :envs ["E1=xx" "E2=yy"]
                                                   :volumes ["vol-1:/var/1" "vol-2:/var/2"]
