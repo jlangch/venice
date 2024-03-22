@@ -44,7 +44,8 @@
 
 (defn
   ^{ :arglists '(
-          "(cargo-arangodb/start cname version mapped-port root-passwd memory cores log)")
+          "(cargo-arangodb/start cname version mapped-port root-passwd memory cores log)"
+          "(cargo-arangodb/start cname version volumes mapped-port root-passwd memory cores log)")
      :doc """
           Starts an ArangoDB container.
 
@@ -81,6 +82,7 @@
             (ca/start "db-test" "3.11.4" 8500 "test" "8GB" 1 nil))
           """)
      :see-also '(
+          "cargo-arangodb/logs"
           "cargo-arangodb/stop"
           "cargo-arangodb/running?") }
 
@@ -128,7 +130,9 @@
 
 
 (defn
-  ^{ :arglists '("(cargo-arangodb/stop cname log)")
+  ^{ :arglists '(
+          "(cargo-arangodb/stop cname)"
+          "(cargo-arangodb/stop cname log)")
      :doc """
           Stops an ArangoDB container
 
@@ -150,12 +154,15 @@
           "cargo-arangodb/start" 
           "cargo-arangodb/running?") }
 
-  stop [cname log]
+  stop 
 
-  { :pre [(string? cname)] }
-
-  (let [log (or log default-log)]
-    (cargo/stop cname log)))
+  ([cname]
+     (stop cname nil))
+ 
+  ([cname log]
+    { :pre [(string? cname)] }
+    (let [log (or log default-log)]
+      (cargo/stop cname log))))
 
 
 (defn
@@ -171,17 +178,56 @@
           """
           ;; Test if ArangoDB container is running
           (do
-            (load-module :cargo-arangodb)
-            (cargo-arangodb/running? "db-test"))
+            (load-module :cargo-arangodb ['cargo-arangodb :as 'ca])
+            (ca/running? "db-test"))
           """)
      :see-also '(
-          "cargo-arangodb/start", "cargo-arangodb/stop") }
+          "cargo-arangodb/logs"
+          "cargo-arangodb/start", 
+          "cargo-arangodb/stop") }
 
   running? [cname]
 
   { :pre [(string? cname)] }
 
   (docker/container-running-with-name? cname))
+
+
+(defn 
+  ^{ :arglists '(
+          "(cargo-arangodb/logs cname)"
+          "(cargo-arangodb/logs cname lines)")
+     :doc """
+          Prints the ArangoDB docker container logs
+
+          Args:
+
+          | cname   | A unique container name  |
+          | lines   | The number of tail lines. Defaults to 100  |
+          """
+     :examples '(
+          """
+          (do
+            (load-module :cargo-arangodb ['cargo-arangodb :as 'ca])
+            (ca/logs "db-test"))
+          """,
+          """
+          (do
+            (load-module :cargo-arangodb ['cargo-arangodb :as 'ca])
+            (ca/logs "db-test" 100))
+          """)
+     :see-also '(
+          "cargo-arangodb/start" 
+          "cargo-arangodb/running?") }
+
+  logs 
+
+  ([cname] 
+    (logs cname 100))
+
+  ([cname lines]
+    (->> (docker/container-logs cname :tail lines)
+        (println))))
 
 
 

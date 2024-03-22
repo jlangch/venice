@@ -24,6 +24,10 @@
 ;;;; This is just a configuration wrapper on top of the :cargo module to
 ;;;; simplify using Qdrant testcontainers
 
+;;;; docker run -p 6333:6333 -p 6334:6334 \
+;;;;    -v /data/qdrant-storage:/qdrant/storage:z \
+;;;;    qdrant/qdrant
+
 (ns cargo-qdrant)
 
 (load-module :docker)
@@ -45,7 +49,9 @@
 
 (defn
   ^{ :arglists '(
-          "(cargo-qdrant/start cname version storage-dir)")
+          "(cargo-qdrant/start cname version storage-dir)"
+          "(cargo-qdrant/start cname version storage-dir config-file log)"
+          "(cargo-qdrant/start cname version mapped-rest-port mapped-grpc-port storage-dir config-file log)")
      :doc """
           Starts a Qdrant container. 
           
@@ -87,10 +93,14 @@
           """)
      :see-also '(
           "cargo-qdrant/stop"
-          "cargo-qdrant/running?") }
+          "cargo-qdrant/running?"
+          "cargo-qdrant/logs") }
 
   start 
-  
+
+  ([cname version storage-dir]
+    (start cname version storage-dir nil nil))
+ 
   ([cname version storage-dir config-file log]
     (start cname 
            version 
@@ -113,17 +123,17 @@
                 (string? config-file) 
                 (io/file? config-file))] }
     (when-not (io/exists-dir? storage-dir)
-      (throw :VncException 
-             "The Qdrant storage directory \"~{storage-dir}\" does not exist!"))
-    (when-not (and (some? config-file) (io/exists-file? config-file))
-      (throw :VncException 
-             "The Qdrant config file \"~{config-file}\" does not exist!"))   
+      (throw (ex :VncException 
+                 "The Qdrant storage directory \"~(io/file-canonical storage-dir)\" does not exist!")))
+    (when (and (some? config-file) (not (io/exists-file? config-file)))
+      (throw (ex :VncException 
+                 "The Qdrant config file \"~(io/file-canonical config-file)\" does not exist!")))  
     (let [publish   ["~{mapped-rest-port}:~{internal-rest-port}"
                      "~{mapped-grpc-port}:~{internal-grpc-port}"]
           envs      []
           volumes   (if (nil? config-file)
-                       ["~{storage-dir}:/qdrant/storage"]
-                       ["~{storage-dir}:/qdrant/storage"
+                       ["~{storage-dir}:/qdrant/storage:z"]
+                       ["~{storage-dir}:/qdrant/storage:z"
                         "~{config-file}:/qdrant/config/production.yaml"])
           args      []
           log       (or log default-log)
@@ -142,9 +152,11 @@
 
 
 (defn
-  ^{ :arglists '("(cargo-qdrant/stop cname log)")
+  ^{ :arglists '(
+          "(cargo-qdrant/stop cname)"
+          "(cargo-qdrant/stop cname log)")
      :doc """
-          Stops an Qdrant container
+          Stops a Qdrant container
 
           Args:
 
@@ -162,12 +174,15 @@
           "cargo-qdrant/start" 
           "cargo-qdrant/running?") }
 
-  stop [cname log]
+  stop 
+  
+  ([cname]
+     (stop cname nil))
 
-  { :pre [(string? cname)] }
-
-  (let [log (or log default-log)]
-    (cargo/stop cname log)))
+  ([cname log]
+    { :pre [(string? cname)] }
+    (let [log (or log default-log)]
+      (cargo/stop cname log))))
 
 
 (defn
@@ -186,7 +201,8 @@
             (load-module :cargo-qdrant ['cargo-qdrant :as 'cq])
             (cq/running? "qdrant"))
           """)
-     :see-also '(
+     :see-also '(    
+          "cargo-qdrant/logs"
           "cargo-qdrant/start", 
           "cargo-qdrant/stop") }
 
@@ -195,6 +211,43 @@
   { :pre [(string? cname)] }
 
   (docker/container-running-with-name? cname))
+
+
+(defn 
+  ^{ :arglists '(
+          "(cargo-qdrant/logs cname)"
+          "(cargo-qdrant/logs cname lines)")
+     :doc """
+          Prints the Qdrant docker container logs
+
+          Args:
+
+          | cname   | A unique container name  |
+          | lines   | The number of tail lines. Defaults to 100  |
+          """
+     :examples '(
+          """
+          (do
+            (load-module :cargo-qdrant ['cargo-qdrant :as 'cq])
+            (cq/logs "qdrant"))
+          """,
+          """
+          (do
+            (load-module :cargo-qdrant ['cargo-qdrant :as 'cq])
+            (cq/logs "qdrant" 100))
+          """)
+     :see-also '(
+          "cargo-qdrant/start" 
+          "cargo-qdrant/running?") }
+
+  logs 
+
+  ([cname] 
+    (logs cname 100))
+
+  ([cname lines]
+    (->> (docker/container-logs cname :tail lines)
+         (println))))
 
 
 
@@ -206,9 +259,12 @@
   (println "Qdrant:" s))
 
 (defn qdrant-ready? [cname]
-  (-> (docker/container-logs cname :tail 1)
-      (str/trim)
-      (match? #".*is ready for business. Have fun.*")))
+  (->> (docker/container-logs cname :tail 100)
+       (str/split-lines)
+       (map str/trim)
+       (filter #(match? % #".*Qdrant HTTP listening on [0-9]{4}.*"))
+       (count)
+       (pos?)))
 
 (defn dir-empty? [dir]
   (zero? (count (io/list-files dir))))
