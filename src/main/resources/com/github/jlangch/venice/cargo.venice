@@ -58,7 +58,10 @@
           | cname                 | A unique container name |
           | repo                  | The image repository |
           | version               | The image version |
-          | publish               | The port publish|
+          | publish               | Publish a container's ports to the host. \
+                                    To expose port 8080 inside the container \
+                                    to port 3000 outside the container, pass \
+                                    ["3000:8080"] |
           | envs                  | A vector of env variables |
           | vols                  | A vector of volume mounts |
           | args                  | A vector of arguments for the process run \
@@ -81,7 +84,7 @@
           (cargo/start "arangodb-test"
                        "arangodb/arangodb"
                        "3.11.4"
-                       "8500:8529"
+                       ["8500:8529"]
                        ["ARANGO_ROOT_PASSWORD=test"
                         "ARANGODB_OVERRIDE_DETECTED_TOTAL_MEMORY=8GB"
                         "ARANGODB_OVERRIDE_DETECTED_NUMBER_OF_CORES=1"]
@@ -108,7 +111,7 @@
     { :pre [(string? cname)
             (string? repo)
             (string? version)
-            (string? publish)
+            (vector? publish)
             (vector? envs)
             (vector? vols)
             (vector? args)

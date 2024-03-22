@@ -57,8 +57,10 @@
 
           | [![width: 20%]] | [![width: 80%]] |
           | :off        | No debug output |
-          | :on         | Prints the raw docker command line to the current stdout channel ahead of running the command |
-          | :on-no-exec | Prints the raw docker command line to the current stdout channel without running the command |
+          | :on         | Prints the raw docker command line to the current \
+                          stdout channel ahead of running the command |
+          | :on-no-exec | Prints the raw docker command line to the current \
+                          stdout channel without running the command |
           """
      :examples '(
           "(docker/debug :on)"
@@ -82,9 +84,11 @@
 
           Options:
 
-          | [![width: 30%]] | [![width: 70%]] |
-          | :format {:string, :json} | Returns the output either as a string or as JSON data |
-          | :version {:full, :server, :client} | Returns full (default), server, or client version |
+          | [![width: 20%]] | [![width: 70%]] |
+          | :format f  | Returns the output either as a stringor as JSON data. \
+                         The format is one of {:string, :json} |
+          | :version v | Returns full (default), server, or client version. \
+                         The version is one of {:full, :server, :client} |
           """
      :examples '(
           "(docker/version)"
@@ -134,11 +138,14 @@
 
           Options:
 
-          | :all {true, false}      | Show all images (default hides intermediate images) |
+          | :all {true, false}      | Show all images (default hides \
+                                      intermediate images) |
           | :digests {true, false}  | Show digests |
           | :quiet {true, false}    | If true only display image IDs |
           | :no-trunc {true, false} | Don't truncate output |
-          | :format {:table, :json} | Returns the output either as a table string or as JSON data |
+          | :format f               | Returns the output either as a table \
+                                      string or as JSON data. \
+                                      The format is one of{:table, :json} |
           """
      :examples '(
           "(println (docker/images :format :table))"
@@ -188,7 +195,7 @@
 
           Options:
 
-          | :force {true, false} | Force removal of the image |
+          | :force {true, false}    | Force removal of the image |
           | :no-prune {true, false} | Do not delete untagged parents |
           """
      :examples '(
@@ -295,7 +302,7 @@
 
           Options:
 
-          | :all {true, false}      | Remove all unused images, not just dangling ones |
+          | :all {true, false} | Remove all unused images, not just dangling ones |
           """
      :examples '(
           "(println (docker/image-prune))"
@@ -345,16 +352,24 @@
           Options:
 
           | [![width: 30%]]         | [![width: 70%]] |
-          | :detach {true, false}   | Run container in background and return container ID |
-          | :attach {stdin, stdout, stderr} | Attach to STDIN, STDOUT or STDERR |
-          | :publish port           | Publish a container's port to the host. To expose port 8080 inside the container to port 3000 outside the container, pass "3000:8080" |
-          | :envs vars              | Set environment variable (a sequence of env var defs) |
+          | :detach {true, false}   | Run container in background and return \
+                                      container ID |
+          | :attach s               | Attach to STDIN, STDOUT or STDERR. \
+                                      Use one of {:stdin, :stdout, :stderr} |
+          | :publish port           | Publish a container's port to the host. \
+                                      To expose port 8080 inside the container \
+                                      to port 3000 outside the container, \
+                                      pass "3000:8080" |
+          | :envs vars              | Set environment variable (a sequence of \
+                                      env var defs) |
           | :memory limit           | Memory limit |
           | :name name              | Assign a name to the container |
           | :quiet {true, false}    | Suppress the pull output |
-          | :volumes vol            | Bind mount a volume (a sequence of volume defs)|
+          | :volumes vol            | Bind mount a volume (a sequence of \
+                                      volume defs)|
           | :workdir dir            | Working directory inside the container |
-          | :args args              | Arguments passed to container process (a sequence of args or a string) |
+          | :args args              | Arguments passed to container process \
+                                      (a sequence of args or a string) |
 
           See also `cargo/start` / `cargo/stop` for a smarter way to start/stop
           a container.
@@ -364,7 +379,7 @@
           ;; Run an ArangoDB container (use bind mounts, very slow on macOSX)
           (docker/run "arangodb/arangodb:3.10.10"
                       :name "myapp"
-                      :publish "8529:8529"
+                      :publish [ "8529:8529" ]
                       :detach true
                       :envs ["ARANGO_ROOT_PASSWORD=xxxxxx"
                              "ARANGODB_OVERRIDE_DETECTED_TOTAL_MEMORY=8G"
@@ -379,7 +394,7 @@
             (docker/volume-create "arangodb-apps")
             (docker/run "arangodb/arangodb:3.10.10"
                         :name "myapp"
-                        :publish "8529:8529"
+                        :publish [ "8529:8529" ]
                         :detach true
                         :envs ["ARANGO_ROOT_PASSWORD=xxxxxx"
                                "ARANGODB_OVERRIDE_DETECTED_TOTAL_MEMORY=8G"
@@ -409,7 +424,7 @@
           "docker/container-image-info-by-name" )
      :spec { :options { :detach  [:optional #{true, false}]
                         :attach  [:optional #{:stdin, :stdout, :stderr}]
-                        :publish [:optional #(and (long? %) (pos? %))]
+                        :publish [:optional #(and (vector? %) (every? string? %))]
                         :envs    [:optional #(and (vector? %) (every? string? %))]
                         :memory  [:optional #(string? %)]
                         :name    [:optional #(string? %)]
@@ -426,7 +441,7 @@
         _        (validate-map "option" opts (-> docker/run meta :spec :options))
         detach   (:detach opts false)
         attach   (:attach opts nil)
-        publish  (:publish opts nil)
+        publish  (:publish opts [])
         envs     (:envs opts [])
         memory   (:memory opts 0)
         name     (:name opts nil)
@@ -438,7 +453,9 @@
         cmdargs* (if detach (conj cmdargs* "--detach") cmdargs*)
         cmdargs* (if attach (conj cmdargs* "--attach" (name attach)) cmdargs*)
         cmdargs* (if quiet (conj cmdargs* "--quiet") cmdargs*)
-        cmdargs* (if (some? publish) (conj cmdargs* "--publish" publish) cmdargs*)
+        cmdargs* (if (and (vector? publish) (not-empty? publish))
+                   (into cmdargs* (interleave (lazy-seq (constantly "--publish")) publish))
+                   cmdargs*)
         cmdargs* (if (pos? memory) (conj cmdargs* "--memory" memory) cmdargs*)
         cmdargs* (if (some? name) (conj cmdargs* "--name" name) cmdargs*)
         cmdargs* (if (some? workdir) (conj cmdargs* "--workdir" workdir) cmdargs*)

@@ -14,6 +14,10 @@ All notable changes to this project will be documented in this file.
 - improvements to markdown to ascii text renderer to allow the Venice
   Github flavoured markdown documentation to be converted to pure ascii
   to feed it as embeddings to LLMs
+  
+### Changed
+
+- the :docker module to support now multiple port publish definitions
 
 ### Fixed 
 - a markdown parser edge case when a table block is immediately followed 

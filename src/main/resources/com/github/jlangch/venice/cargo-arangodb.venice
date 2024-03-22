@@ -111,12 +111,13 @@
                       ["--server.endpoint" "tcp://0.0.0.0:~{internal-port}"
                        "--server.telemetrics-api" "false"])
           log       (or log default-log)
-          publish   "~{host-port}:~{internal-port}"
+          publish   ["~{host-port}:~{internal-port}"]
           wait-after-start-secs 3
           ready-check-max-secs  30]
       (log "starting ~{version} as \"~{cname}\" @ port ~{publish} ...")
       (docoll (fn [v] (log "using volume: ~{v}")) volumes)
-      (cargo/start cname "arangodb/arangodb" version publish
+      (cargo/start cname "arangodb/arangodb" version 
+                   publish
                    envs 
                    volumes
                    args
