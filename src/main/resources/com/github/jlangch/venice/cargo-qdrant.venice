@@ -57,6 +57,9 @@
           
           Qdrant is vector database often used for LLM embeddings.
 
+          Telemetry reporting is disabled by setting the env variable
+          QDRANT__TELEMETRY_DISABLED to `true`.
+
           Start rules:
 
             * If a container with another version exists for the container
@@ -130,7 +133,12 @@
                  "The Qdrant config file \"~(io/file-canonical config-file)\" does not exist!")))  
     (let [publish   ["~{mapped-rest-port}:~{internal-rest-port}"
                      "~{mapped-grpc-port}:~{internal-grpc-port}"]
-          envs      []
+                    ;; QDRANT__LOG_LEVEL=INFO
+                    ;; QDRANT__SERVICE__HTTP_PORT=6333
+                    ;; QDRANT__SERVICE__ENABLE_TLS=1
+                    ;; QDRANT__TLS__CERT=./tls/cert.pem
+                    ;; QDRANT__TLS__CERT_TTL=3600
+          envs      ["QDRANT__TELEMETRY_DISABLED=true"]
           volumes   (if (nil? config-file)
                        ["~{storage-dir}:/qdrant/storage:z"]
                        ["~{storage-dir}:/qdrant/storage:z"
@@ -223,7 +231,7 @@
           Args:
 
           | cname   | A unique container name  |
-          | lines   | The number of tail lines. Defaults to 100  |
+          | lines   | The number of tail lines |
           """
      :examples '(
           """
@@ -243,11 +251,13 @@
   logs 
 
   ([cname] 
-    (logs cname 100))
+    (logs cname nil))
 
   ([cname lines]
-    (->> (docker/container-logs cname :tail lines)
-         (println))))
+    { :pre [(string? cname)  (or (nil? lines) (long? lines))] }
+    (if (nil? lines)
+      (println (docker/container-logs cname))
+      (println (docker/container-logs cname :tail lines)))))
 
 
 
@@ -259,7 +269,7 @@
   (println "Qdrant:" s))
 
 (defn qdrant-ready? [cname]
-  (->> (docker/container-logs cname :tail 100)
+  (->> (docker/container-logs cname :tail 10)
        (str/split-lines)
        (map str/trim)
        (filter #(match? % #".*Qdrant HTTP listening on [0-9]{4}.*"))

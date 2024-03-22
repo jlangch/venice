@@ -356,10 +356,6 @@ public class DocGenerator {
         extmod.addSection(new DocSection("Gradle\u00A0Wrapper", "modules.gradlew"));
         extmod.addSection(new DocSection("Gradle", "modules.gradle"));
         extmod.addSection(new DocSection("Maven", "modules.maven"));
-        extmod.addSection(new DocSection("Docker", "modules.docker"));
-        extmod.addSection(new DocSection("Cargo", "modules.cargo"));
-        extmod.addSection(new DocSection("Cargo/ArangoDB", "modules.cargo-arangodb"));
-        extmod.addSection(new DocSection("Cargo/Qdrant", "modules.cargo-qdrant"));
         extmod.addSection(new DocSection("Test", "modules.test"));
         extmod.addSection(new DocSection("Tracing", "modules.tracing"));
         extmod.addSection(new DocSection("Benchmark", "modules.benchmark"));
@@ -369,6 +365,13 @@ public class DocGenerator {
         extmod.addSection(new DocSection("Installer", "modules.installer"));
         extmod.addSection(new DocSection("Semver", "modules.semver"));
         content.add(extmod);
+
+        final DocSection docker = new DocSection("Docker", "docker");
+        docker.addSection(new DocSection("Docker", "modules.docker"));
+        docker.addSection(new DocSection("Cargo", "modules.cargo"));
+        docker.addSection(new DocSection("Cargo/ArangoDB", "modules.cargo-arangodb"));
+        docker.addSection(new DocSection("Cargo/Qdrant", "modules.cargo-qdrant"));
+        content.add(docker);
 
         final DocSection others = new DocSection("Others", "others");
         others.addSection(new DocSection("Embedding in Java", "embedding"));

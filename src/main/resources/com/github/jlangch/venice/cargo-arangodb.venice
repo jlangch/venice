@@ -203,7 +203,7 @@
           Args:
 
           | cname   | A unique container name  |
-          | lines   | The number of tail lines. Defaults to 100  |
+          | lines   | The number of tail lines |
           """
      :examples '(
           """
@@ -223,11 +223,13 @@
   logs 
 
   ([cname] 
-    (logs cname 100))
+    (logs cname nil))
 
   ([cname lines]
-    (->> (docker/container-logs cname :tail lines)
-        (println))))
+    { :pre [(string? cname)  (or (nil? lines) (long? lines))] }
+    (if (nil? lines)
+      (println (docker/container-logs cname))
+      (println (docker/container-logs cname :tail lines)))))
 
 
 

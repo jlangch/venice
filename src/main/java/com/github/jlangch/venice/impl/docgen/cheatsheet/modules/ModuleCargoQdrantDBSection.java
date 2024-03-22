@@ -47,6 +47,7 @@ public class ModuleCargoQdrantDBSection implements ISectionBuilder {
         docker.addItem(diBuilder.getDocItem("cargo-qdrant/start", false));
         docker.addItem(diBuilder.getDocItem("cargo-qdrant/stop", false));
         docker.addItem(diBuilder.getDocItem("cargo-qdrant/running?", false));
+        docker.addItem(diBuilder.getDocItem("cargo-qdrant/logs", false));
 
         return section;
     }
