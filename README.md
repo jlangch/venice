@@ -85,6 +85,7 @@ Cheat Sheet: [HTML](https://htmlpreview.github.io/?https://cdn.rawgit.com/jlangc
 * [PDF](doc/readme/pdf.md)
 * [EXCEL](doc/readme/excel.md)
 * [ASCII Tables](doc/readme/ascii-tables.md)
+* [Venice meets LLMS](doc/readme/venice-meets-llms.md)
 * [Shell Scripts](doc/readme/shell-scripts.md)
 * [Extension modules](doc/readme/extension-modules.md)
 * [Source Code as PDF](doc/readme/source2pdf.md)
