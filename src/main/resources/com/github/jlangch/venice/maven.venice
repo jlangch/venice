@@ -509,13 +509,20 @@
           (do
             (load-module :maven)
             (maven/dependencies [ "org.knowm.xchart:xchart:3.8.6" ]))
-          """
+          """,
           """
           (do
             (load-module :maven)
             (maven/dependencies [ "org.knowm.xchart:xchart:3.8.6" ] 
                                 :scope :compile
                                 :verbose true))
+          """,
+          """
+          (do
+            (load-module :maven)
+            (maven/dependencies [ "org.knowm.xchart:xchart:3.8.6" ] 
+                                :scope :runtime
+                                :format :list))
           """) }
 
   maven/dependencies   [artifacts & options]
@@ -766,7 +773,8 @@
        (filter #(not (str/starts-with? % "(")))
        (filter #(str/contains? % ":jar:"))
        (map (fn [s] (as-> (str/split s ":") e
-                          (str/join ":" [(nth e 0) (nth e 1) (nth e 3)]))))))
+                          (str/join ":" [(nth e 0) (nth e 1) (nth e 3)]))))
+       (sort)))
 
 
 (defn- mvn-install-dirs-repl []

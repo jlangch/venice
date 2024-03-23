@@ -90,6 +90,61 @@
 
 
 (defn 
+  ^{ :arglists '("(install artifacts options*)")
+     :doc
+       """
+       Install Java artifacts and its dependencies.
+
+       Options:
+
+       | :dir path             | download dir, defaults to "." except when run \
+                                 in a REPL where it defaults to the value of \
+                                 `(repl/libs-dir)` |
+       | :silent {true,false}  | if silent is true does not show a progress \
+                                 bar, defaults to true |
+       | :force {true,false}   | if force is true download the artifact \
+                                 even if it exist already on the download \
+                                 dir, else skip the download if it exists. \
+                                 Defaults to true. |
+       """
+     :examples '(
+       """
+       (do
+         (load-module :installer)
+         (installer/install ["dev.langchain4j:langchain4j:0.28.0" 
+                             "dev.langchain4j:langchain4j-open-ai:0.28.0"] 
+                            :dir (repl/libs-dir) 
+                            :silent false))
+       """)
+     :see-also '( 
+       "installer/install-libs" ) }
+
+  install [artifacts & options]
+
+  (assert (sequential? artifacts) "artifacts must be a sequence of library artifacts")
+  
+  (when-not (io/internet-avail?)
+    (throw (ex :VncException 
+               "Internet is not available, cannot install libraries!")))
+
+  (let [options  (default-options options)
+        opts     (apply hash-map options)
+        silent   (:silent opts true)]
+    (when-not silent
+      (println "Resolving dependencies ..."))
+    (let [deps (maven/dependencies artifacts :print false :format :list)
+          cnt  (count deps)]
+      (when-not silent
+        (printf "Artifacts and dependencies (%d):%n" cnt)
+        (doseq [lib deps] (printf "   %s%n" lib))
+        (println))
+      (doseq [lib deps] (apply maven/download lib options)) 
+      (when-not silent
+        (println)
+        (printf "Installed %d artefacts.%n" cnt)))))
+
+
+(defn 
   ^{ :arglists '("(install-libs libs options*)")
      :doc
        """
