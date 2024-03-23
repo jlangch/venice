@@ -45,6 +45,7 @@
     "org.apache.pdfbox:fontbox:3.0.1"
     "org.slf4j:slf4j-api:2.0.10"])
 
+
 (defn
   ^{ :arglists '("(install options*)")
      :doc
@@ -70,4 +71,5 @@
   (load-module :xchart-install)
   (apply xchart-install/install options)
 
+  ;; no dependency reolving, just install the listed libs
   (apply installer/install-libs (libraries) options))

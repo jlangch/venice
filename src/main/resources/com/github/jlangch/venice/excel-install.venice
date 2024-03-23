@@ -34,29 +34,17 @@
 (load-module :installer)
 
 
-(defn libraries []
+(defn libraries-5.x []
   [ "org.apache.poi:poi:5.2.3"
     "org.apache.poi:poi-ooxml:5.2.3"
     "org.apache.poi:poi-ooxml-full:5.2.3"
-    "org.apache.commons:commons-collections4:4.4"
-    "org.apache.commons:commons-compress:1.21"
-    "org.apache.commons:commons-math3:3.6.1"
-    "org.apache.xmlbeans:xmlbeans:5.1.1"
-    "commons-codec:commons-codec:1.15"
-    "commons-io:commons-io:2.11.0"
-    "org.apache.logging.log4j:log4j-api:2.19.0"
-    "org.apache.logging.log4j:log4j-core:2.19.0" ] )
+    "org.apache.logging.log4j:log4j-api:2.20.0"
+    "org.apache.logging.log4j:log4j-core:2.20.0" ] )
 
 (defn libraries-4.x []
   [ "org.apache.poi:poi:4.1.2"
-    "org.apache.poi:ooxml:4.1.2"
-    "org.apache.poi:ooxml-schemas:4.1.2"
-    "org.apache.commons:commons-collections4:4.4"
-    "org.apache.commons:commons-compress:1.20"
-    "org.apache.commons:commons-math3:3.6.1"
-    "org.apache.xmlbeans:xmlbeans:3.1.0"
-    "commons-codec:commons-codec:1.15"
-    "commons-io:commons-io:2.11.0" ] )
+    "org.apache.poi:poi-ooxml:4.1.2"
+    "org.apache.poi:poi-ooxml-schemas:4.1.2" ] )
 
 
 (defn
@@ -80,7 +68,7 @@
 
   install [ & options]
 
-  (apply installer/install-libs (libraries) options))
+  (apply installer/install (libraries-5.x) options))
 
 
 (defn
@@ -106,4 +94,4 @@
 
   install-4.x [ & options]
 
-  (apply installer/install-libs (libraries-4.x) options))
+  (apply installer/install (libraries-4.x) options))

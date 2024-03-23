@@ -41,30 +41,7 @@
 (defn libraries []
   [ "com.theokanning.openai-gpt3-java:api:0.18.2"
     "com.theokanning.openai-gpt3-java:client:0.18.2"
-    "com.theokanning.openai-gpt3-java:service:0.18.2"
-
-    "com.knuddels:jtokkit:0.6.1"
-    
-    "com.squareup.retrofit2:adapter-rxjava2:2.9.0"
-    "com.squareup.retrofit2:retrofit:2.9.0"
-    "com.squareup.retrofit2:converter-jackson:2.9.0"
-    "com.squareup.okhttp3:okhttp:3.14.9"
-    "com.squareup.okio:okio:1.17.2"
-
-    "com.kjetland:mbknor-jackson-jsonschema_2.12:1.0.39"
-
-    "com.fasterxml.jackson.core:jackson-annotations:2.14.2"
-    "com.fasterxml.jackson.core:jackson-databind:2.14.2"
-    "com.fasterxml.jackson.core:jackson-core:2.14.2"
-
-    "io.reactivex.rxjava2:rxjava:2.0.0"
-
-    "javax.validation:validation-api:2.0.1.Final"
-
-    "org.reactivestreams:reactive-streams:1.0.3"
-    "org.scala-lang:scala-library:2.12.18" ;; we might not need this lib
-    "org.slf4j:slf4j-api:2.0.10"
-  ])
+    "com.theokanning.openai-gpt3-java:service:0.18.2" ])
 
 
 (defn
@@ -88,4 +65,4 @@
 
   install [ & options]
 
-  (apply installer/install-libs (libraries) options))
+  (apply installer/install (libraries) options))

@@ -72,4 +72,5 @@
   (load-module :bouncycastle-install)
   (apply bouncycastle-install/install options)
 
+  ;; no dependency reolving, just install the listed libs
   (apply installer/install-libs (libraries) options))
