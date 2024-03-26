@@ -9,6 +9,8 @@ All notable changes to this project will be documented in this file.
 
 ### Added
 
+- function `str/normalize-utf`. This comes in handy when MacOS filenames
+  with umlauts have to be normalized for easier filename processing
 - a pure ascii version of the Venice cheatsheet to feed it as embeddings 
   to LLMs
 - improvements to markdown to ascii text renderer to allow the Venice

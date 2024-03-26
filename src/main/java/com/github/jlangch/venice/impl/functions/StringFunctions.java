@@ -28,6 +28,8 @@ import static com.github.jlangch.venice.impl.types.VncBoolean.True;
 import java.io.UnsupportedEncodingException;
 import java.net.URLDecoder;
 import java.net.URLEncoder;
+import java.text.Normalizer;
+import java.text.Normalizer.Form;
 import java.util.Arrays;
 import java.util.Base64;
 import java.util.IllegalFormatException;
@@ -2883,6 +2885,83 @@ public class StringFunctions {
         };
 
 
+    public static VncFunction str_normalize_utf =
+        new VncFunction(
+                "str/normalize-utf",
+                VncFunction
+                    .meta()
+                    .arglists("(str/normalize-utf text form)")
+                    .doc(
+                    	"Normalizes an UTF string.\n\n" +
+                    	"On MacOS umlauts like ä are just encoded as 'a' plus the combining diaresis\n" +
+                    	"character. Therefore an 'ä' in Java and an 'ä' from a MacOS filename are\n" +
+                    	"different!\n\n" +
+                    	"This function normalizes UTF strings to simplify processing.\n\n" +
+                    	"The _form_ argument is one of:\n"+
+                    	"* :NFD  Canonical decomposition\n" +
+                    	"* :NFC  Canonical decomposition, followed by canonical composition\n" +
+                    	"* :NFKD  Compatibility decomposition\n" +
+                    	"* :NFKC  Compatibility decomposition, followed by canonical composition\n\n" +
+                    	"```                                                                     \n" +
+                    	"(load-module :hexdump  ['hexdump :as 'h])                               \n" +
+                    	"                                                                        \n" +
+                    	" ;; Even though printed the same these two strings are NOT equal        \n" +
+                    	" ;; 1: \"ü\"          prints to \"ü\"                                   \n" +
+                    	" ;; 2: \"u\\u0308\"   prints to \"ü\"                                   \n" +
+                       	"                                                                        \n" +
+                        "The statement:                                                          \n" +
+                        "«If it looks like a duck and quacks like a duck, then it probably is a  \n" +
+                        "duck» is WRONG here!                                                    \n" +
+                    	"                                                                        \n" +
+                    	";; u with combining diaresis char: \u0308                               \n" +
+                    	"(println \"u\\u0308\")                                                  \n" +
+                    	";; => ü   (actually prints as ü on a console)                           \n" +
+                    	"                                                                        \n" +
+                    	";; ü: \\u00FC                                                           \n" +
+                    	"(println \"\\u00FC\")                                                   \n" +
+                    	";; => ü                                                                 \n" +
+                    	"                                                                        \n" +
+                    	";; combined u with diaresis character                                   \n" +
+                    	"(h/dump (bytebuf-from-string \"u\\u0308\"))                             \n" +
+                    	";; 00000000: 75cc 88                                  u..               \n" +
+                    	"                                                                        \n" +
+                    	";; ü                                                                    \n" +
+                    	"(h/dump (bytebuf-from-string \"ü\"))                                    \n" +
+                    	";; 00000000: c3bc                                     ..                \n" +
+                    	"                                                                        \n" +
+                    	";; ü: \\u00FC                                                           \n" +
+                    	"(h/dump (bytebuf-from-string \"\\u00FC\"))                              \n" +
+                    	";; 00000000: c3bc                                     ..                \n" +
+                    	"                                                                        \n" +
+                    	";; u with combined diaresis character normalized                        \n" +
+                    	"(h/dump (bytebuf-from-string (str/normalize-utf \"u\\u0308\" :NFC)))    \n" +
+                    	";; 00000000: c3bc                                     ..                \n" +
+                    	"```                                                                     ")
+                    .build()
+        ) {
+            @Override
+            public VncVal apply(final VncList args) {
+                ArityExceptions.assertArity(this, args, 2);
+
+                final String s = Coerce.toVncString(args.first()).getValue();
+                final VncKeyword form = Coerce.toVncKeyword(args.second());
+
+                switch(form.getValue()) {
+	            	case "NFD":	  return new VncString(Normalizer.normalize(s, Form.NFD));
+	            	case "NFC":	  return new VncString(Normalizer.normalize(s, Form.NFC));
+	            	case "NFKD":  return new VncString(Normalizer.normalize(s, Form.NFKD));
+	            	case "NFKC":  return new VncString(Normalizer.normalize(s, Form.NFKC));
+	            	default:
+                        throw new VncException(
+                        			"Function 'str/normalize-utf' invalid form argument " + form + ". "
+                        			+ "Use one of {:NFD, :NFC, :NFKD, :NFKC}!");
+                }
+            }
+
+            private static final long serialVersionUID = -1848883965231344442L;
+        };
+
+
 
     private static Locale toLocale(final VncVal locale) {
         if (Types.isVncJavaObject(locale, Locale.class)) {
@@ -3000,5 +3079,6 @@ public class StringFunctions {
                     .add(str_valid_email_addr_Q)
                     .add(str_levenshtein)
                     .add(str_markdown_to_text)
+                    .add(str_normalize_utf)
                     .toMap();
 }
