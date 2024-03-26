@@ -451,7 +451,7 @@
   (send-html res 404 (html-box-page "Not Found (404)" msg)))
 
 (defn send-internal-error [res msg]
-  (send-html res 500 (html-box-page "Internal Error (501)" msg)))
+  (send-html res 500 (html-box-page "Internal Error (500)" msg)))
 
 (defn send-not-implemented [res msg]
   (send-html res 501 (html-box-page "Not Implemented (501)" msg)))
