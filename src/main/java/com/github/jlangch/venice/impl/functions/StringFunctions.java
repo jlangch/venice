@@ -2894,10 +2894,10 @@ public class StringFunctions {
                     .doc(
                     	"Normalizes an UTF string.\n\n" +
                     	"On MacOS umlauts like ä are just encoded as 'a' plus the combining diaresis\n" +
-                    	"character  ̈. Therefore an 'ä' in Java and an 'ä' from a MacOS filename are\n" +
+                    	"character  ̈ . Therefore an 'ä' in Java and an 'ä' from a MacOS filename are\n" +
                     	"different!\n\n" +
                     	"This function normalizes UTF strings to simplify processing.\n\n" +
-                    	"The _form_ argument is one of:\n"+
+                    	"The *form* argument is one of:\n"+
                     	"* :NFD  Canonical decomposition\n" +
                     	"* :NFC  Canonical decomposition, followed by canonical composition\n" +
                     	"* :NFKD  Compatibility decomposition\n" +
@@ -2911,7 +2911,7 @@ public class StringFunctions {
                        	"                                                                        \n" +
                         "«If it looks like a duck and quacks like a duck, then it probably is a duck» is definitely WRONG here!                                                    \n" +
                     	"                                                                        \n" +
-                    	";; u with combining diaresis char: \\u0308 ( ̈)                          \n" +
+                    	";; u with combining diaresis char: \\u0308  ̈                            \n" +
                     	"(println \"u\\u0308\")                                                  \n" +
                     	";; => ü   (actually prints as ü on a terminal)                          \n" +
                     	"                                                                        \n" +
