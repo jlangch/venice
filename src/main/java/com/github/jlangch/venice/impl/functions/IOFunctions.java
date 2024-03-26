@@ -128,7 +128,13 @@ public class IOFunctions {
                         ";;   (io/file \"C:\\\\tmp\\\\test.txt\") \n" +
                         ";;   (io/file \"C:/tmp/test.txt\")",
                         ";;   (io/file \"C:\" \"tmp\" \"test.txt\")")
-                    .seeAlso("io/file-name", "io/file-parent", "io/file-path", "io/file-absolute", "io/file-canonical")
+                    .seeAlso(
+                    	"io/file-name",
+                    	"io/file-parent",
+                    	"io/file-path",
+                    	"io/file-absolute",
+                    	"io/file-canonical",
+                    	"str/normalize-utf")
                     .build()
         ) {
             @Override
@@ -195,7 +201,11 @@ public class IOFunctions {
                     .arglists("(io/file-path f)")
                     .doc("Returns the path of the file f as a string. f must be a file or a string (file path).")
                     .examples("(io/file-path (io/file \"/tmp/test/x.txt\"))")
-                    .seeAlso("io/file-absolute", "io/file-canonical", "io/file")
+                    .seeAlso(
+                    	"io/file-absolute",
+                    	"io/file-canonical",
+                    	"io/file",
+                    	"str/normalize-utf")
                     .build()
         ) {
             @Override
@@ -255,7 +265,11 @@ public class IOFunctions {
                     .arglists("(io/file-canonical f)")
                     .doc("Returns the canonical path of the file f. f must be a file or a string (file path).")
                     .examples("(io/file-canonical (io/file \"/tmp/test/../x.txt\"))")
-                    .seeAlso("io/file-path", "io/file-absolute", "io/file")
+                    .seeAlso(
+                    	"io/file-path",
+                    	"io/file-absolute",
+                    	"io/file",
+                    	"str/normalize-utf")
                     .build()
         ) {
             @Override
@@ -305,7 +319,12 @@ public class IOFunctions {
                     .arglists("(io/file-absolute f)")
                     .doc("Returns the absolute path of the file f. f must be a file or a string (file path).")
                     .examples("(io/file-absolute (io/file \"/tmp/test/x.txt\"))")
-                    .seeAlso("io/file-path", "io/file-canonical", "io/file", "io/file-absolute?")
+                    .seeAlso(
+                    	"io/file-path",
+                    	"io/file-canonical",
+                    	"io/file",
+                    	"io/file-absolute?",
+                    	"str/normalize-utf")
                     .build()
         ) {
             @Override
@@ -415,7 +434,11 @@ public class IOFunctions {
                     .arglists("(io/file-name f)")
                     .doc("Returns the name of the file f as a string. f must be a file or a string (file path).")
                     .examples("(io/file-name (io/file \"/tmp/test/x.txt\"))")
-                    .seeAlso("io/file-basename", "io/file-parent", "io/file")
+                    .seeAlso(
+                    	"io/file-basename",
+                    	"io/file-parent",
+                    	"io/file",
+                    	"str/normalize-utf")
                     .build()
         ) {
             @Override
@@ -444,7 +467,12 @@ public class IOFunctions {
                         + "of the file f as a string. f must be a file or a string "
                         + "(file path).")
                     .examples("(io/file-basename (io/file \"/tmp/test/x.txt\"))")
-                    .seeAlso("io/file-name", "io/file-parent", "io/file-ext", "io/file")
+                    .seeAlso(
+                    	"io/file-name",
+                    	"io/file-parent",
+                    	"io/file-ext",
+                    	"io/file",
+                    	"str/normalize-utf")
                     .build()
         ) {
             @Override
