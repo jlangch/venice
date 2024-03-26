@@ -2915,7 +2915,7 @@ public class StringFunctions {
                     	"                                                                        \n" +
                     	";; u with combining diaresis char: \u0308                               \n" +
                     	"(println \"u\\u0308\")                                                  \n" +
-                    	";; => ü   (actually prints as ü on a console)                           \n" +
+                    	";; => ü   (actually prints as ü on a terminal)                          \n" +
                     	"                                                                        \n" +
                     	";; ü: \\u00FC                                                           \n" +
                     	"(println \"\\u00FC\")                                                   \n" +
