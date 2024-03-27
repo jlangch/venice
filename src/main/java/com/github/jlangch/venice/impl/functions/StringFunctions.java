@@ -2911,7 +2911,7 @@ public class StringFunctions {
                        	"                                                                        \n" +
                         "«If it looks like a duck and quacks like a duck, then it probably is a duck» is definitely WRONG here!                                                    \n" +
                     	"                                                                        \n" +
-                    	";; u with combining diaresis char: \\u0308  ̈                            \n" +
+                    	";; ü represented as u with combining diaresis char: \\u0308  ̈           \n" +
                     	"(println \"u\\u0308\")                                                  \n" +
                     	";; => ü   (actually prints as ü on a terminal)                          \n" +
                     	"                                                                        \n" +
