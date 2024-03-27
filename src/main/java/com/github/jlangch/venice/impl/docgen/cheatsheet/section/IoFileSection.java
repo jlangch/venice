@@ -53,6 +53,7 @@ public class IoFileSection implements ISectionBuilder {
         file.addItem(diBuilder.getDocItem("io/file-ext?"));
         file.addItem(diBuilder.getDocItem("io/file-size", false));
         file.addItem(diBuilder.getDocItem("io/file-last-modified", false));
+        file.addItem(diBuilder.getDocItem("io/file-normalize-utf", false));
 
         final DocSection file_dir = new DocSection("dir", "io.filedir");
         all.addSection(file_dir);

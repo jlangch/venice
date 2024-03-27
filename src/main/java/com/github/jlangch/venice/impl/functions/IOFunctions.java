@@ -47,6 +47,8 @@ import java.nio.file.StandardWatchEventKinds;
 import java.nio.file.WatchEvent;
 import java.nio.file.WatchService;
 import java.nio.file.attribute.FileTime;
+import java.text.Normalizer;
+import java.text.Normalizer.Form;
 import java.time.Instant;
 import java.time.ZoneId;
 import java.util.ArrayList;
@@ -129,12 +131,12 @@ public class IOFunctions {
                         ";;   (io/file \"C:/tmp/test.txt\")",
                         ";;   (io/file \"C:\" \"tmp\" \"test.txt\")")
                     .seeAlso(
-                    	"io/file-name",
-                    	"io/file-parent",
-                    	"io/file-path",
-                    	"io/file-absolute",
-                    	"io/file-canonical",
-                    	"str/normalize-utf")
+                        "io/file-name",
+                        "io/file-parent",
+                        "io/file-path",
+                        "io/file-absolute",
+                        "io/file-canonical",
+                        "str/normalize-utf")
                     .build()
         ) {
             @Override
@@ -202,10 +204,10 @@ public class IOFunctions {
                     .doc("Returns the path of the file f as a string. f must be a file or a string (file path).")
                     .examples("(io/file-path (io/file \"/tmp/test/x.txt\"))")
                     .seeAlso(
-                    	"io/file-absolute",
-                    	"io/file-canonical",
-                    	"io/file",
-                    	"str/normalize-utf")
+                        "io/file-absolute",
+                        "io/file-canonical",
+                        "io/file",
+                        "str/normalize-utf")
                     .build()
         ) {
             @Override
@@ -266,10 +268,10 @@ public class IOFunctions {
                     .doc("Returns the canonical path of the file f. f must be a file or a string (file path).")
                     .examples("(io/file-canonical (io/file \"/tmp/test/../x.txt\"))")
                     .seeAlso(
-                    	"io/file-path",
-                    	"io/file-absolute",
-                    	"io/file",
-                    	"str/normalize-utf")
+                        "io/file-path",
+                        "io/file-absolute",
+                        "io/file",
+                        "str/normalize-utf")
                     .build()
         ) {
             @Override
@@ -320,11 +322,11 @@ public class IOFunctions {
                     .doc("Returns the absolute path of the file f. f must be a file or a string (file path).")
                     .examples("(io/file-absolute (io/file \"/tmp/test/x.txt\"))")
                     .seeAlso(
-                    	"io/file-path",
-                    	"io/file-canonical",
-                    	"io/file",
-                    	"io/file-absolute?",
-                    	"str/normalize-utf")
+                        "io/file-path",
+                        "io/file-canonical",
+                        "io/file",
+                        "io/file-absolute?",
+                        "str/normalize-utf")
                     .build()
         ) {
             @Override
@@ -435,10 +437,10 @@ public class IOFunctions {
                     .doc("Returns the name of the file f as a string. f must be a file or a string (file path).")
                     .examples("(io/file-name (io/file \"/tmp/test/x.txt\"))")
                     .seeAlso(
-                    	"io/file-basename",
-                    	"io/file-parent",
-                    	"io/file",
-                    	"str/normalize-utf")
+                        "io/file-basename",
+                        "io/file-parent",
+                        "io/file",
+                        "str/normalize-utf")
                     .build()
         ) {
             @Override
@@ -468,11 +470,11 @@ public class IOFunctions {
                         + "(file path).")
                     .examples("(io/file-basename (io/file \"/tmp/test/x.txt\"))")
                     .seeAlso(
-                    	"io/file-name",
-                    	"io/file-parent",
-                    	"io/file-ext",
-                    	"io/file",
-                    	"str/normalize-utf")
+                        "io/file-name",
+                        "io/file-parent",
+                        "io/file-ext",
+                        "io/file",
+                        "str/normalize-utf")
                     .build()
         ) {
             @Override
@@ -561,6 +563,50 @@ public class IOFunctions {
 
                 final String ext = FileUtil.getFileExt(f.getName());
                 return ext == null ? Nil : new VncString(ext);
+            }
+
+            private static final long serialVersionUID = -1848883965231344442L;
+        };
+
+    public static VncFunction io_file_normalize_utf =
+        new VncFunction(
+                "io/file-normalize-utf",
+                VncFunction
+                    .meta()
+                    .arglists(
+                        "(io/file-normalize-utf file)")
+                    .doc(
+                        "Normalizes the UTF string of a file path.\n\n" +
+                        "On MacOS file names with umlauts like ä are just encoded as 'a' " +
+                        "plus the combining diaresis character. Therefore an 'ä' (\\u00FC) " +
+                        "and an 'ä' (a + \\u0308) from a MacOS file name are different!\n" +
+                        "Under normal circumstances this not problem. But as soon as some " +
+                        "file name processing is in place (comparing, matching, ...) this " +
+                        "can result in strange behaviour due of the two different technical " +
+                        "representations of umlaut characters.\n\n" +
+                        "Returns an UTF normalized java.io.File from a file path\n\n" +
+                        "See the function `str/normalize-utf` for details on UTF normalization.")
+                    .examples(
+                        "(io/file-normalize-utf \"/tmp/test_u\\u0308.txt\")",
+                        "(io/file-normalize-utf (io/file \"/tmp/test_u\\u0308.txt\"))")
+                     .seeAlso(
+                        "str/normalize-utf")
+                    .build()
+        ) {
+            @Override
+            public VncVal apply(final VncList args) {
+                ArityExceptions.assertArity(this, args, 1);
+
+
+               final File file = convertToFile(
+                                    args.first(),
+                                    "Function 'io/file-normalize-utf' does not allow %s as path");
+
+               return new VncJavaObject(
+                               new File(
+                                   Normalizer.normalize(
+                                           file.getPath(),
+                                           Form.NFC)));
             }
 
             private static final long serialVersionUID = -1848883965231344442L;
@@ -3544,6 +3590,7 @@ public class IOFunctions {
                     .add(io_file_basename)
                     .add(io_file_ext_Q)
                     .add(io_file_ext)
+                    .add(io_file_normalize_utf)
                     .add(io_file_size)
                     .add(io_file_last_modified)
                     .add(io_exists_file_Q)

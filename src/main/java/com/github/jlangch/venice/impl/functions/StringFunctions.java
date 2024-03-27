@@ -2892,53 +2892,53 @@ public class StringFunctions {
                     .meta()
                     .arglists("(str/normalize-utf text form)")
                     .doc(
-                    	"Normalizes an UTF string.\n\n" +
-                    	"On MacOS umlauts like ä are just encoded as 'a' plus the combining diaresis\n" +
-                    	"character  ̈ . Therefore an 'ä' in Java and an 'ä' from a MacOS filename are\n" +
-                    	"different!\n\n" +
-                    	"This function normalizes UTF strings to simplify processing.\n\n" +
-                    	"The *form* argument is one of:\n"+
-                    	"* :NFD  Canonical decomposition\n" +
-                    	"* :NFC  Canonical decomposition, followed by canonical composition\n" +
-                    	"* :NFKD  Compatibility decomposition\n" +
-                    	"* :NFKC  Compatibility decomposition, followed by canonical composition\n\n" +
-                    	"```                                                                     \n" +
-                    	"(load-module :hexdump  ['hexdump :as 'h])                               \n" +
-                    	"                                                                        \n" +
-                    	" ;; Even though printed the same these two strings are NOT equal        \n" +
-                    	" ;; 1: \"ü\"          prints to \"ü\"                                   \n" +
-                    	" ;; 2: \"u\\u0308\"   prints to \"ü\"                                   \n" +
-                       	"                                                                        \n" +
+                        "Normalizes an UTF string.\n\n" +
+                        "On MacOS umlauts like ä are just encoded as 'a' plus the combining diaresis " +
+                        "character. Therefore an 'ä' (\\u00FC) and an 'ä' (a + \\u0308) from a MacOS " +
+                        "filename are different!\n\n" +
+                        "This function normalizes UTF strings to simplify processing.\n\n" +
+                        "The *form* argument is one of:\n"+
+                        "* :NFD  Canonical decomposition\n" +
+                        "* :NFC  Canonical decomposition, followed by canonical composition\n" +
+                        "* :NFKD  Compatibility decomposition\n" +
+                        "* :NFKC  Compatibility decomposition, followed by canonical composition\n\n" +
+                        "```                                                                     \n" +
+                        "(load-module :hexdump  ['hexdump :as 'h])                               \n" +
+                        "                                                                        \n" +
+                        " ;; Even though printed the same these two strings are NOT equal        \n" +
+                        " ;; 1: \"ü\"          prints to \"ü\"                                   \n" +
+                        " ;; 2: \"u\\u0308\"   prints to \"ü\"                                   \n" +
+                           "                                                                        \n" +
                         "«If it looks like a duck and quacks like a duck, then it probably is a duck» is definitely WRONG here!                                                    \n" +
-                    	"                                                                        \n" +
-                    	";; ü represented as u with combining diaresis char: \\u0308  ̈           \n" +
-                    	"(println \"u\\u0308\")                                                  \n" +
-                    	";; => ü   (actually prints as ü on a terminal)                          \n" +
-                    	"                                                                        \n" +
-                    	";; ü: \\u00FC                                                           \n" +
-                    	"(println \"\\u00FC\")                                                   \n" +
-                    	";; => ü                                                                 \n" +
-                    	"                                                                        \n" +
-                    	";; u with combining diaresis character  ̈                                \n" +
-                    	"(h/dump (bytebuf-from-string \"u\\u0308\"))                             \n" +
-                    	";; 00000000: 75cc 88                                  u..               \n" +
-                    	"                                                                        \n" +
-                    	";; ü                                                                    \n" +
-                    	"(h/dump (bytebuf-from-string \"ü\"))                                    \n" +
-                    	";; 00000000: c3bc                                     ..                \n" +
-                    	"                                                                        \n" +
-                    	";; ü: \\u00FC                                                           \n" +
-                    	"(h/dump (bytebuf-from-string \"\\u00FC\"))                              \n" +
-                    	";; 00000000: c3bc                                     ..                \n" +
-                    	"                                                                        \n" +
-                    	";; u with combined diaresis character normalized to get a standard ü    \n" +
-                    	"(h/dump (bytebuf-from-string (str/normalize-utf \"u\\u0308\" :NFC)))    \n" +
-                    	";; 00000000: c3bc                                     ..                \n" +
-                    	"                                                                        \n" +
-                    	";; the reverse (decomposition)                                          \n" +
-                    	"(h/dump (bytebuf-from-string (str/normalize-utf \"\\u00FC\" :NFD)))     \n" +
-                    	";; 00000000: 75cc 88                                  u..               \n" +
-                    	"```                                                                     ")
+                        "                                                                        \n" +
+                        ";; ü represented as u with combining diaresis char: \\u0308  ̈           \n" +
+                        "(println \"u\\u0308\")                                                  \n" +
+                        ";; => ü   (actually prints as ü on a terminal)                          \n" +
+                        "                                                                        \n" +
+                        ";; ü: \\u00FC                                                           \n" +
+                        "(println \"\\u00FC\")                                                   \n" +
+                        ";; => ü                                                                 \n" +
+                        "                                                                        \n" +
+                        ";; u with combining diaresis character  ̈                                \n" +
+                        "(h/dump (bytebuf-from-string \"u\\u0308\"))                             \n" +
+                        ";; 00000000: 75cc 88                                  u..               \n" +
+                        "                                                                        \n" +
+                        ";; ü                                                                    \n" +
+                        "(h/dump (bytebuf-from-string \"ü\"))                                    \n" +
+                        ";; 00000000: c3bc                                     ..                \n" +
+                        "                                                                        \n" +
+                        ";; ü: \\u00FC                                                           \n" +
+                        "(h/dump (bytebuf-from-string \"\\u00FC\"))                              \n" +
+                        ";; 00000000: c3bc                                     ..                \n" +
+                        "                                                                        \n" +
+                        ";; u with combined diaresis character normalized to get a standard ü    \n" +
+                        "(h/dump (bytebuf-from-string (str/normalize-utf \"u\\u0308\" :NFC)))    \n" +
+                        ";; 00000000: c3bc                                     ..                \n" +
+                        "                                                                        \n" +
+                        ";; the reverse (decomposition)                                          \n" +
+                        "(h/dump (bytebuf-from-string (str/normalize-utf \"\\u00FC\" :NFD)))     \n" +
+                        ";; 00000000: 75cc 88                                  u..               \n" +
+                        "```                                                                     ")
                     .build()
         ) {
             @Override
@@ -2949,14 +2949,14 @@ public class StringFunctions {
                 final VncKeyword form = Coerce.toVncKeyword(args.second());
 
                 switch(form.getValue()) {
-	            	case "NFD":	  return new VncString(Normalizer.normalize(s, Form.NFD));
-	            	case "NFC":	  return new VncString(Normalizer.normalize(s, Form.NFC));
-	            	case "NFKD":  return new VncString(Normalizer.normalize(s, Form.NFKD));
-	            	case "NFKC":  return new VncString(Normalizer.normalize(s, Form.NFKC));
-	            	default:
+                    case "NFD":      return new VncString(Normalizer.normalize(s, Form.NFD));
+                    case "NFC":      return new VncString(Normalizer.normalize(s, Form.NFC));
+                    case "NFKD":  return new VncString(Normalizer.normalize(s, Form.NFKD));
+                    case "NFKC":  return new VncString(Normalizer.normalize(s, Form.NFKC));
+                    default:
                         throw new VncException(
-                        			"Function 'str/normalize-utf' invalid form argument " + form + ". "
-                        			+ "Use one of {:NFD, :NFC, :NFKD, :NFKC}!");
+                                    "Function 'str/normalize-utf' invalid form argument " + form + ". "
+                                    + "Use one of {:NFD, :NFC, :NFKD, :NFKC}!");
                 }
             }
 
