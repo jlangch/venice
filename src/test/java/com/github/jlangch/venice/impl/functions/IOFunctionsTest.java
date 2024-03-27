@@ -310,6 +310,9 @@ public class IOFunctionsTest {
 
         final String script2 = "(io/file-path (io/file \"/test_u\\u0308.txt\")))";
         assertEquals("/test_u\u0308.txt", venice.eval(script2));
+
+        final String script3 = "(io/file-path (io/file \"/test_u\\u0308.txt\")))";
+        assertNotEquals("/test_ü.txt", venice.eval(script3));
     }
 
     @Test
@@ -317,13 +320,13 @@ public class IOFunctionsTest {
         final Venice venice = new Venice();
 
         final String script1 = "(== \"/test_\\u00FC.txt\"" +
-        		              "    (io/file-path (io/file-normalize-utf \"/test_u\\u0308.txt\")))";
+                               "    (io/file-path (io/file-normalize-utf \"/test_u\\u0308.txt\")))";
 
         assertTrue((Boolean)venice.eval(script1));
 
 
         final String script2 = "(== \"/test_ü.txt\"" +
-        		              "    (io/file-path (io/file-normalize-utf \"/test_u\\u0308.txt\")))";
+                               "    (io/file-path (io/file-normalize-utf \"/test_u\\u0308.txt\")))";
 
         assertTrue((Boolean)venice.eval(script2));
      }

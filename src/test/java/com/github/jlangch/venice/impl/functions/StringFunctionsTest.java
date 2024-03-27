@@ -24,6 +24,7 @@ package com.github.jlangch.venice.impl.functions;
 import static com.github.jlangch.venice.impl.util.StringUtil.to_lf;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.util.HashSet;
@@ -1317,6 +1318,36 @@ public class StringFunctionsTest {
         assertTrue((Boolean)venice.eval("(str/whitespace? #\\return)"));
         assertFalse((Boolean)venice.eval("(str/whitespace? \"8\")"));
     }
+
+    @Test
+    public void test_str_normalize_utf_1() {
+        final Venice venice = new Venice();
+
+        final String script = "\"test_\u00FC.txt\"";
+        assertEquals("test_ü.txt", venice.eval(script));
+
+        final String script2 = "\"test_u\u0308.txt\"";
+        assertEquals("test_u\u0308.txt", venice.eval(script2));
+
+        final String script3 = "\"test_u\u0308.txt\"";
+        assertNotEquals("test_ü.txt", venice.eval(script3));
+    }
+
+    @Test
+    public void test_str_normalize_utf_2() {
+        final Venice venice = new Venice();
+
+        final String script1 = "(== \"test_\\u00FC.txt\"" +
+                               "    (str/normalize-utf \"test_u\\u0308.txt\" :NFC)))";
+
+        assertTrue((Boolean)venice.eval(script1));
+
+
+        final String script2 = "(== \"test_ü.txt\"" +
+                               "    (str/normalize-utf \"test_u\\u0308.txt\" :NFC)))";
+
+        assertTrue((Boolean)venice.eval(script2));
+     }
 
 
     private static List<Character> toCharList(final String s) {
