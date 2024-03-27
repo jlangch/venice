@@ -316,10 +316,16 @@ public class IOFunctionsTest {
     public void test_io_file_normalize_utf_3() {
         final Venice venice = new Venice();
 
-        final String script = "(== \"/test_\\u00FC.txt\"" +
+        final String script1 = "(== \"/test_\\u00FC.txt\"" +
         		              "    (io/file-path (io/file-normalize-utf \"/test_u\\u0308.txt\")))";
 
-        assertTrue((Boolean)venice.eval(script));
+        assertTrue((Boolean)venice.eval(script1));
+
+
+        final String script2 = "(== \"/test_ü.txt\"" +
+        		              "    (io/file-path (io/file-normalize-utf \"/test_u\\u0308.txt\")))";
+
+        assertTrue((Boolean)venice.eval(script2));
      }
 
     @Test
