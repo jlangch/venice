@@ -2939,6 +2939,8 @@ public class StringFunctions {
                         "(h/dump (bytebuf-from-string (str/normalize-utf \"\\u00FC\" :NFD)))     \n" +
                         ";; 00000000: 75cc 88                                  u..               \n" +
                         "```                                                                     ")
+                    .seeAlso(
+                        "io/file-normalize-utf")
                     .build()
         ) {
             @Override

@@ -24,6 +24,7 @@ package com.github.jlangch.venice.impl.functions;
 import static com.github.jlangch.venice.impl.util.StringUtil.to_lf;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
@@ -290,6 +291,36 @@ public class IOFunctionsTest {
             assertEquals(null, venice.eval("(io/file-ext (io/file \"/tmp/some\"))"));
         }
     }
+
+    @Test
+    public void test_io_file_normalize_utf_1() {
+        final Venice venice = new Venice();
+
+        final String script = "(io/file-path (io/file \"/test_\\u00FC.txt\")))";
+
+        assertEquals("/test_ü.txt", venice.eval(script));
+    }
+
+    @Test
+    public void test_io_file_normalize_utf_2() {
+        final Venice venice = new Venice();
+
+        final String script1 = "(io/file-path (io/file \"/test_u\\u0308.txt\")))";
+        assertNotEquals("/test_ü.txt", venice.eval(script1));
+
+        final String script2 = "(io/file-path (io/file \"/test_u\\u0308.txt\")))";
+        assertEquals("/test_u\u0308.txt", venice.eval(script2));
+    }
+
+    @Test
+    public void test_io_file_normalize_utf_3() {
+        final Venice venice = new Venice();
+
+        final String script = "(== \"/test_\\u00FC.txt\"" +
+        		              "    (io/file-path (io/file-normalize-utf \"/test_u\\u0308.txt\")))";
+
+        assertTrue((Boolean)venice.eval(script));
+     }
 
     @Test
     public void test_io_file_within_dir_Q() {
