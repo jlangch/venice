@@ -329,7 +329,23 @@ public class IOFunctionsTest {
                                "    (io/file-path (io/file-normalize-utf \"/test_u\\u0308.txt\")))";
 
         assertTrue((Boolean)venice.eval(script2));
-     }
+    }
+
+    @Test
+    public void test_io_file_normalize_utf_4() {
+        final Venice venice = new Venice();
+
+        final String script1 = "(== \"/test_\\u00FC.txt\"" +
+                               "    (io/file-path (io/file-normalize-utf \"/test_u\\u0308.txt\" :NFC)))";
+
+        assertTrue((Boolean)venice.eval(script1));
+
+
+        final String script2 = "(== \"/test_ü.txt\"" +
+                               "    (io/file-path (io/file-normalize-utf \"/test_u\\u0308.txt\" :NFC)))";
+
+        assertTrue((Boolean)venice.eval(script2));
+    }
 
     @Test
     public void test_io_file_within_dir_Q() {

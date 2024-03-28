@@ -2951,8 +2951,8 @@ public class StringFunctions {
                 final VncKeyword form = Coerce.toVncKeyword(args.second());
 
                 switch(form.getValue()) {
-                    case "NFD":      return new VncString(Normalizer.normalize(s, Form.NFD));
-                    case "NFC":      return new VncString(Normalizer.normalize(s, Form.NFC));
+                    case "NFD":   return new VncString(Normalizer.normalize(s, Form.NFD));
+                    case "NFC":   return new VncString(Normalizer.normalize(s, Form.NFC));
                     case "NFKD":  return new VncString(Normalizer.normalize(s, Form.NFKD));
                     case "NFKC":  return new VncString(Normalizer.normalize(s, Form.NFKC));
                     default:

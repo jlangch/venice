@@ -574,7 +574,8 @@ public class IOFunctions {
                 VncFunction
                     .meta()
                     .arglists(
-                        "(io/file-normalize-utf file)")
+                        "(io/file-normalize-utf file)",
+                        "(io/file-normalize-utf file form)")
                     .doc(
                         "Normalizes the UTF string of a file path.\n\n" +
                         "On MacOS file names with umlauts like ä are just encoded as 'a' " +
@@ -584,6 +585,11 @@ public class IOFunctions {
                         "file name processing is in place (comparing, matching, ...) this " +
                         "can result in strange behaviour due of the two different technical " +
                         "representations of umlaut characters.\n\n" +
+                        "The *form* argument defaults to :NFC and is one of:\n"+
+                        "* :NFD  Canonical decomposition\n" +
+                        "* :NFC  Canonical decomposition, followed by canonical composition\n" +
+                        "* :NFKD  Compatibility decomposition\n" +
+                        "* :NFKC  Compatibility decomposition, followed by canonical composition\n\n" +
                         "Returns an UTF normalized java.io.File from a file path\n\n" +
                         "See the function `str/normalize-utf` for details on UTF normalization.")
                     .examples(
@@ -595,18 +601,30 @@ public class IOFunctions {
         ) {
             @Override
             public VncVal apply(final VncList args) {
-                ArityExceptions.assertArity(this, args, 1);
+                ArityExceptions.assertArity(this, args, 1, 2);
 
 
-               final File file = convertToFile(
-                                    args.first(),
-                                    "Function 'io/file-normalize-utf' does not allow %s as path");
+                final File file = convertToFile(
+                                     args.first(),
+                                     "Function 'io/file-normalize-utf' does not allow %s as path");
 
-               return new VncJavaObject(
-                               new File(
-                                   Normalizer.normalize(
-                                           file.getPath(),
-                                           Form.NFC)));
+                if (args.size() == 1) {
+                    return new VncJavaObject(normalize(file, Form.NFC));
+                }
+                else {
+                    final VncKeyword form = Coerce.toVncKeyword(args.second());
+
+                    switch(form.getValue()) {
+                        case "NFD":   return new VncJavaObject(normalize(file, Form.NFD));
+                        case "NFC":   return new VncJavaObject(normalize(file, Form.NFC));
+                        case "NFKD":  return new VncJavaObject(normalize(file, Form.NFKD));
+                        case "NFKC":  return new VncJavaObject(normalize(file, Form.NFKC));
+                        default:
+                            throw new VncException(
+                                        "Function 'io/file-normalize-utf' invalid form argument " + form + ". "
+                                        + "Use one of {:NFD, :NFC, :NFKD, :NFKC}!");
+                    }
+                }
             }
 
             private static final long serialVersionUID = -1848883965231344442L;
@@ -3512,6 +3530,10 @@ public class IOFunctions {
         finally {
             output.close();
         }
+    }
+
+    private static File normalize(final File file, final Form form) {
+        return new File(Normalizer.normalize(file.getPath(), form));
     }
 
     private static TimeUnit toTimeUnit(final VncKeyword unit) {
