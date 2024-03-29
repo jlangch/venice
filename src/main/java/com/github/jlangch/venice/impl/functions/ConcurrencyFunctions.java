@@ -2554,7 +2554,7 @@ public class ConcurrencyFunctions {
                         "the thread name is set to \"venice-thread\". For each thread spawned on "  +
                         "a name the thread's name will be suffixed with an incrementing index starting " +
                         "from 1.\n\n" +
-                        "The thread type *daemon* or *user* can be controlled by the *type* argument " +
+                        "The thread type (*daemon* or *user*) can be controlled by the *type* argument " +
                         "that must be one of {:daemon, :user}. By default a daemon thread is spawned.\n\n" +
                         "*Note:* Each call to `thread` creates a new expensive system thread. " +
                         "Consider to use futures or promises that use an *ExecutorService* to " +
