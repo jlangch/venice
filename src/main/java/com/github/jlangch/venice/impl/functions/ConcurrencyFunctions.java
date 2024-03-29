@@ -2551,7 +2551,7 @@ public class ConcurrencyFunctions {
                         "to the spawned thread." +
                         "\n\n" +
                         "The thread can be given a name by passing the *name* argument. By default " +
-                        "the thread names is set to \"venice-thread\". For each thread spawned on "  +
+                        "the thread name is set to \"venice-thread\". For each thread spawned on "  +
                         "a name the thread's name will be suffixed with an incrementing index starting " +
                         "from 1.\n\n" +
                         "The thread type *daemon* or *user* can be controlled by the *type* argument " +
