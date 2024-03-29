@@ -2541,13 +2541,21 @@ public class ConcurrencyFunctions {
                 VncFunction
                     .meta()
                     .arglists(
-                        "(thread f)", "(thread f name)")
+                        "(thread f)",
+                        "(thread f name)",
+                        "(thread f name type)")
                     .doc(
                         "Executes the function f in another thread, returning immediately to the " +
                         "calling thread. Returns a `promise` which will receive the result of " +
                         "calling the function f when completed. Optionally a name can be assigned " +
                         "to the spawned thread." +
                         "\n\n" +
+                        "The thread can be given a name by passing the *name* argument. By default " +
+                        "the thread names is set to \"venice-thread\". For each thread spawned on "  +
+                        "a name the thread's name will be suffixed with an incrementing index starting " +
+                        "from 1.\n\n" +
+                        "The thread type *daemon* or *user* can be controlled by the *type* argument " +
+                        "that must be one of {:daemon, :user}. By default a daemon thread is spawned.\n\n" +
                         "*Note:* Each call to `thread` creates a new expensive system thread. " +
                         "Consider to use futures or promises that use an *ExecutorService* to " +
                         "deal efficiently with threads.")
@@ -2555,6 +2563,7 @@ public class ConcurrencyFunctions {
                          "@(thread #(do (sleep 100) 1))",
                          "@(thread #(do (sleep 100) (thread-name)))",
                          "@(thread #(do (sleep 100) (thread-name)) \"job\")",
+                         "@(thread #(do (sleep 100) (thread-name)) \"job\" :user)",
                          ";; consumer / producer                            \n" +
                          "(do                                               \n" +
                          "  (defn produce [q]                               \n" +
@@ -2571,14 +2580,24 @@ public class ConcurrencyFunctions {
         ) {
             @Override
             public VncVal apply(final VncList args) {
-                ArityExceptions.assertArity(this, args, 1, 2);
+                ArityExceptions.assertArity(this, args, 1, 2, 3);
 
                 final VncFunction fn = Coerce.toVncFunction(args.first());
                 fn.sandboxFunctionCallValidation();
 
-                final String name = args.size() == 2
+                final String name = args.size() >= 2
                                         ? Coerce.toVncString(args.second()).getValue()
                                         : null;
+
+                final VncKeyword type = args.size() == 3
+					                        ? Coerce.toVncKeyword(args.third())
+					                        : new VncKeyword("daemon");
+
+                if (!(type.hasValue("daemon") || type.hasValue("user"))) {
+                    throw new VncException(String.format(
+                            "Function 'thread' requires type to be one of {:daemon, :user}. %s is invalid",
+                            type.getValue()));
+                }
 
                 final CallFrame[] cf = new CallFrame[] {
                                             new CallFrame(this, args),
@@ -2601,6 +2620,7 @@ public class ConcurrencyFunctions {
 
 
                 final Thread th = GlobalThreadFactory.newThread(name, taskWrapper);
+                th.setDaemon(type.hasValue("daemon"));
                 th.start();
 
                 return new VncJavaObject(result);
