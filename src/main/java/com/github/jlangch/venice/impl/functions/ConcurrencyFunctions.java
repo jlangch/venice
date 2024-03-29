@@ -2563,7 +2563,7 @@ public class ConcurrencyFunctions {
                          "@(thread #(do (sleep 100) 1))",
                          "@(thread #(do (sleep 100) (thread-name)))",
                          "@(thread #(do (sleep 100) (thread-name)) \"job\")",
-                         "@(thread #(do (sleep 100) (thread-name)) \"job\" :user)",
+                         "@(thread #(do (sleep 100) (thread-name)) \"job\" :daemon)",
                          ";; consumer / producer                            \n" +
                          "(do                                               \n" +
                          "  (defn produce [q]                               \n" +
