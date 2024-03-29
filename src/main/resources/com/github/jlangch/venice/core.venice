@@ -1942,7 +1942,8 @@
      :see-also '("postwalk-replace" "prewalk") }
 
   prewalk-replace [smap form]
-    (core/prewalk (fn [x] (if (contains? smap x) (smap x) x)) form))
+  
+  (core/prewalk (fn [x] (if (contains? smap x) (smap x) x)) form))
 
 
 (defn
@@ -2007,6 +2008,7 @@
                       (recur)))
                  "venice-tap-loop")))
 
+
 (defn 
   ^{ :arglists '("(add-tap f)")
      :doc """
@@ -2028,10 +2030,11 @@
           "tap>") }
 
   add-tap [f]
-    (assert (fn? f))
-    (force tap-loop)
-    (swap! tapset conj f)
-    nil)
+
+  (assert (fn? f))
+  (force tap-loop)
+  (swap! tapset conj f)
+  nil)
 
 
 (defn 
@@ -2049,10 +2052,11 @@
           "add-tap" 
           "tap>") }
 
- remove-tap [f]
-   (assert (fn? f))
-   (swap! tapset disj f)
-   nil)
+  remove-tap [f]
+
+  (assert (fn? f))
+  (swap! tapset disj f)
+  nil)
 
 
 (defn 
@@ -2072,8 +2076,9 @@
           "tap>") }
 
  clear-taps []
-   (reset! tapset #{})
-   nil)
+ 
+ (reset! tapset #{})
+ nil)
 
 
 (defn 
@@ -2094,8 +2099,9 @@
           "clear-taps") }
 
   tap> [x]
-    (force tap-loop)
-    (offer! tapq x))
+
+  (force tap-loop)
+  (offer! tapq x))
 
 
 
