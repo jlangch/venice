@@ -99,6 +99,7 @@ import com.github.jlangch.venice.impl.docgen.cheatsheet.section.SandboxSection;
 import com.github.jlangch.venice.impl.docgen.cheatsheet.section.SpecialFormsSection;
 import com.github.jlangch.venice.impl.docgen.cheatsheet.section.SystemSection;
 import com.github.jlangch.venice.impl.docgen.cheatsheet.section.SystemVarSection;
+import com.github.jlangch.venice.impl.docgen.cheatsheet.section.TapSection;
 import com.github.jlangch.venice.impl.docgen.cheatsheet.section.TimeSection;
 import com.github.jlangch.venice.impl.docgen.cheatsheet.section.TransducersSection;
 import com.github.jlangch.venice.impl.docgen.cheatsheet.section.TypesSection;
@@ -309,6 +310,7 @@ public class DocGenerator {
         system.addSection(new DocSection("REPL", "repl"));
         system.addSection(new DocSection("Sandbox", "sandbox"));
         system.addSection(new DocSection("Load\u00A0Paths", "loadpaths"));
+        system.addSection(new DocSection("Tap", "tap"));
         content.add(system);
 
         final DocSection util = new DocSection("Util", "util");
@@ -442,6 +444,7 @@ public class DocGenerator {
                 new ConcurrencySection(diBuilder).section(),
                 new SystemSection(diBuilder).section(),
                 new SystemVarSection(diBuilder).section(),
+                new TapSection(diBuilder).section(),
                 new TimeSection(diBuilder).section(),
                 new IoSection(diBuilder).section(),
                 new IoFileSection(diBuilder).section(),

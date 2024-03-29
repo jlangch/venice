@@ -1990,9 +1990,119 @@
 
 
 
-  ;; ---------------------------------------------------------------------------
-  ;; registered service  (service registry)
-  ;; ---------------------------------------------------------------------------
+;; ---------------------------------------------------------------------------
+;; taps
+;; ---------------------------------------------------------------------------
+
+(defonce ^:private tapset (atom #{}))
+(defonce ^:private tapq (queue 1024))
+
+(defonce ^:private tap-loop
+  (delay (thread
+            #(let [t    (take! tapq)
+                   taps @tapset]
+              (doseq [tap taps]
+                (try
+                  (tap t)
+                  (catch Throwable ex)))
+              (recur))
+            "venice-tap-loop")))
+
+(defn 
+  ^{ :arglists '("(add-tap f)")
+     :doc """
+          adds f, a fn of one argument, to the tap set. This function will be 
+          called with anything sent via `tap>`.
+
+          This function may (briefly) block, and will never impede calls to 
+          `tap>`, but blocking indefinitely may cause tap values to be dropped.
+
+          Remember f in order to `remove-tap`
+          """
+     :examples '(
+          """
+          (add-tap println)
+          """)
+     :see-also '(
+          "remove-tap"
+          "clear-taps"
+          "tap>") }
+
+  add-tap [f]
+    (assert (fn? f))
+    (force tap-loop)
+    (swap! tapset conj f)
+    nil)
+
+
+(defn 
+  ^{ :arglists '("(remove-tap f)")
+     :doc """
+          Remove f from the tap set.
+          """
+     :examples '(
+          """
+          (do
+            (add-tap prn)
+            (remove-tap prn))
+          """)
+     :see-also '(
+          "add-tap" 
+          "tap>") }
+
+ remove-tap [f]
+   (assert (fn? f))
+   (swap! tapset disj f)
+   nil)
+
+
+(defn 
+  ^{ :arglists '("(clear-taps)")
+     :doc """
+          Removes all tap sets.
+          """
+     :examples '(
+          """
+          (do
+            (add-tap prn)
+            (clear-taps))
+          """)
+     :see-also '(
+          "remove-tap"
+          "add-tap" 
+          "tap>") }
+
+ clear-taps []
+   (reset! tapset #{})
+   nil)
+
+
+(defn 
+  ^{ :arglists '("(tap> x)")
+     :doc """
+          Sends x to any taps. Will not block. Returns true if there was room 
+          in the queue, false if not (x is dropped).
+          """
+     :examples '(
+          """
+          (do
+            (add-tap prn)
+            (tap> {:foo "hello" :bar 34.5}))
+          """)
+     :see-also '(
+          "add-tap", 
+          "remove-tap", 
+          "clear-taps") }
+
+  tap> [x]
+    (force tap-loop)
+    (offer! tapq x))
+
+
+
+;; ---------------------------------------------------------------------------
+;; registered service  (service registry)
+;; ---------------------------------------------------------------------------
 
 (defn
   ^{ :arglists '(
