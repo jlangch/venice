@@ -1998,15 +1998,14 @@
 (defonce ^:private tapq (queue 1024))
 
 (defonce ^:private tap-loop
-  (delay (thread
-            #(let [t    (take! tapq)
-                   taps @tapset]
-              (doseq [tap taps]
-                (try
-                  (tap t)
-                  (catch Throwable ex)))
-              (recur))
-            "venice-tap-loop")))
+  (delay (thread #(loop []
+                    (let [t (take! tapq)]
+                      (doseq [tap @tapset]
+                        (try
+                          (tap t)
+                          (catch :Exception e)))
+                      (recur)))
+                 "venice-tap-loop")))
 
 (defn 
   ^{ :arglists '("(add-tap f)")
