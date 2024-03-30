@@ -92,7 +92,7 @@ public class TraceModuleTest {
 
     @Test
     public void test_trace_nested() {
-    	final CapturingPrintStream cps = new CapturingPrintStream();
+        final CapturingPrintStream cps = new CapturingPrintStream();
 
         final Venice venice = new Venice();
         final Map<String,Object> params = Parameters.of("*out*", cps);
@@ -111,19 +111,21 @@ public class TraceModuleTest {
                 "          (bar 5))                               ";
 
         assertEquals(7L, venice.eval(script1, params));
+
+        // Must run on *nix and Windows
         assertEquals(
-        		"TRACE t00: (user/bar 5)\n" +
-        		"TRACE t00: | (user/foo 5)\n" +
-        		"TRACE t00: | | (core/+ 5 2)\n" +
-        		"TRACE t00: | | | => 7\n" +
-        		"TRACE t00: | | => 7\n" +
-        		"TRACE t00: | => 7\n",
-        		cps.getOutput().replaceAll("t[0-9]+:", "t00:"));
+                "TRACE t00: (user/bar 5)\n" +
+                "TRACE t00: | (user/foo 5)\n" +
+                "TRACE t00: | | (core/+ 5 2)\n" +
+                "TRACE t00: | | | => 7\n" +
+                "TRACE t00: | | => 7\n" +
+                "TRACE t00: | => 7\n",
+                StringUtil.crlf_to_lf(cps.getOutput()).replaceAll("t[0-9]+:", "t00:"));
     }
 
     @Test
     public void test_trace_exceptipn() {
-    	final CapturingPrintStream cps = new CapturingPrintStream();
+        final CapturingPrintStream cps = new CapturingPrintStream();
 
         final Venice venice = new Venice();
         final Map<String,Object> params = Parameters.of("*out*", cps);
@@ -142,14 +144,16 @@ public class TraceModuleTest {
                 "          (bar 5))                               ";
 
         assertThrows(VncException.class, () -> venice.eval(script1, params));
+
+        // Must run on *nix and Windows
         assertEquals(
-        		"TRACE t00: (user/bar 5)\n" +
-        		"TRACE t00: | (user/foo 5)\n" +
-        		"TRACE t00: | | (core// 5 0)\n" +
-        		"TRACE t00: | | | => com.github.jlangch.venice.VncException: / by zero\n" +
-        		"TRACE t00: | | => com.github.jlangch.venice.VncException: / by zero\n" +
-        		"TRACE t00: | => com.github.jlangch.venice.VncException: / by zero\n",
-        		cps.getOutput().replaceAll("t[0-9]+:", "t00:"));
+                "TRACE t00: (user/bar 5)\n" +
+                "TRACE t00: | (user/foo 5)\n" +
+                "TRACE t00: | | (core// 5 0)\n" +
+                "TRACE t00: | | | => com.github.jlangch.venice.VncException: / by zero\n" +
+                "TRACE t00: | | => com.github.jlangch.venice.VncException: / by zero\n" +
+                "TRACE t00: | => com.github.jlangch.venice.VncException: / by zero\n",
+                StringUtil.crlf_to_lf(cps.getOutput()).replaceAll("t[0-9]+:", "t00:"));
     }
 
     @Test
