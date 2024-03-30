@@ -24,6 +24,7 @@ package com.github.jlangch.venice.modules;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.util.Map;
@@ -32,7 +33,9 @@ import org.junit.jupiter.api.Test;
 
 import com.github.jlangch.venice.Parameters;
 import com.github.jlangch.venice.Venice;
+import com.github.jlangch.venice.VncException;
 import com.github.jlangch.venice.impl.util.StringUtil;
+import com.github.jlangch.venice.util.CapturingPrintStream;
 
 
 public class TraceModuleTest {
@@ -85,6 +88,68 @@ public class TraceModuleTest {
                 "   (trace/trace nil))              ";
 
         assertNull(venice.eval(script3, params));
+    }
+
+    @Test
+    public void test_trace_nested() {
+    	final CapturingPrintStream cps = new CapturingPrintStream();
+
+        final Venice venice = new Venice();
+        final Map<String,Object> params = Parameters.of("*out*", cps);
+
+        final String script1 =
+                "(do                                              \n" +
+                "          (load-module :trace ['trace :as 't])   \n" +
+                "                                                 \n" +
+                "          (defn foo [x] (+ x 2))                 \n" +
+                "          (defn bar [x] (foo x))                 \n" +
+                "                                                 \n" +
+                "          (t/trace-var +)                        \n" +
+                "          (t/trace-var foo)                      \n" +
+                "          (t/trace-var bar)                      \n" +
+                "                                                 \n" +
+                "          (bar 5))                               ";
+
+        assertEquals(7L, venice.eval(script1, params));
+        assertEquals(
+        		"TRACE t00: (user/bar 5)\n" +
+        		"TRACE t00: | (user/foo 5)\n" +
+        		"TRACE t00: | | (core/+ 5 2)\n" +
+        		"TRACE t00: | | | => 7\n" +
+        		"TRACE t00: | | => 7\n" +
+        		"TRACE t00: | => 7\n",
+        		cps.getOutput().replaceAll("t[0-9]+:", "t00:"));
+    }
+
+    @Test
+    public void test_trace_exceptipn() {
+    	final CapturingPrintStream cps = new CapturingPrintStream();
+
+        final Venice venice = new Venice();
+        final Map<String,Object> params = Parameters.of("*out*", cps);
+
+        final String script1 =
+                "(do                                              \n" +
+                "          (load-module :trace ['trace :as 't])   \n" +
+                "                                                 \n" +
+                "          (defn foo [x] (/ x 0))                 \n" +
+                "          (defn bar [x] (foo x))                 \n" +
+                "                                                 \n" +
+                "          (t/trace-var /)                        \n" +
+                "          (t/trace-var foo)                      \n" +
+                "          (t/trace-var bar)                      \n" +
+                "                                                 \n" +
+                "          (bar 5))                               ";
+
+        assertThrows(VncException.class, () -> venice.eval(script1, params));
+        assertEquals(
+        		"TRACE t00: (user/bar 5)\n" +
+        		"TRACE t00: | (user/foo 5)\n" +
+        		"TRACE t00: | | (core// 5 0)\n" +
+        		"TRACE t00: | | | => com.github.jlangch.venice.VncException: / by zero\n" +
+        		"TRACE t00: | | => com.github.jlangch.venice.VncException: / by zero\n" +
+        		"TRACE t00: | => com.github.jlangch.venice.VncException: / by zero\n",
+        		cps.getOutput().replaceAll("t[0-9]+:", "t00:"));
     }
 
     @Test
