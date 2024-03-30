@@ -346,4 +346,41 @@ public class TraceModuleTest {
         assertEquals("trace: 4\n", StringUtil.crlf_to_lf((String)venice.eval(script)));
     }
 
+    @Test
+    public void test_trace_str_limit_1() {
+        final Venice venice = new Venice();
+
+        final String script =
+                "(do                            \n" +
+                "  (load-module :trace)         \n" +
+                "  (trace/trace-str-limit))     ";
+
+        assertEquals(80L, venice.eval(script));
+    }
+
+    @Test
+    public void test_trace_str_limit_2() {
+        final Venice venice = new Venice();
+
+        final String script =
+                "(do                            \n" +
+                "  (load-module :trace)         \n" +
+                "  (trace/trace-str-limit 120)) ";
+
+        assertEquals(120L, venice.eval(script));
+    }
+
+    @Test
+    public void test_trace_str_limit_3() {
+        final Venice venice = new Venice();
+
+        final String script =
+                "(do                            \n" +
+                "  (load-module :trace)         \n" +
+                "  (trace/trace-str-limit 120)  \n" +
+                "  (trace/trace-str-limit))     ";
+
+        assertEquals(120L, venice.eval(script));
+    }
+
 }
