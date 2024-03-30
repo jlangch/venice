@@ -13,6 +13,7 @@ All notable changes to this project will be documented in this file.
 - function `io/file-normalize-utf`
 - thread type support to the function `thread` to allow spawning daemon or user 
   threads
+- support for tracing exceptions in `trace/trace-var`
 
 
 

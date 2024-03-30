@@ -45,7 +45,7 @@ public class ModuleTracingSection implements ISectionBuilder {
         final DocSection trace = new DocSection("Tracing", id());
         all.addSection(trace);
         trace.addItem(diBuilder.getDocItem("trace/trace"));
-        trace.addItem(diBuilder.getDocItem("trace/trace-var"));
+        trace.addItem(diBuilder.getDocItem("trace/trace-var", true, true));
         trace.addItem(diBuilder.getDocItem("trace/untrace-var"));
 
         final DocSection test = new DocSection("Test", id());

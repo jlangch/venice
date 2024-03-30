@@ -54,9 +54,13 @@
   (let [id (gensym "t")]
     (tracer id (str (trace-indent) (pr-str (cons name args))))
     (binding [*trace-depth* (inc *trace-depth*)]
-      (let [result (apply f args)]
-        (tracer id (str (trace-indent) "=> " (pr-str result)))
-        result))))
+      (try
+        (let [result (apply f args)]
+          (tracer id (str (trace-indent) "=> " (pr-str result)))
+          result)
+        (catch :Exception e
+          (tracer id (str (trace-indent) "=> " (pr-str e)))
+          (throw e))))))
 
 
 (defn
@@ -150,7 +154,7 @@
           (t/trace-var +)
 
           (+ 1 2))
-        """
+        """,
         """
         (do
           (load-module :trace ['trace :as 't])
@@ -160,6 +164,19 @@
           (defn bar [x] (zoo x))
 
           (t/trace-var +)
+          (t/trace-var foo)
+          (t/trace-var bar)
+
+          (bar 5))
+        """,
+        """
+        (do
+          (load-module :trace ['trace :as 't])
+
+          (defn foo [x] (/ x 0)) ;; division by zero!
+          (defn bar [x] (foo x))
+
+          (t/trace-var /)
           (t/trace-var foo)
           (t/trace-var bar)
 
