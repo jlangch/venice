@@ -112,7 +112,7 @@ public class TraceModuleTest {
 
         assertEquals(7L, venice.eval(script1, params));
 
-        // Must run on *nix and Windows
+        // Must run on *nix and Windows (convert crlf)
         assertEquals(
                 "TRACE t00: (user/bar 5)\n" +
                 "TRACE t00: | (user/foo 5)\n" +
@@ -124,7 +124,7 @@ public class TraceModuleTest {
     }
 
     @Test
-    public void test_trace_exceptipn() {
+    public void test_trace_exception() {
         final CapturingPrintStream cps = new CapturingPrintStream();
 
         final Venice venice = new Venice();
@@ -145,7 +145,7 @@ public class TraceModuleTest {
 
         assertThrows(VncException.class, () -> venice.eval(script1, params));
 
-        // Must run on *nix and Windows
+        // Must run on *nix and Windows (convert crlf)
         assertEquals(
                 "TRACE t00: (user/bar 5)\n" +
                 "TRACE t00: | (user/foo 5)\n" +
@@ -342,7 +342,7 @@ public class TraceModuleTest {
                 "        trace/tee                             \n" +
                 "        (- 1))))                                ";
 
-        // Must run on *nix and Windows
+        // Must run on *nix and Windows (convert crlf)
         assertEquals("trace: 4\n", StringUtil.crlf_to_lf((String)venice.eval(script)));
     }
 
