@@ -489,10 +489,7 @@ public class DocGenerator {
                 new ModuleTomcatSection(diBuilder).section(),
                 new ModuleRingSection(diBuilder).section(),
                 new ModuleTracingSection(diBuilder).section(),
-                new ModuleShellSection(diBuilder).section(),
-                new ModuleMimetypesSection(diBuilder).section(),
-                new ModuleAnsiSection(diBuilder).section(),
-                new ModuleInstallerSection(diBuilder).section());
+                new ModuleShellSection(diBuilder).section());
     }
 
     private List<DocSection> getModulesRightSections() {
@@ -511,7 +508,10 @@ public class DocGenerator {
 		        new ModuleGrepSection(diBuilder).section(),
 		        new ModuleQrRefSection(diBuilder).section(),
 		        new ModuleAsciiTableSection(diBuilder).section(),
-        		new ModuleMatrixSection(diBuilder).section());
+        		new ModuleMatrixSection(diBuilder).section(),
+        		new ModuleAnsiSection(diBuilder).section(),
+                new ModuleMimetypesSection(diBuilder).section(),
+        		new ModuleInstallerSection(diBuilder).section());
     }
 
     private List<DocItem> getDocItems(final List<DocSection> sections) {

@@ -74,7 +74,7 @@
      :doc """
           Probes the content type of a file. 
 
-          The function uses built-in "mime.types" data file to lookup the
+          The function uses a built-in "mime.types" data file to lookup the
           file's mimetype based on the file extension.
 
           f must be a string or a :java.io.File.
@@ -89,6 +89,6 @@
           """) }
    
    probe-content-type [f]
-   
+
    (assert (or (string? f) (io/file? f)))
    (get (force load-content-types) (io/file-ext f)))
