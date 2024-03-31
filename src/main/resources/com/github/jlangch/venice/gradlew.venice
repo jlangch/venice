@@ -61,12 +61,12 @@
 
         Arguments:
 
-        | proj-home d | The project directory |
-        | :out-fn f   | a function with a single string argument that receives \
-                        line by line from the process' stdout. |
-        | :err-fn f   | a function with a single string argument that receives \
-                        line by line from the process' stderr. |
-        | args        | Any number of task names and Gradle options |
+        | proj-home  | The project directory |
+        | out-fn     | a function with a single string argument that receives \
+                       line by line from the process' stdout. |
+        | err-fn     | a function with a single string argument that receives \
+                       line by line from the process' stderr. |
+        | args       | Any number of task names and Gradle options |
         """
      :examples '(
         """
@@ -108,23 +108,23 @@
 
         **Note: Use this module only for projects based on the Gradle wrapper**
 
-        Apart from printing the information the function is identical to 
-        `gradlew/run`.
+        Apart from printing the passed tasks and options the function is 
+        identical to `gradlew/run`.
 
         Arguments:
 
-        | proj-home d | The project directory |
-        | :out-fn f   | a function with a single string argument that receives \
+        | proj-home | The project directory |
+        | out-fn    | a function with a single string argument that receives \
                         line by line from the process' stdout. May be nil. |
-        | :err-fn f   | a function with a single string argument that receives \
+        | err-fn    | a function with a single string argument that receives \
                         line by line from the process' stderr. May be nil. |
-        | args        | Any number of task names and Gradle options |
+        | args      | Any number of task names and Gradle options |
         """
      :examples '(
         """
         (do
           (load-module :gradlew)
-          (let [java-home     (system-env :JAVA_11_HOME)]
+          (let [java-home  (system-env :JAVA_11_HOME)]
             (gradlew/run* "/Users/foo/projects/bar"
                           println
                           println
