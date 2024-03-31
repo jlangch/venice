@@ -62,6 +62,7 @@ import com.github.jlangch.venice.impl.docgen.cheatsheet.modules.ModuleJsonlSecti
 import com.github.jlangch.venice.impl.docgen.cheatsheet.modules.ModuleKiraSection;
 import com.github.jlangch.venice.impl.docgen.cheatsheet.modules.ModuleMatrixSection;
 import com.github.jlangch.venice.impl.docgen.cheatsheet.modules.ModuleMavenSection;
+import com.github.jlangch.venice.impl.docgen.cheatsheet.modules.ModuleMimetypesSection;
 import com.github.jlangch.venice.impl.docgen.cheatsheet.modules.ModuleParsifalSection;
 import com.github.jlangch.venice.impl.docgen.cheatsheet.modules.ModuleQrRefSection;
 import com.github.jlangch.venice.impl.docgen.cheatsheet.modules.ModuleRingSection;
@@ -136,7 +137,7 @@ public class DocGenerator {
                         "fonts",      "qrref",      "jsonl",           "timing",
                         "zipvault",   "gradlew",    "matrix",          "ascii-table",
                         "docker",     "cargo",      "cargo-arangodb",  "cargo-qdrant",
-                        "installer",  "tomcat",     "ring"));
+                        "installer",  "tomcat",     "ring",            "mimetypes"));
 
         final IVeniceInterpreter venice = new VeniceInterpreter(new AcceptAllInterceptor());
 
@@ -343,32 +344,38 @@ public class DocGenerator {
         final DocSection extmod = new DocSection("Modules", "modules");
         extmod.addSection(new DocSection("Kira\u00A0Templates", "modules.kira"));
         extmod.addSection(new DocSection("Parsifal", "modules.parsifal"));
+        extmod.addSection(new DocSection("Grep", "modules.grep"));
         extmod.addSection(new DocSection("Configuration", "modules.config"));
         extmod.addSection(new DocSection("Component", "modules.component"));
         extmod.addSection(new DocSection("ZipVault", "modules.zipvault"));
-        extmod.addSection(new DocSection("XML", "modules.xml"));
-        extmod.addSection(new DocSection("Grep", "modules.grep"));
         extmod.addSection(new DocSection("Fonts", "modules.fonts"));
         extmod.addSection(new DocSection("Cryptography", "modules.cryptography"));
         extmod.addSection(new DocSection("AsciiTable", "modules.asciitable"));
+        extmod.addSection(new DocSection("Hexdump", "modules.hexdump"));
         extmod.addSection(new DocSection("Matrix", "modules.matrix"));
         extmod.addSection(new DocSection("Java", "modules.java"));
-        extmod.addSection(new DocSection("Hexdump", "modules.hexdump"));
         extmod.addSection(new DocSection("Shell", "modules.shell"));
         extmod.addSection(new DocSection("Geo IP", "modules.geoip"));
+        extmod.addSection(new DocSection("Mimetypes", "modules.mimetypes"));
         extmod.addSection(new DocSection("Ansi", "modules.ansi"));
-        extmod.addSection(new DocSection("Gradle\u00A0Wrapper", "modules.gradlew"));
-        extmod.addSection(new DocSection("Gradle", "modules.gradle"));
-        extmod.addSection(new DocSection("Maven", "modules.maven"));
-        extmod.addSection(new DocSection("Test", "modules.test"));
-        extmod.addSection(new DocSection("Tracing", "modules.tracing"));
-        extmod.addSection(new DocSection("Benchmark", "modules.benchmark"));
-        extmod.addSection(new DocSection("Timing", "modules.timing"));
         extmod.addSection(new DocSection("App", "modules.app"));
         extmod.addSection(new DocSection("QR\u00A0Ref", "modules.qrref"));
-        extmod.addSection(new DocSection("Installer", "modules.installer"));
         extmod.addSection(new DocSection("Semver", "modules.semver"));
         content.add(extmod);
+
+        final DocSection build = new DocSection("Build\u00A0Tools", "build");
+        build.addSection(new DocSection("Gradle\u00A0Wrapper", "modules.gradlew"));
+        build.addSection(new DocSection("Gradle", "modules.gradle"));
+        build.addSection(new DocSection("Maven", "modules.maven"));
+        build.addSection(new DocSection("Installer", "modules.installer"));
+        content.add(build);
+
+        final DocSection debug = new DocSection("Test\u00A0&\u00A0Debug", "test");
+        debug.addSection(new DocSection("Test", "modules.test"));
+        debug.addSection(new DocSection("Tracing", "modules.tracing"));
+        debug.addSection(new DocSection("Timing", "modules.timing"));
+        debug.addSection(new DocSection("Benchmark", "modules.benchmark"));
+        content.add(debug);
 
         final DocSection web = new DocSection("Web", "web");
         web.addSection(new DocSection("Http\u00A0Client", "modules.http-client"));
@@ -483,6 +490,7 @@ public class DocGenerator {
                 new ModuleRingSection(diBuilder).section(),
                 new ModuleTracingSection(diBuilder).section(),
                 new ModuleShellSection(diBuilder).section(),
+                new ModuleMimetypesSection(diBuilder).section(),
                 new ModuleAnsiSection(diBuilder).section(),
                 new ModuleInstallerSection(diBuilder).section());
     }

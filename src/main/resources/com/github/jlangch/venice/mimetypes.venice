@@ -50,3 +50,45 @@
      :image-svg+xml       "image/svg+xml"
      :email               "message/rfc822"
  })
+
+
+(defonce ^:private mime-types-resource "com/github/jlangch/venice/mimetypes/mime.types")
+
+(defn- load-mime-types-resources []
+  (as-> (io/load-classpath-resource mime-types-resource) v
+        (bytebuf-to-string v :UTF-8)
+        (str/split-lines v)
+        (filter #(not (str/starts-with? % "#")) v)
+        (map #(str/split % "(\t| )+") v)
+        (map #(cartesian-product [(first %)] (rest %)) v)
+        (mapcat #(if (sequential? %) % [%]) v)
+        (map #(vector (second %) (keyword (first %))) v)
+        (into {} v)))
+
+(defonce ^:private load-content-types
+  (delay (load-mime-types-resources)))
+
+
+(defn 
+  ^{ :arglists '("(probe-content-type f)")
+     :doc """
+          Probes the content type of a file. 
+
+          The function uses built-in "mime.types" data file to lookup the
+          file's mimetype based on the file extension.
+
+          f must be a string or a :java.io.File.
+
+          Returns `nil` if a mapping is not defined.
+          """
+     :examples '(
+          """
+          (do 
+            (load-module :mimetypes)
+            (mimetypes/probe-content-type "foo.png"))
+          """) }
+   
+   probe-content-type [f]
+   
+   (assert (or (string? f) (io/file? f)))
+   (get (force load-content-types) (io/file-ext f)))

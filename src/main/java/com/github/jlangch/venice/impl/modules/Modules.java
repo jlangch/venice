@@ -96,6 +96,7 @@ public class Modules {
                         "maven",
                         "mercator",
                         "mimetypes",
+                        "multipart",
                         "parsifal",
                         "qrbill",
                         "qrref",

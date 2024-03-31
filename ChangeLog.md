@@ -15,7 +15,7 @@ All notable changes to this project will be documented in this file.
   threads
 - support for tracing exceptions in `trace/trace-var`
 - math function `rand-bigint`
-
+- function `mimetypes/probe-content-type`
 
 
 ## [1.12.7] - 2024-03-26
