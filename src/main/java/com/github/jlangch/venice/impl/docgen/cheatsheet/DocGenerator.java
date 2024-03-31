@@ -64,10 +64,12 @@ import com.github.jlangch.venice.impl.docgen.cheatsheet.modules.ModuleMatrixSect
 import com.github.jlangch.venice.impl.docgen.cheatsheet.modules.ModuleMavenSection;
 import com.github.jlangch.venice.impl.docgen.cheatsheet.modules.ModuleParsifalSection;
 import com.github.jlangch.venice.impl.docgen.cheatsheet.modules.ModuleQrRefSection;
+import com.github.jlangch.venice.impl.docgen.cheatsheet.modules.ModuleRingSection;
 import com.github.jlangch.venice.impl.docgen.cheatsheet.modules.ModuleSemverSection;
 import com.github.jlangch.venice.impl.docgen.cheatsheet.modules.ModuleShellSection;
 import com.github.jlangch.venice.impl.docgen.cheatsheet.modules.ModuleTestSection;
 import com.github.jlangch.venice.impl.docgen.cheatsheet.modules.ModuleTimingSection;
+import com.github.jlangch.venice.impl.docgen.cheatsheet.modules.ModuleTomcatSection;
 import com.github.jlangch.venice.impl.docgen.cheatsheet.modules.ModuleTracingSection;
 import com.github.jlangch.venice.impl.docgen.cheatsheet.modules.ModuleXmlSection;
 import com.github.jlangch.venice.impl.docgen.cheatsheet.modules.ModuleZipVaultSection;
@@ -134,7 +136,7 @@ public class DocGenerator {
                         "fonts",      "qrref",      "jsonl",           "timing",
                         "zipvault",   "gradlew",    "matrix",          "ascii-table",
                         "docker",     "cargo",      "cargo-arangodb",  "cargo-qdrant",
-                        "installer"));
+                        "installer",  "tomcat",     "ring"));
 
         final IVeniceInterpreter venice = new VeniceInterpreter(new AcceptAllInterceptor());
 
@@ -368,6 +370,13 @@ public class DocGenerator {
         extmod.addSection(new DocSection("Semver", "modules.semver"));
         content.add(extmod);
 
+        final DocSection web = new DocSection("Web", "web");
+        web.addSection(new DocSection("Http\u00A0Client", "modules.http-client"));
+        web.addSection(new DocSection("Http\u00A0Client\u00A0Legacy", "modules.http-client-legacy"));
+        web.addSection(new DocSection("Tomcat\u00A0WebApp\u00A0Server", "modules.tomcat"));
+        web.addSection(new DocSection("Ring", "modules.ring"));
+        content.add(web);
+
         final DocSection docker = new DocSection("Docker", "docker");
         docker.addSection(new DocSection("Docker", "modules.docker"));
         docker.addSection(new DocSection("Cargo", "modules.cargo"));
@@ -470,6 +479,8 @@ public class DocGenerator {
                 new ModuleCargoSection(diBuilder).section(),
                 new ModuleCargoArangoDBSection(diBuilder).section(),
                 new ModuleCargoQdrantDBSection(diBuilder).section(),
+                new ModuleTomcatSection(diBuilder).section(),
+                new ModuleRingSection(diBuilder).section(),
                 new ModuleTracingSection(diBuilder).section(),
                 new ModuleShellSection(diBuilder).section(),
                 new ModuleAnsiSection(diBuilder).section(),

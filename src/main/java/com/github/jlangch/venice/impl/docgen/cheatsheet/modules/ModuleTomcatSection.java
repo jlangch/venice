@@ -42,14 +42,24 @@ public class ModuleTomcatSection implements ISectionBuilder {
                               "                          :silent false))      \n" +
                               "```\n";
 
-        final DocSection section = new DocSection("Tomcat", "Tomcat WebApp Server", "modules.tomcat", null, footer);
+        final DocSection section = new DocSection("Tomcat", "Embedded Tomcat WebApp Server", "modules.tomcat", null, footer);
 
         final DocSection all = new DocSection("(load-module :tomcat)", id());
         section.addSection(all);
 
-        final DocSection wr = new DocSection("Writer", id());
-        all.addSection(wr);
-        wr.addItem(diBuilder.getDocItem("excel/writer", false));
+        final DocSection tomcat = new DocSection("Tomcat", id());
+        all.addSection(tomcat);
+        tomcat.addItem(diBuilder.getDocItem("tomcat/start", false));
+        tomcat.addItem(diBuilder.getDocItem("tomcat/stop", false));
+        tomcat.addItem(diBuilder.getDocItem("tomcat/destroy", false));
+        tomcat.addItem(diBuilder.getDocItem("tomcat/shutdown", false));
+        tomcat.addItem(diBuilder.getDocItem("tomcat/state", false));
+
+        final DocSection servlet = new DocSection("Servlet", id());
+        all.addSection(servlet);
+        servlet.addItem(diBuilder.getDocItem("tomcat/create-servlet", false));
+        servlet.addItem(diBuilder.getDocItem("tomcat/hello-world-servlet", false));
+
 
         return section;
     }

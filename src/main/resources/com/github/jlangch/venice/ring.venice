@@ -326,38 +326,50 @@
 ;; Routing
 ;; -----------------------------------------------------------------------------
 
-;; A route is defined by a HTTP verb, a URI filter and a handle
-;; function. If multiple routes match the route with the longest
-;; URI filter will be chosen.
-;;
-;;    (def routes [
-;;      [:get "/**"                   hello-world-handler]
-;;      [:get "/test/**"              test-handler]
-;;      [:get "/static/images/*.png"  image-handler]
-;;    ])
-;;
-;; Routing URI pattern filters:
-;;    "/**"
-;;    "/app/**"
-;;    "/static/images/chart.png"
-;;    "/static/images/*.png"
-;;    "/static/**/*.png"
-;;
-;; Rigging up a Ring WEB App and starting Tomcat:
-;;    (tc/run-tomcat
-;;      (ring/create-servlet (-> (ring/match-routes routes)  ; >--+
-;;                                                           ;    |
-;;                               (ring/mw-dump-request)      ; ^  |
-;;                               (ring/mw-request-counter)   ; |  |
-;;                               (ring/mw-add-session 3600)  ; |  |
-;;                               (ring/mw-print-uri)         ; |  |
-;;                               (ring/mw-debug :on)))       ; +--+
-;;      {:await? false})
 
 (defn
   ^{ :doc """
           Compile the routes and return a function that calls the handler
           matching the URI.
+
+          A route is defined by a HTTP verb, a URI filter and a handle
+          function. If multiple routes match the route with the longest
+          URI filter will be chosen.
+          
+          ```
+          (def routes [
+            [:get    "/**"                   hello-world-handler]
+            [:get    "/test/**"              test-handler]
+            [:get    "/static/images/*.png"  image-handler]
+            
+            [:get    "/employees"             get-all-employees]
+            [:get    "/employees/:id"         get-employee]
+            [:post   "/employees"             create-employee]
+            [:put    "/employees/:id"         update-employee]
+            [:delete "/employees/:id"         delete-employee] ])
+          ```
+          
+          Routing URI pattern filters:
+          
+          *  "/**"
+          *  "/app/**"
+          *  "/static/images/chart.png"
+          *  "/static/images/*.png"
+          *  "/static/**/*.png"
+          
+          Rigging up a Ring WEB App and starting Tomcat:
+
+          ```
+          (tc/run-tomcat
+            (ring/create-servlet (-> (ring/match-routes routes)  ; >--+
+                                                                 ;    |
+                                     (ring/mw-dump-request)      ; ^  |
+                                     (ring/mw-request-counter)   ; |  |
+                                     (ring/mw-add-session 3600)  ; |  |
+                                     (ring/mw-print-uri)         ; |  |
+                                     (ring/mw-debug :on)))       ; +--+
+            {:await? false})
+          ```
           """ }
 
   match-routes [routes]
@@ -433,7 +445,8 @@
   ^{ :doc """
           Gets the character encoding of a Ring response.
 
-          E.g.: Content-Type: text/html; charset=utf-8
+          E.g.: Returns `utf-8` for a content tye header like: 
+          `Content-Type: text/html; charset=utf-8`
           """ }
 
   get-charset [res]

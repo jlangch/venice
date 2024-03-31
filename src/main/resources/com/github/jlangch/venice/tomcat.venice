@@ -301,55 +301,76 @@
      :doc """
           Start a Tomcat to serve given servlet with supplied options:
 
-          Server options:
+          ¶¶*Server options:*
 
-          :base-dir - the server's base directory (default: ".")¶
-          :await? - block the thread until server get shutdown command (default: true)¶
-          :http? - create http connector (default: true)¶
-          :port - the port to listen on http connector (default: 8080)¶
-          :https? - create https connector (default: false)¶
-          :https-port - the port to listen on https connector (default: 8443)¶
-          :keystore - path to keystore file include server certificate¶
-          :key-pass - password of keystore file¶
-          :tls-hostname - hostname to listen for https connector (default: _default_)¶
-          :tls-protocol - list of SSL/TLS protocol to support for https connector (default: TLS)¶
-          :tls-ciphers - list of SSL/TLS ciphers to support for https connector (default: too long. ECDHE-ECDSA and ECDHE-RSA ciphers)¶
-          :executor? - use executor (default: true)¶
-          :executor-name - name of executor (default: tc-executor)¶
-          :max-threads - max number of threads in executor (default: 200)¶
-          :min-spare-threads - minimum number of spare threads in executor (default: 25)¶
-          :max-idle-time - max milliseconds before an idle thread shutsdown (default: 60000)¶
+          | [![width: 20%]]    | [![width: 80%]] |
+          | :base-dir          | the server's base directory (default: ".") |
+          | :await?            | block the thread until server get shutdown command (default: true) |
+          | :http?             | create http connector (default: true) |
+          | :port              | the port to listen on http connector (default: 8080) |
+          | :https?            | create https connector (default: false) |
+          | :https-port.       | the port to listen on https connector (default: 8443) |
+          | :keystore          | path to keystore file include server certificate |
+          | :key-pass.         | password of keystore file |
+          | :tls-hostname.     | hostname to listen for https connector (default: _default_) |
+          | :tls-protocol.     | list of SSL/TLS protocol to support for https connector (default: TLS) |
+          | :tls-ciphers       | list of SSL/TLS ciphers to support for https connector |
+          | :executor?         | use executor (default: true) |
+          | :executor-name     | name of executor (default: tc-executor) |
+          | :max-threads       | max number of threads in executor (default: 200) |
+          | :min-spare-threads | minimum number of spare threads in executor (default: 25) |
+          | :max-idle-time     | max milliseconds before an idle thread shutsdown (default: 60000) |
 
-          Servlet options:
+          ¶¶*Servlet options:*
 
-          :name - the servlet's name (default: "venice-servlet")¶
-          :mapping - the servlet's mapping (default: "/*")¶
-          :file-upload - if true configure as file-upload servlet (default: false)¶
-          :location - file-upload location (default: "")¶
-          :max-file-size - file-upload max file size in bytes (default: -1)¶
-          :max-request-size - file-upload max request size in bytes (default: -1)¶
-          :file-size-threshold - file-upload max file threshold in bytes (default: 0I)¶
+          | [![width: 20%]]      | [![width: 80%]] |
+          | :name                | the servlet's name (default: "venice-servlet") |
+          | :mapping             | the servlet's mapping path (default: "/*") |
+          | :file-upload         | if true configure as file-upload servlet (default: false) |
+          | :location            | file-upload location (default: "") |
+          | :max-file-size       | file-upload max file size in bytes (default: -1) |
+          | :max-request-size    | file-upload max request size in bytes (default: -1) |
+          | :file-size-threshold | file-upload max file threshold in bytes (default: 0I) |
           """
       :examples '(
           """
+          ;; Example 1:
+          ;; start Tomcat with 
+          ;;   - a servlet
+          ;;   - server options
           (tomcat/start (tomcat/hello-world-servlet)
                         {:await? false, :base-dir ".", :port 8080})
           """,
           """
-          ;; passing a context-path and a context-doc-base
+          ;; Example 2:
+          ;; start Tomcat with 
+          ;;   - a servlet
+          ;;   - web app context-path
+          ;;   - web app context-doc-base
+          ;;   - server options
           (tomcat/start (tomcat/hello-world-servlet)
                         ""
                         "."
                         {:await? false, :base-dir ".", :port 8080})
           """,
           """
-          ;; passing servlet options
-          (tomcat/start [[(tomcat/hello-world-servlet) { :name "hello-servlet"
-                                                         :mapping "/*"}]]
+          ;; Example 3:
+          ;; start Tomcat with 
+          ;;   - a single servlet with servlet options
+          ;;   - web app context-path
+          ;;   - web app context-doc-base
+          ;;   - server options
+          (tomcat/start [ [ (tomcat/hello-world-servlet) 
+                            {:name "hello-servlet"  :mapping "/*"} ] ]
                         ""
                         "."
                         {:await? false, :base-dir ".", :port 8080})
-          """ ) }
+          """ )
+      :see-also '(
+          "tomcat/state"
+          "tomcat/stop"
+          "tomcat/destroy"
+          "tomcat/shutdown" ) }
 
   start
 
@@ -409,23 +430,134 @@
       server)))
 
 
-(defn state [server]
-  ;; :NEW  :INITIALIZING  :INITIALIZED
-  ;; :STARTING_PREP  :STARTING  :STARTED
-  ;; :STOPPING_PREP  :STOPPING  :STOPPED
-  ;; :DESTROYING  :DESTROYED  :FAILED
+(defn 
+  ^{ :arglists '("(state server)")
+     :doc """
+          Returns the state of a Tomcat server.
+
+          A Tomcat server state is of:
+
+          * `:NEW`
+          * `:INITIALIZING`
+          * `:INITIALIZED`
+          * `:STARTING_PREP`
+          * `:STARTING`
+          * `:STARTED`
+          * `:STOPPING_PREP`
+          * `:STOPPING`
+          * `:STOPPED`
+          * `:DESTROYING`
+          * `:DESTROYED`
+          * `:FAILED`
+          """
+     :examples '(
+          """
+          (do
+            (load-module :tomcat ['tomcat :as 'tc])
+            (let [server  (tc/start (tc/hello-world-servlet)
+                                    {:await? false, :base-dir ".", :port 8080})]
+              (tc/state server)
+              (sleep 20_000)
+              (tc/shutown server)))
+           """ )
+      :see-also '(
+          "tomcat/start"
+          "tomcat/stop"
+          "tomcat/destroy"
+          "tomcat/shutdown" ) }
+
+  state [server]
+
   (keyword (. (. server :getServer) :getState)))
 
 
-(defn stop [server]
+(defn 
+  ^{ :arglists '("(stop server)")
+     :doc """
+          Stops a Tomcat server.
+
+          Note: Do not forget to call `destroy` on the server after having
+                stopped if:
+          """
+     :examples '(
+          """
+          (do
+            (load-module :tomcat ['tomcat :as 'tc])
+            (let [server  (tc/start (tc/hello-world-servlet)
+                                    {:await? false, :base-dir ".", :port 8080})]
+              (tc/state server)
+              (sleep 20_000)
+              (tc/stop server)            
+              (tc/destroy server)))
+           """ )
+      :see-also '(
+          "tomcat/start"
+          "tomcat/state"
+          "tomcat/destroy"
+          "tomcat/shutdown" ) }
+
+  stop [server]
+
   (. server :stop))
 
 
-(defn destroy [server]
+(defn 
+  ^{ :arglists '("(destroy server)")
+     :doc """
+          Destroys a Tomcat server after having stopped it.
+          """
+     :examples '(
+          """
+          (do
+            (load-module :tomcat ['tomcat :as 'tc])
+            (let [server  (tc/start (tc/hello-world-servlet)
+                                    {:await? false, :base-dir ".", :port 8080})]
+              (tc/state server)
+              (sleep 20_000)
+              (tc/stop server)            
+              (tc/destroy server)))
+           """ )
+      :see-also '(
+          "tomcat/start"
+          "tomcat/state"
+          "tomcat/stop"
+          "tomcat/shutdown" ) }
+
+  destroy [server]
+
   (. server :destroy))
 
 
-(defn shutdown [server]
+(defn 
+  ^{ :arglists '("(shutdown server)")
+     :doc """
+          Shutdown a Tomcat server.
+
+          Shutdown effectively calls
+
+          * `(stop server)`
+          * `(destroy server)`
+
+          on the server
+          """
+     :examples '(
+          """
+          (do
+            (load-module :tomcat ['tomcat :as 'tc])
+            (let [server  (tc/start (tc/hello-world-servlet)
+                                    {:await? false, :base-dir ".", :port 8080})]
+              (tc/state server)
+              (sleep 20_000)
+              (tc/shutdown server)))
+           """ )
+      :see-also '(
+          "tomcat/start"
+          "tomcat/state"
+          "tomcat/stop"
+          "tomcat/destroy" ) }
+
+  shutdown [server]
+
   (. server :stop)
   (. server :destroy))
 
