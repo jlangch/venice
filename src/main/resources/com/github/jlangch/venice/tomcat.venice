@@ -477,7 +477,7 @@
           Stops a Tomcat server.
 
           Note: Do not forget to call `destroy` on the server after having
-                stopped if:
+                stopped it.
           """
      :examples '(
           """
