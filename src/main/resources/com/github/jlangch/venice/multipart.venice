@@ -44,44 +44,58 @@
 (defonce ^:private content-type "Content-Type: ")
 
 
-(defn to-bytebufs [data]
+(defn to-bytebuf [data]
   (assert (map? data))
 
-  )
+  (try-with [os (io/bytebuf-out-stream)]
+    (doseq [[name value] data] 
+           (if (file-protocol? v)
+             (io/spit-stream os (to-bytebuf-file name value))
+             (io/spit-stream os (to-bytebuf-simple name value)))
+    @os)))
   
 
-(defn- to-bytebufs-simple [name value]
+(defn- to-bytebuf-file [name value]
   (assert (string? name))
 
-  (let [v-file         (->as (. :URL :new value) f
-                             (. f :getPath)
-                             (. :File :new f))
-        v-file-name    (io/file-path v-file)
-        v-mime-type    (mimetypes/mimetypes/probe-content-type v-file)
-        v-file-content (. :Files :readAllBytes (. v-file :toPath))]
-    [ (str-to-bytebuf (str dash boundary-value nl));
-      (str-to-bytebuf disposition)
+  (try-with [os (io/bytebuf-out-stream)]
+    (let [v-file         (->as (. :URL :new value) f
+                               (. f :getPath)
+                               (. :File :new f))
+          v-file-name    (io/file-path v-file)
+          v-mime-type    (mimetypes/mimetypes/probe-content-type v-file)]
+      (when (nil? v-mime-type)
+        (throw (ex :VncException (str "Failed to get mimetype for file " v-file-name))))
 
-      (str-to-bytebuf (str field-name dq name dq file-name dq v-file-name dq nl))
-      (str-to-bytebuf (str content-type  v-mime-type nl))
-      (str-to-bytebuf nl)
-      (str-to-bytebuf v-file-content)
-      (str-to-bytebuf nl)
+      (io/spit-stream os (str-to-bytebuf (str dash boundary-value nl)))
+      (io/spit-stream os (str-to-bytebuf disposition))
 
-      (str-to-bytebuf (str dash boundary-value dash nl)) ]))
+      (io/spit-stream os (str-to-bytebuf (str field-name dq name dq file-name dq v-file-name dq nl)))
+      (io/spit-stream os (str-to-bytebuf (str content-type  v-mime-type nl)))
+      (io/spit-stream os (str-to-bytebuf nl))
+      (io/spit-stream os (. :Files :readAllBytes (. v-file :toPath)))
+      (io/spit-stream os (str-to-bytebuf nl))
+
+      (io/spit-stream os (str-to-bytebuf (str dash boundary-value dash nl)))
+      @os)
+    (catch :Exception e  
+      (throw (ex :VncException (str "Failed do process file " v-file-name) e)))))
 
 
-(defn- to-bytebufs-file [name value]
+(defn- to-bytebuf-simple [name value]
   (assert (string? name))
   
-  [ (str-to-bytebuf (str dash boundary-value nl))
-    (str-to-bytebuf disposition)
+  (try-with [os (io/bytebuf-out-stream)]
+    (io/spit-stream os (str-to-bytebuf (str dash boundary-value nl)))
+    (io/spit-stream os (str-to-bytebuf disposition))
 
-    (str-to-bytebuf (str field-name  dq  name  dq  nl))
-    (str-to-bytebuf nl)
-    (str-to-bytebuf (str value nl)) 
+    (io/spit-stream os (str-to-bytebuf (str field-name  dq  name  dq  nl)))
+    (io/spit-stream os (str-to-bytebuf nl))
+    ((io/spit-stream os str-to-bytebuf (str value nl)) )
 
-    (str-to-bytebuf (str dash boundary-value dash nl)) ])
+    ((io/spit-stream os str-to-bytebuf (str dash boundary-value dash nl)))
+    
+    @os))
 
 
 
