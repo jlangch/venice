@@ -1539,6 +1539,7 @@ public class MathFunctions {
                         "(rand-long 100)")
                     .seeAlso(
                     	"rand-double",
+                    	"rand-bigint",
                     	"rand-gaussian",
                     	"bytebuf-allocate-random")
                     .build()
@@ -1581,8 +1582,9 @@ public class MathFunctions {
                         "(rand-double 100.0)")
                     .seeAlso(
                     	"rand-long",
+                       	"rand-bigint",
                     	"rand-gaussian",
-                    	"bytebuf-allocate-random")
+                     	"bytebuf-allocate-random")
                     .build()
         ) {
             @Override
@@ -1627,6 +1629,7 @@ public class MathFunctions {
                     .seeAlso(
                     	"rand-long",
                     	"rand-double",
+                    	"rand-bigint",
                     	"bytebuf-allocate-random")
                     .build()
         ) {
@@ -1642,6 +1645,42 @@ public class MathFunctions {
                     final double stddev = Coerce.toVncDouble(args.second()).getValue();
                     return new VncDouble(mean + stddev * random.nextGaussian());
                 }
+            }
+
+            private static final long serialVersionUID = -1848883965231344442L;
+        };
+
+    public static VncFunction rand_bigint =
+        new VncFunction(
+                "rand-bigint",
+                VncFunction
+                    .meta()
+                    .arglists(
+                        "(rand-bigint bits)")
+                    .doc(
+                        "Constructs a randomly generated BigInteger, uniformly distributed " +
+                        "over the range 0 to (2^N - 1), inclusive.")
+                    .examples(
+                        "(rand-bigint 256)")
+                    .seeAlso(
+                    	"rand-long",
+                    	"rand-double",
+                    	"rand-gaussian",
+                    	"bytebuf-allocate-random")
+                    .build()
+        ) {
+            @Override
+            public VncVal apply(final VncList args) {
+                ArityExceptions.assertArity(this, args, 1);
+
+                final long bits = Coerce.toVncLong(args.first()).getValue();
+
+                if (bits < 2 || bits > 65536) {
+                    throw new VncException(
+                            "Function 'rand-bigint': bits must be in the range [2..65536]");
+                }
+
+                return new VncBigInteger(new BigInteger((int)bits, random));
             }
 
             private static final long serialVersionUID = -1848883965231344442L;
@@ -2263,6 +2302,7 @@ public class MathFunctions {
 
                     .add(rand_long)
                     .add(rand_double)
+                    .add(rand_bigint)
                     .add(rand_gaussian)
 
                     .add(range)

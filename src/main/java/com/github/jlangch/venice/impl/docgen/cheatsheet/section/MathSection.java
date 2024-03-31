@@ -74,6 +74,7 @@ public class MathSection implements ISectionBuilder {
         all.addSection(random);
         random.addItem(diBuilder.getDocItem("rand-long"));
         random.addItem(diBuilder.getDocItem("rand-double"));
+        random.addItem(diBuilder.getDocItem("rand-bigint"));
         random.addItem(diBuilder.getDocItem("rand-gaussian"));
 
         final DocSection trigonometry = new DocSection("Trigonometry", "math.trigonometry");
