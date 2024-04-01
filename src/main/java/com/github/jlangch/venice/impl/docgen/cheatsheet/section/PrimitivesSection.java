@@ -211,6 +211,11 @@ public class PrimitivesSection implements ISectionBuilder {
         hex.addItem(diBuilder.getDocItem("str/bytebuf-to-hex"));
         hex.addItem(diBuilder.getDocItem("str/format-bytebuf"));
 
+        final DocSection bytebuf = new DocSection("Bytebuf", "primitives.strings.bytebuf");
+        strings.addSection(bytebuf);
+        bytebuf.addItem(diBuilder.getDocItem("bytebuf-from-string"));
+        bytebuf.addItem(diBuilder.getDocItem("bytebuf-to-string"));
+
         final DocSection encode = new DocSection("Encode/Decode", "primitives.strings.encode");
         strings.addSection(encode);
         encode.addItem(diBuilder.getDocItem("str/encode-base64"));

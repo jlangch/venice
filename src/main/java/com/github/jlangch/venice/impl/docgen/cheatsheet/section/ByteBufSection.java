@@ -44,9 +44,13 @@ public class ByteBufSection implements ISectionBuilder {
         bb_create.addItem(diBuilder.getDocItem("bytebuf"));
         bb_create.addItem(diBuilder.getDocItem("bytebuf-allocate"));
         bb_create.addItem(diBuilder.getDocItem("bytebuf-allocate-random"));
-        bb_create.addItem(diBuilder.getDocItem("bytebuf-from-string"));
         bb_create.addItem(diBuilder.getDocItem("bytebuf-byte-order!"));
         bb_create.addItem(diBuilder.getDocItem("bytebuf-byte-order"));
+
+        final DocSection string = new DocSection("String", "bytebuf.string");
+        all.addSection(string);
+        string.addItem(diBuilder.getDocItem("bytebuf-from-string"));
+        string.addItem(diBuilder.getDocItem("bytebuf-to-string"));
 
         final DocSection bb_test = new DocSection("Test", "bytebuf.test");
         all.addSection(bb_test);
@@ -59,7 +63,6 @@ public class ByteBufSection implements ISectionBuilder {
         bb_use.addItem(diBuilder.getDocItem("count"));
         bb_use.addItem(diBuilder.getDocItem("bytebuf-capacity"));
         bb_use.addItem(diBuilder.getDocItem("bytebuf-limit"));
-        bb_use.addItem(diBuilder.getDocItem("bytebuf-to-string"));
         bb_use.addItem(diBuilder.getDocItem("bytebuf-to-list"));
         bb_use.addItem(diBuilder.getDocItem("bytebuf-sub"));
         bb_use.addItem(diBuilder.getDocItem("bytebuf-pos"));
