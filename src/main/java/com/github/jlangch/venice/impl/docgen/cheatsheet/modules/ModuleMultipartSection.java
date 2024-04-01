@@ -44,6 +44,7 @@ public class ModuleMultipartSection implements ISectionBuilder {
         final DocSection part = new DocSection("Multipart", id());
         all.addSection(part);
         part.addItem(diBuilder.getDocItem("multipart/render", false));
+        part.addItem(diBuilder.getDocItem("multipart/http-content-type-header", false));
 
         return section;
     }

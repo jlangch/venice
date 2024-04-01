@@ -36,7 +36,6 @@
 (defonce ^:private boundary-value (str (rand-bigint 128)))
 
 (defonce ^:private dash "--")
-(defonce ^:private dq "\"")
 (defonce ^:private nl "\r\n")
 (defonce ^:private disposition "Content-Disposition: form-data")
 (defonce ^:private field-name "; name=")
@@ -49,7 +48,7 @@
         "(render parts)" )
      :doc
         """
-        Renders a map of named parts as *multipart* binary data.
+        Renders a map of named parts as *multipart/form-data* format.
         
         The part name must be a string and the part data may be of type:
         * string
@@ -92,6 +91,29 @@
     @os))
 
 
+(defn 
+  ^{ :arglists '(
+        "(http-content-type-header)" )
+     :doc
+        """
+        Returns the HTTP content type header value for *multipart/form-data*
+        HTTP requests.
+        
+        E.g:  Content-Type: multipart/form-data; boundary=**********1234
+        """
+     :examples '(
+        """
+        (do
+          (load-module :multipart ['multipart :as 'm])
+
+          (m/http-content-type-header))
+        """ ) }
+
+  http-content-type-header []
+
+  (str "multipart/form-data; boundary=" boundary-value))
+
+
 (defn- render-part [name value os]
   (try 
     (assert (string? name))
@@ -105,10 +127,11 @@
       (io/file? value)    (render-file-part name value os)
 
       (map? value)        (render-file-data-part name 
-                                                (:name part) 
-                                                (:mimetype part) 
-                                                (:data part) 
-                                                os)
+                                                 (:name value) 
+                                                 (:mimetype value) 
+                                                 (:data value) 
+                                                 os)
+
       (string? value)     (render-string-part name value os)
 
       :else               (render-string-part name (str value) os))
@@ -141,7 +164,9 @@
   (io/spit-stream os (bytebuf-from-string (str dash boundary-value nl)))
   (io/spit-stream os (bytebuf-from-string disposition))
 
-  (io/spit-stream os (bytebuf-from-string (str field-name dq name dq file-name dq v-file-name dq nl)))
+  (io/spit-stream os (bytebuf-from-string (str field-name (dquote name) 
+                                               file-name (dquote v-file-name) 
+                                               nl)))
   (io/spit-stream os (bytebuf-from-string (str content-type  v-file-mimetype nl)))
   (io/spit-stream os (bytebuf-from-string nl))
   (io/spit-stream os (if (string? v-file-data) 
@@ -158,11 +183,16 @@
   (io/spit-stream os (bytebuf-from-string (str dash boundary-value nl)))
   (io/spit-stream os (bytebuf-from-string disposition))
 
-  (io/spit-stream os (bytebuf-from-string (str field-name  dq  name  dq  nl)))
+  (io/spit-stream os (bytebuf-from-string (str field-name (dquote name)  nl)))
   (io/spit-stream os (bytebuf-from-string nl))
   (io/spit-stream os (bytebuf-from-string (str text nl)))
 
   (io/spit-stream os (bytebuf-from-string (str dash boundary-value dash nl))))
+
+
+(defn- dquote [s]
+  (assert (not (str/contains? "s" "\"")))
+  (str/double-quote s))
 
 
 (defn- file-url? [v]
