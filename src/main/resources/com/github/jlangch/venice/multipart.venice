@@ -35,12 +35,8 @@
 
 (defonce ^:private boundary-value (str (rand-bigint 128)))
 
-(defonce ^:private dash "--")
 (defonce ^:private nl "\r\n")
-(defonce ^:private disposition "Content-Disposition: form-data")
-(defonce ^:private field-name "; name=")
-(defonce ^:private file-name "; filename=")
-(defonce ^:private content-type "Content-Type: ")
+
 
 
 (defn 
@@ -53,7 +49,7 @@
         The part name must be a string and the part data may be of type:
         * string
         * string ("file:/user/foo/image.png" to reference a file)
-        * map (describing a part as :name, :mimetype, and :data (string or bytebuf)) elements)
+        * map (describing a part as :name, :mimetype, :data (string or bytebuf), and an optional charset) elements)
         * io/file
         * all other part data types are converted with `(str data)` to a string
 
@@ -66,17 +62,19 @@
         Content-Type: multipart/form-data; boundary=12345
 
         --12345
-        Content-Disposition: form-data; name="sometext"
+        Content-Disposition: form-data; name="notes"
 
-        some text that you wrote in your html form ...
+        Lorem ipsum ...
         --12345
-        Content-Disposition: form-data; name="name_of_post_request" filename="filename.xyz"
+        Content-Disposition: form-data; name="foo" filename="foo.json"
+        Content-Type: application/json; charset=utf-8
 
-        content of filename.xyz
+        content of foo.xjson
         --12345
-        Content-Disposition: form-data; name="image" filename="picture_of_sunset.jpg"
+        Content-Disposition: form-data; name="image" filename="picture.png"
+        Content-Type: image/png
 
-        content of picture_of_sunset.jpg ...
+        content of picture.jpg
         --12345--
         ```
 
@@ -104,17 +102,17 @@
                                 :data      "<user><name>foo</name></user>"}})
         """ ) }
 
-  render [data]
+  render [parts]
 
-  (assert (map? data))
-  (assert (not (empty? data)))
+  (assert (map? parts))
+  (assert (not (empty? parts)))
 
   (try-with [os (io/bytebuf-out-stream)]
     ;; render parts
-    (doseq [[name value] data] (render-part name value os))
+    (doseq [[name value] parts] (render-part name value os))
     
     ;; close boundary
-    (io/spit-stream os (bytebuf-from-string (str dash boundary-value dash nl)))
+    (spit-string os (make-closing-boundary) nl)
     
     @os))
 
@@ -147,7 +145,7 @@
     (assert (string? name))
 
     ;; open boundary for part
-    (io/spit-stream os (bytebuf-from-string (str dash boundary-value nl)))
+    (spit-string os (make-boundary) nl)
 
     ;; dispatch to the part renderer
     (cond 
@@ -162,6 +160,7 @@
                                                  (:name value) 
                                                  (:mimetype value) 
                                                  (:data value) 
+                                                 (:charset value) 
                                                  os)
 
       (string? value)     (render-string-part name value os)
@@ -188,30 +187,65 @@
       (throw (ex :VncException (str "Failed do process file " v-file-name) e)))))
 
 
-(defn- render-file-data-part [name v-file-name v-file-mimetype v-file-data os]
+(defn- render-file-data-part [name v-file-name v-file-mimetype v-file-data charset os]
   (assert (string? v-file-name))
   (assert (string? v-file-mimetype))
   (assert (or (string? v-file-data) (bytebuf? v-file-data)))
+  (assert (or (nil? charset) (string? charset) (keyword? charset)))
 
-  (io/spit-stream os (bytebuf-from-string disposition))
-  (io/spit-stream os (bytebuf-from-string (str field-name (dquote name) 
-                                               file-name (dquote v-file-name) 
-                                               nl)))
-  (io/spit-stream os (bytebuf-from-string (str content-type v-file-mimetype nl)))
-  (io/spit-stream os (bytebuf-from-string nl))
-  (io/spit-stream os (if (string? v-file-data) 
-                       (bytebuf-from-string v-file-data) 
-                       v-file-data))
-  (io/spit-stream os (bytebuf-from-string nl)))
+  (spit-string os (make-content-disposition-header name v-file-name) nl)
+  (spit-string os (make-content-type-header v-file-mimetype charset) nl)
+  (spit-string os nl)
+  (if (string? v-file-data)
+    (spit-string os v-file-data)
+    (spit-bytebuf os v-file-data))
+  (spit-string os nl))
 
 
 (defn- render-string-part [name text os]
   (assert (string? name))
   
-  (io/spit-stream os (bytebuf-from-string disposition))
-  (io/spit-stream os (bytebuf-from-string (str field-name (dquote name) nl)))
-  (io/spit-stream os (bytebuf-from-string nl))
-  (io/spit-stream os (bytebuf-from-string (str text nl))))
+  (spit-string os (make-content-disposition-header name) nl)
+  (spit-string os nl)
+  (spit-string os text nl))
+
+
+(defn- spit-string [os & s]
+  (io/spit-stream os (bytebuf-from-string (apply str s))))
+
+
+(defn- spit-bytebuf [os buf]
+  (io/spit-stream os buf))
+
+
+(defn- make-boundary []
+  (str "--" boundary-value))
+
+
+(defn- make-closing-boundary []
+  (str "--" boundary-value "--"))
+
+
+(defn- make-content-disposition-header
+  ([name]
+    (str/format "Content-Disposition: form-data; name=%s"
+                (dquote name)))
+
+  ([name filename]
+    (str/format "Content-Disposition: form-data; name=%s filename=%s" 
+                (dquote name) 
+                (dquote filename))))
+
+
+(defn- make-content-type-header
+  ([content-type]
+    (make-content-type-header content-type nil))
+
+  ([content-type charset]
+    (assert (or (nil? charset) (string? charset) (keyword? charset)))
+    (if (nil? charset)
+      (str/format "Content-Type: %s" content-type)
+      (str/format "Content-Type: %s; charset=%s" content-type (name charset)))))
 
 
 (defn- dquote [s]
