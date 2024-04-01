@@ -112,7 +112,7 @@
     (doseq [[name value] parts] (render-part name value os))
     
     ;; close boundary
-    (spit-string os (make-closing-boundary) nl)
+    (spit-string os (closing-boundary) nl)
     
     @os))
 
@@ -145,7 +145,7 @@
     (assert (string? name))
 
     ;; open boundary for part
-    (spit-string os (make-boundary) nl)
+    (spit-string os (boundary) nl)
 
     ;; dispatch to the part renderer
     (cond 
@@ -176,36 +176,36 @@
   (assert (io/file? file))
 
   (try
-    (let [v-file-name     (io/file-path file)
-          v-file-mimetype (mimetypes/probe-content-type file)
-          v-file-data     (io/slurp file)]
-      (when (nil? v-file-mimetype)
-        (throw (ex :VncException (str "Failed to get mimetype for file " v-file-name))))
+    (let [filename (io/file-path file)
+          mimetype (mimetypes/probe-content-type file)
+          data     (io/slurp file)]
+      (when (nil? mimetype)
+        (throw (ex :VncException (str "Failed to get mimetype for file " filename))))
 
-      (render-file-data-part name v-file-name v-file-mimetype v-file-data os))
+      (render-file-data-part name filename mimetype data os))
     (catch :Exception e  
-      (throw (ex :VncException (str "Failed do process file " v-file-name) e)))))
+      (throw (ex :VncException (str "Failed do process file " filename) e)))))
 
 
-(defn- render-file-data-part [name v-file-name v-file-mimetype v-file-data charset os]
-  (assert (string? v-file-name))
-  (assert (string? v-file-mimetype))
-  (assert (or (string? v-file-data) (bytebuf? v-file-data)))
+(defn- render-file-data-part [name filename mimetype data charset os]
+  (assert (string? filename))
+  (assert (string? mimetype))
+  (assert (or (string? data) (bytebuf? data)))
   (assert (or (nil? charset) (string? charset) (keyword? charset)))
 
-  (spit-string os (make-content-disposition-header name v-file-name) nl)
-  (spit-string os (make-content-type-header v-file-mimetype charset) nl)
+  (spit-string os (content-disposition-header name filename) nl)
+  (spit-string os (content-type-header mimetype charset) nl)
   (spit-string os nl)
-  (if (string? v-file-data)
-    (spit-string os v-file-data)
-    (spit-bytebuf os v-file-data))
+  (if (string? data)
+    (spit-string os data)
+    (spit-bytebuf os data))
   (spit-string os nl))
 
 
 (defn- render-string-part [name text os]
   (assert (string? name))
   
-  (spit-string os (make-content-disposition-header name) nl)
+  (spit-string os (content-disposition-header name) nl)
   (spit-string os nl)
   (spit-string os text nl))
 
@@ -218,15 +218,15 @@
   (io/spit-stream os buf))
 
 
-(defn- make-boundary []
+(defn- boundary []
   (str "--" boundary-value))
 
 
-(defn- make-closing-boundary []
+(defn- closing-boundary []
   (str "--" boundary-value "--"))
 
 
-(defn- make-content-disposition-header
+(defn- content-disposition-header
   ([name]
     (str/format "Content-Disposition: form-data; name=%s"
                 (dquote name)))
@@ -237,9 +237,9 @@
                 (dquote filename))))
 
 
-(defn- make-content-type-header
+(defn- content-type-header
   ([content-type]
-    (make-content-type-header content-type nil))
+    (content-type-header content-type nil))
 
   ([content-type charset]
     (assert (or (nil? charset) (string? charset) (keyword? charset)))
