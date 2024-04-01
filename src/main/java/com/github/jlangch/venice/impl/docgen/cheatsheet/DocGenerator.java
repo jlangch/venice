@@ -63,6 +63,7 @@ import com.github.jlangch.venice.impl.docgen.cheatsheet.modules.ModuleKiraSectio
 import com.github.jlangch.venice.impl.docgen.cheatsheet.modules.ModuleMatrixSection;
 import com.github.jlangch.venice.impl.docgen.cheatsheet.modules.ModuleMavenSection;
 import com.github.jlangch.venice.impl.docgen.cheatsheet.modules.ModuleMimetypesSection;
+import com.github.jlangch.venice.impl.docgen.cheatsheet.modules.ModuleMultipartSection;
 import com.github.jlangch.venice.impl.docgen.cheatsheet.modules.ModuleParsifalSection;
 import com.github.jlangch.venice.impl.docgen.cheatsheet.modules.ModuleQrRefSection;
 import com.github.jlangch.venice.impl.docgen.cheatsheet.modules.ModuleRingSection;
@@ -137,7 +138,8 @@ public class DocGenerator {
                         "fonts",      "qrref",      "jsonl",           "timing",
                         "zipvault",   "gradlew",    "matrix",          "ascii-table",
                         "docker",     "cargo",      "cargo-arangodb",  "cargo-qdrant",
-                        "installer",  "tomcat",     "ring",            "mimetypes"));
+                        "installer",  "tomcat",     "ring",
+                        "mimetypes",  "multipart"));
 
         final IVeniceInterpreter venice = new VeniceInterpreter(new AcceptAllInterceptor());
 
@@ -382,6 +384,7 @@ public class DocGenerator {
         web.addSection(new DocSection("Http\u00A0Client\u00A0Legacy", "modules.http-client-legacy"));
         web.addSection(new DocSection("Tomcat\u00A0WebApp\u00A0Server", "modules.tomcat"));
         web.addSection(new DocSection("Ring", "modules.ring"));
+        web.addSection(new DocSection("Multipart", "modules.multipart"));
         content.add(web);
 
         final DocSection docker = new DocSection("Docker", "docker");
@@ -511,6 +514,7 @@ public class DocGenerator {
         		new ModuleMatrixSection(diBuilder).section(),
         		new ModuleAnsiSection(diBuilder).section(),
                 new ModuleMimetypesSection(diBuilder).section(),
+                new ModuleMultipartSection(diBuilder).section(),
         		new ModuleInstallerSection(diBuilder).section());
     }
 

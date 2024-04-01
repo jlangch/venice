@@ -54,7 +54,7 @@
         The part name must be a string and the part data may be of type:
         * string
         * string ("file:/user/foo/image.png" to reference a file)
-        * map (describing a part as :name, :mimetype, and :data)
+        * map (describing a part as :name, :mimetype, and :data (string or bytebuf)) elements)
         * io/file
         * all other part data types are converted with `(str data)` to a string
 
@@ -79,9 +79,7 @@
                       "Part-3" (io/file "/user/foo/image.png")
                       "Part-4" {:name      "data.xml"
                                 :mimetype  "application/xml"
-                                :data      (bytebuf-from-string
-                                              "<user><name>foo</name></user>"
-                                              :utf-8)}})
+                                :data      "<user><name>foo</name></user>"}})
         """ ) }
 
   render [data]
@@ -138,7 +136,7 @@
 (defn- render-file-data-part [name v-file-name v-file-mimetype v-file-data os]
   (assert (string? v-file-name))
   (assert (string? v-file-mimetype))
-  (assert (bytebuf? v-file-data))
+  (assert (or (string? v-file-data) (bytebuf? v-file-data)))
 
   (io/spit-stream os (bytebuf-from-string (str dash boundary-value nl)))
   (io/spit-stream os (bytebuf-from-string disposition))
@@ -146,7 +144,9 @@
   (io/spit-stream os (bytebuf-from-string (str field-name dq name dq file-name dq v-file-name dq nl)))
   (io/spit-stream os (bytebuf-from-string (str content-type  v-file-mimetype nl)))
   (io/spit-stream os (bytebuf-from-string nl))
-  (io/spit-stream os v-file-data)
+  (io/spit-stream os (if (string? v-file-data) 
+                       (bytebuf-from-string v-file-data) 
+                       v-file-data))
   (io/spit-stream os (bytebuf-from-string nl))
 
   (io/spit-stream os (bytebuf-from-string (str dash boundary-value dash nl))))
