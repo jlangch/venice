@@ -6,24 +6,26 @@ All notable changes to this project will be documented in this file.
 
 
 
-## [1.12.8] - 2024-03-xx
+## [1.12.8] - 2024-04-xx
 
 ### Added
 
-- function `io/file-normalize-utf`
+- function `io/file-normalize-utf`. This is useful to make it easier to process
+  MacOS filenames with umlauts.
 - thread type support to the function `thread` to allow spawning daemon or user 
   threads
 - support for tracing exceptions in `trace/trace-var`
-- math function `rand-bigint`
-- function `mimetypes/probe-content-type`
+- math function `rand-bigint`. Venice uses this function to create unique
+  boundary strings for multipart HTTP requests.
+- function `mimetypes/probe-content-type` to get mimetypes for file names.
 
 
 ## [1.12.7] - 2024-03-26
 
 ### Added
 
-- function `str/normalize-utf`. This comes in handy when MacOS filenames
-  with umlauts have to be normalized for easier filename processing
+- function `str/normalize-utf`. This is useful to make it easier to process
+  MacOS filenames with umlauts.
 - a pure ascii version of the Venice cheatsheet to feed it as embeddings 
   to LLMs
 - improvements to markdown to ascii text renderer to allow the Venice
