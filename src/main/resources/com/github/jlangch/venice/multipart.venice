@@ -58,6 +58,29 @@
         * all other part data types are converted with `(str data)` to a string
 
         Returns a bytebuf.
+
+        ```
+        POST / HTTP/1.1
+        HOST: host.example.com
+        Connection: Keep-Alive
+        Content-Type: multipart/form-data; boundary=12345
+
+        --12345
+        Content-Disposition: form-data; name="sometext"
+
+        some text that you wrote in your html form ...
+        --12345
+        Content-Disposition: form-data; name="name_of_post_request" filename="filename.xyz"
+
+        content of filename.xyz
+        --12345
+        Content-Disposition: form-data; name="image" filename="picture_of_sunset.jpg"
+
+        content of picture_of_sunset.jpg ...
+        --12345--
+        ```
+
+        See [multipart/form-data](https://developer.mozilla.org/en-US/docs/Web/HTTP/Basics_of_HTTP/MIME_types#multipartform-data)
         """
      :examples '(
         """
@@ -87,7 +110,12 @@
   (assert (not (empty? data)))
 
   (try-with [os (io/bytebuf-out-stream)]
+    ;; render parts
     (doseq [[name value] data] (render-part name value os))
+    
+    ;; close boundary
+    (io/spit-stream os (bytebuf-from-string (str dash boundary-value dash nl)))
+    
     @os))
 
 
@@ -99,7 +127,7 @@
         Returns the HTTP content type header value for *multipart/form-data*
         HTTP requests.
         
-        E.g:  Content-Type: multipart/form-data; boundary=**********1234
+        E.g:  Content-Type: multipart/form-data; boundary=1234567890N
         """
      :examples '(
         """
@@ -117,11 +145,15 @@
 (defn- render-part [name value os]
   (try 
     (assert (string? name))
-    
+
+    ;; open boundary for part
+    (io/spit-stream os (bytebuf-from-string (str dash boundary-value nl)))
+
+    ;; dispatch to the part renderer
     (cond 
       (file-url? value)   (->as (. :URL :new value) f
                                 (. f :getPath)
-                                (. :File :new f)
+                                (io/file f)
                                 (render-file-part name f os))
                                 
       (io/file? value)    (render-file-part name value os)
@@ -147,7 +179,7 @@
   (try
     (let [v-file-name     (io/file-path file)
           v-file-mimetype (mimetypes/probe-content-type file)
-          v-file-data     (. :Files :readAllBytes (. file :toPath))]
+          v-file-data     (io/slurp file)]
       (when (nil? v-file-mimetype)
         (throw (ex :VncException (str "Failed to get mimetype for file " v-file-name))))
 
@@ -161,33 +193,25 @@
   (assert (string? v-file-mimetype))
   (assert (or (string? v-file-data) (bytebuf? v-file-data)))
 
-  (io/spit-stream os (bytebuf-from-string (str dash boundary-value nl)))
   (io/spit-stream os (bytebuf-from-string disposition))
-
   (io/spit-stream os (bytebuf-from-string (str field-name (dquote name) 
                                                file-name (dquote v-file-name) 
                                                nl)))
-  (io/spit-stream os (bytebuf-from-string (str content-type  v-file-mimetype nl)))
+  (io/spit-stream os (bytebuf-from-string (str content-type v-file-mimetype nl)))
   (io/spit-stream os (bytebuf-from-string nl))
   (io/spit-stream os (if (string? v-file-data) 
                        (bytebuf-from-string v-file-data) 
                        v-file-data))
-  (io/spit-stream os (bytebuf-from-string nl))
-
-  (io/spit-stream os (bytebuf-from-string (str dash boundary-value dash nl))))
+  (io/spit-stream os (bytebuf-from-string nl)))
 
 
 (defn- render-string-part [name text os]
   (assert (string? name))
   
-  (io/spit-stream os (bytebuf-from-string (str dash boundary-value nl)))
   (io/spit-stream os (bytebuf-from-string disposition))
-
-  (io/spit-stream os (bytebuf-from-string (str field-name (dquote name)  nl)))
+  (io/spit-stream os (bytebuf-from-string (str field-name (dquote name) nl)))
   (io/spit-stream os (bytebuf-from-string nl))
-  (io/spit-stream os (bytebuf-from-string (str text nl)))
-
-  (io/spit-stream os (bytebuf-from-string (str dash boundary-value dash nl))))
+  (io/spit-stream os (bytebuf-from-string (str text nl))))
 
 
 (defn- dquote [s]
