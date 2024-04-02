@@ -559,7 +559,7 @@
           | :query-string       | The query string |
           | :scheme             | The scheme {:http, :https } |
           | :request-method     | The lower case request method. \
-                                  {:get, :post, :put, :delete, ...} |
+                                  {:get, :post, :put, :delete, :head } |
           | :protocol           | The protocol |
           | :headers            | A map of part's headers. Key: header name, \
                                   value: list of header values. The header \
