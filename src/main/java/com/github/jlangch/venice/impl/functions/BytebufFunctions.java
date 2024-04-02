@@ -32,6 +32,7 @@ import java.util.Map;
 import java.util.concurrent.atomic.AtomicLong;
 
 import com.github.jlangch.venice.VncException;
+import com.github.jlangch.venice.impl.types.Constants;
 import com.github.jlangch.venice.impl.types.VncBoolean;
 import com.github.jlangch.venice.impl.types.VncByteBuffer;
 import com.github.jlangch.venice.impl.types.VncDouble;
@@ -228,6 +229,12 @@ public class BytebufFunctions {
                     .arglists("(bytebuf-capacity buf)")
                     .doc( "Returns the capacity of a bytebuf.")
                     .examples("(bytebuf-capacity (bytebuf-allocate 100))")
+                    .seeAlso(
+                        "bytebuf-remaining",
+                    	"bytebuf-limit",
+                    	"bytebuf-pos",
+                    	"bytebuf-ensure-free-capacity!",
+                    	"bytebuf-limit!")
                     .build()
         ) {
             @Override
@@ -242,14 +249,20 @@ public class BytebufFunctions {
             private static final long serialVersionUID = -1848883965231344442L;
         };
 
-    public static VncFunction bytebuf_limit =
+    public static VncFunction bytebuf_remaining =
         new VncFunction(
-                "bytebuf-limit",
+                "bytebuf-remaining",
                 VncFunction
                     .meta()
-                    .arglists("(bytebuf-limit buf)")
-                    .doc( "Returns the limit of a bytebuf.")
-                    .examples("(bytebuf-limit (bytebuf-allocate 100))")
+                    .arglists("(bytebuf-remaining buf)")
+                    .doc( "Returns the number of bytes between the current position and the limit.")
+                    .examples("(bytebuf-capacity (bytebuf-allocate 100))")
+                    .seeAlso(
+                    	"bytebuf-capacity",
+                    	"bytebuf-limit",
+                    	"bytebuf-pos",
+                    	"bytebuf-ensure-free-capacity!",
+                    	"bytebuf-limit!")
                     .build()
         ) {
             @Override
@@ -257,6 +270,116 @@ public class BytebufFunctions {
                 ArityExceptions.assertArity(this, args, 1);
 
                 final ByteBuffer buf = Coerce.toVncByteBuffer(args.first()).getValue();
+
+                return new VncLong(buf.remaining());
+            }
+
+            private static final long serialVersionUID = -1848883965231344442L;
+        };
+
+	public static VncFunction bytebuf_ensure_free_capacity_BANG =
+	    new VncFunction(
+	            "bytebuf-ensure-free-capacity!",
+	            VncFunction
+	                .meta()
+	                .arglists(
+	                	"(bytebuf-ensure-capacity! buf capacity)")
+	                .doc(
+	                	"Ensure that the bytebuf has a free capacity.\n" +
+	                	"Returns the widened bytebuf.")
+	                .examples(
+	                	"(bytebuf-ensure-free-capacity! (bytebuf-allocate 100) 200)")
+                    .seeAlso(
+                        "bytebuf-remaining",
+                    	"bytebuf-capacity",
+                    	"bytebuf-limit",
+                    	"bytebuf-pos",
+                    	"bytebuf-limit!")
+	                .build()
+	    ) {
+	        @Override
+	        public VncVal apply(final VncList args) {
+	            ArityExceptions.assertArity(this, args, 2);
+
+	            final int capacity = Coerce.toVncLong(args.second()).toJavaInteger();
+
+	            if (args.first() == Constants.Nil) {
+                	return new VncByteBuffer(ByteBuffer.allocate(capacity));
+	            }
+	            else {
+	            	final ByteBuffer buffer = Coerce.toVncByteBuffer(args.first()).getValue();
+
+		            if (buffer.remaining() < capacity) {
+		                final ByteBuffer newBuffer = ByteBuffer.allocate(buffer.position() + capacity);
+		                buffer.flip();
+		                newBuffer.put(buffer);
+		                return new VncByteBuffer(newBuffer);
+		            }
+		            else {
+		            	return args.first();
+		            }
+	            }
+	        }
+
+	        private static final long serialVersionUID = -1848883965231344442L;
+	    };
+
+    public static VncFunction bytebuf_limit =
+        new VncFunction(
+                "bytebuf-limit",
+                VncFunction
+                    .meta()
+                    .arglists("(bytebuf-limit buf)")
+                    .doc("Returns the limit of a bytebuf.")
+                    .examples(
+                    	"(bytebuf-limit (bytebuf-allocate 100))")
+                    .seeAlso(
+                        "bytebuf-remaining",
+                    	"bytebuf-capacity",
+                    	"bytebuf-pos",
+                    	"bytebuf-ensure-free-capacity!",
+                    	"bytebuf-limit!")
+                    .build()
+        ) {
+            @Override
+            public VncVal apply(final VncList args) {
+                ArityExceptions.assertArity(this, args, 1);
+
+                final ByteBuffer buf = Coerce.toVncByteBuffer(args.first()).getValue();
+
+                return new VncLong(buf.limit());
+            }
+
+            private static final long serialVersionUID = -1848883965231344442L;
+        };
+
+    public static VncFunction bytebuf_limit_BANG =
+        new VncFunction(
+                "bytebuf-limit!",
+                VncFunction
+                    .meta()
+                    .arglists( "(bytebuf-limit! buf new-limit)")
+                    .doc("Set a new limit for the buffer. " +
+                         "The new limit must not be larger than the capacity.\n\n" +
+                         "Returns the new limit of a bytebuf.")
+                    .examples(
+                    	"(bytebuf-limit! (bytebuf-allocate 100) 50)")
+                    .seeAlso(
+                        "bytebuf-remaining",
+                    	"bytebuf-capacity",
+                    	"bytebuf-limit",
+                    	"bytebuf-pos",
+                    	"bytebuf-ensure-free-capacity!")
+                    .build()
+        ) {
+            @Override
+            public VncVal apply(final VncList args) {
+                ArityExceptions.assertArity(this, args, 2);
+
+                final ByteBuffer buf = Coerce.toVncByteBuffer(args.first()).getValue();
+
+	            final int newLimit = Coerce.toVncLong(args.second()).toJavaInteger();
+	            buf.limit(newLimit);
 
                 return new VncLong(buf.limit());
             }
@@ -911,6 +1034,12 @@ public class BytebufFunctions {
                     .doc("Returns the buffer's current position.")
                     .examples(
                         "(bytebuf-pos (bytebuf-allocate 10))")
+                    .seeAlso(
+                    	"bytebuf-capacity",
+                    	"bytebuf-remaining",
+                    	"bytebuf-limit",
+                    	"bytebuf-ensure-free-capacity!",
+                    	"bytebuf-limit!")
                     .build()
         ) {
             @Override
@@ -973,7 +1102,10 @@ public class BytebufFunctions {
                 .add(bytebuf_allocate)
                 .add(bytebuf_allocate_random)
                 .add(bytebuf_capacity)
+                .add(bytebuf_ensure_free_capacity_BANG)
+                .add(bytebuf_remaining)
                 .add(bytebuf_limit)
+                .add(bytebuf_limit_BANG)
                 .add(bytebuf_byte_order_BANG)
                 .add(bytebuf_byte_order)
                 .add(bytebuf_to_string)
