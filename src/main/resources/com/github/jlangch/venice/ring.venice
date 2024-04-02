@@ -172,7 +172,7 @@
 
           | [![width: 15%]] | [![width: 85%]] |
           | :name           | The name of the part |
-          | :file-name      | The file-name of the part or nil if not available |
+          | :file-name      | The file-name of the part or *nil* if not available |
           | :size           | The size of the file |
           | :content-type   | The content type of the part |
           | :headers        | A map of part's headers. key: header name, \
@@ -195,7 +195,8 @@
 (defn
   ^{ :arglists '("(ring/parts-delete-all req)")
      :doc """
-          Safely delete the temporary data of all parts.
+          Safely deletes for all parts the underlying storage for the file 
+          items, including deleting any associated temporary disk files.
 
           Calls the *delete-fn* on every part data map.
           """
