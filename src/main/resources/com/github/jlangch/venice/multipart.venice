@@ -47,7 +47,7 @@
         * io/file
         * all other part data types are converted with `(str data)` to a string
 
-        Returns a bytebuf.
+        Returns a bytebuf with all the rendered parts.
 
         ```
         POST / HTTP/1.1

@@ -10,7 +10,7 @@ All notable changes to this project will be documented in this file.
 
 ### Added
 
-- ...
+- functions to handle multipart requests to :ring module
 
 
 

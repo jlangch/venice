@@ -47,7 +47,8 @@
 ;; -----------------------------------------------------------------------------
 
 (defn
-  ^{ :doc "Redirect to the given URL." }
+  ^{ :arglists '("(ring/redirect request url)")
+     :doc "Redirect to the given URL." }
 
   redirect [request url]
 
@@ -57,7 +58,9 @@
 
 
 (defn
-  ^{:doc "Create a HTTP Not-Found 404 response with content-type text/html. " }
+  ^{ :arglists '("(ring/not-found-response)"
+                 "(ring/not-found-response msg)")
+     :doc "Create a HTTP Not-Found 404 response with content-type text/html. " }
 
   not-found-response
 
@@ -69,7 +72,8 @@
 
 
 (defn
-  ^{ :doc """
+  ^{ :arglists '("(ring/get-request-parameter req name)")
+     :doc """
           Returns the value of the specified request parameter. If the request
           did not include a parameter of the specified name, this method returns
           nil. If there are multiple parameters with the same name, this method
@@ -82,7 +86,8 @@
 
 
 (defn
-  ^{ :doc "Returns all the values of the specified request parameter as a list" }
+  ^{ :arglists '("(ring/get-request-parameters req name)")
+     :doc "Returns all the values of the specified request parameter as a list" }
 
   get-request-parameters [req name]
 
@@ -90,7 +95,8 @@
 
 
 (defn
-  ^{ :doc """
+  ^{ :arglists '("(ring/get-request-header req name)")
+     :doc """
           Returns the value of the specified request header. If the request
           did not include a header of the specified name, this method returns
           nil. If there are multiple header with the same name, this method
@@ -103,7 +109,8 @@
 
 
 (defn
-  ^{ :doc "Returns all the values of the specified request header as a list." }
+  ^{ :arglists '("(ring/get-request-headers req name)")
+     :doc "Returns all the values of the specified request header as a list." }
 
   get-request-headers [req name]
 
@@ -111,7 +118,8 @@
 
 
 (defn
-  ^{ :doc """
+  ^{ :arglists '("(ring/get-request-header-accept-mimetypes req)")
+     :doc """
           Returns all 'Accept' header mime-types of the request as a set.
           Strips off the ratings
           """ }
@@ -123,13 +131,15 @@
 
 
 (defn
-  ^{ :doc "Returns true if debugging is turned on else false" }
+  ^{ :arglists '("(ring/debug? req)")
+     :doc "Returns true if debugging is turned on else false" }
 
   debug? [req] (:debug req false))
 
 
 (defn
-  ^{ :doc "Returns true if the request has content type 'text/html'" }
+  ^{ :arglists '("(ring/html-request? req)")
+     :doc "Returns true if the request has content type 'text/html'" }
 
   html-request? [req]
 
@@ -137,7 +147,8 @@
 
 
 (defn
-  ^{ :doc "Returns true if the request has content type 'application/json'" }
+  ^{ :arglists '("(ring/json-request? req)")
+     :doc "Returns true if the request has content type 'application/json'" }
 
   json-request? [req]
 
@@ -146,11 +157,225 @@
 
 
 ;; -----------------------------------------------------------------------------
+;; Multipart utils
+;; -----------------------------------------------------------------------------
+
+(defn
+  ^{ :arglists '("(ring/multipart-request? req)")
+     :doc "Returns true if the request is a multipart request 'multipart/form-data'" 
+     :see-also '( "ring/parts" "ring/part") }
+
+  multipart-request? [req]
+
+  (match? (:content-type req) #"multipart/form-data(;.*)?"))
+
+
+(defn
+  ^{ :arglists '("(ring/parts req)")
+     :doc """
+          Returns the parts (a vector of :(javax|jakarta).servlet.http.Part) 
+          of a multipart HTTP request.
+          """
+     :see-also '( "ring/multipart-request?" 
+                  "ring/part" ) }
+
+  parts [req] (int [] (. req :getParts)))
+
+
+(defn
+  ^{ :arglists '("(ring/part req name)")
+     :doc "Gets the Part with the given name." 
+     :see-also '( "ring/multipart-request?" 
+                  "ring/parts" 
+                  "ring/part-name"
+                  "ring/part-filename"
+                  "ring/part-size"
+                  "ring/part-content-type"
+                  "ring/part-header-names"
+                  "ring/part-header"
+                  "ring/part-headers"
+                  "ring/part-in-stream"
+                  "ring/part-header"
+                  "ring/part-delete") }
+
+  part [req name] (int [] (. req :getPart name)))
+
+
+(defn
+  ^{ :arglists '("(ring/part-name part name)")
+     :doc "Gets the name of the part"
+     :see-also '( "ring/part-filename"
+                  "ring/part-size"
+                  "ring/part-content-type"
+                  "ring/part-header-names"
+                  "ring/part-header"
+                  "ring/part-headers"
+                  "ring/part-in-stream"
+                  "ring/part-delete"
+                  "ring/part" ) }
+
+  part-name [part] (. part :getName))
+
+
+(defn
+  ^{ :arglists '("(ring/part-filename part)")
+     :doc """
+          Gets the filename of the part
+
+          The part's filename is passed in the "Content-Disposition" header
+          of the part as:
+
+          Content-Disposition: form-data; name="image" filename="picture.png"
+          """
+     :see-also '( "ring/part-name"
+                  "ring/part-size"
+                  "ring/part-content-type"
+                  "ring/part-header-names"
+                  "ring/part-header"
+                  "ring/part-headers"
+                  "ring/part-in-stream"
+                  "ring/part-delete"
+                  "ring/part") }
+
+  part-filename [part]
+
+  (let [v (. part :getHeader "Content-Disposition")
+        m (regex/matcher #".*filename=\"(.*)\"" v)]
+    (when (regex/matches? m)
+      (regex/group m 1))))
+
+
+(defn
+  ^{ :arglists '("(ring/part-size part)")
+     :doc "Gets the size of the part"
+     :see-also '( "ring/part-name"
+                  "ring/part-filename"
+                  "ring/part-content-type"
+                  "ring/part-header-names"
+                  "ring/part-header"
+                  "ring/part-headers"
+                  "ring/part-in-stream"
+                  "ring/part-delete"
+                  "ring/part") }
+
+  part-size [part] (. part :getSize))
+
+
+(defn
+  ^{ :arglists '("(ring/part-content-type part)")
+     :doc "Gets the content type of the part." 
+     :see-also '( "ring/part-name"
+                  "ring/part-filename"
+                  "ring/part-size"
+                  "ring/part-header-names"
+                  "ring/part-header"
+                  "ring/part-headers"
+                  "ring/part-in-stream"
+                  "ring/part-delete"
+                  "ring/part") }
+
+  part-content-type [part] (. part :getContentType))
+
+
+(defn
+  ^{ :arglists '("(ring/part-header-names part)")
+     :doc "Gets the header names of the Part."
+     :see-also '( "ring/part-name"
+                  "ring/part-filename"
+                  "ring/part-size"
+                  "ring/part-content-type"
+                  "ring/part-header"
+                  "ring/part-headers"
+                  "ring/part-in-stream"
+                  "ring/part-delete"
+                  "ring/part") }
+
+  part-header-names [part] (. part :getHeaderNames))
+
+
+(defn
+  ^{ :arglists '("(ring/part-header part name)")
+     :doc "Get the value of the specified mime header as a String." 
+     :see-also '( "ring/part-name"
+                  "ring/part-filename"
+                  "ring/part-size"
+                  "ring/part-content-type"
+                  "ring/part-header-names"
+                  "ring/part-headers"
+                  "ring/part-in-stream"
+                  "ring/part-delete"
+                  "ring/part") }
+
+  part-header [part name] (. part :getHeader name))
+
+
+(defn
+  ^{ :arglists '("(ring/part-headers part name)")
+     :doc "Gets the values of the Part header with the given name."
+     :see-also '( "ring/part-name"
+                  "ring/part-filename"
+                  "ring/part-size"
+                  "ring/part-content-type"
+                  "ring/part-header-names"
+                  "ring/part-header"
+                  "ring/part-in-stream"
+                  "ring/part-delete"
+                  "ring/part") }
+
+  part-headers [part name] (into [] (. part :getHeaders name)))
+
+
+(defn
+  ^{ :arglists '("(ring/part-in-stream part)")
+     :doc "Gets the content of this part as an InputStream"
+     :see-also '( "ring/part-name"
+                  "ring/part-filename"
+                  "ring/part-size"
+                  "ring/part-content-type"
+                  "ring/part-header-names"
+                  "ring/part-header"
+                  "ring/part-headers"
+                  "ring/part-delete"
+                  "ring/part") }
+
+  part-in-stream [part] (. part :getInputStream))
+
+
+(defn
+  ^{ :arglists '("(ring/part-delete part)")
+     :doc """
+          Deletes the underlying storage for a file item, including deleting any 
+          associated temporary disk file.
+          """
+     :see-also '( "ring/part-name"
+                  "ring/part-filename"
+                  "ring/part-size"
+                  "ring/part-content-type"
+                  "ring/part-header-names"
+                  "ring/part-header"
+                  "ring/part-headers"
+                  "ring/part-in-stream"
+                  "ring/part") }
+
+  part-delete [part] (. part :delete))
+
+
+
+
+;; -----------------------------------------------------------------------------
 ;; Session utils
 ;; -----------------------------------------------------------------------------
 
 (defn
-  ^{:doc "Invalidate the session" }
+  ^{ :arglists '("(ring/session-invalidate req)")
+     :doc "Invalidate the session"
+     :see-also '( "ring/session-clear" 
+                  "ring/session-id"
+                  "ring/session-set-value"
+                  "ring/session-get-value"
+                  "ring/session-remove-value"
+                  "ring/session-last-access-time"
+                  "ring/session-creation-time") }
 
   session-invalidate [req]
 
@@ -161,7 +386,15 @@
 
 
 (defn
-  ^{:doc "Removes all attributes from the session" }
+  ^{ :arglists '("(ring/session-clear req)")
+     :doc "Removes all attributes from the session"
+     :see-also '( "ring/session-invalidate"
+                  "ring/session-id"
+                  "ring/session-set-value"
+                  "ring/session-get-value"
+                  "ring/session-remove-value"
+                  "ring/session-last-access-time"
+                  "ring/session-creation-time") }
 
   session-clear [req]
 
@@ -172,7 +405,15 @@
 
 
 (defn
-  ^{:doc "Get the session ID" }
+  ^{ :arglists '("(ring/session-id req)")
+     :doc "Get the session ID"
+     :see-also '( "ring/session-invalidate" 
+                  "ring/session-clear"
+                  "ring/session-set-value"
+                  "ring/session-get-value"
+                  "ring/session-remove-value"
+                  "ring/session-last-access-time"
+                  "ring/session-creation-time") }
 
   session-id [req]
 
@@ -181,7 +422,15 @@
 
 
 (defn
-  ^{:doc "Sets a value on the session" }
+  ^{ :arglists '("(ring/session-set-value req name value)")
+     :doc "Sets a value on the session"
+     :see-also '( "ring/session-invalidate" 
+                  "ring/session-clear" 
+                  "ring/session-id"
+                  "ring/session-get-value"
+                  "ring/session-remove-value"
+                  "ring/session-last-access-time"
+                  "ring/session-creation-time") }
 
   session-set-value [req name value]
 
@@ -192,7 +441,15 @@
 
 
 (defn
-  ^{:doc "Get a value from the session" }
+  ^{ :arglists '("(ring/session-get-value req name)")
+     :doc "Get a value from the session"
+     :see-also '( "ring/session-invalidate" 
+                  "ring/session-clear" 
+                  "ring/session-id"
+                  "ring/session-set-value"
+                  "ring/session-remove-value"
+                  "ring/session-last-access-time"
+                  "ring/session-creation-time") }
 
   session-get-value [req name]
 
@@ -201,7 +458,15 @@
 
 
 (defn
-  ^{:doc "Remove a value from the session" }
+  ^{ :arglists '("(ring/session-remove-value req name)")
+     :doc "Remove a value from the session"
+     :see-also '( "ring/session-invalidate" 
+                  "ring/session-clear" 
+                  "ring/session-id"
+                  "ring/session-set-value"
+                  "ring/session-get-value"
+                  "ring/session-last-access-time"
+                  "ring/session-creation-time") }
 
   session-remove-value [req name]
 
@@ -210,21 +475,44 @@
 
 
 (defn
-  ^{:doc "Returns the time (milliseconds since epoch) when this session was last accessed." }
+  ^{ :arglists '("(ring/session-last-access-time req)")
+     :doc """
+          Returns the time (milliseconds since epoch) when this session was 
+          last accessed.
+          """
+     :see-also '( "ring/session-invalidate" 
+                  "ring/session-clear" 
+                  "ring/session-id"
+                  "ring/session-set-value"
+                  "ring/session-get-value"
+                  "ring/session-remove-value"
+                  "ring/session-creation-time") }
 
-  session-last-access-time [req name]
+  session-last-access-time [req]
 
   (if-let [session (:session req)]
     (. session :getLastAccessedTime)))
 
 
 (defn
-  ^{:doc "Returns the time (milliseconds since epoch) when this session was created." }
+  ^{ :arglists '("(ring/session-creation-time req)")
+     :doc """
+          Returns the time (milliseconds since epoch) when this session was 
+          created.
+          """
+     :see-also '( "ring/session-invalidate" 
+                  "ring/session-clear" 
+                  "ring/session-id"
+                  "ring/session-set-value"
+                  "ring/session-get-value"
+                  "ring/session-remove-value"
+                  "ring/session-last-access-time") }
 
-  session-creation-time [req name]
+  session-creation-time [req]
 
   (if-let [session (:session req)]
-    (. session :getCreationTime name)))
+    (. session :getCreationTime)))
+
 
 
 ;; -----------------------------------------------------------------------------
@@ -232,7 +520,14 @@
 ;; -----------------------------------------------------------------------------
 
 (defn
-  ^{ :doc "Identity, does effectively just delegate to the handler" }
+  ^{ :arglists '("(ring/mw-identity handler)")
+     :doc "Identity, does effectively just delegate to the handler"
+     :see-also '( "ring/mw-debug" 
+                  "ring/mw-print-uri"
+                  "ring/mw-request-counter"
+                  "ring/mw-add-session"
+                  "ring/mw-dump-request"
+                  "ring/mw-dump-response") }
 
   mw-identity [handler]
 
@@ -240,10 +535,17 @@
 
 
 (defn
-  ^{ :doc """
+  ^{ :arglists '("(ring/mw-debug handler option)")
+     :doc """
           Turns handler debug flag on the request on/off and then calls
           the handler with the modified request.
-          """ }
+          """ 
+     :see-also '( "ring/mw-identity"
+                  "ring/mw-print-uri"
+                  "ring/mw-request-counter"
+                  "ring/mw-add-session"
+                  "ring/mw-dump-request"
+                  "ring/mw-dump-response") }
 
   mw-debug [handler option]
 
@@ -253,7 +555,14 @@
 
 
 (defn
-  ^{ :doc "Prints the URI from the request and then calls the handler" }
+  ^{ :arglists '("(ring/mw-print-uri handler)")
+     :doc "Prints the URI from the request and then calls the handler" 
+     :see-also '( "ring/mw-identity" 
+                  "ring/mw-debug"
+                  "ring/mw-request-counter"
+                  "ring/mw-add-session"
+                  "ring/mw-dump-request"
+                  "ring/mw-dump-response") }
 
   mw-print-uri [handler]
 
@@ -264,10 +573,17 @@
 
 
 (defn
-  ^{ :doc """
+  ^{ :arglists '("(ring/mw-request-counter handler)")
+     :doc """
           Increments the number requests, stores it in the attribute
           'request-counter' in the session, and then calls the handler.
-          """ }
+          """ 
+     :see-also '( "ring/mw-identity" 
+                  "ring/mw-debug" 
+                  "ring/mw-print-uri"
+                  "ring/mw-add-session"
+                  "ring/mw-dump-request"
+                  "ring/mw-dump-response") }
 
   mw-request-counter [handler]
 
@@ -281,14 +597,21 @@
 
 
 (defn
-  ^{ :doc """
+  ^{ :arglists '("(ring/mw-add-session handler timeout)")
+     :doc """
           Adds the session to the request. If a new session is created
           the given timeout is set as the MaxInactiveInterval. If a
           timeout is not given the session will never timeout.
 
           Adds the session to the request and then calls the handler
           with the modified request.
-          """ }
+          """ 
+     :see-also '( "ring/mw-identity" 
+                  "ring/mw-debug" 
+                  "ring/mw-print-uri"
+                  "ring/mw-request-counter"
+                  "ring/mw-dump-request"
+                  "ring/mw-dump-response") }
 
   mw-add-session [handler timeout]
 
@@ -302,7 +625,14 @@
 
 
 (defn
-  ^{ :doc "Dumps the request and then calls the handler." }
+  ^{ :arglists '("(ring/mw-dump-request handler)")
+     :doc "Dumps the request and then calls the handler." 
+     :see-also '( "ring/mw-identity" 
+                  "ring/mw-debug" 
+                  "ring/mw-print-uri"
+                  "ring/mw-request-counter"
+                  "ring/mw-add-session"
+                  "ring/mw-dump-response") }
 
   mw-dump-request [handler]
 
@@ -312,7 +642,15 @@
 
 
 (defn
-  ^{ :doc "Calls the handler and the dumps the handler's response." }
+  ^{ :arglists '("(ring/mw-dump-response handler)")
+     :doc "Calls the handler and the dumps the handler's response." 
+     :see-also '( "ring/mw-identity" 
+                  "ring/mw-debug" 
+                  "ring/mw-print-uri"
+                  "ring/mw-request-counter"
+                  "ring/mw-add-session"
+                  "ring/mw-dump-request"
+                  "ring/mw-dump-response") }
 
   mw-dump-response [handler]
 
@@ -328,7 +666,8 @@
 
 
 (defn
-  ^{ :doc """
+  ^{ :arglists '("(ring/match-routes routes)")
+     :doc """
           Compile the routes and return a function that calls the handler
           matching the URI.
 
@@ -370,7 +709,8 @@
                                      (ring/mw-debug :on)))       ; +--+
             {:await? false})
           ```
-          """ }
+          """
+     :see-also '( "ring/create-servlet") }
 
   match-routes [routes]
 
@@ -398,7 +738,9 @@
 ;; -----------------------------------------------------------------------------
 
 (defn
-  ^{ :doc "Create a ring servlet" }
+  ^{ :arglists '("(ring/create-servlet handler)")
+     :doc "Create a ring servlet"
+     :see-also '( "ring/match-routes") }
 
   create-servlet [handler]
 
@@ -414,35 +756,39 @@
         :getLastModified (fn [req] -1) })))
 
 
+
 ;; -----------------------------------------------------------------------------
 ;; Header utils (internal)
 ;; -----------------------------------------------------------------------------
 
 (def
-  ^{:doc "Pattern for pulling the charset out of the content-type header" }
+  ^{ :doc "Pattern for pulling the charset out of the content-type header"
+     :see-also '( "ring/charset") }
 
   regex-charset
 
   (regex/pattern ".*charset=([^\\s;]+).*"))
 
 
+(defn
+  ^{ :arglists '("(ring/parse-charset text)")
+     :doc """
+          Parses the charset from a header value
+
+          E.g.: Returns `utf-8` for a content tye header like: 
+          `Content-Type: text/html; charset=utf-8`
+          """ }
+
+  parse-charset [text]
+
+  (let [m (regex/matcher ring/regex-charset text)]
+    (when (regex/matches? m)
+      (regex/group m 1))))
+
+
 (defn-
-  ^{ :doc """
-          Looks up a header in a Ring response (or request) case insensitively,
-          returning the header map entry, or nil if not present.
-          """  }
-
-  find-header [resp header-name]
-
-  (if (java-obj? resp)
-    (. resp :getHeader header-name)
-    (->> (:headers resp)
-         (filter #(str/equals-ignore-case? header-name (key %)))
-         (first))))
-
-
-(defn-
-  ^{ :doc """
+  ^{ :arglists '("(ring/get-charset res)")
+     :doc """
           Gets the character encoding of a Ring response.
 
           E.g.: Returns `utf-8` for a content tye header like: 
@@ -458,7 +804,24 @@
 
 
 (defn-
-  ^{:doc "Return the HttpServletRequest cookies as a map" }
+  ^{ :arglists '("(ring/find-header resp header-name)")
+     :doc """
+          Looks up a header in a Ring response (or request) case insensitively,
+          returning the header map entry, or nil if not present.
+          """  }
+
+  find-header [resp header-name]
+
+  (if (java-obj? resp)
+    (. resp :getHeader header-name)
+    (->> (:headers resp)
+         (filter #(str/equals-ignore-case? header-name (key %)))
+         (first))))
+
+
+(defn-
+  ^{ :arglists '("(ring/get-cookies req)")
+     :doc "Return the HttpServletRequest cookies as a map" }
 
   get-cookies [req]
 
@@ -469,7 +832,8 @@
 
 
 (defn-
-  ^{ :doc "Dumps the request." }
+  ^{ :arglists '("(ring/dump-request req)")
+     :doc "Dumps the request." }
 
   dump-request [req]
 
@@ -495,7 +859,8 @@
 
 
 (defn-
-  ^{ :doc "Dumps the response." }
+  ^{ :arglists '("(ring/dump-response res)")
+     :doc "Dumps the response." }
 
   dump-response [res]
 
@@ -514,7 +879,8 @@
 ;; -----------------------------------------------------------------------------
 
 (defn-
-  ^{ :doc "Creates a name/value map of all the request headers." }
+  ^{ :arglists '("(ring/get-headers request)")
+     :doc "Creates a name/value map of all the request headers." }
 
   get-headers [request]
 
@@ -529,7 +895,8 @@
 
 
 (defn-
-  ^{ :doc "Creates a name/value map of the request parameters." }
+  ^{ :arglists '("(ring/get-parameters request)")
+     :doc "Creates a name/value map of the request parameters." }
 
   get-parameters [request]
 
@@ -537,7 +904,8 @@
 
 
 (defn-
-  ^{ :doc "Returns the content length, or nil if there is no content." }
+  ^{ :arglists '("(ring/get-content-length request)")
+     :doc "Returns the content length, or nil if there is no content." }
 
   get-content-length [request]
 
@@ -546,7 +914,8 @@
 
 
 (defn-
-  ^{ :doc "Returns the SSL client certificate of the request, if one exists." }
+  ^{ :arglists '("(ring/get-client-cert request)")
+     :doc "Returns the SSL client certificate of the request, if one exists." }
 
   get-client-cert [request]
 
@@ -554,7 +923,8 @@
 
 
 (defn-
-  ^{ :doc "Update a HttpServletResponse with a map of headers." }
+  ^{ :arglists '("(ring/set-response-headers response headers)")
+     :doc "Update a HttpServletResponse with a map of headers." }
 
   set-response-headers [response headers]
 
@@ -603,7 +973,9 @@
 
 
 (defn
-  ^{ :doc """
+  ^{ :arglists '("(ring/make-service-method handler)"
+                 "(ring/make-service-method handler options)")
+     :doc """
           Turns a handler into a function that takes the same arguments
           and has the same return value as the service method in the
           HttpServlet class.
@@ -650,7 +1022,9 @@
 
 
 (defn-
-  ^{ :doc "Update the HttpServletResponse using a response map." }
+  ^{ :arglists '("(ring/update-servlet-response response response-map)"
+                 "(ring/update-servlet-response response async-context response-map)")
+     :doc "Update the HttpServletResponse using a response map." }
 
   update-servlet-response
 
@@ -671,7 +1045,8 @@
 
 
 (defn-
-  ^{ :doc "Create the request map from the HttpServletRequest object." }
+  ^{ :arglists '("(ring/build-request-map request)")
+     :doc "Create the request map from the HttpServletRequest object." }
 
   build-request-map [request]
 
@@ -694,7 +1069,8 @@
 
 
  (defn-
-   ^{ :doc "Associate servlet-specific keys with the request map." }
+   ^{ :arglists '("(ring/merge-servlet-keys request-map servlet request response)")
+      :doc "Associate servlet-specific keys with the request map." }
 
    merge-servlet-keys [request-map servlet request response]
 
