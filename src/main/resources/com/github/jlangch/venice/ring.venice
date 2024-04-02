@@ -32,14 +32,7 @@
         :com.github.jlangch.venice.VncException
         :com.github.jlangch.venice.util.servlet.IVeniceServlet
         :com.github.jlangch.venice.util.servlet.VeniceServlet
-        :com.github.jlangch.venice.util.servlet.FilterOutputStreamCloseCB
-        :java.io.BufferedWriter
-        :java.io.OutputStreamWriter
-        :java.util.Collections
-        :javakarta.servlet.ServletConfig
-        :javakarta.servlet.ServletException
-        :javakarta.servlet.http.HttpServletRequest
-        :javakarta.servlet.http.HttpServletResponse)
+        :com.github.jlangch.venice.util.servlet.FilterOutputStreamCloseCB)
 
 
 ;; -----------------------------------------------------------------------------
