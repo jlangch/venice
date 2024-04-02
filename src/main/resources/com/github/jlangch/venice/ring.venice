@@ -156,7 +156,7 @@
 (defn
   ^{ :arglists '("(ring/multipart-request? req)")
      :doc "Returns true if the request is a multipart request 'multipart/form-data'" 
-     :see-also '( "ring/parts" "ring/part") }
+     :see-also '( "ring/parts") }
 
   multipart-request? [req]
 
@@ -166,191 +166,28 @@
 (defn
   ^{ :arglists '("(ring/parts req)")
      :doc """
-          Returns the parts (a vector of :(javax|jakarta).servlet.http.Part) 
-          of a multipart HTTP request.
+          Returns a list of parts of a multipart HTTP request. 
+
+          A part is map with the fields:
+
+          | [![width: 15%]] | [![width: 85%]] |
+          | :name           | The name of the part |
+          | :file-name      | The file-name of the part or nil if not available |
+          | :size           | The size of the file |
+          | :content-type   | The content type of the part |
+          | :headers        | A map of part's headers. key: header name, \
+                              value: list of header values. The header names \
+                              are mapped to lower case |
+          | :in-stream      | The content part as input stream |
+          | :delete-fn      | A function that deletes the underlying storage \
+                              for a file item, including deleting any \
+                              associated temporary disk file. |
+
+          The part list is empty if the request is not a multipart request.
           """
-     :see-also '( "ring/multipart-request?" 
-                  "ring/part" ) }
+     :see-also '( "ring/multipart-request?" ) }
 
-  parts [req] (int [] (. req :getParts)))
-
-
-(defn
-  ^{ :arglists '("(ring/part req name)")
-     :doc "Gets the Part with the given name." 
-     :see-also '( "ring/multipart-request?" 
-                  "ring/parts" 
-                  "ring/part-name"
-                  "ring/part-filename"
-                  "ring/part-size"
-                  "ring/part-content-type"
-                  "ring/part-header-names"
-                  "ring/part-header"
-                  "ring/part-headers"
-                  "ring/part-in-stream"
-                  "ring/part-header"
-                  "ring/part-delete") }
-
-  part [req name] (int [] (. req :getPart name)))
-
-
-(defn
-  ^{ :arglists '("(ring/part-name part name)")
-     :doc "Gets the name of the part"
-     :see-also '( "ring/part-filename"
-                  "ring/part-size"
-                  "ring/part-content-type"
-                  "ring/part-header-names"
-                  "ring/part-header"
-                  "ring/part-headers"
-                  "ring/part-in-stream"
-                  "ring/part-delete"
-                  "ring/part" ) }
-
-  part-name [part] (. part :getName))
-
-
-(defn
-  ^{ :arglists '("(ring/part-filename part)")
-     :doc """
-          Gets the filename of the part
-
-          The part's filename is passed in the "Content-Disposition" header
-          of the part as:
-
-          Content-Disposition: form-data; name="image" filename="picture.png"
-          """
-     :see-also '( "ring/part-name"
-                  "ring/part-size"
-                  "ring/part-content-type"
-                  "ring/part-header-names"
-                  "ring/part-header"
-                  "ring/part-headers"
-                  "ring/part-in-stream"
-                  "ring/part-delete"
-                  "ring/part") }
-
-  part-filename [part]
-
-  (let [v (. part :getHeader "Content-Disposition")
-        m (regex/matcher #".*filename=\"(.*)\"" v)]
-    (when (regex/matches? m)
-      (regex/group m 1))))
-
-
-(defn
-  ^{ :arglists '("(ring/part-size part)")
-     :doc "Gets the size of the part"
-     :see-also '( "ring/part-name"
-                  "ring/part-filename"
-                  "ring/part-content-type"
-                  "ring/part-header-names"
-                  "ring/part-header"
-                  "ring/part-headers"
-                  "ring/part-in-stream"
-                  "ring/part-delete"
-                  "ring/part") }
-
-  part-size [part] (. part :getSize))
-
-
-(defn
-  ^{ :arglists '("(ring/part-content-type part)")
-     :doc "Gets the content type of the part." 
-     :see-also '( "ring/part-name"
-                  "ring/part-filename"
-                  "ring/part-size"
-                  "ring/part-header-names"
-                  "ring/part-header"
-                  "ring/part-headers"
-                  "ring/part-in-stream"
-                  "ring/part-delete"
-                  "ring/part") }
-
-  part-content-type [part] (. part :getContentType))
-
-
-(defn
-  ^{ :arglists '("(ring/part-header-names part)")
-     :doc "Gets the header names of the Part."
-     :see-also '( "ring/part-name"
-                  "ring/part-filename"
-                  "ring/part-size"
-                  "ring/part-content-type"
-                  "ring/part-header"
-                  "ring/part-headers"
-                  "ring/part-in-stream"
-                  "ring/part-delete"
-                  "ring/part") }
-
-  part-header-names [part] (. part :getHeaderNames))
-
-
-(defn
-  ^{ :arglists '("(ring/part-header part name)")
-     :doc "Get the value of the specified mime header as a String." 
-     :see-also '( "ring/part-name"
-                  "ring/part-filename"
-                  "ring/part-size"
-                  "ring/part-content-type"
-                  "ring/part-header-names"
-                  "ring/part-headers"
-                  "ring/part-in-stream"
-                  "ring/part-delete"
-                  "ring/part") }
-
-  part-header [part name] (. part :getHeader name))
-
-
-(defn
-  ^{ :arglists '("(ring/part-headers part name)")
-     :doc "Gets the values of the Part header with the given name."
-     :see-also '( "ring/part-name"
-                  "ring/part-filename"
-                  "ring/part-size"
-                  "ring/part-content-type"
-                  "ring/part-header-names"
-                  "ring/part-header"
-                  "ring/part-in-stream"
-                  "ring/part-delete"
-                  "ring/part") }
-
-  part-headers [part name] (into [] (. part :getHeaders name)))
-
-
-(defn
-  ^{ :arglists '("(ring/part-in-stream part)")
-     :doc "Gets the content of this part as an InputStream"
-     :see-also '( "ring/part-name"
-                  "ring/part-filename"
-                  "ring/part-size"
-                  "ring/part-content-type"
-                  "ring/part-header-names"
-                  "ring/part-header"
-                  "ring/part-headers"
-                  "ring/part-delete"
-                  "ring/part") }
-
-  part-in-stream [part] (. part :getInputStream))
-
-
-(defn
-  ^{ :arglists '("(ring/part-delete part)")
-     :doc """
-          Deletes the underlying storage for a file item, including deleting any 
-          associated temporary disk file.
-          """
-     :see-also '( "ring/part-name"
-                  "ring/part-filename"
-                  "ring/part-size"
-                  "ring/part-content-type"
-                  "ring/part-header-names"
-                  "ring/part-header"
-                  "ring/part-headers"
-                  "ring/part-in-stream"
-                  "ring/part") }
-
-  part-delete [part] (. part :delete))
+  parts [req] (:parts req))
 
 
 
@@ -688,6 +525,43 @@
           *  "/static/images/chart.png"
           *  "/static/images/*.png"
           *  "/static/**/*.png"
+
+          A routing handler is single argument function that receives the
+          request and returns a response.
+
+          Handler request:
+
+          | [![width: 15%]]     | [![width: 85%]] |
+          | :server-port        | The server port |
+          | :server-name        | The server name |
+          | :remote-addr        | The remote address |
+          | :uri                | The request URI |
+          | :query-string       | The query string |
+          | :scheme             | The scheme {:http, :https } |
+          | :request-method     | The lower case request method. \
+                                  {:get, :post, :put, :delete, ...} |
+          | :protocol           | The protocol |
+          | :headers            | A map of part's headers. Key: header name, \
+                                  value: list of header values. The header \
+                                  names are mapped to lower case |
+          | :parameters         | A name/value map of the request parameters | 
+          | :cookies            | A map of the cookies. Key: cookie name, \
+                                  value: the Java cookie object |
+          | :content-type       | The content type |
+          | :content-length     | The content length |
+          | :character-encoding | The character encoding |
+          | :ssl-client-cert    | The client certificate, if available |
+          | :parts              | A list of parts, empty for non multipart \
+                                  requests |
+          | :body               | The content part as input stream  |
+
+          Handler response:
+
+          ```
+          { :status 400
+            :headers { "Content-Type" "text/plain" }
+            :body "Not a json request!" }
+          ```
           
           Rigging up a Ring WEB App and starting Tomcat:
 
@@ -732,7 +606,9 @@
 
 (defn
   ^{ :arglists '("(ring/create-servlet handler)")
-     :doc "Create a ring servlet"
+     :doc """
+          Create a ring servlet.
+          """
      :see-also '( "ring/match-routes") }
 
   create-servlet [handler]
@@ -1058,7 +934,85 @@
    :content-length     (ring/get-content-length request)
    :character-encoding (. request :getCharacterEncoding)
    :ssl-client-cert    (ring/get-client-cert request)
+   :parts              (into [] (. request :getParts))
    :body               (. request :getInputStream)})
+
+
+
+(defn-
+  ^{ :arglists '("(ring/map-parts request)")
+     :doc "Create a list of part maps from the HttpServletRequest object." }
+
+  map-parts [request]
+
+  (map map-part (. request :getParts)))
+
+
+(defn- map-part [part]
+  { :name         (. part :getName)
+    :file-name    (let [v (. part :getHeader "Content-Disposition")
+                        m (regex/matcher #".*filename=\"(.*)\"" v)]
+                    (when (regex/matches? m)
+                      (regex/group m 1)))
+    :size         (. part :getSize)
+    :content-type (. part :getContentType)
+    :headers      (reduce
+                    (fn [headers name]
+                      (assoc headers
+                             (str/lower-case name)
+                             (into '() (. request :getHeaders name))))
+                    {}
+                    (into '() (. part :getHeaderNames)))
+    :in-stream    (. part :getInputStream)
+    :delete-fn    (fn [] (. part :delete)) })
+
+
+(defn
+  ^{ :arglists '("(ring/part-header-names part)")
+     :doc "Gets the header names of the Part."
+     :see-also '( "ring/part-name"
+                  "ring/part-filename"
+                  "ring/part-size"
+                  "ring/part-content-type"
+                  "ring/part-header"
+                  "ring/part-headers"
+                  "ring/part-in-stream"
+                  "ring/part-delete"
+                  "ring/part") }
+ 
+  part-header-names [part] (. part :getHeaderNames))
+
+
+(defn
+  ^{ :arglists '("(ring/part-header part name)")
+     :doc "Get the value of the specified mime header as a String." 
+     :see-also '( "ring/part-name"
+                  "ring/part-filename"
+                  "ring/part-size"
+                  "ring/part-content-type"
+                  "ring/part-header-names"
+                  "ring/part-headers"
+                  "ring/part-in-stream"
+                  "ring/part-delete"
+                  "ring/part") }
+
+  part-header [part name] (. part :getHeader name))
+
+
+(defn
+  ^{ :arglists '("(ring/part-headers part name)")
+     :doc "Gets the values of the Part header with the given name."
+     :see-also '( "ring/part-name"
+                  "ring/part-filename"
+                  "ring/part-size"
+                  "ring/part-content-type"
+                  "ring/part-header-names"
+                  "ring/part-header"
+                  "ring/part-in-stream"
+                  "ring/part-delete"
+                  "ring/part") }
+
+  part-headers [part name] (into [] (. part :getHeaders name)))
 
 
  (defn-

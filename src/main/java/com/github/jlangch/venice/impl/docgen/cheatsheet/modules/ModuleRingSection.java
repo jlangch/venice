@@ -81,19 +81,6 @@ public class ModuleRingSection implements ISectionBuilder {
         all.addSection(multipart);
         multipart.addItem(diBuilder.getDocItem("ring/multipart-request?", false));
         multipart.addItem(diBuilder.getDocItem("ring/parts", false));
-        multipart.addItem(diBuilder.getDocItem("ring/part", false));
-
-        final DocSection part = new DocSection("Multipart", id());
-        all.addSection(part);
-        part.addItem(diBuilder.getDocItem("ring/part-name", false));
-        part.addItem(diBuilder.getDocItem("ring/part-filename", false));
-        part.addItem(diBuilder.getDocItem("ring/part-size", false));
-        part.addItem(diBuilder.getDocItem("ring/part-content-type", false));
-        part.addItem(diBuilder.getDocItem("ring/part-header-names", false));
-        part.addItem(diBuilder.getDocItem("ring/part-header", false));
-        part.addItem(diBuilder.getDocItem("ring/part-headers", false));
-        part.addItem(diBuilder.getDocItem("ring/part-in-stream", false));
-        part.addItem(diBuilder.getDocItem("ring/part-delete", false));
 
         return section;
     }
