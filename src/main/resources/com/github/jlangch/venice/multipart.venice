@@ -94,7 +94,9 @@
                       "Part-4" {:name      "data.xml"
                                 :mimetype  "application/xml"
                                 :data      "<user><name>foo</name></user>"}})
-        """ ) }
+        """ )
+     :see-also '( 
+        "multipart/http-content-type-header" ) }
 
   render [parts]
 
@@ -118,6 +120,8 @@
         """
         Returns the HTTP content type header value for *multipart/form-data*
         HTTP requests.
+
+        The `multipart/render` function uses this boundary.
         
         E.g:  Content-Type: multipart/form-data; boundary=1234567890N
         """
@@ -127,7 +131,9 @@
           (load-module :multipart ['multipart :as 'm])
 
           (m/http-content-type-header))
-        """ ) }
+        """ )
+     :see-also '( 
+        "multipart/render" ) }
 
   http-content-type-header []
 
