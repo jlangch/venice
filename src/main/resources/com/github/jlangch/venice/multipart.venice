@@ -26,12 +26,6 @@
 
 (load-module :mimetypes)
 
-(import :java.net.URL)
-(import :java.io.File)
-(import :java.nio.file.Files)
-(import :java.nio.file.Path)
-(import :java.nio.file.Paths)
-
 
 (defonce ^:private boundary-value (str (rand-bigint 128)))
 
@@ -149,7 +143,7 @@
 
     ;; dispatch to the part renderer
     (cond 
-      (file-url? value)   (->as (. :URL :new value) f
+      (file-url? value)   (as-> (. :java.net.URL :new value) f
                                 (. f :getPath)
                                 (io/file f)
                                 (render-file-part name f os))
