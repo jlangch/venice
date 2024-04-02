@@ -156,7 +156,7 @@
 (defn
   ^{ :arglists '("(ring/multipart-request? req)")
      :doc "Returns true if the request is a multipart request 'multipart/form-data'" 
-     :see-also '( "ring/parts") }
+     :see-also '( "ring/parts" "ring/parts-delete-all") }
 
   multipart-request? [req]
 
@@ -177,7 +177,9 @@
           | :content-type   | The content type of the part |
           | :headers        | A map of part's headers. key: header name, \
                               value: list of header values. The header names \
-                              are mapped to lower case |
+                              are mapped to lower case.¶ \
+                              Use `(first ("xxxx" :headers))` to get a \
+                              single value header | 
           | :in-stream      | The content part as input stream |
           | :delete-fn      | A function that deletes the underlying storage \
                               for a file item, including deleting any \
@@ -185,10 +187,27 @@
 
           The part list is empty if the request is not a multipart request.
           """
-     :see-also '( "ring/multipart-request?" ) }
+     :see-also '( "ring/multipart-request?" "ring/parts-delete-all") }
 
   parts [req] (:parts req))
 
+
+(defn
+  ^{ :arglists '("(ring/parts-delete-all req)")
+     :doc """
+          Safely delete the temporary data of all parts.
+
+          Calls the *delete-fn* on every part data map.
+          """
+     :see-also '( "ring/multipart-request?" "ring/parts" ) }
+
+  parts-delete-all [req] 
+  
+  (doseq [p (:parts req)]
+         (try 
+           ((:delete-fn p))  ;; call the part's delete function
+           (catch :Exception e))))
+ 
 
 
 
@@ -543,10 +562,12 @@
           | :protocol           | The protocol |
           | :headers            | A map of part's headers. Key: header name, \
                                   value: list of header values. The header \
-                                  names are mapped to lower case |
+                                  names are mapped to lower case.¶ \
+                                  Use `(first ("xxxx" :headers))` to get a \
+                                  single value header |
           | :parameters         | A name/value map of the request parameters | 
           | :cookies            | A map of the cookies. Key: cookie name, \
-                                  value: the Java cookie object |
+                                  value: the Java servlet cookie object |
           | :content-type       | The content type |
           | :content-length     | The content length |
           | :character-encoding | The character encoding |

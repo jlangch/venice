@@ -81,6 +81,7 @@ public class ModuleRingSection implements ISectionBuilder {
         all.addSection(multipart);
         multipart.addItem(diBuilder.getDocItem("ring/multipart-request?", false));
         multipart.addItem(diBuilder.getDocItem("ring/parts", false));
+        multipart.addItem(diBuilder.getDocItem("ring/parts-delete-all", false));
 
         return section;
     }
