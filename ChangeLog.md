@@ -12,6 +12,7 @@ All notable changes to this project will be documented in this file.
 
 - support for multipart requests to :ring module and improved the request/response
   dump functions
+- module :http-client-legacy. A simple HTTP client based on the JDK HttpUrlConnection
 
 
 
