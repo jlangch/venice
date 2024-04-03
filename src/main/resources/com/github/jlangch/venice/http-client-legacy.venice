@@ -197,8 +197,8 @@
   (println     "   content-encoding:  " (:character-encoding res))
   (println     "   content-length:    " (:character-encoding res))
   (println-map "   header:            " (:headers res))
-  (println     "   data-stream:       " (if (nil? (:data-stream res)) "+" "-"))
-  (println     "   error-stream:      " (if (nil? (:error-stream res)) "+" "-")))
+  (println     "   data-stream:       " (if (nil? (:data-stream res)) "<available>" "-"))
+  (println     "   error-stream:      " (if (nil? (:error-stream res)) "<available>" "-")))
 
 
 (defn- println-map [head data]
