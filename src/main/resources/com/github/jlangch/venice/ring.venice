@@ -741,12 +741,24 @@
   (println "   context-path: " (:servlet-context-path req))
   (println "   servlet-path: " (:servlet-path req))
   (println "   session:      " (ring/session-id req))
-  (println "   headers:      ")
-  (docoll #(println "     " (str (first %) ":") (second %)) (into '() (:headers req)))
-  (println "   parameters:   ")
-  (docoll #(println "     " (str (first %) ":") (second %)) (into '() (:parameters req)))
-  (println "   cookies:      ")
-  (docoll #(println "     " (str (first %) ":") (:value (second %))) (into '() (:cookies req))))
+  (println "   headers:")
+  (doseq [h (into '() (:headers req))]
+         (println "      " (str (first h) ": ") (second h)))
+  (println "   parameters:")
+  (doseq [p (into '() (:parameters req))]
+         (println "      " (str (first p) ": ") (second p)))
+  (println "   cookies: ")
+  (doseq [c (into '() (:cookies req))]
+         (println "      " (str (first c) ": ") (:value (second c))))
+  (println "   parts:")
+  (doseq [p (:parts req)]
+         (println "      name:            " (:name p))
+         (println "         file-name:    " (:file-name p))
+         (println "         content-type: " (:content-type p))
+         (println "         size:         " (:size p))
+         (println "         headers:")
+         (doseq [h (into '() (:headers p))]
+         (println "            " (str (first h) ": ") (second h)))))
 
 
 (defn-
@@ -759,10 +771,13 @@
   (println "   content-type: " (:content-type res))
   (println "   encoding:     " (:character-encoding res))
   (println "   status:       " (:status res))
-  (println "   headers:      ")
-  (docoll #(println "     " (str (first %) ":") (second %)) (into '() (:headers res)))
-  (println "   cookies:      ")
-  (docoll #(println "     " (str (first %) ":") (:value (second %))) (into '() (:cookies res))))
+  (println "   headers:")
+  (doseq [h (into '() (:headers res))]
+         (println "      " (str (first h) ": ") (second h)))
+  (println "   cookies: ")
+  (doseq [c (into '() (:cookies res))]
+         (println "      " (str (first c) ": ") (:value (second c)))))
+
 
 
 ;; -----------------------------------------------------------------------------
