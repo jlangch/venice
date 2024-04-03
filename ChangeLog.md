@@ -10,7 +10,8 @@ All notable changes to this project will be documented in this file.
 
 ### Added
 
-- support for multipart requests to :ring module
+- support for multipart requests to :ring module and improved the request/response
+  dump functions
 
 
 
