@@ -552,16 +552,16 @@
           Handler request:
 
           | [![width: 15%]]     | [![width: 85%]] |
-          | :server-port        | The server port |
-          | :server-name        | The server name |
-          | :remote-addr        | The remote address |
-          | :uri                | The request URI |
+          | :server-port        | The server port. E.g.: 8080 |
+          | :server-name        | The server name. E.g.: localhost |
+          | :remote-addr        | The remote address. E.g.: "0:0:0:0:0:0:0:1" |
+          | :uri                | The request URI. E.g.: "/employees" |
           | :query-string       | The query string |
           | :scheme             | The scheme {:http, :https } |
           | :request-method     | The lower case request method. \
                                   {:get, :post, :put, :delete, :head, :options, \
                                    :trace } |
-          | :protocol           | The protocol |
+          | :protocol           | The protocol. E.g. "HTTP/1.1" |
           | :headers            | A map of part's headers. Key: header name, \
                                   value: list of header values. The header \
                                   names are mapped to lower case.¶ \
@@ -570,7 +570,7 @@
           | :parameters         | A name/value map of the request parameters | 
           | :cookies            | A map of the cookies. Key: cookie name, \
                                   value: the Java servlet cookie object |
-          | :content-type       | The content type |
+          | :content-type       | The content type (may be nil) |
           | :content-length     | The content length |
           | :character-encoding | The character encoding |
           | :ssl-client-cert    | The client certificate, if available |
@@ -729,38 +729,24 @@
 
   dump-request [req]
 
-  (println "Dump request:")
-  (println "   server-port:  " (long (:server-port req)))
-  (println "   server-name:  " (:server-name req))
-  (println "   remote-addr:  " (:remote-addr req))
-  (println "   scheme:       " (:scheme req))
-  (println "   uri:          " (:uri req))
-  (println "   protocol:     " (:protocol req))
-  (println "   query-string: " (:query-string req))
-  (println "   method:       " (:request-method req))
-  (println "   content-type: " (:content-type req))
-  (println "   encoding:     " (:character-encoding req))
-  (println "   context-path: " (:servlet-context-path req))
-  (println "   servlet-path: " (:servlet-path req))
-  (println "   session:      " (ring/session-id req))
-  (println "   headers:")
-  (doseq [h (into '() (:headers req))]
-         (println "      " (str (first h) ": ") (second h)))
-  (println "   parameters:")
-  (doseq [p (into '() (:parameters req))]
-         (println "      " (str (first p) ": ") (second p)))
-  (println "   cookies: ")
-  (doseq [c (into '() (:cookies req))]
-         (println "      " (str (first c) ": ") (:value (second c))))
-  (println "   parts:")
-  (doseq [p (:parts req)]
-         (println "      name:            " (:name p))
-         (println "         file-name:    " (:file-name p))
-         (println "         content-type: " (:content-type p))
-         (println "         size:         " (:size p))
-         (println "         headers:")
-         (doseq [h (into '() (:headers p))]
-         (println "            " (str (first h) ": ") (second h)))))
+  (println       "Dump request:")
+  (println       "   server-port:  " (long (:server-port req)))
+  (println       "   server-name:  " (:server-name req))
+  (println       "   remote-addr:  " (:remote-addr req))
+  (println       "   scheme:       " (:scheme req))
+  (println       "   uri:          " (:uri req))
+  (println       "   protocol:     " (:protocol req))
+  (println       "   query-string: " (:query-string req))
+  (println       "   method:       " (:request-method req))
+  (println       "   content-type: " (:content-type req))
+  (println       "   encoding:     " (:character-encoding req))
+  (println       "   context-path: " (:servlet-context-path req))
+  (println       "   servlet-path: " (:servlet-path req))
+  (println       "   session:      " (ring/session-id req))
+  (println-map   "   headers:      " (:headers req))
+  (println-map   "   parameters:   " (:parameters req))
+  (println-map   "   cookies:      " (map-vals :value (or (:cookies req) {})))
+  (println-parts "   parts:        " (:parts req)))
 
 
 (defn-
@@ -769,16 +755,32 @@
 
   dump-response [res]
 
-  (println "Dump response:")
-  (println "   content-type: " (:content-type res))
-  (println "   encoding:     " (:character-encoding res))
-  (println "   status:       " (:status res))
-  (println "   headers:")
-  (doseq [h (into '() (:headers res))]
-         (println "      " (str (first h) ": ") (second h)))
-  (println "   cookies: ")
-  (doseq [c (into '() (:cookies res))]
-         (println "      " (str (first c) ": ") (:value (second c)))))
+  (println     "Dump response:")
+  (println     "   content-type: " (:content-type res))
+  (println     "   encoding:     " (:character-encoding res))
+  (println     "   status:       " (:status res))
+  (println-map "   headers:      " (:headers res))
+  (println-map "   cookies:      " (map-vals :value (or (:cookies res) {}))))
+
+
+(defn- println-map [head data]
+  (if (or (nil? data) (empty? data))
+    (println head "-")
+    (let [indent  (str/repeat " " (count head))
+          tuples  (into '() data)
+          format  (fn [tuple] (str (first tuple) ": " (second tuple)))]     
+      (println head (format (first tuples)))
+      (doseq [t (rest tuples)] (println indent (format t))))))
+
+
+(defn- println-parts [head parts]
+  (println head "-")
+  (doseq [p parts]
+         (println     "      name:            " (:name p))
+         (println     "         file-name:    " (:file-name p))
+         (println     "         content-type: " (:content-type p))
+         (println     "         size:         " (:size p))
+         (println-map "         headers:      " (:headers p))))
 
 
 
