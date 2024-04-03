@@ -559,7 +559,8 @@
           | :query-string       | The query string |
           | :scheme             | The scheme {:http, :https } |
           | :request-method     | The lower case request method. \
-                                  {:get, :post, :put, :delete, :head } |
+                                  {:get, :post, :put, :delete, :head, :options, \
+                                   :trace } |
           | :protocol           | The protocol |
           | :headers            | A map of part's headers. Key: header name, \
                                   value: list of header values. The header \
@@ -734,6 +735,7 @@
   (println "   remote-addr:  " (:remote-addr req))
   (println "   scheme:       " (:scheme req))
   (println "   uri:          " (:uri req))
+  (println "   protocol:     " (:protocol req))
   (println "   query-string: " (:query-string req))
   (println "   method:       " (:request-method req))
   (println "   content-type: " (:content-type req))
@@ -956,24 +958,48 @@
 
   build-request-map [request]
 
-  {:server-port        (. request :getServerPort)
-   :server-name        (. request :getServerName)
-   :remote-addr        (. request :getRemoteAddr)
-   :uri                (. request :getRequestURI)
-   :query-string       (. request :getQueryString)
-   :scheme             (keyword (. request :getScheme))
-   :request-method     (keyword (str/lower-case (. request :getMethod)))
-   :protocol           (. request :getProtocol)
-   :headers            (ring/get-headers request)
-   :parameters         (ring/get-parameters request)
-   :cookies            (ring/get-cookies request)
-   :content-type       (. request :getContentType)
-   :content-length     (ring/get-content-length request)
-   :character-encoding (. request :getCharacterEncoding)
-   :ssl-client-cert    (ring/get-client-cert request)
-   :parts              (into [] (. request :getParts))
-   :body               (. request :getInputStream)})
+  (try 
+    (let [content-type (. request :getContentType)
+          multipart?   (match? (or content-type "") #"multipart/form-data(;.*)?")] 
 
+      { :server-port        (. request :getServerPort)
+        :server-name        (. request :getServerName)
+        :remote-addr        (. request :getRemoteAddr)
+        :uri                (. request :getRequestURI)
+        :query-string       (. request :getQueryString)
+        :scheme             (keyword (. request :getScheme))
+        :request-method     (keyword (str/lower-case (. request :getMethod)))
+        :protocol           (. request :getProtocol)
+        :headers            (ring/get-headers request)
+        :parameters         (ring/get-parameters request)
+        :cookies            (ring/get-cookies request)
+        :content-type       content-type
+        :content-length     (ring/get-content-length request)
+        :character-encoding (. request :getCharacterEncoding)
+        :ssl-client-cert    (ring/get-client-cert request)
+        :parts              (if multipart? (into [] (. request :getParts)) '())
+        :body               (. request :getInputStream) } )
+
+    (catch [:cause-type :java.lang.IllegalStateException] e
+      (let [e (ex-cause e)]
+        (if (= (ex-message e) "Unable to process parts as no multi-part configuration has been provided")
+          (throw (ex :VncException 
+                    """
+                    The servlet is not configured for multi-part!
+
+                    Please provide a multi-part configuration to the servlet:
+                    
+                    { :name                 "fileupload-servlet" 
+                      :mapping              "/upload"
+
+                      ;; multi-part configuration
+                      :file-upload          true
+                      :location             "/tmp"
+                      :max-file-size        10485760
+                      :max-request-size     10485760
+                      :file-size-threshold  -1 } 
+                    """)) 
+          (throw e))))))
 
 
 (defn-

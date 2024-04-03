@@ -14,7 +14,6 @@ All notable changes to this project will be documented in this file.
 
 
 
-
 ## [1.12.8] - 2024-04-02
 
 ### Added
@@ -51,8 +50,8 @@ All notable changes to this project will be documented in this file.
 ### Fixed 
 - a markdown parser edge case when a table block is immediately followed 
   by a list block with no empty line in between
-  
-  
+
+
 
 ## [1.12.6] - 2024-03-19
 

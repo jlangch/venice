@@ -309,11 +309,11 @@
           | :http?             | create http connector (default: true) |
           | :port              | the port to listen on http connector (default: 8080) |
           | :https?            | create https connector (default: false) |
-          | :https-port.       | the port to listen on https connector (default: 8443) |
+          | :https-port        | the port to listen on https connector (default: 8443) |
           | :keystore          | path to keystore file include server certificate |
-          | :key-pass.         | password of keystore file |
-          | :tls-hostname.     | hostname to listen for https connector (default: _default_) |
-          | :tls-protocol.     | list of SSL/TLS protocol to support for https connector (default: TLS) |
+          | :key-pass          | password of keystore file |
+          | :tls-hostname      | hostname to listen for https connector (default: _default_) |
+          | :tls-protocol      | list of SSL/TLS protocol to support for https connector (default: TLS) |
           | :tls-ciphers       | list of SSL/TLS ciphers to support for https connector |
           | :executor?         | use executor (default: true) |
           | :executor-name     | name of executor (default: tc-executor) |
@@ -362,6 +362,25 @@
           ;;   - server options
           (tomcat/start [ [ (tomcat/hello-world-servlet) 
                             {:name "hello-servlet"  :mapping "/*"} ] ]
+                        ""
+                        "."
+                        {:await? false, :base-dir ".", :port 8080})
+          """,
+          """
+          ;; Example 4:
+          ;; start Tomcat with 
+          ;;   - a single fileupload servlet with servlet options
+          ;;   - web app context-path
+          ;;   - web app context-doc-base
+          ;;   - server options
+          (tomcat/start [ [ (upload-servlet) 
+                            {:name                 "upload-servlet"  
+                             :mapping              "/upload"
+                             :file-upload          true
+                             :location             "/tmp"
+                             :max-file-size        10485760
+                             :max-request-size     10485760
+                             :file-size-threshold  -1} ] ]
                         ""
                         "."
                         {:await? false, :base-dir ".", :port 8080})
