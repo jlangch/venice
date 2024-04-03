@@ -31,7 +31,7 @@ import javax.net.ssl.SSLSocketFactory;
 import javax.net.ssl.TrustManager;
 
 
-public class SSLSocketFactoryUtil {
+public abstract class SSLSocketFactoryUtil {
 
     public static SSLSocketFactory getDefault() {
         return (SSLSocketFactory)SSLSocketFactory.getDefault();
