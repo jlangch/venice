@@ -93,7 +93,8 @@
                       "Part-3" (io/file "/user/foo/image.png")
                       "Part-4" {:name      "data.xml"
                                 :mimetype  "application/xml"
-                                :data      "<user><name>foo</name></user>"}})
+                                :data      "<user><name>foo</name></user>"
+                                :charset   :utf-8 }})
         """ )
      :see-also '( 
         "multipart/http-content-type-header" ) }

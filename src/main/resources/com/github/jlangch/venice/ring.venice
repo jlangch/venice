@@ -927,9 +927,8 @@
           (. output-stream :close)
           (finally
             (. :RuntimeException :new
-              (str
-                "Response stream not supported for body type "
-                                  (type body)))))))
+               (str "Response stream not supported for body type "
+                    (type body)))))))
 
 
 (defn-
