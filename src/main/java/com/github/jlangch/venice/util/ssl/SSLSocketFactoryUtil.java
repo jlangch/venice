@@ -37,11 +37,6 @@ public abstract class SSLSocketFactoryUtil {
         return (SSLSocketFactory)SSLSocketFactory.getDefault();
     }
 
-    public static SSLSocketFactory createWithTrustAllX509Certificates(
-    ) throws IOException, NoSuchAlgorithmException, KeyManagementException {
-        return create(null, new TrustAll_X509TrustManager());
-    }
-
     public static SSLSocketFactory create(
             final TrustManager tm
     ) throws IOException, NoSuchAlgorithmException, KeyManagementException {
