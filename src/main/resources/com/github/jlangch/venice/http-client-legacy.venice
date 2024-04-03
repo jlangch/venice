@@ -19,13 +19,193 @@
 ;;;; See the License for the specific language governing permissions and
 ;;;; limitations under the License.
 
-;;;; HTTP client based on the JDK HttpUrlConnection
+;;;; HTTP legacy client based on the JDK HttpUrlConnection
 
-
-;; -----------------------------------------------------------------------------
-;;
-;;                                P L A N N E D
-;;
-;; -----------------------------------------------------------------------------
 
 (ns http-client-legacy)
+
+(import :java.net.URL)
+(import :java.net.HttpURLConnection)
+(import :java.net.HttpsURLConnection)
+
+
+(defn
+  ^{ :arglists '("(send method uri & options)")
+     :doc """
+          Send a request
+
+          ¶¶*Request Options:*
+
+          | [![width: 20%]]    | [![width: 80%]] |
+          | :headers           | A map of request headers |
+          | :body              | An optional body to send with the request¶ \
+                                 The body may be of type *string*, *bytebuf*, \
+                                 `:java.io.InputStream` |
+          | :body-encoding     | If the body is a string the encoding for the \
+                                 encoding can be specified. The charset is a \
+                                 keyword {:utf-8, :iso-8859-1, ...}. \
+                                 Defaults to :utf-8 |
+          | :conn-timeout      | An optional connection timeout in milliseconds |
+          | :read-timeout      | An optional read timeout in milliseconds |
+          | :follow-redirects  | Sets whether HTTP redirects (requests with \
+                                 response code 3xx) should be automatically \
+                                 followed. |
+          | :hostname-verifier | Sets the hostname verifier. An object of type \
+                                 `:javax.net.ssl.HostnameVerifier`. ¶ \
+                                 Use only for HTTPS requests |
+          | :ssl-socket-factory | Sets the SSL socket factory. An object of type \
+                                 `:javax.net.ssl.SSLSocketFactory`. ¶ \
+                                 Use only for HTTPS requests |
+
+          ¶¶*Returns a map with the response fields:*
+
+          | [![width: 20%]]    | [![width: 80%]] |
+          | :http-status       | The HTTP status (a long) |
+          | :content-type      | The content type |
+          | :content-encoding  | The content encoding |
+          | :content-length    | The content length (a long)|
+          | :headers           | A map of headers. key: header name, value: list \
+                                 of header values |
+          | :data-stream       | The response data input stream of the reponse \
+                                 data if the HTTP status codes is 2xx, else nil |
+          | :error-stream      | The response error input stream of the reponse \
+                                 error data if the HTTP status codes is \
+                                 not 2xx, else nil|
+          """ }
+
+  send [uri method & options]
+  
+  (let [opts               (apply hash-map options)
+        method             (str/upper-case (name method))
+        headers            (:headers opts {})
+        body               (:body opts)
+        body-encoding      (:body-encoding opts)
+        conn-timeout       (:conn-timeout opts)
+        read-timeout       (:read-timeout opts)
+        follow-redirects   (:follow-redirects opts)
+        hostname-verifier  (:hostname-verifier opts)
+        ssl-socket-factory (:ssl-socket-factory opts)]
+
+    (assert (string? method))
+    (assert (string? uri))
+    (assert (or (map? headers)))
+    (assert (or (nil? body) (string? str) (bytebuf? body) (io/in-stream? body)))
+    (assert (or (nil? body-encoding) (keyword? body-encoding)))
+    (assert (or (nil? conn-timeout) (long? conn-timeout)))
+    (assert (or (nil? read-timeout) (long? read-timeout)))
+    (assert (or (boolean? follow-redirects)))
+
+    (let [url    (. :URL uri)
+          con    (. url :openConnection)
+          https? (str/starts-with (str/lower-case uri) "https:")]
+      (con :setRequestMethod method)
+
+      (when https?
+        (when (some? hostname-verifier)
+          (con :setHostnameVerifier hostname-verifier))
+        (when (some? ssl-socket-factory)
+          (con :setSSLSocketFactory ssl-socket-factory)))
+
+      (when (some? conn-timeout)
+        (con :setConnectTimeout conn-timeout))
+
+      (when (some? read-timeout)
+        (con :setReadTimeout read-timeout))
+
+      (doseq [[k v] headers] 
+        (if (sequential? v)
+          (doseq [i v] (. con :setRequestProperty k i))  ; multi-value header
+          (. con :setRequestProperty k v)))              ; single-value header
+      
+      (when (some? follow-redirects)
+        (. con :setInstanceFollowRedirects follow-redirects))
+      
+      (when (some? body)
+        (. con :setDoOutput true))
+
+      (. con :connect)  ;; establish the connection
+
+      ;; send body
+      (when (some? body)
+        (let [os (. con :getOutputStream)]
+          (cond 
+            (string? body)        (spit-string body encoding os)                 
+            (bytebuf? body)       (spit-bytebuf body os)
+            (io/in-stream? body)  (spit-bytebuf (io/slurp-stream is) os)
+            :else                 (throw (ex :VncException 
+                                             (str "Invalid " method 
+                                                  " request body type"))))))
+
+      ;; handle response
+      (get-response con))))
+
+
+
+;; -----------------------------------------------------------------------------
+;; Utils
+;; -----------------------------------------------------------------------------
+
+(defn slurp-string [is charset]
+  (io/slurp-stream is :binary false :encoding charset))
+
+
+(defn slurp-json [is charset]
+  (json/slurp is :encoding charset))
+
+
+(defn slurp-bytebuf [is]
+  (io/slurp-stream is :binary true))
+
+
+
+;; -----------------------------------------------------------------------------
+;; Helpers
+;; -----------------------------------------------------------------------------
+
+(defn- get-response [con]
+  (let [status (long (. con :getResponseCode))
+        ok     (<= 200 status 299)]
+    { :http-status      status 
+      :content-type     (. con :getContentType)
+      :content-encoding (. con :getContentEncoding)
+      :content-length   (. con :getContentLengthLong)
+      :headers          (response-headers con) 
+      :data-stream      (if ok (. con :getInputStream) nil)
+      :error-stream     (if ok nil (. con :getErrorStream)) } ))
+
+
+(defn- response-headers [con]
+  (->> (. con :getHeaderFields)
+       (map-vals (into '() %))))
+
+
+(defn- spit-string [str charset os]
+  (try-with [pr (io/wrap-os-with-print-writer os charset)]
+    (print pr str)
+    (flush pr)))
+
+
+(defn- spit-bytebuf [buf os]
+  (try-with [os os]
+    (io/spit-stream os buf :flush true)))
+
+
+(defn- dump-response [res]
+  (println     "Dump response:")
+  (println     "   status:            " (:status res))
+  (println     "   content-type:      " (:content-type res))
+  (println     "   content-encoding:  " (:character-encoding res))
+  (println     "   content-length:    " (:character-encoding res))
+  (println-map "   header:            " (:headers res))
+  (println     "   data-stream:       " (if (nil? (:data-stream res)) "+" "-"))
+  (println     "   error-stream:      " (if (nil? (:error-stream res)) "+" "-")))
+
+
+(defn- println-map [head data]
+  (if (or (nil? data) (empty? data))
+    (println head "-")
+    (let [indent  (str/repeat " " (count head))
+          tuples  (into '() data)
+          format  (fn [tuple] (str (first tuple) ": " (second tuple)))]     
+      (println head (format (first tuples)))
+      (doseq [t (rest tuples)] (println indent (format t))))))

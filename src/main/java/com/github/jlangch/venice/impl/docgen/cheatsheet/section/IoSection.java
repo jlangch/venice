@@ -106,6 +106,13 @@ public class IoSection implements ISectionBuilder {
         rd_wr.addItem(diBuilder.getDocItem("io/flush"));
         rd_wr.addItem(diBuilder.getDocItem("io/close"));
 
+        final DocSection test = new DocSection("test", "io.test");
+        all.addSection(test);
+        test.addItem(diBuilder.getDocItem("io/in-stream?"));
+        test.addItem(diBuilder.getDocItem("io/out-stream?"));
+        test.addItem(diBuilder.getDocItem("io/reader?"));
+        test.addItem(diBuilder.getDocItem("io/writer?"));
+
         final DocSection http = new DocSection("http", "io.http");
         all.addSection(http);
         http.addItem(diBuilder.getDocItem("io/download", false));

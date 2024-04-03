@@ -1246,7 +1246,137 @@ public class IOFunctionsStreams {
             private static final long serialVersionUID = -1848883965231344442L;
         };
 
+    public static VncFunction io_in_streamQ =
+        new VncFunction(
+                "io/in-stream?",
+                VncFunction
+                    .meta()
+                    .arglists("(io/in-stream? is)")
+                    .doc(
+                        "Returns true if 'is' is a `java.io.InputStream`")
+                    .examples(
+                        "(try-with [is (io/string-in-stream \"123\")]  \n" +
+                        "  (io/in-stream? is))                         ")
+                    .seeAlso(
+                        "io/out-stream?")
+                    .build()
+        ) {
+            @Override
+            public VncVal apply(final VncList args) {
+                ArityExceptions.assertArity(this, args, 1);
 
+                sandboxFunctionCallValidation();
+
+                if (args.first() == Nil) {
+                    return VncBoolean.False;
+                }
+                else {
+                    final Object o = Coerce.toVncJavaObject(args.first()).getDelegate();
+                    return VncBoolean.of(o instanceof InputStream);
+                }
+            }
+
+            private static final long serialVersionUID = -1848883965231344442L;
+        };
+
+    public static VncFunction io_out_streamQ =
+        new VncFunction(
+                "io/out-stream?",
+                VncFunction
+                    .meta()
+                    .arglists("(io/out-stream? os)")
+                    .doc(
+                        "Returns true if 'os' is a `java.io.OutputStream`")
+                    .examples(
+                        "(try-with [os (io/bytebuf-out-stream)]    \n" +
+                        "  (io/out-stream? os))                    ")
+                    .seeAlso(
+                        "io/in-stream?")
+                    .build()
+        ) {
+            @Override
+            public VncVal apply(final VncList args) {
+                ArityExceptions.assertArity(this, args, 1);
+
+                sandboxFunctionCallValidation();
+
+                if (args.first() == Nil) {
+                    return VncBoolean.False;
+                }
+                else {
+                    final Object o = Coerce.toVncJavaObject(args.first()).getDelegate();
+                    return VncBoolean.of(o instanceof OutputStream);
+                }
+            }
+
+            private static final long serialVersionUID = -1848883965231344442L;
+        };
+
+    public static VncFunction io_readerQ =
+        new VncFunction(
+                "io/reader?",
+                VncFunction
+                    .meta()
+                    .arglists("(io/reader? rd)")
+                    .doc(
+                        "Returns true if 'rd' is a `java.io.Reader`")
+                    .examples(
+                        "(try-with [rd (io/string-reader \"123\")]  \n" +
+                        "  (io/reader? rd))                         ")
+                    .seeAlso(
+                        "io/writer?")
+                    .build()
+        ) {
+            @Override
+            public VncVal apply(final VncList args) {
+                ArityExceptions.assertArity(this, args, 1);
+
+                sandboxFunctionCallValidation();
+
+                if (args.first() == Nil) {
+                    return VncBoolean.False;
+                }
+                else {
+                    final Object o = Coerce.toVncJavaObject(args.first()).getDelegate();
+                    return VncBoolean.of(o instanceof Reader);
+                }
+            }
+
+            private static final long serialVersionUID = -1848883965231344442L;
+        };
+
+    public static VncFunction io_writerQ =
+        new VncFunction(
+                "io/writer?",
+                VncFunction
+                    .meta()
+                    .arglists("(io/writer? rd)")
+                    .doc(
+                        "Returns true if 'rd' is a `java.io.Writer`")
+                    .examples(
+                        "(try-with [wr (io/string-writer)]  \n" +
+                        "  (io/writer? wr))                 ")
+                    .seeAlso(
+                        "io/reader?")
+                    .build()
+        ) {
+            @Override
+            public VncVal apply(final VncList args) {
+                ArityExceptions.assertArity(this, args, 1);
+
+                sandboxFunctionCallValidation();
+
+                if (args.first() == Nil) {
+                    return VncBoolean.False;
+                }
+                else {
+                    final Object o = Coerce.toVncJavaObject(args.first()).getDelegate();
+                    return VncBoolean.of(o instanceof Writer);
+                }
+            }
+
+            private static final long serialVersionUID = -1848883965231344442L;
+        };
 
     public static File convertToFile(final VncVal f, final String errFormat) {
         final File file = convertToFile(f);
@@ -1311,5 +1441,9 @@ public class IOFunctionsStreams {
                     .add(io_read_char)
                     .add(io_flush)
                     .add(io_close)
+                    .add(io_in_streamQ)
+                    .add(io_out_streamQ)
+                    .add(io_readerQ)
+                    .add(io_writerQ)
                     .toMap();
     }
