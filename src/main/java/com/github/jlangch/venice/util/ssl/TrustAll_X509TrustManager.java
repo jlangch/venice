@@ -19,7 +19,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.github.jlangch.venice.impl.util.ssl;
+package com.github.jlangch.venice.util.ssl;
 
 import java.security.cert.CertificateException;
 import java.security.cert.X509Certificate;

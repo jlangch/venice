@@ -19,15 +19,31 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.github.jlangch.venice.impl.util.ssl;
+package com.github.jlangch.venice.util.ssl;
+
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
 
 import javax.net.ssl.HostnameVerifier;
 import javax.net.ssl.SSLSession;
 
 
-public class LocalhostHostnameVerifier implements HostnameVerifier {
+public class CustomHostnameVerifier implements HostnameVerifier {
 
-    public LocalhostHostnameVerifier() {
+    public CustomHostnameVerifier(final String hostname) {
+    	if (hostname != null) {
+    		hostnames.add(hostname);
+    	}
+    }
+
+    public CustomHostnameVerifier(final List<String> hostnames) {
+    	if (hostnames != null) {
+    		hostnames.stream()
+    				.filter(h -> h != null)
+    				.filter(h -> !h.isEmpty())
+    				.forEach(h -> hostnames.add(h));
+    	}
     }
 
 
@@ -36,7 +52,9 @@ public class LocalhostHostnameVerifier implements HostnameVerifier {
             final String hostname,
             final SSLSession sslSession
     ) {
-        return hostname.equals("localhost");
+        return hostnames.contains(hostname);
     }
 
+
+    final Set<String> hostnames = new HashSet<>();
 }
