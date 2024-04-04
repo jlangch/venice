@@ -952,8 +952,7 @@
        (throw (. :NullPointerException :new "HttpServletResponse is nil")))
      (when (nil? response-map)
        (throw (. :NullPointerException :new "Response map is nil")))
-     (when status
-       (. response setStatus status))
+     (when status (. response :setStatus status))
      (ring/set-response-headers response headers)
      (let [output-stream (ring/make-output-stream response async-context)]
        (ring/write-body-to-stream body response-map output-stream)))))
@@ -1221,7 +1220,10 @@
                        (ring/merge-servlet-keys servlet req res))
           ring_res (handler ring_req)]
       (if ring_res
-        (do (ring/set-response-headers res (dissoc (:headers ring_res)))
+        (do  
+            (when-let [status (:status ring_res)]
+              (. res :setStatus status))
+            (ring/set-response-headers res (dissoc (:headers ring_res)))
             (ring/write-body-to-stream (:body ring_res) res (. res :getOutputStream)))
         (do (ring/send-not-found res))))
     (catch :RingRedirectException ex
