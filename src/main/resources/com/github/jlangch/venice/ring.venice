@@ -769,7 +769,13 @@
     (println head "-")
     (let [indent  (str/repeat " " (count head))
           tuples  (into '() data)
-          format  (fn [tuple] (str (first tuple) ": " (second tuple)))]     
+          format  (fn [tuple] 
+                    (let [name   (first tuple)
+                          values (second tuple)
+                          values (if (sequential? values)
+                                   (str/join ", " values)
+                                   values)]
+                      (str name ": " values)))]
       (println head (format (first tuples)))
       (doseq [t (rest tuples)] (println indent (format t))))))
 
@@ -839,12 +845,11 @@
 
   set-response-headers [response headers]
 
-  (docoll
-    (fn [[key val-or-vals]]
-      (if (string? val-or-vals)
-          (. response :setHeader key val-or-vals)
-          (docoll (fn [val] (. response :setHeader key val)) val-or-vals)))
-    headers)
+  (doseq [[k v] headers]
+    (if (string? v)
+      (. response :setHeader k v)
+      (doseq [i v] (. response :setHeader k i))))
+
   ; Some headers must be set through specific methods
   (if-let [content-type (get headers "Content-Type")]
     (. response :setContentType content-type)))

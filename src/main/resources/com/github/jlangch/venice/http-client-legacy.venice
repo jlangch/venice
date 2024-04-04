@@ -28,6 +28,8 @@
 (import :java.net.HttpURLConnection)
 (import :java.net.HttpsURLConnection)
 
+(defonce ^:private hc-user-agent "Venice HTTP client (legacy)")
+
 
 (defn
   ^{ :arglists '("(send method uri & options)")
@@ -56,6 +58,8 @@
           | :ssl-socket-factory | Sets the SSL socket factory. An object of type \
                                  `:javax.net.ssl.SSLSocketFactory`. ¶ \
                                  Use only for HTTPS requests |
+          | :user-agent         | User agent. Defaults to "Venice HTTP client (legacy)" |
+          | :debug              | Debug true/false. Defaults to false |
 
           ¶¶*Returns a map with the response fields:*
 
@@ -66,78 +70,87 @@
           | :content-length    | The content length (a long)|
           | :headers           | A map of headers. key: header name, value: list \
                                  of header values |
-          | :data-stream       | The response data input stream of the reponse \
-                                 data if the HTTP status codes is 2xx, else nil |
-          | :error-stream      | The response error input stream of the reponse \
-                                 error data if the HTTP status codes is \
-                                 not 2xx, else nil|
+          | :data-stream       | The response data input stream |
           """ }
 
-  send [uri method & options]
+  send [method uri & options]
   
-  (let [opts               (apply hash-map options)
-        method             (str/upper-case (name method))
-        headers            (:headers opts {})
-        body               (:body opts)
-        body-encoding      (:body-encoding opts)
-        conn-timeout       (:conn-timeout opts)
-        read-timeout       (:read-timeout opts)
-        follow-redirects   (:follow-redirects opts)
-        hostname-verifier  (:hostname-verifier opts)
-        ssl-socket-factory (:ssl-socket-factory opts)]
+  (try
+    (let [opts               (apply hash-map options)
+          method             (str/upper-case (name method))
+          headers            (:headers opts {})
+          body               (:body opts)
+          body-encoding      (:body-encoding opts)
+          conn-timeout       (:conn-timeout opts)
+          read-timeout       (:read-timeout opts)
+          follow-redirects   (:follow-redirects opts)
+          hostname-verifier  (:hostname-verifier opts)
+          ssl-socket-factory (:ssl-socket-factory opts)
+          user-agent         (:user-agent opts hc-user-agent)
+          debug?             (true? (:debug opts false))
+          headers            (assoc headers "User-Agent" user-agent)]
 
-    (assert (string? method))
-    (assert (string? uri))
-    (assert (or (map? headers)))
-    (assert (or (nil? body) (string? str) (bytebuf? body) (io/in-stream? body)))
-    (assert (or (nil? body-encoding) (keyword? body-encoding)))
-    (assert (or (nil? conn-timeout) (long? conn-timeout)))
-    (assert (or (nil? read-timeout) (long? read-timeout)))
-    (assert (or (boolean? follow-redirects)))
+      (assert (string? method))
+      (assert (string? uri))
+      (assert (or (map? headers)))
+      (assert (or (nil? body) (string? str) (bytebuf? body) (io/in-stream? body)))
+      (assert (or (nil? body-encoding) (keyword? body-encoding)))
+      (assert (or (nil? conn-timeout) (long? conn-timeout)))
+      (assert (or (nil? read-timeout) (long? read-timeout)))
+      (assert (or (nil? follow-redirects) (boolean? follow-redirects)))
 
-    (let [url    (. :URL uri)
-          con    (. url :openConnection)
-          https? (str/starts-with (str/lower-case uri) "https:")]
-      (con :setRequestMethod method)
+      (let [https? (str/starts-with? (str/lower-case uri) "https:")
+            url    (. :URL :new uri)
+            con    (. url :openConnection)
+            con    (if https? (cast :HttpsURLConnection con)
+                              (cast :HttpURLConnection con))]
 
-      (when https?
-        (when (some? hostname-verifier)
-          (con :setHostnameVerifier hostname-verifier))
-        (when (some? ssl-socket-factory)
-          (con :setSSLSocketFactory ssl-socket-factory)))
+        (. con :setRequestMethod method)
 
-      (when (some? conn-timeout)
-        (con :setConnectTimeout conn-timeout))
+        (when https?
+          (when (some? hostname-verifier)
+            (. con :setHostnameVerifier hostname-verifier))
+          (when (some? ssl-socket-factory)
+            (. con :setSSLSocketFactory ssl-socket-factory)))
 
-      (when (some? read-timeout)
-        (con :setReadTimeout read-timeout))
+        (when (some? conn-timeout)
+          (. con :setConnectTimeout conn-timeout))
 
-      (doseq [[k v] headers] 
-        (if (sequential? v)
-          (doseq [i v] (. con :setRequestProperty k i))  ; multi-value header
-          (. con :setRequestProperty k v)))              ; single-value header
-      
-      (when (some? follow-redirects)
-        (. con :setInstanceFollowRedirects follow-redirects))
-      
-      (when (some? body)
-        (. con :setDoOutput true))
+        (when (some? read-timeout)
+          (. con :setReadTimeout read-timeout))
 
-      (. con :connect)  ;; establish the connection
+        (doseq [[k v] headers] 
+          (if (sequential? v)
+            (doseq [i v] (. con :setRequestProperty k (str i)))  ; multi-value
+            (. con :setRequestProperty k (str v))))              ; single-value
 
-      ;; send body
-      (when (some? body)
-        (let [os (. con :getOutputStream)]
-          (cond 
-            (string? body)        (spit-string body encoding os)                 
-            (bytebuf? body)       (spit-bytebuf body os)
-            (io/in-stream? body)  (spit-bytebuf (io/slurp-stream is) os)
-            :else                 (throw (ex :VncException 
-                                             (str "Invalid " method 
-                                                  " request body type"))))))
+        (when (some? follow-redirects)
+          (. con :setInstanceFollowRedirects follow-redirects))
+        
+        (when (some? body)
+          (. con :setDoOutput true))
 
-      ;; handle response
-      (get-response con))))
+         (. con :connect)  ;; establish the connection
+
+        ;; send body
+        (when (some? body)
+          (println "Sending body")
+          (let [os (. con :getOutputStream)]
+            (cond 
+              (string? body)        (spit-string body encoding os)                 
+              (bytebuf? body)       (spit-bytebuf body os)
+              (io/in-stream? body)  (spit-bytebuf (io/slurp-stream is) os)
+              :else                 (throw (ex :VncException 
+                                              (str "Invalid " method 
+                                                    " request body type"))))))
+
+        ;; handle response
+        (println "Response..")
+        (let [response (get-response con)]
+          (when debug? (dump-response response))
+          response)))
+
+  (catch :Exception e (throw (ex :VncException (ex-message e) e)))))
 
 
 
@@ -170,13 +183,13 @@
       :content-encoding (. con :getContentEncoding)
       :content-length   (. con :getContentLengthLong)
       :headers          (response-headers con) 
-      :data-stream      (if ok? (. con :getInputStream) nil)
-      :error-stream     (if ok? nil (. con :getErrorStream)) } ))
+      :data-stream      (if ok? (. con :getInputStream) 
+                                (. con :getErrorStream)) } ))
 
 
 (defn- response-headers [con]
   (->> (. con :getHeaderFields)
-       (map-vals (into '() %))))
+       (map-vals #(into '() %))))
 
 
 (defn- spit-string [str charset os]
@@ -196,9 +209,7 @@
   (println     "   content-type:      " (:content-type res))
   (println     "   content-encoding:  " (:character-encoding res))
   (println     "   content-length:    " (:character-encoding res))
-  (println-map "   header:            " (:headers res))
-  (println     "   data-stream:       " (if (nil? (:data-stream res)) "<available>" "-"))
-  (println     "   error-stream:      " (if (nil? (:error-stream res)) "<available>" "-")))
+  (println-map "   headers:           " (:headers res)))
 
 
 (defn- println-map [head data]
@@ -206,6 +217,12 @@
     (println head "-")
     (let [indent  (str/repeat " " (count head))
           tuples  (into '() data)
-          format  (fn [tuple] (str (first tuple) ": " (second tuple)))]     
+          format  (fn [tuple] 
+                    (let [name   (first tuple)
+                          values (second tuple)
+                          values (if (sequential? values)
+                                   (str/join ", " values)
+                                   values)]
+                      (str name ": " values)))]
       (println head (format (first tuples)))
       (doseq [t (rest tuples)] (println indent (format t))))))
