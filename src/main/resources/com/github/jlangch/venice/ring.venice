@@ -983,7 +983,7 @@
         :content-length     (ring/get-content-length request)
         :character-encoding (. request :getCharacterEncoding)
         :ssl-client-cert    (ring/get-client-cert request)
-        :parts              (if multipart? (into [] (. request :getParts)) '())
+        :parts              (if multipart? (ring/map-parts request) '())
         :body               (. request :getInputStream) } )
 
     (catch [:cause-type :java.lang.IllegalStateException] e
@@ -1014,7 +1014,7 @@
 
   map-parts [request]
 
-  (map map-part (. request :getParts)))
+  (map map-part (into '() (. request :getParts))))
 
 
 (defn- map-part [part]
@@ -1029,7 +1029,7 @@
                     (fn [headers name]
                       (assoc headers
                              (str/lower-case name)
-                             (into '() (. request :getHeaders name))))
+                             (into '() (. part :getHeaders name))))
                     {}
                     (into '() (. part :getHeaderNames)))
     :in-stream    (. part :getInputStream)

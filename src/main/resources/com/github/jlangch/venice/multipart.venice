@@ -60,12 +60,12 @@
 
         Lorem ipsum ...
         --12345
-        Content-Disposition: form-data; name="foo" filename="foo.json"
+        Content-Disposition: form-data; name="foo"; filename="foo.json"
         Content-Type: application/json; charset=utf-8
 
         content of foo.xjson
         --12345
-        Content-Disposition: form-data; name="image" filename="picture.png"
+        Content-Disposition: form-data; name="image"; filename="picture.png"
         Content-Type: image/png
 
         content of picture.jpg
@@ -233,7 +233,7 @@
                 (dquote name)))
 
   ([name filename]
-    (str/format "Content-Disposition: form-data; name=%s filename=%s" 
+    (str/format "Content-Disposition: form-data; name=%s; filename=%s" 
                 (dquote name) 
                 (dquote filename))))
 
