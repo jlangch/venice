@@ -74,6 +74,11 @@
      :examples '(
           """
           ;; GET (get)
+          ;;
+          ;; 1/ Start the REST Server {Venice}/doc/examples/scripts/rest-webapp.venice
+          ;;    (just drag & drop the file into a REPL)
+          ;; 2/ Run the Http Client commands listed in these examples
+          ;;    (run the Http Client commands from a 2nd REPL)
           (do
             (load-module :http-client-legacy ['http-client-legacy :as 'hc])
           
