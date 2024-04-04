@@ -235,7 +235,7 @@
                   type     (:content-type res)
                   encoding (:content-encoding res)]
               (println "Status:" status)
-              (if (= 200 status)
+              (if (and (= 200 status) (= "application/json" type))
                 (println (hc/slurp-json (:data-stream res) encoding))
                 (println (hc/slurp-string (:data-stream res) encoding)))))
           """ )
@@ -244,10 +244,12 @@
           "http-client-legacy/slurp-bytebuf"
           "http-client-legacy/send" ) }
 
-  slurp-json [is charset]
+  slurp-json
 
   ([is] (slurp-json is :utf-8))
-  ([is charset] (json/slurp is :binary false :encoding (or charset :utf-8))))
+  ([is charset] (-> (io/slurp-stream is :binary false 
+                                        :encoding (or charset :utf-8))
+                    (json/pretty-print))))
 
 
 (defn 
@@ -291,7 +293,8 @@
                                   (first)
                                   (parse-content-type))
         type                 (first content-type-details)
-        encoding             (second content-type-details)]
+        encoding             (-> (second content-type-details)
+                                 (str/strip-start "charset="))]
     { :http-status      http-status 
       :content-type     type
       :content-encoding (if (nil? encoding) nil (keyword encoding))
