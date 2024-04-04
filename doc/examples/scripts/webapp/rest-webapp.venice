@@ -147,42 +147,86 @@
 ;; -----------------------------------------------------------------------------
 
 ;; -----------------------------------------------------------------------------
-;; Venice HTTP Client
-;; 
-;;  (do
-;;    (load-module :http-client-legacy ['http-client-legacy :as 'hc])
-;;  
-;;    (let [res    (hc/send :get 
-;;                          "http://localhost:8080/employees" 
-;;                          :headers {"Accept" "application/json, text/plain"})
-;;          status (:http-status res)]
-;;      (println "Status:" status)
-;;      (if (and (= 200 status) (= "application/json" (:content-type res)))
-;;        (println (hc/slurp-json (:data-stream res) (:content-encoding res)))
-;;        (println (hc/slurp-string (:data-stream res) (:content-encoding res))))))
-;; 
-;;  (do
-;;    (load-module :http-client-legacy ['http-client-legacy :as 'hc])
-;;  
-;;    (let [res    (hc/send :get 
-;;                          "http://localhost:8080/employees/1000" 
-;;                          :headers {"Accept" "application/json, text/plain"})
-;;          status (:http-status res)]
-;;      (println "Status:" status)
-;;      (if (and (= 200 status) (= "application/json" (:content-type res)))
-;;        (println (hc/slurp-json (:data-stream res) (:content-encoding res)))
-;;        (println (hc/slurp-string (:data-stream res) (:content-encoding res))))))
-;; 
-;;  (do
-;;    (load-module :http-client-legacy ['http-client-legacy :as 'hc])
-;;  
-;;    (let [res    (hc/send :delete 
-;;                          "http://localhost:8080/employees/1000" 
-;;                          :headers {"Accept" "text/plain"})
-;;          status (:http-status res)]
-;;      (println "Status:" status)
-;;      (if (= "text/plain" (:content-type res))
-;;        (println (hc/slurp-string (:data-stream res) (:content-encoding res)))))
+;; Venice HTTP Client examples
+;; -----------------------------------------------------------------------------
+
+;; GET (get)
+(comment
+  (do
+    (load-module :http-client-legacy ['http-client-legacy :as 'hc])
+
+    (let [res      (hc/send :get 
+                            "http://localhost:8080/employees" 
+                            :headers { "Accept" "application/json, text/plain" }
+                            :debug true)
+          status   (:http-status res)
+          type     (:content-type res)
+          encoding (:content-encoding res)]
+      (println "Status:" status)
+      (if (and (= 200 status) (= "application/json" type))
+        (println (hc/slurp-json (:data-stream res) encoding))
+        (println (hc/slurp-string (:data-stream res) encoding)))))
+)
+
+;; POST (create)
+(comment
+  (do
+    (load-module :http-client-legacy ['http-client-legacy :as 'hc])
+    
+    (let [res      (hc/send :post 
+                            "http://localhost:8080/employees" 
+                            :headers {"Accept"       "application/json, text/plain"
+                                      "Content-Type" "application/json"}
+                            :body (json/write-str { "name" "hanna", 
+                                                    "role" "secretary" })
+                            :debug true)
+          status   (:http-status res)
+          type     (:content-type res)
+          encoding (:content-encoding res)]
+      (println "Status:" status)
+      (if (and (= 200 status) (= "application/json" type))
+        (println (hc/slurp-json (:data-stream res) encoding))
+        (println (hc/slurp-string (:data-stream res) encoding)))))
+)
+
+;; PUT (update)
+(comment 
+  (do
+    (load-module :http-client-legacy ['http-client-legacy :as 'hc])
+    
+    (let [res      (hc/send :put 
+                            "http://localhost:8080/employees/1001" 
+                            :headers {"Accept"       "application/json, text/plain"
+                                      "Content-Type" "application/json"}
+                            :body (json/write-str { "id"   "1001", 
+                                                    "name" "john", 
+                                                    "role" "clerk" })
+                            :debug true)
+          status   (:http-status res)
+          type     (:content-type res)
+          encoding (:content-encoding res)]
+      (println "Status:" status)
+      (if (and (= 200 status) (= "application/json" type))
+        (println (hc/slurp-json (:data-stream res) encoding))
+        (println (hc/slurp-string (:data-stream res) encoding)))))
+)
+
+;; DELETE (delete)
+(comment 
+  (do
+    (load-module :http-client-legacy ['http-client-legacy :as 'hc])
+    
+    (let [res      (hc/send :delete 
+                            "http://localhost:8080/employees/1000" 
+                            :headers { "Accept" "text/plain" }
+                            :debug true)
+          status   (:http-status res)
+          type     (:content-type res)
+          encoding (:content-encoding res)]
+      (println "Status:" status)
+      (if (= "text/plain" type)
+        (println (hc/slurp-string (:data-stream res) encoding)))))
+)
 ;; -----------------------------------------------------------------------------
 
 (println "Tomcat started on port ~(:port tomcat-opts).")

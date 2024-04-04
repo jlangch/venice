@@ -46,10 +46,6 @@
           | :body              | An optional body to send with the request¶ \
                                  The body may be of type *string*, *bytebuf*, \
                                  `:java.io.InputStream` |
-          | :body-encoding     | If the body is a string the encoding for the \
-                                 encoding can be specified. The charset is a \
-                                 keyword {:utf-8, :iso-8859-1, ...}. \
-                                 Defaults to :utf-8 |
           | :conn-timeout      | An optional connection timeout in milliseconds |
           | :read-timeout      | An optional read timeout in milliseconds |
           | :follow-redirects  | Sets whether HTTP redirects (requests with \
@@ -77,13 +73,14 @@
           """ 
      :examples '(
           """
-          ;; GET
+          ;; GET (get)
           (do
             (load-module :http-client-legacy ['http-client-legacy :as 'hc])
           
             (let [res      (hc/send :get 
                                     "http://localhost:8080/employees" 
-                                    :headers {"Accept" "application/json, text/plain"})
+                                    :headers { "Accept" "application/json, text/plain" }
+                                    :debug true)
                   status   (:http-status res)
                   type     (:content-type res)
                   encoding (:content-encoding res)]
@@ -93,13 +90,55 @@
                 (println (hc/slurp-string (:data-stream res) encoding)))))
           """,
           """
-          ;; DELETE
+          ;; POST (create)
+          (do
+            (load-module :http-client-legacy ['http-client-legacy :as 'hc])
+            
+            (let [res      (hc/send :post 
+                                    "http://localhost:8080/employees" 
+                                    :headers {"Accept"       "application/json, text/plain"
+                                              "Content-Type" "application/json"}
+                                    :body (json/write-str { "name" "hanna", 
+                                                            "role" "secretary" })
+                                    :debug true)
+                  status   (:http-status res)
+                  type     (:content-type res)
+                  encoding (:content-encoding res)]
+              (println "Status:" status)
+              (if (and (= 200 status) (= "application/json" type))
+                (println (hc/slurp-json (:data-stream res) encoding))
+                (println (hc/slurp-string (:data-stream res) encoding)))))
+          """,
+          """
+          ;; PUT (update)
+          (do
+            (load-module :http-client-legacy ['http-client-legacy :as 'hc])
+            
+            (let [res      (hc/send :put 
+                                    "http://localhost:8080/employees/1001" 
+                                    :headers {"Accept"       "application/json, text/plain"
+                                              "Content-Type" "application/json"}
+                                    :body (json/write-str { "id"   "1001", 
+                                                            "name" "john", 
+                                                            "role" "clerk" })
+                                    :debug true)
+                  status   (:http-status res)
+                  type     (:content-type res)
+                  encoding (:content-encoding res)]
+              (println "Status:" status)
+              (if (and (= 200 status) (= "application/json" type))
+                (println (hc/slurp-json (:data-stream res) encoding))
+                (println (hc/slurp-string (:data-stream res) encoding)))))
+          """,
+          """
+          ;; DELETE (delete)
           (do
             (load-module :http-client-legacy ['http-client-legacy :as 'hc])
             
             (let [res      (hc/send :delete 
                                     "http://localhost:8080/employees/1000" 
-                                    :headers {"Accept" "text/plain"})
+                                    :headers { "Accept" "text/plain" }
+                                    :debug true)
                   status   (:http-status res)
                   type     (:content-type res)
                   encoding (:content-encoding res)]
@@ -118,7 +157,6 @@
         method             (str/upper-case (name method))
         headers            (:headers opts {})
         body               (:body opts)
-        body-encoding      (:body-encoding opts)
         conn-timeout       (:conn-timeout opts)
         read-timeout       (:read-timeout opts)
         follow-redirects   (:follow-redirects opts)
@@ -135,18 +173,17 @@
     (assert (string? method))
     (assert (string? uri))
     (assert (or (map? headers)))
-    (assert (or (nil? body) (string? str) (bytebuf? body) (io/in-stream? body)))
-    (assert (or (nil? body-encoding) (keyword? body-encoding)))
+    (assert (or (nil? body) (string? body) (bytebuf? body) (io/in-stream? body)))
     (assert (or (nil? conn-timeout) (long? conn-timeout)))
     (assert (or (nil? read-timeout) (long? read-timeout)))
     (assert (or (nil? follow-redirects) (boolean? follow-redirects)))
 
-    (let [https? (str/starts-with? (str/lower-case uri) "https:")
-          url    (. :URL :new uri)
-          con    (. url :openConnection)
-          con    (if https? (cast :HttpsURLConnection con)
-                            (cast :HttpURLConnection con))]
-
+    (let [https?          (str/starts-with? (str/lower-case uri) "https:")
+          [type encoding] (parse-content-type (get headers "Content-Type"))
+          url             (. :URL :new uri)
+          con             (. url :openConnection)
+          con             (if https? (cast :HttpsURLConnection con)
+                                     (cast :HttpURLConnection con))]
       (. con :setRequestMethod method)
 
       (when https?
@@ -176,9 +213,9 @@
       (when (some? body)
         (let [os (. con :getOutputStream)]
           (cond 
-            (string? body)        (spit-string body encoding os)                 
-            (bytebuf? body)       (spit-bytebuf body os)
-            (io/in-stream? body)  (spit-bytebuf (io/slurp-stream is) os)
+            (string? body)        (spit-string body encoding os debug?)                 
+            (bytebuf? body)       (spit-bytebuf body os debug?)
+            (io/in-stream? body)  (spit-bytebuf (io/slurp-stream is) os debug?)
             :else                 (throw (ex :VncException 
                                             (str "Invalid " method 
                                                   " request body type"))))))
@@ -301,43 +338,46 @@
 ;; -----------------------------------------------------------------------------
 
 (defn- get-response [con]
-  (let [http-status          (long (. con :getResponseCode))
-        ok?                  (<= 200 http-status 299)
-        headers              (response-headers con)
-        content-type-details (->> (get headers "Content-Type")
-                                  (first)
-                                  (parse-content-type))
-        type                 (first content-type-details)
-        encoding             (-> (second content-type-details)
-                                 (str/strip-start "charset="))]
-    { :http-status      http-status 
+  (let [status           (long (. con :getResponseCode))
+        ok?              (<= 200 status 299)
+        headers          (response-headers con)
+        [type encoding]  (parse-content-type (get headers "Content-Type"))]
+    { :http-status      status 
       :content-type     type
-      :content-encoding (if (nil? encoding) nil (keyword encoding))
+      :content-encoding encoding
       :content-length   (. con :getContentLengthLong)
       :headers          headers 
       :data-stream      (if ok? (. con :getInputStream) 
                                 (. con :getErrorStream)) } ))
 
 
-(defn- parse-content-type [ct]
-  (let [e  (as-> (str/trim-to-nil ct) v
-                 (str/split v ";")
-                 (map str/trim v))]
-    [(first e) (second e)]))
+(defn- parse-content-type [content-type]
+   ;; "application/json"                     => ["application/json" ":utf-8"]
+   ;; "application/json; charset=iso-8859-1" => ["application/json" ":iso-8859-1"]
+  (let [[t e]  (as-> (str/trim-to-nil content-type) v
+                     (str/split v ";")
+                     (map str/trim v))
+               ;; default to :utf-8 and strip "charset=" prefix
+        e      (keyword (str/strip-start (or e "utf-8") "charset="))] 
+    [t e]))
 
 
 (defn- response-headers [con]
   (->> (. con :getHeaderFields)
-       (map-vals #(into '() %))))
+       (map-vals #(str/join ", " %))))  ;; just single values
 
 
-(defn- spit-string [str charset os]
-  (try-with [pr (io/wrap-os-with-print-writer os charset)]
+(defn- spit-string [str encoding os debug?]
+  (when debug? (printf "Sending string body. size %s, encoding :%s%n" 
+                       (count str) 
+                       (name encoding)))
+  (try-with [pr (io/wrap-os-with-print-writer os encoding)]
     (print pr str)
     (flush pr)))
 
 
-(defn- spit-bytebuf [buf os]
+(defn- spit-bytebuf [buf os debug?]
+  (when debug? (printf "Sending byte body. size %s%n"  (count buf)))
   (try-with [os os]
     (io/spit-stream os buf :flush true)))
 
@@ -356,12 +396,6 @@
     (println head "-")
     (let [indent  (str/repeat " " (count head))
           tuples  (into '() data)
-          format  (fn [tuple] 
-                    (let [name   (first tuple)
-                          values (second tuple)
-                          values (if (sequential? values)
-                                   (str/join ", " values)
-                                   values)]
-                      (str name ": " values)))]
+          format  (fn [tuple] (str (first tuple) ": " (second tuple)))]
       (println head (format (first tuples)))
       (doseq [t (rest tuples)] (println indent (format t))))))
