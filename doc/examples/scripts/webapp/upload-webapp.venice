@@ -21,10 +21,22 @@
 
 (defn upload-file [request]
   (let [parts (ring/parts request)]
+    (doseq [p parts] (save-part p))
     { :status 200
       :headers { "Content-Type" "text/plain; charset=utf-8" }
       :body "File uploaded!" }))
 
+(defn- save-part [part]
+  (let [name      (:name part)
+        filename  (io/file-name (:file-name part))
+        delete-fn (:delete-fn part)
+        dir       (io/file "/Users/juerg/Desktop/venice/tmp")
+        file      (io/file dir filename)]
+    (println "Saving part '" name "':" filename "to" dir)
+    (try-with [is (:in-stream  part)]
+      (let [data (io/slurp-stream is :binary true)]
+        (io/spit file data :binary true))
+      (finally (delete-fn)))))
 
 
 ;; -----------------------------------------------------------------------------

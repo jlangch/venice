@@ -295,12 +295,7 @@
   (assert (string? uri))
  
   (let [opts      (apply hash-map options)
-        parts     (mp/render {"file" (io/file file)})
-        body      (try-with [os (io/bytebuf-out-stream)] 
-                    ;;(io/spit-stream os (bytebuf-from-string "\r\n"))
-                    (io/spit-stream os parts)
-                    (io/flush os)
-                    @os)
+        body      (mp/render {"file" (io/file file)})
         headers   (:headers opts {})
         headers   (assoc headers "Content-Type" (mp/http-content-type-header))
         opts      (dissoc opts :file)

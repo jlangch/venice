@@ -179,7 +179,7 @@
   (try
     (let [filename (io/file-path file)
           mimetype (core/name (mimetypes/probe-content-type file))
-          data     (io/slurp file)]
+          data     (io/slurp file :binary true)]
       (when (nil? mimetype)
         (throw (ex :VncException (str "Failed to get mimetype for file " filename))))
 
@@ -197,9 +197,7 @@
   (spit-string os (content-disposition-header name filename) nl)
   (spit-string os (content-type-header mimetype charset) nl)
   (spit-string os nl)
-  (if (string? data)
-    (spit-string os data)
-    (spit-bytebuf os data))
+  (if (string? data) (spit-string os data) (spit-bytebuf os data))
   (spit-string os nl))
 
 
