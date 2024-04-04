@@ -81,7 +81,7 @@
             (load-module :http-client-legacy ['http-client-legacy :as 'hc])
           
             (let [res      (hc/send :get "http://localhost:8080/employees" 
-                                    :headers {"Accept" ["application/json" "text/plain"]})
+                                    :headers {"Accept" "application/json, text/plain"})
                   status   (:http-status res)
                   type     (:content-type res)
                   encoding (:content-encoding res)]
@@ -97,84 +97,79 @@
 
   send [method uri & options]
   
-  (try
-    (let [opts               (apply hash-map options)
-          method             (str/upper-case (name method))
-          headers            (:headers opts {})
-          body               (:body opts)
-          body-encoding      (:body-encoding opts)
-          conn-timeout       (:conn-timeout opts)
-          read-timeout       (:read-timeout opts)
-          follow-redirects   (:follow-redirects opts)
-          hostname-verifier  (:hostname-verifier opts)
-          ssl-socket-factory (:ssl-socket-factory opts)
-          user-agent         (:user-agent opts hc-user-agent)
-          debug?             (true? (:debug opts false))
-                             ;; default headers
-          headers            (assoc headers "User-Agent" user-agent)
-          headers            (if (not-contains? headers "Accept")
-                               (assoc headers "Accept" "*/*")
-                               headers)]
+  (let [opts               (apply hash-map options)
+        method             (str/upper-case (name method))
+        headers            (:headers opts {})
+        body               (:body opts)
+        body-encoding      (:body-encoding opts)
+        conn-timeout       (:conn-timeout opts)
+        read-timeout       (:read-timeout opts)
+        follow-redirects   (:follow-redirects opts)
+        hostname-verifier  (:hostname-verifier opts)
+        ssl-socket-factory (:ssl-socket-factory opts)
+        user-agent         (:user-agent opts hc-user-agent)
+        debug?             (true? (:debug opts false))
+                            ;; default headers
+        headers            (assoc headers "User-Agent" user-agent)
+        headers            (if (not-contains? headers "Accept")
+                              (assoc headers "Accept" "text/plain, */*;0.2")
+                              headers)]
 
-      (assert (string? method))
-      (assert (string? uri))
-      (assert (or (map? headers)))
-      (assert (or (nil? body) (string? str) (bytebuf? body) (io/in-stream? body)))
-      (assert (or (nil? body-encoding) (keyword? body-encoding)))
-      (assert (or (nil? conn-timeout) (long? conn-timeout)))
-      (assert (or (nil? read-timeout) (long? read-timeout)))
-      (assert (or (nil? follow-redirects) (boolean? follow-redirects)))
+    (assert (string? method))
+    (assert (string? uri))
+    (assert (or (map? headers)))
+    (assert (or (nil? body) (string? str) (bytebuf? body) (io/in-stream? body)))
+    (assert (or (nil? body-encoding) (keyword? body-encoding)))
+    (assert (or (nil? conn-timeout) (long? conn-timeout)))
+    (assert (or (nil? read-timeout) (long? read-timeout)))
+    (assert (or (nil? follow-redirects) (boolean? follow-redirects)))
 
-      (let [https? (str/starts-with? (str/lower-case uri) "https:")
-            url    (. :URL :new uri)
-            con    (. url :openConnection)
-            con    (if https? (cast :HttpsURLConnection con)
-                              (cast :HttpURLConnection con))]
+    (let [https? (str/starts-with? (str/lower-case uri) "https:")
+          url    (. :URL :new uri)
+          con    (. url :openConnection)
+          con    (if https? (cast :HttpsURLConnection con)
+                            (cast :HttpURLConnection con))]
 
-        (. con :setRequestMethod method)
+      (. con :setRequestMethod method)
 
-        (when https?
-          (when (some? hostname-verifier)
-            (. con :setHostnameVerifier hostname-verifier))
-          (when (some? ssl-socket-factory)
-            (. con :setSSLSocketFactory ssl-socket-factory)))
+      (when https?
+        (when (some? hostname-verifier)
+          (. con :setHostnameVerifier hostname-verifier))
+        (when (some? ssl-socket-factory)
+          (. con :setSSLSocketFactory ssl-socket-factory)))
 
-        (when (some? conn-timeout)
-          (. con :setConnectTimeout conn-timeout))
+      (when (some? conn-timeout)
+        (. con :setConnectTimeout conn-timeout))
 
-        (when (some? read-timeout)
-          (. con :setReadTimeout read-timeout))
+      (when (some? read-timeout)
+        (. con :setReadTimeout read-timeout))
 
-        (doseq [[k v] headers] 
-          (if (sequential? v)
-            (doseq [i v] (. con :setRequestProperty k (str i)))  ; multi-value
-            (. con :setRequestProperty k (str v))))              ; single-value
+      (doseq [[k v] headers] 
+        (. con :setRequestProperty k (str v)))
 
-        (when (some? follow-redirects)
-          (. con :setInstanceFollowRedirects follow-redirects))
-        
-        (when (some? body)
-          (. con :setDoOutput true))
+      (when (some? follow-redirects)
+        (. con :setInstanceFollowRedirects follow-redirects))
+      
+      (when (some? body)
+        (. con :setDoOutput true))
 
-         (. con :connect)  ;; establish the connection
+      (. con :connect)  ;; establish the connection
 
-        ;; send body
-        (when (some? body)
-          (let [os (. con :getOutputStream)]
-            (cond 
-              (string? body)        (spit-string body encoding os)                 
-              (bytebuf? body)       (spit-bytebuf body os)
-              (io/in-stream? body)  (spit-bytebuf (io/slurp-stream is) os)
-              :else                 (throw (ex :VncException 
-                                              (str "Invalid " method 
-                                                    " request body type"))))))
+      ;; send body
+      (when (some? body)
+        (let [os (. con :getOutputStream)]
+          (cond 
+            (string? body)        (spit-string body encoding os)                 
+            (bytebuf? body)       (spit-bytebuf body os)
+            (io/in-stream? body)  (spit-bytebuf (io/slurp-stream is) os)
+            :else                 (throw (ex :VncException 
+                                            (str "Invalid " method 
+                                                  " request body type"))))))
 
-        ;; handle response
-        (let [response  (get-response con)]
-          (when debug? (dump-response response))
-          response)))
-
-  (catch :Exception e (throw (ex :VncException (ex-message e) e)))))
+      ;; handle response
+      (let [response  (get-response con)]
+        (when debug? (dump-response response))
+        response))))
 
 
 
@@ -196,7 +191,7 @@
             (load-module :http-client-legacy ['http-client-legacy :as 'hc])
           
             (let [res      (hc/send :get "http://localhost:8080/employees" 
-                                    :headers {"Accept" ["application/json" "text/plain"]})
+                                    :headers {"Accept" "application/json, text/plain"})
                   status   (:http-status res)
                   type     (:content-type res)
                   encoding (:content-encoding res)]
@@ -230,7 +225,7 @@
             (load-module :http-client-legacy ['http-client-legacy :as 'hc])
           
             (let [res      (hc/send :get "http://localhost:8080/employees" 
-                                    :headers {"Accept" ["application/json" "text/plain"]})
+                                    :headers {"Accept" "application/json, text/plain"})
                   status   (:http-status res)
                   type     (:content-type res)
                   encoding (:content-encoding res)]
@@ -264,7 +259,7 @@
             (load-module :http-client-legacy ['http-client-legacy :as 'hc])
           
             (let [res    (hc/send :get "http://localhost:8080/employees" 
-                                  :headers {"Accept" ["application/json" "text/plain"]})
+                                  :headers {"Accept" "application/json, text/plain"})
                   status (:http-status res)]
               (println "Status:" status)
               (let [data (hc/slurp-bytebuf (:data-stream res))]
