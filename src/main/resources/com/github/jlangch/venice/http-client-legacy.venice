@@ -40,9 +40,9 @@
 
           | [![width: 20%]]    | [![width: 80%]] |
           | :headers           | A map of request headers. Headers can be single- \
-                                 or multi-value: ¶\
+                                 or multi-value (comma separated): ¶\
                                  {"X-Header-1" "value1" ¶ \
-                                  "X-Header-2" ["value1" "value2"  "value3"]} |
+                                  "X-Header-2" "value1, value2, value3"]} |
           | :body              | An optional body to send with the request¶ \
                                  The body may be of type *string*, *bytebuf*, \
                                  `:java.io.InputStream` |
