@@ -39,7 +39,10 @@
           ¶¶*Request Options:*
 
           | [![width: 20%]]    | [![width: 80%]] |
-          | :headers           | A map of request headers |
+          | :headers           | A map of request headers. Headers can be single- \
+                                 or multi-value: ¶\
+                                 {"X-Header-1" "value1" ¶ \
+                                  "X-Header-2" ["value1" "value2"  "value3"]} |
           | :body              | An optional body to send with the request¶ \
                                  The body may be of type *string*, *bytebuf*, \
                                  `:java.io.InputStream` |
@@ -53,10 +56,10 @@
                                  response code 3xx) should be automatically \
                                  followed. |
           | :hostname-verifier | Sets the hostname verifier. An object of type \
-                                 `:javax.net.ssl.HostnameVerifier`. ¶ \
+                                 `:javax.net.ssl.HostnameVerifier`. ¶\
                                  Use only for HTTPS requests |
           | :ssl-socket-factory | Sets the SSL socket factory. An object of type \
-                                 `:javax.net.ssl.SSLSocketFactory`. ¶ \
+                                 `:javax.net.ssl.SSLSocketFactory`. ¶\
                                  Use only for HTTPS requests |
           | :user-agent         | User agent. Defaults to "Venice HTTP client (legacy)" |
           | :debug              | Debug true/false. Defaults to false |
@@ -66,12 +69,31 @@
           | [![width: 20%]]    | [![width: 80%]] |
           | :http-status       | The HTTP status (a long) |
           | :content-type      | The content type |
-          | :content-encoding  | The content encoding |
-          | :content-length    | The content length (a long)|
+          | :content-encoding  | The content encoding (a keyword), if available else nil |
+          | :content-length    | The content length (a long), if available else -1 |
           | :headers           | A map of headers. key: header name, value: list \
                                  of header values |
           | :data-stream       | The response data input stream |
-          """ }
+          """ 
+     :examples '(
+          """
+          (do
+            (load-module :http-client-legacy ['http-client-legacy :as 'hc])
+          
+            (let [res      (hc/send :get "http://localhost:8080/employees" 
+                                    :headers {"Accept" ["application/json" "text/plain"]})
+                  status   (:http-status res)
+                  type     (:content-type res)
+                  encoding (:content-encoding res)]
+              (println "Status:" status)
+              (if (and (= 200 status) (= "application/json" type))
+                (println (hc/slurp-json (:data-stream res) encoding))
+                (println (hc/slurp-string (:data-stream res) encoding)))))
+          """ )
+     :see-also '(
+          "http-client-legacy/slurp-string"
+          "http-client-legacy/slurp-json"
+          "http-client-legacy/slurp-bytebuf" ) }
 
   send [method uri & options]
   
@@ -138,7 +160,6 @@
 
         ;; send body
         (when (some? body)
-          (println "Sending body")
           (let [os (. con :getOutputStream)]
             (cond 
               (string? body)        (spit-string body encoding os)                 
@@ -149,8 +170,7 @@
                                                     " request body type"))))))
 
         ;; handle response
-        (println "Response..")
-        (let [response (get-response con)]
+        (let [response  (get-response con)]
           (when debug? (dump-response response))
           response)))
 
@@ -162,15 +182,99 @@
 ;; Utils
 ;; -----------------------------------------------------------------------------
 
-(defn slurp-string [is charset]
-  (io/slurp-stream is :binary false :encoding charset))
+(defn 
+  ^{ :arglists '(
+         "(slurp-string is)"
+         "(slurp-string is charset)")
+     :doc """
+          Slurps the input stream with response data into a string. Defaults to 
+          :utf-8 charset.
+          """ 
+     :examples '(
+          """
+          (do
+            (load-module :http-client-legacy ['http-client-legacy :as 'hc])
+          
+            (let [res      (hc/send :get "http://localhost:8080/employees" 
+                                    :headers {"Accept" ["application/json" "text/plain"]})
+                  status   (:http-status res)
+                  type     (:content-type res)
+                  encoding (:content-encoding res)]
+              (println "Status:" status)
+              (if (= 200 status)
+                (println (hc/slurp-string (:data-stream res) encoding))
+                (println (hc/slurp-string (:data-stream res) encoding)))))
+          """ )
+     :see-also '(
+          "http-client-legacy/slurp-json"
+          "http-client-legacy/slurp-bytebuf"
+          "http-client-legacy/send" ) }
+
+  slurp-string 
+  
+  ([is] (slurp-string is :utf-8))
+  ([is charset] (io/slurp-stream is :binary false :encoding (or charset :utf-8))))
 
 
-(defn slurp-json [is charset]
-  (json/slurp is :encoding charset))
+(defn 
+  ^{ :arglists '(
+         "(slurp-json is)"
+         "(slurp-json is charset)")
+     :doc """
+          Slurps the input stream with response data into JSON. Defaults to 
+          :utf-8 charset.
+          """ 
+     :examples '(
+          """
+          (do
+            (load-module :http-client-legacy ['http-client-legacy :as 'hc])
+          
+            (let [res      (hc/send :get "http://localhost:8080/employees" 
+                                    :headers {"Accept" ["application/json" "text/plain"]})
+                  status   (:http-status res)
+                  type     (:content-type res)
+                  encoding (:content-encoding res)]
+              (println "Status:" status)
+              (if (= 200 status)
+                (println (hc/slurp-json (:data-stream res) encoding))
+                (println (hc/slurp-string (:data-stream res) encoding)))))
+          """ )
+     :see-also '(
+          "http-client-legacy/slurp-string"
+          "http-client-legacy/slurp-bytebuf"
+          "http-client-legacy/send" ) }
+
+  slurp-json [is charset]
+
+  ([is] (slurp-json is :utf-8))
+  ([is charset] (json/slurp is :binary false :encoding (or charset :utf-8))))
 
 
-(defn slurp-bytebuf [is]
+(defn 
+ ^{ :arglists '(
+         "(slurp-bytebuf is)")
+     :doc """
+          Slurps the input stream with response data into a bytebuf.
+          """ 
+     :examples '(
+          """
+          (do
+            (load-module :http-client-legacy ['http-client-legacy :as 'hc])
+          
+            (let [res    (hc/send :get "http://localhost:8080/employees" 
+                                  :headers {"Accept" ["application/json" "text/plain"]})
+                  status (:http-status res)]
+              (println "Status:" status)
+              (let [data (hc/slurp-bytebuf (:data-stream res))]
+                (println "Bytes read:" (count data)))))
+          """ )
+     :see-also '(
+          "http-client-legacy/slurp-string"
+          "http-client-legacy/slurp-json"
+          "http-client-legacy/send" ) }
+
+  slurp-bytebuf [is]
+
   (io/slurp-stream is :binary true))
 
 
@@ -180,15 +284,28 @@
 ;; -----------------------------------------------------------------------------
 
 (defn- get-response [con]
-  (let [status (long (. con :getResponseCode))
-        ok?    (<= 200 status 299)]
-    { :http-status      status 
-      :content-type     (. con :getContentType)
-      :content-encoding (. con :getContentEncoding)
+  (let [http-status          (long (. con :getResponseCode))
+        ok?                  (<= 200 http-status 299)
+        headers              (response-headers con)
+        content-type-details (->> (get headers "Content-Type")
+                                  (first)
+                                  (parse-content-type))
+        type                 (first content-type-details)
+        encoding             (second content-type-details)]
+    { :http-status      http-status 
+      :content-type     type
+      :content-encoding (if (nil? encoding) nil (keyword encoding))
       :content-length   (. con :getContentLengthLong)
-      :headers          (response-headers con) 
+      :headers          headers 
       :data-stream      (if ok? (. con :getInputStream) 
                                 (. con :getErrorStream)) } ))
+
+
+(defn- parse-content-type [ct]
+  (let [e  (as-> (str/trim-to-nil ct) v
+                 (str/split v ";")
+                 (map str/trim v))]
+    [(first e) (second e)]))
 
 
 (defn- response-headers [con]
@@ -209,10 +326,10 @@
 
 (defn- dump-response [res]
   (println     "Dump response:")
-  (println     "   status:            " (:status res))
+  (println     "   http-status:       " (:http-status res))
   (println     "   content-type:      " (:content-type res))
-  (println     "   content-encoding:  " (:character-encoding res))
-  (println     "   content-length:    " (:character-encoding res))
+  (println     "   content-encoding:  " (:content-encoding res))
+  (println     "   content-length:    " (:content-length res))
   (println-map "   headers:           " (:headers res)))
 
 

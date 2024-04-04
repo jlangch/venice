@@ -56,6 +56,8 @@ import com.github.jlangch.venice.impl.docgen.cheatsheet.modules.ModuleGradleSect
 import com.github.jlangch.venice.impl.docgen.cheatsheet.modules.ModuleGradleWrapperSection;
 import com.github.jlangch.venice.impl.docgen.cheatsheet.modules.ModuleGrepSection;
 import com.github.jlangch.venice.impl.docgen.cheatsheet.modules.ModuleHexdumpSection;
+import com.github.jlangch.venice.impl.docgen.cheatsheet.modules.ModuleHttpClientLegacySection;
+import com.github.jlangch.venice.impl.docgen.cheatsheet.modules.ModuleHttpClientSection;
 import com.github.jlangch.venice.impl.docgen.cheatsheet.modules.ModuleInstallerSection;
 import com.github.jlangch.venice.impl.docgen.cheatsheet.modules.ModuleJavaSection;
 import com.github.jlangch.venice.impl.docgen.cheatsheet.modules.ModuleJsonlSection;
@@ -139,7 +141,7 @@ public class DocGenerator {
                         "zipvault",   "gradlew",    "matrix",          "ascii-table",
                         "docker",     "cargo",      "cargo-arangodb",  "cargo-qdrant",
                         "installer",  "tomcat",     "ring",
-                        "mimetypes",  "multipart"));
+                        "mimetypes",  "multipart",   "http-client",    "http-client-legacy"));
 
         final IVeniceInterpreter venice = new VeniceInterpreter(new AcceptAllInterceptor());
 
@@ -492,7 +494,8 @@ public class DocGenerator {
                 new ModuleTomcatSection(diBuilder).section(),
                 new ModuleRingSection(diBuilder).section(),
                 new ModuleTracingSection(diBuilder).section(),
-                new ModuleShellSection(diBuilder).section());
+                new ModuleShellSection(diBuilder).section(),
+                new ModuleHttpClientSection(diBuilder).section());
     }
 
     private List<DocSection> getModulesRightSections() {
@@ -515,6 +518,7 @@ public class DocGenerator {
         		new ModuleAnsiSection(diBuilder).section(),
                 new ModuleMimetypesSection(diBuilder).section(),
                 new ModuleMultipartSection(diBuilder).section(),
+                new ModuleHttpClientLegacySection(diBuilder).section(),
         		new ModuleInstallerSection(diBuilder).section());
     }
 
