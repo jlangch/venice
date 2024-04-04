@@ -14,6 +14,9 @@ All notable changes to this project will be documented in this file.
   dump functions
 - module :http-client-legacy. A simple HTTP client based on the JDK HttpUrlConnection
 
+### Fixed 
+- the return status handling in the :ring module
+
 
 
 ## [1.12.8] - 2024-04-02
