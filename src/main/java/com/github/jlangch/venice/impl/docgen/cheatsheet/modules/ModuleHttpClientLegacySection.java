@@ -45,6 +45,8 @@ public class ModuleHttpClientLegacySection implements ISectionBuilder {
         final DocSection hc = new DocSection("HTTP Client", id());
         all.addSection(hc);
         hc.addItem(diBuilder.getDocItem("http-client-legacy/send", false));
+        hc.addItem(diBuilder.getDocItem("http-client-legacy/upload-file", false));
+        hc.addItem(diBuilder.getDocItem("http-client-legacy/upload-multipart", false));
 
         final DocSection utils = new DocSection("Utils", id());
         all.addSection( utils);

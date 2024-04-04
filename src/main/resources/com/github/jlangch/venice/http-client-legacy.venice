@@ -24,6 +24,8 @@
 
 (ns http-client-legacy)
 
+(load-module :multipart ['multipart :as 'mp])
+
 (import :java.net.URL)
 (import :java.net.HttpURLConnection)
 (import :java.net.HttpsURLConnection)
@@ -65,7 +67,8 @@
           | [![width: 20%]]    | [![width: 80%]] |
           | :http-status       | The HTTP status (a long) |
           | :content-type      | The content type |
-          | :content-encoding  | The content encoding (a keyword), if available else nil |
+          | :content-encoding  | The content encoding (a keyword), if available \
+                                 else nil |
           | :content-length    | The content length (a long), if available else -1 |
           | :headers           | A map of headers. key: header name, value: list \
                                  of header values |
@@ -152,6 +155,7 @@
                 (println (hc/slurp-string (:data-stream response) encoding)))))
           """ )
      :see-also '(
+          "http-client-legacy/upload-file"
           "http-client-legacy/slurp-string"
           "http-client-legacy/slurp-json"
           "http-client-legacy/slurp-bytebuf" ) }
@@ -231,11 +235,122 @@
         response))))
 
 
-(defn post-fileupload [uri & options]
-   )
+(defn 
+  ^{ :arglists '("(upload-file file uri & options)")
+     :doc """
+          Upload a file
+
+          ¶¶*Request Options:*
+
+          | [![width: 20%]]    | [![width: 80%]] |
+          | :headers           | A map of request headers. Headers can be single- \
+                                 or multi-value (comma separated): ¶\
+                                 {"X-Header-1" "value1" ¶ \
+                                  "X-Header-2" "value1, value2, value3"]} |
+          | :conn-timeout      | An optional connection timeout in milliseconds |
+          | :read-timeout      | An optional read timeout in milliseconds |
+          | :follow-redirects  | Sets whether HTTP redirects (requests with \
+                                 response code 3xx) should be automatically \
+                                 followed. |
+          | :hostname-verifier | Sets the hostname verifier. An object of type \
+                                 `:javax.net.ssl.HostnameVerifier`. ¶\
+                                 Use only for HTTPS requests |
+          | :ssl-socket-factory | Sets the SSL socket factory. An object of type \
+                                 `:javax.net.ssl.SSLSocketFactory`. ¶\
+                                 Use only for HTTPS requests |
+          | :user-agent         | User agent. Defaults to "Venice HTTP client (legacy)" |
+          | :debug              | Debug true/false. Defaults to false |
+
+          ¶¶*Returns a map with the response fields:*
+
+          | [![width: 20%]]    | [![width: 80%]] |
+          | :http-status       | The HTTP status (a long) |
+          | :content-type      | The content type |
+          | :content-encoding  | The content encoding (a keyword), if available \
+                                 else nil |
+          | :content-length    | The content length (a long), if available else -1 |
+          | :headers           | A map of headers. key: header name, value: list \
+                                 of header values |
+          | :data-stream       | The response data input stream |
+          """
+     :examples '(
+          """
+          (do
+            (load-module :http-client-legacy ['http-client-legacy :as 'hc])
+            
+            (let [response (hc/upload-file
+                                (io/file "/Users/foo/image.png") 
+                                "http://localhost:8080/upload" 
+                                :headers { "Accept" "text/plain" }
+                                :debug true)
+                  status   (:http-status response)]
+              (println "Status:" status)))
+          """ )
+     :see-also '(
+          "http-client-legacy/send" ) }
+
+  upload-file [file uri & options]
+ 
+  (assert (io/file? file))
+  (assert (string? uri))
+ 
+  (let [opts      (apply hash-map options)
+        lf        (bytebuf-from-string "\r\n")
+        parts     (mp/render {"file" (io/file file)})
+        body      (try-with [os (io/bytebuf-out-stream)] 
+                    (io/spit-stream os lf)
+                    (io/spit-stream os parts)
+                    (io/flush os)
+                    @os)
+        headers   (:headers opts {})
+        headers   (assoc headers "Content-Type" (mp/http-content-type-header))
+        opts      (dissoc opts :file)
+        opts      (assoc opts :headers headers)
+        opts      (assoc opts :body boundary)]
+      (apply send :post uri opts)))
 
 
-(defn send-multipart [uri & options]
+(defn 
+  ^{ :arglists '("(upload-multipart uri & options)")
+     :doc """
+          Upload multiple parts
+
+          ¶¶*Request Options:*
+
+          | [![width: 20%]]    | [![width: 80%]] |
+          | :headers           | A map of request headers. Headers can be single- \
+                                 or multi-value (comma separated): ¶\
+                                 {"X-Header-1" "value1" ¶ \
+                                  "X-Header-2" "value1, value2, value3"]} |
+          | :conn-timeout      | An optional connection timeout in milliseconds |
+          | :read-timeout      | An optional read timeout in milliseconds |
+          | :follow-redirects  | Sets whether HTTP redirects (requests with \
+                                 response code 3xx) should be automatically \
+                                 followed. |
+          | :hostname-verifier | Sets the hostname verifier. An object of type \
+                                 `:javax.net.ssl.HostnameVerifier`. ¶\
+                                 Use only for HTTPS requests |
+          | :ssl-socket-factory | Sets the SSL socket factory. An object of type \
+                                 `:javax.net.ssl.SSLSocketFactory`. ¶\
+                                 Use only for HTTPS requests |
+          | :user-agent         | User agent. Defaults to "Venice HTTP client (legacy)" |
+          | :debug              | Debug true/false. Defaults to false |
+
+          ¶¶*Returns a map with the response fields:*
+
+          | [![width: 20%]]    | [![width: 80%]] |
+          | :http-status       | The HTTP status (a long) |
+          | :content-type      | The content type |
+          | :content-encoding  | The content encoding (a keyword), if available \
+                                 else nil |
+          | :content-length    | The content length (a long), if available else -1 |
+          | :headers           | A map of headers. key: header name, value: list \
+                                 of header values |
+          | :data-stream       | The response data input stream |
+          """ }
+
+  upload-multipart [uri & options]
+
    )
 
 
