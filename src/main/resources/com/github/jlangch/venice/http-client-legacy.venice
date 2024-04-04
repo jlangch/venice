@@ -75,51 +75,51 @@
           """
           ;; GET (get)
           ;;
-          ;; 1/ Start the REST Server {Venice}/doc/examples/scripts/rest-webapp.venice
-          ;;    (just drag & drop the file into a REPL)
+          ;; 1/ Start the example REST Server {Venice}/doc/examples/scripts/rest-webapp.venice
+          ;;    (drag & drop the file into a REPL and HIT [RET] to start it)
           ;; 2/ Run the Http Client commands listed in these examples
           ;;    (run the Http Client commands from a 2nd REPL)
           (do
             (load-module :http-client-legacy ['http-client-legacy :as 'hc])
           
-            (let [res      (hc/send :get 
+            (let [response (hc/send :get 
                                     "http://localhost:8080/employees" 
                                     :headers { "Accept" "application/json, text/plain" }
                                     :debug true)
-                  status   (:http-status res)
-                  type     (:content-type res)
-                  encoding (:content-encoding res)]
+                  status   (:http-status response)
+                  type     (:content-type response)
+                  encoding (:content-encoding response)]
               (println "Status:" status)
               (if (and (= 200 status) (= "application/json" type))
-                (println (hc/slurp-json (:data-stream res) encoding))
-                (println (hc/slurp-string (:data-stream res) encoding)))))
+                (println (hc/slurp-json (:data-stream response) encoding))
+                (println (hc/slurp-string (:data-stream response) encoding)))))
           """,
           """
           ;; POST (create)
           (do
             (load-module :http-client-legacy ['http-client-legacy :as 'hc])
             
-            (let [res      (hc/send :post 
+            (let [response (hc/send :post 
                                     "http://localhost:8080/employees" 
                                     :headers {"Accept"       "application/json, text/plain"
                                               "Content-Type" "application/json"}
                                     :body (json/write-str { "name" "hanna", 
                                                             "role" "secretary" })
                                     :debug true)
-                  status   (:http-status res)
-                  type     (:content-type res)
-                  encoding (:content-encoding res)]
+                  status   (:http-status response)
+                  type     (:content-type response)
+                  encoding (:content-encoding response)]
               (println "Status:" status)
               (if (and (= 200 status) (= "application/json" type))
-                (println (hc/slurp-json (:data-stream res) encoding))
-                (println (hc/slurp-string (:data-stream res) encoding)))))
+                (println (hc/slurp-json (:data-stream response) encoding))
+                (println (hc/slurp-string (:data-stream response) encoding)))))
           """,
           """
           ;; PUT (update)
           (do
             (load-module :http-client-legacy ['http-client-legacy :as 'hc])
             
-            (let [res      (hc/send :put 
+            (let [response (hc/send :put 
                                     "http://localhost:8080/employees/1001" 
                                     :headers {"Accept"       "application/json, text/plain"
                                               "Content-Type" "application/json"}
@@ -127,29 +127,29 @@
                                                             "name" "john", 
                                                             "role" "clerk" })
                                     :debug true)
-                  status   (:http-status res)
-                  type     (:content-type res)
-                  encoding (:content-encoding res)]
+                  status   (:http-status response)
+                  type     (:content-type response)
+                  encoding (:content-encoding response)]
               (println "Status:" status)
               (if (and (= 200 status) (= "application/json" type))
-                (println (hc/slurp-json (:data-stream res) encoding))
-                (println (hc/slurp-string (:data-stream res) encoding)))))
+                (println (hc/slurp-json (:data-stream response) encoding))
+                (println (hc/slurp-string (:data-stream response) encoding)))))
           """,
           """
           ;; DELETE (delete)
           (do
             (load-module :http-client-legacy ['http-client-legacy :as 'hc])
             
-            (let [res      (hc/send :delete 
+            (let [response (hc/send :delete 
                                     "http://localhost:8080/employees/1000" 
                                     :headers { "Accept" "text/plain" }
                                     :debug true)
-                  status   (:http-status res)
-                  type     (:content-type res)
-                  encoding (:content-encoding res)]
+                  status   (:http-status response)
+                  type     (:content-type response)
+                  encoding (:content-encoding response)]
               (println "Status:" status)
               (if (= "text/plain" type)
-                (println (hc/slurp-string (:data-stream res) encoding)))))
+                (println (hc/slurp-string (:data-stream response) encoding)))))
           """ )
      :see-also '(
           "http-client-legacy/slurp-string"
@@ -222,13 +222,21 @@
             (bytebuf? body)       (spit-bytebuf body os debug?)
             (io/in-stream? body)  (spit-bytebuf (io/slurp-stream is) os debug?)
             :else                 (throw (ex :VncException 
-                                            (str "Invalid " method 
+                                             (str "Invalid " method 
                                                   " request body type"))))))
 
       ;; handle response
       (let [response  (get-response con)]
         (when debug? (dump-response response))
         response))))
+
+
+(defn post-fileupload [uri & options]
+   )
+
+
+(defn send-multipart [uri & options]
+   )
 
 
 
@@ -241,8 +249,8 @@
          "(slurp-string is)"
          "(slurp-string is charset)")
      :doc """
-          Slurps the input stream with response data into a string. Defaults to 
-          :utf-8 charset.
+          Slurps the input stream with the response data into a string. Defaults
+          to :utf-8 charset.
           """ 
      :examples '(
           """
@@ -276,7 +284,7 @@
          "(slurp-json is)"
          "(slurp-json is charset)")
      :doc """
-          Slurps the input stream with response data into JSON. Defaults to 
+          Slurps the input stream with the response data into JSON. Defaults to 
           :utf-8 charset.
           """ 
      :examples '(
@@ -312,7 +320,7 @@
  ^{ :arglists '(
          "(slurp-bytebuf is)")
      :doc """
-          Slurps the input stream with response data into a bytebuf.
+          Slurps the input stream with the response data into a bytebuf.
           """ 
      :examples '(
           """
