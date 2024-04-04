@@ -149,16 +149,29 @@
 ;; -----------------------------------------------------------------------------
 ;; Venice HTTP Client
 ;; 
-;; (do
-;;   (load-module :http-client-legacy ['http-client-legacy :as 'hc])
-;;
-;;   (hc/send :get "http://localhost:8080/employees" 
-;;            :headers {"Accept" "*/*"} 
-;;            :debug true))
-;;
-;;   (hc/send :get "http://localhost:8080/employees/1000" 
-;;            :headers {"Accept" "*/*"} 
-;;            :debug true))
+;;  (do
+;;    (load-module :http-client-legacy ['http-client-legacy :as 'hc])
+;;  
+;;    (let [res      (hc/send :get 
+;;                            "http://localhost:8080/employees" 
+;;                            :headers {"Accept" "application/json, text/plain"})
+;;          status   (:http-status res)]
+;;      (println "Status:" status)
+;;      (if (and (= 200 status) (= "application/json" (:content-type res)))
+;;        (println (hc/slurp-json (:data-stream res) (:content-encoding res)))
+;;        (println (hc/slurp-string (:data-stream res) (:content-encoding res))))))
+;; 
+;;  (do
+;;    (load-module :http-client-legacy ['http-client-legacy :as 'hc])
+;;  
+;;    (let [res      (hc/send :get 
+;;                            "http://localhost:8080/employees/1000" 
+;;                            :headers {"Accept" "application/json, text/plain"})
+;;          status   (:http-status res)]
+;;      (println "Status:" status)
+;;      (if (and (= 200 status) (= "application/json" (:content-type res)))
+;;        (println (hc/slurp-json (:data-stream res) (:content-encoding res)))
+;;        (println (hc/slurp-string (:data-stream res) (:content-encoding res))))))
 ;; -----------------------------------------------------------------------------
 
 (println "Tomcat started on port ~(:port tomcat-opts).")

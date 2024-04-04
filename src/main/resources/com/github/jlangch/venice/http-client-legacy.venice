@@ -80,7 +80,8 @@
           (do
             (load-module :http-client-legacy ['http-client-legacy :as 'hc])
           
-            (let [res      (hc/send :get "http://localhost:8080/employees" 
+            (let [res      (hc/send :get 
+                                    "http://localhost:8080/employees" 
                                     :headers {"Accept" "application/json, text/plain"})
                   status   (:http-status res)
                   type     (:content-type res)
@@ -155,7 +156,7 @@
 
       (. con :connect)  ;; establish the connection
 
-      ;; send body
+      ;; send body, if we got one
       (when (some? body)
         (let [os (. con :getOutputStream)]
           (cond 
@@ -190,7 +191,8 @@
           (do
             (load-module :http-client-legacy ['http-client-legacy :as 'hc])
           
-            (let [res      (hc/send :get "http://localhost:8080/employees" 
+            (let [res      (hc/send :get 
+                                    "http://localhost:8080/employees" 
                                     :headers {"Accept" "application/json, text/plain"})
                   status   (:http-status res)
                   type     (:content-type res)
@@ -224,7 +226,8 @@
           (do
             (load-module :http-client-legacy ['http-client-legacy :as 'hc])
           
-            (let [res      (hc/send :get "http://localhost:8080/employees" 
+            (let [res      (hc/send :get 
+                                    "http://localhost:8080/employees" 
                                     :headers {"Accept" "application/json, text/plain"})
                   status   (:http-status res)
                   type     (:content-type res)
@@ -258,7 +261,8 @@
           (do
             (load-module :http-client-legacy ['http-client-legacy :as 'hc])
           
-            (let [res    (hc/send :get "http://localhost:8080/employees" 
+            (let [res    (hc/send :get 
+                                  "http://localhost:8080/employees" 
                                   :headers {"Accept" "application/json, text/plain"})
                   status (:http-status res)]
               (println "Status:" status)
