@@ -88,7 +88,11 @@
           ssl-socket-factory (:ssl-socket-factory opts)
           user-agent         (:user-agent opts hc-user-agent)
           debug?             (true? (:debug opts false))
-          headers            (assoc headers "User-Agent" user-agent)]
+                             ;; default headers
+          headers            (assoc headers "User-Agent" user-agent)
+          headers            (if (not-contains? headers "Accept")
+                               (assoc headers "Accept" "*/*")
+                               headers)]
 
       (assert (string? method))
       (assert (string? uri))
