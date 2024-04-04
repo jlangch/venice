@@ -139,6 +139,7 @@
 (defn- create-http-connector [options]
   (let [connector (. :Connector :new tomcat/http-connector)]
     (. connector :setPort (:port options tomcat/default-http-port))
+    (. connector :setMaxPostSize (:max-post-size options 2097152))
     (when (:https? options false)
       (. connector :setRedirectPort (:https-port options tomcat/default-https-port)))
     connector))
@@ -209,8 +210,11 @@
 
 
 (defn- create-multipart-config [file-upload-opts]
-  (let [location (:location file-upload-opts "")]
-    (when-not (and (= location "") (not (io/dir-exists? location)))
+  (let [location (:location file-upload-opts)]
+    (when (nil? location)
+      (throw (ex :VncException
+                 "The file upload directory has not been configured for the multi-part servlet!")))
+    (when-not (io/exists-dir? location)
       (throw (ex :VncException
                  "The file upload directory ~{location} does not exist!")))
     (. :MultipartConfigElement :new
@@ -404,25 +408,26 @@
       (cond
         (instance-of? :VeniceServlet servlet)
             (add-servlet server context ctx-path servlet "venice-servlet" "/*")
+
         (sequential? servlet)
-            (docoll (fn [s]
-                      (let [servlet          (first s)
-                            opts             (coalesce (second s) {})
-                            name             (:name opts "venice-servlet")
-                            mapping          (:mapping opts "/*")
-                            file-upload      (:file-upload opts false)
-                            file-upload-opts (select-keys opts
-                                                          [:location
-                                                           :max-file-size
-                                                           :max-request-size
-                                                           :file-size-threshold])]
-                        (if-not file-upload
-                          (add-servlet server context ctx-path
-                                       servlet name mapping)
-                          (add-fileupload-servlet server context ctx-path
-                                                  servlet name mapping
-                                                  file-upload-opts))
-                        servlet)))
+            (doseq [s servlet]
+                   (let [servlet          (first s)
+                         opts             (or (second s) {})
+                         name             (:name opts "venice-servlet")
+                         mapping          (:mapping opts "/*")
+                         file-upload      (:file-upload opts false)
+                         file-upload-opts (select-keys opts
+                                                       [:location
+                                                        :max-file-size
+                                                        :max-request-size
+                                                        :file-size-threshold])]
+                     (if-not file-upload
+                       (add-servlet server context ctx-path
+                                    servlet name mapping)
+                       (add-fileupload-servlet server context ctx-path
+                                               servlet name mapping
+                                               file-upload-opts))))
+
         :else
             (throw (ex :VncException
                        """

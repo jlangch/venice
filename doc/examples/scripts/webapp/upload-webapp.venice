@@ -1,0 +1,63 @@
+;; -----------------------------------------------------------------------------
+;; Demo REST Service
+;; -----------------------------------------------------------------------------
+;;
+
+(load-module :tomcat ['tomcat :as 'tc])
+(load-module :ring)
+
+
+; ensure the Tomcat libs are on the classpath
+(tc/check-required-libs)
+
+(def tomcat-opts {:await? false, :base-dir ".", :port 8080 :max-post-size -1})
+
+
+
+
+;; -----------------------------------------------------------------------------
+;; Ring handler
+;; -----------------------------------------------------------------------------
+
+(defn upload-file [request]
+  (let [parts (ring/parts request)]
+    { :status 200
+      :headers { "Content-Type" "text/plain; charset=utf-8" }
+      :body "File uploaded!" }))
+
+
+
+;; -----------------------------------------------------------------------------
+;; Middleware configuration
+;; -----------------------------------------------------------------------------
+
+(def routes [[:post "/upload"  upload-file] ])
+
+(defn upload-servlet []
+  (ring/create-servlet (-> (ring/match-routes routes)  ; >--+
+                                                       ;    |
+                           (ring/mw-dump-response)     ; ^  |
+                           (ring/mw-dump-request)      ; |  |
+                           (ring/mw-request-counter)   ; |  |
+                           (ring/mw-add-session 3600)  ; |  |
+                           (ring/mw-print-uri)         ; |  |
+                           (ring/mw-debug :on))))      ; +--+
+
+;; start Tomcat
+(let [server (tc/start [ [ (upload-servlet) 
+                           { :name                 "upload-servlet"  
+                             :mapping              "/upload"
+                             :file-upload          true
+                             :location             "/Users/juerg/Desktop/venice/tmp"
+                             :max-file-size        10485760
+                             :max-request-size     10485760
+                             :file-size-threshold  -1 } ] ]
+                         ""
+                         "."
+                         tomcat-opts) ]
+  (defn stop [] (tc/shutdown server)))
+
+
+(println "Tomcat started on port ~(:port tomcat-opts).")
+(println "Open a browser:      (sh/open \"http://localhost:8080\")")
+(println "Stop it by calling:  (stop)")

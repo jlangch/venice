@@ -121,7 +121,7 @@
              [:put    "/employees/:id"  update-employee]
              [:delete "/employees/:id"  delete-employee]])
 
-(defn my-servlet []
+(defn rest-servlet []
   (ring/create-servlet (-> (ring/match-routes routes)  ; >--+
                                                        ;    |
                            (ring/mw-dump-response)     ; ^  |
@@ -132,7 +132,7 @@
                            (ring/mw-debug :on))))      ; +--+
 
 ;; start Tomcat
-(let [server (tc/start (my-servlet) tomcat-opts)]
+(let [server (tc/start (rest-servlet) tomcat-opts)]
   (defn stop [] (tc/shutdown server)))
 
 

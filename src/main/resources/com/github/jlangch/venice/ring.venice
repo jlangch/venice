@@ -739,7 +739,7 @@
   (println       "   query-string:   " (:query-string req))
   (println       "   method:         " (:request-method req))
   (println       "   content-type:   " (:content-type req))
-  (println       "   content-length: " (:content-type req))
+  (println       "   content-length: " (:content-length req))
   (println       "   encoding:       " (:character-encoding req))
   (println       "   context-path:   " (:servlet-context-path req))
   (println       "   servlet-path:   " (:servlet-path req))

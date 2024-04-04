@@ -159,7 +159,7 @@
 
       (map? value)        (render-file-data-part name 
                                                  (:name value) 
-                                                 (:mimetype value) 
+                                                 (core/name (:mimetype value))
                                                  (:data value) 
                                                  (:charset value) 
                                                  os)
@@ -168,7 +168,7 @@
 
       :else               (render-string-part name (str value) os))
   (catch :Exception e  
-    (throw (ex :VncException (str "Failed to process multipart item " name) 
+    (throw (ex :VncException (str "Failed to process multipart item '" name "'") 
                              e)))))
 
 
@@ -178,14 +178,14 @@
 
   (try
     (let [filename (io/file-path file)
-          mimetype (mimetypes/probe-content-type file)
+          mimetype (core/name (mimetypes/probe-content-type file))
           data     (io/slurp file)]
       (when (nil? mimetype)
         (throw (ex :VncException (str "Failed to get mimetype for file " filename))))
 
-      (render-file-data-part name filename mimetype data os))
+      (render-file-data-part name filename mimetype data nil os))
     (catch :Exception e  
-      (throw (ex :VncException (str "Failed do process file " filename) e)))))
+      (throw (ex :VncException (str "Failed to process file " (io/file-path file)) e)))))
 
 
 (defn- render-file-data-part [name filename mimetype data charset os]
