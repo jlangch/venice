@@ -18,7 +18,8 @@ All notable changes to this project will be documented in this file.
 - support for multi-part requests to `:ring` module and improved the request/response
   dump functions
 - function `bytebuf-merge` to merge byte buffers
-- function `bytebuf-index-of` using Knuth-Morris-Pratt (KMP) pattern matching algorithm
+- function `bytebuf-index-of` for searching patterns in byte buffers using 
+  the Knuth-Morris-Pratt (KMP) pattern matching algorithm
 
 ### Fixed 
 - the return status handling in the :ring module
