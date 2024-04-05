@@ -365,6 +365,20 @@
                                  of header values |
           | :data-stream       | The response data input stream |
           """
+     :examples '(
+          """
+          (do
+            (load-module :http-client-legacy ['http-client-legacy :as 'hc])
+            
+            (let [response (hc/upload-multipart
+                                { "image1" (io/file "/Users/foo/image1.png") 
+                                  "image2" (io/file "/Users/foo/image2.png") }                                
+                                "http://localhost:8080/upload" 
+                                :headers { "Accept" "text/plain" }
+                                :debug true)
+                  status   (:http-status response)]
+              (println "Status:" status)))
+          """ )
      :see-also '(
           "http-client-legacy/upload-file"
           "http-client-legacy/upload-multipart" ) }
