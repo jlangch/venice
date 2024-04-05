@@ -434,9 +434,16 @@ public class BytebufFunctions {
                 VncFunction
                     .meta()
                     .arglists(
-                        "(bytebuf-index-of buf value)",
-                        "(bytebuf-index-of buf value from-index)")
-                    .doc("Merges bytebufs.")
+                        "(bytebuf-index-of buf pattern)",
+                        "(bytebuf-index-of buf pattern from-index)")
+                    .doc(
+                        "Returns the index within a byte buf of the first occurrence " +
+                        "of the specified byte pattern.\n\n" +
+                        "The search is based on the Knuth-Morris-Pratt (KMP) pattern " +
+                        "matching algorithm.\n\n" +
+                        "The KMP algorithm is an efficient method for finding the " +
+                        "occurrence of a substring (a pattern) within a larger string " +
+                        "(or in this case, a sequence of bytes)")
                     .examples(
                         "(bytebuf-index-of (bytebuf [1 2 3 4 5]) (bytebuf [3 4]))",
                         "(bytebuf-index-of (bytebuf [1 2 3 4 5 3 4]) (bytebuf [3 4]) 4)")
@@ -449,13 +456,13 @@ public class BytebufFunctions {
                 ArityExceptions.assertArity(this, args, 2, 3);
 
                 final byte[] buf = Coerce.toVncByteBuffer(args.first()).getValue().array();
-                final byte[] val = Coerce.toVncByteBuffer(args.second()).getValue().array();
+                final byte[] pat = Coerce.toVncByteBuffer(args.second()).getValue().array();
 
                 final long indexFrom = args.size() == 2
                                             ? 0L
                                             : Coerce.toVncLong(args.third()).toJavaLong();
 
-                return new VncLong(KnuthMorrisPratt.indexOf(buf, val, (int)indexFrom));
+                return new VncLong(KnuthMorrisPratt.indexOf(buf, pat, (int)indexFrom));
             }
 
             private static final long serialVersionUID = -1848883965231344442L;

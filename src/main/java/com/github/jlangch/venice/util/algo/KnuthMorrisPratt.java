@@ -36,43 +36,43 @@ package com.github.jlangch.venice.util.algo;
  */
 public abstract class KnuthMorrisPratt {
 
-	/**
-	 * Searches for a byte pattern in a larger data buffer.
-	 *
-	 * @param data		The data buffer
-	 * @param pattern   The pattern to search for
-	 * @param indexFrom The start index to begin search with
-	 *
-	 * @return The index of the first occurrence of the pattern
-	 *         in the buffer or -1 of the pattern is not found.
-	 */
+    /**
+     * Searches for a byte pattern in a larger data buffer.
+     *
+     * @param data      The data buffer
+     * @param pattern   The pattern to search for
+     * @param indexFrom The start index to begin search with
+     *
+     * @return The index of the first occurrence of the pattern
+     *         in the buffer or -1 of the pattern is not found.
+     */
     public static int indexOf(
-    		final byte[] data,
-    		final byte[] pattern,
-    		final int indexFrom
+            final byte[] data,
+            final byte[] pattern,
+            final int indexFrom
     ) {
-    	if (data == null) {
-    		throw new IllegalArgumentException("A data byte array must not be null!");
-    	}
-    	if (pattern == null) {
-    		throw new IllegalArgumentException("A pattern byte array must not be null!");
-    	}
-    	if (indexFrom < 0) {
-    		throw new IllegalArgumentException("An indexFrom must not be negative!");
-    	}
+        if (data == null) {
+            throw new IllegalArgumentException("A data byte array must not be null!");
+        }
+        if (pattern == null) {
+            throw new IllegalArgumentException("A pattern byte array must not be null!");
+        }
+        if (indexFrom < 0) {
+            throw new IllegalArgumentException("An indexFrom must not be negative!");
+        }
 
-    	if (indexFrom > data.length - pattern.length) {
-        	return -1;
+        if (indexFrom > data.length - pattern.length) {
+            return -1;
         }
         if (data.length == 0 || pattern.length == 0) {
-        	return -1;
+            return -1;
         }
         if (data.length < pattern.length) {
-        	return -1;
+            return -1;
         }
 
 
-    	final int[] failure = computeFailure(pattern);
+        final int[] failure = computeFailure(pattern);
 
         int j = 0;
 
