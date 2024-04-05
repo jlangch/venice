@@ -10,11 +10,12 @@ All notable changes to this project will be documented in this file.
 
 ### Added
 
-- module :http-client-legacy. A handy HTTP client based on the JDK HttpUrlConnection.
+- module `:http-client-legacy`. A handy HTTP client based on the JDK HttpUrlConnection.
   The HttpClient can be used to send requests and retrieve their responses. It supports
   sending multi-part requests. The HTTP client does not depend on 3rd part libraries!
   There are REST and file upload examples in the Venice script examples directory.
-- support for multi-part requests to :ring module and improved the request/response
+- module `:multipart`. Renders and parses multi-part binary buffers
+- support for multi-part requests to `:ring` module and improved the request/response
   dump functions
 - function `bytebuf-merge` to merge byte buffers
 - function `bytebuf-index-of` using Knuth-Morris-Pratt (KMP) pattern matching algorithm
@@ -50,12 +51,12 @@ All notable changes to this project will be documented in this file.
 - improvements to markdown to ascii text renderer to allow the Venice
   Github flavoured markdown documentation to be converted to pure ascii
   to feed it as embeddings to LLMs
-- :cargo-qdrant module to install/start/stop Qdrant Vector DB docker 
+- `:cargo-qdrant` module to install/start/stop Qdrant Vector DB docker 
   containers 
   
 ### Changed
 
-- the :docker module to support now multiple port publish definitions
+- the `:docker` module to support now multiple port publish definitions
 
 ### Fixed 
 - a markdown parser edge case when a table block is immediately followed 
