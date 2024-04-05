@@ -46,6 +46,7 @@ public class ByteBufSection implements ISectionBuilder {
         bb_create.addItem(diBuilder.getDocItem("bytebuf-allocate-random"));
         bb_create.addItem(diBuilder.getDocItem("bytebuf-byte-order!"));
         bb_create.addItem(diBuilder.getDocItem("bytebuf-byte-order"));
+        bb_create.addItem(diBuilder.getDocItem("bytebuf-merge"));
 
         final DocSection bb_capacity = new DocSection("Capacity", "bytebuf.capacity");
         all.addSection(bb_capacity);

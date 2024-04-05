@@ -63,6 +63,23 @@ public class BytebufFunctionsTest {
     }
 
     @Test
+    public void test_bytebuf_merge() {
+        final Venice venice = new Venice();
+
+        assertEquals("[]", venice.eval("(str (into [] (bytebuf-merge (bytebuf))))"));
+        assertEquals("[]", venice.eval("(str (into [] (bytebuf-merge (bytebuf) (bytebuf))))"));
+        assertEquals("[]", venice.eval("(str (into [] (bytebuf-merge (bytebuf) (bytebuf) (bytebuf))))"));
+
+        assertEquals("[]", venice.eval("(str (into [] (bytebuf-merge (bytebuf))))"));
+        assertEquals("[1]", venice.eval("(str (into [] (bytebuf-merge (bytebuf) (bytebuf [1]))))"));
+        assertEquals("[1 2]", venice.eval("(str (into [] (bytebuf-merge (bytebuf) (bytebuf [1]) (bytebuf [2]))))"));
+
+        assertEquals("[1]", venice.eval("(str (into [] (bytebuf-merge (bytebuf [1]))))"));
+        assertEquals("[1 2 3]", venice.eval("(str (into [] (bytebuf-merge (bytebuf [1]) (bytebuf [2 3]))))"));
+        assertEquals("[1 2 3 4 5 6]", venice.eval("(str (into [] (bytebuf-merge (bytebuf [1]) (bytebuf [2 3]) (bytebuf [4 5 6]))))"));
+    }
+
+    @Test
     public void test_bytebuf_order() {
         final Venice venice = new Venice();
 

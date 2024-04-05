@@ -28,8 +28,10 @@ import java.nio.ByteOrder;
 import java.nio.charset.Charset;
 import java.security.SecureRandom;
 import java.util.Arrays;
+import java.util.List;
 import java.util.Map;
 import java.util.concurrent.atomic.AtomicLong;
+import java.util.stream.Collectors;
 
 import com.github.jlangch.venice.VncException;
 import com.github.jlangch.venice.impl.types.Constants;
@@ -382,6 +384,44 @@ public class BytebufFunctions {
 	            buf.limit(newLimit);
 
                 return new VncLong(buf.limit());
+            }
+
+            private static final long serialVersionUID = -1848883965231344442L;
+        };
+
+    public static VncFunction bytebuf_merge =
+        new VncFunction(
+                "bytebuf-merge",
+                VncFunction
+                    .meta()
+                    .arglists("(bytebuf-merge buffers)")
+                    .doc("Merges bytebufs.")
+                    .examples(
+                    	"(bytebuf-merge (bytebuf [1 2]) (bytebuf [3 4]))")
+                    .seeAlso(
+                        "bytebuf")
+                    .build()
+        ) {
+            @Override
+            public VncVal apply(final VncList args) {
+                ArityExceptions.assertMinArity(this, args, 1);
+
+                if (args.size() == 1) {
+                	return args.first();
+                }
+
+                final List<ByteBuffer> buffers = args.getJavaList()
+                									 .stream()
+                									 .map(b -> Coerce.toVncByteBuffer(b).getValue())
+                									 .collect(Collectors.toList());
+
+                final int totalSize = buffers.stream().mapToInt(ByteBuffer::capacity).sum();
+
+                final ByteBuffer merged = ByteBuffer.allocate(totalSize);
+
+                for(ByteBuffer b : buffers) merged.put(b);
+
+                return new VncByteBuffer(merged);
             }
 
             private static final long serialVersionUID = -1848883965231344442L;
@@ -1106,6 +1146,7 @@ public class BytebufFunctions {
                 .add(bytebuf_remaining)
                 .add(bytebuf_limit)
                 .add(bytebuf_limit_BANG)
+                .add(bytebuf_merge)
                 .add(bytebuf_byte_order_BANG)
                 .add(bytebuf_byte_order)
                 .add(bytebuf_to_string)
