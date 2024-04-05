@@ -17,6 +17,7 @@ ToDo:
 
 - [x] Cargo module for Qdrant vector DB docker container
 - [x] All Venice documentation resources converted to text data
-- [ ] Install all required LangChain4J dependencies
+- [x] Add a HTTP client to Venice
+- [x] Helper to install all required LangChain4J dependencies
 - [ ] Chat example with HTMX GUI
 - [ ] Chat example with Venice doc embeddings

@@ -30,7 +30,7 @@
 (import :java.net.HttpURLConnection)
 (import :java.net.HttpsURLConnection)
 
-(defonce ^:private hc-user-agent "Venice HTTP client (legacy)")
+(defonce ^:private hc-user-agent (str/format "Venice HTTP client %s (legacy)" (version)))
 
 
 (defn
@@ -324,7 +324,7 @@
             "Part-2" (io/file "/user/foo/image.png")
 
             ;; a generic part
-            ;; The *:charset* of a generic part is only required for text based 
+            ;; The charset of a generic part is only required for text based 
             ;; data. When passing binary data the charset can be left out.
             "Part-3" {:name      "data.xml"
                       :mimetype  "application/xml"
