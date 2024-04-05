@@ -12,7 +12,7 @@ All notable changes to this project will be documented in this file.
 
 - module `:http-client-legacy`. A handy HTTP client based on the JDK HttpUrlConnection.
   The HttpClient can be used to send requests and retrieve their responses. It supports
-  sending multi-part requests. The HTTP client does not depend on 3rd part libraries!
+  sending multi-part requests. The HTTP client does not depend on 3rd party libraries!
   There are REST and file upload examples in the Venice script examples directory.
 - module `:multipart`. Renders and parses multi-part binary buffers
 - support for multi-part requests to `:ring` module and improved the request/response
