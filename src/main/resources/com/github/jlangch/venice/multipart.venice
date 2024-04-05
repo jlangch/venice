@@ -114,6 +114,16 @@
     @os))
 
 
+(defn parse [buffer boundary]
+  (assert (bytebuf? buffer))
+  (assert (string? boundary))
+  (assert (pos? (count boundary)))
+  
+  (let [parts  (parse-parts-buffers buffer boundary)]
+     ;; todo
+    ))
+
+
 (defn 
   ^{ :arglists '(
         "(http-content-type-header)" )
@@ -254,3 +264,27 @@
 
 (defn- file-url? [v]
   (and (string? v) (str/starts-with? v "file:")))
+
+
+(defn parse-parts-buffers [buffer boundary]
+  ;;  --boundary
+  ;;  ...
+  ;;  --boundary
+  ;;  ...
+  ;;  --boundary--
+  (let [part-boundary      (bytebuf-from-string (str "--" boundary))
+        part-boundary-len  (count part-boundary)
+        close-boundary     (bytebuf-from-string (str "--" boundary "--"))]
+    (loop [parts [], index 0]
+      (let [idx-start (bytebuf-index-of buffer part-boundary index)
+            idx-next  (bytebuf-index-of buffer part-boundary (+ index part-boundary))]
+        (if (neg? idx-next)
+          (let [idx-closing (bytebuf-index-of buffer close-boundary (+ index part-boundary))]
+            (if (neg? idx-closing)
+              (throw (ex :VncException 
+                         "Closing boundary not found while parsing multi-parts buffer"))
+              (let [p (bytebuf-sub buffer idx-start idx-closing)]
+                (conj parts p))))  ;; end - all parts processed
+          (let [p (bytebuf-sub buffer idx-start idx-next)])
+            (recur (conj parts p) idx-next))))))
+
