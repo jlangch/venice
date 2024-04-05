@@ -20,6 +20,8 @@
 ;;;; limitations under the License.
 
 ;;;; Multipart 
+;;;;
+;;;; RFC:  https://www.rfc-editor.org/rfc/rfc1867
 
 
 (ns multipart)
@@ -30,6 +32,7 @@
 (defonce ^:private boundary-value (str (rand-bigint 128)))
 
 (defonce ^:private nl "\r\n")
+(defonce ^:private nl-buf (bytebuf-from-string nl))
 
 
 
@@ -149,6 +152,11 @@
   (str "multipart/form-data; boundary=" boundary-value))
 
 
+
+;; -----------------------------------------------------------------------------
+;; Rendering parts
+;; -----------------------------------------------------------------------------
+
 (defn- render-part [name value os]
   (try 
     (assert (string? name))
@@ -264,6 +272,11 @@
   (and (string? v) (str/starts-with? v "file:")))
 
 
+
+;; -----------------------------------------------------------------------------
+;; Parsing parts
+;; -----------------------------------------------------------------------------
+
 (defn- parse-parts-buffers [buffer boundary]
   ;;  --boundary
   ;;  ...
@@ -281,13 +294,21 @@
             (if (neg? idx-closing)
               (throw (ex :VncException 
                          "Closing boundary not found while parsing multi-parts buffer"))
-              (let [p (bytebuf-sub buffer idx-start idx-closing)]
+              (let [p (extract-part-buffer buffer idx-start idx-closing)]
                 (conj parts p))))  ;; end - all parts processed
-          (let [p (bytebuf-sub buffer idx-start idx-next)])
+          (let [p (extract-part-buffer buffer idx-start idx-next)])
             (recur (conj parts p) idx-next))))))
 
 
-(defn- parse-part [part-buf]
+(defn- extract-part-buffer [buffer idx-start idx-end]
+  ;; if the part buffer ends with "\r\n" remove it
+  (let [buf (bytebuf-sub buffer idx-start idx-end)]
+    (if (buffer-ends-with? buf nl-buf)
+      (bytebuf-sub buffer (- (count buf) (count nl-buf)))
+      buf)))
+
+
+(defn- parse-part [buffer]
   ;; ---------------------------------------------------------------------------
   ;; Content-Disposition: form-data; name="foo"; filename="foo.json"
   ;; Content-Type: application/json; charset=utf-8
@@ -295,14 +316,67 @@
   ;; content of part
   ;; ---------------------------------------------------------------------------
 
-  (let [content-disposition  (bytebuf-from-string "Content-Disposition")
-        content-type         (bytebuf-from-string "Content-Type")
-        crlf                 (bytebuf-from-string "\r\n")]
+  (let [idx                 0
+        disp-buf            (parse-part-string-line buffer idx)
+        disp                (str/trim (bytebuf-to-string-line disp-buf))
+        [name filename]     (parse-content-disposition-properties disp)
+        idx                 (+ idx (count disp-buf))
+        type-buf            (parse-part-string-line buffer idx)
+        type                (str/trim (bytebuf-to-string-line type-buf))
+        [mimetype charset]  (parse-content-type-properties type)
+        idx                 (+ idx (count type-buf))
+        empty-line-buf      (parse-part-empty-line buffer idx)
+        idx                 (+ idx (count empty-line-buf))]
+    { :name      name
+      :file-name filename
+      :mimetype  mimetype
+      :charset   charset
+      :data      (bytebuf-sub buffer idx) }))
 
-    
 
-    { :name      ""
-      :file-name ""
-      :mimetype  ""
-      :data      (bytebuf [])
-      :charset   "" }))
+(defn- parse-part-string-line [buffer index]
+  (let [idx-nl (bytebuf-index-of buffer nl-buf index)])
+    (if (neg? idx-nl) 
+      (bytebuf) ;; empty (not found)
+      (bytebuf-sub buffer index (+ idx-nl (count nl-buf)) :utf-8)))
+
+
+(defn- parse-part-empty-line [buffer index]
+  (let [idx-nl (bytebuf-index-of buffer nl-buf index)])
+    (if (= index idx-nl) 
+      nl-buf      ;; crlf (empty line)
+      (bytebuf))) ;; something else (nothing parsed)
+
+
+(defn- parse-content-disposition-properties [s]
+  (let [cd (str/lower-case s)]
+    (when-not (match? cd "content-disposition:[ ]*form-data;.*")
+      (throw (ex :VncException 
+                 """
+                 Parts must start "Content-Disposition: form-data" header!
+                 Other subtypes than "form-data" are not supported.
+                 """)))
+    (let [cd       (str/strip-start s "content-disposition:")
+          name     (extract-match-group1 cd #".*;[ ]*name=\"([^\"]+)\"")
+          filename (extract-match-group1 cd #".*;[ ]*filename=\"([^\"]+)\"")]
+      [name filename])))
+      
+
+(defn- parse-content-type-properties [s]
+  (let [ct (str/lower-case s)]
+    (when-not (str/starts-with? ct "content-type:")
+      [nil nil])
+    (let [ct  (str/trim (str/strip-start s (count "content-type:")))]
+      (str/split (str/trim ct) "[ *];[ *]"))))
+
+
+(defn- extract-match-group1 [s re]
+  (let [m (regex/matcher re s)]
+    (if (regex/matches? m) (regex/group m 1) nil)))
+
+
+(defn- buffer-ends-with? [buffer subbuf]
+  (let [idx (- (count buffer) (count subbuf))]
+    (if (neg? idx)
+       false
+       (= idx (bytebuf-index-of buffer idx subbuf)))))
