@@ -22,7 +22,7 @@ All notable changes to this project will be documented in this file.
   the Knuth-Morris-Pratt (KMP) pattern matching algorithm
 
 ### Fixed 
-- the return status handling in the :ring module
+- the return status handling in the `:ring` module
 
 
 
