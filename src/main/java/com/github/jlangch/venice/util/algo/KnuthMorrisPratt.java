@@ -90,6 +90,72 @@ public abstract class KnuthMorrisPratt {
         return -1;
     }
 
+
+    /**
+     * Searches for a byte pattern in a larger data buffer.
+     *
+     * @param data      The data buffer
+     * @param pattern   The pattern to search for
+     * @param indexFrom The start index to begin search with
+     * @param indexTo   The end index (exclusive) to end search with, may be -1
+     *                  to skip the end index limit
+     *
+     * @return The index of the first occurrence of the pattern
+     *         in the buffer or -1 of the pattern is not found.
+     */
+    public static int indexOf(
+            final byte[] data,
+            final byte[] pattern,
+            final int indexFrom,
+            final int indexTo
+    ) {
+        if (data == null) {
+            throw new IllegalArgumentException("A data byte array must not be null!");
+        }
+        if (pattern == null) {
+            throw new IllegalArgumentException("A pattern byte array must not be null!");
+        }
+        if (indexFrom < 0) {
+            throw new IllegalArgumentException("An indexFrom must not be negative!");
+        }
+
+        if (indexFrom > data.length - pattern.length) {
+            return -1;
+        }
+        if (indexTo == 0) {
+            return -1;
+        }
+        if (data.length == 0 || pattern.length == 0) {
+            return -1;
+        }
+        if (data.length < pattern.length) {
+            return -1;
+        }
+
+        if (indexTo < 0 || indexTo >= data.length) {
+        	return indexOf(data, pattern, indexFrom);
+        }
+
+
+        final int[] failure = computeFailure(pattern);
+
+        int j = 0;
+
+        for (int i = indexFrom; i < data.length || i < indexTo; i++) {
+            while (j > 0 && pattern[j] != data[i]) {
+                j = failure[j - 1];
+            }
+            if (pattern[j] == data[i]) {
+                j++;
+            }
+            if (j == pattern.length) {
+                return i - pattern.length + 1;
+            }
+        }
+        return -1;
+    }
+
+
     private static int[] computeFailure(final byte[] pattern) {
         final int[] failure = new int[pattern.length];
 

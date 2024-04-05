@@ -119,9 +119,7 @@
   (assert (string? boundary))
   (assert (pos? (count boundary)))
   
-  (let [parts  (parse-parts-buffers buffer boundary)]
-     ;; todo
-    ))
+  (map parse-part (parse-parts-buffers buffer boundary)))
 
 
 (defn 
@@ -266,7 +264,7 @@
   (and (string? v) (str/starts-with? v "file:")))
 
 
-(defn parse-parts-buffers [buffer boundary]
+(defn- parse-parts-buffers [buffer boundary]
   ;;  --boundary
   ;;  ...
   ;;  --boundary
@@ -277,9 +275,9 @@
         close-boundary     (bytebuf-from-string (str "--" boundary "--"))]
     (loop [parts [], index 0]
       (let [idx-start (bytebuf-index-of buffer part-boundary index)
-            idx-next  (bytebuf-index-of buffer part-boundary (+ index part-boundary))]
+            idx-next  (bytebuf-index-of buffer part-boundary (+ index-start part-boundary-len))]
         (if (neg? idx-next)
-          (let [idx-closing (bytebuf-index-of buffer close-boundary (+ index part-boundary))]
+          (let [idx-closing (bytebuf-index-of buffer close-boundary (+ index-start part-boundary-len))]
             (if (neg? idx-closing)
               (throw (ex :VncException 
                          "Closing boundary not found while parsing multi-parts buffer"))
@@ -288,3 +286,23 @@
           (let [p (bytebuf-sub buffer idx-start idx-next)])
             (recur (conj parts p) idx-next))))))
 
+
+(defn- parse-part [part-buf]
+  ;; ---------------------------------------------------------------------------
+  ;; Content-Disposition: form-data; name="foo"; filename="foo.json"
+  ;; Content-Type: application/json; charset=utf-8
+  ;;
+  ;; content of part
+  ;; ---------------------------------------------------------------------------
+
+  (let [content-disposition  (bytebuf-from-string "Content-Disposition")
+        content-type         (bytebuf-from-string "Content-Type")
+        crlf                 (bytebuf-from-string "\r\n")]
+
+    
+
+    { :name      ""
+      :file-name ""
+      :mimetype  ""
+      :data      (bytebuf [])
+      :charset   "" }))

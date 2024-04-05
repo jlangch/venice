@@ -435,7 +435,8 @@ public class BytebufFunctions {
                     .meta()
                     .arglists(
                         "(bytebuf-index-of buf pattern)",
-                        "(bytebuf-index-of buf pattern from-index)")
+                        "(bytebuf-index-of buf pattern from-index)",
+                        "(bytebuf-index-of buf pattern from-index to-index)")
                     .doc(
                         "Returns the index within a byte buf of the first occurrence " +
                         "of the specified byte pattern.\n\n" +
@@ -453,16 +454,22 @@ public class BytebufFunctions {
         ) {
             @Override
             public VncVal apply(final VncList args) {
-                ArityExceptions.assertArity(this, args, 2, 3);
+                ArityExceptions.assertArity(this, args, 2, 3, 4);
 
                 final byte[] buf = Coerce.toVncByteBuffer(args.first()).getValue().array();
                 final byte[] pat = Coerce.toVncByteBuffer(args.second()).getValue().array();
 
-                final long indexFrom = args.size() == 2
-                                            ? 0L
-                                            : Coerce.toVncLong(args.third()).toJavaLong();
+                final long indexFrom = args.size() == 3
+                                            ? Coerce.toVncLong(args.third()).toJavaLong()
+                                            : 0;
 
-                return new VncLong(KnuthMorrisPratt.indexOf(buf, pat, (int)indexFrom));
+                final long indexTo = args.size() == 4
+                        					? Coerce.toVncLong(args.third()).toJavaLong()
+                        					: -1;
+
+                return indexTo < 0 || indexTo >= buf.length
+                		? new VncLong(KnuthMorrisPratt.indexOf(buf, pat, (int)indexFrom))
+                		: new VncLong(KnuthMorrisPratt.indexOf(buf, pat, (int)indexFrom, (int)indexTo));
             }
 
             private static final long serialVersionUID = -1848883965231344442L;
