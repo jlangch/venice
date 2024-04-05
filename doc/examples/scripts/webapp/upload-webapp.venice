@@ -10,30 +10,31 @@
 ; ensure the Tomcat libs are on the classpath
 (tc/check-required-libs)
 
-(def tomcat-opts {:await? false, :base-dir ".", :port 8080 :max-post-size -1})
-
-
 
 
 ;; -----------------------------------------------------------------------------
 ;; Ring handler
 ;; -----------------------------------------------------------------------------
 
-(defn upload-file [request]
+(defn upload-file [dir request]
   (let [parts (ring/parts request)]
-    (doseq [p parts] (save-part p))
+    (doseq [p parts] (save-part dir p))
     { :status 200
       :headers { "Content-Type" "text/plain; charset=utf-8" }
       :body "File uploaded!" }))
 
-(defn- save-part [part]
+(defn- save-part [dir part]
   (let [name      (:name part)
         filename  (io/file-name (:file-name part))
         delete-fn (:delete-fn part)
-        dir       (io/file "/Users/juerg/Desktop/venice/tmp")
         file      (io/file dir filename)]
-    (println "Saving part '" name "':" filename "to" dir)
+    (when-not (and (io/file? dir) (io/exists-dir? dir))
+      (let [msg (str/format "The dir '%s' does not exist! Failed to save upload part '%s'."
+                             dir name)]
+        (println msg)
+        (throw (ex :VncException msg))))
     (try-with [is (:in-stream  part)]
+      (println "Saving part '" name "':" filename "to" dir)
       (let [data (io/slurp-stream is :binary true)]
         (io/spit file data :binary true))
       (finally (delete-fn)))))
@@ -43,7 +44,14 @@
 ;; Middleware configuration
 ;; -----------------------------------------------------------------------------
 
-(def routes [[:post "/upload"  upload-file] ])
+;; Note: Tomcat's standard max post size is 2MB. A value of -1 specifies a
+;;       indefinite upload size
+(def tomcat-opts {:await? false, :base-dir ".", :port 8080 :max-post-size -1})
+
+(def landing-dir (io/file "/Users/juerg/Desktop/venice/tmp"))
+
+(def routes [[:post "/upload"  (partial upload-file landing-dir)] ])
+
 
 (defn upload-servlet []
   (ring/create-servlet (-> (ring/match-routes routes)  ; >--+

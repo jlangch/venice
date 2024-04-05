@@ -10,8 +10,6 @@
 ; ensure the Tomcat libs are on the classpath
 (tc/check-required-libs)
 
-(def tomcat-opts {:await? false, :base-dir ".", :port 8080})
-
 
 ;; -----------------------------------------------------------------------------
 ;; ID generator
@@ -114,6 +112,8 @@
 ;; -----------------------------------------------------------------------------
 ;; Middleware configuration
 ;; -----------------------------------------------------------------------------
+
+(def tomcat-opts {:await? false, :base-dir ".", :port 8080})
 
 (def routes [[:get    "/employees"      get-all-employees]
              [:get    "/employees/:id"  get-employee]

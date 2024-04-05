@@ -10,8 +10,10 @@
 ; ensure the Tomcat libs are on the classpath
 (tc/check-required-libs)
 
-(def tomcat-opts {:await? false, :base-dir ".", :port 8080})
 
+;; -----------------------------------------------------------------------------
+;; Ring handler
+;; -----------------------------------------------------------------------------
 
 (defn hello-world-handler [request]
   { :status 200
@@ -22,6 +24,14 @@
   { :status 200
     :headers { "Content-Type" "text/html; charset=utf-8" }
     :body (ring/html-box-page "Demo" "Test") })
+
+
+
+;; -----------------------------------------------------------------------------
+;; Middleware configuration
+;; -----------------------------------------------------------------------------
+
+(def tomcat-opts {:await? false, :base-dir ".", :port 8080})
 
 ;; A route is defined by a HTTP verb, a URI filter and a handle
 ;; function.
