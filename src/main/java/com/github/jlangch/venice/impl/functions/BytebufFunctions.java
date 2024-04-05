@@ -1191,6 +1191,7 @@ public class BytebufFunctions {
                 .add(bytebuf_limit)
                 .add(bytebuf_limit_BANG)
                 .add(bytebuf_merge)
+                .add(bytebuf_index_of)
                 .add(bytebuf_byte_order_BANG)
                 .add(bytebuf_byte_order)
                 .add(bytebuf_to_string)

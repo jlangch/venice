@@ -57,6 +57,10 @@ public class ByteBufSection implements ISectionBuilder {
         bb_capacity.addItem(diBuilder.getDocItem("bytebuf-limit!"));
         bb_capacity.addItem(diBuilder.getDocItem("count"));
 
+        final DocSection bb_search = new DocSection("Create", "bytebuf.search");
+        all.addSection(bb_search);
+        bb_search.addItem(diBuilder.getDocItem("bytebuf-index-of"));
+
         final DocSection string = new DocSection("String", "bytebuf.string");
         all.addSection(string);
         string.addItem(diBuilder.getDocItem("bytebuf-from-string"));

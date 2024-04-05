@@ -66,10 +66,12 @@ public class BytebufFunctionsTest {
     public void test_bytebuf_merge() {
         final Venice venice = new Venice();
 
+        // edge cases
         assertEquals("[]", venice.eval("(str (into [] (bytebuf-merge (bytebuf))))"));
         assertEquals("[]", venice.eval("(str (into [] (bytebuf-merge (bytebuf) (bytebuf))))"));
         assertEquals("[]", venice.eval("(str (into [] (bytebuf-merge (bytebuf) (bytebuf) (bytebuf))))"));
 
+        // edge cases
         assertEquals("[]", venice.eval("(str (into [] (bytebuf-merge (bytebuf))))"));
         assertEquals("[1]", venice.eval("(str (into [] (bytebuf-merge (bytebuf) (bytebuf [1]))))"));
         assertEquals("[1 2]", venice.eval("(str (into [] (bytebuf-merge (bytebuf) (bytebuf [1]) (bytebuf [2]))))"));
@@ -77,6 +79,42 @@ public class BytebufFunctionsTest {
         assertEquals("[1]", venice.eval("(str (into [] (bytebuf-merge (bytebuf [1]))))"));
         assertEquals("[1 2 3]", venice.eval("(str (into [] (bytebuf-merge (bytebuf [1]) (bytebuf [2 3]))))"));
         assertEquals("[1 2 3 4 5 6]", venice.eval("(str (into [] (bytebuf-merge (bytebuf [1]) (bytebuf [2 3]) (bytebuf [4 5 6]))))"));
+    }
+
+    @Test
+    public void test_bytebuf_index_of() {
+        final Venice venice = new Venice();
+
+        // edge cases
+        assertEquals(-1L, venice.eval("(bytebuf-index-of (bytebuf []) (bytebuf []))"));
+        assertEquals(-1L, venice.eval("(bytebuf-index-of (bytebuf []) (bytebuf []) 0)"));
+
+        assertEquals(-1L, venice.eval("(bytebuf-index-of (bytebuf [1]) (bytebuf []))"));
+        assertEquals(-1L, venice.eval("(bytebuf-index-of (bytebuf [1]) (bytebuf []) 0)"));
+
+        assertEquals(-1L, venice.eval("(bytebuf-index-of (bytebuf []) (bytebuf [1]))"));
+        assertEquals(-1L, venice.eval("(bytebuf-index-of (bytebuf []) (bytebuf [1]) 0)"));
+
+        // edge cases (pattern larger than buffer)
+        assertEquals(-1L, venice.eval("(bytebuf-index-of (bytebuf [1 2]) (bytebuf [1 2 3]))"));
+        assertEquals(-1L, venice.eval("(bytebuf-index-of (bytebuf [1 2]) (bytebuf [1 2 3]) 0)"));
+
+        // edge cases (pattern larger equal to buffer)
+        assertEquals(0L, venice.eval("(bytebuf-index-of (bytebuf [1 2]) (bytebuf [1 2]))"));
+        assertEquals(0L, venice.eval("(bytebuf-index-of (bytebuf [1 2]) (bytebuf [1 2]) 0)"));
+
+        // edge cases (indexOf outside)
+        assertEquals(-1L, venice.eval("(bytebuf-index-of (bytebuf [1 2 3]) (bytebuf [1 2]) 4)"));
+        assertEquals(-1L, venice.eval("(bytebuf-index-of (bytebuf [1 2 3]) (bytebuf [1 2]) 3)"));
+        assertEquals(-1L, venice.eval("(bytebuf-index-of (bytebuf [1 2 3]) (bytebuf [1 2]) 2)"));
+        assertEquals(-1L, venice.eval("(bytebuf-index-of (bytebuf [1 2 3]) (bytebuf [1 2]) 1)"));
+        assertEquals(0L,  venice.eval("(bytebuf-index-of (bytebuf [1 2 3]) (bytebuf [1 2]) 0)"));
+
+
+        assertEquals(2L, venice.eval("(bytebuf-index-of (bytebuf [1 2 3 4 5]) (bytebuf [3 4]))"));
+        assertEquals(2L, venice.eval("(bytebuf-index-of (bytebuf [1 2 3 4 5]) (bytebuf [3 4]) 0)"));
+        assertEquals(2L, venice.eval("(bytebuf-index-of (bytebuf [1 2 3 4 5 3 4]) (bytebuf [3 4]) 0)"));
+        assertEquals(5L, venice.eval("(bytebuf-index-of (bytebuf [1 2 3 4 5 3 4]) (bytebuf [3 4]) 4)"));
     }
 
     @Test
