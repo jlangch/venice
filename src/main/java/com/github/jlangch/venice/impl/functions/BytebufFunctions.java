@@ -53,6 +53,7 @@ import com.github.jlangch.venice.impl.types.util.Types;
 import com.github.jlangch.venice.impl.util.ArityExceptions;
 import com.github.jlangch.venice.impl.util.SymbolMapBuilder;
 import com.github.jlangch.venice.impl.util.io.CharsetUtil;
+import com.github.jlangch.venice.util.algo.KnuthMorrisPratt;
 
 
 public class BytebufFunctions {
@@ -166,14 +167,14 @@ public class BytebufFunctions {
                 VncFunction
                     .meta()
                     .arglists(
-                    	"(bytebuf-allocate length)",
-                    	"(bytebuf-allocate length init-val)")
+                        "(bytebuf-allocate length)",
+                        "(bytebuf-allocate length init-val)")
                     .doc(
-                    	"Allocates a new bytebuf. The values will be all zero or preset with " +
-                    	"init-val id init-val is supplied.")
+                        "Allocates a new bytebuf. The values will be all zero or preset with " +
+                        "init-val id init-val is supplied.")
                     .examples(
-                    	"(bytebuf-allocate 20)",
-                    	"(bytebuf-allocate 20 0x55)")
+                        "(bytebuf-allocate 20)",
+                        "(bytebuf-allocate 20 0x55)")
                     .build()
         ) {
             @Override
@@ -183,13 +184,13 @@ public class BytebufFunctions {
                 final int length = Coerce.toVncLong(args.first()).getValue().intValue();
 
                 if (args.size() == 1) {
-                	return new VncByteBuffer(ByteBuffer.allocate(length));
+                    return new VncByteBuffer(ByteBuffer.allocate(length));
                 }
                 else {
-                	final byte val = (byte)(Coerce.toVncLong(args.first()).getValue().longValue() & 0x0FF);
-                	final byte[] data = new byte[length];
-                	Arrays.fill(data, val);
-                	return new VncByteBuffer(ByteBuffer.wrap(data));
+                    final byte val = (byte)(Coerce.toVncLong(args.first()).getValue().longValue() & 0x0FF);
+                    final byte[] data = new byte[length];
+                    Arrays.fill(data, val);
+                    return new VncByteBuffer(ByteBuffer.wrap(data));
                 }
             }
 
@@ -202,12 +203,12 @@ public class BytebufFunctions {
                 VncFunction
                     .meta()
                     .arglists(
-                    	"(bytebuf-allocate-random length)")
+                        "(bytebuf-allocate-random length)")
                     .doc(
-                    	"Allocates a new bytebuf. The values will be all preset with random" +
-                    	"bytes")
+                        "Allocates a new bytebuf. The values will be all preset with random" +
+                        "bytes")
                     .examples(
-                    	"(bytebuf-allocate-random 20)")
+                        "(bytebuf-allocate-random 20)")
                     .build()
         ) {
             @Override
@@ -215,9 +216,9 @@ public class BytebufFunctions {
                 ArityExceptions.assertArity(this, args, 1);
 
                 final int length = Coerce.toVncLong(args.first()).getValue().intValue();
-            	final byte[] data = new byte[length];
-            	new SecureRandom().nextBytes(data);
-            	return new VncByteBuffer(ByteBuffer.wrap(data));
+                final byte[] data = new byte[length];
+                new SecureRandom().nextBytes(data);
+                return new VncByteBuffer(ByteBuffer.wrap(data));
             }
 
             private static final long serialVersionUID = -1848883965231344442L;
@@ -233,10 +234,10 @@ public class BytebufFunctions {
                     .examples("(bytebuf-capacity (bytebuf-allocate 100))")
                     .seeAlso(
                         "bytebuf-remaining",
-                    	"bytebuf-limit",
-                    	"bytebuf-pos",
-                    	"bytebuf-ensure-free-capacity!",
-                    	"bytebuf-limit!")
+                        "bytebuf-limit",
+                        "bytebuf-pos",
+                        "bytebuf-ensure-free-capacity!",
+                        "bytebuf-limit!")
                     .build()
         ) {
             @Override
@@ -260,11 +261,11 @@ public class BytebufFunctions {
                     .doc( "Returns the number of bytes between the current position and the limit.")
                     .examples("(bytebuf-capacity (bytebuf-allocate 100))")
                     .seeAlso(
-                    	"bytebuf-capacity",
-                    	"bytebuf-limit",
-                    	"bytebuf-pos",
-                    	"bytebuf-ensure-free-capacity!",
-                    	"bytebuf-limit!")
+                        "bytebuf-capacity",
+                        "bytebuf-limit",
+                        "bytebuf-pos",
+                        "bytebuf-ensure-free-capacity!",
+                        "bytebuf-limit!")
                     .build()
         ) {
             @Override
@@ -279,52 +280,52 @@ public class BytebufFunctions {
             private static final long serialVersionUID = -1848883965231344442L;
         };
 
-	public static VncFunction bytebuf_ensure_free_capacity_BANG =
-	    new VncFunction(
-	            "bytebuf-ensure-free-capacity!",
-	            VncFunction
-	                .meta()
-	                .arglists(
-	                	"(bytebuf-ensure-capacity! buf capacity)")
-	                .doc(
-	                	"Ensure that the bytebuf has a free capacity.\n" +
-	                	"Returns the widened bytebuf.")
-	                .examples(
-	                	"(bytebuf-ensure-free-capacity! (bytebuf-allocate 100) 200)")
+    public static VncFunction bytebuf_ensure_free_capacity_BANG =
+        new VncFunction(
+                "bytebuf-ensure-free-capacity!",
+                VncFunction
+                    .meta()
+                    .arglists(
+                        "(bytebuf-ensure-capacity! buf capacity)")
+                    .doc(
+                        "Ensure that the bytebuf has a free capacity.\n" +
+                        "Returns the widened bytebuf.")
+                    .examples(
+                        "(bytebuf-ensure-free-capacity! (bytebuf-allocate 100) 200)")
                     .seeAlso(
                         "bytebuf-remaining",
-                    	"bytebuf-capacity",
-                    	"bytebuf-limit",
-                    	"bytebuf-pos",
-                    	"bytebuf-limit!")
-	                .build()
-	    ) {
-	        @Override
-	        public VncVal apply(final VncList args) {
-	            ArityExceptions.assertArity(this, args, 2);
+                        "bytebuf-capacity",
+                        "bytebuf-limit",
+                        "bytebuf-pos",
+                        "bytebuf-limit!")
+                    .build()
+        ) {
+            @Override
+            public VncVal apply(final VncList args) {
+                ArityExceptions.assertArity(this, args, 2);
 
-	            final int capacity = Coerce.toVncLong(args.second()).toJavaInteger();
+                final int capacity = Coerce.toVncLong(args.second()).toJavaInteger();
 
-	            if (args.first() == Constants.Nil) {
-                	return new VncByteBuffer(ByteBuffer.allocate(capacity));
-	            }
-	            else {
-	            	final ByteBuffer buffer = Coerce.toVncByteBuffer(args.first()).getValue();
+                if (args.first() == Constants.Nil) {
+                    return new VncByteBuffer(ByteBuffer.allocate(capacity));
+                }
+                else {
+                    final ByteBuffer buffer = Coerce.toVncByteBuffer(args.first()).getValue();
 
-		            if (buffer.remaining() < capacity) {
-		                final ByteBuffer newBuffer = ByteBuffer.allocate(buffer.position() + capacity);
-		                buffer.flip();
-		                newBuffer.put(buffer);
-		                return new VncByteBuffer(newBuffer);
-		            }
-		            else {
-		            	return args.first();
-		            }
-	            }
-	        }
+                    if (buffer.remaining() < capacity) {
+                        final ByteBuffer newBuffer = ByteBuffer.allocate(buffer.position() + capacity);
+                        buffer.flip();
+                        newBuffer.put(buffer);
+                        return new VncByteBuffer(newBuffer);
+                    }
+                    else {
+                        return args.first();
+                    }
+                }
+            }
 
-	        private static final long serialVersionUID = -1848883965231344442L;
-	    };
+            private static final long serialVersionUID = -1848883965231344442L;
+        };
 
     public static VncFunction bytebuf_limit =
         new VncFunction(
@@ -334,13 +335,13 @@ public class BytebufFunctions {
                     .arglists("(bytebuf-limit buf)")
                     .doc("Returns the limit of a bytebuf.")
                     .examples(
-                    	"(bytebuf-limit (bytebuf-allocate 100))")
+                        "(bytebuf-limit (bytebuf-allocate 100))")
                     .seeAlso(
                         "bytebuf-remaining",
-                    	"bytebuf-capacity",
-                    	"bytebuf-pos",
-                    	"bytebuf-ensure-free-capacity!",
-                    	"bytebuf-limit!")
+                        "bytebuf-capacity",
+                        "bytebuf-pos",
+                        "bytebuf-ensure-free-capacity!",
+                        "bytebuf-limit!")
                     .build()
         ) {
             @Override
@@ -365,13 +366,13 @@ public class BytebufFunctions {
                          "The new limit must not be larger than the capacity.\n\n" +
                          "Returns the new limit of a bytebuf.")
                     .examples(
-                    	"(bytebuf-limit! (bytebuf-allocate 100) 50)")
+                        "(bytebuf-limit! (bytebuf-allocate 100) 50)")
                     .seeAlso(
                         "bytebuf-remaining",
-                    	"bytebuf-capacity",
-                    	"bytebuf-limit",
-                    	"bytebuf-pos",
-                    	"bytebuf-ensure-free-capacity!")
+                        "bytebuf-capacity",
+                        "bytebuf-limit",
+                        "bytebuf-pos",
+                        "bytebuf-ensure-free-capacity!")
                     .build()
         ) {
             @Override
@@ -380,8 +381,8 @@ public class BytebufFunctions {
 
                 final ByteBuffer buf = Coerce.toVncByteBuffer(args.first()).getValue();
 
-	            final int newLimit = Coerce.toVncLong(args.second()).toJavaInteger();
-	            buf.limit(newLimit);
+                final int newLimit = Coerce.toVncLong(args.second()).toJavaInteger();
+                buf.limit(newLimit);
 
                 return new VncLong(buf.limit());
             }
@@ -397,7 +398,7 @@ public class BytebufFunctions {
                     .arglists("(bytebuf-merge buffers)")
                     .doc("Merges bytebufs.")
                     .examples(
-                    	"(bytebuf-merge (bytebuf [1 2]) (bytebuf [3 4]))")
+                        "(bytebuf-merge (bytebuf [1 2]) (bytebuf [3 4]))")
                     .seeAlso(
                         "bytebuf")
                     .build()
@@ -407,13 +408,13 @@ public class BytebufFunctions {
                 ArityExceptions.assertMinArity(this, args, 1);
 
                 if (args.size() == 1) {
-                	return args.first();
+                    return args.first();
                 }
 
                 final List<ByteBuffer> buffers = args.getJavaList()
-                									 .stream()
-                									 .map(b -> Coerce.toVncByteBuffer(b).getValue())
-                									 .collect(Collectors.toList());
+                                                     .stream()
+                                                     .map(b -> Coerce.toVncByteBuffer(b).getValue())
+                                                     .collect(Collectors.toList());
 
                 final int totalSize = buffers.stream().mapToInt(ByteBuffer::capacity).sum();
 
@@ -427,6 +428,39 @@ public class BytebufFunctions {
             private static final long serialVersionUID = -1848883965231344442L;
         };
 
+    public static VncFunction bytebuf_index_of =
+        new VncFunction(
+                "bytebuf-index-of",
+                VncFunction
+                    .meta()
+                    .arglists(
+                        "(bytebuf-index-of buf value)",
+                        "(bytebuf-index-of buf value from-index)")
+                    .doc("Merges bytebufs.")
+                    .examples(
+                        "(bytebuf-index-of (bytebuf [1 2 3 4 5]) (bytebuf [3 4]))",
+                        "(bytebuf-index-of (bytebuf [1 2 3 4 5 3 4]) (bytebuf [3 4]) 4)")
+                    .seeAlso(
+                        "bytebuf")
+                    .build()
+        ) {
+            @Override
+            public VncVal apply(final VncList args) {
+                ArityExceptions.assertArity(this, args, 2, 3);
+
+                final byte[] buf = Coerce.toVncByteBuffer(args.first()).getValue().array();
+                final byte[] val = Coerce.toVncByteBuffer(args.second()).getValue().array();
+
+                final long indexFrom = args.size() == 2
+                                            ? 0L
+                                            : Coerce.toVncLong(args.third()).toJavaLong();
+
+                return new VncLong(KnuthMorrisPratt.indexOf(buf, val, (int)indexFrom));
+            }
+
+            private static final long serialVersionUID = -1848883965231344442L;
+        };
+
     public static VncFunction bytebuf_byte_order_BANG =
         new VncFunction(
                 "bytebuf-byte-order!",
@@ -435,10 +469,10 @@ public class BytebufFunctions {
                     .arglists("(bytebuf-byte-order! buf endian)")
                     .doc( "Sets the bytebuf's byte order.")
                     .examples(
-                    	"(-> (bytebuf-allocate 10)              \n" +
+                        "(-> (bytebuf-allocate 10)              \n" +
                         "    (bytebuf-byte-order! :big-endian)  \n" +
                         "    (bytebuf-byte-order))              ",
-                    	"(-> (bytebuf-allocate 10)                 \n" +
+                        "(-> (bytebuf-allocate 10)                 \n" +
                         "    (bytebuf-byte-order! :little-endian)  \n" +
                         "    (bytebuf-byte-order))                 ")
                     .seeAlso("bytebuf-byte-order")
@@ -452,15 +486,15 @@ public class BytebufFunctions {
                 final String order = Coerce.toVncKeyword(args.second()).getSimpleName();
 
                 switch(order) {
-	                case "big-endian":
-	                	buf.order(ByteOrder.BIG_ENDIAN);
-	                	break;
-	                case "little-endian":
-	                	buf.order(ByteOrder.LITTLE_ENDIAN);
-	                	break;
-	                default:
-	                    throw new VncException(String.format(
-	                            "Invalid bytebuf byte order '" + order + "'"));
+                    case "big-endian":
+                        buf.order(ByteOrder.BIG_ENDIAN);
+                        break;
+                    case "little-endian":
+                        buf.order(ByteOrder.LITTLE_ENDIAN);
+                        break;
+                    default:
+                        throw new VncException(String.format(
+                                "Invalid bytebuf byte order '" + order + "'"));
                 }
 
                 return args.first();
@@ -477,7 +511,7 @@ public class BytebufFunctions {
                     .arglists("(bytebuf-byte-order buf endian)")
                     .doc( "Returns the bytebuf's byte order.")
                     .examples(
-                    	"(bytebuf-byte-order (bytebuf-allocate 10))")
+                        "(bytebuf-byte-order (bytebuf-allocate 10))")
                     .seeAlso("bytebuf-byte-order!")
                     .build()
         ) {
@@ -489,9 +523,9 @@ public class BytebufFunctions {
 
                 final String order = buf.order().toString();
                 switch(order) {
-	                case "BIG_ENDIAN": return new VncKeyword(":big-endian");
-	                case "LITTLE_ENDIAN": return new VncKeyword(":little-endian");
-	                default: return new VncKeyword(":little-endian");
+                    case "BIG_ENDIAN": return new VncKeyword(":big-endian");
+                    case "LITTLE_ENDIAN": return new VncKeyword(":little-endian");
+                    default: return new VncKeyword(":little-endian");
                 }
             }
 
@@ -505,17 +539,17 @@ public class BytebufFunctions {
                     .meta()
                     .arglists(
                         "(bytebuf-from-string s)",
-                    	"(bytebuf-from-string s encoding)",
-                    	"(bytebuf-from-string s encoding buf-length fillbyte)")
+                        "(bytebuf-from-string s encoding)",
+                        "(bytebuf-from-string s encoding buf-length fillbyte)")
                     .doc(
-                    	"Converts a string to a bytebuf using an optional encoding. " +
-                    	"The encoding defaults to :UTF-8")
+                        "Converts a string to a bytebuf using an optional encoding. " +
+                        "The encoding defaults to :UTF-8")
                     .examples(
-                    	"(bytebuf-from-string \"abcdef\")",
-                    	"(bytebuf-from-string \"abcdef\" :UTF-8)",
-                    	"(bytebuf-from-string \"abcdef\" :UTF-8 16 0x00)")
+                        "(bytebuf-from-string \"abcdef\")",
+                        "(bytebuf-from-string \"abcdef\" :UTF-8)",
+                        "(bytebuf-from-string \"abcdef\" :UTF-8 16 0x00)")
                     .seeAlso(
-                    	"bytebuf-to-string")
+                        "bytebuf-to-string")
                     .build()
         ) {
             @Override
@@ -523,41 +557,41 @@ public class BytebufFunctions {
                 ArityExceptions.assertArity(this, args, 1, 2, 4);
 
                 try {
-	                final String s = Coerce.toVncString(args.first()).getValue();
+                    final String s = Coerce.toVncString(args.first()).getValue();
 
-	                if (args.size() == 1) {
-	                	final Charset charset = Charset.forName("UTF-8");
-	                	return new VncByteBuffer(ByteBuffer.wrap(s.getBytes(charset)));
-	                }
-	                else if (args.size() == 2) {
-	                	final VncVal encVal = args.second();
-	                	final Charset charset = CharsetUtil.charset(encVal);
-	                	return new VncByteBuffer(ByteBuffer.wrap(s.getBytes(charset)));
-	                }
-	                else if (args.size() == 4) {
-	                	final VncVal encVal = args.second();
-	                	final Charset charset = CharsetUtil.charset(encVal);
+                    if (args.size() == 1) {
+                        final Charset charset = Charset.forName("UTF-8");
+                        return new VncByteBuffer(ByteBuffer.wrap(s.getBytes(charset)));
+                    }
+                    else if (args.size() == 2) {
+                        final VncVal encVal = args.second();
+                        final Charset charset = CharsetUtil.charset(encVal);
+                        return new VncByteBuffer(ByteBuffer.wrap(s.getBytes(charset)));
+                    }
+                    else if (args.size() == 4) {
+                        final VncVal encVal = args.second();
+                        final Charset charset = CharsetUtil.charset(encVal);
 
-	                	final long buflen = Coerce.toVncLong(args.third()).getValue();
+                        final long buflen = Coerce.toVncLong(args.third()).getValue();
 
-	                	final byte[] bytes = s.getBytes(charset);
-	                	if (bytes.length == buflen) {
-		                	return new VncByteBuffer(ByteBuffer.wrap(bytes));
-	                	}
-	                	else if (bytes.length < buflen) {
-		                	final byte filler = (byte)(Coerce.toVncLong(args.fourth()).getValue() & 0xFF);
-		                	final byte[] buf = Arrays.copyOf(bytes, (int)buflen);
-	                		Arrays.fill(buf, bytes.length, buf.length, filler);
-		                	return new VncByteBuffer(ByteBuffer.wrap(buf));
-	                	}
-	                	else {
-	                		return new VncByteBuffer(ByteBuffer.wrap(Arrays.copyOf(bytes, (int)buflen)));
-	                	}
-	                }
-	                else {
-	                    throw new VncException(String.format(
-	                            "bytebuf-from-string illegal number of arguments"));
-	                }
+                        final byte[] bytes = s.getBytes(charset);
+                        if (bytes.length == buflen) {
+                            return new VncByteBuffer(ByteBuffer.wrap(bytes));
+                        }
+                        else if (bytes.length < buflen) {
+                            final byte filler = (byte)(Coerce.toVncLong(args.fourth()).getValue() & 0xFF);
+                            final byte[] buf = Arrays.copyOf(bytes, (int)buflen);
+                            Arrays.fill(buf, bytes.length, buf.length, filler);
+                            return new VncByteBuffer(ByteBuffer.wrap(buf));
+                        }
+                        else {
+                            return new VncByteBuffer(ByteBuffer.wrap(Arrays.copyOf(bytes, (int)buflen)));
+                        }
+                    }
+                    else {
+                        throw new VncException(String.format(
+                                "bytebuf-from-string illegal number of arguments"));
+                    }
                 }
                 catch(Exception ex) {
                     throw new VncException(String.format(
@@ -1075,11 +1109,11 @@ public class BytebufFunctions {
                     .examples(
                         "(bytebuf-pos (bytebuf-allocate 10))")
                     .seeAlso(
-                    	"bytebuf-capacity",
-                    	"bytebuf-remaining",
-                    	"bytebuf-limit",
-                    	"bytebuf-ensure-free-capacity!",
-                    	"bytebuf-limit!")
+                        "bytebuf-capacity",
+                        "bytebuf-remaining",
+                        "bytebuf-limit",
+                        "bytebuf-ensure-free-capacity!",
+                        "bytebuf-limit!")
                     .build()
         ) {
             @Override
@@ -1128,6 +1162,16 @@ public class BytebufFunctions {
 
             private static final long serialVersionUID = -1848883965231344442L;
         };
+
+
+
+    /**
+     * Knuth-Morris-Pratt
+     * @param data
+     * @param pattern
+     * @param indexFrom
+     * @return
+     */
 
 
 
