@@ -100,6 +100,7 @@
                                  :data      "<user><name>foo</name></user>" }})
         """ )
      :see-also '( 
+        "multipart/parse"
         "multipart/http-content-type-header" ) }
 
   render [parts]
@@ -117,7 +118,48 @@
     @os))
 
 
-(defn parse [buffer boundary]
+(defn 
+  ^{ :arglists '(
+        "(parse buffer boundary)" )
+     :doc
+        """
+        Parses a multipart bytebuf.
+        """
+     :examples '(
+        """
+        (do
+          (load-module :multipart ['multipart :as 'm])
+          (load-module :hexdump ['hexdump :as 'h])
+
+          (defn render []
+            (m/render { "Part-1" "xxxxxxxxxxx"
+                        "Part-4" { :filename  "data.xml"
+                                   :mimetype  "application/xml"
+                                   :charset   :utf-8
+                                   :data      "<user><name>foo</name></user>" }}))          
+          (-> (render)
+              (m/parse (m/boundary))))
+
+          ;; Returns a list of part maps:
+          ;; ( { :name "Part-1" 
+          ;;     :filename nil 
+          ;;     :mimetype nil 
+          ;;     :charset nil 
+          ;;     :data [120 ... 120]  ;; shortened for brevity
+          ;;     :data-len 11 } 
+          ;;   { :name "Part-4" 
+          ;;     :filename "data.xml" 
+          ;;     :mimetype "application/xml" 
+          ;;     :charset "utf-8" 
+          ;;     :data [60 ... 62]   ;; shortened for brevity
+          ;;     :data-len 29 })
+        """ )
+     :see-also '( 
+        "multipart/render"
+        "multipart/http-content-type-header" ) }
+        
+  parse [buffer boundary]
+
   (assert (bytebuf? buffer))
   (assert (string? boundary))
   (assert (pos? (count boundary)))
@@ -145,12 +187,15 @@
           (m/http-content-type-header))
         """ )
      :see-also '( 
-        "multipart/render" ) }
+        "multipart/render" 
+        "multipart/parse" ) }
 
   http-content-type-header []
 
   (str "multipart/form-data; boundary=" boundary-value))
 
+
+(defn boundary [] boundary-value)
 
 
 ;; -----------------------------------------------------------------------------
@@ -162,7 +207,7 @@
     (assert (string? name))
 
     ;; open boundary for part
-    (spit-string os (boundary) nl)
+    (spit-string os (part-boundary) nl)
 
     ;; dispatch to the part renderer
     (cond 
@@ -233,7 +278,7 @@
   (io/spit-stream os buf))
 
 
-(defn- boundary []
+(defn- part-boundary []
   (str "--" boundary-value))
 
 
@@ -278,33 +323,34 @@
 ;; -----------------------------------------------------------------------------
 
 (defn- parse-parts-buffers [buffer boundary]
-  ;;  --boundary
+  ;;  --boundary<crlf>
   ;;  ...
-  ;;  --boundary
+  ;;  --boundary<crlf>
   ;;  ...
-  ;;  --boundary--
-  (let [part-boundary      (bytebuf-from-string (str "--" boundary))
+  ;;  --boundary--<crlf>
+  (let [part-boundary      (bytebuf-from-string (str "--" boundary nl))
         part-boundary-len  (count part-boundary)
         close-boundary     (bytebuf-from-string (str "--" boundary "--"))]
     (loop [parts [], index 0]
-      (let [idx-start (bytebuf-index-of buffer part-boundary index)
-            idx-next  (bytebuf-index-of buffer part-boundary (+ index-start part-boundary-len))]
+      (let [idx-start      (bytebuf-index-of buffer part-boundary index)
+            idx-start-body (+ idx-start part-boundary-len)
+            idx-next       (bytebuf-index-of buffer part-boundary idx-start-body)]
         (if (neg? idx-next)
-          (let [idx-closing (bytebuf-index-of buffer close-boundary (+ index-start part-boundary-len))]
+          (let [idx-closing (bytebuf-index-of buffer close-boundary idx-start-body)]
             (if (neg? idx-closing)
               (throw (ex :VncException 
                          "Closing boundary not found while parsing multi-parts buffer"))
-              (let [p (extract-part-buffer buffer idx-start idx-closing)]
+              (let [p (extract-part-buffer buffer idx-start-body idx-closing)]
                 (conj parts p))))  ;; end - all parts processed
-          (let [p (extract-part-buffer buffer idx-start idx-next)])
-            (recur (conj parts p) idx-next))))))
+          (let [p (extract-part-buffer buffer idx-start-body idx-next)]
+            (recur (conj parts p) idx-next)))))))
 
 
-(defn- extract-part-buffer [buffer idx-start idx-end]
+(defn- extract-part-buffer [buffer from to]
   ;; if the part buffer ends with "\r\n" remove it
-  (let [buf (bytebuf-sub buffer idx-start idx-end)]
+  (let [buf (bytebuf-sub buffer from to)]
     (if (buffer-ends-with? buf nl-buf)
-      (bytebuf-sub buffer (- (count buf) (count nl-buf)))
+      (bytebuf-sub buf 0 (- (count buf) (count nl-buf)))
       buf)))
 
 
@@ -318,56 +364,58 @@
 
   (let [idx                 0
         disp-buf            (parse-part-string-line buffer idx)
-        disp                (str/trim (bytebuf-to-string-line disp-buf))
+        disp                (str/trim (bytebuf-to-string disp-buf))
         [name filename]     (parse-content-disposition-properties disp)
         idx                 (+ idx (count disp-buf))
         type-buf            (parse-part-string-line buffer idx)
-        type                (str/trim (bytebuf-to-string-line type-buf))
+        type                (str/trim (bytebuf-to-string type-buf))
         [mimetype charset]  (parse-content-type-properties type)
         idx                 (+ idx (count type-buf))
         empty-line-buf      (parse-part-empty-line buffer idx)
-        idx                 (+ idx (count empty-line-buf))]
+        idx                 (+ idx (count empty-line-buf))
+        data                (bytebuf-sub buffer idx)]
     { :name      name
-      :file-name filename
+      :filename  filename
       :mimetype  mimetype
       :charset   charset
-      :data      (bytebuf-sub buffer idx) }))
+      :data-len  (count data)
+      :data      data }))
 
 
 (defn- parse-part-string-line [buffer index]
-  (let [idx-nl (bytebuf-index-of buffer nl-buf index)])
+  (let [idx-nl (bytebuf-index-of buffer nl-buf index)]
     (if (neg? idx-nl) 
       (bytebuf) ;; empty (not found)
-      (bytebuf-sub buffer index (+ idx-nl (count nl-buf)) :utf-8)))
+      (bytebuf-sub buffer index (+ idx-nl (count nl-buf))))))
 
 
 (defn- parse-part-empty-line [buffer index]
-  (let [idx-nl (bytebuf-index-of buffer nl-buf index)])
+  (let [idx-nl (bytebuf-index-of buffer nl-buf index)]
     (if (= index idx-nl) 
-      nl-buf      ;; crlf (empty line)
-      (bytebuf))) ;; something else (nothing parsed)
+      nl-buf       ;; crlf (empty line)
+      (bytebuf)))) ;; something else (nothing parsed)
 
 
 (defn- parse-content-disposition-properties [s]
-  (let [cd (str/lower-case s)]
-    (when-not (match? cd "content-disposition:[ ]*form-data;.*")
-      (throw (ex :VncException 
-                 """
-                 Parts must start "Content-Disposition: form-data" header!
-                 Other subtypes than "form-data" are not supported.
-                 """)))
-    (let [cd       (str/strip-start s "content-disposition:")
-          name     (extract-match-group1 cd #".*;[ ]*name=\"([^\"]+)\"")
-          filename (extract-match-group1 cd #".*;[ ]*filename=\"([^\"]+)\"")]
-      [name filename])))
+  (when-not (match? (str/lower-case s) "content-disposition:[ ]*form-data;.*")
+    (throw (ex :VncException 
+                """
+                Parts must start "Content-Disposition: form-data" header! \
+                Other subtypes than "form-data" are not supported.
+                """)))
+
+  (let [cd       (str/trim (str/subs s (count "Content-Disposition:")))
+        name     (extract-match-group1 cd #".*form-data;[ ]*name=\"([^\"]+)\".*")
+        filename (extract-match-group1 cd #".*form-data;.*[ ]*filename=\"([^\"]+)\"")]
+    [name filename]))
 
 
 (defn- parse-content-type-properties [s]
-  (let [ct (str/lower-case s)]
-    (when-not (str/starts-with? ct "content-type:")
-      [nil nil])
-    (let [ct  (str/trim (str/strip-start s (count "content-type:")))]
-      (str/split (str/trim ct) "[ *];[ *]"))))
+  (if-not (str/starts-with? (str/lower-case s) "content-type:")
+    [nil nil]
+    (let [ct                 (str/trim (str/subs s (count "Content-Type:")))
+          [mimetype charset] (str/split ct "[ ]*;[ ]*")]
+      [mimetype (str/trim (str/strip-start charset "charset="))])))
 
 
 (defn- extract-match-group1 [s re]
@@ -379,4 +427,4 @@
   (let [idx (- (count buffer) (count subbuf))]
     (if (neg? idx)
        false
-       (= idx (bytebuf-index-of buffer idx subbuf)))))
+       (= idx (bytebuf-index-of buffer subbuf idx)))))

@@ -1134,10 +1134,15 @@ public class StringFunctions {
                 final VncLong from = Coerce.toVncLong(args.second());
                 final VncLong to = args.size() > 2 ? (VncLong)args.nth(2) : null;
 
-                return new VncString(
-                                to == null
-                                    ? string.getValue().substring(from.getValue().intValue())
-                                    : string.getValue().substring(from.getValue().intValue(), to.getValue().intValue()));
+                try {
+	                return new VncString(
+	                                to == null
+	                                    ? string.getValue().substring(from.getValue().intValue())
+	                                    : string.getValue().substring(from.getValue().intValue(), to.getValue().intValue()));
+                }
+                catch(StringIndexOutOfBoundsException ex) {
+                	throw new VncException("str/subs: index out of bounds!", ex);
+                }
             }
 
             private static final long serialVersionUID = -1848883965231344442L;

@@ -111,6 +111,8 @@ public class BytebufFunctionsTest {
         assertEquals(0L,  venice.eval("(bytebuf-index-of (bytebuf [1 2 3]) (bytebuf [1 2]) 0)"));
 
 
+        assertEquals(0L, venice.eval("(bytebuf-index-of (bytebuf [1 2 3 4 5]) (bytebuf [1 2]))"));
+        assertEquals(0L, venice.eval("(bytebuf-index-of (bytebuf [1 2 3 4 5]) (bytebuf [1 2 3 4 5]))"));
         assertEquals(2L, venice.eval("(bytebuf-index-of (bytebuf [1 2 3 4 5]) (bytebuf [3 4]))"));
         assertEquals(2L, venice.eval("(bytebuf-index-of (bytebuf [1 2 3 4 5]) (bytebuf [3 4]) 0)"));
         assertEquals(2L, venice.eval("(bytebuf-index-of (bytebuf [1 2 3 4 5 3 4]) (bytebuf [3 4]) 0)"));

@@ -621,8 +621,10 @@ public class BytebufFunctions {
                 "bytebuf-to-string",
                 VncFunction
                     .meta()
-                    .arglists("(bytebuf-to-string buf encoding)")
-                    .doc( "Converts a bytebuf to a string using an optional encoding. The encoding defaults to :UTF-8")
+                    .arglists(
+                    		"(bytebuf-to-string buf)",
+                    		"(bytebuf-to-string buf encoding)")
+                    .doc("Converts a bytebuf to a string using an optional encoding. The encoding defaults to :UTF-8")
                     .examples("(bytebuf-to-string (bytebuf [97 98 99]) :UTF-8)")
                     .seeAlso("bytebuf-from-string")
                     .build()
@@ -640,8 +642,9 @@ public class BytebufFunctions {
                     return new VncString(new String(buf.array(), charset));
                 }
                 catch(Exception ex) {
-                    throw new VncException(String.format(
-                            "Failed to convert bytebuf to string"));
+                    throw new VncException(
+                    		"Failed to convert bytebuf to string",
+                    		ex);
                 }
             }
 
