@@ -36,7 +36,7 @@ public class ModuleHttpClientLegacySection implements ISectionBuilder {
     public DocSection section() {
         final DocSection section = new DocSection(
         								"HTTP Client Legacy",
-        								"HTTP Client based HttpUrlConnection (Java 8+)",
+        								"HTTP Client based on HttpUrlConnection (Java 8+)",
         								"modules.http-client-legacy");
 
         final DocSection all = new DocSection("(load-module :http-client-legacy)", id());
