@@ -382,7 +382,7 @@ public class DocGenerator {
         content.add(debug);
 
         final DocSection web = new DocSection("Web", "web");
-        web.addSection(new DocSection("Http\u00A0Client", "modules.http-client"));
+        //web.addSection(new DocSection("Http\u00A0Client", "modules.http-client"));
         web.addSection(new DocSection("Http\u00A0Client\u00A0Legacy", "modules.http-client-legacy"));
         web.addSection(new DocSection("Tomcat\u00A0WebApp\u00A0Server", "modules.tomcat"));
         web.addSection(new DocSection("Ring", "modules.ring"));
