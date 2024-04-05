@@ -326,10 +326,10 @@
             ;; a generic part
             ;; The charset of a generic part is only required for text based 
             ;; data. When passing binary data the charset can be left out.
-            "Part-3" {:name      "data.xml"
-                      :mimetype  "application/xml"
-                      :data      "<user><name>foo</name></user>"
-                      :charset   :utf-8 }})
+            "Part-3" { :filename  "data.xml"
+                       :mimetype  "application/xml"
+                       :charset   :utf-8
+                       :data      "<user><name>foo</name></user>" }})
           ```
 
           ¶¶*Request Options:*
