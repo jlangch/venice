@@ -194,7 +194,7 @@
   (assert (or (string? data) (bytebuf? data)))
   (assert (or (nil? charset) (string? charset) (keyword? charset)))
 
-  (spit-string os (content-disposition-header name filename) nl)
+  (spit-string os (content-disposition-header name (io/file-name filename)) nl)
   (spit-string os (content-type-header mimetype charset) nl)
   (spit-string os nl)
   (if (string? data) (spit-string os data) (spit-bytebuf os data))

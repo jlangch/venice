@@ -10,9 +10,11 @@ All notable changes to this project will be documented in this file.
 
 ### Added
 
-- support for multipart requests to :ring module and improved the request/response
+- module :http-client-legacy. A simple HTTP client based on the JDK HttpUrlConnection.
+  The HttpClient can be used to send requests and retrieve their responses. It supports
+  sending multi-part requests.
+- support for multi-part requests to :ring module and improved the request/response
   dump functions
-- module :http-client-legacy. A simple HTTP client based on the JDK HttpUrlConnection
 - function `bytebuf-merge` to merge byte buffers
 
 ### Fixed 
