@@ -62,7 +62,7 @@
         (map #(str/split % "(\t| )+") v)
         (map #(cartesian-product [(first %)] (rest %)) v)
         (mapcat #(if (sequential? %) % [%]) v)
-        (map #(vector (second %) (keyword (first %))) v)
+        (map #(vector (second %) (first %)) v)
         (into {} v)))
 
 (defonce ^:private load-content-types

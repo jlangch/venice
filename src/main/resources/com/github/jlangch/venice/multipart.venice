@@ -104,19 +104,30 @@
         "multipart/parse"
         "multipart/http-content-type-header" ) }
 
-  render [parts]
+  render 
+  
+  ([parts]
+    (render parts false))
 
-  (assert (map? parts))
-  (assert (not (empty? parts)))
+  ([parts debug?]
+    (assert (map? parts))
+    (assert (not (empty? parts)))
 
-  (try-with [os (io/bytebuf-out-stream)]
-    ;; render parts
-    (doseq [[name value] parts] (render-part name value os))
-    
-    ;; close boundary
-    (spit-string os (closing-boundary) nl)
-    
-    @os))
+    (try-with [os (io/bytebuf-out-stream)]
+      ;; render parts
+      (doseq [[name value] parts] 
+             (let [info (render-part name value os)]
+               (when debug?
+                 (println)
+                 (println "Dump request part:")
+                 (println  "   part name:           " name)
+                 (println  "   content-disposition: " (:content-disposition info))
+                 (println  "   content-type:        " (:content-type info)))))
+      
+      ;; close boundary
+      (spit-string os (closing-boundary) nl)
+      
+      @os)))
 
 
 (defn 
@@ -240,7 +251,7 @@
 
   (try
     (let [filename (io/file-path file)
-          mimetype (or (core/name (mimetypes/probe-content-type file)) 
+          mimetype (or (mimetypes/probe-content-type file)
                        "application/octet-stream")
           data     (io/slurp file :binary true)]
       (render-file-data-part name filename mimetype nil data os))
@@ -254,20 +265,34 @@
   (assert (or (nil? charset) (string? charset) (keyword? charset)))
   (assert (or (string? data) (bytebuf? data)))
 
-  (spit-string os (content-disposition-header name (io/file-name filename)) nl)
-  (spit-string os (content-type-header mimetype charset) nl)
-  (spit-string os nl)
-  (if (string? data) (spit-string os data) (spit-bytebuf os data))
-  (spit-string os nl))
+  (let [dispo-header (content-disposition-header name (io/file-name filename))
+        type-header  (content-type-header mimetype charset)]
+
+    (spit-string os dispo-header nl)
+    (spit-string os type-header nl)
+    (spit-string os nl)
+    (if (string? data) (spit-string os data) (spit-bytebuf os data))
+    (spit-string os nl)
+
+    { :name                 name
+      :content-disposition  dispo-header 
+      :content-type         type-header }))
 
 
 (defn- render-string-part [name text os]
   (assert (string? name))
   
-  (spit-string os (content-disposition-header name) nl)
-  (spit-string os (content-type-header "text/plain" "utf-8") nl)
-  (spit-string os nl)
-  (spit-string os text nl))
+  (let [dispo-header (content-disposition-header name)
+        type-header  (content-type-header "text/plain" :utf-8)]
+    
+    (spit-string os dispo-header nl)
+    (spit-string os type-header nl)
+    (spit-string os nl)
+    (spit-string os text nl)
+
+    { :name                 name
+      :content-disposition  dispo-header 
+      :content-type         type-header }))
 
 
 (defn- spit-string [os & s]

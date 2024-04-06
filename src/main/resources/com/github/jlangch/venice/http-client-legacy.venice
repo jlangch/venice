@@ -397,12 +397,12 @@
         debug?    (:debug opts false)
         headers   (:headers opts {})
         headers   (assoc headers "Content-Type" (mp/http-content-type-header))
-        body      (mp/render {"file" (io/file file)})
+        body      (mp/render {"file" (io/file file)} debug?)
         opts      (dissoc opts :file)
         opts      (assoc opts :headers headers)
         opts      (assoc opts :body body)]
     (when debug? 
-      (printf "Uploading file '%s': %d bytes%n" file (io/file-size file)))
+      (printf "\nUploading file '%s': %d bytes%n" file (io/file-size file)))
     (apply send :post uri (flatten (seq opts)))))
 
 
@@ -492,7 +492,8 @@
   (assert (string? uri))
  
   (let [opts      (apply hash-map options)
-        body      (mp/render parts)
+        debug?    (:debug opts false)
+        body      (mp/render parts debug?)
         headers   (:headers opts {})
         headers   (assoc headers "Content-Type" (mp/http-content-type-header))
         opts      (dissoc opts :file)
@@ -647,7 +648,7 @@
 
 
 (defn- spit-string [str charset os debug?]
-  (when debug? (printf "Sending request with string body. size: %s chars, charset :%s%n" 
+  (when debug? (printf "\nSending request with string body. size: %s chars, charset :%s%n" 
                        (count str) 
                        (name charset)))
   (try-with [pr (io/wrap-os-with-print-writer os charset)]
@@ -656,7 +657,7 @@
 
 
 (defn- spit-bytebuf [buf os debug?]
-  (when debug? (printf "Sending request with byte body. size: %s bytes%n" 
+  (when debug? (printf "\nSending request with byte body. size: %s bytes%n" 
                        (count buf)))
   (try-with [os os]
     (io/spit-stream os buf :flush true)))
