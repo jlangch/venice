@@ -24,7 +24,8 @@ All notable changes to this project will be documented in this file.
   The HttpClient can be used to send requests and retrieve their responses. It supports
   sending multi-part requests. The HTTP client does not depend on 3rd party libraries!
   There are REST and file upload examples in the Venice script examples directory.
-- module `:multipart` that supports the subtype `multipart/form-data`. Renders and parses multi-part binary buffers
+- module `:multipart` that supports the subtype `multipart/form-data`. Renders and 
+  parses multi-part binary buffers
 - support for multi-part requests to `:ring` module and improved the request/response
   dump functions
 - function `bytebuf-merge` to merge byte buffers
