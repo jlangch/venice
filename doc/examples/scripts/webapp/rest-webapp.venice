@@ -160,12 +160,12 @@
                             :headers { "Accept" "application/json, text/plain" }
                             :debug true)
           status   (:http-status res)
-          type     (:content-type res)
-          encoding (:content-encoding res)]
+          mimetype (:content-type-mimetype res)
+          charset  (:content-type-charset res)]
       (println "Status:" status)
-      (if (and (= 200 status) (= "application/json" type))
-        (println (hc/slurp-json (:data-stream res) encoding))
-        (println (hc/slurp-string (:data-stream res) encoding)))))
+      (if (and (= 200 status) (= "application/json" mimetype))
+        (println (hc/slurp-json (:data-stream res) charset))
+        (println (hc/slurp-string (:data-stream res) charset)))))
 )
 
 ;; POST (create)
@@ -181,12 +181,12 @@
                                                     "role" "secretary" })
                             :debug true)
           status   (:http-status res)
-          type     (:content-type res)
-          encoding (:content-encoding res)]
+          mimetype (:content-type-mimetype res)
+          charset  (:content-type-charset res)]
       (println "Status:" status)
-      (if (and (= 200 status) (= "application/json" type))
-        (println (hc/slurp-json (:data-stream res) encoding))
-        (println (hc/slurp-string (:data-stream res) encoding)))))
+      (if (and (= 200 status) (= "application/json" mimetype))
+        (println (hc/slurp-json (:data-stream res) charset))
+        (println (hc/slurp-string (:data-stream res) charset)))))
 )
 
 ;; PUT (update)
@@ -203,12 +203,12 @@
                                                     "role" "clerk" })
                             :debug true)
           status   (:http-status res)
-          type     (:content-type res)
-          encoding (:content-encoding res)]
+          mimetype (:content-type-mimetype res)
+          charset  (:content-type-charset res)]
       (println "Status:" status)
-      (if (and (= 200 status) (= "application/json" type))
-        (println (hc/slurp-json (:data-stream res) encoding))
-        (println (hc/slurp-string (:data-stream res) encoding)))))
+      (if (and (= 200 status) (= "application/json" mimetype))
+        (println (hc/slurp-json (:data-stream res) charset))
+        (println (hc/slurp-string (:data-stream res) charset)))))
 )
 
 ;; DELETE (delete)
@@ -221,11 +221,11 @@
                             :headers { "Accept" "text/plain" }
                             :debug true)
           status   (:http-status res)
-          type     (:content-type res)
-          encoding (:content-encoding res)]
+          mimetype (:content-type-mimetype res)
+          charset  (:content-type-charset res)]
       (println "Status:" status)
-      (if (= "text/plain" type)
-        (println (hc/slurp-string (:data-stream res) encoding)))))
+      (if (= "text/plain" mimetype)
+        (println (hc/slurp-string (:data-stream res) charset)))))
 )
 ;; -----------------------------------------------------------------------------
 

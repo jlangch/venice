@@ -69,12 +69,20 @@
           | [![width: 20%]]    | [![width: 80%]] |
           | :http-status       | The HTTP status (a long) |
           | :content-type      | The content type |
-          | :content-encoding  | The content encoding (a keyword), if available \
-                                 else nil |
+          | :content-type-mimetype  | The content type's mimetype. E.g.: "text/plain" |
+          | :content-type-charset   | The content type's charset. E.g.: :utf-8 |
+          | :content-encoding  | The content transfer encoding (a keyword), if \
+                                 available else nil. E.g.: "gzip" |
           | :content-length    | The content length (a long), if available else -1 |
           | :headers           | A map of headers. key: header name, value: list \
                                  of header values |
-          | :data-stream       | The response data input stream |
+          | :data-stream       | The response data input stream. ¶\
+                                 If the response content encoding is 'gzip'  \
+                                 due to a request header "Accept-Encoding: gzip" \
+                                 wrap the data stream with a gzip input \
+                                 stream: ¶\
+                                 \u00A0\u00A0\u00A0\u00A0\u00A0(io/wrap-is-with-gzip-input-stream (:data-stream response)) ¶\
+                                 to uncompress the data. |   
           """ 
      :examples '(
           """
@@ -92,12 +100,12 @@
                                     :headers { "Accept" "application/json, text/plain" }
                                     :debug true)
                   status   (:http-status response)
-                  type     (:content-type response)
-                  encoding (:content-encoding response)]
+                  mimetype (:content-type-mimetype response)
+                  charset  (:content-type-charset response)]
               (println "Status:" status)
-              (if (and (= 200 status) (= "application/json" type))
-                (println (hc/slurp-json (:data-stream response) encoding))
-                (println (hc/slurp-string (:data-stream response) encoding)))))
+              (if (and (= 200 status) (= "application/json" mimetype))
+                (println (hc/slurp-json (:data-stream response) charset))
+                (println (hc/slurp-string (:data-stream response) charset)))))
           """,
           """
           ;; POST (create)
@@ -112,12 +120,12 @@
                                                             "role" "secretary" })
                                     :debug true)
                   status   (:http-status response)
-                  type     (:content-type response)
-                  encoding (:content-encoding response)]
+                  mimetype (:content-type-mimetype response)
+                  charset  (:content-type-charset response)]
               (println "Status:" status)
-              (if (and (= 200 status) (= "application/json" type))
-                (println (hc/slurp-json (:data-stream response) encoding))
-                (println (hc/slurp-string (:data-stream response) encoding)))))
+              (if (and (= 200 status) (= "application/json" mimetype))
+                (println (hc/slurp-json (:data-stream response) charset))
+                (println (hc/slurp-string (:data-stream response) charset)))))
           """,
           """
           ;; PUT (update)
@@ -133,12 +141,12 @@
                                                             "role" "clerk" })
                                     :debug true)
                   status   (:http-status response)
-                  type     (:content-type response)
-                  encoding (:content-encoding response)]
+                  mimetype (:content-type-mimetype response)
+                  charset  (:content-type-charset response)]
               (println "Status:" status)
-              (if (and (= 200 status) (= "application/json" type))
-                (println (hc/slurp-json (:data-stream response) encoding))
-                (println (hc/slurp-string (:data-stream response) encoding)))))
+              (if (and (= 200 status) (= "application/json" mimetype))
+                (println (hc/slurp-json (:data-stream response) charset))
+                (println (hc/slurp-string (:data-stream response) charset)))))
           """,
           """
           ;; DELETE (delete)
@@ -150,11 +158,11 @@
                                     :headers { "Accept" "text/plain" }
                                     :debug true)
                   status   (:http-status response)
-                  type     (:content-type response)
-                  encoding (:content-encoding response)]
+                  mimetype (:content-type-mimetype response)
+                  charset  (:content-type-charset response)]
               (println "Status:" status)
-              (if (= "text/plain" type)
-                (println (hc/slurp-string (:data-stream response) encoding)))))
+              (if (= "text/plain" mimetype)
+                (println (hc/slurp-string (:data-stream response) charset)))))
           """,
           """
           ;; GET over SSL
@@ -189,12 +197,12 @@
                                     :ssl-socket-factory (. :SSLSocketFactory trust-manager-all)
                                     :debug true)
                   status   (:http-status response)
-                  type     (:content-type response)
-                  encoding (:content-encoding response)]
+                  mimetype (:content-type-mimetype response)
+                  charset  (:content-type-charset response)]
               (println "Status:" status)
-              (if (and (= 200 status) (= "application/json" type))
-                (println (hc/slurp-json (:data-stream response) encoding))
-                (println (hc/slurp-string (:data-stream response) encoding)))))
+              (if (and (= 200 status) (= "application/json" mimetype))
+                (println (hc/slurp-json (:data-stream response) charset))
+                (println (hc/slurp-string (:data-stream response) charset)))))
           """,
           """
           ;; OAuth blueprint
@@ -212,11 +220,11 @@
                                                  "Content-Type" "application/x-www-form-urlencoded" }
                                       :body "grant_type=client_credentials")
                   status   (:http-status response)
-                  type     (:content-type response)
-                  encoding (:content-encoding response)]
-                (if (and (= 200 status) (= "application/json" type))
+                  mimetype (:content-type-mimetype response)
+                  charset  (:content-type-charset response)]
+                (if (and (= 200 status) (= "application/json" mimetype))
                   (as-> (:data-stream response) v
-                        (hc/slurp-json v encoding)
+                        (hc/slurp-json v charset)
                         (get v "access_token"))
                   (throw (ex VncException "Failed to get OAuth access token")))))
             
@@ -226,11 +234,11 @@
                                       :headers { "Accept" "application/json, text/plain" 
                                                  "Authorization" (str "Bearer "  accessToken)})
                   status   (:http-status response)
-                  type     (:content-type response)
-                  encoding (:content-encoding response)]
-                (if (and (= 200 status) (= "application/json" type))
+                  mimetype (:content-type-mimetype response)
+                  charset  (:content-type-charset response)]
+                 (if (and (= 200 status) (= "application/json" mimetype))
                   (-> (:data-stream response)
-                      (hc/slurp-json encoding))
+                      (hc/slurp-json charset))
                   (throw (ex VncException "Failed to list members"))))))
           """ )
      :see-also '(
@@ -238,7 +246,8 @@
           "http-client-legacy/upload-multipart"
           "http-client-legacy/slurp-string"
           "http-client-legacy/slurp-json"
-          "http-client-legacy/slurp-bytebuf" ) }
+          "http-client-legacy/slurp-bytebuf"
+          "io/wrap-is-with-gzip-input-stream" ) }
 
   send [method uri & options]
   
@@ -254,7 +263,7 @@
         use-caches         (:use-caches opts false)
         user-agent         (:user-agent opts hc-user-agent)
         debug?             (true? (:debug opts false))
-                            ;; default headers
+                           ;; default headers
         headers            (assoc headers "User-Agent" user-agent)
         headers            (if (not-contains? headers "Accept")
                               (assoc headers "Accept" "text/plain, */*;0.2")
@@ -353,9 +362,10 @@
 
           | [![width: 20%]]    | [![width: 80%]] |
           | :http-status       | The HTTP status (a long) |
-          | :content-type      | The content type |
-          | :content-encoding  | The content encoding (a keyword), if available \
-                                 else nil |
+          | :content-type-mimetype  | The content type's mimetype. E.g.: "text/plain" |
+          | :content-type-charset   | The content type's charset. E.g.: :utf-8 |
+          | :content-encoding  | The content transfer encoding (a keyword), if \
+                                 available else nil. E.g.: "gzip" |
           | :content-length    | The content length (a long), if available else -1 |
           | :headers           | A map of headers. key: header name, value: list \
                                  of header values |
@@ -449,9 +459,10 @@
 
           | [![width: 20%]]    | [![width: 80%]] |
           | :http-status       | The HTTP status (a long) |
-          | :content-type      | The content type |
-          | :content-encoding  | The content encoding (a keyword), if available \
-                                 else nil |
+          | :content-type-mimetype  | The content type's mimetype. E.g.: "text/plain" |
+          | :content-type-charset   | The content type's charset. E.g.: :utf-8 |
+          | :content-encoding  | The content transfer encoding (a keyword), if \
+                                 available else nil. E.g.: "gzip" |
           | :content-length    | The content length (a long), if available else -1 |
           | :headers           | A map of headers. key: header name, value: list \
                                  of header values |
@@ -508,16 +519,16 @@
           (do
             (load-module :http-client-legacy ['http-client-legacy :as 'hc])
           
-            (let [res      (hc/send :get 
+            (let [response (hc/send :get 
                                     "http://localhost:8080/employees" 
                                     :headers {"Accept" "application/json, text/plain"})
-                  status   (:http-status res)
-                  type     (:content-type res)
-                  encoding (:content-encoding res)]
+                  status   (:http-status response)
+                  mimetype (:content-type-mimetype response)
+                  charset  (:content-type-charset response)]
               (println "Status:" status)
               (if (= 200 status)
-                (println (hc/slurp-string (:data-stream res) encoding))
-                (println (hc/slurp-string (:data-stream res) encoding)))))
+                (println (hc/slurp-string (:data-stream response) charset))
+                (println (hc/slurp-string (:data-stream response) charset)))))
           """ )
      :see-also '(
           "http-client-legacy/slurp-json"
@@ -543,16 +554,16 @@
           (do
             (load-module :http-client-legacy ['http-client-legacy :as 'hc])
           
-            (let [res      (hc/send :get 
+            (let [response (hc/send :get 
                                     "http://localhost:8080/employees" 
                                     :headers {"Accept" "application/json, text/plain"})
-                  status   (:http-status res)
-                  type     (:content-type res)
-                  encoding (:content-encoding res)]
+                  status   (:http-status response)
+                  mimetype (:content-type-mimetype response)
+                  charset  (:content-type-charset response)]
               (println "Status:" status)
-              (if (and (= 200 status) (= "application/json" type))
-                (println (hc/slurp-json (:data-stream res) encoding))
-                (println (hc/slurp-string (:data-stream res) encoding)))))
+              (if (and (= 200 status) (= "application/json" mimetype))
+                (println (hc/slurp-json (:data-stream res) charset))
+                (println (hc/slurp-string (:data-stream res) charset)))))
           """ )
      :see-also '(
           "http-client-legacy/slurp-string"
@@ -578,12 +589,12 @@
           (do
             (load-module :http-client-legacy ['http-client-legacy :as 'hc])
           
-            (let [res    (hc/send :get 
-                                  "http://localhost:8080/employees" 
-                                  :headers {"Accept" "application/json, text/plain"})
-                  status (:http-status res)]
+            (let [response (hc/send :get 
+                                    "http://localhost:8080/employees" 
+                                    :headers {"Accept" "application/json, text/plain"})
+                  status   (:http-status response)]
               (println "Status:" status)
-              (let [data (hc/slurp-bytebuf (:data-stream res))]
+              (let [data (hc/slurp-bytebuf (:data-stream response))]
                 (println "Bytes read:" (count data)))))
           """ )
      :see-also '(
@@ -602,22 +613,26 @@
 ;; -----------------------------------------------------------------------------
 
 (defn- get-response [con]
-  (let [status           (long (. con :getResponseCode))
-        ok?              (<= 200 status 299)
-        headers          (response-headers con)
-        [type encoding]  (parse-content-type (get headers "Content-Type"))]
-    { :http-status      status 
-      :content-type     type
-      :content-encoding encoding
-      :content-length   (. con :getContentLengthLong)
-      :headers          headers 
-      :data-stream      (if ok? (. con :getInputStream) 
-                                (. con :getErrorStream)) } ))
+  (let [status              (long (. con :getResponseCode))
+        ok?                 (<= 200 status 299)
+        headers             (response-headers con)
+        content-type        (get headers "Content-Type")
+        [mimetype charset]  (parse-content-type content-type)
+        content-encoding    (get headers "Content-Encoding")]
+    { :http-status            status 
+      :content-type           content-type
+      :content-type-mimetype  mimetype
+      :content-type-charset   charset
+      :content-encoding       content-encoding
+      :content-length         (. con :getContentLengthLong)
+      :headers                headers 
+      :data-stream             (if ok? (. con :getInputStream) 
+                                       (. con :getErrorStream)) } ))
 
 
 (defn- parse-content-type [content-type]
-   ;; "application/json"                     => ["application/json" ":utf-8"]
-   ;; "application/json; charset=iso-8859-1" => ["application/json" ":iso-8859-1"]
+   ;; "application/json"                     => ["application/json" :utf-8]
+   ;; "application/json; charset=iso-8859-1" => ["application/json" :iso-8859-1]
   (let [[t e]  (as-> (str/trim-to-nil content-type) v
                      (str/split v ";")
                      (map str/trim v))
@@ -631,11 +646,11 @@
        (map-vals #(str/join ", " %))))  ;; just single values
 
 
-(defn- spit-string [str encoding os debug?]
-  (when debug? (printf "Sending request with string body. size: %s chars, encoding :%s%n" 
+(defn- spit-string [str charset os debug?]
+  (when debug? (printf "Sending request with string body. size: %s chars, charset :%s%n" 
                        (count str) 
-                       (name encoding)))
-  (try-with [pr (io/wrap-os-with-print-writer os encoding)]
+                       (name charset)))
+  (try-with [pr (io/wrap-os-with-print-writer os charset)]
     (print pr str)
     (flush pr)))
 
@@ -660,11 +675,14 @@
 (defn- dump-response [res]
   (println)
   (println     "Dump response:")
-  (println     "   http-status:       " (:http-status res))
-  (println     "   content-type:      " (:content-type res))
-  (println     "   content-encoding:  " (:content-encoding res))
-  (println     "   content-length:    " (:content-length res))
-  (println-map "   headers:           " (:headers res)))
+  (println     "   http-status:           " (:http-status res))
+  (println     "   content-type:          " (:content-type res))
+  (println     "   content-type-mimetype: " (:content-type-mimetype res))
+  (println     "   content-type-charset:  " (:content-type-charset res))
+  (println     "   content-encoding:      " (:content-encoding res))
+  (println     "   content-length:        " (:content-length res))
+  (println-map "   headers:               " (:headers res)))
+
 
 
 (defn- println-map [head data]

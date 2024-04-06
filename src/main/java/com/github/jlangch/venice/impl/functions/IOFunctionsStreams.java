@@ -47,6 +47,8 @@ import java.nio.charset.Charset;
 import java.nio.file.Path;
 import java.nio.file.StandardOpenOption;
 import java.util.Map;
+import java.util.zip.GZIPInputStream;
+import java.util.zip.GZIPOutputStream;
 
 import com.github.jlangch.venice.SecurityException;
 import com.github.jlangch.venice.VncException;
@@ -706,6 +708,101 @@ public class IOFunctionsStreams {
                 private static final long serialVersionUID = -1848883965231344442L;
             };
 
+    public static VncFunction io_wrap_is_with_gzip_input_stream =
+        new VncFunction(
+                "io/wrap-is-with-gzip-input-stream",
+                VncFunction
+                    .meta()
+                    .arglists(
+                        "(io/wrap-is-with-gzip-input-stream is)")
+                    .doc(
+                        "Wraps an `java.io.InputStream` is with a `java.io.GZIPInputStream` " +
+                        "To ungzip the data read from the input stream.\n\n" +
+                        "Note: The caller is responsible for closing the reader!")
+                    .examples(
+                        "(let [text      \"hello, hello, hello\"                        \n" +
+                        "      gzip-buf  (io/gzip (bytebuf-from-string text :utf-8))]   \n" +
+                        "  (try-with [is (-> (io/bytebuf-in-stream gzip-buf)            \n" +
+                        "                    (io/wrap-is-with-gzip-input-stream))]      \n" +
+                        "    (-> (io/slurp is :binary true)                             \n" +
+                        "        (bytebuf-to-string :utf-8))))                          ")
+                    .seeAlso(
+                        "io/wrap-os-with-gzip-output-stream")
+                    .build()
+        ) {
+            @Override
+            public VncVal apply(final VncList args) {
+                ArityExceptions.assertArity(this, args, 1);
+
+                final Object delegate = ((VncJavaObject)args.first()).getDelegate();
+                if (delegate instanceof InputStream) {
+                    try {
+                         return new VncJavaObject(new GZIPInputStream((InputStream)delegate));
+                    }
+                    catch (Exception ex) {
+                        throw new VncException(
+                                "Failed to wrap a :java.io.InputStream with a :java.util.zip.GZIPInputStream",
+                                ex);
+                    }
+                }
+
+                throw new VncException(String.format(
+                        "Function 'io/wrap-is-with-gzip-input-stream' requires an InputStream." +
+                        "%s as is not allowed!",
+                        Types.getType(args.first())));
+            }
+
+            private static final long serialVersionUID = -1848883965231344442L;
+        };
+
+    public static VncFunction io_wrap_os_with_gzip_output_stream =
+        new VncFunction(
+                "io/wrap-os-with-gzip-output-stream",
+                VncFunction
+                    .meta()
+                    .arglists(
+                        "(io/wrap-os-with-gzip-output-stream is)")
+                    .doc(
+                        "Wraps an `java.io.OutputStream` is with a `java.io.GZIPOutputStream` " +
+                        "To gzip the data sent to the output stream.\n\n" +
+                        "Note: The caller is responsible for closing the reader!")
+                    .examples(
+                        "(let [text \"hello, hello, hello\"                          \n" +
+                        "      bos (io/bytebuf-out-stream)]                          \n" +
+                        "  (try-with [gos (io/wrap-os-with-gzip-output-stream bos)]  \n" +
+                        "    (io/spit gos text :encoding :utf-8)                     \n" +
+                        "    (io/flush gos)                                          \n" +
+                        "    (io/close gos)                                          \n" +
+                        "    (-> (io/ungzip @bos)                                    \n" +
+                        "        (bytebuf-to-string :utf-8))))                       ")
+                    .seeAlso(
+                        "io/wrap-is-with-gzip-input-stream")
+                    .build()
+        ) {
+            @Override
+            public VncVal apply(final VncList args) {
+                ArityExceptions.assertArity(this, args, 1);
+
+                final Object delegate = ((VncJavaObject)args.first()).getDelegate();
+                if (delegate instanceof OutputStream) {
+                    try {
+                         return new VncJavaObject(new GZIPOutputStream((OutputStream)delegate));
+                    }
+                    catch (Exception ex) {
+                        throw new VncException(
+                                "Failed to wrap a :java.io.OutputStream with a :java.util.zip.GZIPOutputStream",
+                                ex);
+                    }
+                }
+
+                throw new VncException(String.format(
+                        "Function 'io/wrap-os-with-gzip-output-stream' requires an OutputStream." +
+                        "%s as is not allowed!",
+                        Types.getType(args.first())));
+            }
+
+            private static final long serialVersionUID = -1848883965231344442L;
+        };
 
     public static VncFunction io_buffered_writer =
         new VncFunction(
@@ -1430,6 +1527,8 @@ public class IOFunctionsStreams {
                     .add(io_wrap_os_with_buffered_writer)
                     .add(io_wrap_os_with_print_writer)
                     .add(io_wrap_is_with_buffered_reader)
+                    .add(io_wrap_is_with_gzip_input_stream)
+                    .add(io_wrap_os_with_gzip_output_stream)
                     .add(io_buffered_writer)
                     .add(io_string_writer)
                     .add(io_buffered_reader)

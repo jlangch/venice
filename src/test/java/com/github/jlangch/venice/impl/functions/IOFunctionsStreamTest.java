@@ -183,6 +183,38 @@ public class IOFunctionsStreamTest {
     }
 
     @Test
+    public void test_io_wrap_is_with_gzip_input_stream() {
+        final Venice venice = new Venice();
+
+        final String script =
+                "(let [text      \"hello, hello, hello\"                        \n" +
+                "      gzip-buf  (io/gzip (bytebuf-from-string text :utf-8))]   \n" +
+                "  (try-with [is (-> (io/bytebuf-in-stream gzip-buf)            \n" +
+                "                    (io/wrap-is-with-gzip-input-stream))]      \n" +
+                "    (-> (io/slurp is :binary true)                             \n" +
+                "        (bytebuf-to-string :utf-8))))                          ";
+
+        assertEquals("hello, hello, hello",venice.eval(script));
+    }
+
+    @Test
+    public void test_io_wrap_os_with_gzip_output_stream() {
+        final Venice venice = new Venice();
+
+        final String script =
+                "(let [text \"hello, hello, hello\"                          \n" +
+                "      bos (io/bytebuf-out-stream)]                          \n" +
+                "  (try-with [gos (io/wrap-os-with-gzip-output-stream bos)]  \n" +
+                "    (io/spit gos text :encoding :utf-8)                     \n" +
+                "    (io/flush gos)                                          \n" +
+                "    (io/close gos)                                          \n" +
+                "    (-> (io/ungzip @bos)                                    \n" +
+                "        (bytebuf-to-string :utf-8))))                       ";
+
+        assertEquals("hello, hello, hello",venice.eval(script));
+    }
+
+    @Test
     public void test_io_read_char() {
         final Venice venice = new Venice();
 

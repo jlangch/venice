@@ -94,6 +94,8 @@ public class IoSection implements ISectionBuilder {
         stream.addItem(diBuilder.getDocItem("io/wrap-os-with-buffered-writer"));
         stream.addItem(diBuilder.getDocItem("io/wrap-os-with-print-writer"));
         stream.addItem(diBuilder.getDocItem("io/wrap-is-with-buffered-reader"));
+        stream.addItem(diBuilder.getDocItem("io/wrap-is-with-gzip-input-stream"));
+        stream.addItem(diBuilder.getDocItem("io/wrap-os-with-gzip-output-stream"));
         stream.addItem(diBuilder.getDocItem("io/flush"));
         stream.addItem(diBuilder.getDocItem("io/close"));
 
