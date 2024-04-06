@@ -421,12 +421,17 @@
             "Part-1" "xxxxxxxxxxx"
 
             ;; a file part
-            "Part-2" (io/file "/user/foo/image.png")
+            "Part-2" (io/file "/Users/juerg/Desktop/image.png")
+
+            ;; a x-www-form-urlencoded (generic) part 
+            "Part-3" { :mimetype  "application/x-www-form-urlencoded"
+                       :charset   :utf-8
+                       :data      "color=blue" }
 
             ;; a generic part
             ;; The charset of a generic part is only required for text based 
             ;; data. When passing binary data the charset can be left out.
-            "Part-3" { :filename  "data.xml"
+            "Part-4" { :filename  "data.xml"
                        :mimetype  "application/xml"
                        :charset   :utf-8
                        :data      "<user><name>foo</name></user>" }})
@@ -488,7 +493,7 @@
 
   upload-multipart [parts uri & options]
  
-  (assert (io/map? parts))
+  (assert (map? parts))
   (assert (string? uri))
  
   (let [opts      (apply hash-map options)

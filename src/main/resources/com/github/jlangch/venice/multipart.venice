@@ -260,12 +260,14 @@
 
 
 (defn- render-file-data-part [name filename mimetype charset data os]
-  (assert (string? filename))
+  (assert (or (nil? filename) (string? filename)))
   (assert (string? mimetype))
   (assert (or (nil? charset) (string? charset) (keyword? charset)))
   (assert (or (string? data) (bytebuf? data)))
 
-  (let [dispo-header (content-disposition-header name (io/file-name filename))
+  (let [dispo-header (if filename 
+                       (content-disposition-header name (io/file-name filename))
+                       (content-disposition-header name))
         type-header  (content-type-header mimetype charset)]
 
     (spit-string os dispo-header nl)

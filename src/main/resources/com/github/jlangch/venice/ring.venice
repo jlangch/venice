@@ -730,24 +730,24 @@
   dump-request [req]
 
   (println       "Dump request:")
-  (println       "   server-port:    " (long (:server-port req)))
-  (println       "   server-name:    " (:server-name req))
-  (println       "   remote-addr:    " (:remote-addr req))
-  (println       "   scheme:         " (:scheme req))
-  (println       "   uri:            " (:uri req))
-  (println       "   protocol:       " (:protocol req))
-  (println       "   query-string:   " (:query-string req))
-  (println       "   method:         " (:request-method req))
-  (println       "   content-type:   " (:content-type req))
-  (println       "   content-length: " (:content-length req))
-  (println       "   encoding:       " (:character-encoding req))
-  (println       "   context-path:   " (:servlet-context-path req))
-  (println       "   servlet-path:   " (:servlet-path req))
-  (println       "   session:        " (ring/session-id req))
-  (println-map   "   headers:        " (:headers req))
-  (println-map   "   parameters:     " (:parameters req))
-  (println-map   "   cookies:        " (map-vals :value (or (:cookies req) {})))
-  (println-parts "   parts:          " (:parts req)))
+  (println       "   server-port:        " (long (:server-port req)))
+  (println       "   server-name:        " (:server-name req))
+  (println       "   remote-addr:        " (:remote-addr req))
+  (println       "   scheme:             " (:scheme req))
+  (println       "   uri:                " (:uri req))
+  (println       "   protocol:           " (:protocol req))
+  (println       "   query-string:       " (:query-string req))
+  (println       "   method:             " (:request-method req))
+  (println       "   content-type:       " (:content-type req))
+  (println       "   content-length:     " (:content-length req))
+  (println       "   character-encoding: " (:character-encoding req))
+  (println       "   context-path:       " (:servlet-context-path req))
+  (println       "   servlet-path:       " (:servlet-path req))
+  (println       "   session:            " (ring/session-id req))
+  (println-map   "   headers:            " (:headers req))
+  (println-map   "   parameters:         " (:parameters req))
+  (println-map   "   cookies:            " (map-vals :value (or (:cookies req) {})))
+  (println-parts "   parts:              " (:parts req)))
 
 
 (defn-
@@ -757,11 +757,10 @@
   dump-response [res]
 
   (println     "Dump response:")
-  (println     "   content-type: " (:content-type res))
-  (println     "   encoding:     " (:character-encoding res))
-  (println     "   status:       " (:status res))
-  (println-map "   headers:      " (:headers res))
-  (println-map "   cookies:      " (map-vals :value (or (:cookies res) {}))))
+  (println     "   content-type:       " (:content-type res))
+  (println     "   status:             " (:status res))
+  (println-map "   headers:            " (:headers res))
+  (println-map "   cookies:            " (map-vals :value (or (:cookies res) {}))))
 
 
 (defn- println-map [head data]

@@ -25,7 +25,10 @@
 
 (defn- save-part [dir part]
   (let [name      (:name part)
-        filename  (io/file-name (:file-name part))
+        filename  (:file-name part)
+        filename  (if filename 
+                    (io/file-name filename) 
+                    (str name ".txt"))
         delete-fn (:delete-fn part)
         file      (io/file dir filename)]
     (when-not (and (io/file? dir) (io/exists-dir? dir))
@@ -76,6 +79,47 @@
                          "."
                          tomcat-opts) ]
   (defn stop [] (tc/shutdown server)))
+
+
+;; -----------------------------------------------------------------------------
+;; Venice HTTP Client examples
+;; -----------------------------------------------------------------------------
+
+;; Upload
+(comment
+  (do
+    (load-module :http-client-legacy ['http-client-legacy :as 'hc])
+    
+    (let [response (hc/upload-file
+                        (io/file "/Users/juerg/Desktop/image.png") 
+                        "http://localhost:8080/upload" 
+                        :headers { "Accept" "text/plain" }
+                        :debug true)
+          status   (:http-status response)]
+      (println "Status:" status)))
+)
+
+;; Upload
+(comment
+  (do
+    (load-module :http-client-legacy ['http-client-legacy :as 'hc])
+    
+    (let [response (hc/upload-multipart
+                        { "Part-1" "xxxxxxxxxxx"
+                          "Part-2" (io/file "/Users/juerg/Desktop/image.png") 
+                          "Part-3" { :mimetype  "application/x-www-form-urlencoded"
+                                     :charset   :utf-8
+                                     :data      "color=blue" }
+                          "Part-4" { :filename  "data.xml"
+                                     :mimetype  "application/xml"
+                                     :charset   :utf-8
+                                     :data      "<user><name>foo</name></user>" } }
+                        "http://localhost:8080/upload" 
+                        :headers { "Accept" "text/plain" }
+                        :debug true)
+          status   (:http-status response)]
+      (println "Status:" status)))
+)
 
 
 (println "Tomcat started on port ~(:port tomcat-opts).")
