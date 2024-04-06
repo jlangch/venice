@@ -60,18 +60,19 @@
 
         --12345
         Content-Disposition: form-data; name="notes"
+        Content-Type: text/plain; charset=utf-8
 
         Lorem ipsum ...
         --12345
         Content-Disposition: form-data; name="foo"; filename="foo.json"
         Content-Type: application/json; charset=utf-8
 
-        content of foo.xjson
+        content of foo.json
         --12345
         Content-Disposition: form-data; name="image"; filename="picture.png"
         Content-Type: image/png
 
-        content of picture.jpg
+        content of picture.png
         --12345--
         ```
 
@@ -137,8 +138,8 @@
                                    :mimetype  "application/xml"
                                    :charset   :utf-8
                                    :data      "<user><name>foo</name></user>" }}))          
-          (-> (render)
-              (m/parse (m/boundary))))
+          (let [mp (render)]
+            (m/parse mp (m/boundary))))
 
           ;; Returns a list of part maps:
           ;; ( { :name "Part-1" 
@@ -239,11 +240,9 @@
 
   (try
     (let [filename (io/file-path file)
-          mimetype (core/name (mimetypes/probe-content-type file))
+          mimetype (or (core/name (mimetypes/probe-content-type file) 
+                       "application/octet-stream"))
           data     (io/slurp file :binary true)]
-      (when (nil? mimetype)
-        (throw (ex :VncException (str "Failed to get mimetype for file " filename))))
-
       (render-file-data-part name filename mimetype nil data os))
     (catch :Exception e  
       (throw (ex :VncException (str "Failed to process file " (io/file-path file)) e)))))
@@ -266,12 +265,13 @@
   (assert (string? name))
   
   (spit-string os (content-disposition-header name) nl)
+  (spit-string os (content-type-header "text/plain" "utf-8") nl)
   (spit-string os nl)
   (spit-string os text nl))
 
 
 (defn- spit-string [os & s]
-  (io/spit-stream os (bytebuf-from-string (apply str s))))
+  (io/spit-stream os (bytebuf-from-string (apply str s) :utf-8)))
 
 
 (defn- spit-bytebuf [os buf]
@@ -358,61 +358,76 @@
   ;; ---------------------------------------------------------------------------
   ;; Content-Disposition: form-data; name="foo"; filename="foo.json"
   ;; Content-Type: application/json; charset=utf-8
+  ;; Content-Transfer-Encoding: binary
   ;;
   ;; content of part
   ;; ---------------------------------------------------------------------------
 
-  (let [idx                 0
-        disp-buf            (parse-part-string-line buffer idx)
-        disp                (str/trim (bytebuf-to-string disp-buf))
-        [name filename]     (parse-content-disposition-properties disp)
-        idx                 (+ idx (count disp-buf))
-        type-buf            (parse-part-string-line buffer idx)
-        type                (str/trim (bytebuf-to-string type-buf))
-        [mimetype charset]  (parse-content-type-properties type)
-        idx                 (+ idx (count type-buf))
-        empty-line-buf      (parse-part-empty-line buffer idx)
-        idx                 (+ idx (count empty-line-buf))
-        data                (bytebuf-sub buffer idx)]
-    { :name      name
-      :filename  filename
-      :mimetype  mimetype
-      :charset   charset
-      :data-len  (count data)
-      :data      data }))
+  (let [[headers-all body] (parse-part-headers-and-body buffer)]
+    (loop [headers headers-all, data (ordered-map) ]
+      (if (empty? headers)
+        ;; part fully parsed -> return data
+        (assoc data :headers headers-all
+                    :data-len (count body)
+                    :data body)
+        (let [header (first headers)]
+          (let [cd  (parse-content-disposition header)
+                ct  (parse-content-type header)]
+            (if (some? cd)
+              (recur (rest headers) (assoc data 
+                                           :name (first cd) 
+                                           :filename (second cd)))
+              (if (some? ct)
+                (recur (rest headers) (assoc data 
+                                             :mimetype (first ct) 
+                                             :charset (second ct)))
+                ;; all other headers are skipped
+                (recur (rest headers) data)))))))))
 
 
-(defn- parse-part-string-line [buffer index]
-  (let [idx-nl (bytebuf-index-of buffer nl-buf index)]
+(defn- parse-part-headers-and-body [buffer]
+  (loop [headers [], idx 0]
+    (let [buf (parse-part-string-line buffer idx)]
+       (when (nil? buf) 
+         (throw (ex :VncException 
+                    """
+                    Invalid part format. No empty line found after the part's \
+                    HTTP headers.
+                    """)))
+        (let [header (str/trim (bytebuf-to-string buf))]
+          (if (empty? header)
+            ;; the empty line marks the end of the headers
+            [headers (bytebuf-sub buffer (+ idx (count buf)))]
+            ;; got a header
+            (recur (conj headers header) (+ idx (count buf))))))))
+
+
+(defn- parse-part-string-line [buffer idx]
+  (let [idx-nl (bytebuf-index-of buffer nl-buf idx)]
     (if (neg? idx-nl) 
-      (bytebuf) ;; empty (not found)
-      (bytebuf-sub buffer index (+ idx-nl (count nl-buf))))))
+      nil
+      (bytebuf-sub buffer idx (+ idx-nl (count nl-buf))))))
 
 
-(defn- parse-part-empty-line [buffer index]
-  (let [idx-nl (bytebuf-index-of buffer nl-buf index)]
-    (if (= index idx-nl) 
-      nl-buf       ;; crlf (empty line)
-      (bytebuf)))) ;; something else (nothing parsed)
+(defn- parse-content-disposition [s]
+  (if-not (str/starts-with? (str/lower-case s) "content-disposition:")
+    nil
+    (let [cd  (str/trim (str/subs s (count "Content-Disposition:")))]   
+      (when-not (match? (str/lower-case cd) "form-data;.*")
+        (throw (ex :VncException 
+                    """
+                    Parts must have a "Content-Disposition" header with subtype \ 
+                    "form-data"! Other subtypes are not supported.
+                    """)))
+
+      (let [name     (extract-match-group1 cd #"form-data;[ ]*name=\"([^\"]+)\".*")
+            filename (extract-match-group1 cd #"form-data;.*[ ]*filename=\"([^\"]+)\"")]
+        [name filename]))))
 
 
-(defn- parse-content-disposition-properties [s]
-  (when-not (match? (str/lower-case s) "content-disposition:[ ]*form-data;.*")
-    (throw (ex :VncException 
-                """
-                Parts must start "Content-Disposition: form-data" header! \
-                Other subtypes than "form-data" are not supported.
-                """)))
-
-  (let [cd       (str/trim (str/subs s (count "Content-Disposition:")))
-        name     (extract-match-group1 cd #".*form-data;[ ]*name=\"([^\"]+)\".*")
-        filename (extract-match-group1 cd #".*form-data;.*[ ]*filename=\"([^\"]+)\"")]
-    [name filename]))
-
-
-(defn- parse-content-type-properties [s]
+(defn- parse-content-type [s]
   (if-not (str/starts-with? (str/lower-case s) "content-type:")
-    [nil nil]
+    nil
     (let [ct                 (str/trim (str/subs s (count "Content-Type:")))
           [mimetype charset] (str/split ct "[ ]*;[ ]*")]
       [mimetype (str/trim (str/strip-start charset "charset="))])))

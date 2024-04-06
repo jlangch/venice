@@ -10,7 +10,9 @@ All notable changes to this project will be documented in this file.
 
 ### Added
 
-- ...
+- improvements to the `:multipart` parser. The parsers is now more robust in
+  parsing the part headers and returns all part headers in its raw form in
+  parsed data map.
 
 
 
