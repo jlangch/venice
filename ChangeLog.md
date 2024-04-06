@@ -20,7 +20,7 @@ All notable changes to this project will be documented in this file.
 
 ### Fixed 
 
-- fixed multipart mimetype handling for content type headers
+- multipart mimetype handling for content type headers
 
 
 
