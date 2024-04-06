@@ -240,8 +240,8 @@
 
   (try
     (let [filename (io/file-path file)
-          mimetype (or (core/name (mimetypes/probe-content-type file) 
-                       "application/octet-stream"))
+          mimetype (or (core/name (mimetypes/probe-content-type file)) 
+                       "application/octet-stream")
           data     (io/slurp file :binary true)]
       (render-file-data-part name filename mimetype nil data os))
     (catch :Exception e  

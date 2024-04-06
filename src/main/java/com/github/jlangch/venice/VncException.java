@@ -121,7 +121,8 @@ public class VncException extends RuntimeException {
                     .callstack()
                     .stream()
                     .map(v -> StringUtil.nullToEmpty(indent) + callFrameToString(v))
-                    .collect(Collectors.joining("\n"));
+                    .collect(Collectors.joining("\n"))
+               + "\n";
     }
 
     public void printVeniceStackTrace() {
