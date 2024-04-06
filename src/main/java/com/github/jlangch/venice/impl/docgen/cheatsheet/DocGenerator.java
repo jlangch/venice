@@ -316,7 +316,6 @@ public class DocGenerator {
         system.addSection(new DocSection("REPL", "repl"));
         system.addSection(new DocSection("Sandbox", "sandbox"));
         system.addSection(new DocSection("Load\u00A0Paths", "loadpaths"));
-        system.addSection(new DocSection("Tap", "tap"));
         content.add(system);
 
         final DocSection java = new DocSection("Java", "java");
@@ -380,6 +379,7 @@ public class DocGenerator {
         final DocSection debug = new DocSection("Test\u00A0&\u00A0Debug", "test");
         debug.addSection(new DocSection("Test", "modules.test"));
         debug.addSection(new DocSection("Tracing", "modules.tracing"));
+        debug.addSection(new DocSection("Tap", "tap"));
         debug.addSection(new DocSection("Timing", "modules.timing"));
         debug.addSection(new DocSection("Benchmark", "modules.benchmark"));
         content.add(debug);
