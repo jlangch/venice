@@ -219,6 +219,9 @@
 
       (. con :connect)  ;; establish the connection
 
+      (when debug? 
+         (dump-request url headers conn-timeout read-timeout))
+
       ;; send body, if we got one
       (when (some? body)
         (let [os (. con :getOutputStream)]
@@ -297,12 +300,15 @@
   (assert (string? uri))
  
   (let [opts      (apply hash-map options)
-        body      (mp/render {"file" (io/file file)})
+        debug?    (:debug opts false)
         headers   (:headers opts {})
         headers   (assoc headers "Content-Type" (mp/http-content-type-header))
+        body      (mp/render {"file" (io/file file)})
         opts      (dissoc opts :file)
         opts      (assoc opts :headers headers)
         opts      (assoc opts :body body)]
+    (when debug? 
+      (printf "Uploading file '%s': %d bytes%n" file (io/file-size file)))
     (apply send :post uri (flatten (seq opts)))))
 
 
@@ -540,7 +546,7 @@
 
 
 (defn- spit-string [str encoding os debug?]
-  (when debug? (printf "Sending string body. size %s, encoding :%s%n" 
+  (when debug? (printf "Sending request with string body. size: %s chars, encoding :%s%n" 
                        (count str) 
                        (name encoding)))
   (try-with [pr (io/wrap-os-with-print-writer os encoding)]
@@ -549,12 +555,23 @@
 
 
 (defn- spit-bytebuf [buf os debug?]
-  (when debug? (printf "Sending byte body. size %s%n"  (count buf)))
+  (when debug? (printf "Sending request with byte body. size: %s bytes%n" 
+                       (count buf)))
   (try-with [os os]
     (io/spit-stream os buf :flush true)))
 
 
+(defn- dump-request [url headers conn-timeout read-timeout]
+  (println)
+  (println     "Dump request:")
+  (println     "   url:               " url)
+  (println     "   conn-timeout:      " conn-timeout)
+  (println     "   read-timeout:      " read-timeout)
+  (println-map "   headers:           " headers))
+
+
 (defn- dump-response [res]
+  (println)
   (println     "Dump response:")
   (println     "   http-status:       " (:http-status res))
   (println     "   content-type:      " (:content-type res))
