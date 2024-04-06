@@ -164,6 +164,7 @@
 
             (import :com.github.jlangch.venice.util.ssl.CustomHostnameVerifier)
             (import :com.github.jlangch.venice.util.ssl.Server_X509TrustManager)
+            (import :com.github.jlangch.venice.util.ssl.TrustAll_X509TrustManager)
             (import :com.github.jlangch.venice.util.ssl.SSLSocketFactory)
             (import :java.security.cert.X509Certificate)
 
@@ -173,7 +174,7 @@
                  "foo.org"    true
                  false))
  
-            (defn check-trust-server  [certs, auth-type]
+            (defn check-trust-server  [certs auth-type]
               (doseq [c certs] (. c :checkValidity))
               (any? #(= "Foo" (. (. % :getIssuerDN) :getName)) certs))
 

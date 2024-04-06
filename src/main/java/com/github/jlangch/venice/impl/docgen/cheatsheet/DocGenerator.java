@@ -310,15 +310,19 @@ public class DocGenerator {
         threads.addSection(new DocSection("Threads", "concurrency.threads"));
         content.add(threads);
 
-        final DocSection system = new DocSection("System\u00A0&\u00A0Java", "system");
+        final DocSection system = new DocSection("System", "system");
         system.addSection(new DocSection("System", "system"));
         system.addSection(new DocSection("System\u00A0Vars", "sysvars"));
-        system.addSection(new DocSection("Java\u00A0Interop", "javainterop"));
         system.addSection(new DocSection("REPL", "repl"));
         system.addSection(new DocSection("Sandbox", "sandbox"));
         system.addSection(new DocSection("Load\u00A0Paths", "loadpaths"));
         system.addSection(new DocSection("Tap", "tap"));
         content.add(system);
+
+        final DocSection java = new DocSection("Java", "java");
+        java.addSection(new DocSection("Java\u00A0Interop", "javainterop"));
+        java.addSection(new DocSection("Java", "modules.java"));
+        content.add(java);
 
         final DocSection util = new DocSection("Util", "util");
         util.addSection(new DocSection("Math", "math"));
@@ -357,7 +361,6 @@ public class DocGenerator {
         extmod.addSection(new DocSection("AsciiTable", "modules.asciitable"));
         extmod.addSection(new DocSection("Hexdump", "modules.hexdump"));
         extmod.addSection(new DocSection("Matrix", "modules.matrix"));
-        extmod.addSection(new DocSection("Java", "modules.java"));
         extmod.addSection(new DocSection("Shell", "modules.shell"));
         extmod.addSection(new DocSection("Geo IP", "modules.geoip"));
         extmod.addSection(new DocSection("Mimetypes", "modules.mimetypes"));
