@@ -59,6 +59,8 @@
           | :ssl-socket-factory | Sets the SSL socket factory. An object of type \
                                  `:javax.net.ssl.SSLSocketFactory`. ¶\
                                  Use only for HTTPS requests |
+          | :use-caches         | A boolean indicating whether or not to allow \
+                                  caching. Defaults to false |
           | :user-agent         | User agent. Defaults to "Venice HTTP client (legacy)" |
           | :debug              | Debug true/false. Defaults to false |
 
@@ -153,7 +155,47 @@
               (println "Status:" status)
               (if (= "text/plain" type)
                 (println (hc/slurp-string (:data-stream response) encoding)))))
-          """ )
+          """,
+                    """
+          ;; GET (get) via SSL
+          (do
+            (load-module :http-client-legacy ['http-client-legacy :as 'hc])
+            (load-module :java ['java :as 'j])
+
+            (import :com.github.jlangch.venice.util.ssl.CustomHostnameVerifier)
+            (import :com.github.jlangch.venice.util.ssl.Server_X509TrustManager)
+            (import :com.github.jlangch.venice.util.ssl.SSLSocketFactory)
+            (import :java.security.cert.X509Certificate)
+
+            (defn verify-host [hostname]
+               (case hostname
+                 "localhost"  true
+                 "foo.org"    true
+                 false))
+ 
+            (defn check-trust-server  [certs, auth-type]
+              (doseq [c certs] (. c :checkValidity))
+              (any? #(= "Foo" (. (. % :getIssuerDN) :getName)) certs))
+
+
+            (let [trust-manager-all     (. :TrustAll_X509TrustManager :new)
+                  trust-manager-server  (. :Server_X509TrustManager :new (j/as-bipredicate check-trust-server))
+                  hostname-verifier     (. :CustomHostnameVerifier :new verify-host)
+                  response (hc/send :get 
+                                    "https://localhost:8080/employees" 
+                                    :headers { "Accept" "application/json, text/plain" }
+                                    :hostname-verifier  hostname-verifier
+                                    :ssl-socket-factory (. :SSLSocketFactory trust-manager-all)
+                                    :debug true)
+                  status   (:http-status response)
+                  type     (:content-type response)
+                  encoding (:content-encoding response)]
+              (println "Status:" status)
+              (if (and (= 200 status) (= "application/json" type))
+                (println (hc/slurp-json (:data-stream response) encoding))
+                (println (hc/slurp-string (:data-stream response) encoding)))))
+          """,
+ )
      :see-also '(
           "http-client-legacy/upload-file"
           "http-client-legacy/upload-multipart"
@@ -172,6 +214,7 @@
         follow-redirects   (:follow-redirects opts)
         hostname-verifier  (:hostname-verifier opts)
         ssl-socket-factory (:ssl-socket-factory opts)
+        use-caches         (:use-caches opts false)
         user-agent         (:user-agent opts hc-user-agent)
         debug?             (true? (:debug opts false))
                             ;; default headers
@@ -208,6 +251,8 @@
       (when (some? read-timeout)
         (. con :setReadTimeout read-timeout))
 
+      (. con :setUseCaches use-caches)
+
       (doseq [[k v] headers] 
         (. con :setRequestProperty k (str v)))
 
@@ -220,7 +265,7 @@
       (. con :connect)  ;; establish the connection
 
       (when debug? 
-         (dump-request url headers conn-timeout read-timeout))
+         (dump-request url headers conn-timeout read-timeout use-caches))
 
       ;; send body, if we got one
       (when (some? body)
@@ -262,6 +307,8 @@
           | :ssl-socket-factory | Sets the SSL socket factory. An object of type \
                                  `:javax.net.ssl.SSLSocketFactory`. ¶\
                                  Use only for HTTPS requests |
+          | :use-caches         | A boolean indicating whether or not to allow \
+                                  caching. Defaults to false |
           | :user-agent         | User agent. Defaults to "Venice HTTP client (legacy)" |
           | :debug              | Debug true/false. Defaults to false |
 
@@ -356,6 +403,8 @@
           | :ssl-socket-factory | Sets the SSL socket factory. An object of type \
                                  `:javax.net.ssl.SSLSocketFactory`. ¶\
                                  Use only for HTTPS requests |
+          | :use-caches         | A boolean indicating whether or not to allow \
+                                  caching. Defaults to false |
           | :user-agent         | User agent. Defaults to "Venice HTTP client (legacy)" |
           | :debug              | Debug true/false. Defaults to false |
 
@@ -561,12 +610,13 @@
     (io/spit-stream os buf :flush true)))
 
 
-(defn- dump-request [url headers conn-timeout read-timeout]
+(defn- dump-request [url headers conn-timeout read-timeout use-caches]
   (println)
   (println     "Dump request:")
   (println     "   url:               " url)
   (println     "   conn-timeout:      " conn-timeout)
   (println     "   read-timeout:      " read-timeout)
+  (println     "   use-caches:        " use-caches)
   (println-map "   headers:           " headers))
 
 

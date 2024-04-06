@@ -24,6 +24,7 @@ package com.github.jlangch.venice.util.ssl;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.function.Predicate;
 
 import javax.net.ssl.HostnameVerifier;
 import javax.net.ssl.SSLSession;
@@ -35,6 +36,7 @@ public class CustomHostnameVerifier implements HostnameVerifier {
         if (hostname != null) {
             hostnames.add(hostname);
         }
+        predicate = null;
     }
 
     public CustomHostnameVerifier(final List<String> hostnames) {
@@ -44,17 +46,27 @@ public class CustomHostnameVerifier implements HostnameVerifier {
                      .filter(h -> !h.isEmpty())
                      .forEach(h -> hostnames.add(h));
         }
+        predicate = null;
     }
 
+    public CustomHostnameVerifier(final Predicate<String> predicate) {
+        this.predicate = predicate;
+    }
 
     @Override
     public boolean verify(
             final String hostname,
             final SSLSession sslSession
     ) {
-        return hostnames.contains(hostname);
+        if (predicate != null) {
+            return predicate.test(hostname);
+        }
+        else {
+            return hostnames.contains(hostname);
+        }
     }
 
 
     final Set<String> hostnames = new HashSet<>();
+    final Predicate<String> predicate;
 }

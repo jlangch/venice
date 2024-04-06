@@ -194,6 +194,7 @@
     T|tests        run the Venice unit tests
     t|task t1 tN   run one or more Venice project Gradle tasks
     c|cheatsheet   generate the Venice cheatsheet
+    P|pdfdoc       show the cheat sheet PDF
     d|dependencies list the Venice dependencies
     e|eclipse      update the Eclipse project classpath
     p|publish k p  publish Venice artefacts, requires pgp-key & password
@@ -239,6 +240,7 @@
                                     (start-repl (first args)))
     (match? cmd "s|start")        (start-repl (first args))
     (match? cmd "c|cheatsheet")   (gradle-tasks "cheatsheet")
+    (match? cmd "P|pdfdoc")       (sh/open (io/file proj-home "cheatsheet.pdf"))
     (match? cmd "d|dependencies") (gradle-tasks "dependencies")
     (match? cmd "e|eclipse")      (gradle-tasks "eclipse")
     (match? cmd "T|tests")        (gradle-tasks "clean" "test")
