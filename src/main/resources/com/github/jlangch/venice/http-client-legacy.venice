@@ -156,8 +156,8 @@
               (if (= "text/plain" type)
                 (println (hc/slurp-string (:data-stream response) encoding)))))
           """,
-                    """
-          ;; GET (get) via SSL
+          """
+          ;; GET over SSL
           (do
             (load-module :http-client-legacy ['http-client-legacy :as 'hc])
             (load-module :java ['java :as 'j])
@@ -196,7 +196,43 @@
                 (println (hc/slurp-json (:data-stream response) encoding))
                 (println (hc/slurp-string (:data-stream response) encoding)))))
           """,
- )
+          """
+          ;; OAuth blueprint
+          (do
+            (load-module :http-client-legacy ['http-client-legacy :as 'hc])
+
+            (defn get-access-token [api-key api-key-secret]
+              (let [encoded-secret (-> (str api-key ":" api-key-secret)
+                                       (bytebuf-from-string :utf-8)
+                                       (str/encode-base64))
+                    response (hc/send :post 
+                                      "https://.../oauth2/token" 
+                                      :headers { "Accept" "application/json, text/plain"
+                                                 "Authorization" (str "Basic " encoded-secret)
+                                                 "Content-Type" "application/x-www-form-urlencoded" }
+                                      :body "grant_type=client_credentials")
+                  status   (:http-status response)
+                  type     (:content-type response)
+                  encoding (:content-encoding response)]
+                (if (and (= 200 status) (= "application/json" type))
+                  (as-> (:data-stream response) v
+                        (hc/slurp-json v encoding)
+                        (get v "access_token"))
+                  (throw (ex VncException "Failed to get OAuth access token")))))
+            
+            (defn list-member [access-token list-id]
+              (let [response (hc/send :get 
+                                      (str "https://.../1.1/lists/members.json?list_id=" list-id) 
+                                      :headers { "Accept" "application/json, text/plain" 
+                                                 "Authorization" (str "Bearer "  accessToken)})
+                  status   (:http-status response)
+                  type     (:content-type response)
+                  encoding (:content-encoding response)]
+                (if (and (= 200 status) (= "application/json" type))
+                  (-> (:data-stream response)
+                      (hc/slurp-json encoding))
+                  (throw (ex VncException "Failed to list members"))))))
+          """ )
      :see-also '(
           "http-client-legacy/upload-file"
           "http-client-legacy/upload-multipart"
