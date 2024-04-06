@@ -32,18 +32,18 @@ import javax.net.ssl.SSLSession;
 public class CustomHostnameVerifier implements HostnameVerifier {
 
     public CustomHostnameVerifier(final String hostname) {
-    	if (hostname != null) {
-    		hostnames.add(hostname);
-    	}
+        if (hostname != null) {
+            hostnames.add(hostname);
+        }
     }
 
     public CustomHostnameVerifier(final List<String> hostnames) {
-    	if (hostnames != null) {
-    		hostnames.stream()
-    				.filter(h -> h != null)
-    				.filter(h -> !h.isEmpty())
-    				.forEach(h -> hostnames.add(h));
-    	}
+        if (hostnames != null) {
+            hostnames.stream()
+                     .filter(h -> h != null)
+                     .filter(h -> !h.isEmpty())
+                     .forEach(h -> hostnames.add(h));
+        }
     }
 
 

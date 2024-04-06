@@ -38,7 +38,7 @@ public abstract class SSLSocketFactoryUtil {
     }
 
     public static SSLSocketFactory create(
-    		final TlsProtocol protocol
+            final TlsProtocol protocol
     ) throws IOException, NoSuchAlgorithmException, KeyManagementException {
         return create(protocol, null);
     }
