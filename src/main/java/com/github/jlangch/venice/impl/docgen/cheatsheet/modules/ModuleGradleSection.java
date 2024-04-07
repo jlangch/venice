@@ -36,6 +36,11 @@ public class ModuleGradleSection implements ISectionBuilder {
     public DocSection section() {
         final DocSection section = new DocSection(
                                             "Gradle",
+                                            "Uses the 'gradle.sh' or 'gradle.bat' shell scripts from a " +
+                                            "locally installed Gradle version to run Gradle commands on " +
+                                            "a project.\n\n" +
+                                            "For projects based on the Gradle Wrapper use the :gradlew " +
+                                            "module instead.",
                                             "modules.gradle");
 
         final DocSection all = new DocSection("(load-module :gradle)", id());

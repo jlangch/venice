@@ -56,7 +56,7 @@ import com.github.jlangch.venice.impl.docgen.cheatsheet.modules.ModuleGradleSect
 import com.github.jlangch.venice.impl.docgen.cheatsheet.modules.ModuleGradleWrapperSection;
 import com.github.jlangch.venice.impl.docgen.cheatsheet.modules.ModuleGrepSection;
 import com.github.jlangch.venice.impl.docgen.cheatsheet.modules.ModuleHexdumpSection;
-import com.github.jlangch.venice.impl.docgen.cheatsheet.modules.ModuleHttpClientLegacySection;
+import com.github.jlangch.venice.impl.docgen.cheatsheet.modules.ModuleHttpClientJ8Section;
 import com.github.jlangch.venice.impl.docgen.cheatsheet.modules.ModuleHttpClientSection;
 import com.github.jlangch.venice.impl.docgen.cheatsheet.modules.ModuleInstallerSection;
 import com.github.jlangch.venice.impl.docgen.cheatsheet.modules.ModuleJavaSection;
@@ -141,7 +141,7 @@ public class DocGenerator {
                         "zipvault",   "gradlew",    "matrix",          "ascii-table",
                         "docker",     "cargo",      "cargo-arangodb",  "cargo-qdrant",
                         "installer",  "tomcat",     "ring",
-                        "mimetypes",  "multipart",   "http-client",    "http-client-legacy"));
+                        "mimetypes",  "multipart",  "http-client",     "http-client-j8"));
 
         final IVeniceInterpreter venice = new VeniceInterpreter(new AcceptAllInterceptor());
 
@@ -358,7 +358,6 @@ public class DocGenerator {
         extmod.addSection(new DocSection("Fonts", "modules.fonts"));
         extmod.addSection(new DocSection("Cryptography", "modules.cryptography"));
         extmod.addSection(new DocSection("AsciiTable", "modules.asciitable"));
-        extmod.addSection(new DocSection("Hexdump", "modules.hexdump"));
         extmod.addSection(new DocSection("Matrix", "modules.matrix"));
         extmod.addSection(new DocSection("Shell", "modules.shell"));
         extmod.addSection(new DocSection("Geo IP", "modules.geoip"));
@@ -380,13 +379,14 @@ public class DocGenerator {
         debug.addSection(new DocSection("Test", "modules.test"));
         debug.addSection(new DocSection("Tracing", "modules.tracing"));
         debug.addSection(new DocSection("Tap", "tap"));
+        debug.addSection(new DocSection("Hexdump", "modules.hexdump"));
         debug.addSection(new DocSection("Timing", "modules.timing"));
         debug.addSection(new DocSection("Benchmark", "modules.benchmark"));
         content.add(debug);
 
         final DocSection web = new DocSection("Web", "web");
         //web.addSection(new DocSection("Http\u00A0Client", "modules.http-client"));
-        web.addSection(new DocSection("Http\u00A0Client\u00A0Legacy", "modules.http-client-legacy"));
+        web.addSection(new DocSection("Http\u00A0Client\u00A0J8", "modules.http-client-j8"));
         web.addSection(new DocSection("Tomcat\u00A0WebApp\u00A0Server", "modules.tomcat"));
         web.addSection(new DocSection("Ring", "modules.ring"));
         web.addSection(new DocSection("Multipart", "modules.multipart"));
@@ -521,7 +521,7 @@ public class DocGenerator {
         		new ModuleAnsiSection(diBuilder).section(),
                 new ModuleMimetypesSection(diBuilder).section(),
                 new ModuleMultipartSection(diBuilder).section(),
-                new ModuleHttpClientLegacySection(diBuilder).section(),
+                new ModuleHttpClientJ8Section(diBuilder).section(),
         		new ModuleInstallerSection(diBuilder).section());
     }
 

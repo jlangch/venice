@@ -84,7 +84,7 @@ public class Modules {
                         "grep",
                         "hexdump",
                         "http-client",
-                        "http-client-legacy",
+                        "http-client-j8",
                         "ivy",
                         "jackson",
                         "java",

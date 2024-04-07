@@ -26,33 +26,33 @@ import com.github.jlangch.venice.impl.docgen.cheatsheet.DocSection;
 import com.github.jlangch.venice.impl.docgen.cheatsheet.ISectionBuilder;
 
 
-public class ModuleHttpClientLegacySection implements ISectionBuilder {
+public class ModuleHttpClientJ8Section implements ISectionBuilder {
 
-    public ModuleHttpClientLegacySection(final DocItemBuilder diBuilder) {
+    public ModuleHttpClientJ8Section(final DocItemBuilder diBuilder) {
         this.diBuilder = diBuilder;
     }
 
     @Override
     public DocSection section() {
         final DocSection section = new DocSection(
-        								"HTTP Client Legacy",
+        								"HTTP Client J8",
         								"HTTP Client based on HttpUrlConnection (Java 8+)",
-        								"modules.http-client-legacy");
+        								"modules.http-client-j8");
 
-        final DocSection all = new DocSection("(load-module :http-client-legacy)", id());
+        final DocSection all = new DocSection("(load-module :http-client-j8)", id());
         section.addSection(all);
 
         final DocSection hc = new DocSection("HTTP Client", id());
         all.addSection(hc);
-        hc.addItem(diBuilder.getDocItem("http-client-legacy/send", false));
-        hc.addItem(diBuilder.getDocItem("http-client-legacy/upload-file", false));
-        hc.addItem(diBuilder.getDocItem("http-client-legacy/upload-multipart", false));
+        hc.addItem(diBuilder.getDocItem("http-client-j8/send", false));
+        hc.addItem(diBuilder.getDocItem("http-client-j8/upload-file", false));
+        hc.addItem(diBuilder.getDocItem("http-client-j8/upload-multipart", false));
 
         final DocSection utils = new DocSection("Utils", id());
         all.addSection( utils);
-        utils.addItem(diBuilder.getDocItem("http-client-legacy/slurp-string", false));
-        utils.addItem(diBuilder.getDocItem("http-client-legacy/slurp-json", false));
-        utils.addItem(diBuilder.getDocItem("http-client-legacy/slurp-bytebuf", false));
+        utils.addItem(diBuilder.getDocItem("http-client-j8/slurp-string", false));
+        utils.addItem(diBuilder.getDocItem("http-client-j8/slurp-json", false));
+        utils.addItem(diBuilder.getDocItem("http-client-j8/slurp-bytebuf", false));
 
         return section;
     }

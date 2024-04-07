@@ -18,7 +18,7 @@ All notable changes to this project will be documented in this file.
 
 ### Added
 
-- support for module `:http-client-legacy` to *ungzip* a response data stream
+- support for module `:http-client-j8` to *ungzip* a response data stream
   with the content encoding 'gzip'  
 - function `io/wrap-is-with-gzip-input-stream` to gzip data sent to the stream
 - function `io/wrap-os-with-gzip-output-stream` to ungzip data read from the stream
@@ -36,7 +36,7 @@ All notable changes to this project will be documented in this file.
 
 ### Added
 
-- module `:http-client-legacy`. A handy HTTP client based on the JDK HttpUrlConnection.
+- module `:http-client-j8`. A handy HTTP client based on the JDK HttpUrlConnection.
   The HttpClient can be used to send requests and retrieve their responses. It supports
   sending multi-part requests. The HTTP client does not depend on 3rd party libraries!
   There are REST and file upload examples in the Venice script examples directory.
@@ -194,7 +194,8 @@ This release focuses on Windows.
 
 - an :installer module to simplify the installation of 3rdparty libraries
   from within the REPL and to simplify the REPL setup process
-- improvements to REPL demo fonts. See the font demo in the [PDF readme](doc/readme/pdf.md#fonts) chapter.
+- improvements to REPL demo fonts. See the font demo in the 
+  [PDF readme](doc/readme/pdf.md#fonts) chapter.
 - an optional force flag to maven/download
 
 ### Fixed 

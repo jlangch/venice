@@ -153,7 +153,7 @@
 ;; GET (get)
 (comment
   (do
-    (load-module :http-client-legacy ['http-client-legacy :as 'hc])
+    (load-module :http-client-j8 ['http-client-j8 :as 'hc])
 
     (let [res      (hc/send :get 
                             "http://localhost:8080/employees" 
@@ -171,7 +171,7 @@
 ;; POST (create)
 (comment
   (do
-    (load-module :http-client-legacy ['http-client-legacy :as 'hc])
+    (load-module :http-client-j8 ['http-client-j8 :as 'hc])
     
     (let [res      (hc/send :post 
                             "http://localhost:8080/employees" 
@@ -192,7 +192,7 @@
 ;; PUT (update)
 (comment 
   (do
-    (load-module :http-client-legacy ['http-client-legacy :as 'hc])
+    (load-module :http-client-j8 ['http-client-j8 :as 'hc])
     
     (let [res      (hc/send :put 
                             "http://localhost:8080/employees/1001" 
@@ -214,7 +214,7 @@
 ;; DELETE (delete)
 (comment 
   (do
-    (load-module :http-client-legacy ['http-client-legacy :as 'hc])
+    (load-module :http-client-j8 ['http-client-j8 :as 'hc])
     
     (let [res      (hc/send :delete 
                             "http://localhost:8080/employees/1000" 

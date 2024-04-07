@@ -716,12 +716,13 @@ public class IOFunctionsStreams {
                     .arglists(
                         "(io/wrap-is-with-gzip-input-stream is)")
                     .doc(
-                        "Wraps an `java.io.InputStream` is with a `java.io.GZIPInputStream` " +
+                        "Wraps a `:java.io.InputStream` is with a `:java.io.GZIPInputStream` " +
                         "To ungzip the data read from the input stream.\n\n" +
                         "Note: The caller is responsible for closing the reader!")
                     .examples(
                         "(let [text      \"hello, hello, hello\"                        \n" +
-                        "      gzip-buf  (io/gzip (bytebuf-from-string text :utf-8))]   \n" +
+                        "      gzip-buf  (-> (bytebuf-from-string text :utf-8)          \n" +
+                        "                    (io/gzip)]                                 \n" +
                         "  (try-with [is (-> (io/bytebuf-in-stream gzip-buf)            \n" +
                         "                    (io/wrap-is-with-gzip-input-stream))]      \n" +
                         "    (-> (io/slurp is :binary true)                             \n" +
@@ -763,7 +764,7 @@ public class IOFunctionsStreams {
                     .arglists(
                         "(io/wrap-os-with-gzip-output-stream is)")
                     .doc(
-                        "Wraps an `java.io.OutputStream` is with a `java.io.GZIPOutputStream` " +
+                        "Wraps a `:java.io.OutputStream` is with a `:java.io.GZIPOutputStream` " +
                         "To gzip the data sent to the output stream.\n\n" +
                         "Note: The caller is responsible for closing the reader!")
                     .examples(
