@@ -1,9 +1,33 @@
+/*   __    __         _
+ *   \ \  / /__ _ __ (_) ___ ___
+ *    \ \/ / _ \ '_ \| |/ __/ _ \
+ *     \  /  __/ | | | | (_|  __/
+ *      \/ \___|_| |_|_|\___\___|
+ *
+ *
+ * Copyright 2017-2024 Venice
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
 package com.github.jlangch.venice.util.servlet;
 
 
+/**
+ * Defines the HTTP status codes
+ */
 public enum HttpStatus {
 
-	/* 2XX: generally "OK" */
+    /* 2XX: generally "OK" */
 
     HTTP_OK(200, "OK"),
 
@@ -86,27 +110,80 @@ public enum HttpStatus {
 
 
 
-
+    /**
+     * @return the HTTP status code (integer)
+     */
     public int code() {
-		return code;
-	}
+        return code;
+    }
 
-	public String description() {
-		return description;
-	}
+    /**
+     * @return the HTTP status short description
+     */
+    public String description() {
+        return description;
+    }
 
-	public static HttpStatus of(final int code) {
-		for (HttpStatus s : values()) {
-			if (s.code() == code) {
-				return s;
-			}
-		}
+    /**
+     * @return the HTTP status enum based on an integer value
+     */
+    public static HttpStatus of(final int code) {
+        for (HttpStatus s : values()) {
+            if (s.code() == code) {
+                return s;
+            }
+        }
 
-		throw new RuntimeException("Invalid HttpStatus code " + code);
-	}
+        throw new RuntimeException("Invalid HttpStatus code " + code);
+    }
 
 
-	@Override
+    /**
+     * Checks if the passed HTTP status code is in the range
+     * of the OK codes (200 ... 299)
+     *
+     * @param code A HTTP status code integer value
+     * @return The corresponding HTTP status enum
+     */
+    public static boolean isOkRange(final int code) {
+        return code >= 200 && code <= 299;
+    }
+
+    /**
+     * Checks if the passed HTTP status code is in the range
+     * of the REDIRECT codes (300 ... 399)
+     *
+     * @param code A HTTP status code integer value
+     * @return The corresponding HTTP status enum
+     */
+    public static boolean isRedirectRange(final int code) {
+        return code >= 300 && code <= 399;
+    }
+
+    /**
+     * Checks if the passed HTTP status code is in the range
+     * of the CLIENT codes (400 ... 499)
+     *
+     * @param code A HTTP status code integer value
+     * @return The corresponding HTTP status enum
+     */
+    public static boolean isClientRange(final int code) {
+        return code >= 400 && code <= 499;
+    }
+
+    /**
+     * Checks if the passed HTTP status code is in the range
+     * of the SERVER ERROR codes (500 ... 599)
+     *
+     * @param code A HTTP status code integer value
+     * @return The corresponding HTTP status enum
+     */
+    public static boolean isServerErrorRange(final int code) {
+        return code >= 500 && code <= 599;
+    }
+
+
+    @Override
     public String toString() {
         return name();
     }
@@ -116,6 +193,7 @@ public enum HttpStatus {
         this.code = code;
         this.description = description;
     }
+
 
     private final int code;
     private final String description;

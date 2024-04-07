@@ -622,12 +622,12 @@
 
 (defn- get-response [con]
   (let [status              (long (. con :getResponseCode))
-        ok?                 (<= 200 status 299)
+        ok?                 (. :HttpStatus :isOkRange status)
         headers             (response-headers con)
         content-type        (get headers "Content-Type")
         [mimetype charset]  (parse-content-type content-type)
         content-encoding    (get headers "Content-Encoding")
-        effective-url       (. con :getURL)]  ;; the url after a possible  redirect
+        effective-url       (. con :getURL)]  ;; the url after a possible redirect
     (ordered-map
       :http-status            status 
       :http-status-name       (str (. :HttpStatus :of status)) 
