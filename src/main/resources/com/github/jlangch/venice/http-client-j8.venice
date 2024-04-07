@@ -64,7 +64,9 @@
           | :use-caches         | A boolean indicating whether or not to allow \
                                   caching. Defaults to false |
           | :user-agent         | User agent. Defaults to "Venice HTTP client (legacy)" |
-          | :debug              | Debug true/false. Defaults to false |
+          | :debug              | Debug true/false. Defaults to false. ¶\
+                                  In debug mode prints the HTTP request and \
+                                  response data  |
 
           ¶¶*Returns a map with the response fields:*
 
@@ -358,7 +360,9 @@
           | :use-caches         | A boolean indicating whether or not to allow \
                                   caching. Defaults to false |
           | :user-agent         | User agent. Defaults to "Venice HTTP client (legacy)" |
-          | :debug              | Debug true/false. Defaults to false |
+          | :debug              | Debug true/false. Defaults to false. ¶\
+                                  In debug mode prints the HTTP request and \
+                                  response data and info on the uploaded file  |
 
           ¶¶*Returns a map with the response fields:*
 
@@ -460,7 +464,9 @@
           | :use-caches         | A boolean indicating whether or not to allow \
                                   caching. Defaults to false |
           | :user-agent         | User agent. Defaults to "Venice HTTP client (legacy)" |
-          | :debug              | Debug true/false. Defaults to false |
+          | :debug              | Debug true/false. Defaults to false. ¶\
+                                  In debug mode prints the HTTP request (multipart \
+                                  data included) and the response data |
 
           ¶¶*Returns a map with the response fields:*
 
