@@ -627,7 +627,7 @@
         content-type        (get headers "Content-Type")
         [mimetype charset]  (parse-content-type content-type)
         content-encoding    (get headers "Content-Encoding")
-        effective-url       (. conn :getURL)]  ;; after a possible redirect
+        effective-url       (. con :getURL)]  ;; after a possible redirect
     (ordered-map
       :http-status            status 
       :http-status-name       (str (. :HttpStatus :of status)) 
@@ -687,7 +687,7 @@
 (defn- dump-response [res]
   (println)
   (println     "Dump response:")
-  (println     "   http-status:           " (:http-status res))
+  (println     "   http-status:           " (:http-status res) (str "(" (:http-status-name res) ")"))
   (println     "   content-type:          " (:content-type res))
   (println     "   content-type-mimetype: " (:content-type-mimetype res))
   (println     "   content-type-charset:  " (:content-type-charset res))

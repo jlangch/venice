@@ -58,6 +58,7 @@
 (defonce session-id "JSESSIONID")
 
 
+
 (def https-ciphers
   (str "TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384:"
        "TLS_ECDHE_ECDSA_WITH_AES_256_GCM_SHA384:"
@@ -201,6 +202,15 @@
     (let [tomcat  (doto (. :Tomcat :new)
                         (. :setBaseDir (io/file-path base-dir)))
           service (. tomcat :getService)]
+
+        ;; // Define a web application context.
+        ;; Context ctx = tomcat.addWebapp("", new File(".").getAbsolutePath());
+        ;; // Create and configure a CookieProcessor
+        ;; Rfc6265CookieProcessor cookieProcessor = new Rfc6265CookieProcessor();
+        ;; // Customize cookieProcessor as needed
+        ;; cookieProcessor.setSameSiteCookies("lax")
+        ;; ctx.setCookieProcessor(cookieProcessor);
+
       (if (:executor? options true)
         (tomcat/create-executored-connectors tomcat/create-connector service options)
         (tomcat/create-connector service options))
@@ -324,6 +334,8 @@
           | :max-threads       | max number of threads in executor (default: 200) |
           | :min-spare-threads | minimum number of spare threads in executor (default: 25) |
           | :max-idle-time     | max milliseconds before an idle thread shutsdown (default: 60000) |
+          | :max-post-size     | max post size for file uploads. Tomcat defaults to 2MB. \
+                                 A value of -1 specifies a indefinite upload size
 
           ¶¶*Servlet options:*
 

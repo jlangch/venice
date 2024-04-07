@@ -95,7 +95,7 @@ public enum HttpStatus {
 		return description;
 	}
 
-	public HttpStatus of(final int code) {
+	public static HttpStatus of(final int code) {
 		for (HttpStatus s : values()) {
 			if (s.code() == code) {
 				return s;
