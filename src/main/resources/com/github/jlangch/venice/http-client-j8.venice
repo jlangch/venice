@@ -30,6 +30,8 @@
 (import :java.net.HttpURLConnection)
 (import :java.net.HttpsURLConnection)
 
+(import :com.github.jlangch.venice.util.servlet.HttpStatus)
+
 (defonce ^:private hc-user-agent (str/format "Venice HTTP client %s (legacy)" (version)))
 
 
@@ -624,16 +626,20 @@
         headers             (response-headers con)
         content-type        (get headers "Content-Type")
         [mimetype charset]  (parse-content-type content-type)
-        content-encoding    (get headers "Content-Encoding")]
-    { :http-status            status 
+        content-encoding    (get headers "Content-Encoding")
+        effective-url       (. conn :getURL)]  ;; after a possible redirect
+    (ordered-map
+      :http-status            status 
+      :http-status-name       (str (. :HttpStatus :of status)) 
       :content-type           content-type
       :content-type-mimetype  mimetype
       :content-type-charset   charset
       :content-encoding       content-encoding
       :content-length         (. con :getContentLengthLong)
+      :effective-url          effective-url
       :headers                headers 
       :data-stream             (if ok? (. con :getInputStream) 
-                                       (. con :getErrorStream)) } ))
+                                       (. con :getErrorStream)))))
 
 
 (defn- parse-content-type [content-type]

@@ -966,8 +966,8 @@
   (try 
     (let [content-type (. request :getContentType)
           multipart?   (match? (or content-type "") #"multipart/form-data(;.*)?")] 
-
-      { :server-port        (. request :getServerPort)
+      (ordered-map
+        :server-port        (. request :getServerPort)
         :server-name        (. request :getServerName)
         :remote-addr        (. request :getRemoteAddr)
         :uri                (. request :getRequestURI)
@@ -983,7 +983,7 @@
         :character-encoding (. request :getCharacterEncoding)
         :ssl-client-cert    (ring/get-client-cert request)
         :parts              (if multipart? (ring/map-parts request) '())
-        :body               (. request :getInputStream) } )
+        :body               (. request :getInputStream)))
 
     (catch [:cause-type :java.lang.IllegalStateException] e
       (let [e (ex-cause e)]
@@ -1017,7 +1017,8 @@
 
 
 (defn- map-part [part]
-  { :name         (. part :getName)
+  (ordered-map
+    :name         (. part :getName)
     :file-name    (let [v (. part :getHeader "Content-Disposition")
                         m (regex/matcher #".*filename=\"(.*)\"" v)]
                     (when (regex/matches? m)
@@ -1032,7 +1033,7 @@
                     {}
                     (into '() (. part :getHeaderNames)))
     :in-stream    (. part :getInputStream)
-    :delete-fn    (fn [] (. part :delete)) })
+    :delete-fn    (fn [] (. part :delete))))
 
 
 (defn

@@ -12,6 +12,11 @@ All notable changes to this project will be documented in this file.
 
 - ...
 
+### Changed
+
+- the http client to provide the name of the HTTP status code in the response 
+  map. E.g.: `HTTP_OK` for status code 200
+
 
 
 ## [1.12.10] - 2024-04-07
