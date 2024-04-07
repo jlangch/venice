@@ -722,7 +722,7 @@ public class IOFunctionsStreams {
                     .examples(
                         "(let [text      \"hello, hello, hello\"                        \n" +
                         "      gzip-buf  (-> (bytebuf-from-string text :utf-8)          \n" +
-                        "                    (io/gzip)]                                 \n" +
+                        "                    (io/gzip))]                                \n" +
                         "  (try-with [is (-> (io/bytebuf-in-stream gzip-buf)            \n" +
                         "                    (io/wrap-is-with-gzip-input-stream))]      \n" +
                         "    (-> (io/slurp is :binary true)                             \n" +

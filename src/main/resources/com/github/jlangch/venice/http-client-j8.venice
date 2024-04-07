@@ -615,6 +615,80 @@
   (io/slurp-stream is :binary true))
 
 
+(defn 
+  ^{ :arglists '(
+         "(status-ok-range? status)")
+     :doc """
+          Returns true if the passed HTTP status code is in the range
+          of the OK codes (200 ... 299) else false.
+          """ 
+     :examples '(
+          "(http-client-j8/status-ok-range? 200)" )
+     :see-also '(
+          "http-client-j8/status-redirect-range?"
+          "http-client-j8/status-client-range?"
+          "http-client-j8/status-server-error-range?" ) }
+
+  status-ok-range? [status] 
+  
+  (. :HttpStatus :isOkRange status))
+
+
+(defn 
+  ^{ :arglists '(
+         "(status-redirect-range? status)")
+     :doc """
+          Returns true if the passed HTTP status code is in the range
+          of the REDIRECT codes (300 ... 399) else false.
+          """ 
+     :examples '(
+          "(http-client-j8/status-redirect-range? 300)" )
+     :see-also '(
+          "http-client-j8/status-ok-range?"
+          "http-client-j8/status-client-range?"
+          "http-client-j8/status-server-error-range?" ) }
+
+  status-redirect-range? [status] 
+  
+  (. :HttpStatus :isRedirectRange status))
+
+(defn 
+  ^{ :arglists '(
+         "(status-client-range? status)")
+     :doc """
+          Returns true if the passed HTTP status code is in the range
+          of the CLIENT codes (400 ... 499) else false.
+          """ 
+     :examples '(
+          "(http-client-j8/status-client-range? 400)" )
+     :see-also '(
+          "http-client-j8/status-ok-range?"
+          "http-client-j8/status-redirect-range?"
+          "http-client-j8/status-server-error-range?" ) }
+
+  status-client-range? [status] 
+  
+  (. :HttpStatus :isClientRange status))
+
+
+(defn 
+  ^{ :arglists '(
+         "(status-oserver-error-range? status)")
+     :doc """
+          Returns true if the passed HTTP status code is in the range
+          of the SERVER ERROR codes (500 ... 599) else false.
+          """ 
+     :examples '(
+          "(http-client-j8/status-server-error-range? 500)" )
+     :see-also '(
+          "http-client-j8/status-ok-range?"
+          "http-client-j8/status-redirect-range?"
+          "http-client-j8/status-client-range?" ) }
+
+  status-server-error-range? [status] 
+  
+  (. :HttpStatus :isServerErrorRange status))
+
 
 ;; -----------------------------------------------------------------------------
 ;; Helpers
@@ -622,7 +696,7 @@
 
 (defn- get-response [con]
   (let [status              (long (. con :getResponseCode))
-        ok?                 (. :HttpStatus :isOkRange status)
+        ok?                 (status-ok-range? status)
         headers             (response-headers con)
         content-type        (get headers "Content-Type")
         [mimetype charset]  (parse-content-type content-type)

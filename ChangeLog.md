@@ -12,12 +12,11 @@ All notable changes to this project will be documented in this file.
 
 - the effective url (the url after a redirect) in the responses of the
   http client
-- the Java enum class `:com.github.jlangch.venice.util.servlet.HttpStatus` that
-  defines all the HTTP status codes.
-     *  `(. :HttpStatus :of 200)` 
-     *  `(. (. :HttpStatus :of 200) :code)` => 200I
-     *  `(. (. :HttpStatus :of 200) :name)` => "HTTP_OK"
-     *  `(. (. :HttpStatus :of 200) :description)` => "OK"
+- http status code helpers:
+     *  `http-client-j8/status-ok-range?` 
+     *  `http-client-j8/status-redirect-range?` 
+     *  `http-client-j8/status-client-range?` 
+     *  `http-client-j8/status-server-error-range?` 
 
 ### Changed
 

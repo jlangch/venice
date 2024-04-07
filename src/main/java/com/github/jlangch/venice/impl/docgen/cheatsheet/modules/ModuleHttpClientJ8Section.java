@@ -49,10 +49,17 @@ public class ModuleHttpClientJ8Section implements ISectionBuilder {
         hc.addItem(diBuilder.getDocItem("http-client-j8/upload-multipart", false));
 
         final DocSection utils = new DocSection("Utils", id());
-        all.addSection( utils);
+        all.addSection(utils);
         utils.addItem(diBuilder.getDocItem("http-client-j8/slurp-string", false));
         utils.addItem(diBuilder.getDocItem("http-client-j8/slurp-json", false));
         utils.addItem(diBuilder.getDocItem("http-client-j8/slurp-bytebuf", false));
+
+        final DocSection tests = new DocSection("Tests", id());
+        all.addSection(tests);
+        tests.addItem(diBuilder.getDocItem("http-client-j8/status-ok-range?"));
+        tests.addItem(diBuilder.getDocItem("http-client-j8/status-redirect-range?"));
+        tests.addItem(diBuilder.getDocItem("http-client-j8/status-client-range?"));
+        tests.addItem(diBuilder.getDocItem("http-client-j8/status-server-error-range?"));
 
         return section;
     }
