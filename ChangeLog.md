@@ -28,7 +28,7 @@ All notable changes to this project will be documented in this file.
 
 ### Fixed 
 
-- multipart mimetype handling for content type headers
+- the multipart parser's mimetype handling for content type headers
 
 
 
