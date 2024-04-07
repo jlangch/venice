@@ -12,6 +12,7 @@ All notable changes to this project will be documented in this file.
 
 - support for multiple url mappings for a servlet in the `:ring` module. 
   See example "rest-webapp.venice"
+- a `:ring` example with a 2 servlet configuration
 - the effective url (the url after a redirect) to the response map in the
   http client
 - http status code helpers:
