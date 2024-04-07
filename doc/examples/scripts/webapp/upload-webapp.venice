@@ -11,45 +11,30 @@
 (tc/check-required-libs)
 
 
-
 ;; -----------------------------------------------------------------------------
 ;; Ring handler
 ;; -----------------------------------------------------------------------------
 
 (defn upload-file [dir request]
   (let [parts (ring/parts request)]
-    (doseq [p parts] (save-part dir p))
+    ;; upload action: save all parts to the specified directory
+    (doseq [p parts] (ring/save-part dir p true))
     { :status 200
       :headers { "Content-Type" "text/plain; charset=utf-8" }
       :body "File uploaded!" }))
 
-(defn- save-part [dir part]
-  (let [name      (:name part)
-        filename  (:file-name part)
-        filename  (if filename 
-                    (io/file-name filename) 
-                    (str name ".txt"))
-        delete-fn (:delete-fn part)
-        file      (io/file dir filename)]
-    (when-not (and (io/file? dir) (io/exists-dir? dir))
-      (let [msg (str/format "The dir '%s' does not exist! Failed to save upload part '%s'."
-                             dir name)]
-        (println msg)
-        (throw (ex :VncException msg))))
-    (try-with [is (:in-stream  part)]
-      (println "Saving part '" name "':" filename "to" dir)
-      (let [data (io/slurp-stream is :binary true)]
-        (io/spit file data :binary true))
-      (finally (delete-fn)))))
 
 
 ;; -----------------------------------------------------------------------------
 ;; Middleware configuration
 ;; -----------------------------------------------------------------------------
 
-;; Note: Tomcat's standard max post size is 2MB. A value of -1 specifies a
-;;       indefinite upload size
-(def tomcat-opts {:await? false, :base-dir ".", :port 8080 :max-post-size -1})
+;; Note: Tomcat's standard max post size is 2MB. A :max-post-size value of -1 
+;;       specifies a indefinite upload size
+(def tomcat-opts { :await?         false  ;; do not block - return after start
+                   :base-dir       "."
+                   :port           8080 
+                   :max-post-size  -1 })
 
 (def landing-dir (io/file "/Users/juerg/Desktop/venice/tmp"))
 
@@ -61,23 +46,21 @@
                                                        ;    |
                            (ring/mw-dump-response)     ; ^  |
                            (ring/mw-dump-request)      ; |  |
-                           (ring/mw-request-counter)   ; |  |
-                           (ring/mw-add-session 3600)  ; |  |
-                           (ring/mw-print-uri)         ; |  |
                            (ring/mw-debug :on))))      ; +--+
 
 ;; start Tomcat
 (let [server (tc/start [ [ (upload-servlet) 
                            { :name                 "upload-servlet"  
                              :mapping              "/upload"
+                             ;; options required for a file upload servlet
                              :file-upload          true
                              :location             "/Users/juerg/Desktop/venice/tmp"
-                             :max-file-size        10485760
-                             :max-request-size     10485760
+                             :max-file-size        10_485_760  ;; 10MB
+                             :max-request-size     10_485_760  ;; 10MB
                              :file-size-threshold  -1 } ] ]
-                         ""
-                         "."
-                         tomcat-opts) ]
+                       ""
+                       "."
+                       tomcat-opts) ]
   (defn stop [] (tc/shutdown server)))
 
 

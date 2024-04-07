@@ -32,64 +32,67 @@ import jakarta.servlet.http.HttpServletResponse;
 
 public interface IVeniceServlet {
 
-    default void init(final ServletConfig config) throws ServletException {
+    default void init(
+    		final HttpServlet servlet,
+    		final ServletConfig config
+    ) throws ServletException {
     }
 
     default void destroy(final HttpServlet servlet) {
     }
 
     default void doGet(
+    		final HttpServlet servlet,
             final HttpServletRequest req,
-            final HttpServletResponse resp,
-            final HttpServlet servlet
+            final HttpServletResponse resp
     ) throws ServletException, IOException {
         sendNotImplemented(resp, "GET");
     }
 
     default void doHead(
+    		final HttpServlet servlet,
             final HttpServletRequest req,
-            final HttpServletResponse resp,
-            final HttpServlet servlet
+            final HttpServletResponse resp
     ) throws ServletException, IOException {
         sendNotImplemented(resp, "HEAD");
     }
 
     default void doPost(
+    		final HttpServlet servlet,
             final HttpServletRequest req,
-            final HttpServletResponse resp,
-            final HttpServlet servlet
+            final HttpServletResponse resp
     ) throws ServletException, IOException {
         sendNotImplemented(resp, "POST");
     }
 
     default void doPut(
+    		final HttpServlet servlet,
             final HttpServletRequest req,
-            final HttpServletResponse resp,
-            final HttpServlet servlet
+            final HttpServletResponse resp
     ) throws ServletException, IOException {
         sendNotImplemented(resp, "PUT");
     }
 
     default void doDelete(
+    		final HttpServlet servlet,
             final HttpServletRequest req,
-            final HttpServletResponse resp,
-            final HttpServlet servlet
+            final HttpServletResponse resp
     ) throws ServletException, IOException {
         sendNotImplemented(resp, "DELETE");
     }
 
     default void doOptions(
+    		final HttpServlet servlet,
             final HttpServletRequest req,
-            final HttpServletResponse resp,
-            final HttpServlet servlet
+            final HttpServletResponse resp
     ) throws ServletException, IOException {
         sendNotImplemented(resp, "OPTIONS");
     }
 
     default void doTrace(
+    		final HttpServlet servlet,
             final HttpServletRequest req,
-            final HttpServletResponse resp,
-            final HttpServlet servlet
+            final HttpServletResponse resp
     ) throws ServletException, IOException {
         sendNotImplemented(resp, "TRACE");
     }

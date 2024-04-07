@@ -113,7 +113,9 @@
 ;; Middleware configuration
 ;; -----------------------------------------------------------------------------
 
-(def tomcat-opts {:await? false, :base-dir ".", :port 8080})
+(def tomcat-opts { :await?    false   ;; do not block - return after start
+                   :base-dir  "."
+                   :port      8080 })
 
 (def routes [[:get    "/employees"      get-all-employees]
              [:get    "/employees/:id"  get-employee]

@@ -638,15 +638,46 @@
 
   (. :VeniceServlet :new
     (proxify :IVeniceServlet
-      { :init      (fn [config] nil)
-        :destroy   (fn [servlet] nil)
-        :doGet     (fn [req res servlet] (ring/handle req res servlet handler))
-        :doHead    (fn [req res servlet] (ring/handle req res servlet handler))
-        :doPost    (fn [req res servlet] (ring/handle req res servlet handler))
-        :doPut     (fn [req res servlet] (ring/handle req res servlet handler))
-        :doDelete  (fn [req res servlet] (ring/handle req res servlet handler))
+      { :init      (fn [servlet config]  (. servlet :log "Initialized"))
+        :destroy   (fn [servlet]         (. servlet :log "Destroyed"))
+        :doGet     (fn [servlet req res] (ring/handle req res servlet handler))
+        :doHead    (fn [servlet req res] (ring/handle req res servlet handler))
+        :doPost    (fn [servlet req res] (ring/handle req res servlet handler))
+        :doPut     (fn [servlet req res] (ring/handle req res servlet handler))
+        :doDelete  (fn [servlet req res] (ring/handle req res servlet handler))
         :getLastModified (fn [req] -1) })))
 
+
+;; -----------------------------------------------------------------------------
+;; Ring Servlet Utils
+;; -----------------------------------------------------------------------------
+
+(defn 
+  ^{ :arglists '("(ring/save-part dir part debug?)")
+     :doc "Saves a multipart part element to a directory." }
+
+  save-part [dir part debug?]
+
+  (assert (io/file? dir))
+  (assert (map part))
+  
+  (let [name      (:name part)
+        filename  (:file-name part)
+        filename  (if filename 
+                    (io/file-name filename) 
+                    (str name ".txt"))
+        delete-fn (:delete-fn part)
+        file      (io/file dir filename)]
+    (when-not (and (io/file? dir) (io/exists-dir? dir))
+      (let [msg (str/format "The dir '%s' does not exist! Failed to save upload part '%s'."
+                             dir name)]
+        (when debug? (println msg))
+        (throw (ex :VncException msg))))
+    (try-with [is (:in-stream  part)]
+      (when debug? (println "Saving part '" name "':" filename "to" dir))
+      (let [data (io/slurp-stream is :binary true)]
+        (io/spit file data :binary true))
+      (finally (delete-fn)))))
 
 
 ;; -----------------------------------------------------------------------------
