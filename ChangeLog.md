@@ -10,7 +10,8 @@ All notable changes to this project will be documented in this file.
 
 ### Added
 
-- ...
+- the effective url (the url after a redirect) in the responses of the
+  http client
 
 ### Changed
 
