@@ -1,0 +1,101 @@
+;; -----------------------------------------------------------------------------
+;; Demo REST Service
+;; -----------------------------------------------------------------------------
+;;
+
+(load-module :tomcat ['tomcat :as 'tc])
+(load-module :ring)
+
+
+; ensure the Tomcat libs are on the classpath
+(tc/check-required-libs)
+
+
+
+;; -----------------------------------------------------------------------------
+;; Ring handler
+;; -----------------------------------------------------------------------------
+
+(defn get-servlet-1-info [request]
+  { :status 200
+    :headers { "Content-Type" "text/plain; charset=utf-8" }
+    :body "Hello from servlet 1!" } )
+
+(defn get-servlet-2-info [request]
+  { :status 200
+    :headers { "Content-Type" "text/plain; charset=utf-8" }
+    :body "Hello from servlet 2!" } )
+
+
+
+;; -----------------------------------------------------------------------------
+;; Middleware configuration
+;; -----------------------------------------------------------------------------
+
+(def tomcat-opts { :await?    false   ;; do not block - return after start
+                   :base-dir  "."
+                   :port      8080 })
+
+(def routes-1 [[:get "/servlet-1/info" get-servlet-1-info]])
+
+(def routes-2 [[:get "/servlet-2/info" get-servlet-2-info]])
+
+(defn servlet-1 []
+  (ring/create-servlet (-> (ring/match-routes routes-1)  ; >--+
+                                                         ;    |
+                           (ring/mw-dump-response)       ; ^  |
+                           (ring/mw-dump-request)        ; |  |
+                           (ring/mw-debug :on))))        ; +--+
+
+(defn servlet-2 []
+  (ring/create-servlet (-> (ring/match-routes routes-2)  ; >--+
+                                                         ;    |
+                           (ring/mw-dump-response)       ; ^  |
+                           (ring/mw-dump-request)        ; |  |
+                           (ring/mw-debug :on))))        ; +--+
+
+;; start Tomcat
+(let [server (tc/start [ [ (servlet-1)
+                           { :name     "servlet-1"  
+                             :mapping  ["/servlet-1/info"] } ]
+                         [ (servlet-2)
+                           { :name     "servlet-2"  
+                             :mapping  ["/servlet-2/info"] } ] ]
+                       tomcat-opts)]
+  (defn stop [] (tc/shutdown server)))
+
+
+;; -----------------------------------------------------------------------------
+;; Venice HTTP Client examples
+;; -----------------------------------------------------------------------------
+
+;; GET on Servlet 1
+(comment
+  (do
+    (load-module :http-client-j8 ['http-client-j8 :as 'hc])
+
+    (let [res  (hc/send :get 
+                        "http://localhost:8080/servlet-1/info" 
+                        :headers { "Accept" "text/plain" }
+                        :debug true) ]
+      (println "Status:" (:http-status res))
+      (println (hc/slurp-string (:data-stream res) (:content-type-charset res)))))
+)
+
+;; GET on Servlet 2
+(comment
+  (do
+    (load-module :http-client-j8 ['http-client-j8 :as 'hc])
+
+    (let [res  (hc/send :get 
+                        "http://localhost:8080/servlet-2/info" 
+                        :headers { "Accept" "text/plain" }
+                        :debug true)]
+      (println "Status:" (:http-status res))
+      (println (hc/slurp-string (:data-stream res) (:content-type-charset res)))))
+)
+;; -----------------------------------------------------------------------------
+
+(println "Tomcat started on port ~(:port tomcat-opts).")
+(println "Open a browser:      (sh/open \"http://localhost:8080\")")
+(println "Stop it by calling:  (stop)")
