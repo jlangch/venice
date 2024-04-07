@@ -6,17 +6,17 @@ All notable changes to this project will be documented in this file.
 
 
 
-## [1.12.10] - 2024-04-xx
+## [1.12.10] - 2024-04-07
 
 ### Added
 
-- improvements to the `:multipart` parser. The parsers is now more robust in
-  parsing the part headers and returns all part headers in its raw form in
-  parsed data map.
 - support for module `:http-client-legacy` to *ungzip* a response data stream
   with the content encoding 'gzip'  
 - function `io/wrap-is-with-gzip-input-stream` to gzip data sent to the stream
 - function `io/wrap-os-with-gzip-output-stream` to ungzip data read from the stream
+- improvements to the `:multipart` parser. The parsers is now more robust in
+  parsing the part headers and returns all part headers in its raw form in
+  parsed data map.
 
 ### Fixed 
 
