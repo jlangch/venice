@@ -10,7 +10,9 @@ All notable changes to this project will be documented in this file.
 
 ### Added
 
-- the effective url (the url after a redirect) in the responses of the
+- support for multiple url mappings for a servlet in the `:ring` module. 
+  See example "rest-webapp.venice"
+- the effective url (the url after a redirect) to the response map in the
   http client
 - http status code helpers:
      *  `http-client-j8/status-ok-range?` 

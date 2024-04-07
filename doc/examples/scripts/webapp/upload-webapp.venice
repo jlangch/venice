@@ -58,8 +58,6 @@
                              :max-file-size        10_485_760  ;; 10MB
                              :max-request-size     10_485_760  ;; 10MB
                              :file-size-threshold  -1 } ] ]
-                       ""
-                       "."
                        tomcat-opts) ]
   (defn stop [] (tc/shutdown server)))
 

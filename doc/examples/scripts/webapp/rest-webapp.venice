@@ -134,7 +134,10 @@
                            (ring/mw-debug :on))))      ; +--+
 
 ;; start Tomcat
-(let [server (tc/start (rest-servlet) tomcat-opts)]
+(let [server (tc/start [ [ (rest-servlet)
+                           { :name     "rest-servlet"  
+                             :mapping  ["/employees" "/employees/*"] } ] ]
+                       tomcat-opts)]
   (defn stop [] (tc/shutdown server)))
 
 
