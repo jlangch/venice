@@ -768,8 +768,8 @@ public class IOFunctionsStreams {
                         "To gzip the data sent to the output stream.\n\n" +
                         "Note: The caller is responsible for closing the reader!")
                     .examples(
-                        "(let [text \"hello, hello, hello\"                          \n" +
-                        "      bos (io/bytebuf-out-stream)]                          \n" +
+                        "(let [text  \"hello, hello, hello\"                         \n" +
+                        "      bos   (io/bytebuf-out-stream)]                        \n" +
                         "  (try-with [gos (io/wrap-os-with-gzip-output-stream bos)]  \n" +
                         "    (io/spit gos text :encoding :utf-8)                     \n" +
                         "    (io/flush gos)                                          \n" +
@@ -817,7 +817,7 @@ public class IOFunctionsStreams {
                         "f may be a:                                                       \n\n" +
                         " * `java.io.File`, e.g: `(io/file \"/temp/foo.json\")`            \n" +
                         " * `java.nio.file.Path`                                           \n" +
-                        " * `java.io.OutputStream`                                          \n" +
+                        " * `java.io.OutputStream`                                         \n" +
                         " * `java.io.Writer`                                               \n" +
                     "Options: \n\n" +
                         "| :append true/false | e.g.: `:append true`, defaults to false |\n" +
