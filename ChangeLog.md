@@ -81,7 +81,7 @@ All notable changes to this project will be documented in this file.
   MacOS filenames with umlauts.
 - a pure ascii version of the Venice cheatsheet to feed it as embeddings 
   to LLMs
-- improvements to markdown to ascii text renderer to allow the Venice
+- improvements on to markdown to ascii text renderer to allow the Venice
   Github flavoured markdown documentation to be converted to pure ascii
   to feed it as embeddings to LLMs
 - `:cargo-qdrant` module to install/start/stop Qdrant Vector DB docker 
