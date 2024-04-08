@@ -219,4 +219,5 @@ is subject to the terms and conditions of the following licenses.
 VAVR 0.10.3 (io.vavr:vavr:0.10.3)                      LICENSE-Vavr.txt
 JLine3 3.21.0 (org.jline:jline:3.21.0)               LICENSE-JLine3.txt
 nanojson 1.6 (com.grack:nanojson:1.6)              LICENSE-nanojson.txt
+Zip4j 2.11.5 (net.lingala.zip4j:zip4j:2.11.5)         LICENSE-Zip4J.txt
 Audiowide Regular Open Font                       LICENSE-Audiowide.txt
