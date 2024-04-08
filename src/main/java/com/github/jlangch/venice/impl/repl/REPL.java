@@ -1103,8 +1103,6 @@ public class REPL implements IRepl {
         }
     }
 
-
-
     private void handleConfiguredColorsCommand() {
         printer.println("default",   "default");
         printer.println("command",   "command");
