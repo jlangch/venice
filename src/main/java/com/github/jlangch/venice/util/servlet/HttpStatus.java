@@ -125,7 +125,10 @@ public enum HttpStatus {
     }
 
     /**
-     * @return the HTTP status enum based on an integer value
+     * Returns the HTTP status enum based on an integer value
+     *
+     * @param code A HTTP status code integer value
+     * @return a HTTP status enum
      */
     public static HttpStatus of(final int code) {
         for (HttpStatus s : values()) {
