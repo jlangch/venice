@@ -88,6 +88,7 @@ import com.github.jlangch.venice.impl.types.util.Coerce;
 import com.github.jlangch.venice.impl.util.CommandLineArgs;
 import com.github.jlangch.venice.impl.util.StringUtil;
 import com.github.jlangch.venice.impl.util.io.CharsetUtil;
+import com.github.jlangch.venice.impl.util.io.ClassPathResource;
 import com.github.jlangch.venice.impl.util.io.zip.ZipFileSystemUtil;
 import com.github.jlangch.venice.javainterop.AcceptAllInterceptor;
 import com.github.jlangch.venice.javainterop.IInterceptor;
@@ -107,9 +108,9 @@ public class REPL implements IRepl {
     public void run(final String[] args) {
         ThreadContext.setInterceptor(interceptor);
 
-    	if (terminal != null) {
-    		throw new VncException("The REPL is already running!");
-    	}
+        if (terminal != null) {
+            throw new VncException("The REPL is already running!");
+        }
 
         final CommandLineArgs cli = new CommandLineArgs(args);
         final ILoadPaths loadpaths = interceptor.getLoadPaths();
@@ -187,17 +188,17 @@ public class REPL implements IRepl {
 
     @Override
     public void setHandler(final Consumer<String> handler) {
-    	// not supported
+        // not supported
     }
 
     @Override
     public void setPrompt(final String prompt) {
-    	// not supported
+        // not supported
     }
 
     @Override
     public void setPrompt(final String prompt, final String secondaryPrompt) {
-    	// not supported
+        // not supported
     }
 
     @Override
@@ -424,7 +425,7 @@ public class REPL implements IRepl {
                 handleException(ex);
             }
             catch (NoClassDefFoundError ex) {
-            	printer.printex("error", ex);
+                printer.printex("error", ex);
             }
         }
     }
@@ -633,6 +634,7 @@ public class REPL implements IRepl {
                     case "java-ex":       handleJavaExCommand(args); break;
                     case "debug":         handleDebugHelpCommand(); break;
                     case "source-pdf":    handleSourcePdfCommand(args); break;
+                    case "license":       handleLicenseCommand(args); break;
                     default:              handleInvalidCommand(cmd); break;
                 }
             }
@@ -1079,9 +1081,22 @@ public class REPL implements IRepl {
         }
         else {
             printer.println(
-            	"error", "Invalid parameter. Use !source-pdf {source-file} {dest-dir}");
+                "error", "Invalid parameter. Use !source-pdf {source-file} {dest-dir}");
         }
     }
+
+    private void handleLicenseCommand(final List<String> params) {
+        try {
+            printer.println(
+                "stdout",
+                new ClassPathResource("META-INF/license.txt").getResourceAsString("UTF-8"));
+        }
+        catch(Exception ex) {
+             printer.println( "error", "Failed to display Venice license info");
+        }
+    }
+
+
 
     private void handleConfiguredColorsCommand() {
         printer.println("default",   "default");
@@ -1214,9 +1229,9 @@ public class REPL implements IRepl {
                     .setStdinReader(in);
 
         return ReplFunctions.register(
-        			env,
-        			this, terminal, config,
-        			venice.isMacroExpandOnLoad(), replDirs);
+                    env,
+                    this, terminal, config,
+                    venice.isMacroExpandOnLoad(), replDirs);
     }
 
     private void reconfigureVenice(
@@ -1297,8 +1312,8 @@ public class REPL implements IRepl {
             final TerminalPrinter printer
     ) {
         if (cli.switchPresent("-setup-ex")
-        	|| cli.switchPresent("-setup-ext")
-        	|| cli.switchPresent("-setup-extended")
+            || cli.switchPresent("-setup-ext")
+            || cli.switchPresent("-setup-extended")
         ) {
             handleSetupCommand(venice, env, Extended, printer);
             return; // we stop here

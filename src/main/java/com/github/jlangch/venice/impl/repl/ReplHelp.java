@@ -65,6 +65,7 @@ public class ReplHelp {
             "  !source-pdf  render Venice source code to PDF\n" +
             "                 !source-pdf {source-file}\n" +
             "                 !source-pdf {source-file} {dest-dir}\n" +
+            "  !license     show the Venice license\n" +
             "  !app         run an app archive:  !app test\n" +
             "  !manifest    print the app archive manifest:  !manifest test\n" +
             "  !hist clear  clear the history\n" +
