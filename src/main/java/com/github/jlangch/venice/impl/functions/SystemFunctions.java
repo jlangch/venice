@@ -40,6 +40,7 @@ import java.util.Set;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Collectors;
 
+import com.github.jlangch.venice.LicenseMgr;
 import com.github.jlangch.venice.VncException;
 import com.github.jlangch.venice.impl.javainterop.DynamicClassLoader2;
 import com.github.jlangch.venice.impl.thread.ThreadBridge;
@@ -61,7 +62,6 @@ import com.github.jlangch.venice.impl.util.ArityExceptions;
 import com.github.jlangch.venice.impl.util.SymbolMapBuilder;
 import com.github.jlangch.venice.impl.util.callstack.CallFrame;
 import com.github.jlangch.venice.impl.util.callstack.CallStack;
-import com.github.jlangch.venice.impl.util.io.ClassPathResource;
 import com.github.jlangch.venice.javainterop.ReturnValue;
 import com.github.jlangch.venice.util.OS;
 
@@ -874,25 +874,46 @@ public class SystemFunctions {
         };
 
     public static VncFunction license =
-            new VncFunction(
-                    "license",
-                    VncFunction
-                        .meta()
-                        .arglists("(license)")
-                        .doc( "Returns the Venice license.")
-                        .build()
-            ) {
-                @Override
-                public VncVal apply(final VncList args) {
-                    ArityExceptions.assertArity(this, args, 0);
+        new VncFunction(
+                "license",
+                VncFunction
+                    .meta()
+                    .arglists("(license)")
+                    .doc( "Returns the Venice license.")
+                    .examples("(println (license))")
+                    .build()
+        ) {
+            @Override
+            public VncVal apply(final VncList args) {
+                ArityExceptions.assertArity(this, args, 0);
 
-                    final String version = loadVeniceLicense();
-                    return new VncString(version);
-                }
+                final String version = LicenseMgr.loadVeniceLicenseText();
+                return new VncString(version);
+            }
 
-                private static final long serialVersionUID = -1848883965231344442L;
-            };
+            private static final long serialVersionUID = -1848883965231344442L;
+        };
 
+    public static VncFunction license_all =
+        new VncFunction(
+                "license-all",
+                VncFunction
+                    .meta()
+                    .arglists("(license)")
+                    .doc( "Returns the Venice license with all 3rd party licenses.")
+                    .examples("(println (license-all))")
+                    .build()
+        ) {
+            @Override
+            public VncVal apply(final VncList args) {
+                ArityExceptions.assertArity(this, args, 0);
+
+                final String version = LicenseMgr.loadAll();
+                return new VncString(version);
+            }
+
+            private static final long serialVersionUID = -1848883965231344442L;
+        };
 
     public static long javaMajorVersion() {
         String version = System.getProperty("java.version");
@@ -923,11 +944,6 @@ public class SystemFunctions {
         catch(Exception ex) {
             return null;
         }
-    }
-
-    public static String loadVeniceLicense() {
-        return new ClassPathResource("META-INF/license.txt")
-                        .getResourceAsString("UTF-8");
     }
 
 
@@ -964,6 +980,7 @@ public class SystemFunctions {
                     .add(load_jar)
                     .add(jansi_version)
                     .add(license)
+                    .add(license_all)
                     .toMap();
 
 
