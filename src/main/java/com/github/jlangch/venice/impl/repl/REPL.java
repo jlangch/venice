@@ -57,6 +57,7 @@ import org.jline.utils.OSUtils;
 
 import com.github.jlangch.venice.ContinueException;
 import com.github.jlangch.venice.IRepl;
+import com.github.jlangch.venice.LicenseMgr;
 import com.github.jlangch.venice.ParseError;
 import com.github.jlangch.venice.SourceCodeRenderer;
 import com.github.jlangch.venice.SymbolNotFoundException;
@@ -88,7 +89,6 @@ import com.github.jlangch.venice.impl.types.util.Coerce;
 import com.github.jlangch.venice.impl.util.CommandLineArgs;
 import com.github.jlangch.venice.impl.util.StringUtil;
 import com.github.jlangch.venice.impl.util.io.CharsetUtil;
-import com.github.jlangch.venice.impl.util.io.ClassPathResource;
 import com.github.jlangch.venice.impl.util.io.zip.ZipFileSystemUtil;
 import com.github.jlangch.venice.javainterop.AcceptAllInterceptor;
 import com.github.jlangch.venice.javainterop.IInterceptor;
@@ -1087,12 +1087,19 @@ public class REPL implements IRepl {
 
     private void handleLicenseCommand(final List<String> params) {
         try {
-            printer.println(
-                "stdout",
-                new ClassPathResource("META-INF/license.txt").getResourceAsString("UTF-8"));
+            if (params.size() == 0) {
+                printer.println("stdout", LicenseMgr.loadVeniceLicenseText());
+            }
+            else if ("all".equals(trimToEmpty(first(params)))) {
+                printer.println("stdout", LicenseMgr.loadAll());
+            }
+            else {
+                printer.println(
+                        "error", "Invalid parameter. Use !license or !license all");
+            }
         }
         catch(Exception ex) {
-             printer.println( "error", "Failed to display Venice license info");
+             printer.println("error", "Failed to display Venice license info");
         }
     }
 
