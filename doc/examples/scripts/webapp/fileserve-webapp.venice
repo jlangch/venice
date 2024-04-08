@@ -11,8 +11,6 @@
 (tc/check-required-libs)
 
 
-(def tomcat-opts {:await? false, :base-dir ".", :port 8080})
-
 (def files-base-dir (io/file-absolute (io/file "." "resources")))
 
 
@@ -27,15 +25,17 @@
     :body "Not Found!" })
 
 
-(defn file-handler [request]
+(defn file-handler [dir request]
   (if (str/starts-with? (:uri request) "/static/")
-    (let [uri  (:uri request)
-          file (io/file files-base-dir (str/strip-start uri "/static/"))]
+    (let [uri      (:uri request)
+          file     (io/file dir (str/strip-start uri "/static/"))
+          mimetype (or (mimetypes/probe-content-type file)
+                       "application/octet-stream")]
       (if (and (io/exists-file? file)
                (io/file-can-read? file)
-               (io/file-within-dir? files-base-dir file))
+               (io/file-within-dir? dir file))
         { :status 200
-          :headers { "Content-Type" (io/mime-type (io/file-name file)) }
+          :headers { "Content-Type" mimetype }
           :body file }
         (not-found-handler request)))
     (not-found-handler request)))
@@ -45,15 +45,23 @@
 ;; Middleware configuration
 ;; -----------------------------------------------------------------------------
 
+(when-not (io/exists-dir? files-base-dir)
+  (throw (ex :VncException
+             "The file base dir ~{files-base-dir} does not exits!")))
+
+(def tomcat-opts { :await?    false   ;; do not block - return after start
+                   :base-dir  "."
+                   :port      8080 })
+
 ;; A route is defined by a HTTP verb, a URI filter and a handle
 ;; function.
 ;; If multiple routes match the route with the longest URI filter
 ;; will be chosen
 (def routes [[:get "/**"         not-found-handler]
-             [:get "/static/**"  file-handler]])
+             [:get "/static/**"  (partial file-handler files-base-dir)]])
 
 
-(defn my-servlet []
+(defn fileserve-servlet []
   (ring/create-servlet (-> (ring/match-routes routes)  ; >--+
                                                        ;    |
                            ;(ring/mw-dump-response)    ; ^  |
@@ -63,12 +71,11 @@
                            (ring/mw-print-uri)         ; |  |
                            (ring/mw-debug :on))))      ; +--+
 
-(when-not (io/exists-dir? files-base-dir)
-  (throw (ex :VncException
-             "The file base dir ~{files-base-dir} does not exits!")))
-
 ;; start Tomcat
-(let [server (tc/start (my-servlet) tomcat-opts)]
+(let [server (tc/start [ [ (fileserve-servlet)
+                           { :name     "fileserve-servlet"  
+                             :mapping  "/*" } ] ]
+                       tomcat-opts)]
   (defn stop [] (tc/shutdown server)))
 
 
