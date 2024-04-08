@@ -92,6 +92,7 @@ import com.github.jlangch.venice.impl.docgen.cheatsheet.section.IoZipSection;
 import com.github.jlangch.venice.impl.docgen.cheatsheet.section.JavaInteropSection;
 import com.github.jlangch.venice.impl.docgen.cheatsheet.section.JsonSection;
 import com.github.jlangch.venice.impl.docgen.cheatsheet.section.LazySequencesSection;
+import com.github.jlangch.venice.impl.docgen.cheatsheet.section.LicenseSection;
 import com.github.jlangch.venice.impl.docgen.cheatsheet.section.LoadPathSection;
 import com.github.jlangch.venice.impl.docgen.cheatsheet.section.MacrosSection;
 import com.github.jlangch.venice.impl.docgen.cheatsheet.section.MathSection;
@@ -399,6 +400,10 @@ public class DocGenerator {
         docker.addSection(new DocSection("Cargo/Qdrant", "modules.cargo-qdrant"));
         content.add(docker);
 
+        final DocSection license = new DocSection("License", "license");
+        license.addSection(new DocSection("License", "license"));
+        content.add(license);
+
         final DocSection others = new DocSection("Others", "others");
         others.addSection(new DocSection("Embedding in Java", "embedding"));
         others.addSection(new DocSection("Venice Doc", "venicedoc"));
@@ -457,7 +462,8 @@ public class DocGenerator {
                 new SandboxSection(diBuilder).section(),
                 new LoadPathSection(diBuilder).section(),
                 new PdfSection(diBuilder).section(),
-                new IoZipSection(diBuilder).section());
+                new IoZipSection(diBuilder).section(),
+                new LicenseSection(diBuilder).section());
     }
 
     private List<DocSection> getRightSections() {
