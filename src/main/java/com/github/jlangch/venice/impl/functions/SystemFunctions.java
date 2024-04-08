@@ -879,7 +879,7 @@ public class SystemFunctions {
                 VncFunction
                     .meta()
                     .arglists("(license)")
-                    .doc( "Returns the Venice license.")
+                    .doc("Returns the Venice license.")
                     .examples("(println (license))")
                     .build()
         ) {
@@ -899,8 +899,8 @@ public class SystemFunctions {
                 "license-all",
                 VncFunction
                     .meta()
-                    .arglists("(license)")
-                    .doc( "Returns the Venice license with all 3rd party licenses.")
+                    .arglists("(license-all)")
+                    .doc("Returns the Venice license with all 3rd party licenses.")
                     .examples("(println (license-all))")
                     .build()
         ) {
