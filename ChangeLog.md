@@ -10,7 +10,8 @@ All notable changes to this project will be documented in this file.
 
 ### Added
 
-- ...
+- options `:async-support` and `:load-on-startup` to `tomcat/tc-start` 
+  servlet options
 
 
 
