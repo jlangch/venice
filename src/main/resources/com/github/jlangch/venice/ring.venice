@@ -585,6 +585,12 @@
             :headers { "Content-Type" "text/plain" }
             :body "Not a json request!" }
           ```
+
+          The `:body` element of a handler response may be a:
+            * string
+            * bytebuf
+            * :java.io.InputStream
+            * :java.io.File
           
           Rigging up a Ring WEB App and starting Tomcat:
 
