@@ -1,0 +1,242 @@
+;;;;   __    __         _
+;;;;   \ \  / /__ _ __ (_) ___ ___
+;;;;    \ \/ / _ \ '_ \| |/ __/ _ \
+;;;;     \  /  __/ | | | | (_|  __/
+;;;;      \/ \___|_| |_|_|\___\___|
+;;;;
+;;;;
+;;;; Copyright 2017-2024 Venice
+;;;;
+;;;; Licensed under the Apache License, Version 2.0 (the "License");
+;;;; you may not use this file except in compliance with the License.
+;;;; You may obtain a copy of the License at
+;;;;
+;;;;     http://www.apache.org/licenses/LICENSE-2.0
+;;;;
+;;;; Unless required by applicable law or agreed to in writing, software
+;;;; distributed under the License is distributed on an "AS IS" BASIS,
+;;;; WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+;;;; See the License for the specific language governing permissions and
+;;;; limitations under the License.
+
+;;;; Venice ring middleware
+
+
+(ns ring-mw)
+
+(load-module :ring-util)
+(load-module :ring-session)
+
+
+(defn
+  ^{ :arglists '("(ring-mw/mw-identity handler)")
+     :doc "Identity, does effectively just delegate to the handler"
+     :see-also '( "ring-mw/mw-debug" 
+                  "ring-mw/mw-print-uri"
+                  "ring-mw/mw-request-counter"
+                  "ring-mw/mw-add-session"
+                  "ring-mw/mw-dump-request"
+                  "ring-mw/mw-dump-response") }
+
+  mw-identity [handler]
+
+  (fn [req] (handler req)))
+
+
+(defn
+  ^{ :arglists '("(ring-mw/mw-debug handler option)")
+     :doc """
+          Turns handler debug flag on the request on/off and then calls
+          the handler with the modified request.
+          """ 
+     :see-also '( "ring-mw/mw-identity"
+                  "ring-mw/mw-print-uri"
+                  "ring-mw/mw-request-counter"
+                  "ring-mw/mw-add-session"
+                  "ring-mw/mw-dump-request"
+                  "ring-mw/mw-dump-response") }
+
+  mw-debug [handler option]
+
+  (let [on (or (nil? option) (== option :on))]
+    (fn [req]
+      (handler (assoc req :debug on)))))
+
+
+(defn
+  ^{ :arglists '("(ring-mw/mw-print-uri handler)")
+     :doc "Prints the URI from the request and then calls the handler" 
+     :see-also '( "ring-mw/mw-identity" 
+                  "ring-mw/mw-debug"
+                  "ring-mw/mw-request-counter"
+                  "ring-mw/mw-add-session"
+                  "ring-mw/mw-dump-request"
+                  "ring-mw/mw-dump-response") }
+
+  mw-print-uri [handler]
+
+  (fn [req]
+    (when (ring-util/debug? req)
+          (println (str "URI: " (:uri req))))
+    (handler req)))
+
+
+(defn
+  ^{ :arglists '("(ring-mw/mw-request-counter handler)")
+     :doc """
+          Increments the number requests, stores it in the attribute
+          'request-counter' in the session, and then calls the handler.
+          """ 
+     :see-also '( "ring-mw/mw-identity" 
+                  "ring-mw/mw-debug" 
+                  "ring-mw/mw-print-uri"
+                  "ring-mw/mw-add-session"
+                  "ring-mw/mw-dump-request"
+                  "ring-mw/mw-dump-response") }
+
+  mw-request-counter [handler]
+
+  (fn [req]
+    (let [id      (ring-session/session-id req)
+          counter (inc (coalesce (ring-session/session-get-value req "request-counter") 0))]
+      (ring-session/session-set-value req "request-counter" counter)
+      (when (ring-util/debug? req)
+            (println (str "Session " id ", request #: " counter))))
+    (handler req)))
+
+
+(defn
+  ^{ :arglists '("(ring-mw/mw-add-session handler timeout)")
+     :doc """
+          Adds the session to the request. If a new session is created
+          the given timeout is set as the MaxInactiveInterval. If a
+          timeout is not given the session will never timeout.
+
+          Adds the session to the request and then calls the handler
+          with the modified request.
+          """ 
+     :see-also '( "ring-mw/mw-identity" 
+                  "ring-mw/mw-debug" 
+                  "ring-mw/mw-print-uri"
+                  "ring-mw/mw-request-counter"
+                  "ring-mw/mw-dump-request"
+                  "ring-mw/mw-dump-response") }
+
+  mw-add-session [handler timeout]
+
+  (fn [req]
+    (let [session (. (:servlet-request req) :getSession true)]
+      (when (. session :isNew)
+            (when (ring-util/debug? req)
+                  (println (str "Session " (. session :getId) " created")))
+            (. session :setMaxInactiveInterval (coalesce timeout -1)))
+      (handler (assoc req :session session)))))
+
+
+(defn
+  ^{ :arglists '("(ring-mw/mw-dump-request handler)")
+     :doc "Dumps the request and then calls the handler." 
+     :see-also '( "ring-mw/mw-identity" 
+                  "ring-mw/mw-debug" 
+                  "ring-mw/mw-print-uri"
+                  "ring-mw/mw-request-counter"
+                  "ring-mw/mw-add-session"
+                  "ring-mw/mw-dump-response") }
+
+  mw-dump-request [handler]
+
+  (fn [req]
+    (ring-mw/dump-request req)
+    (handler req)))
+
+
+(defn
+  ^{ :arglists '("(ring-mw/mw-dump-response handler)")
+     :doc "Calls the handler and the dumps the handler's response." 
+     :see-also '( "ring-mw/mw-identity" 
+                  "ring-mw/mw-debug" 
+                  "ring-mw/mw-print-uri"
+                  "ring-mw/mw-request-counter"
+                  "ring-mw/mw-add-session"
+                  "ring-mw/mw-dump-request"
+                  "ring-mw/mw-dump-response") }
+
+  mw-dump-response [handler]
+
+  (fn [req]
+    (let [res (handler req)]
+      (ring-mw/dump-response res)
+      res)))
+
+
+
+;; -----------------------------------------------------------------------------
+;; Utils
+;; -----------------------------------------------------------------------------
+
+(defn-
+  ^{ :arglists '("(ring-mw/dump-request req)")
+     :doc "Dumps the request." }
+
+  dump-request [req]
+
+  (println       "Dump request:")
+  (println       "   server-port:        " (long (:server-port req)))
+  (println       "   server-name:        " (:server-name req))
+  (println       "   remote-addr:        " (:remote-addr req))
+  (println       "   scheme:             " (:scheme req))
+  (println       "   uri:                " (:uri req))
+  (println       "   protocol:           " (:protocol req))
+  (println       "   query-string:       " (:query-string req))
+  (println       "   method:             " (:request-method req))
+  (println       "   content-type:       " (:content-type req))
+  (println       "   content-length:     " (:content-length req))
+  (println       "   character-encoding: " (:character-encoding req))
+  (println       "   context-path:       " (:servlet-context-path req))
+  (println       "   servlet-path:       " (:servlet-path req))
+  (println       "   session:            " (ring-session/session-id req))
+  (println-map   "   headers:            " (:headers req))
+  (println-map   "   parameters:         " (:parameters req))
+  (println-map   "   cookies:            " (map-vals :value (or (:cookies req) {})))
+  (println-parts "   parts:              " (:parts req))
+  (println       "   async:              " (if (:async req) true false)))
+
+
+(defn-
+  ^{ :arglists '("(ring-mw/dump-response res)")
+     :doc "Dumps the response." }
+
+  dump-response [res]
+
+  (println     "Dump response:")
+  (println     "   content-type:       " (:content-type res))
+  (println     "   status:             " (:status res))
+  (println-map "   headers:            " (:headers res))
+  (println-map "   cookies:            " (map-vals :value (or (:cookies res) {}))))
+
+
+(defn- println-map [head data]
+  (if (or (nil? data) (empty? data))
+    (println head "-")
+    (let [indent  (str/repeat " " (count head))
+          tuples  (into '() data)
+          format  (fn [tuple] 
+                    (let [name   (first tuple)
+                          values (second tuple)
+                          values (if (sequential? values)
+                                   (str/join ", " values)
+                                   values)]
+                      (str name ": " values)))]
+      (println head (format (first tuples)))
+      (doseq [t (rest tuples)] (println indent (format t))))))
+
+
+(defn- println-parts [head parts]
+  (println head "-")
+  (doseq [p parts]
+         (println     "      name:            " (:name p))
+         (println     "         file-name:    " (:file-name p))
+         (println     "         content-type: " (:content-type p))
+         (println     "         size:         " (:size p))
+         (println-map "         headers:      " (:headers p))))
+

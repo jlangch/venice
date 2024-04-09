@@ -41,18 +41,18 @@
 (def routes-2 [[:get "/servlet-2/info" get-servlet-2-info]])
 
 (defn servlet-1 []
-  (ring/create-servlet (-> (ring/match-routes routes-1)  ; >--+
-                                                         ;    |
-                           (ring/mw-dump-response)       ; ^  |
-                           (ring/mw-dump-request)        ; |  |
-                           (ring/mw-debug :on))))        ; +--+
+  (ring/create-servlet (-> (ring/match-routes routes-1)    ; >--+
+                                                            ;    |
+                           (ring-mw/mw-dump-response)       ; ^  |
+                           (ring-mw/mw-dump-request)        ; |  |
+                           (ring-mw/mw-debug :on))))        ; +--+
 
 (defn servlet-2 []
-  (ring/create-servlet (-> (ring/match-routes routes-2)  ; >--+
-                                                         ;    |
-                           (ring/mw-dump-response)       ; ^  |
-                           (ring/mw-dump-request)        ; |  |
-                           (ring/mw-debug :on))))        ; +--+
+  (ring/create-servlet (-> (ring/match-routes routes-2)     ; >--+
+                                                            ;    |
+                           (ring-mw/mw-dump-response)       ; ^  |
+                           (ring-mw/mw-dump-request)        ; |  |
+                           (ring-mw/mw-debug :on))))        ; +--+
 
 ;; start Tomcat
 (let [server (tc/start [ [ (servlet-1)

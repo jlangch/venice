@@ -7,6 +7,7 @@
 (load-module :ring)
 
 
+
 ; ensure the Tomcat libs are on the classpath
 (tc/check-required-libs)
 
@@ -16,9 +17,9 @@
 ;; -----------------------------------------------------------------------------
 
 (defn upload-file [dir request]
-  (let [parts (ring/parts request)]
+  (let [parts (ring-multipart/parts request)]
     ;; upload action: save all parts to the specified directory
-    (doseq [p parts] (ring/save-part dir p true))
+    (doseq [p parts] (ring-multipart/save-part dir p true))
     { :status 200
       :headers { "Content-Type" "text/plain; charset=utf-8" }
       :body "File uploaded!" }))
@@ -42,11 +43,11 @@
 
 
 (defn upload-servlet []
-  (ring/create-servlet (-> (ring/match-routes routes)  ; >--+
-                                                       ;    |
-                           (ring/mw-dump-response)     ; ^  |
-                           (ring/mw-dump-request)      ; |  |
-                           (ring/mw-debug :on))))      ; +--+
+  (ring/create-servlet (-> (ring/match-routes routes)     ; >--+
+                                                          ;    |
+                           (ring-mw/mw-dump-response)     ; ^  |
+                           (ring-mw/mw-dump-request)      ; |  |
+                           (ring-mw/mw-debug :on))))      ; +--+
 
 ;; start Tomcat
 (let [server (tc/start [ [ (upload-servlet) 

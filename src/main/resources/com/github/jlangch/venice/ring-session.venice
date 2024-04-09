@@ -1,0 +1,175 @@
+;;;;   __    __         _
+;;;;   \ \  / /__ _ __ (_) ___ ___
+;;;;    \ \/ / _ \ '_ \| |/ __/ _ \
+;;;;     \  /  __/ | | | | (_|  __/
+;;;;      \/ \___|_| |_|_|\___\___|
+;;;;
+;;;;
+;;;; Copyright 2017-2024 Venice
+;;;;
+;;;; Licensed under the Apache License, Version 2.0 (the "License");
+;;;; you may not use this file except in compliance with the License.
+;;;; You may obtain a copy of the License at
+;;;;
+;;;;     http://www.apache.org/licenses/LICENSE-2.0
+;;;;
+;;;; Unless required by applicable law or agreed to in writing, software
+;;;; distributed under the License is distributed on an "AS IS" BASIS,
+;;;; WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+;;;; See the License for the specific language governing permissions and
+;;;; limitations under the License.
+
+;;;; Venice ring session
+
+
+(ns ring-session)
+
+(load-module :ring-util)
+
+
+(defn
+  ^{ :arglists '("(ring-session/session-invalidate req)")
+     :doc "Invalidate the session"
+     :see-also '( "ring-session/session-clear" 
+                  "ring-session/session-id"
+                  "ring-session/session-set-value"
+                  "ring-session/session-get-value"
+                  "ring-session/session-remove-value"
+                  "ring-session/session-last-access-time"
+                  "ring-session/session-creation-time") }
+
+  session-invalidate [req]
+
+  (if-let [session (:session req)]
+    (when (ring-util/debug? req)
+          (println (str "Session invalidated: " (. session :getId))))
+    (. session :invalidate)))
+
+
+(defn
+  ^{ :arglists '("(ring-session/session-clear req)")
+     :doc "Removes all attributes from the session"
+     :see-also '( "ring-session/session-invalidate"
+                  "ring-session/session-id"
+                  "ring-session/session-set-value"
+                  "ring-session/session-get-value"
+                  "ring-session/session-remove-value"
+                  "ring-session/session-last-access-time"
+                  "ring-session/session-creation-time") }
+
+  session-clear [req]
+
+  (if-let [session (:session req)]
+    (->> (. session :getAttributeNames)
+         (java-enumeration-to-list)
+         (docoll #(. session :removeAttribute %)))))
+
+
+(defn
+  ^{ :arglists '("(ring-session/session-id req)")
+     :doc "Get the session ID"
+     :see-also '( "ring-session/session-invalidate" 
+                  "ring-session/session-clear"
+                  "ring-session/session-set-value"
+                  "ring-session/session-get-value"
+                  "ring-session/session-remove-value"
+                  "ring-session/session-last-access-time"
+                  "ring-session/session-creation-time") }
+
+  session-id [req]
+
+  (if-let [session (:session req)]
+    (. session :getId)))
+
+
+(defn
+  ^{ :arglists '("(ring-session/session-set-value req name value)")
+     :doc "Sets a value on the session"
+     :see-also '( "ring-session/session-invalidate" 
+                  "ring-session/session-clear" 
+                  "ring-session/session-id"
+                  "ring-session/session-get-value"
+                  "ring-session/session-remove-value"
+                  "ring-session/session-last-access-time"
+                  "ring-session/session-creation-time") }
+
+  session-set-value [req name value]
+
+  ; wrap the Venice datatypes to prevent Java object conversions by
+  ; Java Interop. We want the Venice datatype in the session
+  (if-let [session (:session req)]
+    (. session :setAttribute name (java-wrap value))))
+
+
+(defn
+  ^{ :arglists '("(ring-session/session-get-value req name)")
+     :doc "Get a value from the session"
+     :see-also '( "ring-session/session-invalidate" 
+                  "ring-session/session-clear" 
+                  "ring-session/session-id"
+                  "ring-session/session-set-value"
+                  "ring-session/session-remove-value"
+                  "ring-session/session-last-access-time"
+                  "ring-session/session-creation-time") }
+
+  session-get-value [req name]
+
+  (if-let [session (:session req)]
+    (. session :getAttribute name)))
+
+
+(defn
+  ^{ :arglists '("(ring-session/session-remove-value req name)")
+     :doc "Remove a value from the session"
+     :see-also '( "ring-session/session-invalidate" 
+                  "ring-session/session-clear" 
+                  "ring-session/session-id"
+                  "ring-session/session-set-value"
+                  "ring-session/session-get-value"
+                  "ring-session/session-last-access-time"
+                  "ring-session/session-creation-time") }
+
+  session-remove-value [req name]
+
+  (if-let [session (:session req)]
+    (. session :removeAttribute name)))
+
+
+(defn
+  ^{ :arglists '("(ring-session/session-last-access-time req)")
+     :doc """
+          Returns the time (milliseconds since epoch) when this session was 
+          last accessed.
+          """
+     :see-also '( "ring-session/session-invalidate" 
+                  "ring-session/session-clear" 
+                  "ring-session/session-id"
+                  "ring-session/session-set-value"
+                  "ring-session/session-get-value"
+                  "ring-session/session-remove-value"
+                  "ring-session/session-creation-time") }
+
+  session-last-access-time [req]
+
+  (if-let [session (:session req)]
+    (. session :getLastAccessedTime)))
+
+
+(defn
+  ^{ :arglists '("(ring-session/session-creation-time req)")
+     :doc """
+          Returns the time (milliseconds since epoch) when this session was 
+          created.
+          """
+     :see-also '( "ring-session/session-invalidate" 
+                  "ring-session/session-clear" 
+                  "ring-session/session-id"
+                  "ring-session/session-set-value"
+                  "ring-session/session-get-value"
+                  "ring-session/session-remove-value"
+                  "ring-session/session-last-access-time") }
+
+  session-creation-time [req]
+
+  (if-let [session (:session req)]
+    (. session :getCreationTime)))

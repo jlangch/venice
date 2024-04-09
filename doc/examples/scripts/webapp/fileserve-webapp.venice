@@ -5,6 +5,7 @@
 
 (load-module :tomcat ['tomcat :as 'tc])
 (load-module :ring)
+(load-module :mimetypes)
 
 
 ; ensure the Tomcat libs are on the classpath
@@ -62,14 +63,14 @@
 
 
 (defn fileserve-servlet []
-  (ring/create-servlet (-> (ring/match-routes routes)  ; >--+
-                                                       ;    |
-                           ;(ring/mw-dump-response)    ; ^  |
-                           ;(ring/mw-dump-request)     ; |  |
-                           (ring/mw-request-counter)   ; |  |
-                           (ring/mw-add-session 3600)  ; |  |
-                           (ring/mw-print-uri)         ; |  |
-                           (ring/mw-debug :on))))      ; +--+
+  (ring/create-servlet (-> (ring/match-routes routes)     ; >--+
+                                                          ;    |
+                           ;(ring-mw/mw-dump-response)    ; ^  |
+                           ;(ring-mw/mw-dump-request)     ; |  |
+                           (ring-mw/mw-request-counter)   ; |  |
+                           (ring-mw/mw-add-session 3600)  ; |  |
+                           (ring-mw/mw-print-uri)         ; |  |
+                           (ring-mw/mw-debug :on))))      ; +--+
 
 ;; start Tomcat
 (let [server (tc/start [ [ (fileserve-servlet)
@@ -78,6 +79,8 @@
                        tomcat-opts)]
   (defn stop [] (tc/shutdown server)))
 
+(println "File server dir: " + files-base-dir)
+(println)
 
 (println "Tomcat started on port ~(:port tomcat-opts).")
 (println "Open a browser:      (sh/open \"http://localhost:8080\")")

@@ -437,17 +437,20 @@
     (tomcat/start servlet nil nil options))
 
   ([servlet context-path context-doc-base options]
+    (assert (or (nil? context-path) (string? context-path)))
+    (assert (or (nil? context-doc-base) (string? context-doc-base)))
+    (assert map? options)
     (let [ctx-path     (coalesce context-path tomcat/default-context-path)
           ctx-doc-base (coalesce context-doc-base tomcat/default-context-doc-base)
           server       (tomcat/create-server options)
           context      (. server :addContext ctx-path ctx-doc-base)]
       (cond
         (instance-of? :VeniceServlet servlet)
-            (let [name     (:name opts "venice-servlet")
-                  mapping  (:mapping opts "/*")
+            (let [name     (:name options "venice-servlet")
+                  mapping  (:mapping options "/*")
                   opts     {}]
               (add-servlet server context ctx-path 
-                           servlet servlet name mapping opts))
+                           servlet name mapping opts))
 
         (sequential? servlet)
             (doseq [s servlet]

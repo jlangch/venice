@@ -1,0 +1,263 @@
+;;;;   __    __         _
+;;;;   \ \  / /__ _ __ (_) ___ ___
+;;;;    \ \/ / _ \ '_ \| |/ __/ _ \
+;;;;     \  /  __/ | | | | (_|  __/
+;;;;      \/ \___|_| |_|_|\___\___|
+;;;;
+;;;;
+;;;; Copyright 2017-2024 Venice
+;;;;
+;;;; Licensed under the Apache License, Version 2.0 (the "License");
+;;;; you may not use this file except in compliance with the License.
+;;;; You may obtain a copy of the License at
+;;;;
+;;;;     http://www.apache.org/licenses/LICENSE-2.0
+;;;;
+;;;; Unless required by applicable law or agreed to in writing, software
+;;;; distributed under the License is distributed on an "AS IS" BASIS,
+;;;; WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+;;;; See the License for the specific language governing permissions and
+;;;; limitations under the License.
+
+;;;; Venice ring middleware
+
+
+(ns ring-util)
+
+(import :com.github.jlangch.venice.RingRedirectException)
+
+
+(defn
+  ^{ :arglists '("(ring-util/parse-charset header)")
+     :doc """
+          Parses the charset from a header value
+
+          E.g.: Returns `utf-8` for a content tye header like: 
+          `Content-Type: text/html; charset=utf-8`
+          """ }
+
+  parse-charset [header]
+
+  (let [m (regex/matcher #".*charset=([^\\s;]+).*" header)]
+    (when (regex/matches? m)
+      (regex/group m 1))))
+
+
+(defn
+  ^{ :arglists '("(ring-util/get-charset req_or_res)")
+     :doc """
+          Gets the character encoding of a Ring response.
+
+          E.g.: Returns `utf-8` for a content tye header like: 
+          `Content-Type: text/html; charset=utf-8`
+          """ }
+
+  get-charset [req_or_res]
+
+  (if-let [header (ring-util/find-header req_or_res "Content-Type")]
+    (ring-util/parse-charset header)))
+
+
+(defn
+  ^{ :arglists '("(ring-util/find-header req_or_res header-name)")
+     :doc """
+          Looks up a header in a Ring request or response case insensitively,
+          returning the header map entry, or nil if not present.
+          """  }
+
+  find-header [req_or_res header-name]
+
+  (if (java-obj? req_or_res)
+    (. req_or_res :getHeader header-name)
+    (->> (:headers req_or_res)
+         (filter #(str/equals-ignore-case? header-name (key %)))
+         (first))))
+
+
+(defn
+  ^{ :arglists '("(ring-util/redirect request url)")
+     :doc "Redirect to the given URL." }
+
+  redirect [request url]
+
+  (when (ring-util/debug? request)
+    (println (str "Redirect to: " url)))
+  (throw (. :RingRedirectException :new url)))
+
+
+(defn
+  ^{ :arglists '("(ring-util/not-found-response)"
+                 "(ring-util/not-found-response msg)")
+     :doc "Create a HTTP Not-Found 404 response with content-type text/html. " }
+
+  not-found-response
+
+  ([] (ring/not-found-response "Not Found"))
+
+  ([msg] { :status 404
+           :headers { "Content-Type" "text/html; charset=utf-8" }
+           :body """<html><body><p>~(str/escape-html msg)</p></body></html>""" }))
+
+
+(defn
+  ^{ :arglists '("(ring-util/get-request-parameter req name)")
+     :doc """
+          Returns the value of the specified request parameter. If the request
+          did not include a parameter of the specified name, this method returns
+          nil. If there are multiple parameters with the same name, this method
+          returns the first parameter in the request.
+          """ }
+
+  get-request-parameter [req name]
+
+  (first (get (:parameters req) name)))
+
+
+(defn
+  ^{ :arglists '("(ring-util/get-request-parameters req name)")
+     :doc "Returns all the values of the specified request parameter as a list" }
+
+  get-request-parameters [req name]
+
+  (get (:parameters req) name))
+
+
+(defn
+  ^{ :arglists '("(ring-util/get-request-header req name)")
+     :doc """
+          Returns the value of the specified request header. If the request
+          did not include a header of the specified name, this method returns
+          nil. If there are multiple header with the same name, this method
+          returns the first header in the request.
+          """  }
+
+  get-request-header [req name]
+
+  (first (get (:headers req) name)))
+
+
+(defn
+  ^{ :arglists '("(ring-util/get-request-headers req name)")
+     :doc "Returns all the values of the specified request header as a list." }
+
+  get-request-headers [req name]
+
+  (get (:headers req) name))
+
+
+(defn
+  ^{ :arglists '("(ring-util/get-request-header-accept-mimetypes req)")
+     :doc """
+          Returns all 'Accept' header mime-types of the request as a set.
+          Strips off the ratings
+          """ }
+
+  get-request-header-accept-mimetypes [req]
+
+  (into #{} (map #(first (str/split % " *; *"))
+                 (get (:headers req) "Accept"))))
+
+
+
+(defn
+  ^{ :arglists '("(ring-util/html-request? req)")
+     :doc "Returns true if the request has content type 'text/html'" }
+
+  html-request? [req]
+
+  (match? (:content-type req) #"text/html(;.*)?"))
+
+
+(defn
+  ^{ :arglists '("(ring-util/json-request? req)")
+     :doc "Returns true if the request has content type 'application/json'" }
+
+  json-request? [req]
+
+  (match? (:content-type req) #"application/json(;.*)?"))
+
+
+(defn
+  ^{ :arglists '("(ring-util/debug? req)")
+     :doc "Returns true if debugging is turned on else false" }
+
+  debug? [req] (:debug req false))
+
+
+
+(defn
+  ^{ :arglists '("(ring-util/get-headers request)")
+     :doc "Creates a name/value map of all the request headers." }
+
+  get-headers [request]
+
+  (reduce
+    (fn [headers name]
+      (assoc headers
+        (str/lower-case name)
+        (-> (. request :getHeaders name)
+            (java-enumeration-to-list))))
+    {}
+    (java-enumeration-to-list (. request :getHeaderNames))))
+
+
+(defn
+  ^{ :arglists '("(ring-util/get-parameters request)")
+     :doc "Creates a name/value map of the request parameters." }
+
+  get-parameters [request]
+
+  (. request :getParameterMap))
+
+
+(defn
+  ^{ :arglists '("(ring-util/get-content-length request)")
+     :doc "Returns the content length, or nil if there is no content." }
+
+  get-content-length [request]
+
+  (let [length (. request :getContentLength)]
+    (if (>= length 0) length nil)))
+
+
+(defn
+  ^{ :arglists '("(ring-util/get-client-cert request)")
+     :doc "Returns the SSL client certificate of the request, if one exists." }
+
+  get-client-cert [request]
+
+  (first (. request :getAttribute "javax.servlet.request.X509Certificate")))
+
+
+(defn
+  ^{ :arglists '("(ring-util/get-cookies req)")
+     :doc "Return the HttpServletRequest cookies as a map" }
+
+  get-cookies [req]
+
+  (let [cookies (. req :getCookies)]
+    (if cookies
+      (reduce (fn [m c] (assoc m (. c :getName) c)) {} cookies)
+      {})))
+
+
+(defn html-box-page [title message]
+  """
+  <html>
+    <head>
+      <title>Tomcat/Ring</title>
+      <style>
+        body    {font-family: Arial, Helvetica, sans-serif;}
+        .box    {margin-top: 120px; padding: 100px; text-align: center; background-color: #f8f8f8;}
+        .title  {color: #cccccc; font-size: 90px;}
+        .msg    {margin-top: 20px; color: #999999; font-size: 36px;}
+      </style>
+    </head>
+    <body>
+      <div class="box">
+        <div class="title">~(str/escape-html (str title))</div>
+        <div class="msg">~(str/escape-html (str message))</div>
+      </div>
+    </body>
+  </html>
+  """)

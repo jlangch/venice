@@ -1,0 +1,157 @@
+;;;;   __    __         _
+;;;;   \ \  / /__ _ __ (_) ___ ___
+;;;;    \ \/ / _ \ '_ \| |/ __/ _ \
+;;;;     \  /  __/ | | | | (_|  __/
+;;;;      \/ \___|_| |_|_|\___\___|
+;;;;
+;;;;
+;;;; Copyright 2017-2024 Venice
+;;;;
+;;;; Licensed under the Apache License, Version 2.0 (the "License");
+;;;; you may not use this file except in compliance with the License.
+;;;; You may obtain a copy of the License at
+;;;;
+;;;;     http://www.apache.org/licenses/LICENSE-2.0
+;;;;
+;;;; Unless required by applicable law or agreed to in writing, software
+;;;; distributed under the License is distributed on an "AS IS" BASIS,
+;;;; WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+;;;; See the License for the specific language governing permissions and
+;;;; limitations under the License.
+
+;;;; Venice ring multipart
+
+
+(ns ring-multipart)
+
+
+(defn
+  ^{ :arglists '("(ring-multipart/multipart-request? req)")
+     :doc "Returns true if the request is a multipart request 'multipart/form-data'" 
+     :see-also '( 
+        "ring-multipart/parts" 
+        "ring-multipart/parts-delete-all") }
+
+  multipart-request? [req]
+
+  (multipart-content-type? (:content-type req "")))
+
+
+(defn
+  ^{ :arglists '("(ring-multipart/multipart-content-type? content-type)")
+     :doc "Returns true if the header is a multipart request 'multipart/form-data'" 
+     :see-also '( 
+        "ring-multipart/parts" 
+        "ring-multipart/parts-delete-all") }
+
+  multipart-content-type? [content-type]
+
+  (match? (or content-type "") #"multipart/form-data(;.*)?"))
+
+
+(defn
+  ^{ :arglists '("(ring-multipart/parts req)")
+     :doc """
+          Returns a list of parts of a multipart HTTP request. 
+
+          A part is map with the fields:
+
+          | [![width: 15%]] | [![width: 85%]] |
+          | :name           | The name of the part |
+          | :file-name      | The file-name of the part or *nil* if not available |
+          | :size           | The size of the file |
+          | :content-type   | The content type of the part |
+          | :headers        | A map of part's headers. key: header name, \
+                              value: list of header values. The header names \
+                              are mapped to lower case.¶ \
+                              Use `(first ("xxxx" :headers))` to get a \
+                              single value header | 
+          | :in-stream      | The content part as input stream |
+          | :delete-fn      | A function that deletes the underlying storage \
+                              for a file item, including deleting any \
+                              associated temporary disk file. |
+
+          The part list is empty if the request is not a multipart request.
+          """
+     :see-also '( 
+          "ring-multipart/multipart-request?" 
+          "ring-multipart/parts-delete-all") }
+
+  parts [req] (:parts req))
+
+
+(defn
+  ^{ :arglists '("(ring-multipart/parts-delete-all req)")
+     :doc """
+          Safely deletes for all parts the underlying storage for the file 
+          items, including deleting any associated temporary disk files.
+
+          Calls the *delete-fn* on every part data map.
+          """
+     :see-also '( 
+          "ring-multipart/multipart-request?" 
+          "ring-multipart/parts" ) }
+
+  parts-delete-all [req] 
+  
+  (doseq [p (:parts req)]
+         (try 
+           ((:delete-fn p))  ;; call the part's delete function
+           (catch :Exception e))))
+
+
+(defn 
+  ^{ :arglists '("(ring-multipart/save-part dir part debug?)")
+     :doc "Saves a multipart part element to a directory." }
+
+  save-part [dir part debug?]
+
+  (assert (io/file? dir))
+  (assert (map part))
+  
+  (let [name      (:name part)
+        filename  (:file-name part)
+        filename  (if filename 
+                    (io/file-name filename) 
+                    (str name ".txt"))
+        delete-fn (:delete-fn part)
+        file      (io/file dir filename)]
+    (when-not (and (io/file? dir) (io/exists-dir? dir))
+      (let [msg (str/format "The dir '%s' does not exist! Failed to save upload part '%s'."
+                             dir name)]
+        (when debug? (println msg))
+        (throw (ex :VncException msg))))
+    (try-with [is (:in-stream  part)]
+      (when debug? (println "Saving part '" name "':" filename "to" dir))
+      (let [data (io/slurp-stream is :binary true)]
+        (io/spit file data :binary true))
+      (finally (delete-fn)))))
+
+
+(defn
+  ^{ :arglists '("(ring-multipart/map-parts parts)")
+     :doc "Create a list of multipart part maps from the HttpServletRequest request." }
+
+  map-parts [request]
+
+  (map map-part (into '() (. request :getParts))))
+
+
+(defn- map-part [part]
+  (ordered-map
+    :name         (. part :getName)
+    :file-name    (let [v (. part :getHeader "Content-Disposition")
+                        m (regex/matcher #".*filename=\"(.*)\"" v)]
+                    (when (regex/matches? m)
+                      (regex/group m 1)))
+    :size         (. part :getSize)
+    :content-type (. part :getContentType)
+    :headers      (reduce
+                    (fn [headers name]
+                      (assoc headers
+                             (str/lower-case name)
+                             (into '() (. part :getHeaders name))))
+                    {}
+                    (into '() (. part :getHeaderNames)))
+    :in-stream    (. part :getInputStream)
+    :delete-fn    (fn [] (. part :delete))))

@@ -49,39 +49,39 @@ public class ModuleRingSection implements ISectionBuilder {
 
         final DocSection util = new DocSection("Utils", id());
         all.addSection(util);
-        util.addItem(diBuilder.getDocItem("ring/redirect", false));
-        util.addItem(diBuilder.getDocItem("ring/not-found-response", false));
-        util.addItem(diBuilder.getDocItem("ring/get-request-parameters ", false));
-        util.addItem(diBuilder.getDocItem("ring/get-request-header", false));
-        util.addItem(diBuilder.getDocItem("ring/get-request-header-accept-mimetypes", false));
-        util.addItem(diBuilder.getDocItem("ring/debug?", false));
-        util.addItem(diBuilder.getDocItem("ring/html-request?", false));
-        util.addItem(diBuilder.getDocItem("ring/json-request?", false));
-        util.addItem(diBuilder.getDocItem("ring/parse-charset", false));
+        util.addItem(diBuilder.getDocItem("ring-util/redirect", false));
+        util.addItem(diBuilder.getDocItem("ring-util/not-found-response", false));
+        util.addItem(diBuilder.getDocItem("ring-util/get-request-parameters ", false));
+        util.addItem(diBuilder.getDocItem("ring-util/get-request-header", false));
+        util.addItem(diBuilder.getDocItem("ring-util/get-request-header-accept-mimetypes", false));
+        util.addItem(diBuilder.getDocItem("ring-util/html-request?", false));
+        util.addItem(diBuilder.getDocItem("ring-util/json-request?", false));
+        util.addItem(diBuilder.getDocItem("ring-util/parse-charset", false));
+        util.addItem(diBuilder.getDocItem("ring-util/debug?", false));
 
         final DocSection middleware = new DocSection("Middleware", id());
         all.addSection(middleware);
-        middleware.addItem(diBuilder.getDocItem("ring/mw-identity", false));
-        middleware.addItem(diBuilder.getDocItem("ring/mw-debug", false));
-        middleware.addItem(diBuilder.getDocItem("ring/mw-print-uri", false));
-        middleware.addItem(diBuilder.getDocItem("ring/mw-request-counter", false));
-        middleware.addItem(diBuilder.getDocItem("ring/mw-dump-request", false));
-        middleware.addItem(diBuilder.getDocItem("ring/mw-dump-response", false));
+        middleware.addItem(diBuilder.getDocItem("ring-mw/mw-identity", false));
+        middleware.addItem(diBuilder.getDocItem("ring-mw/mw-debug", false));
+        middleware.addItem(diBuilder.getDocItem("ring-mw/mw-print-uri", false));
+        middleware.addItem(diBuilder.getDocItem("ring-mw/mw-request-counter", false));
+        middleware.addItem(diBuilder.getDocItem("ring-mw/mw-dump-request", false));
+        middleware.addItem(diBuilder.getDocItem("ring-mw/mw-dump-response", false));
 
         final DocSection session = new DocSection("Session", id());
         all.addSection(session);
-        session.addItem(diBuilder.getDocItem("ring/session-invalidate", false));
-        session.addItem(diBuilder.getDocItem("ring/session-clear", false));
-        session.addItem(diBuilder.getDocItem("ring/session-id", false));
-        session.addItem(diBuilder.getDocItem("ring/session-get-value", false));
-        session.addItem(diBuilder.getDocItem("ring/session-remove-value", false));
-        session.addItem(diBuilder.getDocItem("ring/session-creation-time", false));
+        session.addItem(diBuilder.getDocItem("ring-session/session-invalidate", false));
+        session.addItem(diBuilder.getDocItem("ring-session/session-clear", false));
+        session.addItem(diBuilder.getDocItem("ring-session/session-id", false));
+        session.addItem(diBuilder.getDocItem("ring-session/session-get-value", false));
+        session.addItem(diBuilder.getDocItem("ring-session/session-remove-value", false));
+        session.addItem(diBuilder.getDocItem("ring-session/session-creation-time", false));
 
         final DocSection multipart = new DocSection("Multipart", id());
         all.addSection(multipart);
-        multipart.addItem(diBuilder.getDocItem("ring/multipart-request?", false));
-        multipart.addItem(diBuilder.getDocItem("ring/parts", false));
-        multipart.addItem(diBuilder.getDocItem("ring/parts-delete-all", false));
+        multipart.addItem(diBuilder.getDocItem("ring-multipart/multipart-request?", false));
+        multipart.addItem(diBuilder.getDocItem("ring-multipart/parts", false));
+        multipart.addItem(diBuilder.getDocItem("ring-multipart/parts-delete-all", false));
 
         return section;
     }

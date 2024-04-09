@@ -182,14 +182,14 @@
 ;; -----------------------------------------------------------------------------
 
 (defn logged-in? [req]
-  (some? (ring/session-get-value req ":user")))
+  (some? (ring-session/session-get-value req ":user")))
 
 (defn login [req user]
-  (ring/session-set-value req ":user" user))
+  (ring-session/session-set-value req ":user" user))
 
 (defn logout [req]
-  (ring/session-clear req)
-  (ring/session-invalidate req))
+  (ring-session/session-clear req)
+  (ring-session/session-invalidate req))
 
 
 ;; -----------------------------------------------------------------------------
@@ -198,24 +198,24 @@
 
 (defn do-logout-handler [request]
   (logout request)
-  (ring/redirect request "/login"))
+  (ring-util/redirect request "/login"))
 
 (defn do-login-handler [request]
-  (let [user (ring/get-request-parameter request "user")
-        pwd (ring/get-request-parameter request "pwd")]
+  (let [user (ring-util/get-request-parameter request "user")
+        pwd (ring-util/get-request-parameter request "pwd")]
     (if (or (empty? user) (empty? pwd))
       (do
-        (ring/session-clear request)
+        (ring-session/session-clear request)
         { :status 200
           :headers { "Content-Type" "text/html; charset=utf-8" }
           :body (render-login-screen :missing) })
       (do
         (login request user)
-        (ring/redirect request "/main")))))
+        (ring-util/redirect request "/main")))))
 
 (defn login-handler [request]
   (if (logged-in? request)
-    (ring/redirect request "/main")
+    (ring-util/redirect request "/main")
     { :status 200
       :headers { "Content-Type" "text/html; charset=utf-8" }
       :body (render-login-screen :ok)}))
@@ -224,14 +224,14 @@
   { :status 200
     :headers { "Content-Type" "text/html; charset=utf-8" }
     :body (render-main-screen
-            (ring/session-get-value request ":user")
-            (ring/session-id request))})
+            (ring-session/session-get-value request ":user")
+            (ring-session/session-id request))})
 
 (defn checkout-handler [request]
   { :status 200
     :headers { "Content-Type" "text/html; charset=utf-8" }
     :body (render-checkout-screen
-            (ring/session-get-value request ":user")) })
+            (ring-session/session-get-value request ":user")) })
 
 (defn style-css-handler [request]
   { :status 200
@@ -239,7 +239,7 @@
     :body style-css })
 
 (defn not-found-handler [request]
-  (ring/not-found-response ))
+  (ring-util/not-found-response ))
 
 
 ;; -----------------------------------------------------------------------------
@@ -249,7 +249,7 @@
 (defn logged-in-filter [handler]
   (fn [req]
     (if (not (logged-in? req))
-      (ring/redirect req "/login")
+      (ring-util/redirect req "/login")
       (handler req))))
 
 
@@ -266,14 +266,14 @@
              [:get  "/favicon.ico"       not-found-handler                   ]])
 
 (defn my-servlet []
-  (ring/create-servlet (-> (ring/match-routes routes)  ; >--+
-                                                       ;    |
-                           ;(ring/mw-dump-response)    ; ^  |
-                           ;(ring/mw-dump-request)     ; |  |
-                           (ring/mw-request-counter)   ; |  |
-                           (ring/mw-add-session 3600)  ; |  |
-                           (ring/mw-print-uri)         ; |  |
-                           (ring/mw-debug :on))))      ; +--+
+  (ring/create-servlet (-> (ring/match-routes routes)     ; >--+
+                                                          ;    |
+                           ;(ring-mw/mw-dump-response)    ; ^  |
+                           ;(ring-mw/mw-dump-request)     ; |  |
+                           (ring-mw/mw-request-counter)   ; |  |
+                           (ring-mw/mw-add-session 3600)  ; |  |
+                           (ring-mw/mw-print-uri)         ; |  |
+                           (ring-mw/mw-debug :on))))      ; +--+
 
 ;; start Tomcat
 (let [server (tc/start (my-servlet) tomcat-opts)]
