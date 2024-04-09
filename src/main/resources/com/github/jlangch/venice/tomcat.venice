@@ -219,6 +219,38 @@
     tomcat)))
 
 
+(defn- add-servlet [server context ctx-path servlet servlet-name servlet-mapping servlet-opts]
+  (let [wrapper (. server :addServlet ctx-path servlet-name servlet)]
+    ;; servlet url mapping
+    (cond
+      (string? servlet-mapping)      (add-servlet-mappings context 
+                                                           servlet-name
+                                                           [ servlet-mapping ] )
+
+      (sequential? servlet-mapping)  (add-servlet-mappings context 
+                                                           servlet-name
+                                                           servlet-mapping )
+      
+      :else  (throw (ex :VncException 
+                        (str/format (str "Invalid servlet mapping for servlet '%s'."
+                                         "Expected a string or a sequence of strings!")
+                                    servlet-name))))
+
+    ;; file upload (multip part config)
+    (when (:file-upload servlet-opts false)
+      (. wrapper :setMultipartConfigElement (create-multipart-config servlet-opts)))
+
+    ;; async-support
+    (. wrapper :setAsyncSupported (:async-support servlet-opts false))
+
+    ;; load-on startup
+    (. wrapper :setLoadOnStartup (int (:load-on-startup servlet-opts -1I)))))
+
+
+(defn- add-servlet-mappings [context servlet-name mappings]
+  (doseq [m mappings] (. context :addServletMappingDecoded m servlet-name)))
+
+
 (defn- create-multipart-config [file-upload-opts]
   (let [location (:location file-upload-opts)]
     (when (nil? location)
@@ -232,37 +264,6 @@
                                (long (:max-file-size file-upload-opts -1))
                                (long (:max-request-size file-upload-opts -1))
                                (int (:file-size-threshold file-upload-opts 0I)))))
-
-
-(defn- add-servlet [server context ctx-path servlet servlet-name servlet-mapping]
-  (. server :addServlet ctx-path servlet-name servlet)
-
-  ;; servlet url mapping
-  (cond
-    (string? servlet-mapping)      (add-servlet-mappings context 
-                                                         servlet-name
-                                                         [ servlet-mapping ] )
-
-    (sequential? servlet-mapping)  (add-servlet-mappings context 
-                                                         servlet-name
-                                                         servlet-mapping )
-     
-    :else  (throw (ex :VncException 
-                      (str/format (str "Invalid servlet mapping for servlet '%s'."
-                                       "Expected a string or a sequence of strings!")
-                                  servlet-name)))))
-
-
-(defn- add-servlet-mappings [context servlet-name mappings]
-  (doseq [m mappings] (. context :addServletMappingDecoded m servlet-name)))
-
-
-(defn- add-fileupload-servlet [server context ctx-path
-                               servlet servlet-name servlet-mapping
-                               upload-opts]
-  (let [wrapper (. server :addServlet ctx-path servlet-name servlet)]
-    (. wrapper :setMultipartConfigElement (create-multipart-config upload-opts)))
-  (. context :addServletMappingDecoded servlet-mapping servlet-name))
 
 
 (defn process-upload-files [req upload-dir]
@@ -361,7 +362,10 @@
           | :mapping             | the servlet's mapping path (default: "/*") ¶\
                                    single or multiple mappings are possible for a servlet: ¶\
                                    \u00A0\u00A0\u00A0- single:  "/employees" ¶\
-                                   \u00A0\u00A0\u00A0- multiple: ["/employees" "/employees/*"] |
+                                   \u00A0\u00A0\u00A0- multiple: ["/employees" "/employees/*"] |                          
+          | :async-support       | if true add async support for servlet (default: false) |
+          | :load-on-startup     | the load-on-startup order value, a negative value means \
+                                   load on first call. (default: -1) |
           | :file-upload         | if true configure as file-upload servlet (default: false) |
           | :location            | file-upload location (default: "") |
           | :max-file-size       | file-upload max file size in bytes (default: -1) |
@@ -439,26 +443,20 @@
           context      (. server :addContext ctx-path ctx-doc-base)]
       (cond
         (instance-of? :VeniceServlet servlet)
-            (add-servlet server context ctx-path servlet "venice-servlet" "/*")
+            (let [name     (:name opts "venice-servlet")
+                  mapping  (:mapping opts "/*")
+                  opts     {}]
+              (add-servlet server context ctx-path 
+                           servlet servlet name mapping opts))
 
         (sequential? servlet)
             (doseq [s servlet]
-                   (let [servlet          (first s)
-                         opts             (or (second s) {})
-                         name             (:name opts "venice-servlet")
-                         mapping          (:mapping opts "/*")
-                         file-upload      (:file-upload opts false)
-                         file-upload-opts (select-keys opts
-                                                       [:location
-                                                        :max-file-size
-                                                        :max-request-size
-                                                        :file-size-threshold])]
-                     (if-not file-upload
-                       (add-servlet server context ctx-path
-                                    servlet name mapping)
-                       (add-fileupload-servlet server context ctx-path
-                                               servlet name mapping
-                                               file-upload-opts))))
+                   (let [servlet  (first s)
+                         opts     (or (second s) {})
+                         name     (:name opts "venice-servlet")
+                         mapping  (:mapping opts "/*")]
+                     (add-servlet server context ctx-path
+                                  servlet name mapping opts)))
 
         :else
             (throw (ex :VncException
