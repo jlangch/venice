@@ -39,6 +39,9 @@
         :com.github.jlangch.venice.util.servlet.FilterOutputStreamCloseCB)
 
 
+(import :jakarta.servlet.http.HttpServletResponse)
+
+
 
 
 
@@ -233,19 +236,24 @@
 
 
 (defn- handle-async [request response servlet handler]
-  (let [async-context (. request :startAsync )
+  (let [async-context (. request :startAsync request response)
         ring-req      (-> (ring/build-request-map request)
                           (ring/merge-servlet-keys servlet request response)
-                          (assoc :async { :context  async-context
-                                          :response response 
-                                          :response-fn (fn [response-map]
-                                                          (ring/update-servlet-response 
-                                                                    response 
-                                                                    async-context 
-                                                                    response-map))
-                                          :error-fn (fn [exception]
-                                                      (. response :sendError 500 (. exception :getMessage))
-                                                      (. async-context :complete ))} ))
+                          (assoc :async 
+                                 { :context  async-context
+                                   :response-fn (fn [response-map]
+                                                  (ring/update-servlet-response 
+                                                            (. async-context :getResponse) 
+                                                            async-context 
+                                                            response-map))
+                                   :error-fn (fn [exception]
+                                               (let [response  (cast :HttpServletResponse (. async-context :getResponse))
+                                                     out       (. response :getWriter)]
+                                                 (. response :setContentType "text/plain; charset=utf-8")
+                                                 (. response :setStatus 500)
+                                                 (. out :print (. exception :getMessage))
+                                                 (. out :flush)
+                                                 (. async-context :complete))) } ))
                       ;; run the handler chain
         ring-res      (handler ring-req)]
     (when ring-res
@@ -443,6 +451,7 @@
            :servlet-context      (. servlet :getServletContext)
            :servlet-path         (. request :getServletPath)
            :servlet-context-path (. request :getContextPath) }))
+
 
 
 ;; -----------------------------------------------------------------------------
