@@ -247,22 +247,29 @@
                                                             async-context 
                                                             response-map))
                                    :error-fn (fn [exception]
-                                               (let [response  (cast :HttpServletResponse (. async-context :getResponse))
-                                                     out       (. response :getWriter)]
-                                                 (. response :setContentType "text/plain; charset=utf-8")
-                                                 (. response :setStatus 500)
-                                                 (. out :print (. exception :getMessage))
-                                                 (. out :flush)
-                                                 (. async-context :complete))) } ))
+                                               (try 
+                                                 (let [response  (cast :HttpServletResponse (. async-context :getResponse))
+                                                       out       (. response :getWriter)]
+                                                   (. response :setContentType "text/plain; charset=utf-8")
+                                                   (. response :setStatus 500)
+                                                   (. out :print (. exception :getMessage))
+                                                   (. out :flush)
+                                                   (. async-context :complete))
+                                                 (finally
+                                                    (. async-context :complete)))) } ))
                       ;; run the handler chain
         ring-res      (handler ring-req)]
-    (when ring-res
-      (do (when-let [status (:status ring-res)]
+    (when (and (map? ring-res) (not (empty? ring-res)))
+      (try 
+        (let [response  (cast :HttpServletResponse (. async-context :getResponse))]
+          (when-let [status (:status ring-res)]
             (. response :setStatus status))
           (ring/set-response-headers response (dissoc (:headers ring-res)))
           (ring/write-body-to-stream (:body ring-res) 
-                                     response 
-                                     (. response :getOutputStream))))))
+                                      response 
+                                      (. response :getOutputStream)))
+        (finally
+          (. async-context :complete))))))
 
 
 

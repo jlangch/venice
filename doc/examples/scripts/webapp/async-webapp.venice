@@ -28,9 +28,10 @@
               (try 
                 (sleep 2_000)
       
-                { :status 200
-                  :headers { "text/plain; charset=utf-8" }
-                  :body "Work completed (demo 1)." }
+                { :status  200
+                  :headers { "Content-Type" "text/plain; charset=utf-8" }
+                  :body    "Work completed (demo 1)." }
+
               (catch :Exception e 
                 (let [async-error-fn  (:error-fn async)]
                   (async-error-fn e))))))))
@@ -54,6 +55,7 @@
                   (. out :flush)
                   (. async-context :complete)
                   nil)
+                  
               (catch :Exception e 
                 (let [async-error-fn  (:error-fn async)]
                   (async-error-fn e))))))))
