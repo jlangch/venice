@@ -36,7 +36,7 @@
                (io/file-within-dir? dir file))
         { :status 200
           :headers { "Content-Type" mimetype }
-          :body file }
+          :body file }  ;; may be a string, bytebuf, :InputSream, :File
         (not-found-handler request)))
     (not-found-handler request)))
 
