@@ -41,10 +41,35 @@
 
 
 
+
+;; -----------------------------------------------------------------------------
+;; Ring Servlet
+;; -----------------------------------------------------------------------------
+
+(defn
+  ^{ :arglists '("(ring/create-servlet handler)")
+     :doc """
+          Create a ring servlet.
+          """
+     :see-also '( "ring/match-routes") }
+
+  create-servlet [handler]
+
+  (. :VeniceServlet :new
+    (proxify :IVeniceServlet
+      { :init      (fn [servlet config]  (. servlet :log "Initialized"))
+        :destroy   (fn [servlet]         (. servlet :log "Destroyed"))
+        :doGet     (fn [servlet req res] (ring/handle req res servlet handler))
+        :doHead    (fn [servlet req res] (ring/handle req res servlet handler))
+        :doPost    (fn [servlet req res] (ring/handle req res servlet handler))
+        :doPut     (fn [servlet req res] (ring/handle req res servlet handler))
+        :doDelete  (fn [servlet req res] (ring/handle req res servlet handler))
+        :getLastModified (fn [req] -1) })))
+
+
 ;; -----------------------------------------------------------------------------
 ;; Routing
 ;; -----------------------------------------------------------------------------
-
 
 (defn
   ^{ :arglists '("(ring/match-routes routes)")
@@ -160,37 +185,82 @@
           (ring-util/not-found-response))))))
 
 
+
 ;; -----------------------------------------------------------------------------
-;; Ring Servlet
+;; Request handling
 ;; -----------------------------------------------------------------------------
 
-(defn
-  ^{ :arglists '("(ring/create-servlet handler)")
-     :doc """
-          Create a ring servlet.
-          """
-     :see-also '( "ring/match-routes") }
+(defn-
+  ^{ :doc """
+          Bootstrap the handler chain. Builds the request from then
+          HttpServletRequest and calls the handler with the request.
+          Builds the HttpServletResponse from the handler's response.
+          Sends a not-found HTTP response if the handler returned a
+          nil response. Sends a redirect if a handler raises a
+          RingRedirectException. In case of any other exception sends
+          an internal-error (HTTP status 500) response.
+          """ }
 
-  create-servlet [handler]
+  handle [req res servlet handler]
 
-  (. :VeniceServlet :new
-    (proxify :IVeniceServlet
-      { :init      (fn [servlet config]  (. servlet :log "Initialized"))
-        :destroy   (fn [servlet]         (. servlet :log "Destroyed"))
-        :doGet     (fn [servlet req res] (ring/handle req res servlet handler))
-        :doHead    (fn [servlet req res] (ring/handle req res servlet handler))
-        :doPost    (fn [servlet req res] (ring/handle req res servlet handler))
-        :doPut     (fn [servlet req res] (ring/handle req res servlet handler))
-        :doDelete  (fn [servlet req res] (ring/handle req res servlet handler))
-        :getLastModified (fn [req] -1) })))
+  (try
+    (if (. req :isAsyncSupported)
+      (handle-async req res servlet handler)
+      (handle-sync req res servlet handler))
+    (catch :RingRedirectException ex
+      (ring/send-redirect req res (:redirectUri ex)))
+    (catch :VncException ex
+      (. ex :printVeniceStackTrace)
+      (ring/send-error res))
+    (catch :Exception ex
+      (. ex :printStackTrace)
+      (ring/send-error res))))
 
+
+(defn- handle-sync [request response servlet handler]
+  (let [ring-req   (-> (ring/build-request-map request)
+                       (ring/merge-servlet-keys servlet request response))
+                    ;; run the handler chain
+        ring-res   (handler ring-req)]
+    (if ring-res
+      (do (when-let [status (:status ring-res)]
+            (. response :setStatus status))
+          (ring/set-response-headers response (dissoc (:headers ring-res)))
+          (ring/write-body-to-stream (:body ring-res) 
+                                     response 
+                                     (. response :getOutputStream)))
+      (do (ring/send-not-found response)))))
+
+
+(defn- handle-async [request response servlet handler]
+  (let [async-context (. request :startAsync )
+        ring-req      (-> (ring/build-request-map request)
+                          (ring/merge-servlet-keys servlet request response)
+                          (assoc :async { :context  async-context
+                                          :response response 
+                                          :response-fn (fn [response-map]
+                                                          (ring/update-servlet-response 
+                                                                    response 
+                                                                    async-context 
+                                                                    response-map))
+                                          :error-fn (fn [exception]
+                                                      (. response :sendError 500 (. exception :getMessage))
+                                                      (. async-context :complete ))} ))
+                      ;; run the handler chain
+        ring-res      (handler ring-req)]
+    (when ring-res
+      (do (when-let [status (:status ring-res)]
+            (. response :setStatus status))
+          (ring/set-response-headers response (dissoc (:headers ring-res)))
+          (ring/write-body-to-stream (:body ring-res) 
+                                     response 
+                                     (. response :getOutputStream))))))
 
 
 
 ;; -----------------------------------------------------------------------------
 ;; Request/Response utils (internal)
 ;; -----------------------------------------------------------------------------
-
 
 (defn-
   ^{ :arglists '("(ring/set-response-headers response headers)")
@@ -475,42 +545,6 @@
                 (and (== verb (:verb route))
                      (ring/uri-matches-regex (:uri-regex route) uri)))
       routes)))
-
-
-(defn
-  ^{ :doc """
-          Bootstrap the handler chain. Builds the request from then
-          HttpServletRequest and calls the handler with the request.
-          Builds the HttpServletResponse from the handler's response.
-          Sends a not-found HTTP response if the handler returned a
-          nil response. Sends a redirect if a handler raises a
-          RingRedirectException. In case of any other exception sends
-          an internal-error (HTTP status 500) response.
-          """ }
-
-  handle [req res servlet handler]
-
-  (try
-    (let [ring-req (-> req
-                       (ring/build-request-map)
-                       (ring/merge-servlet-keys servlet req res))
-                   ;; run the handler chain
-          ring-res (handler ring-req)]
-      (if ring-res
-        (do  
-            (when-let [status (:status ring-res)]
-              (. res :setStatus status))
-            (ring/set-response-headers res (dissoc (:headers ring-res)))
-            (ring/write-body-to-stream (:body ring-res) res (. res :getOutputStream)))
-        (do (ring/send-not-found res))))
-    (catch :RingRedirectException ex
-      (ring/send-redirect req res (:redirectUri ex)))
-    (catch :VncException ex
-      (. ex :printVeniceStackTrace)
-      (ring/send-error res))
-    (catch :Exception ex
-      (. ex :printStackTrace)
-      (ring/send-error res))))
 
 
 

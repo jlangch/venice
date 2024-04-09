@@ -17,24 +17,27 @@
 ;; Ring handler
 ;; -----------------------------------------------------------------------------
 
-(defn async-demo [request async-response-fn async-error-fn]
-  (when (nil? (:async request))
-    (throw (ex :VncException "Not in async mode!")))
+(defn async-demo [request]
+  (let [async          (:async request)
+        async-context  (:context async)]
 
-  @(thread (fn []
-      (try 
-        (let [async     (:async request)
-              response  (:response async)
-              async-ctx (:context async)
-              out      (. response :getWriter())]
-          (. response :setContentType "text/plain; charset=utf-8")
-          (. response :setStatus 200)
-          (sleep 2_000)
-          (. out :print "Work completed.")
-          (. out :flush)
-          (. async-ctx :complete)
-          nil))
-      (catch e (async-error-fn e)))))
+    (when (nil? async)
+      (throw (ex :VncException "Handler is not in async mode!")))
+
+    @(thread (fn []
+        (try 
+          (let [response          (:response async)
+                async-response-fn (:response-fn async)
+                async-error-fn    (:error-fn async)
+                out               (. response :getWriter)]
+            (. response :setContentType "text/plain; charset=utf-8")
+            (. response :setStatus 200)
+            (sleep 2_000)
+            (. out :print "Work completed.")
+            (. out :flush)
+            (. async-context :complete)
+            nil)
+        (catch e (async-error-fn e)))))))
 
 
 
