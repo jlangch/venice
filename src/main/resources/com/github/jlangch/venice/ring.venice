@@ -251,7 +251,8 @@
 
 
 (defn- handle-request [request response servlet handler request-options]
-  (let [ring-req   (-> (ring/build-request-map request)
+  (let [async?     (:async? request-options)
+        ring-req   (-> (ring/build-request-map request)
                        (merge request-options)
                        (ring/merge-servlet-keys servlet request response))
                     ;; run the handler chain
@@ -263,7 +264,9 @@
           (ring/write-body-to-stream (:body ring-res) 
                                      response 
                                      (. response :getOutputStream)))
-      (do (ring/send-not-found request response)))))
+      (when-not async?
+        ;; send a not-found response only when not in async mode
+        (ring/send-not-found request response)))))
 
 
 

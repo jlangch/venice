@@ -14,20 +14,24 @@
 (tc/check-required-libs)
 
 
+
 ;; -----------------------------------------------------------------------------
 ;; Event Producer
 ;; -----------------------------------------------------------------------------
 
-(defn event-producer [queue]
+(defn event-producer [queue stop]
   (let [id-counter (atom 1000)]
     (println "Event producer running.")
-    (thread #(while true
-               (let [id (str (swap! id-counter inc))]
-                 (sleep 2000)
-                 (println "Adding event " id)
-                 (put! queue { :id    id 
-                               :event "demo" 
-                               :data  ["Counter ~{id}"] }))))))
+    (thread #(loop []
+               (if @stop 
+                 (println "Event producer stopped.")
+                 (let [id (str (swap! id-counter inc))]
+                   (sleep 2000)
+                   (println "Adding event " id)
+                   (put! queue { :id    id 
+                                 :event "demo" 
+                                 :data  ["Counter ~{id}"] })
+                   (recur)))))))
 
 
 
@@ -36,7 +40,8 @@
 ;; -----------------------------------------------------------------------------
 
 (defn events-demo [queue request]
-  (let [async_request   (:async-request request)   ;; HttpServletRequest
+  (let [stop-events     (atom false)
+        async_request   (:async-request request)   ;; HttpServletRequest
         async_response  (:async-response request)  ;; HttpServletResponse
         os              (. async_response :getOutputStream)
         pr              (io/wrap-os-with-print-writer os :utf-8)]
@@ -45,7 +50,7 @@
     (. async_response :setCharacterEncoding "UTF-8")
 
     ;; start the event producer
-    (event-producer queue)
+    (event-producer queue stop-events)
 
     (try
       (loop []
@@ -58,9 +63,13 @@
       (catch :Exception e 
         (println "Client closed connection")))
             
+    ;; stop the event producer
+    (reset! stop-events true)
+
     (println "Stopped serving events")
 
-    ;; return nil to signal the :ring module to send any further to the client
+    ;; return nil to signal the :ring module to not send any further data
+    ;; to the client!
     nil))
 
 
@@ -98,10 +107,9 @@
 
 
 
-
-
 ;; GET (demo)
 (comment
+  ;; run this code in another REPL 
   (do
     (load-module :http-client-j8 ['http-client-j8 :as 'hc])
 
