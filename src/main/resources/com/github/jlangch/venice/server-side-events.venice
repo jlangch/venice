@@ -154,9 +154,9 @@
                    (sse/render { :id "101"  :event "scores"   :data ["101"] } )
                    (sse/render { :id "102"  :event "scores"   :data ["102"] } )))
 
-            (let [is (io/string-in-stream (sample-events))
-                  rd (io/wrap-is-with-buffered-reader is :utf-8)]
-              (sse/read-event rd))) ;; read a single event
+            (try-with [is (io/string-in-stream (sample-events))
+                       rd (io/wrap-is-with-buffered-reader is :utf-8)]
+              (sse/read-event rd)))
           """ )
     :see-also '(
           "server-side-events/read-events" ) }
@@ -170,7 +170,7 @@
     (if (nil? line)
       nil  ;; end of stream, no complete event availale
       (if (empty? line)
-        (parse (str/join lines))                      ;; return the event
+        (parse (str/join "\r\n" lines))               ;; return the event
         (recur (read-line rd) (conj lines line))))))  ;; capture next event line
 
 
@@ -194,8 +194,8 @@
                    (sse/render { :id "102"  :event "scores"   :data ["102"] } )
                    (sse/render { :id "103"  :event "scores"   :data ["103"] } )))
 
-            (let [is (io/string-in-stream (sample-events))
-                  rd (io/wrap-is-with-buffered-reader is :utf-8)]
+            (try-with [is (io/string-in-stream (sample-events))
+                       rd (io/wrap-is-with-buffered-reader is :utf-8)]
               (sse/read-events rd 3)))
           """ )
     :see-also '(
