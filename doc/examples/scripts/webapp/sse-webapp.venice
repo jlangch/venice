@@ -109,9 +109,12 @@
 
 ;; GET (demo)
 (comment
-  ;; run this code in another REPL 
+  ;; run this Http client in another REPL. It kicks off server side streaming
+  ;; of events and displays the received events. Stops the connection after
+  ;; having received 10 events.
   (do
     (load-module :http-client-j8 ['http-client-j8 :as 'hc])
+    (load-module :server-side-events ['server-side-events :as 'sse])
 
     (let [response  (hc/send :get 
                              "http://localhost:8080/events" 
@@ -126,13 +129,13 @@
       (println "\nConsuming events...\n")
       (let [is (:data-stream response)
             rd (io/wrap-is-with-buffered-reader is :utf-8)]
-        ;; read the resonse line by line
-        (loop [line (read-line rd) event-count 1]
-          (if (some? line)
+        ;; read the streamed events from the response
+        (loop [event (sse/read-event rd) event-count 1]
+          (if event
             (do
-              (println line)  
-              (if (<= event-count 30)
-                (recur (read-line rd) (inc event-count))
+              (println "Event: " event)  
+              (if (<= event-count 10)
+                (recur (sse/read-event rd) (inc event-count))
                 (do
                   (println "Stopped after receiving 10 events")
                   (. rd :close))))
