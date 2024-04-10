@@ -23,13 +23,104 @@ package com.github.jlangch.venice.modules;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 import org.junit.jupiter.api.Test;
 
 import com.github.jlangch.venice.Venice;
+import com.github.jlangch.venice.VncException;
 
 
 public class SseModuleTest {
+
+    @Test
+    public void test_validation_1() {
+        final Venice venice = new Venice();
+
+        final String script =
+                "(do                                                                \n" +
+                "  (load-module :server-side-events ['server-side-events :as 'sse]) \n" +
+                "  (sse/render { :id \"100\"                                        \n" +
+                "                :event \"scores\"                                  \n" +
+                "                :data [\"100\"] } ))                               ";
+
+        venice.eval(script);
+    }
+
+    @Test
+    public void test_validation_2a() {
+        final Venice venice = new Venice();
+
+        // illegal \n in :id
+        final String script =
+                "(do                                                                \n" +
+                "  (load-module :server-side-events ['server-side-events :as 'sse]) \n" +
+                "  (sse/render { :id \"10\n0\"                                      \n" +
+                "                :event \"scores\"                                  \n" +
+                "                :data [\"100\"] } ))                               ";
+
+        assertThrows(VncException.class, () -> venice.eval(script));
+    }
+
+    @Test
+    public void test_validation_2b() {
+        final Venice venice = new Venice();
+
+        // illegal \r in :id
+        final String script =
+                "(do                                                                \n" +
+                "  (load-module :server-side-events ['server-side-events :as 'sse]) \n" +
+                "  (sse/render { :id \"10\r0\"                                      \n" +
+                "                :event \"scores\"                                  \n" +
+                "                :data [\"100\"] } ))                               ";
+
+        assertThrows(VncException.class, () -> venice.eval(script));
+    }
+
+    @Test
+    public void test_validation_2c() {
+        final Venice venice = new Venice();
+
+        // illegal \f in :id
+        final String script =
+                "(do                                                                \n" +
+                "  (load-module :server-side-events ['server-side-events :as 'sse]) \n" +
+                "  (sse/render { :id \"10\f0\"                                      \n" +
+                "                :event \"scores\"                                  \n" +
+                "                :data [\"100\"] } ))                               ";
+
+        assertThrows(VncException.class, () -> venice.eval(script));
+    }
+
+    @Test
+    public void test_validation_3() {
+        final Venice venice = new Venice();
+
+        // illegal \n in :event
+        final String script =
+                "(do                                                                \n" +
+                "  (load-module :server-side-events ['server-side-events :as 'sse]) \n" +
+                "  (sse/render { :id \"100\"                                        \n" +
+                "                :event \"sco\nres\"                                \n" +
+                "                :data [\"100\"] } ))                               ";
+
+        assertThrows(VncException.class, () -> venice.eval(script));
+    }
+
+    @Test
+    public void test_validation_4() {
+        final Venice venice = new Venice();
+
+        // illegal \n in :data
+        final String script =
+                "(do                                                                \n" +
+                "  (load-module :server-side-events ['server-side-events :as 'sse]) \n" +
+                "  (sse/render { :id \"100\"                                        \n" +
+                "                :event \"scores\"                                  \n" +
+                "                :data [\"10\n0\"] } ))                             ";
+
+        assertThrows(VncException.class, () -> venice.eval(script));
+    }
 
     @Test
     public void test_render_1() {

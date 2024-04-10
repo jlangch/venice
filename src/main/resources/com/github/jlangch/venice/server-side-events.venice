@@ -55,6 +55,9 @@
           data: GOAL Manchester United 3 - 3 Manchester City\\n\\n
           ```
 
+          The event fields :id, :event, and :data must not contain newline, 
+          carriage return, backspace, or formfeed characters!
+
           A HTTP request to initiate SSE streaming looks like:
 
           ```
@@ -80,7 +83,10 @@
   (assert (map? event))
   (assert (or (nil? (:id event)) (string? (:id event))))
   (assert (or (nil? (:event event)) (string? (:event event))))
-  (assert (or (nil? (:data event)) (sequential? (:data event))))
+  (assert (or (nil? (:data event)) 
+              (and (sequential? (:data event)) (every? string? (:data event)))))
+
+  (validate event)
 
   (try-with [sw (io/string-writer)]
     (when-let [s (str/trim-to-nil (:id event))]
@@ -140,7 +146,7 @@
   ^{ :arglists '(
           "(read-event rd)")
      :doc """
-          Read an event from a :java.io.BufferedReader. 
+          Read a single event from a :java.io.BufferedReader. 
 
           Returns the event or `nil` if the underlying stream has been closed.
           """
@@ -178,7 +184,7 @@
   ^{ :arglists '(
           "(read-events rd limit)")
      :doc """
-          Reads event from a :java.io.BufferedReader. 
+          Reads multiple events from a :java.io.BufferedReader. 
 
           Returns a list of events. Stops reading events if the limit is reached 
           or the underlying stream has been closed.
@@ -215,3 +221,26 @@
           (recur (read-event rd) events)))    ;; parse next event
       events)))                               ;; return the events, stream closed
       
+
+(defn- validate [event]
+  (assert (some? event))  
+  (when (contains-invalid-chars? (:id event))
+    (throw (ex :AssertionException (make-validation-err-ms ":id"))))
+  (when (contains-invalid-chars? (:event event))
+    (throw (ex :AssertionException (make-validation-err-ms ":event"))))
+  (doseq [d (or (:data event) [])]
+    (when (contains-invalid-chars? d)
+       (throw (ex :AssertionException (make-validation-err-ms ":data"))))))
+
+
+(defn- contains-invalid-chars? [value]
+  (and (some? value) 
+       (some? (str/index-of-char value [#\newline #\return #\backspace #\formfeed]))))
+
+
+(defn- make-validation-err-msg [field]
+  (str/format """
+              The event field %s must not contain newline, carriage return, \
+              backspace, or formfeed characters!
+              """
+              field))
