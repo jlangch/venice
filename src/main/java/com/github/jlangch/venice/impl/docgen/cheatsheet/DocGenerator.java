@@ -71,6 +71,7 @@ import com.github.jlangch.venice.impl.docgen.cheatsheet.modules.ModuleQrRefSecti
 import com.github.jlangch.venice.impl.docgen.cheatsheet.modules.ModuleRingSection;
 import com.github.jlangch.venice.impl.docgen.cheatsheet.modules.ModuleSemverSection;
 import com.github.jlangch.venice.impl.docgen.cheatsheet.modules.ModuleShellSection;
+import com.github.jlangch.venice.impl.docgen.cheatsheet.modules.ModuleSseSection;
 import com.github.jlangch.venice.impl.docgen.cheatsheet.modules.ModuleTestSection;
 import com.github.jlangch.venice.impl.docgen.cheatsheet.modules.ModuleTimingSection;
 import com.github.jlangch.venice.impl.docgen.cheatsheet.modules.ModuleTomcatSection;
@@ -393,6 +394,7 @@ public class DocGenerator {
         web.addSection(new DocSection("Tomcat\u00A0WebApp\u00A0Server", "modules.tomcat"));
         web.addSection(new DocSection("Ring", "modules.ring"));
         web.addSection(new DocSection("Multipart", "modules.multipart"));
+        web.addSection(new DocSection("SSE", "modules.sse"));
         content.add(web);
 
         final DocSection docker = new DocSection("Docker", "docker");
@@ -529,6 +531,7 @@ public class DocGenerator {
         		new ModuleAnsiSection(diBuilder).section(),
                 new ModuleMimetypesSection(diBuilder).section(),
                 new ModuleMultipartSection(diBuilder).section(),
+                new ModuleSseSection(diBuilder).section(),
                 new ModuleHttpClientJ8Section(diBuilder).section(),
         		new ModuleInstallerSection(diBuilder).section());
     }

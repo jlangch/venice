@@ -38,8 +38,8 @@
           The event is a map. E.g. :
 
           ```
-          { :id    1
-            :event score
+          { :id    "1"
+            :event "score"
             :data  [ "GOAL Liverpool 1 - 1 Arsenal"
                      "GOAL Manchester United 3 - 3 Manchester City" ] }
           ``` 
