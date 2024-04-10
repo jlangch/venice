@@ -235,12 +235,12 @@
 
 (defn- contains-invalid-chars? [value]
   (and (some? value) 
-       (some? (str/index-of-char value [#\newline #\return #\backspace #\formfeed]))))
+       (some? (str/index-of-char value [#\newline #\return]))))
 
 
 (defn- make-validation-err-msg [field]
   (str/format """
-              The event field %s must not contain newline, carriage return, \
-              backspace, or formfeed characters!
+              The event field %s must not contain newline or carriage return \
+              characters!
               """
               field))

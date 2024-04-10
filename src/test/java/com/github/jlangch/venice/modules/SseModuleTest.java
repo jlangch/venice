@@ -92,21 +92,6 @@ public class SseModuleTest {
     }
 
     @Test
-    public void test_validation_2c() {
-        final Venice venice = new Venice();
-
-        // illegal \f in :id
-        final String script =
-                "(do                                                                \n" +
-                "  (load-module :server-side-events ['server-side-events :as 'sse]) \n" +
-                "  (sse/render { :id \"10\f0\"                                      \n" +
-                "                :event \"scores\"                                  \n" +
-                "                :data [\"100\"] } ))                               ";
-
-        assertThrows(VncException.class, () -> venice.eval(script));
-    }
-
-    @Test
     public void test_validation_3() {
         final Venice venice = new Venice();
 
