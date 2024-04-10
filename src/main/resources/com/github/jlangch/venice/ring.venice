@@ -235,8 +235,10 @@
     ;; return immediately
     (future (fn [] (try 
                      (handle-request async-request async-response servlet handler
-                                     { :async?  true 
-                                       :async-context async-context })
+                                     { :async?         true 
+                                       :async-context  async-context
+                                       :async-request  async-request
+                                       :async-response async-response })
                      (catch :RingRedirectException ex
                        (ring/send-redirect async-request async-response (:redirectUri ex)))
                      (catch :VncException ex
