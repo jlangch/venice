@@ -231,6 +231,8 @@
         async-request  (cast :HttpServletRequest (. async-context :getRequest))
         async-response (cast :HttpServletResponse (. async-context :getResponse))]
 
+    ;; run the request handler asynchronously in its own thread and 
+    ;; return immediately
     (future (fn [] (try 
                      (handle-request async-request async-response servlet handler
                                      { :async?  true 

@@ -19,11 +19,20 @@
 
 (defn async-demo [request]
   (sleep 2_000)  
+  
+  (throw (ex :VncException "Failure in async demo!"))
 
   { :status  200
     :headers { "Content-Type" "text/plain; charset=utf-8" }
     :body    (str/format "Work completed. Async: %b" 
                          (:async? request)) } )
+
+(defn async-fail [request]
+  (sleep 2_000)  
+  
+  (println "Handler 'async-fail' -> is failing now with an exception!")
+
+  (throw (ex :VncException "Failure in async demo!")))
 
 
 ;; -----------------------------------------------------------------------------
@@ -34,7 +43,8 @@
                    :base-dir  "."
                    :port      8080 })
 
-(def routes [[:get "/demo"  async-demo]])
+(def routes [[:get "/demo"  async-demo]
+             [:get "/fail"  async-fail]])
 
 (defn async-servlet []
   (ring/create-servlet (-> (ring/match-routes routes)     ; >--+
@@ -49,7 +59,7 @@
 ;; start Tomcat
 (let [server (tc/start [ [ (async-servlet)
                            { :name          "async-servlet"  
-                             :mapping       "/demo"
+                             :mapping       "/*"
                              :async-support true } ] ]
                        tomcat-opts)]
   (defn stop [] (tc/shutdown server)))
