@@ -6,8 +6,6 @@
 (load-module :tomcat ['tomcat :as 'tc])
 (load-module :ring)
 
-(import :jakarta.servlet.http.HttpServletResponse)
-
 
 ; ensure the Tomcat libs are on the classpath
 (tc/check-required-libs)
@@ -19,47 +17,13 @@
 ;; Ring handler
 ;; -----------------------------------------------------------------------------
 
-(defn async-1-demo [request]
-  (let [async (:async request)]
-    (when (nil? async)
-      (throw (ex :VncException "Handler is not in async mode!")))
+(defn async-demo [request]
+  (sleep 2_000)  
 
-    @(future (fn []
-              (try 
-                (sleep 2_000)
-      
-                { :status  200
-                  :headers { "Content-Type" "text/plain; charset=utf-8" }
-                  :body    "Work completed (demo 1)." }
-
-              (catch :Exception e 
-                (let [async-error-fn  (:error-fn async)]
-                  (async-error-fn e))))))))
-
-(defn async-2-demo [request]
-  (let [async          (:async request)
-        async-context  (:context async)]
-
-    (when (nil? async)
-      (throw (ex :VncException "Handler is not in async mode!")))
-
-    @(future (fn []
-              (try 
-                (sleep 2_000)
-      
-                (let [response  (cast :HttpServletResponse (. async-context :getResponse))
-                      out       (. response :getWriter)]
-                  (. response :setContentType "text/plain; charset=utf-8")
-                  (. response :setStatus 200)
-                  (. out :print "Work completed (demo 2).")
-                  (. out :flush)
-                  (. async-context :complete)
-                  nil)
-                  
-              (catch :Exception e 
-                (let [async-error-fn  (:error-fn async)]
-                  (async-error-fn e))))))))
-
+  { :status  200
+    :headers { "Content-Type" "text/plain; charset=utf-8" }
+    :body    (str/format "Work completed. Async: %b" 
+                         (:async? request)) } )
 
 
 ;; -----------------------------------------------------------------------------
@@ -70,20 +34,9 @@
                    :base-dir  "."
                    :port      8080 })
 
-(def routes [[:get "/demo-1"  async-1-demo]
-             [:get "/demo-2"  async-2-demo]])
+(def routes [[:get "/demo"  async-demo]])
 
-(defn async-1-servlet []
-  (ring/create-servlet (-> (ring/match-routes routes)     ; >--+
-                                                          ;    |
-                           (ring-mw/mw-dump-response)     ; ^  |
-                           (ring-mw/mw-dump-request)      ; |  |
-                           (ring-mw/mw-request-counter)   ; |  |
-                           (ring-mw/mw-add-session 3600)  ; |  |
-                           (ring-mw/mw-print-uri)         ; |  |
-                           (ring-mw/mw-debug :on))))      ; +--+
-
-(defn async-2-servlet []
+(defn async-servlet []
   (ring/create-servlet (-> (ring/match-routes routes)     ; >--+
                                                           ;    |
                            (ring-mw/mw-dump-response)     ; ^  |
@@ -94,38 +47,21 @@
                            (ring-mw/mw-debug :on))))      ; +--+
 
 ;; start Tomcat
-(let [server (tc/start [ [ (async-1-servlet)
-                           { :name          "async-1-servlet"  
-                             :mapping       "/demo-1"
-                             :async-support true } ]
-                         [ (async-2-servlet)
-                           { :name          "async-2-servlet"  
-                             :mapping       "/demo-2"
+(let [server (tc/start [ [ (async-servlet)
+                           { :name          "async-servlet"  
+                             :mapping       "/demo"
                              :async-support true } ] ]
                        tomcat-opts)]
   (defn stop [] (tc/shutdown server)))
 
 
-;; GET (demo 1)
+;; GET (demo)
 (comment
   (do
     (load-module :http-client-j8 ['http-client-j8 :as 'hc])
 
     (let [res  (hc/send :get 
-                        "http://localhost:8080/demo-1" 
-                        :headers { "Accept" "text/plain" }
-                        :debug true)]
-      (println "Status:" (:http-status res))
-      (println (hc/slurp-string (:data-stream res)))))
-)
-
-;; GET (demo 2)
-(comment
-  (do
-    (load-module :http-client-j8 ['http-client-j8 :as 'hc])
-
-    (let [res  (hc/send :get 
-                        "http://localhost:8080/demo-2" 
+                        "http://localhost:8080/demo" 
                         :headers { "Accept" "text/plain" }
                         :debug true)]
       (println "Status:" (:http-status res))

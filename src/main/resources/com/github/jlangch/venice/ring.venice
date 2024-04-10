@@ -40,6 +40,7 @@
 
 
 (import :jakarta.servlet.http.HttpServletResponse)
+(import :jakarta.servlet.http.HttpServletRequest)
 
 
 
@@ -208,8 +209,8 @@
 
   (try
     (if (. req :isAsyncSupported)
-      (handle-async req res servlet handler)
-      (handle-sync req res servlet handler))
+      (handle-async-request req res servlet handler)
+      (handle-sync-request req res servlet handler))
     (catch :RingRedirectException ex
       (ring/send-redirect req res (:redirectUri ex)))
     (catch :VncException ex
@@ -220,8 +221,26 @@
       (ring/send-error res))))
 
 
-(defn- handle-sync [request response servlet handler]
+(defn- handle-sync-request [request response servlet handler]
+   (handle-request request response  servlet handler 
+                   { :async? false }))
+
+
+(defn- handle-async-request [request response servlet handler]
+  (let [async-context  (. request :startAsync request response)
+        async-request  (cast :HttpServletRequest (. async-context :getRequest))
+        async-response (cast :HttpServletResponse (. async-context :getResponse))]
+
+    (future (fn [] (try 
+                     (handle-request async-request async-response servlet handler
+                                     { :async?  true 
+                                       :async-context async-context })
+                     (finally (. async-context :complete)))))))
+
+
+(defn- handle-request [request response servlet handler request-options]
   (let [ring-req   (-> (ring/build-request-map request)
+                       (merge request-options)
                        (ring/merge-servlet-keys servlet request response))
                     ;; run the handler chain
         ring-res   (handler ring-req)]
@@ -233,43 +252,6 @@
                                      response 
                                      (. response :getOutputStream)))
       (do (ring/send-not-found response)))))
-
-
-(defn- handle-async [request response servlet handler]
-  (let [async-context (. request :startAsync request response)
-        ring-req      (-> (ring/build-request-map request)
-                          (ring/merge-servlet-keys servlet request response)
-                          (assoc :async 
-                                 { :context  async-context
-                                   :response-fn (fn [response-map]
-                                                  (ring/update-servlet-response 
-                                                            (. async-context :getResponse) 
-                                                            async-context 
-                                                            response-map))
-                                   :error-fn (fn [exception]
-                                               (try 
-                                                 (let [response  (cast :HttpServletResponse (. async-context :getResponse))
-                                                       out       (. response :getWriter)]
-                                                   (. response :setContentType "text/plain; charset=utf-8")
-                                                   (. response :setStatus 500)
-                                                   (. out :print (. exception :getMessage))
-                                                   (. out :flush)
-                                                   (. async-context :complete))
-                                                 (finally
-                                                    (. async-context :complete)))) } ))
-                      ;; run the handler chain
-        ring-res      (handler ring-req)]
-    (when (and (map? ring-res) (not (empty? ring-res)))
-      (try 
-        (let [response  (cast :HttpServletResponse (. async-context :getResponse))]
-          (when-let [status (:status ring-res)]
-            (. response :setStatus status))
-          (ring/set-response-headers response (dissoc (:headers ring-res)))
-          (ring/write-body-to-stream (:body ring-res) 
-                                      response 
-                                      (. response :getOutputStream)))
-        (finally
-          (. async-context :complete))))))
 
 
 
@@ -300,48 +282,6 @@
       (. :FilterOutputStreamCloseCB :new
          os
          (proxify :Runnable {:run (fn [] (. context :complete))} )))))
-
-
-(defn- make-blocking-service-method [handler]
-  (fn [servlet request response]
-    (-<> (ring/build-request-map request)
-         (ring/merge-servlet-keys <> servlet request response)
-         (handler <>)  ;; call the handler
-         (ring/update-servlet-response response <>))))
-
-
-(defn- make-async-service-method [handler]
-  (fn [servlet request response]
-    (let [async-context (. request :startAsync )]
-      ;; call the async handler
-      (handler (-> (ring/build-request-map request)
-                   (ring/merge-servlet-keys servlet request response)
-                   (assoc :async { :context  async-context
-                                   :response response } ))
-               (fn [response-map]
-                 (ring/update-servlet-response response async-context response-map))
-               (fn [exception]
-                 (. response :sendError 500 (. exception :getMessage))
-                 (. async-context :complet ))))))
-
-
-(defn
-  ^{ :arglists '("(ring/make-service-method handler)"
-                 "(ring/make-service-method handler options)")
-     :doc """
-          Turns a handler into a function that takes the same arguments
-          and has the same return value as the service method in the
-          HttpServlet class.
-          """ }
-  make-service-method
-
-  ([handler]
-   (ring/make-service-method handler {}))
-
-  ([handler options]
-   (if (:async options)
-     (ring/make-async-service-method handler)
-     (ring/make-blocking-service-method handler))))
 
 
 (defn- write-body-to-stream [body response output-stream]

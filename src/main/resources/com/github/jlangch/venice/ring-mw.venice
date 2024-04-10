@@ -199,7 +199,8 @@
   (println-map   "   parameters:         " (:parameters req))
   (println-map   "   cookies:            " (map-vals :value (or (:cookies req) {})))
   (println-parts "   parts:              " (:parts req))
-  (println       "   async:              " (if (:async req) true false)))
+  (println       "   debug:              " (:debug req :off))
+  (println       "   async:              " (if (:async? req) true false)))
 
 
 (defn-
