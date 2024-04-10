@@ -215,10 +215,10 @@
       (ring/send-redirect req res (:redirectUri ex)))
     (catch :VncException ex
       (. ex :printVeniceStackTrace)
-      (ring/send-error res))
+      (ring/send-error req res))
     (catch :Exception ex
       (. ex :printStackTrace)
-      (ring/send-error res))))
+      (ring/send-error req res))))
 
 
 (defn- handle-sync-request [request response servlet handler]
@@ -241,10 +241,10 @@
                        (ring/send-redirect async-request async-response (:redirectUri ex)))
                      (catch :VncException ex
                        (. ex :printVeniceStackTrace)
-                       (ring/send-error async-response))
+                       (ring/send-error async-request async-response))
                      (catch :Exception ex
                        (. ex :printStackTrace)
-                       (ring/send-error async-response))
+                       (ring/send-error async-request async-response))
                      (finally (. async-context :complete)))))))
 
 
@@ -261,7 +261,7 @@
           (ring/write-body-to-stream (:body ring-res) 
                                      response 
                                      (. response :getOutputStream)))
-      (do (ring/send-not-found response)))))
+      (do (ring/send-not-found request response)))))
 
 
 
@@ -495,22 +495,42 @@
 ;; Request/Response functions
 ;; -----------------------------------------------------------------------------
 
+(defn- accepts-mimetype? [req mimetype]
+  (str/contains? (. req :getHeader "Accept") mimetype))
+
+
 (defn- send-redirect [req res redirect-uri]
   (. res :sendRedirect (str (. req :getContextPath) redirect-uri)))
 
 
-(defn- send-not-found [res]
+(defn- send-not-found [req res]
   (. res :setStatus 404)
-  (. res :setContentType "text/html; charset=utf-8")
-  (-> (. res :getWriter)
-      (. :println (ring-util/html-box-page "Not Found"
-                                           "the requested webpage was not found"))))
+  (let [wr (. res :getWriter)]
+    (if (accepts-mimetype? req "txt/html")
+      (do
+        (. res :setContentType "text/html")
+        (. res :setCharacterEncoding "UTF-8")
+        (. wr :println (ring-util/html-box-page 
+                            "Not Found"
+                            "The requested webpage was not found!")))
+      (do
+        (. res :setContentType "text/plain")
+        (. res :setCharacterEncoding "UTF-8")
+        (. wr :println "Not Found\r\n\r\nThe requested webpage was not found!")))))
 
 
-(defn- send-error [res]
+(defn- send-error [req res]
   (. res :setStatus 500)
-  (. res :setContentType "text/html; charset=utf-8")
-  (-> (. res :getWriter)
-      (. :println (ring-util/html-box-page "Internal Error"
-                                           "the request processing failed"))))
+  (let [wr (. res :getWriter)]
+    (if (accepts-mimetype? req "txt/html")
+      (do
+        (. res :setContentType "text/html")
+        (. res :setCharacterEncoding "UTF-8")
+        (. wr :println (ring-util/html-box-page 
+                            "Internal Error"
+                            "The request processing failed!")))
+      (do
+        (. res :setContentType "text/plain")
+        (. res :setCharacterEncoding "UTF-8")
+        (. wr :println "Internal Error\r\n\r\nThe request processing failed!")))))
 
