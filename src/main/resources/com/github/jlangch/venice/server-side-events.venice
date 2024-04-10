@@ -61,7 +61,17 @@
           Cache-Control: no-cache
           Connection: keep-alive
           ```
-          """ }
+          """
+    :examples '(
+          """
+          (do 
+            (load-module :server-side-events ['server-side-events :as 'sse])
+            (sse/render { :id "100" 
+                          :event "scores" 
+                          :data ["100" "200"] } ))
+          """ )
+    :see-also '(
+          "server-side-events/parse" ) }
 
   render [event]
 
@@ -83,4 +93,39 @@
       nil)))
 
 
+(defn
+  ^{ :arglists '("(parse s)")
+     :doc """
+          Parses a server side event in string representation to a map.
+          """
+    :examples '(
+          """
+          (do 
+            (load-module :server-side-events ['server-side-events :as 'sse])
+            (-> (sse/render { :id "100" 
+                              :event "scores" 
+                              :data ["100" "200"] } )
+                (sse/parse)))
+          """ )
+    :see-also '(
+          "server-side-events/render" ) }
 
+  parse [s]
+
+  (assert (or (nil? s) (string? s)))
+
+  (loop [lines (str/split-lines s), data {}]
+    (if (empty? lines)
+      data
+      (let [line (first lines)]
+        (if (str/starts-with? line "id:") 
+          (recur (rest lines) 
+                 (assoc data :id (str/trim (str/strip-start line "id:"))))
+          (if (str/starts-with? line "event:") 
+            (recur (rest lines) 
+                   (assoc data :event (str/trim (str/strip-start line "event:"))))
+            (if (str/starts-with? line "data:") 
+              (let [item  (str/trim (str/strip-start line "data:"))
+                    items (conj (:data data []) item)]
+                (recur (rest lines)  (assoc data :data items)))
+              (recur (rest lines)  data))))))))
