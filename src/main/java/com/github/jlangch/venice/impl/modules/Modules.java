@@ -107,6 +107,7 @@ public class Modules {
                         "ring-session",
                         "ring-util",
                         "semver",
+                        "server-side-events",
                         "shell",
                         "test",
                         "test-support",

@@ -1,0 +1,86 @@
+;;;;   __    __         _
+;;;;   \ \  / /__ _ __ (_) ___ ___
+;;;;    \ \/ / _ \ '_ \| |/ __/ _ \
+;;;;     \  /  __/ | | | | (_|  __/
+;;;;      \/ \___|_| |_|_|\___\___|
+;;;;
+;;;;
+;;;; Copyright 2017-2024 Venice
+;;;;
+;;;; Licensed under the Apache License, Version 2.0 (the "License");
+;;;; you may not use this file except in compliance with the License.
+;;;; You may obtain a copy of the License at
+;;;;
+;;;;     http://www.apache.org/licenses/LICENSE-2.0
+;;;;
+;;;; Unless required by applicable law or agreed to in writing, software
+;;;; distributed under the License is distributed on an "AS IS" BASIS,
+;;;; WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+;;;; See the License for the specific language governing permissions and
+;;;; limitations under the License.
+
+;;;; Venice server side events (SSE)
+
+
+(ns server-side-events)
+
+
+(defn
+  ^{ :arglists '("(render event)")
+     :doc """
+          Renders a server side event to a string.
+
+          Returns the event as string or `nil` if the event is `nil` or all its
+          fields are empty or `nil`,
+
+          Note: SSE is restricted to transporting UTF-8 messages.
+
+          The event is a map. E.g. :
+
+          ```
+          { :id    1
+            :event score
+            :data  [ "GOAL Liverpool 1 - 1 Arsenal"
+                     "GOAL Manchester United 3 - 3 Manchester City" ] }
+          ``` 
+
+          with the text representation
+
+          ```
+          id: 1\\n
+          event: score\\n
+          data: GOAL Liverpool 1 - 1 Arsenal\\n
+          data: GOAL Manchester United 3 - 3 Manchester City\\n\\n
+          ```
+
+          A HTTP request to initiate SSE streaming looks like:
+
+          ```
+          GET /api/v1/live-scores 
+          Accept: text/event-stream
+          Cache-Control: no-cache
+          Connection: keep-alive
+          ```
+          """ }
+
+  render [event]
+
+  (assert (map? event))
+
+  (try-with [sw (io/string-writer)]
+    (when-let [s (str/trim-to-nil (:id event))]
+      (print sw (str "id: " s "\r\n")))
+    (when-let [s (str/trim-to-nil (:event event))]
+      (print sw (str "event: " s "\r\n")))
+    (when-let [data (:data event)]
+      (->> (map str/trim-to-nil data)
+           (filter some?)
+           (map #(str "data: " %))
+           (str/join "\r\n")
+           (print sw)))
+    (if-let [s @sw]
+      (str s "\r\n\r\n")
+      nil)))
+
+
+

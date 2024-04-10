@@ -133,18 +133,18 @@ public class DocGenerator {
 
         preloadedModules
             .addAll(Arrays.asList(
-                        "app",        "xml",             "crypt",           "gradle",
-                        "trace",      "ansi",            "maven",           "kira",
-                        "java",       "semver",          "excel",           "hexdump",
-                        "shell",      "geoip",           "benchmark",       "component",
-                        "config",     "parsifal",        "grep",            "test",
-                        "fonts",      "qrref",           "jsonl",           "timing",
-                        "zipvault",   "gradlew",         "matrix",          "ascii-table",
-                        "docker",     "cargo",           "cargo-arangodb",  "cargo-qdrant",
-                        "installer",  "mimetypes",       "multipart",
-                        "tomcat",     "http-client",     "http-client-j8",
-                        "ring",       "ring-multipart",  "ring-session",    "ring-mw",
-                        "ring-util"));
+                        "app",        "xml",               "crypt",           "gradle",
+                        "trace",      "ansi",              "maven",           "kira",
+                        "java",       "semver",            "excel",           "hexdump",
+                        "shell",      "geoip",             "benchmark",       "component",
+                        "config",     "parsifal",          "grep",            "test",
+                        "fonts",      "qrref",             "jsonl",           "timing",
+                        "zipvault",   "gradlew",           "matrix",          "ascii-table",
+                        "docker",     "cargo",             "cargo-arangodb",  "cargo-qdrant",
+                        "installer",  "mimetypes",         "multipart",
+                        "tomcat",     "http-client",       "http-client-j8",
+                        "ring",       "ring-multipart",    "ring-session",    "ring-mw",
+                        "ring-util",  "server-side-events"));
 
         final IVeniceInterpreter venice = new VeniceInterpreter(new AcceptAllInterceptor());
 
