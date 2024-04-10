@@ -6,12 +6,13 @@ All notable changes to this project will be documented in this file.
 
 
 
-## [1.12.12] - 2024-04-xx
+## [1.12.12] - 2024-04-11
 
 ### Added
 
 - options `:async-support` and `:load-on-startup` to `tomcat/tc-start` 
   servlet options
+- `:ring` support for asynchronous handlers. See example "async-webapp.venice".
 - `:ring` support for Server-Side-Events. See example "sse-webapp.venice".
 
 
