@@ -315,34 +315,11 @@
           (io/copy-file body os))
 
     :else
-        (try
-          (. output-stream :close)
-          (finally
-            (. :RuntimeException :new
-               (str "Response stream not supported for body type "
-                    (type body)))))))
-
-
-(defn-
-  ^{ :arglists '("(ring/update-servlet-response response response-map)"
-                 "(ring/update-servlet-response response async-context response-map)")
-     :doc "Update the HttpServletResponse using a response map." }
-
-  update-servlet-response
-
-  ([response response-map]
-   (ring/update-servlet-response response nil response-map))
-
-  ([response async-context response-map]
-   (let [{:keys [status headers body]} response-map]
-     (when (nil? response)
-       (throw (. :NullPointerException :new "HttpServletResponse is nil")))
-     (when (nil? response-map)
-       (throw (. :NullPointerException :new "Response map is nil")))
-     (when status (. response :setStatus status))
-     (ring/set-response-headers response headers)
-     (let [output-stream (ring/make-output-stream response async-context)]
-       (ring/write-body-to-stream body response-map output-stream)))))
+        (throw (ex :VncException 
+                   """
+                   Unsupported response body type '~(type body)'. Use one of \
+                   {string, bytebuf, :java.io.InputStream, :java.io.File}
+                   """))))
 
 
 (defn-
