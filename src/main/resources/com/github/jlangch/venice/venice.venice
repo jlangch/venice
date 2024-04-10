@@ -234,12 +234,13 @@
   (cond
     (nil? cmd)                    nil
     (match? cmd "b|build")        (gradle-tasks "clean" "shadowJar")
-    (match? cmd "r|rebuild")      (do 
-                                    (gradle-tasks "clean" "shadowJar")
-                                    (deploy)
-                                    (start-repl (first args)))
+    (match? cmd "r|rebuild")      (do (gradle-tasks "clean" "shadowJar")
+                                      (deploy)
+                                      (start-repl (first args)))
     (match? cmd "s|start")        (start-repl (first args))
     (match? cmd "c|cheatsheet")   (gradle-tasks "cheatsheet")
+    (match? cmd "cp")             (do (gradle-tasks "cheatsheet")
+                                      (sh/open (io/file proj-home "cheatsheet.pdf")))
     (match? cmd "P|pdfdoc")       (sh/open (io/file proj-home "cheatsheet.pdf"))
     (match? cmd "d|dependencies") (gradle-tasks "dependencies")
     (match? cmd "e|eclipse")      (gradle-tasks "eclipse")
