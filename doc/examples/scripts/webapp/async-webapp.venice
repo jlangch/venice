@@ -19,8 +19,6 @@
 
 (defn async-demo [request]
   (sleep 2_000)  
-  
-  (throw (ex :VncException "Failure in async demo!"))
 
   { :status  200
     :headers { "Content-Type" "text/plain; charset=utf-8" }

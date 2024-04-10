@@ -237,6 +237,14 @@
                      (handle-request async-request async-response servlet handler
                                      { :async?  true 
                                        :async-context async-context })
+                     (catch :RingRedirectException ex
+                       (ring/send-redirect async-request async-response (:redirectUri ex)))
+                     (catch :VncException ex
+                       (. ex :printVeniceStackTrace)
+                       (ring/send-error async-response))
+                     (catch :Exception ex
+                       (. ex :printStackTrace)
+                       (ring/send-error async-response))
                      (finally (. async-context :complete)))))))
 
 
