@@ -34,7 +34,7 @@ import com.github.jlangch.venice.VncException;
 public class SseModuleTest {
 
     @Test
-    public void test_validation_1() {
+    public void test_validation_1a() {
         final Venice venice = new Venice();
 
         final String script =
@@ -43,6 +43,20 @@ public class SseModuleTest {
                 "  (sse/render { :id \"100\"                                        \n" +
                 "                :event \"scores\"                                  \n" +
                 "                :data [\"100\"] } ))                               ";
+
+        venice.eval(script);
+    }
+
+    @Test
+    public void test_validation_1b() {
+        final Venice venice = new Venice();
+
+        final String script =
+                "(do                                                                \n" +
+                "  (load-module :server-side-events ['server-side-events :as 'sse]) \n" +
+                "  (sse/render { :id nil                                            \n" +
+                "                :event nil                                         \n" +
+                "                :data nil } ))                                     ";
 
         venice.eval(script);
     }
@@ -118,6 +132,51 @@ public class SseModuleTest {
                 "  (sse/render { :id \"100\"                                        \n" +
                 "                :event \"scores\"                                  \n" +
                 "                :data [\"10\n0\"] } ))                             ";
+
+        assertThrows(VncException.class, () -> venice.eval(script));
+    }
+
+    @Test
+    public void test_validation_5() {
+        final Venice venice = new Venice();
+
+        // illegal data type :id
+        final String script =
+                "(do                                                                \n" +
+                "  (load-module :server-side-events ['server-side-events :as 'sse]) \n" +
+                "  (sse/render { :id 100                                            \n" +
+                "                :event \"scores\"                                  \n" +
+                "                :data [\"100\"] } ))                               ";
+
+        assertThrows(VncException.class, () -> venice.eval(script));
+    }
+
+    @Test
+    public void test_validation_6() {
+        final Venice venice = new Venice();
+
+        // illegal data type :event
+        final String script =
+                "(do                                                                \n" +
+                "  (load-module :server-side-events ['server-side-events :as 'sse]) \n" +
+                "  (sse/render { :id \"100\"                                        \n" +
+                "                :event :scores                                     \n" +
+                "                :data [\"100\"] } ))                               ";
+
+        assertThrows(VncException.class, () -> venice.eval(script));
+    }
+
+    @Test
+    public void test_validation_7() {
+        final Venice venice = new Venice();
+
+        // illegal data type :data
+        final String script =
+                "(do                                                                \n" +
+                "  (load-module :server-side-events ['server-side-events :as 'sse]) \n" +
+                "  (sse/render { :id 100                                            \n" +
+                "                :event scores                                      \n" +
+                "                :data [100] } ))                                   ";
 
         assertThrows(VncException.class, () -> venice.eval(script));
     }
