@@ -7,6 +7,8 @@
 (load-module :ring)
 (load-module :server-side-events ['server-side-events :as 'sse])
 
+(import :java.io.IOException)
+
 
 ; ensure the Tomcat libs are on the classpath
 (tc/check-required-libs)
@@ -18,12 +20,14 @@
 
 (defn event-producer [queue]
   (let [id-counter (atom 1000)]
+    (println "Event producer running.")
     (thread #(while true
-               (let [id (swap! id-counter inc)]
+               (let [id (str (swap! id-counter inc))]
                  (sleep 2000)
-                 (put! queue { :id id 
+                 (println "Adding event " id)
+                 (put! queue { :id    id 
                                :event "demo" 
-                               :data "Counter ~{id}" }))))))
+                               :data  ["Counter ~{id}"] }))))))
 
 
 
@@ -32,20 +36,32 @@
 ;; -----------------------------------------------------------------------------
 
 (defn events-demo [queue request]
-  (let [request   (:async-request request)   ;; HttpServletRequest
-        response  (:async-response request)  ;; HttpServletResponse
-        os        (. response :getOutputStream)
-        pr        (io/wrap-os-with-print-writer os :utf-8)]
+  (let [async_request   (:async-request request)   ;; HttpServletRequest
+        async_response  (:async-response request)  ;; HttpServletResponse
+        os              (. async_response :getOutputStream)
+        pr              (io/wrap-os-with-print-writer os :utf-8)]
 
-    (. request :setContentType       "text/event-stream")
-    (. request :setCharacterEncoding "UTF-8")
-    
-    (while true
-      (let [event (take! queue)
-            sse   (sse/render event)]
-        (println "Publishing event: " (:id event))
-        (println pr (sse/render event))
-        (flush pr)))))
+    (. async_response :setContentType       "text/event-stream")
+    (. async_response :setCharacterEncoding "UTF-8")
+
+    ;; start the event producer
+    (event-producer queue)
+
+    (try
+      (loop []
+        (let [event       (take! queue)
+              sse-event   (sse/render event)]
+          (println "Publishing event: " (:id event))
+          (print pr sse-event)
+          (flush pr)
+          (recur)))
+      (catch :Exception e 
+        (println "Client closed connection")))
+            
+    (println "Stopped serving events")
+
+    ;; return nil to signal the :ring module to send any further to the client
+    nil))
 
 
 
@@ -53,11 +69,14 @@
 ;; Middleware configuration
 ;; -----------------------------------------------------------------------------
 
+(def sse-queue (queue))
+
 (def tomcat-opts { :await?    false   ;; do not block - return after start
                    :base-dir  "."
                    :port      8080 })
 
-(def routes [[:get "/events"  events-demo]])
+(def routes [[:get "/events"  (partial events-demo sse-queue)]])
+
 
 (defn events-servlet []
   (ring/create-servlet (-> (ring/match-routes routes)     ; >--+
@@ -78,22 +97,37 @@
   (defn stop [] (tc/shutdown server)))
 
 
+
+
+
 ;; GET (demo)
 (comment
   (do
     (load-module :http-client-j8 ['http-client-j8 :as 'hc])
 
-    (let [res  (hc/send :get 
-                        "http://localhost:8080/events" 
-                        :headers { "Accept" "text/plain" }
-                        :debug true)]
-      (println "Status:" (:http-status res))
-      (println (hc/slurp-string (:data-stream res)))))
+    (let [response  (hc/send :get 
+                             "http://localhost:8080/events" 
+                             :headers { "Accept"         "text/event-stream" 
+                                        "Cache-Control"  "no-cache"
+                                        "Connection"     "keep-alive"}
+                             :conn-timeout 0
+                             :read-timeout 0
+                             :debug true)]
+      (println "Status:" (:http-status response))
+      
+      (println "\nConsuming events...\n")
+      (let [is (:data-stream response)
+            rd (io/wrap-is-with-buffered-reader is :utf-8)]
+        ;; read the resonse line by line
+        (loop [line (read-line rd) event-count 1]
+          (if (some? line)
+            (do
+              (println line)  
+              (if (<= event-count 30)
+                (recur (read-line rd) (inc event-count))
+                (do
+                  (println "Stopped after receiving 10 events")
+                  (. rd :close))))
+            (println "Last event received"))))))
 )
 
-
-;; -----------------------------------------------------------------------------
-
-(println "Tomcat started on port ~(:port tomcat-opts).")
-(println "Open a browser:      (sh/open \"http://localhost:8080\")")
-(println "Stop it by calling:  (stop)")

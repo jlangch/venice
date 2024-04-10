@@ -76,6 +76,9 @@
   render [event]
 
   (assert (map? event))
+  (assert (or (nil? (:id event)) (string? (:id event))))
+  (assert (or (nil? (:event event)) (string? (:event event))))
+  (assert (or (nil? (:data event)) (sequential? (:data event))))
 
   (try-with [sw (io/string-writer)]
     (when-let [s (str/trim-to-nil (:id event))]
