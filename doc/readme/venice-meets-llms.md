@@ -19,5 +19,6 @@ ToDo:
 - [x] All Venice documentation resources converted to text data
 - [x] Add a HTTP client to Venice
 - [x] Helper to install all required LangChain4J dependencies
+- [ ] OpenAI console chat example
 - [ ] Chat example with HTMX GUI
 - [ ] Chat example with Venice doc embeddings
