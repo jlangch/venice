@@ -44,6 +44,11 @@ public class ModuleSseSection implements ISectionBuilder {
         servlet.addItem(diBuilder.getDocItem("server-side-events/render"));
         servlet.addItem(diBuilder.getDocItem("server-side-events/parse"));
 
+        final DocSection read = new DocSection("Read", id());
+        all.addSection(read);
+        read.addItem(diBuilder.getDocItem("server-side-events/read-event"));
+        read.addItem(diBuilder.getDocItem("server-side-events/read-events"));
+
         return section;
     }
 

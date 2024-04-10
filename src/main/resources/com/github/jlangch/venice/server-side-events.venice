@@ -24,6 +24,8 @@
 
 (ns server-side-events)
 
+(import :java.io.BufferedReader)
+
 
 (defn
   ^{ :arglists '("(render event)")
@@ -132,3 +134,84 @@
                     items (conj (:data data []) item)]
                 (recur (rest lines)  (assoc data :data items)))
               (recur (rest lines)  data))))))))
+        
+
+(defn
+  ^{ :arglists '(
+          "(read-event rd)")
+     :doc """
+          Read an event from a :java.io.BufferedReader. 
+
+          Returns the event or `nil` if the underlying stream has been closed.
+          """
+    :examples '(
+          """
+          (do 
+            (load-module :server-side-events ['server-side-events :as 'sse])
+
+            (defn sample-events []
+              (str (sse/render { :id "100"  :event "scores"   :data ["100"] } )
+                   (sse/render { :id "101"  :event "scores"   :data ["101"] } )
+                   (sse/render { :id "102"  :event "scores"   :data ["102"] } )))
+
+            (let [is (io/string-in-stream (sample-events))
+                  rd (io/wrap-is-with-buffered-reader is :utf-8)]
+              (sse/read-event rd))) ;; read a single event
+          """ )
+    :see-also '(
+          "server-side-events/read-events" ) }
+
+  read-event [rd]
+
+  (assert (io/reader? rd))
+
+  ;; read the resonse line by line
+  (loop [line (read-line rd) lines []]
+    (if (nil? line)
+      nil  ;; end of stream, no complete event availale
+      (if (empty? line)
+        (parse (str/join lines))                      ;; return the event
+        (recur (read-line rd) (conj lines line))))))  ;; capture next event line
+
+
+(defn
+  ^{ :arglists '(
+          "(read-events rd limit)")
+     :doc """
+          Reads event from a :java.io.BufferedReader. 
+
+          Returns a list of events. Stops reading events if the limit is reached 
+          or the underlying stream has been closed.
+          """
+    :examples '(
+          """
+          (do 
+            (load-module :server-side-events ['server-side-events :as 'sse])
+
+            (defn sample-events []
+              (str (sse/render { :id "100"  :event "scores"   :data ["100"] } )
+                   (sse/render { :id "101"  :event "scores"   :data ["101"] } )
+                   (sse/render { :id "102"  :event "scores"   :data ["102"] } )
+                   (sse/render { :id "103"  :event "scores"   :data ["103"] } )))
+
+            (let [is (io/string-in-stream (sample-events))
+                  rd (io/wrap-is-with-buffered-reader is :utf-8)]
+              (sse/read-events rd 3)))
+          """ )
+    :see-also '(
+          "server-side-events/read-event" ) }
+
+  read-events [rd limit]
+
+  (assert (io/reader? rd))
+  (assert (long? limit))
+  (assert (pos? limit))
+
+  (loop [event (read-event rd) events []]
+    (if event
+      (let [events (conj events event)]
+        (if (>= (count events) limit)
+          events                              ;; return the events, limit
+          (recur (read-event rd) events)))    ;; parse next event
+      events)))                               ;; return the events, stream closed
+      
