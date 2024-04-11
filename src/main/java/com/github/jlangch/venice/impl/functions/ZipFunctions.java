@@ -24,6 +24,7 @@ package com.github.jlangch.venice.impl.functions;
 import static com.github.jlangch.venice.impl.types.Constants.Nil;
 import static com.github.jlangch.venice.impl.types.VncBoolean.False;
 
+import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FilenameFilter;
 import java.io.InputStream;
@@ -39,6 +40,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.function.Function;
 import java.util.stream.Collectors;
+import java.util.zip.Deflater;
+import java.util.zip.Inflater;
 
 import com.github.jlangch.venice.VncException;
 import com.github.jlangch.venice.impl.thread.ThreadContext;
@@ -1466,7 +1469,136 @@ public class ZipFunctions {
                         }};
     }
 
+    public static VncFunction io_deflate =
+        new VncFunction(
+                "io/deflate",
+                VncFunction
+                    .meta()
+                    .arglists("(io/deflate bytebuf)")
+                    .doc(
+                        "deflates (compresses) a bytebuf using ZLIB compression.")
+                    .examples(
+                        "(-> (bytebuf-from-string \"abcdef\" :utf-8) \n" +
+                        "    (io/deflate))")
+                    .seeAlso("io/inflate")
+                    .build()
+        ) {
+            @Override
+            public VncVal apply(final VncList args) {
+                ArityExceptions.assertArity(this, args, 1);
 
+                sandboxFunctionCallValidation();
+
+                final VncVal f = args.first();
+                try {
+                    if (f == Nil) {
+                        return Nil;
+                    }
+                    else if (Types.isVncByteBuffer(f)) {
+                        return new VncByteBuffer(compress(((VncByteBuffer)f).getBytes()));
+                    }
+                    else {
+                        throw new VncException(String.format(
+                                "Function 'io/gzip' does not allow %s as argument",
+                                Types.getType(f)));
+                    }
+                }
+                catch (Exception ex) {
+                    throw new VncException(ex.getMessage(), ex);
+                }
+            }
+
+            private static final long serialVersionUID = -1848883965231344442L;
+        };
+
+    public static VncFunction io_inflate =
+        new VncFunction(
+                "io/inflate",
+                VncFunction
+                    .meta()
+                    .arglists("(io/inflate bytebuf)")
+                    .doc(
+                        "inflates (decompresses) a bytebuf using ZLIB compression.")
+                    .examples(
+                        "(-> (bytebuf-from-string \"abcdef\" :utf-8) \n" +
+                        "    (io/deflate) \n" +
+                        "    (io/inflate))")
+                    .seeAlso("io/deflate")
+                    .build()
+        ) {
+            @Override
+            public VncVal apply(final VncList args) {
+                ArityExceptions.assertArity(this, args, 1);
+
+                sandboxFunctionCallValidation();
+
+                final VncVal f = args.first();
+                try {
+                    if (f == Nil) {
+                        return Nil;
+                    }
+                    else if (Types.isVncByteBuffer(f)) {
+                        return new VncByteBuffer(decompress(((VncByteBuffer)f).getBytes()));
+                    }
+                    else {
+                        throw new VncException(String.format(
+                                "Function 'io/inflate' does not allow %s as argument",
+                                Types.getType(f)));
+                    }
+                }
+                catch (Exception ex) {
+                    throw new VncException(ex.getMessage(), ex);
+                }
+            }
+
+            private static final long serialVersionUID = -1848883965231344442L;
+        };
+
+
+    public static byte[] compress(final byte[] input) {
+        try(ByteArrayOutputStream os = new ByteArrayOutputStream()) {
+            // Compress the bytes
+            final byte[] output = new byte[4096];
+
+            final Deflater compresser = new Deflater();
+            compresser.setInput(input);
+            compresser.finish();
+
+            while (!compresser.finished()) {
+                int compressedSize = compresser.deflate(output);
+                os.write(output, 0, compressedSize);
+            }
+
+            compresser.end();
+
+            return os.toByteArray();
+        }
+        catch(Exception ex) {
+            throw new VncException(ex.getMessage(), ex);
+        }
+    }
+
+    public static byte[] decompress(final byte[] data) {
+        try(ByteArrayOutputStream os = new ByteArrayOutputStream()) {
+            // Decompress the bytes
+            final byte[] output = new byte[4096];
+
+            final Inflater decompresser = new Inflater();
+            decompresser.setInput(data);
+
+            while (!decompresser.finished()) {
+                int decompressedSize = decompresser.inflate(output);
+                os.write(output, 0, decompressedSize);
+            }
+
+            decompresser.end();
+
+            return os.toByteArray();
+        }
+        catch(Exception ex) {
+            throw new VncException(ex.getMessage(), ex);
+        }
+    }
 
     ///////////////////////////////////////////////////////////////////////////
     // types_ns is namespace of type functions
@@ -1492,5 +1624,7 @@ public class ZipFunctions {
                     .add(io_gzip_to_stream)
                     .add(io_ungzip)
                     .add(io_ungzip_to_stream)
+                    .add(io_deflate)
+                    .add(io_inflate)
                     .toMap();
 }

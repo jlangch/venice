@@ -24,9 +24,17 @@ package com.github.jlangch.venice.impl.functions;
 import static com.github.jlangch.venice.impl.util.StringUtil.to_lf;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
+import java.io.InputStream;
+import java.io.OutputStream;
+import java.util.zip.DeflaterOutputStream;
+import java.util.zip.InflaterInputStream;
+
 import org.junit.jupiter.api.Test;
 
 import com.github.jlangch.venice.Venice;
+import com.github.jlangch.venice.impl.util.io.IOStreamUtil;
 
 
 public class IOFunctionsStreamTest {
@@ -212,6 +220,64 @@ public class IOFunctionsStreamTest {
                 "        (bytebuf-to-string :utf-8))))                       ";
 
         assertEquals("hello, hello, hello",venice.eval(script));
+    }
+
+    @Test
+    public void test_io_wrap_is_with_deflate_input_stream() {
+        final Venice venice = new Venice();
+
+        final String script =
+                "(let [text      \"hello, hello, hello\"                        \n" +
+                "      zlib-buf  (-> (bytebuf-from-string text :utf-8)          \n" +
+                "                    (io/deflate))]                             \n" +
+                "  (try-with [is (-> (io/bytebuf-in-stream zlib-buf)            \n" +
+                "                    (io/wrap-is-with-inflater-input-stream))]  \n" +
+                "    (-> (io/slurp is :binary true)                             \n" +
+                "        (bytebuf-to-string :utf-8))))                          ";
+
+        assertEquals("hello, hello, hello",venice.eval(script));
+    }
+
+    @Test
+    public void test_io_wrap_os_with_deflate_output_stream() {
+        final Venice venice = new Venice();
+
+        final String script =
+                "(let [text  \"hello, hello, hello\"                             \n" +
+                "      bos   (io/bytebuf-out-stream)]                            \n" +
+                "  (try-with [gos (io/wrap-os-with-deflater-output-stream bos)]  \n" +
+                "    (io/spit gos text :encoding :utf-8)                         \n" +
+                "    (io/flush gos)                                              \n" +
+                "    (io/close gos)                                              \n" +
+                "    (-> (io/inflate @bos)                                       \n" +
+                "        (bytebuf-to-string :utf-8))))                           ";
+
+        assertEquals("hello, hello, hello", venice.eval(script));
+    }
+
+    @Test
+    public void test_ZLIB_compression() throws Exception {
+    	final String text = "hello, hello, hello";
+
+    	// OK
+    	final byte[] zlib1 = ZipFunctions.compress(text.getBytes("utf-8"));
+    	assertEquals("hello, hello, hello", new String(ZipFunctions.decompress(zlib1), "utf-8"));
+
+    	// OK (compress with DeflaterOutputStream)
+    	final ByteArrayOutputStream bo = new ByteArrayOutputStream();
+    	try (OutputStream os = new DeflaterOutputStream(bo)) {
+    		os.write(text.getBytes("utf-8"));
+    		os.flush();
+    	}
+    	final byte[] zlib2 = bo.toByteArray();
+    	assertEquals("hello, hello, hello", new String(ZipFunctions.decompress(zlib2), "utf-8"));
+
+
+    	// OK (decompress with InflaterInputStream)
+    	try (InputStream is = new InflaterInputStream(new ByteArrayInputStream(zlib1))) {
+    		final byte[] buffer = IOStreamUtil.copyIStoByteArray(is);
+     	    assertEquals("hello, hello, hello", new String(buffer, "utf-8"));
+    	}
     }
 
     @Test

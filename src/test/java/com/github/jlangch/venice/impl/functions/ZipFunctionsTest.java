@@ -440,4 +440,16 @@ public class ZipFunctionsTest {
                     "    (io/slurp-stream :binary false :encoding :utf-8))"));
     }
 
+
+    @Test
+    public void test_io_deflate() throws Exception {
+        final Venice venice = new Venice();
+
+        assertEquals("abcdef", new String(
+                                    ((ByteBuffer)venice.eval("(-> (bytebuf-from-string \"abcdef\" :utf-8)   \n" +
+                                    		                 "    (io/deflate)                              \n" +
+                                    		                 "    (io/inflate))                             \n")).array(),
+                                    "utf-8"));
+    }
+
 }

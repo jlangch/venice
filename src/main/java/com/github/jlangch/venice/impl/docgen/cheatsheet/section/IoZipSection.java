@@ -62,6 +62,11 @@ public class IoZipSection implements ISectionBuilder {
         gzip.addItem(diBuilder.getDocItem("io/ungzip"));
         gzip.addItem(diBuilder.getDocItem("io/ungzip-to-stream"));
 
+        final DocSection zlib = new DocSection("zlib", "io.zlib");
+        all.addSection(zlib);
+        zlib.addItem(diBuilder.getDocItem("io/deflate"));
+        zlib.addItem(diBuilder.getDocItem("io/inflate"));
+
         return section;
     }
 

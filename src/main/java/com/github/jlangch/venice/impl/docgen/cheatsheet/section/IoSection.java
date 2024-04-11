@@ -91,13 +91,19 @@ public class IoSection implements ISectionBuilder {
         stream.addItem(diBuilder.getDocItem("io/bytebuf-in-stream", false));
         stream.addItem(diBuilder.getDocItem("io/bytebuf-out-stream"));
         stream.addItem(diBuilder.getDocItem("io/capturing-print-stream"));
-        stream.addItem(diBuilder.getDocItem("io/wrap-os-with-buffered-writer"));
-        stream.addItem(diBuilder.getDocItem("io/wrap-os-with-print-writer"));
-        stream.addItem(diBuilder.getDocItem("io/wrap-is-with-buffered-reader"));
-        stream.addItem(diBuilder.getDocItem("io/wrap-is-with-gzip-input-stream"));
-        stream.addItem(diBuilder.getDocItem("io/wrap-os-with-gzip-output-stream"));
         stream.addItem(diBuilder.getDocItem("io/flush"));
         stream.addItem(diBuilder.getDocItem("io/close"));
+
+
+        final DocSection stream_wrap = new DocSection("stream wrap", "io.stream.wrap");
+        all.addSection(stream_wrap);
+        stream_wrap.addItem(diBuilder.getDocItem("io/wrap-os-with-buffered-writer"));
+        stream_wrap.addItem(diBuilder.getDocItem("io/wrap-os-with-print-writer"));
+        stream_wrap.addItem(diBuilder.getDocItem("io/wrap-is-with-buffered-reader"));
+        stream_wrap.addItem(diBuilder.getDocItem("io/wrap-is-with-gzip-input-stream"));
+        stream_wrap.addItem(diBuilder.getDocItem("io/wrap-os-with-gzip-output-stream"));
+        stream_wrap.addItem(diBuilder.getDocItem("io/wrap-is-with-inflater-input-stream"));
+        stream_wrap.addItem(diBuilder.getDocItem("io/wrap-os-with-deflater-output-stream"));
 
         final DocSection rd_wr = new DocSection("reader/writer", "io.readerwriter");
         all.addSection(rd_wr);

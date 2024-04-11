@@ -47,8 +47,10 @@ import java.nio.charset.Charset;
 import java.nio.file.Path;
 import java.nio.file.StandardOpenOption;
 import java.util.Map;
+import java.util.zip.DeflaterOutputStream;
 import java.util.zip.GZIPInputStream;
 import java.util.zip.GZIPOutputStream;
+import java.util.zip.InflaterInputStream;
 
 import com.github.jlangch.venice.SecurityException;
 import com.github.jlangch.venice.VncException;
@@ -656,57 +658,57 @@ public class IOFunctionsStreams {
         };
 
     public static VncFunction io_wrap_is_with_buffered_reader =
-            new VncFunction(
-                    "io/wrap-is-with-buffered-reader",
-                    VncFunction
-                        .meta()
-                        .arglists(
-                            "(io/wrap-is-with-buffered-reader is encoding?)")
-                        .doc(
-                            "Wraps an `java.io.InputStream` is with a `java.io.BufferedReader` using an optional " +
-                            "encoding (defaults to :utf-8).\n\n" +
-                            "Note: The caller is responsible for closing the reader!")
-                        .examples(
-                            "(let [data (bytebuf [108 105 110 101 32 49 10 108 105 110 101 32 50])]    \n" +
-                            "  (try-with [is   (io/bytebuf-in-stream data)                             \n" +
-                            "             rd (io/wrap-is-with-buffered-reader is :utf-8)]              \n" +
-                            "    (println (read-line rd))                                              \n" +
-                            "    (println (read-line rd))))                                            ")
-                        .seeAlso(
-                            "io/buffered-reader")
-                        .build()
-            ) {
-                @Override
-                public VncVal apply(final VncList args) {
-                    ArityExceptions.assertArity(this, args, 1, 2);
+        new VncFunction(
+                "io/wrap-is-with-buffered-reader",
+                VncFunction
+                    .meta()
+                    .arglists(
+                        "(io/wrap-is-with-buffered-reader is encoding?)")
+                    .doc(
+                        "Wraps an `java.io.InputStream` is with a `java.io.BufferedReader` using an optional " +
+                        "encoding (defaults to :utf-8).\n\n" +
+                        "Note: The caller is responsible for closing the reader!")
+                    .examples(
+                        "(let [data (bytebuf [108 105 110 101 32 49 10 108 105 110 101 32 50])]    \n" +
+                        "  (try-with [is   (io/bytebuf-in-stream data)                             \n" +
+                        "             rd (io/wrap-is-with-buffered-reader is :utf-8)]              \n" +
+                        "    (println (read-line rd))                                              \n" +
+                        "    (println (read-line rd))))                                            ")
+                    .seeAlso(
+                        "io/buffered-reader")
+                    .build()
+        ) {
+            @Override
+            public VncVal apply(final VncList args) {
+                ArityExceptions.assertArity(this, args, 1, 2);
 
-                     if (Types.isVncJavaObject(args.first())) {
-                        final Object delegate = ((VncJavaObject)args.first()).getDelegate();
-                        if (delegate instanceof InputStream) {
-                            try {
-                                final InputStream is = (InputStream)delegate;
-                                final Charset charset = CharsetUtil.charset(args.second());
+                 if (Types.isVncJavaObject(args.first())) {
+                    final Object delegate = ((VncJavaObject)args.first()).getDelegate();
+                    if (delegate instanceof InputStream) {
+                        try {
+                            final InputStream is = (InputStream)delegate;
+                            final Charset charset = CharsetUtil.charset(args.second());
 
-                                return new VncJavaObject(
-                                            new BufferedReader(
-                                                    new InputStreamReader(is, charset)));
-                            }
-                            catch (Exception ex) {
-                                throw new VncException(
-                                        "Failed to wrap a :java.io.InputStream with a :java.io.BufferReader",
-                                        ex);
-                            }
+                            return new VncJavaObject(
+                                        new BufferedReader(
+                                                new InputStreamReader(is, charset)));
+                        }
+                        catch (Exception ex) {
+                            throw new VncException(
+                                    "Failed to wrap a :java.io.InputStream with a :java.io.BufferReader",
+                                    ex);
                         }
                     }
-
-                    throw new VncException(String.format(
-                            "Function 'io/wrap-is-with-buffered-reader' requires an InputStream " +
-                            "or a Reader. %s as is not allowed!",
-                            Types.getType(args.first())));
                 }
 
-                private static final long serialVersionUID = -1848883965231344442L;
-            };
+                throw new VncException(String.format(
+                        "Function 'io/wrap-is-with-buffered-reader' requires an InputStream " +
+                        "or a Reader. %s as is not allowed!",
+                        Types.getType(args.first())));
+            }
+
+            private static final long serialVersionUID = -1848883965231344442L;
+        };
 
     public static VncFunction io_wrap_is_with_gzip_input_stream =
         new VncFunction(
@@ -717,7 +719,7 @@ public class IOFunctionsStreams {
                         "(io/wrap-is-with-gzip-input-stream is)")
                     .doc(
                         "Wraps a `:java.io.InputStream` is with a `:java.io.GZIPInputStream` " +
-                        "To ungzip the data read from the input stream.\n\n" +
+                        "to read compressed data in the GZIP format.\n\n" +
                         "Note: The caller is responsible for closing the reader!")
                     .examples(
                         "(let [text      \"hello, hello, hello\"                        \n" +
@@ -765,7 +767,7 @@ public class IOFunctionsStreams {
                         "(io/wrap-os-with-gzip-output-stream is)")
                     .doc(
                         "Wraps a `:java.io.OutputStream` is with a `:java.io.GZIPOutputStream` " +
-                        "To gzip the data sent to the output stream.\n\n" +
+                        "to write compressed data in the GZIP format.\n\n" +
                         "Note: The caller is responsible for closing the reader!")
                     .examples(
                         "(let [text  \"hello, hello, hello\"                         \n" +
@@ -798,6 +800,103 @@ public class IOFunctionsStreams {
 
                 throw new VncException(String.format(
                         "Function 'io/wrap-os-with-gzip-output-stream' requires an OutputStream." +
+                        "%s as is not allowed!",
+                        Types.getType(args.first())));
+            }
+
+            private static final long serialVersionUID = -1848883965231344442L;
+        };
+
+    public static VncFunction io_wrap_is_with_inflater_input_stream =
+        new VncFunction(
+                "io/wrap-is-with-inflater-input-stream",
+                VncFunction
+                    .meta()
+                    .arglists(
+                        "(io/wrap-is-with-inflater-input-stream is)")
+                    .doc(
+                        "Wraps a `:java.io.InputStream` is with a `:java.io.InflaterInputStream` " +
+                        "to read compressed data in the 'zlib' format.\n\n" +
+                        "Note: The caller is responsible for closing the reader!")
+                    .examples(
+                        "(let [text      \"hello, hello, hello\"                        \n" +
+                        "      zlib-buf  (-> (bytebuf-from-string text :utf-8)          \n" +
+                        "                    (io/deflate))]                             \n" +
+                        "  (try-with [is (-> (io/bytebuf-in-stream zlib-buf)            \n" +
+                        "                    (io/wrap-is-with-inflater-input-stream))]  \n" +
+                        "    (-> (io/slurp is :binary true)                             \n" +
+                        "        (bytebuf-to-string :utf-8))))                          ")
+                    .seeAlso(
+                        "io/wrap-os-with-deflater-output-stream")
+                    .build()
+        ) {
+            @Override
+            public VncVal apply(final VncList args) {
+                ArityExceptions.assertArity(this, args, 1);
+
+                final Object delegate = ((VncJavaObject)args.first()).getDelegate();
+                if (delegate instanceof InputStream) {
+                    try {
+                         return new VncJavaObject(new InflaterInputStream((InputStream)delegate));
+                    }
+                    catch (Exception ex) {
+                        throw new VncException(
+                                "Failed to wrap a :java.io.InputStream with a :java.util.zip.InflaterInputStream",
+                                ex);
+                    }
+                }
+
+                throw new VncException(String.format(
+                        "Function 'io/wrap-is-with-inflater-input-stream' requires an InputStream." +
+                        "%s as is not allowed!",
+                        Types.getType(args.first())));
+            }
+
+            private static final long serialVersionUID = -1848883965231344442L;
+        };
+
+    public static VncFunction io_wrap_os_with_deflater_output_stream =
+        new VncFunction(
+                "io/wrap-os-with-deflater-output-stream",
+                VncFunction
+                    .meta()
+                    .arglists(
+                        "(io/wrap-os-with-deflater-output-stream is)")
+                    .doc(
+                        "Wraps a `:java.io.OutputStream` is with a `:java.io.DeflaterOutputStream` " +
+                        "to write compressed data in the 'zlib' format.\n\n" +
+                        "Note: The caller is responsible for closing the reader!")
+                    .examples(
+                        "(let [text  \"hello, hello, hello\"                             \n" +
+                        "      bos   (io/bytebuf-out-stream)]                            \n" +
+                        "  (try-with [gos (io/wrap-os-with-deflater-output-stream bos)]  \n" +
+                        "    (io/spit gos text :encoding :utf-8)                         \n" +
+                        "    (io/flush gos)                                              \n" +
+                        "    (io/close gos)                                              \n" +
+                        "    (-> (io/inflate @bos)                                       \n" +
+                        "        (bytebuf-to-string :utf-8))))                           ")
+                    .seeAlso(
+                        "io/wrap-is-with-inflater-input-stream")
+                    .build()
+        ) {
+            @Override
+            public VncVal apply(final VncList args) {
+                ArityExceptions.assertArity(this, args, 1);
+
+                final Object delegate = ((VncJavaObject)args.first()).getDelegate();
+                if (delegate instanceof OutputStream) {
+                    try {
+                         return new VncJavaObject(new DeflaterOutputStream((OutputStream)delegate));
+                    }
+                    catch (Exception ex) {
+                        throw new VncException(
+                                "Failed to wrap a :java.io.OutputStream with a :java.util.zip.DeflaterOutputStream",
+                                ex);
+                    }
+                }
+
+                throw new VncException(String.format(
+                        "Function 'io/wrap-os-with-deflater-output-stream' requires an OutputStream." +
                         "%s as is not allowed!",
                         Types.getType(args.first())));
             }
@@ -1201,7 +1300,7 @@ public class IOFunctionsStreams {
                     .meta()
                     .arglists(
                         "(io/print-line os)",
-                    	"(io/print-line os s)")
+                        "(io/print-line os s)")
                     .doc(
                         "Prints a string s to an output stream. The output stream " +
                         "may be a `:java.io.Writer` or a `:java.io.PrintStream`!")
@@ -1215,17 +1314,17 @@ public class IOFunctionsStreams {
                 if (Types.isVncJavaObject(v, PrintStream.class)) {
                     final PrintStream ps = Coerce.toVncJavaObject(v, PrintStream.class);
                     if (args.size() > 1) {
-                    	ps.println(Printer.pr_str(args.second(), false));
+                        ps.println(Printer.pr_str(args.second(), false));
                     }
                     else {
-                    	ps.println();
+                        ps.println();
                     }
                 }
                 else if (Types.isVncJavaObject(v, BufferedWriter.class)) {
                     final BufferedWriter wr = Coerce.toVncJavaObject(v, BufferedWriter.class);
                     try {
                         if (args.size() > 1) {
-                        	wr.write(Printer.pr_str(args.second(), false));
+                            wr.write(Printer.pr_str(args.second(), false));
                         }
                         wr.newLine();
                     }
@@ -1237,7 +1336,7 @@ public class IOFunctionsStreams {
                     final Writer wr = Coerce.toVncJavaObject(v, Writer.class);
                     try {
                         if (args.size() > 1) {
-                        	wr.write(Printer.pr_str(args.second(), false));
+                            wr.write(Printer.pr_str(args.second(), false));
                         }
                         wr.write('\n');
                     }
@@ -1530,6 +1629,8 @@ public class IOFunctionsStreams {
                     .add(io_wrap_is_with_buffered_reader)
                     .add(io_wrap_is_with_gzip_input_stream)
                     .add(io_wrap_os_with_gzip_output_stream)
+                    .add(io_wrap_is_with_inflater_input_stream)
+                    .add(io_wrap_os_with_deflater_output_stream)
                     .add(io_buffered_writer)
                     .add(io_string_writer)
                     .add(io_buffered_reader)
