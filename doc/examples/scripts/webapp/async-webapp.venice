@@ -86,5 +86,5 @@
                         :headers { "Accept" "text/plain" }
                         :debug true)]
       (println "Status:" (:http-status res))
-      (println (hc/slurp-string (:data-stream res)))))
+      (println (hc/slurp-response res))))
 )

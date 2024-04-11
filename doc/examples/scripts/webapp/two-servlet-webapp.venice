@@ -88,7 +88,7 @@
                         :headers { "Accept" "text/plain" }
                         :debug true) ]
       (println "Status:" (:http-status res))
-      (println (hc/slurp-string (:data-stream res) (:content-type-charset res)))))
+      (println (hc/slurp-response res))))
 )
 
 ;; GET on Servlet 2
@@ -102,5 +102,5 @@
                         :headers { "Accept" "text/plain" }
                         :debug true)]
       (println "Status:" (:http-status res))
-      (println (hc/slurp-string (:data-stream res) (:content-type-charset res)))))
+      (println (hc/slurp-response res))))
 )
