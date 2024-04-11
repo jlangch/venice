@@ -47,7 +47,6 @@ public class Modules {
                         "installer",
 
                         "bouncycastle-install",
-                        "chatgpt-install",
                         "excel-install",
                         "ivy-install",
                         "jansi-install",
@@ -64,7 +63,6 @@ public class Modules {
                         "cargo",
                         "cargo-arangodb",
                         "cargo-qdrant",
-                        "chatgpt",
                         "cli",
                         "clipboard",
                         "config",
@@ -98,6 +96,7 @@ public class Modules {
                         "mercator",
                         "mimetypes",
                         "multipart",
+                        "openai",
                         "parsifal",
                         "qrbill",
                         "qrref",

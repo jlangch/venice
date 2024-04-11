@@ -19,12 +19,8 @@
 ;;;; See the License for the specific language governing permissions and
 ;;;; limitations under the License.
 
-;;;; ChatGPT
-
-;;;; Install ChatGPT 3rd party libraries:
-;;;;
-;;;;   (load-module :chatgpt-install)
-;;;;   (chatgpt-install/install :dir (repl/libs-dir) :silent false)
+;;;; OpenAI API
 
 
-(ns chatgpt)
+
+(ns openai)
