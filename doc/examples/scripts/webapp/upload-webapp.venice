@@ -30,13 +30,6 @@
 ;; Middleware configuration
 ;; -----------------------------------------------------------------------------
 
-;; Note: Tomcat's standard max post size is 2MB. A :max-post-size value of -1 
-;;       specifies a indefinite upload size
-(def tomcat-opts { :await?         false  ;; do not block - return after start
-                   :base-dir       "."
-                   :port           8080 
-                   :max-post-size  -1 })
-
 (def landing-dir (io/file "/Users/juerg/Desktop/venice/tmp"))
 
 (def routes [[:post "/upload"  (partial upload-file landing-dir)] ])
@@ -49,7 +42,15 @@
                            (ring-mw/mw-dump-request)      ; |  |
                            (ring-mw/mw-debug :on))))      ; +--+
 
-;; start Tomcat
+
+;; Note: Tomcat's standard max post size is 2MB. A :max-post-size value of -1 
+;;       specifies a indefinite upload size
+(def tomcat-opts { :await?         false  ;; do not block - return after start
+                   :base-dir       "."
+                   :port           8080 
+                   :max-post-size  -1 })
+
+;; start Tomcat (wires Tomcat with the ring servlets)
 (let [server (tc/start [ [ (upload-servlet) 
                            { :name                 "upload-servlet"  
                              :mapping              "/upload"

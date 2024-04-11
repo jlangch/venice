@@ -32,10 +32,6 @@
 ;; Middleware configuration
 ;; -----------------------------------------------------------------------------
 
-(def tomcat-opts { :await?    false   ;; do not block - return after start
-                   :base-dir  "."
-                   :port      8080 })
-
 (def routes-1 [[:get "/servlet-1/info" get-servlet-1-info]])
 
 (def routes-2 [[:get "/servlet-2/info" get-servlet-2-info]])
@@ -54,7 +50,13 @@
                            (ring-mw/mw-dump-request)        ; |  |
                            (ring-mw/mw-debug :on))))        ; +--+
 
-;; start Tomcat
+
+;; Tomcat server options
+(def tomcat-opts { :await?    false   ;; do not block - return after start
+                   :base-dir  "."
+                   :port      8080 })
+
+;; start Tomcat (wires Tomcat with the ring servlets)
 (let [server (tc/start [ [ (servlet-1)
                            { :name     "servlet-1"  
                              :mapping  ["/servlet-1/info"] } ]
