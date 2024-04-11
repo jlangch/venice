@@ -15,7 +15,7 @@ All notable changes to this project will be documented in this file.
 - `:ring` support for asynchronous handlers. See example "async-webapp.venice".
 - `:ring` support for Server-Side-Events. See example "sse-webapp.venice".
 - content encoding (gzip, deflate) support for http client response processing
-- support for server-side-events in the http client
+- support for server-side-events processing in the http client
 
 
 
