@@ -88,6 +88,7 @@ public class Modules {
                         "ivy",
                         "jackson",
                         "java",
+                        "jetty",
                         "jsonl",
                         "kira",
                         "langchain",
