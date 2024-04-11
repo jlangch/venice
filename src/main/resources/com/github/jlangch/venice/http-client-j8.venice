@@ -602,15 +602,25 @@
           Note: The response must be of the mimetype "text/event-stream"
                 otherwise the processor throws an exception!
 
-          The event handler is a two argument function reciving the event as 
-          the first argument and the event count as the second argument.
+          The event handler is a three argument function:
+          
+          `handler [type event event-count]`
+
+          | *type*        | the notification type: ¶\
+                            \u00A0\u00A0 `:open` - streaming started ¶\
+                            \u00A0\u00A0 `:data` - streamed event ¶\
+                            \u00A0\u00A0 `:close` - streaming closed by the server |
+          | *event*       | the streamed event, available only if the notification \
+                            type is `:data`, else `nil` |
+          | *event-count* | the streamed event count, starting with 1 and \
+                            incremented with every event sent |
 
           If the event handler returns the value `:stop` the processer stops
           handling any further events and closes the data stream to signal
           the server not to send any further events and close the server side
           stream as well.
 
-          Server side events are handed as maps to the handler. E.g. :
+          Server side events are passed as maps to the handler. E.g. :
 
           ```
           { :id    "1"
@@ -619,7 +629,7 @@
                      "GOAL Manchester United 3 - 3 Manchester City" ] }
           ``` 
 
-          Warning: 
+          **Warning:**
           
           When not used over HTTP/2, SSE suffers from a limitation to \
           the maximum number of open connections, which can be especially \
@@ -652,18 +662,15 @@
               ;; process the first 10 events and close the stream
               (hc/process-server-side-events 
                 response
-                (fn [event cnt]
-                  (cond 
-                    (nil? event)  (do (println "No more events")
-                                      :ok)
-                    (= cnt 1)     (do (println "\nConsuming events...\n")
-                                      (println "Event: " event)
-                                      :ok)
-                    (>= cnt 10)   (do (println "Event: " event)
-                                      (println "Stopped after receiving 10 events")
-                                      :stop)
-                    :else         (do (println "Event: " event)
-                                      :ok))))))
+                (fn [type event event-count]
+                  (case type
+                    :open   (do (println "\nStreaming started")
+                                :ok)
+                    :data   (do (println "Event: " event)
+                                ;; only process 10 events
+                                (if (< event-count 10) :ok :stop))
+                    :close  (do (println "Streaming closed")
+                                :ok))))))
           """ )
      :see-also '(
            "http-client-j8/slurp-response"
@@ -683,14 +690,21 @@
 
   (let [is (:data-stream response)
         rd (io/wrap-is-with-buffered-reader is :utf-8)]
-    ;; read the streamed events from the response
-    (loop [event (sse/read-event rd) event-count 1]
-      (if event
-        (let [action (event-handler event event-count)]  
-          (if (= :stop action)
-            (. rd :close)
-            (recur (sse/read-event rd) (inc event-count))))
-        (event-handler nil event-count)))))  ;; no more events
+    (try
+      (event-handler :open nil 0)  ;; streaming opened  notification
+
+      ;; read the streamed events from the response
+      (loop [event (sse/read-event rd) event-count 1]
+        (when event
+          (let [action (event-handler :data event event-count)]  
+            (when-not (= :stop action)
+              (recur (sse/read-event rd) (inc event-count))))))
+      
+      (finally 
+        ;; streaming closed notification
+        (try (event-handler :close nil event-count) (catch :Exception e))
+        ;; close the stream
+        (try (. rd :close) (catch :Exception e))))))
 
 
 (defn 

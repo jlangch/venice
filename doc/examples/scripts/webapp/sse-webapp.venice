@@ -22,16 +22,19 @@
 (defn event-producer [queue stop]
   (let [id-counter (atom 1000)]
     (println "Event producer running.")
-    (thread #(loop []
-               (if @stop 
-                 (println "Event producer stopped.")
-                 (let [id (str (swap! id-counter inc))]
-                   (sleep 2000)
-                   (println "Adding event " id)
-                   (put! queue { :id    id 
-                                 :event "demo" 
-                                 :data  ["Counter ~{id}"] })
-                   (recur)))))))
+    (thread #(try
+               (loop []
+                (when-not @stop 
+                   (let [id (str (swap! id-counter inc))]
+                    (sleep 2000)
+                    (when-not @stop
+                      (println "Adding event " id)
+                      (put! queue { :id    id 
+                                    :event "demo" 
+                                    :data  ["Counter ~{id}"] })
+                      (recur)))))
+               (finally 
+                 (println "Event producer stopped."))))))
 
 
 
@@ -65,6 +68,7 @@
             
     ;; stop the event producer
     (reset! stop-events true)
+    (empty queue)
 
     (println "Stopped serving events")
 
@@ -138,17 +142,14 @@
 
       (hc/process-server-side-events 
         response
-        (fn [event cnt]
-          (cond 
-            (nil? event)  (do (println "No more events")
-                              :ok)
-            (= cnt 1)     (do (println "\nConsuming events...\n")
-                              (println "Event: " event)
-                              :ok)
-            (>= cnt 10)   (do (println "Event: " event)
-                              (println "Stopped after receiving 10 events")          
-                              :stop)
-            :else         (do (println "Event: " event)
-                              :ok))))))
+        (fn [type event event-count]
+          (case type
+            :open   (do (println "\nStreaming started")
+                        :ok)
+            :data   (do (println "Event: " event)
+                        ;; only process 10 events
+                        (if (< event-count 10) :ok :stop))
+            :close  (do (println "Streaming closed")
+                        :ok))))))
 )
 
