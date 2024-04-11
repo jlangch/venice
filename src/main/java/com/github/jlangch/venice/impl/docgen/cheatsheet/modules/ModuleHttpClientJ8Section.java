@@ -50,9 +50,7 @@ public class ModuleHttpClientJ8Section implements ISectionBuilder {
 
         final DocSection utils = new DocSection("Utils", id());
         all.addSection(utils);
-        utils.addItem(diBuilder.getDocItem("http-client-j8/slurp-string", false));
-        utils.addItem(diBuilder.getDocItem("http-client-j8/slurp-json", false));
-        utils.addItem(diBuilder.getDocItem("http-client-j8/slurp-bytebuf", false));
+        utils.addItem(diBuilder.getDocItem("http-client-j8/slurp-response", false));
 
         final DocSection tests = new DocSection("Tests", id());
         all.addSection(tests);

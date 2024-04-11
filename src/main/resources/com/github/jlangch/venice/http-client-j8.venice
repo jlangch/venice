@@ -103,13 +103,9 @@
                                     "http://localhost:8080/employees" 
                                     :headers { "Accept" "application/json, text/plain" }
                                     :debug true)
-                  status   (:http-status response)
-                  mimetype (:content-type-mimetype response)
-                  charset  (:content-type-charset response)]
+                  status   (:http-status response)]
               (println "Status:" status)
-              (if (and (= 200 status) (= "application/json" mimetype))
-                (println (hc/slurp-json (:data-stream response) charset))
-                (println (hc/slurp-string (:data-stream response) charset)))))
+              (println (slurp-response response))))
           """,
           """
           ;; POST (create)
@@ -123,13 +119,9 @@
                                     :body (json/write-str { "name" "hanna", 
                                                             "role" "secretary" })
                                     :debug true)
-                  status   (:http-status response)
-                  mimetype (:content-type-mimetype response)
-                  charset  (:content-type-charset response)]
+                  status   (:http-status response)]
               (println "Status:" status)
-              (if (and (= 200 status) (= "application/json" mimetype))
-                (println (hc/slurp-json (:data-stream response) charset))
-                (println (hc/slurp-string (:data-stream response) charset)))))
+              (println (slurp-response response))))
           """,
           """
           ;; PUT (update)
@@ -144,13 +136,9 @@
                                                             "name" "john", 
                                                             "role" "clerk" })
                                     :debug true)
-                  status   (:http-status response)
-                  mimetype (:content-type-mimetype response)
-                  charset  (:content-type-charset response)]
+                  status   (:http-status response)]
               (println "Status:" status)
-              (if (and (= 200 status) (= "application/json" mimetype))
-                (println (hc/slurp-json (:data-stream response) charset))
-                (println (hc/slurp-string (:data-stream response) charset)))))
+              (println (slurp-response response))))
           """,
           """
           ;; DELETE (delete)
@@ -161,12 +149,9 @@
                                     "http://localhost:8080/employees/1000" 
                                     :headers { "Accept" "text/plain" }
                                     :debug true)
-                  status   (:http-status response)
-                  mimetype (:content-type-mimetype response)
-                  charset  (:content-type-charset response)]
+                  status   (:http-status response)]
               (println "Status:" status)
-              (if (= "text/plain" mimetype)
-                (println (hc/slurp-string (:data-stream response) charset)))))
+              (println (slurp-response response))))
           """,
           """
           ;; GET over SSL
@@ -200,13 +185,9 @@
                                     :hostname-verifier  hostname-verifier
                                     :ssl-socket-factory (. :SSLSocketFactory trust-manager-all)
                                     :debug true)
-                  status   (:http-status response)
-                  mimetype (:content-type-mimetype response)
-                  charset  (:content-type-charset response)]
+                  status   (:http-status response)]
               (println "Status:" status)
-              (if (and (= 200 status) (= "application/json" mimetype))
-                (println (hc/slurp-json (:data-stream response) charset))
-                (println (hc/slurp-string (:data-stream response) charset)))))
+              (println (slurp-response response))))
           """,
           """
           ;; OAuth blueprint
@@ -237,21 +218,14 @@
                                       (str "https://.../1.1/lists/members.json?list_id=" list-id) 
                                       :headers { "Accept" "application/json, text/plain" 
                                                  "Authorization" (str "Bearer "  accessToken)})
-                  status   (:http-status response)
-                  mimetype (:content-type-mimetype response)
-                  charset  (:content-type-charset response)]
-                 (if (and (= 200 status) (= "application/json" mimetype))
-                  (-> (:data-stream response)
-                      (hc/slurp-json charset))
-                  (throw (ex VncException "Failed to list members"))))))
+                  status   (:http-status response)]
+                (println "Status:" status)
+                (println (slurp-response response)))))
           """ )
      :see-also '(
           "http-client-j8/upload-file"
           "http-client-j8/upload-multipart"
-          "http-client-j8/slurp-string"
-          "http-client-j8/slurp-json"
-          "http-client-j8/slurp-bytebuf"
-          "io/wrap-is-with-gzip-input-stream" ) }
+          "http-client-j8/slurp-response" ) }
 
   send [method uri & options]
   
@@ -521,82 +495,27 @@
 ;; -----------------------------------------------------------------------------
 
 (defn 
-  ^{ :arglists '(
-         "(slurp-string is)"
-         "(slurp-string is charset)")
-     :doc """
-          Slurps the input stream with the response data into a string. Defaults
-          to :utf-8 charset.
-          """ 
-     :examples '(
-          """
-          (do
-            (load-module :http-client-j8 ['http-client-j8 :as 'hc])
-          
-            (let [response (hc/send :get 
-                                    "http://localhost:8080/employees" 
-                                    :headers {"Accept" "application/json, text/plain"})
-                  status   (:http-status response)
-                  mimetype (:content-type-mimetype response)
-                  charset  (:content-type-charset response)]
-              (println "Status:" status)
-              (if (= 200 status)
-                (println (hc/slurp-string (:data-stream response) charset))
-                (println (hc/slurp-string (:data-stream response) charset)))))
-          """ )
-     :see-also '(
-          "http-client-j8/slurp-json"
-          "http-client-j8/slurp-bytebuf"
-          "http-client-j8/send" ) }
-
-  slurp-string 
-  
-  ([is] (slurp-string is :utf-8))
-  ([is charset] (io/slurp-stream is :binary false :encoding (or charset :utf-8))))
-
-
-(defn 
-  ^{ :arglists '(
-         "(slurp-json is)"
-         "(slurp-json is charset)")
-     :doc """
-          Slurps the input stream with the response data into JSON. Defaults to 
-          :utf-8 charset.
-          """ 
-     :examples '(
-          """
-          (do
-            (load-module :http-client-j8 ['http-client-j8 :as 'hc])
-          
-            (let [response (hc/send :get 
-                                    "http://localhost:8080/employees" 
-                                    :headers {"Accept" "application/json, text/plain"})
-                  status   (:http-status response)
-                  mimetype (:content-type-mimetype response)
-                  charset  (:content-type-charset response)]
-              (println "Status:" status)
-              (if (and (= 200 status) (= "application/json" mimetype))
-                (println (hc/slurp-json (:data-stream res) charset))
-                (println (hc/slurp-string (:data-stream res) charset)))))
-          """ )
-     :see-also '(
-          "http-client-j8/slurp-string"
-          "http-client-j8/slurp-bytebuf"
-          "http-client-j8/send" ) }
-
-  slurp-json
-
-  ([is] (slurp-json is :utf-8))
-  ([is charset] (-> (io/slurp-stream is :binary false 
-                                        :encoding (or charset :utf-8))
-                    (json/pretty-print))))
-
-
-(defn 
  ^{ :arglists '(
-         "(slurp-bytebuf is)")
+         "(slurp-response response)")
      :doc """
-          Slurps the input stream with the response data into a bytebuf.
+          Slurps the response data from the response' input stream.
+
+          Returns the data according to the mimetype and charset of the 
+          'Content-Type' response header.
+
+          Handles a 'Content-Encoding' transparently. Supports the encodings
+          'gzip' and 'deflate'. Other encodings are rejected with an exception.
+
+          | application/xml  | Returns a string according to the content type charset |
+          | application/json | Returns a string according to the content type charset |
+          | text/plain       | Returns a string according to the content type charset |
+          | text/html        | Returns a string according to the content type charset |
+          | text/xml         | Returns a string according to the content type charset |
+          | text/csv         | Returns a string according to the content type charset |
+          | text/css         | Returns a string according to the content type charset |
+          | text/json        | Returns the parsed JSON as a map according to the \
+                               content type charset |
+          | else             | Returns a byte buffer |
           """ 
      :examples '(
           """
@@ -608,17 +527,23 @@
                                     :headers {"Accept" "application/json, text/plain"})
                   status   (:http-status response)]
               (println "Status:" status)
-              (let [data (hc/slurp-bytebuf (:data-stream response))]
-                (println "Bytes read:" (count data)))))
+              (let [data (slurp-response response)]
+                (println "Slurped as:" (type data)))))
           """ )
      :see-also '(
-          "http-client-j8/slurp-string"
-          "http-client-j8/slurp-json"
-          "http-client-j8/send" ) }
+           "http-client-j8/send" ) }
 
-  slurp-bytebuf [is]
+  slurp-response [reponse]
 
-  (io/slurp-stream is :binary true))
+  (let [status   (:http-status response)
+        mimetype (:content-type-mimetype response)
+        charset  (:content-type-charset response)
+        encoding (parse-content-encoding (:content-encoding response))
+        is       (:data-stream response)]
+    (cond
+      (is-slurp-plain-text? mimetype)  (slurp-as-plain-text is encoding charset)
+      (is-slurp-json? mimetype)        (slurp-as-json is encoding charset)
+      :else                            (slurp-as-binary is encoding))))
 
 
 (defn 
@@ -777,7 +702,6 @@
   (println-map "   headers:               " (:headers res)))
 
 
-
 (defn- println-map [head data]
   (if (or (nil? data) (empty? data))
     (println head "-")
@@ -786,3 +710,53 @@
           format  (fn [tuple] (str (first tuple) ": " (second tuple)))]
       (println head (format (first tuples)))
       (doseq [t (rest tuples)] (println indent (format t))))))
+
+
+(defn- parse-content-encoding [encoding]
+  (let [enc (str/trim-to-nil encoding)]
+    (cond 
+      (nil? enc)             :none
+      (= "gzip" enc)         :gzip
+      (= "deflate" enc)      :deflate
+      (str/contains enc ",") :not-supported
+      :else                  :not-supported)))
+
+
+(defn- is-slurp-plain-text? [mimetype]
+  (some? (get #{ "application/xml", "application/json"
+                 "text/plain", "text/html", "text/xml", 
+                 "text/csv", "text/css" } 
+              mimetype)))
+
+
+(defn- is-slurp-json? [mimetype]
+  (= "text/json" mimetype))
+
+
+(defn- slurp-as-plain-text [is encoding charset]
+  (let [charset  (or (str/trim-to-nil charset) :utf-8)
+        is       (wrap-is-with-decompressor is encoding)]
+    (io/slurp-stream is :binary false :encoding charset)))
+
+
+(defn- slurp-as-json [is encoding charset]
+   (let [charset  (or (str/trim-to-nil charset) :utf-8)
+        is        (wrap-is-with-decompressor is encoding)]
+    (-> (io/slurp-stream is :binary false :encoding charset)
+        (json/read-str))))
+
+
+(defn- slurp-as-binary [is encoding]
+  (let [charset  (or (str/trim-to-nil charset) :utf-8)
+        is       (wrap-is-with-decompressor is encoding)]
+    (io/slurp-stream is :binary true)))
+
+
+(defn- wrap-is-with-decompressor [is encoding]
+  (case encoding
+    :none     is
+    :gzip     (io/wrap-is-with-gzip-input-stream is)
+    :deflate  (io/wrap-is-with-inflater-input-stream is)
+    (throw (ex :VncException (str/format "Unsupported 'Content-Encoding' -> '%s'")
+                                          encoding))))
+

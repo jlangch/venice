@@ -14,6 +14,7 @@ All notable changes to this project will be documented in this file.
   servlet options
 - `:ring` support for asynchronous handlers. See example "async-webapp.venice".
 - `:ring` support for Server-Side-Events. See example "sse-webapp.venice".
+- content encoding (gzip, deflate) support for http client response processing
 
 
 
