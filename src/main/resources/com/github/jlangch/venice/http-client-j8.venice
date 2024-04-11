@@ -510,7 +510,8 @@
 
           | [![width: 20%]]   | [![width: 80%]] |
           | application/xml   | Returns a string according to the content type charset |
-          | application/json  | Returns a string according to the content type charset |
+          | application/json  | Returns the parsed JSON as a map according to the \
+                                content type charset |
           | text/plain        | Returns a string according to the content type charset |
           | text/html         | Returns a string according to the content type charset |
           | text/xml          | Returns a string according to the content type charset |
@@ -525,10 +526,11 @@
           Options:
 
           | [![width: 20%]]    | [![width: 80%]] |
-          | :json              | If the response mimetype is 'text/json' parse to \
-                                 a Venice data map if the option value is `:data`. \
-                                 Return it as pretty printed JSON string if the \
-                                 value is `:pretty-print`.  ¶\
+          | :json              | If the response mimetype is 'text/json' or \
+                                 'application/json' parse to a Venice data map \
+                                 if the option value is `:data`. \
+                                 Return a pretty printed JSON string if the \
+                                 value is `:pretty-print`.¶\
                                  Defaults to `:data` |
 
           """ 
@@ -542,7 +544,7 @@
                                     :headers {"Accept" "application/json, text/plain"})
                   status   (:http-status response)]
               (println "Status:" status)
-              (let [data (slurp-response response)]
+              (let [data (slurp-response response :json :pretty-print)]
                 (println "Slurped as:" (type data)))))
           """ )
      :see-also '(
