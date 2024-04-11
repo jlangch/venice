@@ -67,7 +67,7 @@
 
 
 (defn create-employee [request]
-  (let [json?    (ring/json-request? request)
+  (let [json?    (ring-util/json-request? request)
         body     (if json? (json/slurp (:body request) :key-fn keyword) nil)
         employee (if body {:name (:name body), :role (:role body)} nil)]
     (cond
@@ -82,7 +82,7 @@
 (defn update-employee [request]
   (let [id        (-> request :parameters :id)
         employee  (find-employee-by-id id)
-        json?     (ring/json-request? request)
+        json?     (ring-util/json-request? request)
         body      (if json? (json/slurp (:body request) :key-fn keyword) nil)
         employee* (if body {:id id, :name (:name body), :role (:role body)} nil)]
     (cond
@@ -178,9 +178,7 @@
           mimetype (:content-type-mimetype res)
           charset  (:content-type-charset res)]
       (println "Status:" status)
-      (if (and (= 200 status) (= "application/json" mimetype))
-        (println (hc/slurp-json (:data-stream res) charset))
-        (println (hc/slurp-string (:data-stream res) charset)))))
+      (println (hc/slurp-response res :json :pretty-print))))
 )
 
 ;; POST (create)
@@ -200,9 +198,7 @@
           mimetype (:content-type-mimetype res)
           charset  (:content-type-charset res)]
       (println "Status:" status)
-      (if (and (= 200 status) (= "application/json" mimetype))
-        (println (hc/slurp-json (:data-stream res) charset))
-        (println (hc/slurp-string (:data-stream res) charset)))))
+      (println (hc/slurp-response res :json :pretty-print))))
 )
 
 ;; PUT (update)
@@ -223,9 +219,7 @@
           mimetype (:content-type-mimetype res)
           charset  (:content-type-charset res)]
       (println "Status:" status)
-      (if (and (= 200 status) (= "application/json" mimetype))
-        (println (hc/slurp-json (:data-stream res) charset))
-        (println (hc/slurp-string (:data-stream res) charset)))))
+      (println (hc/slurp-response res :json :pretty-print))))
 )
 
 ;; DELETE (delete)
@@ -242,6 +236,5 @@
           mimetype (:content-type-mimetype res)
           charset  (:content-type-charset res)]
       (println "Status:" status)
-      (if (= "text/plain" mimetype)
-        (println (hc/slurp-string (:data-stream res) charset)))))
+      (println (hc/slurp-response res :json :pretty-print))))
 )

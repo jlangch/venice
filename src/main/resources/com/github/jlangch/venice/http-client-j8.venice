@@ -123,7 +123,7 @@
                                     :debug true)
                   status   (:http-status response)]
               (println "Status:" status)
-              (println (slurp-response response :json :pretty-print))))
+              (println (hc/slurp-response response :json :pretty-print))))
           """,
           """
           ;; PUT (update)
@@ -140,7 +140,7 @@
                                     :debug true)
                   status   (:http-status response)]
               (println "Status:" status)
-              (println (slurp-response response :json :pretty-print))))
+              (println (hc/slurp-response response :json :pretty-print))))
           """,
           """
           ;; DELETE (delete)
@@ -153,7 +153,7 @@
                                     :debug true)
                   status   (:http-status response)]
               (println "Status:" status)
-              (println (slurp-response response))))
+              (println (hc/slurp-response response))))
           """,
           """
           ;; GET over SSL
@@ -189,7 +189,7 @@
                                     :debug true)
                   status   (:http-status response)]
               (println "Status:" status)
-              (println (slurp-response response))))
+              (println (hc/slurp-response response))))
           """,
           """
           ;; OAuth blueprint
@@ -222,7 +222,7 @@
                                                  "Authorization" (str "Bearer "  accessToken)})
                   status   (:http-status response)]
                 (println "Status:" status)
-                (println (slurp-response response :json :pretty-print)))))
+                (println (hc/slurp-response response :json :pretty-print)))))
           """ )
      :see-also '(
           "http-client-j8/upload-file"
@@ -305,7 +305,7 @@
                                                   " request body type"))))))
 
       ;; handle response
-      (let [response  (get-response con)]
+      (let [response (assoc (get-response con) :debug debug?)]
         (when debug? (dump-response response))
         response))))
 
@@ -549,17 +549,21 @@
            "http-client-j8/process-server-side-events"
            "http-client-j8/send" ) }
 
-  slurp-response [reponse & options]
+  slurp-response [response & options]
 
   (assert (some? response))
 
-  (let [opts      (apply hash-map options) 
-        json-mode (:json opts :data)   
-        status    (:http-status response)
-        mimetype  (:content-type-mimetype response)
-        charset   (:content-type-charset response)
-        encoding  (parse-content-encoding (:content-encoding response))
-        is        (:data-stream response)]
+  (let [opts         (apply hash-map options) 
+        json-mode    (:json opts :data)   
+        status       (:http-status response)
+        mimetype     (:content-type-mimetype response)
+        charset      (:content-type-charset response)
+        encoding     (parse-content-encoding (:content-encoding response))
+        is           (:data-stream response)
+        debug?       (true? (:debug response false))
+        slurp-plain  (is-slurp-plain-text? mimetype)
+        slurp-json   (is-slurp-json? mimetype)
+        slurp-binary (not (or slurp-plain slurp-json))]
     (when (= "text/event-stream" mimetype)
       (throw (ex :VncException 
                  """
@@ -567,6 +571,19 @@
                   function. Use the function \
                   'http-client-j8/process-server-side-events' instead!
                  """)))
+    (when debug?
+      (println)
+      (println "Slurp response:")
+      (println "   status:            " status)
+      (println "   mimetype:          " mimetype)
+      (println "   charset:           " charset)
+      (println "   encoding:          " encoding)
+      (println "   slurp-plain:       " slurp-plain)
+      (println "   slurp-json:        " slurp-json)
+      (println "   slurp-binary:      " slurp-binary)
+      (println "   json-mode:         " json-mode)
+      (println))
+
     (cond
       (is-slurp-plain-text? mimetype)  (slurp-as-plain-text is encoding charset)
       (is-slurp-json? mimetype)        (slurp-as-json is encoding charset json-mode)
@@ -851,14 +868,13 @@
 
 
 (defn- is-slurp-plain-text? [mimetype]
-  (some? (get #{ "application/xml", "application/json"
-                 "text/plain", "text/html", "text/xml", 
-                 "text/csv", "text/css" } 
+  (some? (get #{ "application/xml", "text/plain", "text/html", 
+                 "text/xml", "text/csv", "text/css" } 
               mimetype)))
 
 
 (defn- is-slurp-json? [mimetype]
-  (= "text/json" mimetype))
+  (or (= "text/json" mimetype) (= "application/json" mimetype)))
 
 
 (defn- slurp-as-plain-text [is encoding charset]
@@ -873,7 +889,7 @@
         data      (io/slurp-stream is :binary false :encoding charset)]
      (if (= :data json-mode) 
        (json/read-str)
-       (-> (json/read-str)
+       (-> (json/read-str data)
            (json/write-str)
            (json/pretty-print)))))
 
