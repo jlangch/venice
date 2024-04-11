@@ -106,7 +106,17 @@
                        tomcat-opts)]
   (defn stop [] (tc/shutdown server)))
 
+;; -----------------------------------------------------------------------------
 
+(println "Tomcat started on port ~(:port tomcat-opts).")
+(println "Stop it by calling:  (stop)")
+
+
+
+
+;; -----------------------------------------------------------------------------
+;; Venice HTTP Client examples
+;; -----------------------------------------------------------------------------
 
 ;; GET (demo)
 (comment
