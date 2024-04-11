@@ -48,9 +48,13 @@ public class ModuleHttpClientJ8Section implements ISectionBuilder {
         hc.addItem(diBuilder.getDocItem("http-client-j8/upload-file", false));
         hc.addItem(diBuilder.getDocItem("http-client-j8/upload-multipart", false));
 
-        final DocSection utils = new DocSection("Utils", id());
+        final DocSection utils = new DocSection("Response", id());
         all.addSection(utils);
         utils.addItem(diBuilder.getDocItem("http-client-j8/slurp-response", false));
+
+        final DocSection sse = new DocSection("SSE", id());
+        all.addSection(sse);
+        sse.addItem(diBuilder.getDocItem("http-client-j8/process-server-side-events", false));
 
         final DocSection tests = new DocSection("Tests", id());
         all.addSection(tests);

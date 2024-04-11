@@ -114,31 +114,30 @@
   ;; having received 10 events.
   (do
     (load-module :http-client-j8 ['http-client-j8 :as 'hc])
-    (load-module :server-side-events ['server-side-events :as 'sse])
 
     (let [response  (hc/send :get 
                              "http://localhost:8080/events" 
                              :headers { "Accept"         "text/event-stream" 
                                         "Cache-Control"  "no-cache"
-                                        "Connection"     "keep-alive"}
+                                        "Connection"     "keep-alive" }
                              :conn-timeout 0
                              :read-timeout 0
                              :debug true)]
       (println "Status:" (:http-status response))
-      
-      (println "\nConsuming events...\n")
-      (let [is (:data-stream response)
-            rd (io/wrap-is-with-buffered-reader is :utf-8)]
-        ;; read the streamed events from the response
-        (loop [event (sse/read-event rd) event-count 1]
-          (if event
-            (do
-              (println "Event: " event)  
-              (if (<= event-count 10)
-                (recur (sse/read-event rd) (inc event-count))
-                (do
-                  (println "Stopped after receiving 10 events")
-                  (. rd :close))))
-            (println "Last event received"))))))
+
+      (hc/process-server-side-events 
+        response
+        (fn [event cnt]
+          (cond 
+            (nil? event)  (do (println "No more events")
+                              :ok)
+            (= cnt 1)     (do (println "\nConsuming events...\n")
+                              (println "Event: " event)
+                              :ok)
+            (>= cnt 10)   (do (println "Stopped after receiving 10 events")
+                              (println "Event: " event)
+                              :stop)
+            :else         (do (println "Event: " event)
+                              :ok))))))
 )
 
