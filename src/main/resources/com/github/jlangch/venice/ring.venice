@@ -228,6 +228,14 @@
 
 (defn- handle-async-request [request response servlet handler]
   (let [async-context  (. request :startAsync request response)
+                       ;; ensure formal type for Tomcat RequestFacade and 
+                       ;; ResponseFacade. From Tomcat 10+ on these facades 
+                       ;; implement 
+                       ;;   - jakarta.servlet.http.HttpServletRequest 
+                       ;;   - jakarta.servlet.http.HttpServletResponse
+                       ;; instead of javax.servlet.http.*
+                       ;; The package 'jakarta.servlet' comes with the 
+                       ;; Tomcat 10+ core library.
         async-request  (cast :HttpServletRequest (. async-context :getRequest))
         async-response (cast :HttpServletResponse (. async-context :getResponse))]
 
