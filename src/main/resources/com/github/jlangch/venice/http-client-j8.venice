@@ -25,6 +25,8 @@
 (ns http-client-j8)
 
 (load-module :multipart ['multipart :as 'mp])
+(load-module :server-side-events ['server-side-events :as 'sse])
+
 
 (import :java.net.URL)
 (import :java.net.HttpURLConnection)
@@ -638,8 +640,8 @@
                     (= cnt 1)     (do (println "\nConsuming events...\n")
                                       (println "Event: " event)
                                       :ok)
-                    (>= cnt 10)   (do (println "Stopped after receiving 10 events")
-                                      (println "Event: " event)
+                    (>= cnt 10)   (do (println "Event: " event)
+                                      (println "Stopped after receiving 10 events")
                                       :stop)
                     :else         (do (println "Event: " event)
                                       :ok))))))
@@ -653,7 +655,7 @@
   (assert (some? response))
   (assert (fn? event-handler))
 
-  (when-not (= "text/event-stream" mimetype)
+  (when-not (= "text/event-stream" (:content-type-mimetype response))
     (throw (ex :VncException 
                 """
                 Server side events can only be processed on a response with \

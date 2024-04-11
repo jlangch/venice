@@ -43,3 +43,7 @@
 ;;;;        server.start();
 ;;;;        server.join();
 ;;;;    }
+;;;;
+;;;; for multipart servlets add a <multipart-config> in the web.xml equivalent
+;;;; in the prgramatical setup.
+;;;;
